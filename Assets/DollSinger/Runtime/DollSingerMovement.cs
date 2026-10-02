@@ -21,6 +21,12 @@ namespace Unity.MP_FPS.DollSinger {
         [Tooltip("How quickly the movement animation follows actual speed")]
         public float m_SpeedChangeRate = 10.0f;
 
+        [Header("Turn in place")]
+        [Tooltip("Ignore small rotation corrections below this angular speed, in degrees/second.")]
+        [Min(1f)] public float m_TurnMinAngularSpeed = 12f;
+        [Tooltip("Use walking animations instead when horizontal speed exceeds this value.")]
+        [Min(0f)] public float m_TurnStationarySpeed = 0.15f;
+
         public AudioClip m_LandingAudioClip;
         public AudioClip[] m_FootstepAudioClips;
         [Range(0, 1)] public float m_FootstepAudioVolume = 0.5f;
@@ -119,6 +125,8 @@ namespace Unity.MP_FPS.DollSinger {
         private static readonly int k_AnimIDJump = Animator.StringToHash("Jump");
         private static readonly int k_AnimIDFreeFall = Animator.StringToHash("FreeFall");
         private static readonly int k_AnimIDMotionSpeed = Animator.StringToHash("MotionSpeed");
+        private static readonly int k_AnimIDMoveX = Animator.StringToHash("MoveX");
+        private static readonly int k_AnimIDMoveZ = Animator.StringToHash("MoveZ");
         private Animator m_Animator;
         private CharacterController m_Controller;
         private GameObject m_MainCamera;
@@ -135,6 +143,15 @@ namespace Unity.MP_FPS.DollSinger {
         private bool m_HasMotionSpeedParameter;
         private bool m_MotionSpeedIsFloat;
         private bool m_HasJumpParameter;
+        private bool m_HasMoveXParameter, m_HasMoveZParameter;
+        private Vector2 m_LastMoveDirection = Vector2.up;
+        private static readonly int k_AnimIDTurnDirection = Animator.StringToHash("TurnDirection");
+        private static readonly int k_AnimIDTurnPlayback = Animator.StringToHash("TurnPlayback");
+        private static readonly int k_AnimIDTurnState = Animator.StringToHash("Turn In Place.Turn Steps");
+        private int m_TurnLayer = -1;
+        private bool m_HasTurnParameters;
+        private bool m_HasBodyYawSample;
+        private float m_PreviousBodyYaw, m_TurnWeight, m_TurnHoldTime, m_TurnDirection;
         private float m_HeadLookWeight;
 
         // Out
@@ -178,7 +195,8 @@ namespace Unity.MP_FPS.DollSinger {
         // Called with this component disabled. Network prediction owns the root
         // CharacterController; this adapter updates only animation and presentation state.
         public void ApplyNetworkPresentation(float speed, float verticalVelocity, bool grounded,
-            bool sprinting, bool jumped, float deltaTime)
+            bool sprinting, bool jumped, float deltaTime, Vector3 worldMovement = default,
+            float? bodyYaw = null)
         {
             m_NetworkDriven = true;
             m_NetworkSpeed = speed;
@@ -189,6 +207,8 @@ namespace Unity.MP_FPS.DollSinger {
             if (!m_HasAnimator) return;
             m_AnimationBlend = Mathf.Lerp(m_AnimationBlend, speed, deltaTime * m_SpeedChangeRate);
             if (m_HasSpeedParameter) m_Animator.SetFloat(k_AnimIDSpeed, m_AnimationBlend);
+            ApplyDirectionalAnimation(worldMovement, deltaTime);
+            ApplyTurnAnimation(bodyYaw ?? transform.eulerAngles.y, speed, grounded && !jumped, deltaTime);
             if (m_HasMoveParameter) m_Animator.SetBool("Move", speed > 0.05f);
             if (m_HasGroundedParameter) m_Animator.SetBool(k_AnimIDGrounded, grounded);
             if (m_HasFreeFallParameter) m_Animator.SetBool(k_AnimIDFreeFall, !grounded && verticalVelocity < 0f);
@@ -221,8 +241,30 @@ namespace Unity.MP_FPS.DollSinger {
                     }
                     if (parameter.nameHash == k_AnimIDJump && parameter.type == AnimatorControllerParameterType.Trigger)
                         m_HasJumpParameter = true;
+                    if (parameter.nameHash == k_AnimIDMoveX && parameter.type == AnimatorControllerParameterType.Float)
+                        m_HasMoveXParameter = true;
+                    if (parameter.nameHash == k_AnimIDMoveZ && parameter.type == AnimatorControllerParameterType.Float)
+                        m_HasMoveZParameter = true;
                 }
+                m_TurnLayer = m_Animator.GetLayerIndex("Turn In Place");
+                bool hasDirection = false, hasPlayback = false;
+                foreach (var parameter in m_Animator.parameters) {
+                    if (parameter.type != AnimatorControllerParameterType.Float) continue;
+                    hasDirection |= parameter.nameHash == k_AnimIDTurnDirection;
+                    hasPlayback |= parameter.nameHash == k_AnimIDTurnPlayback;
+                }
+                m_HasTurnParameters = hasDirection && hasPlayback;
             }
+        }
+
+        private void OnEnable() => ResetTurnAnimation();
+        private void OnDisable() => ResetTurnAnimation();
+
+        private void ResetTurnAnimation()
+        {
+            m_HasBodyYawSample = false;
+            m_TurnWeight = m_TurnHoldTime = m_TurnDirection = 0f;
+            if (m_Animator && m_TurnLayer >= 0) m_Animator.SetLayerWeight(m_TurnLayer, 0f);
         }
 
         private void Start() {
@@ -243,6 +285,8 @@ namespace Unity.MP_FPS.DollSinger {
             JumpAndGravity();
             Move();
             GroundedCheck();
+            if (m_HasAnimator)
+                ApplyTurnAnimation(transform.eulerAngles.y, CurrentSpeed, m_Grounded && !JumpedThisFrame, Time.deltaTime);
         }
 
         private void LateUpdate() {
@@ -434,6 +478,7 @@ namespace Unity.MP_FPS.DollSinger {
             m_AnimationBlend = Mathf.Lerp(m_AnimationBlend, CurrentSpeed, Time.deltaTime * m_SpeedChangeRate);
             if (m_AnimationBlend < 0.01f) m_AnimationBlend = 0f;
             if (m_HasSpeedParameter) m_Animator.SetFloat(k_AnimIDSpeed, m_AnimationBlend);
+            ApplyDirectionalAnimation(m_Controller.velocity, Time.deltaTime);
             if (m_HasMoveParameter) m_Animator.SetBool("Move", CurrentSpeed > 0.05f);
             if (m_HasMotionSpeedParameter) {
                 // As a Float this multiplies the locomotion state's playback speed;
@@ -441,6 +486,51 @@ namespace Unity.MP_FPS.DollSinger {
                 if (m_MotionSpeedIsFloat) m_Animator.SetFloat(k_AnimIDMotionSpeed, 1f);
                 else m_Animator.SetInteger(k_AnimIDMotionSpeed, inputMagnitude > 0.01f ? 1 : 0);
             }
+        }
+
+        private void ApplyDirectionalAnimation(Vector3 worldMovement, float deltaTime)
+        {
+            if (!m_HasMoveXParameter || !m_HasMoveZParameter) return;
+            Vector3 local = transform.InverseTransformDirection(worldMovement);
+            var horizontal = new Vector2(local.x, local.z);
+            if (horizontal.sqrMagnitude > 0.0001f) m_LastMoveDirection = horizontal.normalized;
+            m_Animator.SetFloat(k_AnimIDMoveX, m_LastMoveDirection.x * m_AnimationBlend, 0.06f, deltaTime);
+            m_Animator.SetFloat(k_AnimIDMoveZ, m_LastMoveDirection.y * m_AnimationBlend, 0.06f, deltaTime);
+        }
+
+        private void ApplyTurnAnimation(float bodyYaw, float speed, bool grounded, float deltaTime)
+        {
+            if (m_TurnLayer < 0 || !m_HasTurnParameters) return;
+            float angle = m_HasBodyYawSample ? Mathf.DeltaAngle(m_PreviousBodyYaw, bodyYaw) : 0f;
+            bool hadSample = m_HasBodyYawSample;
+            m_PreviousBodyYaw = bodyYaw;
+            m_HasBodyYawSample = true;
+
+            // Only animate real stationary body rotation. Camera orbit, walking, airborne
+            // motion and respawn/teleport discontinuities must not start a turn step.
+            if (!hadSample || deltaTime <= 0f || deltaTime > 0.25f || Mathf.Abs(angle) > 45f ||
+                !grounded || speed > m_TurnStationarySpeed)
+            {
+                m_TurnWeight = m_TurnHoldTime = 0f;
+                m_Animator.SetLayerWeight(m_TurnLayer, 0f);
+                return;
+            }
+            float angularSpeed = angle / deltaTime;
+            if (Mathf.Abs(angularSpeed) >= m_TurnMinAngularSpeed)
+            {
+                float direction = Mathf.Sign(angularSpeed);
+                if (m_TurnWeight <= 0.001f || direction != m_TurnDirection)
+                    m_Animator.Play(k_AnimIDTurnState, m_TurnLayer, 0f);
+                m_TurnDirection = direction;
+                m_TurnHoldTime = 0.12f;
+                m_Animator.SetFloat(k_AnimIDTurnDirection, direction);
+                m_Animator.SetFloat(k_AnimIDTurnPlayback, Mathf.Clamp(Mathf.Abs(angularSpeed) / 100f, 0.65f, 2f));
+            }
+            else m_TurnHoldTime = Mathf.Max(0f, m_TurnHoldTime - deltaTime);
+            float targetWeight = m_TurnHoldTime > 0f ? 1f : 0f;
+            m_TurnWeight = Mathf.MoveTowards(m_TurnWeight, targetWeight,
+                deltaTime / (targetWeight > m_TurnWeight ? 0.08f : 0.15f));
+            m_Animator.SetLayerWeight(m_TurnLayer, m_TurnWeight);
         }
 
         private void JumpAndGravity() {

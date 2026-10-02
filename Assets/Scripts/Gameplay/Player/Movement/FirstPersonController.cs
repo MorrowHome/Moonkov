@@ -750,6 +750,10 @@ public class FirstPersonController : MonoBehaviour
         // Rotate movement by the view, regardless of which way the body currently faces.
         var worldDir = math.mul(rotQuat, localDir);
 
+        // Reuse the existing replicated animation vector for directional character poses.
+        // The DollSinger view converts this world-space motion into its body's local axes.
+        state.AnimatorMotion = worldDir * state.MovementSpeed;
+
         // Multiply the pure direction by the final speed calculated in AccumulateMovement.
         return worldDir * state.MovementSpeed;
     }

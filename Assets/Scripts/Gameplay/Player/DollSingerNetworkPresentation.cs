@@ -80,7 +80,8 @@ namespace Unity.MP_FPS
             if (jumped) m_LastJumpTick = ghost.LastJumpTick;
             m_Model.ApplyNetworkPresentation(state.MovementSpeed, state.JumpFallSpeed,
                 state.MovementType == FirstPersonController.MovementType.Standing,
-                state.Sprinting, jumped, Time.deltaTime);
+                state.Sprinting, jumped, Time.deltaTime, (Vector3)state.AnimatorMotion,
+                ((Quaternion)state.CurrentRotation).eulerAngles.y);
             var viewRotation = Quaternion.Euler(state.PitchDegrees, state.YawDegrees, 0f);
             m_Halo.SetNetworkPresentation(state.Aiming, viewRotation * Vector3.forward, ghost.AimPoint);
             if (Role == MultiplayerRole.ClientOwned)

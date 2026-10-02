@@ -55,6 +55,8 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
 
     private readonly RaycastHit[] rayHits = new RaycastHit[32];
     private Animator animator;
+    private static readonly int AimBlendId = Animator.StringToHash("AimBlend");
+    private bool hasAimBlendParameter;
     public DollSingerInput input;
     public DollSingerView view;
     [SerializeField] private bool networkControlled;
@@ -98,6 +100,9 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
 
     private void Awake() {
         animator = GetComponent<Animator>();
+        foreach (var parameter in animator.parameters)
+            if (parameter.nameHash == AimBlendId && parameter.type == AnimatorControllerParameterType.Float)
+                hasAimBlendParameter = true;
         if (!input) input = GetComponent<DollSingerInput>();
         var skirtAvoidance = GetComponent<SkirtHandAvoidance>();
         if (skirtAvoidance) skirtAvoidance.haloAim = this;
@@ -145,6 +150,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         aimBlend = Mathf.MoveTowards(aimBlend, wantsAim ? 1f : 0f,
             Time.deltaTime / (wantsAim ? aimInSeconds : aimOutSeconds));
         if (aimLayerIndex >= 0) animator.SetLayerWeight(aimLayerIndex, aimBlend);
+        if (hasAimBlendParameter) animator.SetFloat(AimBlendId, aimBlend);
         if (cameraOwner) cameraOwner.SetAimBlend(aimBlend);
         if (!networkControlled && wantsAim && aimBlend > 0.65f && input.FireHeld && Time.time >= nextLocalShotTime)
         {
@@ -244,6 +250,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         nextLocalShotTime = 0;
         if (thirdPerson) thirdPerson.IsLocallyAiming = false;
         if (animator && aimLayerIndex >= 0) animator.SetLayerWeight(aimLayerIndex, 0f);
+        if (animator && hasAimBlendParameter) animator.SetFloat(AimBlendId, 0f);
         if (cameraOwner) cameraOwner.SetAimBlend(0f);
         SetBoltVisible(false);
         if (boltPool) boltPool.ClearActive();
