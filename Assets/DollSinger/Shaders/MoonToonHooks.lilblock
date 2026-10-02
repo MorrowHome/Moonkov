@@ -1,5 +1,23 @@
 // Keep nearby toon self-shadow soft; darken distant sun occlusion per pixel.
 
+// URP lilToon normally merges punctual lights into the main light in the
+// fragment shader. Keep them separate so the sun's occlusion cannot erase
+// lamps. The original forward pass adds fd.addLightColor after OVERRIDE_SHADOW.
+#if defined(LIL_URP) && !defined(LIL_OUTLINE) && \
+    defined(LIL_USE_ADDITIONALLIGHT_MAINDIR_PS) && !defined(LIL_USE_LIGHTMAP)
+    #undef LIL_GET_MAINLIGHT
+    #define LIL_GET_MAINLIGHT(input,lc,ld,atten) \
+        lc = input.lightColor; \
+        LIL_CORRECT_LIGHTCOLOR_PS(lc); \
+        LIL_CORRECT_LIGHTDIRECTION_PS(ld)
+
+    #undef LIL_GET_ADDITIONALLIGHT
+    #define LIL_GET_ADDITIONALLIGHT(i,o) \
+        o = lilGetAdditionalLights(i.positionWS, i.positionCS, LIL_ADDITIONAL_LIGHT_STRENGTH); \
+        o = lerp(o, lilGray(o), _MonochromeLighting); \
+        o = lerp(o, 0.0, _AsUnlit)
+#endif
+
 float MoonToonShadowVisibility(float3 positionWS, float attenuation)
 {
     #if defined(LIL_URP) && defined(LIL_USE_SHADOW) && !defined(LIL_OUTLINE)

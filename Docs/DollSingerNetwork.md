@@ -62,6 +62,10 @@ DollSinger_Body 的 SkinnedMeshRenderer 已启用 Receive Shadows，但 lilToon 
 
 `MoonToonHooks.lilblock` 从 URP 太阳阴影图估算遮挡物到当前表面的距离，近处保留淡紫色自阴影，较远的遮挡逐像素压暗；实际光环和激光灯仍在之后叠加。
 
+URP lilToon 默认在片元阶段先把局部灯光合并进主光照。直接把合并结果乘上太阳遮蔽，会同时压掉光环和其他玩家的灯；旧版本“附加灯之后叠加”的假设因此不成立。当前扩展对未烘焙的角色表面重新绑定 `LIL_GET_MAINLIGHT` 和 `LIL_GET_ADDITIONALLIGHT`：主光照只保留太阳，局部灯光独立写入 `fd.addLightColor`，由 lilToon 原 Forward Pass 在太阳阴影处理之后叠加。继续使用原有 URP 灯光循环及灯光层过滤，不区分灯的角色归属，不增加常亮保底。描边和烘焙光照分支不在本次调整范围内。
+
+针对性离屏对照（黑色环境光、实际遮挡太阳、相同灯强度与相机）中，修正前关灯／头顶灯／前方灯的表面亮度均为 0；修正后依次为 0／0.85／0.768，无遮挡的日照亮度仍为 0.360，渲染错误为 0。这些数值验证灯光贡献与太阳阴影的分离，角色最终观感仍由用户在 Play 中确认。
+
 ```mermaid
 flowchart LR
     Atlas[URP 太阳阴影图] --> Gap[估算遮挡物到表面的距离]
