@@ -15,6 +15,11 @@ namespace Unity.MP_FPS.Client
         private Button m_Login, m_Register, m_Logout;
         private CancellationTokenSource m_AccountStop;
         private bool m_AccountBusy, m_AccountVerified;
+        private StashScreen m_StashScreen;
+        private bool m_ShowConnectionMenu;
+        private Button m_BackToStash;
+        private string m_AccountError;
+        private GlobalGameState m_LastStashGameState;
 
         private void InitializeAccountPanel()
         {
@@ -38,6 +43,12 @@ namespace Unity.MP_FPS.Client
             m_ConnectionPanel.Insert(0, m_LoggedInLabel); m_ConnectionPanel.Insert(1, m_Logout);
             m_MainMenu.Q<TextField>(UIElementNames.NameInputField).SetEnabled(false);
             m_MainMenu.Q<VisualElement>("InputPlayerName").style.display = DisplayStyle.None;
+            m_ShowConnectionMenu = false;
+            m_BackToStash = new Button(ShowStash) { text = "BACK TO STASH" };
+            m_ConnectionPanel.Insert(0, m_BackToStash);
+            m_StashScreen = new StashScreen(m_MainMenu.Q<VisualElement>("stashScreenHost"), ShowRaidPreparation, Logout, RefreshStash);
+            m_LastStashGameState = GameSettings.Instance.GameState;
+            GameSettings.Instance.propertyChanged += StashSettingsChanged;
             UpdateAccountPanel();
             if (AccountClient.IsLoggedIn) RestoreLogin();
         }
@@ -45,8 +56,13 @@ namespace Unity.MP_FPS.Client
         private void UpdateAccountPanel()
         {
             bool loggedIn = AccountClient.IsLoggedIn && m_AccountVerified;
+            bool showStash = loggedIn && !m_ShowConnectionMenu;
             m_AccountPanel.style.display = loggedIn ? DisplayStyle.None : DisplayStyle.Flex;
-            m_ConnectionPanel.style.display = loggedIn ? DisplayStyle.Flex : DisplayStyle.None;
+            m_ConnectionPanel.style.display = loggedIn && m_ShowConnectionMenu ? DisplayStyle.Flex : DisplayStyle.None;
+            m_MainMenu.Q<VisualElement>("Container").style.display = showStash ? DisplayStyle.None : DisplayStyle.Flex;
+            m_StashScreen.Present(AccountClient.DisplayName, GameSettings.Instance.PlayerCharacter,
+                AccountClient.StashDust, AccountClient.StashAlloy, AccountClient.StashCells, showStash, m_AccountBusy, m_AccountError);
+            m_CreateGameButton.SetEnabled(!m_AccountBusy); m_StartHostButton.SetEnabled(!m_AccountBusy); m_ConnectToServerButton.SetEnabled(!m_AccountBusy);
             m_LoggedInLabel.text = $"Signed in as {AccountClient.DisplayName}\nSTASH: Dust {AccountClient.StashDust}   Alloy {AccountClient.StashAlloy}   Cells {AccountClient.StashCells}";
             m_LoggedInLabel.style.whiteSpace = WhiteSpace.Normal;
             m_Login.SetEnabled(!m_AccountBusy); m_Register.SetEnabled(!m_AccountBusy); m_Logout.SetEnabled(!m_AccountBusy);
@@ -80,8 +96,30 @@ namespace Unity.MP_FPS.Client
             {
                 await AccountClient.LogoutAsync(m_AccountServiceUrl, ct);
                 m_AccountVerified = false;
+                m_ShowConnectionMenu = false;
                 m_Password.value = "";
                 m_AccountMessage.text = "Signed out.";
+            });
+        }
+
+        private void ShowRaidPreparation() { m_ShowConnectionMenu = true; UpdateAccountPanel(); }
+        private void ShowStash() { m_ShowConnectionMenu = false; UpdateAccountPanel(); }
+        private void StashSettingsChanged(object sender, BindablePropertyChangedEventArgs evt)
+        {
+            var gameState = GameSettings.Instance.GameState;
+            bool returnedToMenu = m_LastStashGameState != GlobalGameState.MainMenu && gameState == GlobalGameState.MainMenu;
+            m_LastStashGameState = gameState;
+            if (!returnedToMenu) return;
+            m_ShowConnectionMenu = false;
+            if (AccountClient.IsLoggedIn) RefreshStash();
+            else UpdateAccountPanel();
+        }
+        private async void RefreshStash()
+        {
+            await AccountAction(async ct =>
+            {
+                await AccountClient.ValidateAsync(m_AccountServiceUrl, ct);
+                m_AccountVerified = AccountClient.IsLoggedIn;
             });
         }
 
@@ -89,12 +127,13 @@ namespace Unity.MP_FPS.Client
         {
             if (m_AccountBusy) return;
             var lifetime = m_AccountStop;
+            m_AccountError = null;
             m_AccountBusy = true;
             UpdateAccountPanel();
             try { await action(lifetime.Token); }
-            catch (OperationCanceledException) { }
-            catch (System.Net.Http.HttpRequestException) { if (!lifetime.IsCancellationRequested) m_AccountMessage.text = "Cannot reach account service. Please retry."; }
-            catch (Exception ex) { if (!lifetime.IsCancellationRequested) m_AccountMessage.text = ex.Message; }
+            catch (OperationCanceledException) { if (!lifetime.IsCancellationRequested) m_AccountMessage.text = m_AccountError = "Account service timed out. Please retry."; }
+            catch (System.Net.Http.HttpRequestException) { if (!lifetime.IsCancellationRequested) m_AccountMessage.text = m_AccountError = "Cannot reach account service. Please retry."; }
+            catch (Exception ex) { if (!lifetime.IsCancellationRequested) m_AccountMessage.text = m_AccountError = ex.Message; }
             finally
             {
                 if (!lifetime.IsCancellationRequested) { m_AccountBusy = false; UpdateAccountPanel(); }
@@ -104,6 +143,9 @@ namespace Unity.MP_FPS.Client
         private void DisposeAccountPanel()
         {
             m_AccountStop?.Cancel();
+            GameSettings.Instance.propertyChanged -= StashSettingsChanged;
+            m_StashScreen?.Dispose(); m_StashScreen = null;
+            m_BackToStash?.RemoveFromHierarchy();
             m_AccountPanel?.RemoveFromHierarchy(); m_LoggedInLabel?.RemoveFromHierarchy(); m_Logout?.RemoveFromHierarchy();
             m_AccountBusy = m_AccountVerified = false;
         }

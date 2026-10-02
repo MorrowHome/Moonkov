@@ -1,0 +1,105 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="StashScreen.uss" />
+    <ui:VisualElement name="stashScreen" class="stash-root">
+        <ui:VisualElement class="stash-header">
+            <ui:VisualElement class="stash-brand">
+                <ui:Label text="MOONKOV" class="stash-brand-title" />
+                <ui:Label text="LUNAR OPERATIONS" class="stash-eyebrow" />
+            </ui:VisualElement>
+            <ui:VisualElement class="stash-page-heading">
+                <ui:Label text="CHARACTER" class="stash-page-title" />
+                <ui:Label text="EQUIPMENT / PERSONAL STORAGE" class="stash-eyebrow" />
+            </ui:VisualElement>
+            <ui:VisualElement class="stash-account">
+                <ui:Label name="stashAccountName" class="stash-account-name" />
+                <ui:Label text="PERSONAL STASH" class="stash-eyebrow" />
+            </ui:VisualElement>
+            <ui:Button name="stashLogout" text="LOG OUT" class="stash-small-button" />
+        </ui:VisualElement>
+        <ui:VisualElement class="stash-body">
+            <ui:VisualElement class="stash-character-pane">
+                <ui:VisualElement class="stash-section-header">
+                    <ui:Label text="EQUIPMENT" class="stash-section-title" />
+                    <ui:Label text="STANDARD ISSUE" class="stash-muted" />
+                </ui:VisualElement>
+                <ui:VisualElement class="stash-character-heading">
+                    <ui:Label name="stashCharacterName" text="DOLLSINGER" class="stash-character-name" />
+                    <ui:Label text="FIELD LOADOUT" class="stash-eyebrow" />
+                </ui:VisualElement>
+                <ui:VisualElement name="stashEquipment" class="stash-equipment" />
+                <ui:VisualElement class="stash-section-header stash-subsection">
+                    <ui:Label text="POCKETS" class="stash-section-title" />
+                    <ui:Label text="EMPTY" class="stash-muted" />
+                </ui:VisualElement>
+                <ui:VisualElement name="stashPockets" class="stash-pockets" />
+                <ui:VisualElement class="stash-section-header stash-subsection">
+                    <ui:Label text="RAID PACK" class="stash-section-title" />
+                    <ui:Label text="12 SUPPLIES" class="stash-muted" />
+                </ui:VisualElement>
+                <ui:VisualElement name="stashPack" class="stash-pack" />
+                <ui:Label text="Collected supplies return to your stash after extraction." class="stash-loadout-note" />
+            </ui:VisualElement>
+            <ui:VisualElement class="stash-storage-pane">
+                <ui:VisualElement class="stash-section-header">
+                    <ui:Label text="STASH" class="stash-section-title" />
+                    <ui:Label name="stashStackCount" text="0 STACKS" class="stash-muted" />
+                </ui:VisualElement>
+                <ui:VisualElement class="stash-balance-bar">
+                    <ui:VisualElement class="stash-balance">
+                        <ui:Label text="MOON DUST" class="stash-eyebrow" />
+                        <ui:Label name="stashDustCount" text="0" class="stash-balance-value stash-dust-text" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="stash-balance">
+                        <ui:Label text="ALLOY" class="stash-eyebrow" />
+                        <ui:Label name="stashAlloyCount" text="0" class="stash-balance-value stash-alloy-text" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="stash-balance">
+                        <ui:Label text="ENERGY CELLS" class="stash-eyebrow" />
+                        <ui:Label name="stashCellsCount" text="0" class="stash-balance-value stash-cell-text" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="stash-balance-spacer" />
+                    <ui:Label name="stashSyncStatus" text="UP TO DATE" class="stash-sync-status" />
+                    <ui:Button name="stashRefresh" text="REFRESH" class="stash-small-button" />
+                </ui:VisualElement>
+                <ui:VisualElement class="stash-toolbar">
+                    <ui:Button name="stashFilterAll" text="ALL" class="stash-filter stash-filter-active" />
+                    <ui:Button name="stashFilterMaterials" text="MATERIALS" class="stash-filter" />
+                    <ui:Button name="stashFilterEnergy" text="ENERGY" class="stash-filter" />
+                    <ui:TextField name="stashSearch" class="stash-search" tooltip="Search supplies by name" />
+                    <ui:Button name="stashSort" text="SORT: NAME" class="stash-small-button" />
+                </ui:VisualElement>
+                <ui:VisualElement class="stash-inventory-body">
+                    <ui:ScrollView name="stashScroll" mode="Vertical" class="stash-scroll" horizontal-scroller-visibility="Hidden">
+                        <ui:VisualElement name="stashGridHost" class="stash-grid-host" />
+                    </ui:ScrollView>
+                    <ui:VisualElement class="stash-inspector">
+                        <ui:Label text="ITEM INSPECTION" class="stash-eyebrow" />
+                        <ui:VisualElement name="stashInspectArt" class="stash-inspect-art" />
+                        <ui:Label name="stashInspectName" text="SELECT AN ITEM" class="stash-inspect-name" />
+                        <ui:Label name="stashInspectCategory" text="PERSONAL STORAGE" class="stash-inspect-category" />
+                        <ui:VisualElement class="stash-detail-rule" />
+                        <ui:Label name="stashInspectDescription" text="Select a supply stack to inspect its contents." class="stash-inspect-description" />
+                        <ui:VisualElement class="stash-detail-row">
+                            <ui:Label text="OWNED" class="stash-muted" />
+                            <ui:Label name="stashInspectQuantity" text="--" class="stash-detail-value" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="stash-detail-row">
+                            <ui:Label text="STORAGE" class="stash-muted" />
+                            <ui:Label text="STASH" class="stash-detail-value" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="stash-inspector-spacer" />
+                        <ui:Label text="Click to inspect.\nScroll to browse your storage." class="stash-inspect-help" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:Label text="PERSONAL STORAGE / RECOVERED SUPPLIES" class="stash-storage-caption" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement class="stash-footer">
+            <ui:Button name="stashMainMenu" text="MAIN MENU" class="stash-footer-button" />
+            <ui:Label text="MOON / DEPLOYMENT TERMINAL" class="stash-footer-caption" />
+            <ui:VisualElement class="stash-footer-spacer" />
+            <ui:Label text="Choose your connection in raid preparation." class="stash-footer-hint" />
+            <ui:Button name="stashDeploy" text="PREPARE RAID" class="stash-deploy-button" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

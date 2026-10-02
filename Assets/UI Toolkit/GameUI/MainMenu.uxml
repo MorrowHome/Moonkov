@@ -1,5 +1,7 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:Template name="StashScreen" src="StashScreen.uxml" />
     <Style src="project://database/Assets/UI%20Toolkit/GameUI/GameUIStyleSheet.uss?fileID=7433441132597879392&amp;guid=35b9b2a65173fdb47ad41dfdb0b5a02a&amp;type=3#GameUIStyleSheet" />
+    <ui:Style src="StashScreen.uss" />
     <ui:VisualElement name="Canvas" picking-mode="Ignore" class="canvas canvas-transparent-background">
         <ui:VisualElement name="HidingBackground" picking-mode="Ignore" class="background" />
         <ui:VisualElement name="Container" picking-mode="Ignore" class="container" style="height: auto;">
@@ -25,5 +27,6 @@
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
+        <ui:Instance template="StashScreen" name="stashScreenHost" class="stash-host" />
     </ui:VisualElement>
 </ui:UXML>
