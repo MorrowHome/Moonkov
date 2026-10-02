@@ -56,6 +56,23 @@ namespace Unity.MP_FPS
 
         private ComponentLookup<GhostOwner> ghostOwnerLookup;
 
+        private bool TryReserveHaloCell(Entity player, uint weaponId)
+        {
+            if (weaponId != 2 || MoonRaidMap.Active == null) return true;
+            if (!SystemAPI.TryGetSingletonBuffer<ClientsMap>(out var clients)) return false;
+            int owner = ghostOwnerLookup[player].NetworkId;
+            if (owner <= 0 || owner >= clients.Length) return false;
+            Entity connection = clients[owner].ConnectionEntity;
+            if (!EntityManager.Exists(connection) || !EntityManager.HasComponent<RaidSession>(connection) ||
+                !EntityManager.HasComponent<JoinedClient>(connection) ||
+                EntityManager.GetComponentData<JoinedClient>(connection).PlayerEntity != player ||
+                EntityManager.GetComponentData<PredictedPlayerGhost>(player).CurrentHealth <= 0) return false;
+            var session = EntityManager.GetComponentData<RaidSession>(connection);
+            if (!RaidRules.TryConsumeCell(ref session)) return false;
+            EntityManager.SetComponentData(connection, session);
+            return true;
+        }
+
         public PlayerMovementHistory MovementHistory { get; private set; } =
             new PlayerMovementHistory(k_NumHistoryTicks);
 
@@ -291,7 +308,8 @@ namespace Unity.MP_FPS
 
                         if ((wantsToReload || mustReload) &&
                             !predictedPlayer.ValueRO.ControllerState.IsReloadingState &&
-                            predictedPlayer.ValueRO.CurrentAmmo < weaponData.MagazineSize)
+                            predictedPlayer.ValueRO.CurrentAmmo < weaponData.MagazineSize &&
+                            TryReserveHaloCell(entity, predictedPlayer.ValueRO.EquippedWeaponID))
                         {
                             predictedPlayer.ValueRW.ControllerState.IsReloadingState = true;
                             predictedPlayer.ValueRW.ReloadTimer = weaponData.ReloadTime;

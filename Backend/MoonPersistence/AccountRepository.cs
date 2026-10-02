@@ -46,9 +46,7 @@ public sealed class AccountRepository(NpgsqlDataSource db)
         await using var retire = new NpgsqlCommand("UPDATE players SET guest_token_hash = NULL WHERE id = $1", connection, transaction);
         retire.Parameters.AddWithValue(playerId);
         await retire.ExecuteNonQueryAsync(ct);
-        await using var stash = new NpgsqlCommand("INSERT INTO stashes (player_id) VALUES ($1) ON CONFLICT DO NOTHING", connection, transaction);
-        stash.Parameters.AddWithValue(playerId);
-        await stash.ExecuteNonQueryAsync(ct);
+        await InventoryRepository.EnsureStacksAsync(connection, transaction, playerId, ct);
         var session = await CreateSessionAsync(connection, transaction, playerId, request.Username, ct);
         await transaction.CommitAsync(ct);
         return session;
@@ -101,14 +99,15 @@ public sealed class AccountRepository(NpgsqlDataSource db)
     public async Task<Profile?> ResolveSessionAsync(string? token, CancellationToken ct)
     {
         if (token is not { Length: 64 } || !token.All(Uri.IsHexDigit)) return null;
-        await using var command = db.CreateCommand("""
-            SELECT s.player_id, s.dust, s.alloy, s.cells, p.display_name
-            FROM login_sessions l JOIN stashes s ON s.player_id = l.player_id JOIN players p ON p.id = l.player_id
-            WHERE l.token_hash = $1 AND l.expires_at > now()
-            """);
+        await using var connection = await db.OpenConnectionAsync(ct);
+        await using var command = new NpgsqlCommand("SELECT player_id FROM login_sessions WHERE token_hash=$1 AND expires_at>now()", connection);
         command.Parameters.AddWithValue(HashToken(token));
-        await using var reader = await command.ExecuteReaderAsync(ct);
-        return await reader.ReadAsync(ct) ? new Profile(reader.GetGuid(0), reader.GetInt32(1), reader.GetInt32(2), reader.GetInt32(3), reader.GetString(4)) : null;
+        var id = await command.ExecuteScalarAsync(ct);
+        if (id is not Guid playerId) return null;
+        await using var transaction = await connection.BeginTransactionAsync(ct);
+        var profile = await InventoryRepository.ReadAsync(connection, transaction, playerId, ct);
+        await transaction.CommitAsync(ct);
+        return profile;
     }
 
     public async Task LogoutAsync(string? token, CancellationToken ct)

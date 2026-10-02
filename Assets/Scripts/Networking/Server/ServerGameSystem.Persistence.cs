@@ -62,10 +62,77 @@ namespace Unity.MP_FPS
                 }
                 context.Profiles[connection] = profile;
                 join.Name.CopyFromTruncated(profile.DisplayName);
-                SpawnPlayerCharacter(ref state, ecb, connection, join.Name, join.CharacterIndex);
-                AddPlayerToLeaderboard(SystemAPI.GetComponent<NetworkId>(connection).Value, join.Name);
+                if (MoonRaidMap.Active != null) context.BeginDeploy(connection, join.CarryCells, join);
+                else
+                {
+                    SpawnPlayerCharacter(ref state, ecb, connection, join.Name, join.CharacterIndex);
+                    AddPlayerToLeaderboard(SystemAPI.GetComponent<NetworkId>(connection).Value, join.Name);
+                }
             }
             foreach (var connection in removeJoins) context.Joins.Remove(connection);
+
+            var removeDeploys = new List<Entity>();
+            foreach (var pair in context.Deployments)
+            {
+                var deploy = pair.Value;
+                Entity connection = pair.Key;
+                if (MoonRaidMap.Active == null || !SystemAPI.Exists(connection) || !SystemAPI.HasComponent<NetworkId>(connection) || SystemAPI.HasComponent<NetworkStreamRequestDisconnect>(connection))
+                {
+                    // Retain cleanup independently of the disappearing connection.
+                    context.Abandon(deploy.Payload);
+                    removeDeploys.Add(connection);
+                    continue;
+                }
+                if (deploy.Task == null)
+                {
+                    if (SystemAPI.Time.ElapsedTime >= deploy.RetryAt) deploy.Task = context.DeployAsync(deploy.Payload);
+                    continue;
+                }
+                if (!deploy.Task.IsCompleted) continue;
+                if (deploy.Task.IsFaulted || deploy.Task.IsCanceled)
+                {
+                    if (deploy.Task.Exception?.GetBaseException() is RaidPersistenceContext.LoadoutRejectedException rejected)
+                    {
+                        context.Abandon(deploy.Payload);
+                        removeDeploys.Add(connection);
+                        if (deploy.Join != null)
+                            ecb.AddComponent(connection, new NetworkStreamRequestDisconnect { Reason = NetworkStreamDisconnectReason.ConnectionClose });
+                        else
+                        {
+                            var raid = SystemAPI.GetComponentRW<RaidSession>(connection);
+                            raid.ValueRW.DeployPending = false;
+                            raid.ValueRW.LoadoutError = rejected.Error;
+                            raid.ValueRW.SnapshotTimer = 0;
+                        }
+                    }
+                    else { deploy.Task = null; deploy.RetryAt = SystemAPI.Time.ElapsedTime + 3; }
+                    continue;
+                }
+                var profile = deploy.Task.Result;
+                context.Profiles[connection] = profile;
+                RaidSession session = deploy.Join == null ? SystemAPI.GetComponent<RaidSession>(connection) : default;
+                RaidRules.BeginNext(ref session, MoonRaidMap.Active.RaidDuration);
+                session.SettlementId = deploy.Payload.DeploymentId;
+                session.PersistentDeployment = true;
+                session.SaveState = RaidSaveState.Saved;
+                session.Cells = deploy.Payload.Cells;
+                session.CellStackId = profile.CellStackId ?? "";
+                session.StashDust = profile.Dust; session.StashAlloy = profile.Alloy; session.StashCells = profile.Cells;
+                if (deploy.Join != null)
+                {
+                    context.ReadyRaids[connection] = session;
+                    SpawnPlayerCharacter(ref state, ecb, connection, deploy.Join.Name, deploy.Join.CharacterIndex);
+                    AddPlayerToLeaderboard(SystemAPI.GetComponent<NetworkId>(connection).Value, deploy.Join.Name);
+                }
+                else
+                {
+                    SystemAPI.SetComponent(connection, session);
+                    var joined = SystemAPI.GetComponent<JoinedClient>(connection);
+                    SpawnPlayerCharacter(ref state, ecb, connection, joined.PlayerName, joined.CharacterIndex);
+                }
+                removeDeploys.Add(connection);
+            }
+            foreach (var connection in removeDeploys) context.Deployments.Remove(connection);
 
             var removeSaves = new List<string>();
             foreach (var pair in context.Saves)
@@ -73,7 +140,7 @@ namespace Unity.MP_FPS
                 var save = pair.Value;
                 if (save.Task == null)
                 {
-                    if (SystemAPI.Time.ElapsedTime >= save.RetryAt) save.Task = context.SaveAsync(save.Payload);
+                    if (SystemAPI.Time.ElapsedTime >= save.RetryAt) save.Task = context.RetrySave(save);
                     continue;
                 }
                 if (!save.Task.IsCompleted) continue;
@@ -113,7 +180,13 @@ namespace Unity.MP_FPS
             var disconnected = new List<Entity>();
             foreach (var connection in context.Profiles.Keys)
                 if (!SystemAPI.Exists(connection)) disconnected.Add(connection);
-            foreach (var connection in disconnected) context.Profiles.Remove(connection);
+            foreach (var connection in disconnected)
+            {
+                var profile = context.Profiles[connection];
+                if (!string.IsNullOrEmpty(profile.DeploymentId))
+                    context.Abandon(new RaidPersistenceContext.Deployment { PlayerId=profile.PlayerId, DeploymentId=profile.DeploymentId, Cells=profile.CarriedCells });
+                context.Profiles.Remove(connection);
+            }
         }
     }
 }

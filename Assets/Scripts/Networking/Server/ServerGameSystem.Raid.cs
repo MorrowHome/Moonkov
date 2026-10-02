@@ -44,7 +44,10 @@ namespace Unity.MP_FPS
                         {
                             case 0: session.ValueRW.Dust++; break;
                             case 1: session.ValueRW.Alloy++; break;
-                            case 2: session.ValueRW.Cells++; break;
+                            case 2:
+                                if (session.ValueRO.CellStackId.IsEmpty) session.ValueRW.CellStackId = System.Guid.NewGuid().ToString("D");
+                                session.ValueRW.Cells++;
+                                break;
                         }
                         loot.ValueRW.TakenMask |= 1u << id;
                         loot.ValueRW.RespawnTimers[id] = map.LootRespawnSeconds;
@@ -61,11 +64,29 @@ namespace Unity.MP_FPS
                     !SystemAPI.HasComponent<NetworkStreamRequestDisconnect>(connection))
                 {
                     var session = SystemAPI.GetComponentRW<RaidSession>(connection);
-                    if (RaidRules.TryDeploy(ref session.ValueRW, request.ValueRO.SettledRaidId, map.RaidDuration))
+                    int cells = request.ValueRO.CarryCells;
+                    if (RaidRules.CanDeploy(session.ValueRO, request.ValueRO.SettledRaidId))
                     {
-                        // Mutate immediately: duplicate requests in the same tick cannot spawn twice.
-                        var joined = SystemAPI.GetComponent<JoinedClient>(connection);
-                        SpawnPlayerCharacter(ref state, ecb, connection, joined.PlayerName, joined.CharacterIndex);
+                        session.ValueRW.LoadoutRequestId = request.ValueRO.RequestId;
+                        if (!RaidRules.ValidLoadout(cells))
+                        {
+                            session.ValueRW.LoadoutError = RaidLoadoutError.InvalidCount;
+                            session.ValueRW.SnapshotTimer = 0;
+                        }
+                        else if (Persistence(ref state).Enabled)
+                        {
+                            // Mark immediately; repeated RPCs cannot enqueue a second debit.
+                            session.ValueRW.DeployPending = true;
+                            session.ValueRW.LoadoutError = RaidLoadoutError.None;
+                            session.ValueRW.SnapshotTimer = 0;
+                            Persistence(ref state).BeginDeploy(connection, cells);
+                        }
+                        else if (RaidRules.TryDeploy(ref session.ValueRW, request.ValueRO.SettledRaidId, map.RaidDuration, cells))
+                        {
+                            var joined = SystemAPI.GetComponent<JoinedClient>(connection);
+                            SpawnPlayerCharacter(ref state, ecb, connection, joined.PlayerName, joined.CharacterIndex);
+                        }
+                        else { session.ValueRW.LoadoutError = RaidLoadoutError.InsufficientCells; session.ValueRW.SnapshotTimer = 0; }
                     }
                 }
                 ecb.DestroyEntity(entity);
@@ -96,7 +117,10 @@ namespace Unity.MP_FPS
                     ecb.AddComponent(rpc, new RaidSnapshotRpc
                     {
                         RaidId = session.ValueRO.RaidId, Sequence = session.ValueRO.SnapshotSequence, Phase = session.ValueRO.Phase,
+                        LoadoutRequestId = session.ValueRO.LoadoutRequestId,
                         SaveState = session.ValueRO.SaveState,
+                        DeployPending = session.ValueRO.DeployPending, LoadoutError = session.ValueRO.LoadoutError,
+                        CellStackId = session.ValueRO.CellStackId,
                         Dust = session.ValueRO.Dust, Alloy = session.ValueRO.Alloy, Cells = session.ValueRO.Cells,
                         StashDust = session.ValueRO.StashDust, StashAlloy = session.ValueRO.StashAlloy, StashCells = session.ValueRO.StashCells,
                         TimeLeft = session.ValueRO.TimeLeft, TakenMask = loot.ValueRO.TakenMask,

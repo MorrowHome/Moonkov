@@ -104,6 +104,13 @@ namespace Unity.MP_FPS
                 {
                     var networkId = evt.Id.Value;
                     Debug.Log($"[Server] Client with NetworkId {networkId} has disconnected.");
+                    if (SystemAPI.Exists(evt.ConnectionEntity) && SystemAPI.HasComponent<RaidSession>(evt.ConnectionEntity))
+                    {
+                        var raid = SystemAPI.GetComponentRW<RaidSession>(evt.ConnectionEntity);
+                        var persistence = Persistence(ref state);
+                        if (RaidRules.TrySettle(ref raid.ValueRW, RaidPhase.Dead, !persistence.Enabled) && persistence.Enabled)
+                            persistence.BeginSave(evt.ConnectionEntity, raid.ValueRO);
+                    }
 
                     // Find and destroy the player character entity by querying for its GhostOwner.
                     foreach (var (ghostOwner, entity) in SystemAPI.Query<RefRO<GhostOwner>>().WithAll<PredictedPlayerGhost>().WithEntityAccess())
@@ -256,15 +263,15 @@ namespace Unity.MP_FPS
                 {
                     var raid = new RaidSession();
                     var persistence = Persistence(ref state);
-                    if (persistence.Enabled)
+                    if (persistence.ReadyRaids.TryGetValue(connectionEntity, out var prepared))
                     {
-                        var profile = persistence.Profiles[connectionEntity];
-                        raid.StashDust = profile.Dust;
-                        raid.StashAlloy = profile.Alloy;
-                        raid.StashCells = profile.Cells;
-                        raid.SaveState = RaidSaveState.Saved;
+                        raid = prepared;
+                        persistence.ReadyRaids.Remove(connectionEntity);
                     }
-                    RaidRules.BeginNext(ref raid, MoonRaidMap.Active.RaidDuration);
+                    else
+                    {
+                        RaidRules.BeginNext(ref raid, MoonRaidMap.Active.RaidDuration);
+                    }
                     ecb.AddComponent(connectionEntity, raid);
                 }
             }
@@ -360,10 +367,12 @@ namespace Unity.MP_FPS
                     !SystemAPI.HasComponent<NetworkStreamInGame>(rpcReceive.ValueRW.SourceConnection))
                 {
                     var persistence = Persistence(ref state);
-                    if (persistence.Enabled)
+                    if (!RaidRules.ValidLoadout(request.ValueRO.CarryCells) || (!persistence.Enabled && request.ValueRO.CarryCells != 0))
+                        ecb.AddComponent(rpcReceive.ValueRW.SourceConnection, new NetworkStreamRequestDisconnect { Reason=NetworkStreamDisconnectReason.ConnectionClose });
+                    else if (persistence.Enabled)
                     {
                         persistence.BeginJoin(rpcReceive.ValueRW.SourceConnection, request.ValueRO.PlayerName,
-                            request.ValueRO.CharacterIndex, request.ValueRO.LoginToken.ToString());
+                            request.ValueRO.CharacterIndex, request.ValueRO.LoginToken.ToString(), request.ValueRO.CarryCells);
                     }
                     else
                     {

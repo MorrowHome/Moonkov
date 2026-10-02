@@ -12,6 +12,7 @@ namespace Unity.MP_FPS
         public FixedString64Bytes PlayerName;
         public FixedString128Bytes LoginToken;
         public int CharacterIndex;
+        public int CarryCells;
     }
 
     /// <summary>

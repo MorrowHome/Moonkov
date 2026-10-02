@@ -14,6 +14,7 @@ if (string.IsNullOrWhiteSpace(serverKey) || serverKey.Length < 32)
     throw new InvalidOperationException("Configure a random ServerKey of at least 32 characters.");
 builder.Services.AddSingleton(NpgsqlDataSource.Create(connectionString));
 builder.Services.AddSingleton<StashRepository>();
+builder.Services.AddSingleton<InventoryRepository>();
 builder.Services.AddSingleton<AccountRepository>();
 builder.Services.AddRateLimiter(options =>
 {
@@ -93,7 +94,24 @@ app.MapPost("/internal/settlements", async (Settlement request, StashRepository 
     catch (ReceiptConflictException) { return Results.Conflict(new { error = "Settlement ID already has another payload." }); }
     catch (ProfileNotFoundException) { return Results.NotFound(new { error = "Unknown profile." }); }
 });
+app.MapPost("/internal/deployments", async (Deployment request, InventoryRepository inventory, CancellationToken ct) =>
+{
+    if (!ValidDeployment(request)) return Results.BadRequest(new { error="invalid_loadout" });
+    try { return Results.Ok(await inventory.DeployAsync(request, ct)); }
+    catch (DeploymentRejectedException ex) { return Results.Conflict(new { error=ex.Message }); }
+    catch (ReceiptConflictException) { return Results.Conflict(new { error="deployment_conflict" }); }
+    catch (ProfileNotFoundException) { return Results.NotFound(new { error="unknown_profile" }); }
+});
+app.MapPost("/internal/deployments/abandon", async (Deployment request, InventoryRepository inventory, CancellationToken ct) =>
+{
+    if (!ValidDeployment(request)) return Results.BadRequest(new { error="invalid_loadout" });
+    try { return Results.Ok(await inventory.AbandonAsync(request, ct)); }
+    catch (ReceiptConflictException) { return Results.Conflict(new { error="deployment_conflict" }); }
+    catch (ProfileNotFoundException) { return Results.NotFound(new { error="unknown_profile" }); }
+});
 await app.RunAsync();
+
+static bool ValidDeployment(Deployment request) => request.PlayerId != Guid.Empty && request.DeploymentId != Guid.Empty && request.Cells is >= 0 and <= 12;
 
 static string? BearerToken(HttpRequest request)
 {
@@ -102,7 +120,8 @@ static string? BearerToken(HttpRequest request)
 }
 
 public sealed record ResolveProfile(string GuestToken, string DisplayName);
-public sealed record Settlement(Guid PlayerId, Guid SettlementId, string Outcome, int Dust, int Alloy, int Cells);
-public sealed record Profile(Guid PlayerId, int Dust, int Alloy, int Cells, string DisplayName);
+public sealed record Settlement(Guid PlayerId, Guid SettlementId, string Outcome, int Dust, int Alloy, int Cells, Guid? DeploymentId=null);
+public sealed record Profile(Guid PlayerId, int Dust, int Alloy, int Cells, string DisplayName,
+    Guid? DeploymentId=null, int CarriedCells=0, Guid? CellStackId=null, IReadOnlyList<InventoryStack>? Items=null);
 public sealed class ReceiptConflictException : Exception;
 public sealed class ProfileNotFoundException : Exception;

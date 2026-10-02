@@ -61,6 +61,7 @@ namespace Unity.MP_FPS
             clientJoinRequestRpc.PlayerName.CopyFromTruncated(playerName);
             clientJoinRequestRpc.CharacterIndex = GameSettings.Instance.PlayerCharacter;
             clientJoinRequestRpc.LoginToken = AccountClient.Token;
+            clientJoinRequestRpc.CarryCells = state.WorldUnmanaged.IsThinClient() ? 0 : AccountClient.CarryCells;
             state.EntityManager.SetComponentData(joinRequestEntity, clientJoinRequestRpc);
             state.EntityManager.AddComponentData(clientEntity, new NetworkStreamInGame());
         }

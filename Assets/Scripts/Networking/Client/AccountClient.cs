@@ -21,6 +21,13 @@ namespace Unity.MP_FPS
         public static int StashDust { get; private set; }
         public static int StashAlloy { get; private set; }
         public static int StashCells { get; private set; }
+        public static int CarryCells { get; private set; }
+        public static void SelectCarryCells(int cells) => CarryCells = Mathf.Clamp(cells, 0, Mathf.Min(StashCells, RaidRules.BagCapacity));
+        public static void UpdateStash(int dust, int alloy, int cells)
+        {
+            StashDust = dust; StashAlloy = alloy; StashCells = cells;
+            SelectCarryCells(CarryCells);
+        }
         public static string Token { get { Load(); return IsLoggedIn ? s_Token : ""; } }
         public static string DisplayName { get { Load(); return s_Name; } }
         public static bool IsLoggedIn { get { Load(); return !string.IsNullOrEmpty(s_Token) && s_Expires > DateTime.UtcNow; } }
@@ -31,6 +38,7 @@ namespace Unity.MP_FPS
             s_Http?.Dispose(); s_Http = null;
             s_Token = s_Name = s_PreferenceKey = null; s_Expires = default;
             StashDust = StashAlloy = StashCells = 0;
+            CarryCells = 0;
         }
 
         private static void Load()
@@ -70,6 +78,7 @@ namespace Unity.MP_FPS
                     if (result == null || result.Token == null || result.Token.Length != 64 || result.ExpiresAt <= DateTime.UtcNow)
                         throw new InvalidOperationException("Invalid login response.");
                     ct.ThrowIfCancellationRequested();
+                    CarryCells = 0;
                     s_Token = result.Token; s_Name = result.DisplayName; s_Expires = result.ExpiresAt.ToUniversalTime();
                     PlayerPrefs.SetString(s_PreferenceKey, JsonConvert.SerializeObject(result)); PlayerPrefs.Save();
                     GameSettings.Instance.PlayerName = s_Name;
@@ -92,7 +101,7 @@ namespace Unity.MP_FPS
                     if (profile == null) throw new InvalidOperationException("Invalid account response.");
                     ct.ThrowIfCancellationRequested();
                     s_Name = profile.DisplayName;
-                    StashDust = profile.Dust; StashAlloy = profile.Alloy; StashCells = profile.Cells;
+                    UpdateStash(profile.Dust, profile.Alloy, profile.Cells);
                     GameSettings.Instance.PlayerName = s_Name;
                 }
             }
@@ -112,6 +121,7 @@ namespace Unity.MP_FPS
         {
             s_Token = s_Name = ""; s_Expires = default;
             StashDust = StashAlloy = StashCells = 0;
+            CarryCells = 0;
             PlayerPrefs.DeleteKey(s_PreferenceKey); PlayerPrefs.Save();
         }
 

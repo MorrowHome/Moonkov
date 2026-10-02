@@ -29,10 +29,8 @@ public sealed class StashRepository(NpgsqlDataSource db)
         command.Parameters.AddWithValue(hash);
         command.Parameters.AddWithValue(request.DisplayName);
         var playerId = (Guid)(await command.ExecuteScalarAsync(ct))!;
-        await using var stash = new NpgsqlCommand("INSERT INTO stashes (player_id) VALUES ($1) ON CONFLICT DO NOTHING", connection, transaction);
-        stash.Parameters.AddWithValue(playerId);
-        await stash.ExecuteNonQueryAsync(ct);
-        var result = await ReadAsync(connection, transaction, playerId, ct);
+        await InventoryRepository.EnsureStacksAsync(connection, transaction, playerId, ct);
+        var result = await InventoryRepository.ReadAsync(connection, transaction, playerId, ct);
         await transaction.CommitAsync(ct);
         return result;
     }
@@ -42,12 +40,12 @@ public sealed class StashRepository(NpgsqlDataSource db)
         await using var connection = await db.OpenConnectionAsync(ct);
         await using var transaction = await connection.BeginTransactionAsync(ct);
         // Serialize rewards for this player. Atomic increments never overwrite another raid's rewards.
-        await using var gate = new NpgsqlCommand("SELECT player_id FROM stashes WHERE player_id = $1 FOR UPDATE", connection, transaction);
-        gate.Parameters.AddWithValue(request.PlayerId);
-        if (await gate.ExecuteScalarAsync(ct) is null) throw new ProfileNotFoundException();
+        await InventoryRepository.LockPlayerAsync(connection, transaction, request.PlayerId, ct);
+        if (request.DeploymentId.HasValue)
+            await InventoryRepository.CheckDeploymentAsync(connection, transaction, request, ct);
         await using var receipt = new NpgsqlCommand("""
-            INSERT INTO raid_settlements (id, player_id, outcome, dust, alloy, cells)
-            VALUES ($1, $2, $3, $4, $5, $6) ON CONFLICT (id) DO NOTHING
+            INSERT INTO raid_settlements (id, player_id, outcome, dust, alloy, cells, deployment_id)
+            VALUES ($1, $2, $3, $4, $5, $6, $7) ON CONFLICT (id) DO NOTHING
             """, connection, transaction);
         receipt.Parameters.AddWithValue(request.SettlementId);
         receipt.Parameters.AddWithValue(request.PlayerId);
@@ -55,37 +53,34 @@ public sealed class StashRepository(NpgsqlDataSource db)
         receipt.Parameters.AddWithValue(request.Dust);
         receipt.Parameters.AddWithValue(request.Alloy);
         receipt.Parameters.AddWithValue(request.Cells);
+        receipt.Parameters.Add(new NpgsqlParameter { NpgsqlDbType = NpgsqlTypes.NpgsqlDbType.Uuid, Value = (object?)request.DeploymentId ?? DBNull.Value });
         var inserted = await receipt.ExecuteNonQueryAsync(ct) == 1;
         if (!inserted)
         {
-            await using var previous = new NpgsqlCommand("SELECT player_id, outcome, dust, alloy, cells FROM raid_settlements WHERE id = $1", connection, transaction);
+            await using var previous = new NpgsqlCommand("SELECT player_id, outcome, dust, alloy, cells, deployment_id FROM raid_settlements WHERE id = $1", connection, transaction);
             previous.Parameters.AddWithValue(request.SettlementId);
             await using var reader = await previous.ExecuteReaderAsync(ct);
             if (!await reader.ReadAsync(ct) || reader.GetGuid(0) != request.PlayerId
                 || reader.GetString(1) != request.Outcome || reader.GetInt32(2) != request.Dust
-                || reader.GetInt32(3) != request.Alloy || reader.GetInt32(4) != request.Cells)
+                || reader.GetInt32(3) != request.Alloy || reader.GetInt32(4) != request.Cells
+                || (reader.IsDBNull(5) ? (Guid?)null : reader.GetGuid(5)) != request.DeploymentId)
                 throw new ReceiptConflictException();
         }
         if (inserted && request.Outcome == "Extracted")
         {
-            await using var reward = new NpgsqlCommand("UPDATE stashes SET dust = dust + $2, alloy = alloy + $3, cells = cells + $4 WHERE player_id = $1", connection, transaction);
-            reward.Parameters.AddWithValue(request.PlayerId);
-            reward.Parameters.AddWithValue(request.Dust);
-            reward.Parameters.AddWithValue(request.Alloy);
-            reward.Parameters.AddWithValue(request.Cells);
-            await reward.ExecuteNonQueryAsync(ct);
+            await InventoryRepository.AddAsync(connection, transaction, request.PlayerId, "dust", request.Dust, ct);
+            await InventoryRepository.AddAsync(connection, transaction, request.PlayerId, "alloy", request.Alloy, ct);
+            await InventoryRepository.AddAsync(connection, transaction, request.PlayerId, "cells", request.Cells, ct);
         }
-        var result = await ReadAsync(connection, transaction, request.PlayerId, ct);
+        if (request.DeploymentId.HasValue)
+        {
+            await using var close = new NpgsqlCommand("UPDATE raid_deployments SET status='Closed' WHERE id=$1", connection, transaction);
+            close.Parameters.AddWithValue(request.DeploymentId.Value);
+            await close.ExecuteNonQueryAsync(ct);
+        }
+        var result = await InventoryRepository.ReadAsync(connection, transaction, request.PlayerId, ct);
         await transaction.CommitAsync(ct);
         return result;
     }
 
-    private static async Task<Profile> ReadAsync(NpgsqlConnection connection, NpgsqlTransaction transaction, Guid playerId, CancellationToken ct)
-    {
-        await using var command = new NpgsqlCommand("SELECT s.dust, s.alloy, s.cells, p.display_name FROM stashes s JOIN players p ON p.id = s.player_id WHERE player_id = $1", connection, transaction);
-        command.Parameters.AddWithValue(playerId);
-        await using var reader = await command.ExecuteReaderAsync(ct);
-        if (!await reader.ReadAsync(ct)) throw new ProfileNotFoundException();
-        return new Profile(playerId, reader.GetInt32(0), reader.GetInt32(1), reader.GetInt32(2), reader.GetString(3));
-    }
 }

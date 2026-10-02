@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,11 +28,13 @@ namespace Unity.MP_FPS
             public string PlayerId;
             public string DisplayName;
             public int Dust, Alloy, Cells;
+            public string DeploymentId, CellStackId;
+            public int CarriedCells;
         }
 
         public sealed class Settlement
         {
-            public string PlayerId, SettlementId, Outcome;
+            public string PlayerId, SettlementId, Outcome, DeploymentId;
             public int Dust, Alloy, Cells;
         }
 
@@ -42,6 +45,28 @@ namespace Unity.MP_FPS
             public Task<Profile> Task;
             public string Token;
             public bool NeedsRefresh;
+            public int CarryCells;
+        }
+
+        public sealed class Deployment
+        {
+            public string PlayerId, DeploymentId;
+            public int Cells;
+        }
+
+        public sealed class Deploy
+        {
+            public Entity Connection;
+            public Join Join;
+            public Deployment Payload;
+            public Task<Profile> Task;
+            public double RetryAt;
+        }
+
+        public sealed class LoadoutRejectedException : Exception
+        {
+            public readonly RaidLoadoutError Error;
+            public LoadoutRejectedException(RaidLoadoutError error) { Error = error; }
         }
 
         public sealed class Save
@@ -52,11 +77,14 @@ namespace Unity.MP_FPS
             public Task<Profile> Task;
             public double RetryAt;
             public bool Warned;
+            public Deployment AbandonedDeployment;
         }
 
         public readonly Dictionary<Entity, Join> Joins = new Dictionary<Entity, Join>();
         public readonly Dictionary<string, Save> Saves = new Dictionary<string, Save>();
         public readonly Dictionary<Entity, Profile> Profiles = new Dictionary<Entity, Profile>();
+        public readonly Dictionary<Entity, Deploy> Deployments = new Dictionary<Entity, Deploy>();
+        public readonly Dictionary<Entity, RaidSession> ReadyRaids = new Dictionary<Entity, RaidSession>();
         public bool Enabled => m_Http != null;
         private readonly HttpClient m_Http;
         private readonly CancellationTokenSource m_Stop = new CancellationTokenSource();
@@ -92,15 +120,23 @@ namespace Unity.MP_FPS
                 save.Task = SaveAsync(payload);
                 Saves.Add(payload.SettlementId, save);
             }
+            foreach (string file in Directory.GetFiles(m_Outbox, "*.deploy"))
+            {
+                var payload = JsonConvert.DeserializeObject<Deployment>(File.ReadAllText(file));
+                if (payload == null || !Guid.TryParse(payload.DeploymentId, out _) || !Guid.TryParse(payload.PlayerId, out _) || !RaidRules.ValidLoadout(payload.Cells))
+                    throw new InvalidDataException("Invalid deployment journal: " + Path.GetFileName(file));
+                // A completed raid's exact settlement takes precedence over crash recovery.
+                if (!Saves.ContainsKey(payload.DeploymentId)) Abandon(payload);
+            }
             Debug.Log("[Raid] Persistent stash enabled. Pending receipts: " + Saves.Count);
         }
 
-        public void BeginJoin(Entity connection, FixedString64Bytes name, int characterIndex, string token)
+        public void BeginJoin(Entity connection, FixedString64Bytes name, int characterIndex, string token, int carryCells = 0)
         {
             if (Joins.ContainsKey(connection) || Profiles.ContainsKey(connection)) return;
             Joins.Add(connection, new Join
             {
-                Name = name, CharacterIndex = characterIndex, Token = token,
+                Name = name, CharacterIndex = characterIndex, Token = token, CarryCells = carryCells,
                 Task = PostAsync("internal/sessions/resolve", new { Token = token })
             });
         }
@@ -117,7 +153,8 @@ namespace Unity.MP_FPS
             var payload = new Settlement
             {
                 PlayerId = profile.PlayerId, SettlementId = session.SettlementId.ToString(),
-                Outcome = session.Phase.ToString(), Dust = session.Dust, Alloy = session.Alloy, Cells = session.Cells
+                Outcome = session.Phase.ToString(), Dust = session.Dust, Alloy = session.Alloy, Cells = session.Cells,
+                DeploymentId = session.PersistentDeployment ? session.SettlementId.ToString() : null
             };
             Saves.Add(payload.SettlementId, new Save
             {
@@ -125,25 +162,64 @@ namespace Unity.MP_FPS
             });
         }
 
+        public void BeginDeploy(Entity connection, int cells, Join join = null)
+        {
+            var payload = new Deployment { PlayerId = Profiles[connection].PlayerId, DeploymentId = Guid.NewGuid().ToString("D"), Cells = cells };
+            Deployments.Add(connection, new Deploy { Connection=connection, Join=join, Payload=payload, Task=DeployAsync(payload) });
+        }
+
+        private string DeploymentFile(Deployment payload) => Path.Combine(m_Outbox, Guid.Parse(payload.DeploymentId).ToString("N") + ".deploy");
+
+        private static void WriteJournal(string file, object payload)
+        {
+            if (File.Exists(file)) return;
+            string temporary = file + ".tmp";
+            byte[] bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(payload));
+            using (var stream = new FileStream(temporary, FileMode.Create, FileAccess.Write, FileShare.None))
+            {
+                stream.Write(bytes, 0, bytes.Length);
+                stream.Flush(true);
+            }
+            File.Move(temporary, file);
+        }
+
+        public Task<Profile> DeployAsync(Deployment payload) => Task.Run(async () =>
+        {
+            WriteJournal(DeploymentFile(payload), payload);
+            var profile = await PostAsync("internal/deployments", payload).ConfigureAwait(false);
+            if (profile.PlayerId != payload.PlayerId || profile.DeploymentId != payload.DeploymentId || profile.CarriedCells != payload.Cells ||
+                (payload.Cells > 0 && !Guid.TryParse(profile.CellStackId, out _)))
+                throw new InvalidDataException("Deployment response mismatch.");
+            return profile;
+        });
+
+        public void Abandon(Deployment payload)
+        {
+            if (Saves.ContainsKey(payload.DeploymentId)) return;
+            var save = new Save { Payload = new Settlement { PlayerId=payload.PlayerId, SettlementId=payload.DeploymentId }, AbandonedDeployment=payload };
+            save.Task = RetrySave(save);
+            Saves.Add(payload.DeploymentId, save);
+        }
+
+        public Task<Profile> RetrySave(Save save) => save.AbandonedDeployment == null ? SaveAsync(save.Payload) : Task.Run(async () =>
+        {
+            var profile = await PostAsync("internal/deployments/abandon", save.AbandonedDeployment).ConfigureAwait(false);
+            if (profile.PlayerId != save.Payload.PlayerId) throw new InvalidDataException("Recovery profile mismatch.");
+            File.Delete(DeploymentFile(save.AbandonedDeployment));
+            return profile;
+        });
+
         public Task<Profile> SaveAsync(Settlement payload)
         {
             // One tiny local receipt per completed raid; the frame never waits for disk or HTTP.
             return Task.Run(async () =>
             {
                 string file = Path.Combine(m_Outbox, Guid.Parse(payload.SettlementId).ToString("N") + ".json");
-                if (!File.Exists(file))
-                {
-                    string temporary = file + ".tmp";
-                    byte[] bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(payload));
-                    using (var stream = new FileStream(temporary, FileMode.Create, FileAccess.Write, FileShare.None))
-                    {
-                        stream.Write(bytes, 0, bytes.Length);
-                        stream.Flush(true);
-                    }
-                    File.Move(temporary, file);
-                }
+                WriteJournal(file, payload);
                 var profile = await PostAsync("internal/settlements", payload).ConfigureAwait(false);
                 if (profile.PlayerId != payload.PlayerId) throw new InvalidDataException("Settlement profile mismatch.");
+                // Delete the open-raid journal first. A crash between deletes then replays the exact receipt.
+                File.Delete(Path.ChangeExtension(file, ".deploy"));
                 File.Delete(file);
                 return profile;
             });
@@ -155,6 +231,11 @@ namespace Unity.MP_FPS
             using (var response = await m_Http.PostAsync(path, content, m_Stop.Token).ConfigureAwait(false))
             {
                 // Do not log request bodies: guest tokens and server keys are credentials.
+                if (path == "internal/deployments" && (response.StatusCode == HttpStatusCode.Conflict || response.StatusCode == HttpStatusCode.BadRequest || response.StatusCode == HttpStatusCode.NotFound))
+                {
+                    var body = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    throw new LoadoutRejectedException(body.Contains("insufficient_cells") ? RaidLoadoutError.InsufficientCells : RaidLoadoutError.Rejected);
+                }
                 response.EnsureSuccessStatusCode();
                 var profile = JsonConvert.DeserializeObject<Profile>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
                 if (profile == null || !Guid.TryParse(profile.PlayerId, out _) || profile.Dust < 0 || profile.Alloy < 0 || profile.Cells < 0)

@@ -21,6 +21,7 @@ namespace Unity.MP_FPS
         private RaidSnapshotRpc m_Snapshot;
         private int m_DeployRequestedRaid;
         private uint m_DeployRequestedSequence;
+        private uint m_DeployRequestId;
         private IntegerField m_CarryCells;
         private VisualElement m_LoadoutPanel;
         private Label m_LoadoutNote;
@@ -44,6 +45,7 @@ namespace Unity.MP_FPS
         {
             m_DeployRequestedRaid = 0;
             m_DeployRequestedSequence = 0;
+            m_DeployRequestId = 0;
             m_WasSettled = false;
             s_Active = this; m_ResultStep = 0; m_InventoryVisible = false; m_PreviousCount = -1;
             m_Root = GetComponent<UIDocument>().rootVisualElement;
@@ -127,6 +129,7 @@ namespace Unity.MP_FPS
                 Utils.SetCursorVisible(true);
                 bool saving = m_Snapshot.SaveState == RaidSaveState.Saving || m_Snapshot.SaveState == RaidSaveState.Retrying;
                 if (m_DeployRequestedRaid == m_Snapshot.RaidId && m_Snapshot.Sequence > m_DeployRequestedSequence &&
+                    m_Snapshot.LoadoutRequestId == m_DeployRequestId &&
                     !m_Snapshot.DeployPending && m_Snapshot.LoadoutError != RaidLoadoutError.None)
                     m_DeployRequestedRaid = 0;
                 bool deploying = m_Snapshot.DeployPending || m_DeployRequestedRaid == m_Snapshot.RaidId;
@@ -216,11 +219,13 @@ namespace Unity.MP_FPS
             if (m_Snapshot.RaidId <= 0 || m_Snapshot.Phase == RaidPhase.Active ||
                 m_Snapshot.DeployPending || m_DeployRequestedRaid == m_Snapshot.RaidId ||
                 m_Snapshot.SaveState == RaidSaveState.Saving || m_Snapshot.SaveState == RaidSaveState.Retrying) return;
-            if (Send(new RaidDeployRpc { SettledRaidId = m_Snapshot.RaidId, CarryCells = AccountClient.CarryCells }))
+            uint requestId = m_Snapshot.LoadoutRequestId + 1;
+            if (Send(new RaidDeployRpc { SettledRaidId = m_Snapshot.RaidId, CarryCells = AccountClient.CarryCells, RequestId = requestId }))
             {
                 GameSettings.Instance.IsPauseMenuOpen = false;
                 m_DeployRequestedRaid = m_Snapshot.RaidId;
                 m_DeployRequestedSequence = m_Snapshot.Sequence;
+                m_DeployRequestId = requestId;
                 m_Deploy.SetEnabled(false);
             }
         }
