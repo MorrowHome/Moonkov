@@ -52,6 +52,12 @@ flowchart LR
 
 地面方向动画已接入 Mixamo：非瞄准使用 Locomotion Pack，保留原来的前向 Walk / Run；瞄准使用 Pistol 包的移动基础，手势继续由原 Halo Aim 层覆盖。方向来自现有 Ghost 移动向量，不依赖观察者输入；跳跃与护裙保持原状态。资源及编辑入口见 `Docs/DollSingerLocomotion.md`。
 
+### 角色接收场景阴影
+
+DollSinger_Body 的 SkinnedMeshRenderer 已启用 Receive Shadows，但 lilToon 还需要材质自身接收阴影。13 个共享角色材质的 `_ShadowReceive`、`_Shadow2ndReceive`、`_Shadow3rdReceive` 原为 0，现设为 1，允许地形、岩石及其他遮挡投影到角色上。Renderer 开关和材质开关缺一不可；材质中的 Shadow 设定可继续调整接收强度。保留原阴影颜色、边界、`_LightMinLimit` 和贴图，不改为写实角色 Shader。
+
+项目 `ProjectSettings/lilToonSetting.json` 的 `LIL_FEATURE_RECEIVE_SHADOW` 已为 true，无需修改包源码或开启额外 Shader 功能。针对性检查包含 13 个材质的参数、共享材质绑定及使用的两个 lilToon Shader 编译状态；实际头发自阴影和月球掩体投影的外观由用户在 Play 中确认。
+
 ## 当前范围
 
 本次接入复用已有联机流程，保留 Rifle／Shotgun 作为对照角色。尚未接入 Q/E 探身和 Alt 自由观察的网络状态；L 灯光开关只影响当前客户端。弹药和装填仍是原型规则，后续可换为光环技能、能量或施法节奏。
