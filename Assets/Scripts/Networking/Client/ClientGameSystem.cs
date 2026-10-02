@@ -60,6 +60,7 @@ namespace Unity.MP_FPS
             var clientJoinRequestRpc = new ClientJoinRequestRpc();
             clientJoinRequestRpc.PlayerName.CopyFromTruncated(playerName);
             clientJoinRequestRpc.CharacterIndex = GameSettings.Instance.PlayerCharacter;
+            clientJoinRequestRpc.LoginToken = AccountClient.Token;
             state.EntityManager.SetComponentData(joinRequestEntity, clientJoinRequestRpc);
             state.EntityManager.AddComponentData(clientEntity, new NetworkStreamInGame());
         }

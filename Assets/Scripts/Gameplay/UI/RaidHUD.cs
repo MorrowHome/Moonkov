@@ -14,14 +14,17 @@ namespace Unity.MP_FPS
         private World m_World;
         private EntityQuery m_StateQuery, m_PlayerQuery, m_ConnectionQuery;
         private VisualElement m_Root, m_Result;
-        private Label m_Bag, m_Timer, m_Prompt, m_Exit, m_ResultText;
+        private Label m_Bag, m_Timer, m_Prompt, m_Exit, m_ResultText, m_SaveStatus;
         private Button m_Deploy;
         private bool m_WasSettled;
         private float m_RefreshTimer;
         private RaidSnapshotRpc m_Snapshot;
+        private int m_DeployRequestedRaid;
 
         private void OnEnable()
         {
+            m_DeployRequestedRaid = 0;
+            m_WasSettled = false;
             m_Root = GetComponent<UIDocument>().rootVisualElement;
             m_Root.pickingMode = PickingMode.Ignore;
             var card = new VisualElement { pickingMode = PickingMode.Ignore };
@@ -50,7 +53,7 @@ namespace Unity.MP_FPS
             m_Deploy = new Button(Deploy) { text = "DEPLOY AGAIN" };
             m_Deploy.style.height = 48; m_Deploy.style.marginTop = 20; m_Deploy.style.fontSize = 20;
             m_Result.Add(m_Deploy);
-            AddLabel(m_Result, "Stash lasts for this connection only.", 14);
+            m_SaveStatus = AddLabel(m_Result, "", 14);
             m_Root.Add(m_Result);
             m_Result.style.display = DisplayStyle.None;
         }
@@ -93,7 +96,9 @@ namespace Unity.MP_FPS
             {
                 // LateUpdate runs after character teardown, which can restore the previous cursor state.
                 Utils.SetCursorVisible(true);
-                if (!m_WasSettled) { m_Deploy.SetEnabled(true); m_Deploy.Focus(); }
+                bool saving = m_Snapshot.SaveState == RaidSaveState.Saving || m_Snapshot.SaveState == RaidSaveState.Retrying;
+                m_Deploy.SetEnabled(!saving && m_DeployRequestedRaid != m_Snapshot.RaidId);
+                if (!m_WasSettled && !saving) m_Deploy.Focus();
             }
             m_WasSettled = settled;
             m_Result.style.display = settled ? DisplayStyle.Flex : DisplayStyle.None;
@@ -135,6 +140,9 @@ namespace Unity.MP_FPS
             else m_Exit.text = settled ? "Raid ended" : "Deploying...";
             if (settled)
             {
+                m_SaveStatus.text = m_Snapshot.SaveState == RaidSaveState.SessionOnly ? "Stash lasts for this connection only."
+                    : m_Snapshot.SaveState == RaidSaveState.Saved ? "Stash saved. You can reconnect later."
+                    : m_Snapshot.SaveState == RaidSaveState.Retrying ? "Waiting to save. Retrying..." : "Saving raid results...";
                 string title = m_Snapshot.Phase == RaidPhase.Extracted ? "EXTRACTION SUCCESS" : m_Snapshot.Phase == RaidPhase.Dead ? "KILLED IN ACTION" : "RAID TIME EXPIRED";
                 string result = m_Snapshot.Phase == RaidPhase.Extracted ? $"Recovered {count} supplies" : $"Lost {count} carried supplies";
                 m_ResultText.text = $"{title}\n\n{result}\nDust {m_Snapshot.Dust}   Alloy {m_Snapshot.Alloy}   Cells {m_Snapshot.Cells}\n\nSTASH\nDust {m_Snapshot.StashDust}   Alloy {m_Snapshot.StashAlloy}   Cells {m_Snapshot.StashCells}";
@@ -145,10 +153,12 @@ namespace Unity.MP_FPS
 
         private void Deploy()
         {
-            if (m_Snapshot.RaidId <= 0 || m_Snapshot.Phase == RaidPhase.Active) return;
+            if (m_Snapshot.RaidId <= 0 || m_Snapshot.Phase == RaidPhase.Active ||
+                m_Snapshot.SaveState == RaidSaveState.Saving || m_Snapshot.SaveState == RaidSaveState.Retrying) return;
             if (Send(new RaidDeployRpc { SettledRaidId = m_Snapshot.RaidId }))
             {
                 GameSettings.Instance.IsPauseMenuOpen = false;
+                m_DeployRequestedRaid = m_Snapshot.RaidId;
                 m_Deploy.SetEnabled(false);
             }
         }

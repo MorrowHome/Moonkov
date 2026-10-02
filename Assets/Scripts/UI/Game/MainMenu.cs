@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 namespace Unity.MP_FPS.Client
 {
     [RequireComponent(typeof(UIDocument))]
-    public class MainMenu : MonoBehaviour
+    public partial class MainMenu : MonoBehaviour
     {
         static class UIElementNames
         {
@@ -97,13 +97,16 @@ namespace Unity.MP_FPS.Client
             });
 
             ToggleConnectionModeDisplay();
+            InitializeAccountPanel();
         }
 
         void OnDisable()
         {
+            DisposeAccountPanel();
             m_CreateGameButton.clicked -= OnCreateGamePressed;
             m_ConnectionModeGroup.UnregisterValueChangedCallback(OnConnectionModeChanged);
             m_ConnectToServerButton.clicked -= OnConnectToServerPressed;
+            m_StartHostButton.clicked -= OnStartHostPressed;
             m_QuitButton.clicked -= OnQuitPressed;
         }
 

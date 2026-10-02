@@ -5,6 +5,7 @@ using Unity.NetCode;
 namespace Unity.MP_FPS
 {
     public enum RaidPhase : byte { Active, Extracted, Dead, TimedOut }
+    public enum RaidSaveState : byte { SessionOnly, Saved, Saving, Retrying }
 
     // This component lives on the connection, so settlement survives character despawning.
     public struct RaidSession : IComponentData
@@ -12,6 +13,8 @@ namespace Unity.MP_FPS
         public int RaidId;
         public uint SnapshotSequence;
         public RaidPhase Phase;
+        public RaidSaveState SaveState;
+        public FixedString64Bytes SettlementId;
         public int Dust, Alloy, Cells;
         public int StashDust, StashAlloy, StashCells;
         public float TimeLeft, ExtractionProgress, SnapshotTimer;
@@ -38,6 +41,7 @@ namespace Unity.MP_FPS
         public int RaidId;
         public uint Sequence;
         public RaidPhase Phase;
+        public RaidSaveState SaveState;
         public int Dust, Alloy, Cells;
         public int StashDust, StashAlloy, StashCells;
         public float TimeLeft, ExtractionRemaining;
@@ -51,10 +55,10 @@ namespace Unity.MP_FPS
         public const int BagCapacity = 12;
         public const float PickupRange = 3f;
 
-        public static bool TrySettle(ref RaidSession session, RaidPhase outcome)
+        public static bool TrySettle(ref RaidSession session, RaidPhase outcome, bool awardImmediately = true)
         {
             if (session.Phase != RaidPhase.Active || outcome == RaidPhase.Active) return false;
-            if (outcome == RaidPhase.Extracted)
+            if (outcome == RaidPhase.Extracted && awardImmediately)
             {
                 session.StashDust += session.Dust;
                 session.StashAlloy += session.Alloy;
@@ -69,6 +73,7 @@ namespace Unity.MP_FPS
         public static void BeginNext(ref RaidSession session, float duration)
         {
             session.RaidId++;
+            session.SettlementId = System.Guid.NewGuid().ToString("D");
             session.Phase = RaidPhase.Active;
             session.Dust = session.Alloy = session.Cells = 0;
             session.ExtractionProgress = session.SnapshotTimer = 0;
@@ -77,7 +82,8 @@ namespace Unity.MP_FPS
 
         public static bool TryDeploy(ref RaidSession session, int settledRaidId, float duration)
         {
-            if (session.Phase == RaidPhase.Active || session.RaidId != settledRaidId) return false;
+            if (session.Phase == RaidPhase.Active || session.RaidId != settledRaidId ||
+                session.SaveState == RaidSaveState.Saving || session.SaveState == RaidSaveState.Retrying) return false;
             BeginNext(ref session, duration);
             return true;
         }

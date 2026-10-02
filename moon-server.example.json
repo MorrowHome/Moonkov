@@ -1,0 +1,5 @@
+{
+  "BackendUrl": "http://127.0.0.1:5080/",
+  "ServerKey": "SAME_SECRET_AS_BACKEND",
+  "OutboxDirectory": "LocalData/raid-outbox"
+}

@@ -49,6 +49,8 @@ namespace Unity.MP_FPS
             state.EntityManager.GetBuffer<ClientsMap>(mapSingleton).Add(default); //The server NetworkId is 0
             _joinedClientLookup = state.GetComponentLookup<JoinedClient>();
             state.EntityManager.CreateSingleton(new RaidLootWorld());
+            m_PersistenceEntity = state.EntityManager.CreateEntity();
+            state.EntityManager.AddComponentObject(m_PersistenceEntity, new RaidPersistenceContext());
         }
 
         [BurstDiscard]
@@ -74,6 +76,7 @@ namespace Unity.MP_FPS
                 state.EntityManager.DestroyEntity(SystemAPI.GetSingletonEntity<DisableCharacterDynamicContacts>());
             }
 
+            PollPersistence(ref state, ecb);
             HandleJoinRequests(ref state, gameplayMapsEntity, playerEntityPrefabs, ecb);
             HandlePlayerDeathAndRespawn(ref state, ecb);
             HandleRaids(ref state, ecb);
@@ -252,6 +255,15 @@ namespace Unity.MP_FPS
                 if (MoonRaidMap.Active != null)
                 {
                     var raid = new RaidSession();
+                    var persistence = Persistence(ref state);
+                    if (persistence.Enabled)
+                    {
+                        var profile = persistence.Profiles[connectionEntity];
+                        raid.StashDust = profile.Dust;
+                        raid.StashAlloy = profile.Alloy;
+                        raid.StashCells = profile.Cells;
+                        raid.SaveState = RaidSaveState.Saved;
+                    }
                     RaidRules.BeginNext(ref raid, MoonRaidMap.Active.RaidDuration);
                     ecb.AddComponent(connectionEntity, raid);
                 }
@@ -347,10 +359,18 @@ namespace Unity.MP_FPS
                 if (SystemAPI.HasComponent<NetworkId>(rpcReceive.ValueRW.SourceConnection) &&
                     !SystemAPI.HasComponent<NetworkStreamInGame>(rpcReceive.ValueRW.SourceConnection))
                 {
-                    SpawnPlayerCharacter(ref state, ecb, rpcReceive.ValueRW.SourceConnection, request.ValueRO.PlayerName, request.ValueRO.CharacterIndex);
-                    
-                    var ownerNetworkId = SystemAPI.GetComponent<NetworkId>(rpcReceive.ValueRW.SourceConnection);
-                    AddPlayerToLeaderboard(ownerNetworkId.Value, request.ValueRO.PlayerName);
+                    var persistence = Persistence(ref state);
+                    if (persistence.Enabled)
+                    {
+                        persistence.BeginJoin(rpcReceive.ValueRW.SourceConnection, request.ValueRO.PlayerName,
+                            request.ValueRO.CharacterIndex, request.ValueRO.LoginToken.ToString());
+                    }
+                    else
+                    {
+                        SpawnPlayerCharacter(ref state, ecb, rpcReceive.ValueRW.SourceConnection, request.ValueRO.PlayerName, request.ValueRO.CharacterIndex);
+                        var ownerNetworkId = SystemAPI.GetComponent<NetworkId>(rpcReceive.ValueRW.SourceConnection);
+                        AddPlayerToLeaderboard(ownerNetworkId.Value, request.ValueRO.PlayerName);
+                    }
                 }
 
                 ecb.DestroyEntity(entity);

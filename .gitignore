@@ -30,3 +30,11 @@
 # OS generated files
 .DS_Store
 Thumbs.db
+
+# Standalone persistence service sources; Unity-generated project files stay ignored.
+!Backend/**/*.csproj
+Backend/**/bin/
+Backend/**/obj/
+**/appsettings.local.json
+moon-server.local.json
+LocalData/

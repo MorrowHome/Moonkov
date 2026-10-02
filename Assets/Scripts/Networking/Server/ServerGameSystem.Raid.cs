@@ -96,6 +96,7 @@ namespace Unity.MP_FPS
                     ecb.AddComponent(rpc, new RaidSnapshotRpc
                     {
                         RaidId = session.ValueRO.RaidId, Sequence = session.ValueRO.SnapshotSequence, Phase = session.ValueRO.Phase,
+                        SaveState = session.ValueRO.SaveState,
                         Dust = session.ValueRO.Dust, Alloy = session.ValueRO.Alloy, Cells = session.ValueRO.Cells,
                         StashDust = session.ValueRO.StashDust, StashAlloy = session.ValueRO.StashAlloy, StashCells = session.ValueRO.StashCells,
                         TimeLeft = session.ValueRO.TimeLeft, TakenMask = loot.ValueRO.TakenMask,
@@ -118,7 +119,13 @@ namespace Unity.MP_FPS
         private void FinishRaid(ref SystemState state, EntityCommandBuffer ecb, Entity connection, RaidPhase outcome)
         {
             var session = SystemAPI.GetComponentRW<RaidSession>(connection);
-            if (!RaidRules.TrySettle(ref session.ValueRW, outcome)) return;
+            var persistence = Persistence(ref state);
+            if (!RaidRules.TrySettle(ref session.ValueRW, outcome, !persistence.Enabled)) return;
+            if (persistence.Enabled)
+            {
+                session.ValueRW.SaveState = RaidSaveState.Saving;
+                persistence.BeginSave(connection, session.ValueRO);
+            }
             var joined = SystemAPI.GetComponentRW<JoinedClient>(connection);
             Entity player = joined.ValueRO.PlayerEntity;
             if (SystemAPI.Exists(player))

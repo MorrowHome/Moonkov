@@ -10,6 +10,7 @@ namespace Unity.MP_FPS
     public struct ClientJoinRequestRpc : IRpcCommand
     {
         public FixedString64Bytes PlayerName;
+        public FixedString128Bytes LoginToken;
         public int CharacterIndex;
     }
 

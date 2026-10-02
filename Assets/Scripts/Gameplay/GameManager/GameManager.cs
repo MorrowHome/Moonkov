@@ -151,6 +151,11 @@ namespace Unity.MP_FPS
         /// </remarks>
         public async void StartGameAsync(CreationType creationType)
         {
+            if (!IsHeadless && !AccountClient.IsLoggedIn)
+            {
+                Debug.LogWarning("Sign in before starting a raid.");
+                return;
+            }
             if (GameSettings.Instance.GameState != GlobalGameState.MainMenu)
             {
                 Debug.Log("[StartGameAsync] Called but in-game, cannot start while in-game!");
