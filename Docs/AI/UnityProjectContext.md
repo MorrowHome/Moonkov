@@ -11,6 +11,7 @@
 - 正式月球地图的 `Moon Raid` 配置最小搜打撤：服务端拾取验证、12 格背包、死亡／超时损失、8 秒撤离、连接内存仓库、结算后再次出战。复用现有光环战斗，未接数据库或敌人 AI；断线清空仓库。详见 `Docs/MinimumRaidLoop.md`。
 - 原有功能根为 `Assets/Scripts`、`Prefabs`、`Scenes`、`Data`、`InputSystems`、`Settings`；第三方／Unity 示例目录保持原样。
 - 月球功能集中在 `Assets/MoonEnvironment`，分 Runtime、Demo、Editor 三个程序集；Runtime 不依赖模板业务类或 Starter Assets。Demo 复用 Starter Assets 与 Input System。
+- 正式 MoonGameScene 使用 `MoonEnvironment/SpaceSky` 与 `LunarSpaceSky.mat`：NASA HDR 星图与银河、Blue Marble 地球、与 Lunar Sun 在编辑及运行模式同步的太阳圆盘。Moon Space Volume / MoonSpacePostProcessing 提供 Bloom 眩光，MoonRenderer 引用 URP PostProcessData。MoonSceneLighting 管理运行时材质及设置恢复；无图形设备的服务器跳过天空实例化。当前是固定天空与游戏曝光近似，未接天文星历或昼夜循环。详见 `Docs/MoonSpaceEnvironment.md`，素材署名见 `Assets/MoonEnvironment/Art/Space/Sources.md`。
 - DollSinger 本地角色集中在 `Assets/DollSinger`，分 Runtime／Editor 程序集；本地演示和操作见 `Docs/DollSinger.md`。独立网络预制体 `DollSingerNetworkPlayer.prefab` 已通过模板 Ghost 接入 MainMenu 的第三项角色选择，复用模板预测移动和服务器武器判定；适配器位于 `Assets/Scripts/Gameplay/Player/DollSingerNetworkPresentation.cs`。联机结构、操作与限制见 `Docs/DollSingerNetwork.md`。
 - Unity Test Framework 已安装；本次迁移使用针对性编译、资产引用与 Play Mode 冒烟验证，没有引入通用测试架构。
 - 官方 AI Assistant 和 Pipeline 包已存在。当前可通过 Unity CLI 的本地 Pipeline 连接 Editor；操作必须显式指定 FPS_Template。

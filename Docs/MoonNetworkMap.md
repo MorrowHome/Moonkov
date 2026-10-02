@@ -37,7 +37,7 @@ flowchart TD
 - Editor 的 Client + Server 模式从主菜单启动 Host；Server 模式沿用 ServerBootstrap 自动启动流程，默认监听端口 7979。
 - 独立客户端和服务器须使用包含新地图的同一版本；旧构建不会自动获得这些场景。
 
-月球地图尚未添加拾取物、撤离区或持久化数据库。这些是下一轮最小搜打撤循环的工作。
+月球地图已接入拾取物与撤离区，见 `Docs/MinimumRaidLoop.md`；仓库仍是连接内存状态，未接持久化数据库。正式地图的太空天空见 `Docs/MoonSpaceEnvironment.md`。
 
 ## 验证
 

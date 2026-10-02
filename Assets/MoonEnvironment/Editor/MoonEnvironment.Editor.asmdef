@@ -1,7 +1,7 @@
 {
     "name": "MoonEnvironment.Editor",
     "rootNamespace": "Unity.MP_FPS.Moon.Editor",
-    "references": ["MoonEnvironment.Runtime", "MoonEnvironment.Demo", "Unity.StarterAssets", "Unity.InputSystem", "Unity.RenderPipelines.Universal.Runtime"],
+    "references": ["MoonEnvironment.Runtime", "MoonEnvironment.Demo", "Unity.StarterAssets", "Unity.InputSystem", "Unity.RenderPipelines.Universal.Runtime", "Unity.RenderPipelines.Core.Runtime"],
     "includePlatforms": ["Editor"],
     "autoReferenced": true
 }
