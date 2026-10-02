@@ -81,7 +81,7 @@ public partial class ClientInputReaderSystem : SystemBase
                 playerInput.SetFlag(PlayerInput.InputFlag.Sprint, _dollSingerInput.SprintHeld);
                 playerInput.SetFlag(PlayerInput.InputFlag.Aim, _dollSingerInput.AimHeld);
                 playerInput.SetFlag(PlayerInput.InputFlag.ThirdPerson, _dollSingerPresentation.IsThirdPerson);
-                playerInput.SetFlag(PlayerInput.InputFlag.Shoot, _dollSingerInput.AimHeld && _dollSingerInput.FirePressed);
+                playerInput.SetFlag(PlayerInput.InputFlag.Shoot, _dollSingerInput.AimHeld && _dollSingerInput.FireHeld);
                 playerInput.SetFlag(PlayerInput.InputFlag.Reload, _dollSingerInput.ReloadPressed);
                 _accumulatedLook.x += _dollSingerInput.Look.x;
                 _accumulatedLook.y = math.clamp(_accumulatedLook.y - _dollSingerInput.Look.y, -85f, 85f);

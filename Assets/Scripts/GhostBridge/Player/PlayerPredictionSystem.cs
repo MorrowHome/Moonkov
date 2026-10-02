@@ -233,7 +233,9 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                                 float3 aimDirection = shotRay.direction;
                                 var shotOriginPosition = playerGhost.VisualShotOrigin1P.position;
                                     
-                                if (VisualEffectManager.ClientInstance != null)
+                                // Replayed/partial predictions must not create another visible halo bolt.
+                                if (VisualEffectManager.ClientInstance != null &&
+                                    (predictedPlayer.ValueRO.EquippedWeaponID != 2 || networkTime.IsFirstTimeFullyPredictingTick))
                                 {
                                     VisualEffectManager.ClientInstance.SpawnMuzzleFlash(playerGhost, predictedPlayer.ValueRO.EquippedWeaponID, true, aimPoint);
                                 }

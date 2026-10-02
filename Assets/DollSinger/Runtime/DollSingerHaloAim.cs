@@ -25,6 +25,12 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     [Min(1f)] public float boltSpeed = 38f;
     [Min(0.05f)] public float boltLength = 0.30f;
     [Min(1f)] public float boltMaxDistance = 35f;
+    [Tooltip("Standalone demo fire interval; network fire rate comes from HaloWeapon.")]
+    [Min(0.02f)] public float localShotInterval = 0.1f;
+
+    [Header("Laser flight lighting")]
+    [Min(0f)] public float boltLightIntensity = 4f;
+    [Min(0.1f)] public float boltLightRange = 3f;
 
     [Header("Appearance")]
     public Color idleHaloColor = new Color(1f, 0.28f, 0.52f, 1f);
@@ -63,10 +69,8 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     private Transform rightIndexTip;
     private int aimLayerIndex = -1;
     private float aimBlend;
-    private float boltStartedAt = -100f;
-    private float boltDistance;
-    private Vector3 boltStart;
-    private Vector3 boltDirection;
+    private HaloBoltPool boltPool;
+    private float nextLocalShotTime;
     private bool wantsAim;
 
     [SerializeField] private float hhh;
@@ -142,8 +146,11 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
             Time.deltaTime / (wantsAim ? aimInSeconds : aimOutSeconds));
         if (aimLayerIndex >= 0) animator.SetLayerWeight(aimLayerIndex, aimBlend);
         if (cameraOwner) cameraOwner.SetAimBlend(aimBlend);
-        if (!networkControlled && wantsAim && aimBlend > 0.65f && input.FirePressed)
+        if (!networkControlled && wantsAim && aimBlend > 0.65f && input.FireHeld && Time.time >= nextLocalShotTime)
+        {
+            nextLocalShotTime = Time.time + Mathf.Max(0.02f, localShotInterval);
             FireCosmeticBolt();
+        }
     }
 
     /// <summary>Only adds camera pitch to the clip pose; the .anim owns the arm and finger shape.</summary>
@@ -229,17 +236,17 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
                 haloFaceLightBack.enabled = haloLightEnabled;
             }
         }
-        UpdateBolt();
     }
 
     private void OnDisable() {
         wantsAim = false;
         aimBlend = 0f;
-        boltStartedAt = -100f;
+        nextLocalShotTime = 0;
         if (thirdPerson) thirdPerson.IsLocallyAiming = false;
         if (animator && aimLayerIndex >= 0) animator.SetLayerWeight(aimLayerIndex, 0f);
         if (cameraOwner) cameraOwner.SetAimBlend(0f);
         SetBoltVisible(false);
+        if (boltPool) boltPool.ClearActive();
     }
 
     private void FindCamera() {
@@ -271,27 +278,18 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         if (!haloVisual || (!networkControlled && !playerCamera)) return;
         Vector3 forward = networkControlled ? networkDirection : playerCamera.transform.forward;
         Vector3 target = shotAimPoint ?? FindAimPoint();
-        boltStart = haloVisual.position + forward * 0.02f;
+        Vector3 boltStart = haloVisual.position + forward * 0.02f;
         Vector3 travel = target - boltStart;
         if (travel.sqrMagnitude < 0.0001f || (!networkControlled && Vector3.Dot(travel, forward) < 0.5f))
             travel = forward * boltMaxDistance;
-        boltDistance = Mathf.Min(travel.magnitude, boltMaxDistance);
-        boltDirection = travel.normalized;
-        boltStartedAt = Time.time;
-    }
-
-    private void UpdateBolt() {
-        float travelled = (Time.time - boltStartedAt) * boltSpeed;
-        bool active = travelled >= 0f && travelled < boltDistance + boltLength &&
-                      boltDistance > 0.01f;
-        SetBoltVisible(active);
-        if (!active) return;
-        float front = Mathf.Min(travelled, boltDistance);
-        float tail = Mathf.Max(0f, travelled - boltLength);
-        Vector3 from = boltStart + boltDirection * tail;
-        Vector3 to = boltStart + boltDirection * front;
-        if (beamGlow) { beamGlow.SetPosition(0, from); beamGlow.SetPosition(1, to); }
-        if (beamCore) { beamCore.SetPosition(0, from); beamCore.SetPosition(1, to); }
+        if (!boltPool) {
+            var flights = new GameObject("Halo Bolts (Runtime)");
+            flights.transform.SetParent(transform, false);
+            boltPool = flights.AddComponent<HaloBoltPool>();
+            boltPool.Configure(beamCore, beamGlow);
+        }
+        boltPool.Play(boltStart, travel.normalized, Mathf.Min(travel.magnitude, boltMaxDistance),
+            boltSpeed, boltLength, aimedHaloColor, boltLightIntensity, boltLightRange);
     }
 
     private void SetBoltVisible(bool visible) {

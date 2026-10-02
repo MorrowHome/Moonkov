@@ -21,6 +21,7 @@ namespace Unity.MP_FPS.DollSinger
         public bool SprintHeld { get; private set; }
         public bool AimHeld { get; private set; }
         public bool FirePressed { get; private set; }
+        public bool FireHeld { get; private set; }
         public bool ViewPressed { get; private set; }
         public bool LightPressed { get; private set; }
         public bool ReloadPressed { get; private set; }
@@ -64,6 +65,7 @@ namespace Unity.MP_FPS.DollSinger
                 Look = mouse.delta.ReadValue() * mouseSensitivity;
                 AimHeld = mouse.rightButton.isPressed;
                 FirePressed = mouse.leftButton.wasPressedThisFrame;
+                FireHeld = mouse.leftButton.isPressed;
                 ViewPressed |= mouse.middleButton.wasPressedThisFrame;
                 Scroll = mouse.scroll.ReadValue().y;
             }
@@ -76,6 +78,7 @@ namespace Unity.MP_FPS.DollSinger
                 SprintHeld |= gamepad.leftStickButton.isPressed;
                 AimHeld |= gamepad.leftTrigger.isPressed;
                 FirePressed |= gamepad.rightTrigger.wasPressedThisFrame;
+                FireHeld |= gamepad.rightTrigger.isPressed;
                 ViewPressed |= gamepad.rightStickButton.wasPressedThisFrame;
             }
             Move = Vector2.ClampMagnitude(Move, 1f);
@@ -85,6 +88,7 @@ namespace Unity.MP_FPS.DollSinger
         {
             Move = Look = Vector2.zero;
             JumpPressed = SprintHeld = AimHeld = FirePressed = ViewPressed = LightPressed = ReloadPressed = false;
+            FireHeld = false;
             Scroll = 0f;
         }
 
