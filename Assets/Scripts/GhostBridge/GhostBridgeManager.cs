@@ -27,19 +27,23 @@ namespace Unity.GhostBridge
         }
 
 #region Server functions
-        private NetworkStreamDriver _serverNetworkStreamDriver;
-
-        public void SetServerNetworkStreamDriver(NetworkStreamDriver serverNetworkStreamDriver)
-        {
-            _serverNetworkStreamDriver = serverNetworkStreamDriver;
-        }
-        
         public bool IsServerListening()
         {
-            var driverStore = _serverNetworkStreamDriver.DriverStore; 
+            // DriverStore dereferences a native pointer. Never cache a driver across
+            // world lifetimes or read a default driver before the server is ready.
+            if (!TryGetServerEntityManager(out var manager))
+                return false;
+
+            using var query = manager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
+            if (query.IsEmptyIgnoreFilter)
+                return false;
+
+            query.CompleteDependency();
+            var driver = query.GetSingletonRW<NetworkStreamDriver>();
+            ref var driverStore = ref driver.ValueRW.DriverStore;
             if (driverStore.IsCreated && driverStore.DriversCount > 0)
             {
-                int driverId = _serverNetworkStreamDriver.DriverStore.FirstDriver;
+                int driverId = driverStore.FirstDriver;
                 return driverStore.GetDriverInstanceRO(driverId).driver.IsCreated &&
                        driverStore.GetDriverInstanceRO(driverId).driver.Listening;
             }
@@ -51,7 +55,8 @@ namespace Unity.GhostBridge
             World serverWorld = null;
             foreach (var world in World.All)
             {
-                if ((world.Flags & WorldFlags.GameServer) == WorldFlags.GameServer)
+                if (world.IsCreated && !world.QuitUpdate &&
+                    (world.Flags & WorldFlags.GameServer) == WorldFlags.GameServer)
                 {
                     serverWorld = world;
                     break;

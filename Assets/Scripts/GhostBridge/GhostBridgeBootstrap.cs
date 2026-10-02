@@ -16,6 +16,20 @@ public class GhostBridgeBootstrap : ClientServerBootstrap
     public new World ServerWorld { get; private set; }
     public new World ClientWorld { get; private set; }
 
+    public static bool IsServerOnly
+    {
+        get
+        {
+#if UNITY_SERVER
+            return true;
+#elif UNITY_EDITOR
+            return RequestedPlayType == PlayType.Server;
+#else
+            return false;
+#endif
+        }
+    }
+
     private GameObject m_ClientGameObjectHierarchy;
     public GameObject ClientGameObjectHierarchy
     {
@@ -89,17 +103,7 @@ public class GhostBridgeBootstrap : ClientServerBootstrap
         var world = new World(defaultWorldName, WorldFlags.Game);
         World.DefaultGameObjectInjectionWorld = world;
 
-        bool createServerWorld = false;
-
-#if UNITY_SERVER
-        createServerWorld = true;
-#elif UNITY_EDITOR
-        // if we are in editor we only want a server on boot if we are simulating being the server
-        // otherwise we'll defer the server world creation until we need it
-        createServerWorld = RequestedPlayType == PlayType.Server;
-#endif
-
-        if (createServerWorld)
+        if (IsServerOnly)
         {
             CreateServerWorld();
         }

@@ -1,4 +1,4 @@
-#if UNITY_SERVER
+#if UNITY_SERVER || UNITY_EDITOR
 
 using System;
 using Unity.Entities;
@@ -13,6 +13,12 @@ namespace Unity.MP_FPS
     {
         private void Awake()
         {
+            if (!GhostBridgeBootstrap.IsServerOnly)
+            {
+                enabled = false;
+                return;
+            }
+
             Debug.Log($"FPS2 server -> Awaking.");
             Application.runInBackground = true; 
             Debug.Log($"FPS2 server -> Loading the Persistent scene ...");
@@ -42,9 +48,9 @@ namespace Unity.MP_FPS
             
             using var drvQuery = serverWorld.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
             drvQuery.CompleteDependency();
-            var serverDriver = drvQuery.GetSingletonRW<NetworkStreamDriver>().ValueRW;
-            GhostBridgeManager.Instance.SetServerNetworkStreamDriver(serverDriver);
-            serverDriver.Listen(gameConnection.ListenEndpoint);
+            var serverDriver = drvQuery.GetSingletonRW<NetworkStreamDriver>();
+            if (!serverDriver.ValueRW.Listen(gameConnection.ListenEndpoint))
+                throw new InvalidOperationException($"Unable to listen on port {port}.");
             Debug.Log($"FPS2 server -> Listening on port {port}.");
             
             Debug.Log($"FPS2 server -> Loading the Game Scenes.");

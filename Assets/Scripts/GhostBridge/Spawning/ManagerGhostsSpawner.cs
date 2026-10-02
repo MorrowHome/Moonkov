@@ -24,9 +24,9 @@ public class ManagerGhostsSpawner : Singleton<ManagerGhostsSpawner>
 
     public void LateUpdate()
     {
-        if (GhostBridgeManager.Instance.IsServerListening())
+        if (GhostBridgeManager.Instance != null && GhostBridgeManager.Instance.IsServerListening())
         {
-            if (GhostEntityPrefabSystem.ServerInstance.PrefabsLoaded)
+            if (GhostEntityPrefabSystem.ServerInstance != null && GhostEntityPrefabSystem.ServerInstance.PrefabsLoaded)
             {
                 foreach (var manager in ManagersToSpawn)
                 {
@@ -45,10 +45,6 @@ public class ManagerGhostsSpawner : Singleton<ManagerGhostsSpawner>
                 }
                 gameObject.SetActive(false);
             }
-        }
-        else
-        {
-            gameObject.SetActive(false);
         }
     }
 }

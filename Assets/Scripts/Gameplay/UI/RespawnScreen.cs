@@ -32,9 +32,10 @@ namespace Unity.MP_FPS.UI
 
         private void InitializeEcs()
         {
+            m_ClientWorld = null;
             foreach (var world in World.All)
             {
-                if (world.IsClient())
+                if (world.IsCreated && world.IsClient())
                 {
                     m_ClientWorld = world;
                     m_EntityManager = world.EntityManager;
@@ -42,7 +43,7 @@ namespace Unity.MP_FPS.UI
                 }
             }
 
-            if (m_EntityManager != null)
+            if (m_ClientWorld != null)
             {
                 m_LocalPlayerQuery = m_EntityManager.CreateEntityQuery(
                     ComponentType.ReadOnly<PredictedPlayerGhost>(),
@@ -53,7 +54,8 @@ namespace Unity.MP_FPS.UI
 
         void LateUpdate()
         {
-            if (GameSettings.Instance.GameState != GlobalGameState.InGame)
+            if (!ClientServerBootstrap.HasClientWorlds ||
+                GameSettings.Instance.GameState != GlobalGameState.InGame)
             {
                 m_RespawnScreen.style.display = DisplayStyle.None;
                 return;

@@ -55,10 +55,11 @@ namespace Unity.MP_FPS
 
         private void InitializeEcs()
         {
+            m_ClientWorld = null;
             // Find the active client world
             foreach (var world in World.All)
             {
-                if (world.IsClient())
+                if (world.IsCreated && world.IsClient())
                 {
                     m_ClientWorld = world;
                     m_EntityManager = world.EntityManager;
@@ -66,7 +67,7 @@ namespace Unity.MP_FPS
                 }
             }
 
-            if (m_EntityManager != null)
+            if (m_ClientWorld != null)
             {
                 // This query finds the single entity that is both a predicted player ghost
                 // and is owned by the local client.
@@ -80,7 +81,8 @@ namespace Unity.MP_FPS
         void LateUpdate()
         {
             // Toggle HUD visibility based on the overall game state
-            bool isInGame = GameSettings.Instance.GameState == GlobalGameState.InGame;
+            bool isInGame = ClientServerBootstrap.HasClientWorlds &&
+                            GameSettings.Instance.GameState == GlobalGameState.InGame;
             if (m_RootElement.style.display != (isInGame ? DisplayStyle.Flex : DisplayStyle.None))
             {
                 m_RootElement.style.display = isInGame ? DisplayStyle.Flex : DisplayStyle.None;
@@ -95,7 +97,8 @@ namespace Unity.MP_FPS
             }
 
             // Ensure the ECS systems are ready
-            if (m_EntityManager == null || !m_LocalPlayerQuery.HasSingleton<PredictedPlayerGhost>())
+            if (m_ClientWorld == null || !m_ClientWorld.IsCreated ||
+                !m_LocalPlayerQuery.HasSingleton<PredictedPlayerGhost>())
             {
                 // No local player entity found, hide the HUD. This occurs when the player is dead.
                 m_RootElement.style.display = DisplayStyle.None;

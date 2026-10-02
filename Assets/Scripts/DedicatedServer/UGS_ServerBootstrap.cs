@@ -121,9 +121,8 @@ namespace Unity.MP_FPS
 
             using var drvQuery = serverWorld.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
             drvQuery.CompleteDependency();
-            var serverDriver = drvQuery.GetSingletonRW<NetworkStreamDriver>().ValueRW;
-            GhostBridgeManager.Instance.SetServerNetworkStreamDriver(serverDriver);
-            serverDriver.Listen(listenEndpoint);
+            var serverDriver = drvQuery.GetSingletonRW<NetworkStreamDriver>();
+            serverDriver.ValueRW.Listen(listenEndpoint);
             
             Debug.Log($"FPS2 server -> Loading game scene ...");
             LoadingData.Instance.UpdateLoading(LoadingData.LoadingSteps.LoadGameScene);

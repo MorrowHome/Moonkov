@@ -57,6 +57,7 @@ namespace Unity.MP_FPS
             var commandLineArgs = new List<string>(System.Environment.GetCommandLineArgs());
             m_IsHeadless = commandLineArgs.Contains("-batchmode");
 #endif
+            m_IsHeadless |= GhostBridgeBootstrap.IsServerOnly;
             ConfigVar.Init();
 
             if (m_IsHeadless)
@@ -75,6 +76,20 @@ namespace Unity.MP_FPS
         async void Start()
         {
             Application.runInBackground = true; //Prevents dropped connections during multiplayer gameplay
+
+            // The Editor's Server play type must use the same startup path as
+            // the dedicated server, rather than creating a main-menu client world.
+#if UNITY_SERVER || UNITY_EDITOR
+            if (GhostBridgeBootstrap.IsServerOnly)
+            {
+                if (SceneManager.GetActiveScene().name == MainMenuSceneName &&
+                    GetComponent<ServerBootstrap>() == null)
+                {
+                    gameObject.AddComponent<ServerBootstrap>();
+                }
+                return;
+            }
+#endif
 
             MainCameraSingleton.Instance.GetComponent<Camera>().enabled = true;
             var audioListener = MainCameraSingleton.Instance.GetComponent<AudioListener>();
@@ -282,10 +297,9 @@ namespace Unity.MP_FPS
             if (server != null)
             {
                 using var drvQuery = server.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
-                var serverDriver = drvQuery.GetSingletonRW<NetworkStreamDriver>().ValueRW;
-                GhostBridgeManager.Instance.SetServerNetworkStreamDriver(serverDriver);
-
-                serverDriver.Listen(GameConnection.ListenEndpoint);
+                drvQuery.CompleteDependency();
+                var serverDriver = drvQuery.GetSingletonRW<NetworkStreamDriver>();
+                serverDriver.ValueRW.Listen(GameConnection.ListenEndpoint);
                 await ScenesLoader.LoadGameplayAsync(server, null);
             }
 
