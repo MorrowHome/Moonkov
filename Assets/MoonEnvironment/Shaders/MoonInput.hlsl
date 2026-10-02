@@ -79,6 +79,16 @@ half3 MoonLight(SurfaceOutputStandard surface, half3 normal, half3 view, Light l
     return surface.Albedo * light.color * disk * MoonPhaseReflectance(light.direction, view)
         * light.distanceAttenuation * light.shadowAttenuation;
 }
+float4 MoonFragmentShadowCoord(MoonVaryings input)
+{
+#if defined(_MAIN_LIGHT_SHADOWS_CASCADE)
+    // Terrain triangles can cross a cascade boundary. Select the cascade from
+    // the actual fragment position, rather than interpolating atlas coordinates.
+    return TransformWorldToShadowCoord(input.positionWS);
+#else
+    return input.shadowCoord;
+#endif
+}
 float3 _LightDirection, _LightPosition;
 MoonVaryings MoonShadowVertex(MoonAttributes input)
 {

@@ -146,7 +146,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d7faaba316fd40d4fa939e0f496dd113, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: MoonEnvironment.Runtime::Unity.MP_FPS.Moon.MoonSceneLighting
   sun: {fileID: 1069018252372146075}
   pipeline: {fileID: 11400000, guid: 2200b3694cbdeb34992b95067fe22db7, type: 2}
@@ -193,7 +193,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7681043a3128d7147878c37eec67361b, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: GameObjectBridge::ManagerGhostsSpawner
   <ManagersToSpawn>k__BackingField:
   - <GhostPrefab>k__BackingField:
@@ -262,7 +262,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 45a335734b1572644a6a5d09d87adc65, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Unity.Scenes::Unity.Scenes.SubScene
   _SceneAsset: {fileID: 102900000, guid: 8e8f34f78e2592749936e898ae12979b, type: 3}
   _HierarchyColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
@@ -432,7 +432,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 45a335734b1572644a6a5d09d87adc65, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Unity.Scenes::Unity.Scenes.SubScene
   _SceneAsset: {fileID: 102900000, guid: 61e4dafa831829f41ac2fd6c36bacab8, type: 3}
   _HierarchyColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
@@ -485,7 +485,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e353a2af93409f14087238ac8353a7f9, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::GhostSpawner
   <GhostPrefabReference>k__BackingField:
     <GhostPrefab>k__BackingField:
@@ -529,7 +529,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 414492166366945033, guid: 675f9882ac896674483c0f181f2b2d2d, type: 3}
       propertyPath: m_Intensity
-      value: 1.6
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1947159228668865484, guid: 675f9882ac896674483c0f181f2b2d2d, type: 3}
       propertyPath: m_Name
@@ -622,7 +622,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
   m_UsePipelineSettings: 1
   m_AdditionalLightsShadowResolutionTier: 2

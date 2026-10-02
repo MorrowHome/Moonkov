@@ -91,6 +91,13 @@ namespace Unity.MP_FPS.Moon.Editor
                 AssetDatabase.AddObjectToAsset(bloom, profile);
                 EditorUtility.SetDirty(profile);
             }
+            if (!profile.TryGet<Tonemapping>(out var tonemapping))
+            {
+                tonemapping = profile.Add<Tonemapping>(true);
+                tonemapping.mode.value = TonemappingMode.ACES;
+                AssetDatabase.AddObjectToAsset(tonemapping, profile);
+                EditorUtility.SetDirty(profile);
+            }
             Volume volume = null;
             foreach (GameObject root in scene.GetRootGameObjects())
                 if (root.name == "Moon Space Volume") { volume = root.GetComponent<Volume>(); break; }

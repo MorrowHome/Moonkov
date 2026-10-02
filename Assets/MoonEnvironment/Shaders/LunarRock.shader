@@ -90,7 +90,7 @@ half4 MoonFragment(MoonVaryings input) : SV_Target
     // URP's clustered LIGHT_LOOP macros require this exact variable name.
     InputData inputData = (InputData)0;
     inputData.positionWS=input.positionWS; inputData.normalWS=normal; inputData.viewDirectionWS=view;
-    inputData.shadowCoord=input.shadowCoord; inputData.bakedGI=SampleSH(normal) * _IndirectStrength;
+    inputData.shadowCoord=MoonFragmentShadowCoord(input); inputData.bakedGI=SampleSH(normal) * _IndirectStrength;
     inputData.normalizedScreenSpaceUV=GetNormalizedScreenSpaceUV(input.positionCS);
     inputData.shadowMask=half4(1,1,1,1);
 #if !defined(_MOON_LUNAR_LIGHTING)
@@ -99,7 +99,7 @@ half4 MoonFragment(MoonVaryings input) : SV_Target
     pbr.occlusion=surface.Occlusion; pbr.alpha=1;
     return UniversalFragmentPBR(inputData,pbr);
 #else
-    Light mainLight=GetMainLight(input.shadowCoord,input.positionWS,half4(1,1,1,1));
+    Light mainLight=GetMainLight(inputData.shadowCoord,input.positionWS,half4(1,1,1,1));
     half3 color=MoonLight(surface,normal,view,mainLight) + surface.Albedo * inputData.bakedGI;
     #if defined(_ADDITIONAL_LIGHTS)
     uint lightCount=GetAdditionalLightsCount();

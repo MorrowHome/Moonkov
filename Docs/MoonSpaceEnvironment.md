@@ -38,7 +38,11 @@ flowchart LR
 
 太阳位置改场景中的 Lunar Sun，而非手动编辑材质隐藏的 Sun direction。编辑模式在当前场景天空材质上更新派生的太阳方向，保留场景可序列化的原始材质引用；运行时 `MoonSceneLighting` 复制材质更新太阳参数，退出场景会销毁副本并恢复接管前的渲染设置，游戏不回写源材质。无图形设备的独立服务器跳过天空材质实例化。
 
-眩光配置：`Assets/MoonEnvironment/Settings/MoonSpacePostProcessing.asset` 的 Bloom。场景 `Moon Space Volume` 位于 Default 层，与 DollSinger 相机的 Volume Mask 匹配；现有相机已启用 HDR 和后处理。MoonRenderer 引用 URP 官方 PostProcessData。默认 Bloom 强度 0.9、阈值 1.3、扩散 0.75，太阳圆盘 HDR 强度提高到约 80；没有更改方向光强度或对整幅画面增加曝光。
+正式地图的 **Lunar Sun → Intensity** 设为 5（原值 1.6），提高低太阳高度下的受光月壤亮度；保留用户设置的太阳角度。`MoonSpacePostProcessing.asset` 加入 **Tonemapping → ACES**，压缩 HDR 高光，减少亮岩石、太阳与激光直接裁成平白的问题。没有抬高环境光或增加全画面曝光，地形阴影仍由真实遮挡产生。Intensity 是此项目的游戏渲染标度，不是 lux，也没有完成物理曝光标定。
+
+眩光配置：同一 Profile 的 Bloom。场景 `Moon Space Volume` 位于 Default 层，与 DollSinger 相机的 Volume Mask 匹配；现有相机已启用 HDR 和后处理。MoonRenderer 引用 URP 官方 PostProcessData。默认 Bloom 强度 0.9、阈值 1.3、扩散 0.75，太阳圆盘 HDR 强度约 80。
+
+月壤与岩石继续使用原有 Lommel–Seeliger 混合和相位／反向散射模型，未把月壤改成白色或自发光材质。级联阴影改为逐像素选择级联，避免跨边界地形三角形插值错误的阴影图坐标。月球土壤反射率较低，明亮日照应通过光照与显示曝光处理；反射率、太阳照度和画面显示亮度是不同量，参见 [NASA Moonlight](https://science.nasa.gov/moon/moonlight/)。此处仍是游戏画面近似，未增加地形多次反弹光的求解。
 
 菜单 **Tools → Moon Environment → Set Up Space Sky** 可以创建缺失的天空材质，并连接正式地图；保留已存在材质的曝光、地球大小等参数。它会打开正式地图，调用前需保存其他场景的未保存编辑。
 
