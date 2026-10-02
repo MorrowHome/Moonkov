@@ -1,0 +1,199 @@
+[
+  {
+    "guid": "45cea3982a69f6849b9e1156c14ea458",
+    "source": "Models\\Characters\\LuoTianYiDollSinger\\Glasses.mat",
+    "target": "Assets\\DollSinger\\Art\\Materials\\Glasses.mat"
+  },
+  {
+    "guid": "41856082326262743bef9d6ff8eb5a52",
+    "source": "Models\\Characters\\LuoTianYiDollSinger\\Textures\\yifu2.png",
+    "target": "Assets\\DollSinger\\Art\\Textures\\yifu2.png"
+  },
+  {
+    "guid": "85d6126cae43b6847aff4b13f4adb8ec",
+    "reuse": "E:\\UnityProjects\\FPS_Template\\Library\\PackageCache\\jp.lilxyzw.liltoon@ee47c8c7ae5d\\Shader\\lts_cutout.shader"
+  },
+  {
+    "guid": "96a361d5f4dfed043a6d2498bb6df4bd",
+    "source": "Models\\Characters\\LuoTianYiDollSinger\\LuoTianYi_DollSinger.fbx",
+    "target": "Assets\\DollSinger\\Art\\Model\\LuoTianYi_DollSinger.fbx"
+  },
+  {
+    "guid": "33daf0d39ba526b40a2f68bfdf0c0642",
+    "source": "Models\\Characters\\LuoTianYiDollSinger\\Jewel.mat",
+    "target": "Assets\\DollSinger\\Art\\Materials\\Jewel.mat"
+  },
+  {
+    "guid": "a417590d62ca6764283eebdd897ffe98",
+    "source": "Models\\Characters\\LuoTianYiDollSinger\\Textures\\yifu.png",
+    "target": "Assets\\DollSinger\\Art\\Textures\\yifu.png"
+  },
+  {
+    "guid": "c9dd540ebb425fe4fb2dff84532fc126",
+    "source": "Models\\Characters\\LuoTianYiDollSinger\\InnerDress.mat",
+    "target": "Assets\\DollSinger\\Art\\Materials\\InnerDress.mat"
+  },
+  {
+    "guid": "3b4aa19949601f046a20ca8bdaee929f",
+    "reuse": "E:\\UnityProjects\\FPS_Template\\Library\\PackageCache\\jp.lilxyzw.liltoon@ee47c8c7ae5d\\Shader\\lts_cutout_o.shader"
+  },
+  {
+    "guid": "c3f74890a76a85d46ae1fcab7abe8b75",
+    "source": "Models\\Characters\\LuoTianYiDollSinger\\DressDetail.mat",
+    "target": "Assets\\DollSinger\\Art\\Materials\\DressDetail.mat"
+  },
+  {
+    "guid": "e1275c6fbb99152469fcc7e57247fb98",
+    "source": "Models\\Characters\\LuoTianYiDollSinger\\Dress.mat",
+    "target": "Assets\\DollSinger\\Art\\Materials\\Dress.mat"
+  },
+  {
+    "guid": "3c42f2c8851548b4d8b7c0cebaffe098",
+    "source": "Models\\Characters\\LuoTianYiDollSinger\\Brows.mat",
+    "target": "Assets\\DollSinger\\Art\\Materials\\Brows.mat"
+  },
+  {
+    "guid": "4b3b95049d50c034d9cd270b47139147",
+    "source": "Models\\Characters\\LuoTianYiDollSinger\\Textures\\face.png",
+    "target": "Assets\\DollSinger\\Art\\Textures\\face.png"
+  },
+  {
+    "guid": "e03e680db05ea234698edc62e2d2cf76",
+    "source": "Models\\Characters\\LuoTianYiDollSinger\\Shoes.mat",
+    "target": "Assets\\DollSinger\\Art\\Materials\\Shoes.mat"
+  },
+  {
+    "guid": "d981321af7c996648921381bcc5a9864",
+    "source": "Models\\Characters\\LuoTianYiDollSinger\\Textures\\xiezi.png",
+    "target": "Assets\\DollSinger\\Art\\Textures\\xiezi.png"
+  },
+  {
+    "guid": "8ea63809951a58e41be4e320b7195e9b",
+    "source": "Models\\Characters\\LuoTianYiDollSinger\\Hair.mat",
+    "target": "Assets\\DollSinger\\Art\\Materials\\Hair.mat"
+  },
+  {
+    "guid": "2210002307063af4aac16cdd5a0420c3",
+    "source": "Models\\Characters\\LuoTianYiDollSinger\\Textures\\toufa.png",
+    "target": "Assets\\DollSinger\\Art\\Textures\\toufa.png"
+  },
+  {
+    "guid": "2ff62536a1efd1a47b98433339e10445",
+    "source": "Models\\Characters\\LuoTianYiDollSinger\\Lashes.mat",
+    "target": "Assets\\DollSinger\\Art\\Materials\\Lashes.mat"
+  },
+  {
+    "guid": "3cc9c98e0cfe9f14598b56f64dd2a884",
+    "source": "Models\\Characters\\LuoTianYiDollSinger\\Face.mat",
+    "target": "Assets\\DollSinger\\Art\\Materials\\Face.mat"
+  },
+  {
+    "guid": "667cfaead4146ad489a7f8dab7369f09",
+    "source": "Models\\Characters\\LuoTianYiDollSinger\\Eyes.mat",
+    "target": "Assets\\DollSinger\\Art\\Materials\\Eyes.mat"
+  },
+  {
+    "guid": "0c5b671bd105211438ebcb3f10e7683d",
+    "source": "Models\\Characters\\LuoTianYiDollSinger\\Body.mat",
+    "target": "Assets\\DollSinger\\Art\\Materials\\Body.mat"
+  },
+  {
+    "guid": "fcf0b02e0973db24ab6c5efe43f0415f",
+    "source": "Models\\Characters\\LuoTianYiDollSinger\\Textures\\body.png",
+    "target": "Assets\\DollSinger\\Art\\Textures\\body.png"
+  },
+  {
+    "guid": "d3828e924b86fac4e89dd90a7326cf22",
+    "source": "Models\\Characters\\LuoTianYiDollSinger\\HaloGlow.mat",
+    "target": "Assets\\DollSinger\\Art\\Materials\\HaloGlow.mat"
+  },
+  {
+    "guid": "604d408ad04b8b749be242118e2e4e6f",
+    "source": "Shader\\HaloLine.shader",
+    "target": "Assets\\DollSinger\\Shaders\\HaloLine.shader"
+  },
+  {
+    "guid": "4fc28a1bcd3c4814986daac7f91bfab4",
+    "source": "Models\\Characters\\LuoTianYiDollSinger\\EyeWhite.mat",
+    "target": "Assets\\DollSinger\\Art\\Materials\\EyeWhite.mat"
+  },
+  {
+    "guid": "0a54c9b0d0ce429448f9574e053cc77d",
+    "source": "Scripts\\SkirtHandAvoidance.cs",
+    "target": "Assets\\DollSinger\\Runtime\\SkirtHandAvoidance.cs"
+  },
+  {
+    "guid": "2d43ac70cc1bdd24b90b882566e61900",
+    "source": "Scripts\\DollSingerHaloAim.cs",
+    "target": "Assets\\DollSinger\\Runtime\\DollSingerHaloAim.cs"
+  },
+  {
+    "guid": "673580432b61d0e488526f8c896925f0",
+    "source": "Scripts\\SecondaryBoneSpring.cs",
+    "target": "Assets\\DollSinger\\Runtime\\SecondaryBoneSpring.cs"
+  },
+  {
+    "guid": "3154d1f8e700d67498796047fab78825",
+    "source": "Models\\Characters\\LuoTianYiDollSinger\\DollSingerThirdPersonHalo.controller",
+    "target": "Assets\\DollSinger\\Animation\\DollSingerThirdPersonHalo.controller"
+  },
+  {
+    "guid": "3c033631149b9c541bcf155cd94cccba",
+    "reuse": "E:\\UnityProjects\\FPS_Template\\Assets\\Starter Assets\\Runtime\\ThirdPersonController\\Character\\Animations\\Locomotion--Run_N_Land.anim.fbx"
+  },
+  {
+    "guid": "325a26d62b61fa94cb3c97c435efebc5",
+    "reuse": "E:\\UnityProjects\\FPS_Template\\Assets\\Starter Assets\\Runtime\\ThirdPersonController\\Character\\Animations\\Locomotion--Walk_N_Land.anim.fbx"
+  },
+  {
+    "guid": "98f277b0c8055e143b2fcf058d3c27dc",
+    "reuse": "E:\\UnityProjects\\FPS_Template\\Assets\\Starter Assets\\Runtime\\ThirdPersonController\\Character\\Animations\\Jump--Jump.anim.fbx"
+  },
+  {
+    "guid": "94162c488acd6fc4699e4a0d36a9412d",
+    "source": "Models\\Characters\\LuoTianYiDollSinger\\DollSinger_Run_N_RelaxedFingers.anim",
+    "target": "Assets\\DollSinger\\Animation\\DollSinger_Run_N_RelaxedFingers.anim"
+  },
+  {
+    "guid": "8269a9f8cf495034c817722ac21f309f",
+    "reuse": "E:\\UnityProjects\\FPS_Template\\Assets\\Starter Assets\\Runtime\\ThirdPersonController\\Character\\Animations\\Locomotion--Walk_N.anim.fbx"
+  },
+  {
+    "guid": "12e52e465ed793a4d801955e9f964a82",
+    "reuse": "E:\\UnityProjects\\FPS_Template\\Assets\\Starter Assets\\Runtime\\ThirdPersonController\\Character\\Animations\\Stand--Idle.anim.fbx"
+  },
+  {
+    "guid": "28f662c33c0a430449c8e437ceb54ceb",
+    "source": "Models\\Characters\\LuoTianYiDollSinger\\DollSinger_FingerGunAim.anim",
+    "target": "Assets\\DollSinger\\Animation\\DollSinger_FingerGunAim.anim"
+  },
+  {
+    "guid": "5bf6e5f7bcf5ab14589a0b9223b1d319",
+    "source": "Models\\Characters\\LuoTianYiDollSinger\\DollSinger_FreeFallCover.anim",
+    "target": "Assets\\DollSinger\\Animation\\DollSinger_FreeFallCover.anim"
+  },
+  {
+    "guid": "239d5f712175104498630ee47475fe09",
+    "source": "Models\\Characters\\LuoTianYiDollSinger\\DollSinger_AimUpperBody.mask",
+    "target": "Assets\\DollSinger\\Animation\\DollSinger_AimUpperBody.mask"
+  },
+  {
+    "guid": "0d9d26e2162aa4d11ab075b34c029673",
+    "source": "KinematicCharacterController\\Walkthrough\\15- Root motion example\\EthanCharacter\\Animation\\HumanoidIdleJumpUp.fbx",
+    "target": "Assets\\DollSinger\\Animation\\HumanoidIdleJumpUp.fbx"
+  },
+  {
+    "guid": "d89ea37480b6d75458aa38843e9688dc",
+    "source": "KinematicCharacterController\\Walkthrough\\15- Root motion example\\EthanCharacter\\Animation\\HumanoidCrouch.fbx",
+    "target": "Assets\\DollSinger\\Animation\\HumanoidCrouch.fbx"
+  },
+  {
+    "guid": "063aa479676c4084ebf187660ca0a7b8",
+    "reuse": "E:\\UnityProjects\\FPS_Template\\Assets\\Starter Assets\\Runtime\\ThirdPersonController\\Character\\Animations\\Jump--InAir.anim.fbx"
+  },
+  {
+    "guid": "f6262992024f48d41bfbfd1b2a17d353",
+    "source": "Models\\Characters\\LuoTianYiDollSinger\\HaloAdditive.mat",
+    "target": "Assets\\DollSinger\\Art\\Materials\\HaloAdditive.mat"
+  }
+]

@@ -1,0 +1,7 @@
+{
+    "name": "DollSinger.Editor",
+    "rootNamespace": "Unity.MP_FPS.DollSinger.Editor",
+    "references": ["DollSinger.Runtime", "Unity.RenderPipelines.Universal.Runtime", "Unity.RenderPipelines.Core.Runtime"],
+    "includePlatforms": ["Editor"],
+    "autoReferenced": true
+}
