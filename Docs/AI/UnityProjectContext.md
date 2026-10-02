@@ -7,6 +7,7 @@
 - Input System 1.20.0，activeInputHandler=1；保留已存在的 Starter Assets。
 - 模板使用 Entities／NetCode 与 `GhostBridgeBootstrap`、GhostBridge 连接游戏对象和网络实体；原有脚本主要为 MonoBehaviour 加 ECS 系统。
 - 默认 Build Settings：MainMenu、GameScene、GameResourcesSubScene、Persistents、SpawnPointsSubScene。`GameManager`／`SceneLoader.cs` 负责模板游戏场景加载。
+- 正式联机地图改为 `MoonEnvironment/Scenes/MoonGameScene.unity`，另加 MoonSpawnPointsSubScene（8 个出生点）；原 GameScene 保留为主菜单预览。Host／Client／独立 Server 使用同一正式地图入口，菜单预览退出后才加载月球地图，详见 `Docs/MoonNetworkMap.md`。
 - 原有功能根为 `Assets/Scripts`、`Prefabs`、`Scenes`、`Data`、`InputSystems`、`Settings`；第三方／Unity 示例目录保持原样。
 - 月球功能集中在 `Assets/MoonEnvironment`，分 Runtime、Demo、Editor 三个程序集；Runtime 不依赖模板业务类或 Starter Assets。Demo 复用 Starter Assets 与 Input System。
 - DollSinger 本地角色集中在 `Assets/DollSinger`，分 Runtime／Editor 程序集；本地演示和操作见 `Docs/DollSinger.md`。独立网络预制体 `DollSingerNetworkPlayer.prefab` 已通过模板 Ghost 接入 MainMenu 的第三项角色选择，复用模板预测移动和服务器武器判定；适配器位于 `Assets/Scripts/Gameplay/Player/DollSingerNetworkPresentation.cs`。联机结构、操作与限制见 `Docs/DollSingerNetwork.md`。

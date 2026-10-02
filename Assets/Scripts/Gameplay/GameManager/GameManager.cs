@@ -18,7 +18,8 @@ namespace Unity.MP_FPS
 
         public const int MaxPlayer = 32;
         public const string MainMenuSceneName = "MainMenu";
-        public const string GameSceneName = "GameScene";
+        public const string MenuPreviewSceneName = "GameScene";
+        public const string GameSceneName = "MoonGameScene";
         static public GameConnection GameConnection { get; private set; }
 
         Task m_LoadingGame;
@@ -137,7 +138,7 @@ namespace Unity.MP_FPS
         {
             DestroyLocalSimulationWorld();
             var clientWorld = ClientServerBootstrap.CreateClientWorld("ClientWorld");
-            await ScenesLoader.LoadGameplayAsync(null, clientWorld);
+            await ScenesLoader.LoadMenuPreviewAsync(clientWorld);
             GameSettings.Instance.MainMenuSceneLoaded = true;
             cancellationToken.ThrowIfCancellationRequested();
         }

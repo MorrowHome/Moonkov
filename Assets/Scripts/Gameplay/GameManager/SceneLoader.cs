@@ -12,6 +12,12 @@ namespace Unity.MP_FPS
     /// </summary>
     static class ScenesLoader
     {
+        public static async Task LoadMenuPreviewAsync(World client)
+        {
+            await LoadSceneAsync(GameManager.MenuPreviewSceneName, LoadingData.LoadingSteps.LoadGameScene);
+            await WaitForAllSubScenesToLoadAsync(client, LoadingData.LoadingSteps.LoadClient);
+        }
+
         public static async Task LoadGameplayAsync(World server, World client)
         {
             await LoadGameplayScenesAsync();
@@ -25,7 +31,13 @@ namespace Unity.MP_FPS
         {
             LoadingData.Instance.UpdateLoading(LoadingData.LoadingSteps.UnloadingWorld);
 
-            var gameplay = SceneManager.GetSceneByName(GameManager.GameSceneName);
+            await UnloadSceneAsync(GameManager.GameSceneName);
+            await UnloadSceneAsync(GameManager.MenuPreviewSceneName);
+        }
+
+        static async Task UnloadSceneAsync(string sceneName)
+        {
+            var gameplay = SceneManager.GetSceneByName(sceneName);
             if (gameplay.IsValid() && gameplay != SceneManager.GetActiveScene())
             {
                 var unloadScene = SceneManager.UnloadSceneAsync(gameplay);

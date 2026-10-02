@@ -18,9 +18,9 @@ public partial class ClientInputReaderSystem : SystemBase
     protected override void OnUpdate()
     {
         Entity currentLocalPlayer = Entity.Null;
-        float3 playerPosition = float3.zero;
+        float3 playerForward = new float3(0, 0, 1);
 
-        // 1. Find the local player entity and its position
+        // 1. Find the local player entity and its server-authored spawn facing.
         foreach (var (transform, ghost, owner, entity) in SystemAPI.Query<
                          RefRO<LocalTransform>,
                          RefRO<PredictedPlayerGhost>,
@@ -28,7 +28,7 @@ public partial class ClientInputReaderSystem : SystemBase
                      .WithEntityAccess())
         {
             currentLocalPlayer = entity;
-            playerPosition = transform.ValueRO.Position;
+            playerForward = math.mul(transform.ValueRO.Rotation, new float3(0, 0, 1));
             break; // Found local player, stop searching
         }
 
@@ -37,13 +37,8 @@ public partial class ClientInputReaderSystem : SystemBase
         {
             if (currentLocalPlayer != _lastKnownPlayerEntity)
             {
-                float3 directionToOrigin = math.normalizesafe(new float3(0, 0, -12) - playerPosition);
-
-                // Calculate Yaw (rotation around Y axis)
-                // atan2(x, z) gives the angle in radians from the forward (Z) axis
-                float yawRadians = math.atan2(directionToOrigin.x, directionToOrigin.z);
-
-                // RESET LOOK: Yaw to face center, Pitch to 0 (Horizontal)
+                // Each map owns spawn facing; the old arena's centre is not a universal look target.
+                float yawRadians = math.atan2(playerForward.x, playerForward.z);
                 _accumulatedLook = new float2(math.degrees(yawRadians), 0f);
 
                 // Update tracker so we don't reset again while this character is alive

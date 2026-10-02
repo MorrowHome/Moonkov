@@ -20,6 +20,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/SpawnPointsSubScene.unity
     guid: 4b2b8f84db1610c4a8bbf1528d4eb489
+  - enabled: 1
+    path: Assets/MoonEnvironment/Scenes/MoonGameScene.unity
+    guid: 887f332cc69c11941a87944e2e9a1c96
+  - enabled: 1
+    path: Assets/MoonEnvironment/Scenes/MoonSpawnPointsSubScene.unity
+    guid: 8e8f34f78e2592749936e898ae12979b
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: 8a359052d73013046af0cccc79347d43, type: 2}
     com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f, type: 2}
