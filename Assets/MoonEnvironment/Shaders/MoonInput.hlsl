@@ -89,6 +89,34 @@ float4 MoonFragmentShadowCoord(MoonVaryings input)
     return input.shadowCoord;
 #endif
 }
+Light MoonMainLight(MoonVaryings input)
+{
+    Light light = GetMainLight(MoonFragmentShadowCoord(input), input.positionWS, half4(1,1,1,1));
+#if defined(_MAIN_LIGHT_SHADOWS_CASCADE)
+    int cascade = (int)ComputeCascadeIndex(input.positionWS);
+    // The last cascade already fades with URP's shadow distance. Only blend real
+    // neighbours, never the identity matrix slot outside the shadow distance.
+    UNITY_BRANCH if (cascade < 3)
+    {
+        float4 spheres[4] = { _CascadeShadowSplitSpheres0, _CascadeShadowSplitSpheres1,
+                             _CascadeShadowSplitSpheres2, _CascadeShadowSplitSpheres3 };
+        float radius2 = _CascadeShadowSplitSphereRadii[cascade];
+        float nextRadius2 = _CascadeShadowSplitSphereRadii[cascade + 1];
+        float3 delta = input.positionWS - spheres[cascade].xyz;
+        // Blend over the outer 12% of the sphere radius, with zero endpoint slope.
+        float blend = smoothstep(0.88 * 0.88, 1.0, dot(delta,delta) / max(radius2,1e-5));
+        float3 nextDelta = input.positionWS - spheres[cascade + 1].xyz;
+        UNITY_BRANCH if (blend > 0 && nextRadius2 > 0 && dot(nextDelta,nextDelta) < nextRadius2)
+        {
+            float4 nextCoord = float4(mul(_MainLightWorldToShadow[cascade + 1],
+                float4(input.positionWS,1)).xyz,0);
+            Light next = GetMainLight(nextCoord, input.positionWS, half4(1,1,1,1));
+            light.shadowAttenuation = lerp(light.shadowAttenuation, next.shadowAttenuation, blend);
+        }
+    }
+#endif
+    return light;
+}
 float3 _LightDirection, _LightPosition;
 MoonVaryings MoonShadowVertex(MoonAttributes input)
 {

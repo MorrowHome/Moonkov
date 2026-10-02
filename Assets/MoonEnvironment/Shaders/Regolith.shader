@@ -122,7 +122,7 @@ half4 MoonFragment(MoonVaryings input) : SV_Target
     pbr.occlusion=surface.Occlusion; pbr.alpha=1;
     return UniversalFragmentPBR(inputData,pbr);
 #else
-    Light mainLight=GetMainLight(inputData.shadowCoord,input.positionWS,half4(1,1,1,1));
+    Light mainLight=MoonMainLight(input);
     half3 color=MoonLight(surface,normal,view,mainLight) + surface.Albedo * inputData.bakedGI;
     #if defined(_ADDITIONAL_LIGHTS)
     uint lightCount=GetAdditionalLightsCount();
