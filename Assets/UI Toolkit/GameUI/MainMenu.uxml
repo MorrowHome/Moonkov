@@ -9,7 +9,7 @@
                         <ui:Label text="Player Name" name="PlayerName" picking-mode="Ignore" />
                         <ui:TextField name="PlayerNameField" value="_" tabindex="1" />
                     </ui:VisualElement>
-                    <ui:RadioButtonGroup label="Choose Character" choices="Rifle,Shotgun" value="-1" name="ChooseCharacterOption" style="border-left-color: rgb(131, 180, 222); border-right-color: rgb(131, 180, 222); border-top-color: rgb(131, 180, 222); border-bottom-color: rgb(131, 180, 222); border-bottom-width: 2px; border-right-width: 2px; border-top-width: 2px; border-left-width: 2px;" />
+                    <ui:RadioButtonGroup label="Choose Character" choices="Rifle,Shotgun,DollSinger" value="-1" name="ChooseCharacterOption" style="border-left-color: rgb(131, 180, 222); border-right-color: rgb(131, 180, 222); border-top-color: rgb(131, 180, 222); border-bottom-color: rgb(131, 180, 222); border-bottom-width: 2px; border-right-width: 2px; border-top-width: 2px; border-left-width: 2px;" />
                     <ui:RadioButtonGroup label="Connection Mode" choices="Relay,Direct" value="-1" name="ConnetionModeOption" style="border-left-color: rgb(131, 180, 222); border-right-color: rgb(131, 180, 222); border-top-color: rgb(131, 180, 222); border-bottom-color: rgb(131, 180, 222); border-bottom-width: 2px; border-right-width: 2px; border-top-width: 2px; border-left-width: 2px;" />
                     <ui:VisualElement name="InputSessionName" picking-mode="Ignore" class="section-separator">
                         <ui:Label text="Session Name" name="SessionName" picking-mode="Ignore" />

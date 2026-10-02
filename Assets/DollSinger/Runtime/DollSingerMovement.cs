@@ -138,7 +138,9 @@ namespace Unity.MP_FPS.DollSinger {
         private float m_HeadLookWeight;
 
         // Out
-        public float CurrentSpeed => m_Controller == null ? 0f :
+        private bool m_NetworkDriven;
+        private float m_NetworkSpeed;
+        public float CurrentSpeed => m_NetworkDriven ? m_NetworkSpeed : m_Controller == null ? 0f :
             new Vector3(m_Controller.velocity.x, 0f, m_Controller.velocity.z).magnitude;
         public float VerticalVelocity => m_VerticalVelocity;
         public bool IsGrounded => m_Grounded;
@@ -172,6 +174,31 @@ namespace Unity.MP_FPS.DollSinger {
         }
         public DollSingerInput input;
         public DollSingerView view;
+
+        // Called with this component disabled. Network prediction owns the root
+        // CharacterController; this adapter updates only animation and presentation state.
+        public void ApplyNetworkPresentation(float speed, float verticalVelocity, bool grounded,
+            bool sprinting, bool jumped, float deltaTime)
+        {
+            m_NetworkDriven = true;
+            m_NetworkSpeed = speed;
+            m_VerticalVelocity = verticalVelocity;
+            m_Grounded = grounded;
+            m_SprintInput = sprinting;
+            JumpedThisFrame = jumped;
+            if (!m_HasAnimator) return;
+            m_AnimationBlend = Mathf.Lerp(m_AnimationBlend, speed, deltaTime * m_SpeedChangeRate);
+            if (m_HasSpeedParameter) m_Animator.SetFloat(k_AnimIDSpeed, m_AnimationBlend);
+            if (m_HasMoveParameter) m_Animator.SetBool("Move", speed > 0.05f);
+            if (m_HasGroundedParameter) m_Animator.SetBool(k_AnimIDGrounded, grounded);
+            if (m_HasFreeFallParameter) m_Animator.SetBool(k_AnimIDFreeFall, !grounded && verticalVelocity < 0f);
+            if (m_HasJumpParameter && jumped) m_Animator.SetTrigger(k_AnimIDJump);
+            if (m_HasMotionSpeedParameter)
+            {
+                if (m_MotionSpeedIsFloat) m_Animator.SetFloat(k_AnimIDMotionSpeed, 1f);
+                else m_Animator.SetInteger(k_AnimIDMotionSpeed, speed > 0.01f ? 1 : 0);
+            }
+        }
 
         private void Awake() {
             m_Controller = GetComponent<CharacterController>();

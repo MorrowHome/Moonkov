@@ -206,8 +206,12 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                         var weaponData = WeaponManager.Instance.WeaponRegistry.GetWeaponData(predictedPlayer.ValueRO.EquippedWeaponID);
                         if (weaponData != null)
                         {
+                            var playerGhost = controllerLink.Controller.GetComponent<PlayerGhost>();
+                            var shotRay = playerGhost.GetShotRay(input, weaponData.HitscanRange, out var aimPoint);
+                            predictedPlayer.ValueRW.AimPoint = aimPoint;
                             bool wantsToReload = input.Reload;
-                            bool wantsToShoot = input.Shoot;
+                            bool wantsToShoot = input.Shoot &&
+                                (predictedPlayer.ValueRO.EquippedWeaponID != 2 || input.Aim);
                             bool mustReload = wantsToShoot && predictedPlayer.ValueRO.CurrentAmmo <= 0;
 
                             if ((wantsToReload || mustReload) &&
@@ -225,20 +229,13 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                                 predictedPlayer.ValueRW.CurrentAmmo--;
                                 predictedPlayer.ValueRW.LastShotTick = commandInput.Tick.TickIndexForValidTick;
 
-                                var playerGhost = controllerLink.Controller.GetComponent<PlayerGhost>();
-                                var controllerState = predictedPlayer.ValueRO.ControllerState;
-                                var aimRotation = quaternion.Euler(
-                                    math.radians(controllerState.PitchDegrees),
-                                    math.radians(controllerState.YawDegrees),
-                                    0f);
-
-                                float3 eyePosition = playerGhost.CameraTarget.position;
-                                var aimDirection = math.mul(aimRotation, new float3(0, 0, 1));
+                                float3 eyePosition = shotRay.origin;
+                                float3 aimDirection = shotRay.direction;
                                 var shotOriginPosition = playerGhost.VisualShotOrigin1P.position;
                                     
                                 if (VisualEffectManager.ClientInstance != null)
                                 {
-                                    VisualEffectManager.ClientInstance.SpawnMuzzleFlash(playerGhost, predictedPlayer.ValueRO.EquippedWeaponID, true);
+                                    VisualEffectManager.ClientInstance.SpawnMuzzleFlash(playerGhost, predictedPlayer.ValueRO.EquippedWeaponID, true, aimPoint);
                                 }
 
                                 if (weaponData.Type == WeaponType.Hitscan)
@@ -277,7 +274,6 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                                 }
                             }
 
-                            FirstPersonController.ProcessInputs(ref predictedPlayer.ValueRW.ControllerState, input, accumulateDT);
                             FirstPersonController.AccumulateMovement(ref predictedPlayer.ValueRW.ControllerState,
                                 ref predictedPlayer.ValueRW.AccumulatedMovement,
                                 input,

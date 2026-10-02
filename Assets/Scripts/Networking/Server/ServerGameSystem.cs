@@ -191,6 +191,9 @@ namespace Unity.MP_FPS
         private void SpawnPlayerCharacter(ref SystemState state, EntityCommandBuffer ecb, Entity connectionEntity, FixedString64Bytes playerName, int characterIndex)
         {
             var playerEntityPrefabs = SystemAPI.GetSingleton<PlayerEntityPrefabs>();
+            // The server selects the registered prefab; clients only send an index.
+            characterIndex = characterIndex == 2 && playerEntityPrefabs.DollSingerEntityPrefab != Entity.Null
+                ? 2 : characterIndex == 1 ? 1 : 0;
             var ownerNetworkId = SystemAPI.GetComponent<NetworkId>(connectionEntity);
             
             // Instantiate the client input entity
@@ -201,10 +204,11 @@ namespace Unity.MP_FPS
             ecb.SetComponent(clientInputEntity, new PlayerCommandTarget { NetworkId = ownerNetworkId.Value });
 
             // Instantiate the player entity
-            var playerEntityPrefab = characterIndex == 0 ? playerEntityPrefabs.PlayerRifleEntityPrefab : playerEntityPrefabs.PlayerShotgunEntityPrefab;
+            var playerEntityPrefab = characterIndex == 2 ? playerEntityPrefabs.DollSingerEntityPrefab
+                : characterIndex == 1 ? playerEntityPrefabs.PlayerShotgunEntityPrefab : playerEntityPrefabs.PlayerRifleEntityPrefab;
             var playerEntity = ecb.Instantiate(playerEntityPrefab);
 
-            var weaponId = characterIndex == 0 ? (uint)0 : 1;
+            var weaponId = characterIndex == 2 ? (uint)2 : characterIndex == 1 ? (uint)1 : 0;
             
             var weaponData = WeaponManager.Instance.WeaponRegistry.GetWeaponData(weaponId);
             var magazineSize = weaponData != null ? weaponData.MagazineSize : 30; // Default to 30 if weapon not found

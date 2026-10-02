@@ -282,8 +282,11 @@ namespace Unity.MP_FPS
                         WeaponManager.Instance.WeaponRegistry.GetWeaponData(predictedPlayer.ValueRO.EquippedWeaponID);
                     if (weaponData != null)
                     {
+                        var shotRay = playerGhost.GetShotRay(commandInput.PlayerInput, weaponData.HitscanRange, out var aimPoint);
+                        predictedPlayer.ValueRW.AimPoint = aimPoint;
                         bool wantsToReload = commandInput.PlayerInput.Reload;
-                        bool wantsToShoot = commandInput.PlayerInput.Shoot;
+                        bool wantsToShoot = commandInput.PlayerInput.Shoot &&
+                            (predictedPlayer.ValueRO.EquippedWeaponID != 2 || commandInput.PlayerInput.Aim);
                         bool mustReload = wantsToShoot && predictedPlayer.ValueRO.CurrentAmmo <= 0;
 
                         if ((wantsToReload || mustReload) &&
@@ -305,20 +308,14 @@ namespace Unity.MP_FPS
                             predictedPlayer.ValueRW.LastShotTick = serverTick;
 
                             var shooterNetworkId = ghostOwnerLookup[entity].NetworkId;
-                            var controllerState = predictedPlayer.ValueRO.ControllerState;
-                            quaternion aimRotation = quaternion.Euler(
-                                math.radians(controllerState.PitchDegrees),
-                                math.radians(controllerState.YawDegrees),
-                                0f);
-
-                            float3 eyePosition = playerGhost.CameraTarget.position;
-                            float3 aimDirection = math.mul(aimRotation, new float3(0, 0, 1));
+                            float3 eyePosition = shotRay.origin;
+                            float3 aimDirection = shotRay.direction;
                             float3 shotOriginPosition = eyePosition + aimDirection * 0.5f;
 
                             if (VisualEffectManager.ServerInstance != null)
                             {
                                 VisualEffectManager.ServerInstance.Server_RequestVfx(shooterNetworkId,
-                                    predictedPlayer.ValueRO.EquippedWeaponID);
+                                    predictedPlayer.ValueRO.EquippedWeaponID, aimPoint);
                             }
 
                             switch (weaponData.Type)

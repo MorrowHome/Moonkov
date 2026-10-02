@@ -23,6 +23,7 @@ namespace Unity.MP_FPS.DollSinger
         public bool FirePressed { get; private set; }
         public bool ViewPressed { get; private set; }
         public bool LightPressed { get; private set; }
+        public bool ReloadPressed { get; private set; }
         public float Scroll { get; private set; }
 
         private void OnEnable()
@@ -56,6 +57,7 @@ namespace Unity.MP_FPS.DollSinger
                 SprintHeld = keyboard.leftShiftKey.isPressed || keyboard.rightShiftKey.isPressed;
                 ViewPressed = keyboard.vKey.wasPressedThisFrame;
                 LightPressed = keyboard.lKey.wasPressedThisFrame;
+                ReloadPressed = keyboard.rKey.wasPressedThisFrame;
             }
             if (mouse != null)
             {
@@ -82,7 +84,7 @@ namespace Unity.MP_FPS.DollSinger
         private void ClearFrame()
         {
             Move = Look = Vector2.zero;
-            JumpPressed = SprintHeld = AimHeld = FirePressed = ViewPressed = LightPressed = false;
+            JumpPressed = SprintHeld = AimHeld = FirePressed = ViewPressed = LightPressed = ReloadPressed = false;
             Scroll = 0f;
         }
 

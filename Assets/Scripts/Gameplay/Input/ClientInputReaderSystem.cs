@@ -4,6 +4,7 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
+using Unity.MP_FPS.DollSinger;
 
 [UpdateInGroup(typeof(GhostInputSystemGroup))]
 public partial class ClientInputReaderSystem : SystemBase
@@ -11,6 +12,8 @@ public partial class ClientInputReaderSystem : SystemBase
     private float2 _accumulatedLook;
 
     private Entity _lastKnownPlayerEntity = Entity.Null;
+    private DollSingerInput _dollSingerInput;
+    private DollSingerNetworkPresentation _dollSingerPresentation;
 
     protected override void OnUpdate()
     {
@@ -45,6 +48,8 @@ public partial class ClientInputReaderSystem : SystemBase
 
                 // Update tracker so we don't reset again while this character is alive
                 _lastKnownPlayerEntity = currentLocalPlayer;
+                _dollSingerInput = null;
+                _dollSingerPresentation = null;
             }
         }
         else
@@ -52,12 +57,45 @@ public partial class ClientInputReaderSystem : SystemBase
             // Player is dead or not yet spawned.
             // Reset the tracker so the *next* spawn triggers the logic.
             _lastKnownPlayerEntity = Entity.Null;
+            _dollSingerInput = null;
+            _dollSingerPresentation = null;
+        }
+
+        if (_dollSingerInput == null && currentLocalPlayer != Entity.Null &&
+            EntityManager.HasComponent<GhostGameObjectLink>(currentLocalPlayer))
+        {
+            var link = EntityManager.GetComponentObject<GhostGameObjectLink>(currentLocalPlayer);
+            if (link.LinkedInstance != null &&
+                link.LinkedInstance.TryGetComponent<DollSingerNetworkPresentation>(out var presentation))
+            {
+                _dollSingerInput = presentation.OwnedInput;
+                _dollSingerPresentation = presentation;
+            }
         }
 
         foreach (var (input, movementInput) in SystemAPI.Query<RefRW<ClientInput>, RefRW<ClientMovementInput>>())
         {
             input.ValueRW = new ClientInput();
             movementInput.ValueRW = new ClientMovementInput();
+
+            if (_dollSingerInput != null)
+            {
+                var playerInput = new PlayerInput();
+                playerInput.MoveInput = _dollSingerInput.Move;
+                playerInput.SetFlag(PlayerInput.InputFlag.Jump, _dollSingerInput.JumpPressed);
+                playerInput.SetFlag(PlayerInput.InputFlag.Sprint, _dollSingerInput.SprintHeld);
+                playerInput.SetFlag(PlayerInput.InputFlag.Aim, _dollSingerInput.AimHeld);
+                playerInput.SetFlag(PlayerInput.InputFlag.Shoot, _dollSingerInput.AimHeld && _dollSingerInput.FirePressed);
+                playerInput.SetFlag(PlayerInput.InputFlag.Reload, _dollSingerInput.ReloadPressed);
+                _accumulatedLook.x += _dollSingerInput.Look.x;
+                _accumulatedLook.y = math.clamp(_accumulatedLook.y - _dollSingerInput.Look.y, -85f, 85f);
+                playerInput.LookYawPitchDegrees = _accumulatedLook;
+                var weapon = WeaponManager.Instance.WeaponRegistry.GetWeaponData(2);
+                playerInput.AimPoint = _dollSingerPresentation.CaptureAimPoint(_accumulatedLook, weapon.HitscanRange);
+                input.ValueRW.SetInput(0, playerInput);
+                movementInput.ValueRW.SetInput(0, playerInput);
+                continue;
+            }
 
             var user = InputSystemManager.GetFirstInputUser();
 

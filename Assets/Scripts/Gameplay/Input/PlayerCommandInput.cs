@@ -9,17 +9,23 @@ public struct PlayerInput
     {
         Jump = 1 << 0,
         Shoot = 1 << 1,
-        Reload = 1 << 3
+        Sprint = 1 << 2,
+        Reload = 1 << 3,
+        Aim = 1 << 4
     }
 
     public float2 MoveInput;
     public float2 LookYawPitchDegrees;
+    // Camera-centre target intent. The server still owns the shot origin, raycast and damage.
+    public float3 AimPoint;
 
     public uint InputFlags; // 4 (16)
 
     public bool Jump => (InputFlags & (uint)InputFlag.Jump) != 0;
     public bool Shoot => (InputFlags & (uint)InputFlag.Shoot) != 0;
     public bool Reload => (InputFlags & (uint)InputFlag.Reload) != 0;
+    public bool Sprint => (InputFlags & (uint)InputFlag.Sprint) != 0;
+    public bool Aim => (InputFlags & (uint)InputFlag.Aim) != 0;
 
     public void SetFlag(InputFlag flag, bool set)
     {
@@ -35,6 +41,12 @@ public struct PlayerInput
 
     public void UpdateFrom(in PlayerInput input)
     {
+        // Preserve the target belonging to a buffered single-shot press.
+        if (input.Shoot)
+        {
+            AimPoint = input.AimPoint;
+            LookYawPitchDegrees = input.LookYawPitchDegrees;
+        }
         InputFlags |= input.InputFlags;
     }
 }

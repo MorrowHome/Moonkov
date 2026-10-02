@@ -25,6 +25,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b17d50091f5130d4a9e69d055e13b4d5
+    m_Address: Assets/DollSinger/Prefabs/DollSingerNetworkPlayer.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c93af8b935d1da7419ae22251a33748c
     m_Address: Assets/Prefabs/Effects/PlasmaHit.prefab
     m_ReadOnly: 0

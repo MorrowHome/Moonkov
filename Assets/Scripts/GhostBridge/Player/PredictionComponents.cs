@@ -50,6 +50,7 @@ public struct PredictedPlayerGhost : IComponentData
     [GhostField] public int InputIndex;
 
     [GhostField] public ControllerState ControllerState;
+    [GhostField] public float3 AimPoint;
     [GhostField] public float CurrentHealth;
     [GhostField] public float MaxHealth;
     

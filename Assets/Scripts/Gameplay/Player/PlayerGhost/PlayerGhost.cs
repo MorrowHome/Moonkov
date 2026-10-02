@@ -67,6 +67,29 @@ namespace Unity.MP_FPS
             return m_PlayerCamera;
         }
 
+        public Ray GetShotRay(in PlayerInput input, float range, out Vector3 aimPoint)
+        {
+            var direction = Quaternion.Euler(input.LookYawPitchDegrees.y, input.LookYawPitchDegrees.x, 0f) * Vector3.forward;
+            Vector3 origin = CameraTarget.position;
+            aimPoint = origin + direction * range;
+            if (TryGetComponent<DollSingerNetworkPresentation>(out _))
+            {
+                // A stable gameplay anchor also exists on a headless server, where the model is inactive.
+                origin = ShotOrigin.position;
+                Vector3 requestedTarget = input.AimPoint;
+                Vector3 offset = requestedTarget - origin;
+                if (math.all(math.isfinite(input.AimPoint)) && math.lengthsq(input.AimPoint) > 0f &&
+                    offset.sqrMagnitude > 0.0001f)
+                {
+                    direction = offset.normalized;
+                    aimPoint = origin + direction * Mathf.Min(offset.magnitude, range);
+                }
+                else
+                    aimPoint = origin + direction * range;
+            }
+            return new Ray(origin, direction);
+        }
+
         public CinemachineCamera GetPlayerCinemachineCamera()
         {
             return m_CinemachineCamera;
@@ -181,6 +204,13 @@ namespace Unity.MP_FPS
             if (existingCamera != null)
             {
                 existingCamera.enabled = false;
+            }
+
+            if (TryGetComponent<DollSingerNetworkPresentation>(out var dollSinger))
+            {
+                m_PlayerCamera = dollSinger.ActivateOwnedView();
+                Utils.SetCursorVisible(false);
+                return;
             }
 
             // spawn the camera

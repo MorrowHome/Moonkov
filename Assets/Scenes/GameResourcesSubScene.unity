@@ -167,6 +167,7 @@ MonoBehaviour:
   <ClientInputEntityPrefab>k__BackingField: {fileID: -872636517575754594, guid: a5f7e89c673676445a6ea2905e239be0, type: 3}
   <PlayerRifleEntityPrefab>k__BackingField: {fileID: 5939953900665156735, guid: d66bf1c0cf4a94990815a86b3d55b686, type: 3}
   <PlayerShotgunEntityPrefab>k__BackingField: {fileID: 5939953900665156735, guid: f4bc4302cb16c4e29aaa203772f1461c, type: 3}
+  <DollSingerEntityPrefab>k__BackingField: {fileID: 5939953900665156735, guid: b17d50091f5130d4a9e69d055e13b4d5, type: 3}
 --- !u!114 &1105370251
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -229,6 +230,11 @@ MonoBehaviour:
     m_SubObjectName: 
     m_SubObjectType: 
     m_SubObjectGUID: 
+    m_EditorAssetChanged: 0
+  - m_AssetGUID: b17d50091f5130d4a9e69d055e13b4d5
+    m_SubObjectName:
+    m_SubObjectType:
+    m_SubObjectGUID:
     m_EditorAssetChanged: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

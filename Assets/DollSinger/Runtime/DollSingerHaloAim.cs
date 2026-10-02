@@ -51,6 +51,10 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     private Animator animator;
     public DollSingerInput input;
     public DollSingerView view;
+    [SerializeField] private bool networkControlled;
+    private bool networkAiming;
+    private Vector3 networkDirection = Vector3.forward;
+    private Vector3 networkAimPoint;
     private DollSingerMovement thirdPerson;
     private Camera playerCamera;
     private DollSingerView cameraOwner;
@@ -75,6 +79,18 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
 
     public float AimBlend => aimBlend;
     public int AimLayerIndex => aimLayerIndex;
+
+    public void SetNetworkPresentation(bool aiming, Vector3 direction, Vector3 aimPoint)
+    {
+        networkControlled = true;
+        networkAiming = aiming;
+        networkDirection = direction.normalized;
+        networkAimPoint = aimPoint;
+    }
+
+    // Invoked by the existing predicted/server-confirmed shot effects path.
+    // This is a cosmetic bolt; damage still belongs to the authoritative weapon system.
+    public void PlayNetworkShot(Vector3 aimPoint) => FireCosmeticBolt(aimPoint);
 
     private void Awake() {
         animator = GetComponent<Animator>();
@@ -103,36 +119,36 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     }
 
     private void Start() {
-        if (input) FindCamera();
+        if (!networkControlled && input) FindCamera();
     }
 
     private void Update() {
-        if (!input) return;
+        if (!networkControlled && !input) return;
         if (!thirdPerson) thirdPerson = GetComponent<DollSingerMovement>();
-        if (!playerCamera) FindCamera();
+        if (!networkControlled && !playerCamera) FindCamera();
 
-        bool manualAim = input.AimHeld;
+        bool manualAim = networkControlled ? networkAiming : input.AimHeld;
 #if UNITY_EDITOR
         bool aimingInput = manualAim || editorForceAim;
 #else
         bool aimingInput = manualAim;
 #endif
-        wantsAim = thirdPerson && thirdPerson.enabled && playerCamera &&
-                   aimingInput;
+        wantsAim = networkControlled ? networkAiming :
+            thirdPerson && thirdPerson.enabled && playerCamera && aimingInput;
         if (thirdPerson) thirdPerson.IsLocallyAiming = wantsAim;
-        if (input.LightPressed)
+        if (input && input.enabled && input.LightPressed)
             haloLightEnabled = !haloLightEnabled;
         aimBlend = Mathf.MoveTowards(aimBlend, wantsAim ? 1f : 0f,
             Time.deltaTime / (wantsAim ? aimInSeconds : aimOutSeconds));
         if (aimLayerIndex >= 0) animator.SetLayerWeight(aimLayerIndex, aimBlend);
         if (cameraOwner) cameraOwner.SetAimBlend(aimBlend);
-        if (wantsAim && aimBlend > 0.65f && input.FirePressed)
+        if (!networkControlled && wantsAim && aimBlend > 0.65f && input.FirePressed)
             FireCosmeticBolt();
     }
 
     /// <summary>Only adds camera pitch to the clip pose; the .anim owns the arm and finger shape.</summary>
     public bool TryApplyHandIK(AvatarIKGoal goal) {
-        if (aimBlend <= 0.001f || !playerCamera || !chest) return false;
+        if (aimBlend <= 0.001f || (!networkControlled && !playerCamera) || !chest) return false;
         Vector3 aimPoint = FindAimPoint();
         Vector3 direction = (aimPoint - chest.position).normalized;
         float elevation = Mathf.Clamp(Vector3.Dot(direction, transform.up), -0.55f, 0.65f);
@@ -151,7 +167,10 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         if (!haloVisual || !head) return;
         Vector3 headPosition = head.position + transform.up * 0.27f +
                                transform.right * Mathf.Sin(Time.time * 1.8f) * 0.008f + transform.up * hhh;
-        Vector3 aimDirection = playerCamera ? playerCamera.transform.forward : transform.forward;
+        Vector3 aimDirection = networkControlled ? networkDirection :
+            playerCamera ? playerCamera.transform.forward : transform.forward;
+        if (networkControlled && networkAimPoint != Vector3.zero)
+            aimDirection = (networkAimPoint - rightIndexTip.position).normalized;
         Vector3 fingerPosition = rightIndexTip.position + aimDirection * 0.075f;
         float t = aimBlend * aimBlend * (3f - 2f * aimBlend);
         Vector3 control = headPosition + transform.up * 0.17f + transform.right * 0.16f;
@@ -230,6 +249,8 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     }
 
     private Vector3 FindAimPoint() {
+        if (networkControlled) return networkAimPoint != Vector3.zero ? networkAimPoint :
+            transform.position + transform.up * 1.5f + networkDirection * boltMaxDistance;
         if (!playerCamera) return transform.position + transform.forward * 60f;
         Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
         int count = Physics.RaycastNonAlloc(ray, rayHits, boltMaxDistance, ~0,
@@ -246,12 +267,14 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         return point;
     }
 
-    private void FireCosmeticBolt() {
-        Vector3 target = FindAimPoint();
-        boltStart = haloVisual.position + playerCamera.transform.forward * 0.02f;
+    private void FireCosmeticBolt(Vector3? shotAimPoint = null) {
+        if (!haloVisual || (!networkControlled && !playerCamera)) return;
+        Vector3 forward = networkControlled ? networkDirection : playerCamera.transform.forward;
+        Vector3 target = shotAimPoint ?? FindAimPoint();
+        boltStart = haloVisual.position + forward * 0.02f;
         Vector3 travel = target - boltStart;
-        if (Vector3.Dot(travel, playerCamera.transform.forward) < 0.5f)
-            travel = playerCamera.transform.forward * boltMaxDistance;
+        if (travel.sqrMagnitude < 0.0001f || (!networkControlled && Vector3.Dot(travel, forward) < 0.5f))
+            travel = forward * boltMaxDistance;
         boltDistance = Mathf.Min(travel.magnitude, boltMaxDistance);
         boltDirection = travel.normalized;
         boltStartedAt = Time.time;
@@ -364,7 +387,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     }
 
     private void OnGUI() {
-        if (!wantsAim || !input) return;
+        if (!wantsAim || !input || !input.enabled) return;
         float x = Screen.width * 0.5f;
         float y = Screen.height * 0.5f;
         GUI.color = new Color(1f, 0.38f, 0.52f, 0.95f);

@@ -9,15 +9,16 @@ namespace Unity.MP_FPS
     {
         public int OwnerNetworkId;
         public uint WeaponId;
+        public Unity.Mathematics.float3 AimPoint;
     }
 
     public class VisualEffectManager : GhostSingleton<VisualEffectManager>, IUpdateServer, IUpdateClient, IGhostManager
     {
         private Queue<ClientSpawnVfxRpc> _vfxQueue = new();
 
-        public void Server_RequestVfx(int ownerNetworkId, uint weaponId)
+        public void Server_RequestVfx(int ownerNetworkId, uint weaponId, Vector3 aimPoint)
         {
-            _vfxQueue.Enqueue(new ClientSpawnVfxRpc { OwnerNetworkId = ownerNetworkId, WeaponId = weaponId });
+            _vfxQueue.Enqueue(new ClientSpawnVfxRpc { OwnerNetworkId = ownerNetworkId, WeaponId = weaponId, AimPoint = aimPoint });
         }
 
         public void UpdateServer(float deltaTime)
@@ -62,7 +63,7 @@ namespace Unity.MP_FPS
                         if (player.GhostGameObject.Owner == rpc.OwnerNetworkId)
                         {
                             // Found the remote player. Spawn the effect.
-                            SpawnMuzzleFlash(player, rpc.WeaponId, false);
+                            SpawnMuzzleFlash(player, rpc.WeaponId, false, rpc.AimPoint);
                             break;
                         }
                     }
@@ -70,7 +71,7 @@ namespace Unity.MP_FPS
             }
         }
 
-        public async void SpawnMuzzleFlash(PlayerGhost player, uint weaponId, bool isFirstPerson)
+        public async void SpawnMuzzleFlash(PlayerGhost player, uint weaponId, bool isFirstPerson, Vector3 aimPoint)
         {
             try
             {
@@ -81,6 +82,11 @@ namespace Unity.MP_FPS
                 }
 
                 var weaponData = WeaponManager.Instance.WeaponRegistry.GetWeaponData(weaponId);
+                if (player.TryGetComponent<DollSingerNetworkPresentation>(out var dollSinger))
+                {
+                    dollSinger.PlayShot(aimPoint);
+                    return;
+                }
                 if (weaponData == null)
                 {
                     Debug.Log("Cannot spawn muzzle flash: weapon data is null");

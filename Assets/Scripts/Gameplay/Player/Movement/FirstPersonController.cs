@@ -53,13 +53,29 @@ public class FirstPersonController : MonoBehaviour
             IsReloading = 1 << 4,
             IsHit = 1 << 5,
             JumpTrigger = 1 << 6,
-            LandTrigger = 1 << 7
+            LandTrigger = 1 << 7,
+            Aiming = 1 << 8,
+            Sprinting = 1 << 9
         }
 
         //WARNING WARNING: Adding more members to this struct might break network serialisation speak to Claire/Andy B
 
         // booleans
         public uint StateFlags;
+
+        [GhostField(SendData = false)]
+        public bool Aiming
+        {
+            get => (StateFlags & (uint)StateFlag.Aiming) != 0;
+            set => SetFlag(StateFlag.Aiming, value);
+        }
+
+        [GhostField(SendData = false)]
+        public bool Sprinting
+        {
+            get => (StateFlags & (uint)StateFlag.Sprinting) != 0;
+            set => SetFlag(StateFlag.Sprinting, value);
+        }
 
         [GhostField(SendData = false)]
         public bool Jump
@@ -447,10 +463,10 @@ public class FirstPersonController : MonoBehaviour
             SetMovementType(ref state, MovementType.Standing);
 
             bool isClientOwned = (m_PlayerGhost.Role == MultiplayerRole.ClientOwned);
-            if (isClientOwned)
+            if (isClientOwned && m_Animator_1P != null)
             {
-                Unity.MP_FPS.EventHandler eventHandler = m_Animator_1P.GetComponent<Unity.MP_FPS.EventHandler>();
-                eventHandler.onFootDown = true;
+                if (m_Animator_1P.TryGetComponent<Unity.MP_FPS.EventHandler>(out var eventHandler))
+                    eventHandler.onFootDown = true;
             }
         }
         else if (!isGrounded && state.MovementType == MovementType.Standing)
@@ -680,7 +696,7 @@ public class FirstPersonController : MonoBehaviour
                 case MovementType.Standing:
                 case MovementType.Jumping:
                 case MovementType.Falling:
-                    stateConsts = consts.Walk;
+                    stateConsts = input.Sprint && !input.Aim ? consts.Sprint : consts.Walk;
                     break;
                 default:
                     Debug.LogError(
@@ -721,11 +737,14 @@ public class FirstPersonController : MonoBehaviour
 
     public static void ProcessInputs(ref ControllerState state, in PlayerInput input, float deltaTime)
     {
+        state.Aiming = input.Aim;
+        state.Sprinting = input.Sprint && !input.Aim;
     }
 
     public static void AccumulateMovement(ref ControllerState state,
         ref float3 accumulatedMovement, in PlayerInput input, in ControllerConsts consts, float deltaTime)
     {
+        ProcessInputs(ref state, input, deltaTime);
         state.TimeInState += deltaTime;
 
         AccumulateJumpAndGravity(ref state, input, consts, deltaTime);
@@ -856,6 +875,8 @@ public class FirstPersonController : MonoBehaviour
 
     private void HandleFirstPersonFootstepSFX(ControllerState state)
     {
+        // Full-body presentations can use their own animation footstep events.
+        if (m_Animator_1P == null) return;
         if (state.MovementType == MovementType.Standing && m_Controller != null && m_Controller.enabled && gameObject.activeInHierarchy)
         {
             bool isClientOwned = (m_PlayerGhost.Role == MultiplayerRole.ClientOwned);
@@ -878,8 +899,8 @@ public class FirstPersonController : MonoBehaviour
                     if (t >= 0.5f)
                     {
                         footstepStartTimer += 0.5f;
-                        Unity.MP_FPS.EventHandler eventHandler = m_Animator_1P.GetComponent<Unity.MP_FPS.EventHandler>();
-                        eventHandler.onFootDown = true;
+                        if (m_Animator_1P.TryGetComponent<Unity.MP_FPS.EventHandler>(out var eventHandler))
+                            eventHandler.onFootDown = true;
                     }
                 }
             }
