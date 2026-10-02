@@ -54,9 +54,30 @@ flowchart LR
 
 ### 角色接收场景阴影
 
-DollSinger_Body 的 SkinnedMeshRenderer 已启用 Receive Shadows，但 lilToon 还需要材质自身接收阴影。13 个共享角色材质的 `_ShadowReceive`、`_Shadow2ndReceive`、`_Shadow3rdReceive` 原为 0，现设为 1，允许地形、岩石及其他遮挡投影到角色上。Renderer 开关和材质开关缺一不可；材质中的 Shadow 设定可继续调整接收强度。保留原阴影颜色、边界、`_LightMinLimit` 和贴图，不改为写实角色 Shader。
+DollSinger_Body 的 SkinnedMeshRenderer 已启用 Receive Shadows，但 lilToon 还需要材质自身接收阴影。13 个共享角色材质的 `_ShadowReceive`、`_Shadow2ndReceive`、`_Shadow3rdReceive` 原为 0，现设为 1，允许地形、岩石及其他遮挡投影到角色上。Renderer 开关和材质开关缺一不可；材质中的 Shadow 设定可继续调整接收强度。角色继续使用 lilToon 和原贴图、分段阴影边界。
 
-项目 `ProjectSettings/lilToonSetting.json` 的 `LIL_FEATURE_RECEIVE_SHADOW` 已为 true，无需修改包源码或开启额外 Shader 功能。针对性检查包含 13 个材质的参数、共享材质绑定及使用的两个 lilToon Shader 编译状态；实际头发自阴影和月球掩体投影的外观由用户在 Play 中确认。
+`_LightMinLimit` 保持 0，Outline Color 的 RGB 保持黑色，`_RimShadowMask` 为 1，`_OutlineLitShadowReceive` 为 1。不能用最低亮度保底来恢复脸部，否则无光环境也会亮。直接把三层 Shadow Color 永久设成黑色又会压黑阳光下的头发和脸部，因此共享材质已恢复原来的淡紫色暗面，运行时再按场景遮蔽调暗。
+
+角色通过项目内 `MoonToonCutout` / `MoonToonCutoutOutline` 使用 lilToon 的扩展接口，复用原光照、贴图、描边和投影 Pass，不修改 PackageCache。按骨骼采样后切换整个材质的旧 `DollSingerSunShading` 已移除，避免整个材质突然变黑。
+
+`MoonToonHooks.lilblock` 从 URP 太阳阴影图估算遮挡物到当前表面的距离，近处保留淡紫色自阴影，较远的遮挡逐像素压暗；实际光环和激光灯仍在之后叠加。
+
+```mermaid
+flowchart LR
+    Atlas[URP 太阳阴影图] --> Gap[估算遮挡物到表面的距离]
+    Gap --> Fade[按距离平滑压暗]
+    Toon[lilToon 原淡紫色暗面] --> Result[最终角色颜色]
+    Fade --> Result
+    LocalLight[实际光环和激光灯] --> Result
+```
+
+材质 Inspector 的 **月球阴影遮蔽** 中，**开始压暗距离（米）** 默认 0.12，**完全压暗距离（米）** 默认 0.8。这是距离近似，不能可靠区分角色自身和场景遮挡。双马尾投到裙子和大腿上仍可能出现不规则深浅分层，暂保留该已知问题，后续另行解决。双马尾分布在 `DressDetail` 和 `InnerDress` 子网格中，仅修改 `Hair.mat` 不能控制全部双马尾投影。
+
+曾尝试增加角色专用深度图识别投影来源；用户判定观感退步后已撤销这轮方案，移除组件、Renderer Feature 和相关接线，恢复到反馈双马尾异常时的距离近似版本。没有增加最低亮度保底或恒定自发光。
+
+光环仍是实际局部光源，默认开启，三盏灯会照亮位于太阳阴影中的角色。按 **L** 关闭后才能判断无其他光源的黑暗表现；飞行中的激光点光源也会照亮附近角色。此次未关闭这些玩法光源。材质 Emission Color 当前为黑色，不是这次残余亮度的来源。
+
+项目 `ProjectSettings/lilToonSetting.json` 的 `LIL_FEATURE_RECEIVE_SHADOW` 已为 true，无需修改包源码。实际双马尾自阴影和月球掩体投影的外观由用户在 Play 中确认；编译和资源接线检查不代表视觉验收。
 
 ## 当前范围
 

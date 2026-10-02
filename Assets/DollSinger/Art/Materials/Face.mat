@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Face
-  m_Shader: {fileID: 4800000, guid: 3b4aa19949601f046a20ca8bdaee929f, type: 3}
+  m_Shader: {fileID: -7482078289662181024, guid: 75ba87f7313ecdc4f872586980fd53f5, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -383,7 +383,7 @@ Material:
     - _IDMaskPrior8: 0
     - _Invisible: 0
     - _LightMaxLimit: 0.85
-    - _LightMinLimit: 0.05
+    - _LightMinLimit: 0
     - _Main2ndDissolveNoiseStrength: 0.1
     - _Main2ndEnableLighting: 1
     - _Main2ndTexAlphaMode: 0
@@ -443,6 +443,8 @@ Material:
     - _MatCapZRotCancel: 1
     - _Metallic: 0
     - _MonochromeLighting: 0
+    - _MoonShadowFar: 0.8
+    - _MoonShadowNear: 0.12
     - _OffsetFactor: 0
     - _OffsetUnits: 0
     - _OutlineAlphaToMask: 1
@@ -463,7 +465,7 @@ Material:
     - _OutlineLitApplyTex: 0
     - _OutlineLitOffset: -8
     - _OutlineLitScale: 10
-    - _OutlineLitShadowReceive: 0
+    - _OutlineLitShadowReceive: 1
     - _OutlineOffsetFactor: 0
     - _OutlineOffsetUnits: 0
     - _OutlineSrcBlend: 1
@@ -512,7 +514,7 @@ Material:
     - _RimShadeBorder: 0.5
     - _RimShadeFresnelPower: 1
     - _RimShadeNormalStrength: 1
-    - _RimShadowMask: 0.5
+    - _RimShadowMask: 1
     - _RimStrength: 0.134
     - _RimVRParallaxStrength: 1
     - _ShadeSmooth: 0.093
@@ -525,11 +527,11 @@ Material:
     - _Shadow3rdBorder: 0.25
     - _Shadow3rdNormalStrength: 1
     - _Shadow3rdReceive: 1
-    - _ShadowBlur: 0.1
+    - _ShadowBlur: 0.18
     - _ShadowBlurMaskLOD: 0
     - _ShadowBorder: 0.5
     - _ShadowBorderMaskLOD: 0
-    - _ShadowBorderRange: 0.08
+    - _ShadowBorderRange: 0.12
     - _ShadowColorType: 0
     - _ShadowEnvStrength: 0
     - _ShadowFlatBlur: 1
@@ -676,7 +678,7 @@ Material:
     - _MatCap2ndColor: {r: 1, g: 1, b: 1, a: 1}
     - _MatCapBlendUV1: {r: 0, g: 0, b: 0, a: 0}
     - _MatCapColor: {r: 1, g: 1, b: 1, a: 1}
-    - _OutlineColor: {r: 0.6, g: 0.56, b: 0.73, a: 1}
+    - _OutlineColor: {r: 0, g: 0, b: 0, a: 1}
     - _OutlineLitColor: {r: 1, g: 0.2, b: 0, a: 0}
     - _OutlineTexHSVG: {r: 0, g: 1, b: 1, a: 1}
     - _OutlineTex_ScrollRotate: {r: 0, g: 0, b: 0, a: 0}
@@ -690,7 +692,7 @@ Material:
     - _Shadow3rdColor: {r: 0, g: 0, b: 0, a: 0}
     - _ShadowAOShift: {r: 1, g: 0, b: 1, a: 0}
     - _ShadowAOShift2: {r: 1, g: 0, b: 1, a: 0}
-    - _ShadowBorderColor: {r: 1, g: 0.1, b: 0, a: 1}
+    - _ShadowBorderColor: {r: 0, g: 0, b: 0, a: 1}
     - _ShadowColor: {r: 0.72, g: 0.65, b: 0.85, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
     - _ToonSpecColor: {r: 1, g: 1, b: 1, a: 1}

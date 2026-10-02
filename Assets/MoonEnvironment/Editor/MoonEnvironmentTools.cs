@@ -103,7 +103,7 @@ namespace Unity.MP_FPS.Moon.Editor
                 sun.type = LightType.Directional;
                 sun.intensity = 1.6f;
                 sun.color = Color.white;
-                sun.shadows = LightShadows.Hard;
+                sun.shadows = LightShadows.Soft;
                 sun.shadowBias = 0.015f;
                 sun.shadowNormalBias = 0.025f;
                 sun.transform.localRotation = Quaternion.Euler(25, 120, 0);

@@ -1,0 +1,38 @@
+// Keep nearby toon self-shadow soft; darken distant sun occlusion per pixel.
+
+float MoonToonShadowVisibility(float3 positionWS, float attenuation)
+{
+    #if defined(LIL_URP) && defined(LIL_USE_SHADOW) && !defined(LIL_OUTLINE)
+        if (attenuation >= 0.999) return 1.0;
+        uint cascade = 0;
+        #if defined(_MAIN_LIGHT_SHADOWS_CASCADE)
+            cascade = (uint)ComputeCascadeIndex(positionWS);
+            if (cascade >= MAX_SHADOW_CASCADES) return 1.0;
+        #endif
+        float4x4 worldToShadow = _MainLightWorldToShadow[cascade];
+        float3 coord = mul(worldToShadow, float4(positionWS, 1.0)).xyz;
+        if (any(coord.xy < 0.0) || any(coord.xy > 1.0) || BEYOND_SHADOW_FAR(coord))
+            return 1.0;
+
+        float occluderDepth = SAMPLE_TEXTURE2D_LOD(
+            _MainLightShadowmapTexture, sampler_PointClamp, coord.xy, 0).r;
+        #if UNITY_REVERSED_Z
+            float depthGap = occluderDepth - coord.z;
+        #else
+            float depthGap = coord.z - occluderDepth;
+        #endif
+        float metresPerDepth = rcp(max(length(worldToShadow[2].xyz), 0.000001));
+        float separation = max(0.0, depthGap * metresPerDepth);
+        float distantOcclusion = smoothstep(max(0.0, _MoonShadowNear),
+            max(_MoonShadowNear + 0.001, _MoonShadowFar), separation);
+        return lerp(1.0, saturate(attenuation), distantOcclusion);
+    #else
+        return 1.0;
+    #endif
+}
+
+#define OVERRIDE_SHADOW \
+    lilGetShading(fd LIL_SAMP_IN(sampler_MainTex)); \
+    float moonShadowVisibility = MoonToonShadowVisibility(fd.positionWS, fd.attenuation); \
+    fd.col.rgb *= moonShadowVisibility; \
+    fd.shadowmix *= moonShadowVisibility;

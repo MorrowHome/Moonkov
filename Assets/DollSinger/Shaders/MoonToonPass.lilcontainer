@@ -1,0 +1,18 @@
+Shader "Hidden/Moonkov/lilToonMoonPassCutout"
+{
+    Properties
+    {
+        lilProperties "Default"
+        lilProperties "DefaultCutout"
+        _MoonShadowNear ("Near occlusion distance (m)", Float) = 0.12
+        _MoonShadowFar ("Far occlusion distance (m)", Float) = 0.8
+    }
+    HLSLINCLUDE
+        #define LIL_RENDER 1
+        #define LIL_CUSTOM_PROPERTIES float _MoonShadowNear; float _MoonShadowFar;
+    ENDHLSL
+    lilSubShaderInsert "MoonToonHooks.lilblock"
+    lilSubShaderTags {"RenderType" = "TransparentCutout" "Queue" = "AlphaTest"}
+    lilSubShader URP "Default"
+    CustomEditor "*LIL_EDITOR_NAME*"
+}
