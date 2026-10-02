@@ -1,0 +1,6 @@
+{
+    "name": "MoonEnvironment.Runtime",
+    "rootNamespace": "Unity.MP_FPS.Moon",
+    "references": ["Unity.RenderPipelines.Universal.Runtime"],
+    "autoReferenced": true
+}

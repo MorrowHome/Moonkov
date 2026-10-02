@@ -1,0 +1,6 @@
+{
+    "name": "MoonEnvironment.Demo",
+    "rootNamespace": "Unity.MP_FPS.Moon",
+    "references": ["MoonEnvironment.Runtime", "Unity.StarterAssets", "Unity.InputSystem"],
+    "autoReferenced": true
+}

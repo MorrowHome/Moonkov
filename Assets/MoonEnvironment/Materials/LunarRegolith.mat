@@ -1,0 +1,78 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: LunarRegolith
+  m_Shader: {fileID: 4800000, guid: 319cf0d6317f8e544bae295368b5b001, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords:
+  - _MOON_LUNAR_LIGHTING
+  m_InvalidKeywords:
+  - _PHASEENABLED_ON
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BumpMap:
+        m_Texture: {fileID: 2800000, guid: 6176c0d4330af47488941a9ebda85717, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _GeologyMap:
+        m_Texture: {fileID: 2800000, guid: 3a776293fcdbae946bee9c7290ed3357, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _HeightMap:
+        m_Texture: {fileID: 2800000, guid: b47e649833e76544497bf1d703c2bc95, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: f07ed905608558b40bbee2087b0e854b, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MicroNormal:
+        m_Texture: {fileID: 2800000, guid: f9bcfc78f169f314f9b323ee4f9453b3, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MicroTex:
+        m_Texture: {fileID: 2800000, guid: 83009957ffb6ede4bb54789ade7311a8, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Roughness:
+        m_Texture: {fileID: 2800000, guid: 1733cb584e8e40142941a1e6683f19a6, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _TerrainHolesTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _CoherentAmplitude: 0.08
+    - _CoherentWidth: 3
+    - _DetailStrength: 1
+    - _EjectaBrightness: 0.16
+    - _GeologyStrength: 0.65
+    - _IndirectStrength: 0
+    - _LunarLighting: 1
+    - _LunarWeight: 0.55
+    - _PhaseEnabled: 1
+    - _PhaseSlope: 0.12
+    - _ShadowHidingAmplitude: 0.25
+    - _ShadowHidingWidth: 12
+    m_Colors:
+    - _Color: {r: 0.65, g: 0.65, b: 0.65, a: 1}
+    - _GeologyRect: {r: 1792, g: 1792, b: 512, a: 512}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1
