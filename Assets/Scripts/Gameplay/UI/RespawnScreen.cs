@@ -58,6 +58,7 @@ namespace Unity.MP_FPS.UI
                 GameSettings.Instance.GameState != GlobalGameState.InGame)
             {
                 m_RespawnScreen.style.display = DisplayStyle.None;
+                RespawnCamera.gameObject.SetActive(false);
                 return;
             }
 
@@ -65,6 +66,21 @@ namespace Unity.MP_FPS.UI
             {
                 InitializeEcs();
                 if (m_ClientWorld == null) return;
+            }
+
+            if (MoonRaidMap.Active != null)
+            {
+                // Raid settlement replaces arena auto-respawn, while retaining its spectator camera.
+                m_RespawnScreen.style.display = DisplayStyle.None;
+                bool alive = m_LocalPlayerQuery.HasSingleton<PredictedPlayerGhost>();
+                RespawnCamera.gameObject.SetActive(!alive);
+                if (!alive)
+                {
+                    Vector3 target = MoonRaidMap.Active.ExtractionPosition;
+                    RespawnCamera.transform.position = target + new Vector3(0, 25, -25);
+                    RespawnCamera.transform.LookAt(target);
+                }
+                return;
             }
 
             bool isPlayerAlive = m_LocalPlayerQuery.HasSingleton<PredictedPlayerGhost>();

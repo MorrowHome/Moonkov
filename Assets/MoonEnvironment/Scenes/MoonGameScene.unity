@@ -292,6 +292,69 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 4260637346796824925, guid: 675f9882ac896674483c0f181f2b2d2d, type: 3}
   m_PrefabInstance: {fileID: 1069018252372146073}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1054611475
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1054611477}
+  - component: {fileID: 1054611476}
+  m_Layer: 0
+  m_Name: Moon Raid
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1054611476
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1054611475}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98a7733dd7e72324d8fce5649b18b65e, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::Unity.MP_FPS.MoonRaidMap
+  m_LootPositions:
+  - {x: 2034, y: 225.51888, z: 1824}
+  - {x: 2046, y: 226.60951, z: 1822}
+  - {x: 2064, y: 230.20366, z: 1824}
+  - {x: 2032, y: 221.62727, z: 1835}
+  - {x: 2048, y: 221.35461, z: 1837}
+  - {x: 2062, y: 224.03163, z: 1837}
+  - {x: 2034, y: 215.65355, z: 1850}
+  - {x: 2048, y: 217.28952, z: 1850}
+  - {x: 2062, y: 219.22292, z: 1850}
+  - {x: 2032, y: 210.77048, z: 1861}
+  - {x: 2046, y: 212.28249, z: 1861}
+  - {x: 2062, y: 214.0176, z: 1863}
+  m_ExtractionPosition: {x: 2050, y: 201.27228, z: 1887}
+  m_PanelSettings: {fileID: 11400000, guid: 5c62f99c56dafb646950dd9cfc028828, type: 2}
+  m_RaidDuration: 600
+  m_ExtractionSeconds: 8
+  m_ExtractionRadius: 5
+  m_LootRespawnSeconds: 60
+--- !u!4 &1054611477
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1054611475}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1629115546
 GameObject:
   m_ObjectHideFlags: 0
@@ -534,3 +597,4 @@ SceneRoots:
   - {fileID: 1742701829}
   - {fileID: 1629115548}
   - {fileID: 664082974}
+  - {fileID: 1054611477}

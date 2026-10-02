@@ -17,6 +17,8 @@ namespace Unity.MP_FPS
     /// Processes client join requests and spawns a character for each client.
     /// </summary>
     [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
+    [UpdateAfter(typeof(PredictedSimulationSystemGroup))]
+    [UpdateAfter(typeof(ServerGhostTransformWriteSystem))]
     //[UpdateInGroup(typeof(SimulationSystemGroup))]  //Default, no explicit declaration is needed;
     [BurstCompile]
     public partial struct ServerGameSystem : ISystem
@@ -46,6 +48,7 @@ namespace Unity.MP_FPS
             var mapSingleton = state.EntityManager.CreateSingletonBuffer<ClientsMap>();
             state.EntityManager.GetBuffer<ClientsMap>(mapSingleton).Add(default); //The server NetworkId is 0
             _joinedClientLookup = state.GetComponentLookup<JoinedClient>();
+            state.EntityManager.CreateSingleton(new RaidLootWorld());
         }
 
         [BurstDiscard]
@@ -73,6 +76,7 @@ namespace Unity.MP_FPS
 
             HandleJoinRequests(ref state, gameplayMapsEntity, playerEntityPrefabs, ecb);
             HandlePlayerDeathAndRespawn(ref state, ecb);
+            HandleRaids(ref state, ecb);
         }
 
         void RefreshClientsMap(ref SystemState state, EntityCommandBuffer ecb,
@@ -99,7 +103,7 @@ namespace Unity.MP_FPS
                     Debug.Log($"[Server] Client with NetworkId {networkId} has disconnected.");
 
                     // Find and destroy the player character entity by querying for its GhostOwner.
-                    foreach (var (ghostOwner, entity) in SystemAPI.Query<RefRO<GhostOwner>>().WithEntityAccess())
+                    foreach (var (ghostOwner, entity) in SystemAPI.Query<RefRO<GhostOwner>>().WithAll<PredictedPlayerGhost>().WithEntityAccess())
                     {
                         if (ghostOwner.ValueRO.NetworkId == networkId)
                         {
@@ -245,10 +249,23 @@ namespace Unity.MP_FPS
                 {
                     PlayerEntity = playerEntity, PlayerName = playerName, CharacterIndex = characterIndex
                 });
+                if (MoonRaidMap.Active != null)
+                {
+                    var raid = new RaidSession();
+                    RaidRules.BeginNext(ref raid, MoonRaidMap.Active.RaidDuration);
+                    ecb.AddComponent(connectionEntity, raid);
+                }
+            }
+            else
+            {
+                var joined = SystemAPI.GetComponent<JoinedClient>(connectionEntity);
+                joined.PlayerEntity = playerEntity;
+                ecb.SetComponent(connectionEntity, joined);
             }
 
             ecb.AppendToBuffer(connectionEntity, new LinkedEntityGroup { Value = playerEntity });
-            ecb.AddComponent(connectionEntity, new NetworkStreamInGame());
+            if (!SystemAPI.HasComponent<NetworkStreamInGame>(connectionEntity))
+                ecb.AddComponent(connectionEntity, new NetworkStreamInGame());
         }
 
         void HandlePlayerDeathAndRespawn(ref SystemState state, EntityCommandBuffer ecb)
@@ -263,6 +280,13 @@ namespace Unity.MP_FPS
                 {
                     var networkId = ghostOwner.ValueRO.NetworkId;
                     var connectionEntity = clientsMap[ghostOwner.ValueRO.NetworkId].ConnectionEntity;
+                    if (!SystemAPI.Exists(connectionEntity)) continue;
+
+                    if (SystemAPI.HasComponent<RaidSession>(connectionEntity))
+                    {
+                        FinishRaid(ref state, ecb, connectionEntity, RaidPhase.Dead);
+                        continue;
+                    }
 
                     // Add a respawn timer to the connection
                     if (!SystemAPI.HasComponent<PendingRespawn>(connectionEntity))
