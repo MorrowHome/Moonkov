@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd3bd063c6f2ea143890be97270c5e38, type: 3}
+  m_Name: MenuCharacterSettings
+  m_EditorClassIdentifier: Assembly-CSharp::Unity.MP_FPS.Client.MenuCharacterSettings
+  VisualPrefab: {fileID: 7839800250978570414, guid: 9d657cc213075874d83db2e2f0ff456a, type: 3}
+  Motions:
+  - {fileID: 7400000, guid: 82589cafe9239604fa763d2e84ef34c8, type: 2}
+  - {fileID: 7400000, guid: 28f662c33c0a430449c8e437ceb54ceb, type: 2}
+  - {fileID: 7400000, guid: 08c604041df9f094d90c18c7dd3cc946, type: 2}
+  - {fileID: 7400000, guid: 68171a5ac30a0bd428902ac6a6dd8a0a, type: 2}
+  HaloAimMask: {fileID: 31900000, guid: 239d5f712175104498630ee47475fe09, type: 2}
+  MotionMasks:
+  - {fileID: 0}
+  - {fileID: 31900000, guid: 239d5f712175104498630ee47475fe09, type: 2}
+  - {fileID: 31900000, guid: 4bea029a2157bc645a55774295ba0bd8, type: 2}
+  - {fileID: 31900000, guid: 4bea029a2157bc645a55774295ba0bd8, type: 2}
+  TurnDegrees: 18
+  IdleHaloColor: {r: 1, g: 0.28, b: 0.52, a: 1}
+  AimedHaloColor: {r: 1, g: 0.08, b: 0.25, a: 1}
+  Yaw: -12
+  ResolutionScale: 2
+  MaximumResolution: 2048
+  CrossfadeSeconds: 0.65
+  IdleInterval: {x: 6, y: 11}

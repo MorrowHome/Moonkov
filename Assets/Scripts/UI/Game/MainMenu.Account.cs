@@ -18,6 +18,8 @@ namespace Unity.MP_FPS.Client
         private StashScreen m_StashScreen;
         private bool m_ShowConnectionMenu;
         private Button m_BackToStash;
+        private IntegerField m_CarryCells;
+        private Label m_CarryNote;
         private string m_AccountError;
         private GlobalGameState m_LastStashGameState;
 
@@ -46,6 +48,11 @@ namespace Unity.MP_FPS.Client
             m_ShowConnectionMenu = false;
             m_BackToStash = new Button(ShowStash) { text = "BACK TO STASH" };
             m_ConnectionPanel.Insert(0, m_BackToStash);
+            m_CarryCells = new IntegerField("ENERGY CELLS TO CARRY") { name = "carryCells", isDelayed = true };
+            m_CarryCells.RegisterValueChangedCallback(CarryCellsChanged);
+            m_CarryNote = new Label();
+            m_CarryNote.style.whiteSpace = WhiteSpace.Normal;
+            m_ConnectionPanel.Insert(2, m_CarryCells); m_ConnectionPanel.Insert(3, m_CarryNote);
             m_StashScreen = new StashScreen(m_MainMenu.Q<VisualElement>("stashScreenHost"), ShowRaidPreparation, Logout, RefreshStash);
             m_LastStashGameState = GameSettings.Instance.GameState;
             GameSettings.Instance.propertyChanged += StashSettingsChanged;
@@ -65,6 +72,9 @@ namespace Unity.MP_FPS.Client
             m_CreateGameButton.SetEnabled(!m_AccountBusy); m_StartHostButton.SetEnabled(!m_AccountBusy); m_ConnectToServerButton.SetEnabled(!m_AccountBusy);
             m_LoggedInLabel.text = $"Signed in as {AccountClient.DisplayName}\nSTASH: Dust {AccountClient.StashDust}   Alloy {AccountClient.StashAlloy}   Cells {AccountClient.StashCells}";
             m_LoggedInLabel.style.whiteSpace = WhiteSpace.Normal;
+            m_CarryCells.SetValueWithoutNotify(AccountClient.CarryCells);
+            m_CarryCells.SetEnabled(!m_AccountBusy);
+            m_CarryNote.text = $"Carry {AccountClient.CarryCells}/{RaidRules.BagCapacity} cells / Stash {AccountClient.StashCells}.\nCharged when the server accepts deployment. [R] uses one cell to recharge. Lost on death.";
             m_Login.SetEnabled(!m_AccountBusy); m_Register.SetEnabled(!m_AccountBusy); m_Logout.SetEnabled(!m_AccountBusy);
             m_Username.SetEnabled(!m_AccountBusy); m_Password.SetEnabled(!m_AccountBusy);
         }
@@ -103,6 +113,11 @@ namespace Unity.MP_FPS.Client
         }
 
         private void ShowRaidPreparation() { m_ShowConnectionMenu = true; UpdateAccountPanel(); }
+        private void CarryCellsChanged(ChangeEvent<int> evt)
+        {
+            AccountClient.SelectCarryCells(evt.newValue);
+            UpdateAccountPanel();
+        }
         private void ShowStash() { m_ShowConnectionMenu = false; UpdateAccountPanel(); }
         private void StashSettingsChanged(object sender, BindablePropertyChangedEventArgs evt)
         {
@@ -146,6 +161,8 @@ namespace Unity.MP_FPS.Client
             GameSettings.Instance.propertyChanged -= StashSettingsChanged;
             m_StashScreen?.Dispose(); m_StashScreen = null;
             m_BackToStash?.RemoveFromHierarchy();
+            m_CarryCells?.UnregisterValueChangedCallback(CarryCellsChanged);
+            m_CarryCells?.RemoveFromHierarchy(); m_CarryNote?.RemoveFromHierarchy();
             m_AccountPanel?.RemoveFromHierarchy(); m_LoggedInLabel?.RemoveFromHierarchy(); m_Logout?.RemoveFromHierarchy();
             m_AccountBusy = m_AccountVerified = false;
         }

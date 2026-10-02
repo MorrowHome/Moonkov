@@ -1,0 +1,44 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="RaidUI.uss" />
+    <ui:VisualElement name="raidPresentation" class="raid-ui" picking-mode="Ignore">
+        <ui:VisualElement name="raidStatus" class="raid-status" picking-mode="Ignore">
+            <ui:Label text="LUNAR EXPEDITION" class="raid-caption" />
+            <ui:Label name="raidTimer" class="raid-timer" />
+            <ui:Label name="raidBag" class="raid-copy" />
+        </ui:VisualElement>
+        <ui:Label name="raidPrompt" class="raid-prompt" picking-mode="Ignore" />
+        <ui:Label name="raidExtraction" class="raid-extraction" picking-mode="Ignore" />
+        <ui:VisualElement name="raidInventory" class="raid-overlay">
+            <ui:VisualElement class="raid-window">
+                <ui:Label text="RAID PACK" class="raid-title" />
+                <ui:Label text="CARRIED CARGO / LIVE EXPEDITION" class="raid-caption" />
+                <ui:VisualElement name="raidPackGrid" class="raid-pack-grid" />
+                <ui:Label name="raidPackCapacity" class="raid-copy" />
+                <ui:Label text="Your expedition continues while the pack is open. Cargo returns to storage only after extraction." class="raid-copy" />
+                <ui:Button name="raidPackClose" text="CLOSE / TAB / ESC" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="raidResult" class="raid-overlay raid-result-overlay">
+            <ui:VisualElement class="raid-result-window">
+                <ui:Label text="EXPEDITION DEBRIEF" class="raid-caption" />
+                <ui:VisualElement class="raid-stepper">
+                    <ui:Label name="raidStep0" text="01 / RESULT" />
+                    <ui:Label name="raidStep1" text="02 / CARGO" />
+                    <ui:Label name="raidStep2" text="03 / STORAGE" />
+                </ui:VisualElement>
+                <ui:Label name="raidResultText" class="raid-result-text" />
+                <ui:Label name="raidSaveStatus" class="raid-copy" />
+                <ui:VisualElement name="raidLoadout" class="raid-loadout">
+                    <ui:IntegerField name="raidCarryCells" label="ENERGY CELLS TO CARRY" is-delayed="true" />
+                    <ui:Label name="raidLoadoutNote" class="raid-copy" />
+                </ui:VisualElement>
+                <ui:VisualElement class="raid-result-actions">
+                    <ui:Button name="raidResultBack" text="BACK" />
+                    <ui:Button name="raidResultNext" text="CONTINUE" />
+                    <ui:Button name="raidDeploy" text="DEPLOY AGAIN" class="raid-primary" />
+                    <ui:Button name="raidReturn" text="RETURN TO SHIP" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -22,6 +22,7 @@ namespace Unity.MP_FPS
 
         // UI-side timer to ensure shot feedback is visible for a minimum duration.
         private float m_shotFeedbackTimer = 0f;
+        private float m_LastHealth = -1f, m_HealthRevealUntil;
 
         // The reticle will stay white for at least 100ms after a shot.
         private const float k_ShotFeedbackDuration = 0.1f;
@@ -107,6 +108,11 @@ namespace Unity.MP_FPS
 
             // Get the player's data directly from the ECS component
             PredictedPlayerGhost playerData = m_LocalPlayerQuery.GetSingleton<PredictedPlayerGhost>();
+            bool statusCheck = UnityEngine.InputSystem.Keyboard.current != null && UnityEngine.InputSystem.Keyboard.current.hKey.isPressed;
+            bool alwaysShow = PlayerPrefs.GetInt("Moonkov.AlwaysShowHUD", 0) != 0;
+            if (m_LastHealth != playerData.CurrentHealth) { m_LastHealth = playerData.CurrentHealth; m_HealthRevealUntil = Time.unscaledTime + 4f; }
+            var healthPanel = m_RootElement.Q<VisualElement>("health-info-container");
+            if (healthPanel != null) healthPanel.style.display = alwaysShow || statusCheck || Time.unscaledTime < m_HealthRevealUntil || playerData.CurrentHealth < playerData.MaxHealth * .35f ? DisplayStyle.Flex : DisplayStyle.None;
 
             // Update Health Bar
             if (m_HealthBar != null)
@@ -114,7 +120,7 @@ namespace Unity.MP_FPS
                 m_HealthBar.highValue = playerData.MaxHealth > 0 ? playerData.MaxHealth : 100;
                 m_HealthBar.value = playerData.CurrentHealth;
 
-                float healthPercent = playerData.CurrentHealth / 100f;
+                float healthPercent = playerData.CurrentHealth / Mathf.Max(1f, playerData.MaxHealth);
                 Color healthColor = Color.Lerp(Color.red, k_HealthBarColor, healthPercent);
 
                 // Apply the calculated color to the fill element's background
@@ -128,13 +134,17 @@ namespace Unity.MP_FPS
                 int magazineSize = weaponData != null ? weaponData.MagazineSize : 0;
 
                 // Update Ammo Text and Color
-                m_AmmoLabel.text = $"{playerData.CurrentAmmo.ToString()} / {magazineSize.ToString()}";
+                float fraction = magazineSize > 0 ? (float)playerData.CurrentAmmo / magazineSize : 0;
+                m_AmmoLabel.text = fraction > .75f ? "ENERGY / HIGH" : fraction > .4f ? "ENERGY / MEDIUM" : fraction > .15f ? "ENERGY / LOW" : "ENERGY / CRITICAL";
+                var ammoPanel = m_RootElement.Q<VisualElement>("weapon-info-container");
+                if (ammoPanel != null) ammoPanel.style.display = alwaysShow || statusCheck || fraction <= .15f || playerData.ControllerState.IsReloadingState ? DisplayStyle.Flex : DisplayStyle.None;
                 if (playerData.CurrentAmmo == 0) m_AmmoLabel.style.color = Color.red;
                 else if (playerData.CurrentAmmo <= magazineSize * 0.3f) m_AmmoLabel.style.color = Color.yellow;
                 else m_AmmoLabel.style.color = Color.white;
 
                 m_AmmoBar.highValue = magazineSize;
                 m_AmmoBar.value = playerData.CurrentAmmo;
+                m_AmmoBar.style.display = DisplayStyle.None;
             }
 
             // Update Reloading Indicator

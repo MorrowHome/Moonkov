@@ -250,7 +250,21 @@ public sealed class SecondaryBoneSpring : MonoBehaviour {
     }
 
     private void LateUpdate() {
+        if (m_PresentationDriven) return;
         Step(Time.deltaTime);
+    }
+
+    private bool m_PresentationDriven;
+
+    // Menu Playables evaluate manually; keep the same collision/spring rules,
+    // but run them once after the menu pose instead of again in LateUpdate.
+    public void InitializePresentation() {
+        m_PresentationDriven = true;
+        OnEnable();
+    }
+
+    public void SimulatePresentation(float deltaTime) {
+        if (m_PresentationDriven) Step(deltaTime);
     }
 
     private void Step(float dt) {

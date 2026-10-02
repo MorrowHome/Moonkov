@@ -3,7 +3,7 @@ using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client
 {
-    public enum StashArtKind { None, Dust, Alloy, Cell, Halo, Outfit }
+    public enum StashArtKind { None, Dust, Alloy, Cell, Halo, Outfit, Helmet, Rifle, Pistol, ChestRig, Backpack }
 
     // Small original vector illustrations, kept sharp at the shared PanelSettings scale.
     public sealed class StashItemArt : VisualElement
@@ -25,7 +25,7 @@ namespace Unity.MP_FPS.Client
             if (contentRect.width < 1 || contentRect.height < 1) return;
             m_Painter = context.painter2D;
             float width = m_Kind == StashArtKind.Cell ? 60 : 100;
-            float height = m_Kind == StashArtKind.Alloy ? 60 : 100;
+            float height = m_Kind == StashArtKind.Rifle ? 45 : m_Kind == StashArtKind.Alloy || m_Kind == StashArtKind.Pistol ? 60 : 100;
             m_Scale = Mathf.Min(contentRect.width / width, contentRect.height / height);
             m_Origin = new Vector2((contentRect.width - width * m_Scale) * 0.5f, (contentRect.height - height * m_Scale) * 0.5f);
             switch (m_Kind)
@@ -35,6 +35,11 @@ namespace Unity.MP_FPS.Client
                 case StashArtKind.Cell: Cell(); break;
                 case StashArtKind.Halo: Halo(); break;
                 case StashArtKind.Outfit: Outfit(); break;
+                case StashArtKind.Helmet: Helmet(); break;
+                case StashArtKind.Rifle: Rifle(); break;
+                case StashArtKind.Pistol: Pistol(); break;
+                case StashArtKind.ChestRig: ChestRig(); break;
+                case StashArtKind.Backpack: Backpack(); break;
             }
         }
 
@@ -122,6 +127,50 @@ namespace Unity.MP_FPS.Client
             Line(0xc6d1c5, 3, new Vector2(24, 84), new Vector2(50, 90), new Vector2(76, 84));
             Box(0xb9c6c1, 39, 27, 22, 4);
         }
+
+        private void Helmet()
+        {
+            Shape(0x535d60, new Vector2(18, 63), new Vector2(20, 35), new Vector2(31, 19), new Vector2(53, 12), new Vector2(75, 22), new Vector2(84, 42), new Vector2(83, 67), new Vector2(67, 83), new Vector2(35, 81));
+            Shape(0xc5cdcb, new Vector2(24, 39), new Vector2(33, 25), new Vector2(53, 19), new Vector2(72, 27), new Vector2(78, 41));
+            Shape(0x283739, new Vector2(23, 45), new Vector2(78, 45), new Vector2(73, 65), new Vector2(33, 69), new Vector2(24, 60));
+            Line(0x8fa8a8, 2, new Vector2(29, 49), new Vector2(73, 49));
+            Box(0x7e8887, 14, 44, 8, 20); Box(0x7e8887, 82, 44, 6, 20);
+            Line(0xd7ddda, 2, new Vector2(38, 74), new Vector2(64, 74));
+        }
+        private void Rifle()
+        {
+            Shape(0x434d50, new Vector2(5, 13), new Vector2(23, 13), new Vector2(31, 18), new Vector2(73, 18), new Vector2(73, 27), new Vector2(29, 27), new Vector2(16, 33), new Vector2(5, 33));
+            Box(0x68777b, 34, 15, 37, 4); Box(0x2b3538, 73, 20, 21, 4); Box(0x434d50, 92, 18, 5, 8);
+            Shape(0x58666a, new Vector2(37, 26), new Vector2(49, 26), new Vector2(54, 40), new Vector2(43, 42));
+            Shape(0x313d41, new Vector2(27, 26), new Vector2(34, 26), new Vector2(32, 39), new Vector2(25, 39));
+            Box(0x859193, 42, 8, 13, 6); Box(0x394548, 45, 6, 8, 4);
+            Line(0xaeb8b7, 1, new Vector2(36, 21), new Vector2(66, 21));
+            for (int x = 55; x < 70; x += 4) Box(0x293639, x, 23, 2, 2);
+        }
+        private void Pistol()
+        {
+            Shape(0x526267, new Vector2(17, 14), new Vector2(82, 14), new Vector2(82, 27), new Vector2(47, 27), new Vector2(39, 53), new Vector2(23, 50), new Vector2(30, 28), new Vector2(17, 26));
+            Box(0x879496, 20, 14, 60, 4); Box(0x2a373b, 28, 33, 11, 14);
+            Line(0x455358, 3, new Vector2(47, 28), new Vector2(58, 28), new Vector2(57, 36), new Vector2(44, 36));
+            Box(0x253237, 71, 11, 6, 3);
+        }
+        private void ChestRig()
+        {
+            Box(0x7b8987, 24, 13, 12, 26); Box(0x7b8987, 64, 13, 12, 26);
+            Shape(0x566763, new Vector2(23, 33), new Vector2(77, 33), new Vector2(82, 82), new Vector2(19, 82));
+            Box(0x87958e, 27, 37, 45, 16); Box(0x3c4c49, 24, 58, 15, 21); Box(0x3c4c49, 42, 58, 15, 21); Box(0x3c4c49, 60, 58, 16, 21);
+            Line(0xb5c0b5, 1, new Vector2(30, 44), new Vector2(69, 44));
+            Box(0xb0bbb2, 45, 49, 10, 5);
+        }
+        private void Backpack()
+        {
+            Line(0x5a6968, 6, new Vector2(34, 22), new Vector2(37, 12), new Vector2(62, 12), new Vector2(67, 23));
+            Shape(0x647571, new Vector2(28, 20), new Vector2(72, 20), new Vector2(79, 37), new Vector2(78, 87), new Vector2(22, 87), new Vector2(22, 37));
+            Box(0x344744, 17, 44, 10, 29); Box(0x344744, 74, 44, 10, 29);
+            Box(0x8b9991, 29, 26, 42, 22); Box(0x4e625b, 30, 55, 40, 27);
+            Box(0xb8c0b1, 34, 36, 5, 16); Box(0xb8c0b1, 61, 36, 5, 16);
+            Line(0xaeb9ad, 1, new Vector2(32, 63), new Vector2(68, 63));
+        }
     }
 
     public sealed class StashGridVisual : VisualElement
@@ -138,7 +187,7 @@ namespace Unity.MP_FPS.Client
             float w = contentRect.width, h = contentRect.height;
             if (w < 1 || h < 1) return;
             var painter = context.painter2D;
-            painter.strokeColor = new Color(0.24f, 0.26f, 0.22f, 0.8f); painter.lineWidth = 1;
+            painter.strokeColor = new Color(0.24f, 0.26f, 0.25f, 0.18f); painter.lineWidth = 1;
             painter.BeginPath();
             for (int x = 0; x <= m_Columns; x++)
             {

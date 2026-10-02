@@ -1,0 +1,30 @@
+.raid-ui { position: absolute; left: 0; right: 0; top: 0; bottom: 0; color: #dadada; -unity-font: url("project://database/Assets/UnityTechnologies/ParticlePack/TextMesh Pro/Fonts/LiberationSans.ttf"); }
+.raid-ui Label { color: #dadada; -unity-text-align: middle-left; white-space: normal; }
+.raid-status { position: absolute; left: 3%; bottom: 4%; padding: 18px; background-color: rgba(0, 0, 0, 0.65); border-radius: 6px; }
+.raid-caption { font-size: 11px; color: #a3a3a3; margin-bottom: 14px; }
+.raid-timer { font-size: 22px; }
+.raid-copy { font-size: 14px; color: #b4b4b4; white-space: normal; margin-top: 12px; margin-bottom: 14px; }
+.raid-prompt { position: absolute; left: 30%; right: 30%; top: 58%; font-size: 17px; -unity-text-align: middle-center; }
+.raid-extraction { position: absolute; right: 3%; top: 7%; font-size: 20px; -unity-text-align: middle-right; color: #d3d3d3; }
+.raid-overlay { position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; justify-content: center; background-color: rgba(0, 0, 0, 0.44); display: none; }
+.raid-window { width: 620px; padding: 32px; background-color: rgba(0, 0, 0, 0.94); border-radius: 10px; }
+.raid-title { font-size: 32px; margin-bottom: 10px; }
+.raid-pack-grid { flex-direction: row; flex-wrap: wrap; height: 192px; }
+.raid-pack-cell { width: 24%; height: 60px; margin-right: 1%; margin-bottom: 4px; background-color: rgba(255, 255, 255, 0.13); border-radius: 3px; align-items: center; justify-content: center; }
+.raid-pack-cell Label { font-size: 12px; }
+.raid-pack-filled { background-color: rgba(255, 255, 255, 0.14); }
+.raid-result-overlay { background-color: rgba(0, 0, 0, 0.97); }
+.raid-result-window { width: 780px; padding: 44px; }
+.raid-stepper { flex-direction: row; margin-top: 12px; margin-bottom: 32px; }
+.raid-stepper Label { flex-grow: 1; color: #6b6b6b; font-size: 12px; }
+.raid-stepper .raid-step-active { color: #e4e4e4; }
+.raid-result-text { min-height: 200px; font-size: 27px; white-space: normal; }
+.raid-result-actions { flex-direction: row; flex-wrap: wrap; margin-top: 22px; }
+.raid-ui Button { height: 42px; min-width: 120px; margin-right: 8px; margin-top: 8px; border-width: 0; border-radius: 4px; color: #dfdfdf; background-color: rgba(255, 255, 255, 0.14); font-size: 13px; }
+.raid-ui Button:hover { background-color: rgba(255, 255, 255, 0.14); }
+.raid-ui Button:disabled { color: #6a6a6a; background-color: rgba(255, 255, 255, 0.08); }
+.raid-ui .raid-primary { background-color: rgba(255, 255, 255, 0.14); }
+.raid-loadout { margin-top: 8px; }
+.raid-loadout IntegerField { height: 34px; }
+.raid-loadout .unity-base-field__label { color: #b4b4b4; min-width: 220px; }
+.raid-loadout .unity-base-field__input { color: #dfdfdf; background-color: rgba(255, 255, 255, 0.14); border-width: 0; border-radius: 4px; }

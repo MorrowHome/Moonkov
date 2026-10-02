@@ -1,29 +1,32 @@
-<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
     <ui:Template name="StashScreen" src="StashScreen.uxml" />
-    <Style src="project://database/Assets/UI%20Toolkit/GameUI/GameUIStyleSheet.uss?fileID=7433441132597879392&amp;guid=35b9b2a65173fdb47ad41dfdb0b5a02a&amp;type=3#GameUIStyleSheet" />
+    <ui:Style src="GameUIStyleSheet.uss" />
     <ui:Style src="StashScreen.uss" />
-    <ui:VisualElement name="Canvas" picking-mode="Ignore" class="canvas canvas-transparent-background">
+    <ui:Style src="MoonkovTerminal.uss" />
+    <ui:VisualElement name="Canvas" picking-mode="Ignore" class="canvas canvas-transparent-background moonkov-login">
         <ui:VisualElement name="HidingBackground" picking-mode="Ignore" class="background" />
-        <ui:VisualElement name="Container" picking-mode="Ignore" class="container" style="height: auto;">
+        <ui:VisualElement name="Container" picking-mode="Ignore" class="container">
+            <ui:VisualElement class="login-heading">
+                <ui:Label text="ESCAPE FROM MOONKOV" class="login-title" />
+                <ui:Label text="ORBITAL ACCESS / LUNAR EXPEDITION" class="login-caption" />
+            </ui:VisualElement>
             <ui:VisualElement name="UIWrapper" picking-mode="Ignore">
                 <ui:VisualElement name="ConnectionPanel" picking-mode="Ignore">
-                    <ui:VisualElement name="InputPlayerName" picking-mode="Ignore" class="section-separator">
-                        <ui:Label text="Player Name" name="PlayerName" picking-mode="Ignore" />
-                        <ui:TextField name="PlayerNameField" value="_" tabindex="1" />
+                    <ui:VisualElement name="InputPlayerName" class="section-separator">
+                        <ui:Label text="Player Name" name="PlayerName" />
+                        <ui:TextField name="PlayerNameField" value="_" />
                     </ui:VisualElement>
-                    <ui:RadioButtonGroup label="Choose Character" choices="Rifle,Shotgun,DollSinger" value="-1" name="ChooseCharacterOption" style="border-left-color: rgb(131, 180, 222); border-right-color: rgb(131, 180, 222); border-top-color: rgb(131, 180, 222); border-bottom-color: rgb(131, 180, 222); border-bottom-width: 2px; border-right-width: 2px; border-top-width: 2px; border-left-width: 2px;" />
-                    <ui:RadioButtonGroup label="Connection Mode" choices="Relay,Direct" value="-1" name="ConnetionModeOption" style="border-left-color: rgb(131, 180, 222); border-right-color: rgb(131, 180, 222); border-top-color: rgb(131, 180, 222); border-bottom-color: rgb(131, 180, 222); border-bottom-width: 2px; border-right-width: 2px; border-top-width: 2px; border-left-width: 2px;" />
-                    <ui:VisualElement name="InputSessionName" picking-mode="Ignore" class="section-separator">
-                        <ui:Label text="Session Name" name="SessionName" picking-mode="Ignore" />
-                        <ui:TextField name="SessionNameField" value="_" tabindex="1" />
+                    <ui:RadioButtonGroup label="Field operator" choices="Rifle,Shotgun,DollSinger" value="-1" name="ChooseCharacterOption" />
+                    <ui:RadioButtonGroup label="Session route" choices="Relay,Direct" value="-1" name="ConnetionModeOption" />
+                    <ui:VisualElement name="InputSessionName" class="section-separator">
+                        <ui:Label text="Crew session" name="SessionName" />
+                        <ui:TextField name="SessionNameField" value="_" />
                     </ui:VisualElement>
-                    <ui:Button text="Create or Join Session" name="CreateJoinGame" tabindex="3" />
-                    <ui:VisualElement name="Seperator" style="flex-grow: 1; height: 16px;" />
-                    <ui:Button text="Start Host" name="StartHost" tabindex="4" selectable="true" />
-                    <ui:Button text="Connect to Server" name="ConnectToServer" tabindex="4" selectable="true" />
-                    <ui:Button text="Matchmake" name="QuickJoin" tabindex="5" enabled="true" class="section-separator hidden" style="display: none;" />
-                    <ui:VisualElement name="Seperator" style="flex-grow: 1; height: 16px;" />
-                    <ui:Button text="Quit" name="QuitButton" tabindex="6" />
+                    <ui:Button text="CREATE / JOIN CREW" name="CreateJoinGame" />
+                    <ui:Button text="HOST EXPEDITION" name="StartHost" />
+                    <ui:Button text="JOIN EXPEDITION" name="ConnectToServer" />
+                    <ui:Button text="Matchmake" name="QuickJoin" class="hidden" />
+                    <ui:Button text="QUIT" name="QuitButton" />
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>

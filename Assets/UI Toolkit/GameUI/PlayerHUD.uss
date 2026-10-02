@@ -206,3 +206,9 @@
 .kits-icon-reload{
     background-image: url("project://database/Assets/AddressableAssetsData/Art/Textures/reticle_reload_circle.png?fileID=2800000&guid=f4b5f52c4eeaa494b874f69ad3ad6502&type=3#reticle_reload_circle");
 }
+#weapon-info-container, #health-info-container { background-color: rgba(10, 26, 47, 0.5); border-radius: 5px; width: 260px; padding: 12px; }
+#player-health-bar { height: 8px; min-height: 8px; }
+#player-health-bar .unity-progress-bar__title { display: none; }
+#player-health-bar .unity-progress-bar__background { min-height: 8px; height: 8px; border-width: 0; background-color: rgba(60, 88, 123, 0.4); }
+#player-health-bar .unity-progress-bar__progress { background-color: #91c5dc; }
+#ammo-label { font-size: 14px; color: #c0d8f4; -unity-font-style: normal; }

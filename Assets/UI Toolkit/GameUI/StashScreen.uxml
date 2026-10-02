@@ -1,5 +1,6 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
     <ui:Style src="StashScreen.uss" />
+    <ui:Style src="MoonkovTerminal.uss" />
     <ui:VisualElement name="stashScreen" class="stash-root">
         <ui:VisualElement class="stash-header">
             <ui:VisualElement class="stash-brand">
@@ -18,26 +19,16 @@
         </ui:VisualElement>
         <ui:VisualElement class="stash-body">
             <ui:VisualElement class="stash-character-pane">
-                <ui:VisualElement class="stash-section-header">
-                    <ui:Label text="EQUIPMENT" class="stash-section-title" />
-                    <ui:Label text="STANDARD ISSUE" class="stash-muted" />
-                </ui:VisualElement>
                 <ui:VisualElement class="stash-character-heading">
                     <ui:Label name="stashCharacterName" text="DOLLSINGER" class="stash-character-name" />
                     <ui:Label text="FIELD LOADOUT" class="stash-eyebrow" />
                 </ui:VisualElement>
-                <ui:VisualElement name="stashEquipment" class="stash-equipment" />
-                <ui:VisualElement class="stash-section-header stash-subsection">
-                    <ui:Label text="POCKETS" class="stash-section-title" />
-                    <ui:Label text="EMPTY" class="stash-muted" />
+                <ui:VisualElement name="stashCharacterStage" class="stash-character-stage">
+                    <ui:VisualElement name="stashEquipment" class="stash-equipment" />
                 </ui:VisualElement>
-                <ui:VisualElement name="stashPockets" class="stash-pockets" />
-                <ui:VisualElement class="stash-section-header stash-subsection">
-                    <ui:Label text="RAID PACK" class="stash-section-title" />
-                    <ui:Label text="12 SUPPLIES" class="stash-muted" />
-                </ui:VisualElement>
-                <ui:VisualElement name="stashPack" class="stash-pack" />
-                <ui:Label text="Collected supplies return to your stash after extraction." class="stash-loadout-note" />
+                <ui:VisualElement name="stashPockets" style="display: none;" />
+                <ui:VisualElement name="stashPack" style="display: none;" />
+                <ui:Label name="stashLoadoutNote" class="stash-loadout-note" />
             </ui:VisualElement>
             <ui:VisualElement class="stash-storage-pane">
                 <ui:VisualElement class="stash-section-header">

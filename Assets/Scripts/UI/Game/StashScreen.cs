@@ -7,12 +7,13 @@ using UnityEngine.UIElements;
 namespace Unity.MP_FPS.Client
 {
     // Presentation of the existing aggregate stash. No equipment or inventory writes occur here.
-    public sealed class StashScreen : IDisposable
+    public sealed partial class StashScreen : IDisposable
     {
         private sealed class Stack
         {
             public string Name, ShortName, Category, Description, Class;
             public StashArtKind Art;
+            public EquipmentKind Kind;
             public int Width, Height, Quantity;
             public Button Tile;
             public Label Count;
@@ -21,7 +22,7 @@ namespace Unity.MP_FPS.Client
         private readonly VisualElement m_Host, m_Root, m_Grid, m_InspectArt;
         private readonly ScrollView m_Scroll;
         private readonly TextField m_Search;
-        private readonly Button m_All, m_Materials, m_Energy, m_Sort, m_Refresh, m_Logout, m_Deploy, m_MainMenu;
+        private readonly Button m_All, m_Materials, m_Energy, m_EquipmentFilter, m_Sort, m_Refresh, m_Logout, m_Deploy, m_MainMenu;
         private readonly Action m_OnPrepare, m_OnLogout, m_OnRefresh;
         private readonly Label m_EmptyTitle, m_EmptyDescription;
         private readonly Stack[] m_Stacks;
@@ -31,18 +32,21 @@ namespace Unity.MP_FPS.Client
         private bool m_SortByQuantity;
         private float m_CellSize;
 
-        public StashScreen(VisualElement host, Action prepare, Action logout, Action refresh)
+        public StashScreen(VisualElement host, Action prepare, Action logout, Action refresh, bool preview = false)
         {
+            m_Preview = preview;
             m_Host = host; m_Root = host.Q<VisualElement>("stashScreen");
             m_OnPrepare = prepare; m_OnLogout = logout; m_OnRefresh = refresh;
             m_Search = m_Root.Q<TextField>("stashSearch");
-            m_Search.textEdition.placeholder = "Search supplies...";
+            m_Search.textEdition.placeholder = "Search...";
             m_All = Button("stashFilterAll"); m_Materials = Button("stashFilterMaterials"); m_Energy = Button("stashFilterEnergy");
             m_Sort = Button("stashSort"); m_Refresh = Button("stashRefresh"); m_Logout = Button("stashLogout");
             m_Deploy = Button("stashDeploy"); m_MainMenu = Button("stashMainMenu");
             m_All.clicked += All; m_Materials.clicked += Materials; m_Energy.clicked += Energy;
+            m_EquipmentFilter = new Button(() => Filter(3)) { text = "GEAR" }; m_EquipmentFilter.AddToClassList("stash-filter");
+            m_Root.Q<VisualElement>(className: "stash-toolbar").Insert(3, m_EquipmentFilter);
             m_Sort.clicked += Sort; m_Refresh.clicked += m_OnRefresh; m_Logout.clicked += m_OnLogout;
-            m_Deploy.clicked += m_OnPrepare; m_MainMenu.clicked += m_OnPrepare;
+            m_Deploy.clicked += PrepareTerminal; m_MainMenu.clicked += ShipTerminal;
             m_Search.RegisterValueChangedCallback(SearchChanged);
             m_Scroll = m_Root.Q<ScrollView>("stashScroll");
             m_Grid = new StashGridVisual(Columns, Rows);
@@ -56,6 +60,10 @@ namespace Unity.MP_FPS.Client
                 new Stack { Name = "Alloy", ShortName = "Alloy", Category = "STRUCTURAL MATERIAL", Art = StashArtKind.Alloy, Width = 2, Height = 1, Class = "stash-item-alloy", Description = "Recovered structural alloy. Each supply collected and extracted adds to this material stack." },
                 new Stack { Name = "Energy cell", ShortName = "Cell", Category = "ENERGY RESOURCE", Art = StashArtKind.Cell, Width = 1, Height = 2, Class = "stash-item-cell", Description = "A compact energy resource retrieved from lunar supply caches. Kept in storage between expeditions." }
             };
+            if (m_Preview)
+            {
+                var all = new List<Stack>(m_Stacks); all.AddRange(PreviewEquipment()); m_Stacks = all.ToArray();
+            }
             foreach (var stack in m_Stacks)
             {
                 stack.Tile = new Button(() => Select(stack)) { tooltip = stack.Name };
@@ -69,8 +77,9 @@ namespace Unity.MP_FPS.Client
             m_EmptyDescription = new Label { pickingMode = PickingMode.Ignore }; m_EmptyDescription.AddToClassList("stash-empty-description");
             m_Grid.Add(m_EmptyTitle); m_Grid.Add(m_EmptyDescription);
             BuildEquipment();
+            InitializeTerminal();
             m_Search.SetValueWithoutNotify("");
-            m_Sort.text = "SORT: NAME";
+            m_Sort.text = "SORT";
             Select(null);
             Filter(0);
         }
@@ -90,6 +99,7 @@ namespace Unity.MP_FPS.Client
             Label("stashSyncStatus").tooltip = error ?? "Inventory loaded from your account.";
             m_Refresh.SetEnabled(!busy); m_Logout.SetEnabled(!busy); m_Deploy.SetEnabled(!busy); m_MainMenu.SetEnabled(!busy);
             Rebuild();
+            m_Terminal.Present(playerName, dust, alloy, cells, busy);
         }
 
         private void All() => Filter(0);
@@ -101,9 +111,10 @@ namespace Unity.MP_FPS.Client
             m_All.EnableInClassList("stash-filter-active", filter == 0);
             m_Materials.EnableInClassList("stash-filter-active", filter == 1);
             m_Energy.EnableInClassList("stash-filter-active", filter == 2);
+            m_EquipmentFilter.EnableInClassList("stash-filter-active", filter == 3);
             Rebuild();
         }
-        private void Sort() { m_SortByQuantity = !m_SortByQuantity; m_Sort.text = m_SortByQuantity ? "SORT: AMOUNT" : "SORT: NAME"; Rebuild(); }
+        private void Sort() { m_SortByQuantity = !m_SortByQuantity; Rebuild(); }
         private void SearchChanged(ChangeEvent<string> evt) => Rebuild();
         private void ViewportChanged(GeometryChangedEvent evt)
         {
@@ -119,12 +130,17 @@ namespace Unity.MP_FPS.Client
             string search = (m_Search.value ?? "").Trim();
             foreach (var stack in m_Stacks)
             {
-                bool material = stack.Art != StashArtKind.Cell;
-                bool show = stack.Quantity > 0 && (m_Filter == 0 || m_Filter == 1 && material || m_Filter == 2 && !material)
+                var placement = m_Layout.Items[stack.Name];
+                bool becameAvailable = !placement.Available && stack.Quantity > 0;
+                placement.Available = stack.Quantity > 0;
+                if (becameAvailable && placement.InStorage && !m_Layout.CanPlace(stack.Name, placement.X, placement.Y, placement.Rotated)
+                    && m_Layout.FindSpace(stack.Name, out var free)) m_Layout.TryMove(stack.Name, free.x, free.y, placement.Rotated);
+                bool material = stack.Art == StashArtKind.Dust || stack.Art == StashArtKind.Alloy;
+                bool show = stack.Quantity > 0 && placement.InStorage && (m_Filter == 0 || m_Filter == 1 && material || m_Filter == 2 && stack.Art == StashArtKind.Cell || m_Filter == 3 && stack.Kind != EquipmentKind.None)
                     && stack.Name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0;
                 stack.Tile.style.display = show ? DisplayStyle.Flex : DisplayStyle.None;
                 stack.Count.text = Number(stack.Quantity);
-                if (stack.Quantity > 0) ownedStacks++;
+                if (stack.Quantity > 0 && placement.InStorage) ownedStacks++;
                 if (show) m_Visible.Add(stack);
             }
             m_Visible.Sort((a, b) => m_SortByQuantity && a.Quantity != b.Quantity
@@ -132,24 +148,24 @@ namespace Unity.MP_FPS.Client
             Label("stashStackCount").text = ownedStacks + (ownedStacks == 1 ? " STACK" : " STACKS");
             bool empty = m_Visible.Count == 0;
             m_EmptyTitle.style.display = m_EmptyDescription.style.display = empty ? DisplayStyle.Flex : DisplayStyle.None;
-            m_EmptyTitle.text = ownedStacks == 0 ? "YOUR STASH IS EMPTY" : "NO MATCHING SUPPLIES";
+            m_EmptyTitle.text = ownedStacks == 0 ? "YOUR STASH IS EMPTY" : "NO MATCHING ITEMS";
             m_EmptyDescription.text = ownedStacks == 0 ? "Recover supplies on the Moon. Extract successfully to bring them home." : "Try another category or search term.";
             if (m_Selected != null && !m_Visible.Contains(m_Selected)) Select(null);
             else if (m_Selected != null) Label("stashInspectQuantity").text = Number(m_Selected.Quantity);
             Layout();
+            RefreshEquipment();
         }
 
         private void Layout()
         {
             if (m_CellSize <= 0) return;
-            int column = 0;
             foreach (var stack in m_Visible)
             {
-                stack.Tile.style.left = column * m_CellSize;
-                stack.Tile.style.top = 0;
-                stack.Tile.style.width = stack.Width * m_CellSize;
-                stack.Tile.style.height = stack.Height * m_CellSize;
-                column += stack.Width;
+                var placement = m_Layout.Items[stack.Name];
+                stack.Tile.style.left = placement.X * m_CellSize;
+                stack.Tile.style.top = placement.Y * m_CellSize;
+                stack.Tile.style.width = placement.Width * m_CellSize;
+                stack.Tile.style.height = placement.Height * m_CellSize;
             }
         }
 
@@ -169,45 +185,15 @@ namespace Unity.MP_FPS.Client
             Label("stashInspectQuantity").text = selected == null ? "--" : Number(selected.Quantity);
         }
 
-        private void BuildEquipment()
-        {
-            var equipment = m_Root.Q<VisualElement>("stashEquipment");
-            Slot(equipment, "HALO", StashArtKind.Halo, "DEFAULT");
-            Slot(equipment, "OUTFIT", StashArtKind.Outfit, "DEFAULT");
-            Slot(equipment, "COMMS", StashArtKind.None, "");
-            Slot(equipment, "FACE COVER", StashArtKind.None, "");
-            Slot(equipment, "UTILITY", StashArtKind.None, "");
-            Slot(equipment, "PACK MODULE", StashArtKind.None, "");
-            var pockets = m_Root.Q<VisualElement>("stashPockets");
-            for (int i = 0; i < 4; i++) { var pocket = new VisualElement(); pocket.AddToClassList("stash-pocket"); pockets.Add(pocket); }
-            var pack = new StashGridVisual(4, 3); pack.style.flexGrow = 1; m_Root.Q<VisualElement>("stashPack").Add(pack);
-        }
-        private static void Slot(VisualElement parent, string label, StashArtKind kind, string caption)
-        {
-            var slot = new VisualElement { tooltip = kind == StashArtKind.None ? "No equipment assigned." : "Default field kit. Equipment selection is not available yet." };
-            slot.AddToClassList("stash-equipment-slot");
-            var title = new Label(label); title.AddToClassList("stash-slot-label"); slot.Add(title);
-            if (kind == StashArtKind.None)
-            {
-                var empty = new Label("EMPTY"); empty.AddToClassList("stash-slot-empty"); slot.Add(empty);
-            }
-            else
-            {
-                slot.AddToClassList("stash-equipped-slot");
-                var art = new StashItemArt(kind); art.AddToClassList("stash-slot-art"); slot.Add(art);
-                var note = new Label(caption); note.AddToClassList("stash-slot-caption"); slot.Add(note);
-            }
-            parent.Add(slot);
-        }
-
         public void Dispose()
         {
             m_All.clicked -= All; m_Materials.clicked -= Materials; m_Energy.clicked -= Energy;
             m_Sort.clicked -= Sort; m_Refresh.clicked -= m_OnRefresh; m_Logout.clicked -= m_OnLogout;
-            m_Deploy.clicked -= m_OnPrepare; m_MainMenu.clicked -= m_OnPrepare;
+            m_Deploy.clicked -= PrepareTerminal; m_MainMenu.clicked -= ShipTerminal;
+            DisposeTerminal();
             m_Search.UnregisterValueChangedCallback(SearchChanged);
             m_Scroll.contentViewport.UnregisterCallback<GeometryChangedEvent>(ViewportChanged);
-            m_Grid.RemoveFromHierarchy(); m_Root.Q<VisualElement>("stashEquipment").Clear();
+            m_Grid.RemoveFromHierarchy(); m_Root.Q<VisualElement>("stashEquipment").Clear(); m_Guides.RemoveFromHierarchy(); m_EquipmentFilter.RemoveFromHierarchy();
             m_Root.Q<VisualElement>("stashPockets").Clear(); m_Root.Q<VisualElement>("stashPack").Clear();
             m_Host.style.display = DisplayStyle.None;
         }

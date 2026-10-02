@@ -40,6 +40,15 @@ public sealed class SkirtHandAvoidance : MonoBehaviour {
     private float m_CoverBlend;
     private float m_HandCoverBlend;
     private int m_CoverLayerIndex = -1;
+    private bool m_PresentationDriven;
+    private float m_PresentationDeltaTime, m_PresentationAim;
+
+    public void PreparePresentation(float deltaTime, float aimWeight) {
+        m_PresentationDriven = true;
+        m_PresentationDeltaTime = deltaTime;
+        m_PresentationAim = aimWeight;
+        if (!animator) animator = GetComponent<Animator>();
+    }
 
     private void Awake() {
         if (!spring) spring = GetComponent<SecondaryBoneSpring>();
@@ -48,6 +57,7 @@ public sealed class SkirtHandAvoidance : MonoBehaviour {
     }
 
     private void Update() {
+        if (m_PresentationDriven) return;
         if (!animator || m_CoverLayerIndex < 0) return;
         bool falling = spring && skirtCenter &&
             spring.AirflowBlend > coverAirflowThreshold;
@@ -72,6 +82,18 @@ public sealed class SkirtHandAvoidance : MonoBehaviour {
 
     private void OnAnimatorIK(int layerIndex) {
         if (!animator || !animator.isHuman) return;
+        if (m_PresentationDriven) {
+            if (layerIndex != 0) return;
+            if (m_PresentationAim > 0.001f) {
+                ResetOffsets();
+                animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 0f);
+                animator.SetIKPositionWeight(AvatarIKGoal.RightHand, 0f);
+            } else if (skirtCenter && outerSkirtRoots != null) {
+                SetHandGoal(AvatarIKGoal.LeftHand, leftHand, ref m_LeftOffsetLocal, ref m_LeftOffsetVelocity);
+                SetHandGoal(AvatarIKGoal.RightHand, rightHand, ref m_RightOffsetLocal, ref m_RightOffsetVelocity);
+            }
+            return;
+        }
         if (haloAim && layerIndex == haloAim.AimLayerIndex) {
             haloAim.TryApplyHandIK(AvatarIKGoal.LeftHand);
             haloAim.TryApplyHandIK(AvatarIKGoal.RightHand);
@@ -191,7 +213,8 @@ public sealed class SkirtHandAvoidance : MonoBehaviour {
         }
 
         offsetLocal = Vector3.SmoothDamp(offsetLocal, desiredOffsetLocal,
-            ref offsetVelocity, handAvoidanceSmoothTime, Mathf.Infinity, Time.deltaTime);
+            ref offsetVelocity, handAvoidanceSmoothTime, Mathf.Infinity,
+            m_PresentationDriven ? m_PresentationDeltaTime : Time.deltaTime);
         // Blend the IK solver in with the correction. A binary weight made the
         // whole arm suddenly solve toward a nearly identical wrist target on
         // every shallow skirt contact during the walk and run cycles.

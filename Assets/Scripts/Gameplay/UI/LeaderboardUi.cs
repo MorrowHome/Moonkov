@@ -65,6 +65,7 @@ namespace Unity.MP_FPS.UI
         
         private void OnShowLeaderboard(InputAction.CallbackContext context)
         {
+            if (MoonRaidMap.Active != null) return;
             _rootElement.style.display = DisplayStyle.Flex;
         }
         

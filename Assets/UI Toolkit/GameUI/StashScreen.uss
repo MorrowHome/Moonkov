@@ -1,130 +1,119 @@
-.stash-host {
-    position: absolute;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    display: none;
-}
+.stash-host { position: absolute; left: 0; top: 0; right: 0; bottom: 0; display: none; }
 .stash-root {
     flex-grow: 1;
-    background-color: rgba(17, 18, 17, 0.98);
-    color: #d9d7ce;
-    padding-left: 44px;
-    padding-right: 44px;
+    padding-left: 3%; padding-right: 3%;
+    background-image: none; background-color: #f2f2ef;
+    background-size: cover;
+    color: #191919;
+
     font-size: 16px;
 }
-.stash-root Label { color: #d9d7ce; margin: 0; }
-.stash-header {
-    height: 108px;
-    flex-shrink: 0;
-    flex-direction: row;
-    align-items: center;
-    border-bottom-width: 1px;
-    border-bottom-color: #46463c;
-}
-.stash-brand { width: 270px; }
-.stash-root .stash-brand-title { font-size: 36px; -unity-font-style: bold; color: #b7b29b; }
-.stash-root .stash-eyebrow { font-size: 12px; color: #929287; margin-top: 4px; }
+.stash-root Label { color: #191919; margin: 0; -unity-text-align: middle-left; }
+.stash-header { height: 86px; flex-shrink: 0; flex-direction: row; align-items: center; }
+.stash-brand { width: 230px; }
+.stash-root .stash-brand-title { font-size: 32px; -unity-font-style: bold; color: #191919; }
+.stash-root .stash-eyebrow { font-size: 11px; color: #474747; margin-top: 5px; }
 .stash-page-heading { flex-grow: 1; }
-.stash-root .stash-page-title { font-size: 28px; -unity-font-style: bold; }
+.stash-root .stash-page-title { font-size: 22px; -unity-font-style: normal; }
 .stash-account { margin-right: 24px; align-items: flex-end; }
-.stash-root .stash-account-name { font-size: 19px; color: #cbc8b7; }
-.stash-body { flex-grow: 1; flex-direction: row; min-height: 0; padding-top: 24px; padding-bottom: 20px; }
-.stash-character-pane { width: 470px; flex-shrink: 0; margin-right: 34px; }
-.stash-storage-pane { flex-grow: 1; min-width: 0; }
-.stash-section-header { height: 35px; flex-shrink: 0; flex-direction: row; justify-content: space-between; align-items: center; border-bottom-width: 1px; border-bottom-color: #49493f; }
-.stash-root .stash-section-title { font-size: 19px; -unity-font-style: bold; color: #bbb79e; }
-.stash-root .stash-muted { font-size: 12px; color: #85867c; }
-.stash-character-heading { flex-direction: row; justify-content: space-between; align-items: center; height: 60px; flex-shrink: 0; }
-.stash-root .stash-character-name { font-size: 23px; -unity-font-style: bold; }
-.stash-equipment { flex-direction: row; flex-wrap: wrap; }
-.stash-equipment-slot { width: 48%; height: 126px; margin-right: 2%; margin-bottom: 10px; border-width: 1px; border-color: #4c4c40; background-color: #23241f; position: relative; }
-.stash-equipped-slot { border-color: #79745b; background-color: #2b2c24; }
-.stash-root .stash-slot-label { position: absolute; left: 8px; top: 6px; font-size: 12px; color: #9d9b88; }
-.stash-root .stash-slot-caption { position: absolute; right: 8px; bottom: 6px; font-size: 11px; color: #96947e; }
-.stash-slot-art { position: absolute; left: 20px; right: 20px; top: 24px; bottom: 22px; }
-.stash-root .stash-slot-empty { flex-grow: 1; -unity-text-align: middle-center; color: #53554b; font-size: 12px; }
-.stash-subsection { margin-top: 13px; }
-.stash-pockets { flex-direction: row; height: 62px; margin-top: 10px; flex-shrink: 0; }
-.stash-pocket { width: 60px; margin-right: 7px; background-color: #1b1c19; border-width: 1px; border-color: #42443b; }
-.stash-pack { height: 150px; flex-shrink: 0; margin-top: 10px; border-width: 1px; border-color: #47483f; }
-.stash-root .stash-loadout-note { margin-top: 12px; font-size: 13px; color: #83857b; white-space: normal; }
-.stash-balance-bar { height: 80px; flex-direction: row; flex-shrink: 0; align-items: center; }
-.stash-balance { margin-right: 32px; min-width: 90px; }
-.stash-root .stash-balance-value { font-size: 24px; -unity-font-style: bold; margin-top: 2px; }
-.stash-root .stash-dust-text { color: #a8bac0; }
-.stash-root .stash-alloy-text { color: #c1b28d; }
-.stash-root .stash-cell-text { color: #a8acd1; }
+.stash-root .stash-account-name { font-size: 18px; color: #191919; }
+.stash-body { flex-grow: 1; flex-direction: row; min-height: 0; padding-top: 18px; padding-bottom: 12px; }
+.stash-character-pane { width: 52%; flex-shrink: 0; margin-right: 2%; padding: 0; background-color: transparent; }
+.stash-character-pane .unity-scroll-view__content-container { padding-right: 6px; }
+.stash-storage-pane { flex-grow: 1; min-width: 0; padding: 16px; background-color: rgba(255, 255, 255, 0.72); border-radius: 3px; }
+.stash-section-header { height: 28px; flex-shrink: 0; flex-direction: row; justify-content: space-between; align-items: center; }
+.stash-root .stash-section-title { font-size: 16px; -unity-font-style: bold; color: #262626; }
+.stash-root .stash-muted { font-size: 11px; color: #676767; }
+.stash-character-heading { flex-direction: row; justify-content: space-between; align-items: center; height: 46px; flex-shrink: 0; }
+.stash-root .stash-character-name { font-size: 22px; -unity-font-style: bold; }
+.stash-character-stage { flex-grow: 1; min-height: 0; position: relative; }
+.stash-equipment { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
+.stash-equipment-guides { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
+.stash-character-render { position: absolute; left: 14%; right: 14%; top: 0; bottom: 0; }
+.stash-root .stash-loadout-slot { position: absolute; width: 24%; height: 24%; border-width: 0; border-radius: 3px; padding: 10px; background-color: rgba(255, 255, 255, 0.65); }
+.stash-root .stash-loadout-slot:hover { background-color: #ffffff; }
+.stash-root .stash-loadout-equipped { background-color: rgba(224, 228, 224, 0.8); }
+.stash-root .stash-loadout-label { position: absolute; left: 9px; right: 4px; top: 8px; font-size: 10px; color: #454c4b; white-space: normal; }
+.stash-loadout-art { position: absolute; left: 12%; right: 12%; top: 28px; bottom: 23px; }
+.stash-root .stash-loadout-caption { position: absolute; left: 9px; right: 9px; bottom: 7px; font-size: 10px; color: #727a77; }
+.stash-root .stash-slot-drop-valid { background-color: #d7e1a7; }
+.stash-root .stash-slot-drop-invalid { background-color: #ead3d0; }
+.stash-equipment-slot { width: 48%; height: 96px; margin-right: 2%; margin-bottom: 8px; background-color: rgba(255, 255, 255, 0.12); border-radius: 5px; position: relative; }
+.stash-equipped-slot { background-color: rgba(255, 255, 255, 0.14); }
+.stash-root .stash-slot-label { position: absolute; left: 8px; top: 6px; font-size: 10px; color: #444444; }
+.stash-root .stash-slot-caption { position: absolute; right: 8px; bottom: 6px; font-size: 10px; color: #5a5a5a; }
+.stash-slot-art { position: absolute; left: 20px; right: 20px; top: 23px; bottom: 20px; }
+.stash-root .stash-slot-empty { flex-grow: 1; -unity-text-align: middle-center; color: #646464; font-size: 10px; }
+.stash-subsection { margin-top: 9px; }
+.stash-pockets { flex-direction: row; height: 46px; margin-top: 7px; flex-shrink: 0; }
+.stash-pocket { width: 46px; margin-right: 7px; background-color: rgba(255, 255, 255, 0.1); border-radius: 4px; }
+.stash-pack { height: 100px; flex-shrink: 0; margin-top: 7px; background-color: rgba(255, 255, 255, 0.6); }
+.stash-root .stash-loadout-note { margin-top: 10px; font-size: 10px; color: #757b77; white-space: normal; }
+.stash-balance-bar { height: 64px; flex-direction: row; flex-shrink: 0; align-items: center; }
+.stash-balance { margin-right: 12px; min-width: 56px; }
+.stash-root .stash-balance-value { font-size: 23px; margin-top: 2px; }
+.stash-root .stash-dust-text { color: #262626; }
+.stash-root .stash-alloy-text { color: #3a3a3a; }
+.stash-root .stash-cell-text { color: #3c3c3c; }
 .stash-balance-spacer { flex-grow: 1; }
-.stash-root .stash-sync-status { font-size: 11px; color: #989b85; margin-right: 14px; }
-.stash-toolbar { flex-direction: row; align-items: center; height: 48px; flex-shrink: 0; margin-bottom: 10px; }
+.stash-root .stash-sync-status { display: none; }
+.stash-toolbar { flex-direction: row; align-items: center; height: 44px; flex-shrink: 0; margin-bottom: 10px; }
 .stash-root Button {
-    background-color: #282a24;
-    background-image: none;
-    color: #aaa896;
-    border-width: 1px;
-    border-color: #4c4e42;
-    border-radius: 0;
-    margin: 0;
-    padding-left: 14px;
-    padding-right: 14px;
-    -unity-font-style: normal;
-    -unity-text-align: middle-center;
-    font-size: 13px;
-    height: 34px;
-    min-height: 0;
-    min-width: 0;
-    flex-shrink: 0;
+    background-color: rgba(255, 255, 255, 0.08); background-image: none;
+    color: #3b3b3b; border-width: 0; border-radius: 4px;
+    margin: 0; padding-left: 14px; padding-right: 14px;
+    -unity-font-style: normal; -unity-text-align: middle-center;
+    font-size: 12px; height: 34px; min-height: 0; min-width: 0; flex-shrink: 0;
+    scale: 1; transition-property: background-color, color, opacity; transition-duration: 0.15s;
 }
-.stash-root Button:hover { background-color: #3e4033; border-color: #939076; color: #e1dfd2; }
-.stash-root Button:focus { border-color: #bbb38d; }
-.stash-root Button:active { background-color: #55533d; }
-.stash-root Button:disabled { background-color: #23241f; border-color: #34362e; color: #626456; }
-.stash-root .stash-filter { margin-right: 5px; padding-left: 14px; padding-right: 14px; background-color: #1d1e1a; }
-.stash-root .stash-filter-active { color: #dfdcc7; border-bottom-width: 2px; border-bottom-color: #aca57e; background-color: #38392e; }
-.stash-root .stash-search { flex-grow: 1; min-width: 80px; height: 34px; margin-left: 16px; margin-right: 12px; }
-.stash-root .stash-search .unity-text-field__input { border-width: 1px; border-color: #41433a; border-radius: 0; background-color: #1a1c18; color: #d9d7ce; font-size: 14px; padding-left: 9px; }
-.stash-root .stash-search .unity-text-field__input:focus { border-color: #a39a74; }
+.stash-root Button:hover { background-color: rgba(255, 255, 255, 0.14); color: #191919; scale: 1; }
+.stash-root Button:focus { background-color: rgba(255, 255, 255, 0.14); scale: 1; }
+.stash-root Button:active { background-color: rgba(255, 255, 255, 0.14); scale: 1; }
+.stash-root Button:disabled { background-color: rgba(255, 255, 255, 0.12); color: #7a7a7a; opacity: 0.7; }
+.stash-root .stash-filter { margin-right: 1px; padding-left: 7px; padding-right: 7px; font-size: 10px; background-color: transparent; }
+.stash-root .stash-filter-active { color: #191919; background-color: rgba(255, 255, 255, 0.14); }
+.stash-root .stash-search { flex-grow: 1; min-width: 50px; height: 34px; margin-left: 10px; margin-right: 8px; }
+.stash-root .stash-search .unity-text-field__input { border-width: 0; border-radius: 4px; background-color: rgba(255, 255, 255, 0.1); color: #191919; font-size: 13px; padding-left: 9px; }
+.stash-root .stash-search .unity-text-field__input:focus { background-color: rgba(255, 255, 255, 0.14); }
 .stash-inventory-body { flex-grow: 1; flex-direction: row; min-height: 0; }
-.stash-scroll { flex-grow: 1; min-width: 0; border-width: 1px; border-color: #45473d; background-color: #181a17; }
+.stash-scroll { flex-grow: 1; min-width: 0; background-color: rgba(255, 255, 255, 0.6); }
 .stash-grid-host { flex-shrink: 0; width: 100%; }
 .stash-grid { position: relative; }
-.stash-root .stash-item {
-    position: absolute;
-    height: auto;
-    flex-shrink: 0;
-    border-width: 1px;
-    border-color: #6a705d;
-    padding: 0;
-    background-color: #30352c;
-    overflow: hidden;
-}
-.stash-root .stash-item-dust { background-color: #293135; border-color: #657880; }
-.stash-root .stash-item-alloy { background-color: #353329; border-color: #81795c; }
-.stash-root .stash-item-cell { background-color: #2c2e3a; border-color: #727796; }
-.stash-root .stash-item:hover { background-color: #454739; border-color: #d1c9a8; }
-.stash-root .stash-item-selected { border-width: 2px; border-color: #dad1aa; }
+.stash-root .stash-item { position: absolute; height: auto; flex-shrink: 0; border-width: 1px; border-color: rgba(255, 255, 255, 0.14); border-radius: 2px; padding: 0; background-color: rgba(255, 255, 255, 0.14); overflow: hidden; }
+.stash-root .stash-item-dust { background-color: rgba(255, 255, 255, 0.14); }
+.stash-root .stash-item-alloy { background-color: rgba(255, 255, 255, 0.14); }
+.stash-root .stash-item-cell { background-color: rgba(255, 255, 255, 0.14); }
+.stash-root .stash-item:hover { background-color: rgba(255, 255, 255, 0.14); border-color: #383838; }
+.stash-root .stash-item-selected { border-width: 2px; border-color: #4a4a4a; }
+.stash-root .stash-item-locked { border-color: #686868; }
+.stash-root .stash-item-favorite { border-top-width: 3px; border-top-color: #333333; }
+.stash-root .stash-item-dragging { opacity: 0.6; }
+.stash-root .stash-item.stash-item-equipment { background-color: #dde3df; border-color: #c4ccc7; }
+.stash-root .stash-item.stash-item-equipment:hover { background-color: #e8ece8; }
+.stash-drag-ghost { position: absolute; background-color: rgba(227, 233, 220, 0.93); border-width: 1px; border-color: #919a7c; border-radius: 3px; }
+.stash-drop-preview { position: absolute; border-width: 2px; border-radius: 2px; }
+.stash-drop-valid { background-color: rgba(81, 190, 155, 0.2); border-color: #64c7ae; }
+.stash-drop-invalid { background-color: rgba(207, 72, 101, 0.2); border-color: #d5718f; }
 .stash-item-art { position: absolute; left: 12%; right: 12%; top: 18%; bottom: 18%; }
-.stash-root .stash-item-name { position: absolute; left: 6px; top: 4px; font-size: 12px; color: #d0cfbf; }
-.stash-root .stash-item-quantity { position: absolute; right: 5px; bottom: 4px; font-size: 14px; -unity-font-style: bold; color: #eeebd9; }
-.stash-root .stash-empty-title { position: absolute; top: 180px; left: 16px; right: 16px; font-size: 22px; -unity-text-align: middle-center; color: #8b8e7e; }
-.stash-root .stash-empty-description { position: absolute; top: 220px; left: 32px; right: 32px; font-size: 14px; white-space: normal; -unity-text-align: middle-center; color: #686d5e; }
-.stash-inspector { width: 242px; flex-shrink: 0; margin-left: 20px; padding-left: 18px; border-left-width: 1px; border-left-color: #3b3e34; }
-.stash-inspect-art { height: 168px; flex-shrink: 0; margin-top: 20px; margin-bottom: 20px; border-width: 1px; border-color: #3b3e34; background-color: #20221d; }
-.stash-root .stash-inspect-name { font-size: 23px; -unity-font-style: bold; white-space: normal; }
-.stash-root .stash-inspect-category { font-size: 12px; color: #a4a084; margin-top: 6px; }
-.stash-detail-rule { height: 1px; background-color: #44473a; margin-top: 20px; margin-bottom: 18px; }
-.stash-root .stash-inspect-description { white-space: normal; font-size: 15px; color: #a2a394; margin-bottom: 25px; }
-.stash-detail-row { flex-direction: row; justify-content: space-between; margin-bottom: 12px; }
-.stash-root .stash-detail-value { font-size: 14px; color: #cdc9b3; }
+.stash-root .stash-item-name { position: absolute; left: 6px; top: 4px; font-size: 11px; color: #1f1f1f; }
+.stash-root .stash-item-quantity { position: absolute; right: 5px; bottom: 4px; font-size: 13px; color: #191919; }
+.stash-root .stash-empty-title { position: absolute; top: 140px; left: 16px; right: 16px; font-size: 19px; -unity-text-align: middle-center; color: #3c3c3c; }
+.stash-root .stash-empty-description { position: absolute; top: 177px; left: 20px; right: 20px; font-size: 13px; white-space: normal; -unity-text-align: middle-center; color: #939393; }
+.stash-inspector { display: none; }
+.stash-inspect-art { height: 130px; flex-shrink: 0; margin-top: 14px; margin-bottom: 14px; background-color: rgba(255, 255, 255, 0.08); border-radius: 5px; }
+.stash-root .stash-inspect-name { font-size: 19px; -unity-font-style: bold; white-space: normal; }
+.stash-root .stash-inspect-category { font-size: 10px; color: #545454; margin-top: 6px; }
+.stash-detail-rule { height: 12px; }
+.stash-root .stash-inspect-description { white-space: normal; font-size: 13px; color: #434343; margin-bottom: 16px; }
+.stash-detail-row { flex-direction: row; justify-content: space-between; margin-bottom: 10px; }
+.stash-root .stash-detail-value { font-size: 13px; color: #272727; }
 .stash-inspector-spacer { flex-grow: 1; }
-.stash-root .stash-inspect-help { font-size: 12px; color: #7c8070; white-space: normal; margin-top: 15px; margin-bottom: 10px; }
-.stash-root .stash-storage-caption { font-size: 11px; color: #727766; margin-top: 10px; }
-.stash-footer { height: 84px; flex-shrink: 0; flex-direction: row; align-items: center; border-top-width: 1px; border-top-color: #45473c; }
-.stash-root .stash-footer-button { height: 42px; padding-left: 22px; padding-right: 22px; font-size: 16px; }
-.stash-root .stash-footer-caption { margin-left: 22px; font-size: 12px; color: #7e8270; }
+.stash-root .stash-inspect-help { font-size: 11px; color: #676767; white-space: normal; margin-top: 12px; margin-bottom: 10px; }
+.stash-root .stash-storage-caption { font-size: 10px; color: #959595; margin-top: 10px; }
+.stash-footer { height: 66px; flex-shrink: 0; flex-direction: row; align-items: center; }
+.stash-root .stash-footer-button { height: 38px; padding-left: 20px; padding-right: 20px; font-size: 13px; background-color: transparent; }
+.stash-root .stash-footer-caption { display: none; }
 .stash-footer-spacer { flex-grow: 1; }
-.stash-root .stash-footer-hint { font-size: 12px; color: #969a84; margin-right: 25px; }
-.stash-root .stash-deploy-button { height: 48px; width: 218px; font-size: 22px; -unity-font-style: bold; background-color: #bbb28b; color: #1a1d16; border-color: #d2c8a1; }
-.stash-root .stash-deploy-button:hover { background-color: #d9d0a6; color: #12150f; }
+.stash-root .stash-footer-hint { font-size: 9px; color: #4e4e4e; margin-right: 16px; }
+.stash-root .stash-deploy-button { height: 44px; width: 200px; font-size: 17px; -unity-font-style: bold; background-color: rgba(255, 255, 255, 0.14); color: #191919; border-radius: 4px; }
+.stash-root .stash-deploy-button:hover { background-color: rgba(255, 255, 255, 0.14); }

@@ -13,58 +13,82 @@ namespace Unity.MP_FPS
     {
         private World m_World;
         private EntityQuery m_StateQuery, m_PlayerQuery, m_ConnectionQuery;
-        private VisualElement m_Root, m_Result;
+        private VisualElement m_Root, m_Result, m_Status, m_Inventory, m_PackGrid;
         private Label m_Bag, m_Timer, m_Prompt, m_Exit, m_ResultText, m_SaveStatus;
         private Button m_Deploy;
         private bool m_WasSettled;
         private float m_RefreshTimer;
         private RaidSnapshotRpc m_Snapshot;
         private int m_DeployRequestedRaid;
+        private uint m_DeployRequestedSequence;
+        private IntegerField m_CarryCells;
+        private VisualElement m_LoadoutPanel;
+        private Label m_LoadoutNote;
+        private int m_ResultStep;
+        private bool m_InventoryVisible;
+        private Label m_PackCapacity;
+        private Button m_ResultBack, m_ResultNext, m_Return;
+        private float m_RevealUntil;
+        private int m_PreviousCount = -1;
+        private static RaidHUD s_Active;
+        public static bool InventoryOpen => s_Active != null && s_Active.m_InventoryVisible;
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetPresentation() => s_Active = null;
+        public static bool CloseInventory()
+        {
+            if (!InventoryOpen) return false;
+            s_Active.SetInventory(false); return true;
+        }
 
         private void OnEnable()
         {
             m_DeployRequestedRaid = 0;
+            m_DeployRequestedSequence = 0;
             m_WasSettled = false;
+            s_Active = this; m_ResultStep = 0; m_InventoryVisible = false; m_PreviousCount = -1;
             m_Root = GetComponent<UIDocument>().rootVisualElement;
             m_Root.pickingMode = PickingMode.Ignore;
-            var card = new VisualElement { pickingMode = PickingMode.Ignore };
-            card.style.position = Position.Absolute;
-            card.style.left = 20; card.style.top = 140; card.style.width = 390;
-            card.style.paddingLeft = card.style.paddingRight = 16;
-            card.style.paddingTop = card.style.paddingBottom = 12;
-            card.style.backgroundColor = new Color(0.02f, 0.04f, 0.07f, 0.85f);
-            m_Root.Add(card);
-            AddLabel(card, "MOON RAID", 24);
-            m_Timer = AddLabel(card, "Connecting...", 18);
-            m_Bag = AddLabel(card, "", 18);
-            m_Exit = AddLabel(card, "", 18);
-            m_Prompt = AddLabel(card, "", 18);
-            AddLabel(card, "Blue: Dust   Orange: Alloy   Purple: Cell\nE / gamepad X: collect nearby supplies", 14);
-
-            m_Result = new VisualElement();
-            m_Result.style.position = Position.Absolute;
-            m_Result.style.left = new Length(30, LengthUnit.Percent);
-            m_Result.style.top = new Length(28, LengthUnit.Percent);
-            m_Result.style.width = new Length(40, LengthUnit.Percent);
-            m_Result.style.paddingLeft = m_Result.style.paddingRight = 28;
-            m_Result.style.paddingTop = m_Result.style.paddingBottom = 28;
-            m_Result.style.backgroundColor = new Color(0.02f, 0.04f, 0.07f, 0.97f);
-            m_ResultText = AddLabel(m_Result, "", 22);
-            m_Deploy = new Button(Deploy) { text = "DEPLOY AGAIN" };
-            m_Deploy.style.height = 48; m_Deploy.style.marginTop = 20; m_Deploy.style.fontSize = 20;
-            m_Result.Add(m_Deploy);
-            m_SaveStatus = AddLabel(m_Result, "", 14);
-            m_Root.Add(m_Result);
-            m_Result.style.display = DisplayStyle.None;
+            Resources.Load<VisualTreeAsset>("Moonkov/RaidUI").CloneTree(m_Root);
+            m_Status = m_Root.Q("raidStatus"); m_Timer = m_Root.Q<Label>("raidTimer"); m_Bag = m_Root.Q<Label>("raidBag");
+            m_Exit = m_Root.Q<Label>("raidExtraction"); m_Prompt = m_Root.Q<Label>("raidPrompt");
+            m_Result = m_Root.Q("raidResult"); m_ResultText = m_Root.Q<Label>("raidResultText"); m_SaveStatus = m_Root.Q<Label>("raidSaveStatus");
+            m_Deploy = m_Root.Q<Button>("raidDeploy"); m_Deploy.clicked += Deploy;
+            m_LoadoutPanel = m_Root.Q("raidLoadout");
+            m_CarryCells = m_Root.Q<IntegerField>("raidCarryCells");
+            m_CarryCells.RegisterValueChangedCallback(CarryCellsChanged);
+            m_LoadoutNote = m_Root.Q<Label>("raidLoadoutNote");
+            m_ResultBack = m_Root.Q<Button>("raidResultBack"); m_ResultBack.clicked += ResultBack;
+            m_ResultNext = m_Root.Q<Button>("raidResultNext"); m_ResultNext.clicked += ResultNext;
+            m_Return = m_Root.Q<Button>("raidReturn"); m_Return.clicked += ReturnToShip;
+            m_Return.SetEnabled(GameManager.CanUseMainMenu);
+            m_Inventory = m_Root.Q("raidInventory"); m_PackGrid = m_Root.Q("raidPackGrid"); m_PackCapacity = m_Root.Q<Label>("raidPackCapacity");
+            m_Root.Q<Button>("raidPackClose").clicked += ClosePack;
+            for (int i = 0; i < RaidRules.BagCapacity; i++)
+            {
+                var cell = new VisualElement(); cell.AddToClassList("raid-pack-cell"); cell.Add(new Label()); m_PackGrid.Add(cell);
+            }
         }
 
-        private static Label AddLabel(VisualElement parent, string text, int size)
+        private void SetInventory(bool visible)
         {
-            var label = new Label(text) { pickingMode = PickingMode.Ignore };
-            label.style.color = Color.white; label.style.fontSize = size;
-            label.style.whiteSpace = WhiteSpace.Normal; label.style.marginBottom = 8;
-            parent.Add(label);
-            return label;
+            m_InventoryVisible = visible; m_Inventory.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
+            Utils.SetCursorVisible(visible || GameSettings.Instance.IsPauseMenuOpen || m_WasSettled);
+        }
+        private void ClosePack() => SetInventory(false);
+        private void ResultBack() { m_ResultStep = Mathf.Max(0, m_ResultStep - 1); RenderResult(); }
+        private void ResultNext() { m_ResultStep = Mathf.Min(2, m_ResultStep + 1); RenderResult(); }
+        private void ReturnToShip() { if (GameManager.CanUseMainMenu) GameManager.Instance.ReturnToMainMenuAsync(); }
+        private void RenderResult()
+        {
+            int count = m_Snapshot.Dust + m_Snapshot.Alloy + m_Snapshot.Cells;
+            string title = m_Snapshot.Phase == RaidPhase.Extracted ? "SURVIVED" : m_Snapshot.Phase == RaidPhase.Dead ? "KILLED IN ACTION" : "TIME EXPIRED";
+            m_ResultText.text = m_ResultStep == 0 ? $"{title}\n\nEXPEDITION {m_Snapshot.RaidId:000}\n{(m_Snapshot.Phase == RaidPhase.Extracted ? "Cargo recovered" : "Carried cargo lost")} / {count} supplies"
+                : m_ResultStep == 1 ? $"{(m_Snapshot.Phase == RaidPhase.Extracted ? "RECOVERED CARGO" : "LOST CARGO")}\n\nMoon dust      {m_Snapshot.Dust}\nAlloy               {m_Snapshot.Alloy}\nEnergy cells   {m_Snapshot.Cells}"
+                : $"PERSONAL STORAGE\n\nMoon dust      {m_Snapshot.StashDust}\nAlloy               {m_Snapshot.StashAlloy}\nEnergy cells   {m_Snapshot.StashCells}";
+            for (int i = 0; i < 3; i++) m_Root.Q<Label>("raidStep" + i).EnableInClassList("raid-step-active", i == m_ResultStep);
+            m_ResultBack.SetEnabled(m_ResultStep > 0); m_ResultNext.style.display = m_ResultStep < 2 ? DisplayStyle.Flex : DisplayStyle.None;
+            m_Deploy.style.display = m_Return.style.display = m_ResultStep == 2 ? DisplayStyle.Flex : DisplayStyle.None;
+            m_LoadoutPanel.style.display = m_ResultStep == 2 ? DisplayStyle.Flex : DisplayStyle.None;
         }
 
         private void InitializeWorld()
@@ -91,13 +115,32 @@ namespace Unity.MP_FPS
             m_Snapshot = m_StateQuery.GetSingleton<RaidClientState>().Snapshot;
             bool ready = m_Snapshot.RaidId > 0;
             bool settled = ready && m_Snapshot.Phase != RaidPhase.Active;
+            if (Keyboard.current != null && Keyboard.current.tabKey.wasPressedThisFrame && ready && !settled && !GameSettings.Instance.IsPauseMenuOpen)
+                SetInventory(!m_InventoryVisible);
+            if (settled && m_InventoryVisible) SetInventory(false);
+            if (!settled && m_WasSettled) { m_ResultStep = 0; Utils.SetCursorVisible(false); }
+            if (settled && !m_WasSettled) m_ResultStep = 0;
             MoonRaidMap.Active.ShowLoot(m_Snapshot.TakenMask, ready);
             if (settled)
             {
                 // LateUpdate runs after character teardown, which can restore the previous cursor state.
                 Utils.SetCursorVisible(true);
                 bool saving = m_Snapshot.SaveState == RaidSaveState.Saving || m_Snapshot.SaveState == RaidSaveState.Retrying;
-                m_Deploy.SetEnabled(!saving && m_DeployRequestedRaid != m_Snapshot.RaidId);
+                if (m_DeployRequestedRaid == m_Snapshot.RaidId && m_Snapshot.Sequence > m_DeployRequestedSequence &&
+                    !m_Snapshot.DeployPending && m_Snapshot.LoadoutError != RaidLoadoutError.None)
+                    m_DeployRequestedRaid = 0;
+                bool deploying = m_Snapshot.DeployPending || m_DeployRequestedRaid == m_Snapshot.RaidId;
+                m_Deploy.SetEnabled(!saving && !deploying);
+                m_Return.SetEnabled(!saving && !deploying && GameManager.CanUseMainMenu);
+                m_CarryCells.SetEnabled(!saving && !deploying);
+                // Do not replace text while the player is editing it.
+                if (m_CarryCells.panel?.focusController.focusedElement is not VisualElement focused || !m_CarryCells.Contains(focused))
+                    m_CarryCells.SetValueWithoutNotify(AccountClient.CarryCells);
+                m_LoadoutNote.text = deploying ? "Preparing loadout. Waiting for server confirmation..."
+                    : m_Snapshot.LoadoutError == RaidLoadoutError.InsufficientCells ? "Not enough cells in storage. Reduce the quantity or refresh storage on the ship."
+                    : m_Snapshot.LoadoutError == RaidLoadoutError.InvalidCount ? "Choose 0-12 energy cells."
+                    : m_Snapshot.LoadoutError == RaidLoadoutError.Rejected ? "Loadout rejected. You can retry or return to the ship."
+                    : $"Storage: {m_Snapshot.StashCells} cells / Carry limit: {RaidRules.BagCapacity}. [R] consumes one cell. Unused cargo returns on extraction.";
                 if (!m_WasSettled && !saving) m_Deploy.Focus();
             }
             m_WasSettled = settled;
@@ -129,36 +172,55 @@ namespace Unity.MP_FPS
             int seconds = Mathf.CeilToInt(m_Snapshot.TimeLeft);
             m_Timer.text = ready ? $"Raid {m_Snapshot.RaidId}   {seconds / 60:00}:{seconds % 60:00} remaining" : "Connecting...";
             int count = m_Snapshot.Dust + m_Snapshot.Alloy + m_Snapshot.Cells;
+            if (count != m_PreviousCount) { m_PreviousCount = count; m_RevealUntil = Time.unscaledTime + 4; }
+            bool check = Keyboard.current != null && Keyboard.current.hKey.isPressed;
+            bool status = PlayerPrefs.GetInt("Moonkov.AlwaysShowHUD", 0) != 0 || check || Time.unscaledTime < m_RevealUntil || m_Snapshot.TimeLeft < 60;
+            m_Status.style.display = !settled && status ? DisplayStyle.Flex : DisplayStyle.None;
             m_Bag.text = $"Bag {count}/{RaidRules.BagCapacity}\nDust {m_Snapshot.Dust}   Alloy {m_Snapshot.Alloy}   Cells {m_Snapshot.Cells}";
-            m_Prompt.text = nearest < 0 ? "Find glowing supply caches" : count >= RaidRules.BagCapacity ? "Backpack full" : $"[E / X] Collect {ItemName(nearest)}";
+            m_Prompt.text = nearest < 0 || settled || m_InventoryVisible ? "" : count >= RaidRules.BagCapacity ? "CARGO FULL" : $"[E]  COLLECT\n{ItemName(nearest)}";
             if (alive && !settled)
             {
                 Vector3 delta = MoonRaidMap.Active.ExtractionPosition - position;
                 string heading = Mathf.Abs(delta.x) > Mathf.Abs(delta.z) ? delta.x > 0 ? "E" : "W" : delta.z > 0 ? "N" : "S";
-                m_Exit.text = m_Snapshot.ExtractionRemaining >= 0 ? $"EXTRACTING: {m_Snapshot.ExtractionRemaining:F1}s - stay inside" : $"Green beacon: {delta.magnitude:F0}m {heading}\nStay inside for {MoonRaidMap.Active.ExtractionSeconds:F0}s";
+                m_Exit.text = m_Snapshot.ExtractionRemaining >= 0 ? $"EXTRACTION\nSHUTTLE BEACON / {m_Snapshot.ExtractionRemaining:00.0}s" : check ? $"GREEN BEACON / {delta.magnitude:F0}m {heading}" : "";
             }
-            else m_Exit.text = settled ? "Raid ended" : "Deploying...";
+            else m_Exit.text = "";
+            if (m_InventoryVisible)
+            {
+                m_PackCapacity.text = $"{count} / {RaidRules.BagCapacity} supplies";
+                for (int i = 0; i < m_PackGrid.childCount; i++)
+                {
+                    var cell = m_PackGrid[i]; cell.EnableInClassList("raid-pack-filled", i < count);
+                    cell.Q<Label>().text = i >= count ? "" : i < m_Snapshot.Dust ? "MOON DUST" : i < m_Snapshot.Dust + m_Snapshot.Alloy ? "ALLOY" : "ENERGY CELL";
+                }
+            }
             if (settled)
             {
                 m_SaveStatus.text = m_Snapshot.SaveState == RaidSaveState.SessionOnly ? "Stash lasts for this connection only."
                     : m_Snapshot.SaveState == RaidSaveState.Saved ? "Stash saved. You can reconnect later."
                     : m_Snapshot.SaveState == RaidSaveState.Retrying ? "Waiting to save. Retrying..." : "Saving raid results...";
-                string title = m_Snapshot.Phase == RaidPhase.Extracted ? "EXTRACTION SUCCESS" : m_Snapshot.Phase == RaidPhase.Dead ? "KILLED IN ACTION" : "RAID TIME EXPIRED";
-                string result = m_Snapshot.Phase == RaidPhase.Extracted ? $"Recovered {count} supplies" : $"Lost {count} carried supplies";
-                m_ResultText.text = $"{title}\n\n{result}\nDust {m_Snapshot.Dust}   Alloy {m_Snapshot.Alloy}   Cells {m_Snapshot.Cells}\n\nSTASH\nDust {m_Snapshot.StashDust}   Alloy {m_Snapshot.StashAlloy}   Cells {m_Snapshot.StashCells}";
+                RenderResult();
             }
         }
 
         private static string ItemName(int id) => id % 3 == 0 ? "Moon Dust" : id % 3 == 1 ? "Alloy" : "Energy Cell";
 
+        private void CarryCellsChanged(ChangeEvent<int> evt)
+        {
+            AccountClient.SelectCarryCells(evt.newValue);
+            m_CarryCells.SetValueWithoutNotify(AccountClient.CarryCells);
+        }
+
         private void Deploy()
         {
             if (m_Snapshot.RaidId <= 0 || m_Snapshot.Phase == RaidPhase.Active ||
+                m_Snapshot.DeployPending || m_DeployRequestedRaid == m_Snapshot.RaidId ||
                 m_Snapshot.SaveState == RaidSaveState.Saving || m_Snapshot.SaveState == RaidSaveState.Retrying) return;
-            if (Send(new RaidDeployRpc { SettledRaidId = m_Snapshot.RaidId }))
+            if (Send(new RaidDeployRpc { SettledRaidId = m_Snapshot.RaidId, CarryCells = AccountClient.CarryCells }))
             {
                 GameSettings.Instance.IsPauseMenuOpen = false;
                 m_DeployRequestedRaid = m_Snapshot.RaidId;
+                m_DeployRequestedSequence = m_Snapshot.Sequence;
                 m_Deploy.SetEnabled(false);
             }
         }
@@ -175,11 +237,15 @@ namespace Unity.MP_FPS
 
         private void OnDisable()
         {
+            m_CarryCells?.UnregisterValueChangedCallback(CarryCellsChanged);
             if (m_World != null && m_World.IsCreated)
             {
                 m_StateQuery.Dispose(); m_PlayerQuery.Dispose(); m_ConnectionQuery.Dispose();
             }
             m_World = null;
+            if (s_Active == this) s_Active = null;
+            if (m_InventoryVisible) Utils.SetCursorVisible(GameSettings.Instance.IsPauseMenuOpen);
+            m_InventoryVisible = false;
             m_Root?.Clear();
         }
     }

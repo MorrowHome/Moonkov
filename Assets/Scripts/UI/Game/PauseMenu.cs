@@ -53,6 +53,7 @@ namespace Unity.MP_FPS
 
         void TogglePauseMenuVisibility(InputAction.CallbackContext obj)
         {
+            if (GameSettings.Instance.GameState != GlobalGameState.InGame || RaidHUD.CloseInventory()) return;
             EventSystem.current.SetSelectedGameObject(transform.parent.GetComponentInChildren<PanelRaycaster>().gameObject);
             GameSettings.Instance.IsPauseMenuOpen = !GameSettings.Instance.IsPauseMenuOpen;
         }
