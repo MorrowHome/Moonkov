@@ -80,6 +80,7 @@ public partial class ClientInputReaderSystem : SystemBase
                 playerInput.SetFlag(PlayerInput.InputFlag.Jump, _dollSingerInput.JumpPressed);
                 playerInput.SetFlag(PlayerInput.InputFlag.Sprint, _dollSingerInput.SprintHeld);
                 playerInput.SetFlag(PlayerInput.InputFlag.Aim, _dollSingerInput.AimHeld);
+                playerInput.SetFlag(PlayerInput.InputFlag.ThirdPerson, _dollSingerPresentation.IsThirdPerson);
                 playerInput.SetFlag(PlayerInput.InputFlag.Shoot, _dollSingerInput.AimHeld && _dollSingerInput.FirePressed);
                 playerInput.SetFlag(PlayerInput.InputFlag.Reload, _dollSingerInput.ReloadPressed);
                 _accumulatedLook.x += _dollSingerInput.Look.x;

@@ -713,17 +713,41 @@ public class FirstPersonController : MonoBehaviour
         {
             state.YawDegrees = input.LookYawPitchDegrees.x;
             state.PitchDegrees = input.LookYawPitchDegrees.y;
-            state.CurrentRotation = quaternion.RotateY(math.radians(state.YawDegrees));
+            if (!input.ThirdPerson)
+            {
+                state.CurrentRotation = quaternion.RotateY(math.radians(state.YawDegrees));
+                state.RotationVelocity = 0f;
+            }
+            else if (input.Aim || state.MovementSpeed > 0f)
+            {
+                // Third person walks towards camera-relative input; aiming keeps the body facing the view.
+                float targetYaw = state.YawDegrees;
+                if (!input.Aim)
+                    targetYaw += math.degrees(math.atan2(input.MoveInput.x, input.MoveInput.y));
+                float3 forward = math.forward(state.CurrentRotation);
+                float bodyYaw = math.degrees(math.atan2(forward.x, forward.z));
+                float yaw = stateConsts.RotationSmoothTime > 0f
+                    ? Mathf.SmoothDampAngle(bodyYaw, targetYaw, ref state.RotationVelocity,
+                        stateConsts.RotationSmoothTime, Mathf.Infinity, deltaTime)
+                    : targetYaw;
+                state.CurrentRotation = quaternion.RotateY(math.radians(yaw));
+            }
+            else
+            {
+                // Orbiting the camera at rest must not turn the third-person character.
+                state.RotationVelocity = 0f;
+            }
         }
 
-        var rotQuat = state.CurrentRotation; // Use the rotation already calculated above
+        // View yaw and body yaw are independent: using the turning body would rotate the input twice.
+        var rotQuat = quaternion.RotateY(math.radians(state.YawDegrees));
         var localMove = new float3(input.MoveInput.x, 0f, input.MoveInput.y);
 
         // Normalize it to get a pure direction vector with a length of 1.
         // This is the crucial step.
         var localDir = math.normalizesafe(localMove);
 
-        // Rotate the pure direction by the character's facing rotation.
+        // Rotate movement by the view, regardless of which way the body currently faces.
         var worldDir = math.mul(rotQuat, localDir);
 
         // Multiply the pure direction by the final speed calculated in AccumulateMovement.

@@ -18,10 +18,11 @@ namespace Unity.MP_FPS
         private readonly RaycastHit[] m_AimHits = new RaycastHit[32];
 
         public DollSingerInput OwnedInput => m_Linked && Role == MultiplayerRole.ClientOwned ? m_Input : null;
+        public bool IsThirdPerson => m_View != null && !m_View.IsFirstPerson;
 
         public Vector3 CaptureAimPoint(float2 look, float range)
         {
-            m_View.transform.rotation = Quaternion.Euler(look.y, look.x, 0f);
+            m_View.SetNetworkLookRotation(Quaternion.Euler(look.y, look.x, 0f));
             var ray = m_View.camera.ViewportPointToRay(new Vector3(0.5f, 0.5f));
             var target = ray.GetPoint(range);
             // Host server colliders duplicate the client avatars; ignore that world here.
@@ -84,7 +85,7 @@ namespace Unity.MP_FPS
             m_Halo.SetNetworkPresentation(state.Aiming, viewRotation * Vector3.forward, ghost.AimPoint);
             if (Role == MultiplayerRole.ClientOwned)
             {
-                m_View.transform.rotation = viewRotation;
+                m_View.SetNetworkLookRotation(viewRotation);
                 m_View.SetAimBlend(m_Halo.AimBlend);
             }
         }

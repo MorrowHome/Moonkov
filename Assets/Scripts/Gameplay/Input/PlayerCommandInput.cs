@@ -11,7 +11,8 @@ public struct PlayerInput
         Shoot = 1 << 1,
         Sprint = 1 << 2,
         Reload = 1 << 3,
-        Aim = 1 << 4
+        Aim = 1 << 4,
+        ThirdPerson = 1 << 5
     }
 
     public float2 MoveInput;
@@ -19,13 +20,14 @@ public struct PlayerInput
     // Camera-centre target intent. The server still owns the shot origin, raycast and damage.
     public float3 AimPoint;
 
-    public uint InputFlags; // 4 (16)
+    public uint InputFlags;
 
     public bool Jump => (InputFlags & (uint)InputFlag.Jump) != 0;
     public bool Shoot => (InputFlags & (uint)InputFlag.Shoot) != 0;
     public bool Reload => (InputFlags & (uint)InputFlag.Reload) != 0;
     public bool Sprint => (InputFlags & (uint)InputFlag.Sprint) != 0;
     public bool Aim => (InputFlags & (uint)InputFlag.Aim) != 0;
+    public bool ThirdPerson => (InputFlags & (uint)InputFlag.ThirdPerson) != 0;
 
     public void SetFlag(InputFlag flag, bool set)
     {

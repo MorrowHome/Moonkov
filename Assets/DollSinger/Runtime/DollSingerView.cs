@@ -73,6 +73,8 @@ public class DollSingerView : MonoBehaviour
     private float viewBlend;
     private float aimBlend;
     private bool appliedFirstPerson;
+    private bool networkLookDriven;
+    private Quaternion networkLookRotation;
 
     private const string HairMaterialName = "Hair";
     // "Hair" is the scalp/bangs/side-hair submesh only. The twin-tails are skinned to the
@@ -132,6 +134,7 @@ public class DollSingerView : MonoBehaviour
         movement = usesThirdPerson && character ? character.GetComponent<DollSingerMovement>() : null;
         firstPerson = false;
         appliedFirstPerson = false;
+        networkLookDriven = false;
         viewBlend = 0f;
         aimBlend = 0f;
         distanceVelocity = 0f;
@@ -149,6 +152,15 @@ public class DollSingerView : MonoBehaviour
     }
 
     public void SetAimBlend(float blend) => aimBlend = Mathf.Clamp01(blend);
+
+    /// <summary>Keep the owned view independent of network prediction rotating its character parent.</summary>
+    public void SetNetworkLookRotation(Quaternion rotation)
+    {
+        networkLookDriven = true;
+        networkLookRotation = rotation;
+        // Aim capture needs the current pose immediately, before the final camera update.
+        transform.rotation = rotation;
+    }
 
     public void SetFirstPerson(bool enabled)
     {
@@ -203,6 +215,10 @@ public class DollSingerView : MonoBehaviour
             transform.position = player.transform.position;
             return;
         }
+
+        // Prediction can rotate the parent after Update. Restore world-space look before
+        // calculating the final camera offset and applying lean, rather than inheriting that turn.
+        if (networkLookDriven) transform.rotation = networkLookRotation;
 
         float step = Time.deltaTime / Mathf.Max(0.01f, viewBlendSeconds);
         viewBlend = Mathf.MoveTowards(viewBlend, firstPerson ? 1f : 0f, step);
@@ -525,6 +541,7 @@ public class DollSingerView : MonoBehaviour
         if (movement) movement.IsFirstPersonView = false;
         firstPerson = false;
         appliedFirstPerson = false;
+        networkLookDriven = false;
         viewBlend = 0f;
         aimBlend = 0f;
         if (!camera || !cameraDefaultsCaptured) return;

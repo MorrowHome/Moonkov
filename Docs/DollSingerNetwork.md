@@ -16,6 +16,10 @@
 
 联机预制体关闭本地 `DollSingerMovement` 的位移模拟，并关闭嵌套 CharacterController。根对象的模板控制器负责网络移动；`DollSingerNetworkPresentation` 只把 Ghost 状态送入 Animator、护裙和光环表现。服务器不激活角色模型，相机和输入只属于本机玩家。第三人称观察者使用完整模型，第一人称隐藏面部仍只影响拥有者相机。
 
+第三人称未瞄准时，WASD 按相机水平朝向移动，角色平滑转向实际输入方向；例如 A 向左移动时身体也朝左，S 向后移动时身体转向后方。松开移动键后保持身体朝向，鼠标可独立绕角色观察。右键瞄准时身体朝向视角，允许侧移和后退；第一人称保持原有视角朝向控制。视角模式随输入命令送到服务器，身体朝向通过现有 ControllerState.CurrentRotation 同步，远端也能看到同样的转身。相机与光环目标仍使用独立的视角 yaw／pitch，避免把转身叠加到位移或瞄准方向上。
+
+网络相机保存世界空间的视角旋转，并在 `DollSingerView.LateUpdate` 中、计算相机偏移和探身之前重新应用。这样角色父对象在预测／校正期间转身也不会把转角带进最终画面；准星射线采样使用同一视角接口。纯本地演示继续由原 Movement 驱动相机。
+
 ```mermaid
 flowchart LR
     Input[DollSingerInput] --> Command[ClientCommandInput]
