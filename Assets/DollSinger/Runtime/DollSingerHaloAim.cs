@@ -136,7 +136,8 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         if (!thirdPerson) thirdPerson = GetComponent<DollSingerMovement>();
         if (!networkControlled && !playerCamera) FindCamera();
 
-        bool manualAim = networkControlled ? networkAiming : input.AimHeld;
+        bool manualAim = networkControlled ? networkAiming :
+            input.AimHeld && !(thirdPerson && thirdPerson.IsFreeLooking);
 #if UNITY_EDITOR
         bool aimingInput = manualAim || editorForceAim;
 #else

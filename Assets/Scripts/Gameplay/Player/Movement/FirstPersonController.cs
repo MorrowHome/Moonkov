@@ -144,6 +144,10 @@ public class FirstPersonController : MonoBehaviour
 
         public float YawDegrees;
         public float PitchDegrees;
+        public float2 FreeLookOffset;
+        public float Lean;
+        public bool FirstPersonView;
+        public bool FreeLooking;
         public float MovementSpeed;
         public float JumpFallSpeed;
         public float AnimatorTargetSpeed; // _animIDSpeed
@@ -161,7 +165,7 @@ public class FirstPersonController : MonoBehaviour
 
         public float TeleportFreeze;
 
-        //WARNING WARNING: Adding more members to this struct might break network serialisation speak to Claire/Andy B
+        // Nested fields are serialized by the generated PredictedPlayerGhost serializer.
 
         private void SetFlag(StateFlag flag, bool set)
         {
@@ -715,7 +719,8 @@ public class FirstPersonController : MonoBehaviour
             state.PitchDegrees = input.LookYawPitchDegrees.y;
             if (!input.ThirdPerson)
             {
-                state.CurrentRotation = quaternion.RotateY(math.radians(state.YawDegrees));
+                if (!state.FreeLooking)
+                    state.CurrentRotation = quaternion.RotateY(math.radians(state.YawDegrees));
                 state.RotationVelocity = 0f;
             }
             else if (input.Aim || state.MovementSpeed > 0f)
@@ -740,7 +745,7 @@ public class FirstPersonController : MonoBehaviour
         }
 
         // View yaw and body yaw are independent: using the turning body would rotate the input twice.
-        var rotQuat = quaternion.RotateY(math.radians(state.YawDegrees));
+        var rotQuat = state.FreeLooking ? state.CurrentRotation : quaternion.RotateY(math.radians(state.YawDegrees));
         var localMove = new float3(input.MoveInput.x, 0f, input.MoveInput.y);
 
         // Normalize it to get a pure direction vector with a length of 1.
@@ -767,6 +772,12 @@ public class FirstPersonController : MonoBehaviour
     {
         state.Aiming = input.Aim;
         state.Sprinting = input.Sprint && !input.Aim;
+        state.FirstPersonView = !input.ThirdPerson;
+        state.FreeLooking = state.FirstPersonView && input.FreeLooking;
+        state.FreeLookOffset = state.FirstPersonView
+            ? math.clamp(input.FreeLookOffset, new float2(-70f, -45f), new float2(70f, 45f))
+            : float2.zero;
+        state.Lean = math.clamp(input.Lean, -1f, 1f);
     }
 
     public static void AccumulateMovement(ref ControllerState state,

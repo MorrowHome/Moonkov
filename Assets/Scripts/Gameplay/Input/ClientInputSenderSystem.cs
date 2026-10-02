@@ -40,7 +40,7 @@ public partial class ClientInputSenderSystem : SystemBase
                         { Tick = tick, ClientInterpolationTick = networkTime.InterpolationTick, };
 
                     commandInput.SetFrom(in input.ValueRO);
-                    commandInput.UpdateFrom(inProgressCommandInput);
+                    commandInput.UpdateFrom(inProgressCommandInput, false);
                     buffer.AddCommandData(commandInput);
 
                     // we can now start a new inprogress input

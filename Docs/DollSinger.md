@@ -19,7 +19,7 @@
 | 滚轮 | 第三人称距离 |
 | 鼠标右键 | 手指枪瞄准，光环由头顶移向食指，第三人称切换肩后视角 |
 | 瞄准时按住鼠标左键 | 连续发射独立激光视觉弹道，每发携带实时点光源 |
-| Q / E | 左右探身 |
+| Q / E | 从腰部带动上身左右侧倾，松开回正 |
 | Alt + Q / E | 锁定探身；再次按相同组合解除 |
 | 第一人称 Alt + 鼠标 | 自由观察；松开后视角回正 |
 | L | 开关光环照明 |
@@ -41,6 +41,8 @@
 移动使用源 ThirdPersonController 的本地逻辑，改名为 `DollSingerMovement`，解除 EntityController、InputManager、MapService 和协议依赖。位移由 CharacterController 管理，Animator root motion 关闭；物理模拟放在动画写入后的 LateUpdate。
 
 第一人称保留身体、双马尾和完整角色影子，只对玩家自己的相机过滤面部及近眼头饰三角形。改用 URP 渲染回调，其他相机与 Scene 视图继续显示完整模型。模型开启 Read/Write，供运行时生成第一人称网格；运行时网格和影子对象随视角组件释放。
+
+2026-10-03：侧倾改成腰部与胸部共同倾斜，第一人称相机跟随真实眼位，移除第一人称额外横移。左右 Alt 均支持自由转头；自由观察与回正期间暂停瞄准。极限低头时眼位平滑向胸部表面前方让开，可调整 View 上的 `firstPersonEyeForward` 和 `lookDownBodyClearance`。这轮按用户要求未运行测试或截图，最终手感与外观由实际 Play 确认。
 
 ```mermaid
 flowchart LR

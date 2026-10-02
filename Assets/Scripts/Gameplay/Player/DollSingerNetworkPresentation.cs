@@ -15,14 +15,46 @@ namespace Unity.MP_FPS
         private bool m_Linked;
         private bool m_ViewActivated;
         private uint m_LastJumpTick;
+        private float2 m_FreeLookOffset;
+        private Quaternion m_OwnedViewRotation = Quaternion.identity;
+        private float m_OwnedLean;
         private readonly RaycastHit[] m_AimHits = new RaycastHit[32];
 
         public DollSingerInput OwnedInput => m_Linked && Role == MultiplayerRole.ClientOwned ? m_Input : null;
         public bool IsThirdPerson => m_View != null && !m_View.IsFirstPerson;
 
+        public bool UpdateOwnedLook(ref float2 look, out float2 freeLookOffset, bool blocked)
+        {
+            bool freeLooking = !blocked && !IsThirdPerson && m_Input.AltHeld;
+            if (freeLooking)
+            {
+                m_FreeLookOffset += new float2(m_Input.Look.x, -m_Input.Look.y);
+                m_FreeLookOffset = math.clamp(m_FreeLookOffset,
+                    new float2(-m_Model.m_FreeLookYawLimit, -m_Model.m_FreeLookPitchLimit),
+                    new float2(m_Model.m_FreeLookYawLimit, m_Model.m_FreeLookPitchLimit));
+            }
+            else
+            {
+                if (!blocked) look += new float2(m_Input.Look.x, -m_Input.Look.y);
+                float step = m_Model.m_FreeLookReturnSpeed * Time.deltaTime;
+                m_FreeLookOffset.x = Mathf.MoveTowards(m_FreeLookOffset.x, 0f, step);
+                m_FreeLookOffset.y = Mathf.MoveTowards(m_FreeLookOffset.y, 0f, step);
+            }
+            if (IsThirdPerson) m_FreeLookOffset = float2.zero;
+            look.y = math.clamp(look.y, -80f, 80f);
+            m_FreeLookOffset.y = math.clamp(look.y + m_FreeLookOffset.y, -80f, 80f) - look.y;
+            freeLookOffset = m_FreeLookOffset;
+            m_OwnedLean = blocked ? 0f : m_Input.LeanTarget;
+            var viewLook = look + m_FreeLookOffset;
+            m_OwnedViewRotation = Quaternion.Euler(viewLook.y, viewLook.x, 0f);
+            m_View.SetNetworkLookRotation(m_OwnedViewRotation);
+            return freeLooking || math.lengthsq(m_FreeLookOffset) > 0.01f;
+        }
+
         public Vector3 CaptureAimPoint(float2 look, float range)
         {
-            m_View.SetNetworkLookRotation(Quaternion.Euler(look.y, look.x, 0f));
+            var viewLook = look + m_FreeLookOffset;
+            m_View.SetNetworkLookRotation(Quaternion.Euler(viewLook.y, viewLook.x, 0f));
             var ray = m_View.camera.ViewportPointToRay(new Vector3(0.5f, 0.5f));
             var target = ray.GetPoint(range);
             // Host server colliders duplicate the client avatars; ignore that world here.
@@ -43,7 +75,8 @@ namespace Unity.MP_FPS
         public override void OnGhostLinked()
         {
             m_Linked = true;
-            m_Model.enabled = false;
+            m_Model.SetNetworkViewPresentation(false, Quaternion.identity, 0f);
+            m_Model.enabled = Role != MultiplayerRole.Server;
             m_Model.GetComponent<UnityEngine.CharacterController>().enabled = false;
             m_Model.gameObject.SetActive(Role != MultiplayerRole.Server);
             if (Role == MultiplayerRole.ClientOwned)
@@ -83,10 +116,15 @@ namespace Unity.MP_FPS
                 state.Sprinting, jumped, Time.deltaTime, (Vector3)state.AnimatorMotion,
                 ((Quaternion)state.CurrentRotation).eulerAngles.y);
             var viewRotation = Quaternion.Euler(state.PitchDegrees, state.YawDegrees, 0f);
+            var headLook = new float2(state.YawDegrees, state.PitchDegrees) + state.FreeLookOffset;
+            var headRotation = Quaternion.Euler(headLook.y, headLook.x, 0f);
+            bool owned = Role == MultiplayerRole.ClientOwned;
+            m_Model.SetNetworkViewPresentation(owned ? m_View.IsFirstPerson : state.FirstPersonView,
+                owned ? m_OwnedViewRotation : headRotation, owned ? m_OwnedLean : state.Lean);
             m_Halo.SetNetworkPresentation(state.Aiming, viewRotation * Vector3.forward, ghost.AimPoint);
             if (Role == MultiplayerRole.ClientOwned)
             {
-                m_View.SetNetworkLookRotation(viewRotation);
+                m_View.SetNetworkLookRotation(m_OwnedViewRotation);
                 m_View.SetAimBlend(m_Halo.AimBlend);
             }
         }

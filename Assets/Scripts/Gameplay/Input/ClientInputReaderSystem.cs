@@ -73,18 +73,23 @@ public partial class ClientInputReaderSystem : SystemBase
             input.ValueRW = new ClientInput();
             movementInput.ValueRW = new ClientMovementInput();
 
+            bool blocked = GameSettings.Instance.IsPauseMenuOpen || RaidHUD.InventoryOpen;
+            if (blocked && _dollSingerInput == null) continue;
+
             if (_dollSingerInput != null)
             {
                 var playerInput = new PlayerInput();
-                playerInput.MoveInput = _dollSingerInput.Move;
-                playerInput.SetFlag(PlayerInput.InputFlag.Jump, _dollSingerInput.JumpPressed);
-                playerInput.SetFlag(PlayerInput.InputFlag.Sprint, _dollSingerInput.SprintHeld);
-                playerInput.SetFlag(PlayerInput.InputFlag.Aim, _dollSingerInput.AimHeld);
+                bool canRead = !blocked && _dollSingerInput.CanReadPlayerInput;
+                playerInput.FreeLooking = _dollSingerPresentation.UpdateOwnedLook(
+                    ref _accumulatedLook, out playerInput.FreeLookOffset, !canRead);
+                playerInput.Lean = canRead ? _dollSingerInput.LeanTarget : 0f;
+                playerInput.MoveInput = canRead ? _dollSingerInput.Move : Vector2.zero;
+                playerInput.SetFlag(PlayerInput.InputFlag.Jump, canRead && _dollSingerInput.JumpPressed);
+                playerInput.SetFlag(PlayerInput.InputFlag.Sprint, canRead && _dollSingerInput.SprintHeld);
+                playerInput.SetFlag(PlayerInput.InputFlag.Aim, canRead && _dollSingerInput.AimHeld && !playerInput.FreeLooking);
                 playerInput.SetFlag(PlayerInput.InputFlag.ThirdPerson, _dollSingerPresentation.IsThirdPerson);
-                playerInput.SetFlag(PlayerInput.InputFlag.Shoot, _dollSingerInput.AimHeld && _dollSingerInput.FireHeld);
-                playerInput.SetFlag(PlayerInput.InputFlag.Reload, _dollSingerInput.ReloadPressed);
-                _accumulatedLook.x += _dollSingerInput.Look.x;
-                _accumulatedLook.y = math.clamp(_accumulatedLook.y - _dollSingerInput.Look.y, -85f, 85f);
+                playerInput.SetFlag(PlayerInput.InputFlag.Shoot, playerInput.Aim && _dollSingerInput.FireHeld);
+                playerInput.SetFlag(PlayerInput.InputFlag.Reload, canRead && _dollSingerInput.ReloadPressed);
                 playerInput.LookYawPitchDegrees = _accumulatedLook;
                 var weapon = WeaponManager.Instance.WeaponRegistry.GetWeaponData(2);
                 playerInput.AimPoint = _dollSingerPresentation.CaptureAimPoint(_accumulatedLook, weapon.HitscanRange);

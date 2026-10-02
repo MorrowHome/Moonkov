@@ -17,6 +17,10 @@ public struct PlayerInput
 
     public float2 MoveInput;
     public float2 LookYawPitchDegrees;
+    // Head-only angles relative to the normal view; locomotion and weapons keep their base facing.
+    public float2 FreeLookOffset;
+    public float Lean;
+    public bool FreeLooking;
     // Camera-centre target intent. The server still owns the shot origin, raycast and damage.
     public float3 AimPoint;
 
@@ -41,15 +45,34 @@ public struct PlayerInput
         }
     }
 
-    public void UpdateFrom(in PlayerInput input)
+    public void UpdateFrom(in PlayerInput input, bool updateContinuousState = true)
     {
+        bool hadBufferedShot = Shoot;
+        float3 bufferedAimPoint = AimPoint;
+        float2 bufferedLook = LookYawPitchDegrees;
+        if (updateContinuousState)
+        {
+            MoveInput = input.MoveInput;
+            LookYawPitchDegrees = input.LookYawPitchDegrees;
+            FreeLookOffset = input.FreeLookOffset;
+            Lean = input.Lean;
+            FreeLooking = input.FreeLooking;
+            AimPoint = input.AimPoint;
+            const uint events = (uint)(InputFlag.Jump | InputFlag.Shoot | InputFlag.Reload);
+            InputFlags = (InputFlags & events) | input.InputFlags;
+        }
         // Preserve the target belonging to a buffered single-shot press.
         if (input.Shoot)
         {
             AimPoint = input.AimPoint;
             LookYawPitchDegrees = input.LookYawPitchDegrees;
         }
-        InputFlags |= input.InputFlags;
+        else if (hadBufferedShot)
+        {
+            AimPoint = bufferedAimPoint;
+            LookYawPitchDegrees = bufferedLook;
+        }
+        InputFlags |= input.InputFlags & (uint)(InputFlag.Jump | InputFlag.Shoot | InputFlag.Reload);
     }
 }
 
@@ -82,9 +105,9 @@ public struct ClientMovementInput : IComponentData
         PlayerInput = playerInput;
     }
 
-    public void UpdateFrom(in ClientMovementInput clientInput)
+    public void UpdateFrom(in ClientMovementInput clientInput, bool updateContinuousState = true)
     {
-        PlayerInput.UpdateFrom(clientInput.PlayerInput);
+        PlayerInput.UpdateFrom(clientInput.PlayerInput, updateContinuousState);
     }
 }
 
@@ -112,9 +135,9 @@ public struct ClientCommandInput : ICommandData
         return true;
     }
 
-    public void UpdateFrom(in ClientMovementInput clientInput)
+    public void UpdateFrom(in ClientMovementInput clientInput, bool updateContinuousState = true)
     {
-        PlayerInput.UpdateFrom(clientInput.PlayerInput);
+        PlayerInput.UpdateFrom(clientInput.PlayerInput, updateContinuousState);
     }
 
     public void SetFrom(in ClientMovementInput clientInput)

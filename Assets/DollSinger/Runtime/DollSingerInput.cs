@@ -25,6 +25,10 @@ namespace Unity.MP_FPS.DollSinger
         public bool ViewPressed { get; private set; }
         public bool LightPressed { get; private set; }
         public bool ReloadPressed { get; private set; }
+        public bool AltHeld { get; private set; }
+        public float LeanTarget { get; private set; }
+        public bool IsLeanLocked => lockedLean != 0f;
+        private float lockedLean;
         public float Scroll { get; private set; }
 
         private void OnEnable()
@@ -59,6 +63,14 @@ namespace Unity.MP_FPS.DollSinger
                 ViewPressed = keyboard.vKey.wasPressedThisFrame;
                 LightPressed = keyboard.lKey.wasPressedThisFrame;
                 ReloadPressed = keyboard.rKey.wasPressedThisFrame;
+                AltHeld = keyboard.leftAltKey.isPressed || keyboard.rightAltKey.isPressed;
+                if (AltHeld && keyboard.qKey.wasPressedThisFrame)
+                    lockedLean = lockedLean < 0f ? 0f : -1f;
+                else if (AltHeld && keyboard.eKey.wasPressedThisFrame)
+                    lockedLean = lockedLean > 0f ? 0f : 1f;
+                float heldLean = AltHeld ? 0f :
+                    (keyboard.eKey.isPressed ? 1f : 0f) - (keyboard.qKey.isPressed ? 1f : 0f);
+                LeanTarget = heldLean != 0f ? heldLean : lockedLean;
             }
             if (mouse != null)
             {
@@ -89,12 +101,15 @@ namespace Unity.MP_FPS.DollSinger
             Move = Look = Vector2.zero;
             JumpPressed = SprintHeld = AimHeld = FirePressed = ViewPressed = LightPressed = ReloadPressed = false;
             FireHeld = false;
+            AltHeld = false;
+            LeanTarget = 0f;
             Scroll = 0f;
         }
 
         private void SetCapture(bool value)
         {
             captured = value;
+            if (!value) lockedLean = 0f;
             Cursor.lockState = value ? CursorLockMode.Locked : CursorLockMode.None;
             Cursor.visible = !value;
             ClearFrame();
@@ -108,6 +123,7 @@ namespace Unity.MP_FPS.DollSinger
         private void OnDisable()
         {
             captured = false;
+            lockedLean = 0f;
             ClearFrame();
             Cursor.lockState = previousLock;
             Cursor.visible = previousVisible;

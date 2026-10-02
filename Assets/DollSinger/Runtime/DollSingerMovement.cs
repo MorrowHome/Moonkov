@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using Random = UnityEngine.Random;
 
 /* Note: animations are called via the controller for both the character and capsule using animator null checks
@@ -84,7 +83,7 @@ namespace Unity.MP_FPS.DollSinger {
         [Header("Lean")]
         [Tooltip("Camera roll in degrees at full lean.")]
         [Range(5f, 35f)] public float m_LeanAngle = 15f;
-        [Tooltip("How far the camera slides sideways at full lean, in metres. Lets you peek past cover.")]
+        [Tooltip("Third-person orbit offset at full lean. First person follows the actual leaning head.")]
         [Range(0f, 0.6f)] public float m_LeanShift = 0.22f;
         [Tooltip("Upper body roll as a fraction of the camera roll.")]
         [Range(0f, 1f)] public float m_BodyLeanRatio = 0.65f;
@@ -103,9 +102,11 @@ namespace Unity.MP_FPS.DollSinger {
         private bool m_BodyTurningToLook;
         private float m_LeanState = 0f;
         private float m_LeanTarget = 0f;
-        private float m_LeanLockedSide = 0f;
         private Transform m_ChestBone;
+        private Transform m_SpineBone;
+        private Transform m_HeadBone;
         private bool m_ChestBoneSearched;
+        private Quaternion m_NetworkHeadRotation;
 
         // player
         private float m_Speed;
@@ -176,7 +177,9 @@ namespace Unity.MP_FPS.DollSinger {
         /// <summary>Upper-body roll about the character's forward axis. Same sign convention as <see cref="LeanRoll"/>.</summary>
         public float BodyLeanRoll => -m_LeanState * m_LeanAngle * m_BodyLeanRatio;
         /// <summary>True while a lean is latched with Alt+Q / Alt+E.</summary>
-        public bool IsLeanLocked => m_LeanLockedSide != 0f;
+        public bool IsLeanLocked => input && input.IsLeanLocked;
+        public bool IsFreeLooking => m_FreeLookHeld ||
+            Mathf.Abs(m_FreeLookYaw) > 0.1f || Mathf.Abs(m_FreeLookPitch) > 0.1f;
         public bool IsFirstPersonView {
             get => m_IsFirstPersonView;
             set {
@@ -192,8 +195,18 @@ namespace Unity.MP_FPS.DollSinger {
         public DollSingerInput input;
         public DollSingerView view;
 
-        // Called with this component disabled. Network prediction owns the root
-        // CharacterController; this adapter updates only animation and presentation state.
+        // Network prediction owns the root CharacterController. Keep this component
+        // enabled for Animator IK and LateUpdate, but skip local movement simulation.
+        public void SetNetworkViewPresentation(bool firstPersonView, Quaternion headRotation, float lean)
+        {
+            m_NetworkDriven = true;
+            m_IsFirstPersonView = firstPersonView;
+            m_NetworkHeadRotation = headRotation;
+            m_LeanTarget = Mathf.Clamp(lean, -1f, 1f);
+            m_HeadLookWeight = Mathf.MoveTowards(m_HeadLookWeight,
+                firstPersonView ? 1f : 0f, Time.deltaTime * 6f);
+        }
+
         public void ApplyNetworkPresentation(float speed, float verticalVelocity, bool grounded,
             bool sprinting, bool jumped, float deltaTime, Vector3 worldMovement = default,
             float? bodyYaw = null)
@@ -258,7 +271,13 @@ namespace Unity.MP_FPS.DollSinger {
         }
 
         private void OnEnable() => ResetTurnAnimation();
-        private void OnDisable() => ResetTurnAnimation();
+        private void OnDisable()
+        {
+            ResetTurnAnimation();
+            m_LeanState = m_LeanTarget = 0f;
+            m_FreeLookYaw = m_FreeLookPitch = m_HeadLookWeight = 0f;
+            m_FreeLookHeld = false;
+        }
 
         private void ResetTurnAnimation()
         {
@@ -277,8 +296,11 @@ namespace Unity.MP_FPS.DollSinger {
         }
 
         private void Update() {
+            if (m_NetworkDriven) return;
             IsLocallyAiming = input && input.AimHeld;
             ReadInput();
+            CameraRotation();
+            if (IsFreeLooking) IsLocallyAiming = false;
             m_HeadLookWeight = Mathf.MoveTowards(m_HeadLookWeight,
                 IsFirstPersonView ? 1f : 0f, Time.deltaTime * 6f);
             JumpedThisFrame = false;
@@ -291,7 +313,6 @@ namespace Unity.MP_FPS.DollSinger {
 
         private void LateUpdate() {
             m_LeanState = Mathf.MoveTowards(m_LeanState, m_LeanTarget, Time.deltaTime * m_LeanSpeed);
-            CameraRotation();
             ApplyBodyLean();
         }
 
@@ -300,16 +321,31 @@ namespace Unity.MP_FPS.DollSinger {
         private void ApplyBodyLean() {
             if (!m_HasAnimator || !m_Animator.isHuman) return;
             if (!m_ChestBoneSearched) {
+                m_SpineBone = m_Animator.GetBoneTransform(HumanBodyBones.Spine);
                 m_ChestBone = m_Animator.GetBoneTransform(HumanBodyBones.UpperChest)
                               ?? m_Animator.GetBoneTransform(HumanBodyBones.Chest);
+                m_HeadBone = m_Animator.GetBoneTransform(HumanBodyBones.Head);
                 m_ChestBoneSearched = true;
             }
-            if (!m_ChestBone) return;
+            if (!m_SpineBone) return;
             float roll = BodyLeanRoll;
             if (Mathf.Abs(roll) < 0.01f) return;
+            Quaternion headBeforeLean = m_HeadBone ? m_HeadBone.rotation : Quaternion.identity;
             // Roll around the character's forward axis, not the bone's local one — MMD
             // bone axes are arbitrary and would tilt the wrong way.
-            m_ChestBone.rotation = Quaternion.AngleAxis(roll, transform.forward) * m_ChestBone.rotation;
+            // Bend from the waist with planted legs, then distribute a little of the bend
+            // over the chest. The head/eyes travel with the real body instead of a camera slide.
+            float waistWeight = m_ChestBone ? 0.75f : 1f;
+            m_SpineBone.rotation = Quaternion.AngleAxis(roll * waistWeight, transform.forward) * m_SpineBone.rotation;
+            if (m_ChestBone)
+                m_ChestBone.rotation = Quaternion.AngleAxis(roll * 0.25f, transform.forward) * m_ChestBone.rotation;
+            if (m_IsFirstPersonView && m_HeadBone)
+            {
+                // Keep yaw/pitch in world space after the torso bend; only roll follows lean.
+                Quaternion look = m_NetworkDriven ? m_NetworkHeadRotation :
+                    view ? view.transform.rotation : m_HeadBone.rotation;
+                m_HeadBone.rotation = Quaternion.AngleAxis(LeanRoll, look * Vector3.forward) * headBeforeLean;
+            }
         }
 
         private void OnAnimatorIK(int layerIndex) {
@@ -318,6 +354,12 @@ namespace Unity.MP_FPS.DollSinger {
             // camera exactly, otherwise the hair that frames the view drifts off screen.
             m_Animator.SetLookAtWeight(m_HeadLookWeight, 0f, 1f, 0f, 0f);
             if (m_HeadLookWeight <= 0.001f) return;
+            if (m_NetworkDriven)
+            {
+                Transform head = m_Animator.GetBoneTransform(HumanBodyBones.Head);
+                if (head) m_Animator.SetLookAtPosition(head.position + m_NetworkHeadRotation * Vector3.forward * 12f);
+                return;
+            }
             var rig = view;
             if (rig != null) {
                 m_Animator.SetLookAtPosition(rig.LookPoint);
@@ -343,24 +385,7 @@ namespace Unity.MP_FPS.DollSinger {
         // the lean. Pressing the same Alt combo again unlatches and returns to upright;
         // the opposite Alt combo switches sides.
         private void ReadLeanInput(bool canRead) {
-            if (!canRead) { m_LeanTarget = 0f; return; }
-            var keyboard = Keyboard.current;
-            if (keyboard == null) return;
-
-            bool altHeld = keyboard.leftAltKey.isPressed || keyboard.rightAltKey.isPressed;
-            if (canRead && altHeld && keyboard.qKey.wasPressedThisFrame)
-                m_LeanLockedSide = m_LeanLockedSide < 0f ? 0f : -1f;
-            else if (canRead && altHeld && keyboard.eKey.wasPressedThisFrame)
-                m_LeanLockedSide = m_LeanLockedSide > 0f ? 0f : 1f;
-
-            float held = 0f;
-            if (canRead && !altHeld) {
-                if (keyboard.qKey.isPressed) held = -1f;
-                else if (keyboard.eKey.isPressed) held = 1f;
-            }
-            // A held key wins over the latch, so tapping Q/E still works while locked and
-            // returns to the latched angle on release.
-            m_LeanTarget = held != 0f ? held : m_LeanLockedSide;
+            m_LeanTarget = canRead ? input.LeanTarget : 0f;
         }
 
         private void ReadInput() {
@@ -368,8 +393,7 @@ namespace Unity.MP_FPS.DollSinger {
             m_MoveInput = canRead ? input.Move : Vector2.zero;
             m_JumpInput = canRead && input.JumpPressed;
             m_SprintInput = canRead && input.SprintHeld;
-            m_FreeLookHeld = canRead && IsFirstPersonView && !IsLocallyAiming &&
-                             Keyboard.current != null && Keyboard.current.leftAltKey.isPressed;
+            m_FreeLookHeld = canRead && IsFirstPersonView && input.AltHeld;
             ReadLeanInput(canRead);
             m_LookInput = Vector2.zero;
             if (!canRead) return;
@@ -433,7 +457,7 @@ namespace Unity.MP_FPS.DollSinger {
             // if there is a move input rotate player when the player is moving
             if (IsFirstPersonView && m_CinemachineCameraTarget != null) {
                 float yawToLook = Mathf.DeltaAngle(transform.eulerAngles.y, m_CinemachineTargetYaw);
-                if (m_FreeLookHeld) {
+                if (IsFreeLooking) {
                     m_BodyTurningToLook = false;
                     m_RotationVelocity = 0f;
                 }

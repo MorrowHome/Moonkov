@@ -40,9 +40,14 @@ public class DollSingerView : MonoBehaviour
     public Vector3 fallbackEyeWorldOffset = new Vector3(0f, 0.08f, 0.05f);
     [Tooltip("Distance used to build the head look-at target along the camera forward.")]
     public float lookTargetDistance = 12f;
+    [Tooltip("Moves the eye outside the neck opening as the view pitches down, in world metres.")]
+    [Range(0f, 0.15f)] public float firstPersonEyeForward = 0.045f;
+    [Tooltip("Minimum distance in front of the chest when looking fully down, in world metres.")]
+    [Range(0.05f, 0.35f)] public float lookDownBodyClearance = 0.20f;
 
     private DollSingerMovement movement;
     private Transform eyeAnchor;
+    private Transform chestAnchor;
     private Vector3 eyeLocalOffset;
     private SkinnedMeshRenderer bodyRenderer;
     private Material[] thirdPersonMaterials;
@@ -56,8 +61,7 @@ public class DollSingerView : MonoBehaviour
     private readonly Stack<CameraMeshState> cameraMeshStates = new Stack<CameraMeshState>();
     private struct CameraMeshState
     {
-        public new Camera camera;
-    public DollSingerInput input;
+        public Camera camera;
         public bool firstPersonMesh;
     }
 
@@ -228,7 +232,7 @@ public class DollSingerView : MonoBehaviour
         // First person rides the head bone so the camera follows head animation; the pivot
         // rotation itself comes from DollSingerMovement.CameraRotation().
         Vector3 pivot = player.transform.position;
-        if (eyeAnchor) pivot = eyeAnchor.TransformPoint(eyeLocalOffset);
+        if (eyeAnchor) pivot = GetFirstPersonEyePosition();
         transform.position = Vector3.Lerp(player.transform.position, pivot, viewBlend);
 
         Vector3 restForward = thirdPersonRestRotation * Vector3.forward;
@@ -261,12 +265,32 @@ public class DollSingerView : MonoBehaviour
     private void ApplyLean()
     {
         if (!movement) return;
-        float shift = movement.LeanShift;
+        // The first-person eye has already moved with the waist/chest bones. Applying
+        // the old sideways camera slide here a second time detaches it from the body.
+        float shift = movement.LeanShift * (1f - viewBlend);
         if (Mathf.Abs(shift) > 0.0001f)
             transform.position += player.transform.right * shift;
         float roll = movement.LeanRoll;
         if (Mathf.Abs(roll) > 0.01f)
             transform.rotation = transform.rotation * Quaternion.Euler(0f, 0f, roll);
+    }
+
+    private Vector3 GetFirstPersonEyePosition()
+    {
+        Vector3 up = player.transform.up;
+        Vector3 horizontalLook = Vector3.ProjectOnPlane(transform.forward, up).normalized;
+        if (horizontalLook.sqrMagnitude < 0.01f) horizontalLook = player.transform.forward;
+        Vector3 eye = eyeAnchor.TransformPoint(eyeLocalOffset) + horizontalLook * firstPersonEyeForward;
+        float down = Mathf.Clamp01(Vector3.Dot(transform.forward, -up));
+        float clearanceBlend = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.35f, 0.95f, down));
+        if (chestAnchor && clearanceBlend > 0f)
+        {
+            float forwardDistance = Vector3.Dot(eye - chestAnchor.position, horizontalLook);
+            // Push horizontally out of the torso, rather than down along the camera ray.
+            // The original head-relative eye dives into the neckline at extreme pitch.
+            eye += horizontalLook * (Mathf.Max(0f, lookDownBodyClearance - forwardDistance) * clearanceBlend);
+        }
+        return eye;
     }
 
     /// <summary>
@@ -279,6 +303,7 @@ public class DollSingerView : MonoBehaviour
     private void ResolveEyeAnchor(GameObject character)
     {
         eyeAnchor = null;
+        chestAnchor = null;
         eyeLocalOffset = Vector3.zero;
         if (!character) return;
 
@@ -287,6 +312,8 @@ public class DollSingerView : MonoBehaviour
         if (animator && animator.isHuman)
         {
             head = animator.GetBoneTransform(HumanBodyBones.Head);
+            chestAnchor = animator.GetBoneTransform(HumanBodyBones.UpperChest)
+                ?? animator.GetBoneTransform(HumanBodyBones.Chest);
             eyeLeft = animator.GetBoneTransform(HumanBodyBones.LeftEye);
             eyeRight = animator.GetBoneTransform(HumanBodyBones.RightEye);
         }
@@ -523,6 +550,7 @@ public class DollSingerView : MonoBehaviour
         fullShadowRenderer = null;
         shadowBlendWeights = null;
         eyeAnchor = null;
+        chestAnchor = null;
     }
 
     private static void DestroyRuntime(Object target)
