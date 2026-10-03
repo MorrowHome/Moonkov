@@ -192,6 +192,11 @@ namespace Unity.MP_FPS
 
         public override void OnGhostLinked()
         {
+            // Host server and client replicas share a PhysX scene. Hitboxes on the
+            // other timeline must never push this movement controller during prediction.
+            Controller.CharacterController.excludeLayers |= Role == MultiplayerRole.Server
+                ? LayerMask.GetMask("ClientPlayer")
+                : LayerMask.GetMask("ServerPlayer");
             CreateHeadHitbox(Role==MultiplayerRole.Server ? (int)LayerIndex.ServerPlayer : (int)LayerIndex.ClientPlayer);
             bool isClientOwned = (Role == MultiplayerRole.ClientOwned);
             m_OwnerVisuals.SetActive(isClientOwned);

@@ -312,7 +312,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                          RefRW<PredictedPlayerGhost>,
                          RefRO<LocalTransform>,
                          RefRO<PredictedPlayerControllerConsts>>() 
-                     .WithAll<PlayerControllerLink>().WithEntityAccess())
+                     .WithAll<Simulate, PlayerControllerLink>().WithEntityAccess())
         {
             var controllerLink = SystemAPI.ManagedAPI.GetComponent<PlayerControllerLink>(entity);
             var controllerConsts = playerControllerConsts.ValueRO.ControllerConsts;
