@@ -25,8 +25,29 @@ namespace Unity.MP_FPS.Inventory
         public static InventoryGraph Snapshot(InventoryGraph carried,InventoryGraph cache)
         {
             var joined=carried.Clone();
+            joined.LootRows=cache.LootRows;
             joined.Items.AddRange(cache.Items.Where(i=>i.Id==Root || cache.RootOf(i.Id)==Root).Select(i=>i.Clone()));
             return joined;
+        }
+        // Build and validate the new owner before clearing the dead player's graph. Only
+        // direct equipment/pocket items move; descendants retain their exact placements.
+        public static InventoryGraph DropOnDeath(InventoryGraph carried)
+        {
+            if(carried==null || carried.Validate()!=InventoryError.None || carried.Find("stash")!=null || carried.Find(Root)!=null)
+                throw new InvalidOperationException("Cannot drop an invalid raid inventory.");
+            var cache=InventoryGraph.Create(false,false);cache.LootRows=24;
+            cache.Items.Add(new InventoryItem {Id=Root,Code=Root});
+            foreach(var source in carried.Items.Where(i=>i.Parent==InventoryCatalog.Equipment || i.Parent==InventoryCatalog.Pockets))
+            {
+                var item=source.Clone();
+                if(!cache.FindSpace(item,Root,out var region,out var x,out var y))
+                    throw new InvalidOperationException("Death bag cannot fit carried equipment.");
+                item.Parent=Root;item.Region=region;item.X=x;item.Y=y;cache.Items.Add(item);
+            }
+            cache.Items.AddRange(carried.Items.Where(i=>i.Parent!=null && i.Parent!=InventoryCatalog.Equipment && i.Parent!=InventoryCatalog.Pockets).Select(i=>i.Clone()));
+            if(cache.Validate()!=InventoryError.None)throw new InvalidOperationException("Death bag lost an inventory hierarchy.");
+            carried.Items.RemoveAll(i=>InventoryCatalog.Get(i.Code).Kind!=ItemKind.Root);carried.Version++;
+            return cache;
         }
         public static InventoryError TryApply(InventoryGraph carried,InventoryGraph cache,InventoryCommand command,int expectedCacheVersion)
         {

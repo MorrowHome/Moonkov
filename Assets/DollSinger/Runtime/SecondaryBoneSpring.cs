@@ -255,6 +255,17 @@ public sealed class SecondaryBoneSpring : MonoBehaviour {
     }
 
     private bool m_PresentationDriven;
+    private bool m_CorpsePresentation;
+    private PhysicsScene m_CorpsePhysics;
+
+    public void InitializeCorpsePresentation() {
+        m_CorpsePresentation = true;
+        InitializePresentation();
+        m_Skirt.Clear();m_Chest.Clear();
+        hairStiffness = 3f;hairGravity = 9.81f;hairDamping = .86f;
+        maxBendAngle = 175f;stiffnessSpeedGain = 0f;
+        m_CorpsePhysics = gameObject.scene.GetPhysicsScene();
+    }
 
     // Menu Playables evaluate manually; keep the same collision/spring rules,
     // but run them once after the menu pose instead of again in LateUpdate.
@@ -269,6 +280,12 @@ public sealed class SecondaryBoneSpring : MonoBehaviour {
 
     private void Step(float dt) {
         if (dt <= 0f) return;
+        if(m_CorpsePresentation) {
+            // Only the small hair chains run after death; no airborne/locomotion rules.
+            Simulate(m_Hair,dt,hairDamping,hairStiffness,hairGravity,0f,
+                maxBendAngle,maxBendAngle,1f,null,hairBodyColliders,0f,0f,maxBendAngle,0f);
+            return;
+        }
         Vector3 rootDelta = transform.position - m_LastRootPosition;
         if (rootDelta.sqrMagnitude > 4f || dt > 0.2f) {
             ResetTips(m_Hair);
@@ -422,6 +439,18 @@ public sealed class SecondaryBoneSpring : MonoBehaviour {
                 direction = ResolveCapsuleCollisions(origin, direction, length, frontSkirtBodyColliders);
             direction = Vector3.RotateTowards(restDirection, direction,
                 Mathf.Lerp(collisionBendLimit, airBendLimit, jointAirflow) * Mathf.Deg2Rad, 0f);
+            if(m_CorpsePresentation && m_CorpsePhysics.Raycast(origin+Vector3.up*2f,Vector3.down,out var floor,5f,
+                LayerMask.GetMask("Default","Ground"),QueryTriggerInteraction.Ignore)) {
+                const float thickness=.025f;
+                float height=Vector3.Dot(origin+direction-floor.point,floor.normal);
+                if(height<thickness) {
+                    float normalLength=Mathf.Clamp(thickness-Vector3.Dot(origin-floor.point,floor.normal),-length,length);
+                    Vector3 tangent=Vector3.ProjectOnPlane(direction,floor.normal);
+                    if(tangent.sqrMagnitude<.000001f)tangent=Vector3.ProjectOnPlane(restDirection,floor.normal);
+                    if(tangent.sqrMagnitude<.000001f)tangent=Vector3.Cross(floor.normal,Vector3.right);
+                    direction=tangent.normalized*Mathf.Sqrt(Mathf.Max(0f,length*length-normalLength*normalLength))+floor.normal*normalLength;
+                }
+            }
             // The hands push the outer skirt after its bend limit. The inner
             // skirt follows inside the outer skirt instead of being pushed past it.
             if (colliders != null && handCover > 0.001f && !innerSkirtBone)

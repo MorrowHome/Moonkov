@@ -76,9 +76,26 @@ try
     Check(after.Cells==5 && after.Dust==42 && restored.Equipped("Backpack")!=null && restored.Items.Count(i=>i.Code=="small_pack")==1,"extraction restores nested kit once");
     var next=new Deployment(player,Guid.NewGuid(),1); var second=await inventory.DeployAsync(next,default);
     var lost=InventoryRepository.Decode(second.RaidInventoryJson!);
-    await store.SettleAsync(new Settlement(player,next.DeploymentId,"Dead",0,0,1,next.DeploymentId,InventoryRepository.Encode(lost)),default);
+    var droppedPack=lost.Equipped("Backpack")!;var droppedNested=lost.Items.Single(i=>i.Code=="small_pack");
+    var deathBag=LootInventoryExchange.DropOnDeath(lost);
+    var deathReceipt=new Settlement(player,next.DeploymentId,"Dead",0,0,1,next.DeploymentId,InventoryRepository.Encode(lost));
+    await store.SettleAsync(deathReceipt,default);await store.SettleAsync(deathReceipt,default);
     var dead=InventoryRepository.Decode((await Read()).InventoryJson!);
     Check(dead.Equipped("Backpack")==null && dead.Items.All(i=>i.Code!="small_pack"),"death does not return nested kit");
+    Check(lost.Items.All(i=>InventoryCatalog.Get(i.Code)!.Kind==ItemKind.Root),"death receipt has no ownership of dropped kit");
+    Guid survivor=Guid.NewGuid();
+    await using(var seed=db.CreateCommand("INSERT INTO players(id,display_name) VALUES($1,'survivor_fixture')")) {seed.Parameters.AddWithValue(survivor);await seed.ExecuteNonQueryAsync();}
+    var survivorDeploy=new Deployment(survivor,Guid.NewGuid(),0);var survivorProfile=await inventory.DeployAsync(survivorDeploy,default);
+    var survivorCargo=InventoryRepository.Decode(survivorProfile.RaidInventoryJson!);
+    Check(LootInventoryExchange.TryApply(survivorCargo,deathBag,new InventoryCommand {ExpectedVersion=survivorCargo.Version,ItemId=droppedPack.Id,Parent="equipment",Region="Backpack"},deathBag.Version)==InventoryError.None,"survivor takes actual fallen kit");
+    var recovered=new Settlement(survivor,survivorDeploy.DeploymentId,"Extracted",survivorCargo.Count("dust",true),survivorCargo.Count("alloy",true),survivorCargo.Count("cells",true),survivorDeploy.DeploymentId,InventoryRepository.Encode(survivorCargo));
+    await store.SettleAsync(recovered,default);await store.SettleAsync(recovered,default);
+    await using(var connection=await db.OpenConnectionAsync())
+    await using(var transaction=await connection.BeginTransactionAsync())
+    {
+        var returned=InventoryRepository.Decode((await InventoryRepository.ReadAsync(connection,transaction,survivor,default)).InventoryJson!);
+        Check(returned.Find(droppedPack.Id)!=null && returned.Find(droppedNested.Id)?.Parent==droppedPack.Id && deathBag.Find(droppedNested.Id)==null,"looted kit persists once under survivor identity");
+    }
     checks += await HttpInventoryChecks.RunAsync(root,settings.ConnectionString,db);
 }
 finally

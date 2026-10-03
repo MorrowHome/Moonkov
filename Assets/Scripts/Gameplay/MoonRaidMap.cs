@@ -17,6 +17,8 @@ namespace Unity.MP_FPS
         [SerializeField, Min(10)] private float m_LootRespawnSeconds = 60;
         private GameObject[] m_Markers;
         private Material[] m_Materials;
+        private readonly System.Collections.Generic.Dictionary<int,GameObject> m_DeathBags = new System.Collections.Generic.Dictionary<int,GameObject>();
+        private CorpsePresentationSettings m_CorpseSettings;
 
         public Vector3[] LootPositions => m_LootPositions;
         public Vector3 ExtractionPosition => m_ExtractionPosition;
@@ -39,6 +41,7 @@ namespace Unity.MP_FPS
         {
             // No presentation objects or UI are created in a dedicated server.
             if (!ClientServerBootstrap.HasClientWorlds) return;
+            m_CorpseSettings=Resources.Load<CorpsePresentationSettings>("Moonkov/CorpsePresentation");
             m_Materials = new Material[5];
             Color[] colors = { new Color(0.2f, 0.8f, 1f), new Color(1f, 0.65f, 0.15f), new Color(0.8f, 0.35f, 1f), new Color(0.2f, 1f, 0.4f),new Color(.12f,.14f,.16f) };
             var shader = Shader.Find("Universal Render Pipeline/Lit");
@@ -90,6 +93,16 @@ namespace Unity.MP_FPS
             {
                 bool visible = hasSnapshot;
                 if (m_Markers[i].activeSelf != visible) m_Markers[i].SetActive(visible);
+            }
+        }
+        public void ShowDeathBags(RaidDeathBagClientState state)
+        {
+            if(m_CorpseSettings==null || state==null)return;
+            foreach(var bag in state.Bags.Values)
+            {
+                if(m_DeathBags.ContainsKey(bag.LootId))continue;
+                var corpse=CorpseVisual.Spawn(transform,m_CorpseSettings,bag);
+                m_DeathBags.Add(bag.LootId,corpse.gameObject);
             }
         }
 

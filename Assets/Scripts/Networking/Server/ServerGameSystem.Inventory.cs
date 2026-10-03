@@ -49,7 +49,7 @@ namespace Unity.MP_FPS
                             : inventory.Graph.TryApply(new InventoryCommand { ExpectedVersion=r.ExpectedVersion, Operation=r.Operation, ItemId=r.ItemId.ToString(),
                                 Parent=r.Parent.ToString(), Region=r.Region.ToString(), TargetId=r.TargetId.ToString(), X=r.X, Y=r.Y, Rotated=r.Rotated, Quantity=r.Quantity });
                         inventory.LastSentVersion = -1;
-                        RaidInventoryState.UpdateTotals(inventory.Graph, ref session.ValueRW);
+                        if(session.ValueRO.Phase==RaidPhase.Active)RaidInventoryState.UpdateTotals(inventory.Graph, ref session.ValueRW);
                     }
                 }
                 ecb.DestroyEntity(entity);

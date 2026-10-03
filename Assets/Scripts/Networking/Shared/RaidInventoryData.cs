@@ -11,7 +11,7 @@ namespace Unity.MP_FPS
         // Keep each ASCII JSON fragment comfortably below the transport's 1378-byte packet.
         public const int ChunkCharacters = 400;
         public const int MaxChunks = 2048;
-        public const int MaxJsonCharacters = 500000;
+        public const int MaxJsonCharacters = 800000;
         public static string Encode(InventoryGraph graph) => Newtonsoft.Json.JsonConvert.SerializeObject(graph,
             new Newtonsoft.Json.JsonSerializerSettings { StringEscapeHandling=Newtonsoft.Json.StringEscapeHandling.EscapeNonAscii });
         public static InventoryGraph Decode(string json) => Newtonsoft.Json.JsonConvert.DeserializeObject<InventoryGraph>(json);
@@ -27,6 +27,17 @@ namespace Unity.MP_FPS
     public sealed class RaidLootContainers : IComponentData
     {
         public readonly System.Collections.Generic.Dictionary<int,InventoryGraph> Containers = new System.Collections.Generic.Dictionary<int,InventoryGraph>();
+        public readonly System.Collections.Generic.Dictionary<int,RaidCorpseRecord> DeathBags = new System.Collections.Generic.Dictionary<int,RaidCorpseRecord>();
+        public const int FirstDeathBagId=24;
+        private int m_NextDeathBagId=FirstDeathBagId;
+        public int Drop(InventoryGraph carried,Unity.Mathematics.float3 position,Unity.Mathematics.quaternion rotation=default,int characterIndex=2,double createdAt=0)
+        {
+            var graph=LootInventoryExchange.DropOnDeath(carried);
+            int id=m_NextDeathBagId++;
+            Containers.Add(id,graph);DeathBags.Add(id,new RaidCorpseRecord {Position=position,
+                Rotation=Unity.Mathematics.math.lengthsq(rotation.value)>0 ? rotation : Unity.Mathematics.quaternion.identity,
+                CharacterIndex=characterIndex,CreatedAt=createdAt});return id;
+        }
         public void Initialize(int count)
         {for(int index=0;index<count;index++)if(!Containers.ContainsKey(index))Containers.Add(index,LootInventoryExchange.CreateCache(index));}
     }
@@ -38,6 +49,7 @@ namespace Unity.MP_FPS
         public uint Sequence, RequestId;
         public InventoryError Error;
         public int OpenedLootId=-1, LastSentLootVersion=-1;
+        public readonly System.Collections.Generic.Dictionary<int,int> SentDeathBags = new System.Collections.Generic.Dictionary<int,int>();
         public static void UpdateTotals(InventoryGraph graph, ref RaidSession session)
         {
             session.Dust = graph.Count("dust", true); session.Alloy = graph.Count("alloy", true); session.Cells = graph.Count("cells", true);
@@ -56,6 +68,34 @@ namespace Unity.MP_FPS
     {
         public int RaidId, LootId;
         public uint RequestId;
+    }
+    public sealed class RaidCorpseRecord
+    {
+        public Unity.Mathematics.float3 Position;
+        public Unity.Mathematics.quaternion Rotation;
+        public int CharacterIndex;
+        public double CreatedAt;
+    }
+    // Separate identity from the earlier bag marker RPC: generated/Burst layouts
+    // must never reuse the smaller component after adding corpse presentation data.
+    public struct RaidCorpseRpc : IRpcCommand
+    {
+        public int LootId, Version, CharacterIndex;
+        public Unity.Mathematics.float3 Position;
+        public Unity.Mathematics.quaternion Rotation;
+        public float Age;
+        public bool Empty;
+    }
+    public sealed class RaidDeathBagClientState : IComponentData
+    {
+        public readonly System.Collections.Generic.Dictionary<int,RaidCorpseRpc> Bags = new System.Collections.Generic.Dictionary<int,RaidCorpseRpc>();
+        public void Receive(RaidCorpseRpc bag)
+        {
+            if(bag.LootId<RaidLootContainers.FirstDeathBagId || bag.Version<1 || bag.CharacterIndex<0 || bag.CharacterIndex>2 ||
+                !Unity.Mathematics.math.all(Unity.Mathematics.math.isfinite(bag.Position)) || !Unity.Mathematics.math.all(Unity.Mathematics.math.isfinite(bag.Rotation.value)) ||
+                Unity.Mathematics.math.abs(Unity.Mathematics.math.lengthsq(bag.Rotation.value)-1)>.01f || !float.IsFinite(bag.Age) || bag.Age<0)return;
+            if(!Bags.TryGetValue(bag.LootId,out var old) || bag.Version>old.Version)Bags[bag.LootId]=bag;
+        }
     }
     public struct RaidLootMoveRpc : IRpcCommand
     {

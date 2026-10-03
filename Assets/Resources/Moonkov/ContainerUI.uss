@@ -35,6 +35,7 @@
 .inventory-grid { position: relative; flex-shrink: 0; background-color: rgba(0, 0, 0, 0.4); }
 .inventory-warehouse-scroll { flex-grow: 1; min-height: 0; }
 .inventory-stash .inventory-container, .inventory-stash .inventory-regions, .inventory-stash .inventory-region { flex-grow: 1; }
+.inventory-loot-pane .inventory-container, .inventory-loot-pane .inventory-regions, .inventory-loot-pane .inventory-region { flex-grow: 1; }
 .inventory-view .inventory-item { position: absolute; padding: 0; overflow: hidden; border-width: 1px; border-color: rgba(255, 255, 255, 0.14); background-color: rgba(255, 255, 255, 0.05); }
 .inventory-view .inventory-item:hover { border-color: rgba(255, 255, 255, 0.5); background-color: rgba(255, 255, 255, 0.09); }
 .inventory-item-art { position: absolute; left: 12%; right: 12%; top: 20%; bottom: 20%; }

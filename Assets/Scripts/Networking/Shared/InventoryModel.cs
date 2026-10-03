@@ -72,10 +72,11 @@ namespace Unity.MP_FPS.Inventory
     }
     [Serializable] public sealed class InventoryGraph
     {
-        public int Version = 1, StashRows = 80;
+        public int Version = 1, StashRows = 80, LootRows = 5;
         public List<InventoryItem> Items = new List<InventoryItem>();
         public InventoryItem Find(string id) => Items.Find(i => i.Id == id);
-        public InventoryGraph Clone() => new InventoryGraph { Version = Version, StashRows = StashRows, Items = Items.ConvertAll(i => i.Clone()) };
+        public InventoryGraph Clone() => new InventoryGraph { Version = Version, StashRows = StashRows, LootRows = LootRows, Items = Items.ConvertAll(i => i.Clone()) };
+        public int Rows(string parent, InventoryRegion region) => Find(parent)?.Code == "stash" ? StashRows : Find(parent)?.Code == "loot" ? LootRows : region.Height;
         public IEnumerable<InventoryItem> Children(string parent, string region = null) => Items.Where(i => i.Parent == parent && (region == null || i.Region == region));
         public string RootOf(string id)
         {
@@ -122,7 +123,7 @@ namespace Unity.MP_FPS.Inventory
                 // Pockets and rig pouches are for supplies, never bags or other wearable gear.
                 if ((target.Code == "pockets" || target.Code == "rig") && definition.Container) return InventoryError.Incompatible;
                 int width = rotated ? definition.Height : definition.Width, height = rotated ? definition.Width : definition.Height;
-                int rows = target.Code == "stash" ? StashRows : compartment.Height;
+                int rows = Rows(parent, compartment);
                 if (x < 0 || y < 0 || x > compartment.Width - width || y > rows - height) return InventoryError.Bounds;
             }
             foreach (var other in Children(parent, region))
@@ -140,7 +141,7 @@ namespace Unity.MP_FPS.Inventory
         {
             var regions = InventoryCatalog.Get(Find(parent)?.Code)?.Regions;
             if (regions != null) foreach (var r in regions)
-                for (int row = 0; row < (Find(parent).Code == "stash" ? StashRows : r.Height); row++)
+                for (int row = 0; row < Rows(parent, r); row++)
                     for (int col = 0; col < r.Width; col++)
                         if (CanPlace(item, parent, r.Id, col, row, item.Rotated) == InventoryError.None)
                         { region = r.Id; x = col; y = row; return true; }
@@ -196,7 +197,10 @@ namespace Unity.MP_FPS.Inventory
         }
         public InventoryError Validate()
         {
-            if (Version < 1 || Items == null || Items.Count > InventoryCatalog.MaxItems || StashRows < 1 || StashRows > 4096) return InventoryError.Invalid;
+            // A world-loot snapshot joins two owners; account/actor graphs keep the
+            // original limit. The extra loot root must also fit a maximum-sized drop.
+            int limit=Items!=null && Items.Any(i=>i?.Id=="loot") ? InventoryCatalog.MaxItems*2 : InventoryCatalog.MaxItems;
+            if (Version < 1 || Items == null || Items.Count > limit || StashRows < 1 || StashRows > 4096 || LootRows < 1 || LootRows > 24) return InventoryError.Invalid;
             var ids = new HashSet<string>();
             foreach (var item in Items)
             {

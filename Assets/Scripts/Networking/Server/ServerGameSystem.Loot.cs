@@ -2,6 +2,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
+using Unity.Transforms;
 using UnityEngine;
 using Unity.MP_FPS.Inventory;
 
@@ -10,15 +11,55 @@ namespace Unity.MP_FPS
     public partial struct ServerGameSystem
     {
         private RaidLootContainers LootContainers(ref SystemState state) => state.EntityManager.GetComponentObject<RaidLootContainers>(SystemAPI.GetSingletonEntity<RaidLootWorld>());
+        private void DropDeathInventory(ref SystemState state,Entity connection)
+        {
+            if(MoonRaidMap.Active==null || !state.EntityManager.HasComponent<RaidInventoryState>(connection) || !SystemAPI.HasComponent<JoinedClient>(connection))return;
+            var player=SystemAPI.GetComponent<JoinedClient>(connection).PlayerEntity;
+            if(!SystemAPI.Exists(player) || !SystemAPI.HasComponent<LocalTransform>(player))return;
+            var inventory=GetRaidInventory(ref state,connection);
+            var pose=SystemAPI.GetComponent<LocalTransform>(player);
+            var position=pose.Position;
+            var rotation=pose.Rotation;
+            if(UnityEngine.Physics.Raycast((Vector3)position+Vector3.up,Vector3.down,out var ground,4,
+                LayerMask.GetMask("Default","Ground"),QueryTriggerInteraction.Ignore))
+            {
+                position=ground.point;
+                rotation=Quaternion.FromToRotation(Vector3.up,ground.normal)*(Quaternion)pose.Rotation;
+            }
+            LootContainers(ref state).Drop(inventory.Graph,position,rotation,SystemAPI.GetComponent<JoinedClient>(connection).CharacterIndex,SystemAPI.Time.ElapsedTime);
+            inventory.OpenedLootId=-1;inventory.LastSentVersion=-1;
+        }
         private bool CanAccessLoot(ref SystemState state,Entity connection,int lootId,RaidSession session)
         {
             var map=MoonRaidMap.Active;
-            if(map==null || session.Phase!=RaidPhase.Active || lootId<0 || lootId>=map.LootPositions.Length ||
+            if(map==null || session.Phase!=RaidPhase.Active || !TryGetLootPosition(ref state,lootId,out var target) ||
                 SystemAPI.HasComponent<NetworkStreamRequestDisconnect>(connection) || !SystemAPI.HasComponent<JoinedClient>(connection)) return false;
             var player=SystemAPI.GetComponent<JoinedClient>(connection).PlayerEntity;
-            if(!TryGetLivingPosition(ref state,player,out var position) || math.distancesq(position,map.LootPositions[lootId])>RaidRules.PickupRange*RaidRules.PickupRange) return false;
-            return !UnityEngine.Physics.Linecast((Vector3)position+Vector3.up*1.4f,map.LootPositions[lootId],
+            if(!TryGetLivingPosition(ref state,player,out var position) || math.distancesq(position,target)>RaidRules.PickupRange*RaidRules.PickupRange) return false;
+            return !UnityEngine.Physics.Linecast((Vector3)position+Vector3.up*1.4f,(Vector3)target,
                 LayerMask.GetMask("Default","Ground"),QueryTriggerInteraction.Ignore);
+        }
+        private bool TryGetLootPosition(ref SystemState state,int id,out float3 position)
+        {
+            position=default;var map=MoonRaidMap.Active;
+            if(map!=null && id>=0 && id<map.LootPositions.Length){position=map.LootPositions[id];return true;}
+            if(!LootContainers(ref state).DeathBags.TryGetValue(id,out var corpse))return false;
+            position=corpse.Position+new float3(0,.25f,0);return true;
+        }
+        private void SendDeathBags(ref SystemState state,EntityCommandBuffer ecb,Entity connection)
+        {
+            var loot=LootContainers(ref state);var inventory=GetRaidInventory(ref state,connection);
+            foreach(var bag in loot.DeathBags)
+            {
+                var graph=loot.Containers[bag.Key];
+                if(inventory.SentDeathBags.TryGetValue(bag.Key,out var sent) && sent==graph.Version)continue;
+                inventory.SentDeathBags[bag.Key]=graph.Version;
+                var rpc=ecb.CreateEntity();
+                ecb.AddComponent(rpc,new RaidCorpseRpc {LootId=bag.Key,Version=graph.Version,Position=bag.Value.Position,
+                    Rotation=bag.Value.Rotation,CharacterIndex=bag.Value.CharacterIndex,Age=(float)math.max(0,SystemAPI.Time.ElapsedTime-bag.Value.CreatedAt),
+                    Empty=!graph.Items.Exists(i=>i.Parent==LootInventoryExchange.Root)});
+                ecb.AddComponent(rpc,new SendRpcCommandRequest {TargetConnection=connection});
+            }
         }
         private void HandleLootRequests(ref SystemState state,EntityCommandBuffer ecb)
         {
@@ -56,7 +97,7 @@ namespace Unity.MP_FPS
                                 ItemId=r.ItemId.ToString(),Parent=r.Parent.ToString(),Region=r.Region.ToString(),TargetId=r.TargetId.ToString(),
                                 X=r.X,Y=r.Y,Rotated=r.Rotated,Quantity=r.Quantity},r.ExpectedLootVersion);
                         inventory.LastSentVersion=-1;
-                        RaidInventoryState.UpdateTotals(inventory.Graph,ref session.ValueRW);
+                        if(session.ValueRO.Phase==RaidPhase.Active)RaidInventoryState.UpdateTotals(inventory.Graph,ref session.ValueRW);
                     }
                 }
                 ecb.DestroyEntity(entity);

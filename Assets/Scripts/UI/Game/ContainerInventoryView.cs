@@ -147,7 +147,7 @@ namespace Unity.MP_FPS.Client
             AddContainer(m_ContainerPane, m_Graph.Find("pockets"), "POCKETS");
             AddContainer(m_ContainerPane, m_Graph.Equipped("ChestRig"), "CHEST RIG");
             AddContainer(m_ContainerPane, m_Graph.Equipped("Backpack"), "BACKPACK");
-            if(loot!=null)AddContainer(m_LootPane,loot,"SUPPLY CACHE / "+(m_LootId+1).ToString("00"));
+            if(loot!=null)AddContainer(m_LootPane,loot,m_LootId>=RaidLootContainers.FirstDeathBagId ? "FALLEN EXPEDITION / GEAR" : "SUPPLY CACHE / "+(m_LootId+1).ToString("00"));
             if (m_Stash) AddContainer(m_StashPane, m_Graph.Find("stash"), "PERSONAL STORAGE");
             foreach (var id in new List<string>(m_Open)) { var item = m_Graph.Find(id); if (item == null) m_Open.Remove(id); else OpenContainer(item, false); }
         }
@@ -165,8 +165,8 @@ namespace Unity.MP_FPS.Client
                 var wrapper = new VisualElement(); wrapper.AddToClassList("inventory-region"); regionRow.Add(wrapper);
                 Text(wrapper, region.Id.ToUpperInvariant(), "inventory-region-title");
                 VisualElement gridParent = wrapper;
-                if (item.Code == "stash") { var scroll = new ScrollView(ScrollViewMode.Vertical); scroll.AddToClassList("inventory-warehouse-scroll"); wrapper.Add(scroll); gridParent = scroll; }
-                int rows = item.Code == "stash" ? m_Graph.StashRows : region.Height;
+                if (item.Code == "stash" || item.Code=="loot") { var scroll = new ScrollView(ScrollViewMode.Vertical); scroll.AddToClassList("inventory-warehouse-scroll"); wrapper.Add(scroll); gridParent = scroll; }
+                int rows = m_Graph.Rows(item.Id,region);
                 var visual = new StashGridVisual(region.Width, rows); visual.AddToClassList("inventory-grid"); visual.style.width=region.Width*40; visual.style.height=rows*40; gridParent.Add(visual);
                 var grid = new Grid { Parent=item.Id, Region=region.Id, Definition=region, Element=visual }; m_Grids.Add(grid);
                 foreach (var entry in m_Graph.Children(item.Id, region.Id))

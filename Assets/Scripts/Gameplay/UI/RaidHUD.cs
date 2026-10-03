@@ -148,6 +148,8 @@ namespace Unity.MP_FPS
             }
             if (m_InventoryVisible) Utils.SetCursorVisible(true);
             MoonRaidMap.Active.ShowLoot(m_Snapshot.TakenMask, ready);
+            var deathBags=m_World.EntityManager.GetComponentObject<RaidDeathBagClientState>(m_StateQuery.GetSingletonEntity());
+            MoonRaidMap.Active.ShowDeathBags(deathBags);
             if (settled)
             {
                 // LateUpdate runs after character teardown, which can restore the previous cursor state.
@@ -187,14 +189,20 @@ namespace Unity.MP_FPS
                     float candidate = Vector3.Distance(position, map.LootPositions[i]);
                     if (candidate < distance) { nearest = i; distance = candidate; }
                 }
+                foreach(var bag in deathBags.Bags.Values)
+                {
+                    float candidate=Vector3.Distance(position,(Vector3)bag.Position);
+                    if(candidate<distance){nearest=bag.LootId;distance=candidate;}
+                }
                 bool pressed = (Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame) ||
                                (Gamepad.current != null && Gamepad.current.buttonWest.wasPressedThisFrame);
                 if (nearest >= 0 && pressed && !m_InventoryVisible && !m_InventoryRequestPending && UnityEngine.Cursor.lockState == CursorLockMode.Locked && !GameSettings.Instance.IsPauseMenuOpen)
                 {
                     if(RequestLoot(nearest))
                     {
-                        m_LootOpenPending=true;m_InventoryView.Present(null,"Opening supply cache…",operationCompleted:false);
-                        m_InventoryView.SetReadOnly("Opening supply cache…");SetInventory(true);
+                        string opening=nearest>=RaidLootContainers.FirstDeathBagId ? "Searching fallen expedition…" : "Opening supply cache…";
+                        m_LootOpenPending=true;m_InventoryView.Present(null,opening,operationCompleted:false);
+                        m_InventoryView.SetReadOnly(opening);SetInventory(true);
                     }
                 }
             }
@@ -210,8 +218,10 @@ namespace Unity.MP_FPS
             bool status = PlayerPrefs.GetInt("Moonkov.AlwaysShowHUD", 0) != 0 || check || Time.unscaledTime < m_RevealUntil || m_Snapshot.TimeLeft < 60;
             m_Status.style.display = !settled && status ? DisplayStyle.Flex : DisplayStyle.None;
             m_Bag.text = $"CARRIED / {count} supplies\nDust {m_Snapshot.Dust}   Alloy {m_Snapshot.Alloy}   Cells {m_Snapshot.Cells}";
-            m_Prompt.text = Time.unscaledTime<m_LootErrorUntil ? "Cannot reach this cache. Move closer with a clear line of sight."
-                : nearest < 0 || settled || m_InventoryVisible ? "" : $"[E]  OPEN SUPPLY CACHE / {nearest+1:00}"+(((m_Snapshot.TakenMask & (1u<<nearest))!=0) ? " / EMPTY" : "");
+            bool deathBag=nearest>=RaidLootContainers.FirstDeathBagId;
+            bool empty=deathBag ? deathBags.Bags[nearest].Empty : nearest>=0 && (m_Snapshot.TakenMask & (1u<<nearest))!=0;
+            m_Prompt.text = Time.unscaledTime<m_LootErrorUntil ? "Cannot reach this container. Move closer with a clear line of sight."
+                : nearest < 0 || settled || m_InventoryVisible ? "" : (deathBag ? "[E]  SEARCH FALLEN EXPEDITION" : $"[E]  OPEN SUPPLY CACHE / {nearest+1:00}")+(empty ? " / EMPTY" : "");
             if (alive && !settled)
             {
                 Vector3 delta = MoonRaidMap.Active.ExtractionPosition - position;
@@ -254,7 +264,8 @@ namespace Unity.MP_FPS
                 if (acknowledged) m_InventoryRequestPending = false;
                 m_OpenedLootId=inventory.LootId;
                 if(acknowledged){m_LootOpenPending=false;m_InventoryView.SetReadOnly(null);}
-                m_InventoryTitle.text=inventory.LootId>=0 ? "SUPPLY CACHE / CARRIED INVENTORY" : "CHARACTER / CARRIED INVENTORY";
+                m_InventoryTitle.text=inventory.LootId>=RaidLootContainers.FirstDeathBagId ? "FALLEN EXPEDITION / CARRIED INVENTORY"
+                    : inventory.LootId>=0 ? "SUPPLY CACHE / CARRIED INVENTORY" : "CHARACTER / CARRIED INVENTORY";
                 m_InventoryView.Present(inventory.Graph,acknowledged && inventory.Error!=Inventory.InventoryError.None ? "Inventory: "+inventory.Error : null,
                     operationCompleted: acknowledged,lootId:inventory.LootId);
                 if(inventory.LootId<0 && (wasOpen || acknowledged && inventory.Error==Inventory.InventoryError.Inaccessible))

@@ -13,11 +13,16 @@ namespace Unity.MP_FPS
         {
             m_State = EntityManager.CreateEntity(typeof(RaidClientState));
             EntityManager.AddComponentObject(m_State, new RaidInventoryClientState());
+            EntityManager.AddComponentObject(m_State,new RaidDeathBagClientState());
         }
 
         protected override void OnUpdate()
         {
             using var ecb = new EntityCommandBuffer(Allocator.Temp);
+            foreach(var (bag,received,entity) in SystemAPI.Query<RefRO<RaidCorpseRpc>,RefRW<ReceiveRpcCommandRequest>>().WithEntityAccess())
+            {
+                received.ValueRW.Consume();EntityManager.GetComponentObject<RaidDeathBagClientState>(m_State).Receive(bag.ValueRO);ecb.DestroyEntity(entity);
+            }
             foreach (var (chunk, received, entity) in SystemAPI.Query<RefRO<RaidInventoryChunkV2Rpc>, RefRW<ReceiveRpcCommandRequest>>().WithEntityAccess())
             {
                 received.ValueRW.Consume();

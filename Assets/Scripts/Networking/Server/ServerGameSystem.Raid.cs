@@ -12,7 +12,6 @@ namespace Unity.MP_FPS
         {
             var map = MoonRaidMap.Active;
             if (map == null) return;
-            EnsureRaidInventories(ref state);
             var caches=LootContainers(ref state);
             caches.Initialize(map.LootPositions.Length);
             HandleLootRequests(ref state,ecb);
@@ -22,7 +21,7 @@ namespace Unity.MP_FPS
             // Empty containers stay in the world. A server World owns each cache's one item tree.
             loot.ValueRW.TakenMask=0;
             foreach(var cache in caches.Containers)
-                if(!cache.Value.Items.Exists(i=>i.Parent==Inventory.LootInventoryExchange.Root))
+                if(cache.Key<RaidLootContainers.FirstDeathBagId && !cache.Value.Items.Exists(i=>i.Parent==Inventory.LootInventoryExchange.Root))
                     loot.ValueRW.TakenMask|=1u<<cache.Key;
 
             foreach (var (request, received, entity) in SystemAPI.Query<RefRO<RaidPickupRpc>, RefRO<ReceiveRpcCommandRequest>>().WithEntityAccess())
@@ -87,6 +86,7 @@ namespace Unity.MP_FPS
                 session.ValueRW.SnapshotTimer -= dt;
                 if (session.ValueRO.SnapshotTimer <= 0)
                 {
+                    SendDeathBags(ref state,ecb,connection);
                     session.ValueRW.SnapshotTimer = 0.25f;
                     session.ValueRW.SnapshotSequence++;
                     var rpc = ecb.CreateEntity();
@@ -120,6 +120,12 @@ namespace Unity.MP_FPS
         {
             var session = SystemAPI.GetComponentRW<RaidSession>(connection);
             var persistence = Persistence(ref state);
+            // Commit ownership transfer exactly once, while the dead entity still has a
+            // transform. Keep loss totals in RaidSession for the result screen only.
+            if(outcome==RaidPhase.Dead && session.ValueRO.Phase==RaidPhase.Active && MoonRaidMap.Active!=null)
+            {
+                DropDeathInventory(ref state,connection);
+            }
             if (!RaidRules.TrySettle(ref session.ValueRW, outcome, !persistence.Enabled)) return;
             if (persistence.Enabled)
             {

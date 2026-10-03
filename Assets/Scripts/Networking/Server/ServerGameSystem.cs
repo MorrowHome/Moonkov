@@ -79,6 +79,7 @@ namespace Unity.MP_FPS
 
             PollPersistence(ref state, ecb);
             HandleJoinRequests(ref state, gameplayMapsEntity, playerEntityPrefabs, ecb);
+            if(MoonRaidMap.Active!=null)EnsureRaidInventories(ref state);
             HandlePlayerDeathAndRespawn(ref state, ecb);
             HandleRaids(ref state, ecb);
         }
@@ -109,6 +110,7 @@ namespace Unity.MP_FPS
                     {
                         var raid = SystemAPI.GetComponentRW<RaidSession>(evt.ConnectionEntity);
                         var persistence = Persistence(ref state);
+                        if(raid.ValueRO.Phase==RaidPhase.Active)DropDeathInventory(ref state,evt.ConnectionEntity);
                         if (RaidRules.TrySettle(ref raid.ValueRW, RaidPhase.Dead, !persistence.Enabled) && persistence.Enabled)
                             persistence.BeginSave(evt.ConnectionEntity, raid.ValueRO);
                     }

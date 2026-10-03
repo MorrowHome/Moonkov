@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0206e05a58c24d446b2b7ee9d0c520c2, type: 3}
+  m_Name: CorpsePresentation
+  m_EditorClassIdentifier: Assembly-CSharp::Unity.MP_FPS.CorpsePresentationSettings
+  CharacterVisuals:
+  - {fileID: 6755703510664406289, guid: 751827e823bc83144bec80a0f7bbf83f, type: 3}
+  - {fileID: 4714531572423036641, guid: d1a9df7498e9320409f241d8feab3e4d, type: 3}
+  - {fileID: 8630589399470641778, guid: ad9212a932ad5524c89ab4785fa3d29c, type: 3}
+  Death: {fileID: 7400000, guid: 32638223a8f200c47890d785b52cf357, type: 2}
