@@ -61,6 +61,7 @@ public sealed partial class MoonkovUIPreview : EditorWindow
     }
 
     [MenuItem("Tools/Moonkov/Capture UI Preview", true)]
+    [MenuItem("Tools/Moonkov/Capture All Pages", true)]
     [MenuItem("Tools/Moonkov/Validate UI Interactions", true)]
     [MenuItem("Tools/Moonkov/Rebuild Menu Character", true)]
     [MenuItem("Tools/Moonkov/Validate Menu Character", true)]
@@ -82,6 +83,29 @@ public sealed partial class MoonkovUIPreview : EditorWindow
             finally { DestroyImmediate(image); }
             Debug.Log("Saved the actual Unity UI preview to Docs/UI/MoonkovHubPreview.png.");
         };
+    }
+
+    [MenuItem("Tools/Moonkov/Capture All Pages")]
+    public static void CaptureAllPages()
+    {
+        var window = GetWindow<MoonkovUIPreview>(); window.Focus();
+        int page = 0, frames = 0; window.m_Screen.NavigatePage(page);
+        EditorApplication.CallbackFunction tick = null;
+        tick = () =>
+        {
+            window.Repaint(); if (++frames < 75) return; frames = 0;
+            var rect = window.position;
+            int width = Mathf.RoundToInt(rect.width), height = Mathf.RoundToInt(rect.height);
+            var image = new Texture2D(width, height, TextureFormat.RGB24, false);
+            image.SetPixels(UnityEditorInternal.InternalEditorUtility.ReadScreenPixel(rect.position, width, height)); image.Apply();
+            var path = Path.GetFullPath(Path.Combine(Application.dataPath, $"../Docs/UI/MoonkovPage{page}.png"));
+            try { Directory.CreateDirectory(Path.GetDirectoryName(path)); File.WriteAllBytes(path, image.EncodeToPNG()); }
+            finally { DestroyImmediate(image); }
+            if (++page < 9) { window.m_Screen.NavigatePage(page); return; }
+            EditorApplication.update -= tick; window.m_Screen.NavigatePage(0);
+            Debug.Log("Saved nine Moonkov page captures to Docs/UI/.");
+        };
+        EditorApplication.update += tick;
     }
 
     [MenuItem("Tools/Moonkov/Validate UI Interactions")]

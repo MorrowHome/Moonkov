@@ -1,119 +1,125 @@
+/* Moonkov stash — dark vanguard theme. Layout preserved; MoonkovTerminal.uss layers chrome on top. */
 .stash-host { position: absolute; left: 0; top: 0; right: 0; bottom: 0; display: none; }
 .stash-root {
     flex-grow: 1;
     padding-left: 3%; padding-right: 3%;
-    background-image: none; background-color: #f2f2ef;
+    background-image: none; background-color: #07080A;
     background-size: cover;
-    color: #191919;
-
+    color: #ECECE6;
+    -unity-font-definition: url("../Fonts/Inter-Regular.ttf");
     font-size: 16px;
 }
-.stash-root Label { color: #191919; margin: 0; -unity-text-align: middle-left; }
+.stash-root Label { color: #ECECE6; margin: 0; -unity-text-align: middle-left; }
 .stash-header { height: 86px; flex-shrink: 0; flex-direction: row; align-items: center; }
 .stash-brand { width: 230px; }
-.stash-root .stash-brand-title { font-size: 32px; -unity-font-style: bold; color: #191919; }
-.stash-root .stash-eyebrow { font-size: 11px; color: #474747; margin-top: 5px; }
+.stash-root .stash-brand-title { font-size: 32px; -unity-font-definition: url("../Fonts/Roboto-Black.ttf"); color: #ECECE6; }
+.stash-root .stash-eyebrow { font-size: 11px; color: rgba(236, 236, 230, 0.5); margin-top: 5px; -unity-font-definition: url("../RobotoMono-Medium.ttf"); }
 .stash-page-heading { flex-grow: 1; }
 .stash-root .stash-page-title { font-size: 22px; -unity-font-style: normal; }
 .stash-account { margin-right: 24px; align-items: flex-end; }
-.stash-root .stash-account-name { font-size: 18px; color: #191919; }
+.stash-root .stash-account-name { font-size: 18px; color: #ECECE6; }
 .stash-body { flex-grow: 1; flex-direction: row; min-height: 0; padding-top: 18px; padding-bottom: 12px; }
 .stash-character-pane { width: 52%; flex-shrink: 0; margin-right: 2%; padding: 0; background-color: transparent; }
 .stash-character-pane .unity-scroll-view__content-container { padding-right: 6px; }
-.stash-storage-pane { flex-grow: 1; min-width: 0; padding: 16px; background-color: rgba(255, 255, 255, 0.72); border-radius: 3px; }
+.stash-storage-pane { flex-grow: 1; min-width: 0; padding: 16px; background-color: rgba(255, 255, 255, 0.025); border-width: 1px; border-color: rgba(255, 255, 255, 0.08); border-top-width: 2px; border-top-color: #FFE11A; border-radius: 0; }
 .stash-section-header { height: 28px; flex-shrink: 0; flex-direction: row; justify-content: space-between; align-items: center; }
-.stash-root .stash-section-title { font-size: 16px; -unity-font-style: bold; color: #262626; }
-.stash-root .stash-muted { font-size: 11px; color: #676767; }
+.stash-root .stash-section-title { font-size: 14px; letter-spacing: 3px; -unity-font-definition: url("../Fonts/Roboto-Bold.ttf"); color: #ECECE6; }
+.stash-root .stash-muted { font-size: 10px; letter-spacing: 1px; color: rgba(236, 236, 230, 0.45); -unity-font-definition: url("../RobotoMono-Medium.ttf"); }
 .stash-character-heading { flex-direction: row; justify-content: space-between; align-items: center; height: 46px; flex-shrink: 0; }
-.stash-root .stash-character-name { font-size: 22px; -unity-font-style: bold; }
+.stash-root .stash-character-name { font-size: 22px; letter-spacing: 2px; -unity-font-definition: url("../Fonts/Roboto-Black.ttf"); }
 .stash-character-stage { flex-grow: 1; min-height: 0; position: relative; }
 .stash-equipment { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
 .stash-equipment-guides { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
 .stash-character-render { position: absolute; left: 14%; right: 14%; top: 0; bottom: 0; }
-.stash-root .stash-loadout-slot { position: absolute; width: 24%; height: 24%; border-width: 0; border-radius: 3px; padding: 10px; background-color: rgba(255, 255, 255, 0.65); }
-.stash-root .stash-loadout-slot:hover { background-color: #ffffff; }
-.stash-root .stash-loadout-equipped { background-color: rgba(224, 228, 224, 0.8); }
-.stash-root .stash-loadout-label { position: absolute; left: 9px; right: 4px; top: 8px; font-size: 10px; color: #454c4b; white-space: normal; }
+.stash-root .stash-loadout-slot { position: absolute; width: 24%; height: 24%; border-width: 1px; border-color: rgba(255, 255, 255, 0.12); border-left-width: 2px; border-left-color: rgba(255, 225, 26, 0.35); border-radius: 0; padding: 10px; background-color: rgba(9, 10, 13, 0.82); transition-property: background-color, border-color; transition-duration: 0.18s; }
+.stash-root .stash-loadout-slot:hover { background-color: rgba(255, 225, 26, 0.08); border-color: rgba(255, 225, 26, 0.6); border-left-color: #FFE11A; }
+.stash-root .stash-loadout-equipped { background-color: rgba(63, 224, 208, 0.06); border-left-color: #3FE0D0; }
+.stash-root .stash-loadout-label { position: absolute; left: 9px; right: 4px; top: 8px; font-size: 9px; letter-spacing: 2px; color: rgba(236, 236, 230, 0.55); white-space: normal; -unity-font-definition: url("../RobotoMono-Medium.ttf"); }
 .stash-loadout-art { position: absolute; left: 12%; right: 12%; top: 28px; bottom: 23px; }
-.stash-root .stash-loadout-caption { position: absolute; left: 9px; right: 9px; bottom: 7px; font-size: 10px; color: #727a77; }
-.stash-root .stash-slot-drop-valid { background-color: #d7e1a7; }
-.stash-root .stash-slot-drop-invalid { background-color: #ead3d0; }
-.stash-equipment-slot { width: 48%; height: 96px; margin-right: 2%; margin-bottom: 8px; background-color: rgba(255, 255, 255, 0.12); border-radius: 5px; position: relative; }
-.stash-equipped-slot { background-color: rgba(255, 255, 255, 0.14); }
-.stash-root .stash-slot-label { position: absolute; left: 8px; top: 6px; font-size: 10px; color: #444444; }
-.stash-root .stash-slot-caption { position: absolute; right: 8px; bottom: 6px; font-size: 10px; color: #5a5a5a; }
+.stash-root .stash-loadout-caption { position: absolute; left: 9px; right: 9px; bottom: 7px; font-size: 10px; color: rgba(236, 236, 230, 0.75); }
+.stash-root .stash-slot-drop-valid { background-color: rgba(63, 224, 122, 0.16); border-color: #3FE07A; border-left-color: #3FE07A; }
+.stash-root .stash-slot-drop-invalid { background-color: rgba(255, 77, 58, 0.16); border-color: #FF4D3A; border-left-color: #FF4D3A; }
+.stash-equipment-slot { width: 48%; height: 96px; margin-right: 2%; margin-bottom: 8px; background-color: rgba(255, 255, 255, 0.03); border-width: 1px; border-color: rgba(255, 255, 255, 0.08); border-radius: 0; position: relative; }
+.stash-equipped-slot { background-color: rgba(63, 224, 208, 0.05); }
+.stash-root .stash-slot-label { position: absolute; left: 8px; top: 6px; font-size: 9px; letter-spacing: 2px; color: rgba(236, 236, 230, 0.55); -unity-font-definition: url("../RobotoMono-Medium.ttf"); }
+.stash-root .stash-slot-caption { position: absolute; right: 8px; bottom: 6px; font-size: 10px; color: rgba(236, 236, 230, 0.6); }
 .stash-slot-art { position: absolute; left: 20px; right: 20px; top: 23px; bottom: 20px; }
-.stash-root .stash-slot-empty { flex-grow: 1; -unity-text-align: middle-center; color: #646464; font-size: 10px; }
+.stash-root .stash-slot-empty { flex-grow: 1; -unity-text-align: middle-center; color: rgba(236, 236, 230, 0.3); font-size: 10px; letter-spacing: 2px; }
 .stash-subsection { margin-top: 9px; }
 .stash-pockets { flex-direction: row; height: 46px; margin-top: 7px; flex-shrink: 0; }
-.stash-pocket { width: 46px; margin-right: 7px; background-color: rgba(255, 255, 255, 0.1); border-radius: 4px; }
-.stash-pack { height: 100px; flex-shrink: 0; margin-top: 7px; background-color: rgba(255, 255, 255, 0.6); }
-.stash-root .stash-loadout-note { margin-top: 10px; font-size: 10px; color: #757b77; white-space: normal; }
+.stash-pocket { width: 46px; margin-right: 7px; background-color: rgba(255, 255, 255, 0.04); border-width: 1px; border-color: rgba(255, 255, 255, 0.1); border-radius: 0; }
+.stash-pack { height: 100px; flex-shrink: 0; margin-top: 7px; background-color: rgba(255, 255, 255, 0.03); }
+.stash-root .stash-loadout-note { margin-top: 10px; font-size: 10px; color: rgba(236, 236, 230, 0.45); white-space: normal; }
 .stash-balance-bar { height: 64px; flex-direction: row; flex-shrink: 0; align-items: center; }
 .stash-balance { margin-right: 12px; min-width: 56px; }
-.stash-root .stash-balance-value { font-size: 23px; margin-top: 2px; }
-.stash-root .stash-dust-text { color: #262626; }
-.stash-root .stash-alloy-text { color: #3a3a3a; }
-.stash-root .stash-cell-text { color: #3c3c3c; }
+.stash-root .stash-balance-value { font-size: 23px; margin-top: 2px; -unity-font-definition: url("../RobotoMono-Medium.ttf"); }
+.stash-root .stash-dust-text { color: #FFE11A; }
+.stash-root .stash-alloy-text { color: #3FE0D0; }
+.stash-root .stash-cell-text { color: #3FE07A; }
 .stash-balance-spacer { flex-grow: 1; }
 .stash-root .stash-sync-status { display: none; }
 .stash-toolbar { flex-direction: row; align-items: center; height: 44px; flex-shrink: 0; margin-bottom: 10px; }
 .stash-root Button {
-    background-color: rgba(255, 255, 255, 0.08); background-image: none;
-    color: #3b3b3b; border-width: 0; border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.06); background-image: none;
+    color: #ECECE6; border-width: 0; border-radius: 0;
     margin: 0; padding-left: 14px; padding-right: 14px;
-    -unity-font-style: normal; -unity-text-align: middle-center;
-    font-size: 12px; height: 34px; min-height: 0; min-width: 0; flex-shrink: 0;
+    -unity-font-definition: url("../Fonts/Roboto-Bold.ttf"); -unity-font-style: normal; -unity-text-align: middle-center;
+    font-size: 12px; letter-spacing: 2px; height: 34px; min-height: 0; min-width: 0; flex-shrink: 0;
     scale: 1; transition-property: background-color, color, opacity; transition-duration: 0.15s;
 }
-.stash-root Button:hover { background-color: rgba(255, 255, 255, 0.14); color: #191919; scale: 1; }
-.stash-root Button:focus { background-color: rgba(255, 255, 255, 0.14); scale: 1; }
-.stash-root Button:active { background-color: rgba(255, 255, 255, 0.14); scale: 1; }
-.stash-root Button:disabled { background-color: rgba(255, 255, 255, 0.12); color: #7a7a7a; opacity: 0.7; }
-.stash-root .stash-filter { margin-right: 1px; padding-left: 7px; padding-right: 7px; font-size: 10px; background-color: transparent; }
-.stash-root .stash-filter-active { color: #191919; background-color: rgba(255, 255, 255, 0.14); }
+.stash-root Button:hover { background-color: rgba(255, 225, 26, 0.14); color: #FFE11A; scale: 1; }
+.stash-root Button:focus { background-color: rgba(255, 225, 26, 0.1); scale: 1; }
+.stash-root Button:active { background-color: #FFE11A; color: #07080A; scale: 1; }
+.stash-root Button:disabled { background-color: rgba(255, 255, 255, 0.04); color: rgba(236, 236, 230, 0.5); opacity: 0.32; }
+.stash-root .stash-filter { margin-right: 1px; padding-left: 7px; padding-right: 7px; font-size: 10px; background-color: transparent; color: rgba(236, 236, 230, 0.55); }
+.stash-root .stash-filter:hover { background-color: rgba(255, 225, 26, 0.12); color: #FFE11A; }
+.stash-root .stash-filter-active { color: #07080A; background-color: #FFE11A; }
+.stash-root .stash-filter-active:hover { color: #07080A; background-color: #FFE11A; }
 .stash-root .stash-search { flex-grow: 1; min-width: 50px; height: 34px; margin-left: 10px; margin-right: 8px; }
-.stash-root .stash-search .unity-text-field__input { border-width: 0; border-radius: 4px; background-color: rgba(255, 255, 255, 0.1); color: #191919; font-size: 13px; padding-left: 9px; }
-.stash-root .stash-search .unity-text-field__input:focus { background-color: rgba(255, 255, 255, 0.14); }
+.stash-root .stash-search .unity-text-field__input { border-width: 0; border-bottom-width: 1px; border-bottom-color: rgba(255, 255, 255, 0.22); border-radius: 0; background-color: rgba(255, 255, 255, 0.04); color: #ECECE6; font-size: 12px; padding-left: 9px; -unity-font-definition: url("../RobotoMono-Medium.ttf"); }
+.stash-root .stash-search .unity-text-field__input:focus { background-color: rgba(255, 255, 255, 0.07); border-bottom-color: #FFE11A; }
 .stash-inventory-body { flex-grow: 1; flex-direction: row; min-height: 0; }
-.stash-scroll { flex-grow: 1; min-width: 0; background-color: rgba(255, 255, 255, 0.6); }
+.stash-scroll { flex-grow: 1; min-width: 0; background-color: rgba(0, 0, 0, 0.35); }
 .stash-grid-host { flex-shrink: 0; width: 100%; }
 .stash-grid { position: relative; }
-.stash-root .stash-item { position: absolute; height: auto; flex-shrink: 0; border-width: 1px; border-color: rgba(255, 255, 255, 0.14); border-radius: 2px; padding: 0; background-color: rgba(255, 255, 255, 0.14); overflow: hidden; }
-.stash-root .stash-item-dust { background-color: rgba(255, 255, 255, 0.14); }
-.stash-root .stash-item-alloy { background-color: rgba(255, 255, 255, 0.14); }
-.stash-root .stash-item-cell { background-color: rgba(255, 255, 255, 0.14); }
-.stash-root .stash-item:hover { background-color: rgba(255, 255, 255, 0.14); border-color: #383838; }
-.stash-root .stash-item-selected { border-width: 2px; border-color: #4a4a4a; }
-.stash-root .stash-item-locked { border-color: #686868; }
-.stash-root .stash-item-favorite { border-top-width: 3px; border-top-color: #333333; }
-.stash-root .stash-item-dragging { opacity: 0.6; }
-.stash-root .stash-item.stash-item-equipment { background-color: #dde3df; border-color: #c4ccc7; }
-.stash-root .stash-item.stash-item-equipment:hover { background-color: #e8ece8; }
-.stash-drag-ghost { position: absolute; background-color: rgba(227, 233, 220, 0.93); border-width: 1px; border-color: #919a7c; border-radius: 3px; }
-.stash-drop-preview { position: absolute; border-width: 2px; border-radius: 2px; }
-.stash-drop-valid { background-color: rgba(81, 190, 155, 0.2); border-color: #64c7ae; }
-.stash-drop-invalid { background-color: rgba(207, 72, 101, 0.2); border-color: #d5718f; }
+.stash-root .stash-item { position: absolute; height: auto; flex-shrink: 0; border-width: 1px; border-color: rgba(255, 255, 255, 0.12); border-radius: 0; padding: 0; background-color: rgba(255, 255, 255, 0.04); overflow: hidden; transition-property: background-color, border-color; transition-duration: 0.12s; }
+.stash-root .stash-item-dust { background-color: rgba(255, 225, 26, 0.06); }
+.stash-root .stash-item-alloy { background-color: rgba(63, 224, 208, 0.06); }
+.stash-root .stash-item-cell { background-color: rgba(63, 224, 122, 0.06); }
+.stash-root .stash-item:hover { background-color: rgba(255, 255, 255, 0.09); border-color: rgba(255, 255, 255, 0.5); }
+.stash-root .stash-item-selected { border-width: 2px; border-color: #FFE11A; }
+.stash-root .stash-item-selected:hover { border-color: #FFE11A; }
+.stash-root .stash-item-locked { border-color: rgba(255, 77, 58, 0.6); }
+.stash-root .stash-item-favorite { border-top-width: 3px; border-top-color: #FFE11A; }
+.stash-root .stash-item-dragging { opacity: 0.45; }
+.stash-root .stash-item.stash-item-equipment { background-color: rgba(63, 224, 208, 0.08); border-color: rgba(63, 224, 208, 0.4); }
+.stash-root .stash-item.stash-item-equipment:hover { background-color: rgba(63, 224, 208, 0.14); }
+.stash-drag-ghost { position: absolute; background-color: rgba(9, 10, 13, 0.92); border-width: 1px; border-color: #FFE11A; border-radius: 0; }
+.stash-drop-preview { position: absolute; border-width: 2px; border-radius: 0; }
+.stash-drop-valid { background-color: rgba(63, 224, 122, 0.18); border-color: #3FE07A; }
+.stash-drop-invalid { background-color: rgba(255, 77, 58, 0.18); border-color: #FF4D3A; }
 .stash-item-art { position: absolute; left: 12%; right: 12%; top: 18%; bottom: 18%; }
-.stash-root .stash-item-name { position: absolute; left: 6px; top: 4px; font-size: 11px; color: #1f1f1f; }
-.stash-root .stash-item-quantity { position: absolute; right: 5px; bottom: 4px; font-size: 13px; color: #191919; }
-.stash-root .stash-empty-title { position: absolute; top: 140px; left: 16px; right: 16px; font-size: 19px; -unity-text-align: middle-center; color: #3c3c3c; }
-.stash-root .stash-empty-description { position: absolute; top: 177px; left: 20px; right: 20px; font-size: 13px; white-space: normal; -unity-text-align: middle-center; color: #939393; }
+.stash-root .stash-item-name { position: absolute; left: 6px; top: 4px; font-size: 10px; letter-spacing: 1px; color: rgba(236, 236, 230, 0.85); -unity-font-definition: url("../Fonts/Roboto-Bold.ttf"); }
+.stash-root .stash-item-quantity { position: absolute; right: 5px; bottom: 4px; font-size: 12px; color: #FFE11A; -unity-font-definition: url("../RobotoMono-Medium.ttf"); }
+.stash-root .stash-empty-title { position: absolute; top: 140px; left: 16px; right: 16px; font-size: 19px; letter-spacing: 4px; -unity-text-align: middle-center; color: rgba(236, 236, 230, 0.6); -unity-font-definition: url("../Fonts/Roboto-Black.ttf"); }
+.stash-root .stash-empty-description { position: absolute; top: 177px; left: 20px; right: 20px; font-size: 12px; white-space: normal; -unity-text-align: middle-center; color: rgba(236, 236, 230, 0.4); }
 .stash-inspector { display: none; }
-.stash-inspect-art { height: 130px; flex-shrink: 0; margin-top: 14px; margin-bottom: 14px; background-color: rgba(255, 255, 255, 0.08); border-radius: 5px; }
-.stash-root .stash-inspect-name { font-size: 19px; -unity-font-style: bold; white-space: normal; }
-.stash-root .stash-inspect-category { font-size: 10px; color: #545454; margin-top: 6px; }
+.stash-inspect-art { height: 130px; flex-shrink: 0; margin-top: 14px; margin-bottom: 14px; background-color: rgba(255, 255, 255, 0.03); border-radius: 0; }
+.stash-root .stash-inspect-name { font-size: 19px; -unity-font-definition: url("../Fonts/Roboto-Black.ttf"); white-space: normal; }
+.stash-root .stash-inspect-category { font-size: 10px; letter-spacing: 2px; color: #3FE0D0; margin-top: 6px; -unity-font-definition: url("../RobotoMono-Medium.ttf"); }
 .stash-detail-rule { height: 12px; }
-.stash-root .stash-inspect-description { white-space: normal; font-size: 13px; color: #434343; margin-bottom: 16px; }
+.stash-root .stash-inspect-description { white-space: normal; font-size: 13px; color: rgba(236, 236, 230, 0.7); margin-bottom: 16px; }
 .stash-detail-row { flex-direction: row; justify-content: space-between; margin-bottom: 10px; }
-.stash-root .stash-detail-value { font-size: 13px; color: #272727; }
+.stash-root .stash-detail-value { font-size: 13px; color: #ECECE6; -unity-font-definition: url("../RobotoMono-Medium.ttf"); }
 .stash-inspector-spacer { flex-grow: 1; }
-.stash-root .stash-inspect-help { font-size: 11px; color: #676767; white-space: normal; margin-top: 12px; margin-bottom: 10px; }
-.stash-root .stash-storage-caption { font-size: 10px; color: #959595; margin-top: 10px; }
-.stash-footer { height: 66px; flex-shrink: 0; flex-direction: row; align-items: center; }
-.stash-root .stash-footer-button { height: 38px; padding-left: 20px; padding-right: 20px; font-size: 13px; background-color: transparent; }
+.stash-root .stash-inspect-help { font-size: 11px; color: rgba(236, 236, 230, 0.45); white-space: normal; margin-top: 12px; margin-bottom: 10px; }
+.stash-root .stash-storage-caption { font-size: 10px; color: rgba(236, 236, 230, 0.35); margin-top: 10px; -unity-font-definition: url("../RobotoMono-Medium.ttf"); }
+.stash-footer { height: 66px; flex-shrink: 0; flex-direction: row; align-items: center; border-top-width: 1px; border-top-color: rgba(255, 255, 255, 0.08); }
+.stash-root .stash-footer-button { height: 38px; padding-left: 20px; padding-right: 20px; font-size: 12px; background-color: transparent; color: rgba(236, 236, 230, 0.7); }
+.stash-root .stash-footer-button:hover { background-color: rgba(255, 225, 26, 0.12); color: #FFE11A; }
 .stash-root .stash-footer-caption { display: none; }
 .stash-footer-spacer { flex-grow: 1; }
-.stash-root .stash-footer-hint { font-size: 9px; color: #4e4e4e; margin-right: 16px; }
-.stash-root .stash-deploy-button { height: 44px; width: 200px; font-size: 17px; -unity-font-style: bold; background-color: rgba(255, 255, 255, 0.14); color: #191919; border-radius: 4px; }
-.stash-root .stash-deploy-button:hover { background-color: rgba(255, 255, 255, 0.14); }
+.stash-root .stash-footer-hint { font-size: 9px; letter-spacing: 1px; color: rgba(236, 236, 230, 0.4); margin-right: 16px; -unity-font-definition: url("../RobotoMono-Medium.ttf"); }
+.stash-root .stash-deploy-button { height: 44px; width: 200px; font-size: 16px; letter-spacing: 4px; -unity-font-definition: url("../Fonts/Roboto-Black.ttf"); background-color: #FFE11A; color: #07080A; border-radius: 0; }
+.stash-root .stash-deploy-button:hover { background-color: #ECECE6; color: #07080A; }
+.stash-root .stash-deploy-button:active { background-color: #FFFFFF; color: #07080A; }

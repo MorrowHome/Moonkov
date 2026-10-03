@@ -34,7 +34,8 @@ namespace Unity.MP_FPS.Client
             var header = new VisualElement(); header.AddToClassList("terminal-window-header");
             var label = new Label(title); label.AddToClassList("terminal-heading"); header.Add(label);
             var close = new Button(() => Close(window)) { text = "×", tooltip = "Close / Esc" };
-            close.AddToClassList("terminal-window-close"); header.Add(close); window.Add(header);
+            close.AddToClassList("terminal-window-close"); header.Add(close);
+            TechFrame.Attach(window); window.Add(header); TerminalMotion.Fade(window, 0, .28f);
             header.AddManipulator(new WindowDrag(window));
             m_ReturnFocus[window] = m_Root.panel?.focusController.focusedElement as VisualElement;
             m_Windows.Add(window); m_Layer.Add(window); window.Focus();
@@ -65,7 +66,8 @@ namespace Unity.MP_FPS.Client
         public void Toast(string message)
         {
             m_ToastTimer?.Pause(); m_Toast.text = message; m_Toast.style.display = DisplayStyle.Flex;
-            m_ToastTimer = m_Root.schedule.Execute(() => m_Toast.style.display = DisplayStyle.None).StartingIn(3500);
+            TerminalMotion.Tween(m_Toast, .45f, t => { float k = TerminalMotion.OutExpo(t); m_Toast.style.opacity = k; m_Toast.style.translate = new Translate(40 * (1 - k), 0); }, 0, null, "toast");
+            m_ToastTimer = m_Root.schedule.Execute(() => TerminalMotion.Tween(m_Toast, .3f, t => m_Toast.style.opacity = 1 - t, 0, () => { m_Toast.style.display = DisplayStyle.None; m_Toast.style.opacity = StyleKeyword.Null; m_Toast.style.translate = StyleKeyword.Null; }, "toast")).StartingIn(3500);
         }
         public void Dispose()
         {

@@ -1,22 +1,22 @@
 :root {
     flex-shrink: 1;
-    --color-default: rgb(250, 250, 250);
-    --color-canvas: rgb(21, 22, 28);
+    --color-default: rgb(236, 236, 230);
+    --color-canvas: rgb(7, 8, 10);
     --color-transparent: rgba(0, 0, 0, 0);
-    --color-primary: rgb(47, 112, 165);
-    --color-border: rgb(131, 180, 222);
-    --color-active: rgb(56, 101, 153);
-    --color-inactive: rgb(171, 171, 171);
-    --color-hovered: rgb(24, 63, 103);
-    --color-border-focused: rgb(254, 203, 47);
-    --color-input-background: rgb(45, 81, 123);
-    --color-progress-bar: rgb(186, 223, 255);
-    --color-border-hover-slider: rgb(186, 223, 255);
+    --color-primary: rgba(255, 255, 255, 0.06);
+    --color-border: rgba(255, 255, 255, 0.18);
+    --color-active: rgb(255, 225, 26);
+    --color-inactive: rgba(255, 255, 255, 0.04);
+    --color-hovered: rgba(255, 225, 26, 0.14);
+    --color-border-focused: rgb(255, 225, 26);
+    --color-input-background: rgba(255, 255, 255, 0.05);
+    --color-progress-bar: rgb(255, 225, 26);
+    --color-border-hover-slider: rgb(255, 225, 26);
     --color-crosshair: white;
     font-size: var(--font-size-regular);
     --font-size-regular: 26px;
     --font-size-xsmall: 20px;
-    --border-width: 2px;
+    --border-width: 1px;
     --padding-background: 40px;
     --button-top-margin: 8px;
     --crosshair-thickness: 3px;
@@ -50,13 +50,16 @@
     width: var(--width-container);
     padding: var(--padding-background);
     background-repeat: repeat;
-    background-image: url("project://database/Assets/AddressableAssetsData/Art/Textures/GridEmissive_01.png?fileID=2800000&guid=85052190418bc4603b8747b3b97a27a1&type=3#GridEmissive_01");
+    background-image: none;
+    background-color: rgba(9, 10, 13, 0.92);
     background-position-x: left 0;
     background-position-y: top 0;
     background-size: 10%;
     -unity-background-image-tint-color: var(--color-default);
     border-width: 1px;
-    border-color: var(--color-default);
+    border-color: rgba(255, 255, 255, 0.14);
+    border-left-width: 3px;
+    border-left-color: rgb(255, 225, 26);
 }
 .container-in-game {
     width: var(--width-container-in-game);
@@ -154,17 +157,18 @@ Button {
 
 Button:active {
     background-color: var(--color-active);
-    scale: 1.03;
+    color: rgb(7, 8, 10);
+    scale: 1;
 }
 
 Button:hover {
     background-color: var(--color-hovered);
-    scale: 1.03;
+    scale: 1;
 }
 
 Button:focus {
     border-color: var(--color-border-focused);
-    scale: 1.03;
+    scale: 1;
 }
 
 Button:disabled {
@@ -217,6 +221,7 @@ ProgressBar .unity-progress-bar__progress {
 }
 
 .unity-text-element {
+    -unity-font-definition: url("../Fonts/Inter-Regular.ttf");
     -unity-text-align: middle-center;
     color: var(--color-default);
 }
