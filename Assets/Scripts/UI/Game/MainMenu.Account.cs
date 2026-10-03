@@ -22,9 +22,13 @@ namespace Unity.MP_FPS.Client
         private Label m_CarryNote;
         private string m_AccountError;
         private GlobalGameState m_LastStashGameState;
+        private LunarBackdrop m_LoginMoon;
 
         private void InitializeAccountPanel()
         {
+            var canvas = m_MainMenu.Q<VisualElement>("Canvas");
+            m_LoginMoon = new LunarBackdrop(BackdropMode.Login, canvas);
+            m_LoginMoon.AddToClassList("terminal-scene-shade"); canvas.Insert(0, m_LoginMoon);
             m_AccountStop = new CancellationTokenSource();
             m_ConnectionPanel = m_MainMenu.Q<VisualElement>("ConnectionPanel");
             m_AccountPanel = new VisualElement { name = "AccountPanel" };
@@ -64,6 +68,7 @@ namespace Unity.MP_FPS.Client
         {
             bool loggedIn = AccountClient.IsLoggedIn && m_AccountVerified;
             bool showStash = loggedIn && !m_ShowConnectionMenu;
+            m_LoginMoon.style.display = showStash ? DisplayStyle.None : DisplayStyle.Flex;
             m_AccountPanel.style.display = loggedIn ? DisplayStyle.None : DisplayStyle.Flex;
             m_ConnectionPanel.style.display = loggedIn && m_ShowConnectionMenu ? DisplayStyle.Flex : DisplayStyle.None;
             m_MainMenu.Q<VisualElement>("Container").style.display = showStash ? DisplayStyle.None : DisplayStyle.Flex;
@@ -157,6 +162,7 @@ namespace Unity.MP_FPS.Client
 
         private void DisposeAccountPanel()
         {
+            m_LoginMoon?.Dispose(); m_LoginMoon?.RemoveFromHierarchy(); m_LoginMoon = null;
             m_AccountStop?.Cancel();
             GameSettings.Instance.propertyChanged -= StashSettingsChanged;
             m_StashScreen?.Dispose(); m_StashScreen = null;

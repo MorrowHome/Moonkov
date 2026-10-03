@@ -35,12 +35,15 @@ namespace Unity.MP_FPS.Client
             m_Subtitle = root.Q<VisualElement>(className: "stash-page-heading").Q<Label>(className: "stash-eyebrow");
             m_Gear = root.Q<VisualElement>(className: "stash-body");
             m_Nav = new VisualElement(); m_Nav.AddToClassList("terminal-nav"); root.Insert(1, m_Nav);
-            m_NavTabs = new VisualElement(); m_NavTabs.AddToClassList("terminal-nav-tabs"); m_Nav.Add(m_NavTabs);
+            var navScroll = new ScrollView(ScrollViewMode.Horizontal) { verticalScrollerVisibility = ScrollerVisibility.Hidden, horizontalScrollerVisibility = ScrollerVisibility.Auto };
+            navScroll.AddToClassList("terminal-nav-scroll"); m_Nav.Add(navScroll);
+            m_NavTabs = new VisualElement(); m_NavTabs.AddToClassList("terminal-nav-tabs"); navScroll.Add(m_NavTabs);
             for (int i = 0; i < m_Pages.Length; i++)
             {
                 int page = i;
-                var tab = ActionButton(m_NavTabs, m_Pages[i], () => Navigate(page), "terminal-tab"); m_Tabs.Add(tab);
+                var tab = ActionButton(m_NavTabs, "", () => Navigate(page), "terminal-tab"); tab.tooltip = m_Pages[i]; m_Tabs.Add(tab);
                 Text(tab, (i + 1).ToString("00"), "terminal-tab-index").pickingMode = PickingMode.Ignore;
+                Text(tab, m_Pages[i], "terminal-tab-label").pickingMode = PickingMode.Ignore;
             }
             m_Indicator = new VisualElement { pickingMode = PickingMode.Ignore }; m_Indicator.AddToClassList("terminal-nav-indicator"); m_NavTabs.Add(m_Indicator);
             m_NavTabs.RegisterCallback<GeometryChangedEvent>(_ => MoveIndicator(false));
@@ -53,12 +56,13 @@ namespace Unity.MP_FPS.Client
                 m_Clock.text = DateTime.UtcNow.ToString("HH:mm:ss") + " UTC";
                 dot.EnableInClassList("terminal-nav-dot-dim", DateTime.UtcNow.Second % 2 == 0);
             }).Every(500);
-            m_Content = new VisualElement(); m_Content.AddToClassList("terminal-content"); root.Insert(3, m_Content);
+            m_Content = new VisualElement { pickingMode = PickingMode.Ignore }; m_Content.AddToClassList("terminal-content"); root.Insert(3, m_Content);
+            m_Content.RegisterCallback<GeometryChangedEvent>(_ => UpdateHomeMenuSize());
             var spacer = root.Q<VisualElement>(className: "stash-footer-spacer");
             if (spacer != null) m_FooterTicker = Ticker(spacer, k_Ticker);
             m_Chrome = new TerminalChrome(); root.Add(m_Chrome);
+            m_Shade = new LunarBackdrop(BackdropMode.Ship, root); m_Shade.AddToClassList("terminal-scene-shade"); root.Insert(0, m_Shade);
             m_Windows = new TerminalWindows(root, () => Navigate(0));
-            m_Shade = new LunarBackdrop(BackdropMode.Ship); m_Shade.AddToClassList("terminal-scene-shade"); root.Insert(0, m_Shade);
             Navigate(0); m_Ready = true;
         }
         public void Present(string player, int dust, int alloy, int cells, bool busy)
@@ -158,6 +162,7 @@ namespace Unity.MP_FPS.Client
             TerminalMotion.Scramble(title, .35f, .9f);
 
             var menu = new VisualElement(); menu.AddToClassList("terminal-home-menu"); m_Content.Add(menu);
+            UpdateHomeMenuSize();
             var head = Row(menu); head.AddToClassList("terminal-home-menu-head");
             Text(head, "COMMAND DECK", "terminal-eyebrow"); Text(head, "SELECT  /  " + m_Pages.Length.ToString("00") + " SYSTEMS", "terminal-home-menu-count");
             var deploy = HomeAction(menu, "OPERATION", "05", "LUNAR SUPPLY RECOVERY  /  DEPLOY", Prepare);
@@ -202,6 +207,11 @@ namespace Unity.MP_FPS.Client
             Text(button, caption, "terminal-home-action-caption").pickingMode = PickingMode.Ignore;
             var arrow = new VisualElement { pickingMode = PickingMode.Ignore }; arrow.AddToClassList("terminal-home-action-arrow"); button.Add(arrow);
             return button;
+        }
+        private void UpdateHomeMenuSize()
+        {
+            var menu = m_Content.Q<VisualElement>(className: "terminal-home-menu");
+            menu?.EnableInClassList("terminal-home-menu-compact", m_Content.contentRect.height < 500 || m_Content.contentRect.width < 1120);
         }
         private static void Resource(VisualElement parent, string name, int value, float delay)
         {
@@ -517,7 +527,7 @@ namespace Unity.MP_FPS.Client
         {
             DisposeCharacter();
             m_Windows.Dispose(); m_Content.RemoveFromHierarchy(); m_Nav.RemoveFromHierarchy();
-            m_Shade.RemoveFromHierarchy(); m_Chrome.RemoveFromHierarchy(); m_FooterTicker?.RemoveFromHierarchy();
+            m_Shade.Dispose(); m_Shade.RemoveFromHierarchy(); m_Chrome.RemoveFromHierarchy(); m_FooterTicker?.RemoveFromHierarchy();
             m_Root.Query(className: "terminal-wipe").ForEach(e => e.RemoveFromHierarchy());
             m_Gear.style.display = DisplayStyle.Flex;
         }

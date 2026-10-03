@@ -24,13 +24,18 @@
 .moonkov-terminal .stash-account-name { -unity-font-definition: url("../Fonts/Roboto-Bold.ttf"); font-size: 13px; letter-spacing: 2px; color: #ECECE6; }
 
 /* ---------- Navigation ---------- */
-.terminal-nav { flex-direction: row; height: 42px; flex-shrink: 0; align-items: center; border-bottom-width: 1px; border-bottom-color: rgba(255, 255, 255, 0.08); }
+.terminal-nav { flex-direction: row; height: 56px; flex-shrink: 0; align-items: center; border-bottom-width: 1px; border-bottom-color: rgba(255, 255, 255, 0.08); }
+.terminal-nav-scroll { flex-grow: 1; flex-shrink: 1; min-width: 0; height: 100%; }
+.terminal-nav-scroll > .unity-scroll-view__content-viewport { height: 100%; }
+.terminal-nav-scroll .unity-scroll-view__content-container { flex-grow: 1; }
 .terminal-nav-tabs { flex-direction: row; flex-grow: 1; height: 100%; align-items: stretch; position: relative; }
-.stash-root .terminal-tab { background-color: transparent; height: 100%; margin: 0; padding-left: 34px; padding-right: 16px; -unity-font-definition: url("../Fonts/Roboto-Bold.ttf"); font-size: 11px; letter-spacing: 2px; color: rgba(236, 236, 230, 0.45); -unity-text-align: middle-left; border-radius: 0; border-width: 0; transition-property: background-color, color; transition-duration: 0.18s; }
+.stash-root .terminal-nav-tabs > .terminal-tab { flex-direction: row; flex-grow: 1; flex-basis: 0; min-width: 136px; height: 100%; align-items: center; justify-content: center; margin: 0; padding-left: 12px; padding-right: 12px; background-color: transparent; border-radius: 0; border-width: 0; transition-property: background-color, color; transition-duration: 0.18s; }
 .stash-root .terminal-tab:hover { background-color: rgba(255, 255, 255, 0.04); color: #ECECE6; }
 .stash-root .terminal-tab:focus { background-color: transparent; }
 .stash-root .terminal-tab-selected, .stash-root .terminal-tab-selected:hover, .stash-root .terminal-tab-selected:focus { background-color: rgba(255, 225, 26, 0.06); color: #ECECE6; }
-.stash-root .terminal-tab-index { position: absolute; left: 13px; top: 0; bottom: 0; -unity-text-align: middle-left; -unity-font-definition: url("../RobotoMono-Medium.ttf"); font-size: 9px; letter-spacing: 0; color: rgba(236, 236, 230, 0.3); }
+.stash-root .terminal-nav-tabs .terminal-tab-index { flex-shrink: 0; margin-right: 10px; -unity-text-align: middle-left; -unity-font-definition: url("../RobotoMono-Medium.ttf"); font-size: 10px; letter-spacing: 0; color: rgba(236, 236, 230, 0.3); }
+.stash-root .terminal-tab-label { flex-shrink: 0; -unity-font-definition: url("../Fonts/Roboto-Bold.ttf"); font-size: 12px; letter-spacing: 1px; white-space: nowrap; color: rgba(236, 236, 230, 0.65); }
+.stash-root .terminal-tab-selected .terminal-tab-label, .stash-root .terminal-tab:hover .terminal-tab-label { color: #ECECE6; }
 .stash-root .terminal-tab-selected .terminal-tab-index { color: #FFE11A; }
 .terminal-nav-indicator { position: absolute; bottom: -1px; height: 3px; background-color: #FFE11A; }
 .terminal-nav-status { flex-direction: row; align-items: center; flex-shrink: 0; padding-left: 18px; }
@@ -95,8 +100,8 @@
    SHIP / HOME
    ========================================================================== */
 .terminal-scene-shade { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
-.lunar-backdrop-tag, .lunar-backdrop-coords { position: absolute; -unity-font-definition: url("../RobotoMono-Medium.ttf"); font-size: 10px; letter-spacing: 3px; color: rgba(236, 236, 230, 0.45); white-space: nowrap; }
-.lunar-backdrop-tag { color: #FFE11A; }
+.lunar-backdrop { background-image: url("project://database/Assets/UI%20Toolkit/GameUI/Textures/MoonkovStarfield.png?fileID=2800000&guid=e13533265945ee349be63f8cf038d6e7&type=3#MoonkovStarfield"); background-color: #030508; background-size: cover; background-position: center; }
+.lunar-backdrop-page { -unity-background-image-tint-color: rgb(100, 100, 100); }
 .terminal-is-ship .terminal-nav, .terminal-is-ship .stash-footer { display: none; }
 .terminal-is-ship .stash-brand, .terminal-is-ship .stash-page-heading { display: none; }
 .terminal-is-ship .stash-header { justify-content: flex-end; height: 64px; border-bottom-width: 0; }
@@ -119,7 +124,7 @@
 .stash-root .terminal-home-description { -unity-font-definition: url("../RobotoMono-Medium.ttf"); font-size: 10px; letter-spacing: 3px; color: rgba(236, 236, 230, 0.38); margin-top: 14px; margin-left: 6px; padding-left: 10px; border-left-width: 2px; border-left-color: #3FE0D0; }
 
 /* Command menu */
-.terminal-home-menu { position: absolute; right: 0; top: 2%; width: 31%; min-width: 380px; max-width: 520px; }
+.terminal-home-menu { position: absolute; right: 0; top: 2%; width: 38%; min-width: 380px; max-width: 760px; }
 .terminal-home-menu-head { justify-content: space-between; align-items: flex-end; padding-bottom: 8px; margin-bottom: 14px; border-bottom-width: 1px; border-bottom-color: rgba(255, 255, 255, 0.16); }
 .stash-root .terminal-home-menu-head .terminal-eyebrow { margin-bottom: 0; color: #ECECE6; }
 .stash-root .terminal-home-menu-count { -unity-font-definition: url("../RobotoMono-Medium.ttf"); font-size: 9px; letter-spacing: 2px; color: rgba(236, 236, 230, 0.4); }
@@ -129,29 +134,29 @@
 .terminal-home-action > .tech-frame { --frame-fill: rgba(12, 14, 18, 0.78); --frame-line: rgba(255, 255, 255, 0.14); --frame-accent: #FFE11A; --frame-cut: 14; }
 .terminal-home-action:hover > .tech-frame, .terminal-home-action:focus > .tech-frame { --frame-fill: rgba(34, 31, 10, 0.92); --frame-line: #FFE11A; }
 .stash-root .terminal-home-action-index { position: absolute; right: 14px; top: 4px; -unity-font-definition: url("../Fonts/Roboto-Black.ttf"); font-size: 40px; letter-spacing: -1px; color: rgba(0, 0, 0, 0); -unity-text-outline-width: 1px; -unity-text-outline-color: rgba(236, 236, 230, 0.22); }
-.stash-root .terminal-home-action-name { -unity-font-definition: url("../Fonts/Roboto-Black.ttf"); font-size: 17px; letter-spacing: 2px; color: #ECECE6; margin-bottom: 3px; transition-property: color; transition-duration: 0.18s; }
-.stash-root .terminal-home-action-caption { -unity-font-definition: url("../RobotoMono-Medium.ttf"); font-size: 9px; letter-spacing: 2px; color: rgba(236, 236, 230, 0.42); white-space: normal; }
+.stash-root .terminal-home-action-name { -unity-font-definition: url("../Fonts/Roboto-Black.ttf"); font-size: 21px; letter-spacing: 2px; color: #ECECE6; margin-bottom: 6px; transition-property: color; transition-duration: 0.18s; }
+.stash-root .terminal-home-action-caption { -unity-font-definition: url("../RobotoMono-Medium.ttf"); font-size: 11px; letter-spacing: 1px; color: rgba(236, 236, 230, 0.55); white-space: normal; }
 .terminal-home-action-arrow { position: absolute; right: 18px; bottom: 18px; width: 9px; height: 9px; border-top-width: 2px; border-right-width: 2px; border-color: rgba(236, 236, 230, 0.45); rotate: 45deg; transition-property: translate, border-color; transition-duration: 0.22s; }
 .terminal-home-action:hover .terminal-home-action-arrow, .terminal-home-action:focus .terminal-home-action-arrow { translate: 6px 0; border-color: #FFE11A; }
 .stash-root .terminal-home-action:hover .terminal-home-action-name, .stash-root .terminal-home-action:focus .terminal-home-action-name { color: #FFE11A; }
 .stash-root .terminal-home-action:hover .terminal-home-action-index, .stash-root .terminal-home-action:focus .terminal-home-action-index { -unity-text-outline-color: rgba(255, 225, 26, 0.6); }
 
-.stash-root .terminal-home-deploy { height: 132px; margin-bottom: 12px; padding: 18px 22px; }
+.stash-root .terminal-home-deploy { height: 184px; margin-bottom: 16px; padding: 24px 28px; }
 .terminal-home-deploy > .tech-frame { --frame-fill: #FFE11A; --frame-line: rgba(7, 8, 10, 0.35); --frame-accent: #07080A; --frame-cut: 22; }
 .terminal-home-deploy:hover > .tech-frame, .terminal-home-deploy:focus > .tech-frame { --frame-fill: #FFEC5C; --frame-line: #07080A; }
 .terminal-home-deploy-stripes { position: absolute; right: 0; top: 0; bottom: 0; width: 42%; }
 .stash-root .terminal-home-deploy .terminal-home-action-index, .stash-root .terminal-home-deploy:hover .terminal-home-action-index, .stash-root .terminal-home-deploy:focus .terminal-home-action-index { font-size: 64px; top: -4px; right: 20px; -unity-text-outline-color: rgba(7, 8, 10, 0.45); }
-.stash-root .terminal-home-deploy .terminal-home-action-name, .stash-root .terminal-home-deploy:hover .terminal-home-action-name, .stash-root .terminal-home-deploy:focus .terminal-home-action-name { font-size: 40px; letter-spacing: 1px; color: #07080A; margin-bottom: 2px; }
+.stash-root .terminal-home-deploy .terminal-home-action-name, .stash-root .terminal-home-deploy:hover .terminal-home-action-name, .stash-root .terminal-home-deploy:focus .terminal-home-action-name { font-size: 46px; letter-spacing: 1px; color: #07080A; margin-bottom: 6px; }
 .stash-root .terminal-home-deploy .terminal-home-action-caption { color: rgba(7, 8, 10, 0.7); font-size: 10px; }
 .terminal-home-deploy .terminal-home-action-arrow, .terminal-home-deploy:hover .terminal-home-action-arrow, .terminal-home-deploy:focus .terminal-home-action-arrow { width: 14px; height: 14px; border-top-width: 3px; border-right-width: 3px; border-color: #07080A; right: 28px; bottom: 30px; }
 .terminal-home-deploy:hover .terminal-home-action-arrow, .terminal-home-deploy:focus .terminal-home-action-arrow { translate: 10px 0; }
 .stash-root .terminal-home-deploy:disabled { opacity: 0.45; }
 
 .terminal-home-grid { margin-left: -5px; margin-right: -5px; }
-.stash-root .terminal-home-grid .terminal-home-action { flex-grow: 1; flex-basis: 0; margin-left: 5px; margin-right: 5px; height: 112px; }
+.stash-root .terminal-home-grid .terminal-home-action { flex-grow: 1; flex-basis: 0; margin-left: 5px; margin-right: 5px; height: 164px; padding: 20px; }
 
 .terminal-home-services { margin-left: -4px; margin-right: -4px; margin-top: 2px; }
-.stash-root .terminal-home-chip { flex-grow: 1; flex-basis: 0; height: 46px; margin: 0 4px; padding: 0 0 7px 10px; -unity-text-align: lower-left; -unity-font-definition: url("../Fonts/Roboto-Bold.ttf"); font-size: 10px; letter-spacing: 2px; color: rgba(236, 236, 230, 0.75); background-color: rgba(255, 255, 255, 0.04); border-radius: 0; border-width: 0; border-bottom-width: 2px; border-bottom-color: rgba(255, 255, 255, 0.16); transition-property: background-color, color, border-color; transition-duration: 0.18s; }
+.stash-root .terminal-home-chip { flex-grow: 1; flex-basis: 0; height: 60px; margin: 0 4px; padding: 0 0 10px 12px; -unity-text-align: lower-left; -unity-font-definition: url("../Fonts/Roboto-Bold.ttf"); font-size: 12px; letter-spacing: 1px; color: rgba(236, 236, 230, 0.75); background-color: rgba(255, 255, 255, 0.04); border-radius: 0; border-width: 0; border-bottom-width: 2px; border-bottom-color: rgba(255, 255, 255, 0.16); transition-property: background-color, color, border-color; transition-duration: 0.18s; }
 .stash-root .terminal-home-chip:hover, .stash-root .terminal-home-chip:focus { background-color: rgba(63, 224, 208, 0.1); color: #3FE0D0; border-bottom-color: #3FE0D0; }
 .stash-root .terminal-home-chip-index { position: absolute; left: 10px; top: 6px; -unity-font-definition: url("../RobotoMono-Medium.ttf"); font-size: 8px; letter-spacing: 1px; color: #3FE0D0; }
 
@@ -159,6 +164,12 @@
 .terminal-home-resource { flex-grow: 1; flex-basis: 0; padding-left: 10px; border-left-width: 2px; border-left-color: rgba(255, 225, 26, 0.7); margin-right: 10px; }
 .stash-root .terminal-home-resource-name { -unity-font-definition: url("../RobotoMono-Medium.ttf"); font-size: 8px; letter-spacing: 2px; color: rgba(236, 236, 230, 0.42); }
 .stash-root .terminal-home-resource-value { -unity-font-definition: url("../Fonts/Roboto-Black.ttf"); font-size: 24px; color: #ECECE6; margin-top: 2px; }
+.stash-root .terminal-home-menu-compact .terminal-home-deploy { height: 140px; padding: 18px 22px; }
+.stash-root .terminal-home-menu-compact .terminal-home-grid .terminal-home-action { height: 120px; padding: 14px 16px; }
+.stash-root .terminal-home-menu-compact .terminal-home-action-name { font-size: 17px; }
+.stash-root .terminal-home-menu-compact .terminal-home-grid .terminal-home-action-name { font-size: 15px; letter-spacing: 0.5px; }
+.stash-root .terminal-home-menu-compact .terminal-home-deploy .terminal-home-action-name { font-size: 40px; }
+.stash-root .terminal-home-menu-compact .terminal-home-chip { height: 48px; font-size: 10px; }
 
 /* Operator card */
 .terminal-home-operator-card { position: absolute; left: 0; bottom: 58px; width: 300px; padding: 18px 20px 16px 20px; }
@@ -298,9 +309,9 @@
 /* ==========================================================================
    LOGIN
    ========================================================================== */
-.moonkov-login { background-image: none; background-color: #07080A; background-size: cover; -unity-font-definition: url("../Fonts/Inter-Regular.ttf"); }
+.moonkov-login { background-image: url("project://database/Assets/UI%20Toolkit/GameUI/Textures/MoonkovStarfield.png?fileID=2800000&guid=e13533265945ee349be63f8cf038d6e7&type=3#MoonkovStarfield"); background-color: #030508; background-size: cover; background-position: center; -unity-font-definition: url("../Fonts/Inter-Regular.ttf"); }
 .moonkov-login .background { background-color: rgba(7, 8, 10, 0.25); }
-.moonkov-login .container { background-image: none; border-width: 0; border-radius: 0; background-color: rgba(9, 10, 13, 0.9); border-left-width: 3px; border-left-color: #FFE11A; padding: 32px; width: 440px; }
+.moonkov-login .container { align-self: flex-start; margin-left: 6%; background-image: none; border-width: 0; border-radius: 0; background-color: rgba(9, 10, 13, 0.9); border-left-width: 3px; border-left-color: #FFE11A; padding: 32px; width: 440px; max-width: 88%; }
 .moonkov-login Button { border-width: 0; border-radius: 0; background-color: rgba(255, 255, 255, 0.06); color: #ECECE6; height: 42px; font-size: 13px; letter-spacing: 3px; -unity-font-definition: url("../Fonts/Roboto-Bold.ttf"); scale: 1; transition-property: background-color, color; transition-duration: 0.18s; }
 .moonkov-login Button:hover { background-color: #FFE11A; color: #07080A; scale: 1; }
 .moonkov-login Button:active, .moonkov-login Button:focus { scale: 1; }
@@ -312,3 +323,16 @@
 .login-heading { margin-bottom: 24px; }
 .moonkov-login .login-title { font-size: 44px; letter-spacing: 2px; -unity-font-definition: url("../Fonts/Roboto-Black.ttf"); color: #ECECE6; }
 .moonkov-login .login-caption { font-size: 10px; letter-spacing: 3px; -unity-font-definition: url("../RobotoMono-Medium.ttf"); color: #FFE11A; margin-top: 8px; }
+
+/* Interactive lunar backdrop and observation screen. */
+.moon-backdrop-view { position: absolute; left: 34%; top: 9%; width: 44%; height: 82%; }
+.stash-root .moon-observe-link, .moonkov-login .moon-observe-link { position: absolute; left: 54%; bottom: 7%; height: 42px; padding: 0 18px; font-size: 11px; letter-spacing: 2px; background-color: rgba(8, 13, 20, 0.8); color: #B7CEDC; border-width: 1px; border-color: rgba(183, 206, 220, 0.35); border-radius: 0; }
+.moon-observer { position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: #030508; background-image: url("project://database/Assets/UI%20Toolkit/GameUI/Textures/MoonkovStarfield.png?fileID=2800000&guid=e13533265945ee349be63f8cf038d6e7&type=3#MoonkovStarfield"); background-size: cover; background-position: center; }
+.moon-observer-header { position: absolute; left: 4%; right: 4%; top: 4%; flex-direction: row; align-items: center; justify-content: space-between; }
+.stash-root .moon-observer-title, .moonkov-login .moon-observer-title { font-size: 28px; letter-spacing: 4px; color: #ECECE6; -unity-font-definition: url("../Fonts/Roboto-Black.ttf"); }
+.moon-observer-view { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
+.moon-observer-controls { position: absolute; left: 4%; right: 4%; bottom: 4%; flex-direction: row; align-items: center; justify-content: center; }
+.stash-root .moon-observer-controls Label, .moonkov-login .moon-observer-controls Label { font-size: 12px; letter-spacing: 2px; color: #B7CEDC; margin-right: 24px; }
+.stash-root .moon-observer-button, .moonkov-login .moon-observer-button { height: 44px; margin-left: 12px; padding: 0 20px; background-color: rgba(16, 22, 30, 0.9); border-width: 1px; border-color: rgba(183, 206, 220, 0.3); border-radius: 0; color: #ECECE6; font-size: 12px; letter-spacing: 1px; }
+.stash-root .moon-observer-button:hover, .moonkov-login .moon-observer-button:hover { background-color: #B7CEDC; color: #030508; }
+.stash-root .moon-observer-telemetry, .moonkov-login .moon-observer-telemetry { position: absolute; left: 4%; right: 4%; bottom: 11%; -unity-text-align: middle-center; font-size: 10px; letter-spacing: 2px; color: rgba(183, 206, 220, 0.55); }
