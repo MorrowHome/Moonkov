@@ -23,10 +23,12 @@ namespace Unity.MP_FPS
         public WeaponType Type = WeaponType.Hitscan;
         public ReticleType ReticleType = ReticleType.TCross;
 
-        [Header("Firing Mechanics")] [Tooltip("Shots per second")]
+        [Header("Firing Mechanics")] [Tooltip("Seconds between shots (legacy field name).")]
         public float CooldownInMs = 10f;
 
         public float Damage = 15f;
+        public bool Automatic = true;
+        public bool AutoReloadWhenEmpty;
 
         [Header("Hitscan Properties")] [Tooltip("Max range for raycast-based weapons.")]
         public float HitscanRange = 100f;

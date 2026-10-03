@@ -235,7 +235,10 @@ namespace Unity.MP_FPS
                 MaxHealth = 100f,
                 CurrentHealth = 100f,
                 EquippedWeaponID = weaponId,
-                CurrentAmmo = magazineSize
+                CurrentAmmo = magazineSize,
+                StoredHaloAmmo = characterIndex == 2 ? magazineSize : 0,
+                StoredRevolverAmmo = characterIndex == 2 ?
+                    WeaponManager.Instance.WeaponRegistry.GetWeaponData(DollSingerWeapons.Revolver)?.MagazineSize ?? 0 : 0
             });
             ecb.AddComponent(playerEntity, new PlayerCharacterInitialized());
             ecb.SetComponentEnabled<PlayerCharacterInitialized>(playerEntity, false);

@@ -84,7 +84,7 @@ namespace Unity.MP_FPS
                 var weaponData = WeaponManager.Instance.WeaponRegistry.GetWeaponData(weaponId);
                 if (player.TryGetComponent<DollSingerNetworkPresentation>(out var dollSinger))
                 {
-                    dollSinger.PlayShot(aimPoint);
+                    dollSinger.PlayShot(aimPoint, weaponId);
                     return;
                 }
                 if (weaponData == null)

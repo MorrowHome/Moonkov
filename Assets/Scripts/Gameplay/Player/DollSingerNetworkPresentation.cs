@@ -133,6 +133,10 @@ namespace Unity.MP_FPS
             m_Model.SetNetworkViewPresentation(owned ? m_View.IsFirstPerson : state.FirstPersonView,
                 owned ? m_OwnedViewRotation : headRotation, owned ? m_OwnedLean : state.Lean);
             m_Halo.SetNetworkPresentation(state.Aiming, viewRotation * Vector3.forward, ghost.AimPoint);
+            var weapon = WeaponManager.Instance.WeaponRegistry.GetWeaponData(ghost.EquippedWeaponID);
+            m_Halo.SetNetworkWeapon(ghost.EquippedWeaponID == DollSingerWeapons.Revolver, ghost.CurrentAmmo,
+                state.IsReloadingState, weapon != null ? 1f - ghost.ReloadTimer / Mathf.Max(0.01f, weapon.ReloadTime) : 0f,
+                ghost.LastShotTick, ghost.LastReloadTick);
             if (Role == MultiplayerRole.ClientOwned)
             {
                 m_View.SetNetworkLookRotation(m_OwnedViewRotation);
@@ -140,10 +144,14 @@ namespace Unity.MP_FPS
             }
         }
 
-        public void PlayShot(Vector3 aimPoint)
+        public void PlayShot(Vector3 aimPoint, uint weaponId)
         {
             if (m_Linked && Role != MultiplayerRole.Server)
+            {
+                // The shot RPC may precede the equipment snapshot on an observer.
+                if (ReadGhostComponentData<PredictedPlayerGhost>().EquippedWeaponID != weaponId) return;
                 m_Halo.PlayNetworkShot(aimPoint);
+            }
         }
 
         public override void OnGhostPreDestroy()

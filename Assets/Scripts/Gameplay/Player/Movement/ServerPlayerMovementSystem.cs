@@ -58,7 +58,7 @@ namespace Unity.MP_FPS
 
         private bool TryReserveHaloCell(Entity player, uint weaponId)
         {
-            if (weaponId != 2 || MoonRaidMap.Active == null) return true;
+            if (!DollSingerWeapons.IsHalo(weaponId) || MoonRaidMap.Active == null) return true;
             if (!SystemAPI.TryGetSingletonBuffer<ClientsMap>(out var clients)) return false;
             int owner = ghostOwnerLookup[player].NetworkId;
             if (owner <= 0 || owner >= clients.Length) return false;
@@ -301,6 +301,8 @@ namespace Unity.MP_FPS
 
                     predictedPlayer.ValueRW.ControllerState.Shoot = false;
 
+                    bool switchedWeapon = DollSingerWeapons.TryEquip(ref predictedPlayer.ValueRW, commandInput.PlayerInput,
+                        WeaponManager.Instance.WeaponRegistry);
                     var weaponData =
                         WeaponManager.Instance.WeaponRegistry.GetWeaponData(predictedPlayer.ValueRO.EquippedWeaponID);
                     if (weaponData != null)
@@ -308,9 +310,9 @@ namespace Unity.MP_FPS
                         var shotRay = playerGhost.GetShotRay(commandInput.PlayerInput, weaponData.HitscanRange, out var aimPoint);
                         predictedPlayer.ValueRW.AimPoint = aimPoint;
                         bool wantsToReload = commandInput.PlayerInput.Reload;
-                        bool wantsToShoot = commandInput.PlayerInput.Shoot &&
-                            (predictedPlayer.ValueRO.EquippedWeaponID != 2 || commandInput.PlayerInput.Aim);
-                        bool mustReload = wantsToShoot && predictedPlayer.ValueRO.CurrentAmmo <= 0;
+                        bool wantsToShoot = !switchedWeapon && commandInput.PlayerInput.Shoot &&
+                            (!DollSingerWeapons.IsHalo(predictedPlayer.ValueRO.EquippedWeaponID) || commandInput.PlayerInput.Aim);
+                        bool mustReload = (wantsToShoot || weaponData.AutoReloadWhenEmpty) && predictedPlayer.ValueRO.CurrentAmmo <= 0;
 
                         if ((wantsToReload || mustReload) &&
                             !predictedPlayer.ValueRO.ControllerState.IsReloadingState &&

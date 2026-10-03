@@ -54,6 +54,8 @@ flowchart LR
 
 - `Assets/DollSinger/Prefabs/DollSingerNetworkPlayer.prefab`：独立网络预制体，移除了旧模板第一人称手枪、第三人称模型与球形准星模型。
 - `Assets/DollSinger/HaloWeapon.asset`：武器 ID 2，当前沿用模板 Hitscan 参数，无枪声与枪口火焰；光环飞行线段是视觉表现，伤害按服务器即时射线计算。
+
+新增六发光环左轮为武器 ID 3：`1` 切换原光环、`2` 切换左轮。左轮单次点击射击，两把武器分别保留弹量，装填沿用能量电池规则。资源、动效及验证范围见 [六发光环左轮](HaloRevolver.md)。
 - `Assets/Scenes/GameResourcesSubScene.unity`：DollSinger 实体预制体和 Ghost 资源登记。
 - `Assets/Editor/DollSingerNetworkSetup.cs`：菜单 **Tools → Doll Singer → Set Up Network Player**；登记工具可重复运行，已有网络预制体不会被整体重建。
 

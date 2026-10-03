@@ -89,11 +89,15 @@ public partial class ClientInputReaderSystem : SystemBase
                 playerInput.SetFlag(PlayerInput.InputFlag.Sprint, canRead && _dollSingerInput.SprintHeld);
                 playerInput.SetFlag(PlayerInput.InputFlag.Aim, canRead && _dollSingerInput.AimHeld && !playerInput.FreeLooking);
                 playerInput.SetFlag(PlayerInput.InputFlag.ThirdPerson, _dollSingerPresentation.IsThirdPerson);
-                playerInput.SetFlag(PlayerInput.InputFlag.Shoot, playerInput.Aim && _dollSingerInput.FireHeld);
+                var equipped = EntityManager.GetComponentData<PredictedPlayerGhost>(currentLocalPlayer);
+                var weapon = WeaponManager.Instance.WeaponRegistry.GetWeaponData(equipped.EquippedWeaponID);
+                playerInput.SetFlag(PlayerInput.InputFlag.Shoot, playerInput.Aim &&
+                    (weapon != null && !weapon.Automatic ? _dollSingerInput.FirePressed : _dollSingerInput.FireHeld));
+                playerInput.SetFlag(PlayerInput.InputFlag.EquipHalo, canRead && _dollSingerInput.WeaponSlotPressed == 1);
+                playerInput.SetFlag(PlayerInput.InputFlag.EquipRevolver, canRead && _dollSingerInput.WeaponSlotPressed == 2);
                 playerInput.SetFlag(PlayerInput.InputFlag.Reload, canRead && _dollSingerInput.ReloadPressed);
                 playerInput.LookYawPitchDegrees = _accumulatedLook;
-                var weapon = WeaponManager.Instance.WeaponRegistry.GetWeaponData(2);
-                playerInput.AimPoint = _dollSingerPresentation.CaptureAimPoint(_accumulatedLook, weapon.HitscanRange);
+                playerInput.AimPoint = _dollSingerPresentation.CaptureAimPoint(_accumulatedLook, weapon != null ? weapon.HitscanRange : 100f);
                 input.ValueRW.SetInput(0, playerInput);
                 movementInput.ValueRW.SetInput(0, playerInput);
                 continue;

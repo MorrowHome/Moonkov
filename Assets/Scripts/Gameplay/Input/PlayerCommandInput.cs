@@ -12,7 +12,9 @@ public struct PlayerInput
         Sprint = 1 << 2,
         Reload = 1 << 3,
         Aim = 1 << 4,
-        ThirdPerson = 1 << 5
+        ThirdPerson = 1 << 5,
+        EquipHalo = 1 << 6,
+        EquipRevolver = 1 << 7
     }
 
     public float2 MoveInput;
@@ -32,6 +34,8 @@ public struct PlayerInput
     public bool Sprint => (InputFlags & (uint)InputFlag.Sprint) != 0;
     public bool Aim => (InputFlags & (uint)InputFlag.Aim) != 0;
     public bool ThirdPerson => (InputFlags & (uint)InputFlag.ThirdPerson) != 0;
+    public bool EquipHalo => (InputFlags & (uint)InputFlag.EquipHalo) != 0;
+    public bool EquipRevolver => (InputFlags & (uint)InputFlag.EquipRevolver) != 0;
 
     public void SetFlag(InputFlag flag, bool set)
     {
@@ -60,7 +64,7 @@ public struct PlayerInput
             Lean = input.Lean;
             FreeLooking = input.FreeLooking;
             AimPoint = input.AimPoint;
-            const uint events = (uint)(InputFlag.Jump | InputFlag.Shoot | InputFlag.Reload);
+            const uint events = (uint)(InputFlag.Jump | InputFlag.Shoot | InputFlag.Reload | InputFlag.EquipHalo | InputFlag.EquipRevolver);
             InputFlags = (InputFlags & events) | input.InputFlags;
         }
         // Preserve the target belonging to a buffered single-shot press.
@@ -78,7 +82,7 @@ public struct PlayerInput
             Lean = bufferedLean;
             SetFlag(InputFlag.ThirdPerson, bufferedThirdPerson);
         }
-        InputFlags |= input.InputFlags & (uint)(InputFlag.Jump | InputFlag.Shoot | InputFlag.Reload);
+        InputFlags |= input.InputFlags & (uint)(InputFlag.Jump | InputFlag.Shoot | InputFlag.Reload | InputFlag.EquipHalo | InputFlag.EquipRevolver);
     }
 }
 

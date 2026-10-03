@@ -30,6 +30,7 @@ namespace Unity.MP_FPS.DollSinger
         public bool ViewPressed { get; private set; }
         public bool LightPressed { get; private set; }
         public bool ReloadPressed { get; private set; }
+        public int WeaponSlotPressed { get; private set; }
         public bool AltHeld { get; private set; }
         public float LeanTarget { get; private set; }
         public bool IsLeanLocked => lockedLean != 0f;
@@ -90,6 +91,8 @@ namespace Unity.MP_FPS.DollSinger
                 ViewPressed = keyboard.vKey.wasPressedThisFrame;
                 LightPressed = keyboard.lKey.wasPressedThisFrame;
                 ReloadPressed = keyboard.rKey.wasPressedThisFrame;
+                WeaponSlotPressed = keyboard.digit1Key.wasPressedThisFrame ? 1 :
+                    keyboard.digit2Key.wasPressedThisFrame ? 2 : 0;
                 AltHeld = keyboard.leftAltKey.isPressed || keyboard.rightAltKey.isPressed;
                 if (leanEnabled && AltHeld && keyboard.qKey.wasPressedThisFrame)
                     lockedLean = lockedLean < 0f ? 0f : -1f;
@@ -131,6 +134,7 @@ namespace Unity.MP_FPS.DollSinger
             AltHeld = false;
             LeanTarget = 0f;
             Scroll = 0f;
+            WeaponSlotPressed = 0;
         }
 
         private void SetCapture(bool value)

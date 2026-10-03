@@ -2442,6 +2442,7 @@ Transform:
   - {fileID: 6600455218744158340}
   - {fileID: 6613708230535739146}
   - {fileID: 8090030298820278466}
+  - {fileID: 5195043614950503946}
   m_Father: {fileID: 2754690713623540616}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7845691824386914750
@@ -3710,6 +3711,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: DollSinger.Runtime::Unity.MP_FPS.DollSinger.DollSingerHaloAim
   haloVisual: {fileID: 3666665834518509864}
+  revolverVisual: {fileID: 6880449923347472751}
   haloStrokes:
   - {fileID: 4103868541034794848}
   - {fileID: 2002041894467822681}
@@ -3738,6 +3740,18 @@ MonoBehaviour:
   boltSpeed: 38
   boltLength: 0.3
   boltMaxDistance: 35
+  localShotInterval: 0.1
+  localRevolverShotInterval: 0.75
+  localRevolverReloadTime: 0.75
+  idleHaloScale: 0.72
+  aimedHaloScale: 0.45
+  firstPersonAimDistance: 0.45
+  fingertipHaloGap: 0.075
+  firstPersonThumbClearance: 0.1
+  firstPersonThumbDepth: 0.02
+  firstPersonSupportOffset: {x: -0.12, y: -0.055, z: -0.04}
+  boltLightIntensity: 4
+  boltLightRange: 3
   idleHaloColor: {r: 1, g: 0.72, b: 0.9, a: 0.9}
   aimedHaloColor: {r: 1, g: 0.16, b: 0.35, a: 1}
   glowAlpha: 0.6
@@ -3752,6 +3766,7 @@ MonoBehaviour:
   flashlightIntensity: 4
   input: {fileID: 5454841194306245068}
   view: {fileID: 4506668622313829390}
+  networkControlled: 0
   hhh: 0.1
 --- !u!143 &2719931389219654408
 CharacterController:
@@ -3994,3 +4009,80 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -2580708020691696861, guid: 96a361d5f4dfed043a6d2498bb6df4bd, type: 3}
   m_PrefabInstance: {fileID: 2427468677288055907}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &8122980789621772659
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 3666665834518509864}
+    m_Modifications:
+    - target: {fileID: 2977222963027264892, guid: ae633f375daf6c040921f47f8431b353, type: 3}
+      propertyPath: m_Name
+      value: RevolverHalo
+      objectReference: {fileID: 0}
+    - target: {fileID: 2977222963027264892, guid: ae633f375daf6c040921f47f8431b353, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4080858679722862457, guid: ae633f375daf6c040921f47f8431b353, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4080858679722862457, guid: ae633f375daf6c040921f47f8431b353, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4080858679722862457, guid: ae633f375daf6c040921f47f8431b353, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4080858679722862457, guid: ae633f375daf6c040921f47f8431b353, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4080858679722862457, guid: ae633f375daf6c040921f47f8431b353, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4080858679722862457, guid: ae633f375daf6c040921f47f8431b353, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4080858679722862457, guid: ae633f375daf6c040921f47f8431b353, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4080858679722862457, guid: ae633f375daf6c040921f47f8431b353, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4080858679722862457, guid: ae633f375daf6c040921f47f8431b353, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4080858679722862457, guid: ae633f375daf6c040921f47f8431b353, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: ae633f375daf6c040921f47f8431b353, type: 3}
+--- !u!4 &5195043614950503946 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4080858679722862457, guid: ae633f375daf6c040921f47f8431b353, type: 3}
+  m_PrefabInstance: {fileID: 8122980789621772659}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6880449923347472751 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3442680024057458716, guid: ae633f375daf6c040921f47f8431b353, type: 3}
+  m_PrefabInstance: {fileID: 8122980789621772659}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a3eb1c6e9e76074ab246352371f2936, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: DollSinger.Runtime::Unity.MP_FPS.DollSinger.RevolverHaloVisual

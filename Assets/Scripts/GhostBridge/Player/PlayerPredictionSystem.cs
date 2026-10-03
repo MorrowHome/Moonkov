@@ -203,6 +203,8 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                     {
                         predictedPlayer.ValueRW.LocalLookYawPitchDegrees = input.LookYawPitchDegrees;
 
+                        bool switchedWeapon = DollSingerWeapons.TryEquip(ref predictedPlayer.ValueRW, input,
+                            WeaponManager.Instance.WeaponRegistry);
                         var weaponData = WeaponManager.Instance.WeaponRegistry.GetWeaponData(predictedPlayer.ValueRO.EquippedWeaponID);
                         if (weaponData != null)
                         {
@@ -210,11 +212,14 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                             var shotRay = playerGhost.GetShotRay(input, weaponData.HitscanRange, out var aimPoint);
                             predictedPlayer.ValueRW.AimPoint = aimPoint;
                             bool wantsToReload = input.Reload;
-                            bool wantsToShoot = input.Shoot &&
-                                (predictedPlayer.ValueRO.EquippedWeaponID != 2 || input.Aim);
-                            bool mustReload = wantsToShoot && predictedPlayer.ValueRO.CurrentAmmo <= 0;
+                            bool wantsToShoot = !switchedWeapon && input.Shoot &&
+                                (!DollSingerWeapons.IsHalo(predictedPlayer.ValueRO.EquippedWeaponID) || input.Aim);
+                            bool mustReload = (wantsToShoot || weaponData.AutoReloadWhenEmpty) && predictedPlayer.ValueRO.CurrentAmmo <= 0;
 
                             if ((wantsToReload || mustReload) &&
+                                // The server reserves an accessible cell before authorizing a revolver reload.
+                                // Predicting one without that reservation causes empty/full ammo oscillation.
+                                predictedPlayer.ValueRO.EquippedWeaponID != DollSingerWeapons.Revolver &&
                                 !predictedPlayer.ValueRO.ControllerState.IsReloadingState &&
                                 predictedPlayer.ValueRO.CurrentAmmo < weaponData.MagazineSize)
                             {
@@ -235,7 +240,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                                     
                                 // Replayed/partial predictions must not create another visible halo bolt.
                                 if (VisualEffectManager.ClientInstance != null &&
-                                    (predictedPlayer.ValueRO.EquippedWeaponID != 2 || networkTime.IsFirstTimeFullyPredictingTick))
+                                    (!DollSingerWeapons.IsHalo(predictedPlayer.ValueRO.EquippedWeaponID) || networkTime.IsFirstTimeFullyPredictingTick))
                                 {
                                     VisualEffectManager.ClientInstance.SpawnMuzzleFlash(playerGhost, predictedPlayer.ValueRO.EquippedWeaponID, true, aimPoint);
                                 }
