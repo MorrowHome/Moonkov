@@ -289,7 +289,9 @@ namespace Unity.MP_FPS.DollSinger {
             m_SprintInput = sprinting;
             JumpedThisFrame = jumped;
             if (!m_HasAnimator) return;
-            m_AnimationBlend = Mathf.Lerp(m_AnimationBlend, speed, deltaTime * m_SpeedChangeRate);
+            // Simulation already smooths speed and NetCode already interpolates remote snapshots.
+            // A second lerp here makes remote characters skate before their feet catch up.
+            m_AnimationBlend = speed;
             if (m_HasSpeedParameter) m_Animator.SetFloat(k_AnimIDSpeed, m_AnimationBlend);
             ApplyDirectionalAnimation(worldMovement, deltaTime);
             ApplyTurnAnimation(bodyYaw ?? transform.eulerAngles.y, speed, grounded && !jumped, deltaTime);
@@ -591,8 +593,16 @@ namespace Unity.MP_FPS.DollSinger {
             Vector3 local = transform.InverseTransformDirection(worldMovement);
             var horizontal = new Vector2(local.x, local.z);
             if (horizontal.sqrMagnitude > 0.0001f) m_LastMoveDirection = horizontal.normalized;
-            m_Animator.SetFloat(k_AnimIDMoveX, m_LastMoveDirection.x * m_AnimationBlend, 0.06f, deltaTime);
-            m_Animator.SetFloat(k_AnimIDMoveZ, m_LastMoveDirection.y * m_AnimationBlend, 0.06f, deltaTime);
+            if (m_NetworkDriven)
+            {
+                m_Animator.SetFloat(k_AnimIDMoveX, m_LastMoveDirection.x * m_AnimationBlend);
+                m_Animator.SetFloat(k_AnimIDMoveZ, m_LastMoveDirection.y * m_AnimationBlend);
+            }
+            else
+            {
+                m_Animator.SetFloat(k_AnimIDMoveX, m_LastMoveDirection.x * m_AnimationBlend, 0.06f, deltaTime);
+                m_Animator.SetFloat(k_AnimIDMoveZ, m_LastMoveDirection.y * m_AnimationBlend, 0.06f, deltaTime);
+            }
         }
 
         private void ApplyTurnAnimation(float bodyYaw, float speed, bool grounded, float deltaTime)
