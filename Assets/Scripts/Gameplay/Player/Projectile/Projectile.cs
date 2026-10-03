@@ -1,273 +1,219 @@
 using System.Collections.Generic;
-using System;
 using Gameplay.Leaderboard;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.NetCode;
+using Unity.Transforms;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Unity.MP_FPS
 {
-    public class Projectile : GhostMonoBehaviour, IUpdateServer, IUpdateClient
+    // One ghost per shot. Clients evaluate the trajectory; only the server applies damage.
+    public class Projectile : GhostMonoBehaviour, IUpdateServer, IPhysicsUpdateServer, IUpdateClient
     {
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetStaticState()
-        {
-            PredictedProjectiles = new List<PredictedProjectileInfo>();
-        }
-
-        public static List<PredictedProjectileInfo> PredictedProjectiles = new List<PredictedProjectileInfo>();
-        private int _hitLayerMask;
-
-        // Holds the projectile's networked state
         public struct ProjectileData : IComponentData
         {
             [GhostField] public int OwnerNetworkId;
             [GhostField] public uint SpawnTick;
             [GhostField] public uint WeaponID;
+            [GhostField] public uint FireTick;
+            [GhostField] public float3 Origin;
+            [GhostField] public float3 InitialVelocity;
         }
 
         public class PredictedProjectileInfo
         {
             public GameObject Instance;
             public uint SpawnTick;
+            public uint WeaponID;
+            public float CreatedAt;
         }
 
-        private void Awake()
+        public static List<PredictedProjectileInfo> PredictedProjectiles = new();
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStaticState()
         {
-            _hitLayerMask = LayerMask.GetMask("ServerPlayer", "Ground", "Default");
+            PredictedProjectiles.Clear();
+            if (s_BulletMaterial != null) Destroy(s_BulletMaterial);
+            s_BulletMaterial = null;
+        }
+
+        private ProjectileData m_Data;
+        private WeaponData m_Weapon;
+        private float m_Age;
+        private float m_TickDuration = 1f / 60f;
+        private bool m_Initialized;
+        private bool m_Stopped;
+        private RaycastHit[] m_Hits = new RaycastHit[16];
+        private int m_HitMask;
+        private Transform m_Shooter;
+        private MeshRenderer m_Body;
+        private static Material s_BulletMaterial;
+
+        public void InitializePrediction(uint weaponId, Vector3 origin, Quaternion rotation, Transform shooter,
+            float elapsed = 0f)
+        {
+            m_Data = new ProjectileData { WeaponID = weaponId, Origin = origin,
+                InitialVelocity = rotation * Vector3.forward * WeaponManager.Instance.WeaponRegistry.GetWeaponData(weaponId).ProjectileSpeed };
+            m_Shooter = shooter;
+            Initialize(false);
+            Advance(elapsed, false);
+        }
+
+        private void Initialize(bool server)
+        {
+            m_Weapon = WeaponManager.Instance.WeaponRegistry.GetWeaponData(m_Data.WeaponID);
+            m_HitMask = LayerMask.GetMask(server ? "ServerPlayer" : "ClientPlayer", "Ground", "Default");
+            m_Initialized = m_Weapon != null;
+            if (!server && m_Initialized && m_Weapon.ShowProjectileBody && m_Body == null)
+            {
+                var body = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                body.name = "Ballistic bullet";
+                var collider = body.GetComponent<Collider>();
+                collider.enabled = false;
+                Destroy(collider);
+                body.transform.SetParent(transform, false);
+                var scale = transform.lossyScale;
+                body.transform.localScale = new Vector3(.035f / scale.x, .035f / scale.y, .12f / scale.z);
+                if (s_BulletMaterial == null)
+                {
+                    s_BulletMaterial = new Material(Shader.Find("Universal Render Pipeline/Lit"))
+                        { name = "Ballistic bullet (runtime)", hideFlags = HideFlags.DontSave };
+                    s_BulletMaterial.SetColor("_BaseColor", new Color(.9f, .7f, .35f));
+                    s_BulletMaterial.SetFloat("_Metallic", .7f);
+                    s_BulletMaterial.SetColor("_EmissionColor", new Color(1f, .55f, .15f) * 3f);
+                    s_BulletMaterial.EnableKeyword("_EMISSION");
+                }
+                m_Body = body.GetComponent<MeshRenderer>();
+                m_Body.sharedMaterial = s_BulletMaterial;
+                m_Body.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                if (m_Stopped) m_Body.enabled = false;
+            }
+        }
+
+        public override void OnGhostLinked()
+        {
+            m_Data = GhostGameObject.ReadGhostComponentData<ProjectileData>();
+            if (GhostGameObject.TryReadSingleton<ClientServerTickRate>(out var rates))
+            {
+                rates.ResolveDefaults();
+                m_TickDuration = 1f / rates.SimulationTickRate;
+            }
+            bool server = Role == MultiplayerRole.Server;
+            Initialize(server);
+            m_Age = 0f;
+            var manager = server ? PlayerGhostManager.ServerInstance : PlayerGhostManager.ClientInstance;
+            if (manager != null && manager.TryGetPlayersByRole(server ? MultiplayerRole.Server : MultiplayerRole.ClientAll, out var players))
+                foreach (var player in players)
+                    if (player.GhostGameObject.Owner == m_Data.OwnerNetworkId && player.GhostGameObject.World == GhostGameObject.World)
+                    { m_Shooter = player.transform; break; }
         }
 
         private void Update()
         {
-            if (GhostGameObject == null || !GhostGameObject.IsGhostLinked())
-            {
-                var weaponData = WeaponManager.Instance.WeaponRegistry.GetWeaponData(_weaponId);
-                Move(Time.deltaTime, weaponData.ProjectileSpeed);
-            }
+            if (m_Initialized && (GhostGameObject == null || !GhostGameObject.IsGhostLinked()))
+                Advance(Mathf.Min(m_Weapon.ProjectileLifetime, m_Age + Time.deltaTime), false);
         }
 
-        public void SetWeaponId(uint weaponId)
+        private float NetworkAge(bool server)
         {
-            _weaponId = weaponId;
-        }
-
-        private float _localTime;
-        private uint _weaponId;
-
-        public override void OnGhostLinked()
-        {
-            var projectileData = GhostGameObject.ReadGhostComponentData<ProjectileData>();
-            _weaponId = projectileData.WeaponID;
+            if (!GhostGameObject.TryReadSingleton<NetworkTime>(out var time)) return m_Age;
+            bool predicted = !server && Role == MultiplayerRole.ClientOwned;
+            var tick = server || predicted ? time.ServerTick : time.InterpolationTick;
+            float fraction = server || predicted ? time.ServerTickFraction : time.InterpolationTickFraction;
+            if (!tick.IsValid) return m_Age;
+            int ticks = unchecked((int)(tick.TickIndexForValidTick - m_Data.FireTick));
+            return Mathf.Max(0f, (ticks + fraction - 1f) * m_TickDuration);
         }
 
         public void UpdateServer(float deltaTime)
         {
-            var weaponData = WeaponManager.Instance.WeaponRegistry.GetWeaponData(_weaponId);
-            Move(deltaTime, weaponData.ProjectileSpeed);
-
-            _localTime += deltaTime;
-            if (_localTime > 5f)
-            {
-                GhostGameObject.DestroyEntity();
-                return;
-            }
-
-            CheckForCollision(weaponData, deltaTime);
+            // GhostBridge destroys entities during its UpdateServer lifecycle phase.
+            if (m_Stopped) GhostGameObject.DestroyEntity();
         }
 
-        private void Move(float deltaTime, float speed)
+        public void PhysicsUpdateServer(float deltaTime)
         {
-            transform.position += transform.forward * (speed * deltaTime);
+            if (!m_Initialized || m_Stopped) return;
+            Advance(Mathf.Min(m_Weapon.ProjectileLifetime, NetworkAge(true)), true);
+            if (m_Age >= m_Weapon.ProjectileLifetime) Stop();
+            var pose = GhostGameObject.ReadGhostComponentData<LocalTransform>();
+            pose.Position = transform.position;
+            pose.Rotation = transform.rotation;
+            GhostGameObject.WriteGhostComponentData(pose);
         }
 
         public void UpdateClient(float deltaTime)
         {
-            var weaponData = WeaponManager.Instance.WeaponRegistry.GetWeaponData(_weaponId);
-            Move(deltaTime, weaponData.ProjectileSpeed);
+            if (m_Initialized) Advance(Mathf.Min(m_Weapon.ProjectileLifetime, NetworkAge(false)), false);
         }
 
-        // In Projectile.cs
-        private void CheckForCollision(WeaponData weaponData, float deltaTime)
+        private void Advance(float targetAge, bool server)
         {
-            float projectileRadius = 0.2f;
-            float distanceThisFrame = weaponData.ProjectileSpeed * deltaTime;
-
-            // Combine layer masks for a single, efficient cast
-            if (UnityEngine.Physics.SphereCast(transform.position, projectileRadius, transform.forward,
-                    out RaycastHit hitInfo, distanceThisFrame, _hitLayerMask, QueryTriggerInteraction.Ignore))
+            if (m_Stopped || targetAge <= m_Age) return;
+            var scene = gameObject.scene.GetPhysicsScene();
+            // Sweep the entire travelled arc, including a stalled frame's path.
+            while (m_Age < targetAge)
             {
-                // We hit something! The precise impact point is in hitInfo.point
-                GameObject hitObject = hitInfo.collider.gameObject;
-
-                var projectileData = GhostGameObject.ReadGhostComponentData<ProjectileData>();
-
-                // Check if the hit object is a player
-                if (hitObject.layer == LayerMask.NameToLayer("ServerPlayer"))
+                float nextAge = Mathf.Min(targetAge, m_Age + 1f / 120f);
+                Vector3 from = Ballistics.Position(m_Data.Origin, m_Data.InitialVelocity, m_Weapon.ProjectileGravity, m_Age);
+                Vector3 to = Ballistics.Position(m_Data.Origin, m_Data.InitialVelocity, m_Weapon.ProjectileGravity, nextAge);
+                if (Ballistics.Sweep(scene, from, to, m_Weapon.ProjectileRadius, m_HitMask, m_Shooter, ref m_Hits, out var hit))
                 {
-                    var world = GhostGameObject.World;
-
-                    var playerGhostLookup = world.GetExistingSystemManaged<ServerPlayerMovementSystem>()
-                        .GetComponentLookup<PredictedPlayerGhost>();
-                    var ghostOwnerLookup = world.GetExistingSystemManaged<ServerPlayerMovementSystem>()
-                        .GetComponentLookup<GhostOwner>();
-
-
-                    if (GhostGameObject.TryFindGhostGameObject(hitObject, out var hitGhostObject) &&
-                        playerGhostLookup.HasComponent(hitGhostObject.LinkedEntity))
-                    {
-                        var hitPlayerOwner = ghostOwnerLookup[hitGhostObject.LinkedEntity];
-                        if (hitPlayerOwner.NetworkId == projectileData.OwnerNetworkId)
-                        {
-                            // It's the owner, so we ignore this hit and do nothing.
-                            // The projectile continues its path.
-                            return;
-                        }
-                    }
-
-                    // It's another player, so handle the impact using the precise hit point
-                    HandlePlayerImpact(hitObject, hitInfo.point, world, projectileData, playerGhostLookup,
-                        ghostOwnerLookup);
+                    transform.position = hit.point;
+                    Stop();
+                    if (server) Impact(hit);
+                    else MoonkovAudio.Play(m_Weapon.WeaponImpactSfx, hit.point);
+                    return;
                 }
-                else
-                {
-                    // It's geometry (Ground, Default, etc.), handle the impact
-                    HandleGeometryImpact(hitInfo.point);
-                }
-
-                if (weaponData.ProjectileHitVfxPrefab != null)
-                {
-                    GhostSpawner.SpawnGhostPrefab(weaponData.ProjectileHitVfxPrefab, hitInfo.point,
-                        Quaternion.LookRotation(hitInfo.normal), GhostGameObject.GenerateRandomHash());
-                }
+                m_Age = nextAge;
+                transform.position = to;
+                var velocity = Ballistics.Velocity(m_Data.InitialVelocity, m_Weapon.ProjectileGravity, m_Age);
+                if (velocity.sqrMagnitude > .00001f) transform.rotation = Quaternion.LookRotation(velocity);
             }
+            if (!server && m_Age >= m_Weapon.ProjectileLifetime) Stop();
         }
 
-        private void HandleGeometryImpact(Vector3 impactPosition)
+        private void Stop()
         {
-            DrawGizmoAtPosition(impactPosition);
-            GhostGameObject.DestroyEntity();
+            m_Stopped = true;
+            if (m_Body != null) m_Body.enabled = false;
         }
 
-        private void HandlePlayerImpact(GameObject hitObject, Vector3 impactPosition, World world,
-            ProjectileData projectileData,
-            ComponentLookup<PredictedPlayerGhost> playerGhostLookup, ComponentLookup<GhostOwner> ghostOwnerLookup)
+        private void Impact(RaycastHit hit)
         {
-            var weaponData = WeaponManager.Instance.WeaponRegistry.GetWeaponData(projectileData.WeaponID);
-            int shooterNetworkId = projectileData.OwnerNetworkId;
-
-            var serverCurrentTick = GhostGameObject.GetCurrentTick();
-
-            // Check the behavior type to decide the damage logic.
-            if (weaponData.Behavior == ProjectileBehavior.AreaOfEffect)
+            var system = GhostGameObject.World.GetExistingSystemManaged<ServerPlayerMovementSystem>();
+            var players = system.GetComponentLookup<PredictedPlayerGhost>();
+            var owners = system.GetComponentLookup<GhostOwner>();
+            if (m_Weapon.Behavior == ProjectileBehavior.AreaOfEffect)
             {
-                // ROCKET LOGIC 
-                var playersInRadius = UnityEngine.Physics.OverlapSphere(impactPosition, weaponData.AoeRadius,
-                    LayerMask.GetMask("ServerPlayer"));
-
-                foreach (var playerCollider in playersInRadius)
-                {
-                    if (GhostGameObject.TryFindGhostGameObject(playerCollider.gameObject, out var hitGhostObject) &&
-                        playerGhostLookup.HasComponent(hitGhostObject.LinkedEntity))
-                    {
-                        // Get the owner of the hit player and compare it to the projectile's owner.
-                        var hitPlayerOwner = ghostOwnerLookup[hitGhostObject.LinkedEntity];
-                        int targetNetworkId = hitPlayerOwner.NetworkId;
-                        if (targetNetworkId == shooterNetworkId)
-                        {
-                            continue; // Skip self-damage
-                        }
-
-                        var targetPredictedPlayer = playerGhostLookup.GetRefRW(hitGhostObject.LinkedEntity);
-
-                        var healthBeforeDamage = targetPredictedPlayer.ValueRO.CurrentHealth;
-                        targetPredictedPlayer.ValueRW.CurrentHealth -= weaponData.Damage;
-
-                        // Set the simple flag for animations
-                        targetPredictedPlayer.ValueRW.ControllerState.IsHit = true;
-
-                        // Set the detailed data for the 1P visual effect
-                        targetPredictedPlayer.ValueRW.LastDamageAmount = weaponData.Damage;
-                        targetPredictedPlayer.ValueRW.LastHitTick = serverCurrentTick;
-
-                        if (healthBeforeDamage > 0 && targetPredictedPlayer.ValueRO.CurrentHealth <= 0)
-                        {
-                            if (LeaderboardManager.Instance != null)
-                            {
-                                LeaderboardManager.Instance.AddKill(shooterNetworkId, targetNetworkId);
-                                Debug.Log(
-                                    $"[Server] Player {shooterNetworkId.ToString()} killed player {targetNetworkId.ToString()} (AOE).");
-                            }
-                            else
-                            {
-                                Debug.LogWarning("[Server] LeaderboardManager instance not found. Cannot add kill.");
-                            }
-                        }
-
-                        float gizmoDuration = 4.0f; // How long the gizmo will be visible in seconds
-                        float gizmoSize = 0.25f; // The length of the lines for the cross marker
-
-                        Debug.DrawRay(impactPosition - Vector3.up * gizmoSize, Vector3.up * gizmoSize * 2, Color.yellow,
-                            gizmoDuration);
-                        Debug.DrawRay(impactPosition - Vector3.right * gizmoSize, Vector3.right * gizmoSize * 2,
-                            Color.yellow, gizmoDuration);
-                        Debug.DrawRay(impactPosition - Vector3.forward * gizmoSize, Vector3.forward * gizmoSize * 2,
-                            Color.yellow, gizmoDuration);
-                        // After the impact is handled, the projectile must be destroyed.
-                        GhostGameObject.DestroyEntity();
-                    }
-                }
+                var damaged = new HashSet<Entity>();
+                var colliders = UnityEngine.Physics.OverlapSphere(hit.point, m_Weapon.AoeRadius, LayerMask.GetMask("ServerPlayer"));
+                foreach (var collider in colliders)
+                    if (GhostGameObject.TryFindGhostGameObject(collider.gameObject, out var target) && damaged.Add(target.LinkedEntity))
+                        Damage(target, players, owners);
             }
-            else // DirectDamage
-            {
-                if (GhostGameObject.TryFindGhostGameObject(hitObject, out var hitGhostObject) &&
-                    playerGhostLookup.HasComponent(hitGhostObject.LinkedEntity))
-                {
-                    // Get the owner of the hit player and compare it to the projectile's owner.
-                    var hitPlayerOwner = ghostOwnerLookup[hitGhostObject.LinkedEntity];
-                    int targetNetworkId = hitPlayerOwner.NetworkId;
-
-                    if (targetNetworkId != shooterNetworkId)
-                    {
-                        Debug.Log(
-                            $"2 hitPlayerOwner.NetworkId: {hitPlayerOwner.NetworkId.ToString()}, projectileData.OwnerNetworkId: {projectileData.OwnerNetworkId.ToString()}");
-                        var targetPredictedPlayer = playerGhostLookup.GetRefRW(hitGhostObject.LinkedEntity);
-                        var healthBeforeDamage = targetPredictedPlayer.ValueRO.CurrentHealth;
-                        targetPredictedPlayer.ValueRW.CurrentHealth -= weaponData.Damage;
-                        targetPredictedPlayer.ValueRW.ControllerState.IsHit = true;
-                        targetPredictedPlayer.ValueRW.LastDamageAmount = weaponData.Damage;
-                        targetPredictedPlayer.ValueRW.LastHitTick = serverCurrentTick;
-
-                        if (healthBeforeDamage > 0 && targetPredictedPlayer.ValueRO.CurrentHealth <= 0)
-                        {
-                            if (LeaderboardManager.Instance != null)
-                            {
-                                LeaderboardManager.Instance.AddKill(shooterNetworkId, targetNetworkId);
-                                Debug.Log(
-                                    $"[Server] Player {shooterNetworkId.ToString()} killed player {targetNetworkId.ToString()} (Direct).");
-                            }
-                            else
-                            {
-                                Debug.LogWarning("[Server] LeaderboardManager instance not found. Cannot add kill.");
-                            }
-                        }
-
-
-                        DrawGizmoAtPosition(impactPosition);
-                        GhostGameObject.DestroyEntity();
-                    }
-                }
-            }
+            else if (GhostGameObject.TryFindGhostGameObject(hit.collider.gameObject, out var target))
+                Damage(target, players, owners);
+            if (m_Weapon.ProjectileHitVfxPrefab != null && m_Weapon.ProjectileHitVfxPrefab.GhostGuid.IsValid)
+                GhostSpawner.SpawnGhostPrefab(m_Weapon.ProjectileHitVfxPrefab, hit.point,
+                    Quaternion.LookRotation(hit.normal.sqrMagnitude > .001f ? hit.normal : Vector3.up), GhostGameObject.GenerateRandomHash());
         }
 
-        private static void DrawGizmoAtPosition(Vector3 position)
+        private void Damage(GhostGameObject target, ComponentLookup<PredictedPlayerGhost> players, ComponentLookup<GhostOwner> owners)
         {
-            var color = Color.yellow;
-            const float duration = 4.0f; // How long the gizmo will be visible in seconds
-            const float size = 0.25f; // The length of the lines for the cross marker
-
-            Debug.DrawRay(position - Vector3.up * size, Vector3.up * size * 2, color, duration);
-            Debug.DrawRay(position - Vector3.right * size, Vector3.right * size * 2, color, duration);
-            Debug.DrawRay(position - Vector3.forward * size, Vector3.forward * size * 2, color, duration);
+            if (target.World != GhostGameObject.World || !players.HasComponent(target.LinkedEntity) || !owners.HasComponent(target.LinkedEntity)) return;
+            int owner = owners[target.LinkedEntity].NetworkId;
+            if (owner == m_Data.OwnerNetworkId) return;
+            var player = players.GetRefRW(target.LinkedEntity);
+            if (player.ValueRO.CurrentHealth <= 0) return;
+            player.ValueRW.CurrentHealth -= m_Weapon.Damage;
+            player.ValueRW.ControllerState.IsHit = true;
+            player.ValueRW.LastDamageAmount = m_Weapon.Damage;
+            player.ValueRW.LastHitTick = GhostGameObject.GetCurrentTick();
+            if (player.ValueRO.CurrentHealth <= 0 && LeaderboardManager.Instance != null)
+                LeaderboardManager.Instance.AddKill(m_Data.OwnerNetworkId, owner);
         }
     }
 }

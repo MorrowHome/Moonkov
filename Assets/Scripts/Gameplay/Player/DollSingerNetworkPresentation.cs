@@ -68,8 +68,9 @@ namespace Unity.MP_FPS
             var ray = m_View.CaptureAimRay(Quaternion.Euler(viewLook.y, viewLook.x, 0f),
                 Quaternion.Euler(0f, look.x, 0f), m_OwnedLean);
             var target = ray.GetPoint(range);
+            UnityEngine.Physics.SyncTransforms();
             // Host server colliders duplicate the client avatars; ignore that world here.
-            int count = UnityEngine.Physics.RaycastNonAlloc(ray, m_AimHits, range,
+            int count = gameObject.scene.GetPhysicsScene().Raycast(ray.origin,ray.direction, m_AimHits, range,
                 ~LayerMask.GetMask("ServerPlayer"), QueryTriggerInteraction.Ignore);
             float nearest = range;
             for (int i = 0; i < count; i++)
@@ -153,7 +154,8 @@ namespace Unity.MP_FPS
             {
                 // The shot RPC may precede the equipment snapshot on an observer.
                 if (ReadGhostComponentData<PredictedPlayerGhost>().EquippedWeaponID != weaponId) return;
-                m_Halo.PlayNetworkShot(aimPoint);
+                var weapon = WeaponManager.Instance.WeaponRegistry.GetWeaponData(weaponId);
+                m_Halo.PlayNetworkShot(aimPoint, weapon != null && weapon.Type == WeaponType.Hitscan);
             }
         }
 

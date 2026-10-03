@@ -25,9 +25,9 @@ namespace Unity.MP_FPS
                 return;
 
 
-            var ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
             if (!SystemAPI.TryGetSingleton(out NetworkId networkIdComponent))
                 return;
+            var ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
 
             var localPlayerNetworkId = networkIdComponent.Value;
 
@@ -37,21 +37,19 @@ namespace Unity.MP_FPS
                          .WithEntityAccess())
             {
                 if (projectileData.ValueRO.OwnerNetworkId != localPlayerNetworkId)
-                    return;
+                    continue;
 
                 uint serverInputTick = projectileData.ValueRO.SpawnTick;
                 Projectile.PredictedProjectileInfo bestMatchInfo = null;
-                uint smallestTickDifference = 5; // Allow slightly larger window
 
                 // Find the closest predicted projectile within the window.
                 foreach (var prediction in Projectile.PredictedProjectiles)
                 {
-                    // Use absolute difference safely
-                    uint tickDifference = (uint)Math.Abs((int)prediction.SpawnTick - (int)serverInputTick);
-                    if (tickDifference < smallestTickDifference)
+                    if (prediction.Instance != null && prediction.SpawnTick == serverInputTick &&
+                        prediction.WeaponID == projectileData.ValueRO.WeaponID)
                     {
-                        smallestTickDifference = tickDifference;
                         bestMatchInfo = prediction;
+                        break;
                     }
                 }
 
@@ -103,6 +101,7 @@ namespace Unity.MP_FPS
                     }
 
                     // Call LinkGhost now that the component exists
+                    GhostGameObjectLifetimeSystem.Instance(World).AdoptPredictedGhost(entity, link.LinkedInstance);
                     link.LinkedInstance.LinkGhost(World, entity, MultiplayerRole.ClientOwned);
                 }
                 else
@@ -118,15 +117,14 @@ namespace Unity.MP_FPS
             var cleanupQuery = SystemAPI.QueryBuilder().WithAll<NeedsLinking>().Build();
             EntityManager.RemoveComponent<NeedsLinking>(cleanupQuery);
 
-            var currentTick = networkTime.ServerTick.TickIndexForValidTick;
             for (int i = Projectile.PredictedProjectiles.Count - 1; i >= 0; i--)
             {
                 var predictedProjectileInfo = Projectile.PredictedProjectiles[i];
-                if (predictedProjectileInfo.SpawnTick + 40 < currentTick)
+                // Time-based expiry also handles tick-rate changes and stalled prediction.
+                if (UnityEngine.Time.time - predictedProjectileInfo.CreatedAt > 2f)
                 {
-                    Object.Destroy(predictedProjectileInfo.Instance);
-                    Debug.Log(
-                        $"Destroyed stale predicted projectile (SpawnTick: {predictedProjectileInfo.SpawnTick.ToString()}).");
+                    if (predictedProjectileInfo.Instance != null)
+                        Object.Destroy(predictedProjectileInfo.Instance);
                     Projectile.PredictedProjectiles.RemoveAt(i);
                 }
             }

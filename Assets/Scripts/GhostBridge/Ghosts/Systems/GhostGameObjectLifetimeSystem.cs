@@ -400,6 +400,20 @@ public partial class GhostGameObjectLifetimeSystem : ClientServerSingletonSystem
         m_RebuildGhostGameObjectTransformAccessArray = false;
     }
 
+    // Adopt a locally predicted object into the normal ghost lifetime bookkeeping.
+    public void AdoptPredictedGhost(Entity entity, GhostGameObject instance)
+    {
+        var guid = EntityManager.GetComponentData<GhostGameObjectGuid>(entity);
+        var prefab = EntityManager.GetComponentData<GhostGameObjectPrefabReference>(entity);
+        instance.SetGuid(guid.Guid);
+        instance.SetPrefabAssetGuid(prefab.PrefabGuid, prefab.PrefabRootGuid);
+        guid.LocalGhostIndex = m_GhostGameObjectList.Count;
+        EntityManager.SetComponentData(entity, guid);
+        m_GhostGameObjects.Add(guid.Guid, instance);
+        m_GhostGameObjectList.Add(instance);
+        m_GhostEntityList.Add(entity);
+        m_RebuildGhostGameObjectTransformAccessArray = true;
+    }
     private void StripComponent<T>(T componentInterface, MonoBehaviour component)
         where T : IStripComponent
     {

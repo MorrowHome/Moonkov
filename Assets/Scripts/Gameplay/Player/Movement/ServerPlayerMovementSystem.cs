@@ -21,6 +21,8 @@ namespace Unity.MP_FPS
         public int OwnerNetworkId;
         public uint SpawnTick;
         public uint WeaponId;
+        public uint FireTick;
+        public float3 InitialVelocity;
     }
 
     struct VfxSpawnData
@@ -336,7 +338,7 @@ namespace Unity.MP_FPS
                             var shooterNetworkId = ghostOwnerLookup[entity].NetworkId;
                             float3 eyePosition = shotRay.origin;
                             float3 aimDirection = shotRay.direction;
-                            float3 shotOriginPosition = eyePosition + aimDirection * 0.5f;
+                            float3 shotOriginPosition = eyePosition;
 
                             if (VisualEffectManager.ServerInstance != null)
                             {
@@ -416,24 +418,7 @@ namespace Unity.MP_FPS
                                         GhostSpawner.FindGhostPrefabEntity(weaponData.ProjectileGhostPrefab.GhostGuid);
                                     if (prefabEntity != Entity.Null)
                                     {
-                                        // Determine target point
-                                        Vector3 targetPoint;
-                                        // Use calculated eyePosition and aimDirection for the raycast
-                                        if (UnityEngine.Physics.Raycast(eyePosition, aimDirection,
-                                                out RaycastHit aimHit, 1000f,
-                                                s_ShootableLayerMask))
-                                        {
-                                            targetPoint = aimHit.point;
-                                        }
-                                        else
-                                        {
-                                            targetPoint = eyePosition + aimDirection * 1000f;
-                                        }
-
-                                        // Use calculated shotOriginPosition for direction calculation
-                                        Vector3 directionToTarget =
-                                            (targetPoint - (Vector3)shotOriginPosition).normalized;
-                                        Quaternion spawnRotation = Quaternion.LookRotation(directionToTarget);
+                                        Quaternion spawnRotation = Quaternion.LookRotation(aimDirection);
 
                                         projectileSpawnList.Add(new ProjectileSpawnData
                                         {
@@ -442,7 +427,9 @@ namespace Unity.MP_FPS
                                             Rotation = spawnRotation,
                                             OwnerNetworkId = ghostOwnerLookup[entity].NetworkId,
                                             SpawnTick = commandInput.Tick.TickIndexForValidTick,
-                                            WeaponId = predictedPlayer.ValueRO.EquippedWeaponID
+                                            WeaponId = predictedPlayer.ValueRO.EquippedWeaponID,
+                                            FireTick = serverTick,
+                                            InitialVelocity = aimDirection * weaponData.ProjectileSpeed
                                         });
                                     }
 
@@ -468,7 +455,10 @@ namespace Unity.MP_FPS
                         {
                             OwnerNetworkId = spawnData.OwnerNetworkId,
                             SpawnTick = spawnData.SpawnTick,
-                            WeaponID = spawnData.WeaponId
+                            WeaponID = spawnData.WeaponId,
+                            FireTick = spawnData.FireTick,
+                            Origin = spawnData.Position,
+                            InitialVelocity = spawnData.InitialVelocity
                         });
                     });
             }

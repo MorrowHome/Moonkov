@@ -140,10 +140,10 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
 
     // Invoked by the existing predicted/server-confirmed shot effects path.
     // This is a cosmetic bolt; damage still belongs to the authoritative weapon system.
-    public void PlayNetworkShot(Vector3 aimPoint)
+    public void PlayNetworkShot(Vector3 aimPoint, bool cosmeticFlight = true)
     {
         if (revolverEquipped && revolverVisual) revolverVisual.PlayShot();
-        FireCosmeticBolt(aimPoint);
+        if (cosmeticFlight) FireCosmeticBolt(aimPoint);
     }
 
     private void Awake() {

@@ -13,26 +13,28 @@ MonoBehaviour:
   m_Name: HaloWeapon
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
   WeaponName: Halo
-  Type: 0
+  Type: 1
   ReticleType: 0
   CooldownInMs: 0.1
   Damage: 10
-  HitscanRange: 100
+  Automatic: 1
+  AutoReloadWhenEmpty: 0
+  HitscanRange: 1000
   MagazineSize: 30
   ReloadTime: 2
   ProjectileGhostPrefab:
     <GhostPrefab>k__BackingField:
-      m_AssetGUID: 
+      m_AssetGUID: 83a79bf5320972c46ae675e08e77534b
       m_SubObjectName: 
       m_SubObjectType: 
       m_SubObjectGUID: 
       m_EditorAssetChanged: 0
     m_GhostGuid:
       Value:
-        x: 0
-        y: 0
-        z: 0
-        w: 0
+        x: 1605990968
+        y: 1277661219
+        z: 240610982
+        w: 3023402984
   ProjectileHitVfxPrefab:
     <GhostPrefab>k__BackingField:
       m_AssetGUID: e0aa30b8adee8b44dac442776f34f5e7
@@ -65,4 +67,8 @@ MonoBehaviour:
   WeaponImpactSfx: {fileID: 11400000, guid: d700293aa398d3b4f89968f998438a9e, type: 2}
   Behavior: 0
   AoeRadius: 5
-  ProjectileSpeed: 30
+  ProjectileSpeed: 300
+  ProjectileGravity: 1.62
+  ProjectileRadius: 0.005
+  ProjectileLifetime: 3
+  ShowProjectileBody: 1

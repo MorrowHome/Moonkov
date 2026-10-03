@@ -1030,65 +1030,29 @@ public class FirstPersonController : MonoBehaviour
         }
     }
 
-    public async void SpawnPredictedProjectile(uint spawnTick, uint weaponId, Vector3 spawnPosition,
+    public void SpawnPredictedProjectile(uint spawnTick, uint weaponId, Vector3 spawnPosition,
         Quaternion spawnRotation)
     {
-        try
+        foreach (var shot in Projectile.PredictedProjectiles)
+            if (shot.SpawnTick == spawnTick && shot.WeaponID == weaponId) return;
+
+        var player = GetComponent<PlayerGhost>();
+        var weapon = WeaponManager.Instance.WeaponRegistry.GetWeaponData(weaponId);
+        // GameResources has already loaded ghost prefabs before it permits player spawning.
+        // Instantiate that cached asset synchronously: no async duplicate or first-shot load delay.
+        var world = player.GhostGameObject.World;
+        var prefab = world.GetExistingSystemManaged<GhostEntityPrefabSystem>()
+            ?.GetGameObjectPrefab(weapon.ProjectileGhostPrefab.GhostGuid)?.Asset as GameObject;
+        if (prefab == null)
         {
-            var alreadyExists = false;
-            for (var i = 0; i < Projectile.PredictedProjectiles.Count; i++)
-            {
-                var proj = Projectile.PredictedProjectiles[i];
-                if (proj.SpawnTick == spawnTick)
-                {
-                    alreadyExists = true;
-                    break;
-                }
-            }
-
-            if (alreadyExists)
-            {
-                return;
-            }
-
-            var playerGhost = GetComponent<PlayerGhost>();
-            var projectilePrefabRef = playerGhost.ProjectilePrefabAR;
-
-            if (!projectilePrefabRef.RuntimeKeyIsValid() || playerGhost.CameraTarget == null)
-            {
-                Debug.LogWarning(
-                    "[CLIENT] Cannot spawn predicted projectile as prefab ref or camera target is null");
-                return;
-            }
-
-            // var spawnPosition = playerGhost.CameraTarget.position;
-            // var spawnRotation = playerGhost.CameraTarget.rotation;
-            //
-            var predictedProjectile = await projectilePrefabRef.InstantiateAsync(spawnPosition, spawnRotation).Task;
-            if (predictedProjectile == null)
-            {
-                Debug.LogWarning("[CLIENT] Failed to instantiate predicted projectile");
-                return;
-            }
-
-            predictedProjectile.transform.parent =
-                GhostBridgeBootstrap.Instance.ClientGameObjectHierarchy.transform;
-
-            var projectile = predictedProjectile.GetComponent<Projectile>();
-            projectile.SetWeaponId(weaponId);
-
-            var projectileInfo = new Projectile.PredictedProjectileInfo
-            {
-                Instance = predictedProjectile,
-                SpawnTick = spawnTick
-            };
-
-            Projectile.PredictedProjectiles.Add(projectileInfo);
+            Debug.LogWarning("Predicted projectile prefab is not loaded in this client world.");
+            return;
         }
-        catch (Exception e)
-        {
-            Debug.LogException(e);
-        }
+        var instance = Instantiate(prefab, spawnPosition, spawnRotation,
+            GhostBridgeBootstrap.Instance.ClientGameObjectHierarchy.transform);
+        instance.GetComponent<Projectile>().InitializePrediction(weaponId, spawnPosition, spawnRotation, transform);
+        Projectile.PredictedProjectiles.Add(new Projectile.PredictedProjectileInfo
+        { Instance = instance, SpawnTick = spawnTick, WeaponID = weaponId, CreatedAt = Time.time });
     }
 
     private static bool AccumulateJump(ref ControllerState state, in PlayerInput input, in ControllerConsts consts,

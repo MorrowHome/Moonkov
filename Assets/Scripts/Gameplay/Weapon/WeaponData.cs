@@ -49,6 +49,11 @@ namespace Unity.MP_FPS
         public ProjectileBehavior Behavior = ProjectileBehavior.DirectDamage;
         public float AoeRadius = 5f;
         public float ProjectileSpeed = 30f;
+        [Tooltip("Downward acceleration in m/s²; lunar gravity is 1.62. Zero keeps legacy rockets straight.")]
+        public float ProjectileGravity;
+        [Min(0.001f)] public float ProjectileRadius = 0.01f;
+        [Min(0.1f)] public float ProjectileLifetime = 5f;
+        public bool ShowProjectileBody;
     }
 
     public enum ProjectileBehavior
