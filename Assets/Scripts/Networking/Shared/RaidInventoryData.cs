@@ -15,6 +15,20 @@ namespace Unity.MP_FPS
         public static string Encode(InventoryGraph graph) => Newtonsoft.Json.JsonConvert.SerializeObject(graph,
             new Newtonsoft.Json.JsonSerializerSettings { StringEscapeHandling=Newtonsoft.Json.StringEscapeHandling.EscapeNonAscii });
         public static InventoryGraph Decode(string json) => Newtonsoft.Json.JsonConvert.DeserializeObject<InventoryGraph>(json);
+        public static string EncodeSnapshot(InventoryGraph graph,int lootId,int lootVersion) => Newtonsoft.Json.JsonConvert.SerializeObject(
+            new RaidInventorySnapshot {Graph=graph,LootId=lootId,LootVersion=lootVersion},
+            new Newtonsoft.Json.JsonSerializerSettings {StringEscapeHandling=Newtonsoft.Json.StringEscapeHandling.EscapeNonAscii});
+    }
+    public sealed class RaidInventorySnapshot
+    {
+        public InventoryGraph Graph;
+        public int LootId=-1, LootVersion;
+    }
+    public sealed class RaidLootContainers : IComponentData
+    {
+        public readonly System.Collections.Generic.Dictionary<int,InventoryGraph> Containers = new System.Collections.Generic.Dictionary<int,InventoryGraph>();
+        public void Initialize(int count)
+        {for(int index=0;index<count;index++)if(!Containers.ContainsKey(index))Containers.Add(index,LootInventoryExchange.CreateCache(index));}
     }
     public sealed class RaidInventoryState : IComponentData
     {
@@ -23,6 +37,7 @@ namespace Unity.MP_FPS
         public int LastSentVersion = -1;
         public uint Sequence, RequestId;
         public InventoryError Error;
+        public int OpenedLootId=-1, LastSentLootVersion=-1;
         public static void UpdateTotals(InventoryGraph graph, ref RaidSession session)
         {
             session.Dust = graph.Count("dust", true); session.Alloy = graph.Count("alloy", true); session.Cells = graph.Count("cells", true);
@@ -32,6 +47,19 @@ namespace Unity.MP_FPS
     public struct RaidInventoryMoveRpc : IRpcCommand
     {
         public int RaidId, ExpectedVersion, X, Y, Quantity;
+        public uint RequestId;
+        public InventoryOperation Operation;
+        public FixedString64Bytes ItemId, Parent, Region, TargetId;
+        public bool Rotated;
+    }
+    public struct RaidLootOpenRpc : IRpcCommand
+    {
+        public int RaidId, LootId;
+        public uint RequestId;
+    }
+    public struct RaidLootMoveRpc : IRpcCommand
+    {
+        public int RaidId, LootId, ExpectedLootVersion, ExpectedVersion, X, Y, Quantity;
         public uint RequestId;
         public InventoryOperation Operation;
         public FixedString64Bytes ItemId, Parent, Region, TargetId;
@@ -53,6 +81,7 @@ namespace Unity.MP_FPS
         public int RaidId;
         public uint Sequence, RequestId;
         public InventoryError Error;
+        public int LootId=-1, LootVersion;
         private uint m_IncomingSequence;
         private int m_IncomingRaid, m_Received;
         private string[] m_Chunks;
@@ -68,7 +97,11 @@ namespace Unity.MP_FPS
             if (json.Length > RaidInventoryTransport.MaxJsonCharacters) return false;
             try
             {
-                var graph = decode(json); if (graph == null || graph.Find("stash") != null || graph.Validate() != InventoryError.None) return false;
+                var snapshot=Newtonsoft.Json.JsonConvert.DeserializeObject<RaidInventorySnapshot>(json);
+                var graph=snapshot?.Graph ?? decode(json);
+                if (graph == null || graph.Find("stash") != null || graph.Validate() != InventoryError.None) return false;
+                if(snapshot?.Graph!=null && (snapshot.LootId>=0)!=(graph.Find(LootInventoryExchange.Root)!=null)) return false;
+                LootId=snapshot?.Graph!=null ? snapshot.LootId : -1; LootVersion=snapshot?.Graph!=null ? snapshot.LootVersion : 0;
                 Graph = graph; RaidId = chunk.RaidId; Sequence = chunk.Sequence; RequestId = chunk.RequestId; Error = chunk.Error; return true;
             }
             catch (Exception) { return false; }

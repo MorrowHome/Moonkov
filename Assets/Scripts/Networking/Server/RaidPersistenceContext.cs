@@ -202,7 +202,7 @@ namespace Unity.MP_FPS
             Inventory.InventoryGraph graph;
             try { graph = string.IsNullOrEmpty(profile.RaidInventoryJson) ? null : RaidInventoryTransport.Decode(profile.RaidInventoryJson); }
             catch (JsonException) { throw new LoadoutRejectedException(RaidLoadoutError.Rejected, "Malformed deployment inventory."); }
-            if (graph == null || graph.Find("stash") != null || graph.Validate() != Inventory.InventoryError.None || graph.Count("cells",true) != payload.Cells)
+            if (graph == null || graph.Find("stash") != null || graph.Find("loot")!=null || graph.Validate() != Inventory.InventoryError.None || graph.Count("cells",true) != payload.Cells)
                 throw new LoadoutRejectedException(RaidLoadoutError.Rejected, "Deployment inventory missing or invalid; update the persistence service.");
             return profile;
         });

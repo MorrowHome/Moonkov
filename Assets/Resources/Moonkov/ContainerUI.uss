@@ -5,6 +5,8 @@
 .inventory-view Button:hover { background-color: rgba(255, 225, 26, 0.14); color: #FFE11A; }
 .inventory-view Button:active { background-color: #FFE11A; color: #07080A; }
 .inventory-body { flex-grow: 1; min-height: 0; flex-direction: row; }
+.inventory-loot-pane { width: 46%; margin-right: 4%; padding: 14px; background-color: rgba(255, 255, 255, 0.025); border-width: 1px; border-color: rgba(255, 255, 255, 0.12); border-top-width: 2px; border-top-color: #FFE11A; }
+.inventory-with-loot .inventory-containers { flex-grow: 1; }
 .inventory-character { width: 44%; min-height: 0; margin-right: 3%; }
 .inventory-with-stash .inventory-character { width: 36%; margin-right: 2%; }
 .inventory-character-title { font-size: 23px; letter-spacing: 3px; -unity-font-definition: url("../../UI Toolkit/Fonts/Roboto-Black.ttf"); margin-bottom: 6px; }

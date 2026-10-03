@@ -150,7 +150,7 @@ namespace Unity.MP_FPS
         {
             if (profile == null || string.IsNullOrEmpty(profile.InventoryJson)) throw new InvalidOperationException("Account service returned no inventory. Update the persistence service.");
             var graph = JsonConvert.DeserializeObject<InventoryGraph>(profile.InventoryJson);
-            if (graph == null || graph.Validate() != InventoryError.None || graph.Find("stash") == null)
+            if (graph == null || graph.Validate() != InventoryError.None || graph.Find("stash") == null || graph.Find("loot")!=null)
                 throw new InvalidOperationException("Invalid account inventory snapshot. Existing inventory was preserved.");
             // A delayed background refresh cannot roll back a successful move or a newer raid state.
             if (Inventory != null && (graph.Version < Inventory.Version ||

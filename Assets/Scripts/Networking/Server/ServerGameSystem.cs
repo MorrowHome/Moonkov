@@ -48,7 +48,8 @@ namespace Unity.MP_FPS
             var mapSingleton = state.EntityManager.CreateSingletonBuffer<ClientsMap>();
             state.EntityManager.GetBuffer<ClientsMap>(mapSingleton).Add(default); //The server NetworkId is 0
             _joinedClientLookup = state.GetComponentLookup<JoinedClient>();
-            state.EntityManager.CreateSingleton(new RaidLootWorld());
+            var lootEntity=state.EntityManager.CreateSingleton(new RaidLootWorld());
+            state.EntityManager.AddComponentObject(lootEntity,new RaidLootContainers());
             m_PersistenceEntity = state.EntityManager.CreateEntity();
             state.EntityManager.AddComponentObject(m_PersistenceEntity, new RaidPersistenceContext());
         }

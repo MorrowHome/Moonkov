@@ -37,7 +37,7 @@ public sealed partial class InventoryRepository
     }
     public static async Task WriteGraphAsync(NpgsqlConnection connection, NpgsqlTransaction transaction, Guid playerId, InventoryGraph graph, CancellationToken ct)
     {
-        if (graph.Validate() != InventoryError.None) throw new DeploymentRejectedException("invalid_inventory");
+        if (graph.Validate() != InventoryError.None || graph.Find("stash")==null || graph.Find("loot")!=null) throw new DeploymentRejectedException("invalid_inventory");
         await using (var write = new NpgsqlCommand("""
             INSERT INTO inventory_profiles (player_id,revision,inventory) VALUES ($1,$2,$3::jsonb)
             ON CONFLICT (player_id) DO UPDATE SET revision=EXCLUDED.revision,inventory=EXCLUDED.inventory
@@ -98,7 +98,7 @@ public sealed partial class InventoryRepository
     {
         if (request.InventoryJson == null) return;
         var raid = Decode(request.InventoryJson);
-        if (raid.Find("stash") != null || raid.Count("dust", true) != request.Dust || raid.Count("alloy", true) != request.Alloy || raid.Count("cells", true) != request.Cells
+        if (raid.Find("stash") != null || raid.Find("loot")!=null || raid.Count("dust", true) != request.Dust || raid.Count("alloy", true) != request.Alloy || raid.Count("cells", true) != request.Cells
             || raid.Validate() != InventoryError.None) throw new ReceiptConflictException();
         if (request.Outcome != "Extracted") return;
         var graph = await ReadGraphAsync(connection, transaction, request.PlayerId, ct);

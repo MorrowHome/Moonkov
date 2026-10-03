@@ -19,6 +19,9 @@ namespace Unity.MP_FPS
         private uint m_InventorySequence, m_InventoryRequestId;
         private float m_InventoryRequestedAt;
         private bool m_InventoryRequestPending;
+        private bool m_LootOpenPending;
+        private int m_OpenedLootId=-1;
+        private Label m_InventoryTitle;
         private Label m_Bag, m_Timer, m_Prompt, m_Exit, m_ResultText, m_SaveStatus;
         private Button m_Deploy;
         private bool m_WasSettled;
@@ -34,6 +37,7 @@ namespace Unity.MP_FPS
         private bool m_InventoryVisible;
         private Button m_ResultBack, m_ResultNext, m_Return;
         private float m_RevealUntil;
+        private float m_LootErrorUntil;
         private int m_PreviousCount = -1;
         private static RaidHUD s_Active;
         public static bool InventoryOpen => s_Active != null && s_Active.m_InventoryVisible;
@@ -70,16 +74,20 @@ namespace Unity.MP_FPS
             m_Return = m_Root.Q<Button>("raidReturn"); m_Return.clicked += ReturnToShip;
             m_Return.SetEnabled(GameManager.CanUseMainMenu);
             m_Inventory = m_Root.Q("raidInventory");
+            m_InventoryTitle=m_Root.Q<Label>(className:"raid-inventory-title");
             m_InventoryView = new Client.ContainerInventoryView(m_Root.Q("raidInventoryHost"), false, SendInventoryMove);
             m_InventorySequence=0; m_InventoryRequestId=0;
             m_InventoryRequestPending=false;
+            m_LootOpenPending=false;m_OpenedLootId=-1;
             m_Root.Q<Button>("raidPackClose").clicked += ClosePack;
         }
 
         private void SetInventory(bool visible)
         {
+            if(m_InventoryRequestPending && m_Snapshot.Phase==RaidPhase.Active && !visible)return;
+            if(!visible && m_OpenedLootId>=0 && m_Snapshot.Phase==RaidPhase.Active)RequestLoot(-1);
             m_InventoryVisible = visible; m_Inventory.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
-            if (visible) { UpdateInventoryView(); m_InventoryView.Show(); }
+            if (visible) { UpdateInventoryView(); if(!m_LootOpenPending)m_InventoryView.Show(); }
             else m_InventoryView.Suspend();
             Utils.SetCursorVisible(visible || GameSettings.Instance.IsPauseMenuOpen || m_WasSettled);
         }
@@ -127,7 +135,7 @@ namespace Unity.MP_FPS
             bool ready = m_Snapshot.RaidId > 0;
             bool settled = ready && m_Snapshot.Phase != RaidPhase.Active;
             if (Keyboard.current != null && Keyboard.current.tabKey.wasPressedThisFrame && ready && !settled && !GameSettings.Instance.IsPauseMenuOpen)
-                SetInventory(!m_InventoryVisible);
+                {if(!m_InventoryRequestPending)SetInventory(!m_InventoryVisible);}
             if (settled && m_InventoryVisible) SetInventory(false);
             if (!settled && m_WasSettled) { m_ResultStep = 0; Utils.SetCursorVisible(false); }
             if (settled && !m_WasSettled) m_ResultStep = 0;
@@ -169,14 +177,19 @@ namespace Unity.MP_FPS
                 var map = MoonRaidMap.Active;
                 for (int i = 0; i < map.LootPositions.Length; i++)
                 {
-                    if ((m_Snapshot.TakenMask & (1u << i)) != 0) continue;
                     float candidate = Vector3.Distance(position, map.LootPositions[i]);
                     if (candidate < distance) { nearest = i; distance = candidate; }
                 }
                 bool pressed = (Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame) ||
                                (Gamepad.current != null && Gamepad.current.buttonWest.wasPressedThisFrame);
-                if (nearest >= 0 && pressed && UnityEngine.Cursor.lockState == CursorLockMode.Locked && !GameSettings.Instance.IsPauseMenuOpen)
-                    Send(new RaidPickupRpc { RaidId = m_Snapshot.RaidId, LootId = nearest });
+                if (nearest >= 0 && pressed && !m_InventoryVisible && !m_InventoryRequestPending && UnityEngine.Cursor.lockState == CursorLockMode.Locked && !GameSettings.Instance.IsPauseMenuOpen)
+                {
+                    if(RequestLoot(nearest))
+                    {
+                        m_LootOpenPending=true;m_InventoryView.Present(null,"Opening supply cache…",operationCompleted:false);
+                        m_InventoryView.SetReadOnly("Opening supply cache…");SetInventory(true);
+                    }
+                }
             }
             // Input is sampled every frame; presentation text refreshes at 10 Hz.
             m_RefreshTimer -= Time.deltaTime;
@@ -190,7 +203,8 @@ namespace Unity.MP_FPS
             bool status = PlayerPrefs.GetInt("Moonkov.AlwaysShowHUD", 0) != 0 || check || Time.unscaledTime < m_RevealUntil || m_Snapshot.TimeLeft < 60;
             m_Status.style.display = !settled && status ? DisplayStyle.Flex : DisplayStyle.None;
             m_Bag.text = $"CARRIED / {count} supplies\nDust {m_Snapshot.Dust}   Alloy {m_Snapshot.Alloy}   Cells {m_Snapshot.Cells}";
-            m_Prompt.text = nearest < 0 || settled || m_InventoryVisible ? "" : $"[E]  COLLECT\n{ItemName(nearest)}";
+            m_Prompt.text = Time.unscaledTime<m_LootErrorUntil ? "Cannot reach this cache. Move closer with a clear line of sight."
+                : nearest < 0 || settled || m_InventoryVisible ? "" : $"[E]  OPEN SUPPLY CACHE / {nearest+1:00}"+(((m_Snapshot.TakenMask & (1u<<nearest))!=0) ? " / EMPTY" : "");
             if (alive && !settled)
             {
                 Vector3 delta = MoonRaidMap.Active.ExtractionPosition - position;
@@ -207,33 +221,53 @@ namespace Unity.MP_FPS
             }
         }
 
-        private static string ItemName(int id) => Inventory.InventoryCatalog.Get(Inventory.InventoryCatalog.LootCode(id)).Name;
+        private bool RequestLoot(int lootId)
+        {
+            if(m_World==null || !m_World.IsCreated || m_InventoryQuery.IsEmptyIgnoreFilter)return false;
+            var inventory=m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
+            m_InventoryRequestId=System.Math.Max(m_InventoryRequestId,inventory.RequestId)+1;
+            if(!Send(new RaidLootOpenRpc {RaidId=m_Snapshot.RaidId,LootId=lootId,RequestId=m_InventoryRequestId}))return false;
+            m_InventoryRequestedAt=Time.unscaledTime;m_InventoryRequestPending=true;return true;
+        }
         private void UpdateInventoryView()
         {
             if (m_World==null || !m_World.IsCreated || m_InventoryQuery.IsEmptyIgnoreFilter) return;
             var inventory=m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
+            if(m_InventoryRequestPending && Time.unscaledTime-m_InventoryRequestedAt>5)
+            {
+                m_InventoryRequestPending=false;m_LootOpenPending=false;m_InventoryView.SetReadOnly(null);
+                m_InventoryView.Present(inventory.Graph,"Waiting for the server. Retry after the connection recovers.",lootId:inventory.LootId);
+            }
             if (inventory.Graph==null || inventory.RaidId!=m_Snapshot.RaidId) return;
             if (inventory.Sequence!=m_InventorySequence)
             {
                 m_InventorySequence=inventory.Sequence;
-                bool acknowledged = !m_InventoryRequestPending || inventory.RequestId == m_InventoryRequestId;
+                bool wasOpen=m_OpenedLootId>=0;
+                bool acknowledged = !m_InventoryRequestPending || inventory.RequestId == m_InventoryRequestId || wasOpen && inventory.LootId<0;
                 if (acknowledged) m_InventoryRequestPending = false;
+                m_OpenedLootId=inventory.LootId;
+                if(acknowledged){m_LootOpenPending=false;m_InventoryView.SetReadOnly(null);}
+                m_InventoryTitle.text=inventory.LootId>=0 ? "SUPPLY CACHE / CARRIED INVENTORY" : "CHARACTER / CARRIED INVENTORY";
                 m_InventoryView.Present(inventory.Graph,acknowledged && inventory.Error!=Inventory.InventoryError.None ? "Inventory: "+inventory.Error : null,
-                    operationCompleted: acknowledged);
-            }
-            if (m_InventoryRequestPending && Time.unscaledTime-m_InventoryRequestedAt>5)
-            {
-                m_InventoryRequestPending = false;
-                m_InventoryView.Present(inventory.Graph,"Move is waiting for the server. Retry after the connection recovers.");
+                    operationCompleted: acknowledged,lootId:inventory.LootId);
+                if(inventory.LootId<0 && (wasOpen || acknowledged && inventory.Error==Inventory.InventoryError.Inaccessible))
+                {if(inventory.Error==Inventory.InventoryError.Inaccessible)m_LootErrorUntil=Time.unscaledTime+3;SetInventory(false);}
+                else if(m_InventoryVisible && inventory.LootId<0 && !m_LootOpenPending)m_InventoryView.Show();
             }
         }
         private void SendInventoryMove(Inventory.InventoryCommand command)
         {
             var inventory=m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
             m_InventoryRequestId=System.Math.Max(m_InventoryRequestId,inventory.RequestId)+1;
-            if (Send(new RaidInventoryMoveRpc { RaidId=m_Snapshot.RaidId, RequestId=m_InventoryRequestId, ExpectedVersion=command.ExpectedVersion,
+            bool sent=inventory.LootId>=0
+                ? Send(new RaidLootMoveRpc {RaidId=m_Snapshot.RaidId,LootId=inventory.LootId,ExpectedLootVersion=inventory.LootVersion,
+                    RequestId=m_InventoryRequestId,ExpectedVersion=command.ExpectedVersion,Operation=command.Operation,
+                    ItemId=command.ItemId??"",Parent=command.Parent??"",Region=command.Region??"",TargetId=command.TargetId??"",
+                    X=command.X,Y=command.Y,Quantity=command.Quantity,Rotated=command.Rotated})
+                : Send(new RaidInventoryMoveRpc { RaidId=m_Snapshot.RaidId, RequestId=m_InventoryRequestId, ExpectedVersion=command.ExpectedVersion,
                 Operation=command.Operation, ItemId=command.ItemId??"", Parent=command.Parent??"", Region=command.Region??"", TargetId=command.TargetId??"",
-                X=command.X,Y=command.Y,Quantity=command.Quantity,Rotated=command.Rotated }))
+                X=command.X,Y=command.Y,Quantity=command.Quantity,Rotated=command.Rotated });
+            if(sent)
             { m_InventoryRequestedAt=Time.unscaledTime; m_InventoryRequestPending=true; }
             else m_InventoryView.Present(inventory.Graph,"Not connected. Item remains in its container.");
         }

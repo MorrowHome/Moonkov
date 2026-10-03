@@ -39,19 +39,26 @@ namespace Unity.MP_FPS
         {
             // No presentation objects or UI are created in a dedicated server.
             if (!ClientServerBootstrap.HasClientWorlds) return;
-            m_Materials = new Material[4];
-            Color[] colors = { new Color(0.2f, 0.8f, 1f), new Color(1f, 0.65f, 0.15f), new Color(0.8f, 0.35f, 1f), new Color(0.2f, 1f, 0.4f) };
+            m_Materials = new Material[5];
+            Color[] colors = { new Color(0.2f, 0.8f, 1f), new Color(1f, 0.65f, 0.15f), new Color(0.8f, 0.35f, 1f), new Color(0.2f, 1f, 0.4f),new Color(.12f,.14f,.16f) };
             var shader = Shader.Find("Universal Render Pipeline/Lit");
             for (int i = 0; i < m_Materials.Length; i++)
             {
                 m_Materials[i] = new Material(shader);
                 m_Materials[i].SetColor("_BaseColor", colors[i]);
-                m_Materials[i].SetColor("_EmissionColor", colors[i] * 1.5f);
-                m_Materials[i].EnableKeyword("_EMISSION");
+                if(i<4){m_Materials[i].SetColor("_EmissionColor", colors[i] * 1.5f);m_Materials[i].EnableKeyword("_EMISSION");}
+                else {m_Materials[i].SetFloat("_Metallic",.55f);m_Materials[i].SetFloat("_Smoothness",.35f);}
             }
             m_Markers = new GameObject[m_LootPositions.Length];
             for (int i = 0; i < m_Markers.Length; i++)
-                m_Markers[i] = Marker("Supply cache " + i, PrimitiveType.Cube, m_LootPositions[i], Vector3.one * 0.6f, m_Materials[i % 3]);
+            {
+                var position=m_LootPositions[i];
+                m_Markers[i]=Marker("Supply cache "+(i+1).ToString("00"),PrimitiveType.Cube,position,new Vector3(1.1f,.6f,.8f),m_Materials[4]);
+                var lid=Marker("Cache lid",PrimitiveType.Cube,position+Vector3.up*.33f,new Vector3(1.14f,.08f,.84f),m_Materials[4]);
+                lid.transform.SetParent(m_Markers[i].transform,true);
+                var latch=Marker("Cache indicator",PrimitiveType.Cube,position+new Vector3(0,.1f,-.41f),new Vector3(.18f,.12f,.025f),m_Materials[i%3]);
+                latch.transform.SetParent(m_Markers[i].transform,true);
+            }
             Marker("Extraction zone", PrimitiveType.Cylinder, m_ExtractionPosition + Vector3.up * 0.08f,
                 new Vector3(m_ExtractionRadius * 2, 0.06f, m_ExtractionRadius * 2), m_Materials[3]);
             Marker("Extraction beacon", PrimitiveType.Cylinder, m_ExtractionPosition + Vector3.up * 4,
@@ -81,7 +88,7 @@ namespace Unity.MP_FPS
             if (m_Markers == null) return;
             for (int i = 0; i < m_Markers.Length; i++)
             {
-                bool visible = hasSnapshot && (takenMask & (1u << i)) == 0;
+                bool visible = hasSnapshot;
                 if (m_Markers[i].activeSelf != visible) m_Markers[i].SetActive(visible);
             }
         }

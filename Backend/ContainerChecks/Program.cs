@@ -49,6 +49,20 @@ try
     {await using var c=await db.OpenConnectionAsync();await using var t=await c.BeginTransactionAsync();var p=await InventoryRepository.ReadAsync(c,t,player,default);await t.CommitAsync();return p;}
     var before=await Read(); var owned=InventoryRepository.Decode(before.InventoryJson!);
     Check(before.Dust==27 && before.Alloy==3 && before.Cells==6 && owned.Validate()==InventoryError.None,"migration preserves quantities and creates containers");
+    await using(var connection=await db.OpenConnectionAsync())
+    await using(var transaction=await connection.BeginTransactionAsync())
+    {
+        var invalidAccount=owned.Clone();invalidAccount.Items.Add(new InventoryItem {Id="loot",Code="loot"});
+        try {await InventoryRepository.WriteGraphAsync(connection,transaction,player,invalidAccount,default);Check(false,"world cache cannot be persisted in account");}
+        catch(DeploymentRejectedException ex) {Check(ex.Message=="invalid_inventory","account boundary rejects cache graph");}
+    }
+    await using(var connection=await db.OpenConnectionAsync())
+    await using(var transaction=await connection.BeginTransactionAsync())
+    {
+        var invalidCargo=InventoryGraph.Create(false,false);invalidCargo.Items.Add(new InventoryItem {Id="loot",Code="loot"});
+        try {await InventoryRepository.ReturnInventoryAsync(connection,transaction,new Settlement(player,Guid.NewGuid(),"Extracted",0,0,0,InventoryJson:InventoryRepository.Encode(invalidCargo)),default);Check(false,"world cache cannot be settled as cargo");}
+        catch(ReceiptConflictException) {Check(true,"settlement boundary rejects cache graph");}
+    }
     var deployment=new Deployment(player,Guid.NewGuid(),2);
     var deployed=await inventory.DeployAsync(deployment,default); var repeated=await inventory.DeployAsync(deployment,default);
     Check(deployed.Cells==4 && deployed.RaidInventoryJson==repeated.RaidInventoryJson,"idempotent whole-kit deployment");

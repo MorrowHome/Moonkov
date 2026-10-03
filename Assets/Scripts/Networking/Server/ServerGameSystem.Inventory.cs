@@ -13,7 +13,7 @@ namespace Unity.MP_FPS
             RaidInventoryState inventory;
             if (state.EntityManager.HasComponent<RaidInventoryState>(connection)) inventory = state.EntityManager.GetComponentObject<RaidInventoryState>(connection);
             else { inventory = new RaidInventoryState(); state.EntityManager.AddComponentObject(connection, inventory); }
-            inventory.Graph = graph; inventory.RaidId=raidId; inventory.LastSentVersion = -1;
+            inventory.Graph = graph; inventory.RaidId=raidId; inventory.LastSentVersion = -1; inventory.OpenedLootId=-1;inventory.LastSentLootVersion=-1;
             Persistence(ref state).Inventories[connection] = inventory;
             return inventory;
         }
@@ -58,9 +58,14 @@ namespace Unity.MP_FPS
         private void SendInventory(ref SystemState state, EntityCommandBuffer ecb, Entity connection, int raidId)
         {
             var inventory = GetRaidInventory(ref state, connection);
-            if (inventory.LastSentVersion == inventory.Graph.Version) return;
+            InventoryGraph cache=null;
+            if(inventory.OpenedLootId>=0)LootContainers(ref state).Containers.TryGetValue(inventory.OpenedLootId,out cache);
+            int lootVersion=cache?.Version ?? 0;
+            if (inventory.LastSentVersion == inventory.Graph.Version && inventory.LastSentLootVersion==lootVersion) return;
             inventory.LastSentVersion = inventory.Graph.Version; inventory.Sequence++;
-            var json = RaidInventoryTransport.Encode(inventory.Graph);
+            inventory.LastSentLootVersion=lootVersion;
+            var snapshot=cache==null ? inventory.Graph : LootInventoryExchange.Snapshot(inventory.Graph,cache);
+            var json = RaidInventoryTransport.EncodeSnapshot(snapshot,cache==null ? -1 : inventory.OpenedLootId,lootVersion);
             const int fragmentSize = RaidInventoryTransport.ChunkCharacters;
             int count = (json.Length + fragmentSize - 1) / fragmentSize;
             for (int index = 0; index < count; index++)

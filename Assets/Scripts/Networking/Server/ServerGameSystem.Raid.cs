@@ -13,44 +13,21 @@ namespace Unity.MP_FPS
             var map = MoonRaidMap.Active;
             if (map == null) return;
             EnsureRaidInventories(ref state);
+            var caches=LootContainers(ref state);
+            caches.Initialize(map.LootPositions.Length);
+            HandleLootRequests(ref state,ecb);
             HandleInventoryRequests(ref state, ecb);
             float dt = SystemAPI.Time.DeltaTime;
             var loot = SystemAPI.GetSingletonRW<RaidLootWorld>();
-            // Loot availability is shared across players; consumed caches return after a cooldown.
-            while (loot.ValueRW.RespawnTimers.Length < map.LootPositions.Length)
-                loot.ValueRW.RespawnTimers.Add(0);
-            for (int i = 0; i < map.LootPositions.Length; i++)
-            {
-                if ((loot.ValueRO.TakenMask & (1u << i)) == 0) continue;
-                float timer = loot.ValueRO.RespawnTimers[i] - dt;
-                loot.ValueRW.RespawnTimers[i] = timer;
-                if (timer <= 0) loot.ValueRW.TakenMask &= ~(1u << i);
-            }
+            // Empty containers stay in the world. A server World owns each cache's one item tree.
+            loot.ValueRW.TakenMask=0;
+            foreach(var cache in caches.Containers)
+                if(!cache.Value.Items.Exists(i=>i.Parent==Inventory.LootInventoryExchange.Root))
+                    loot.ValueRW.TakenMask|=1u<<cache.Key;
 
             foreach (var (request, received, entity) in SystemAPI.Query<RefRO<RaidPickupRpc>, RefRO<ReceiveRpcCommandRequest>>().WithEntityAccess())
             {
-                Entity connection = received.ValueRO.SourceConnection;
-                if (SystemAPI.HasComponent<RaidSession>(connection) && SystemAPI.HasComponent<JoinedClient>(connection))
-                {
-                    var session = SystemAPI.GetComponentRW<RaidSession>(connection);
-                    Entity player = SystemAPI.GetComponent<JoinedClient>(connection).PlayerEntity;
-                    int id = request.ValueRO.LootId;
-                    if (session.ValueRO.Phase == RaidPhase.Active && session.ValueRO.RaidId == request.ValueRO.RaidId &&
-                        id >= 0 && id < map.LootPositions.Length &&
-                        (loot.ValueRO.TakenMask & (1u << id)) == 0 && TryGetLivingPosition(ref state, player, out var position) &&
-                        math.distance(position, map.LootPositions[id]) <= RaidRules.PickupRange &&
-                        !UnityEngine.Physics.Linecast((Vector3)position + Vector3.up * 1.4f,
-                            map.LootPositions[id], LayerMask.GetMask("Default", "Ground"), QueryTriggerInteraction.Ignore))
-                    {
-                        var inventory = GetRaidInventory(ref state, connection);
-                        inventory.Error = inventory.Graph.AddLoot(LootCode(id));
-                        if (inventory.Error != Unity.MP_FPS.Inventory.InventoryError.None) { inventory.LastSentVersion = -1; ecb.DestroyEntity(entity); continue; }
-                        RaidInventoryState.UpdateTotals(inventory.Graph, ref session.ValueRW);
-                        loot.ValueRW.TakenMask |= 1u << id;
-                        loot.ValueRW.RespawnTimers[id] = map.LootRespawnSeconds;
-                        session.ValueRW.SnapshotTimer = 0;
-                    }
-                }
+                // Consume obsolete instant-pickup intents without generating new items.
                 ecb.DestroyEntity(entity);
             }
 
@@ -92,6 +69,7 @@ namespace Unity.MP_FPS
             foreach (var (session, joined, connection) in SystemAPI.Query<RefRW<RaidSession>, RefRO<JoinedClient>>().WithEntityAccess())
             {
                 if (SystemAPI.HasComponent<NetworkStreamRequestDisconnect>(connection)) continue;
+                RefreshLootAccess(ref state,connection,session.ValueRO);
                 SendInventory(ref state, ecb, connection, session.ValueRO.RaidId);
                 if (session.ValueRO.Phase == RaidPhase.Active && TryGetLivingPosition(ref state, joined.ValueRO.PlayerEntity, out var position))
                 {

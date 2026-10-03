@@ -15,7 +15,7 @@ namespace Unity.MP_FPS.Client
             public string Parent, Region; public InventoryRegion Definition;
             public VisualElement Element; public float Cell = 40;
         }
-        private readonly VisualElement m_Root, m_Body, m_CharacterStage, m_ContainerPane, m_StashPane, m_Ghost, m_Preview;
+        private readonly VisualElement m_Root, m_Body, m_CharacterStage, m_CharacterPane, m_LootPane, m_ContainerPane, m_StashPane, m_Ghost, m_Preview;
         private readonly Label m_Weight, m_Message;
         private readonly Action<InventoryCommand> m_Send;
         private readonly TerminalWindows m_Windows;
@@ -29,6 +29,7 @@ namespace Unity.MP_FPS.Client
         private Drag m_Drag;
         private bool m_Busy, m_Disposed, m_Rebuilding;
         private string m_ReadOnlyReason;
+        private int m_LootId=-1;
         private int m_RenderedVersion = int.MinValue;
         private int m_EscapeHandledFrame = -1;
         public VisualElement Element => m_Root;
@@ -46,7 +47,8 @@ namespace Unity.MP_FPS.Client
             if (showStash) m_Root.AddToClassList("inventory-with-stash");
             m_Root.styleSheets.Add(Resources.Load<StyleSheet>("Moonkov/ContainerUI")); parent.Add(m_Root);
             m_Body = new VisualElement(); m_Body.AddToClassList("inventory-body"); m_Root.Add(m_Body);
-            var actor = new VisualElement(); actor.AddToClassList("inventory-character"); m_Body.Add(actor);
+            m_LootPane=new VisualElement();m_LootPane.AddToClassList("inventory-loot-pane");m_LootPane.style.display=DisplayStyle.None;m_Body.Add(m_LootPane);
+            var actor = new VisualElement(); m_CharacterPane=actor; actor.AddToClassList("inventory-character"); m_Body.Add(actor);
             Text(actor, "DOLLSINGER", "inventory-character-title"); Text(actor, "EQUIPMENT / FIELD LOADOUT", "inventory-caption");
             m_CharacterStage = new VisualElement(); m_CharacterStage.AddToClassList("inventory-character-stage"); actor.Add(m_CharacterStage);
             var guides = new StashEquipmentGuides(() => m_Character, m_Slots); m_CharacterStage.Add(guides);
@@ -88,10 +90,10 @@ namespace Unity.MP_FPS.Client
                 case "helmet":return StashArtKind.Helmet; case "rifle":case "compact":return StashArtKind.Rifle; case "pistol":return StashArtKind.Pistol;
                 case "rig":return StashArtKind.ChestRig; case "backpack":case "small_pack":return StashArtKind.Backpack; default:return StashArtKind.None; }
         }
-        public void Present(InventoryGraph graph, string message = null, bool operationCompleted = true)
+        public void Present(InventoryGraph graph, string message = null, bool operationCompleted = true, int lootId=-1)
         {
             if (m_Disposed) return;
-            bool changed = m_Graph != graph || m_RenderedVersion != (graph?.Version ?? -1); m_Graph = graph;
+            bool changed = m_Graph != graph || m_RenderedVersion != (graph?.Version ?? -1) || m_LootId!=lootId; m_Graph = graph;m_LootId=lootId;
             if (operationCompleted) m_Busy = false;
             if (changed) { CancelDrag(); Render(); m_RenderedVersion=graph?.Version ?? -1; }
             if (message != null) m_Message.text = message;
@@ -99,7 +101,7 @@ namespace Unity.MP_FPS.Client
         }
         public void Show()
         {
-            if (m_Character != null || m_Disposed) return;
+            if (m_Character != null || m_Disposed || m_Graph?.Find(LootInventoryExchange.Root)!=null) return;
             m_Character = new MenuCharacterView(idleOnly: true);
             m_Character.Element.RemoveFromClassList("terminal-character-art"); m_Character.Element.AddToClassList("stash-character-render");
             m_CharacterStage.Insert(0, m_Character.Element);
@@ -113,7 +115,11 @@ namespace Unity.MP_FPS.Client
         }
         private void Render()
         {
-            m_Grids.RemoveAll(g => !g.Definition.SlotKind.HasValue); m_Tiles.Clear(); m_ContainerPane.Clear(); m_StashPane.Clear();
+            m_Grids.RemoveAll(g => !g.Definition.SlotKind.HasValue); m_Tiles.Clear(); m_ContainerPane.Clear(); m_StashPane.Clear();m_LootPane.Clear();
+            var loot=m_Graph?.Find(LootInventoryExchange.Root);
+            m_Root.EnableInClassList("inventory-with-loot",loot!=null);
+            m_LootPane.style.display=loot==null ? DisplayStyle.None : DisplayStyle.Flex;
+            m_CharacterPane.style.display=loot==null ? DisplayStyle.Flex : DisplayStyle.None;
             m_Rebuilding=true; m_Windows.CloseAll(); m_Rebuilding=false;
             foreach (var pair in m_Slots)
             {
@@ -136,6 +142,7 @@ namespace Unity.MP_FPS.Client
             AddContainer(m_ContainerPane, m_Graph.Find("pockets"), "POCKETS");
             AddContainer(m_ContainerPane, m_Graph.Equipped("ChestRig"), "CHEST RIG");
             AddContainer(m_ContainerPane, m_Graph.Equipped("Backpack"), "BACKPACK");
+            if(loot!=null)AddContainer(m_LootPane,loot,"SUPPLY CACHE / "+(m_LootId+1).ToString("00"));
             if (m_Stash) AddContainer(m_StashPane, m_Graph.Find("stash"), "PERSONAL STORAGE");
             foreach (var id in new List<string>(m_Open)) { var item = m_Graph.Find(id); if (item == null) m_Open.Remove(id); else OpenContainer(item, false); }
         }
@@ -237,6 +244,8 @@ namespace Unity.MP_FPS.Client
         }
         private void QuickTransfer(InventoryItem item)
         {
+            if(m_Graph.Find(LootInventoryExchange.Root)!=null && m_Graph.Carried(item))
+            {if(!AutoMove(item,LootInventoryExchange.Root))m_Message.text="No compatible free space in this cache.";return;}
             if (m_Stash && m_Graph.Carried(item)) { if (!AutoMove(item,"stash")) m_Message.text="No free space in storage."; return; }
             if (!m_Graph.Carried(item)) foreach (var region in InventoryCatalog.Get("equipment").Regions)
                 if (region.SlotKind==InventoryCatalog.Get(item.Code).Kind && m_Graph.Equipped(region.Id)==null) { Command(new InventoryCommand { ItemId=item.Id, Parent="equipment", Region=region.Id }); return; }
@@ -245,6 +254,11 @@ namespace Unity.MP_FPS.Client
         }
         private bool AutoMove(InventoryItem item, string parent)
         {
+            var definition=InventoryCatalog.Get(item.Code);
+            if(!definition.Container && definition.MaxStack>1)
+                foreach(var stack in m_Graph.Children(parent))
+                    if(stack.Id!=item.Id && stack.Code==item.Code && stack.FoundInRaid==item.FoundInRaid && stack.Quantity+item.Quantity<=definition.MaxStack)
+                    {Command(new InventoryCommand {Operation=InventoryOperation.Merge,ItemId=item.Id,TargetId=stack.Id});return true;}
             if (!m_Graph.FindSpace(item,parent,out var region,out var x,out var y)) return false;
             Command(new InventoryCommand { ItemId=item.Id, Parent=parent, Region=region, X=x, Y=y, Rotated=item.Rotated }); return true;
         }
@@ -329,6 +343,7 @@ namespace Unity.MP_FPS.Client
                 for (int n=m_View.m_Grids.Count-1; n>=0; n--)
                 {
                     var grid=m_View.m_Grids[n]; if (grid.Element.panel==null || !grid.Element.worldBound.Contains(m_Last)) continue;
+                    if(grid.Definition.SlotKind.HasValue && m_View.m_Graph.Find(LootInventoryExchange.Root)!=null)continue;
                     var scroll=grid.Element.GetFirstAncestorOfType<ScrollView>(); if (scroll!=null && !scroll.contentViewport.worldBound.Contains(m_Last)) continue;
                     bool slot=grid.Definition.SlotKind.HasValue; var local=grid.Element.WorldToLocal(m_Last);
                     cell=grid.Cell;

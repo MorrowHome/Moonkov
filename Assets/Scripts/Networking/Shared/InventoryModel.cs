@@ -43,6 +43,7 @@ namespace Unity.MP_FPS.Inventory
                     new InventoryRegion("ChestRig", 1, 1, ItemKind.Rig), new InventoryRegion("Backpack", 1, 1, ItemKind.Backpack)),
                 new ItemDefinition("pockets", "Pockets", ItemKind.Root, 0, 0, 1, 0,
                     new InventoryRegion("1", 1, 1), new InventoryRegion("2", 1, 1), new InventoryRegion("3", 1, 1), new InventoryRegion("4", 1, 1)),
+                new ItemDefinition("loot", "Supply cache", ItemKind.Root, 0, 0, 1, 0, new InventoryRegion("main", 6, 5)),
                 new ItemDefinition("dust", "Moon dust", ItemKind.Material, 1, 1, 20, .15f),
                 new ItemDefinition("alloy", "Lunar alloy", ItemKind.Material, 2, 1, 10, .6f),
                 new ItemDefinition("cells", "Energy cell", ItemKind.Cell, 1, 1, 12, .2f),
