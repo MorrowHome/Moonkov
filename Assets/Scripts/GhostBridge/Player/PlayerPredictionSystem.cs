@@ -236,7 +236,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
 
                                 float3 eyePosition = shotRay.origin;
                                 float3 aimDirection = shotRay.direction;
-                                var shotOriginPosition = playerGhost.VisualShotOrigin1P.position;
+                                Vector3 shotOriginPosition = shotRay.origin;
                                     
                                 // Replayed/partial predictions must not create another visible halo bolt.
                                 if (VisualEffectManager.ClientInstance != null &&
@@ -247,8 +247,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
 
                                 if (weaponData.Type == WeaponType.Hitscan)
                                 {
-                                    if (Physics.Raycast(eyePosition, aimDirection, out RaycastHit cosmeticHit,
-                                        weaponData.HitscanRange, s_HitscanLayerMask))
+                                    if (playerGhost.RaycastShot(shotRay,weaponData.HitscanRange,s_HitscanLayerMask,out var cosmeticHit))
                                     {
                                         Debug.DrawLine(shotOriginPosition, cosmeticHit.point, Color.yellow, 0.3f);
                                     }
@@ -258,20 +257,9 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                                         Debug.DrawLine(shotOriginPosition, endPoint, Color.cyan, 0.3f);
                                     }
                                 }
-                                else if (weaponData.Type == WeaponType.Projectile)
+                                else if (weaponData.Type == WeaponType.Projectile && networkTime.IsFirstTimeFullyPredictingTick)
                                 {
-                                    Vector3 targetPoint;
-                                    if (Physics.Raycast(eyePosition, aimDirection, out RaycastHit aimHit, 1000f, s_ProjectileTargetLayerMask))
-                                    {
-                                        targetPoint = aimHit.point;
-                                    }
-                                    else
-                                    {
-                                        targetPoint = eyePosition + 1000f * aimDirection;
-                                    }
-
-                                    var directionToTarget = (targetPoint - shotOriginPosition).normalized;
-                                    var spawnRotation = Quaternion.LookRotation(directionToTarget);
+                                    var spawnRotation = Quaternion.LookRotation(shotRay.direction);
 
                                     controllerLink.Controller.SpawnPredictedProjectile(
                                         commandInput.Tick.TickIndexForValidTick,
