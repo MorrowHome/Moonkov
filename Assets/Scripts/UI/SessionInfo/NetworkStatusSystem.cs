@@ -20,6 +20,7 @@ public partial struct NetworkStatusSystem : ISystem
     private const string k_RedColor = "#ff5555";
     private const string k_OrangeColor = "#ffb86c";
     private const string k_GreenColor = "#50fa7b";
+    private float m_FrameMs;
 
     public void OnCreate(ref SystemState state)
     {
@@ -54,9 +55,6 @@ public partial struct NetworkStatusSystem : ISystem
         if (SystemAPI.TryGetSingleton<NetworkSnapshotAck>(out var ack) && connection.CurrentState == ConnectionState.State.Connected)
         {
             var pingEstimate = (int)ack.EstimatedRTT;
-            const float assumedSimulationTickRate = 60;
-            const float lastSimulationTickRateFrameMs = (1000f / assumedSimulationTickRate);
-            pingEstimate = (int)math.max(0, pingEstimate - lastSimulationTickRateFrameMs);
             var deviationRTT = (int)ack.DeviationRTT;
 
             if (ack.EstimatedRTT > 200)
@@ -73,6 +71,18 @@ public partial struct NetworkStatusSystem : ISystem
             sb.Append('±');
             sb.Append(deviationRTT);
             sb.Append("ms, ");
+            // Presentation runs once per rendered frame. Do not use a prediction step's dt as FPS.
+            m_FrameMs = math.lerp(m_FrameMs > 0f ? m_FrameMs : Time.unscaledDeltaTime * 1000f,
+                Time.unscaledDeltaTime * 1000f, .1f);
+            sb.Append("Frame:");
+            sb.Append((int)m_FrameMs);
+            sb.Append("ms, ");
+            if (SystemAPI.TryGetSingleton<NetworkTime>(out var time) && time.ServerTick.IsValid && ack.LastReceivedSnapshotByLocal.IsValid)
+            {
+                sb.Append("Snapshot gap:");
+                sb.Append(time.ServerTick.TicksSince(ack.LastReceivedSnapshotByLocal));
+                sb.Append(" ticks, ");
+            }
         }
         else
         {
