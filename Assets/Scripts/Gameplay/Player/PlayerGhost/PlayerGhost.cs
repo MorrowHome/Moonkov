@@ -6,6 +6,7 @@ using Unity.NetCode;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Serialization;
+using Unity.MP_FPS.DollSinger;
 using static FirstPersonController;
 
 namespace Unity.MP_FPS
@@ -72,10 +73,14 @@ namespace Unity.MP_FPS
             var direction = Quaternion.Euler(input.LookYawPitchDegrees.y, input.LookYawPitchDegrees.x, 0f) * Vector3.forward;
             Vector3 origin = CameraTarget.position;
             aimPoint = origin + direction * range;
-            if (TryGetComponent<DollSingerNetworkPresentation>(out _))
+            if (TryGetComponent<DollSingerNetworkPresentation>(out var dollSinger))
             {
                 // A stable gameplay anchor also exists on a headless server, where the model is inactive.
                 origin = ShotOrigin.position;
+                Vector3 leanOffset = dollSinger.GetGameplayLeanOffset(input.Lean,
+                    Quaternion.Euler(0f, input.LookYawPitchDegrees.x, 0f), input.ThirdPerson);
+                origin += DollSingerMovement.ConstrainLeanOffset(origin, leanOffset, transform,
+                    LayerMask.GetMask("Ground", "Default"));
                 Vector3 requestedTarget = input.AimPoint;
                 Vector3 offset = requestedTarget - origin;
                 if (math.all(math.isfinite(input.AimPoint)) && math.lengthsq(input.AimPoint) > 0f &&

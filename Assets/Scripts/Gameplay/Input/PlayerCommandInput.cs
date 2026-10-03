@@ -50,6 +50,8 @@ public struct PlayerInput
         bool hadBufferedShot = Shoot;
         float3 bufferedAimPoint = AimPoint;
         float2 bufferedLook = LookYawPitchDegrees;
+        float bufferedLean = Lean;
+        bool bufferedThirdPerson = ThirdPerson;
         if (updateContinuousState)
         {
             MoveInput = input.MoveInput;
@@ -66,11 +68,15 @@ public struct PlayerInput
         {
             AimPoint = input.AimPoint;
             LookYawPitchDegrees = input.LookYawPitchDegrees;
+            Lean = input.Lean;
+            SetFlag(InputFlag.ThirdPerson, input.ThirdPerson);
         }
         else if (hadBufferedShot)
         {
             AimPoint = bufferedAimPoint;
             LookYawPitchDegrees = bufferedLook;
+            Lean = bufferedLean;
+            SetFlag(InputFlag.ThirdPerson, bufferedThirdPerson);
         }
         InputFlags |= input.InputFlags & (uint)(InputFlag.Jump | InputFlag.Shoot | InputFlag.Reload);
     }

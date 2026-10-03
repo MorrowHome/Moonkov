@@ -13,8 +13,13 @@ namespace Unity.MP_FPS.DollSinger
         private CursorLockMode previousLock;
         private bool previousVisible;
         private bool captured;
+        private bool wasBlocked;
 
-        public bool CanReadPlayerInput => captured && Cursor.lockState == CursorLockMode.Locked;
+        // Assigned by the host game; the standalone character demo has no UI dependency.
+        public System.Func<bool> GameplayInputBlocked { get; set; }
+        private bool IsGameplayBlocked => GameplayInputBlocked?.Invoke() == true;
+
+        public bool CanReadPlayerInput => !IsGameplayBlocked && captured && Cursor.lockState == CursorLockMode.Locked;
         public Vector2 Move { get; private set; }
         public Vector2 Look { get; private set; }
         public bool JumpPressed { get; private set; }
@@ -28,6 +33,7 @@ namespace Unity.MP_FPS.DollSinger
         public bool AltHeld { get; private set; }
         public float LeanTarget { get; private set; }
         public bool IsLeanLocked => lockedLean != 0f;
+        private bool leanEnabled;
         private float lockedLean;
         public float Scroll { get; private set; }
 
@@ -35,12 +41,33 @@ namespace Unity.MP_FPS.DollSinger
         {
             previousLock = Cursor.lockState;
             previousVisible = Cursor.visible;
-            SetCapture(captureOnEnable);
+            wasBlocked = IsGameplayBlocked;
+            SetCapture(captureOnEnable && !wasBlocked);
+        }
+
+        public void SetLeanEnabled(bool enabled)
+        {
+            leanEnabled = enabled;
+            if (enabled) return;
+            lockedLean = 0f;
+            LeanTarget = 0f;
         }
 
         private void Update()
         {
             ClearFrame();
+            if (IsGameplayBlocked)
+            {
+                wasBlocked = true;
+                SetCapture(false);
+                return;
+            }
+            if (wasBlocked)
+            {
+                wasBlocked = false;
+                SetCapture(captureOnEnable && Application.isFocused);
+                return; // Closing UI must not also aim, shoot or rotate the character.
+            }
             var keyboard = Keyboard.current;
             var mouse = Mouse.current;
             if (keyboard != null && keyboard.escapeKey.wasPressedThisFrame)
@@ -64,13 +91,13 @@ namespace Unity.MP_FPS.DollSinger
                 LightPressed = keyboard.lKey.wasPressedThisFrame;
                 ReloadPressed = keyboard.rKey.wasPressedThisFrame;
                 AltHeld = keyboard.leftAltKey.isPressed || keyboard.rightAltKey.isPressed;
-                if (AltHeld && keyboard.qKey.wasPressedThisFrame)
+                if (leanEnabled && AltHeld && keyboard.qKey.wasPressedThisFrame)
                     lockedLean = lockedLean < 0f ? 0f : -1f;
-                else if (AltHeld && keyboard.eKey.wasPressedThisFrame)
+                else if (leanEnabled && AltHeld && keyboard.eKey.wasPressedThisFrame)
                     lockedLean = lockedLean > 0f ? 0f : 1f;
-                float heldLean = AltHeld ? 0f :
+                float heldLean = !leanEnabled || AltHeld ? 0f :
                     (keyboard.eKey.isPressed ? 1f : 0f) - (keyboard.qKey.isPressed ? 1f : 0f);
-                LeanTarget = heldLean != 0f ? heldLean : lockedLean;
+                LeanTarget = leanEnabled ? (heldLean != 0f ? heldLean : lockedLean) : 0f;
             }
             if (mouse != null)
             {

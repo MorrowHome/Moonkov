@@ -22,6 +22,12 @@ namespace Unity.MP_FPS
 
         public DollSingerInput OwnedInput => m_Linked && Role == MultiplayerRole.ClientOwned ? m_Input : null;
         public bool IsThirdPerson => m_View != null && !m_View.IsFirstPerson;
+        public float OwnedLeanAmount => m_OwnedLean;
+
+        public Vector3 GetGameplayLeanOffset(float lean, Quaternion bodyRotation, bool thirdPerson)
+        {
+            return thirdPerson ? Vector3.zero : m_Model.GetLeanOffset(lean, bodyRotation);
+        }
 
         public bool UpdateOwnedLook(ref float2 look, out float2 freeLookOffset, bool blocked)
         {
@@ -44,7 +50,11 @@ namespace Unity.MP_FPS
             look.y = math.clamp(look.y, -80f, 80f);
             m_FreeLookOffset.y = math.clamp(look.y + m_FreeLookOffset.y, -80f, 80f) - look.y;
             freeLookOffset = m_FreeLookOffset;
-            m_OwnedLean = blocked ? 0f : m_Input.LeanTarget;
+            m_OwnedLean = blocked || IsThirdPerson ? 0f :
+                Mathf.MoveTowards(m_OwnedLean, m_Input.LeanTarget, Time.deltaTime * m_Model.m_LeanSpeed);
+            Quaternion bodyRotation = freeLooking ? m_Model.transform.rotation : Quaternion.Euler(0f, look.x, 0f);
+            if (!blocked && !IsThirdPerson) m_OwnedLean = m_View.LimitLeanAmount(m_OwnedLean, bodyRotation);
+            m_Model.SetNetworkLeanAmount(m_OwnedLean);
             var viewLook = look + m_FreeLookOffset;
             m_OwnedViewRotation = Quaternion.Euler(viewLook.y, viewLook.x, 0f);
             m_View.SetNetworkLookRotation(m_OwnedViewRotation);
@@ -54,8 +64,8 @@ namespace Unity.MP_FPS
         public Vector3 CaptureAimPoint(float2 look, float range)
         {
             var viewLook = look + m_FreeLookOffset;
-            m_View.SetNetworkLookRotation(Quaternion.Euler(viewLook.y, viewLook.x, 0f));
-            var ray = m_View.camera.ViewportPointToRay(new Vector3(0.5f, 0.5f));
+            var ray = m_View.CaptureAimRay(Quaternion.Euler(viewLook.y, viewLook.x, 0f),
+                Quaternion.Euler(0f, look.x, 0f), m_OwnedLean);
             var target = ray.GetPoint(range);
             // Host server colliders duplicate the client avatars; ignore that world here.
             int count = UnityEngine.Physics.RaycastNonAlloc(ray, m_AimHits, range,
@@ -92,6 +102,7 @@ namespace Unity.MP_FPS
         {
             if (m_ViewActivated) return m_View.camera;
             m_ViewActivated = true;
+            m_Input.GameplayInputBlocked = () => GameSettings.Instance.IsPauseMenuOpen || RaidHUD.PointerRequested;
             m_Model.gameObject.SetActive(true);
             m_View.gameObject.SetActive(true);
             m_Input.enabled = true;
@@ -139,6 +150,7 @@ namespace Unity.MP_FPS
         {
             m_Linked = false;
             m_Input.enabled = false;
+            m_Input.GameplayInputBlocked = null;
             m_View.gameObject.SetActive(false);
         }
     }

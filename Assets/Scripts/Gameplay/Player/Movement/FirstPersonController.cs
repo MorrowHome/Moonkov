@@ -777,7 +777,7 @@ public class FirstPersonController : MonoBehaviour
         state.FreeLookOffset = state.FirstPersonView
             ? math.clamp(input.FreeLookOffset, new float2(-70f, -45f), new float2(70f, 45f))
             : float2.zero;
-        state.Lean = math.clamp(input.Lean, -1f, 1f);
+        state.Lean = state.FirstPersonView ? math.clamp(input.Lean, -1f, 1f) : 0f;
     }
 
     public static void AccumulateMovement(ref ControllerState state,

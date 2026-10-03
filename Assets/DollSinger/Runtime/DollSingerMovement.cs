@@ -83,10 +83,11 @@ namespace Unity.MP_FPS.DollSinger {
         [Header("Lean")]
         [Tooltip("Camera roll in degrees at full lean.")]
         [Range(5f, 35f)] public float m_LeanAngle = 15f;
-        [Tooltip("Third-person orbit offset at full lean. First person follows the actual leaning head.")]
-        [Range(0f, 0.6f)] public float m_LeanShift = 0.22f;
-        [Tooltip("Upper body roll as a fraction of the camera roll.")]
-        [Range(0f, 1f)] public float m_BodyLeanRatio = 0.65f;
+        [Tooltip("Total waist/chest bend at full lean. Eye displacement comes from the skeleton's arc.")]
+        [Range(5f, 35f)] public float m_BodyLeanAngle = 30f;
+        // Legacy serialized settings; fixed translation is no longer applied to any bone.
+        [HideInInspector] public float m_LeanShift = 0.22f;
+        [HideInInspector] public float m_BodyLeanRatio = 0.65f;
         [Tooltip("How fast the lean eases in and out, in units per second.")]
         [Min(0.5f)] public float m_LeanSpeed = 6f;
         [Tooltip("Movement speed multiplier at full lean.")]
@@ -107,6 +108,10 @@ namespace Unity.MP_FPS.DollSinger {
         private Transform m_HeadBone;
         private bool m_ChestBoneSearched;
         private Quaternion m_NetworkHeadRotation;
+        private Vector3 m_SpineToChest;
+        private Vector3 m_ChestToHead;
+        private Vector3 m_AppliedLeanOffset;
+        private static readonly RaycastHit[] s_LeanHits = new RaycastHit[32];
 
         // player
         private float m_Speed;
@@ -172,10 +177,67 @@ namespace Unity.MP_FPS.DollSinger {
         /// <see cref="m_LeanState"/> because Unity's positive Z rotation tips "up" toward -X.
         /// </summary>
         public float LeanRoll => -m_LeanState * m_LeanAngle;
-        /// <summary>Sideways camera slide along the character's right axis, in metres. Negative = to the left.</summary>
-        public float LeanShift => m_LeanState * m_LeanShift;
+        /// <summary>Actual sideways travel produced by waist/chest rotation.</summary>
+        public float LeanShift => Vector3.Dot(LeanOffset, transform.right);
+        public float LeanAmount => IsFirstPersonView ? m_LeanState : 0f;
+        public Vector3 LeanOffset => IsFirstPersonView ? m_AppliedLeanOffset : Vector3.zero;
+
+        public Vector3 GetLeanOffset(float amount, Quaternion bodyRotation)
+        {
+            if (float.IsNaN(amount) || float.IsInfinity(amount) || !EnsureLeanBones()) return Vector3.zero;
+            amount = Mathf.Clamp(amount, -1f, 1f);
+            float roll = -amount * Mathf.Clamp(m_BodyLeanAngle, 5f, 35f);
+            float waistWeight = m_ChestBone ? 0.75f : 1f;
+            Quaternion waist = Quaternion.AngleAxis(roll * waistWeight, Vector3.forward);
+            Quaternion total = Quaternion.AngleAxis(roll, Vector3.forward);
+            Vector3 offset = waist * m_SpineToChest + total * m_ChestToHead
+                - m_SpineToChest - m_ChestToHead;
+            return bodyRotation * offset;
+        }
+
+        private bool EnsureLeanBones()
+        {
+            if (m_ChestBoneSearched) return m_SpineBone;
+            var animator = m_Animator ? m_Animator : GetComponent<Animator>();
+            if (!animator || !animator.isHuman) return false;
+            m_SpineBone = animator.GetBoneTransform(HumanBodyBones.Spine);
+            m_ChestBone = animator.GetBoneTransform(HumanBodyBones.UpperChest)
+                ?? animator.GetBoneTransform(HumanBodyBones.Chest);
+            m_HeadBone = animator.GetBoneTransform(HumanBodyBones.Head);
+            m_ChestBoneSearched = true;
+            CaptureLeanGeometry();
+            return m_SpineBone;
+        }
+
+        private void CaptureLeanGeometry()
+        {
+            if (!m_SpineBone) return;
+            Transform chest = m_ChestBone ? m_ChestBone : m_SpineBone;
+            Transform head = m_HeadBone ? m_HeadBone : chest;
+            Quaternion inverseBody = Quaternion.Inverse(transform.rotation);
+            m_SpineToChest = inverseBody * (chest.position - m_SpineBone.position);
+            m_ChestToHead = inverseBody * (head.position - chest.position);
+        }
+
+        public static Vector3 ConstrainLeanOffset(Vector3 origin, Vector3 offset, Transform owner, int layers)
+        {
+            float distance = offset.magnitude;
+            if (distance < 0.0001f) return Vector3.zero;
+            int count = Physics.SphereCastNonAlloc(origin, 0.045f, offset / distance, s_LeanHits,
+                distance, layers, QueryTriggerInteraction.Ignore);
+            // Be conservative if a crowded query overflows the fixed buffer.
+            if (count == s_LeanHits.Length) return Vector3.zero;
+            float allowed = distance;
+            for (int i = 0; i < count; i++)
+            {
+                var hit = s_LeanHits[i];
+                if (!hit.collider || (owner && hit.collider.transform.IsChildOf(owner))) continue;
+                allowed = Mathf.Min(allowed, Mathf.Max(0f, hit.distance - 0.01f));
+            }
+            return offset * (allowed / distance);
+        }
         /// <summary>Upper-body roll about the character's forward axis. Same sign convention as <see cref="LeanRoll"/>.</summary>
-        public float BodyLeanRoll => -m_LeanState * m_LeanAngle * m_BodyLeanRatio;
+        public float BodyLeanRoll => -m_LeanState * Mathf.Clamp(m_BodyLeanAngle, 5f, 35f);
         /// <summary>True while a lean is latched with Alt+Q / Alt+E.</summary>
         public bool IsLeanLocked => input && input.IsLeanLocked;
         public bool IsFreeLooking => m_FreeLookHeld ||
@@ -184,9 +246,12 @@ namespace Unity.MP_FPS.DollSinger {
             get => m_IsFirstPersonView;
             set {
                 m_IsFirstPersonView = value;
+                if (input) input.SetLeanEnabled(value);
                 m_BodyTurningToLook = false;
                 m_RotationVelocity = 0f;
                 if (value) return;
+                m_LeanState = m_LeanTarget = 0f;
+                m_AppliedLeanOffset = Vector3.zero;
                 m_FreeLookYaw = 0f;
                 m_FreeLookPitch = 0f;
                 m_FreeLookHeld = false;
@@ -195,14 +260,20 @@ namespace Unity.MP_FPS.DollSinger {
         public DollSingerInput input;
         public DollSingerView view;
 
+        public void SetNetworkLeanAmount(float lean)
+        {
+            m_LeanState = m_LeanTarget = Mathf.Clamp(lean, -1f, 1f);
+        }
+
         // Network prediction owns the root CharacterController. Keep this component
         // enabled for Animator IK and LateUpdate, but skip local movement simulation.
         public void SetNetworkViewPresentation(bool firstPersonView, Quaternion headRotation, float lean)
         {
             m_NetworkDriven = true;
             m_IsFirstPersonView = firstPersonView;
+            if (input) input.SetLeanEnabled(firstPersonView);
             m_NetworkHeadRotation = headRotation;
-            m_LeanTarget = Mathf.Clamp(lean, -1f, 1f);
+            SetNetworkLeanAmount(firstPersonView ? lean : 0f);
             m_HeadLookWeight = Mathf.MoveTowards(m_HeadLookWeight,
                 firstPersonView ? 1f : 0f, Time.deltaTime * 6f);
         }
@@ -275,6 +346,7 @@ namespace Unity.MP_FPS.DollSinger {
         {
             ResetTurnAnimation();
             m_LeanState = m_LeanTarget = 0f;
+            m_AppliedLeanOffset = Vector3.zero;
             m_FreeLookYaw = m_FreeLookPitch = m_HeadLookWeight = 0f;
             m_FreeLookHeld = false;
         }
@@ -300,6 +372,9 @@ namespace Unity.MP_FPS.DollSinger {
             IsLocallyAiming = input && input.AimHeld;
             ReadInput();
             CameraRotation();
+            m_LeanState = IsFirstPersonView
+                ? Mathf.MoveTowards(m_LeanState, m_LeanTarget, Time.deltaTime * m_LeanSpeed) : 0f;
+            if (view && IsFirstPersonView) m_LeanState = view.LimitLeanAmount(m_LeanState);
             if (IsFreeLooking) IsLocallyAiming = false;
             m_HeadLookWeight = Mathf.MoveTowards(m_HeadLookWeight,
                 IsFirstPersonView ? 1f : 0f, Time.deltaTime * 6f);
@@ -312,29 +387,26 @@ namespace Unity.MP_FPS.DollSinger {
         }
 
         private void LateUpdate() {
-            m_LeanState = Mathf.MoveTowards(m_LeanState, m_LeanTarget, Time.deltaTime * m_LeanSpeed);
+            m_AppliedLeanOffset = Vector3.zero;
+            if (!IsFirstPersonView) { m_LeanState = m_LeanTarget = 0f; return; }
             ApplyBodyLean();
         }
 
         // There is no lean animation on this rig, so the upper-body roll is applied on top
         // of the animated pose. LateUpdate runs after the Animator has written the bones.
         private void ApplyBodyLean() {
-            if (!m_HasAnimator || !m_Animator.isHuman) return;
-            if (!m_ChestBoneSearched) {
-                m_SpineBone = m_Animator.GetBoneTransform(HumanBodyBones.Spine);
-                m_ChestBone = m_Animator.GetBoneTransform(HumanBodyBones.UpperChest)
-                              ?? m_Animator.GetBoneTransform(HumanBodyBones.Chest);
-                m_HeadBone = m_Animator.GetBoneTransform(HumanBodyBones.Head);
-                m_ChestBoneSearched = true;
-            }
-            if (!m_SpineBone) return;
+            if (!IsFirstPersonView || !m_HasAnimator || !m_Animator.isHuman) return;
+            if (!EnsureLeanBones()) return;
+            CaptureLeanGeometry();
             float roll = BodyLeanRoll;
-            if (Mathf.Abs(roll) < 0.01f) return;
+            if (Mathf.Abs(LeanAmount) < 0.0001f) return;
+            Transform leanReference = m_HeadBone ? m_HeadBone : m_ChestBone ? m_ChestBone : m_SpineBone;
+            Vector3 headBeforePosition = leanReference.position;
             Quaternion headBeforeLean = m_HeadBone ? m_HeadBone.rotation : Quaternion.identity;
             // Roll around the character's forward axis, not the bone's local one — MMD
             // bone axes are arbitrary and would tilt the wrong way.
-            // Bend from the waist with planted legs, then distribute a little of the bend
-            // over the chest. The head/eyes travel with the real body instead of a camera slide.
+            // Keep every bone's local position intact. The head moves along the arc of
+            // the waist/chest joints; it is never translated to force a fixed peek distance.
             float waistWeight = m_ChestBone ? 0.75f : 1f;
             m_SpineBone.rotation = Quaternion.AngleAxis(roll * waistWeight, transform.forward) * m_SpineBone.rotation;
             if (m_ChestBone)
@@ -346,6 +418,7 @@ namespace Unity.MP_FPS.DollSinger {
                     view ? view.transform.rotation : m_HeadBone.rotation;
                 m_HeadBone.rotation = Quaternion.AngleAxis(LeanRoll, look * Vector3.forward) * headBeforeLean;
             }
+            m_AppliedLeanOffset = leanReference.position - headBeforePosition;
         }
 
         private void OnAnimatorIK(int layerIndex) {
@@ -385,7 +458,7 @@ namespace Unity.MP_FPS.DollSinger {
         // the lean. Pressing the same Alt combo again unlatches and returns to upright;
         // the opposite Alt combo switches sides.
         private void ReadLeanInput(bool canRead) {
-            m_LeanTarget = canRead ? input.LeanTarget : 0f;
+            m_LeanTarget = canRead && IsFirstPersonView ? input.LeanTarget : 0f;
         }
 
         private void ReadInput() {

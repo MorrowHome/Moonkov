@@ -79,6 +79,7 @@ public class DollSingerView : MonoBehaviour
     private bool appliedFirstPerson;
     private bool networkLookDriven;
     private Quaternion networkLookRotation;
+    private Vector3 lastRenderedLeanOffset;
 
     private const string HairMaterialName = "Hair";
     // "Hair" is the scalp/bangs/side-hair submesh only. The twin-tails are skinned to the
@@ -137,10 +138,12 @@ public class DollSingerView : MonoBehaviour
         followPlayerRotation = !usesThirdPerson;
         movement = usesThirdPerson && character ? character.GetComponent<DollSingerMovement>() : null;
         firstPerson = false;
+        if (input) input.SetLeanEnabled(false);
         appliedFirstPerson = false;
         networkLookDriven = false;
         viewBlend = 0f;
         aimBlend = 0f;
+        lastRenderedLeanOffset = Vector3.zero;
         distanceVelocity = 0f;
 
         ResolveEyeAnchor(character);
@@ -166,9 +169,46 @@ public class DollSingerView : MonoBehaviour
         transform.rotation = rotation;
     }
 
+    public float LimitLeanAmount(float amount)
+        => LimitLeanAmount(amount, player ? player.transform.rotation : Quaternion.identity);
+
+    public float LimitLeanAmount(float amount, Quaternion bodyRotation)
+    {
+        if (!firstPerson || !movement || !camera || !player) return 0f;
+        Vector3 desired = movement.GetLeanOffset(amount, bodyRotation);
+        if (desired.sqrMagnitude < 0.000001f) return amount;
+        Vector3 origin = camera.transform.position - lastRenderedLeanOffset;
+        Vector3 allowed = DollSingerMovement.ConstrainLeanOffset(origin, desired, player.transform.root,
+            ~LayerMask.GetMask("ServerPlayer"));
+        if (allowed.sqrMagnitude >= desired.sqrMagnitude - 0.000001f) return amount;
+        // Joint arcs are nonlinear: reduce the angle, rather than scaling a translation.
+        float low = 0f, high = Mathf.Abs(amount);
+        float sign = Mathf.Sign(amount);
+        for (int i = 0; i < 8; i++)
+        {
+            float middle = (low + high) * 0.5f;
+            if (movement.GetLeanOffset(sign * middle, bodyRotation).sqrMagnitude <= allowed.sqrMagnitude)
+                low = middle;
+            else high = middle;
+        }
+        return sign * low;
+    }
+
+    public Ray CaptureAimRay(Quaternion lookRotation, Quaternion bodyRotation, float lean)
+    {
+        SetNetworkLookRotation(lookRotation);
+        if (!firstPerson || !movement) return camera.ViewportPointToRay(new Vector3(0.5f, 0.5f));
+        // Input is sampled before LateUpdate: replace the previous rendered lean with the
+        // current commanded displacement, so aiming uses this frame's sideways eye position.
+        Vector3 offset = movement.GetLeanOffset(lean, bodyRotation);
+        Vector3 origin = camera.transform.position - lastRenderedLeanOffset + offset;
+        return new Ray(origin, lookRotation * Vector3.forward);
+    }
+
     public void SetFirstPerson(bool enabled)
     {
         firstPerson = enabled;
+        if (input) input.SetLeanEnabled(enabled);
         appliedFirstPerson = enabled;
         if (movement) movement.IsFirstPersonView = enabled;
     }
@@ -255,6 +295,7 @@ public class DollSingerView : MonoBehaviour
         SetFirstPersonPresentation(viewBlend > 0.5f);
         SyncShadowBlendShapes();
         ApplyLean();
+        lastRenderedLeanOffset = firstPerson ? movement.LeanOffset * viewBlend : Vector3.zero;
     }
 
     /// <summary>
@@ -264,12 +305,8 @@ public class DollSingerView : MonoBehaviour
     /// </summary>
     private void ApplyLean()
     {
-        if (!movement) return;
-        // The first-person eye has already moved with the waist/chest bones. Applying
-        // the old sideways camera slide here a second time detaches it from the body.
-        float shift = movement.LeanShift * (1f - viewBlend);
-        if (Mathf.Abs(shift) > 0.0001f)
-            transform.position += player.transform.right * shift;
+        if (!firstPerson || !movement) return;
+        // Eye translation already comes from the leaning bones; only first-person roll remains.
         float roll = movement.LeanRoll;
         if (Mathf.Abs(roll) > 0.01f)
             transform.rotation = transform.rotation * Quaternion.Euler(0f, 0f, roll);
@@ -572,6 +609,7 @@ public class DollSingerView : MonoBehaviour
         networkLookDriven = false;
         viewBlend = 0f;
         aimBlend = 0f;
+        lastRenderedLeanOffset = Vector3.zero;
         if (!camera || !cameraDefaultsCaptured) return;
         camera.transform.localPosition = thirdPersonRestPosition;
         camera.transform.localRotation = thirdPersonRestRotation;
