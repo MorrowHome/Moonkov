@@ -493,6 +493,7 @@ namespace Unity.MP_FPS.Client
             double start = TerminalMotion.Now;
             ticker.schedule.Execute(() =>
             {
+                if(!TerminalMotion.Animate(ticker))return;
                 float w = first.layout.width; if (float.IsNaN(w) || w < 1) return;
                 track.style.translate = new Translate(-Mathf.Repeat((float)(TerminalMotion.Now - start) * 42, w), 0);
             }).Every(16);

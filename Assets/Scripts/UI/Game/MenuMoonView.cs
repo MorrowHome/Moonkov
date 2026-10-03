@@ -68,7 +68,7 @@ namespace Unity.MP_FPS.Client
                 if (parent.resolvedStyle.display == DisplayStyle.None) { visible = false; break; }
             if (!visible) { ReleaseStage(); return; }
             if (m_Disposed || m_Settings == null || m_Settings.Mesh == null || m_Settings.Material == null) return;
-            if (!Paused) Advance(dt);
+            if (!Paused && TerminalMotion.Animate(Element)) Advance(dt);
             if (now < m_NextFrame) return;
             m_NextFrame = now + (Observing ? 1.0 / 30 : 1.0 / 15);
             if (m_Camera == null) CreateStage();

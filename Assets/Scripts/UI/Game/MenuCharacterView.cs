@@ -52,6 +52,7 @@ namespace Unity.MP_FPS.Client
         private int m_Slot, m_Motion, m_LastAction;
         private float m_Remaining, m_Blend;
         private double m_LastTime;
+        private Vector2 m_EditorViewport;
         private bool m_Transition, m_Disposed, m_EditorScene;
 
         public MenuCharacterView(bool idleOnly = false)
@@ -209,6 +210,12 @@ namespace Unity.MP_FPS.Client
                 if (parent.resolvedStyle.display == DisplayStyle.None) { visible = false; break; }
             if (!visible) { ReleaseStage(); return; }
             if (m_Camera == null) CreateStage();
+            if(!TerminalMotion.Animate(Element))
+            {
+                var size=Element.contentRect.size;
+                if(m_Target==null || size!=m_EditorViewport){Render();m_EditorViewport=size;}
+                return;
+            }
             Advance(dt);
             Render();
         }

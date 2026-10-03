@@ -13,6 +13,19 @@ using Unity.MP_FPS.DollSinger;
 public sealed partial class MoonkovUIPreview : EditorWindow
 {
     private StashScreen m_Screen;
+    private VisualElement m_PreviewHost;
+    private Toggle m_LiveToggle;
+    private double m_LiveUntil;
+    private void SetLivePreview(bool live)
+    {
+        m_PreviewHost?.EnableInClassList(TerminalMotion.LiveEditorPreviewClass,live);
+        m_LiveUntil=live ? EditorApplication.timeSinceStartup+30 : 0;
+    }
+    private void OnInspectorUpdate()
+    {
+        if(m_LiveUntil<=0 || EditorApplication.timeSinceStartup<m_LiveUntil)return;
+        SetLivePreview(false);m_LiveToggle?.SetValueWithoutNotify(false);
+    }
     private void OnEnable()
     {
         EditorApplication.playModeStateChanged -= OnPlayModeChanged;
@@ -25,6 +38,7 @@ public sealed partial class MoonkovUIPreview : EditorWindow
     }
     private void SuspendPreview()
     {
+        SetLivePreview(false);
         m_Screen?.Dispose(); m_Screen = null; rootVisualElement.Clear();
         var message = new Label("UI preview is paused during Play mode. View the menu in the Game window.");
         message.style.whiteSpace = WhiteSpace.Normal; message.style.paddingLeft = 24; message.style.paddingTop = 24;
@@ -48,14 +62,20 @@ public sealed partial class MoonkovUIPreview : EditorWindow
     {
         if (EditorApplication.isPlayingOrWillChangePlaymode) { SuspendPreview(); return; }
         m_Screen?.Dispose(); m_Screen = null; rootVisualElement.Clear();
+        m_LiveUntil=0;
+        m_LiveToggle=new Toggle("ANIMATE PREVIEW / 30 SECONDS") {tooltip="Static by default. Live 3D/UI previews stop after 30 seconds; Play mode stays animated."};
+        m_LiveToggle.style.height=26;m_LiveToggle.style.flexShrink=0;rootVisualElement.Add(m_LiveToggle);
+        m_LiveToggle.RegisterValueChangedCallback(e=>SetLivePreview(e.newValue));
         var tree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/UI Toolkit/GameUI/StashScreen.uxml");
         var host = new VisualElement(); host.style.flexGrow = 1; tree.CloneTree(host); rootVisualElement.Add(host);
+        m_PreviewHost=host;
         m_Screen = new StashScreen(host, () => Debug.Log("UI preview: in-game connection setup opens here."), () => Debug.Log("UI preview: no account is logged in."), () => Present(), preview: true);
         Present();
     }
     private void Present() => m_Screen?.Present("PREVIEW / SAMPLE DATA", 2, 128, 36, 12, true, false);
     private void OnDisable()
     {
+        SetLivePreview(false);
         EditorApplication.playModeStateChanged -= OnPlayModeChanged;
         m_Screen?.Dispose(); m_Screen = null;
     }

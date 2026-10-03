@@ -20,6 +20,14 @@ namespace Unity.MP_FPS.Client
         private const string k_Glyphs = "ABCDEFGHJKLMNPQRSTUVWXYZ0123456789/#<>";
         private static readonly Dictionary<(VisualElement, string), IVisualElementScheduledItem> s_Channels = new Dictionary<(VisualElement, string), IVisualElementScheduledItem>();
         public static double Now => Time.realtimeSinceStartupAsDouble;
+        public const string LiveEditorPreviewClass="moonkov-live-editor-preview";
+        public static bool Animate(VisualElement owner)
+        {
+            if(Application.isPlaying)return true;
+            for(var element=owner;element!=null;element=element.parent)
+                if(element.ClassListContains(LiveEditorPreviewClass))return true;
+            return false;
+        }
         public static float OutExpo(float t) => t >= 1 ? 1 : 1 - Mathf.Pow(2, -10 * t);
         public static float OutCubic(float t) { t = 1 - Mathf.Clamp01(t); return 1 - t * t * t; }
         public static float OutBack(float t) { const float c1 = 1.70158f, c3 = c1 + 1; t = Mathf.Clamp01(t) - 1; return 1 + c3 * t * t * t + c1 * t * t; }
@@ -29,6 +37,7 @@ namespace Unity.MP_FPS.Client
         public static IVisualElementScheduledItem Tween(VisualElement owner, float duration, Action<float> step, float delay = 0, Action done = null, string channel = null)
         {
             if (channel != null && s_Channels.TryGetValue((owner, channel), out var previous)) { previous.Pause(); s_Channels.Remove((owner, channel)); }
+            if(!Animate(owner)){step(1);done?.Invoke();return null;}
             double start = Now + delay; step(0); IVisualElementScheduledItem item = null;
             item = owner.schedule.Execute(() =>
             {
@@ -134,7 +143,7 @@ namespace Unity.MP_FPS.Client
         private IVisualElementScheduledItem m_Tick;
         private double m_Born;
         protected int m_Interval = 33;
-        protected float Age => (float)(TerminalMotion.Now - m_Born);
+        protected float Age => TerminalMotion.Animate(this) ? (float)(TerminalMotion.Now - m_Born) : 30;
         protected virtual bool Animating => true;
         protected AnimatedPainter()
         {
@@ -143,7 +152,7 @@ namespace Unity.MP_FPS.Client
             RegisterCallback<AttachToPanelEvent>(_ => { if (m_Tick == null) m_Tick = schedule.Execute(Tick).Every(m_Interval); else m_Tick.Resume(); });
             RegisterCallback<DetachFromPanelEvent>(_ => m_Tick?.Pause());
         }
-        private void Tick() { if (Animating) MarkDirtyRepaint(); }
+        private void Tick() { if (Animating && TerminalMotion.Animate(this)) MarkDirtyRepaint(); }
         public void Restart() { m_Born = TerminalMotion.Now; MarkDirtyRepaint(); }
         protected abstract void Draw(Painter2D p, float w, float h);
     }
