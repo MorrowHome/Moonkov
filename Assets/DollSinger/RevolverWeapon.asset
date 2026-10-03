@@ -61,8 +61,10 @@ MonoBehaviour:
         y: 0
         z: 0
         w: 0
-  WeaponFireSfx: {fileID: 0}
-  WeaponReloadSfx: {fileID: 0}
+  WeaponFireSfx: {fileID: 11400000, guid: ddb631f18f4f71b4d9c87aac5e474d3b, type: 2}
+  WeaponReloadSfx: {fileID: 11400000, guid: e866ddf7b3bd48e4995d229359d5f894, type: 2}
+  WeaponFireLayerSfx: {fileID: 11400000, guid: ac804c14c7772bd40b2aceea634fbc32, type: 2}
+  WeaponImpactSfx: {fileID: 11400000, guid: d700293aa398d3b4f89968f998438a9e, type: 2}
   Behavior: 0
   AoeRadius: 5
   ProjectileSpeed: 30

@@ -469,8 +469,9 @@ namespace Unity.MP_FPS.Client
         {
             var row = Row(m_Content); var settings = Panel(row, "PRESENTATION / AUDIO", "terminal-wide");
             Text(settings, "TERMINAL PREFERENCES", "terminal-title");
-            var volume = new Slider("MASTER AUDIO", 0, 1) { value = AudioListener.volume };
-            volume.AddToClassList("terminal-slider"); volume.RegisterValueChangedCallback(e => AudioListener.volume = e.newValue); settings.Add(volume);
+            AddAudioSlider(settings, "MASTER AUDIO", "Master", MoonkovAudio.MasterVolume);
+            AddAudioSlider(settings, "GAMEPLAY EFFECTS", "Effects", MoonkovAudio.EffectsVolume);
+            AddAudioSlider(settings, "INTERFACE AUDIO", "Interface", MoonkovAudio.InterfaceVolume);
             var hud = new Toggle("ALWAYS SHOW FIELD STATUS") { value = PlayerPrefs.GetInt("Moonkov.AlwaysShowHUD", 0) != 0 };
             hud.AddToClassList("terminal-toggle");
             hud.RegisterValueChangedCallback(e => PlayerPrefs.SetInt("Moonkov.AlwaysShowHUD", e.newValue ? 1 : 0)); settings.Add(hud);
@@ -511,6 +512,14 @@ namespace Unity.MP_FPS.Client
         {
             var label = new Label(text); label.AddToClassList(css); parent.Add(label); return label;
         }
+        private static void AddAudioSlider(VisualElement parent, string label, string channel, float value)
+        {
+            var slider = new Slider(label, 0, 1) { value = value };
+            slider.AddToClassList("terminal-slider");
+            slider.RegisterValueChangedCallback(e => MoonkovAudio.SetVolume(channel, e.newValue));
+            parent.Add(slider);
+        }
+
         internal static Button ActionButton(VisualElement parent, string text, Action action, string css = "terminal-button")
         {
             var button = new Button(action) { text = text }; button.AddToClassList(css); parent.Add(button); return button;

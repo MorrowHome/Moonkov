@@ -93,6 +93,11 @@ namespace Unity.MP_FPS.Client
         public void Present(InventoryGraph graph, string message = null, bool operationCompleted = true, int lootId=-1)
         {
             if (m_Disposed) return;
+            if (m_Busy && operationCompleted)
+            {
+                if (message != null) MoonkovAudio.Error();
+                else MoonkovAudio.Play(MoonkovAudio.Library?.Equipment, Vector3.zero);
+            }
             bool changed = m_Graph != graph || m_RenderedVersion != (graph?.Version ?? -1) || m_LootId!=lootId; m_Graph = graph;m_LootId=lootId;
             if (operationCompleted) m_Busy = false;
             if (changed) { CancelDrag(); Render(); m_RenderedVersion=graph?.Version ?? -1; }
@@ -268,7 +273,7 @@ namespace Unity.MP_FPS.Client
             if (m_ReadOnlyReason != null) { m_Message.text=m_ReadOnlyReason; return; }
             command.ExpectedVersion=m_Graph.Version;
             var error=m_Graph.Clone().TryApply(command);
-            if (error!=InventoryError.None) { m_Message.text="Move blocked: "+error; return; }
+            if (error!=InventoryError.None) { MoonkovAudio.Error(); m_Message.text="Move blocked: "+error; return; }
             m_Busy=true; m_Message.text="UPDATING INVENTORY…"; m_Send(command);
         }
         public void CancelDrag() => m_Drag?.Cancel();

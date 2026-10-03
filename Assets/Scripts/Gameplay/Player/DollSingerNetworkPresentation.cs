@@ -19,6 +19,7 @@ namespace Unity.MP_FPS
         private Quaternion m_OwnedViewRotation = Quaternion.identity;
         private float m_OwnedLean;
         private readonly RaycastHit[] m_AimHits = new RaycastHit[32];
+        private MoonkovPlayerAudio m_Audio;
 
         public DollSingerInput OwnedInput => m_Linked && Role == MultiplayerRole.ClientOwned ? m_Input : null;
         public bool IsThirdPerson => m_View != null && !m_View.IsFirstPerson;
@@ -85,6 +86,7 @@ namespace Unity.MP_FPS
         public override void OnGhostLinked()
         {
             m_Linked = true;
+            m_Audio = Role == MultiplayerRole.Server ? null : new MoonkovPlayerAudio();
             m_Model.SetNetworkViewPresentation(false, Quaternion.identity, 0f);
             m_Model.enabled = Role != MultiplayerRole.Server;
             m_Model.GetComponent<UnityEngine.CharacterController>().enabled = false;
@@ -119,6 +121,7 @@ namespace Unity.MP_FPS
 
             var ghost = ReadGhostComponentData<PredictedPlayerGhost>();
             var state = ghost.ControllerState;
+            m_Audio?.Update(ghost, transform, Role == MultiplayerRole.ClientOwned, Time.deltaTime);
             bool jumped = ghost.LastJumpTick != 0 &&
                 (m_LastJumpTick == 0 || (int)(ghost.LastJumpTick - m_LastJumpTick) > 0);
             if (jumped) m_LastJumpTick = ghost.LastJumpTick;

@@ -1,0 +1,166 @@
+{
+  "downloadDate": "2026-10-04",
+  "licenseVersion": "2.0 effective 2026-08-27",
+  "files": [
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/UI/Notification.wav",
+      "original": "Sonniss.com - GDC 2019 - Game Audio Bundle Part 1of8/BlueZone - Sci-Fi Interface Sound Effects/Bluezone_BC0241_interface_beep_029.wav",
+      "archive": "https://ftpmirror.your.org/pub/misc/sonniss2019/Sonniss.com%20-%20GDC%202019%20-%20Game%20Audio%20Bundle%20Part%201of8.zip",
+      "sha256": "e792af7e7c4d36c07c45a91051f20816c52921530cde218ec05744e0423c17ab",
+      "provider": "Sonniss GDC 2019",
+      "license": "https://sonniss.com/gdc-bundle-license/"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/UI/Click.wav",
+      "original": "Sonniss.com - GDC 2019 - Game Audio Bundle Part 1of8/BlueZone - Sci-Fi Interface Sound Effects/Bluezone_BC0241_interface_beep_transmission_004.wav",
+      "archive": "https://ftpmirror.your.org/pub/misc/sonniss2019/Sonniss.com%20-%20GDC%202019%20-%20Game%20Audio%20Bundle%20Part%201of8.zip",
+      "sha256": "41550554521d74d2042cd0798a87d910c46c03b4bd31e0de2d53fc1288c82f78",
+      "provider": "Sonniss GDC 2019",
+      "license": "https://sonniss.com/gdc-bundle-license/"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/World/MetalImpact.wav",
+      "original": "Sonniss.com - GDC 2019 - Game Audio Bundle Part 1of8/BlueZone - Heavy Metal Impact Sound Effects/Bluezone_BC0251_heavy_metal_impact_metal_plate_medium.wav",
+      "archive": "https://ftpmirror.your.org/pub/misc/sonniss2019/Sonniss.com%20-%20GDC%202019%20-%20Game%20Audio%20Bundle%20Part%201of8.zip",
+      "sha256": "801312157aa8ea620690be3163490d7eddd840aaacf9baef2bbd589bad8b3c48",
+      "provider": "Sonniss GDC 2019",
+      "license": "https://sonniss.com/gdc-bundle-license/"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Ambience/ShipInterior.wav",
+      "original": "Sonniss.com - GDC 2019 - Game Audio Bundle Part 1of8/BlueZone - Cargo Spaceship Sound Effects/Bluezone_BC0243_background_cockpit_ambience_001.wav",
+      "archive": "https://ftpmirror.your.org/pub/misc/sonniss2019/Sonniss.com%20-%20GDC%202019%20-%20Game%20Audio%20Bundle%20Part%201of8.zip",
+      "sha256": "26f6be07080ebdacd4a9ad04b512bb180c899c0e0dd7d757128a2fa7cd2b7bbc",
+      "provider": "Sonniss GDC 2019",
+      "license": "https://sonniss.com/gdc-bundle-license/"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Weapons/ElectricSnap.wav",
+      "original": "Sonniss.com - GDC 2019 - Game Audio Bundle Part 1of8/Airborne Sound - Electric-Magnetic/Accent,Sound Design,Electric,Buzz,Resonant,Frayed Buzz,Insistent,Medium Fast.wav",
+      "archive": "https://ftpmirror.your.org/pub/misc/sonniss2019/Sonniss.com%20-%20GDC%202019%20-%20Game%20Audio%20Bundle%20Part%201of8.zip",
+      "sha256": "be56ef203dccf3fe7a04f0d3565b55ef93190aa27c001cdd8c8c4547028204bb",
+      "provider": "Sonniss GDC 2019",
+      "license": "https://sonniss.com/gdc-bundle-license/"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/UI/Hover.wav",
+      "original": "Sonniss.com - GDC 2019 - Game Audio Bundle Part 2of8/L.A. Sounds - Game & UI Interface 001/Hovers 03.wav",
+      "archive": "https://ftpmirror.your.org/pub/misc/sonniss2019/Sonniss.com%20-%20GDC%202019%20-%20Game%20Audio%20Bundle%20Part%202of8.zip",
+      "sha256": "16a13b39b4d08ca21651cd399288810f7d2c75eca4ccb2493b520ad40425bc97",
+      "provider": "Sonniss GDC 2019",
+      "license": "https://sonniss.com/gdc-bundle-license/"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/UI/Confirm.wav",
+      "original": "Sonniss.com - GDC 2019 - Game Audio Bundle Part 2of8/InspectorJ - UI - Mechanical/UI_Mechanical_Confirm_04_FX.wav",
+      "archive": "https://ftpmirror.your.org/pub/misc/sonniss2019/Sonniss.com%20-%20GDC%202019%20-%20Game%20Audio%20Bundle%20Part%202of8.zip",
+      "sha256": "198da984525896c7df9e61b73132100aec75c8feef8fcbb7208951302e80abdf",
+      "provider": "Sonniss GDC 2019",
+      "license": "https://sonniss.com/gdc-bundle-license/"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/UI/Error.wav",
+      "original": "Sonniss.com - GDC 2019 - Game Audio Bundle Part 2of8/InspectorJ - UI - Mechanical/UI_Mechanical_Error_11_FX_01.wav",
+      "archive": "https://ftpmirror.your.org/pub/misc/sonniss2019/Sonniss.com%20-%20GDC%202019%20-%20Game%20Audio%20Bundle%20Part%202of8.zip",
+      "sha256": "b5b6fc0704123c0b2a15d65eb50ed0aff87841687597a75867b90188edfea4b1",
+      "provider": "Sonniss GDC 2019",
+      "license": "https://sonniss.com/gdc-bundle-license/"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Interaction/Equipment.wav",
+      "original": "Sonniss.com - GDC 2019 - Game Audio Bundle Part 2of8/InspectorJ - UI - Mechanical/UI_Mechanical_Move_40.wav",
+      "archive": "https://ftpmirror.your.org/pub/misc/sonniss2019/Sonniss.com%20-%20GDC%202019%20-%20Game%20Audio%20Bundle%20Part%202of8.zip",
+      "sha256": "2a1a0b839a829aceb3888856f630a369c90f13ca561f395da77ed9532a542665",
+      "provider": "Sonniss GDC 2019",
+      "license": "https://sonniss.com/gdc-bundle-license/"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Interaction/Container.wav",
+      "original": "Sonniss.com - GDC 2019 - Game Audio Bundle Part 2of8/InspectorJ - UI - Mechanical/UI_Mechanical_Turning-On_03_Raw.wav",
+      "archive": "https://ftpmirror.your.org/pub/misc/sonniss2019/Sonniss.com%20-%20GDC%202019%20-%20Game%20Audio%20Bundle%20Part%202of8.zip",
+      "sha256": "0eba6924d5b21626849817a7b68dc394f433442e3d480b2b811436051ef550dc",
+      "provider": "Sonniss GDC 2019",
+      "license": "https://sonniss.com/gdc-bundle-license/"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Weapons/EnergyShot.wav",
+      "original": "Sonniss.com - GDC 2019 - Game Audio Bundle Part 2of8/Eiravaein Works - Nocked/Nocked,archery,firing,loose,Pinakabow,mythic,midflight,wide,hum,sizzle,energy,alt8.wav",
+      "archive": "https://ftpmirror.your.org/pub/misc/sonniss2019/Sonniss.com%20-%20GDC%202019%20-%20Game%20Audio%20Bundle%20Part%202of8.zip",
+      "sha256": "c05e5dff5be349abc9193c4b61e36417a0d3b125cdac18d4487bb9c2198f3bec",
+      "provider": "Sonniss GDC 2019",
+      "license": "https://sonniss.com/gdc-bundle-license/"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Weapons/Charge.wav",
+      "original": "Sonniss.com - GDC 2019 - Game Audio Bundle Part 2of8/Chris Logsdon - Sci-Fi SFX Pack/EnergyGun_Charge1.wav",
+      "archive": "https://ftpmirror.your.org/pub/misc/sonniss2019/Sonniss.com%20-%20GDC%202019%20-%20Game%20Audio%20Bundle%20Part%202of8.zip",
+      "sha256": "a62daded1f1ce17f0e787480f3353c81136aac98ba183b34bc5404dfa7086fad",
+      "provider": "Sonniss GDC 2019",
+      "license": "https://sonniss.com/gdc-bundle-license/"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Character/RegolithStepA.wav",
+      "original": "Sonniss.com - GDC 2019 - Game Audio Bundle Part 3of8/PMSFX - STEPS Dirt & Gravel/PM_SDNG_Single_Step_Footstep_46.wav",
+      "archive": "https://ftpmirror.your.org/pub/misc/sonniss2019/Sonniss.com%20-%20GDC%202019%20-%20Game%20Audio%20Bundle%20Part%203of8.zip",
+      "sha256": "49d344b77f015ef1f37bbdafae6cabd9087b55f8fb6cb9cfca6861a1e1b43f70",
+      "provider": "Sonniss GDC 2019",
+      "license": "https://sonniss.com/gdc-bundle-license/"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Character/RegolithStepB.wav",
+      "original": "Sonniss.com - GDC 2019 - Game Audio Bundle Part 3of8/PMSFX - STEPS Dirt & Gravel/PM_SDNG_Single_Step_Footstep_19.wav",
+      "archive": "https://ftpmirror.your.org/pub/misc/sonniss2019/Sonniss.com%20-%20GDC%202019%20-%20Game%20Audio%20Bundle%20Part%203of8.zip",
+      "sha256": "451966d993b323235118cc65e93cacd443ee8f3e05c47e743a0e8017ebf13e95",
+      "provider": "Sonniss GDC 2019",
+      "license": "https://sonniss.com/gdc-bundle-license/"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Interaction/Servo.wav",
+      "original": "Sonniss.com - GDC 2019 - Game Audio Bundle Part 3of8/PMSFX - Foundation Series SCI-FI/PM_FSSF_DOOR_MID_9.wav",
+      "archive": "https://ftpmirror.your.org/pub/misc/sonniss2019/Sonniss.com%20-%20GDC%202019%20-%20Game%20Audio%20Bundle%20Part%203of8.zip",
+      "sha256": "6128d39cff98fd2909a15f3112ea8596384d4b88246e456fdd1f466270e74ce3",
+      "provider": "Sonniss GDC 2019",
+      "license": "https://sonniss.com/gdc-bundle-license/"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Weapons/RevolverShot.wav",
+      "original": "Sonniss.com - GDC 2019 - Game Audio Bundle Part 3of8/PMSFX - Foundation Series SCI-FI/PM_FSSF_GUN_SHOTGUN_2.wav",
+      "archive": "https://ftpmirror.your.org/pub/misc/sonniss2019/Sonniss.com%20-%20GDC%202019%20-%20Game%20Audio%20Bundle%20Part%203of8.zip",
+      "sha256": "89f3ba15270cb42736faf6959a9308bc90c0d2e99f2229295f023e2432bc4e8a",
+      "provider": "Sonniss GDC 2019",
+      "license": "https://sonniss.com/gdc-bundle-license/"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Character/Cloth.wav",
+      "original": "Sonniss.com - GDC 2019 - Game Audio Bundle Part 5of8/SoundBits - Tiny Transitions 2/Scrape_Cloth_10.wav",
+      "archive": "https://ftpmirror.your.org/pub/misc/sonniss2019/Sonniss.com%20-%20GDC%202019%20-%20Game%20Audio%20Bundle%20Part%205of8.zip",
+      "sha256": "15c9c037d3b6d914641cfeccb78105ef8129705d0a5ca7a1fbc25e9f9eabe512",
+      "provider": "Sonniss GDC 2019",
+      "license": "https://sonniss.com/gdc-bundle-license/"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Character/BodyImpact.wav",
+      "original": "Sonniss.com - GDC 2019 - Game Audio Bundle Part 5of8/Red Libraries - Bodyfall/RL_bodyfall_Metal_Grid_M3_Close_Stereo_Hard_Impact_07.wav",
+      "archive": "https://ftpmirror.your.org/pub/misc/sonniss2019/Sonniss.com%20-%20GDC%202019%20-%20Game%20Audio%20Bundle%20Part%205of8.zip",
+      "sha256": "e1b8841b688d0881610e4e50edf34de719c572160beb95aa3e7dcfe98e1471fe",
+      "provider": "Sonniss GDC 2019",
+      "license": "https://sonniss.com/gdc-bundle-license/"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Character/MetalBootsSequence.wav",
+      "original": "Sonniss.com - GDC 2019 - Game Audio Bundle Part 6of8/Studio 23 - Ultimate Footstep Collection/S23_SFX_Footsteps_Metal_Boots_Loop_Jogging.wav",
+      "archive": "https://ftpmirror.your.org/pub/misc/sonniss2019/Sonniss.com%20-%20GDC%202019%20-%20Game%20Audio%20Bundle%20Part%206of8.zip",
+      "sha256": "d5003dc4ee8aeb9e811ca03ee1d45a2313e480b7a317a992a983da62276f9f00",
+      "provider": "Sonniss GDC 2019",
+      "license": "https://sonniss.com/gdc-bundle-license/"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Interaction/NanoServo.wav",
+      "original": "Sonniss.com - GDC 2019 - Game Audio Bundle Part 6of8/SoundMorph - Robotic Lifeforms 2/Robotic Lifeforms 2 - Servos - Variable Nano Machine 12.wav",
+      "archive": "https://ftpmirror.your.org/pub/misc/sonniss2019/Sonniss.com%20-%20GDC%202019%20-%20Game%20Audio%20Bundle%20Part%206of8.zip",
+      "sha256": "09b1b8c7ee28cb7c2a071154e997ede2655bc77d9fed29d37b3525930b5edce1",
+      "provider": "Sonniss GDC 2019",
+      "license": "https://sonniss.com/gdc-bundle-license/"
+    }
+  ]
+}

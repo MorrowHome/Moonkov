@@ -59,6 +59,7 @@ namespace Unity.MP_FPS
             m_WasSettled = false;
             s_Active = this; m_ResultStep = 0; m_InventoryVisible = false; m_PreviousCount = -1;
             m_Root = GetComponent<UIDocument>().rootVisualElement;
+            MoonkovAudio.BindUI(m_Root);
             m_Root.pickingMode = PickingMode.Ignore;
             Resources.Load<VisualTreeAsset>("Moonkov/RaidUI").CloneTree(m_Root);
             m_Status = m_Root.Q("raidStatus"); m_Timer = m_Root.Q<Label>("raidTimer"); m_Bag = m_Root.Q<Label>("raidBag");
@@ -85,6 +86,7 @@ namespace Unity.MP_FPS
         private void SetInventory(bool visible)
         {
             if(m_InventoryRequestPending && m_Snapshot.Phase==RaidPhase.Active && !visible)return;
+            if (visible != m_InventoryVisible) MoonkovAudio.Play(MoonkovAudio.Library?.Container, Vector3.zero);
             if(!visible && m_OpenedLootId>=0 && m_Snapshot.Phase==RaidPhase.Active)RequestLoot(-1);
             m_InventoryVisible = visible; m_Inventory.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
             if (visible) { UpdateInventoryView(); if(!m_LootOpenPending)m_InventoryView.Show(); }
@@ -138,7 +140,12 @@ namespace Unity.MP_FPS
                 {if(!m_InventoryRequestPending)SetInventory(!m_InventoryVisible);}
             if (settled && m_InventoryVisible) SetInventory(false);
             if (!settled && m_WasSettled) { m_ResultStep = 0; Utils.SetCursorVisible(false); }
-            if (settled && !m_WasSettled) m_ResultStep = 0;
+            if (settled && !m_WasSettled)
+            {
+                m_ResultStep = 0;
+                if (m_Snapshot.Phase == RaidPhase.Extracted) MoonkovAudio.Confirm();
+                else MoonkovAudio.Error();
+            }
             if (m_InventoryVisible) Utils.SetCursorVisible(true);
             MoonRaidMap.Active.ShowLoot(m_Snapshot.TakenMask, ready);
             if (settled)
@@ -306,6 +313,7 @@ namespace Unity.MP_FPS
 
         private void OnDisable()
         {
+            if (m_Root != null) MoonkovAudio.UnbindUI(m_Root);
             m_InventoryView?.Dispose(); m_InventoryView=null;
             m_CarryCells?.UnregisterValueChangedCallback(CarryCellsChanged);
             if (m_World != null && m_World.IsCreated)

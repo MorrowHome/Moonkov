@@ -43,6 +43,8 @@ namespace Unity.MP_FPS
         public GhostSpawner.GhostReference MuzzleFlashVfxPrefab;
         public SoundDef WeaponFireSfx;
         public SoundDef WeaponReloadSfx;
+        public SoundDef WeaponFireLayerSfx;
+        public SoundDef WeaponImpactSfx;
 
         public ProjectileBehavior Behavior = ProjectileBehavior.DirectDamage;
         public float AoeRadius = 5f;

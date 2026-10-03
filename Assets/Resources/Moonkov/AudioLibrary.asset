@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc19636bb72a2794d917a88798581ffe, type: 3}
+  m_Name: AudioLibrary
+  m_EditorClassIdentifier: Assembly-CSharp::Unity.MP_FPS.MoonkovAudioLibrary
+  Click: {fileID: 11400000, guid: 2c51d90ade92f4f4a8db57d211b2cba6, type: 2}
+  Hover: {fileID: 11400000, guid: 6cfb804fa1694f7408f77f6759b7e98f, type: 2}
+  Confirm: {fileID: 11400000, guid: 9654833cd35b13740ad8154e0c6b5d8c, type: 2}
+  Error: {fileID: 11400000, guid: 46975e11edb870b48b911dcb228aa1ae, type: 2}
+  Notification: {fileID: 11400000, guid: e4da94686cce2b84382d79e1a930e756, type: 2}
+  Equipment: {fileID: 11400000, guid: a278b15de85ac924cb9107a0efd6d328, type: 2}
+  Container: {fileID: 11400000, guid: 80a6b40023bcc7c4a90217620cb71fd8, type: 2}
+  Jump: {fileID: 11400000, guid: 73b72b3778f6cf34abb78d33dd4d9a23, type: 2}
+  Land: {fileID: 11400000, guid: 966f5b4a02d3d714b9167a797b808023, type: 2}
+  Hit: {fileID: 11400000, guid: 14beafcf0ecdae04ba3b72310a500d4b, type: 2}
+  Death: {fileID: 11400000, guid: 8afe44e787d4ca94f893b4d1b676fcd1, type: 2}
+  RegolithFootsteps: {fileID: 11400000, guid: 93bc775f9d18ada4cb8030e04550cfca, type: 2}
+  MetalFootsteps: {fileID: 11400000, guid: a31a507dbb38d50469d4505d1c7fa898, type: 2}
+  Cloth: {fileID: 11400000, guid: c93a300bab3de7c4da9766f1fa8d65ca, type: 2}
+  ShipInterior: {fileID: 11400000, guid: dbc155221efdcdb499d7e1a3fac1c6b7, type: 2}

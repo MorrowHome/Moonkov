@@ -36,6 +36,7 @@ namespace Unity.MP_FPS.Client
         {
             m_Preview = preview;
             m_Host = host; m_Root = host.Q<VisualElement>("stashScreen");
+            MoonkovAudio.BindUI(m_Root);
             m_OnPrepare = prepare; m_OnLogout = logout; m_OnRefresh = refresh;
             m_Search = m_Root.Q<TextField>("stashSearch");
             m_Search.textEdition.placeholder = "Search...";
@@ -188,6 +189,7 @@ namespace Unity.MP_FPS.Client
 
         public void Dispose()
         {
+            MoonkovAudio.UnbindUI(m_Root);
             m_All.clicked -= All; m_Materials.clicked -= Materials; m_Energy.clicked -= Energy;
             m_Sort.clicked -= Sort; m_Refresh.clicked -= m_OnRefresh; m_Logout.clicked -= m_OnLogout;
             m_Deploy.clicked -= PrepareTerminal; m_MainMenu.clicked -= ShipTerminal;

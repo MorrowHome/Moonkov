@@ -1,0 +1,58 @@
+[
+  {
+    "asset": "Assets/Audio/Moonkov/Clips/Character/MetalStep1.wav",
+    "source": "Assets/Audio/Moonkov/Clips/Character/MetalBootsSequence.wav",
+    "start": 0.575,
+    "duration": 0.26,
+    "processing": "48 kHz mono PCM16; 50 ms end fade"
+  },
+  {
+    "asset": "Assets/Audio/Moonkov/Clips/Character/MetalStep2.wav",
+    "source": "Assets/Audio/Moonkov/Clips/Character/MetalBootsSequence.wav",
+    "start": 1.185,
+    "duration": 0.26,
+    "processing": "48 kHz mono PCM16; 50 ms end fade"
+  },
+  {
+    "asset": "Assets/Audio/Moonkov/Clips/Character/MetalStep3.wav",
+    "source": "Assets/Audio/Moonkov/Clips/Character/MetalBootsSequence.wav",
+    "start": 1.5050000000000001,
+    "duration": 0.26,
+    "processing": "48 kHz mono PCM16; 50 ms end fade"
+  },
+  {
+    "asset": "Assets/Audio/Moonkov/Clips/Character/MetalStep4.wav",
+    "source": "Assets/Audio/Moonkov/Clips/Character/MetalBootsSequence.wav",
+    "start": 1.8050000000000002,
+    "duration": 0.26,
+    "processing": "48 kHz mono PCM16; 50 ms end fade"
+  },
+  {
+    "asset": "Assets/Audio/Moonkov/Clips/Weapons/HaloRecharge.wav",
+    "source": "Assets/Audio/Moonkov/Clips/Weapons/Charge.wav",
+    "start": 0,
+    "duration": 1.8,
+    "processing": "48 kHz PCM16; 80 ms end fade"
+  },
+  {
+    "asset": "Assets/Audio/Moonkov/Clips/Weapons/RevolverRecharge.wav",
+    "source": "Assets/Audio/Moonkov/Clips/Interaction/NanoServo.wav",
+    "start": 0,
+    "duration": 0.65,
+    "processing": "48 kHz PCM16; 80 ms end fade"
+  },
+  {
+    "asset": "Assets/Audio/Moonkov/Clips/UI/ConfirmShort.wav",
+    "source": "Assets/Audio/Moonkov/Clips/UI/Confirm.wav",
+    "start": 0,
+    "duration": 0.9,
+    "processing": "48 kHz PCM16; 80 ms end fade"
+  },
+  {
+    "asset": "Assets/Audio/Moonkov/Clips/UI/ErrorShort.wav",
+    "source": "Assets/Audio/Moonkov/Clips/UI/Error.wav",
+    "start": 0,
+    "duration": 0.65,
+    "processing": "48 kHz PCM16; 80 ms end fade"
+  }
+]

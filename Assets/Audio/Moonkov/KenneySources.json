@@ -1,0 +1,42 @@
+[
+  {
+    "asset": "Assets/Audio/Moonkov/Clips/UI/ClickA.ogg",
+    "original": "Audio/click_001.ogg",
+    "archive": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip",
+    "provider": "Kenney interface-sounds",
+    "license": "CC0 1.0",
+    "sha256": "ccfb7fa0cccdd9faec0eb16033c732b1e308d139d80f799161495d58f7adcdb9"
+  },
+  {
+    "asset": "Assets/Audio/Moonkov/Clips/UI/ClickB.ogg",
+    "original": "Audio/click_002.ogg",
+    "archive": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip",
+    "provider": "Kenney interface-sounds",
+    "license": "CC0 1.0",
+    "sha256": "adcd1f4adc35f1b41bc1b5bbefeff7aa44f2f3f0d96d3199b544140c7c1e761c"
+  },
+  {
+    "asset": "Assets/Audio/Moonkov/Clips/UI/ClickC.ogg",
+    "original": "Audio/click_003.ogg",
+    "archive": "https://kenney.nl/media/pages/assets/interface-sounds/fa43c1dd4d-1677589452/kenney_interface-sounds.zip",
+    "provider": "Kenney interface-sounds",
+    "license": "CC0 1.0",
+    "sha256": "2fa929138bc3a0f432696588f66eac94b8f6d463905ec8808c6461ce4b054292"
+  },
+  {
+    "asset": "Assets/Audio/Moonkov/Clips/UI/HoverA.ogg",
+    "original": "Audio/rollover1.ogg",
+    "archive": "https://kenney.nl/media/pages/assets/ui-audio/490d233f68-1677590494/kenney_ui-audio.zip",
+    "provider": "Kenney ui-audio",
+    "license": "CC0 1.0",
+    "sha256": "4eb47e2e1540c44847b47a89825e21335c820a4e54cacf8c4c1eb5100e36af42"
+  },
+  {
+    "asset": "Assets/Audio/Moonkov/Clips/UI/HoverB.ogg",
+    "original": "Audio/rollover2.ogg",
+    "archive": "https://kenney.nl/media/pages/assets/ui-audio/490d233f68-1677590494/kenney_ui-audio.zip",
+    "provider": "Kenney ui-audio",
+    "license": "CC0 1.0",
+    "sha256": "d0bc0fcba496d73df1da8c145e5330df75f87ab5a4f33a9b71461b006b5c338e"
+  }
+]

@@ -76,6 +76,8 @@ namespace Unity.MP_FPS
         
         async void Start()
         {
+            if (!m_IsHeadless && GetComponent<MoonkovAudioEnvironment>() == null)
+                gameObject.AddComponent<MoonkovAudioEnvironment>();
             Application.runInBackground = true; //Prevents dropped connections during multiplayer gameplay
 
             // The Editor's Server play type must use the same startup path as

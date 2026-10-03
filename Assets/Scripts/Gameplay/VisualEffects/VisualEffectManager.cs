@@ -82,6 +82,11 @@ namespace Unity.MP_FPS
                 }
 
                 var weaponData = WeaponManager.Instance.WeaponRegistry.GetWeaponData(weaponId);
+                if (weaponData != null)
+                {
+                    MoonkovAudio.Play(weaponData.WeaponFireSfx, player.transform.position);
+                    MoonkovAudio.Play(weaponData.WeaponFireLayerSfx, player.transform.position);
+                }
                 if (player.TryGetComponent<DollSingerNetworkPresentation>(out var dollSinger))
                 {
                     dollSinger.PlayShot(aimPoint, weaponId);
@@ -113,7 +118,6 @@ namespace Unity.MP_FPS
 
                     vfxInstance.SetActive(true);
 
-                    GameManager.Instance.SoundSystem.CreateEmitter(weaponData.WeaponFireSfx, spawnPoint);
                 }
                 catch (Exception e)
                 {
