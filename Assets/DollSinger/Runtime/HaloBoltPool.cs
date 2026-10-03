@@ -97,7 +97,6 @@ namespace Unity.MP_FPS.DollSinger
             lightObject.transform.SetParent(root.transform, false);
             bolt.Light = lightObject.AddComponent<Light>();
             bolt.Light.type = LightType.Point;
-            bolt.Light.lightmapBakeType = LightmapBakeType.Realtime;
             bolt.Light.renderMode = LightRenderMode.ForcePixel;
             bolt.Light.shadows = LightShadows.None;
             return bolt;
