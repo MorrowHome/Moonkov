@@ -823,7 +823,7 @@ public class GhostGameObject : MonoBehaviour
 
     public bool GhostEntityExists()
     {
-        if (!m_World.IsCreated)
+        if (m_World == null || !m_World.IsCreated)
         {
             return false;
         }

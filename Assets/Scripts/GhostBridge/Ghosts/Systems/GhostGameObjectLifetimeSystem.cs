@@ -65,7 +65,14 @@ public partial class GhostGameObjectLifetimeSystem : ClientServerSingletonSystem
     private List<GhostGameObject> m_GhostGameObjectList = new(k_InitialGhostListCapacity);
     public List<GhostGameObject> GhostGameObjectList => m_GhostGameObjectList;
     private TransformAccessArray m_TransformAccessArray;
-    public TransformAccessArray GhostGameObjectTransformAccessArray => m_TransformAccessArray;
+    public TransformAccessArray GhostGameObjectTransformAccessArray
+    {
+        get
+        {
+            EnsureTransformAccessArrayUpToDate();
+            return m_TransformAccessArray;
+        }
+    }
     private NativeList<Entity> m_GhostEntityList;
     public NativeList<Entity> GhostEntityList => m_GhostEntityList;
 
@@ -78,6 +85,8 @@ public partial class GhostGameObjectLifetimeSystem : ClientServerSingletonSystem
     private int m_NumDeferredGhosts;
 
     private bool m_RebuildGhostGameObjectTransformAccessArray;
+    private ClientGhostTransformApplySystem m_ClientTransformSystem;
+    private ServerGhostTransformRetrieveSystem m_ServerTransformSystem;
 
     private List<Animator> m_RetrievedAnimators = new();
     private List<Renderer> m_RetrievedRenderers = new();
@@ -99,6 +108,7 @@ public partial class GhostGameObjectLifetimeSystem : ClientServerSingletonSystem
 
     protected override void OnDestroy()
     {
+        CompleteKnownTransformJobs();
         var query = GetEntityQuery(typeof(GhostGameObjectLink));
         foreach (var entity in query.ToEntityArray(Allocator.Temp))
         {
@@ -118,6 +128,7 @@ public partial class GhostGameObjectLifetimeSystem : ClientServerSingletonSystem
 
     protected override void OnUpdate()
     {
+        CompleteTransformJobs();
         bool isClient = World.IsClient();
         bool isServer = World.IsServer();
         int networkId = isClient ? SystemAPI.GetSingleton<NetworkId>().Value : 0;
@@ -367,25 +378,36 @@ public partial class GhostGameObjectLifetimeSystem : ClientServerSingletonSystem
 
         if (m_RebuildGhostGameObjectTransformAccessArray)
         {
-            RebuildGhostGameObjectTransformAccessArray();
+            EnsureTransformAccessArrayUpToDate();
         }
+    }
+
+    private void CompleteTransformJobs()
+    {
+        m_ClientTransformSystem ??= World.GetExistingSystemManaged<ClientGhostTransformApplySystem>();
+        m_ServerTransformSystem ??= World.GetExistingSystemManaged<ServerGhostTransformRetrieveSystem>();
+        CompleteKnownTransformJobs();
+    }
+
+    private void CompleteKnownTransformJobs()
+    {
+        m_ClientTransformSystem?.ApplyTransformsJobHandle.Complete();
+        m_ServerTransformSystem?.CompleteTransformRead();
+    }
+
+    public void EnsureTransformAccessArrayUpToDate()
+    {
+        if (!m_RebuildGhostGameObjectTransformAccessArray) return;
+        PostUpdateRemoveStaleGhostGameObjectsFromList();
+        RebuildGhostGameObjectTransformAccessArray();
     }
 
     private void RebuildGhostGameObjectTransformAccessArray()
     {
         var transforms = new Transform[m_GhostGameObjectList.Count];
-        int transformCount = 0;
         for (int i = 0; i < m_GhostGameObjectList.Count; i++)
         {
-            if (m_GhostGameObjectList[i] != null)
-            {
-                transforms[transformCount++] = m_GhostGameObjectList[i].transform;
-            }
-        }
-
-        if (transformCount != transforms.Length)
-        {
-            Array.Resize(ref transforms, transformCount);
+            transforms[i] = m_GhostGameObjectList[i].transform;
         }
 
         if (m_TransformAccessArray.isCreated)
@@ -403,6 +425,7 @@ public partial class GhostGameObjectLifetimeSystem : ClientServerSingletonSystem
     // Adopt a locally predicted object into the normal ghost lifetime bookkeeping.
     public void AdoptPredictedGhost(Entity entity, GhostGameObject instance)
     {
+        CompleteTransformJobs();
         var guid = EntityManager.GetComponentData<GhostGameObjectGuid>(entity);
         var prefab = EntityManager.GetComponentData<GhostGameObjectPrefabReference>(entity);
         instance.SetGuid(guid.Guid);
@@ -414,6 +437,7 @@ public partial class GhostGameObjectLifetimeSystem : ClientServerSingletonSystem
         m_GhostEntityList.Add(entity);
         m_RebuildGhostGameObjectTransformAccessArray = true;
     }
+
     private void StripComponent<T>(T componentInterface, MonoBehaviour component)
         where T : IStripComponent
     {
@@ -502,6 +526,7 @@ public partial class GhostGameObjectLifetimeSystem : ClientServerSingletonSystem
 
     public void OnGhostGameObjectDestroyed(Hash128 guid)
     {
+        CompleteTransformJobs();
 #if VERBOSE_GHOST_LIFETIME_EVENTS
         Debug.Log($"{World.Name} OnGhostGameObjectDestroyed {guid}");
 #endif
@@ -522,34 +547,34 @@ public partial class GhostGameObjectLifetimeSystem : ClientServerSingletonSystem
 
     public void PostUpdateRemoveStaleGhostGameObjectsFromList()
     {
-        if (m_GhostGameObjects.Count == m_GhostGameObjectList.Count)
+        if (!m_RebuildGhostGameObjectTransformAccessArray && m_GhostGameObjects.Count == m_GhostGameObjectList.Count)
         {
             // the list is not dirty
             // no work to do
             return;
         }
 
-        // 1. Clear the old, potentially out-of-sync lists.
-        m_GhostGameObjectList.Clear();
-        m_GhostEntityList.Clear();
-
-        // 2. Repopulate the lists from the authoritative dictionary.
-        // This guarantees the order and indices are always correct.
-        foreach (var ghost in m_GhostGameObjects.Values)
+        CompleteTransformJobs();
+        // The stored entity is valid even while its GameObject is waiting for LinkGhost.
+        // Compact all three index-based collections together, before the next transform job.
+        m_GhostGameObjects.Clear();
+        int count = 0;
+        for (int i = 0; i < m_GhostGameObjectList.Count; i++)
         {
-            if (ghost != null && ghost.GhostEntityExists())
-            {
-                m_GhostGameObjectList.Add(ghost);
-                m_GhostEntityList.Add(ghost.LinkedEntity);
-
-                // 3. Update the local index stored on the ghost's entity component.
-                var ghostGuidComponent = ghost.ReadGhostComponentData<GhostGameObjectGuid>();
-                ghostGuidComponent.LocalGhostIndex = m_GhostGameObjectList.Count - 1;
-                ghost.WriteGhostComponentData(ghostGuidComponent);
-            }
+            var ghost = m_GhostGameObjectList[i];
+            var entity = m_GhostEntityList[i];
+            if (ghost == null || !EntityManager.Exists(entity) ||
+                !EntityManager.HasComponent<GhostGameObjectGuid>(entity)) continue;
+            var guid = EntityManager.GetComponentData<GhostGameObjectGuid>(entity);
+            guid.LocalGhostIndex = count;
+            EntityManager.SetComponentData(entity, guid);
+            m_GhostGameObjectList[count] = ghost;
+            m_GhostEntityList[count] = entity;
+            m_GhostGameObjects.Add(guid.Guid, ghost);
+            count++;
         }
-
-        // 4. Mark the TransformAccessArray to be rebuilt with the new, correct data.
+        m_GhostGameObjectList.RemoveRange(count, m_GhostGameObjectList.Count - count);
+        m_GhostEntityList.ResizeUninitialized(count);
         m_RebuildGhostGameObjectTransformAccessArray = true;
     }
 

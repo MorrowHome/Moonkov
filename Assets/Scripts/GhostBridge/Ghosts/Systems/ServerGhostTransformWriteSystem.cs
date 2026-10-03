@@ -8,6 +8,7 @@ using UnityEngine.Jobs;
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 [UpdateInGroup(typeof(SimulationSystemGroup))]
+[UpdateAfter(typeof(GhostGameObjectPhysicsUpdateServerSystem))]
 public partial class ServerGhostTransformRetrieveSystem : SingletonSystem<ServerGhostTransformRetrieveSystem>
 {
     private const int k_BatchTransformSize = 200;
@@ -24,8 +25,11 @@ public partial class ServerGhostTransformRetrieveSystem : SingletonSystem<Server
 
     private JobHandle m_GhostTransformWriteHandle;
 
+    public void CompleteTransformRead() => m_GhostTransformWriteHandle.Complete();
+
     protected override void OnDestroy()
     {
+        CompleteTransformRead();
         if (m_GhostGameObjectTransforms.IsCreated)
         {
             m_GhostGameObjectTransforms.Dispose();
@@ -39,6 +43,7 @@ public partial class ServerGhostTransformRetrieveSystem : SingletonSystem<Server
         m_GhostTransformWriteHandle.Complete();
 
         var lifeTimeSystem = GhostGameObjectLifetimeSystem.ServerInstance;
+        lifeTimeSystem.EnsureTransformAccessArrayUpToDate();
 
         if (!m_GhostGameObjectTransforms.IsCreated || m_GhostGameObjectTransforms.Length != lifeTimeSystem.GhostGameObjectList.Count)
         {
