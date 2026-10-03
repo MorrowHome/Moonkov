@@ -45,6 +45,9 @@ namespace Unity.MP_FPS
         private Camera m_PlayerCamera;
         private Animator _animatorCharacter;
         private Vector3 m_ReticleVector;
+        private SphereCollider m_HeadHitbox;
+        private Transform m_HeadBone;
+        private static RaycastHit[] s_ShotHits = new RaycastHit[64];
 
         private CinemachineTargetGroup m_TargetGroup;
         private CinemachinePositionComposer m_PositionComposer;
@@ -95,6 +98,58 @@ namespace Unity.MP_FPS
             return new Ray(origin, direction);
         }
 
+        public void CreateHeadHitbox(int layer)
+        {
+            if(m_HeadHitbox!=null)return;
+            var animator=m_Animator3P!=null ? m_Animator3P : GetComponentInChildren<Animator>(true);
+            if(animator==null)return;
+            if(animator.avatar!=null && animator.avatar.isHuman)
+                m_HeadBone=animator.GetBoneTransform(HumanBodyBones.Head);
+            else
+                foreach(var bone in animator.GetComponentsInChildren<Transform>(true))
+                    if(bone.name=="Head"){m_HeadBone=bone;break;}
+            if(m_HeadBone==null)return;
+            // Keep the hitbox outside the visual hierarchy: headless servers disable that model.
+            var head=new GameObject("Head hitbox");head.layer=layer;head.transform.SetParent(transform,false);
+            m_HeadHitbox=head.AddComponent<SphereCollider>();m_HeadHitbox.radius=.17f;
+            // Proxy movement controllers are disabled. They still need a queryable body
+            // so the camera chooses the character surface instead of distant ground.
+            var controller=GetComponent<UnityEngine.CharacterController>();
+            if(controller!=null)
+            {
+                var body=new GameObject("Body hitbox");body.layer=layer;body.transform.SetParent(transform,false);
+                var capsule=body.AddComponent<CapsuleCollider>();capsule.center=controller.center;
+                capsule.height=controller.height;capsule.radius=controller.radius;capsule.direction=1;
+            }
+            UpdateHeadHitbox();
+        }
+
+        private void UpdateHeadHitbox()
+        {
+            if(m_HeadHitbox==null || m_HeadBone==null)return;
+            m_HeadHitbox.transform.position=m_HeadBone.position+Vector3.up*.06f;
+        }
+
+        public bool RaycastShot(Ray ray,float range,int mask,out RaycastHit nearest)
+        {
+            var physics=gameObject.scene.GetPhysicsScene();
+            int count;
+            while((count=physics.Raycast(ray.origin,ray.direction,s_ShotHits,range,mask,QueryTriggerInteraction.Ignore))==s_ShotHits.Length)
+            {
+                // Do not select an arbitrary target if an unusually dense scene fills the buffer.
+                if(s_ShotHits.Length>=4096){nearest=default;return false;}
+                System.Array.Resize(ref s_ShotHits,s_ShotHits.Length*2);
+            }
+            nearest=default;float distance=float.PositiveInfinity;bool found=false;
+            for(int i=0;i<count;i++)
+            {
+                var hit=s_ShotHits[i];
+                if(!hit.collider || hit.collider.transform.IsChildOf(transform) || hit.distance>=distance)continue;
+                nearest=hit;distance=hit.distance;found=true;
+            }
+            return found;
+        }
+
         public CinemachineCamera GetPlayerCinemachineCamera()
         {
             return m_CinemachineCamera;
@@ -137,6 +192,7 @@ namespace Unity.MP_FPS
 
         public override void OnGhostLinked()
         {
+            CreateHeadHitbox(Role==MultiplayerRole.Server ? (int)LayerIndex.ServerPlayer : (int)LayerIndex.ClientPlayer);
             bool isClientOwned = (Role == MultiplayerRole.ClientOwned);
             m_OwnerVisuals.SetActive(isClientOwned);
             m_OtherPlayerVisuals.SetActive(!isClientOwned);
@@ -241,6 +297,7 @@ namespace Unity.MP_FPS
 
         public void UpdateClient(float deltaTime)
         {
+            UpdateHeadHitbox();
             var predictedPlayerGhost = ReadGhostComponentData<PredictedPlayerGhost>();
             var controllerState = predictedPlayerGhost.ControllerState;
             if (Role == MultiplayerRole.ClientOwned)

@@ -257,6 +257,9 @@ namespace Unity.MP_FPS
 
             var projectileSpawnList = new NativeList<ProjectileSpawnData>(Allocator.Temp);
             var vfxSpawnList = new NativeList<VfxSpawnData>(Allocator.Temp);
+            // The project disables automatic transform syncing. Query the current poses,
+            // including newly spawned head hitboxes, rather than the previous physics step.
+            UnityEngine.Physics.SyncTransforms();
 
             foreach (var predictedPlayer in SystemAPI.Query<RefRW<PredictedPlayerGhost>>()
                          .WithAll<Simulate>())
@@ -351,9 +354,7 @@ namespace Unity.MP_FPS
                                 case WeaponType.Hitscan:
                                 {
                                     // Use the calculated eyePosition and aimDirection
-                                    if (UnityEngine.Physics.Raycast(eyePosition, aimDirection, out var hit,
-                                            weaponData.HitscanRange,
-                                            s_HitscanLayerMask))
+                                    if (playerGhost.RaycastShot(shotRay,weaponData.HitscanRange,s_HitscanLayerMask,out var hit))
                                     {
                                         if (hit.collider.gameObject.layer == LayerMask.NameToLayer("ServerPlayer"))
                                         {
@@ -569,6 +570,8 @@ namespace Unity.MP_FPS
 
             ecb.Playback(EntityManager);
             ecb.Dispose();
+
+            UnityEngine.Physics.SyncTransforms();
 
             s_PlayerMovementActive = false;
         }
