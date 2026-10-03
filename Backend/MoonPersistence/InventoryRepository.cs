@@ -1,6 +1,7 @@
 using Npgsql;
+using Unity.MP_FPS.Inventory;
 
-public sealed class InventoryRepository(NpgsqlDataSource db)
+public sealed partial class InventoryRepository(NpgsqlDataSource db)
 {
     public static async Task LockPlayerAsync(NpgsqlConnection connection, NpgsqlTransaction transaction, Guid playerId, CancellationToken ct)
     {
@@ -24,9 +25,10 @@ public sealed class InventoryRepository(NpgsqlDataSource db)
 
     public static async Task AddAsync(NpgsqlConnection connection, NpgsqlTransaction transaction, Guid playerId, string code, int quantity, CancellationToken ct)
     {
-        await using var command = new NpgsqlCommand("UPDATE inventory_stacks SET quantity=quantity+$3 WHERE player_id=$1 AND item_code=$2", connection, transaction);
-        command.Parameters.AddWithValue(playerId); command.Parameters.AddWithValue(code); command.Parameters.AddWithValue(quantity);
-        if (await command.ExecuteNonQueryAsync(ct) != 1) throw new ProfileNotFoundException();
+        var graph = await ReadGraphAsync(connection, transaction, playerId, ct);
+        var result = graph.AddSupply(code, quantity, "stash");
+        if (result != InventoryError.None) throw new DeploymentRejectedException("inventory_" + result);
+        await WriteGraphAsync(connection, transaction, playerId, graph, ct);
     }
 
     public static async Task<Profile> ReadAsync(NpgsqlConnection connection, NpgsqlTransaction transaction, Guid playerId, CancellationToken ct)
@@ -48,8 +50,12 @@ public sealed class InventoryRepository(NpgsqlDataSource db)
             while (await reader.ReadAsync(ct)) items.Add(new InventoryStack(reader.GetGuid(0), reader.GetString(1),
                 reader.GetInt32(2), reader.GetInt32(3), reader.GetInt32(4), reader.GetBoolean(5), reader.GetInt32(6), reader.GetInt32(7), reader.GetString(8)));
         }
-        int Count(string code) => items.Where(item => item.ItemCode == code).Sum(item => item.Quantity);
-        return new Profile(playerId, Count("dust"), Count("alloy"), Count("cells"), name, Items: items);
+        var graph = await ReadGraphAsync(connection, transaction, playerId, ct);
+        await using var active = new NpgsqlCommand("SELECT id FROM raid_deployments WHERE player_id=$1 AND status='Open' LIMIT 1", connection, transaction);
+        active.Parameters.AddWithValue(playerId);
+        var activeId = await active.ExecuteScalarAsync(ct);
+        return new Profile(playerId, graph.Count("dust"), graph.Count("alloy"), graph.Count("cells"), name,
+            Items: items, InventoryJson: Encode(graph), ActiveDeploymentId: activeId is Guid id ? id : null);
     }
 
     public async Task<Profile> DeployAsync(Deployment request, CancellationToken ct)
@@ -58,8 +64,9 @@ public sealed class InventoryRepository(NpgsqlDataSource db)
         await using var transaction = await connection.BeginTransactionAsync(ct);
         await LockPlayerAsync(connection, transaction, request.PlayerId, ct);
         Guid? stackId = null;
+        string? raidJson = null;
         bool existing = false;
-        await using (var previous = new NpgsqlCommand("SELECT player_id,cells,cell_stack_id,status FROM raid_deployments WHERE id=$1", connection, transaction))
+        await using (var previous = new NpgsqlCommand("SELECT player_id,cells,cell_stack_id,status,inventory FROM raid_deployments WHERE id=$1", connection, transaction))
         {
             previous.Parameters.AddWithValue(request.DeploymentId);
             await using var reader = await previous.ExecuteReaderAsync(ct);
@@ -69,25 +76,32 @@ public sealed class InventoryRepository(NpgsqlDataSource db)
                 if (reader.GetGuid(0) != request.PlayerId || reader.GetInt32(1) != request.Cells) throw new ReceiptConflictException();
                 if (reader.GetString(3) != "Open") throw new DeploymentRejectedException("deployment_closed");
                 stackId = reader.IsDBNull(2) ? null : reader.GetGuid(2);
+                raidJson = reader.IsDBNull(4) ? null : Encode(Decode(reader.GetString(4)));
             }
         }
         if (!existing)
         {
-            await using var take = new NpgsqlCommand("""
-                UPDATE inventory_stacks SET quantity=quantity-$2
-                WHERE player_id=$1 AND item_code='cells' AND quantity >= $2 RETURNING id
-                """, connection, transaction);
-            take.Parameters.AddWithValue(request.PlayerId); take.Parameters.AddWithValue(request.Cells);
-            if (await take.ExecuteScalarAsync(ct) is null) throw new DeploymentRejectedException("insufficient_cells");
-            stackId = request.Cells > 0 ? Guid.NewGuid() : null;
-            await using var record = new NpgsqlCommand("INSERT INTO raid_deployments (id,player_id,cells,cell_stack_id) VALUES ($1,$2,$3,$4)", connection, transaction);
+            await using (var active = new NpgsqlCommand("SELECT EXISTS(SELECT 1 FROM raid_deployments WHERE player_id=$1 AND status='Open')", connection, transaction))
+            {
+                active.Parameters.AddWithValue(request.PlayerId);
+                if (await active.ExecuteScalarAsync(ct) is true) throw new DeploymentRejectedException("deployment_already_open");
+            }
+            var graph = await ReadGraphAsync(connection, transaction, request.PlayerId, ct);
+            PrepareCells(graph, request.Cells);
+            var raid = graph.ExtractLoadout();
+            if (raid.Validate() != InventoryError.None || raid.CarriedWeight > InventoryCatalog.CarryWeightLimit) throw new DeploymentRejectedException("invalid_loadout");
+            raidJson = Encode(raid);
+            stackId = request.Cells > 0 ? Guid.Parse(raid.Items.First(i => i.Code == "cells").Id) : null;
+            await WriteGraphAsync(connection, transaction, request.PlayerId, graph, ct);
+            await using var record = new NpgsqlCommand("INSERT INTO raid_deployments (id,player_id,cells,cell_stack_id,inventory) VALUES ($1,$2,$3,$4,$5::jsonb)", connection, transaction);
             record.Parameters.AddWithValue(request.DeploymentId); record.Parameters.AddWithValue(request.PlayerId); record.Parameters.AddWithValue(request.Cells);
             record.Parameters.Add(new NpgsqlParameter { NpgsqlDbType=NpgsqlTypes.NpgsqlDbType.Uuid, Value=(object?)stackId ?? DBNull.Value });
+            record.Parameters.AddWithValue(raidJson);
             await record.ExecuteNonQueryAsync(ct);
         }
         var profile = await ReadAsync(connection, transaction, request.PlayerId, ct);
         await transaction.CommitAsync(ct);
-        return profile with { DeploymentId=request.DeploymentId, CarriedCells=request.Cells, CellStackId=stackId };
+        return profile with { DeploymentId=request.DeploymentId, CarriedCells=request.Cells, CellStackId=stackId, RaidInventoryJson=raidJson };
     }
 
     public static async Task CheckDeploymentAsync(NpgsqlConnection connection, NpgsqlTransaction transaction, Settlement request, CancellationToken ct)

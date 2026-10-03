@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Unity.Entities;
 using Unity.NetCode;
@@ -55,7 +56,7 @@ namespace Unity.MP_FPS
         /// </summary>
         public async void QuitAsync()
         {
-            await LeaveSessionAsync();
+            await DisconnectAndUnloadWorlds();
 
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
@@ -102,14 +103,21 @@ namespace Unity.MP_FPS
             await Awaitable.EndOfFrameAsync();
 
             // Destroy netcode worlds:
+            var shutdowns = new List<Task>();
             for (var i = World.All.Count - 1; i >= 0; i--)
             {
                 var world = World.All[i];
                 if (world.IsServer() || world.IsClient())
                 {
+                    RaidPersistenceContext persistence = null;
+                    using (var query = world.EntityManager.CreateEntityQuery(typeof(RaidPersistenceContext)))
+                        if (!query.IsEmptyIgnoreFilter) persistence = world.EntityManager.GetComponentObject<RaidPersistenceContext>(query.GetSingletonEntity());
                     world.Dispose();
+                    if (persistence != null) shutdowns.Add(persistence.ShutdownTask);
                 }
             }
+            // Do not expose the account equipment screen while its last raid still owns the kit.
+            await Task.WhenAll(shutdowns);
         }
         
         async Task DisconnectAndUnloadWorlds()

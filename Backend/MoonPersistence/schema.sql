@@ -87,3 +87,23 @@ CREATE TABLE IF NOT EXISTS raid_deployments (
     created_at timestamptz NOT NULL DEFAULT now()
 );
 ALTER TABLE raid_settlements ADD COLUMN IF NOT EXISTS deployment_id uuid REFERENCES raid_deployments(id);
+
+-- Version 4: authoritative item/container tree. V3 resource stacks are a compatibility projection.
+CREATE TABLE IF NOT EXISTS inventory_profiles (
+    player_id uuid PRIMARY KEY REFERENCES players(id),
+    revision integer NOT NULL,
+    inventory jsonb NOT NULL
+);
+ALTER TABLE raid_deployments ADD COLUMN IF NOT EXISTS inventory jsonb;
+ALTER TABLE raid_settlements ADD COLUMN IF NOT EXISTS inventory jsonb;
+INSERT INTO schema_version VALUES (4) ON CONFLICT DO NOTHING;
+
+-- Version 5: the old 12-supply receipt cap applies only to legacy, container-less raids.
+ALTER TABLE raid_settlements DROP CONSTRAINT IF EXISTS raid_settlements_check;
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conrelid='raid_settlements'::regclass AND conname='raid_settlements_legacy_capacity') THEN
+        ALTER TABLE raid_settlements ADD CONSTRAINT raid_settlements_legacy_capacity
+            CHECK (inventory IS NOT NULL OR dust::bigint + alloy::bigint + cells::bigint <= 12);
+    END IF;
+END $$;
+INSERT INTO schema_version VALUES (5) ON CONFLICT DO NOTHING;

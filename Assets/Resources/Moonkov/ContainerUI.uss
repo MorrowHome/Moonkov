@@ -1,0 +1,42 @@
+@import url("../../UI Toolkit/GameUI/MoonkovTerminal.uss");
+.inventory-view { flex-grow: 1; min-height: 0; color: #252b29; background-color: #f2f2ef; position: relative; }
+.inventory-view Label { color: #252b29; margin: 0; -unity-text-align: middle-left; }
+.inventory-view Button { background-image: none; background-color: #e6e9e2; color: #252b29; border-width: 0; border-radius: 3px; min-width: 0; margin: 0; padding: 7px; }
+.inventory-view Button:hover { background-color: #dce3c8; }
+.inventory-body { flex-grow: 1; min-height: 0; flex-direction: row; }
+.inventory-character { width: 44%; min-height: 0; margin-right: 3%; }
+.inventory-with-stash .inventory-character { width: 36%; margin-right: 2%; }
+.inventory-character-title { font-size: 23px; -unity-font-style: bold; margin-bottom: 6px; }
+.inventory-caption { font-size: 10px; color: #69736e; margin-bottom: 7px; white-space: normal; }
+.inventory-character-stage { flex-grow: 1; min-height: 290px; position: relative; }
+.inventory-slot-layer, .inventory-view .stash-equipment-guides { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
+.inventory-view .stash-character-render { position: absolute; left: 14%; right: 14%; top: 0; bottom: 0; }
+.inventory-view .inventory-slot { position: absolute; width: 24%; height: 24%; padding: 8px; background-color: rgba(255,255,255,0.7); }
+.inventory-view .inventory-equipped { background-color: #e0e6de; }
+.inventory-slot-label { position: absolute; left: 7px; right: 5px; top: 7px; font-size: 9px; white-space: normal; }
+.inventory-slot-art { position: absolute; top: 25px; left: 12%; right: 12%; bottom: 22px; }
+.inventory-slot-item { position: absolute; left: 7px; right: 5px; bottom: 6px; font-size: 9px; color: #67726b; }
+.inventory-weight { font-size: 11px; margin-top: 10px; margin-bottom: 8px; }
+.inventory-containers { flex-grow: 1; min-width: 0; min-height: 0; }
+.inventory-with-stash .inventory-containers { width: 25%; flex-grow: 0; margin-right: 2%; }
+.inventory-stash { flex-grow: 1; min-width: 0; min-height: 0; background-color: rgba(255,255,255,0.72); padding: 14px; }
+.inventory-container { margin-bottom: 16px; min-height: 0; }
+.inventory-section-title { font-size: 13px; -unity-font-style: bold; margin-bottom: 8px; }
+.inventory-regions { flex-direction: row; flex-wrap: wrap; min-height: 0; }
+.inventory-region { margin-right: 8px; margin-bottom: 8px; min-height: 0; }
+.inventory-region-title { font-size: 8px; color: #808b82; margin-bottom: 4px; }
+.inventory-grid { position: relative; flex-shrink: 0; background-color: #eaede7; }
+.inventory-warehouse-scroll { flex-grow: 1; min-height: 0; }
+.inventory-stash .inventory-container, .inventory-stash .inventory-regions, .inventory-stash .inventory-region { flex-grow: 1; }
+.inventory-view .inventory-item { position: absolute; padding: 0; overflow: hidden; border-width: 1px; border-color: #bdc7ba; background-color: #dce2d8; }
+.inventory-item-art { position: absolute; left: 12%; right: 12%; top: 20%; bottom: 20%; }
+.inventory-item-label { position: absolute; left: 4px; right: 4px; top: 3px; font-size: 8px; }
+.inventory-item-quantity { position: absolute; right: 4px; bottom: 3px; font-size: 9px; }
+.inventory-ghost { position: absolute; background-color: rgba(225,234,211,0.9); border-width: 1px; border-color: #919f82; }
+.inventory-drop { position: absolute; border-width: 2px; }
+.inventory-view .inventory-drop-valid { background-color: rgba(188,208,119,0.55); border-color: #91a356; }
+.inventory-view .inventory-drop-invalid { background-color: rgba(215,125,120,0.35); border-color: #b46f6a; }
+.inventory-hint { height: 32px; flex-shrink: 0; font-size: 10px; color: #69736e; white-space: normal; margin-top: 7px; }
+.inventory-container-window { width: auto; min-width: 250px; max-width: 560px; }
+.inventory-container-window .inventory-container { margin: 10px; }
+.inventory-view .terminal-window-layer { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }

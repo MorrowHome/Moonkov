@@ -9,13 +9,12 @@
         <ui:Label name="raidPrompt" class="raid-prompt" picking-mode="Ignore" />
         <ui:Label name="raidExtraction" class="raid-extraction" picking-mode="Ignore" />
         <ui:VisualElement name="raidInventory" class="raid-overlay">
-            <ui:VisualElement class="raid-window">
-                <ui:Label text="RAID PACK" class="raid-title" />
-                <ui:Label text="CARRIED CARGO / LIVE EXPEDITION" class="raid-caption" />
-                <ui:VisualElement name="raidPackGrid" class="raid-pack-grid" />
-                <ui:Label name="raidPackCapacity" class="raid-copy" />
-                <ui:Label text="Your expedition continues while the pack is open. Cargo returns to storage only after extraction." class="raid-copy" />
-                <ui:Button name="raidPackClose" text="CLOSE / TAB / ESC" />
+            <ui:VisualElement class="raid-inventory-window">
+                <ui:VisualElement class="raid-inventory-header">
+                    <ui:Label text="CHARACTER / CARRIED INVENTORY" class="raid-inventory-title" />
+                    <ui:Button name="raidPackClose" text="CLOSE / TAB" />
+                </ui:VisualElement>
+                <ui:VisualElement name="raidInventoryHost" class="raid-inventory-host" />
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="raidResult" class="raid-overlay raid-result-overlay">

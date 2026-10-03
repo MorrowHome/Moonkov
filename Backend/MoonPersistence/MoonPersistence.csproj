@@ -5,6 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../../Assets/Scripts/Networking/Shared/InventoryModel.cs" Link="Shared/InventoryModel.cs" />
     <PackageReference Include="Npgsql" Version="10.0.3" />
     <Content Include="schema.sql" CopyToOutputDirectory="PreserveNewest" />
     <Content Update="appsettings.local.json" CopyToOutputDirectory="Never" CopyToPublishDirectory="Never" />

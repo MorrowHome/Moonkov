@@ -3,6 +3,7 @@ using System.Text;
 using Npgsql;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.RateLimiting;
+using Unity.MP_FPS.Inventory;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddJsonFile("appsettings.local.json", optional: true).AddEnvironmentVariables();
@@ -16,6 +17,7 @@ builder.Services.AddSingleton(NpgsqlDataSource.Create(connectionString));
 builder.Services.AddSingleton<StashRepository>();
 builder.Services.AddSingleton<InventoryRepository>();
 builder.Services.AddSingleton<AccountRepository>();
+builder.Services.ConfigureHttpJsonOptions(options => options.SerializerOptions.IncludeFields = true);
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = 429;
@@ -39,7 +41,8 @@ app.Use(async (context, next) =>
     await next(context);
 });
 app.UseRateLimiter();
-var auth = app.MapGroup("/auth").RequireRateLimiting("auth");
+// Login throttling must not count inventory moves and background refreshes.
+var auth = app.MapGroup("/auth");
 auth.MapPost("/register", async (Credentials request, AccountRepository accounts, CancellationToken ct) =>
 {
     if (!AccountRepository.ValidCredentials(request))
@@ -47,13 +50,13 @@ auth.MapPost("/register", async (Credentials request, AccountRepository accounts
     try { return Results.Ok(await accounts.RegisterAsync(request, ct)); }
     catch (PostgresException ex) when (ex.SqlState == PostgresErrorCodes.UniqueViolation)
     { return Results.Conflict(new { error = "Username or guest profile already registered." }); }
-});
+}).RequireRateLimiting("auth");
 auth.MapPost("/login", async (Credentials request, AccountRepository accounts, CancellationToken ct) =>
 {
     if (!AccountRepository.ValidCredentials(request)) return Results.Unauthorized();
     var result = await accounts.LoginAsync(request, ct);
     return result is null ? Results.Unauthorized() : Results.Ok(result);
-});
+}).RequireRateLimiting("auth");
 auth.MapGet("/me", async (HttpRequest request, AccountRepository accounts, CancellationToken ct) =>
 {
     var result = await accounts.ResolveSessionAsync(BearerToken(request), ct);
@@ -63,6 +66,13 @@ auth.MapPost("/logout", async (HttpRequest request, AccountRepository accounts, 
 {
     await accounts.LogoutAsync(BearerToken(request), ct);
     return Results.NoContent();
+});
+auth.MapPost("/inventory/move", async (HttpRequest request, InventoryCommand command, AccountRepository accounts, InventoryRepository inventory, CancellationToken ct) =>
+{
+    var profile = await accounts.ResolveSessionAsync(BearerToken(request), ct);
+    if (profile is null) return Results.Unauthorized();
+    try { return Results.Ok(await inventory.MoveAsync(profile.PlayerId, command, ct)); }
+    catch (DeploymentRejectedException ex) { return Results.Conflict(new { error=ex.Message }); }
 });
 app.MapPost("/internal/sessions/resolve", async (SessionCredential request, AccountRepository accounts, CancellationToken ct) =>
 {
@@ -88,11 +98,13 @@ app.MapPost("/internal/settlements", async (Settlement request, StashRepository 
     if (request.PlayerId == Guid.Empty || request.SettlementId == Guid.Empty
         || request.Outcome is not ("Extracted" or "Dead" or "TimedOut")
         || request.Dust < 0 || request.Alloy < 0 || request.Cells < 0
-        || (long)request.Dust + request.Alloy + request.Cells > 12)
+        || (request.InventoryJson == null && (long)request.Dust + request.Alloy + request.Cells > 12)
+        || request.InventoryJson?.Length > 500000)
         return Results.BadRequest(new { error = "Invalid settlement." });
     try { return Results.Ok(await store.SettleAsync(request, ct)); }
     catch (ReceiptConflictException) { return Results.Conflict(new { error = "Settlement ID already has another payload." }); }
     catch (ProfileNotFoundException) { return Results.NotFound(new { error = "Unknown profile." }); }
+    catch (DeploymentRejectedException ex) { return Results.Conflict(new { error=ex.Message }); }
 });
 app.MapPost("/internal/deployments", async (Deployment request, InventoryRepository inventory, CancellationToken ct) =>
 {
@@ -120,8 +132,9 @@ static string? BearerToken(HttpRequest request)
 }
 
 public sealed record ResolveProfile(string GuestToken, string DisplayName);
-public sealed record Settlement(Guid PlayerId, Guid SettlementId, string Outcome, int Dust, int Alloy, int Cells, Guid? DeploymentId=null);
+public sealed record Settlement(Guid PlayerId, Guid SettlementId, string Outcome, int Dust, int Alloy, int Cells, Guid? DeploymentId=null, string? InventoryJson=null);
 public sealed record Profile(Guid PlayerId, int Dust, int Alloy, int Cells, string DisplayName,
-    Guid? DeploymentId=null, int CarriedCells=0, Guid? CellStackId=null, IReadOnlyList<InventoryStack>? Items=null);
+    Guid? DeploymentId=null, int CarriedCells=0, Guid? CellStackId=null, IReadOnlyList<InventoryStack>? Items=null,
+    string? InventoryJson=null, string? RaidInventoryJson=null, Guid? ActiveDeploymentId=null);
 public sealed class ReceiptConflictException : Exception;
 public sealed class ProfileNotFoundException : Exception;

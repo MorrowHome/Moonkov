@@ -8,6 +8,12 @@
 .raid-extraction { position: absolute; right: 3%; top: 7%; font-size: 20px; -unity-text-align: middle-right; color: #d3d3d3; }
 .raid-overlay { position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; justify-content: center; background-color: rgba(0, 0, 0, 0.44); display: none; }
 .raid-window { width: 620px; padding: 32px; background-color: rgba(0, 0, 0, 0.94); border-radius: 10px; }
+.raid-inventory-window { width: 94%; height: 90%; padding: 24px; background-color: #f2f2ef; border-radius: 3px; }
+.raid-inventory-header { height: 42px; flex-shrink: 0; flex-direction: row; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+.raid-ui .raid-inventory-title { color: #252b29; font-size: 24px; }
+.raid-inventory-host { flex-grow: 1; min-height: 0; }
+.raid-ui .raid-inventory-header Button { color: #252b29; background-color: #e1e6d3; }
+.raid-ui .inventory-view Button { min-width: 0; margin: 0; min-height: 0; height: auto; }
 .raid-title { font-size: 32px; margin-bottom: 10px; }
 .raid-pack-grid { flex-direction: row; flex-wrap: wrap; height: 192px; }
 .raid-pack-cell { width: 24%; height: 60px; margin-right: 1%; margin-bottom: 4px; background-color: rgba(255, 255, 255, 0.13); border-radius: 3px; align-items: center; justify-content: center; }

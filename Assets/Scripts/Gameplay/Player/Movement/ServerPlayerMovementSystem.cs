@@ -68,7 +68,13 @@ namespace Unity.MP_FPS
                 EntityManager.GetComponentData<JoinedClient>(connection).PlayerEntity != player ||
                 EntityManager.GetComponentData<PredictedPlayerGhost>(player).CurrentHealth <= 0) return false;
             var session = EntityManager.GetComponentData<RaidSession>(connection);
-            if (!RaidRules.TryConsumeCell(ref session)) return false;
+            if (EntityManager.HasComponent<RaidInventoryState>(connection))
+            {
+                var inventory = EntityManager.GetComponentObject<RaidInventoryState>(connection);
+                if (session.Phase != RaidPhase.Active || !inventory.Graph.ConsumeAccessibleCell()) return false;
+                RaidInventoryState.UpdateTotals(inventory.Graph, ref session);
+            }
+            else if (!RaidRules.TryConsumeCell(ref session)) return false;
             EntityManager.SetComponentData(connection, session);
             return true;
         }

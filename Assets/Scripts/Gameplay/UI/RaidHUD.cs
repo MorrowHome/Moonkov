@@ -13,7 +13,12 @@ namespace Unity.MP_FPS
     {
         private World m_World;
         private EntityQuery m_StateQuery, m_PlayerQuery, m_ConnectionQuery;
-        private VisualElement m_Root, m_Result, m_Status, m_Inventory, m_PackGrid;
+        private VisualElement m_Root, m_Result, m_Status, m_Inventory;
+        private Client.ContainerInventoryView m_InventoryView;
+        private EntityQuery m_InventoryQuery;
+        private uint m_InventorySequence, m_InventoryRequestId;
+        private float m_InventoryRequestedAt;
+        private bool m_InventoryRequestPending;
         private Label m_Bag, m_Timer, m_Prompt, m_Exit, m_ResultText, m_SaveStatus;
         private Button m_Deploy;
         private bool m_WasSettled;
@@ -27,17 +32,18 @@ namespace Unity.MP_FPS
         private Label m_LoadoutNote;
         private int m_ResultStep;
         private bool m_InventoryVisible;
-        private Label m_PackCapacity;
         private Button m_ResultBack, m_ResultNext, m_Return;
         private float m_RevealUntil;
         private int m_PreviousCount = -1;
         private static RaidHUD s_Active;
         public static bool InventoryOpen => s_Active != null && s_Active.m_InventoryVisible;
+        public static bool PointerRequested => s_Active != null && (s_Active.m_InventoryVisible || s_Active.m_WasSettled);
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetPresentation() => s_Active = null;
         public static bool CloseInventory()
         {
             if (!InventoryOpen) return false;
+            if (s_Active.m_InventoryView.Escape()) return true;
             s_Active.SetInventory(false); return true;
         }
 
@@ -63,17 +69,18 @@ namespace Unity.MP_FPS
             m_ResultNext = m_Root.Q<Button>("raidResultNext"); m_ResultNext.clicked += ResultNext;
             m_Return = m_Root.Q<Button>("raidReturn"); m_Return.clicked += ReturnToShip;
             m_Return.SetEnabled(GameManager.CanUseMainMenu);
-            m_Inventory = m_Root.Q("raidInventory"); m_PackGrid = m_Root.Q("raidPackGrid"); m_PackCapacity = m_Root.Q<Label>("raidPackCapacity");
+            m_Inventory = m_Root.Q("raidInventory");
+            m_InventoryView = new Client.ContainerInventoryView(m_Root.Q("raidInventoryHost"), false, SendInventoryMove);
+            m_InventorySequence=0; m_InventoryRequestId=0;
+            m_InventoryRequestPending=false;
             m_Root.Q<Button>("raidPackClose").clicked += ClosePack;
-            for (int i = 0; i < RaidRules.BagCapacity; i++)
-            {
-                var cell = new VisualElement(); cell.AddToClassList("raid-pack-cell"); cell.Add(new Label()); m_PackGrid.Add(cell);
-            }
         }
 
         private void SetInventory(bool visible)
         {
             m_InventoryVisible = visible; m_Inventory.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
+            if (visible) { UpdateInventoryView(); m_InventoryView.Show(); }
+            else m_InventoryView.Suspend();
             Utils.SetCursorVisible(visible || GameSettings.Instance.IsPauseMenuOpen || m_WasSettled);
         }
         private void ClosePack() => SetInventory(false);
@@ -103,6 +110,7 @@ namespace Unity.MP_FPS
                 m_PlayerQuery = world.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<PredictedPlayerGhost>(),
                     ComponentType.ReadOnly<GhostOwnerIsLocal>(), ComponentType.ReadOnly<LocalTransform>());
                 m_ConnectionQuery = world.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<NetworkId>(), ComponentType.ReadOnly<NetworkStreamInGame>());
+                m_InventoryQuery = world.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<RaidInventoryClientState>());
                 break;
             }
         }
@@ -115,6 +123,7 @@ namespace Unity.MP_FPS
             if (m_World == null || !m_World.IsCreated) InitializeWorld();
             if (m_World == null || !m_World.IsCreated || m_StateQuery.IsEmptyIgnoreFilter) return;
             m_Snapshot = m_StateQuery.GetSingleton<RaidClientState>().Snapshot;
+            UpdateInventoryView();
             bool ready = m_Snapshot.RaidId > 0;
             bool settled = ready && m_Snapshot.Phase != RaidPhase.Active;
             if (Keyboard.current != null && Keyboard.current.tabKey.wasPressedThisFrame && ready && !settled && !GameSettings.Instance.IsPauseMenuOpen)
@@ -122,6 +131,7 @@ namespace Unity.MP_FPS
             if (settled && m_InventoryVisible) SetInventory(false);
             if (!settled && m_WasSettled) { m_ResultStep = 0; Utils.SetCursorVisible(false); }
             if (settled && !m_WasSettled) m_ResultStep = 0;
+            if (m_InventoryVisible) Utils.SetCursorVisible(true);
             MoonRaidMap.Active.ShowLoot(m_Snapshot.TakenMask, ready);
             if (settled)
             {
@@ -179,8 +189,8 @@ namespace Unity.MP_FPS
             bool check = Keyboard.current != null && Keyboard.current.hKey.isPressed;
             bool status = PlayerPrefs.GetInt("Moonkov.AlwaysShowHUD", 0) != 0 || check || Time.unscaledTime < m_RevealUntil || m_Snapshot.TimeLeft < 60;
             m_Status.style.display = !settled && status ? DisplayStyle.Flex : DisplayStyle.None;
-            m_Bag.text = $"Bag {count}/{RaidRules.BagCapacity}\nDust {m_Snapshot.Dust}   Alloy {m_Snapshot.Alloy}   Cells {m_Snapshot.Cells}";
-            m_Prompt.text = nearest < 0 || settled || m_InventoryVisible ? "" : count >= RaidRules.BagCapacity ? "CARGO FULL" : $"[E]  COLLECT\n{ItemName(nearest)}";
+            m_Bag.text = $"CARRIED / {count} supplies\nDust {m_Snapshot.Dust}   Alloy {m_Snapshot.Alloy}   Cells {m_Snapshot.Cells}";
+            m_Prompt.text = nearest < 0 || settled || m_InventoryVisible ? "" : $"[E]  COLLECT\n{ItemName(nearest)}";
             if (alive && !settled)
             {
                 Vector3 delta = MoonRaidMap.Active.ExtractionPosition - position;
@@ -188,15 +198,6 @@ namespace Unity.MP_FPS
                 m_Exit.text = m_Snapshot.ExtractionRemaining >= 0 ? $"EXTRACTION\nSHUTTLE BEACON / {m_Snapshot.ExtractionRemaining:00.0}s" : check ? $"GREEN BEACON / {delta.magnitude:F0}m {heading}" : "";
             }
             else m_Exit.text = "";
-            if (m_InventoryVisible)
-            {
-                m_PackCapacity.text = $"{count} / {RaidRules.BagCapacity} supplies";
-                for (int i = 0; i < m_PackGrid.childCount; i++)
-                {
-                    var cell = m_PackGrid[i]; cell.EnableInClassList("raid-pack-filled", i < count);
-                    cell.Q<Label>().text = i >= count ? "" : i < m_Snapshot.Dust ? "MOON DUST" : i < m_Snapshot.Dust + m_Snapshot.Alloy ? "ALLOY" : "ENERGY CELL";
-                }
-            }
             if (settled)
             {
                 m_SaveStatus.text = m_Snapshot.SaveState == RaidSaveState.SessionOnly ? "Stash lasts for this connection only."
@@ -206,7 +207,36 @@ namespace Unity.MP_FPS
             }
         }
 
-        private static string ItemName(int id) => id % 3 == 0 ? "Moon Dust" : id % 3 == 1 ? "Alloy" : "Energy Cell";
+        private static string ItemName(int id) => Inventory.InventoryCatalog.Get(Inventory.InventoryCatalog.LootCode(id)).Name;
+        private void UpdateInventoryView()
+        {
+            if (m_World==null || !m_World.IsCreated || m_InventoryQuery.IsEmptyIgnoreFilter) return;
+            var inventory=m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
+            if (inventory.Graph==null || inventory.RaidId!=m_Snapshot.RaidId) return;
+            if (inventory.Sequence!=m_InventorySequence)
+            {
+                m_InventorySequence=inventory.Sequence;
+                bool acknowledged = !m_InventoryRequestPending || inventory.RequestId == m_InventoryRequestId;
+                if (acknowledged) m_InventoryRequestPending = false;
+                m_InventoryView.Present(inventory.Graph,acknowledged && inventory.Error!=Inventory.InventoryError.None ? "Inventory: "+inventory.Error : null,
+                    operationCompleted: acknowledged);
+            }
+            if (m_InventoryRequestPending && Time.unscaledTime-m_InventoryRequestedAt>5)
+            {
+                m_InventoryRequestPending = false;
+                m_InventoryView.Present(inventory.Graph,"Move is waiting for the server. Retry after the connection recovers.");
+            }
+        }
+        private void SendInventoryMove(Inventory.InventoryCommand command)
+        {
+            var inventory=m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
+            m_InventoryRequestId=System.Math.Max(m_InventoryRequestId,inventory.RequestId)+1;
+            if (Send(new RaidInventoryMoveRpc { RaidId=m_Snapshot.RaidId, RequestId=m_InventoryRequestId, ExpectedVersion=command.ExpectedVersion,
+                Operation=command.Operation, ItemId=command.ItemId??"", Parent=command.Parent??"", Region=command.Region??"", TargetId=command.TargetId??"",
+                X=command.X,Y=command.Y,Quantity=command.Quantity,Rotated=command.Rotated }))
+            { m_InventoryRequestedAt=Time.unscaledTime; m_InventoryRequestPending=true; }
+            else m_InventoryView.Present(inventory.Graph,"Not connected. Item remains in its container.");
+        }
 
         private void CarryCellsChanged(ChangeEvent<int> evt)
         {
@@ -242,10 +272,11 @@ namespace Unity.MP_FPS
 
         private void OnDisable()
         {
+            m_InventoryView?.Dispose(); m_InventoryView=null;
             m_CarryCells?.UnregisterValueChangedCallback(CarryCellsChanged);
             if (m_World != null && m_World.IsCreated)
             {
-                m_StateQuery.Dispose(); m_PlayerQuery.Dispose(); m_ConnectionQuery.Dispose();
+                m_StateQuery.Dispose(); m_PlayerQuery.Dispose(); m_ConnectionQuery.Dispose(); m_InventoryQuery.Dispose();
             }
             m_World = null;
             if (s_Active == this) s_Active = null;

@@ -49,6 +49,7 @@ namespace Unity.MP_FPS.Client
             inspect.AddToClassList("terminal-button"); m_Root.Q<VisualElement>(className: "stash-inspector").Add(inspect);
             var medical = new Button(Health) { text = "HEALTH / SUIT STATUS" }; medical.AddToClassList("terminal-button");
             m_Root.Q<VisualElement>(className: "stash-character-pane").Add(medical);
+            InitializeContainers();
         }
         private void Arrange()
         {
@@ -77,6 +78,7 @@ namespace Unity.MP_FPS.Client
         }
         private void ItemKey(KeyDownEvent evt)
         {
+            if (m_Containers?.HandleKey(evt) == true) return;
             if (evt.target is VisualElement focused && focused.GetFirstAncestorOfType<TextField>() != null) return;
             if (evt.keyCode == KeyCode.Escape && m_ActiveDrag != null)
             { CancelDrag(); evt.StopImmediatePropagation(); return; }
@@ -145,6 +147,7 @@ namespace Unity.MP_FPS.Client
         }
         private void DisposeTerminal()
         {
+            DisposeContainers();
             m_ActiveDrag?.Cancel(); m_ActiveDrag = null;
             m_Sort.clicked -= Arrange; m_Root.UnregisterCallback<KeyDownEvent>(ItemKey, TrickleDown.TrickleDown);
             m_Terminal.Navigating -= CancelDrag; m_Terminal.Dispose(); m_DragGhost.RemoveFromHierarchy();

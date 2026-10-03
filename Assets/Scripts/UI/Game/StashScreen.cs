@@ -100,6 +100,7 @@ namespace Unity.MP_FPS.Client
             m_Refresh.SetEnabled(!busy); m_Logout.SetEnabled(!busy); m_Deploy.SetEnabled(!busy); m_MainMenu.SetEnabled(!busy);
             Rebuild();
             m_Terminal.Present(playerName, dust, alloy, cells, busy);
+            PresentContainers();
         }
 
         private void All() => Filter(0);

@@ -164,7 +164,7 @@ namespace Unity.MP_FPS
                 }
 
                 m_IsPauseMenuOpen = value;
-                Utils.SetCursorVisible(value);
+                Utils.SetCursorVisible(value || RaidHUD.PointerRequested);
                 Notify(PauseMenuStylePropertyName);
                 Notify(MobileControlsOpacityPropertyName);
             }

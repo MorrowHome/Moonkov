@@ -30,12 +30,14 @@ namespace Unity.MP_FPS
             public int Dust, Alloy, Cells;
             public string DeploymentId, CellStackId;
             public int CarriedCells;
+            public string InventoryJson, RaidInventoryJson;
         }
 
         public sealed class Settlement
         {
             public string PlayerId, SettlementId, Outcome, DeploymentId;
             public int Dust, Alloy, Cells;
+            public string InventoryJson;
         }
 
         public sealed class Join
@@ -66,7 +68,7 @@ namespace Unity.MP_FPS
         public sealed class LoadoutRejectedException : Exception
         {
             public readonly RaidLoadoutError Error;
-            public LoadoutRejectedException(RaidLoadoutError error) { Error = error; }
+            public LoadoutRejectedException(RaidLoadoutError error, string message = null) : base(message) { Error = error; }
         }
 
         public sealed class Save
@@ -85,16 +87,21 @@ namespace Unity.MP_FPS
         public readonly Dictionary<Entity, Profile> Profiles = new Dictionary<Entity, Profile>();
         public readonly Dictionary<Entity, Deploy> Deployments = new Dictionary<Entity, Deploy>();
         public readonly Dictionary<Entity, RaidSession> ReadyRaids = new Dictionary<Entity, RaidSession>();
+        public readonly Dictionary<Entity, RaidInventoryState> Inventories = new Dictionary<Entity, RaidInventoryState>();
         public bool Enabled => m_Http != null;
         private readonly HttpClient m_Http;
         private readonly CancellationTokenSource m_Stop = new CancellationTokenSource();
         private readonly string m_Outbox;
+        private bool m_Disposed;
+        public Task ShutdownTask { get; private set; } = Task.CompletedTask;
 
-        public RaidPersistenceContext()
+        public RaidPersistenceContext() : this(null) { }
+
+        public RaidPersistenceContext(string configPath, HttpMessageHandler handler = null)
         {
             // Secrets are outside Assets and are never read by client Worlds.
             string root = Path.GetDirectoryName(Application.dataPath);
-            string configPath = Environment.GetEnvironmentVariable("MOON_SERVER_CONFIG");
+            if (string.IsNullOrEmpty(configPath)) configPath = Environment.GetEnvironmentVariable("MOON_SERVER_CONFIG");
             if (string.IsNullOrEmpty(configPath)) configPath = Path.Combine(root, "moon-server.local.json");
             if (!File.Exists(configPath))
             {
@@ -108,7 +115,8 @@ namespace Unity.MP_FPS
                 throw new InvalidOperationException("Invalid moon server config: use a server key and HTTPS (HTTP is allowed on loopback only).");
             m_Outbox = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(Path.GetFullPath(configPath)), config.OutboxDirectory));
             Directory.CreateDirectory(m_Outbox);
-            m_Http = new HttpClient { BaseAddress = url, Timeout = TimeSpan.FromSeconds(10) };
+            m_Http = handler == null ? new HttpClient() : new HttpClient(handler);
+            m_Http.BaseAddress = url; m_Http.Timeout = TimeSpan.FromSeconds(10);
             m_Http.DefaultRequestHeaders.Add("X-Moon-Server-Key", config.ServerKey);
             // Replay receipts retained across a normal restart or a lost HTTP acknowledgement.
             foreach (string file in Directory.GetFiles(m_Outbox, "*.json"))
@@ -154,7 +162,8 @@ namespace Unity.MP_FPS
             {
                 PlayerId = profile.PlayerId, SettlementId = session.SettlementId.ToString(),
                 Outcome = session.Phase.ToString(), Dust = session.Dust, Alloy = session.Alloy, Cells = session.Cells,
-                DeploymentId = session.PersistentDeployment ? session.SettlementId.ToString() : null
+                DeploymentId = session.PersistentDeployment ? session.SettlementId.ToString() : null,
+                InventoryJson = Inventories.TryGetValue(connection, out var inventory) ? JsonConvert.SerializeObject(inventory.Graph) : null
             };
             Saves.Add(payload.SettlementId, new Save
             {
@@ -189,15 +198,20 @@ namespace Unity.MP_FPS
             var profile = await PostAsync("internal/deployments", payload).ConfigureAwait(false);
             if (profile.PlayerId != payload.PlayerId || profile.DeploymentId != payload.DeploymentId || profile.CarriedCells != payload.Cells ||
                 (payload.Cells > 0 && !Guid.TryParse(profile.CellStackId, out _)))
-                throw new InvalidDataException("Deployment response mismatch.");
+                throw new LoadoutRejectedException(RaidLoadoutError.Rejected, "Deployment response mismatch.");
+            Inventory.InventoryGraph graph;
+            try { graph = string.IsNullOrEmpty(profile.RaidInventoryJson) ? null : RaidInventoryTransport.Decode(profile.RaidInventoryJson); }
+            catch (JsonException) { throw new LoadoutRejectedException(RaidLoadoutError.Rejected, "Malformed deployment inventory."); }
+            if (graph == null || graph.Find("stash") != null || graph.Validate() != Inventory.InventoryError.None || graph.Count("cells",true) != payload.Cells)
+                throw new LoadoutRejectedException(RaidLoadoutError.Rejected, "Deployment inventory missing or invalid; update the persistence service.");
             return profile;
         });
 
-        public void Abandon(Deployment payload)
+        public void Abandon(Deployment payload, bool startImmediately = true)
         {
             if (Saves.ContainsKey(payload.DeploymentId)) return;
             var save = new Save { Payload = new Settlement { PlayerId=payload.PlayerId, SettlementId=payload.DeploymentId }, AbandonedDeployment=payload };
-            save.Task = RetrySave(save);
+            if (startImmediately) save.Task = RetrySave(save);
             Saves.Add(payload.DeploymentId, save);
         }
 
@@ -246,9 +260,46 @@ namespace Unity.MP_FPS
 
         public void Dispose()
         {
-            m_Stop.Cancel();
-            m_Http?.Dispose();
-            // Workers may still read the token while unwinding; keep its source alive until they finish.
+            if (m_Disposed) return;
+            m_Disposed = true;
+            if (!Enabled) { m_Stop.Dispose(); return; }
+            // The World disappears before disconnect processing necessarily gets another tick.
+            // Capture data now; cleanup must not query ECS or await HTTP on the main thread.
+            foreach (var profile in Profiles.Values)
+                if (!string.IsNullOrEmpty(profile.DeploymentId))
+                    Abandon(new Deployment { PlayerId=profile.PlayerId, DeploymentId=profile.DeploymentId, Cells=profile.CarriedCells }, startImmediately:false);
+            var deploying = new List<Task<Profile>>();
+            foreach (var deploy in Deployments.Values)
+            {
+                if (deploy.Task != null) deploying.Add(deploy.Task);
+                Abandon(deploy.Payload, startImmediately:false);
+            }
+            var saves = new List<Save>(Saves.Values);
+            m_Stop.CancelAfter(TimeSpan.FromSeconds(20));
+            ShutdownTask = FlushShutdownAsync(deploying, saves);
+        }
+
+        private async Task FlushShutdownAsync(List<Task<Profile>> deploying, List<Save> saves)
+        {
+            try
+            {
+                // A pending debit must resolve before its cancellation is acknowledged locally.
+                foreach (var task in deploying) { try { await task.ConfigureAwait(false); } catch (Exception) { /* journal retained */ } }
+                foreach (var save in saves)
+                {
+                    try
+                    {
+                        if (save.Task != null) { try { await save.Task.ConfigureAwait(false); } catch (Exception) { /* retry exact payload */ } }
+                        if (save.Task == null || !save.Task.IsCompletedSuccessfully)
+                            await RetrySave(save).ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.LogWarning("[Raid] Shutdown receipt remains in outbox for recovery: " + ex.GetType().Name);
+                    }
+                }
+            }
+            finally { m_Http.Dispose(); m_Stop.Dispose(); }
         }
     }
 }

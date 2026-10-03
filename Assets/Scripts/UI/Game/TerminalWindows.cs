@@ -55,6 +55,7 @@ namespace Unity.MP_FPS.Client
         {
             while (m_Windows.Count > 0) Close(m_Windows[m_Windows.Count - 1]);
         }
+        public bool CloseTop() { if (m_Windows.Count==0) return false; Close(m_Windows[m_Windows.Count-1]); return true; }
         private void OnKey(KeyDownEvent evt)
         {
             if (evt.keyCode != KeyCode.Escape) return;

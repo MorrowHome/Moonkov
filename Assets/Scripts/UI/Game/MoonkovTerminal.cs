@@ -22,6 +22,7 @@ namespace Unity.MP_FPS.Client
         public TerminalWindows Windows => m_Windows;
         public MenuCharacterView Character => m_Character;
         public event Action Navigating;
+        public event Action LoadoutShowing;
 
         public MoonkovTerminal(VisualElement root, Action prepare)
         {
@@ -62,6 +63,7 @@ namespace Unity.MP_FPS.Client
             if (page != 1) Render();
             else
             {
+                if (LoadoutShowing != null) { LoadoutShowing(); return; }
                 m_Character = new MenuCharacterView(idleOnly: true);
                 m_Character.Element.RemoveFromClassList("terminal-character-art");
                 m_Character.Element.AddToClassList("stash-character-render");

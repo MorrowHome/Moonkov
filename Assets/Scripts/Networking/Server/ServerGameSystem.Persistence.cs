@@ -118,6 +118,10 @@ namespace Unity.MP_FPS
                 session.Cells = deploy.Payload.Cells;
                 session.CellStackId = profile.CellStackId ?? "";
                 session.StashDust = profile.Dust; session.StashAlloy = profile.Alloy; session.StashCells = profile.Cells;
+                // DeployAsync has validated the complete authoritative kit; never substitute test gear.
+                var graph = RaidInventoryTransport.Decode(profile.RaidInventoryJson);
+                SetRaidInventory(ref state, connection, graph, session.RaidId);
+                RaidInventoryState.UpdateTotals(graph, ref session);
                 if (deploy.Join != null)
                 {
                     context.ReadyRaids[connection] = session;
@@ -186,6 +190,7 @@ namespace Unity.MP_FPS
                 if (!string.IsNullOrEmpty(profile.DeploymentId))
                     context.Abandon(new RaidPersistenceContext.Deployment { PlayerId=profile.PlayerId, DeploymentId=profile.DeploymentId, Cells=profile.CarriedCells });
                 context.Profiles.Remove(connection);
+                context.Inventories.Remove(connection);
             }
         }
     }

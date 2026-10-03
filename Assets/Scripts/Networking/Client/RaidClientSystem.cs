@@ -12,14 +12,21 @@ namespace Unity.MP_FPS
         protected override void OnCreate()
         {
             m_State = EntityManager.CreateEntity(typeof(RaidClientState));
+            EntityManager.AddComponentObject(m_State, new RaidInventoryClientState());
         }
 
         protected override void OnUpdate()
         {
             using var ecb = new EntityCommandBuffer(Allocator.Temp);
-            foreach (var (rpc, entity) in SystemAPI.Query<RefRO<RaidSnapshotRpc>>()
-                         .WithAll<ReceiveRpcCommandRequest>().WithEntityAccess())
+            foreach (var (chunk, received, entity) in SystemAPI.Query<RefRO<RaidInventoryChunkV2Rpc>, RefRW<ReceiveRpcCommandRequest>>().WithEntityAccess())
             {
+                received.ValueRW.Consume();
+                EntityManager.GetComponentObject<RaidInventoryClientState>(m_State).Receive(chunk.ValueRO, RaidInventoryTransport.Decode);
+                ecb.DestroyEntity(entity);
+            }
+            foreach (var (rpc, received, entity) in SystemAPI.Query<RefRO<RaidSnapshotRpc>, RefRW<ReceiveRpcCommandRequest>>().WithEntityAccess())
+            {
+                received.ValueRW.Consume();
                 var current = EntityManager.GetComponentData<RaidClientState>(m_State).Snapshot;
                 if (rpc.ValueRO.Sequence > current.Sequence)
                 {

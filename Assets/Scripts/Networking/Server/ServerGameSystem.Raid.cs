@@ -12,6 +12,8 @@ namespace Unity.MP_FPS
         {
             var map = MoonRaidMap.Active;
             if (map == null) return;
+            EnsureRaidInventories(ref state);
+            HandleInventoryRequests(ref state, ecb);
             float dt = SystemAPI.Time.DeltaTime;
             var loot = SystemAPI.GetSingletonRW<RaidLootWorld>();
             // Loot availability is shared across players; consumed caches return after a cooldown.
@@ -34,21 +36,16 @@ namespace Unity.MP_FPS
                     Entity player = SystemAPI.GetComponent<JoinedClient>(connection).PlayerEntity;
                     int id = request.ValueRO.LootId;
                     if (session.ValueRO.Phase == RaidPhase.Active && session.ValueRO.RaidId == request.ValueRO.RaidId &&
-                        session.ValueRO.BagCount < RaidRules.BagCapacity && id >= 0 && id < map.LootPositions.Length &&
+                        id >= 0 && id < map.LootPositions.Length &&
                         (loot.ValueRO.TakenMask & (1u << id)) == 0 && TryGetLivingPosition(ref state, player, out var position) &&
                         math.distance(position, map.LootPositions[id]) <= RaidRules.PickupRange &&
                         !UnityEngine.Physics.Linecast((Vector3)position + Vector3.up * 1.4f,
                             map.LootPositions[id], LayerMask.GetMask("Default", "Ground"), QueryTriggerInteraction.Ignore))
                     {
-                        switch (id % 3)
-                        {
-                            case 0: session.ValueRW.Dust++; break;
-                            case 1: session.ValueRW.Alloy++; break;
-                            case 2:
-                                if (session.ValueRO.CellStackId.IsEmpty) session.ValueRW.CellStackId = System.Guid.NewGuid().ToString("D");
-                                session.ValueRW.Cells++;
-                                break;
-                        }
+                        var inventory = GetRaidInventory(ref state, connection);
+                        inventory.Error = inventory.Graph.AddLoot(LootCode(id));
+                        if (inventory.Error != Unity.MP_FPS.Inventory.InventoryError.None) { inventory.LastSentVersion = -1; ecb.DestroyEntity(entity); continue; }
+                        RaidInventoryState.UpdateTotals(inventory.Graph, ref session.ValueRW);
                         loot.ValueRW.TakenMask |= 1u << id;
                         loot.ValueRW.RespawnTimers[id] = map.LootRespawnSeconds;
                         session.ValueRW.SnapshotTimer = 0;
@@ -95,6 +92,7 @@ namespace Unity.MP_FPS
             foreach (var (session, joined, connection) in SystemAPI.Query<RefRW<RaidSession>, RefRO<JoinedClient>>().WithEntityAccess())
             {
                 if (SystemAPI.HasComponent<NetworkStreamRequestDisconnect>(connection)) continue;
+                SendInventory(ref state, ecb, connection, session.ValueRO.RaidId);
                 if (session.ValueRO.Phase == RaidPhase.Active && TryGetLivingPosition(ref state, joined.ValueRO.PlayerEntity, out var position))
                 {
                     session.ValueRW.TimeLeft = math.max(0, session.ValueRO.TimeLeft - dt);

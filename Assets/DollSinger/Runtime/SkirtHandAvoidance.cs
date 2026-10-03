@@ -53,7 +53,7 @@ public sealed class SkirtHandAvoidance : MonoBehaviour {
     private void Awake() {
         if (!spring) spring = GetComponent<SecondaryBoneSpring>();
         if (!animator) animator = GetComponent<Animator>();
-        m_CoverLayerIndex = animator ? animator.GetLayerIndex(coverLayerName) : -1;
+        m_CoverLayerIndex = animator && animator.runtimeAnimatorController ? animator.GetLayerIndex(coverLayerName) : -1;
     }
 
     private void Update() {

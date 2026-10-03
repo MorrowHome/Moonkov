@@ -44,8 +44,8 @@ public sealed class StashRepository(NpgsqlDataSource db)
         if (request.DeploymentId.HasValue)
             await InventoryRepository.CheckDeploymentAsync(connection, transaction, request, ct);
         await using var receipt = new NpgsqlCommand("""
-            INSERT INTO raid_settlements (id, player_id, outcome, dust, alloy, cells, deployment_id)
-            VALUES ($1, $2, $3, $4, $5, $6, $7) ON CONFLICT (id) DO NOTHING
+            INSERT INTO raid_settlements (id, player_id, outcome, dust, alloy, cells, deployment_id,inventory)
+            VALUES ($1, $2, $3, $4, $5, $6, $7,$8::jsonb) ON CONFLICT (id) DO NOTHING
             """, connection, transaction);
         receipt.Parameters.AddWithValue(request.SettlementId);
         receipt.Parameters.AddWithValue(request.PlayerId);
@@ -54,10 +54,11 @@ public sealed class StashRepository(NpgsqlDataSource db)
         receipt.Parameters.AddWithValue(request.Alloy);
         receipt.Parameters.AddWithValue(request.Cells);
         receipt.Parameters.Add(new NpgsqlParameter { NpgsqlDbType = NpgsqlTypes.NpgsqlDbType.Uuid, Value = (object?)request.DeploymentId ?? DBNull.Value });
+        receipt.Parameters.Add(new NpgsqlParameter { NpgsqlDbType = NpgsqlTypes.NpgsqlDbType.Text, Value = (object?)request.InventoryJson ?? DBNull.Value });
         var inserted = await receipt.ExecuteNonQueryAsync(ct) == 1;
         if (!inserted)
         {
-            await using var previous = new NpgsqlCommand("SELECT player_id, outcome, dust, alloy, cells, deployment_id FROM raid_settlements WHERE id = $1", connection, transaction);
+            await using var previous = new NpgsqlCommand("SELECT player_id, outcome, dust, alloy, cells, deployment_id, inventory::text FROM raid_settlements WHERE id = $1", connection, transaction);
             previous.Parameters.AddWithValue(request.SettlementId);
             await using var reader = await previous.ExecuteReaderAsync(ct);
             if (!await reader.ReadAsync(ct) || reader.GetGuid(0) != request.PlayerId
@@ -65,12 +66,18 @@ public sealed class StashRepository(NpgsqlDataSource db)
                 || reader.GetInt32(3) != request.Alloy || reader.GetInt32(4) != request.Cells
                 || (reader.IsDBNull(5) ? (Guid?)null : reader.GetGuid(5)) != request.DeploymentId)
                 throw new ReceiptConflictException();
+            if ((reader.IsDBNull(6) ? null : reader.GetString(6)) is string saved)
+            { if (request.InventoryJson == null || InventoryRepository.Encode(InventoryRepository.Decode(saved)) != InventoryRepository.Encode(InventoryRepository.Decode(request.InventoryJson))) throw new ReceiptConflictException(); }
+            else if (request.InventoryJson != null) throw new ReceiptConflictException();
         }
         if (inserted && request.Outcome == "Extracted")
         {
+            if (request.InventoryJson != null) await InventoryRepository.ReturnInventoryAsync(connection, transaction, request, ct);
+            else {
             await InventoryRepository.AddAsync(connection, transaction, request.PlayerId, "dust", request.Dust, ct);
             await InventoryRepository.AddAsync(connection, transaction, request.PlayerId, "alloy", request.Alloy, ct);
             await InventoryRepository.AddAsync(connection, transaction, request.PlayerId, "cells", request.Cells, ct);
+            }
         }
         if (request.DeploymentId.HasValue)
         {
