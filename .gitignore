@@ -37,4 +37,5 @@ Backend/**/bin/
 Backend/**/obj/
 **/appsettings.local.json
 moon-server.local.json
+moon-client.local.json
 LocalData/

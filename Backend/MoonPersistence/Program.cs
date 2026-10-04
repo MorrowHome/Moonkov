@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.RateLimiting;
 using Unity.MP_FPS.Inventory;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Configuration.AddJsonFile("appsettings.local.json", optional: true).AddEnvironmentVariables();
+builder.Configuration.AddJsonFile("appsettings.local.json", optional: true).AddEnvironmentVariables().AddCommandLine(args);
 builder.WebHost.UseUrls(builder.Configuration["Urls"] ?? "http://127.0.0.1:5080");
 var connectionString = builder.Configuration["ConnectionStrings:Postgres"]
     ?? throw new InvalidOperationException("Configure ConnectionStrings:Postgres in appsettings.local.json or environment.");

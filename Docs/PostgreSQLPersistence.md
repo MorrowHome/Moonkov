@@ -47,6 +47,39 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Backend/Stop-Database.ps1
 
 日志在 `LocalData/backend.stdout.log`、`LocalData/backend.stderr.log`、`LocalData/postgres.stderr.log`。
 
+## Windows Host 与 Mac 的局域网测试
+
+在 Windows 项目根目录用**管理员 PowerShell**运行：
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File Backend/Enable-Lan.ps1
+```
+
+只有一张已连接的物理网卡时脚本自动选择 IPv4 地址；多网卡时加 `-HostAddress 192.168.1.10`，换成 Mac 能访问的 Windows 地址。脚本启动项目数据库，让数据服务通过 `-Lan` 监听 `0.0.0.0:5080`，必要时重启本项目原来的 loopback 数据服务。服务器自己的 `moon-server.local.json` 仍可使用 `127.0.0.1:5080`。
+
+脚本生成 `LocalData/LanClient/moon-client.local.json`，并为选定的 Windows 地址设置 TCP 5080、UDP 7979 两条入站规则；来源限制为 `LocalSubnet`，不修改网络类别。普通权限也能启动后端并生成配置，但防火墙步骤需要管理员重新运行。项目 PostgreSQL 继续监听 `127.0.0.1:5433`，客户端通过数据服务访问账号和仓库，不直接连接数据库。
+
+重新构建包含本次客户端代码的 Mac 包，将生成的 `moon-client.local.json` 放在 **`.app` 旁边**，不要放进 `.app/Contents`：
+
+```json
+{
+  "AccountServiceUrl": "http://192.168.1.10:5080/",
+  "AllowLanHttp": true
+}
+```
+
+地址换成 Windows 当前的局域网 IP。Windows Client 配置放在 `.exe` 旁边；Editor 配置放在项目根目录。配置只包含公开连接地址，没有服务器密钥、数据库密码或账号密码。没有配置文件时保持原来的 Inspector 地址和 HTTPS 策略。`AllowLanHttp` 仅用于可信局域网测试，只允许显式的私有 IPv4 地址（10/8、172.16/12、192.168/16）；公网地址或域名仍须使用 HTTPS。
+
+Mac 注册、登录访问 TCP 5080，随后 **Connect to Server** 填相同的 Windows IP 和游戏端口 `7979`。`127.0.0.1` 在 Mac 上指向 Mac 本身。局域网直连不需要云部署或路由器端口映射；两台设备仍需能互访，访客 Wi-Fi/校园网客户端隔离可能阻止连接。
+
+Mac 可以先用终端验证账号接口可达，未登录应返回 `401`：
+
+```bash
+curl -i http://192.168.1.10:5080/auth/me
+```
+
+返回 `401` 后再进游戏 Register。连接超时先查防火墙和两台设备的路由；收到游戏里的 HTTPS 提示则检查配置文件是否放在 `.app` 旁边，并确认使用了重新构建的客户端。停止 LAN 开放可删除 `Moonkov-LAN-Account`、`Moonkov-LAN-Game` 防火墙规则，然后停止后端并按本机方式启动。
+
 ## 换电脑时首次配置
 
 准备 PostgreSQL 程序和 .NET 10 SDK，运行：
@@ -68,7 +101,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Backend/Setup-Local.ps1 -Pos
 | `LocalData/postgresql/` | 真实数据库文件，删除会丢失账号与仓库 |
 | `LocalData/raid-outbox/` | 待确认结算，不要删除未完成记录 |
 
-示例文件不含真实密码。服务器部署时可通过 `MOON_SERVER_CONFIG` 指定外部配置文件。客户端服务地址在主菜单 `MainMenu` 组件 Inspector 的 **Account Service Url** 中设置，客户端不保存服务器密钥或数据库密码。
+示例文件不含真实密码。服务器部署时可通过 `MOON_SERVER_CONFIG` 指定外部配置文件。客户端服务地址可在主菜单 `MainMenu` 组件 Inspector 的 **Account Service Url** 中设置，或使用上述 `moon-client.local.json` 覆盖，客户端不保存服务器密钥或数据库密码。
 
 ## 撤离如何入库
 
@@ -111,7 +144,7 @@ sequenceDiagram
 - 原型在 PlayerPrefs 中保存登录凭证以自动登录，正式发行应换成系统凭据存储。首次注册可绑定原游客仓库，旧游客凭证随即失效。
 - 默认关闭游客加入。薄客户端不能共享主玩家凭证参加负载测试，后续需给机器人配置独立账号。
 
-本机版本只监听 loopback，适用于开发。公开部署前需要 HTTPS、游戏连接凭证的受保护传输，以及跨服务器会话策略。当前账号同时在线检查只覆盖一个 Server World；尚无全局踢下线、找回密码、邮箱验证或管理后台。
+默认启动只监听 loopback；`-Lan` 是上述局域网开发模式。公开部署前需要 HTTPS、游戏连接凭证的受保护传输，以及跨服务器会话策略。当前账号同时在线检查只覆盖一个 Server World；尚无全局踢下线、找回密码、邮箱验证或管理后台。
 
 ## 验证与手动验收
 

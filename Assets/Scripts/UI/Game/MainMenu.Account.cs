@@ -15,6 +15,7 @@ namespace Unity.MP_FPS.Client
         private Button m_Login, m_Register, m_Logout;
         private CancellationTokenSource m_AccountStop;
         private bool m_AccountBusy, m_AccountVerified;
+        private bool m_AccountConfigurationValid;
         private StashScreen m_StashScreen;
         private bool m_ShowConnectionMenu;
         private Button m_BackToStash;
@@ -60,6 +61,15 @@ namespace Unity.MP_FPS.Client
             m_StashScreen = new StashScreen(m_MainMenu.Q<VisualElement>("stashScreenHost"), ShowRaidPreparation, Logout, RefreshStash);
             m_LastStashGameState = GameSettings.Instance.GameState;
             GameSettings.Instance.propertyChanged += StashSettingsChanged;
+            m_AccountConfigurationValid = false;
+            try { m_AccountServiceUrl = AccountServiceSettings.Configure(m_AccountServiceUrl); }
+            catch (Exception ex)
+            {
+                m_AccountMessage.text = m_AccountError = ex.Message;
+                UpdateAccountPanel();
+                return;
+            }
+            m_AccountConfigurationValid = true;
             UpdateAccountPanel();
             if (AccountClient.IsLoggedIn) RestoreLogin();
         }
@@ -80,7 +90,8 @@ namespace Unity.MP_FPS.Client
             m_CarryCells.SetValueWithoutNotify(AccountClient.CarryCells);
             m_CarryCells.SetEnabled(!m_AccountBusy);
             m_CarryNote.text = $"Carry {AccountClient.CarryCells}/{RaidRules.BagCapacity} cells / Stash {AccountClient.StashCells}.\nCharged when the server accepts deployment. [R] uses one cell to recharge. Lost on death.";
-            m_Login.SetEnabled(!m_AccountBusy); m_Register.SetEnabled(!m_AccountBusy); m_Logout.SetEnabled(!m_AccountBusy);
+            m_Login.SetEnabled(!m_AccountBusy && m_AccountConfigurationValid);
+            m_Register.SetEnabled(!m_AccountBusy && m_AccountConfigurationValid); m_Logout.SetEnabled(!m_AccountBusy);
             m_Username.SetEnabled(!m_AccountBusy); m_Password.SetEnabled(!m_AccountBusy);
         }
 
@@ -145,7 +156,7 @@ namespace Unity.MP_FPS.Client
 
         private async Task AccountAction(Func<CancellationToken, Task> action)
         {
-            if (m_AccountBusy) return;
+            if (m_AccountBusy || !m_AccountConfigurationValid) return;
             var lifetime = m_AccountStop;
             m_AccountError = null;
             m_AccountBusy = true;

@@ -26,6 +26,7 @@ namespace Unity.MP_FPS
         private static string s_Token, s_Name, s_PreferenceKey;
         private static DateTime s_Expires;
         private static string s_BaseUrl;
+        internal static bool AllowLanHttp { get; set; }
         public static InventoryGraph Inventory { get; private set; }
         public static bool RaidActive { get; private set; }
         private static long s_ProfileRequest, s_AppliedProfileRequest;
@@ -53,6 +54,7 @@ namespace Unity.MP_FPS
             CarryCells = 0;
             Inventory = null; RaidActive = false; InventoryChanged = null; s_BaseUrl = null;
             s_ProfileRequest = s_AppliedProfileRequest = 0;
+            AllowLanHttp = false;
         }
 
         private static void Load()
@@ -206,9 +208,7 @@ namespace Unity.MP_FPS
         }
         private static Uri Address(string baseUrl, string path)
         {
-            if (!Uri.TryCreate(baseUrl, UriKind.Absolute, out var url) ||
-                (url.Scheme != "https" && !(url.IsLoopback && url.Scheme == "http")))
-                throw new InvalidOperationException("Account service must use HTTPS, or localhost for development.");
+            AccountServiceSettings.ValidateAddress(baseUrl, AllowLanHttp);
             return new Uri(new Uri(baseUrl.TrimEnd('/') + "/"), path);
         }
         private static void ThrowIfFailed(HttpStatusCode code)
