@@ -88,6 +88,16 @@ curl -i http://192.168.1.10:5080/auth/me
 
 返回 `401` 后再进游戏 Register。连接超时先查防火墙和两台设备的路由；收到游戏里的 HTTPS 提示则检查配置文件是否放在 `.app` 旁边，并确认使用了重新构建的客户端。停止 LAN 开放可删除 `Moonkov-LAN-Account`、`Moonkov-LAN-Game` 防火墙规则，然后停止后端并按本机方式启动。
 
+## 跨机器测试记录
+
+2026-10-04，用户使用 Windows Editor Play 模式的 Direct Host 与 Mac 独立 Client 完成连接。Windows 关闭 VPN、从有线改为 Wi-Fi，使用当时的 IPv4 `10.250.74.61` 后，客户端成功进入游戏，未再观察到同一台电脑运行两个图形程序时的严重卡顿。账号注册、登录也已由用户确认可用。
+
+网络接口、VPN 和目标 IP 同时改变，本次结果不能单独归因于其中一项。该 IP 是测试时的地址；切换网络后须重新确认 Windows IPv4、客户端账号配置和游戏连接地址，并用 `Enable-Lan.ps1` 更新对应防火墙规则。两台设备跨子网时保留 `-ClientAddress` 参数。
+
+下一步用这两台机器验收完整战局：双方静止与走停、互相射击、死亡与搜尸、撤离结算、重新登录后的仓库。当前记录确认连接和基本运行体验，尚未确认完整战局与持久化流程。
+
+Windows/macOS 的 `AddressableAssetsData` 平台内容状态文件和新生成的 `SceneDependencyCache` 属于本机构建输出，保留在本地并从 Git 忽略。正式发行时，将对应的 `addressables_content_state.bin` 随发行构建归档，供后续 Addressables 内容更新使用。
+
 ## 换电脑时首次配置
 
 准备 PostgreSQL 程序和 .NET 10 SDK，运行：

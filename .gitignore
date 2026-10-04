@@ -10,6 +10,14 @@
 [Rr]ecordings/
 [Uu]nity[Cc]rash[Rr]eports/
 
+# Generated local build state. Archive release content-state files with release artifacts.
+/Assets/AddressableAssetsData/Windows/
+/Assets/AddressableAssetsData/Windows.meta
+/Assets/AddressableAssetsData/OSX/
+/Assets/AddressableAssetsData/OSX.meta
+/Assets/SceneDependencyCache/
+/Assets/SceneDependencyCache.meta
+
 # IDE generated files
 .vs/
 .idea/
