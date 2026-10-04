@@ -3739,6 +3739,7 @@ MonoBehaviour:
   aimOutSeconds: 0.24
   boltSpeed: 38
   boltLength: 0.3
+  networkBoltTrailSeconds: 0.02
   boltMaxDistance: 35
   localShotInterval: 0.1
   localRevolverShotInterval: 0.75
@@ -3750,8 +3751,8 @@ MonoBehaviour:
   firstPersonThumbClearance: 0.1
   firstPersonThumbDepth: 0.02
   firstPersonSupportOffset: {x: -0.12, y: -0.055, z: -0.04}
-  boltLightIntensity: 4
-  boltLightRange: 3
+  boltLightIntensity: 12
+  boltLightRange: 10
   idleHaloColor: {r: 1, g: 0.72, b: 0.9, a: 0.9}
   aimedHaloColor: {r: 1, g: 0.16, b: 0.35, a: 1}
   glowAlpha: 0.6

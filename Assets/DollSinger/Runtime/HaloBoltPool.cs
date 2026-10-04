@@ -102,10 +102,11 @@ namespace Unity.MP_FPS.DollSinger
             return bolt;
         }
 
-        private static LineRenderer CreateLine(string name, Transform parent, LineRenderer template)
+        internal static LineRenderer CreateLine(string name, Transform parent, LineRenderer template)
         {
             if (!template) return null;
             var go = new GameObject(name);
+            go.layer = template.gameObject.layer;
             go.transform.SetParent(parent, false);
             var line = go.AddComponent<LineRenderer>();
             line.positionCount = 2;
@@ -119,6 +120,7 @@ namespace Unity.MP_FPS.DollSinger
             line.numCapVertices = template.numCapVertices;
             line.numCornerVertices = template.numCornerVertices;
             line.sortingOrder = template.sortingOrder;
+            line.renderingLayerMask = template.renderingLayerMask;
             line.shadowCastingMode = ShadowCastingMode.Off;
             line.receiveShadows = false;
             line.lightProbeUsage = LightProbeUsage.Off;

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Gameplay.Leaderboard;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.MP_FPS.DollSinger;
 using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
@@ -49,6 +50,8 @@ namespace Unity.MP_FPS
         private int m_HitMask;
         private Transform m_Shooter;
         private MeshRenderer m_Body;
+        private HaloProjectileVisual m_HaloVisual;
+        private float m_HaloTrailSeconds;
         private static Material s_BulletMaterial;
 
         public void InitializePrediction(uint weaponId, Vector3 origin, Quaternion rotation, Transform shooter,
@@ -59,6 +62,7 @@ namespace Unity.MP_FPS
             m_Shooter = shooter;
             Initialize(false);
             Advance(elapsed, false);
+            UpdateHaloVisual();
         }
 
         private void Initialize(bool server)
@@ -90,6 +94,43 @@ namespace Unity.MP_FPS
                 m_Body.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
                 if (m_Stopped) m_Body.enabled = false;
             }
+            if (!server) TryCreateHaloVisual();
+        }
+
+        private void TryCreateHaloVisual()
+        {
+            if (m_HaloVisual != null || !m_Initialized || m_Stopped || !m_Weapon.ShowProjectileBody ||
+                (m_Data.WeaponID != DollSingerWeapons.Halo && m_Data.WeaponID != DollSingerWeapons.Revolver)) return;
+            // The projectile can arrive before its shooter ghost on an observer.
+            if (m_Shooter == null) ResolveShooter(false);
+            if (m_Shooter == null) return;
+            var source = m_Shooter.GetComponentInChildren<DollSingerHaloAim>(true);
+            if (source == null) return;
+            var visuals = new GameObject("Halo projectile visuals");
+            visuals.transform.SetParent(transform, false);
+            m_HaloVisual = visuals.AddComponent<HaloProjectileVisual>();
+            m_HaloVisual.Configure(source, m_Data.WeaponID == DollSingerWeapons.Revolver);
+            m_HaloTrailSeconds = Mathf.Max(0.001f, source.networkBoltTrailSeconds);
+            if (m_Body != null) m_Body.enabled = false;
+            UpdateHaloVisual();
+        }
+
+        private void UpdateHaloVisual()
+        {
+            if (m_HaloVisual == null || m_Stopped) return;
+            var tail = Ballistics.Position(m_Data.Origin, m_Data.InitialVelocity, m_Weapon.ProjectileGravity,
+                Mathf.Max(0f, m_Age - m_HaloTrailSeconds));
+            m_HaloVisual.SetFlight(tail, transform.position);
+        }
+
+        private void ResolveShooter(bool server)
+        {
+            if (m_Shooter != null || GhostGameObject == null || !GhostGameObject.IsGhostLinked()) return;
+            var manager = server ? PlayerGhostManager.ServerInstance : PlayerGhostManager.ClientInstance;
+            if (manager != null && manager.TryGetPlayersByRole(server ? MultiplayerRole.Server : MultiplayerRole.ClientAll, out var players))
+                foreach (var player in players)
+                    if (player.GhostGameObject.Owner == m_Data.OwnerNetworkId && player.GhostGameObject.World == GhostGameObject.World)
+                    { m_Shooter = player.transform; break; }
         }
 
         public override void OnGhostLinked()
@@ -101,19 +142,19 @@ namespace Unity.MP_FPS
                 m_TickDuration = 1f / rates.SimulationTickRate;
             }
             bool server = Role == MultiplayerRole.Server;
-            Initialize(server);
             m_Age = 0f;
-            var manager = server ? PlayerGhostManager.ServerInstance : PlayerGhostManager.ClientInstance;
-            if (manager != null && manager.TryGetPlayersByRole(server ? MultiplayerRole.Server : MultiplayerRole.ClientAll, out var players))
-                foreach (var player in players)
-                    if (player.GhostGameObject.Owner == m_Data.OwnerNetworkId && player.GhostGameObject.World == GhostGameObject.World)
-                    { m_Shooter = player.transform; break; }
+            ResolveShooter(server);
+            Initialize(server);
         }
 
         private void Update()
         {
             if (m_Initialized && (GhostGameObject == null || !GhostGameObject.IsGhostLinked()))
+            {
+                TryCreateHaloVisual();
                 Advance(Mathf.Min(m_Weapon.ProjectileLifetime, m_Age + Time.deltaTime), false);
+                UpdateHaloVisual();
+            }
         }
 
         private float NetworkAge(bool server)
@@ -146,7 +187,10 @@ namespace Unity.MP_FPS
 
         public void UpdateClient(float deltaTime)
         {
-            if (m_Initialized) Advance(Mathf.Min(m_Weapon.ProjectileLifetime, NetworkAge(false)), false);
+            if (!m_Initialized) return;
+            TryCreateHaloVisual();
+            Advance(Mathf.Min(m_Weapon.ProjectileLifetime, NetworkAge(false)), false);
+            UpdateHaloVisual();
         }
 
         private void Advance(float targetAge, bool server)
@@ -179,6 +223,7 @@ namespace Unity.MP_FPS
         {
             m_Stopped = true;
             if (m_Body != null) m_Body.enabled = false;
+            if (m_HaloVisual != null) m_HaloVisual.Stop();
         }
 
         private void Impact(RaycastHit hit)

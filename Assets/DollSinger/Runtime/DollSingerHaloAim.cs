@@ -25,6 +25,8 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     [Min(0.01f)] public float aimOutSeconds = 0.24f;
     [Min(1f)] public float boltSpeed = 38f;
     [Min(0.05f)] public float boltLength = 0.30f;
+    [Tooltip("Laser trail duration for network projectiles; length follows the actual ballistic speed.")]
+    [Min(0.001f)] public float networkBoltTrailSeconds = 0.02f;
     [Min(1f)] public float boltMaxDistance = 35f;
     [Tooltip("Standalone demo fire interval; network fire rate comes from HaloWeapon.")]
     [Min(0.02f)] public float localShotInterval = 0.1f;
@@ -45,8 +47,8 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     public Vector3 firstPersonSupportOffset = new Vector3(-0.12f, -0.055f, -0.04f);
 
     [Header("Laser flight lighting")]
-    [Min(0f)] public float boltLightIntensity = 4f;
-    [Min(0.1f)] public float boltLightRange = 3f;
+    [Min(0f)] public float boltLightIntensity = 12f;
+    [Min(0.1f)] public float boltLightRange = 10f;
 
     [Header("Appearance")]
     public Color idleHaloColor = new Color(1f, 0.28f, 0.52f, 1f);
