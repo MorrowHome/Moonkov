@@ -47,3 +47,8 @@ Backend/**/obj/
 moon-server.local.json
 moon-client.local.json
 LocalData/
+
+# Local audition copies of candidate source audio. Nothing in the project references
+# them; they exist so a shortlist can be previewed in the editor. Delete freely.
+/Assets/Audio/Audition/
+/Assets/Audio/Audition.meta
