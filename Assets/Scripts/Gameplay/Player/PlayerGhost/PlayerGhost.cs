@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Unity.Cinemachine;
 using Unity.Collections;
 using Unity.Entities;
@@ -52,6 +53,12 @@ namespace Unity.MP_FPS
         private CinemachineTargetGroup m_TargetGroup;
         private CinemachinePositionComposer m_PositionComposer;
         private CinemachineCamera m_CinemachineCamera;
+
+        // AudioListeners that were suppressed when this client took ownership of the ghost, and
+        // the one this ghost added. Both are needed to put the scene back the way it was when the
+        // ghost is destroyed - see RestoreAudioListeners.
+        private AudioListener m_AddedListener;
+        private readonly List<AudioListener> m_SuppressedListeners = new List<AudioListener>();
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void Init()
@@ -205,10 +212,12 @@ namespace Unity.MP_FPS
             if (Role != MultiplayerRole.Server)
             {
                 _animatorCharacter = GetComponent<Animator>();
-                // spawn SFX
-                if (m_SpawnSFX != null)
+                // Our own deployment gets the layered confirmation cue (success gong + the
+                // android acknowledging the order); other players arriving keep the spawn cue.
+                var spawnSfx = isClientOwned ? MoonkovAudio.Library?.DeployConfirm : m_SpawnSFX;
+                if (spawnSfx != null)
                 {
-                    GameManager.Instance.SoundSystem.CreateEmitter(m_SpawnSFX, transform.position);
+                    GameManager.Instance.SoundSystem.CreateEmitter(spawnSfx, transform.position);
                 }
             }
 
@@ -219,16 +228,23 @@ namespace Unity.MP_FPS
                 // create camera
                 CreateClientCamera();
 
-                // Add AudioListener to client position and ensure all other AudioListeners are disabled
-                var audioListeners = Resources.FindObjectsOfTypeAll<AudioListener>();
-                foreach (var a in audioListeners)
+                // Move the AudioListener to the player model instead of the camera, suppressing
+                // the others. This has to be undone in RestoreAudioListeners: the listener lived
+                // on m_OwnerVisuals, so dying or extracting destroyed it while every other
+                // listener stayed disabled, and Unity plays nothing at all without an enabled
+                // AudioListener in the scene.
+                m_AddedListener = m_OwnerVisuals.AddComponent<AudioListener>();
+                m_SuppressedListeners.Clear();
+                foreach (var a in Resources.FindObjectsOfTypeAll<AudioListener>())
                 {
+                    if (a == null || a == m_AddedListener || !a.enabled) continue;
+                    if (!a.gameObject.scene.IsValid()) continue;   // skip prefab/asset contents
+                    m_SuppressedListeners.Add(a);
                     a.enabled = false;
                 }
-                m_OwnerVisuals.AddComponent<AudioListener>();
-                
+
                 // Attach the listener to the player model rather than the camera
-                GameManager.Instance.SoundSystem.SetListenerTransform(m_OwnerVisuals.transform);    
+                GameManager.Instance.SoundSystem.SetListenerTransform(m_OwnerVisuals.transform);
             }
             else if (Role == MultiplayerRole.ClientProxy)
             {
@@ -246,9 +262,40 @@ namespace Unity.MP_FPS
 
         public override void OnGhostPreDestroy()
         {
+            RestoreAudioListeners();
             if (PlayerGhostManager.TryGetInstanceByRole(Role, out var playerManager))
             {
                 playerManager.Unregister(this);
+            }
+        }
+
+        /// <summary>
+        /// Puts the AudioListeners back the way they were before this client took ownership.
+        /// Without it, the listener that lived on the owner visuals dies with the ghost while
+        /// every other listener stays disabled, which silences the death screen and the ship
+        /// after extraction. The camera listener is also re-enabled explicitly, because Unity
+        /// produces no sound at all when no enabled AudioListener exists.
+        /// </summary>
+        private void RestoreAudioListeners()
+        {
+            if (m_AddedListener == null && m_SuppressedListeners.Count == 0) return;
+
+            foreach (var listener in m_SuppressedListeners)
+            {
+                if (listener != null) listener.enabled = true;
+            }
+            m_SuppressedListeners.Clear();
+            m_AddedListener = null;
+
+            var camera = MainCameraSingleton.Instance;
+            var fallback = camera != null ? camera.GetComponent<AudioListener>() : null;
+            if (fallback != null)
+            {
+                fallback.enabled = true;
+                if (GameManager.Instance != null)
+                {
+                    GameManager.Instance.SoundSystem.SetListenerTransform(fallback.transform);
+                }
             }
         }
 
