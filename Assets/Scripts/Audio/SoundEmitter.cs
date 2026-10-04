@@ -92,11 +92,26 @@ public class SoundEmitter
         ActiveSoundGameObjects = new List<SoundGameObject>();
         Volume = 1.0f;
         SequentialClipIndex = 0;
+        RandomClipIndex = 0;      // fresh allocation: nothing has been played yet
         UserClipIndex = 0;
         m_RepeatCount = 0;
         Reserved = ReservedInfo.FreeAfterPlaybackCompletes;
         m_SoundGameObjectPool = soundGameObjectPool;
         SoundDefOverrideInfo = new SoundDefOverrideData();
+
+        // FadeOutTime doubles as the "please stop me" flag: Update() kills the emitter as
+        // soon as it reads 0. Emitters are recycled through the pool, so it must be reset
+        // here. Without this, any emitter that once faded out (the ship ambience fades out
+        // when a match starts) stays poisoned forever and silently swallows the first
+        // Update() of whatever sound is given to it next.
+        if (FadeOutTime == null)
+        {
+            FadeOutTime = new Interpolator(1.0f, Interpolator.CurveType.Linear);
+        }
+        else
+        {
+            FadeOutTime.SetValue(1.0f);
+        }
     }
 
     /// <summary>

@@ -57,6 +57,9 @@ public class SoundGameObject
     private float m_LPFRandomValue;
     private float m_HPFRandomValue;
     private float m_SpatialBlendValue;
+    // dsp time at which a PlayDelayed/PlayScheduled source will actually start.
+    // 0 means "playback starts immediately or has already started".
+    private double m_PendingStartDsp;
 
 #if UNITY_EDITOR
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -220,9 +223,23 @@ public class SoundGameObject
             return false;
         }
 
+        // A delayed or scheduled source reports isPlaying == false until its start time.
+        // Treating that as "finished" used to kill the emitter before it ever made a sound,
+        // so any SoundDef using DelayMin/DelayMax or StopDelay was silently dropped.
+        if (m_PendingStartDsp > 0.0)
+        {
+            if (AudioSettings.dspTime < m_PendingStartDsp)
+            {
+                count++;
+                return true;
+            }
+            m_PendingStartDsp = 0.0;
+        }
+
         if (m_AudioSource.isPlaying)  
             // AudioSource is still playing? Handle fade out if stopping and update looping audio clip counter.
         {
+            m_PendingStartDsp = 0.0;
             UpdateAudioParameters(soundEmitter);
             CheckForAudioSourceLoop();
             count++;
@@ -359,15 +376,22 @@ public class SoundGameObject
             double startTime = AudioSettings.dspTime;
             startTime += delay;
             double endTime = startTime + soundDef.StartStopInfo.StopDelay;
+            m_PendingStartDsp = startTime;
             m_AudioSource.PlayScheduled(startTime);
             m_AudioSource.SetScheduledEndTime(endTime);
         }
         else
         {
             if (delay > 0.0f)
+            {
+                m_PendingStartDsp = AudioSettings.dspTime + delay;
                 m_AudioSource.PlayDelayed(delay);
+            }
             else
+            {
+                m_PendingStartDsp = 0.0;
                 m_AudioSource.Play();
+            }
         }
     }
 

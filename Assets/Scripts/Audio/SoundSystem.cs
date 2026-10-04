@@ -142,15 +142,14 @@ public class SoundSystem : ISoundSystem
         {
             return false;
         }
-        SoundHandle soundHandle = soundInfo.Handle;
         if (fadeOutTime == 0)
         {
-            soundHandle.Emitter.Kill();
+            // Route through Kill() so the emitter is also dropped from the active list.
+            // Calling Emitter.Kill() directly left a stale entry behind, and that entry
+            // could later be updated as if it were still playing the old sound.
+            return Kill(soundInfo);
         }
-        else
-        {
-            soundHandle.Emitter.FadeOut(fadeOutTime);
-        }
+        soundInfo.Handle.Emitter.FadeOut(fadeOutTime);
         return true;
     }
 
@@ -199,13 +198,19 @@ public class SoundSystem : ISoundSystem
     /// <param name="muteSound">Whether to mute all sounds</param>
     public void UpdateSoundSystem(bool muteSound = false)
     {
+        // Mixer levels are refreshed even while nothing is playing, so a volume change made
+        // in a menu takes effect on the very next sound instead of one sound later.
+        float masterVolume = (muteSound == true ? 0 : m_MasterVolume.GetValue());
+        if (m_SoundMixer != null)
+        {
+            m_SoundMixer.Update(masterVolume);
+        }
+
         if (m_SoundEmitterActiveList.Count == 0)
         {
             return; // Nothing playing
         }
 
-        float masterVolume = (muteSound == true ? 0 : m_MasterVolume.GetValue());
-        m_SoundMixer.Update(masterVolume);
         UpdateActiveSoundEmitters();
     }
 
@@ -278,9 +283,8 @@ public class SoundSystem : ISoundSystem
     }
     private SoundEmitter CreateSoundEmitterForPool(SoundGameObjectPool soundGameObjectPool)
     {
-        var emitter = new SoundEmitter(soundGameObjectPool);
-        emitter.FadeOutTime = new Interpolator(1.0f, Interpolator.CurveType.Linear);
-        return emitter;
+        // SoundEmitter.Init() owns FadeOutTime so that recycled emitters always start clean.
+        return new SoundEmitter(soundGameObjectPool);
     }
 
     private SoundEmitter GetSoundEmitterFromPool(SoundGameObjectPool soundGameObjectPool)
@@ -308,7 +312,8 @@ public class SoundSystem : ISoundSystem
             return null;
         }
 
-        if (soundInfo.Handle == null || soundInfo.Handle.Emitter.Allocated == false)
+        bool freshlyAllocated = soundInfo.Handle == null || soundInfo.Handle.Emitter.Allocated == false;
+        if (freshlyAllocated)
         {
             soundInfo.Handle = AllocateSoundEmitter(soundInfo);    // Allocates a SoundEmitter and set the soundDef and Reserve information
         }
@@ -334,8 +339,19 @@ public class SoundSystem : ISoundSystem
         if (Play(soundEmitter, soundInfo.Position, soundInfo.SoundTransform) == true)
         {
             soundEmitter.SetVolume(volume);
+            return soundInfo;
         }
-        return soundInfo;
+
+        // Playback never started, usually because the SoundGameObject pool had no free
+        // source for this SoundDef's PlayCount. An emitter taken from the pool is already
+        // marked Allocated and Active, and nothing else will ever call Update() on it, so
+        // it would leak a slot on every failure and eventually mute the whole system.
+        if (freshlyAllocated)
+        {
+            soundEmitter.UnreserveAndKill();
+            soundInfo.Handle = null;
+        }
+        return null;
     }
 
     private SoundHandle AllocateSoundEmitter(SoundInfo soundInfo)
