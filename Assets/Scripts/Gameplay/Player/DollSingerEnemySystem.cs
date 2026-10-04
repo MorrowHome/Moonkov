@@ -17,19 +17,6 @@ namespace Unity.MP_FPS
         public Entity InputEntity;
     }
 
-    public sealed class DollSingerEnemyBrain : IComponentData
-    {
-        public Entity Target;
-        public InventoryGraph Inventory;
-        public readonly NavMeshPath Path = new NavMeshPath();
-        public readonly Vector3[] Corners = new Vector3[64];
-        public int CornerCount, Corner, PatrolPoint, Seed;
-        public Vector3 Goal, LastSeen, ProgressPosition;
-        public float Yaw, Pitch, LastHealth = 100;
-        public double NextSense, NextPath, LastSeenTime = -100, VisibleSince, NextPatrol, NextProgress, AlertUntil;
-        public bool Visible;
-    }
-
     [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
     [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
     [UpdateBefore(typeof(ServerPlayerMovementSystem))]
@@ -40,9 +27,30 @@ namespace Unity.MP_FPS
             public Entity Entity;
             public Vector3 Position;
             public Transform Root;
+            public Vector3 Velocity;
+        }
+
+        private sealed class SensorTrack
+        {
+            public Vector3 Position;
+            public float StepDistance;
+            public uint Shot, Reload;
+            public double SeenAt;
+        }
+        private struct SensorEvent
+        {
+            public Entity Source;
+            public Vector3 Position;
+            public float Range;
+            public bool Shot;
         }
 
         private readonly List<Target> m_Targets = new List<Target>();
+        private readonly Dictionary<Entity, SensorTrack> m_Tracks = new Dictionary<Entity, SensorTrack>();
+        private readonly List<Entity> m_ExpiredTracks = new List<Entity>();
+        private readonly List<SensorEvent> m_Events = new List<SensorEvent>();
+        private readonly Dictionary<int, (Vector3 position, double expiry)> m_CoverReservations = new Dictionary<int, (Vector3, double)>();
+        private DollSingerAITuning m_Tuning;
         private readonly RaycastHit[] m_Hits = new RaycastHit[32];
         private readonly List<NavMeshBuildSource> m_Sources = new List<NavMeshBuildSource>();
         private static readonly int s_WorldMask = LayerMask.GetMask("Default", "Ground");
@@ -53,18 +61,25 @@ namespace Unity.MP_FPS
         private MoonRaidMap m_Map;
         private bool m_Spawned;
         private double m_NextBuild, m_NextTargets;
+        private double m_SensorBatch;
         private int m_NextId = -1000;
         private NavMeshQueryFilter m_Filter;
 
         protected override void OnCreate()
         {
+            m_Tuning = Resources.Load<DollSingerAITuning>("Moonkov/DollSingerAI");
+            if (m_Tuning == null) m_Tuning = ScriptableObject.CreateInstance<DollSingerAITuning>();
             RequireForUpdate<PlayerEntityPrefabs>();
             RequireForUpdate<NetworkStreamInGame>();
             RequireForUpdate<NetworkTime>();
             RequireForUpdate<RaidLootWorld>();
         }
 
-        protected override void OnDestroy() => ReleaseNavigation();
+        protected override void OnDestroy()
+        {
+            ReleaseNavigation();
+            if (m_Tuning != null && string.IsNullOrEmpty(m_Tuning.name)) Object.Destroy(m_Tuning);
+        }
 
         private void ReleaseNavigation()
         {
@@ -90,12 +105,14 @@ namespace Unity.MP_FPS
                 m_Map = map;
                 m_Spawned = false;
                 m_NextBuild = 0;
+                m_Tracks.Clear();
+                m_CoverReservations.Clear();
             }
             if (map == null || map.EnemyCount == 0) return;
             if (!NavigationReady(map, now)) return;
             if (now >= m_NextTargets)
             {
-                CollectTargets();
+                CollectTargets(now);
                 m_NextTargets = now + .1;
             }
             if (!m_Spawned && m_Targets.Count > 0) Spawn(map);
@@ -109,6 +126,7 @@ namespace Unity.MP_FPS
                 if (health.ValueRO.CurrentHealth <= 0)
                 {
                     DropCorpse(brain, pose.ValueRO, now);
+                    RetireEnemy(entity, brain);
                     deaths.DestroyEntity(enemy.ValueRO.InputEntity);
                     deaths.DestroyEntity(entity);
                     continue;
@@ -120,6 +138,13 @@ namespace Unity.MP_FPS
                 if (ghost == null) continue;
                 input.ValueRW.Input = Think(brain, ghost, pose.ValueRO, health.ValueRO, map, now,
                     (float)SystemAPI.Time.DeltaTime);
+                if (brain.Extracted)
+                {
+                    // Successful extraction removes this raid actor, without producing a corpse.
+                    deaths.DestroyEntity(enemy.ValueRO.InputEntity);
+                    deaths.DestroyEntity(entity);
+                    RetireEnemy(entity, brain);
+                }
             }
             deaths.Playback(EntityManager);
         }
@@ -130,10 +155,17 @@ namespace Unity.MP_FPS
             using var enemies = query.ToEntityArray(Allocator.Temp);
             foreach (var enemy in enemies)
             {
+                RetireEnemy(enemy, EntityManager.GetComponentObject<DollSingerEnemyBrain>(enemy));
                 var input = EntityManager.GetComponentData<DollSingerEnemy>(enemy).InputEntity;
                 if (EntityManager.Exists(input)) EntityManager.DestroyEntity(input);
                 EntityManager.DestroyEntity(enemy);
             }
+        }
+
+        private void RetireEnemy(Entity entity, DollSingerEnemyBrain brain)
+        {
+            m_CoverReservations.Remove(brain.Seed);
+            LeaderboardManager.RetireRaidActor(EntityManager.GetComponentData<GhostOwner>(entity).NetworkId);
         }
 
         private bool NavigationReady(MoonRaidMap map, double now)
@@ -183,18 +215,50 @@ namespace Unity.MP_FPS
             return false;
         }
 
-        private void CollectTargets()
+        private void CollectTargets(double now)
         {
             m_Targets.Clear();
+            m_Events.Clear();
+            m_SensorBatch = now;
             foreach (var (pose, health, owner, entity) in SystemAPI.Query<RefRO<LocalTransform>,
-                         RefRO<PredictedPlayerGhost>, RefRO<GhostOwner>>().WithNone<DollSingerEnemy>()
+                         RefRO<PredictedPlayerGhost>, RefRO<GhostOwner>>()
                          .WithAll<GhostGameObjectLink, Simulate>().WithEntityAccess())
             {
-                if (health.ValueRO.CurrentHealth <= 0 || owner.ValueRO.NetworkId <= 0) continue;
+                if (health.ValueRO.CurrentHealth <= 0 || owner.ValueRO.NetworkId == 0) continue;
                 var link = EntityManager.GetComponentObject<GhostGameObjectLink>(entity);
-                if (link.LinkedInstance != null)
-                    m_Targets.Add(new Target { Entity = entity, Position = pose.ValueRO.Position, Root = link.LinkedInstance.transform });
+                if (link.LinkedInstance == null) continue;
+                Vector3 position = pose.ValueRO.Position;
+                Vector3 velocity = Vector3.zero;
+                if (!m_Tracks.TryGetValue(entity, out var track))
+                {
+                    track = new SensorTrack { Position = position, SeenAt = now,
+                        Shot = health.ValueRO.LastShotTick, Reload = health.ValueRO.LastReloadTick };
+                    m_Tracks.Add(entity, track);
+                }
+                else
+                {
+                    velocity = Vector3.ClampMagnitude((position - track.Position) / Mathf.Max(.05f, (float)(now - track.SeenAt)), 8);
+                    track.StepDistance += HorizontalDistance(position, track.Position);
+                    if (track.Shot != health.ValueRO.LastShotTick)
+                        m_Events.Add(new SensorEvent { Source = entity, Position = position, Range = m_Tuning.ShotSensorRange, Shot = true });
+                    if (track.Reload != health.ValueRO.LastReloadTick)
+                        m_Events.Add(new SensorEvent { Source = entity, Position = position, Range = 7 });
+                    if (track.StepDistance >= 2.2f)
+                    {
+                        m_Events.Add(new SensorEvent { Source = entity, Position = position,
+                            Range = m_Tuning.FootstepSensorRange * (velocity.magnitude > 4 ? 1.3f : .65f) });
+                        track.StepDistance = 0;
+                    }
+                    track.Position = position;
+                    track.SeenAt = now;
+                    track.Shot = health.ValueRO.LastShotTick;
+                    track.Reload = health.ValueRO.LastReloadTick;
+                }
+                m_Targets.Add(new Target { Entity = entity, Position = position, Velocity = velocity, Root = link.LinkedInstance.transform });
             }
+            m_ExpiredTracks.Clear();
+            foreach (var pair in m_Tracks) if (now - pair.Value.SeenAt > 1) m_ExpiredTracks.Add(pair.Key);
+            foreach (var entity in m_ExpiredTracks) m_Tracks.Remove(entity);
         }
 
         private void Spawn(MoonRaidMap map)
@@ -237,118 +301,15 @@ namespace Unity.MP_FPS
                 var inventory = InventoryGraph.Create(stash: false);
                 if (map.EnemyCells > 0) inventory.AddSupply("cells", map.EnemyCells, foundInRaid: true);
                 EntityManager.AddComponentObject(player, new DollSingerEnemyBrain { Inventory = inventory,
-                    PatrolPoint = patrol, Seed = i + 1, Goal = position, ProgressPosition = position });
+                    Seed = i + 1, Goal = position, ProgressPosition = position, SpawnTime = SystemAPI.Time.ElapsedTime,
+                    NextSense = SystemAPI.Time.ElapsedTime + i * .033, NextDecision = SystemAPI.Time.ElapsedTime + i * .067,
+                    Aggression = .4f + (i % 3) * .2f, Caution = .8f - (i % 3) * .2f,
+                    Random = new Unity.Mathematics.Random((uint)(id * id + 17)) });
                 LeaderboardManager.AddPlayer(id, name);
                 spawned++;
             }
             m_Spawned = true;
             Debug.Log($"[DollSinger AI] Spawned {spawned}/{map.EnemyCount} enemies on the server.");
-        }
-
-        private PlayerInput Think(DollSingerEnemyBrain brain, PlayerGhost ghost, LocalTransform pose,
-            PredictedPlayerGhost health, MoonRaidMap map, double now, float dt)
-        {
-            Vector3 position = pose.Position;
-            Vector3 eye = ghost.ShotOrigin.position;
-            if (health.CurrentHealth < brain.LastHealth) brain.AlertUntil = now + 3;
-            brain.LastHealth = health.CurrentHealth;
-            if (now >= brain.NextSense)
-            {
-                Sense(brain, ghost.transform, eye, map.EnemySightRange, now);
-                brain.NextSense = now + .1;
-            }
-            bool pursuing = brain.Target != Entity.Null && now - brain.LastSeenTime < 6;
-            if (pursuing && (!EntityManager.Exists(brain.Target) ||
-                !EntityManager.HasComponent<PredictedPlayerGhost>(brain.Target) ||
-                EntityManager.GetComponentData<PredictedPlayerGhost>(brain.Target).CurrentHealth <= 0))
-            {
-                pursuing = brain.Visible = false;
-                brain.Target = Entity.Null;
-            }
-            Vector3 goal;
-            if (pursuing)
-            {
-                // Chase the last observed position, then weave at medium range while in sight.
-                goal = brain.LastSeen;
-                Vector3 away = position - brain.LastSeen;
-                away.y = 0;
-                if (brain.Visible && away.sqrMagnitude < 32 * 32 && away.sqrMagnitude > .01f)
-                {
-                    away.Normalize();
-                    float side = Mathf.Sin((float)now * .65f + brain.Seed * 2) * 3;
-                    goal += away * (health.ControllerState.IsReloadingState ? 20 : 16) + Vector3.Cross(Vector3.up, away) * side;
-                }
-            }
-            else
-            {
-                brain.Target = Entity.Null;
-                brain.Visible = false;
-                goal = map.LootPositions[brain.PatrolPoint];
-                if (HorizontalDistance(position, goal) < 2 && now >= brain.NextPatrol)
-                {
-                    brain.PatrolPoint = (brain.PatrolPoint + 1) % map.LootPositions.Length;
-                    brain.NextPatrol = now + 1.5;
-                    goal = map.LootPositions[brain.PatrolPoint];
-                }
-            }
-            UpdatePath(brain, position, goal, now);
-            Vector3 move = FollowPath(brain, position);
-            Vector3 facing = brain.Visible ? brain.LastSeen + Vector3.up * 1.2f - eye : move;
-            if (facing.sqrMagnitude > .001f)
-            {
-                float yaw = Mathf.Atan2(facing.x, facing.z) * Mathf.Rad2Deg;
-                float pitch = brain.Visible ? -Mathf.Atan2(facing.y, new Vector2(facing.x, facing.z).magnitude) * Mathf.Rad2Deg : 0;
-                brain.Yaw = Mathf.MoveTowardsAngle(brain.Yaw, yaw, 180 * dt);
-                brain.Pitch = Mathf.MoveTowardsAngle(brain.Pitch, pitch, 120 * dt);
-            }
-            // Aim has a small changing error and a reaction delay; it never snaps through walls.
-            float error = brain.Visible ? Mathf.Sin((float)now * 2.7f + brain.Seed) * 1.1f : 0;
-            var look = new float2(brain.Yaw + error, brain.Pitch + error * .5f);
-            Vector3 direction = Quaternion.Euler(look.y, look.x, 0) * Vector3.forward;
-            float distance = pursuing ? Vector3.Distance(eye, brain.LastSeen + Vector3.up * 1.2f) : 50;
-            Vector3 localMove = Quaternion.Euler(0, -look.x, 0) * move;
-            var input = new PlayerInput { MoveInput = new float2(localMove.x, localMove.z),
-                LookYawPitchDegrees = look, AimPoint = eye + direction * Mathf.Max(1, distance) };
-            input.SetFlag(PlayerInput.InputFlag.ThirdPerson, true);
-            input.SetFlag(PlayerInput.InputFlag.Aim, brain.Visible);
-            input.SetFlag(PlayerInput.InputFlag.Sprint, pursuing && !brain.Visible && move.sqrMagnitude > .1f);
-            input.SetFlag(PlayerInput.InputFlag.Reload, health.CurrentAmmo == 0 && !health.ControllerState.IsReloadingState);
-            bool aligned = brain.Visible && Vector3.Angle(direction, facing) < 6;
-            bool burst = ((float)now + brain.Seed * .31f) % 1.3f < .65f;
-            input.SetFlag(PlayerInput.InputFlag.Shoot, aligned && distance < 35 && now - brain.VisibleSince > .4 && burst &&
-                ClearSight(ghost.transform, eye, brain.LastSeen + Vector3.up * 1.2f, brain.Target));
-            return input;
-        }
-
-        private void Sense(DollSingerEnemyBrain brain, Transform root, Vector3 eye, float range, double now)
-        {
-            Entity target = Entity.Null;
-            Vector3 observed = default;
-            float nearest = range * range;
-            foreach (var candidate in m_Targets)
-            {
-                if (!EntityManager.Exists(candidate.Entity) || candidate.Root == null ||
-                    !EntityManager.HasComponent<PredictedPlayerGhost>(candidate.Entity) ||
-                    EntityManager.GetComponentData<PredictedPlayerGhost>(candidate.Entity).CurrentHealth <= 0) continue;
-                Vector3 offset = candidate.Position + Vector3.up * 1.2f - eye;
-                float sqr = offset.sqrMagnitude;
-                if (sqr >= nearest) continue;
-                if (sqr > 8 * 8 && now >= brain.AlertUntil && candidate.Entity != brain.Target &&
-                    Vector3.Angle(Quaternion.Euler(0, brain.Yaw, 0) * Vector3.forward, offset) > 70) continue;
-                if (!ClearSight(root, eye, eye + offset, candidate.Entity)) continue;
-                target = candidate.Entity;
-                observed = candidate.Position;
-                nearest = sqr;
-            }
-            bool visible = target != Entity.Null;
-            if (visible)
-            {
-                if (!brain.Visible || brain.Target != target) brain.VisibleSince = now;
-                brain.Target = target;
-                brain.LastSeen = observed;
-                brain.LastSeenTime = now;
-            }
-            brain.Visible = visible;
         }
 
         private bool ClearSight(Transform root, Vector3 eye, Vector3 targetPoint, Entity target)
@@ -379,14 +340,22 @@ namespace Unity.MP_FPS
             brain.CornerCount = 0;
             brain.Corner = 1;
             if (!NavMesh.SamplePosition(position, out var start, 3, m_Filter) ||
-                !NavMesh.SamplePosition(goal, out var end, 6, m_Filter) ||
-                !NavMesh.CalculatePath(start.position, end.position, m_Filter, brain.Path)) return;
+                !NavMesh.SamplePosition(goal, out var end, 3, m_Filter) ||
+                !NavMesh.CalculatePath(start.position, end.position, m_Filter, brain.Path) ||
+                brain.Path.status != NavMeshPathStatus.PathComplete)
+            { brain.PathFailed = true; return; }
+            brain.PathFailed = false;
             brain.CornerCount = brain.Path.GetCornersNonAlloc(brain.Corners);
             // A stalled controller repaths instead of teleporting through an obstruction.
             if (now >= brain.NextProgress)
             {
                 if (HorizontalDistance(position, brain.ProgressPosition) < .3f && HorizontalDistance(position, goal) > 2)
-                    brain.PatrolPoint = (brain.PatrolPoint + 1) % m_Map.LootPositions.Length;
+                {
+                    brain.PathFailed = true;
+                    brain.NextCover = brain.NextDecision = 0;
+                    if (brain.Action == PmcAction.Scavenge && brain.Cache >= 0)
+                    { brain.VisitedCaches.Add(brain.Cache); brain.Cache = -1; brain.LootUntil = 0; }
+                }
                 brain.ProgressPosition = position;
                 brain.NextProgress = now + 3;
             }

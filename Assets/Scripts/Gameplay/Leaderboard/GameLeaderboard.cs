@@ -27,6 +27,7 @@ namespace Gameplay.Leaderboard
         // This is reset from ResetOnPlayMode attribute
         private static Queue<(int networkId, FixedString64Bytes playerName)> _pendingPlayers =
             new Queue<(int, FixedString64Bytes)>();
+        private static readonly HashSet<int> s_RetiredRaidActors = new HashSet<int>();
 #pragma warning restore UDR0001
 
         protected static void ResetStaticState()
@@ -56,7 +57,23 @@ namespace Gameplay.Leaderboard
 
         public static void AddPlayer(int networkId, FixedString64Bytes playerName)
         {
+            s_RetiredRaidActors.Remove(networkId);
             _pendingPlayers.Enqueue((networkId, playerName));
+        }
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetRetiredActors() => s_RetiredRaidActors.Clear();
+
+        public static void RetireRaidActor(int networkId)
+        {
+            // Cancel an addition even if the manager has not consumed the spawn queue.
+            int count = _pendingPlayers.Count;
+            for (int i = 0; i < count; i++)
+            {
+                var pending = _pendingPlayers.Dequeue();
+                if (pending.networkId != networkId) _pendingPlayers.Enqueue(pending);
+            }
+            s_RetiredRaidActors.Add(networkId);
         }
 
         public void RemovePlayer(int networkId)
@@ -257,6 +274,10 @@ namespace Gameplay.Leaderboard
                 GhostGameObject.BroadcastRPC(joinRpc);
                 ActionFeed.Instance.AnnouncePlayerJoined(playerName.ToString());
             }
+            // Keep names available until this frame's kill feed has been emitted.
+            for (int i = buffer.Length - 1; i >= 0; i--)
+                if (s_RetiredRaidActors.Contains(buffer[i].NetworkId)) buffer.RemoveAt(i);
+            s_RetiredRaidActors.Clear();
         }
 
         public void UpdateClient(float deltaTime)
