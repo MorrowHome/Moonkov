@@ -49,7 +49,7 @@ public static class MoonkovAudioSetup
         new Row { Name = "Click", Mixer = Mixer.Menu, Spatial = 0f, Db = -18f, PitchCents = 20f,
                   Clips = new[] { "UI/Click.wav" } },
         new Row { Name = "Hover", Mixer = Mixer.Menu, Spatial = 0f, Db = -31f, SpreadDb = .5f, PitchCents = 20f,
-                  Clips = new[] { "UI/HoverA.wav", "UI/HoverB.wav" } },
+                  Clips = new[] { "UI/Hover.wav" } },
         // Raid / extraction success: resonant metallic gong strike.
         new Row { Name = "Confirm", Mixer = Mixer.Menu, Spatial = 0f, Db = -14f, PitchCents = 10f,
                   Clips = new[] { "UI/Confirm.wav" } },

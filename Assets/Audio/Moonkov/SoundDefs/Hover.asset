@@ -22,7 +22,6 @@ MonoBehaviour:
   PlayCount: 1
   Clips:
   - {fileID: 8300000, guid: 4a3bb654519ef8346851395a492bb133, type: 3}
-  - {fileID: 8300000, guid: f6b438a351e568b4cb86ac379ab305cb, type: 3}
   RepeatInfo:
     LoopCount: 1
     RepeatMin: 1

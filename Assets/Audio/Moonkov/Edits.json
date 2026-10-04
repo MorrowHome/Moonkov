@@ -201,20 +201,12 @@
     "note": "single alarm beep body (precursor trimmed for a snappy attack)"
   },
   {
-    "asset": "Assets/Audio/Moonkov/Clips/UI/HoverA.wav",
+    "asset": "Assets/Audio/Moonkov/Clips/UI/Hover.wav",
     "source": "BluezoneCorp - Futuristic User Interface/Bluezone_BC0303_futuristic_user_interface_high_tech_beep_038.wav",
     "start": 0.0,
     "duration": 0.081,
     "processing": "48 kHz PCM16; peak-normalised to -1 dBFS with fades",
-    "note": "high tech beep tick"
-  },
-  {
-    "asset": "Assets/Audio/Moonkov/Clips/UI/HoverB.wav",
-    "source": "Rogue Waves - Kawaii UI/UIClick_Operating System UI Cursor_RogueWaves_KawaiiUI.wav",
-    "start": 0.0,
-    "duration": 0.083,
-    "processing": "48 kHz PCM16; peak-normalised to -1 dBFS with fades",
-    "note": "cursor tick"
+    "note": "the single hover tick"
   },
   {
     "asset": "Assets/Audio/Moonkov/Clips/UI/Notification.wav",

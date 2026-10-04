@@ -12,7 +12,7 @@
       "provider": "Sonniss GDC 2024",
       "license": "https://sonniss.com/gdc-bundle-license/",
       "assets": [
-        "Assets/Audio/Moonkov/Clips/UI/HoverA.wav"
+        "Assets/Audio/Moonkov/Clips/UI/Hover.wav"
       ]
     },
     {
@@ -202,15 +202,6 @@
       "license": "https://sonniss.com/gdc-bundle-license/",
       "assets": [
         "Assets/Audio/Moonkov/Clips/UI/Notification.wav"
-      ]
-    },
-    {
-      "original": "Rogue Waves - Kawaii UI/UIClick_Operating System UI Cursor_RogueWaves_KawaiiUI.wav",
-      "sha256": "440a747c030ac880a853efe4275cbb5c6d5eddbc3f1780272f63dfbf2fd2f431",
-      "provider": "Sonniss GDC 2024",
-      "license": "https://sonniss.com/gdc-bundle-license/",
-      "assets": [
-        "Assets/Audio/Moonkov/Clips/UI/HoverB.wav"
       ]
     },
     {
