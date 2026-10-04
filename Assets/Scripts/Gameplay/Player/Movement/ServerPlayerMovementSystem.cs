@@ -61,6 +61,8 @@ namespace Unity.MP_FPS
         private bool TryReserveHaloCell(Entity player, uint weaponId)
         {
             if (!DollSingerWeapons.IsHalo(weaponId) || MoonRaidMap.Active == null) return true;
+            if (EntityManager.HasComponent<DollSingerEnemy>(player))
+                return EntityManager.GetComponentObject<DollSingerEnemyBrain>(player).Inventory.ConsumeAccessibleCell();
             if (!SystemAPI.TryGetSingletonBuffer<ClientsMap>(out var clients)) return false;
             int owner = ghostOwnerLookup[player].NetworkId;
             if (owner <= 0 || owner >= clients.Length) return false;
@@ -246,6 +248,20 @@ namespace Unity.MP_FPS
                             $"[{unityFrameCountString}] [ServerPlayerMovementSystem] Last processed tick not set to current. Current server tick {serverTickString}, last processed tick {predictedClient.ValueRO.LastProcessedServerTick.ToString()}");
                     }
                 }
+            }
+
+            // Bots produce the same command stream as players, without a fake transport connection.
+            foreach (var (enemy, input, health) in SystemAPI.Query<RefRO<DollSingerEnemy>,
+                         RefRO<PlayerInputComponent>, RefRO<PredictedPlayerGhost>>().WithAll<Simulate>())
+            {
+                var entity = enemy.ValueRO.InputEntity;
+                var predicted = EntityManager.GetComponentData<PredictedClientInput>(entity);
+                predicted.BeginInputIndex = commands.Length;
+                predicted.InputCount = health.ValueRO.CurrentHealth > 0 && predicted.LastProcessedServerTick != serverTick ? 1 : 0;
+                if (predicted.InputCount != 0)
+                    commands.Add(new ClientCommandInput { Tick = new NetworkTick(serverTick), PlayerInput = input.ValueRO.Input });
+                predicted.LastProcessedServerTick = serverTick;
+                EntityManager.SetComponentData(entity, predicted);
             }
 
             ghostOwnerLookup.Update(this);
