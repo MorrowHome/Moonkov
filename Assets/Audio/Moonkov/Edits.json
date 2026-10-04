@@ -1,58 +1,315 @@
 [
   {
+    "asset": "Assets/Audio/Moonkov/Clips/Ambience/ShipInterior.wav",
+    "source": "(mixed from 3 bundle files, see layers below)",
+    "processing": "48 kHz stereo PCM16; 45 s seamless loop, 2.5 s equal-power crossfade at the seam, RMS-normalised to -26 dBFS",
+    "layers": [
+      {
+        "source": "InMotionAudio - UK Train Interior Ambience/AMBTran_TrainInterior06_InMotionAudio_UKTrainInteriorAmbience.wav",
+        "start": 40.0,
+        "duration": 47.5,
+        "gain_db": 0.0
+      },
+      {
+        "source": "Systematic Sound - General Ambience Series - Quiet Rooms 01/AMBRoom_Quiet Room Flat C Livingroom 02_SYSO_SYSO0013.wav",
+        "start": 60.0,
+        "duration": 47.5,
+        "gain_db": -7.0
+      },
+      {
+        "source": "InMotionAudio - GEODRONE/DSGNDron_Geofon05_InMotionAudio_GEODRONE.wav",
+        "start": 60.0,
+        "duration": 47.5,
+        "gain_db": -11.0
+      }
+    ]
+  },
+  {
+    "asset": "Assets/Audio/Moonkov/Clips/Character/Cloth1.wav",
+    "source": "TheWorkRoom Audio Post - Neoprene - Dry - Wetsuit/NEO008.wav",
+    "start": 5.2,
+    "duration": 0.65,
+    "processing": "48 kHz PCM16; peak-normalised to -1 dBFS with fades",
+    "note": "suit movement (peak at 5.312 s)"
+  },
+  {
+    "asset": "Assets/Audio/Moonkov/Clips/Character/Cloth2.wav",
+    "source": "TheWorkRoom Audio Post - Neoprene - Dry - Wetsuit/NEO008.wav",
+    "start": 14.38,
+    "duration": 0.6,
+    "processing": "48 kHz PCM16; peak-normalised to -1 dBFS with fades",
+    "note": "suit movement (peak at 14.491 s)"
+  },
+  {
+    "asset": "Assets/Audio/Moonkov/Clips/Character/Death.wav",
+    "source": "Justsoundeffects - Gore Mini Pack/GORESplt_Gore Splatter 01_JSE_GMP.wav",
+    "start": 4.78,
+    "duration": 0.8,
+    "processing": "48 kHz PCM16; peak-normalised to -1 dBFS with fades",
+    "note": "gore splatter (peak at 4.875 s)"
+  },
+  {
+    "asset": "Assets/Audio/Moonkov/Clips/Character/Hit.wav",
+    "source": "Justsoundeffects - Melee Weapons/WEAPArmr_Metal Shield Block Hits_JSE_MW.wav",
+    "start": 4.75,
+    "duration": 0.55,
+    "processing": "48 kHz PCM16; peak-normalised to -1 dBFS with fades",
+    "note": "armour plate hit (peak at 4.827 s, -4.9 dBFS)"
+  },
+  {
+    "asset": "Assets/Audio/Moonkov/Clips/Character/Jump.wav",
+    "source": "InMotionAudio - Mask Foley/FOLYMisc_FabricMask_Movement06_InMotionAudio_MaskFoley.wav",
+    "start": 0.2,
+    "duration": 0.55,
+    "processing": "48 kHz PCM16; peak-normalised to -1 dBFS with fades",
+    "note": "fabric suit rustle (peak at 0.293 s)"
+  },
+  {
+    "asset": "Assets/Audio/Moonkov/Clips/Character/LandA.wav",
+    "source": "Sonic Bat - Videogame Foley Essentials Vol. II/SBvfe2_Medium Rock Dropping 011.wav",
+    "start": 0.0,
+    "duration": 0.58,
+    "processing": "48 kHz PCM16; peak-normalised to -1 dBFS with fades",
+    "note": "regolith rock impact + DSGNBoom_Cinematic Metallic Hit, Boom, Trailer, Sub_JF_Haunted Metal Vol 1_02.wav low-passed @170 Hz @-2.0 dB"
+  },
+  {
+    "asset": "Assets/Audio/Moonkov/Clips/Character/LandB.wav",
+    "source": "InMotionAudio - Mask Foley/FOLYMisc_3MMask_Movement04_InMotionAudio_MaskFoley.wav",
+    "start": 0.92,
+    "duration": 0.58,
+    "processing": "48 kHz PCM16; peak-normalised to -1 dBFS with fades",
+    "note": "suit settle (peak at 0.997 s)"
+  },
+  {
     "asset": "Assets/Audio/Moonkov/Clips/Character/MetalStep1.wav",
-    "source": "Assets/Audio/Moonkov/Clips/Character/MetalBootsSequence.wav",
-    "start": 0.575,
-    "duration": 0.26,
-    "processing": "48 kHz mono PCM16; 50 ms end fade"
+    "source": "Pole Position - The Metal Hit Sweeteners Library/Iron - Thick - HIT - Hammer.wav",
+    "start": 1.785,
+    "duration": 0.3,
+    "processing": "48 kHz PCM16; peak-normalised to -1 dBFS with fades",
+    "note": "hammer hit on thick iron @1.797 s + low-passed self @-6.0 dB / 240 Hz for body"
   },
   {
     "asset": "Assets/Audio/Moonkov/Clips/Character/MetalStep2.wav",
-    "source": "Assets/Audio/Moonkov/Clips/Character/MetalBootsSequence.wav",
-    "start": 1.185,
-    "duration": 0.26,
-    "processing": "48 kHz mono PCM16; 50 ms end fade"
+    "source": "Pole Position - The Metal Hit Sweeteners Library/Iron - Thick - HIT - Hammer.wav",
+    "start": 3.572,
+    "duration": 0.3,
+    "processing": "48 kHz PCM16; peak-normalised to -1 dBFS with fades",
+    "note": "hammer hit on thick iron @3.584 s + low-passed self @-6.0 dB / 240 Hz for body"
   },
   {
     "asset": "Assets/Audio/Moonkov/Clips/Character/MetalStep3.wav",
-    "source": "Assets/Audio/Moonkov/Clips/Character/MetalBootsSequence.wav",
-    "start": 1.5050000000000001,
-    "duration": 0.26,
-    "processing": "48 kHz mono PCM16; 50 ms end fade"
+    "source": "Pole Position - The Metal Hit Sweeteners Library/Iron - Thick - HIT - Hammer.wav",
+    "start": 5.337,
+    "duration": 0.3,
+    "processing": "48 kHz PCM16; peak-normalised to -1 dBFS with fades",
+    "note": "hammer hit on thick iron @5.349 s + low-passed self @-6.0 dB / 240 Hz for body"
   },
   {
     "asset": "Assets/Audio/Moonkov/Clips/Character/MetalStep4.wav",
-    "source": "Assets/Audio/Moonkov/Clips/Character/MetalBootsSequence.wav",
-    "start": 1.8050000000000002,
-    "duration": 0.26,
-    "processing": "48 kHz mono PCM16; 50 ms end fade"
+    "source": "Pole Position - The Metal Hit Sweeteners Library/Iron - Thick - HIT - Hammer.wav",
+    "start": 7.007,
+    "duration": 0.3,
+    "processing": "48 kHz PCM16; peak-normalised to -1 dBFS with fades",
+    "note": "hammer hit on thick iron @7.019 s + low-passed self @-6.0 dB / 240 Hz for body"
+  },
+  {
+    "asset": "Assets/Audio/Moonkov/Clips/Character/RegolithStep1.wav",
+    "source": "Sonic Bat - Videogame Foley Essentials Vol. II/SBvfe2_Shaking Small Wooden Box 030.wav",
+    "start": 0.348,
+    "duration": 0.2,
+    "processing": "48 kHz PCM16; peak-normalised to -1 dBFS with fades",
+    "note": "dry crunch from box shake + low-passed rock thud for weight"
+  },
+  {
+    "asset": "Assets/Audio/Moonkov/Clips/Character/RegolithStep2.wav",
+    "source": "Sonic Bat - Videogame Foley Essentials Vol. II/SBvfe2_Shaking Small Wooden Box 030.wav",
+    "start": 1.116,
+    "duration": 0.2,
+    "processing": "48 kHz PCM16; peak-normalised to -1 dBFS with fades",
+    "note": "dry crunch from box shake + low-passed rock thud for weight"
+  },
+  {
+    "asset": "Assets/Audio/Moonkov/Clips/Character/RegolithStep3.wav",
+    "source": "Sonic Bat - Videogame Foley Essentials Vol. II/SBvfe2_Shaking Small Wooden Box 030.wav",
+    "start": 1.431,
+    "duration": 0.2,
+    "processing": "48 kHz PCM16; peak-normalised to -1 dBFS with fades",
+    "note": "dry crunch from box shake + low-passed rock thud for weight"
+  },
+  {
+    "asset": "Assets/Audio/Moonkov/Clips/Character/RegolithStep4.wav",
+    "source": "Sonic Bat - Videogame Foley Essentials Vol. II/SBvfe2_Shaking Small Wooden Box 030.wav",
+    "start": 1.681,
+    "duration": 0.2,
+    "processing": "48 kHz PCM16; peak-normalised to -1 dBFS with fades",
+    "note": "dry crunch from box shake + low-passed rock thud for weight"
+  },
+  {
+    "asset": "Assets/Audio/Moonkov/Clips/Interaction/Container.wav",
+    "source": "Jake Fielding - Train Onboards/DOORHydr_Train Door Close_JF_Train Tracks .wav",
+    "start": 0.0,
+    "duration": 1.216,
+    "processing": "48 kHz PCM16; peak-normalised to -1 dBFS with fades",
+    "note": "hydraulic hatch close"
+  },
+  {
+    "asset": "Assets/Audio/Moonkov/Clips/Interaction/DeployConfirm.wav",
+    "source": "Orbital Emitter - Cinematic Transitions for Editors Volume 2/80,TheGong.wav",
+    "start": 0.08,
+    "duration": 2.6,
+    "processing": "48 kHz PCM16; peak-normalised to -1 dBFS with fades",
+    "note": "gong body + android voice 'Carrying out orders' layered on top + layer Carrying out orders.wav @-1.0 dB"
+  },
+  {
+    "asset": "Assets/Audio/Moonkov/Clips/Interaction/Equipment.wav",
+    "source": "BluezoneCorp - Industrial Lever Switch/Bluezone_BC0302_industrial_lever_switch_small_003.wav",
+    "start": 0.065,
+    "duration": 0.24,
+    "processing": "48 kHz PCM16; peak-normalised to -1 dBFS with fades",
+    "note": "small lever latch clack"
+  },
+  {
+    "asset": "Assets/Audio/Moonkov/Clips/Interaction/Spawn.wav",
+    "source": "Mechanical Wave - Sound Effects Collection/BELLHand_Metallic Bell_ 22_MWSFX_SEC.wav",
+    "start": 0.035,
+    "duration": 0.45,
+    "processing": "48 kHz PCM16; peak-normalised to -1 dBFS with fades",
+    "note": "metallic double tink (bell strikes at 0.053 / 0.304 s)"
+  },
+  {
+    "asset": "Assets/Audio/Moonkov/Clips/UI/Click.wav",
+    "source": "BluezoneCorp - Retrofuturistic Computer/Bluezone_BC0304_retrofuturistic_computer_button_013.wav",
+    "start": 0.0,
+    "duration": 0.3,
+    "processing": "48 kHz PCM16; peak-normalised to -1 dBFS with fades",
+    "note": "the single UI / item selection sound"
+  },
+  {
+    "asset": "Assets/Audio/Moonkov/Clips/UI/Confirm.wav",
+    "source": "Orbital Emitter - Cinematic Transitions for Editors Volume 2/80,TheGong.wav",
+    "start": 0.08,
+    "duration": 1.75,
+    "processing": "48 kHz PCM16; peak-normalised to -1 dBFS with fades",
+    "note": "gong strike = extraction / raid success"
+  },
+  {
+    "asset": "Assets/Audio/Moonkov/Clips/UI/Error.wav",
+    "source": "BluezoneCorp - Retrofuturistic Computer/Bluezone_BC0304_retrofuturistic_computer_alarm_005.wav",
+    "start": 0.233,
+    "duration": 0.2,
+    "processing": "48 kHz PCM16; peak-normalised to -1 dBFS with fades",
+    "note": "single alarm beep body (precursor trimmed for a snappy attack)"
+  },
+  {
+    "asset": "Assets/Audio/Moonkov/Clips/UI/HoverA.wav",
+    "source": "BluezoneCorp - Futuristic User Interface/Bluezone_BC0303_futuristic_user_interface_high_tech_beep_038.wav",
+    "start": 0.0,
+    "duration": 0.081,
+    "processing": "48 kHz PCM16; peak-normalised to -1 dBFS with fades",
+    "note": "high tech beep tick"
+  },
+  {
+    "asset": "Assets/Audio/Moonkov/Clips/UI/HoverB.wav",
+    "source": "Rogue Waves - Kawaii UI/UIClick_Operating System UI Cursor_RogueWaves_KawaiiUI.wav",
+    "start": 0.0,
+    "duration": 0.083,
+    "processing": "48 kHz PCM16; peak-normalised to -1 dBFS with fades",
+    "note": "cursor tick"
+  },
+  {
+    "asset": "Assets/Audio/Moonkov/Clips/UI/Notification.wav",
+    "source": "Rescopic Sound - User Interaction/UIAlert_Confirm Middle 12_RSCPC_USIN.wav",
+    "start": 0.0,
+    "duration": 0.9,
+    "processing": "48 kHz PCM16; peak-normalised to -1 dBFS with fades",
+    "note": "designed UI alert"
+  },
+  {
+    "asset": "Assets/Audio/Moonkov/Clips/Weapons/HaloFire1.wav",
+    "source": "Pole Position - The Metal Hit Sweeteners Library/Spade - HIT - Drumstick - Ring - Mute.wav",
+    "start": 0.057,
+    "duration": 0.42,
+    "processing": "48 kHz PCM16; peak-normalised to -1 dBFS with fades",
+    "note": "ringing metal hit @0.069 s + low-passed self @-8.0 dB / 300 Hz for body"
+  },
+  {
+    "asset": "Assets/Audio/Moonkov/Clips/Weapons/HaloFire2.wav",
+    "source": "Pole Position - The Metal Hit Sweeteners Library/Spade - HIT - Drumstick - Ring - Mute.wav",
+    "start": 2.335,
+    "duration": 0.42,
+    "processing": "48 kHz PCM16; peak-normalised to -1 dBFS with fades",
+    "note": "ringing metal hit @2.347 s + low-passed self @-8.0 dB / 300 Hz for body"
+  },
+  {
+    "asset": "Assets/Audio/Moonkov/Clips/Weapons/HaloFire3.wav",
+    "source": "Pole Position - The Metal Hit Sweeteners Library/Spade - HIT - Drumstick - Ring - Mute.wav",
+    "start": 4.425,
+    "duration": 0.42,
+    "processing": "48 kHz PCM16; peak-normalised to -1 dBFS with fades",
+    "note": "ringing metal hit @4.437 s + low-passed self @-8.0 dB / 300 Hz for body"
+  },
+  {
+    "asset": "Assets/Audio/Moonkov/Clips/Weapons/HaloFire4.wav",
+    "source": "Pole Position - The Metal Hit Sweeteners Library/Spade - HIT - Drumstick - Ring - Mute.wav",
+    "start": 6.521,
+    "duration": 0.42,
+    "processing": "48 kHz PCM16; peak-normalised to -1 dBFS with fades",
+    "note": "ringing metal hit @6.533 s + low-passed self @-8.0 dB / 300 Hz for body"
+  },
+  {
+    "asset": "Assets/Audio/Moonkov/Clips/Weapons/HaloImpact.wav",
+    "source": "Mechanical Wave - Torturing Metal/METLImpt_Metal Impact-03_MWSFX_TM.wav",
+    "start": 0.0,
+    "duration": 0.7,
+    "processing": "48 kHz PCM16; peak-normalised to -1 dBFS with fades",
+    "note": "metal impact (onset 0.069 s)"
   },
   {
     "asset": "Assets/Audio/Moonkov/Clips/Weapons/HaloRecharge.wav",
-    "source": "Assets/Audio/Moonkov/Clips/Weapons/Charge.wav",
-    "start": 0,
-    "duration": 1.8,
-    "processing": "48 kHz PCM16; 80 ms end fade"
+    "source": "Rescopic Sound - Sci-Fi Energy Weapons/SCIWeap_Reload Compact O 01_RSCPC_SFEW.wav",
+    "start": 0.0,
+    "duration": 1.771,
+    "processing": "48 kHz PCM16; peak-normalised to -1 dBFS with fades",
+    "note": "designed energy weapon reload"
+  },
+  {
+    "asset": "Assets/Audio/Moonkov/Clips/Weapons/HaloSnap.wav",
+    "source": "Mechanical Wave - Sound Effects Collection/BELLHand_Metallic Bell_ 22_MWSFX_SEC.wav",
+    "start": 0.041,
+    "duration": 0.22,
+    "processing": "48 kHz PCM16; peak-normalised to -1 dBFS with fades",
+    "note": "bright metallic tink (bell strike @0.053 s) layered under every shot"
+  },
+  {
+    "asset": "Assets/Audio/Moonkov/Clips/Weapons/RevolverEnergy.wav",
+    "source": "BluezoneCorp - Sci Fi Weapon/Bluezone_BC0295_sci_fi_weapon_texture_007.wav",
+    "start": 0.0,
+    "duration": 0.7,
+    "processing": "48 kHz PCM16; peak-normalised to -1 dBFS with fades",
+    "note": "energy tail layer"
+  },
+  {
+    "asset": "Assets/Audio/Moonkov/Clips/Weapons/RevolverFire1.wav",
+    "source": "Pole Position - Dan Wesson .445 SuperMag/Dan Wesson 445 - FIRING - Take 2 - 1m Above - MKH8060.wav",
+    "start": 15.97,
+    "duration": 1.05,
+    "processing": "48 kHz PCM16; peak-normalised to -1 dBFS with fades",
+    "note": ".445 SuperMag shot; take 2, 1 m above, transient at 16.00 s"
+  },
+  {
+    "asset": "Assets/Audio/Moonkov/Clips/Weapons/RevolverFire2.wav",
+    "source": "Pole Position - Dan Wesson .445 SuperMag/Dan Wesson 445 - FIRING - Take 2 - 1m Above - MKH8060.wav",
+    "start": 31.97,
+    "duration": 1.05,
+    "processing": "48 kHz PCM16; peak-normalised to -1 dBFS with fades",
+    "note": ".445 SuperMag shot; same take, transient at 32.00 s"
   },
   {
     "asset": "Assets/Audio/Moonkov/Clips/Weapons/RevolverRecharge.wav",
-    "source": "Assets/Audio/Moonkov/Clips/Interaction/NanoServo.wav",
-    "start": 0,
-    "duration": 0.65,
-    "processing": "48 kHz PCM16; 80 ms end fade"
-  },
-  {
-    "asset": "Assets/Audio/Moonkov/Clips/UI/ConfirmShort.wav",
-    "source": "Assets/Audio/Moonkov/Clips/UI/Confirm.wav",
-    "start": 0,
-    "duration": 0.9,
-    "processing": "48 kHz PCM16; 80 ms end fade"
-  },
-  {
-    "asset": "Assets/Audio/Moonkov/Clips/UI/ErrorShort.wav",
-    "source": "Assets/Audio/Moonkov/Clips/UI/Error.wav",
-    "start": 0,
-    "duration": 0.65,
-    "processing": "48 kHz PCM16; 80 ms end fade"
+    "source": "Pole Position - Smith & Wesson .38 Chiefs Special Model 60/Smith & Wesson 60 - VAR SFX - Open Close Revovler with Shells - XY - RSM191.wav",
+    "start": 3.0,
+    "duration": 1.2,
+    "processing": "48 kHz PCM16; peak-normalised to -1 dBFS with fades",
+    "note": "loudest cylinder open/eject/close cluster (3.141-3.568 s)"
   }
 ]

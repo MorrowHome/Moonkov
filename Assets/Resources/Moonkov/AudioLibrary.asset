@@ -27,3 +27,4 @@ MonoBehaviour:
   MetalFootsteps: {fileID: 11400000, guid: a31a507dbb38d50469d4505d1c7fa898, type: 2}
   Cloth: {fileID: 11400000, guid: c93a300bab3de7c4da9766f1fa8d65ca, type: 2}
   ShipInterior: {fileID: 11400000, guid: dbc155221efdcdb499d7e1a3fac1c6b7, type: 2}
+  DeployConfirm: {fileID: 11400000, guid: cf73b4f8232750148bcd13ac5efe416a, type: 2}

@@ -21,7 +21,7 @@ MonoBehaviour:
   PlaybackType: 0
   PlayCount: 1
   Clips:
-  - {fileID: 8300000, guid: 9f1b58358e8598040b178755bef4edad, type: 3}
+  - {fileID: 8300000, guid: 25d002df13360f04fb0e5c6e76c51b3b, type: 3}
   RepeatInfo:
     LoopCount: 1
     RepeatMin: 1
@@ -33,10 +33,10 @@ MonoBehaviour:
     StartOffsetPercentMax: 0
     StopDelay: 0
   PitchAndVolumeInfo:
-    VolumeMin: -25
-    VolumeMax: -24
-    PitchMin: -45
-    PitchMax: 45
+    VolumeMin: -17
+    VolumeMax: -16
+    PitchMin: -80
+    PitchMax: 80
   DistanceInfo:
     VolumeDistMin: 1.5
     VolumeDistMax: 40

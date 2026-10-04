@@ -36,13 +36,13 @@ MonoBehaviour:
     StartOffsetPercentMax: 0
     StopDelay: 0
   PitchAndVolumeInfo:
-    VolumeMin: -17
-    VolumeMax: -16
-    PitchMin: -45
-    PitchMax: 45
+    VolumeMin: -21.5
+    VolumeMax: -19
+    PitchMin: -70
+    PitchMax: 70
   DistanceInfo:
     VolumeDistMin: 1.5
-    VolumeDistMax: 18
+    VolumeDistMax: 12
     SpatialBlend: 1
     DopplerScale: 0
     VolumeRolloffMode: 1
