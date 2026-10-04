@@ -115,8 +115,19 @@ public static class MoonkovAudioSetup
                   PitchCents = 35f, Clips = new[] { "Weapons/RevolverRecharge.wav" } },
     };
 
-    [MenuItem("Tools/Moonkov/Audio/Rebuild Sound Definitions")]
-    public static void Build()
+    // Two entry points on purpose. Hand-wiring clips and tuning in the Inspector is a normal
+    // way to work on these, and a single "rebuild" that silently overwrote that work was a
+    // trap: the safe command only creates what is missing, the explicit one is authoritative.
+    [MenuItem("Tools/Moonkov/Audio/Rebuild Sound Definitions (overwrites hand edits)", false, 10)]
+    public static void Rebuild() => Build(overwriteExisting: true);
+
+    [MenuItem("Tools/Moonkov/Audio/Create Missing Sound Definitions", false, 11)]
+    public static void CreateMissing() => Build(overwriteExisting: false);
+
+    /// <summary>Authoritative rebuild; also the -executeMethod entry point.</summary>
+    public static void Build() => Rebuild();
+
+    private static void Build(bool overwriteExisting)
     {
         if (EditorApplication.isPlayingOrWillChangePlaymode)
             throw new InvalidOperationException("Build audio assets in Edit mode.");
@@ -125,8 +136,20 @@ public static class MoonkovAudioSetup
         AssetDatabase.Refresh();
 
         var byName = new Dictionary<string, SoundDef>();
+        int written = 0, kept = 0;
         foreach (var row in Table)
+        {
+            var path = Definitions + row.Name + ".asset";
+            var existing = AssetDatabase.LoadAssetAtPath<SoundDef>(path);
+            if (!overwriteExisting && existing != null)
+            {
+                byName[row.Name] = existing;
+                kept++;
+                continue;
+            }
             byName[row.Name] = Define(row);
+            written++;
+        }
 
         var library = AssetDatabase.LoadAssetAtPath<MoonkovAudioLibrary>(LibraryPath);
         if (library == null)
@@ -166,11 +189,11 @@ public static class MoonkovAudioSetup
         EditorUtility.SetDirty(halo);
         EditorUtility.SetDirty(revolver);
 
-        RetuneLegacySpawnSound();
+        if (overwriteExisting) RetuneLegacySpawnSound();
         ApplyImportSettings();
         AssetDatabase.SaveAssets();
-        Debug.Log($"Moonkov audio wired: {Table.Length} SoundDefs, " +
-                  $"{CountClips()} clips, layered weapons, looping ship ambience.");
+        Debug.Log($"Moonkov audio: {written} SoundDefs written, {kept} left as they were, " +
+                  $"{CountClips()} clips in the table.");
     }
 
     /// <summary>

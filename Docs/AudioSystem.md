@@ -131,7 +131,7 @@ flowchart LR
 - `Assets/Scripts/Audio/MoonkovUIAudio.cs`：扫描所有 `UIDocument` 并绑定点击 / 确认 / 悬停音效；由 `GameManager` 自动挂载。
 - `Assets/DollSinger/HaloWeapon.asset`、`RevolverWeapon.asset`：发射主层、副层、换弹和冲击引用。
 - 终端 `SETTINGS`：主音量、玩法音效、界面音量。使用 `Moonkov.Audio.Master / Effects / Interface` 的 PlayerPrefs 保存，玩法和界面分别控制现有 SFX / Menu mixer 参数。
-- `Tools > Moonkov > Audio > Rebuild Sound Definitions`：按上面的表重建全部 SoundDef 与导入设置。**会覆盖 Inspector 里对这些 SoundDef 的手工修改**；要保留手工调音就先记下来。已存在的 asset 保留 GUID，因此库和武器的引用不会断。
+- 音频菜单有两个入口，故意分开：`Tools > Moonkov > Audio > Create Missing Sound Definitions` 只创建缺失的 SoundDef，**已存在的一律不动**，所以在 Inspector 里手工拖 clip、调 dB 的成果会保留；`Tools > Moonkov > Audio > Rebuild Sound Definitions (overwrites hand edits)` 才是权威重建，会按上面的表覆盖 clips 与调音。两者都保留已存在 asset 的 GUID，因此库和武器的引用不会断。
 
 `LocalData/AudioRebuild` 是本次的生成工具链。**它在 `.gitignore` 内，不会被提交**，属于本机可重跑的脚手架；真正随仓库走的记录是 `Sources.json`（原文件与 SHA-256）、`Edits.json`（裁剪区间与分层）和 `MoonkovAudioSetup.cs`（电平与结构化参数），三者足以从素材包重建全部配置。
 
