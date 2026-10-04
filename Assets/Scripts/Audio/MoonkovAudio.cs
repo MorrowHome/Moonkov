@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -28,6 +29,7 @@ namespace Unity.MP_FPS
             s_Library = null;
             s_Loaded = false;
             s_LastHover = -1f;
+            s_BoundRoots.Clear();
         }
 
         public static SoundSystem.SoundInfo Play(SoundDef sound, Vector3 position, float volume = 1f)
@@ -43,18 +45,30 @@ namespace Unity.MP_FPS
         public static void Error() => Play(Library?.Error, Vector3.zero);
 
         // Delegated callbacks cover dynamically built buttons and keyboard activation as well.
+        // Only whole UIDocument roots may be bound: a bound child element nested under a bound
+        // document root would fire the sound once per bound ancestor.
+        private static readonly HashSet<VisualElement> s_BoundRoots = new HashSet<VisualElement>();
+
         public static void BindUI(VisualElement root)
         {
+            if (root == null || !s_BoundRoots.Add(root)) return;
             root.RegisterCallback<ClickEvent>(OnClick, TrickleDown.TrickleDown);
             root.RegisterCallback<NavigationSubmitEvent>(OnSubmit, TrickleDown.TrickleDown);
-            root.RegisterCallback<PointerOverEvent>(OnHover);
+            root.RegisterCallback<PointerOverEvent>(OnHover, TrickleDown.TrickleDown);
         }
 
         public static void UnbindUI(VisualElement root)
         {
+            if (root == null || !s_BoundRoots.Remove(root)) return;
             root.UnregisterCallback<ClickEvent>(OnClick, TrickleDown.TrickleDown);
             root.UnregisterCallback<NavigationSubmitEvent>(OnSubmit, TrickleDown.TrickleDown);
-            root.UnregisterCallback<PointerOverEvent>(OnHover);
+            root.UnregisterCallback<PointerOverEvent>(OnHover, TrickleDown.TrickleDown);
+        }
+
+        /// <summary>Forget roots whose panel is gone so the bound set does not grow forever.</summary>
+        public static void PruneBoundRoots()
+        {
+            s_BoundRoots.RemoveWhere(root => root == null || root.panel == null);
         }
 
         private static Button ButtonFor(EventBase evt)

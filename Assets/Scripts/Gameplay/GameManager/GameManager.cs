@@ -78,6 +78,9 @@ namespace Unity.MP_FPS
         {
             if (!m_IsHeadless && GetComponent<MoonkovAudioEnvironment>() == null)
                 gameObject.AddComponent<MoonkovAudioEnvironment>();
+            // Keeps every UI Toolkit screen audible, including ones that never opt in.
+            if (!m_IsHeadless && GetComponent<MoonkovUIAudio>() == null)
+                gameObject.AddComponent<MoonkovUIAudio>();
             Application.runInBackground = true; //Prevents dropped connections during multiplayer gameplay
 
             // The Editor's Server play type must use the same startup path as
