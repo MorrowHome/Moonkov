@@ -112,7 +112,7 @@ flowchart LR
 
 ## 素材和授权
 
-- **Sonniss GDC 2024 Game Audio Bundle (Part 8)**：609 个 WAV、约 27.5 GB，已与包内 `Filelist.xlsx` 核对。素材以 96 kHz / 24-bit 为主（477 个 96 kHz、35 个 192 kHz，仅 75 个 48 kHz），本次统一转换为 48 kHz PCM16。
+- **Sonniss GDC 2024 Game Audio Bundle (Part 8)**：609 个 WAV、约 27.5 GB，已与包内 `Filelist.xlsx` 核对。素材以 96 kHz / 24-bit 为主（492 个 96 kHz、42 个 192 kHz、75 个 48 kHz；583 个 24-bit、26 个 32-bit float），本次统一转换为 48 kHz PCM16。另有 18 个四声道及少量 5/6/8 声道环境录音。
 - 包内每个供应商目录是**样品集**（多数只有 3–4 个文件），不是完整商业库。因此部分音效来自长录音裁剪：左轮枪声取自 `Dan Wesson 445 - FIRING - Take 2` 第 16.00 秒的单发，金属脚步取自 `Iron - Thick - HIT - Hammer` 在 1.797 / 3.584 / 5.349 / 7.019 秒的四次敲击。
 - 光环步枪的金属"叮"取自 `Spade - HIT - Drumstick - Ring - Mute` 在 0.069 / 2.347 / 4.437 / 6.533 秒的四次敲击（每次叠加自身低通副本补厚度），叮声层取自 `BELLHand_Metallic Bell_ 22` 的第一声敲击。
 - 成功提示音取自 `80,TheGong.wav` 的铜锣敲击（单一起音在 0.112 秒）。部署确认在此之上叠层 `CB Sounddesign - Sci-Fi Voices Volume 03` 的 `Carrying out orders`；队友到场音取自同一支铃铛的两声敲击。
@@ -146,6 +146,7 @@ flowchart LR
 | `calibrate_levels.py` | 测量新旧素材电平并求解每条音效的目标增益 |
 | `stage_clips.ps1` | 把 `out/` 同步到 `Assets/Audio/Moonkov/Clips`，删除不再引用的片段 |
 | `write_provenance.py` | 生成 `Sources.json` 与 `Edits.json` |
+| `make_audition_page.py` | 在素材包目录里生成单文件试听页 `_audition.html`（分组、搜索、自动连播、标记导出），双击即用，不会预载 27.5 GB |
 | `verify_assets.py` | 逐行解析 22 个 SoundDef 与库、武器资产，校验循环、电平范围、片段 GUID 是否全部可解析、是否有孤立片段 |
 
 短音效使用解压加载、48 kHz、Vorbis quality 0.85。空间音效为单声道，界面保持立体声；座舱音频使用流式加载并保持立体声。专用服务器不创建新的音频组件，继续使用模板 `SoundSystemNull`。
