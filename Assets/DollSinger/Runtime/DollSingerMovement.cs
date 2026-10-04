@@ -289,20 +289,21 @@ namespace Unity.MP_FPS.DollSinger {
             m_SprintInput = sprinting;
             JumpedThisFrame = jumped;
             if (!m_HasAnimator) return;
-            // Simulation already smooths speed and NetCode already interpolates remote snapshots.
-            // A second lerp here makes remote characters skate before their feet catch up.
-            m_AnimationBlend = speed;
+            // Start promptly, but blend deceleration so a zero-speed snapshot does not snap the feet to idle.
+            m_AnimationBlend = speed >= m_AnimationBlend ? speed : Mathf.Lerp(m_AnimationBlend, speed,
+                1f - Mathf.Exp(-Mathf.Max(0f, deltaTime) * Mathf.Max(0f, m_SpeedChangeRate)));
+            if (m_AnimationBlend < 0.01f) m_AnimationBlend = 0f;
             if (m_HasSpeedParameter) m_Animator.SetFloat(k_AnimIDSpeed, m_AnimationBlend);
             ApplyDirectionalAnimation(worldMovement, deltaTime);
-            ApplyTurnAnimation(bodyYaw ?? transform.eulerAngles.y, speed, grounded && !jumped, deltaTime);
-            if (m_HasMoveParameter) m_Animator.SetBool("Move", speed > 0.05f);
+            ApplyTurnAnimation(bodyYaw ?? transform.eulerAngles.y, m_AnimationBlend, grounded && !jumped, deltaTime);
+            if (m_HasMoveParameter) m_Animator.SetBool("Move", m_AnimationBlend > 0.05f);
             if (m_HasGroundedParameter) m_Animator.SetBool(k_AnimIDGrounded, grounded);
             if (m_HasFreeFallParameter) m_Animator.SetBool(k_AnimIDFreeFall, !grounded && verticalVelocity < 0f);
             if (m_HasJumpParameter && jumped) m_Animator.SetTrigger(k_AnimIDJump);
             if (m_HasMotionSpeedParameter)
             {
                 if (m_MotionSpeedIsFloat) m_Animator.SetFloat(k_AnimIDMotionSpeed, 1f);
-                else m_Animator.SetInteger(k_AnimIDMotionSpeed, speed > 0.01f ? 1 : 0);
+                else m_Animator.SetInteger(k_AnimIDMotionSpeed, m_AnimationBlend > 0.01f ? 1 : 0);
             }
         }
 
