@@ -22,7 +22,7 @@ namespace Unity.MP_FPS
         private bool m_LootOpenPending;
         private int m_OpenedLootId=-1;
         private Label m_InventoryTitle;
-        private Label m_Bag, m_Timer, m_Prompt, m_Exit, m_ResultText, m_SaveStatus;
+        private Label m_Bag, m_Timer, m_Clock, m_Prompt, m_Exit, m_ResultText, m_SaveStatus;
         private Button m_Deploy;
         private bool m_WasSettled;
         private float m_RefreshTimer;
@@ -63,6 +63,7 @@ namespace Unity.MP_FPS
             m_Root.pickingMode = PickingMode.Ignore;
             Resources.Load<VisualTreeAsset>("Moonkov/RaidUI").CloneTree(m_Root);
             m_Status = m_Root.Q("raidStatus"); m_Timer = m_Root.Q<Label>("raidTimer"); m_Bag = m_Root.Q<Label>("raidBag");
+            m_Clock = m_Root.Q<Label>("raidClock");
             m_Exit = m_Root.Q<Label>("raidExtraction"); m_Prompt = m_Root.Q<Label>("raidPrompt");
             m_Result = m_Root.Q("raidResult"); m_ResultText = m_Root.Q<Label>("raidResultText"); m_SaveStatus = m_Root.Q<Label>("raidSaveStatus");
             m_Deploy = m_Root.Q<Button>("raidDeploy"); m_Deploy.clicked += Deploy;
@@ -212,6 +213,8 @@ namespace Unity.MP_FPS
             m_RefreshTimer = 0.1f;
             int seconds = Mathf.CeilToInt(m_Snapshot.TimeLeft);
             m_Timer.text = ready ? $"Raid {m_Snapshot.RaidId}   {seconds / 60:00}:{seconds % 60:00} remaining" : "Connecting...";
+            var clock = ExpeditionClockPresentation.Active;
+            m_Clock.text = clock != null && clock.IsSynchronized ? ExpeditionClock.Display(clock.TotalHours) : "";
             int count = m_Snapshot.Dust + m_Snapshot.Alloy + m_Snapshot.Cells;
             if (count != m_PreviousCount) { m_PreviousCount = count; m_RevealUntil = Time.unscaledTime + 4; }
             bool check = Keyboard.current != null && Keyboard.current.hKey.isPressed;

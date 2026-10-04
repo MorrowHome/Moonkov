@@ -129,6 +129,7 @@ GameObject:
   m_Component:
   - component: {fileID: 237632586}
   - component: {fileID: 237632585}
+  - component: {fileID: 237632587}
   m_Layer: 0
   m_Name: Moon Scene Lighting
   m_TagString: Untagged
@@ -151,6 +152,19 @@ MonoBehaviour:
   sun: {fileID: 1069018252372146075}
   pipeline: {fileID: 11400000, guid: 2200b3694cbdeb34992b95067fe22db7, type: 2}
   spaceSkybox: {fileID: 2100000, guid: f5a2a3631ecd0a64a83105dacd40f43d, type: 2}
+  nightAmbient: {r: 0.012, g: 0.015, b: 0.02, a: 1}
+--- !u!114 &237632587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 237632584}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 495b0de3215b36b4da8f35d9c587466b, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::Unity.MP_FPS.ExpeditionClockPresentation
 --- !u!4 &237632586
 Transform:
   m_ObjectHideFlags: 0
@@ -344,6 +358,9 @@ MonoBehaviour:
   m_EnemyCount: 3
   m_EnemySightRange: 45
   m_EnemyCells: 4
+  m_StartHour: 7
+  m_DayLengthMinutes: 24
+  m_TimeRunning: 1
 --- !u!4 &1054611477
 Transform:
   m_ObjectHideFlags: 0

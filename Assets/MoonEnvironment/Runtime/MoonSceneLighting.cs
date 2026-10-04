@@ -10,6 +10,7 @@ namespace Unity.MP_FPS.Moon
         [SerializeField] private Light sun;
         [SerializeField] private RenderPipelineAsset pipeline;
         [SerializeField] private Material spaceSkybox;
+        [SerializeField] private Color nightAmbient = new Color(.012f, .015f, .02f);
         private Material runtimeSkybox;
         private static readonly int SunDirectionId = Shader.PropertyToID("_SunDirection");
         private static readonly int SunVisibleId = Shader.PropertyToID("_SunVisible");
@@ -22,6 +23,9 @@ namespace Unity.MP_FPS.Moon
         private Light previousSun;
         private bool previousFog;
         private bool applied;
+        private Quaternion initialSunRotation;
+        private float initialSunIntensity, sunAzimuth;
+        private bool initialSunEnabled;
 
         private void OnEnable()
         {
@@ -32,6 +36,13 @@ namespace Unity.MP_FPS.Moon
             }
             // Dedicated/headless servers still need terrain collision, but no sky rendering.
             if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null) return;
+            if (sun)
+            {
+                initialSunRotation = sun.transform.rotation;
+                initialSunIntensity = sun.intensity;
+                initialSunEnabled = sun.enabled;
+                sunAzimuth = sun.transform.eulerAngles.y;
+            }
             previousPipeline = QualitySettings.renderPipeline;
             previousSkybox = RenderSettings.skybox;
             previousAmbientMode = RenderSettings.ambientMode;
@@ -60,6 +71,21 @@ namespace Unity.MP_FPS.Moon
 
         private void LateUpdate() => UpdateSky();
 
+        public void ApplyTimeOfDay(double totalHours)
+        {
+            if (!applied || !sun) return;
+            double hour = (totalHours % 24 + 24) % 24;
+            sun.transform.rotation = Quaternion.Euler((float)((hour - 6) * 15), sunAzimuth, 0);
+            float height = -sun.transform.forward.y;
+            float daylight = Mathf.SmoothStep(0, 1, Mathf.InverseLerp(0, .08f, height));
+            sun.intensity = initialSunIntensity * daylight;
+            sun.enabled = initialSunEnabled && height > 0;
+            // Very faint night fill keeps navigation readable; no atmospheric sky or fog is added.
+            RenderSettings.ambientLight = Color.Lerp(nightAmbient, Color.black, daylight);
+            RenderSettings.ambientIntensity = 1;
+            UpdateSky();
+        }
+
         private void UpdateSky()
         {
             Material sky = runtimeSkybox;
@@ -79,6 +105,12 @@ namespace Unity.MP_FPS.Moon
         private void OnDisable()
         {
             if (!applied) return;
+            if (sun)
+            {
+                sun.transform.rotation = initialSunRotation;
+                sun.intensity = initialSunIntensity;
+                sun.enabled = initialSunEnabled;
+            }
             if (QualitySettings.renderPipeline == pipeline) QualitySettings.renderPipeline = previousPipeline;
             RenderSettings.skybox = previousSkybox;
             RenderSettings.ambientMode = previousAmbientMode;

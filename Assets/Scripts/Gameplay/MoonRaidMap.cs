@@ -19,6 +19,10 @@ namespace Unity.MP_FPS
         [SerializeField, Range(0, 12)] private int m_EnemyCount = 3;
         [SerializeField, Range(10, 100)] private float m_EnemySightRange = 45;
         [SerializeField, Range(0, 12)] private int m_EnemyCells = 4;
+        [Header("Expedition clock (server authority)")]
+        [SerializeField, Range(0, 24)] private float m_StartHour = 7;
+        [SerializeField, Min(1)] private float m_DayLengthMinutes = 24;
+        [SerializeField] private bool m_TimeRunning = true;
         private GameObject[] m_Markers;
         private Material[] m_Materials;
         private readonly System.Collections.Generic.Dictionary<int,GameObject> m_DeathBags = new System.Collections.Generic.Dictionary<int,GameObject>();
@@ -33,6 +37,9 @@ namespace Unity.MP_FPS
         public int EnemyCount => m_EnemyCount;
         public float EnemySightRange => m_EnemySightRange;
         public int EnemyCells => m_EnemyCells;
+        public float StartHour => m_StartHour;
+        public float DayLengthMinutes => Mathf.Max(1, m_DayLengthMinutes);
+        public bool TimeRunning => m_TimeRunning;
 
         private void OnEnable()
         {

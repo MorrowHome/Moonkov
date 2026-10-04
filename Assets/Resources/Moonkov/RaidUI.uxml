@@ -4,6 +4,7 @@
         <ui:VisualElement name="raidStatus" class="raid-status" picking-mode="Ignore">
             <ui:Label text="LUNAR EXPEDITION" class="raid-caption" />
             <ui:Label name="raidTimer" class="raid-timer" />
+            <ui:Label name="raidClock" class="raid-caption" />
             <ui:Label name="raidBag" class="raid-copy" />
         </ui:VisualElement>
         <ui:Label name="raidPrompt" class="raid-prompt" picking-mode="Ignore" />
