@@ -57,7 +57,15 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Backend/Enable-Lan.ps1
 
 只有一张已连接的物理网卡时脚本自动选择 IPv4 地址；多网卡时加 `-HostAddress 192.168.1.10`，换成 Mac 能访问的 Windows 地址。脚本启动项目数据库，让数据服务通过 `-Lan` 监听 `0.0.0.0:5080`，必要时重启本项目原来的 loopback 数据服务。服务器自己的 `moon-server.local.json` 仍可使用 `127.0.0.1:5080`。
 
-脚本生成 `LocalData/LanClient/moon-client.local.json`，并为选定的 Windows 地址设置 TCP 5080、UDP 7979 两条入站规则；来源限制为 `LocalSubnet`，不修改网络类别。普通权限也能启动后端并生成配置，但防火墙步骤需要管理员重新运行。项目 PostgreSQL 继续监听 `127.0.0.1:5433`，客户端通过数据服务访问账号和仓库，不直接连接数据库。
+脚本生成 `LocalData/LanClient/moon-client.local.json`，并为选定的 Windows 地址设置 TCP 5080、UDP 7979 两条入站规则；默认来源限制为 `LocalSubnet`，不修改网络类别。普通权限也能启动后端并生成配置，但防火墙步骤需要管理员重新运行，保留同样的地址参数。项目 PostgreSQL 继续监听 `127.0.0.1:5433`，客户端通过数据服务访问账号和仓库，不直接连接数据库。
+
+校园网有线与 Wi-Fi 可能属于不同子网；账号后端若另有程序放行规则，注册成功也不能证明 UDP 7979 可达。此时用 `-ClientAddress` 显式放行另一子网中的客户端私有 IPv4，仍保留 `LocalSubnet`。下面两个地址仅为示例，分别换成 Windows 和 Mac 的当前地址：
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File Backend/Enable-Lan.ps1 -HostAddress 10.1.0.10 -ClientAddress 10.2.0.20
+```
+
+若 Windows 存在针对当前 Unity Editor 或游戏程序的显式入站阻止规则，需先解除该程序的阻止规则；端口放行规则不能覆盖显式阻止。Editor Play 模式可作为 Direct Host，测试时保持 Host 已进入地图。修改防火墙规则后无需重新构建客户端。
 
 重新构建包含本次客户端代码的 Mac 包，将生成的 `moon-client.local.json` 放在 **`.app` 旁边**，不要放进 `.app/Contents`：
 
