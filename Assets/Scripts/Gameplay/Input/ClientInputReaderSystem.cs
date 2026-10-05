@@ -95,6 +95,7 @@ public partial class ClientInputReaderSystem : SystemBase
                     (weapon != null && !weapon.Automatic ? _dollSingerInput.FirePressed : _dollSingerInput.FireHeld));
                 playerInput.SetFlag(PlayerInput.InputFlag.EquipHalo, canRead && _dollSingerInput.WeaponSlotPressed == 1);
                 playerInput.SetFlag(PlayerInput.InputFlag.EquipRevolver, canRead && _dollSingerInput.WeaponSlotPressed == 2);
+                playerInput.SetFlag(PlayerInput.InputFlag.EquipPistol, canRead && _dollSingerInput.WeaponSlotPressed == 3);
                 playerInput.SetFlag(PlayerInput.InputFlag.Reload, canRead && _dollSingerInput.ReloadPressed);
                 playerInput.LookYawPitchDegrees = _accumulatedLook;
                 playerInput.AimPoint = _dollSingerPresentation.CaptureAimPoint(_accumulatedLook, weapon != null ? weapon.HitscanRange : 100f);

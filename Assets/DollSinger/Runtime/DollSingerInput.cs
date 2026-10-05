@@ -92,7 +92,7 @@ namespace Unity.MP_FPS.DollSinger
                 LightPressed = keyboard.lKey.wasPressedThisFrame;
                 ReloadPressed = keyboard.rKey.wasPressedThisFrame;
                 WeaponSlotPressed = keyboard.digit1Key.wasPressedThisFrame ? 1 :
-                    keyboard.digit2Key.wasPressedThisFrame ? 2 : 0;
+                    keyboard.digit2Key.wasPressedThisFrame ? 2 : keyboard.digit3Key.wasPressedThisFrame ? 3 : 0;
                 AltHeld = keyboard.leftAltKey.isPressed || keyboard.rightAltKey.isPressed;
                 if (leanEnabled && AltHeld && keyboard.qKey.wasPressedThisFrame)
                     lockedLean = lockedLean < 0f ? 0f : -1f;

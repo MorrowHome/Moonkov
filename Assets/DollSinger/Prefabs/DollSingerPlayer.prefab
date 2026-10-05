@@ -2443,6 +2443,7 @@ Transform:
   - {fileID: 6613708230535739146}
   - {fileID: 8090030298820278466}
   - {fileID: 5195043614950503946}
+  - {fileID: 787886902332232872}
   m_Father: {fileID: 2754690713623540616}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7845691824386914750
@@ -3264,6 +3265,83 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
+--- !u!1001 &2232500603777849402
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 3666665834518509864}
+    m_Modifications:
+    - target: {fileID: 451114636976538323, guid: 3bfd2fdabccdb1841afa1e732b09969f, type: 3}
+      propertyPath: m_Name
+      value: ShotgunHalo
+      objectReference: {fileID: 0}
+    - target: {fileID: 451114636976538323, guid: 3bfd2fdabccdb1841afa1e732b09969f, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1446866652870478994, guid: 3bfd2fdabccdb1841afa1e732b09969f, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1446866652870478994, guid: 3bfd2fdabccdb1841afa1e732b09969f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1446866652870478994, guid: 3bfd2fdabccdb1841afa1e732b09969f, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1446866652870478994, guid: 3bfd2fdabccdb1841afa1e732b09969f, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1446866652870478994, guid: 3bfd2fdabccdb1841afa1e732b09969f, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1446866652870478994, guid: 3bfd2fdabccdb1841afa1e732b09969f, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1446866652870478994, guid: 3bfd2fdabccdb1841afa1e732b09969f, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1446866652870478994, guid: 3bfd2fdabccdb1841afa1e732b09969f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1446866652870478994, guid: 3bfd2fdabccdb1841afa1e732b09969f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1446866652870478994, guid: 3bfd2fdabccdb1841afa1e732b09969f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 3bfd2fdabccdb1841afa1e732b09969f, type: 3}
+--- !u!4 &787886902332232872 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1446866652870478994, guid: 3bfd2fdabccdb1841afa1e732b09969f, type: 3}
+  m_PrefabInstance: {fileID: 2232500603777849402}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2048020543978032076 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 186733005849842678, guid: 3bfd2fdabccdb1841afa1e732b09969f, type: 3}
+  m_PrefabInstance: {fileID: 2232500603777849402}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c802068b2babdfb41a6da04ff2bbb8d2, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: DollSinger.Runtime::Unity.MP_FPS.DollSinger.ShotgunHaloVisual
 --- !u!1001 &2427468677288055907
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3710,8 +3788,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d43ac70cc1bdd24b90b882566e61900, type: 3}
   m_Name: 
   m_EditorClassIdentifier: DollSinger.Runtime::Unity.MP_FPS.DollSinger.DollSingerHaloAim
+  localPrimary: 1
+  localSecondary: 3
+  localPistol: 2
   haloVisual: {fileID: 3666665834518509864}
   revolverVisual: {fileID: 6880449923347472751}
+  shotgunVisual: {fileID: 2048020543978032076}
   haloStrokes:
   - {fileID: 4103868541034794848}
   - {fileID: 2002041894467822681}

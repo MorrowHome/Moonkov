@@ -225,10 +225,18 @@ namespace Unity.MP_FPS
                 : characterIndex == 1 ? playerEntityPrefabs.PlayerShotgunEntityPrefab : playerEntityPrefabs.PlayerRifleEntityPrefab;
             var playerEntity = ecb.Instantiate(playerEntityPrefab);
 
-            var weaponId = characterIndex == 2 ? (uint)2 : characterIndex == 1 ? (uint)1 : 0;
+            if (characterIndex == 2 && MoonRaidMap.Active == null && !state.EntityManager.HasComponent<RaidInventoryState>(connectionEntity))
+            {
+                var context = Persistence(ref state);
+                var graph = context.Profiles.TryGetValue(connectionEntity, out var profile) && !string.IsNullOrEmpty(profile.InventoryJson)
+                    ? RaidInventoryTransport.Decode(profile.InventoryJson).ExtractLoadout() : Inventory.InventoryGraph.Create(stash: false);
+                SetRaidInventory(ref state, connectionEntity, graph, 0);
+            }
+
+            var weaponId = characterIndex == 2 ? DollSingerWeapons.None : characterIndex == 1 ? (uint)1 : 0;
             
             var weaponData = WeaponManager.Instance.WeaponRegistry.GetWeaponData(weaponId);
-            var magazineSize = weaponData != null ? weaponData.MagazineSize : 30; // Default to 30 if weapon not found
+            var magazineSize = weaponData != null ? weaponData.MagazineSize : 0;
 
             ecb.SetComponent(playerEntity, new GhostOwner { NetworkId = ownerNetworkId.Value });
             ecb.AddComponent(playerEntity, new PlayerClientCommandInputLookup { ClientCommandInputEntity = clientInputEntity });
@@ -239,9 +247,8 @@ namespace Unity.MP_FPS
                 CurrentHealth = 100f,
                 EquippedWeaponID = weaponId,
                 CurrentAmmo = magazineSize,
-                StoredHaloAmmo = characterIndex == 2 ? magazineSize : 0,
-                StoredRevolverAmmo = characterIndex == 2 ?
-                    WeaponManager.Instance.WeaponRegistry.GetWeaponData(DollSingerWeapons.Revolver)?.MagazineSize ?? 0 : 0
+                InventoryWeapons = characterIndex == 2,
+                PrimaryWeaponID = DollSingerWeapons.None, SecondaryWeaponID = DollSingerWeapons.None, PistolWeaponID = DollSingerWeapons.None
             });
             ecb.AddComponent(playerEntity, new PlayerCharacterInitialized());
             ecb.SetComponentEnabled<PlayerCharacterInitialized>(playerEntity, false);

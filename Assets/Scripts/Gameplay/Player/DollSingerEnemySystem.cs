@@ -290,8 +290,8 @@ namespace Unity.MP_FPS
                 EntityManager.SetComponentData(player, LocalTransform.FromPositionRotation(position + Vector3.up * .1f, quaternion.identity));
                 int ammo = WeaponManager.Instance.WeaponRegistry.GetWeaponData(2)?.MagazineSize ?? 30;
                 EntityManager.SetComponentData(player, new PredictedPlayerGhost { MaxHealth = 100, CurrentHealth = 100,
-                    EquippedWeaponID = 2, CurrentAmmo = ammo, StoredHaloAmmo = ammo,
-                    StoredRevolverAmmo = WeaponManager.Instance.WeaponRegistry.GetWeaponData(3)?.MagazineSize ?? 6 });
+                    EquippedWeaponID = DollSingerWeapons.None, CurrentAmmo = 0, InventoryWeapons = true,
+                    PrimaryWeaponID = DollSingerWeapons.None, SecondaryWeaponID = DollSingerWeapons.None, PistolWeaponID = DollSingerWeapons.None });
                 EntityManager.SetComponentData(player, new GhostGameObjectGuid { Guid = GhostGameObject.GenerateRandomHash() });
                 EntityManager.SetComponentData(player, new PlayerGhost.PlayerData { Name = name });
                 EntityManager.AddComponentData(player, new PlayerCharacterInitialized());
@@ -299,6 +299,7 @@ namespace Unity.MP_FPS
                 EntityManager.AddComponentData(player, new PlayerClientCommandInputLookup { ClientCommandInputEntity = input });
                 EntityManager.AddComponentData(player, new DollSingerEnemy { InputEntity = input });
                 var inventory = InventoryGraph.Create(stash: false);
+                inventory.Equipped("Primary").LoadedAmmo = ammo;
                 if (map.EnemyCells > 0) inventory.AddSupply("cells", map.EnemyCells, foundInRaid: true);
                 EntityManager.AddComponentObject(player, new DollSingerEnemyBrain { Inventory = inventory,
                     Seed = i + 1, Goal = position, ProgressPosition = position, SpawnTime = SystemAPI.Time.ElapsedTime,

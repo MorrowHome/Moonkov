@@ -81,8 +81,9 @@ namespace Unity.MP_FPS
             {
                 bool cellReady = PrepareReloadCell(brain.Inventory);
                 if (cellReady) input.SetFlag(PlayerInput.InputFlag.Reload, true);
-                else if (health.EquippedWeaponID == 2 && health.StoredRevolverAmmo > 0) input.SetFlag(PlayerInput.InputFlag.EquipRevolver, true);
-                else if (health.EquippedWeaponID == 3 && health.StoredHaloAmmo > 0) input.SetFlag(PlayerInput.InputFlag.EquipHalo, true);
+                else if (health.EquippedWeaponSlot != 3 && health.PistolAmmo > 0) input.SetFlag(PlayerInput.InputFlag.EquipPistol, true);
+                else if (health.EquippedWeaponSlot != 1 && health.PrimaryAmmo > 0) input.SetFlag(PlayerInput.InputFlag.EquipHalo, true);
+                else if (health.EquippedWeaponSlot != 2 && health.SecondaryAmmo > 0) input.SetFlag(PlayerInput.InputFlag.EquipRevolver, true);
             }
             if (now >= brain.NextBurst && fighting && brain.Visible)
             {

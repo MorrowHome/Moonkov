@@ -48,9 +48,10 @@ namespace Unity.MP_FPS.Inventory
                 new ItemDefinition("alloy", "Lunar alloy", ItemKind.Material, 2, 1, 10, .6f),
                 new ItemDefinition("cells", "Energy cell", ItemKind.Cell, 1, 1, 12, .2f),
                 new ItemDefinition("helmet", "L-01 Flight helmet", ItemKind.Helmet, 2, 2, 1, 1.2f),
-                new ItemDefinition("rifle", "AR-7 Field rifle", ItemKind.LongGun, 4, 2, 1, 3.2f),
-                new ItemDefinition("compact", "M-12 Compact rifle", ItemKind.LongGun, 3, 2, 1, 2.4f),
-                new ItemDefinition("pistol", "P-03 Sidearm", ItemKind.Pistol, 2, 1, 1, .8f),
+                new ItemDefinition("rifle", "Halo Rifle", ItemKind.LongGun, 2, 2, 1, 3.2f),
+                new ItemDefinition("compact", "Halo Rifle (Compact)", ItemKind.LongGun, 2, 2, 1, 2.4f),
+                new ItemDefinition("pistol", "Halo Revolver", ItemKind.Pistol, 1, 1, 1, .8f),
+                new ItemDefinition("shotgun", "Halo Shotgun", ItemKind.LongGun, 2, 2, 1, 3.2f),
                 new ItemDefinition("rig", "R-04 Chest rig", ItemKind.Rig, 2, 3, 1, .9f,
                     new InventoryRegion("left", 1, 2), new InventoryRegion("center", 2, 2), new InventoryRegion("right", 1, 2)),
                 new ItemDefinition("backpack", "B-08 Expedition pack", ItemKind.Backpack, 3, 3, 1, 1.3f, new InventoryRegion("main", 5, 6)),
@@ -63,6 +64,8 @@ namespace Unity.MP_FPS.Inventory
     [Serializable] public sealed class InventoryItem
     {
         public string Id, Code, Parent, Region; public int X, Y, Quantity = 1; public bool Rotated, FoundInRaid;
+        // -1 is a new weapon; live ammo follows the item through moves/deploy/settlement.
+        public int LoadedAmmo = -1;
         public InventoryItem Clone() => (InventoryItem)MemberwiseClone();
     }
     [Serializable] public sealed class InventoryCommand
@@ -73,9 +76,10 @@ namespace Unity.MP_FPS.Inventory
     [Serializable] public sealed class InventoryGraph
     {
         public int Version = 1, StashRows = 80, LootRows = 5;
+        public int WeaponKitVersion;
         public List<InventoryItem> Items = new List<InventoryItem>();
         public InventoryItem Find(string id) => Items.Find(i => i.Id == id);
-        public InventoryGraph Clone() => new InventoryGraph { Version = Version, StashRows = StashRows, LootRows = LootRows, Items = Items.ConvertAll(i => i.Clone()) };
+        public InventoryGraph Clone() => new InventoryGraph { Version = Version, StashRows = StashRows, LootRows = LootRows, WeaponKitVersion = WeaponKitVersion, Items = Items.ConvertAll(i => i.Clone()) };
         public int Rows(string parent, InventoryRegion region) => Find(parent)?.Code == "stash" ? StashRows : Find(parent)?.Code == "loot" ? LootRows : region.Height;
         public IEnumerable<InventoryItem> Children(string parent, string region = null) => Items.Where(i => i.Parent == parent && (region == null || i.Region == region));
         public string RootOf(string id)
@@ -98,8 +102,29 @@ namespace Unity.MP_FPS.Inventory
             {
                 g.Items.Add(new InventoryItem { Id = Guid.NewGuid().ToString("D"), Code = "rig", Parent = "equipment", Region = "ChestRig" });
                 g.Items.Add(new InventoryItem { Id = Guid.NewGuid().ToString("D"), Code = "backpack", Parent = "equipment", Region = "Backpack" });
+                g.AddStarterWeapons(!stash);
             }
             return g;
+        }
+        public void AddStarterWeapons(bool equipped = false)
+        {
+            if (WeaponKitVersion >= 1) return;
+            foreach (var pair in new[] { (Code:"rifle", Slot:"Primary"), (Code:"shotgun", Slot:"Secondary"), (Code:"pistol", Slot:"Pistol") })
+            {
+                if (Items.Any(i => i.Code == pair.Code)) continue;
+                var item = new InventoryItem { Id = Guid.NewGuid().ToString("D"), Code = pair.Code };
+                if (equipped && Equipped(pair.Slot) == null)
+                { item.Parent = "equipment"; item.Region = pair.Slot; }
+                else
+                {
+                    if (Find("stash") == null) continue;
+                    while (!FindSpace(item, "stash", out _, out _, out _) && StashRows < 4096) StashRows = Math.Min(4096, StashRows * 2);
+                    if (!FindSpace(item, "stash", out var region, out var x, out var y)) throw new InvalidOperationException("No space for starter halo weapon.");
+                    item.Parent = "stash"; item.Region = region; item.X = x; item.Y = y;
+                }
+                Items.Add(item);
+            }
+            WeaponKitVersion = 1;
         }
         private InventoryRegion RegionFor(string parent, string region) => InventoryCatalog.Get(Find(parent)?.Code)?.Regions.FirstOrDefault(r => r.Id == region);
         public InventoryError CanPlace(InventoryItem item, string parent, string region, int x, int y, bool rotated, string ignore = null)
@@ -206,7 +231,7 @@ namespace Unity.MP_FPS.Inventory
             {
                 if (item == null) return InventoryError.Invalid;
                 var def = InventoryCatalog.Get(item.Code);
-                if (item.Id == null || !ids.Add(item.Id) || def == null || item.Quantity <= 0 || item.Quantity > def.MaxStack) return InventoryError.Invalid;
+                if (item.Id == null || !ids.Add(item.Id) || def == null || item.Quantity <= 0 || item.Quantity > def.MaxStack || item.LoadedAmmo < -1 || item.LoadedAmmo > 10000) return InventoryError.Invalid;
                 if (def.Kind == ItemKind.Root)
                 { if (item.Id != item.Code || item.Parent != null || item.Quantity != 1) return InventoryError.Invalid; }
                 else if (!Guid.TryParse(item.Id, out _) || item.Parent == null) return InventoryError.Invalid;

@@ -16,7 +16,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
     private static uint s_PlayerMovementTick;
     private static readonly int s_HitscanLayerMask = ~LayerMask.GetMask("ClientPlayer");
     private static readonly int s_ProjectileTargetLayerMask = ~LayerMask.GetMask( "ClientPlayer", "ServerPlayer" );
-    
+
     public static uint PlayerMovementTick => s_PlayerMovementTick;
 
     private int m_LastSeenUnityFrame;
@@ -29,7 +29,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
     {
         s_PlayerMovementTick = 0;
     }
-    
+
     private NativeList<ClientCommandInput> m_ProcessedClientInputCommands;
 
     protected override void OnCreate()
@@ -128,7 +128,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
         m_ProcessedClientInputCommands.Clear();
         var commands = m_ProcessedClientInputCommands;
         var clientCommandInputBufferLookup = SystemAPI.GetBufferLookup<ClientCommandInput>(true);
-        
+
         foreach(var (predictedClient, entity) in
                 SystemAPI.Query<RefRW<PredictedClientInput>>()
                     .WithEntityAccess()
@@ -137,7 +137,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
             // GameDebug.BurstLog("[PlayerPredictionSystem] PredictedClientInput is Simulate");
             if (!clientCommandInputBufferLookup.TryGetBuffer(entity, out var inputCommands) || inputCommands.Length == 0)
                 continue;
-            
+
             if (isFirstPredictionTick)
             {
                 predictedClient.ValueRW.LastProcessedServerTick = tick - 1;
@@ -217,9 +217,9 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                             bool mustReload = (wantsToShoot || weaponData.AutoReloadWhenEmpty) && predictedPlayer.ValueRO.CurrentAmmo <= 0;
 
                             if ((wantsToReload || mustReload) &&
-                                // The server reserves an accessible cell before authorizing a revolver reload.
+                                // The server reserves an accessible cell before authorizing a halo reload.
                                 // Predicting one without that reservation causes empty/full ammo oscillation.
-                                predictedPlayer.ValueRO.EquippedWeaponID != DollSingerWeapons.Revolver &&
+                                !DollSingerWeapons.IsHalo(predictedPlayer.ValueRO.EquippedWeaponID) &&
                                 !predictedPlayer.ValueRO.ControllerState.IsReloadingState &&
                                 predictedPlayer.ValueRO.CurrentAmmo < weaponData.MagazineSize)
                             {
@@ -227,7 +227,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                                 predictedPlayer.ValueRW.ReloadTimer = weaponData.ReloadTime;
                                 predictedPlayer.ValueRW.LastReloadTick = commandInput.Tick.TickIndexForValidTick;
                             }
-                            
+
                             if (wantsToShoot && !predictedPlayer.ValueRO.ControllerState.IsReloadingState && predictedPlayer.ValueRO.CurrentAmmo > 0 && predictedPlayer.ValueRO.WeaponCooldown >= weaponData.CooldownInMs)
                             {
                                 predictedPlayer.ValueRW.WeaponCooldown = 0f;
@@ -237,7 +237,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                                 float3 eyePosition = shotRay.origin;
                                 float3 aimDirection = shotRay.direction;
                                 Vector3 shotOriginPosition = shotRay.origin;
-                                    
+
                                 // Replayed/partial predictions must not create another visible halo bolt.
                                 if (VisualEffectManager.ClientInstance != null &&
                                     (!DollSingerWeapons.IsHalo(predictedPlayer.ValueRO.EquippedWeaponID) || networkTime.IsFirstTimeFullyPredictingTick))
@@ -259,31 +259,34 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                                 }
                                 else if (weaponData.Type == WeaponType.Projectile && networkTime.IsFirstTimeFullyPredictingTick)
                                 {
-                                    var spawnRotation = Quaternion.LookRotation(shotRay.direction);
-
-                                    controllerLink.Controller.SpawnPredictedProjectile(
-                                        commandInput.Tick.TickIndexForValidTick,
-                                        predictedPlayer.ValueRO.EquippedWeaponID,
-                                        shotOriginPosition,
-                                        spawnRotation);
+                                    for (int pellet = 0; pellet < Mathf.Clamp(weaponData.PelletCount, 1, 32); pellet++)
+                                    {
+                                        var spawnRotation = Quaternion.LookRotation(WeaponSpread.Direction(shotRay.direction, weaponData, pellet, commandInput.Tick.TickIndexForValidTick));
+                                        controllerLink.Controller.SpawnPredictedProjectile(
+                                            commandInput.Tick.TickIndexForValidTick,
+                                            predictedPlayer.ValueRO.EquippedWeaponID,
+                                            shotOriginPosition,
+                                            spawnRotation, pellet);
+                                    }
                                 }
                             }
 
-                            FirstPersonController.AccumulateMovement(ref predictedPlayer.ValueRW.ControllerState,
-                                ref predictedPlayer.ValueRW.AccumulatedMovement,
-                                input,
-                                controllerConsts.ValueRO.ControllerConsts, accumulateDT);
-                            
-                            if (predictedPlayer.ValueRW.ControllerState.JumpTriggered)
-                            {
-                                predictedPlayer.ValueRW.LastJumpTick = commandInput.Tick.TickIndexForValidTick;
-                                predictedPlayer.ValueRW.ControllerState.JumpTriggered = false;
-                            }
-                            if (predictedPlayer.ValueRW.ControllerState.LandTriggered)
-                            {
-                                predictedPlayer.ValueRW.LastLandTick = commandInput.Tick.TickIndexForValidTick;
-                                predictedPlayer.ValueRW.ControllerState.LandTriggered = false;
-                            }
+                        }
+                        DollSingerWeapons.StoreAmmo(ref predictedPlayer.ValueRW);
+                        FirstPersonController.AccumulateMovement(ref predictedPlayer.ValueRW.ControllerState,
+                            ref predictedPlayer.ValueRW.AccumulatedMovement,
+                            input,
+                            controllerConsts.ValueRO.ControllerConsts, accumulateDT);
+
+                        if (predictedPlayer.ValueRW.ControllerState.JumpTriggered)
+                        {
+                            predictedPlayer.ValueRW.LastJumpTick = commandInput.Tick.TickIndexForValidTick;
+                            predictedPlayer.ValueRW.ControllerState.JumpTriggered = false;
+                        }
+                        if (predictedPlayer.ValueRW.ControllerState.LandTriggered)
+                        {
+                            predictedPlayer.ValueRW.LastLandTick = commandInput.Tick.TickIndexForValidTick;
+                            predictedPlayer.ValueRW.ControllerState.LandTriggered = false;
                         }
                     }
                 }
@@ -303,7 +306,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
 
         bool checkForPredictionErrors = CheckForPredictionErrors.IsEnabled;
         var predictedPlayerGhostStatesBufferLookup = SystemAPI.GetBufferLookup<PredictedPlayerGhostState>(true);
-        
+
         foreach (var (predictedPlayer,
                      transform,
                      playerControllerConsts,
@@ -317,7 +320,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
             var controllerLink = SystemAPI.ManagedAPI.GetComponent<PlayerControllerLink>(entity);
             var controllerConsts = playerControllerConsts.ValueRO.ControllerConsts;
             var predictedPlayerGhostStates = predictedPlayerGhostStatesBufferLookup[entity];
-            
+
             if (isFinalPredictionTick || predictedPlayer.ValueRO.RequestApplyMovement)
             {
                 if (math.lengthsq(predictedPlayer.ValueRO.AccumulatedMovement) > 0f)
@@ -369,7 +372,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
 
         ecb.Playback(EntityManager);
     }
-    
+
     [FeatureToggle(Name = "prediction_enabletickbatching", Default = false)]
     private static readonly FeatureToggle EnableTickBatching;
 

@@ -87,7 +87,8 @@ namespace Unity.MP_FPS.Client
         public static StashArtKind Art(string code)
         {
             switch (code) { case "dust":return StashArtKind.Dust; case "alloy":return StashArtKind.Alloy; case "cells":return StashArtKind.Cell;
-                case "helmet":return StashArtKind.Helmet; case "rifle":case "compact":return StashArtKind.Rifle; case "pistol":return StashArtKind.Pistol;
+                case "helmet":return StashArtKind.Helmet; case "rifle":case "compact":return StashArtKind.HaloRifle; case "pistol":return StashArtKind.HaloRevolver;
+                case "shotgun":return StashArtKind.HaloShotgun;
                 case "rig":return StashArtKind.ChestRig; case "backpack":case "small_pack":return StashArtKind.Backpack; default:return StashArtKind.None; }
         }
         public void Present(InventoryGraph graph, string message = null, bool operationCompleted = true, int lootId=-1)

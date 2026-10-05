@@ -46,7 +46,7 @@ namespace Unity.MP_FPS
                 foreach (var prediction in Projectile.PredictedProjectiles)
                 {
                     if (prediction.Instance != null && prediction.SpawnTick == serverInputTick &&
-                        prediction.WeaponID == projectileData.ValueRO.WeaponID)
+                        prediction.WeaponID == projectileData.ValueRO.WeaponID && prediction.PelletIndex == projectileData.ValueRO.PelletIndex)
                     {
                         bestMatchInfo = prediction;
                         break;

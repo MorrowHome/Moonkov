@@ -137,9 +137,11 @@ namespace Unity.MP_FPS
                 float fraction = magazineSize > 0 ? (float)playerData.CurrentAmmo / magazineSize : 0;
                 m_AmmoLabel.text = playerData.EquippedWeaponID == DollSingerWeapons.Revolver
                     ? $"REVOLVER / {playerData.CurrentAmmo} / 6"
+                    : playerData.EquippedWeaponID == DollSingerWeapons.Shotgun ? $"SHOTGUN / {playerData.CurrentAmmo} / {magazineSize}"
+                    : weaponData == null ? "UNARMED"
                     : fraction > .75f ? "ENERGY / HIGH" : fraction > .4f ? "ENERGY / MEDIUM" : fraction > .15f ? "ENERGY / LOW" : "ENERGY / CRITICAL";
                 var ammoPanel = m_RootElement.Q<VisualElement>("weapon-info-container");
-                if (ammoPanel != null) ammoPanel.style.display = playerData.EquippedWeaponID == DollSingerWeapons.Revolver || alwaysShow || statusCheck || fraction <= .15f || playerData.ControllerState.IsReloadingState ? DisplayStyle.Flex : DisplayStyle.None;
+                if (ammoPanel != null) ammoPanel.style.display = playerData.EquippedWeaponID == DollSingerWeapons.Revolver || playerData.EquippedWeaponID == DollSingerWeapons.Shotgun || alwaysShow || statusCheck || fraction <= .15f || playerData.ControllerState.IsReloadingState ? DisplayStyle.Flex : DisplayStyle.None;
                 if (playerData.CurrentAmmo == 0) m_AmmoLabel.style.color = Color.red;
                 else if (playerData.CurrentAmmo <= magazineSize * 0.3f) m_AmmoLabel.style.color = Color.yellow;
                 else m_AmmoLabel.style.color = Color.white;

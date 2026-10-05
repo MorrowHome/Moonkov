@@ -1031,10 +1031,10 @@ public class FirstPersonController : MonoBehaviour
     }
 
     public void SpawnPredictedProjectile(uint spawnTick, uint weaponId, Vector3 spawnPosition,
-        Quaternion spawnRotation)
+        Quaternion spawnRotation, int pelletIndex = 0)
     {
         foreach (var shot in Projectile.PredictedProjectiles)
-            if (shot.SpawnTick == spawnTick && shot.WeaponID == weaponId) return;
+            if (shot.SpawnTick == spawnTick && shot.WeaponID == weaponId && shot.PelletIndex == pelletIndex) return;
 
         var player = GetComponent<PlayerGhost>();
         var weapon = WeaponManager.Instance.WeaponRegistry.GetWeaponData(weaponId);
@@ -1052,7 +1052,7 @@ public class FirstPersonController : MonoBehaviour
             GhostBridgeBootstrap.Instance.ClientGameObjectHierarchy.transform);
         instance.GetComponent<Projectile>().InitializePrediction(weaponId, spawnPosition, spawnRotation, transform);
         Projectile.PredictedProjectiles.Add(new Projectile.PredictedProjectileInfo
-        { Instance = instance, SpawnTick = spawnTick, WeaponID = weaponId, CreatedAt = Time.time });
+        { Instance = instance, SpawnTick = spawnTick, WeaponID = weaponId, PelletIndex = pelletIndex, CreatedAt = Time.time });
     }
 
     private static bool AccumulateJump(ref ControllerState state, in PlayerInput input, in ControllerConsts consts,

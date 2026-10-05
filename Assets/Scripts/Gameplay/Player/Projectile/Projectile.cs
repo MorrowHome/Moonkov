@@ -19,6 +19,7 @@ namespace Unity.MP_FPS
             [GhostField] public uint SpawnTick;
             [GhostField] public uint WeaponID;
             [GhostField] public uint FireTick;
+            [GhostField] public int PelletIndex;
             [GhostField] public float3 Origin;
             [GhostField] public float3 InitialVelocity;
         }
@@ -28,6 +29,7 @@ namespace Unity.MP_FPS
             public GameObject Instance;
             public uint SpawnTick;
             public uint WeaponID;
+            public int PelletIndex;
             public float CreatedAt;
         }
 
@@ -100,7 +102,7 @@ namespace Unity.MP_FPS
         private void TryCreateHaloVisual()
         {
             if (m_HaloVisual != null || !m_Initialized || m_Stopped || !m_Weapon.ShowProjectileBody ||
-                (m_Data.WeaponID != DollSingerWeapons.Halo && m_Data.WeaponID != DollSingerWeapons.Revolver)) return;
+                !DollSingerWeapons.IsHalo(m_Data.WeaponID)) return;
             // The projectile can arrive before its shooter ghost on an observer.
             if (m_Shooter == null) ResolveShooter(false);
             if (m_Shooter == null) return;
@@ -109,7 +111,7 @@ namespace Unity.MP_FPS
             var visuals = new GameObject("Halo projectile visuals");
             visuals.transform.SetParent(transform, false);
             m_HaloVisual = visuals.AddComponent<HaloProjectileVisual>();
-            m_HaloVisual.Configure(source, m_Data.WeaponID == DollSingerWeapons.Revolver);
+            m_HaloVisual.Configure(source, m_Data.WeaponID == DollSingerWeapons.Revolver, m_Data.WeaponID == DollSingerWeapons.Shotgun);
             m_HaloTrailSeconds = Mathf.Max(0.001f, source.networkBoltTrailSeconds);
             if (m_Body != null) m_Body.enabled = false;
             UpdateHaloVisual();

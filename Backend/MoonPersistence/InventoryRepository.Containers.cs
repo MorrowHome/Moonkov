@@ -15,7 +15,16 @@ public sealed partial class InventoryRepository
         await using (var query = new NpgsqlCommand("SELECT inventory FROM inventory_profiles WHERE player_id=$1", connection, transaction))
         {
             query.Parameters.AddWithValue(playerId);
-            if (await query.ExecuteScalarAsync(ct) is string json) return Decode(json);
+            if (await query.ExecuteScalarAsync(ct) is string json)
+            {
+                var existing = Decode(json);
+                if (existing.WeaponKitVersion < 1)
+                {
+                    existing.AddStarterWeapons(); existing.Version++;
+                    await WriteGraphAsync(connection, transaction, playerId, existing, ct);
+                }
+                return existing;
+            }
         }
         var graph = InventoryGraph.Create();
         var legacy = new List<(string Code, int Count, string Id)>();

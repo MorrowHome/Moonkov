@@ -22,6 +22,7 @@ namespace Unity.MP_FPS
         public uint SpawnTick;
         public uint WeaponId;
         public uint FireTick;
+        public int PelletIndex;
         public float3 InitialVelocity;
     }
 
@@ -57,6 +58,17 @@ namespace Unity.MP_FPS
         public static uint PlayerMovementTick => s_PlayerMovementTick;
 
         private ComponentLookup<GhostOwner> ghostOwnerLookup;
+
+        private Inventory.InventoryGraph WeaponInventory(Entity player)
+        {
+            if (EntityManager.HasComponent<DollSingerEnemyBrain>(player)) return EntityManager.GetComponentObject<DollSingerEnemyBrain>(player).Inventory;
+            if (!ghostOwnerLookup.HasComponent(player) || !SystemAPI.TryGetSingletonBuffer<ClientsMap>(out var clients)) return null;
+            int owner = ghostOwnerLookup[player].NetworkId;
+            if (owner <= 0 || owner >= clients.Length) return null;
+            var connection = clients[owner].ConnectionEntity;
+            return EntityManager.Exists(connection) && EntityManager.HasComponent<RaidInventoryState>(connection)
+                ? EntityManager.GetComponentObject<RaidInventoryState>(connection).Graph : null;
+        }
 
         private bool TryReserveHaloCell(Entity player, uint weaponId)
         {
@@ -277,6 +289,10 @@ namespace Unity.MP_FPS
             // including newly spawned head hitboxes, rather than the previous physics step.
             UnityEngine.Physics.SyncTransforms();
 
+            foreach (var (player, entity) in SystemAPI.Query<RefRW<PredictedPlayerGhost>>().WithAll<Simulate>().WithEntityAccess())
+                if (player.ValueRO.InventoryWeapons)
+                    DollSingerWeapons.SyncEquipment(ref player.ValueRW, WeaponInventory(entity), WeaponManager.Instance.WeaponRegistry);
+
             foreach (var predictedPlayer in SystemAPI.Query<RefRW<PredictedPlayerGhost>>()
                          .WithAll<Simulate>())
             {
@@ -324,6 +340,7 @@ namespace Unity.MP_FPS
 
                     bool switchedWeapon = DollSingerWeapons.TryEquip(ref predictedPlayer.ValueRW, commandInput.PlayerInput,
                         WeaponManager.Instance.WeaponRegistry);
+                    if (switchedWeapon) DollSingerWeapons.SyncEquipment(ref predictedPlayer.ValueRW, WeaponInventory(entity), WeaponManager.Instance.WeaponRegistry);
                     var weaponData =
                         WeaponManager.Instance.WeaponRegistry.GetWeaponData(predictedPlayer.ValueRO.EquippedWeaponID);
                     if (weaponData != null)
@@ -435,19 +452,23 @@ namespace Unity.MP_FPS
                                         GhostSpawner.FindGhostPrefabEntity(weaponData.ProjectileGhostPrefab.GhostGuid);
                                     if (prefabEntity != Entity.Null)
                                     {
-                                        Quaternion spawnRotation = Quaternion.LookRotation(aimDirection);
-
-                                        projectileSpawnList.Add(new ProjectileSpawnData
+                                        for (int pellet = 0; pellet < Mathf.Clamp(weaponData.PelletCount, 1, 32); pellet++)
                                         {
-                                            Prefab = prefabEntity,
-                                            Position = shotOriginPosition,
-                                            Rotation = spawnRotation,
-                                            OwnerNetworkId = ghostOwnerLookup[entity].NetworkId,
-                                            SpawnTick = commandInput.Tick.TickIndexForValidTick,
-                                            WeaponId = predictedPlayer.ValueRO.EquippedWeaponID,
-                                            FireTick = serverTick,
-                                            InitialVelocity = aimDirection * weaponData.ProjectileSpeed
+                                            Vector3 pelletDirection = WeaponSpread.Direction(aimDirection, weaponData, pellet, commandInput.Tick.TickIndexForValidTick);
+                                            Quaternion spawnRotation = Quaternion.LookRotation(pelletDirection);
+                                            projectileSpawnList.Add(new ProjectileSpawnData
+                                            {
+                                                Prefab = prefabEntity,
+                                                Position = shotOriginPosition,
+                                                Rotation = spawnRotation,
+                                                OwnerNetworkId = ghostOwnerLookup[entity].NetworkId,
+                                                SpawnTick = commandInput.Tick.TickIndexForValidTick,
+                                                WeaponId = predictedPlayer.ValueRO.EquippedWeaponID,
+                                                FireTick = serverTick,
+                                                PelletIndex = pellet,
+                                                InitialVelocity = pelletDirection * weaponData.ProjectileSpeed
                                         });
+                                        }
                                     }
 
                                     break;
@@ -457,6 +478,9 @@ namespace Unity.MP_FPS
                     }
                 }
             }
+
+            foreach (var (player, entity) in SystemAPI.Query<RefRW<PredictedPlayerGhost>>().WithAll<Simulate>().WithEntityAccess())
+                if (player.ValueRO.InventoryWeapons) DollSingerWeapons.SaveActiveAmmo(ref player.ValueRW, WeaponInventory(entity));
 
             foreach (var spawnData in projectileSpawnList)
             {
@@ -474,6 +498,7 @@ namespace Unity.MP_FPS
                             SpawnTick = spawnData.SpawnTick,
                             WeaponID = spawnData.WeaponId,
                             FireTick = spawnData.FireTick,
+                            PelletIndex = spawnData.PelletIndex,
                             Origin = spawnData.Position,
                             InitialVelocity = spawnData.InitialVelocity
                         });

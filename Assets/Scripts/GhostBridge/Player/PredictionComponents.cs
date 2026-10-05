@@ -61,6 +61,15 @@ public struct PredictedPlayerGhost : IComponentData
     // Only the inactive weapon uses its stored ammo; CurrentAmmo owns the equipped weapon.
     [GhostField] public int StoredHaloAmmo;
     [GhostField] public int StoredRevolverAmmo;
+    [GhostField] public bool InventoryWeapons;
+    [GhostField] public int EquippedWeaponSlot;
+    [GhostField] public Unity.Collections.FixedString64Bytes EquippedWeaponItem;
+    [GhostField] public uint PrimaryWeaponID;
+    [GhostField] public uint SecondaryWeaponID;
+    [GhostField] public uint PistolWeaponID;
+    [GhostField] public int PrimaryAmmo;
+    [GhostField] public int SecondaryAmmo;
+    [GhostField] public int PistolAmmo;
     [GhostField] public float LastDamageAmount;
     [GhostField] public uint LastHitTick;
     [GhostField] public uint LastShotTick;

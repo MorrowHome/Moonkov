@@ -10,7 +10,8 @@ namespace Unity.MP_FPS
             bool contact = brain.Target != Unity.Entities.Entity.Null && brain.Confidence > .2f;
             bool lowHealth = health.CurrentHealth < health.MaxHealth * m_Tuning.RetreatHealthFraction;
             bool empty = health.CurrentAmmo == 0;
-            int reserveAmmo = health.EquippedWeaponID == 2 ? health.StoredRevolverAmmo : health.StoredHaloAmmo;
+            int reserveAmmo = (health.EquippedWeaponSlot != 1 ? health.PrimaryAmmo : 0) +
+                (health.EquippedWeaponSlot != 2 ? health.SecondaryAmmo : 0) + (health.EquippedWeaponSlot != 3 ? health.PistolAmmo : 0);
             bool noResources = empty && reserveAmmo == 0 && brain.Inventory.Count("cells") == 0;
             if (lowHealth || noResources || brain.LootedCaches >= m_Tuning.DesiredCaches ||
                 now - brain.SpawnTime > map.RaidDuration * (m_Tuning.DepartureFraction + (brain.Seed % 3 - 1) * .08f))
