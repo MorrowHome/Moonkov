@@ -336,3 +336,21 @@
 .stash-root .moon-observer-button, .moonkov-login .moon-observer-button { height: 44px; margin-left: 12px; padding: 0 20px; background-color: rgba(16, 22, 30, 0.9); border-width: 1px; border-color: rgba(183, 206, 220, 0.3); border-radius: 0; color: #ECECE6; font-size: 12px; letter-spacing: 1px; }
 .stash-root .moon-observer-button:hover, .moonkov-login .moon-observer-button:hover { background-color: #B7CEDC; color: #030508; }
 .stash-root .moon-observer-telemetry, .moonkov-login .moon-observer-telemetry { position: absolute; left: 4%; right: 4%; bottom: 11%; -unity-text-align: middle-center; font-size: 10px; letter-spacing: 2px; color: rgba(183, 206, 220, 0.55); }
+
+/* Account supplier stock, orders and emergency recovery. */
+.stash-root .terminal-shop-window { width: 720px; max-width: 88%; max-height: 82%; }
+.terminal-shop-head { justify-content: space-between; align-items: center; margin-top: 12px; }
+.terminal-shop-tabs { margin-top: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+.terminal-shop-tabs .terminal-button { margin-right: 10px; }
+.terminal-shop-list { flex-grow: 1; min-height: 160px; max-height: 390px; }
+.terminal-shop-product { flex-direction: row; align-items: center; padding: 12px 0; border-bottom-width: 1px; border-bottom-color: rgba(110, 119, 105, 0.28); min-height: 106px; }
+.terminal-shop-art { width: 78px; height: 78px; flex-shrink: 0; margin-right: 16px; }
+.terminal-shop-description { flex-grow: 1; flex-shrink: 1; min-width: 100px; margin-right: 12px; }
+.terminal-shop-description .terminal-copy { white-space: normal; font-size: 11px; }
+.terminal-shop-order { width: 184px; flex-shrink: 0; }
+.terminal-shop-order .terminal-primary, .terminal-shop-order > .terminal-button { height: 38px; margin-top: 4px; font-size: 11px; letter-spacing: 1px; }
+.terminal-shop-quantity { justify-content: flex-end; align-items: center; }
+.terminal-shop-quantity .terminal-button { width: 28px; height: 24px; padding: 0; margin: 0 5px; }
+.stash-root .terminal-shop-quantity .terminal-button:hover, .stash-root .terminal-shop-quantity .terminal-button:focus { padding-left: 0; }
+.terminal-shop-quantity .terminal-copy { margin: 0; min-width: 36px; -unity-text-align: middle-center; }
+.terminal-shop-status { white-space: normal; margin-top: 12px; min-height: 32px; }

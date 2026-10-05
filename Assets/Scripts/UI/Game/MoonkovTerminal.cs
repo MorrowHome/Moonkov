@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client
 {
-    // Navigation and presentation. Economy actions remain disabled until a server API exists.
+    // Navigation and presentation; shop transactions go through the account inventory service.
     public sealed class MoonkovTerminal : IDisposable
     {
         private readonly VisualElement m_Root, m_Gear, m_Content, m_Nav, m_NavTabs, m_Indicator, m_Chrome, m_FooterTicker;
@@ -288,20 +288,22 @@ namespace Unity.MP_FPS.Client
                 Text(card, names[i], "terminal-heading"); Text(card, copy[i], "terminal-copy");
                 var standing = new VisualElement(); standing.AddToClassList("terminal-standing"); card.Add(standing);
                 for (int s = 0; s < 6; s++) { var pip = new VisualElement(); pip.AddToClassList("terminal-standing-pip"); standing.Add(pip); }
-                Stat(card, "CONTRACT", "NOT ESTABLISHED");
+                Stat(card, "SUPPLY", "HALO WEAPONS / ENERGY CELLS");
                 ActionButton(card, "VIEW SUPPLIER", () => SupplierDetail(names[index]));
             }
             var foot = Row(m_Content); foot.AddToClassList("terminal-page-foot");
-            Text(foot, "No trading contracts or player offers are available yet.", "terminal-copy");
+            Text(foot, "Trade with moon dust. Lost every halo? Emergency supply can get you back into the field.", "terminal-copy");
+            ActionButton(foot, "EMERGENCY SUPPLY", () => OpenShop("LUNAR EMERGENCY SUPPLY", true), "terminal-primary");
             Disabled(foot, "OPEN PLAYER MARKET", "The player market is not open.");
         }
         private void SupplierDetail(string name)
         {
+            OpenShop(name);
+        }
+        private void OpenShop(string name, bool recovery = false)
+        {
             var window = m_Windows.Open(name);
-            var tabs = Row(window);
-            foreach (var tab in new[] { "BUY", "SELL", "TASKS", "SERVICES" }) Disabled(tabs, tab, "Supplier contracts are not established.");
-            Text(window, "AWAITING SUPPLY CONTRACT", "terminal-title");
-            Text(window, "Buying, selling and reputation will be available once this supplier establishes a contract with your ship.", "terminal-copy");
+            new MoonkovShopView(window, () => { m_Windows.Close(window); Navigate(1); }, recovery);
         }
 
         private void Operation()

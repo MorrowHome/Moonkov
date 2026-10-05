@@ -107,3 +107,11 @@ DO $$ BEGIN
     END IF;
 END $$;
 INSERT INTO schema_version VALUES (5) ON CONFLICT DO NOTHING;
+
+-- Version 6: account-scoped transaction receipts make network retries safe.
+CREATE TABLE IF NOT EXISTS inventory_trades (
+    player_id uuid NOT NULL REFERENCES players(id), request_id uuid NOT NULL,
+    request_hash text NOT NULL, created_at timestamptz NOT NULL DEFAULT now(),
+    PRIMARY KEY (player_id, request_id)
+);
+INSERT INTO schema_version VALUES (6) ON CONFLICT DO NOTHING;

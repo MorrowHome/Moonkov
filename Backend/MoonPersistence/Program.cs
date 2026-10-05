@@ -74,6 +74,18 @@ auth.MapPost("/inventory/move", async (HttpRequest request, InventoryCommand com
     try { return Results.Ok(await inventory.MoveAsync(profile.PlayerId, command, ct)); }
     catch (DeploymentRejectedException ex) { return Results.Conflict(new { error=ex.Message }); }
 });
+auth.MapGet("/shop", async (HttpRequest request, AccountRepository accounts, CancellationToken ct) =>
+{
+    var profile = await accounts.ResolveSessionAsync(BearerToken(request), ct);
+    return profile is null ? Results.Unauthorized() : Results.Ok(new { offers = ShopCatalog.Offers, profile });
+});
+auth.MapPost("/shop/trade", async (HttpRequest request, ShopCommand command, AccountRepository accounts, InventoryRepository inventory, CancellationToken ct) =>
+{
+    var profile = await accounts.ResolveSessionAsync(BearerToken(request), ct);
+    if (profile is null) return Results.Unauthorized();
+    try { return Results.Ok(await inventory.TradeAsync(profile.PlayerId, command, ct)); }
+    catch (DeploymentRejectedException ex) { return Results.Conflict(new { error = ex.Message }); }
+});
 app.MapPost("/internal/sessions/resolve", async (SessionCredential request, AccountRepository accounts, CancellationToken ct) =>
 {
     var result = await accounts.ResolveSessionAsync(request.Token, ct);

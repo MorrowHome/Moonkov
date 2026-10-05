@@ -17,6 +17,7 @@ namespace Unity.MP_FPS
         private sealed class LoginResult { public string Token, DisplayName; public DateTime ExpiresAt; }
         private sealed class Profile { public string DisplayName, InventoryJson, ActiveDeploymentId; public int Dust, Alloy, Cells; }
         private sealed class Failure { public string Error; }
+        private sealed class ShopSnapshot { public ShopOffer[] Offers; public Profile Profile; }
         public sealed class InventoryRequestException : InvalidOperationException
         {
             public string ErrorCode { get; }
@@ -165,12 +166,31 @@ namespace Unity.MP_FPS
             GameSettings.Instance.PlayerName = s_Name;
             InventoryChanged?.Invoke();
         }
-        public static async Task MoveInventoryAsync(InventoryCommand command, CancellationToken ct)
+        public static Task MoveInventoryAsync(InventoryCommand command, CancellationToken ct) => PostInventoryAsync("auth/inventory/move", command, ct);
+        public static Task TradeAsync(ShopCommand command, CancellationToken ct) => PostInventoryAsync("auth/shop/trade", command, ct);
+        public static async Task<ShopOffer[]> GetShopOffersAsync(CancellationToken ct)
+        {
+            if (!IsLoggedIn) throw new InventoryRequestException("login_expired");
+            string token = Token; long requestId = ++s_ProfileRequest;
+            using var request = new HttpRequestMessage(HttpMethod.Get, Address(s_BaseUrl, "auth/shop"));
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            using var response = await Http().SendAsync(request, ct);
+            ct.ThrowIfCancellationRequested(); if (token != Token) throw new OperationCanceledException("Account changed while loading shop.");
+            if (response.StatusCode == HttpStatusCode.Unauthorized) { Clear(); throw new InventoryRequestException("login_expired"); }
+            if (!response.IsSuccessStatusCode) throw new InventoryRequestException("service_" + (int)response.StatusCode);
+            var snapshot = JsonConvert.DeserializeObject<ShopSnapshot>(await response.Content.ReadAsStringAsync());
+            if (snapshot?.Offers == null || snapshot.Profile == null || snapshot.Offers.Length > 64 ||
+                Array.Exists(snapshot.Offers, offer => offer == null || InventoryCatalog.Get(offer.Code) == null || offer.BuyDust < 1 || offer.SellDust < 0))
+                throw new InvalidOperationException("Invalid supplier catalogue. Existing inventory was preserved.");
+            ct.ThrowIfCancellationRequested(); if (token != Token) throw new OperationCanceledException("Account changed while loading shop.");
+            ApplyProfile(snapshot.Profile, requestId); return snapshot.Offers;
+        }
+        private static async Task PostInventoryAsync(string path, object command, CancellationToken ct)
         {
             if (!IsLoggedIn) throw new InventoryRequestException("login_expired");
             string token = Token;
             long requestId = ++s_ProfileRequest;
-            using var request = new HttpRequestMessage(HttpMethod.Post, Address(s_BaseUrl, "auth/inventory/move"));
+            using var request = new HttpRequestMessage(HttpMethod.Post, Address(s_BaseUrl, path));
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             request.Content = new StringContent(JsonConvert.SerializeObject(command), Encoding.UTF8, "application/json");
             using var response = await Http().SendAsync(request, ct);
@@ -203,6 +223,12 @@ namespace Unity.MP_FPS
                 case "inventory_Overweight": return "This move exceeds the carried weight limit. [inventory_Overweight]";
                 case "inventory_Missing": return "The item or container no longer exists. Refresh storage. [inventory_Missing]";
                 case "login_expired": return "Login expired. Sign in again before moving equipment. [login_expired]";
+                case "shop_insufficient_dust": return "Not enough moon dust for this order. Sell stored equipment or recover dust in a raid.";
+                case "shop_has_weapon": return "Emergency supply is available only when no halo weapon remains in your inventory.";
+                case "shop_emergency_supply": return "Emergency supplies cannot be sold.";
+                case "shop_store_first": return "Return this item to personal storage before selling it.";
+                case "shop_request_conflict": return "This order ID already belongs to a different transaction. Refresh the supplier.";
+                case "shop_invalid": return "This supplier order is no longer valid. Refresh the catalogue.";
                 default: return "Inventory request rejected. Items remain unchanged. [" + code + "]";
             }
         }

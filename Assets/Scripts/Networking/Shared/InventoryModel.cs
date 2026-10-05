@@ -66,6 +66,7 @@ namespace Unity.MP_FPS.Inventory
         public string Id, Code, Parent, Region; public int X, Y, Quantity = 1; public bool Rotated, FoundInRaid;
         // -1 is a new weapon; live ammo follows the item through moves/deploy/settlement.
         public int LoadedAmmo = -1;
+        public bool EmergencySupply;
         public InventoryItem Clone() => (InventoryItem)MemberwiseClone();
     }
     [Serializable] public sealed class InventoryCommand
@@ -192,7 +193,7 @@ namespace Unity.MP_FPS.Inventory
             {
                 var target = Find(r.TargetId); int count = r.Quantity == 0 ? item.Quantity : r.Quantity;
                 if (target == null || target.Id == item.Id || target.Code != item.Code || def.Container || count <= 0 || count > item.Quantity
-                    || (long)target.Quantity + count > def.MaxStack || target.FoundInRaid != item.FoundInRaid) return InventoryError.Invalid;
+                    || (long)target.Quantity + count > def.MaxStack || target.FoundInRaid != item.FoundInRaid || target.EmergencySupply != item.EmergencySupply) return InventoryError.Invalid;
                 target.Quantity += count; item.Quantity -= count; if (item.Quantity == 0) Items.Remove(item); return InventoryError.None;
             }
             if (r.Operation == InventoryOperation.Split)
@@ -256,7 +257,7 @@ namespace Unity.MP_FPS.Inventory
             var rig = Equipped("ChestRig"); if (rig != null) yield return rig.Id;
             foreach (var i in Items) if (InventoryCatalog.Get(i.Code).Kind == ItemKind.Backpack && Carried(i)) yield return i.Id;
         }
-        public InventoryError AddSupply(string code, int quantity, string parent = null, bool foundInRaid = false, string id = null)
+        public InventoryError AddSupply(string code, int quantity, string parent = null, bool foundInRaid = false, string id = null, bool emergencySupply = false)
         {
             if (quantity == 0) return InventoryError.None;
             var definition = InventoryCatalog.Get(code); if (definition == null || definition.Container || quantity < 0) return InventoryError.Invalid;
@@ -264,11 +265,11 @@ namespace Unity.MP_FPS.Inventory
             var containers = parent == null ? copy.CarryContainers().ToArray() : new[] { parent };
             foreach (var container in containers)
             {
-                foreach (var stack in copy.Children(container).Where(i => i.Code == code && i.FoundInRaid == foundInRaid))
+                foreach (var stack in copy.Children(container).Where(i => i.Code == code && i.FoundInRaid == foundInRaid && i.EmergencySupply == emergencySupply))
                 { int add = Math.Min(remaining, definition.MaxStack - stack.Quantity); stack.Quantity += add; remaining -= add; }
                 while (remaining > 0)
                 {
-                    var item = new InventoryItem { Id = id ?? Guid.NewGuid().ToString("D"), Code = code, Quantity = Math.Min(remaining, definition.MaxStack), FoundInRaid = foundInRaid };
+                    var item = new InventoryItem { Id = id ?? Guid.NewGuid().ToString("D"), Code = code, Quantity = Math.Min(remaining, definition.MaxStack), FoundInRaid = foundInRaid, EmergencySupply = emergencySupply };
                     if (!copy.FindSpace(item, container, out var region, out var x, out var y)) break;
                     Position(item, container, region, x, y, false); copy.Items.Add(item); remaining -= item.Quantity; id = null;
                 }

@@ -85,9 +85,17 @@ public sealed partial class InventoryRepository
             var stock = graph.Items.Where(i => i.Code == "cells" && !graph.Carried(i)).ToArray();
             if (stock.Sum(i => i.Quantity) < take) throw new DeploymentRejectedException("insufficient_cells");
             int remaining = take;
-            foreach (var item in stock)
-            { int used = Math.Min(item.Quantity, remaining); item.Quantity -= used; remaining -= used; if (item.Quantity == 0) graph.Items.Remove(item); if (remaining == 0) break; }
-            if (graph.AddSupply("cells", take) != InventoryError.None) throw new DeploymentRejectedException("loadout_full");
+            foreach (var source in stock)
+            {
+                var item = graph.Find(source.Id); int used = Math.Min(item.Quantity, remaining);
+                bool wholeStack = used == item.Quantity;
+                item.Quantity -= used; remaining -= used;
+                if (wholeStack) graph.Items.Remove(item);
+                if (graph.AddSupply("cells", used, foundInRaid: source.FoundInRaid,
+                    id: wholeStack ? source.Id : null, emergencySupply: source.EmergencySupply) != InventoryError.None)
+                    throw new DeploymentRejectedException("loadout_full");
+                if (remaining == 0) break;
+            }
         }
     }
     public async Task<Profile> MoveAsync(Guid playerId, InventoryCommand command, CancellationToken ct)
