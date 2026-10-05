@@ -1,6 +1,6 @@
 # Moonkov 音效系统
 
-已接入 FPS_Template 当前的网络 DollSinger 流程。音源全部来自 Sonniss **GDC 2024 Game Audio Bundle (Part 8)**，没有合成音源或自行录制。继续使用模板的 `SoundSystem`、`SoundEmitter`、`SoundGameObjectPool` 和 `DefaultMixer`。
+已接入 FPS_Template 当前的网络 DollSinger 流程。音源以 Sonniss **GDC 2024 Game Audio Bundle (Part 8)** 为主，另有一条用户提供的音乐曲目（见下方授权说明）；没有合成音源或自行录制。继续使用模板的 `SoundSystem`、`SoundEmitter`、`SoundGameObjectPool` 和 `DefaultMixer`。
 
 ## 已有行为
 
@@ -9,17 +9,17 @@
 | 光环连射 | 4 个金属敲击变体随机且不连续重复 + 明亮金属叮声层，最大听距 70/40 米 |
 | 光环左轮 | 真实 .445 SuperMag 单发录音（2 个变体）+ 能量尾声层，最大听距 90/60 米 |
 | 充能 / 换弹 | 光环用设计过的能量换弹音；左轮用真实转轮开合退壳录音，每个新事件播放一次 |
-| 部署成功 | 铜锣成功音 + 安卓语音 "Carrying out orders" 叠层，在角色生成时播放 |
+| 部署成功 | 手工挑选的 `DSGN VORTEX IN` 上升音，在角色生成时播放 |
 | 弹丸命中 | 客户端轨迹碰撞时在命中位置播放金属冲击；服务器仍独立判定伤害 |
 | 脚步 | 客户端实际水平位移累计；月壤与金属各 4 个变体，附低音量衣物层 |
 | 起跳 / 落地 / 受击 | 客户端表现层观察网络事件 tick；初次接入不重播历史事件 |
 | 尸体落下 | 新尸体通知播放身体撞击，超过 0.35 秒的历史尸体不补播 |
 | 武器切换 | 当前拥有者的装备声 |
-| 终端和战局按钮 | 点击、键盘确认、限频悬停；禁用按钮不播放。所有 UIDocument 自动绑定 |
+| 终端和战局按钮 | 点击与悬停各为单个手工挑选的机械点击音；禁用按钮不播放。所有 UIDocument 自动绑定 |
 | 库存操作 | 收到操作结果才播放装备反馈或错误反馈；本地非法放置有错误声 |
 | 打开 / 关闭背包、缓存 | 液压舱门机械声 |
-| 撤离 / 战局结束 | 成功播放铜锣，失败播放单声警铃 |
-| 飞船终端 | 三层实录混合的低音量座舱循环；进入战局时淡出；月球室外不播放风声 |
+| 撤离 / 战局结束 | 成功播放手工挑选的 `UBL_Lo-Tech_70` 磁带垫底音，失败播放单声警铃 |
+| 飞船终端 | 手工挑选的音乐曲目（Music 混音组）循环；进入战局时淡出；月球室外不播放风声 |
 
 射击继续走原有路径：自己的开火使用预测事件，远端使用既有 RPC；既有拥有者 RPC 排除逻辑仍生效。音频在 DollSinger 分支提前返回之前触发，也不再依赖异步枪口特效加载成功。没有新增音频 RPC 或改动服务器伤害规则。
 
@@ -115,9 +115,10 @@ flowchart LR
 - **Sonniss GDC 2024 Game Audio Bundle (Part 8)**：609 个 WAV、约 27.5 GB，已与包内 `Filelist.xlsx` 核对。素材以 96 kHz / 24-bit 为主（492 个 96 kHz、42 个 192 kHz、75 个 48 kHz；583 个 24-bit、26 个 32-bit float），本次统一转换为 48 kHz PCM16。另有 18 个四声道及少量 5/6/8 声道环境录音。
 - 包内每个供应商目录是**样品集**（多数只有 3–4 个文件），不是完整商业库。因此部分音效来自长录音裁剪：左轮枪声取自 `Dan Wesson 445 - FIRING - Take 2` 第 16.00 秒的单发，金属脚步取自 `Iron - Thick - HIT - Hammer` 在 1.797 / 3.584 / 5.349 / 7.019 秒的四次敲击。
 - 光环步枪的金属"叮"取自 `Spade - HIT - Drumstick - Ring - Mute` 在 0.069 / 2.347 / 4.437 / 6.533 秒的四次敲击（每次叠加自身低通副本补厚度），叮声层取自 `BELLHand_Metallic Bell_ 22` 的第一声敲击。
-- 成功提示音取自 `80,TheGong.wav` 的铜锣敲击（单一起音在 0.112 秒）。部署确认在此之上叠层 `CB Sounddesign - Sci-Fi Voices Volume 03` 的 `Carrying out orders`；队友到场音取自同一支铃铛的两声敲击。
 - 包内**没有脚步素材库**。金属脚步用铁锤敲击铁板实录裁剪并加低通厚度；月壤脚步由 `SBvfe2_Shaking Small Wooden Box 030` 的干碎屑裁剪，叠加 `SBvfe2_Medium Rock Dropping 011` 的 200 Hz 低通层获得重量。属于对已有录音的剪辑与均衡，没有合成音源。
-- 飞船环境音由列车车厢底噪、房间空调底噪与低频 drone 三层实录混合，接缝处做 2.5 秒等功率交叉淡化。
+- 队友到场音取自 `BELLHand_Metallic Bell_ 22` 的两声敲击。
+- **5 个音效是手工挑选后原样搬入的，不由生成脚本产出**，`build_clips.py` 与 `stage_clips.ps1` 里都有 `HAND_SUPPLIED` 名单保护它们。其中 4 条来自素材包且逐字节校验一致：`UI/Click.wav` ← `Bluezone_BC0301_tiny_gears_small_mechanism_click_complex_011`，`UI/Hover.wav` ← `...click_003`，`UI/Confirm.wav` ← `UBL_Lo-Tech_70_one_shot_key_Amin`，`Interaction/DeployConfirm.wav` ← `Chupapsound/DSGN VORTEX IN`。它们没有裁剪、淡入淡出或归一化，改动其内容会作废已按听感调好的 SoundDef。
+- `Assets/Audio/Moonkov/Clips/Ambience/ShipInterior.flac` 是**用户提供的一条音乐曲目**（FLAC、44.1 kHz 立体声、2 分 21 秒），用作飞船背景并切到 Music 混音组。**它的来源与授权未记录**，`Sources.json` 中以 `NOT RECORDED` 明确标出；发布前必须确认这条音轨的授权，或换成已授权素材。
 - 旧的 GDC 2019 与 Kenney UI 素材已全部不再引用，相应的 `KenneySources.json` 与 Kenney 许可文本已删除，避免记录不存在的素材。
 - `Assets/Audio/Moonkov/Sources.json` 记录每个原文件、来源、许可证与 SHA-256；`Assets/Audio/Moonkov/Edits.json` 记录每个片段的裁剪区间、分层与处理。
 
@@ -141,7 +142,7 @@ flowchart LR
 | `query.py` | 按包名 / 文件名 / 时长检索 catalog |
 | `probe.py` | 单文件波形、电平、起始点与瞬态峰值分析，可导出波形图 |
 | `survey.py` | 批量分析候选素材 |
-| `build_clips.py` | 按显式切片表生成 36 个片段到 `out/`，并写出 `provenance.json` |
+| `build_clips.py` | 按显式切片表生成 31 个片段到 `out/`，并写出 `provenance.json`；`HAND_SUPPLIED` 里的 5 条永不生成 |
 | `verify_clips.py` | 独立复读 `out/` 校验格式、削波、起始点与循环接缝 |
 | `calibrate_levels.py` | 测量新旧素材电平并求解每条音效的目标增益 |
 | `stage_clips.ps1` | 把 `out/` 同步到 `Assets/Audio/Moonkov/Clips`，删除不再引用的片段 |

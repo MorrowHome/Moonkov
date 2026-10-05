@@ -89,9 +89,10 @@ public static class MoonkovAudioSetup
                   SpreadDb = 2f, PitchCents = 80f,
                   Clips = new[] { "Character/Cloth1.wav", "Character/Cloth2.wav" } },
 
-        // ---- ambience: 2D bed, loops forever ----
-        new Row { Name = "ShipInterior", Mixer = Mixer.SFX, Spatial = 0f, Db = -13.6f, SpreadDb = 0f,
-                  PitchCents = 0f, Loop = 0, Clips = new[] { "Ambience/ShipInterior.wav" } },
+        // ---- ambience: ship music bed, loops forever. Hand-picked by ear and wired in the
+        // Inspector; this row mirrors that choice so a forced rebuild does not undo it.
+        new Row { Name = "ShipInterior", Mixer = Mixer.Music, Spatial = 0f, Db = -13.6f, SpreadDb = 0f,
+                  PitchCents = 0f, Loop = 0, Clips = new[] { "Ambience/ShipInterior.flac" } },
 
         // ---- Halo rifle: metallic "ding" per request, four ringing strikes + bright tink layer ----
         new Row { Name = "HaloFire", Mixer = Mixer.SFX, Spatial = 1f, Db = -10f, Range = 70f,

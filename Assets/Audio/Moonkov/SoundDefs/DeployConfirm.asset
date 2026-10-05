@@ -16,12 +16,12 @@ MonoBehaviour:
   UnityAudioMixer: {fileID: 24100000, guid: fddb343a82968524eb1e9a6f65433d7e, type: 2}
   MixerGroup: 1
   BasePitchInCents: 0
-  VolumeScale: 1
+  VolumeScale: 4
   BaseLowPassCutoff: 0
   PlaybackType: 0
   PlayCount: 1
   Clips:
-  - {fileID: 8300000, guid: c4aeb628fbb4f9d468fc0ea3b9f69bdd, type: 3}
+  - {fileID: 8300000, guid: b40117b8ed0128d40a863ca3c0b154cb, type: 3}
   RepeatInfo:
     LoopCount: 1
     RepeatMin: 1

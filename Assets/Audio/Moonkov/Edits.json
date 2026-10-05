@@ -1,28 +1,10 @@
 [
   {
-    "asset": "Assets/Audio/Moonkov/Clips/Ambience/ShipInterior.wav",
-    "source": "(mixed from 3 bundle files, see layers below)",
-    "processing": "48 kHz stereo PCM16; 45 s seamless loop, 2.5 s equal-power crossfade at the seam, RMS-normalised to -26 dBFS",
-    "layers": [
-      {
-        "source": "InMotionAudio - UK Train Interior Ambience/AMBTran_TrainInterior06_InMotionAudio_UKTrainInteriorAmbience.wav",
-        "start": 40.0,
-        "duration": 47.5,
-        "gain_db": 0.0
-      },
-      {
-        "source": "Systematic Sound - General Ambience Series - Quiet Rooms 01/AMBRoom_Quiet Room Flat C Livingroom 02_SYSO_SYSO0013.wav",
-        "start": 60.0,
-        "duration": 47.5,
-        "gain_db": -7.0
-      },
-      {
-        "source": "InMotionAudio - GEODRONE/DSGNDron_Geofon05_InMotionAudio_GEODRONE.wav",
-        "start": 60.0,
-        "duration": 47.5,
-        "gain_db": -11.0
-      }
-    ]
+    "asset": "Assets/Audio/Moonkov/Clips/Ambience/ShipInterior.flac",
+    "source": "(hand-supplied, not from the bundle)",
+    "sha256": "86e611adcb6291e5b902520f1c69ad2af353dd3d7bfcd70e97957bdf0e765468",
+    "processing": "verbatim copy: no slicing, fade or normalisation applied",
+    "note": "Picked by ear in the audition page and wired in the Inspector. Source and licence are not recorded."
   },
   {
     "asset": "Assets/Audio/Moonkov/Clips/Character/Cloth1.wav",
@@ -154,11 +136,10 @@
   },
   {
     "asset": "Assets/Audio/Moonkov/Clips/Interaction/DeployConfirm.wav",
-    "source": "Orbital Emitter - Cinematic Transitions for Editors Volume 2/80,TheGong.wav",
-    "start": 0.08,
-    "duration": 2.6,
-    "processing": "48 kHz PCM16; peak-normalised to -1 dBFS with fades",
-    "note": "gong body + android voice 'Carrying out orders' layered on top + layer Carrying out orders.wav @-1.0 dB"
+    "source": "Chupapsound - Essential Scifi/DSGN VORTEX IN.wav",
+    "sha256": "c17480d35cdd72b2ac0c1013d975738f779c6b72f0112d41c9ef98f7624b37dd",
+    "processing": "verbatim copy: no slicing, fade or normalisation applied",
+    "note": "Picked by ear in the audition page and wired in the Inspector."
   },
   {
     "asset": "Assets/Audio/Moonkov/Clips/Interaction/Equipment.wav",
@@ -178,19 +159,17 @@
   },
   {
     "asset": "Assets/Audio/Moonkov/Clips/UI/Click.wav",
-    "source": "BluezoneCorp - Retrofuturistic Computer/Bluezone_BC0304_retrofuturistic_computer_button_013.wav",
-    "start": 0.0,
-    "duration": 0.3,
-    "processing": "48 kHz PCM16; peak-normalised to -1 dBFS with fades",
-    "note": "the single UI / item selection sound"
+    "source": "BluezoneCorp - Tiny Gears - Small Mechanism/Bluezone_BC0301_tiny_gears_small_mechanism_click_complex_011.wav",
+    "sha256": "48e5e77e8d9258bd5d7c338ec4c7a39b9396ece77ae171f78210117b57b04f18",
+    "processing": "verbatim copy: no slicing, fade or normalisation applied",
+    "note": "Picked by ear in the audition page and wired in the Inspector."
   },
   {
     "asset": "Assets/Audio/Moonkov/Clips/UI/Confirm.wav",
-    "source": "Orbital Emitter - Cinematic Transitions for Editors Volume 2/80,TheGong.wav",
-    "start": 0.08,
-    "duration": 1.75,
-    "processing": "48 kHz PCM16; peak-normalised to -1 dBFS with fades",
-    "note": "gong strike = extraction / raid success"
+    "source": "Used Bin Loops - Lo-Tech Premium Degraded Tape FX/UBL_Lo-Tech_70_one_shot_key_Amin.wav",
+    "sha256": "3c6791d5328e99c2588c5802bc70f203701d388ae93355a488b1aeb97d99c5b7",
+    "processing": "verbatim copy: no slicing, fade or normalisation applied",
+    "note": "Picked by ear in the audition page and wired in the Inspector."
   },
   {
     "asset": "Assets/Audio/Moonkov/Clips/UI/Error.wav",
@@ -202,11 +181,10 @@
   },
   {
     "asset": "Assets/Audio/Moonkov/Clips/UI/Hover.wav",
-    "source": "BluezoneCorp - Futuristic User Interface/Bluezone_BC0303_futuristic_user_interface_high_tech_beep_038.wav",
-    "start": 0.0,
-    "duration": 0.081,
-    "processing": "48 kHz PCM16; peak-normalised to -1 dBFS with fades",
-    "note": "the single hover tick"
+    "source": "BluezoneCorp - Tiny Gears - Small Mechanism/Bluezone_BC0301_tiny_gears_small_mechanism_click_003.wav",
+    "sha256": "e167a6a96d6da785450a668ae0a0ad60d5d15f37b974bf7f37045926954d378c",
+    "processing": "verbatim copy: no slicing, fade or normalisation applied",
+    "note": "Picked by ear in the audition page and wired in the Inspector."
   },
   {
     "asset": "Assets/Audio/Moonkov/Clips/UI/Notification.wav",

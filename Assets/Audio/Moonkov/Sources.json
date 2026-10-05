@@ -7,12 +7,12 @@
   "note": "Bundle file list: 'Game Audio GDC Bundle 2024 (Part 8) Filelist.xlsx'. sha256 is of the original WAV inside the bundle, before slicing or conversion.",
   "files": [
     {
-      "original": "BluezoneCorp - Futuristic User Interface/Bluezone_BC0303_futuristic_user_interface_high_tech_beep_038.wav",
-      "sha256": "88ac539edce485245b37b83fce0b527d807af7f18cc7a3583e05019bf8c05d38",
-      "provider": "Sonniss GDC 2024",
-      "license": "https://sonniss.com/gdc-bundle-license/",
+      "original": "(not from the bundle)",
+      "sha256": "86e611adcb6291e5b902520f1c69ad2af353dd3d7bfcd70e97957bdf0e765468",
+      "provider": "hand-supplied",
+      "license": "NOT RECORDED - confirm the source and licence before shipping",
       "assets": [
-        "Assets/Audio/Moonkov/Clips/UI/Hover.wav"
+        "Assets/Audio/Moonkov/Clips/Ambience/ShipInterior.flac"
       ]
     },
     {
@@ -34,15 +34,6 @@
       ]
     },
     {
-      "original": "BluezoneCorp - Retrofuturistic Computer/Bluezone_BC0304_retrofuturistic_computer_button_013.wav",
-      "sha256": "e99473a8d32d52453174bcd21f9bf28fd50ef51942d57b34a4834d13d6be6689",
-      "provider": "Sonniss GDC 2024",
-      "license": "https://sonniss.com/gdc-bundle-license/",
-      "assets": [
-        "Assets/Audio/Moonkov/Clips/UI/Click.wav"
-      ]
-    },
-    {
       "original": "BluezoneCorp - Sci Fi Weapon/Bluezone_BC0295_sci_fi_weapon_texture_007.wav",
       "sha256": "1564b3b550dde5a2be37debe0f344828ffbe1072455cda57bca409a49491f697",
       "provider": "Sonniss GDC 2024",
@@ -52,13 +43,34 @@
       ]
     },
     {
-      "original": "InMotionAudio - GEODRONE/DSGNDron_Geofon05_InMotionAudio_GEODRONE.wav",
-      "sha256": "a084a1ae6ac319eb1812323fa222d38741b00533b596dfdc7225bf17c6dd77fd",
+      "original": "BluezoneCorp - Tiny Gears - Small Mechanism/Bluezone_BC0301_tiny_gears_small_mechanism_click_003.wav",
+      "sha256": "e167a6a96d6da785450a668ae0a0ad60d5d15f37b974bf7f37045926954d378c",
       "provider": "Sonniss GDC 2024",
       "license": "https://sonniss.com/gdc-bundle-license/",
       "assets": [
-        "Assets/Audio/Moonkov/Clips/Ambience/ShipInterior.wav"
-      ]
+        "Assets/Audio/Moonkov/Clips/UI/Hover.wav"
+      ],
+      "note": "used verbatim: no slicing, fade or normalisation applied"
+    },
+    {
+      "original": "BluezoneCorp - Tiny Gears - Small Mechanism/Bluezone_BC0301_tiny_gears_small_mechanism_click_complex_011.wav",
+      "sha256": "48e5e77e8d9258bd5d7c338ec4c7a39b9396ece77ae171f78210117b57b04f18",
+      "provider": "Sonniss GDC 2024",
+      "license": "https://sonniss.com/gdc-bundle-license/",
+      "assets": [
+        "Assets/Audio/Moonkov/Clips/UI/Click.wav"
+      ],
+      "note": "used verbatim: no slicing, fade or normalisation applied"
+    },
+    {
+      "original": "Chupapsound - Essential Scifi/DSGN VORTEX IN.wav",
+      "sha256": "c17480d35cdd72b2ac0c1013d975738f779c6b72f0112d41c9ef98f7624b37dd",
+      "provider": "Sonniss GDC 2024",
+      "license": "https://sonniss.com/gdc-bundle-license/",
+      "assets": [
+        "Assets/Audio/Moonkov/Clips/Interaction/DeployConfirm.wav"
+      ],
+      "note": "used verbatim: no slicing, fade or normalisation applied"
     },
     {
       "original": "InMotionAudio - Mask Foley/FOLYMisc_3MMask_Movement04_InMotionAudio_MaskFoley.wav",
@@ -76,15 +88,6 @@
       "license": "https://sonniss.com/gdc-bundle-license/",
       "assets": [
         "Assets/Audio/Moonkov/Clips/Character/Jump.wav"
-      ]
-    },
-    {
-      "original": "InMotionAudio - UK Train Interior Ambience/AMBTran_TrainInterior06_InMotionAudio_UKTrainInteriorAmbience.wav",
-      "sha256": "d7f9cd2d885fbf903997405dfe646c170fd29955bec5e6dbbddaac41d8330e83",
-      "provider": "Sonniss GDC 2024",
-      "license": "https://sonniss.com/gdc-bundle-license/",
-      "assets": [
-        "Assets/Audio/Moonkov/Clips/Ambience/ShipInterior.wav"
       ]
     },
     {
@@ -131,16 +134,6 @@
       "license": "https://sonniss.com/gdc-bundle-license/",
       "assets": [
         "Assets/Audio/Moonkov/Clips/Weapons/HaloImpact.wav"
-      ]
-    },
-    {
-      "original": "Orbital Emitter - Cinematic Transitions for Editors Volume 2/80,TheGong.wav",
-      "sha256": "a4f9bdd126a028d0dba7c74ac28f12ac721e252d4f9fe2445273fcabdc75a225",
-      "provider": "Sonniss GDC 2024",
-      "license": "https://sonniss.com/gdc-bundle-license/",
-      "assets": [
-        "Assets/Audio/Moonkov/Clips/UI/Confirm.wav",
-        "Assets/Audio/Moonkov/Clips/Interaction/DeployConfirm.wav"
       ]
     },
     {
@@ -226,15 +219,6 @@
       ]
     },
     {
-      "original": "Systematic Sound - General Ambience Series - Quiet Rooms 01/AMBRoom_Quiet Room Flat C Livingroom 02_SYSO_SYSO0013.wav",
-      "sha256": "9166a350b42f1a9b3a33c721f4166534a78f27d6051d4f48248fabc0e2d09cde",
-      "provider": "Sonniss GDC 2024",
-      "license": "https://sonniss.com/gdc-bundle-license/",
-      "assets": [
-        "Assets/Audio/Moonkov/Clips/Ambience/ShipInterior.wav"
-      ]
-    },
-    {
       "original": "TheWorkRoom Audio Post - Neoprene - Dry - Wetsuit/NEO008.wav",
       "sha256": "ff013645aad206a3119e039cc827ee395ecd5cb6ad43dd447d7d56a0a861ec64",
       "provider": "Sonniss GDC 2024",
@@ -243,6 +227,16 @@
         "Assets/Audio/Moonkov/Clips/Character/Cloth1.wav",
         "Assets/Audio/Moonkov/Clips/Character/Cloth2.wav"
       ]
+    },
+    {
+      "original": "Used Bin Loops - Lo-Tech Premium Degraded Tape FX/UBL_Lo-Tech_70_one_shot_key_Amin.wav",
+      "sha256": "3c6791d5328e99c2588c5802bc70f203701d388ae93355a488b1aeb97d99c5b7",
+      "provider": "Sonniss GDC 2024",
+      "license": "https://sonniss.com/gdc-bundle-license/",
+      "assets": [
+        "Assets/Audio/Moonkov/Clips/UI/Confirm.wav"
+      ],
+      "note": "used verbatim: no slicing, fade or normalisation applied"
     }
   ]
 }
