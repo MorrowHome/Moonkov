@@ -1,0 +1,78 @@
+<ui:UXML xmlns:moon="Unity.MP_FPS.Client" xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="project://database/Assets/UI Toolkit/GameUI/StashScreen.uss" />
+    <ui:Style src="project://database/Assets/UI Toolkit/GameUI/MoonkovTerminal.uss" />
+    <ui:Style src="project://database/Assets/Resources/Moonkov/UI/TerminalLayout.uss" />
+    <ui:VisualElement name="layoutPreview" class="stash-root moonkov-terminal terminal-layout-preview">
+        <ui:VisualElement name="terminalPage" class="terminal-content terminal-content-page">
+            <ui:Label class="terminal-page-index" picking-mode="Ignore" text="03" />
+            <ui:VisualElement class="terminal-row">
+                <ui:VisualElement class="terminal-panel terminal-wide">
+                    <moon:TechFrame picking-mode="Ignore" delay="0.08" />
+                    <ui:Label class="terminal-eyebrow" text="STANDARD HALO / COMPONENT SCHEMATIC" />
+                    <ui:Label class="terminal-title" text="H-01   /   FIELD ISSUE" />
+                    <moon:HaloSchematic class="halo-schematic terminal-halo-schematic" picking-mode="Ignore">
+                        <ui:Button class="terminal-node" text="FOCUSING LENS" name="haloNode0">
+                            <ui:Label class="terminal-node-index" picking-mode="Ignore" text="N1" />
+                        </ui:Button>
+                        <ui:Button class="terminal-node" text="LEFT EMITTER" name="haloNode1">
+                            <ui:Label class="terminal-node-index" picking-mode="Ignore" text="N2" />
+                        </ui:Button>
+                        <ui:Button class="terminal-node" text="HALO FRAME" name="haloNode2">
+                            <ui:Label class="terminal-node-index" picking-mode="Ignore" text="N3" />
+                        </ui:Button>
+                        <ui:Button class="terminal-node" text="RIGHT EMITTER" name="haloNode3">
+                            <ui:Label class="terminal-node-index" picking-mode="Ignore" text="N4" />
+                        </ui:Button>
+                        <ui:Button class="terminal-node" text="CORE" name="haloNode4">
+                            <ui:Label class="terminal-node-index" picking-mode="Ignore" text="N5" />
+                        </ui:Button>
+                        <ui:Button class="terminal-node" text="AMPLIFIER" name="haloNode5">
+                            <ui:Label class="terminal-node-index" picking-mode="Ignore" text="N6" />
+                        </ui:Button>
+                        <ui:Button class="terminal-node" text="CONTROL MODULE" name="haloNode6">
+                            <ui:Label class="terminal-node-index" picking-mode="Ignore" text="N7" />
+                        </ui:Button>
+                    </moon:HaloSchematic>
+                    <ui:Label class="terminal-eyebrow" text="SELECT A NODE TO INSPECT ITS ROLE" />
+                </ui:VisualElement>
+                <ui:VisualElement class="terminal-panel terminal-side">
+                    <moon:TechFrame picking-mode="Ignore" delay="0.16" />
+                    <ui:Label class="terminal-eyebrow" text="LOADOUT INFORMATION" />
+                    <ui:VisualElement class="terminal-row terminal-meters">
+                        <moon:ArcMeter class="arc-meter" picking-mode="Ignore" value="0.0" meter-color="#FFE11AFF">
+                            <ui:Label class="terminal-meter-value" text="—" />
+                            <ui:Label class="terminal-meter-name" text="DMG" />
+                        </moon:ArcMeter>
+                        <moon:ArcMeter class="arc-meter" picking-mode="Ignore" value="0.0" meter-color="#3FE0D0FF">
+                            <ui:Label class="terminal-meter-value" text="—" />
+                            <ui:Label class="terminal-meter-name" text="CAP" />
+                        </moon:ArcMeter>
+                        <moon:ArcMeter class="arc-meter" picking-mode="Ignore" value="0.0" meter-color="#ECECE6FF">
+                            <ui:Label class="terminal-meter-value" text="—" />
+                            <ui:Label class="terminal-meter-name" text="RNG" />
+                        </moon:ArcMeter>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="terminal-row terminal-stat">
+                        <ui:Label class="terminal-stat-name" text="STATUS" />
+                        <ui:Label class="terminal-stat-value" text="STANDARD ISSUE" name="statValue0" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="terminal-row terminal-stat">
+                        <ui:Label class="terminal-stat-name" text="DAMAGE" />
+                        <ui:Label class="terminal-stat-value" text="—" name="statValue1" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="terminal-row terminal-stat">
+                        <ui:Label class="terminal-stat-name" text="ENERGY CAPACITY" />
+                        <ui:Label class="terminal-stat-value" text="—" name="statValue2" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="terminal-row terminal-stat">
+                        <ui:Label class="terminal-stat-name" text="RANGE" />
+                        <ui:Label class="terminal-stat-value" text="—" name="statValue3" />
+                    </ui:VisualElement>
+                    <ui:Label class="terminal-copy" text="Modular halo assembly is awaiting workshop access. Your current field weapon remains standard issue." />
+                    <ui:Button class="terminal-button" enabled="false" tooltip="No modular loadout service is available." text="SAVE HALO PRESET" />
+                    <ui:Button class="terminal-button" enabled="false" tooltip="No modular loadout service is available." text="ASSEMBLE LOADOUT" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

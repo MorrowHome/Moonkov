@@ -1,0 +1,78 @@
+<ui:UXML xmlns:moon="Unity.MP_FPS.Client" xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="project://database/Assets/UI Toolkit/GameUI/StashScreen.uss" />
+    <ui:Style src="project://database/Assets/UI Toolkit/GameUI/MoonkovTerminal.uss" />
+    <ui:Style src="project://database/Assets/Resources/Moonkov/UI/TerminalLayout.uss" />
+    <ui:VisualElement name="layoutPreview" class="stash-root moonkov-terminal terminal-layout-preview">
+        <ui:VisualElement name="terminalPage" class="terminal-content terminal-content-page">
+            <ui:Label class="terminal-page-index" picking-mode="Ignore" text="07" />
+            <ui:Label class="terminal-title" text="ORBITAL SHIP / MODULE MANAGEMENT" />
+            <ui:VisualElement class="terminal-row">
+                <ui:VisualElement class="terminal-panel terminal-wide terminal-blueprint-panel">
+                    <moon:TechFrame picking-mode="Ignore" delay="0.08" />
+                    <ui:Label class="terminal-eyebrow" text="HULL  /  DECK PLAN" />
+                    <moon:ShipBlueprint class="ship-blueprint terminal-blueprint" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:VisualElement class="terminal-panel terminal-resources">
+                    <moon:TechFrame picking-mode="Ignore" delay="0.16" />
+                    <ui:Label class="terminal-eyebrow" text="ONBOARD RESOURCES" />
+                    <ui:VisualElement class="terminal-row terminal-stat">
+                        <ui:Label class="terminal-stat-name" text="MOON DUST" />
+                        <ui:Label class="terminal-stat-value" text="0" name="statValue0" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="terminal-row terminal-stat">
+                        <ui:Label class="terminal-stat-name" text="ALLOY" />
+                        <ui:Label class="terminal-stat-value" text="0" name="statValue1" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="terminal-row terminal-stat">
+                        <ui:Label class="terminal-stat-name" text="ENERGY CELLS" />
+                        <ui:Label class="terminal-stat-value" text="0" name="statValue2" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="terminal-row terminal-meters">
+                        <moon:ArcMeter class="arc-meter" picking-mode="Ignore" value="0.25" meter-color="#3FE07AFF">
+                            <ui:Label class="terminal-meter-value" text="25%" />
+                            <ui:Label class="terminal-meter-name" text="POWER" />
+                        </moon:ArcMeter>
+                        <moon:ArcMeter class="arc-meter" picking-mode="Ignore" value="0.92" meter-color="#3FE0D0FF">
+                            <ui:Label class="terminal-meter-value" text="92%" />
+                            <ui:Label class="terminal-meter-name" text="HULL" />
+                        </moon:ArcMeter>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement class="terminal-row terminal-module-row">
+                <ui:VisualElement class="terminal-panel terminal-console terminal-module terminal-module-online">
+                    <moon:TechFrame picking-mode="Ignore" delay="0.24" />
+                    <ui:Label class="terminal-eyebrow" text="CARGO HOLD" />
+                    <ui:Label class="terminal-module-index" picking-mode="Ignore" text="B1" />
+                    <ui:Label class="terminal-positive" text="ONLINE" />
+                    <ui:Label class="terminal-copy" text="Personal storage is available at the cargo terminal." />
+                    <ui:Button class="terminal-button" text="OPEN STORAGE" name="openStorage" />
+                </ui:VisualElement>
+                <ui:VisualElement class="terminal-panel terminal-console terminal-module">
+                    <moon:TechFrame picking-mode="Ignore" delay="0.32" />
+                    <ui:Label class="terminal-eyebrow" text="HALO WORKSHOP" />
+                    <ui:Label class="terminal-module-index" picking-mode="Ignore" text="B2" />
+                    <ui:Label class="terminal-warning" text="OFFLINE" />
+                    <ui:Label class="terminal-copy" text="Module upgrades and crafting require a ship construction contract." />
+                    <ui:Button class="terminal-button" enabled="false" tooltip="Ship construction is unavailable." text="UPGRADE / CRAFT" />
+                </ui:VisualElement>
+                <ui:VisualElement class="terminal-panel terminal-console terminal-module">
+                    <moon:TechFrame picking-mode="Ignore" delay="0.4" />
+                    <ui:Label class="terminal-eyebrow" text="MEDICAL BAY" />
+                    <ui:Label class="terminal-module-index" picking-mode="Ignore" text="B3" />
+                    <ui:Label class="terminal-warning" text="OFFLINE" />
+                    <ui:Label class="terminal-copy" text="Module upgrades and crafting require a ship construction contract." />
+                    <ui:Button class="terminal-button" enabled="false" tooltip="Ship construction is unavailable." text="UPGRADE / CRAFT" />
+                </ui:VisualElement>
+                <ui:VisualElement class="terminal-panel terminal-console terminal-module">
+                    <moon:TechFrame picking-mode="Ignore" delay="0.48000000000000004" />
+                    <ui:Label class="terminal-eyebrow" text="REACTOR" />
+                    <ui:Label class="terminal-module-index" picking-mode="Ignore" text="B4" />
+                    <ui:Label class="terminal-warning" text="OFFLINE" />
+                    <ui:Label class="terminal-copy" text="Module upgrades and crafting require a ship construction contract." />
+                    <ui:Button class="terminal-button" enabled="false" tooltip="Ship construction is unavailable." text="UPGRADE / CRAFT" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -55,10 +55,11 @@ namespace Unity.MP_FPS.Client
         private Vector2 m_EditorViewport;
         private bool m_Transition, m_Disposed, m_EditorScene;
 
-        public MenuCharacterView(bool idleOnly = false)
+        public MenuCharacterView(bool idleOnly = false, Image element = null)
         {
             m_IdleOnly = idleOnly;
-            Element = new Image { pickingMode = PickingMode.Ignore, scaleMode = ScaleMode.ScaleToFit };
+            Element = element ?? new Image();
+            Element.pickingMode = PickingMode.Ignore; Element.scaleMode = ScaleMode.ScaleToFit;
             Element.AddToClassList("terminal-character-art");
             m_Settings = Resources.Load<MenuCharacterSettings>("Moonkov/MenuCharacterSettings");
             if (m_Settings == null || m_Settings.VisualPrefab == null || m_Settings.Motions == null || m_Settings.Motions.Length == 0)

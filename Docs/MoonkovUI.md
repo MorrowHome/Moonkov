@@ -44,6 +44,21 @@ flowchart LR
 
 ## 文件
 
+### 手动编辑布局
+
+UI 保持 UI Toolkit。固定终端页面、导航、出击步骤、浮窗骨架及角色库存的六个装备槽已移到 UXML；运行时脚本负责绑定数据、事件、动画和动态库存。
+
+- 使用 `Tools > Moonkov > Edit Layout > Ship / Character Inventory / Navigation` 打开 UI Builder。
+- `Assets/Resources/Moonkov/UI/` 包含 `Ship`、`Halo`、`Suppliers`、`Tasks`、`Base`、`Comms`、`Settings` 页面，以及 `Window` 和 `ContainerInventory` 模板。
+- `Operation.uxml` 是出击公共框架；`OperationOperator / OperationLocation / OperationBriefing / OperationRecovery / OperationReady.uxml` 是五个步骤的内容。运行时将当前步骤加入 `operationMain`。
+- 全局外观继续在 `MoonkovTerminal.uss` 中调整；光环节点位置在 `UI/TerminalLayout.uss` 中调整，角色库存的布局及装备槽位置在 `ContainerUI.uss` 中调整。
+- 保留元素的 `name` 和用于绑定的 `class`，调整层级时保留对应容器。`layoutPreview` 仅用于独立资产的编辑预览，运行时只采用 `terminalPage` 内的布局。
+- 光环图、仪表、边框、条纹、地图与物品插画已经注册为 UXML 元素，可在 UI Builder 中显示；仪表数值、插画类型和条纹颜色可在元素属性中设置。
+
+账户数量、忙碌状态、选中项、携带数量和音量仍由运行时数据覆盖。3D 角色由运行时创建，UI Builder 中保留其占位区域；完整角色、动态容器网格和交互请用 `Tools > Moonkov > UI Preview` 或 Play 模式查看。UXML 改动保存后，重新打开预览或重新进入菜单以重新创建布局。
+
+本次资产迁移的编辑器检查覆盖九页、五个出击步骤、真实字段绑定、出击忙碌状态、弹窗关闭与顺序、六个装备槽、局内库存变体和重复初始化。未进行 Play 模式视觉或联网战局验收。
+
 - `Assets/UI Toolkit/GameUI/MainMenu.uxml`：登录、连接设置与飞船宿主。
 - `StashScreen.uxml / .uss`：角色装备区、格子仓库及其布局。
 - `MoonkovTerminal.uss`：简约菜单、页面和窗口主题。

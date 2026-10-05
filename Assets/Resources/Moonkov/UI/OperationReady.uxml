@@ -1,0 +1,24 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="project://database/Assets/UI Toolkit/GameUI/StashScreen.uss" />
+    <ui:Style src="project://database/Assets/UI Toolkit/GameUI/MoonkovTerminal.uss" />
+    <ui:Style src="project://database/Assets/Resources/Moonkov/UI/TerminalLayout.uss" />
+    <ui:VisualElement name="layoutPreview" class="stash-root moonkov-terminal terminal-layout-preview">
+        <ui:VisualElement name="terminalPage">
+            <ui:Label class="terminal-title" text="READY FOR DEPLOYMENT" />
+            <ui:VisualElement class="terminal-row terminal-stat">
+                <ui:Label class="terminal-stat-name" text="OPERATOR" />
+                <ui:Label class="terminal-stat-value" text="DOLLSINGER" name="statValue0" />
+            </ui:VisualElement>
+            <ui:VisualElement class="terminal-row terminal-stat">
+                <ui:Label class="terminal-stat-name" text="CARGO" />
+                <ui:Label class="terminal-stat-value" text="4 ENERGY CELLS" name="statValue1" />
+            </ui:VisualElement>
+            <ui:VisualElement class="terminal-row terminal-stat">
+                <ui:Label class="terminal-stat-name" text="RECOVERY" />
+                <ui:Label class="terminal-stat-value" text="NO CONTRACT" name="statValue2" />
+            </ui:VisualElement>
+            <ui:Label class="terminal-copy" text="Host a session or join an existing crew in the connection terminal. Selected cells are taken from storage; unused cells return only after extraction." />
+            <ui:Button class="terminal-primary terminal-launch" text="OPEN CONNECTION TERMINAL" name="launch" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

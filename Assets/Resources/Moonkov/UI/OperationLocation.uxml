@@ -1,0 +1,15 @@
+<ui:UXML xmlns:moon="Unity.MP_FPS.Client" xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="project://database/Assets/UI Toolkit/GameUI/StashScreen.uss" />
+    <ui:Style src="project://database/Assets/UI Toolkit/GameUI/MoonkovTerminal.uss" />
+    <ui:Style src="project://database/Assets/Resources/Moonkov/UI/TerminalLayout.uss" />
+    <ui:VisualElement name="layoutPreview" class="stash-root moonkov-terminal terminal-layout-preview">
+        <ui:VisualElement name="terminalPage">
+            <ui:Label class="terminal-title" text="MOON / SURFACE SECTOR" />
+            <moon:LunarSchematic class="lunar-schematic terminal-operation-map" picking-mode="Ignore">
+                <ui:Label class="terminal-map-tag" picking-mode="Ignore" text="SECTOR 07  /  MARE IMBRIUM" />
+            </moon:LunarSchematic>
+            <ui:Label class="terminal-eyebrow" text="AVAILABLE OPERATION: LUNAR SUPPLY RECOVERY" />
+            <ui:Label class="terminal-copy" text="Locate supply caches and navigate back to the extraction beacon. Additional regions are not charted for deployment." />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

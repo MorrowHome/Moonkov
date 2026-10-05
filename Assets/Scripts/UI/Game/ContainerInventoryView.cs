@@ -43,25 +43,19 @@ namespace Unity.MP_FPS.Client
         public ContainerInventoryView(VisualElement parent, bool showStash, Action<InventoryCommand> send)
         {
             m_Stash = showStash; m_Send = send;
-            m_Root = new VisualElement { name = "containerInventory", focusable = true }; m_Root.AddToClassList("inventory-view");
-            if (showStash) m_Root.AddToClassList("inventory-with-stash");
+            m_Root = TerminalLayout.Clone("ContainerInventory", "containerInventory");
+            m_Root.EnableInClassList("inventory-with-stash", showStash);
             m_Root.styleSheets.Add(Resources.Load<StyleSheet>("Moonkov/ContainerUI")); parent.Add(m_Root);
-            m_Body = new VisualElement(); m_Body.AddToClassList("inventory-body"); m_Root.Add(m_Body);
-            m_LootPane=new VisualElement();m_LootPane.AddToClassList("inventory-loot-pane");m_LootPane.style.display=DisplayStyle.None;m_Body.Add(m_LootPane);
-            var actor = new VisualElement(); m_CharacterPane=actor; actor.AddToClassList("inventory-character"); m_Body.Add(actor);
-            Text(actor, "DOLLSINGER", "inventory-character-title"); Text(actor, "EQUIPMENT / FIELD LOADOUT", "inventory-caption");
-            m_CharacterStage = new VisualElement(); m_CharacterStage.AddToClassList("inventory-character-stage"); actor.Add(m_CharacterStage);
-            var guides = new StashEquipmentGuides(() => m_Character, m_Slots); m_CharacterStage.Add(guides);
-            var slotLayer = new VisualElement(); slotLayer.AddToClassList("inventory-slot-layer"); m_CharacterStage.Add(slotLayer);
+            m_Body = m_Root.Q<VisualElement>("inventoryBody");
+            m_LootPane = m_Root.Q<VisualElement>("lootPane");
+            m_CharacterPane = m_Root.Q<VisualElement>("characterPane");
+            m_CharacterStage = m_Root.Q<VisualElement>("characterStage");
+            var guides = new StashEquipmentGuides(() => m_Character, m_Slots); m_CharacterStage.Insert(0, guides);
             string[] slots = { "Helmet", "ChestRig", "Pistol", "Backpack", "Primary", "Secondary" };
             for (int n = 0; n < slots.Length; n++)
             {
                 string slot = slots[n];
-                var button = new Button(() => ChooseSlot(slot)) { name = "inventorySlot" + slot }; button.AddToClassList("inventory-slot");
-                button.style.left = new Length(n < 3 ? 0 : 76, LengthUnit.Percent);
-                button.style.top = new Length(5 + n % 3 * 31, LengthUnit.Percent);
-                Text(button, SlotLabel(slot), "inventory-slot-label"); var art = new VisualElement { name="art", pickingMode=PickingMode.Ignore }; art.AddToClassList("inventory-slot-art"); button.Add(art);
-                Text(button, "EMPTY", "inventory-slot-item").name = "item"; slotLayer.Add(button);
+                var button = m_Root.Q<Button>("inventorySlot" + slot);
                 m_Slots.Add((LoadoutSlot)Enum.Parse(typeof(LoadoutSlot), slot), button);
                 button.RemoveManipulator(button.clickable);
                 button.AddManipulator(new Drag(this, () => m_Graph?.Equipped(slot), () => ChooseSlot(slot), () =>
@@ -71,11 +65,12 @@ namespace Unity.MP_FPS.Client
                 }));
                 m_Grids.Add(new Grid { Parent="equipment", Region=slot, Element=button, Definition=InventoryCatalog.Get("equipment").Regions.First(r => r.Id == slot) });
             }
-            m_Weight = Text(actor, "", "inventory-weight");
-            m_ContainerPane = new ScrollView(ScrollViewMode.Vertical); m_ContainerPane.AddToClassList("inventory-containers"); m_Body.Add(m_ContainerPane);
-            m_StashPane = new VisualElement(); m_StashPane.AddToClassList("inventory-stash"); if (showStash) m_Body.Add(m_StashPane);
-            m_Message = Text(m_Root, "Drag to move · R rotate · Double click containers · Ctrl click transfer", "inventory-hint");
-            m_Ghost = new VisualElement { pickingMode=PickingMode.Ignore }; m_Ghost.AddToClassList("inventory-ghost"); m_Ghost.style.display=DisplayStyle.None; m_Root.Add(m_Ghost);
+            m_Weight = m_Root.Q<Label>("inventoryWeight");
+            m_ContainerPane = m_Root.Q<ScrollView>("containerPane");
+            m_StashPane = m_Root.Q<VisualElement>("stashPane");
+            if (!showStash) m_StashPane.RemoveFromHierarchy();
+            m_Message = m_Root.Q<Label>("inventoryHint");
+            m_Ghost = m_Root.Q<VisualElement>("inventoryGhost");
             m_Preview = new VisualElement { pickingMode=PickingMode.Ignore }; m_Preview.AddToClassList("inventory-drop"); m_Preview.style.display=DisplayStyle.None;
             m_Root.RegisterCallback<KeyDownEvent>(Key, TrickleDown.TrickleDown);
             m_Windows = new TerminalWindows(m_Root, () => { });

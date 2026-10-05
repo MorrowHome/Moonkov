@@ -158,15 +158,16 @@ namespace Unity.MP_FPS.Client
     }
 
     // Chamfered panel frame that draws its border in, then rests.
-    public sealed class TechFrame : AnimatedPainter
+    [UxmlElement]
+    public sealed partial class TechFrame : AnimatedPainter
     {
         private static readonly CustomStyleProperty<Color> s_Fill = new CustomStyleProperty<Color>("--frame-fill"), s_Line = new CustomStyleProperty<Color>("--frame-line"), s_Accent = new CustomStyleProperty<Color>("--frame-accent");
         private static readonly CustomStyleProperty<float> s_Cut = new CustomStyleProperty<float>("--frame-cut");
         private Color m_Fill = new Color(.06f, .066f, .08f, .9f), m_Line = new Color(1, 1, 1, .14f), m_Accent = TerminalPalette.Yellow;
         private float m_Cut = 16;
-        private readonly float m_Delay;
+        private float m_Delay;
         protected override bool Animating => Age < m_Delay + 1.4f;
-        public TechFrame(float delay = 0)
+        public TechFrame(float delay)
         {
             m_Delay = delay; AddToClassList("tech-frame");
             style.position = Position.Absolute; style.left = 0; style.top = 0; style.right = 0; style.bottom = 0;
@@ -287,10 +288,11 @@ namespace Unity.MP_FPS.Client
     }
 
     // Repeating diagonal warning stripes.
-    public sealed class HazardStripes : AnimatedPainter
+    [UxmlElement]
+    public sealed partial class HazardStripes : AnimatedPainter
     {
-        private readonly Color m_Color;
-        private readonly bool m_Moving;
+        private Color m_Color;
+        private bool m_Moving;
         protected override bool Animating => m_Moving;
         public HazardStripes(Color color, bool moving = true)
         {
@@ -307,7 +309,8 @@ namespace Unity.MP_FPS.Client
     }
 
     // Animated exploded view of the halo weapon.
-    public sealed class HaloSchematic : AnimatedPainter
+    [UxmlElement]
+    public sealed partial class HaloSchematic : AnimatedPainter
     {
         private readonly List<Vector2> m_Nodes = new List<Vector2>();
         public void SetNodes(IEnumerable<Vector2> percentPositions) { m_Nodes.Clear(); m_Nodes.AddRange(percentPositions); MarkDirtyRepaint(); }
@@ -347,7 +350,8 @@ namespace Unity.MP_FPS.Client
     }
 
     // Animated tactical map of the lunar surface sector.
-    public sealed class LunarSchematic : AnimatedPainter
+    [UxmlElement]
+    public sealed partial class LunarSchematic : AnimatedPainter
     {
         public LunarSchematic() { m_Interval = 33; AddToClassList("lunar-schematic"); }
         protected override void Draw(Painter2D p, float w, float h)
@@ -394,7 +398,8 @@ namespace Unity.MP_FPS.Client
     }
 
     // Top-down blueprint of the orbital ship.
-    public sealed class ShipBlueprint : AnimatedPainter
+    [UxmlElement]
+    public sealed partial class ShipBlueprint : AnimatedPainter
     {
         public ShipBlueprint() { m_Interval = 33; AddToClassList("ship-blueprint"); }
         protected override void Draw(Painter2D p, float w, float h)
@@ -427,7 +432,8 @@ namespace Unity.MP_FPS.Client
     }
 
     // Idle carrier wave for the quiet comms channel.
-    public sealed class SignalWave : AnimatedPainter
+    [UxmlElement]
+    public sealed partial class SignalWave : AnimatedPainter
     {
         public SignalWave() { m_Interval = 33; AddToClassList("signal-wave"); }
         protected override void Draw(Painter2D p, float w, float h)
@@ -453,10 +459,11 @@ namespace Unity.MP_FPS.Client
     }
 
     // Circular gauge for a single value.
-    public sealed class ArcMeter : AnimatedPainter
+    [UxmlElement]
+    public sealed partial class ArcMeter : AnimatedPainter
     {
-        private readonly float m_Value;
-        private readonly Color m_Color;
+        private float m_Value;
+        private Color m_Color;
         protected override bool Animating => Age < 2f;
         public ArcMeter(float value, Color color) { m_Value = Mathf.Clamp01(value); m_Color = color; AddToClassList("arc-meter"); }
         protected override void Draw(Painter2D p, float w, float h)

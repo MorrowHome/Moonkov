@@ -1,0 +1,16 @@
+<ui:UXML xmlns:moon="Unity.MP_FPS.Client" xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="project://database/Assets/UI Toolkit/GameUI/StashScreen.uss" />
+    <ui:Style src="project://database/Assets/UI Toolkit/GameUI/MoonkovTerminal.uss" />
+    <ui:Style src="project://database/Assets/Resources/Moonkov/UI/TerminalLayout.uss" />
+    <ui:VisualElement name="layoutPreview" class="stash-root moonkov-terminal terminal-layout-preview">
+        <ui:VisualElement name="terminalPage">
+            <ui:Label class="terminal-title" text="RECOVERY CONTRACT" />
+            <ui:VisualElement class="terminal-hazard-banner">
+                <moon:HazardStripes class="hazard-stripes terminal-hazard-stripes" picking-mode="Ignore" stripe-color="#FF4D3A59" moving="true" />
+                <ui:Label class="terminal-warning" text="NO RECOVERY COVERAGE" />
+            </ui:VisualElement>
+            <ui:Label class="terminal-copy" text="Drone insurance is not currently offered. You are deploying without a recovery contract. Lost cargo cannot be claimed after death." />
+            <ui:Button class="terminal-button" enabled="false" tooltip="Recovery insurance is unavailable." text="PURCHASE CONTRACT" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

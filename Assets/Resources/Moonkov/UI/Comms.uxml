@@ -1,0 +1,48 @@
+<ui:UXML xmlns:moon="Unity.MP_FPS.Client" xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="project://database/Assets/UI Toolkit/GameUI/StashScreen.uss" />
+    <ui:Style src="project://database/Assets/UI Toolkit/GameUI/MoonkovTerminal.uss" />
+    <ui:Style src="project://database/Assets/Resources/Moonkov/UI/TerminalLayout.uss" />
+    <ui:VisualElement name="layoutPreview" class="stash-root moonkov-terminal terminal-layout-preview">
+        <ui:VisualElement name="terminalPage" class="terminal-content terminal-content-page">
+            <ui:Label class="terminal-page-index" picking-mode="Ignore" text="08" />
+            <ui:VisualElement class="terminal-row">
+                <ui:VisualElement class="terminal-panel terminal-side">
+                    <moon:TechFrame picking-mode="Ignore" delay="0.08" />
+                    <ui:Label class="terminal-eyebrow" text="CONTACTS" />
+                    <ui:Label class="terminal-title" text="SHIP CHANNEL" />
+                    <ui:Label class="terminal-copy" text="No incoming transmissions." />
+                    <ui:VisualElement class="terminal-row terminal-contact">
+                        <ui:VisualElement class="terminal-contact-led" />
+                        <ui:Label class="terminal-contact-name" text="UEL / FREIGHT" />
+                        <ui:Label class="terminal-contact-state" text="OFFLINE" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="terminal-row terminal-contact">
+                        <ui:VisualElement class="terminal-contact-led" />
+                        <ui:Label class="terminal-contact-name" text="LMB / MEDICAL" />
+                        <ui:Label class="terminal-contact-state" text="OFFLINE" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="terminal-row terminal-contact">
+                        <ui:VisualElement class="terminal-contact-led" />
+                        <ui:Label class="terminal-contact-name" text="SE / SALVAGE" />
+                        <ui:Label class="terminal-contact-state" text="OFFLINE" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="terminal-row terminal-contact">
+                        <ui:VisualElement class="terminal-contact-led" />
+                        <ui:Label class="terminal-contact-name" text="CREW / SESSION" />
+                        <ui:Label class="terminal-contact-state" text="OFFLINE" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="terminal-panel terminal-wide">
+                    <moon:TechFrame picking-mode="Ignore" delay="0.16" />
+                    <ui:Label class="terminal-eyebrow" text="COMMUNICATIONS / 00 MESSAGES" />
+                    <moon:SignalWave class="signal-wave terminal-comms-wave" picking-mode="Ignore">
+                        <ui:Label class="terminal-wave-tag" picking-mode="Ignore" text="CARRIER  /  148.250 MHZ" />
+                    </moon:SignalWave>
+                    <ui:Label class="terminal-hero-title" text="CHANNEL QUIET" />
+                    <ui:Label class="terminal-copy" text="Supplier rewards, recovery notices and crew messages will appear here when communications service is available." />
+                    <ui:Button class="terminal-button" enabled="false" tooltip="There are no message attachments." text="CLAIM ATTACHMENTS" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

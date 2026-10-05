@@ -51,3 +51,13 @@
 .inventory-container-window { width: auto; min-width: 250px; max-width: 560px; }
 .inventory-container-window .inventory-container { margin: 10px; }
 .inventory-view .terminal-window-layer { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
+
+/* Fixed inventory layout; visible in UI Builder. */
+.inventory-loot-pane, .inventory-ghost { display: none; }
+.inventory-slot-0 { left: 0%; top: 5%; }
+.inventory-slot-1 { left: 0%; top: 36%; }
+.inventory-slot-2 { left: 0%; top: 67%; }
+.inventory-slot-3 { left: 76%; top: 5%; }
+.inventory-slot-4 { left: 76%; top: 36%; }
+.inventory-slot-5 { left: 76%; top: 67%; }
+.stash-halo-icon { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }

@@ -1,0 +1,10 @@
+/* Static layout positions are editable here; runtime only changes state and animation. */
+.terminal-layout-preview { min-height: 680px; }
+#haloNode0 { left: 40%; top: 5%; }
+#haloNode1 { left: 2%; top: 39%; }
+#haloNode2 { left: 40%; top: 30%; }
+#haloNode3 { left: 78%; top: 39%; }
+#haloNode4 { left: 40%; top: 64%; }
+#haloNode5 { left: 2%; top: 78%; }
+#haloNode6 { left: 78%; top: 78%; }
+.stash-halo-icon { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }

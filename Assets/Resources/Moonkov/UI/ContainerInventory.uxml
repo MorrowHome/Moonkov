@@ -1,0 +1,51 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="../ContainerUI.uss" />
+    <ui:VisualElement name="containerInventory" class="inventory-view inventory-with-stash" focusable="true">
+        <ui:VisualElement name="inventoryBody" class="inventory-body">
+            <ui:VisualElement name="lootPane" class="inventory-loot-pane" />
+            <ui:VisualElement name="characterPane" class="inventory-character">
+                <ui:Label text="DOLLSINGER" class="inventory-character-title" picking-mode="Ignore" />
+                <ui:Label text="EQUIPMENT / FIELD LOADOUT" class="inventory-caption" picking-mode="Ignore" />
+                <ui:VisualElement name="characterStage" class="inventory-character-stage">
+                    <ui:VisualElement name="slotLayer" class="inventory-slot-layer">
+                        <ui:Button name="inventorySlotHelmet" class="inventory-slot inventory-slot-0">
+                            <ui:Label text="HELMET" class="inventory-slot-label" picking-mode="Ignore" />
+                            <ui:VisualElement name="art" class="inventory-slot-art" picking-mode="Ignore" />
+                            <ui:Label name="item" text="EMPTY" class="inventory-slot-item" picking-mode="Ignore" />
+                        </ui:Button>
+                        <ui:Button name="inventorySlotChestRig" class="inventory-slot inventory-slot-1">
+                            <ui:Label text="CHEST RIG" class="inventory-slot-label" picking-mode="Ignore" />
+                            <ui:VisualElement name="art" class="inventory-slot-art" picking-mode="Ignore" />
+                            <ui:Label name="item" text="EMPTY" class="inventory-slot-item" picking-mode="Ignore" />
+                        </ui:Button>
+                        <ui:Button name="inventorySlotPistol" class="inventory-slot inventory-slot-2">
+                            <ui:Label text="PISTOL" class="inventory-slot-label" picking-mode="Ignore" />
+                            <ui:VisualElement name="art" class="inventory-slot-art" picking-mode="Ignore" />
+                            <ui:Label name="item" text="EMPTY" class="inventory-slot-item" picking-mode="Ignore" />
+                        </ui:Button>
+                        <ui:Button name="inventorySlotBackpack" class="inventory-slot inventory-slot-3">
+                            <ui:Label text="BACKPACK" class="inventory-slot-label" picking-mode="Ignore" />
+                            <ui:VisualElement name="art" class="inventory-slot-art" picking-mode="Ignore" />
+                            <ui:Label name="item" text="EMPTY" class="inventory-slot-item" picking-mode="Ignore" />
+                        </ui:Button>
+                        <ui:Button name="inventorySlotPrimary" class="inventory-slot inventory-slot-4">
+                            <ui:Label text="PRIMARY" class="inventory-slot-label" picking-mode="Ignore" />
+                            <ui:VisualElement name="art" class="inventory-slot-art" picking-mode="Ignore" />
+                            <ui:Label name="item" text="EMPTY" class="inventory-slot-item" picking-mode="Ignore" />
+                        </ui:Button>
+                        <ui:Button name="inventorySlotSecondary" class="inventory-slot inventory-slot-5">
+                            <ui:Label text="SECONDARY" class="inventory-slot-label" picking-mode="Ignore" />
+                            <ui:VisualElement name="art" class="inventory-slot-art" picking-mode="Ignore" />
+                            <ui:Label name="item" text="EMPTY" class="inventory-slot-item" picking-mode="Ignore" />
+                        </ui:Button>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:Label name="inventoryWeight" class="inventory-weight" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:ScrollView name="containerPane" mode="Vertical" class="inventory-containers" />
+            <ui:VisualElement name="stashPane" class="inventory-stash" />
+        </ui:VisualElement>
+        <ui:Label name="inventoryHint" text="Drag to move · R rotate · Double click containers · Ctrl click transfer" class="inventory-hint" picking-mode="Ignore" />
+        <ui:VisualElement name="inventoryGhost" class="inventory-ghost" picking-mode="Ignore" />
+    </ui:VisualElement>
+</ui:UXML>

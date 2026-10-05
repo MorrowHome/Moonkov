@@ -1,7 +1,8 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
     <ui:Style src="StashScreen.uss" />
     <ui:Style src="MoonkovTerminal.uss" />
-    <ui:VisualElement name="stashScreen" class="stash-root">
+    <ui:Style src="../../Resources/Moonkov/UI/TerminalLayout.uss" />
+    <ui:VisualElement name="stashScreen" class="stash-root moonkov-terminal">
         <ui:VisualElement class="stash-header">
             <ui:VisualElement class="stash-brand">
                 <ui:Label text="MOONKOV" class="stash-brand-title" />
@@ -16,6 +17,54 @@
                 <ui:Label text="PERSONAL STASH" class="stash-eyebrow" />
             </ui:VisualElement>
             <ui:Button name="stashLogout" text="LOG OUT" class="stash-small-button" />
+        </ui:VisualElement>
+        <ui:VisualElement class="terminal-nav" name="terminalNav">
+            <ui:ScrollView class="terminal-nav-scroll" mode="Horizontal" vertical-scroller-visibility="Hidden" horizontal-scroller-visibility="Auto">
+                <ui:VisualElement class="terminal-nav-tabs" name="terminalNavTabs">
+                    <ui:Button class="terminal-tab" tooltip="SHIP" text="" name="terminalTab0">
+                        <ui:Label class="terminal-tab-index" picking-mode="Ignore" text="01" />
+                        <ui:Label class="terminal-tab-label" picking-mode="Ignore" text="SHIP" />
+                    </ui:Button>
+                    <ui:Button class="terminal-tab" tooltip="CHARACTER" text="" name="terminalTab1">
+                        <ui:Label class="terminal-tab-index" picking-mode="Ignore" text="02" />
+                        <ui:Label class="terminal-tab-label" picking-mode="Ignore" text="CHARACTER" />
+                    </ui:Button>
+                    <ui:Button class="terminal-tab" tooltip="HALO BUILD" text="" name="terminalTab2">
+                        <ui:Label class="terminal-tab-index" picking-mode="Ignore" text="03" />
+                        <ui:Label class="terminal-tab-label" picking-mode="Ignore" text="HALO BUILD" />
+                    </ui:Button>
+                    <ui:Button class="terminal-tab" tooltip="SUPPLIERS" text="" name="terminalTab3">
+                        <ui:Label class="terminal-tab-index" picking-mode="Ignore" text="04" />
+                        <ui:Label class="terminal-tab-label" picking-mode="Ignore" text="SUPPLIERS" />
+                    </ui:Button>
+                    <ui:Button class="terminal-tab" tooltip="OPERATIONS" text="" name="terminalTab4">
+                        <ui:Label class="terminal-tab-index" picking-mode="Ignore" text="05" />
+                        <ui:Label class="terminal-tab-label" picking-mode="Ignore" text="OPERATIONS" />
+                    </ui:Button>
+                    <ui:Button class="terminal-tab" tooltip="TASKS" text="" name="terminalTab5">
+                        <ui:Label class="terminal-tab-index" picking-mode="Ignore" text="06" />
+                        <ui:Label class="terminal-tab-label" picking-mode="Ignore" text="TASKS" />
+                    </ui:Button>
+                    <ui:Button class="terminal-tab" tooltip="BASE" text="" name="terminalTab6">
+                        <ui:Label class="terminal-tab-index" picking-mode="Ignore" text="07" />
+                        <ui:Label class="terminal-tab-label" picking-mode="Ignore" text="BASE" />
+                    </ui:Button>
+                    <ui:Button class="terminal-tab" tooltip="COMMS" text="" name="terminalTab7">
+                        <ui:Label class="terminal-tab-index" picking-mode="Ignore" text="08" />
+                        <ui:Label class="terminal-tab-label" picking-mode="Ignore" text="COMMS" />
+                    </ui:Button>
+                    <ui:Button class="terminal-tab" tooltip="SETTINGS" text="" name="terminalTab8">
+                        <ui:Label class="terminal-tab-index" picking-mode="Ignore" text="09" />
+                        <ui:Label class="terminal-tab-label" picking-mode="Ignore" text="SETTINGS" />
+                    </ui:Button>
+                    <ui:VisualElement class="terminal-nav-indicator" picking-mode="Ignore" />
+                </ui:VisualElement>
+            </ui:ScrollView>
+            <ui:VisualElement class="terminal-nav-status">
+                <ui:VisualElement class="terminal-nav-dot" />
+                <ui:Label class="terminal-nav-link" text="UPLINK STABLE" />
+                <ui:Label class="terminal-nav-clock" text="" />
+            </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement class="stash-body">
             <ui:VisualElement class="stash-character-pane">
@@ -85,6 +134,7 @@
                 <ui:Label text="PERSONAL STORAGE / RECOVERED SUPPLIES" class="stash-storage-caption" />
             </ui:VisualElement>
         </ui:VisualElement>
+        <ui:VisualElement name="terminalContent" class="terminal-content" picking-mode="Ignore" />
         <ui:VisualElement class="stash-footer">
             <ui:Button name="stashMainMenu" text="MAIN MENU" class="stash-footer-button" />
             <ui:Label text="MOON / DEPLOYMENT TERMINAL" class="stash-footer-caption" />

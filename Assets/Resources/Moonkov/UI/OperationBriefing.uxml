@@ -1,0 +1,29 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="project://database/Assets/UI Toolkit/GameUI/StashScreen.uss" />
+    <ui:Style src="project://database/Assets/UI Toolkit/GameUI/MoonkovTerminal.uss" />
+    <ui:Style src="project://database/Assets/Resources/Moonkov/UI/TerminalLayout.uss" />
+    <ui:VisualElement name="layoutPreview" class="stash-root moonkov-terminal terminal-layout-preview">
+        <ui:VisualElement name="terminalPage">
+            <ui:Label class="terminal-title" text="RECOVER. SURVIVE. EXTRACT." />
+            <ui:Label name="carrySummary" class="terminal-copy" text="Carry 0/12 / Stash 0" />
+            <ui:IntegerField name="operationCarryCells" class="terminal-carry-field" label="ENERGY CELLS TO CARRY" is-delayed="true" />
+            <ui:VisualElement class="terminal-cargo-gauge">
+                <ui:VisualElement class="terminal-cargo-gauge-fill" />
+            </ui:VisualElement>
+            <ui:Label class="terminal-copy" text="Cells leave storage when the server accepts deployment. [R] spends battery energy for missing rounds, according to the weapon's energy cost. Unspent charge stays in the cell." />
+            <ui:VisualElement class="terminal-row terminal-stat">
+                <ui:Label class="terminal-stat-name" text="01 / RECOVER" />
+                <ui:Label class="terminal-stat-value" text="[E] COLLECT NEARBY SUPPLIES" name="statValue0" />
+            </ui:VisualElement>
+            <ui:VisualElement class="terminal-row terminal-stat">
+                <ui:Label class="terminal-stat-name" text="02 / MANAGE" />
+                <ui:Label class="terminal-stat-value" text="[TAB] CHECK YOUR RAID PACK" name="statValue1" />
+            </ui:VisualElement>
+            <ui:VisualElement class="terminal-row terminal-stat">
+                <ui:Label class="terminal-stat-name" text="03 / EXTRACT" />
+                <ui:Label class="terminal-stat-value" text="STAY INSIDE THE GREEN BEACON" name="statValue2" />
+            </ui:VisualElement>
+            <ui:Label class="terminal-copy" text="Carried supplies are lost on death or timeout. Storage is credited after a successful server settlement. The session controls the extraction countdown." />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

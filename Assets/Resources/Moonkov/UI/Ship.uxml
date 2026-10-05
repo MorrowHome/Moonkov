@@ -1,0 +1,100 @@
+<ui:UXML xmlns:moon="Unity.MP_FPS.Client" xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="project://database/Assets/UI Toolkit/GameUI/StashScreen.uss" />
+    <ui:Style src="project://database/Assets/UI Toolkit/GameUI/MoonkovTerminal.uss" />
+    <ui:Style src="project://database/Assets/Resources/Moonkov/UI/TerminalLayout.uss" />
+    <ui:VisualElement name="layoutPreview" class="stash-root moonkov-terminal terminal-is-ship terminal-layout-preview">
+        <ui:VisualElement name="terminalPage" class="terminal-content">
+            <ui:Image class="terminal-character-art" picking-mode="Ignore" name="characterView" />
+            <ui:VisualElement class="terminal-home-hero" picking-mode="Ignore">
+                <ui:Label class="terminal-home-kicker" text="ESCAPE FROM" />
+                <ui:VisualElement class="terminal-home-mark" picking-mode="Ignore">
+                    <ui:Label class="terminal-home-title-ghost" text="MOONKOV" />
+                    <ui:Label class="terminal-home-title" text="MOONKOV" />
+                </ui:VisualElement>
+                <ui:VisualElement class="terminal-home-bar">
+                    <ui:Label class="terminal-home-caption" text="LUNAR EXPEDITION" />
+                    <ui:Label class="terminal-home-version" text="VER 0.7  /  SECTOR 07" />
+                </ui:VisualElement>
+                <ui:Label class="terminal-home-description" text="ORBITAL SHIP  /  FIELD TERMINAL" />
+            </ui:VisualElement>
+            <ui:VisualElement class="terminal-home-menu">
+                <ui:VisualElement class="terminal-row terminal-home-menu-head">
+                    <ui:Label class="terminal-eyebrow" text="COMMAND DECK" />
+                    <ui:Label class="terminal-home-menu-count" text="SELECT  /  09 SYSTEMS" />
+                </ui:VisualElement>
+                <ui:Button class="terminal-home-action terminal-home-deploy" tooltip="OPERATION" text="" name="homeAction0">
+                    <moon:TechFrame picking-mode="Ignore" delay="0.4" />
+                    <moon:HazardStripes class="hazard-stripes terminal-home-deploy-stripes" picking-mode="Ignore" stripe-color="#07080A29" moving="true" />
+                    <ui:Label class="terminal-home-action-index" picking-mode="Ignore" text="05" />
+                    <ui:Label class="terminal-home-action-name" picking-mode="Ignore" text="OPERATION" />
+                    <ui:Label class="terminal-home-action-caption" picking-mode="Ignore" text="LUNAR SUPPLY RECOVERY  /  DEPLOY" />
+                    <ui:VisualElement class="terminal-home-action-arrow" picking-mode="Ignore" />
+                </ui:Button>
+                <ui:VisualElement class="terminal-row terminal-home-grid">
+                    <ui:Button class="terminal-home-action" tooltip="CHARACTER" text="" name="homeAction1">
+                        <moon:TechFrame picking-mode="Ignore" delay="0.4" />
+                        <ui:Label class="terminal-home-action-index" picking-mode="Ignore" text="02" />
+                        <ui:Label class="terminal-home-action-name" picking-mode="Ignore" text="CHARACTER" />
+                        <ui:Label class="terminal-home-action-caption" picking-mode="Ignore" text="LOADOUT  /  STASH" />
+                        <ui:VisualElement class="terminal-home-action-arrow" picking-mode="Ignore" />
+                    </ui:Button>
+                    <ui:Button class="terminal-home-action" tooltip="HALO" text="" name="homeAction2">
+                        <moon:TechFrame picking-mode="Ignore" delay="0.4" />
+                        <ui:Label class="terminal-home-action-index" picking-mode="Ignore" text="03" />
+                        <ui:Label class="terminal-home-action-name" picking-mode="Ignore" text="HALO" />
+                        <ui:Label class="terminal-home-action-caption" picking-mode="Ignore" text="WEAPON SCHEMATIC" />
+                        <ui:VisualElement class="terminal-home-action-arrow" picking-mode="Ignore" />
+                    </ui:Button>
+                    <ui:Button class="terminal-home-action" tooltip="SETTINGS" text="" name="homeAction3">
+                        <moon:TechFrame picking-mode="Ignore" delay="0.4" />
+                        <ui:Label class="terminal-home-action-index" picking-mode="Ignore" text="09" />
+                        <ui:Label class="terminal-home-action-name" picking-mode="Ignore" text="SETTINGS" />
+                        <ui:Label class="terminal-home-action-caption" picking-mode="Ignore" text="TERMINAL" />
+                        <ui:VisualElement class="terminal-home-action-arrow" picking-mode="Ignore" />
+                    </ui:Button>
+                </ui:VisualElement>
+                <ui:VisualElement class="terminal-row terminal-home-services">
+                    <ui:Button class="terminal-home-chip" text="SUPPLIERS" name="homeChip0">
+                        <ui:Label class="terminal-home-chip-index" picking-mode="Ignore" text="04" />
+                    </ui:Button>
+                    <ui:Button class="terminal-home-chip" text="TASKS" name="homeChip1">
+                        <ui:Label class="terminal-home-chip-index" picking-mode="Ignore" text="06" />
+                    </ui:Button>
+                    <ui:Button class="terminal-home-chip" text="BASE" name="homeChip2">
+                        <ui:Label class="terminal-home-chip-index" picking-mode="Ignore" text="07" />
+                    </ui:Button>
+                    <ui:Button class="terminal-home-chip" text="COMMS" name="homeChip3">
+                        <ui:Label class="terminal-home-chip-index" picking-mode="Ignore" text="08" />
+                    </ui:Button>
+                </ui:VisualElement>
+                <ui:VisualElement class="terminal-row terminal-home-resources">
+                    <ui:VisualElement class="terminal-home-resource">
+                        <ui:Label class="terminal-home-resource-name" text="MOON DUST" />
+                        <ui:Label class="terminal-home-resource-value" text="0" name="resourceValue0" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="terminal-home-resource">
+                        <ui:Label class="terminal-home-resource-name" text="ALLOY" />
+                        <ui:Label class="terminal-home-resource-value" text="0" name="resourceValue1" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="terminal-home-resource">
+                        <ui:Label class="terminal-home-resource-name" text="ENERGY CELLS" />
+                        <ui:Label class="terminal-home-resource-value" text="0" name="resourceValue2" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement class="terminal-home-operator-card">
+                <moon:TechFrame picking-mode="Ignore" delay="0.6" />
+                <ui:Label class="terminal-eyebrow" text="OPERATOR  /  ACTIVE" />
+                <ui:Label class="terminal-home-operator" text="DOLLSINGER" />
+                <ui:Label class="terminal-home-player" text="UNREGISTERED CREW" />
+                <ui:Label class="terminal-positive" text="READY FOR DEPLOYMENT" />
+            </ui:VisualElement>
+            <ui:VisualElement class="terminal-ticker terminal-home-ticker" picking-mode="Ignore">
+                <ui:VisualElement class="terminal-ticker-track" picking-mode="Ignore">
+                    <ui:Label class="terminal-ticker-text" text="MOONKOV ORBITAL TERMINAL  //  SELENE RELAY 07 NOMINAL  //  SURFACE -173 C / NIGHT CYCLE  //  EXTRACTION BEACON: GREEN  //  CARGO IS LOST ON DEATH  //  RECOVER. SURVIVE. EXTRACT.  //  " />
+                    <ui:Label class="terminal-ticker-text" text="MOONKOV ORBITAL TERMINAL  //  SELENE RELAY 07 NOMINAL  //  SURFACE -173 C / NIGHT CYCLE  //  EXTRACTION BEACON: GREEN  //  CARGO IS LOST ON DEATH  //  RECOVER. SURVIVE. EXTRACT.  //  " />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

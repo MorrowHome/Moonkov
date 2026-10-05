@@ -1,0 +1,99 @@
+<ui:UXML xmlns:moon="Unity.MP_FPS.Client" xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="project://database/Assets/UI Toolkit/GameUI/StashScreen.uss" />
+    <ui:Style src="project://database/Assets/UI Toolkit/GameUI/MoonkovTerminal.uss" />
+    <ui:Style src="project://database/Assets/Resources/Moonkov/UI/TerminalLayout.uss" />
+    <ui:VisualElement name="layoutPreview" class="stash-root moonkov-terminal terminal-layout-preview">
+        <ui:VisualElement name="terminalPage" class="terminal-content terminal-content-page">
+            <ui:Label class="terminal-page-index" picking-mode="Ignore" text="04" />
+            <ui:VisualElement class="terminal-row terminal-page-head">
+                <ui:VisualElement class="terminal-page-heading">
+                    <ui:Label class="terminal-eyebrow" text="SUPPLIERS  /  MARKET" />
+                    <ui:Label class="terminal-title" text="LUNAR SUPPLY NETWORK" />
+                </ui:VisualElement>
+                <ui:Label class="terminal-page-meta" text="03 FACTIONS  /  00 CONTRACTS" />
+            </ui:VisualElement>
+            <ui:VisualElement class="terminal-row terminal-trader-row">
+                <ui:VisualElement class="terminal-panel terminal-trader terminal-trader-0">
+                    <moon:TechFrame picking-mode="Ignore" delay="0.08" />
+                    <ui:Label class="terminal-eyebrow" text="UEL / 01" />
+                    <ui:Label class="terminal-trader-index" picking-mode="Ignore" text="01" />
+                    <ui:VisualElement class="terminal-trader-stage">
+                        <moon:HazardStripes class="hazard-stripes terminal-trader-stripes" picking-mode="Ignore" stripe-color="#ECECE60D" moving="false" />
+                        <moon:StashItemArt class="terminal-trader-art" picking-mode="Ignore" art-kind="Alloy" />
+                    </ui:VisualElement>
+                    <ui:Label class="terminal-trader-role" text="FREIGHT  /  STRUCTURE" />
+                    <ui:Label class="terminal-heading" text="UNITED EARTH LOGISTICS" />
+                    <ui:Label class="terminal-copy" text="Structural materials, field equipment and cargo transport." />
+                    <ui:VisualElement class="terminal-standing">
+                        <ui:VisualElement class="terminal-standing-pip" />
+                        <ui:VisualElement class="terminal-standing-pip" />
+                        <ui:VisualElement class="terminal-standing-pip" />
+                        <ui:VisualElement class="terminal-standing-pip" />
+                        <ui:VisualElement class="terminal-standing-pip" />
+                        <ui:VisualElement class="terminal-standing-pip" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="terminal-row terminal-stat">
+                        <ui:Label class="terminal-stat-name" text="SUPPLY" />
+                        <ui:Label class="terminal-stat-value" text="HALO WEAPONS / ENERGY CELLS" name="statValue0" />
+                    </ui:VisualElement>
+                    <ui:Button class="terminal-button" text="VIEW SUPPLIER" name="supplier0" />
+                </ui:VisualElement>
+                <ui:VisualElement class="terminal-panel terminal-trader terminal-trader-1">
+                    <moon:TechFrame picking-mode="Ignore" delay="0.16" />
+                    <ui:Label class="terminal-eyebrow" text="LMB / 02" />
+                    <ui:Label class="terminal-trader-index" picking-mode="Ignore" text="02" />
+                    <ui:VisualElement class="terminal-trader-stage">
+                        <moon:HazardStripes class="hazard-stripes terminal-trader-stripes" picking-mode="Ignore" stripe-color="#ECECE60D" moving="false" />
+                        <moon:StashItemArt class="terminal-trader-art" picking-mode="Ignore" art-kind="Outfit" />
+                    </ui:VisualElement>
+                    <ui:Label class="terminal-trader-role" text="MEDICAL  /  RECOVERY" />
+                    <ui:Label class="terminal-heading" text="LUNAR MEDICAL BUREAU" />
+                    <ui:Label class="terminal-copy" text="Medical supplies, suit diagnostics and expedition recovery." />
+                    <ui:VisualElement class="terminal-standing">
+                        <ui:VisualElement class="terminal-standing-pip" />
+                        <ui:VisualElement class="terminal-standing-pip" />
+                        <ui:VisualElement class="terminal-standing-pip" />
+                        <ui:VisualElement class="terminal-standing-pip" />
+                        <ui:VisualElement class="terminal-standing-pip" />
+                        <ui:VisualElement class="terminal-standing-pip" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="terminal-row terminal-stat">
+                        <ui:Label class="terminal-stat-name" text="SUPPLY" />
+                        <ui:Label class="terminal-stat-value" text="HALO WEAPONS / ENERGY CELLS" name="statValue1" />
+                    </ui:VisualElement>
+                    <ui:Button class="terminal-button" text="VIEW SUPPLIER" name="supplier1" />
+                </ui:VisualElement>
+                <ui:VisualElement class="terminal-panel terminal-trader terminal-trader-2">
+                    <moon:TechFrame picking-mode="Ignore" delay="0.24" />
+                    <ui:Label class="terminal-eyebrow" text="SE / 03" />
+                    <ui:Label class="terminal-trader-index" picking-mode="Ignore" text="03" />
+                    <ui:VisualElement class="terminal-trader-stage">
+                        <moon:HazardStripes class="hazard-stripes terminal-trader-stripes" picking-mode="Ignore" stripe-color="#ECECE60D" moving="false" />
+                        <moon:StashItemArt class="terminal-trader-art" picking-mode="Ignore" art-kind="Halo" />
+                    </ui:VisualElement>
+                    <ui:Label class="terminal-trader-role" text="SALVAGE  /  HALO PARTS" />
+                    <ui:Label class="terminal-heading" text="THE SALVAGE ENGINEER" />
+                    <ui:Label class="terminal-copy" text="Halo components, reclaimed electronics and rare artifacts." />
+                    <ui:VisualElement class="terminal-standing">
+                        <ui:VisualElement class="terminal-standing-pip" />
+                        <ui:VisualElement class="terminal-standing-pip" />
+                        <ui:VisualElement class="terminal-standing-pip" />
+                        <ui:VisualElement class="terminal-standing-pip" />
+                        <ui:VisualElement class="terminal-standing-pip" />
+                        <ui:VisualElement class="terminal-standing-pip" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="terminal-row terminal-stat">
+                        <ui:Label class="terminal-stat-name" text="SUPPLY" />
+                        <ui:Label class="terminal-stat-value" text="HALO WEAPONS / ENERGY CELLS" name="statValue2" />
+                    </ui:VisualElement>
+                    <ui:Button class="terminal-button" text="VIEW SUPPLIER" name="supplier2" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement class="terminal-row terminal-page-foot">
+                <ui:Label class="terminal-copy" text="Trade with moon dust. Lost every halo? Emergency supply can get you back into the field." />
+                <ui:Button class="terminal-primary" text="EMERGENCY SUPPLY" name="emergencySupply" />
+                <ui:Button class="terminal-button" enabled="false" tooltip="The player market is not open." text="OPEN PLAYER MARKET" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

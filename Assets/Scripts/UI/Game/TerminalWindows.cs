@@ -26,16 +26,15 @@ namespace Unity.MP_FPS.Client
 
         public VisualElement Open(string title, Vector2? position = null, bool compact = false)
         {
-            var window = new VisualElement { focusable = true };
-            window.AddToClassList(compact ? "terminal-context" : "terminal-window");
+            var window = TerminalLayout.Clone("Window", "terminalWindow");
+            window.EnableInClassList("terminal-window", !compact); window.EnableInClassList("terminal-context", compact);
             float offset = (m_Windows.Count % 5) * 24;
             window.style.left = position.HasValue ? Mathf.Max(0, position.Value.x) : 70 + offset;
             window.style.top = position.HasValue ? Mathf.Max(0, position.Value.y) : 70 + offset;
-            var header = new VisualElement(); header.AddToClassList("terminal-window-header");
-            var label = new Label(title); label.AddToClassList("terminal-heading"); header.Add(label);
-            var close = new Button(() => Close(window)) { text = "×", tooltip = "Close / Esc" };
-            close.AddToClassList("terminal-window-close"); header.Add(close);
-            TechFrame.Attach(window); window.Add(header); TerminalMotion.Fade(window, 0, .28f);
+            var header = window.Q<VisualElement>("windowHeader");
+            window.Q<Label>("windowTitle").text = title;
+            window.Q<Button>("windowClose").clicked += () => Close(window);
+            TerminalMotion.Fade(window, 0, .28f);
             header.AddManipulator(new WindowDrag(window));
             m_ReturnFocus[window] = m_Root.panel?.focusController.focusedElement as VisualElement;
             m_Windows.Add(window); m_Layer.Add(window); window.Focus();

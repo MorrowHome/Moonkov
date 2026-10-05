@@ -1,0 +1,31 @@
+<ui:UXML xmlns:moon="Unity.MP_FPS.Client" xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="project://database/Assets/UI Toolkit/GameUI/StashScreen.uss" />
+    <ui:Style src="project://database/Assets/UI Toolkit/GameUI/MoonkovTerminal.uss" />
+    <ui:Style src="project://database/Assets/Resources/Moonkov/UI/TerminalLayout.uss" />
+    <ui:VisualElement name="layoutPreview" class="stash-root moonkov-terminal terminal-layout-preview">
+        <ui:VisualElement name="terminalPage">
+            <ui:Label class="terminal-title" text="CHOOSE YOUR OPERATOR" />
+            <ui:Label class="terminal-copy" text="Select the field kit you will deploy with." />
+            <ui:VisualElement class="terminal-row terminal-operator-row">
+                <ui:VisualElement class="terminal-panel terminal-console terminal-operator-card">
+                    <moon:TechFrame picking-mode="Ignore" delay="0.24" />
+                    <ui:Label class="terminal-eyebrow" text="01" />
+                    <moon:StashItemArt class="terminal-trader-art" picking-mode="Ignore" art-kind="Outfit" />
+                    <ui:Button class="terminal-button" text="RIFLE" name="operator0" />
+                </ui:VisualElement>
+                <ui:VisualElement class="terminal-panel terminal-console terminal-operator-card">
+                    <moon:TechFrame picking-mode="Ignore" delay="0.32" />
+                    <ui:Label class="terminal-eyebrow" text="02" />
+                    <moon:StashItemArt class="terminal-trader-art" picking-mode="Ignore" art-kind="Outfit" />
+                    <ui:Button class="terminal-button" text="SHOTGUN" name="operator1" />
+                </ui:VisualElement>
+                <ui:VisualElement class="terminal-panel terminal-console terminal-operator-card">
+                    <moon:TechFrame picking-mode="Ignore" delay="0.4" />
+                    <ui:Label class="terminal-eyebrow" text="03" />
+                    <moon:StashItemArt class="terminal-trader-art" picking-mode="Ignore" art-kind="Halo" />
+                    <ui:Button class="terminal-button" text="DOLLSINGER" name="operator2" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

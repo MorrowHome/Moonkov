@@ -1,0 +1,13 @@
+<ui:UXML xmlns:moon="Unity.MP_FPS.Client" xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="project://database/Assets/UI Toolkit/GameUI/MoonkovTerminal.uss" />
+    <ui:Style src="project://database/Assets/Resources/Moonkov/UI/TerminalLayout.uss" />
+    <ui:VisualElement name="layoutPreview" class="stash-root moonkov-terminal terminal-layout-preview">
+        <ui:VisualElement name="terminalWindow" class="terminal-window" focusable="true">
+            <moon:TechFrame picking-mode="Ignore" />
+            <ui:VisualElement name="windowHeader" class="terminal-window-header">
+                <ui:Label name="windowTitle" text="WINDOW" class="terminal-heading" />
+                <ui:Button name="windowClose" text="×" tooltip="Close / Esc" class="terminal-window-close" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

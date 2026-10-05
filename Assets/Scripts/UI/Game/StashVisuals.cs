@@ -6,25 +6,38 @@ namespace Unity.MP_FPS.Client
     public enum StashArtKind { None, Dust, Alloy, Cell, Halo, Outfit, Helmet, Rifle, Pistol, ChestRig, Backpack, HaloRifle, HaloRevolver, HaloShotgun }
 
     // Small original vector illustrations, kept sharp at the shared PanelSettings scale.
-    public sealed class StashItemArt : VisualElement
+    [UxmlElement]
+    public sealed partial class StashItemArt : VisualElement
     {
-        private readonly StashArtKind m_Kind;
+        private StashArtKind m_Kind;
         private Painter2D m_Painter;
         private Vector2 m_Origin;
         private float m_Scale;
 
+        public StashItemArt() : this(StashArtKind.None) { }
         public StashItemArt(StashArtKind kind)
         {
-            m_Kind = kind;
             pickingMode = PickingMode.Ignore;
-            if (kind == StashArtKind.HaloRifle || kind == StashArtKind.HaloRevolver || kind == StashArtKind.HaloShotgun)
-            {
-                var icon = new Image { image = Resources.Load<Texture2D>("HaloIcons/" +
-                    (kind == StashArtKind.HaloRifle ? "Rifle" : kind == StashArtKind.HaloRevolver ? "Revolver" : "Shotgun")), scaleMode = ScaleMode.ScaleToFit, pickingMode = PickingMode.Ignore };
-                icon.style.position = Position.Absolute; icon.style.left = icon.style.right = icon.style.top = icon.style.bottom = 0;
-                Add(icon); return;
-            }
             generateVisualContent += Draw;
+            ArtKind = kind;
+        }
+
+        [UxmlAttribute]
+        public StashArtKind ArtKind
+        {
+            get => m_Kind;
+            set
+            {
+                m_Kind = value; Clear();
+                if (value == StashArtKind.HaloRifle || value == StashArtKind.HaloRevolver || value == StashArtKind.HaloShotgun)
+                {
+                    var icon = new Image { image = Resources.Load<Texture2D>("HaloIcons/" +
+                        (value == StashArtKind.HaloRifle ? "Rifle" : value == StashArtKind.HaloRevolver ? "Revolver" : "Shotgun")), scaleMode = ScaleMode.ScaleToFit, pickingMode = PickingMode.Ignore };
+                    icon.style.position = Position.Absolute; icon.style.left = icon.style.right = icon.style.top = icon.style.bottom = 0;
+                    Add(icon);
+                }
+                MarkDirtyRepaint();
+            }
         }
 
         private void Draw(MeshGenerationContext context)

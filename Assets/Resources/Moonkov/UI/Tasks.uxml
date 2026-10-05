@@ -1,0 +1,57 @@
+<ui:UXML xmlns:moon="Unity.MP_FPS.Client" xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="project://database/Assets/UI Toolkit/GameUI/StashScreen.uss" />
+    <ui:Style src="project://database/Assets/UI Toolkit/GameUI/MoonkovTerminal.uss" />
+    <ui:Style src="project://database/Assets/Resources/Moonkov/UI/TerminalLayout.uss" />
+    <ui:VisualElement name="layoutPreview" class="stash-root moonkov-terminal terminal-layout-preview">
+        <ui:VisualElement name="terminalPage" class="terminal-content terminal-content-page">
+            <ui:Label class="terminal-page-index" picking-mode="Ignore" text="06" />
+            <ui:VisualElement class="terminal-row">
+                <ui:VisualElement class="terminal-panel terminal-side">
+                    <moon:TechFrame picking-mode="Ignore" delay="0.08" />
+                    <ui:Label class="terminal-eyebrow" text="EXPEDITION OBJECTIVES" />
+                    <ui:Label class="terminal-eyebrow" text="ACTIVE / FIELD PROTOCOL" />
+                    <ui:VisualElement class="terminal-row terminal-task-progress">
+                        <moon:ArcMeter class="arc-meter" picking-mode="Ignore" value="0.0" meter-color="#FFE11AFF">
+                            <ui:Label class="terminal-meter-value" text="0/3" />
+                            <ui:Label class="terminal-meter-name" text="DONE" />
+                        </moon:ArcMeter>
+                        <ui:VisualElement class="terminal-task-progress-copy">
+                            <ui:Label class="terminal-title" text="LUNAR RECOVERY" />
+                            <ui:Label class="terminal-heading" text="YOUR FIRST RETURN" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:Label class="terminal-copy" text="Recover supplies from the surface." />
+                    <ui:VisualElement class="terminal-task-chain">
+                        <ui:Label class="terminal-eyebrow" text="TASK CHAINS" />
+                        <ui:Button class="terminal-button" enabled="false" tooltip="Additional task chains are not available yet." text="SUPPLIER CONTRACTS" />
+                        <ui:Button class="terminal-button" enabled="false" tooltip="Additional task chains are not available yet." text="SHIP EXPANSION" />
+                        <ui:Button class="terminal-button" enabled="false" tooltip="Additional task chains are not available yet." text="DEEP SURVEY" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="terminal-panel terminal-wide">
+                    <moon:TechFrame picking-mode="Ignore" delay="0.16" />
+                    <ui:Label class="terminal-eyebrow" text="MISSION BRIEF" />
+                    <ui:Label class="terminal-title" text="EVERY RETURN COUNTS" />
+                    <ui:Label class="terminal-copy" text="Your ship needs recovered materials. Search the lunar caches, manage your limited cargo space and make it back to the extraction zone." />
+                    <ui:VisualElement class="terminal-objectives">
+                        <ui:VisualElement class="terminal-row terminal-stat">
+                            <ui:Label class="terminal-stat-name" text="OBJECTIVE 01" />
+                            <ui:Label class="terminal-stat-value" text="COLLECT ANY SURFACE SUPPLY" name="statValue0" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="terminal-row terminal-stat">
+                            <ui:Label class="terminal-stat-name" text="OBJECTIVE 02" />
+                            <ui:Label class="terminal-stat-value" text="REACH THE EXTRACTION BEACON" name="statValue1" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="terminal-row terminal-stat">
+                            <ui:Label class="terminal-stat-name" text="OBJECTIVE 03" />
+                            <ui:Label class="terminal-stat-value" text="SURVIVE THE EXTRACTION COUNTDOWN" name="statValue2" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:Label class="terminal-positive" text="REWARD / ALL SUCCESSFULLY EXTRACTED CARGO" />
+                    <ui:Button class="terminal-primary" text="PLAN THIS OPERATION" name="planOperation" />
+                    <ui:Label class="terminal-copy" text="This is the expedition protocol. Separate quest rewards and progression are not available yet." />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

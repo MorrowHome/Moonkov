@@ -1,0 +1,56 @@
+<ui:UXML xmlns:moon="Unity.MP_FPS.Client" xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="project://database/Assets/UI Toolkit/GameUI/StashScreen.uss" />
+    <ui:Style src="project://database/Assets/UI Toolkit/GameUI/MoonkovTerminal.uss" />
+    <ui:Style src="project://database/Assets/Resources/Moonkov/UI/TerminalLayout.uss" />
+    <ui:VisualElement name="layoutPreview" class="stash-root moonkov-terminal terminal-layout-preview">
+        <ui:VisualElement name="terminalPage" class="terminal-content terminal-content-page">
+            <ui:Label class="terminal-page-index" picking-mode="Ignore" text="09" />
+            <ui:VisualElement class="terminal-row">
+                <ui:VisualElement class="terminal-panel terminal-wide">
+                    <moon:TechFrame picking-mode="Ignore" delay="0.08" />
+                    <ui:Label class="terminal-eyebrow" text="PRESENTATION / AUDIO" />
+                    <ui:Label class="terminal-title" text="TERMINAL PREFERENCES" />
+                    <ui:Slider class="terminal-slider" picking-mode="Ignore" label="MASTER AUDIO" low-value="0" high-value="1" name="audioMaster" />
+                    <ui:Slider class="terminal-slider" picking-mode="Ignore" label="GAMEPLAY EFFECTS" low-value="0" high-value="1" name="audioEffects" />
+                    <ui:Slider class="terminal-slider" picking-mode="Ignore" label="INTERFACE AUDIO" low-value="0" high-value="1" name="audioInterface" />
+                    <ui:Toggle class="terminal-toggle" label="ALWAYS SHOW FIELD STATUS" name="alwaysShowHUD" />
+                    <ui:Label class="terminal-copy" text="The default HUD reveals critical states automatically. Hold [H] to check status or press [Tab] to open your raid pack." />
+                    <moon:SignalWave class="signal-wave terminal-settings-wave" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:VisualElement class="terminal-panel terminal-side terminal-keys">
+                    <moon:TechFrame picking-mode="Ignore" delay="0.16" />
+                    <ui:Label class="terminal-eyebrow" text="KEYBOARD / MOUSE" />
+                    <ui:VisualElement class="terminal-row terminal-stat">
+                        <ui:Label class="terminal-stat-name" text="RAID INVENTORY" />
+                        <ui:Label class="terminal-stat-value" text="TAB" name="statValue0" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="terminal-row terminal-stat">
+                        <ui:Label class="terminal-stat-name" text="STATUS CHECK" />
+                        <ui:Label class="terminal-stat-value" text="H (HOLD)" name="statValue1" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="terminal-row terminal-stat">
+                        <ui:Label class="terminal-stat-name" text="PICKUP" />
+                        <ui:Label class="terminal-stat-value" text="E" name="statValue2" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="terminal-row terminal-stat">
+                        <ui:Label class="terminal-stat-name" text="ROTATE IN STASH" />
+                        <ui:Label class="terminal-stat-value" text="R" name="statValue3" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="terminal-row terminal-stat">
+                        <ui:Label class="terminal-stat-name" text="ITEM INSPECT" />
+                        <ui:Label class="terminal-stat-value" text="DOUBLE CLICK / MIDDLE" name="statValue4" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="terminal-row terminal-stat">
+                        <ui:Label class="terminal-stat-name" text="ADVANCED ACTIONS" />
+                        <ui:Label class="terminal-stat-value" text="RIGHT CLICK" name="statValue5" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="terminal-row terminal-stat">
+                        <ui:Label class="terminal-stat-name" text="CLOSE TOP WINDOW" />
+                        <ui:Label class="terminal-stat-value" text="ESC" name="statValue6" />
+                    </ui:VisualElement>
+                    <ui:Label class="terminal-copy" text="Container transfers and equipment changes become available with the inventory service." />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
