@@ -70,11 +70,12 @@ namespace Unity.MP_FPS
                 ? EntityManager.GetComponentObject<RaidInventoryState>(connection).Graph : null;
         }
 
-        private bool TryReserveHaloCell(Entity player, uint weaponId)
+        private bool TryReserveHaloEnergy(Entity player, uint weaponId, WeaponData weapon, int currentAmmo, out int targetAmmo)
         {
+            targetAmmo = weapon.MagazineSize;
             if (!DollSingerWeapons.IsHalo(weaponId) || MoonRaidMap.Active == null) return true;
             if (EntityManager.HasComponent<DollSingerEnemy>(player))
-                return EntityManager.GetComponentObject<DollSingerEnemyBrain>(player).Inventory.ConsumeAccessibleCell();
+                return EntityManager.GetComponentObject<DollSingerEnemyBrain>(player).Inventory.TryRecharge(currentAmmo, weapon.MagazineSize, weapon.EnergyPerRound, out targetAmmo);
             if (!SystemAPI.TryGetSingletonBuffer<ClientsMap>(out var clients)) return false;
             int owner = ghostOwnerLookup[player].NetworkId;
             if (owner <= 0 || owner >= clients.Length) return false;
@@ -87,10 +88,10 @@ namespace Unity.MP_FPS
             if (EntityManager.HasComponent<RaidInventoryState>(connection))
             {
                 var inventory = EntityManager.GetComponentObject<RaidInventoryState>(connection);
-                if (session.Phase != RaidPhase.Active || !inventory.Graph.ConsumeAccessibleCell()) return false;
+                if (session.Phase != RaidPhase.Active || !inventory.Graph.TryRecharge(currentAmmo, weapon.MagazineSize, weapon.EnergyPerRound, out targetAmmo)) return false;
                 RaidInventoryState.UpdateTotals(inventory.Graph, ref session);
             }
-            else if (!RaidRules.TryConsumeCell(ref session)) return false;
+            else return false; // A persistent battery graph is required; never fall back to one-cell-per-magazine.
             EntityManager.SetComponentData(connection, session);
             return true;
         }
@@ -306,14 +307,10 @@ namespace Unity.MP_FPS
                     predictedPlayer.ValueRW.ReloadTimer -= deltaTime;
                     if (predictedPlayer.ValueRO.ReloadTimer <= 0f)
                     {
-                        predictedPlayer.ValueRW.ControllerState.IsReloadingState = false;
                         var weaponData =
                             WeaponManager.Instance.WeaponRegistry.GetWeaponData(
                                 predictedPlayer.ValueRO.EquippedWeaponID);
-                        if (weaponData != null)
-                        {
-                            predictedPlayer.ValueRW.CurrentAmmo = weaponData.MagazineSize;
-                        }
+                        DollSingerWeapons.CompleteReload(ref predictedPlayer.ValueRW, weaponData);
                     }
                 }
             }
@@ -355,10 +352,11 @@ namespace Unity.MP_FPS
                         if ((wantsToReload || mustReload) &&
                             !predictedPlayer.ValueRO.ControllerState.IsReloadingState &&
                             predictedPlayer.ValueRO.CurrentAmmo < weaponData.MagazineSize &&
-                            TryReserveHaloCell(entity, predictedPlayer.ValueRO.EquippedWeaponID))
+                            TryReserveHaloEnergy(entity, predictedPlayer.ValueRO.EquippedWeaponID, weaponData, predictedPlayer.ValueRO.CurrentAmmo, out int targetAmmo))
                         {
                             predictedPlayer.ValueRW.ControllerState.IsReloadingState = true;
                             predictedPlayer.ValueRW.ReloadTimer = weaponData.ReloadTime;
+                            predictedPlayer.ValueRW.ReloadTargetAmmo = targetAmmo;
                             predictedPlayer.ValueRW.LastReloadTick = serverTick;
                         }
 

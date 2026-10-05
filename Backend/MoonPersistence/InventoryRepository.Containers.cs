@@ -72,9 +72,8 @@ public sealed partial class InventoryRepository
             foreach (var item in graph.Items.Where(i => i.Code == "cells" && graph.Carried(i)).ToArray())
             {
                 if (remove == 0) break;
-                int amount = Math.Min(item.Quantity, remove); var stored = item.Clone(); stored.Quantity = amount;
-                if (amount < item.Quantity) { item.Quantity -= amount; stored.Id = Guid.NewGuid().ToString("D"); }
-                else graph.Items.Remove(item);
+                int amount = Math.Min(item.Quantity, remove); var stored = BatteryEnergy.Take(item, amount);
+                if (item.Quantity == 0) graph.Items.Remove(item);
                 if (!graph.FindSpace(stored, "stash", out var region, out var x, out var y)) throw new DeploymentRejectedException("stash_full");
                 stored.Parent = "stash"; stored.Region = region; stored.X = x; stored.Y = y; graph.Items.Add(stored); remove -= amount;
             }
@@ -88,11 +87,10 @@ public sealed partial class InventoryRepository
             foreach (var source in stock)
             {
                 var item = graph.Find(source.Id); int used = Math.Min(item.Quantity, remaining);
-                bool wholeStack = used == item.Quantity;
-                item.Quantity -= used; remaining -= used;
-                if (wholeStack) graph.Items.Remove(item);
-                if (graph.AddSupply("cells", used, foundInRaid: source.FoundInRaid,
-                    id: wholeStack ? source.Id : null, emergencySupply: source.EmergencySupply) != InventoryError.None)
+                var moved = BatteryEnergy.Take(item, used); remaining -= used;
+                if (item.Quantity == 0) graph.Items.Remove(item);
+                if (graph.AddSupply("cells", used, foundInRaid: moved.FoundInRaid,
+                    id: moved.Id, emergencySupply: moved.EmergencySupply, cellCharge: moved.CellCharge) != InventoryError.None)
                     throw new DeploymentRejectedException("loadout_full");
                 if (remaining == 0) break;
             }

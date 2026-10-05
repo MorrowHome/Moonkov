@@ -85,6 +85,7 @@ namespace Unity.MP_FPS.Client
         {
             var definition = InventoryCatalog.Get(offer.Code);
             var row = Product(offer.Code, offer.Name, $"{definition.Width * definition.Height} GRID CELL(S)  /  {offer.BuyDust} DUST EACH");
+            if (offer.Code == "cells") MoonkovTerminal.Text(row.Q(className: "terminal-shop-description"), $"{BatteryEnergy.Capacity} ENERGY / FULL CELL", "terminal-copy");
             var order = new VisualElement(); order.AddToClassList("terminal-shop-order"); row.Add(order);
             int quantity = offer.Code == "cells" ? 3 : 1;
             Button buy = null;
@@ -100,12 +101,12 @@ namespace Unity.MP_FPS.Client
             {
                 var offer = m_Offers.First(o => o.Code == item.Code); rows++;
                 string detail = item.EmergencySupply ? "EMERGENCY SUPPLY / CANNOT BE SOLD" : graph.RootOf(item.Id) != "stash" ? "RETURN TO STORAGE TO SELL" :
-                    $"{offer.SellDust} DUST EACH  /  " + (item.Code == "cells" ? $"{item.Quantity} CELLS" : item.LoadedAmmo < 0 ? "FULL MAGAZINE" : $"{item.LoadedAmmo} ROUNDS");
+                    $"{offer.SellDust} DUST EACH  /  " + (item.Code == "cells" ? $"{BatteryEnergy.Stored(item)}/{item.Quantity * BatteryEnergy.Capacity} ENERGY / VALUE SCALES WITH CHARGE" : item.LoadedAmmo < 0 ? "FULL MAGAZINE" : $"{item.LoadedAmmo} ROUNDS");
                 var row = Product(item.Code, offer.Name, detail);
                 var order = new VisualElement(); order.AddToClassList("terminal-shop-order"); row.Add(order);
                 int quantity = 1; Button sell = null;
-                Quantity(order, item.Quantity, quantity, value => { quantity = value; if (sell != null) sell.text = $"SELL / {quantity * offer.SellDust} DUST"; });
-                sell = MoonkovTerminal.ActionButton(order, $"SELL / {offer.SellDust} DUST", () => Order(ShopOperation.Sell, item.Code, item.Id, quantity));
+                Quantity(order, item.Quantity, quantity, value => { quantity = value; if (sell != null) sell.text = $"SELL / {ShopCatalog.SaleDust(item, quantity, offer.SellDust)} DUST"; });
+                sell = MoonkovTerminal.ActionButton(order, $"SELL / {ShopCatalog.SaleDust(item, quantity, offer.SellDust)} DUST", () => Order(ShopOperation.Sell, item.Code, item.Id, quantity));
                 sell.SetEnabled(Ready && !item.EmergencySupply && graph.RootOf(item.Id) == "stash");
             }
             if (rows == 0) MoonkovTerminal.Text(m_List, "No halo weapons or energy cells to sell. Recover supplies in a raid to restock.", "terminal-copy");

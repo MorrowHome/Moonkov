@@ -35,6 +35,8 @@ namespace Unity.MP_FPS
 
         [Header("Ammo & Reloading")] public int MagazineSize = 30;
         public float ReloadTime = 2.0f; // Time in seconds
+        [Min(1), Tooltip("Battery energy spent per round added to this halo's magazine.")]
+        public int EnergyPerRound = 1;
 
         [Header("Projectile Properties")] [Tooltip("The ghost prefab for the projectile to be spawned.")]
         public GhostSpawner.GhostReference ProjectileGhostPrefab;

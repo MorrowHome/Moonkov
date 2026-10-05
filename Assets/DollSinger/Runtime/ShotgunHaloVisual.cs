@@ -14,6 +14,7 @@ namespace Unity.MP_FPS.DollSinger
         private float aimBlend, innerRadius = -50f, outerScale = 1.5f, shotTime, progress;
         private uint lastShot, lastReload;
         private int ammo = 4;
+        private int reloadTarget = 4;
         private bool reloading, initialized;
 
         public void SetAimBlend(float value) => aimBlend = Mathf.Clamp01(value);
@@ -24,25 +25,26 @@ namespace Unity.MP_FPS.DollSinger
             innerRadius = -50f; outerScale = 1.5f; reloading = false;
             gameObject.SetActive(equipped); Refresh();
         }
-        public void SetNetworkState(int rounds, bool reload, float reloadProgress, uint shotTick, uint reloadTick)
+        public void SetNetworkState(int rounds, bool reload, float reloadProgress, uint shotTick, uint reloadTick, int targetAmmo = -1)
         {
             if (!gameObject.activeSelf) return;
             if (!initialized) { lastShot = shotTick; lastReload = reloadTick; initialized = true; }
             if (Newer(lastShot, shotTick) || Newer(lastReload, reloadTick)) return;
             if (Newer(shotTick, lastShot)) { PlayShot(); lastShot = shotTick; }
             if (Newer(reloadTick, lastReload)) { progress = 0; lastReload = reloadTick; }
+            if (reload) reloadTarget = Mathf.Clamp(targetAmmo < 0 ? 4 : targetAmmo, rounds, 4);
             if (reload) progress = Mathf.Max(progress, Mathf.Clamp01(reloadProgress));
-            else if (rounds == 4 && lastReload != 0) progress = 1f;
-            if (reload && progress >= 1f) rounds = 4;
+            else if (rounds == reloadTarget && lastReload != 0) progress = 1f;
+            if (reload && progress >= 1f) rounds = reloadTarget;
             reloading = reload && progress < 1f; ammo = Mathf.Clamp(rounds, 0, 4); Refresh();
         }
         private static bool Newer(uint tick, uint previous) => tick != 0 && (previous == 0 || (int)(tick - previous) > 0);
         public void PlayShot() => shotTime = .12f;
         public void SetLocalState(int rounds, bool reload, float reloadProgress)
-        { ammo = Mathf.Clamp(rounds, 0, 4); reloading = reload; progress = reloadProgress; Refresh(); }
+        { ammo = Mathf.Clamp(rounds, 0, 4); reloadTarget = 4; reloading = reload; progress = reloadProgress; Refresh(); }
         private void Refresh()
         {
-            int visibleAmmo = reloading ? Mathf.Max(ammo, Mathf.FloorToInt(progress * 4)) : ammo;
+            int visibleAmmo = reloading ? Mathf.FloorToInt(Mathf.Lerp(ammo, reloadTarget, progress)) : ammo;
             if (shell && shellFrames?.Length == 5) shell.sprite = shellFrames[4 - Mathf.Clamp(visibleAmmo, 0, 4)];
         }
         private void LateUpdate()

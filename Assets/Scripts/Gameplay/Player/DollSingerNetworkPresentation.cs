@@ -143,7 +143,7 @@ namespace Unity.MP_FPS
                 ghost.EquippedWeaponID == DollSingerWeapons.Shotgun ? DollSingerHaloAim.HaloWeapon.Shotgun : DollSingerHaloAim.HaloWeapon.None;
             m_Halo.SetNetworkWeapon(haloWeapon, ghost.CurrentAmmo,
                 state.IsReloadingState, weapon != null ? 1f - ghost.ReloadTimer / Mathf.Max(0.01f, weapon.ReloadTime) : 0f,
-                ghost.LastShotTick, ghost.LastReloadTick);
+                ghost.LastShotTick, ghost.LastReloadTick, ghost.ReloadTargetAmmo);
             if (Role == MultiplayerRole.ClientOwned)
             {
                 m_View.SetNetworkLookRotation(m_OwnedViewRotation);

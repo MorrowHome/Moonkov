@@ -171,8 +171,9 @@ namespace Unity.MP_FPS.Client
                     var tile = new Button(() => Describe(captured)); tile.AddToClassList("inventory-item"); tile.name="inventoryItem"+entry.Id;
                     var icon = new StashItemArt(Art(entry.Code)); icon.AddToClassList("inventory-item-art"); tile.Add(icon);
                     var itemDef = InventoryCatalog.Get(entry.Code); Text(tile, itemDef.Name.Split(' ')[0].ToUpperInvariant(), "inventory-item-label");
-                    Text(tile, itemDef.Container ? "OPEN ↗" : entry.Quantity.ToString(), "inventory-item-quantity");
+                    Text(tile, itemDef.Container ? "OPEN ↗" : BatteryEnergy.IsCell(entry) ? $"{BatteryEnergy.Stored(entry)}E" : entry.Quantity.ToString(), "inventory-item-quantity");
                     tile.tooltip=itemDef.Name + " / " + entry.Quantity + (entry.FoundInRaid ? " / FOUND IN RAID" : " / BROUGHT IN");
+                    if (BatteryEnergy.IsCell(entry)) tile.tooltip += $" / {BatteryEnergy.Stored(entry)}/{entry.Quantity * BatteryEnergy.Capacity} ENERGY";
                     tile.RemoveManipulator(tile.clickable);
                     tile.AddManipulator(new Drag(this, () => m_Graph.Find(captured.Id), () => Describe(captured),
                         () => { if (itemDef.Container) OpenContainer(captured); else Describe(captured); }));
@@ -198,6 +199,7 @@ namespace Unity.MP_FPS.Client
         private void Describe(InventoryItem item)
         {
             var def=InventoryCatalog.Get(item.Code); m_Message.text=$"{def.Name} · {item.Quantity} · {def.Weight*item.Quantity:0.0} KG · {Path(item.Parent)}";
+            if (BatteryEnergy.IsCell(item)) m_Message.text += $" · {BatteryEnergy.Stored(item)}/{item.Quantity * BatteryEnergy.Capacity} ENERGY · ACTIVE CELL {BatteryEnergy.Charge(item)}/{BatteryEnergy.Capacity}";
         }
         private string Path(string id)
         {

@@ -21,6 +21,7 @@ MonoBehaviour:
   AutoReloadWhenEmpty: 1
   HitscanRange: 1000
   MagazineSize: 6
+  EnergyPerRound: 1
   ReloadTime: 0.75
   ProjectileGhostPrefab:
     <GhostPrefab>k__BackingField:

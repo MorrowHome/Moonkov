@@ -111,12 +111,12 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     private float localReloadRemaining;
     private int weaponAmmo = 6;
 
-    public void SetNetworkWeapon(HaloWeapon weapon, int ammo, bool reloading, float reloadProgress, uint shotTick, uint reloadTick)
+    public void SetNetworkWeapon(HaloWeapon weapon, int ammo, bool reloading, float reloadProgress, uint shotTick, uint reloadTick, int reloadTargetAmmo = -1)
     {
         SetWeaponEquipped(weapon, ammo);
         weaponAmmo = ammo;
         if (revolverVisual) revolverVisual.SetNetworkState(ammo, reloading, reloadProgress, shotTick, reloadTick);
-        if (shotgunVisual) shotgunVisual.SetNetworkState(ammo, reloading, reloadProgress, shotTick, reloadTick);
+        if (shotgunVisual) shotgunVisual.SetNetworkState(ammo, reloading, reloadProgress, shotTick, reloadTick, reloadTargetAmmo);
     }
 
     private void SetRevolverEquipped(bool revolver, int ammo)

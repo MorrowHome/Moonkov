@@ -12,7 +12,10 @@ namespace Unity.MP_FPS
             bool empty = health.CurrentAmmo == 0;
             int reserveAmmo = (health.EquippedWeaponSlot != 1 ? health.PrimaryAmmo : 0) +
                 (health.EquippedWeaponSlot != 2 ? health.SecondaryAmmo : 0) + (health.EquippedWeaponSlot != 3 ? health.PistolAmmo : 0);
-            bool noResources = empty && reserveAmmo == 0 && brain.Inventory.Count("cells") == 0;
+            var weapon = WeaponManager.Instance?.WeaponRegistry.GetWeaponData(health.EquippedWeaponID);
+            int energyPerRound = weapon?.EnergyPerRound ?? 1;
+            bool hasEnergy = brain.Inventory.CellEnergy(carriedOnly: true) >= energyPerRound;
+            bool noResources = empty && reserveAmmo == 0 && !hasEnergy;
             if (lowHealth || noResources || brain.LootedCaches >= m_Tuning.DesiredCaches ||
                 now - brain.SpawnTime > map.RaidDuration * (m_Tuning.DepartureFraction + (brain.Seed % 3 - 1) * .08f))
                 brain.Leaving = true;
@@ -43,7 +46,7 @@ namespace Unity.MP_FPS
                 if (lowHealth || noResources)
                     Consider(PmcAction.Retreat, 110, "survival exceeds value of this fight");
             }
-            if (empty && brain.Inventory.Count("cells") > 0 || health.ControllerState.IsReloadingState)
+            if (empty && hasEnergy || health.ControllerState.IsReloadingState)
                 Consider(PmcAction.Reload, 95, "reload using carried cells, behind cover when available");
             bool emergency = lowHealth || noResources || empty || brain.Suppression > .7f;
             bool changed = best != brain.Action && (now >= brain.CommitUntil || emergency || brain.PathFailed);

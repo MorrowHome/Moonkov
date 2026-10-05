@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Unity.MP_FPS.Inventory;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -89,7 +90,7 @@ namespace Unity.MP_FPS.Client
             m_LoggedInLabel.style.whiteSpace = WhiteSpace.Normal;
             m_CarryCells.SetValueWithoutNotify(AccountClient.CarryCells);
             m_CarryCells.SetEnabled(!m_AccountBusy);
-            m_CarryNote.text = $"Carry {AccountClient.CarryCells}/{RaidRules.BagCapacity} cells / Stash {AccountClient.StashCells}.\nCharged when the server accepts deployment. [R] uses one cell to recharge. Lost on death.";
+            m_CarryNote.text = $"Carry {AccountClient.CarryCells}/{RaidRules.BagCapacity} cells / Stash {AccountClient.StashCells}.\nEach full cell stores {BatteryEnergy.Capacity} energy. [R] spends energy per round; partial charge is retained. Lost on death.";
             m_Login.SetEnabled(!m_AccountBusy && m_AccountConfigurationValid);
             m_Register.SetEnabled(!m_AccountBusy && m_AccountConfigurationValid); m_Logout.SetEnabled(!m_AccountBusy);
             m_Username.SetEnabled(!m_AccountBusy); m_Password.SetEnabled(!m_AccountBusy);

@@ -78,4 +78,5 @@ public struct PredictedPlayerGhost : IComponentData
     [GhostField] public uint LastReloadTick;
     [GhostField] public uint LastGrenadeShotTick;
     [GhostField] public float ReloadTimer;
+    [GhostField] public int ReloadTargetAmmo;
 }

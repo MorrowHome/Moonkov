@@ -26,7 +26,7 @@ flowchart LR
 
 霰弹枪接入 `E:\Code\Halos\Game Comp Test Space` 的 `ShotControl/Shotgun` 交付：四发弹仓、五张 `ShotShell` 弹量帧、四个 `ShotDot`、瞄准收拢、开火外扩、装填展开及逐步补齐显示。原图复制在 `Assets/DollSinger/Art/Shotgun`，均为 640×640，中心原点（320,320），每单位 1000 像素；GameMaker 的向下 Y 轴和角度已转换。瞄准位置沿用现有第一人称大拇指上方布局与小点准心。
 
-当前初始平衡为四发、每次八枚弹丸、5° 半角散射、每枚伤害 10、冷却 0.8 秒、整仓装填 2 秒。以上都可在 `ShotgunWeapon.asset` 调整。散射使用输入 tick 的确定性图案，客户端预测与服务器一致；弹丸拥有各自的预测匹配编号，沿用现有重力、飞行、碰撞和伤害路径。一次发射消耗一发，整仓装填消耗一个可访问能源电池。八枚弹丸的灯光强度按单枚减小，避免每枪叠加八份照明。
+当前初始平衡为四发、每次八枚弹丸、5° 半角散射、每枚伤害 10、冷却 0.8 秒、充能 2 秒。以上都可在 `ShotgunWeapon.asset` 调整。散射使用输入 tick 的确定性图案，客户端预测与服务器一致；弹丸拥有各自的预测匹配编号，沿用现有重力、飞行、碰撞和伤害路径。一次发射消耗一发，充能每补一发消耗 12 电池能量（空仓充满 48），不按弹丸重复收费；电池余量保留，不足时按完整发数补充，详见 `BatteryEnergy.md`。八枚弹丸的灯光强度按单枚减小，避免每枪叠加八份照明。
 
 库存图标在 `Assets/Resources/HaloIcons`，由实际 Sprite 像素和 LineRenderer 顶点生成原光环外形，不使用实体枪械图。重建入口：`Tools/Doll Singer/Import Shotgun And Weapon Icons`；配置与装备规则检查入口：`HaloWeaponSetup.Validate`。
 

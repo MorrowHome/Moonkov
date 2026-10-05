@@ -43,6 +43,7 @@ public static class HaloWeaponSetup
             shotgun = UnityEngine.Object.Instantiate(registry.GetWeaponData(DollSingerWeapons.Halo));
             shotgun.name = "ShotgunWeapon"; shotgun.WeaponName = "Halo Shotgun";
             shotgun.MagazineSize = 4; shotgun.CooldownInMs = .8f; shotgun.ReloadTime = 2f;
+            shotgun.EnergyPerRound = 12;
             shotgun.Automatic = false; shotgun.AutoReloadWhenEmpty = true;
             shotgun.Damage = 10; shotgun.PelletCount = 8; shotgun.SpreadDegrees = 5f;
             shotgun.ProjectileSpeed = 240f; shotgun.ProjectileLifetime = 1f;

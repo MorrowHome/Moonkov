@@ -79,7 +79,7 @@ namespace Unity.MP_FPS
                 (brain.Action == PmcAction.Retreat || brain.Action == PmcAction.Flank || brain.Action == PmcAction.Extract && !hasContact));
             if (health.CurrentAmmo == 0 && !health.ControllerState.IsReloadingState)
             {
-                bool cellReady = PrepareReloadCell(brain.Inventory);
+                bool cellReady = weapon != null && PrepareReloadCell(brain.Inventory, weapon.EnergyPerRound);
                 if (cellReady) input.SetFlag(PlayerInput.InputFlag.Reload, true);
                 else if (health.EquippedWeaponSlot != 3 && health.PistolAmmo > 0) input.SetFlag(PlayerInput.InputFlag.EquipPistol, true);
                 else if (health.EquippedWeaponSlot != 1 && health.PrimaryAmmo > 0) input.SetFlag(PlayerInput.InputFlag.EquipHalo, true);

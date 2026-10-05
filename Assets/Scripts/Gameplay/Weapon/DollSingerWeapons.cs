@@ -48,7 +48,7 @@ namespace Unity.MP_FPS
             if (state.EquippedWeaponItem.ToString() != id || state.EquippedWeaponID != WeaponId(active?.Code))
             {
                 state.EquippedWeaponItem = id; state.EquippedWeaponID = WeaponId(active?.Code);
-                state.CurrentAmmo = Ammo(active, registry); state.ReloadTimer = 0f;
+                state.CurrentAmmo = Ammo(active, registry); state.ReloadTimer = 0f; state.ReloadTargetAmmo = 0;
                 state.ControllerState.IsReloadingState = false; state.WeaponCooldown = 0f;
             }
             state.EquippedWeaponSlot = slot;
@@ -65,6 +65,12 @@ namespace Unity.MP_FPS
             state.CurrentAmmo = slot == 1 ? state.PrimaryAmmo : slot == 2 ? state.SecondaryAmmo : state.PistolAmmo;
             state.WeaponCooldown = 0f;
             return true;
+        }
+        public static void CompleteReload(ref PredictedPlayerGhost state, WeaponData weapon)
+        {
+            state.ControllerState.IsReloadingState = false;
+            if (weapon != null) state.CurrentAmmo = Mathf.Clamp(state.ReloadTargetAmmo, state.CurrentAmmo, weapon.MagazineSize);
+            state.ReloadTargetAmmo = 0;
         }
     }
 }

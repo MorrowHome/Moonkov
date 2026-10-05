@@ -66,6 +66,8 @@ namespace Unity.MP_FPS.Inventory
         public string Id, Code, Parent, Region; public int X, Y, Quantity = 1; public bool Rotated, FoundInRaid;
         // -1 is a new weapon; live ammo follows the item through moves/deploy/settlement.
         public int LoadedAmmo = -1;
+        // Missing in old saves means full. One partial cell per stack; the rest are full.
+        public int CellCharge = -1;
         public bool EmergencySupply;
         public InventoryItem Clone() => (InventoryItem)MemberwiseClone();
     }
@@ -194,7 +196,8 @@ namespace Unity.MP_FPS.Inventory
                 var target = Find(r.TargetId); int count = r.Quantity == 0 ? item.Quantity : r.Quantity;
                 if (target == null || target.Id == item.Id || target.Code != item.Code || def.Container || count <= 0 || count > item.Quantity
                     || (long)target.Quantity + count > def.MaxStack || target.FoundInRaid != item.FoundInRaid || target.EmergencySupply != item.EmergencySupply) return InventoryError.Invalid;
-                target.Quantity += count; item.Quantity -= count; if (item.Quantity == 0) Items.Remove(item); return InventoryError.None;
+                if (!BatteryEnergy.CanMerge(item, target, count)) return InventoryError.Invalid;
+                BatteryEnergy.Merge(item, target, count); if (item.Quantity == 0) Items.Remove(item); return InventoryError.None;
             }
             if (r.Operation == InventoryOperation.Split)
             {
@@ -202,7 +205,7 @@ namespace Unity.MP_FPS.Inventory
                 var split = item.Clone(); split.Id = Guid.NewGuid().ToString("D"); split.Quantity = r.Quantity;
                 var error = CanPlace(split, r.Parent, r.Region, r.X, r.Y, r.Rotated);
                 if (error != InventoryError.None) return error;
-                item.Quantity -= r.Quantity; Position(split, r.Parent, r.Region, r.X, r.Y, r.Rotated); Items.Add(split); return InventoryError.None;
+                split = BatteryEnergy.Take(item, r.Quantity); Position(split, r.Parent, r.Region, r.X, r.Y, r.Rotated); Items.Add(split); return InventoryError.None;
             }
             if (r.Operation != InventoryOperation.Move) return InventoryError.Invalid;
             var slot = RegionFor(r.Parent, r.Region);
@@ -233,6 +236,7 @@ namespace Unity.MP_FPS.Inventory
                 if (item == null) return InventoryError.Invalid;
                 var def = InventoryCatalog.Get(item.Code);
                 if (item.Id == null || !ids.Add(item.Id) || def == null || item.Quantity <= 0 || item.Quantity > def.MaxStack || item.LoadedAmmo < -1 || item.LoadedAmmo > 10000) return InventoryError.Invalid;
+                if (item.CellCharge != -1 && (!BatteryEnergy.IsCell(item) || item.CellCharge < 1 || item.CellCharge > BatteryEnergy.Capacity)) return InventoryError.Invalid;
                 if (def.Kind == ItemKind.Root)
                 { if (item.Id != item.Code || item.Parent != null || item.Quantity != 1) return InventoryError.Invalid; }
                 else if (!Guid.TryParse(item.Id, out _) || item.Parent == null) return InventoryError.Invalid;
@@ -257,24 +261,31 @@ namespace Unity.MP_FPS.Inventory
             var rig = Equipped("ChestRig"); if (rig != null) yield return rig.Id;
             foreach (var i in Items) if (InventoryCatalog.Get(i.Code).Kind == ItemKind.Backpack && Carried(i)) yield return i.Id;
         }
-        public InventoryError AddSupply(string code, int quantity, string parent = null, bool foundInRaid = false, string id = null, bool emergencySupply = false)
+        public InventoryError AddSupply(string code, int quantity, string parent = null, bool foundInRaid = false, string id = null, bool emergencySupply = false, int cellCharge = -1)
         {
             if (quantity == 0) return InventoryError.None;
             var definition = InventoryCatalog.Get(code); if (definition == null || definition.Container || quantity < 0) return InventoryError.Invalid;
-            var copy = Clone(); int remaining = quantity;
+            if (cellCharge != -1 && (code != "cells" || cellCharge < 1 || cellCharge > BatteryEnergy.Capacity)) return InventoryError.Invalid;
+            var copy = Clone();
+            var supply = new InventoryItem { Id = id ?? Guid.NewGuid().ToString("D"), Code = code, Quantity = quantity,
+                FoundInRaid = foundInRaid, EmergencySupply = emergencySupply, CellCharge = cellCharge };
             var containers = parent == null ? copy.CarryContainers().ToArray() : new[] { parent };
             foreach (var container in containers)
             {
                 foreach (var stack in copy.Children(container).Where(i => i.Code == code && i.FoundInRaid == foundInRaid && i.EmergencySupply == emergencySupply))
-                { int add = Math.Min(remaining, definition.MaxStack - stack.Quantity); stack.Quantity += add; remaining -= add; }
-                while (remaining > 0)
                 {
-                    var item = new InventoryItem { Id = id ?? Guid.NewGuid().ToString("D"), Code = code, Quantity = Math.Min(remaining, definition.MaxStack), FoundInRaid = foundInRaid, EmergencySupply = emergencySupply };
+                    int add = Math.Min(supply.Quantity, definition.MaxStack - stack.Quantity);
+                    if (add > 0 && BatteryEnergy.CanMerge(supply, stack, add)) BatteryEnergy.Merge(supply, stack, add);
+                }
+                while (supply.Quantity > 0)
+                {
+                    var item = supply.Clone(); item.Quantity = Math.Min(supply.Quantity, definition.MaxStack);
                     if (!copy.FindSpace(item, container, out var region, out var x, out var y)) break;
-                    Position(item, container, region, x, y, false); copy.Items.Add(item); remaining -= item.Quantity; id = null;
+                    item = BatteryEnergy.Take(supply, item.Quantity);
+                    Position(item, container, region, x, y, false); copy.Items.Add(item);
                 }
             }
-            if (remaining > 0) return InventoryError.Full;
+            if (supply.Quantity > 0) return InventoryError.Full;
             if (parent == null && copy.CarriedWeight > InventoryCatalog.CarryWeightLimit) return InventoryError.Overweight;
             var validation = copy.Validate(); if (validation != InventoryError.None) return validation;
             Items = copy.Items; Version++; return InventoryError.None;
@@ -284,7 +295,26 @@ namespace Unity.MP_FPS.Inventory
             var rig = Equipped("ChestRig");
             var item = Items.Find(i => i.Code == "cells" && (i.Parent == "pockets" || i.Parent == rig?.Id));
             if (item == null) return false;
-            if (--item.Quantity == 0) Items.Remove(item); Version++; return true;
+            BatteryEnergy.Take(item, 1); if (item.Quantity == 0) Items.Remove(item); Version++; return true;
+        }
+        private bool AccessibleCell(InventoryItem item) => item.Code == "cells" && (item.Parent == "pockets" || item.Parent == Equipped("ChestRig")?.Id);
+        public int CellEnergy(bool carriedOnly = false, bool accessibleOnly = false) => Items.Where(i => i.Code == "cells" &&
+            (!carriedOnly || Carried(i)) && (!accessibleOnly || AccessibleCell(i))).Sum(BatteryEnergy.Stored);
+        // Called once by the server when authorizing a reload; prediction uses its target ammo.
+        public bool TryRecharge(int currentAmmo, int magazineSize, int energyPerRound, out int targetAmmo)
+        {
+            targetAmmo = currentAmmo;
+            if (currentAmmo < 0 || magazineSize <= currentAmmo || energyPerRound < 1) return false;
+            int rounds = Math.Min(magazineSize - currentAmmo, CellEnergy(accessibleOnly: true) / energyPerRound);
+            if (rounds == 0) return false;
+            int remaining = rounds * energyPerRound;
+            foreach (var item in Items.Where(AccessibleCell).ToArray())
+            {
+                int used = Math.Min(remaining, BatteryEnergy.Stored(item)); BatteryEnergy.Spend(item, used); remaining -= used;
+                if (item.Quantity == 0) Items.Remove(item);
+                if (remaining == 0) break;
+            }
+            targetAmmo += rounds; Version++; return true;
         }
         public InventoryError AddLoot(string code)
         {

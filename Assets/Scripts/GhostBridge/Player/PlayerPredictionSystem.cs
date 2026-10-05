@@ -98,12 +98,8 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                 predictedPlayer.ValueRW.ReloadTimer -= dt;
                 if (predictedPlayer.ValueRO.ReloadTimer <= 0f)
                 {
-                    predictedPlayer.ValueRW.ControllerState.IsReloadingState = false;
                     var weaponData = WeaponManager.Instance.WeaponRegistry.GetWeaponData(predictedPlayer.ValueRO.EquippedWeaponID);
-                    if (weaponData != null)
-                    {
-                        predictedPlayer.ValueRW.CurrentAmmo = weaponData.MagazineSize;
-                    }
+                    DollSingerWeapons.CompleteReload(ref predictedPlayer.ValueRW, weaponData);
                 }
             }
         }
@@ -217,7 +213,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                             bool mustReload = (wantsToShoot || weaponData.AutoReloadWhenEmpty) && predictedPlayer.ValueRO.CurrentAmmo <= 0;
 
                             if ((wantsToReload || mustReload) &&
-                                // The server reserves an accessible cell before authorizing a halo reload.
+                                // The server reserves accessible energy and synchronizes the target ammo.
                                 // Predicting one without that reservation causes empty/full ammo oscillation.
                                 !DollSingerWeapons.IsHalo(predictedPlayer.ValueRO.EquippedWeaponID) &&
                                 !predictedPlayer.ValueRO.ControllerState.IsReloadingState &&
@@ -225,6 +221,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                             {
                                 predictedPlayer.ValueRW.ControllerState.IsReloadingState = true;
                                 predictedPlayer.ValueRW.ReloadTimer = weaponData.ReloadTime;
+                                predictedPlayer.ValueRW.ReloadTargetAmmo = weaponData.MagazineSize;
                                 predictedPlayer.ValueRW.LastReloadTick = commandInput.Tick.TickIndexForValidTick;
                             }
 

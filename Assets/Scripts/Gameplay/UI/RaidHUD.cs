@@ -171,7 +171,7 @@ namespace Unity.MP_FPS
                     : m_Snapshot.LoadoutError == RaidLoadoutError.InsufficientCells ? "Not enough cells in storage. Reduce the quantity or refresh storage on the ship."
                     : m_Snapshot.LoadoutError == RaidLoadoutError.InvalidCount ? "Choose 0-12 energy cells."
                     : m_Snapshot.LoadoutError == RaidLoadoutError.Rejected ? "Loadout rejected. You can retry or return to the ship."
-                    : $"Storage: {m_Snapshot.StashCells} cells / Carry limit: {RaidRules.BagCapacity}. [R] consumes one cell. Unused cargo returns on extraction.";
+                    : $"Storage: {m_Snapshot.StashCells} cells / Carry limit: {RaidRules.BagCapacity}. [R] spends energy per round. Unspent energy returns on extraction.";
                 if (!m_WasSettled && !saving) m_Deploy.Focus();
             }
             m_WasSettled = settled;
@@ -221,6 +221,11 @@ namespace Unity.MP_FPS
             bool status = PlayerPrefs.GetInt("Moonkov.AlwaysShowHUD", 0) != 0 || check || Time.unscaledTime < m_RevealUntil || m_Snapshot.TimeLeft < 60;
             m_Status.style.display = !settled && status ? DisplayStyle.Flex : DisplayStyle.None;
             m_Bag.text = $"CARRIED / {count} supplies\nDust {m_Snapshot.Dust}   Alloy {m_Snapshot.Alloy}   Cells {m_Snapshot.Cells}";
+            if (!m_InventoryQuery.IsEmptyIgnoreFilter)
+            {
+                var batteryGraph = m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity()).Graph;
+                if (batteryGraph != null) m_Bag.text += $"\nENERGY {batteryGraph.CellEnergy(carriedOnly: true)} / READY {batteryGraph.CellEnergy(accessibleOnly: true)}";
+            }
             bool deathBag=nearest>=RaidLootContainers.FirstDeathBagId;
             bool empty=deathBag ? deathBags.Bags[nearest].Empty : nearest>=0 && (m_Snapshot.TakenMask & (1u<<nearest))!=0;
             m_Prompt.text = Time.unscaledTime<m_LootErrorUntil ? "Cannot reach this container. Move closer with a clear line of sight."

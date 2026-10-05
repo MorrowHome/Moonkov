@@ -26,6 +26,8 @@ namespace Unity.MP_FPS.Inventory
             new ShopOffer("shotgun", 50, 25), new ShopOffer("cells", 5, 2)
         };
         public static ShopOffer Find(string code) => Offers.FirstOrDefault(o => o.Code == code);
+        public static int SaleDust(InventoryItem item, int quantity, int fullPrice) => BatteryEnergy.IsCell(item)
+            ? BatteryEnergy.PortionEnergy(item, quantity) * fullPrice / BatteryEnergy.Capacity : quantity * fullPrice;
         public static bool IsWeapon(string code) => code == "rifle" || code == "compact" || code == "pistol" || code == "shotgun";
         public static bool CanClaim(InventoryGraph graph) => graph != null && graph.Find("stash") != null && !graph.Items.Any(i => IsWeapon(i.Code));
     }
@@ -71,8 +73,9 @@ namespace Unity.MP_FPS.Inventory
                     if (item == null || item.Code != offer.Code || item.Quantity < command.Quantity) return "inventory_Missing";
                     if (item.EmergencySupply) return "shop_emergency_supply";
                     if (copy.RootOf(item.Id) != "stash") return "shop_store_first";
-                    item.Quantity -= command.Quantity; if (item.Quantity == 0) copy.Items.Remove(item);
-                    if (copy.AddSupply("dust", offer.SellDust * command.Quantity, "stash") != InventoryError.None) return "inventory_Full";
+                    int refund = ShopCatalog.SaleDust(item, command.Quantity, offer.SellDust);
+                    BatteryEnergy.Take(item, command.Quantity); if (item.Quantity == 0) copy.Items.Remove(item);
+                    if (copy.AddSupply("dust", refund, "stash") != InventoryError.None) return "inventory_Full";
                 }
                 else return "shop_invalid";
             }

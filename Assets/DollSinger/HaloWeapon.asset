@@ -22,6 +22,7 @@ MonoBehaviour:
   HitscanRange: 1000
   MagazineSize: 30
   ReloadTime: 2
+  EnergyPerRound: 3
   ProjectileGhostPrefab:
     <GhostPrefab>k__BackingField:
       m_AssetGUID: 83a79bf5320972c46ae675e08e77534b
