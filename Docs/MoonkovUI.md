@@ -59,6 +59,12 @@ UI 保持 UI Toolkit。固定终端页面、导航、出击步骤、浮窗骨架
 
 本次资产迁移的编辑器检查覆盖九页、五个出击步骤、真实字段绑定、出击忙碌状态、弹窗关闭与顺序、六个装备槽、局内库存变体和重复初始化。未进行 Play 模式视觉或联网战局验收。
 
+Moonkov 目前只有 DollSinger：登录页不再提供 Rifle/Shotgun，旧角色偏好不再参与出击；客户端和服务器使用原网络角色编号 2，旧请求也生成 DollSinger，未重新编号历史快照或尸体数据。原 FPS 模板资源保留，角色生成路径不再使用 Rifle/Shotgun。
+
+Operator 步骤直接使用主界面的 `MenuCharacterView`、展示模型和动作，以实时 3D 角色替代三张程序图标卡。`OperationOperator.uxml` 的 `operatorPortrait` 是可编辑展示区域；在 `TerminalLayout.uss` 中调尺寸和排版。切换步骤/页面或关闭终端时释放展示资源。`Tools > Moonkov > Edit Layout > Operation Operator` 可直接打开该布局。
+
+本次角色调整的编辑器检查通过：旧选择入口移除、固定网络编号 2、752×608 模型与光环渲染、切换步骤释放展示场景、重开只有一个视图、READY 摘要为 DollSinger。未进行联网两客户端生成测试或最终视觉验收。
+
 - `Assets/UI Toolkit/GameUI/MainMenu.uxml`：登录、连接设置与飞船宿主。
 - `StashScreen.uxml / .uss`：角色装备区、格子仓库及其布局。
 - `MoonkovTerminal.uss`：简约菜单、页面和窗口主题。

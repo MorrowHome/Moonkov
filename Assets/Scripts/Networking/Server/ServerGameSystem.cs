@@ -208,9 +208,10 @@ namespace Unity.MP_FPS
         private void SpawnPlayerCharacter(ref SystemState state, EntityCommandBuffer ecb, Entity connectionEntity, FixedString64Bytes playerName, int characterIndex)
         {
             var playerEntityPrefabs = SystemAPI.GetSingleton<PlayerEntityPrefabs>();
-            // The server selects the registered prefab; clients only send an index.
-            characterIndex = characterIndex == 2 && playerEntityPrefabs.DollSingerEntityPrefab != Entity.Null
-                ? 2 : characterIndex == 1 ? 1 : 0;
+            // Moonkov has one operator. Ignore legacy client choices without renumbering its ghost identity.
+            characterIndex = GameSettings.DollSingerCharacterIndex;
+            if (playerEntityPrefabs.DollSingerEntityPrefab == Entity.Null)
+                throw new InvalidOperationException("Moonkov requires a registered DollSinger player prefab.");
             var ownerNetworkId = SystemAPI.GetComponent<NetworkId>(connectionEntity);
             
             // Instantiate the client input entity
@@ -221,11 +222,10 @@ namespace Unity.MP_FPS
             ecb.SetComponent(clientInputEntity, new PlayerCommandTarget { NetworkId = ownerNetworkId.Value });
 
             // Instantiate the player entity
-            var playerEntityPrefab = characterIndex == 2 ? playerEntityPrefabs.DollSingerEntityPrefab
-                : characterIndex == 1 ? playerEntityPrefabs.PlayerShotgunEntityPrefab : playerEntityPrefabs.PlayerRifleEntityPrefab;
+            var playerEntityPrefab = playerEntityPrefabs.DollSingerEntityPrefab;
             var playerEntity = ecb.Instantiate(playerEntityPrefab);
 
-            if (characterIndex == 2 && MoonRaidMap.Active == null && !state.EntityManager.HasComponent<RaidInventoryState>(connectionEntity))
+            if (MoonRaidMap.Active == null && !state.EntityManager.HasComponent<RaidInventoryState>(connectionEntity))
             {
                 var context = Persistence(ref state);
                 var graph = context.Profiles.TryGetValue(connectionEntity, out var profile) && !string.IsNullOrEmpty(profile.InventoryJson)
@@ -233,7 +233,7 @@ namespace Unity.MP_FPS
                 SetRaidInventory(ref state, connectionEntity, graph, 0);
             }
 
-            var weaponId = characterIndex == 2 ? DollSingerWeapons.None : characterIndex == 1 ? (uint)1 : 0;
+            var weaponId = DollSingerWeapons.None;
             
             var weaponData = WeaponManager.Instance.WeaponRegistry.GetWeaponData(weaponId);
             var magazineSize = weaponData != null ? weaponData.MagazineSize : 0;
@@ -247,7 +247,7 @@ namespace Unity.MP_FPS
                 CurrentHealth = 100f,
                 EquippedWeaponID = weaponId,
                 CurrentAmmo = magazineSize,
-                InventoryWeapons = characterIndex == 2,
+                InventoryWeapons = true,
                 PrimaryWeaponID = DollSingerWeapons.None, SecondaryWeaponID = DollSingerWeapons.None, PistolWeaponID = DollSingerWeapons.None
             });
             ecb.AddComponent(playerEntity, new PlayerCharacterInitialized());

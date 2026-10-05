@@ -94,7 +94,7 @@ namespace Unity.MP_FPS.Client
         {
             m_Host.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
             Label("stashAccountName").text = playerName;
-            Label("stashCharacterName").text = character == 2 ? "DOLLSINGER" : "OPERATOR " + (character + 1).ToString("00");
+            Label("stashCharacterName").text = "DOLLSINGER";
             m_Stacks[0].Quantity = dust; m_Stacks[1].Quantity = alloy; m_Stacks[2].Quantity = cells;
             Label("stashDustCount").text = Number(dust); Label("stashAlloyCount").text = Number(alloy); Label("stashCellsCount").text = Number(cells);
             Label("stashSyncStatus").text = busy ? "UPDATING..." : error != null ? "UPDATE FAILED" : "UP TO DATE";

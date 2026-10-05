@@ -29,6 +29,8 @@ namespace Unity.MP_FPS
    
     public class GameSettings : INotifyBindablePropertyChanged
     {
+        // Keep the existing network identity so old snapshots and corpse visuals stay compatible.
+        public const int DollSingerCharacterIndex = 2;
         public static GameSettings Instance { get; private set; } = null!;
 
         /// <summary>
@@ -38,14 +40,12 @@ namespace Unity.MP_FPS
         static void RuntimeInitializeOnLoad() => Instance = new GameSettings();
 
         const string k_PlayerNameKey = "PlayerName";
-        const string k_PlayerCharacterKey = "PlayerCharacer";
         const string k_ConnectionModeKey = "ConnectionMode";
         const string k_SessionNameKey = "SessionName";
 
         GameSettings()
         {
             m_PlayerName = PlayerPrefs.GetString(k_PlayerNameKey, Environment.UserName);
-            m_PlayerCharacter = PlayerPrefs.GetInt(k_PlayerCharacterKey, 0);  
             m_ConnectionMode = PlayerPrefs.GetInt(k_ConnectionModeKey, 0);
             m_SessionName = PlayerPrefs.GetString(k_SessionNameKey, "default-session");
         }
@@ -194,22 +194,8 @@ namespace Unity.MP_FPS
             }
         }
 
-        private int m_PlayerCharacter = 0;
         [CreateProperty]
-        public int PlayerCharacter
-        {
-            get => m_PlayerCharacter;
-            set
-            {
-                if (m_PlayerCharacter == value)
-                {
-                    return;
-                }
-
-                m_PlayerCharacter = value;
-                PlayerPrefs.SetInt(k_PlayerCharacterKey, value);
-            }
-        }
+        public int PlayerCharacter => DollSingerCharacterIndex;
         
         int m_ConnectionMode = 0;
         [CreateProperty]

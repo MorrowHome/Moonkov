@@ -16,7 +16,10 @@
                         <ui:Label text="Player Name" name="PlayerName" />
                         <ui:TextField name="PlayerNameField" value="_" />
                     </ui:VisualElement>
-                    <ui:RadioButtonGroup label="Field operator" choices="Rifle,Shotgun,DollSinger" value="-1" name="ChooseCharacterOption" />
+                    <ui:VisualElement class="section-separator">
+                        <ui:Label text="Field operator" />
+                        <ui:Label name="FieldOperator" text="DOLLSINGER" />
+                    </ui:VisualElement>
                     <ui:RadioButtonGroup label="Session route" choices="Relay,Direct" value="-1" name="ConnetionModeOption" />
                     <ui:VisualElement name="InputSessionName" class="section-separator">
                         <ui:Label text="Crew session" name="SessionName" />

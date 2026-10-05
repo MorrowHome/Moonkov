@@ -271,14 +271,8 @@ namespace Unity.MP_FPS.Client
             summary.Q<Label>("statValue1").text = RaidRules.BagCapacity + " SUPPLIES";
             if (m_Step == 0)
             {
-                for (int i = 0; i < 3; i++)
-                {
-                    int character = i; var button = main.Q<Button>("operator" + i);
-                    bool selected = GameSettings.Instance != null && GameSettings.Instance.PlayerCharacter == i;
-                    button.parent.EnableInClassList("terminal-operator-selected", selected);
-                    button.EnableInClassList("terminal-tab-selected", selected);
-                    button.clicked += () => { if (GameSettings.Instance != null) GameSettings.Instance.PlayerCharacter = character; Render(); };
-                }
+                m_Character = new MenuCharacterView(element: main.Q<Image>("operatorPortrait"));
+                m_Character.Element.RemoveFromClassList("terminal-character-art");
             }
             else if (m_Step == 2)
             {
@@ -300,7 +294,7 @@ namespace Unity.MP_FPS.Client
             }
             else if (m_Step == 4)
             {
-                main.Q<Label>("statValue0").text = GameSettings.Instance != null ? new[] { "RIFLE", "SHOTGUN", "DOLLSINGER" }[Mathf.Clamp(GameSettings.Instance.PlayerCharacter, 0, 2)] : "PREVIEW";
+                main.Q<Label>("statValue0").text = "DOLLSINGER";
                 main.Q<Label>("statValue1").text = AccountClient.CarryCells + " ENERGY CELLS";
                 var go = main.Q<Button>("launch"); go.clicked += m_Prepare; go.SetEnabled(!m_Busy);
             }

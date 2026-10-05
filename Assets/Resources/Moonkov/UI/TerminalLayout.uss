@@ -7,4 +7,14 @@
 #haloNode4 { left: 40%; top: 64%; }
 #haloNode5 { left: 2%; top: 78%; }
 #haloNode6 { left: 78%; top: 78%; }
+
+/* The operation shares the main menu's live DollSinger renderer. */
+.terminal-operator-showcase { flex-grow: 1; min-height: 180px; flex-direction: row; align-items: stretch; }
+.terminal-operator-portrait { width: 48%; min-width: 140px; flex-shrink: 0; position: relative; background-color: rgba(255, 255, 255, 0.025); border-bottom-width: 2px; border-bottom-color: #FFE11A; }
+.terminal-operator-character { position: absolute; left: 0; right: 0; top: 0; bottom: 24px; }
+.stash-root .terminal-operator-portrait-caption { position: absolute; left: 12px; right: 12px; bottom: 8px; font-size: 9px; letter-spacing: 2px; color: rgba(236, 236, 230, 0.48); -unity-text-align: middle-center; }
+.terminal-operator-profile { flex-grow: 1; min-width: 0; padding-left: 22px; justify-content: center; }
+.stash-root .terminal-operator-name { font-size: 28px; letter-spacing: 2px; margin-bottom: 8px; }
+.stash-root .terminal-operator-designation { font-size: 10px; letter-spacing: 2px; color: #FFE11A; white-space: normal; margin-bottom: 16px; }
+.terminal-operator-divider { height: 1px; background-color: rgba(255, 255, 255, 0.14); margin-bottom: 8px; }
 .stash-halo-icon { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
