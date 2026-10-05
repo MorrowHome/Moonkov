@@ -32,7 +32,8 @@ namespace Unity.MP_FPS
 
         static Values s_Values;
 
-        static Values Values
+        // Not named Values: a member cannot share a name with the nested type above (CS0102).
+        static Values Configuration
         {
             get
             {
@@ -62,18 +63,18 @@ namespace Unity.MP_FPS
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void Reset() => s_Values = null;
 
-        public static string AccountServiceUrl => Values.AccountServiceUrl?.Trim();
-        public static bool AllowLanHttp => Values.AllowLanHttp;
+        public static string AccountServiceUrl => Configuration.AccountServiceUrl?.Trim();
+        public static bool AllowLanHttp => Configuration.AllowLanHttp;
 
         /// <summary>The game server a fresh install should point at, or null for the built-in default.</summary>
         public static string ServerAddress =>
-            string.IsNullOrWhiteSpace(Values.ServerAddress) ? null : Values.ServerAddress.Trim();
+            string.IsNullOrWhiteSpace(Configuration.ServerAddress) ? null : Configuration.ServerAddress.Trim();
 
         /// <summary>The game server port, or 0 for the built-in default.</summary>
-        public static int ServerPort => Values.ServerPort is > 0 and <= 65535 ? Values.ServerPort : 0;
+        public static int ServerPort => Configuration.ServerPort is > 0 and <= 65535 ? Configuration.ServerPort : 0;
 
         /// <summary>The connection mode the main menu starts in, or -1 to keep the player's choice.</summary>
-        public static int ConnectionMode => Values.ConnectionMode is 0 or 1 ? Values.ConnectionMode : -1;
+        public static int ConnectionMode => Configuration.ConnectionMode is 0 or 1 ? Configuration.ConnectionMode : -1;
 
         /// <summary>
         /// Unity Transport cannot hold a host name - NetworkEndpoint only stores an address - so a
