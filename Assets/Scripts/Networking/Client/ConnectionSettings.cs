@@ -48,18 +48,37 @@ namespace Unity.MP_FPS
 
          const string k_IPAddressKey = "IPAddress";
          const string k_PortKey = "Port";
+         // Remember what the shipped settings file asked for, so changing that file moves existing
+         // installs to the new server while a player's own edit still wins in between.
+         const string k_SeededAddressKey = "SeededServerAddress";
+         const string k_SeededPortKey = "SeededServerPort";
 
          public NetworkEndpoint ConnectionEndpoint;
 
          ConnectionSettings()
          {
-             IPAddress = PlayerPrefs.GetString(k_IPAddressKey, DefaultServerAddress);
-             if (!NetworkEndpoint.TryParse(IPAddress, 0, out _))
-                 IPAddress = DefaultServerAddress;
+             IPAddress = Seeded(k_IPAddressKey, k_SeededAddressKey, ClientSettings.ServerAddress, DefaultServerAddress);
+             if (!ClientSettings.IsValidAddress(IPAddress))
+                 IPAddress = ClientSettings.ServerAddress ?? DefaultServerAddress;
 
-             Port = PlayerPrefs.GetString(k_PortKey, DefaultServerPort.ToString());
+             string configuredPort = ClientSettings.ServerPort > 0 ? ClientSettings.ServerPort.ToString() : null;
+             Port = Seeded(k_PortKey, k_SeededPortKey, configuredPort, DefaultServerPort.ToString());
              if (!ushort.TryParse(Port, out _))
                  Port = DefaultServerPort.ToString();
+         }
+
+         /// <summary>
+         /// A value the shipped settings file supplies is re-applied whenever that value changes, so
+         /// a new server address reaches existing installs; otherwise the player's own choice is kept.
+         /// </summary>
+         static string Seeded(string valueKey, string seedKey, string configured, string fallback)
+         {
+             if (string.IsNullOrWhiteSpace(configured))
+                 return PlayerPrefs.GetString(valueKey, fallback);
+             if (PlayerPrefs.GetString(seedKey, string.Empty) == configured)
+                 return PlayerPrefs.GetString(valueKey, configured);
+             PlayerPrefs.SetString(seedKey, configured);
+             return configured;
          }
 
          public event EventHandler<BindablePropertyChangedEventArgs> propertyChanged;
@@ -110,7 +129,7 @@ namespace Unity.MP_FPS
 
                  m_IPAddress = value;
                  PlayerPrefs.SetString(k_IPAddressKey, value);
-                 IsNetworkEndpointValid = NetworkEndpoint.TryParse(m_IPAddress, 0, out _) && ushort.TryParse(m_Port, out _);
+                 IsNetworkEndpointValid = ClientSettings.IsValidAddress(m_IPAddress) && ushort.TryParse(m_Port, out _);
                  Notify();
              }
          }
@@ -126,7 +145,7 @@ namespace Unity.MP_FPS
 
                  m_Port = value;
                  PlayerPrefs.SetString(k_PortKey, value);
-                 IsNetworkEndpointValid = NetworkEndpoint.TryParse(m_IPAddress, 0, out _) && ushort.TryParse(m_Port, out _);
+                 IsNetworkEndpointValid = ClientSettings.IsValidAddress(m_IPAddress) && ushort.TryParse(m_Port, out _);
                  Notify();
              }
          }

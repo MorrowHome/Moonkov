@@ -102,14 +102,17 @@ namespace Unity.MP_FPS
             return Task.FromResult(gameConnection);
         }
 
-        public static Task<GameConnection> ConnectGameAsync()
+        public static async Task<GameConnection> ConnectGameAsync()
         {
             ushort port = ushort.Parse(ConnectionSettings.Instance.Port);
+            // A host name cannot be stored in a NetworkEndpoint, so resolve one here. This is what
+            // lets the shipped settings file name the server by domain instead of by address.
+            string address = await ClientSettings.ResolveAsync(ConnectionSettings.Instance.IPAddress);
             var gameConnection = new GameConnection();
             gameConnection.ListenEndpoint = NetworkEndpoint.AnyIpv4;
-            gameConnection.ConnectEndpoint = NetworkEndpoint.Parse(ConnectionSettings.Instance.IPAddress, port);
+            gameConnection.ConnectEndpoint = NetworkEndpoint.Parse(address, port);
             gameConnection.SessionConnectionType = NetworkType.Direct;
-            return Task.FromResult(gameConnection);
+            return gameConnection;
         }
 
         static async Task StartServicesAsync()

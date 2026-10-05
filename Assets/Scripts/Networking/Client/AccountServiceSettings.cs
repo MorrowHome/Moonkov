@@ -1,35 +1,21 @@
 using System;
-using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using Newtonsoft.Json;
-using UnityEngine;
 
 namespace Unity.MP_FPS
 {
     /// <summary>Public client connection settings; never contains database or server credentials.</summary>
     public static class AccountServiceSettings
     {
-        private sealed class Settings
-        {
-            public string AccountServiceUrl;
-            public bool AllowLanHttp;
-        }
-
         public static string Configure(string fallbackUrl)
         {
-            // Windows: next to the executable. macOS: next to the .app, outside its bundle.
-            string directory = Path.GetDirectoryName(Application.dataPath);
-            if (Application.platform == RuntimePlatform.OSXPlayer)
-                directory = Path.GetDirectoryName(directory);
-            string path = Path.Combine(directory, "moon-client.local.json");
-            var settings = File.Exists(path)
-                ? JsonConvert.DeserializeObject<Settings>(File.ReadAllText(path))
-                : new Settings { AccountServiceUrl = fallbackUrl };
-            if (settings == null) throw new InvalidOperationException("Client server settings are empty.");
-            string url = string.IsNullOrWhiteSpace(settings.AccountServiceUrl) ? fallbackUrl : settings.AccountServiceUrl;
-            ValidateAddress(url, settings.AllowLanHttp);
-            AccountClient.AllowLanHttp = settings.AllowLanHttp;
+            // The file itself is read by ClientSettings, which ConnectionSettings and GameSettings
+            // share, so all three agree on what the shipped configuration said.
+            string url = string.IsNullOrWhiteSpace(ClientSettings.AccountServiceUrl)
+                ? fallbackUrl
+                : ClientSettings.AccountServiceUrl;
+            ValidateAddress(url, ClientSettings.AllowLanHttp);
+            AccountClient.AllowLanHttp = ClientSettings.AllowLanHttp;
             return url.TrimEnd('/') + "/";
         }
 

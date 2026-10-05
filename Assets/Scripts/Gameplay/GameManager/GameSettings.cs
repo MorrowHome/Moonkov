@@ -46,7 +46,10 @@ namespace Unity.MP_FPS
         GameSettings()
         {
             m_PlayerName = PlayerPrefs.GetString(k_PlayerNameKey, Environment.UserName);
-            m_ConnectionMode = PlayerPrefs.GetInt(k_ConnectionModeKey, 0);
+            // The shipped settings file decides which connection mode a fresh install opens in, so
+            // players pointed at a dedicated server land straight on the host/join buttons.
+            m_ConnectionMode = PlayerPrefs.GetInt(k_ConnectionModeKey,
+                ClientSettings.ConnectionMode >= 0 ? ClientSettings.ConnectionMode : 0);
             m_SessionName = PlayerPrefs.GetString(k_SessionNameKey, "default-session");
         }
 

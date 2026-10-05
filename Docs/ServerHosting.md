@@ -203,15 +203,35 @@ Caddy 会自动申请并续期 Let's Encrypt 证书，前提是**域名的 A 记
 ```json
 {
   "AccountServiceUrl": "https://moon.example.com/",
-  "AllowLanHttp": false
+  "AllowLanHttp": false,
+  "ServerAddress": "moon.example.com",
+  "ServerPort": 7979,
+  "ConnectionMode": 1
 }
 ```
 
-文件不存在时用 Inspector 上 `MainMenu` 的 `m_AccountServiceUrl`，默认
-`http://127.0.0.1:5080/`——那是回环 HTTP，能过校验，所以**本机开发不用改任何东西**。
+全部字段都是可选的，缺什么就用内置默认值：
 
-玩家侧不用改代码：主菜单 **DIRECT CONNECT** 面板本来就是填地址 + 端口
-（`DirectConnectPopUp`），让他们填 `moon.example.com` 和 `7979`。
+| 字段 | 作用 | 缺省时 |
+| --- | --- | --- |
+| `AccountServiceUrl` | 账号服务地址，**非回环必须 HTTPS** | Inspector 上的 `m_AccountServiceUrl`（`http://127.0.0.1:5080/`） |
+| `AllowLanHttp` | 允许局域网私有 IP 走明文 HTTP | `false` |
+| `ServerAddress` | 游戏服务器地址，**可以填域名** | `ConnectionSettings.DefaultServerAddress`（`127.0.0.1`） |
+| `ServerPort` | 游戏服务器端口 | `7979` |
+| `ConnectionMode` | 主菜单初始连接模式，`1` 才会显示 HOST / JOIN EXPEDITION | PlayerPrefs，全新安装为 `0` |
+
+`ServerAddress` 在连接时才做 DNS 解析（`ClientSettings.ResolveAsync`），因为
+`NetworkEndpoint` 结构体只能存 IP、存不了域名。填 IP 字面量时这一步直接跳过，零开销。
+
+`ServerAddress` 写入后会被记成"已下发的值"（PlayerPrefs `SeededServerAddress`）：
+**这个值一改，老玩家下次启动会自动跟到新地址**；值没变时则尊重玩家自己手填的地址。
+换 VPS 时不用让所有人重装。
+
+**打包时必须把这个文件放进 exe 所在目录**，否则客户端会回退到
+`http://127.0.0.1:5080/` 和 `127.0.0.1` —— 那指向玩家自己的机器，**登录和连接都会失败**。
+
+`ConnectionMode` 只决定全新安装的初始值。玩家自己切换过之后以他的选择为准，不会被每次启动改回去。
+
 
 ## 7. 验证顺序
 
