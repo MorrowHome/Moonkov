@@ -1,5 +1,7 @@
+using System.Net;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.AspNetCore.HttpOverrides;
 using Npgsql;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.RateLimiting;
@@ -18,6 +20,12 @@ builder.Services.AddSingleton<StashRepository>();
 builder.Services.AddSingleton<InventoryRepository>();
 builder.Services.AddSingleton<AccountRepository>();
 builder.Services.ConfigureHttpJsonOptions(options => options.SerializerOptions.IncludeFields = true);
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    // Only the VPS reverse proxy is trusted, so a client cannot spoof its own address.
+    options.KnownProxies.Add(IPAddress.Parse("10.8.0.1"));
+});
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = 429;
@@ -26,6 +34,9 @@ builder.Services.AddRateLimiter(options =>
         { PermitLimit = 20, Window = TimeSpan.FromMinutes(1), QueueLimit = 0 }));
 });
 var app = builder.Build();
+// The relay masquerades traffic, so without this every request looks like it came from the
+// tunnel address and the per-IP auth rate limit becomes a single bucket shared by all players.
+app.UseForwardedHeaders();
 await app.Services.GetRequiredService<StashRepository>().InitializeAsync();
 var expectedKey = SHA256.HashData(Encoding.UTF8.GetBytes(serverKey));
 app.Use(async (context, next) =>
