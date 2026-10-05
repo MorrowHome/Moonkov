@@ -73,8 +73,8 @@ namespace Unity.MP_FPS.Client
             static void OnCancelPressed()
             {
                 GameSettings.Instance.CancellableUserInputPopUp.SetCanceled();
-                ConnectionSettings.Instance.IPAddress = ConnectionSettings.DefaultServerAddress;
-                ConnectionSettings.Instance.Port = ConnectionSettings.DefaultServerPort.ToString();
+                ConnectionSettings.Instance.IPAddress = ConnectionSettings.ConfiguredAddress;
+                ConnectionSettings.Instance.Port = ConnectionSettings.ConfiguredPort;
             }
         }
     }

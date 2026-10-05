@@ -46,6 +46,17 @@ namespace Unity.MP_FPS
          public const string DefaultServerAddress = "127.0.0.1";
          public const ushort DefaultServerPort = 7979;
 
+         /// <summary>
+         /// The address a fresh install should use: what the shipped settings file asked for, or the
+         /// built-in default. Cancelling a popup restores this rather than the built-in default, so
+         /// a player cannot accidentally replace the server they were given.
+         /// </summary>
+         public static string ConfiguredAddress => ClientSettings.ServerAddress ?? DefaultServerAddress;
+
+         /// <summary>The port a fresh install should use, on the same terms as <see cref="ConfiguredAddress"/>.</summary>
+         public static string ConfiguredPort =>
+             ClientSettings.ServerPort > 0 ? ClientSettings.ServerPort.ToString() : DefaultServerPort.ToString();
+
          const string k_IPAddressKey = "IPAddress";
          const string k_PortKey = "Port";
          // Remember what the shipped settings file asked for, so changing that file moves existing
@@ -57,14 +68,14 @@ namespace Unity.MP_FPS
 
          ConnectionSettings()
          {
-             IPAddress = Seeded(k_IPAddressKey, k_SeededAddressKey, ClientSettings.ServerAddress, DefaultServerAddress);
+             IPAddress = Seeded(k_IPAddressKey, k_SeededAddressKey, ClientSettings.ServerAddress, ConfiguredAddress);
              if (!ClientSettings.IsValidAddress(IPAddress))
-                 IPAddress = ClientSettings.ServerAddress ?? DefaultServerAddress;
+                 IPAddress = ConfiguredAddress;
 
              string configuredPort = ClientSettings.ServerPort > 0 ? ClientSettings.ServerPort.ToString() : null;
-             Port = Seeded(k_PortKey, k_SeededPortKey, configuredPort, DefaultServerPort.ToString());
+             Port = Seeded(k_PortKey, k_SeededPortKey, configuredPort, ConfiguredPort);
              if (!ushort.TryParse(Port, out _))
-                 Port = DefaultServerPort.ToString();
+                 Port = ConfiguredPort;
          }
 
          /// <summary>
