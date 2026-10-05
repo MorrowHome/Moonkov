@@ -44,15 +44,15 @@ namespace Unity.MP_FPS
         public static void Confirm() => Play(Library?.Confirm, Vector3.zero);
         public static void Error() => Play(Library?.Error, Vector3.zero);
 
-        // Delegated callbacks cover dynamically built buttons and keyboard activation as well.
-        // Only whole UIDocument roots may be bound: a bound child element nested under a bound
-        // document root would fire the sound once per bound ancestor.
+        // Bind before activation, including buttons created dynamically between document scans.
+        // Clickable captures pointer-up, and navigation can detach the button before ClickEvent
+        // reaches an ancestor. The sound therefore belongs to Button.clicked, not a root event.
         private static readonly HashSet<VisualElement> s_BoundRoots = new HashSet<VisualElement>();
 
         public static void BindUI(VisualElement root)
         {
             if (root == null || !s_BoundRoots.Add(root)) return;
-            root.RegisterCallback<ClickEvent>(OnClick, TrickleDown.TrickleDown);
+            root.RegisterCallback<PointerDownEvent>(OnPointerDown, TrickleDown.TrickleDown);
             root.RegisterCallback<NavigationSubmitEvent>(OnSubmit, TrickleDown.TrickleDown);
             root.RegisterCallback<PointerOverEvent>(OnHover, TrickleDown.TrickleDown);
         }
@@ -60,7 +60,7 @@ namespace Unity.MP_FPS
         public static void UnbindUI(VisualElement root)
         {
             if (root == null || !s_BoundRoots.Remove(root)) return;
-            root.UnregisterCallback<ClickEvent>(OnClick, TrickleDown.TrickleDown);
+            root.UnregisterCallback<PointerDownEvent>(OnPointerDown, TrickleDown.TrickleDown);
             root.UnregisterCallback<NavigationSubmitEvent>(OnSubmit, TrickleDown.TrickleDown);
             root.UnregisterCallback<PointerOverEvent>(OnHover, TrickleDown.TrickleDown);
         }
@@ -68,7 +68,8 @@ namespace Unity.MP_FPS
         /// <summary>Forget roots whose panel is gone so the bound set does not grow forever.</summary>
         public static void PruneBoundRoots()
         {
-            s_BoundRoots.RemoveWhere(root => root == null || root.panel == null);
+            foreach (var root in new List<VisualElement>(s_BoundRoots))
+                if (root.panel == null) UnbindUI(root);
         }
 
         private static Button ButtonFor(EventBase evt)
@@ -76,13 +77,21 @@ namespace Unity.MP_FPS
             var target = evt.target as VisualElement;
             return target as Button ?? target?.GetFirstAncestorOfType<Button>();
         }
-        private static void OnClick(ClickEvent evt)
+        private static void BindButton(Button button)
         {
-            if (evt.button == 0 && ButtonFor(evt)?.enabledInHierarchy == true) Click();
+            if (button == null || !button.enabledInHierarchy) return;
+            // A subtree and its UIDocument may both observe the press. Rebinding the same
+            // delegate is idempotent, without retaining buttons after their page is discarded.
+            button.clicked -= Click;
+            button.clicked += Click;
+        }
+        private static void OnPointerDown(PointerDownEvent evt)
+        {
+            if (evt.button == 0) BindButton(ButtonFor(evt));
         }
         private static void OnSubmit(NavigationSubmitEvent evt)
         {
-            if (ButtonFor(evt)?.enabledInHierarchy == true) Click();
+            BindButton(ButtonFor(evt));
         }
         private static void OnHover(PointerOverEvent evt)
         {

@@ -9,15 +9,14 @@ namespace Unity.MP_FPS
     /// to opt in. Before this existed only the stash screen and the raid HUD were wired,
     /// which left the main menu, the pause menu and the post-death result screen mute.
     ///
-    /// Only whole UIDocument roots are bound. A screen that binds one of its own child
-    /// elements would produce a second callback for the same event, so the screens do not
-    /// do that (see MoonkovAudio.BindUI).
+    /// Roots observe input to bind each button's activation callback. Subtree bindings
+    /// are safe: MoonkovAudio installs the same sound callback only once per button.
     /// </summary>
     public sealed class MoonkovUIAudio : MonoBehaviour
     {
         // Documents appear when scenes load and when screens are created at runtime, so the
-        // scan is cheap and periodic rather than per frame. A control only becomes clickable
-        // after the user sees it, which is far longer than one interval.
+        // scan is periodic rather than per frame; delegated input also covers new buttons
+        // added to an already-bound document between scans.
         private const float ScanInterval = .25f;
 
         private float m_NextScan;
@@ -38,14 +37,16 @@ namespace Unity.MP_FPS
             m_NextScan = Time.unscaledTime + ScanInterval;
             MoonkovAudio.PruneBoundRoots();
 
-            var documents = FindObjectsByType<UIDocument>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            var documents = FindObjectsByType<UIDocument>(FindObjectsInactive.Include);
             for (int i = 0; i < documents.Length; i++)
             {
                 var document = documents[i];
                 if (document == null) continue;
                 var root = document.rootVisualElement;
-                if (root != null) MoonkovAudio.BindUI(root);
+                if (root == null) continue;
+                MoonkovAudio.BindUI(root);
             }
+
         }
     }
 }

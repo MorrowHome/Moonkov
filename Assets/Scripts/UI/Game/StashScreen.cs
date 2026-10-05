@@ -36,8 +36,10 @@ namespace Unity.MP_FPS.Client
         {
             m_Preview = preview;
             m_Host = host; m_Root = host.Q<VisualElement>("stashScreen");
-            // No BindUI here: MoonkovUIAudio binds whole UIDocument roots, and binding this
-            // child element as well would fire the click sound twice per press.
+            // Bind the terminal/stash subtree explicitly so its cards are audible immediately,
+            // before MoonkovUIAudio's document scan runs. Button sound binding is idempotent,
+            // so observing both this subtree and the document cannot double up the sound.
+            MoonkovAudio.BindUI(m_Root);
             m_OnPrepare = prepare; m_OnLogout = logout; m_OnRefresh = refresh;
             m_Search = m_Root.Q<TextField>("stashSearch");
             m_Search.textEdition.placeholder = "Search...";
