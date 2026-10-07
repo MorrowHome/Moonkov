@@ -72,9 +72,9 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     [Range(10f, 170f)] public float faceSpotAngle = 110f;
     [Min(0f)] public float faceLightIntensityScale = 0.7f;
     [Header("Flashlight (aim state)")]
-    [Min(0.1f)] public float flashlightRange = 24f;
-    [Range(10f, 90f)] public float flashlightAngle = 42f;
-    [Min(0f)] public float flashlightIntensity = 4f;
+    [Min(0.1f)] public float flashlightRange = 80f;
+    [Range(10f, 90f)] public float flashlightAngle = 48f;
+    [Min(0f)] public float flashlightIntensity = 45f;
 
     private readonly RaycastHit[] rayHits = new RaycastHit[32];
     private Animator animator;
@@ -352,11 +352,12 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
                                   faceLightIntensityScale;
             Color faceColor = new Color(color.r, color.g, color.b, 1f);
             if (haloFaceLightFront) {
-                haloFaceLightFront.color = faceColor;
+                // A neutral beam preserves terrain contrast instead of tinting the path cyan.
+                haloFaceLightFront.color = Color.Lerp(faceColor, new Color(1f, 0.96f, 0.86f), t);
                 haloFaceLightFront.intensity = Mathf.Lerp(faceIntensity, flashlightIntensity, t);
                 haloFaceLightFront.range = Mathf.Lerp(lightRange, flashlightRange, t);
                 haloFaceLightFront.spotAngle = Mathf.Lerp(faceSpotAngle, flashlightAngle, t);
-                haloFaceLightFront.innerSpotAngle = haloFaceLightFront.spotAngle * 0.55f;
+                haloFaceLightFront.innerSpotAngle = haloFaceLightFront.spotAngle * Mathf.Lerp(0.55f, 0.72f, t);
                 haloFaceLightFront.enabled = haloLightEnabled;
             }
             if (haloFaceLightBack) {
