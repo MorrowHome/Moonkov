@@ -631,6 +631,7 @@ MonoBehaviour:
   zoomSmoothTime: 0.12
   firstPersonFieldOfView: 70
   firstPersonNearClip: 0.03
+  aimMagnification: 1.75
   fallbackEyeWorldOffset: {x: 0, y: 0.08, z: 0.05}
   lookTargetDistance: 12
   firstPersonEyeForward: 0.015

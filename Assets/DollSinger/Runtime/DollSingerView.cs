@@ -35,6 +35,10 @@ public class DollSingerView : MonoBehaviour
     [Range(40f, 100f)] public float firstPersonFieldOfView = 70f;
     [Range(0.01f, 0.5f)] public float firstPersonNearClip = 0.03f;
 
+    [Header("Aim zoom")]
+    [Tooltip("Target magnification when fully aiming, relative to the current first/third-person FOV.")]
+    [Range(1f, 3f)] public float aimMagnification = 1.75f;
+
     [Header("First person head")]
     [Tooltip("Fallback eye position in front of the head bone, in character-local metres.")]
     public Vector3 fallbackEyeWorldOffset = new Vector3(0f, 0.08f, 0.05f);
@@ -288,8 +292,13 @@ public class DollSingerView : MonoBehaviour
         camera.transform.localRotation = Quaternion.Slerp(
             Quaternion.Slerp(thirdPersonRestRotation, Quaternion.identity, aimBlend),
             Quaternion.identity, viewBlend);
-        camera.fieldOfView = Mathf.Lerp(Mathf.Lerp(thirdPersonRestFov, 39f, aimBlend),
-            firstPersonFieldOfView, viewBlend);
+        float baseFov = Mathf.Lerp(thirdPersonRestFov, firstPersonFieldOfView, viewBlend);
+        float magnification = Mathf.Lerp(1f, Mathf.Clamp(aimMagnification, 1f, 3f),
+            Mathf.SmoothStep(0f, 1f, aimBlend));
+        // Divide the projection's tangent so the same setting gives equal target
+        // magnification in both perspectives and with a customized base FOV.
+        camera.fieldOfView = 2f * Mathf.Atan(Mathf.Tan(baseFov * 0.5f * Mathf.Deg2Rad)
+            / magnification) * Mathf.Rad2Deg;
         camera.nearClipPlane = Mathf.Lerp(thirdPersonRestNearClip, firstPersonNearClip, viewBlend);
 
         SetFirstPersonPresentation(viewBlend > 0.5f);
