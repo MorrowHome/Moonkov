@@ -15,7 +15,8 @@ public struct PlayerInput
         ThirdPerson = 1 << 5,
         EquipHalo = 1 << 6,
         EquipRevolver = 1 << 7,
-        EquipPistol = 1 << 8
+        EquipPistol = 1 << 8,
+        HaloLightDisabled = 1 << 9
     }
 
     public float2 MoveInput;
@@ -38,6 +39,7 @@ public struct PlayerInput
     public bool EquipHalo => (InputFlags & (uint)InputFlag.EquipHalo) != 0;
     public bool EquipRevolver => (InputFlags & (uint)InputFlag.EquipRevolver) != 0;
     public bool EquipPistol => (InputFlags & (uint)InputFlag.EquipPistol) != 0;
+    public bool HaloLightEnabled => (InputFlags & (uint)InputFlag.HaloLightDisabled) == 0;
 
     public void SetFlag(InputFlag flag, bool set)
     {

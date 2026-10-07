@@ -18,12 +18,19 @@ namespace Unity.MP_FPS
         private float2 m_FreeLookOffset;
         private Quaternion m_OwnedViewRotation = Quaternion.identity;
         private float m_OwnedLean;
+        private bool m_OwnedLightEnabled = true;
         private readonly RaycastHit[] m_AimHits = new RaycastHit[32];
         private MoonkovPlayerAudio m_Audio;
 
         public DollSingerInput OwnedInput => m_Linked && Role == MultiplayerRole.ClientOwned ? m_Input : null;
         public bool IsThirdPerson => m_View != null && !m_View.IsFirstPerson;
         public float OwnedLeanAmount => m_OwnedLean;
+
+        public bool ReadOwnedLight(bool canRead)
+        {
+            if (canRead && m_Input.LightPressed) m_OwnedLightEnabled = !m_OwnedLightEnabled;
+            return m_OwnedLightEnabled;
+        }
 
         public Vector3 GetGameplayLeanOffset(float lean, Quaternion bodyRotation, bool thirdPerson)
         {
@@ -87,6 +94,7 @@ namespace Unity.MP_FPS
         public override void OnGhostLinked()
         {
             m_Linked = true;
+            m_OwnedLightEnabled = true;
             m_Audio = Role == MultiplayerRole.Server ? null : new MoonkovPlayerAudio();
             m_Model.SetNetworkViewPresentation(false, Quaternion.identity, 0f);
             m_Model.enabled = Role != MultiplayerRole.Server;
@@ -136,7 +144,8 @@ namespace Unity.MP_FPS
             bool owned = Role == MultiplayerRole.ClientOwned;
             m_Model.SetNetworkViewPresentation(owned ? m_View.IsFirstPerson : state.FirstPersonView,
                 owned ? m_OwnedViewRotation : headRotation, owned ? m_OwnedLean : state.Lean);
-            m_Halo.SetNetworkPresentation(state.Aiming, viewRotation * Vector3.forward, ghost.AimPoint);
+            m_Halo.SetNetworkPresentation(state.Aiming, viewRotation * Vector3.forward, ghost.AimPoint,
+                owned ? m_OwnedLightEnabled : state.HaloLightEnabled);
             var weapon = WeaponManager.Instance.WeaponRegistry.GetWeaponData(ghost.EquippedWeaponID);
             var haloWeapon = ghost.EquippedWeaponID == DollSingerWeapons.Halo ? DollSingerHaloAim.HaloWeapon.Rifle :
                 ghost.EquippedWeaponID == DollSingerWeapons.Revolver ? DollSingerHaloAim.HaloWeapon.Revolver :

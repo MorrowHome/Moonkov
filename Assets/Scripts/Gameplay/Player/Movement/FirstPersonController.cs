@@ -55,13 +55,21 @@ public class FirstPersonController : MonoBehaviour
             JumpTrigger = 1 << 6,
             LandTrigger = 1 << 7,
             Aiming = 1 << 8,
-            Sprinting = 1 << 9
+            Sprinting = 1 << 9,
+            HaloLightDisabled = 1 << 10
         }
 
         //WARNING WARNING: Adding more members to this struct might break network serialisation speak to Claire/Andy B
 
         // booleans
         public uint StateFlags;
+
+        [GhostField(SendData = false)]
+        public bool HaloLightEnabled
+        {
+            get => (StateFlags & (uint)StateFlag.HaloLightDisabled) == 0;
+            set => SetFlag(StateFlag.HaloLightDisabled, !value);
+        }
 
         [GhostField(SendData = false)]
         public bool Aiming
@@ -771,6 +779,7 @@ public class FirstPersonController : MonoBehaviour
     public static void ProcessInputs(ref ControllerState state, in PlayerInput input, float deltaTime)
     {
         state.Aiming = input.Aim;
+        state.HaloLightEnabled = input.HaloLightEnabled;
         state.Sprinting = input.Sprint && !input.Aim;
         state.FirstPersonView = !input.ThirdPerson;
         state.FreeLooking = state.FirstPersonView && input.FreeLooking;

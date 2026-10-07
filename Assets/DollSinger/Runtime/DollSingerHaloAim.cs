@@ -147,9 +147,10 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     public float AimBlend => aimBlend;
     public int AimLayerIndex => aimLayerIndex;
 
-    public void SetNetworkPresentation(bool aiming, Vector3 direction, Vector3 aimPoint)
+    public void SetNetworkPresentation(bool aiming, Vector3 direction, Vector3 aimPoint, bool lightEnabled = true)
     {
         networkControlled = true;
+        haloLightEnabled = lightEnabled;
         networkAiming = aiming;
         networkDirection = direction.normalized;
         networkAimPoint = aimPoint;
@@ -220,7 +221,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         wantsAim = visualWeapon != HaloWeapon.None && (networkControlled ? networkAiming :
             thirdPerson && thirdPerson.enabled && playerCamera && aimingInput);
         if (thirdPerson) thirdPerson.IsLocallyAiming = wantsAim;
-        if (input && input.enabled && input.LightPressed)
+        if (!networkControlled && input && input.enabled && input.LightPressed)
             haloLightEnabled = !haloLightEnabled;
         aimBlend = Mathf.MoveTowards(aimBlend, wantsAim ? 1f : 0f,
             Time.deltaTime / (wantsAim ? aimInSeconds : aimOutSeconds));

@@ -80,6 +80,8 @@ public partial class ClientInputReaderSystem : SystemBase
             {
                 var playerInput = new PlayerInput();
                 bool canRead = !blocked && _dollSingerInput.CanReadPlayerInput;
+                playerInput.SetFlag(PlayerInput.InputFlag.HaloLightDisabled,
+                    !_dollSingerPresentation.ReadOwnedLight(canRead));
                 playerInput.FreeLooking = _dollSingerPresentation.UpdateOwnedLook(
                     ref _accumulatedLook, out playerInput.FreeLookOffset, !canRead);
                 playerInput.Lean = canRead && !_dollSingerPresentation.IsThirdPerson
