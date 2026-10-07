@@ -30,12 +30,42 @@ namespace Unity.MP_FPS
             {
                 var session=state.EntityManager.GetComponentData<RaidSession>(connection);
                 if (state.EntityManager.HasComponent<RaidInventoryState>(connection) && GetRaidInventory(ref state,connection).RaidId==session.RaidId) continue;
-                var graph=InventoryGraph.Create(stash:false); graph.AddSupply("cells",session.Cells);
+            var graph=InventoryGraph.Create(stash:false); graph.AddSupply("cells",session.Cells);
+            if (!session.PersistentDeployment) graph.AddSupply("medkit", 2);
                 SetRaidInventory(ref state,connection,graph,session.RaidId);
             }
         }
         private void HandleInventoryRequests(ref SystemState state, EntityCommandBuffer ecb)
         {
+            foreach (var (request, received, entity) in SystemAPI.Query<RefRO<RaidMedicalUseRpc>, RefRO<ReceiveRpcCommandRequest>>().WithEntityAccess())
+            {
+                var connection = received.ValueRO.SourceConnection;
+                if (SystemAPI.HasComponent<RaidSession>(connection) && SystemAPI.HasComponent<JoinedClient>(connection) &&
+                    state.EntityManager.HasComponent<RaidInventoryState>(connection) && !SystemAPI.HasComponent<NetworkStreamRequestDisconnect>(connection))
+                {
+                    var session = SystemAPI.GetComponent<RaidSession>(connection);
+                    var inventory = GetRaidInventory(ref state, connection);
+                    var r = request.ValueRO;
+                    // Request IDs share the inventory operation stream. Delayed/replayed
+                    // intents cannot heal again, including after respawn/deployment.
+                    if (r.RequestId > inventory.RequestId)
+                    {
+                        inventory.RequestId = r.RequestId;
+                        inventory.Error = InventoryError.Inaccessible;
+                        var player = SystemAPI.GetComponent<JoinedClient>(connection).PlayerEntity;
+                        if (session.Phase == RaidPhase.Active && session.RaidId == r.RaidId &&
+                            inventory.RaidId == r.RaidId && SystemAPI.Exists(player) && SystemAPI.HasComponent<PredictedPlayerGhost>(player))
+                        {
+                            var ghost = SystemAPI.GetComponentRW<PredictedPlayerGhost>(player);
+                            inventory.Error = inventory.Graph.UseMedical(r.ItemId.ToString(), r.ExpectedVersion,
+                                ghost.ValueRO.CurrentHealth, ghost.ValueRO.MaxHealth, out var healed);
+                            if (inventory.Error == InventoryError.None) ghost.ValueRW.CurrentHealth = healed;
+                        }
+                        inventory.LastSentVersion = -1;
+                    }
+                }
+                ecb.DestroyEntity(entity);
+            }
             foreach (var (request, received, entity) in SystemAPI.Query<RefRO<RaidInventoryMoveRpc>, RefRO<ReceiveRpcCommandRequest>>().WithEntityAccess())
             {
                 var connection = received.ValueRO.SourceConnection;

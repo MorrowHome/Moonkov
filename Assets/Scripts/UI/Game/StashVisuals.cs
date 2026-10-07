@@ -3,7 +3,7 @@ using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client
 {
-    public enum StashArtKind { None, Dust, Alloy, Cell, Halo, Outfit, Helmet, Rifle, Pistol, ChestRig, Backpack, HaloRifle, HaloRevolver, HaloShotgun }
+    public enum StashArtKind { None, Dust, Alloy, Cell, Halo, Outfit, Helmet, Rifle, Pistol, ChestRig, Backpack, HaloRifle, HaloRevolver, HaloShotgun, Medical }
 
     // Small original vector illustrations, kept sharp at the shared PanelSettings scale.
     [UxmlElement]
@@ -53,6 +53,7 @@ namespace Unity.MP_FPS.Client
                 case StashArtKind.Dust: Dust(); break;
                 case StashArtKind.Alloy: Alloy(); break;
                 case StashArtKind.Cell: Cell(); break;
+                case StashArtKind.Medical: Medical(); break;
                 case StashArtKind.Halo: Halo(); break;
                 case StashArtKind.Outfit: Outfit(); break;
                 case StashArtKind.Helmet: Helmet(); break;
@@ -125,6 +126,13 @@ namespace Unity.MP_FPS.Client
             Box(0xc3c9b3, 21, 7, 14, 5); Box(0x26344a, 20, 36, 17, 29);
             Shape(0xc5d5dd, new Vector2(31, 39), new Vector2(24, 50), new Vector2(29, 50), new Vector2(25, 62), new Vector2(34, 47), new Vector2(29, 47));
             Line(0xdce4d3, 1.3f, new Vector2(14, 20), new Vector2(14, 66));
+        }
+        private void Medical()
+        {
+            Box(0x253530, 32, 8, 36, 84); Box(0xd8ddd1, 35, 20, 30, 55);
+            Box(0x8b9e93, 35, 8, 30, 12); Box(0x567763, 36, 76, 28, 10);
+            Box(0x8c3e37, 44, 32, 12, 28); Box(0x8c3e37, 36, 40, 28, 12);
+            Line(0xf2f1e5, 2, new Vector2(38, 23), new Vector2(38, 71));
         }
 
         private void Halo()

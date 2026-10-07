@@ -77,7 +77,7 @@ namespace Unity.MP_FPS
             m_Return.SetEnabled(GameManager.CanUseMainMenu);
             m_Inventory = m_Root.Q("raidInventory");
             m_InventoryTitle=m_Root.Q<Label>(className:"raid-inventory-title");
-            m_InventoryView = new Client.ContainerInventoryView(m_Root.Q("raidInventoryHost"), false, SendInventoryMove);
+            m_InventoryView = new Client.ContainerInventoryView(m_Root.Q("raidInventoryHost"), false, SendInventoryMove, UseMedical);
             m_InventorySequence=0; m_InventoryRequestId=0;
             m_InventoryRequestPending=false;
             m_LootOpenPending=false;m_OpenedLootId=-1;
@@ -181,6 +181,15 @@ namespace Unity.MP_FPS
             float distance = RaidRules.PickupRange;
             Vector3 position = default;
             bool alive = m_PlayerQuery.HasSingleton<PredictedPlayerGhost>();
+            if (alive && ready && !settled && !m_InventoryVisible && !m_InventoryRequestPending &&
+                !GameSettings.Instance.IsPauseMenuOpen && UnityEngine.Cursor.lockState == CursorLockMode.Locked &&
+                Keyboard.current != null && Keyboard.current.digit4Key.wasPressedThisFrame && !m_InventoryQuery.IsEmptyIgnoreFilter)
+            {
+                var inventory = m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
+                var player = m_PlayerQuery.GetSingleton<PredictedPlayerGhost>();
+                var medicine = inventory.Graph?.Items.Find(inventory.Graph.MedicalAccessible);
+                if (medicine != null && player.CurrentHealth > 0f && player.CurrentHealth < player.MaxHealth) UseMedical(medicine);
+            }
             if (alive && ready && !settled)
             {
                 position = m_PlayerQuery.GetSingleton<LocalTransform>().Position;
@@ -224,7 +233,7 @@ namespace Unity.MP_FPS
             if (!m_InventoryQuery.IsEmptyIgnoreFilter)
             {
                 var batteryGraph = m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity()).Graph;
-                if (batteryGraph != null) m_Bag.text += $"\nENERGY {batteryGraph.CellEnergy(carriedOnly: true)} / READY {batteryGraph.CellEnergy(accessibleOnly: true)}";
+                if (batteryGraph != null) m_Bag.text += $"\nENERGY {batteryGraph.CellEnergy(carriedOnly: true)} / READY {batteryGraph.CellEnergy(accessibleOnly: true)}\n[4] MEDICAL / {batteryGraph.Count("medkit", true)}";
             }
             bool deathBag=nearest>=RaidLootContainers.FirstDeathBagId;
             bool empty=deathBag ? deathBags.Bags[nearest].Empty : nearest>=0 && (m_Snapshot.TakenMask & (1u<<nearest))!=0;
@@ -296,6 +305,17 @@ namespace Unity.MP_FPS
             if(sent)
             { m_InventoryRequestedAt=Time.unscaledTime; m_InventoryRequestPending=true; }
             else m_InventoryView.Present(inventory.Graph,"Not connected. Item remains in its container.");
+        }
+
+        private void UseMedical(Inventory.InventoryItem item)
+        {
+            if (m_InventoryRequestPending || m_Snapshot.Phase != RaidPhase.Active) return;
+            var inventory = m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
+            m_InventoryRequestId = System.Math.Max(m_InventoryRequestId, inventory.RequestId) + 1;
+            if (Send(new RaidMedicalUseRpc { RaidId = m_Snapshot.RaidId, RequestId = m_InventoryRequestId,
+                ExpectedVersion = inventory.Graph.Version, ItemId = item.Id }))
+            { m_InventoryRequestedAt = Time.unscaledTime; m_InventoryRequestPending = true; }
+            else m_InventoryView.Present(inventory.Graph, "Not connected. Medical item remains in its container.");
         }
 
         private void CarryCellsChanged(ChangeEvent<int> evt)

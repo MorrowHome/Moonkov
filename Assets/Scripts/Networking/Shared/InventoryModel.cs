@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Unity.MP_FPS.Inventory
 {
-    public enum ItemKind { Root, Material, Cell, Helmet, LongGun, Pistol, Rig, Backpack }
+    public enum ItemKind { Root, Material, Cell, Helmet, LongGun, Pistol, Rig, Backpack, Medical }
     public enum InventoryError { None, Stale, Missing, Invalid, Incompatible, Bounds, Collision, Cycle, Full, Overweight, Inaccessible }
     public enum InventoryOperation { Move, Split, Merge }
 
@@ -47,6 +47,7 @@ namespace Unity.MP_FPS.Inventory
                 new ItemDefinition("dust", "Moon dust", ItemKind.Material, 1, 1, 20, .15f),
                 new ItemDefinition("alloy", "Lunar alloy", ItemKind.Material, 2, 1, 10, .6f),
                 new ItemDefinition("cells", "Energy cell", ItemKind.Cell, 1, 1, 12, .2f),
+                new ItemDefinition("medkit", "M-40 Medical injector", ItemKind.Medical, 1, 1, 4, .15f),
                 new ItemDefinition("helmet", "L-01 Flight helmet", ItemKind.Helmet, 2, 2, 1, 1.2f),
                 new ItemDefinition("rifle", "Halo Rifle", ItemKind.LongGun, 2, 2, 1, 3.2f),
                 new ItemDefinition("compact", "Halo Rifle (Compact)", ItemKind.LongGun, 2, 2, 1, 2.4f),
@@ -296,6 +297,25 @@ namespace Unity.MP_FPS.Inventory
             var item = Items.Find(i => i.Code == "cells" && (i.Parent == "pockets" || i.Parent == rig?.Id));
             if (item == null) return false;
             BatteryEnergy.Take(item, 1); if (item.Quantity == 0) Items.Remove(item); Version++; return true;
+        }
+        public bool MedicalAccessible(InventoryItem item) => item != null && item.Code == "medkit" &&
+            (item.Parent == InventoryCatalog.Pockets || item.Parent == Equipped("ChestRig")?.Id);
+
+        // Only the match server commits this result. Full health/death/stale versions
+        // leave both health and the stack untouched; a replay cannot consume it twice.
+        public InventoryError UseMedical(string itemId, int expectedVersion, float health, float maximum, out float healed)
+        {
+            healed = health;
+            if (expectedVersion != Version) return InventoryError.Stale;
+            var item = Find(itemId);
+            if (item == null) return InventoryError.Missing;
+            if (!MedicalAccessible(item)) return InventoryError.Inaccessible;
+            if (float.IsNaN(health) || float.IsInfinity(health) || float.IsNaN(maximum) || float.IsInfinity(maximum) ||
+                health <= 0f || maximum <= health || item.Quantity < 1) return InventoryError.Invalid;
+            healed = Math.Min(maximum, health + 40f);
+            if (--item.Quantity == 0) Items.Remove(item);
+            Version++;
+            return InventoryError.None;
         }
         private bool AccessibleCell(InventoryItem item) => item.Code == "cells" && (item.Parent == "pockets" || item.Parent == Equipped("ChestRig")?.Id);
         public int CellEnergy(bool carriedOnly = false, bool accessibleOnly = false) => Items.Where(i => i.Code == "cells" &&

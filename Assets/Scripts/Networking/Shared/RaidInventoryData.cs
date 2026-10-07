@@ -64,6 +64,12 @@ namespace Unity.MP_FPS
         public FixedString64Bytes ItemId, Parent, Region, TargetId;
         public bool Rotated;
     }
+    public struct RaidMedicalUseRpc : IRpcCommand
+    {
+        public int RaidId, ExpectedVersion;
+        public uint RequestId;
+        public FixedString64Bytes ItemId;
+    }
     public struct RaidLootOpenRpc : IRpcCommand
     {
         public int RaidId, LootId;

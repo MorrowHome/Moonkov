@@ -23,7 +23,8 @@ namespace Unity.MP_FPS.Inventory
     {
         public static readonly ShopOffer[] Offers = {
             new ShopOffer("rifle", 40, 20), new ShopOffer("pistol", 15, 7),
-            new ShopOffer("shotgun", 50, 25), new ShopOffer("cells", 5, 2)
+            new ShopOffer("shotgun", 50, 25), new ShopOffer("cells", 5, 2),
+            new ShopOffer("medkit", 8, 3)
         };
         public static ShopOffer Find(string code) => Offers.FirstOrDefault(o => o.Code == code);
         public static int SaleDust(InventoryItem item, int quantity, int fullPrice) => BatteryEnergy.IsCell(item)

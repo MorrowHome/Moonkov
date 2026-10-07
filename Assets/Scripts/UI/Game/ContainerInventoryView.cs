@@ -18,6 +18,7 @@ namespace Unity.MP_FPS.Client
         private readonly VisualElement m_Root, m_Body, m_CharacterStage, m_CharacterPane, m_LootPane, m_ContainerPane, m_StashPane, m_Ghost, m_Preview;
         private readonly Label m_Weight, m_Message;
         private readonly Action<InventoryCommand> m_Send;
+        private readonly Action<InventoryItem> m_UseMedical;
         private readonly TerminalWindows m_Windows;
         private readonly bool m_Stash;
         private readonly List<Grid> m_Grids = new List<Grid>();
@@ -40,9 +41,9 @@ namespace Unity.MP_FPS.Client
             CancelDrag(); m_ReadOnlyReason = reason;
             m_Message.text = reason ?? "Drag to move · R rotate · Double click containers · Ctrl click transfer";
         }
-        public ContainerInventoryView(VisualElement parent, bool showStash, Action<InventoryCommand> send)
+        public ContainerInventoryView(VisualElement parent, bool showStash, Action<InventoryCommand> send, Action<InventoryItem> useMedical = null)
         {
-            m_Stash = showStash; m_Send = send;
+            m_Stash = showStash; m_Send = send; m_UseMedical = useMedical;
             m_Root = TerminalLayout.Clone("ContainerInventory", "containerInventory");
             m_Root.EnableInClassList("inventory-with-stash", showStash);
             m_Root.styleSheets.Add(Resources.Load<StyleSheet>("Moonkov/ContainerUI")); parent.Add(m_Root);
@@ -81,7 +82,7 @@ namespace Unity.MP_FPS.Client
         private static string SlotLabel(string slot) => slot == "ChestRig" ? "CHEST RIG" : slot == "Primary" ? "PRIMARY" : slot == "Secondary" ? "SECONDARY" : slot.ToUpperInvariant();
         public static StashArtKind Art(string code)
         {
-            switch (code) { case "dust":return StashArtKind.Dust; case "alloy":return StashArtKind.Alloy; case "cells":return StashArtKind.Cell;
+            switch (code) { case "dust":return StashArtKind.Dust; case "alloy":return StashArtKind.Alloy; case "cells":return StashArtKind.Cell; case "medkit":return StashArtKind.Medical;
                 case "helmet":return StashArtKind.Helmet; case "rifle":case "compact":return StashArtKind.HaloRifle; case "pistol":return StashArtKind.HaloRevolver;
                 case "shotgun":return StashArtKind.HaloShotgun;
                 case "rig":return StashArtKind.ChestRig; case "backpack":case "small_pack":return StashArtKind.Backpack; default:return StashArtKind.None; }
@@ -228,6 +229,12 @@ namespace Unity.MP_FPS.Client
         private void Context(InventoryItem item, Vector2 position)
         {
             var window=m_Windows.Open(InventoryCatalog.Get(item.Code).Name, m_Root.WorldToLocal(position), true);
+            if (m_UseMedical != null && m_Graph.MedicalAccessible(item))
+                MoonkovTerminal.ActionButton(window, "USE / RESTORE 40 HP", () =>
+                {
+                    if (m_Busy || m_ReadOnlyReason != null) return;
+                    m_Windows.Close(window); m_Busy = true; m_UseMedical(item);
+                });
             MoonkovTerminal.ActionButton(window, "INSPECT", ()=> { m_Windows.Close(window); Describe(item); });
             if (InventoryCatalog.Get(item.Code).Container) MoonkovTerminal.ActionButton(window, "OPEN CONTAINER", ()=> { m_Windows.Close(window); OpenContainer(item); });
             MoonkovTerminal.ActionButton(window, "QUICK TRANSFER", ()=> { m_Windows.Close(window); QuickTransfer(item); });
