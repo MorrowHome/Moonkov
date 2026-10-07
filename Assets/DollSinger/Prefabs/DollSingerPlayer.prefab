@@ -616,7 +616,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 06ed113b286b64d45994990b88e0d7ea, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: DollSinger.Runtime::Unity.MP_FPS.DollSinger.DollSingerView
   camera: {fileID: 6335285093948285814}
   input: {fileID: 5454841194306245068}
@@ -633,6 +633,8 @@ MonoBehaviour:
   firstPersonNearClip: 0.03
   fallbackEyeWorldOffset: {x: 0, y: 0.08, z: 0.05}
   lookTargetDistance: 12
+  firstPersonEyeForward: 0.045
+  lookDownBodyClearance: 0.2
 --- !u!1 &3581373097316671528
 GameObject:
   m_ObjectHideFlags: 0
@@ -3231,7 +3233,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalCameraData
   m_RenderShadows: 1
   m_RequiresDepthTextureOption: 2
@@ -3340,7 +3342,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c802068b2babdfb41a6da04ff2bbb8d2, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: DollSinger.Runtime::Unity.MP_FPS.DollSinger.ShotgunHaloVisual
 --- !u!1001 &2427468677288055907
 PrefabInstance:
@@ -3609,7 +3611,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 673580432b61d0e488526f8c896925f0, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: DollSinger.Runtime::Unity.MP_FPS.DollSinger.SecondaryBoneSpring
   hairRoots:
   - {fileID: 1386689455678712922}
@@ -3741,7 +3743,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0a54c9b0d0ce429448f9574e053cc77d, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: DollSinger.Runtime::Unity.MP_FPS.DollSinger.SkirtHandAvoidance
   animator: {fileID: 8131966349961652722}
   skirtCenter: {fileID: 28234025865213006}
@@ -3786,7 +3788,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2d43ac70cc1bdd24b90b882566e61900, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: DollSinger.Runtime::Unity.MP_FPS.DollSinger.DollSingerHaloAim
   localPrimary: 1
   localSecondary: 3
@@ -3886,7 +3888,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0571e5e6312842a44a44f5bb3ea1d9d8, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: DollSinger.Runtime::Unity.MP_FPS.DollSinger.DollSingerInput
   mouseSensitivity: 0.15
   gamepadLookSpeed: 120
@@ -3901,12 +3903,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3e52a363428a43347aa293e12bc7c6aa, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: DollSinger.Runtime::Unity.MP_FPS.DollSinger.DollSingerMovement
   m_MoveSpeed: 2
   m_SprintSpeed: 5.335
   m_RotationSmoothTime: 0.12
   m_SpeedChangeRate: 10
+  m_TurnMinAngularSpeed: 12
+  m_TurnStationarySpeed: 0.15
   m_LandingAudioClip: {fileID: 0}
   m_FootstepAudioClips: []
   m_FootstepAudioVolume: 0.5
@@ -3930,7 +3934,8 @@ MonoBehaviour:
   m_FreeLookReturnSpeed: 240
   m_HeadTurnBeforeBody: 35
   m_FirstPersonBodyTurnTime: 0.18
-  m_LeanAngle: 15
+  m_LeanAngle: 8
+  m_BodyLeanAngle: 42
   m_LeanShift: 0.22
   m_BodyLeanRatio: 0.65
   m_LeanSpeed: 6
@@ -4167,5 +4172,5 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2a3eb1c6e9e76074ab246352371f2936, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: DollSinger.Runtime::Unity.MP_FPS.DollSinger.RevolverHaloVisual

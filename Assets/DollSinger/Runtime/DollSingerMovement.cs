@@ -84,7 +84,7 @@ namespace Unity.MP_FPS.DollSinger {
         [Tooltip("Camera roll in degrees at full lean.")]
         [Range(5f, 35f)] public float m_LeanAngle = 15f;
         [Tooltip("Total waist/chest bend at full lean. Eye displacement comes from the skeleton's arc.")]
-        [Range(5f, 35f)] public float m_BodyLeanAngle = 30f;
+        [Range(5f, 45f)] public float m_BodyLeanAngle = 42f;
         // Legacy serialized settings; fixed translation is no longer applied to any bone.
         [HideInInspector] public float m_LeanShift = 0.22f;
         [HideInInspector] public float m_BodyLeanRatio = 0.65f;
@@ -186,7 +186,7 @@ namespace Unity.MP_FPS.DollSinger {
         {
             if (float.IsNaN(amount) || float.IsInfinity(amount) || !EnsureLeanBones()) return Vector3.zero;
             amount = Mathf.Clamp(amount, -1f, 1f);
-            float roll = -amount * Mathf.Clamp(m_BodyLeanAngle, 5f, 35f);
+            float roll = -amount * Mathf.Clamp(m_BodyLeanAngle, 5f, 45f);
             float waistWeight = m_ChestBone ? 0.75f : 1f;
             Quaternion waist = Quaternion.AngleAxis(roll * waistWeight, Vector3.forward);
             Quaternion total = Quaternion.AngleAxis(roll, Vector3.forward);
@@ -237,7 +237,7 @@ namespace Unity.MP_FPS.DollSinger {
             return offset * (allowed / distance);
         }
         /// <summary>Upper-body roll about the character's forward axis. Same sign convention as <see cref="LeanRoll"/>.</summary>
-        public float BodyLeanRoll => -m_LeanState * Mathf.Clamp(m_BodyLeanAngle, 5f, 35f);
+        public float BodyLeanRoll => -m_LeanState * Mathf.Clamp(m_BodyLeanAngle, 5f, 45f);
         /// <summary>True while a lean is latched with Alt+Q / Alt+E.</summary>
         public bool IsLeanLocked => input && input.IsLeanLocked;
         public bool IsFreeLooking => m_FreeLookHeld ||
