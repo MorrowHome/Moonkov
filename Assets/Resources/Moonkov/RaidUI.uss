@@ -42,3 +42,9 @@
 .raid-loadout IntegerField { height: 34px; }
 .raid-loadout .unity-base-field__label { color: rgba(236, 236, 230, 0.6); min-width: 220px; -unity-font-definition: url("../../UI Toolkit/RobotoMono-Medium.ttf"); }
 .raid-loadout .unity-base-field__input { color: #ECECE6; background-color: rgba(255, 255, 255, 0.05); border-width: 0; border-bottom-width: 1px; border-bottom-color: rgba(255, 225, 26, 0.5); border-radius: 0; }
+
+.raid-inventory-window { width: 92%; max-width: 1440px; height: 88%; padding: 20px; background-color: #d9d7cc; border-color: #91a08c; border-top-width: 4px; border-top-color: #485f51; }
+.raid-inventory-header { height: 44px; margin-bottom: 12px; border-bottom-width: 1px; border-bottom-color: #acb2a0; padding-bottom: 10px; }
+.raid-ui .raid-inventory-title { color: #2b3b32; font-size: 22px; letter-spacing: 2px; }
+.raid-ui .raid-inventory-header Button { color: #334b3d; background-color: #c4cbb7; height: 32px; margin-top: 0; }
+.raid-ui .raid-inventory-header Button:hover { color: #f1eee2; background-color: #884c43; }

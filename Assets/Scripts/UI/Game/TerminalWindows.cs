@@ -38,6 +38,16 @@ namespace Unity.MP_FPS.Client
             header.AddManipulator(new WindowDrag(window));
             m_ReturnFocus[window] = m_Root.panel?.focusController.focusedElement as VisualElement;
             m_Windows.Add(window); m_Layer.Add(window); window.Focus();
+            window.RegisterCallback<GeometryChangedEvent>(_ =>
+            {
+                var bounds = m_Layer.contentRect;
+                if (bounds.width <= 0 || bounds.height <= 0) return;
+                float left = window.resolvedStyle.left, top = window.resolvedStyle.top;
+                float x = Mathf.Clamp(left, 0, Mathf.Max(0, bounds.width - window.resolvedStyle.width));
+                float y = Mathf.Clamp(top, 0, Mathf.Max(0, bounds.height - window.resolvedStyle.height));
+                if (Mathf.Abs(x - left) > .1f) window.style.left = x;
+                if (Mathf.Abs(y - top) > .1f) window.style.top = y;
+            });
             window.RegisterCallback<PointerDownEvent>(_ => BringToFront(window), TrickleDown.TrickleDown);
             return window;
         }

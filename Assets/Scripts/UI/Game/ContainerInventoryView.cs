@@ -13,7 +13,7 @@ namespace Unity.MP_FPS.Client
         private sealed class Grid
         {
             public string Parent, Region; public InventoryRegion Definition;
-            public VisualElement Element; public float Cell = 40;
+            public VisualElement Element; public float Cell = 48;
         }
         private readonly VisualElement m_Root, m_Body, m_CharacterStage, m_CharacterPane, m_LootPane, m_ContainerPane, m_StashPane, m_Ghost, m_Preview;
         private readonly Label m_Weight, m_Message;
@@ -164,7 +164,7 @@ namespace Unity.MP_FPS.Client
                 VisualElement gridParent = wrapper;
                 if (item.Code == "stash" || item.Code=="loot") { var scroll = new ScrollView(ScrollViewMode.Vertical); scroll.AddToClassList("inventory-warehouse-scroll"); wrapper.Add(scroll); gridParent = scroll; }
                 int rows = m_Graph.Rows(item.Id,region);
-                var visual = new StashGridVisual(region.Width, rows); visual.AddToClassList("inventory-grid"); visual.style.width=region.Width*40; visual.style.height=rows*40; gridParent.Add(visual);
+                var visual = new StashGridVisual(region.Width, rows); visual.AddToClassList("inventory-grid"); visual.style.width=region.Width*48; visual.style.height=rows*48; gridParent.Add(visual);
                 var grid = new Grid { Parent=item.Id, Region=region.Id, Definition=region, Element=visual }; m_Grids.Add(grid);
                 foreach (var entry in m_Graph.Children(item.Id, region.Id))
                 {

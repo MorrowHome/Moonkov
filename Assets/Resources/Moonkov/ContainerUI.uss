@@ -61,3 +61,41 @@
 .inventory-slot-4 { left: 76%; top: 36%; }
 .inventory-slot-5 { left: 76%; top: 67%; }
 .stash-halo-icon { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
+
+/* Field inventory: ivory instrument panels, dark engraved labels and restrained brass. */
+.inventory-view { background-color: #e9e5db; color: #252d2e; padding: 16px; }
+.inventory-view Label { color: #252d2e; }
+.inventory-view Button { background-color: #dedbd1; color: #252d2e; letter-spacing: 1px; }
+.inventory-view Button:hover { background-color: #cec6ad; color: #1f2828; }
+.inventory-view Button:active { background-color: #394a46; color: #f2f0e7; }
+.inventory-character { margin-right: 24px; }
+.inventory-character-title { font-size: 24px; letter-spacing: 2px; }
+.inventory-view .inventory-caption { color: #65716b; font-size: 11px; letter-spacing: 1px; }
+.inventory-loot-pane, .inventory-stash { background-color: #dcd8cc; border-color: #aaa99d; border-top-color: #52685e; padding: 18px; }
+.inventory-loot-pane { width: 46%; margin-right: 24px; }
+.inventory-view .inventory-slot { background-color: rgba(243, 240, 230, 0.94); border-color: #b6b7ab; border-left-color: #8f8f75; padding: 8px; }
+.inventory-view .inventory-slot:hover { background-color: #d9ddce; border-color: #6b8072; }
+.inventory-view .inventory-equipped { background-color: #e0e5d8; border-left-color: #526e5e; }
+.inventory-view .inventory-slot-label { color: #667166; font-size: 10px; letter-spacing: 1px; }
+.inventory-view .inventory-slot-item { color: #303d38; font-size: 10px; }
+.inventory-container { margin-bottom: 20px; padding-bottom: 14px; border-bottom-width: 1px; border-bottom-color: #bebfb1; }
+.inventory-section-title { font-size: 15px; letter-spacing: 2px; margin-bottom: 10px; }
+.inventory-view .inventory-region-title { color: #677267; font-size: 10px; }
+.inventory-grid { background-color: #c7cbbf; }
+.inventory-view .inventory-item { background-color: #f1eee4; border-color: #a6ac9d; border-bottom-width: 2px; }
+.inventory-view .inventory-item:hover { background-color: #e0e7d9; border-color: #4e735e; }
+.inventory-item-art { left: 8%; right: 8%; top: 12px; bottom: 4px; }
+.inventory-view .inventory-item-label { font-size: 9px; letter-spacing: 0; color: #47584d; }
+.inventory-view .inventory-item-quantity { font-size: 10px; color: #263e30; background-color: #dbdfd1; padding-left: 3px; padding-right: 3px; }
+.inventory-ghost { background-color: rgba(238, 239, 225, 0.96); border-color: #526e5e; }
+.inventory-view .inventory-hint { color: #5a655a; font-size: 11px; height: auto; min-height: 36px; padding-top: 12px; border-top-width: 1px; border-top-color: #a8af9e; }
+.inventory-view .terminal-window, .inventory-view .terminal-context { background-color: #eeeade; color: #252d2e; border-width: 1px; border-color: #839383; border-top-width: 3px; border-top-color: #536b5b; padding: 16px; }
+.inventory-view .terminal-window > .tech-frame, .inventory-view .terminal-context > .tech-frame { display: none; }
+.inventory-view .terminal-window-header { border-bottom-color: #b0b5a5; padding-bottom: 10px; margin-bottom: 12px; }
+.inventory-view .terminal-window-header .terminal-heading { font-size: 15px; white-space: normal; letter-spacing: 1px; color: #2d4034; }
+.inventory-view .terminal-window-close { width: 30px; min-width: 30px; height: 30px; padding: 0; font-size: 20px; -unity-text-align: middle-center; }
+.inventory-view .terminal-context .terminal-button { height: 36px; margin-top: 4px; -unity-text-align: middle-left; padding-left: 12px; }
+.inventory-view .terminal-window-close:hover { background-color: #944e43; color: #f5f0e4; }
+.inventory-view .terminal-button:disabled { color: #899184; background-color: #deded3; }
+.inventory-view .unity-base-field__label { color: #4e6152; }
+.inventory-view .unity-base-field__input { color: #28392e; background-color: #f5f3eb; border-color: #a7b49e; }
