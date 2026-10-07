@@ -633,8 +633,8 @@ MonoBehaviour:
   firstPersonNearClip: 0.03
   fallbackEyeWorldOffset: {x: 0, y: 0.08, z: 0.05}
   lookTargetDistance: 12
-  firstPersonEyeForward: 0.045
-  lookDownBodyClearance: 0.2
+  firstPersonEyeForward: 0.015
+  lookDownBodyClearance: 0.075
 --- !u!1 &3581373097316671528
 GameObject:
   m_ObjectHideFlags: 0

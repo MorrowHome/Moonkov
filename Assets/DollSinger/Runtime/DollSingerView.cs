@@ -41,9 +41,9 @@ public class DollSingerView : MonoBehaviour
     [Tooltip("Distance used to build the head look-at target along the camera forward.")]
     public float lookTargetDistance = 12f;
     [Tooltip("Moves the eye outside the neck opening as the view pitches down, in world metres.")]
-    [Range(0f, 0.15f)] public float firstPersonEyeForward = 0.045f;
-    [Tooltip("Minimum distance in front of the chest when looking fully down, in world metres.")]
-    [Range(0.05f, 0.35f)] public float lookDownBodyClearance = 0.20f;
+    [Range(0f, 0.15f)] public float firstPersonEyeForward = 0.015f;
+    [Tooltip("Maximum eye distance ahead of the chest when looking down. Keeps the torso in view.")]
+    [Range(0.04f, 0.2f)] public float lookDownBodyClearance = 0.075f;
 
     private DollSingerMovement movement;
     private Transform eyeAnchor;
@@ -323,9 +323,11 @@ public class DollSingerView : MonoBehaviour
         if (chestAnchor && clearanceBlend > 0f)
         {
             float forwardDistance = Vector3.Dot(eye - chestAnchor.position, horizontalLook);
-            // Push horizontally out of the torso, rather than down along the camera ray.
-            // The original head-relative eye dives into the neckline at extreme pitch.
-            eye += horizontalLook * (Mathf.Max(0f, lookDownBodyClearance - forwardDistance) * clearanceBlend);
+            // Keep the near plane outside the neckline, but bring the eye back over the
+            // chest. A 20 cm forward push made the downward view skip the torso entirely.
+            float minimum = Mathf.Max(0.04f, firstPersonNearClip + 0.01f);
+            float desired = Mathf.Clamp(forwardDistance, minimum, Mathf.Max(minimum, lookDownBodyClearance));
+            eye += horizontalLook * ((desired - forwardDistance) * clearanceBlend);
         }
         return eye;
     }
