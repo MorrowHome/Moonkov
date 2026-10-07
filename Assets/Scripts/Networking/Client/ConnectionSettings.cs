@@ -65,6 +65,7 @@ namespace Unity.MP_FPS
          const string k_SeededPortKey = "SeededServerPort";
 
          public NetworkEndpoint ConnectionEndpoint;
+         public string ConnectionError { get; set; }
 
          ConnectionSettings()
          {

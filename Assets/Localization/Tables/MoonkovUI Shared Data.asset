@@ -2102,6 +2102,42 @@ MonoBehaviour:
       CELL {6}/{7}"
     m_Metadata:
       m_Items: []
+  - m_Id: 2943653523456
+    m_Key: Server connection timed out. Check the address and try again.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2943674494976
+    m_Key: Client and server versions do not match.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2943674494977
+    m_Key: Server rejected this session. Sign in again before reconnecting.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2943674494978
+    m_Key: Connection lost. Return to the ship and reconnect.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2943674494979
+    m_Key: Invalid server address or port.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2943674494980
+    m_Key: Unable to start this session. Please try again.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2943674494981
+    m_Key: Cannot start server. The port may be in use.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2943674494982
+    m_Key: World synchronization timed out. Please reconnect.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2943674494983
+    m_Key: Player spawn timed out. Please reconnect.
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

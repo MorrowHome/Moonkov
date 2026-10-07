@@ -84,7 +84,8 @@ namespace Unity.MP_FPS.Client
             m_ConnectionPanel.style.display = loggedIn && m_ShowConnectionMenu ? DisplayStyle.Flex : DisplayStyle.None;
             m_MainMenu.Q<VisualElement>("Container").style.display = showStash ? DisplayStyle.None : DisplayStyle.Flex;
             m_StashScreen.Present(AccountClient.DisplayName, GameSettings.Instance.PlayerCharacter,
-                AccountClient.StashDust, AccountClient.StashAlloy, AccountClient.StashCells, showStash, m_AccountBusy, m_AccountError);
+                AccountClient.StashDust, AccountClient.StashAlloy, AccountClient.StashCells, showStash, m_AccountBusy,
+                m_AccountError ?? ConnectionSettings.Instance.ConnectionError);
             m_CreateGameButton.SetEnabled(!m_AccountBusy); m_StartHostButton.SetEnabled(!m_AccountBusy); m_ConnectToServerButton.SetEnabled(!m_AccountBusy);
             MoonkovLocalization.Set(m_LoggedInLabel, "Signed in as {0}\nSTASH: Dust {1}   Alloy {2}   Cells {3}" , AccountClient.DisplayName, AccountClient.StashDust, AccountClient.StashAlloy, AccountClient.StashCells);
             m_LoggedInLabel.style.whiteSpace = WhiteSpace.Normal;

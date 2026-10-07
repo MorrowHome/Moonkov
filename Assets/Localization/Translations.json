@@ -500,5 +500,14 @@
   "Unloading Resources scene...": "正在卸载资源…",
   "Opening Main menu...": "正在返回主菜单…",
   "CARRIED / {0} supplies\nDust {1}   Alloy {2}   Cells {3}\nENERGY {4} / READY {5}\n[4] MEDICAL / {6}": "随身物资 / {0}\n月尘 {1}　合金 {2}　电池 {3}\n能源 {4} / 可取用 {5}\n[4] 医疗用品 / {6}",
-  "{0} · {1} · {2:0.0} KG · {3} · {4}/{5} ENERGY · ACTIVE CELL {6}/{7}": "{0} · {1} · {2:0.0} kg · {3} · 能源 {4}/{5} · 当前电池 {6}/{7}"
+  "{0} · {1} · {2:0.0} KG · {3} · {4}/{5} ENERGY · ACTIVE CELL {6}/{7}": "{0} · {1} · {2:0.0} kg · {3} · 能源 {4}/{5} · 当前电池 {6}/{7}",
+  "Server connection timed out. Check the address and try again.": "连接服务器超时，请检查地址后重试。",
+  "Client and server versions do not match.": "客户端与服务器版本不一致，请更新后重试。",
+  "Server rejected this session. Sign in again before reconnecting.": "服务器拒绝了本次会话，请重新登录后连接。",
+  "Connection lost. Return to the ship and reconnect.": "连接已断开，请返回飞船后重新连接。",
+  "Invalid server address or port.": "服务器地址或端口无效。",
+  "Unable to start this session. Please try again.": "无法开始本次会话，请重试。",
+  "Cannot start server. The port may be in use.": "无法启动服务器，端口可能已被占用。",
+  "World synchronization timed out. Please reconnect.": "场景同步超时，请重新连接。",
+  "Player spawn timed out. Please reconnect.": "角色生成超时，请重新连接。"
 }

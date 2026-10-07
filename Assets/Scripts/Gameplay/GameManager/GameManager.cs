@@ -26,6 +26,7 @@ namespace Unity.MP_FPS
         CancellationTokenSource m_LoadingGameCancel;
         Task m_LoadingMainMenu;
         CancellationTokenSource m_LoadingMainMenuCancel;
+        bool m_StartGameRequested;
 
         public UnityEngine.Audio.AudioMixer AudioMixer;
         public int MaxSoundEmitters;
@@ -156,6 +157,14 @@ namespace Unity.MP_FPS
         /// </remarks>
         public async void StartGameAsync(CreationType creationType)
         {
+            if (m_StartGameRequested || m_ReturningToMainMenu) return;
+            m_StartGameRequested = true;
+            try { await StartRequestedGameAsync(creationType); }
+            finally { m_StartGameRequested = false; }
+        }
+
+        async Task StartRequestedGameAsync(CreationType creationType)
+        {
             if (!IsHeadless && !AccountClient.IsLoggedIn)
             {
                 Debug.LogWarning("Sign in before starting a raid.");
@@ -168,6 +177,7 @@ namespace Unity.MP_FPS
             }
 
             Debug.Log($"[{nameof(StartGameAsync)}] Called with creation type '{creationType}'");
+            ConnectionSettings.Instance.ConnectionError = null;
 
             if (creationType == CreationType.Host)
             {
@@ -221,6 +231,8 @@ namespace Unity.MP_FPS
             {
                 Debug.LogError($"[{nameof(StartGameAsync)}] Loading has failed, returning to main menu");
                 Debug.LogException(e);
+                ConnectionSettings.Instance.ConnectionError ??= e is TimeoutException || e is InvalidOperationException
+                    ? e.Message : "Unable to start this session. Please try again.";
                 // Disposing the token here because the error has been handled and ReturnToMainMenu should not check it.
                 m_LoadingGameCancel.Dispose();
                 m_LoadingGameCancel = null;
@@ -310,7 +322,8 @@ namespace Unity.MP_FPS
                 using var drvQuery = server.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
                 drvQuery.CompleteDependency();
                 var serverDriver = drvQuery.GetSingletonRW<NetworkStreamDriver>();
-                serverDriver.ValueRW.Listen(GameConnection.ListenEndpoint);
+                if (!serverDriver.ValueRW.Listen(GameConnection.ListenEndpoint))
+                    throw new InvalidOperationException("Cannot start server. The port may be in use.");
                 await ScenesLoader.LoadGameplayAsync(server, null);
             }
 
@@ -341,16 +354,16 @@ namespace Unity.MP_FPS
         {
             LoadingData.Instance.UpdateLoading(LoadingData.LoadingSteps.WorldReplication);
             using var ghostCountQuery = world.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<GhostCount>());
-            var waitedForTicks = 0;
+            double started = Time.realtimeSinceStartupAsDouble;
             while (true)
             {
-                if (ghostCountQuery.TryGetSingleton<GhostCount>(out var ghostCount))
+                CheckLoadingConnection(started, "World synchronization timed out. Please reconnect.");
+                ghostCountQuery.CompleteDependency();
+                if (ghostCountQuery.TryGetSingleton<GhostCount>(out var ghostCount) && ghostCount.IsCreated)
                 {
-                    var synchronizingPercentage = ghostCount.GhostCountOnServer == 0
-                        ? math.saturate(ghostCount.GhostCountReceivedOnClient / (float)ghostCount.GhostCountOnServer)
-                        : waitedForTicks > 60
-                            ? 1f
-                            : 0f; // The server has no ghosts to replicate, so ghost loading is complete.
+                    var synchronizingPercentage = SessionConnectionPolicy.ReplicationProgress(
+                        ghostCount.GhostCountOnServer, ghostCount.GhostCountInstantiatedOnClient,
+                        Time.realtimeSinceStartupAsDouble - started);
 
                     LoadingData.Instance.UpdateLoading(LoadingData.LoadingSteps.WorldReplication, synchronizingPercentage);
                     if (synchronizingPercentage > 0.99f)
@@ -360,7 +373,6 @@ namespace Unity.MP_FPS
                 }
 
                 await Awaitable.NextFrameAsync(cancellationToken);
-                waitedForTicks++;
             }
         }
 
@@ -368,8 +380,10 @@ namespace Unity.MP_FPS
         {
             LoadingData.Instance.UpdateLoading(LoadingData.LoadingSteps.WaitingOnPlayer);
             using var mainEntityCameraQuery = world.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<MainCamera>());
+            double started = Time.realtimeSinceStartupAsDouble;
             while (!mainEntityCameraQuery.HasSingleton<MainCamera>())
             {
+                CheckLoadingConnection(started, "Player spawn timed out. Please reconnect.");
                 await Awaitable.NextFrameAsync(cancellationToken);
             }
 
@@ -429,12 +443,29 @@ namespace Unity.MP_FPS
         public static async Task WaitForPlayerConnectionAsync(CancellationToken cancellationToken = default)
         {
             LoadingData.Instance.UpdateLoading(LoadingData.LoadingSteps.WaitingConnection);
-            // The GameManagerSystem is handling the connection/reconnection once the client world is created.
+            // The transport retries its handshake; the session owner bounds the wait.
             ConnectionSettings.Instance.GameConnectionState = ConnectionState.State.Connecting;
+            double started = Time.realtimeSinceStartupAsDouble;
             while (ConnectionSettings.Instance.GameConnectionState == ConnectionState.State.Connecting)
             {
+                if (Time.realtimeSinceStartupAsDouble - started >= SessionConnectionPolicy.TimeoutSeconds)
+                {
+                    ConnectionSettings.Instance.GameConnectionState = ConnectionState.State.Disconnected;
+                    throw new TimeoutException("Server connection timed out. Check the address and try again.");
+                }
                 await Awaitable.NextFrameAsync(cancellationToken);
             }
+            cancellationToken.ThrowIfCancellationRequested();
+            if (ConnectionSettings.Instance.GameConnectionState != ConnectionState.State.Connected)
+                throw new InvalidOperationException(ConnectionSettings.Instance.ConnectionError ?? "Connection lost. Return to the ship and reconnect.");
+        }
+
+        static void CheckLoadingConnection(double started, string timeoutMessage)
+        {
+            if (ConnectionSettings.Instance.GameConnectionState != ConnectionState.State.Connected)
+                throw new InvalidOperationException(ConnectionSettings.Instance.ConnectionError ?? "Connection lost. Return to the ship and reconnect.");
+            if (Time.realtimeSinceStartupAsDouble - started >= SessionConnectionPolicy.TimeoutSeconds)
+                throw new TimeoutException(timeoutMessage);
         }
 
         void FinishLoadingGame()

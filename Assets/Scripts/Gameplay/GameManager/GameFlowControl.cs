@@ -9,10 +9,20 @@ namespace Unity.MP_FPS
 {
     public partial class GameManager : MonoBehaviour
     {
+        private bool m_ReturningToMainMenu;
         /// <summary>
         /// Safe return to main menu, can be called by the pause menu button.
         /// </summary>
         public async void ReturnToMainMenuAsync()
+        {
+            if (m_ReturningToMainMenu) return;
+            m_ReturningToMainMenu = true;
+            try { await ReturnToMainMenuCoreAsync(); }
+            catch (Exception e) { Debug.LogException(e); }
+            finally { m_ReturningToMainMenu = false; }
+        }
+
+        async Task ReturnToMainMenuCoreAsync()
         {
             Debug.Log($"[{nameof(ReturnToMainMenuAsync)}] Called.");
             if (!CanUseMainMenu)
@@ -144,7 +154,9 @@ namespace Unity.MP_FPS
                 await Awaitable.NextFrameAsync();
             }
 
-            await LeaveSessionAsync();
+            try { await LeaveSessionAsync(); }
+            catch (Exception e) { Debug.LogWarning($"[Session] Could not leave the service session: {e.Message}"); }
+            finally { GameConnection = null; }
             await DestroyGameSessionWorlds();
             
             if (GhostBridgeBootstrap.Instance != null)

@@ -4,54 +4,61 @@ using Unity.NetCode;
 
 namespace Unity.MP_FPS
 {
-    /// <summary>
-    /// This system will connect and re-connect a client to the server
-    /// as long as the <see cref="ConnectionSettings.ConnectionState"/> is Connecting or Connected.
-    /// </summary>
+    // Transport owns handshake retries. A raid gets one connection attempt;
+    // loss of an established connection must settle the raid before another join.
     [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
     [UpdateInGroup(typeof(SimulationSystemGroup))]
+    [UpdateAfter(typeof(NetworkReceiveSystemGroup))]
     public partial class NetcodeClientConnectionSystem : SystemBase
     {
+        private bool m_ConnectRequested;
+
+        protected override void OnCreate() => RequireForUpdate<NetworkStreamDriver>();
+
         protected override void OnUpdate()
         {
-            CompleteDependency();
+            var settings = ConnectionSettings.Instance;
+            if (settings.GameConnectionState != ConnectionState.State.Connecting &&
+                settings.GameConnectionState != ConnectionState.State.Connected) return;
 
-            if (ConnectionSettings.Instance.GameConnectionState == ConnectionState.State.Connected ||
-                ConnectionSettings.Instance.GameConnectionState == ConnectionState.State.Connecting)
+            CompleteDependency();
+            ref var driver = ref SystemAPI.GetSingletonRW<NetworkStreamDriver>().ValueRW;
+            foreach (var evt in driver.ConnectionEventsForTick)
             {
-                bool hasNetworkStreamConnectionSingleton = 
-                    SystemAPI.TryGetSingleton(out NetworkStreamConnection connection);
-                
-                if (hasNetworkStreamConnectionSingleton)
-                {
-                    ConnectionSettings.Instance.GameConnectionState =
-                        connection.CurrentState == ConnectionState.State.Connected
-                            ? ConnectionState.State.Connected
-                            : ConnectionState.State.Connecting;
-                }
+                if (evt.State != ConnectionState.State.Disconnected) continue;
+                Debug.LogWarning($"[{World.Name}] Disconnected: {evt.DisconnectReason}");
+                Fail(SessionConnectionPolicy.DisconnectMessage(evt.DisconnectReason));
+                return;
+            }
+
+            if (SystemAPI.TryGetSingleton(out NetworkStreamConnection connection))
+            {
+                if (connection.CurrentState == ConnectionState.State.Disconnected)
+                    Fail("Connection lost. Return to the ship and reconnect.");
                 else
-                {
-                    //If it just lost connection (GameConnectionState is still connected), return to main menu
-                    if (ConnectionSettings.Instance.GameConnectionState == ConnectionState.State.Connected)
-                    {
-                        GameManager.Instance.ReturnToMainMenuAsync();
-                        return;
-                    }
-                    
-                    //Try to connect to the server
-                    if (connection.CurrentState == ConnectionState.State.Unknown)
-                    {
-                        ConnectionSettings.Instance.GameConnectionState = ConnectionState.State.Connecting;
-                        if (UnityEngine.Time.frameCount % 120 == 0) 
-                        {
-                            var networkEndpoint = ConnectionSettings.Instance.ConnectionEndpoint;
-                            Debug.Log($"[{World.Name}] Reconnecting to {networkEndpoint.ToString()}...");
-                            ref var driver = ref SystemAPI.GetSingletonRW<NetworkStreamDriver>().ValueRW;
-                            driver.Connect(EntityManager, networkEndpoint);
-                        }
-                    }
-                }
-            }            
+                    settings.GameConnectionState = connection.CurrentState == ConnectionState.State.Connected
+                        ? ConnectionState.State.Connected : ConnectionState.State.Connecting;
+                return;
+            }
+
+            if (m_ConnectRequested || settings.GameConnectionState == ConnectionState.State.Connected)
+            {
+                Fail("Connection lost. Return to the ship and reconnect.");
+                return;
+            }
+
+            m_ConnectRequested = true;
+            if (driver.Connect(EntityManager, settings.ConnectionEndpoint) == Entity.Null)
+                Fail("Invalid server address or port.");
+        }
+
+        private static void Fail(string message)
+        {
+            ConnectionSettings.Instance.ConnectionError = message;
+            ConnectionSettings.Instance.GameConnectionState = ConnectionState.State.Disconnected;
+            // Loading waits propagate failure to their owner; gameplay has no loading task.
+            if (GameSettings.Instance.GameState == GlobalGameState.InGame && GameManager.Instance != null)
+                GameManager.Instance.ReturnToMainMenuAsync();
         }
     }
 }
