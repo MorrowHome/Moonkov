@@ -6,6 +6,7 @@ using Unity.NetCode;
 namespace Unity.MP_FPS
 {
     [RequireComponent(typeof(UIDocument))]
+    [DefaultExecutionOrder(150)]
     public class InGameHUD : MonoBehaviour
     {
         [Header("Reticle Configuration")] [SerializeField]
@@ -167,6 +168,8 @@ namespace Unity.MP_FPS
             if (m_Reticle == null)
                 return;
 
+            m_Reticle.style.rotate = new Rotate(new Angle(GetOwnedReticleRoll(), AngleUnit.Degree));
+
             if (m_shotFeedbackTimer > 0)
             {
                 m_shotFeedbackTimer -= Time.deltaTime;
@@ -246,6 +249,16 @@ namespace Unity.MP_FPS
             m_Reticle.style.unityBackgroundImageTintColor = greyReticleVisual
                 ? new StyleColor(Color.grey)
                 : new StyleColor(Color.white);
+        }
+
+        private static float GetOwnedReticleRoll()
+        {
+            if (!PlayerGhostManager.TryGetClientInstance(out var manager) || !manager ||
+                !manager.TryGetPlayersByRole(MultiplayerRole.ClientOwned, out var players)) return 0f;
+            foreach (var player in players)
+                if (player && player.TryGetComponent<DollSingerNetworkPresentation>(out var presentation))
+                    return presentation.OwnedReticleScreenRoll;
+            return 0f;
         }
 
         private string GetReticleClassName(ReticleType reticleType)

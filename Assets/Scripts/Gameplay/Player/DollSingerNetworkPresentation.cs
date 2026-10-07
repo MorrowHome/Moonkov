@@ -25,6 +25,7 @@ namespace Unity.MP_FPS
         public DollSingerInput OwnedInput => m_Linked && Role == MultiplayerRole.ClientOwned ? m_Input : null;
         public bool IsThirdPerson => m_View != null && !m_View.IsFirstPerson;
         public float OwnedLeanAmount => m_OwnedLean;
+        public float OwnedReticleScreenRoll => m_View ? -m_View.SightLeanRoll : 0f;
 
         public bool ReadOwnedLight(bool canRead)
         {

@@ -317,7 +317,9 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
                               2f * (1f - t) * t * control + t * t * fingerPosition;
         // Local Z is the ring's hole axis: up over the head, forward at the muzzle.
         Quaternion restingRotation = Quaternion.LookRotation(transform.up, transform.forward);
-        Quaternion aimingRotation = centred ? aimingCamera.transform.rotation : Quaternion.LookRotation(aimDirection, transform.up);
+        Quaternion aimingRotation = centred
+            ? Quaternion.AngleAxis(view.SightLeanRoll, aimDirection) * aimingCamera.transform.rotation
+            : Quaternion.LookRotation(aimDirection, transform.up);
         haloVisual.rotation = Quaternion.Slerp(restingRotation, aimingRotation, t);
         float haloScale = Mathf.Lerp(idleHaloScale, aimedHaloScale, t);
         Vector3 parentScale = transform.lossyScale;

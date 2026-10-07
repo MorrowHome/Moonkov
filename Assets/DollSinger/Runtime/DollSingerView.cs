@@ -94,6 +94,7 @@ public class DollSingerView : MonoBehaviour
         { "Face", "EyeWhite", "Eyes", "Lashes", "Brows", "Glasses", HairMaterialName, "Jewel" };
 
     public bool IsFirstPerson => firstPerson;
+    public float SightLeanRoll => firstPerson && movement ? movement.LeanRoll : 0f;
 
     /// <summary>Point the head bone should look at, far along the camera's forward axis.</summary>
     public Vector3 LookPoint
