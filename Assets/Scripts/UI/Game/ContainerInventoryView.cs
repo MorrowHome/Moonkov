@@ -39,7 +39,7 @@ namespace Unity.MP_FPS.Client
         {
             if (m_ReadOnlyReason == reason) return;
             CancelDrag(); m_ReadOnlyReason = reason;
-            m_Message.text = reason ?? "Drag to move · R rotate · Double click containers · Ctrl click transfer";
+            MoonkovLocalization.Set(m_Message, reason ?? "Drag to move · R rotate · Double click containers · Ctrl click transfer");
         }
         public ContainerInventoryView(VisualElement parent, bool showStash, Action<InventoryCommand> send, Action<InventoryItem> useMedical = null)
         {
@@ -78,7 +78,7 @@ namespace Unity.MP_FPS.Client
             Present(null);
         }
         private static Label Text(VisualElement parent, string text, string css)
-        { var label = new Label(text) { pickingMode=PickingMode.Ignore }; label.AddToClassList(css); parent.Add(label); return label; }
+        { var label = new Label { pickingMode=PickingMode.Ignore }; label.AddToClassList(css); parent.Add(label); MoonkovLocalization.Set(label, text); return label; }
         private static string SlotLabel(string slot) => slot == "ChestRig" ? "CHEST RIG" : slot == "Primary" ? "PRIMARY" : slot == "Secondary" ? "SECONDARY" : slot.ToUpperInvariant();
         public static StashArtKind Art(string code)
         {
@@ -98,8 +98,8 @@ namespace Unity.MP_FPS.Client
             bool changed = m_Graph != graph || m_RenderedVersion != (graph?.Version ?? -1) || m_LootId!=lootId; m_Graph = graph;m_LootId=lootId;
             if (operationCompleted) m_Busy = false;
             if (changed) { CancelDrag(); Render(); m_RenderedVersion=graph?.Version ?? -1; }
-            if (message != null) m_Message.text = message;
-            else if (!m_Busy && graph != null) m_Message.text = m_ReadOnlyReason ?? "Drag to move · R rotate · Double click containers · Ctrl click transfer";
+            if (message != null) MoonkovLocalization.Set(m_Message, message);
+            else if (!m_Busy && graph != null) MoonkovLocalization.Set(m_Message, m_ReadOnlyReason ?? "Drag to move · R rotate · Double click containers · Ctrl click transfer");
         }
         public void Show()
         {
@@ -126,21 +126,21 @@ namespace Unity.MP_FPS.Client
             foreach (var pair in m_Slots)
             {
                 var item = m_Graph?.Equipped(pair.Key.ToString()); var button = pair.Value; var art = button.Q<VisualElement>("art"); art.Clear();
-                button.Q<Label>("item").text = m_Graph == null ? "LOADING" : item == null ? "EMPTY" : InventoryCatalog.Get(item.Code).Name.Split(' ')[0];
+                MoonkovLocalization.Set(button.Q<Label>("item"), m_Graph == null ? "LOADING" : item == null ? "EMPTY" : InventoryCatalog.Get(item.Code).Name);
                 if (item != null) { var icon = new StashItemArt(Art(item.Code)); icon.style.flexGrow=1; art.Add(icon); m_Tiles[item.Id] = button; }
                 button.EnableInClassList("inventory-equipped", item != null);
             }
             if (m_Graph == null)
             {
-                m_Weight.text = "Waiting for inventory snapshot";
-                m_Message.text = "Loading carried inventory from the server…";
+                MoonkovLocalization.Set(m_Weight, "Waiting for inventory snapshot");
+                MoonkovLocalization.Set(m_Message, "Loading carried inventory from the server…");
                 AddContainer(m_ContainerPane, null, "POCKETS");
                 AddContainer(m_ContainerPane, null, "CHEST RIG");
                 AddContainer(m_ContainerPane, null, "BACKPACK");
                 if (m_Stash) AddContainer(m_StashPane, null, "PERSONAL STORAGE");
                 return;
             }
-            m_Weight.text = $"CARRIED {m_Graph.CarriedWeight:0.0} / {InventoryCatalog.CarryWeightLimit:0} KG";
+            MoonkovLocalization.Set(m_Weight, "CARRIED {0:0.0} / {1:0} KG" , m_Graph.CarriedWeight, InventoryCatalog.CarryWeightLimit);
             AddContainer(m_ContainerPane, m_Graph.Find("pockets"), "POCKETS");
             AddContainer(m_ContainerPane, m_Graph.Equipped("ChestRig"), "CHEST RIG");
             AddContainer(m_ContainerPane, m_Graph.Equipped("Backpack"), "BACKPACK");
@@ -171,10 +171,10 @@ namespace Unity.MP_FPS.Client
                     var captured = entry;
                     var tile = new Button(() => Describe(captured)); tile.AddToClassList("inventory-item"); tile.name="inventoryItem"+entry.Id;
                     var icon = new StashItemArt(Art(entry.Code)); icon.AddToClassList("inventory-item-art"); tile.Add(icon);
-                    var itemDef = InventoryCatalog.Get(entry.Code); Text(tile, itemDef.Name.Split(' ')[0].ToUpperInvariant(), "inventory-item-label");
+                    var itemDef = InventoryCatalog.Get(entry.Code); Text(tile, MoonkovLocalization.Text(itemDef.Name).Split(' ')[0].ToUpperInvariant(), "inventory-item-label");
                     Text(tile, itemDef.Container ? "OPEN ↗" : BatteryEnergy.IsCell(entry) ? $"{BatteryEnergy.Stored(entry)}E" : entry.Quantity.ToString(), "inventory-item-quantity");
-                    tile.tooltip=itemDef.Name + " / " + entry.Quantity + (entry.FoundInRaid ? " / FOUND IN RAID" : " / BROUGHT IN");
-                    if (BatteryEnergy.IsCell(entry)) tile.tooltip += $" / {BatteryEnergy.Stored(entry)}/{entry.Quantity * BatteryEnergy.Capacity} ENERGY";
+                    tile.tooltip=MoonkovLocalization.Text(itemDef.Name) + " / " + entry.Quantity + MoonkovLocalization.Text(entry.FoundInRaid ? " / FOUND IN RAID" : " / BROUGHT IN");
+                    if (BatteryEnergy.IsCell(entry)) tile.tooltip += MoonkovLocalization.Format($" / {BatteryEnergy.Stored(entry)}/{entry.Quantity * BatteryEnergy.Capacity} ENERGY");
                     tile.RemoveManipulator(tile.clickable);
                     tile.AddManipulator(new Drag(this, () => m_Graph.Find(captured.Id), () => Describe(captured),
                         () => { if (itemDef.Container) OpenContainer(captured); else Describe(captured); }));
@@ -199,14 +199,18 @@ namespace Unity.MP_FPS.Client
         }
         private void Describe(InventoryItem item)
         {
-            var def=InventoryCatalog.Get(item.Code); m_Message.text=$"{def.Name} · {item.Quantity} · {def.Weight*item.Quantity:0.0} KG · {Path(item.Parent)}";
-            if (BatteryEnergy.IsCell(item)) m_Message.text += $" · {BatteryEnergy.Stored(item)}/{item.Quantity * BatteryEnergy.Capacity} ENERGY · ACTIVE CELL {BatteryEnergy.Charge(item)}/{BatteryEnergy.Capacity}";
+            var def=InventoryCatalog.Get(item.Code);
+            if (BatteryEnergy.IsCell(item)) MoonkovLocalization.Set(m_Message,
+                "{0} · {1} · {2:0.0} KG · {3} · {4}/{5} ENERGY · ACTIVE CELL {6}/{7}",
+                def.Name, item.Quantity, def.Weight*item.Quantity, Path(item.Parent),
+                BatteryEnergy.Stored(item), item.Quantity * BatteryEnergy.Capacity, BatteryEnergy.Charge(item), BatteryEnergy.Capacity);
+            else MoonkovLocalization.Set(m_Message, "{0} · {1} · {2:0.0} KG · {3}", def.Name, item.Quantity, def.Weight*item.Quantity, Path(item.Parent));
         }
         private string Path(string id)
         {
             var parts=new List<string>(); var item=m_Graph.Find(id);
             for (int n=0; item!=null && n<InventoryCatalog.MaxDepth; n++) { parts.Insert(0, InventoryCatalog.Get(item.Code).Name); item=m_Graph.Find(item.Parent); }
-            return string.Join(" / ", parts);
+            return string.Join(" / ", parts.ConvertAll(MoonkovLocalization.Text));
         }
         private void OpenContainer(InventoryItem item, bool remember=true)
         {
@@ -248,19 +252,19 @@ namespace Unity.MP_FPS.Client
             MoonkovTerminal.ActionButton(window, "SPLIT", ()=>
             {
                 var split=item.Clone(); split.Id=Guid.NewGuid().ToString("D");
-                if (!m_Graph.FindSpace(split, item.Parent, out var region, out var x, out var y)) { m_Message.text="No space in this container."; return; }
+                if (!m_Graph.FindSpace(split, item.Parent, out var region, out var x, out var y)) { MoonkovLocalization.Set(m_Message, "No space in this container."); return; }
                 m_Windows.Close(window); Command(new InventoryCommand { Operation=InventoryOperation.Split, ItemId=item.Id, Parent=item.Parent, Region=region, X=x, Y=y, Rotated=item.Rotated, Quantity=amount.value });
             });
         }
         private void QuickTransfer(InventoryItem item)
         {
             if(m_Graph.Find(LootInventoryExchange.Root)!=null && m_Graph.Carried(item))
-            {if(!AutoMove(item,LootInventoryExchange.Root))m_Message.text="No compatible free space in this cache.";return;}
-            if (m_Stash && m_Graph.Carried(item)) { if (!AutoMove(item,"stash")) m_Message.text="No free space in storage."; return; }
+            {if(!AutoMove(item,LootInventoryExchange.Root))MoonkovLocalization.Set(m_Message, "No compatible free space in this cache.");return;}
+            if (m_Stash && m_Graph.Carried(item)) { if (!AutoMove(item,"stash")) MoonkovLocalization.Set(m_Message, "No free space in storage."); return; }
             if (!m_Graph.Carried(item)) foreach (var region in InventoryCatalog.Get("equipment").Regions)
                 if (region.SlotKind==InventoryCatalog.Get(item.Code).Kind && m_Graph.Equipped(region.Id)==null) { Command(new InventoryCommand { ItemId=item.Id, Parent="equipment", Region=region.Id }); return; }
             foreach (string parent in m_Graph.CarryContainers()) if (parent!=item.Parent && parent!=item.Id && AutoMove(item,parent)) return;
-            m_Message.text="No compatible free space.";
+            MoonkovLocalization.Set(m_Message, "No compatible free space.");
         }
         private bool AutoMove(InventoryItem item, string parent)
         {
@@ -275,11 +279,11 @@ namespace Unity.MP_FPS.Client
         private void Command(InventoryCommand command)
         {
             if (m_Busy || m_Graph==null) return;
-            if (m_ReadOnlyReason != null) { m_Message.text=m_ReadOnlyReason; return; }
+            if (m_ReadOnlyReason != null) { MoonkovLocalization.Set(m_Message, m_ReadOnlyReason); return; }
             command.ExpectedVersion=m_Graph.Version;
             var error=m_Graph.Clone().TryApply(command);
-            if (error!=InventoryError.None) { MoonkovAudio.Error(); m_Message.text="Move blocked: "+error; return; }
-            m_Busy=true; m_Message.text="UPDATING INVENTORY…"; m_Send(command);
+            if (error!=InventoryError.None) { MoonkovAudio.Error(); MoonkovLocalization.Set(m_Message, "Move blocked: {0}", error.ToString()); return; }
+            m_Busy=true; MoonkovLocalization.Set(m_Message, "UPDATING INVENTORY…"); m_Send(command);
         }
         public void CancelDrag() => m_Drag?.Cancel();
         public bool Escape()
@@ -402,7 +406,7 @@ namespace Unity.MP_FPS.Client
                     return;
                 }
                 m_Last=evt.position; Preview(); var command=m_Command; Cancel(); evt.StopImmediatePropagation();
-                if (command!=null) m_View.Command(command); else m_View.m_Message.text="Move cancelled. Item remains in its container.";
+                if (command!=null) m_View.Command(command); else MoonkovLocalization.Set(m_View.m_Message, "Move cancelled. Item remains in its container.");
             }
             private void Lost(PointerCaptureOutEvent evt) { if (evt.target==target && evt.pointerId==m_Pointer) Cancel(); }
             public void Cancel()

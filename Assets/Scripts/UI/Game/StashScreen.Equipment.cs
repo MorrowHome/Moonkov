@@ -58,7 +58,7 @@ namespace Unity.MP_FPS.Client
                 m_Slots.Add(slot, button); equipment.Add(button);
             }
             var note = m_Root.Q<Label>("stashLoadoutNote");
-            note.text = m_Preview ? "LOCAL PREVIEW / SAMPLE EQUIPMENT" : "ACCOUNT SUPPLIES / EQUIPMENT SERVICE NOT CONNECTED";
+            MoonkovLocalization.Set(note, m_Preview ? "LOCAL PREVIEW / SAMPLE EQUIPMENT" : "ACCOUNT SUPPLIES / EQUIPMENT SERVICE NOT CONNECTED");
             RefreshEquipment();
         }
 

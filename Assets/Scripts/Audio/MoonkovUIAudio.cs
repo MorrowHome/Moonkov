@@ -45,6 +45,7 @@ namespace Unity.MP_FPS
                 var root = document.rootVisualElement;
                 if (root == null) continue;
                 MoonkovAudio.BindUI(root);
+                MoonkovLocalization.Bind(root);
             }
 
         }

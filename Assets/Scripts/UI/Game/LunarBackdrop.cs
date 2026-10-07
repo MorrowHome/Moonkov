@@ -48,10 +48,10 @@ namespace Unity.MP_FPS.Client
             controls.Add(new Label("DRAG TO ORBIT  /  SCROLL TO ZOOM"));
             var reset = new Button(Moon.ResetView) { text = "RESET VIEW" }; reset.AddToClassList("moon-observer-button"); controls.Add(reset);
             Button pause = null;
-            pause = new Button(() => { Moon.Paused = !Moon.Paused; pause.text = Moon.Paused ? "RESUME ORBIT" : "PAUSE ORBIT"; }) { text = "PAUSE ORBIT" };
+            pause = new Button(() => { Moon.Paused = !Moon.Paused; MoonkovLocalization.Set(pause, Moon.Paused ? "RESUME ORBIT" : "PAUSE ORBIT"); }) { text = "PAUSE ORBIT" };
             pause.AddToClassList("moon-observer-button"); controls.Add(pause);
             var telemetry = new Label(); telemetry.AddToClassList("moon-observer-telemetry"); m_Overlay.Add(telemetry);
-            m_Telemetry = telemetry.schedule.Execute(() => telemetry.text = "ORBITAL DAY " + Moon.Days.ToString("F2") + "  /  ACCELERATED TIME  /  SUNLIT " + ((1 + Vector3.Dot(Moon.SunDirection, Vector3.back)) * 50).ToString("F0") + "%").Every(500);
+            m_Telemetry = telemetry.schedule.Execute(() => MoonkovLocalization.Set(telemetry, "ORBITAL DAY " + Moon.Days.ToString("F2") + "  /  ACCELERATED TIME  /  SUNLIT " + ((1 + Vector3.Dot(Moon.SunDirection, Vector3.back)) * 50).ToString("F0") + "%")).Every(500);
             m_Overlay.RegisterCallback<PointerDownEvent>(e => e.StopPropagation());
             header.BringToFront();
             m_Owner.Add(m_Overlay); m_Overlay.BringToFront(); m_Overlay.Focus();

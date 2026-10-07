@@ -10,6 +10,7 @@
                     <moon:TechFrame picking-mode="Ignore" delay="0.08" />
                     <ui:Label class="terminal-eyebrow" text="PRESENTATION / AUDIO" />
                     <ui:Label class="terminal-title" text="TERMINAL PREFERENCES" />
+                    <ui:DropdownField name="language" label="LANGUAGE" class="terminal-language" />
                     <ui:Slider class="terminal-slider" picking-mode="Ignore" label="MASTER AUDIO" low-value="0" high-value="1" name="audioMaster" />
                     <ui:Slider class="terminal-slider" picking-mode="Ignore" label="GAMEPLAY EFFECTS" low-value="0" high-value="1" name="audioEffects" />
                     <ui:Slider class="terminal-slider" picking-mode="Ignore" label="INTERFACE AUDIO" low-value="0" high-value="1" name="audioInterface" />

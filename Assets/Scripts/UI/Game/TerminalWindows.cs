@@ -74,7 +74,7 @@ namespace Unity.MP_FPS.Client
         }
         public void Toast(string message)
         {
-            m_ToastTimer?.Pause(); m_Toast.text = message; m_Toast.style.display = DisplayStyle.Flex;
+            m_ToastTimer?.Pause(); MoonkovLocalization.Set(m_Toast, message); m_Toast.style.display = DisplayStyle.Flex;
             TerminalMotion.Tween(m_Toast, .45f, t => { float k = TerminalMotion.OutExpo(t); m_Toast.style.opacity = k; m_Toast.style.translate = new Translate(40 * (1 - k), 0); }, 0, null, "toast");
             m_ToastTimer = m_Root.schedule.Execute(() => TerminalMotion.Tween(m_Toast, .3f, t => m_Toast.style.opacity = 1 - t, 0, () => { m_Toast.style.display = DisplayStyle.None; m_Toast.style.opacity = StyleKeyword.Null; m_Toast.style.translate = StyleKeyword.Null; }, "toast")).StartingIn(3500);
         }

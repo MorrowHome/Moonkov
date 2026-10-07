@@ -42,37 +42,30 @@ namespace Unity.MP_FPS.Client
         {
             while (true)
             {
-                m_ConnectionStatus.text = "Connection: ";
                 switch(ConnectionSettings.Instance.GameConnectionState)
                 {
                     case ConnectionState.State.Disconnected:
-                        m_ConnectionStatus.text += "Offline";
-                        m_NetworkingRole.text = m_SessionName.text = string.Empty;
+                        MoonkovLocalization.Set(m_ConnectionStatus, "Connection: {0}", "Offline");
+                        MoonkovLocalization.Set(m_NetworkingRole, string.Empty);
+                        MoonkovLocalization.Set(m_SessionName, string.Empty);
                         break;
                     case ConnectionState.State.Connecting:
-                        m_ConnectionStatus.text += "Connecting ...";
-                        m_NetworkingRole.text = m_SessionName.text = string.Empty;
+                        MoonkovLocalization.Set(m_ConnectionStatus, "Connection: {0}", "Connecting ...");
+                        MoonkovLocalization.Set(m_NetworkingRole, string.Empty);
+                        MoonkovLocalization.Set(m_SessionName, string.Empty);
                         break;
                     case ConnectionState.State.Connected:
-                        m_ConnectionStatus.text += "Connected";
-                        m_NetworkingRole.text = "Role: ";
-                        if (ClientServerBootstrap.HasServerWorld)
-                        {
-                            m_NetworkingRole.text += "Server";
-                        }
-                        else
-                        {
-                            m_NetworkingRole.text += "Client";
-                        }
+                        MoonkovLocalization.Set(m_ConnectionStatus, "Connection: {0}", "Connected");
+                        MoonkovLocalization.Set(m_NetworkingRole, "Role: {0}", ClientServerBootstrap.HasServerWorld ? "Server" : "Client");
 
                         if (GameManager.GameConnection != null &&
                             GameManager.GameConnection.Session != null)
                         {
-                            m_SessionName.text = $"Session: {GameManager.GameConnection.Session.Name}";
+                            MoonkovLocalization.Set(m_SessionName, "Session: {0}" , GameManager.GameConnection.Session.Name);
                         }
                         else
                         {
-                            m_SessionName.text = string.Empty;
+                            MoonkovLocalization.Set(m_SessionName, string.Empty);
                         }
 
 

@@ -66,7 +66,7 @@ namespace Unity.MP_FPS.Client
             try { m_AccountServiceUrl = AccountServiceSettings.Configure(m_AccountServiceUrl); }
             catch (Exception ex)
             {
-                m_AccountMessage.text = m_AccountError = ex.Message;
+                MoonkovLocalization.Set(m_AccountMessage, m_AccountError = ex.Message);
                 UpdateAccountPanel();
                 return;
             }
@@ -86,11 +86,11 @@ namespace Unity.MP_FPS.Client
             m_StashScreen.Present(AccountClient.DisplayName, GameSettings.Instance.PlayerCharacter,
                 AccountClient.StashDust, AccountClient.StashAlloy, AccountClient.StashCells, showStash, m_AccountBusy, m_AccountError);
             m_CreateGameButton.SetEnabled(!m_AccountBusy); m_StartHostButton.SetEnabled(!m_AccountBusy); m_ConnectToServerButton.SetEnabled(!m_AccountBusy);
-            m_LoggedInLabel.text = $"Signed in as {AccountClient.DisplayName}\nSTASH: Dust {AccountClient.StashDust}   Alloy {AccountClient.StashAlloy}   Cells {AccountClient.StashCells}";
+            MoonkovLocalization.Set(m_LoggedInLabel, "Signed in as {0}\nSTASH: Dust {1}   Alloy {2}   Cells {3}" , AccountClient.DisplayName, AccountClient.StashDust, AccountClient.StashAlloy, AccountClient.StashCells);
             m_LoggedInLabel.style.whiteSpace = WhiteSpace.Normal;
             m_CarryCells.SetValueWithoutNotify(AccountClient.CarryCells);
             m_CarryCells.SetEnabled(!m_AccountBusy);
-            m_CarryNote.text = $"Carry {AccountClient.CarryCells}/{RaidRules.BagCapacity} cells / Stash {AccountClient.StashCells}.\nEach full cell stores {BatteryEnergy.Capacity} energy. [R] spends energy per round; partial charge is retained. Lost on death.";
+            MoonkovLocalization.Set(m_CarryNote, "Carry {0}/{1} cells / Stash {2}.\nEach full cell stores {3} energy. [R] spends energy per round; partial charge is retained. Lost on death." , AccountClient.CarryCells, RaidRules.BagCapacity, AccountClient.StashCells, BatteryEnergy.Capacity);
             m_Login.SetEnabled(!m_AccountBusy && m_AccountConfigurationValid);
             m_Register.SetEnabled(!m_AccountBusy && m_AccountConfigurationValid); m_Logout.SetEnabled(!m_AccountBusy);
             m_Username.SetEnabled(!m_AccountBusy); m_Password.SetEnabled(!m_AccountBusy);
@@ -102,7 +102,7 @@ namespace Unity.MP_FPS.Client
             {
                 await AccountClient.ValidateAsync(m_AccountServiceUrl, ct);
                 m_AccountVerified = AccountClient.IsLoggedIn;
-                m_AccountMessage.text = m_AccountVerified ? "Signed in." : "Login expired. Please sign in again.";
+                MoonkovLocalization.Set(m_AccountMessage, m_AccountVerified ? "Signed in." : "Login expired. Please sign in again.");
             });
         }
 
@@ -113,7 +113,7 @@ namespace Unity.MP_FPS.Client
                 await AccountClient.AuthenticateAsync(m_AccountServiceUrl, m_Username.value, m_Password.value, register, ct);
                 m_Password.value = "";
                 m_AccountVerified = true;
-                m_AccountMessage.text = "Signed in.";
+                MoonkovLocalization.Set(m_AccountMessage, "Signed in.");
             });
         }
 
@@ -125,7 +125,7 @@ namespace Unity.MP_FPS.Client
                 m_AccountVerified = false;
                 m_ShowConnectionMenu = false;
                 m_Password.value = "";
-                m_AccountMessage.text = "Signed out.";
+                MoonkovLocalization.Set(m_AccountMessage, "Signed out.");
             });
         }
 
@@ -163,9 +163,9 @@ namespace Unity.MP_FPS.Client
             m_AccountBusy = true;
             UpdateAccountPanel();
             try { await action(lifetime.Token); }
-            catch (OperationCanceledException) { if (!lifetime.IsCancellationRequested) m_AccountMessage.text = m_AccountError = "Account service timed out. Please retry."; }
-            catch (System.Net.Http.HttpRequestException) { if (!lifetime.IsCancellationRequested) m_AccountMessage.text = m_AccountError = "Cannot reach account service. Please retry."; }
-            catch (Exception ex) { if (!lifetime.IsCancellationRequested) m_AccountMessage.text = m_AccountError = ex.Message; }
+            catch (OperationCanceledException) { if (!lifetime.IsCancellationRequested) MoonkovLocalization.Set(m_AccountMessage, m_AccountError = "Account service timed out. Please retry."); }
+            catch (System.Net.Http.HttpRequestException) { if (!lifetime.IsCancellationRequested) MoonkovLocalization.Set(m_AccountMessage, m_AccountError = "Cannot reach account service. Please retry."); }
+            catch (Exception ex) { if (!lifetime.IsCancellationRequested) MoonkovLocalization.Set(m_AccountMessage, m_AccountError = ex.Message); }
             finally
             {
                 if (!lifetime.IsCancellationRequested) { m_AccountBusy = false; UpdateAccountPanel(); }

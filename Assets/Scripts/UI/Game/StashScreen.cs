@@ -83,7 +83,7 @@ namespace Unity.MP_FPS.Client
             BuildEquipment();
             InitializeTerminal();
             m_Search.SetValueWithoutNotify("");
-            m_Sort.text = "SORT";
+            MoonkovLocalization.Set(m_Sort, "SORT");
             Select(null);
             Filter(0);
         }
@@ -144,7 +144,7 @@ namespace Unity.MP_FPS.Client
                 bool show = stack.Quantity > 0 && placement.InStorage && (m_Filter == 0 || m_Filter == 1 && material || m_Filter == 2 && stack.Art == StashArtKind.Cell || m_Filter == 3 && stack.Kind != EquipmentKind.None)
                     && stack.Name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0;
                 stack.Tile.style.display = show ? DisplayStyle.Flex : DisplayStyle.None;
-                stack.Count.text = Number(stack.Quantity);
+                MoonkovLocalization.Set(stack.Count, Number(stack.Quantity));
                 if (stack.Quantity > 0 && placement.InStorage) ownedStacks++;
                 if (show) m_Visible.Add(stack);
             }
@@ -153,8 +153,8 @@ namespace Unity.MP_FPS.Client
             Label("stashStackCount").text = ownedStacks + (ownedStacks == 1 ? " STACK" : " STACKS");
             bool empty = m_Visible.Count == 0;
             m_EmptyTitle.style.display = m_EmptyDescription.style.display = empty ? DisplayStyle.Flex : DisplayStyle.None;
-            m_EmptyTitle.text = ownedStacks == 0 ? "YOUR STASH IS EMPTY" : "NO MATCHING ITEMS";
-            m_EmptyDescription.text = ownedStacks == 0 ? "Recover supplies on the Moon. Extract successfully to bring them home." : "Try another category or search term.";
+            MoonkovLocalization.Set(m_EmptyTitle, ownedStacks == 0 ? "YOUR STASH IS EMPTY" : "NO MATCHING ITEMS");
+            MoonkovLocalization.Set(m_EmptyDescription, ownedStacks == 0 ? "Recover supplies on the Moon. Extract successfully to bring them home." : "Try another category or search term.");
             if (m_Selected != null && !m_Visible.Contains(m_Selected)) Select(null);
             else if (m_Selected != null) Label("stashInspectQuantity").text = Number(m_Selected.Quantity);
             Layout();

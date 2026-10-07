@@ -76,12 +76,12 @@ namespace Unity.MP_FPS.Client
                 int solved = Mathf.FloorToInt(target.Length * OutCubic(t)); seed++;
                 for (int i = 0; i < target.Length; i++)
                     chars[i] = i < solved || target[i] == ' ' || target[i] == '/' ? target[i] : k_Glyphs[(i * 7 + seed * 13 + (i * seed) % 11) % k_Glyphs.Length];
-                label.text = new string(chars);
-            }, delay, () => label.text = target, "text");
+                MoonkovLocalization.Set(label, new string(chars));
+            }, delay, () => MoonkovLocalization.Set(label, target), "text");
         }
         public static void CountUp(Label label, float target, string format = "{0:N0}", float delay = 0, float duration = 1.1f)
         {
-            Tween(label, duration, t => label.text = string.Format(format, Mathf.Round(target * OutExpo(t))), delay, () => label.text = string.Format(format, target), "text");
+            Tween(label, duration, t => MoonkovLocalization.Set(label, string.Format(format, Mathf.Round(target * OutExpo(t)))), delay, () => MoonkovLocalization.Set(label, string.Format(format, target)), "text");
         }
         public static void Wipe(VisualElement host, string caption)
         {

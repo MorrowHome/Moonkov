@@ -15,6 +15,7 @@ namespace Unity.MP_FPS.Client
             var element = tree.CloneTree().Q<VisualElement>(elementName);
             if (element == null) throw new InvalidOperationException(assetName + " is missing UI binding: " + elementName);
             element.RemoveFromHierarchy();
+            MoonkovLocalization.Bind(element);
             return element;
         }
 

@@ -1,0 +1,2115 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: MoonkovUI Shared Data
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.SharedTableData
+  m_TableCollectionName: MoonkovUI
+  m_TableCollectionNameGuidString: a69c9372e952ad04d9ed096ac2b369d7
+  m_Entries:
+  - m_Id: 2838245376
+    m_Key: SHIP
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2867605504
+    m_Key: CHARACTER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799808
+    m_Key: HALO BUILD
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799809
+    m_Key: SUPPLIERS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799810
+    m_Key: OPERATIONS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799811
+    m_Key: TASKS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799812
+    m_Key: BASE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799813
+    m_Key: COMMS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799814
+    m_Key: SETTINGS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799815
+    m_Key: SHIP CHANNEL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799816
+    m_Key: TERMINAL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799817
+    m_Key: STASH
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799818
+    m_Key: STORAGE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799819
+    m_Key: CARGO
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799820
+    m_Key: GEAR
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799821
+    m_Key: MATERIALS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799822
+    m_Key: ALL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799823
+    m_Key: ALLOY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799824
+    m_Key: HALO
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799825
+    m_Key: ENERGY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799826
+    m_Key: SUPPLY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799827
+    m_Key: STATUS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799828
+    m_Key: DOLLSINGER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799829
+    m_Key: MOONKOV
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799830
+    m_Key: ESCAPE FROM
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799831
+    m_Key: ESCAPE FROM MOONKOV
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799832
+    m_Key: RECOVER. SURVIVE. EXTRACT.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799833
+    m_Key: EVERY RETURN COUNTS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799834
+    m_Key: YOUR FIRST RETURN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799835
+    m_Key: MOON RAID ACCOUNT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799836
+    m_Key: LOG IN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799837
+    m_Key: REGISTER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799838
+    m_Key: LOG OUT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799839
+    m_Key: Player Name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799840
+    m_Key: Name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799841
+    m_Key: Password
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799842
+    m_Key: Username
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799843
+    m_Key: ACCOUNT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799844
+    m_Key: Cancel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799845
+    m_Key: Connect
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799846
+    m_Key: Start
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799847
+    m_Key: Quit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799848
+    m_Key: QUIT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799849
+    m_Key: Resume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799850
+    m_Key: Main Menu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799851
+    m_Key: MAIN MENU
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799852
+    m_Key: 'Username: 3-32 letters, digits or underscores.
+
+      Password: at least
+      8 characters.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799853
+    m_Key: Signed in.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799854
+    m_Key: Signed out.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799855
+    m_Key: Login expired. Please sign in again.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799856
+    m_Key: Cannot reach account service. Please retry.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799857
+    m_Key: Account service timed out. Please retry.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799858
+    m_Key: BACK
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799859
+    m_Key: BACK  /  ESC
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799860
+    m_Key: BACK TO STASH
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799861
+    m_Key: CONTINUE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799862
+    m_Key: DONE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799863
+    m_Key: REFRESH
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799864
+    m_Key: CLOSE / TAB
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799865
+    m_Key: Close / Esc
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799866
+    m_Key: CLOSE TOP WINDOW
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799867
+    m_Key: WINDOW
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799868
+    m_Key: CREATE / JOIN CREW
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799869
+    m_Key: HOST EXPEDITION
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799870
+    m_Key: JOIN EXPEDITION
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799871
+    m_Key: CREW / SESSION
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799872
+    m_Key: 'Session name: '
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799873
+    m_Key: Crew session
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799874
+    m_Key: Session route
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799875
+    m_Key: Matchmake
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799876
+    m_Key: IP Address
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799877
+    m_Key: Port
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799878
+    m_Key: Connecting...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799879
+    m_Key: Connecting ...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799880
+    m_Key: 'Networking role:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799881
+    m_Key: 'Connetion:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799882
+    m_Key: OPERATOR
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799883
+    m_Key: OPERATOR  /  ACTIVE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799884
+    m_Key: OPERATOR CONFIRMED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799885
+    m_Key: Field operator
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799886
+    m_Key: FIELD OPERATOR / 01
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799887
+    m_Key: EXPEDITION / OPERATOR
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799888
+    m_Key: 01  OPERATOR
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799889
+    m_Key: 02  LOCATION
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799890
+    m_Key: 03  BRIEFING
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799891
+    m_Key: 04  RECOVERY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799892
+    m_Key: 05  READY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799893
+    m_Key: ASSEMBLE LOADOUT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799894
+    m_Key: BRIEFING
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799895
+    m_Key: LOCATION
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799896
+    m_Key: RECOVERY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799897
+    m_Key: READY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799898
+    m_Key: PREPARE RAID
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799899
+    m_Key: PREPARING DESCENT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799900
+    m_Key: READY FOR DEPLOYMENT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799901
+    m_Key: OPEN CONNECTION TERMINAL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799902
+    m_Key: Choose your connection in raid preparation.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799903
+    m_Key: Establishing the expedition...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799904
+    m_Key: LINK BUSY  /  STAND BY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799905
+    m_Key: FIELD LOADOUT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799906
+    m_Key: LOADOUT INFORMATION
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799907
+    m_Key: EQUIPMENT / FIELD LOADOUT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799908
+    m_Key: EQUIPMENT / PERSONAL STORAGE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799909
+    m_Key: HALO / FIELD LOADOUT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799910
+    m_Key: LOADOUT  /  STASH
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799911
+    m_Key: HELMET
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799912
+    m_Key: CHEST RIG
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799913
+    m_Key: PISTOL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799914
+    m_Key: BACKPACK
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799915
+    m_Key: PRIMARY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799916
+    m_Key: SECONDARY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799917
+    m_Key: PRIMARY WEAPON
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799918
+    m_Key: SECONDARY WEAPON
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799919
+    m_Key: POCKETS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799920
+    m_Key: CONTENTS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799921
+    m_Key: MAIN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799922
+    m_Key: LEFT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799923
+    m_Key: CENTER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799924
+    m_Key: RIGHT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799925
+    m_Key: EMPTY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799926
+    m_Key: NOT EQUIPPED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799927
+    m_Key: LOADING
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799928
+    m_Key: "LOADING\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799929
+    m_Key: "UPDATING INVENTORY\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799930
+    m_Key: UPDATING...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799931
+    m_Key: UPDATE FAILED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799932
+    m_Key: UP TO DATE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799933
+    m_Key: Waiting for inventory snapshot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799934
+    m_Key: "Loading carried inventory from the server\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799935
+    m_Key: "Loading account inventory\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799936
+    m_Key: PERSONAL STASH
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799937
+    m_Key: PERSONAL STORAGE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799938
+    m_Key: PERSONAL STORAGE / RECOVERED SUPPLIES
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799939
+    m_Key: CHARACTER / CARRIED INVENTORY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799940
+    m_Key: SUPPLY CACHE / CARRIED INVENTORY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799941
+    m_Key: FALLEN EXPEDITION / CARRIED INVENTORY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799942
+    m_Key: FALLEN EXPEDITION / GEAR
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799943
+    m_Key: 'SUPPLY CACHE / '
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799944
+    m_Key: Moon dust
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799945
+    m_Key: MOON DUST
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799946
+    m_Key: Lunar alloy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799947
+    m_Key: Energy cell
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799948
+    m_Key: Personal storage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799949
+    m_Key: Equipment
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799950
+    m_Key: Pockets
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799951
+    m_Key: Supply cache
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799952
+    m_Key: L-01 Flight helmet
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799953
+    m_Key: Halo Rifle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799954
+    m_Key: Halo Rifle (Compact)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799955
+    m_Key: Halo Revolver
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799956
+    m_Key: Halo Shotgun
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799957
+    m_Key: R-04 Chest rig
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799958
+    m_Key: B-08 Expedition pack
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799959
+    m_Key: B-04 Scout pack
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799960
+    m_Key: M-40 Medical injector
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799961
+    m_Key: AR-7 Field rifle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799962
+    m_Key: M-12 Compact rifle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799963
+    m_Key: P-03 Sidearm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799964
+    m_Key: H-02 Survey helmet
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799965
+    m_Key: UNARMED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799966
+    m_Key: STANDARD ISSUE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799967
+    m_Key: WEAPON ALREADY OWNED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799968
+    m_Key: Weapon Name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799969
+    m_Key: ITEM INSPECT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799970
+    m_Key: ITEM INSPECTION
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799971
+    m_Key: INSPECT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799972
+    m_Key: OPEN INSPECTION
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799973
+    m_Key: OPEN CONTAINER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799974
+    m_Key: "OPEN \u2197"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799975
+    m_Key: QUICK TRANSFER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799976
+    m_Key: TRANSFER / EQUIP
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799977
+    m_Key: EQUIP
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799978
+    m_Key: UNEQUIP
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799979
+    m_Key: UNEQUIP / STORE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799980
+    m_Key: UNEQUIP TO STASH
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799981
+    m_Key: QUANTITY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799982
+    m_Key: SPLIT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799983
+    m_Key: SPLIT STACK
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799984
+    m_Key: SORT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799985
+    m_Key: 'SORT: NAME'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799986
+    m_Key: SEARCH
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799987
+    m_Key: Search supplies by name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799988
+    m_Key: SELECT AN ITEM
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799989
+    m_Key: NO MATCHING ITEMS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799990
+    m_Key: Try another category or search term.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799991
+    m_Key: SELECT A NODE TO INSPECT ITS ROLE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799992
+    m_Key: "Drag to move \xB7 R rotate \xB7 Double click containers \xB7 Ctrl click
+      transfer"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799993
+    m_Key: "Drag to arrange \xB7 R to rotate\nDouble click to inspect \xB7 Right
+      click for actions"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799994
+    m_Key: DRAG / MOVE     R / ROTATE     CTRL + CLICK / EQUIP     ESC / BACK
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799995
+    m_Key: 'Click to inspect.
+
+      Scroll to browse your storage.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799996
+    m_Key: Click to choose or drag compatible equipment.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799997
+    m_Key: Select or drag compatible equipment.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799998
+    m_Key: Select a supply stack to inspect its contents.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871799999
+    m_Key: The expedition continues while your pack is open. Stay aware of your surroundings.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800000
+    m_Key: USE / RESTORE 40 HP
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800001
+    m_Key: HEALTH / SUIT STATUS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800002
+    m_Key: MEDICAL / SUIT DIAGNOSTICS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800003
+    m_Key: MEDICAL  /  RECOVERY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800004
+    m_Key: MEDICAL BAY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800005
+    m_Key: LUNAR MEDICAL BUREAU
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800006
+    m_Key: TREAT ALL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800007
+    m_Key: Medical supplies, suit diagnostics and expedition recovery.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800008
+    m_Key: Medical treatment is unavailable.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800009
+    m_Key: Part-specific health and suit sensors are not available. Your current
+      overall health is shown during the raid.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800010
+    m_Key: No compatible free space in this cache.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800011
+    m_Key: No compatible free space.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800012
+    m_Key: No free space in storage.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800013
+    m_Key: No space in this container.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800014
+    m_Key: No compatible equipment is available in your stash.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800015
+    m_Key: No free space in your stash, or item locked.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800016
+    m_Key: No free storage space, or this item is locked.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800017
+    m_Key: Move cancelled. Item remains in its container.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800018
+    m_Key: Placement blocked. Item returned to its previous position.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800019
+    m_Key: 'Rotation blocked: locked item, collision or storage boundary.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800020
+    m_Key: This item is locked.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800021
+    m_Key: Not connected. Item remains in its container.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800022
+    m_Key: Not connected. Medical item remains in its container.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800023
+    m_Key: Inventory request timed out. Refresh storage before retrying.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800024
+    m_Key: Waiting for the server. Retry after the connection recovers.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800025
+    m_Key: Inventory loaded from your account.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800026
+    m_Key: Inventory updated.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800027
+    m_Key: Missing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800028
+    m_Key: Stale
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800029
+    m_Key: Invalid
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800030
+    m_Key: Incompatible
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800031
+    m_Key: Bounds
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800032
+    m_Key: Collision
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800033
+    m_Key: Cycle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800034
+    m_Key: Full
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800035
+    m_Key: Overweight
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800036
+    m_Key: Inaccessible
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800037
+    m_Key: None
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800038
+    m_Key: BUY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800039
+    m_Key: SELL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800040
+    m_Key: SELL / SALVAGE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800041
+    m_Key: SUPPLIERS  /  MARKET
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800042
+    m_Key: HALO WEAPONS / ENERGY CELLS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800043
+    m_Key: LUNAR SUPPLY NETWORK
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800044
+    m_Key: VIEW SUPPLIER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800045
+    m_Key: TRADE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800046
+    m_Key: PURCHASE CONTRACT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800047
+    m_Key: EMERGENCY SUPPLY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800048
+    m_Key: EMERGENCY FIELD KIT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800049
+    m_Key: LUNAR EMERGENCY SUPPLY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800050
+    m_Key: CLAIM FREE KIT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800051
+    m_Key: FREE / SIX-ROUND REVOLVER + 3 ENERGY CELLS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800052
+    m_Key: CHECK LAST ORDER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800053
+    m_Key: FULL MAGAZINE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800054
+    m_Key: EMERGENCY SUPPLY / CANNOT BE SOLD
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800055
+    m_Key: Trade with moon dust. Lost every halo? Emergency supply can get you back
+      into the field.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800056
+    m_Key: Moon dust is deducted only when your order is confirmed. Purchases arrive
+      in personal storage.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800057
+    m_Key: Available when no halo weapon remains, including weapons stored inside
+      containers. The revolver equips into the pistol slot; cells go into carried
+      storage when space allows. Emergency supplies cannot be sold.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800058
+    m_Key: Emergency kit received. Open storage to check your pistol slot and carried
+      cells.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800059
+    m_Key: Trade confirmed. Inventory and moon dust updated.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800060
+    m_Key: Confirmation was interrupted. CHECK LAST ORDER safely retries the same
+      order without a second charge.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800061
+    m_Key: "Confirming supply order\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800062
+    m_Key: "Connecting to supplier\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800063
+    m_Key: "Contacting lunar supply\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800064
+    m_Key: Sign in and reopen this supplier to load current stock.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800065
+    m_Key: Supply contact timed out. Close and reopen the supplier to reconnect.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800066
+    m_Key: Finish or leave your active raid before trading or requesting emergency
+      supplies.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800067
+    m_Key: No halo weapons or energy cells to sell. Recover supplies in a raid to
+      restock.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800068
+    m_Key: RETURN TO STORAGE TO SELL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800069
+    m_Key: UNITED EARTH LOGISTICS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800070
+    m_Key: THE SALVAGE ENGINEER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800071
+    m_Key: UEL / FREIGHT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800072
+    m_Key: SE / SALVAGE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800073
+    m_Key: LMB / MEDICAL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800074
+    m_Key: FREIGHT  /  STRUCTURE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800075
+    m_Key: SALVAGE  /  HALO PARTS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800076
+    m_Key: Structural materials, field equipment and cargo transport.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800077
+    m_Key: Halo components, reclaimed electronics and rare artifacts.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800078
+    m_Key: ENERGY CELLS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800079
+    m_Key: ENERGY CELLS TO CARRY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800080
+    m_Key: ENERGY RESOURCE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800081
+    m_Key: ENERGY CAPACITY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800082
+    m_Key: ENERGY / CRITICAL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800083
+    m_Key: ENERGY / LOW
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800084
+    m_Key: ENERGY / MEDIUM
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800085
+    m_Key: ENERGY / HIGH
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800086
+    m_Key: LUNAR MATERIAL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800087
+    m_Key: STRUCTURAL MATERIAL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800088
+    m_Key: Fine regolith recovered from lunar supply caches. Stored as a single stack
+      in your personal stash.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800089
+    m_Key: Recovered structural alloy. Each supply collected and extracted adds to
+      this material stack.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800090
+    m_Key: A compact energy resource retrieved from lunar supply caches. Kept in
+      storage between expeditions.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800091
+    m_Key: LUNAR EXPEDITION
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800092
+    m_Key: LUNAR OPERATIONS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800093
+    m_Key: LUNAR RECOVERY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800094
+    m_Key: LUNAR SUPPLY RECOVERY  /  DEPLOY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800095
+    m_Key: 'AVAILABLE OPERATION: LUNAR SUPPLY RECOVERY'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800096
+    m_Key: ACTIVE / FIELD PROTOCOL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800097
+    m_Key: MISSION BRIEF
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800098
+    m_Key: MISSION SUMMARY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800099
+    m_Key: EXPEDITION OBJECTIVES
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800100
+    m_Key: 01 / RECOVER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800101
+    m_Key: 02 / MANAGE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800102
+    m_Key: 03 / EXTRACT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800103
+    m_Key: OBJECTIVE 01
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800104
+    m_Key: OBJECTIVE 02
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800105
+    m_Key: OBJECTIVE 03
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800106
+    m_Key: COLLECT ANY SURFACE SUPPLY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800107
+    m_Key: REACH THE EXTRACTION BEACON
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800108
+    m_Key: SURVIVE THE EXTRACTION COUNTDOWN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800109
+    m_Key: STAY INSIDE THE GREEN BEACON
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800110
+    m_Key: GREEN BEACON
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800111
+    m_Key: EXTRACTION
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800112
+    m_Key: PLAN THIS OPERATION
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800113
+    m_Key: SECTOR 07  /  MARE IMBRIUM
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800114
+    m_Key: MOON / SURFACE SECTOR
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800115
+    m_Key: Recover supplies from the surface.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800116
+    m_Key: Recover supplies on the Moon. Extract successfully to bring them home.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800117
+    m_Key: Locate supply caches and navigate back to the extraction beacon. Additional
+      regions are not charted for deployment.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800118
+    m_Key: Your ship needs recovered materials. Search the lunar caches, manage your
+      limited cargo space and make it back to the extraction zone.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800119
+    m_Key: Your equipment is taken from the character loadout. Check your halo weapons
+      and carried supplies before deployment.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800120
+    m_Key: Your session host determines the map and mission timing. Connection setup
+      follows the readiness check.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800121
+    m_Key: Host a session or join an existing crew in the connection terminal. Selected
+      cells are taken from storage; unused cells return only after extraction.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800122
+    m_Key: Cells leave storage when the server accepts deployment. [R] spends battery
+      energy for missing rounds, according to the weapon's energy cost. Unspent charge
+      stays in the cell.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800123
+    m_Key: Carried supplies are lost on death or timeout. Storage is credited after
+      a successful server settlement. The session controls the extraction countdown.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800124
+    m_Key: NO RECOVERY COVERAGE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800125
+    m_Key: NO CONTRACT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800126
+    m_Key: RECOVERY CONTRACT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800127
+    m_Key: Drone insurance is not currently offered. You are deploying without a
+      recovery contract. Lost cargo cannot be claimed after death.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800128
+    m_Key: Recovery insurance is unavailable.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800129
+    m_Key: REWARD / ALL SUCCESSFULLY EXTRACTED CARGO
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800130
+    m_Key: EXPEDITION DEBRIEF
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800131
+    m_Key: 01 / RESULT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800132
+    m_Key: 02 / CARGO
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800133
+    m_Key: 03 / STORAGE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800134
+    m_Key: SURVIVED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800135
+    m_Key: KILLED IN ACTION
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800136
+    m_Key: TIME EXPIRED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800137
+    m_Key: RECOVERED CARGO
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800138
+    m_Key: LOST CARGO
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800139
+    m_Key: Cargo recovered
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800140
+    m_Key: Carried cargo lost
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800141
+    m_Key: DEPLOY AGAIN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800142
+    m_Key: RETURN TO SHIP
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800143
+    m_Key: YOU ARE DEAD
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800144
+    m_Key: Death
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800145
+    m_Key: Saving raid results...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800146
+    m_Key: Waiting to save. Retrying...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800147
+    m_Key: Stash saved. You can reconnect later.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800148
+    m_Key: Stash lasts for this connection only.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800149
+    m_Key: Preparing loadout. Waiting for server confirmation...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800150
+    m_Key: Not enough cells in storage. Reduce the quantity or refresh storage on
+      the ship.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800151
+    m_Key: Choose 0-12 energy cells.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800152
+    m_Key: Loadout rejected. You can retry or return to the ship.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800153
+    m_Key: "Opening supply cache\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800154
+    m_Key: "Searching fallen expedition\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800155
+    m_Key: Cannot reach this container. Move closer with a clear line of sight.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800156
+    m_Key: '[E]  SEARCH FALLEN EXPEDITION'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800157
+    m_Key: '[E]  OPEN EMPTY CACHE'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800158
+    m_Key: '[E] COLLECT NEARBY SUPPLIES'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800159
+    m_Key: '[TAB] CHECK YOUR RAID PACK'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800160
+    m_Key: PRESENTATION / AUDIO
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800161
+    m_Key: TERMINAL PREFERENCES
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800162
+    m_Key: MASTER AUDIO
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800163
+    m_Key: GAMEPLAY EFFECTS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800164
+    m_Key: INTERFACE AUDIO
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800165
+    m_Key: ALWAYS SHOW FIELD STATUS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800166
+    m_Key: LANGUAGE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800167
+    m_Key: KEYBOARD / MOUSE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800168
+    m_Key: RAID INVENTORY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800169
+    m_Key: STATUS CHECK
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800170
+    m_Key: H (HOLD)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800171
+    m_Key: PICKUP
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800172
+    m_Key: ROTATE IN STASH
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800173
+    m_Key: DOUBLE CLICK / MIDDLE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800174
+    m_Key: RIGHT CLICK
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800175
+    m_Key: Reticle Configuration
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800176
+    m_Key: The default HUD reveals critical states automatically. Hold [H] to check
+      status or press [Tab] to open your raid pack.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800177
+    m_Key: RESUME ORBIT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800178
+    m_Key: PAUSE ORBIT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800179
+    m_Key: PAUSE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800180
+    m_Key: HALO WORKSHOP
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800181
+    m_Key: STANDARD HALO / COMPONENT SCHEMATIC
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800182
+    m_Key: WEAPON SCHEMATIC
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800183
+    m_Key: HALO FRAME
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800184
+    m_Key: CORE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800185
+    m_Key: POWER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800186
+    m_Key: FOCUSING LENS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800187
+    m_Key: CONTROL MODULE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800188
+    m_Key: AMPLIFIER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800189
+    m_Key: LEFT EMITTER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800190
+    m_Key: RIGHT EMITTER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800191
+    m_Key: REPLACE MODULE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800192
+    m_Key: SAVE HALO PRESET
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800193
+    m_Key: CLAIM ATTACHMENTS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800194
+    m_Key: Modular halo assembly is awaiting workshop access. Your current field
+      weapon remains standard issue.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800195
+    m_Key: Workshop assembly is not available.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800196
+    m_Key: No modular loadout service is available.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800197
+    m_Key: The power source at the center of the halo assembly.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800198
+    m_Key: A component of the lunar halo weapon. Replaceable modules will become
+      available through the workshop.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800199
+    m_Key: COMMAND DECK
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800200
+    m_Key: CARGO HOLD
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800201
+    m_Key: REACTOR
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800202
+    m_Key: HULL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800203
+    m_Key: HULL  /  DECK PLAN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800204
+    m_Key: ONBOARD RESOURCES
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800205
+    m_Key: ORBITAL SHIP / MODULE MANAGEMENT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800206
+    m_Key: ORBITAL SHIP  /  FIELD TERMINAL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800207
+    m_Key: SHIP EXPANSION
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800208
+    m_Key: UPGRADE / CRAFT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800209
+    m_Key: Ship construction is unavailable.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800210
+    m_Key: Module upgrades and crafting require a ship construction contract.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800211
+    m_Key: TASK CHAINS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800212
+    m_Key: ADDITIONAL TASKS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800213
+    m_Key: Additional task chains are not available yet.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800214
+    m_Key: This is the expedition protocol. Separate quest rewards and progression
+      are not available yet.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800215
+    m_Key: COMMUNICATIONS / 00 MESSAGES
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800216
+    m_Key: CHANNEL QUIET
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800217
+    m_Key: NO MESSAGES
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800218
+    m_Key: CONTACTS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800219
+    m_Key: SESSION PARTICIPANTS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800220
+    m_Key: No incoming transmissions.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800221
+    m_Key: There are no message attachments.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800222
+    m_Key: Supplier rewards, recovery notices and crew messages will appear here
+      when communications service is available.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800223
+    m_Key: LUNAR OBSERVATORY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800224
+    m_Key: Inspect the Moon
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800225
+    m_Key: DEEP SURVEY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800226
+    m_Key: DRAG TO ORBIT  /  SCROLL TO ZOOM
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800227
+    m_Key: RESET VIEW
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800228
+    m_Key: "OBSERVE MOON  \u2197"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800229
+    m_Key: MOON / DEPLOYMENT TERMINAL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800230
+    m_Key: SELECT  /  09 SYSTEMS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800231
+    m_Key: UPLINK STABLE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800232
+    m_Key: ORBITAL ACCESS / LUNAR EXPEDITION
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800233
+    m_Key: UNREGISTERED CREW
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800234
+    m_Key: 'MOONKOV ORBITAL TERMINAL  //  SELENE RELAY 07 NOMINAL  //  SURFACE -173
+      C / NIGHT CYCLE  //  EXTRACTION BEACON: GREEN  //  CARGO IS LOST ON DEATH 
+      //  RECOVER. SURVIVE. EXTRACT.  //  '
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800235
+    m_Key: HEAD
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800236
+    m_Key: THORAX
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800237
+    m_Key: ABDOMEN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800238
+    m_Key: LEFT ARM
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800239
+    m_Key: RIGHT ARM
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800240
+    m_Key: LEFT LEG
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800241
+    m_Key: RIGHT LEG
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800242
+    m_Key: OXYGEN / PRESSURE / RADIATION
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800243
+    m_Key: FOOTPRINT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800244
+    m_Key: CAPACITY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800245
+    m_Key: DAMAGE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800246
+    m_Key: RANGE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800247
+    m_Key: RELOADING
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800248
+    m_Key: BUY / {0} DUST
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800249
+    m_Key: SELL / {0} DUST
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800250
+    m_Key: MOON DUST / {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800251
+    m_Key: CARRIED {0:0.0} / {1:0} KG
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800252
+    m_Key: 'CARRIED / {0} supplies
+
+      Dust {1}   Alloy {2}   Cells {3}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800253
+    m_Key: Carry {0}/{1} / Stash {2}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800254
+    m_Key: 'Carry {0}/{1} cells / Stash {2}.
+
+      Each full cell stores {3} energy.
+      [R] spends energy per round; partial charge is retained. Lost on death.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800255
+    m_Key: 'Signed in as {0}
+
+      STASH: Dust {1}   Alloy {2}   Cells {3}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800256
+    m_Key: 'Session: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800257
+    m_Key: ORBITAL SHIP / {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800258
+    m_Key: 'Move blocked: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800259
+    m_Key: 'Inventory: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800260
+    m_Key: 'Connection: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800261
+    m_Key: 'Role: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800262
+    m_Key: ORBITAL DAY {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800263
+    m_Key: SUNLIT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800264
+    m_Key: Offline
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800265
+    m_Key: Connected
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800266
+    m_Key: Server
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800267
+    m_Key: Client
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800268
+    m_Key: "{0} \xB7 {1} \xB7 {2:0.0} KG \xB7 {3}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800269
+    m_Key: " \xB7 {0}/{1} ENERGY \xB7 ACTIVE CELL {2}/{3}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800270
+    m_Key: ' / {0}/{1} ENERGY'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800271
+    m_Key: '{0} ENERGY / FULL CELL'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800272
+    m_Key: '{0} GRID CELL(S)  /  {1} DUST EACH'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800273
+    m_Key: '{0} DUST EACH  /  '
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800274
+    m_Key: '{0} ROUNDS'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800275
+    m_Key: '{0}/{1} ENERGY / VALUE SCALES WITH CHARGE'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800276
+    m_Key: ' / FOUND IN RAID'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800277
+    m_Key: ' / BROUGHT IN'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800278
+    m_Key: ' / EQUIPPED'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800279
+    m_Key: ' / EMPTY'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800280
+    m_Key: ' / STASH'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800281
+    m_Key: OWNED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800282
+    m_Key: Raid {0}   {1:00}:{2:00} remaining
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800283
+    m_Key: 'EXTRACTION
+
+      SHUTTLE BEACON / {0:00.0}s'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800284
+    m_Key: GREEN BEACON / {0:F0}m {1}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800285
+    m_Key: '[E]  OPEN SUPPLY CACHE / {0:00}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800286
+    m_Key: 'Storage: {0} cells / Carry limit: {1}. [R] spends energy per round. Unspent
+      energy returns on extraction.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800287
+    m_Key: '{0}
+
+
+      EXPEDITION {1:000}
+
+      {2} / {3} supplies'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800288
+    m_Key: '{0}
+
+
+      Moon dust      {1}
+
+      Alloy               {2}
+
+      Energy
+      cells   {3}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800289
+    m_Key: 'PERSONAL STORAGE
+
+
+      Moon dust      {0}
+
+      Alloy              
+      {1}
+
+      Energy cells   {2}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800290
+    m_Key: '
+
+      ENERGY {0} / READY {1}
+
+      [4] MEDICAL / {2}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800291
+    m_Key: Creating entity worlds...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800292
+    m_Key: Waiting for Client connection...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800293
+    m_Key: Loading Gameplay scene...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800294
+    m_Key: Loading Resources scene...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800295
+    m_Key: Loading Server world...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800296
+    m_Key: Loading Client world...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800297
+    m_Key: Replicating world...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800298
+    m_Key: Waiting for Player spawn...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800299
+    m_Key: Starting gameplay...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800300
+    m_Key: Leaving gameplay...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800301
+    m_Key: Disconnecting Client...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800302
+    m_Key: Disposing entity worlds...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800303
+    m_Key: Unloading Gameplay scene...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800304
+    m_Key: Unloading Resources scene...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2871800305
+    m_Key: Opening Main menu...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1195979321344
+    m_Key: 'CARRIED / {0} supplies
+
+      Dust {1}   Alloy {2}   Cells {3}
+
+      ENERGY
+      {4} / READY {5}
+
+      [4] MEDICAL / {6}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1196004487168
+    m_Key: "{0} \xB7 {1} \xB7 {2:0.0} KG \xB7 {3} \xB7 {4}/{5} ENERGY \xB7 ACTIVE
+      CELL {6}/{7}"
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 5672155255533732036
+  references:
+    version: 2
+    RefIds:
+    - rid: 5672155255533732036
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1791367881966

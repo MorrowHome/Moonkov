@@ -88,6 +88,7 @@ namespace Unity.MP_FPS.Client
 
             ToggleConnectionModeDisplay();
             InitializeAccountPanel();
+            MoonkovLocalization.Bind(m_MainMenu);
         }
 
         void OnDisable()

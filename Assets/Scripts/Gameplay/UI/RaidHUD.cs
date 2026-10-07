@@ -102,9 +102,9 @@ namespace Unity.MP_FPS
         {
             int count = m_Snapshot.Dust + m_Snapshot.Alloy + m_Snapshot.Cells;
             string title = m_Snapshot.Phase == RaidPhase.Extracted ? "SURVIVED" : m_Snapshot.Phase == RaidPhase.Dead ? "KILLED IN ACTION" : "TIME EXPIRED";
-            m_ResultText.text = m_ResultStep == 0 ? $"{title}\n\nEXPEDITION {m_Snapshot.RaidId:000}\n{(m_Snapshot.Phase == RaidPhase.Extracted ? "Cargo recovered" : "Carried cargo lost")} / {count} supplies"
-                : m_ResultStep == 1 ? $"{(m_Snapshot.Phase == RaidPhase.Extracted ? "RECOVERED CARGO" : "LOST CARGO")}\n\nMoon dust      {m_Snapshot.Dust}\nAlloy               {m_Snapshot.Alloy}\nEnergy cells   {m_Snapshot.Cells}"
-                : $"PERSONAL STORAGE\n\nMoon dust      {m_Snapshot.StashDust}\nAlloy               {m_Snapshot.StashAlloy}\nEnergy cells   {m_Snapshot.StashCells}";
+            MoonkovLocalization.Set(m_ResultText, m_ResultStep == 0 ? MoonkovLocalization.Format($"{title}\n\nEXPEDITION {m_Snapshot.RaidId:000}\n{(m_Snapshot.Phase == RaidPhase.Extracted ? "Cargo recovered" : "Carried cargo lost")} / {count} supplies")
+                : m_ResultStep == 1 ? MoonkovLocalization.Format($"{(m_Snapshot.Phase == RaidPhase.Extracted ? "RECOVERED CARGO" : "LOST CARGO")}\n\nMoon dust      {m_Snapshot.Dust}\nAlloy               {m_Snapshot.Alloy}\nEnergy cells   {m_Snapshot.Cells}")
+                : MoonkovLocalization.Format($"PERSONAL STORAGE\n\nMoon dust      {m_Snapshot.StashDust}\nAlloy               {m_Snapshot.StashAlloy}\nEnergy cells   {m_Snapshot.StashCells}"));
             for (int i = 0; i < 3; i++) m_Root.Q<Label>("raidStep" + i).EnableInClassList("raid-step-active", i == m_ResultStep);
             m_ResultBack.SetEnabled(m_ResultStep > 0); m_ResultNext.style.display = m_ResultStep < 2 ? DisplayStyle.Flex : DisplayStyle.None;
             m_Deploy.style.display = m_Return.style.display = m_ResultStep == 2 ? DisplayStyle.Flex : DisplayStyle.None;
@@ -167,11 +167,11 @@ namespace Unity.MP_FPS
                 // Do not replace text while the player is editing it.
                 if (m_CarryCells.panel?.focusController.focusedElement is not VisualElement focused || !m_CarryCells.Contains(focused))
                     m_CarryCells.SetValueWithoutNotify(AccountClient.CarryCells);
-                m_LoadoutNote.text = deploying ? "Preparing loadout. Waiting for server confirmation..."
+                MoonkovLocalization.Set(m_LoadoutNote, deploying ? "Preparing loadout. Waiting for server confirmation..."
                     : m_Snapshot.LoadoutError == RaidLoadoutError.InsufficientCells ? "Not enough cells in storage. Reduce the quantity or refresh storage on the ship."
                     : m_Snapshot.LoadoutError == RaidLoadoutError.InvalidCount ? "Choose 0-12 energy cells."
                     : m_Snapshot.LoadoutError == RaidLoadoutError.Rejected ? "Loadout rejected. You can retry or return to the ship."
-                    : $"Storage: {m_Snapshot.StashCells} cells / Carry limit: {RaidRules.BagCapacity}. [R] spends energy per round. Unspent energy returns on extraction.";
+                    : MoonkovLocalization.Format($"Storage: {m_Snapshot.StashCells} cells / Carry limit: {RaidRules.BagCapacity}. [R] spends energy per round. Unspent energy returns on extraction."));
                 if (!m_WasSettled && !saving) m_Deploy.Focus();
             }
             m_WasSettled = settled;
@@ -221,36 +221,41 @@ namespace Unity.MP_FPS
             if (m_RefreshTimer > 0) return;
             m_RefreshTimer = 0.1f;
             int seconds = Mathf.CeilToInt(m_Snapshot.TimeLeft);
-            m_Timer.text = ready ? $"Raid {m_Snapshot.RaidId}   {seconds / 60:00}:{seconds % 60:00} remaining" : "Connecting...";
+            MoonkovLocalization.Set(m_Timer, ready ? MoonkovLocalization.Format($"Raid {m_Snapshot.RaidId}   {seconds / 60:00}:{seconds % 60:00} remaining") : "Connecting...");
             var clock = ExpeditionClockPresentation.Active;
-            m_Clock.text = clock != null && clock.IsSynchronized ? ExpeditionClock.Display(clock.TotalHours) : "";
+            MoonkovLocalization.Set(m_Clock, clock != null && clock.IsSynchronized ? ExpeditionClock.Display(clock.TotalHours) : "");
             int count = m_Snapshot.Dust + m_Snapshot.Alloy + m_Snapshot.Cells;
             if (count != m_PreviousCount) { m_PreviousCount = count; m_RevealUntil = Time.unscaledTime + 4; }
             bool check = Keyboard.current != null && Keyboard.current.hKey.isPressed;
             bool status = PlayerPrefs.GetInt("Moonkov.AlwaysShowHUD", 0) != 0 || check || Time.unscaledTime < m_RevealUntil || m_Snapshot.TimeLeft < 60;
             m_Status.style.display = !settled && status ? DisplayStyle.Flex : DisplayStyle.None;
-            m_Bag.text = $"CARRIED / {count} supplies\nDust {m_Snapshot.Dust}   Alloy {m_Snapshot.Alloy}   Cells {m_Snapshot.Cells}";
+            MoonkovLocalization.Set(m_Bag, "CARRIED / {0} supplies\nDust {1}   Alloy {2}   Cells {3}" , count, m_Snapshot.Dust, m_Snapshot.Alloy, m_Snapshot.Cells);
             if (!m_InventoryQuery.IsEmptyIgnoreFilter)
             {
                 var batteryGraph = m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity()).Graph;
-                if (batteryGraph != null) m_Bag.text += $"\nENERGY {batteryGraph.CellEnergy(carriedOnly: true)} / READY {batteryGraph.CellEnergy(accessibleOnly: true)}\n[4] MEDICAL / {batteryGraph.Count("medkit", true)}";
+                if (batteryGraph != null) MoonkovLocalization.Set(m_Bag,
+                    "CARRIED / {0} supplies\nDust {1}   Alloy {2}   Cells {3}\nENERGY {4} / READY {5}\n[4] MEDICAL / {6}",
+                    count, m_Snapshot.Dust, m_Snapshot.Alloy, m_Snapshot.Cells,
+                    batteryGraph.CellEnergy(carriedOnly: true), batteryGraph.CellEnergy(accessibleOnly: true), batteryGraph.Count("medkit", true));
             }
             bool deathBag=nearest>=RaidLootContainers.FirstDeathBagId;
             bool empty=deathBag ? deathBags.Bags[nearest].Empty : nearest>=0 && (m_Snapshot.TakenMask & (1u<<nearest))!=0;
-            m_Prompt.text = Time.unscaledTime<m_LootErrorUntil ? "Cannot reach this container. Move closer with a clear line of sight."
-                : nearest < 0 || settled || m_InventoryVisible ? "" : (deathBag ? "[E]  SEARCH FALLEN EXPEDITION" : $"[E]  OPEN SUPPLY CACHE / {nearest+1:00}")+(empty ? " / EMPTY" : "");
+            MoonkovLocalization.Set(m_Prompt, Time.unscaledTime<m_LootErrorUntil ? "Cannot reach this container. Move closer with a clear line of sight."
+                : nearest < 0 || settled || m_InventoryVisible ? "" :
+                    (deathBag ? MoonkovLocalization.Text("[E]  SEARCH FALLEN EXPEDITION") : MoonkovLocalization.Format($"[E]  OPEN SUPPLY CACHE / {nearest+1:00}")) +
+                    (empty ? MoonkovLocalization.Text(" / EMPTY") : ""));
             if (alive && !settled)
             {
                 Vector3 delta = MoonRaidMap.Active.ExtractionPosition - position;
                 string heading = Mathf.Abs(delta.x) > Mathf.Abs(delta.z) ? delta.x > 0 ? "E" : "W" : delta.z > 0 ? "N" : "S";
-                m_Exit.text = m_Snapshot.ExtractionRemaining >= 0 ? $"EXTRACTION\nSHUTTLE BEACON / {m_Snapshot.ExtractionRemaining:00.0}s" : check ? $"GREEN BEACON / {delta.magnitude:F0}m {heading}" : "";
+                MoonkovLocalization.Set(m_Exit, m_Snapshot.ExtractionRemaining >= 0 ? MoonkovLocalization.Format($"EXTRACTION\nSHUTTLE BEACON / {m_Snapshot.ExtractionRemaining:00.0}s") : check ? MoonkovLocalization.Format($"GREEN BEACON / {delta.magnitude:F0}m {heading}") : "");
             }
-            else m_Exit.text = "";
+            else MoonkovLocalization.Set(m_Exit, "");
             if (settled)
             {
-                m_SaveStatus.text = m_Snapshot.SaveState == RaidSaveState.SessionOnly ? "Stash lasts for this connection only."
+                MoonkovLocalization.Set(m_SaveStatus, m_Snapshot.SaveState == RaidSaveState.SessionOnly ? "Stash lasts for this connection only."
                     : m_Snapshot.SaveState == RaidSaveState.Saved ? "Stash saved. You can reconnect later."
-                    : m_Snapshot.SaveState == RaidSaveState.Retrying ? "Waiting to save. Retrying..." : "Saving raid results...";
+                    : m_Snapshot.SaveState == RaidSaveState.Retrying ? "Waiting to save. Retrying..." : "Saving raid results...");
                 RenderResult();
             }
         }
@@ -281,9 +286,9 @@ namespace Unity.MP_FPS
                 if (acknowledged) m_InventoryRequestPending = false;
                 m_OpenedLootId=inventory.LootId;
                 if(acknowledged){m_LootOpenPending=false;m_InventoryView.SetReadOnly(null);}
-                m_InventoryTitle.text=inventory.LootId>=RaidLootContainers.FirstDeathBagId ? "FALLEN EXPEDITION / CARRIED INVENTORY"
-                    : inventory.LootId>=0 ? "SUPPLY CACHE / CARRIED INVENTORY" : "CHARACTER / CARRIED INVENTORY";
-                m_InventoryView.Present(inventory.Graph,acknowledged && inventory.Error!=Inventory.InventoryError.None ? "Inventory: "+inventory.Error : null,
+                MoonkovLocalization.Set(m_InventoryTitle, inventory.LootId>=RaidLootContainers.FirstDeathBagId ? "FALLEN EXPEDITION / CARRIED INVENTORY"
+                    : inventory.LootId>=0 ? "SUPPLY CACHE / CARRIED INVENTORY" : "CHARACTER / CARRIED INVENTORY");
+                m_InventoryView.Present(inventory.Graph,acknowledged && inventory.Error!=Inventory.InventoryError.None ? MoonkovLocalization.Format($"Inventory: {inventory.Error.ToString()}") : null,
                     operationCompleted: acknowledged,lootId:inventory.LootId);
                 if(inventory.LootId<0 && (wasOpen || acknowledged && inventory.Error==Inventory.InventoryError.Inaccessible))
                 {if(inventory.Error==Inventory.InventoryError.Inaccessible)m_LootErrorUntil=Time.unscaledTime+3;SetInventory(false);}

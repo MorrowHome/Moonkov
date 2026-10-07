@@ -53,7 +53,7 @@ namespace Unity.MP_FPS.Client
             m_Clock = root.Q<Label>(className: "terminal-nav-clock");
             m_ClockTimer = m_Nav.schedule.Execute(() =>
             {
-                m_Clock.text = DateTime.UtcNow.ToString("HH:mm:ss") + " UTC";
+                MoonkovLocalization.Set(m_Clock, DateTime.UtcNow.ToString("HH:mm:ss") + " UTC");
                 dot.EnableInClassList("terminal-nav-dot-dim", DateTime.UtcNow.Second % 2 == 0);
             }).Every(500);
             m_Content = root.Q<VisualElement>("terminalContent");
@@ -81,8 +81,9 @@ namespace Unity.MP_FPS.Client
             m_Gear.style.display = page == 1 ? DisplayStyle.Flex : DisplayStyle.None;
             m_Content.style.display = page == 1 ? DisplayStyle.None : DisplayStyle.Flex;
             m_Shade.Mode = page == 0 ? BackdropMode.Ship : BackdropMode.Page;
-            m_Title.text = m_Pages[page];
-            m_Subtitle.text = page == 1 ? "EQUIPMENT / PERSONAL STORAGE" : "ORBITAL SHIP / " + m_Pages[page];
+            MoonkovLocalization.Set(m_Title, m_Pages[page]);
+            if (page == 1) MoonkovLocalization.Set(m_Subtitle, "EQUIPMENT / PERSONAL STORAGE");
+            else MoonkovLocalization.Set(m_Subtitle, "ORBITAL SHIP / {0}", m_Pages[page]);
             if (moved)
             {
                 TerminalMotion.Scramble(m_Title, .12f, .5f); TerminalMotion.Reveal(m_Subtitle, .18f, 24, 0, .5f);
@@ -175,7 +176,7 @@ namespace Unity.MP_FPS.Client
             var card = m_Content.Q<VisualElement>(className: "terminal-home-operator-card");
             card.Q<Label>(className: "terminal-home-player").text = string.IsNullOrEmpty(m_Player) ? "UNREGISTERED CREW" : m_Player.ToUpperInvariant();
             var state = card.Q<Label>(className: "terminal-positive");
-            state.text = m_Busy ? "LINK BUSY  /  STAND BY" : "READY FOR DEPLOYMENT";
+            MoonkovLocalization.Set(state, m_Busy ? "LINK BUSY  /  STAND BY" : "READY FOR DEPLOYMENT");
             state.EnableInClassList("terminal-warning", m_Busy); state.EnableInClassList("terminal-positive", !m_Busy);
             TerminalMotion.Reveal(card, .55f, -30, 0, .7f);
             var ticker = m_Content.Q<VisualElement>(className: "terminal-home-ticker");
@@ -283,7 +284,7 @@ namespace Unity.MP_FPS.Client
                 var gauge = main.Q<VisualElement>(className: "terminal-cargo-gauge-fill");
                 void PresentCarry()
                 {
-                    cargo.text = $"Carry {AccountClient.CarryCells}/{RaidRules.BagCapacity} / Stash {m_Cells}";
+                    MoonkovLocalization.Set(cargo, "Carry {0}/{1} / Stash {2}" , AccountClient.CarryCells, RaidRules.BagCapacity, m_Cells);
                     gauge.style.width = Length.Percent(100f * AccountClient.CarryCells / Mathf.Max(1, RaidRules.BagCapacity));
                 }
                 carry.RegisterValueChangedCallback(evt =>
@@ -330,6 +331,14 @@ namespace Unity.MP_FPS.Client
             var hud = m_Content.Q<Toggle>("alwaysShowHUD");
             hud.SetValueWithoutNotify(PlayerPrefs.GetInt("Moonkov.AlwaysShowHUD", 0) != 0);
             hud.RegisterValueChangedCallback(e => PlayerPrefs.SetInt("Moonkov.AlwaysShowHUD", e.newValue ? 1 : 0));
+            var language = m_Content.Q<DropdownField>("language");
+            language.choices = new List<string> { "简体中文", "English" };
+            language.SetValueWithoutNotify(UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale?.Identifier.Code == "zh-Hans" ? "简体中文" : "English");
+            language.RegisterValueChangedCallback(e =>
+            {
+                MoonkovLocalization.Select(e.newValue == "简体中文" ? "zh-Hans" : "en");
+                Navigate(8);
+            });
         }
         private void BindAudioSlider(string name, string channel, float value)
         {
@@ -371,13 +380,13 @@ namespace Unity.MP_FPS.Client
         }
         internal static Label Text(VisualElement parent, string text, string css)
         {
-            var label = new Label(text); label.AddToClassList(css); parent.Add(label); return label;
+            var label = new Label(); label.AddToClassList(css); parent.Add(label); MoonkovLocalization.Set(label, text); return label;
         }
 
 
         internal static Button ActionButton(VisualElement parent, string text, Action action, string css = "terminal-button")
         {
-            var button = new Button(action) { text = text }; button.AddToClassList(css); parent.Add(button); return button;
+            var button = new Button(action); button.AddToClassList(css); parent.Add(button); MoonkovLocalization.Set(button, text); return button;
         }
         internal static void Disabled(VisualElement parent, string text, string reason)
         {

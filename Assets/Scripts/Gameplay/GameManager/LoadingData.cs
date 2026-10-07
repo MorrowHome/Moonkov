@@ -115,7 +115,7 @@ namespace Unity.MP_FPS
         [CreateProperty]
         string LoadingStatusText
         {
-            get => m_LoadingStatusText;
+            get => MoonkovLocalization.Text(m_LoadingStatusText);
             set
             {
                 if (m_LoadingStatusText == value)

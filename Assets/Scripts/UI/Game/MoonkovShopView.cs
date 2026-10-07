@@ -41,10 +41,10 @@ namespace Unity.MP_FPS.Client
             try
             {
                 m_Offers = await AccountClient.GetShopOffersAsync(m_Stop.Token);
-                if (!m_Disposed) m_Status.text = "Moon dust is deducted only when your order is confirmed. Purchases arrive in personal storage.";
+                if (!m_Disposed) MoonkovLocalization.Set(m_Status, "Moon dust is deducted only when your order is confirmed. Purchases arrive in personal storage.");
             }
-            catch (OperationCanceledException) { if (!m_Disposed) m_Status.text = "Supply contact timed out. Close and reopen the supplier to reconnect."; }
-            catch (Exception ex) { if (!m_Disposed) m_Status.text = ex.Message; }
+            catch (OperationCanceledException) { if (!m_Disposed) MoonkovLocalization.Set(m_Status, "Supply contact timed out. Close and reopen the supplier to reconnect."); }
+            catch (Exception ex) { if (!m_Disposed) MoonkovLocalization.Set(m_Status, ex.Message); }
             finally { m_Busy = false; if (!m_Disposed) Render(); }
         }
         private void Changed() { if (!m_Busy && !m_Disposed) Render(); }
@@ -52,7 +52,7 @@ namespace Unity.MP_FPS.Client
         private void Render()
         {
             m_List.Clear();
-            m_Balance.text = "MOON DUST / " + AccountClient.StashDust;
+            MoonkovLocalization.Set(m_Balance, "MOON DUST / {0}", AccountClient.StashDust);
             for (int i = 0; i < m_Tabs.Length; i++) m_Tabs[i].EnableInClassList("terminal-tab-selected", i == m_Tab);
             m_Retry.style.display = m_Pending != null && !m_Busy ? DisplayStyle.Flex : DisplayStyle.None;
             if (AccountClient.RaidActive)
@@ -76,20 +76,20 @@ namespace Unity.MP_FPS.Client
             int quantity = initial;
             var picker = MoonkovTerminal.Row(parent); picker.AddToClassList("terminal-shop-quantity");
             Label value = null;
-            var minus = MoonkovTerminal.ActionButton(picker, "−", () => { quantity = Math.Max(1, quantity - 1); value.text = "× " + quantity; changed(quantity); });
+            var minus = MoonkovTerminal.ActionButton(picker, "−", () => { quantity = Math.Max(1, quantity - 1); MoonkovLocalization.Set(value, "× " + quantity); changed(quantity); });
             value = MoonkovTerminal.Text(picker, "× " + quantity, "terminal-copy");
-            var plus = MoonkovTerminal.ActionButton(picker, "+", () => { quantity = Math.Min(maximum, quantity + 1); value.text = "× " + quantity; changed(quantity); });
+            var plus = MoonkovTerminal.ActionButton(picker, "+", () => { quantity = Math.Min(maximum, quantity + 1); MoonkovLocalization.Set(value, "× " + quantity); changed(quantity); });
             minus.SetEnabled(maximum > 1 && Ready); plus.SetEnabled(maximum > 1 && Ready);
         }
         private void BuyRow(ShopOffer offer)
         {
             var definition = InventoryCatalog.Get(offer.Code);
-            var row = Product(offer.Code, offer.Name, $"{definition.Width * definition.Height} GRID CELL(S)  /  {offer.BuyDust} DUST EACH");
-            if (offer.Code == "cells") MoonkovTerminal.Text(row.Q(className: "terminal-shop-description"), $"{BatteryEnergy.Capacity} ENERGY / FULL CELL", "terminal-copy");
+            var row = Product(offer.Code, offer.Name, MoonkovLocalization.Format($"{definition.Width * definition.Height} GRID CELL(S)  /  {offer.BuyDust} DUST EACH"));
+            if (offer.Code == "cells") MoonkovTerminal.Text(row.Q(className: "terminal-shop-description"), MoonkovLocalization.Format($"{BatteryEnergy.Capacity} ENERGY / FULL CELL"), "terminal-copy");
             var order = new VisualElement(); order.AddToClassList("terminal-shop-order"); row.Add(order);
             int quantity = offer.Code == "cells" ? 3 : 1;
             Button buy = null;
-            void Update(int value) { quantity = value; if (buy != null) { buy.text = $"BUY / {quantity * offer.BuyDust} DUST"; buy.SetEnabled(Ready && AccountClient.StashDust >= quantity * offer.BuyDust); } }
+            void Update(int value) { quantity = value; if (buy != null) { MoonkovLocalization.Set(buy, "BUY / {0} DUST" , quantity * offer.BuyDust); buy.SetEnabled(Ready && AccountClient.StashDust >= quantity * offer.BuyDust); } }
             Quantity(order, definition.MaxStack, quantity, Update);
             buy = MoonkovTerminal.ActionButton(order, "", () => Order(ShopOperation.Buy, offer.Code, null, quantity), "terminal-primary");
             Update(quantity);
@@ -101,12 +101,12 @@ namespace Unity.MP_FPS.Client
             {
                 var offer = m_Offers.First(o => o.Code == item.Code); rows++;
                 string detail = item.EmergencySupply ? "EMERGENCY SUPPLY / CANNOT BE SOLD" : graph.RootOf(item.Id) != "stash" ? "RETURN TO STORAGE TO SELL" :
-                    $"{offer.SellDust} DUST EACH  /  " + (item.Code == "cells" ? $"{BatteryEnergy.Stored(item)}/{item.Quantity * BatteryEnergy.Capacity} ENERGY / VALUE SCALES WITH CHARGE" : item.LoadedAmmo < 0 ? "FULL MAGAZINE" : $"{item.LoadedAmmo} ROUNDS");
+                    MoonkovLocalization.Format($"{offer.SellDust} DUST EACH  /  ") + (item.Code == "cells" ? MoonkovLocalization.Format($"{BatteryEnergy.Stored(item)}/{item.Quantity * BatteryEnergy.Capacity} ENERGY / VALUE SCALES WITH CHARGE") : item.LoadedAmmo < 0 ? "FULL MAGAZINE" : MoonkovLocalization.Format($"{item.LoadedAmmo} ROUNDS"));
                 var row = Product(item.Code, offer.Name, detail);
                 var order = new VisualElement(); order.AddToClassList("terminal-shop-order"); row.Add(order);
                 int quantity = 1; Button sell = null;
-                Quantity(order, item.Quantity, quantity, value => { quantity = value; if (sell != null) sell.text = $"SELL / {ShopCatalog.SaleDust(item, quantity, offer.SellDust)} DUST"; });
-                sell = MoonkovTerminal.ActionButton(order, $"SELL / {ShopCatalog.SaleDust(item, quantity, offer.SellDust)} DUST", () => Order(ShopOperation.Sell, item.Code, item.Id, quantity));
+                Quantity(order, item.Quantity, quantity, value => { quantity = value; if (sell != null) MoonkovLocalization.Set(sell, "SELL / {0} DUST" , ShopCatalog.SaleDust(item, quantity, offer.SellDust)); });
+                sell = MoonkovTerminal.ActionButton(order, MoonkovLocalization.Format($"SELL / {ShopCatalog.SaleDust(item, quantity, offer.SellDust)} DUST"), () => Order(ShopOperation.Sell, item.Code, item.Id, quantity));
                 sell.SetEnabled(Ready && !item.EmergencySupply && graph.RootOf(item.Id) == "stash");
             }
             if (rows == 0) MoonkovTerminal.Text(m_List, "No halo weapons or energy cells to sell. Recover supplies in a raid to restock.", "terminal-copy");
@@ -129,17 +129,17 @@ namespace Unity.MP_FPS.Client
         private async void Execute(ShopCommand command)
         {
             if (command == null || m_Busy || m_Disposed) return;
-            m_Pending = command; m_Busy = true; m_Status.text = "Confirming supply order…"; Render();
+            m_Pending = command; m_Busy = true; MoonkovLocalization.Set(m_Status, "Confirming supply order…"); Render();
             try
             {
                 await AccountClient.TradeAsync(command, m_Stop.Token);
                 m_Pending = null;
-                if (!m_Disposed) m_Status.text = command.Operation == ShopOperation.Emergency ? "Emergency kit received. Open storage to check your pistol slot and carried cells." : "Trade confirmed. Inventory and moon dust updated.";
+                if (!m_Disposed) MoonkovLocalization.Set(m_Status, command.Operation == ShopOperation.Emergency ? "Emergency kit received. Open storage to check your pistol slot and carried cells." : "Trade confirmed. Inventory and moon dust updated.");
             }
             catch (AccountClient.InventoryRequestException ex)
             {
                 if (ex.ErrorCode.StartsWith("service_")) Uncertain();
-                else { m_Pending = null; if (!m_Disposed) m_Status.text = ex.Message; }
+                else { m_Pending = null; if (!m_Disposed) MoonkovLocalization.Set(m_Status, ex.Message); }
             }
             catch (OperationCanceledException) { if (!m_Disposed) Uncertain(); }
             catch (System.Net.Http.HttpRequestException) { Uncertain(); }
@@ -147,7 +147,7 @@ namespace Unity.MP_FPS.Client
             finally { m_Busy = false; if (!m_Disposed) Render(); }
         }
         private void Uncertain()
-        { if (!m_Disposed) m_Status.text = "Confirmation was interrupted. CHECK LAST ORDER safely retries the same order without a second charge."; }
+        { if (!m_Disposed) MoonkovLocalization.Set(m_Status, "Confirmation was interrupted. CHECK LAST ORDER safely retries the same order without a second charge."); }
         private void Detached(DetachFromPanelEvent evt) { if (evt.target == m_Window) Dispose(); }
         public void Dispose()
         {
