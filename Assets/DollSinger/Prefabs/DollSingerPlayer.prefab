@@ -3935,7 +3935,8 @@ MonoBehaviour:
   m_HeadTurnBeforeBody: 35
   m_FirstPersonBodyTurnTime: 0.18
   m_LeanAngle: 8
-  m_BodyLeanAngle: 42
+  m_BodyLeanAngle: 60
+  m_PelvisLeanRatio: 0.5
   m_LeanShift: 0.22
   m_BodyLeanRatio: 0.65
   m_LeanSpeed: 6

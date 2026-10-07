@@ -83,8 +83,10 @@ namespace Unity.MP_FPS.DollSinger {
         [Header("Lean")]
         [Tooltip("Camera roll in degrees at full lean.")]
         [Range(5f, 35f)] public float m_LeanAngle = 15f;
-        [Tooltip("Total waist/chest bend at full lean. Eye displacement comes from the skeleton's arc.")]
-        [Range(5f, 45f)] public float m_BodyLeanAngle = 42f;
+        [Tooltip("Total pelvis/waist/chest bend at full lean. Eye displacement comes from the skeleton's arc.")]
+        [Range(5f, 65f)] public float m_BodyLeanAngle = 60f;
+        [Tooltip("Share of the bend applied at the lower-body pivot. Leg IK keeps the feet on their animated anchors.")]
+        [Range(0f, 0.65f)] public float m_PelvisLeanRatio = 0.5f;
         // Legacy serialized settings; fixed translation is no longer applied to any bone.
         [HideInInspector] public float m_LeanShift = 0.22f;
         [HideInInspector] public float m_BodyLeanRatio = 0.65f;
@@ -105,10 +107,14 @@ namespace Unity.MP_FPS.DollSinger {
         private float m_LeanTarget = 0f;
         private Transform m_ChestBone;
         private Transform m_SpineBone;
+        private Transform m_PelvisBone;
         private Transform m_HeadBone;
+        private Transform m_LeftThigh, m_LeftCalf, m_LeftFoot;
+        private Transform m_RightThigh, m_RightCalf, m_RightFoot;
         private bool m_ChestBoneSearched;
         private Quaternion m_NetworkHeadRotation;
         private Vector3 m_SpineToChest;
+        private Vector3 m_PelvisToSpine;
         private Vector3 m_ChestToHead;
         private Vector3 m_AppliedLeanOffset;
         private static readonly RaycastHit[] s_LeanHits = new RaycastHit[32];
@@ -186,14 +192,18 @@ namespace Unity.MP_FPS.DollSinger {
         {
             if (float.IsNaN(amount) || float.IsInfinity(amount) || !EnsureLeanBones()) return Vector3.zero;
             amount = Mathf.Clamp(amount, -1f, 1f);
-            float roll = -amount * Mathf.Clamp(m_BodyLeanAngle, 5f, 45f);
-            float waistWeight = m_ChestBone ? 0.75f : 1f;
+            float roll = -amount * Mathf.Clamp(m_BodyLeanAngle, 5f, 65f);
+            float pelvisWeight = PelvisLeanWeight;
+            float waistWeight = m_ChestBone ? 0.8f : 1f;
+            Quaternion pelvis = Quaternion.AngleAxis(roll * pelvisWeight, Vector3.forward);
             Quaternion waist = Quaternion.AngleAxis(roll * waistWeight, Vector3.forward);
             Quaternion total = Quaternion.AngleAxis(roll, Vector3.forward);
-            Vector3 offset = waist * m_SpineToChest + total * m_ChestToHead
-                - m_SpineToChest - m_ChestToHead;
+            Vector3 offset = pelvis * m_PelvisToSpine + waist * m_SpineToChest + total * m_ChestToHead
+                - m_PelvisToSpine - m_SpineToChest - m_ChestToHead;
             return bodyRotation * offset;
         }
+
+        private float PelvisLeanWeight => m_PelvisBone ? Mathf.Clamp(m_PelvisLeanRatio, 0f, 0.65f) : 0f;
 
         private bool EnsureLeanBones()
         {
@@ -201,9 +211,25 @@ namespace Unity.MP_FPS.DollSinger {
             var animator = m_Animator ? m_Animator : GetComponent<Animator>();
             if (!animator || !animator.isHuman) return false;
             m_SpineBone = animator.GetBoneTransform(HumanBodyBones.Spine);
+            m_PelvisBone = animator.GetBoneTransform(HumanBodyBones.Hips);
+            if (!m_SpineBone || !m_PelvisBone || !m_SpineBone.IsChildOf(m_PelvisBone)) m_PelvisBone = null;
+            // MMD's groove joint sits below the pelvis and can shift weight while the
+            // legs bend. Rolling only the hips of a straight-legged pose cannot keep
+            // both feet within reach. Never use an armature/root pivot at ground level.
+            if (m_PelvisBone && m_PelvisBone.parent && m_PelvisBone.parent != animator.transform)
+            {
+                float drop = Vector3.Dot(m_PelvisBone.position - m_PelvisBone.parent.position, transform.up);
+                if (drop >= 0.15f && drop <= 0.4f) m_PelvisBone = m_PelvisBone.parent;
+            }
             m_ChestBone = animator.GetBoneTransform(HumanBodyBones.UpperChest)
                 ?? animator.GetBoneTransform(HumanBodyBones.Chest);
             m_HeadBone = animator.GetBoneTransform(HumanBodyBones.Head);
+            m_LeftThigh = animator.GetBoneTransform(HumanBodyBones.LeftUpperLeg);
+            m_LeftCalf = animator.GetBoneTransform(HumanBodyBones.LeftLowerLeg);
+            m_LeftFoot = animator.GetBoneTransform(HumanBodyBones.LeftFoot);
+            m_RightThigh = animator.GetBoneTransform(HumanBodyBones.RightUpperLeg);
+            m_RightCalf = animator.GetBoneTransform(HumanBodyBones.RightLowerLeg);
+            m_RightFoot = animator.GetBoneTransform(HumanBodyBones.RightFoot);
             m_ChestBoneSearched = true;
             CaptureLeanGeometry();
             return m_SpineBone;
@@ -215,6 +241,8 @@ namespace Unity.MP_FPS.DollSinger {
             Transform chest = m_ChestBone ? m_ChestBone : m_SpineBone;
             Transform head = m_HeadBone ? m_HeadBone : chest;
             Quaternion inverseBody = Quaternion.Inverse(transform.rotation);
+            m_PelvisToSpine = m_PelvisBone
+                ? inverseBody * (m_SpineBone.position - m_PelvisBone.position) : Vector3.zero;
             m_SpineToChest = inverseBody * (chest.position - m_SpineBone.position);
             m_ChestToHead = inverseBody * (head.position - chest.position);
         }
@@ -237,7 +265,7 @@ namespace Unity.MP_FPS.DollSinger {
             return offset * (allowed / distance);
         }
         /// <summary>Upper-body roll about the character's forward axis. Same sign convention as <see cref="LeanRoll"/>.</summary>
-        public float BodyLeanRoll => -m_LeanState * Mathf.Clamp(m_BodyLeanAngle, 5f, 45f);
+        public float BodyLeanRoll => -m_LeanState * Mathf.Clamp(m_BodyLeanAngle, 5f, 65f);
         /// <summary>True while a lean is latched with Alt+Q / Alt+E.</summary>
         public bool IsLeanLocked => input && input.IsLeanLocked;
         public bool IsFreeLooking => m_FreeLookHeld ||
@@ -406,14 +434,28 @@ namespace Unity.MP_FPS.DollSinger {
             Transform leanReference = m_HeadBone ? m_HeadBone : m_ChestBone ? m_ChestBone : m_SpineBone;
             Vector3 headBeforePosition = leanReference.position;
             Quaternion headBeforeLean = m_HeadBone ? m_HeadBone.rotation : Quaternion.identity;
+            Vector3 leftFootPosition = m_LeftFoot ? m_LeftFoot.position : Vector3.zero;
+            Vector3 rightFootPosition = m_RightFoot ? m_RightFoot.position : Vector3.zero;
+            Quaternion leftFootRotation = m_LeftFoot ? m_LeftFoot.rotation : Quaternion.identity;
+            Quaternion rightFootRotation = m_RightFoot ? m_RightFoot.rotation : Quaternion.identity;
+            Vector3 leftKnee = m_LeftCalf ? m_LeftCalf.position : Vector3.zero;
+            Vector3 rightKnee = m_RightCalf ? m_RightCalf.position : Vector3.zero;
             // Roll around the character's forward axis, not the bone's local one — MMD
             // bone axes are arbitrary and would tilt the wrong way.
-            // Keep every bone's local position intact. The head moves along the arc of
-            // the waist/chest joints; it is never translated to force a fixed peek distance.
-            float waistWeight = m_ChestBone ? 0.75f : 1f;
-            m_SpineBone.rotation = Quaternion.AngleAxis(roll * waistWeight, transform.forward) * m_SpineBone.rotation;
+            // Start at the lower-body pivot instead of the short upper spine. All joint positions
+            // stay intact; the same three arcs also supply the network shot-ray offset.
+            float pelvisWeight = PelvisLeanWeight;
+            float waistWeight = m_ChestBone ? 0.8f : 1f;
+            if (m_PelvisBone)
+                m_PelvisBone.rotation = Quaternion.AngleAxis(roll * pelvisWeight, transform.forward) * m_PelvisBone.rotation;
+            m_SpineBone.rotation = Quaternion.AngleAxis(roll * (waistWeight - pelvisWeight), transform.forward) * m_SpineBone.rotation;
             if (m_ChestBone)
-                m_ChestBone.rotation = Quaternion.AngleAxis(roll * 0.25f, transform.forward) * m_ChestBone.rotation;
+                m_ChestBone.rotation = Quaternion.AngleAxis(roll * (1f - waistWeight), transform.forward) * m_ChestBone.rotation;
+            if (pelvisWeight > 0f)
+            {
+                KeepFootAnchor(m_LeftThigh, m_LeftCalf, m_LeftFoot, leftFootPosition, leftFootRotation, leftKnee);
+                KeepFootAnchor(m_RightThigh, m_RightCalf, m_RightFoot, rightFootPosition, rightFootRotation, rightKnee);
+            }
             if (m_IsFirstPersonView && m_HeadBone)
             {
                 // Keep yaw/pitch in world space after the torso bend; only roll follows lean.
@@ -422,6 +464,34 @@ namespace Unity.MP_FPS.DollSinger {
                 m_HeadBone.rotation = Quaternion.AngleAxis(LeanRoll, look * Vector3.forward) * headBeforeLean;
             }
             m_AppliedLeanOffset = leanReference.position - headBeforePosition;
+        }
+
+        // Two-bone IK compensates the pelvis roll without translating bones or dragging
+        // the feet. Preserve the animated knee bend and ankle rotation, including while walking.
+        private void KeepFootAnchor(Transform thigh, Transform calf, Transform foot,
+            Vector3 footPosition, Quaternion footRotation, Vector3 kneePosition)
+        {
+            if (!thigh || !calf || !foot) return;
+            Vector3 hip = thigh.position;
+            float upperLength = Vector3.Distance(hip, calf.position);
+            float lowerLength = Vector3.Distance(calf.position, foot.position);
+            Vector3 toFoot = footPosition - hip;
+            float distance = toFoot.magnitude;
+            if (upperLength < 0.0001f || lowerLength < 0.0001f || distance < 0.0001f) return;
+            Vector3 axis = toFoot / distance;
+            distance = Mathf.Clamp(distance, Mathf.Abs(upperLength - lowerLength) + 0.0001f,
+                upperLength + lowerLength - 0.0001f);
+            Vector3 bend = Vector3.ProjectOnPlane(kneePosition - hip, axis);
+            if (bend.sqrMagnitude < 0.000001f) bend = Vector3.ProjectOnPlane(transform.forward, axis);
+            if (bend.sqrMagnitude < 0.000001f) bend = Vector3.ProjectOnPlane(transform.up, axis);
+            float along = (upperLength * upperLength + distance * distance - lowerLength * lowerLength)
+                / (2f * distance);
+            float height = Mathf.Sqrt(Mathf.Max(0f, upperLength * upperLength - along * along));
+            Vector3 knee = hip + axis * along + bend.normalized * height;
+            thigh.rotation = Quaternion.FromToRotation(calf.position - hip, knee - hip) * thigh.rotation;
+            calf.rotation = Quaternion.FromToRotation(foot.position - calf.position,
+                hip + axis * distance - calf.position) * calf.rotation;
+            foot.rotation = footRotation;
         }
 
         private void OnAnimatorIK(int layerIndex) {
