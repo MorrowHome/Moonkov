@@ -12,6 +12,11 @@ request immediately; Unity Transport owns retransmission and handshake retries.
 - Enter and return requests are serialized so repeated UI clicks cannot create
   overlapping worlds or dispose the same worlds twice through the return path.
 - Service-session leave failures still allow local world cleanup.
+- Prediction and server movement use the same finite, bounded input contract.
+  Server weapon actions consume that validated input as well. Target coordinates
+  cannot overflow the shot ray or turn it behind the requested look direction.
+- Command sending compares NetworkTick values with wrap-aware ordering, retains
+  a single-shot press between ticks and restores pruned current-tick commands.
 
 A dropped raid returns to the ship. It does not silently create a new connection
 in the old client world: the server must settle the previous raid and release its
@@ -19,6 +24,8 @@ equipment before a new join reloads the persisted profile. Seamless reconnect
 would require an explicit server-side grace period and authenticated resumption
 of the same raid, rather than repeating the join request.
 
-Validation covers compilation and progress/reason branches. Host/client latency,
+Validation covers compilation, progress/reason branches, invalid numeric input
+and an isolated ECS run of the real sender across tick wrap, buffered fire,
+continuous light state and command-buffer recovery. Host/client latency,
 packet loss, interrupted connections and persistence recovery need a separate
 multiplayer acceptance run before a production-readiness claim.

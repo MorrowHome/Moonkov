@@ -335,18 +335,18 @@ namespace Unity.MP_FPS
 
                     predictedPlayer.ValueRW.ControllerState.Shoot = false;
 
-                    bool switchedWeapon = DollSingerWeapons.TryEquip(ref predictedPlayer.ValueRW, commandInput.PlayerInput,
+                    bool switchedWeapon = DollSingerWeapons.TryEquip(ref predictedPlayer.ValueRW, input,
                         WeaponManager.Instance.WeaponRegistry);
                     if (switchedWeapon) DollSingerWeapons.SyncEquipment(ref predictedPlayer.ValueRW, WeaponInventory(entity), WeaponManager.Instance.WeaponRegistry);
                     var weaponData =
                         WeaponManager.Instance.WeaponRegistry.GetWeaponData(predictedPlayer.ValueRO.EquippedWeaponID);
                     if (weaponData != null)
                     {
-                        var shotRay = playerGhost.GetShotRay(commandInput.PlayerInput, weaponData.HitscanRange, out var aimPoint);
+                        var shotRay = playerGhost.GetShotRay(input, weaponData.HitscanRange, out var aimPoint);
                         predictedPlayer.ValueRW.AimPoint = aimPoint;
-                        bool wantsToReload = commandInput.PlayerInput.Reload;
-                        bool wantsToShoot = !switchedWeapon && commandInput.PlayerInput.Shoot &&
-                            (!DollSingerWeapons.IsHalo(predictedPlayer.ValueRO.EquippedWeaponID) || commandInput.PlayerInput.Aim);
+                        bool wantsToReload = input.Reload;
+                        bool wantsToShoot = !switchedWeapon && input.Shoot &&
+                            (!DollSingerWeapons.IsHalo(predictedPlayer.ValueRO.EquippedWeaponID) || input.Aim);
                         bool mustReload = (wantsToShoot || weaponData.AutoReloadWhenEmpty) && predictedPlayer.ValueRO.CurrentAmmo <= 0;
 
                         if ((wantsToReload || mustReload) &&

@@ -1,4 +1,3 @@
-using NUnit.Framework.Constraints;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
@@ -51,6 +50,37 @@ public struct PlayerInput
         {
             InputFlags &= ~(uint)flag;
         }
+    }
+
+    // Apply the same numeric contract to client prediction and server simulation.
+    // Command payloads are player intent, never trusted movement or shot state.
+    public PlayerInput Sanitized()
+    {
+        var result = this;
+        const uint knownFlags = (uint)(InputFlag.Jump | InputFlag.Shoot | InputFlag.Sprint | InputFlag.Reload |
+            InputFlag.Aim | InputFlag.ThirdPerson | InputFlag.EquipHalo | InputFlag.EquipRevolver |
+            InputFlag.EquipPistol | InputFlag.HaloLightDisabled);
+        result.InputFlags &= knownFlags;
+        result.MoveInput = math.all(math.isfinite(MoveInput)) ? math.clamp(MoveInput, -1f, 1f) : float2.zero;
+        float moveLengthSq = math.lengthsq(result.MoveInput);
+        if (moveLengthSq > 1f) result.MoveInput *= math.rsqrt(moveLengthSq);
+        if (math.all(math.isfinite(LookYawPitchDegrees)))
+        {
+            result.LookYawPitchDegrees.x = math.fmod(LookYawPitchDegrees.x, 360f);
+            result.LookYawPitchDegrees.y = math.clamp(LookYawPitchDegrees.y, -85f, 85f);
+        }
+        else
+        {
+            result.LookYawPitchDegrees = float2.zero;
+            result.MoveInput = float2.zero;
+            result.SetFlag(InputFlag.Shoot, false);
+        }
+        result.FreeLookOffset = math.all(math.isfinite(FreeLookOffset))
+            ? math.clamp(FreeLookOffset, new float2(-70f, -45f), new float2(70f, 45f)) : float2.zero;
+        result.Lean = math.isfinite(Lean) ? math.clamp(Lean, -1f, 1f) : 0f;
+        result.AimPoint = math.all(math.isfinite(AimPoint)) && math.isfinite(math.lengthsq(AimPoint))
+            ? AimPoint : float3.zero;
+        return result;
     }
 
     public void UpdateFrom(in PlayerInput input, bool updateContinuousState = true)
@@ -106,7 +136,7 @@ public struct ClientInput : IComponentData
 
     public void SetInput(int playerIndex, in PlayerInput playerInput)
     {
-        PlayerInput = playerInput;
+        PlayerInput = playerInput.Sanitized();
     }
 }
 
@@ -116,7 +146,7 @@ public struct ClientMovementInput : IComponentData
 
     public void SetInput(int playerIndex, in PlayerInput playerInput)
     {
-        PlayerInput = playerInput;
+        PlayerInput = playerInput.Sanitized();
     }
 
     public void UpdateFrom(in ClientMovementInput clientInput, bool updateContinuousState = true)
@@ -135,7 +165,7 @@ public struct ClientCommandInput : ICommandData
 
     public void SetPlayerMovementInput(int playerIndex, in PlayerInput playerInput)
     {
-        PlayerInput = playerInput;
+        PlayerInput = playerInput.Sanitized();
     }
 
     public void UpdatePlayerInput(int playerIndex, in PlayerInput playerInput)
@@ -145,7 +175,7 @@ public struct ClientCommandInput : ICommandData
 
     public bool TryGetPlayerMovementInput(int playerIndex, out PlayerInput playerInput)
     {
-        playerInput = PlayerInput;
+        playerInput = PlayerInput.Sanitized();
         return true;
     }
 
@@ -156,6 +186,6 @@ public struct ClientCommandInput : ICommandData
 
     public void SetFrom(in ClientMovementInput clientInput)
     {
-        PlayerInput = clientInput.PlayerInput;
+        PlayerInput = clientInput.PlayerInput.Sanitized();
     }
 }

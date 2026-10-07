@@ -93,8 +93,10 @@ namespace Unity.MP_FPS
                     LayerMask.GetMask("Ground", "Default"));
                 Vector3 requestedTarget = input.AimPoint;
                 Vector3 offset = requestedTarget - origin;
+                // Allow camera/muzzle parallax, but reject overflowing or rearward target intent.
                 if (math.all(math.isfinite(input.AimPoint)) && math.lengthsq(input.AimPoint) > 0f &&
-                    offset.sqrMagnitude > 0.0001f)
+                    math.isfinite(offset.sqrMagnitude) && offset.sqrMagnitude > 0.0001f &&
+                    Vector3.Dot(offset.normalized, direction) >= 0.1f)
                 {
                     direction = offset.normalized;
                     aimPoint = origin + direction * Mathf.Min(offset.magnitude, range);

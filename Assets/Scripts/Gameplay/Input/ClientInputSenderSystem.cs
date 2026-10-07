@@ -1,14 +1,11 @@
-using System.Globalization;
 using Unity.Entities;
 using Unity.NetCode;
-using UnityEngine;
 
 [UpdateInGroup(typeof(GhostInputSystemGroup)), UpdateAfter(typeof(ClientInputReaderSystem))]
 public partial class ClientInputSenderSystem : SystemBase
 {
-    private uint m_PreviouslySentTick;
+    private NetworkTick m_PreviouslySentTick;
     private ClientMovementInput m_InProgressCommandInput;
-    private float m_DeltaTimeSinceLastTick;
 
     protected override void OnCreate()
     {
@@ -24,16 +21,15 @@ public partial class ClientInputSenderSystem : SystemBase
         {
             var previousTick = m_PreviouslySentTick;
             var inProgressCommandInput = m_InProgressCommandInput;
-            var deltaTimeSinceLastTick = m_DeltaTimeSinceLastTick;
-            var deltaTime = World.Time.DeltaTime;
             var bufferLookup = SystemAPI.GetBufferLookup<ClientCommandInput>();
 
             foreach (var (input, entity)
                      in SystemAPI.Query<RefRO<ClientMovementInput>>()
+                         .WithAll<ClientCommandInput>()
                          .WithEntityAccess())
             {
                 var buffer = bufferLookup[entity];
-                if (tick.TickIndexForValidTick > previousTick)
+                if (!previousTick.IsValid || tick.IsNewerThan(previousTick))
                 {
                     // this is a new tick.
                     var commandInput = new ClientCommandInput
@@ -46,19 +42,10 @@ public partial class ClientInputSenderSystem : SystemBase
                     // we can now start a new inprogress input
                     inProgressCommandInput = default;
 
-                    previousTick = tick.TickIndexForValidTick;
-                    deltaTimeSinceLastTick = 0f;
+                    previousTick = tick;
                 }
                 else
                 {
-                    deltaTimeSinceLastTick += deltaTime;
-
-                    if (deltaTimeSinceLastTick >= 1 / 30f)
-                    {
-                        Debug.LogWarning(
-                            $"[{UnityEngine.Time.frameCount.ToString()}] Overdue new command. dt is {deltaTimeSinceLastTick.ToString(CultureInfo.InvariantCulture)}");
-                    }
-
                     // we've already sent this tick
                     // but we've still got client frames happening
                     // so let's record our input for sending when the tick next changes
@@ -74,8 +61,10 @@ public partial class ClientInputSenderSystem : SystemBase
                     }
                     else
                     {
-                        Debug.LogError(
-                            $"[ClientInputSenderSystem] Has processed this server tick, but it isn't in the command buffer");
+                        // Recover a pruned command so prediction always has this tick.
+                        var command = new ClientCommandInput { Tick = tick, ClientInterpolationTick = networkTime.InterpolationTick };
+                        command.SetFrom(input.ValueRO);
+                        buffer.AddCommandData(command);
                     }
                 }
             }
