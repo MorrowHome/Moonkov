@@ -239,7 +239,7 @@ MonoBehaviour:
   <SprintLandingSpeedMultiplier>k__BackingField: 10
   <SprintAnimationMotionScale>k__BackingField: 0.25
   <JumpHeight>k__BackingField: 1.2
-  <Gravity>k__BackingField: -15
+  <Gravity>k__BackingField: -1.62
   <TerminalVelocity>k__BackingField: -53
   <StandingFallSpeed>k__BackingField: -3.75
   <JumpTimeout>k__BackingField: 0
@@ -454,6 +454,10 @@ PrefabInstance:
     - target: {fileID: 1202634575877374931, guid: 8ad6a3c7c1d9bd64e9e175595fa74590, type: 3}
       propertyPath: m_Enabled
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1202634575877374931, guid: 8ad6a3c7c1d9bd64e9e175595fa74590, type: 3}
+      propertyPath: m_Gravity
+      value: -1.62
       objectReference: {fileID: 0}
     - target: {fileID: 2719931389219654408, guid: 8ad6a3c7c1d9bd64e9e175595fa74590, type: 3}
       propertyPath: m_Enabled

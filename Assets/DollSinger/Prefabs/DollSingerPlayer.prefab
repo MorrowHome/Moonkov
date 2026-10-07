@@ -3915,7 +3915,7 @@ MonoBehaviour:
   m_FootstepAudioClips: []
   m_FootstepAudioVolume: 0.5
   m_JumpHeight: 1.2
-  m_Gravity: -15
+  m_Gravity: -1.62
   m_JumpTimeout: 0.5
   m_FallTimeout: 0.15
   m_Grounded: 1

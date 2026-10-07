@@ -38,8 +38,8 @@ public class PredictedPlayerControllerConstsAuthoring : MonoBehaviour
     [field: SerializeField, Tooltip("The height the player can jump")]
     public float JumpHeight { get; private set; } = 1.2f;
 
-    [field: SerializeField, Tooltip("The character uses its own gravity value. The engine default is -9.81f")]
-    public float Gravity { get; private set; } = -15.0f;
+    [field: SerializeField, Tooltip("Lunar surface acceleration in metres per second squared.")]
+    public float Gravity { get; private set; } = -1.62f;
 
     [field: SerializeField]
     public float TerminalVelocity { get; private set; } = -53.0f;
