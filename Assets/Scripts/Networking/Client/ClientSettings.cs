@@ -19,11 +19,12 @@ namespace Unity.MP_FPS
     public static class ClientSettings
     {
         public const string FileName = "moon-client.local.json";
+        public const string EditorFileName = "moon-client.editor.local.json";
 
         sealed class Values
         {
             public string AccountServiceUrl;
-            public bool AllowLanHttp;
+            public bool? AllowLanHttp;
             public string ServerAddress;
             public int ServerPort;
             // -1 means "leave whatever the player chose alone".
@@ -55,6 +56,29 @@ namespace Unity.MP_FPS
                     Debug.LogWarning($"[Moonkov] ignoring {FileName}: {exception.Message}");
                     s_Values = new Values();
                 }
+#if UNITY_EDITOR
+                // Local development must not replace the settings shipped to players.
+                try
+                {
+                    string editorPath = Path.Combine(Path.GetDirectoryName(Application.dataPath), EditorFileName);
+                    if (File.Exists(editorPath))
+                    {
+                        var overrides = JsonConvert.DeserializeObject<Values>(File.ReadAllText(editorPath));
+                        if (overrides != null)
+                        {
+                            if (overrides.AccountServiceUrl != null) s_Values.AccountServiceUrl = overrides.AccountServiceUrl;
+                            if (overrides.ServerAddress != null) s_Values.ServerAddress = overrides.ServerAddress;
+                            if (overrides.ServerPort != 0) s_Values.ServerPort = overrides.ServerPort;
+                            if (overrides.ConnectionMode != -1) s_Values.ConnectionMode = overrides.ConnectionMode;
+                            s_Values.AllowLanHttp = overrides.AllowLanHttp ?? s_Values.AllowLanHttp;
+                        }
+                    }
+                }
+                catch (Exception exception)
+                {
+                    Debug.LogWarning($"[Moonkov] ignoring {EditorFileName}: {exception.Message}");
+                }
+#endif
                 return s_Values;
             }
         }
@@ -64,7 +88,7 @@ namespace Unity.MP_FPS
         static void Reset() => s_Values = null;
 
         public static string AccountServiceUrl => Configuration.AccountServiceUrl?.Trim();
-        public static bool AllowLanHttp => Configuration.AllowLanHttp;
+        public static bool AllowLanHttp => Configuration.AllowLanHttp ?? false;
 
         /// <summary>The game server a fresh install should point at, or null for the built-in default.</summary>
         public static string ServerAddress =>

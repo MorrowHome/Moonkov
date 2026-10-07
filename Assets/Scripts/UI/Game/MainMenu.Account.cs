@@ -165,6 +165,12 @@ namespace Unity.MP_FPS.Client
             UpdateAccountPanel();
             try { await action(lifetime.Token); }
             catch (OperationCanceledException) { if (!lifetime.IsCancellationRequested) MoonkovLocalization.Set(m_AccountMessage, m_AccountError = "Account service timed out. Please retry."); }
+            catch (System.Net.WebException ex)
+            {
+                if (!lifetime.IsCancellationRequested) MoonkovLocalization.Set(m_AccountMessage, m_AccountError =
+                    ex.Status == System.Net.WebExceptionStatus.Timeout || ex.Status == System.Net.WebExceptionStatus.RequestCanceled
+                        ? "Account service timed out. Please retry." : "Cannot reach account service. Please retry.");
+            }
             catch (System.Net.Http.HttpRequestException) { if (!lifetime.IsCancellationRequested) MoonkovLocalization.Set(m_AccountMessage, m_AccountError = "Cannot reach account service. Please retry."); }
             catch (Exception ex) { if (!lifetime.IsCancellationRequested) MoonkovLocalization.Set(m_AccountMessage, m_AccountError = ex.Message); }
             finally

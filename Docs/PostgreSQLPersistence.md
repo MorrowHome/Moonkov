@@ -34,6 +34,20 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Backend/Start-Backend.ps1 -B
 
 它会启动项目数据库和数据服务，识别并保留已经运行的服务。去掉 `-Background` 可以前台运行并查看输出。
 
+如果发行配置指向公网，但本机开发不希望绕经 VPS/VPN，可在项目根目录创建
+`moon-client.editor.local.json`：
+
+```json
+{
+  "AccountServiceUrl": "http://127.0.0.1:5080/"
+}
+```
+
+它只在 Unity Editor 中覆盖提供的字段；未提供的字段继续使用
+`moon-client.local.json`。本地覆盖不随构建复制，打包客户端保持公网地址。
+修改后重新进入 Play 生效。这解决本机开发的公网访问依赖，并不证明其他设备
+的 VPN、VPS 或公网链路已经修复。
+
 然后在 Unity 进入 Play。主菜单先注册或登录：用户名 3–32 位字母、数字或下划线，密码 8–128 位。注册成功自动登录；登录后菜单显示账号仓库，再选角色、Start Host 或 Connect to Server。Server-only 启动不需要登录菜单，加入的客户端仍须先登录。
 
 多开测试每个客户端使用不同账号。同一账号不能同时加入同一个游戏服务器；编辑器虚拟副本的登录凭证按项目路径分别保存。

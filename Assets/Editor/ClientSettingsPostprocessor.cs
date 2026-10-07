@@ -15,8 +15,8 @@ using UnityEngine;
 /// This is an IPostprocessBuildWithReport rather than a menu item on purpose: it runs for every
 /// build, including the ones started from Build Settings.
 ///
-/// The source is the copy in the project root, the same file the editor reads. It is gitignored,
-/// so every machine keeps its own.
+/// The source is the public configuration in the project root. Editor-only overrides
+/// in moon-client.editor.local.json are never copied into a build.
 /// </summary>
 public sealed class ClientSettingsPostprocessor : IPostprocessBuildWithReport
 {
