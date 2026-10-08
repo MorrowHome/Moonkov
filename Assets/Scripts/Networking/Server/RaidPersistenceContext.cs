@@ -88,14 +88,23 @@ namespace Unity.MP_FPS
         public readonly Dictionary<Entity, Deploy> Deployments = new Dictionary<Entity, Deploy>();
         public readonly Dictionary<Entity, RaidSession> ReadyRaids = new Dictionary<Entity, RaidSession>();
         public readonly Dictionary<Entity, RaidInventoryState> Inventories = new Dictionary<Entity, RaidInventoryState>();
-        public bool Enabled => m_Http != null;
+        public bool Enabled => m_Http != null || m_Offline != null;
+        private readonly OfflineProfileStore m_Offline;
         private readonly HttpClient m_Http;
         private readonly CancellationTokenSource m_Stop = new CancellationTokenSource();
         private readonly string m_Outbox;
         private bool m_Disposed;
         public Task ShutdownTask { get; private set; } = Task.CompletedTask;
 
-        public RaidPersistenceContext() : this(null) { }
+        public RaidPersistenceContext() : this((string)null) { }
+
+        public RaidPersistenceContext(OfflineProfileStore store)
+        {
+            m_Offline = store ?? throw new ArgumentNullException(nameof(store));
+            m_Outbox = store.OutboxDirectory;
+            Directory.CreateDirectory(m_Outbox);
+            ReplayOutbox();
+        }
 
         public RaidPersistenceContext(string configPath, HttpMessageHandler handler = null)
         {
@@ -118,6 +127,11 @@ namespace Unity.MP_FPS
             m_Http = handler == null ? new HttpClient() : new HttpClient(handler);
             m_Http.BaseAddress = url; m_Http.Timeout = TimeSpan.FromSeconds(10);
             m_Http.DefaultRequestHeaders.Add("X-Moon-Server-Key", config.ServerKey);
+            ReplayOutbox();
+        }
+
+        private void ReplayOutbox()
+        {
             // Replay receipts retained across a normal restart or a lost HTTP acknowledgement.
             foreach (string file in Directory.GetFiles(m_Outbox, "*.json"))
             {
@@ -241,6 +255,7 @@ namespace Unity.MP_FPS
 
         private async Task<Profile> PostAsync(string path, object payload)
         {
+            if (m_Offline != null) return m_Offline.Request(path, payload);
             using (var content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json"))
             using (var response = await m_Http.PostAsync(path, content, m_Stop.Token).ConfigureAwait(false))
             {
@@ -299,7 +314,7 @@ namespace Unity.MP_FPS
                     }
                 }
             }
-            finally { m_Http.Dispose(); m_Stop.Dispose(); }
+            finally { m_Http?.Dispose(); m_Stop.Dispose(); }
         }
     }
 }

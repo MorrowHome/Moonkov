@@ -509,5 +509,16 @@
   "Unable to start this session. Please try again.": "无法开始本次会话，请重试。",
   "Cannot start server. The port may be in use.": "无法启动服务器，端口可能已被占用。",
   "World synchronization timed out. Please reconnect.": "场景同步超时，请重新连接。",
-  "Player spawn timed out. Please reconnect.": "角色生成超时，请重新连接。"
+  "Player spawn timed out. Please reconnect.": "角色生成超时，请重新连接。",
+  "SINGLEPLAYER": "单机模式",
+  "ONLINE ACCOUNTS": "联网账号",
+  "CLOSE SINGLEPLAYER": "关闭单机档案",
+  "Open the independent local stash and single-player raids.": "打开独立本地仓库与单机战局。",
+  "Single player requires a Client+Server build.": "单机模式需要包含客户端与服务端的 Client+Server 版本。",
+  "Single-player Operator": "单机行动员",
+  "Single-player save opened.": "已打开单机存档。",
+  "Sign in to your online account.": "请登录你的联网账号。",
+  "Single-player save is invalid. The original file was preserved.": "单机存档无效，原文件已保留。",
+  "Single-player save is in use or unavailable. Close other instances and retry.": "单机存档正在使用或无法访问，请关闭其他游戏实例后重试。",
+  "Single-player settlement recovery is pending. Reopen single player to retry.": "单机结算尚待恢复，请重新打开单机模式重试。"
 }

@@ -51,12 +51,14 @@ namespace Unity.MP_FPS
             var lootEntity=state.EntityManager.CreateSingleton(new RaidLootWorld());
             state.EntityManager.AddComponentObject(lootEntity,new RaidLootContainers());
             m_PersistenceEntity = state.EntityManager.CreateEntity();
-            state.EntityManager.AddComponentObject(m_PersistenceEntity, new RaidPersistenceContext());
         }
 
         [BurstDiscard]
         public void OnUpdate(ref SystemState state)
         {
+            // Initialize before borrowing buffers/lookups: adding the managed context
+            // is a structural change, and the World now has its session-mode marker.
+            Persistence(ref state);
             _joinedClientLookup.Update(ref state);
 
             var ecb = SystemAPI.GetSingletonRW<BeginSimulationEntityCommandBufferSystem.Singleton>()
@@ -380,7 +382,9 @@ namespace Unity.MP_FPS
                     !SystemAPI.HasComponent<NetworkStreamInGame>(rpcReceive.ValueRW.SourceConnection))
                 {
                     var persistence = Persistence(ref state);
-                    if (!RaidRules.ValidLoadout(request.ValueRO.CarryCells) || (!persistence.Enabled && request.ValueRO.CarryCells != 0))
+                    if ((SystemAPI.HasSingleton<OfflineRaidMode>() &&
+                            (persistence.Joins.Count != 0 || persistence.Profiles.Count != 0 || persistence.Deployments.Count != 0)) ||
+                        !RaidRules.ValidLoadout(request.ValueRO.CarryCells) || (!persistence.Enabled && request.ValueRO.CarryCells != 0))
                         ecb.AddComponent(rpcReceive.ValueRW.SourceConnection, new NetworkStreamRequestDisconnect { Reason=NetworkStreamDisconnectReason.ConnectionClose });
                     else if (persistence.Enabled)
                     {

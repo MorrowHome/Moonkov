@@ -165,9 +165,15 @@ namespace Unity.MP_FPS
 
         async Task StartRequestedGameAsync(CreationType creationType)
         {
-            if (!IsHeadless && !AccountClient.IsLoggedIn)
+            if (!IsHeadless && !PlayerProfileClient.IsLoggedIn)
             {
                 Debug.LogWarning("Sign in before starting a raid.");
+                return;
+            }
+            if ((creationType == CreationType.Offline) != PlayerProfileClient.IsOffline ||
+                (creationType == CreationType.Offline && !PlayerProfileClient.SupportsSinglePlayer))
+            {
+                Debug.LogWarning("Select the matching online or single-player profile before starting a raid.");
                 return;
             }
             if (GameSettings.Instance.GameState != GlobalGameState.MainMenu)
@@ -295,6 +301,9 @@ namespace Unity.MP_FPS
                         GameConnection = await GameConnection.HostGameAsync();
                         break;
                     }
+                case CreationType.Offline:
+                    GameConnection = await GameConnection.OfflineGameAsync();
+                    break;
                 case (CreationType.ConnectAndJoin): //Direct connection - client
                     {
                         GameConnection = await GameConnection.ConnectGameAsync();
@@ -313,7 +322,12 @@ namespace Unity.MP_FPS
             }
             else
             {
-                CreateEntityWorlds(creationType == CreationType.Host, out server, out client);
+                CreateEntityWorlds(creationType == CreationType.Host || creationType == CreationType.Offline, out server, out client);
+                if (creationType == CreationType.Offline)
+                {
+                    server.EntityManager.CreateEntity(typeof(OfflineRaidMode));
+                    client.EntityManager.CreateEntity(typeof(OfflineRaidMode));
+                }
             }
 
             // If the server was created successfully, start listening.
@@ -324,6 +338,24 @@ namespace Unity.MP_FPS
                 var serverDriver = drvQuery.GetSingletonRW<NetworkStreamDriver>();
                 if (!serverDriver.ValueRW.Listen(GameConnection.ListenEndpoint))
                     throw new InvalidOperationException("Cannot start server. The port may be in use.");
+                if (creationType == CreationType.Offline)
+                {
+                    // NetCode may choose IPC or UDP for the local client (e.g. the
+                    // Editor network simulator forces UDP). Port 0 gives each server
+                    // driver a different port, so select the matching transport.
+                    using var clientDriverQuery = client.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<NetworkStreamDriver>());
+                    var clientDrivers = clientDriverQuery.GetSingleton<NetworkStreamDriver>().DriverStore;
+                    var transport = clientDrivers.GetDriverType(clientDrivers.FirstDriver);
+                    var serverDrivers = serverDriver.ValueRO.DriverStore;
+                    bool matched = false;
+                    for (int id = serverDrivers.FirstDriver; id < serverDrivers.LastDriver; id++)
+                        if (serverDrivers.GetDriverType(id) == transport)
+                        {
+                            GameConnection.UseLocalServerEndpoint(serverDriver.ValueRW.GetLocalEndPoint(id));
+                            matched = true; break;
+                        }
+                    if (!matched) throw new InvalidOperationException("No matching local server transport.");
+                }
                 await ScenesLoader.LoadGameplayAsync(server, null);
             }
 

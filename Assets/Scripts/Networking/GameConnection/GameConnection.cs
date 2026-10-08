@@ -102,6 +102,18 @@ namespace Unity.MP_FPS
             return Task.FromResult(gameConnection);
         }
 
+        public static Task<GameConnection> OfflineGameAsync()
+        {
+            return Task.FromResult(new GameConnection
+            {
+                ListenEndpoint = NetworkEndpoint.LoopbackIpv4,
+                ConnectEndpoint = NetworkEndpoint.LoopbackIpv4,
+                SessionConnectionType = NetworkType.Direct
+            });
+        }
+
+        public void UseLocalServerEndpoint(NetworkEndpoint endpoint) => ConnectEndpoint = endpoint;
+
         public static async Task<GameConnection> ConnectGameAsync()
         {
             ushort port = ushort.Parse(ConnectionSettings.Instance.Port);

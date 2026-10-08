@@ -34,5 +34,6 @@
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:Instance template="StashScreen" name="stashScreenHost" class="stash-host" />
+        <ui:Button name="ProfileMode" text="SINGLEPLAYER" style="position: absolute; left: 24px; bottom: 24px; width: 190px; height: 34px;" />
     </ui:VisualElement>
 </ui:UXML>

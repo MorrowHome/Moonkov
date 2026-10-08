@@ -2138,6 +2138,52 @@ MonoBehaviour:
     m_Key: Player spawn timed out. Please reconnect.
     m_Metadata:
       m_Items: []
+  - m_Id: 329937683492864
+    m_Key: SINGLEPLAYER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 329937712852992
+    m_Key: ONLINE ACCOUNTS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 329937712852993
+    m_Key: CLOSE SINGLEPLAYER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 329937712852994
+    m_Key: Open the independent local stash and single-player raids.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 329937712852995
+    m_Key: Single player requires a Client+Server build.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 329937712852996
+    m_Key: Single-player Operator
+    m_Metadata:
+      m_Items: []
+  - m_Id: 329937712852997
+    m_Key: Single-player save opened.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 329937712852998
+    m_Key: Sign in to your online account.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 329937712852999
+    m_Key: Single-player save is invalid. The original file was preserved.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 329937712853000
+    m_Key: Single-player save is in use or unavailable. Close other instances and
+      retry.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 329937712853001
+    m_Key: Single-player settlement recovery is pending. Reopen single player to
+      retry.
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

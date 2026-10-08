@@ -10,12 +10,21 @@ namespace Unity.MP_FPS
     {
         private Entity m_PersistenceEntity;
 
-        private RaidPersistenceContext Persistence(ref SystemState state) =>
-            state.EntityManager.GetComponentObject<RaidPersistenceContext>(m_PersistenceEntity);
+        private RaidPersistenceContext Persistence(ref SystemState state)
+        {
+            if (!state.EntityManager.HasComponent<RaidPersistenceContext>(m_PersistenceEntity))
+            {
+                var context = SystemAPI.HasSingleton<OfflineRaidMode>()
+                    ? new RaidPersistenceContext(PlayerProfileClient.OfflineStore) : new RaidPersistenceContext();
+                state.EntityManager.AddComponentObject(m_PersistenceEntity, context);
+            }
+            return state.EntityManager.GetComponentObject<RaidPersistenceContext>(m_PersistenceEntity);
+        }
 
         public void OnDestroy(ref SystemState state)
         {
-            if (state.EntityManager.Exists(m_PersistenceEntity)) Persistence(ref state).Dispose();
+            if (state.EntityManager.Exists(m_PersistenceEntity) && state.EntityManager.HasComponent<RaidPersistenceContext>(m_PersistenceEntity))
+                Persistence(ref state).Dispose();
         }
 
         private void PollPersistence(ref SystemState state, EntityCommandBuffer ecb)

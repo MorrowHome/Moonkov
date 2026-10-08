@@ -36,7 +36,7 @@ namespace Unity.MP_FPS
                 if (rpc.ValueRO.Sequence > current.Sequence)
                 {
                     EntityManager.SetComponentData(m_State, new RaidClientState { Snapshot = rpc.ValueRO });
-                    if (!World.IsThinClient()) AccountClient.UpdateStash(rpc.ValueRO.StashDust, rpc.ValueRO.StashAlloy, rpc.ValueRO.StashCells);
+                    if (!World.IsThinClient()) PlayerProfileClient.UpdateStash(rpc.ValueRO.StashDust, rpc.ValueRO.StashAlloy, rpc.ValueRO.StashCells);
                 }
                 ecb.DestroyEntity(entity);
             }

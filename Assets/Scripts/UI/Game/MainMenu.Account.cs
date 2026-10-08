@@ -25,6 +25,7 @@ namespace Unity.MP_FPS.Client
         private string m_AccountError;
         private GlobalGameState m_LastStashGameState;
         private LunarBackdrop m_LoginMoon;
+        private Button m_ProfileModeButton;
 
         private void InitializeAccountPanel()
         {
@@ -32,6 +33,8 @@ namespace Unity.MP_FPS.Client
             m_LoginMoon = new LunarBackdrop(BackdropMode.Login, canvas);
             m_LoginMoon.AddToClassList("terminal-scene-shade"); canvas.Insert(0, m_LoginMoon);
             m_AccountStop = new CancellationTokenSource();
+            m_ProfileModeButton = m_MainMenu.Q<Button>("ProfileMode");
+            m_ProfileModeButton.clicked += SwitchProfileMode;
             m_ConnectionPanel = m_MainMenu.Q<VisualElement>("ConnectionPanel");
             m_AccountPanel = new VisualElement { name = "AccountPanel" };
             m_AccountPanel.Add(new Label("MOON RAID ACCOUNT"));
@@ -52,6 +55,7 @@ namespace Unity.MP_FPS.Client
             m_MainMenu.Q<TextField>(UIElementNames.NameInputField).SetEnabled(false);
             m_MainMenu.Q<VisualElement>("InputPlayerName").style.display = DisplayStyle.None;
             m_ShowConnectionMenu = false;
+            m_AccountVerified = PlayerProfileClient.IsOffline;
             m_BackToStash = new Button(ShowStash) { text = "BACK TO STASH" };
             m_ConnectionPanel.Insert(0, m_BackToStash);
             m_CarryCells = new IntegerField("ENERGY CELLS TO CARRY") { name = "carryCells", isDelayed = true };
@@ -72,26 +76,31 @@ namespace Unity.MP_FPS.Client
             }
             m_AccountConfigurationValid = true;
             UpdateAccountPanel();
-            if (AccountClient.IsLoggedIn) RestoreLogin();
+            if (PlayerProfileClient.IsLoggedIn) RestoreLogin();
         }
 
         private void UpdateAccountPanel()
         {
-            bool loggedIn = AccountClient.IsLoggedIn && m_AccountVerified;
+            bool loggedIn = PlayerProfileClient.IsLoggedIn && m_AccountVerified;
+            MoonkovLocalization.Set(m_ProfileModeButton, PlayerProfileClient.IsOffline ? "ONLINE ACCOUNTS" : "SINGLEPLAYER");
+            m_ProfileModeButton.SetEnabled((!m_AccountBusy || !PlayerProfileClient.IsOffline) && PlayerProfileClient.SupportsSinglePlayer);
+            MoonkovLocalization.Set(m_Logout, PlayerProfileClient.IsOffline ? "CLOSE SINGLEPLAYER" : "LOG OUT");
+            m_ProfileModeButton.tooltip = MoonkovLocalization.Text(PlayerProfileClient.SupportsSinglePlayer
+                ? "Open the independent local stash and single-player raids." : "Single player requires a Client+Server build.");
             bool showStash = loggedIn && !m_ShowConnectionMenu;
             m_LoginMoon.style.display = showStash ? DisplayStyle.None : DisplayStyle.Flex;
             m_AccountPanel.style.display = loggedIn ? DisplayStyle.None : DisplayStyle.Flex;
             m_ConnectionPanel.style.display = loggedIn && m_ShowConnectionMenu ? DisplayStyle.Flex : DisplayStyle.None;
             m_MainMenu.Q<VisualElement>("Container").style.display = showStash ? DisplayStyle.None : DisplayStyle.Flex;
-            m_StashScreen.Present(AccountClient.DisplayName, GameSettings.Instance.PlayerCharacter,
-                AccountClient.StashDust, AccountClient.StashAlloy, AccountClient.StashCells, showStash, m_AccountBusy,
+            m_StashScreen.Present(PlayerProfileClient.DisplayName, GameSettings.Instance.PlayerCharacter,
+                PlayerProfileClient.StashDust, PlayerProfileClient.StashAlloy, PlayerProfileClient.StashCells, showStash, m_AccountBusy,
                 m_AccountError ?? ConnectionSettings.Instance.ConnectionError);
             m_CreateGameButton.SetEnabled(!m_AccountBusy); m_StartHostButton.SetEnabled(!m_AccountBusy); m_ConnectToServerButton.SetEnabled(!m_AccountBusy);
-            MoonkovLocalization.Set(m_LoggedInLabel, "Signed in as {0}\nSTASH: Dust {1}   Alloy {2}   Cells {3}" , AccountClient.DisplayName, AccountClient.StashDust, AccountClient.StashAlloy, AccountClient.StashCells);
+            MoonkovLocalization.Set(m_LoggedInLabel, "Signed in as {0}\nSTASH: Dust {1}   Alloy {2}   Cells {3}" , PlayerProfileClient.DisplayName, PlayerProfileClient.StashDust, PlayerProfileClient.StashAlloy, PlayerProfileClient.StashCells);
             m_LoggedInLabel.style.whiteSpace = WhiteSpace.Normal;
-            m_CarryCells.SetValueWithoutNotify(AccountClient.CarryCells);
+            m_CarryCells.SetValueWithoutNotify(PlayerProfileClient.CarryCells);
             m_CarryCells.SetEnabled(!m_AccountBusy);
-            MoonkovLocalization.Set(m_CarryNote, "Carry {0}/{1} cells / Stash {2}.\nEach full cell stores {3} energy. [R] spends energy per round; partial charge is retained. Lost on death." , AccountClient.CarryCells, RaidRules.BagCapacity, AccountClient.StashCells, BatteryEnergy.Capacity);
+            MoonkovLocalization.Set(m_CarryNote, "Carry {0}/{1} cells / Stash {2}.\nEach full cell stores {3} energy. [R] spends energy per round; partial charge is retained. Lost on death." , PlayerProfileClient.CarryCells, RaidRules.BagCapacity, PlayerProfileClient.StashCells, BatteryEnergy.Capacity);
             m_Login.SetEnabled(!m_AccountBusy && m_AccountConfigurationValid);
             m_Register.SetEnabled(!m_AccountBusy && m_AccountConfigurationValid); m_Logout.SetEnabled(!m_AccountBusy);
             m_Username.SetEnabled(!m_AccountBusy); m_Password.SetEnabled(!m_AccountBusy);
@@ -101,8 +110,8 @@ namespace Unity.MP_FPS.Client
         {
             await AccountAction(async ct =>
             {
-                await AccountClient.ValidateAsync(m_AccountServiceUrl, ct);
-                m_AccountVerified = AccountClient.IsLoggedIn;
+                await PlayerProfileClient.ValidateAsync(m_AccountServiceUrl, ct);
+                m_AccountVerified = PlayerProfileClient.IsLoggedIn;
                 MoonkovLocalization.Set(m_AccountMessage, m_AccountVerified ? "Signed in." : "Login expired. Please sign in again.");
             });
         }
@@ -111,7 +120,7 @@ namespace Unity.MP_FPS.Client
         {
             await AccountAction(async ct =>
             {
-                await AccountClient.AuthenticateAsync(m_AccountServiceUrl, m_Username.value, m_Password.value, register, ct);
+                await PlayerProfileClient.AuthenticateAsync(m_AccountServiceUrl, m_Username.value, m_Password.value, register, ct);
                 m_Password.value = "";
                 m_AccountVerified = true;
                 MoonkovLocalization.Set(m_AccountMessage, "Signed in.");
@@ -122,7 +131,7 @@ namespace Unity.MP_FPS.Client
         {
             await AccountAction(async ct =>
             {
-                await AccountClient.LogoutAsync(m_AccountServiceUrl, ct);
+                await PlayerProfileClient.LogoutAsync(m_AccountServiceUrl, ct);
                 m_AccountVerified = false;
                 m_ShowConnectionMenu = false;
                 m_Password.value = "";
@@ -130,10 +139,38 @@ namespace Unity.MP_FPS.Client
             });
         }
 
-        private void ShowRaidPreparation() { m_ShowConnectionMenu = true; UpdateAccountPanel(); }
+        private void ShowRaidPreparation()
+        {
+            if (PlayerProfileClient.IsOffline) GameManager.Instance.StartGameAsync(CreationType.Offline);
+            else { m_ShowConnectionMenu = true; UpdateAccountPanel(); }
+        }
+
+        private async void SwitchProfileMode()
+        {
+            if (GameSettings.Instance.GameState != GlobalGameState.MainMenu) return;
+            if (m_AccountBusy && !PlayerProfileClient.IsOffline)
+            {
+                var previous = m_AccountStop; previous.Cancel(); previous.Dispose();
+                m_AccountStop = new CancellationTokenSource(); m_AccountBusy = false;
+            }
+            await AccountAction(async ct =>
+            {
+                m_ShowConnectionMenu = false;
+                if (PlayerProfileClient.IsOffline)
+                {
+                    PlayerProfileClient.LeaveOffline(); m_AccountVerified = false;
+                    MoonkovLocalization.Set(m_AccountMessage, "Sign in to your online account.");
+                }
+                else
+                {
+                    await PlayerProfileClient.EnterOfflineAsync(ct); m_AccountVerified = true;
+                    MoonkovLocalization.Set(m_AccountMessage, "Single-player save opened.");
+                }
+            }, allowOffline: true);
+        }
         private void CarryCellsChanged(ChangeEvent<int> evt)
         {
-            AccountClient.SelectCarryCells(evt.newValue);
+            PlayerProfileClient.SelectCarryCells(evt.newValue);
             UpdateAccountPanel();
         }
         private void ShowStash() { m_ShowConnectionMenu = false; UpdateAccountPanel(); }
@@ -144,21 +181,21 @@ namespace Unity.MP_FPS.Client
             m_LastStashGameState = gameState;
             if (!returnedToMenu) return;
             m_ShowConnectionMenu = false;
-            if (AccountClient.IsLoggedIn) RefreshStash();
+            if (PlayerProfileClient.IsLoggedIn) RefreshStash();
             else UpdateAccountPanel();
         }
         private async void RefreshStash()
         {
             await AccountAction(async ct =>
             {
-                await AccountClient.ValidateAsync(m_AccountServiceUrl, ct);
-                m_AccountVerified = AccountClient.IsLoggedIn;
+                await PlayerProfileClient.ValidateAsync(m_AccountServiceUrl, ct);
+                m_AccountVerified = PlayerProfileClient.IsLoggedIn;
             });
         }
 
-        private async Task AccountAction(Func<CancellationToken, Task> action)
+        private async Task AccountAction(Func<CancellationToken, Task> action, bool allowOffline = false)
         {
-            if (m_AccountBusy || !m_AccountConfigurationValid) return;
+            if (m_AccountBusy || (!m_AccountConfigurationValid && !PlayerProfileClient.IsOffline && !allowOffline)) return;
             var lifetime = m_AccountStop;
             m_AccountError = null;
             m_AccountBusy = true;
@@ -183,6 +220,7 @@ namespace Unity.MP_FPS.Client
         {
             m_LoginMoon?.Dispose(); m_LoginMoon?.RemoveFromHierarchy(); m_LoginMoon = null;
             m_AccountStop?.Cancel();
+            if (m_ProfileModeButton != null) m_ProfileModeButton.clicked -= SwitchProfileMode;
             GameSettings.Instance.propertyChanged -= StashSettingsChanged;
             m_StashScreen?.Dispose(); m_StashScreen = null;
             m_BackToStash?.RemoveFromHierarchy();

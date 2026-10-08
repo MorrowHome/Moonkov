@@ -277,26 +277,26 @@ namespace Unity.MP_FPS.Client
             }
             else if (m_Step == 2)
             {
-                AccountClient.SelectCarryCells(AccountClient.CarryCells);
+                PlayerProfileClient.SelectCarryCells(PlayerProfileClient.CarryCells);
                 var carry = main.Q<IntegerField>("operationCarryCells");
-                carry.SetValueWithoutNotify(AccountClient.CarryCells); carry.SetEnabled(!m_Busy);
+                carry.SetValueWithoutNotify(PlayerProfileClient.CarryCells); carry.SetEnabled(!m_Busy);
                 var cargo = main.Q<Label>("carrySummary");
                 var gauge = main.Q<VisualElement>(className: "terminal-cargo-gauge-fill");
                 void PresentCarry()
                 {
-                    MoonkovLocalization.Set(cargo, "Carry {0}/{1} / Stash {2}" , AccountClient.CarryCells, RaidRules.BagCapacity, m_Cells);
-                    gauge.style.width = Length.Percent(100f * AccountClient.CarryCells / Mathf.Max(1, RaidRules.BagCapacity));
+                    MoonkovLocalization.Set(cargo, "Carry {0}/{1} / Stash {2}" , PlayerProfileClient.CarryCells, RaidRules.BagCapacity, m_Cells);
+                    gauge.style.width = Length.Percent(100f * PlayerProfileClient.CarryCells / Mathf.Max(1, RaidRules.BagCapacity));
                 }
                 carry.RegisterValueChangedCallback(evt =>
                 {
-                    AccountClient.SelectCarryCells(evt.newValue); carry.SetValueWithoutNotify(AccountClient.CarryCells); PresentCarry();
+                    PlayerProfileClient.SelectCarryCells(evt.newValue); carry.SetValueWithoutNotify(PlayerProfileClient.CarryCells); PresentCarry();
                 });
                 PresentCarry();
             }
             else if (m_Step == 4)
             {
                 main.Q<Label>("statValue0").text = "DOLLSINGER";
-                main.Q<Label>("statValue1").text = AccountClient.CarryCells + " ENERGY CELLS";
+                main.Q<Label>("statValue1").text = PlayerProfileClient.CarryCells + " ENERGY CELLS";
                 var go = main.Q<Button>("launch"); go.clicked += m_Prepare; go.SetEnabled(!m_Busy);
             }
             m_Content.Q<Button>("back").clicked += () => { if (m_Step > 0) { m_Step--; Render(); } else Navigate(0); };

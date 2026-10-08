@@ -166,7 +166,7 @@ namespace Unity.MP_FPS
                 m_CarryCells.SetEnabled(!saving && !deploying);
                 // Do not replace text while the player is editing it.
                 if (m_CarryCells.panel?.focusController.focusedElement is not VisualElement focused || !m_CarryCells.Contains(focused))
-                    m_CarryCells.SetValueWithoutNotify(AccountClient.CarryCells);
+                    m_CarryCells.SetValueWithoutNotify(PlayerProfileClient.CarryCells);
                 MoonkovLocalization.Set(m_LoadoutNote, deploying ? "Preparing loadout. Waiting for server confirmation..."
                     : m_Snapshot.LoadoutError == RaidLoadoutError.InsufficientCells ? "Not enough cells in storage. Reduce the quantity or refresh storage on the ship."
                     : m_Snapshot.LoadoutError == RaidLoadoutError.InvalidCount ? "Choose 0-12 energy cells."
@@ -325,8 +325,8 @@ namespace Unity.MP_FPS
 
         private void CarryCellsChanged(ChangeEvent<int> evt)
         {
-            AccountClient.SelectCarryCells(evt.newValue);
-            m_CarryCells.SetValueWithoutNotify(AccountClient.CarryCells);
+            PlayerProfileClient.SelectCarryCells(evt.newValue);
+            m_CarryCells.SetValueWithoutNotify(PlayerProfileClient.CarryCells);
         }
 
         private void Deploy()
@@ -335,7 +335,7 @@ namespace Unity.MP_FPS
                 m_Snapshot.DeployPending || m_DeployRequestedRaid == m_Snapshot.RaidId ||
                 m_Snapshot.SaveState == RaidSaveState.Saving || m_Snapshot.SaveState == RaidSaveState.Retrying) return;
             uint requestId = m_Snapshot.LoadoutRequestId + 1;
-            if (Send(new RaidDeployRpc { SettledRaidId = m_Snapshot.RaidId, CarryCells = AccountClient.CarryCells, RequestId = requestId }))
+            if (Send(new RaidDeployRpc { SettledRaidId = m_Snapshot.RaidId, CarryCells = PlayerProfileClient.CarryCells, RequestId = requestId }))
             {
                 GameSettings.Instance.IsPauseMenuOpen = false;
                 m_DeployRequestedRaid = m_Snapshot.RaidId;
