@@ -22,6 +22,7 @@ public static class RifleHaloSetup
             if (!shader) throw new Exception("Rifle halo shader missing");
             visual.lineMaterial = AssetDatabase.LoadAssetAtPath<Material>(materialPath);
             if (!visual.lineMaterial) { visual.lineMaterial = new Material(shader); AssetDatabase.CreateAsset(visual.lineMaterial, materialPath); }
+            visual.lineMaterial.SetFloat("_Gain", 1.5f); EditorUtility.SetDirty(visual.lineMaterial);
             visual.BuildGeometry(); PrefabUtility.SaveAsPrefabAsset(root, Prefab);
         }
         finally { UnityEngine.Object.DestroyImmediate(root); }
@@ -84,7 +85,7 @@ public static class RifleHaloSetup
         var scene = EditorSceneManager.NewPreviewScene();
         var root = UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(Prefab)); SceneManager.MoveGameObjectToScene(root, scene);
         var cameraObject = new GameObject("Rifle preview camera"); SceneManager.MoveGameObjectToScene(cameraObject, scene);
-        var camera = cameraObject.AddComponent<Camera>(); camera.orthographic = true; camera.orthographicSize = .34f;
+        var camera = cameraObject.AddComponent<Camera>(); camera.orthographic = true; camera.orthographicSize = .5f;
         camera.overrideSceneCullingMask = EditorSceneManager.GetSceneCullingMask(scene);
         camera.transform.position = new Vector3(0, 0, -2); camera.clearFlags = CameraClearFlags.SolidColor;
         camera.backgroundColor = new Color(.013f, .018f, .03f); camera.nearClipPlane = .1f; camera.farClipPlane = 5;

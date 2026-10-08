@@ -1,6 +1,6 @@
 Shader "DollSinger/RifleHaloLine"
 {
-    Properties { _Gain ("Energy brightness", Float) = 3 }
+    Properties { _Gain ("Energy brightness", Float) = 1.5 }
     SubShader
     {
         Tags { "Queue"="Transparent" "RenderType"="Transparent" "RenderPipeline"="UniversalPipeline" }
@@ -20,12 +20,8 @@ Shader "DollSinger/RifleHaloLine"
             Output vert(Input v) { Output o; o.position=TransformObjectToHClip(v.vertex.xyz); o.color=v.color; o.uv=v.uv; return o; }
             half4 frag(Output i):SV_Target
             {
-                half edge=saturate(1-abs(i.uv.y*2-1));
-                half aura=pow(edge,1.65);
-                half core=pow(edge,7);
-                half alpha=i.color.a*aura;
-                half3 energy=lerp(i.color.rgb,half3(1,1,1),core*.6);
-                return half4(energy*alpha*_Gain,alpha);
+                // Uniform luminous ink, matching the flat revolver / shotgun graphics.
+                return half4(i.color.rgb*i.color.a*_Gain,i.color.a);
             }
             ENDHLSL
         }

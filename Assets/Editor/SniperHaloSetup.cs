@@ -115,7 +115,7 @@ public static class SniperHaloSetup
                 float scopeFov = 2 * Mathf.Atan(Mathf.Tan(baseFov * .5f * Mathf.Deg2Rad) / visual.scopeMagnification) * Mathf.Rad2Deg;
                 float scale = visual.ScopeScale(.45f, scopeFov);
                 float viewportFraction = visual.AimedRadius * scale / (.45f * Mathf.Tan(scopeFov * .5f * Mathf.Deg2Rad));
-                Require(Mathf.Abs(viewportFraction - .7f) < .001f, "Scope fits configured FOV");
+                Require(Mathf.Abs(viewportFraction - visual.scopeViewportFraction) < .001f, "Scope fits configured FOV");
             }
         }
         finally { UnityEngine.Object.DestroyImmediate(root); }
@@ -128,7 +128,7 @@ public static class SniperHaloSetup
         var scene = EditorSceneManager.NewPreviewScene();
         var root = UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(Prefab)); SceneManager.MoveGameObjectToScene(root, scene);
         var cameraObject = new GameObject("Sniper preview camera"); SceneManager.MoveGameObjectToScene(cameraObject, scene);
-        var camera = cameraObject.AddComponent<Camera>(); camera.orthographic = true; camera.orthographicSize = .29f;
+        var camera = cameraObject.AddComponent<Camera>(); camera.orthographic = true; camera.orthographicSize = .42f;
         camera.overrideSceneCullingMask = EditorSceneManager.GetSceneCullingMask(scene);
         camera.transform.position = new Vector3(0, 0, -2); camera.clearFlags = CameraClearFlags.SolidColor;
         camera.backgroundColor = new Color(.013f, .018f, .03f); camera.nearClipPlane = .1f; camera.farClipPlane = 5;

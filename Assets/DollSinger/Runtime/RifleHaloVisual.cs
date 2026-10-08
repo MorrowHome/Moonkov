@@ -12,8 +12,8 @@ namespace Unity.MP_FPS.DollSinger
         public Color lightColor = new Color(1f, .18f, .42f);
         [Range(.3f, 1f)] public float idleScale = .68f;
         [Header("Halo size (sight dot stays small)")]
-        [Min(.1f)] public float overallScale = 1.35f;
-        [Min(.001f)] public float lineWidth = .0055f;
+        [Min(.1f)] public float overallScale = 1.75f;
+        [Min(.001f)] public float lineWidth = .024f;
         [Min(.01f)] public float ringRadius = .135f;
         public LineRenderer[] blades, outerArcs, innerArcs, cells;
         public LineRenderer sight, chargeSweep;
@@ -36,7 +36,7 @@ namespace Unity.MP_FPS.DollSinger
             outerArcs = CreateLines("Outer ring", 6, 17, lineWidth);
             innerArcs = CreateLines("Inner ring", 3, 17, lineWidth * .65f);
             cells = CreateLines("Energy cell", Capacity, 2, lineWidth * 1.2f);
-            sight = CreateLine("Sight dot", 17, lineWidth * .6f);
+            sight = CreateLine("Sight dot", 17, .0015f);
             chargeSweep = CreateLine("Charge relay", 17, lineWidth * 1.5f);
             ApplyLayout();
         }
@@ -134,17 +134,19 @@ namespace Unity.MP_FPS.DollSinger
                 float angle = i * 60 + rotor;
                 bladePoints[0] = Polar((ringRadius + expansion) * scale, angle - 12);
                 bladePoints[1] = Polar((ringRadius + .054f + expansion) * scale, angle - 7);
-                bladePoints[2] = Polar((ringRadius + .073f + expansion) * scale, angle + 1, open * .024f);
+                bladePoints[2] = Polar((ringRadius + .073f + expansion) * scale, angle + 1);
                 bladePoints[3] = Polar((ringRadius + .034f + expansion) * scale, angle + 12);
                 bladePoints[4] = bladePoints[0];
                 blades[i].SetPositions(bladePoints); Tint(blades[i], core, .75f);
-                Arc(outerArcs[i], (ringRadius + expansion * .65f) * scale, angle + 17, 33, -open * .020f);
+                blades[i].widthMultiplier = outerArcs[i].widthMultiplier = lineWidth;
+                Arc(outerArcs[i], (ringRadius + expansion * .65f) * scale, angle + 17, 33);
                 Tint(outerArcs[i], core, .8f);
             }
             for (int i = 0; i < innerArcs.Length; i++)
             {
-                Arc(innerArcs[i], (ringRadius - .045f - open * .012f) * scale, innerRotor + i * 120 + 20, 78, open * .018f);
+                Arc(innerArcs[i], (ringRadius - .045f - open * .012f) * scale, innerRotor + i * 120 + 20, 78);
                 Tint(innerArcs[i], Color.Lerp(lightColor, Color.white, .35f), .45f);
+                innerArcs[i].widthMultiplier = lineWidth * .65f;
             }
             for (int i = 0; i < cells.Length; i++)
             {
@@ -152,11 +154,13 @@ namespace Unity.MP_FPS.DollSinger
                 float r = (ringRadius + .018f + expansion * .4f) * scale;
                 cellPoints[0] = Polar(r, angle); cellPoints[1] = Polar(r + .012f * scale, angle);
                 cells[i].SetPositions(cellPoints); Tint(cells[i], i < visible ? core : lightColor, i < visible ? .95f : .09f);
+                cells[i].widthMultiplier = lineWidth * 1.2f;
             }
             Arc(sight, Mathf.Lerp(.012f, .0023f, aimBlend), 0, 360);
             if (sight) Tint(sight, Color.Lerp(lightColor, Color.white, aimBlend * .65f), .95f);
             if (chargeSweep)
             {
+                chargeSweep.widthMultiplier = lineWidth * 1.5f;
                 chargeSweep.enabled = reloading;
                 Arc(chargeSweep, (ringRadius + .040f + expansion) * scale, 90 - progress * 720, 36);
                 Tint(chargeSweep, Color.Lerp(lightColor, Color.white, .65f), .9f * open);
