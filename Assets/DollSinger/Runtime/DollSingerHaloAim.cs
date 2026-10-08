@@ -16,6 +16,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     [Header("Prefab visuals")]
     public Transform haloVisual;
     public RevolverHaloVisual revolverVisual;
+    public RifleHaloVisual rifleVisual;
     public ShotgunHaloVisual shotgunVisual;
     public LineRenderer[] haloStrokes;
     public LineRenderer[] haloGlowStrokes;
@@ -37,6 +38,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     [Min(0.02f)] public float localShotInterval = 0.1f;
     [Min(0.02f)] public float localRevolverShotInterval = 0.75f;
     [Min(0.02f)] public float localRevolverReloadTime = 0.75f;
+    [Min(0.02f)] public float localRifleReloadTime = 2f;
 
     [Header("Halo layout")]
     [Min(0.1f)] public float idleHaloScale = 0.72f;
@@ -107,6 +109,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     private bool revolverEquipped;
     private HaloWeapon visualWeapon = HaloWeapon.Rifle;
     private int localShotgunAmmo = 4;
+    private int localRifleAmmo = RifleHaloVisual.Capacity;
     private int localRevolverAmmo = 6;
     private float localReloadRemaining;
     private int weaponAmmo = 6;
@@ -115,6 +118,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     {
         SetWeaponEquipped(weapon, ammo);
         weaponAmmo = ammo;
+        if (rifleVisual) rifleVisual.SetNetworkState(ammo, reloading, reloadProgress, shotTick, reloadTick, reloadTargetAmmo);
         if (revolverVisual) revolverVisual.SetNetworkState(ammo, reloading, reloadProgress, shotTick, reloadTick);
         if (shotgunVisual) shotgunVisual.SetNetworkState(ammo, reloading, reloadProgress, shotTick, reloadTick, reloadTargetAmmo);
     }
@@ -130,10 +134,11 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         if (haloVisual) haloVisual.gameObject.SetActive(weapon != HaloWeapon.None);
         if (revolverVisual) revolverVisual.SetEquipped(revolverEquipped, ammo);
         if (shotgunVisual) shotgunVisual.SetEquipped(weapon == HaloWeapon.Shotgun, ammo);
+        if (rifleVisual) rifleVisual.SetEquipped(weapon == HaloWeapon.Rifle, ammo);
         if (haloStrokes != null)
-            foreach (var stroke in haloStrokes) if (stroke) stroke.enabled = weapon == HaloWeapon.Rifle;
+            foreach (var stroke in haloStrokes) if (stroke) stroke.enabled = weapon == HaloWeapon.Rifle && !rifleVisual;
         if (haloGlowStrokes != null)
-            foreach (var stroke in haloGlowStrokes) if (stroke) stroke.enabled = weapon == HaloWeapon.Rifle;
+            foreach (var stroke in haloGlowStrokes) if (stroke) stroke.enabled = weapon == HaloWeapon.Rifle && !rifleVisual;
     }
 
     [SerializeField] private float hhh;
@@ -162,6 +167,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     {
         if (revolverEquipped && revolverVisual) revolverVisual.PlayShot();
         if (visualWeapon == HaloWeapon.Shotgun && shotgunVisual) shotgunVisual.PlayShot();
+        if (visualWeapon == HaloWeapon.Rifle && rifleVisual) rifleVisual.PlayShot();
         if (cosmeticFlight) FireCosmeticBolt(aimPoint);
     }
 
@@ -198,7 +204,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
             Debug.LogWarning("Doll Singer halo: editable 'Halo Aim' Animator layer is missing.", this);
         EnsureGlowStrokes();
         EnsureHaloLight();
-        SetRevolverEquipped(false, localRevolverAmmo);
+        SetRevolverEquipped(false, localRifleAmmo);
         SetBoltVisible(false);
     }
 
@@ -230,18 +236,19 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         if (cameraOwner) cameraOwner.SetAimBlend(aimBlend);
         if (revolverVisual) revolverVisual.SetAimBlend(aimBlend);
         if (shotgunVisual) shotgunVisual.SetAimBlend(aimBlend);
+        if (rifleVisual) rifleVisual.SetAimBlend(aimBlend);
         if (!networkControlled && input)
         {
             if (localReloadRemaining <= 0f && input.WeaponSlotPressed != 0)
             {
                 var next = input.WeaponSlotPressed == 1 ? localPrimary : input.WeaponSlotPressed == 2 ? localSecondary : localPistol;
-                SetWeaponEquipped(next, next == HaloWeapon.Shotgun ? localShotgunAmmo : localRevolverAmmo);
+                SetWeaponEquipped(next, next == HaloWeapon.Shotgun ? localShotgunAmmo : next == HaloWeapon.Rifle ? localRifleAmmo : localRevolverAmmo);
                 nextLocalShotTime = Time.time + (revolverEquipped ? localRevolverShotInterval : localShotInterval);
             }
             if (localReloadRemaining > 0f)
             {
                 localReloadRemaining = Mathf.Max(0f, localReloadRemaining - Time.deltaTime);
-                if (localReloadRemaining == 0f) { if (visualWeapon == HaloWeapon.Shotgun) localShotgunAmmo = 4; else localRevolverAmmo = 6; }
+                if (localReloadRemaining == 0f) { if (visualWeapon == HaloWeapon.Shotgun) localShotgunAmmo = 4; else if (visualWeapon == HaloWeapon.Rifle) localRifleAmmo = RifleHaloVisual.Capacity; else localRevolverAmmo = 6; }
             }
             if (revolverEquipped && localReloadRemaining == 0f && localRevolverAmmo < 6 &&
                 (input.ReloadPressed || localRevolverAmmo == 0)) localReloadRemaining = localRevolverReloadTime;
@@ -250,6 +257,12 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
             {
                 if (localReloadRemaining == 0f && localShotgunAmmo < 4 && (input.ReloadPressed || localShotgunAmmo == 0)) localReloadRemaining = 2f;
                 fire = input.FirePressed && localShotgunAmmo > 0 && localReloadRemaining == 0f;
+            }
+            if (visualWeapon == HaloWeapon.Rifle)
+            {
+                if (localReloadRemaining == 0 && localRifleAmmo < RifleHaloVisual.Capacity &&
+                    (input.ReloadPressed || localRifleAmmo == 0 && input.FireHeld)) localReloadRemaining = localRifleReloadTime;
+                fire = input.FireHeld && localRifleAmmo > 0 && localReloadRemaining == 0;
             }
             if (wantsAim && aimBlend > 0.65f && fire && Time.time >= nextLocalShotTime)
             {
@@ -261,11 +274,13 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
                 }
                 FireCosmeticBolt();
                 if (visualWeapon == HaloWeapon.Shotgun) { localShotgunAmmo--; if (shotgunVisual) shotgunVisual.PlayShot(); }
+                if (visualWeapon == HaloWeapon.Rifle) { localRifleAmmo--; if (rifleVisual) rifleVisual.PlayShot(); }
             }
-            weaponAmmo = visualWeapon == HaloWeapon.Shotgun ? localShotgunAmmo : localRevolverAmmo;
+            weaponAmmo = visualWeapon == HaloWeapon.Shotgun ? localShotgunAmmo : visualWeapon == HaloWeapon.Rifle ? localRifleAmmo : localRevolverAmmo;
             if (revolverVisual) revolverVisual.SetState(localRevolverAmmo, localReloadRemaining > 0f,
                 1f - localReloadRemaining / localRevolverReloadTime);
             if (shotgunVisual) shotgunVisual.SetLocalState(localShotgunAmmo, localReloadRemaining > 0f, 1f - localReloadRemaining / 2f);
+            if (rifleVisual && visualWeapon == HaloWeapon.Rifle) rifleVisual.SetLocalState(localRifleAmmo, localReloadRemaining > 0, 1f - localReloadRemaining / localRifleReloadTime);
         }
     }
 
@@ -416,6 +431,14 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         // them in the sight window. Solve after torso lean, without translating bones.
         Vector3 supportPosition = desiredWrist + cameraTransform.rotation * firstPersonSupportOffset;
         Quaternion supportRotation = leftHand ? correction * leftHand.rotation : Quaternion.identity;
+        if (visualWeapon == HaloWeapon.Rifle && rifleVisual && rifleVisual.IsReloading)
+        {
+            float p = rifleVisual.ReloadProgress;
+            float gesture = Mathf.Sin(p * Mathf.PI);
+            // A low support-hand sweep winds the iris; the firing hand stays below the sight.
+            supportPosition += cameraTransform.rotation * new Vector3(-.028f * gesture, -.018f * gesture, .028f * gesture);
+            supportRotation = Quaternion.AngleAxis(-32f * gesture, cameraTransform.forward) * supportRotation;
+        }
         Vector3 elbowBase = cameraTransform.position + direction * 0.12f - cameraTransform.up * 0.30f;
         SolveArm(rightUpperArm, rightForearm, rightHand, desiredWrist, wristRotation,
             elbowBase + cameraTransform.right * 0.24f, blend);
