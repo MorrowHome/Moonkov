@@ -8,7 +8,7 @@ namespace Unity.MP_FPS.DollSinger
         private LineRenderer m_Core, m_Glow;
         private Light m_Light;
 
-        public void Configure(DollSingerHaloAim source, bool revolver, bool shotgun = false)
+        public void Configure(DollSingerHaloAim source, bool revolver, bool shotgun = false, bool sniper = false)
         {
             m_Core = HaloBoltPool.CreateLine("Laser core", transform, source.beamCore);
             m_Glow = HaloBoltPool.CreateLine("Laser glow", transform, source.beamGlow);
@@ -19,9 +19,9 @@ namespace Unity.MP_FPS.DollSinger
             m_Light.renderMode = LightRenderMode.ForcePixel;
             m_Light.shadows = LightShadows.None;
             m_Light.color = revolver && source.revolverVisual ? source.revolverVisual.lightColor :
-                shotgun && source.shotgunVisual ? source.shotgunVisual.lightColor : source.aimedHaloColor;
+                sniper && source.sniperVisual ? source.sniperVisual.lightColor : shotgun && source.shotgunVisual ? source.shotgunVisual.lightColor : source.aimedHaloColor;
             m_Light.intensity = Mathf.Max(0f, source.boltLightIntensity) * (shotgun ? .125f : 1f);
-            if (shotgun)
+            if (shotgun || sniper)
             {
                 if (m_Core) m_Core.startColor = m_Core.endColor = m_Light.color;
                 if (m_Glow) { var glow = m_Light.color; glow.a = source.glowAlpha; m_Glow.startColor = m_Glow.endColor = glow; }

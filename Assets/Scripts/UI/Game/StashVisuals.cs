@@ -3,7 +3,7 @@ using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client
 {
-    public enum StashArtKind { None, Dust, Alloy, Cell, Halo, Outfit, Helmet, Rifle, Pistol, ChestRig, Backpack, HaloRifle, HaloRevolver, HaloShotgun, Medical }
+    public enum StashArtKind { None, Dust, Alloy, Cell, Halo, Outfit, Helmet, Rifle, Pistol, ChestRig, Backpack, HaloRifle, HaloRevolver, HaloShotgun, Medical, HaloSniper }
 
     // Small original vector illustrations, kept sharp at the shared PanelSettings scale.
     [UxmlElement]
@@ -29,10 +29,10 @@ namespace Unity.MP_FPS.Client
             set
             {
                 m_Kind = value; Clear();
-                if (value == StashArtKind.HaloRifle || value == StashArtKind.HaloRevolver || value == StashArtKind.HaloShotgun)
+                if (value == StashArtKind.HaloRifle || value == StashArtKind.HaloRevolver || value == StashArtKind.HaloShotgun || value == StashArtKind.HaloSniper)
                 {
                     var icon = new Image { image = Resources.Load<Texture2D>("HaloIcons/" +
-                        (value == StashArtKind.HaloRifle ? "Rifle" : value == StashArtKind.HaloRevolver ? "Revolver" : "Shotgun")), scaleMode = ScaleMode.ScaleToFit, pickingMode = PickingMode.Ignore };
+                        (value == StashArtKind.HaloRifle ? "Rifle" : value == StashArtKind.HaloRevolver ? "Revolver" : value == StashArtKind.HaloSniper ? "Sniper" : "Shotgun")), scaleMode = ScaleMode.ScaleToFit, pickingMode = PickingMode.Ignore };
                     icon.style.position = Position.Absolute; icon.style.left = icon.style.right = icon.style.top = icon.style.bottom = 0;
                     Add(icon);
                 }

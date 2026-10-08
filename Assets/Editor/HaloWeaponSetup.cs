@@ -93,6 +93,7 @@ public static class HaloWeaponSetup
         renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; return renderer;
     }
     public static void GenerateRifleIcon() => GenerateIcons(DollSingerHaloAim.HaloWeapon.Rifle);
+    public static void GenerateSniperIcon() => GenerateIcons(DollSingerHaloAim.HaloWeapon.Sniper);
     private static void GenerateIcons(DollSingerHaloAim.HaloWeapon? only = null)
     {
         const string folder = "Assets/Resources/HaloIcons"; Directory.CreateDirectory(folder);
@@ -100,7 +101,7 @@ public static class HaloWeaponSetup
         try
         {
             var halo = player.GetComponentInChildren<DollSingerHaloAim>(true);
-            foreach (var weapon in new[] { DollSingerHaloAim.HaloWeapon.Rifle, DollSingerHaloAim.HaloWeapon.Revolver, DollSingerHaloAim.HaloWeapon.Shotgun })
+            foreach (var weapon in new[] { DollSingerHaloAim.HaloWeapon.Rifle, DollSingerHaloAim.HaloWeapon.Revolver, DollSingerHaloAim.HaloWeapon.Shotgun, DollSingerHaloAim.HaloWeapon.Sniper })
             {
                 if (only.HasValue && weapon != only.Value) continue;
                 var scene = EditorSceneManager.NewPreviewScene();
@@ -111,8 +112,12 @@ public static class HaloWeaponSetup
                     SceneManager.MoveGameObjectToScene(copy, scene);
                     copy.SetActive(true); copy.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity); copy.transform.localScale = Vector3.one;
                     var rifle = copy.GetComponentInChildren<RifleHaloVisual>(true);
-                    foreach (var line in copy.GetComponentsInChildren<LineRenderer>(true)) line.enabled = weapon == DollSingerHaloAim.HaloWeapon.Rifle && (!rifle || line.GetComponentInParent<RifleHaloVisual>(true));
+                    var sniper = copy.GetComponentInChildren<SniperHaloVisual>(true);
+                    foreach (var line in copy.GetComponentsInChildren<LineRenderer>(true)) line.enabled =
+                        weapon == DollSingerHaloAim.HaloWeapon.Rifle && (!rifle || line.GetComponentInParent<RifleHaloVisual>(true)) ||
+                        weapon == DollSingerHaloAim.HaloWeapon.Sniper && sniper && line.GetComponentInParent<SniperHaloVisual>(true);
                     if (rifle) { rifle.SetEquipped(weapon == DollSingerHaloAim.HaloWeapon.Rifle, 30); rifle.ApplyLayout(); }
+                    if (sniper) { sniper.SetEquipped(weapon == DollSingerHaloAim.HaloWeapon.Sniper, 5); sniper.ApplyLayout(); }
                     foreach (var light in copy.GetComponentsInChildren<Light>(true)) light.enabled = false;
                     var revolver = copy.GetComponentInChildren<RevolverHaloVisual>(true);
                     revolver.SetEquipped(weapon == DollSingerHaloAim.HaloWeapon.Revolver, 6);
@@ -141,7 +146,7 @@ public static class HaloWeaponSetup
         }
         finally { PrefabUtility.UnloadPrefabContents(player); }
         AssetDatabase.Refresh();
-        foreach (string name in new[] { "Rifle", "Revolver", "Shotgun" })
+        foreach (string name in new[] { "Rifle", "Revolver", "Shotgun", "Sniper" })
         {
             if (only.HasValue && name != only.Value.ToString()) continue;
             var importer = (TextureImporter)AssetImporter.GetAtPath(folder + "/" + name + ".png");

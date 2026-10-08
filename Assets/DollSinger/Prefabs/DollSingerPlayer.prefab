@@ -2448,6 +2448,7 @@ Transform:
   - {fileID: 5195043614950503946}
   - {fileID: 787886902332232872}
   - {fileID: 6114679232393603438}
+  - {fileID: 742348777643163519}
   m_Father: {fileID: 2754690713623540616}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7845691824386914750
@@ -3798,6 +3799,7 @@ MonoBehaviour:
   haloVisual: {fileID: 3666665834518509864}
   revolverVisual: {fileID: 6880449923347472751}
   rifleVisual: {fileID: 496337019002686891}
+  sniperVisual: {fileID: 8780180261574674823}
   shotgunVisual: {fileID: 2048020543978032076}
   haloStrokes:
   - {fileID: 4103868541034794848}
@@ -3832,6 +3834,7 @@ MonoBehaviour:
   localRevolverShotInterval: 0.75
   localRevolverReloadTime: 0.75
   localRifleReloadTime: 2
+  localSniperReloadTime: 3
   idleHaloScale: 0.72
   aimedHaloScale: 0.45
   firstPersonAimDistance: 0.45
@@ -4179,6 +4182,83 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8630533122932511836, guid: bc7ce456193eb3249b4ab9b5b52ca333, type: 3}
   m_PrefabInstance: {fileID: 2530570522167999794}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &4382827054243761783
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 3666665834518509864}
+    m_Modifications:
+    - target: {fileID: 3936066615933038856, guid: a066e902c01fa4f4faa400e31abd09c3, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3936066615933038856, guid: a066e902c01fa4f4faa400e31abd09c3, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3936066615933038856, guid: a066e902c01fa4f4faa400e31abd09c3, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3936066615933038856, guid: a066e902c01fa4f4faa400e31abd09c3, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3936066615933038856, guid: a066e902c01fa4f4faa400e31abd09c3, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3936066615933038856, guid: a066e902c01fa4f4faa400e31abd09c3, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3936066615933038856, guid: a066e902c01fa4f4faa400e31abd09c3, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3936066615933038856, guid: a066e902c01fa4f4faa400e31abd09c3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3936066615933038856, guid: a066e902c01fa4f4faa400e31abd09c3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3936066615933038856, guid: a066e902c01fa4f4faa400e31abd09c3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9048806591329105245, guid: a066e902c01fa4f4faa400e31abd09c3, type: 3}
+      propertyPath: m_Name
+      value: SniperHalo
+      objectReference: {fileID: 0}
+    - target: {fileID: 9048806591329105245, guid: a066e902c01fa4f4faa400e31abd09c3, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: a066e902c01fa4f4faa400e31abd09c3, type: 3}
+--- !u!4 &742348777643163519 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3936066615933038856, guid: a066e902c01fa4f4faa400e31abd09c3, type: 3}
+  m_PrefabInstance: {fileID: 4382827054243761783}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8780180261574674823 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4975240163658942448, guid: a066e902c01fa4f4faa400e31abd09c3, type: 3}
+  m_PrefabInstance: {fileID: 4382827054243761783}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 330d9ea0ffbeb924a96cbb63fdbaf0b9, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: DollSinger.Runtime::Unity.MP_FPS.DollSinger.SniperHaloVisual
 --- !u!1001 &8122980789621772659
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -80,6 +80,10 @@ public class DollSingerView : MonoBehaviour
     private float distanceVelocity;
     private float viewBlend;
     private float aimBlend;
+    private float weaponAimMagnification;
+    public float CurrentAimMagnification => Mathf.Lerp(1f,
+        firstPerson && weaponAimMagnification > 0 ? weaponAimMagnification : Mathf.Clamp(aimMagnification, 1f, 3f),
+        Mathf.SmoothStep(0f, 1f, aimBlend));
     private bool appliedFirstPerson;
     private bool networkLookDriven;
     private Quaternion networkLookRotation;
@@ -164,6 +168,7 @@ public class DollSingerView : MonoBehaviour
     }
 
     public void SetAimBlend(float blend) => aimBlend = Mathf.Clamp01(blend);
+    public void SetWeaponAimMagnification(float value) => weaponAimMagnification = value > 0 ? Mathf.Clamp(value, 1f, 12f) : 0;
 
     /// <summary>Keep the owned view independent of network prediction rotating its character parent.</summary>
     public void SetNetworkLookRotation(Quaternion rotation)
@@ -294,8 +299,7 @@ public class DollSingerView : MonoBehaviour
             Quaternion.Slerp(thirdPersonRestRotation, Quaternion.identity, aimBlend),
             Quaternion.identity, viewBlend);
         float baseFov = Mathf.Lerp(thirdPersonRestFov, firstPersonFieldOfView, viewBlend);
-        float magnification = Mathf.Lerp(1f, Mathf.Clamp(aimMagnification, 1f, 3f),
-            Mathf.SmoothStep(0f, 1f, aimBlend));
+        float magnification = CurrentAimMagnification;
         // Divide the projection's tangent so the same setting gives equal target
         // magnification in both perspectives and with a customized base FOV.
         camera.fieldOfView = 2f * Mathf.Atan(Mathf.Tan(baseFov * 0.5f * Mathf.Deg2Rad)

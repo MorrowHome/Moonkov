@@ -5,10 +5,10 @@ namespace Unity.MP_FPS
 {
     public static class DollSingerWeapons
     {
-        public const uint Halo = 2, Revolver = 3, Shotgun = 4, None = uint.MaxValue;
-        public static bool IsHalo(uint id) => id == Halo || id == Revolver || id == Shotgun;
+        public const uint Halo = 2, Revolver = 3, Shotgun = 4, Sniper = 5, None = uint.MaxValue;
+        public static bool IsHalo(uint id) => id == Halo || id == Revolver || id == Shotgun || id == Sniper;
         public static uint WeaponId(string code) => code == "rifle" || code == "compact" ? Halo :
-            code == "pistol" ? Revolver : code == "shotgun" ? Shotgun : None;
+            code == "pistol" ? Revolver : code == "shotgun" ? Shotgun : code == "sniper" ? Sniper : None;
         private static string Slot(int slot) => slot == 1 ? "Primary" : slot == 2 ? "Secondary" : "Pistol";
         private static int Ammo(InventoryItem item, WeaponRegistry registry)
         {

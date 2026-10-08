@@ -23,13 +23,13 @@ namespace Unity.MP_FPS.Inventory
     {
         public static readonly ShopOffer[] Offers = {
             new ShopOffer("rifle", 40, 20), new ShopOffer("pistol", 15, 7),
-            new ShopOffer("shotgun", 50, 25), new ShopOffer("cells", 5, 2),
+            new ShopOffer("shotgun", 50, 25), new ShopOffer("sniper", 90, 45), new ShopOffer("cells", 5, 2),
             new ShopOffer("medkit", 8, 3)
         };
         public static ShopOffer Find(string code) => Offers.FirstOrDefault(o => o.Code == code);
         public static int SaleDust(InventoryItem item, int quantity, int fullPrice) => BatteryEnergy.IsCell(item)
             ? BatteryEnergy.PortionEnergy(item, quantity) * fullPrice / BatteryEnergy.Capacity : quantity * fullPrice;
-        public static bool IsWeapon(string code) => code == "rifle" || code == "compact" || code == "pistol" || code == "shotgun";
+        public static bool IsWeapon(string code) => InventoryCatalog.Get(code)?.Kind == ItemKind.LongGun || InventoryCatalog.Get(code)?.Kind == ItemKind.Pistol;
         public static bool CanClaim(InventoryGraph graph) => graph != null && graph.Find("stash") != null && !graph.Items.Any(i => IsWeapon(i.Code));
     }
     // Prices and item mutations are shared for display/testing; only the backend commits trades.

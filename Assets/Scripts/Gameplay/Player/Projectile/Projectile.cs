@@ -111,7 +111,7 @@ namespace Unity.MP_FPS
             var visuals = new GameObject("Halo projectile visuals");
             visuals.transform.SetParent(transform, false);
             m_HaloVisual = visuals.AddComponent<HaloProjectileVisual>();
-            m_HaloVisual.Configure(source, m_Data.WeaponID == DollSingerWeapons.Revolver, m_Data.WeaponID == DollSingerWeapons.Shotgun);
+            m_HaloVisual.Configure(source, m_Data.WeaponID == DollSingerWeapons.Revolver, m_Data.WeaponID == DollSingerWeapons.Shotgun, m_Data.WeaponID == DollSingerWeapons.Sniper);
             m_HaloTrailSeconds = Mathf.Max(0.001f, source.networkBoltTrailSeconds);
             if (m_Body != null) m_Body.enabled = false;
             UpdateHaloVisual();

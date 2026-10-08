@@ -150,7 +150,8 @@ namespace Unity.MP_FPS
             var weapon = WeaponManager.Instance.WeaponRegistry.GetWeaponData(ghost.EquippedWeaponID);
             var haloWeapon = ghost.EquippedWeaponID == DollSingerWeapons.Halo ? DollSingerHaloAim.HaloWeapon.Rifle :
                 ghost.EquippedWeaponID == DollSingerWeapons.Revolver ? DollSingerHaloAim.HaloWeapon.Revolver :
-                ghost.EquippedWeaponID == DollSingerWeapons.Shotgun ? DollSingerHaloAim.HaloWeapon.Shotgun : DollSingerHaloAim.HaloWeapon.None;
+                ghost.EquippedWeaponID == DollSingerWeapons.Shotgun ? DollSingerHaloAim.HaloWeapon.Shotgun :
+                ghost.EquippedWeaponID == DollSingerWeapons.Sniper ? DollSingerHaloAim.HaloWeapon.Sniper : DollSingerHaloAim.HaloWeapon.None;
             m_Halo.SetNetworkWeapon(haloWeapon, ghost.CurrentAmmo,
                 state.IsReloadingState, weapon != null ? 1f - ghost.ReloadTimer / Mathf.Max(0.01f, weapon.ReloadTime) : 0f,
                 ghost.LastShotTick, ghost.LastReloadTick, ghost.ReloadTargetAmmo);
@@ -158,6 +159,7 @@ namespace Unity.MP_FPS
             {
                 m_View.SetNetworkLookRotation(m_OwnedViewRotation);
                 m_View.SetAimBlend(m_Halo.AimBlend);
+                m_View.SetWeaponAimMagnification(m_Halo.ScopeMagnification);
             }
         }
 
