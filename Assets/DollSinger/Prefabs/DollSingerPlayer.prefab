@@ -3839,9 +3839,9 @@ MonoBehaviour:
   aimedHaloScale: 0.45
   firstPersonAimDistance: 0.45
   fingertipHaloGap: 0.075
-  firstPersonThumbClearance: 0.1
+  firstPersonThumbClearance: 0.035
   firstPersonThumbDepth: 0.02
-  firstPersonSupportOffset: {x: -0.12, y: -0.055, z: -0.04}
+  firstPersonSupportOffset: {x: -0.12, y: -0.08, z: -0.04}
   boltLightIntensity: 12
   boltLightRange: 10
   idleHaloColor: {r: 1, g: 0.72, b: 0.9, a: 0.9}

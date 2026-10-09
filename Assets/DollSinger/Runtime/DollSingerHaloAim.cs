@@ -49,11 +49,11 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     [Range(0.25f, 0.8f)] public float firstPersonAimDistance = 0.45f;
     [Tooltip("Gap between the index fingertip and the halo along the aiming direction.")]
     [Range(0.02f, 0.15f)] public float fingertipHaloGap = 0.075f;
-    [Tooltip("Camera-space vertical gap between the right thumb tip and the halo centre.")]
-    [Range(0.04f, 0.2f)] public float firstPersonThumbClearance = 0.10f;
+    [Tooltip("Camera-space gap below the sight: the raised thumb tip is the visible aiming reference.")]
+    [Range(0.02f, 0.2f)] public float firstPersonThumbClearance = 0.035f;
     [Range(0f, 0.1f)] public float firstPersonThumbDepth = 0.02f;
     [Tooltip("Camera-space support wrist offset from the firing wrist.")]
-    public Vector3 firstPersonSupportOffset = new Vector3(-0.12f, -0.055f, -0.04f);
+    public Vector3 firstPersonSupportOffset = new Vector3(-0.12f, -0.08f, -0.04f);
 
     [Header("Laser flight lighting")]
     [Min(0f)] public float boltLightIntensity = 12f;
@@ -451,8 +451,9 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         Vector3 direction = cameraTransform.forward;
         Quaternion correction = wristRotation * Quaternion.Inverse(rightHand.rotation);
 
-        // Keep the finger shape, but lower and separate the hands instead of stacking
-        // them in the sight window. Solve after torso lean, without translating bones.
+        // Keep the finger-gun pose: raise its thumb under the fixed sight while the
+        // support hand stays lower and separate. The hand transition never drives aim.
+        // Solve after torso lean without translating bones.
         Vector3 supportPosition = desiredWrist + cameraTransform.rotation * firstPersonSupportOffset;
         Quaternion supportRotation = leftHand ? correction * leftHand.rotation : Quaternion.identity;
         if (visualWeapon == HaloWeapon.Rifle && rifleVisual && !rifleVisual.IsReloading)

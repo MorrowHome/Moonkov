@@ -53,7 +53,8 @@ public static class RifleHaloSetup
             var halo = AssetDatabase.LoadAssetAtPath<GameObject>(path).GetComponentInChildren<DollSingerHaloAim>(true);
             Require(halo.rifleVisual && halo.rifleVisual.cells.Length == 30 && halo.rifleVisual.blades.Length == 6, "Rifle bindings: " + path);
             Require(halo.rifleVisual.overallScale >= 1.35f, "Enlarged rifle halo");
-            Require(halo.firstPersonThumbClearance >= .09f && halo.aimedHaloScale <= .45f, "Preserve thumb clearance/aim scale");
+            Require(halo.firstPersonThumbClearance >= .02f && halo.firstPersonThumbClearance <= .05f &&
+                halo.aimedHaloScale <= .45f, "Visible thumb reference with an unobstructed sight");
         }
         var root = UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(Prefab));
         try
