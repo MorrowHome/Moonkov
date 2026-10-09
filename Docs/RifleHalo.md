@@ -1,5 +1,7 @@
 # 步枪虹膜光环
 
+射击手势回弹、释放节奏、分层音效和落点反馈见 [RifleShootingFeel.md](RifleShootingFeel.md)。
+
 步枪使用六瓣折角虹膜、内外双层断环和 30 段弹量刻度。沿用原来的粉红光色、原位置及拇指上方的第一人称瞄准布局；头顶状态收拢，瞄准时只保留很小的中央点，外层始终留出中空视野。
 
 大小在 `Assets/DollSinger/Prefabs/RifleHalo.prefab` 根物体的 `RifleHaloVisual` 组件中调：`Overall Scale` 是整体倍率，当前 1.75（比上一版 1.35 再增大约 30%）；`Idle Scale` 是头顶相对瞄准的收拢倍率。中央瞄准点独立于整体倍率，仍保持很小。`Ring Radius` 可进一步改变环与六瓣的比例，通常只需调整 `Overall Scale`。

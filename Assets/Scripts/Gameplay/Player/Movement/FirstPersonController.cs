@@ -1059,7 +1059,7 @@ public class FirstPersonController : MonoBehaviour
         }
         var instance = Instantiate(prefab, spawnPosition, spawnRotation,
             GhostBridgeBootstrap.Instance.ClientGameObjectHierarchy.transform);
-        instance.GetComponent<Projectile>().InitializePrediction(weaponId, spawnPosition, spawnRotation, transform);
+        instance.GetComponent<Projectile>().InitializePrediction(weaponId, spawnPosition, spawnRotation, transform, shotTick: spawnTick);
         Projectile.PredictedProjectiles.Add(new Projectile.PredictedProjectileInfo
         { Instance = instance, SpawnTick = spawnTick, WeaponID = weaponId, PelletIndex = pelletIndex, CreatedAt = Time.time });
     }

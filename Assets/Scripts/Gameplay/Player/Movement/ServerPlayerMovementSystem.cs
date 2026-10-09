@@ -377,7 +377,7 @@ namespace Unity.MP_FPS
                             if (VisualEffectManager.ServerInstance != null)
                             {
                                 VisualEffectManager.ServerInstance.Server_RequestVfx(shooterNetworkId,
-                                    predictedPlayer.ValueRO.EquippedWeaponID, aimPoint);
+                                    predictedPlayer.ValueRO.EquippedWeaponID, aimPoint, serverTick);
                             }
 
                             switch (weaponData.Type)

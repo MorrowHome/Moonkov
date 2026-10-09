@@ -15,11 +15,16 @@ namespace Unity.MP_FPS.DollSinger
         [Min(.1f)] public float overallScale = 1.75f;
         [Min(.001f)] public float lineWidth = .024f;
         [Min(.01f)] public float ringRadius = .135f;
+        [Header("Shot response")]
+        [Min(0f)] public float releaseExpansion = .019f;
+        [Min(0f)] public float wristTravel = .016f;
+        [Range(0f, 12f)] public float wristAngle = 5f;
         public LineRenderer[] blades, outerArcs, innerArcs, cells;
         public LineRenderer sight, chargeSweep;
 
         private readonly Vector3[] bladePoints = new Vector3[5], arcPoints = new Vector3[17], cellPoints = new Vector3[2];
-        private float aimBlend, elapsed, shotPulse, lockFlash, rotation, reloadStartRotation, progress;
+        private float aimBlend, elapsed, shotPulse, releaseSlow, releaseFast, pressure, lockFlash, rotation, reloadStartRotation, progress;
+        private uint lastFeedbackTick;
         private int ammo = Capacity, startAmmo, targetAmmo = Capacity;
         private uint lastShot, lastReload;
         private bool initialized, reloading, localReloading;
@@ -28,6 +33,8 @@ namespace Unity.MP_FPS.DollSinger
         public float ReloadProgress => progress;
         public float RotorRotation => rotation;
         public bool IsReloading => reloading;
+        public float ShotRelease => Mathf.Clamp01((releaseSlow - releaseFast) * 1.8f);
+        public float ShotPressure => pressure;
 
         // Called by the asset installer only. Runtime reuses these fixed renderers and point buffers.
         public void BuildGeometry()
@@ -61,6 +68,7 @@ namespace Unity.MP_FPS.DollSinger
             if (gameObject.activeSelf == equipped) return;
             ammo = Mathf.Clamp(rounds, 0, Capacity); startAmmo = ammo; targetAmmo = ammo;
             rotation = reloadStartRotation = progress = elapsed = shotPulse = lockFlash = 0;
+            releaseSlow = releaseFast = pressure = 0; lastFeedbackTick = 0;
             reloading = localReloading = initialized = false; lastShot = lastReload = 0;
             gameObject.SetActive(equipped); if (equipped) ApplyLayout();
         }
@@ -71,7 +79,7 @@ namespace Unity.MP_FPS.DollSinger
             if (!initialized) { lastShot = shotTick; lastReload = reloadTick; ammo = rounds; initialized = true; }
             if (Newer(lastShot, shotTick) || Newer(lastReload, reloadTick)) return;
             bool shot = Newer(shotTick, lastShot), newReload = Newer(reloadTick, lastReload);
-            if (shot) { rotation += 360f / Capacity; PlayShot(); lastShot = shotTick; }
+            if (shot) { rotation += 360f / Capacity; PlayShot(shotTick); lastShot = shotTick; }
             if (newReload || reload && !reloading && progress == 0)
             { BeginReload(rounds, reloadTarget < 0 ? Capacity : reloadTarget); lastReload = reloadTick; }
             if (reload && !Newer(lastShot, lastReload)) AdvanceReload(reloadProgress);
@@ -102,11 +110,25 @@ namespace Unity.MP_FPS.DollSinger
             else reloading = false;
             localReloading = reload; ammo = Mathf.Clamp(rounds, 0, Capacity);
         }
-        public void PlayShot() { shotPulse = 1; }
-        private void LateUpdate() => Step(Time.deltaTime);
+        public void PlayShot(uint shotTick = 0)
+        {
+            // Snapshot and predicted/RPC effects describe the same release. Never restart it.
+            if (shotTick != 0 && !Newer(shotTick, lastFeedbackTick)) return;
+            if (shotTick != 0) lastFeedbackTick = shotTick;
+            shotPulse = 1;
+            float impulse = Mathf.Min(1f, 2f - releaseSlow);
+            releaseSlow += impulse;
+            releaseFast += impulse;
+            pressure = Mathf.Min(1f, pressure + .22f);
+        }
+        // Hands solve in LateUpdate after this frame's envelope has advanced.
+        private void Update() => Step(Time.deltaTime);
         public void Step(float deltaTime)
         {
             elapsed += Mathf.Max(0, deltaTime); shotPulse *= Mathf.Exp(-Mathf.Max(0, deltaTime) * 24f);
+            float dt = Mathf.Max(0, deltaTime);
+            releaseSlow *= Mathf.Exp(-dt * 18f); releaseFast *= Mathf.Exp(-dt * 65f);
+            pressure *= Mathf.Exp(-dt * 3.5f);
             lockFlash *= Mathf.Exp(-Mathf.Max(0, deltaTime) * 15f); ApplyLayout();
         }
         private static Vector3 Polar(float radius, float degrees, float z = 0)
@@ -124,7 +146,7 @@ namespace Unity.MP_FPS.DollSinger
             if (blades == null || outerArcs == null || innerArcs == null || cells == null) return;
             float scale = overallScale * Mathf.Lerp(idleScale, 1, aimBlend);
             float open = reloading ? Mathf.SmoothStep(0, 1, progress / .18f) * (1 - Mathf.SmoothStep(0, 1, (progress - .82f) / .18f)) : 0;
-            float expansion = .046f * open + .010f * shotPulse;
+            float expansion = .046f * open + releaseExpansion * ShotRelease * (1 + pressure * .25f);
             float rotor = rotation + (reloading ? 0 : elapsed * 3f);
             float innerRotor = -rotation * .7f - elapsed * 5f;
             Color core = Color.Lerp(lightColor, Color.white, Mathf.Max(shotPulse * .45f, lockFlash * .65f));
@@ -144,8 +166,8 @@ namespace Unity.MP_FPS.DollSinger
             }
             for (int i = 0; i < innerArcs.Length; i++)
             {
-                Arc(innerArcs[i], (ringRadius - .045f - open * .012f) * scale, innerRotor + i * 120 + 20, 78);
-                Tint(innerArcs[i], Color.Lerp(lightColor, Color.white, .35f), .45f);
+                Arc(innerArcs[i], (ringRadius - .045f - open * .012f - shotPulse * .008f) * scale, innerRotor + i * 120 + 20, 78);
+                Tint(innerArcs[i], Color.Lerp(lightColor, Color.white, .35f + shotPulse * .3f), .45f + shotPulse * .15f);
                 innerArcs[i].widthMultiplier = lineWidth * .65f;
             }
             for (int i = 0; i < cells.Length; i++)

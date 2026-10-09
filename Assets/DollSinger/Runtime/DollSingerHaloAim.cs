@@ -170,11 +170,11 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
 
     // Invoked by the existing predicted/server-confirmed shot effects path.
     // This is a cosmetic bolt; damage still belongs to the authoritative weapon system.
-    public void PlayNetworkShot(Vector3 aimPoint, bool cosmeticFlight = true)
+    public void PlayNetworkShot(Vector3 aimPoint, bool cosmeticFlight = true, uint shotTick = 0)
     {
         if (revolverEquipped && revolverVisual) revolverVisual.PlayShot();
         if (visualWeapon == HaloWeapon.Shotgun && shotgunVisual) shotgunVisual.PlayShot();
-        if (visualWeapon == HaloWeapon.Rifle && rifleVisual) rifleVisual.PlayShot();
+        if (visualWeapon == HaloWeapon.Rifle && rifleVisual) rifleVisual.PlayShot(shotTick);
         if (visualWeapon == HaloWeapon.Sniper && sniperVisual) sniperVisual.PlayShot();
         if (cosmeticFlight) FireCosmeticBolt(aimPoint);
     }
@@ -321,7 +321,10 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
             ? AvatarIKHint.RightElbow : AvatarIKHint.LeftElbow, 0f);
         animator.SetIKPositionWeight(goal, aimBlend);
         animator.SetIKRotationWeight(goal, 0f);
-        animator.SetIKPosition(goal, hand.position + transform.up * (elevation * 0.20f));
+        float release = visualWeapon == HaloWeapon.Rifle && rifleVisual ? rifleVisual.ShotRelease : 0;
+        float weight = goal == AvatarIKGoal.RightHand ? 1f : .4f;
+        animator.SetIKPosition(goal, hand.position + transform.up * (elevation * 0.20f) -
+            direction * (release * weight * (rifleVisual ? rifleVisual.wristTravel : 0)));
         return true;
     }
 
@@ -452,6 +455,15 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         // them in the sight window. Solve after torso lean, without translating bones.
         Vector3 supportPosition = desiredWrist + cameraTransform.rotation * firstPersonSupportOffset;
         Quaternion supportRotation = leftHand ? correction * leftHand.rotation : Quaternion.identity;
+        if (visualWeapon == HaloWeapon.Rifle && rifleVisual && !rifleVisual.IsReloading)
+        {
+            float release = rifleVisual.ShotRelease * (1 + rifleVisual.ShotPressure * .2f);
+            Vector3 kick = cameraTransform.rotation * new Vector3(0, -.003f, -rifleVisual.wristTravel) * release;
+            desiredWrist += kick;
+            supportPosition += kick * .4f;
+            wristRotation = Quaternion.AngleAxis(-rifleVisual.wristAngle * release, cameraTransform.right) * wristRotation;
+            supportRotation = Quaternion.AngleAxis(-rifleVisual.wristAngle * release * .35f, cameraTransform.right) * supportRotation;
+        }
         if (visualWeapon == HaloWeapon.Rifle && rifleVisual && rifleVisual.IsReloading)
         {
             float p = rifleVisual.ReloadProgress;

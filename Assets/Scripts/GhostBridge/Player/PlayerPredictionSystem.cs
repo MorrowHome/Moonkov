@@ -239,7 +239,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                                 if (VisualEffectManager.ClientInstance != null &&
                                     (!DollSingerWeapons.IsHalo(predictedPlayer.ValueRO.EquippedWeaponID) || networkTime.IsFirstTimeFullyPredictingTick))
                                 {
-                                    VisualEffectManager.ClientInstance.SpawnMuzzleFlash(playerGhost, predictedPlayer.ValueRO.EquippedWeaponID, true, aimPoint);
+                                    VisualEffectManager.ClientInstance.SpawnMuzzleFlash(playerGhost, predictedPlayer.ValueRO.EquippedWeaponID, true, aimPoint, predictedPlayer.ValueRO.LastShotTick);
                                 }
 
                                 if (weaponData.Type == WeaponType.Hitscan)

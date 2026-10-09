@@ -21,6 +21,8 @@ namespace Unity.MP_FPS
         private bool m_OwnedLightEnabled = true;
         private readonly RaycastHit[] m_AimHits = new RaycastHit[32];
         private MoonkovPlayerAudio m_Audio;
+        private uint m_LastShotEffectTick;
+        private SoundSystem.SoundInfo m_RifleBodySound, m_RifleSnapSound;
 
         public DollSingerInput OwnedInput => m_Linked && Role == MultiplayerRole.ClientOwned ? m_Input : null;
         public bool IsThirdPerson => m_View != null && !m_View.IsFirstPerson;
@@ -163,19 +165,36 @@ namespace Unity.MP_FPS
             }
         }
 
-        public void PlayShot(Vector3 aimPoint, uint weaponId)
+        public void PlayShot(Vector3 aimPoint, uint weaponId, uint shotTick = 0)
         {
             if (m_Linked && Role != MultiplayerRole.Server)
             {
                 // The shot RPC may precede the equipment snapshot on an observer.
                 if (ReadGhostComponentData<PredictedPlayerGhost>().EquippedWeaponID != weaponId) return;
+                if (shotTick != 0 && !MoonkovPlayerAudio.NewTick(shotTick, ref m_LastShotEffectTick)) return;
                 var weapon = WeaponManager.Instance.WeaponRegistry.GetWeaponData(weaponId);
-                m_Halo.PlayNetworkShot(aimPoint, weapon != null && weapon.Type == WeaponType.Hitscan);
+                if (weaponId == DollSingerWeapons.Halo)
+                {
+                    // Keep the metallic strike, but let only the current pulse ring out fully.
+                    GameManager.Instance.SoundSystem?.Stop(m_RifleBodySound, .025f);
+                    GameManager.Instance.SoundSystem?.Stop(m_RifleSnapSound, .015f);
+                    m_RifleBodySound = MoonkovAudio.Play(weapon?.WeaponFireSfx, transform.position);
+                    m_RifleSnapSound = MoonkovAudio.Play(weapon?.WeaponFireLayerSfx, transform.position, .85f);
+                }
+                else
+                {
+                    MoonkovAudio.Play(weapon?.WeaponFireSfx, transform.position);
+                    MoonkovAudio.Play(weapon?.WeaponFireLayerSfx, transform.position);
+                }
+                m_Halo.PlayNetworkShot(aimPoint, weapon != null && weapon.Type == WeaponType.Hitscan, shotTick);
             }
         }
 
         public override void OnGhostPreDestroy()
         {
+            GameManager.Instance?.SoundSystem?.Stop(m_RifleBodySound, .025f);
+            GameManager.Instance?.SoundSystem?.Stop(m_RifleSnapSound, .015f);
+            m_RifleBodySound = m_RifleSnapSound = null;
             m_Linked = false;
             m_Input.enabled = false;
             m_Input.GameplayInputBlocked = null;

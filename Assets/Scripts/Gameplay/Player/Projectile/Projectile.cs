@@ -57,9 +57,11 @@ namespace Unity.MP_FPS
         private static Material s_BulletMaterial;
 
         public void InitializePrediction(uint weaponId, Vector3 origin, Quaternion rotation, Transform shooter,
-            float elapsed = 0f)
+            float elapsed = 0f, uint shotTick = 0)
         {
-            m_Data = new ProjectileData { WeaponID = weaponId, Origin = origin,
+            var player = shooter ? shooter.GetComponent<PlayerGhost>() : null;
+            m_Data = new ProjectileData { WeaponID = weaponId, Origin = origin, SpawnTick = shotTick,
+                OwnerNetworkId = player && player.GhostGameObject ? player.GhostGameObject.Owner : 0,
                 InitialVelocity = rotation * Vector3.forward * WeaponManager.Instance.WeaponRegistry.GetWeaponData(weaponId).ProjectileSpeed };
             m_Shooter = shooter;
             Initialize(false);
@@ -210,6 +212,15 @@ namespace Unity.MP_FPS
                     transform.position = hit.point;
                     Stop();
                     if (server) Impact(hit);
+                    else if (m_Data.WeaponID == DollSingerWeapons.Halo)
+                    {
+                        // Only the owner predicts impacts; observers consume the server's impact event.
+                        bool owned = GhostGameObject == null || !GhostGameObject.IsGhostLinked() || Role == MultiplayerRole.ClientOwned;
+                        if (owned && VisualEffectManager.ClientInstance != null)
+                            VisualEffectManager.ClientInstance.RifleImpacts.Present(new ClientRifleImpactRpc
+                            { OwnerNetworkId = m_Data.OwnerNetworkId, ShotTick = m_Data.SpawnTick,
+                                Position = hit.point, Normal = hit.normal, Kind = (byte)RifleImpactSurface.Classify(hit.collider) }, false, true);
+                    }
                     else MoonkovAudio.Play(m_Weapon.WeaponImpactSfx, hit.point);
                     return;
                 }
@@ -233,6 +244,7 @@ namespace Unity.MP_FPS
             var system = GhostGameObject.World.GetExistingSystemManaged<ServerPlayerMovementSystem>();
             var players = system.GetComponentLookup<PredictedPlayerGhost>();
             var owners = system.GetComponentLookup<GhostOwner>();
+            byte damageFlags = 0;
             if (m_Weapon.Behavior == ProjectileBehavior.AreaOfEffect)
             {
                 var damaged = new HashSet<Entity>();
@@ -242,25 +254,33 @@ namespace Unity.MP_FPS
                         Damage(target, players, owners);
             }
             else if (GhostGameObject.TryFindGhostGameObject(hit.collider.gameObject, out var target))
-                Damage(target, players, owners);
+                damageFlags = Damage(target, players, owners);
+            if (m_Data.WeaponID == DollSingerWeapons.Halo)
+            {
+                VisualEffectManager.ServerInstance?.Server_RequestRifleImpact(new ClientRifleImpactRpc
+                { OwnerNetworkId = m_Data.OwnerNetworkId, ShotTick = m_Data.SpawnTick,
+                    Position = hit.point, Normal = hit.normal, Kind = (byte)RifleImpactSurface.Classify(hit.collider), DamageFlags = damageFlags });
+                return;
+            }
             if (m_Weapon.ProjectileHitVfxPrefab != null && m_Weapon.ProjectileHitVfxPrefab.GhostGuid.IsValid)
                 GhostSpawner.SpawnGhostPrefab(m_Weapon.ProjectileHitVfxPrefab, hit.point,
                     Quaternion.LookRotation(hit.normal.sqrMagnitude > .001f ? hit.normal : Vector3.up), GhostGameObject.GenerateRandomHash());
         }
 
-        private void Damage(GhostGameObject target, ComponentLookup<PredictedPlayerGhost> players, ComponentLookup<GhostOwner> owners)
+        private byte Damage(GhostGameObject target, ComponentLookup<PredictedPlayerGhost> players, ComponentLookup<GhostOwner> owners)
         {
-            if (target.World != GhostGameObject.World || !players.HasComponent(target.LinkedEntity) || !owners.HasComponent(target.LinkedEntity)) return;
+            if (target.World != GhostGameObject.World || !players.HasComponent(target.LinkedEntity) || !owners.HasComponent(target.LinkedEntity)) return 0;
             int owner = owners[target.LinkedEntity].NetworkId;
-            if (owner == m_Data.OwnerNetworkId) return;
+            if (owner == m_Data.OwnerNetworkId) return 0;
             var player = players.GetRefRW(target.LinkedEntity);
-            if (player.ValueRO.CurrentHealth <= 0) return;
+            if (player.ValueRO.CurrentHealth <= 0 || m_Weapon.Damage <= 0) return 0;
             player.ValueRW.CurrentHealth -= m_Weapon.Damage;
             player.ValueRW.ControllerState.IsHit = true;
             player.ValueRW.LastDamageAmount = m_Weapon.Damage;
             player.ValueRW.LastHitTick = GhostGameObject.GetCurrentTick();
             if (player.ValueRO.CurrentHealth <= 0 && LeaderboardManager.Instance != null)
                 LeaderboardManager.Instance.AddKill(m_Data.OwnerNetworkId, owner);
+            return (byte)(player.ValueRO.CurrentHealth <= 0 ? 3 : 1);
         }
     }
 }

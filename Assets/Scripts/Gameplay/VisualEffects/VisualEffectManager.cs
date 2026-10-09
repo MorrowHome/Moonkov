@@ -9,20 +9,38 @@ namespace Unity.MP_FPS
     {
         public int OwnerNetworkId;
         public uint WeaponId;
+        public uint ShotTick;
         public Unity.Mathematics.float3 AimPoint;
     }
 
     public class VisualEffectManager : GhostSingleton<VisualEffectManager>, IUpdateServer, IUpdateClient, IGhostManager
     {
         private Queue<ClientSpawnVfxRpc> _vfxQueue = new();
-
-        public void Server_RequestVfx(int ownerNetworkId, uint weaponId, Vector3 aimPoint)
+        private readonly Queue<ClientRifleImpactRpc> m_RifleImpactQueue = new();
+        private RifleImpactFeedback m_RifleImpacts;
+        public RifleImpactFeedback RifleImpacts
         {
-            _vfxQueue.Enqueue(new ClientSpawnVfxRpc { OwnerNetworkId = ownerNetworkId, WeaponId = weaponId, AimPoint = aimPoint });
+            get
+            {
+                if (!m_RifleImpacts)
+                {
+                    var root = new GameObject("Rifle impact feedback"); root.transform.SetParent(transform, false);
+                    m_RifleImpacts = root.AddComponent<RifleImpactFeedback>();
+                    m_RifleImpacts.Warmup();
+                }
+                return m_RifleImpacts;
+            }
+        }
+        public void Server_RequestRifleImpact(ClientRifleImpactRpc impact) => m_RifleImpactQueue.Enqueue(impact);
+
+        public void Server_RequestVfx(int ownerNetworkId, uint weaponId, Vector3 aimPoint, uint shotTick = 0)
+        {
+            _vfxQueue.Enqueue(new ClientSpawnVfxRpc { OwnerNetworkId = ownerNetworkId, WeaponId = weaponId, AimPoint = aimPoint, ShotTick = shotTick });
         }
 
         public void UpdateServer(float deltaTime)
         {
+            while (m_RifleImpactQueue.Count > 0) GhostGameObject.BroadcastRPC(m_RifleImpactQueue.Dequeue());
             while (_vfxQueue.Count > 0)
             {
                 var vfxRequest = _vfxQueue.Dequeue();
@@ -32,6 +50,8 @@ namespace Unity.MP_FPS
 
         public void UpdateClient(float deltaTime)
         {
+            while (GhostGameObject.ConsumeRPC(out ClientRifleImpactRpc impact))
+                RifleImpacts.Present(impact, true, IsOwnedShooter(impact.OwnerNetworkId));
             while (GhostGameObject.ConsumeRPC(out ClientSpawnVfxRpc rpc))
             {
                 int localPlayerNetworkId = -1;
@@ -63,7 +83,7 @@ namespace Unity.MP_FPS
                         if (player.GhostGameObject.Owner == rpc.OwnerNetworkId)
                         {
                             // Found the remote player. Spawn the effect.
-                            SpawnMuzzleFlash(player, rpc.WeaponId, false, rpc.AimPoint);
+                            SpawnMuzzleFlash(player, rpc.WeaponId, false, rpc.AimPoint, rpc.ShotTick);
                             break;
                         }
                     }
@@ -71,7 +91,15 @@ namespace Unity.MP_FPS
             }
         }
 
-        public async void SpawnMuzzleFlash(PlayerGhost player, uint weaponId, bool isFirstPerson, Vector3 aimPoint)
+        private static bool IsOwnedShooter(int owner)
+        {
+            if (!PlayerGhostManager.TryGetInstanceByRole(MultiplayerRole.ClientOwned, out var manager) ||
+                !manager.TryGetPlayersByRole(MultiplayerRole.ClientOwned, out var players)) return false;
+            foreach (var player in players) if (player && player.GhostGameObject.Owner == owner) return true;
+            return false;
+        }
+
+        public async void SpawnMuzzleFlash(PlayerGhost player, uint weaponId, bool isFirstPerson, Vector3 aimPoint, uint shotTick = 0)
         {
             try
             {
@@ -82,15 +110,15 @@ namespace Unity.MP_FPS
                 }
 
                 var weaponData = WeaponManager.Instance.WeaponRegistry.GetWeaponData(weaponId);
+                if (player.TryGetComponent<DollSingerNetworkPresentation>(out var dollSinger))
+                {
+                    dollSinger.PlayShot(aimPoint, weaponId, shotTick);
+                    return;
+                }
                 if (weaponData != null)
                 {
                     MoonkovAudio.Play(weaponData.WeaponFireSfx, player.transform.position);
                     MoonkovAudio.Play(weaponData.WeaponFireLayerSfx, player.transform.position);
-                }
-                if (player.TryGetComponent<DollSingerNetworkPresentation>(out var dollSinger))
-                {
-                    dollSinger.PlayShot(aimPoint, weaponId);
-                    return;
                 }
                 if (weaponData == null)
                 {

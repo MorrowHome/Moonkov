@@ -20,6 +20,19 @@ namespace Unity.MP_FPS
         private Label m_AmmoLabel;
         private Label m_ReloadingLabel;
         private VisualElement m_Reticle;
+        private static InGameHUD s_Active;
+        private VisualElement m_RifleHit;
+        private float m_RifleHitUntil;
+        private bool m_RifleKill;
+
+        public static void ConfirmRifleHit(bool killed)
+        {
+            if (!s_Active) return;
+            // A following body hit must not erase a still-visible lethal confirmation.
+            s_Active.m_RifleKill = killed || s_Active.m_RifleKill && Time.unscaledTime < s_Active.m_RifleHitUntil;
+            s_Active.m_RifleHitUntil = Time.unscaledTime + (s_Active.m_RifleKill ? .22f : .12f);
+            s_Active.m_RifleHit?.MarkDirtyRepaint();
+        }
 
         // UI-side timer to ensure shot feedback is visible for a minimum duration.
         private float m_shotFeedbackTimer = 0f;
@@ -40,6 +53,7 @@ namespace Unity.MP_FPS
 
         void OnEnable()
         {
+            s_Active = this;
             m_RootElement = GetComponent<UIDocument>().rootVisualElement;
 
             // Find the UI elements by name
@@ -53,6 +67,39 @@ namespace Unity.MP_FPS
             m_AmmoBar = m_RootElement.Q<ProgressBar>("player-ammo-bar");
             m_ReloadingLabel = m_RootElement.Q<Label>("reloading-label");
             m_Reticle = m_RootElement.Q<VisualElement>("player-reticle");
+            m_RifleHit = m_RootElement.Q<VisualElement>("rifle-hit-confirmation");
+            if (m_RifleHit == null)
+            {
+                m_RifleHit = new VisualElement { name = "rifle-hit-confirmation", pickingMode = PickingMode.Ignore };
+                m_RifleHit.style.position = Position.Absolute;
+                m_RifleHit.style.left = Length.Percent(50); m_RifleHit.style.top = Length.Percent(50);
+                m_RifleHit.style.width = 28; m_RifleHit.style.height = 28;
+                m_RifleHit.style.marginLeft = -14; m_RifleHit.style.marginTop = -14;
+                m_RootElement.Add(m_RifleHit);
+            }
+            m_RifleHit.generateVisualContent += DrawRifleHit;
+            m_RifleHitUntil = 0;
+        }
+
+        private void OnDisable()
+        {
+            if (s_Active == this) s_Active = null;
+            if (m_RifleHit != null) m_RifleHit.generateVisualContent -= DrawRifleHit;
+            m_RifleHitUntil = 0;
+        }
+
+        private void DrawRifleHit(MeshGenerationContext context)
+        {
+            var painter = context.painter2D;
+            painter.strokeColor = m_RifleKill ? new Color(1f, .8f, .35f) : new Color(.9f, 1f, 1f);
+            painter.lineWidth = 1.5f;
+            for (int i = 0; i < 4; i++)
+            {
+                float x = i % 2 == 0 ? -1 : 1, y = i < 2 ? -1 : 1;
+                painter.BeginPath();
+                painter.MoveTo(new Vector2(14 + x * 6, 14 + y * 6));
+                painter.LineTo(new Vector2(14 + x * 10, 14 + y * 10)); painter.Stroke();
+            }
         }
 
         private void InitializeEcs()
@@ -85,6 +132,17 @@ namespace Unity.MP_FPS
             // Toggle HUD visibility based on the overall game state
             bool isInGame = ClientServerBootstrap.HasClientWorlds &&
                             GameSettings.Instance.GameState == GlobalGameState.InGame;
+            bool hitVisible = isInGame && Time.unscaledTime < m_RifleHitUntil;
+            if (!isInGame) m_RifleHitUntil = 0;
+            if (m_RifleHit != null)
+            {
+                m_RifleHit.style.display = hitVisible ? DisplayStyle.Flex : DisplayStyle.None;
+                if (hitVisible)
+                {
+                    m_RifleHit.style.opacity = Mathf.Clamp01((m_RifleHitUntil - Time.unscaledTime) / .06f);
+                    m_RifleHit.style.rotate = new Rotate(new Angle(GetOwnedReticleRoll(), AngleUnit.Degree));
+                }
+            }
             if (m_RootElement.style.display != (isInGame ? DisplayStyle.Flex : DisplayStyle.None))
             {
                 m_RootElement.style.display = isInGame ? DisplayStyle.Flex : DisplayStyle.None;
