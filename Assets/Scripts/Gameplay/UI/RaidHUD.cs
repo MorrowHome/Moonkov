@@ -84,8 +84,8 @@ namespace Unity.MP_FPS
             m_Inventory = m_Root.Q("raidInventory");
             m_InventoryTitle=m_Root.Q<Label>(className:"raid-inventory-title");
             m_EquipmentHost = m_Root.Q("raidInventoryHost"); m_HealthHost = m_Root.Q("raidHealthHost");
-            m_InventoryView = new Client.ContainerInventoryView(m_EquipmentHost, false, SendInventoryMove, UseMedical);
-            m_HealthView = new Client.RaidHealthView(m_HealthHost, TreatPart);
+            m_InventoryView = new Client.ContainerInventoryView(m_EquipmentHost, false, SendInventoryMove, UseMedical, UseConsumable);
+            m_HealthView = new Client.RaidHealthView(m_HealthHost, TreatPart, ConsumeSupply);
             m_EquipmentTab = m_Root.Q<Button>("raidEquipmentTab"); m_EquipmentTab.clicked += EquipmentTab;
             m_HealthTab = m_Root.Q<Button>("raidHealthTab"); m_HealthTab.clicked += HealthTab;
             m_HealthSelected = false; m_NextOxygenAlert = 0;
@@ -118,23 +118,38 @@ namespace Unity.MP_FPS
         {
             if (m_World == null || !m_World.IsCreated) return;
             var player = m_PlayerQuery.HasSingleton<PredictedPlayerGhost>() ? m_PlayerQuery.GetSingleton<PredictedPlayerGhost>() : default;
-            int medicines = 0;
+            int medicines = 0, food = 0, water = 0;
             if (!m_InventoryQuery.IsEmptyIgnoreFilter)
             {
                 var inventory = m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
                 if (inventory.RaidId == m_Snapshot.RaidId && inventory.Graph != null)
-                    foreach (var item in inventory.Graph.Items) if (inventory.Graph.MedicalAccessible(item)) medicines += item.Quantity;
+                    foreach (var item in inventory.Graph.Items)
+                    {
+                        if (inventory.Graph.MedicalAccessible(item)) medicines += item.Quantity;
+                        if (inventory.Graph.ConsumableAccessible(item))
+                        { if (item.Code == "ration") food += item.Quantity; else if (item.Code == "water") water += item.Quantity; }
+                    }
             }
-            if (m_InventoryVisible && m_HealthSelected) m_HealthView.Present(player, medicines, m_InventoryRequestPending);
-            bool warning = player.BodyHealthInitialized && player.CurrentHealth > 0 && player.Oxygen <= 25 && !m_WasSettled;
+            if (m_InventoryVisible && m_HealthSelected) m_HealthView.Present(player, medicines, m_InventoryRequestPending, food, water);
+            var effects = RaidNutrition.Effects(player);
+            bool oxygenWarning = player.BodyHealthInitialized && player.CurrentHealth > 0 && player.Oxygen <= 25;
+            var otherEffects = effects & ~(SurvivalEffects.LowOxygen | SurvivalEffects.Hypoxia);
+            bool warning = (oxygenWarning || otherEffects != SurvivalEffects.None) && !m_WasSettled;
             m_OxygenWarning.style.display = warning ? DisplayStyle.Flex : DisplayStyle.None;
             if (!warning) { m_NextOxygenAlert = 0; return; }
-            m_OxygenWarning.EnableInClassList("oxygen-critical", player.Oxygen <= 10);
-            MoonkovLocalization.Set(m_OxygenWarning, player.BreathableAir ? "OXYGEN REFILLING / {0:0}%" :
-                player.Oxygen <= 0 ? "HYPOXIA / SEEK PRESSURIZED AIR" : "LOW OXYGEN / {0:0}%", player.Oxygen);
-            if (!player.BreathableAir && Time.unscaledTime >= m_NextOxygenAlert)
+            bool critical = (oxygenWarning && player.Oxygen <= 10) || (effects & (SurvivalEffects.Starving | SurvivalEffects.Dehydrated)) != 0;
+            m_OxygenWarning.EnableInClassList("oxygen-critical", critical);
+            string text = oxygenWarning ? string.Format(System.Globalization.CultureInfo.CurrentCulture,
+                MoonkovLocalization.Text(player.BreathableAir ? "OXYGEN REFILLING / {0:0}%" :
+                player.Oxygen <= 0 ? "HYPOXIA / SEEK PRESSURIZED AIR" : "LOW OXYGEN / {0:0}%"), player.Oxygen) : "";
+            string nutritionText = Client.RaidHealthView.EffectText(otherEffects);
+            if (!string.IsNullOrEmpty(nutritionText)) text += (text.Length > 0 ? "\n" : "") + nutritionText;
+            MoonkovLocalization.Set(m_OxygenWarning, text);
+            bool alert = (oxygenWarning && !player.BreathableAir) ||
+                (effects & (SurvivalEffects.Hungry | SurvivalEffects.Starving | SurvivalEffects.Thirsty | SurvivalEffects.Dehydrated)) != 0;
+            if (alert && Time.unscaledTime >= m_NextOxygenAlert)
             {
-                MoonkovAudio.Error(); m_NextOxygenAlert = Time.unscaledTime + (player.Oxygen <= 10 ? 10 : 20);
+                MoonkovAudio.Error(); m_NextOxygenAlert = Time.unscaledTime + (critical ? 10 : 20);
             }
         }
 
@@ -377,6 +392,34 @@ namespace Unity.MP_FPS
 
         private void UseMedical(Inventory.InventoryItem item)
             => UseMedical(item, BodyPart.Auto);
+        private void ConsumeSupply(string code)
+        {
+            if (m_World == null || !m_World.IsCreated || m_InventoryQuery.IsEmptyIgnoreFilter) return;
+            var inventory = m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
+            var item = inventory.Graph?.Items.Find(i => i.Code == code && inventory.Graph.ConsumableAccessible(i));
+            if (item != null) UseConsumable(item);
+        }
+        private void UseConsumable(Inventory.InventoryItem item)
+        {
+            if (m_InventoryRequestPending || m_Snapshot.Phase != RaidPhase.Active || m_InventoryQuery.IsEmptyIgnoreFilter) return;
+            var inventory = m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
+            var player = m_PlayerQuery.HasSingleton<PredictedPlayerGhost>() ? m_PlayerQuery.GetSingleton<PredictedPlayerGhost>() : default;
+            if (!RaidNutrition.CanConsume(player, Inventory.ConsumableCatalog.Get(item.Code)))
+            {
+                const string message = "Cannot consume: resource is full, stomach capacity is insufficient, or the player is inactive.";
+                m_InventoryView.Present(inventory.Graph, message); m_HealthView.Message(message); return;
+            }
+            m_InventoryRequestId = System.Math.Max(m_InventoryRequestId, inventory.RequestId) + 1;
+            if (Send(new RaidConsumableUseRpc { RaidId = m_Snapshot.RaidId, RequestId = m_InventoryRequestId,
+                ExpectedVersion = inventory.Graph.Version, ItemId = item.Id }))
+            { m_InventoryRequestedAt = Time.unscaledTime; m_InventoryRequestPending = true; }
+            else
+            {
+                const string message = "Not connected. Consumable remains in its container.";
+                m_InventoryView.Present(inventory.Graph, message); m_HealthView.Message(message);
+            }
+            RefreshHealth();
+        }
         private void TreatPart(BodyPart part)
         {
             if (m_World == null || !m_World.IsCreated || m_InventoryQuery.IsEmptyIgnoreFilter) return;

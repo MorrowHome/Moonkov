@@ -28,6 +28,9 @@ namespace Unity.MP_FPS
                 RaidHealth.TickOxygen(ref health.ValueRW, air, SystemAPI.Time.DeltaTime,
                     map.OutdoorOxygenSeconds, map.OxygenRecoveryPerSecond,
                     map.HypoxiaGraceSeconds, map.HypoxiaDamagePerSecond, tick);
+                RaidNutrition.Tick(ref health.ValueRW, SystemAPI.Time.DeltaTime,
+                    map.EnergyReserveSeconds, map.HydrationReserveSeconds, map.DigestionSeconds,
+                    map.NutritionGraceSeconds, map.StarvationDamagePerSecond, map.DehydrationDamagePerSecond, tick);
             }
         }
     }

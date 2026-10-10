@@ -67,6 +67,11 @@ public struct PredictedPlayerGhost : IComponentData
     [GhostField] public bool BreathableAir;
     [GhostField] public BodyPart LastHitPart;
     public float HypoxiaSeconds;
+    [GhostField] public float Energy;
+    [GhostField] public float Hydration;
+    [GhostField] public float Satiety;
+    // Server exposure timers; snapshots carry the resulting resources/effects.
+    public float StarvationSeconds, DehydrationSeconds;
     
     [GhostField] public uint EquippedWeaponID;
     [GhostField] public float WeaponCooldown;   // Timer to control rate of fire

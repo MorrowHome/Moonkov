@@ -28,6 +28,12 @@ namespace Unity.MP_FPS
         [SerializeField, Min(0)] private float m_OxygenRecoveryPerSecond = 5;
         [SerializeField, Min(0)] private float m_HypoxiaGraceSeconds = 8;
         [SerializeField, Min(0)] private float m_HypoxiaDamagePerSecond = 3;
+        [SerializeField, Min(1)] private float m_EnergyReserveSeconds = 900;
+        [SerializeField, Min(1)] private float m_HydrationReserveSeconds = 720;
+        [SerializeField, Min(1)] private float m_DigestionSeconds = 600;
+        [SerializeField, Min(0)] private float m_NutritionGraceSeconds = 10;
+        [SerializeField, Min(0)] private float m_StarvationDamagePerSecond = .5f;
+        [SerializeField, Min(0)] private float m_DehydrationDamagePerSecond = 1;
         private GameObject[] m_Markers;
         private Material[] m_Materials;
         private readonly System.Collections.Generic.Dictionary<int,GameObject> m_DeathBags = new System.Collections.Generic.Dictionary<int,GameObject>();
@@ -49,6 +55,12 @@ namespace Unity.MP_FPS
         public float OxygenRecoveryPerSecond => m_OxygenRecoveryPerSecond;
         public float HypoxiaGraceSeconds => m_HypoxiaGraceSeconds;
         public float HypoxiaDamagePerSecond => m_HypoxiaDamagePerSecond;
+        public float EnergyReserveSeconds => m_EnergyReserveSeconds;
+        public float HydrationReserveSeconds => m_HydrationReserveSeconds;
+        public float DigestionSeconds => m_DigestionSeconds;
+        public float NutritionGraceSeconds => m_NutritionGraceSeconds;
+        public float StarvationDamagePerSecond => m_StarvationDamagePerSecond;
+        public float DehydrationDamagePerSecond => m_DehydrationDamagePerSecond;
 
         private void OnEnable()
         {

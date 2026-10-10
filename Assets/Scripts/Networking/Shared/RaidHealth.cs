@@ -59,6 +59,7 @@ namespace Unity.MP_FPS
             state.LeftArmHealth = state.RightArmHealth = 60;
             state.LeftLegHealth = state.RightLegHealth = 65;
             state.Oxygen = OxygenCapacity; state.BreathableAir = false; state.HypoxiaSeconds = 0;
+            RaidNutrition.Initialize(ref state);
             Synchronize(ref state);
         }
         private static void Synchronize(ref PredictedPlayerGhost state)
@@ -137,16 +138,8 @@ namespace Unity.MP_FPS
         }
         public static FirstPersonController.ControllerConsts Movement(in PredictedPlayerGhost state,
             FirstPersonController.ControllerConsts constants)
-        {
-            if (state.BodyHealthInitialized && (state.LeftLegHealth <= 0 || state.RightLegHealth <= 0))
-            {
-                constants.Walk.Speed *= .65f; constants.Sprint.Speed = constants.Walk.Speed;
-                constants.JumpHeight *= .5f;
-            }
-            return constants;
-        }
-        public static float HandlingMultiplier(in PredictedPlayerGhost state) => state.BodyHealthInitialized &&
-            (state.LeftArmHealth <= 0 || state.RightArmHealth <= 0) ? 1.4f : 1f;
+            => RaidNutrition.Movement(state, constants);
+        public static float HandlingMultiplier(in PredictedPlayerGhost state) => RaidNutrition.HandlingMultiplier(state);
         // A large remaining limb total must not hide a nearly fatal head/chest
         // injury from the compact HUD or the existing PMC retreat decision.
         public static float DangerFraction(in PredictedPlayerGhost state)
@@ -156,7 +149,7 @@ namespace Unity.MP_FPS
         }
         public static PlayerInput RestrictInput(in PredictedPlayerGhost state, PlayerInput input)
         {
-            if (state.BodyHealthInitialized && (state.LeftLegHealth <= 0 || state.RightLegHealth <= 0))
+            if (!RaidNutrition.CanSprint(state))
                 input.SetFlag(PlayerInput.InputFlag.Sprint, false);
             return input;
         }

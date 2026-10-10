@@ -15,14 +15,18 @@ namespace Unity.MP_FPS.Client
         private readonly RaidBodyDiagram m_Diagram;
         private readonly Action<BodyPart> m_Heal;
         private readonly Button m_Treat;
+        private readonly Button m_Eat, m_Drink;
+        private readonly Action<string> m_Consume;
         private PredictedPlayerGhost m_State;
         private BodyPart m_Selected = BodyPart.Chest;
         private bool m_Ready, m_Busy;
         private int m_Medicines;
+        private int m_Food, m_Water;
         private string m_Feedback;
-        public RaidHealthView(VisualElement parent, Action<BodyPart> heal)
+        public RaidHealthView(VisualElement parent, Action<BodyPart> heal, Action<string> consume = null)
         {
             m_Heal = heal;
+            m_Consume = consume;
             m_Root = TerminalLayout.Clone("RaidHealth", "raidHealthPage");
             // Clone detaches this page from its TemplateContainer; keep its own
             // stylesheet on the page, just as ContainerInventoryView does.
@@ -42,6 +46,8 @@ namespace Unity.MP_FPS.Client
                 var fill = new VisualElement { pickingMode = PickingMode.Ignore }; fill.AddToClassList("health-meter-fill"); meter.Add(fill); m_Fills[i] = fill;
             }
             m_Treat = m_Root.Q<Button>("healthTreat"); m_Treat.clicked += Treat;
+            m_Eat = m_Root.Q<Button>("healthEat"); m_Eat.clicked += Eat;
+            m_Drink = m_Root.Q<Button>("healthDrink"); m_Drink.clicked += Drink;
             MoonkovLocalization.Bind(m_Root); Select(m_Selected);
         }
         public static string Name(BodyPart part)
@@ -62,10 +68,13 @@ namespace Unity.MP_FPS.Client
             m_Diagram.Present(m_State, m_Selected); RenderTreatment();
         }
         private void Treat() { if (m_Treat.enabledSelf) m_Heal(m_Selected); }
+        private void Eat() { if (m_Eat.enabledSelf) m_Consume?.Invoke("ration"); }
+        private void Drink() { if (m_Drink.enabledSelf) m_Consume?.Invoke("water"); }
         public void Message(string source) { m_Feedback = source; RenderTreatment(); }
-        public void Present(in PredictedPlayerGhost state, int medicines, bool busy)
+        public void Present(in PredictedPlayerGhost state, int medicines, bool busy, int food = 0, int water = 0)
         {
             m_State = state; m_Ready = state.BodyHealthInitialized; m_Medicines = medicines; m_Busy = busy;
+            m_Food = food; m_Water = water;
             MoonkovLocalization.Set(m_Root.Q<Label>("healthTotal"), m_Ready ? "{0:0} / {1:0}" : "Waiting for health snapshot", state.CurrentHealth, state.MaxHealth);
             for (int i = 0; i < RaidHealth.PartCount; i++)
             {
@@ -82,10 +91,45 @@ namespace Unity.MP_FPS.Client
             stageLabel.EnableInClassList("health-danger", m_Ready && state.Oxygen <= 10);
             stageLabel.EnableInClassList("health-caution", m_Ready && state.Oxygen > 10 && state.Oxygen <= 25);
             MoonkovLocalization.Set(m_Root.Q<Label>("healthAir"), state.BreathableAir ? "PRESSURIZED / REFILLING" : "VACUUM / RESERVE IN USE");
-            string consequence = MoonkovLocalization.Text(state.LeftLegHealth <= 0 || state.RightLegHealth <= 0 ? "LEG DISABLED / SPRINT LIMITED" : "LEGS FUNCTIONAL");
-            if (state.LeftArmHealth <= 0 || state.RightArmHealth <= 0) consequence += "\n" + MoonkovLocalization.Text("ARM DISABLED / HANDLING SLOWED");
-            MoonkovLocalization.Set(m_Root.Q<Label>("healthConsequences"), m_Ready ? consequence : "");
+            NutritionMeter("Energy", "ENERGY / {0:0}%", state.Energy);
+            NutritionMeter("Hydration", "HYDRATION / {0:0}%", state.Hydration);
+            NutritionMeter("Satiety", "STOMACH / {0:0}% FULL", state.Satiety);
+            string consequence = EffectText(RaidNutrition.Effects(state));
+            MoonkovLocalization.Set(m_Root.Q<Label>("healthConsequences"), m_Ready ?
+                string.IsNullOrEmpty(consequence) ? "NO NEGATIVE CONDITIONS" : consequence : "");
+            RenderNutrition();
             m_Diagram.Present(state, m_Selected); RenderTreatment();
+        }
+        private void NutritionMeter(string name, string text, float value)
+        {
+            MoonkovLocalization.Set(m_Root.Q<Label>("health" + name + "Value"), m_Ready ? text : "—", value);
+            var fill = m_Root.Q("health" + name + "Fill"); fill.style.width = Length.Percent(m_Ready ? value : 0);
+            fill.style.backgroundColor = name == "Satiety" ? value >= RaidNutrition.FullThreshold ? new Color(.64f, .46f, .2f) : new Color(.4f, .52f, .43f) : RaidBodyDiagram.ConditionColor(value / 100);
+        }
+        private void RenderNutrition()
+        {
+            m_Eat.SetEnabled(m_Ready && !m_Busy && m_Consume != null && m_Food > 0 && RaidNutrition.CanConsume(m_State, Inventory.ConsumableCatalog.Get("ration")));
+            m_Drink.SetEnabled(m_Ready && !m_Busy && m_Consume != null && m_Water > 0 && RaidNutrition.CanConsume(m_State, Inventory.ConsumableCatalog.Get("water")));
+            MoonkovLocalization.Set(m_Eat, "EAT / {0}", m_Food); MoonkovLocalization.Set(m_Drink, "DRINK / {0}", m_Water);
+            MoonkovLocalization.Set(m_Root.Q<Label>("healthFoodStatus"),
+                m_State.Satiety + 35 > 100 ? "Not enough stomach capacity for a ration. Drinking remains available." :
+                "Ration: +45 energy, -5 hydration, +35 fullness. Water: +50 hydration, +10 fullness. Use carried supplies.");
+        }
+        public static string EffectText(SurvivalEffects effects)
+        {
+            var lines = new System.Collections.Generic.List<string>();
+            void Add(SurvivalEffects flag, string text) { if ((effects & flag) != 0) lines.Add(MoonkovLocalization.Text(text)); }
+            Add(SurvivalEffects.Hungry, "HUNGRY / MOVEMENT AND JUMP REDUCED");
+            Add(SurvivalEffects.Starving, "STARVING / NO SPRINT, HEALTH LOSS AFTER GRACE");
+            Add(SurvivalEffects.Thirsty, "THIRSTY / MOVEMENT AND HANDLING SLOWED");
+            Add(SurvivalEffects.Dehydrated, "DEHYDRATED / NO SPRINT, HEALTH LOSS AFTER GRACE");
+            Add(SurvivalEffects.FullStomach, "FULL STOMACH / SPRINT SPEED REDUCED");
+            Add(SurvivalEffects.LowOxygen, "LOW OXYGEN / MOVEMENT AND HANDLING SLOWED");
+            Add(SurvivalEffects.Hypoxia, "HYPOXIA / NO SPRINT, CONTINUOUS HEALTH LOSS");
+            Add(SurvivalEffects.LegDisabled, "LEG DISABLED / SPRINT LIMITED");
+            Add(SurvivalEffects.ArmDisabled, "ARM DISABLED / HANDLING SLOWED");
+            Add(SurvivalEffects.AbdomenDisabled, "ABDOMEN DISABLED / DOUBLE NUTRITION DRAIN");
+            return string.Join("\n", lines);
         }
         private void RenderTreatment()
         {
@@ -97,7 +141,7 @@ namespace Unity.MP_FPS.Client
                 m_Medicines == 0 ? "Medical supplies must be in pockets or the chest rig." :
                 !RaidHealth.CanHeal(m_State, m_Selected) ? "This body part does not need treatment." : "One injector restores up to 40 HP to the selected part.");
         }
-        public void Dispose() { m_Treat.clicked -= Treat; m_Root.RemoveFromHierarchy(); }
+        public void Dispose() { m_Treat.clicked -= Treat; m_Eat.clicked -= Eat; m_Drink.clicked -= Drink; m_Root.RemoveFromHierarchy(); }
     }
 
     internal sealed class RaidBodyDiagram : VisualElement

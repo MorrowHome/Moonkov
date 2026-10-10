@@ -19,6 +19,7 @@ namespace Unity.MP_FPS.Client
         private readonly Label m_Weight, m_Message;
         private readonly Action<InventoryCommand> m_Send;
         private readonly Action<InventoryItem> m_UseMedical;
+        private readonly Action<InventoryItem> m_UseConsumable;
         private readonly TerminalWindows m_Windows;
         private readonly bool m_Stash;
         private readonly List<Grid> m_Grids = new List<Grid>();
@@ -41,9 +42,11 @@ namespace Unity.MP_FPS.Client
             CancelDrag(); m_ReadOnlyReason = reason;
             MoonkovLocalization.Set(m_Message, reason ?? "Drag to move · R rotate · Double click containers · Ctrl click transfer");
         }
-        public ContainerInventoryView(VisualElement parent, bool showStash, Action<InventoryCommand> send, Action<InventoryItem> useMedical = null)
+        public ContainerInventoryView(VisualElement parent, bool showStash, Action<InventoryCommand> send,
+            Action<InventoryItem> useMedical = null, Action<InventoryItem> useConsumable = null)
         {
             m_Stash = showStash; m_Send = send; m_UseMedical = useMedical;
+            m_UseConsumable = useConsumable;
             m_Root = TerminalLayout.Clone("ContainerInventory", "containerInventory");
             m_Root.EnableInClassList("inventory-with-stash", showStash);
             m_Root.styleSheets.Add(Resources.Load<StyleSheet>("Moonkov/ContainerUI")); parent.Add(m_Root);
@@ -84,6 +87,7 @@ namespace Unity.MP_FPS.Client
         {
             switch (code) { case "dust":return StashArtKind.Dust; case "alloy":return StashArtKind.Alloy; case "cells":return StashArtKind.Cell; case "medkit":return StashArtKind.Medical;
                 case "helmet":return StashArtKind.Helmet; case "rifle":case "compact":return StashArtKind.HaloRifle; case "pistol":return StashArtKind.HaloRevolver;
+                case "ration":return StashArtKind.Ration; case "water":return StashArtKind.Water;
                 case "shotgun":return StashArtKind.HaloShotgun;
                 case "sniper":return StashArtKind.HaloSniper;
                 case "rig":return StashArtKind.ChestRig; case "backpack":case "small_pack":return StashArtKind.Backpack; default:return StashArtKind.None; }
@@ -234,6 +238,12 @@ namespace Unity.MP_FPS.Client
         private void Context(InventoryItem item, Vector2 position)
         {
             var window=m_Windows.Open(InventoryCatalog.Get(item.Code).Name, m_Root.WorldToLocal(position), true);
+            if (m_UseConsumable != null && m_Graph.ConsumableAccessible(item))
+                MoonkovTerminal.ActionButton(window, ConsumableCatalog.Get(item.Code).Food ? "EAT / +45 ENERGY" : "DRINK / +50 HYDRATION", () =>
+                {
+                    if (m_Busy || m_ReadOnlyReason != null) return;
+                    m_Windows.Close(window); m_Busy = true; m_UseConsumable(item);
+                });
             if (m_UseMedical != null && m_Graph.MedicalAccessible(item))
                 MoonkovTerminal.ActionButton(window, "USE / RESTORE 40 HP", () =>
                 {
@@ -243,7 +253,7 @@ namespace Unity.MP_FPS.Client
             MoonkovTerminal.ActionButton(window, "INSPECT", ()=> { m_Windows.Close(window); Describe(item); });
             if (InventoryCatalog.Get(item.Code).Container) MoonkovTerminal.ActionButton(window, "OPEN CONTAINER", ()=> { m_Windows.Close(window); OpenContainer(item); });
             MoonkovTerminal.ActionButton(window, "QUICK TRANSFER", ()=> { m_Windows.Close(window); QuickTransfer(item); });
-            if ((int)InventoryCatalog.Get(item.Code).Kind >= (int)ItemKind.Helmet)
+            if (InventoryCatalog.Get("equipment").Regions.Any(r => r.SlotKind == InventoryCatalog.Get(item.Code).Kind))
                 MoonkovTerminal.ActionButton(window, "EQUIP", ()=> { m_Windows.Close(window); foreach (var region in InventoryCatalog.Get("equipment").Regions) if (region.SlotKind==InventoryCatalog.Get(item.Code).Kind) { Command(new InventoryCommand { ItemId=item.Id, Parent="equipment", Region=region.Id }); break; } });
             if (item.Quantity>1) MoonkovTerminal.ActionButton(window, "SPLIT STACK", ()=> { m_Windows.Close(window); Split(item); });
         }

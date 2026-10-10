@@ -3,7 +3,7 @@ using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client
 {
-    public enum StashArtKind { None, Dust, Alloy, Cell, Halo, Outfit, Helmet, Rifle, Pistol, ChestRig, Backpack, HaloRifle, HaloRevolver, HaloShotgun, Medical, HaloSniper }
+    public enum StashArtKind { None, Dust, Alloy, Cell, Halo, Outfit, Helmet, Rifle, Pistol, ChestRig, Backpack, HaloRifle, HaloRevolver, HaloShotgun, Medical, HaloSniper, Ration, Water }
 
     // Small original vector illustrations, kept sharp at the shared PanelSettings scale.
     [UxmlElement]
@@ -54,6 +54,8 @@ namespace Unity.MP_FPS.Client
                 case StashArtKind.Alloy: Alloy(); break;
                 case StashArtKind.Cell: Cell(); break;
                 case StashArtKind.Medical: Medical(); break;
+                case StashArtKind.Ration: Ration(); break;
+                case StashArtKind.Water: Water(); break;
                 case StashArtKind.Halo: Halo(); break;
                 case StashArtKind.Outfit: Outfit(); break;
                 case StashArtKind.Helmet: Helmet(); break;
@@ -91,6 +93,24 @@ namespace Unity.MP_FPS.Client
             m_Painter.Stroke();
         }
 
+        private void Ration()
+        {
+            Shape(0x4e6047, new Vector2(19, 12), new Vector2(79, 12), new Vector2(85, 88), new Vector2(14, 88));
+            Box(0x9dab85, 24, 22, 51, 55); Box(0xe4ddba, 30, 35, 39, 24);
+            Line(0x56694e, 3, new Vector2(36, 42), new Vector2(63, 42));
+            Line(0x56694e, 2, new Vector2(36, 50), new Vector2(56, 50));
+            Line(0xcacbb0, 2, new Vector2(20, 17), new Vector2(78, 17));
+            Line(0x303d32, 2, new Vector2(19, 83), new Vector2(80, 83));
+        }
+        private void Water()
+        {
+            Box(0x384f52, 39, 7, 23, 12); Box(0x95b5b7, 42, 19, 17, 9);
+            Shape(0x6d9fa2, new Vector2(42, 25), new Vector2(58, 25), new Vector2(72, 40),
+                new Vector2(72, 88), new Vector2(28, 88), new Vector2(28, 40));
+            Box(0xb5cfcc, 33, 42, 7, 39); Box(0xe5e5cf, 28, 53, 44, 20);
+            Ring(0x557c7c, 2, 50, 63, 6);
+            Line(0x456d6d, 2, new Vector2(29, 85), new Vector2(70, 85));
+        }
         private void Dust()
         {
             Shape(0x151a1b, new Vector2(24, 14), new Vector2(80, 12), new Vector2(87, 88), new Vector2(21, 94), new Vector2(17, 69));

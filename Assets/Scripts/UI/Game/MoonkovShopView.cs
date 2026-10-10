@@ -86,6 +86,8 @@ namespace Unity.MP_FPS.Client
             var definition = InventoryCatalog.Get(offer.Code);
             var row = Product(offer.Code, offer.Name, MoonkovLocalization.Format($"{definition.Width * definition.Height} GRID CELL(S)  /  {offer.BuyDust} DUST EACH"));
             if (offer.Code == "cells") MoonkovTerminal.Text(row.Q(className: "terminal-shop-description"), MoonkovLocalization.Format($"{BatteryEnergy.Capacity} ENERGY / FULL CELL"), "terminal-copy");
+            if (ConsumableCatalog.Get(offer.Code) != null)
+                MoonkovTerminal.Text(row.Q(className: "terminal-shop-description"), StockDetail(new InventoryItem { Code = offer.Code }), "terminal-copy");
             var order = new VisualElement(); order.AddToClassList("terminal-shop-order"); row.Add(order);
             int quantity = offer.Code == "cells" ? 3 : 1;
             Button buy = null;
@@ -101,7 +103,7 @@ namespace Unity.MP_FPS.Client
             {
                 var offer = m_Offers.First(o => o.Code == item.Code); rows++;
                 string detail = item.EmergencySupply ? "EMERGENCY SUPPLY / CANNOT BE SOLD" : graph.RootOf(item.Id) != "stash" ? "RETURN TO STORAGE TO SELL" :
-                    MoonkovLocalization.Format($"{offer.SellDust} DUST EACH  /  ") + (item.Code == "cells" ? MoonkovLocalization.Format($"{BatteryEnergy.Stored(item)}/{item.Quantity * BatteryEnergy.Capacity} ENERGY / VALUE SCALES WITH CHARGE") : item.LoadedAmmo < 0 ? "FULL MAGAZINE" : MoonkovLocalization.Format($"{item.LoadedAmmo} ROUNDS"));
+                    MoonkovLocalization.Format($"{offer.SellDust} DUST EACH  /  ") + StockDetail(item);
                 var row = Product(item.Code, offer.Name, detail);
                 var order = new VisualElement(); order.AddToClassList("terminal-shop-order"); row.Add(order);
                 int quantity = 1; Button sell = null;
@@ -110,6 +112,14 @@ namespace Unity.MP_FPS.Client
                 sell.SetEnabled(Ready && !item.EmergencySupply && graph.RootOf(item.Id) == "stash");
             }
             if (rows == 0) MoonkovTerminal.Text(m_List, "No halo weapons or energy cells to sell. Recover supplies in a raid to restock.", "terminal-copy");
+        }
+        private static string StockDetail(InventoryItem item)
+        {
+            if (item.Code == "ration") return MoonkovLocalization.Text("RATION / +45 ENERGY, -5 HYDRATION, +35 FULLNESS");
+            if (item.Code == "water") return MoonkovLocalization.Text("WATER / +50 HYDRATION, +10 FULLNESS");
+            if (item.Code == "cells") return MoonkovLocalization.Format($"{BatteryEnergy.Stored(item)}/{item.Quantity * BatteryEnergy.Capacity} ENERGY / VALUE SCALES WITH CHARGE");
+            if (ShopCatalog.IsWeapon(item.Code)) return item.LoadedAmmo < 0 ? MoonkovLocalization.Text("FULL MAGAZINE") : MoonkovLocalization.Format($"{item.LoadedAmmo} ROUNDS");
+            return MoonkovLocalization.Text("USE / RESTORE 40 HP");
         }
         private void Recovery()
         {

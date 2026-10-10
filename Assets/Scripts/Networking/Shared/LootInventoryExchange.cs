@@ -15,6 +15,7 @@ namespace Unity.MP_FPS.Inventory
             graph.AddSupply("alloy",1+index%3,Root,true);
             graph.AddSupply("cells",1+index%2,Root,true);
             if(index%3==0) graph.AddSupply("medkit",1+index%2,Root,true);
+            graph.AddSupply(index%2==0 ? "ration" : "water",1,Root,true);
             if(index%4==0)
             {
                 var bag=new InventoryItem {Id=Guid.NewGuid().ToString("D"),Code="small_pack",FoundInRaid=true};

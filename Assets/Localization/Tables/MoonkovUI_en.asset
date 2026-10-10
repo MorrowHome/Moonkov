@@ -2302,6 +2302,120 @@ MonoBehaviour:
     m_Localized: LOW OXYGEN / {0:0}%
     m_Metadata:
       m_Items: []
+  - m_Id: 1063760301928448
+    m_Localized: Expedition ration
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1063760327094272
+    m_Localized: Sealed drinking water
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1063760327094273
+    m_Localized: NUTRITION / DIGESTION
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1063760327094274
+    m_Localized: ENERGY / {0:0}%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1063760327094275
+    m_Localized: HYDRATION / {0:0}%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1063760327094276
+    m_Localized: STOMACH / {0:0}% FULL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1063760327094277
+    m_Localized: EAT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1063760327094278
+    m_Localized: DRINK
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1063760327094279
+    m_Localized: EAT / {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1063760327094280
+    m_Localized: DRINK / {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1063760327094281
+    m_Localized: EAT / +45 ENERGY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1063760327094282
+    m_Localized: DRINK / +50 HYDRATION
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1063760327094283
+    m_Localized: ACTIVE CONDITIONS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1063760327094284
+    m_Localized: NO NEGATIVE CONDITIONS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1063760327094285
+    m_Localized: Not enough stomach capacity for a ration. Drinking remains available.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1063760327094286
+    m_Localized: 'Ration: +45 energy, -5 hydration, +35 fullness. Water: +50 hydration,
+      +10 fullness. Use carried supplies.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1063760327094287
+    m_Localized: HUNGRY / MOVEMENT AND JUMP REDUCED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1063760327094288
+    m_Localized: STARVING / NO SPRINT, HEALTH LOSS AFTER GRACE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1063760327094289
+    m_Localized: THIRSTY / MOVEMENT AND HANDLING SLOWED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1063760327094290
+    m_Localized: DEHYDRATED / NO SPRINT, HEALTH LOSS AFTER GRACE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1063760327094291
+    m_Localized: FULL STOMACH / SPRINT SPEED REDUCED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1063760327094292
+    m_Localized: LOW OXYGEN / MOVEMENT AND HANDLING SLOWED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1063760327094293
+    m_Localized: HYPOXIA / NO SPRINT, CONTINUOUS HEALTH LOSS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1063760327094294
+    m_Localized: ABDOMEN DISABLED / DOUBLE NUTRITION DRAIN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1063760327094295
+    m_Localized: 'Cannot consume: resource is full, stomach capacity is insufficient,
+      or the player is inactive.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1063760327094296
+    m_Localized: Not connected. Consumable remains in its container.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1064981733584896
+    m_Localized: RATION / +45 ENERGY, -5 HYDRATION, +35 FULLNESS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1064981750362112
+    m_Localized: WATER / +50 HYDRATION, +10 FULLNESS
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

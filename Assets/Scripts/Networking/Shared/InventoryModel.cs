@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Unity.MP_FPS.Inventory
 {
-    public enum ItemKind { Root, Material, Cell, Helmet, LongGun, Pistol, Rig, Backpack, Medical }
+    public enum ItemKind { Root, Material, Cell, Helmet, LongGun, Pistol, Rig, Backpack, Medical, Food, Drink }
     public enum InventoryError { None, Stale, Missing, Invalid, Incompatible, Bounds, Collision, Cycle, Full, Overweight, Inaccessible }
     public enum InventoryOperation { Move, Split, Merge }
 
@@ -30,7 +30,7 @@ namespace Unity.MP_FPS.Inventory
         public const string Stash = "stash", Equipment = "equipment", Pockets = "pockets";
         public const int MaxDepth = 8, MaxItems = 2048;
         public const float CarryWeightLimit = 45;
-        private static readonly string[] LootCodes = { "dust", "alloy", "cells", "small_pack", "rig" };
+        private static readonly string[] LootCodes = { "dust", "alloy", "cells", "small_pack", "rig", "ration", "water" };
         public static string LootCode(int index) => LootCodes[index % LootCodes.Length];
         public static readonly IReadOnlyDictionary<string, ItemDefinition> Definitions = Build();
         private static Dictionary<string, ItemDefinition> Build()
@@ -48,6 +48,8 @@ namespace Unity.MP_FPS.Inventory
                 new ItemDefinition("alloy", "Lunar alloy", ItemKind.Material, 2, 1, 10, .6f),
                 new ItemDefinition("cells", "Energy cell", ItemKind.Cell, 1, 1, 12, .2f),
                 new ItemDefinition("medkit", "M-40 Medical injector", ItemKind.Medical, 1, 1, 4, .15f),
+                new ItemDefinition("ration", "Expedition ration", ItemKind.Food, 1, 1, 3, .25f),
+                new ItemDefinition("water", "Sealed drinking water", ItemKind.Drink, 1, 2, 2, .5f),
                 new ItemDefinition("helmet", "L-01 Flight helmet", ItemKind.Helmet, 2, 2, 1, 1.2f),
                 new ItemDefinition("rifle", "Halo Rifle", ItemKind.LongGun, 2, 2, 1, 3.2f),
                 new ItemDefinition("compact", "Halo Rifle (Compact)", ItemKind.LongGun, 2, 2, 1, 2.4f),
@@ -301,6 +303,21 @@ namespace Unity.MP_FPS.Inventory
         }
         public bool MedicalAccessible(InventoryItem item) => item != null && item.Code == "medkit" &&
             (item.Parent == InventoryCatalog.Pockets || item.Parent == Equipped("ChestRig")?.Id);
+
+        // Food/water may be used from any carried bag while the inventory is open.
+        // Joined loot snapshots and the personal stash are never consumable here.
+        public bool ConsumableAccessible(InventoryItem item) => item != null &&
+            ConsumableCatalog.Get(item.Code) != null && Carried(item);
+        public InventoryError ConsumeOne(string itemId, int expectedVersion)
+        {
+            if (expectedVersion != Version) return InventoryError.Stale;
+            var item = Find(itemId);
+            if (item == null) return InventoryError.Missing;
+            if (!ConsumableAccessible(item)) return InventoryError.Inaccessible;
+            if (item.Quantity < 1) return InventoryError.Invalid;
+            if (--item.Quantity == 0) Items.Remove(item);
+            Version++; return InventoryError.None;
+        }
 
         // Only the match server commits this result. Full health/death/stale versions
         // leave both health and the stack untouched; a replay cannot consume it twice.
