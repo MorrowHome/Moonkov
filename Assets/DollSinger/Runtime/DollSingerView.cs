@@ -35,6 +35,14 @@ public class DollSingerView : MonoBehaviour
     [Range(40f, 100f)] public float firstPersonFieldOfView = 70f;
     [Range(0.01f, 0.5f)] public float firstPersonNearClip = 0.03f;
 
+    [Header("Third person orbit (Cinemachine)")]
+    [Tooltip("Orbit around the torso in world-up space, rather than pitching a camera offset around the feet.")]
+    [Min(0.3f)] public float thirdPersonOrbitHeight = 1.25f;
+    [Tooltip("Immediate pull-in prevents clipping; this controls the smooth return after leaving an obstacle.")]
+    [Min(0f)] public float cameraCollisionRecoverySeconds = 0.35f;
+    [Min(0.05f)] public float thirdPersonCameraRadius = 0.2f;
+    public LayerMask cameraObstacleLayers = Physics.DefaultRaycastLayers;
+
     [Header("Aim zoom")]
     [Tooltip("Target magnification when fully aiming, relative to the current first/third-person FOV.")]
     [Range(1f, 3f)] public float aimMagnification = 1.75f;
@@ -93,6 +101,7 @@ public class DollSingerView : MonoBehaviour
     private bool networkLookDriven;
     private Quaternion networkLookRotation;
     private Vector3 lastRenderedLeanOffset;
+    private DollSingerThirdPersonCamera thirdPersonRig;
 
     private const string HairMaterialName = "Hair";
     // "Hair" is the scalp/bangs/side-hair submesh only. The twin-tails are skinned to the
@@ -144,6 +153,7 @@ public class DollSingerView : MonoBehaviour
 
     public void BindPlayer(GameObject character, bool usesThirdPerson)
     {
+        ReleaseThirdPersonRig();
         ReleaseFirstPersonPresentation();
         if (movement) movement.IsFirstPersonView = false;
         CaptureCameraDefaults();
@@ -261,7 +271,7 @@ public class DollSingerView : MonoBehaviour
         // Also recover if a camera render was interrupted before its post-render event.
         cameraMeshStates.Clear();
         SetCameraMesh(false);
-        if (!player) return;
+        if (!player) { ReleaseThirdPersonRig(); return; }
 
         if (followPlayerRotation)
         {
@@ -319,7 +329,37 @@ public class DollSingerView : MonoBehaviour
         SetFirstPersonPresentation(viewBlend > 0.5f);
         SyncShadowBlendShapes();
         ApplyLean();
+        UpdateThirdPersonRig();
         lastRenderedLeanOffset = firstPerson ? movement.LeanOffset * viewBlend : Vector3.zero;
+    }
+
+    private void UpdateThirdPersonRig()
+    {
+        if (thirdPersonRig == null)
+            thirdPersonRig = new DollSingerThirdPersonCamera(transform, camera, player.transform);
+
+        if (viewBlend < 1f)
+        {
+            Vector3 up = player.transform.up;
+            Vector3 eye = GetFirstPersonEyePosition();
+            // Crouching/prone lower the pivot too. The height is never rotated by pitch:
+            // looking UP lowers the boom into the ground, where Cinemachine pulls it in.
+            float eyeHeight = Vector3.Dot(eye - player.transform.position, up);
+            float height = Mathf.Min(thirdPersonOrbitHeight, Mathf.Max(0.35f, eyeHeight * 0.85f));
+            Vector3 anchor = Vector3.Lerp(player.transform.position + up * height, eye, viewBlend);
+            float distance = Mathf.Lerp(currentDistance,
+                Mathf.Max(minThirdPersonDistance, currentDistance - 1.45f), aimBlend) * (1f - viewBlend);
+            thirdPersonRig.Position(anchor, camera.transform.rotation, up, distance,
+                Vector3.right * (0.65f * aimBlend * (1f - viewBlend)),
+                thirdPersonCameraRadius, cameraObstacleLayers, cameraCollisionRecoverySeconds, Time.deltaTime);
+        }
+        else thirdPersonRig.ResetCollision();
+    }
+
+    private void ReleaseThirdPersonRig()
+    {
+        thirdPersonRig?.Dispose();
+        thirdPersonRig = null;
     }
 
     /// <summary>
@@ -624,6 +664,7 @@ public class DollSingerView : MonoBehaviour
 
     private void OnDisable()
     {
+        ReleaseThirdPersonRig();
         RenderPipelineManager.beginCameraRendering -= BeginCameraRendering;
         RenderPipelineManager.endCameraRendering -= EndCameraRendering;
         Camera.onPreCull -= BeforeBuiltinCamera;
