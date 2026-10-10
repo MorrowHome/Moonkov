@@ -23,6 +23,8 @@ namespace Unity.MP_FPS
         private MoonkovPlayerAudio m_Audio;
         private uint m_LastShotEffectTick;
         private SoundSystem.SoundInfo m_RifleBodySound, m_RifleSnapSound;
+        private SoundSystem.SoundInfo m_WeaponTailSound;
+        private RifleFeedbackLibrary m_WeaponFeedback;
 
         public DollSingerInput OwnedInput => m_Linked && Role == MultiplayerRole.ClientOwned ? m_Input : null;
         public bool IsThirdPerson => m_View != null && !m_View.IsFirstPerson;
@@ -173,13 +175,18 @@ namespace Unity.MP_FPS
                 if (ReadGhostComponentData<PredictedPlayerGhost>().EquippedWeaponID != weaponId) return;
                 if (shotTick != 0 && !MoonkovPlayerAudio.NewTick(shotTick, ref m_LastShotEffectTick)) return;
                 var weapon = WeaponManager.Instance.WeaponRegistry.GetWeaponData(weaponId);
-                if (weaponId == DollSingerWeapons.Halo)
+                if (!m_WeaponFeedback) m_WeaponFeedback = Resources.Load<RifleFeedbackLibrary>("Moonkov/RifleFeedback");
+                var profile = m_WeaponFeedback?.ForWeapon(weaponId);
+                if (weaponId == DollSingerWeapons.Halo || profile != null)
                 {
                     // Keep the metallic strike, but let only the current pulse ring out fully.
                     GameManager.Instance.SoundSystem?.Stop(m_RifleBodySound, .025f);
                     GameManager.Instance.SoundSystem?.Stop(m_RifleSnapSound, .015f);
-                    m_RifleBodySound = MoonkovAudio.Play(weapon?.WeaponFireSfx, transform.position);
-                    m_RifleSnapSound = MoonkovAudio.Play(weapon?.WeaponFireLayerSfx, transform.position, .85f);
+                    GameManager.Instance.SoundSystem?.Stop(m_WeaponTailSound, .03f);
+                    m_RifleBodySound = MoonkovAudio.Play(profile?.FireBody ?? weapon?.WeaponFireSfx, transform.position);
+                    m_RifleSnapSound = MoonkovAudio.Play(profile?.FireSnap ?? weapon?.WeaponFireLayerSfx,
+                        transform.position, profile == null ? .85f : 1f);
+                    m_WeaponTailSound = MoonkovAudio.Play(profile?.FireTail, transform.position);
                 }
                 else
                 {
@@ -194,7 +201,8 @@ namespace Unity.MP_FPS
         {
             GameManager.Instance?.SoundSystem?.Stop(m_RifleBodySound, .025f);
             GameManager.Instance?.SoundSystem?.Stop(m_RifleSnapSound, .015f);
-            m_RifleBodySound = m_RifleSnapSound = null;
+            GameManager.Instance?.SoundSystem?.Stop(m_WeaponTailSound, .03f);
+            m_RifleBodySound = m_RifleSnapSound = m_WeaponTailSound = null;
             m_Linked = false;
             m_Input.enabled = false;
             m_Input.GameplayInputBlocked = null;

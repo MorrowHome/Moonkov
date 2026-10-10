@@ -57,10 +57,11 @@ namespace Unity.MP_FPS
         private static Material s_BulletMaterial;
 
         public void InitializePrediction(uint weaponId, Vector3 origin, Quaternion rotation, Transform shooter,
-            float elapsed = 0f, uint shotTick = 0)
+            float elapsed = 0f, uint shotTick = 0, int pelletIndex = 0)
         {
             var player = shooter ? shooter.GetComponent<PlayerGhost>() : null;
             m_Data = new ProjectileData { WeaponID = weaponId, Origin = origin, SpawnTick = shotTick,
+                PelletIndex = pelletIndex,
                 OwnerNetworkId = player && player.GhostGameObject ? player.GhostGameObject.Owner : 0,
                 InitialVelocity = rotation * Vector3.forward * WeaponManager.Instance.WeaponRegistry.GetWeaponData(weaponId).ProjectileSpeed };
             m_Shooter = shooter;
@@ -212,13 +213,14 @@ namespace Unity.MP_FPS
                     transform.position = hit.point;
                     Stop();
                     if (server) Impact(hit);
-                    else if (m_Data.WeaponID == DollSingerWeapons.Halo)
+                    else if (DollSingerWeapons.IsHalo(m_Data.WeaponID))
                     {
                         // Only the owner predicts impacts; observers consume the server's impact event.
                         bool owned = GhostGameObject == null || !GhostGameObject.IsGhostLinked() || Role == MultiplayerRole.ClientOwned;
                         if (owned && VisualEffectManager.ClientInstance != null)
                             VisualEffectManager.ClientInstance.RifleImpacts.Present(new ClientRifleImpactRpc
                             { OwnerNetworkId = m_Data.OwnerNetworkId, ShotTick = m_Data.SpawnTick,
+                                WeaponId = m_Data.WeaponID, PelletIndex = m_Data.PelletIndex,
                                 Position = hit.point, Normal = hit.normal, Kind = (byte)RifleImpactSurface.Classify(hit.collider) }, false, true);
                     }
                     else MoonkovAudio.Play(m_Weapon.WeaponImpactSfx, hit.point);
@@ -255,10 +257,11 @@ namespace Unity.MP_FPS
             }
             else if (GhostGameObject.TryFindGhostGameObject(hit.collider.gameObject, out var target))
                 damageFlags = Damage(target, players, owners);
-            if (m_Data.WeaponID == DollSingerWeapons.Halo)
+            if (DollSingerWeapons.IsHalo(m_Data.WeaponID))
             {
                 VisualEffectManager.ServerInstance?.Server_RequestRifleImpact(new ClientRifleImpactRpc
                 { OwnerNetworkId = m_Data.OwnerNetworkId, ShotTick = m_Data.SpawnTick,
+                    WeaponId = m_Data.WeaponID, PelletIndex = m_Data.PelletIndex,
                     Position = hit.point, Normal = hit.normal, Kind = (byte)RifleImpactSurface.Classify(hit.collider), DamageFlags = damageFlags });
                 return;
             }

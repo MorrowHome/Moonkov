@@ -24,13 +24,18 @@ namespace Unity.MP_FPS
         private VisualElement m_RifleHit;
         private float m_RifleHitUntil;
         private bool m_RifleKill;
+        private HaloWeaponFeedbackProfile m_HitProfile;
 
-        public static void ConfirmRifleHit(bool killed)
+        public static void ConfirmRifleHit(bool killed, HaloWeaponFeedbackProfile profile = null)
         {
             if (!s_Active) return;
             // A following body hit must not erase a still-visible lethal confirmation.
-            s_Active.m_RifleKill = killed || s_Active.m_RifleKill && Time.unscaledTime < s_Active.m_RifleHitUntil;
-            s_Active.m_RifleHitUntil = Time.unscaledTime + (s_Active.m_RifleKill ? .22f : .12f);
+            bool keepKill = s_Active.m_RifleKill && Time.unscaledTime < s_Active.m_RifleHitUntil;
+            s_Active.m_RifleKill = killed || keepKill;
+            if (killed || !keepKill) s_Active.m_HitProfile = profile;
+            float duration = s_Active.m_RifleKill ? s_Active.m_HitProfile?.KillDuration ?? .22f :
+                s_Active.m_HitProfile?.HitDuration ?? .12f;
+            s_Active.m_RifleHitUntil = Mathf.Max(s_Active.m_RifleHitUntil, Time.unscaledTime + duration);
             s_Active.m_RifleHit?.MarkDirtyRepaint();
         }
 
@@ -91,14 +96,15 @@ namespace Unity.MP_FPS
         private void DrawRifleHit(MeshGenerationContext context)
         {
             var painter = context.painter2D;
-            painter.strokeColor = m_RifleKill ? new Color(1f, .8f, .35f) : new Color(.9f, 1f, 1f);
-            painter.lineWidth = 1.5f;
+            painter.strokeColor = m_RifleKill ? new Color(1f, .8f, .35f) : m_HitProfile?.HitColor ?? new Color(.9f, 1f, 1f);
+            painter.lineWidth = m_HitProfile?.HitLineWidth ?? 1.5f;
+            float outer = m_HitProfile?.HitOuterRadius ?? 10f;
             for (int i = 0; i < 4; i++)
             {
                 float x = i % 2 == 0 ? -1 : 1, y = i < 2 ? -1 : 1;
                 painter.BeginPath();
                 painter.MoveTo(new Vector2(14 + x * 6, 14 + y * 6));
-                painter.LineTo(new Vector2(14 + x * 10, 14 + y * 10)); painter.Stroke();
+                painter.LineTo(new Vector2(14 + x * outer, 14 + y * outer)); painter.Stroke();
             }
         }
 

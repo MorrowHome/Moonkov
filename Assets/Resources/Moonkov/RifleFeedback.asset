@@ -18,3 +18,60 @@ MonoBehaviour:
   BodyImpact: {fileID: 11400000, guid: b5ae2b95eb2d45d45b3ca649d12882cf, type: 2}
   HitConfirm: {fileID: 11400000, guid: c0cc816e17777c74b9dd6c80a14947b7, type: 2}
   KillConfirm: {fileID: 11400000, guid: 6b4f6bc8ed0b97046b488fa7dc6c69f8, type: 2}
+  Revolver:
+    FireBody: {fileID: 11400000, guid: b0cfeaa3bc240c84b953bd9000b42f8a, type: 2}
+    FireSnap: {fileID: 11400000, guid: bc560f3c932053843837ffb40d151410, type: 2}
+    FireTail: {fileID: 0}
+    RockImpact: {fileID: 11400000, guid: 63c91b562c83b4d4eb2b5fcaa99be77a, type: 2}
+    MetalImpact: {fileID: 11400000, guid: 0d5d5b8d65c71f44abd9b2495fa074d5, type: 2}
+    BodyImpact: {fileID: 11400000, guid: 81169803400932147a5ce463dddb123f, type: 2}
+    HitConfirm: {fileID: 11400000, guid: 008c7a0fd71a67249bbbe124d9c431ba, type: 2}
+    KillConfirm: {fileID: 11400000, guid: 68b26cc721bf9f948a1cfe64f57c7ac1, type: 2}
+    FragmentScale: 1.1
+    FragmentSpeed: 1.2
+    FragmentCount: 1
+    SurfaceSoundInterval: 0
+    ImpactFlash: 0
+    HitColor: {r: 1, g: 0.94, b: 0.8, a: 1}
+    HitDuration: 0.14
+    KillDuration: 0.26
+    HitLineWidth: 1.6
+    HitOuterRadius: 10
+  Shotgun:
+    FireBody: {fileID: 11400000, guid: 7809371c925d91b4c92a889256cbd376, type: 2}
+    FireSnap: {fileID: 11400000, guid: d4a77740130d8c246b4b29b8f90ca00d, type: 2}
+    FireTail: {fileID: 11400000, guid: 6eb6b72452a49794b9d52ffc1f7cd58c, type: 2}
+    RockImpact: {fileID: 11400000, guid: c62c6109d2f1b4f4db48c2d809b02cf7, type: 2}
+    MetalImpact: {fileID: 11400000, guid: b8a1e3e206c07f64b92c647a4607d704, type: 2}
+    BodyImpact: {fileID: 11400000, guid: d8effa1a37a1a73418554e73836b7647, type: 2}
+    HitConfirm: {fileID: 11400000, guid: fe2399170a5ca324a9823b4630b3a9b5, type: 2}
+    KillConfirm: {fileID: 11400000, guid: 458f7d56ba3bfaf40a97965fe6845d28, type: 2}
+    FragmentScale: 0.75
+    FragmentSpeed: 1.1
+    FragmentCount: 0.45
+    SurfaceSoundInterval: 0.075
+    ImpactFlash: 0
+    HitColor: {r: 0.88, g: 1, b: 0.87, a: 1}
+    HitDuration: 0.16
+    KillDuration: 0.28
+    HitLineWidth: 1.8
+    HitOuterRadius: 11
+  Sniper:
+    FireBody: {fileID: 11400000, guid: 3eff7f916c12a084ba341462bf6a0d5c, type: 2}
+    FireSnap: {fileID: 11400000, guid: fb853d241d9eb294d87bed99e2815f5e, type: 2}
+    FireTail: {fileID: 11400000, guid: 4a6078fb358cfbe43b0f72f9518eea30, type: 2}
+    RockImpact: {fileID: 11400000, guid: 79e7e3b901b5bb44da3b96ade590726e, type: 2}
+    MetalImpact: {fileID: 11400000, guid: 4856867ba5dd24e4abdbd874678daf68, type: 2}
+    BodyImpact: {fileID: 11400000, guid: 7f90248d34a04054e93ee4e1d862a9ce, type: 2}
+    HitConfirm: {fileID: 11400000, guid: a43e4d1e6559da54babb0661ded3ef92, type: 2}
+    KillConfirm: {fileID: 11400000, guid: c94c99fcf1b376b489dda0abb696dbca, type: 2}
+    FragmentScale: 1.6
+    FragmentSpeed: 2.1
+    FragmentCount: 1.3
+    SurfaceSoundInterval: 0
+    ImpactFlash: 1
+    HitColor: {r: 0.72, g: 0.94, b: 1, a: 1}
+    HitDuration: 0.2
+    KillDuration: 0.32
+    HitLineWidth: 2.2
+    HitOuterRadius: 12

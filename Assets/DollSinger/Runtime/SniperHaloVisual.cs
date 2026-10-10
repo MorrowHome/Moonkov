@@ -18,8 +18,9 @@ namespace Unity.MP_FPS.DollSinger
             * Mathf.Tan(fieldOfView * .5f * Mathf.Deg2Rad) / Mathf.Max(.001f, AimedRadius);
         [Min(.001f)] public float lineWidth = .020f;
         [Header("Precision release")]
-        [Min(0f)] public float wristTravel = .014f;
-        [Range(0f, 12f)] public float wristAngle = 3f;
+        [Min(0f)] public float wristTravel = .024f;
+        [Range(0f, 12f)] public float wristAngle = 5f;
+        [Min(0f)] public float releaseExpansion = .018f;
         private HaloShotResponse response;
         public float ShotRelease => response.Release;
         public float BoltCycle => shotAge < .9f ? Mathf.Sin(Mathf.Clamp01((shotAge - .12f) / .78f) * Mathf.PI) : 0;
@@ -131,9 +132,9 @@ namespace Unity.MP_FPS.DollSinger
             Color core = Color.Lerp(lightColor, Color.white, Mathf.Max(kick * .65f, lockPulse * .7f));
             for (int i = 0; i < 4; i++)
             {
-                Arc(outerArcs[i], radius + kick * .008f + bolt * .012f, i * 90 + 8 + turn, 65, 0);
+                Arc(outerArcs[i], radius + response.Release * releaseExpansion + bolt * .012f, i * 90 + 8 + turn, 65, 0);
                 Tint(outerArcs[i], core, .9f);
-                outerArcs[i].widthMultiplier = lineWidth;
+                outerArcs[i].widthMultiplier = lineWidth * (1 + kick * .45f);
                 Arc(innerArcs[i], radius * .83f, i * 90 + 11 - turn * .7f, 61, 0);
                 Tint(innerArcs[i], core, .6f);
                 innerArcs[i].widthMultiplier = lineWidth * .6f;
