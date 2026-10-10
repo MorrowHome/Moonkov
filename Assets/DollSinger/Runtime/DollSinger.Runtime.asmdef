@@ -1,6 +1,6 @@
 {
     "name": "DollSinger.Runtime",
     "rootNamespace": "Unity.MP_FPS.DollSinger",
-    "references": ["Unity.InputSystem", "Unity.RenderPipelines.Universal.Runtime", "Unity.Cinemachine"],
+    "references": ["Unity.InputSystem", "Unity.RenderPipelines.Universal.Runtime", "Unity.RenderPipelines.Core.Runtime", "Unity.Cinemachine"],
     "autoReferenced": true
 }

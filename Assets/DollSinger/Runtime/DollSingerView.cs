@@ -43,6 +43,13 @@ public class DollSingerView : MonoBehaviour
     [Min(0.05f)] public float thirdPersonCameraRadius = 0.2f;
     public LayerMask cameraObstacleLayers = Physics.DefaultRaycastLayers;
 
+    [Header("Third person background focus")]
+    public bool thirdPersonBackgroundBlur = true;
+    [Tooltip("Keep the entire character inside the clear foreground, including hair and skirt.")]
+    [Min(0f)] public float backgroundFocusPadding = 0.35f;
+    [Min(0.1f)] public float backgroundBlurFadeDistance = 5f;
+    [Range(0.5f, 1.5f)] public float backgroundBlurRadius = 1f;
+
     [Header("Aim zoom")]
     [Tooltip("Target magnification when fully aiming, relative to the current first/third-person FOV.")]
     [Range(1f, 3f)] public float aimMagnification = 1.75f;
@@ -354,6 +361,10 @@ public class DollSingerView : MonoBehaviour
                 thirdPersonCameraRadius, cameraObstacleLayers, cameraCollisionRecoverySeconds, Time.deltaTime);
         }
         else thirdPersonRig.ResetCollision();
+
+        thirdPersonRig.UpdateFocus(bodyRenderer, player.transform.position + player.transform.up,
+            thirdPersonBackgroundBlur ? (1f - viewBlend) * (1f - aimBlend) : 0f,
+            backgroundFocusPadding, backgroundBlurFadeDistance, backgroundBlurRadius);
     }
 
     private void ReleaseThirdPersonRig()

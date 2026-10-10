@@ -2,13 +2,15 @@ using System;
 using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 namespace Unity.MP_FPS.DollSinger
 {
 /// <summary>
-/// Owns a manually evaluated official Cinemachine third-person boom.
+/// Owns a manually evaluated official Cinemachine boom and an owner-camera focus volume.
 /// DollSingerView remains the only writer of the real camera and its first-person pose.
-/// Runtime objects are released on disable and character rebind.
+/// Runtime objects and camera settings are released on disable and character rebind.
 /// </summary>
 public sealed class DollSingerThirdPersonCamera : IDisposable
 {
@@ -22,6 +24,13 @@ public sealed class DollSingerThirdPersonCamera : IDisposable
     private readonly Vector3[] nearCorners = new Vector3[4];
     private readonly GameObject[] ownerColliderObjects;
     private readonly string[] savedTags;
+    private readonly UniversalAdditionalCameraData cameraData;
+    private readonly bool originalPostProcessing;
+    private readonly LayerMask originalVolumeMask;
+    private readonly Transform originalVolumeTrigger;
+    private readonly Volume volume;
+    private readonly VolumeProfile profile;
+    private readonly DepthOfField depthOfField;
     private float previousDistance;
 
     public DollSingerThirdPersonCamera(Transform parent, Camera camera, Transform owner)
@@ -49,6 +58,31 @@ public sealed class DollSingerThirdPersonCamera : IDisposable
         objects.CopyTo(ownerColliderObjects);
         savedTags = new string[objects.Count];
 
+        cameraData = camera.GetUniversalAdditionalCameraData();
+        originalPostProcessing = cameraData.renderPostProcessing;
+        originalVolumeMask = cameraData.volumeLayerMask;
+        originalVolumeTrigger = cameraData.volumeTrigger;
+        var volumeObject = new GameObject("Third person background focus (Runtime)") { hideFlags = HideFlags.DontSave };
+        volumeObject.transform.SetParent(camera.transform, false);
+        volumeObject.layer = LayerMask.NameToLayer("FirstPersonOverlay");
+        // A tiny local volume with its own camera trigger avoids affecting Scene view,
+        // menu portraits, respawn cameras or another local player's view.
+        var bounds = volumeObject.AddComponent<BoxCollider>();
+        bounds.isTrigger = true;
+        bounds.size = Vector3.one * 0.01f;
+        volume = volumeObject.AddComponent<Volume>();
+        volume.isGlobal = false;
+        volume.priority = 100f;
+        volume.blendDistance = 0f;
+        volume.weight = 0f;
+        profile = ScriptableObject.CreateInstance<VolumeProfile>();
+        profile.name = "DollSinger third person focus (Runtime)";
+        volume.sharedProfile = profile;
+        depthOfField = profile.Add<DepthOfField>(true);
+        depthOfField.mode.Override(DepthOfFieldMode.Gaussian);
+        depthOfField.highQualitySampling.Override(true);
+        cameraData.volumeLayerMask = originalVolumeMask.value | (1 << volumeObject.layer);
+        cameraData.volumeTrigger = volumeObject.transform;
     }
 
     public void Position(Vector3 anchor, Quaternion rotation, Vector3 up, float distance,
@@ -100,8 +134,37 @@ public sealed class DollSingerThirdPersonCamera : IDisposable
 
     public void ResetCollision() => virtualCamera.PreviousStateIsValid = false;
 
+    public void UpdateFocus(Renderer subject, Vector3 fallbackFocus, float weight,
+        float padding, float fadeDistance, float blurRadius)
+    {
+        Vector3 forward = camera.transform.forward;
+        float clearDepth = Vector3.Dot(fallbackFocus - camera.transform.position, forward);
+        if (subject)
+        {
+            Bounds bounds = subject.bounds;
+            Vector3 extents = bounds.extents;
+            // Furthest depth of the entire animated bounds: the skirt/head remain sharp
+            // even when the orbit looks up from near the ground or zooms close to the body.
+            clearDepth = Vector3.Dot(bounds.center - camera.transform.position, forward)
+                + Mathf.Abs(forward.x) * extents.x + Mathf.Abs(forward.y) * extents.y + Mathf.Abs(forward.z) * extents.z;
+        }
+        depthOfField.gaussianStart.Override(Mathf.Max(camera.nearClipPlane, clearDepth + Mathf.Max(0f, padding)));
+        depthOfField.gaussianEnd.Override(depthOfField.gaussianStart.value + Mathf.Max(0.1f, fadeDistance));
+        depthOfField.gaussianMaxRadius.Override(blurRadius);
+        volume.weight = Mathf.Clamp01(weight);
+        cameraData.renderPostProcessing = originalPostProcessing || volume.weight > 0.001f;
+    }
+
     public void Dispose()
     {
+        if (cameraData)
+        {
+            cameraData.renderPostProcessing = originalPostProcessing;
+            cameraData.volumeLayerMask = originalVolumeMask;
+            cameraData.volumeTrigger = originalVolumeTrigger;
+        }
+        if (volume) { volume.enabled = false; DestroyRuntime(volume.gameObject); }
+        if (profile) { foreach (var component in profile.components) DestroyRuntime(component); DestroyRuntime(profile); }
         if (rig) { rig.SetActive(false); DestroyRuntime(rig); }
     }
 

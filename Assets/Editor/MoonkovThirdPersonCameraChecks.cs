@@ -1,6 +1,8 @@
 using System;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 using Unity.MP_FPS.DollSinger;
 
 /// <summary>Focused regression checks for the actual Cinemachine adapter, not a substitute for visual acceptance.</summary>
@@ -23,6 +25,10 @@ public static class MoonkovThirdPersonCameraChecks
             camera.nearClipPlane = 0.3f;
             camera.fieldOfView = 60f;
             camera.aspect = 16f / 9f;
+            var data = camera.GetUniversalAdditionalCameraData();
+            bool oldPostProcessing = data.renderPostProcessing;
+            int oldMask = data.volumeLayerMask.value;
+            var oldTrigger = data.volumeTrigger;
             Vector3 anchor = origin + Vector3.up * 1.25f;
             Physics.SyncTransforms();
             using (var rig = new DollSingerThirdPersonCamera(holder.transform, camera, owner.transform))
@@ -72,8 +78,32 @@ public static class MoonkovThirdPersonCameraChecks
                 Require(Vector3.Distance(camera.transform.position, anchor - Vector3.forward * 4f) < 0.01f,
                     "Collision changed the requested zoom permanently.");
 
+                camera.transform.rotation = Quaternion.identity;
+                rig.UpdateFocus(owner.GetComponent<Renderer>(), anchor, 1f, 0.35f, 5f, 1f);
+                var focusStack = VolumeManager.instance.CreateStack();
+                try
+                {
+                    VolumeManager.instance.Update(focusStack, data.volumeTrigger, data.volumeLayerMask);
+                    var focus = focusStack.GetComponent<DepthOfField>();
+                    Require(focus.mode.value == DepthOfFieldMode.Gaussian, "Owner camera did not receive background focus.");
+                    Require(focus.gaussianEnd.value > focus.gaussianStart.value, "Background blur range is invalid.");
+                }
+                finally { VolumeManager.instance.DestroyStack(focusStack); }
+                // A second camera's ordinary volume mask must not see this private volume.
+                var otherStack = VolumeManager.instance.CreateStack();
+                try
+                {
+                    VolumeManager.instance.Update(otherStack, camera.transform, oldMask);
+                    Require(otherStack.GetComponent<DepthOfField>().mode.value != DepthOfFieldMode.Gaussian,
+                        "Background focus leaked into another camera.");
+                }
+                finally { VolumeManager.instance.DestroyStack(otherStack); }
+                rig.UpdateFocus(null, anchor, 0f, 0.35f, 5f, 1f);
+                Require(data.renderPostProcessing == oldPostProcessing, "First person did not restore post-processing state.");
             }
-            Debug.Log("Third person camera checks passed: upward terrain orbit, near plane, self filtering, rapid zoom, wall, smooth recovery.");
+            Require(data.volumeLayerMask.value == oldMask && data.volumeTrigger == oldTrigger
+                && data.renderPostProcessing == oldPostProcessing, "Disposal did not restore the camera settings.");
+            Debug.Log("Third person camera checks passed: upward terrain orbit, near plane, self filtering, rapid zoom, wall, smooth recovery, private focus volume and cleanup.");
         }
         finally
         {
