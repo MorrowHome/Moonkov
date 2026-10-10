@@ -11,6 +11,7 @@ namespace Unity.MP_FPS.MoonAlien
         [SerializeField] private Vector2Int[] m_Links;
         [SerializeField] private int m_StartNode;
         [SerializeField] private bool m_Running = true;
+        private AlienDummyCombat m_Combat;
         private AlienSurfaceGraph m_Graph;
         private AlienAmbushBrain m_Brain;
         private AlienAdhesionRoute m_Motor;
@@ -35,7 +36,10 @@ namespace Unity.MP_FPS.MoonAlien
             m_Motor = GetComponent<AlienAdhesionRoute>();
             m_Probe = GetComponent<AlienGroundProbe>();
             m_Legs = GetComponent<ProceduralAlienLegs>();
-            m_Brain = new AlienAmbushBrain();
+            m_Combat = GetComponent<AlienDummyCombat>();
+            m_Brain = new AlienAmbushBrain(externallyTimedCombat: m_Combat != null);
+            if (m_Combat && !m_Combat.Initialize(m_Probe))
+            { m_Running = false; m_PlanStatus = "Invalid dummy combat fixture"; m_Motor.SetRunning(false); return; }
             m_Graph = new AlienSurfaceGraph();
             if (!m_Course || !m_Dummy || m_Nodes == null || m_Links == null ||
                 m_Nodes.Length > AlienSurfaceGraph.MaxNodes || m_Links.Length * 2 > AlienSurfaceGraph.MaxEdges ||
@@ -64,18 +68,27 @@ namespace Unity.MP_FPS.MoonAlien
         private void OnDisable()
         {
             if (m_Motor) m_Motor.SetRunning(false);
+            if (m_Combat) m_Combat.Suspend();
         }
 
         private void Update()
         {
             if (m_Brain == null || !m_Running || !m_Course) return;
-            m_Time += Mathf.Min(Time.deltaTime, .05f);
+            if (m_Combat)
+            {
+                if (!m_Combat.isActiveAndEnabled) { m_Combat.Suspend(); m_Motor.SetRunning(false); return; }
+                m_Time = m_Combat.BeginFrame(Time.deltaTime, ref m_Brain, out bool resetRoute);
+                if (resetRoute)
+                { m_PathCount = 0; m_BlockHandled = false; m_NextPlan = m_Time; m_Motor.SetRunning(false); }
+            }
+            else m_Time += Mathf.Min(Time.deltaTime, .05f);
             if (m_Time >= m_NextSense)
             {
                 m_NextSense = m_Time + .1f;
                 Sense();
             }
-            m_Brain.SetAttackEligibility(SenseAttackEligibility(), m_Time);
+            bool currentAttackEligible = SenseAttackEligibility();
+            m_Brain.SetAttackEligibility(currentAttackEligible, m_Time);
             m_Brain.Advance(m_Time);
             m_Brain.Decide(m_Time, transform.position + transform.up * AlienAdhesionRoute.BodyOffset);
             if (m_PathCount > 0)
@@ -103,6 +116,7 @@ namespace Unity.MP_FPS.MoonAlien
                 Plan();
             }
             else m_Motor.SetRunning(m_PathCount > 0 && !m_BlockHandled);
+            if (m_Combat) m_Combat.ResolveFrame(m_Brain, currentAttackEligible);
             if (m_Brain.TryConsumeAttack(out var intent))
             {
                 // A diagnostic intent at the locked observed point, never actual health damage.
@@ -115,7 +129,7 @@ namespace Unity.MP_FPS.MoonAlien
         private void Sense()
         {
             m_Visible = false;
-            if (!m_Dummy) return;
+            if (!m_Dummy || (m_Combat && !m_Combat.TargetAlive)) return;
             Vector3 eye = transform.position + transform.up * AlienAdhesionRoute.BodyOffset;
             Vector3 point = m_Dummy.position + Vector3.up * .8f;
             Vector3 view = (transform.forward + transform.up * .75f).normalized;
@@ -125,7 +139,7 @@ namespace Unity.MP_FPS.MoonAlien
 
         private bool SenseAttackEligibility()
         {
-            if (!m_Dummy) return false;
+            if (!m_Dummy || (m_Combat && (!m_Combat.TargetAlive || !m_Combat.AttackerAlive))) return false;
             Vector3 eye = transform.position + transform.up * AlienAdhesionRoute.BodyOffset;
             Vector3 point = m_Dummy.position + Vector3.up * .8f;
             Vector3 view = (transform.forward + transform.up * .75f).normalized;
@@ -216,8 +230,9 @@ namespace Unity.MP_FPS.MoonAlien
             GUILayout.Label("Attack intents: " + m_AttackIntents + " | feet: " + (m_Legs ? m_Legs.PlantedFeet : 0));
             GUILayout.BeginHorizontal();
             if (GUILayout.Button(m_Running ? "Pause alien" : "Run alien"))
-            { m_Running = !m_Running; m_Motor.SetRunning(m_Running && m_Brain.WantsMovement); }
-            if (GUILayout.Button("Kill (sandbox)")) { m_Brain.Kill(); m_Motor.SetRunning(false); }
+            { m_Running = !m_Running; m_Motor.SetRunning(false); if (!m_Running && m_Combat) m_Combat.Suspend(); }
+            if (GUILayout.Button("Kill (sandbox)"))
+            { if (m_Combat) m_Combat.RequestAttackerDeath(); else m_Brain.Kill(); m_Motor.SetRunning(false); }
             GUILayout.EndHorizontal();
             GUILayout.Label("Move the dummy behind cover or remove a support collider in Scene view.");
             GUILayout.Label("Cyan = planned route; red sphere = one locked attack intent. Stop/Play resets.");

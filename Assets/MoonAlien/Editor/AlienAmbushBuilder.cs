@@ -9,7 +9,12 @@ namespace Unity.MP_FPS.MoonAlien.Editor
     public static class AlienAmbushBuilder
     {
         [MenuItem("Moonkov/Alien/Create Observation Ambush Sandbox (Additive)")]
-        public static void Create()
+        public static void Create() => CreateCourse(false);
+
+        [MenuItem("Moonkov/Alien/Create Dummy Combat Sandbox (Additive)")]
+        public static void CreateCombat() => CreateCourse(true);
+
+        private static void CreateCourse(bool combat)
         {
             if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("Stop Play before creating the sandbox.");
             var previous = SceneManager.GetActiveScene();
@@ -17,7 +22,7 @@ namespace Unity.MP_FPS.MoonAlien.Editor
             try
             {
                 SceneManager.SetActiveScene(scene);
-                var root = new GameObject("Alien observation ambush - no damage or networking");
+                var root = new GameObject(combat ? "Alien dummy combat - fake HP only" : "Alien observation ambush - no damage or networking");
                 root.transform.position = new Vector3(12000, 12000, 12000);
                 var terrain = new GameObject("Allowed sandbox terrain").transform;
                 terrain.SetParent(root.transform, false);
@@ -33,7 +38,9 @@ namespace Unity.MP_FPS.MoonAlien.Editor
                 body.name = "Dummy torso"; body.transform.SetParent(dummy.transform, false);
                 body.transform.localPosition = new Vector3(0, .8f, 0);
                 body.transform.localScale = new Vector3(.45f, .8f, .45f);
-                UnityEngine.Object.DestroyImmediate(body.GetComponent<Collider>());
+                Collider hitbox = body.GetComponent<Collider>();
+                if (combat) hitbox.isTrigger = true;
+                else UnityEngine.Object.DestroyImmediate(hitbox);
                 dummy.AddComponent<AlienDummyTarget>();
                 const float r = AlienAdhesionRoute.BodyOffset;
                 var nodes = new[]
@@ -61,6 +68,7 @@ namespace Unity.MP_FPS.MoonAlien.Editor
                 alien.AddComponent<AlienPrimitiveRig>();
                 var motor = alien.AddComponent<AlienAdhesionRoute>();
                 motor.Configure(root.transform, new[] { nodes[0], nodes[0] });
+                if (combat) alien.AddComponent<AlienDummyCombat>().Configure(hitbox);
                 alien.AddComponent<AlienAmbushSandbox>().Configure(root.transform, dummy.transform, nodes, links, 0);
                 var camera = new GameObject("Ambush sandbox camera").AddComponent<Camera>();
                 camera.transform.SetParent(root.transform, false);
@@ -71,7 +79,7 @@ namespace Unity.MP_FPS.MoonAlien.Editor
                 var light = new GameObject("Sandbox point light").AddComponent<Light>();
                 light.transform.SetParent(root.transform, false); light.transform.localPosition = new Vector3(0,3,1);
                 light.type = LightType.Point; light.range = 25; light.intensity = 15;
-                Undo.RegisterCreatedObjectUndo(root, "Create observation ambush sandbox");
+                Undo.RegisterCreatedObjectUndo(root, combat ? "Create dummy combat sandbox" : "Create observation ambush sandbox");
                 Selection.activeGameObject = alien;
                 EditorSceneManager.MarkSceneDirty(scene);
             }

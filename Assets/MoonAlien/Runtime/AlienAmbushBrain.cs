@@ -16,6 +16,8 @@ namespace Unity.MP_FPS.MoonAlien
     /// Plain, observation-only sandbox rules. The caller owns LOS, physical movement,
     /// and time. No target Transform, damage, networking or physics is retained here.
     /// Supply the same nondecreasing time source to all timed methods.
+    /// By default attack phases use the diagnostic float clock. Opt-in external combat
+    /// emits a windup request only; AlienCombatContract owns all attack phase timing.
     /// </summary>
     public sealed class AlienAmbushBrain
     {
@@ -37,6 +39,10 @@ namespace Unity.MP_FPS.MoonAlien
         private bool attackPending;
         private bool attackEligible;
         private float attackEligibilityTime = float.NegativeInfinity;
+        private readonly bool externallyTimedCombat;
+        private bool windupPending;
+        private bool externalCombatCycle;
+        private AlienCombatPhase externalCombatPhase;
 
         public AlienAmbushState State { get; private set; } = AlienAmbushState.Perch;
         public bool HasObservation { get; private set; }
@@ -49,11 +55,12 @@ namespace Unity.MP_FPS.MoonAlien
         public Vector3 MoveTarget => LastObservedPosition;
         public Vector3 CommittedAttackPosition => committedPosition;
 
-        public AlienAmbushBrain(float attackDistance = AttackRange)
+        public AlienAmbushBrain(float attackDistance = AttackRange, bool externallyTimedCombat = false)
         {
             if (!Finite(attackDistance) || attackDistance <= 0f)
                 throw new ArgumentOutOfRangeException(nameof(attackDistance));
             AttackDistance = attackDistance;
+            this.externallyTimedCombat = externallyTimedCombat;
         }
 
         // Call only after current LOS, sensor range and FOV all confirm visibility.
@@ -89,7 +96,7 @@ namespace Unity.MP_FPS.MoonAlien
             Advance(now);
             if (now < nextDecision) return;
             nextDecision = (double)now + DecisionInterval;
-            if (attackPending || !HasObservation || State == AlienAmbushState.Telegraph ||
+            if (attackPending || externalCombatCycle || !HasObservation || State == AlienAmbushState.Telegraph ||
                 State == AlienAmbushState.Strike || State == AlienAmbushState.Recover) return;
 
             double x = (double)LastObservedPosition.x - bodyPosition.x;
@@ -101,6 +108,12 @@ namespace Unity.MP_FPS.MoonAlien
                 // Once telegraphed, even a later visible observation cannot steer this attack.
                 committedPosition = LastObservedPosition;
                 Enter(AlienAmbushState.Telegraph, now);
+                if (externallyTimedCombat)
+                {
+                    windupPending = true;
+                    externalCombatCycle = true;
+                    externalCombatPhase = AlienCombatPhase.Windup;
+                }
             }
             else Enter(distanceSquared <= (double)ApproachRange * ApproachRange ?
                 AlienAmbushState.Approach : AlienAmbushState.Stalk, now);
@@ -111,6 +124,8 @@ namespace Unity.MP_FPS.MoonAlien
         /// At most one timed transition per call: a hitch cannot catch up a series of attacks.
         /// Durations start when the transition is observed, so hitches extend, never shorten,
         /// the next telegraph/recovery. Expiry cancels a not-yet-issued strike first.
+        /// In external mode only observation, eligibility and search use this clock;
+        /// no amount of float time advances Telegraph, Strike or Recover.
         /// </summary>
         public void Advance(float now)
         {
@@ -119,13 +134,20 @@ namespace Unity.MP_FPS.MoonAlien
             if (HasObservation && (double)now - LastObservedTime >= ObservationLifetime)
             {
                 Forget();
-                if (State == AlienAmbushState.Perch || State == AlienAmbushState.Stalk ||
+                if (externallyTimedCombat && State == AlienAmbushState.Telegraph) CancelTelegraph(now);
+                else if (State == AlienAmbushState.Perch || State == AlienAmbushState.Stalk ||
                     State == AlienAmbushState.Approach || State == AlienAmbushState.Telegraph)
                     Enter(AlienAmbushState.Search, now);
             }
 
             if (State == AlienAmbushState.Telegraph && !CanAttack(now)) CancelTelegraph(now);
             double elapsed = (double)now - stateSince;
+            if (externallyTimedCombat)
+            {
+                if (State == AlienAmbushState.Search && elapsed >= SearchDuration)
+                    Enter(AlienAmbushState.Perch, now);
+                return;
+            }
             switch (State)
             {
                 case AlienAmbushState.Telegraph:
@@ -156,11 +178,70 @@ namespace Unity.MP_FPS.MoonAlien
         public bool TryConsumeAttack(out AlienAttackIntent intent)
         {
             intent = default;
-            if (State == AlienAmbushState.Dead || !attackPending) return false;
+            if (externallyTimedCombat || State == AlienAmbushState.Dead || !attackPending) return false;
             intent = pendingIntent;
             attackPending = false;
             pendingIntent = default;
             return true;
+        }
+
+        /// <summary>
+        /// One-slot request mailbox for an external combat adapter. The copied aim is locked
+        /// at tactical entry, and consumption never issues a diagnostic strike or attack ID.
+        /// Begin the contract once, then apply its current phase even if beginning fails.
+        /// </summary>
+        public bool TryConsumeWindup(out Vector3 aim)
+        {
+            aim = Vector3.zero;
+            if (!externallyTimedCombat || State != AlienAmbushState.Telegraph || !windupPending) return false;
+            aim = committedPosition;
+            windupPending = false;
+            return true;
+        }
+
+        /// <summary>
+        /// Mirrors the current authoritative contract; it never advances that contract.
+        /// Forward phase skips are allowed for hitches; backwards phases cannot restart an
+        /// attack. Idle acknowledges a consumed/canceled request and frees the tactical latch,
+        /// but cannot erase an unread request. Cancellation leaves Telegraph immediately so
+        /// the adapter can cancel its Windup before resolving hits. A stale Windup/Strike
+        /// cannot resurrect that canceled state. Call with the same frame time as sensing.
+        /// </summary>
+        public void ApplyCombatPhase(AlienCombatPhase phase, float now)
+        {
+            if (!externallyTimedCombat || State == AlienAmbushState.Dead || !ValidTime(now) ||
+                (int)phase < (int)AlienCombatPhase.Idle || (int)phase > (int)AlienCombatPhase.Dead) return;
+            lastTime = now;
+            if (phase == AlienCombatPhase.Dead) { Kill(); return; }
+            if (!externalCombatCycle || windupPending) return;
+
+            if (phase == AlienCombatPhase.Idle)
+            {
+                externalCombatCycle = false;
+                externalCombatPhase = AlienCombatPhase.Idle;
+                committedPosition = Vector3.zero;
+                if (State == AlienAmbushState.Telegraph || State == AlienAmbushState.Strike ||
+                    State == AlienAmbushState.Recover)
+                    Enter(HasObservation ? AlienAmbushState.Stalk : AlienAmbushState.Search, now);
+                return;
+            }
+
+            if ((int)phase < (int)externalCombatPhase) return;
+            switch (phase)
+            {
+                case AlienCombatPhase.Windup:
+                    // The tactical Telegraph already exists; never recreate a canceled one.
+                    return;
+                case AlienCombatPhase.Strike:
+                    if (State != AlienAmbushState.Telegraph && State != AlienAmbushState.Strike) return;
+                    Enter(AlienAmbushState.Strike, now);
+                    break;
+                case AlienCombatPhase.Recovery:
+                    // A cancellation at/after strike opening still owes contract recovery.
+                    Enter(AlienAmbushState.Recover, now);
+                    break;
+            }
+            externalCombatPhase = phase;
         }
 
         public void NotifyRouteUnavailable(float now)
@@ -171,6 +252,7 @@ namespace Unity.MP_FPS.MoonAlien
             Forget();
             attackPending = false;
             pendingIntent = default;
+            windupPending = false;
             committedPosition = Vector3.zero;
             if (State != AlienAmbushState.Search) Enter(AlienAmbushState.Search, now);
         }
@@ -180,6 +262,9 @@ namespace Unity.MP_FPS.MoonAlien
             Forget();
             attackPending = false;
             pendingIntent = default;
+            windupPending = false;
+            externalCombatCycle = false;
+            externalCombatPhase = AlienCombatPhase.Dead;
             committedPosition = Vector3.zero;
             State = AlienAmbushState.Dead;
         }
@@ -196,6 +281,7 @@ namespace Unity.MP_FPS.MoonAlien
 
         private void CancelTelegraph(float now)
         {
+            windupPending = false;
             committedPosition = Vector3.zero;
             Enter(HasObservation ? AlienAmbushState.Approach : AlienAmbushState.Search, now);
         }

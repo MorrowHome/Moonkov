@@ -43,7 +43,17 @@ namespace Unity.MP_FPS.MoonAlien.Editor
             EligibilityRequiredAndFresh();
             LostEligibilityCancelsTelegraph();
             PhysicsSensorBoundary();
-            return 21;
+            ExternalModeRequiresOptIn();
+            ExternalWindupConsumedOnce();
+            ExternalFloatTimeCannotAdvanceCombat();
+            ExternalAuthoritativePhaseProgression();
+            ExternalHiddenTargetCancellation();
+            ExternalCancellationAwaitsIdle();
+            ExternalObservationExpiryPreservesActivePhases();
+            ExternalRouteFailureCancellation();
+            ExternalDeathIsTerminal();
+            ExternalPhaseValidationAndSkippedWindows();
+            return 31;
         }
 
         private static AlienSurfaceGraph Diamond(out int lowerEdge, out int upperEdge)
@@ -358,6 +368,293 @@ namespace Unity.MP_FPS.MoonAlien.Editor
             brain.Advance(1.501f);
             Require(brain.State == AlienAmbushState.Approach && brain.LastAttackId == 0 &&
                 !brain.TryConsumeAttack(out _), "Out-of-attack-range eligibility cancels committed wind-up");
+        }
+
+        private static AlienAmbushBrain ExternalWindup()
+        {
+            var brain = new AlienAmbushBrain(externallyTimedCombat: true);
+            brain.Observe(Vector3.forward, 0f);
+            brain.SetAttackEligibility(true, 0f);
+            brain.Decide(0f, Vector3.zero);
+            Require(brain.State == AlienAmbushState.Telegraph, "External tactical request enters Telegraph");
+            return brain;
+        }
+
+        private static void ExternalModeRequiresOptIn()
+        {
+            var diagnostic = new AlienAmbushBrain();
+            diagnostic.Observe(Vector3.forward, 0f);
+            diagnostic.SetAttackEligibility(true, 0f);
+            diagnostic.Decide(0f, Vector3.zero);
+            Require(!diagnostic.TryConsumeWindup(out Vector3 aim) && aim == Vector3.zero,
+                "Default diagnostic mode never publishes an external request");
+            diagnostic.ApplyCombatPhase(AlienCombatPhase.Recovery, .1f);
+            diagnostic.ApplyCombatPhase(AlienCombatPhase.Dead, .1f);
+            Require(diagnostic.State == AlienAmbushState.Telegraph,
+                "External phase API cannot alter the default diagnostic mode");
+            diagnostic.SetAttackEligibility(true, .701f);
+            diagnostic.Advance(.701f);
+            Require(diagnostic.TryConsumeAttack(out AlienAttackIntent intent) && intent.Id == 1 &&
+                diagnostic.State == AlienAmbushState.Strike, "Default diagnostic timer and intent remain intact");
+        }
+
+        private static void ExternalWindupConsumedOnce()
+        {
+            AlienAmbushBrain brain = ExternalWindup();
+            brain.ApplyCombatPhase(AlienCombatPhase.Idle, 0f);
+            Require(brain.State == AlienAmbushState.Telegraph,
+                "Frame-start Idle cannot erase an unread tactical request");
+            brain.Observe(Vector3.right, .05f);
+            Require(brain.TryConsumeWindup(out Vector3 aim) && aim == Vector3.forward &&
+                brain.CommittedAttackPosition == Vector3.forward && brain.LastObservedPosition == Vector3.right,
+                "External request locks the entry snapshot despite newer visible observations");
+            for (int i = 0; i < 100; i++)
+            {
+                brain.SetAttackEligibility(true, .05f);
+                brain.Advance(.05f);
+                brain.Decide(.05f, Vector3.zero);
+                brain.ApplyCombatPhase(AlienCombatPhase.Windup, .05f);
+                Require(!brain.TryConsumeWindup(out aim) && aim == Vector3.zero &&
+                    !brain.TryConsumeAttack(out _) && brain.LastAttackId == 0,
+                    "Repeated request/phase updates never duplicate windup or diagnostic strike");
+            }
+        }
+
+        private static void ExternalFloatTimeCannotAdvanceCombat()
+        {
+            AlienAmbushBrain brain = ExternalWindup();
+            Require(brain.TryConsumeWindup(out _), "External windup is available");
+            brain.ApplyCombatPhase(AlienCombatPhase.Windup, 0f);
+            brain.Observe(Vector3.right, 100f);
+            brain.SetAttackEligibility(true, 100f);
+            brain.Advance(100f);
+            brain.Decide(100f, Vector3.zero);
+            Require(brain.State == AlienAmbushState.Telegraph &&
+                brain.CommittedAttackPosition == Vector3.forward && !brain.TryConsumeWindup(out _),
+                "Fresh eligibility plus arbitrarily large float time cannot open external Strike");
+            brain.ApplyCombatPhase(AlienCombatPhase.Strike, 100f);
+            brain.Advance(200f);
+            Require(brain.State == AlienAmbushState.Strike,
+                "Float StrikeDuration never closes externally owned strike");
+            brain.ApplyCombatPhase(AlienCombatPhase.Recovery, 200f);
+            brain.Advance(300f);
+            brain.Decide(300f, Vector3.zero);
+            Require(brain.State == AlienAmbushState.Recover && !brain.TryConsumeAttack(out _) &&
+                brain.LastAttackId == 0, "Float RecoveryDuration never releases externally owned recovery");
+        }
+
+        private static void ExternalAuthoritativePhaseProgression()
+        {
+            AlienAmbushBrain brain = ExternalWindup();
+            var contract = new AlienCombatContract(new AlienActorLife(1, 1));
+            Require(brain.TryConsumeWindup(out Vector3 aim) && aim == Vector3.forward &&
+                contract.TryBeginAttack(new AlienActorLife(2, 1), 0, new AlienAttackTiming(70, 18, 120),
+                    10d, new AlienHitEvidence(0, true, true, true, false, false, false), out _),
+                "An external tactical request starts the real integer-timed contract");
+            brain.ApplyCombatPhase(contract.Phase, 0f);
+            contract.AdvanceTo(69);
+            brain.SetAttackEligibility(true, .69f);
+            brain.Advance(.69f);
+            brain.ApplyCombatPhase(contract.Phase, .69f);
+            Require(brain.State == AlienAmbushState.Telegraph, "Contract windup boundary remains exclusive");
+            contract.AdvanceTo(70);
+            brain.ApplyCombatPhase(contract.Phase, .7f);
+            Require(brain.State == AlienAmbushState.Strike && !brain.WantsMovement,
+                "Contract strike opening controls brain presentation");
+            contract.AdvanceTo(88);
+            brain.ApplyCombatPhase(contract.Phase, .88f);
+            Require(brain.State == AlienAmbushState.Recover, "Contract strike closing controls recovery");
+            brain.Observe(Vector3.forward, 2.07f);
+            brain.SetAttackEligibility(true, 2.07f);
+            contract.AdvanceTo(207);
+            brain.ApplyCombatPhase(contract.Phase, 2.07f);
+            brain.Decide(2.07f, Vector3.zero);
+            Require(brain.State == AlienAmbushState.Recover && !brain.TryConsumeWindup(out _),
+                "Fresh observations and decisions cannot bypass the contract recovery deadline");
+            contract.AdvanceTo(208);
+            brain.ApplyCombatPhase(contract.Phase, 2.08f);
+            Require(brain.State == AlienAmbushState.Stalk && brain.CommittedAttackPosition == Vector3.zero,
+                "Authoritative Idle releases the accepted cycle and clears old aim");
+            brain.SetAttackEligibility(true, 2.29f);
+            brain.Decide(2.29f, Vector3.zero);
+            Require(brain.TryConsumeWindup(out _) && !brain.TryConsumeAttack(out _) && brain.LastAttackId == 0 &&
+                contract.LastIssuedSequence == 1, "Next tactical request leaves all attack identity to the contract");
+        }
+
+        private static void ExternalHiddenTargetCancellation()
+        {
+            AlienAmbushBrain unread = ExternalWindup();
+            unread.SetAttackEligibility(false, .1f);
+            Require(unread.State == AlienAmbushState.Approach && unread.HasObservation &&
+                unread.LastObservedPosition == Vector3.forward && unread.CommittedAttackPosition == Vector3.zero &&
+                !unread.TryConsumeWindup(out _), "Hidden target cancels an unread external request immediately");
+
+            AlienAmbushBrain consumed = ExternalWindup();
+            Require(consumed.TryConsumeWindup(out _), "Consumed cancellation setup");
+            consumed.SetAttackEligibility(false, .1f);
+            consumed.ApplyCombatPhase(AlienCombatPhase.Windup, .1f);
+            Require(consumed.State == AlienAmbushState.Approach && consumed.LastObservedPosition == Vector3.forward &&
+                !consumed.TryConsumeWindup(out _) && !consumed.TryConsumeAttack(out _),
+                "Hidden-target cancellation is observable even after the request was consumed");
+
+            AlienAmbushBrain stale = ExternalWindup();
+            stale.Advance(.151f);
+            Require(stale.State == AlienAmbushState.Approach && !stale.TryConsumeWindup(out _) &&
+                stale.LastAttackId == 0, "Expired same-frame eligibility clears the external request");
+        }
+
+        private static void ExternalCancellationAwaitsIdle()
+        {
+            AlienAmbushBrain brain = ExternalWindup();
+            Require(brain.TryConsumeWindup(out _), "Cancellation handshake setup");
+            brain.SetAttackEligibility(false, .1f);
+            brain.Observe(Vector3.right, .3f);
+            brain.SetAttackEligibility(true, .3f);
+            brain.Decide(.3f, Vector3.zero);
+            brain.ApplyCombatPhase(AlienCombatPhase.Windup, .3f);
+            brain.ApplyCombatPhase(AlienCombatPhase.Strike, .3f);
+            Require(brain.State == AlienAmbushState.Approach && !brain.TryConsumeWindup(out _),
+                "Reacquisition and stale contract phases cannot replace a canceled unacknowledged cycle");
+            brain.ApplyCombatPhase(AlienCombatPhase.Idle, .3f);
+            brain.SetAttackEligibility(true, .51f);
+            brain.Decide(.51f, Vector3.zero);
+            Require(brain.TryConsumeWindup(out Vector3 aim) && aim == Vector3.right,
+                "Idle acknowledgment permits one new request with a fresh aim snapshot");
+            brain.ApplyCombatPhase(AlienCombatPhase.Idle, .51f);
+            Require(brain.State == AlienAmbushState.Stalk,
+                "Rejected contract start is released by applying Idle after consuming its request");
+            brain.SetAttackEligibility(true, .72f);
+            brain.Decide(.72f, Vector3.zero);
+            brain.ApplyCombatPhase(AlienCombatPhase.Idle, .72f);
+            Require(brain.State == AlienAmbushState.Telegraph && brain.TryConsumeWindup(out _),
+                "Later Idle reports still cannot drop the next unread request");
+        }
+
+        private static void ExternalObservationExpiryPreservesActivePhases()
+        {
+            AlienAmbushBrain pending = ExternalWindup();
+            pending.SetAttackEligibility(true, 4f);
+            pending.Advance(4f);
+            pending.ApplyCombatPhase(AlienCombatPhase.Windup, 4f);
+            Require(pending.State == AlienAmbushState.Search && !pending.HasObservation &&
+                pending.CommittedAttackPosition == Vector3.zero && !pending.TryConsumeWindup(out _),
+                "Observation expiry cancels windup and its mailbox even with a fresh eligibility flag");
+            pending.Advance(6f);
+            Require(pending.State == AlienAmbushState.Perch, "External mode retains bounded Search timing");
+
+            AlienAmbushBrain active = ExternalWindup();
+            Require(active.TryConsumeWindup(out _), "Active memory-loss setup");
+            active.ApplyCombatPhase(AlienCombatPhase.Strike, 0f);
+            active.Advance(4f);
+            active.SetAttackEligibility(false, 4f);
+            Require(active.State == AlienAmbushState.Strike && !active.HasObservation &&
+                active.CommittedAttackPosition == Vector3.forward,
+                "Normal memory/eligibility loss preserves authoritative Strike and locked aim");
+            active.ApplyCombatPhase(AlienCombatPhase.Recovery, 4f);
+            active.Advance(100f);
+            Require(active.State == AlienAmbushState.Recover, "Memory loss cannot erase contract recovery");
+            active.ApplyCombatPhase(AlienCombatPhase.Idle, 100f);
+            Require(active.State == AlienAmbushState.Search && !active.WantsMovement,
+                "Idle without an observation releases into Search");
+            active.Advance(102f);
+            Require(active.State == AlienAmbushState.Perch, "Search still finishes after contract release");
+        }
+
+        private static void ExternalRouteFailureCancellation()
+        {
+            AlienAmbushBrain pending = ExternalWindup();
+            pending.NotifyRouteUnavailable(.1f);
+            pending.ApplyCombatPhase(AlienCombatPhase.Windup, .1f);
+            pending.Observe(Vector3.right, .3f);
+            pending.SetAttackEligibility(true, .3f);
+            pending.Decide(.3f, Vector3.zero);
+            Require(pending.State == AlienAmbushState.Search && !pending.TryConsumeWindup(out _) &&
+                pending.CommittedAttackPosition == Vector3.zero,
+                "Route failure clears a pending request and blocks replacement until Idle");
+            pending.ApplyCombatPhase(AlienCombatPhase.Idle, .3f);
+            pending.SetAttackEligibility(true, .51f);
+            pending.Decide(.51f, Vector3.zero);
+            Require(pending.TryConsumeWindup(out Vector3 aim) && aim == Vector3.right,
+                "Route cancellation acknowledgment permits fresh tactical acquisition");
+
+            AlienAmbushBrain active = ExternalWindup();
+            Require(active.TryConsumeWindup(out _), "Active route-failure setup");
+            active.ApplyCombatPhase(AlienCombatPhase.Strike, 0f);
+            active.NotifyRouteUnavailable(.1f);
+            active.ApplyCombatPhase(AlienCombatPhase.Strike, .1f);
+            Require(active.State == AlienAmbushState.Search, "Stale Strike cannot undo explicit route cancellation");
+            active.ApplyCombatPhase(AlienCombatPhase.Recovery, .1f);
+            active.Advance(100f);
+            Require(active.State == AlienAmbushState.Recover && !active.TryConsumeWindup(out _),
+                "Cancellation at strike can still mirror the mandatory authoritative recovery");
+        }
+
+        private static void ExternalDeathIsTerminal()
+        {
+            AlienAmbushBrain unread = ExternalWindup();
+            unread.Kill();
+            Require(!unread.TryConsumeWindup(out _) && unread.CommittedAttackPosition == Vector3.zero,
+                "Death clears the unread external mailbox and aim");
+
+            foreach (AlienCombatPhase phase in new[] { AlienCombatPhase.Windup,
+                AlienCombatPhase.Strike, AlienCombatPhase.Recovery })
+            {
+                AlienAmbushBrain brain = ExternalWindup();
+                Require(brain.TryConsumeWindup(out _), "External death phase setup");
+                brain.ApplyCombatPhase(phase, 0f);
+                brain.ApplyCombatPhase(AlienCombatPhase.Dead, .1f);
+                brain.ApplyCombatPhase(AlienCombatPhase.Idle, .2f);
+                brain.ApplyCombatPhase(AlienCombatPhase.Windup, .2f);
+                brain.ApplyCombatPhase(AlienCombatPhase.Strike, .2f);
+                brain.ApplyCombatPhase(AlienCombatPhase.Recovery, .2f);
+                brain.SetAttackEligibility(true, .2f);
+                brain.NotifyRouteUnavailable(.2f);
+                brain.Advance(100f);
+                brain.Decide(100f, Vector3.zero);
+                brain.Kill();
+                Require(brain.State == AlienAmbushState.Dead && !brain.HasObservation && !brain.WantsMovement &&
+                    !brain.Observe(Vector3.right, 100f) && !brain.TryConsumeWindup(out _) &&
+                    !brain.TryConsumeAttack(out _) && brain.LastAttackId == 0,
+                    "External death is terminal across every active phase and repeated API calls");
+            }
+        }
+
+        private static void ExternalPhaseValidationAndSkippedWindows()
+        {
+            var idle = new AlienAmbushBrain(externallyTimedCombat: true);
+            idle.ApplyCombatPhase(AlienCombatPhase.Windup, 0f);
+            idle.ApplyCombatPhase(AlienCombatPhase.Strike, 0f);
+            idle.ApplyCombatPhase(AlienCombatPhase.Recovery, 0f);
+            Require(idle.State == AlienAmbushState.Perch,
+                "Unsolicited phases without a tactical cycle cannot manufacture an attack");
+
+            AlienAmbushBrain brain = ExternalWindup();
+            brain.ApplyCombatPhase(AlienCombatPhase.Strike, 0f);
+            brain.ApplyCombatPhase(AlienCombatPhase.Recovery, 0f);
+            Require(brain.State == AlienAmbushState.Telegraph && brain.TryConsumeWindup(out _),
+                "Nonterminal phase reports cannot consume an unread request implicitly");
+            brain.ApplyCombatPhase(AlienCombatPhase.Recovery, 1f);
+            Require(brain.State == AlienAmbushState.Recover && !brain.TryConsumeAttack(out _),
+                "An authoritative hitch may skip Strike without emitting a missed diagnostic hit");
+            brain.ApplyCombatPhase(AlienCombatPhase.Strike, 1f);
+            brain.ApplyCombatPhase(AlienCombatPhase.Windup, 1f);
+            brain.ApplyCombatPhase(AlienCombatPhase.Idle, .9f);
+            brain.ApplyCombatPhase(AlienCombatPhase.Dead, float.NaN);
+            brain.ApplyCombatPhase(AlienCombatPhase.Dead, float.PositiveInfinity);
+            brain.ApplyCombatPhase((AlienCombatPhase)999, 2f);
+            Require(brain.State == AlienAmbushState.Recover && brain.LastAttackId == 0,
+                "Backward phases and invalid/regressing times cannot reopen or release an external cycle");
+            brain.ApplyCombatPhase(AlienCombatPhase.Idle, 1.1f);
+            Require(brain.State == AlienAmbushState.Stalk,
+                "Rejected unknown phase does not consume time or prevent a valid later Idle");
+
+            AlienAmbushBrain missed = ExternalWindup();
+            Require(missed.TryConsumeWindup(out _), "Completely skipped external attack setup");
+            missed.ApplyCombatPhase(AlienCombatPhase.Idle, 10f);
+            missed.Advance(10f);
+            Require(missed.State == AlienAmbushState.Search && !missed.HasObservation &&
+                !missed.TryConsumeWindup(out _) && !missed.TryConsumeAttack(out _) && missed.LastAttackId == 0,
+                "A whole skipped contract window releases and forgets without replaying a missed hit");
         }
 
         private static void PhysicsSensorBoundary()
