@@ -7,6 +7,7 @@
             <ui:Label name="raidClock" class="raid-caption" />
             <ui:Label name="raidBag" class="raid-copy" />
         </ui:VisualElement>
+        <ui:Label name="raidOxygenWarning" class="raid-oxygen-warning" picking-mode="Ignore" />
         <ui:Label name="raidPrompt" class="raid-prompt" picking-mode="Ignore" />
         <ui:Label name="raidExtraction" class="raid-extraction" picking-mode="Ignore" />
         <ui:VisualElement name="raidInventory" class="raid-overlay">
@@ -15,7 +16,12 @@
                     <ui:Label text="CHARACTER / CARRIED INVENTORY" class="raid-inventory-title" />
                     <ui:Button name="raidPackClose" text="CLOSE / TAB" />
                 </ui:VisualElement>
+                <ui:VisualElement class="raid-inventory-tabs">
+                    <ui:Button name="raidEquipmentTab" text="EQUIPMENT" class="raid-tab raid-tab-active" />
+                    <ui:Button name="raidHealthTab" text="HEALTH" class="raid-tab" />
+                </ui:VisualElement>
                 <ui:VisualElement name="raidInventoryHost" class="raid-inventory-host" />
+                <ui:VisualElement name="raidHealthHost" class="raid-inventory-host raid-health-host" />
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="raidResult" class="raid-overlay raid-result-overlay">

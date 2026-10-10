@@ -23,6 +23,11 @@ namespace Unity.MP_FPS
         [SerializeField, Range(0, 24)] private float m_StartHour = 7;
         [SerializeField, Min(1)] private float m_DayLengthMinutes = 24;
         [SerializeField] private bool m_TimeRunning = true;
+        [Header("Survival (server authority)")]
+        [SerializeField, Min(1)] private float m_OutdoorOxygenSeconds = 600;
+        [SerializeField, Min(0)] private float m_OxygenRecoveryPerSecond = 5;
+        [SerializeField, Min(0)] private float m_HypoxiaGraceSeconds = 8;
+        [SerializeField, Min(0)] private float m_HypoxiaDamagePerSecond = 3;
         private GameObject[] m_Markers;
         private Material[] m_Materials;
         private readonly System.Collections.Generic.Dictionary<int,GameObject> m_DeathBags = new System.Collections.Generic.Dictionary<int,GameObject>();
@@ -40,6 +45,10 @@ namespace Unity.MP_FPS
         public float StartHour => m_StartHour;
         public float DayLengthMinutes => Mathf.Max(1, m_DayLengthMinutes);
         public bool TimeRunning => m_TimeRunning;
+        public float OutdoorOxygenSeconds => Mathf.Max(1, m_OutdoorOxygenSeconds);
+        public float OxygenRecoveryPerSecond => m_OxygenRecoveryPerSecond;
+        public float HypoxiaGraceSeconds => m_HypoxiaGraceSeconds;
+        public float HypoxiaDamagePerSecond => m_HypoxiaDamagePerSecond;
 
         private void OnEnable()
         {

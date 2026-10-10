@@ -48,6 +48,7 @@ namespace Unity.MP_FPS
         private Vector3 m_ReticleVector;
         private SphereCollider m_HeadHitbox;
         private Transform m_HeadBone;
+        private CapsuleCollider m_BodyHitbox, m_LeftArmHitbox, m_RightArmHitbox;
         private static RaycastHit[] s_ShotHits = new RaycastHit[64];
 
         private CinemachineTargetGroup m_TargetGroup;
@@ -121,6 +122,7 @@ namespace Unity.MP_FPS
             // Keep the hitbox outside the visual hierarchy: headless servers disable that model.
             var head=new GameObject("Head hitbox");head.layer=layer;head.transform.SetParent(transform,false);
             m_HeadHitbox=head.AddComponent<SphereCollider>();m_HeadHitbox.radius=.17f;
+            head.AddComponent<PlayerHitRegion>().Part = BodyPart.Head;
             // Proxy movement controllers are disabled. They still need a queryable body
             // so the camera chooses the character surface instead of distant ground.
             var controller=GetComponent<UnityEngine.CharacterController>();
@@ -128,15 +130,35 @@ namespace Unity.MP_FPS
             {
                 var body=new GameObject("Body hitbox");body.layer=layer;body.transform.SetParent(transform,false);
                 var capsule=body.AddComponent<CapsuleCollider>();capsule.center=controller.center;
+                m_BodyHitbox = capsule;
                 capsule.height=controller.height;capsule.radius=controller.radius;capsule.direction=1;
+                CapsuleCollider Arm(string name, BodyPart part)
+                {
+                    var arm = new GameObject(name); arm.layer = layer; arm.transform.SetParent(transform, false);
+                    arm.AddComponent<PlayerHitRegion>().Part = part;
+                    return arm.AddComponent<CapsuleCollider>();
+                }
+                m_LeftArmHitbox = Arm("Left arm hitbox", BodyPart.LeftArm);
+                m_RightArmHitbox = Arm("Right arm hitbox", BodyPart.RightArm);
             }
             UpdateHeadHitbox();
         }
 
         private void UpdateHeadHitbox()
         {
-            if(m_HeadHitbox==null || m_HeadBone==null)return;
-            m_HeadHitbox.transform.position=m_HeadBone.position+Vector3.up*.06f;
+            if(m_HeadHitbox==null)return;
+            var capsule = Controller.CharacterController;
+            if (m_BodyHitbox != null) { m_BodyHitbox.center = capsule.center; m_BodyHitbox.height = capsule.height; m_BodyHitbox.radius = capsule.radius; }
+            if (Role == MultiplayerRole.Server)
+                m_HeadHitbox.transform.localPosition = capsule.center + Vector3.up * (capsule.height * .5f - .14f);
+            else if (m_HeadBone != null) m_HeadHitbox.transform.position=m_HeadBone.position+Vector3.up*.06f;
+            void PlaceArm(CapsuleCollider arm, float side)
+            {
+                if (arm == null) return;
+                arm.transform.localPosition = capsule.center + new Vector3(side * (capsule.radius + .06f), capsule.height * .08f, 0);
+                arm.height = capsule.height * .36f; arm.radius = .09f;
+            }
+            PlaceArm(m_LeftArmHitbox, -1); PlaceArm(m_RightArmHitbox, 1);
         }
 
         public bool RaycastShot(Ray ray,float range,int mask,out RaycastHit nearest)
@@ -346,7 +368,7 @@ namespace Unity.MP_FPS
 
         public void UpdateServer(float deltaTime)
         {
-            // Server does not need to do anything for now regarding PlayerGhost
+            UpdateHeadHitbox();
         }
 
         public void UpdateClient(float deltaTime)

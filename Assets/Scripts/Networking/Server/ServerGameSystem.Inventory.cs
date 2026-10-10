@@ -57,9 +57,8 @@ namespace Unity.MP_FPS
                             inventory.RaidId == r.RaidId && SystemAPI.Exists(player) && SystemAPI.HasComponent<PredictedPlayerGhost>(player))
                         {
                             var ghost = SystemAPI.GetComponentRW<PredictedPlayerGhost>(player);
-                            inventory.Error = inventory.Graph.UseMedical(r.ItemId.ToString(), r.ExpectedVersion,
-                                ghost.ValueRO.CurrentHealth, ghost.ValueRO.MaxHealth, out var healed);
-                            if (inventory.Error == InventoryError.None) ghost.ValueRW.CurrentHealth = healed;
+                            inventory.Error = RaidHealth.UseMedical(ref ghost.ValueRW, inventory.Graph,
+                                r.ItemId.ToString(), r.ExpectedVersion, r.Part);
                         }
                         inventory.LastSentVersion = -1;
                     }

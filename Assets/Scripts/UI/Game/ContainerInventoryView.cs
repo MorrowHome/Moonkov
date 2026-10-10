@@ -128,7 +128,7 @@ namespace Unity.MP_FPS.Client
             {
                 var item = m_Graph?.Equipped(pair.Key.ToString()); var button = pair.Value; var art = button.Q<VisualElement>("art"); art.Clear();
                 MoonkovLocalization.Set(button.Q<Label>("item"), m_Graph == null ? "LOADING" : item == null ? "EMPTY" : InventoryCatalog.Get(item.Code).Name);
-                if (item != null) { var icon = new StashItemArt(Art(item.Code)); icon.style.flexGrow=1; art.Add(icon); m_Tiles[item.Id] = button; }
+                if (item != null) { var icon = new StashItemArt(Art(item.Code)); icon.AddToClassList("inventory-equipment-icon"); art.Add(icon); m_Tiles[item.Id] = button; }
                 button.EnableInClassList("inventory-equipped", item != null);
             }
             if (m_Graph == null)

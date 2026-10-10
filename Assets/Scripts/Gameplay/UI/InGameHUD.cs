@@ -177,7 +177,7 @@ namespace Unity.MP_FPS
             bool alwaysShow = PlayerPrefs.GetInt("Moonkov.AlwaysShowHUD", 0) != 0;
             if (m_LastHealth != playerData.CurrentHealth) { m_LastHealth = playerData.CurrentHealth; m_HealthRevealUntil = Time.unscaledTime + 4f; }
             var healthPanel = m_RootElement.Q<VisualElement>("health-info-container");
-            if (healthPanel != null) healthPanel.style.display = alwaysShow || statusCheck || Time.unscaledTime < m_HealthRevealUntil || playerData.CurrentHealth < playerData.MaxHealth * .35f ? DisplayStyle.Flex : DisplayStyle.None;
+            if (healthPanel != null) healthPanel.style.display = alwaysShow || statusCheck || Time.unscaledTime < m_HealthRevealUntil || RaidHealth.DangerFraction(playerData) < .35f ? DisplayStyle.Flex : DisplayStyle.None;
 
             // Update Health Bar
             if (m_HealthBar != null)
@@ -185,7 +185,7 @@ namespace Unity.MP_FPS
                 m_HealthBar.highValue = playerData.MaxHealth > 0 ? playerData.MaxHealth : 100;
                 m_HealthBar.value = playerData.CurrentHealth;
 
-                float healthPercent = playerData.CurrentHealth / Mathf.Max(1f, playerData.MaxHealth);
+                float healthPercent = RaidHealth.DangerFraction(playerData);
                 Color healthColor = Color.Lerp(Color.red, k_HealthBarColor, healthPercent);
 
                 // Apply the calculated color to the fill element's background

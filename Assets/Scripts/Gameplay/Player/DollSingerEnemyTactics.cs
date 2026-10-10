@@ -8,7 +8,7 @@ namespace Unity.MP_FPS
         private void Decide(DollSingerEnemyBrain brain, Vector3 position, PredictedPlayerGhost health, MoonRaidMap map, double now)
         {
             bool contact = brain.Target != Unity.Entities.Entity.Null && brain.Confidence > .2f;
-            bool lowHealth = health.CurrentHealth < health.MaxHealth * m_Tuning.RetreatHealthFraction;
+            bool lowHealth = RaidHealth.DangerFraction(health) < m_Tuning.RetreatHealthFraction;
             bool empty = health.CurrentAmmo == 0;
             int reserveAmmo = (health.EquippedWeaponSlot != 1 ? health.PrimaryAmmo : 0) +
                 (health.EquippedWeaponSlot != 2 ? health.SecondaryAmmo : 0) + (health.EquippedWeaponSlot != 3 ? health.PistolAmmo : 0);

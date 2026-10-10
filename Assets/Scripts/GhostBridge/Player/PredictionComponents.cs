@@ -53,6 +53,20 @@ public struct PredictedPlayerGhost : IComponentData
     [GhostField] public float3 AimPoint;
     [GhostField] public float CurrentHealth;
     [GhostField] public float MaxHealth;
+    // Match-server authority. CurrentHealth/MaxHealth are derived compatibility
+    // values for death, AI, animation and the compact HUD; never heal them directly.
+    [GhostField] public bool BodyHealthInitialized;
+    [GhostField] public float HeadHealth;
+    [GhostField] public float ChestHealth;
+    [GhostField] public float AbdomenHealth;
+    [GhostField] public float LeftArmHealth;
+    [GhostField] public float RightArmHealth;
+    [GhostField] public float LeftLegHealth;
+    [GhostField] public float RightLegHealth;
+    [GhostField] public float Oxygen;
+    [GhostField] public bool BreathableAir;
+    [GhostField] public BodyPart LastHitPart;
+    public float HypoxiaSeconds;
     
     [GhostField] public uint EquippedWeaponID;
     [GhostField] public float WeaponCooldown;   // Timer to control rate of fire

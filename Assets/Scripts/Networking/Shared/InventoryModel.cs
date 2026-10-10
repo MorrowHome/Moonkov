@@ -304,7 +304,7 @@ namespace Unity.MP_FPS.Inventory
 
         // Only the match server commits this result. Full health/death/stale versions
         // leave both health and the stack untouched; a replay cannot consume it twice.
-        public InventoryError UseMedical(string itemId, int expectedVersion, float health, float maximum, out float healed)
+        public InventoryError UseMedical(string itemId, int expectedVersion, float health, float maximum, out float healed, bool allowZeroHealth = false)
         {
             healed = health;
             if (expectedVersion != Version) return InventoryError.Stale;
@@ -312,7 +312,7 @@ namespace Unity.MP_FPS.Inventory
             if (item == null) return InventoryError.Missing;
             if (!MedicalAccessible(item)) return InventoryError.Inaccessible;
             if (float.IsNaN(health) || float.IsInfinity(health) || float.IsNaN(maximum) || float.IsInfinity(maximum) ||
-                health <= 0f || maximum <= health || item.Quantity < 1) return InventoryError.Invalid;
+                health < 0f || (!allowZeroHealth && health == 0f) || maximum <= health || item.Quantity < 1) return InventoryError.Invalid;
             healed = Math.Min(maximum, health + 40f);
             if (--item.Quantity == 0) Items.Remove(item);
             Version++;

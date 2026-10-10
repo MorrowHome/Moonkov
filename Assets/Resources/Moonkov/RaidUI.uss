@@ -16,9 +16,17 @@
 .raid-inventory-header { height: 42px; flex-shrink: 0; flex-direction: row; align-items: center; justify-content: space-between; margin-bottom: 18px; }
 .raid-ui .raid-inventory-title { color: #ECECE6; font-size: 26px; letter-spacing: 4px; -unity-font-definition: url("../../UI Toolkit/Fonts/Roboto-Black.ttf"); }
 .raid-inventory-host { flex-grow: 1; min-height: 0; }
+.raid-health-host { display: none; }
+.raid-inventory-tabs { flex-direction: row; flex-shrink: 0; margin-bottom: 10px; }
+.raid-ui .raid-inventory-tabs .raid-tab { margin: 0 10px 0 0; height: 32px; min-width: 140px; color: #506354; background-color: #c8cebe; letter-spacing: 1px; }
+.raid-ui .raid-inventory-tabs .raid-tab-active { color: #f1eee2; background-color: #485f51; }
+.raid-oxygen-warning { position: absolute; left: 3%; top: 8%; max-width: 320px; padding: 12px 18px; background-color: rgba(20, 16, 10, 0.84); border-left-width: 3px; border-left-color: #e0ac51; font-size: 15px; display: none; }
+.raid-ui .raid-oxygen-warning { color: #edc279; }
+.raid-ui .raid-oxygen-warning.oxygen-critical { color: #ff8c78; border-left-color: #e26049; }
 .raid-ui .raid-inventory-header Button { color: #ECECE6; background-color: rgba(255, 255, 255, 0.06); }
 .raid-ui .raid-inventory-header Button:hover { color: #07080A; background-color: #FF4D3A; }
 .raid-ui .inventory-view Button { min-width: 0; margin: 0; min-height: 0; height: auto; }
+.raid-ui .inventory-view .inventory-slot { height: 24%; }
 .raid-title { font-size: 34px; letter-spacing: 3px; margin-bottom: 10px; -unity-font-definition: url("../../UI Toolkit/Fonts/Roboto-Black.ttf"); }
 .raid-pack-grid { flex-direction: row; flex-wrap: wrap; height: 192px; }
 .raid-pack-cell { width: 24%; height: 60px; margin-right: 1%; margin-bottom: 4px; background-color: rgba(255, 255, 255, 0.04); border-width: 1px; border-color: rgba(255, 255, 255, 0.1); border-radius: 0; align-items: center; justify-content: center; }

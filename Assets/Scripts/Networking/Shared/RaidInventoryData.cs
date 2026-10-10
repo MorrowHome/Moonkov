@@ -69,6 +69,7 @@ namespace Unity.MP_FPS
         public int RaidId, ExpectedVersion;
         public uint RequestId;
         public FixedString64Bytes ItemId;
+        public BodyPart Part;
     }
     public struct RaidLootOpenRpc : IRpcCommand
     {

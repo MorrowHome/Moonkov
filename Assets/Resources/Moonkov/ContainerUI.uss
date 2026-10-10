@@ -20,6 +20,7 @@
 .inventory-slot-label { position: absolute; left: 7px; right: 5px; top: 7px; font-size: 8px; letter-spacing: 2px; white-space: normal; -unity-font-definition: url("../../UI Toolkit/RobotoMono-Medium.ttf"); }
 .inventory-view .inventory-slot-label { color: rgba(236, 236, 230, 0.55); }
 .inventory-slot-art { position: absolute; top: 25px; left: 12%; right: 12%; bottom: 22px; }
+.inventory-equipment-icon { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
 .inventory-slot-item { position: absolute; left: 7px; right: 5px; bottom: 6px; font-size: 9px; }
 .inventory-view .inventory-slot-item { color: rgba(236, 236, 230, 0.75); }
 .inventory-weight { font-size: 11px; margin-top: 10px; margin-bottom: 8px; -unity-font-definition: url("../../UI Toolkit/RobotoMono-Medium.ttf"); }

@@ -1,0 +1,34 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="RaidHealthStyles.uss" />
+    <ui:VisualElement name="raidHealthPage" class="raid-health-page">
+        <ui:VisualElement class="health-overview">
+            <ui:Label text="HEALTH / SUIT STATUS" class="health-eyebrow" />
+            <ui:Label name="healthTotal" class="health-total" />
+            <ui:Label text="TOTAL HEALTH" class="health-caption" />
+            <ui:VisualElement class="health-oxygen-card">
+                <ui:Label text="OXYGEN RESERVE" class="health-section-title" />
+                <ui:Label name="healthOxygenValue" class="health-oxygen-value" />
+                <ui:VisualElement class="health-meter"><ui:VisualElement name="healthOxygenFill" class="health-meter-fill" /></ui:VisualElement>
+                <ui:Label name="healthOxygenStage" class="health-oxygen-stage" />
+                <ui:Label name="healthAir" class="health-caption" />
+                <ui:Label text="Outdoor air drains the suit reserve. Pressurized rooms stop exposure and refill oxygen gradually." class="health-help" />
+            </ui:VisualElement>
+            <ui:Label name="healthConsequences" class="health-help" />
+        </ui:VisualElement>
+        <ui:VisualElement class="health-anatomy">
+            <ui:Label text="BODY CONDITION" class="health-eyebrow" />
+            <ui:VisualElement name="healthDiagram" class="health-diagram" />
+            <ui:Label text="Select a body part to treat it." class="health-caption" />
+        </ui:VisualElement>
+        <ui:VisualElement class="health-treatment">
+            <ui:Label text="BODY PARTS" class="health-eyebrow" />
+            <ui:ScrollView name="healthParts" mode="Vertical" class="health-parts" />
+            <ui:VisualElement class="health-medical-card">
+                <ui:Label name="healthSelectedPart" class="health-section-title" />
+                <ui:Label name="healthMedicalCount" class="health-caption" />
+                <ui:Button name="healthTreat" text="TREAT SELECTED PART / +40 HP" />
+                <ui:Label name="healthMedicalStatus" class="health-help" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

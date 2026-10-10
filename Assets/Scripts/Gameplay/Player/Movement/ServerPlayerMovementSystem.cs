@@ -355,7 +355,7 @@ namespace Unity.MP_FPS
                             TryReserveHaloEnergy(entity, predictedPlayer.ValueRO.EquippedWeaponID, weaponData, predictedPlayer.ValueRO.CurrentAmmo, out int targetAmmo))
                         {
                             predictedPlayer.ValueRW.ControllerState.IsReloadingState = true;
-                            predictedPlayer.ValueRW.ReloadTimer = weaponData.ReloadTime;
+                            predictedPlayer.ValueRW.ReloadTimer = weaponData.ReloadTime * RaidHealth.HandlingMultiplier(predictedPlayer.ValueRO);
                             predictedPlayer.ValueRW.ReloadTargetAmmo = targetAmmo;
                             predictedPlayer.ValueRW.LastReloadTick = serverTick;
                         }
@@ -363,7 +363,7 @@ namespace Unity.MP_FPS
                         if (wantsToShoot &&
                             !predictedPlayer.ValueRO.ControllerState.IsReloadingState &&
                             predictedPlayer.ValueRO.CurrentAmmo > 0 &&
-                            predictedPlayer.ValueRO.WeaponCooldown >= weaponData.CooldownInMs)
+                            predictedPlayer.ValueRO.WeaponCooldown >= weaponData.CooldownInMs * RaidHealth.HandlingMultiplier(predictedPlayer.ValueRO))
                         {
                             predictedPlayer.ValueRW.WeaponCooldown = 0f;
                             predictedPlayer.ValueRW.CurrentAmmo--;
@@ -405,11 +405,9 @@ namespace Unity.MP_FPS
                                                 }
 
                                                 var healthBeforeDamage = targetPredictedPlayer.ValueRO.CurrentHealth;
-                                                targetPredictedPlayer.ValueRW.CurrentHealth -= weaponData.Damage;
-                                                targetPredictedPlayer.ValueRW.ControllerState.IsHit = true;
-
-                                                targetPredictedPlayer.ValueRW.LastDamageAmount = weaponData.Damage;
-                                                targetPredictedPlayer.ValueRW.LastHitTick = serverTick;
+                                                var hitPlayer = hitGhostObject.GetComponent<PlayerGhost>();
+                                                RaidHealth.Damage(ref targetPredictedPlayer.ValueRW,
+                                                    RaidHealth.ResolveHit(hitPlayer, hit.collider, hit.point), weaponData.Damage, serverTick);
 
                                                 if (healthBeforeDamage > 0 &&
                                                     targetPredictedPlayer.ValueRO.CurrentHealth <= 0)
@@ -532,8 +530,8 @@ namespace Unity.MP_FPS
                         {
                             FirstPersonController.AccumulateMovement(ref predictedPlayer.ValueRW.ControllerState,
                                 ref predictedPlayer.ValueRW.AccumulatedMovement,
-                                input,
-                                controllerConsts.ValueRO.ControllerConsts,
+                                RaidHealth.RestrictInput(predictedPlayer.ValueRO, input),
+                                RaidHealth.Movement(predictedPlayer.ValueRO, controllerConsts.ValueRO.ControllerConsts),
                                 movementDt);
                         }
                     }

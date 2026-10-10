@@ -82,6 +82,7 @@ namespace Unity.MP_FPS
             PollPersistence(ref state, ecb);
             HandleJoinRequests(ref state, gameplayMapsEntity, playerEntityPrefabs, ecb);
             if(MoonRaidMap.Active!=null)EnsureRaidInventories(ref state);
+            UpdateSurvival(ref state);
             HandlePlayerDeathAndRespawn(ref state, ecb);
             HandleRaids(ref state, ecb);
         }
@@ -242,7 +243,7 @@ namespace Unity.MP_FPS
 
             ecb.SetComponent(playerEntity, new GhostOwner { NetworkId = ownerNetworkId.Value });
             ecb.AddComponent(playerEntity, new PlayerClientCommandInputLookup { ClientCommandInputEntity = clientInputEntity });
-            ecb.SetComponent(playerEntity, new PredictedPlayerGhost
+            var playerState = new PredictedPlayerGhost
             {
                 InputIndex = 0,
                 MaxHealth = 100f,
@@ -251,7 +252,9 @@ namespace Unity.MP_FPS
                 CurrentAmmo = magazineSize,
                 InventoryWeapons = true,
                 PrimaryWeaponID = DollSingerWeapons.None, SecondaryWeaponID = DollSingerWeapons.None, PistolWeaponID = DollSingerWeapons.None
-            });
+            };
+            RaidHealth.Initialize(ref playerState);
+            ecb.SetComponent(playerEntity, playerState);
             ecb.AddComponent(playerEntity, new PlayerCharacterInitialized());
             ecb.SetComponentEnabled<PlayerCharacterInitialized>(playerEntity, false);
 

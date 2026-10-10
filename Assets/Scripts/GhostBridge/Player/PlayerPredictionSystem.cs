@@ -220,12 +220,12 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                                 predictedPlayer.ValueRO.CurrentAmmo < weaponData.MagazineSize)
                             {
                                 predictedPlayer.ValueRW.ControllerState.IsReloadingState = true;
-                                predictedPlayer.ValueRW.ReloadTimer = weaponData.ReloadTime;
+                                predictedPlayer.ValueRW.ReloadTimer = weaponData.ReloadTime * RaidHealth.HandlingMultiplier(predictedPlayer.ValueRO);
                                 predictedPlayer.ValueRW.ReloadTargetAmmo = weaponData.MagazineSize;
                                 predictedPlayer.ValueRW.LastReloadTick = commandInput.Tick.TickIndexForValidTick;
                             }
 
-                            if (wantsToShoot && !predictedPlayer.ValueRO.ControllerState.IsReloadingState && predictedPlayer.ValueRO.CurrentAmmo > 0 && predictedPlayer.ValueRO.WeaponCooldown >= weaponData.CooldownInMs)
+                            if (wantsToShoot && !predictedPlayer.ValueRO.ControllerState.IsReloadingState && predictedPlayer.ValueRO.CurrentAmmo > 0 && predictedPlayer.ValueRO.WeaponCooldown >= weaponData.CooldownInMs * RaidHealth.HandlingMultiplier(predictedPlayer.ValueRO))
                             {
                                 predictedPlayer.ValueRW.WeaponCooldown = 0f;
                                 predictedPlayer.ValueRW.CurrentAmmo--;
@@ -272,8 +272,8 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                         DollSingerWeapons.StoreAmmo(ref predictedPlayer.ValueRW);
                         FirstPersonController.AccumulateMovement(ref predictedPlayer.ValueRW.ControllerState,
                             ref predictedPlayer.ValueRW.AccumulatedMovement,
-                            input,
-                            controllerConsts.ValueRO.ControllerConsts, accumulateDT);
+                            RaidHealth.RestrictInput(predictedPlayer.ValueRO, input),
+                            RaidHealth.Movement(predictedPlayer.ValueRO, controllerConsts.ValueRO.ControllerConsts), accumulateDT);
 
                         if (predictedPlayer.ValueRW.ControllerState.JumpTriggered)
                         {

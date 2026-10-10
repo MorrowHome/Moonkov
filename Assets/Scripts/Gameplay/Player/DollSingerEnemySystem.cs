@@ -289,9 +289,11 @@ namespace Unity.MP_FPS
                 EntityManager.SetComponentData(player, new GhostOwner { NetworkId = id });
                 EntityManager.SetComponentData(player, LocalTransform.FromPositionRotation(position + Vector3.up * .1f, quaternion.identity));
                 int ammo = WeaponManager.Instance.WeaponRegistry.GetWeaponData(2)?.MagazineSize ?? 30;
-                EntityManager.SetComponentData(player, new PredictedPlayerGhost { MaxHealth = 100, CurrentHealth = 100,
+                var healthState = new PredictedPlayerGhost { MaxHealth = 100, CurrentHealth = 100,
                     EquippedWeaponID = DollSingerWeapons.None, CurrentAmmo = 0, InventoryWeapons = true,
-                    PrimaryWeaponID = DollSingerWeapons.None, SecondaryWeaponID = DollSingerWeapons.None, PistolWeaponID = DollSingerWeapons.None });
+                    PrimaryWeaponID = DollSingerWeapons.None, SecondaryWeaponID = DollSingerWeapons.None, PistolWeaponID = DollSingerWeapons.None };
+                RaidHealth.Initialize(ref healthState);
+                EntityManager.SetComponentData(player, healthState);
                 EntityManager.SetComponentData(player, new GhostGameObjectGuid { Guid = GhostGameObject.GenerateRandomHash() });
                 EntityManager.SetComponentData(player, new PlayerGhost.PlayerData { Name = name });
                 EntityManager.AddComponentData(player, new PlayerCharacterInitialized());

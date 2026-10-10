@@ -1,0 +1,28 @@
+.raid-health-page { flex-grow: 1; flex-direction: row; min-height: 0; background-color: #e9e5db; padding: 20px; }
+.raid-ui .raid-health-page Label { color: #303d38; white-space: normal; }
+.health-overview { width: 25%; padding-right: 22px; }
+.health-anatomy { flex-grow: 1; min-width: 160px; align-items: center; padding: 0 20px; border-left-width: 1px; border-right-width: 1px; border-color: #b8bbaa; }
+.health-treatment { width: 36%; padding-left: 22px; min-height: 0; }
+.health-eyebrow { font-size: 11px; letter-spacing: 2px; margin-bottom: 14px; }
+.raid-ui .raid-health-page .health-eyebrow, .raid-ui .raid-health-page .health-caption { color: #657166; }
+.health-total { font-size: 38px; margin-bottom: 3px; }
+.health-caption { font-size: 11px; margin-top: 4px; margin-bottom: 8px; }
+.health-section-title { font-size: 14px; letter-spacing: 1px; margin-bottom: 8px; }
+.health-oxygen-card { margin-top: 20px; padding: 16px; background-color: #dce1d6; border-left-width: 3px; border-left-color: #5c796e; }
+.health-oxygen-value { font-size: 32px; }
+.health-oxygen-stage { margin-top: 12px; font-size: 14px; }
+.health-help { font-size: 11px; margin-top: 12px; }
+.health-meter { height: 5px; background-color: #b8bdae; margin-top: 6px; }
+.health-meter-fill { height: 100%; background-color: #64846c; }
+.health-diagram { width: 100%; flex-grow: 1; min-height: 180px; }
+.health-parts { flex-grow: 1; min-height: 0; }
+.raid-ui .raid-health-page .health-part { height: 52px; min-height: 52px; min-width: 0; margin: 0 0 5px 0; padding: 7px 12px; background-color: #dedfd3; border-left-width: 3px; border-left-color: #8d9f86; letter-spacing: 0; }
+.raid-ui .raid-health-page .health-part:hover { background-color: #ced9c5; }
+.raid-ui .raid-health-page .health-part-selected { background-color: #cbd6c3; border-left-color: #405e48; }
+.health-part-heading { flex-direction: row; justify-content: space-between; }
+.health-part-name, .health-part-value { font-size: 12px; }
+.health-medical-card { flex-shrink: 0; padding: 12px 0 0 0; margin-top: 10px; border-top-width: 1px; border-top-color: #aeb8a5; }
+.raid-ui .raid-health-page #healthTreat { min-width: 0; height: 36px; margin: 0; padding: 4px 8px; background-color: #485f51; color: #f1eee2; letter-spacing: 0; }
+.raid-ui .raid-health-page #healthTreat:disabled { background-color: #c3c7ba; color: #758171; }
+.raid-ui .raid-health-page .health-danger { color: #ad4236; }
+.raid-ui .raid-health-page .health-caution { color: #947132; }

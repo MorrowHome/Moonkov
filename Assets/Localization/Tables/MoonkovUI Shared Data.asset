@@ -2184,6 +2184,119 @@ MonoBehaviour:
       retry.
     m_Metadata:
       m_Items: []
+  - m_Id: 1045890297769984
+    m_Key: EQUIPMENT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1045890335518720
+    m_Key: HEALTH
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1045890335518721
+    m_Key: CHEST
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1045890335518722
+    m_Key: BODY CONDITION
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1045890335518723
+    m_Key: BODY PARTS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1045890335518724
+    m_Key: TOTAL HEALTH
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1045890335518725
+    m_Key: OXYGEN RESERVE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1045890335518726
+    m_Key: TREAT SELECTED PART / +40 HP
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1045890335518727
+    m_Key: Select a body part to treat it.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1045890335518728
+    m_Key: Outdoor air drains the suit reserve. Pressurized rooms stop exposure and
+      refill oxygen gradually.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1045890335518729
+    m_Key: HYPOXIA / SEEK AIR
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1045890335518730
+    m_Key: CRITICAL OXYGEN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1045890335518731
+    m_Key: LOW OXYGEN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1045890335518732
+    m_Key: OXYGEN NORMAL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1045890335518733
+    m_Key: PRESSURIZED / REFILLING
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1045890335518734
+    m_Key: VACUUM / RESERVE IN USE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1045890335518735
+    m_Key: LEG DISABLED / SPRINT LIMITED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1045890335518736
+    m_Key: LEGS FUNCTIONAL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1045890335518737
+    m_Key: ARM DISABLED / HANDLING SLOWED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1045890335518738
+    m_Key: TREATMENT / {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1045890335518739
+    m_Key: ACCESSIBLE MEDICAL / {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1045890335518740
+    m_Key: Waiting for health snapshot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1045890335518741
+    m_Key: Medical supplies must be in pockets or the chest rig.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1045890335518742
+    m_Key: This body part does not need treatment.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1045890335518743
+    m_Key: One injector restores up to 40 HP to the selected part.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1045890335518744
+    m_Key: OXYGEN REFILLING / {0:0}%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1045890335518745
+    m_Key: HYPOXIA / SEEK PRESSURIZED AIR
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1045890335518746
+    m_Key: LOW OXYGEN / {0:0}%
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

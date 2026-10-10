@@ -15,6 +15,12 @@ namespace Unity.MP_FPS
         private EntityQuery m_StateQuery, m_PlayerQuery, m_ConnectionQuery;
         private VisualElement m_Root, m_Result, m_Status, m_Inventory;
         private Client.ContainerInventoryView m_InventoryView;
+        private Client.RaidHealthView m_HealthView;
+        private VisualElement m_EquipmentHost, m_HealthHost;
+        private Button m_EquipmentTab, m_HealthTab;
+        private Label m_OxygenWarning;
+        private bool m_HealthSelected;
+        private float m_NextOxygenAlert;
         private EntityQuery m_InventoryQuery;
         private uint m_InventorySequence, m_InventoryRequestId;
         private float m_InventoryRequestedAt;
@@ -47,7 +53,7 @@ namespace Unity.MP_FPS
         public static bool CloseInventory()
         {
             if (!InventoryOpen) return false;
-            if (s_Active.m_InventoryView.Escape()) return true;
+            if (!s_Active.m_HealthSelected && s_Active.m_InventoryView.Escape()) return true;
             s_Active.SetInventory(false); return true;
         }
 
@@ -77,11 +83,59 @@ namespace Unity.MP_FPS
             m_Return.SetEnabled(GameManager.CanUseMainMenu);
             m_Inventory = m_Root.Q("raidInventory");
             m_InventoryTitle=m_Root.Q<Label>(className:"raid-inventory-title");
-            m_InventoryView = new Client.ContainerInventoryView(m_Root.Q("raidInventoryHost"), false, SendInventoryMove, UseMedical);
+            m_EquipmentHost = m_Root.Q("raidInventoryHost"); m_HealthHost = m_Root.Q("raidHealthHost");
+            m_InventoryView = new Client.ContainerInventoryView(m_EquipmentHost, false, SendInventoryMove, UseMedical);
+            m_HealthView = new Client.RaidHealthView(m_HealthHost, TreatPart);
+            m_EquipmentTab = m_Root.Q<Button>("raidEquipmentTab"); m_EquipmentTab.clicked += EquipmentTab;
+            m_HealthTab = m_Root.Q<Button>("raidHealthTab"); m_HealthTab.clicked += HealthTab;
+            m_HealthSelected = false; m_NextOxygenAlert = 0;
+            m_OxygenWarning = m_Root.Q<Label>("raidOxygenWarning");
             m_InventorySequence=0; m_InventoryRequestId=0;
             m_InventoryRequestPending=false;
             m_LootOpenPending=false;m_OpenedLootId=-1;
             m_Root.Q<Button>("raidPackClose").clicked += ClosePack;
+            MoonkovLocalization.Bind(m_Root);
+        }
+
+        private void EquipmentTab() => SelectHealth(false);
+        private void HealthTab() => SelectHealth(true);
+        private void SelectHealth(bool health)
+        {
+            if (m_InventoryRequestPending || m_HealthSelected == health) return;
+            m_HealthSelected = health;
+            m_EquipmentHost.style.display = health ? DisplayStyle.None : DisplayStyle.Flex;
+            m_HealthHost.style.display = health ? DisplayStyle.Flex : DisplayStyle.None;
+            m_EquipmentTab.EnableInClassList("raid-tab-active", !health);
+            m_HealthTab.EnableInClassList("raid-tab-active", health);
+            MoonkovLocalization.Set(m_InventoryTitle, health ? "HEALTH / SUIT STATUS" :
+                m_OpenedLootId >= RaidLootContainers.FirstDeathBagId ? "FALLEN EXPEDITION / CARRIED INVENTORY" :
+                m_OpenedLootId >= 0 ? "SUPPLY CACHE / CARRIED INVENTORY" : "CHARACTER / CARRIED INVENTORY");
+            if (health) m_InventoryView.Suspend();
+            else if (m_InventoryVisible) m_InventoryView.Show();
+            RefreshHealth();
+        }
+        private void RefreshHealth()
+        {
+            if (m_World == null || !m_World.IsCreated) return;
+            var player = m_PlayerQuery.HasSingleton<PredictedPlayerGhost>() ? m_PlayerQuery.GetSingleton<PredictedPlayerGhost>() : default;
+            int medicines = 0;
+            if (!m_InventoryQuery.IsEmptyIgnoreFilter)
+            {
+                var inventory = m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
+                if (inventory.RaidId == m_Snapshot.RaidId && inventory.Graph != null)
+                    foreach (var item in inventory.Graph.Items) if (inventory.Graph.MedicalAccessible(item)) medicines += item.Quantity;
+            }
+            if (m_InventoryVisible && m_HealthSelected) m_HealthView.Present(player, medicines, m_InventoryRequestPending);
+            bool warning = player.BodyHealthInitialized && player.CurrentHealth > 0 && player.Oxygen <= 25 && !m_WasSettled;
+            m_OxygenWarning.style.display = warning ? DisplayStyle.Flex : DisplayStyle.None;
+            if (!warning) { m_NextOxygenAlert = 0; return; }
+            m_OxygenWarning.EnableInClassList("oxygen-critical", player.Oxygen <= 10);
+            MoonkovLocalization.Set(m_OxygenWarning, player.BreathableAir ? "OXYGEN REFILLING / {0:0}%" :
+                player.Oxygen <= 0 ? "HYPOXIA / SEEK PRESSURIZED AIR" : "LOW OXYGEN / {0:0}%", player.Oxygen);
+            if (!player.BreathableAir && Time.unscaledTime >= m_NextOxygenAlert)
+            {
+                MoonkovAudio.Error(); m_NextOxygenAlert = Time.unscaledTime + (player.Oxygen <= 10 ? 10 : 20);
+            }
         }
 
         private void SetInventory(bool visible)
@@ -90,7 +144,7 @@ namespace Unity.MP_FPS
             if (visible != m_InventoryVisible) MoonkovAudio.Play(MoonkovAudio.Library?.Container, Vector3.zero);
             if(!visible && m_OpenedLootId>=0 && m_Snapshot.Phase==RaidPhase.Active)RequestLoot(-1);
             m_InventoryVisible = visible; m_Inventory.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
-            if (visible) { UpdateInventoryView(); if(!m_LootOpenPending)m_InventoryView.Show(); }
+            if (visible) { UpdateInventoryView(); if(!m_LootOpenPending && !m_HealthSelected)m_InventoryView.Show(); RefreshHealth(); }
             else m_InventoryView.Suspend();
             Utils.SetCursorVisible(visible || GameSettings.Instance.IsPauseMenuOpen || m_WasSettled);
         }
@@ -210,6 +264,11 @@ namespace Unity.MP_FPS
                 {
                     if(RequestLoot(nearest))
                     {
+                        // Loot always opens the equipment page, even if Tab last
+                        // showed health. Selection does not discard an in-flight intent.
+                        m_HealthSelected = false;
+                        m_EquipmentHost.style.display = DisplayStyle.Flex; m_HealthHost.style.display = DisplayStyle.None;
+                        m_EquipmentTab.EnableInClassList("raid-tab-active", true); m_HealthTab.EnableInClassList("raid-tab-active", false);
                         string opening=nearest>=RaidLootContainers.FirstDeathBagId ? "Searching fallen expedition…" : "Opening supply cache…";
                         m_LootOpenPending=true;m_InventoryView.Present(null,opening,operationCompleted:false);
                         m_InventoryView.SetReadOnly(opening);SetInventory(true);
@@ -220,6 +279,7 @@ namespace Unity.MP_FPS
             m_RefreshTimer -= Time.deltaTime;
             if (m_RefreshTimer > 0) return;
             m_RefreshTimer = 0.1f;
+            RefreshHealth();
             int seconds = Mathf.CeilToInt(m_Snapshot.TimeLeft);
             MoonkovLocalization.Set(m_Timer, ready ? MoonkovLocalization.Format($"Raid {m_Snapshot.RaidId}   {seconds / 60:00}:{seconds % 60:00} remaining") : "Connecting...");
             var clock = ExpeditionClockPresentation.Active;
@@ -276,6 +336,7 @@ namespace Unity.MP_FPS
             {
                 m_InventoryRequestPending=false;m_LootOpenPending=false;m_InventoryView.SetReadOnly(null);
                 m_InventoryView.Present(inventory.Graph,"Waiting for the server. Retry after the connection recovers.",lootId:inventory.LootId);
+                m_HealthView.Message("Waiting for the server. Retry after the connection recovers.");
             }
             if (inventory.Graph==null || inventory.RaidId!=m_Snapshot.RaidId) return;
             if (inventory.Sequence!=m_InventorySequence)
@@ -290,9 +351,11 @@ namespace Unity.MP_FPS
                     : inventory.LootId>=0 ? "SUPPLY CACHE / CARRIED INVENTORY" : "CHARACTER / CARRIED INVENTORY");
                 m_InventoryView.Present(inventory.Graph,acknowledged && inventory.Error!=Inventory.InventoryError.None ? MoonkovLocalization.Format($"Inventory: {inventory.Error.ToString()}") : null,
                     operationCompleted: acknowledged,lootId:inventory.LootId);
+                if (acknowledged) m_HealthView.Message(inventory.Error == Inventory.InventoryError.None ? "" : MoonkovLocalization.Format($"Inventory: {inventory.Error.ToString()}"));
+                if (m_HealthSelected) MoonkovLocalization.Set(m_InventoryTitle, "HEALTH / SUIT STATUS");
                 if(inventory.LootId<0 && (wasOpen || acknowledged && inventory.Error==Inventory.InventoryError.Inaccessible))
                 {if(inventory.Error==Inventory.InventoryError.Inaccessible)m_LootErrorUntil=Time.unscaledTime+3;SetInventory(false);}
-                else if(m_InventoryVisible && inventory.LootId<0 && !m_LootOpenPending)m_InventoryView.Show();
+                else if(m_InventoryVisible && !m_HealthSelected && inventory.LootId<0 && !m_LootOpenPending)m_InventoryView.Show();
             }
         }
         private void SendInventoryMove(Inventory.InventoryCommand command)
@@ -313,14 +376,24 @@ namespace Unity.MP_FPS
         }
 
         private void UseMedical(Inventory.InventoryItem item)
+            => UseMedical(item, BodyPart.Auto);
+        private void TreatPart(BodyPart part)
+        {
+            if (m_World == null || !m_World.IsCreated || m_InventoryQuery.IsEmptyIgnoreFilter) return;
+            var inventory = m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
+            var item = inventory.Graph?.Items.Find(inventory.Graph.MedicalAccessible);
+            if (item != null) UseMedical(item, part);
+        }
+        private void UseMedical(Inventory.InventoryItem item, BodyPart part)
         {
             if (m_InventoryRequestPending || m_Snapshot.Phase != RaidPhase.Active) return;
             var inventory = m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
             m_InventoryRequestId = System.Math.Max(m_InventoryRequestId, inventory.RequestId) + 1;
             if (Send(new RaidMedicalUseRpc { RaidId = m_Snapshot.RaidId, RequestId = m_InventoryRequestId,
-                ExpectedVersion = inventory.Graph.Version, ItemId = item.Id }))
+                ExpectedVersion = inventory.Graph.Version, ItemId = item.Id, Part = part }))
             { m_InventoryRequestedAt = Time.unscaledTime; m_InventoryRequestPending = true; }
             else m_InventoryView.Present(inventory.Graph, "Not connected. Medical item remains in its container.");
+            RefreshHealth();
         }
 
         private void CarryCellsChanged(ChangeEvent<int> evt)
@@ -359,6 +432,9 @@ namespace Unity.MP_FPS
         {
             if (m_Root != null) MoonkovAudio.UnbindUI(m_Root);
             m_InventoryView?.Dispose(); m_InventoryView=null;
+            m_HealthView?.Dispose(); m_HealthView = null;
+            if (m_EquipmentTab != null) m_EquipmentTab.clicked -= EquipmentTab;
+            if (m_HealthTab != null) m_HealthTab.clicked -= HealthTab;
             m_CarryCells?.UnregisterValueChangedCallback(CarryCellsChanged);
             if (m_World != null && m_World.IsCreated)
             {
