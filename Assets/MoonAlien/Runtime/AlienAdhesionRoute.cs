@@ -20,7 +20,10 @@ namespace Unity.MP_FPS.MoonAlien
         private AlienGroundProbe m_Probe;
         private int m_Index = 1;
         private Vector3 m_Centre;
-        private bool m_Ready;
+        private bool m_Ready, m_FaceTravel;
+        public bool IsComplete => m_Route != null && m_Index >= m_Route.Length;
+        public bool IsBlocked { get; private set; }
+        public int CurrentWaypoint => m_Index;
         public Vector3 Up => transform.up;
         public Vector3 Centre => m_Centre;
         public string Status { get; private set; } = "Awaiting supported pose";
@@ -33,6 +36,12 @@ namespace Unity.MP_FPS.MoonAlien
 
         public void Configure(Transform course, Pose[] route) { m_Course = course; m_Route = route; }
         public void SetRunning(bool value) => m_Running = value;
+        public void SetFaceTravel(bool value) => m_FaceTravel = value;
+        public void ReplaceRoute(Pose[] route)
+        {
+            m_Route = route; m_Index = 1; IsBlocked = false; m_Running = true;
+            // Deliberately retain the accepted centre/frame. Replanning never teleports.
+        }
         public void SetFast(bool fast) => m_Speed = fast ? 6f : 1.5f;
         private void OnEnable() { m_Ready = false; }
 
@@ -63,6 +72,16 @@ namespace Unity.MP_FPS.MoonAlien
             // edge can point the support ray into empty space and strand the creature.
             Vector3 up = Vector3.Slerp(Up, targetUp, fraction).normalized;
             Quaternion rotation = AlienSurfaceFrame.Transport(transform.rotation, up);
+            if (m_FaceTravel)
+            {
+                Vector3 tangent = Vector3.ProjectOnPlane(target - m_Centre, up);
+                if (tangent.sqrMagnitude > .001f)
+                {
+                    Vector3 heading = Vector3.RotateTowards(rotation * Vector3.forward, tangent.normalized,
+                        m_TurnRate * Mathf.Deg2Rad * dt, 0f);
+                    rotation = Quaternion.LookRotation(heading, up);
+                }
+            }
             Vector3 centre = Vector3.Lerp(m_Centre, target, fraction);
             float normalRemaining = Vector3.Angle(up, targetUp);
             if (!FindSupport(centre, rotation, out var support))
@@ -81,6 +100,7 @@ namespace Unity.MP_FPS.MoonAlien
             Contact = support.collider;
             ContactPoint = support.point;
             ContactConfidence = Mathf.MoveTowards(ContactConfidence, 1f, dt * 4f);
+            IsBlocked = false;
             Status = "Supported authored adhesion pose";
             if (Vector3.Distance(centre, target) < .005f && normalRemaining < .5f) m_Index++;
         }
@@ -127,6 +147,7 @@ namespace Unity.MP_FPS.MoonAlien
         private void Hold(string reason)
         {
             Status = reason;
+            IsBlocked = true;
             ContactConfidence = 0f;
             // Preserve last validated centre and frame. No automatic warp or world-Y fall.
         }
