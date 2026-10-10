@@ -1,0 +1,6 @@
+{
+    "name": "MoonAlien.Runtime",
+    "rootNamespace": "Unity.MP_FPS.MoonAlien",
+    "references": [],
+    "autoReferenced": true
+}

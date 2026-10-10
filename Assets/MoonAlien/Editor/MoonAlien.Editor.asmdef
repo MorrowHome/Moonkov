@@ -1,0 +1,7 @@
+{
+    "name": "MoonAlien.Editor",
+    "rootNamespace": "Unity.MP_FPS.MoonAlien.Editor",
+    "references": ["MoonAlien.Runtime"],
+    "includePlatforms": ["Editor"],
+    "autoReferenced": true
+}
