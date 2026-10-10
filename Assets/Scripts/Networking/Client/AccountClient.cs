@@ -180,7 +180,7 @@ namespace Unity.MP_FPS
             if (!response.IsSuccessStatusCode) throw new InventoryRequestException("service_" + (int)response.StatusCode);
             var snapshot = JsonConvert.DeserializeObject<ShopSnapshot>(await response.Content.ReadAsStringAsync());
             if (snapshot?.Offers == null || snapshot.Profile == null || snapshot.Offers.Length > 64 ||
-                Array.Exists(snapshot.Offers, offer => offer == null || InventoryCatalog.Get(offer.Code) == null || offer.BuyDust < 1 || offer.SellDust < 0))
+                Array.Exists(snapshot.Offers, offer => offer == null || InventoryCatalog.Get(offer.Code) == null || offer.BuyDust < 0 || offer.SellDust < 0))
                 throw new InvalidOperationException("Invalid supplier catalogue. Existing inventory was preserved.");
             ct.ThrowIfCancellationRequested(); if (token != Token) throw new OperationCanceledException("Account changed while loading shop.");
             ApplyProfile(snapshot.Profile, requestId); return snapshot.Offers;
