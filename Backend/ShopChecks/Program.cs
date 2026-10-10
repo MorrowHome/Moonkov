@@ -60,7 +60,15 @@ try
         {
             Check(catalogue.IsSuccessStatusCode, "catalogue is available"); using var payload = JsonDocument.Parse(await catalogue.Content.ReadAsStringAsync());
             var offers = JsonSerializer.Deserialize<ShopOffer[]>(payload.RootElement.GetProperty("offers").GetRawText(), read)!;
-            Check(offers.Length == 4 && offers.Single(o => o.Code == "pistol").BuyDust == 15, "server supplies current prices");
+            Check(offers.Length == ShopCatalog.Offers.Length, "server supplies the complete current catalogue");
+            Check(offers.Select(o => o.Code).Distinct(StringComparer.Ordinal).Count() == offers.Length, "catalogue codes are unique");
+            foreach (var expected in ShopCatalog.Offers)
+            {
+                var actual = offers.SingleOrDefault(o => o.Code == expected.Code);
+                Check(actual != null && actual.Name == expected.Name && actual.BuyDust == expected.BuyDust && actual.SellDust == expected.SellDust,
+                    "catalogue fields and prices for " + expected.Code);
+            }
+            Check(offers.Any(o => o.Code == "sniper") && offers.Any(o => o.Code == "medkit"), "catalogue includes sniper and medkit");
             profile = JsonSerializer.Deserialize<Profile>(payload.RootElement.GetProperty("profile").GetRawText(), read)!;
         }
         var graph = InventoryRepository.Decode(profile.InventoryJson!); Guid player = profile.PlayerId;
