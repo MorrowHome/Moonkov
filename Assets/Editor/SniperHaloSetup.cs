@@ -106,9 +106,9 @@ public static class SniperHaloSetup
             var view = root.AddComponent<DollSingerView>();
             var serialized = new SerializedObject(view); serialized.FindProperty("firstPerson").boolValue = true; serialized.ApplyModifiedPropertiesWithoutUndo();
             view.SetAimBlend(1); view.SetWeaponAimMagnification(visual.scopeMagnification);
-            Require(Mathf.Approximately(view.CurrentAimMagnification, 6), "Six times first person scope");
+            Require(Mathf.Approximately(view.TargetAimMagnification, 6), "Six times first person scope target");
             view.SetWeaponAimMagnification(0);
-            Require(Mathf.Approximately(view.CurrentAimMagnification, view.aimMagnification), "Other weapon zoom restores");
+            Require(Mathf.Approximately(view.TargetAimMagnification, view.aimMagnification), "Other weapon zoom target restores");
             // Projection must keep the optic within the viewport even when base FOV changes.
             foreach (float baseFov in new[] { 40f, 70f, 100f })
             {

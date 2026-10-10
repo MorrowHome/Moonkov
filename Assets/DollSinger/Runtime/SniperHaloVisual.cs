@@ -17,6 +17,12 @@ namespace Unity.MP_FPS.DollSinger
         public float ScopeScale(float distance, float fieldOfView) => scopeViewportFraction * Mathf.Max(.01f, distance)
             * Mathf.Tan(fieldOfView * .5f * Mathf.Deg2Rad) / Mathf.Max(.001f, AimedRadius);
         [Min(.001f)] public float lineWidth = .020f;
+        [Header("Precision release")]
+        [Min(0f)] public float wristTravel = .014f;
+        [Range(0f, 12f)] public float wristAngle = 3f;
+        private HaloShotResponse response;
+        public float ShotRelease => response.Release;
+        public float BoltCycle => shotAge < .9f ? Mathf.Sin(Mathf.Clamp01((shotAge - .12f) / .78f) * Mathf.PI) : 0;
         public LineRenderer[] outerArcs, innerArcs, capacitors, guides;
         public LineRenderer sight, chargeArc;
         private readonly Vector3[] arc = new Vector3[33], segment = new Vector3[2], diamond = new Vector3[3];
@@ -64,6 +70,7 @@ namespace Unity.MP_FPS.DollSinger
             ammo = startAmmo = targetAmmo = Mathf.Clamp(rounds, 0, Capacity);
             initialized = reloading = localReloading = false; lastShot = lastReload = 0;
             progress = phase = lockPulse = 0; shotAge = 10; gameObject.SetActive(equipped);
+            response.Reset();
             if (equipped) ApplyLayout();
         }
         private static bool Newer(uint value, uint previous) => value != 0 && (previous == 0 || (int)(value - previous) > 0);
@@ -74,7 +81,7 @@ namespace Unity.MP_FPS.DollSinger
             if (!initialized) { lastShot = shotTick; lastReload = reloadTick; ammo = rounds; initialized = true; }
             if (Newer(lastShot, shotTick) || Newer(lastReload, reloadTick)) return;
             bool shot = Newer(shotTick, lastShot), newReload = Newer(reloadTick, lastReload);
-            if (shot) { PlayShot(); lastShot = shotTick; }
+            if (shot) { PlayShot(shotTick); lastShot = shotTick; }
             if (newReload || reload && !reloading && progress == 0)
             { BeginReload(rounds, target < 0 ? Capacity : target); lastReload = reloadTick; }
             if (reload && !Newer(lastShot, lastReload)) AdvanceReload(reloadProgress);
@@ -98,10 +105,10 @@ namespace Unity.MP_FPS.DollSinger
             localReloading = reload; ammo = Mathf.Clamp(rounds, 0, Capacity);
         }
         // Shot feedback moves only the optic's outer mechanism, keeping the sight fixed.
-        public void PlayShot() => shotAge = 0;
-        private void LateUpdate() => Step(Time.deltaTime);
+        public void PlayShot(uint shotTick = 0) { if (response.Play(shotTick)) shotAge = 0; }
+        private void Update() => Step(Time.deltaTime);
         public void Step(float deltaTime)
-        { float dt = Mathf.Max(0, deltaTime); phase += dt; shotAge += dt; lockPulse *= Mathf.Exp(-dt * 12); ApplyLayout(); }
+        { float dt = Mathf.Max(0, deltaTime); response.Step(dt, 17f, 75f); phase += dt; shotAge += dt; lockPulse *= Mathf.Exp(-dt * 12); ApplyLayout(); }
         private static Vector3 Polar(float r, float angle, float z = 0)
         { float a = angle * Mathf.Deg2Rad; return new Vector3(Mathf.Cos(a) * r, Mathf.Sin(a) * r, z); }
         private static void Tint(LineRenderer line, Color color, float alpha)
@@ -118,7 +125,7 @@ namespace Unity.MP_FPS.DollSinger
             float reloadOpen = reloading ? Mathf.Sin(progress * Mathf.PI) : 0;
             float kick = Mathf.Exp(-shotAge * 24);
             // A planar unlock / outward sweep / return cycle between single shots.
-            float bolt = shotAge < .9f ? Mathf.Sin(Mathf.Clamp01((shotAge - .12f) / .78f) * Mathf.PI) : 0;
+            float bolt = BoltCycle;
             float radius = Mathf.Lerp(.115f, .175f, unfold) * overallScale + .018f * reloadOpen;
             float turn = reloading ? progress * 540 : phase * 2 + bolt * 24;
             Color core = Color.Lerp(lightColor, Color.white, Mathf.Max(kick * .65f, lockPulse * .7f));

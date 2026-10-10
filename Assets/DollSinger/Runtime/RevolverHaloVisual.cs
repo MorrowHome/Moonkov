@@ -3,6 +3,7 @@ using UnityEngine;
 namespace Unity.MP_FPS.DollSinger
 {
     /// <summary>GameMaker RevControl/Revolver presentation, driven by gameplay ammo.</summary>
+    [DefaultExecutionOrder(110)]
     public sealed class RevolverHaloVisual : MonoBehaviour
     {
         public SpriteRenderer centre;
@@ -15,6 +16,13 @@ namespace Unity.MP_FPS.DollSinger
         public Color lightColor = new Color(1f, 0.78f, 0.28f);
         [Min(0.01f)] public float idleCentreScale = 1f;
         [Range(0.01f, 1f)] public float aimedCentreScale = 0.08f;
+        [Header("Single-shot wrist response")]
+        [Min(0f)] public float wristTravel = .022f;
+        [Range(0f, 15f)] public float wristAngle = 8f;
+        private HaloShotResponse response;
+        public float ShotRelease => response.Release;
+        public bool IsReloading => wasReloading;
+        public float ReloadProgress => reloadProgress;
 
         private int previousAmmo = 6;
         private bool wasReloading;
@@ -47,6 +55,7 @@ namespace Unity.MP_FPS.DollSinger
             shotExpansionTime = 0f;
             reloadProgress = 0f;
             networkEventsInitialized = false;
+            response.Reset();
             gameObject.SetActive(equipped);
             RefreshChambers(previousAmmo);
         }
@@ -96,6 +105,7 @@ namespace Unity.MP_FPS.DollSinger
                     reloadProgress = 1f;
                 }
                 targetAngle += 60f;
+                PlayShot(shotTick);
                 lastShotTick = shotTick;
             }
             if (newReload)
@@ -121,16 +131,22 @@ namespace Unity.MP_FPS.DollSinger
             if (reloading && reloadTick == lastReloadTick && reloadProgress >= 1f)
                 ammo = Mathf.Max(previousAmmo, ammo);
             previousAmmo = ammo;
+            wasReloading = reloading && reloadProgress < 1f;
             RefreshChambers(ammo);
         }
 
         private static bool IsNewer(uint tick, uint previous) => tick != 0 && (previous == 0 || (int)(tick - previous) > 0);
 
-        public void PlayShot() => shotExpansionTime = 0.23f;
-
-        private void LateUpdate()
+        public void PlayShot(uint shotTick = 0)
         {
-            float dt = Time.deltaTime;
+            if (response.Play(shotTick)) shotExpansionTime = 0.23f;
+        }
+
+        private void Update() => Step(Time.deltaTime);
+        public void Step(float deltaTime)
+        {
+            float dt = Mathf.Max(0, deltaTime);
+            response.Step(dt, 14f, 70f);
             // Convert the source's per-frame /4 easing to a frame-rate-independent 60 Hz response.
             float radialBlend = 1f - Mathf.Pow(0.75f, dt * 60f);
             float spinBlend = 1f - Mathf.Pow(0.9f, dt * 60f);

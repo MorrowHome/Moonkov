@@ -38,6 +38,8 @@ public class DollSingerView : MonoBehaviour
     [Header("Aim zoom")]
     [Tooltip("Target magnification when fully aiming, relative to the current first/third-person FOV.")]
     [Range(1f, 3f)] public float aimMagnification = 1.75f;
+    [Tooltip("Smooths magnification when switching an already aimed weapon; the look direction stays unchanged.")]
+    [Min(.01f)] public float weaponZoomTransitionSeconds = .16f;
 
     [Header("First person head")]
     [Tooltip("Fallback eye position in front of the head bone, in character-local metres.")]
@@ -81,8 +83,11 @@ public class DollSingerView : MonoBehaviour
     private float viewBlend;
     private float aimBlend;
     private float weaponAimMagnification;
+    private float presentedWeaponMagnification = 1.75f;
+    public float TargetAimMagnification => firstPerson && weaponAimMagnification > 0
+        ? weaponAimMagnification : Mathf.Clamp(aimMagnification, 1f, 3f);
     public float CurrentAimMagnification => Mathf.Lerp(1f,
-        firstPerson && weaponAimMagnification > 0 ? weaponAimMagnification : Mathf.Clamp(aimMagnification, 1f, 3f),
+        presentedWeaponMagnification,
         Mathf.SmoothStep(0f, 1f, aimBlend));
     private bool appliedFirstPerson;
     private bool networkLookDriven;
@@ -152,6 +157,8 @@ public class DollSingerView : MonoBehaviour
         networkLookDriven = false;
         viewBlend = 0f;
         aimBlend = 0f;
+        weaponAimMagnification = 0;
+        presentedWeaponMagnification = Mathf.Clamp(aimMagnification, 1f, 3f);
         lastRenderedLeanOffset = Vector3.zero;
         distanceVelocity = 0f;
 
@@ -299,6 +306,9 @@ public class DollSingerView : MonoBehaviour
             Quaternion.Slerp(thirdPersonRestRotation, Quaternion.identity, aimBlend),
             Quaternion.identity, viewBlend);
         float baseFov = Mathf.Lerp(thirdPersonRestFov, firstPersonFieldOfView, viewBlend);
+        float targetMagnification = TargetAimMagnification;
+        presentedWeaponMagnification = Mathf.Lerp(presentedWeaponMagnification, targetMagnification,
+            1f - Mathf.Exp(-Time.deltaTime * 3f / Mathf.Max(.01f, weaponZoomTransitionSeconds)));
         float magnification = CurrentAimMagnification;
         // Divide the projection's tangent so the same setting gives equal target
         // magnification in both perspectives and with a customized base FOV.

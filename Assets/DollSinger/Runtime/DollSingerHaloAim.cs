@@ -54,6 +54,18 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     [Range(0f, 0.1f)] public float firstPersonThumbDepth = 0.02f;
     [Tooltip("Camera-space support wrist offset from the firing wrist.")]
     public Vector3 firstPersonSupportOffset = new Vector3(-0.12f, -0.08f, -0.04f);
+    [Header("Weapon gestures (camera-space metres)")]
+    public Vector3 revolverSupportOffset = new Vector3(-0.19f, -0.18f, -0.10f);
+    public Vector3 shotgunSupportOffset = new Vector3(-0.09f, 0.015f, -0.025f);
+    public Vector3 sniperSupportOffset = new Vector3(-0.09f, -0.085f, -0.055f);
+    [Tooltip("Maximum thumb gap as a fraction of viewport height; keeps the reference visible during scope zoom and weapon transitions.")]
+    [Range(.03f, .15f)] public float thumbScreenGap = .065f;
+    [Range(.01f, .05f)] public float gestureThumbClearance = .022f;
+    [Tooltip("Finger direction slope relative to the camera forward ray. Negative Y exposes fingers below the thumb reference.")]
+    public Vector2 revolverFingerSlope = new Vector2(.18f, -.12f);
+    public Vector2 shotgunFingerSlope = new Vector2(-.12f, -.32f);
+    public Vector2 sniperFingerSlope = new Vector2(-.10f, -.06f);
+    [Min(.01f)] public float gestureTransitionSeconds = .16f;
 
     [Header("Laser flight lighting")]
     [Min(0f)] public float boltLightIntensity = 12f;
@@ -84,6 +96,11 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     private Animator animator;
     private static readonly int AimBlendId = Animator.StringToHash("AimBlend");
     private bool hasAimBlendParameter;
+    private static readonly int HaloGestureId = Animator.StringToHash("HaloGesture");
+    private bool hasGestureParameter;
+    private Vector3 supportOffset;
+    private Vector2 fingerSlope;
+    private float thumbClearance;
     public DollSingerInput input;
     public DollSingerView view;
     [SerializeField] private bool networkControlled;
@@ -172,18 +189,24 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     // This is a cosmetic bolt; damage still belongs to the authoritative weapon system.
     public void PlayNetworkShot(Vector3 aimPoint, bool cosmeticFlight = true, uint shotTick = 0)
     {
-        if (revolverEquipped && revolverVisual) revolverVisual.PlayShot();
-        if (visualWeapon == HaloWeapon.Shotgun && shotgunVisual) shotgunVisual.PlayShot();
+        if (revolverEquipped && revolverVisual) revolverVisual.PlayShot(shotTick);
+        if (visualWeapon == HaloWeapon.Shotgun && shotgunVisual) shotgunVisual.PlayShot(shotTick);
         if (visualWeapon == HaloWeapon.Rifle && rifleVisual) rifleVisual.PlayShot(shotTick);
-        if (visualWeapon == HaloWeapon.Sniper && sniperVisual) sniperVisual.PlayShot();
+        if (visualWeapon == HaloWeapon.Sniper && sniperVisual) sniperVisual.PlayShot(shotTick);
         if (cosmeticFlight) FireCosmeticBolt(aimPoint);
     }
 
     private void Awake() {
         animator = GetComponent<Animator>();
+        supportOffset = firstPersonSupportOffset;
+        thumbClearance = firstPersonThumbClearance;
         foreach (var parameter in animator.parameters)
+        {
             if (parameter.nameHash == AimBlendId && parameter.type == AnimatorControllerParameterType.Float)
                 hasAimBlendParameter = true;
+            if (parameter.nameHash == HaloGestureId && parameter.type == AnimatorControllerParameterType.Int)
+                hasGestureParameter = true;
+        }
         if (!input) input = GetComponent<DollSingerInput>();
         var skirtAvoidance = GetComponent<SkirtHandAvoidance>();
         if (skirtAvoidance) skirtAvoidance.haloAim = this;
@@ -224,6 +247,22 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         if (!networkControlled && !input) return;
         if (!thirdPerson) thirdPerson = GetComponent<DollSingerMovement>();
         if (!networkControlled && !playerCamera) FindCamera();
+        // Animator owns finger shapes and their crossfades. Wrist targets follow the
+        // same equipped weapon with a smooth cosmetic transition; neither owns aim.
+        if (hasGestureParameter) animator.SetInteger(HaloGestureId, (int)(visualWeapon == HaloWeapon.None ? HaloWeapon.Rifle : visualWeapon));
+        Vector3 nextSupport = visualWeapon == HaloWeapon.Revolver ? revolverSupportOffset :
+            visualWeapon == HaloWeapon.Shotgun ? shotgunSupportOffset :
+            visualWeapon == HaloWeapon.Sniper ? sniperSupportOffset : firstPersonSupportOffset;
+        supportOffset = Vector3.Lerp(supportOffset, nextSupport,
+            1f - Mathf.Exp(-Time.deltaTime * 3f / Mathf.Max(.01f, gestureTransitionSeconds)));
+        Vector2 nextSlope = visualWeapon == HaloWeapon.Revolver ? revolverFingerSlope :
+            visualWeapon == HaloWeapon.Shotgun ? shotgunFingerSlope :
+            visualWeapon == HaloWeapon.Sniper ? sniperFingerSlope : Vector2.zero;
+        fingerSlope = Vector2.Lerp(fingerSlope, nextSlope,
+            1f - Mathf.Exp(-Time.deltaTime * 3f / Mathf.Max(.01f, gestureTransitionSeconds)));
+        thumbClearance = Mathf.Lerp(thumbClearance,
+            visualWeapon == HaloWeapon.Rifle ? firstPersonThumbClearance : gestureThumbClearance,
+            1f - Mathf.Exp(-Time.deltaTime * 3f / Mathf.Max(.01f, gestureTransitionSeconds)));
 
         bool manualAim = networkControlled ? networkAiming :
             input.AimHeld && !(thirdPerson && thirdPerson.IsFreeLooking);
@@ -321,10 +360,10 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
             ? AvatarIKHint.RightElbow : AvatarIKHint.LeftElbow, 0f);
         animator.SetIKPositionWeight(goal, aimBlend);
         animator.SetIKRotationWeight(goal, 0f);
-        float release = visualWeapon == HaloWeapon.Rifle && rifleVisual ? rifleVisual.ShotRelease : 0;
-        float weight = goal == AvatarIKGoal.RightHand ? 1f : .4f;
+        GetHandResponse(out float release, out float travel, out _, out float supportWeight);
+        float weight = goal == AvatarIKGoal.RightHand ? 1f : supportWeight;
         animator.SetIKPosition(goal, hand.position + transform.up * (elevation * 0.20f) -
-            direction * (release * weight * (rifleVisual ? rifleVisual.wristTravel : 0)));
+            direction * (release * weight * travel));
         return true;
     }
 
@@ -454,16 +493,41 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         // Keep the finger-gun pose: raise its thumb under the fixed sight while the
         // support hand stays lower and separate. The hand transition never drives aim.
         // Solve after torso lean without translating bones.
-        Vector3 supportPosition = desiredWrist + cameraTransform.rotation * firstPersonSupportOffset;
+        Vector3 supportPosition = desiredWrist + cameraTransform.rotation * supportOffset;
         Quaternion supportRotation = leftHand ? correction * leftHand.rotation : Quaternion.identity;
-        if (visualWeapon == HaloWeapon.Rifle && rifleVisual && !rifleVisual.IsReloading)
+        Vector3 thumbAtRest = rightThumbTip ? desiredWrist + correction * (rightThumbTip.position - rightHand.position) : desiredWrist;
+        GetHandResponse(out float release, out float travel, out float angle, out float supportWeight);
+        Vector3 kick = cameraTransform.rotation * new Vector3(0, -.003f, -travel) * release;
+        desiredWrist += kick;
+        supportPosition += kick * supportWeight;
+        wristRotation = Quaternion.AngleAxis(-angle * release, cameraTransform.right) * wristRotation;
+        supportRotation = Quaternion.AngleAxis(-angle * release * supportWeight, cameraTransform.right) * supportRotation;
+        if (visualWeapon != HaloWeapon.Rifle && rightThumbTip)
         {
-            float release = rifleVisual.ShotRelease * (1 + rifleVisual.ShotPressure * .2f);
-            Vector3 kick = cameraTransform.rotation * new Vector3(0, -.003f, -rifleVisual.wristTravel) * release;
-            desiredWrist += kick;
-            supportPosition += kick * .4f;
-            wristRotation = Quaternion.AngleAxis(-rifleVisual.wristAngle * release, cameraTransform.right) * wristRotation;
-            supportRotation = Quaternion.AngleAxis(-rifleVisual.wristAngle * release * .35f, cameraTransform.right) * supportRotation;
+            // Turning the wrist may lift its thumb even while the wrist retreats.
+            // Keep the thumb below its sight reference throughout a single-shot release.
+            Vector3 thumbAtRelease = desiredWrist + wristRotation * Quaternion.Inverse(rightHand.rotation) *
+                (rightThumbTip.position - rightHand.position);
+            desiredWrist -= cameraTransform.up * Mathf.Max(0, Vector3.Dot(thumbAtRelease - thumbAtRest, cameraTransform.up));
+        }
+        if (visualWeapon == HaloWeapon.Revolver && revolverVisual && revolverVisual.IsReloading)
+        {
+            float gesture = Mathf.Sin(revolverVisual.ReloadProgress * Mathf.PI);
+            supportPosition += cameraTransform.rotation * new Vector3(.06f, .045f, .025f) * gesture;
+            supportRotation = Quaternion.AngleAxis(-38f * gesture, cameraTransform.forward) * supportRotation;
+        }
+        if (visualWeapon == HaloWeapon.Shotgun && shotgunVisual && shotgunVisual.IsReloading)
+        {
+            float gesture = Mathf.Sin(shotgunVisual.ReloadProgress * Mathf.PI);
+            supportPosition += cameraTransform.rotation * new Vector3(-.045f, -.018f, .045f) * gesture;
+            supportRotation = Quaternion.AngleAxis(-28f * gesture, cameraTransform.forward) * supportRotation;
+        }
+        if (visualWeapon == HaloWeapon.Sniper && sniperVisual && !sniperVisual.IsReloading)
+        {
+            // The support wrist unlocks below the scope after release, then returns.
+            float cycle = sniperVisual.BoltCycle;
+            supportPosition -= cameraTransform.forward * (.022f * cycle);
+            supportRotation = Quaternion.AngleAxis(-18f * cycle, cameraTransform.forward) * supportRotation;
         }
         if (visualWeapon == HaloWeapon.Rifle && rifleVisual && rifleVisual.IsReloading)
         {
@@ -495,12 +559,40 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         if (!rightHand || !rightIndexTip || !rightThumbTip) return false;
         Vector3 fingerDirection = rightIndexTip.position - rightHand.position;
         if (fingerDirection.sqrMagnitude < 0.000001f) return false;
-        Quaternion correction = Quaternion.FromToRotation(fingerDirection, cameraTransform.forward);
-        Vector3 thumbPosition = haloPosition - cameraTransform.up * firstPersonThumbClearance -
+        Vector3 pointing = cameraTransform.forward + cameraTransform.right * fingerSlope.x + cameraTransform.up * fingerSlope.y;
+        Quaternion correction = Quaternion.FromToRotation(fingerDirection, pointing.normalized);
+        float clearance = thumbClearance;
+        if (view && view.camera)
+            clearance = Mathf.Min(clearance, firstPersonAimDistance *
+                Mathf.Tan(view.camera.fieldOfView * .5f * Mathf.Deg2Rad) *
+                (visualWeapon == HaloWeapon.Rifle ? .10f : thumbScreenGap) * 2f);
+        Vector3 thumbPosition = haloPosition - cameraTransform.up * clearance -
                                cameraTransform.forward * firstPersonThumbDepth;
         wristPosition = thumbPosition - correction * (rightThumbTip.position - rightHand.position);
         wristRotation = correction * rightHand.rotation;
         return true;
+    }
+
+    // All shot response is presentation. Gameplay keeps its stable ShotOrigin and
+    // camera-derived intent, including while switching, charging or turning wrists.
+    private void GetHandResponse(out float release, out float travel, out float angle, out float supportWeight)
+    {
+        release = travel = angle = 0; supportWeight = .4f;
+        switch (visualWeapon)
+        {
+            case HaloWeapon.Rifle when rifleVisual && !rifleVisual.IsReloading:
+                release = rifleVisual.ShotRelease * (1 + rifleVisual.ShotPressure * .2f);
+                travel = rifleVisual.wristTravel; angle = rifleVisual.wristAngle; break;
+            case HaloWeapon.Revolver when revolverVisual && !revolverVisual.IsReloading:
+                release = revolverVisual.ShotRelease; travel = revolverVisual.wristTravel;
+                angle = revolverVisual.wristAngle; supportWeight = 0; break;
+            case HaloWeapon.Shotgun when shotgunVisual && !shotgunVisual.IsReloading:
+                release = shotgunVisual.ShotRelease; travel = shotgunVisual.wristTravel;
+                angle = shotgunVisual.wristAngle; supportWeight = .8f; break;
+            case HaloWeapon.Sniper when sniperVisual && !sniperVisual.IsReloading:
+                release = sniperVisual.ShotRelease; travel = sniperVisual.wristTravel;
+                angle = sniperVisual.wristAngle; supportWeight = .3f; break;
+        }
     }
 
     private static void SolveArm(Transform upper, Transform forearm, Transform hand,
