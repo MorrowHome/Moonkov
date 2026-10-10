@@ -160,31 +160,32 @@ namespace Unity.MP_FPS.MoonAlien.Editor
 
         private sealed class SceneSnapshot
         {
-            private readonly int active = SceneManager.GetActiveScene().handle;
-            private readonly Dictionary<int, bool> dirty = new Dictionary<int, bool>();
-            private readonly Dictionary<int, HashSet<int>> roots = new Dictionary<int, HashSet<int>>();
+            // Preserve engine identity types; Unity 6000.5 removes legacy int conversions.
+            private readonly Scene active = SceneManager.GetActiveScene();
+            private readonly Dictionary<Scene, bool> dirty = new Dictionary<Scene, bool>();
+            private readonly Dictionary<Scene, HashSet<GameObject>> roots = new Dictionary<Scene, HashSet<GameObject>>();
             public SceneSnapshot()
             {
                 for (int i = 0; i < SceneManager.sceneCount; i++)
                 {
-                    Scene scene = SceneManager.GetSceneAt(i); dirty.Add(scene.handle, scene.isDirty);
-                    roots.Add(scene.handle, RootIds(scene));
+                    Scene scene = SceneManager.GetSceneAt(i); dirty.Add(scene, scene.isDirty);
+                    roots.Add(scene, RootObjects(scene));
                 }
             }
             public void RequireUnchanged()
             {
-                Require(SceneManager.sceneCount == dirty.Count && SceneManager.GetActiveScene().handle == active, "Existing scene count/active preserved");
+                Require(SceneManager.sceneCount == dirty.Count && SceneManager.GetActiveScene() == active, "Existing scene count/active preserved");
                 for (int i = 0; i < SceneManager.sceneCount; i++)
                 {
                     Scene scene = SceneManager.GetSceneAt(i);
-                    Require(dirty.ContainsKey(scene.handle) && dirty[scene.handle] == scene.isDirty &&
-                        roots[scene.handle].SetEquals(RootIds(scene)), "Existing scene identity/dirty/root state preserved");
+                    Require(dirty.ContainsKey(scene) && dirty[scene] == scene.isDirty &&
+                        roots[scene].SetEquals(RootObjects(scene)), "Existing scene identity/dirty/root state preserved");
                 }
             }
-            private static HashSet<int> RootIds(Scene scene)
+            private static HashSet<GameObject> RootObjects(Scene scene)
             {
-                var result = new HashSet<int>();
-                if (scene.isLoaded) foreach (var root in scene.GetRootGameObjects()) result.Add(root.GetInstanceID());
+                var result = new HashSet<GameObject>();
+                if (scene.isLoaded) foreach (var root in scene.GetRootGameObjects()) result.Add(root);
                 return result;
             }
         }

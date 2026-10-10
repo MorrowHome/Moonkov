@@ -95,11 +95,11 @@ namespace Unity.MP_FPS.MoonAlien.Editor
                 if (previous.IsValid() && previous.isLoaded) SceneManager.SetActiveScene(previous);
                 Physics.SyncTransforms();
                 Require(SceneManager.sceneCount == priorCount, "Probe checks leaked a scene");
-                Require(SceneManager.GetActiveScene().handle == previous.handle, "Active scene was not restored");
+                Require(SceneManager.GetActiveScene() == previous, "Active scene was not restored");
                 for (int i = 0; i < priorCount; i++)
                 {
                     var preserved = SceneManager.GetSceneAt(i);
-                    Require(preserved.handle == priorScenes[i].handle && preserved.isDirty == priorDirty[i], "Existing scene identity/dirty state changed");
+                    Require(preserved == priorScenes[i] && preserved.isDirty == priorDirty[i], "Existing scene identity/dirty state changed");
                     var roots = preserved.isLoaded ? preserved.GetRootGameObjects() : Array.Empty<GameObject>();
                     Require(roots.Length == priorRoots[i].Length, "Existing root count changed");
                     foreach (var oldRoot in priorRoots[i]) Require(Array.IndexOf(roots, oldRoot) >= 0, "Existing root changed");

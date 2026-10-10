@@ -767,7 +767,7 @@ namespace Unity.MP_FPS.MoonAlien.Editor
                 if (previous.IsValid() && previous.isLoaded) SceneManager.SetActiveScene(previous);
                 Physics.SyncTransforms();
                 Require(SceneManager.sceneCount == sceneCount &&
-                    SceneManager.GetActiveScene().handle == previous.handle && previous.isDirty == previousDirty,
+                    SceneManager.GetActiveScene() == previous && previous.isDirty == previousDirty,
                     "Physics sensor checks restore the scene and dirty-state snapshot");
             }
         }

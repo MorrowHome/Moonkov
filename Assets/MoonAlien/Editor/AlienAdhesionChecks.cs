@@ -62,7 +62,7 @@ namespace Unity.MP_FPS.MoonAlien.Editor
                 if (scene.IsValid() && scene.isLoaded) EditorSceneManager.CloseScene(scene, true);
                 if (previous.IsValid() && previous.isLoaded) SceneManager.SetActiveScene(previous);
                 Physics.SyncTransforms();
-                Require(SceneManager.sceneCount == count && SceneManager.GetActiveScene().handle == previous.handle, "Check scene cleanup");
+                Require(SceneManager.sceneCount == count && SceneManager.GetActiveScene() == previous, "Check scene cleanup");
             }
         }
         private static void Cube(Transform parent, string label, Vector3 position, Vector3 scale)
