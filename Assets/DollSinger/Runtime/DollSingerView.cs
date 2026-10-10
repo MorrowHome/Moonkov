@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
+using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 
 namespace Unity.MP_FPS.DollSinger
@@ -88,6 +89,8 @@ public class DollSingerView : MonoBehaviour
     private bool networkLookDriven;
     private Quaternion networkLookRotation;
     private Vector3 lastRenderedLeanOffset;
+    private readonly DollSingerCameraCollision cameraCollision = new DollSingerCameraCollision();
+    private int cameraCollisionLayers;
 
     private const string HairMaterialName = "Hair";
     // "Hair" is the scalp/bangs/side-hair submesh only. The twin-tails are skinned to the
@@ -118,6 +121,7 @@ public class DollSingerView : MonoBehaviour
 
     private void OnEnable()
     {
+        cameraCollisionLayers = ~LayerMask.GetMask("ServerPlayer");
         RenderPipelineManager.beginCameraRendering += BeginCameraRendering;
         RenderPipelineManager.endCameraRendering += EndCameraRendering;
         Camera.onPreCull += BeforeBuiltinCamera;
@@ -309,7 +313,22 @@ public class DollSingerView : MonoBehaviour
         SetFirstPersonPresentation(viewBlend > 0.5f);
         SyncShadowBlendShapes();
         ApplyLean();
+        ConstrainThirdPersonCamera();
         lastRenderedLeanOffset = firstPerson ? movement.LeanOffset * viewBlend : Vector3.zero;
+    }
+
+    private void ConstrainThirdPersonCamera()
+    {
+        // First-person eye/lean behavior is unchanged. During a transition constrain the
+        // final blended pose, after roll, so interpolation cannot put it through terrain.
+        if (viewBlend >= 1f) return;
+        Vector3 up = player.transform.up;
+        Vector3 eye = GetFirstPersonEyePosition();
+        float height = Mathf.Max(0.5f, Vector3.Dot(eye - player.transform.position, up));
+        Vector3 anchor = player.transform.position + up * height;
+        anchor = Vector3.Lerp(anchor, eye, viewBlend);
+        camera.transform.position = cameraCollision.Constrain(player.scene.GetPhysicsScene(),
+            anchor, camera.transform.position, camera, player.transform, cameraCollisionLayers);
     }
 
     /// <summary>
@@ -614,6 +633,7 @@ public class DollSingerView : MonoBehaviour
 
     private void OnDisable()
     {
+        cameraCollision.Dispose();
         RenderPipelineManager.beginCameraRendering -= BeginCameraRendering;
         RenderPipelineManager.endCameraRendering -= EndCameraRendering;
         Camera.onPreCull -= BeforeBuiltinCamera;
@@ -635,3 +655,4 @@ public class DollSingerView : MonoBehaviour
 }
 
 }
+
