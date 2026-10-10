@@ -9,6 +9,23 @@ Shader "MoonEnvironment/LunarRock"
         [Toggle(_MOON_LUNAR_LIGHTING)] _LunarLighting("Lunar diffuse lighting", Float) = 1
         _LunarWeight("Lommel-Seeliger weight", Range(0,1)) = 0.55
         _IndirectStrength("Indirect light contribution", Range(0,1)) = 0
+        _ReflectanceScale("Reflectance calibration (exposure independent)", Range(0.1,1.5)) = 0.8
+        _LocalBounceStrength("Local terrain bounce", Range(0,2)) = 1
+        _BounceAlbedo("Average source terrain reflectance", Range(0,0.3)) = 0.12
+        _MacroContrast("Landscape material contrast", Range(0,1)) = 0.8
+        _MaterialFadeStart("Preserve near material contrast to (m)", Float) = 35
+        _MaterialFadeEnd("Distant material blend complete (m)", Float) = 180
+        _DistantVariation("Distant macro contrast fraction", Range(0,1)) = 0.12
+        _FaciesStrength("Powder / exposed rock separation", Range(0,1)) = 0.85
+        _DustTint("Fine powder tint", Color) = (1.06,1.03,0.98,1)
+        _BasaltTint("Exposed rock tint", Color) = (0.64,0.67,0.71,1)
+        [HideInInspector] _ImpactGeology("Generated rim / rubble / basin", 2D) = "black" {}
+        [HideInInspector] _ImpactReady("Generated geology enabled", Float) = 0
+        [HideInInspector] _ProceduralRock("Vertex-authored rock variation", Float) = 0
+        [HideInInspector] _LocalTerrainGeometry("Runtime terrain geometry", 2D) = "black" {}
+        [HideInInspector] _LocalTerrainRect("Runtime terrain bounds", Vector) = (0,0,1,1)
+        [HideInInspector] _LocalTerrainReady("Runtime terrain ready", Float) = 0
+        [HideInInspector] _FragmentMode("Small fragment distance fade", Float) = 0
         [Toggle] _PhaseEnabled("Phase / opposition reflectance", Float) = 1
         _PhaseSlope("Broad phase falloff per radian", Range(0,1)) = 0.12
         _ShadowHidingAmplitude("Shadow hiding peak amplitude", Range(0,1)) = 0.15
@@ -38,6 +55,12 @@ Shader "MoonEnvironment/LunarRock"
         void surf(Input IN,inout SurfaceOutputStandard o)
         {
             float3 diffuse=tex2D(_MainTex,IN.uv_MainTex).rgb;
+            if (_ProceduralRock>.5)
+            {
+                float3 w=pow(abs(IN.worldNormal),4);w/=max(dot(w,float3(1,1,1)),.001);
+                diffuse=tex2D(_MainTex,IN.worldPos.zy/.7).rgb*w.x
+                    +tex2D(_MainTex,IN.worldPos.xz/.7).rgb*w.y+tex2D(_MainTex,IN.worldPos.xy/.7).rgb*w.z;
+            }
             float gray=dot(diffuse,float3(0.2126,0.7152,0.0722));
             float4 plane=_GroundPlane;
             float height=dot(plane.xyz,IN.worldPos)+plane.w;
@@ -45,20 +68,31 @@ Shader "MoonEnvironment/LunarRock"
             float dust=1-smoothstep(0,max(blendHeight,0.001),height);
             float variation=_RockVariation;
             float freshness=_RockFreshness;
+            if (_ProceduralRock>.5)
+            {
+                variation=IN.rockData.r;
+                freshness=IN.rockData.g;
+                dust=IN.rockData.b;
+            }
             float2 uv=IN.worldPos.xz/3.1,dx=ddx(uv),dy=ddy(uv);
             float3 ground=0;
             UNITY_BRANCH if(dust>0.001)
             {
                 float2 a,b,c;float3 w;MoonLattice(uv,a,b,c,w);
                 float groundGray=dot(float3(MoonGrainGray(_GroundTex,uv,dx,dy,a),MoonGrainGray(_GroundTex,uv,dx,dy,b),MoonGrainGray(_GroundTex,uv,dx,dy,c)),w);
-                float groundTint=MoonMacro(IN.worldPos.xz)*MoonGeologyTint(MoonGeology(IN.worldPos.xz));
+                float groundTint=MoonMacro(IN.worldPos)*MoonGeologyTint(MoonGeology(IN.worldPos.xz),MoonMaterialNearWeight(IN.worldPos));
                 ground=_GroundColor.rgb*lerp(0.38,groundGray,0.65)*groundTint;
             }
             // A thin dust coat joins the surface without hiding the rock silhouette.
             float3 scan=lerp(gray.xxx,diffuse,_ScanColorWeight);
             float3 tint=lerp(_WeatheredRockTint.rgb,_FreshRockTint.rgb,saturate(freshness));
+            // Large scanned rocks retain their authored UVs, but no longer all
+            // share one shade. Changes follow world position and surface exposure.
+            tint*=lerp(.72,1.12,MoonNoise(IN.worldPos.xz/2.7));
+            tint*=lerp(float3(.83,.86,.91),float3(1.02,1,.96),saturate(IN.worldNormal.y));
             o.Albedo=lerp(scan*_Color.rgb*tint*variation,ground,dust*0.85);
             o.Albedo*=1-0.10*(1-smoothstep(0,0.018,height));
+            o.Albedo*=_ReflectanceScale;
             float3 normal=UnpackNormal(tex2D(_BumpMap,IN.uv_MainTex));
             normal.xy*=1-dust*0.3;o.Normal=normalize(normal);
             o.Metallic=0;
@@ -67,11 +101,14 @@ Shader "MoonEnvironment/LunarRock"
 
 SurfaceOutputStandard MoonSurface(MoonVaryings input, out half3 normalWS, out half3 viewWS)
 {
+    MoonFragmentFade(input.positionWS);
     half3 n = normalize(input.normalWS), t = normalize(input.tangentWS.xyz);
     half3 b = cross(n,t) * input.tangentWS.w;
     viewWS = GetWorldSpaceNormalizeViewDir(input.positionWS);
     Input data;
     data.worldPos = input.positionWS;
+    data.worldNormal = n;
+    data.rockData = input.rockData;
     data.viewDir = float3(dot(viewWS,t),dot(viewWS,b),dot(viewWS,n));
     data.uv_MainTex = input.uv * _MainTex_ST.xy + _MainTex_ST.zw;
     data.uv_TerrainHolesTexture = input.uv;
@@ -100,7 +137,8 @@ half4 MoonFragment(MoonVaryings input) : SV_Target
     return UniversalFragmentPBR(inputData,pbr);
 #else
     Light mainLight=MoonMainLight(input);
-    half3 color=MoonLight(surface,normal,view,mainLight) + surface.Albedo * inputData.bakedGI;
+    half3 color=MoonLight(surface,normal,view,mainLight) + surface.Albedo *
+        (inputData.bakedGI + MoonLocalBounce(input.positionWS,normal,mainLight));
     #if defined(_ADDITIONAL_LIGHTS)
     uint lightCount=GetAdditionalLightsCount();
     #if USE_CLUSTER_LIGHT_LOOP

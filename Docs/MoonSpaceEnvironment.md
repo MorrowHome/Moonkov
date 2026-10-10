@@ -1,5 +1,7 @@
 # 月球太空环境
 
+> 2026-10-09 更新：正式地图已启用统一曝光、白昼隐藏星空、近场局部反射与平均月球轨道时间。当前参数、近似范围和交接说明见 [月球环境真实感配置](MoonRealism.md)。下文记录此前的太空天空接入基线；其中日照星光、Bloom、夜间填充和固定星图设置已被新预设替代，历史验证记录不代表本轮改动已验证。
+
 正式联机地图 `Assets/MoonEnvironment/Scenes/MoonGameScene.unity` 已接入 `LunarSpaceSky.mat`。从 MainMenu 启动 Host / Client 即可看到；无需给角色增加相机或天空对象。MoonDemo 仍保留原来的光照对比设置。
 
 ## 当前效果

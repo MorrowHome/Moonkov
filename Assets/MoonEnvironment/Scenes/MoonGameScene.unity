@@ -152,7 +152,19 @@ MonoBehaviour:
   sun: {fileID: 1069018252372146075}
   pipeline: {fileID: 11400000, guid: 2200b3694cbdeb34992b95067fe22db7, type: 2}
   spaceSkybox: {fileID: 2100000, guid: f5a2a3631ecd0a64a83105dacd40f43d, type: 2}
-  nightAmbient: {r: 0.012, g: 0.015, b: 0.02, a: 1}
+  nightAmbient: {r: 0, g: 0, b: 0, a: 1}
+  clockMode: 1
+  epochUtc: 2026-10-18T00:00:00Z
+  latitude: -13.7855
+  longitude: 25.164
+  astronomicalTimeScale: 1
+  adaptExposure: 1
+  maximumExposureEV: 4
+  darkAdaptationSeconds: 8
+  brightAdaptationSeconds: 0.6
+  exposureOccluders:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!114 &237632587
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -37,9 +37,9 @@ Material:
     - _EarthBrightness: 1.2
     - _EarthDiameter: 1.9
     - _EarthRotation: 30
-    - _StarIntensity: 0.4
+    - _StarIntensity: 0.025
     - _StarRotation: 0
-    - _StarsDayVisibility: 0.65
+    - _StarsDayVisibility: 0
     - _SunDiameter: 0.533
     - _SunVisible: 1
     m_Colors:

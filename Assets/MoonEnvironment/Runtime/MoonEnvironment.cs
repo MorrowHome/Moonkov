@@ -13,6 +13,9 @@ namespace Unity.MP_FPS.Moon
         [SerializeField] private Material[] rockMaterials;
         [SerializeField] private Light sun;
         [SerializeField] private Transform spawnPoint;
+        [Header("Runtime near-field geology")]
+        [SerializeField] private MoonSurfaceDetailSettings surfaceDetail = new();
+        private MoonSurfaceDetail surface;
 
         private TerrainData sourceTerrainData;
         private TerrainData runtimeTerrainData;
@@ -81,7 +84,24 @@ namespace Unity.MP_FPS.Moon
             }
             LunarLighting = regolith.IsKeywordEnabled("_MOON_LUNAR_LIGHTING");
             SunElevation = sun.transform.eulerAngles.x;
+            if (surfaceDetail != null && surfaceDetail.enabled)
+            {
+                Terrain near = detailRoot.GetComponentInChildren<Terrain>(true);
+                if (near && near != surroundingTerrain)
+                {
+                    Material rock = rockMaterials.Length > 0 && rockMaterials[0]
+                        ? runtimeMaterials[rockMaterials[0]] : null;
+                    surface = new MoonSurfaceDetail(near, detailRoot.transform, rock, surfaceDetail, spawnPoint.position);
+                    if (SystemInfo.graphicsDeviceType != GraphicsDeviceType.Null)
+                        surface.BindGeometry(runtimeMaterials.Values);
+                }
+            }
             initialized = true;
+        }
+
+        private void LateUpdate()
+        {
+            if (initialized && Detailed) surface?.Tick();
         }
 
         private void CloneMaterial(Material source)
@@ -96,6 +116,11 @@ namespace Unity.MP_FPS.Moon
             runtimeTerrainData.SetHoles(0, 0, value ? authoredHoles : completeHoles);
             detailRoot.SetActive(value);
             runtimeMaterials[regolith].SetFloat("_DetailStrength", value ? 1 : 0);
+            foreach (Material material in runtimeMaterials.Values)
+            {
+                material.SetFloat("_LocalTerrainReady", value && surface != null ? 1 : 0);
+                material.SetFloat("_ImpactReady", value && surface != null ? 1 : 0);
+            }
             Detailed = value;
             Physics.SyncTransforms();
         }
@@ -121,6 +146,8 @@ namespace Unity.MP_FPS.Moon
         private void OnDestroy()
         {
             if (!initialized) return;
+            surface?.Dispose();
+            surface = null;
             if (surroundingTerrain)
             {
                 surroundingTerrain.terrainData = sourceTerrainData;

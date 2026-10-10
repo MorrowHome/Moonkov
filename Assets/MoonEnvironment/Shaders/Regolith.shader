@@ -13,6 +13,25 @@ Shader "MoonEnvironment/Regolith"
         [Toggle(_MOON_LUNAR_LIGHTING)] _LunarLighting("Lunar diffuse lighting", Float) = 1
         _LunarWeight("Lommel-Seeliger weight", Range(0,1)) = 0.55
         _IndirectStrength("Indirect light contribution", Range(0,1)) = 0
+        _ReflectanceScale("Reflectance calibration (exposure independent)", Range(0.1,1.5)) = 0.8
+        _LocalBounceStrength("Local terrain bounce", Range(0,2)) = 1
+        _BounceAlbedo("Average source terrain reflectance", Range(0,0.3)) = 0.12
+        _GrainNormalStrength("Grain normal strength", Range(0,1.5)) = 0.55
+        _FineNormalStrength("Fine normal strength", Range(0,1)) = 0.18
+        _ParallaxMetres("Near grain relief in metres", Range(0,0.025)) = 0.008
+        _MacroContrast("Landscape material contrast", Range(0,1)) = 0.8
+        _MaterialFadeStart("Preserve near material contrast to (m)", Float) = 35
+        _MaterialFadeEnd("Distant material blend complete (m)", Float) = 180
+        _DistantVariation("Distant macro contrast fraction", Range(0,1)) = 0.12
+        _FaciesStrength("Powder / exposed rock separation", Range(0,1)) = 0.85
+        _BedrockStrength("Metre-scale fractured surface", Range(0,1)) = 0.7
+        _DustTint("Fine powder tint", Color) = (1.06,1.03,0.98,1)
+        _BasaltTint("Exposed rock tint", Color) = (0.64,0.67,0.71,1)
+        [HideInInspector] _ImpactGeology("Generated rim / rubble / basin", 2D) = "black" {}
+        [HideInInspector] _ImpactReady("Generated geology enabled", Float) = 0
+        [HideInInspector] _LocalTerrainGeometry("Runtime terrain geometry", 2D) = "black" {}
+        [HideInInspector] _LocalTerrainRect("Runtime terrain bounds", Vector) = (0,0,1,1)
+        [HideInInspector] _LocalTerrainReady("Runtime terrain ready", Float) = 0
         [Toggle] _PhaseEnabled("Phase / opposition reflectance", Float) = 1
         _PhaseSlope("Broad phase falloff per radian", Range(0,1)) = 0.12
         _ShadowHidingAmplitude("Shadow hiding peak amplitude", Range(0,1)) = 0.25
@@ -54,7 +73,7 @@ Shader "MoonEnvironment/Regolith"
             clip(tex2D(_TerrainHolesTexture, IN.uv_TerrainHolesTexture).r - 0.5);
             float distanceToCamera=distance(_WorldSpaceCameraPos,IN.worldPos);
             float2 uv = IN.worldPos.xz / 3.1;
-            float parallax=0.012*_DetailStrength*saturate(1-distanceToCamera/22);
+            float parallax=_ParallaxMetres*_DetailStrength*saturate(1-distanceToCamera/22);
             float2 a,b,c;float3 w;MoonLattice(uv,a,b,c,w);
             float ga,gb,gc,ra,rb,rc;float3 na,nb,nc;
             SampleGrain(uv,ddx(uv),ddy(uv),a,parallax,IN.viewDir,ga,na,ra);
@@ -75,12 +94,24 @@ Shader "MoonEnvironment/Regolith"
                 microNormal=normalize(na*w.x+nb*w.y+nc*w.z);
             }
             float3 geology=MoonGeology(IN.worldPos.xz);
-            float macro=MoonMacro(IN.worldPos.xz)*MoonGeologyTint(geology);
+            float rock;
+            float materialNear=MoonMaterialNearWeight(IN.worldPos);
+            float3 facies=MoonFacies(IN.worldPos,1-saturate(IN.worldNormal.y),geology,rock);
+            float macro=MoonMacro(IN.worldPos)*MoonGeologyTint(geology,materialNear);
             o.Albedo=_Color.rgb*lerp(0.45,lerp(0.38,gray,0.65)*lerp(1,microGray*2,0.18*fineFade)*macro,_DetailStrength);
+            o.Albedo*=_ReflectanceScale*facies;
+            // Exposed zones use a separate metre-scale sample. Broad rock plates
+            // coexist with fine powder instead of the same grain everywhere.
+            float2 bedUV=IN.worldPos.xz/1.15;
+            float bed=MoonGray(tex2D(_MainTex,bedUV).rgb);
+            float3 bedNormal=UnpackNormal(tex2D(_BumpMap,bedUV));
+            float bedWeight=rock*_BedrockStrength*_DetailStrength;
+            o.Albedo*=lerp(1,lerp(.65,1.25,smoothstep(.22,.7,bed)),bedWeight*lerp(.15,1,materialNear));
             // Let normal-map mip filtering reduce unresolved detail; avoid an
             // additional distance-based flattening of the distant landscape.
-            normal.xy*=0.75;
-            normal.xy+=microNormal.xy*0.24*fineFade;
+            normal.xy*=_GrainNormalStrength;
+            normal.xy+=microNormal.xy*_FineNormalStrength*fineFade;
+            normal.xy=lerp(normal.xy,bedNormal.xy*1.2,bedWeight);
             normal.xy*=1-geology.b*0.18;
             o.Normal=normalize(lerp(float3(0,0,1),normal,_DetailStrength));
             o.Metallic = 0;
@@ -95,6 +126,8 @@ SurfaceOutputStandard MoonSurface(MoonVaryings input, out half3 normalWS, out ha
     viewWS = GetWorldSpaceNormalizeViewDir(input.positionWS);
     Input data;
     data.worldPos = input.positionWS;
+    data.worldNormal = n;
+    data.rockData = input.rockData;
     data.viewDir = float3(dot(viewWS,t),dot(viewWS,b),dot(viewWS,n));
     data.uv_MainTex = input.uv * _MainTex_ST.xy + _MainTex_ST.zw;
     data.uv_TerrainHolesTexture = input.uv;
@@ -123,7 +156,8 @@ half4 MoonFragment(MoonVaryings input) : SV_Target
     return UniversalFragmentPBR(inputData,pbr);
 #else
     Light mainLight=MoonMainLight(input);
-    half3 color=MoonLight(surface,normal,view,mainLight) + surface.Albedo * inputData.bakedGI;
+    half3 color=MoonLight(surface,normal,view,mainLight) + surface.Albedo *
+        (inputData.bakedGI + MoonLocalBounce(input.positionWS,normal,mainLight));
     #if defined(_ADDITIONAL_LIGHTS)
     uint lightCount=GetAdditionalLightsCount();
     #if USE_CLUSTER_LIGHT_LOOP

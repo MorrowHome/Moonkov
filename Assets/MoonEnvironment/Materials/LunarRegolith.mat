@@ -62,9 +62,21 @@ Material:
     - _CoherentAmplitude: 0.08
     - _CoherentWidth: 3
     - _DetailStrength: 1
-    - _EjectaBrightness: 0.16
-    - _GeologyStrength: 0.65
+    - _EjectaBrightness: 0.35
+    - _GeologyStrength: 0.9
+    - _MacroContrast: 0.8
+    - _MaterialFadeStart: 35
+    - _MaterialFadeEnd: 180
+    - _DistantVariation: 0.12
+    - _FaciesStrength: 0.85
+    - _BedrockStrength: 0.7
     - _IndirectStrength: 0
+    - _ReflectanceScale: 0.8
+    - _LocalBounceStrength: 1
+    - _BounceAlbedo: 0.12
+    - _GrainNormalStrength: 0.8
+    - _FineNormalStrength: 0.24
+    - _ParallaxMetres: 0.012
     - _LunarLighting: 1
     - _LunarWeight: 0.55
     - _PhaseEnabled: 1
@@ -73,6 +85,8 @@ Material:
     - _ShadowHidingWidth: 12
     m_Colors:
     - _Color: {r: 0.65, g: 0.65, b: 0.65, a: 1}
+    - _DustTint: {r: 1.06, g: 1.03, b: 0.98, a: 1}
+    - _BasaltTint: {r: 0.64, g: 0.67, b: 0.71, a: 1}
     - _GeologyRect: {r: 1792, g: 1792, b: 512, a: 512}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

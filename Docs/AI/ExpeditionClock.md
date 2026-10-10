@@ -5,6 +5,12 @@
 the server loads the map and continues across individual player deaths/extractions
 and redeployments. A new map/server session starts from the configured hour.
 This is an accelerated gameplay day, not an astronomical lunar rotation simulation.
+The clock remains unchanged by the 2026-10-09 environment update. Its hours now
+feed a selectable sky model: the shipped MoonGameScene uses MeanLunarOrbit,
+with one astronomical Earth hour per game hour and an approximately 29.53-day
+solar cycle. HUD hours are game time, not local lunar solar time. See
+[Moon realism configuration](../MoonRealism.md) for the authored UTC epoch,
+time multiplier and approximation limits.
 
 ```mermaid
 flowchart LR
@@ -28,12 +34,14 @@ session. Local client settings do not change the authoritative clock. The raid's
 countdown stays separate, and opening a client's pause menu does not freeze the world.
 
 `ExpeditionClockPresentation` is attached to Moon Scene Lighting in MoonGameScene.
-It uses the existing `MoonSceneLighting` runtime sky material. Sunrise is at 06:00,
-noon at 12:00, sunset at 18:00; the sun follows the scene's original azimuth and retains
-its authored daytime intensity. The existing vacuum sky keeps its black background,
+It uses the existing `MoonSceneLighting` runtime sky material. In the optional
+GameplayDay mode, sunrise is at 06:00, noon at 12:00 and sunset at 18:00. In the
+default MeanLunarOrbit mode these times depend on the authored epoch and location.
+The existing vacuum sky keeps its black background,
 solar disk, stars and changing Earth phase. There is no atmospheric sky or fog.
-Night Ambient is a faint adjustable gameplay fill; set it to black for complete lunar
-darkness. Dynamic sun state and render settings are restored when lighting is disabled.
+Night Ambient is an optional gameplay fill, now black by default. Camera exposure
+adapts independently on each rendering client. Dynamic sun state and render settings
+are restored when lighting is disabled.
 Headless servers simulate the clock without rendering it.
 
 The HUD time follows the existing status panel visibility (hold H or enable Always Show
@@ -41,6 +49,8 @@ HUD). Both Host and client executables must be rebuilt together because a clock 
 has been added to the network protocol.
 
 Validation uses an isolated session-only Host with its actual client RPC receiver:
+The following results predate the 2026-10-09 rendering changes, which were not tested
+at the user's request.
 clock delivery/agreement, rate continuity, pause/resume, initial-connection sync path,
 server-session replacement with a lower sequence, stale/wrong-source rejection, noon
 and midnight sky/light state, and sun restoration passed. Clock math also covers midnight,

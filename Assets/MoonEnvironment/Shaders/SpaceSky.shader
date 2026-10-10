@@ -4,7 +4,11 @@ Shader "MoonEnvironment/SpaceSky"
     {
         _StarMap("NASA celestial star map (linear HDR)", 2D) = "black" {}
         _StarIntensity("Star map exposure", Range(0, 8)) = 1.2
-        _StarsDayVisibility("Day star visibility (0 = photographic exposure)", Range(0, 1)) = 0.65
+        _StarsDayVisibility("Day star visibility (0 = photographic exposure)", Range(0, 1)) = 0
+        [HideInInspector] _AstronomicalSky("Mean orbit sky", Float) = 0
+        [HideInInspector] _SkyEast("Equatorial east", Vector) = (1,0,0,0)
+        [HideInInspector] _SkyUp("Equatorial up", Vector) = (0,0,1,0)
+        [HideInInspector] _SkyNorth("Equatorial north", Vector) = (0,1,0,0)
         _StarRotation("Star map yaw (degrees)", Range(0, 360)) = 0
         _EarthMap("NASA Blue Marble", 2D) = "white" {}
         _EarthDirection("Earth direction in world space", Vector) = (-0.426, 0.878, 0.215, 0)
@@ -35,6 +39,8 @@ Shader "MoonEnvironment/SpaceSky"
                 float _StarIntensity, _StarsDayVisibility, _StarRotation;
                 float _EarthDiameter, _EarthRotation, _EarthBrightness;
                 float _SunDiameter, _SunVisible, _Daylight;
+                float _AstronomicalSky;
+                float4 _SkyEast, _SkyUp, _SkyNorth;
             CBUFFER_END
             struct Attributes { float4 positionOS : POSITION; UNITY_VERTEX_INPUT_INSTANCE_ID };
             struct Varyings { float4 positionCS : SV_POSITION; float3 direction : TEXCOORD0; UNITY_VERTEX_OUTPUT_STEREO };
@@ -57,7 +63,11 @@ Shader "MoonEnvironment/SpaceSky"
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
                 float3 ray = normalize(input.direction);
                 float3 sun = normalize(_SunDirection.xyz);
-                float2 starUV = SphericalUV(ray);
+                float3 equatorial = ray.x*_SkyEast.xyz + ray.y*_SkyUp.xyz + ray.z*_SkyNorth.xyz;
+                // NASA's equirectangular map uses RA horizontally and declination vertically.
+                float2 starUV = _AstronomicalSky > .5
+                    ? float2(.5 + atan2(equatorial.y,equatorial.x)/TWO_PI, .5 + asin(clamp(equatorial.z,-1,1))/PI)
+                    : SphericalUV(ray);
                 starUV.x += _StarRotation / 360;
                 float3 color = SAMPLE_TEXTURE2D(_StarMap, sampler_StarMap, starUV).rgb
                     * _StarIntensity * lerp(1, _StarsDayVisibility, saturate(_Daylight));
@@ -86,7 +96,13 @@ Shader "MoonEnvironment/SpaceSky"
                         float front = sqrt(saturate(1 - dot(disk, disk)));
                         float3 normal = normalize(disk.x * right + disk.y * up - front * earth);
                         float2 earthUV = SphericalUV(normalize(float3(disk.x, disk.y, front)));
-                        earthUV.x += _EarthRotation / 360;
+                        if (_AstronomicalSky > .5)
+                        {
+                            float3 eqNormal = normal.x*_SkyEast.xyz + normal.y*_SkyUp.xyz + normal.z*_SkyNorth.xyz;
+                            earthUV = float2(.5 + atan2(eqNormal.y,eqNormal.x)/TWO_PI - _EarthRotation/360,
+                                .5 + asin(clamp(eqNormal.z,-1,1))/PI);
+                        }
+                        else earthUV.x += _EarthRotation / 360;
                         float3 albedo = SAMPLE_TEXTURE2D(_EarthMap, sampler_EarthMap, earthUV).rgb;
                         float illumination = saturate(dot(normal, sun));
                         float3 earthColor = albedo * illumination * _EarthBrightness;
