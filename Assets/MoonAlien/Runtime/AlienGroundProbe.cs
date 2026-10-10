@@ -11,14 +11,21 @@ namespace Unity.MP_FPS.MoonAlien
         [SerializeField] private LayerMask m_Mask = ~0;
         [SerializeField, Range(0f, 70f)] private float m_MaxSlope = 50f;
         private readonly RaycastHit[] m_Hits = new RaycastHit[32];
+        private readonly Collider[] m_Overlaps = new Collider[32];
         public void Configure(Transform terrain) => m_Terrain = terrain;
 
         public bool Ground(Vector3 near, out RaycastHit hit, float rise = 1.2f, float drop = 2.4f)
+            => Surface(near, Vector3.up, out hit, rise, drop, m_MaxSlope);
+
+        public bool Surface(Vector3 near, Vector3 up, out RaycastHit hit, float rise = 1.2f,
+            float drop = 2.4f, float maxAngle = 55f)
         {
             hit = default;
+            up = up.normalized;
+            if (up.sqrMagnitude < .5f) return false;
             if (!m_Terrain || !gameObject.scene.GetPhysicsScene().IsValid()) return false;
-            int count = gameObject.scene.GetPhysicsScene().Raycast(near + Vector3.up * rise,
-                Vector3.down, m_Hits, rise + drop, m_Mask, QueryTriggerInteraction.Ignore);
+            int count = gameObject.scene.GetPhysicsScene().Raycast(near + up * rise,
+                -up, m_Hits, rise + drop, m_Mask, QueryTriggerInteraction.Ignore);
             if (count == m_Hits.Length) return false;
             float nearest = float.PositiveInfinity;
             bool found = false;
@@ -31,7 +38,18 @@ namespace Unity.MP_FPS.MoonAlien
                 found = true;
             }
             // Reject steep nearest surfaces, never see through them to walkable ground below.
-            return found && Vector3.Dot(hit.normal, Vector3.up) >= Mathf.Cos(m_MaxSlope * Mathf.Deg2Rad);
+            return found && Vector3.Dot(hit.normal, up) >= Mathf.Cos(maxAngle * Mathf.Deg2Rad);
+        }
+
+        public bool Overlaps(Vector3 centre, float radius)
+        {
+            if (!m_Terrain) return true;
+            int count = gameObject.scene.GetPhysicsScene().OverlapSphere(centre, radius,
+                m_Overlaps, m_Mask, QueryTriggerInteraction.Ignore);
+            if (count == m_Overlaps.Length) return true;
+            for (int i = 0; i < count; i++)
+                if (m_Overlaps[i] && m_Overlaps[i].transform.IsChildOf(m_Terrain)) return true;
+            return false;
         }
 
         public bool Obstructed(Vector3 from, Vector3 to, float radius)

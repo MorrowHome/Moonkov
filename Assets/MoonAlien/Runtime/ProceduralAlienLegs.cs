@@ -10,7 +10,7 @@ namespace Unity.MP_FPS.MoonAlien
         {
             public Transform Upper, Lower, Toe;
             public Vector3 Hip, RestFoot;
-            [System.NonSerialized] public Vector3 Position, From, Target, Normal;
+            [System.NonSerialized] public Vector3 Position, From, Target, Normal, SwingUp;
             [System.NonSerialized] public Collider Support;
             [System.NonSerialized] public float Progress;
             [System.NonSerialized] public bool Planted, Swinging;
@@ -23,7 +23,9 @@ namespace Unity.MP_FPS.MoonAlien
         [SerializeField, Min(.1f)] private float m_LowerLength = 1.05f;
         [SerializeField, Min(.05f)] private float m_StepDistance = .36f;
         [SerializeField, Min(.05f)] private float m_StepHeight = .34f;
-        private Vector3 m_LastPosition, m_Velocity;
+        private Vector3 m_LastPosition, m_Velocity, m_LastForward, m_LastUp;
+        private AlienAdhesionRoute m_Surface;
+        private Vector3 Up => m_Surface ? m_Surface.Up : Vector3.up;
         private float m_LastYaw, m_Duration;
         private bool m_Ready;
         private int m_ActivePair = -1, m_LastPair = 1;
@@ -32,7 +34,7 @@ namespace Unity.MP_FPS.MoonAlien
         public float Speed => m_Velocity.magnitude;
 
         public void Configure(Transform body, AlienGroundProbe ground, Leg[] legs)
-        { m_Body = body; m_Ground = ground; m_Legs = legs; m_Ready = false; }
+        { m_Body = body; m_Ground = ground; m_Legs = legs; m_Surface = GetComponent<AlienAdhesionRoute>(); m_Ready = false; }
 
         private void OnEnable() => m_Ready = false;
         private void OnDisable() => m_Ready = false;
@@ -43,17 +45,19 @@ namespace Unity.MP_FPS.MoonAlien
             foreach (var leg in m_Legs) if (leg == null || !leg.Upper || !leg.Lower || !leg.Toe) return false;
             m_LastPosition = transform.position;
             m_LastYaw = transform.eulerAngles.y;
+            m_LastForward = transform.forward;
+            m_LastUp = Up;
             m_Velocity = Vector3.zero;
             m_ActivePair = -1;
             m_LastPair = 1;
-            m_Body.position = transform.position + Vector3.up * .66f;
+            m_Body.position = transform.position + Up * .66f;
             m_Body.rotation = transform.rotation;
             foreach (var leg in m_Legs)
             {
                 leg.Swinging = false;
-                leg.Planted = m_Ground.Ground(transform.TransformPoint(leg.RestFoot), out var hit);
+                leg.Planted = ProbeFoot(transform.TransformPoint(leg.RestFoot), Up, out var hit);
                 leg.Position = leg.Planted ? hit.point + hit.normal * .035f : transform.TransformPoint(leg.RestFoot);
-                leg.Normal = leg.Planted ? hit.normal : Vector3.up;
+                leg.Normal = leg.Planted ? hit.normal : Up;
                 leg.Support = leg.Planted ? hit.collider : null;
             }
             m_Ready = true;
@@ -69,7 +73,12 @@ namespace Unity.MP_FPS.MoonAlien
             // Network teleports/respawns must reset contacts; ordinary fast motion must not.
             if (delta.sqrMagnitude > 9f) { m_Ready = false; Initialize(); return; }
             m_Velocity = Vector3.Lerp(m_Velocity, delta / dt, AlienLegMath.Damping(14f, dt));
-            float yawRate = Mathf.Clamp(Mathf.DeltaAngle(m_LastYaw, transform.eulerAngles.y) / dt, -240f, 240f);
+            float yawDelta = m_Surface ? Vector3.SignedAngle(
+                Quaternion.FromToRotation(m_LastUp, Up) * m_LastForward, transform.forward, Up) :
+                Mathf.DeltaAngle(m_LastYaw, transform.eulerAngles.y);
+            float yawRate = Mathf.Clamp(yawDelta / dt, -240f, 240f);
+            m_LastForward = transform.forward;
+            m_LastUp = Up;
             m_LastPosition = transform.position;
             m_LastYaw = transform.eulerAngles.y;
             UpdateBody(dt);
@@ -94,6 +103,14 @@ namespace Unity.MP_FPS.MoonAlien
 
         private void UpdateBody(float dt)
         {
+            if (m_Surface)
+            {
+                // The adhesion motor validated a sphere enclosing the shell at this exact centre.
+                // Position smoothing here would invalidate that clearance check during corners.
+                m_Body.position = transform.position + Up * AlienAdhesionRoute.BodyOffset;
+                m_Body.rotation = transform.rotation;
+                return;
+            }
             Vector3 normals = Vector3.zero;
             float height = transform.position.y + .66f;
             int count = 0;
@@ -125,12 +142,12 @@ namespace Unity.MP_FPS.MoonAlien
             {
                 if (!leg.Swinging) continue;
                 leg.Progress = Mathf.Min(1f, leg.Progress + dt / m_Duration);
-                leg.Position = AlienLegMath.Swing(leg.From, leg.Target, Vector3.up, leg.Progress, m_StepHeight);
+                leg.Position = AlienLegMath.Swing(leg.From, leg.Target, leg.SwingUp, leg.Progress, m_StepHeight);
                 if (leg.Progress >= 1f)
                 {
                     leg.Swinging = false;
                     // A missing ledge is never accepted as a planted contact.
-                    leg.Planted = m_Ground.Ground(leg.Target, out var hit, .15f, .2f) &&
+                    leg.Planted = ProbeFoot(leg.Target, leg.Normal, out var hit, .15f, .2f) &&
                         (hit.point - leg.Target).sqrMagnitude < .04f;
                     leg.Support = leg.Planted ? hit.collider : null;
                 }
@@ -167,18 +184,26 @@ namespace Unity.MP_FPS.MoonAlien
 
         private bool Destination(Leg leg, float yawRate, out RaycastHit hit)
         {
-            Vector3 rest = Quaternion.AngleAxis(yawRate * m_Duration * .6f, Vector3.up) *
+            Vector3 rest = Quaternion.AngleAxis(yawRate * m_Duration * .6f, Up) *
                 (transform.rotation * leg.RestFoot);
-            Vector3 lead = Vector3.ClampMagnitude(Vector3.ProjectOnPlane(m_Velocity, Vector3.up) * m_Duration * .8f, .8f);
+            Vector3 lead = Vector3.ClampMagnitude(Vector3.ProjectOnPlane(m_Velocity, Up) * m_Duration * .8f, .8f);
             Vector3 target = transform.position + rest + lead;
-            if (!m_Ground.Ground(target, out hit)) return false;
+            if (!ProbeFoot(target, Up, out hit)) return false;
             // Avoid reaching through a floor or down a cliff. The driver stops independently.
-            return Mathf.Abs(hit.point.y - transform.position.y) <= .7f &&
+            return Mathf.Abs(Vector3.Dot(hit.point - transform.position, Up)) <= .7f &&
                 Vector3.Distance(m_Body.TransformPoint(leg.Hip), hit.point) < m_UpperLength + m_LowerLength - .08f;
         }
 
-        private static void StartSwing(Leg leg, RaycastHit hit)
+        private bool ProbeFoot(Vector3 point, Vector3 up, out RaycastHit hit, float rise = 1.2f, float drop = 2.4f)
         {
+            // Preserve the original configured ground slope contract in the foundation scene.
+            return m_Surface ? m_Ground.Surface(point, up, out hit, rise, drop) :
+                m_Ground.Ground(point, out hit, rise, drop);
+        }
+
+        private void StartSwing(Leg leg, RaycastHit hit)
+        {
+            leg.SwingUp = Up;
             leg.From = leg.Position;
             leg.Target = hit.point + hit.normal * .035f;
             leg.Normal = hit.normal;
