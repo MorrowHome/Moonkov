@@ -6,6 +6,8 @@
 
 ## 全量 v02 已接入（当前入口）
 
+后续灯光性能回归已执行自动 Play 修复和总开关复核，新的配置、实测和验证边界见 [MC00 灯光性能记录](MC00LightingPerformance.md)。下文“未自动 Play”描述的是最初接入时的验证状态。
+
 2026-10-11：已从用户下载路径取得 `MC00_Game_Light_Controls_Full_v02.blend`，本地大小 **14,435,303 字节**，SHA-256 **e61f2fab253a0801f3ebb7084fbb7163e48bd156c9ce79074825e4e81d5ca5f0**。源文件原样归档于 `SourceData/Models/MC00LightControlsFullV02`；禁用自动执行后台导出，未保存改写原 blend。
 
 完整候选场景：`Assets/MoonEnvironment/Variants/MC00LightControlsFullV02/Scenes/MC00GameExportPreview.unity`。本轮已打开并保存，出生点位于 **L22 操作台附近**。也可用 **Tools → Moon Environment → MC00 Full Lights v02 → Open candidate** 打开。旧正式地图、v07 及早期临时面板保留，未替换正式联网环境。
