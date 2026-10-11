@@ -1,0 +1,68 @@
+
+{
+  "schema": "MC00_final_native_counts_v1",
+  "source_author_sha256": "84d205455009145fa7de73e7b04fb06547dc03d122e23bf3db3aed944697e876",
+  "render_stage_input_sha256": "0ec2f29462020f756f678aae8e35d8cbb00b7557ec51a5d5fef334d9d07eb726",
+  "accepted_geometry_candidate_sha256": "4cf7475fb1b85c41d2a4b24c7dbae45dc437c9e82d4fb12ae7a9ce967b2db56b",
+  "native_version": "4.3.2",
+  "scope": "MC00 only. Counts are Blender native data, not measured Unity Renderers, batches, draw calls or performance.",
+  "render_only": {
+    "all_objects": 9559,
+    "object_type_counts": {
+      "CURVE": 116,
+      "EMPTY": 419,
+      "FONT": 286,
+      "MESH": 8738
+    },
+    "geometry_objects": 9140,
+    "evaluated_triangles_all_geometry": 949110,
+    "default_visible_geometry_objects": 9108,
+    "evaluated_triangles_default_visible_geometry": 948678,
+    "unique_referenced_mesh_datablocks": 7234,
+    "eye_hidden_objects": 0,
+    "render_disabled_objects": 174
+  },
+  "proxy_only": {
+    "all_objects": 277,
+    "object_type_counts": {
+      "MESH": 277
+    },
+    "geometry_objects": 277,
+    "evaluated_triangles_all_geometry": 45728,
+    "default_visible_geometry_objects": 0,
+    "evaluated_triangles_default_visible_geometry": 0,
+    "unique_referenced_mesh_datablocks": 277,
+    "eye_hidden_objects": 277,
+    "render_disabled_objects": 277,
+    "author_source_members": 3252,
+    "collection": "MC00_COLLISION_PROXIES",
+    "collection_viewport_evaluation_enabled": true
+  },
+  "combined": {
+    "all_objects": 9836,
+    "object_type_counts": {
+      "CURVE": 116,
+      "EMPTY": 419,
+      "FONT": 286,
+      "MESH": 9015
+    },
+    "geometry_objects": 9417,
+    "evaluated_triangles_all_geometry": 994838,
+    "default_visible_geometry_objects": 9108,
+    "evaluated_triangles_default_visible_geometry": 948678,
+    "unique_referenced_mesh_datablocks": 7511,
+    "eye_hidden_objects": 277,
+    "render_disabled_objects": 451
+  },
+  "flags": {
+    "proxy_geometry_generated": true,
+    "unity_collider_components_configured": false,
+    "unity_runtime_profiled": false,
+    "LOD_generated": false,
+    "normal_or_detail_bakes_generated": false,
+    "whole_base_collision_complete": false
+  },
+  "historical_render_stage_counts_text": "MC00_RENDER_STAGE_COUNTS.json",
+  "historical_note": "MC00_RENDER_STAGE_COUNTS.json is the verbatim record of the accepted render-only stage before proxy generation; its colliders_generated:false is historical, not the final geometry state.",
+  "counting_note": "Render-only includes retained dormant geometry; the default-visible subset excludes dormant geometry and all eye/render-hidden proxy meshes. Combined triangles are an all-geometry data total, not a render budget. Non-geometry Empty parents/anchors are included only in all_objects/type counts."
+}

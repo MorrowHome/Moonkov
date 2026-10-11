@@ -1,0 +1,45 @@
+
+{
+ "source_sha256": "84d205455009145fa7de73e7b04fb06547dc03d122e23bf3db3aed944697e876",
+ "native_version": "4.3.2",
+ "source_scope_objects": 10151,
+ "source_geometry_objects": 9834,
+ "source_mesh_objects": 9432,
+ "applied_packs": 446,
+ "packed_source_objects": 1140,
+ "source_geometry_reduction": 694,
+ "candidate_type_counts": {
+  "EMPTY": 419,
+  "MESH": 8738,
+  "CURVE": 116,
+  "FONT": 286
+ },
+ "default_visible_type_counts": {
+  "EMPTY": 277,
+  "MESH": 8706,
+  "CURVE": 116,
+  "FONT": 286
+ },
+ "candidate_geometry_objects": 9140,
+ "evaluated_triangles_all": 949110,
+ "evaluated_triangles_default_visible": 948678,
+ "unique_mesh_resources": 7234,
+ "evaluated_reuse_groups": 290,
+ "evaluated_reuse_objects": 1786,
+ "original_empty_roots_preserved": 194,
+ "light_anchors": 118,
+ "organizational_roots_added": 98,
+ "pack_unit_roots_added": 9,
+ "reparented_direct_children": 6497,
+ "dormant_geometry_retained_disabled": 32,
+ "LOD_generated": false,
+ "colliders_generated": false,
+ "normal_or_detail_bakes_generated": false,
+ "unity_runtime_profiled": false,
+ "redundant_single_pack_empty_roots_removed": 373,
+ "shared_complete_pack_resource_groups": 8,
+ "shared_complete_pack_objects": 16,
+ "finite_increment_pack_count": 48,
+ "finite_increment_source_count": 266,
+ "finite_increment_triangle_delta": 0
+}

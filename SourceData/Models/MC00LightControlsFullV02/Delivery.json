@@ -1,0 +1,9 @@
+{
+  "sourceFolder": "SourceData/Models/MC00LightControlsFullV02",
+  "assetFolder": "Assets/MoonEnvironment/Variants/MC00LightControlsFullV02",
+  "sourceSha256": "e61f2fab253a0801f3ebb7084fbb7163e48bd156c9ce79074825e4e81d5ca5f0",
+  "revision": "full_rollout_v02",
+  "lightCount": 118,
+  "switchCount": 135,
+  "controlledLightCount": 118
+}

@@ -1,0 +1,76 @@
+{
+    "schema_version": 2,
+    "asset_id": "MC00",
+    "asset_revision": "local-lighting-trial-1",
+    "example_only": false,
+    "physical_buttons_exist": true,
+    "lights": [
+        {
+            "target_light_id": "SRC_5328cb8663556e3b29dc",
+            "anchor_object": "MC106_Reading_Bar_Actual_Light",
+            "anchor_output_id": "NODE_5328cb8663556e3b29dc",
+            "emissive_resolution_status": "resolved_local_trial",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC106_Lamp_opal_diffuser",
+                    "material_name": "MC106_Reading_Diffuser"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_e6365998da3f1684fc26",
+            "anchor_object": "MC108_Task_Bar_Actual_Light",
+            "anchor_output_id": "NODE_e6365998da3f1684fc26",
+            "emissive_resolution_status": "resolved_local_trial",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC108_Task_Bar_Lens",
+                    "material_name": "MC108_Task_Diffuser"
+                }
+            ]
+        }
+    ],
+    "switches": [
+        {
+            "switch_id": "LOCAL_A",
+            "button_object": "LOCAL_A",
+            "action": "Toggle",
+            "label": "READING",
+            "target_light_ids": [
+                "SRC_5328cb8663556e3b29dc"
+            ]
+        },
+        {
+            "switch_id": "LOCAL_BATCH",
+            "button_object": "LOCAL_BATCH",
+            "action": "Toggle",
+            "label": "BOTH / TOGGLE",
+            "target_light_ids": [
+                "SRC_5328cb8663556e3b29dc",
+                "SRC_e6365998da3f1684fc26"
+            ]
+        },
+        {
+            "switch_id": "LOCAL_ON",
+            "button_object": "LOCAL_ON",
+            "action": "SetOn",
+            "label": "BOTH / ON",
+            "target_light_ids": [
+                "SRC_5328cb8663556e3b29dc",
+                "SRC_e6365998da3f1684fc26"
+            ]
+        },
+        {
+            "switch_id": "LOCAL_OFF",
+            "button_object": "LOCAL_OFF",
+            "action": "SetOff",
+            "label": "BOTH / OFF",
+            "target_light_ids": [
+                "SRC_5328cb8663556e3b29dc",
+                "SRC_e6365998da3f1684fc26"
+            ]
+        }
+    ]
+}

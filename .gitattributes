@@ -64,3 +64,16 @@
 # TextCore font assets embed their atlas textures.
 Assets/Localization/Fonts/Inter.asset filter=lfs diff=lfs merge=lfs -text
 Assets/Localization/Fonts/NotoSansCJKsc.asset filter=lfs diff=lfs merge=lfs -text
+
+# Observed lunar DEM and Unity's binary TerrainData assets.
+*.TIF filter=lfs diff=lfs merge=lfs -text
+Assets/MoonEnvironment/Variants/Apollo12Base/Terrain/*.asset filter=lfs diff=lfs merge=lfs -text
+
+# Unity serializes empty values with trailing spaces. Preserve its generated format.
+*.meta whitespace=-blank-at-eol
+Assets/MoonEnvironment/Variants/**/*.prefab whitespace=-blank-at-eol
+Assets/MoonEnvironment/Variants/**/*.asset whitespace=-blank-at-eol
+Assets/MoonEnvironment/Variants/**/*.mat whitespace=-blank-at-eol
+Assets/MoonEnvironment/Variants/**/*.unity whitespace=-blank-at-eol
+# Preserve the model author's delivered notes and CSV formatting.
+SourceData/Models/**/AuthorNotes/** whitespace=-blank-at-eol,-blank-at-eof

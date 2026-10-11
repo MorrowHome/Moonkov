@@ -1,0 +1,58 @@
+{
+  "product": "NAC_DTM_APOLLO12",
+  "version": "v1.9",
+  "sourcePage": "https://data.lroc.im-ldi.com/lroc/view_rdr/NAC_DTM_APOLLO12",
+  "sourceUrl": "https://pds.lroc.im-ldi.com/data/LRO-L-LROC-5-RDR-V1.0/LROLRC_2001/DATA/SDP/NAC_DTM/APOLLO12/NAC_DTM_APOLLO12.TIF",
+  "sourceFileBytes": 13506631,
+  "sourceSha256": "d19ddf661a8675d1c3faed5e15574a220bb5976ce463034375cfefcde33f3103",
+  "labelSha256": "4e6d8cafe404bd3feda366c9b3b70af37566fb54152b514359bb785e4d3a0457",
+  "sourceRasterSize": [
+    2468,
+    1367
+  ],
+  "sourceWindow": [
+    736,
+    112,
+    1025,
+    1025
+  ],
+  "geoTiffPixelScale": [
+    2.0000000000006,
+    2.0000000000006,
+    0.0
+  ],
+  "geoTiffTiepoint": [
+    0.0,
+    0.0,
+    0.0,
+    4737648.0000014,
+    -89822.000000027,
+    0.0
+  ],
+  "resolution": 1025,
+  "spacingMeters": 2,
+  "sizeMeters": 2048,
+  "nativeSourceSpacingMeters": 2,
+  "verticalExaggeration": 1,
+  "validFraction": 1,
+  "axes": "Unity X east, Z north; TIFF rows flipped",
+  "format": "float32 little endian row-major absolute elevation in metres",
+  "minimumHeight": -1446.8365478515625,
+  "maximumHeight": -1411.593017578125,
+  "verticalOffset": -1455,
+  "terrainHeight": 52,
+  "baseX": 1184.0,
+  "baseZ": 1248.0,
+  "baseElevation": -1424.8668212890625,
+  "baseUnityY": 30.1331787109375,
+  "baseFootprintRelief": 6.024169921875,
+  "gradingHalfX": 165.5,
+  "gradingHalfZ": 169.5,
+  "gradingBlendMeters": 32,
+  "gradingMaxCutMeters": 1.755126953125,
+  "gradingMaxFillMeters": 5.250732421875,
+  "gradingAreaFraction": 0.037513860797144555,
+  "note": "Observed elevations retained separately. Local base grading is authored cut/fill, not measured terrain. No synthetic craters or global flattening.",
+  "apollo12_observedSha256": "f55345d7a02c8ae8f2bcc14ccca333ac1a98bbcbcf90f1270b56fd4c173d55c9",
+  "apollo12_baseSha256": "f0e9968ca03cc3cec847253bfe0270bdaa1e98285182d3149d8b51c09d64e200"
+}

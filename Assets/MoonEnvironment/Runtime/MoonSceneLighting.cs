@@ -11,6 +11,8 @@ namespace Unity.MP_FPS.Moon
         [SerializeField] private RenderPipelineAsset pipeline;
         [SerializeField] private Material spaceSkybox;
         [SerializeField] private Color nightAmbient = Color.black;
+        [Tooltip("Optional low ambient fill for maps without baked indirect lighting. Black preserves the vacuum-lighting preset.")]
+        [SerializeField] private Color ambientFill = Color.black;
         public enum ClockMode { GameplayDay, MeanLunarOrbit }
         [Header("Sky time (existing server clock is the only time source)")]
         [SerializeField] private ClockMode clockMode = ClockMode.MeanLunarOrbit;
@@ -83,8 +85,8 @@ namespace Unity.MP_FPS.Moon
             }
             RenderSettings.skybox = runtimeSkybox;
             RenderSettings.ambientMode = AmbientMode.Flat;
-            RenderSettings.ambientLight = Color.black;
-            RenderSettings.ambientIntensity = 0;
+            RenderSettings.ambientLight = ambientFill;
+            RenderSettings.ambientIntensity = 1;
             RenderSettings.reflectionIntensity = 0;
             RenderSettings.sun = sun;
             RenderSettings.fog = false;
@@ -142,7 +144,7 @@ namespace Unity.MP_FPS.Moon
             sun.intensity = initialSunIntensity * daylight;
             sun.enabled = initialSunEnabled && height > -radius;
             // Optional artistic fill stays explicit; the realism preset uses black.
-            RenderSettings.ambientLight = Color.Lerp(nightAmbient, Color.black, daylight);
+            RenderSettings.ambientLight = ambientFill + Color.Lerp(nightAmbient, Color.black, daylight);
             RenderSettings.ambientIntensity = 1;
             UpdateSky();
         }

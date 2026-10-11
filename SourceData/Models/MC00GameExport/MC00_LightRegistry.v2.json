@@ -1,0 +1,1523 @@
+{
+  "schema_version": 2,
+  "status": "EXISTING_LIGHT_REGISTRY_NO_PLACED_SWITCHES_IN_THIS_PAYLOAD",
+  "source_game_sha256": "8e607a8b6b8a152aea980c0b834cc46c85817210a939d8dae04f170571281f9c",
+  "switches": [],
+  "notes": [
+    "All118 IDs and anchor objects already exist in the delivered game edition.",
+    "112 renderer/material associations independently source-reviewed; six ramp lamps have no separate authored emissive face.",
+    "This registry does not claim Unity registration/material switching complete. New physical switches remain in a private sample and are not included yet."
+  ],
+  "lights": [
+    {
+      "target_light_id": "SRC_5328cb8663556e3b29dc",
+      "anchor_object": "MC106_Reading_Bar_Actual_Light",
+      "anchor_output_id": "NODE_5328cb8663556e3b29dc",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC106_Lamp_opal_diffuser",
+          "material_name": "MC106_Reading_Diffuser"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_e6365998da3f1684fc26",
+      "anchor_object": "MC108_Task_Bar_Actual_Light",
+      "anchor_output_id": "NODE_e6365998da3f1684fc26",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC108_Task_Bar_Lens",
+          "material_name": "MC108_Task_Diffuser"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_4163ef02dd8b938914e7",
+      "anchor_object": "MC95_IO_task_emitter",
+      "anchor_output_id": "NODE_4163ef02dd8b938914e7",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC95_IO_task_bar_diffuser",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_154e70e9f1255200307d",
+      "anchor_object": "MC97_BAY_test_task_bar_emitter",
+      "anchor_output_id": "NODE_154e70e9f1255200307d",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC97_BAY_test_task_bar_captured_diffuser",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_2f56fdafe3f7b0a9aede",
+      "anchor_object": "MC97_RAFT_OPERATIONS_task_emitter",
+      "anchor_output_id": "NODE_2f56fdafe3f7b0a9aede",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC97_RAFT_OPERATIONS_task_captured_diffuser",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_706aa66afbb4e02121e7",
+      "anchor_object": "MC97_RAFT_REPLAY_task_emitter",
+      "anchor_output_id": "NODE_706aa66afbb4e02121e7",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC97_RAFT_REPLAY_task_captured_diffuser",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_80479fd91931e04fd1d6",
+      "anchor_object": "MC_East EVA actual ramp worklight_04207",
+      "anchor_output_id": "NODE_80479fd91931e04fd1d6",
+      "default_on": true,
+      "emissive_targets": [],
+      "emissive_resolution_status": "audited_no_separate_emissive_face",
+      "emissive_resolution_reason": "No separate emissive face exists in the audited aimed-worklight housing/mount-arm family. Housing and arm have only nonemissive materials. The entry collection emission users belong to the separately named collar task light or interlock indicator. This is an observed native absence, not an assertion of design intent."
+    },
+    {
+      "target_light_id": "SRC_20906c5094fa0dcf9416",
+      "anchor_object": "MC_East EVA actual ramp worklight_04210",
+      "anchor_output_id": "NODE_20906c5094fa0dcf9416",
+      "default_on": true,
+      "emissive_targets": [],
+      "emissive_resolution_status": "audited_no_separate_emissive_face",
+      "emissive_resolution_reason": "No separate emissive face exists in the audited aimed-worklight housing/mount-arm family. Housing and arm have only nonemissive materials. The entry collection emission users belong to the separately named collar task light or interlock indicator. This is an observed native absence, not an assertion of design intent."
+    },
+    {
+      "target_light_id": "SRC_ccf4474ef1e825e8fcec",
+      "anchor_object": "MC_East EVA collar task light actual light_04188",
+      "anchor_output_id": "NODE_ccf4474ef1e825e8fcec",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_East EVA collar task light diffuser_04187",
+          "material_name": "MC_Exterior_Task_Diffuser"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_52a38591f27ee83929c6",
+      "anchor_object": "MC_G01 SPECIMEN + ENCLOSED TEST room task light actual ligh",
+      "anchor_output_id": "NODE_52a38591f27ee83929c6",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_G01 SPECIMEN + ENCLOSED TEST room task light diffuser_04398",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_c944b5d38d53c21259bd",
+      "anchor_object": "MC_G01 SPECIMEN + ENCLOSED TEST room task light actual ligh.001",
+      "anchor_output_id": "NODE_c944b5d38d53c21259bd",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_G01 SPECIMEN + ENCLOSED TEST room task light diffuser_04401",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_f8aa98d7c30c722f422b",
+      "anchor_object": "MC_G01 SPECIMEN + ENCLOSED TEST room task light actual ligh.002",
+      "anchor_output_id": "NODE_f8aa98d7c30c722f422b",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_G01 SPECIMEN + ENCLOSED TEST room task light diffuser_04404",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_075a647728ec073c4d9e",
+      "anchor_object": "MC_G01 SPECIMEN + ENCLOSED TEST room task light actual light_04",
+      "anchor_output_id": "NODE_075a647728ec073c4d9e",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_G01 SPECIMEN + ENCLOSED TEST room task light diffuser_04395",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_cc5485e12866c0ce5db4",
+      "anchor_object": "MC_G02 CREW SUPPORT / PREPARATION ceiling task actual light",
+      "anchor_output_id": "NODE_cc5485e12866c0ce5db4",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_G02 CREW SUPPORT / PREPARATION ceiling task diffuser_05040",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_a9c3fe8c80a49311e49a",
+      "anchor_object": "MC_G02 CREW SUPPORT / PREPARATION ceiling task actual light_050",
+      "anchor_output_id": "NODE_a9c3fe8c80a49311e49a",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_G02 CREW SUPPORT / PREPARATION ceiling task diffuser_05037",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_8a52ba3ac89b5b690918",
+      "anchor_object": "MC_G03 CLEAN SUPPLY / SERVICE ceiling task actual light_05064",
+      "anchor_output_id": "NODE_8a52ba3ac89b5b690918",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_G03 CLEAN SUPPLY / SERVICE ceiling task diffuser_05063",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_e7fafbefb3b72e55b54e",
+      "anchor_object": "MC_G03 CLEAN SUPPLY / SERVICE ceiling task actual light_05067",
+      "anchor_output_id": "NODE_e7fafbefb3b72e55b54e",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_G03 CLEAN SUPPLY / SERVICE ceiling task diffuser_05066",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_bc0788d4043cb28c430c",
+      "anchor_object": "MC_G04 THERMAL VACUUM / PROCESS ceiling task actual light_05872",
+      "anchor_output_id": "NODE_bc0788d4043cb28c430c",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_G04 THERMAL VACUUM / PROCESS ceiling task diffuser_05871",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_1710c95a64371115d23d",
+      "anchor_object": "MC_G04 THERMAL VACUUM / PROCESS ceiling task actual light_05875",
+      "anchor_output_id": "NODE_1710c95a64371115d23d",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_G04 THERMAL VACUUM / PROCESS ceiling task diffuser_05874",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_619892d2c4ae9820e5e0",
+      "anchor_object": "MC_G04 THERMAL VACUUM / PROCESS ceiling task actual light_05878",
+      "anchor_output_id": "NODE_619892d2c4ae9820e5e0",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_G04 THERMAL VACUUM / PROCESS ceiling task diffuser_05877",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_a4a77dcdd3a15c680aac",
+      "anchor_object": "MC_G04 THERMAL VACUUM / PROCESS ceiling task actual light_05881",
+      "anchor_output_id": "NODE_a4a77dcdd3a15c680aac",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_G04 THERMAL VACUUM / PROCESS ceiling task diffuser_05880",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_61ac2585dcaa0be75468",
+      "anchor_object": "MC_G04 THERMAL VACUUM / PROCESS ceiling task actual light_05884",
+      "anchor_output_id": "NODE_61ac2585dcaa0be75468",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_G04 THERMAL VACUUM / PROCESS ceiling task diffuser_05883",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_f8b89bc092c8a5436b1e",
+      "anchor_object": "MC_G04 THERMAL VACUUM / PROCESS ceiling task actual light_05887",
+      "anchor_output_id": "NODE_f8b89bc092c8a5436b1e",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_G04 THERMAL VACUUM / PROCESS ceiling task diffuser_05886",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_5d3724724aea8898c868",
+      "anchor_object": "MC_Hub L0 actual task light actual light_02051",
+      "anchor_output_id": "NODE_5d3724724aea8898c868",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_Hub L0 actual task light diffuser_02050",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_30664f804f3a10914c70",
+      "anchor_object": "MC_Hub L0 actual task light actual light_02054",
+      "anchor_output_id": "NODE_30664f804f3a10914c70",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_Hub L0 actual task light diffuser_02053",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_9ff5c15ed0288a1a7748",
+      "anchor_object": "MC_Hub L1 actual task light actual light_02119",
+      "anchor_output_id": "NODE_9ff5c15ed0288a1a7748",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_Hub L1 actual task light diffuser_02118",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_bd2e229e203e11b7341b",
+      "anchor_object": "MC_Hub L1 actual task light actual light_02122",
+      "anchor_output_id": "NODE_bd2e229e203e11b7341b",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_Hub L1 actual task light diffuser_02121",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_4fb50cd1ef8bbb489725",
+      "anchor_object": "MC_Hub L2 actual task light actual light_02190",
+      "anchor_output_id": "NODE_4fb50cd1ef8bbb489725",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_Hub L2 actual task light diffuser_02189",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_eec9cd11404591c1d748",
+      "anchor_object": "MC_Hub L2 actual task light actual light_02193",
+      "anchor_output_id": "NODE_eec9cd11404591c1d748",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_Hub L2 actual task light diffuser_02192",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_d0941a5d53d430fad589",
+      "anchor_object": "MC_L11 SAMPLE CHEMISTRY / METROLOGY room task light actual ",
+      "anchor_output_id": "NODE_d0941a5d53d430fad589",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_L11 SAMPLE CHEMISTRY / METROLOGY room task light diffuse",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_a7a28a67080bd870517c",
+      "anchor_object": "MC_L11 SAMPLE CHEMISTRY / METROLOGY room task light actual .001",
+      "anchor_output_id": "NODE_a7a28a67080bd870517c",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_L11 SAMPLE CHEMISTRY / METROLOGY room task light diffuse.001",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_399d8c16b7ff9728f6ca",
+      "anchor_object": "MC_L11 SAMPLE CHEMISTRY / METROLOGY room task light actual .002",
+      "anchor_output_id": "NODE_399d8c16b7ff9728f6ca",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_L11 SAMPLE CHEMISTRY / METROLOGY room task light diffuse.002",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_2b4b0d323d1623fce592",
+      "anchor_object": "MC_L11 SAMPLE CHEMISTRY / METROLOGY room task light actual ligh",
+      "anchor_output_id": "NODE_2b4b0d323d1623fce592",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_L11 SAMPLE CHEMISTRY / METROLOGY room task light diffuser_04",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_dc93a8fce849ef1b73f7",
+      "anchor_object": "MC_L11 glove working-face task bar actual light_11101",
+      "anchor_output_id": "NODE_dc93a8fce849ef1b73f7",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_L11 glove working-face task bar diffuser_11100",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_527efe5858634fe793f1",
+      "anchor_object": "MC_L12 INSTRUMENT ANALYSIS ceiling task actual light_05322",
+      "anchor_output_id": "NODE_527efe5858634fe793f1",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_L12 INSTRUMENT ANALYSIS ceiling task diffuser_05321",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_8850f81876da19e50738",
+      "anchor_object": "MC_L12 INSTRUMENT ANALYSIS ceiling task actual light_05325",
+      "anchor_output_id": "NODE_8850f81876da19e50738",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_L12 INSTRUMENT ANALYSIS ceiling task diffuser_05324",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_8bf332046810ad4f9b7c",
+      "anchor_object": "MC_L13 OPTICAL MEASUREMENT ceiling task actual light_05368",
+      "anchor_output_id": "NODE_8bf332046810ad4f9b7c",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_L13 OPTICAL MEASUREMENT ceiling task diffuser_05367",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_246fa62817d2f1809ea7",
+      "anchor_object": "MC_L13 OPTICAL MEASUREMENT ceiling task actual light_05371",
+      "anchor_output_id": "NODE_246fa62817d2f1809ea7",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_L13 OPTICAL MEASUREMENT ceiling task diffuser_05370",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_ea5d1bc6b6ddd0325274",
+      "anchor_object": "MC_L14 CALIBRATION / DIAGNOSTICS ceiling task actual light_",
+      "anchor_output_id": "NODE_ea5d1bc6b6ddd0325274",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_L14 CALIBRATION / DIAGNOSTICS ceiling task diffuser_05974",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_eea5746896e7661cf6fd",
+      "anchor_object": "MC_L14 CALIBRATION / DIAGNOSTICS ceiling task actual light_.001",
+      "anchor_output_id": "NODE_eea5746896e7661cf6fd",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_L14 CALIBRATION / DIAGNOSTICS ceiling task diffuser_05977",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_a66d5e3e295feeeb5853",
+      "anchor_object": "MC_L14 CALIBRATION / DIAGNOSTICS ceiling task actual light_.002",
+      "anchor_output_id": "NODE_a66d5e3e295feeeb5853",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_L14 CALIBRATION / DIAGNOSTICS ceiling task diffuser_05983",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_5e0f5dfb5e08b6927607",
+      "anchor_object": "MC_L14 CALIBRATION / DIAGNOSTICS ceiling task actual light_.003",
+      "anchor_output_id": "NODE_5e0f5dfb5e08b6927607",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_L14 CALIBRATION / DIAGNOSTICS ceiling task diffuser_05986",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_9e8d53bf0befb3660e15",
+      "anchor_object": "MC_L14 CALIBRATION / DIAGNOSTICS ceiling task actual light_0597",
+      "anchor_output_id": "NODE_9e8d53bf0befb3660e15",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_L14 CALIBRATION / DIAGNOSTICS ceiling task diffuser_05971",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_46a0a3f3185f9daa3790",
+      "anchor_object": "MC_L14 CALIBRATION / DIAGNOSTICS ceiling task actual light_0598",
+      "anchor_output_id": "NODE_46a0a3f3185f9daa3790",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_L14 CALIBRATION / DIAGNOSTICS ceiling task diffuser_05980",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_b9e3287cb22a5988d1f0",
+      "anchor_object": "MC_L21 SYSTEMS RESEARCH / INTEGRATION room task light actua",
+      "anchor_output_id": "NODE_b9e3287cb22a5988d1f0",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_L21 SYSTEMS RESEARCH / INTEGRATION room task light diffu",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_6e4a9f7bd0af2c9bcdd4",
+      "anchor_object": "MC_L21 SYSTEMS RESEARCH / INTEGRATION room task light actua.001",
+      "anchor_output_id": "NODE_6e4a9f7bd0af2c9bcdd4",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_L21 SYSTEMS RESEARCH / INTEGRATION room task light diffu.001",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_3c22e45a674e728e57be",
+      "anchor_object": "MC_L21 SYSTEMS RESEARCH / INTEGRATION room task light actua.002",
+      "anchor_output_id": "NODE_3c22e45a674e728e57be",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_L21 SYSTEMS RESEARCH / INTEGRATION room task light diffu.002",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_29b1c8dceafe8bb54c99",
+      "anchor_object": "MC_L21 SYSTEMS RESEARCH / INTEGRATION room task light actual li",
+      "anchor_output_id": "NODE_29b1c8dceafe8bb54c99",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_L21 SYSTEMS RESEARCH / INTEGRATION room task light diffuser_",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_6714bbdfa004dd74f524",
+      "anchor_object": "MC_L22 PLANT CONTROL ceiling task actual light_05611",
+      "anchor_output_id": "NODE_6714bbdfa004dd74f524",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_L22 PLANT CONTROL ceiling task diffuser_05610",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_6aa1ab9749a2fcdcdd13",
+      "anchor_object": "MC_L22 PLANT CONTROL ceiling task actual light_05614",
+      "anchor_output_id": "NODE_6aa1ab9749a2fcdcdd13",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_L22 PLANT CONTROL ceiling task diffuser_05613",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_cf20144209ce5802965b",
+      "anchor_object": "MC_L23 DATA / RESEARCH ceiling task actual light_05715",
+      "anchor_output_id": "NODE_cf20144209ce5802965b",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_L23 DATA / RESEARCH ceiling task diffuser_05714",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_aec72e2320de7a786b5b",
+      "anchor_object": "MC_L23 DATA / RESEARCH ceiling task actual light_05718",
+      "anchor_output_id": "NODE_aec72e2320de7a786b5b",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_L23 DATA / RESEARCH ceiling task diffuser_05717",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_b0336dd3ce37af6400c0",
+      "anchor_object": "MC_MC_N midflight stair wall luminaire_11067 actual illuminatio",
+      "anchor_output_id": "NODE_b0336dd3ce37af6400c0",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_N midflight stair wall diffuser_11068",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_1684cd33ad89c483c83c",
+      "anchor_object": "MC_MC_N midflight stair wall luminaire_11070 actual illuminatio",
+      "anchor_output_id": "NODE_1684cd33ad89c483c83c",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_N midflight stair wall diffuser_11071",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_79e8bddce8d0416451b6",
+      "anchor_object": "MC_MC_N midflight stair wall luminaire_11073 actual illuminatio",
+      "anchor_output_id": "NODE_79e8bddce8d0416451b6",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_N midflight stair wall diffuser_11074",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_309b2134dd3243b62c54",
+      "anchor_object": "MC_MC_N midflight stair wall luminaire_11076 actual illuminatio",
+      "anchor_output_id": "NODE_309b2134dd3243b62c54",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_N midflight stair wall diffuser_11077",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_dc34c028d4c604ab5e87",
+      "anchor_object": "MC_MC_N stair wall luminaire_02718 actual illumination_11085",
+      "anchor_output_id": "NODE_dc34c028d4c604ab5e87",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_N stair wall diffuser_02719",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_abcd0beea8ce302e1570",
+      "anchor_object": "MC_MC_N stair wall luminaire_02721 actual illumination_11086",
+      "anchor_output_id": "NODE_abcd0beea8ce302e1570",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_N stair wall diffuser_02722",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_cc8622e51885d5420cd3",
+      "anchor_object": "MC_MC_N stair wall luminaire_02912 actual illumination_11087",
+      "anchor_output_id": "NODE_cc8622e51885d5420cd3",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_N stair wall diffuser_02913",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_fad5e2cef01c855872dc",
+      "anchor_object": "MC_MC_N stair wall luminaire_02915 actual illumination_11088",
+      "anchor_output_id": "NODE_fad5e2cef01c855872dc",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_N stair wall diffuser_02916",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_858f9e852717d0d1a5e2",
+      "anchor_object": "MC_MC_N stair wall luminaire_03106 actual illumination_11089",
+      "anchor_output_id": "NODE_858f9e852717d0d1a5e2",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_N stair wall diffuser_03107",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_7c24776f4a8c48aa8d36",
+      "anchor_object": "MC_MC_N stair wall luminaire_03109 actual illumination_11090",
+      "anchor_output_id": "NODE_7c24776f4a8c48aa8d36",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_N stair wall diffuser_03110",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_901c9af40209df94ff83",
+      "anchor_object": "MC_MC_W midflight stair wall luminaire_11055 actual illuminatio",
+      "anchor_output_id": "NODE_901c9af40209df94ff83",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_W midflight stair wall diffuser_11056",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_e4c79b9334563ca7addd",
+      "anchor_object": "MC_MC_W midflight stair wall luminaire_11058 actual illuminatio",
+      "anchor_output_id": "NODE_e4c79b9334563ca7addd",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_W midflight stair wall diffuser_11059",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_969c27e65a2d6b8c8b26",
+      "anchor_object": "MC_MC_W midflight stair wall luminaire_11061 actual illuminatio",
+      "anchor_output_id": "NODE_969c27e65a2d6b8c8b26",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_W midflight stair wall diffuser_11062",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_37820ebac180682c43b7",
+      "anchor_object": "MC_MC_W midflight stair wall luminaire_11064 actual illuminatio",
+      "anchor_output_id": "NODE_37820ebac180682c43b7",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_W midflight stair wall diffuser_11065",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_a9ca300cba8b3cba0469",
+      "anchor_object": "MC_MC_W stair wall luminaire_02260 actual illumination_11079",
+      "anchor_output_id": "NODE_a9ca300cba8b3cba0469",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_W stair wall diffuser_02261",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_309d0dc5665dc3d51e6a",
+      "anchor_object": "MC_MC_W stair wall luminaire_02263 actual illumination_11080",
+      "anchor_output_id": "NODE_309d0dc5665dc3d51e6a",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_W stair wall diffuser_02264",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_97fd33d448b82a14d9ed",
+      "anchor_object": "MC_MC_W stair wall luminaire_02454 actual illumination_11081",
+      "anchor_output_id": "NODE_97fd33d448b82a14d9ed",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_W stair wall diffuser_02455",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_7abf3407d30d94c6ab89",
+      "anchor_object": "MC_MC_W stair wall luminaire_02457 actual illumination_11082",
+      "anchor_output_id": "NODE_7abf3407d30d94c6ab89",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_W stair wall diffuser_02458",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_4fc875d69863c9b31946",
+      "anchor_object": "MC_MC_W stair wall luminaire_02648 actual illumination_11083",
+      "anchor_output_id": "NODE_4fc875d69863c9b31946",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_W stair wall diffuser_02649",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_824b889f88aafc3450e4",
+      "anchor_object": "MC_MC_W stair wall luminaire_02651 actual illumination_11084",
+      "anchor_output_id": "NODE_824b889f88aafc3450e4",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_W stair wall diffuser_02652",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_b17372edc9841332f308",
+      "anchor_object": "MC_N central circulation actual light L0 actual light_04825",
+      "anchor_output_id": "NODE_b17372edc9841332f308",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_N central circulation actual light L0 diffuser_04824",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_d2c0334505e22e3f4db2",
+      "anchor_object": "MC_N central circulation actual light L0 actual light_04828",
+      "anchor_output_id": "NODE_d2c0334505e22e3f4db2",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_N central circulation actual light L0 diffuser_04827",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_dcafe2cb39431232ba64",
+      "anchor_object": "MC_N central circulation actual light L0 actual light_04831",
+      "anchor_output_id": "NODE_dcafe2cb39431232ba64",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_N central circulation actual light L0 diffuser_04830",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_8eff7a2eb52d40c683af",
+      "anchor_object": "MC_N central circulation actual light L0 actual light_04834",
+      "anchor_output_id": "NODE_8eff7a2eb52d40c683af",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_N central circulation actual light L0 diffuser_04833",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_645db1bbd67ef9b40c7f",
+      "anchor_object": "MC_N central circulation actual light L1 actual light_05109",
+      "anchor_output_id": "NODE_645db1bbd67ef9b40c7f",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_N central circulation actual light L1 diffuser_05108",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_034fa11fc0502772a52c",
+      "anchor_object": "MC_N central circulation actual light L1 actual light_05112",
+      "anchor_output_id": "NODE_034fa11fc0502772a52c",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_N central circulation actual light L1 diffuser_05111",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_103f30276326b6c49cad",
+      "anchor_object": "MC_N central circulation actual light L1 actual light_05115",
+      "anchor_output_id": "NODE_103f30276326b6c49cad",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_N central circulation actual light L1 diffuser_05114",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_4a570bc5ef047d5b3e76",
+      "anchor_object": "MC_N central circulation actual light L1 actual light_05118",
+      "anchor_output_id": "NODE_4a570bc5ef047d5b3e76",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_N central circulation actual light L1 diffuser_05117",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_05d1d811ad452130c425",
+      "anchor_object": "MC_N central circulation actual light L2 actual light_05398",
+      "anchor_output_id": "NODE_05d1d811ad452130c425",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_N central circulation actual light L2 diffuser_05397",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_555cc55e808111822680",
+      "anchor_object": "MC_N central circulation actual light L2 actual light_05401",
+      "anchor_output_id": "NODE_555cc55e808111822680",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_N central circulation actual light L2 diffuser_05400",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_d5f39733bc25fbe63445",
+      "anchor_object": "MC_N central circulation actual light L2 actual light_05404",
+      "anchor_output_id": "NODE_d5f39733bc25fbe63445",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_N central circulation actual light L2 diffuser_05403",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_2247be6ef7d9804b2451",
+      "anchor_object": "MC_N central circulation actual light L2 actual light_05407",
+      "anchor_output_id": "NODE_2247be6ef7d9804b2451",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_N central circulation actual light L2 diffuser_05406",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_7fde2899fddee3dab297",
+      "anchor_object": "MC_N right circulation L0 actual light_05103",
+      "anchor_output_id": "NODE_7fde2899fddee3dab297",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_N right circulation L0 diffuser_05102",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_34780b9c1a1d0603e27d",
+      "anchor_object": "MC_N right circulation L0 actual light_05106",
+      "anchor_output_id": "NODE_34780b9c1a1d0603e27d",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_N right circulation L0 diffuser_05105",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_661f9d6297caf0101ae0",
+      "anchor_object": "MC_N right circulation L1 actual light_05392",
+      "anchor_output_id": "NODE_661f9d6297caf0101ae0",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_N right circulation L1 diffuser_05391",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_97b6864a35faee270d5f",
+      "anchor_object": "MC_N right circulation L1 actual light_05395",
+      "anchor_output_id": "NODE_97b6864a35faee270d5f",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_N right circulation L1 diffuser_05394",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_45d435c743839bc404e5",
+      "anchor_object": "MC_N right circulation L2 actual light_05754",
+      "anchor_output_id": "NODE_45d435c743839bc404e5",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_N right circulation L2 diffuser_05753",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_2a7f3381b8ce49df578d",
+      "anchor_object": "MC_N right circulation L2 actual light_05757",
+      "anchor_output_id": "NODE_2a7f3381b8ce49df578d",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_N right circulation L2 diffuser_05756",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_fae0c58b3617a416d1d8",
+      "anchor_object": "MC_North crew actual ramp worklight_04004",
+      "anchor_output_id": "NODE_fae0c58b3617a416d1d8",
+      "default_on": true,
+      "emissive_targets": [],
+      "emissive_resolution_status": "audited_no_separate_emissive_face",
+      "emissive_resolution_reason": "No separate emissive face exists in the audited aimed-worklight housing/mount-arm family. Housing and arm have only nonemissive materials. The entry collection emission users belong to the separately named collar task light or interlock indicator. This is an observed native absence, not an assertion of design intent."
+    },
+    {
+      "target_light_id": "SRC_580c3e540cdc97636e69",
+      "anchor_object": "MC_North crew actual ramp worklight_04007",
+      "anchor_output_id": "NODE_580c3e540cdc97636e69",
+      "default_on": true,
+      "emissive_targets": [],
+      "emissive_resolution_status": "audited_no_separate_emissive_face",
+      "emissive_resolution_reason": "No separate emissive face exists in the audited aimed-worklight housing/mount-arm family. Housing and arm have only nonemissive materials. The entry collection emission users belong to the separately named collar task light or interlock indicator. This is an observed native absence, not an assertion of design intent."
+    },
+    {
+      "target_light_id": "SRC_8206cc3a2e905dea7e42",
+      "anchor_object": "MC_North crew collar task light actual light_03985",
+      "anchor_output_id": "NODE_8206cc3a2e905dea7e42",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_North crew collar task light diffuser_03984",
+          "material_name": "MC_Exterior_Task_Diffuser"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_ad82c9913dceb209d217",
+      "anchor_object": "MC_W L0 circulation fixture 0 actual light_11003",
+      "anchor_output_id": "NODE_ad82c9913dceb209d217",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_W L0 circulation fixture 0 diffuser_11002",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_6c3576a03844171c4194",
+      "anchor_object": "MC_W L0 circulation fixture 1 actual light_11006",
+      "anchor_output_id": "NODE_6c3576a03844171c4194",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_W L0 circulation fixture 1 diffuser_11005",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_460d8e9ebd345ce8ba36",
+      "anchor_object": "MC_W L0 circulation fixture 2 actual light_11009",
+      "anchor_output_id": "NODE_460d8e9ebd345ce8ba36",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_W L0 circulation fixture 2 diffuser_11008",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_1e8be63be71dfbbd2a83",
+      "anchor_object": "MC_W L0 circulation fixture 3 actual light_11012",
+      "anchor_output_id": "NODE_1e8be63be71dfbbd2a83",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_W L0 circulation fixture 3 diffuser_11011",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_421e04b99218d8206581",
+      "anchor_object": "MC_W L0 circulation fixture 4 actual light_11015",
+      "anchor_output_id": "NODE_421e04b99218d8206581",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_W L0 circulation fixture 4 diffuser_11014",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_c84ffffaf908278600f6",
+      "anchor_object": "MC_W L0 circulation fixture 5 actual light_11018",
+      "anchor_output_id": "NODE_c84ffffaf908278600f6",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_W L0 circulation fixture 5 diffuser_11017",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_bed213792bc6085cc017",
+      "anchor_object": "MC_W L1 circulation fixture 0 actual light_11021",
+      "anchor_output_id": "NODE_bed213792bc6085cc017",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_W L1 circulation fixture 0 diffuser_11020",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_5cded97b6d97ee4c73b1",
+      "anchor_object": "MC_W L1 circulation fixture 1 actual light_11024",
+      "anchor_output_id": "NODE_5cded97b6d97ee4c73b1",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_W L1 circulation fixture 1 diffuser_11023",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_74640b7cff21d3355fe6",
+      "anchor_object": "MC_W L1 circulation fixture 2 actual light_11027",
+      "anchor_output_id": "NODE_74640b7cff21d3355fe6",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_W L1 circulation fixture 2 diffuser_11026",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_cd9cd2d16e8b68efebbc",
+      "anchor_object": "MC_W L1 circulation fixture 3 actual light_11030",
+      "anchor_output_id": "NODE_cd9cd2d16e8b68efebbc",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_W L1 circulation fixture 3 diffuser_11029",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_0f8fb6254bfcc6f9789c",
+      "anchor_object": "MC_W L1 circulation fixture 4 actual light_11033",
+      "anchor_output_id": "NODE_0f8fb6254bfcc6f9789c",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_W L1 circulation fixture 4 diffuser_11032",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_1ef43413f7a3987dc51a",
+      "anchor_object": "MC_W L1 circulation fixture 5 actual light_11036",
+      "anchor_output_id": "NODE_1ef43413f7a3987dc51a",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_W L1 circulation fixture 5 diffuser_11035",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_b078a2e8d3c15dcca956",
+      "anchor_object": "MC_W L2 circulation fixture 0 actual light_11039",
+      "anchor_output_id": "NODE_b078a2e8d3c15dcca956",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_W L2 circulation fixture 0 diffuser_11038",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_83b1f0ad3eb38ac4812f",
+      "anchor_object": "MC_W L2 circulation fixture 1 actual light_11042",
+      "anchor_output_id": "NODE_83b1f0ad3eb38ac4812f",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_W L2 circulation fixture 1 diffuser_11041",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_fccb5394d779262bcf5b",
+      "anchor_object": "MC_W L2 circulation fixture 2 actual light_11045",
+      "anchor_output_id": "NODE_fccb5394d779262bcf5b",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_W L2 circulation fixture 2 diffuser_11044",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_78372f03996cc9631c37",
+      "anchor_object": "MC_W L2 circulation fixture 3 actual light_11048",
+      "anchor_output_id": "NODE_78372f03996cc9631c37",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_W L2 circulation fixture 3 diffuser_11047",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_27c13dff156798f70aad",
+      "anchor_object": "MC_W L2 circulation fixture 4 actual light_11051",
+      "anchor_output_id": "NODE_27c13dff156798f70aad",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_W L2 circulation fixture 4 diffuser_11050",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_d944011fc39ffefc2457",
+      "anchor_object": "MC_W L2 circulation fixture 5 actual light_11054",
+      "anchor_output_id": "NODE_d944011fc39ffefc2457",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_W L2 circulation fixture 5 diffuser_11053",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_d76b755ec0495dba882e",
+      "anchor_object": "MC_West cargo actual ramp worklight_04106",
+      "anchor_output_id": "NODE_d76b755ec0495dba882e",
+      "default_on": true,
+      "emissive_targets": [],
+      "emissive_resolution_status": "audited_no_separate_emissive_face",
+      "emissive_resolution_reason": "No separate emissive face exists in the audited aimed-worklight housing/mount-arm family. Housing and arm have only nonemissive materials. The entry collection emission users belong to the separately named collar task light or interlock indicator. This is an observed native absence, not an assertion of design intent."
+    },
+    {
+      "target_light_id": "SRC_e6537e5046016fd5ef99",
+      "anchor_object": "MC_West cargo actual ramp worklight_04109",
+      "anchor_output_id": "NODE_e6537e5046016fd5ef99",
+      "default_on": true,
+      "emissive_targets": [],
+      "emissive_resolution_status": "audited_no_separate_emissive_face",
+      "emissive_resolution_reason": "No separate emissive face exists in the audited aimed-worklight housing/mount-arm family. Housing and arm have only nonemissive materials. The entry collection emission users belong to the separately named collar task light or interlock indicator. This is an observed native absence, not an assertion of design intent."
+    },
+    {
+      "target_light_id": "SRC_1a52582031c976077777",
+      "anchor_object": "MC_West cargo collar task light actual light_04087",
+      "anchor_output_id": "NODE_1a52582031c976077777",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "MC_West cargo collar task light diffuser_04086",
+          "material_name": "MC_Exterior_Task_Diffuser"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_9dfca7f3e23de021b0d4",
+      "anchor_object": "SP00_TaskLight_Preparation",
+      "anchor_output_id": "NODE_9dfca7f3e23de021b0d4",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "SP02_InternalLightStrip",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_c191b078d62d8b510150",
+      "anchor_object": "SP00_TaskLight_Receiving",
+      "anchor_output_id": "NODE_c191b078d62d8b510150",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "SP01_DockUndersideTaskDiffuser",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_ad5ad1e65dc58cf30a30",
+      "anchor_object": "SP00_TaskLight_Return",
+      "anchor_output_id": "NODE_ad5ad1e65dc58cf30a30",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "SP05_ReturnUndersideLamp",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    },
+    {
+      "target_light_id": "SRC_739705eea6b68e1ba443",
+      "anchor_object": "SP00_TaskLight_TestChamber",
+      "anchor_output_id": "NODE_739705eea6b68e1ba443",
+      "default_on": true,
+      "emissive_targets": [
+        {
+          "renderer_object": "SP04_InternalLamp",
+          "material_name": "LD2_Light_NeutralTask"
+        }
+      ],
+      "emissive_resolution_status": "resolved_exact_semantic_family"
+    }
+  ]
+}

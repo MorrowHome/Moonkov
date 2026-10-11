@@ -26,6 +26,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/MoonEnvironment/Scenes/MoonSpawnPointsSubScene.unity
     guid: 8e8f34f78e2592749936e898ae12979b
+  - enabled: 1
+    path: Assets/MoonEnvironment/Variants/Apollo12Base/Scenes/Apollo12GameScene.unity
+    guid: fc5cc15809a0a954ab53528907fe185a
+  - enabled: 1
+    path: Assets/MoonEnvironment/Variants/Apollo12Base/Scenes/Apollo12SpawnPointsSubScene.unity
+    guid: 5c542ab3728c45141a554dc6caed8ff5
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: 8a359052d73013046af0cccc79347d43, type: 2}
     com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f, type: 2}

@@ -53,3 +53,12 @@ LocalData/
 # them; they exist so a shortlist can be previewed in the editor. Delete freely.
 /Assets/Audio/Audition/
 /Assets/Audio/Audition.meta
+
+# Local map preview/test scenes; keep gameplay scenes, shared assets and builders versioned.
+/Assets/MoonEnvironment/Variants/**/Scenes/*Preview.unity
+/Assets/MoonEnvironment/Variants/**/Scenes/*Preview.unity.meta
+/Assets/MoonEnvironment/Variants/Apollo12Base/Scenes/MoonBaseApollo12.unity
+/Assets/MoonEnvironment/Variants/Apollo12Base/Scenes/MoonBaseApollo12.unity.meta
+
+# Reproducible exporter console output; manifests and integration reports remain versioned.
+/SourceData/**/*.log

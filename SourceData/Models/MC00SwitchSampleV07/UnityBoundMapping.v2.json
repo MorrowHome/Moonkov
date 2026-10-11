@@ -1,0 +1,197 @@
+{
+    "schema_version": 2,
+    "asset_id": "MC00",
+    "asset_revision": "switch-sample-v07",
+    "example_only": false,
+    "physical_buttons_exist": true,
+    "lights": [
+        {
+            "target_light_id": "SRC_e6365998da3f1684fc26",
+            "anchor_object": "MC108_Task_Bar_Actual_Light",
+            "anchor_output_id": "NODE_e6365998da3f1684fc26",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC108_Task_Bar_Lens",
+                    "material_name": "MC108_Task_Diffuser"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_4163ef02dd8b938914e7",
+            "anchor_object": "MC95_IO_task_emitter",
+            "anchor_output_id": "NODE_4163ef02dd8b938914e7",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC95_IO_task_bar_diffuser",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_154e70e9f1255200307d",
+            "anchor_object": "MC97_BAY_test_task_bar_emitter",
+            "anchor_output_id": "NODE_154e70e9f1255200307d",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC97_BAY_test_task_bar_captured_diffuser",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_2f56fdafe3f7b0a9aede",
+            "anchor_object": "MC97_RAFT_OPERATIONS_task_emitter",
+            "anchor_output_id": "NODE_2f56fdafe3f7b0a9aede",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC97_RAFT_OPERATIONS_task_captured_diffuser",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_706aa66afbb4e02121e7",
+            "anchor_object": "MC97_RAFT_REPLAY_task_emitter",
+            "anchor_output_id": "NODE_706aa66afbb4e02121e7",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC97_RAFT_REPLAY_task_captured_diffuser",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_8a52ba3ac89b5b690918",
+            "anchor_object": "MC_G03 CLEAN SUPPLY / SERVICE ceiling task actual light_05064",
+            "anchor_output_id": "NODE_8a52ba3ac89b5b690918",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_G03 CLEAN SUPPLY / SERVICE ceiling task diffuser_05063",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_e7fafbefb3b72e55b54e",
+            "anchor_object": "MC_G03 CLEAN SUPPLY / SERVICE ceiling task actual light_05067",
+            "anchor_output_id": "NODE_e7fafbefb3b72e55b54e",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_G03 CLEAN SUPPLY / SERVICE ceiling task diffuser_05066",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_6714bbdfa004dd74f524",
+            "anchor_object": "MC_L22 PLANT CONTROL ceiling task actual light_05611",
+            "anchor_output_id": "NODE_6714bbdfa004dd74f524",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_L22 PLANT CONTROL ceiling task diffuser_05610",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_6aa1ab9749a2fcdcdd13",
+            "anchor_object": "MC_L22 PLANT CONTROL ceiling task actual light_05614",
+            "anchor_output_id": "NODE_6aa1ab9749a2fcdcdd13",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_L22 PLANT CONTROL ceiling task diffuser_05613",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        }
+    ],
+    "switches": [
+        {
+            "switch_id": "SW_MC00_G03_TASK_01",
+            "button_object": "MC108_Task_Bar_Switch",
+            "action": "Toggle",
+            "label": "G03 task bar",
+            "target_light_ids": [
+                "SRC_e6365998da3f1684fc26"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_G03_CEILING_01",
+            "button_object": "SW_MC00_G03_CEILING_01_Keycap",
+            "action": "Toggle",
+            "label": "G03 ceiling 1",
+            "target_light_ids": [
+                "SRC_8a52ba3ac89b5b690918"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_G03_CEILING_02",
+            "button_object": "SW_MC00_G03_CEILING_02_Keycap",
+            "action": "Toggle",
+            "label": "G03 ceiling 2",
+            "target_light_ids": [
+                "SRC_e7fafbefb3b72e55b54e"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_L22_OPERATIONS_01",
+            "button_object": "SW_MC00_L22_OPERATIONS_01_Keycap",
+            "action": "SetOn",
+            "label": "L22 ON",
+            "target_light_ids": [
+                "SRC_4163ef02dd8b938914e7",
+                "SRC_154e70e9f1255200307d",
+                "SRC_2f56fdafe3f7b0a9aede",
+                "SRC_706aa66afbb4e02121e7",
+                "SRC_6714bbdfa004dd74f524",
+                "SRC_6aa1ab9749a2fcdcdd13"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_L22_OPERATIONS_02",
+            "button_object": "SW_MC00_L22_OPERATIONS_02_Keycap",
+            "action": "SetOff",
+            "label": "L22 OFF",
+            "target_light_ids": [
+                "SRC_4163ef02dd8b938914e7",
+                "SRC_154e70e9f1255200307d",
+                "SRC_2f56fdafe3f7b0a9aede",
+                "SRC_706aa66afbb4e02121e7",
+                "SRC_6714bbdfa004dd74f524",
+                "SRC_6aa1ab9749a2fcdcdd13"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_L22_OPERATIONS_03",
+            "button_object": "SW_MC00_L22_OPERATIONS_03_Keycap",
+            "action": "Toggle",
+            "label": "L22 TOGGLE",
+            "target_light_ids": [
+                "SRC_4163ef02dd8b938914e7",
+                "SRC_154e70e9f1255200307d",
+                "SRC_2f56fdafe3f7b0a9aede",
+                "SRC_706aa66afbb4e02121e7",
+                "SRC_6714bbdfa004dd74f524",
+                "SRC_6aa1ab9749a2fcdcdd13"
+            ]
+        }
+    ]
+}

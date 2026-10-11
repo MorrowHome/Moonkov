@@ -1,0 +1,3380 @@
+{
+    "schema_version": 2,
+    "asset_id": "MC00",
+    "asset_revision": "full_rollout_v02",
+    "example_only": false,
+    "physical_buttons_exist": true,
+    "lights": [
+        {
+            "target_light_id": "SRC_5328cb8663556e3b29dc",
+            "anchor_object": "MC106_Reading_Bar_Actual_Light",
+            "anchor_output_id": "NODE_5328cb8663556e3b29dc",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC106_Lamp_opal_diffuser",
+                    "material_name": "MC106_Reading_Diffuser"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_e6365998da3f1684fc26",
+            "anchor_object": "MC108_Task_Bar_Actual_Light",
+            "anchor_output_id": "NODE_e6365998da3f1684fc26",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC108_Task_Bar_Lens",
+                    "material_name": "MC108_Task_Diffuser"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_4163ef02dd8b938914e7",
+            "anchor_object": "MC95_IO_task_emitter",
+            "anchor_output_id": "NODE_4163ef02dd8b938914e7",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC95_IO_task_bar_diffuser",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_154e70e9f1255200307d",
+            "anchor_object": "MC97_BAY_test_task_bar_emitter",
+            "anchor_output_id": "NODE_154e70e9f1255200307d",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC97_BAY_test_task_bar_captured_diffuser",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_2f56fdafe3f7b0a9aede",
+            "anchor_object": "MC97_RAFT_OPERATIONS_task_emitter",
+            "anchor_output_id": "NODE_2f56fdafe3f7b0a9aede",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC97_RAFT_OPERATIONS_task_captured_diffuser",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_706aa66afbb4e02121e7",
+            "anchor_object": "MC97_RAFT_REPLAY_task_emitter",
+            "anchor_output_id": "NODE_706aa66afbb4e02121e7",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC97_RAFT_REPLAY_task_captured_diffuser",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_80479fd91931e04fd1d6",
+            "anchor_object": "MC_East EVA actual ramp worklight_04207",
+            "anchor_output_id": "NODE_80479fd91931e04fd1d6",
+            "emissive_resolution_status": "audited_no_separate_emissive_face",
+            "default_on": true,
+            "emissive_targets": []
+        },
+        {
+            "target_light_id": "SRC_20906c5094fa0dcf9416",
+            "anchor_object": "MC_East EVA actual ramp worklight_04210",
+            "anchor_output_id": "NODE_20906c5094fa0dcf9416",
+            "emissive_resolution_status": "audited_no_separate_emissive_face",
+            "default_on": true,
+            "emissive_targets": []
+        },
+        {
+            "target_light_id": "SRC_ccf4474ef1e825e8fcec",
+            "anchor_object": "MC_East EVA collar task light actual light_04188",
+            "anchor_output_id": "NODE_ccf4474ef1e825e8fcec",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_East EVA collar task light diffuser_04187",
+                    "material_name": "MC_Exterior_Task_Diffuser"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_52a38591f27ee83929c6",
+            "anchor_object": "MC_G01 SPECIMEN + ENCLOSED TEST room task light actual ligh",
+            "anchor_output_id": "NODE_52a38591f27ee83929c6",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_G01 SPECIMEN + ENCLOSED TEST room task light diffuser_04398",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_c944b5d38d53c21259bd",
+            "anchor_object": "MC_G01 SPECIMEN + ENCLOSED TEST room task light actual ligh.001",
+            "anchor_output_id": "NODE_c944b5d38d53c21259bd",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_G01 SPECIMEN + ENCLOSED TEST room task light diffuser_04401",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_f8aa98d7c30c722f422b",
+            "anchor_object": "MC_G01 SPECIMEN + ENCLOSED TEST room task light actual ligh.002",
+            "anchor_output_id": "NODE_f8aa98d7c30c722f422b",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_G01 SPECIMEN + ENCLOSED TEST room task light diffuser_04404",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_075a647728ec073c4d9e",
+            "anchor_object": "MC_G01 SPECIMEN + ENCLOSED TEST room task light actual light_04",
+            "anchor_output_id": "NODE_075a647728ec073c4d9e",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_G01 SPECIMEN + ENCLOSED TEST room task light diffuser_04395",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_cc5485e12866c0ce5db4",
+            "anchor_object": "MC_G02 CREW SUPPORT / PREPARATION ceiling task actual light",
+            "anchor_output_id": "NODE_cc5485e12866c0ce5db4",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_G02 CREW SUPPORT / PREPARATION ceiling task diffuser_05040",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_a9c3fe8c80a49311e49a",
+            "anchor_object": "MC_G02 CREW SUPPORT / PREPARATION ceiling task actual light_050",
+            "anchor_output_id": "NODE_a9c3fe8c80a49311e49a",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_G02 CREW SUPPORT / PREPARATION ceiling task diffuser_05037",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_8a52ba3ac89b5b690918",
+            "anchor_object": "MC_G03 CLEAN SUPPLY / SERVICE ceiling task actual light_05064",
+            "anchor_output_id": "NODE_8a52ba3ac89b5b690918",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_G03 CLEAN SUPPLY / SERVICE ceiling task diffuser_05063",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_e7fafbefb3b72e55b54e",
+            "anchor_object": "MC_G03 CLEAN SUPPLY / SERVICE ceiling task actual light_05067",
+            "anchor_output_id": "NODE_e7fafbefb3b72e55b54e",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_G03 CLEAN SUPPLY / SERVICE ceiling task diffuser_05066",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_bc0788d4043cb28c430c",
+            "anchor_object": "MC_G04 THERMAL VACUUM / PROCESS ceiling task actual light_05872",
+            "anchor_output_id": "NODE_bc0788d4043cb28c430c",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_G04 THERMAL VACUUM / PROCESS ceiling task diffuser_05871",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_1710c95a64371115d23d",
+            "anchor_object": "MC_G04 THERMAL VACUUM / PROCESS ceiling task actual light_05875",
+            "anchor_output_id": "NODE_1710c95a64371115d23d",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_G04 THERMAL VACUUM / PROCESS ceiling task diffuser_05874",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_619892d2c4ae9820e5e0",
+            "anchor_object": "MC_G04 THERMAL VACUUM / PROCESS ceiling task actual light_05878",
+            "anchor_output_id": "NODE_619892d2c4ae9820e5e0",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_G04 THERMAL VACUUM / PROCESS ceiling task diffuser_05877",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_a4a77dcdd3a15c680aac",
+            "anchor_object": "MC_G04 THERMAL VACUUM / PROCESS ceiling task actual light_05881",
+            "anchor_output_id": "NODE_a4a77dcdd3a15c680aac",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_G04 THERMAL VACUUM / PROCESS ceiling task diffuser_05880",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_61ac2585dcaa0be75468",
+            "anchor_object": "MC_G04 THERMAL VACUUM / PROCESS ceiling task actual light_05884",
+            "anchor_output_id": "NODE_61ac2585dcaa0be75468",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_G04 THERMAL VACUUM / PROCESS ceiling task diffuser_05883",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_f8b89bc092c8a5436b1e",
+            "anchor_object": "MC_G04 THERMAL VACUUM / PROCESS ceiling task actual light_05887",
+            "anchor_output_id": "NODE_f8b89bc092c8a5436b1e",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_G04 THERMAL VACUUM / PROCESS ceiling task diffuser_05886",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_5d3724724aea8898c868",
+            "anchor_object": "MC_Hub L0 actual task light actual light_02051",
+            "anchor_output_id": "NODE_5d3724724aea8898c868",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_Hub L0 actual task light diffuser_02050",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_30664f804f3a10914c70",
+            "anchor_object": "MC_Hub L0 actual task light actual light_02054",
+            "anchor_output_id": "NODE_30664f804f3a10914c70",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_Hub L0 actual task light diffuser_02053",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_9ff5c15ed0288a1a7748",
+            "anchor_object": "MC_Hub L1 actual task light actual light_02119",
+            "anchor_output_id": "NODE_9ff5c15ed0288a1a7748",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_Hub L1 actual task light diffuser_02118",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_bd2e229e203e11b7341b",
+            "anchor_object": "MC_Hub L1 actual task light actual light_02122",
+            "anchor_output_id": "NODE_bd2e229e203e11b7341b",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_Hub L1 actual task light diffuser_02121",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_4fb50cd1ef8bbb489725",
+            "anchor_object": "MC_Hub L2 actual task light actual light_02190",
+            "anchor_output_id": "NODE_4fb50cd1ef8bbb489725",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_Hub L2 actual task light diffuser_02189",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_eec9cd11404591c1d748",
+            "anchor_object": "MC_Hub L2 actual task light actual light_02193",
+            "anchor_output_id": "NODE_eec9cd11404591c1d748",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_Hub L2 actual task light diffuser_02192",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_d0941a5d53d430fad589",
+            "anchor_object": "MC_L11 SAMPLE CHEMISTRY / METROLOGY room task light actual ",
+            "anchor_output_id": "NODE_d0941a5d53d430fad589",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_L11 SAMPLE CHEMISTRY / METROLOGY room task light diffuse",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_a7a28a67080bd870517c",
+            "anchor_object": "MC_L11 SAMPLE CHEMISTRY / METROLOGY room task light actual .001",
+            "anchor_output_id": "NODE_a7a28a67080bd870517c",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_L11 SAMPLE CHEMISTRY / METROLOGY room task light diffuse.001",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_399d8c16b7ff9728f6ca",
+            "anchor_object": "MC_L11 SAMPLE CHEMISTRY / METROLOGY room task light actual .002",
+            "anchor_output_id": "NODE_399d8c16b7ff9728f6ca",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_L11 SAMPLE CHEMISTRY / METROLOGY room task light diffuse.002",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_2b4b0d323d1623fce592",
+            "anchor_object": "MC_L11 SAMPLE CHEMISTRY / METROLOGY room task light actual ligh",
+            "anchor_output_id": "NODE_2b4b0d323d1623fce592",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_L11 SAMPLE CHEMISTRY / METROLOGY room task light diffuser_04",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_dc93a8fce849ef1b73f7",
+            "anchor_object": "MC_L11 glove working-face task bar actual light_11101",
+            "anchor_output_id": "NODE_dc93a8fce849ef1b73f7",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_L11 glove working-face task bar diffuser_11100",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_527efe5858634fe793f1",
+            "anchor_object": "MC_L12 INSTRUMENT ANALYSIS ceiling task actual light_05322",
+            "anchor_output_id": "NODE_527efe5858634fe793f1",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_L12 INSTRUMENT ANALYSIS ceiling task diffuser_05321",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_8850f81876da19e50738",
+            "anchor_object": "MC_L12 INSTRUMENT ANALYSIS ceiling task actual light_05325",
+            "anchor_output_id": "NODE_8850f81876da19e50738",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_L12 INSTRUMENT ANALYSIS ceiling task diffuser_05324",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_8bf332046810ad4f9b7c",
+            "anchor_object": "MC_L13 OPTICAL MEASUREMENT ceiling task actual light_05368",
+            "anchor_output_id": "NODE_8bf332046810ad4f9b7c",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_L13 OPTICAL MEASUREMENT ceiling task diffuser_05367",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_246fa62817d2f1809ea7",
+            "anchor_object": "MC_L13 OPTICAL MEASUREMENT ceiling task actual light_05371",
+            "anchor_output_id": "NODE_246fa62817d2f1809ea7",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_L13 OPTICAL MEASUREMENT ceiling task diffuser_05370",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_ea5d1bc6b6ddd0325274",
+            "anchor_object": "MC_L14 CALIBRATION / DIAGNOSTICS ceiling task actual light_",
+            "anchor_output_id": "NODE_ea5d1bc6b6ddd0325274",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_L14 CALIBRATION / DIAGNOSTICS ceiling task diffuser_05974",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_eea5746896e7661cf6fd",
+            "anchor_object": "MC_L14 CALIBRATION / DIAGNOSTICS ceiling task actual light_.001",
+            "anchor_output_id": "NODE_eea5746896e7661cf6fd",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_L14 CALIBRATION / DIAGNOSTICS ceiling task diffuser_05977",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_a66d5e3e295feeeb5853",
+            "anchor_object": "MC_L14 CALIBRATION / DIAGNOSTICS ceiling task actual light_.002",
+            "anchor_output_id": "NODE_a66d5e3e295feeeb5853",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_L14 CALIBRATION / DIAGNOSTICS ceiling task diffuser_05983",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_5e0f5dfb5e08b6927607",
+            "anchor_object": "MC_L14 CALIBRATION / DIAGNOSTICS ceiling task actual light_.003",
+            "anchor_output_id": "NODE_5e0f5dfb5e08b6927607",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_L14 CALIBRATION / DIAGNOSTICS ceiling task diffuser_05986",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_9e8d53bf0befb3660e15",
+            "anchor_object": "MC_L14 CALIBRATION / DIAGNOSTICS ceiling task actual light_0597",
+            "anchor_output_id": "NODE_9e8d53bf0befb3660e15",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_L14 CALIBRATION / DIAGNOSTICS ceiling task diffuser_05971",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_46a0a3f3185f9daa3790",
+            "anchor_object": "MC_L14 CALIBRATION / DIAGNOSTICS ceiling task actual light_0598",
+            "anchor_output_id": "NODE_46a0a3f3185f9daa3790",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_L14 CALIBRATION / DIAGNOSTICS ceiling task diffuser_05980",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_b9e3287cb22a5988d1f0",
+            "anchor_object": "MC_L21 SYSTEMS RESEARCH / INTEGRATION room task light actua",
+            "anchor_output_id": "NODE_b9e3287cb22a5988d1f0",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_L21 SYSTEMS RESEARCH / INTEGRATION room task light diffu",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_6e4a9f7bd0af2c9bcdd4",
+            "anchor_object": "MC_L21 SYSTEMS RESEARCH / INTEGRATION room task light actua.001",
+            "anchor_output_id": "NODE_6e4a9f7bd0af2c9bcdd4",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_L21 SYSTEMS RESEARCH / INTEGRATION room task light diffu.001",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_3c22e45a674e728e57be",
+            "anchor_object": "MC_L21 SYSTEMS RESEARCH / INTEGRATION room task light actua.002",
+            "anchor_output_id": "NODE_3c22e45a674e728e57be",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_L21 SYSTEMS RESEARCH / INTEGRATION room task light diffu.002",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_29b1c8dceafe8bb54c99",
+            "anchor_object": "MC_L21 SYSTEMS RESEARCH / INTEGRATION room task light actual li",
+            "anchor_output_id": "NODE_29b1c8dceafe8bb54c99",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_L21 SYSTEMS RESEARCH / INTEGRATION room task light diffuser_",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_6714bbdfa004dd74f524",
+            "anchor_object": "MC_L22 PLANT CONTROL ceiling task actual light_05611",
+            "anchor_output_id": "NODE_6714bbdfa004dd74f524",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_L22 PLANT CONTROL ceiling task diffuser_05610",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_6aa1ab9749a2fcdcdd13",
+            "anchor_object": "MC_L22 PLANT CONTROL ceiling task actual light_05614",
+            "anchor_output_id": "NODE_6aa1ab9749a2fcdcdd13",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_L22 PLANT CONTROL ceiling task diffuser_05613",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_cf20144209ce5802965b",
+            "anchor_object": "MC_L23 DATA / RESEARCH ceiling task actual light_05715",
+            "anchor_output_id": "NODE_cf20144209ce5802965b",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_L23 DATA / RESEARCH ceiling task diffuser_05714",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_aec72e2320de7a786b5b",
+            "anchor_object": "MC_L23 DATA / RESEARCH ceiling task actual light_05718",
+            "anchor_output_id": "NODE_aec72e2320de7a786b5b",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_L23 DATA / RESEARCH ceiling task diffuser_05717",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_b0336dd3ce37af6400c0",
+            "anchor_object": "MC_MC_N midflight stair wall luminaire_11067 actual illuminatio",
+            "anchor_output_id": "NODE_b0336dd3ce37af6400c0",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_N midflight stair wall diffuser_11068",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_1684cd33ad89c483c83c",
+            "anchor_object": "MC_MC_N midflight stair wall luminaire_11070 actual illuminatio",
+            "anchor_output_id": "NODE_1684cd33ad89c483c83c",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_N midflight stair wall diffuser_11071",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_79e8bddce8d0416451b6",
+            "anchor_object": "MC_MC_N midflight stair wall luminaire_11073 actual illuminatio",
+            "anchor_output_id": "NODE_79e8bddce8d0416451b6",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_N midflight stair wall diffuser_11074",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_309b2134dd3243b62c54",
+            "anchor_object": "MC_MC_N midflight stair wall luminaire_11076 actual illuminatio",
+            "anchor_output_id": "NODE_309b2134dd3243b62c54",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_N midflight stair wall diffuser_11077",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_dc34c028d4c604ab5e87",
+            "anchor_object": "MC_MC_N stair wall luminaire_02718 actual illumination_11085",
+            "anchor_output_id": "NODE_dc34c028d4c604ab5e87",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_N stair wall diffuser_02719",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_abcd0beea8ce302e1570",
+            "anchor_object": "MC_MC_N stair wall luminaire_02721 actual illumination_11086",
+            "anchor_output_id": "NODE_abcd0beea8ce302e1570",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_N stair wall diffuser_02722",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_cc8622e51885d5420cd3",
+            "anchor_object": "MC_MC_N stair wall luminaire_02912 actual illumination_11087",
+            "anchor_output_id": "NODE_cc8622e51885d5420cd3",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_N stair wall diffuser_02913",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_fad5e2cef01c855872dc",
+            "anchor_object": "MC_MC_N stair wall luminaire_02915 actual illumination_11088",
+            "anchor_output_id": "NODE_fad5e2cef01c855872dc",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_N stair wall diffuser_02916",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_858f9e852717d0d1a5e2",
+            "anchor_object": "MC_MC_N stair wall luminaire_03106 actual illumination_11089",
+            "anchor_output_id": "NODE_858f9e852717d0d1a5e2",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_N stair wall diffuser_03107",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_7c24776f4a8c48aa8d36",
+            "anchor_object": "MC_MC_N stair wall luminaire_03109 actual illumination_11090",
+            "anchor_output_id": "NODE_7c24776f4a8c48aa8d36",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_N stair wall diffuser_03110",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_901c9af40209df94ff83",
+            "anchor_object": "MC_MC_W midflight stair wall luminaire_11055 actual illuminatio",
+            "anchor_output_id": "NODE_901c9af40209df94ff83",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_W midflight stair wall diffuser_11056",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_e4c79b9334563ca7addd",
+            "anchor_object": "MC_MC_W midflight stair wall luminaire_11058 actual illuminatio",
+            "anchor_output_id": "NODE_e4c79b9334563ca7addd",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_W midflight stair wall diffuser_11059",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_969c27e65a2d6b8c8b26",
+            "anchor_object": "MC_MC_W midflight stair wall luminaire_11061 actual illuminatio",
+            "anchor_output_id": "NODE_969c27e65a2d6b8c8b26",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_W midflight stair wall diffuser_11062",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_37820ebac180682c43b7",
+            "anchor_object": "MC_MC_W midflight stair wall luminaire_11064 actual illuminatio",
+            "anchor_output_id": "NODE_37820ebac180682c43b7",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_W midflight stair wall diffuser_11065",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_a9ca300cba8b3cba0469",
+            "anchor_object": "MC_MC_W stair wall luminaire_02260 actual illumination_11079",
+            "anchor_output_id": "NODE_a9ca300cba8b3cba0469",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_W stair wall diffuser_02261",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_309d0dc5665dc3d51e6a",
+            "anchor_object": "MC_MC_W stair wall luminaire_02263 actual illumination_11080",
+            "anchor_output_id": "NODE_309d0dc5665dc3d51e6a",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_W stair wall diffuser_02264",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_97fd33d448b82a14d9ed",
+            "anchor_object": "MC_MC_W stair wall luminaire_02454 actual illumination_11081",
+            "anchor_output_id": "NODE_97fd33d448b82a14d9ed",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_W stair wall diffuser_02455",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_7abf3407d30d94c6ab89",
+            "anchor_object": "MC_MC_W stair wall luminaire_02457 actual illumination_11082",
+            "anchor_output_id": "NODE_7abf3407d30d94c6ab89",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_W stair wall diffuser_02458",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_4fc875d69863c9b31946",
+            "anchor_object": "MC_MC_W stair wall luminaire_02648 actual illumination_11083",
+            "anchor_output_id": "NODE_4fc875d69863c9b31946",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_W stair wall diffuser_02649",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_824b889f88aafc3450e4",
+            "anchor_object": "MC_MC_W stair wall luminaire_02651 actual illumination_11084",
+            "anchor_output_id": "NODE_824b889f88aafc3450e4",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_W stair wall diffuser_02652",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_b17372edc9841332f308",
+            "anchor_object": "MC_N central circulation actual light L0 actual light_04825",
+            "anchor_output_id": "NODE_b17372edc9841332f308",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_N central circulation actual light L0 diffuser_04824",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_d2c0334505e22e3f4db2",
+            "anchor_object": "MC_N central circulation actual light L0 actual light_04828",
+            "anchor_output_id": "NODE_d2c0334505e22e3f4db2",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_N central circulation actual light L0 diffuser_04827",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_dcafe2cb39431232ba64",
+            "anchor_object": "MC_N central circulation actual light L0 actual light_04831",
+            "anchor_output_id": "NODE_dcafe2cb39431232ba64",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_N central circulation actual light L0 diffuser_04830",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_8eff7a2eb52d40c683af",
+            "anchor_object": "MC_N central circulation actual light L0 actual light_04834",
+            "anchor_output_id": "NODE_8eff7a2eb52d40c683af",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_N central circulation actual light L0 diffuser_04833",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_645db1bbd67ef9b40c7f",
+            "anchor_object": "MC_N central circulation actual light L1 actual light_05109",
+            "anchor_output_id": "NODE_645db1bbd67ef9b40c7f",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_N central circulation actual light L1 diffuser_05108",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_034fa11fc0502772a52c",
+            "anchor_object": "MC_N central circulation actual light L1 actual light_05112",
+            "anchor_output_id": "NODE_034fa11fc0502772a52c",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_N central circulation actual light L1 diffuser_05111",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_103f30276326b6c49cad",
+            "anchor_object": "MC_N central circulation actual light L1 actual light_05115",
+            "anchor_output_id": "NODE_103f30276326b6c49cad",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_N central circulation actual light L1 diffuser_05114",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_4a570bc5ef047d5b3e76",
+            "anchor_object": "MC_N central circulation actual light L1 actual light_05118",
+            "anchor_output_id": "NODE_4a570bc5ef047d5b3e76",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_N central circulation actual light L1 diffuser_05117",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_05d1d811ad452130c425",
+            "anchor_object": "MC_N central circulation actual light L2 actual light_05398",
+            "anchor_output_id": "NODE_05d1d811ad452130c425",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_N central circulation actual light L2 diffuser_05397",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_555cc55e808111822680",
+            "anchor_object": "MC_N central circulation actual light L2 actual light_05401",
+            "anchor_output_id": "NODE_555cc55e808111822680",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_N central circulation actual light L2 diffuser_05400",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_d5f39733bc25fbe63445",
+            "anchor_object": "MC_N central circulation actual light L2 actual light_05404",
+            "anchor_output_id": "NODE_d5f39733bc25fbe63445",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_N central circulation actual light L2 diffuser_05403",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_2247be6ef7d9804b2451",
+            "anchor_object": "MC_N central circulation actual light L2 actual light_05407",
+            "anchor_output_id": "NODE_2247be6ef7d9804b2451",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_N central circulation actual light L2 diffuser_05406",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_7fde2899fddee3dab297",
+            "anchor_object": "MC_N right circulation L0 actual light_05103",
+            "anchor_output_id": "NODE_7fde2899fddee3dab297",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_N right circulation L0 diffuser_05102",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_34780b9c1a1d0603e27d",
+            "anchor_object": "MC_N right circulation L0 actual light_05106",
+            "anchor_output_id": "NODE_34780b9c1a1d0603e27d",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_N right circulation L0 diffuser_05105",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_661f9d6297caf0101ae0",
+            "anchor_object": "MC_N right circulation L1 actual light_05392",
+            "anchor_output_id": "NODE_661f9d6297caf0101ae0",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_N right circulation L1 diffuser_05391",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_97b6864a35faee270d5f",
+            "anchor_object": "MC_N right circulation L1 actual light_05395",
+            "anchor_output_id": "NODE_97b6864a35faee270d5f",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_N right circulation L1 diffuser_05394",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_45d435c743839bc404e5",
+            "anchor_object": "MC_N right circulation L2 actual light_05754",
+            "anchor_output_id": "NODE_45d435c743839bc404e5",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_N right circulation L2 diffuser_05753",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_2a7f3381b8ce49df578d",
+            "anchor_object": "MC_N right circulation L2 actual light_05757",
+            "anchor_output_id": "NODE_2a7f3381b8ce49df578d",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_N right circulation L2 diffuser_05756",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_fae0c58b3617a416d1d8",
+            "anchor_object": "MC_North crew actual ramp worklight_04004",
+            "anchor_output_id": "NODE_fae0c58b3617a416d1d8",
+            "emissive_resolution_status": "audited_no_separate_emissive_face",
+            "default_on": true,
+            "emissive_targets": []
+        },
+        {
+            "target_light_id": "SRC_580c3e540cdc97636e69",
+            "anchor_object": "MC_North crew actual ramp worklight_04007",
+            "anchor_output_id": "NODE_580c3e540cdc97636e69",
+            "emissive_resolution_status": "audited_no_separate_emissive_face",
+            "default_on": true,
+            "emissive_targets": []
+        },
+        {
+            "target_light_id": "SRC_8206cc3a2e905dea7e42",
+            "anchor_object": "MC_North crew collar task light actual light_03985",
+            "anchor_output_id": "NODE_8206cc3a2e905dea7e42",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_North crew collar task light diffuser_03984",
+                    "material_name": "MC_Exterior_Task_Diffuser"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_ad82c9913dceb209d217",
+            "anchor_object": "MC_W L0 circulation fixture 0 actual light_11003",
+            "anchor_output_id": "NODE_ad82c9913dceb209d217",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_W L0 circulation fixture 0 diffuser_11002",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_6c3576a03844171c4194",
+            "anchor_object": "MC_W L0 circulation fixture 1 actual light_11006",
+            "anchor_output_id": "NODE_6c3576a03844171c4194",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_W L0 circulation fixture 1 diffuser_11005",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_460d8e9ebd345ce8ba36",
+            "anchor_object": "MC_W L0 circulation fixture 2 actual light_11009",
+            "anchor_output_id": "NODE_460d8e9ebd345ce8ba36",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_W L0 circulation fixture 2 diffuser_11008",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_1e8be63be71dfbbd2a83",
+            "anchor_object": "MC_W L0 circulation fixture 3 actual light_11012",
+            "anchor_output_id": "NODE_1e8be63be71dfbbd2a83",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_W L0 circulation fixture 3 diffuser_11011",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_421e04b99218d8206581",
+            "anchor_object": "MC_W L0 circulation fixture 4 actual light_11015",
+            "anchor_output_id": "NODE_421e04b99218d8206581",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_W L0 circulation fixture 4 diffuser_11014",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_c84ffffaf908278600f6",
+            "anchor_object": "MC_W L0 circulation fixture 5 actual light_11018",
+            "anchor_output_id": "NODE_c84ffffaf908278600f6",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_W L0 circulation fixture 5 diffuser_11017",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_bed213792bc6085cc017",
+            "anchor_object": "MC_W L1 circulation fixture 0 actual light_11021",
+            "anchor_output_id": "NODE_bed213792bc6085cc017",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_W L1 circulation fixture 0 diffuser_11020",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_5cded97b6d97ee4c73b1",
+            "anchor_object": "MC_W L1 circulation fixture 1 actual light_11024",
+            "anchor_output_id": "NODE_5cded97b6d97ee4c73b1",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_W L1 circulation fixture 1 diffuser_11023",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_74640b7cff21d3355fe6",
+            "anchor_object": "MC_W L1 circulation fixture 2 actual light_11027",
+            "anchor_output_id": "NODE_74640b7cff21d3355fe6",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_W L1 circulation fixture 2 diffuser_11026",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_cd9cd2d16e8b68efebbc",
+            "anchor_object": "MC_W L1 circulation fixture 3 actual light_11030",
+            "anchor_output_id": "NODE_cd9cd2d16e8b68efebbc",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_W L1 circulation fixture 3 diffuser_11029",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_0f8fb6254bfcc6f9789c",
+            "anchor_object": "MC_W L1 circulation fixture 4 actual light_11033",
+            "anchor_output_id": "NODE_0f8fb6254bfcc6f9789c",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_W L1 circulation fixture 4 diffuser_11032",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_1ef43413f7a3987dc51a",
+            "anchor_object": "MC_W L1 circulation fixture 5 actual light_11036",
+            "anchor_output_id": "NODE_1ef43413f7a3987dc51a",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_W L1 circulation fixture 5 diffuser_11035",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_b078a2e8d3c15dcca956",
+            "anchor_object": "MC_W L2 circulation fixture 0 actual light_11039",
+            "anchor_output_id": "NODE_b078a2e8d3c15dcca956",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_W L2 circulation fixture 0 diffuser_11038",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_83b1f0ad3eb38ac4812f",
+            "anchor_object": "MC_W L2 circulation fixture 1 actual light_11042",
+            "anchor_output_id": "NODE_83b1f0ad3eb38ac4812f",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_W L2 circulation fixture 1 diffuser_11041",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_fccb5394d779262bcf5b",
+            "anchor_object": "MC_W L2 circulation fixture 2 actual light_11045",
+            "anchor_output_id": "NODE_fccb5394d779262bcf5b",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_W L2 circulation fixture 2 diffuser_11044",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_78372f03996cc9631c37",
+            "anchor_object": "MC_W L2 circulation fixture 3 actual light_11048",
+            "anchor_output_id": "NODE_78372f03996cc9631c37",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_W L2 circulation fixture 3 diffuser_11047",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_27c13dff156798f70aad",
+            "anchor_object": "MC_W L2 circulation fixture 4 actual light_11051",
+            "anchor_output_id": "NODE_27c13dff156798f70aad",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_W L2 circulation fixture 4 diffuser_11050",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_d944011fc39ffefc2457",
+            "anchor_object": "MC_W L2 circulation fixture 5 actual light_11054",
+            "anchor_output_id": "NODE_d944011fc39ffefc2457",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_W L2 circulation fixture 5 diffuser_11053",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_d76b755ec0495dba882e",
+            "anchor_object": "MC_West cargo actual ramp worklight_04106",
+            "anchor_output_id": "NODE_d76b755ec0495dba882e",
+            "emissive_resolution_status": "audited_no_separate_emissive_face",
+            "default_on": true,
+            "emissive_targets": []
+        },
+        {
+            "target_light_id": "SRC_e6537e5046016fd5ef99",
+            "anchor_object": "MC_West cargo actual ramp worklight_04109",
+            "anchor_output_id": "NODE_e6537e5046016fd5ef99",
+            "emissive_resolution_status": "audited_no_separate_emissive_face",
+            "default_on": true,
+            "emissive_targets": []
+        },
+        {
+            "target_light_id": "SRC_1a52582031c976077777",
+            "anchor_object": "MC_West cargo collar task light actual light_04087",
+            "anchor_output_id": "NODE_1a52582031c976077777",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "MC_West cargo collar task light diffuser_04086",
+                    "material_name": "MC_Exterior_Task_Diffuser"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_9dfca7f3e23de021b0d4",
+            "anchor_object": "SP00_TaskLight_Preparation",
+            "anchor_output_id": "NODE_9dfca7f3e23de021b0d4",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "SP02_InternalLightStrip",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_c191b078d62d8b510150",
+            "anchor_object": "SP00_TaskLight_Receiving",
+            "anchor_output_id": "NODE_c191b078d62d8b510150",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "SP01_DockUndersideTaskDiffuser",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_ad5ad1e65dc58cf30a30",
+            "anchor_object": "SP00_TaskLight_Return",
+            "anchor_output_id": "NODE_ad5ad1e65dc58cf30a30",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "SP05_ReturnUndersideLamp",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        },
+        {
+            "target_light_id": "SRC_739705eea6b68e1ba443",
+            "anchor_object": "SP00_TaskLight_TestChamber",
+            "anchor_output_id": "NODE_739705eea6b68e1ba443",
+            "emissive_resolution_status": "resolved_exact_semantic_family",
+            "default_on": true,
+            "emissive_targets": [
+                {
+                    "renderer_object": "SP04_InternalLamp",
+                    "material_name": "LD2_Light_NeutralTask"
+                }
+            ]
+        }
+    ],
+    "switches": [
+        {
+            "switch_id": "SW_MC00_G03_TASK_01",
+            "button_object": "MC108_Task_Bar_Switch",
+            "action": "Toggle",
+            "label": "G03 task bar",
+            "indicator_object": "SW_MC00_G03_TASK_01_Indicator",
+            "indicator_material_name": "MC_Data",
+            "interaction_anchor": "SW_MC00_G03_TASK_01_ROOT",
+            "target_light_ids": [
+                "SRC_e6365998da3f1684fc26"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_G03_CEILING_01",
+            "button_object": "SW_MC00_G03_CEILING_01_Keycap",
+            "action": "Toggle",
+            "label": "G03 ceiling 1",
+            "indicator_object": "SW_MC00_G03_CEILING_01_Indicator",
+            "indicator_material_name": "MC_Data",
+            "interaction_anchor": "SW_MC00_G03_CEILING_01_ROOT",
+            "target_light_ids": [
+                "SRC_8a52ba3ac89b5b690918"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_G03_CEILING_02",
+            "button_object": "SW_MC00_G03_CEILING_02_Keycap",
+            "action": "Toggle",
+            "label": "G03 ceiling 2",
+            "indicator_object": "SW_MC00_G03_CEILING_02_Indicator",
+            "indicator_material_name": "MC_Data",
+            "interaction_anchor": "SW_MC00_G03_CEILING_02_ROOT",
+            "target_light_ids": [
+                "SRC_e7fafbefb3b72e55b54e"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_L22_OPERATIONS_01",
+            "button_object": "SW_MC00_L22_OPERATIONS_01_Keycap",
+            "action": "SetOn",
+            "label": "L22 ON",
+            "indicator_object": "SW_MC00_L22_OPERATIONS_01_Indicator",
+            "indicator_material_name": "MC_Data",
+            "interaction_anchor": "SW_MC00_L22_OPERATIONS_01_ROOT",
+            "target_light_ids": [
+                "SRC_4163ef02dd8b938914e7",
+                "SRC_154e70e9f1255200307d",
+                "SRC_2f56fdafe3f7b0a9aede",
+                "SRC_706aa66afbb4e02121e7",
+                "SRC_6714bbdfa004dd74f524",
+                "SRC_6aa1ab9749a2fcdcdd13"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_L22_OPERATIONS_02",
+            "button_object": "SW_MC00_L22_OPERATIONS_02_Keycap",
+            "action": "SetOff",
+            "label": "L22 OFF",
+            "indicator_object": "SW_MC00_L22_OPERATIONS_02_Indicator",
+            "indicator_material_name": "MC_Data",
+            "interaction_anchor": "SW_MC00_L22_OPERATIONS_02_ROOT",
+            "target_light_ids": [
+                "SRC_4163ef02dd8b938914e7",
+                "SRC_154e70e9f1255200307d",
+                "SRC_2f56fdafe3f7b0a9aede",
+                "SRC_706aa66afbb4e02121e7",
+                "SRC_6714bbdfa004dd74f524",
+                "SRC_6aa1ab9749a2fcdcdd13"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_L22_OPERATIONS_03",
+            "button_object": "SW_MC00_L22_OPERATIONS_03_Keycap",
+            "action": "Toggle",
+            "label": "L22 TOGGLE",
+            "indicator_object": "SW_MC00_L22_OPERATIONS_03_Indicator",
+            "indicator_material_name": "MC_Data",
+            "interaction_anchor": "SW_MC00_L22_OPERATIONS_03_ROOT",
+            "target_light_ids": [
+                "SRC_4163ef02dd8b938914e7",
+                "SRC_154e70e9f1255200307d",
+                "SRC_2f56fdafe3f7b0a9aede",
+                "SRC_706aa66afbb4e02121e7",
+                "SRC_6714bbdfa004dd74f524",
+                "SRC_6aa1ab9749a2fcdcdd13"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_G01_CEILING_01",
+            "button_object": "SW_MC00_G01_CEILING_01_Keycap",
+            "action": "Toggle",
+            "label": "G01 / LIGHTS / 1",
+            "indicator_object": "SW_MC00_G01_CEILING_01_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_G01_CEILING_01_ROOT",
+            "target_light_ids": [
+                "SRC_52a38591f27ee83929c6"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_G01_CEILING_02",
+            "button_object": "SW_MC00_G01_CEILING_02_Keycap",
+            "action": "Toggle",
+            "label": "G01 / LIGHTS / 2",
+            "indicator_object": "SW_MC00_G01_CEILING_02_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_G01_CEILING_02_ROOT",
+            "target_light_ids": [
+                "SRC_c944b5d38d53c21259bd"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_G01_CEILING_03",
+            "button_object": "SW_MC00_G01_CEILING_03_Keycap",
+            "action": "Toggle",
+            "label": "G01 / LIGHTS / 3",
+            "indicator_object": "SW_MC00_G01_CEILING_03_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_G01_CEILING_03_ROOT",
+            "target_light_ids": [
+                "SRC_f8aa98d7c30c722f422b"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_G01_CEILING_04",
+            "button_object": "SW_MC00_G01_CEILING_04_Keycap",
+            "action": "Toggle",
+            "label": "G01 / LIGHTS / 4",
+            "indicator_object": "SW_MC00_G01_CEILING_04_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_G01_CEILING_04_ROOT",
+            "target_light_ids": [
+                "SRC_075a647728ec073c4d9e"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_G02_CEILING_01",
+            "button_object": "SW_MC00_G02_CEILING_01_Keycap",
+            "action": "Toggle",
+            "label": "G02 / LIGHTS / 1",
+            "indicator_object": "SW_MC00_G02_CEILING_01_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_G02_CEILING_01_ROOT",
+            "target_light_ids": [
+                "SRC_cc5485e12866c0ce5db4"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_G02_CEILING_02",
+            "button_object": "SW_MC00_G02_CEILING_02_Keycap",
+            "action": "Toggle",
+            "label": "G02 / LIGHTS / 2",
+            "indicator_object": "SW_MC00_G02_CEILING_02_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_G02_CEILING_02_ROOT",
+            "target_light_ids": [
+                "SRC_a9c3fe8c80a49311e49a"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_G04_CEILING_01",
+            "button_object": "SW_MC00_G04_CEILING_01_Keycap",
+            "action": "Toggle",
+            "label": "G04 / LIGHTS / 1",
+            "indicator_object": "SW_MC00_G04_CEILING_01_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_G04_CEILING_01_ROOT",
+            "target_light_ids": [
+                "SRC_bc0788d4043cb28c430c"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_G04_CEILING_02",
+            "button_object": "SW_MC00_G04_CEILING_02_Keycap",
+            "action": "Toggle",
+            "label": "G04 / LIGHTS / 2",
+            "indicator_object": "SW_MC00_G04_CEILING_02_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_G04_CEILING_02_ROOT",
+            "target_light_ids": [
+                "SRC_1710c95a64371115d23d"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_G04_CEILING_03",
+            "button_object": "SW_MC00_G04_CEILING_03_Keycap",
+            "action": "Toggle",
+            "label": "G04 / LIGHTS / 3",
+            "indicator_object": "SW_MC00_G04_CEILING_03_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_G04_CEILING_03_ROOT",
+            "target_light_ids": [
+                "SRC_619892d2c4ae9820e5e0"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_G04_CEILING_04",
+            "button_object": "SW_MC00_G04_CEILING_04_Keycap",
+            "action": "Toggle",
+            "label": "G04 / LIGHTS / 4",
+            "indicator_object": "SW_MC00_G04_CEILING_04_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_G04_CEILING_04_ROOT",
+            "target_light_ids": [
+                "SRC_a4a77dcdd3a15c680aac"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_G04_CEILING_05",
+            "button_object": "SW_MC00_G04_CEILING_05_Keycap",
+            "action": "Toggle",
+            "label": "G04 / LIGHTS / 5",
+            "indicator_object": "SW_MC00_G04_CEILING_05_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_G04_CEILING_05_ROOT",
+            "target_light_ids": [
+                "SRC_61ac2585dcaa0be75468"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_G04_CEILING_06",
+            "button_object": "SW_MC00_G04_CEILING_06_Keycap",
+            "action": "Toggle",
+            "label": "G04 / LIGHTS / 6",
+            "indicator_object": "SW_MC00_G04_CEILING_06_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_G04_CEILING_06_ROOT",
+            "target_light_ids": [
+                "SRC_f8b89bc092c8a5436b1e"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_L11_CEILING_01",
+            "button_object": "SW_MC00_L11_CEILING_01_Keycap",
+            "action": "Toggle",
+            "label": "L11 / LIGHTS / 1",
+            "indicator_object": "SW_MC00_L11_CEILING_01_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_L11_CEILING_01_ROOT",
+            "target_light_ids": [
+                "SRC_d0941a5d53d430fad589"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_L11_CEILING_02",
+            "button_object": "SW_MC00_L11_CEILING_02_Keycap",
+            "action": "Toggle",
+            "label": "L11 / LIGHTS / 2",
+            "indicator_object": "SW_MC00_L11_CEILING_02_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_L11_CEILING_02_ROOT",
+            "target_light_ids": [
+                "SRC_a7a28a67080bd870517c"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_L11_CEILING_03",
+            "button_object": "SW_MC00_L11_CEILING_03_Keycap",
+            "action": "Toggle",
+            "label": "L11 / LIGHTS / 3",
+            "indicator_object": "SW_MC00_L11_CEILING_03_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_L11_CEILING_03_ROOT",
+            "target_light_ids": [
+                "SRC_399d8c16b7ff9728f6ca"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_L11_CEILING_04",
+            "button_object": "SW_MC00_L11_CEILING_04_Keycap",
+            "action": "Toggle",
+            "label": "L11 / LIGHTS / 4",
+            "indicator_object": "SW_MC00_L11_CEILING_04_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_L11_CEILING_04_ROOT",
+            "target_light_ids": [
+                "SRC_2b4b0d323d1623fce592"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_L12_CEILING_01",
+            "button_object": "SW_MC00_L12_CEILING_01_Keycap",
+            "action": "Toggle",
+            "label": "L12 / LIGHTS / 1",
+            "indicator_object": "SW_MC00_L12_CEILING_01_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_L12_CEILING_01_ROOT",
+            "target_light_ids": [
+                "SRC_527efe5858634fe793f1"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_L12_CEILING_02",
+            "button_object": "SW_MC00_L12_CEILING_02_Keycap",
+            "action": "Toggle",
+            "label": "L12 / LIGHTS / 2",
+            "indicator_object": "SW_MC00_L12_CEILING_02_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_L12_CEILING_02_ROOT",
+            "target_light_ids": [
+                "SRC_8850f81876da19e50738"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_L13_CEILING_01",
+            "button_object": "SW_MC00_L13_CEILING_01_Keycap",
+            "action": "Toggle",
+            "label": "L13 / LIGHTS / 1",
+            "indicator_object": "SW_MC00_L13_CEILING_01_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_L13_CEILING_01_ROOT",
+            "target_light_ids": [
+                "SRC_8bf332046810ad4f9b7c"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_L13_CEILING_02",
+            "button_object": "SW_MC00_L13_CEILING_02_Keycap",
+            "action": "Toggle",
+            "label": "L13 / LIGHTS / 2",
+            "indicator_object": "SW_MC00_L13_CEILING_02_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_L13_CEILING_02_ROOT",
+            "target_light_ids": [
+                "SRC_246fa62817d2f1809ea7"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_L14_CEILING_01",
+            "button_object": "SW_MC00_L14_CEILING_01_Keycap",
+            "action": "Toggle",
+            "label": "L14 / LIGHTS / 1",
+            "indicator_object": "SW_MC00_L14_CEILING_01_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_L14_CEILING_01_ROOT",
+            "target_light_ids": [
+                "SRC_ea5d1bc6b6ddd0325274"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_L14_CEILING_02",
+            "button_object": "SW_MC00_L14_CEILING_02_Keycap",
+            "action": "Toggle",
+            "label": "L14 / LIGHTS / 2",
+            "indicator_object": "SW_MC00_L14_CEILING_02_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_L14_CEILING_02_ROOT",
+            "target_light_ids": [
+                "SRC_eea5746896e7661cf6fd"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_L14_CEILING_03",
+            "button_object": "SW_MC00_L14_CEILING_03_Keycap",
+            "action": "Toggle",
+            "label": "L14 / LIGHTS / 3",
+            "indicator_object": "SW_MC00_L14_CEILING_03_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_L14_CEILING_03_ROOT",
+            "target_light_ids": [
+                "SRC_a66d5e3e295feeeb5853"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_L14_CEILING_04",
+            "button_object": "SW_MC00_L14_CEILING_04_Keycap",
+            "action": "Toggle",
+            "label": "L14 / LIGHTS / 4",
+            "indicator_object": "SW_MC00_L14_CEILING_04_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_L14_CEILING_04_ROOT",
+            "target_light_ids": [
+                "SRC_5e0f5dfb5e08b6927607"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_L14_CEILING_05",
+            "button_object": "SW_MC00_L14_CEILING_05_Keycap",
+            "action": "Toggle",
+            "label": "L14 / LIGHTS / 5",
+            "indicator_object": "SW_MC00_L14_CEILING_05_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_L14_CEILING_05_ROOT",
+            "target_light_ids": [
+                "SRC_9e8d53bf0befb3660e15"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_L14_CEILING_06",
+            "button_object": "SW_MC00_L14_CEILING_06_Keycap",
+            "action": "Toggle",
+            "label": "L14 / LIGHTS / 6",
+            "indicator_object": "SW_MC00_L14_CEILING_06_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_L14_CEILING_06_ROOT",
+            "target_light_ids": [
+                "SRC_46a0a3f3185f9daa3790"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_L21_CEILING_01",
+            "button_object": "SW_MC00_L21_CEILING_01_Keycap",
+            "action": "Toggle",
+            "label": "L21 / LIGHTS / 1",
+            "indicator_object": "SW_MC00_L21_CEILING_01_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_L21_CEILING_01_ROOT",
+            "target_light_ids": [
+                "SRC_b9e3287cb22a5988d1f0"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_L21_CEILING_02",
+            "button_object": "SW_MC00_L21_CEILING_02_Keycap",
+            "action": "Toggle",
+            "label": "L21 / LIGHTS / 2",
+            "indicator_object": "SW_MC00_L21_CEILING_02_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_L21_CEILING_02_ROOT",
+            "target_light_ids": [
+                "SRC_6e4a9f7bd0af2c9bcdd4"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_L21_CEILING_03",
+            "button_object": "SW_MC00_L21_CEILING_03_Keycap",
+            "action": "Toggle",
+            "label": "L21 / LIGHTS / 3",
+            "indicator_object": "SW_MC00_L21_CEILING_03_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_L21_CEILING_03_ROOT",
+            "target_light_ids": [
+                "SRC_3c22e45a674e728e57be"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_L21_CEILING_04",
+            "button_object": "SW_MC00_L21_CEILING_04_Keycap",
+            "action": "Toggle",
+            "label": "L21 / LIGHTS / 4",
+            "indicator_object": "SW_MC00_L21_CEILING_04_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_L21_CEILING_04_ROOT",
+            "target_light_ids": [
+                "SRC_29b1c8dceafe8bb54c99"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_L22_CEILING_01",
+            "button_object": "SW_MC00_L22_CEILING_01_Keycap",
+            "action": "Toggle",
+            "label": "L22 / LIGHTS / 1",
+            "indicator_object": "SW_MC00_L22_CEILING_01_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_L22_CEILING_01_ROOT",
+            "target_light_ids": [
+                "SRC_6714bbdfa004dd74f524"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_L22_CEILING_02",
+            "button_object": "SW_MC00_L22_CEILING_02_Keycap",
+            "action": "Toggle",
+            "label": "L22 / LIGHTS / 2",
+            "indicator_object": "SW_MC00_L22_CEILING_02_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_L22_CEILING_02_ROOT",
+            "target_light_ids": [
+                "SRC_6aa1ab9749a2fcdcdd13"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_L23_CEILING_01",
+            "button_object": "SW_MC00_L23_CEILING_01_Keycap",
+            "action": "Toggle",
+            "label": "L23 / LIGHTS / 1",
+            "indicator_object": "SW_MC00_L23_CEILING_01_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_L23_CEILING_01_ROOT",
+            "target_light_ids": [
+                "SRC_cf20144209ce5802965b"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_L23_CEILING_02",
+            "button_object": "SW_MC00_L23_CEILING_02_Keycap",
+            "action": "Toggle",
+            "label": "L23 / LIGHTS / 2",
+            "indicator_object": "SW_MC00_L23_CEILING_02_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_L23_CEILING_02_ROOT",
+            "target_light_ids": [
+                "SRC_aec72e2320de7a786b5b"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_COR_L0_WEST_01",
+            "button_object": "SW_MC00_COR_L0_WEST_01_Keycap",
+            "action": "Toggle",
+            "label": "L0 WEST / LIGHTS / 1",
+            "indicator_object": "SW_MC00_COR_L0_WEST_01_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_COR_L0_WEST_01_ROOT",
+            "target_light_ids": [
+                "SRC_ad82c9913dceb209d217"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_COR_L0_WEST_02",
+            "button_object": "SW_MC00_COR_L0_WEST_02_Keycap",
+            "action": "Toggle",
+            "label": "L0 WEST / LIGHTS / 2",
+            "indicator_object": "SW_MC00_COR_L0_WEST_02_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_COR_L0_WEST_02_ROOT",
+            "target_light_ids": [
+                "SRC_6c3576a03844171c4194"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_COR_L0_WEST_03",
+            "button_object": "SW_MC00_COR_L0_WEST_03_Keycap",
+            "action": "Toggle",
+            "label": "L0 WEST / LIGHTS / 3",
+            "indicator_object": "SW_MC00_COR_L0_WEST_03_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_COR_L0_WEST_03_ROOT",
+            "target_light_ids": [
+                "SRC_460d8e9ebd345ce8ba36"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_COR_L0_WEST_04",
+            "button_object": "SW_MC00_COR_L0_WEST_04_Keycap",
+            "action": "Toggle",
+            "label": "L0 WEST / LIGHTS / 4",
+            "indicator_object": "SW_MC00_COR_L0_WEST_04_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_COR_L0_WEST_04_ROOT",
+            "target_light_ids": [
+                "SRC_1e8be63be71dfbbd2a83"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_COR_L0_WEST_05",
+            "button_object": "SW_MC00_COR_L0_WEST_05_Keycap",
+            "action": "Toggle",
+            "label": "L0 WEST / LIGHTS / 5",
+            "indicator_object": "SW_MC00_COR_L0_WEST_05_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_COR_L0_WEST_05_ROOT",
+            "target_light_ids": [
+                "SRC_421e04b99218d8206581"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_COR_L0_WEST_06",
+            "button_object": "SW_MC00_COR_L0_WEST_06_Keycap",
+            "action": "Toggle",
+            "label": "L0 WEST / LIGHTS / 6",
+            "indicator_object": "SW_MC00_COR_L0_WEST_06_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_COR_L0_WEST_06_ROOT",
+            "target_light_ids": [
+                "SRC_c84ffffaf908278600f6"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_COR_L0_N_CENTRAL_01",
+            "button_object": "SW_MC00_COR_L0_N_CENTRAL_01_Keycap",
+            "action": "Toggle",
+            "label": "L0 N CENTRAL / LIGHTS / 1",
+            "indicator_object": "SW_MC00_COR_L0_N_CENTRAL_01_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_COR_L0_N_CENTRAL_01_ROOT",
+            "target_light_ids": [
+                "SRC_b17372edc9841332f308"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_COR_L0_N_CENTRAL_02",
+            "button_object": "SW_MC00_COR_L0_N_CENTRAL_02_Keycap",
+            "action": "Toggle",
+            "label": "L0 N CENTRAL / LIGHTS / 2",
+            "indicator_object": "SW_MC00_COR_L0_N_CENTRAL_02_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_COR_L0_N_CENTRAL_02_ROOT",
+            "target_light_ids": [
+                "SRC_d2c0334505e22e3f4db2"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_COR_L0_N_CENTRAL_03",
+            "button_object": "SW_MC00_COR_L0_N_CENTRAL_03_Keycap",
+            "action": "Toggle",
+            "label": "L0 N CENTRAL / LIGHTS / 3",
+            "indicator_object": "SW_MC00_COR_L0_N_CENTRAL_03_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_COR_L0_N_CENTRAL_03_ROOT",
+            "target_light_ids": [
+                "SRC_dcafe2cb39431232ba64"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_COR_L0_N_CENTRAL_04",
+            "button_object": "SW_MC00_COR_L0_N_CENTRAL_04_Keycap",
+            "action": "Toggle",
+            "label": "L0 N CENTRAL / LIGHTS / 4",
+            "indicator_object": "SW_MC00_COR_L0_N_CENTRAL_04_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_COR_L0_N_CENTRAL_04_ROOT",
+            "target_light_ids": [
+                "SRC_8eff7a2eb52d40c683af"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_COR_L0_N_RIGHT_01",
+            "button_object": "SW_MC00_COR_L0_N_RIGHT_01_Keycap",
+            "action": "Toggle",
+            "label": "L0 N RIGHT / LIGHTS / 1",
+            "indicator_object": "SW_MC00_COR_L0_N_RIGHT_01_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_COR_L0_N_RIGHT_01_ROOT",
+            "target_light_ids": [
+                "SRC_7fde2899fddee3dab297"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_COR_L0_N_RIGHT_02",
+            "button_object": "SW_MC00_COR_L0_N_RIGHT_02_Keycap",
+            "action": "Toggle",
+            "label": "L0 N RIGHT / LIGHTS / 2",
+            "indicator_object": "SW_MC00_COR_L0_N_RIGHT_02_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_COR_L0_N_RIGHT_02_ROOT",
+            "target_light_ids": [
+                "SRC_34780b9c1a1d0603e27d"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_COR_L0_HUB_01",
+            "button_object": "SW_MC00_COR_L0_HUB_01_Keycap",
+            "action": "Toggle",
+            "label": "L0 HUB / LIGHTS / 1",
+            "indicator_object": "SW_MC00_COR_L0_HUB_01_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_COR_L0_HUB_01_ROOT",
+            "target_light_ids": [
+                "SRC_5d3724724aea8898c868"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_COR_L0_HUB_02",
+            "button_object": "SW_MC00_COR_L0_HUB_02_Keycap",
+            "action": "Toggle",
+            "label": "L0 HUB / LIGHTS / 2",
+            "indicator_object": "SW_MC00_COR_L0_HUB_02_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_COR_L0_HUB_02_ROOT",
+            "target_light_ids": [
+                "SRC_30664f804f3a10914c70"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_COR_L1_WEST_01",
+            "button_object": "SW_MC00_COR_L1_WEST_01_Keycap",
+            "action": "Toggle",
+            "label": "L1 WEST / LIGHTS / 1",
+            "indicator_object": "SW_MC00_COR_L1_WEST_01_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_COR_L1_WEST_01_ROOT",
+            "target_light_ids": [
+                "SRC_bed213792bc6085cc017"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_COR_L1_WEST_02",
+            "button_object": "SW_MC00_COR_L1_WEST_02_Keycap",
+            "action": "Toggle",
+            "label": "L1 WEST / LIGHTS / 2",
+            "indicator_object": "SW_MC00_COR_L1_WEST_02_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_COR_L1_WEST_02_ROOT",
+            "target_light_ids": [
+                "SRC_5cded97b6d97ee4c73b1"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_COR_L1_WEST_03",
+            "button_object": "SW_MC00_COR_L1_WEST_03_Keycap",
+            "action": "Toggle",
+            "label": "L1 WEST / LIGHTS / 3",
+            "indicator_object": "SW_MC00_COR_L1_WEST_03_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_COR_L1_WEST_03_ROOT",
+            "target_light_ids": [
+                "SRC_74640b7cff21d3355fe6"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_COR_L1_WEST_04",
+            "button_object": "SW_MC00_COR_L1_WEST_04_Keycap",
+            "action": "Toggle",
+            "label": "L1 WEST / LIGHTS / 4",
+            "indicator_object": "SW_MC00_COR_L1_WEST_04_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_COR_L1_WEST_04_ROOT",
+            "target_light_ids": [
+                "SRC_cd9cd2d16e8b68efebbc"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_COR_L1_WEST_05",
+            "button_object": "SW_MC00_COR_L1_WEST_05_Keycap",
+            "action": "Toggle",
+            "label": "L1 WEST / LIGHTS / 5",
+            "indicator_object": "SW_MC00_COR_L1_WEST_05_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_COR_L1_WEST_05_ROOT",
+            "target_light_ids": [
+                "SRC_0f8fb6254bfcc6f9789c"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_COR_L1_WEST_06",
+            "button_object": "SW_MC00_COR_L1_WEST_06_Keycap",
+            "action": "Toggle",
+            "label": "L1 WEST / LIGHTS / 6",
+            "indicator_object": "SW_MC00_COR_L1_WEST_06_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_COR_L1_WEST_06_ROOT",
+            "target_light_ids": [
+                "SRC_1ef43413f7a3987dc51a"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_COR_L1_N_CENTRAL_01",
+            "button_object": "SW_MC00_COR_L1_N_CENTRAL_01_Keycap",
+            "action": "Toggle",
+            "label": "L1 N CENTRAL / LIGHTS / 1",
+            "indicator_object": "SW_MC00_COR_L1_N_CENTRAL_01_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_COR_L1_N_CENTRAL_01_ROOT",
+            "target_light_ids": [
+                "SRC_645db1bbd67ef9b40c7f"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_COR_L1_N_CENTRAL_02",
+            "button_object": "SW_MC00_COR_L1_N_CENTRAL_02_Keycap",
+            "action": "Toggle",
+            "label": "L1 N CENTRAL / LIGHTS / 2",
+            "indicator_object": "SW_MC00_COR_L1_N_CENTRAL_02_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_COR_L1_N_CENTRAL_02_ROOT",
+            "target_light_ids": [
+                "SRC_034fa11fc0502772a52c"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_COR_L1_N_CENTRAL_03",
+            "button_object": "SW_MC00_COR_L1_N_CENTRAL_03_Keycap",
+            "action": "Toggle",
+            "label": "L1 N CENTRAL / LIGHTS / 3",
+            "indicator_object": "SW_MC00_COR_L1_N_CENTRAL_03_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_COR_L1_N_CENTRAL_03_ROOT",
+            "target_light_ids": [
+                "SRC_103f30276326b6c49cad"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_COR_L1_N_CENTRAL_04",
+            "button_object": "SW_MC00_COR_L1_N_CENTRAL_04_Keycap",
+            "action": "Toggle",
+            "label": "L1 N CENTRAL / LIGHTS / 4",
+            "indicator_object": "SW_MC00_COR_L1_N_CENTRAL_04_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_COR_L1_N_CENTRAL_04_ROOT",
+            "target_light_ids": [
+                "SRC_4a570bc5ef047d5b3e76"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_COR_L1_N_RIGHT_01",
+            "button_object": "SW_MC00_COR_L1_N_RIGHT_01_Keycap",
+            "action": "Toggle",
+            "label": "L1 N RIGHT / LIGHTS / 1",
+            "indicator_object": "SW_MC00_COR_L1_N_RIGHT_01_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_COR_L1_N_RIGHT_01_ROOT",
+            "target_light_ids": [
+                "SRC_661f9d6297caf0101ae0"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_COR_L1_N_RIGHT_02",
+            "button_object": "SW_MC00_COR_L1_N_RIGHT_02_Keycap",
+            "action": "Toggle",
+            "label": "L1 N RIGHT / LIGHTS / 2",
+            "indicator_object": "SW_MC00_COR_L1_N_RIGHT_02_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_COR_L1_N_RIGHT_02_ROOT",
+            "target_light_ids": [
+                "SRC_97b6864a35faee270d5f"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_COR_L1_HUB_01",
+            "button_object": "SW_MC00_COR_L1_HUB_01_Keycap",
+            "action": "Toggle",
+            "label": "L1 HUB / LIGHTS / 1",
+            "indicator_object": "SW_MC00_COR_L1_HUB_01_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_COR_L1_HUB_01_ROOT",
+            "target_light_ids": [
+                "SRC_9ff5c15ed0288a1a7748"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_COR_L1_HUB_02",
+            "button_object": "SW_MC00_COR_L1_HUB_02_Keycap",
+            "action": "Toggle",
+            "label": "L1 HUB / LIGHTS / 2",
+            "indicator_object": "SW_MC00_COR_L1_HUB_02_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_COR_L1_HUB_02_ROOT",
+            "target_light_ids": [
+                "SRC_bd2e229e203e11b7341b"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_COR_L2_WEST_01",
+            "button_object": "SW_MC00_COR_L2_WEST_01_Keycap",
+            "action": "Toggle",
+            "label": "L2 WEST / LIGHTS / 1",
+            "indicator_object": "SW_MC00_COR_L2_WEST_01_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_COR_L2_WEST_01_ROOT",
+            "target_light_ids": [
+                "SRC_b078a2e8d3c15dcca956"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_COR_L2_WEST_02",
+            "button_object": "SW_MC00_COR_L2_WEST_02_Keycap",
+            "action": "Toggle",
+            "label": "L2 WEST / LIGHTS / 2",
+            "indicator_object": "SW_MC00_COR_L2_WEST_02_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_COR_L2_WEST_02_ROOT",
+            "target_light_ids": [
+                "SRC_83b1f0ad3eb38ac4812f"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_COR_L2_WEST_03",
+            "button_object": "SW_MC00_COR_L2_WEST_03_Keycap",
+            "action": "Toggle",
+            "label": "L2 WEST / LIGHTS / 3",
+            "indicator_object": "SW_MC00_COR_L2_WEST_03_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_COR_L2_WEST_03_ROOT",
+            "target_light_ids": [
+                "SRC_fccb5394d779262bcf5b"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_COR_L2_WEST_04",
+            "button_object": "SW_MC00_COR_L2_WEST_04_Keycap",
+            "action": "Toggle",
+            "label": "L2 WEST / LIGHTS / 4",
+            "indicator_object": "SW_MC00_COR_L2_WEST_04_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_COR_L2_WEST_04_ROOT",
+            "target_light_ids": [
+                "SRC_78372f03996cc9631c37"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_COR_L2_WEST_05",
+            "button_object": "SW_MC00_COR_L2_WEST_05_Keycap",
+            "action": "Toggle",
+            "label": "L2 WEST / LIGHTS / 5",
+            "indicator_object": "SW_MC00_COR_L2_WEST_05_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_COR_L2_WEST_05_ROOT",
+            "target_light_ids": [
+                "SRC_27c13dff156798f70aad"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_COR_L2_WEST_06",
+            "button_object": "SW_MC00_COR_L2_WEST_06_Keycap",
+            "action": "Toggle",
+            "label": "L2 WEST / LIGHTS / 6",
+            "indicator_object": "SW_MC00_COR_L2_WEST_06_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_COR_L2_WEST_06_ROOT",
+            "target_light_ids": [
+                "SRC_d944011fc39ffefc2457"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_COR_L2_N_CENTRAL_01",
+            "button_object": "SW_MC00_COR_L2_N_CENTRAL_01_Keycap",
+            "action": "Toggle",
+            "label": "L2 N CENTRAL / LIGHTS / 1",
+            "indicator_object": "SW_MC00_COR_L2_N_CENTRAL_01_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_COR_L2_N_CENTRAL_01_ROOT",
+            "target_light_ids": [
+                "SRC_05d1d811ad452130c425"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_COR_L2_N_CENTRAL_02",
+            "button_object": "SW_MC00_COR_L2_N_CENTRAL_02_Keycap",
+            "action": "Toggle",
+            "label": "L2 N CENTRAL / LIGHTS / 2",
+            "indicator_object": "SW_MC00_COR_L2_N_CENTRAL_02_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_COR_L2_N_CENTRAL_02_ROOT",
+            "target_light_ids": [
+                "SRC_555cc55e808111822680"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_COR_L2_N_CENTRAL_03",
+            "button_object": "SW_MC00_COR_L2_N_CENTRAL_03_Keycap",
+            "action": "Toggle",
+            "label": "L2 N CENTRAL / LIGHTS / 3",
+            "indicator_object": "SW_MC00_COR_L2_N_CENTRAL_03_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_COR_L2_N_CENTRAL_03_ROOT",
+            "target_light_ids": [
+                "SRC_d5f39733bc25fbe63445"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_COR_L2_N_CENTRAL_04",
+            "button_object": "SW_MC00_COR_L2_N_CENTRAL_04_Keycap",
+            "action": "Toggle",
+            "label": "L2 N CENTRAL / LIGHTS / 4",
+            "indicator_object": "SW_MC00_COR_L2_N_CENTRAL_04_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_COR_L2_N_CENTRAL_04_ROOT",
+            "target_light_ids": [
+                "SRC_2247be6ef7d9804b2451"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_COR_L2_N_RIGHT_01",
+            "button_object": "SW_MC00_COR_L2_N_RIGHT_01_Keycap",
+            "action": "Toggle",
+            "label": "L2 N RIGHT / LIGHTS / 1",
+            "indicator_object": "SW_MC00_COR_L2_N_RIGHT_01_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_COR_L2_N_RIGHT_01_ROOT",
+            "target_light_ids": [
+                "SRC_45d435c743839bc404e5"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_COR_L2_N_RIGHT_02",
+            "button_object": "SW_MC00_COR_L2_N_RIGHT_02_Keycap",
+            "action": "Toggle",
+            "label": "L2 N RIGHT / LIGHTS / 2",
+            "indicator_object": "SW_MC00_COR_L2_N_RIGHT_02_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_COR_L2_N_RIGHT_02_ROOT",
+            "target_light_ids": [
+                "SRC_2a7f3381b8ce49df578d"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_COR_L2_HUB_01",
+            "button_object": "SW_MC00_COR_L2_HUB_01_Keycap",
+            "action": "Toggle",
+            "label": "L2 HUB / LIGHTS / 1",
+            "indicator_object": "SW_MC00_COR_L2_HUB_01_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_COR_L2_HUB_01_ROOT",
+            "target_light_ids": [
+                "SRC_4fb50cd1ef8bbb489725"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_COR_L2_HUB_02",
+            "button_object": "SW_MC00_COR_L2_HUB_02_Keycap",
+            "action": "Toggle",
+            "label": "L2 HUB / LIGHTS / 2",
+            "indicator_object": "SW_MC00_COR_L2_HUB_02_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_COR_L2_HUB_02_ROOT",
+            "target_light_ids": [
+                "SRC_eec9cd11404591c1d748"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_STAIR_W_LANDING_L0_01",
+            "button_object": "SW_MC00_STAIR_W_LANDING_L0_01_Keycap",
+            "action": "Toggle",
+            "label": "STAIR W L0 / LIGHTS / 1",
+            "indicator_object": "SW_MC00_STAIR_W_LANDING_L0_01_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_STAIR_W_LANDING_L0_01_ROOT",
+            "target_light_ids": [
+                "SRC_901c9af40209df94ff83"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_STAIR_W_LANDING_L0_02",
+            "button_object": "SW_MC00_STAIR_W_LANDING_L0_02_Keycap",
+            "action": "Toggle",
+            "label": "STAIR W L0 / LIGHTS / 2",
+            "indicator_object": "SW_MC00_STAIR_W_LANDING_L0_02_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_STAIR_W_LANDING_L0_02_ROOT",
+            "target_light_ids": [
+                "SRC_e4c79b9334563ca7addd"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_STAIR_W_LANDING_L0_03",
+            "button_object": "SW_MC00_STAIR_W_LANDING_L0_03_Keycap",
+            "action": "Toggle",
+            "label": "STAIR W L0 / LIGHTS / 3",
+            "indicator_object": "SW_MC00_STAIR_W_LANDING_L0_03_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_STAIR_W_LANDING_L0_03_ROOT",
+            "target_light_ids": [
+                "SRC_a9ca300cba8b3cba0469"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_STAIR_W_LANDING_L0_04",
+            "button_object": "SW_MC00_STAIR_W_LANDING_L0_04_Keycap",
+            "action": "Toggle",
+            "label": "STAIR W L0 / LIGHTS / 4",
+            "indicator_object": "SW_MC00_STAIR_W_LANDING_L0_04_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_STAIR_W_LANDING_L0_04_ROOT",
+            "target_light_ids": [
+                "SRC_309d0dc5665dc3d51e6a"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_STAIR_W_LANDING_L1_01",
+            "button_object": "SW_MC00_STAIR_W_LANDING_L1_01_Keycap",
+            "action": "Toggle",
+            "label": "STAIR W L1 / LIGHTS / 1",
+            "indicator_object": "SW_MC00_STAIR_W_LANDING_L1_01_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_STAIR_W_LANDING_L1_01_ROOT",
+            "target_light_ids": [
+                "SRC_901c9af40209df94ff83"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_STAIR_W_LANDING_L1_02",
+            "button_object": "SW_MC00_STAIR_W_LANDING_L1_02_Keycap",
+            "action": "Toggle",
+            "label": "STAIR W L1 / LIGHTS / 2",
+            "indicator_object": "SW_MC00_STAIR_W_LANDING_L1_02_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_STAIR_W_LANDING_L1_02_ROOT",
+            "target_light_ids": [
+                "SRC_e4c79b9334563ca7addd"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_STAIR_W_LANDING_L1_03",
+            "button_object": "SW_MC00_STAIR_W_LANDING_L1_03_Keycap",
+            "action": "Toggle",
+            "label": "STAIR W L1 / LIGHTS / 3",
+            "indicator_object": "SW_MC00_STAIR_W_LANDING_L1_03_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_STAIR_W_LANDING_L1_03_ROOT",
+            "target_light_ids": [
+                "SRC_969c27e65a2d6b8c8b26"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_STAIR_W_LANDING_L1_04",
+            "button_object": "SW_MC00_STAIR_W_LANDING_L1_04_Keycap",
+            "action": "Toggle",
+            "label": "STAIR W L1 / LIGHTS / 4",
+            "indicator_object": "SW_MC00_STAIR_W_LANDING_L1_04_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_STAIR_W_LANDING_L1_04_ROOT",
+            "target_light_ids": [
+                "SRC_37820ebac180682c43b7"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_STAIR_W_LANDING_L1_05",
+            "button_object": "SW_MC00_STAIR_W_LANDING_L1_05_Keycap",
+            "action": "Toggle",
+            "label": "STAIR W L1 / LIGHTS / 5",
+            "indicator_object": "SW_MC00_STAIR_W_LANDING_L1_05_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_STAIR_W_LANDING_L1_05_ROOT",
+            "target_light_ids": [
+                "SRC_97fd33d448b82a14d9ed"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_STAIR_W_LANDING_L1_06",
+            "button_object": "SW_MC00_STAIR_W_LANDING_L1_06_Keycap",
+            "action": "Toggle",
+            "label": "STAIR W L1 / LIGHTS / 6",
+            "indicator_object": "SW_MC00_STAIR_W_LANDING_L1_06_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_STAIR_W_LANDING_L1_06_ROOT",
+            "target_light_ids": [
+                "SRC_7abf3407d30d94c6ab89"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_STAIR_W_LANDING_L2_01",
+            "button_object": "SW_MC00_STAIR_W_LANDING_L2_01_Keycap",
+            "action": "Toggle",
+            "label": "STAIR W L2 / LIGHTS / 1",
+            "indicator_object": "SW_MC00_STAIR_W_LANDING_L2_01_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_STAIR_W_LANDING_L2_01_ROOT",
+            "target_light_ids": [
+                "SRC_969c27e65a2d6b8c8b26"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_STAIR_W_LANDING_L2_02",
+            "button_object": "SW_MC00_STAIR_W_LANDING_L2_02_Keycap",
+            "action": "Toggle",
+            "label": "STAIR W L2 / LIGHTS / 2",
+            "indicator_object": "SW_MC00_STAIR_W_LANDING_L2_02_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_STAIR_W_LANDING_L2_02_ROOT",
+            "target_light_ids": [
+                "SRC_37820ebac180682c43b7"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_STAIR_W_LANDING_L2_03",
+            "button_object": "SW_MC00_STAIR_W_LANDING_L2_03_Keycap",
+            "action": "Toggle",
+            "label": "STAIR W L2 / LIGHTS / 3",
+            "indicator_object": "SW_MC00_STAIR_W_LANDING_L2_03_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_STAIR_W_LANDING_L2_03_ROOT",
+            "target_light_ids": [
+                "SRC_4fc875d69863c9b31946"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_STAIR_W_LANDING_L2_04",
+            "button_object": "SW_MC00_STAIR_W_LANDING_L2_04_Keycap",
+            "action": "Toggle",
+            "label": "STAIR W L2 / LIGHTS / 4",
+            "indicator_object": "SW_MC00_STAIR_W_LANDING_L2_04_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_STAIR_W_LANDING_L2_04_ROOT",
+            "target_light_ids": [
+                "SRC_824b889f88aafc3450e4"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_STAIR_N_LANDING_L0_01",
+            "button_object": "SW_MC00_STAIR_N_LANDING_L0_01_Keycap",
+            "action": "Toggle",
+            "label": "STAIR N L0 / LIGHTS / 1",
+            "indicator_object": "SW_MC00_STAIR_N_LANDING_L0_01_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_STAIR_N_LANDING_L0_01_ROOT",
+            "target_light_ids": [
+                "SRC_b0336dd3ce37af6400c0"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_STAIR_N_LANDING_L0_02",
+            "button_object": "SW_MC00_STAIR_N_LANDING_L0_02_Keycap",
+            "action": "Toggle",
+            "label": "STAIR N L0 / LIGHTS / 2",
+            "indicator_object": "SW_MC00_STAIR_N_LANDING_L0_02_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_STAIR_N_LANDING_L0_02_ROOT",
+            "target_light_ids": [
+                "SRC_1684cd33ad89c483c83c"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_STAIR_N_LANDING_L0_03",
+            "button_object": "SW_MC00_STAIR_N_LANDING_L0_03_Keycap",
+            "action": "Toggle",
+            "label": "STAIR N L0 / LIGHTS / 3",
+            "indicator_object": "SW_MC00_STAIR_N_LANDING_L0_03_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_STAIR_N_LANDING_L0_03_ROOT",
+            "target_light_ids": [
+                "SRC_dc34c028d4c604ab5e87"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_STAIR_N_LANDING_L0_04",
+            "button_object": "SW_MC00_STAIR_N_LANDING_L0_04_Keycap",
+            "action": "Toggle",
+            "label": "STAIR N L0 / LIGHTS / 4",
+            "indicator_object": "SW_MC00_STAIR_N_LANDING_L0_04_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_STAIR_N_LANDING_L0_04_ROOT",
+            "target_light_ids": [
+                "SRC_abcd0beea8ce302e1570"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_STAIR_N_LANDING_L1_01",
+            "button_object": "SW_MC00_STAIR_N_LANDING_L1_01_Keycap",
+            "action": "Toggle",
+            "label": "STAIR N L1 / LIGHTS / 1",
+            "indicator_object": "SW_MC00_STAIR_N_LANDING_L1_01_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_STAIR_N_LANDING_L1_01_ROOT",
+            "target_light_ids": [
+                "SRC_b0336dd3ce37af6400c0"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_STAIR_N_LANDING_L1_02",
+            "button_object": "SW_MC00_STAIR_N_LANDING_L1_02_Keycap",
+            "action": "Toggle",
+            "label": "STAIR N L1 / LIGHTS / 2",
+            "indicator_object": "SW_MC00_STAIR_N_LANDING_L1_02_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_STAIR_N_LANDING_L1_02_ROOT",
+            "target_light_ids": [
+                "SRC_1684cd33ad89c483c83c"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_STAIR_N_LANDING_L1_03",
+            "button_object": "SW_MC00_STAIR_N_LANDING_L1_03_Keycap",
+            "action": "Toggle",
+            "label": "STAIR N L1 / LIGHTS / 3",
+            "indicator_object": "SW_MC00_STAIR_N_LANDING_L1_03_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_STAIR_N_LANDING_L1_03_ROOT",
+            "target_light_ids": [
+                "SRC_79e8bddce8d0416451b6"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_STAIR_N_LANDING_L1_04",
+            "button_object": "SW_MC00_STAIR_N_LANDING_L1_04_Keycap",
+            "action": "Toggle",
+            "label": "STAIR N L1 / LIGHTS / 4",
+            "indicator_object": "SW_MC00_STAIR_N_LANDING_L1_04_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_STAIR_N_LANDING_L1_04_ROOT",
+            "target_light_ids": [
+                "SRC_309b2134dd3243b62c54"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_STAIR_N_LANDING_L1_05",
+            "button_object": "SW_MC00_STAIR_N_LANDING_L1_05_Keycap",
+            "action": "Toggle",
+            "label": "STAIR N L1 / LIGHTS / 5",
+            "indicator_object": "SW_MC00_STAIR_N_LANDING_L1_05_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_STAIR_N_LANDING_L1_05_ROOT",
+            "target_light_ids": [
+                "SRC_cc8622e51885d5420cd3"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_STAIR_N_LANDING_L1_06",
+            "button_object": "SW_MC00_STAIR_N_LANDING_L1_06_Keycap",
+            "action": "Toggle",
+            "label": "STAIR N L1 / LIGHTS / 6",
+            "indicator_object": "SW_MC00_STAIR_N_LANDING_L1_06_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_STAIR_N_LANDING_L1_06_ROOT",
+            "target_light_ids": [
+                "SRC_fad5e2cef01c855872dc"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_STAIR_N_LANDING_L2_01",
+            "button_object": "SW_MC00_STAIR_N_LANDING_L2_01_Keycap",
+            "action": "Toggle",
+            "label": "STAIR N L2 / LIGHTS / 1",
+            "indicator_object": "SW_MC00_STAIR_N_LANDING_L2_01_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_STAIR_N_LANDING_L2_01_ROOT",
+            "target_light_ids": [
+                "SRC_79e8bddce8d0416451b6"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_STAIR_N_LANDING_L2_02",
+            "button_object": "SW_MC00_STAIR_N_LANDING_L2_02_Keycap",
+            "action": "Toggle",
+            "label": "STAIR N L2 / LIGHTS / 2",
+            "indicator_object": "SW_MC00_STAIR_N_LANDING_L2_02_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_STAIR_N_LANDING_L2_02_ROOT",
+            "target_light_ids": [
+                "SRC_309b2134dd3243b62c54"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_STAIR_N_LANDING_L2_03",
+            "button_object": "SW_MC00_STAIR_N_LANDING_L2_03_Keycap",
+            "action": "Toggle",
+            "label": "STAIR N L2 / LIGHTS / 3",
+            "indicator_object": "SW_MC00_STAIR_N_LANDING_L2_03_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_STAIR_N_LANDING_L2_03_ROOT",
+            "target_light_ids": [
+                "SRC_858f9e852717d0d1a5e2"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_STAIR_N_LANDING_L2_04",
+            "button_object": "SW_MC00_STAIR_N_LANDING_L2_04_Keycap",
+            "action": "Toggle",
+            "label": "STAIR N L2 / LIGHTS / 4",
+            "indicator_object": "SW_MC00_STAIR_N_LANDING_L2_04_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_STAIR_N_LANDING_L2_04_ROOT",
+            "target_light_ids": [
+                "SRC_7c24776f4a8c48aa8d36"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_ENTRY_EVA_01",
+            "button_object": "SW_MC00_ENTRY_EVA_01_Keycap",
+            "action": "Toggle",
+            "label": "ENTRY EVA / LIGHTS / COLLAR",
+            "indicator_object": "SW_MC00_ENTRY_EVA_01_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_ENTRY_EVA_01_ROOT",
+            "target_light_ids": [
+                "SRC_80479fd91931e04fd1d6"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_ENTRY_EVA_02",
+            "button_object": "SW_MC00_ENTRY_EVA_02_Keycap",
+            "action": "Toggle",
+            "label": "ENTRY EVA / LIGHTS / RAMP A",
+            "indicator_object": "SW_MC00_ENTRY_EVA_02_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_ENTRY_EVA_02_ROOT",
+            "target_light_ids": [
+                "SRC_20906c5094fa0dcf9416"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_ENTRY_EVA_03",
+            "button_object": "SW_MC00_ENTRY_EVA_03_Keycap",
+            "action": "Toggle",
+            "label": "ENTRY EVA / LIGHTS / RAMP B",
+            "indicator_object": "SW_MC00_ENTRY_EVA_03_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_ENTRY_EVA_03_ROOT",
+            "target_light_ids": [
+                "SRC_ccf4474ef1e825e8fcec"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_ENTRY_CREW_01",
+            "button_object": "SW_MC00_ENTRY_CREW_01_Keycap",
+            "action": "Toggle",
+            "label": "ENTRY CREW / LIGHTS / COLLAR",
+            "indicator_object": "SW_MC00_ENTRY_CREW_01_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_ENTRY_CREW_01_ROOT",
+            "target_light_ids": [
+                "SRC_fae0c58b3617a416d1d8"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_ENTRY_CREW_02",
+            "button_object": "SW_MC00_ENTRY_CREW_02_Keycap",
+            "action": "Toggle",
+            "label": "ENTRY CREW / LIGHTS / RAMP A",
+            "indicator_object": "SW_MC00_ENTRY_CREW_02_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_ENTRY_CREW_02_ROOT",
+            "target_light_ids": [
+                "SRC_580c3e540cdc97636e69"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_ENTRY_CREW_03",
+            "button_object": "SW_MC00_ENTRY_CREW_03_Keycap",
+            "action": "Toggle",
+            "label": "ENTRY CREW / LIGHTS / RAMP B",
+            "indicator_object": "SW_MC00_ENTRY_CREW_03_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_ENTRY_CREW_03_ROOT",
+            "target_light_ids": [
+                "SRC_8206cc3a2e905dea7e42"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_ENTRY_CARGO_01",
+            "button_object": "SW_MC00_ENTRY_CARGO_01_Keycap",
+            "action": "Toggle",
+            "label": "ENTRY CARGO / LIGHTS / COLLAR",
+            "indicator_object": "SW_MC00_ENTRY_CARGO_01_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_ENTRY_CARGO_01_ROOT",
+            "target_light_ids": [
+                "SRC_d76b755ec0495dba882e"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_ENTRY_CARGO_02",
+            "button_object": "SW_MC00_ENTRY_CARGO_02_Keycap",
+            "action": "Toggle",
+            "label": "ENTRY CARGO / LIGHTS / RAMP A",
+            "indicator_object": "SW_MC00_ENTRY_CARGO_02_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_ENTRY_CARGO_02_ROOT",
+            "target_light_ids": [
+                "SRC_e6537e5046016fd5ef99"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_ENTRY_CARGO_03",
+            "button_object": "SW_MC00_ENTRY_CARGO_03_Keycap",
+            "action": "Toggle",
+            "label": "ENTRY CARGO / LIGHTS / RAMP B",
+            "indicator_object": "SW_MC00_ENTRY_CARGO_03_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_ENTRY_CARGO_03_ROOT",
+            "target_light_ids": [
+                "SRC_1a52582031c976077777"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_G02_TASK_01",
+            "button_object": "SW_MC00_G02_TASK_01_Keycap",
+            "action": "Toggle",
+            "label": "G02 TASK / LIGHT",
+            "indicator_object": "SW_MC00_G02_TASK_01_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_G02_TASK_01_ROOT",
+            "target_light_ids": [
+                "SRC_5328cb8663556e3b29dc"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_L11_TASK_01",
+            "button_object": "SW_MC00_L11_TASK_01_Keycap",
+            "action": "Toggle",
+            "label": "L11 TASK / LIGHT",
+            "indicator_object": "SW_MC00_L11_TASK_01_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_L11_TASK_01_ROOT",
+            "target_light_ids": [
+                "SRC_dc93a8fce849ef1b73f7"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_TASK_SP01_01",
+            "button_object": "SW_MC00_TASK_SP01_01_Keycap",
+            "action": "Toggle",
+            "label": "SP01 TASK / LIGHT",
+            "indicator_object": "SW_MC00_TASK_SP01_01_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_TASK_SP01_01_ROOT",
+            "target_light_ids": [
+                "SRC_c191b078d62d8b510150"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_TASK_SP02_01",
+            "button_object": "SW_MC00_TASK_SP02_01_Keycap",
+            "action": "Toggle",
+            "label": "SP02 TASK / LIGHT",
+            "indicator_object": "SW_MC00_TASK_SP02_01_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_TASK_SP02_01_ROOT",
+            "target_light_ids": [
+                "SRC_9dfca7f3e23de021b0d4"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_TASK_SP04_01",
+            "button_object": "SW_MC00_TASK_SP04_01_Keycap",
+            "action": "Toggle",
+            "label": "SP04 TASK / LIGHT",
+            "indicator_object": "SW_MC00_TASK_SP04_01_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_TASK_SP04_01_ROOT",
+            "target_light_ids": [
+                "SRC_739705eea6b68e1ba443"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_TASK_SP05_01",
+            "button_object": "SW_MC00_TASK_SP05_01_Keycap",
+            "action": "Toggle",
+            "label": "SP05 TASK / LIGHT",
+            "indicator_object": "SW_MC00_TASK_SP05_01_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_TASK_SP05_01_ROOT",
+            "target_light_ids": [
+                "SRC_ad5ad1e65dc58cf30a30"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_TASK_L22_IO_01",
+            "button_object": "SW_MC00_TASK_L22_IO_01_Keycap",
+            "action": "Toggle",
+            "label": "L22 IO TASK / LIGHT",
+            "indicator_object": "SW_MC00_TASK_L22_IO_01_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_TASK_L22_IO_01_ROOT",
+            "target_light_ids": [
+                "SRC_4163ef02dd8b938914e7"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_TASK_L22_OPERATIONS_01",
+            "button_object": "SW_MC00_TASK_L22_OPERATIONS_01_Keycap",
+            "action": "Toggle",
+            "label": "L22 OPERATIONS TASK / LIGHT",
+            "indicator_object": "SW_MC00_TASK_L22_OPERATIONS_01_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_TASK_L22_OPERATIONS_01_ROOT",
+            "target_light_ids": [
+                "SRC_2f56fdafe3f7b0a9aede"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_TASK_L22_REPLAY_01",
+            "button_object": "SW_MC00_TASK_L22_REPLAY_01_Keycap",
+            "action": "Toggle",
+            "label": "L22 REPLAY TASK / LIGHT",
+            "indicator_object": "SW_MC00_TASK_L22_REPLAY_01_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_TASK_L22_REPLAY_01_ROOT",
+            "target_light_ids": [
+                "SRC_706aa66afbb4e02121e7"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_TASK_L22_TEST_01",
+            "button_object": "SW_MC00_TASK_L22_TEST_01_Keycap",
+            "action": "Toggle",
+            "label": "L22 TEST TASK / LIGHT",
+            "indicator_object": "SW_MC00_TASK_L22_TEST_01_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_TASK_L22_TEST_01_ROOT",
+            "target_light_ids": [
+                "SRC_154e70e9f1255200307d"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_L22_OPERATIONS_04",
+            "button_object": "SW_MC00_L22_OPERATIONS_04_Keycap",
+            "action": "Toggle",
+            "label": "L0",
+            "indicator_object": "SW_MC00_L22_OPERATIONS_04_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_L22_OPERATIONS_04_ROOT",
+            "target_light_ids": [
+                "SRC_5328cb8663556e3b29dc",
+                "SRC_e6365998da3f1684fc26",
+                "SRC_52a38591f27ee83929c6",
+                "SRC_c944b5d38d53c21259bd",
+                "SRC_f8aa98d7c30c722f422b",
+                "SRC_075a647728ec073c4d9e",
+                "SRC_cc5485e12866c0ce5db4",
+                "SRC_a9c3fe8c80a49311e49a",
+                "SRC_8a52ba3ac89b5b690918",
+                "SRC_e7fafbefb3b72e55b54e",
+                "SRC_bc0788d4043cb28c430c",
+                "SRC_1710c95a64371115d23d",
+                "SRC_619892d2c4ae9820e5e0",
+                "SRC_a4a77dcdd3a15c680aac",
+                "SRC_61ac2585dcaa0be75468",
+                "SRC_f8b89bc092c8a5436b1e",
+                "SRC_5d3724724aea8898c868",
+                "SRC_30664f804f3a10914c70",
+                "SRC_b17372edc9841332f308",
+                "SRC_d2c0334505e22e3f4db2",
+                "SRC_dcafe2cb39431232ba64",
+                "SRC_8eff7a2eb52d40c683af",
+                "SRC_7fde2899fddee3dab297",
+                "SRC_34780b9c1a1d0603e27d",
+                "SRC_ad82c9913dceb209d217",
+                "SRC_6c3576a03844171c4194",
+                "SRC_460d8e9ebd345ce8ba36",
+                "SRC_1e8be63be71dfbbd2a83",
+                "SRC_421e04b99218d8206581",
+                "SRC_c84ffffaf908278600f6",
+                "SRC_9dfca7f3e23de021b0d4",
+                "SRC_c191b078d62d8b510150",
+                "SRC_ad5ad1e65dc58cf30a30",
+                "SRC_739705eea6b68e1ba443"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_L22_OPERATIONS_05",
+            "button_object": "SW_MC00_L22_OPERATIONS_05_Keycap",
+            "action": "Toggle",
+            "label": "L1",
+            "indicator_object": "SW_MC00_L22_OPERATIONS_05_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_L22_OPERATIONS_05_ROOT",
+            "target_light_ids": [
+                "SRC_9ff5c15ed0288a1a7748",
+                "SRC_bd2e229e203e11b7341b",
+                "SRC_d0941a5d53d430fad589",
+                "SRC_a7a28a67080bd870517c",
+                "SRC_399d8c16b7ff9728f6ca",
+                "SRC_2b4b0d323d1623fce592",
+                "SRC_dc93a8fce849ef1b73f7",
+                "SRC_527efe5858634fe793f1",
+                "SRC_8850f81876da19e50738",
+                "SRC_8bf332046810ad4f9b7c",
+                "SRC_246fa62817d2f1809ea7",
+                "SRC_ea5d1bc6b6ddd0325274",
+                "SRC_eea5746896e7661cf6fd",
+                "SRC_a66d5e3e295feeeb5853",
+                "SRC_5e0f5dfb5e08b6927607",
+                "SRC_9e8d53bf0befb3660e15",
+                "SRC_46a0a3f3185f9daa3790",
+                "SRC_645db1bbd67ef9b40c7f",
+                "SRC_034fa11fc0502772a52c",
+                "SRC_103f30276326b6c49cad",
+                "SRC_4a570bc5ef047d5b3e76",
+                "SRC_661f9d6297caf0101ae0",
+                "SRC_97b6864a35faee270d5f",
+                "SRC_bed213792bc6085cc017",
+                "SRC_5cded97b6d97ee4c73b1",
+                "SRC_74640b7cff21d3355fe6",
+                "SRC_cd9cd2d16e8b68efebbc",
+                "SRC_0f8fb6254bfcc6f9789c",
+                "SRC_1ef43413f7a3987dc51a"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_L22_OPERATIONS_06",
+            "button_object": "SW_MC00_L22_OPERATIONS_06_Keycap",
+            "action": "Toggle",
+            "label": "L2",
+            "indicator_object": "SW_MC00_L22_OPERATIONS_06_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_L22_OPERATIONS_06_ROOT",
+            "target_light_ids": [
+                "SRC_4163ef02dd8b938914e7",
+                "SRC_154e70e9f1255200307d",
+                "SRC_2f56fdafe3f7b0a9aede",
+                "SRC_706aa66afbb4e02121e7",
+                "SRC_4fb50cd1ef8bbb489725",
+                "SRC_eec9cd11404591c1d748",
+                "SRC_b9e3287cb22a5988d1f0",
+                "SRC_6e4a9f7bd0af2c9bcdd4",
+                "SRC_3c22e45a674e728e57be",
+                "SRC_29b1c8dceafe8bb54c99",
+                "SRC_6714bbdfa004dd74f524",
+                "SRC_6aa1ab9749a2fcdcdd13",
+                "SRC_cf20144209ce5802965b",
+                "SRC_aec72e2320de7a786b5b",
+                "SRC_05d1d811ad452130c425",
+                "SRC_555cc55e808111822680",
+                "SRC_d5f39733bc25fbe63445",
+                "SRC_2247be6ef7d9804b2451",
+                "SRC_45d435c743839bc404e5",
+                "SRC_2a7f3381b8ce49df578d",
+                "SRC_b078a2e8d3c15dcca956",
+                "SRC_83b1f0ad3eb38ac4812f",
+                "SRC_fccb5394d779262bcf5b",
+                "SRC_78372f03996cc9631c37",
+                "SRC_27c13dff156798f70aad",
+                "SRC_d944011fc39ffefc2457"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_L22_OPERATIONS_07",
+            "button_object": "SW_MC00_L22_OPERATIONS_07_Keycap",
+            "action": "Toggle",
+            "label": "STAIRS",
+            "indicator_object": "SW_MC00_L22_OPERATIONS_07_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_L22_OPERATIONS_07_ROOT",
+            "target_light_ids": [
+                "SRC_b0336dd3ce37af6400c0",
+                "SRC_1684cd33ad89c483c83c",
+                "SRC_79e8bddce8d0416451b6",
+                "SRC_309b2134dd3243b62c54",
+                "SRC_dc34c028d4c604ab5e87",
+                "SRC_abcd0beea8ce302e1570",
+                "SRC_cc8622e51885d5420cd3",
+                "SRC_fad5e2cef01c855872dc",
+                "SRC_858f9e852717d0d1a5e2",
+                "SRC_7c24776f4a8c48aa8d36",
+                "SRC_901c9af40209df94ff83",
+                "SRC_e4c79b9334563ca7addd",
+                "SRC_969c27e65a2d6b8c8b26",
+                "SRC_37820ebac180682c43b7",
+                "SRC_a9ca300cba8b3cba0469",
+                "SRC_309d0dc5665dc3d51e6a",
+                "SRC_97fd33d448b82a14d9ed",
+                "SRC_7abf3407d30d94c6ab89",
+                "SRC_4fc875d69863c9b31946",
+                "SRC_824b889f88aafc3450e4"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_L22_OPERATIONS_08",
+            "button_object": "SW_MC00_L22_OPERATIONS_08_Keycap",
+            "action": "Toggle",
+            "label": "ENTRIES",
+            "indicator_object": "SW_MC00_L22_OPERATIONS_08_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_L22_OPERATIONS_08_ROOT",
+            "target_light_ids": [
+                "SRC_80479fd91931e04fd1d6",
+                "SRC_20906c5094fa0dcf9416",
+                "SRC_ccf4474ef1e825e8fcec",
+                "SRC_fae0c58b3617a416d1d8",
+                "SRC_580c3e540cdc97636e69",
+                "SRC_8206cc3a2e905dea7e42",
+                "SRC_d76b755ec0495dba882e",
+                "SRC_e6537e5046016fd5ef99",
+                "SRC_1a52582031c976077777"
+            ]
+        },
+        {
+            "switch_id": "SW_MC00_L22_OPERATIONS_09",
+            "button_object": "SW_MC00_L22_OPERATIONS_09_Keycap",
+            "action": "Toggle",
+            "label": "ALL MC00",
+            "indicator_object": "SW_MC00_L22_OPERATIONS_09_Keycap",
+            "indicator_material_name": "MC111_Key_State",
+            "interaction_anchor": "SW_MC00_L22_OPERATIONS_09_ROOT",
+            "target_light_ids": [
+                "SRC_5328cb8663556e3b29dc",
+                "SRC_e6365998da3f1684fc26",
+                "SRC_4163ef02dd8b938914e7",
+                "SRC_154e70e9f1255200307d",
+                "SRC_2f56fdafe3f7b0a9aede",
+                "SRC_706aa66afbb4e02121e7",
+                "SRC_80479fd91931e04fd1d6",
+                "SRC_20906c5094fa0dcf9416",
+                "SRC_ccf4474ef1e825e8fcec",
+                "SRC_52a38591f27ee83929c6",
+                "SRC_c944b5d38d53c21259bd",
+                "SRC_f8aa98d7c30c722f422b",
+                "SRC_075a647728ec073c4d9e",
+                "SRC_cc5485e12866c0ce5db4",
+                "SRC_a9c3fe8c80a49311e49a",
+                "SRC_8a52ba3ac89b5b690918",
+                "SRC_e7fafbefb3b72e55b54e",
+                "SRC_bc0788d4043cb28c430c",
+                "SRC_1710c95a64371115d23d",
+                "SRC_619892d2c4ae9820e5e0",
+                "SRC_a4a77dcdd3a15c680aac",
+                "SRC_61ac2585dcaa0be75468",
+                "SRC_f8b89bc092c8a5436b1e",
+                "SRC_5d3724724aea8898c868",
+                "SRC_30664f804f3a10914c70",
+                "SRC_9ff5c15ed0288a1a7748",
+                "SRC_bd2e229e203e11b7341b",
+                "SRC_4fb50cd1ef8bbb489725",
+                "SRC_eec9cd11404591c1d748",
+                "SRC_d0941a5d53d430fad589",
+                "SRC_a7a28a67080bd870517c",
+                "SRC_399d8c16b7ff9728f6ca",
+                "SRC_2b4b0d323d1623fce592",
+                "SRC_dc93a8fce849ef1b73f7",
+                "SRC_527efe5858634fe793f1",
+                "SRC_8850f81876da19e50738",
+                "SRC_8bf332046810ad4f9b7c",
+                "SRC_246fa62817d2f1809ea7",
+                "SRC_ea5d1bc6b6ddd0325274",
+                "SRC_eea5746896e7661cf6fd",
+                "SRC_a66d5e3e295feeeb5853",
+                "SRC_5e0f5dfb5e08b6927607",
+                "SRC_9e8d53bf0befb3660e15",
+                "SRC_46a0a3f3185f9daa3790",
+                "SRC_b9e3287cb22a5988d1f0",
+                "SRC_6e4a9f7bd0af2c9bcdd4",
+                "SRC_3c22e45a674e728e57be",
+                "SRC_29b1c8dceafe8bb54c99",
+                "SRC_6714bbdfa004dd74f524",
+                "SRC_6aa1ab9749a2fcdcdd13",
+                "SRC_cf20144209ce5802965b",
+                "SRC_aec72e2320de7a786b5b",
+                "SRC_b0336dd3ce37af6400c0",
+                "SRC_1684cd33ad89c483c83c",
+                "SRC_79e8bddce8d0416451b6",
+                "SRC_309b2134dd3243b62c54",
+                "SRC_dc34c028d4c604ab5e87",
+                "SRC_abcd0beea8ce302e1570",
+                "SRC_cc8622e51885d5420cd3",
+                "SRC_fad5e2cef01c855872dc",
+                "SRC_858f9e852717d0d1a5e2",
+                "SRC_7c24776f4a8c48aa8d36",
+                "SRC_901c9af40209df94ff83",
+                "SRC_e4c79b9334563ca7addd",
+                "SRC_969c27e65a2d6b8c8b26",
+                "SRC_37820ebac180682c43b7",
+                "SRC_a9ca300cba8b3cba0469",
+                "SRC_309d0dc5665dc3d51e6a",
+                "SRC_97fd33d448b82a14d9ed",
+                "SRC_7abf3407d30d94c6ab89",
+                "SRC_4fc875d69863c9b31946",
+                "SRC_824b889f88aafc3450e4",
+                "SRC_b17372edc9841332f308",
+                "SRC_d2c0334505e22e3f4db2",
+                "SRC_dcafe2cb39431232ba64",
+                "SRC_8eff7a2eb52d40c683af",
+                "SRC_645db1bbd67ef9b40c7f",
+                "SRC_034fa11fc0502772a52c",
+                "SRC_103f30276326b6c49cad",
+                "SRC_4a570bc5ef047d5b3e76",
+                "SRC_05d1d811ad452130c425",
+                "SRC_555cc55e808111822680",
+                "SRC_d5f39733bc25fbe63445",
+                "SRC_2247be6ef7d9804b2451",
+                "SRC_7fde2899fddee3dab297",
+                "SRC_34780b9c1a1d0603e27d",
+                "SRC_661f9d6297caf0101ae0",
+                "SRC_97b6864a35faee270d5f",
+                "SRC_45d435c743839bc404e5",
+                "SRC_2a7f3381b8ce49df578d",
+                "SRC_fae0c58b3617a416d1d8",
+                "SRC_580c3e540cdc97636e69",
+                "SRC_8206cc3a2e905dea7e42",
+                "SRC_ad82c9913dceb209d217",
+                "SRC_6c3576a03844171c4194",
+                "SRC_460d8e9ebd345ce8ba36",
+                "SRC_1e8be63be71dfbbd2a83",
+                "SRC_421e04b99218d8206581",
+                "SRC_c84ffffaf908278600f6",
+                "SRC_bed213792bc6085cc017",
+                "SRC_5cded97b6d97ee4c73b1",
+                "SRC_74640b7cff21d3355fe6",
+                "SRC_cd9cd2d16e8b68efebbc",
+                "SRC_0f8fb6254bfcc6f9789c",
+                "SRC_1ef43413f7a3987dc51a",
+                "SRC_b078a2e8d3c15dcca956",
+                "SRC_83b1f0ad3eb38ac4812f",
+                "SRC_fccb5394d779262bcf5b",
+                "SRC_78372f03996cc9631c37",
+                "SRC_27c13dff156798f70aad",
+                "SRC_d944011fc39ffefc2457",
+                "SRC_d76b755ec0495dba882e",
+                "SRC_e6537e5046016fd5ef99",
+                "SRC_1a52582031c976077777",
+                "SRC_9dfca7f3e23de021b0d4",
+                "SRC_c191b078d62d8b510150",
+                "SRC_ad5ad1e65dc58cf30a30",
+                "SRC_739705eea6b68e1ba443"
+            ]
+        }
+    ]
+}

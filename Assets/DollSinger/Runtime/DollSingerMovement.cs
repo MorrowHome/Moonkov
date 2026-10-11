@@ -295,10 +295,12 @@ namespace Unity.MP_FPS.DollSinger {
 
         // Network prediction owns the root CharacterController. Keep this component
         // enabled for Animator IK and LateUpdate, but skip local movement simulation.
-        public void SetNetworkViewPresentation(bool firstPersonView, Quaternion headRotation, float lean)
+        public void SetNetworkViewPresentation(bool firstPersonView, Quaternion headRotation, float lean,
+            bool freeLooking = false)
         {
             m_NetworkDriven = true;
             m_IsFirstPersonView = firstPersonView;
+            m_FreeLookHeld = firstPersonView && freeLooking;
             if (input) input.SetLeanEnabled(firstPersonView);
             m_NetworkHeadRotation = headRotation;
             SetNetworkLeanAmount(firstPersonView ? lean : 0f);

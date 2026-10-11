@@ -1,0 +1,14 @@
+{
+    "renderersBefore": 9292,
+    "renderersAfter": 8280,
+    "castersBefore": 5243,
+    "castersAfter": 4251,
+    "sourcesClustered": 1355,
+    "clusters": 343,
+    "boxesConverted": 128,
+    "meshCollidersBefore": 4528,
+    "meshCollidersAfter": 4400,
+    "trianglesBefore": 975755,
+    "trianglesAfter": 975755,
+    "backup": "Library/BuildValidation/BeforeMC00Cpu-20261011-130400"
+}

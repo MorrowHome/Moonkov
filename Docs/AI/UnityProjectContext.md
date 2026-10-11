@@ -7,7 +7,7 @@
 - Input System 1.20.0，activeInputHandler=1；保留已存在的 Starter Assets。
 - 模板使用 Entities／NetCode 与 `GhostBridgeBootstrap`、GhostBridge 连接游戏对象和网络实体；原有脚本主要为 MonoBehaviour 加 ECS 系统。
 - 默认 Build Settings：MainMenu、GameScene、GameResourcesSubScene、Persistents、SpawnPointsSubScene。`GameManager`／`SceneLoader.cs` 负责模板游戏场景加载。
-- 正式联机地图改为 `MoonEnvironment/Scenes/MoonGameScene.unity`，另加 MoonSpawnPointsSubScene（8 个出生点）；原 GameScene 保留为主菜单预览。Host／Client／独立 Server 使用同一正式地图入口，菜单预览退出后才加载月球地图，详见 `Docs/MoonNetworkMap.md`。
+- 正式地图为 `MoonEnvironment/Variants/Apollo12Base/Scenes/Apollo12GameScene.unity`，配套 Apollo12SpawnPointsSubScene（8 个出生点）。复用 Apollo12Base Prefab、12 个物资点、原有搜打撤与服务端敌人；旧 MoonGameScene 与原 GameScene 主菜单预览保留。离线／Host／Client／独立 Server 使用同一入口，详见 `Docs/MoonNetworkMap.md`。
 - 正式月球地图的 `Moon Raid` 配置最小搜打撤：服务端拾取验证、12 格背包、死亡／超时损失、8 秒撤离、连接内存仓库、结算后再次出战。复用现有光环战斗，未接数据库或敌人 AI；断线清空仓库。详见 `Docs/MinimumRaidLoop.md`。
 - 原有功能根为 `Assets/Scripts`、`Prefabs`、`Scenes`、`Data`、`InputSystems`、`Settings`；第三方／Unity 示例目录保持原样。
 - 月球功能集中在 `Assets/MoonEnvironment`，分 Runtime、Demo、Editor 三个程序集；Runtime 不依赖模板业务类或 Starter Assets。Demo 复用 Starter Assets 与 Input System。

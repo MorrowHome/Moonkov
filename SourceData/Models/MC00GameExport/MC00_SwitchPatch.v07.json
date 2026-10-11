@@ -1,0 +1,27 @@
+{
+  "schema_version": 2,
+  "example_only": false,
+  "physical_buttons_exist": true,
+  "status": "PRIVATE_REAL_SIX_BUTTON_ASSET_FOR_LOCAL_INTEGRATION_NOT_RUNTIME_ACCEPTANCE",
+  "source_game_sha256": "8e607a8b6b8a152aea980c0b834cc46c85817210a939d8dae04f170571281f9c",
+  "asset_sha256": "c985ea16ff85e0ff53d8566860ec33374d8213bd4e35976fc200874056627fc0",
+  "model_root": "MC00_ROOT",
+  "switches": [
+    {"switch_id":"SW_MC00_G03_TASK_01","button_object":"MC108_Task_Bar_Switch","target_light_ids":["SRC_e6365998da3f1684fc26"],"action":"Toggle","panel_id":"PANEL_MC00_G03_TASK","label":"G03 task bar","interaction_anchor":"SW_MC00_G03_TASK_01_ROOT","indicator_object":"SW_MC00_G03_TASK_01_Indicator","press_axis_local":"0,0,1","press_travel_m":0,"interaction_mode":"click_only_retained_source_key","indicator_material_name":"MC_Data"},
+    {"switch_id":"SW_MC00_G03_CEILING_01","button_object":"SW_MC00_G03_CEILING_01_Keycap","target_light_ids":["SRC_8a52ba3ac89b5b690918"],"action":"Toggle","panel_id":"PANEL_MC00_G03_CEILING","label":"G03 ceiling 1","interaction_anchor":"SW_MC00_G03_CEILING_01_ROOT","indicator_object":"SW_MC00_G03_CEILING_01_Indicator","press_axis_local":"0,0,1","press_travel_m":0.003,"interaction_mode":"momentary_push","indicator_material_name":"MC_Data"},
+    {"switch_id":"SW_MC00_G03_CEILING_02","button_object":"SW_MC00_G03_CEILING_02_Keycap","target_light_ids":["SRC_e7fafbefb3b72e55b54e"],"action":"Toggle","panel_id":"PANEL_MC00_G03_CEILING","label":"G03 ceiling 2","interaction_anchor":"SW_MC00_G03_CEILING_02_ROOT","indicator_object":"SW_MC00_G03_CEILING_02_Indicator","press_axis_local":"0,0,1","press_travel_m":0.003,"interaction_mode":"momentary_push","indicator_material_name":"MC_Data"},
+    {"switch_id":"SW_MC00_L22_OPERATIONS_01","button_object":"SW_MC00_L22_OPERATIONS_01_Keycap","target_light_ids":["SRC_4163ef02dd8b938914e7","SRC_154e70e9f1255200307d","SRC_2f56fdafe3f7b0a9aede","SRC_706aa66afbb4e02121e7","SRC_6714bbdfa004dd74f524","SRC_6aa1ab9749a2fcdcdd13"],"action":"SetOn","panel_id":"PANEL_MC00_L22_OPERATIONS","label":"L22 ON","interaction_anchor":"SW_MC00_L22_OPERATIONS_01_ROOT","indicator_object":"SW_MC00_L22_OPERATIONS_01_Indicator","press_axis_local":"0,0,1","press_travel_m":0.003,"interaction_mode":"momentary_push","indicator_material_name":"MC_Data"},
+    {"switch_id":"SW_MC00_L22_OPERATIONS_02","button_object":"SW_MC00_L22_OPERATIONS_02_Keycap","target_light_ids":["SRC_4163ef02dd8b938914e7","SRC_154e70e9f1255200307d","SRC_2f56fdafe3f7b0a9aede","SRC_706aa66afbb4e02121e7","SRC_6714bbdfa004dd74f524","SRC_6aa1ab9749a2fcdcdd13"],"action":"SetOff","panel_id":"PANEL_MC00_L22_OPERATIONS","label":"L22 OFF","interaction_anchor":"SW_MC00_L22_OPERATIONS_02_ROOT","indicator_object":"SW_MC00_L22_OPERATIONS_02_Indicator","press_axis_local":"0,0,1","press_travel_m":0.003,"interaction_mode":"momentary_push","indicator_material_name":"MC_Data"},
+    {"switch_id":"SW_MC00_L22_OPERATIONS_03","button_object":"SW_MC00_L22_OPERATIONS_03_Keycap","target_light_ids":["SRC_4163ef02dd8b938914e7","SRC_154e70e9f1255200307d","SRC_2f56fdafe3f7b0a9aede","SRC_706aa66afbb4e02121e7","SRC_6714bbdfa004dd74f524","SRC_6aa1ab9749a2fcdcdd13"],"action":"Toggle","panel_id":"PANEL_MC00_L22_OPERATIONS","label":"L22 TOGGLE","interaction_anchor":"SW_MC00_L22_OPERATIONS_03_ROOT","indicator_object":"SW_MC00_L22_OPERATIONS_03_Indicator","press_axis_local":"0,0,1","press_travel_m":0.003,"interaction_mode":"momentary_push","indicator_material_name":"MC_Data"}
+  ],
+  "notes": [
+    "target_light_id preserves the exact source_id permanently; do not rehash on rename or move.",
+    "Switches may target one or multiple lights; multiple switches may address the same light. Switch identity remains independent of target membership.",
+    "118 actual light records:112 exact authored emissive counterparts and6 source-audited cases with no separate authored emissive face. No nearest-object assignment.",
+    "6 real physical controls in the unified editable private game copy address9 unique lamps:3 G03 lamps and6 L22 lamps. Full118 local-control placement is not complete.",
+    "No Unity runtime, saved-state, network, collider or performance acceptance is implied. The G03 retained key is click-only;5 new caps provide3mm root-local+Z travel.",
+    "Text blocks andCSV are not automatically carried inFBX; explicitly extract them for runtime fallback."
+  ],
+  "lights_registry_reference": "MC00_LightRegistry.v2.json:118 existing records, unchanged IDs/anchors/emission assignments",
+  "patch_only": true
+}

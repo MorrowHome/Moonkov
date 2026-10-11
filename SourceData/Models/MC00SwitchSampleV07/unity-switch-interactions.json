@@ -1,0 +1,173 @@
+{
+  "sourceSha256": "c985ea16ff85e0ff53d8566860ec33374d8213bd4e35976fc200874056627fc0",
+  "buttons": [
+    {
+      "switch_id": "SW_MC00_G03_TASK_01",
+      "button_object": "MC108_Task_Bar_Switch",
+      "interaction_root": "SW_MC00_G03_TASK_01_ROOT",
+      "indicator_object": "SW_MC00_G03_TASK_01_Indicator",
+      "indicator_material_name": "MC_Data",
+      "press_travel_m": 0.0,
+      "press_axis_world": [
+        -8.742277657347586E-08,
+        1.0,
+        7.549790126404332E-08
+      ],
+      "position_world": [
+        52.56999969482422,
+        -48.696998596191406,
+        1.906999945640564
+      ],
+      "bounds_min": [
+        52.551499690695486,
+        -48.707998597749125,
+        1.8734999431887776
+      ],
+      "bounds_max": [
+        52.58849969895295,
+        -48.68599859463369,
+        1.9404999480923504
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_G03_CEILING_01",
+      "button_object": "SW_MC00_G03_CEILING_01_Keycap",
+      "interaction_root": "SW_MC00_G03_CEILING_01_ROOT",
+      "indicator_object": "SW_MC00_G03_CEILING_01_Indicator",
+      "indicator_material_name": "MC_Data",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        1.0,
+        4.371138828673793E-08,
+        -4.371138828673793E-08
+      ],
+      "position_world": [
+        55.467498779296875,
+        -53.53799819946289,
+        1.9380000829696655
+      ],
+      "bounds_min": [
+        55.46099877678049,
+        -53.56399820028346,
+        1.9095000826706403
+      ],
+      "bounds_max": [
+        55.47399878181326,
+        -53.511998198642324,
+        1.9665000832686907
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_G03_CEILING_02",
+      "button_object": "SW_MC00_G03_CEILING_02_Keycap",
+      "interaction_root": "SW_MC00_G03_CEILING_02_ROOT",
+      "indicator_object": "SW_MC00_G03_CEILING_02_Indicator",
+      "indicator_material_name": "MC_Data",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        1.0,
+        4.371138828673793E-08,
+        -4.371138828673793E-08
+      ],
+      "position_world": [
+        55.467498779296875,
+        -53.6619987487793,
+        1.9380000829696655
+      ],
+      "bounds_min": [
+        55.46099877678049,
+        -53.68799874959986,
+        1.9095000826706403
+      ],
+      "bounds_max": [
+        55.47399878181326,
+        -53.63599874795873,
+        1.9665000832686907
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_L22_OPERATIONS_01",
+      "button_object": "SW_MC00_L22_OPERATIONS_01_Keycap",
+      "interaction_root": "SW_MC00_L22_OPERATIONS_01_ROOT",
+      "indicator_object": "SW_MC00_L22_OPERATIONS_01_Indicator",
+      "indicator_material_name": "MC_Data",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        7.92319454490098E-08,
+        0.42261824011802673,
+        -0.9063078165054321
+      ],
+      "position_world": [
+        38.50200271606445,
+        -63.78883361816406,
+        13.698446273803711
+      ],
+      "bounds_min": [
+        38.47600271396003,
+        -63.81741040956542,
+        13.680510650752227
+      ],
+      "bounds_max": [
+        38.52800271816888,
+        -63.760256826762706,
+        13.716381896855195
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_L22_OPERATIONS_02",
+      "button_object": "SW_MC00_L22_OPERATIONS_02_Keycap",
+      "interaction_root": "SW_MC00_L22_OPERATIONS_02_ROOT",
+      "indicator_object": "SW_MC00_L22_OPERATIONS_02_Indicator",
+      "indicator_material_name": "MC_Data",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        7.92319454490098E-08,
+        0.42261824011802673,
+        -0.9063078165054321
+      ],
+      "position_world": [
+        38.6150016784668,
+        -63.78883361816406,
+        13.698446273803711
+      ],
+      "bounds_min": [
+        38.58900167636237,
+        -63.81741040956542,
+        13.680510650752227
+      ],
+      "bounds_max": [
+        38.64100168057122,
+        -63.760256826762706,
+        13.716381896855195
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_L22_OPERATIONS_03",
+      "button_object": "SW_MC00_L22_OPERATIONS_03_Keycap",
+      "interaction_root": "SW_MC00_L22_OPERATIONS_03_ROOT",
+      "indicator_object": "SW_MC00_L22_OPERATIONS_03_Indicator",
+      "indicator_material_name": "MC_Data",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        7.92319454490098E-08,
+        0.42261824011802673,
+        -0.9063078165054321
+      ],
+      "position_world": [
+        38.72800064086914,
+        -63.78883361816406,
+        13.698446273803711
+      ],
+      "bounds_min": [
+        38.702000638764716,
+        -63.81741040956542,
+        13.680510650752227
+      ],
+      "bounds_max": [
+        38.754000642973566,
+        -63.760256826762706,
+        13.716381896855195
+      ]
+    }
+  ]
+}

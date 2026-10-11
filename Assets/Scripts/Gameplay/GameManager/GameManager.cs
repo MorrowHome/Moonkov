@@ -19,7 +19,9 @@ namespace Unity.MP_FPS
         public const int MaxPlayer = 32;
         public const string MainMenuSceneName = "MainMenu";
         public const string MenuPreviewSceneName = "GameScene";
-        public const string GameSceneName = "MoonGameScene";
+        // Shared by offline/Host, remote clients and the dedicated server.
+        // The original MoonGameScene remains available as an authored fallback.
+        public const string GameSceneName = "Apollo12GameScene";
         static public GameConnection GameConnection { get; private set; }
 
         Task m_LoadingGame;

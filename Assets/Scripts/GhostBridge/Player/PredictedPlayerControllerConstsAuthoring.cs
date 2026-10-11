@@ -71,6 +71,44 @@ public class PredictedPlayerControllerConstsAuthoring : MonoBehaviour
 
     [field: SerializeField, Tooltip("What layers the character uses as ground")]
     public LayerMask GroundLayers { get; private set; }
+
+    /// <summary>Shared movement tuning for entity baking and offline gameplay previews.</summary>
+    public FirstPersonController.ControllerConsts BuildControllerConsts()
+    {
+        return new FirstPersonController.ControllerConsts
+        {
+            JumpHeight = JumpHeight,
+            Gravity = Gravity,
+            StandingFallSpeed = StandingFallSpeed,
+            JumpTimeout = math.max(JumpTimeout, math.EPSILON), //set a minimum delay to force the jump timeout to wait 1 frame
+            FallTimeout = FallTimeout,
+            LandingTimeout = LandingTimeout,
+            LandingAnimTimeout = LandingAnimTimeout,
+            StateChangeSafetyTimeout = StateChangeSafetyTimeout,
+            GroundedOffset = GroundedOffset,
+            GroundLayers = GroundLayers,
+            TerminalVelocity = TerminalVelocity,
+
+            Walk = new FirstPersonController.ControllerConsts.StateConsts
+            {
+                Speed = WalkSpeed,
+                RotationSmoothTime = WalkRotationSmoothTime,
+                SpeedChangeRate = WalkSpeedChangeRate,
+                LandingSpeedMult = 1f,
+                AnimationMotionScale = WalkAnimationMotionScale,
+            },
+
+            Sprint = new FirstPersonController.ControllerConsts.StateConsts
+            {
+                Speed = SprintSpeed,
+                RotationSmoothTime = SprintRotationSmoothTime,
+                SpeedChangeRate = SprintSpeedChangeRate,
+                LandingSpeedMult = SprintLandingSpeedMultiplier,
+                AnimationMotionScale = SprintAnimationMotionScale,
+            },
+        };
+    }
+
 }
 
 public class PredictedPlayerControllerConstsBaker : Baker<PredictedPlayerControllerConstsAuthoring>
@@ -80,38 +118,7 @@ public class PredictedPlayerControllerConstsBaker : Baker<PredictedPlayerControl
         var entity = GetEntity(TransformUsageFlags.None);
         AddComponent(entity, new PredictedPlayerControllerConsts
         {
-            ControllerConsts = new FirstPersonController.ControllerConsts
-            {
-                JumpHeight = authoring.JumpHeight,
-                Gravity = authoring.Gravity,
-                StandingFallSpeed = authoring.StandingFallSpeed,
-                JumpTimeout = math.max(authoring.JumpTimeout, math.EPSILON), //set a minimum delay to force the jump timeout to wait 1 frame
-                FallTimeout = authoring.FallTimeout,
-                LandingTimeout = authoring.LandingTimeout,
-                LandingAnimTimeout = authoring.LandingAnimTimeout,
-                StateChangeSafetyTimeout = authoring.StateChangeSafetyTimeout,
-                GroundedOffset = authoring.GroundedOffset,
-                GroundLayers = authoring.GroundLayers,
-                TerminalVelocity = authoring.TerminalVelocity,
-
-                Walk = new FirstPersonController.ControllerConsts.StateConsts
-                {
-                    Speed = authoring.WalkSpeed,
-                    RotationSmoothTime = authoring.WalkRotationSmoothTime,
-                    SpeedChangeRate = authoring.WalkSpeedChangeRate,
-                    LandingSpeedMult = 1f,
-                    AnimationMotionScale = authoring.WalkAnimationMotionScale,
-                },
-
-                Sprint = new FirstPersonController.ControllerConsts.StateConsts
-                {
-                    Speed = authoring.SprintSpeed,
-                    RotationSmoothTime = authoring.SprintRotationSmoothTime,
-                    SpeedChangeRate = authoring.SprintSpeedChangeRate,
-                    LandingSpeedMult = authoring.SprintLandingSpeedMultiplier,
-                    AnimationMotionScale = authoring.SprintAnimationMotionScale,
-                },
-            }
+            ControllerConsts = authoring.BuildControllerConsts()
         });
     }
 }

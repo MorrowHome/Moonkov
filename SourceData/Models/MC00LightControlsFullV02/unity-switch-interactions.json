@@ -1,0 +1,3785 @@
+{
+  "sourceSha256": "e61f2fab253a0801f3ebb7084fbb7163e48bd156c9ce79074825e4e81d5ca5f0",
+  "buttons": [
+    {
+      "switch_id": "SW_MC00_G03_TASK_01",
+      "button_object": "MC108_Task_Bar_Switch",
+      "interaction_root": "SW_MC00_G03_TASK_01_ROOT",
+      "indicator_object": "SW_MC00_G03_TASK_01_Indicator",
+      "indicator_material_name": "MC_Data",
+      "press_travel_m": 0.0,
+      "press_axis_world": [
+        -8.742277657347586e-08,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        52.56999969482422,
+        -48.696998596191406,
+        1.906999945640564
+      ],
+      "bounds_min": [
+        52.55149841308594,
+        -48.70800018310547,
+        1.8734999895095825
+      ],
+      "bounds_max": [
+        52.5885009765625,
+        -48.685997009277344,
+        1.9404999017715454
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_G03_CEILING_01",
+      "button_object": "SW_MC00_G03_CEILING_01_Keycap",
+      "interaction_root": "SW_MC00_G03_CEILING_01_ROOT",
+      "indicator_object": "SW_MC00_G03_CEILING_01_Indicator",
+      "indicator_material_name": "MC_Data",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        55.467498779296875,
+        -53.53799819946289,
+        1.9380000829696655
+      ],
+      "bounds_min": [
+        55.46099853515625,
+        -53.56399917602539,
+        1.9095001220703125
+      ],
+      "bounds_max": [
+        55.4739990234375,
+        -53.51199722290039,
+        1.9665000438690186
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_G03_CEILING_02",
+      "button_object": "SW_MC00_G03_CEILING_02_Keycap",
+      "interaction_root": "SW_MC00_G03_CEILING_02_ROOT",
+      "indicator_object": "SW_MC00_G03_CEILING_02_Indicator",
+      "indicator_material_name": "MC_Data",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        55.467498779296875,
+        -53.6619987487793,
+        1.9380000829696655
+      ],
+      "bounds_min": [
+        55.46099853515625,
+        -53.6879997253418,
+        1.9095001220703125
+      ],
+      "bounds_max": [
+        55.4739990234375,
+        -53.6359977722168,
+        1.9665000438690186
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_L22_OPERATIONS_01",
+      "button_object": "SW_MC00_L22_OPERATIONS_01_Keycap",
+      "interaction_root": "SW_MC00_L22_OPERATIONS_01_ROOT",
+      "indicator_object": "SW_MC00_L22_OPERATIONS_01_Indicator",
+      "indicator_material_name": "MC_Data",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        7.92319454490098e-08,
+        0.42261824011802673,
+        -0.9063078165054321
+      ],
+      "position_world": [
+        38.50200271606445,
+        -63.78883361816406,
+        13.698446273803711
+      ],
+      "bounds_min": [
+        38.47600173950195,
+        -63.81740951538086,
+        13.680510520935059
+      ],
+      "bounds_max": [
+        38.52800369262695,
+        -63.760257720947266,
+        13.716382026672363
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_L22_OPERATIONS_02",
+      "button_object": "SW_MC00_L22_OPERATIONS_02_Keycap",
+      "interaction_root": "SW_MC00_L22_OPERATIONS_02_ROOT",
+      "indicator_object": "SW_MC00_L22_OPERATIONS_02_Indicator",
+      "indicator_material_name": "MC_Data",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        7.92319454490098e-08,
+        0.42261824011802673,
+        -0.9063078165054321
+      ],
+      "position_world": [
+        38.6150016784668,
+        -63.78883361816406,
+        13.698446273803711
+      ],
+      "bounds_min": [
+        38.5890007019043,
+        -63.81740951538086,
+        13.680510520935059
+      ],
+      "bounds_max": [
+        38.6410026550293,
+        -63.760257720947266,
+        13.716382026672363
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_L22_OPERATIONS_03",
+      "button_object": "SW_MC00_L22_OPERATIONS_03_Keycap",
+      "interaction_root": "SW_MC00_L22_OPERATIONS_03_ROOT",
+      "indicator_object": "SW_MC00_L22_OPERATIONS_03_Indicator",
+      "indicator_material_name": "MC_Data",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        7.92319454490098e-08,
+        0.42261824011802673,
+        -0.9063078165054321
+      ],
+      "position_world": [
+        38.72800064086914,
+        -63.78883361816406,
+        13.698446273803711
+      ],
+      "bounds_min": [
+        38.70199966430664,
+        -63.81740951538086,
+        13.680510520935059
+      ],
+      "bounds_max": [
+        38.75400161743164,
+        -63.760257720947266,
+        13.716382026672363
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_G01_CEILING_01",
+      "button_object": "SW_MC00_G01_CEILING_01_Keycap",
+      "interaction_root": "SW_MC00_G01_CEILING_01_ROOT",
+      "indicator_object": "SW_MC00_G01_CEILING_01_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -8.742277657347586e-08,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        39.6879997253418,
+        -89.8324966430664,
+        1.996000051498413
+      ],
+      "bounds_min": [
+        39.6619987487793,
+        -89.83899688720703,
+        1.96750009059906
+      ],
+      "bounds_max": [
+        39.7140007019043,
+        -89.82599639892578,
+        2.0245001316070557
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_G01_CEILING_02",
+      "button_object": "SW_MC00_G01_CEILING_02_Keycap",
+      "interaction_root": "SW_MC00_G01_CEILING_02_ROOT",
+      "indicator_object": "SW_MC00_G01_CEILING_02_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -8.742277657347586e-08,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        39.8120002746582,
+        -89.8324966430664,
+        1.996000051498413
+      ],
+      "bounds_min": [
+        39.7859992980957,
+        -89.83899688720703,
+        1.96750009059906
+      ],
+      "bounds_max": [
+        39.8380012512207,
+        -89.82599639892578,
+        2.0245001316070557
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_G01_CEILING_03",
+      "button_object": "SW_MC00_G01_CEILING_03_Keycap",
+      "interaction_root": "SW_MC00_G01_CEILING_03_ROOT",
+      "indicator_object": "SW_MC00_G01_CEILING_03_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -8.742277657347586e-08,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        39.6879997253418,
+        -89.8324966430664,
+        1.8820000886917114
+      ],
+      "bounds_min": [
+        39.6619987487793,
+        -89.83899688720703,
+        1.8535001277923584
+      ],
+      "bounds_max": [
+        39.7140007019043,
+        -89.82599639892578,
+        1.9105000495910645
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_G01_CEILING_04",
+      "button_object": "SW_MC00_G01_CEILING_04_Keycap",
+      "interaction_root": "SW_MC00_G01_CEILING_04_ROOT",
+      "indicator_object": "SW_MC00_G01_CEILING_04_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -8.742277657347586e-08,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        39.8120002746582,
+        -89.8324966430664,
+        1.8820000886917114
+      ],
+      "bounds_min": [
+        39.7859992980957,
+        -89.83899688720703,
+        1.8535001277923584
+      ],
+      "bounds_max": [
+        39.8380012512207,
+        -89.82599639892578,
+        1.9105000495910645
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_G02_CEILING_01",
+      "button_object": "SW_MC00_G02_CEILING_01_Keycap",
+      "interaction_root": "SW_MC00_G02_CEILING_01_ROOT",
+      "indicator_object": "SW_MC00_G02_CEILING_01_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        55.467498779296875,
+        -63.53799819946289,
+        1.9380000829696655
+      ],
+      "bounds_min": [
+        55.46099853515625,
+        -63.56399917602539,
+        1.9095001220703125
+      ],
+      "bounds_max": [
+        55.4739990234375,
+        -63.51199722290039,
+        1.9665000438690186
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_G02_CEILING_02",
+      "button_object": "SW_MC00_G02_CEILING_02_Keycap",
+      "interaction_root": "SW_MC00_G02_CEILING_02_ROOT",
+      "indicator_object": "SW_MC00_G02_CEILING_02_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        55.467498779296875,
+        -63.6619987487793,
+        1.9380000829696655
+      ],
+      "bounds_min": [
+        55.46099853515625,
+        -63.6879997253418,
+        1.9095001220703125
+      ],
+      "bounds_max": [
+        55.4739990234375,
+        -63.6359977722168,
+        1.9665000438690186
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_G04_CEILING_01",
+      "button_object": "SW_MC00_G04_CEILING_01_Keycap",
+      "interaction_root": "SW_MC00_G04_CEILING_01_ROOT",
+      "indicator_object": "SW_MC00_G04_CEILING_01_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        67.17250061035156,
+        -82.01300048828125,
+        1.996000051498413
+      ],
+      "bounds_min": [
+        67.16600036621094,
+        -82.03900146484375,
+        1.96750009059906
+      ],
+      "bounds_max": [
+        67.17900085449219,
+        -81.98699951171875,
+        2.0245001316070557
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_G04_CEILING_02",
+      "button_object": "SW_MC00_G04_CEILING_02_Keycap",
+      "interaction_root": "SW_MC00_G04_CEILING_02_ROOT",
+      "indicator_object": "SW_MC00_G04_CEILING_02_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        67.17250061035156,
+        -81.9000015258789,
+        1.996000051498413
+      ],
+      "bounds_min": [
+        67.16600036621094,
+        -81.9260025024414,
+        1.96750009059906
+      ],
+      "bounds_max": [
+        67.17900085449219,
+        -81.8740005493164,
+        2.0245001316070557
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_G04_CEILING_03",
+      "button_object": "SW_MC00_G04_CEILING_03_Keycap",
+      "interaction_root": "SW_MC00_G04_CEILING_03_ROOT",
+      "indicator_object": "SW_MC00_G04_CEILING_03_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        67.17250061035156,
+        -81.78700256347656,
+        1.996000051498413
+      ],
+      "bounds_min": [
+        67.16600036621094,
+        -81.81300354003906,
+        1.96750009059906
+      ],
+      "bounds_max": [
+        67.17900085449219,
+        -81.76100158691406,
+        2.0245001316070557
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_G04_CEILING_04",
+      "button_object": "SW_MC00_G04_CEILING_04_Keycap",
+      "interaction_root": "SW_MC00_G04_CEILING_04_ROOT",
+      "indicator_object": "SW_MC00_G04_CEILING_04_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        67.17250061035156,
+        -82.01300048828125,
+        1.8820000886917114
+      ],
+      "bounds_min": [
+        67.16600036621094,
+        -82.03900146484375,
+        1.8535001277923584
+      ],
+      "bounds_max": [
+        67.17900085449219,
+        -81.98699951171875,
+        1.9105000495910645
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_G04_CEILING_05",
+      "button_object": "SW_MC00_G04_CEILING_05_Keycap",
+      "interaction_root": "SW_MC00_G04_CEILING_05_ROOT",
+      "indicator_object": "SW_MC00_G04_CEILING_05_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        67.17250061035156,
+        -81.9000015258789,
+        1.8820000886917114
+      ],
+      "bounds_min": [
+        67.16600036621094,
+        -81.9260025024414,
+        1.8535001277923584
+      ],
+      "bounds_max": [
+        67.17900085449219,
+        -81.8740005493164,
+        1.9105000495910645
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_G04_CEILING_06",
+      "button_object": "SW_MC00_G04_CEILING_06_Keycap",
+      "interaction_root": "SW_MC00_G04_CEILING_06_ROOT",
+      "indicator_object": "SW_MC00_G04_CEILING_06_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        67.17250061035156,
+        -81.78700256347656,
+        1.8820000886917114
+      ],
+      "bounds_min": [
+        67.16600036621094,
+        -81.81300354003906,
+        1.8535001277923584
+      ],
+      "bounds_max": [
+        67.17900085449219,
+        -81.76100158691406,
+        1.9105000495910645
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_L11_CEILING_01",
+      "button_object": "SW_MC00_L11_CEILING_01_Keycap",
+      "interaction_root": "SW_MC00_L11_CEILING_01_ROOT",
+      "indicator_object": "SW_MC00_L11_CEILING_01_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -8.742277657347586e-08,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        40.6879997253418,
+        -89.8324966430664,
+        7.995999813079834
+      ],
+      "bounds_min": [
+        40.6619987487793,
+        -89.83899688720703,
+        7.967499732971191
+      ],
+      "bounds_max": [
+        40.7140007019043,
+        -89.82599639892578,
+        8.024499893188477
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_L11_CEILING_02",
+      "button_object": "SW_MC00_L11_CEILING_02_Keycap",
+      "interaction_root": "SW_MC00_L11_CEILING_02_ROOT",
+      "indicator_object": "SW_MC00_L11_CEILING_02_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -8.742277657347586e-08,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        40.8120002746582,
+        -89.8324966430664,
+        7.995999813079834
+      ],
+      "bounds_min": [
+        40.7859992980957,
+        -89.83899688720703,
+        7.967499732971191
+      ],
+      "bounds_max": [
+        40.8380012512207,
+        -89.82599639892578,
+        8.024499893188477
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_L11_CEILING_03",
+      "button_object": "SW_MC00_L11_CEILING_03_Keycap",
+      "interaction_root": "SW_MC00_L11_CEILING_03_ROOT",
+      "indicator_object": "SW_MC00_L11_CEILING_03_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -8.742277657347586e-08,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        40.6879997253418,
+        -89.8324966430664,
+        7.881999969482422
+      ],
+      "bounds_min": [
+        40.6619987487793,
+        -89.83899688720703,
+        7.853499889373779
+      ],
+      "bounds_max": [
+        40.7140007019043,
+        -89.82599639892578,
+        7.9105000495910645
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_L11_CEILING_04",
+      "button_object": "SW_MC00_L11_CEILING_04_Keycap",
+      "interaction_root": "SW_MC00_L11_CEILING_04_ROOT",
+      "indicator_object": "SW_MC00_L11_CEILING_04_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -8.742277657347586e-08,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        40.8120002746582,
+        -89.8324966430664,
+        7.881999969482422
+      ],
+      "bounds_min": [
+        40.7859992980957,
+        -89.83899688720703,
+        7.853499889373779
+      ],
+      "bounds_max": [
+        40.8380012512207,
+        -89.82599639892578,
+        7.9105000495910645
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_L12_CEILING_01",
+      "button_object": "SW_MC00_L12_CEILING_01_Keycap",
+      "interaction_root": "SW_MC00_L12_CEILING_01_ROOT",
+      "indicator_object": "SW_MC00_L12_CEILING_01_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        55.467498779296875,
+        -63.53799819946289,
+        7.937999725341797
+      ],
+      "bounds_min": [
+        55.46099853515625,
+        -63.56399917602539,
+        7.909499645233154
+      ],
+      "bounds_max": [
+        55.4739990234375,
+        -63.51199722290039,
+        7.9664998054504395
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_L12_CEILING_02",
+      "button_object": "SW_MC00_L12_CEILING_02_Keycap",
+      "interaction_root": "SW_MC00_L12_CEILING_02_ROOT",
+      "indicator_object": "SW_MC00_L12_CEILING_02_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        55.467498779296875,
+        -63.6619987487793,
+        7.937999725341797
+      ],
+      "bounds_min": [
+        55.46099853515625,
+        -63.6879997253418,
+        7.909499645233154
+      ],
+      "bounds_max": [
+        55.4739990234375,
+        -63.6359977722168,
+        7.9664998054504395
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_L13_CEILING_01",
+      "button_object": "SW_MC00_L13_CEILING_01_Keycap",
+      "interaction_root": "SW_MC00_L13_CEILING_01_ROOT",
+      "indicator_object": "SW_MC00_L13_CEILING_01_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        55.467498779296875,
+        -53.53799819946289,
+        7.937999725341797
+      ],
+      "bounds_min": [
+        55.46099853515625,
+        -53.56399917602539,
+        7.909499645233154
+      ],
+      "bounds_max": [
+        55.4739990234375,
+        -53.51199722290039,
+        7.9664998054504395
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_L13_CEILING_02",
+      "button_object": "SW_MC00_L13_CEILING_02_Keycap",
+      "interaction_root": "SW_MC00_L13_CEILING_02_ROOT",
+      "indicator_object": "SW_MC00_L13_CEILING_02_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        55.467498779296875,
+        -53.6619987487793,
+        7.937999725341797
+      ],
+      "bounds_min": [
+        55.46099853515625,
+        -53.6879997253418,
+        7.909499645233154
+      ],
+      "bounds_max": [
+        55.4739990234375,
+        -53.6359977722168,
+        7.9664998054504395
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_L14_CEILING_01",
+      "button_object": "SW_MC00_L14_CEILING_01_Keycap",
+      "interaction_root": "SW_MC00_L14_CEILING_01_ROOT",
+      "indicator_object": "SW_MC00_L14_CEILING_01_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        67.17250061035156,
+        -82.01300048828125,
+        7.995999813079834
+      ],
+      "bounds_min": [
+        67.16600036621094,
+        -82.03900146484375,
+        7.967499732971191
+      ],
+      "bounds_max": [
+        67.17900085449219,
+        -81.98699951171875,
+        8.024499893188477
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_L14_CEILING_02",
+      "button_object": "SW_MC00_L14_CEILING_02_Keycap",
+      "interaction_root": "SW_MC00_L14_CEILING_02_ROOT",
+      "indicator_object": "SW_MC00_L14_CEILING_02_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        67.17250061035156,
+        -81.9000015258789,
+        7.995999813079834
+      ],
+      "bounds_min": [
+        67.16600036621094,
+        -81.9260025024414,
+        7.967499732971191
+      ],
+      "bounds_max": [
+        67.17900085449219,
+        -81.8740005493164,
+        8.024499893188477
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_L14_CEILING_03",
+      "button_object": "SW_MC00_L14_CEILING_03_Keycap",
+      "interaction_root": "SW_MC00_L14_CEILING_03_ROOT",
+      "indicator_object": "SW_MC00_L14_CEILING_03_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        67.17250061035156,
+        -81.78700256347656,
+        7.995999813079834
+      ],
+      "bounds_min": [
+        67.16600036621094,
+        -81.81300354003906,
+        7.967499732971191
+      ],
+      "bounds_max": [
+        67.17900085449219,
+        -81.76100158691406,
+        8.024499893188477
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_L14_CEILING_04",
+      "button_object": "SW_MC00_L14_CEILING_04_Keycap",
+      "interaction_root": "SW_MC00_L14_CEILING_04_ROOT",
+      "indicator_object": "SW_MC00_L14_CEILING_04_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        67.17250061035156,
+        -82.01300048828125,
+        7.881999969482422
+      ],
+      "bounds_min": [
+        67.16600036621094,
+        -82.03900146484375,
+        7.853499889373779
+      ],
+      "bounds_max": [
+        67.17900085449219,
+        -81.98699951171875,
+        7.9105000495910645
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_L14_CEILING_05",
+      "button_object": "SW_MC00_L14_CEILING_05_Keycap",
+      "interaction_root": "SW_MC00_L14_CEILING_05_ROOT",
+      "indicator_object": "SW_MC00_L14_CEILING_05_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        67.17250061035156,
+        -81.9000015258789,
+        7.881999969482422
+      ],
+      "bounds_min": [
+        67.16600036621094,
+        -81.9260025024414,
+        7.853499889373779
+      ],
+      "bounds_max": [
+        67.17900085449219,
+        -81.8740005493164,
+        7.9105000495910645
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_L14_CEILING_06",
+      "button_object": "SW_MC00_L14_CEILING_06_Keycap",
+      "interaction_root": "SW_MC00_L14_CEILING_06_ROOT",
+      "indicator_object": "SW_MC00_L14_CEILING_06_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        67.17250061035156,
+        -81.78700256347656,
+        7.881999969482422
+      ],
+      "bounds_min": [
+        67.16600036621094,
+        -81.81300354003906,
+        7.853499889373779
+      ],
+      "bounds_max": [
+        67.17900085449219,
+        -81.76100158691406,
+        7.9105000495910645
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_L21_CEILING_01",
+      "button_object": "SW_MC00_L21_CEILING_01_Keycap",
+      "interaction_root": "SW_MC00_L21_CEILING_01_ROOT",
+      "indicator_object": "SW_MC00_L21_CEILING_01_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -8.742277657347586e-08,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        40.6879997253418,
+        -89.8324966430664,
+        13.995999336242676
+      ],
+      "bounds_min": [
+        40.6619987487793,
+        -89.83899688720703,
+        13.967499732971191
+      ],
+      "bounds_max": [
+        40.7140007019043,
+        -89.82599639892578,
+        14.02449893951416
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_L21_CEILING_02",
+      "button_object": "SW_MC00_L21_CEILING_02_Keycap",
+      "interaction_root": "SW_MC00_L21_CEILING_02_ROOT",
+      "indicator_object": "SW_MC00_L21_CEILING_02_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -8.742277657347586e-08,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        40.8120002746582,
+        -89.8324966430664,
+        13.995999336242676
+      ],
+      "bounds_min": [
+        40.7859992980957,
+        -89.83899688720703,
+        13.967499732971191
+      ],
+      "bounds_max": [
+        40.8380012512207,
+        -89.82599639892578,
+        14.02449893951416
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_L21_CEILING_03",
+      "button_object": "SW_MC00_L21_CEILING_03_Keycap",
+      "interaction_root": "SW_MC00_L21_CEILING_03_ROOT",
+      "indicator_object": "SW_MC00_L21_CEILING_03_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -8.742277657347586e-08,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        40.6879997253418,
+        -89.8324966430664,
+        13.881999969482422
+      ],
+      "bounds_min": [
+        40.6619987487793,
+        -89.83899688720703,
+        13.853500366210938
+      ],
+      "bounds_max": [
+        40.7140007019043,
+        -89.82599639892578,
+        13.910499572753906
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_L21_CEILING_04",
+      "button_object": "SW_MC00_L21_CEILING_04_Keycap",
+      "interaction_root": "SW_MC00_L21_CEILING_04_ROOT",
+      "indicator_object": "SW_MC00_L21_CEILING_04_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -8.742277657347586e-08,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        40.8120002746582,
+        -89.8324966430664,
+        13.881999969482422
+      ],
+      "bounds_min": [
+        40.7859992980957,
+        -89.83899688720703,
+        13.853500366210938
+      ],
+      "bounds_max": [
+        40.8380012512207,
+        -89.82599639892578,
+        13.910499572753906
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_L22_CEILING_01",
+      "button_object": "SW_MC00_L22_CEILING_01_Keycap",
+      "interaction_root": "SW_MC00_L22_CEILING_01_ROOT",
+      "indicator_object": "SW_MC00_L22_CEILING_01_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        55.467498779296875,
+        -63.53799819946289,
+        13.937999725341797
+      ],
+      "bounds_min": [
+        55.46099853515625,
+        -63.56399917602539,
+        13.909500122070312
+      ],
+      "bounds_max": [
+        55.4739990234375,
+        -63.51199722290039,
+        13.966499328613281
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_L22_CEILING_02",
+      "button_object": "SW_MC00_L22_CEILING_02_Keycap",
+      "interaction_root": "SW_MC00_L22_CEILING_02_ROOT",
+      "indicator_object": "SW_MC00_L22_CEILING_02_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        55.467498779296875,
+        -63.6619987487793,
+        13.937999725341797
+      ],
+      "bounds_min": [
+        55.46099853515625,
+        -63.6879997253418,
+        13.909500122070312
+      ],
+      "bounds_max": [
+        55.4739990234375,
+        -63.6359977722168,
+        13.966499328613281
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_L23_CEILING_01",
+      "button_object": "SW_MC00_L23_CEILING_01_Keycap",
+      "interaction_root": "SW_MC00_L23_CEILING_01_ROOT",
+      "indicator_object": "SW_MC00_L23_CEILING_01_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        55.467498779296875,
+        -53.53799819946289,
+        13.937999725341797
+      ],
+      "bounds_min": [
+        55.46099853515625,
+        -53.56399917602539,
+        13.909500122070312
+      ],
+      "bounds_max": [
+        55.4739990234375,
+        -53.51199722290039,
+        13.966499328613281
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_L23_CEILING_02",
+      "button_object": "SW_MC00_L23_CEILING_02_Keycap",
+      "interaction_root": "SW_MC00_L23_CEILING_02_ROOT",
+      "indicator_object": "SW_MC00_L23_CEILING_02_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        55.467498779296875,
+        -53.6619987487793,
+        13.937999725341797
+      ],
+      "bounds_min": [
+        55.46099853515625,
+        -53.6879997253418,
+        13.909500122070312
+      ],
+      "bounds_max": [
+        55.4739990234375,
+        -53.6359977722168,
+        13.966499328613281
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_COR_L0_WEST_01",
+      "button_object": "SW_MC00_COR_L0_WEST_01_Keycap",
+      "interaction_root": "SW_MC00_COR_L0_WEST_01_ROOT",
+      "indicator_object": "SW_MC00_COR_L0_WEST_01_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        48.82749938964844,
+        -85.98699951171875,
+        1.996000051498413
+      ],
+      "bounds_min": [
+        48.82099914550781,
+        -86.01300048828125,
+        1.96750009059906
+      ],
+      "bounds_max": [
+        48.83399963378906,
+        -85.96099853515625,
+        2.0245001316070557
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_COR_L0_WEST_02",
+      "button_object": "SW_MC00_COR_L0_WEST_02_Keycap",
+      "interaction_root": "SW_MC00_COR_L0_WEST_02_ROOT",
+      "indicator_object": "SW_MC00_COR_L0_WEST_02_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        48.82749938964844,
+        -86.0999984741211,
+        1.996000051498413
+      ],
+      "bounds_min": [
+        48.82099914550781,
+        -86.1259994506836,
+        1.96750009059906
+      ],
+      "bounds_max": [
+        48.83399963378906,
+        -86.0739974975586,
+        2.0245001316070557
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_COR_L0_WEST_03",
+      "button_object": "SW_MC00_COR_L0_WEST_03_Keycap",
+      "interaction_root": "SW_MC00_COR_L0_WEST_03_ROOT",
+      "indicator_object": "SW_MC00_COR_L0_WEST_03_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        48.82749938964844,
+        -86.21299743652344,
+        1.996000051498413
+      ],
+      "bounds_min": [
+        48.82099914550781,
+        -86.23899841308594,
+        1.96750009059906
+      ],
+      "bounds_max": [
+        48.83399963378906,
+        -86.18699645996094,
+        2.0245001316070557
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_COR_L0_WEST_04",
+      "button_object": "SW_MC00_COR_L0_WEST_04_Keycap",
+      "interaction_root": "SW_MC00_COR_L0_WEST_04_ROOT",
+      "indicator_object": "SW_MC00_COR_L0_WEST_04_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        48.82749938964844,
+        -85.98699951171875,
+        1.8820000886917114
+      ],
+      "bounds_min": [
+        48.82099914550781,
+        -86.01300048828125,
+        1.8535001277923584
+      ],
+      "bounds_max": [
+        48.83399963378906,
+        -85.96099853515625,
+        1.9105000495910645
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_COR_L0_WEST_05",
+      "button_object": "SW_MC00_COR_L0_WEST_05_Keycap",
+      "interaction_root": "SW_MC00_COR_L0_WEST_05_ROOT",
+      "indicator_object": "SW_MC00_COR_L0_WEST_05_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        48.82749938964844,
+        -86.0999984741211,
+        1.8820000886917114
+      ],
+      "bounds_min": [
+        48.82099914550781,
+        -86.1259994506836,
+        1.8535001277923584
+      ],
+      "bounds_max": [
+        48.83399963378906,
+        -86.0739974975586,
+        1.9105000495910645
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_COR_L0_WEST_06",
+      "button_object": "SW_MC00_COR_L0_WEST_06_Keycap",
+      "interaction_root": "SW_MC00_COR_L0_WEST_06_ROOT",
+      "indicator_object": "SW_MC00_COR_L0_WEST_06_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        48.82749938964844,
+        -86.21299743652344,
+        1.8820000886917114
+      ],
+      "bounds_min": [
+        48.82099914550781,
+        -86.23899841308594,
+        1.8535001277923584
+      ],
+      "bounds_max": [
+        48.83399963378906,
+        -86.18699645996094,
+        1.9105000495910645
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_COR_L0_N_CENTRAL_01",
+      "button_object": "SW_MC00_COR_L0_N_CENTRAL_01_Keycap",
+      "interaction_root": "SW_MC00_COR_L0_N_CENTRAL_01_ROOT",
+      "indicator_object": "SW_MC00_COR_L0_N_CENTRAL_01_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        55.73249816894531,
+        -53.6619987487793,
+        1.996000051498413
+      ],
+      "bounds_min": [
+        55.72599792480469,
+        -53.6879997253418,
+        1.96750009059906
+      ],
+      "bounds_max": [
+        55.73899841308594,
+        -53.6359977722168,
+        2.0245001316070557
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_COR_L0_N_CENTRAL_02",
+      "button_object": "SW_MC00_COR_L0_N_CENTRAL_02_Keycap",
+      "interaction_root": "SW_MC00_COR_L0_N_CENTRAL_02_ROOT",
+      "indicator_object": "SW_MC00_COR_L0_N_CENTRAL_02_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        55.73249816894531,
+        -53.53799819946289,
+        1.996000051498413
+      ],
+      "bounds_min": [
+        55.72599792480469,
+        -53.56399917602539,
+        1.96750009059906
+      ],
+      "bounds_max": [
+        55.73899841308594,
+        -53.51199722290039,
+        2.0245001316070557
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_COR_L0_N_CENTRAL_03",
+      "button_object": "SW_MC00_COR_L0_N_CENTRAL_03_Keycap",
+      "interaction_root": "SW_MC00_COR_L0_N_CENTRAL_03_ROOT",
+      "indicator_object": "SW_MC00_COR_L0_N_CENTRAL_03_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        55.73249816894531,
+        -53.6619987487793,
+        1.8820000886917114
+      ],
+      "bounds_min": [
+        55.72599792480469,
+        -53.6879997253418,
+        1.8535001277923584
+      ],
+      "bounds_max": [
+        55.73899841308594,
+        -53.6359977722168,
+        1.9105000495910645
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_COR_L0_N_CENTRAL_04",
+      "button_object": "SW_MC00_COR_L0_N_CENTRAL_04_Keycap",
+      "interaction_root": "SW_MC00_COR_L0_N_CENTRAL_04_ROOT",
+      "indicator_object": "SW_MC00_COR_L0_N_CENTRAL_04_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        55.73249816894531,
+        -53.53799819946289,
+        1.8820000886917114
+      ],
+      "bounds_min": [
+        55.72599792480469,
+        -53.56399917602539,
+        1.8535001277923584
+      ],
+      "bounds_max": [
+        55.73899841308594,
+        -53.51199722290039,
+        1.9105000495910645
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_COR_L0_N_RIGHT_01",
+      "button_object": "SW_MC00_COR_L0_N_RIGHT_01_Keycap",
+      "interaction_root": "SW_MC00_COR_L0_N_RIGHT_01_ROOT",
+      "indicator_object": "SW_MC00_COR_L0_N_RIGHT_01_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        60.532501220703125,
+        -53.6619987487793,
+        1.9380000829696655
+      ],
+      "bounds_min": [
+        60.5260009765625,
+        -53.6879997253418,
+        1.9095001220703125
+      ],
+      "bounds_max": [
+        60.53900146484375,
+        -53.6359977722168,
+        1.9665000438690186
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_COR_L0_N_RIGHT_02",
+      "button_object": "SW_MC00_COR_L0_N_RIGHT_02_Keycap",
+      "interaction_root": "SW_MC00_COR_L0_N_RIGHT_02_ROOT",
+      "indicator_object": "SW_MC00_COR_L0_N_RIGHT_02_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        60.532501220703125,
+        -53.53799819946289,
+        1.9380000829696655
+      ],
+      "bounds_min": [
+        60.5260009765625,
+        -53.56399917602539,
+        1.9095001220703125
+      ],
+      "bounds_max": [
+        60.53900146484375,
+        -53.51199722290039,
+        1.9665000438690186
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_COR_L0_HUB_01",
+      "button_object": "SW_MC00_COR_L0_HUB_01_Keycap",
+      "interaction_root": "SW_MC00_COR_L0_HUB_01_ROOT",
+      "indicator_object": "SW_MC00_COR_L0_HUB_01_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        0.0,
+        -1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        65.26199340820312,
+        -80.82749938964844,
+        1.9380000829696655
+      ],
+      "bounds_min": [
+        65.23599243164062,
+        -80.83399963378906,
+        1.9095001220703125
+      ],
+      "bounds_max": [
+        65.28799438476562,
+        -80.82099914550781,
+        1.9665000438690186
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_COR_L0_HUB_02",
+      "button_object": "SW_MC00_COR_L0_HUB_02_Keycap",
+      "interaction_root": "SW_MC00_COR_L0_HUB_02_ROOT",
+      "indicator_object": "SW_MC00_COR_L0_HUB_02_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        0.0,
+        -1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        65.13800048828125,
+        -80.82749938964844,
+        1.9380000829696655
+      ],
+      "bounds_min": [
+        65.11199951171875,
+        -80.83399963378906,
+        1.9095001220703125
+      ],
+      "bounds_max": [
+        65.16400146484375,
+        -80.82099914550781,
+        1.9665000438690186
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_COR_L1_WEST_01",
+      "button_object": "SW_MC00_COR_L1_WEST_01_Keycap",
+      "interaction_root": "SW_MC00_COR_L1_WEST_01_ROOT",
+      "indicator_object": "SW_MC00_COR_L1_WEST_01_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        48.82749938964844,
+        -85.98699951171875,
+        7.995999813079834
+      ],
+      "bounds_min": [
+        48.82099914550781,
+        -86.01300048828125,
+        7.967499732971191
+      ],
+      "bounds_max": [
+        48.83399963378906,
+        -85.96099853515625,
+        8.024499893188477
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_COR_L1_WEST_02",
+      "button_object": "SW_MC00_COR_L1_WEST_02_Keycap",
+      "interaction_root": "SW_MC00_COR_L1_WEST_02_ROOT",
+      "indicator_object": "SW_MC00_COR_L1_WEST_02_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        48.82749938964844,
+        -86.0999984741211,
+        7.995999813079834
+      ],
+      "bounds_min": [
+        48.82099914550781,
+        -86.1259994506836,
+        7.967499732971191
+      ],
+      "bounds_max": [
+        48.83399963378906,
+        -86.0739974975586,
+        8.024499893188477
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_COR_L1_WEST_03",
+      "button_object": "SW_MC00_COR_L1_WEST_03_Keycap",
+      "interaction_root": "SW_MC00_COR_L1_WEST_03_ROOT",
+      "indicator_object": "SW_MC00_COR_L1_WEST_03_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        48.82749938964844,
+        -86.21299743652344,
+        7.995999813079834
+      ],
+      "bounds_min": [
+        48.82099914550781,
+        -86.23899841308594,
+        7.967499732971191
+      ],
+      "bounds_max": [
+        48.83399963378906,
+        -86.18699645996094,
+        8.024499893188477
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_COR_L1_WEST_04",
+      "button_object": "SW_MC00_COR_L1_WEST_04_Keycap",
+      "interaction_root": "SW_MC00_COR_L1_WEST_04_ROOT",
+      "indicator_object": "SW_MC00_COR_L1_WEST_04_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        48.82749938964844,
+        -85.98699951171875,
+        7.881999969482422
+      ],
+      "bounds_min": [
+        48.82099914550781,
+        -86.01300048828125,
+        7.853499889373779
+      ],
+      "bounds_max": [
+        48.83399963378906,
+        -85.96099853515625,
+        7.9105000495910645
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_COR_L1_WEST_05",
+      "button_object": "SW_MC00_COR_L1_WEST_05_Keycap",
+      "interaction_root": "SW_MC00_COR_L1_WEST_05_ROOT",
+      "indicator_object": "SW_MC00_COR_L1_WEST_05_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        48.82749938964844,
+        -86.0999984741211,
+        7.881999969482422
+      ],
+      "bounds_min": [
+        48.82099914550781,
+        -86.1259994506836,
+        7.853499889373779
+      ],
+      "bounds_max": [
+        48.83399963378906,
+        -86.0739974975586,
+        7.9105000495910645
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_COR_L1_WEST_06",
+      "button_object": "SW_MC00_COR_L1_WEST_06_Keycap",
+      "interaction_root": "SW_MC00_COR_L1_WEST_06_ROOT",
+      "indicator_object": "SW_MC00_COR_L1_WEST_06_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        48.82749938964844,
+        -86.21299743652344,
+        7.881999969482422
+      ],
+      "bounds_min": [
+        48.82099914550781,
+        -86.23899841308594,
+        7.853499889373779
+      ],
+      "bounds_max": [
+        48.83399963378906,
+        -86.18699645996094,
+        7.9105000495910645
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_COR_L1_N_CENTRAL_01",
+      "button_object": "SW_MC00_COR_L1_N_CENTRAL_01_Keycap",
+      "interaction_root": "SW_MC00_COR_L1_N_CENTRAL_01_ROOT",
+      "indicator_object": "SW_MC00_COR_L1_N_CENTRAL_01_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        55.73249816894531,
+        -53.6619987487793,
+        7.995999813079834
+      ],
+      "bounds_min": [
+        55.72599792480469,
+        -53.6879997253418,
+        7.967499732971191
+      ],
+      "bounds_max": [
+        55.73899841308594,
+        -53.6359977722168,
+        8.024499893188477
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_COR_L1_N_CENTRAL_02",
+      "button_object": "SW_MC00_COR_L1_N_CENTRAL_02_Keycap",
+      "interaction_root": "SW_MC00_COR_L1_N_CENTRAL_02_ROOT",
+      "indicator_object": "SW_MC00_COR_L1_N_CENTRAL_02_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        55.73249816894531,
+        -53.53799819946289,
+        7.995999813079834
+      ],
+      "bounds_min": [
+        55.72599792480469,
+        -53.56399917602539,
+        7.967499732971191
+      ],
+      "bounds_max": [
+        55.73899841308594,
+        -53.51199722290039,
+        8.024499893188477
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_COR_L1_N_CENTRAL_03",
+      "button_object": "SW_MC00_COR_L1_N_CENTRAL_03_Keycap",
+      "interaction_root": "SW_MC00_COR_L1_N_CENTRAL_03_ROOT",
+      "indicator_object": "SW_MC00_COR_L1_N_CENTRAL_03_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        55.73249816894531,
+        -53.6619987487793,
+        7.881999969482422
+      ],
+      "bounds_min": [
+        55.72599792480469,
+        -53.6879997253418,
+        7.853499889373779
+      ],
+      "bounds_max": [
+        55.73899841308594,
+        -53.6359977722168,
+        7.9105000495910645
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_COR_L1_N_CENTRAL_04",
+      "button_object": "SW_MC00_COR_L1_N_CENTRAL_04_Keycap",
+      "interaction_root": "SW_MC00_COR_L1_N_CENTRAL_04_ROOT",
+      "indicator_object": "SW_MC00_COR_L1_N_CENTRAL_04_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        55.73249816894531,
+        -53.53799819946289,
+        7.881999969482422
+      ],
+      "bounds_min": [
+        55.72599792480469,
+        -53.56399917602539,
+        7.853499889373779
+      ],
+      "bounds_max": [
+        55.73899841308594,
+        -53.51199722290039,
+        7.9105000495910645
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_COR_L1_N_RIGHT_01",
+      "button_object": "SW_MC00_COR_L1_N_RIGHT_01_Keycap",
+      "interaction_root": "SW_MC00_COR_L1_N_RIGHT_01_ROOT",
+      "indicator_object": "SW_MC00_COR_L1_N_RIGHT_01_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        60.532501220703125,
+        -53.6619987487793,
+        7.937999725341797
+      ],
+      "bounds_min": [
+        60.5260009765625,
+        -53.6879997253418,
+        7.909499645233154
+      ],
+      "bounds_max": [
+        60.53900146484375,
+        -53.6359977722168,
+        7.9664998054504395
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_COR_L1_N_RIGHT_02",
+      "button_object": "SW_MC00_COR_L1_N_RIGHT_02_Keycap",
+      "interaction_root": "SW_MC00_COR_L1_N_RIGHT_02_ROOT",
+      "indicator_object": "SW_MC00_COR_L1_N_RIGHT_02_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        60.532501220703125,
+        -53.53799819946289,
+        7.937999725341797
+      ],
+      "bounds_min": [
+        60.5260009765625,
+        -53.56399917602539,
+        7.909499645233154
+      ],
+      "bounds_max": [
+        60.53900146484375,
+        -53.51199722290039,
+        7.9664998054504395
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_COR_L1_HUB_01",
+      "button_object": "SW_MC00_COR_L1_HUB_01_Keycap",
+      "interaction_root": "SW_MC00_COR_L1_HUB_01_ROOT",
+      "indicator_object": "SW_MC00_COR_L1_HUB_01_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        0.0,
+        -1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        65.26199340820312,
+        -80.82749938964844,
+        7.937999725341797
+      ],
+      "bounds_min": [
+        65.23599243164062,
+        -80.83399963378906,
+        7.909499645233154
+      ],
+      "bounds_max": [
+        65.28799438476562,
+        -80.82099914550781,
+        7.9664998054504395
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_COR_L1_HUB_02",
+      "button_object": "SW_MC00_COR_L1_HUB_02_Keycap",
+      "interaction_root": "SW_MC00_COR_L1_HUB_02_ROOT",
+      "indicator_object": "SW_MC00_COR_L1_HUB_02_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        0.0,
+        -1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        65.13800048828125,
+        -80.82749938964844,
+        7.937999725341797
+      ],
+      "bounds_min": [
+        65.11199951171875,
+        -80.83399963378906,
+        7.909499645233154
+      ],
+      "bounds_max": [
+        65.16400146484375,
+        -80.82099914550781,
+        7.9664998054504395
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_COR_L2_WEST_01",
+      "button_object": "SW_MC00_COR_L2_WEST_01_Keycap",
+      "interaction_root": "SW_MC00_COR_L2_WEST_01_ROOT",
+      "indicator_object": "SW_MC00_COR_L2_WEST_01_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        48.82749938964844,
+        -85.98699951171875,
+        13.995999336242676
+      ],
+      "bounds_min": [
+        48.82099914550781,
+        -86.01300048828125,
+        13.967499732971191
+      ],
+      "bounds_max": [
+        48.83399963378906,
+        -85.96099853515625,
+        14.02449893951416
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_COR_L2_WEST_02",
+      "button_object": "SW_MC00_COR_L2_WEST_02_Keycap",
+      "interaction_root": "SW_MC00_COR_L2_WEST_02_ROOT",
+      "indicator_object": "SW_MC00_COR_L2_WEST_02_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        48.82749938964844,
+        -86.0999984741211,
+        13.995999336242676
+      ],
+      "bounds_min": [
+        48.82099914550781,
+        -86.1259994506836,
+        13.967499732971191
+      ],
+      "bounds_max": [
+        48.83399963378906,
+        -86.0739974975586,
+        14.02449893951416
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_COR_L2_WEST_03",
+      "button_object": "SW_MC00_COR_L2_WEST_03_Keycap",
+      "interaction_root": "SW_MC00_COR_L2_WEST_03_ROOT",
+      "indicator_object": "SW_MC00_COR_L2_WEST_03_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        48.82749938964844,
+        -86.21299743652344,
+        13.995999336242676
+      ],
+      "bounds_min": [
+        48.82099914550781,
+        -86.23899841308594,
+        13.967499732971191
+      ],
+      "bounds_max": [
+        48.83399963378906,
+        -86.18699645996094,
+        14.02449893951416
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_COR_L2_WEST_04",
+      "button_object": "SW_MC00_COR_L2_WEST_04_Keycap",
+      "interaction_root": "SW_MC00_COR_L2_WEST_04_ROOT",
+      "indicator_object": "SW_MC00_COR_L2_WEST_04_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        48.82749938964844,
+        -85.98699951171875,
+        13.881999969482422
+      ],
+      "bounds_min": [
+        48.82099914550781,
+        -86.01300048828125,
+        13.853500366210938
+      ],
+      "bounds_max": [
+        48.83399963378906,
+        -85.96099853515625,
+        13.910499572753906
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_COR_L2_WEST_05",
+      "button_object": "SW_MC00_COR_L2_WEST_05_Keycap",
+      "interaction_root": "SW_MC00_COR_L2_WEST_05_ROOT",
+      "indicator_object": "SW_MC00_COR_L2_WEST_05_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        48.82749938964844,
+        -86.0999984741211,
+        13.881999969482422
+      ],
+      "bounds_min": [
+        48.82099914550781,
+        -86.1259994506836,
+        13.853500366210938
+      ],
+      "bounds_max": [
+        48.83399963378906,
+        -86.0739974975586,
+        13.910499572753906
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_COR_L2_WEST_06",
+      "button_object": "SW_MC00_COR_L2_WEST_06_Keycap",
+      "interaction_root": "SW_MC00_COR_L2_WEST_06_ROOT",
+      "indicator_object": "SW_MC00_COR_L2_WEST_06_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        48.82749938964844,
+        -86.21299743652344,
+        13.881999969482422
+      ],
+      "bounds_min": [
+        48.82099914550781,
+        -86.23899841308594,
+        13.853500366210938
+      ],
+      "bounds_max": [
+        48.83399963378906,
+        -86.18699645996094,
+        13.910499572753906
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_COR_L2_N_CENTRAL_01",
+      "button_object": "SW_MC00_COR_L2_N_CENTRAL_01_Keycap",
+      "interaction_root": "SW_MC00_COR_L2_N_CENTRAL_01_ROOT",
+      "indicator_object": "SW_MC00_COR_L2_N_CENTRAL_01_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        55.73249816894531,
+        -53.6619987487793,
+        13.995999336242676
+      ],
+      "bounds_min": [
+        55.72599792480469,
+        -53.6879997253418,
+        13.967499732971191
+      ],
+      "bounds_max": [
+        55.73899841308594,
+        -53.6359977722168,
+        14.02449893951416
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_COR_L2_N_CENTRAL_02",
+      "button_object": "SW_MC00_COR_L2_N_CENTRAL_02_Keycap",
+      "interaction_root": "SW_MC00_COR_L2_N_CENTRAL_02_ROOT",
+      "indicator_object": "SW_MC00_COR_L2_N_CENTRAL_02_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        55.73249816894531,
+        -53.53799819946289,
+        13.995999336242676
+      ],
+      "bounds_min": [
+        55.72599792480469,
+        -53.56399917602539,
+        13.967499732971191
+      ],
+      "bounds_max": [
+        55.73899841308594,
+        -53.51199722290039,
+        14.02449893951416
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_COR_L2_N_CENTRAL_03",
+      "button_object": "SW_MC00_COR_L2_N_CENTRAL_03_Keycap",
+      "interaction_root": "SW_MC00_COR_L2_N_CENTRAL_03_ROOT",
+      "indicator_object": "SW_MC00_COR_L2_N_CENTRAL_03_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        55.73249816894531,
+        -53.6619987487793,
+        13.881999969482422
+      ],
+      "bounds_min": [
+        55.72599792480469,
+        -53.6879997253418,
+        13.853500366210938
+      ],
+      "bounds_max": [
+        55.73899841308594,
+        -53.6359977722168,
+        13.910499572753906
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_COR_L2_N_CENTRAL_04",
+      "button_object": "SW_MC00_COR_L2_N_CENTRAL_04_Keycap",
+      "interaction_root": "SW_MC00_COR_L2_N_CENTRAL_04_ROOT",
+      "indicator_object": "SW_MC00_COR_L2_N_CENTRAL_04_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        55.73249816894531,
+        -53.53799819946289,
+        13.881999969482422
+      ],
+      "bounds_min": [
+        55.72599792480469,
+        -53.56399917602539,
+        13.853500366210938
+      ],
+      "bounds_max": [
+        55.73899841308594,
+        -53.51199722290039,
+        13.910499572753906
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_COR_L2_N_RIGHT_01",
+      "button_object": "SW_MC00_COR_L2_N_RIGHT_01_Keycap",
+      "interaction_root": "SW_MC00_COR_L2_N_RIGHT_01_ROOT",
+      "indicator_object": "SW_MC00_COR_L2_N_RIGHT_01_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        60.532501220703125,
+        -53.6619987487793,
+        13.937999725341797
+      ],
+      "bounds_min": [
+        60.5260009765625,
+        -53.6879997253418,
+        13.909500122070312
+      ],
+      "bounds_max": [
+        60.53900146484375,
+        -53.6359977722168,
+        13.966499328613281
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_COR_L2_N_RIGHT_02",
+      "button_object": "SW_MC00_COR_L2_N_RIGHT_02_Keycap",
+      "interaction_root": "SW_MC00_COR_L2_N_RIGHT_02_ROOT",
+      "indicator_object": "SW_MC00_COR_L2_N_RIGHT_02_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        60.532501220703125,
+        -53.53799819946289,
+        13.937999725341797
+      ],
+      "bounds_min": [
+        60.5260009765625,
+        -53.56399917602539,
+        13.909500122070312
+      ],
+      "bounds_max": [
+        60.53900146484375,
+        -53.51199722290039,
+        13.966499328613281
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_COR_L2_HUB_01",
+      "button_object": "SW_MC00_COR_L2_HUB_01_Keycap",
+      "interaction_root": "SW_MC00_COR_L2_HUB_01_ROOT",
+      "indicator_object": "SW_MC00_COR_L2_HUB_01_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        0.0,
+        -1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        65.26199340820312,
+        -80.82749938964844,
+        13.937999725341797
+      ],
+      "bounds_min": [
+        65.23599243164062,
+        -80.83399963378906,
+        13.909500122070312
+      ],
+      "bounds_max": [
+        65.28799438476562,
+        -80.82099914550781,
+        13.966499328613281
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_COR_L2_HUB_02",
+      "button_object": "SW_MC00_COR_L2_HUB_02_Keycap",
+      "interaction_root": "SW_MC00_COR_L2_HUB_02_ROOT",
+      "indicator_object": "SW_MC00_COR_L2_HUB_02_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        0.0,
+        -1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        65.13800048828125,
+        -80.82749938964844,
+        13.937999725341797
+      ],
+      "bounds_min": [
+        65.11199951171875,
+        -80.83399963378906,
+        13.909500122070312
+      ],
+      "bounds_max": [
+        65.16400146484375,
+        -80.82099914550781,
+        13.966499328613281
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_STAIR_W_LANDING_L0_01",
+      "button_object": "SW_MC00_STAIR_W_LANDING_L0_01_Keycap",
+      "interaction_root": "SW_MC00_STAIR_W_LANDING_L0_01_ROOT",
+      "indicator_object": "SW_MC00_STAIR_W_LANDING_L0_01_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -8.742277657347586e-08,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        31.58799934387207,
+        -77.23249816894531,
+        1.996000051498413
+      ],
+      "bounds_min": [
+        31.562000274658203,
+        -77.23899841308594,
+        1.96750009059906
+      ],
+      "bounds_max": [
+        31.613998413085938,
+        -77.22599792480469,
+        2.0245001316070557
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_STAIR_W_LANDING_L0_02",
+      "button_object": "SW_MC00_STAIR_W_LANDING_L0_02_Keycap",
+      "interaction_root": "SW_MC00_STAIR_W_LANDING_L0_02_ROOT",
+      "indicator_object": "SW_MC00_STAIR_W_LANDING_L0_02_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -8.742277657347586e-08,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        31.711999893188477,
+        -77.23249816894531,
+        1.996000051498413
+      ],
+      "bounds_min": [
+        31.68600082397461,
+        -77.23899841308594,
+        1.96750009059906
+      ],
+      "bounds_max": [
+        31.737998962402344,
+        -77.22599792480469,
+        2.0245001316070557
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_STAIR_W_LANDING_L0_03",
+      "button_object": "SW_MC00_STAIR_W_LANDING_L0_03_Keycap",
+      "interaction_root": "SW_MC00_STAIR_W_LANDING_L0_03_ROOT",
+      "indicator_object": "SW_MC00_STAIR_W_LANDING_L0_03_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -8.742277657347586e-08,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        31.58799934387207,
+        -77.23249816894531,
+        1.8820000886917114
+      ],
+      "bounds_min": [
+        31.562000274658203,
+        -77.23899841308594,
+        1.8535001277923584
+      ],
+      "bounds_max": [
+        31.613998413085938,
+        -77.22599792480469,
+        1.9105000495910645
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_STAIR_W_LANDING_L0_04",
+      "button_object": "SW_MC00_STAIR_W_LANDING_L0_04_Keycap",
+      "interaction_root": "SW_MC00_STAIR_W_LANDING_L0_04_ROOT",
+      "indicator_object": "SW_MC00_STAIR_W_LANDING_L0_04_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -8.742277657347586e-08,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        31.711999893188477,
+        -77.23249816894531,
+        1.8820000886917114
+      ],
+      "bounds_min": [
+        31.68600082397461,
+        -77.23899841308594,
+        1.8535001277923584
+      ],
+      "bounds_max": [
+        31.737998962402344,
+        -77.22599792480469,
+        1.9105000495910645
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_STAIR_W_LANDING_L1_01",
+      "button_object": "SW_MC00_STAIR_W_LANDING_L1_01_Keycap",
+      "interaction_root": "SW_MC00_STAIR_W_LANDING_L1_01_ROOT",
+      "indicator_object": "SW_MC00_STAIR_W_LANDING_L1_01_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -8.742277657347586e-08,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        31.536998748779297,
+        -77.23249816894531,
+        7.995999813079834
+      ],
+      "bounds_min": [
+        31.51099967956543,
+        -77.23899841308594,
+        7.967499732971191
+      ],
+      "bounds_max": [
+        31.562997817993164,
+        -77.22599792480469,
+        8.024499893188477
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_STAIR_W_LANDING_L1_02",
+      "button_object": "SW_MC00_STAIR_W_LANDING_L1_02_Keycap",
+      "interaction_root": "SW_MC00_STAIR_W_LANDING_L1_02_ROOT",
+      "indicator_object": "SW_MC00_STAIR_W_LANDING_L1_02_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -8.742277657347586e-08,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        31.649999618530273,
+        -77.23249816894531,
+        7.995999813079834
+      ],
+      "bounds_min": [
+        31.624000549316406,
+        -77.23899841308594,
+        7.967499732971191
+      ],
+      "bounds_max": [
+        31.67599868774414,
+        -77.22599792480469,
+        8.024499893188477
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_STAIR_W_LANDING_L1_03",
+      "button_object": "SW_MC00_STAIR_W_LANDING_L1_03_Keycap",
+      "interaction_root": "SW_MC00_STAIR_W_LANDING_L1_03_ROOT",
+      "indicator_object": "SW_MC00_STAIR_W_LANDING_L1_03_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -8.742277657347586e-08,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        31.76300048828125,
+        -77.23249816894531,
+        7.995999813079834
+      ],
+      "bounds_min": [
+        31.737001419067383,
+        -77.23899841308594,
+        7.967499732971191
+      ],
+      "bounds_max": [
+        31.788999557495117,
+        -77.22599792480469,
+        8.024499893188477
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_STAIR_W_LANDING_L1_04",
+      "button_object": "SW_MC00_STAIR_W_LANDING_L1_04_Keycap",
+      "interaction_root": "SW_MC00_STAIR_W_LANDING_L1_04_ROOT",
+      "indicator_object": "SW_MC00_STAIR_W_LANDING_L1_04_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -8.742277657347586e-08,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        31.536998748779297,
+        -77.23249816894531,
+        7.881999969482422
+      ],
+      "bounds_min": [
+        31.51099967956543,
+        -77.23899841308594,
+        7.853499889373779
+      ],
+      "bounds_max": [
+        31.562997817993164,
+        -77.22599792480469,
+        7.9105000495910645
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_STAIR_W_LANDING_L1_05",
+      "button_object": "SW_MC00_STAIR_W_LANDING_L1_05_Keycap",
+      "interaction_root": "SW_MC00_STAIR_W_LANDING_L1_05_ROOT",
+      "indicator_object": "SW_MC00_STAIR_W_LANDING_L1_05_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -8.742277657347586e-08,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        31.649999618530273,
+        -77.23249816894531,
+        7.881999969482422
+      ],
+      "bounds_min": [
+        31.624000549316406,
+        -77.23899841308594,
+        7.853499889373779
+      ],
+      "bounds_max": [
+        31.67599868774414,
+        -77.22599792480469,
+        7.9105000495910645
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_STAIR_W_LANDING_L1_06",
+      "button_object": "SW_MC00_STAIR_W_LANDING_L1_06_Keycap",
+      "interaction_root": "SW_MC00_STAIR_W_LANDING_L1_06_ROOT",
+      "indicator_object": "SW_MC00_STAIR_W_LANDING_L1_06_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -8.742277657347586e-08,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        31.76300048828125,
+        -77.23249816894531,
+        7.881999969482422
+      ],
+      "bounds_min": [
+        31.737001419067383,
+        -77.23899841308594,
+        7.853499889373779
+      ],
+      "bounds_max": [
+        31.788999557495117,
+        -77.22599792480469,
+        7.9105000495910645
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_STAIR_W_LANDING_L2_01",
+      "button_object": "SW_MC00_STAIR_W_LANDING_L2_01_Keycap",
+      "interaction_root": "SW_MC00_STAIR_W_LANDING_L2_01_ROOT",
+      "indicator_object": "SW_MC00_STAIR_W_LANDING_L2_01_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -8.742277657347586e-08,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        31.58799934387207,
+        -77.23249816894531,
+        13.995999336242676
+      ],
+      "bounds_min": [
+        31.562000274658203,
+        -77.23899841308594,
+        13.967499732971191
+      ],
+      "bounds_max": [
+        31.613998413085938,
+        -77.22599792480469,
+        14.02449893951416
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_STAIR_W_LANDING_L2_02",
+      "button_object": "SW_MC00_STAIR_W_LANDING_L2_02_Keycap",
+      "interaction_root": "SW_MC00_STAIR_W_LANDING_L2_02_ROOT",
+      "indicator_object": "SW_MC00_STAIR_W_LANDING_L2_02_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -8.742277657347586e-08,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        31.711999893188477,
+        -77.23249816894531,
+        13.995999336242676
+      ],
+      "bounds_min": [
+        31.68600082397461,
+        -77.23899841308594,
+        13.967499732971191
+      ],
+      "bounds_max": [
+        31.737998962402344,
+        -77.22599792480469,
+        14.02449893951416
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_STAIR_W_LANDING_L2_03",
+      "button_object": "SW_MC00_STAIR_W_LANDING_L2_03_Keycap",
+      "interaction_root": "SW_MC00_STAIR_W_LANDING_L2_03_ROOT",
+      "indicator_object": "SW_MC00_STAIR_W_LANDING_L2_03_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -8.742277657347586e-08,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        31.58799934387207,
+        -77.23249816894531,
+        13.881999969482422
+      ],
+      "bounds_min": [
+        31.562000274658203,
+        -77.23899841308594,
+        13.853500366210938
+      ],
+      "bounds_max": [
+        31.613998413085938,
+        -77.22599792480469,
+        13.910499572753906
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_STAIR_W_LANDING_L2_04",
+      "button_object": "SW_MC00_STAIR_W_LANDING_L2_04_Keycap",
+      "interaction_root": "SW_MC00_STAIR_W_LANDING_L2_04_ROOT",
+      "indicator_object": "SW_MC00_STAIR_W_LANDING_L2_04_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -8.742277657347586e-08,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        31.711999893188477,
+        -77.23249816894531,
+        13.881999969482422
+      ],
+      "bounds_min": [
+        31.68600082397461,
+        -77.23899841308594,
+        13.853500366210938
+      ],
+      "bounds_max": [
+        31.737998962402344,
+        -77.22599792480469,
+        13.910499572753906
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_STAIR_N_LANDING_L0_01",
+      "button_object": "SW_MC00_STAIR_N_LANDING_L0_01_Keycap",
+      "interaction_root": "SW_MC00_STAIR_N_LANDING_L0_01_ROOT",
+      "indicator_object": "SW_MC00_STAIR_N_LANDING_L0_01_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -8.742277657347586e-08,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        69.58800506591797,
+        -52.23249816894531,
+        1.996000051498413
+      ],
+      "bounds_min": [
+        69.56200408935547,
+        -52.23899841308594,
+        1.96750009059906
+      ],
+      "bounds_max": [
+        69.61400604248047,
+        -52.22599792480469,
+        2.0245001316070557
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_STAIR_N_LANDING_L0_02",
+      "button_object": "SW_MC00_STAIR_N_LANDING_L0_02_Keycap",
+      "interaction_root": "SW_MC00_STAIR_N_LANDING_L0_02_ROOT",
+      "indicator_object": "SW_MC00_STAIR_N_LANDING_L0_02_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -8.742277657347586e-08,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        69.71199798583984,
+        -52.23249816894531,
+        1.996000051498413
+      ],
+      "bounds_min": [
+        69.68599700927734,
+        -52.23899841308594,
+        1.96750009059906
+      ],
+      "bounds_max": [
+        69.73799896240234,
+        -52.22599792480469,
+        2.0245001316070557
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_STAIR_N_LANDING_L0_03",
+      "button_object": "SW_MC00_STAIR_N_LANDING_L0_03_Keycap",
+      "interaction_root": "SW_MC00_STAIR_N_LANDING_L0_03_ROOT",
+      "indicator_object": "SW_MC00_STAIR_N_LANDING_L0_03_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -8.742277657347586e-08,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        69.58800506591797,
+        -52.23249816894531,
+        1.8820000886917114
+      ],
+      "bounds_min": [
+        69.56200408935547,
+        -52.23899841308594,
+        1.8535001277923584
+      ],
+      "bounds_max": [
+        69.61400604248047,
+        -52.22599792480469,
+        1.9105000495910645
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_STAIR_N_LANDING_L0_04",
+      "button_object": "SW_MC00_STAIR_N_LANDING_L0_04_Keycap",
+      "interaction_root": "SW_MC00_STAIR_N_LANDING_L0_04_ROOT",
+      "indicator_object": "SW_MC00_STAIR_N_LANDING_L0_04_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -8.742277657347586e-08,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        69.71199798583984,
+        -52.23249816894531,
+        1.8820000886917114
+      ],
+      "bounds_min": [
+        69.68599700927734,
+        -52.23899841308594,
+        1.8535001277923584
+      ],
+      "bounds_max": [
+        69.73799896240234,
+        -52.22599792480469,
+        1.9105000495910645
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_STAIR_N_LANDING_L1_01",
+      "button_object": "SW_MC00_STAIR_N_LANDING_L1_01_Keycap",
+      "interaction_root": "SW_MC00_STAIR_N_LANDING_L1_01_ROOT",
+      "indicator_object": "SW_MC00_STAIR_N_LANDING_L1_01_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -8.742277657347586e-08,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        69.53700256347656,
+        -52.23249816894531,
+        7.995999813079834
+      ],
+      "bounds_min": [
+        69.51100158691406,
+        -52.23899841308594,
+        7.967499732971191
+      ],
+      "bounds_max": [
+        69.56300354003906,
+        -52.22599792480469,
+        8.024499893188477
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_STAIR_N_LANDING_L1_02",
+      "button_object": "SW_MC00_STAIR_N_LANDING_L1_02_Keycap",
+      "interaction_root": "SW_MC00_STAIR_N_LANDING_L1_02_ROOT",
+      "indicator_object": "SW_MC00_STAIR_N_LANDING_L1_02_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -8.742277657347586e-08,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        69.6500015258789,
+        -52.23249816894531,
+        7.995999813079834
+      ],
+      "bounds_min": [
+        69.6240005493164,
+        -52.23899841308594,
+        7.967499732971191
+      ],
+      "bounds_max": [
+        69.6760025024414,
+        -52.22599792480469,
+        8.024499893188477
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_STAIR_N_LANDING_L1_03",
+      "button_object": "SW_MC00_STAIR_N_LANDING_L1_03_Keycap",
+      "interaction_root": "SW_MC00_STAIR_N_LANDING_L1_03_ROOT",
+      "indicator_object": "SW_MC00_STAIR_N_LANDING_L1_03_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -8.742277657347586e-08,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        69.76300048828125,
+        -52.23249816894531,
+        7.995999813079834
+      ],
+      "bounds_min": [
+        69.73699951171875,
+        -52.23899841308594,
+        7.967499732971191
+      ],
+      "bounds_max": [
+        69.78900146484375,
+        -52.22599792480469,
+        8.024499893188477
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_STAIR_N_LANDING_L1_04",
+      "button_object": "SW_MC00_STAIR_N_LANDING_L1_04_Keycap",
+      "interaction_root": "SW_MC00_STAIR_N_LANDING_L1_04_ROOT",
+      "indicator_object": "SW_MC00_STAIR_N_LANDING_L1_04_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -8.742277657347586e-08,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        69.53700256347656,
+        -52.23249816894531,
+        7.881999969482422
+      ],
+      "bounds_min": [
+        69.51100158691406,
+        -52.23899841308594,
+        7.853499889373779
+      ],
+      "bounds_max": [
+        69.56300354003906,
+        -52.22599792480469,
+        7.9105000495910645
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_STAIR_N_LANDING_L1_05",
+      "button_object": "SW_MC00_STAIR_N_LANDING_L1_05_Keycap",
+      "interaction_root": "SW_MC00_STAIR_N_LANDING_L1_05_ROOT",
+      "indicator_object": "SW_MC00_STAIR_N_LANDING_L1_05_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -8.742277657347586e-08,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        69.6500015258789,
+        -52.23249816894531,
+        7.881999969482422
+      ],
+      "bounds_min": [
+        69.6240005493164,
+        -52.23899841308594,
+        7.853499889373779
+      ],
+      "bounds_max": [
+        69.6760025024414,
+        -52.22599792480469,
+        7.9105000495910645
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_STAIR_N_LANDING_L1_06",
+      "button_object": "SW_MC00_STAIR_N_LANDING_L1_06_Keycap",
+      "interaction_root": "SW_MC00_STAIR_N_LANDING_L1_06_ROOT",
+      "indicator_object": "SW_MC00_STAIR_N_LANDING_L1_06_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -8.742277657347586e-08,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        69.76300048828125,
+        -52.23249816894531,
+        7.881999969482422
+      ],
+      "bounds_min": [
+        69.73699951171875,
+        -52.23899841308594,
+        7.853499889373779
+      ],
+      "bounds_max": [
+        69.78900146484375,
+        -52.22599792480469,
+        7.9105000495910645
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_STAIR_N_LANDING_L2_01",
+      "button_object": "SW_MC00_STAIR_N_LANDING_L2_01_Keycap",
+      "interaction_root": "SW_MC00_STAIR_N_LANDING_L2_01_ROOT",
+      "indicator_object": "SW_MC00_STAIR_N_LANDING_L2_01_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -8.742277657347586e-08,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        69.58800506591797,
+        -52.23249816894531,
+        13.995999336242676
+      ],
+      "bounds_min": [
+        69.56200408935547,
+        -52.23899841308594,
+        13.967499732971191
+      ],
+      "bounds_max": [
+        69.61400604248047,
+        -52.22599792480469,
+        14.02449893951416
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_STAIR_N_LANDING_L2_02",
+      "button_object": "SW_MC00_STAIR_N_LANDING_L2_02_Keycap",
+      "interaction_root": "SW_MC00_STAIR_N_LANDING_L2_02_ROOT",
+      "indicator_object": "SW_MC00_STAIR_N_LANDING_L2_02_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -8.742277657347586e-08,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        69.71199798583984,
+        -52.23249816894531,
+        13.995999336242676
+      ],
+      "bounds_min": [
+        69.68599700927734,
+        -52.23899841308594,
+        13.967499732971191
+      ],
+      "bounds_max": [
+        69.73799896240234,
+        -52.22599792480469,
+        14.02449893951416
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_STAIR_N_LANDING_L2_03",
+      "button_object": "SW_MC00_STAIR_N_LANDING_L2_03_Keycap",
+      "interaction_root": "SW_MC00_STAIR_N_LANDING_L2_03_ROOT",
+      "indicator_object": "SW_MC00_STAIR_N_LANDING_L2_03_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -8.742277657347586e-08,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        69.58800506591797,
+        -52.23249816894531,
+        13.881999969482422
+      ],
+      "bounds_min": [
+        69.56200408935547,
+        -52.23899841308594,
+        13.853500366210938
+      ],
+      "bounds_max": [
+        69.61400604248047,
+        -52.22599792480469,
+        13.910499572753906
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_STAIR_N_LANDING_L2_04",
+      "button_object": "SW_MC00_STAIR_N_LANDING_L2_04_Keycap",
+      "interaction_root": "SW_MC00_STAIR_N_LANDING_L2_04_ROOT",
+      "indicator_object": "SW_MC00_STAIR_N_LANDING_L2_04_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -8.742277657347586e-08,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        69.71199798583984,
+        -52.23249816894531,
+        13.881999969482422
+      ],
+      "bounds_min": [
+        69.68599700927734,
+        -52.23899841308594,
+        13.853500366210938
+      ],
+      "bounds_max": [
+        69.73799896240234,
+        -52.22599792480469,
+        13.910499572753906
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_ENTRY_EVA_01",
+      "button_object": "SW_MC00_ENTRY_EVA_01_Keycap",
+      "interaction_root": "SW_MC00_ENTRY_EVA_01_ROOT",
+      "indicator_object": "SW_MC00_ENTRY_EVA_01_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        76.15250396728516,
+        -108.71299743652344,
+        1.9380000829696655
+      ],
+      "bounds_min": [
+        76.14600372314453,
+        -108.73899841308594,
+        1.9095001220703125
+      ],
+      "bounds_max": [
+        76.15900421142578,
+        -108.68699645996094,
+        1.9665000438690186
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_ENTRY_EVA_02",
+      "button_object": "SW_MC00_ENTRY_EVA_02_Keycap",
+      "interaction_root": "SW_MC00_ENTRY_EVA_02_ROOT",
+      "indicator_object": "SW_MC00_ENTRY_EVA_02_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        76.15250396728516,
+        -108.5999984741211,
+        1.9380000829696655
+      ],
+      "bounds_min": [
+        76.14600372314453,
+        -108.6259994506836,
+        1.9095001220703125
+      ],
+      "bounds_max": [
+        76.15900421142578,
+        -108.5739974975586,
+        1.9665000438690186
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_ENTRY_EVA_03",
+      "button_object": "SW_MC00_ENTRY_EVA_03_Keycap",
+      "interaction_root": "SW_MC00_ENTRY_EVA_03_ROOT",
+      "indicator_object": "SW_MC00_ENTRY_EVA_03_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        76.15250396728516,
+        -108.48699951171875,
+        1.9380000829696655
+      ],
+      "bounds_min": [
+        76.14600372314453,
+        -108.51300048828125,
+        1.9095001220703125
+      ],
+      "bounds_max": [
+        76.15900421142578,
+        -108.46099853515625,
+        1.9665000438690186
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_ENTRY_CREW_01",
+      "button_object": "SW_MC00_ENTRY_CREW_01_Keycap",
+      "interaction_root": "SW_MC00_ENTRY_CREW_01_ROOT",
+      "indicator_object": "SW_MC00_ENTRY_CREW_01_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        60.9474983215332,
+        -44.1870002746582,
+        1.9380000829696655
+      ],
+      "bounds_min": [
+        60.94099807739258,
+        -44.2130012512207,
+        1.9095001220703125
+      ],
+      "bounds_max": [
+        60.95399856567383,
+        -44.1609992980957,
+        1.9665000438690186
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_ENTRY_CREW_02",
+      "button_object": "SW_MC00_ENTRY_CREW_02_Keycap",
+      "interaction_root": "SW_MC00_ENTRY_CREW_02_ROOT",
+      "indicator_object": "SW_MC00_ENTRY_CREW_02_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        60.9474983215332,
+        -44.29999923706055,
+        1.9380000829696655
+      ],
+      "bounds_min": [
+        60.94099807739258,
+        -44.32600021362305,
+        1.9095001220703125
+      ],
+      "bounds_max": [
+        60.95399856567383,
+        -44.27399826049805,
+        1.9665000438690186
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_ENTRY_CREW_03",
+      "button_object": "SW_MC00_ENTRY_CREW_03_Keycap",
+      "interaction_root": "SW_MC00_ENTRY_CREW_03_ROOT",
+      "indicator_object": "SW_MC00_ENTRY_CREW_03_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        60.9474983215332,
+        -44.41299819946289,
+        1.9380000829696655
+      ],
+      "bounds_min": [
+        60.94099807739258,
+        -44.43899917602539,
+        1.9095001220703125
+      ],
+      "bounds_max": [
+        60.95399856567383,
+        -44.38699722290039,
+        1.9665000438690186
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_ENTRY_CARGO_01",
+      "button_object": "SW_MC00_ENTRY_CARGO_01_Keycap",
+      "interaction_root": "SW_MC00_ENTRY_CARGO_01_ROOT",
+      "indicator_object": "SW_MC00_ENTRY_CARGO_01_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -1.5099580252808664e-07,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        19.486997604370117,
+        -83.95250701904297,
+        1.9380000829696655
+      ],
+      "bounds_min": [
+        19.46099853515625,
+        -83.9590072631836,
+        1.9095001220703125
+      ],
+      "bounds_max": [
+        19.512996673583984,
+        -83.94600677490234,
+        1.9665000438690186
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_ENTRY_CARGO_02",
+      "button_object": "SW_MC00_ENTRY_CARGO_02_Keycap",
+      "interaction_root": "SW_MC00_ENTRY_CARGO_02_ROOT",
+      "indicator_object": "SW_MC00_ENTRY_CARGO_02_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -1.5099580252808664e-07,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        19.599998474121094,
+        -83.95250701904297,
+        1.9380000829696655
+      ],
+      "bounds_min": [
+        19.573999404907227,
+        -83.9590072631836,
+        1.9095001220703125
+      ],
+      "bounds_max": [
+        19.62599754333496,
+        -83.94600677490234,
+        1.9665000438690186
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_ENTRY_CARGO_03",
+      "button_object": "SW_MC00_ENTRY_CARGO_03_Keycap",
+      "interaction_root": "SW_MC00_ENTRY_CARGO_03_ROOT",
+      "indicator_object": "SW_MC00_ENTRY_CARGO_03_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -1.5099580252808664e-07,
+        1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        19.71299934387207,
+        -83.95250701904297,
+        1.9380000829696655
+      ],
+      "bounds_min": [
+        19.687000274658203,
+        -83.9590072631836,
+        1.9095001220703125
+      ],
+      "bounds_max": [
+        19.738998413085938,
+        -83.94600677490234,
+        1.9665000438690186
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_G02_TASK_01",
+      "button_object": "SW_MC00_G02_TASK_01_Keycap",
+      "interaction_root": "SW_MC00_G02_TASK_01_ROOT",
+      "indicator_object": "SW_MC00_G02_TASK_01_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        50.272499084472656,
+        -57.599998474121094,
+        1.746999979019165
+      ],
+      "bounds_min": [
+        50.26599884033203,
+        -57.625999450683594,
+        1.718500018119812
+      ],
+      "bounds_max": [
+        50.27899932861328,
+        -57.573997497558594,
+        1.775499939918518
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_L11_TASK_01",
+      "button_object": "SW_MC00_L11_TASK_01_Keycap",
+      "interaction_root": "SW_MC00_L11_TASK_01_ROOT",
+      "indicator_object": "SW_MC00_L11_TASK_01_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        36.73249816894531,
+        -95.12999725341797,
+        7.997000217437744
+      ],
+      "bounds_min": [
+        36.72599792480469,
+        -95.15599822998047,
+        7.968500137329102
+      ],
+      "bounds_max": [
+        36.73899841308594,
+        -95.10399627685547,
+        8.025500297546387
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_TASK_SP01_01",
+      "button_object": "SW_MC00_TASK_SP01_01_Keycap",
+      "interaction_root": "SW_MC00_TASK_SP01_01_ROOT",
+      "indicator_object": "SW_MC00_TASK_SP01_01_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        0.0,
+        -1.0,
+        7.549790126404332e-08
+      ],
+      "position_world": [
+        34.20000076293945,
+        -103.56749725341797,
+        1.9470000267028809
+      ],
+      "bounds_min": [
+        34.17399978637695,
+        -103.5739974975586,
+        1.9185000658035278
+      ],
+      "bounds_max": [
+        34.22600173950195,
+        -103.56099700927734,
+        1.9754999876022339
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_TASK_SP02_01",
+      "button_object": "SW_MC00_TASK_SP02_01_Keycap",
+      "interaction_root": "SW_MC00_TASK_SP02_01_ROOT",
+      "indicator_object": "SW_MC00_TASK_SP02_01_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        29.13249969482422,
+        -94.05000305175781,
+        1.9470000267028809
+      ],
+      "bounds_min": [
+        29.125999450683594,
+        -94.07600402832031,
+        1.9185000658035278
+      ],
+      "bounds_max": [
+        29.138999938964844,
+        -94.02400207519531,
+        1.9754999876022339
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_TASK_SP04_01",
+      "button_object": "SW_MC00_TASK_SP04_01_Keycap",
+      "interaction_root": "SW_MC00_TASK_SP04_01_ROOT",
+      "indicator_object": "SW_MC00_TASK_SP04_01_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        46.86750030517578,
+        -95.80000305175781,
+        1.9470000267028809
+      ],
+      "bounds_min": [
+        46.861000061035156,
+        -95.82600402832031,
+        1.9185000658035278
+      ],
+      "bounds_max": [
+        46.874000549316406,
+        -95.77400207519531,
+        1.9754999876022339
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_TASK_SP05_01",
+      "button_object": "SW_MC00_TASK_SP05_01_Keycap",
+      "interaction_root": "SW_MC00_TASK_SP05_01_ROOT",
+      "indicator_object": "SW_MC00_TASK_SP05_01_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        -1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        45.39249801635742,
+        -101.0999984741211,
+        2.0169999599456787
+      ],
+      "bounds_min": [
+        45.3859977722168,
+        -101.1259994506836,
+        1.9884999990463257
+      ],
+      "bounds_max": [
+        45.39899826049805,
+        -101.0739974975586,
+        2.0455000400543213
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_TASK_L22_IO_01",
+      "button_object": "SW_MC00_TASK_L22_IO_01_Keycap",
+      "interaction_root": "SW_MC00_TASK_L22_IO_01_ROOT",
+      "indicator_object": "SW_MC00_TASK_L22_IO_01_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        1.0,
+        4.371138828673793e-08,
+        -4.371138828673793e-08
+      ],
+      "position_world": [
+        44.20750045776367,
+        -57.900001525878906,
+        13.946999549865723
+      ],
+      "bounds_min": [
+        44.20100021362305,
+        -57.926002502441406,
+        13.918499946594238
+      ],
+      "bounds_max": [
+        44.2140007019043,
+        -57.874000549316406,
+        13.975499153137207
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_TASK_L22_OPERATIONS_01",
+      "button_object": "SW_MC00_TASK_L22_OPERATIONS_01_Keycap",
+      "interaction_root": "SW_MC00_TASK_L22_OPERATIONS_01_ROOT",
+      "indicator_object": "SW_MC00_TASK_L22_OPERATIONS_01_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        8.742277657347586e-08,
+        0.0,
+        -1.0
+      ],
+      "position_world": [
+        43.52000045776367,
+        -64.04299926757812,
+        13.617499351501465
+      ],
+      "bounds_min": [
+        43.49399948120117,
+        -64.07150268554688,
+        13.61099910736084
+      ],
+      "bounds_max": [
+        43.54600143432617,
+        -64.01449584960938,
+        13.62399959564209
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_TASK_L22_REPLAY_01",
+      "button_object": "SW_MC00_TASK_L22_REPLAY_01_Keycap",
+      "interaction_root": "SW_MC00_TASK_L22_REPLAY_01_ROOT",
+      "indicator_object": "SW_MC00_TASK_L22_REPLAY_01_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        8.742277657347586e-08,
+        0.0,
+        -1.0
+      ],
+      "position_world": [
+        46.54999923706055,
+        -64.04299926757812,
+        13.617499351501465
+      ],
+      "bounds_min": [
+        46.52399826049805,
+        -64.07150268554688,
+        13.61099910736084
+      ],
+      "bounds_max": [
+        46.57600021362305,
+        -64.01449584960938,
+        13.62399959564209
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_TASK_L22_TEST_01",
+      "button_object": "SW_MC00_TASK_L22_TEST_01_Keycap",
+      "interaction_root": "SW_MC00_TASK_L22_TEST_01_ROOT",
+      "indicator_object": "SW_MC00_TASK_L22_TEST_01_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        0.0,
+        8.742277657347586e-08,
+        -1.0
+      ],
+      "position_world": [
+        32.9900016784668,
+        -60.09700012207031,
+        13.637499809265137
+      ],
+      "bounds_min": [
+        32.9640007019043,
+        -60.1254997253418,
+        13.630999565124512
+      ],
+      "bounds_max": [
+        33.0160026550293,
+        -60.06850051879883,
+        13.644000053405762
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_L22_OPERATIONS_04",
+      "button_object": "SW_MC00_L22_OPERATIONS_04_Keycap",
+      "interaction_root": "SW_MC00_L22_OPERATIONS_04_ROOT",
+      "indicator_object": "SW_MC00_L22_OPERATIONS_04_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        7.92319454490098e-08,
+        0.42261824011802673,
+        -0.9063078165054321
+      ],
+      "position_world": [
+        38.50200271606445,
+        -63.60575866699219,
+        13.783815383911133
+      ],
+      "bounds_min": [
+        38.47600173950195,
+        -63.634334564208984,
+        13.76587963104248
+      ],
+      "bounds_max": [
+        38.52800369262695,
+        -63.57718276977539,
+        13.801751136779785
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_L22_OPERATIONS_05",
+      "button_object": "SW_MC00_L22_OPERATIONS_05_Keycap",
+      "interaction_root": "SW_MC00_L22_OPERATIONS_05_ROOT",
+      "indicator_object": "SW_MC00_L22_OPERATIONS_05_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        7.92319454490098e-08,
+        0.42261824011802673,
+        -0.9063078165054321
+      ],
+      "position_world": [
+        38.6150016784668,
+        -63.60575866699219,
+        13.783815383911133
+      ],
+      "bounds_min": [
+        38.5890007019043,
+        -63.634334564208984,
+        13.76587963104248
+      ],
+      "bounds_max": [
+        38.6410026550293,
+        -63.57718276977539,
+        13.801751136779785
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_L22_OPERATIONS_06",
+      "button_object": "SW_MC00_L22_OPERATIONS_06_Keycap",
+      "interaction_root": "SW_MC00_L22_OPERATIONS_06_ROOT",
+      "indicator_object": "SW_MC00_L22_OPERATIONS_06_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        7.92319454490098e-08,
+        0.42261824011802673,
+        -0.9063078165054321
+      ],
+      "position_world": [
+        38.72800064086914,
+        -63.60575866699219,
+        13.783815383911133
+      ],
+      "bounds_min": [
+        38.70199966430664,
+        -63.634334564208984,
+        13.76587963104248
+      ],
+      "bounds_max": [
+        38.75400161743164,
+        -63.57718276977539,
+        13.801751136779785
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_L22_OPERATIONS_07",
+      "button_object": "SW_MC00_L22_OPERATIONS_07_Keycap",
+      "interaction_root": "SW_MC00_L22_OPERATIONS_07_ROOT",
+      "indicator_object": "SW_MC00_L22_OPERATIONS_07_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        7.92319454490098e-08,
+        0.42261824011802673,
+        -0.9063078165054321
+      ],
+      "position_world": [
+        38.50200271606445,
+        -63.69186019897461,
+        13.743666648864746
+      ],
+      "bounds_min": [
+        38.47600173950195,
+        -63.720436096191406,
+        13.725730895996094
+      ],
+      "bounds_max": [
+        38.52800369262695,
+        -63.66328430175781,
+        13.761602401733398
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_L22_OPERATIONS_08",
+      "button_object": "SW_MC00_L22_OPERATIONS_08_Keycap",
+      "interaction_root": "SW_MC00_L22_OPERATIONS_08_ROOT",
+      "indicator_object": "SW_MC00_L22_OPERATIONS_08_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        7.92319454490098e-08,
+        0.42261824011802673,
+        -0.9063078165054321
+      ],
+      "position_world": [
+        38.6150016784668,
+        -63.69186019897461,
+        13.743666648864746
+      ],
+      "bounds_min": [
+        38.5890007019043,
+        -63.720436096191406,
+        13.725730895996094
+      ],
+      "bounds_max": [
+        38.6410026550293,
+        -63.66328430175781,
+        13.761602401733398
+      ]
+    },
+    {
+      "switch_id": "SW_MC00_L22_OPERATIONS_09",
+      "button_object": "SW_MC00_L22_OPERATIONS_09_Keycap",
+      "interaction_root": "SW_MC00_L22_OPERATIONS_09_ROOT",
+      "indicator_object": "SW_MC00_L22_OPERATIONS_09_Keycap",
+      "indicator_material_name": "MC111_Key_State",
+      "press_travel_m": 0.003,
+      "press_axis_world": [
+        7.92319454490098e-08,
+        0.42261824011802673,
+        -0.9063078165054321
+      ],
+      "position_world": [
+        38.72800064086914,
+        -63.69186019897461,
+        13.743666648864746
+      ],
+      "bounds_min": [
+        38.70199966430664,
+        -63.720436096191406,
+        13.725730895996094
+      ],
+      "bounds_max": [
+        38.75400161743164,
+        -63.66328430175781,
+        13.761602401733398
+      ]
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+    "name": "MoonEnvironment.Apollo12Preview",
+    "rootNamespace": "Unity.MP_FPS.Moon.Preview",
+    "references": ["DollSinger.Runtime", "MoonEnvironment.Runtime", "Unity.InputSystem"],
+    "autoReferenced": true
+}

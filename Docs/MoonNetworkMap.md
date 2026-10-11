@@ -1,6 +1,31 @@
 # Moon 正式联机地图
 
-正式入口仍是 `Assets/Scenes/MainMenu.unity`。选择 DollSinger 后启动 Host 或连接独立服务器，游戏会加载 `Assets/MoonEnvironment/Scenes/MoonGameScene.unity`。
+正式入口仍是 `Assets/Scenes/MainMenu.unity`。2026-10-11 起，开始离线对局、启动 Host 或连接独立服务器，会加载 `Assets/MoonEnvironment/Variants/Apollo12Base/Scenes/Apollo12GameScene.unity`。
+
+新场景引用已优化的 `Apollo12Base.prefab`（真实 DEM、建筑群 3、Laptop 管线与装饰阴影简化），沿用原正式地图的管理器、Ghost 资源、MoonRaidMap、HUD 与后处理。没有带入预览玩家或启用模型展示相机。`ExpeditionClockPresentation` 连接现有服务端时钟；角色、敌人、战斗、背包、撤离和结算仍走原逻辑。
+
+独立 `Apollo12SpawnPointsSubScene` 提供 8 个出生点，位于 MC00 东南侧空地并朝向基地。12 个物资点已重新落地：7 个室内点、5 个室外点；撤离点位于南侧 `(1219, 28.11, 1043)`。原有 3 个服务端敌人、10 分钟对局与 8 秒撤离参数保留。AI 继续使用既有运行时导航生成逻辑，未逐房间验证路径。
+
+`GameManager.GameSceneName`、全局 Build Settings 和独立服务器的覆盖场景列表均指向/包含新地图。客户端和服务器需要同一版本，已有可执行文件需重新构建。菜单 **Tools → Moon Environment → Apollo 12 → Set Up Gameplay Map (preserve existing)** 只在缺少新地图时创建；已有地图仅补全构建列表，不覆盖手工调整。
+
+```mermaid
+flowchart TD
+    Menu[MainMenu] --> Preview[GameScene 菜单预览]
+    Menu --> Start[离线对局或 Host 或 Client]
+    Start --> Unload[卸载菜单预览和旧 World]
+    Unload --> Apollo[Apollo12GameScene]
+    Server[独立服务器] --> Apollo
+    Apollo --> Base[Apollo12Base 地形和建筑碰撞]
+    Apollo --> Resources[GameResourcesSubScene]
+    Apollo --> Spawns[Apollo12SpawnPointsSubScene]
+    Apollo --> Raid[原有搜打撤和服务端敌人逻辑]
+```
+
+本次执行了编译与创建过程中的引用/出生空间检查，没有启动 Play、联机测试或性能采样。旧 `MoonGameScene`、`MoonSpawnPointsSubScene` 和本地 Apollo12 预览保留。
+
+## 旧 MoonGameScene 的历史记录
+
+以下描述原地图接入时的结构、坐标与验证，不代表新 Apollo12 地图的运行验收。
 
 `MoonDemo.unity` 保留为本地地形和光照演示。正式地图复用其中的 Moon Environment 预制体实例、TerrainData、岩石布局、碰撞和 Moon Scene Lighting；移除了 Local Moon Explorer 及其相机，不复制测试角色控制器。
 

@@ -44,34 +44,10 @@ namespace Unity.MP_FPS
 
         public bool UpdateOwnedLook(ref float2 look, out float2 freeLookOffset, bool blocked)
         {
-            bool freeLooking = !blocked && !IsThirdPerson && m_Input.AltHeld;
-            if (freeLooking)
-            {
-                m_FreeLookOffset += new float2(m_Input.Look.x, -m_Input.Look.y);
-                m_FreeLookOffset = math.clamp(m_FreeLookOffset,
-                    new float2(-m_Model.m_FreeLookYawLimit, -m_Model.m_FreeLookPitchLimit),
-                    new float2(m_Model.m_FreeLookYawLimit, m_Model.m_FreeLookPitchLimit));
-            }
-            else
-            {
-                if (!blocked) look += new float2(m_Input.Look.x, -m_Input.Look.y);
-                float step = m_Model.m_FreeLookReturnSpeed * Time.deltaTime;
-                m_FreeLookOffset.x = Mathf.MoveTowards(m_FreeLookOffset.x, 0f, step);
-                m_FreeLookOffset.y = Mathf.MoveTowards(m_FreeLookOffset.y, 0f, step);
-            }
-            if (IsThirdPerson) m_FreeLookOffset = float2.zero;
-            look.y = math.clamp(look.y, -80f, 80f);
-            m_FreeLookOffset.y = math.clamp(look.y + m_FreeLookOffset.y, -80f, 80f) - look.y;
+            bool freeLooking = DollSingerLookController.Update(ref look, ref m_FreeLookOffset,
+                ref m_OwnedLean, out m_OwnedViewRotation, m_Input, m_Model, m_View, blocked, Time.deltaTime);
             freeLookOffset = m_FreeLookOffset;
-            m_OwnedLean = blocked || IsThirdPerson ? 0f :
-                Mathf.MoveTowards(m_OwnedLean, m_Input.LeanTarget, Time.deltaTime * m_Model.m_LeanSpeed);
-            Quaternion bodyRotation = freeLooking ? m_Model.transform.rotation : Quaternion.Euler(0f, look.x, 0f);
-            if (!blocked && !IsThirdPerson) m_OwnedLean = m_View.LimitLeanAmount(m_OwnedLean, bodyRotation);
-            m_Model.SetNetworkLeanAmount(m_OwnedLean);
-            var viewLook = look + m_FreeLookOffset;
-            m_OwnedViewRotation = Quaternion.Euler(viewLook.y, viewLook.x, 0f);
-            m_View.SetNetworkLookRotation(m_OwnedViewRotation);
-            return freeLooking || math.lengthsq(m_FreeLookOffset) > 0.01f;
+            return freeLooking;
         }
 
         public Vector3 CaptureAimPoint(float2 look, float range)

@@ -1,0 +1,18 @@
+
+{
+ "source_sha256": "84d205455009145fa7de73e7b04fb06547dc03d122e23bf3db3aed944697e876",
+ "base_candidate_sha256": "858d0427b16f84f3959e03af6ed6075f1b955898be5f3452d829e7619e7ad2d4",
+ "finite_increment_sha256": "24f65cb2c4a732757d39e22ad7fa54bd74e9c3c1e1f72b7c0042292c8b73ca19",
+ "source_objects": 266,
+ "output_packs": 48,
+ "triangles_before": 11160,
+ "triangles_after": 11160,
+ "unaffected_objects": 9511,
+ "unaffected_object_states_exact": true,
+ "unaffected_mesh_resources_exact": true,
+ "materials_exact": true,
+ "max_normal_angle_degrees": 0.010577832524572449,
+ "native_pass_before_save": true,
+ "light_hosts_resolved": 18,
+ "baseline_398_packs_unchanged": true
+}

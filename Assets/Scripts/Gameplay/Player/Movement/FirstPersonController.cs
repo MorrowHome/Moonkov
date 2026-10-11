@@ -252,6 +252,16 @@ public class FirstPersonController : MonoBehaviour
     private PlayerGhost m_PlayerGhost;
     private PlayerGhost PlayerGhost => m_PlayerGhost;
 
+    // Explicit opt-in for map previews: reuse the motor without creating a network world.
+    [SerializeField, HideInInspector] private bool m_StandalonePreview;
+
+    public void ConfigureStandalonePreview(FirstPersonController source)
+    {
+        m_StandalonePreview = true;
+        GroundedOffset = source.GroundedOffset;
+        ControllerOffset = source.ControllerOffset;
+    }
+
     private const int k_NumPhysicsResults = 8;
     private readonly RaycastHit[] m_GroundCheckRaycastResults = new RaycastHit[k_NumPhysicsResults];
 
@@ -280,10 +290,10 @@ public class FirstPersonController : MonoBehaviour
         Debug.Assert(m_Controller, "[THIRDPERSONCONTROLLER] Player has no CharacterController component");
 
         TryGetComponent(out m_PlayerGhost);
-        Debug.Assert(m_PlayerGhost, "[THIRDPERSONCONTROLLER] Player has no PlayerGhost component");
+        Debug.Assert(m_PlayerGhost || m_StandalonePreview, "[THIRDPERSONCONTROLLER] Player has no PlayerGhost component");
 
         TryGetComponent(out m_DamageVisualsController);
-        Debug.Assert(m_DamageVisualsController,
+        Debug.Assert(m_DamageVisualsController || m_StandalonePreview,
             "[FIRSTPERSONCONTROLLER] Player has no DamageVisualsController component");
     }
 
@@ -400,7 +410,7 @@ public class FirstPersonController : MonoBehaviour
             {
                 var raycastResult = m_GroundCheckRaycastResults[i];
 
-                if (GhostGameObject.TryFindGhostGameObject(raycastResult.collider.gameObject, out var ghost) &&
+                if (PlayerGhost && GhostGameObject.TryFindGhostGameObject(raycastResult.collider.gameObject, out var ghost) &&
                     !GhostGameObject.BroadClientServerRolesMatch(ghost.Role, PlayerGhost.Role))
                 {
                     // not a valid ground for this player (server hitting client object, or vice versa)
@@ -474,7 +484,7 @@ public class FirstPersonController : MonoBehaviour
             state.Jump = false;
             SetMovementType(ref state, MovementType.Standing);
 
-            bool isClientOwned = (m_PlayerGhost.Role == MultiplayerRole.ClientOwned);
+            bool isClientOwned = m_PlayerGhost && m_PlayerGhost.Role == MultiplayerRole.ClientOwned;
             if (isClientOwned && m_Animator_1P != null)
             {
                 if (m_Animator_1P.TryGetComponent<Unity.MP_FPS.EventHandler>(out var eventHandler))
@@ -924,7 +934,7 @@ public class FirstPersonController : MonoBehaviour
     private void HandleFirstPersonFootstepSFX(ControllerState state)
     {
         // Full-body presentations can use their own animation footstep events.
-        if (m_Animator_1P == null) return;
+        if (m_Animator_1P == null || m_StandalonePreview) return;
         if (state.MovementType == MovementType.Standing && m_Controller != null && m_Controller.enabled && gameObject.activeInHierarchy)
         {
             bool isClientOwned = (m_PlayerGhost.Role == MultiplayerRole.ClientOwned);

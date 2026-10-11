@@ -1,0 +1,12 @@
+{
+    "renderers": 9292,
+    "triangles": 975755,
+    "uniqueBefore": 7651,
+    "uniqueAfter": 3892,
+    "proxies": 277,
+    "fallbackColliders": 4251,
+    "lights": 118,
+    "lightsWithPriorSettings": 116,
+    "casters": 5243,
+    "sourceSha256": "e61f2fab253a0801f3ebb7084fbb7163e48bd156c9ce79074825e4e81d5ca5f0"
+}

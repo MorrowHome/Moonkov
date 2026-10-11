@@ -1,0 +1,454 @@
+fileFormatVersion: 2
+guid: 47648f06756168048b81b244ed32b9c8
+ModelImporter:
+  serializedVersion: 24501
+  internalIDToNameTable: []
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: LD2_Anodized_DarkAlloy
+    second: {fileID: 2100000, guid: d3872fc52023635499a680cd77199848, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: LD2_Brushed_Aluminium
+    second: {fileID: 2100000, guid: bfa2e9694920a6d4f9396d331f759845, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: LD2_Deck_BareSteel
+    second: {fileID: 2100000, guid: 919f5a29097dd004884653594b0b022f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: LD2_Deck_NonslipCoat
+    second: {fileID: 2100000, guid: fd1f75b708d0aed44925c73b50d1fbb3, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: LD2_Glass_ClearPartition
+    second: {fileID: 2100000, guid: 28ee31335dd49d649bee92da8006698c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: LD2_Glass_SmokedPressureViewport
+    second: {fileID: 2100000, guid: 4d2a50e912b8edb40b4b79a9f1ff9f35, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: LD2_Hardstand_SinteredRegolith
+    second: {fileID: 2100000, guid: 46495dca00f8de14a8e62d910d6bba24, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: LD2_Hull_CeramicPaint
+    second: {fileID: 2100000, guid: 01fc1f5d475902a4c97dee2b3fe90d1c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: LD2_Light_NeutralTask
+    second: {fileID: 2100000, guid: 71428e6144996244380c277526db5c96, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: LD2_MLI_AluminizedChampagne
+    second: {fileID: 2100000, guid: ebf2e7ce762b80d48b13958b00cb1270, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: LD2_Painted_Metal_Grey
+    second: {fileID: 2100000, guid: 54e53a2388d5a92488475e50113b0964, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: LD2_Raw_StainlessSteel
+    second: {fileID: 2100000, guid: 3ffea55735644764b9fe8c8e0666e4fe, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: LD2_Regolith_FineAggregate
+    second: {fileID: 2100000, guid: 5923b90621323a8418e72df32647796c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: LD2_Safety_MutedOchre
+    second: {fileID: 2100000, guid: 90c25f81561dbb3439f64960562ef4c5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: LD2_Seal_Elastomer
+    second: {fileID: 2100000, guid: a32396f432934a447bdd12efe7a44227, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: LD2_Structure_GraphiteCoat
+    second: {fileID: 2100000, guid: 955a985adf7c4c544b14583cc530a82f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: LD2_Wayfinding_DesaturatedTeal
+    second: {fileID: 2100000, guid: a856c52079a0b304190cb5ff6a6b9c90, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC106_Anchoring_Webbing_Constant_PBR
+    second: {fileID: 2100000, guid: 2a0f44619a69ccd48b13950c9e6ecdad, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC106_Dense_Teal_Gusset_Constant_PBR
+    second: {fileID: 2100000, guid: b8f8939885c6f2044ad149a646b24e55, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC106_Folded_Flax_Binding_Constant_PBR
+    second: {fileID: 2100000, guid: 793cc3777139e2c43a5820ac543422c4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC106_PBR_back_pad_slot0
+    second: {fileID: 2100000, guid: a5d1096d2a6336f41ac7f8a016d4d1a7, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC106_PBR_back_pad_slot1
+    second: {fileID: 2100000, guid: 1250c5124b488504ea4a0df5a82560b3, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC106_PBR_back_pad_slot2
+    second: {fileID: 2100000, guid: d89a892a70a59794ebd5ae925e0d052b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC106_PBR_fitted_seat_cushion_slot0
+    second: {fileID: 2100000, guid: c7583e85858a5f741861b1e13f5d96e0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC106_PBR_fitted_seat_cushion_slot1
+    second: {fileID: 2100000, guid: af9342cd1f6d82e4582bfe2d8f40ad8f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC106_PBR_fitted_seat_cushion_slot2
+    second: {fileID: 2100000, guid: 2a663478df9ab184090bbf9d83fa1f66, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC106_Reading_Diffuser
+    second: {fileID: 2100000, guid: b7e42d77bbbccfb4aa4e5346e539b5dd, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC106_Waxed_Flax_Thread_Constant_PBR
+    second: {fileID: 2100000, guid: 167805a614c48c841bda80e70defe0c0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC107_Backboard_Painted_Cassette
+    second: {fileID: 2100000, guid: e762f83ce0c4efa44bd9301d74d448a3, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC107_Cabinet_Ceramic_Satin
+    second: {fileID: 2100000, guid: 6ef227dd555e5684892856edf482edca, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC107_Captured_Polymer_Glide
+    second: {fileID: 2100000, guid: d797f7e1f9a5ad14889ffca30e34f1ff, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC107_Formed_Aluminium_Edges
+    second: {fileID: 2100000, guid: cbd1c9564f2c9ed4bb8dcffe5848428b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC107_Guide_Graphite_Coat
+    second: {fileID: 2100000, guid: c710f21e453fa2b41bc8359fdfc1297c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC107_Handled_Aluminium_Polish
+    second: {fileID: 2100000, guid: c9fc45c265ca32b47be9e05183e578bd, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC107_Local_Graphite_Lettering
+    second: {fileID: 2100000, guid: a703e09943c2a5b4e8eea9f7e5ba7782, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC107_Recessed_Expansion_Joint
+    second: {fileID: 2100000, guid: 56440c0e2314c974cb18ecbb64bcecde, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC107_Recessed_Grip_Graphite
+    second: {fileID: 2100000, guid: bbd2288dde3080c41bdb879c21f636c6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC108_Bare_Contact_Edge
+    second: {fileID: 2100000, guid: 9a4faee438b514240bfc3afafad2cc74, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC108_Drawer_Interior
+    second: {fileID: 2100000, guid: 7e8e6ce5fa88a7648aa3094057dacf06, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC108_Elastomer_Liner
+    second: {fileID: 2100000, guid: f95222a460a32684fbd4c0ab3913e4f0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC108_Etched_Lettering
+    second: {fileID: 2100000, guid: 3e0f9585e8dd79d41b5d09a17aed8308, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC108_Formed_Stainless
+    second: {fileID: 2100000, guid: 82a72ac3e2373c84a8fd4d217e0124c8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC108_Graphite_Frame
+    second: {fileID: 2100000, guid: 345c27350eac85b4499cabd468c85fbb, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC108_Load_Bearing_Polymer
+    second: {fileID: 2100000, guid: a210929407cf2ba4aa7eb4c8c5871ef0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC108_Service_Teal
+    second: {fileID: 2100000, guid: 1578ebd2094d7ce46970733b95cd0cad, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC108_Task_Diffuser
+    second: {fileID: 2100000, guid: 6c758ccadd20ae049ab3da9ee7460626, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC108_Tool_Grip
+    second: {fileID: 2100000, guid: 92a5e00e876e759448b03cde6f3c89c2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC108_Tool_Insert_Base
+    second: {fileID: 2100000, guid: 3dfea81e562977d4381182700f2b0da1, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC108_Warm_PowderCoat
+    second: {fileID: 2100000, guid: 6759b85e55cd5fd47be2b6d6f0fc1fca, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC108_Zinc_Runner
+    second: {fileID: 2100000, guid: 31fc5659ca94ab04aa18f8cbcbe5ac18, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC95_ScreenAmber
+    second: {fileID: 2100000, guid: 70fba173501952340980aaefc6ae8bd2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC95_ScreenFace
+    second: {fileID: 2100000, guid: 4a9a42174c0d2e2419bd85fba46bdd40, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC95_ScreenFace.001
+    second: {fileID: 2100000, guid: 08e52d2247a1a2f40bb93badc16fd775, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC95_ScreenInk
+    second: {fileID: 2100000, guid: e5ca4191be5da9c49910c1db6869dc3b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC95_ScreenWhite
+    second: {fileID: 2100000, guid: 0d4eefa7037a23449ab22717182f0b5b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC95_ScreenWhite.001
+    second: {fileID: 2100000, guid: e19f026bc8ad6de45b4879aa2eb9ec95, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC96_bench_slide_polish
+    second: {fileID: 2100000, guid: 38099fe1aa4c38d4fb71c5da862793e6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC96_floor_heel_polish
+    second: {fileID: 2100000, guid: 5ac6601e9cd28bf46b7a4ada10a9d57d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC_Data
+    second: {fileID: 2100000, guid: e2f7da766f7bdbe468343e553a0081d2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC_Display
+    second: {fileID: 2100000, guid: 4d1e3e86ba757a2498f220ae483262a4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MC_Exterior_Task_Diffuser
+    second: {fileID: 2100000, guid: d0b08b4238b519940a0fb158c7b0b521, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: WL_Label_Graphite
+    second: {fileID: 2100000, guid: 3a268137ab8bdc54daa2adcbd86d2561, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: WL_Label_Graphite.001
+    second: {fileID: 2100000, guid: 3f66ea9cf5d7bf344bcaef0c5678a2ef, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: WL_Label_Laminate
+    second: {fileID: 2100000, guid: 02b02b0bf11a9e9439a6221647108f60, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: WL_Label_Laminate.001
+    second: {fileID: 2100000, guid: b8d490bb06e42ee4c84c9a2278fcb8fe, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: WL_Textile_MutedTeal
+    second: {fileID: 2100000, guid: ecabb69de6a638243ac5c72c66c9b666, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: WL_Textile_WarmGrey
+    second: {fileID: 2100000, guid: 03709487714e3ba4e9109b54bb0f5cf9, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: WL_ToolContact_Dark
+    second: {fileID: 2100000, guid: 4d6cd62c0d0dcc149a05bdbcc4b9f2b2, type: 2}
+  materials:
+    materialImportMode: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+    searchTexturesGlobally: 0
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importPhysicalCameras: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 0
+    importLights: 0
+    nodeNameCollisionStrategy: 1
+    fileIdsGeneration: 2
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    keepQuads: 0
+    weldVertices: 1
+    bakeAxisConversion: 0
+    preserveHierarchy: 1
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    generateMeshLods: 0
+    meshLodGenerationFlags: 0
+    maximumMeshLod: -1
+    importUVs: -1
+    importVertexColors: 1
+    meshOptimizationFlags: -1
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 1
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    strictVertexDataChecks: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+    calculateBlendshapeNormalsDeltaFromImportedNormals: 0
+  referencedClips: []
+  importAnimation: 0
+  humanDescription:
+    serializedVersion: 3
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    globalScale: 1
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
+  animationType: 2
+  humanoidOversampling: 1
+  avatarSetup: 0
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 1
+  importBlendShapeDeformPercent: 1
+  remapMaterialsIfMaterialImportModeIsNone: 0
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

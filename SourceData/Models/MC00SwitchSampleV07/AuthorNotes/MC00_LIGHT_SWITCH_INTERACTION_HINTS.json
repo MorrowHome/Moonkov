@@ -1,0 +1,533 @@
+{
+  "schema_version": 2,
+  "physical_buttons_exist": true,
+  "unit": "metres",
+  "coordinate_system": "Blender right-handed Z-up; supplied AABBs are each actual button_object mesh-local, not root-local or Unity-local.",
+  "interaction_root_convention": "forward=-localZ;up=+localY;new cap press=+root-localZ; retained source G03 task key is click-only.",
+  "unity_import_note": "Attach an independent Collider component to each actual button_object. BoxCollider hints describe the saved mesh-local AABB. Compare against imported Mesh.bounds after FBX axis or bake conversion; do not copy Blender axes blindly. No Collider component or hidden proxy mesh has been created.",
+  "measurement_basis": "Actual mesh vertices read in same saved-scene finalization; geometry unchanged since independently reviewedv06.",
+  "buttons": [
+    {
+      "switch_id": "SW_MC00_G03_TASK_01",
+      "button_object": "MC108_Task_Bar_Switch",
+      "interaction_root": "SW_MC00_G03_TASK_01_ROOT",
+      "mesh_data": "MC108_Task_Bar_Switch_Mesh",
+      "center_local_m": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_local_m": [
+        0.03700000047683716,
+        0.02199999988079071,
+        0.06700000166893005
+      ],
+      "bounds_local_m": [
+        [
+          -0.01850000023841858,
+          -0.010999999940395355,
+          -0.03350000083446503
+        ],
+        [
+          0.01850000023841858,
+          0.010999999940395355,
+          0.03350000083446503
+        ]
+      ],
+      "button_object_matrix_world": [
+        [
+          1.0,
+          -8.742278367890322e-08,
+          8.742277657347586e-08,
+          52.56999969482422
+        ],
+        [
+          8.742278367890322e-08,
+          1.0,
+          7.105427357601002e-15,
+          -48.696998596191406
+        ],
+        [
+          -8.742277657347586e-08,
+          0.0,
+          1.0,
+          1.906999945640564
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "interaction_root_matrix_world": [
+        [
+          -1.0,
+          6.6002361555513294e-15,
+          -8.742277657347586e-08,
+          52.56999969482422
+        ],
+        [
+          -8.742277657347586e-08,
+          -7.549790126404332e-08,
+          1.0,
+          -48.696998596191406
+        ],
+        [
+          0.0,
+          1.0,
+          7.549790126404332e-08,
+          1.906999945640564
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "collider_type_hint": "BoxCollider on button_object",
+      "collider_component_exists": false,
+      "interaction_mode": "click_only_retained_source_key",
+      "press_axis_root_local": "0,0,1",
+      "press_travel_m": 0.0,
+      "indicator_object": "SW_MC00_G03_TASK_01_Indicator",
+      "indicator_material_name": "MC_Data"
+    },
+    {
+      "switch_id": "SW_MC00_G03_CEILING_01",
+      "button_object": "SW_MC00_G03_CEILING_01_Keycap",
+      "interaction_root": "SW_MC00_G03_CEILING_01_ROOT",
+      "mesh_data": "MC_SW_Shared_Keycap_52x57",
+      "center_local_m": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_local_m": [
+        0.052000001072883606,
+        0.05700000002980232,
+        0.013000000268220901
+      ],
+      "bounds_local_m": [
+        [
+          -0.026000000536441803,
+          -0.02850000001490116,
+          -0.006500000134110451
+        ],
+        [
+          0.026000000536441803,
+          0.02850000001490116,
+          0.006500000134110451
+        ]
+      ],
+      "button_object_matrix_world": [
+        [
+          -4.371138828673793e-08,
+          4.371138828673793e-08,
+          1.0,
+          55.467498779296875
+        ],
+        [
+          1.0,
+          1.910685676922942e-15,
+          4.371138828673793e-08,
+          -53.53799819946289
+        ],
+        [
+          0.0,
+          1.0,
+          -4.371138828673793e-08,
+          1.9380000829696655
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "interaction_root_matrix_world": [
+        [
+          -4.371138828673793e-08,
+          4.371138828673793e-08,
+          1.0,
+          55.5099983215332
+        ],
+        [
+          1.0,
+          1.910685676922942e-15,
+          4.371138828673793e-08,
+          -53.53799819946289
+        ],
+        [
+          0.0,
+          1.0,
+          -4.371138828673793e-08,
+          1.9380000829696655
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "collider_type_hint": "BoxCollider on button_object",
+      "collider_component_exists": false,
+      "interaction_mode": "momentary_push",
+      "press_axis_root_local": "0,0,1",
+      "press_travel_m": 0.003,
+      "indicator_object": "SW_MC00_G03_CEILING_01_Indicator",
+      "indicator_material_name": "MC_Data"
+    },
+    {
+      "switch_id": "SW_MC00_G03_CEILING_02",
+      "button_object": "SW_MC00_G03_CEILING_02_Keycap",
+      "interaction_root": "SW_MC00_G03_CEILING_02_ROOT",
+      "mesh_data": "MC_SW_Shared_Keycap_52x57",
+      "center_local_m": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_local_m": [
+        0.052000001072883606,
+        0.05700000002980232,
+        0.013000000268220901
+      ],
+      "bounds_local_m": [
+        [
+          -0.026000000536441803,
+          -0.02850000001490116,
+          -0.006500000134110451
+        ],
+        [
+          0.026000000536441803,
+          0.02850000001490116,
+          0.006500000134110451
+        ]
+      ],
+      "button_object_matrix_world": [
+        [
+          -4.371138828673793e-08,
+          4.371138828673793e-08,
+          1.0,
+          55.467498779296875
+        ],
+        [
+          1.0,
+          1.910685676922942e-15,
+          4.371138828673793e-08,
+          -53.6619987487793
+        ],
+        [
+          0.0,
+          1.0,
+          -4.371138828673793e-08,
+          1.9380000829696655
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "interaction_root_matrix_world": [
+        [
+          -4.371138828673793e-08,
+          4.371138828673793e-08,
+          1.0,
+          55.5099983215332
+        ],
+        [
+          1.0,
+          1.910685676922942e-15,
+          4.371138828673793e-08,
+          -53.6619987487793
+        ],
+        [
+          0.0,
+          1.0,
+          -4.371138828673793e-08,
+          1.9380000829696655
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "collider_type_hint": "BoxCollider on button_object",
+      "collider_component_exists": false,
+      "interaction_mode": "momentary_push",
+      "press_axis_root_local": "0,0,1",
+      "press_travel_m": 0.003,
+      "indicator_object": "SW_MC00_G03_CEILING_02_Indicator",
+      "indicator_material_name": "MC_Data"
+    },
+    {
+      "switch_id": "SW_MC00_L22_OPERATIONS_01",
+      "button_object": "SW_MC00_L22_OPERATIONS_01_Keycap",
+      "interaction_root": "SW_MC00_L22_OPERATIONS_01_ROOT",
+      "mesh_data": "MC_SW_Shared_Keycap_52x57",
+      "center_local_m": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_local_m": [
+        0.052000001072883606,
+        0.05700000002980232,
+        0.013000000268220901
+      ],
+      "bounds_local_m": [
+        [
+          -0.026000000536441803,
+          -0.02850000001490116,
+          -0.006500000134110451
+        ],
+        [
+          0.026000000536441803,
+          0.02850000001490116,
+          0.006500000134110451
+        ]
+      ],
+      "button_object_matrix_world": [
+        [
+          -1.0,
+          -3.6946460113540525e-08,
+          7.92319454490098e-08,
+          38.50200271606445
+        ],
+        [
+          0.0,
+          0.9063078165054321,
+          0.42261824011802673,
+          -63.78883361816406
+        ],
+        [
+          -8.742277657347586e-08,
+          0.42261824011802673,
+          -0.9063078165054321,
+          13.698446273803711
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "interaction_root_matrix_world": [
+        [
+          -1.0,
+          -3.6946460113540525e-08,
+          7.92319454490098e-08,
+          38.50200271606445
+        ],
+        [
+          0.0,
+          0.9063078165054321,
+          0.42261824011802673,
+          -63.7708740234375
+        ],
+        [
+          -8.742277657347586e-08,
+          0.42261824011802673,
+          -0.9063078165054321,
+          13.659928321838379
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "collider_type_hint": "BoxCollider on button_object",
+      "collider_component_exists": false,
+      "interaction_mode": "momentary_push",
+      "press_axis_root_local": "0,0,1",
+      "press_travel_m": 0.003,
+      "indicator_object": "SW_MC00_L22_OPERATIONS_01_Indicator",
+      "indicator_material_name": "MC_Data"
+    },
+    {
+      "switch_id": "SW_MC00_L22_OPERATIONS_02",
+      "button_object": "SW_MC00_L22_OPERATIONS_02_Keycap",
+      "interaction_root": "SW_MC00_L22_OPERATIONS_02_ROOT",
+      "mesh_data": "MC_SW_Shared_Keycap_52x57",
+      "center_local_m": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_local_m": [
+        0.052000001072883606,
+        0.05700000002980232,
+        0.013000000268220901
+      ],
+      "bounds_local_m": [
+        [
+          -0.026000000536441803,
+          -0.02850000001490116,
+          -0.006500000134110451
+        ],
+        [
+          0.026000000536441803,
+          0.02850000001490116,
+          0.006500000134110451
+        ]
+      ],
+      "button_object_matrix_world": [
+        [
+          -1.0,
+          -3.6946460113540525e-08,
+          7.92319454490098e-08,
+          38.6150016784668
+        ],
+        [
+          0.0,
+          0.9063078165054321,
+          0.42261824011802673,
+          -63.78883361816406
+        ],
+        [
+          -8.742277657347586e-08,
+          0.42261824011802673,
+          -0.9063078165054321,
+          13.698446273803711
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "interaction_root_matrix_world": [
+        [
+          -1.0,
+          -3.6946460113540525e-08,
+          7.92319454490098e-08,
+          38.6150016784668
+        ],
+        [
+          0.0,
+          0.9063078165054321,
+          0.42261824011802673,
+          -63.7708740234375
+        ],
+        [
+          -8.742277657347586e-08,
+          0.42261824011802673,
+          -0.9063078165054321,
+          13.659928321838379
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "collider_type_hint": "BoxCollider on button_object",
+      "collider_component_exists": false,
+      "interaction_mode": "momentary_push",
+      "press_axis_root_local": "0,0,1",
+      "press_travel_m": 0.003,
+      "indicator_object": "SW_MC00_L22_OPERATIONS_02_Indicator",
+      "indicator_material_name": "MC_Data"
+    },
+    {
+      "switch_id": "SW_MC00_L22_OPERATIONS_03",
+      "button_object": "SW_MC00_L22_OPERATIONS_03_Keycap",
+      "interaction_root": "SW_MC00_L22_OPERATIONS_03_ROOT",
+      "mesh_data": "MC_SW_Shared_Keycap_52x57",
+      "center_local_m": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "size_local_m": [
+        0.052000001072883606,
+        0.05700000002980232,
+        0.013000000268220901
+      ],
+      "bounds_local_m": [
+        [
+          -0.026000000536441803,
+          -0.02850000001490116,
+          -0.006500000134110451
+        ],
+        [
+          0.026000000536441803,
+          0.02850000001490116,
+          0.006500000134110451
+        ]
+      ],
+      "button_object_matrix_world": [
+        [
+          -1.0,
+          -3.6946460113540525e-08,
+          7.92319454490098e-08,
+          38.72800064086914
+        ],
+        [
+          0.0,
+          0.9063078165054321,
+          0.42261824011802673,
+          -63.78883361816406
+        ],
+        [
+          -8.742277657347586e-08,
+          0.42261824011802673,
+          -0.9063078165054321,
+          13.698446273803711
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "interaction_root_matrix_world": [
+        [
+          -1.0,
+          -3.6946460113540525e-08,
+          7.92319454490098e-08,
+          38.72800064086914
+        ],
+        [
+          0.0,
+          0.9063078165054321,
+          0.42261824011802673,
+          -63.7708740234375
+        ],
+        [
+          -8.742277657347586e-08,
+          0.42261824011802673,
+          -0.9063078165054321,
+          13.659928321838379
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "collider_type_hint": "BoxCollider on button_object",
+      "collider_component_exists": false,
+      "interaction_mode": "momentary_push",
+      "press_axis_root_local": "0,0,1",
+      "press_travel_m": 0.003,
+      "indicator_object": "SW_MC00_L22_OPERATIONS_03_Indicator",
+      "indicator_material_name": "MC_Data"
+    }
+  ]
+}

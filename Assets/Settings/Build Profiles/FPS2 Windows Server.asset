@@ -37,6 +37,12 @@ MonoBehaviour:
   - m_enabled: 1
     m_path: Assets/Scenes/SpawnPointsSubScene.unity
     m_guid: 4b2b8f84db1610c4a8bbf1528d4eb489
+  - m_enabled: 1
+    m_path: Assets/MoonEnvironment/Variants/Apollo12Base/Scenes/Apollo12GameScene.unity
+    m_guid: fc5cc15809a0a954ab53528907fe185a
+  - m_enabled: 1
+    m_path: Assets/MoonEnvironment/Variants/Apollo12Base/Scenes/Apollo12SpawnPointsSubScene.unity
+    m_guid: 5c542ab3728c45141a554dc6caed8ff5
   m_HasScriptingDefines: 0
   m_ScriptingDefines: []
   m_PlayerSettingsYaml:

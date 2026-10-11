@@ -1,0 +1,74 @@
+PDS_VERSION_ID                  = PDS3
+RECORD_TYPE                     = FIXED_LENGTH
+RECORD_BYTES                    = 9872
+FILE_RECORDS                    = 1367
+DATA_SET_ID                     = "LRO-L-LROC-5-RDR-V1.0"
+DATA_SET_NAME                   = "LRO MOON LROC 5 RDR V1.0"
+VOLUME_ID                       = "LROLRC_2001"
+PRODUCER_INSTITUTE_NAME         = "ARIZONA STATE UNIVERSITY"
+PRODUCER_ID                     = LRO_LROC_TEAM
+PRODUCER_FULL_NAME              = "MARK ROBINSON, PH.D"
+PRODUCT_ID                      = "NAC_DTM_APOLLO12"
+PRODUCT_VERSION_ID              = "v1.9"
+PRODUCT_TYPE                    = RDR
+INSTRUMENT_HOST_NAME            = "LUNAR RECONNAISSANCE ORBITER"
+INSTRUMENT_HOST_ID              = "LRO"
+INSTRUMENT_NAME                 = "LUNAR RECONNAISSANCE ORBITER CAMERA"
+INSTRUMENT_ID                   = "LROC"
+TARGET_NAME                     = "MOON"
+MISSION_PHASE_NAME              = "NOMINAL MISSION"
+RATIONALE_DESC                  = "Created to enable lunar science and
+                                  exploration activities"
+SOFTWARE_NAME                   = "ISIS 3.2.1, 3.10.2, 3.4.3.5155 with SER
+  enhancements | SOCET SET v5.5 (c) BAE Systems | GDAL"
+START_TIME                      = 2010-02-05T10:34:26
+STOP_TIME                       = 2010-02-05T12:28:05
+SPACECRAFT_CLOCK_START_COUNT    = "N/A"
+SPACECRAFT_CLOCK_STOP_COUNT     = "N/A"
+PRODUCT_CREATION_TIME           = 2022-09-27T02:44:56
+^IMAGE                          = ("NAC_DTM_APOLLO12.TIF", 13477016 <BYTES>)
+
+OBJECT                          = IMAGE_MAP_PROJECTION
+  ^DATA_SET_MAP_PROJECTION      = "DSMAP.CAT"
+  MAP_PROJECTION_TYPE           = "EQUIRECTANGULAR"
+  PROJECTION_LATITUDE_TYPE      = PLANETOCENTRIC
+  A_AXIS_RADIUS                 = 1737.4 <KM>
+  B_AXIS_RADIUS                 = 1737.4 <KM>
+  C_AXIS_RADIUS                 = 1737.4 <KM>
+  COORDINATE_SYSTEM_NAME        = PLANETOCENTRIC
+  POSITIVE_LONGITUDE_DIRECTION  = EAST
+  KEYWORD_LATITUDE_TYPE         = PLANETOCENTRIC
+  CENTER_LATITUDE               = -3.0 <DEG>
+  CENTER_LONGITUDE              = 180.0 <DEG>
+  LINE_FIRST_PIXEL              = 1
+  LINE_LAST_PIXEL               = 1367
+  SAMPLE_FIRST_PIXEL            = 1
+  SAMPLE_LAST_PIXEL             = 2468
+  MAP_PROJECTION_ROTATION       = 0.0 <DEG>
+  MAP_RESOLUTION                = 15161.67521207 <PIX/DEG>
+  MAP_SCALE                     = 2.0000000000006 <METERS/PIXEL>
+  MAXIMUM_LATITUDE              = -2.9621397 <DEG>
+  MINIMUM_LATITUDE              = -3.0523012 <DEG>
+  EASTERNMOST_LONGITUDE         = 336.615031 <DEG>
+  WESTERNMOST_LONGITUDE         = 336.4520287 <DEG>
+  LINE_PROJECTION_OFFSET        = -44912.5
+  SAMPLE_PROJECTION_OFFSET      = -2368825.5
+END_OBJECT                      = IMAGE_MAP_PROJECTION
+
+OBJECT                          = IMAGE
+  DESCRIPTION                   = "Apollo 12 Landing Site high-resolution NAC
+    digital terrain model in GeoTIFF format. DEM is IEEE floating point
+    GeoTIFF, 32 bits/sample, 1 samples/pixel in single image plane
+    configuration. The NoDATA value is -3.40282266e+038. For more info, see
+    [HENRIKSENETAL2017]."
+  INTERCHANGE_FORMAT            = BINARY
+  LINES                         = 1367
+  LINE_SAMPLES                  = 2468
+  SAMPLE_TYPE                   = PC_REAL
+  SAMPLE_BITS                   = 32
+  BAND_STORAGE_TYPE             = SAMPLE_INTERLEAVED
+  BANDS                         = 1
+  FILTER_NAME                   = "N/A"
+END_OBJECT                      = IMAGE
+
+END
