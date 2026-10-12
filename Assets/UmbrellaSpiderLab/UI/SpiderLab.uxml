@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="SpiderLab.uss" />
+    <ui:VisualElement name="spiderHud" class="spider-hud" picking-mode="Ignore">
+        <ui:Label name="status" text="MC00 / UMBRELLA SPIDER" picking-mode="Ignore" />
+    </ui:VisualElement>
+</ui:UXML>

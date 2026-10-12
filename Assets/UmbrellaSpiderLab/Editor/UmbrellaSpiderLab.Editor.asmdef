@@ -1,0 +1,7 @@
+{
+    "name": "UmbrellaSpiderLab.Editor",
+    "rootNamespace": "Unity.MP_FPS.SpiderLab.Editor",
+    "references": ["UmbrellaSpiderLab.Runtime"],
+    "includePlatforms": ["Editor"],
+    "autoReferenced": false
+}

@@ -1,0 +1,15 @@
+.spider-hud {
+    position: absolute;
+    left: 18px;
+    top: 18px;
+    max-width: 640px;
+    padding: 16px 20px;
+    background-color: rgba(12, 15, 18, 0.86);
+    border-left-width: 3px;
+    border-left-color: rgb(82, 213, 176);
+}
+.spider-hud Label {
+    color: rgb(232, 240, 236);
+    font-size: 16px;
+    white-space: normal;
+}
