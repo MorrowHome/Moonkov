@@ -2,11 +2,15 @@
 
 正式入口仍是 `Assets/Scenes/MainMenu.unity`。2026-10-11 起，开始离线对局、启动 Host 或连接独立服务器，会加载 `Assets/MoonEnvironment/Variants/Apollo12Base/Scenes/Apollo12GameScene.unity`。
 
-新场景引用已优化的 `Apollo12Base.prefab`（真实 DEM、建筑群 3、Laptop 管线与装饰阴影简化），沿用原正式地图的管理器、Ghost 资源、MoonRaidMap、HUD 与后处理。没有带入预览玩家或启用模型展示相机。`ExpeditionClockPresentation` 连接现有服务端时钟；角色、敌人、战斗、背包、撤离和结算仍走原逻辑。
+2026-10-13 起，场景环境实例引用 `Assets/MoonEnvironment/Variants/MC00LightControlsFullV02/Prefabs/Apollo12MC00Candidate.prefab`，接入 Full v02 的 MC00 模型、碰撞和局部渲染整理；真实 DEM 仍为原地形数据。原正式地图的管理器、Ghost 资源、MoonRaidMap、HUD 与后处理继续沿用，没有带入预览玩家或启用模型展示相机。`ExpeditionClockPresentation` 连接现有服务端时钟；角色、敌人、战斗、背包、撤离和结算仍走原逻辑。
 
-独立 `Apollo12SpawnPointsSubScene` 提供 8 个出生点，位于 MC00 东南侧空地并朝向基地。12 个物资点已重新落地：7 个室内点、5 个室外点；撤离点位于南侧 `(1219, 28.11, 1043)`。原有 3 个服务端敌人、10 分钟对局与 8 秒撤离参数保留。AI 继续使用既有运行时导航生成逻辑，未逐房间验证路径。
+正式场景保留 `Apollo12LaptopPipeline` 和 **350 m 室外阴影距离**，封闭近景会通过运行时副本缩短阴影距离；没有将 Full v02 预览的固定 30 m 配置推广到整张地图。灯具和按钮资产随环境接入，但开关操作仍仅有本地 preview interactor，正式交互仲裁与联网状态同步尚未接入。详见 [MC00 接入记录](MC00GameExportIntegration.md)和[视觉精修记录](VisualPolish.md)。
+
+独立 `Apollo12SpawnPointsSubScene` 提供 8 个出生点，位于 MC00 东南侧空地并朝向基地。12 个物资点在首次 Apollo12 接入时已落地：7 个室内点、5 个室外点；撤离点位于南侧 `(1219, 28.11, 1043)`。本次环境替换保留上述全部点位，并检查 MC00 内物资数组索引 4–7 在原坐标的地板高度和站立空间。原有 3 个服务端敌人、10 分钟对局与 8 秒撤离参数保留。AI 继续使用既有运行时导航生成逻辑，未逐房间验证路径。
 
 `GameManager.GameSceneName`、全局 Build Settings 和独立服务器的覆盖场景列表均指向/包含新地图。客户端和服务器需要同一版本，已有可执行文件需重新构建。菜单 **Tools → Moon Environment → Apollo 12 → Set Up Gameplay Map (preserve existing)** 只在缺少新地图时创建；已有地图仅补全构建列表，不覆盖手工调整。
+
+已有原版 Apollo12 游戏场景的环境替换入口为 **Tools → Moon Environment → Apollo 12 → Use optimized MC00 in gameplay**；要求退出 Play 并先处理场景未保存修改。已经引用 Full v02 时不重复替换。原 `Apollo12Base.prefab` 与独立候选场景保留。
 
 ```mermaid
 flowchart TD
@@ -15,13 +19,13 @@ flowchart TD
     Start --> Unload[卸载菜单预览和旧 World]
     Unload --> Apollo[Apollo12GameScene]
     Server[独立服务器] --> Apollo
-    Apollo --> Base[Apollo12Base 地形和建筑碰撞]
+    Apollo --> Base[原 Apollo12 地形与 Full v02 MC00 建筑碰撞]
     Apollo --> Resources[GameResourcesSubScene]
     Apollo --> Spawns[Apollo12SpawnPointsSubScene]
     Apollo --> Raid[原有搜打撤和服务端敌人逻辑]
 ```
 
-本次执行了编译与创建过程中的引用/出生空间检查，没有启动 Play、联机测试或性能采样。旧 `MoonGameScene`、`MoonSpawnPointsSubScene` 和本地 Apollo12 预览保留。
+2026-10-11 首次 Apollo12 接入时执行了编译与创建过程中的引用/出生空间检查，没有启动 Play、联机测试或性能采样。2026-10-13 的 Full v02 替换已完成正式场景引用、MC00 四处物资地板与站立空间、时钟和室外管线保留检查；这些结果不代替实际行走、联网开关或性能验收。本轮运行验证另见 [视觉质感精修](VisualPolish.md)。旧 `MoonGameScene`、`MoonSpawnPointsSubScene` 和本地 Apollo12 预览保留。
 
 ## 旧 MoonGameScene 的历史记录
 

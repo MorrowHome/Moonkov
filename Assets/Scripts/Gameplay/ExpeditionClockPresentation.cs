@@ -16,7 +16,7 @@ namespace Unity.MP_FPS
         private EntityQuery m_Clock, m_Time;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void Reset() => Active = null;
+        private static void ResetPresentation() => Active = null;
 
         private void OnEnable()
         {

@@ -2,7 +2,17 @@
 
 来源：`E:/Download/MC00_Game_Export.blend`，2026-10-11。原文件保留，项目内归档在 `SourceData/Models/MC00GameExport/MC00_Game_Export.blend`，SHA-256 记录于同目录 `unity-manifest.json`。
 
-这是 MC00 单体的独立候选接入。当前正式 Apollo12 地图、旧建筑 FBX 和原作者版不覆盖。作者说明、来源映射、碰撞覆盖、交互约束与灯位清单保存在 `SourceData/Models/MC00GameExport/AuthorNotes/`；内嵌 Python 只作来源说明，本次没有执行。
+2026-10-11 最初以 MC00 单体的独立候选接入，当时没有替换正式 Apollo12 地图。作者说明、来源映射、碰撞覆盖、交互约束与灯位清单保存在 `SourceData/Models/MC00GameExport/AuthorNotes/`；内嵌 Python 只作来源说明，当次没有执行。以下导入和 CPU 整理计数保留当时版本的结果，不等同于后续 Full v02 的计数。
+
+## 正式地图现状（2026-10-13）
+
+正式 `Assets/MoonEnvironment/Variants/Apollo12Base/Scenes/Apollo12GameScene.unity` 已改为引用 `Assets/MoonEnvironment/Variants/MC00LightControlsFullV02/Prefabs/Apollo12MC00Candidate.prefab`，由 Full v02 的模型、碰撞和已整理的渲染组替换原环境实例。源 FBX、作者 `.blend`、旧环境 Prefab 和各独立预览继续保留；正式主菜单、Host、Client 与独立服务器仍加载同一 Apollo12 游戏场景。
+
+替换入口为 **Tools → Moon Environment → Apollo 12 → Use optimized MC00 in gameplay**。场景保留 8 个出生点、全部 12 个物资点、撤离点和原搜打撤逻辑；MC00 内物资数组索引 4–7 的原坐标通过落地高度与站立空间检查，未据此宣称逐房间碰撞或导航验收通过。
+
+正式环境继续使用 `Apollo12LaptopPipeline`、350 m 室外阴影距离与服务端时钟连接；封闭近景通过运行时管线副本缩短阴影距离，视野开放恢复原值，详见视觉精修记录。Full v02 预览使用的固定 30 m 室内性能配置没有应用到整张正式地图。灯具、按钮和绑定随环境资产接入，但操作适配器仍只有本地预览版：**尚未接入正式联网开关交互**，不能把可见按钮视为所有玩家已能同步操作。
+
+正式入口与检查边界见 [Moon 正式联机地图](MoonNetworkMap.md)，本轮画面和反馈调整见 [视觉质感精修](VisualPolish.md)。
 
 ## 导出与导入入口
 
@@ -23,7 +33,7 @@ Unity 菜单：**Tools → Moon Environment → MC00 Game Export**。
 3. **Optimize candidate CPU submission**：在候选生成后执行一次，生成固定建筑局部渲染组，并将严格符合长方体的实体碰撞换为 BoxCollider。已有渲染组时拒绝叠加；换版先生成干净的新候选，不沿用旧版合并网格。
 4. **Create separate light switch trial**：另存本地单灯/批量面板试点，不覆盖性能候选或正式地图。操作、v2 映射和验证边界见 [灯光按钮说明](MC00LightSwitches.md)。
 
-候选场景：`Assets/MoonEnvironment/Variants/MC00GameExport/Scenes/MC00GameExportPreview.unity`。正式主菜单入口仍使用原地图。候选环境 Prefab 为同目录下 `Prefabs/Apollo12MC00Candidate.prefab`。
+最初候选场景：`Assets/MoonEnvironment/Variants/MC00GameExport/Scenes/MC00GameExportPreview.unity`，候选环境 Prefab 为同目录下 `Prefabs/Apollo12MC00Candidate.prefab`。2026-10-11 接入时正式主菜单仍使用原环境；当前正式引用以本文顶部的 Full v02 记录为准。
 
 ## 材质与 UV
 
@@ -44,7 +54,7 @@ Unity 菜单：**Tools → Moon Environment → MC00 Game Export**。
 
 作者已确认 FBX 不保留半程滑轨驱动和滑门限位。抽屉父子关系仍在、工具随抽屉移动，并不意味着完整机构联动已经接入；不能把这一状态当作玩法验收通过。
 
-## 验证边界
+## 首次导入的验证边界（2026-10-11）
 
 本轮针对导入风险检查几何数、三角形数、共享网格、材质槽、特殊 UV/切线、坐标与碰撞排除关系。没有自动进入 Play、进行长时间性能采样或宣称达到 4060 Laptop 60 FPS。
 
@@ -52,7 +62,7 @@ Unity 菜单：**Tools → Moon Environment → MC00 Game Export**。
 
 Unity 原始导入：9,108 个 Renderer、7,604 个不同 Mesh、948,198 个三角形。相比 Blender 少的 480 个三角形分别对应 14 件仪表/手套网格的退化面数量；没有缺失对象。三角形数量不一致不能一概解释为漏面，也不能未经核对就忽略。
 
-候选 Prefab 接入结果：精确网格复用后为 **3,843 个 Mesh**，5,133 个可见网格参与投影；277 个代理加 4,251 个未覆盖实体碰撞。118 盏灯中 116 盏沿用旧参数，基地受管灯总数变为 247。原旧地图仍为 245 盏，不受本候选影响。
+首次候选 Prefab 接入结果：精确网格复用后为 **3,843 个 Mesh**，5,133 个可见网格参与投影；277 个代理加 4,251 个未覆盖实体碰撞。118 盏灯中 116 盏沿用旧参数，基地受管灯总数变为 247。当时原正式地图仍为 245 盏，不受该候选影响。
 
 最终静态检查通过：每种材质承载的三角形数量匹配（允许已核对的退化面剔除）；无缺失对象、材质或脚本；已覆盖区域没有重复可见网格碰撞，未覆盖标记实体没有漏配碰撞；代理 Renderer 均关闭、非 Convex。模型与代理根位置完全一致，9,108 个物件相对作者世界位置的最大误差约 **0.000122 m**。两块软垫均保留两套 UV 并具备切线。实际外观、法线细节和运行性能未据此宣称通过。
 
@@ -78,6 +88,6 @@ Unity 原始导入：9,108 个 Renderer、7,604 个不同 Mesh、948,198 个三�
 
 正常照明模式的 `LocalLightBudget` 不再每帧遍历全部灯；只在初始化、通电状态改变或退出实验距离预算时应用状态。玩法继续使用 `SetPowered`，不可直接竞争写入 Light 的强度或 enabled。
 
-优化前候选备份：`Library/BuildValidation/BeforeMC00Cpu-20261011-094523/MC00GameExport.prefab`。还原此文件到原 Prefab 路径即可恢复此前渲染和碰撞配置，保留原 `.meta`；Library 备份不代替版本控制。原 FBX、作者 `.blend` 和旧正式地图未覆盖。
+优化前候选备份：`Library/BuildValidation/BeforeMC00Cpu-20261011-094523/MC00GameExport.prefab`。还原此文件到原 Prefab 路径即可恢复该早期候选的渲染和碰撞配置，保留原 `.meta`；Library 备份不代替版本控制。当次未覆盖原 FBX、作者 `.blend` 或正式地图；该备份不是当前 Full v02 正式环境的回滚来源。
 
 验证范围为编译、保存数据及恢复/通电状态检查，不包含运行画面、碰撞手感或新的 FPS 采样。用户只需在当前候选场景沿原先慢点走一遍，重点看朝向 MC00、室内转头、门口和楼梯；目标仍为 4060 Laptop 的 1440p 稳定 60 FPS，尚未确认达成。
