@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 namespace Unity.MP_FPS.Moon
 {
@@ -28,8 +29,13 @@ namespace Unity.MP_FPS.Moon
         [SerializeField, Min(.05f)] private float darkAdaptationSeconds = 8;
         [SerializeField, Min(.05f)] private float brightAdaptationSeconds = .6f;
         [SerializeField] private LayerMask exposureOccluders = ~0;
+        [Tooltip("Shorten shadow distance only while the camera is under a solid roof and its view is enclosed. Uses a runtime pipeline copy.")]
+        [SerializeField] private bool adaptInteriorShadows = false;
         private System.DateTime parsedEpoch;
         private MoonCameraExposure exposure;
+        private MoonInteriorShadowRange interiorShadows;
+        private UniversalRenderPipelineAsset runtimePipeline;
+        private RenderPipelineAsset appliedPipeline;
         private Material runtimeSkybox;
         private static readonly int SunDirectionId = Shader.PropertyToID("_SunDirection");
         private static readonly int SunVisibleId = Shader.PropertyToID("_SunVisible");
@@ -76,7 +82,10 @@ namespace Unity.MP_FPS.Moon
             previousReflections = RenderSettings.reflectionIntensity;
             previousSun = RenderSettings.sun;
             previousFog = RenderSettings.fog;
-            if (pipeline) QualitySettings.renderPipeline = pipeline;
+            appliedPipeline = pipeline;
+            if (adaptInteriorShadows && pipeline is UniversalRenderPipelineAsset sourcePipeline)
+                CreateInteriorPipeline(sourcePipeline);
+            if (appliedPipeline) QualitySettings.renderPipeline = appliedPipeline;
             if (spaceSkybox)
             {
                 runtimeSkybox = Instantiate(spaceSkybox);
@@ -106,8 +115,30 @@ namespace Unity.MP_FPS.Moon
                 if (adaptExposure && exposure == null) exposure = new MoonCameraExposure(transform);
                 if (!adaptExposure && exposure != null) { exposure.Dispose(); exposure = null; }
                 exposure?.Tick(sun, maximumExposureEV, darkAdaptationSeconds, brightAdaptationSeconds, exposureOccluders);
+                // Support a runtime A/B toggle without ever writing to the shared asset.
+                if (adaptInteriorShadows && !runtimePipeline && pipeline is UniversalRenderPipelineAsset sourcePipeline &&
+                    QualitySettings.renderPipeline == appliedPipeline)
+                {
+                    CreateInteriorPipeline(sourcePipeline);
+                    QualitySettings.renderPipeline = appliedPipeline;
+                }
+                if (interiorShadows != null)
+                {
+                    if (adaptInteriorShadows && QualitySettings.renderPipeline == runtimePipeline)
+                        interiorShadows.Tick(exposureOccluders);
+                    else interiorShadows.Restore();
+                }
             }
             UpdateSky();
+        }
+
+        private void CreateInteriorPipeline(UniversalRenderPipelineAsset source)
+        {
+            runtimePipeline = Instantiate(source);
+            runtimePipeline.name = source.name + " (interior runtime)";
+            runtimePipeline.hideFlags = HideFlags.DontSave;
+            appliedPipeline = runtimePipeline;
+            interiorShadows = new MoonInteriorShadowRange(runtimePipeline, source.shadowDistance);
         }
 
         public void ApplyTimeOfDay(double totalHours)
@@ -179,7 +210,15 @@ namespace Unity.MP_FPS.Moon
                 sun.intensity = initialSunIntensity;
                 sun.enabled = initialSunEnabled;
             }
-            if (QualitySettings.renderPipeline == pipeline) QualitySettings.renderPipeline = previousPipeline;
+            if (QualitySettings.renderPipeline == appliedPipeline) QualitySettings.renderPipeline = previousPipeline;
+            interiorShadows = null;
+            if (runtimePipeline)
+            {
+                if (Application.isPlaying) Destroy(runtimePipeline);
+                else DestroyImmediate(runtimePipeline);
+            }
+            runtimePipeline = null;
+            appliedPipeline = null;
             RenderSettings.skybox = previousSkybox;
             RenderSettings.ambientMode = previousAmbientMode;
             RenderSettings.ambientLight = previousAmbient;
