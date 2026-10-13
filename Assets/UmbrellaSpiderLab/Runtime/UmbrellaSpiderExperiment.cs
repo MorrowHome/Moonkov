@@ -22,6 +22,9 @@ namespace Unity.MP_FPS.SpiderLab
         [SerializeField] private bool showContactMarkers;
         [SerializeField] private GameObject previewPlayer;
         [SerializeField] private Camera observerCamera;
+        [SerializeField] private float cameraYawOffset;
+        [SerializeField, Range(-65, 75)] private float cameraPitch = 18;
+        [SerializeField, Range(2.8f, 8)] private float cameraDistance = 5;
         private SurfaceMotor m_Motor;
         private PredictiveFeet m_Feet;
         private SpiderPresentation m_Presentation;
@@ -49,7 +52,7 @@ namespace Unity.MP_FPS.SpiderLab
             m_Motor = new SurfaceMotor(m_Spawn, m_SpawnRotation, surfaceMask);
             m_StuckOrigin = m_Spawn;
             m_Feet = new PredictiveFeet(surfaceMask); m_Feet.Reset(m_Motor.Current);
-            m_View = new SpiderCharacterView(observerCamera, m_Motor.Current, surfaceMask);
+            m_View = new SpiderCharacterView(observerCamera, m_Motor.Current, surfaceMask, cameraYawOffset, cameraPitch, cameraDistance);
             m_Presentation = new SpiderPresentation(transform, surfaceMask);
             m_Presentation.SetAppearance(appearance, showContactMarkers);
             m_Status = GetComponent<UIDocument>()?.rootVisualElement.Q<Label>("status");
@@ -64,9 +67,10 @@ namespace Unity.MP_FPS.SpiderLab
             m_RunClock += dt;
             if (keyboard != null)
             {
+                if (keyboard.f3Key.wasPressedThisFrame && m_Presentation.Fluid != null)
+                    m_Presentation.Fluid.AttractionEnabled = !m_Presentation.Fluid.AttractionEnabled;
                 if (keyboard.f4Key.wasPressedThisFrame) showContactMarkers = !showContactMarkers;
-                if (keyboard.f5Key.wasPressedThisFrame) appearance = appearance == SpiderPresentation.Look.Carapace ?
-                    SpiderPresentation.Look.Legacy : SpiderPresentation.Look.Carapace;
+                if (keyboard.f5Key.wasPressedThisFrame) appearance = (SpiderPresentation.Look)(((int)appearance + 1) % 4);
                 if (keyboard.f6Key.wasPressedThisFrame) automatic = !automatic;
                 if (keyboard.f7Key.wasPressedThisFrame) SetObserver(!m_FreeObserver);
                 if (keyboard.f8Key.wasPressedThisFrame) stage = (SpiderPresentation.Stage)(((int)stage + 1) % 4);
@@ -175,7 +179,7 @@ namespace Unity.MP_FPS.SpiderLab
             m_Presentation.Draw(m_Motor, m_Feet, stage, dt);
             if (observerCamera && !m_FreeObserver)
             {
-                m_View.Draw(m_Motor.Current);
+                m_View.Draw(m_Motor.Current, automatic && (appearance == SpiderPresentation.Look.Liquid || appearance == SpiderPresentation.Look.Fluid));
             }
         }
 
@@ -215,7 +219,8 @@ namespace Unity.MP_FPS.SpiderLab
                 $"IK contact error {m_Presentation.MaxContactError:F3} m    Leg obstacles {m_Presentation.LegObstructions}\n" +
                 $"Body blocks {m_Motor.Blocked}    Toe blocks {m_Feet.ObstructedSwings}\n\n" +
                 $"Emergency escapes {m_Motor.Escapes}   = Fold / detach / land\n" +
-                "F4 Contact markers   F5 Legacy/Carapace\n" +
+                $"F3 Fluid attraction {(m_Presentation.Fluid?.AttractionEnabled == false ? "OFF" : "ON")}   F4 Contact markers\n" +
+                "F5 Legacy/Carapace/Liquid/Fluid\n" +
                 "F6 Auto/Manual   F7 Player/Follow   F8 Body/Feet/Ribs/Canopy\n" +
                 "F9 Slow   F10 Reset   F11 Reverse   F12 Stop\n" +
                 "Click to control / Esc release   Mouse orbit / Wheel zoom\n" +

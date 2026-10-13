@@ -16,6 +16,7 @@ namespace Unity.MP_FPS.SpiderLab.Editor
     public static class SpiderLabTools
     {
         public const string ScenePath = "Assets/UmbrellaSpiderLab/Scenes/MC00SpiderLab.unity";
+        public const string LiquidScenePath = "Assets/UmbrellaSpiderLab/Scenes/MC00LiquidSpiderLab.unity";
         private const string SourceScene = "Assets/MoonEnvironment/Variants/MC00LightControlsFullV02/Scenes/MC00GameExportPreview.unity";
         private const string Output = "Library/BuildValidation/UmbrellaSpider";
         private static Report s_Report;
@@ -30,7 +31,10 @@ namespace Unity.MP_FPS.SpiderLab.Editor
         private static float s_NextSkinCheck;
         private static bool s_ComparisonCaptured;
         private static string ResultPath => SessionState.GetString("SpiderLabReportPath", Output + "/report.json");
-        private static bool SkinCapture => s_Report.captureLabel == "Carapace";
+        private static bool SkinCapture => s_Report.captureLabel == "Carapace" || s_Report.captureLabel == "Liquid";
+        private static bool FluidCapture => s_Report.captureLabel == "Fluid";
+        private static string CapturePrefix => SkinCapture || FluidCapture ? "/MC00-" + s_Report.captureLabel : "/MC00-Run";
+        private static int s_FluidPhase;
 
         static SpiderLabTools()
         {
@@ -60,6 +64,9 @@ namespace Unity.MP_FPS.SpiderLab.Editor
             public string appearance, firstSkinObstruction;
             public int skinChecks, skinClipChecks;
             public bool skinPassed, samePoseMatched;
+            public float maxTissueLag, maxLiquidEndpointError;
+            public SkeletonFluidPresentation.Sample attachedFluid, releasedFluid, reformedFluid, movingFluid;
+            public bool fluidPassed;
         }
         [Serializable] private class Report
         {
@@ -236,6 +243,61 @@ namespace Unity.MP_FPS.SpiderLab.Editor
             ArmPlayCapture();
         }
 
+        [MenuItem("Tools/Umbrella Spider/4 - Open independent Umbra liquid variant")]
+        public static void OpenLiquid()
+        {
+            RequireCleanEditMode();
+            if (!File.Exists(LiquidScenePath))
+            {
+                if (!AssetDatabase.CopyAsset(ScenePath, LiquidScenePath)) throw new IOException("Cannot copy spider lab.");
+                var scene = EditorSceneManager.OpenScene(LiquidScenePath);
+                var actor = Object.FindFirstObjectByType<UmbrellaSpiderExperiment>();
+                var settings = new SerializedObject(actor);
+                settings.FindProperty("appearance").enumValueIndex = (int)SpiderPresentation.Look.Fluid;
+                settings.FindProperty("cameraYawOffset").floatValue = 90;
+                settings.FindProperty("cameraPitch").floatValue = 25;
+                settings.FindProperty("cameraDistance").floatValue = 4.5f;
+                settings.ApplyModifiedPropertiesWithoutUndo();
+                actor.gameObject.name = "Umbra 08 - independent liquid motion experiment";
+                GameObject.Find("Spider observer fill").GetComponent<Light>().intensity = 50;
+                EditorSceneManager.SaveScene(scene);
+            }
+            else EditorSceneManager.OpenScene(LiquidScenePath);
+        }
+
+        [MenuItem("Tools/Umbrella Spider/5 - Validate Umbra liquid in MC00")]
+        public static void ProbeLiquid()
+        {
+            OpenLiquid();
+            var actor = Object.FindFirstObjectByType<UmbrellaSpiderExperiment>();
+            Directory.CreateDirectory(Output);
+            s_Report = new Report
+            {
+                scene = LiquidScenePath, source = "SourceData/Models/Umbra08Liquid/Umbra_08_Editable_Variant.blend",
+                captureLabel = "Liquid", spawn = actor.transform.position, capturedAt = DateTime.UtcNow.ToString("O"),
+                playMode = new Case { name = "MC00 liquid Play Mode / sampled deformed mesh clearance" }
+            };
+            SessionState.SetString("SpiderLabReportPath", Output + "/liquid-report.json");
+            File.WriteAllText(ResultPath, JsonUtility.ToJson(s_Report, true));
+            ArmPlayCapture();
+        }
+
+        [MenuItem("Tools/Umbrella Spider/6 - Probe skeleton-attracted particle fluid")]
+        public static void ProbeFluid()
+        {
+            OpenLiquid();
+            Directory.CreateDirectory(Output);
+            s_Report = new Report
+            {
+                scene = LiquidScenePath, source = "SourceData/Models/Umbra08Liquid/Umbra_08_Editable_Variant.blend",
+                captureLabel = "Fluid", capturedAt = DateTime.UtcNow.ToString("O"),
+                playMode = new Case { name = "GPU particle fluid / attraction release, reform and MC00 movement" }
+            };
+            SessionState.SetString("SpiderLabReportPath", Output + "/fluid-report.json");
+            File.WriteAllText(ResultPath, JsonUtility.ToJson(s_Report, true));
+            ArmPlayCapture();
+        }
+
         private static void RunProbes()
         {
             var root = new GameObject("Temporary corner probes");
@@ -336,13 +398,48 @@ namespace Unity.MP_FPS.SpiderLab.Editor
             {
                 s_Actor = Object.FindFirstObjectByType<UmbrellaSpiderExperiment>();
                 if (!s_Actor || s_Actor.Motor == null) return;
+                if (s_Report.captureLabel == "Liquid")
+                {
+                    s_Actor.SetAppearance(SpiderPresentation.Look.Liquid, false);
+                    CaptureComparison(s_Report.playMode);
+                    var settings = new SerializedObject(s_Actor);
+                    settings.FindProperty("automatic").boolValue = true;
+                    settings.ApplyModifiedPropertiesWithoutUndo(); // Only the Play instance receives capture intent.
+                }
+                if (FluidCapture) { s_Actor.SetAppearance(SpiderPresentation.Look.Fluid, false); s_FluidPhase = 0; }
                 s_Entered = true; s_LastTime = Time.time; s_Report.playMode.minSpeed = float.MaxValue;
             }
             if (Time.time <= s_LastTime) return;
             s_PlayTime += Time.time - s_LastTime; s_LastTime = Time.time;
             CaptureMotionFrame();
             var result = s_Report.playMode;
+            if (FluidCapture && s_Actor.Presentation.Fluid != null)
+            {
+                var fluid = s_Actor.Presentation.Fluid;
+                if (s_FluidPhase == 0 && s_PlayTime > .8f)
+                {
+                    result.attachedFluid = fluid.SampleParticles();
+                    CaptureComparison(result); CaptureCameraFile(Output + "/Fluid-Attached.png");
+                    fluid.AttractionEnabled = false; s_FluidPhase = 1;
+                }
+                else if (s_FluidPhase == 1 && s_PlayTime > 1.7f)
+                {
+                    result.releasedFluid = fluid.SampleParticles(); CaptureCameraFile(Output + "/Fluid-Released.png");
+                    fluid.AttractionEnabled = true; s_FluidPhase = 2;
+                }
+                else if (s_FluidPhase == 2 && s_PlayTime > 2.9f)
+                {
+                    result.reformedFluid = fluid.SampleParticles(); CaptureCameraFile(Output + "/Fluid-Reformed.png");
+                    var settings = new SerializedObject(s_Actor); settings.FindProperty("automatic").boolValue = true;
+                    settings.ApplyModifiedPropertiesWithoutUndo(); s_FluidPhase = 3;
+                }
+            }
             result.appearance = s_Actor.Appearance.ToString();
+            if (s_Actor.Presentation.Liquid != null)
+            {
+                result.maxTissueLag = Mathf.Max(result.maxTissueLag, s_Actor.Presentation.Liquid.MaxTissueLag);
+                result.maxLiquidEndpointError = Mathf.Max(result.maxLiquidEndpointError, s_Actor.Presentation.Liquid.MaxEndpointError);
+            }
             result.frames++;
             result.minSpeed = Mathf.Min(result.minSpeed, s_Actor.Motor.Velocity.magnitude);
             result.maxSpeed = Mathf.Max(result.maxSpeed, s_Actor.Motor.Velocity.magnitude);
@@ -351,7 +448,7 @@ namespace Unity.MP_FPS.SpiderLab.Editor
             result.maxBodyLean = Mathf.Max(result.maxBodyLean,
                 Vector3.Angle(s_Actor.Motor.Current.Up, s_Actor.Feet.BodyPose.Up));
             if (!s_Actor.Motor.Supported) result.unsupportedFrames++;
-            if (s_Actor.Motor.Velocity.magnitude < .3f) result.slowFrames++;
+            if ((!FluidCapture || s_PlayTime > 3.1f) && s_Actor.Motor.Velocity.magnitude < .3f) result.slowFrames++;
             result.maxReachMisses = Mathf.Max(result.maxReachMisses, s_Actor.Feet.UnreachableCount);
             result.maxRecovery = Mathf.Max(result.maxRecovery, s_Actor.Feet.RecoveryCount);
             for (int i = 0; i < 8; i++) result.maxUnplantedTime = Mathf.Max(result.maxUnplantedTime, s_Actor.Feet[i].UnplantedTime);
@@ -376,7 +473,7 @@ namespace Unity.MP_FPS.SpiderLab.Editor
                             result.firstSkinObstruction = $"t={s_PlayTime:F3}, {part}, motor={s_Actor.Motor.Mode}, up={s_Actor.Motor.Current.Up}";
                     }
                 }
-                if (!s_ComparisonCaptured && s_PlayTime > 1 && !s_Actor.Motor.Transitioning &&
+                if (!s_ComparisonCaptured && s_PlayTime > (s_Report.captureLabel == "Liquid" ? .05f : 1) && !s_Actor.Motor.Transitioning &&
                     Vector3.Dot(s_Actor.Motor.Current.Up, Vector3.up) > .96f)
                     CaptureComparison(result);
             }
@@ -388,6 +485,13 @@ namespace Unity.MP_FPS.SpiderLab.Editor
             result.finalRecovery = s_Actor.Feet.RecoveryCount;
             result.feetPassed = result.maxContactError < .03f && result.maxUnplantedTime < .5f && result.finalRecovery == 0 && result.legObstructionFrames == 0;
             result.skinPassed = result.skinChecks > 0 && result.skinClipChecks == 0;
+            if (FluidCapture)
+            {
+                result.movingFluid = s_Actor.Presentation.Fluid.SampleParticles();
+                result.fluidPassed = result.attachedFluid.nonFinite + result.releasedFluid.nonFinite + result.reformedFluid.nonFinite + result.movingFluid.nonFinite == 0 &&
+                    result.releasedFluid.meanGuideDistance > result.attachedFluid.meanGuideDistance + .025f &&
+                    result.reformedFluid.meanGuideDistance < result.releasedFluid.meanGuideDistance;
+            }
             if (SkinCapture && !s_ComparisonCaptured) CaptureComparison(result);
             CaptureCamera();
             FinishMotionCapture();
@@ -402,7 +506,7 @@ namespace Unity.MP_FPS.SpiderLab.Editor
 
         private static void CaptureCamera()
         {
-            CaptureCameraFile(Output + (SkinCapture ? "/MC00-Carapace.png" : "/MC00-Play.png"));
+            CaptureCameraFile(Output + CapturePrefix + ".png");
         }
 
         private static void CaptureComparison(Case result)
@@ -414,9 +518,19 @@ namespace Unity.MP_FPS.SpiderLab.Editor
             try
             {
                 s_Actor.SetAppearance(SpiderPresentation.Look.Legacy, false);
-                CaptureCameraFile(Output + "/Legacy-SamePose.png");
+                CaptureCameraFile(Output + "/" + s_Report.captureLabel + "-Rollback-Legacy.png");
                 s_Actor.SetAppearance(SpiderPresentation.Look.Carapace, false);
-                CaptureCameraFile(Output + "/Carapace-SamePose.png");
+                CaptureCameraFile(Output + "/" + s_Report.captureLabel + "-Rollback-Carapace.png");
+                if (s_Report.captureLabel == "Liquid" || FluidCapture)
+                {
+                    s_Actor.SetAppearance(SpiderPresentation.Look.Liquid, false);
+                    CaptureCameraFile(Output + "/" + s_Report.captureLabel + "-Rollback-Liquid.png");
+                }
+                if (FluidCapture)
+                {
+                    s_Actor.SetAppearance(SpiderPresentation.Look.Fluid, false);
+                    CaptureCameraFile(Output + "/Fluid-SamePose.png");
+                }
             }
             finally { s_Actor.SetAppearance(look, contacts); }
             result.samePoseMatched = pose.Position == s_Actor.Feet.BodyPose.Position && pose.Rotation == s_Actor.Feet.BodyPose.Rotation;
@@ -454,7 +568,7 @@ namespace Unity.MP_FPS.SpiderLab.Editor
                 s_MotionTarget = new RenderTexture(640, 360, 24);
                 s_MotionImage = new Texture2D(640, 360, TextureFormat.RGB24, false);
                 s_MotionBytes = new byte[640 * 360 * 3];
-                s_MotionStream = new FileStream(Output + (SkinCapture ? "/MC00-Carapace.rgb" : "/MC00-Run.rgb"), FileMode.Create, FileAccess.Write);
+                s_MotionStream = new FileStream(Output + CapturePrefix + ".rgb", FileMode.Create, FileAccess.Write);
             }
             var camera = GameObject.Find("Spider observer camera").GetComponent<Camera>();
             var previousActive = RenderTexture.active;

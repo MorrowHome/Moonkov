@@ -8,7 +8,7 @@ namespace Unity.MP_FPS.SpiderLab
     public sealed class SpiderPresentation
     {
         public enum Stage { Body, Feet, Skeleton, Umbrella }
-        public enum Look { Legacy, Carapace }
+        public enum Look { Legacy, Carapace, Liquid, Fluid }
         private readonly Transform m_Root, m_Canopy, m_Body;
         private readonly Transform[] m_Upper = new Transform[8], m_Lower = new Transform[8],
             m_Knees = new Transform[8], m_Toes = new Transform[8];
@@ -26,6 +26,11 @@ namespace Unity.MP_FPS.SpiderLab
         public bool DebugContacts { get; private set; }
         private Vector3 m_Tilt, m_TiltVelocity, m_PreviousVelocity;
         private readonly int m_Mask;
+        private LiquidSpiderPresentation m_Liquid;
+        private SkeletonFluidPresentation m_Fluid;
+        private Mesh m_LiquidProbe;
+        public LiquidSpiderPresentation Liquid => m_Liquid;
+        public SkeletonFluidPresentation Fluid => m_Fluid;
         public float MaxContactError { get; private set; }
         public int LegObstructions { get; private set; }
 
@@ -121,6 +126,8 @@ namespace Unity.MP_FPS.SpiderLab
             if (Appearance != look)
             {
                 Appearance = look;
+                if ((look == Look.Liquid || look == Look.Fluid) && m_Liquid == null) m_Liquid = new LiquidSpiderPresentation(m_Root, m_Mask);
+                if (look == Look.Fluid && m_Fluid == null) m_Fluid = new SkeletonFluidPresentation(m_Root, m_Mask);
                 bool skin = look == Look.Carapace;
                 for (int i = 0; i < 8; i++)
                 {
@@ -139,13 +146,16 @@ namespace Unity.MP_FPS.SpiderLab
         private void ApplyVisibility()
         {
             bool skin = Appearance == Look.Carapace;
-            m_Body.gameObject.SetActive(!skin || m_Stage == Stage.Body);
-            m_Canopy.gameObject.SetActive(!skin && m_Stage == Stage.Umbrella);
+            bool liquid = Appearance == Look.Liquid || Appearance == Look.Fluid;
+            m_Body.gameObject.SetActive((!skin && !liquid) || m_Stage == Stage.Body);
+            m_Canopy.gameObject.SetActive(!skin && !liquid && m_Stage == Stage.Umbrella);
+            m_Liquid?.SetVisible(Appearance == Look.Liquid && m_Stage == Stage.Umbrella);
+            m_Fluid?.SetVisible(Appearance == Look.Fluid && m_Stage == Stage.Umbrella);
             m_SkinShell.gameObject.SetActive(skin && m_Stage != Stage.Body);
             for (int i = 0; i < 8; i++)
             {
                 m_Toes[i].gameObject.SetActive(DebugContacts && m_Stage >= Stage.Feet);
-                bool bones = m_Stage >= Stage.Skeleton;
+                bool bones = m_Stage >= Stage.Skeleton && (!liquid || m_Stage == Stage.Skeleton);
                 m_Upper[i].gameObject.SetActive(bones); m_Lower[i].gameObject.SetActive(bones);
                 m_Knees[i].gameObject.SetActive(bones);
             }
@@ -200,6 +210,7 @@ namespace Unity.MP_FPS.SpiderLab
             m_SkinShell.localScale = Vector3.Lerp(Vector3.one, new Vector3(.98f, .94f, .96f), Mathf.Clamp01(feet.RunIntensity));
             LegObstructions = 0;
             MaxContactError = 0;
+            if (Appearance == Look.Liquid || Appearance == Look.Fluid) m_Liquid.BeginFrame(motor, feet, dt);
             for (int i = 0; i < 8; i++)
             {
                 var foot = feet[i];
@@ -218,7 +229,9 @@ namespace Unity.MP_FPS.SpiderLab
                     MaxContactError = Mathf.Max(MaxContactError, Vector3.Distance(tip, foot.Position));
                 // These are diagnostics, not claims of full joint collision solving.
                 if (blocked) LegObstructions++;
+                if (Appearance == Look.Liquid || Appearance == Look.Fluid) m_Liquid.SetLeg(i, hip, knee, tip);
             }
+            if (Appearance == Look.Fluid) m_Fluid.Draw(m_Liquid, motor, dt);
         }
 
         private static void Segment(Transform t, Vector3 from, Vector3 to, float thickness)
@@ -260,6 +273,8 @@ namespace Unity.MP_FPS.SpiderLab
 
         public void Release()
         {
+            m_Liquid?.Release(); Dispose(m_LiquidProbe);
+            m_Fluid?.Release();
             Dispose(m_Root.gameObject); Dispose(m_Mesh);
             foreach (var material in m_Materials) Dispose(material);
             foreach (var mesh in m_SkinMeshes) Dispose(mesh);
@@ -306,6 +321,11 @@ namespace Unity.MP_FPS.SpiderLab
         public bool SkinObstructed(out string part)
         {
             part = null;
+            if (Appearance == Look.Liquid)
+            {
+                if (!m_LiquidProbe) m_LiquidProbe = new Mesh { name = "Liquid clearance probe" };
+                return m_Liquid.SkinObstructed(m_LiquidProbe, m_Mask, out part);
+            }
             if (Appearance != Look.Carapace) return false;
             foreach (var sample in m_SkinSamples)
             {

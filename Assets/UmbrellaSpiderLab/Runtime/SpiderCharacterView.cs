@@ -14,11 +14,13 @@ namespace Unity.MP_FPS.SpiderLab
         private Vector3 m_LastUp;
         public bool HasControl => Application.isFocused && Cursor.lockState == CursorLockMode.Locked;
 
-        public SpiderCharacterView(Camera camera, SurfaceMotor.Pose pose, int mask)
+        public SpiderCharacterView(Camera camera, SurfaceMotor.Pose pose, int mask,
+            float yawOffset = 0, float pitch = 18, float distance = 5)
         {
             m_Camera = camera; m_Mask = mask;
             Vector3 forward = Vector3.ProjectOnPlane(pose.Forward, Vector3.up).normalized;
-            m_Yaw = Mathf.Atan2(forward.x, forward.z) * Mathf.Rad2Deg;
+            m_Yaw = Mathf.Atan2(forward.x, forward.z) * Mathf.Rad2Deg + yawOffset;
+            m_Pitch = pitch; m_Distance = distance;
             m_Tangent = pose.Forward; m_LastUp = pose.Up;
         }
 
@@ -49,10 +51,13 @@ namespace Unity.MP_FPS.SpiderLab
             return m_Tangent;
         }
 
-        public void Draw(SurfaceMotor.Pose pose)
+        public void Draw(SurfaceMotor.Pose pose, bool automaticSurfaceFraming = false)
         {
             if (!m_Camera) return;
-            Quaternion rotation = Quaternion.Euler(m_Pitch, m_Yaw, 0);
+            // Automated liquid previews inspect from below a ceiling instead of pushing the
+            // camera into it. Manual orbit keeps the user's pitch and world-up horizon.
+            float pitch = automaticSurfaceFraming ? m_Pitch * Vector3.Dot(pose.Up, Vector3.up) : m_Pitch;
+            Quaternion rotation = Quaternion.Euler(pitch, m_Yaw, 0);
             Vector3 target = pose.Position + pose.Up * .20f;
             Vector3 backwards = rotation * Vector3.back;
             float distance = m_Distance;
