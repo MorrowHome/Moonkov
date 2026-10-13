@@ -35,7 +35,8 @@ namespace Unity.MP_FPS
         [SerializeField, Min(0)] private float m_StarvationDamagePerSecond = .5f;
         [SerializeField, Min(0)] private float m_DehydrationDamagePerSecond = 1;
         private GameObject[] m_Markers;
-        private Material[] m_Materials;
+        private Material m_ExtractionMaterial;
+        private RaidSupplyCacheVisuals m_CacheVisuals;
         private readonly System.Collections.Generic.Dictionary<int,GameObject> m_DeathBags = new System.Collections.Generic.Dictionary<int,GameObject>();
         private CorpsePresentationSettings m_CorpseSettings;
 
@@ -77,30 +78,20 @@ namespace Unity.MP_FPS
             // No presentation objects or UI are created in a dedicated server.
             if (!ClientServerBootstrap.HasClientWorlds) return;
             m_CorpseSettings=Resources.Load<CorpsePresentationSettings>("Moonkov/CorpsePresentation");
-            m_Materials = new Material[5];
-            Color[] colors = { new Color(0.2f, 0.8f, 1f), new Color(1f, 0.65f, 0.15f), new Color(0.8f, 0.35f, 1f), new Color(0.2f, 1f, 0.4f),new Color(.12f,.14f,.16f) };
             var shader = Shader.Find("Universal Render Pipeline/Lit");
-            for (int i = 0; i < m_Materials.Length; i++)
-            {
-                m_Materials[i] = new Material(shader);
-                m_Materials[i].SetColor("_BaseColor", colors[i]);
-                if(i<4){m_Materials[i].SetColor("_EmissionColor", colors[i] * 1.5f);m_Materials[i].EnableKeyword("_EMISSION");}
-                else {m_Materials[i].SetFloat("_Metallic",.55f);m_Materials[i].SetFloat("_Smoothness",.35f);}
-            }
+            var beaconColor = new Color(.2f, 1f, .4f);
+            m_ExtractionMaterial = new Material(shader);
+            m_ExtractionMaterial.SetColor("_BaseColor", beaconColor);
+            m_ExtractionMaterial.SetColor("_EmissionColor", beaconColor * 1.5f);
+            m_ExtractionMaterial.EnableKeyword("_EMISSION");
+            m_CacheVisuals = new RaidSupplyCacheVisuals(shader, m_LootPositions.Length);
             m_Markers = new GameObject[m_LootPositions.Length];
             for (int i = 0; i < m_Markers.Length; i++)
-            {
-                var position=m_LootPositions[i];
-                m_Markers[i]=Marker("Supply cache "+(i+1).ToString("00"),PrimitiveType.Cube,position,new Vector3(1.1f,.6f,.8f),m_Materials[4]);
-                var lid=Marker("Cache lid",PrimitiveType.Cube,position+Vector3.up*.33f,new Vector3(1.14f,.08f,.84f),m_Materials[4]);
-                lid.transform.SetParent(m_Markers[i].transform,true);
-                var latch=Marker("Cache indicator",PrimitiveType.Cube,position+new Vector3(0,.1f,-.41f),new Vector3(.18f,.12f,.025f),m_Materials[i%3]);
-                latch.transform.SetParent(m_Markers[i].transform,true);
-            }
+                m_Markers[i] = m_CacheVisuals.Create(transform, m_LootPositions[i], i);
             Marker("Extraction zone", PrimitiveType.Cylinder, m_ExtractionPosition + Vector3.up * 0.08f,
-                new Vector3(m_ExtractionRadius * 2, 0.06f, m_ExtractionRadius * 2), m_Materials[3]);
+                new Vector3(m_ExtractionRadius * 2, 0.06f, m_ExtractionRadius * 2), m_ExtractionMaterial);
             Marker("Extraction beacon", PrimitiveType.Cylinder, m_ExtractionPosition + Vector3.up * 4,
-                new Vector3(0.3f, 4, 0.3f), m_Materials[3]);
+                new Vector3(0.3f, 4, 0.3f), m_ExtractionMaterial);
             var document = gameObject.AddComponent<UIDocument>();
             document.panelSettings = m_PanelSettings;
             document.sortingOrder = 20;
@@ -128,6 +119,7 @@ namespace Unity.MP_FPS
             {
                 bool visible = hasSnapshot;
                 if (m_Markers[i].activeSelf != visible) m_Markers[i].SetActive(visible);
+                if (hasSnapshot) m_CacheVisuals.SetEmpty(i, (takenMask & (1u << i)) != 0);
             }
         }
         public void ShowDeathBags(RaidDeathBagClientState state)
@@ -144,8 +136,8 @@ namespace Unity.MP_FPS
         private void OnDestroy()
         {
             if (Active == this) Active = null;
-            if (m_Materials != null)
-                foreach (var material in m_Materials) if (material != null) Destroy(material);
+            m_CacheVisuals?.Dispose();
+            if (m_ExtractionMaterial != null) Destroy(m_ExtractionMaterial);
         }
     }
 }
