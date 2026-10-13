@@ -6,12 +6,15 @@ namespace Unity.MP_FPS.SpiderLab
     [Serializable]
     public sealed class CreatureChainSettings
     {
+        public enum HeadFeature { None, Mandibles, Sucker }
         [Header("体形 / 米")]
         [Range(.8f, 8)] public float length = 4.6f;
         [Range(.06f, .4f)] public float radius = .14f;
         [Range(6, 30)] public int segments = 18;
         [Range(.45f, 1.2f)] public float verticalScale = .78f;
         public Vector3 headScale = new Vector3(.32f, .19f, .43f);
+        public HeadFeature headFeature;
+        [Range(.1f, .8f)] public float feelerLength = .48f;
 
         [Header("运动波 / 运行时可调")]
         [Range(.1f, 8)] public float speed = 3.2f;
@@ -35,7 +38,7 @@ namespace Unity.MP_FPS.SpiderLab
         [Range(.3f, 2)] public float stuckDelay = .8f;
 
         [Header("毛毛虫腹足与刚毛")]
-        [Range(3, 10)] public int legPairs = 6;
+        [Range(0, 24)] public int legPairs = 6;
         [Range(.08f, .5f)] public float legReach = .27f;
         [Range(.015f, .2f)] public float footLift = .09f;
         [Range(.015f, .08f)] public float legRadius = .035f;

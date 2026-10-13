@@ -17,7 +17,7 @@ namespace Unity.MP_FPS.SpiderLab
         [StructLayout(LayoutKind.Sequential)] public struct Seed { public Vector4 rest, bones, weights; }
         [StructLayout(LayoutKind.Sequential)] private struct Particle { public Vector3 position; public float pad0; public Vector3 velocity; public float pad1; }
         [Serializable] public struct Sample
-        { public int particles, nonFinite; public float meanGuideDistance, maxGuideDistance, meanSpeed; }
+        { public int particles, nonFinite; public float meanGuideDistance, maxGuideDistance, meanSpeed, meanBodyDistance, meanAppendageDistance; }
         [StructLayout(LayoutKind.Sequential)] private struct Obstacle
         { public Matrix4x4 toBox, fromBox; public Vector4 halfSize; }
         private const int MaximumObstacles = 96;
@@ -34,6 +34,7 @@ namespace Unity.MP_FPS.SpiderLab
         private readonly Collider[] m_Nearby = new Collider[256];
         private readonly Obstacle[] m_Boxes = new Obstacle[MaximumObstacles];
         private readonly int m_Mask;
+        private readonly bool m_ChainRig;
         private readonly int k_Initialize, k_Transport, k_ClearGrid, k_BuildGrid, k_Density, k_Integrate,
             k_ClearVolume, k_Deposit, k_ResolveX, k_BlurY, k_BlurZ;
         private Matrix4x4 m_PreviousRoot;
@@ -58,13 +59,13 @@ namespace Unity.MP_FPS.SpiderLab
         /// <summary>Shared solver for an explicitly supplied weighted rig. Spider defaults stay
         /// unchanged; chain rigs supply their own rest volume, bones and collision radius.</summary>
         public SkeletonFluidPresentation(Transform parent, int mask, Seed[] seeds, int boneCount,
-            float halfVolume, int volumeSide, bool chainRig)
+            float halfVolume, int volumeSide, bool chainRig, bool branchedRig = false)
         {
             if (!SystemInfo.supportsComputeShaders || !SystemInfo.supports3DRenderTextures)
                 throw new NotSupportedException("The skeleton fluid variant requires compute shaders and 3D textures.");
             if (seeds == null || seeds.Length < 1 || seeds.Length > 16000 || boneCount < 1 || boneCount > 256)
                 throw new ArgumentException("Invalid skeleton fluid budget.");
-            m_Mask = mask; ParticleCount = seeds.Length;
+            m_Mask = mask; m_ChainRig = chainRig && !branchedRig; ParticleCount = seeds.Length;
             m_HalfVolume = Mathf.Max(2.8f, halfVolume); m_VolumeSide = volumeSide;
             m_GridSide = Mathf.CeilToInt(m_HalfVolume * 2 / .13f);
             m_BoneMatrices = new Matrix4x4[boneCount]; m_PreviousMatrices = new Matrix4x4[boneCount];
@@ -75,7 +76,7 @@ namespace Unity.MP_FPS.SpiderLab
             m_Solver = UnityEngine.Object.Instantiate(solver);
             m_Solver.SetFloat("_HalfVolume", m_HalfVolume);
             m_Solver.SetFloat("_CollisionRadius", chainRig ? .025f : .055f);
-            m_Solver.SetInt("_GuideKind", chainRig ? 1 : 0);
+            m_Solver.SetInt("_GuideKind", branchedRig ? 2 : chainRig ? 1 : 0);
             m_SeedData = seeds;
             m_Seeds = new ComputeBuffer(ParticleCount, 48); m_Seeds.SetData(seeds);
             m_Read = new ComputeBuffer(ParticleCount, 32); m_Write = new ComputeBuffer(ParticleCount, 32);
@@ -99,6 +100,7 @@ namespace Unity.MP_FPS.SpiderLab
                 m_Solver.SetBuffer(kernel, "_RestCentres", m_RestCentres);
             }
             m_Solver.SetBuffer(k_Integrate, "_PreviousBones", m_PreviousBones);
+            m_Solver.SetBuffer(k_Deposit, "_Seeds", m_Seeds);
             m_Solver.SetBuffer(k_Integrate, "_Obstacles", m_Obstacles);
             foreach (int kernel in new[] { k_ClearGrid, k_BuildGrid, k_Density, k_Integrate })
                 m_Solver.SetBuffer(kernel, "_Heads", m_Heads);
@@ -118,9 +120,9 @@ namespace Unity.MP_FPS.SpiderLab
             for (int i = 0; i < ParticleCount; i++)
             {
                 restPoints[i] = m_SeedData[i].rest;
-                segments[i] = chainRig ? (m_SeedData[i].bones.w < 2 ? m_SeedData[i].bones.x * .5f : m_SeedData[i].bones.y) :
+                segments[i] = branchedRig ? m_SeedData[i].bones.z * 16 : chainRig ? (m_SeedData[i].bones.w < 2 ? m_SeedData[i].bones.x * .5f : m_SeedData[i].bones.y) :
                     ((int)m_SeedData[i].bones.y - 1) % 11 + m_SeedData[i].weights.z;
-                regions[i] = chainRig ? (int)m_SeedData[i].bones.w :
+                regions[i] = chainRig || branchedRig ? (int)m_SeedData[i].bones.w :
                     m_SeedData[i].weights.x > .5f ? -1 : ((int)m_SeedData[i].bones.y - 1) / 11;
             }
             m_Filaments = new FluidFilaments(m_Root, restPoints, regions, segments, out var linkIndices, out var linkLengths, m_HalfVolume * 2);
@@ -264,6 +266,7 @@ namespace Unity.MP_FPS.SpiderLab
             m_Solver.SetFloat("_LegAsymmetry", s.legAsymmetry);
             m_Solver.SetFloat("_ThicknessVariation", s.localThicknessVariation);
             m_Solver.SetFloat("_LiquidMass", Mathf.Max(.1f, s.liquidMass));
+            m_Solver.SetFloat("_AppendageMass", s.appendageMass);
             m_Solver.SetFloat("_MotionTrail", s.motionTrail);
             m_Solver.SetFloat("_FreeFlowRadius", s.freeFlowRadius);
             m_Solver.SetFloat("_BodyAttraction", s.bodyAttraction);
@@ -273,6 +276,7 @@ namespace Unity.MP_FPS.SpiderLab
             m_Solver.SetFloat("_Viscosity", s.viscosity);
             m_Solver.SetFloat("_Pressure", s.pressure);
             m_Solver.SetFloat("_Cohesion", s.cohesion);
+            m_Solver.SetVector("_AccelerationLimits", new Vector4(s.bodyAccelerationLimit, s.tipAccelerationLimit, s.bodySpeedLimit, s.tipSpeedLimit));
             m_Solver.SetFloat("_BondDensity", s.filamentDensity);
             m_Solver.SetFloat("_BreakLength", s.minimumBreakLength);
             m_Solver.SetFloat("_BreakStretch", s.breakStretch);
@@ -322,6 +326,7 @@ namespace Unity.MP_FPS.SpiderLab
         {
             var particles = new Particle[ParticleCount]; m_Read.GetData(particles);
             var sample = new Sample { particles = ParticleCount };
+            int bodyCount = 0, appendageCount = 0;
             for (int i = 0; i < particles.Length; i++)
             {
                 var particle = particles[i];
@@ -333,7 +338,10 @@ namespace Unity.MP_FPS.SpiderLab
                 float distance = Vector3.Distance(target, particle.position);
                 sample.meanGuideDistance += distance; sample.maxGuideDistance = Mathf.Max(sample.maxGuideDistance, distance);
                 sample.meanSpeed += particle.velocity.magnitude;
+                if (m_ChainRig && seed.bones.w < 2) { sample.meanBodyDistance += distance; bodyCount++; }
+                else { sample.meanAppendageDistance += distance; appendageCount++; }
             }
+            sample.meanBodyDistance /= Mathf.Max(1, bodyCount); sample.meanAppendageDistance /= Mathf.Max(1, appendageCount);
             sample.meanGuideDistance /= ParticleCount; sample.meanSpeed /= ParticleCount; return sample;
         }
 

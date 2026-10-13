@@ -17,6 +17,11 @@ namespace Unity.MP_FPS.SpiderLab
         private readonly Vector3[] m_Previous = new Vector3[Rings];
         private readonly Collider[] m_Support = new Collider[Rings], m_PreviousSupport = new Collider[Rings];
         private bool m_HasPrevious;
+        private bool m_SuckerInitialized, m_RearHolding;
+        private Vector3 m_SuckerTail, m_SuckerAnchor;
+        private Collider m_SuckerSurface;
+        public bool RearSuckerHolding => m_RearHolding;
+        public float SuckerSpan { get; private set; }
         public readonly Vector3[] Centres = new Vector3[Rings], Ups = new Vector3[Rings], Tangents = new Vector3[Rings];
         public readonly float[] Radii = new float[Rings];
         public float Phase => m_Phase;
@@ -32,6 +37,7 @@ namespace Unity.MP_FPS.SpiderLab
         {
             m_Newest = m_Count = 0; m_Travel = m_Phase = m_Drive = 0;
             m_HasPrevious = false;
+            m_SuckerInitialized = false; m_SuckerSurface = null;
             int samples = Mathf.CeilToInt((length + 2) / .035f);
             for (int i = samples; i >= 0; i--)
             {
@@ -51,6 +57,49 @@ namespace Unity.MP_FPS.SpiderLab
             }
             m_History[m_Newest] = pose; m_Distance[m_Newest] = m_Travel;
             m_Count = Mathf.Min(m_Count + 1, HistoryCapacity);
+        }
+
+        /// <summary>Two-anchor gait: the rear stays in collider-local coordinates while
+        /// the head extends; the head then pauses while the rear contracts forward.
+        /// The actor owns head displacement, so this is never a second movement authority.</summary>
+        public void TickSuction(SurfaceMotor.Pose head, CreatureChainSettings s, float phase,
+            float drive, float dt, bool detached)
+        {
+            Tick(head, s, true, drive, dt, 0, detached);
+            bool holding = phase < .58f;
+            if (!m_SuckerInitialized || detached)
+            {
+                m_SuckerTail = head.Position - head.Forward * s.length * (1 - s.contraction);
+                m_SuckerInitialized = true; m_SuckerSurface = null;
+            }
+            if (holding && m_SuckerSurface) m_SuckerTail = m_SuckerSurface.transform.TransformPoint(m_SuckerAnchor);
+            else if (!holding)
+                m_SuckerTail = Vector3.MoveTowards(m_SuckerTail, head.Position - head.Forward * s.length * (1 - s.contraction),
+                    s.speed * 1.6f * dt * drive);
+            m_RearHolding = holding && !detached;
+            SuckerSpan = Vector3.Distance(head.Position, m_SuckerTail);
+            UnsupportedRings = 0;
+            for (int i = 0; i < Rings; i++)
+            {
+                float t = i / (Rings - 1f);
+                Vector3 position = Vector3.Lerp(head.Position, m_SuckerTail, t);
+                float radius = s.radius * Mathf.Lerp(.50f, 1, Mathf.Pow(Mathf.Max(0, Mathf.Sin(t * Mathf.PI)), .4f));
+                Vector3 up = head.Up;
+                if (!detached && Physics.Raycast(position + up * .6f, -up, out var hit, 1.8f, m_Mask, QueryTriggerInteraction.Ignore))
+                {
+                    up = hit.normal; position = hit.point + up * radius * s.verticalScale;
+                    if (i == Rings - 1)
+                    { m_SuckerSurface = hit.collider; m_SuckerAnchor = hit.collider.transform.InverseTransformPoint(hit.point + up * SurfaceMotor.Height); }
+                }
+                else UnsupportedRings++;
+                float arch = Mathf.Sin(t * Mathf.PI) * s.archHeight * Mathf.Sin(phase * Mathf.PI) * drive;
+                Centres[i] = position + up * arch; Ups[i] = up; Radii[i] = radius;
+            }
+            for (int i = 0; i < Rings; i++)
+            {
+                Vector3 direction = Centres[Mathf.Max(0, i - 1)] - Centres[Mathf.Min(Rings - 1, i + 1)];
+                Tangents[i] = direction.sqrMagnitude > .00001f ? direction.normalized : head.Forward;
+            }
         }
 
         private SurfaceMotor.Pose At(float behind, SurfaceMotor.Pose head)

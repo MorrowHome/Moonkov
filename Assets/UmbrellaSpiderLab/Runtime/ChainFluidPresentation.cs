@@ -10,12 +10,14 @@ namespace Unity.MP_FPS.SpiderLab
         private readonly Transform m_Pivot;
         private readonly Matrix4x4[] m_RestInverse, m_Matrices;
         private readonly Vector4[] m_Centres;
-        private readonly Vector3[] m_LegPoints = new Vector3[60];
+        private readonly Vector3[] m_LegPoints = new Vector3[144];
         private readonly float[] m_RestRadii = new float[CreatureChain.Rings];
         private readonly bool m_Larva;
         private readonly float m_Length, m_Radius, m_Vertical, m_LegReach, m_LegRadius, m_HairLength;
         private readonly int m_Pairs, m_Segments, m_Hairs;
         private readonly Vector3 m_HeadScale;
+        private readonly CreatureChainSettings.HeadFeature m_HeadFeature;
+        private readonly float m_FeelerLength;
         private readonly List<SkeletonFluidPresentation.Seed> m_Seeds = new List<SkeletonFluidPresentation.Seed>();
         public SkeletonFluidPresentation Fluid { get; }
 
@@ -32,6 +34,7 @@ namespace Unity.MP_FPS.SpiderLab
 
         public bool Matches(CreatureChainSettings s, bool larva) => m_Larva == larva &&
             m_Length == s.length && m_Radius == s.radius && m_Vertical == s.verticalScale && m_HeadScale == s.headScale &&
+            m_HeadFeature == s.headFeature && m_FeelerLength == s.feelerLength &&
             (!larva || (m_Pairs == s.legPairs && m_LegReach == s.legReach && m_LegRadius == s.legRadius &&
                 m_Segments == s.segments && m_Hairs == s.bristlesPerSegment && m_HairLength == s.bristleLength));
 
@@ -39,6 +42,7 @@ namespace Unity.MP_FPS.SpiderLab
         {
             m_Larva = larva; m_Length = s.length; m_Radius = s.radius; m_Vertical = s.verticalScale;
             m_HeadScale = s.headScale; m_Pairs = larva ? s.legPairs : 0; m_LegReach = s.legReach;
+            m_HeadFeature = s.headFeature; m_FeelerLength = s.feelerLength;
             m_LegRadius = s.legRadius; m_Segments = s.segments; m_Hairs = s.bristlesPerSegment; m_HairLength = s.bristleLength;
             int bones = CreatureChain.Rings + 1 + m_Pairs * 6;
             m_Centres = new Vector4[bones]; m_RestInverse = new Matrix4x4[bones]; m_Matrices = new Matrix4x4[bones];
@@ -74,6 +78,22 @@ namespace Unity.MP_FPS.SpiderLab
                 if (x * x / (half.x * half.x) + y * y / (half.y * half.y) + z * z / (half.z * half.z) < 1)
                     Add(head + new Vector3(x, y, z), CreatureChain.Rings, CreatureChain.Rings, 0, false, 1);
             BuildLegs(s, spacing);
+            var details = CreatureHeadDetails.Paths(s);
+            for (int p = 0; p < details.Count; p++) for (int j = 0; j < details[p].Length; j++)
+            {
+                var path = details[p]; float radius = Mathf.Max(.025f, CreatureHeadDetails.Radius(s, p, j / (path.Length - 1f)));
+                Vector3 axis = (path[Mathf.Min(j + 1, path.Length - 1)] - path[Mathf.Max(j - 1, 0)]).normalized;
+                Vector3 cross = Vector3.Cross(axis, Vector3.up).normalized;
+                if (cross.sqrMagnitude < .1f) cross = Vector3.right;
+                Vector3 up = Vector3.Cross(cross, axis);
+                for (int k = 0; k < 7; k++)
+                {
+                    float angle = k * Mathf.PI / 3;
+                    Add(head + path[j] + (k == 6 ? Vector3.zero : (cross * Mathf.Cos(angle) + up * Mathf.Sin(angle)) * radius * .7f),
+                        CreatureChain.Rings, CreatureChain.Rings, 0, false, 100 + p);
+                    var seed = m_Seeds[m_Seeds.Count - 1]; seed.bones.y = j; m_Seeds[m_Seeds.Count - 1] = seed;
+                }
+            }
             if (larva) BuildTendrils(s);
             Fluid = new SkeletonFluidPresentation(m_Pivot, mask, m_Seeds.ToArray(), bones,
                 Mathf.Max(2.8f, m_Length * .5f + 1.05f), 128, true);
@@ -114,7 +134,8 @@ namespace Unity.MP_FPS.SpiderLab
                 Vector3 knee = Vector3.Lerp(root, toe, .45f) + Vector3.up * .035f + side * .04f;
                 var points = new[] { root, knee, toe };
                 for (int j = 0; j < 3; j++) SetRest(bone + j, points[j], Quaternion.LookRotation(j == 0 ? knee - root : toe - knee, Vector3.up));
-                float radius = Mathf.Max(.05f, s.legRadius * 1.4f);
+                float radius = s.headFeature == CreatureChainSettings.HeadFeature.Mandibles ?
+                    Mathf.Max(.033f, s.legRadius * 1.15f) : Mathf.Max(.05f, s.legRadius * 1.4f);
                 for (int j = 0; j < 2; j++)
                 {
                     int slices = Mathf.Max(2, Mathf.CeilToInt(Vector3.Distance(points[j], points[j + 1]) / spacing));

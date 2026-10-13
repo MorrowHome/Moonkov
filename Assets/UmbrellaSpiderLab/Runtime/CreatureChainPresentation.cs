@@ -11,6 +11,7 @@ namespace Unity.MP_FPS.SpiderLab
         private readonly Transform m_Root, m_Head;
         private readonly Mesh m_Tube, m_Bristles;
         private readonly Material m_Body, m_Belly, m_Accent;
+        private readonly CreatureHeadDetails m_Details;
         private readonly Vector3[] m_Vertices = new Vector3[CreatureChain.Rings * (Sides + 1)];
         private readonly Vector3[] m_Normals = new Vector3[CreatureChain.Rings * (Sides + 1)];
         private readonly LineRenderer m_Tongue, m_Fork;
@@ -62,6 +63,7 @@ namespace Unity.MP_FPS.SpiderLab
             m_Tube.vertices = m_Vertices; m_Tube.uv = uv; m_Tube.subMeshCount = 2;
             m_Tube.SetTriangles(dorsal, 0); m_Tube.SetTriangles(belly, 1);
             m_Head = Primitive("Head", PrimitiveType.Sphere, m_Body);
+            m_Details = new CreatureHeadDetails(m_Root, m_Body);
             m_Tongue = Line("Tongue", .012f); m_Fork = Line("Forked tip", .006f);
             m_Bristles = new Mesh { name = "Procedural larva bristles" }; m_Bristles.MarkDynamic();
             var hairs = new GameObject("Larva bristles"); hairs.layer = 2; hairs.transform.SetParent(m_Root, false);
@@ -117,6 +119,7 @@ namespace Unity.MP_FPS.SpiderLab
             Vector3 head = chain.Centres[0], forward = chain.Tangents[0], headUp = chain.Ups[0];
             m_Head.SetPositionAndRotation(head + forward * .06f, Quaternion.LookRotation(forward, headUp));
             m_Head.localScale = s.headScale;
+            m_Details.Draw(s, head + forward * .06f, Quaternion.LookRotation(forward, headUp));
             bool flick = !caterpillar && Mathf.Repeat(clock, 2.3f) < .20f;
             m_Tongue.enabled = m_Fork.enabled = flick && m_Visible;
             if (flick)
@@ -234,6 +237,8 @@ namespace Unity.MP_FPS.SpiderLab
 
         public void Release()
         {
+            m_Root.gameObject.SetActive(false);
+            m_Details.Release();
             Dispose(m_Root.gameObject); Dispose(m_Tube); Dispose(m_Bristles); Dispose(m_Body); Dispose(m_Belly); Dispose(m_Accent);
         }
         public void ResetContacts()
@@ -250,6 +255,7 @@ namespace Unity.MP_FPS.SpiderLab
         {
             if (m_Visible == visible) return;
             m_Visible = visible;
+            m_Details.SetVisible(visible);
             foreach (var renderer in m_Renderers) if (renderer) renderer.enabled = visible;
         }
         private static void Dispose(Object obj) { if (Application.isPlaying) Object.Destroy(obj); else Object.DestroyImmediate(obj); }

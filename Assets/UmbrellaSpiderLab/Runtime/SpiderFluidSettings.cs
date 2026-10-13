@@ -20,6 +20,10 @@ namespace Unity.MP_FPS.SpiderLab
         [Range(0, 150)] public float pressure = 48;
         [Range(0, 20)] public float cohesion = 2.2f;
         [Range(0, .1f)] public float freeFlowRadius = .012f;
+        [Range(100, 1500)] public float bodyAccelerationLimit = 240;
+        [Range(100, 2000)] public float tipAccelerationLimit = 420;
+        [Range(10, 80)] public float bodySpeedLimit = 28;
+        [Range(10, 100)] public float tipSpeedLimit = 40;
 
         [Header("积液与肢体截面 / 1 = 原始截面")]
         [Range(.2f, 1.5f)] public float mantleThickness = .84f;
@@ -29,6 +33,7 @@ namespace Unity.MP_FPS.SpiderLab
         [Range(0, .7f)] public float legAsymmetry = .42f;
         [Range(0, .4f)] public float localThicknessVariation = .15f;
         [Range(.1f, 1)] public float liquidMass = .45f;
+        [Range(.1f, 1)] public float appendageMass = 1;
         [Range(.05f, 1)] public float surfaceThreshold = .50f;
         [Range(0, .25f)] public float motionTrail = .12f;
 
