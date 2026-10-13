@@ -6,10 +6,29 @@
 .raid-timer { font-size: 30px; letter-spacing: 2px; -unity-font-definition: url("../../UI Toolkit/RobotoMono-Medium.ttf"); }
 .raid-copy { font-size: 13px; white-space: normal; margin-top: 12px; margin-bottom: 14px; }
 .raid-ui .raid-copy { color: rgba(236, 236, 230, 0.65); }
-.raid-prompt { position: absolute; left: 30%; right: 30%; top: 58%; font-size: 15px; letter-spacing: 3px; -unity-text-align: middle-center; -unity-font-definition: url("../../UI Toolkit/Fonts/Roboto-Bold.ttf"); }
-.raid-ui .raid-prompt { -unity-text-align: middle-center; -unity-text-outline-width: 0.15px; -unity-text-outline-color: rgba(0, 0, 0, 0.8); }
-.raid-extraction { position: absolute; right: 3%; top: 7%; font-size: 18px; letter-spacing: 3px; padding: 10px 16px; background-color: rgba(7, 8, 10, 0.7); border-right-width: 3px; border-right-color: #3FE0D0; -unity-text-align: middle-right; -unity-font-definition: url("../../UI Toolkit/Fonts/Roboto-Bold.ttf"); }
-.raid-ui .raid-extraction { -unity-text-align: middle-right; color: #3FE0D0; }
+.raid-interaction-anchor { position: absolute; left: 24px; right: 24px; top: 58%; align-items: center; }
+.raid-interaction { flex-direction: row; align-items: center; max-width: 500px; min-height: 62px; padding: 10px 17px 10px 11px; background-color: rgba(12, 17, 18, 0.88); border-width: 1px; border-color: rgba(220, 218, 198, 0.16); border-left-width: 2px; border-left-color: #d8c59a; opacity: 0; translate: 0 6px; transition-property: opacity, translate, border-left-color; transition-duration: 0.16s; }
+.raid-interaction.is-visible { opacity: 1; translate: 0 0; }
+.raid-ui .raid-interaction-key { width: 46px; height: 36px; flex-shrink: 0; margin: 0 13px 0 0; border-width: 1px; border-color: rgba(222, 215, 193, 0.48); border-bottom-width: 3px; background-color: rgba(222, 215, 193, 0.1); color: #ebe2cc; font-size: 11px; letter-spacing: 1px; -unity-text-align: middle-center; }
+.raid-interaction-copy { flex-shrink: 1; min-width: 0; }
+.raid-ui .raid-prompt { margin: 0; font-size: 14px; letter-spacing: 1px; color: #eee9dd; -unity-font-definition: url("../../UI Toolkit/Fonts/Roboto-Bold.ttf"); }
+.raid-interaction-details { flex-direction: row; margin-top: 5px; }
+.raid-ui .raid-interaction-state { margin: 0; color: #b8c5b7; font-size: 10px; letter-spacing: 2px; }
+.raid-ui .raid-interaction-range { margin: 0 0 0 18px; color: #9da8a6; font-size: 10px; letter-spacing: 1px; }
+.raid-interaction.is-empty { border-left-color: #7c8c88; }
+.raid-ui .raid-interaction.is-empty .raid-interaction-state { color: #919d98; }
+.raid-interaction.is-error { border-left-color: #dd9077; }
+.raid-ui .raid-interaction.is-error .raid-interaction-key { border-color: #c88874; color: #efaa91; }
+.raid-ui .raid-interaction.is-error .raid-prompt { color: #efb8a4; }
+.raid-extraction-panel { position: absolute; right: 3%; top: 7%; min-width: 260px; max-width: 440px; padding: 13px 17px 15px 17px; background-color: rgba(12, 22, 22, 0.88); border-width: 1px; border-color: rgba(133, 195, 178, 0.22); border-right-width: 2px; border-right-color: #98ccba; opacity: 0; translate: 5px 0; transition-property: opacity, translate; transition-duration: 0.18s; }
+.raid-extraction-panel.is-visible { opacity: 1; translate: 0 0; }
+.raid-ui .raid-extraction { margin: 0; font-size: 16px; letter-spacing: 2px; -unity-text-align: middle-right; color: #c0e5d7; -unity-font-definition: url("../../UI Toolkit/Fonts/Roboto-Bold.ttf"); }
+.raid-extraction-track { height: 3px; margin-top: 12px; background-color: rgba(161, 204, 187, 0.15); }
+.raid-extraction-fill { height: 3px; width: 0; background-color: #b0dec9; transition-property: width; transition-duration: 0.12s; transition-timing-function: linear; }
+.raid-receipt { position: absolute; right: 3%; bottom: 7%; min-width: 210px; padding: 11px 16px; background-color: rgba(12, 22, 22, 0.88); border-left-width: 2px; border-left-color: #a4c3aa; opacity: 0; translate: 8px 0; transition-property: opacity, translate; transition-duration: 0.2s; }
+.raid-receipt.is-visible { opacity: 1; translate: 0 0; }
+.raid-ui .raid-receipt-caption { margin: 0 0 6px 0; color: #92b09c; font-size: 10px; letter-spacing: 3px; }
+.raid-ui .raid-receipt-copy { margin: 0; color: #dce9da; font-size: 14px; letter-spacing: 1px; }
 .raid-overlay { position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; justify-content: center; background-color: rgba(7, 8, 10, 0.6); display: none; }
 .raid-window { width: 620px; padding: 32px; background-color: rgba(9, 10, 13, 0.96); border-width: 1px; border-color: rgba(255, 255, 255, 0.14); border-top-width: 3px; border-top-color: #FFE11A; border-radius: 0; }
 .raid-inventory-window { width: 94%; height: 90%; padding: 24px; background-color: rgba(7, 8, 10, 0.96); border-width: 1px; border-color: rgba(255, 255, 255, 0.1); border-top-width: 3px; border-top-color: #FFE11A; border-radius: 0; }

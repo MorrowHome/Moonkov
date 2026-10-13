@@ -29,6 +29,12 @@ namespace Unity.MP_FPS
         private int m_OpenedLootId=-1;
         private Label m_InventoryTitle;
         private Label m_Bag, m_Timer, m_Clock, m_Prompt, m_Exit, m_ResultText, m_SaveStatus;
+        private VisualElement m_Interaction, m_InteractionDetails, m_ExtractionPanel, m_ExtractionTrack, m_ExtractionFill, m_Receipt;
+        private Label m_InteractionKey, m_InteractionState, m_InteractionRange, m_ReceiptText;
+        private int m_FeedbackRaid;
+        private int3 m_PreviousSupplies, m_ReceiptSupplies;
+        private float m_ReceiptUntil;
+        private bool m_ReceiptQueued;
         private Button m_Deploy;
         private bool m_WasSettled;
         private float m_RefreshTimer;
@@ -71,6 +77,13 @@ namespace Unity.MP_FPS
             m_Status = m_Root.Q("raidStatus"); m_Timer = m_Root.Q<Label>("raidTimer"); m_Bag = m_Root.Q<Label>("raidBag");
             m_Clock = m_Root.Q<Label>("raidClock");
             m_Exit = m_Root.Q<Label>("raidExtraction"); m_Prompt = m_Root.Q<Label>("raidPrompt");
+            m_Interaction = m_Root.Q("raidInteraction"); m_InteractionDetails = m_Root.Q("raidInteractionDetails");
+            m_InteractionKey = m_Root.Q<Label>("raidInteractionKey");
+            m_InteractionState = m_Root.Q<Label>("raidInteractionState"); m_InteractionRange = m_Root.Q<Label>("raidInteractionRange");
+            m_ExtractionPanel = m_Root.Q("raidExtractionPanel"); m_ExtractionTrack = m_Root.Q("raidExtractionTrack");
+            m_ExtractionFill = m_Root.Q("raidExtractionFill");
+            m_Receipt = m_Root.Q("raidReceipt"); m_ReceiptText = m_Root.Q<Label>("raidReceiptText");
+            m_FeedbackRaid = 0; m_ReceiptUntil = 0; m_ReceiptQueued = false; m_ReceiptSupplies = default;
             m_Result = m_Root.Q("raidResult"); m_ResultText = m_Root.Q<Label>("raidResultText"); m_SaveStatus = m_Root.Q<Label>("raidSaveStatus");
             m_Deploy = m_Root.Q<Button>("raidDeploy"); m_Deploy.clicked += Deploy;
             m_LoadoutPanel = m_Root.Q("raidLoadout");
@@ -291,6 +304,10 @@ namespace Unity.MP_FPS
                 }
             }
             // Input is sampled every frame; presentation text refreshes at 10 Hz.
+            bool interactionVisible = alive && ready && !settled && !m_InventoryVisible &&
+                !m_InventoryRequestPending && !GameSettings.Instance.IsPauseMenuOpen &&
+                UnityEngine.Cursor.lockState == CursorLockMode.Locked;
+            if (!interactionVisible) m_Interaction.EnableInClassList("is-visible", false);
             m_RefreshTimer -= Time.deltaTime;
             if (m_RefreshTimer > 0) return;
             m_RefreshTimer = 0.1f;
@@ -301,6 +318,7 @@ namespace Unity.MP_FPS
             MoonkovLocalization.Set(m_Clock, clock != null && clock.IsSynchronized ? ExpeditionClock.Display(clock.TotalHours) : "");
             int count = m_Snapshot.Dust + m_Snapshot.Alloy + m_Snapshot.Cells;
             if (count != m_PreviousCount) { m_PreviousCount = count; m_RevealUntil = Time.unscaledTime + 4; }
+            RefreshSupplyReceipt(ready && !settled);
             bool check = Keyboard.current != null && Keyboard.current.hKey.isPressed;
             bool status = PlayerPrefs.GetInt("Moonkov.AlwaysShowHUD", 0) != 0 || check || Time.unscaledTime < m_RevealUntil || m_Snapshot.TimeLeft < 60;
             m_Status.style.display = !settled && status ? DisplayStyle.Flex : DisplayStyle.None;
@@ -315,10 +333,13 @@ namespace Unity.MP_FPS
             }
             bool deathBag=nearest>=RaidLootContainers.FirstDeathBagId;
             bool empty=deathBag ? deathBags.Bags[nearest].Empty : nearest>=0 && (m_Snapshot.TakenMask & (1u<<nearest))!=0;
-            MoonkovLocalization.Set(m_Prompt, Time.unscaledTime<m_LootErrorUntil ? "Cannot reach this container. Move closer with a clear line of sight."
-                : nearest < 0 || settled || m_InventoryVisible ? "" :
-                    (deathBag ? MoonkovLocalization.Text("[E]  SEARCH FALLEN EXPEDITION") : MoonkovLocalization.Format($"[E]  OPEN SUPPLY CACHE / {nearest+1:00}")) +
-                    (empty ? MoonkovLocalization.Text(" / EMPTY") : ""));
+            RefreshInteraction(nearest, distance, deathBag, empty, interactionVisible);
+            bool extracting = alive && !settled && m_Snapshot.ExtractionRemaining >= 0;
+            m_ExtractionPanel.EnableInClassList("is-visible", alive && !settled && (extracting || check));
+            m_ExtractionTrack.style.display = extracting ? DisplayStyle.Flex : DisplayStyle.None;
+            if (extracting)
+                m_ExtractionFill.style.width = Length.Percent(100 * Mathf.Clamp01(1 - m_Snapshot.ExtractionRemaining / MoonRaidMap.Active.ExtractionSeconds));
+            else m_ExtractionFill.style.width = Length.Percent(0);
             if (alive && !settled)
             {
                 Vector3 delta = MoonRaidMap.Active.ExtractionPosition - position;
@@ -333,6 +354,73 @@ namespace Unity.MP_FPS
                     : m_Snapshot.SaveState == RaidSaveState.Retrying ? "Waiting to save. Retrying..." : "Saving raid results...");
                 RenderResult();
             }
+        }
+
+        private void RefreshInteraction(int nearest, float distance, bool deathBag, bool empty, bool allowed)
+        {
+            bool error = Time.unscaledTime < m_LootErrorUntil;
+            bool visible = allowed && (nearest >= 0 || error);
+            m_Interaction.EnableInClassList("is-visible", visible);
+            if (!visible) return;
+            m_Interaction.EnableInClassList("is-error", error);
+            m_Interaction.EnableInClassList("is-empty", !error && empty);
+            MoonkovLocalization.Set(m_InteractionKey, error ? "!" : "E");
+            m_InteractionDetails.style.display = error ? DisplayStyle.None : DisplayStyle.Flex;
+            if (error)
+            {
+                MoonkovLocalization.Set(m_Prompt, "Cannot reach this container. Move closer with a clear line of sight.");
+                return;
+            }
+            // Reuse the localized action wording; the physical key now has its own visual.
+            string prompt = deathBag ? MoonkovLocalization.Text("[E]  SEARCH FALLEN EXPEDITION")
+                : MoonkovLocalization.Format($"[E]  OPEN SUPPLY CACHE / {nearest + 1:00}");
+            if (prompt.StartsWith("[E]", System.StringComparison.Ordinal)) prompt = prompt.Substring(3).TrimStart();
+            MoonkovLocalization.Set(m_Prompt, prompt);
+            MoonkovLocalization.Set(m_InteractionState, empty ? "EMPTY" : "CONTENTS");
+            MoonkovLocalization.Set(m_InteractionRange, $"{distance:0.0} m");
+        }
+
+        private void RefreshSupplyReceipt(bool active)
+        {
+            int3 supplies = new int3(m_Snapshot.Dust, m_Snapshot.Alloy, m_Snapshot.Cells);
+            if (m_FeedbackRaid != m_Snapshot.RaidId || !active)
+            {
+                m_FeedbackRaid = m_Snapshot.RaidId;
+                m_PreviousSupplies = supplies;
+                m_ReceiptSupplies = default; m_ReceiptQueued = false; m_ReceiptUntil = 0;
+            }
+            else
+            {
+                // Only server snapshot increases earn a receipt. Opening or clicking a cache is not a pickup.
+                int3 gained = math.max(supplies - m_PreviousSupplies, 0);
+                m_PreviousSupplies = supplies;
+                if (math.any(gained > 0))
+                {
+                    if (Time.unscaledTime >= m_ReceiptUntil && !m_ReceiptQueued) m_ReceiptSupplies = default;
+                    m_ReceiptSupplies += gained;
+                    m_ReceiptUntil = Time.unscaledTime + 3.2f;
+                    m_ReceiptQueued = m_InventoryVisible;
+                    string text = "";
+                    AppendReceipt(ref text, m_ReceiptSupplies.x, "Moon dust");
+                    AppendReceipt(ref text, m_ReceiptSupplies.y, "Lunar alloy");
+                    AppendReceipt(ref text, m_ReceiptSupplies.z, "Energy cell");
+                    MoonkovLocalization.Set(m_ReceiptText, text);
+                }
+            }
+            if (m_ReceiptQueued && !m_InventoryVisible)
+            {
+                m_ReceiptQueued = false;
+                m_ReceiptUntil = Time.unscaledTime + 3.2f;
+            }
+            m_Receipt.EnableInClassList("is-visible", active && !m_InventoryVisible &&
+                !GameSettings.Instance.IsPauseMenuOpen && Time.unscaledTime < m_ReceiptUntil);
+        }
+
+        private static void AppendReceipt(ref string text, int amount, string item)
+        {
+            if (amount <= 0) return;
+            if (text.Length > 0) text += "\n";
+            text += $"+{amount}  {MoonkovLocalization.Text(item)}";
         }
 
         private bool RequestLoot(int lootId)

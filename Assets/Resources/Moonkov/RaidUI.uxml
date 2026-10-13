@@ -8,8 +8,28 @@
             <ui:Label name="raidBag" class="raid-copy" />
         </ui:VisualElement>
         <ui:Label name="raidOxygenWarning" class="raid-oxygen-warning" picking-mode="Ignore" />
-        <ui:Label name="raidPrompt" class="raid-prompt" picking-mode="Ignore" />
-        <ui:Label name="raidExtraction" class="raid-extraction" picking-mode="Ignore" />
+        <ui:VisualElement class="raid-interaction-anchor" picking-mode="Ignore">
+            <ui:VisualElement name="raidInteraction" class="raid-interaction" picking-mode="Ignore">
+                <ui:Label name="raidInteractionKey" text="E" class="raid-interaction-key" picking-mode="Ignore" />
+                <ui:VisualElement class="raid-interaction-copy" picking-mode="Ignore">
+                    <ui:Label name="raidPrompt" class="raid-prompt" picking-mode="Ignore" />
+                    <ui:VisualElement name="raidInteractionDetails" class="raid-interaction-details" picking-mode="Ignore">
+                        <ui:Label name="raidInteractionState" class="raid-interaction-state" picking-mode="Ignore" />
+                        <ui:Label name="raidInteractionRange" class="raid-interaction-range" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="raidExtractionPanel" class="raid-extraction-panel" picking-mode="Ignore">
+            <ui:Label name="raidExtraction" class="raid-extraction" picking-mode="Ignore" />
+            <ui:VisualElement name="raidExtractionTrack" class="raid-extraction-track" picking-mode="Ignore">
+                <ui:VisualElement name="raidExtractionFill" class="raid-extraction-fill" picking-mode="Ignore" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="raidReceipt" class="raid-receipt" picking-mode="Ignore">
+            <ui:Label text="CARGO" class="raid-receipt-caption" picking-mode="Ignore" />
+            <ui:Label name="raidReceiptText" class="raid-receipt-copy" picking-mode="Ignore" />
+        </ui:VisualElement>
         <ui:VisualElement name="raidInventory" class="raid-overlay">
             <ui:VisualElement class="raid-inventory-window">
                 <ui:VisualElement class="raid-inventory-header">
