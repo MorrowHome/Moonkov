@@ -25,6 +25,15 @@ namespace Unity.MP_FPS.SpiderLab
         [SerializeField] private float cameraYawOffset;
         [SerializeField, Range(-65, 75)] private float cameraPitch = 18;
         [SerializeField, Range(2.8f, 8)] private float cameraDistance = 5;
+        [Header("姿态与步态")]
+        [SerializeField] private PredictiveFeet.GaitSettings gait = new PredictiveFeet.GaitSettings();
+        [Header("脱困")]
+        [SerializeField, Range(.2f, 3)] private float stuckDelay = .75f;
+        [SerializeField, Range(.05f, .5f)] private float stuckDistance = .18f;
+        [SerializeField, Range(.3f, 3)] private float escapeCooldown = 1.2f;
+        [SerializeField, Range(90, 900)] private float turnSpeed = 540;
+        [Header("液态外观 / 展开后可实时调节")]
+        [SerializeField] private SpiderFluidSettings fluid = new SpiderFluidSettings();
         private SurfaceMotor m_Motor;
         private PredictiveFeet m_Feet;
         private SpiderPresentation m_Presentation;
@@ -43,6 +52,7 @@ namespace Unity.MP_FPS.SpiderLab
         public SpiderPresentation Presentation => m_Presentation;
         public SpiderPresentation.Look Appearance => appearance;
         public bool ShowContactMarkers => showContactMarkers;
+        public SpiderFluidSettings FluidSettings => fluid;
 
         private void OnEnable()
         {
@@ -51,7 +61,7 @@ namespace Unity.MP_FPS.SpiderLab
             if (previewPlayer) previewPlayer.SetActive(false);
             m_Motor = new SurfaceMotor(m_Spawn, m_SpawnRotation, surfaceMask);
             m_StuckOrigin = m_Spawn;
-            m_Feet = new PredictiveFeet(surfaceMask); m_Feet.Reset(m_Motor.Current);
+            m_Feet = new PredictiveFeet(surfaceMask) { Settings = gait }; m_Feet.Reset(m_Motor.Current);
             m_View = new SpiderCharacterView(observerCamera, m_Motor.Current, surfaceMask, cameraYawOffset, cameraPitch, cameraDistance);
             m_Presentation = new SpiderPresentation(transform, surfaceMask);
             m_Presentation.SetAppearance(appearance, showContactMarkers);
@@ -67,8 +77,10 @@ namespace Unity.MP_FPS.SpiderLab
             m_RunClock += dt;
             if (keyboard != null)
             {
+                if (keyboard.f2Key.wasPressedThisFrame && m_Presentation.Fluid != null)
+                    fluid.heavy = !fluid.heavy;
                 if (keyboard.f3Key.wasPressedThisFrame && m_Presentation.Fluid != null)
-                    m_Presentation.Fluid.AttractionEnabled = !m_Presentation.Fluid.AttractionEnabled;
+                    fluid.attraction = !fluid.attraction;
                 if (keyboard.f4Key.wasPressedThisFrame) showContactMarkers = !showContactMarkers;
                 if (keyboard.f5Key.wasPressedThisFrame) appearance = (SpiderPresentation.Look)(((int)appearance + 1) % 4);
                 if (keyboard.f6Key.wasPressedThisFrame) automatic = !automatic;
@@ -113,6 +125,7 @@ namespace Unity.MP_FPS.SpiderLab
 
         public void Simulate(Vector2 input, float requestedSpeed, float yaw, float dt, Vector3? worldIntent = null)
         {
+            m_Feet.Settings = gait;
             // Limit distance per gait tick as well as time: high speed must not carry the hips
             // past a foot's reach before the scheduler gets its next opportunity to plant.
             float maxDt = Mathf.Min(.016f, .055f / Mathf.Max(1, requestedSpeed));
@@ -128,7 +141,7 @@ namespace Unity.MP_FPS.SpiderLab
                     worldIntent = Quaternion.FromToRotation(previousUp, pose.Up) * worldIntent.Value;
                     previousUp = pose.Up;
                     yaw = worldIntent.Value.sqrMagnitude > .001f ? Mathf.Clamp(Vector3.SignedAngle(pose.Forward,
-                        worldIntent.Value, pose.Up) / (dt / steps), -540, 540) : 0;
+                        worldIntent.Value, pose.Up) / (dt / steps), -turnSpeed, turnSpeed) : 0;
                     var basis = pose.Rotation * Quaternion.AngleAxis(m_Motor.Transitioning ? 0 : yaw * dt / steps, Vector3.up);
                     input = new Vector2(Vector3.Dot(worldIntent.Value, basis * Vector3.right),
                         Vector3.Dot(worldIntent.Value, basis * Vector3.forward));
@@ -145,7 +158,7 @@ namespace Unity.MP_FPS.SpiderLab
                 }
                 else
                 {
-                    if (wasDetached) { m_Feet.EndFold(m_Motor.Current); m_EscapeCooldown = 1.2f; }
+                    if (wasDetached) { m_Feet.EndFold(m_Motor.Current); m_EscapeCooldown = escapeCooldown; }
                     m_Feet.Tick(m_Motor, input, constrainedSpeed, yaw, dt / steps);
                 }
             }
@@ -158,7 +171,7 @@ namespace Unity.MP_FPS.SpiderLab
             if (m_Motor == null || m_Motor.Detached) return;
             m_Motor.Detach(m_LastWorldIntent);
             m_Feet.BeginFold(); m_Hold = false;
-            m_StuckTime = 0; m_EscapeCooldown = 1.2f; m_StuckOrigin = m_Motor.Current.Position;
+            m_StuckTime = 0; m_EscapeCooldown = escapeCooldown; m_StuckOrigin = m_Motor.Current.Position;
         }
 
         private void DetectStuck(Vector2 input, float dt)
@@ -166,16 +179,22 @@ namespace Unity.MP_FPS.SpiderLab
             m_EscapeCooldown = Mathf.Max(0, m_EscapeCooldown - dt);
             if (!automaticUnstick || m_Motor.Detached || m_EscapeCooldown > 0 || input.sqrMagnitude < .04f)
             { m_StuckTime = 0; m_StuckOrigin = m_Motor.Current.Position; return; }
-            if (Vector3.Distance(m_StuckOrigin, m_Motor.Current.Position) > .18f)
+            if (Vector3.Distance(m_StuckOrigin, m_Motor.Current.Position) > stuckDistance)
             { m_StuckTime = 0; m_StuckOrigin = m_Motor.Current.Position; return; }
             m_StuckTime += dt;
-            if (m_StuckTime >= .75f) Escape();
+            if (m_StuckTime >= stuckDelay) Escape();
         }
 
         private void Draw(float dt)
         {
             transform.SetPositionAndRotation(m_Motor.Current.Position, m_Motor.Current.Rotation);
             m_Presentation.SetAppearance(appearance, showContactMarkers);
+            if (m_Presentation.Fluid != null)
+            {
+                m_Presentation.Fluid.Settings = fluid;
+                m_Presentation.Fluid.Predatory = fluid.heavy;
+                m_Presentation.Fluid.AttractionEnabled = fluid.attraction;
+            }
             m_Presentation.Draw(m_Motor, m_Feet, stage, dt);
             if (observerCamera && !m_FreeObserver)
             {
@@ -219,7 +238,8 @@ namespace Unity.MP_FPS.SpiderLab
                 $"IK contact error {m_Presentation.MaxContactError:F3} m    Leg obstacles {m_Presentation.LegObstructions}\n" +
                 $"Body blocks {m_Motor.Blocked}    Toe blocks {m_Feet.ObstructedSwings}\n\n" +
                 $"Emergency escapes {m_Motor.Escapes}   = Fold / detach / land\n" +
-                $"F3 Fluid attraction {(m_Presentation.Fluid?.AttractionEnabled == false ? "OFF" : "ON")}   F4 Contact markers\n" +
+                $"F2 Fluid {(m_Presentation.Fluid?.Predatory == false ? "ORIGINAL" : "HEAVY")}   F3 Attraction {(m_Presentation.Fluid?.AttractionEnabled == false ? "OFF" : "ON")}\n" +
+                "F4 Contact markers\n" +
                 "F5 Legacy/Carapace/Liquid/Fluid\n" +
                 "F6 Auto/Manual   F7 Player/Follow   F8 Body/Feet/Ribs/Canopy\n" +
                 "F9 Slow   F10 Reset   F11 Reverse   F12 Stop\n" +

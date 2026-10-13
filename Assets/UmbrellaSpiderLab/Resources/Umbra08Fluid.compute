@@ -15,7 +15,9 @@ struct Particle { float3 position; float pad0; float3 velocity; float pad1; };
 struct Obstacle { float4x4 toBox; float4x4 fromBox; float4 halfSize; };
 StructuredBuffer<Seed> _Seeds;
 StructuredBuffer<float4x4> _Bones, _PreviousBones;
+StructuredBuffer<float4> _RestCentres;
 StructuredBuffer<Obstacle> _Obstacles;
+StructuredBuffer<float4> _LinkIndices, _LinkLengths;
 StructuredBuffer<Particle> _Input;
 RWStructuredBuffer<Particle> _Output;
 RWStructuredBuffer<int> _Heads, _Next;
@@ -23,25 +25,50 @@ RWStructuredBuffer<float> _Densities;
 RWTexture3D<uint> _Accum;
 RWTexture3D<float> _WriteVolume;
 Texture3D<float> _ReadVolume;
-int _ParticleCount, _GridSide, _VolumeSide, _ObstacleCount;
-float _Step, _FrameDt, _Attraction;
-float3 _Gravity, _InitialVelocity;
+int _ParticleCount, _GridSide, _VolumeSide, _ObstacleCount, _GuideKind;
+float _HalfVolume, _CollisionRadius;
+float _Step, _FrameDt, _Attraction, _Predatory;
+float3 _Gravity, _InitialVelocity, _CarrierVelocity;
+float4 _Thickness;
+float _LegAsymmetry, _ThicknessVariation, _LiquidMass, _MotionTrail, _FreeFlowRadius;
+float _BodyAttraction, _FootAttraction, _BodyDamping, _FootDamping, _Viscosity, _Pressure, _Cohesion;
+float _BondDensity, _BreakLength, _BreakStretch, _BondTension, _BondDamping;
 float4x4 _PreviousToCurrent;
-static const float HalfVolume = 2.8;
+
 static const float Support = .13;
 static const float RestDensity = 11.2;
 
 float3 Target(Seed seed, bool previous)
 {
-    float3 p = 0;
+    float3 p = 0, centre = 0;
     [unroll] for (int j = 0; j < 4; j++)
     {
+        if (seed.weights[j] <= 0) continue;
         int bone = (int)seed.bones[j];
         p += mul(previous ? _PreviousBones[bone] : _Bones[bone], seed.rest).xyz * seed.weights[j];
+        centre += mul(previous ? _PreviousBones[bone] : _Bones[bone], _RestCentres[bone]).xyz * seed.weights[j];
     }
+    float leg = floor((seed.bones.y - 1) / 11);
+    float segment = ((int)seed.bones.y - 1) % 11 + seed.weights.z / max(.001, 1 - seed.weights.x);
+    float asymmetry = 1 - _LegAsymmetry * (1 - frac(sin(leg * 19.31 + 3.7) * 173.13));
+    float limb = lerp(_Thickness.y, _Thickness.z, smoothstep(0, 5, segment));
+    limb = lerp(limb, _Thickness.w, smoothstep(6, 10, segment));
+    // Distinct mantle, accumulated roots/joints and narrowed shins. Each leg
+    // has a different retained cross-section instead of eight identical hoses.
+    limb *= asymmetry * (1 - _ThicknessVariation + _ThicknessVariation * sin(segment * 1.7 + leg * 2.3));
+    float mantle = _Thickness.x * (1 + _ThicknessVariation * sin(seed.rest.x * 9 + seed.rest.z * 6));
+    float profile = lerp(limb, mantle, smoothstep(.25, .75, seed.weights.x));
+    if (_GuideKind == 1)
+    {
+        float t = saturate(seed.bones.x / 96);
+        profile = seed.bones.w == 1 ? _Thickness.x : seed.bones.z > .5 ? _Thickness.w :
+            lerp(lerp(_Thickness.y, _Thickness.z, smoothstep(0, .55, t)), _Thickness.w, smoothstep(.75, 1, t));
+        profile *= 1 + _ThicknessVariation * sin(seed.rest.z * 13 + seed.rest.x * 7);
+    }
+    p = lerp(p, centre + (p - centre) * profile, _Predatory);
     return previous ? mul(_PreviousToCurrent, float4(p, 1)).xyz : p;
 }
-int3 Cell(float3 p) { return clamp((int3)floor((p + HalfVolume) / Support), 0, _GridSide - 1); }
+int3 Cell(float3 p) { return clamp((int3)floor((p + _HalfVolume) / Support), 0, _GridSide - 1); }
 int CellIndex(int3 p) { return (p.z * _GridSide + p.y) * _GridSide + p.x; }
 float Kernel(float r2) { float w = max(0, 1 - r2 / (Support * Support)); return w * w * w; }
 
@@ -87,7 +114,8 @@ float Kernel(float r2) { float w = max(0, 1 - r2 / (Support * Support)); return 
 {
     if (id >= _ParticleCount) return;
     Particle p = _Input[id]; int3 cell = Cell(p.position);
-    float pressure = max(0, _Densities[id] / RestDensity - 1);
+    float densityTarget = RestDensity / lerp(1, _LiquidMass, _Predatory);
+    float pressure = max(0, _Densities[id] / densityTarget - 1);
     float3 force = _Gravity, sharedVelocity = 0; float sharedWeight = 0;
     for (int z = -1; z <= 1; z++) for (int y = -1; y <= 1; y++) for (int x = -1; x <= 1; x++)
     {
@@ -102,10 +130,11 @@ float Kernel(float r2) { float w = max(0, 1 - r2 / (Support * Support)); return 
                 if (r > .0001 && r < Support)
                 {
                     float w = 1 - r / Support;
-                    float otherPressure = max(0, _Densities[neighbour] / RestDensity - 1);
+                    float otherPressure = max(0, _Densities[neighbour] / densityTarget - 1);
                     // Symmetric pressure, short-range cohesion and XSPH viscosity: actual
                     // neighbour interaction, rather than independent spring-skinned vertices.
-                    force += (d / r) * ((pressure + otherPressure) * 80 * w * w - 5 * w * (r / Support));
+                    force += (d / r) * ((pressure + otherPressure) * lerp(80, _Pressure, _Predatory) * w * w -
+                                       lerp(5, _Cohesion, _Predatory) * w * (r / Support));
                     sharedVelocity += other.velocity * w; sharedWeight += w;
                 }
             }
@@ -113,20 +142,38 @@ float Kernel(float r2) { float w = max(0, 1 - r2 / (Support * Support)); return 
         }
     }
     Seed seed = _Seeds[id]; float3 target = Target(seed, false);
+    float4 links = _LinkIndices[id], restLengths = _LinkLengths[id];
+    [unroll] for (int link = 0; link < 4; link++)
+    {
+        if (links[link] < 0) continue;
+        Particle other = _Input[(uint)links[link]]; float3 delta = other.position - p.position;
+        float length = max(.001, sqrt(dot(delta, delta)));
+        float breakLength = max(_BreakLength, restLengths[link] * _BreakStretch);
+        if (length >= breakLength) continue;
+        float3 direction = delta / length;
+        float tension = (length - restLengths[link]) * _BondTension + dot(other.velocity - p.velocity, direction) * _BondDamping;
+        // Sparse, weak, damped extensional bonds bridge separating clumps. The
+        // links cease at the same extension where their rendered neck breaks.
+        force += _Predatory * _BondDensity * direction * clamp(tension, -3, 8) * (1 - smoothstep(breakLength * .65, breakLength, length));
+    }
     float3 targetVelocity = (target - Target(seed, true)) / max(_FrameDt, .001);
     float3 offset = target - p.position;
     float distance = length(offset);
     // A small free band permits pooling and rearrangement around the skeleton.
     // Attraction grows outside it; switching it off leaves gravity/pressure/viscosity active.
-    float distal = saturate((((int)seed.bones.y - 1) % 11 - 4) / 5.0) * (1 - seed.weights.x);
+    float distal = _GuideKind == 1 ? seed.bones.z : saturate((((int)seed.bones.y - 1) % 11 - 4) / 5.0) * (1 - seed.weights.x);
     // Keep the newly allocated shin/toe volume with fast moving distal bones.
     // The mantle has weaker attraction and can still pool, sag and stretch visibly.
-    float pull = lerp(280, 650, distal), damping = lerp(8, 18, distal);
-    force += _Attraction * (offset * max(0, 1 - .035 / max(distance, .0001)) * pull +
+    float pull = lerp(lerp(280, _BodyAttraction, _Predatory), lerp(650, _FootAttraction, _Predatory), distal);
+    // Critically damped tissue settles without the original rubber-like overshoot.
+    // Distal guidance stays strong so the accepted shin/toe volume is retained.
+    float damping = lerp(lerp(8, _BodyDamping, _Predatory), lerp(18, _FootDamping, _Predatory), distal);
+    force += _Attraction * (offset * max(0, 1 - lerp(.035, _FreeFlowRadius, _Predatory) / max(distance, .0001)) * pull +
                            (targetVelocity - p.velocity) * damping);
     force *= min(1, lerp(240, 420, distal) / max(length(force), .001));
     p.velocity += force * _Step;
-    if (sharedWeight > .001) p.velocity = lerp(p.velocity, sharedVelocity / sharedWeight, 1 - exp(-14 * _Step));
+    if (sharedWeight > .001) p.velocity = lerp(p.velocity, sharedVelocity / sharedWeight,
+        1 - exp(-lerp(14, _Viscosity, _Predatory) * _Step));
     p.velocity *= exp(-.35 * _Step);
     p.velocity *= min(1, lerp(28, 40, distal) / max(length(p.velocity), .001));
     p.position += p.velocity * _Step;
@@ -136,7 +183,7 @@ float Kernel(float r2) { float w = max(0, 1 - r2 / (Support * Support)); return 
     {
         Obstacle box = _Obstacles[collider];
         float3 q = mul(box.toBox, float4(p.position, 1)).xyz;
-        float3 expanded = 1 + .055 / box.halfSize.xyz;
+        float3 expanded = 1 + _CollisionRadius / box.halfSize.xyz;
         if (all(abs(q) < expanded))
         {
             float3 gap = (expanded - abs(q)) * box.halfSize.xyz;
@@ -158,7 +205,7 @@ float Kernel(float r2) { float w = max(0, 1 - r2 / (Support * Support)); return 
             p.velocity -= normal * min(0, dot(normal, p.velocity)); p.velocity *= .88;
         }
     }
-    float3 clamped = clamp(p.position, -HalfVolume + .06, HalfVolume - .06);
+    float3 clamped = clamp(p.position, -_HalfVolume + .06, _HalfVolume - .06);
     if (any(clamped != p.position)) p.velocity *= .2;
     p.position = clamped; _Output[id] = p;
 }
@@ -166,17 +213,27 @@ float Kernel(float r2) { float w = max(0, 1 - r2 / (Support * Support)); return 
 {
     if (all(id < _VolumeSide)) _Accum[id] = 0;
 }
-[numthreads(64, 1, 1)] void Deposit(uint id : SV_DispatchThreadID)
+void Splat(float3 position, float mass)
 {
-    if (id >= _ParticleCount) return;
-    float3 grid = (_Input[id].position / (HalfVolume * 2) + .5) * _VolumeSide - .5;
+    float3 grid = (position / (_HalfVolume * 2) + .5) * _VolumeSide - .5;
     int3 baseCell = (int3)floor(grid); float3 f = frac(grid);
     for (int z = 0; z <= 1; z++) for (int y = 0; y <= 1; y++) for (int x = 0; x <= 1; x++)
     {
         int3 c = baseCell + int3(x, y, z); if (any(c < 0) || any(c >= _VolumeSide)) continue;
         float weight = (x ? f.x : 1 - f.x) * (y ? f.y : 1 - f.y) * (z ? f.z : 1 - f.z);
-        InterlockedAdd(_Accum[c], (uint)(weight * 65536));
+        InterlockedAdd(_Accum[c], (uint)(weight * mass * 65536));
     }
+}
+[numthreads(64, 1, 1)] void Deposit(uint id : SV_DispatchThreadID)
+{
+    if (id >= _ParticleCount) return;
+    Particle p = _Input[id]; float3 relative = p.velocity - _CarrierVelocity;
+    if (_Predatory < .5) { Splat(p.position, 1); return; }
+    float speed = length(relative);
+    float3 trail = relative / max(speed, .001) * min(_MotionTrail, speed * .016) * _Predatory;
+    // Share the configured effective mass between the centre and two trailing splats;
+    // sparse free drops lose the inflated spherical silhouette.
+    Splat(p.position, _LiquidMass * .6); Splat(p.position - trail, _LiquidMass * .2); Splat(p.position + trail, _LiquidMass * .2);
 }
 [numthreads(4, 4, 4)] void ResolveX(uint3 id : SV_DispatchThreadID)
 {

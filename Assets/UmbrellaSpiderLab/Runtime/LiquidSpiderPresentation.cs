@@ -48,6 +48,11 @@ namespace Unity.MP_FPS.SpiderLab
             }
         }
 
+        public void CopyRestCentres(Vector4[] centres)
+        {
+            for (int i = 0; i < m_Rest.Length; i++) centres[i] = new Vector4(m_Rest[i].x, m_Rest[i].y, m_Rest[i].z, 1);
+        }
+
         public LiquidSpiderPresentation(Transform parent, int mask)
         {
             m_Mask = mask;

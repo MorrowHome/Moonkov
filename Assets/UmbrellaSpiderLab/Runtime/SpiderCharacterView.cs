@@ -51,7 +51,7 @@ namespace Unity.MP_FPS.SpiderLab
             return m_Tangent;
         }
 
-        public void Draw(SurfaceMotor.Pose pose, bool automaticSurfaceFraming = false)
+        public void Draw(SurfaceMotor.Pose pose, bool automaticSurfaceFraming = false, float framingClearance = .25f)
         {
             if (!m_Camera) return;
             // Automated liquid previews inspect from below a ceiling instead of pushing the
@@ -63,6 +63,24 @@ namespace Unity.MP_FPS.SpiderLab
             float distance = m_Distance;
             if (Physics.SphereCast(target, .18f, backwards, out var hit, distance, m_Mask,
                 QueryTriggerInteraction.Ignore)) distance = Mathf.Max(.25f, hit.distance - .20f);
+            // Long bodies can place the inspection target beside a cabinet even when their
+            // head is clear. Optional creature framing searches a free orbit before accepting
+            // a close-up inside the mesh. Existing spider callers retain their original camera.
+            if (distance < framingClearance)
+            {
+                for (int i = 0; i < 8; i++)
+                {
+                    float offset = (i / 2 + 1) * 45 * (i % 2 == 0 ? 1 : -1);
+                    Quaternion candidate = Quaternion.Euler(pitch, m_Yaw + offset, 0);
+                    Vector3 direction = candidate * Vector3.back;
+                    float clearance = m_Distance;
+                    if (Physics.SphereCast(target, .18f, direction, out var obstruction, clearance, m_Mask,
+                        QueryTriggerInteraction.Ignore)) clearance = Mathf.Max(.25f, obstruction.distance - .20f);
+                    if (clearance <= distance) continue;
+                    distance = clearance; backwards = direction; rotation = candidate;
+                    if (distance >= framingClearance) break;
+                }
+            }
             m_Camera.transform.SetPositionAndRotation(target + backwards * distance, rotation);
         }
 

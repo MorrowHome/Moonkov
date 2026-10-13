@@ -5,6 +5,9 @@ Shader "SpiderLab/Umbra08 Particle Fluid Surface"
         _BaseColor("Liquid colour", Color) = (.035, .048, .055, 1)
         _Threshold("Fluid density isosurface", Range(.05, 1)) = .28
         _Smoothness("Liquid smoothness", Range(0, 1)) = .94
+        _HalfVolume("Fluid bounds half-size", Float) = 2.8
+        _VolumeResolution("Volume resolution", Float) = 96
+        _Predatory("Heavy viscous style", Range(0, 1)) = 1
         [HideInInspector] _DensityTex("Particle density volume", 3D) = "white" {}
     }
     SubShader
@@ -15,8 +18,10 @@ Shader "SpiderLab/Umbra08 Particle Fluid Surface"
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
         TEXTURE3D(_DensityTex); SAMPLER(sampler_DensityTex);
         CBUFFER_START(UnityPerMaterial)
-        half4 _BaseColor; float _Threshold; half _Smoothness;
+        half4 _BaseColor; float _Threshold; half _Smoothness; float _Predatory;
+        float _FilmVariation, _CoatMask, _CoatSmoothness, _HalfVolume, _VolumeResolution;
         CBUFFER_END
+        #include "Umbra08LiquidStyle.hlsl"
         struct Attributes { float4 positionOS : POSITION; UNITY_VERTEX_INPUT_INSTANCE_ID };
         struct Varyings { float4 positionCS : SV_POSITION; float3 positionWS : TEXCOORD0; UNITY_VERTEX_OUTPUT_STEREO };
         Varyings Vert(Attributes v)
@@ -24,15 +29,15 @@ Shader "SpiderLab/Umbra08 Particle Fluid Surface"
             UNITY_SETUP_INSTANCE_ID(v); Varyings o = (Varyings)0; UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
             o.positionWS = TransformObjectToWorld(v.positionOS.xyz); o.positionCS = TransformWorldToHClip(o.positionWS); return o;
         }
-        float DensityAt(float3 p) { return SAMPLE_TEXTURE3D_LOD(_DensityTex, sampler_DensityTex, p / 5.6 + .5, 0).r; }
+        float DensityAt(float3 p) { return SAMPLE_TEXTURE3D_LOD(_DensityTex, sampler_DensityTex, p / (_HalfVolume * 2) + .5, 0).r; }
         bool Trace(float3 origin, float3 direction, out float3 hit)
         {
             float3 safeDirection = direction + (abs(direction) < .00001) * .00001;
-            float3 a = (-2.8 - origin) / safeDirection, b = (2.8 - origin) / safeDirection;
+            float3 a = (-_HalfVolume - origin) / safeDirection, b = (_HalfVolume - origin) / safeDirection;
             float3 near = min(a, b), far = max(a, b);
             float entry = max(0, max(near.x, max(near.y, near.z))), exit = min(far.x, min(far.y, far.z));
             float t = entry + .001, previous = entry;
-            [loop] for (int i = 0; i < 240 && t <= exit; i++)
+            [loop] for (int i = 0; i < 1024 && t <= exit; i++)
             {
                 float3 p = origin + direction * t;
                 if (DensityAt(p) >= _Threshold)
@@ -45,13 +50,13 @@ Shader "SpiderLab/Umbra08 Particle Fluid Surface"
                     }
                     hit = origin + direction * high; return true;
                 }
-                previous = t; t += .042;
+                previous = t; t += lerp(.042, .020, _Predatory);
             }
             hit = 0; return false;
         }
         float3 FluidNormal(float3 p)
         {
-            float h = 5.6 / 96.0 * .65;
+            float h = _HalfVolume * 2 / _VolumeResolution * .65;
             float3 gradient = float3(DensityAt(p + float3(h,0,0)) - DensityAt(p - float3(h,0,0)),
                                     DensityAt(p + float3(0,h,0)) - DensityAt(p - float3(0,h,0)),
                                     DensityAt(p + float3(0,0,h)) - DensityAt(p - float3(0,0,h)));
@@ -104,9 +109,9 @@ Shader "SpiderLab/Umbra08 Particle Fluid Surface"
                 data.vertexLighting = VertexLighting(world, normal); data.shadowMask = half4(1,1,1,1);
                 data.normalizedScreenSpaceUV = GetNormalizedScreenSpaceUV(v.positionCS);
                 SurfaceData surface = (SurfaceData)0;
-                surface.albedo = _BaseColor.rgb; surface.smoothness = _Smoothness;
+                float3 local = TransformWorldToObject(world);
+                UmbraLiquidStyle(local, surface.albedo, surface.smoothness, surface.clearCoatMask, surface.clearCoatSmoothness);
                 surface.occlusion = surface.alpha = 1; surface.normalTS = half3(0,0,1);
-                surface.clearCoatMask = .85; surface.clearCoatSmoothness = .97;
                 FragmentOutput o; o.color = UniversalFragmentPBR(data, surface);
                 o.color.rgb = MixFog(o.color.rgb, ComputeFogFactor(TransformWorldToHClip(world).z));
                 o.depth = DeviceDepth(world); return o;

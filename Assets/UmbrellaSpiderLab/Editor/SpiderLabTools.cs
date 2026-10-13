@@ -420,12 +420,12 @@ namespace Unity.MP_FPS.SpiderLab.Editor
                 {
                     result.attachedFluid = fluid.SampleParticles();
                     CaptureComparison(result); CaptureCameraFile(Output + "/Fluid-Attached.png");
-                    fluid.AttractionEnabled = false; s_FluidPhase = 1;
+                    s_Actor.FluidSettings.attraction = false; s_FluidPhase = 1;
                 }
                 else if (s_FluidPhase == 1 && s_PlayTime > 1.7f)
                 {
                     result.releasedFluid = fluid.SampleParticles(); CaptureCameraFile(Output + "/Fluid-Released.png");
-                    fluid.AttractionEnabled = true; s_FluidPhase = 2;
+                    s_Actor.FluidSettings.attraction = true; s_FluidPhase = 2;
                 }
                 else if (s_FluidPhase == 2 && s_PlayTime > 2.9f)
                 {

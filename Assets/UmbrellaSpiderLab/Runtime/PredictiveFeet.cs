@@ -5,6 +5,18 @@ namespace Unity.MP_FPS.SpiderLab
     /// <summary>Eight independent collider-local anchors; gait grants steps without queueing the body.</summary>
     public sealed class PredictiveFeet
     {
+        [System.Serializable]
+        public sealed class GaitSettings
+        {
+            [Range(0, 30)] public float forwardLean = 19;
+            [Range(0, 10)] public float roll = 3;
+            [Range(0, .2f)] public float compression = .12f;
+            [Range(0, .1f)] public float bodyBob = .045f;
+            [Range(1, 4)] public float strideCycleDistance = 3;
+            [Range(.25f, .6f)] public float swingFraction = .40f;
+            [Range(.05f, .4f)] public float footLift = .18f;
+        }
+        public GaitSettings Settings { get; set; } = new GaitSettings();
         public enum ContactState { Stance, Swing, Recovery }
         public sealed class Foot
         {
@@ -70,17 +82,17 @@ namespace Unity.MP_FPS.SpiderLab
 
         // Body posture belongs before planning/IK: the roots really lean and compress while the
         // planted toes keep their collider anchors. It is not a late rotation of already-solved legs.
-        private static SurfaceMotor.Pose RunningPose(SurfaceMotor.Pose surface, Vector2 lean, float phase)
+        private SurfaceMotor.Pose RunningPose(SurfaceMotor.Pose surface, Vector2 lean, float phase)
         {
             float intensity = lean.magnitude;
             Vector3 direction = surface.Right * lean.x + surface.Forward * lean.y;
             Vector3 axis = Vector3.Cross(surface.Up, direction);
             var pose = surface;
-            float compression = (-.12f + .045f * Mathf.Cos(phase * Mathf.PI * 4)) * intensity;
+            float compression = (-Settings.compression + Settings.bodyBob * Mathf.Cos(phase * Mathf.PI * 4)) * intensity;
             pose.Position += surface.Up * compression + direction * .025f;
             if (axis.sqrMagnitude > .001f)
-                pose.Rotation = Quaternion.AngleAxis(19 * intensity, axis.normalized) * surface.Rotation;
-            pose.Rotation *= Quaternion.AngleAxis(Mathf.Sin(phase * Mathf.PI * 2) * 3 * intensity, Vector3.forward);
+                pose.Rotation = Quaternion.AngleAxis(Settings.forwardLean * intensity, axis.normalized) * surface.Rotation;
+            pose.Rotation *= Quaternion.AngleAxis(Mathf.Sin(phase * Mathf.PI * 2) * Settings.roll * intensity, Vector3.forward);
             return pose;
         }
 
@@ -122,9 +134,9 @@ namespace Unity.MP_FPS.SpiderLab
             float travelSpeed = speed * input.magnitude;
             // A complete cycle covers about three metres at running speed. Longer real segments
             // and forward touchdown bias let rear feet finish a visible push instead of shuffling.
-            m_CycleTime = Mathf.Clamp(3f / Mathf.Max(1, travelSpeed), .14f, .55f);
+            m_CycleTime = Mathf.Clamp(Settings.strideCycleDistance / Mathf.Max(1, travelSpeed), .14f, .55f);
             m_Phase = Mathf.Repeat(m_Phase + dt / m_CycleTime, 1);
-            float duration = m_CycleTime * .40f;
+            float duration = m_CycleTime * Settings.swingFraction;
             float supportTime = Mathf.Min(.13f, .85f / Mathf.Max(1, travelSpeed));
             Vector2 targetLean = input.normalized * Mathf.InverseLerp(1, 7, travelSpeed);
             m_Lean = Vector2.MoveTowards(m_Lean, targetLean, dt * 10);
@@ -318,7 +330,7 @@ namespace Unity.MP_FPS.SpiderLab
                 if (Vector3.Dot(hit.point - hip, radial) < .10f) continue;
                 float score = (hit.point - home).sqrMagnitude + Mathf.Max(0, futureReach - 1.15f) * .7f;
                 if (score >= bestScore) continue;
-                float lift = .18f;
+                float lift = Settings.footLift;
                 if (stepping != null)
                 {
                     bool clear = false;
