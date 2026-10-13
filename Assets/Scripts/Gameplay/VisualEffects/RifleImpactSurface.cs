@@ -26,6 +26,8 @@ namespace Unity.MP_FPS
 
         private static bool IsMetal(string name) => name.IndexOf("metal", System.StringComparison.OrdinalIgnoreCase) >= 0 ||
             name.IndexOf("steel", System.StringComparison.OrdinalIgnoreCase) >= 0 ||
+            // Matches both aluminium and aluminum in the authored MC00 material names.
+            name.IndexOf("alumin", System.StringComparison.OrdinalIgnoreCase) >= 0 ||
             name.IndexOf("alloy", System.StringComparison.OrdinalIgnoreCase) >= 0;
     }
 }
