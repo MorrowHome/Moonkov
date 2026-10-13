@@ -15,6 +15,29 @@ namespace Unity.MP_FPS.Moon.Editor
         private const string ScenePath = "Assets/MoonEnvironment/Scenes/MoonGameScene.unity";
         private const string ArtRoot = "Assets/MoonEnvironment/Art/Space/";
 
+        [MenuItem("Tools/Moon Environment/Apply readable game sky to selected material")]
+        public static void ApplyReadableSkyToSelectedMaterial()
+            => ApplyReadableGameSky(Selection.activeObject as Material);
+
+        public static void ApplyReadableGameSky(Material material)
+        {
+            if (EditorApplication.isPlayingOrWillChangePlaymode)
+                throw new InvalidOperationException("Exit Play before saving sky art direction.");
+            if (!material || !AssetDatabase.Contains(material) || !material.shader || material.shader.name != "MoonEnvironment/SpaceSky")
+                throw new InvalidOperationException("Select a saved MoonEnvironment/SpaceSky material.");
+            Undo.RecordObject(material, "Readable game sky");
+            material.SetFloat("_StarIntensity", .25f);
+            material.SetFloat("_StarsDayVisibility", .5f);
+            material.SetFloat("_StarPointBoost", 3f);
+            material.SetFloat("_MilkyWayIntensity", .3f);
+            material.SetFloat("_StarPeakRadiance", 4f);
+            // Artistic angular size only. Ephemeris direction, phase and rotation stay authoritative.
+            material.SetFloat("_EarthAngleScale", 4f);
+            material.SetFloat("_EarthBrightness", 1.35f);
+            EditorUtility.SetDirty(material);
+            AssetDatabase.SaveAssetIfDirty(material);
+        }
+
         [MenuItem("Tools/Moon Environment/Set Up Space Sky")]
         public static void SetUp()
         {

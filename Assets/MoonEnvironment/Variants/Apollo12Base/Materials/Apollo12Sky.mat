@@ -35,12 +35,16 @@ Material:
     m_Floats:
     - _AstronomicalSky: 0
     - _Daylight: 1
-    - _EarthBrightness: 1.2
+    - _EarthAngleScale: 4
+    - _EarthBrightness: 1.35
     - _EarthDiameter: 1.9
     - _EarthRotation: 30
-    - _StarIntensity: 0.025
+    - _MilkyWayIntensity: 0.3
+    - _StarIntensity: 0.25
+    - _StarPeakRadiance: 4
+    - _StarPointBoost: 3
     - _StarRotation: 0
-    - _StarsDayVisibility: 0
+    - _StarsDayVisibility: 0.5
     - _SunDiameter: 0.533
     - _SunVisible: 1
     m_Colors:
