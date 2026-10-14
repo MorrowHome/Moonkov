@@ -20,8 +20,8 @@ namespace Unity.MP_FPS
         public const string MainMenuSceneName = "MainMenu";
         public const string MenuPreviewSceneName = "GameScene";
         // Shared by offline/Host, remote clients and the dedicated server.
-        // The original MoonGameScene remains available as an authored fallback.
-        public const string GameSceneName = "Apollo12GameScene";
+        // Apollo12 and MoonGameScene remain available as authored fallbacks.
+        public const string GameSceneName = "TheophilusGameScene";
         static public GameConnection GameConnection { get; private set; }
 
         Task m_LoadingGame;
