@@ -68,6 +68,7 @@ Assets/Localization/Fonts/NotoSansCJKsc.asset filter=lfs diff=lfs merge=lfs -tex
 # Observed lunar DEM and Unity's binary TerrainData assets.
 *.TIF filter=lfs diff=lfs merge=lfs -text
 Assets/MoonEnvironment/Variants/Apollo12Base/Terrain/*.asset filter=lfs diff=lfs merge=lfs -text
+Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/Terrain/*.asset filter=lfs diff=lfs merge=lfs -text
 
 # Unity serializes empty values with trailing spaces. Preserve its generated format.
 *.meta whitespace=-blank-at-eol

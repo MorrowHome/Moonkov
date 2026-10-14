@@ -1,0 +1,408 @@
+{
+  "scene": "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/Scenes/Theophilus_Shoulder_Return_Study.unity",
+  "placement": {
+    "scene": "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/Scenes/Theophilus_Shoulder_Return_Study.unity",
+    "status": "placed_saved_and_entry_checked",
+    "buildings": [
+      {
+        "name": "EB05",
+        "source": "Assets/MoonEnvironment/Variants/MC00LightControlsFullV02/Prefabs/Apollo12MC00Candidate.prefab :: EB05_ROOT",
+        "prefab": "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/BuildingAdditionsBatch03/Prefabs/EB05_Theophilus_Placed.prefab",
+        "position": [
+          1700,
+          218.173859,
+          2295
+        ],
+        "yaw": -133.725067,
+        "sourceMeshes": 518,
+        "sourceColliders": 518,
+        "sourceLights": 5,
+        "sourceEntryRoutePreserved": true,
+        "sourceRoofRoomAndDoorHierarchyPreserved": true,
+        "nativeHeightMin": 212.130539,
+        "nativeHeightMax": 218.093857,
+        "pierCount": 8,
+        "maximumPierHeightM": 4.2348175,
+        "entryRouteWorld": [
+          1693.2511,
+          218.773865,
+          2283.88916
+        ],
+        "existingRampToe": [
+          1690.65527,
+          218.173843,
+          2279.61572
+        ],
+        "newTerrainToe": [
+          1683.935,
+          215.356888,
+          2268.553
+        ],
+        "connectionLengthM": 12.9440269,
+        "connectionMaximumLongitudinalSlopeDeg": 17.8988018,
+        "minimumSampledConnectionGroundClearanceM": 0.0249938965
+      },
+      {
+        "name": "EB07",
+        "source": "Assets/MoonEnvironment/Variants/MC00LightControlsFullV02/Prefabs/Apollo12MC00Candidate.prefab :: EB07_ROOT",
+        "prefab": "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/BuildingAdditionsBatch03/Prefabs/EB07_Theophilus_Placed.prefab",
+        "position": [
+          1745,
+          225.79248,
+          2400
+        ],
+        "yaw": -121.469009,
+        "sourceMeshes": 287,
+        "sourceColliders": 287,
+        "sourceLights": 5,
+        "sourceEntryRoutePreserved": true,
+        "sourceRoofRoomAndDoorHierarchyPreserved": true,
+        "nativeHeightMin": 219.735077,
+        "nativeHeightMax": 225.712479,
+        "pierCount": 8,
+        "maximumPierHeightM": 4.83876038,
+        "entryRouteWorld": [
+          1737.42383,
+          226.392487,
+          2392.025
+        ],
+        "existingRampToe": [
+          1733.98,
+          225.79248,
+          2388.4
+        ],
+        "newTerrainToe": [
+          1723.991,
+          221.6114,
+          2377.885
+        ],
+        "connectionLengthM": 14.503211,
+        "connectionMaximumLongitudinalSlopeDeg": 26.5781574,
+        "minimumSampledConnectionGroundClearanceM": 0.0249938965
+      }
+    ],
+    "existingLightButtons": 135,
+    "existingAirlocks": 1,
+    "newLightsKeptIndependent": 10,
+    "terrainEdited": false,
+    "oldPH01CourtyardCopied": false,
+    "screenshotsTaken": false,
+    "entryChecksPending": false
+  },
+  "entryChecks": {
+    "scene": "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/Scenes/Theophilus_Shoulder_Return_Study.unity",
+    "method": "Edit-mode native CharacterController collision probe copied from formal prefab; two new entry links only, no Play Mode or original A return rerun",
+    "capsuleHeight": 1.7,
+    "capsuleRadius": 0.28,
+    "capsuleStepOffset": 0.25,
+    "capsuleSlopeLimit": 45,
+    "entries": [
+      {
+        "building": "EB05",
+        "passed": true,
+        "failure": "",
+        "start": [
+          1683.41589,
+          215.247147,
+          2267.69824
+        ],
+        "targetInside": [
+          1694.80859,
+          218.773865,
+          2286.45313
+        ],
+        "actualInside": [
+          1694.78577,
+          218.793854,
+          2286.41553
+        ],
+        "actualFootHeight": 218.793854,
+        "interiorFloorHeight": 218.773865,
+        "horizontalTravelM": 21.9000835,
+        "moveSteps": 438
+      },
+      {
+        "building": "EB07",
+        "passed": true,
+        "failure": "",
+        "start": [
+          1723.30225,
+          221.5004,
+          2377.16
+        ],
+        "targetInside": [
+          1739.49011,
+          226.392487,
+          2394.2
+        ],
+        "actualInside": [
+          1739.45337,
+          226.412476,
+          2394.16113
+        ],
+        "actualFootHeight": 226.412476,
+        "interiorFloorHeight": 226.392487,
+        "horizontalTravelM": 23.4500523,
+        "moveSteps": 469
+      }
+    ],
+    "minimumA_RouteHorizontalColliderAabbGapM": 129.002579,
+    "oldLightButtonCount": 135,
+    "airlockCount": 1,
+    "screenshotsTaken": false,
+    "playing": false
+  },
+  "eightBuildingReadback": {
+    "project": "E:/UnityProjects/FPS_Template/Assets",
+    "scene": "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/Scenes/Theophilus_Shoulder_Return_Study.unity",
+    "reopened": true,
+    "dirty": false,
+    "playing": false,
+    "compiling": false,
+    "buildings": [
+      {
+        "name": "EB08_Theophilus_Placed",
+        "position": [
+          1615,
+          215.2827,
+          2240
+        ],
+        "sourceMeshes": 292,
+        "sourceColliders": 292,
+        "lights": 5,
+        "missingScripts": 0
+      },
+      {
+        "name": "EB03_Theophilus_Placed",
+        "position": [
+          1655,
+          216.505844,
+          2270
+        ],
+        "sourceMeshes": 344,
+        "sourceColliders": 344,
+        "lights": 5,
+        "missingScripts": 0
+      },
+      {
+        "name": "EB06_Theophilus_Placed",
+        "position": [
+          1665,
+          214.1177,
+          2220
+        ],
+        "sourceMeshes": 629,
+        "sourceColliders": 629,
+        "lights": 5,
+        "missingScripts": 0
+      },
+      {
+        "name": "EB01_Theophilus_Placed",
+        "position": [
+          1640,
+          218.732254,
+          2335
+        ],
+        "sourceMeshes": 260,
+        "sourceColliders": 260,
+        "lights": 5,
+        "missingScripts": 0
+      },
+      {
+        "name": "EB02_Theophilus_Placed",
+        "position": [
+          1655,
+          219.433014,
+          2395
+        ],
+        "sourceMeshes": 536,
+        "sourceColliders": 536,
+        "lights": 5,
+        "missingScripts": 0
+      },
+      {
+        "name": "EB04_Theophilus_Placed",
+        "position": [
+          1695,
+          221.064514,
+          2350
+        ],
+        "sourceMeshes": 191,
+        "sourceColliders": 191,
+        "lights": 5,
+        "missingScripts": 0
+      },
+      {
+        "name": "EB05_Theophilus_Placed",
+        "position": [
+          1700,
+          218.173859,
+          2295
+        ],
+        "sourceMeshes": 518,
+        "sourceColliders": 518,
+        "lights": 5,
+        "missingScripts": 0
+      },
+      {
+        "name": "EB07_Theophilus_Placed",
+        "position": [
+          1745,
+          225.79248,
+          2400
+        ],
+        "sourceMeshes": 287,
+        "sourceColliders": 287,
+        "lights": 5,
+        "missingScripts": 0
+      }
+    ]
+  },
+  "protectedFiles": {
+    "filesChecked": 686,
+    "changed": []
+  },
+  "singleFixedSiteChecks": {
+    "siteChecksPerBuilding": 1,
+    "oldCourtExcludedBeforePHFootprint": true,
+    "sites": [
+      {
+        "name": "EB05",
+        "siteXZ": [
+          1705,
+          2285
+        ],
+        "yaw": -59.7447548,
+        "effectiveMin": [
+          1686.89758,
+          -5.722046E-06,
+          2267.21313
+        ],
+        "effectiveMax": [
+          1722.16406,
+          21.6000042,
+          2309.55322
+        ],
+        "nativeHeightMin": 210.544724,
+        "nativeHeightMax": 217.4364,
+        "reliefM": 6.891678,
+        "acceptedForPlacement": false,
+        "reason": "effective footprint exceeds 6m native relief support budget"
+      },
+      {
+        "name": "EB07",
+        "siteXZ": [
+          1745,
+          2400
+        ],
+        "yaw": -121.469009,
+        "effectiveMin": [
+          1724.83411,
+          -5.722046E-06,
+          2380.01538
+        ],
+        "effectiveMax": [
+          1765.16589,
+          9.157499,
+          2419.98462
+        ],
+        "nativeHeightMin": 219.735,
+        "nativeHeightMax": 225.613342,
+        "reliefM": 5.87834167,
+        "acceptedForPlacement": true,
+        "reason": "single fixed site has relief within 6m support budget; entry/overlap checks still required"
+      },
+      {
+        "name": "PH01",
+        "siteXZ": [
+          1640,
+          2480
+        ],
+        "yaw": -3.17982841,
+        "effectiveMin": [
+          1614.67236,
+          -0.08000183,
+          2457.85645
+        ],
+        "effectiveMax": [
+          1665.32764,
+          15.664999,
+          2502.14355
+        ],
+        "nativeHeightMin": 205.0929,
+        "nativeHeightMax": 221.1346,
+        "reliefM": 16.0417023,
+        "acceptedForPlacement": false,
+        "reason": "effective footprint exceeds 6m native relief support budget"
+      },
+      {
+        "name": "RB00",
+        "siteXZ": [
+          1730,
+          2480
+        ],
+        "yaw": -231.037613,
+        "effectiveMin": [
+          1702.771,
+          -0.0400028229,
+          2455.284
+        ],
+        "effectiveMax": [
+          1757.68591,
+          17.5589428,
+          2504.513
+        ],
+        "nativeHeightMin": 223.193817,
+        "nativeHeightMax": 230.666336,
+        "reliefM": 7.472519,
+        "acceptedForPlacement": false,
+        "reason": "effective footprint exceeds 6m native relief support budget"
+      }
+    ]
+  },
+  "EB05LocalAdjustment": {
+    "siteChecksPerBuilding": 1,
+    "oldCourtExcludedBeforePHFootprint": true,
+    "sites": [
+      {
+        "name": "EB05",
+        "siteXZ": [
+          1700,
+          2295
+        ],
+        "yaw": -133.725067,
+        "effectiveMin": [
+          1675.10168,
+          -5.722046E-06,
+          2275.65942
+        ],
+        "effectiveMax": [
+          1719.67627,
+          21.6000042,
+          2316.0564
+        ],
+        "nativeHeightMin": 212.130463,
+        "nativeHeightMax": 218.093826,
+        "reliefM": 5.96336365,
+        "acceptedForPlacement": true,
+        "reason": "single fixed site has relief within 6m support budget; entry/overlap checks still required"
+      }
+    ]
+  },
+  "notPlaced": [
+    "PH01",
+    "RB00"
+  ],
+  "siteBudget": {
+    "maximumEffectiveFootprintReliefM": 6,
+    "source": "implementation choice for this local support scheme, not a user-specified constraint",
+    "scope": "Only the two checked PH01/RB00 sites rejected. No global unsuitable-space claim."
+  },
+  "limits": [
+    "No screenshots or subjective visual acceptance",
+    "No original A return or first six entries rerun",
+    "Edit-mode formal-dimension native capsule probes only",
+    "No new exterior light controls or dynamic doors",
+    "PH01/RB00 source assets preserved; no entry connection validated for the rejected sites"
+  ]
+}

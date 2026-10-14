@@ -1,0 +1,350 @@
+{
+  "sourceBlend": "LocalData/AI/AssetHandoffs/TheophilusDenseRing/R2/Moonkov_Theophilus_B_Dense_Ring_Concept_Increment_R2.blend",
+  "sourceManifest": "LocalData/AI/AssetHandoffs/TheophilusDenseRing/R2/B_RING_R2_VISUAL_DELTA.json",
+  "export": {
+    "source": "R2",
+    "addedModules": 26,
+    "removedOldFaces": 58,
+    "existingMaterialsReused": true,
+    "rootUnityWorld": [
+      2015,
+      0,
+      2130
+    ],
+    "vertices": 127560,
+    "triangles": 42520,
+    "objects": [
+      {
+        "name": "R2_MODULE_RING_SECTOR_00",
+        "key": "R2_Mesh_00",
+        "vertices": 7812,
+        "triangles": 2604,
+        "materialKeys": [
+          "Mat_01",
+          "Mat_04",
+          "Mat_02",
+          "Mat_00"
+        ]
+      },
+      {
+        "name": "R2_MODULE_RING_SECTOR_01",
+        "key": "R2_Mesh_01",
+        "vertices": 8580,
+        "triangles": 2860,
+        "materialKeys": [
+          "Mat_01",
+          "Mat_04",
+          "Mat_02",
+          "Mat_00"
+        ]
+      },
+      {
+        "name": "R2_MODULE_RING_SECTOR_02",
+        "key": "R2_Mesh_02",
+        "vertices": 3852,
+        "triangles": 1284,
+        "materialKeys": [
+          "Mat_01",
+          "Mat_04",
+          "Mat_02"
+        ]
+      },
+      {
+        "name": "R2_MODULE_RING_SECTOR_03",
+        "key": "R2_Mesh_03",
+        "vertices": 8988,
+        "triangles": 2996,
+        "materialKeys": [
+          "Mat_01",
+          "Mat_04",
+          "Mat_02",
+          "Mat_00"
+        ]
+      },
+      {
+        "name": "R2_MODULE_RING_SECTOR_04",
+        "key": "R2_Mesh_04",
+        "vertices": 3852,
+        "triangles": 1284,
+        "materialKeys": [
+          "Mat_01",
+          "Mat_04",
+          "Mat_02"
+        ]
+      },
+      {
+        "name": "R2_MODULE_RING_SECTOR_05",
+        "key": "R2_Mesh_05",
+        "vertices": 7632,
+        "triangles": 2544,
+        "materialKeys": [
+          "Mat_01",
+          "Mat_04",
+          "Mat_02",
+          "Mat_00"
+        ]
+      },
+      {
+        "name": "R2_MODULE_RING_SECTOR_06",
+        "key": "R2_Mesh_06",
+        "vertices": 8520,
+        "triangles": 2840,
+        "materialKeys": [
+          "Mat_01",
+          "Mat_04",
+          "Mat_02",
+          "Mat_00"
+        ]
+      },
+      {
+        "name": "R2_MODULE_RING_SECTOR_07",
+        "key": "R2_Mesh_07",
+        "vertices": 3960,
+        "triangles": 1320,
+        "materialKeys": [
+          "Mat_01",
+          "Mat_04",
+          "Mat_02"
+        ]
+      },
+      {
+        "name": "R2_MODULE_RING_SECTOR_08",
+        "key": "R2_Mesh_08",
+        "vertices": 8616,
+        "triangles": 2872,
+        "materialKeys": [
+          "Mat_01",
+          "Mat_04",
+          "Mat_02",
+          "Mat_00"
+        ]
+      },
+      {
+        "name": "R2_MODULE_RING_SECTOR_09",
+        "key": "R2_Mesh_09",
+        "vertices": 3816,
+        "triangles": 1272,
+        "materialKeys": [
+          "Mat_01",
+          "Mat_04",
+          "Mat_02"
+        ]
+      },
+      {
+        "name": "R2_MODULE_RING_SECTOR_10",
+        "key": "R2_Mesh_10",
+        "vertices": 7584,
+        "triangles": 2528,
+        "materialKeys": [
+          "Mat_01",
+          "Mat_04",
+          "Mat_02",
+          "Mat_00"
+        ]
+      },
+      {
+        "name": "R2_MODULE_RING_SECTOR_11",
+        "key": "R2_Mesh_11",
+        "vertices": 8652,
+        "triangles": 2884,
+        "materialKeys": [
+          "Mat_01",
+          "Mat_04",
+          "Mat_02",
+          "Mat_00"
+        ]
+      },
+      {
+        "name": "R2_MODULE_RING_BEARING_00",
+        "key": "R2_Mesh_12",
+        "vertices": 324,
+        "triangles": 108,
+        "materialKeys": [
+          "Mat_04",
+          "Mat_01"
+        ]
+      },
+      {
+        "name": "R2_MODULE_RING_BEARING_01",
+        "key": "R2_Mesh_13",
+        "vertices": 252,
+        "triangles": 84,
+        "materialKeys": [
+          "Mat_04",
+          "Mat_01"
+        ]
+      },
+      {
+        "name": "R2_MODULE_RING_BEARING_02",
+        "key": "R2_Mesh_14",
+        "vertices": 288,
+        "triangles": 96,
+        "materialKeys": [
+          "Mat_04",
+          "Mat_01"
+        ]
+      },
+      {
+        "name": "R2_MODULE_RING_BEARING_03",
+        "key": "R2_Mesh_15",
+        "vertices": 288,
+        "triangles": 96,
+        "materialKeys": [
+          "Mat_04",
+          "Mat_01"
+        ]
+      },
+      {
+        "name": "R2_MODULE_TRANSFER_POD_00",
+        "key": "R2_Mesh_16",
+        "vertices": 5748,
+        "triangles": 1916,
+        "materialKeys": [
+          "Mat_01",
+          "Mat_03",
+          "Mat_02",
+          "Mat_04",
+          "Mat_00"
+        ]
+      },
+      {
+        "name": "R2_MODULE_TRANSFER_POD_01",
+        "key": "R2_Mesh_17",
+        "vertices": 6768,
+        "triangles": 2256,
+        "materialKeys": [
+          "Mat_01",
+          "Mat_03",
+          "Mat_02",
+          "Mat_04",
+          "Mat_00"
+        ]
+      },
+      {
+        "name": "R2_MODULE_TRANSFER_POD_02",
+        "key": "R2_Mesh_18",
+        "vertices": 7464,
+        "triangles": 2488,
+        "materialKeys": [
+          "Mat_01",
+          "Mat_03",
+          "Mat_02",
+          "Mat_04",
+          "Mat_00"
+        ]
+      },
+      {
+        "name": "R2_MODULE_TRANSFER_POD_03",
+        "key": "R2_Mesh_19",
+        "vertices": 5892,
+        "triangles": 1964,
+        "materialKeys": [
+          "Mat_01",
+          "Mat_03",
+          "Mat_02",
+          "Mat_04",
+          "Mat_00"
+        ]
+      },
+      {
+        "name": "R2_MODULE_TRANSFER_POD_04",
+        "key": "R2_Mesh_20",
+        "vertices": 6636,
+        "triangles": 2212,
+        "materialKeys": [
+          "Mat_01",
+          "Mat_03",
+          "Mat_02",
+          "Mat_04",
+          "Mat_00"
+        ]
+      },
+      {
+        "name": "R2_MODULE_TRANSFER_POD_05",
+        "key": "R2_Mesh_21",
+        "vertices": 7164,
+        "triangles": 2388,
+        "materialKeys": [
+          "Mat_01",
+          "Mat_03",
+          "Mat_02",
+          "Mat_04",
+          "Mat_00"
+        ]
+      },
+      {
+        "name": "R2_MODULE_CENTRAL_SERVICE_SPINES",
+        "key": "R2_Mesh_22",
+        "vertices": 864,
+        "triangles": 288,
+        "materialKeys": [
+          "Mat_00",
+          "Mat_01",
+          "Mat_02"
+        ]
+      },
+      {
+        "name": "R2_MODULE_CENTRAL_WINDING_HEAD",
+        "key": "R2_Mesh_23",
+        "vertices": 3456,
+        "triangles": 1152,
+        "materialKeys": [
+          "Mat_01",
+          "Mat_03",
+          "Mat_04",
+          "Mat_00"
+        ]
+      },
+      {
+        "name": "R2_Visible_Winding_Drum",
+        "key": "R2_Mesh_24",
+        "vertices": 276,
+        "triangles": 92,
+        "materialKeys": [
+          "Mat_01"
+        ]
+      },
+      {
+        "name": "R2_Visible_Winding_Drum.001",
+        "key": "R2_Mesh_25",
+        "vertices": 276,
+        "triangles": 92,
+        "materialKeys": [
+          "Mat_01"
+        ]
+      }
+    ]
+  },
+  "unity": {
+    "scene": "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/Scenes/Theophilus_Shoulder_Return_Study.unity",
+    "prefab": "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/DenseRingConceptB/Prefabs/B_Dense_Ring_Display_Only.prefab",
+    "root": "B_RING_CONCEPT_ROOT",
+    "position": [
+      2015,
+      0,
+      2130
+    ],
+    "addedVisualModules": 26,
+    "removedOldShellObjects": 58,
+    "existingMaterialsReused": 7,
+    "newMaterialAssets": 0,
+    "oldMeshAssetsRetained": true,
+    "rendererCount": 1318,
+    "addedColliders": 0,
+    "newLights": 0,
+    "sceneSavedReopened": true,
+    "dirty": false,
+    "playing": false,
+    "screenshotsTaken": false,
+    "visualQualityAssessed": false,
+    "stairTowerIncluded": false
+  },
+  "rollbackScene": "LocalData/AI/AssetHandoffs/TheophilusDenseRing/R2/BeforeVisualR2.unity",
+  "rollbackPrefab": "LocalData/AI/AssetHandoffs/TheophilusDenseRing/R2/BeforeVisualR2.prefab",
+  "limits": [
+    "Visual graybox only, subjective realism/concept fidelity unassessed",
+    "No new textures, shaders, collision, lights or runtime code",
+    "No Play or screenshot testing",
+    "Stair tower not delivered to this scene; stop here and wait for separate increment"
+  ]
+}

@@ -1,0 +1,1980 @@
+{
+  "actualPlayerResult": {
+    "scene": "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/Scenes/Theophilus_Shoulder_Return_Study.unity",
+    "status": "passed",
+    "phase": "EB07 original ramp and inside",
+    "failure": "",
+    "actorName": "EVA_Validation_ActualPlayer",
+    "actorEntityId": "568105589212586980",
+    "formalPrefab": "Assets/DollSinger/Prefabs/DollSingerNetworkPlayer.prefab",
+    "method": "Live formal players spawned by existing AirlockPrototypeDemo. Scripted PlayerInput passes through the actual instance FirstPersonController.AccumulateMovement and ApplyMovementUpdate with formal authored constants and current scene collision. Adapter input and DollSingerMovement Update temporarily disabled; presentation updated through the same API. Horizontal step capped only to avoid waypoint overshoot.",
+    "restartedAfterPlayEnded": true,
+    "horizontalTravelM": 293.260559,
+    "resetCount": 7,
+    "entries": [
+      {
+        "building": "EB08",
+        "segment": "continuous EB08-EB03-EB06",
+        "passed": true,
+        "entityId": "568105589212594092",
+        "start": [
+          1615.94263,
+          213.475571,
+          2214.865
+        ],
+        "actualInside": [
+          1615.3031,
+          215.9027,
+          2231.9187
+        ],
+        "floorY": 215.8827,
+        "actualFootY": 215.9027,
+        "distanceM": 17.065752
+      },
+      {
+        "building": "EB03",
+        "segment": "continuous EB08-EB03-EB06",
+        "passed": true,
+        "entityId": "568105589212594092",
+        "start": [
+          1646.85437,
+          214.6051,
+          2245.75732
+        ],
+        "actualInside": [
+          1652.42212,
+          217.125839,
+          2262.33618
+        ],
+        "floorY": 217.10585,
+        "actualFootY": 217.125839,
+        "distanceM": 17.4888916
+      },
+      {
+        "building": "EB06",
+        "segment": "continuous EB08-EB03-EB06",
+        "passed": true,
+        "entityId": "568105589212594092",
+        "start": [
+          1647.24487,
+          212.547546,
+          2197.42
+        ],
+        "actualInside": [
+          1659.39746,
+          214.7377,
+          2212.84766
+        ],
+        "floorY": 214.717712,
+        "actualFootY": 214.7377,
+        "distanceM": 19.6402283
+      },
+      {
+        "building": "EB01",
+        "segment": "local entry EB01",
+        "passed": true,
+        "entityId": "568105589212594092",
+        "start": [
+          1636.84167,
+          217.418015,
+          2309.878
+        ],
+        "actualInside": [
+          1638.74219,
+          219.352249,
+          2324.994
+        ],
+        "floorY": 219.33226,
+        "actualFootY": 219.352249,
+        "distanceM": 15.234314
+      },
+      {
+        "building": "EB02",
+        "segment": "local entry EB02",
+        "passed": true,
+        "entityId": "568105589212594092",
+        "start": [
+          1651.57825,
+          219.3653,
+          2373.26782
+        ],
+        "actualInside": [
+          1653.5874,
+          220.053009,
+          2386.02686
+        ],
+        "floorY": 220.03302,
+        "actualFootY": 220.053009,
+        "distanceM": 12.9160919
+      },
+      {
+        "building": "EB04",
+        "segment": "EB04 remainder restarted at declared breakpoint",
+        "passed": true,
+        "entityId": "568105589212586980",
+        "start": [
+          1685.04382,
+          218.120285,
+          2325.43164
+        ],
+        "actualInside": [
+          1691.96729,
+          221.684509,
+          2342.5166
+        ],
+        "floorY": 221.66452,
+        "actualFootY": 221.684509,
+        "distanceM": 18.4341888,
+        "continuedAtGuardBreakpointWithoutReset": false,
+        "completedEntryPrefixRecordedBeforeGuardStop": true
+      },
+      {
+        "building": "EB05",
+        "segment": "local entry EB05",
+        "passed": true,
+        "entityId": "568105589212586980",
+        "start": [
+          1683.41589,
+          215.268509,
+          2267.69824
+        ],
+        "actualInside": [
+          1694.76819,
+          218.793854,
+          2286.38647
+        ],
+        "floorY": 218.773865,
+        "actualFootY": 218.793854,
+        "distanceM": 21.8667145
+      },
+      {
+        "building": "EB07",
+        "segment": "local entry EB07",
+        "passed": true,
+        "entityId": "568105589212586980",
+        "start": [
+          1723.30225,
+          221.527176,
+          2377.16
+        ],
+        "actualInside": [
+          1739.43542,
+          226.412476,
+          2394.14233
+        ],
+        "floorY": 226.392487,
+        "actualFootY": 226.412476,
+        "distanceM": 23.42392
+      }
+    ],
+    "continuousOutdoorConnections": [
+      {
+        "from": "EB08",
+        "to": "EB03",
+        "continuous": true,
+        "resetDuringConnection": false,
+        "start": [
+          1615.93958,
+          213.483612,
+          2214.946
+        ],
+        "end": [
+          1646.85437,
+          214.6051,
+          2245.75732
+        ],
+        "distanceM": 55.5206
+      },
+      {
+        "from": "EB03",
+        "to": "EB06",
+        "continuous": true,
+        "resetDuringConnection": false,
+        "start": [
+          1646.89,
+          214.618057,
+          2245.888
+        ],
+        "end": [
+          1647.24487,
+          212.547546,
+          2197.42
+        ],
+        "distanceM": 56.40439
+      }
+    ],
+    "events": [
+      {
+        "event": "Explicit validation segment start reset from previous position; not continuous across reset",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 0.0509414673,
+        "entityId": "568105589212594092",
+        "position": [
+          1800,
+          180.272079,
+          2168
+        ],
+        "eye": [
+          1799.98877,
+          181.57196,
+          2168.01025
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Reset to continuous EB08-EB03-EB06 at (1615.94, 213.45, 2214.87)",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 0.0509414673,
+        "entityId": "568105589212594092",
+        "position": [
+          1615.94263,
+          213.504211,
+          2214.865
+        ],
+        "eye": [
+          1615.9314,
+          214.8041,
+          2214.87524
+        ],
+        "movementType": "Falling",
+        "grounded": true
+      },
+      {
+        "event": "Begin EB08 new ground link",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 0.9798622,
+        "entityId": "568105589212594092",
+        "position": [
+          1615.94263,
+          213.475571,
+          2214.865
+        ],
+        "eye": [
+          1615.92639,
+          214.775543,
+          2214.87329
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Reached EB08 new ground link",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 1.654274,
+        "entityId": "568105589212594092",
+        "position": [
+          1615.90845,
+          213.55899,
+          2215.77539
+        ],
+        "eye": [
+          1615.91248,
+          214.860016,
+          2215.79785
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Begin EB08 existing ramp toe",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 1.68014526,
+        "entityId": "568105589212594092",
+        "position": [
+          1615.90845,
+          213.55899,
+          2215.77539
+        ],
+        "eye": [
+          1615.91248,
+          214.86,
+          2215.79785
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Reached EB08 existing ramp toe",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 5.98582458,
+        "entityId": "568105589212594092",
+        "position": [
+          1615.60229,
+          215.373352,
+          2223.9397
+        ],
+        "eye": [
+          1615.61023,
+          216.66893,
+          2223.95728
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Begin EB08 original ramp and inside",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 6.00326538,
+        "entityId": "568105589212594092",
+        "position": [
+          1615.60229,
+          215.373352,
+          2223.9397
+        ],
+        "eye": [
+          1615.61023,
+          216.668976,
+          2223.957
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Reached EB08 original ramp and inside",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 10.21154,
+        "entityId": "568105589212594092",
+        "position": [
+          1615.3031,
+          215.9027,
+          2231.9187
+        ],
+        "eye": [
+          1615.31067,
+          217.203552,
+          2231.93652
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Entry passed: EB08",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 10.2190971,
+        "entityId": "568105589212594092",
+        "position": [
+          1615.3031,
+          215.9027,
+          2231.9187
+        ],
+        "eye": [
+          1615.31067,
+          217.203537,
+          2231.93652
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Begin EB08 exit via old ramp",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 10.2473526,
+        "entityId": "568105589212594092",
+        "position": [
+          1615.3031,
+          215.9027,
+          2231.9187
+        ],
+        "eye": [
+          1615.31079,
+          217.203522,
+          2231.93677
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Reached EB08 exit via old ramp",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 14.557003,
+        "entityId": "568105589212594092",
+        "position": [
+          1615.597,
+          215.3913,
+          2224.07935
+        ],
+        "eye": [
+          1615.587,
+          216.688309,
+          2224.0564
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Begin EB08 exit via new link top",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 14.65118,
+        "entityId": "568105589212594092",
+        "position": [
+          1615.597,
+          215.3913,
+          2224.07935
+        ],
+        "eye": [
+          1615.58716,
+          216.688232,
+          2224.057
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Reached EB08 exit via new link top",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 19.04256,
+        "entityId": "568105589212594092",
+        "position": [
+          1615.90186,
+          213.598175,
+          2215.95068
+        ],
+        "eye": [
+          1615.89783,
+          214.898941,
+          2215.929
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Begin EB08 exit to native ground",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 19.1319847,
+        "entityId": "568105589212594092",
+        "position": [
+          1615.90186,
+          213.598175,
+          2215.95068
+        ],
+        "eye": [
+          1615.89783,
+          214.898956,
+          2215.929
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Reached EB08 exit to native ground",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 19.9537239,
+        "entityId": "568105589212594092",
+        "position": [
+          1615.93958,
+          213.483612,
+          2214.946
+        ],
+        "eye": [
+          1615.93042,
+          214.781143,
+          2214.925
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Begin EB08 to EB03: outside front facade",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 20.1016884,
+        "entityId": "568105589212594092",
+        "position": [
+          1615.93958,
+          213.483612,
+          2214.946
+        ],
+        "eye": [
+          1615.92993,
+          214.78067,
+          2214.924
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Reached EB08 to EB03: outside front facade",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 32.3467979,
+        "entityId": "568105589212594092",
+        "position": [
+          1639.93335,
+          213.537155,
+          2214.99976
+        ],
+        "eye": [
+          1639.95593,
+          214.8357,
+          2214.99243
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Begin EB08 to EB03: native shoulder east side",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 32.4194832,
+        "entityId": "568105589212594092",
+        "position": [
+          1639.93335,
+          213.537155,
+          2214.99976
+        ],
+        "eye": [
+          1639.95581,
+          214.835312,
+          2214.99219
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Reached EB08 to EB03: native shoulder east side",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 48.38116,
+        "entityId": "568105589212594092",
+        "position": [
+          1646.85437,
+          214.6051,
+          2245.75732
+        ],
+        "eye": [
+          1646.86548,
+          215.905975,
+          2245.77075
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Begin EB03 new ground link",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 48.4150963,
+        "entityId": "568105589212594092",
+        "position": [
+          1646.85437,
+          214.6051,
+          2245.75732
+        ],
+        "eye": [
+          1646.86572,
+          215.905991,
+          2245.77124
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Reached EB03 new ground link",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 49.13045,
+        "entityId": "568105589212594092",
+        "position": [
+          1647.16187,
+          214.690659,
+          2246.69434
+        ],
+        "eye": [
+          1647.17371,
+          215.991669,
+          2246.71362
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Begin EB03 existing ramp toe",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 49.1469154,
+        "entityId": "568105589212594092",
+        "position": [
+          1647.16187,
+          214.690659,
+          2246.69434
+        ],
+        "eye": [
+          1647.17371,
+          215.991638,
+          2246.71362
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Reached EB03 existing ramp toe",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 53.6265373,
+        "entityId": "568105589212594092",
+        "position": [
+          1649.87585,
+          216.5962,
+          2254.76587
+        ],
+        "eye": [
+          1649.88953,
+          217.897,
+          2254.78027
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Begin EB03 original ramp and inside",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 53.6467171,
+        "entityId": "568105589212594092",
+        "position": [
+          1649.87585,
+          216.5962,
+          2254.76587
+        ],
+        "eye": [
+          1649.88965,
+          217.896973,
+          2254.78027
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Reached EB03 original ramp and inside",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 57.8545036,
+        "entityId": "568105589212594092",
+        "position": [
+          1652.42212,
+          217.125839,
+          2262.33618
+        ],
+        "eye": [
+          1652.4397,
+          218.421585,
+          2262.35449
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Entry passed: EB03",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 57.8625526,
+        "entityId": "568105589212594092",
+        "position": [
+          1652.42212,
+          217.125839,
+          2262.33618
+        ],
+        "eye": [
+          1652.4397,
+          218.42157,
+          2262.35449
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Begin EB03 exit via old ramp",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 57.8924675,
+        "entityId": "568105589212594092",
+        "position": [
+          1652.42212,
+          217.125839,
+          2262.33618
+        ],
+        "eye": [
+          1652.4397,
+          218.421524,
+          2262.35449
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Reached EB03 exit via old ramp",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 62.1391335,
+        "entityId": "568105589212594092",
+        "position": [
+          1649.91028,
+          216.611053,
+          2254.86865
+        ],
+        "eye": [
+          1649.898,
+          217.909866,
+          2254.85278
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Begin EB03 exit via new link top",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 62.21043,
+        "entityId": "568105589212594092",
+        "position": [
+          1649.91028,
+          216.611053,
+          2254.86865
+        ],
+        "eye": [
+          1649.898,
+          217.910049,
+          2254.85229
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Reached EB03 exit via new link top",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 66.79253,
+        "entityId": "568105589212594092",
+        "position": [
+          1647.19617,
+          214.716019,
+          2246.79834
+        ],
+        "eye": [
+          1647.183,
+          216.015015,
+          2246.78857
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Begin EB03 exit to native ground",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 66.87648,
+        "entityId": "568105589212594092",
+        "position": [
+          1647.19617,
+          214.716019,
+          2246.79834
+        ],
+        "eye": [
+          1647.18311,
+          216.0153,
+          2246.789
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Reached EB03 exit to native ground",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 67.63167,
+        "entityId": "568105589212594092",
+        "position": [
+          1646.89,
+          214.618057,
+          2245.888
+        ],
+        "eye": [
+          1646.8783,
+          215.918869,
+          2245.87061
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Begin EB03 to EB06: native shoulder beside EB08",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 67.73656,
+        "entityId": "568105589212594092",
+        "position": [
+          1646.89,
+          214.618057,
+          2245.888
+        ],
+        "eye": [
+          1646.87842,
+          215.918976,
+          2245.87
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Reached EB03 to EB06: native shoulder beside EB08",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 83.84509,
+        "entityId": "568105589212594092",
+        "position": [
+          1640.01587,
+          213.537155,
+          2215.071
+        ],
+        "eye": [
+          1640.00415,
+          214.836777,
+          2215.06055
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Begin EB03 to EB06: outside EB06 facade",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 83.91998,
+        "entityId": "568105589212594092",
+        "position": [
+          1640.01587,
+          213.537155,
+          2215.071
+        ],
+        "eye": [
+          1640.00439,
+          214.837051,
+          2215.06079
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Reached EB03 to EB06: outside EB06 facade",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 92.98981,
+        "entityId": "568105589212594092",
+        "position": [
+          1640.00012,
+          213.191437,
+          2197.4856
+        ],
+        "eye": [
+          1639.99109,
+          214.489929,
+          2197.46484
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Begin EB03 to EB06: native entry start",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 93.06764,
+        "entityId": "568105589212594092",
+        "position": [
+          1640.00012,
+          213.191437,
+          2197.4856
+        ],
+        "eye": [
+          1639.99084,
+          214.4895,
+          2197.46484
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Reached EB03 to EB06: native entry start",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 96.9309845,
+        "entityId": "568105589212594092",
+        "position": [
+          1647.24487,
+          212.547546,
+          2197.42
+        ],
+        "eye": [
+          1647.2583,
+          213.847214,
+          2197.41138
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Begin EB06 new ground link",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 97.00609,
+        "entityId": "568105589212594092",
+        "position": [
+          1647.24487,
+          212.547546,
+          2197.42
+        ],
+        "eye": [
+          1647.2583,
+          213.847565,
+          2197.41138
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Reached EB06 new ground link",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 97.72255,
+        "entityId": "568105589212594092",
+        "position": [
+          1647.88672,
+          212.5436,
+          2198.15869
+        ],
+        "eye": [
+          1647.90466,
+          213.844589,
+          2198.17114
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Begin EB06 existing ramp toe",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 97.75247,
+        "entityId": "568105589212594092",
+        "position": [
+          1647.88672,
+          212.5436,
+          2198.15869
+        ],
+        "eye": [
+          1647.90479,
+          213.84462,
+          2198.17139
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Reached EB06 existing ramp toe",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 103.311462,
+        "entityId": "568105589212594092",
+        "position": [
+          1654.46777,
+          214.2063,
+          2206.555
+        ],
+        "eye": [
+          1654.48718,
+          215.50589,
+          2206.565
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Begin EB06 original ramp and inside",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 103.337952,
+        "entityId": "568105589212594092",
+        "position": [
+          1654.46777,
+          214.2063,
+          2206.555
+        ],
+        "eye": [
+          1654.48718,
+          215.505783,
+          2206.56519
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Reached EB06 original ramp and inside",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 107.56955,
+        "entityId": "568105589212594092",
+        "position": [
+          1659.39746,
+          214.7377,
+          2212.84766
+        ],
+        "eye": [
+          1659.41711,
+          216.03421,
+          2212.85767
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Entry passed: EB06",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 107.580963,
+        "entityId": "568105589212594092",
+        "position": [
+          1659.39746,
+          214.7377,
+          2212.84766
+        ],
+        "eye": [
+          1659.41711,
+          216.03421,
+          2212.85767
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Continuous first-three group finished; no reset since EB08 start",
+        "segment": "continuous EB08-EB03-EB06",
+        "timeS": 107.596649,
+        "entityId": "568105589212594092",
+        "position": [
+          1659.39746,
+          214.7377,
+          2212.84766
+        ],
+        "eye": [
+          1659.417,
+          216.034241,
+          2212.858
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Explicit validation segment start reset from previous position; not continuous across reset",
+        "segment": "local entry EB01",
+        "timeS": 107.612534,
+        "entityId": "568105589212594092",
+        "position": [
+          1659.39746,
+          214.7377,
+          2212.84766
+        ],
+        "eye": [
+          1659.41687,
+          216.034256,
+          2212.858
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Reset to local entry EB01 at (1636.84, 217.40, 2309.88)",
+        "segment": "local entry EB01",
+        "timeS": 107.612534,
+        "entityId": "568105589212594092",
+        "position": [
+          1636.84167,
+          217.446671,
+          2309.878
+        ],
+        "eye": [
+          1636.86108,
+          218.743225,
+          2309.88818
+        ],
+        "movementType": "Falling",
+        "grounded": true
+      },
+      {
+        "event": "Begin EB01 new ground link",
+        "segment": "local entry EB01",
+        "timeS": 108.466476,
+        "entityId": "568105589212594092",
+        "position": [
+          1636.84167,
+          217.418015,
+          2309.878
+        ],
+        "eye": [
+          1636.85608,
+          218.717911,
+          2309.88623
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Reached EB01 new ground link",
+        "segment": "local entry EB01",
+        "timeS": 109.147751,
+        "entityId": "568105589212594092",
+        "position": [
+          1636.95715,
+          217.505463,
+          2310.79688
+        ],
+        "eye": [
+          1636.96753,
+          218.804672,
+          2310.80957
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Begin EB01 existing ramp toe",
+        "segment": "local entry EB01",
+        "timeS": 109.159561,
+        "entityId": "568105589212594092",
+        "position": [
+          1636.95715,
+          217.505463,
+          2310.79688
+        ],
+        "eye": [
+          1636.96753,
+          218.804749,
+          2310.80957
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Reached EB01 existing ramp toe",
+        "segment": "local entry EB01",
+        "timeS": 112.534943,
+        "entityId": "568105589212594092",
+        "position": [
+          1637.74487,
+          218.820618,
+          2317.06128
+        ],
+        "eye": [
+          1637.75793,
+          220.1162,
+          2317.08154
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Begin EB01 original ramp and inside",
+        "segment": "local entry EB01",
+        "timeS": 112.54985,
+        "entityId": "568105589212594092",
+        "position": [
+          1637.74487,
+          218.820618,
+          2317.06128
+        ],
+        "eye": [
+          1637.75781,
+          220.116226,
+          2317.08154
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Reached EB01 original ramp and inside",
+        "segment": "local entry EB01",
+        "timeS": 116.761963,
+        "entityId": "568105589212594092",
+        "position": [
+          1638.74219,
+          219.352249,
+          2324.994
+        ],
+        "eye": [
+          1638.751,
+          220.651886,
+          2325.01318
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Entry passed: EB01",
+        "segment": "local entry EB01",
+        "timeS": 116.770065,
+        "entityId": "568105589212594092",
+        "position": [
+          1638.74219,
+          219.352249,
+          2324.994
+        ],
+        "eye": [
+          1638.751,
+          220.651932,
+          2325.01318
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Explicit validation segment start reset from previous position; not continuous across reset",
+        "segment": "local entry EB02",
+        "timeS": 116.790833,
+        "entityId": "568105589212594092",
+        "position": [
+          1638.74219,
+          219.352249,
+          2324.994
+        ],
+        "eye": [
+          1638.751,
+          220.652008,
+          2325.01318
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Reset to local entry EB02 at (1651.58, 219.34, 2373.27)",
+        "segment": "local entry EB02",
+        "timeS": 116.790833,
+        "entityId": "568105589212594092",
+        "position": [
+          1651.57825,
+          219.393936,
+          2373.26782
+        ],
+        "eye": [
+          1651.587,
+          220.6937,
+          2373.287
+        ],
+        "movementType": "Falling",
+        "grounded": true
+      },
+      {
+        "event": "Begin EB02 new ground link",
+        "segment": "local entry EB02",
+        "timeS": 117.630508,
+        "entityId": "568105589212594092",
+        "position": [
+          1651.57825,
+          219.3653,
+          2373.26782
+        ],
+        "eye": [
+          1651.58545,
+          220.665253,
+          2373.28638
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Reached EB02 new ground link",
+        "segment": "local entry EB02",
+        "timeS": 118.317352,
+        "entityId": "568105589212594092",
+        "position": [
+          1651.72083,
+          219.397644,
+          2374.17334
+        ],
+        "eye": [
+          1651.733,
+          220.697525,
+          2374.19141
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Begin EB02 existing ramp toe",
+        "segment": "local entry EB02",
+        "timeS": 118.333115,
+        "entityId": "568105589212594092",
+        "position": [
+          1651.72083,
+          219.397644,
+          2374.17334
+        ],
+        "eye": [
+          1651.733,
+          220.697479,
+          2374.19141
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Reached EB02 existing ramp toe",
+        "segment": "local entry EB02",
+        "timeS": 120.548569,
+        "entityId": "568105589212594092",
+        "position": [
+          1652.34375,
+          219.521713,
+          2378.12915
+        ],
+        "eye": [
+          1652.35791,
+          220.817551,
+          2378.15015
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Begin EB02 original ramp and inside",
+        "segment": "local entry EB02",
+        "timeS": 120.560669,
+        "entityId": "568105589212594092",
+        "position": [
+          1652.34375,
+          219.521713,
+          2378.12915
+        ],
+        "eye": [
+          1652.35791,
+          220.81752,
+          2378.15039
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Reached EB02 original ramp and inside",
+        "segment": "local entry EB02",
+        "timeS": 124.771088,
+        "entityId": "568105589212594092",
+        "position": [
+          1653.5874,
+          220.053009,
+          2386.02686
+        ],
+        "eye": [
+          1653.597,
+          221.35144,
+          2386.045
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Entry passed: EB02",
+        "segment": "local entry EB02",
+        "timeS": 124.777267,
+        "entityId": "568105589212594092",
+        "position": [
+          1653.5874,
+          220.053009,
+          2386.02686
+        ],
+        "eye": [
+          1653.597,
+          221.351456,
+          2386.045
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Explicit validation segment start reset from previous position; not continuous across reset",
+        "segment": "local entry EB04",
+        "timeS": 124.803955,
+        "entityId": "568105589212594092",
+        "position": [
+          1653.5874,
+          220.053009,
+          2386.02686
+        ],
+        "eye": [
+          1653.59692,
+          221.351563,
+          2386.04517
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Reset to local entry EB04 at (1684.70, 217.88, 2324.57)",
+        "segment": "local entry EB04",
+        "timeS": 124.803955,
+        "entityId": "568105589212594092",
+        "position": [
+          1684.69556,
+          217.931488,
+          2324.57227
+        ],
+        "eye": [
+          1684.70508,
+          219.230042,
+          2324.59058
+        ],
+        "movementType": "Falling",
+        "grounded": true
+      },
+      {
+        "event": "Begin EB04 new ground link",
+        "segment": "local entry EB04",
+        "timeS": 125.639221,
+        "entityId": "568105589212594092",
+        "position": [
+          1684.69556,
+          217.904221,
+          2324.57227
+        ],
+        "eye": [
+          1684.70313,
+          219.204163,
+          2324.58838
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Reached EB04 new ground link",
+        "segment": "local entry EB04",
+        "timeS": 126.315063,
+        "entityId": "568105589212594092",
+        "position": [
+          1685.03906,
+          218.116455,
+          2325.41968
+        ],
+        "eye": [
+          1685.05359,
+          219.417267,
+          2325.433
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Begin EB04 existing ramp toe",
+        "segment": "local entry EB04",
+        "timeS": 126.3282,
+        "entityId": "568105589212594092",
+        "position": [
+          1685.03906,
+          218.116455,
+          2325.41968
+        ],
+        "eye": [
+          1685.05359,
+          219.417252,
+          2325.43335
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "System.Exception: Fell below intended ground at EB04 existing ramp toe actual=(1685.04, 218.12, 2325.43)\r\n  at WalkOuterBuildings+<Move>d__35.MoveNext () [0x002cd] in E:\\UnityProjects\\FPS_Template\\LocalData\\AI\\AssetHandoffs\\TheophilusShoulder\\WalkOuterBuildings.cs:51 \r\n  at WalkOuterBuildings.Tick () [0x00070] in E:\\UnityProjects\\FPS_Template\\LocalData\\AI\\AssetHandoffs\\TheophilusShoulder\\WalkOuterBuildings.cs:83 ",
+        "segment": "local entry EB04",
+        "timeS": 126.3282,
+        "entityId": "568105589212594092",
+        "position": [
+          1685.04382,
+          218.12027,
+          2325.43164
+        ],
+        "eye": [
+          1685.05835,
+          219.421066,
+          2325.44531
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Original Play ended before guard continuation; this is a second Play with a recreated formal player. Five passed entries and first-three outdoor continuity preserved as first-Play evidence.",
+        "segment": "",
+        "timeS": 0.373267174,
+        "entityId": "568105589212586980",
+        "position": [
+          1800,
+          180.272079,
+          2168
+        ],
+        "eye": [
+          1799.98535,
+          181.5717,
+          2168.011
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Explicit validation segment start reset from previous position; not continuous across reset",
+        "segment": "EB04 remainder restarted at declared breakpoint",
+        "timeS": 0.41122818,
+        "entityId": "568105589212586980",
+        "position": [
+          1800,
+          180.272079,
+          2168
+        ],
+        "eye": [
+          1799.9873,
+          181.572,
+          2168.01025
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Reset to EB04 remainder restarted at declared breakpoint at (1685.04, 218.12, 2325.43)",
+        "segment": "EB04 remainder restarted at declared breakpoint",
+        "timeS": 0.41122818,
+        "entityId": "568105589212586980",
+        "position": [
+          1685.04382,
+          218.170273,
+          2325.43164
+        ],
+        "eye": [
+          1685.03113,
+          219.4702,
+          2325.442
+        ],
+        "movementType": "Falling",
+        "grounded": true
+      },
+      {
+        "event": "Begin EB04 existing ramp toe: continue from guard breakpoint",
+        "segment": "EB04 remainder restarted at declared breakpoint",
+        "timeS": 1.35770416,
+        "entityId": "568105589212586980",
+        "position": [
+          1685.04382,
+          218.120285,
+          2325.43164
+        ],
+        "eye": [
+          1685.02991,
+          219.420319,
+          2325.44
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Reached EB04 existing ramp toe: continue from guard breakpoint",
+        "segment": "EB04 remainder restarted at declared breakpoint",
+        "timeS": 6.76207638,
+        "entityId": "568105589212586980",
+        "position": [
+          1688.95947,
+          221.15181,
+          2335.09424
+        ],
+        "eye": [
+          1688.97327,
+          222.450943,
+          2335.1106
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Begin EB04 original ramp and inside: continue from guard breakpoint",
+        "segment": "EB04 remainder restarted at declared breakpoint",
+        "timeS": 6.77732944,
+        "entityId": "568105589212586980",
+        "position": [
+          1688.95947,
+          221.15181,
+          2335.09424
+        ],
+        "eye": [
+          1688.97327,
+          222.450989,
+          2335.1106
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Reached EB04 original ramp and inside: continue from guard breakpoint",
+        "segment": "EB04 remainder restarted at declared breakpoint",
+        "timeS": 11.0052824,
+        "entityId": "568105589212586980",
+        "position": [
+          1691.96729,
+          221.684509,
+          2342.5166
+        ],
+        "eye": [
+          1691.98218,
+          222.983871,
+          2342.53442
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Entry passed: EB04 remainder after declared guard breakpoint",
+        "segment": "EB04 remainder restarted at declared breakpoint",
+        "timeS": 11.0214205,
+        "entityId": "568105589212586980",
+        "position": [
+          1691.96729,
+          221.684509,
+          2342.5166
+        ],
+        "eye": [
+          1691.98218,
+          222.98381,
+          2342.53442
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Explicit validation segment start reset from previous position; not continuous across reset",
+        "segment": "local entry EB05",
+        "timeS": 11.0325212,
+        "entityId": "568105589212586980",
+        "position": [
+          1691.96729,
+          221.684509,
+          2342.5166
+        ],
+        "eye": [
+          1691.98218,
+          222.983749,
+          2342.53442
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Reset to local entry EB05 at (1683.42, 215.25, 2267.70)",
+        "segment": "local entry EB05",
+        "timeS": 11.0325212,
+        "entityId": "568105589212586980",
+        "position": [
+          1683.41589,
+          215.29715,
+          2267.69824
+        ],
+        "eye": [
+          1683.43079,
+          216.59639,
+          2267.716
+        ],
+        "movementType": "Falling",
+        "grounded": true
+      },
+      {
+        "event": "Begin EB05 new ground link",
+        "segment": "local entry EB05",
+        "timeS": 11.8824263,
+        "entityId": "568105589212586980",
+        "position": [
+          1683.41589,
+          215.268509,
+          2267.69824
+        ],
+        "eye": [
+          1683.42993,
+          216.568573,
+          2267.70972
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Reached EB05 new ground link",
+        "segment": "local entry EB05",
+        "timeS": 12.5642138,
+        "entityId": "568105589212586980",
+        "position": [
+          1683.88928,
+          215.362961,
+          2268.47754
+        ],
+        "eye": [
+          1683.90857,
+          216.65921,
+          2268.49
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Begin EB05 existing ramp toe",
+        "segment": "local entry EB05",
+        "timeS": 12.58324,
+        "entityId": "568105589212586980",
+        "position": [
+          1683.88928,
+          215.362961,
+          2268.47754
+        ],
+        "eye": [
+          1683.90845,
+          216.659256,
+          2268.49023
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Reached EB05 existing ramp toe",
+        "segment": "local entry EB05",
+        "timeS": 19.2901459,
+        "entityId": "568105589212586980",
+        "position": [
+          1690.61035,
+          218.2601,
+          2279.54175
+        ],
+        "eye": [
+          1690.6272,
+          219.560822,
+          2279.55273
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Begin EB05 original ramp and inside",
+        "segment": "local entry EB05",
+        "timeS": 19.30764,
+        "entityId": "568105589212586980",
+        "position": [
+          1690.61035,
+          218.2601,
+          2279.54175
+        ],
+        "eye": [
+          1690.6272,
+          219.560822,
+          2279.55273
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Reached EB05 original ramp and inside",
+        "segment": "local entry EB05",
+        "timeS": 23.5386124,
+        "entityId": "568105589212586980",
+        "position": [
+          1694.76819,
+          218.793854,
+          2286.38647
+        ],
+        "eye": [
+          1694.78906,
+          220.0897,
+          2286.40039
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Entry passed: EB05",
+        "segment": "local entry EB05",
+        "timeS": 23.5508575,
+        "entityId": "568105589212586980",
+        "position": [
+          1694.76819,
+          218.793854,
+          2286.38647
+        ],
+        "eye": [
+          1694.789,
+          220.089722,
+          2286.40015
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Explicit validation segment start reset from previous position; not continuous across reset",
+        "segment": "local entry EB07",
+        "timeS": 23.5711746,
+        "entityId": "568105589212586980",
+        "position": [
+          1694.76819,
+          218.793854,
+          2286.38647
+        ],
+        "eye": [
+          1694.789,
+          220.089722,
+          2286.4
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Reset to local entry EB07 at (1723.30, 221.50, 2377.16)",
+        "segment": "local entry EB07",
+        "timeS": 23.5711746,
+        "entityId": "568105589212586980",
+        "position": [
+          1723.30225,
+          221.550415,
+          2377.16
+        ],
+        "eye": [
+          1723.323,
+          222.846283,
+          2377.17334
+        ],
+        "movementType": "Falling",
+        "grounded": true
+      },
+      {
+        "event": "Begin EB07 new ground link",
+        "segment": "local entry EB07",
+        "timeS": 24.4072151,
+        "entityId": "568105589212586980",
+        "position": [
+          1723.30225,
+          221.527176,
+          2377.16
+        ],
+        "eye": [
+          1723.31689,
+          222.8271,
+          2377.17
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Reached EB07 new ground link",
+        "segment": "local entry EB07",
+        "timeS": 25.0813675,
+        "entityId": "568105589212586980",
+        "position": [
+          1723.93481,
+          221.621063,
+          2377.826
+        ],
+        "eye": [
+          1723.95276,
+          222.9177,
+          2377.83179
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Begin EB07 existing ramp toe",
+        "segment": "local entry EB07",
+        "timeS": 25.0954285,
+        "entityId": "568105589212586980",
+        "position": [
+          1723.93481,
+          221.621063,
+          2377.826
+        ],
+        "eye": [
+          1723.95264,
+          222.91777,
+          2377.83154
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Reached EB07 existing ramp toe",
+        "segment": "local entry EB07",
+        "timeS": 32.56894,
+        "entityId": "568105589212586980",
+        "position": [
+          1733.92249,
+          225.879715,
+          2388.33936
+        ],
+        "eye": [
+          1733.941,
+          227.178925,
+          2388.34937
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Begin EB07 original ramp and inside",
+        "segment": "local entry EB07",
+        "timeS": 32.58331,
+        "entityId": "568105589212586980",
+        "position": [
+          1733.92249,
+          225.879715,
+          2388.33936
+        ],
+        "eye": [
+          1733.941,
+          227.17897,
+          2388.34937
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Reached EB07 original ramp and inside",
+        "segment": "local entry EB07",
+        "timeS": 36.80441,
+        "entityId": "568105589212586980",
+        "position": [
+          1739.43542,
+          226.412476,
+          2394.14233
+        ],
+        "eye": [
+          1739.45593,
+          227.711853,
+          2394.15381
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "Entry passed: EB07",
+        "segment": "local entry EB07",
+        "timeS": 36.81589,
+        "entityId": "568105589212586980",
+        "position": [
+          1739.43542,
+          226.412476,
+          2394.14233
+        ],
+        "eye": [
+          1739.45593,
+          227.711792,
+          2394.15381
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      },
+      {
+        "event": "All eight actual formal player entry segments completed; endpoint-height guard corrected without scene change",
+        "segment": "local entry EB07",
+        "timeS": 36.82523,
+        "entityId": "568105589212586980",
+        "position": [
+          1739.43542,
+          226.412476,
+          2394.14233
+        ],
+        "eye": [
+          1739.456,
+          227.711746,
+          2394.15381
+        ],
+        "movementType": "Standing",
+        "grounded": true
+      }
+    ],
+    "runtimeErrorsAfterHarnessBegin": [],
+    "screenshotTaken": false,
+    "originalA_ReturnRerun": false,
+    "performanceAssessed": false
+  },
+  "playStartRequests": 3,
+  "walkingActorInstances": 2,
+  "explicitStartResets": 7,
+  "validationGuardFailurePreserved": "LocalData/AI/AssetHandoffs/TheophilusShoulder/OuterBuildingsActualPlayerWalk_GuardFailure.json",
+  "sceneFixesRequired": false,
+  "continuedAfterUserStopDirective": false,
+  "unverified": [
+    "Outdoor connections among EB01/02/04/05/07",
+    "Manual input, remaining rooms, networking, performance and subjective visual/audio acceptance"
+  ],
+  "latestEditorState": {
+    "scene": "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/Scenes/Theophilus_Shoulder_Return_Study.unity",
+    "paletteSlotsAfterReopen": 1064,
+    "terrainRefsMatchEnvironment": true,
+    "lightButtons": 135,
+    "airlocks": 1,
+    "sunHardShadows": true,
+    "exposureSettingUnchanged": true,
+    "dirty": false,
+    "playing": false
+  }
+}

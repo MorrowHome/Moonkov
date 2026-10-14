@@ -1,0 +1,317 @@
+{
+  "scene": "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/Scenes/Theophilus_Shoulder_Return_Study.unity",
+  "placement": {
+    "scene": "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/Scenes/Theophilus_Shoulder_Return_Study.unity",
+    "status": "placed_saved_and_entry_checked",
+    "buildings": [
+      {
+        "name": "EB01",
+        "source": "Assets/MoonEnvironment/Variants/MC00LightControlsFullV02/Prefabs/Apollo12MC00Candidate.prefab :: EB01_ROOT",
+        "prefab": "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/BuildingAdditionsBatch02/Prefabs/EB01_Theophilus_Placed.prefab",
+        "position": [
+          1640,
+          218.732254,
+          2335
+        ],
+        "yaw": -172.834686,
+        "sourceMeshes": 260,
+        "sourceColliders": 260,
+        "sourceLights": 5,
+        "sourceEntryRoutePreserved": true,
+        "sourceRoofRoomAndDoorHierarchyPreserved": true,
+        "nativeHeightMin": 216.787048,
+        "nativeHeightMax": 218.652252,
+        "pierCount": 8,
+        "maximumPierHeightM": 2.03369141,
+        "entryRouteWorld": [
+          1638.37842,
+          219.33226,
+          2322.10156
+        ],
+        "existingRampToe": [
+          1637.75488,
+          218.732254,
+          2317.14063
+        ],
+        "newTerrainToe": [
+          1636.96643,
+          217.495239,
+          2310.87
+        ],
+        "connectionLengthM": 6.319898,
+        "connectionMaximumLongitudinalSlopeDeg": 15.2523384,
+        "minimumSampledConnectionGroundClearanceM": 0.0249938965
+      },
+      {
+        "name": "EB02",
+        "source": "Assets/MoonEnvironment/Variants/MC00LightControlsFullV02/Prefabs/Apollo12MC00Candidate.prefab :: EB02_ROOT",
+        "prefab": "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/BuildingAdditionsBatch02/Prefabs/EB02_Theophilus_Placed.prefab",
+        "position": [
+          1655,
+          219.433014,
+          2395
+        ],
+        "yaw": -261.052429,
+        "sourceMeshes": 536,
+        "sourceColliders": 536,
+        "sourceLights": 5,
+        "sourceEntryRoutePreserved": true,
+        "sourceRoofRoomAndDoorHierarchyPreserved": true,
+        "nativeHeightMin": 217.888046,
+        "nativeHeightMax": 219.353012,
+        "pierCount": 8,
+        "maximumPierHeightM": 1.18333435,
+        "entryRouteWorld": [
+          1653.13367,
+          220.03302,
+          2383.146
+        ],
+        "existingRampToe": [
+          1652.356,
+          219.433,
+          2378.207
+        ],
+        "newTerrainToe": [
+          1651.73376,
+          219.390335,
+          2374.25562
+        ],
+        "connectionLengthM": 4,
+        "connectionMaximumLongitudinalSlopeDeg": 3.504354,
+        "minimumSampledConnectionGroundClearanceM": 0.0249938965
+      },
+      {
+        "name": "EB04",
+        "source": "Assets/MoonEnvironment/Variants/MC00LightControlsFullV02/Prefabs/Apollo12MC00Candidate.prefab :: EB04_ROOT",
+        "prefab": "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/BuildingAdditionsBatch02/Prefabs/EB04_Theophilus_Placed.prefab",
+        "position": [
+          1695,
+          221.064514,
+          2350
+        ],
+        "yaw": -142.9393,
+        "sourceMeshes": 191,
+        "sourceColliders": 191,
+        "sourceLights": 5,
+        "sourceEntryRoutePreserved": true,
+        "sourceRoofRoomAndDoorHierarchyPreserved": true,
+        "nativeHeightMin": 217.9109,
+        "nativeHeightMax": 220.984512,
+        "pierCount": 8,
+        "maximumPierHeightM": 2.3217926,
+        "entryRouteWorld": [
+          1690.86853,
+          221.66452,
+          2339.80542
+        ],
+        "existingRampToe": [
+          1688.99072,
+          221.0645,
+          2335.17139
+        ],
+        "newTerrainToe": [
+          1685.07117,
+          218.109879,
+          2325.499
+        ],
+        "connectionLengthM": 10.4362488,
+        "connectionMaximumLongitudinalSlopeDeg": 19.1120987,
+        "minimumSampledConnectionGroundClearanceM": 0.0249938965
+      }
+    ],
+    "existingLightButtons": 135,
+    "existingAirlocks": 1,
+    "newLightsKeptIndependent": 15,
+    "terrainEdited": false,
+    "oldPH01CourtyardCopied": false,
+    "screenshotsTaken": false,
+    "entryChecksPending": false
+  },
+  "entryChecks": {
+    "scene": "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/Scenes/Theophilus_Shoulder_Return_Study.unity",
+    "method": "Edit-mode native CharacterController collision probe copied from formal prefab; three new entry links only, no Play Mode or original A return rerun",
+    "capsuleHeight": 1.7,
+    "capsuleRadius": 0.28,
+    "capsuleStepOffset": 0.25,
+    "capsuleSlopeLimit": 45,
+    "entries": [
+      {
+        "building": "EB01",
+        "passed": true,
+        "failure": "",
+        "start": [
+          1636.84167,
+          217.396667,
+          2309.878
+        ],
+        "targetInside": [
+          1638.75269,
+          219.33226,
+          2325.07813
+        ],
+        "actualInside": [
+          1638.7439,
+          219.352249,
+          2325.00879
+        ],
+        "actualFootHeight": 219.352249,
+        "interiorFloorHeight": 219.33226,
+        "horizontalTravelM": 15.2499294,
+        "moveSteps": 305
+      },
+      {
+        "building": "EB02",
+        "passed": true,
+        "failure": "",
+        "start": [
+          1651.57825,
+          219.343933,
+          2373.26782
+        ],
+        "targetInside": [
+          1653.60034,
+          220.03302,
+          2386.10938
+        ],
+        "actualInside": [
+          1653.59265,
+          220.053024,
+          2386.0603
+        ],
+        "actualFootHeight": 220.053024,
+        "interiorFloorHeight": 220.03302,
+        "horizontalTravelM": 12.9501352,
+        "moveSteps": 259
+      },
+      {
+        "building": "EB04",
+        "passed": true,
+        "failure": "",
+        "start": [
+          1684.69556,
+          217.8815,
+          2324.57227
+        ],
+        "targetInside": [
+          1691.99524,
+          221.66452,
+          2342.58569
+        ],
+        "actualInside": [
+          1691.98157,
+          221.684509,
+          2342.552
+        ],
+        "actualFootHeight": 221.684509,
+        "interiorFloorHeight": 221.66452,
+        "horizontalTravelM": 19.3998642,
+        "moveSteps": 388
+      }
+    ],
+    "minimumA_RouteHorizontalColliderAabbGapM": 182.097672,
+    "oldLightButtonCount": 135,
+    "airlockCount": 1,
+    "screenshotsTaken": false,
+    "playing": false
+  },
+  "sixBuildingReadback": {
+    "project": "E:/UnityProjects/FPS_Template/Assets",
+    "scene": "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/Scenes/Theophilus_Shoulder_Return_Study.unity",
+    "reopened": true,
+    "dirty": false,
+    "playing": false,
+    "compiling": false,
+    "buildings": [
+      {
+        "name": "EB08_Theophilus_Placed",
+        "position": [
+          1615,
+          215.2827,
+          2240
+        ],
+        "sourceMeshes": 292,
+        "sourceColliders": 292,
+        "lights": 5,
+        "missingScripts": 0
+      },
+      {
+        "name": "EB03_Theophilus_Placed",
+        "position": [
+          1655,
+          216.505844,
+          2270
+        ],
+        "sourceMeshes": 344,
+        "sourceColliders": 344,
+        "lights": 5,
+        "missingScripts": 0
+      },
+      {
+        "name": "EB06_Theophilus_Placed",
+        "position": [
+          1665,
+          214.1177,
+          2220
+        ],
+        "sourceMeshes": 629,
+        "sourceColliders": 629,
+        "lights": 5,
+        "missingScripts": 0
+      },
+      {
+        "name": "EB01_Theophilus_Placed",
+        "position": [
+          1640,
+          218.732254,
+          2335
+        ],
+        "sourceMeshes": 260,
+        "sourceColliders": 260,
+        "lights": 5,
+        "missingScripts": 0
+      },
+      {
+        "name": "EB02_Theophilus_Placed",
+        "position": [
+          1655,
+          219.433014,
+          2395
+        ],
+        "sourceMeshes": 536,
+        "sourceColliders": 536,
+        "lights": 5,
+        "missingScripts": 0
+      },
+      {
+        "name": "EB04_Theophilus_Placed",
+        "position": [
+          1695,
+          221.064514,
+          2350
+        ],
+        "sourceMeshes": 191,
+        "sourceColliders": 191,
+        "lights": 5,
+        "missingScripts": 0
+      }
+    ]
+  },
+  "protectedFiles": {
+    "filesChecked": 671,
+    "changed": []
+  },
+  "priorBatchEntryEvidence": "Docs/AI/Theophilus_Outer_Buildings_Batch01_Validation.json",
+  "remainingSpaceJudgment": {
+    "EB05_EB07": "Local shoulder margins may accommodate individual medium buildings; no validated placement point yet",
+    "PH01_RB00": "No suitable spacious patch confirmed in current compact shoulder strip; choose broader native shoulder and exclude PH01 old courtyard",
+    "searchedMoreCandidateSites": false,
+    "visualQualityAssessed": false
+  },
+  "limits": [
+    "No screenshots",
+    "No Play Mode or original A return rerun",
+    "Only batch 02 entry probes; batch 01 not rewalked",
+    "No new exterior light circuit or dynamic doors",
+    "Prior Package Manager Window error not fixed; no repeated Console scan this batch"
+  ]
+}

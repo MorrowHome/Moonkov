@@ -1,0 +1,373 @@
+{
+  "scene": "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/Scenes/Theophilus_Shoulder_Return_Study.unity",
+  "sourceDirectory": "LocalData/AI/AssetHandoffs/TheophilusShoulder",
+  "assembly": {
+    "scene": "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/Scenes/Theophilus_Shoulder_Return_Study.unity",
+    "coreLights": 118,
+    "lightButtons": 135,
+    "entryMeshes": 103,
+    "entryColliders": 101,
+    "nearOrigin": [
+      1536,
+      0,
+      1920
+    ],
+    "nearResolution": 2049,
+    "nativeCompositeFromExistingWorldHeightData": true,
+    "PlayRan": false
+  },
+  "continuousReturn": {
+    "scene": "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/Scenes/Theophilus_Shoulder_Return_Study.unity",
+    "status": "passed",
+    "phase": "Entered base through inner door",
+    "failure": "",
+    "denseRoutePointCount": 341,
+    "lastRouteIndex": 341,
+    "horizontalTravelM": 192.025925,
+    "method": "One live formal DollSinger prefab, native CharacterController.Move with current scene collision, scripted horizontal 2m/s and downward grounding as existing airlock validator; no teleporting after spawn. Airlock commands through actual in-range camera rays and existing button.Press rules. Movement/input temporarily disabled.",
+    "visualQualityActuallyViewed": false,
+    "subjectiveCraterReadability": "not assessed; no screenshot",
+    "screenshotTaken": false,
+    "observations": [
+      {
+        "event": "Spawned actual formal player at A start; no subsequent teleport",
+        "timeS": 0,
+        "position": [
+          1800,
+          180.272079,
+          2168
+        ],
+        "eye": [
+          1799.98389,
+          181.572067,
+          2168.00464
+        ],
+        "eyeHeightM": 1.29998779,
+        "grounded": true,
+        "pressureKPa": 0
+      },
+      {
+        "event": "Pit-side departure objective sightlines; no subjective visual assessment; roof sightline=True middle sightline=True",
+        "timeS": 2.36474729,
+        "position": [
+          1800,
+          180.272079,
+          2168
+        ],
+        "eye": [
+          1800.01343,
+          181.572144,
+          2168.00757
+        ],
+        "eyeHeightM": 1.30006409,
+        "grounded": true,
+        "pressureKPa": 0
+      },
+      {
+        "event": "A route marker 50; roof sightline=True middle sightline=True",
+        "timeS": 17.5102978,
+        "position": [
+          1778.786,
+          184.680679,
+          2156.431
+        ],
+        "eye": [
+          1778.74817,
+          185.955917,
+          2156.4397
+        ],
+        "eyeHeightM": 1.275238,
+        "grounded": true,
+        "pressureKPa": 0
+      },
+      {
+        "event": "A route marker 100; roof sightline=True middle sightline=True",
+        "timeS": 32.552475,
+        "position": [
+          1758.20752,
+          189.311783,
+          2151.513
+        ],
+        "eye": [
+          1758.17188,
+          190.601639,
+          2151.50635
+        ],
+        "eyeHeightM": 1.289856,
+        "grounded": true,
+        "pressureKPa": 0
+      },
+      {
+        "event": "A route marker 150; roof sightline=True middle sightline=True",
+        "timeS": 47.686985,
+        "position": [
+          1737.4801,
+          192.499954,
+          2138.377
+        ],
+        "eye": [
+          1737.43542,
+          193.791428,
+          2138.37866
+        ],
+        "eyeHeightM": 1.29147339,
+        "grounded": true,
+        "pressureKPa": 0
+      },
+      {
+        "event": "A route marker 200; roof sightline=True middle sightline=False",
+        "timeS": 63.0330238,
+        "position": [
+          1718.33362,
+          196.80368,
+          2122.59424
+        ],
+        "eye": [
+          1718.29175,
+          198.101929,
+          2122.60547
+        ],
+        "eyeHeightM": 1.29824829,
+        "grounded": true,
+        "pressureKPa": 0
+      },
+      {
+        "event": "A route marker 250; roof sightline=False middle sightline=True",
+        "timeS": 78.11432,
+        "position": [
+          1697.219,
+          201.130356,
+          2111.64331
+        ],
+        "eye": [
+          1697.18481,
+          202.4166,
+          2111.649
+        ],
+        "eyeHeightM": 1.28623962,
+        "grounded": true,
+        "pressureKPa": 0
+      },
+      {
+        "event": "A route marker 300; roof sightline=True middle sightline=True",
+        "timeS": 93.17821,
+        "position": [
+          1675.57629,
+          205.518616,
+          2118.71021
+        ],
+        "eye": [
+          1675.53113,
+          206.789764,
+          2118.71387
+        ],
+        "eyeHeightM": 1.27114868,
+        "grounded": true,
+        "pressureKPa": 0
+      },
+      {
+        "event": "Reached declared A toe",
+        "timeS": 105.211693,
+        "position": [
+          1662.04016,
+          209.345139,
+          2129.933
+        ],
+        "eye": [
+          1662.00586,
+          210.620926,
+          2129.93945
+        ],
+        "eyeHeightM": 1.27578735,
+        "grounded": true,
+        "pressureKPa": 0
+      },
+      {
+        "event": "Continuation uses actual existing ramp endpoint geometry; no guessed waypoints or new road",
+        "timeS": 105.211693,
+        "position": [
+          1662.04016,
+          209.345139,
+          2129.933
+        ],
+        "eye": [
+          1662.00586,
+          210.620926,
+          2129.93945
+        ],
+        "eyeHeightM": 1.27578735,
+        "grounded": true,
+        "pressureKPa": 0
+      },
+      {
+        "event": "OUTSIDE.OPEN_OUTER accepted",
+        "timeS": 111.452934,
+        "position": [
+          1651.61609,
+          211.543121,
+          2133.03833
+        ],
+        "eye": [
+          1651.596,
+          212.84288,
+          2133.05322
+        ],
+        "eyeHeightM": 1.29975891,
+        "grounded": true,
+        "pressureKPa": 0
+      },
+      {
+        "event": "Outer door opened",
+        "timeS": 112.6612,
+        "position": [
+          1651.61609,
+          211.543121,
+          2133.03833
+        ],
+        "eye": [
+          1651.604,
+          212.794891,
+          2133.03857
+        ],
+        "eyeHeightM": 1.25177,
+        "grounded": true,
+        "pressureKPa": 0
+      },
+      {
+        "event": "CHAMBER.CLOSE_OUTER accepted",
+        "timeS": 114.453461,
+        "position": [
+          1649.64941,
+          211.656143,
+          2135.647
+        ],
+        "eye": [
+          1649.63293,
+          212.9244,
+          2135.64453
+        ],
+        "eyeHeightM": 1.26824951,
+        "grounded": true,
+        "pressureKPa": 0
+      },
+      {
+        "event": "Outer door sealed",
+        "timeS": 115.669037,
+        "position": [
+          1649.64941,
+          211.656143,
+          2135.647
+        ],
+        "eye": [
+          1649.64343,
+          212.9414,
+          2135.64087
+        ],
+        "eyeHeightM": 1.28526306,
+        "grounded": true,
+        "pressureKPa": 0
+      },
+      {
+        "event": "CHAMBER.EQUALIZE_INSIDE accepted",
+        "timeS": 115.772324,
+        "position": [
+          1649.64941,
+          211.656143,
+          2135.647
+        ],
+        "eye": [
+          1649.6438,
+          212.951431,
+          2135.647
+        ],
+        "eyeHeightM": 1.29528809,
+        "grounded": true,
+        "pressureKPa": 0
+      },
+      {
+        "event": "Chamber pressurized",
+        "timeS": 121.788673,
+        "position": [
+          1649.64941,
+          211.656143,
+          2135.647
+        ],
+        "eye": [
+          1649.65222,
+          212.905457,
+          2135.65674
+        ],
+        "eyeHeightM": 1.24931335,
+        "grounded": true,
+        "pressureKPa": 101.325
+      },
+      {
+        "event": "CHAMBER.OPEN_INNER accepted",
+        "timeS": 121.890175,
+        "position": [
+          1649.64941,
+          211.656143,
+          2135.647
+        ],
+        "eye": [
+          1649.64368,
+          212.925034,
+          2135.65771
+        ],
+        "eyeHeightM": 1.26889038,
+        "grounded": true,
+        "pressureKPa": 101.325
+      },
+      {
+        "event": "Inner door opened",
+        "timeS": 123.098244,
+        "position": [
+          1649.64941,
+          211.656143,
+          2135.647
+        ],
+        "eye": [
+          1649.63416,
+          212.943863,
+          2135.648
+        ],
+        "eyeHeightM": 1.28771973,
+        "grounded": true,
+        "pressureKPa": 101.325
+      },
+      {
+        "event": "Continuous return complete: same player inside base",
+        "timeS": 127.758949,
+        "position": [
+          1644.116,
+          211.656143,
+          2142.99023
+        ],
+        "eye": [
+          1644.08179,
+          212.943878,
+          2143.013
+        ],
+        "eyeHeightM": 1.287735,
+        "grounded": true,
+        "pressureKPa": 101.325
+      }
+    ],
+    "runtimeErrors": [
+      "[Package Manager Window] The \"path\" argument must be of type string. Received undefined\n"
+    ]
+  },
+  "protectedOriginalFiles": {
+    "filesChecked": 290,
+    "changed": []
+  },
+  "editorHandoff": {
+    "project": "E:/UnityProjects/FPS_Template/Assets",
+    "playing": false,
+    "compilingBeforeReopen": false,
+    "reopened": true,
+    "dirty": false,
+    "savedBeforePlay": true
+  },
+  "validationScope": "One scripted continuous real-character collision and airlock return. No screenshot or subjective visual acceptance. Captured Package Manager Window error retained."
+}

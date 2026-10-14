@@ -1,0 +1,48 @@
+{
+  "sourceBlend": "LocalData/AI/AssetHandoffs/TheophilusDenseRing/R4/Moonkov_Theophilus_B_Dense_Ring_Concept_Increment_R4.blend",
+  "sourceContract": "LocalData/AI/AssetHandoffs/TheophilusDenseRing/R4/B_RING_R4_MATERIAL_HANDOFF.json",
+  "export": {
+    "targetObjects": 82,
+    "materials": 9,
+    "packedTextures": 27,
+    "uvVFlipped": false,
+    "normalGreenFlipped": false,
+    "metallicGlossConverted": false,
+    "rootUnityWorld": [
+      2015,
+      0,
+      2130
+    ]
+  },
+  "unity": {
+    "scene": "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/Scenes/Theophilus_Shoulder_Return_Study.unity",
+    "displayObjectsUpdated": 82,
+    "newDisplayMeshAssets": 82,
+    "newUrpLitMaterials": 9,
+    "packedTexturesImported": 27,
+    "uvVFlipped": false,
+    "normalGreenFlipped": false,
+    "metallicGlossAlphaInverted": false,
+    "smoothnessSource": "Metallic Alpha",
+    "smoothnessMultiplier": 1,
+    "parentTransformsComponentsPreserved": true,
+    "pathAndBridgeCollidersPreserved": 53,
+    "originalPrefabAssetsUnchanged": true,
+    "oldMeshesMaterialsRetained": true,
+    "lightingExposureChanged": false,
+    "runtimeCodeAdded": false,
+    "savedReopened": true,
+    "dirty": false,
+    "playing": false,
+    "screenshotsTaken": false,
+    "subjectiveVisualAcceptance": false
+  },
+  "rollbackScene": "LocalData/AI/AssetHandoffs/TheophilusDenseRing/R4/BeforeMaterialR4.unity",
+  "rollbackReferences": "LocalData/AI/AssetHandoffs/TheophilusDenseRing/R4/BeforeMaterialR4_References.json",
+  "limits": [
+    "No subjective visual/concept-fidelity acceptance",
+    "No screenshot or full walk test",
+    "No collider, transform, parent, lighting or exposure edit",
+    "No broad protection scan or performance measurement"
+  ]
+}

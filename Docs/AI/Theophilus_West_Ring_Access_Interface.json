@@ -1,0 +1,69 @@
+{
+  "status": "selected_west_interface_requires_vertical_access_module",
+  "scene": "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/Scenes/Theophilus_Shoulder_Return_Study.unity",
+  "worldFrame": "Unity XYZ metres, no MC00 transform",
+  "groundOutsideShell": {
+    "groundOutsideDisplayLift": [
+      1810,
+      187.16835,
+      2265
+    ],
+    "targetBridgeNearEdgeCenter": [
+      1818,
+      233.6,
+      2265
+    ],
+    "heightDifferenceM": 46.4316559,
+    "horizontalDistanceM": 8,
+    "directSlopeDeg": 80.22413011184373,
+    "sceneChanged": false,
+    "dirty": false,
+    "playing": false,
+    "directSlopeRadians": 1.40017521
+  },
+  "towerAndBridgeInterface": {
+    "scene": "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/Scenes/Theophilus_Shoulder_Return_Study.unity",
+    "chosenGroundInterface": [
+      1818,
+      185.160583,
+      2265
+    ],
+    "terrain": "Near terrain / 25cm geometry",
+    "targetObject": "B_WEST_RING_ACCESS_BRIDGE_0526",
+    "targetBridgeNearEdgeCenter": [
+      1818,
+      233.6,
+      2265
+    ],
+    "heightDifferenceM": 48.4394226,
+    "horizontalDistanceM": 0,
+    "directSlopeDeg": 90,
+    "horizontalRunAt12DegreesM": 227.889557,
+    "displayLiftMin": [
+      1812,
+      185.160645,
+      2258.5
+    ],
+    "displayLiftMax": [
+      1824,
+      233,
+      2271.5
+    ],
+    "sceneChanged": false,
+    "collidersAdded": 0,
+    "dirty": false,
+    "playing": false,
+    "playTested": false
+  },
+  "newGeometryCreated": false,
+  "newColliders": 0,
+  "sceneChanged": false,
+  "candidateSearchExpanded": false,
+  "scope": "Only this selected west lift interface. No global impossibility conclusion.",
+  "cloudModuleGap": [
+    "Lower landing/opening plus short natural-ground transition",
+    "Vertical access of about 48.44m; display shell alone is insufficient",
+    "Upper landing/transition at current bridge top Y233.6, account for 0.6m difference from platform contract",
+    "Separate movable lift car or independent stair tower, fixed shell and guardrail collision groups"
+  ]
+}

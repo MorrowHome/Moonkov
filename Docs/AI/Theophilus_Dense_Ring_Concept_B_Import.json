@@ -1,0 +1,77 @@
+{
+  "source": {
+    "path": "LocalData/AI/AssetHandoffs/TheophilusDenseRing/Moonkov_Theophilus_B_Dense_Ring_Concept_Increment.blend",
+    "bytes": 13020085,
+    "sha256": "4296ed283ae54a7e4e058d25594383ee68b07dcddab5dea017fc2063751ec88f",
+    "collection": "CONCEPT_B_DENSE_RADIAL_MEGASTRUCTURE"
+  },
+  "export": {
+    "sourceCollection": "CONCEPT_B_DENSE_RADIAL_MEGASTRUCTURE",
+    "sourceRoot": "B_RING_CONCEPT_ROOT",
+    "sourceRootBlenderWorld": [
+      2015,
+      2130,
+      0
+    ],
+    "unityRootWorld": [
+      2015,
+      0,
+      2130
+    ],
+    "mapping": "Root world matrix removed from geometry; bake root-local object matrices; Blender XYZ -> Unity XZY, normals mapped once, triangle winding reversed once; all logical node transforms identity. No MC00 transform.",
+    "objects": 1417,
+    "meshes": 1350,
+    "materials": 7,
+    "vertices": 53880,
+    "triangles": 17960,
+    "localBounds": [
+      [
+        -268.0798034667969,
+        92.580322265625,
+        -420.0
+      ],
+      [
+        425.0,
+        315.5,
+        480.0
+      ]
+    ],
+    "excludedEarthworkObjects": 3,
+    "excludedCollection": "B_PROPOSED_LOCAL_EARTHWORKS_NOT_APPLIED",
+    "lightsExported": 0,
+    "collidersRequested": 0
+  },
+  "unity": {
+    "scene": "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/Scenes/Theophilus_Shoulder_Return_Study.unity",
+    "prefab": "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/DenseRingConceptB/Prefabs/B_Dense_Ring_Display_Only.prefab",
+    "root": "B_RING_CONCEPT_ROOT",
+    "position": [
+      2015,
+      0,
+      2130
+    ],
+    "rotationIdentity": true,
+    "scaleOne": true,
+    "meshAssets": 1350,
+    "materials": 7,
+    "renderers": 1350,
+    "newColliders": 0,
+    "newLights": 0,
+    "terrainEdited": false,
+    "screenshotsTaken": false,
+    "playTested": false,
+    "entrancesGrounded": false,
+    "savedReopened": true,
+    "dirty": false,
+    "playing": false,
+    "saveRootLabelCorrected": true
+  },
+  "rollbackScene": "LocalData/AI/AssetHandoffs/TheophilusDenseRing/BeforeDenseRing_PaletteB.unity",
+  "limits": [
+    "Display-only graybox without collision or new lights",
+    "Platform entrances not connected to natural ground",
+    "Sealed cap only, no DEM excavation or shaft hole",
+    "No Play route, screenshots, performance or subjective visual acceptance",
+    "No broad protection rehash or project-wide settings edits"
+  ]
+}
