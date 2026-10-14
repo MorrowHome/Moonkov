@@ -10,6 +10,6 @@
 
 回退为同一持久目录中的 `BeforeTowerR9R10.unity`、`BeforeTowerR9R10_Renderers.tsv`。临时脚本编译无诊断，保存重开后 37 件材质/网格绑定、23 个 Renderer 禁用、指定独立构件及 R7 桌根/原生 Terrain 引用成立，`dirty=false`、`playing=false`。未截图、试走、整场保护扫描、性能或视觉验收。
 
-正式 `TheophilusGameScene` 是截至 R8 的独立副本，本批没有修改它。后续正式同步需要单独明确处理，不能将研究副本当成已同步正式版。
+本批最初只写研究场景。随后用户明确要求直接使用正式地图，37 件显示增量与 23 个 Renderer 禁用已同步到 `TheophilusGameScene`，保留原正式出生/搜打撤入口。后续增量只修改正式场景，不再维护研究副本。
 
 本地用户在本批执行期间再次要求“小步 commit”，因此该研究增量单独提交；没有推送，没有夹带正式入口或其他并行改动。
