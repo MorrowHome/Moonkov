@@ -1,0 +1,142 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c229a34fb17625e40822975a02870470, type: 3}
+  m_Name: Spider
+  m_EditorClassIdentifier: Assembly-CSharp::Unity.MP_FPS.AlienCreatureProfile
+  Species: 0
+  Scale: 0.45
+  Health: 140
+  Speed: 12.222222
+  TurnSpeed: 300
+  SightRange: 35
+  HearingRange: 12
+  MemorySeconds: 5
+  PatrolRadius: 8
+  Damage: 24
+  AttackReach: 1.6
+  Windup: 0.42
+  Recovery: 0.55
+  AttackCooldown: 1.6
+  LungeSpeed: 3
+  Liquid: 1
+  LiquidDistance: 24
+  MaximumLiquidEnemies: 2
+  Chain:
+    length: 4.6
+    radius: 0.14
+    segments: 18
+    verticalScale: 0.78
+    headScale: {x: 0.32, y: 0.19, z: 0.43}
+    headFeature: 0
+    feelerLength: 0.48
+    speed: 3.2
+    burstMultiplier: 1.6
+    turnSpeed: 190
+    lateralAmplitude: 0.28
+    wavelength: 1.65
+    waveFrequency: 1.4
+    contraction: 0.28
+    archHeight: 0.075
+    headLift: 0.045
+    bendSmoothing: 0.55
+    segmentGrooveDepth: 0.24
+    sprintHeadLift: 0.24
+    collisionRadiusScale: 0.65
+    selfSeparation: 0.65
+    maximumStretch: 1.45
+    maximumJointAngle: 55
+    footPrediction: 0.12
+    stuckDelay: 0.8
+    legPairs: 6
+    legReach: 0.27
+    footLift: 0.09
+    legRadius: 0.035
+    bristlesPerSegment: 6
+    bristleLength: 0.1
+    bodyColour: {r: 0.035, g: 0.055, b: 0.048, a: 1}
+    bellyColour: {r: 0.17, g: 0.13, b: 0.09, a: 1}
+    smoothness: 0.48
+    metallic: 0.08
+  Branch:
+    bodyRadii: {x: 0.38, y: 0.3, z: 0.52}
+    arms: 8
+    reach: 1.7
+    rootRadius: 0.13
+    tipRadius: 0.045
+    speed: 2.8
+    burstMultiplier: 1.8
+    turnSpeed: 260
+    frequency: 1.1
+    stanceFraction: 0.62
+    prediction: 0.22
+    lift: 0.32
+    curl: 0.3
+    follow: 16
+    stuckDelay: 0.85
+    bodyStretch: 0.38
+    ripple: 0.045
+    actionDuration: 0.75
+    actionExtension: 0.65
+    growthRate: 0.35
+    colour: {r: 0.025, g: 0.035, b: 0.041, a: 1}
+    smoothness: 0.84
+  Gait:
+    forwardLean: 19
+    roll: 3
+    compression: 0.12
+    bodyBob: 0.045
+    strideCycleDistance: 3
+    swingFraction: 0.4
+    footLift: 0.18
+  Fluid:
+    heavy: 1
+    attraction: 1
+    gravity: 12
+    bodyAttraction: 220
+    footAttraction: 650
+    bodyDamping: 34
+    footDamping: 56
+    viscosity: 28
+    pressure: 48
+    cohesion: 2.2
+    freeFlowRadius: 0.012
+    bodyAccelerationLimit: 240
+    tipAccelerationLimit: 420
+    bodySpeedLimit: 28
+    tipSpeedLimit: 40
+    mantleThickness: 0.84
+    rootThickness: 0.72
+    kneeThickness: 0.5
+    toeThickness: 0.38
+    legAsymmetry: 0.42
+    localThicknessVariation: 0.15
+    liquidMass: 0.45
+    appendageMass: 1
+    surfaceThreshold: 0.5
+    motionTrail: 0.12
+    filamentDensity: 0.32
+    minimumRadius: 0.004
+    maximumRadius: 0.022
+    radiusVariation: 0.85
+    necking: 0.82
+    rootPooling: 1.4
+    sag: 0.12
+    velocityLag: 0.008
+    minimumBreakLength: 0.8
+    breakStretch: 3.8
+    bondTension: 12
+    bondDamping: 3
+    colour: {r: 0.0252, g: 0.03456, b: 0.0396, a: 1}
+    smoothness: 0.82
+    wetFilmVariation: 0.045
+    clearCoat: 0.45
+    clearCoatSmoothness: 0.88

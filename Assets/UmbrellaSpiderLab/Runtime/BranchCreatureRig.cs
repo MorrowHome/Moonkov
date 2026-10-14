@@ -23,6 +23,7 @@ namespace Unity.MP_FPS.SpiderLab
         private readonly ProceduralMenagerieExperiment.Species m_Kind;
         private readonly float[] m_Growth;
         private bool m_Initialized;
+        private readonly bool m_Render;
         public readonly Vector3[] Rest, Points;
         public readonly float[] RestRadii, Radii;
         public readonly Quaternion[] Rotations;
@@ -50,8 +51,9 @@ namespace Unity.MP_FPS.SpiderLab
             kind == m_Kind && s.arms == Arms && s.reach == m_Shape.reach &&
             s.rootRadius == m_Shape.rootRadius && s.tipRadius == m_Shape.tipRadius && s.bodyRadii == RestBodyRadii;
 
-        public BranchCreatureRig(Transform owner, int mask, BranchCreatureSettings s, ProceduralMenagerieExperiment.Species kind)
+        public BranchCreatureRig(Transform owner, int mask, BranchCreatureSettings s, ProceduralMenagerieExperiment.Species kind, bool render = true)
         {
+            m_Render = render;
             m_Kind = kind; m_Mask = mask; Arms = Mathf.Clamp(s.arms, 3, 8);
             bool roots = kind == ProceduralMenagerieExperiment.Species.Roots;
             Branches = roots ? Arms + Mathf.Min(Arms, 6) : Arms;
@@ -97,6 +99,7 @@ namespace Unity.MP_FPS.SpiderLab
             }
             m_Root = new GameObject("Continuous branch rig / " + kind).transform;
             m_Root.SetParent(owner, false); m_Root.gameObject.layer = 2;
+            if (!m_Render) return;
             m_Material = new Material(Shader.Find("Universal Render Pipeline/Lit")) { name = "Menagerie solid rollback skin" };
             var body = GameObject.CreatePrimitive(PrimitiveType.Sphere); body.name = "Central mantle"; body.layer = 2;
             body.transform.SetParent(m_Root, false); body.GetComponent<Collider>().enabled = false; Dispose(body.GetComponent<Collider>());
@@ -128,7 +131,7 @@ namespace Unity.MP_FPS.SpiderLab
             var pose = motor.Current; Vector3 up = pose.Up;
             bool slime = m_Kind == ProceduralMenagerieExperiment.Species.Slime;
             bool roots = m_Kind == ProceduralMenagerieExperiment.Species.Roots;
-            Vector3 body = pose.Position - up * (SurfaceMotor.Height - RestBodyRadii.y * (slime ? .88f : 1.05f));
+            Vector3 body = pose.Position - up * (motor.BodyHeight - RestBodyRadii.y * (slime ? .88f : 1.05f));
             float stretch = 1 + drive * s.bodyStretch * (slime ? 1 : .35f);
             float flatten = slime ? 1 - action * .5f : 1;
             BodyScale = new Vector3(1 / Mathf.Sqrt(stretch * flatten), flatten / Mathf.Sqrt(stretch), stretch);
@@ -142,7 +145,7 @@ namespace Unity.MP_FPS.SpiderLab
                 bool stance = !motor.Detached && (drive < .02f || phase < s.stanceFraction);
                 var contact = m_Contacts[a];
                 Vector3 predicted = pose.Position + radial * s.reach * (slime ? .9f : 1) + Vector3.ClampMagnitude(motor.Velocity * s.prediction, .75f);
-                Vector3 goal = predicted - up * (SurfaceMotor.Height - .05f);
+                Vector3 goal = predicted - up * (motor.BodyHeight - .05f * motor.Size);
                 if (motor.Detached) goal = root + radial * s.reach * .28f + up * .12f;
                 bool hasSurface = false;
                 if (!motor.Detached && Physics.Raycast(predicted + up * .6f, -up, out var ground, 2, m_Mask, QueryTriggerInteraction.Ignore))
@@ -212,8 +215,11 @@ namespace Unity.MP_FPS.SpiderLab
                     Radii[index] = Mathf.Lerp(s.rootRadius * .55f, s.tipRadius * .75f, t) * Mathf.Lerp(.60f, 1, m_Growth[a]);
                 }
             }
-            m_Material.SetColor("_BaseColor", s.colour); m_Material.SetFloat("_Smoothness", s.smoothness);
-            m_Body.SetPositionAndRotation(body, pose.Rotation); m_Body.localScale = Vector3.Scale(RestBodyRadii * 2, BodyScale);
+            if (m_Render)
+            {
+                m_Material.SetColor("_BaseColor", s.colour); m_Material.SetFloat("_Smoothness", s.smoothness);
+                m_Body.SetPositionAndRotation(body, pose.Rotation); m_Body.localScale = Vector3.Scale(RestBodyRadii * 2, BodyScale);
+            }
             for (int a = 0; a < Branches; a++) for (int j = 0; j < Samples; j++)
             {
                 int bone = Index(a, j); Vector3 axis = Points[Index(a, Mathf.Min(j + 1, Samples - 1))] - Points[Index(a, Mathf.Max(j - 1, 0))];
@@ -221,6 +227,7 @@ namespace Unity.MP_FPS.SpiderLab
                 Vector3 normalUp = Vector3.ProjectOnPlane(up, axis.normalized).normalized;
                 if (normalUp.sqrMagnitude < .1f) normalUp = pose.Right;
                 Rotations[bone] = Quaternion.LookRotation(axis, normalUp);
+                if (!m_Render) continue;
                 for (int side = 0; side <= Sides; side++)
                 {
                     float angle = side / (float)Sides * Mathf.PI * 2;
@@ -232,14 +239,15 @@ namespace Unity.MP_FPS.SpiderLab
                     m_Normals[vertex] = m_Root.InverseTransformDirection(radial.normalized);
                 }
             }
-            m_Mesh.vertices = m_Vertices; m_Mesh.normals = m_Normals; m_Mesh.RecalculateBounds(); m_Initialized = true;
+            if (m_Render) { m_Mesh.vertices = m_Vertices; m_Mesh.normals = m_Normals; m_Mesh.RecalculateBounds(); }
+            m_Initialized = true;
         }
 
         public void ResetContacts()
         {
             foreach (var contact in m_Contacts) { contact.Initialized = contact.Stance = false; contact.Surface = null; }
         }
-        public void SetVisible(bool visible) { m_Renderer.enabled = m_BodyRenderer.enabled = visible && m_Initialized; }
+        public void SetVisible(bool visible) { if (m_Render) m_Renderer.enabled = m_BodyRenderer.enabled = visible && m_Initialized; }
         public void Release() { m_Root.gameObject.SetActive(false); Dispose(m_Root.gameObject); Dispose(m_Mesh); Dispose(m_Material); }
         private static void Dispose(Object obj) { if (Application.isPlaying) Object.Destroy(obj); else Object.DestroyImmediate(obj); }
     }

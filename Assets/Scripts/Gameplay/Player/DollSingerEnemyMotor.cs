@@ -36,7 +36,7 @@ namespace Unity.MP_FPS
                 HorizontalDistance(position, brain.TacticalGoal) < .65f) move = Vector3.zero;
 
             bool hasContact = brain.Target != Unity.Entities.Entity.Null;
-            Vector3 aim = brain.LastSeen + Vector3.up * 1.15f;
+            Vector3 aim = brain.LastSeen + brain.AimOffset;
             float distance = hasContact ? Vector3.Distance(eye, aim) : 50;
             var weapon = WeaponManager.Instance?.WeaponRegistry.GetWeaponData(health.EquippedWeaponID);
             if (brain.Visible && weapon != null && weapon.Type == WeaponType.Projectile)

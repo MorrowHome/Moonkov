@@ -11,6 +11,7 @@ namespace Unity.MP_FPS.SpiderLab
         private readonly Matrix4x4[] m_Matrices;
         private readonly Vector4[] m_Centres;
         private readonly BranchCreatureRig m_Rig;
+        private readonly float m_PhysicalScale;
         public SkeletonFluidPresentation Fluid { get; }
 
         public static SpiderFluidSettings Defaults(ProceduralMenagerieExperiment.Species species)
@@ -31,15 +32,17 @@ namespace Unity.MP_FPS.SpiderLab
         }
 
         public BranchFluidPresentation(Transform owner, int mask, BranchCreatureRig rig, BranchCreatureSettings s,
-            ProceduralMenagerieExperiment.Species species)
+            ProceduralMenagerieExperiment.Species species, float physicalScale = 1, BranchCreatureSettings restShape = null)
         {
+            m_PhysicalScale = Mathf.Clamp(physicalScale, .1f, 4);
             m_Rig = rig; m_Pivot = new GameObject("Weighted branched liquid guide").transform;
             m_Pivot.SetParent(owner, false); m_Pivot.gameObject.layer = 2;
+            m_Pivot.localScale = Vector3.one * m_PhysicalScale;
             m_Matrices = new Matrix4x4[rig.BoneCount]; m_Centres = new Vector4[rig.BoneCount];
-            for (int i = 0; i < rig.BoneCount; i++) m_Centres[i] = new Vector4(rig.Rest[i].x, rig.Rest[i].y, rig.Rest[i].z, 1);
+            for (int i = 0; i < rig.BoneCount; i++) m_Centres[i] = new Vector4(rig.Rest[i].x / m_PhysicalScale, rig.Rest[i].y / m_PhysicalScale, rig.Rest[i].z / m_PhysicalScale, 1);
             var seeds = new List<SkeletonFluidPresentation.Seed>();
             const float spacing = .045f;
-            Vector3 r = rig.RestBodyRadii;
+            Vector3 r = rig.RestBodyRadii / m_PhysicalScale;
             for (float z = -r.z; z <= r.z; z += spacing)
             for (float y = -r.y; y <= r.y; y += spacing)
             for (float x = -r.x; x <= r.x; x += spacing)
@@ -50,7 +53,7 @@ namespace Unity.MP_FPS.SpiderLab
             for (int j = 0; j < BranchCreatureRig.Samples - 1; j++)
             {
                 int a = BranchCreatureRig.Index(arm, j), b = a + 1;
-                Vector3 from = rig.Rest[a], to = rig.Rest[b], axis = (to - from).normalized;
+                Vector3 from = rig.Rest[a] / m_PhysicalScale, to = rig.Rest[b] / m_PhysicalScale, axis = (to - from).normalized;
                 Vector3 cross = Vector3.Cross(axis, Vector3.up).normalized;
                 if (cross.sqrMagnitude < .1f) cross = Vector3.right;
                 Vector3 up = Vector3.Cross(cross, axis).normalized;
@@ -58,7 +61,7 @@ namespace Unity.MP_FPS.SpiderLab
                 for (int slice = 0; slice < slices; slice++)
                 {
                     float blend = slice / (float)slices, coordinate = (j + blend) / (BranchCreatureRig.Samples - 1f);
-                    float radius = Mathf.Lerp(rig.RestRadii[a], rig.RestRadii[b], blend);
+                    float radius = Mathf.Lerp(rig.RestRadii[a], rig.RestRadii[b], blend) / m_PhysicalScale;
                     Vector3 centre = Vector3.Lerp(from, to, blend);
                     float vertical = slime ? .48f : 1;
                     for (float y = -radius; y <= radius; y += spacing)
@@ -79,7 +82,7 @@ namespace Unity.MP_FPS.SpiderLab
                     }
                 }
             }
-            float half = Mathf.Max(2.8f, s.reach + Mathf.Max(r.x, r.z) + .45f);
+            float half = Mathf.Max(2.8f, (restShape ?? s).reach + Mathf.Max(r.x, r.z) + .45f);
             Fluid = new SkeletonFluidPresentation(m_Pivot, mask, seeds.ToArray(), rig.BoneCount, half, 128, true, true);
         }
 
@@ -97,11 +100,14 @@ namespace Unity.MP_FPS.SpiderLab
         {
             m_Pivot.SetPositionAndRotation(m_Rig.Points[0], motor.Current.Rotation);
             var local = m_Pivot.worldToLocalMatrix;
-            m_Matrices[0] = local * Matrix4x4.TRS(m_Rig.Points[0], m_Rig.Rotations[0], m_Rig.BodyScale);
+            m_Matrices[0] = local * Matrix4x4.TRS(m_Rig.Points[0], m_Rig.Rotations[0], m_Rig.BodyScale * m_PhysicalScale);
             for (int i = 1; i < m_Matrices.Length; i++)
             {
                 float scale = m_Rig.Radii[i] / Mathf.Max(.01f, m_Rig.RestRadii[i]);
-                m_Matrices[i] = local * Matrix4x4.TRS(m_Rig.Points[i], m_Rig.Rotations[i], new Vector3(scale, scale, 1)) * m_Rig.RestInverse[i];
+                // The rig rest points are world-sized, while fluid rest points stay
+                // normalized so shrinking an enemy retains voxel/particle detail.
+                m_Matrices[i] = local * Matrix4x4.TRS(m_Rig.Points[i], m_Rig.Rotations[i], new Vector3(scale, scale, 1)) *
+                    m_Rig.RestInverse[i] * Matrix4x4.Scale(Vector3.one * m_PhysicalScale);
             }
             Fluid.Settings = style; Fluid.Predatory = style.heavy; Fluid.AttractionEnabled = style.attraction;
             Fluid.SetVisible(true); Fluid.Draw(m_Matrices, m_Centres, motor.Velocity, dt);

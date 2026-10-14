@@ -1,0 +1,142 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c229a34fb17625e40822975a02870470, type: 3}
+  m_Name: Leech
+  m_EditorClassIdentifier: Assembly-CSharp::Unity.MP_FPS.AlienCreatureProfile
+  Species: 5
+  Scale: 0.65
+  Health: 140
+  Speed: 4.1538463
+  TurnSpeed: 300
+  SightRange: 35
+  HearingRange: 12
+  MemorySeconds: 5
+  PatrolRadius: 8
+  Damage: 24
+  AttackReach: 1.6
+  Windup: 0.42
+  Recovery: 0.55
+  AttackCooldown: 1.6
+  LungeSpeed: 3
+  Liquid: 1
+  LiquidDistance: 24
+  MaximumLiquidEnemies: 2
+  Chain:
+    length: 2.8
+    radius: 0.24
+    segments: 12
+    verticalScale: 0.64
+    headScale: {x: 0.34, y: 0.19, z: 0.3}
+    headFeature: 2
+    feelerLength: 0.48
+    speed: 2.7
+    burstMultiplier: 1.6
+    turnSpeed: 150
+    lateralAmplitude: 0.015
+    wavelength: 2.8
+    waveFrequency: 0.95
+    contraction: 0.42
+    archHeight: 0.24
+    headLift: 0.03
+    bendSmoothing: 0.55
+    segmentGrooveDepth: 0.04
+    sprintHeadLift: 0.24
+    collisionRadiusScale: 0.65
+    selfSeparation: 0.65
+    maximumStretch: 1.45
+    maximumJointAngle: 55
+    footPrediction: 0.12
+    stuckDelay: 0.8
+    legPairs: 0
+    legReach: 0.27
+    footLift: 0.09
+    legRadius: 0.035
+    bristlesPerSegment: 0
+    bristleLength: 0.1
+    bodyColour: {r: 0.035, g: 0.055, b: 0.048, a: 1}
+    bellyColour: {r: 0.17, g: 0.13, b: 0.09, a: 1}
+    smoothness: 0.87
+    metallic: 0.08
+  Branch:
+    bodyRadii: {x: 0.38, y: 0.3, z: 0.52}
+    arms: 8
+    reach: 1.7
+    rootRadius: 0.13
+    tipRadius: 0.045
+    speed: 2.8
+    burstMultiplier: 1.8
+    turnSpeed: 260
+    frequency: 1.1
+    stanceFraction: 0.62
+    prediction: 0.22
+    lift: 0.32
+    curl: 0.3
+    follow: 16
+    stuckDelay: 0.85
+    bodyStretch: 0.38
+    ripple: 0.045
+    actionDuration: 0.75
+    actionExtension: 0.65
+    growthRate: 0.35
+    colour: {r: 0.025, g: 0.035, b: 0.041, a: 1}
+    smoothness: 0.84
+  Gait:
+    forwardLean: 19
+    roll: 3
+    compression: 0.12
+    bodyBob: 0.045
+    strideCycleDistance: 3
+    swingFraction: 0.4
+    footLift: 0.18
+  Fluid:
+    heavy: 1
+    attraction: 1
+    gravity: 12
+    bodyAttraction: 440
+    footAttraction: 850
+    bodyDamping: 42
+    footDamping: 65
+    viscosity: 30
+    pressure: 42
+    cohesion: 2.5
+    freeFlowRadius: 0.012
+    bodyAccelerationLimit: 240
+    tipAccelerationLimit: 420
+    bodySpeedLimit: 28
+    tipSpeedLimit: 40
+    mantleThickness: 1
+    rootThickness: 1
+    kneeThickness: 1
+    toeThickness: 0.9
+    legAsymmetry: 0.42
+    localThicknessVariation: 0.05
+    liquidMass: 0.7
+    appendageMass: 1
+    surfaceThreshold: 0.42
+    motionTrail: 0.065
+    filamentDensity: 0.2
+    minimumRadius: 0.004
+    maximumRadius: 0.018
+    radiusVariation: 0.85
+    necking: 0.82
+    rootPooling: 1.4
+    sag: 0.12
+    velocityLag: 0.008
+    minimumBreakLength: 0.8
+    breakStretch: 3.8
+    bondTension: 12
+    bondDamping: 3
+    colour: {r: 0.0252, g: 0.03456, b: 0.0396, a: 1}
+    smoothness: 0.87
+    wetFilmVariation: 0.045
+    clearCoat: 0.6
+    clearCoatSmoothness: 0.94

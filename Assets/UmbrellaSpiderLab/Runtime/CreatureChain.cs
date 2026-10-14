@@ -63,9 +63,9 @@ namespace Unity.MP_FPS.SpiderLab
         /// the head extends; the head then pauses while the rear contracts forward.
         /// The actor owns head displacement, so this is never a second movement authority.</summary>
         public void TickSuction(SurfaceMotor.Pose head, CreatureChainSettings s, float phase,
-            float drive, float dt, bool detached)
+            float drive, float dt, bool detached, float bodyHeight = SurfaceMotor.Height)
         {
-            Tick(head, s, true, drive, dt, 0, detached);
+            Tick(head, s, true, drive, dt, 0, detached, bodyHeight);
             bool holding = phase < .58f;
             if (!m_SuckerInitialized || detached)
             {
@@ -89,7 +89,7 @@ namespace Unity.MP_FPS.SpiderLab
                 {
                     up = hit.normal; position = hit.point + up * radius * s.verticalScale;
                     if (i == Rings - 1)
-                    { m_SuckerSurface = hit.collider; m_SuckerAnchor = hit.collider.transform.InverseTransformPoint(hit.point + up * SurfaceMotor.Height); }
+                    { m_SuckerSurface = hit.collider; m_SuckerAnchor = hit.collider.transform.InverseTransformPoint(hit.point + up * bodyHeight); }
                 }
                 else UnsupportedRings++;
                 float arch = Mathf.Sin(t * Mathf.PI) * s.archHeight * Mathf.Sin(phase * Mathf.PI) * drive;
@@ -125,7 +125,7 @@ namespace Unity.MP_FPS.SpiderLab
             return newer;
         }
 
-        public void Tick(SurfaceMotor.Pose head, CreatureChainSettings settings, bool caterpillar, float drive, float dt, float sprint = 0, bool detached = false)
+        public void Tick(SurfaceMotor.Pose head, CreatureChainSettings settings, bool caterpillar, float drive, float dt, float sprint = 0, bool detached = false, float bodyHeight = SurfaceMotor.Height)
         {
             Push(head);
             m_Drive = Mathf.MoveTowards(m_Drive, Mathf.Clamp01(drive), dt * 3);
@@ -147,7 +147,7 @@ namespace Unity.MP_FPS.SpiderLab
                 if (caterpillar) radius *= 1 - settings.segmentGrooveDepth * Mathf.Pow(.5f + .5f * Mathf.Cos(t * settings.segments * Mathf.PI * 2), 4);
                 float envelope = Mathf.Sin(t * Mathf.PI) * (caterpillar ? 1 : Mathf.Min(1, t * 12));
                 float sideways = Mathf.Sin(wave) * settings.lateralAmplitude * envelope * m_Drive;
-                Vector3 centre = pose.Position - pose.Up * (SurfaceMotor.Height - radius * settings.verticalScale);
+                Vector3 centre = pose.Position - pose.Up * (bodyHeight - radius * settings.verticalScale);
                 Vector3 offset = pose.Right * sideways;
                 if (offset.sqrMagnitude > .000001f && Physics.SphereCast(centre, radius * .65f, offset.normalized,
                     out var obstacle, offset.magnitude, m_Mask, QueryTriggerInteraction.Ignore))

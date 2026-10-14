@@ -80,7 +80,7 @@ namespace Unity.MP_FPS.SpiderLab
         private Transform Primitive(string name, PrimitiveType type, Material material)
         {
             var go = GameObject.CreatePrimitive(type); go.name = name; go.layer = 2;
-            go.transform.SetParent(m_Root, false); Object.Destroy(go.GetComponent<Collider>());
+            go.transform.SetParent(m_Root, false); var collider = go.GetComponent<Collider>(); collider.enabled = false; Dispose(collider);
             var renderer = go.GetComponent<Renderer>(); renderer.sharedMaterial = material;
             renderer.enabled = m_Visible; m_Renderers.Add(renderer); return go.transform;
         }

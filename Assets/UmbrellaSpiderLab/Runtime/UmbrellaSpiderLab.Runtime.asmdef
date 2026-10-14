@@ -2,5 +2,5 @@
     "name": "UmbrellaSpiderLab.Runtime",
     "rootNamespace": "Unity.MP_FPS.SpiderLab",
     "references": ["Unity.InputSystem"],
-    "autoReferenced": false
+    "autoReferenced": true
 }

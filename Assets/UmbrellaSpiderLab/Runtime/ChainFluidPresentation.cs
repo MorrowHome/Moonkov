@@ -16,6 +16,7 @@ namespace Unity.MP_FPS.SpiderLab
         private readonly float m_Length, m_Radius, m_Vertical, m_LegReach, m_LegRadius, m_HairLength;
         private readonly int m_Pairs, m_Segments, m_Hairs;
         private readonly Vector3 m_HeadScale;
+        private readonly float m_PhysicalScale;
         private readonly CreatureChainSettings.HeadFeature m_HeadFeature;
         private readonly float m_FeelerLength;
         private readonly List<SkeletonFluidPresentation.Seed> m_Seeds = new List<SkeletonFluidPresentation.Seed>();
@@ -38,8 +39,9 @@ namespace Unity.MP_FPS.SpiderLab
             (!larva || (m_Pairs == s.legPairs && m_LegReach == s.legReach && m_LegRadius == s.legRadius &&
                 m_Segments == s.segments && m_Hairs == s.bristlesPerSegment && m_HairLength == s.bristleLength));
 
-        public ChainFluidPresentation(Transform owner, int mask, CreatureChainSettings s, bool larva)
+        public ChainFluidPresentation(Transform owner, int mask, CreatureChainSettings s, bool larva, float physicalScale = 1)
         {
+            m_PhysicalScale = Mathf.Clamp(physicalScale, .1f, 4);
             m_Larva = larva; m_Length = s.length; m_Radius = s.radius; m_Vertical = s.verticalScale;
             m_HeadScale = s.headScale; m_Pairs = larva ? s.legPairs : 0; m_LegReach = s.legReach;
             m_HeadFeature = s.headFeature; m_FeelerLength = s.feelerLength;
@@ -48,6 +50,7 @@ namespace Unity.MP_FPS.SpiderLab
             m_Centres = new Vector4[bones]; m_RestInverse = new Matrix4x4[bones]; m_Matrices = new Matrix4x4[bones];
             m_Pivot = new GameObject(larva ? "Liquid larva rig" : "Liquid serpent rig").transform;
             m_Pivot.SetParent(owner, false); m_Pivot.gameObject.layer = 2;
+            m_Pivot.localScale = Vector3.one * m_PhysicalScale;
             for (int i = 0; i < CreatureChain.Rings; i++)
             {
                 float t = i / (CreatureChain.Rings - 1f);
@@ -182,10 +185,10 @@ namespace Unity.MP_FPS.SpiderLab
             {
                 var rotation = Quaternion.LookRotation(chain.Tangents[i], chain.Ups[i]);
                 float scale = chain.Radii[i] / Mathf.Max(.006f, m_RestRadii[i]);
-                m_Matrices[i] = toLocal * Matrix4x4.TRS(chain.Centres[i], rotation, new Vector3(scale, scale, 1)) * m_RestInverse[i];
+                m_Matrices[i] = toLocal * Matrix4x4.TRS(chain.Centres[i], rotation, new Vector3(scale, scale, m_PhysicalScale)) * m_RestInverse[i];
             }
             m_Matrices[CreatureChain.Rings] = toLocal * Matrix4x4.TRS(chain.Centres[0] + chain.Tangents[0] * .06f,
-                Quaternion.LookRotation(chain.Tangents[0], chain.Ups[0]), Vector3.one) * m_RestInverse[CreatureChain.Rings];
+                Quaternion.LookRotation(chain.Tangents[0], chain.Ups[0]), Vector3.one * m_PhysicalScale) * m_RestInverse[CreatureChain.Rings];
             int legs = body.CopyLegPoints(m_LegPoints);
             for (int leg = 0; leg < legs; leg++)
             {
@@ -195,7 +198,7 @@ namespace Unity.MP_FPS.SpiderLab
                 {
                     Vector3 direction = j == 0 ? m_LegPoints[leg * 3 + 1] - m_LegPoints[leg * 3] : m_LegPoints[leg * 3 + 2] - m_LegPoints[leg * 3 + 1];
                     Quaternion rotation = direction.sqrMagnitude > .000001f ? Quaternion.LookRotation(direction, chain.Ups[ring]) : motor.Current.Rotation;
-                    m_Matrices[bone + j] = toLocal * Matrix4x4.TRS(m_LegPoints[leg * 3 + j], rotation, Vector3.one) * m_RestInverse[bone + j];
+                    m_Matrices[bone + j] = toLocal * Matrix4x4.TRS(m_LegPoints[leg * 3 + j], rotation, Vector3.one * m_PhysicalScale) * m_RestInverse[bone + j];
                 }
             }
             Fluid.Settings = style; Fluid.Predatory = style.heavy; Fluid.AttractionEnabled = style.attraction;

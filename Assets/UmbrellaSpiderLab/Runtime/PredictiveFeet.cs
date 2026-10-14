@@ -42,6 +42,9 @@ namespace Unity.MP_FPS.SpiderLab
         public const float MaxReach = UpperLength + LowerLength - .055f;
         private readonly Foot[] m_Feet = new Foot[Count];
         private readonly int m_Mask;
+        private readonly float m_Size;
+        public float Size => m_Size;
+        private float ReachLimit => MaxReach * m_Size;
         private float m_Clock;
         private Vector2 m_PreviousInput;
         private float m_PreviousYaw;
@@ -61,7 +64,7 @@ namespace Unity.MP_FPS.SpiderLab
         public int ReleasedAnchors { get; private set; }
         public float SpeedScale { get; private set; } = 1;
 
-        public PredictiveFeet(int mask) { m_Mask = mask; }
+        public PredictiveFeet(int mask, float scale = 1) { m_Mask = mask; m_Size = Mathf.Clamp(scale, .1f, 4); }
 
         public static Vector3 Radial(int index)
         {
@@ -69,15 +72,15 @@ namespace Unity.MP_FPS.SpiderLab
             return new Vector3(Mathf.Sin(a), 0, Mathf.Cos(a));
         }
 
-        public static Vector3 Hip(SurfaceMotor.Pose pose, int i)
+        public static Vector3 Hip(SurfaceMotor.Pose pose, int i, float scale = 1)
         {
-            return pose.Position + pose.Rotation * (Radial(i) * .35f + Vector3.up * .04f);
+            return pose.Position + pose.Rotation * (Radial(i) * .35f + Vector3.up * .04f) * scale;
         }
 
         private Vector3 Home(SurfaceMotor.Pose pose, int i)
         {
             Vector3 lead = (pose.Right * m_PreviousInput.x + pose.Forward * m_PreviousInput.y).normalized * m_LeadDistance;
-            return pose.Position + pose.Rotation * (Radial(i) * 1.18f - Vector3.up * SurfaceMotor.Height) + lead;
+            return pose.Position + pose.Rotation * (Radial(i) * 1.18f - Vector3.up * SurfaceMotor.Height) * m_Size + lead;
         }
 
         // Body posture belongs before planning/IK: the roots really lean and compress while the
@@ -89,7 +92,7 @@ namespace Unity.MP_FPS.SpiderLab
             Vector3 axis = Vector3.Cross(surface.Up, direction);
             var pose = surface;
             float compression = (-Settings.compression + Settings.bodyBob * Mathf.Cos(phase * Mathf.PI * 4)) * intensity;
-            pose.Position += surface.Up * compression + direction * .025f;
+            pose.Position += surface.Up * compression + direction * .025f * m_Size;
             if (axis.sqrMagnitude > .001f)
                 pose.Rotation = Quaternion.AngleAxis(Settings.forwardLean * intensity, axis.normalized) * surface.Rotation;
             pose.Rotation *= Quaternion.AngleAxis(Mathf.Sin(phase * Mathf.PI * 2) * Settings.roll * intensity, Vector3.forward);
@@ -137,10 +140,10 @@ namespace Unity.MP_FPS.SpiderLab
             m_CycleTime = Mathf.Clamp(Settings.strideCycleDistance / Mathf.Max(1, travelSpeed), .14f, .55f);
             m_Phase = Mathf.Repeat(m_Phase + dt / m_CycleTime, 1);
             float duration = m_CycleTime * Settings.swingFraction;
-            float supportTime = Mathf.Min(.13f, .85f / Mathf.Max(1, travelSpeed));
+            float supportTime = Mathf.Min(.13f, .85f * m_Size / Mathf.Max(1, travelSpeed));
             Vector2 targetLean = input.normalized * Mathf.InverseLerp(1, 7, travelSpeed);
             m_Lean = Vector2.MoveTowards(m_Lean, targetLean, dt * 10);
-            m_LeadDistance = Mathf.InverseLerp(1, 6, travelSpeed) * .5f;
+            m_LeadDistance = Mathf.InverseLerp(1, 6, travelSpeed) * .5f * m_Size;
             var surfacePose = motor.Current;
             var pose = BodyPose = RunningPose(surfacePose, m_Lean, m_Phase);
             var landingSurface = motor.Predict(input, speed, yaw, duration);
@@ -167,7 +170,7 @@ namespace Unity.MP_FPS.SpiderLab
                     foot.Position = anchor;
                     foot.Normal = foot.Surface.transform.TransformDirection(foot.LocalNormal).normalized;
                     foot.Velocity = Vector3.zero;
-                    if (!SpiderLegKinematics.Solve(pose, i, foot.Position, foot.Normal, m_Mask, out _, out _))
+                    if (!SpiderLegKinematics.Solve(pose, i, foot.Position, foot.Normal, m_Mask, out _, out _, m_Size))
                         ReleaseAnchor(foot);
                 }
                 else foot.State = ContactState.Recovery;
@@ -181,13 +184,13 @@ namespace Unity.MP_FPS.SpiderLab
                 int i = (first + offset) % Count;
                 var foot = m_Feet[i];
                 if (foot.State == ContactState.Swing) continue;
-                float reach = Vector3.Distance(Hip(pose, i), foot.Position);
+                float reach = Vector3.Distance(Hip(pose, i, m_Size), foot.Position);
                 float error = Vector3.Distance(Home(landingSurface, i), foot.Position);
                 float phase = Mathf.Repeat(m_Phase + (i % 2) * .5f + (i / 2) * .015f, 1);
-                bool urgent = reach > MaxReach * .80f || foot.State == ContactState.Recovery;
+                bool urgent = reach > ReachLimit * .80f || foot.State == ContactState.Recovery;
                 if (urgent != (pass == 0)) continue;
                 if (foot.State != ContactState.Recovery && SwingCount >= (urgent ? 6 : 4)) continue;
-                if (!urgent && (error < .42f || phase > .10f)) continue;
+                if (!urgent && (error < .42f * m_Size || phase > .10f)) continue;
                 // An airborne recovery foot removes no support. Never prevent it from landing
                 // because other feet are also recovering; that would deadlock the whole gait.
                 bool support = foot.State == ContactState.Recovery || SupportDistributedWithout(i, urgent ? 2 : 4);
@@ -199,8 +202,8 @@ namespace Unity.MP_FPS.SpiderLab
                 if (!support || !FindContact(stepLanding, stepSupportEnd, i, foot.Normal, out var contact, foot, stepSurface))
                 {
                     foot.FailedTime += dt;
-                    if (foot.State == ContactState.Stance && (reach > MaxReach * .94f ||
-                        foot.FailedTime > .12f && reach > MaxReach * .84f)) ReleaseAnchor(foot);
+                    if (foot.State == ContactState.Stance && (reach > ReachLimit * .94f ||
+                        foot.FailedTime > .12f && reach > ReachLimit * .84f)) ReleaseAnchor(foot);
                     continue;
                 }
                 if (Vector3.Distance(contact.point, foot.Position) < .09f && foot.Surface) continue;
@@ -254,12 +257,12 @@ namespace Unity.MP_FPS.SpiderLab
 
         private void Retract(Foot foot, SurfaceMotor.Pose pose, int i, float dt)
         {
-            Vector3 hip = Hip(pose, i);
+            Vector3 hip = Hip(pose, i, m_Size);
             // Repair a previously invalid target at the endpoint the IK was actually rendering.
             // Normal recovery releases BEFORE this limit, so valid planted contacts never jump.
             Vector3 delta = foot.Position - hip;
-            if (delta.magnitude > MaxReach) foot.Position = hip + delta.normalized * MaxReach;
-            Vector3 tucked = hip + pose.Rotation * Radial(i) * .52f + pose.Up * .42f;
+            if (delta.magnitude > ReachLimit) foot.Position = hip + delta.normalized * ReachLimit;
+            Vector3 tucked = hip + (pose.Rotation * Radial(i) * .52f + pose.Up * .42f) * m_Size;
             Vector3 before = foot.Position;
             Vector3 next = Vector3.MoveTowards(before, tucked, 26f * dt);
             Vector3 step = next - before;
@@ -301,7 +304,7 @@ namespace Unity.MP_FPS.SpiderLab
             best = default;
             float bestScore = float.MaxValue;
             var surface = contactFrame ?? landing;
-            Vector3 home = Home(surface, index), hip = Hip(landing, index);
+            Vector3 home = Home(surface, index), hip = Hip(landing, index, m_Size);
             if (stepping != null) stepping.PlanningIssue = "no reachable contact";
             for (int candidate = 0; candidate < 12; candidate++)
             {
@@ -309,34 +312,34 @@ namespace Unity.MP_FPS.SpiderLab
                 if (normal.sqrMagnitude < .1f) normal = surface.Up;
                 Vector3 radial = surface.Rotation * Radial(index);
                 Vector3 lateral = Vector3.Cross(surface.Up, radial);
-                Vector3 center = home + radial * ((candidate % 3 - 1) * .35f) +
-                    lateral * ((candidate % 6 < 3 ? -1 : 1) * .23f);
-                if (!UnityEngine.Physics.Raycast(center + normal * 1.25f, -normal, out var hit,
-                    2.5f, m_Mask, QueryTriggerInteraction.Ignore)) continue;
+                Vector3 center = home + (radial * ((candidate % 3 - 1) * .35f) +
+                    lateral * ((candidate % 6 < 3 ? -1 : 1) * .23f)) * m_Size;
+                if (!UnityEngine.Physics.Raycast(center + normal * 1.25f * m_Size, -normal, out var hit,
+                    2.5f * m_Size, m_Mask, QueryTriggerInteraction.Ignore)) continue;
                 float reach = Vector3.Distance(hip, hit.point);
-                float futureReach = Vector3.Distance(Hip(supportEnd, index), hit.point);
-                if (reach > MaxReach * .94f || futureReach > MaxReach) continue;
-                if (!SpiderLegKinematics.Solve(landing, index, hit.point, hit.normal, m_Mask, out _, out _) ||
-                    !SpiderLegKinematics.Solve(supportEnd, index, hit.point, hit.normal, m_Mask, out _, out _)) continue;
+                float futureReach = Vector3.Distance(Hip(supportEnd, index, m_Size), hit.point);
+                if (reach > ReachLimit * .94f || futureReach > ReachLimit) continue;
+                if (!SpiderLegKinematics.Solve(landing, index, hit.point, hit.normal, m_Mask, out _, out _, m_Size) ||
+                    !SpiderLegKinematics.Solve(supportEnd, index, hit.point, hit.normal, m_Mask, out _, out _, m_Size)) continue;
                 // A detail collider may sit behind/inside the coarse building proxy. Its ray hit is
                 // not an exposed grip merely because the toe can reach it. Keep both the departure
                 // collar and the straight root-to-contact corridor on the accessible side.
-                Vector3 collar = hit.point + hit.normal * .05f;
-                if (UnityEngine.Physics.CheckSphere(collar, .025f, m_Mask, QueryTriggerInteraction.Ignore)) continue;
+                Vector3 collar = hit.point + hit.normal * .05f * m_Size;
+                if (UnityEngine.Physics.CheckSphere(collar, .025f * m_Size, m_Mask, QueryTriggerInteraction.Ignore)) continue;
                 Vector3 corridor = collar - hip;
                 if (corridor.sqrMagnitude > .0001f && UnityEngine.Physics.Raycast(hip, corridor.normalized,
                     out _, corridor.magnitude, m_Mask, QueryTriggerInteraction.Ignore)) continue;
                 // Reject crossed legs; the candidate must lie in this leg's outward half-space.
-                if (Vector3.Dot(hit.point - hip, radial) < .10f) continue;
-                float score = (hit.point - home).sqrMagnitude + Mathf.Max(0, futureReach - 1.15f) * .7f;
+                if (Vector3.Dot(hit.point - hip, radial) < .10f * m_Size) continue;
+                float score = (hit.point - home).sqrMagnitude + Mathf.Max(0, futureReach - 1.15f * m_Size) * .7f * m_Size;
                 if (score >= bestScore) continue;
-                float lift = Settings.footLift;
+                float lift = Settings.footLift * m_Size;
                 if (stepping != null)
                 {
                     bool clear = false;
                     for (int attempt = 0; attempt < 4; attempt++)
                     {
-                        lift = .18f + attempt * .25f;
+                        lift = (.18f + attempt * .25f) * m_Size;
                         if (ClearSwing(stepping.Position, hit.point, stepping.Normal, hit.normal, lift))
                         { clear = true; break; }
                     }
@@ -356,7 +359,7 @@ namespace Unity.MP_FPS.SpiderLab
             Vector2 targetLean = input.normalized * Mathf.InverseLerp(1, 7, speed * input.magnitude);
             var landingSurface = intentChanged ? motor.Predict(input, speed, yaw, remaining) : default;
             var landing = intentChanged ? PredictBody(landingSurface, targetLean, remaining) : default;
-            float supportTime = Mathf.Min(.13f, .85f / Mathf.Max(1, speed * input.magnitude));
+            float supportTime = Mathf.Min(.13f, .85f * m_Size / Mathf.Max(1, speed * input.magnitude));
             var supportEnd = intentChanged ? PredictBody(motor.Predict(input, speed, yaw, remaining + supportTime), targetLean, remaining + supportTime) : default;
             // Bounded redirection after an abrupt intent change. Keep both the current velocity and
             // original touchdown deadline; correcting a landing never restarts a full-duration chase.
@@ -376,7 +379,7 @@ namespace Unity.MP_FPS.SpiderLab
                 foot.StartNormal, foot.EndNormal, foot.Lift, foot.Duration, t);
             // A late obstruction enters recovery at the current location instead of stepping through it.
             if (!ClearToe(before, next) || !SpiderLegKinematics.Solve(BodyPose, i, next,
-                Vector3.Slerp(foot.StartNormal, foot.EndNormal, t), m_Mask, out _, out _))
+                Vector3.Slerp(foot.StartNormal, foot.EndNormal, t), m_Mask, out _, out _, m_Size))
             {
                 ReleaseAnchor(foot);
                 Retract(foot, BodyPose, i, dt);
@@ -457,10 +460,10 @@ namespace Unity.MP_FPS.SpiderLab
             for (int i = 0; i < Count; i++)
             {
                 var f = m_Feet[i];
-                f.Reach = Vector3.Distance(Hip(pose, i), f.Position);
+                f.Reach = Vector3.Distance(Hip(pose, i, m_Size), f.Position);
                 if (f.State == ContactState.Recovery) RecoveryCount++;
-                if (f.Reach > MaxReach) UnreachableCount++;
-                worst = Mathf.Max(worst, f.Reach / MaxReach);
+                if (f.Reach > ReachLimit) UnreachableCount++;
+                worst = Mathf.Max(worst, f.Reach / ReachLimit);
             }
             // A bounded, continuous reach guard, never a boolean isStepping/wait-for-group stop.
             // At a genuine reach failure, let the recovering toe catch up before the body can

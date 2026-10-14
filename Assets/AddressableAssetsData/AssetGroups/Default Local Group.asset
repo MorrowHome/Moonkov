@@ -15,8 +15,23 @@ MonoBehaviour:
   m_GroupName: Default Local Group
   m_GUID: 92b6b833b5f846f45bbe32bd85d5ee8d
   m_SerializeEntries:
+  - m_GUID: 4576cf29127fe4c429003e6cefb79e5d
+    m_Address: Assets/AlienCreatures/Prefabs/XenoLeech.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 60167978cf99f034a918f22acfb3fe7e
+    m_Address: Assets/AlienCreatures/Prefabs/XenoCaterpillar.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 63934da2ab499aa479387455c5ccfd99
     m_Address: Assets/Prefabs/Effects/MachineGunBulletHit.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 65e9068a354054343b9db362c8a8ea19
+    m_Address: Assets/AlienCreatures/Prefabs/XenoRoots.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -25,8 +40,28 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8923f43d799f0934db8fd313c07968eb
+    m_Address: Assets/AlienCreatures/Prefabs/XenoSpider.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 97444351532aae84c86615bdc2db8b86
+    m_Address: Assets/AlienCreatures/Prefabs/XenoSnake.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b0752bc8487bdf04eb9662e973d879c6
+    m_Address: Assets/AlienCreatures/Prefabs/XenoSlime.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b17d50091f5130d4a9e69d055e13b4d5
     m_Address: Assets/DollSinger/Prefabs/DollSingerNetworkPlayer.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c612969593356ac49b57170911850090
+    m_Address: Assets/AlienCreatures/Prefabs/XenoTentacle.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -62,6 +97,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ebe8c5575ef1f504fb3711262b7b6467
     m_Address: Assets/Prefabs/ActorGhosts/Leaderboard.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ed5cce47ff492194789f38f54a0b72d5
+    m_Address: Assets/AlienCreatures/Prefabs/XenoCentipede.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

@@ -49,6 +49,12 @@ namespace Unity.MP_FPS.SpiderLab
         private const float TurnRadius = .42f;
         private const float Skin = .012f;
         private readonly int m_Mask;
+        private readonly float m_Size;
+        public float Size => m_Size;
+        public float BodyHeight => Height * m_Size;
+        public float CollisionRadius => BodyRadius * m_Size;
+        private float CornerRadius => TurnRadius * m_Size;
+        private float ContactSkin => Skin * m_Size;
         private State m_State;
         public Pose Current => m_State.Pose;
         public Vector3 Velocity => m_State.Velocity;
@@ -63,9 +69,9 @@ namespace Unity.MP_FPS.SpiderLab
         public string Mode => Detached ? "DETACHED / FOLDED" : !Supported ? "NO SUPPORT" : !Transitioning ? "SURFACE" :
             m_State.Corner.OnArc ? "CORNER ARC" : "CORNER APPROACH";
 
-        public SurfaceMotor(Vector3 position, Quaternion rotation, int mask)
+        public SurfaceMotor(Vector3 position, Quaternion rotation, int mask, float scale = 1)
         {
-            m_Mask = mask;
+            m_Mask = mask; m_Size = Mathf.Clamp(scale, .1f, 4);
             Reset(position, rotation);
         }
 
@@ -80,6 +86,15 @@ namespace Unity.MP_FPS.SpiderLab
             Advance(ref m_State, input, speed, yawDegrees, dt);
         }
 
+        /// <summary>Presentation-only pose from an authoritative snapshot. Never call
+        /// this on the server motor: clients use its value-copy predictor for feet only.</summary>
+        public void Observe(Pose pose, Vector3 velocity, bool detached)
+        {
+            m_State.Pose = pose; m_State.Velocity = velocity;
+            m_State.Detached = detached; m_State.Supported = !detached;
+            m_State.Corner = default;
+        }
+
         /// <summary>Emergency release owns a real swept flight, not a reset to the spawn point.
         /// Clearing the pending corner also releases its locked heading/arc when it is obstructed.</summary>
         public void Detach(Vector3 intendedDirection)
@@ -88,7 +103,7 @@ namespace Unity.MP_FPS.SpiderLab
             if (intendedDirection.sqrMagnitude < .01f) intendedDirection = Current.Forward;
             m_State.Corner = default; m_State.Surface = null; m_State.Supported = false;
             m_State.Detached = true; m_State.DetachedTime = 0; m_State.Escapes++;
-            m_State.FlightVelocity = intendedDirection.normalized * 6.5f + Current.Up * 4.5f;
+            m_State.FlightVelocity = (intendedDirection.normalized * 6.5f + Current.Up * 4.5f) * m_Size;
             m_State.Velocity = m_State.FlightVelocity;
         }
 
@@ -160,17 +175,17 @@ namespace Unity.MP_FPS.SpiderLab
             if (state.DetachedTime >= .24f && state.FlightVelocity.sqrMagnitude > .01f &&
                 Ray(state.Pose.Position, state.FlightVelocity.normalized, 2.5f, out var ahead) &&
                 Vector3.Dot(state.FlightVelocity, ahead.normal) < -.2f &&
-                Vector3.Dot(state.Pose.Position - ahead.point, ahead.normal) <= Height + .025f &&
+                Vector3.Dot(state.Pose.Position - ahead.point, ahead.normal) <= BodyHeight + .025f &&
                 Land(ref state, ahead)) return;
             Vector3 remaining = state.FlightVelocity * dt;
             // Bounded sweep/slide handles tight corners without advancing through a blocking wall.
             for (int slide = 0; slide < 3 && remaining.sqrMagnitude > .000001f; slide++)
             {
                 float distance = remaining.magnitude;
-                if (!UnityEngine.Physics.SphereCast(state.Pose.Position, BodyRadius, remaining / distance,
-                    out var hit, distance + Skin, m_Mask, QueryTriggerInteraction.Ignore))
+                if (!UnityEngine.Physics.SphereCast(state.Pose.Position, CollisionRadius, remaining / distance,
+                    out var hit, distance + ContactSkin, m_Mask, QueryTriggerInteraction.Ignore))
                 { state.Pose.Position += remaining; break; }
-                float travelled = Mathf.Min(distance, Mathf.Max(0, hit.distance - Skin));
+                float travelled = Mathf.Min(distance, Mathf.Max(0, hit.distance - ContactSkin));
                 state.Pose.Position += remaining / distance * travelled;
                 state.Blocked++;
                 // SphereCast normals guide sliding only. Attachment still uses an actual ray hit.
@@ -184,10 +199,10 @@ namespace Unity.MP_FPS.SpiderLab
         private bool Land(ref State state, RaycastHit contact)
         {
             float gap = Vector3.Dot(state.Pose.Position - contact.point, contact.normal);
-            if (gap < BodyRadius - .02f || gap > Height + .025f) return false;
-            Vector3 target = state.Pose.Position + contact.normal * (Height - gap);
+            if (gap < CollisionRadius - .02f || gap > BodyHeight + .025f) return false;
+            Vector3 target = state.Pose.Position + contact.normal * (BodyHeight - gap);
             if (!Clear(state.Pose.Position, target) || UnityEngine.Physics.CheckSphere(target,
-                BodyRadius - .005f, m_Mask, QueryTriggerInteraction.Ignore)) return false;
+                CollisionRadius - .005f, m_Mask, QueryTriggerInteraction.Ignore)) return false;
             state.Pose.Position = target;
             state.Pose.Rotation = Quaternion.FromToRotation(state.Pose.Up, contact.normal) * state.Pose.Rotation;
             state.Surface = contact.collider; state.Supported = true; state.Detached = false;
@@ -204,7 +219,7 @@ namespace Unity.MP_FPS.SpiderLab
         private bool Attach(ref State state)
         {
             Vector3 normal = state.Pose.Up;
-            if (!Ray(state.Pose.Position + normal * .16f, -normal, Height + .55f, out var hit))
+            if (!Ray(state.Pose.Position + normal * .16f, -normal, BodyHeight + .55f, out var hit))
             {
                 state.Supported = false;
                 return false;
@@ -212,7 +227,7 @@ namespace Unity.MP_FPS.SpiderLab
             if (Vector3.Dot(normal, hit.normal) < .6f) return false;
             var transport = Quaternion.FromToRotation(normal, hit.normal);
             state.Pose.Rotation = transport * state.Pose.Rotation;
-            state.Pose.Position = hit.point + hit.normal * Height;
+            state.Pose.Position = hit.point + hit.normal * BodyHeight;
             state.Surface = hit.collider;
             state.Supported = true;
             return true;
@@ -223,7 +238,7 @@ namespace Unity.MP_FPS.SpiderLab
             Vector3 p = state.Pose.Position, n = state.Pose.Up;
             float look = Mathf.Max(.85f, speed * .2f);
             // Concave: a wall is visible BEFORE current support is lost.
-            if (Ray(p, direction, look + Height, out var front) &&
+            if (Ray(p, direction, look + BodyHeight, out var front) &&
                 Vector3.Dot(front.normal, direction) < -.25f && Vector3.Dot(front.normal, n) < .94f)
             {
                 MakeCorner(ref state, direction, front, false);
@@ -232,12 +247,12 @@ namespace Unity.MP_FPS.SpiderLab
             // Convex: only search around an edge when future support is missing. The fan aims back
             // into the departing solid; it is not a global nearest-surface or downward-only search.
             Vector3 ahead = p + direction * look;
-            if (Ray(ahead + n * .12f, -n, Height + .25f, out _)) return;
+            if (Ray(ahead + n * .12f, -n, BodyHeight + .25f, out _)) return;
             for (int i = 0; i < 6; i++)
             {
                 float angle = (15 + i * 13) * Mathf.Deg2Rad;
                 Vector3 ray = -n * Mathf.Cos(angle) - direction * Mathf.Sin(angle);
-                if (Ray(ahead + n * .12f, ray, look * 3 + Height, out var side) &&
+                if (Ray(ahead + n * .12f, ray, look * 3 + BodyHeight, out var side) &&
                     Vector3.Dot(side.normal, direction) > .25f && Vector3.Dot(side.normal, n) < .94f)
                 {
                     if (MakeCorner(ref state, direction, side, true)) return;
@@ -254,8 +269,8 @@ namespace Unity.MP_FPS.SpiderLab
             if (degrees < 15 || degrees > 135 || !state.Surface) return false;
             // Two local planes yield their intersection; collider names/types never select a route.
             Vector3 p = state.Pose.Position;
-            float a = convex ? -Height : 0;
-            float b = Vector3.Dot(target.point - p, n1) + (convex ? 0 : Height);
+            float a = convex ? -BodyHeight : 0;
+            float b = Vector3.Dot(target.point - p, n1) + (convex ? 0 : BodyHeight);
             float denominator = 1 - dot * dot;
             Vector3 intersection = p + n0 * ((a - dot * b) / denominator) +
                 n1 * ((b - dot * a) / denominator);
@@ -269,14 +284,14 @@ namespace Unity.MP_FPS.SpiderLab
             if (convex)
             {
                 center = intersection;
-                radius = n0 * Height;
+                radius = n0 * BodyHeight;
                 entry = center + radius;
             }
             else
             {
-                entry = intersection - incoming * (TurnRadius * Mathf.Tan(degrees * .5f * Mathf.Deg2Rad));
+                entry = intersection - incoming * (CornerRadius * Mathf.Tan(degrees * .5f * Mathf.Deg2Rad));
                 Vector3 bend = Quaternion.AngleAxis(signedAngle > 0 ? 90 : -90, axis) * incoming;
-                center = entry + bend * TurnRadius;
+                center = entry + bend * CornerRadius;
                 radius = entry - center;
             }
             float approach = Vector3.Dot(entry - p, incoming);
@@ -306,7 +321,7 @@ namespace Unity.MP_FPS.SpiderLab
         {
             Vector3 delta = to - from;
             return delta.sqrMagnitude < .000001f || !UnityEngine.Physics.SphereCast(from,
-                BodyRadius, delta.normalized, out _, delta.magnitude, m_Mask, QueryTriggerInteraction.Ignore);
+                CollisionRadius, delta.normalized, out _, delta.magnitude, m_Mask, QueryTriggerInteraction.Ignore);
         }
 
         private void MoveCorner(ref State state, Vector3 direction, float distance)
@@ -383,10 +398,10 @@ namespace Unity.MP_FPS.SpiderLab
         {
             Vector3 delta = target - state.Pose.Position;
             if (delta.sqrMagnitude < .0000001f) return true;
-            if (UnityEngine.Physics.SphereCast(state.Pose.Position, BodyRadius, delta.normalized,
-                out var hit, delta.magnitude + Skin, m_Mask, QueryTriggerInteraction.Ignore))
+            if (UnityEngine.Physics.SphereCast(state.Pose.Position, CollisionRadius, delta.normalized,
+                out var hit, delta.magnitude + ContactSkin, m_Mask, QueryTriggerInteraction.Ignore))
             {
-                state.Pose.Position += delta.normalized * Mathf.Max(0, hit.distance - Skin);
+                state.Pose.Position += delta.normalized * Mathf.Max(0, hit.distance - ContactSkin);
                 state.Blocked++;
                 return false;
             }

@@ -236,6 +236,46 @@ MonoBehaviour:
     m_SubObjectType:
     m_SubObjectGUID:
     m_EditorAssetChanged: 0
+  - m_AssetGUID: 8923f43d799f0934db8fd313c07968eb
+    m_SubObjectName:
+    m_SubObjectType:
+    m_SubObjectGUID:
+    m_EditorAssetChanged: 0
+  - m_AssetGUID: 97444351532aae84c86615bdc2db8b86
+    m_SubObjectName:
+    m_SubObjectType:
+    m_SubObjectGUID:
+    m_EditorAssetChanged: 0
+  - m_AssetGUID: 60167978cf99f034a918f22acfb3fe7e
+    m_SubObjectName:
+    m_SubObjectType:
+    m_SubObjectGUID:
+    m_EditorAssetChanged: 0
+  - m_AssetGUID: c612969593356ac49b57170911850090
+    m_SubObjectName:
+    m_SubObjectType:
+    m_SubObjectGUID:
+    m_EditorAssetChanged: 0
+  - m_AssetGUID: ed5cce47ff492194789f38f54a0b72d5
+    m_SubObjectName:
+    m_SubObjectType:
+    m_SubObjectGUID:
+    m_EditorAssetChanged: 0
+  - m_AssetGUID: 4576cf29127fe4c429003e6cefb79e5d
+    m_SubObjectName:
+    m_SubObjectType:
+    m_SubObjectGUID:
+    m_EditorAssetChanged: 0
+  - m_AssetGUID: b0752bc8487bdf04eb9662e973d879c6
+    m_SubObjectName:
+    m_SubObjectType:
+    m_SubObjectGUID:
+    m_EditorAssetChanged: 0
+  - m_AssetGUID: 65e9068a354054343b9db362c8a8ea19
+    m_SubObjectName:
+    m_SubObjectType:
+    m_SubObjectGUID:
+    m_EditorAssetChanged: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

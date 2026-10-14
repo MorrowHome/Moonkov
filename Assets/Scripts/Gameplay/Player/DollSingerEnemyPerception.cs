@@ -27,15 +27,23 @@ namespace Unity.MP_FPS
                 if (candidate.Root == null || candidate.Root == root || !EntityManager.Exists(candidate.Entity) ||
                     !EntityManager.HasComponent<PredictedPlayerGhost>(candidate.Entity) ||
                     EntityManager.GetComponentData<PredictedPlayerGhost>(candidate.Entity).CurrentHealth <= 0) continue;
-                Vector3 offset = candidate.Position + Vector3.up * 1.15f - eye;
+                Vector3 offset = candidate.Position + candidate.AimOffset - eye;
                 float distance = offset.magnitude;
                 float angle = Vector3.Angle(Quaternion.Euler(0, brain.Yaw, 0) * Vector3.forward, offset);
                 float cone = now - brain.LastDamage < 2 ? 95 : m_Tuning.HalfViewAngle;
                 if (distance > range * light || angle > cone) continue;
                 int exposed = 0;
-                if (ClearSight(root, eye, candidate.Position + Vector3.up * 1.55f, candidate.Entity)) exposed++;
-                if (ClearSight(root, eye, candidate.Position + Vector3.up * 1.15f, candidate.Entity)) exposed++;
-                if (ClearSight(root, eye, candidate.Position + Vector3.up * .85f, candidate.Entity)) exposed++;
+                if (candidate.Alien)
+                {
+                    // Scaled crawling creatures cannot be aimed at an imaginary human chest.
+                    if (ClearSight(root, eye, candidate.Position + candidate.AimOffset, candidate.Entity)) exposed = 3;
+                }
+                else
+                {
+                    if (ClearSight(root, eye, candidate.Position + Vector3.up * 1.55f, candidate.Entity)) exposed++;
+                    if (ClearSight(root, eye, candidate.Position + Vector3.up * 1.15f, candidate.Entity)) exposed++;
+                    if (ClearSight(root, eye, candidate.Position + Vector3.up * .85f, candidate.Entity)) exposed++;
+                }
                 if (exposed == 0) continue;
                 if (!brain.Contacts.TryGetValue(candidate.Entity, out var contact))
                 { contact = new PmcContact(); brain.Contacts.Add(candidate.Entity, contact); }
@@ -45,6 +53,7 @@ namespace Unity.MP_FPS
                 contact.Suspicion = Mathf.Clamp01(contact.Suspicion + interval * (clarity / m_Tuning.RecognitionSeconds + .2f));
                 contact.Position = candidate.Position;
                 contact.Velocity = candidate.Velocity;
+                contact.AimOffset = candidate.AimOffset;
                 contact.LastSeen = now;
                 if (contact.Suspicion >= .99f) contact.Confirmed = true;
                 contact.Visible = contact.Confirmed;
@@ -103,6 +112,7 @@ namespace Unity.MP_FPS
             if (brain.Visible && (!wasVisible || previous != selected)) brain.VisibleSince = now;
             brain.LastSeen = memory.Position;
             brain.ObservedVelocity = memory.Velocity;
+            brain.AimOffset = memory.AimOffset;
             brain.LastSeenTime = memory.LastSeen;
             brain.LastHeardTime = memory.LastHeard;
         }

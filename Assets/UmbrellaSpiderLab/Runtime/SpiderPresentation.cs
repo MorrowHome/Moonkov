@@ -34,7 +34,7 @@ namespace Unity.MP_FPS.SpiderLab
         public float MaxContactError { get; private set; }
         public int LegObstructions { get; private set; }
 
-        public SpiderPresentation(Transform owner, int mask)
+        public SpiderPresentation(Transform owner, int mask, float scale = 1)
         {
             m_Mask = mask;
             m_Root = new GameObject("Generated spider presentation").transform;
@@ -106,6 +106,7 @@ namespace Unity.MP_FPS.SpiderLab
                 m_SkinSamples.Add(new SkinSample("joint " + i, m_Knees[i], m_JointGuard, false));
             }
             ApplyVisibility();
+            m_Root.localScale = Vector3.one * scale;
         }
 
         private Mesh Own(Mesh mesh) { m_SkinMeshes.Add(mesh); return mesh; }
@@ -217,9 +218,9 @@ namespace Unity.MP_FPS.SpiderLab
                 m_Toes[i].position = foot.Position;
                 m_ToeRenderers[i].sharedMaterial = foot.State == PredictiveFeet.ContactState.Swing ? m_Swing :
                     foot.State == PredictiveFeet.ContactState.Stance ? m_Stance : m_Recovery;
-                Vector3 hip = PredictiveFeet.Hip(pose, i);
+                Vector3 hip = PredictiveFeet.Hip(pose, i, feet.Size);
                 bool blocked = !SpiderLegKinematics.Solve(pose, i, foot.Position, foot.Normal, m_Mask,
-                    out var knee, out var tip);
+                    out var knee, out var tip, feet.Size);
                 Segment(m_Upper[i], hip, knee, .035f); Segment(m_Lower[i], knee, tip, .024f);
                 m_Knees[i].position = knee;
                 Vector3 upperAxis = (knee - hip).normalized;
@@ -238,7 +239,7 @@ namespace Unity.MP_FPS.SpiderLab
         {
             t.position = (from + to) * .5f;
             t.rotation = Quaternion.FromToRotation(Vector3.up, to - from);
-            t.localScale = new Vector3(thickness * 2, Vector3.Distance(from, to) * .5f, thickness * 2);
+            t.localScale = new Vector3(thickness * 2, Vector3.Distance(from, to) * .5f / Mathf.Max(.1f, t.parent.lossyScale.y), thickness * 2);
         }
 
         private static Mesh CanopyMesh()

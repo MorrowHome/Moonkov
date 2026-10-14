@@ -311,7 +311,7 @@ namespace Unity.MP_FPS
 
             // --- Part 1: Detect Death and Destroy Player Entity ---
             foreach (var (playerGhost, ghostOwner, entity) in
-                     SystemAPI.Query<RefRO<PredictedPlayerGhost>, RefRO<GhostOwner>>().WithNone<DollSingerEnemy>().WithEntityAccess())
+                     SystemAPI.Query<RefRO<PredictedPlayerGhost>, RefRO<GhostOwner>>().WithNone<DollSingerEnemy, ProceduralAlienEnemy.State>().WithEntityAccess())
             {
                 if (playerGhost.ValueRO.CurrentHealth <= 0)
                 {

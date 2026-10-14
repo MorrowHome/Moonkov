@@ -35,6 +35,7 @@ namespace Unity.MP_FPS.SpiderLab
         private readonly Obstacle[] m_Boxes = new Obstacle[MaximumObstacles];
         private readonly int m_Mask;
         private readonly bool m_ChainRig;
+        private readonly float m_CollisionRadius;
         private readonly int k_Initialize, k_Transport, k_ClearGrid, k_BuildGrid, k_Density, k_Integrate,
             k_ClearVolume, k_Deposit, k_ResolveX, k_BlurY, k_BlurZ;
         private Matrix4x4 m_PreviousRoot;
@@ -74,6 +75,7 @@ namespace Unity.MP_FPS.SpiderLab
             var shader = Resources.Load<Shader>("Umbra08FluidSurface");
             if (!solver || !shader) throw new InvalidOperationException("Umbra fluid resources are missing.");
             m_Solver = UnityEngine.Object.Instantiate(solver);
+            m_CollisionRadius = chainRig ? .025f : .055f;
             m_Solver.SetFloat("_HalfVolume", m_HalfVolume);
             m_Solver.SetFloat("_CollisionRadius", chainRig ? .025f : .055f);
             m_Solver.SetInt("_GuideKind", branchedRig ? 2 : chainRig ? 1 : 0);
@@ -210,13 +212,14 @@ namespace Unity.MP_FPS.SpiderLab
             Matrix4x4 transport = m_Root.worldToLocalMatrix * m_PreviousRoot;
             m_Bones.SetData(m_BoneMatrices);
             m_Solver.SetFloat("_Predatory", Predatory ? 1 : 0);
+            m_Solver.SetFloat("_CollisionRadius", m_CollisionRadius * Mathf.Abs(m_Root.lossyScale.x));
             bool justInitialized = !m_Initialized;
             if (!m_Initialized)
             {
                 m_RestCentres.SetData(m_Centres);
                 Array.Copy(m_BoneMatrices, m_PreviousMatrices, m_BoneMatrices.Length);
                 transport = Matrix4x4.identity;
-                m_Solver.SetVector("_InitialVelocity", m_Root.InverseTransformDirection(velocity));
+                m_Solver.SetVector("_InitialVelocity", m_Root.InverseTransformVector(velocity));
                 m_Solver.SetBuffer(k_Initialize, "_Output", m_Read); DispatchParticles(k_Initialize);
                 m_Initialized = true;
             }
@@ -228,8 +231,10 @@ namespace Unity.MP_FPS.SpiderLab
             }
             m_PreviousBones.SetData(m_PreviousMatrices);
             m_Solver.SetMatrix("_PreviousToCurrent", transport);
+            // Liquid integrates in normalized model units; uniform size keeps its
+            // relative sag/settling style while world velocity is converted below.
             m_Solver.SetVector("_Gravity", m_Root.InverseTransformDirection(Vector3.down * (Predatory ? Settings.gravity : 9.8f)));
-            m_Solver.SetVector("_CarrierVelocity", m_Root.InverseTransformDirection(velocity));
+            m_Solver.SetVector("_CarrierVelocity", m_Root.InverseTransformVector(velocity));
             m_Material.SetFloat("_Predatory", Predatory ? 1 : 0);
             m_Material.SetFloat("_Threshold", Predatory ? Settings.surfaceThreshold : .28f);
             m_Solver.SetFloat("_Attraction", AttractionEnabled ? 1 : 0);
@@ -253,7 +258,7 @@ namespace Unity.MP_FPS.SpiderLab
             m_Solver.Dispatch(k_ResolveX, groups, groups, groups);
             m_Solver.Dispatch(k_BlurY, groups, groups, groups); m_Solver.Dispatch(k_BlurZ, groups, groups, groups);
             m_Filaments.Draw(m_Read, m_Root.InverseTransformDirection(Vector3.down),
-                m_Root.InverseTransformDirection(velocity), Predatory, Settings, m_VolumeA,
+                m_Root.InverseTransformVector(velocity), Predatory, Settings, m_VolumeA,
                 Predatory ? Settings.surfaceThreshold : .28f, m_HalfVolume, m_VolumeSide);
             Array.Copy(m_BoneMatrices, m_PreviousMatrices, m_BoneMatrices.Length); m_PreviousRoot = currentRoot;
         }
@@ -286,7 +291,7 @@ namespace Unity.MP_FPS.SpiderLab
 
         private int GatherObstacles()
         {
-            int count = Physics.OverlapSphereNonAlloc(m_Root.position, m_HalfVolume + .4f, m_Nearby, m_Mask, QueryTriggerInteraction.Ignore);
+            int count = Physics.OverlapSphereNonAlloc(m_Root.position, (m_HalfVolume + .4f) * Mathf.Abs(m_Root.lossyScale.x), m_Nearby, m_Mask, QueryTriggerInteraction.Ignore);
             int written = 0;
             for (int i = 0; i < count && written < MaximumObstacles; i++)
             {

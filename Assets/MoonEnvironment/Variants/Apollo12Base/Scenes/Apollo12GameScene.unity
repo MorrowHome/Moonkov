@@ -449,6 +449,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1054611477}
   - component: {fileID: 1054611476}
+  - component: {fileID: 1054611478}
   m_Layer: 0
   m_Name: Moon Raid
   m_TagString: Untagged
@@ -518,6 +519,150 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1054611478
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1054611475}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a02f58d714a7444390442b720053d6c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Unity.MP_FPS.AlienEncounterSettings
+  enableAliens: 1
+  maximumAliens: 8
+  minimumPlayerSpawnDistance: 8
+  encounters:
+  - Profile: {fileID: 11400000, guid: 1be3ef20c43dd8246a59fb91bdee5ec4, type: 2}
+    Prefab:
+      <GhostPrefab>k__BackingField:
+        m_AssetGUID: 8923f43d799f0934db8fd313c07968eb
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_SubObjectGUID: 
+        m_EditorAssetChanged: 0
+      m_GhostGuid:
+        Value:
+          x: 3545182872
+          y: 1133574551
+          z: 826144957
+          w: 3196491532
+    Position: {x: 1130.3501, y: 30.763176, z: 1318.03}
+    Yaw: -90
+  - Profile: {fileID: 11400000, guid: a384afc0e05e8e546b77a1fb92a651ab, type: 2}
+    Prefab:
+      <GhostPrefab>k__BackingField:
+        m_AssetGUID: 97444351532aae84c86615bdc2db8b86
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_SubObjectGUID: 
+        m_EditorAssetChanged: 0
+      m_GhostGuid:
+        Value:
+          x: 355746937
+          y: 1223336501
+          z: 3679544972
+          w: 1756937516
+    Position: {x: 1134.3501, y: 30.763176, z: 1318.03}
+    Yaw: -90
+  - Profile: {fileID: 11400000, guid: a8a41f3bf9208b24cb7e587aeb8dd7ed, type: 2}
+    Prefab:
+      <GhostPrefab>k__BackingField:
+        m_AssetGUID: 60167978cf99f034a918f22acfb3fe7e
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_SubObjectGUID: 
+        m_EditorAssetChanged: 0
+      m_GhostGuid:
+        Value:
+          x: 2274844934
+          y: 1125095932
+          z: 2721022362
+          w: 3891215356
+    Position: {x: 1138.3501, y: 30.763176, z: 1318.03}
+    Yaw: -90
+  - Profile: {fileID: 11400000, guid: b8135596a5b27f747b1b724bb3a4695a, type: 2}
+    Prefab:
+      <GhostPrefab>k__BackingField:
+        m_AssetGUID: c612969593356ac49b57170911850090
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_SubObjectGUID: 
+        m_EditorAssetChanged: 0
+      m_GhostGuid:
+        Value:
+          x: 1500062060
+          y: 1285968697
+          z: 2423354809
+          w: 151017489
+    Position: {x: 1142.3501, y: 30.763176, z: 1318.03}
+    Yaw: -90
+  - Profile: {fileID: 11400000, guid: 02fada5ec9c9ab74784812c81a658b16, type: 2}
+    Prefab:
+      <GhostPrefab>k__BackingField:
+        m_AssetGUID: ed5cce47ff492194789f38f54a0b72d5
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_SubObjectGUID: 
+        m_EditorAssetChanged: 0
+      m_GhostGuid:
+        Value:
+          x: 1961674206
+          y: 1225954559
+          z: 1602484615
+          w: 1562882212
+    Position: {x: 1130.3501, y: 30.763178, z: 1325.03}
+    Yaw: -90
+  - Profile: {fileID: 11400000, guid: 032745e210dd20f44ae8588289da6ff6, type: 2}
+    Prefab:
+      <GhostPrefab>k__BackingField:
+        m_AssetGUID: 4576cf29127fe4c429003e6cefb79e5d
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_SubObjectGUID: 
+        m_EditorAssetChanged: 0
+      m_GhostGuid:
+        Value:
+          x: 2466015060
+          y: 1280243489
+          z: 3336765586
+          w: 3588848638
+    Position: {x: 1135.7642, y: 30.132576, z: 1326.4442}
+    Yaw: -90
+  - Profile: {fileID: 11400000, guid: 24a6c7dc5640215469880cf72d5b3678, type: 2}
+    Prefab:
+      <GhostPrefab>k__BackingField:
+        m_AssetGUID: b0752bc8487bdf04eb9662e973d879c6
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_SubObjectGUID: 
+        m_EditorAssetChanged: 0
+      m_GhostGuid:
+        Value:
+          x: 2360497931
+          y: 1090369412
+          z: 2653317566
+          w: 1821871415
+    Position: {x: 1138.35, y: 30.132576, z: 1325.03}
+    Yaw: -90
+  - Profile: {fileID: 11400000, guid: 6fa2790f210aa8a4995f68d3929c87cd, type: 2}
+    Prefab:
+      <GhostPrefab>k__BackingField:
+        m_AssetGUID: 65e9068a354054343b9db362c8a8ea19
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_SubObjectGUID: 
+        m_EditorAssetChanged: 0
+      m_GhostGuid:
+        Value:
+          x: 2824904278
+          y: 1128596563
+          z: 641456563
+          w: 2444135052
+    Position: {x: 1142.35, y: 30.132576, z: 1325.03}
+    Yaw: -90
 --- !u!1 &1216288369
 GameObject:
   m_ObjectHideFlags: 0

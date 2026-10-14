@@ -7,16 +7,16 @@ namespace Unity.MP_FPS.SpiderLab
     public static class SpiderLegKinematics
     {
         public static bool Solve(SurfaceMotor.Pose pose, int index, Vector3 point, Vector3 normal,
-            int mask, out Vector3 knee, out Vector3 tip)
+            int mask, out Vector3 knee, out Vector3 tip, float scale = 1)
         {
-            Vector3 hip = PredictiveFeet.Hip(pose, index), delta = point - hip;
+            Vector3 hip = PredictiveFeet.Hip(pose, index, scale), delta = point - hip;
             float distance = Mathf.Clamp(delta.magnitude,
-                PredictiveFeet.LowerLength - PredictiveFeet.UpperLength + .01f, PredictiveFeet.MaxReach);
+                (PredictiveFeet.LowerLength - PredictiveFeet.UpperLength + .01f) * scale, PredictiveFeet.MaxReach * scale);
             Vector3 direction = delta.sqrMagnitude > .00001f ? delta.normalized : pose.Rotation * PredictiveFeet.Radial(index);
             Vector3 hint = pose.Up * .65f + normal * .75f + pose.Rotation * PredictiveFeet.Radial(index) * .35f;
             Vector3 bend = Vector3.ProjectOnPlane(hint, direction).normalized;
             if (bend.sqrMagnitude < .01f) bend = Vector3.Cross(direction, pose.Right).normalized;
-            float l1 = PredictiveFeet.UpperLength, l2 = PredictiveFeet.LowerLength;
+            float l1 = PredictiveFeet.UpperLength * scale, l2 = PredictiveFeet.LowerLength * scale;
             float along = (l1 * l1 - l2 * l2 + distance * distance) / (2 * distance);
             float lift = Mathf.Sqrt(Mathf.Max(0, l1 * l1 - along * along));
             tip = hip + direction * distance;
@@ -25,9 +25,9 @@ namespace Unity.MP_FPS.SpiderLab
             {
                 float angle = candidate == 0 ? 0 : ((candidate + 1) / 2) * 22.5f * (candidate % 2 == 0 ? -1 : 1);
                 Vector3 proposed = hip + direction * along + Quaternion.AngleAxis(angle, direction) * bend * lift;
-                Vector3 collar = tip + (proposed - tip).normalized * .10f;
-                if (Physics.CheckSphere(proposed, .058f, mask, QueryTriggerInteraction.Ignore) ||
-                    Blocked(hip, proposed, .05f, mask) || Blocked(proposed, collar, .024f, mask)) continue;
+                Vector3 collar = tip + (proposed - tip).normalized * .10f * scale;
+                if (Physics.CheckSphere(proposed, .058f * scale, mask, QueryTriggerInteraction.Ignore) ||
+                    Blocked(hip, proposed, .05f * scale, mask) || Blocked(proposed, collar, .024f * scale, mask)) continue;
                 knee = proposed; return true;
             }
             return false;

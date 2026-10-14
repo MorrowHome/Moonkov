@@ -28,6 +28,8 @@ namespace Unity.MP_FPS
             public Vector3 Position;
             public Transform Root;
             public Vector3 Velocity;
+            public Vector3 AimOffset;
+            public bool Alien;
         }
 
         private sealed class SensorTrack
@@ -254,7 +256,9 @@ namespace Unity.MP_FPS
                     track.Shot = health.ValueRO.LastShotTick;
                     track.Reload = health.ValueRO.LastReloadTick;
                 }
-                m_Targets.Add(new Target { Entity = entity, Position = position, Velocity = velocity, Root = link.LinkedInstance.transform });
+                var alien = link.LinkedInstance.GetComponent<ProceduralAlienEnemy>();
+                m_Targets.Add(new Target { Entity = entity, Position = position, Velocity = velocity, Root = link.LinkedInstance.transform,
+                    Alien = alien != null, AimOffset = alien ? alien.AimPoint - position : Vector3.up * 1.15f });
             }
             m_ExpiredTracks.Clear();
             foreach (var pair in m_Tracks) if (now - pair.Value.SeenAt > 1) m_ExpiredTracks.Add(pair.Key);
