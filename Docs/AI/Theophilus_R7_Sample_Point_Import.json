@@ -1,0 +1,98 @@
+{
+  "scene": "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/Scenes/Theophilus_Shoulder_Return_Study.unity",
+  "newDisplayObjects": 22,
+  "newDisplayMeshAssets": 22,
+  "reusedMaterialCount": 6,
+  "newMaterials": 0,
+  "newTextures": 0,
+  "newColliders": 0,
+  "newLights": 0,
+  "nativeTerrainSamplingPasses": 1,
+  "groundAnchors": 10,
+  "benchGroupDeltaY": 0.008037567,
+  "mountedCasesCapsuleFollowBench": true,
+  "nativeGroundOffsets": [
+    {
+      "object": "R7_SHADE_ADJUSTABLE_FOOT_00",
+      "previewGroundY": 180.6121826171875,
+      "nativeGroundY": 180.60965,
+      "deltaY": -0.002532959,
+      "withinReserve": true
+    },
+    {
+      "object": "R7_SHADE_ADJUSTABLE_FOOT_01",
+      "previewGroundY": 180.800537109375,
+      "nativeGroundY": 180.79805,
+      "deltaY": -0.00248718262,
+      "withinReserve": true
+    },
+    {
+      "object": "R7_SHADE_ADJUSTABLE_FOOT_02",
+      "previewGroundY": 180.185791015625,
+      "nativeGroundY": 180.20314,
+      "deltaY": 0.0173492432,
+      "withinReserve": true
+    },
+    {
+      "object": "R7_SHADE_ADJUSTABLE_FOOT_03",
+      "previewGroundY": 180.3717041015625,
+      "nativeGroundY": 180.376648,
+      "deltaY": 0.00494384766,
+      "withinReserve": true
+    },
+    {
+      "object": "R7_BENCH_ADJUSTABLE_FOOT_00",
+      "previewGroundY": 180.55987548828125,
+      "nativeGroundY": 180.565033,
+      "deltaY": 0.0051574707,
+      "withinReserve": true
+    },
+    {
+      "object": "R7_BENCH_ADJUSTABLE_FOOT_01",
+      "previewGroundY": 180.652099609375,
+      "nativeGroundY": 180.664185,
+      "deltaY": 0.0120849609,
+      "withinReserve": true
+    },
+    {
+      "object": "R7_BENCH_ADJUSTABLE_FOOT_02",
+      "previewGroundY": 180.347900390625,
+      "nativeGroundY": 180.358841,
+      "deltaY": 0.0109405518,
+      "withinReserve": true
+    },
+    {
+      "object": "R7_BENCH_ADJUSTABLE_FOOT_03",
+      "previewGroundY": 180.44012451171875,
+      "nativeGroundY": 180.444092,
+      "deltaY": 0.003967285,
+      "withinReserve": true
+    },
+    {
+      "object": "R7_CLOSED_TOOL_MAINTENANCE_CRADLE",
+      "previewGroundY": 180.39031982421875,
+      "nativeGroundY": 180.3965,
+      "deltaY": 0.00617980957,
+      "withinReserve": true
+    },
+    {
+      "object": "R7_SAMPLE_LOCATION_MARKER",
+      "previewGroundY": 180.8438720703125,
+      "nativeGroundY": 180.832748,
+      "deltaY": -0.0111236572,
+      "withinReserve": true
+    }
+  ],
+  "savedReopened": true,
+  "dirty": false,
+  "playing": false,
+  "gitCommitPerformed": false,
+  "screenshotsTaken": false,
+  "walkTestRun": false,
+  "subjectiveVisualAcceptance": false,
+  "status": "completed_saved_without_git_commit",
+  "targetSceneEdited": true,
+  "priorAssetFilesEdited": false,
+  "rollbackScene": "LocalData/AI/AssetHandoffs/TheophilusDenseRing/R7/BeforeSamplePointR7.unity",
+  "blockers": []
+}
