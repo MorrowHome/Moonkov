@@ -1,0 +1,23 @@
+[
+  {
+    "name": "Moonkov_R29_From_R24_Final_Geometry_And_Handoff.zip",
+    "bytes": 1044298,
+    "sha256": "8ba195539ab1f747e58e02f41475c0b95468835e7e7859ce0539aa6d43156838",
+    "entries": 7,
+    "uncompressed": 1113189.0
+  },
+  {
+    "name": "Moonkov_R29_Industrial_Final_For_R24.zip",
+    "bytes": 94566649,
+    "sha256": "0618bfaa0ca355f7884208fb88a638e80c40902a564baf371f35099d0ef8a93c",
+    "entries": 28,
+    "uncompressed": 96026678.0
+  },
+  {
+    "name": "R29_Local_Ground_External_Materials_And_Textures.zip",
+    "bytes": 80670804,
+    "sha256": "cabd30665249719111f50baa38dba9c80cc3680091dfa3c6510e1e92e1cc872f",
+    "entries": 33,
+    "uncompressed": 80664566.0
+  }
+]

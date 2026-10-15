@@ -1,0 +1,79 @@
+{
+  "scope": "Shader reconstruction contract for the five local soil/rock display meshes only. Not a mainTerrain shader; never automatically installed.",
+  "materials": [
+    {
+      "material": "R27S_Compacted_WorldContinuous_PBR",
+      "local_prefix": "R26_Regolith_Compacted",
+      "local_mean_linear_rgb_for_ratio": [
+        0.1258419644058841,
+        0.1225847892974671,
+        0.11762079817541848
+      ],
+      "local_tile_m": 4,
+      "local_main_normal_strength": 0.65,
+      "metallic": 0,
+      "IOR": 1.5,
+      "Blender_specular_IOR_level": 0.25
+    },
+    {
+      "material": "R27S_DustyClasts_WorldContinuous_PBR",
+      "local_prefix": "R26_Regolith_DustyClasts",
+      "local_mean_linear_rgb_for_ratio": [
+        0.13537431109147957,
+        0.13286914031689576,
+        0.12557122588395075
+      ],
+      "local_tile_m": 4,
+      "local_main_normal_strength": 0.8,
+      "metallic": 0,
+      "IOR": 1.5,
+      "Blender_specular_IOR_level": 0.25
+    },
+    {
+      "material": "R27S_FineDust_WorldContinuous_PBR",
+      "local_prefix": "R26_Regolith_FineDust",
+      "local_mean_linear_rgb_for_ratio": [
+        0.14594774206453115,
+        0.13909723840740926,
+        0.1328106228796473
+      ],
+      "local_tile_m": 4,
+      "local_main_normal_strength": 0.65,
+      "metallic": 0,
+      "IOR": 1.5,
+      "Blender_specular_IOR_level": 0.25
+    }
+  ],
+  "core_world_reference": {
+    "base_color": "Textures/R27_Regolith_World64m_BaseColor.png at worldXZ/64,linearized from sRGB",
+    "macro": "Textures/R27_Regolith_Macro256m.png at worldXZ/256,linear",
+    "color_formula": "worldBaseLinear * (0.86+0.28*macro256) * (0.94+0.06*max(unperturbedNormalWorldUp,0))",
+    "roughness": "Textures/R27_Regolith_World64m_Roughness.png at worldXZ/64",
+    "meso_height": "Textures/R27_Regolith_World64m_Height16.png at worldXZ/64; visual bump strength0.95",
+    "meso_height_min_m": -0.22833238542079926,
+    "meso_height_max_m": 0.33418717980384827,
+    "equivalent_tangent_normal_source": "Textures/R27_Regolith_World64m_Normal_OpenGL.png; a target-pipeline visual match remains to be verified",
+    "fine_height": "Textures/R26_Regolith_Compacted_Height16.png at worldXZ/4; bumpDistance0.03775m; strength lerp(0.55,0,saturate((viewDistance-12)/108))",
+    "no_distance_flattening_of_macro_or_meso": true
+  },
+  "local_detail": {
+    "color_formula": "LocalBaseLinear(UV0/4) * (0.92+0.16*Macro32(worldXZ/32))",
+    "macro32": "Textures/R26_Regolith_Macro32m.png",
+    "micro_normal": "Textures/R26_Regolith_Micro025m_Normal_OpenGL.png at UV0/0.25m",
+    "micro_strength": "lerp(0.25,0,saturate((viewDistance-8)/27))",
+    "local_normal_composition": "normalize(localMainNormalWorld + microNormalWorld - unperturbedNormalWorld)"
+  },
+  "edge_blend": {
+    "mask": "Textures/R26S_World_Edge_Transition_Mask.png,linear,clipped outside UV0..1",
+    "UV": "(worldXZ-float2(1928,2038))/float2(186,140)",
+    "color": "referenceColor * lerp(1, localDetailColor / local_mean_linear_rgb_for_ratio, mask)",
+    "roughness": "lerp(referenceRoughness, localRoughness, mask)",
+    "normal": "normalize(lerp(referenceNormal, normalize(localDetailNormal + referenceNormal - unperturbedNormal), mask))"
+  },
+  "portable_channels": {
+    "normal": "OpenGL +Y tangent,normalmap import,flipGreen=false",
+    "smoothness": "1-roughness; MetallicGloss.alpha already contains smoothness",
+    "metallic": "0 in every soil layer"
+  },
+  "verification": "Only Blender library reopened and texture-byte identity/ZIP CRC checked. Unity reconstruction, compilation, scene binding, sourceTerrain matching and runtime are not verified."
+}

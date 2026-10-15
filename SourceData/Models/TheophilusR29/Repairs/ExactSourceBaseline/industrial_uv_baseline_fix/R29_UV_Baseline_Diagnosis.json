@@ -1,0 +1,1233 @@
+{
+  "objects": [
+    {
+      "object": "R20_01_Articulated_Armored_Primary_Buttresses",
+      "old_cloud_UVMap_sha256": "5756a77cace58f193daeb55682c882f9530aa25e597f3879f604b4b374217f0d",
+      "correct_R21_plus_R23_JSON_UVMap_sha256": "72ce56d21b086e4280d472e15e6322511238cad418deb2dc440f3f368610e4ce",
+      "R23_overridden_loops": 6144,
+      "unchanged_other_loops": 19200,
+      "different_loops_from_cloud_raw": 212,
+      "max_abs_difference": 0.000244140625,
+      "max_float32_ULP_difference": 6,
+      "outside_R23_override_changes": 0,
+      "samples": [
+        {
+          "loop": 10,
+          "cloud_raw_float32": [
+            -67.25689697265625,
+            207.3789825439453
+          ],
+          "R23_JSON_reloaded_float32": [
+            -67.25688934326172,
+            207.3789825439453
+          ],
+          "max_abs_difference": 7.62939453125e-06,
+          "max_ULP": 1
+        },
+        {
+          "loop": 11,
+          "cloud_raw_float32": [
+            -67.25689697265625,
+            240.62054443359375
+          ],
+          "R23_JSON_reloaded_float32": [
+            -67.25688934326172,
+            240.62054443359375
+          ],
+          "max_abs_difference": 7.62939453125e-06,
+          "max_ULP": 1
+        },
+        {
+          "loop": 12,
+          "cloud_raw_float32": [
+            95.02899169921875,
+            240.62054443359375
+          ],
+          "R23_JSON_reloaded_float32": [
+            95.02899932861328,
+            240.62054443359375
+          ],
+          "max_abs_difference": 7.62939453125e-06,
+          "max_ULP": 1
+        },
+        {
+          "loop": 15,
+          "cloud_raw_float32": [
+            95.02899169921875,
+            207.3789825439453
+          ],
+          "R23_JSON_reloaded_float32": [
+            95.02899932861328,
+            207.3789825439453
+          ],
+          "max_abs_difference": 7.62939453125e-06,
+          "max_ULP": 1
+        },
+        {
+          "loop": 115,
+          "cloud_raw_float32": [
+            -71.46723937988281,
+            33.749114990234375
+          ],
+          "R23_JSON_reloaded_float32": [
+            -71.46723937988281,
+            33.74911880493164
+          ],
+          "max_abs_difference": 3.814697265625e-06,
+          "max_ULP": 1
+        }
+      ]
+    },
+    {
+      "object": "R20_03_Nested_Transmission_Rings_And_Gear_Races",
+      "old_cloud_UVMap_sha256": "c1061a2d6ce6718dafcf9a35537d65692b032a3dd765b88df74b9b9131d0d87d",
+      "correct_R21_plus_R23_JSON_UVMap_sha256": "9a38a74f21dfa15988e36a7fdeba0aa21c3e41851177ef0e4de00386292eb78e",
+      "R23_overridden_loops": 31320,
+      "unchanged_other_loops": 8240,
+      "different_loops_from_cloud_raw": 362,
+      "max_abs_difference": 0.000244140625,
+      "max_float32_ULP_difference": 11,
+      "outside_R23_override_changes": 0,
+      "samples": [
+        {
+          "loop": 634,
+          "cloud_raw_float32": [
+            -2918.231689453125,
+            82.51020812988281
+          ],
+          "R23_JSON_reloaded_float32": [
+            -2918.231689453125,
+            82.51021575927734
+          ],
+          "max_abs_difference": 7.62939453125e-06,
+          "max_ULP": 1
+        },
+        {
+          "loop": 635,
+          "cloud_raw_float32": [
+            -2907.231689453125,
+            82.51020812988281
+          ],
+          "R23_JSON_reloaded_float32": [
+            -2907.231689453125,
+            82.51021575927734
+          ],
+          "max_abs_difference": 7.62939453125e-06,
+          "max_ULP": 1
+        },
+        {
+          "loop": 637,
+          "cloud_raw_float32": [
+            2916.6845703125,
+            82.51020812988281
+          ],
+          "R23_JSON_reloaded_float32": [
+            2916.6845703125,
+            82.51021575927734
+          ],
+          "max_abs_difference": 7.62939453125e-06,
+          "max_ULP": 1
+        },
+        {
+          "loop": 638,
+          "cloud_raw_float32": [
+            2927.6845703125,
+            82.51020812988281
+          ],
+          "R23_JSON_reloaded_float32": [
+            2927.6845703125,
+            82.51021575927734
+          ],
+          "max_abs_difference": 7.62939453125e-06,
+          "max_ULP": 1
+        },
+        {
+          "loop": 1288,
+          "cloud_raw_float32": [
+            1260.6605224609375,
+            -60.04347229003906
+          ],
+          "R23_JSON_reloaded_float32": [
+            1260.6605224609375,
+            -60.0434684753418
+          ],
+          "max_abs_difference": 3.814697265625e-06,
+          "max_ULP": 1
+        }
+      ]
+    },
+    {
+      "object": "R20_04_Offset_Shoulder_Engine_Packs_And_Armor",
+      "old_cloud_UVMap_sha256": "89b011dad8adfb0306d25c41553230980eee5bb340f6537b6f01ef90c0776965",
+      "correct_R21_plus_R23_JSON_UVMap_sha256": "9f773523f988ea9f50558289be75304f9293ad840234c45f755892902bfc2488",
+      "R23_overridden_loops": 3840,
+      "unchanged_other_loops": 960,
+      "different_loops_from_cloud_raw": 108,
+      "max_abs_difference": 0.000244140625,
+      "max_float32_ULP_difference": 1,
+      "outside_R23_override_changes": 0,
+      "samples": [
+        {
+          "loop": 44,
+          "cloud_raw_float32": [
+            -52.982723236083984,
+            -108.39061737060547
+          ],
+          "R23_JSON_reloaded_float32": [
+            -52.98271942138672,
+            -108.39061737060547
+          ],
+          "max_abs_difference": 3.814697265625e-06,
+          "max_ULP": 1
+        },
+        {
+          "loop": 46,
+          "cloud_raw_float32": [
+            -51.992855072021484,
+            -83.23113250732422
+          ],
+          "R23_JSON_reloaded_float32": [
+            -51.99285125732422,
+            -83.23113250732422
+          ],
+          "max_abs_difference": 3.814697265625e-06,
+          "max_ULP": 1
+        },
+        {
+          "loop": 960,
+          "cloud_raw_float32": [
+            -226.57769775390625,
+            -1846.8497314453125
+          ],
+          "R23_JSON_reloaded_float32": [
+            -226.5776824951172,
+            -1846.8497314453125
+          ],
+          "max_abs_difference": 1.52587890625e-05,
+          "max_ULP": 1
+        },
+        {
+          "loop": 961,
+          "cloud_raw_float32": [
+            -226.57769775390625,
+            -1846.4581298828125
+          ],
+          "R23_JSON_reloaded_float32": [
+            -226.5776824951172,
+            -1846.4581298828125
+          ],
+          "max_abs_difference": 1.52587890625e-05,
+          "max_ULP": 1
+        },
+        {
+          "loop": 962,
+          "cloud_raw_float32": [
+            -237.57769775390625,
+            -1846.4581298828125
+          ],
+          "R23_JSON_reloaded_float32": [
+            -237.5776824951172,
+            -1846.4581298828125
+          ],
+          "max_abs_difference": 1.52587890625e-05,
+          "max_ULP": 1
+        }
+      ]
+    },
+    {
+      "object": "R20_07_Upper_Stage_Articulated_Spine_And_Armor",
+      "old_cloud_UVMap_sha256": "37efd5cfe74e4cf4e42e67675667a83d9857550beb3af9307efa0f6f4f40a60c",
+      "correct_R21_plus_R23_JSON_UVMap_sha256": "958e1bd3ef16ed006c889931a53ba910918b72e8cc8954337f22cd5285c6dab2",
+      "R23_overridden_loops": 8832,
+      "unchanged_other_loops": 10944,
+      "different_loops_from_cloud_raw": 272,
+      "max_abs_difference": 0.000244140625,
+      "max_float32_ULP_difference": 13,
+      "outside_R23_override_changes": 0,
+      "samples": [
+        {
+          "loop": 94,
+          "cloud_raw_float32": [
+            2158.010986328125,
+            24.2275447845459
+          ],
+          "R23_JSON_reloaded_float32": [
+            2158.010986328125,
+            24.22754669189453
+          ],
+          "max_abs_difference": 1.9073486328125e-06,
+          "max_ULP": 1
+        },
+        {
+          "loop": 95,
+          "cloud_raw_float32": [
+            2156.526123046875,
+            24.2275447845459
+          ],
+          "R23_JSON_reloaded_float32": [
+            2156.526123046875,
+            24.22754669189453
+          ],
+          "max_abs_difference": 1.9073486328125e-06,
+          "max_ULP": 1
+        },
+        {
+          "loop": 100,
+          "cloud_raw_float32": [
+            -2015.485107421875,
+            -1.3366481065750122
+          ],
+          "R23_JSON_reloaded_float32": [
+            -2015.485107421875,
+            -1.3366479873657227
+          ],
+          "max_abs_difference": 1.1920928955078125e-07,
+          "max_ULP": 1
+        },
+        {
+          "loop": 101,
+          "cloud_raw_float32": [
+            -2014.000244140625,
+            -1.3366481065750122
+          ],
+          "R23_JSON_reloaded_float32": [
+            -2014.000244140625,
+            -1.3366479873657227
+          ],
+          "max_abs_difference": 1.1920928955078125e-07,
+          "max_ULP": 1
+        },
+        {
+          "loop": 102,
+          "cloud_raw_float32": [
+            -2012.5859375,
+            10.746405601501465
+          ],
+          "R23_JSON_reloaded_float32": [
+            -2012.5859375,
+            10.746404647827148
+          ],
+          "max_abs_difference": 9.5367431640625e-07,
+          "max_ULP": 1
+        }
+      ]
+    },
+    {
+      "object": "R20_08_Upper_Lift_Drive_Core_And_Segmented_Casings",
+      "old_cloud_UVMap_sha256": "a2c3c25a9dfec474f1e4ee22d317b4ee9d3f7338220ddcc61b94d671334fc4dc",
+      "correct_R21_plus_R23_JSON_UVMap_sha256": "5ef75ea680a7e76bab8dda1d3731924f230d27ef9acb11ca3b625e20c2e43ac4",
+      "R23_overridden_loops": 13080,
+      "unchanged_other_loops": 2496,
+      "different_loops_from_cloud_raw": 160,
+      "max_abs_difference": 0.000244140625,
+      "max_float32_ULP_difference": 4,
+      "outside_R23_override_changes": 0,
+      "samples": [
+        {
+          "loop": 3188,
+          "cloud_raw_float32": [
+            305.1629333496094,
+            2011.8056640625
+          ],
+          "R23_JSON_reloaded_float32": [
+            305.1629333496094,
+            2011.8055419921875
+          ],
+          "max_abs_difference": 0.0001220703125,
+          "max_ULP": 1
+        },
+        {
+          "loop": 3191,
+          "cloud_raw_float32": [
+            306.7629089355469,
+            2011.8056640625
+          ],
+          "R23_JSON_reloaded_float32": [
+            306.7629089355469,
+            2011.8055419921875
+          ],
+          "max_abs_difference": 0.0001220703125,
+          "max_ULP": 1
+        },
+        {
+          "loop": 3205,
+          "cloud_raw_float32": [
+            305.1629333496094,
+            1713.283447265625
+          ],
+          "R23_JSON_reloaded_float32": [
+            305.1629333496094,
+            1713.2833251953125
+          ],
+          "max_abs_difference": 0.0001220703125,
+          "max_ULP": 1
+        },
+        {
+          "loop": 3206,
+          "cloud_raw_float32": [
+            306.7629089355469,
+            1713.283447265625
+          ],
+          "R23_JSON_reloaded_float32": [
+            306.7629089355469,
+            1713.2833251953125
+          ],
+          "max_abs_difference": 0.0001220703125,
+          "max_ULP": 1
+        },
+        {
+          "loop": 3229,
+          "cloud_raw_float32": [
+            1552.8026123046875,
+            -2490.277587890625
+          ],
+          "R23_JSON_reloaded_float32": [
+            1552.8026123046875,
+            -2490.27783203125
+          ],
+          "max_abs_difference": 0.000244140625,
+          "max_ULP": 1
+        }
+      ]
+    },
+    {
+      "object": "R19_07_Paired_Feed_Rams_And_Axial_Guides",
+      "old_cloud_UVMap_sha256": "77d24afae04cb2c98568e48230de0a5d387c1e7e7d3dda77ae25f8c1b454bd02",
+      "correct_R21_plus_R23_JSON_UVMap_sha256": "e4fc95a511bca1e3aecc92ceafaa0ba43215891d3b44a0d321d605961780a962",
+      "R23_overridden_loops": 1728,
+      "unchanged_other_loops": 2160,
+      "different_loops_from_cloud_raw": 37,
+      "max_abs_difference": 0.000244140625,
+      "max_float32_ULP_difference": 1,
+      "outside_R23_override_changes": 0,
+      "samples": [
+        {
+          "loop": 1221,
+          "cloud_raw_float32": [
+            176.5856170654297,
+            285.9034423828125
+          ],
+          "R23_JSON_reloaded_float32": [
+            176.5856170654297,
+            285.9034118652344
+          ],
+          "max_abs_difference": 3.0517578125e-05,
+          "max_ULP": 1
+        },
+        {
+          "loop": 1222,
+          "cloud_raw_float32": [
+            177.5856170654297,
+            285.9034423828125
+          ],
+          "R23_JSON_reloaded_float32": [
+            177.5856170654297,
+            285.9034118652344
+          ],
+          "max_abs_difference": 3.0517578125e-05,
+          "max_ULP": 1
+        },
+        {
+          "loop": 1228,
+          "cloud_raw_float32": [
+            176.5856170654297,
+            -477.997802734375
+          ],
+          "R23_JSON_reloaded_float32": [
+            176.5856170654297,
+            -477.9978332519531
+          ],
+          "max_abs_difference": 3.0517578125e-05,
+          "max_ULP": 1
+        },
+        {
+          "loop": 1231,
+          "cloud_raw_float32": [
+            177.5856170654297,
+            -477.997802734375
+          ],
+          "R23_JSON_reloaded_float32": [
+            177.5856170654297,
+            -477.9978332519531
+          ],
+          "max_abs_difference": 3.0517578125e-05,
+          "max_ULP": 1
+        },
+        {
+          "loop": 1316,
+          "cloud_raw_float32": [
+            176.5856170654297,
+            -275.540771484375
+          ],
+          "R23_JSON_reloaded_float32": [
+            176.5856170654297,
+            -275.5408020019531
+          ],
+          "max_abs_difference": 3.0517578125e-05,
+          "max_ULP": 1
+        }
+      ]
+    },
+    {
+      "object": "R19_08_Travelling_Head_Topdrive_And_Clamp_Assembly",
+      "old_cloud_UVMap_sha256": "715522fe0e3211a3c50d3e0842c07b107cd72c09b084cfa22dfcda4749369443",
+      "correct_R21_plus_R23_JSON_UVMap_sha256": "f430b13e6c65cdd25a6a2e563b310fc5fc899054f661e17767ac1cdf4c26261e",
+      "R23_overridden_loops": 7800,
+      "unchanged_other_loops": 1200,
+      "different_loops_from_cloud_raw": 238,
+      "max_abs_difference": 0.000244140625,
+      "max_float32_ULP_difference": 15,
+      "outside_R23_override_changes": 0,
+      "samples": [
+        {
+          "loop": 1241,
+          "cloud_raw_float32": [
+            -2119.95166015625,
+            11.109285354614258
+          ],
+          "R23_JSON_reloaded_float32": [
+            -2119.95166015625,
+            11.109286308288574
+          ],
+          "max_abs_difference": 9.5367431640625e-07,
+          "max_ULP": 1
+        },
+        {
+          "loop": 1242,
+          "cloud_raw_float32": [
+            -2115.95166015625,
+            11.109285354614258
+          ],
+          "R23_JSON_reloaded_float32": [
+            -2115.95166015625,
+            11.109286308288574
+          ],
+          "max_abs_difference": 9.5367431640625e-07,
+          "max_ULP": 1
+        },
+        {
+          "loop": 1390,
+          "cloud_raw_float32": [
+            -980.2930297851562,
+            -10.272887229919434
+          ],
+          "R23_JSON_reloaded_float32": [
+            -980.2930297851562,
+            -10.27288818359375
+          ],
+          "max_abs_difference": 9.5367431640625e-07,
+          "max_ULP": 1
+        },
+        {
+          "loop": 1400,
+          "cloud_raw_float32": [
+            0.844950258731842,
+            -2887.36376953125
+          ],
+          "R23_JSON_reloaded_float32": [
+            0.8449500203132629,
+            -2887.36376953125
+          ],
+          "max_abs_difference": 2.384185791015625e-07,
+          "max_ULP": 4
+        },
+        {
+          "loop": 1401,
+          "cloud_raw_float32": [
+            0.41080716252326965,
+            -2887.59814453125
+          ],
+          "R23_JSON_reloaded_float32": [
+            0.4108070135116577,
+            -2887.59814453125
+          ],
+          "max_abs_difference": 1.4901161193847656e-07,
+          "max_ULP": 5
+        }
+      ]
+    },
+    {
+      "object": "R18_14_Return_Separation_Vessel_Skids",
+      "old_cloud_UVMap_sha256": "914e1a772a2b23aab3ea9e123959bdee6cfe60825a9e0a390255e48ddc7383e0",
+      "correct_R21_plus_R23_JSON_UVMap_sha256": "2b05c89e293c8eba5c119d58ad47b485cb2eb2c784c16bba8db16b2eb43b7d89",
+      "R23_overridden_loops": 5832,
+      "unchanged_other_loops": 3240,
+      "different_loops_from_cloud_raw": 52,
+      "max_abs_difference": 0.0001220703125,
+      "max_float32_ULP_difference": 1,
+      "outside_R23_override_changes": 0,
+      "samples": [
+        {
+          "loop": 694,
+          "cloud_raw_float32": [
+            2748.863525390625,
+            -51.720706939697266
+          ],
+          "R23_JSON_reloaded_float32": [
+            2748.863525390625,
+            -51.720703125
+          ],
+          "max_abs_difference": 3.814697265625e-06,
+          "max_ULP": 1
+        },
+        {
+          "loop": 1058,
+          "cloud_raw_float32": [
+            -2727.37841796875,
+            -51.19839096069336
+          ],
+          "R23_JSON_reloaded_float32": [
+            -2727.37841796875,
+            -51.198387145996094
+          ],
+          "max_abs_difference": 3.814697265625e-06,
+          "max_ULP": 1
+        },
+        {
+          "loop": 1059,
+          "cloud_raw_float32": [
+            -2727.35791015625,
+            -51.61445999145508
+          ],
+          "R23_JSON_reloaded_float32": [
+            -2727.35791015625,
+            -51.61445617675781
+          ],
+          "max_abs_difference": 3.814697265625e-06,
+          "max_ULP": 1
+        },
+        {
+          "loop": 1166,
+          "cloud_raw_float32": [
+            2856.620849609375,
+            56.837284088134766
+          ],
+          "R23_JSON_reloaded_float32": [
+            2856.620849609375,
+            56.83728790283203
+          ],
+          "max_abs_difference": 3.814697265625e-06,
+          "max_ULP": 1
+        },
+        {
+          "loop": 1536,
+          "cloud_raw_float32": [
+            1835.0369873046875,
+            -69.97080993652344
+          ],
+          "R23_JSON_reloaded_float32": [
+            1835.0369873046875,
+            -69.9708023071289
+          ],
+          "max_abs_difference": 7.62939453125e-06,
+          "max_ULP": 1
+        }
+      ]
+    },
+    {
+      "object": "R18_15_High_Pressure_Pump_And_Compressor_Skids",
+      "old_cloud_UVMap_sha256": "2d01f59ce90329ba0eb87f3e384dfd7219479a688fe9c866dfb5cee10ca3d2bd",
+      "correct_R21_plus_R23_JSON_UVMap_sha256": "876984ff5f3c8b873a58088f2dd79aa7dd0549aa3536a0d9c684e833c1c8bd1b",
+      "R23_overridden_loops": 8856,
+      "unchanged_other_loops": 144,
+      "different_loops_from_cloud_raw": 229,
+      "max_abs_difference": 0.0001220703125,
+      "max_float32_ULP_difference": 115,
+      "outside_R23_override_changes": 0,
+      "samples": [
+        {
+          "loop": 215,
+          "cloud_raw_float32": [
+            2873.83740234375,
+            144.14491271972656
+          ],
+          "R23_JSON_reloaded_float32": [
+            2873.83740234375,
+            144.1448974609375
+          ],
+          "max_abs_difference": 1.52587890625e-05,
+          "max_ULP": 1
+        },
+        {
+          "loop": 229,
+          "cloud_raw_float32": [
+            2864.03564453125,
+            233.75811767578125
+          ],
+          "R23_JSON_reloaded_float32": [
+            2864.03564453125,
+            233.7581024169922
+          ],
+          "max_abs_difference": 1.52587890625e-05,
+          "max_ULP": 1
+        },
+        {
+          "loop": 236,
+          "cloud_raw_float32": [
+            -2849.799072265625,
+            233.28907775878906
+          ],
+          "R23_JSON_reloaded_float32": [
+            -2849.799072265625,
+            233.2890625
+          ],
+          "max_abs_difference": 1.52587890625e-05,
+          "max_ULP": 1
+        },
+        {
+          "loop": 253,
+          "cloud_raw_float32": [
+            -2798.152587890625,
+            454.0352783203125
+          ],
+          "R23_JSON_reloaded_float32": [
+            -2798.152587890625,
+            454.0352478027344
+          ],
+          "max_abs_difference": 3.0517578125e-05,
+          "max_ULP": 1
+        },
+        {
+          "loop": 393,
+          "cloud_raw_float32": [
+            -2857.013916015625,
+            135.1728057861328
+          ],
+          "R23_JSON_reloaded_float32": [
+            -2857.013916015625,
+            135.17279052734375
+          ],
+          "max_abs_difference": 1.52587890625e-05,
+          "max_ULP": 1
+        }
+      ]
+    },
+    {
+      "object": "R18_16_Flanged_Process_Headers_And_Valve_Manifolds",
+      "old_cloud_UVMap_sha256": "ece83c75ccf106a724197c46d1aff696326df4d55e18272887b9b194fb2ad5db",
+      "correct_R21_plus_R23_JSON_UVMap_sha256": "ccdeab7fcc351745c960b7e179ca7a7efff36bcecd7a10c560f2b19906506372",
+      "R23_overridden_loops": 2976,
+      "unchanged_other_loops": 8064,
+      "different_loops_from_cloud_raw": 34,
+      "max_abs_difference": 6.103515625e-05,
+      "max_float32_ULP_difference": 1,
+      "outside_R23_override_changes": 0,
+      "samples": [
+        {
+          "loop": 1096,
+          "cloud_raw_float32": [
+            -1962.156005859375,
+            131.5785369873047
+          ],
+          "R23_JSON_reloaded_float32": [
+            -1962.156005859375,
+            131.57852172851562
+          ],
+          "max_abs_difference": 1.52587890625e-05,
+          "max_ULP": 1
+        },
+        {
+          "loop": 1097,
+          "cloud_raw_float32": [
+            -1962.17431640625,
+            131.67037963867188
+          ],
+          "R23_JSON_reloaded_float32": [
+            -1962.17431640625,
+            131.6703643798828
+          ],
+          "max_abs_difference": 1.52587890625e-05,
+          "max_ULP": 1
+        },
+        {
+          "loop": 1103,
+          "cloud_raw_float32": [
+            -1962.61767578125,
+            131.67037963867188
+          ],
+          "R23_JSON_reloaded_float32": [
+            -1962.61767578125,
+            131.6703643798828
+          ],
+          "max_abs_difference": 1.52587890625e-05,
+          "max_ULP": 1
+        },
+        {
+          "loop": 1104,
+          "cloud_raw_float32": [
+            -1962.635986328125,
+            131.5785369873047
+          ],
+          "R23_JSON_reloaded_float32": [
+            -1962.635986328125,
+            131.57852172851562
+          ],
+          "max_abs_difference": 1.52587890625e-05,
+          "max_ULP": 1
+        },
+        {
+          "loop": 1106,
+          "cloud_raw_float32": [
+            -1962.565673828125,
+            131.40882873535156
+          ],
+          "R23_JSON_reloaded_float32": [
+            -1962.565673828125,
+            131.4088134765625
+          ],
+          "max_abs_difference": 1.52587890625e-05,
+          "max_ULP": 1
+        }
+      ]
+    },
+    {
+      "object": "R18_09_Pipe_Handling_Terrace",
+      "old_cloud_UVMap_sha256": "6c6d925c769e12a4cf436cc21f13b8c9071f14f0ea12f8bb35ac52c81ed9bd8e",
+      "correct_R21_plus_R23_JSON_UVMap_sha256": "25bb080a34d96ec80317e17d85abaf912b11f259fa0fb3e2ec3e63527b14b769",
+      "R23_overridden_loops": 3168,
+      "unchanged_other_loops": 1344,
+      "different_loops_from_cloud_raw": 34,
+      "max_abs_difference": 0.0001220703125,
+      "max_float32_ULP_difference": 1,
+      "outside_R23_override_changes": 0,
+      "samples": [
+        {
+          "loop": 33,
+          "cloud_raw_float32": [
+            1914.170166015625,
+            -128.39828491210938
+          ],
+          "R23_JSON_reloaded_float32": [
+            1914.170166015625,
+            -128.39830017089844
+          ],
+          "max_abs_difference": 1.52587890625e-05,
+          "max_ULP": 1
+        },
+        {
+          "loop": 34,
+          "cloud_raw_float32": [
+            1914.72021484375,
+            -128.39828491210938
+          ],
+          "R23_JSON_reloaded_float32": [
+            1914.72021484375,
+            -128.39830017089844
+          ],
+          "max_abs_difference": 1.52587890625e-05,
+          "max_ULP": 1
+        },
+        {
+          "loop": 38,
+          "cloud_raw_float32": [
+            -1903.729736328125,
+            -128.39828491210938
+          ],
+          "R23_JSON_reloaded_float32": [
+            -1903.729736328125,
+            -128.39830017089844
+          ],
+          "max_abs_difference": 1.52587890625e-05,
+          "max_ULP": 1
+        },
+        {
+          "loop": 39,
+          "cloud_raw_float32": [
+            -1903.1796875,
+            -128.39828491210938
+          ],
+          "R23_JSON_reloaded_float32": [
+            -1903.1796875,
+            -128.39830017089844
+          ],
+          "max_abs_difference": 1.52587890625e-05,
+          "max_ULP": 1
+        },
+        {
+          "loop": 42,
+          "cloud_raw_float32": [
+            -2084.0048828125,
+            -128.39828491210938
+          ],
+          "R23_JSON_reloaded_float32": [
+            -2084.0048828125,
+            -128.39830017089844
+          ],
+          "max_abs_difference": 1.52587890625e-05,
+          "max_ULP": 1
+        }
+      ]
+    },
+    {
+      "object": "R18_13_Process_Equipment_Deck",
+      "old_cloud_UVMap_sha256": "1575bb758d7154e1a57b85f71ca29b67e82f2d18a88c0cfa41b0c524a51912f8",
+      "correct_R21_plus_R23_JSON_UVMap_sha256": "840da1739993828cb06ab756ba61c99ff70608d649cef0da221d205ab6bfd240",
+      "R23_overridden_loops": 4056,
+      "unchanged_other_loops": 1632,
+      "different_loops_from_cloud_raw": 82,
+      "max_abs_difference": 0.000244140625,
+      "max_float32_ULP_difference": 1,
+      "outside_R23_override_changes": 0,
+      "samples": [
+        {
+          "loop": 321,
+          "cloud_raw_float32": [
+            -1949.4822998046875,
+            133.0028839111328
+          ],
+          "R23_JSON_reloaded_float32": [
+            -1949.4822998046875,
+            133.00286865234375
+          ],
+          "max_abs_difference": 1.52587890625e-05,
+          "max_ULP": 1
+        },
+        {
+          "loop": 322,
+          "cloud_raw_float32": [
+            -1949.9822998046875,
+            133.0028839111328
+          ],
+          "R23_JSON_reloaded_float32": [
+            -1949.9822998046875,
+            133.00286865234375
+          ],
+          "max_abs_difference": 1.52587890625e-05,
+          "max_ULP": 1
+        },
+        {
+          "loop": 326,
+          "cloud_raw_float32": [
+            1974.5177001953125,
+            133.0028839111328
+          ],
+          "R23_JSON_reloaded_float32": [
+            1974.5177001953125,
+            133.00286865234375
+          ],
+          "max_abs_difference": 1.52587890625e-05,
+          "max_ULP": 1
+        },
+        {
+          "loop": 327,
+          "cloud_raw_float32": [
+            1974.0177001953125,
+            133.0028839111328
+          ],
+          "R23_JSON_reloaded_float32": [
+            1974.0177001953125,
+            133.00286865234375
+          ],
+          "max_abs_difference": 1.52587890625e-05,
+          "max_ULP": 1
+        },
+        {
+          "loop": 330,
+          "cloud_raw_float32": [
+            2084.517822265625,
+            133.0028839111328
+          ],
+          "R23_JSON_reloaded_float32": [
+            2084.517822265625,
+            133.00286865234375
+          ],
+          "max_abs_difference": 1.52587890625e-05,
+          "max_ULP": 1
+        }
+      ]
+    },
+    {
+      "object": "R18_19_Machinery_House_Foundation",
+      "old_cloud_UVMap_sha256": "81528252d40ed651e052974af5fbc8fd0d5000c234063076b2e00a0bf0309be0",
+      "correct_R21_plus_R23_JSON_UVMap_sha256": "7b45ca85209832a6761f5f22021f77c4239ac418b7779e5c0d219fe1e794771a",
+      "R23_overridden_loops": 2736,
+      "unchanged_other_loops": 1104,
+      "different_loops_from_cloud_raw": 70,
+      "max_abs_difference": 0.000244140625,
+      "max_float32_ULP_difference": 1,
+      "outside_R23_override_changes": 0,
+      "samples": [
+        {
+          "loop": 80,
+          "cloud_raw_float32": [
+            -108.17439270019531,
+            -1906.093017578125
+          ],
+          "R23_JSON_reloaded_float32": [
+            -108.17440032958984,
+            -1906.093017578125
+          ],
+          "max_abs_difference": 7.62939453125e-06,
+          "max_ULP": 1
+        },
+        {
+          "loop": 81,
+          "cloud_raw_float32": [
+            -109.52439880371094,
+            -1906.093017578125
+          ],
+          "R23_JSON_reloaded_float32": [
+            -109.52440643310547,
+            -1906.093017578125
+          ],
+          "max_abs_difference": 7.62939453125e-06,
+          "max_ULP": 1
+        },
+        {
+          "loop": 82,
+          "cloud_raw_float32": [
+            -109.52439880371094,
+            -1936.093017578125
+          ],
+          "R23_JSON_reloaded_float32": [
+            -109.52440643310547,
+            -1936.093017578125
+          ],
+          "max_abs_difference": 7.62939453125e-06,
+          "max_ULP": 1
+        },
+        {
+          "loop": 83,
+          "cloud_raw_float32": [
+            -108.17439270019531,
+            -1936.093017578125
+          ],
+          "R23_JSON_reloaded_float32": [
+            -108.17440032958984,
+            -1936.093017578125
+          ],
+          "max_abs_difference": 7.62939453125e-06,
+          "max_ULP": 1
+        },
+        {
+          "loop": 84,
+          "cloud_raw_float32": [
+            -108.17439270019531,
+            1935.906982421875
+          ],
+          "R23_JSON_reloaded_float32": [
+            -108.17440032958984,
+            1935.906982421875
+          ],
+          "max_abs_difference": 7.62939453125e-06,
+          "max_ULP": 1
+        }
+      ]
+    },
+    {
+      "object": "R19_11_Machine_Service_Walkways_And_Rails",
+      "old_cloud_UVMap_sha256": "98d5453bed5cc54de1f00cf90da3fc03eec77c4154ba0a16a077658ef784529c",
+      "correct_R21_plus_R23_JSON_UVMap_sha256": "b0beb1d511847fa47446edfd620480f44cc93b40017a5232ba40bd13dcdeda71",
+      "R23_overridden_loops": 912,
+      "unchanged_other_loops": 5544,
+      "different_loops_from_cloud_raw": 3,
+      "max_abs_difference": 3.814697265625e-06,
+      "max_float32_ULP_difference": 1,
+      "outside_R23_override_changes": 0,
+      "samples": [
+        {
+          "loop": 665,
+          "cloud_raw_float32": [
+            -56.00349807739258,
+            -2922.607421875
+          ],
+          "R23_JSON_reloaded_float32": [
+            -56.00349426269531,
+            -2922.607421875
+          ],
+          "max_abs_difference": 3.814697265625e-06,
+          "max_ULP": 1
+        },
+        {
+          "loop": 669,
+          "cloud_raw_float32": [
+            52.73942184448242,
+            -2925.805419921875
+          ],
+          "R23_JSON_reloaded_float32": [
+            52.73942565917969,
+            -2925.805419921875
+          ],
+          "max_abs_difference": 3.814697265625e-06,
+          "max_ULP": 1
+        },
+        {
+          "loop": 670,
+          "cloud_raw_float32": [
+            57.73929977416992,
+            -2925.805419921875
+          ],
+          "R23_JSON_reloaded_float32": [
+            57.73930358886719,
+            -2925.805419921875
+          ],
+          "max_abs_difference": 3.814697265625e-06,
+          "max_ULP": 1
+        }
+      ]
+    },
+    {
+      "object": "R20_05_Central_Transfer_Hub_At_Existing_Bridge_Height",
+      "old_cloud_UVMap_sha256": "441ea020312d004d273f56b5506c0d286f28660a016365493f35937b7e2339d0",
+      "correct_R21_plus_R23_JSON_UVMap_sha256": "78021d1423a42796f4e0303230bb1448d9f1ea337e8eae869b6337c4da6ac341",
+      "R23_overridden_loops": 6928,
+      "unchanged_other_loops": 960,
+      "different_loops_from_cloud_raw": 71,
+      "max_abs_difference": 0.000244140625,
+      "max_float32_ULP_difference": 5,
+      "outside_R23_override_changes": 0,
+      "samples": [
+        {
+          "loop": 409,
+          "cloud_raw_float32": [
+            484.8092346191406,
+            -2885.441162109375
+          ],
+          "R23_JSON_reloaded_float32": [
+            484.8092346191406,
+            -2885.44091796875
+          ],
+          "max_abs_difference": 0.000244140625,
+          "max_ULP": 1
+        },
+        {
+          "loop": 415,
+          "cloud_raw_float32": [
+            -483.3570251464844,
+            -2885.441162109375
+          ],
+          "R23_JSON_reloaded_float32": [
+            -483.3570251464844,
+            -2885.44091796875
+          ],
+          "max_abs_difference": 0.000244140625,
+          "max_ULP": 1
+        },
+        {
+          "loop": 552,
+          "cloud_raw_float32": [
+            2515.41943359375,
+            -1450.651123046875
+          ],
+          "R23_JSON_reloaded_float32": [
+            2515.41943359375,
+            -1450.6510009765625
+          ],
+          "max_abs_difference": 0.0001220703125,
+          "max_ULP": 1
+        },
+        {
+          "loop": 556,
+          "cloud_raw_float32": [
+            -2513.96728515625,
+            -1450.651123046875
+          ],
+          "R23_JSON_reloaded_float32": [
+            -2513.96728515625,
+            -1450.6510009765625
+          ],
+          "max_abs_difference": 0.0001220703125,
+          "max_ULP": 1
+        },
+        {
+          "loop": 827,
+          "cloud_raw_float32": [
+            -1420.790283203125,
+            -2543.828369140625
+          ],
+          "R23_JSON_reloaded_float32": [
+            -1420.790283203125,
+            -2543.828125
+          ],
+          "max_abs_difference": 0.000244140625,
+          "max_ULP": 1
+        }
+      ]
+    },
+    {
+      "object": "R21_02_Thick_Segmented_Shaft_Lining",
+      "old_cloud_UVMap_sha256": "f89401d33b7bf7bf884d551506f2886c2718b7f641b2dd3860e20957e1d1497d",
+      "correct_R21_plus_R23_JSON_UVMap_sha256": "a492feadcbf4d22391d06fdab499ed39a97a6a58aec4637c747390561c89f5b4",
+      "R23_overridden_loops": 6656,
+      "unchanged_other_loops": 0,
+      "different_loops_from_cloud_raw": 644,
+      "max_abs_difference": 0.000244140625,
+      "max_float32_ULP_difference": 10,
+      "outside_R23_override_changes": 0,
+      "samples": [
+        {
+          "loop": 260,
+          "cloud_raw_float32": [
+            -2428.36279296875,
+            23.81424903869629
+          ],
+          "R23_JSON_reloaded_float32": [
+            -2428.36279296875,
+            23.814250946044922
+          ],
+          "max_abs_difference": 1.9073486328125e-06,
+          "max_ULP": 1
+        },
+        {
+          "loop": 263,
+          "cloud_raw_float32": [
+            -2429.2626953125,
+            23.81424903869629
+          ],
+          "R23_JSON_reloaded_float32": [
+            -2429.2626953125,
+            23.814250946044922
+          ],
+          "max_abs_difference": 1.9073486328125e-06,
+          "max_ULP": 1
+        },
+        {
+          "loop": 264,
+          "cloud_raw_float32": [
+            2458.12548828125,
+            23.81424903869629
+          ],
+          "R23_JSON_reloaded_float32": [
+            2458.12548828125,
+            23.814250946044922
+          ],
+          "max_abs_difference": 1.9073486328125e-06,
+          "max_ULP": 1
+        },
+        {
+          "loop": 265,
+          "cloud_raw_float32": [
+            2459.025390625,
+            23.81424903869629
+          ],
+          "R23_JSON_reloaded_float32": [
+            2459.025390625,
+            23.814250946044922
+          ],
+          "max_abs_difference": 1.9073486328125e-06,
+          "max_ULP": 1
+        },
+        {
+          "loop": 268,
+          "cloud_raw_float32": [
+            1710.2938232421875,
+            23.81424903869629
+          ],
+          "R23_JSON_reloaded_float32": [
+            1710.2938232421875,
+            23.814250946044922
+          ],
+          "max_abs_difference": 1.9073486328125e-06,
+          "max_ULP": 1
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "objects": 16,
+    "different_objects": 16,
+    "max_ULP": 115,
+    "max_absolute_difference": 0.000244140625,
+    "unchanged_unlisted_loops": true
+  }
+}

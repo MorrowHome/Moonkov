@@ -1,0 +1,133 @@
+{
+  "revision": "R29 source UV baseline guard correction only",
+  "source_R23_JSON": "R23_R21_Metric_UV_Overrides.json",
+  "source_R23_JSON_sha256": "29ab48046fd6448c06e4bb50ddbecaafa8b0542b9b3f20c12f175f07561affb7",
+  "original_industrial_mapping_sha256": "0b2df9baf508b4a28cb50a7d68f465ae08ba4dc31219443be085dc0213d32dcb",
+  "original_industrial_entry_sha256": "343b8d4e5cd04f8a3d399eaa353be9dc6189be325abd8479699a54bcfc11f07b",
+  "guards": [
+    {
+      "object": "R20_01_Articulated_Armored_Primary_Buttresses",
+      "old_guard": "5756a77cace58f193daeb55682c882f9530aa25e597f3879f604b4b374217f0d",
+      "correct_guard": "72ce56d21b086e4280d472e15e6322511238cad418deb2dc440f3f368610e4ce",
+      "vertex_float32_sha256": "5d2cb0f968a8ba57b75dc353eddd96b60a4069be2fcbbc421f26ab26ea53296c",
+      "topology_sha256": "9c918229345191aa5d52c1cb12777803fbac75acc963b955392de1b315b4320e"
+    },
+    {
+      "object": "R20_03_Nested_Transmission_Rings_And_Gear_Races",
+      "old_guard": "c1061a2d6ce6718dafcf9a35537d65692b032a3dd765b88df74b9b9131d0d87d",
+      "correct_guard": "9a38a74f21dfa15988e36a7fdeba0aa21c3e41851177ef0e4de00386292eb78e",
+      "vertex_float32_sha256": "8a03bf544c78ca5445fad65cd3d4b31718e44dcd7b2a9dea2dc46f4040f38695",
+      "topology_sha256": "7939b0b802f016afb5a71ddafd7ef19547d115b4d7ae3f1af466406f23f79c8e"
+    },
+    {
+      "object": "R20_04_Offset_Shoulder_Engine_Packs_And_Armor",
+      "old_guard": "89b011dad8adfb0306d25c41553230980eee5bb340f6537b6f01ef90c0776965",
+      "correct_guard": "9f773523f988ea9f50558289be75304f9293ad840234c45f755892902bfc2488",
+      "vertex_float32_sha256": "4def2510985b132adb12e90b49a7e6478f6b2f00a4db66506f0982c3a178b246",
+      "topology_sha256": "5599738f190566d25be8b59e8102fa88e1b1f85c1cc73ef8ed50acc2dc31fda6"
+    },
+    {
+      "object": "R20_07_Upper_Stage_Articulated_Spine_And_Armor",
+      "old_guard": "37efd5cfe74e4cf4e42e67675667a83d9857550beb3af9307efa0f6f4f40a60c",
+      "correct_guard": "958e1bd3ef16ed006c889931a53ba910918b72e8cc8954337f22cd5285c6dab2",
+      "vertex_float32_sha256": "f0e4d4b690f5fef0bfa789d33f5ea466c577fd37fa9bd39bd3b4e40611d56923",
+      "topology_sha256": "9ab8a6bbbc7873643279282907ad6f41b5d8da82f1c465ede7ed0edd19ed191c"
+    },
+    {
+      "object": "R20_08_Upper_Lift_Drive_Core_And_Segmented_Casings",
+      "old_guard": "a2c3c25a9dfec474f1e4ee22d317b4ee9d3f7338220ddcc61b94d671334fc4dc",
+      "correct_guard": "5ef75ea680a7e76bab8dda1d3731924f230d27ef9acb11ca3b625e20c2e43ac4",
+      "vertex_float32_sha256": "247defa3761d901bd47e06288b588bfa60179665439b496153b3c7cf2c5c6339",
+      "topology_sha256": "1a349a8cc1b3090a4f4a81ea4bb3bf1d28dd55bca1f79c3f0f9e95ee6b7353a8"
+    },
+    {
+      "object": "R19_07_Paired_Feed_Rams_And_Axial_Guides",
+      "old_guard": "77d24afae04cb2c98568e48230de0a5d387c1e7e7d3dda77ae25f8c1b454bd02",
+      "correct_guard": "e4fc95a511bca1e3aecc92ceafaa0ba43215891d3b44a0d321d605961780a962",
+      "vertex_float32_sha256": "0578a77ed48b1c4749f1d82daafc049bfca1b2c8367273e9305b0c8c9974e161",
+      "topology_sha256": "61e0074b0ae15356e6cdc8e7e054fddcff2d4a8c4702aa62010e8d72202bb39f"
+    },
+    {
+      "object": "R19_08_Travelling_Head_Topdrive_And_Clamp_Assembly",
+      "old_guard": "715522fe0e3211a3c50d3e0842c07b107cd72c09b084cfa22dfcda4749369443",
+      "correct_guard": "f430b13e6c65cdd25a6a2e563b310fc5fc899054f661e17767ac1cdf4c26261e",
+      "vertex_float32_sha256": "486d8e6af053793d4941dca8534bbb08305aa4bfe9afa26583d16d9321caafa9",
+      "topology_sha256": "b48aa4489e2cb04983c74053cdd7579129af1f0439f4f3b7af573b489b127718"
+    },
+    {
+      "object": "R18_14_Return_Separation_Vessel_Skids",
+      "old_guard": "914e1a772a2b23aab3ea9e123959bdee6cfe60825a9e0a390255e48ddc7383e0",
+      "correct_guard": "2b05c89e293c8eba5c119d58ad47b485cb2eb2c784c16bba8db16b2eb43b7d89",
+      "vertex_float32_sha256": "a0ccf411990fc5a31b9d2c1e9651e701e94848d5afa2454e262ff08439c474da",
+      "topology_sha256": "9bceae4dceda5159641a7c7b6e3d01acd826870fb724ec3648731e5abaaa4979"
+    },
+    {
+      "object": "R18_15_High_Pressure_Pump_And_Compressor_Skids",
+      "old_guard": "2d01f59ce90329ba0eb87f3e384dfd7219479a688fe9c866dfb5cee10ca3d2bd",
+      "correct_guard": "876984ff5f3c8b873a58088f2dd79aa7dd0549aa3536a0d9c684e833c1c8bd1b",
+      "vertex_float32_sha256": "f7c99c8be11f087469c53bfc8e7f6ec8ac08553341020a3bc213083b605318bd",
+      "topology_sha256": "d853b44b2a41e9b5db80d85193726b86f9e050592f4a9b4e66dd5e9a566ccb15"
+    },
+    {
+      "object": "R18_16_Flanged_Process_Headers_And_Valve_Manifolds",
+      "old_guard": "ece83c75ccf106a724197c46d1aff696326df4d55e18272887b9b194fb2ad5db",
+      "correct_guard": "ccdeab7fcc351745c960b7e179ca7a7efff36bcecd7a10c560f2b19906506372",
+      "vertex_float32_sha256": "fe0a408ef9eb2bb4c98dc33ab820de3284807226ff55bdaa3c0cb6626ba8e269",
+      "topology_sha256": "bfcb3f72374f61d72755ce7661d88ce84f109a33447be01a788e73b634a446b8"
+    },
+    {
+      "object": "R18_09_Pipe_Handling_Terrace",
+      "old_guard": "6c6d925c769e12a4cf436cc21f13b8c9071f14f0ea12f8bb35ac52c81ed9bd8e",
+      "correct_guard": "25bb080a34d96ec80317e17d85abaf912b11f259fa0fb3e2ec3e63527b14b769",
+      "vertex_float32_sha256": "e7645be70799de923de0d46d80134335c1a3305574fc00322276601cd563e241",
+      "topology_sha256": "5f27d1f278ce84e9c4f1ac251a55d2d2341e215e7316a536714037322b50a9b7"
+    },
+    {
+      "object": "R18_13_Process_Equipment_Deck",
+      "old_guard": "1575bb758d7154e1a57b85f71ca29b67e82f2d18a88c0cfa41b0c524a51912f8",
+      "correct_guard": "840da1739993828cb06ab756ba61c99ff70608d649cef0da221d205ab6bfd240",
+      "vertex_float32_sha256": "ea2263340737a714d1664c7dde1d6d3e9478bfaf37bd8f365848b25d375d04eb",
+      "topology_sha256": "13b60b85959ac70320d740eb4b176d5872effe51542a8dbf1d276d38380bd0e0"
+    },
+    {
+      "object": "R18_19_Machinery_House_Foundation",
+      "old_guard": "81528252d40ed651e052974af5fbc8fd0d5000c234063076b2e00a0bf0309be0",
+      "correct_guard": "7b45ca85209832a6761f5f22021f77c4239ac418b7779e5c0d219fe1e794771a",
+      "vertex_float32_sha256": "0d7a39b641f7599c401a1afd26fb80edcf43337943c9cf294f3aba7a4cbbc573",
+      "topology_sha256": "5841e209051ae827b2b9197811bdcf509ba28e957dbd4646cd9cab253f2cfdc9"
+    },
+    {
+      "object": "R19_11_Machine_Service_Walkways_And_Rails",
+      "old_guard": "98d5453bed5cc54de1f00cf90da3fc03eec77c4154ba0a16a077658ef784529c",
+      "correct_guard": "b0beb1d511847fa47446edfd620480f44cc93b40017a5232ba40bd13dcdeda71",
+      "vertex_float32_sha256": "d7a6b335697868280951704eecdbaddaf8bfb42a429b4f6819fe14047b37ad90",
+      "topology_sha256": "0e37dbf2ef5ce12462e488965e78d340330fd0bb252f64c5f8a16964d1e4baed"
+    },
+    {
+      "object": "R20_05_Central_Transfer_Hub_At_Existing_Bridge_Height",
+      "old_guard": "441ea020312d004d273f56b5506c0d286f28660a016365493f35937b7e2339d0",
+      "correct_guard": "78021d1423a42796f4e0303230bb1448d9f1ea337e8eae869b6337c4da6ac341",
+      "vertex_float32_sha256": "8abe61a191cf40c4c1cb2522be5b8e8d51db7ac352c74d3a9d12138ccd7bfc57",
+      "topology_sha256": "2a64ae5e8af2b8704da0ad34f88c700382a90d22d83bbf8e1f24c58cbf71d98d"
+    },
+    {
+      "object": "R21_02_Thick_Segmented_Shaft_Lining",
+      "old_guard": "f89401d33b7bf7bf884d551506f2886c2718b7f641b2dd3860e20957e1d1497d",
+      "correct_guard": "a492feadcbf4d22391d06fdab499ed39a97a6a58aec4637c747390561c89f5b4",
+      "vertex_float32_sha256": "a57de59cd14c65faf3115ad68980b0c00e2577e221ae2fa0d765642c3a20d85e",
+      "topology_sha256": "e668ec91482146bdd21a9bc594533022323786aa7f6abe2627b740b423032b9f"
+    }
+  ],
+  "unchanged_R24_objects": [
+    "R24_00_R20_02_Actuators_With_Hero_Knee_Replaced",
+    "R24_01_Hero_Knee_Forging_And_Thick_Armor",
+    "R24_02_Hero_Pin_Collar_Seal_And_Service_Cover"
+  ],
+  "procedure": "Reconstructed all UVMap values on source R21 mesh copies by applying only the exact delivered R23 JSON loop rows through Blender float32 storage. Unlisted loops retain original R21 values and match the prior cloud R24 reference exactly. No source UV is written by the correction.",
+  "original_industrial_face_UV_data_file": "R29_Industrial_Final_Face_UV_Data.json",
+  "original_industrial_face_UV_data_sha256": "e34a882adf5c3df9079c7282ca0b5101fe1d10ff918b9024a798c2238cbad6aa",
+  "source_R23_handoff_mapping_sha256": "68e112c06bdeb0289ed146ff7d7ebd0e137e92f755c1a41ed158f94a48a7d708",
+  "authoritative_material_names_sha256": "79290cecc002280ffa70b77c920ba9d14d46ae83e9d407b5ef7fa22c8bc52cb8",
+  "R13_alias_equivalence_sha256": "e67eb678fd58a169526f852ca7c3ccb77731101a9b307f276364228dc3476f09",
+  "R13_fingerprint_helper_sha256": "db1d3a99daf4aac95ad7cef286f020c6ed792dcf637e75b6f2824247d68eef93"
+}

@@ -1,0 +1,1343 @@
+{
+  "objects": [
+    {
+      "name": "R20_01_Articulated_Armored_Primary_Buttresses",
+      "key": "R29Patch_00",
+      "kind": "Patch",
+      "vertices": 40512,
+      "triangles": 13504,
+      "materials": [
+        "R23_Protective_Steel_Microfinish",
+        "R23_Exposed_Steel_Calm_Finish",
+        "R8_OffWhite_Ceramic_Coat",
+        "R23_Matte_Deck_Fine_Finish",
+        "R23_Concrete_Metric_Surface",
+        "R8_Restrained_Safety_Ochre",
+        "R13_Machined_Steel_Contact.001",
+        "R13_Dark_Seal_And_Gasket",
+        "R6_Dark_Inspection_Glazing",
+        "R3_Weathered_WarmGray_Sheet",
+        "R26V2_Baked_Heavy_Structures"
+      ],
+      "baselineMaterialSlots": [
+        "R23_Protective_Steel_Microfinish",
+        "R23_Exposed_Steel_Calm_Finish",
+        "R8_OffWhite_Ceramic_Coat",
+        "R23_Matte_Deck_Fine_Finish",
+        "R23_Concrete_Metric_Surface",
+        "R8_Restrained_Safety_Ochre",
+        "R13_Machined_Steel_Contact.001",
+        "R13_Dark_Seal_And_Gasket",
+        "R6_Dark_Inspection_Glazing",
+        "R3_Weathered_WarmGray_Sheet"
+      ],
+      "UVChannels": {
+        "UVMap": 0,
+        "R26_Finish_UV": 2
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R20_03_Nested_Transmission_Rings_And_Gear_Races",
+      "key": "R29Patch_01",
+      "kind": "Patch",
+      "vertices": 60420,
+      "triangles": 20140,
+      "materials": [
+        "R23_Protective_Steel_Microfinish",
+        "R23_Exposed_Steel_Calm_Finish",
+        "R8_OffWhite_Ceramic_Coat",
+        "R23_Matte_Deck_Fine_Finish",
+        "R23_Concrete_Metric_Surface",
+        "R8_Restrained_Safety_Ochre",
+        "R13_Machined_Steel_Contact.001",
+        "R13_Dark_Seal_And_Gasket",
+        "R6_Dark_Inspection_Glazing",
+        "R3_Weathered_WarmGray_Sheet",
+        "R26V2_Baked_Heavy_Structures"
+      ],
+      "baselineMaterialSlots": [
+        "R23_Protective_Steel_Microfinish",
+        "R23_Exposed_Steel_Calm_Finish",
+        "R8_OffWhite_Ceramic_Coat",
+        "R23_Matte_Deck_Fine_Finish",
+        "R23_Concrete_Metric_Surface",
+        "R8_Restrained_Safety_Ochre",
+        "R13_Machined_Steel_Contact.001",
+        "R13_Dark_Seal_And_Gasket",
+        "R6_Dark_Inspection_Glazing",
+        "R3_Weathered_WarmGray_Sheet"
+      ],
+      "UVChannels": {
+        "UVMap": 0,
+        "R26_Finish_UV": 2
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R20_04_Offset_Shoulder_Engine_Packs_And_Armor",
+      "key": "R29Patch_02",
+      "kind": "Patch",
+      "vertices": 8784,
+      "triangles": 2928,
+      "materials": [
+        "R23_Protective_Steel_Microfinish",
+        "R23_Exposed_Steel_Calm_Finish",
+        "R8_OffWhite_Ceramic_Coat",
+        "R23_Matte_Deck_Fine_Finish",
+        "R23_Concrete_Metric_Surface",
+        "R8_Restrained_Safety_Ochre",
+        "R13_Machined_Steel_Contact.001",
+        "R13_Dark_Seal_And_Gasket",
+        "R6_Dark_Inspection_Glazing",
+        "R3_Weathered_WarmGray_Sheet",
+        "R26V2_Baked_Heavy_Structures"
+      ],
+      "baselineMaterialSlots": [
+        "R23_Protective_Steel_Microfinish",
+        "R23_Exposed_Steel_Calm_Finish",
+        "R8_OffWhite_Ceramic_Coat",
+        "R23_Matte_Deck_Fine_Finish",
+        "R23_Concrete_Metric_Surface",
+        "R8_Restrained_Safety_Ochre",
+        "R13_Machined_Steel_Contact.001",
+        "R13_Dark_Seal_And_Gasket",
+        "R6_Dark_Inspection_Glazing",
+        "R3_Weathered_WarmGray_Sheet"
+      ],
+      "UVChannels": {
+        "UVMap": 0,
+        "R26_Finish_UV": 2
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R20_07_Upper_Stage_Articulated_Spine_And_Armor",
+      "key": "R29Patch_03",
+      "kind": "Patch",
+      "vertices": 33648,
+      "triangles": 11216,
+      "materials": [
+        "R23_Protective_Steel_Microfinish",
+        "R23_Exposed_Steel_Calm_Finish",
+        "R8_OffWhite_Ceramic_Coat",
+        "R23_Matte_Deck_Fine_Finish",
+        "R23_Concrete_Metric_Surface",
+        "R8_Restrained_Safety_Ochre",
+        "R13_Machined_Steel_Contact.001",
+        "R13_Dark_Seal_And_Gasket",
+        "R6_Dark_Inspection_Glazing",
+        "R3_Weathered_WarmGray_Sheet",
+        "R26V2_Baked_Heavy_Structures"
+      ],
+      "baselineMaterialSlots": [
+        "R23_Protective_Steel_Microfinish",
+        "R23_Exposed_Steel_Calm_Finish",
+        "R8_OffWhite_Ceramic_Coat",
+        "R23_Matte_Deck_Fine_Finish",
+        "R23_Concrete_Metric_Surface",
+        "R8_Restrained_Safety_Ochre",
+        "R13_Machined_Steel_Contact.001",
+        "R13_Dark_Seal_And_Gasket",
+        "R6_Dark_Inspection_Glazing",
+        "R3_Weathered_WarmGray_Sheet"
+      ],
+      "UVChannels": {
+        "UVMap": 0,
+        "R26_Finish_UV": 2
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R20_08_Upper_Lift_Drive_Core_And_Segmented_Casings",
+      "key": "R29Patch_04",
+      "kind": "Patch",
+      "vertices": 25356,
+      "triangles": 8452,
+      "materials": [
+        "R23_Protective_Steel_Microfinish",
+        "R23_Exposed_Steel_Calm_Finish",
+        "R8_OffWhite_Ceramic_Coat",
+        "R23_Matte_Deck_Fine_Finish",
+        "R23_Concrete_Metric_Surface",
+        "R8_Restrained_Safety_Ochre",
+        "R13_Machined_Steel_Contact.001",
+        "R13_Dark_Seal_And_Gasket",
+        "R6_Dark_Inspection_Glazing",
+        "R3_Weathered_WarmGray_Sheet",
+        "R26V2_Baked_Heavy_Structures"
+      ],
+      "baselineMaterialSlots": [
+        "R23_Protective_Steel_Microfinish",
+        "R23_Exposed_Steel_Calm_Finish",
+        "R8_OffWhite_Ceramic_Coat",
+        "R23_Matte_Deck_Fine_Finish",
+        "R23_Concrete_Metric_Surface",
+        "R8_Restrained_Safety_Ochre",
+        "R13_Machined_Steel_Contact.001",
+        "R13_Dark_Seal_And_Gasket",
+        "R6_Dark_Inspection_Glazing",
+        "R3_Weathered_WarmGray_Sheet"
+      ],
+      "UVChannels": {
+        "UVMap": 0,
+        "R26_Finish_UV": 2
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R24_00_R20_02_Actuators_With_Hero_Knee_Replaced",
+      "key": "R29Patch_05",
+      "kind": "Patch",
+      "vertices": 34692,
+      "triangles": 11564,
+      "materials": [
+        "R23_Protective_Steel_Microfinish",
+        "R23_Exposed_Steel_Calm_Finish",
+        "R13_Machined_Steel_Contact",
+        "R26V2_Baked_Heavy_Structures"
+      ],
+      "baselineMaterialSlots": [
+        "R23_Protective_Steel_Microfinish",
+        "R23_Exposed_Steel_Calm_Finish",
+        "R13_Machined_Steel_Contact"
+      ],
+      "UVChannels": {
+        "UVMap": 0,
+        "R26_Finish_UV": 2
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R19_07_Paired_Feed_Rams_And_Axial_Guides",
+      "key": "R29Patch_06",
+      "kind": "Patch",
+      "vertices": 6984,
+      "triangles": 2328,
+      "materials": [
+        "R23_Protective_Steel_Microfinish",
+        "R23_Exposed_Steel_Calm_Finish",
+        "R8_OffWhite_Ceramic_Coat",
+        "R23_Matte_Deck_Fine_Finish",
+        "R23_Concrete_Metric_Surface",
+        "R8_Restrained_Safety_Ochre",
+        "R13_Machined_Steel_Contact.001",
+        "R13_Dark_Seal_And_Gasket",
+        "R6_Dark_Inspection_Glazing",
+        "R3_Weathered_WarmGray_Sheet",
+        "R26V2_Baked_Heavy_Structures"
+      ],
+      "baselineMaterialSlots": [
+        "R23_Protective_Steel_Microfinish",
+        "R23_Exposed_Steel_Calm_Finish",
+        "R8_OffWhite_Ceramic_Coat",
+        "R23_Matte_Deck_Fine_Finish",
+        "R23_Concrete_Metric_Surface",
+        "R8_Restrained_Safety_Ochre",
+        "R13_Machined_Steel_Contact.001",
+        "R13_Dark_Seal_And_Gasket",
+        "R6_Dark_Inspection_Glazing",
+        "R3_Weathered_WarmGray_Sheet"
+      ],
+      "UVChannels": {
+        "UVMap": 0,
+        "R26_Finish_UV": 2
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R19_08_Travelling_Head_Topdrive_And_Clamp_Assembly",
+      "key": "R29Patch_07",
+      "kind": "Patch",
+      "vertices": 14484,
+      "triangles": 4828,
+      "materials": [
+        "R23_Protective_Steel_Microfinish",
+        "R23_Exposed_Steel_Calm_Finish",
+        "R8_OffWhite_Ceramic_Coat",
+        "R23_Matte_Deck_Fine_Finish",
+        "R23_Concrete_Metric_Surface",
+        "R8_Restrained_Safety_Ochre",
+        "R13_Machined_Steel_Contact.001",
+        "R13_Dark_Seal_And_Gasket",
+        "R6_Dark_Inspection_Glazing",
+        "R3_Weathered_WarmGray_Sheet",
+        "R26V2_Baked_Heavy_Structures"
+      ],
+      "baselineMaterialSlots": [
+        "R23_Protective_Steel_Microfinish",
+        "R23_Exposed_Steel_Calm_Finish",
+        "R8_OffWhite_Ceramic_Coat",
+        "R23_Matte_Deck_Fine_Finish",
+        "R23_Concrete_Metric_Surface",
+        "R8_Restrained_Safety_Ochre",
+        "R13_Machined_Steel_Contact.001",
+        "R13_Dark_Seal_And_Gasket",
+        "R6_Dark_Inspection_Glazing",
+        "R3_Weathered_WarmGray_Sheet"
+      ],
+      "UVChannels": {
+        "UVMap": 0,
+        "R26_Finish_UV": 2
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R18_14_Return_Separation_Vessel_Skids",
+      "key": "R29Patch_08",
+      "kind": "Patch",
+      "vertices": 14868,
+      "triangles": 4956,
+      "materials": [
+        "R23_Protective_Steel_Microfinish",
+        "R23_Exposed_Steel_Calm_Finish",
+        "R8_OffWhite_Ceramic_Coat",
+        "R23_Matte_Deck_Fine_Finish",
+        "R23_Concrete_Metric_Surface",
+        "R8_Restrained_Safety_Ochre",
+        "R13_Machined_Steel_Contact.001",
+        "R13_Dark_Seal_And_Gasket",
+        "R6_Dark_Inspection_Glazing",
+        "R3_Weathered_WarmGray_Sheet",
+        "R26V2_Baked_Hero_Mechanics"
+      ],
+      "baselineMaterialSlots": [
+        "R23_Protective_Steel_Microfinish",
+        "R23_Exposed_Steel_Calm_Finish",
+        "R8_OffWhite_Ceramic_Coat",
+        "R23_Matte_Deck_Fine_Finish",
+        "R23_Concrete_Metric_Surface",
+        "R8_Restrained_Safety_Ochre",
+        "R13_Machined_Steel_Contact.001",
+        "R13_Dark_Seal_And_Gasket",
+        "R6_Dark_Inspection_Glazing",
+        "R3_Weathered_WarmGray_Sheet"
+      ],
+      "UVChannels": {
+        "UVMap": 0,
+        "R26_Finish_UV": 2
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R18_15_High_Pressure_Pump_And_Compressor_Skids",
+      "key": "R29Patch_09",
+      "kind": "Patch",
+      "vertices": 13788,
+      "triangles": 4596,
+      "materials": [
+        "R23_Protective_Steel_Microfinish",
+        "R23_Exposed_Steel_Calm_Finish",
+        "R8_OffWhite_Ceramic_Coat",
+        "R23_Matte_Deck_Fine_Finish",
+        "R23_Concrete_Metric_Surface",
+        "R8_Restrained_Safety_Ochre",
+        "R13_Machined_Steel_Contact.001",
+        "R13_Dark_Seal_And_Gasket",
+        "R6_Dark_Inspection_Glazing",
+        "R3_Weathered_WarmGray_Sheet",
+        "R26V2_Baked_Hero_Mechanics"
+      ],
+      "baselineMaterialSlots": [
+        "R23_Protective_Steel_Microfinish",
+        "R23_Exposed_Steel_Calm_Finish",
+        "R8_OffWhite_Ceramic_Coat",
+        "R23_Matte_Deck_Fine_Finish",
+        "R23_Concrete_Metric_Surface",
+        "R8_Restrained_Safety_Ochre",
+        "R13_Machined_Steel_Contact.001",
+        "R13_Dark_Seal_And_Gasket",
+        "R6_Dark_Inspection_Glazing",
+        "R3_Weathered_WarmGray_Sheet"
+      ],
+      "UVChannels": {
+        "UVMap": 0,
+        "R26_Finish_UV": 2
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R18_16_Flanged_Process_Headers_And_Valve_Manifolds",
+      "key": "R29Patch_10",
+      "kind": "Patch",
+      "vertices": 18240,
+      "triangles": 6080,
+      "materials": [
+        "R23_Protective_Steel_Microfinish",
+        "R23_Exposed_Steel_Calm_Finish",
+        "R8_OffWhite_Ceramic_Coat",
+        "R23_Matte_Deck_Fine_Finish",
+        "R23_Concrete_Metric_Surface",
+        "R8_Restrained_Safety_Ochre",
+        "R13_Machined_Steel_Contact.001",
+        "R13_Dark_Seal_And_Gasket",
+        "R6_Dark_Inspection_Glazing",
+        "R3_Weathered_WarmGray_Sheet",
+        "R26V2_Baked_Hero_Mechanics"
+      ],
+      "baselineMaterialSlots": [
+        "R23_Protective_Steel_Microfinish",
+        "R23_Exposed_Steel_Calm_Finish",
+        "R8_OffWhite_Ceramic_Coat",
+        "R23_Matte_Deck_Fine_Finish",
+        "R23_Concrete_Metric_Surface",
+        "R8_Restrained_Safety_Ochre",
+        "R13_Machined_Steel_Contact.001",
+        "R13_Dark_Seal_And_Gasket",
+        "R6_Dark_Inspection_Glazing",
+        "R3_Weathered_WarmGray_Sheet"
+      ],
+      "UVChannels": {
+        "UVMap": 0,
+        "R26_Finish_UV": 2
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R24_01_Hero_Knee_Forging_And_Thick_Armor",
+      "key": "R29Patch_11",
+      "kind": "Patch",
+      "vertices": 9108,
+      "triangles": 3036,
+      "materials": [
+        "R24_Slate_Gray_Industrial_Enamel",
+        "R24_Dark_Forged_Joint_Steel",
+        "R27_HYD_Used_Coating"
+      ],
+      "baselineMaterialSlots": [
+        "R24_Slate_Gray_Industrial_Enamel",
+        "R24_Dark_Forged_Joint_Steel"
+      ],
+      "UVChannels": {
+        "UVMap": 0,
+        "R27_Industrial_Finish_UV": 3
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R24_02_Hero_Pin_Collar_Seal_And_Service_Cover",
+      "key": "R29Patch_12",
+      "kind": "Patch",
+      "vertices": 62004,
+      "triangles": 20668,
+      "materials": [
+        "R24_Slate_Gray_Industrial_Enamel",
+        "R24_Exposed_Machined_Contact_Steel",
+        "R24_Dark_Forged_Joint_Steel",
+        "R24_Recessed_Elastomer_Seal",
+        "R27_HYD_Used_Coating"
+      ],
+      "baselineMaterialSlots": [
+        "R24_Slate_Gray_Industrial_Enamel",
+        "R24_Exposed_Machined_Contact_Steel",
+        "R24_Dark_Forged_Joint_Steel",
+        "R24_Recessed_Elastomer_Seal"
+      ],
+      "UVChannels": {
+        "UVMap": 0,
+        "R27_Industrial_Finish_UV": 3
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R18_09_Pipe_Handling_Terrace",
+      "key": "R29Patch_13",
+      "kind": "Patch",
+      "vertices": 6768,
+      "triangles": 2256,
+      "materials": [
+        "R23_Protective_Steel_Microfinish",
+        "R23_Exposed_Steel_Calm_Finish",
+        "R8_OffWhite_Ceramic_Coat",
+        "R23_Matte_Deck_Fine_Finish",
+        "R23_Concrete_Metric_Surface",
+        "R8_Restrained_Safety_Ochre",
+        "R13_Machined_Steel_Contact.001",
+        "R13_Dark_Seal_And_Gasket",
+        "R6_Dark_Inspection_Glazing",
+        "R3_Weathered_WarmGray_Sheet",
+        "R26V2_Baked_Service_Decks"
+      ],
+      "baselineMaterialSlots": [
+        "R23_Protective_Steel_Microfinish",
+        "R23_Exposed_Steel_Calm_Finish",
+        "R8_OffWhite_Ceramic_Coat",
+        "R23_Matte_Deck_Fine_Finish",
+        "R23_Concrete_Metric_Surface",
+        "R8_Restrained_Safety_Ochre",
+        "R13_Machined_Steel_Contact.001",
+        "R13_Dark_Seal_And_Gasket",
+        "R6_Dark_Inspection_Glazing",
+        "R3_Weathered_WarmGray_Sheet"
+      ],
+      "UVChannels": {
+        "UVMap": 0,
+        "R26_Finish_UV": 2
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R18_13_Process_Equipment_Deck",
+      "key": "R29Patch_14",
+      "kind": "Patch",
+      "vertices": 8532,
+      "triangles": 2844,
+      "materials": [
+        "R23_Protective_Steel_Microfinish",
+        "R23_Exposed_Steel_Calm_Finish",
+        "R8_OffWhite_Ceramic_Coat",
+        "R23_Matte_Deck_Fine_Finish",
+        "R23_Concrete_Metric_Surface",
+        "R8_Restrained_Safety_Ochre",
+        "R13_Machined_Steel_Contact.001",
+        "R13_Dark_Seal_And_Gasket",
+        "R6_Dark_Inspection_Glazing",
+        "R3_Weathered_WarmGray_Sheet",
+        "R26V2_Baked_Service_Decks"
+      ],
+      "baselineMaterialSlots": [
+        "R23_Protective_Steel_Microfinish",
+        "R23_Exposed_Steel_Calm_Finish",
+        "R8_OffWhite_Ceramic_Coat",
+        "R23_Matte_Deck_Fine_Finish",
+        "R23_Concrete_Metric_Surface",
+        "R8_Restrained_Safety_Ochre",
+        "R13_Machined_Steel_Contact.001",
+        "R13_Dark_Seal_And_Gasket",
+        "R6_Dark_Inspection_Glazing",
+        "R3_Weathered_WarmGray_Sheet"
+      ],
+      "UVChannels": {
+        "UVMap": 0,
+        "R26_Finish_UV": 2
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R18_19_Machinery_House_Foundation",
+      "key": "R29Patch_15",
+      "kind": "Patch",
+      "vertices": 5760,
+      "triangles": 1920,
+      "materials": [
+        "R23_Protective_Steel_Microfinish",
+        "R23_Exposed_Steel_Calm_Finish",
+        "R8_OffWhite_Ceramic_Coat",
+        "R23_Matte_Deck_Fine_Finish",
+        "R23_Concrete_Metric_Surface",
+        "R8_Restrained_Safety_Ochre",
+        "R13_Machined_Steel_Contact.001",
+        "R13_Dark_Seal_And_Gasket",
+        "R6_Dark_Inspection_Glazing",
+        "R3_Weathered_WarmGray_Sheet",
+        "R26V2_Baked_Service_Decks"
+      ],
+      "baselineMaterialSlots": [
+        "R23_Protective_Steel_Microfinish",
+        "R23_Exposed_Steel_Calm_Finish",
+        "R8_OffWhite_Ceramic_Coat",
+        "R23_Matte_Deck_Fine_Finish",
+        "R23_Concrete_Metric_Surface",
+        "R8_Restrained_Safety_Ochre",
+        "R13_Machined_Steel_Contact.001",
+        "R13_Dark_Seal_And_Gasket",
+        "R6_Dark_Inspection_Glazing",
+        "R3_Weathered_WarmGray_Sheet"
+      ],
+      "UVChannels": {
+        "UVMap": 0,
+        "R26_Finish_UV": 2
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R19_11_Machine_Service_Walkways_And_Rails",
+      "key": "R29Patch_16",
+      "kind": "Patch",
+      "vertices": 9684,
+      "triangles": 3228,
+      "materials": [
+        "R23_Protective_Steel_Microfinish",
+        "R23_Exposed_Steel_Calm_Finish",
+        "R8_OffWhite_Ceramic_Coat",
+        "R23_Matte_Deck_Fine_Finish",
+        "R23_Concrete_Metric_Surface",
+        "R8_Restrained_Safety_Ochre",
+        "R13_Machined_Steel_Contact.001",
+        "R13_Dark_Seal_And_Gasket",
+        "R6_Dark_Inspection_Glazing",
+        "R3_Weathered_WarmGray_Sheet",
+        "R26V2_Baked_Service_Decks"
+      ],
+      "baselineMaterialSlots": [
+        "R23_Protective_Steel_Microfinish",
+        "R23_Exposed_Steel_Calm_Finish",
+        "R8_OffWhite_Ceramic_Coat",
+        "R23_Matte_Deck_Fine_Finish",
+        "R23_Concrete_Metric_Surface",
+        "R8_Restrained_Safety_Ochre",
+        "R13_Machined_Steel_Contact.001",
+        "R13_Dark_Seal_And_Gasket",
+        "R6_Dark_Inspection_Glazing",
+        "R3_Weathered_WarmGray_Sheet"
+      ],
+      "UVChannels": {
+        "UVMap": 0,
+        "R26_Finish_UV": 2
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R20_05_Central_Transfer_Hub_At_Existing_Bridge_Height",
+      "key": "R29Patch_17",
+      "kind": "Patch",
+      "vertices": 12312,
+      "triangles": 4104,
+      "materials": [
+        "R23_Protective_Steel_Microfinish",
+        "R23_Exposed_Steel_Calm_Finish",
+        "R8_OffWhite_Ceramic_Coat",
+        "R23_Matte_Deck_Fine_Finish",
+        "R23_Concrete_Metric_Surface",
+        "R8_Restrained_Safety_Ochre",
+        "R13_Machined_Steel_Contact.001",
+        "R13_Dark_Seal_And_Gasket",
+        "R6_Dark_Inspection_Glazing",
+        "R3_Weathered_WarmGray_Sheet",
+        "R26V2_Baked_Service_Decks"
+      ],
+      "baselineMaterialSlots": [
+        "R23_Protective_Steel_Microfinish",
+        "R23_Exposed_Steel_Calm_Finish",
+        "R8_OffWhite_Ceramic_Coat",
+        "R23_Matte_Deck_Fine_Finish",
+        "R23_Concrete_Metric_Surface",
+        "R8_Restrained_Safety_Ochre",
+        "R13_Machined_Steel_Contact.001",
+        "R13_Dark_Seal_And_Gasket",
+        "R6_Dark_Inspection_Glazing",
+        "R3_Weathered_WarmGray_Sheet"
+      ],
+      "UVChannels": {
+        "UVMap": 0,
+        "R26_Finish_UV": 2
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R21_02_Thick_Segmented_Shaft_Lining",
+      "key": "R29Patch_18",
+      "kind": "Patch",
+      "vertices": 9984,
+      "triangles": 3328,
+      "materials": [
+        "R23_Protective_Steel_Microfinish",
+        "R23_Exposed_Steel_Calm_Finish",
+        "R8_OffWhite_Ceramic_Coat",
+        "R23_Matte_Deck_Fine_Finish",
+        "R23_Concrete_Metric_Surface",
+        "R8_Restrained_Safety_Ochre",
+        "R13_Machined_Steel_Contact.001",
+        "R13_Dark_Seal_And_Gasket",
+        "R6_Dark_Inspection_Glazing",
+        "R3_Weathered_WarmGray_Sheet",
+        "R13_Settled_Regolith_On_Ledges",
+        "R28_Shaft_Mineral_Lining"
+      ],
+      "baselineMaterialSlots": [
+        "R23_Protective_Steel_Microfinish",
+        "R23_Exposed_Steel_Calm_Finish",
+        "R8_OffWhite_Ceramic_Coat",
+        "R23_Matte_Deck_Fine_Finish",
+        "R23_Concrete_Metric_Surface",
+        "R8_Restrained_Safety_Ochre",
+        "R13_Machined_Steel_Contact.001",
+        "R13_Dark_Seal_And_Gasket",
+        "R6_Dark_Inspection_Glazing",
+        "R3_Weathered_WarmGray_Sheet",
+        "R13_Settled_Regolith_On_Ledges"
+      ],
+      "UVChannels": {
+        "UVMap": 0,
+        "R28_Large_Surface_UV": 4,
+        "R28_Metric_Detail_UV": 5
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R25_01_Descending_Throat_And_Split_Guide_Frame",
+      "key": "R29New_00",
+      "kind": "New",
+      "vertices": 67368,
+      "triangles": 22456,
+      "materials": [
+        "R24_Exposed_Machined_Contact_Steel",
+        "R26V2_Baked_Hero_Mechanics"
+      ],
+      "baselineMaterialSlots": [],
+      "UVChannels": {
+        "UVMap": 0,
+        "R26_Finish_UV": 2
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R25_02_Three_Heavy_Guide_Jaws_And_Recesses",
+      "key": "R29New_01",
+      "kind": "New",
+      "vertices": 55752,
+      "triangles": 18584,
+      "materials": [
+        "R24_Exposed_Machined_Contact_Steel",
+        "R24_Dark_Forged_Joint_Steel",
+        "R26V2_Baked_Hero_Mechanics"
+      ],
+      "baselineMaterialSlots": [],
+      "UVChannels": {
+        "UVMap": 0,
+        "R26_Finish_UV": 2
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R25_03_Opposed_Clamp_Drives_And_Clevises",
+      "key": "R29New_02",
+      "kind": "New",
+      "vertices": 77160,
+      "triangles": 25720,
+      "materials": [
+        "R24_Exposed_Machined_Contact_Steel",
+        "R24_Dark_Forged_Joint_Steel",
+        "R24_Recessed_Elastomer_Seal",
+        "R26V2_Baked_Hero_Mechanics"
+      ],
+      "baselineMaterialSlots": [],
+      "UVChannels": {
+        "UVMap": 0,
+        "R26_Finish_UV": 2
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R25_04_Exposed_Contact_Bands_And_Seals",
+      "key": "R29New_03",
+      "kind": "New",
+      "vertices": 49740,
+      "triangles": 16580,
+      "materials": [
+        "R24_Exposed_Machined_Contact_Steel",
+        "R24_Dark_Forged_Joint_Steel",
+        "R24_Recessed_Elastomer_Seal"
+      ],
+      "baselineMaterialSlots": [],
+      "UVChannels": {
+        "UVMap": 0
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R25_05_Compact_Pipe_Branches_And_Supports",
+      "key": "R29New_04",
+      "kind": "New",
+      "vertices": 17016,
+      "triangles": 5672,
+      "materials": [
+        "R24_Exposed_Machined_Contact_Steel",
+        "R24_Dark_Forged_Joint_Steel",
+        "R24_Recessed_Elastomer_Seal"
+      ],
+      "baselineMaterialSlots": [],
+      "UVChannels": {
+        "UVMap": 0
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R25_06_Guide_Service_Plate_And_Local_Use_Marks",
+      "key": "R29New_05",
+      "kind": "New",
+      "vertices": 14112,
+      "triangles": 4704,
+      "materials": [
+        "R24_Slate_Gray_Industrial_Enamel",
+        "R24_Exposed_Machined_Contact_Steel",
+        "R24_Dark_Forged_Joint_Steel",
+        "R24_Recessed_Elastomer_Seal",
+        "R24_Localized_Lunar_Dust_Deposit",
+        "R8_Restrained_Safety_Ochre",
+        "R26V2_Baked_Hero_Mechanics"
+      ],
+      "baselineMaterialSlots": [],
+      "UVChannels": {
+        "UVMap": 0,
+        "R26_Finish_UV": 2
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R25_07_Guide_Identification",
+      "key": "R29New_06",
+      "kind": "New",
+      "vertices": 4140,
+      "triangles": 1380,
+      "materials": [
+        "R24_Service_Stencil_Offwhite"
+      ],
+      "baselineMaterialSlots": [],
+      "UVChannels": {
+        "UVMap": 0
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R26_ARMOR_01_Shoulder_Deep_Saddle_And_Perimeter",
+      "key": "R29New_07",
+      "kind": "New",
+      "vertices": 3828,
+      "triangles": 1276,
+      "materials": [
+        "R24_Slate_Gray_Industrial_Enamel",
+        "R24_Dark_Forged_Joint_Steel",
+        "R23_Exposed_Steel_Calm_Finish"
+      ],
+      "baselineMaterialSlots": [],
+      "UVChannels": {
+        "UVMap": 0
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R26_ARMOR_02_Shoulder_Offset_Armor_Cover",
+      "key": "R29New_08",
+      "kind": "New",
+      "vertices": 18720,
+      "triangles": 6240,
+      "materials": [
+        "R24_Slate_Gray_Industrial_Enamel",
+        "R24_Exposed_Machined_Contact_Steel",
+        "R24_Dark_Forged_Joint_Steel",
+        "R24_Recessed_Elastomer_Seal",
+        "R23_Exposed_Steel_Calm_Finish",
+        "R27_Access_Armor_Used_Coating"
+      ],
+      "baselineMaterialSlots": [],
+      "UVChannels": {
+        "UVMap": 0,
+        "R26_Finish_UV": 2,
+        "R27_Industrial_Finish_UV": 3
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R26_ARMOR_03_Recessed_Coupling_Bay_And_Interfaces",
+      "key": "R29New_09",
+      "kind": "New",
+      "vertices": 44760,
+      "triangles": 14920,
+      "materials": [
+        "R24_Exposed_Machined_Contact_Steel",
+        "R24_Dark_Forged_Joint_Steel",
+        "R24_Recessed_Elastomer_Seal",
+        "R23_Exposed_Steel_Calm_Finish"
+      ],
+      "baselineMaterialSlots": [],
+      "UVChannels": {
+        "UVMap": 0
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R26_ARMOR_04_Shoulder_Load_Keys_And_Locking_Ends",
+      "key": "R29New_10",
+      "kind": "New",
+      "vertices": 8916,
+      "triangles": 2972,
+      "materials": [
+        "R24_Exposed_Machined_Contact_Steel",
+        "R24_Dark_Forged_Joint_Steel",
+        "R23_Exposed_Steel_Calm_Finish",
+        "R8_Restrained_Safety_Ochre"
+      ],
+      "baselineMaterialSlots": [],
+      "UVChannels": {
+        "UVMap": 0
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R26_ARMOR_05_Lower_Shank_Split_Thick_Plates",
+      "key": "R29New_11",
+      "kind": "New",
+      "vertices": 5736,
+      "triangles": 1912,
+      "materials": [
+        "R24_Dark_Forged_Joint_Steel",
+        "R24_Recessed_Elastomer_Seal",
+        "R23_Exposed_Steel_Calm_Finish",
+        "R27_Access_Armor_Used_Coating"
+      ],
+      "baselineMaterialSlots": [],
+      "UVChannels": {
+        "UVMap": 0,
+        "R26_Finish_UV": 2,
+        "R27_Industrial_Finish_UV": 3
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R26_ARMOR_06_Shank_Service_Channel_And_Anchor_Hardware",
+      "key": "R29New_12",
+      "kind": "New",
+      "vertices": 20376,
+      "triangles": 6792,
+      "materials": [
+        "R24_Exposed_Machined_Contact_Steel",
+        "R24_Dark_Forged_Joint_Steel",
+        "R24_Recessed_Elastomer_Seal",
+        "R23_Exposed_Steel_Calm_Finish"
+      ],
+      "baselineMaterialSlots": [],
+      "UVChannels": {
+        "UVMap": 0
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R26_ARMOR_07_Service_Identification_Plate",
+      "key": "R29New_13",
+      "kind": "New",
+      "vertices": 1140,
+      "triangles": 380,
+      "materials": [
+        "R24_Dark_Forged_Joint_Steel"
+      ],
+      "baselineMaterialSlots": [],
+      "UVChannels": {
+        "UVMap": 0
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R26_ARMOR_08_Service_ID",
+      "key": "R29New_14",
+      "kind": "New",
+      "vertices": 6168,
+      "triangles": 2056,
+      "materials": [
+        "R24_Service_Stencil_Offwhite"
+      ],
+      "baselineMaterialSlots": [],
+      "UVChannels": {
+        "UVMap": 0
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R27S_01_Compacted_Work_Fronts_And_Broad_Spoil_Gradients",
+      "key": "R29New_15",
+      "kind": "New",
+      "vertices": 12096,
+      "triangles": 4032,
+      "materials": [
+        "R27S_Compacted_WorldContinuous_PBR"
+      ],
+      "baselineMaterialSlots": [],
+      "UVChannels": {
+        "UVMap": 0,
+        "R8_Regolith_3p7m": 6,
+        "R8_Terrain_Global_4096m": 7
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R27S_02_Stepped_Cut_Shoulder_And_Compressed_Faces",
+      "key": "R29New_16",
+      "kind": "New",
+      "vertices": 1152,
+      "triangles": 384,
+      "materials": [
+        "R27S_Compacted_WorldContinuous_PBR",
+        "R27S_DustyClasts_WorldContinuous_PBR"
+      ],
+      "baselineMaterialSlots": [],
+      "UVChannels": {
+        "UVMap": 0,
+        "R8_Regolith_3p7m": 6,
+        "R8_Terrain_Global_4096m": 7
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R27S_03_Local_Grading_And_Plate_Seat_Traces",
+      "key": "R29New_17",
+      "kind": "New",
+      "vertices": 144,
+      "triangles": 48,
+      "materials": [
+        "R27S_FineDust_WorldContinuous_PBR"
+      ],
+      "baselineMaterialSlots": [],
+      "UVChannels": {
+        "UVMap": 0,
+        "R8_Regolith_3p7m": 6,
+        "R8_Terrain_Global_4096m": 7
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R27S_04_Nine_Local_Cut_Rock_Slabs",
+      "key": "R29New_18",
+      "kind": "New",
+      "vertices": 513,
+      "triangles": 171,
+      "materials": [
+        "R27S_DustyClasts_WorldContinuous_PBR"
+      ],
+      "baselineMaterialSlots": [],
+      "UVChannels": {
+        "UVMap": 0,
+        "R8_Regolith_3p7m": 6,
+        "R8_Terrain_Global_4096m": 7
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R27S_04B_Eighteen_Density_Graded_Regolith_Clods",
+      "key": "R29New_19",
+      "kind": "New",
+      "vertices": 1134,
+      "triangles": 378,
+      "materials": [
+        "R27S_Compacted_WorldContinuous_PBR",
+        "R27S_DustyClasts_WorldContinuous_PBR",
+        "R27S_FineDust_WorldContinuous_PBR"
+      ],
+      "baselineMaterialSlots": [],
+      "UVChannels": {
+        "UVMap": 0,
+        "R8_Regolith_3p7m": 6,
+        "R8_Terrain_Global_4096m": 7
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R27S_05_Four_Anchored_Construction_Cover_Plates",
+      "key": "R29New_20",
+      "kind": "New",
+      "vertices": 17400,
+      "triangles": 5800,
+      "materials": [
+        "R24_Dark_Forged_Joint_Steel",
+        "R24_Slate_Gray_Industrial_Enamel",
+        "R24_Exposed_Machined_Contact_Steel"
+      ],
+      "baselineMaterialSlots": [],
+      "UVChannels": {
+        "UVMap": 0,
+        "R8_Regolith_3p7m": 6,
+        "R8_Terrain_Global_4096m": 7
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R29_00_R21_04_Display_Remainder",
+      "key": "R29New_21",
+      "kind": "New",
+      "vertices": 4932,
+      "triangles": 1644,
+      "materials": [
+        "R23_Protective_Steel_Microfinish",
+        "R23_Exposed_Steel_Calm_Finish",
+        "R8_OffWhite_Ceramic_Coat",
+        "R23_Concrete_Metric_Surface",
+        "R26V2_Baked_Heavy_Structures",
+        "R28_Suspension_Coating_And_Steel"
+      ],
+      "baselineMaterialSlots": [],
+      "UVChannels": {
+        "UVMap": 0,
+        "R26_Finish_UV": 2,
+        "R28_Large_Surface_UV": 4,
+        "R28_Metric_Detail_UV": 5
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R29_BEAMS_NEAR_01_Deep_Web_And_Segmented_Flanges",
+      "key": "R29New_22",
+      "kind": "New",
+      "vertices": 6492,
+      "triangles": 2164,
+      "materials": [
+        "R28_Suspension_Coating_And_Steel",
+        "R24_Slate_Gray_Industrial_Enamel"
+      ],
+      "baselineMaterialSlots": [],
+      "UVChannels": {
+        "UVMap": 0,
+        "R28_Large_Surface_UV": 4,
+        "R28_Metric_Detail_UV": 5
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R29_BEAMS_NEAR_02_Sparse_Stiffeners_And_Access_Rims",
+      "key": "R29New_23",
+      "kind": "New",
+      "vertices": 13668,
+      "triangles": 4556,
+      "materials": [
+        "R24_Slate_Gray_Industrial_Enamel",
+        "R23_Exposed_Steel_Calm_Finish"
+      ],
+      "baselineMaterialSlots": [],
+      "UVChannels": {
+        "UVMap": 0,
+        "R28_Large_Surface_UV": 4,
+        "R28_Metric_Detail_UV": 5
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R29_BEAMS_NEAR_03_Splice_And_End_Connection_Plates",
+      "key": "R29New_24",
+      "kind": "New",
+      "vertices": 14640,
+      "triangles": 4880,
+      "materials": [
+        "R24_Dark_Forged_Joint_Steel",
+        "R23_Exposed_Steel_Calm_Finish",
+        "R24_Exposed_Machined_Contact_Steel"
+      ],
+      "baselineMaterialSlots": [],
+      "UVChannels": {
+        "UVMap": 0,
+        "R28_Large_Surface_UV": 4,
+        "R28_Metric_Detail_UV": 5
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R29_BEAMS_FAR_01_Deep_Web_And_Segmented_Flanges",
+      "key": "R29New_25",
+      "kind": "New",
+      "vertices": 6492,
+      "triangles": 2164,
+      "materials": [
+        "R28_Suspension_Coating_And_Steel",
+        "R24_Slate_Gray_Industrial_Enamel"
+      ],
+      "baselineMaterialSlots": [],
+      "UVChannels": {
+        "UVMap": 0,
+        "R28_Large_Surface_UV": 4,
+        "R28_Metric_Detail_UV": 5
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R29_BEAMS_FAR_02_Sparse_Stiffeners_And_Access_Rims",
+      "key": "R29New_26",
+      "kind": "New",
+      "vertices": 13668,
+      "triangles": 4556,
+      "materials": [
+        "R24_Slate_Gray_Industrial_Enamel",
+        "R23_Exposed_Steel_Calm_Finish"
+      ],
+      "baselineMaterialSlots": [],
+      "UVChannels": {
+        "UVMap": 0,
+        "R28_Large_Surface_UV": 4,
+        "R28_Metric_Detail_UV": 5
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R29_BEAMS_FAR_03_Splice_And_End_Connection_Plates",
+      "key": "R29New_27",
+      "kind": "New",
+      "vertices": 14640,
+      "triangles": 4880,
+      "materials": [
+        "R24_Dark_Forged_Joint_Steel",
+        "R23_Exposed_Steel_Calm_Finish",
+        "R24_Exposed_Machined_Contact_Steel"
+      ],
+      "baselineMaterialSlots": [],
+      "UVChannels": {
+        "UVMap": 0,
+        "R28_Large_Surface_UV": 4,
+        "R28_Metric_Detail_UV": 5
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R29B_01_Stepped_Column_Foot_And_Baseplate",
+      "key": "R29New_28",
+      "kind": "New",
+      "vertices": 1980,
+      "triangles": 660,
+      "materials": [
+        "R24_Dark_Forged_Joint_Steel",
+        "R24_Exposed_Machined_Contact_Steel",
+        "R24_Recessed_Elastomer_Seal"
+      ],
+      "baselineMaterialSlots": [],
+      "UVChannels": {
+        "UVMap": 0
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R29B_02_Cast_Pedestal_And_Transverse_Crosshead",
+      "key": "R29New_29",
+      "kind": "New",
+      "vertices": 3276,
+      "triangles": 1092,
+      "materials": [
+        "R24_Dark_Forged_Joint_Steel",
+        "R24_Slate_Gray_Industrial_Enamel",
+        "R24_Exposed_Machined_Contact_Steel"
+      ],
+      "baselineMaterialSlots": [],
+      "UVChannels": {
+        "UVMap": 0
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R29B_03_Twin_Layered_Bearing_Shoes",
+      "key": "R29New_30",
+      "kind": "New",
+      "vertices": 7872,
+      "triangles": 2624,
+      "materials": [
+        "R24_Dark_Forged_Joint_Steel",
+        "R24_Exposed_Machined_Contact_Steel",
+        "R24_Recessed_Elastomer_Seal"
+      ],
+      "baselineMaterialSlots": [],
+      "UVChannels": {
+        "UVMap": 0
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R29B_04_Four_Transverse_Load_Ribs",
+      "key": "R29New_31",
+      "kind": "New",
+      "vertices": 960,
+      "triangles": 320,
+      "materials": [
+        "R24_Dark_Forged_Joint_Steel"
+      ],
+      "baselineMaterialSlots": [],
+      "UVChannels": {
+        "UVMap": 0
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R29B_05_Six_Foundation_Anchor_Sets",
+      "key": "R29New_32",
+      "kind": "New",
+      "vertices": 8856,
+      "triangles": 2952,
+      "materials": [
+        "R24_Dark_Forged_Joint_Steel",
+        "R24_Exposed_Machined_Contact_Steel"
+      ],
+      "baselineMaterialSlots": [],
+      "UVChannels": {
+        "UVMap": 0
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    },
+    {
+      "name": "R29B_06_Four_Bearing_Keeper_Locks",
+      "key": "R29New_33",
+      "kind": "New",
+      "vertices": 3648,
+      "triangles": 1216,
+      "materials": [
+        "R24_Dark_Forged_Joint_Steel",
+        "R24_Exposed_Machined_Contact_Steel"
+      ],
+      "baselineMaterialSlots": [],
+      "UVChannels": {
+        "UVMap": 0
+      },
+      "reservedLightmapChannel": 1,
+      "normalTangentUVPerMaterial": true
+    }
+  ],
+  "industrialChangedFaces": 4639,
+  "newMeshes": 34,
+  "patchedMeshes": 19,
+  "imageHashesVerified": 43,
+  "UVChannelMap": {
+    "UVMap": 0,
+    "R26_Finish_UV": 2,
+    "R27_Industrial_Finish_UV": 3,
+    "R28_Large_Surface_UV": 4,
+    "R28_Metric_Detail_UV": 5,
+    "R8_Regolith_3p7m": 6,
+    "R8_Terrain_Global_4096m": 7
+  },
+  "axis": "XZY once with reversed triangle winding; source world minus (2015,2130,0), Unity root at (2015,0,2130)",
+  "sourceSaved": false,
+  "rendered": false
+}

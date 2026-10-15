@@ -1,0 +1,361 @@
+{
+  "canonical_material": "R13_Machined_Steel_Contact",
+  "only_allowed_alias": "R13_Machined_Steel_Contact.001",
+  "expected_fingerprint_sha256": "63e1bcb5adbcbbc502534957f3aed985c10130d71babf314121b170f6363f134",
+  "definition": {
+    "schema": "R13 exact shader/content fingerprint v1",
+    "material_scalars": {
+      "use_nodes": true,
+      "diffuse_color": [
+        0.3400000035762787,
+        0.3700000047683716,
+        0.38999998569488525,
+        1.0
+      ],
+      "metallic": 0.0,
+      "roughness": 0.4000000059604645,
+      "use_backface_culling": false,
+      "surface_render_method": "DITHERED",
+      "displacement_method": "BUMP",
+      "alpha_threshold": 0.5
+    },
+    "nodes": [
+      {
+        "node_type": "ShaderNodeBsdfPrincipled",
+        "mute": false,
+        "input_defaults": [
+          {
+            "identifier": "Base Color",
+            "value": [
+              0.3400000035762787,
+              0.3700000047683716,
+              0.38999998569488525,
+              1.0
+            ]
+          },
+          {
+            "identifier": "Metallic",
+            "value": 0.9399999976158142
+          },
+          {
+            "identifier": "Roughness",
+            "value": 0.23999999463558197
+          },
+          {
+            "identifier": "IOR",
+            "value": 1.5
+          },
+          {
+            "identifier": "Alpha",
+            "value": 1.0
+          },
+          {
+            "identifier": "Normal",
+            "value": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "identifier": "Weight",
+            "value": 0.0
+          },
+          {
+            "identifier": "Diffuse Roughness",
+            "value": 0.0
+          },
+          {
+            "identifier": "Subsurface Weight",
+            "value": 0.0
+          },
+          {
+            "identifier": "Subsurface Radius",
+            "value": [
+              1.0,
+              0.20000000298023224,
+              0.10000000149011612
+            ]
+          },
+          {
+            "identifier": "Subsurface Scale",
+            "value": 0.05000000074505806
+          },
+          {
+            "identifier": "Subsurface IOR",
+            "value": 1.399999976158142
+          },
+          {
+            "identifier": "Subsurface Anisotropy",
+            "value": 0.0
+          },
+          {
+            "identifier": "Specular IOR Level",
+            "value": 0.5
+          },
+          {
+            "identifier": "Specular Tint",
+            "value": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          {
+            "identifier": "Anisotropic",
+            "value": 0.0
+          },
+          {
+            "identifier": "Anisotropic Rotation",
+            "value": 0.0
+          },
+          {
+            "identifier": "Tangent",
+            "value": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "identifier": "Transmission Weight",
+            "value": 0.0
+          },
+          {
+            "identifier": "Coat Weight",
+            "value": 0.0
+          },
+          {
+            "identifier": "Coat Roughness",
+            "value": 0.029999999329447746
+          },
+          {
+            "identifier": "Coat IOR",
+            "value": 1.5
+          },
+          {
+            "identifier": "Coat Tint",
+            "value": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          {
+            "identifier": "Coat Normal",
+            "value": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "identifier": "Sheen Weight",
+            "value": 0.0
+          },
+          {
+            "identifier": "Sheen Roughness",
+            "value": 0.5
+          },
+          {
+            "identifier": "Sheen Tint",
+            "value": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          {
+            "identifier": "Emission Color",
+            "value": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          {
+            "identifier": "Emission Strength",
+            "value": 0.0
+          },
+          {
+            "identifier": "Thin Film Thickness",
+            "value": 0.0
+          },
+          {
+            "identifier": "Thin Film IOR",
+            "value": 1.3300000429153442
+          }
+        ],
+        "output_defaults": [],
+        "properties": {
+          "distribution": "MULTI_GGX",
+          "subsurface_method": "RANDOM_WALK"
+        }
+      },
+      {
+        "node_type": "ShaderNodeOutputMaterial",
+        "mute": false,
+        "input_defaults": [
+          {
+            "identifier": "Displacement",
+            "value": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          {
+            "identifier": "Thickness",
+            "value": 0.0
+          }
+        ],
+        "output_defaults": [],
+        "properties": {
+          "is_active_output": true,
+          "target": "ALL"
+        }
+      },
+      {
+        "node_type": "ShaderNodeUVMap",
+        "mute": false,
+        "input_defaults": [],
+        "output_defaults": [
+          {
+            "identifier": "UV",
+            "value": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        ],
+        "properties": {
+          "uv_map": "UVMap",
+          "from_instancer": false
+        }
+      },
+      {
+        "node_type": "ShaderNodeTexImage",
+        "mute": false,
+        "input_defaults": [
+          {
+            "identifier": "Vector",
+            "value": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        ],
+        "output_defaults": [
+          {
+            "identifier": "Color",
+            "value": [
+              0.800000011920929,
+              0.800000011920929,
+              0.800000011920929,
+              1.0
+            ]
+          },
+          {
+            "identifier": "Alpha",
+            "value": 0.0
+          }
+        ],
+        "properties": {
+          "extension": "REPEAT",
+          "interpolation": "Linear",
+          "projection": "FLAT",
+          "projection_blend": 0.0
+        },
+        "image_content": {
+          "sha256": "298ae64a7144e9217b9e3dbe1da58d38b2278515dfe54534831c1925099b126b",
+          "bytes": 671611,
+          "dimensions": [
+            1024,
+            1024
+          ],
+          "colorspace": "Non-Color",
+          "alpha_mode": "CHANNEL_PACKED",
+          "source": "FILE",
+          "is_float": false
+        }
+      },
+      {
+        "node_type": "ShaderNodeNormalMap",
+        "mute": false,
+        "input_defaults": [
+          {
+            "identifier": "Strength",
+            "value": 0.02500000037252903
+          },
+          {
+            "identifier": "Color",
+            "value": [
+              0.5,
+              0.5,
+              1.0,
+              1.0
+            ]
+          }
+        ],
+        "output_defaults": [
+          {
+            "identifier": "Normal",
+            "value": [
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        ],
+        "properties": {
+          "space": "TANGENT",
+          "uv_map": "UVMap"
+        }
+      }
+    ],
+    "links": [
+      [
+        0,
+        "BSDF",
+        1,
+        "Surface"
+      ],
+      [
+        2,
+        "UV",
+        3,
+        "Vector"
+      ],
+      [
+        3,
+        "Color",
+        4,
+        "Color"
+      ],
+      [
+        4,
+        "Normal",
+        0,
+        "Normal"
+      ]
+    ]
+  },
+  "source": "Unchanged R13 material in accepted original Moonkov_R21_Open_Deep_Shaft_Compressed_Handoff.blend",
+  "allowed_objects": [
+    "R20_01_Articulated_Armored_Primary_Buttresses",
+    "R20_03_Nested_Transmission_Rings_And_Gear_Races",
+    "R20_07_Upper_Stage_Articulated_Spine_And_Armor",
+    "R20_08_Upper_Lift_Drive_Core_And_Segmented_Casings",
+    "R19_07_Paired_Feed_Rams_And_Axial_Guides",
+    "R19_08_Travelling_Head_Topdrive_And_Clamp_Assembly",
+    "R18_14_Return_Separation_Vessel_Skids",
+    "R18_16_Flanged_Process_Headers_And_Valve_Manifolds",
+    "R20_05_Central_Transfer_Hub_At_Existing_Bridge_Height"
+  ]
+}

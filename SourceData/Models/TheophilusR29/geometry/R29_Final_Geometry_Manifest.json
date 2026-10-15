@@ -1,0 +1,2305 @@
+{
+  "revision": "R24 installed baseline directly to R29 final visible geometry",
+  "source_scene": "Moonkov_R29_Fabricated_Beams_And_Bearings_Latest.blend",
+  "collection": "B_R29_FROM_R24_FINAL_DISPLAY_GEOMETRY",
+  "root": "R29_FROM_R24_FINAL_DISPLAY_ROOT",
+  "geometry_library": "Moonkov_R29_From_R24_Final_Display_Geometry.blend",
+  "mesh_count": 34,
+  "objects": [
+    {
+      "object": "R25_01_Descending_Throat_And_Split_Guide_Frame",
+      "source_collection": "B_27_R25_DESCENDING_SHAFT_GUIDE_DISPLAY",
+      "vertices": 2404,
+      "polygons": 2256,
+      "loops": 9216,
+      "vertex_topology_float32_sha256": "ce738339581781a517b9aef8b133f0e1b7e7d8851ae1c40ebabf92bd838d5ec4",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "uv_layers": [
+        {
+          "name": "UVMap",
+          "loop_float32_sha256": "67e14f1bbaeef891b8046ad361eb05e0ed9472aefa66e2d1dec56390589beb4b"
+        },
+        {
+          "name": "R26_Finish_UV",
+          "loop_float32_sha256": "ddeb8c60c9058448046a80123b323eaaa4724b15a0cba30fbe5ef325be0f5bbd"
+        }
+      ],
+      "material_slots": [
+        {
+          "slot": 0,
+          "placeholder": "H29_SLOT_000",
+          "canonical_material": "R24_Exposed_Machined_Contact_Steel"
+        },
+        {
+          "slot": 1,
+          "placeholder": "H29_SLOT_001",
+          "canonical_material": "R26V2_Baked_Hero_Mechanics"
+        }
+      ],
+      "modifiers": [
+        {
+          "name": "R25 editable cast and machined edge bevel",
+          "type": "BEVEL",
+          "viewport": true,
+          "render": true
+        }
+      ]
+    },
+    {
+      "object": "R25_02_Three_Heavy_Guide_Jaws_And_Recesses",
+      "source_collection": "B_27_R25_DESCENDING_SHAFT_GUIDE_DISPLAY",
+      "vertices": 1672,
+      "polygons": 1396,
+      "loops": 5968,
+      "vertex_topology_float32_sha256": "a80662a46142e2a892f860668428b1f15dd19e9caca7ac35f5d5b40b2f264cf2",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "uv_layers": [
+        {
+          "name": "UVMap",
+          "loop_float32_sha256": "2aa3c922bab7803835a71ce73bc2a995ff073f8abb90ec65b85ddbd79deb0ce9"
+        },
+        {
+          "name": "R26_Finish_UV",
+          "loop_float32_sha256": "4421683299c655bea69182bf29d8feab7513667d0ec36d569a4d4e05444f2bc6"
+        }
+      ],
+      "material_slots": [
+        {
+          "slot": 0,
+          "placeholder": "H29_SLOT_000",
+          "canonical_material": "R24_Exposed_Machined_Contact_Steel"
+        },
+        {
+          "slot": 1,
+          "placeholder": "H29_SLOT_002",
+          "canonical_material": "R24_Dark_Forged_Joint_Steel"
+        },
+        {
+          "slot": 2,
+          "placeholder": "H29_SLOT_001",
+          "canonical_material": "R26V2_Baked_Hero_Mechanics"
+        }
+      ],
+      "modifiers": [
+        {
+          "name": "R25 editable cast and machined edge bevel",
+          "type": "BEVEL",
+          "viewport": true,
+          "render": true
+        }
+      ]
+    },
+    {
+      "object": "R25_03_Opposed_Clamp_Drives_And_Clevises",
+      "source_collection": "B_27_R25_DESCENDING_SHAFT_GUIDE_DISPLAY",
+      "vertices": 2720,
+      "polygons": 2324,
+      "loops": 9952,
+      "vertex_topology_float32_sha256": "405fc662811626c7fd47d89bb4462430ed9d94cc180b7cb9354edc13b5e5e4dd",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "uv_layers": [
+        {
+          "name": "UVMap",
+          "loop_float32_sha256": "592e53ab1f2826c5654729477343a6c5b2aca21afddde64701a323785048e58b"
+        },
+        {
+          "name": "R26_Finish_UV",
+          "loop_float32_sha256": "3178375f04006c286167abad3a2cc924c062d4bb6428978a0152a643a0709131"
+        }
+      ],
+      "material_slots": [
+        {
+          "slot": 0,
+          "placeholder": "H29_SLOT_000",
+          "canonical_material": "R24_Exposed_Machined_Contact_Steel"
+        },
+        {
+          "slot": 1,
+          "placeholder": "H29_SLOT_002",
+          "canonical_material": "R24_Dark_Forged_Joint_Steel"
+        },
+        {
+          "slot": 2,
+          "placeholder": "H29_SLOT_003",
+          "canonical_material": "R24_Recessed_Elastomer_Seal"
+        },
+        {
+          "slot": 3,
+          "placeholder": "H29_SLOT_001",
+          "canonical_material": "R26V2_Baked_Hero_Mechanics"
+        }
+      ],
+      "modifiers": [
+        {
+          "name": "R25 editable cast and machined edge bevel",
+          "type": "BEVEL",
+          "viewport": true,
+          "render": true
+        }
+      ]
+    },
+    {
+      "object": "R25_04_Exposed_Contact_Bands_And_Seals",
+      "source_collection": "B_27_R25_DESCENDING_SHAFT_GUIDE_DISPLAY",
+      "vertices": 1780,
+      "polygons": 1622,
+      "loops": 6712,
+      "vertex_topology_float32_sha256": "533de743d23d6559472cd38d664f28df2d8cee31b62af5ee53c98f448ebcbab4",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "uv_layers": [
+        {
+          "name": "UVMap",
+          "loop_float32_sha256": "bbf61e7aaf349a24a0b04210ff6802d5cecee74814a238d9390b9b8eb9df646b"
+        }
+      ],
+      "material_slots": [
+        {
+          "slot": 0,
+          "placeholder": "H29_SLOT_000",
+          "canonical_material": "R24_Exposed_Machined_Contact_Steel"
+        },
+        {
+          "slot": 1,
+          "placeholder": "H29_SLOT_002",
+          "canonical_material": "R24_Dark_Forged_Joint_Steel"
+        },
+        {
+          "slot": 2,
+          "placeholder": "H29_SLOT_003",
+          "canonical_material": "R24_Recessed_Elastomer_Seal"
+        }
+      ],
+      "modifiers": [
+        {
+          "name": "R25 editable cast and machined edge bevel",
+          "type": "BEVEL",
+          "viewport": true,
+          "render": true
+        }
+      ]
+    },
+    {
+      "object": "R25_05_Compact_Pipe_Branches_And_Supports",
+      "source_collection": "B_27_R25_DESCENDING_SHAFT_GUIDE_DISPLAY",
+      "vertices": 496,
+      "polygons": 292,
+      "loops": 1488,
+      "vertex_topology_float32_sha256": "8eec010b53440c58f486ae09283cdcee600b7ffc70f805d5616ecd71f6078dd6",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "uv_layers": [
+        {
+          "name": "UVMap",
+          "loop_float32_sha256": "9bd1b4e1a4972c132ec5258601441ac199be8b0a91d9cc618cc2e424ed13a81d"
+        }
+      ],
+      "material_slots": [
+        {
+          "slot": 0,
+          "placeholder": "H29_SLOT_000",
+          "canonical_material": "R24_Exposed_Machined_Contact_Steel"
+        },
+        {
+          "slot": 1,
+          "placeholder": "H29_SLOT_002",
+          "canonical_material": "R24_Dark_Forged_Joint_Steel"
+        },
+        {
+          "slot": 2,
+          "placeholder": "H29_SLOT_003",
+          "canonical_material": "R24_Recessed_Elastomer_Seal"
+        }
+      ],
+      "modifiers": [
+        {
+          "name": "R25 editable cast and machined edge bevel",
+          "type": "BEVEL",
+          "viewport": true,
+          "render": true
+        }
+      ]
+    },
+    {
+      "object": "R25_06_Guide_Service_Plate_And_Local_Use_Marks",
+      "source_collection": "B_27_R25_DESCENDING_SHAFT_GUIDE_DISPLAY",
+      "vertices": 324,
+      "polygons": 224,
+      "loops": 1032,
+      "vertex_topology_float32_sha256": "36899bcd56d3361eed2ed283ed05ec192dd1c7483de91947b998e6e4a78104c1",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "uv_layers": [
+        {
+          "name": "UVMap",
+          "loop_float32_sha256": "7f217dac144d3ce50b82f55fd9402cee12f2e572fb6293a7fa221e7d1b830caa"
+        },
+        {
+          "name": "R26_Finish_UV",
+          "loop_float32_sha256": "c5a928d43397953f8b7be24ef9e71d064d34e8942b115dfb6e2a901c66e96414"
+        }
+      ],
+      "material_slots": [
+        {
+          "slot": 0,
+          "placeholder": "H29_SLOT_004",
+          "canonical_material": "R24_Slate_Gray_Industrial_Enamel"
+        },
+        {
+          "slot": 1,
+          "placeholder": "H29_SLOT_000",
+          "canonical_material": "R24_Exposed_Machined_Contact_Steel"
+        },
+        {
+          "slot": 2,
+          "placeholder": "H29_SLOT_002",
+          "canonical_material": "R24_Dark_Forged_Joint_Steel"
+        },
+        {
+          "slot": 3,
+          "placeholder": "H29_SLOT_003",
+          "canonical_material": "R24_Recessed_Elastomer_Seal"
+        },
+        {
+          "slot": 4,
+          "placeholder": "H29_SLOT_005",
+          "canonical_material": "R24_Localized_Lunar_Dust_Deposit"
+        },
+        {
+          "slot": 5,
+          "placeholder": "H29_SLOT_006",
+          "canonical_material": "R8_Restrained_Safety_Ochre"
+        },
+        {
+          "slot": 6,
+          "placeholder": "H29_SLOT_001",
+          "canonical_material": "R26V2_Baked_Hero_Mechanics"
+        }
+      ],
+      "modifiers": [
+        {
+          "name": "R25 editable cast and machined edge bevel",
+          "type": "BEVEL",
+          "viewport": true,
+          "render": true
+        }
+      ]
+    },
+    {
+      "object": "R25_07_Guide_Identification",
+      "source_collection": "B_27_R25_DESCENDING_SHAFT_GUIDE_DISPLAY",
+      "vertices": 1400,
+      "polygons": 1030,
+      "loops": 3440,
+      "vertex_topology_float32_sha256": "15177dce4bca1c95253cd3310e89949731da3bddfad74bc54998b7e05a4516d1",
+      "matrix_world": [
+        [
+          0.9986295104026794,
+          2.287677380863329e-09,
+          0.0523359589278698,
+          2015.4769287109375
+        ],
+        [
+          0.0523359589278698,
+          -4.3651485981399674e-08,
+          -0.9986295104026794,
+          2120.900390625
+        ],
+        [
+          0.0,
+          1.0,
+          -4.371138828673793e-08,
+          79.12000274658203
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "uv_layers": [
+        {
+          "name": "UVMap",
+          "loop_float32_sha256": "0b5fe9f99d3ac5b9abb9fc5bf15fae9111a0979046291f8ea40a0b9a9667fe0a"
+        }
+      ],
+      "material_slots": [
+        {
+          "slot": 0,
+          "placeholder": "H29_SLOT_007",
+          "canonical_material": "R24_Service_Stencil_Offwhite"
+        }
+      ],
+      "modifiers": []
+    },
+    {
+      "object": "R26_ARMOR_01_Shoulder_Deep_Saddle_And_Perimeter",
+      "source_collection": "B_28_R26_ARMOR_STRUCTURE_PARALLEL_DISPLAY",
+      "vertices": 62,
+      "polygons": 41,
+      "loops": 186,
+      "vertex_topology_float32_sha256": "fa585a530bbd954e05fdde4be2393b3b0a03e82bb930532b30b271c66113dc88",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "uv_layers": [
+        {
+          "name": "UVMap",
+          "loop_float32_sha256": "d6a14ffb6e9c91e37ef65a90f8fcdbb709c32dbccdeb9bc83061e33ce1dd63bd"
+        }
+      ],
+      "material_slots": [
+        {
+          "slot": 0,
+          "placeholder": "H29_SLOT_004",
+          "canonical_material": "R24_Slate_Gray_Industrial_Enamel"
+        },
+        {
+          "slot": 1,
+          "placeholder": "H29_SLOT_002",
+          "canonical_material": "R24_Dark_Forged_Joint_Steel"
+        },
+        {
+          "slot": 2,
+          "placeholder": "H29_SLOT_008",
+          "canonical_material": "R23_Exposed_Steel_Calm_Finish"
+        }
+      ],
+      "modifiers": [
+        {
+          "name": "R26 restrained physical edge bevel",
+          "type": "BEVEL",
+          "viewport": true,
+          "render": true
+        }
+      ]
+    },
+    {
+      "object": "R26_ARMOR_02_Shoulder_Offset_Armor_Cover",
+      "source_collection": "B_28_R26_ARMOR_STRUCTURE_PARALLEL_DISPLAY",
+      "vertices": 418,
+      "polygons": 249,
+      "loops": 1254,
+      "vertex_topology_float32_sha256": "ab0b02ce8e943196acb896f671c39adaac18671a588f6b629b3a6db15bdae317",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "uv_layers": [
+        {
+          "name": "UVMap",
+          "loop_float32_sha256": "8f18a7182d589bc9c46e11066de545a07125910460ab7499fa5131131d03e0fe"
+        },
+        {
+          "name": "R26_Finish_UV",
+          "loop_float32_sha256": "75687b4ef986f65b914ea3522c7cfe010c564928d073981d0cc0e27fea7df810"
+        },
+        {
+          "name": "R27_Industrial_Finish_UV",
+          "loop_float32_sha256": "d7f26d585c9e3b99360d07020149e3cc223f76cdad16e8f32194c290dcb7649f"
+        }
+      ],
+      "material_slots": [
+        {
+          "slot": 0,
+          "placeholder": "H29_SLOT_004",
+          "canonical_material": "R24_Slate_Gray_Industrial_Enamel"
+        },
+        {
+          "slot": 1,
+          "placeholder": "H29_SLOT_000",
+          "canonical_material": "R24_Exposed_Machined_Contact_Steel"
+        },
+        {
+          "slot": 2,
+          "placeholder": "H29_SLOT_002",
+          "canonical_material": "R24_Dark_Forged_Joint_Steel"
+        },
+        {
+          "slot": 3,
+          "placeholder": "H29_SLOT_003",
+          "canonical_material": "R24_Recessed_Elastomer_Seal"
+        },
+        {
+          "slot": 4,
+          "placeholder": "H29_SLOT_008",
+          "canonical_material": "R23_Exposed_Steel_Calm_Finish"
+        },
+        {
+          "slot": 5,
+          "placeholder": "H29_SLOT_009",
+          "canonical_material": "R27_Access_Armor_Used_Coating"
+        }
+      ],
+      "modifiers": [
+        {
+          "name": "R26 restrained physical edge bevel",
+          "type": "BEVEL",
+          "viewport": true,
+          "render": true
+        }
+      ]
+    },
+    {
+      "object": "R26_ARMOR_03_Recessed_Coupling_Bay_And_Interfaces",
+      "source_collection": "B_28_R26_ARMOR_STRUCTURE_PARALLEL_DISPLAY",
+      "vertices": 1648,
+      "polygons": 1428,
+      "loops": 6096,
+      "vertex_topology_float32_sha256": "55adb71d213b76848f173639ac84b8db003611013d12c2812081038866d9877f",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "uv_layers": [
+        {
+          "name": "UVMap",
+          "loop_float32_sha256": "aaf314ab26d0ed97543a7e87e545702e19bc048629b243a3ea200f9698fc04b9"
+        }
+      ],
+      "material_slots": [
+        {
+          "slot": 0,
+          "placeholder": "H29_SLOT_000",
+          "canonical_material": "R24_Exposed_Machined_Contact_Steel"
+        },
+        {
+          "slot": 1,
+          "placeholder": "H29_SLOT_002",
+          "canonical_material": "R24_Dark_Forged_Joint_Steel"
+        },
+        {
+          "slot": 2,
+          "placeholder": "H29_SLOT_003",
+          "canonical_material": "R24_Recessed_Elastomer_Seal"
+        },
+        {
+          "slot": 3,
+          "placeholder": "H29_SLOT_008",
+          "canonical_material": "R23_Exposed_Steel_Calm_Finish"
+        }
+      ],
+      "modifiers": [
+        {
+          "name": "R26 restrained physical edge bevel",
+          "type": "BEVEL",
+          "viewport": true,
+          "render": true
+        }
+      ]
+    },
+    {
+      "object": "R26_ARMOR_04_Shoulder_Load_Keys_And_Locking_Ends",
+      "source_collection": "B_28_R26_ARMOR_STRUCTURE_PARALLEL_DISPLAY",
+      "vertices": 168,
+      "polygons": 102,
+      "loops": 504,
+      "vertex_topology_float32_sha256": "5a2715fd297bfbbb49dc036ea59a88da0e806aad623f29477f4c123aae7f5d42",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "uv_layers": [
+        {
+          "name": "UVMap",
+          "loop_float32_sha256": "cf9e92d2851df1aa725794614cb1a93e763675de4efd544b195a723daf599eee"
+        }
+      ],
+      "material_slots": [
+        {
+          "slot": 0,
+          "placeholder": "H29_SLOT_000",
+          "canonical_material": "R24_Exposed_Machined_Contact_Steel"
+        },
+        {
+          "slot": 1,
+          "placeholder": "H29_SLOT_002",
+          "canonical_material": "R24_Dark_Forged_Joint_Steel"
+        },
+        {
+          "slot": 2,
+          "placeholder": "H29_SLOT_008",
+          "canonical_material": "R23_Exposed_Steel_Calm_Finish"
+        },
+        {
+          "slot": 3,
+          "placeholder": "H29_SLOT_006",
+          "canonical_material": "R8_Restrained_Safety_Ochre"
+        }
+      ],
+      "modifiers": [
+        {
+          "name": "R26 restrained physical edge bevel",
+          "type": "BEVEL",
+          "viewport": true,
+          "render": true
+        }
+      ]
+    },
+    {
+      "object": "R26_ARMOR_05_Lower_Shank_Split_Thick_Plates",
+      "source_collection": "B_28_R26_ARMOR_STRUCTURE_PARALLEL_DISPLAY",
+      "vertices": 82,
+      "polygons": 53,
+      "loops": 246,
+      "vertex_topology_float32_sha256": "4f677e014eb87dbc99fc44eff3612c15834a0c9472c2f9f5b4156b4ebe152703",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "uv_layers": [
+        {
+          "name": "UVMap",
+          "loop_float32_sha256": "0ac1f275d83df6a73645a3c3690f3730e9e3f4191c43451a475745cc45dec13b"
+        },
+        {
+          "name": "R26_Finish_UV",
+          "loop_float32_sha256": "9abcd65f827401f7692844f50eb8ca7726f6bb70be8f7d6c5b1465fa627484a6"
+        },
+        {
+          "name": "R27_Industrial_Finish_UV",
+          "loop_float32_sha256": "42ab963e0b81eb56d5e0fdf04caa1990d87b226a7af47d769e11e938cd32bddf"
+        }
+      ],
+      "material_slots": [
+        {
+          "slot": 0,
+          "placeholder": "H29_SLOT_002",
+          "canonical_material": "R24_Dark_Forged_Joint_Steel"
+        },
+        {
+          "slot": 1,
+          "placeholder": "H29_SLOT_003",
+          "canonical_material": "R24_Recessed_Elastomer_Seal"
+        },
+        {
+          "slot": 2,
+          "placeholder": "H29_SLOT_008",
+          "canonical_material": "R23_Exposed_Steel_Calm_Finish"
+        },
+        {
+          "slot": 3,
+          "placeholder": "H29_SLOT_009",
+          "canonical_material": "R27_Access_Armor_Used_Coating"
+        }
+      ],
+      "modifiers": [
+        {
+          "name": "R26 restrained physical edge bevel",
+          "type": "BEVEL",
+          "viewport": true,
+          "render": true
+        }
+      ]
+    },
+    {
+      "object": "R26_ARMOR_06_Shank_Service_Channel_And_Anchor_Hardware",
+      "source_collection": "B_28_R26_ARMOR_STRUCTURE_PARALLEL_DISPLAY",
+      "vertices": 468,
+      "polygons": 278,
+      "loops": 1404,
+      "vertex_topology_float32_sha256": "ec079182def29c37f662612a41dd563dad753a1c0a2156068dc94dcb1c62d0a7",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "uv_layers": [
+        {
+          "name": "UVMap",
+          "loop_float32_sha256": "ef8c16a4f879e4917127f98304aa17e16c3e1bde94397ceb2d761bb08ad9a3be"
+        }
+      ],
+      "material_slots": [
+        {
+          "slot": 0,
+          "placeholder": "H29_SLOT_000",
+          "canonical_material": "R24_Exposed_Machined_Contact_Steel"
+        },
+        {
+          "slot": 1,
+          "placeholder": "H29_SLOT_002",
+          "canonical_material": "R24_Dark_Forged_Joint_Steel"
+        },
+        {
+          "slot": 2,
+          "placeholder": "H29_SLOT_003",
+          "canonical_material": "R24_Recessed_Elastomer_Seal"
+        },
+        {
+          "slot": 3,
+          "placeholder": "H29_SLOT_008",
+          "canonical_material": "R23_Exposed_Steel_Calm_Finish"
+        }
+      ],
+      "modifiers": [
+        {
+          "name": "R26 restrained physical edge bevel",
+          "type": "BEVEL",
+          "viewport": true,
+          "render": true
+        }
+      ]
+    },
+    {
+      "object": "R26_ARMOR_07_Service_Identification_Plate",
+      "source_collection": "B_28_R26_ARMOR_STRUCTURE_PARALLEL_DISPLAY",
+      "vertices": 16,
+      "polygons": 10,
+      "loops": 48,
+      "vertex_topology_float32_sha256": "af7e24781ff6fb04190d76e7b6b6494aeeb9ab9678cf67a11ee03477951a72ab",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "uv_layers": [
+        {
+          "name": "UVMap",
+          "loop_float32_sha256": "012f8964dd9c647055a5fbe9281e2203bb3f673e5b70bbb4ebbf16b0502dc902"
+        }
+      ],
+      "material_slots": [
+        {
+          "slot": 0,
+          "placeholder": "H29_SLOT_002",
+          "canonical_material": "R24_Dark_Forged_Joint_Steel"
+        }
+      ],
+      "modifiers": [
+        {
+          "name": "R26 restrained physical edge bevel",
+          "type": "BEVEL",
+          "viewport": true,
+          "render": true
+        }
+      ]
+    },
+    {
+      "object": "R26_ARMOR_08_Service_ID",
+      "source_collection": "B_28_R26_ARMOR_STRUCTURE_PARALLEL_DISPLAY",
+      "vertices": 2076,
+      "polygons": 1537,
+      "loops": 5130,
+      "vertex_topology_float32_sha256": "fea00a9d815e1fb1c0efbc6b5d524e206f9d6d04a5addfe6c492c8fa8a1adb97",
+      "matrix_world": [
+        [
+          0.7071067690849304,
+          0.1386750191450119,
+          -0.693375289440155,
+          1987.818115234375
+        ],
+        [
+          -0.7071067690849304,
+          0.1386750191450119,
+          -0.6933752298355103,
+          2104.967529296875
+        ],
+        [
+          0.0,
+          0.9805806875228882,
+          0.19611608982086182,
+          168.02000427246094
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "uv_layers": [
+        {
+          "name": "UVMap",
+          "loop_float32_sha256": "1f21f33d9ae12d033c37dc0b07415a33251c8e7730a19c6b5463e621289e5b1b"
+        }
+      ],
+      "material_slots": [
+        {
+          "slot": 0,
+          "placeholder": "H29_SLOT_007",
+          "canonical_material": "R24_Service_Stencil_Offwhite"
+        }
+      ],
+      "modifiers": []
+    },
+    {
+      "object": "R27S_01_Compacted_Work_Fronts_And_Broad_Spoil_Gradients",
+      "source_collection": "B_R27_SHAFT_SURFACE_GRADIENT_DISPLAY",
+      "vertices": 2220,
+      "polygons": 4032,
+      "loops": 12096,
+      "vertex_topology_float32_sha256": "ca31e445454757db1a066c826db3ff5073bd2d46c43e79dc2291f18162516093",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "uv_layers": [
+        {
+          "name": "UVMap",
+          "loop_float32_sha256": "a2cd5919fd0c47f03ac51e8b3bec2819af3b984c194db42a689913b70db097ff"
+        },
+        {
+          "name": "R8_Regolith_3p7m",
+          "loop_float32_sha256": "722766b4befaf91c079cff32deb36c5a3a437e917ec109e116981ebe202f53d0"
+        },
+        {
+          "name": "R8_Terrain_Global_4096m",
+          "loop_float32_sha256": "aa02453603ef694031a3c1f7c1db9388cfe9f3e6f162237127bdb74dc54381e2"
+        }
+      ],
+      "material_slots": [
+        {
+          "slot": 0,
+          "placeholder": "H29_SLOT_010",
+          "canonical_material": "R27S_Compacted_WorldContinuous_PBR"
+        }
+      ],
+      "modifiers": []
+    },
+    {
+      "object": "R27S_02_Stepped_Cut_Shoulder_And_Compressed_Faces",
+      "source_collection": "B_R27_SHAFT_SURFACE_GRADIENT_DISPLAY",
+      "vertices": 768,
+      "polygons": 384,
+      "loops": 1152,
+      "vertex_topology_float32_sha256": "93ff82b6fe8431d6ea039dac663d1c86eed14c76b89e77b03f462ab8c532411a",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "uv_layers": [
+        {
+          "name": "UVMap",
+          "loop_float32_sha256": "f050b91b327f57e4daee63b25fd4543aaeb1feb5306a4676923a776a01c4c5cc"
+        },
+        {
+          "name": "R8_Regolith_3p7m",
+          "loop_float32_sha256": "fe83264901324a482f1ffd842f500233da68ab79741ca3294634048728f021e1"
+        },
+        {
+          "name": "R8_Terrain_Global_4096m",
+          "loop_float32_sha256": "1bf5952f358b874427aad369d80406d7c98cafdbb0e03e3cdfd9d26f10d07a8c"
+        }
+      ],
+      "material_slots": [
+        {
+          "slot": 0,
+          "placeholder": "H29_SLOT_010",
+          "canonical_material": "R27S_Compacted_WorldContinuous_PBR"
+        },
+        {
+          "slot": 1,
+          "placeholder": "H29_SLOT_011",
+          "canonical_material": "R27S_DustyClasts_WorldContinuous_PBR"
+        }
+      ],
+      "modifiers": []
+    },
+    {
+      "object": "R27S_03_Local_Grading_And_Plate_Seat_Traces",
+      "source_collection": "B_R27_SHAFT_SURFACE_GRADIENT_DISPLAY",
+      "vertices": 54,
+      "polygons": 24,
+      "loops": 96,
+      "vertex_topology_float32_sha256": "47bd06bbb13d7c18ece83d8e1f23e8c5c7b653f19890ae3d0866b9373e9285c2",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "uv_layers": [
+        {
+          "name": "UVMap",
+          "loop_float32_sha256": "a957abbfe8a2bd7df5b42a58352f41367af9d42fe98387f22929907c3862e3f5"
+        },
+        {
+          "name": "R8_Regolith_3p7m",
+          "loop_float32_sha256": "e3da7271e3a0d0b20a9856ac30f875b9c636e0e2bbec3470468343b4efcb1b81"
+        },
+        {
+          "name": "R8_Terrain_Global_4096m",
+          "loop_float32_sha256": "d3045e7021805fec71557784c0593ba2d673bbc402b334deac225db48ef2ad24"
+        }
+      ],
+      "material_slots": [
+        {
+          "slot": 0,
+          "placeholder": "H29_SLOT_012",
+          "canonical_material": "R27S_FineDust_WorldContinuous_PBR"
+        }
+      ],
+      "modifiers": []
+    },
+    {
+      "object": "R27S_04_Nine_Local_Cut_Rock_Slabs",
+      "source_collection": "B_R27_SHAFT_SURFACE_GRADIENT_DISPLAY",
+      "vertices": 126,
+      "polygons": 72,
+      "loops": 315,
+      "vertex_topology_float32_sha256": "b0c94c657fce5d6d2b3aca72279dd0d37fbc29ca3514f7cfbf90917c3d9b4892",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "uv_layers": [
+        {
+          "name": "UVMap",
+          "loop_float32_sha256": "5205a104dc84bfbd6c5ac8fbc4815e3199afc1d891f08f7869436f274483b455"
+        },
+        {
+          "name": "R8_Regolith_3p7m",
+          "loop_float32_sha256": "de4d20691ebf22ebac66d4d46cfc71e878c88e28f37bfdb9dfffe86ec1929959"
+        },
+        {
+          "name": "R8_Terrain_Global_4096m",
+          "loop_float32_sha256": "12f9a09c3c63b6ec0e14fc6c3002d0d0c287d3f9048e75c885f35db2dee3c024"
+        }
+      ],
+      "material_slots": [
+        {
+          "slot": 0,
+          "placeholder": "H29_SLOT_011",
+          "canonical_material": "R27S_DustyClasts_WorldContinuous_PBR"
+        }
+      ],
+      "modifiers": []
+    },
+    {
+      "object": "R27S_04B_Eighteen_Density_Graded_Regolith_Clods",
+      "source_collection": "B_R27_SHAFT_SURFACE_GRADIENT_DISPLAY",
+      "vertices": 270,
+      "polygons": 252,
+      "loops": 882,
+      "vertex_topology_float32_sha256": "5f949d7cb6a0e075e62b8938ad473fd04cf5f7e707b1681e4bf859a466ac5b88",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "uv_layers": [
+        {
+          "name": "UVMap",
+          "loop_float32_sha256": "f25cf6c0c91945f39ed1ecf56e564e8b097d3241ef7163bd5911c2afe5827ebd"
+        },
+        {
+          "name": "R8_Regolith_3p7m",
+          "loop_float32_sha256": "e2a17ea5149c252b90d29e24c11d708c3402125c708104ed65f202d482babca9"
+        },
+        {
+          "name": "R8_Terrain_Global_4096m",
+          "loop_float32_sha256": "1ce5b8ccf13db225b75aed3f91b54ce7c9983a4582a66ebb6ccbeae0aad9f862"
+        }
+      ],
+      "material_slots": [
+        {
+          "slot": 0,
+          "placeholder": "H29_SLOT_010",
+          "canonical_material": "R27S_Compacted_WorldContinuous_PBR"
+        },
+        {
+          "slot": 1,
+          "placeholder": "H29_SLOT_011",
+          "canonical_material": "R27S_DustyClasts_WorldContinuous_PBR"
+        },
+        {
+          "slot": 2,
+          "placeholder": "H29_SLOT_012",
+          "canonical_material": "R27S_FineDust_WorldContinuous_PBR"
+        }
+      ],
+      "modifiers": []
+    },
+    {
+      "object": "R27S_05_Four_Anchored_Construction_Cover_Plates",
+      "source_collection": "B_R27_SHAFT_SURFACE_GRADIENT_DISPLAY",
+      "vertices": 688,
+      "polygons": 416,
+      "loops": 2000,
+      "vertex_topology_float32_sha256": "a5799c7ef046cda266df802ec04d3a3d4f8dcbd51508f69729e1f2561ed162d1",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "uv_layers": [
+        {
+          "name": "UVMap",
+          "loop_float32_sha256": "1ef89cc7c3d4acf2915a6224d0b13137400044d57c4af760475e0f4d2095a25b"
+        },
+        {
+          "name": "R8_Regolith_3p7m",
+          "loop_float32_sha256": "9e161a9df046a320e07cfad305ce04c453c1cbd00d09722388f9c0d71e2671d5"
+        },
+        {
+          "name": "R8_Terrain_Global_4096m",
+          "loop_float32_sha256": "4946a8e29a58c57fac2b69515c6820f228ab99d3a7eeb2d467f7e73ef257f5ec"
+        }
+      ],
+      "material_slots": [
+        {
+          "slot": 0,
+          "placeholder": "H29_SLOT_002",
+          "canonical_material": "R24_Dark_Forged_Joint_Steel"
+        },
+        {
+          "slot": 1,
+          "placeholder": "H29_SLOT_004",
+          "canonical_material": "R24_Slate_Gray_Industrial_Enamel"
+        },
+        {
+          "slot": 2,
+          "placeholder": "H29_SLOT_000",
+          "canonical_material": "R24_Exposed_Machined_Contact_Steel"
+        }
+      ],
+      "modifiers": [
+        {
+          "name": "Editable construction edge bevel",
+          "type": "BEVEL",
+          "viewport": true,
+          "render": true
+        }
+      ]
+    },
+    {
+      "object": "R29_00_R21_04_Display_Remainder",
+      "source_collection": "B_R29_INTEGRATED_STRUCTURE_DISPLAY",
+      "vertices": 1096,
+      "polygons": 822,
+      "loops": 3288,
+      "vertex_topology_float32_sha256": "086e77c31085157cc74cca00bc22fdbb3028d21bc2563d992dbedb73730892ba",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "uv_layers": [
+        {
+          "name": "UVMap",
+          "loop_float32_sha256": "9ee5438a803120584783cc759dbbeeaec99e175f9264bafbd03287bad18fcfe6"
+        },
+        {
+          "name": "R26_Finish_UV",
+          "loop_float32_sha256": "8899d9a5726c52400399f0d628ba62381c21709948cfd66631249d95cdd61d15"
+        },
+        {
+          "name": "R28_Large_Surface_UV",
+          "loop_float32_sha256": "e12865889733d3778c54685a687b9728b319c8a5052893d5263e3d623fb72369"
+        },
+        {
+          "name": "R28_Metric_Detail_UV",
+          "loop_float32_sha256": "1b895f9c16812d4c844d25f64b9312fefcb3ee2403ae206d19ebb985de7c1e52"
+        }
+      ],
+      "material_slots": [
+        {
+          "slot": 0,
+          "placeholder": "H29_SLOT_013",
+          "canonical_material": "R23_Protective_Steel_Microfinish"
+        },
+        {
+          "slot": 1,
+          "placeholder": "H29_SLOT_008",
+          "canonical_material": "R23_Exposed_Steel_Calm_Finish"
+        },
+        {
+          "slot": 2,
+          "placeholder": "H29_SLOT_014",
+          "canonical_material": "R8_OffWhite_Ceramic_Coat"
+        },
+        {
+          "slot": 3,
+          "placeholder": "H29_SLOT_015",
+          "canonical_material": "R23_Concrete_Metric_Surface"
+        },
+        {
+          "slot": 4,
+          "placeholder": "H29_SLOT_016",
+          "canonical_material": "R26V2_Baked_Heavy_Structures"
+        },
+        {
+          "slot": 5,
+          "placeholder": "H29_SLOT_017",
+          "canonical_material": "R28_Suspension_Coating_And_Steel"
+        }
+      ],
+      "modifiers": []
+    },
+    {
+      "object": "R29_BEAMS_NEAR_01_Deep_Web_And_Segmented_Flanges",
+      "source_collection": "B_R29_INTEGRATED_STRUCTURE_DISPLAY",
+      "vertices": 168,
+      "polygons": 130,
+      "loops": 504,
+      "vertex_topology_float32_sha256": "1c9a837570a98fc3a0578057d586ead3cbd53fb6e2f5d5fc9b6dd862f396599c",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "uv_layers": [
+        {
+          "name": "UVMap",
+          "loop_float32_sha256": "98acc1241e2efd190e818d90dd624751543111b38d575a0910e7d243a73c5b67"
+        },
+        {
+          "name": "R28_Large_Surface_UV",
+          "loop_float32_sha256": "5d4de0d17b2780713ef5f709728e5c34c76a988bbb9e482021a4fd9102c8e4d2"
+        },
+        {
+          "name": "R28_Metric_Detail_UV",
+          "loop_float32_sha256": "0699d39b990556432f86af649bf1ba30f75c97cf1548bdfbfca1269a12672d0c"
+        }
+      ],
+      "material_slots": [
+        {
+          "slot": 0,
+          "placeholder": "H29_SLOT_017",
+          "canonical_material": "R28_Suspension_Coating_And_Steel"
+        },
+        {
+          "slot": 1,
+          "placeholder": "H29_SLOT_004",
+          "canonical_material": "R24_Slate_Gray_Industrial_Enamel"
+        }
+      ],
+      "modifiers": [
+        {
+          "name": "R29 physical fabrication edge bevel",
+          "type": "BEVEL",
+          "viewport": true,
+          "render": true
+        }
+      ]
+    },
+    {
+      "object": "R29_BEAMS_NEAR_02_Sparse_Stiffeners_And_Access_Rims",
+      "source_collection": "B_R29_INTEGRATED_STRUCTURE_DISPLAY",
+      "vertices": 336,
+      "polygons": 242,
+      "loops": 1008,
+      "vertex_topology_float32_sha256": "ea27c19e5eefbcaf2dd29de20a5195d1085f42a3df245fdc053d829f2e4c618f",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "uv_layers": [
+        {
+          "name": "UVMap",
+          "loop_float32_sha256": "acf366020dad63f70646c2f1e7468abccffdf2fc6f91429a459c36f1dd6c501f"
+        },
+        {
+          "name": "R28_Large_Surface_UV",
+          "loop_float32_sha256": "acf366020dad63f70646c2f1e7468abccffdf2fc6f91429a459c36f1dd6c501f"
+        },
+        {
+          "name": "R28_Metric_Detail_UV",
+          "loop_float32_sha256": "acf366020dad63f70646c2f1e7468abccffdf2fc6f91429a459c36f1dd6c501f"
+        }
+      ],
+      "material_slots": [
+        {
+          "slot": 0,
+          "placeholder": "H29_SLOT_004",
+          "canonical_material": "R24_Slate_Gray_Industrial_Enamel"
+        },
+        {
+          "slot": 1,
+          "placeholder": "H29_SLOT_008",
+          "canonical_material": "R23_Exposed_Steel_Calm_Finish"
+        }
+      ],
+      "modifiers": [
+        {
+          "name": "R29 physical fabrication edge bevel",
+          "type": "BEVEL",
+          "viewport": true,
+          "render": true
+        }
+      ]
+    },
+    {
+      "object": "R29_BEAMS_NEAR_03_Splice_And_End_Connection_Plates",
+      "source_collection": "B_R29_INTEGRATED_STRUCTURE_DISPLAY",
+      "vertices": 576,
+      "polygons": 344,
+      "loops": 1728,
+      "vertex_topology_float32_sha256": "18ff6e33951a732422b1afb7a00a9740bd859452ddae9cd88aa0691ed15bbec5",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "uv_layers": [
+        {
+          "name": "UVMap",
+          "loop_float32_sha256": "d6f870828876d0b3fc44ceb12638ed42afbdc2f907bb88f9b4d0082714401539"
+        },
+        {
+          "name": "R28_Large_Surface_UV",
+          "loop_float32_sha256": "d6f870828876d0b3fc44ceb12638ed42afbdc2f907bb88f9b4d0082714401539"
+        },
+        {
+          "name": "R28_Metric_Detail_UV",
+          "loop_float32_sha256": "d6f870828876d0b3fc44ceb12638ed42afbdc2f907bb88f9b4d0082714401539"
+        }
+      ],
+      "material_slots": [
+        {
+          "slot": 0,
+          "placeholder": "H29_SLOT_002",
+          "canonical_material": "R24_Dark_Forged_Joint_Steel"
+        },
+        {
+          "slot": 1,
+          "placeholder": "H29_SLOT_008",
+          "canonical_material": "R23_Exposed_Steel_Calm_Finish"
+        },
+        {
+          "slot": 2,
+          "placeholder": "H29_SLOT_000",
+          "canonical_material": "R24_Exposed_Machined_Contact_Steel"
+        }
+      ],
+      "modifiers": [
+        {
+          "name": "R29 physical fabrication edge bevel",
+          "type": "BEVEL",
+          "viewport": true,
+          "render": true
+        }
+      ]
+    },
+    {
+      "object": "R29_BEAMS_FAR_01_Deep_Web_And_Segmented_Flanges",
+      "source_collection": "B_R29_INTEGRATED_STRUCTURE_DISPLAY",
+      "vertices": 168,
+      "polygons": 130,
+      "loops": 504,
+      "vertex_topology_float32_sha256": "0838943c9b71649746b92451767f3ff5d916de16437895e65574132661d5f538",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "uv_layers": [
+        {
+          "name": "UVMap",
+          "loop_float32_sha256": "2104b51fe57f247218d1da427f2b039363672edfe6981c3100db1ba6ea435bcf"
+        },
+        {
+          "name": "R28_Large_Surface_UV",
+          "loop_float32_sha256": "11a896507082e228ec174f6b8009adbc583a7c2fcb5fbb80786e0e507b53ae4d"
+        },
+        {
+          "name": "R28_Metric_Detail_UV",
+          "loop_float32_sha256": "a6e416747b0848cd5757861326683568912b0de4b6ed483789d42c45981798f0"
+        }
+      ],
+      "material_slots": [
+        {
+          "slot": 0,
+          "placeholder": "H29_SLOT_017",
+          "canonical_material": "R28_Suspension_Coating_And_Steel"
+        },
+        {
+          "slot": 1,
+          "placeholder": "H29_SLOT_004",
+          "canonical_material": "R24_Slate_Gray_Industrial_Enamel"
+        }
+      ],
+      "modifiers": [
+        {
+          "name": "R29 physical fabrication edge bevel",
+          "type": "BEVEL",
+          "viewport": true,
+          "render": true
+        }
+      ]
+    },
+    {
+      "object": "R29_BEAMS_FAR_02_Sparse_Stiffeners_And_Access_Rims",
+      "source_collection": "B_R29_INTEGRATED_STRUCTURE_DISPLAY",
+      "vertices": 336,
+      "polygons": 242,
+      "loops": 1008,
+      "vertex_topology_float32_sha256": "510935618b32dcf8fd15098582f401c6d0c2f91ab17666a2446a362be026c2da",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "uv_layers": [
+        {
+          "name": "UVMap",
+          "loop_float32_sha256": "129dc062603e53095ece5d490d50235ab23960e179900c07fb607deccecd3c0c"
+        },
+        {
+          "name": "R28_Large_Surface_UV",
+          "loop_float32_sha256": "129dc062603e53095ece5d490d50235ab23960e179900c07fb607deccecd3c0c"
+        },
+        {
+          "name": "R28_Metric_Detail_UV",
+          "loop_float32_sha256": "129dc062603e53095ece5d490d50235ab23960e179900c07fb607deccecd3c0c"
+        }
+      ],
+      "material_slots": [
+        {
+          "slot": 0,
+          "placeholder": "H29_SLOT_004",
+          "canonical_material": "R24_Slate_Gray_Industrial_Enamel"
+        },
+        {
+          "slot": 1,
+          "placeholder": "H29_SLOT_008",
+          "canonical_material": "R23_Exposed_Steel_Calm_Finish"
+        }
+      ],
+      "modifiers": [
+        {
+          "name": "R29 physical fabrication edge bevel",
+          "type": "BEVEL",
+          "viewport": true,
+          "render": true
+        }
+      ]
+    },
+    {
+      "object": "R29_BEAMS_FAR_03_Splice_And_End_Connection_Plates",
+      "source_collection": "B_R29_INTEGRATED_STRUCTURE_DISPLAY",
+      "vertices": 576,
+      "polygons": 344,
+      "loops": 1728,
+      "vertex_topology_float32_sha256": "f0b62b38fb391a38b4119fc1d286e8bbf339c914ebc1cb556a7ead2938bd6416",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "uv_layers": [
+        {
+          "name": "UVMap",
+          "loop_float32_sha256": "f908c84a2a5701f3d25649ac1a5f2804660824d7e9656c48196f71363f6dadcb"
+        },
+        {
+          "name": "R28_Large_Surface_UV",
+          "loop_float32_sha256": "f908c84a2a5701f3d25649ac1a5f2804660824d7e9656c48196f71363f6dadcb"
+        },
+        {
+          "name": "R28_Metric_Detail_UV",
+          "loop_float32_sha256": "f908c84a2a5701f3d25649ac1a5f2804660824d7e9656c48196f71363f6dadcb"
+        }
+      ],
+      "material_slots": [
+        {
+          "slot": 0,
+          "placeholder": "H29_SLOT_002",
+          "canonical_material": "R24_Dark_Forged_Joint_Steel"
+        },
+        {
+          "slot": 1,
+          "placeholder": "H29_SLOT_008",
+          "canonical_material": "R23_Exposed_Steel_Calm_Finish"
+        },
+        {
+          "slot": 2,
+          "placeholder": "H29_SLOT_000",
+          "canonical_material": "R24_Exposed_Machined_Contact_Steel"
+        }
+      ],
+      "modifiers": [
+        {
+          "name": "R29 physical fabrication edge bevel",
+          "type": "BEVEL",
+          "viewport": true,
+          "render": true
+        }
+      ]
+    },
+    {
+      "object": "R29B_01_Stepped_Column_Foot_And_Baseplate",
+      "source_collection": "B_R29_INTEGRATED_STRUCTURE_DISPLAY",
+      "vertices": 336,
+      "polygons": 318,
+      "loops": 1296,
+      "vertex_topology_float32_sha256": "6bdca361fd79bfe2fa76682cabdce6a72796b3eb240ae56aa15933d75fa03d3f",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "uv_layers": [
+        {
+          "name": "UVMap",
+          "loop_float32_sha256": "ae05b71e5951452945ca964f01af09fb8ae5fe5c1c2e08c1789fd0fa6fc07b86"
+        }
+      ],
+      "material_slots": [
+        {
+          "slot": 0,
+          "placeholder": "H29_SLOT_002",
+          "canonical_material": "R24_Dark_Forged_Joint_Steel"
+        },
+        {
+          "slot": 1,
+          "placeholder": "H29_SLOT_000",
+          "canonical_material": "R24_Exposed_Machined_Contact_Steel"
+        },
+        {
+          "slot": 2,
+          "placeholder": "H29_SLOT_003",
+          "canonical_material": "R24_Recessed_Elastomer_Seal"
+        }
+      ],
+      "modifiers": []
+    },
+    {
+      "object": "R29B_02_Cast_Pedestal_And_Transverse_Crosshead",
+      "source_collection": "B_R29_INTEGRATED_STRUCTURE_DISPLAY",
+      "vertices": 560,
+      "polygons": 534,
+      "loops": 2160,
+      "vertex_topology_float32_sha256": "60fa9a1a34f44a342fc00d5d80d392dc91bf07e9b21895aba6284226db03d019",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "uv_layers": [
+        {
+          "name": "UVMap",
+          "loop_float32_sha256": "243d910345d3c0a282ff92ae974daee2a7342cf0260b33fdcc270d906386da6d"
+        }
+      ],
+      "material_slots": [
+        {
+          "slot": 0,
+          "placeholder": "H29_SLOT_002",
+          "canonical_material": "R24_Dark_Forged_Joint_Steel"
+        },
+        {
+          "slot": 1,
+          "placeholder": "H29_SLOT_004",
+          "canonical_material": "R24_Slate_Gray_Industrial_Enamel"
+        },
+        {
+          "slot": 2,
+          "placeholder": "H29_SLOT_000",
+          "canonical_material": "R24_Exposed_Machined_Contact_Steel"
+        }
+      ],
+      "modifiers": []
+    },
+    {
+      "object": "R29B_03_Twin_Layered_Bearing_Shoes",
+      "source_collection": "B_R29_INTEGRATED_STRUCTURE_DISPLAY",
+      "vertices": 1344,
+      "polygons": 1280,
+      "loops": 5184,
+      "vertex_topology_float32_sha256": "a9ebce14d482904399bfc7d3f54e714ccef8abcd5703eb5ce38a9d9dd1de347d",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "uv_layers": [
+        {
+          "name": "UVMap",
+          "loop_float32_sha256": "ec4a28651824b4f266389fa6d2bae2e09426793d941542d96faeb75fbc739736"
+        }
+      ],
+      "material_slots": [
+        {
+          "slot": 0,
+          "placeholder": "H29_SLOT_002",
+          "canonical_material": "R24_Dark_Forged_Joint_Steel"
+        },
+        {
+          "slot": 1,
+          "placeholder": "H29_SLOT_000",
+          "canonical_material": "R24_Exposed_Machined_Contact_Steel"
+        },
+        {
+          "slot": 2,
+          "placeholder": "H29_SLOT_003",
+          "canonical_material": "R24_Recessed_Elastomer_Seal"
+        }
+      ],
+      "modifiers": []
+    },
+    {
+      "object": "R29B_04_Four_Transverse_Load_Ribs",
+      "source_collection": "B_R29_INTEGRATED_STRUCTURE_DISPLAY",
+      "vertices": 168,
+      "polygons": 164,
+      "loops": 648,
+      "vertex_topology_float32_sha256": "a68232a3a6cd410ef06a79706b79997a1a4577c1f2343cba825db011ed05c189",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "uv_layers": [
+        {
+          "name": "UVMap",
+          "loop_float32_sha256": "cf08fe20529f1116e856f9c3814f36756ebfcfb0fcd8cc6233fe26beb0171aee"
+        }
+      ],
+      "material_slots": [
+        {
+          "slot": 0,
+          "placeholder": "H29_SLOT_002",
+          "canonical_material": "R24_Dark_Forged_Joint_Steel"
+        }
+      ],
+      "modifiers": []
+    },
+    {
+      "object": "R29B_05_Six_Foundation_Anchor_Sets",
+      "source_collection": "B_R29_INTEGRATED_STRUCTURE_DISPLAY",
+      "vertices": 1512,
+      "polygons": 1344,
+      "loops": 5640,
+      "vertex_topology_float32_sha256": "796e1e588f8bddfa5b342cad055c6a4839a47024a409d6793852e0c99b3f7014",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "uv_layers": [
+        {
+          "name": "UVMap",
+          "loop_float32_sha256": "60b78e4e9d65d9951626455b9c6f6201f5f7182e325e20c0de82b49b4833ff08"
+        }
+      ],
+      "material_slots": [
+        {
+          "slot": 0,
+          "placeholder": "H29_SLOT_002",
+          "canonical_material": "R24_Dark_Forged_Joint_Steel"
+        },
+        {
+          "slot": 1,
+          "placeholder": "H29_SLOT_000",
+          "canonical_material": "R24_Exposed_Machined_Contact_Steel"
+        }
+      ],
+      "modifiers": []
+    },
+    {
+      "object": "R29B_06_Four_Bearing_Keeper_Locks",
+      "source_collection": "B_R29_INTEGRATED_STRUCTURE_DISPLAY",
+      "vertices": 624,
+      "polygons": 568,
+      "loops": 2352,
+      "vertex_topology_float32_sha256": "924148f3a48bc07816c4329e8f2df0406074d6da4f4fc0bac8c12890515d0499",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "uv_layers": [
+        {
+          "name": "UVMap",
+          "loop_float32_sha256": "8f0ddf55b8d4b2390bcba50741ae694fb0abfe678c494d97b7e9dbcdc1cfea11"
+        }
+      ],
+      "material_slots": [
+        {
+          "slot": 0,
+          "placeholder": "H29_SLOT_002",
+          "canonical_material": "R24_Dark_Forged_Joint_Steel"
+        },
+        {
+          "slot": 1,
+          "placeholder": "H29_SLOT_000",
+          "canonical_material": "R24_Exposed_Machined_Contact_Steel"
+        }
+      ],
+      "modifiers": []
+    }
+  ],
+  "verified_identical_source_material_aliases": {
+    "R24_Dark_Forged_Joint_Steel.002": "R24_Dark_Forged_Joint_Steel",
+    "R24_Slate_Gray_Industrial_Enamel.002": "R24_Slate_Gray_Industrial_Enamel",
+    "R24_Exposed_Machined_Contact_Steel.002": "R24_Exposed_Machined_Contact_Steel"
+  },
+  "canonical_materials": [
+    "R23_Concrete_Metric_Surface",
+    "R23_Exposed_Steel_Calm_Finish",
+    "R23_Protective_Steel_Microfinish",
+    "R24_Dark_Forged_Joint_Steel",
+    "R24_Exposed_Machined_Contact_Steel",
+    "R24_Localized_Lunar_Dust_Deposit",
+    "R24_Recessed_Elastomer_Seal",
+    "R24_Service_Stencil_Offwhite",
+    "R24_Slate_Gray_Industrial_Enamel",
+    "R26V2_Baked_Heavy_Structures",
+    "R26V2_Baked_Hero_Mechanics",
+    "R27S_Compacted_WorldContinuous_PBR",
+    "R27S_DustyClasts_WorldContinuous_PBR",
+    "R27S_FineDust_WorldContinuous_PBR",
+    "R27_Access_Armor_Used_Coating",
+    "R28_Suspension_Coating_And_Steel",
+    "R8_OffWhite_Ceramic_Coat",
+    "R8_Restrained_Safety_Ochre"
+  ],
+  "material_placeholder_map": {
+    "H29_SLOT_000": "R24_Exposed_Machined_Contact_Steel",
+    "H29_SLOT_001": "R26V2_Baked_Hero_Mechanics",
+    "H29_SLOT_002": "R24_Dark_Forged_Joint_Steel",
+    "H29_SLOT_003": "R24_Recessed_Elastomer_Seal",
+    "H29_SLOT_004": "R24_Slate_Gray_Industrial_Enamel",
+    "H29_SLOT_005": "R24_Localized_Lunar_Dust_Deposit",
+    "H29_SLOT_006": "R8_Restrained_Safety_Ochre",
+    "H29_SLOT_007": "R24_Service_Stencil_Offwhite",
+    "H29_SLOT_008": "R23_Exposed_Steel_Calm_Finish",
+    "H29_SLOT_009": "R27_Access_Armor_Used_Coating",
+    "H29_SLOT_010": "R27S_Compacted_WorldContinuous_PBR",
+    "H29_SLOT_011": "R27S_DustyClasts_WorldContinuous_PBR",
+    "H29_SLOT_012": "R27S_FineDust_WorldContinuous_PBR",
+    "H29_SLOT_013": "R23_Protective_Steel_Microfinish",
+    "H29_SLOT_014": "R8_OffWhite_Ceramic_Coat",
+    "H29_SLOT_015": "R23_Concrete_Metric_Surface",
+    "H29_SLOT_016": "R26V2_Baked_Heavy_Structures",
+    "H29_SLOT_017": "R28_Suspension_Coating_And_Steel"
+  },
+  "hide_old_renderer_only": [
+    {
+      "object": "R21_04_Rim_Foundations_And_Machine_Suspension_Grillage",
+      "vertex_topology_float32_sha256": "e4f1feb5320ea2d44636ff1fb6eda8ec459964620aa5e5fbebf0f4031605be08",
+      "keep_source_mesh": true,
+      "keep_collision_and_interactions": true,
+      "replacement": "R29_00_R21_04_Display_Remainder"
+    }
+  ],
+  "units": "metres",
+  "coordinates": {
+    "source": "Blender world X,Y,Z, Z-up",
+    "target_Unity": "X,Y,Z = Blender X,Z,Y; apply established import conversion once only",
+    "shaft_axis_blender_XY": [
+      2015,
+      2130
+    ]
+  },
+  "no_R22_dependency": true,
+  "excluded": [
+    "all Terrain meshes/material replacements",
+    "old superseded R26S ground geometry",
+    "lights/cameras",
+    "collisions/interactions",
+    "R28 worksite overlay (optional separate)"
+  ],
+  "notes": [
+    "Preserves editable Blender bevel/normal modifiers. Final static-mesh export must evaluate them deliberately; do not create colliders from display meshes.",
+    "Ground geometry uses final R27S form and R27 local-only materials; R28 worksite overlay is disabled by default.",
+    "Slot numbers are compact final package slots. Resolve canonical names from this manifest, never the placeholders as finished materials."
+  ],
+  "library_bytes": 1034450,
+  "library_sha256": "13951cd72659bf8869846594f5f562d33d6a6a5cd11b56261772266989f1a515"
+}

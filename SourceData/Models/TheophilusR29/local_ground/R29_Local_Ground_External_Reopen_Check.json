@@ -1,0 +1,186 @@
+{
+  "final_external_library_reopen_pass": true,
+  "materials": [
+    "R27S_Compacted_WorldContinuous_PBR",
+    "R27S_DustyClasts_WorldContinuous_PBR",
+    "R27S_FineDust_WorldContinuous_PBR"
+  ],
+  "no_objects": true,
+  "no_R21_or_Terrain_materials": true,
+  "external_images_resolve": true,
+  "external_images": [
+    {
+      "image": "R26_Regolith_Compacted_BaseColor.png",
+      "relative_file": "Textures/R26_Regolith_Compacted_BaseColor.png",
+      "size": [
+        2048,
+        2048
+      ],
+      "sha256": "37d8ab19596756cb16dacb2a5e678c36d63fc563eda9070d6cd23f45ae0050c5",
+      "packed": false
+    },
+    {
+      "image": "R26_Regolith_Compacted_Height16.png",
+      "relative_file": "Textures/R26_Regolith_Compacted_Height16.png",
+      "size": [
+        2048,
+        2048
+      ],
+      "sha256": "d93574b94a336703b20b5fe144cf7b4b5658dec1fdfb9ba449b763450bd10146",
+      "packed": false
+    },
+    {
+      "image": "R26_Regolith_Compacted_Normal_OpenGL.png",
+      "relative_file": "Textures/R26_Regolith_Compacted_Normal_OpenGL.png",
+      "size": [
+        2048,
+        2048
+      ],
+      "sha256": "e8f88452a5dfb312d7b9e4921947da62b288fd99bd96d00c07e453637e6f3ffb",
+      "packed": false
+    },
+    {
+      "image": "R26_Regolith_Compacted_Roughness.png",
+      "relative_file": "Textures/R26_Regolith_Compacted_Roughness.png",
+      "size": [
+        2048,
+        2048
+      ],
+      "sha256": "0c2c021bdbe5db7efeac73d6a88f66e1c4cabb58c8ebaea3f54713262a99d7bb",
+      "packed": false
+    },
+    {
+      "image": "R26_Regolith_DustyClasts_BaseColor.png",
+      "relative_file": "Textures/R26_Regolith_DustyClasts_BaseColor.png",
+      "size": [
+        2048,
+        2048
+      ],
+      "sha256": "206b9e292cbf3d9c56769657fbcd7f09bee11ddec09b5d41972465e975e5e324",
+      "packed": false
+    },
+    {
+      "image": "R26_Regolith_DustyClasts_Normal_OpenGL.png",
+      "relative_file": "Textures/R26_Regolith_DustyClasts_Normal_OpenGL.png",
+      "size": [
+        2048,
+        2048
+      ],
+      "sha256": "67df96ba3a12aadc22a7edb112a64b4070d9a60ec128618940274ad51d809afe",
+      "packed": false
+    },
+    {
+      "image": "R26_Regolith_DustyClasts_Roughness.png",
+      "relative_file": "Textures/R26_Regolith_DustyClasts_Roughness.png",
+      "size": [
+        2048,
+        2048
+      ],
+      "sha256": "6bca887837b070c0551b2d8532d1a340917a4ad3e7daf6279177d22064e00851",
+      "packed": false
+    },
+    {
+      "image": "R26_Regolith_FineDust_BaseColor.png",
+      "relative_file": "Textures/R26_Regolith_FineDust_BaseColor.png",
+      "size": [
+        2048,
+        2048
+      ],
+      "sha256": "1aeb296cdefb84e8bc0e241b0dfde1afba53abe0f41f4371c4b03f77ee222d49",
+      "packed": false
+    },
+    {
+      "image": "R26_Regolith_FineDust_Normal_OpenGL.png",
+      "relative_file": "Textures/R26_Regolith_FineDust_Normal_OpenGL.png",
+      "size": [
+        2048,
+        2048
+      ],
+      "sha256": "44861ca2df7e3fe2df33ef2c8d0cf0b8bb6c67de8b917d69ebea9d3f8666ebae",
+      "packed": false
+    },
+    {
+      "image": "R26_Regolith_FineDust_Roughness.png",
+      "relative_file": "Textures/R26_Regolith_FineDust_Roughness.png",
+      "size": [
+        2048,
+        2048
+      ],
+      "sha256": "fbf2a11500e726e955eecbea9230a2d0d9787defd8d15d2b02537b839607cef4",
+      "packed": false
+    },
+    {
+      "image": "R26_Regolith_Macro32m.png",
+      "relative_file": "Textures/R26_Regolith_Macro32m.png",
+      "size": [
+        2048,
+        2048
+      ],
+      "sha256": "4de56d0ca40ff992b5fbcc68f875dca2a30787bc4eff67e3f20cf0d9d2974978",
+      "packed": false
+    },
+    {
+      "image": "R26_Regolith_Micro025m_Normal_OpenGL.png",
+      "relative_file": "Textures/R26_Regolith_Micro025m_Normal_OpenGL.png",
+      "size": [
+        2048,
+        2048
+      ],
+      "sha256": "e20362bd00ed2e7b3844ef1ddec05da339459bee8219352ff5d78d80ac181b1a",
+      "packed": false
+    },
+    {
+      "image": "R26S_World_Edge_Transition_Mask.png",
+      "relative_file": "Textures/R26S_World_Edge_Transition_Mask.png",
+      "size": [
+        1024,
+        1024
+      ],
+      "sha256": "2f5bfa7120e535b0b0539136a61863644f081275c14c9b8ee14cb001da70e733",
+      "packed": false
+    },
+    {
+      "image": "R27_Regolith_Macro256m.png",
+      "relative_file": "Textures/R27_Regolith_Macro256m.png",
+      "size": [
+        2048,
+        2048
+      ],
+      "sha256": "3aff285bea37905b1c4d36fbb2c166bbe560428e56d0b83a0fa05d9c66637367",
+      "packed": false
+    },
+    {
+      "image": "R27_Regolith_World64m_BaseColor.png",
+      "relative_file": "Textures/R27_Regolith_World64m_BaseColor.png",
+      "size": [
+        2048,
+        2048
+      ],
+      "sha256": "b7939003648ac8d962dac4e774dcc23a4300ef2555c75acfd3c9a1a38686420d",
+      "packed": false
+    },
+    {
+      "image": "R27_Regolith_World64m_Height16.png",
+      "relative_file": "Textures/R27_Regolith_World64m_Height16.png",
+      "size": [
+        2048,
+        2048
+      ],
+      "sha256": "4ce271e880b906679dbdf413743d5415c00123c462ebcd6badf0f4e1956115fa",
+      "packed": false
+    },
+    {
+      "image": "R27_Regolith_World64m_Roughness.png",
+      "relative_file": "Textures/R27_Regolith_World64m_Roughness.png",
+      "size": [
+        2048,
+        2048
+      ],
+      "sha256": "1d63885cce70a514f785c7d3e4f92e0b0d9dcddb12995bdbf4bd103743b7cf25",
+      "packed": false
+    }
+  ],
+  "source_files_reused_via_links_no_pixel_duplicates": true,
+  "rendered": false,
+  "Unity_not_executed": true
+}

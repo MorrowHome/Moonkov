@@ -1,0 +1,2001 @@
+{
+  "revision": "R29 final industrial finish patch directly over local R21 + R23 + compact R24",
+  "final_source": "Moonkov_R29_Fabricated_Beams_And_Bearings_Latest.blend",
+  "source_reference_files": [
+    "Moonkov_R24_Hero_Modeling_Rollback.blend",
+    "Moonkov_R24_R21_Base_Display_Delta.blend"
+  ],
+  "R22_dependency": false,
+  "objects": [
+    {
+      "object": "R20_01_Articulated_Armored_Primary_Buttresses",
+      "vertices": 6912,
+      "polygons": 5920,
+      "loops": 25344,
+      "vertex_float32_sha256": "5d2cb0f968a8ba57b75dc353eddd96b60a4069be2fcbbc421f26ab26ea53296c",
+      "topology_sha256": "9c918229345191aa5d52c1cb12777803fbac75acc963b955392de1b315b4320e",
+      "UVMap_float32_sha256": "5756a77cace58f193daeb55682c882f9530aa25e597f3879f604b4b374217f0d",
+      "source_face_material_names_sha256": "a89138716645ddb1467caca9fd9e5eab06a1f4c519bc6496dfdfc11de8a38e4a",
+      "source_matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "target_matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "changed_faces": 420,
+      "new_uv_layers": [
+        "R26_Finish_UV"
+      ],
+      "materials": [
+        "R26V2_Baked_Heavy_Structures"
+      ],
+      "source_reference": "R21 source mesh + R23 material/UV state, read from untouched R24 rollback"
+    },
+    {
+      "object": "R20_03_Nested_Transmission_Rings_And_Gear_Races",
+      "vertices": 10740,
+      "polygons": 9710,
+      "loops": 39560,
+      "vertex_float32_sha256": "8a03bf544c78ca5445fad65cd3d4b31718e44dcd7b2a9dea2dc46f4040f38695",
+      "topology_sha256": "7939b0b802f016afb5a71ddafd7ef19547d115b4d7ae3f1af466406f23f79c8e",
+      "UVMap_float32_sha256": "c1061a2d6ce6718dafcf9a35537d65692b032a3dd765b88df74b9b9131d0d87d",
+      "source_face_material_names_sha256": "11d4598242507d97b4e20039e61f1924fd888ef7234fd6b60a8f2f8364b8426b",
+      "source_matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "target_matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "changed_faces": 958,
+      "new_uv_layers": [
+        "R26_Finish_UV"
+      ],
+      "materials": [
+        "R26V2_Baked_Heavy_Structures"
+      ],
+      "source_reference": "R21 source mesh + R23 material/UV state, read from untouched R24 rollback"
+    },
+    {
+      "object": "R20_04_Offset_Shoulder_Engine_Packs_And_Armor",
+      "vertices": 1600,
+      "polygons": 936,
+      "loops": 4800,
+      "vertex_float32_sha256": "4def2510985b132adb12e90b49a7e6478f6b2f00a4db66506f0982c3a178b246",
+      "topology_sha256": "5599738f190566d25be8b59e8102fa88e1b1f85c1cc73ef8ed50acc2dc31fda6",
+      "UVMap_float32_sha256": "89b011dad8adfb0306d25c41553230980eee5bb340f6537b6f01ef90c0776965",
+      "source_face_material_names_sha256": "e3679a4c51b956838f20cce9e55558a0d830138fd3eb3cec9a871aece09e0ef7",
+      "source_matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "target_matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "changed_faces": 104,
+      "new_uv_layers": [
+        "R26_Finish_UV"
+      ],
+      "materials": [
+        "R26V2_Baked_Heavy_Structures"
+      ],
+      "source_reference": "R21 source mesh + R23 material/UV state, read from untouched R24 rollback"
+    },
+    {
+      "object": "R20_07_Upper_Stage_Articulated_Spine_And_Armor",
+      "vertices": 5824,
+      "polygons": 4280,
+      "loops": 19776,
+      "vertex_float32_sha256": "f0e4d4b690f5fef0bfa789d33f5ea466c577fd37fa9bd39bd3b4e40611d56923",
+      "topology_sha256": "9ab8a6bbbc7873643279282907ad6f41b5d8da82f1c465ede7ed0edd19ed191c",
+      "UVMap_float32_sha256": "37efd5cfe74e4cf4e42e67675667a83d9857550beb3af9307efa0f6f4f40a60c",
+      "source_face_material_names_sha256": "3a21fcab231e01a5194a8017fa06f615d8a944c0b3fd92589538176ca77051d6",
+      "source_matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "target_matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "changed_faces": 355,
+      "new_uv_layers": [
+        "R26_Finish_UV"
+      ],
+      "materials": [
+        "R26V2_Baked_Heavy_Structures"
+      ],
+      "source_reference": "R21 source mesh + R23 material/UV state, read from untouched R24 rollback"
+    },
+    {
+      "object": "R20_08_Upper_Lift_Drive_Core_And_Segmented_Casings",
+      "vertices": 4528,
+      "polygons": 3562,
+      "loops": 15576,
+      "vertex_float32_sha256": "247defa3761d901bd47e06288b588bfa60179665439b496153b3c7cf2c5c6339",
+      "topology_sha256": "1a349a8cc1b3090a4f4a81ea4bb3bf1d28dd55bca1f79c3f0f9e95ee6b7353a8",
+      "UVMap_float32_sha256": "a2c3c25a9dfec474f1e4ee22d317b4ee9d3f7338220ddcc61b94d671334fc4dc",
+      "source_face_material_names_sha256": "85f8b79e387c02c9ab72f89df2d796a908ccd2232d4cd17e91f294f7d53f680a",
+      "source_matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "target_matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "changed_faces": 276,
+      "new_uv_layers": [
+        "R26_Finish_UV"
+      ],
+      "materials": [
+        "R26V2_Baked_Heavy_Structures"
+      ],
+      "source_reference": "R21 source mesh + R23 material/UV state, read from untouched R24 rollback"
+    },
+    {
+      "object": "R24_00_R20_02_Actuators_With_Hero_Knee_Replaced",
+      "vertices": 6128,
+      "polygons": 3410,
+      "loops": 18384,
+      "vertex_float32_sha256": "f05f053981304fb6c576a6998a7ad46b6b6cdcf04d5500e0f4a05790b13cd083",
+      "topology_sha256": "9d538dc8ee0c0e60108e176e22e02de34815441066b1b05404197db5dd226847",
+      "UVMap_float32_sha256": "61b87dfeace314d765784d62353574bebb3d532fb1fd38c237f0b17a448084b7",
+      "source_face_material_names_sha256": "1c573f531bba353c5ed44db93f9e17ecdffd0c3803a940467bfb57a6c485cc38",
+      "source_matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "target_matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "changed_faces": 574,
+      "new_uv_layers": [
+        "R26_Finish_UV"
+      ],
+      "materials": [
+        "R26V2_Baked_Heavy_Structures"
+      ],
+      "source_reference": "Compacted R24 delta"
+    },
+    {
+      "object": "R19_07_Paired_Feed_Rams_And_Axial_Guides",
+      "vertices": 1296,
+      "polygons": 780,
+      "loops": 3888,
+      "vertex_float32_sha256": "0578a77ed48b1c4749f1d82daafc049bfca1b2c8367273e9305b0c8c9974e161",
+      "topology_sha256": "61e0074b0ae15356e6cdc8e7e054fddcff2d4a8c4702aa62010e8d72202bb39f",
+      "UVMap_float32_sha256": "77d24afae04cb2c98568e48230de0a5d387c1e7e7d3dda77ae25f8c1b454bd02",
+      "source_face_material_names_sha256": "d30d838a4bc71bc961b2a9c1c3b4328e3cef4f743a555a6dcb6d38a6f3a471bc",
+      "source_matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "target_matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "changed_faces": 120,
+      "new_uv_layers": [
+        "R26_Finish_UV"
+      ],
+      "materials": [
+        "R26V2_Baked_Heavy_Structures"
+      ],
+      "source_reference": "R21 source mesh + R23 material/UV state, read from untouched R24 rollback"
+    },
+    {
+      "object": "R19_08_Travelling_Head_Topdrive_And_Clamp_Assembly",
+      "vertices": 2488,
+      "polygons": 2086,
+      "loops": 9000,
+      "vertex_float32_sha256": "486d8e6af053793d4941dca8534bbb08305aa4bfe9afa26583d16d9321caafa9",
+      "topology_sha256": "b48aa4489e2cb04983c74053cdd7579129af1f0439f4f3b7af573b489b127718",
+      "UVMap_float32_sha256": "715522fe0e3211a3c50d3e0842c07b107cd72c09b084cfa22dfcda4749369443",
+      "source_face_material_names_sha256": "69925d44cd52524ad60b84af8e8f2af42b0250303017783b7d6f83e4914d601b",
+      "source_matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "target_matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "changed_faces": 42,
+      "new_uv_layers": [
+        "R26_Finish_UV"
+      ],
+      "materials": [
+        "R26V2_Baked_Heavy_Structures"
+      ],
+      "source_reference": "R21 source mesh + R23 material/UV state, read from untouched R24 rollback"
+    },
+    {
+      "object": "R18_14_Return_Separation_Vessel_Skids",
+      "vertices": 2544,
+      "polygons": 2058,
+      "loops": 9072,
+      "vertex_float32_sha256": "a0ccf411990fc5a31b9d2c1e9651e701e94848d5afa2454e262ff08439c474da",
+      "topology_sha256": "9bceae4dceda5159641a7c7b6e3d01acd826870fb724ec3648731e5abaaa4979",
+      "UVMap_float32_sha256": "914e1a772a2b23aab3ea9e123959bdee6cfe60825a9e0a390255e48ddc7383e0",
+      "source_face_material_names_sha256": "bfab5ba672ed4cde50a3e614a4f529b98a115305a43ab2a19a57f057b4e76ecf",
+      "source_matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "target_matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "changed_faces": 444,
+      "new_uv_layers": [
+        "R26_Finish_UV"
+      ],
+      "materials": [
+        "R26V2_Baked_Hero_Mechanics"
+      ],
+      "source_reference": "R21 source mesh + R23 material/UV state, read from untouched R24 rollback"
+    },
+    {
+      "object": "R18_15_High_Pressure_Pump_And_Compressor_Skids",
+      "vertices": 2328,
+      "polygons": 2202,
+      "loops": 9000,
+      "vertex_float32_sha256": "f7c99c8be11f087469c53bfc8e7f6ec8ac08553341020a3bc213083b605318bd",
+      "topology_sha256": "d853b44b2a41e9b5db80d85193726b86f9e050592f4a9b4e66dd5e9a566ccb15",
+      "UVMap_float32_sha256": "2d01f59ce90329ba0eb87f3e384dfd7219479a688fe9c866dfb5cee10ca3d2bd",
+      "source_face_material_names_sha256": "b097444907104e91fbda77208804dba7098ae59af814dc1d5d430cadefaba3c5",
+      "source_matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "target_matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "changed_faces": 120,
+      "new_uv_layers": [
+        "R26_Finish_UV"
+      ],
+      "materials": [
+        "R26V2_Baked_Hero_Mechanics"
+      ],
+      "source_reference": "R21 source mesh + R23 material/UV state, read from untouched R24 rollback"
+    },
+    {
+      "object": "R18_16_Flanged_Process_Headers_And_Valve_Manifolds",
+      "vertices": 3200,
+      "polygons": 2480,
+      "loops": 11040,
+      "vertex_float32_sha256": "fe0a408ef9eb2bb4c98dc33ab820de3284807226ff55bdaa3c0cb6626ba8e269",
+      "topology_sha256": "bfcb3f72374f61d72755ce7661d88ce84f109a33447be01a788e73b634a446b8",
+      "UVMap_float32_sha256": "ece83c75ccf106a724197c46d1aff696326df4d55e18272887b9b194fb2ad5db",
+      "source_face_material_names_sha256": "af544f2d6cafae70c6e7cd2cb530e3d036177f21dad5dde63594b0f4d7d9d238",
+      "source_matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "target_matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "changed_faces": 522,
+      "new_uv_layers": [
+        "R26_Finish_UV"
+      ],
+      "materials": [
+        "R26V2_Baked_Hero_Mechanics"
+      ],
+      "source_reference": "R21 source mesh + R23 material/UV state, read from untouched R24 rollback"
+    },
+    {
+      "object": "R24_01_Hero_Knee_Forging_And_Thick_Armor",
+      "vertices": 128,
+      "polygons": 82,
+      "loops": 384,
+      "vertex_float32_sha256": "c51123f086e854e9eaffa06a1d640a37d459fcb060d443b3e7d75848121a994b",
+      "topology_sha256": "e382b9c0feb876f0e2b8a771770bce9808c6c77225a55eda439dac0af613d5a1",
+      "UVMap_float32_sha256": "dc4d564e831a97437e03472c9937bda3268c149e8e5cfed53f98b3fc9e2d201a",
+      "source_face_material_names_sha256": "09bd0ba7f3289f4b96cc364d28c910030e986a089d130455123719b3d12c3bf0",
+      "source_matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "target_matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "changed_faces": 82,
+      "new_uv_layers": [
+        "R27_Industrial_Finish_UV"
+      ],
+      "materials": [
+        "R27_HYD_Used_Coating"
+      ],
+      "source_reference": "Compacted R24 delta"
+    },
+    {
+      "object": "R24_02_Hero_Pin_Collar_Seal_And_Service_Cover",
+      "vertices": 2168,
+      "polygons": 1726,
+      "loops": 7656,
+      "vertex_float32_sha256": "d7166e4ee47ddcc10d10eeb9733adaab1d75f6ca6f45f114e94b404a940e5135",
+      "topology_sha256": "b14352bb99eb1be05bc77d23f44608ee209a6adf42152115a3a5a7de6cda694a",
+      "UVMap_float32_sha256": "f6ba1dc0915bfd8d6066cea0840ffdb8d0917821bd1e9d886d8dc5c42d7040d2",
+      "source_face_material_names_sha256": "f5f2524201f0f502a11d301a20bf7b45d960033831093e3490be283ac69c742c",
+      "source_matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "target_matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "changed_faces": 78,
+      "new_uv_layers": [
+        "R27_Industrial_Finish_UV"
+      ],
+      "materials": [
+        "R27_HYD_Used_Coating"
+      ],
+      "source_reference": "Compacted R24 delta"
+    },
+    {
+      "object": "R18_09_Pipe_Handling_Terrace",
+      "vertices": 1504,
+      "polygons": 1128,
+      "loops": 4512,
+      "vertex_float32_sha256": "e7645be70799de923de0d46d80134335c1a3305574fc00322276601cd563e241",
+      "topology_sha256": "5f27d1f278ce84e9c4f1ac251a55d2d2341e215e7316a536714037322b50a9b7",
+      "UVMap_float32_sha256": "6c6d925c769e12a4cf436cc21f13b8c9071f14f0ea12f8bb35ac52c81ed9bd8e",
+      "source_face_material_names_sha256": "8f6cd6050268eb6f19fea00f0130497991d116a7ccb837b7f73ebfd4678b45e9",
+      "source_matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "target_matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "changed_faces": 6,
+      "new_uv_layers": [
+        "R26_Finish_UV"
+      ],
+      "materials": [
+        "R26V2_Baked_Service_Decks"
+      ],
+      "source_reference": "R21 source mesh + R23 material/UV state, read from untouched R24 rollback"
+    },
+    {
+      "object": "R18_13_Process_Equipment_Deck",
+      "vertices": 1896,
+      "polygons": 1422,
+      "loops": 5688,
+      "vertex_float32_sha256": "ea2263340737a714d1664c7dde1d6d3e9478bfaf37bd8f365848b25d375d04eb",
+      "topology_sha256": "13b60b85959ac70320d740eb4b176d5872effe51542a8dbf1d276d38380bd0e0",
+      "UVMap_float32_sha256": "1575bb758d7154e1a57b85f71ca29b67e82f2d18a88c0cfa41b0c524a51912f8",
+      "source_face_material_names_sha256": "285c9a95c9a115dda257fe6b8f5d6a37d86148612445c6dae7acbf81c98440be",
+      "source_matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "target_matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "changed_faces": 6,
+      "new_uv_layers": [
+        "R26_Finish_UV"
+      ],
+      "materials": [
+        "R26V2_Baked_Service_Decks"
+      ],
+      "source_reference": "R21 source mesh + R23 material/UV state, read from untouched R24 rollback"
+    },
+    {
+      "object": "R18_19_Machinery_House_Foundation",
+      "vertices": 1280,
+      "polygons": 960,
+      "loops": 3840,
+      "vertex_float32_sha256": "0d7a39b641f7599c401a1afd26fb80edcf43337943c9cf294f3aba7a4cbbc573",
+      "topology_sha256": "5841e209051ae827b2b9197811bdcf509ba28e957dbd4646cd9cab253f2cfdc9",
+      "UVMap_float32_sha256": "81528252d40ed651e052974af5fbc8fd0d5000c234063076b2e00a0bf0309be0",
+      "source_face_material_names_sha256": "cf003f746885b5619364734d5b3b11d398c3e56076f54539f2351847516bea5a",
+      "source_matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "target_matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "changed_faces": 6,
+      "new_uv_layers": [
+        "R26_Finish_UV"
+      ],
+      "materials": [
+        "R26V2_Baked_Service_Decks"
+      ],
+      "source_reference": "R21 source mesh + R23 material/UV state, read from untouched R24 rollback"
+    },
+    {
+      "object": "R19_11_Machine_Service_Walkways_And_Rails",
+      "vertices": 1832,
+      "polygons": 1614,
+      "loops": 6456,
+      "vertex_float32_sha256": "d7a6b335697868280951704eecdbaddaf8bfb42a429b4f6819fe14047b37ad90",
+      "topology_sha256": "0e37dbf2ef5ce12462e488965e78d340330fd0bb252f64c5f8a16964d1e4baed",
+      "UVMap_float32_sha256": "98d5453bed5cc54de1f00cf90da3fc03eec77c4154ba0a16a077658ef784529c",
+      "source_face_material_names_sha256": "e8a7bb356d88d3fbfc26055e80ad057f673da539d04217beb6f7b2c6b3c651f0",
+      "source_matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "target_matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "changed_faces": 204,
+      "new_uv_layers": [
+        "R26_Finish_UV"
+      ],
+      "materials": [
+        "R26V2_Baked_Service_Decks"
+      ],
+      "source_reference": "R21 source mesh + R23 material/UV state, read from untouched R24 rollback"
+    },
+    {
+      "object": "R20_05_Central_Transfer_Hub_At_Existing_Bridge_Height",
+      "vertices": 2120,
+      "polygons": 1892,
+      "loops": 7888,
+      "vertex_float32_sha256": "8abe61a191cf40c4c1cb2522be5b8e8d51db7ac352c74d3a9d12138ccd7bfc57",
+      "topology_sha256": "2a64ae5e8af2b8704da0ad34f88c700382a90d22d83bbf8e1f24c58cbf71d98d",
+      "UVMap_float32_sha256": "441ea020312d004d273f56b5506c0d286f28660a016365493f35937b7e2339d0",
+      "source_face_material_names_sha256": "bcbaafb0b0530c712b2a68133717371853b3a3f9ff129f8b1acc944429dc58c9",
+      "source_matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "target_matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "changed_faces": 258,
+      "new_uv_layers": [
+        "R26_Finish_UV"
+      ],
+      "materials": [
+        "R26V2_Baked_Service_Decks"
+      ],
+      "source_reference": "R21 source mesh + R23 material/UV state, read from untouched R24 rollback"
+    },
+    {
+      "object": "R21_02_Thick_Segmented_Shaft_Lining",
+      "vertices": 2304,
+      "polygons": 1664,
+      "loops": 6656,
+      "vertex_float32_sha256": "a57de59cd14c65faf3115ad68980b0c00e2577e221ae2fa0d765642c3a20d85e",
+      "topology_sha256": "e668ec91482146bdd21a9bc594533022323786aa7f6abe2627b740b423032b9f",
+      "UVMap_float32_sha256": "f89401d33b7bf7bf884d551506f2886c2718b7f641b2dd3860e20957e1d1497d",
+      "source_face_material_names_sha256": "4a53a54ff37b8090b86660f17f91a3eef7d391e9601ecb51cdcb7ca127b5a75a",
+      "source_matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "target_matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "changed_faces": 64,
+      "new_uv_layers": [
+        "R28_Large_Surface_UV",
+        "R28_Metric_Detail_UV"
+      ],
+      "materials": [
+        "R28_Shaft_Mineral_Lining"
+      ],
+      "source_reference": "R21 source mesh + R23 material/UV state, read from untouched R24 rollback"
+    }
+  ],
+  "patch_data_file": "R29_Industrial_Final_Face_UV_Data.json",
+  "material_libraries": [
+    "Moonkov_R29_Industrial_Final_External_Materials.blend"
+  ],
+  "materials": [
+    {
+      "name": "R26V2_Baked_Heavy_Structures",
+      "uv_layers": [
+        "R26_Finish_UV",
+        "UVMap"
+      ],
+      "textures": [
+        {
+          "texture_node": "Image Texture",
+          "image": "R29_PBR_b1c386536eb72caa_sRGB",
+          "png": "Textures/b1c386536eb72caa33df5085bd50d4528b370aa6895461a9fd5567d88128fccb.png",
+          "sha256": "b1c386536eb72caa33df5085bd50d4528b370aa6895461a9fd5567d88128fccb",
+          "colorspace": "sRGB",
+          "alpha_mode": "CHANNEL_PACKED",
+          "extension": "EXTEND",
+          "interpolation": "Linear",
+          "source_image_name": "R26V2_Heavy_Structures_BaseColor.png",
+          "role": "base_color",
+          "uv_layer": "R26_Finish_UV"
+        },
+        {
+          "texture_node": "Image Texture.001",
+          "image": "R29_PBR_1b07801b358c13a1_Linear",
+          "png": "Textures/1b07801b358c13a18a5cab0e178fb48d39247827fecaf516364c51416e36e315.png",
+          "sha256": "1b07801b358c13a18a5cab0e178fb48d39247827fecaf516364c51416e36e315",
+          "colorspace": "Non-Color",
+          "alpha_mode": "CHANNEL_PACKED",
+          "extension": "EXTEND",
+          "interpolation": "Linear",
+          "source_image_name": "R26V2_Heavy_Structures_MetallicGloss.png",
+          "role": "metallic_roughness_dust_smoothness",
+          "uv_layer": "R26_Finish_UV"
+        },
+        {
+          "texture_node": "Image Texture.002",
+          "image": "R29_PBR_755d0dc342bf5e96_Linear",
+          "png": "Textures/755d0dc342bf5e9614e87f71d7539daf523cf802cad875a4262939e56fb8943a.png",
+          "sha256": "755d0dc342bf5e9614e87f71d7539daf523cf802cad875a4262939e56fb8943a",
+          "colorspace": "Non-Color",
+          "alpha_mode": "CHANNEL_PACKED",
+          "extension": "REPEAT",
+          "interpolation": "Linear",
+          "source_image_name": "R26_Isotropic_Microfinish_RoughnessDetail.png",
+          "role": "detail_roughness",
+          "uv_layer": "UVMap"
+        },
+        {
+          "texture_node": "Image Texture.003",
+          "image": "R29_PBR_e5f18076473ccf09_Linear",
+          "png": "Textures/e5f18076473ccf094c32546445df5e539d3b3bfaa6a86ebec03f396745b31244.png",
+          "sha256": "e5f18076473ccf094c32546445df5e539d3b3bfaa6a86ebec03f396745b31244",
+          "colorspace": "Non-Color",
+          "alpha_mode": "CHANNEL_PACKED",
+          "extension": "REPEAT",
+          "interpolation": "Linear",
+          "source_image_name": "R26_Isotropic_Microfinish_Normal_OpenGL.png",
+          "role": "detail_normal",
+          "uv_layer": "UVMap"
+        }
+      ],
+      "shader_contract": {
+        "atlas_UV": "R26_Finish_UV",
+        "detail_UV": "UVMap",
+        "detail_tiling": 2.0,
+        "normal_strength": 0.24,
+        "roughness": "clamp(Mask.G + (MicroRoughness.R - 0.5) * 0.07, 0, 1)",
+        "smoothness": "1 - computed roughness",
+        "normal": "Micro normal OpenGL +Y only, sampled at UVMap*2; strength0.24. No macro normal.",
+        "atlas_BaseColor": "sRGB RGB",
+        "atlas_Mask": "linear R metallic, G roughness, B dust, A 1-G"
+      },
+      "used_by_existing_object_patch": true,
+      "also_referenced_by_new_geometry_manifest": true
+    },
+    {
+      "name": "R26V2_Baked_Hero_Mechanics",
+      "uv_layers": [
+        "R26_Finish_UV",
+        "UVMap"
+      ],
+      "textures": [
+        {
+          "texture_node": "Image Texture",
+          "image": "R29_PBR_fdb837adb14bd187_sRGB",
+          "png": "Textures/fdb837adb14bd1870fc9aeec0ca7e5cb971f23e5c3b2f3732e569c8d981e6483.png",
+          "sha256": "fdb837adb14bd1870fc9aeec0ca7e5cb971f23e5c3b2f3732e569c8d981e6483",
+          "colorspace": "sRGB",
+          "alpha_mode": "CHANNEL_PACKED",
+          "extension": "EXTEND",
+          "interpolation": "Linear",
+          "source_image_name": "R26V2_Hero_Mechanics_BaseColor.png",
+          "role": "base_color",
+          "uv_layer": "R26_Finish_UV"
+        },
+        {
+          "texture_node": "Image Texture.001",
+          "image": "R29_PBR_7866825c8bb4da13_Linear",
+          "png": "Textures/7866825c8bb4da1348d1b12793836e474451c51059e5b7876120767867cd1c24.png",
+          "sha256": "7866825c8bb4da1348d1b12793836e474451c51059e5b7876120767867cd1c24",
+          "colorspace": "Non-Color",
+          "alpha_mode": "CHANNEL_PACKED",
+          "extension": "EXTEND",
+          "interpolation": "Linear",
+          "source_image_name": "R26V2_Hero_Mechanics_MetallicGloss.png",
+          "role": "metallic_roughness_dust_smoothness",
+          "uv_layer": "R26_Finish_UV"
+        },
+        {
+          "texture_node": "Image Texture.002",
+          "image": "R29_PBR_755d0dc342bf5e96_Linear",
+          "png": "Textures/755d0dc342bf5e9614e87f71d7539daf523cf802cad875a4262939e56fb8943a.png",
+          "sha256": "755d0dc342bf5e9614e87f71d7539daf523cf802cad875a4262939e56fb8943a",
+          "colorspace": "Non-Color",
+          "alpha_mode": "CHANNEL_PACKED",
+          "extension": "REPEAT",
+          "interpolation": "Linear",
+          "source_image_name": "R26_Isotropic_Microfinish_RoughnessDetail.png",
+          "role": "detail_roughness",
+          "uv_layer": "UVMap"
+        },
+        {
+          "texture_node": "Image Texture.003",
+          "image": "R29_PBR_e5f18076473ccf09_Linear",
+          "png": "Textures/e5f18076473ccf094c32546445df5e539d3b3bfaa6a86ebec03f396745b31244.png",
+          "sha256": "e5f18076473ccf094c32546445df5e539d3b3bfaa6a86ebec03f396745b31244",
+          "colorspace": "Non-Color",
+          "alpha_mode": "CHANNEL_PACKED",
+          "extension": "REPEAT",
+          "interpolation": "Linear",
+          "source_image_name": "R26_Isotropic_Microfinish_Normal_OpenGL.png",
+          "role": "detail_normal",
+          "uv_layer": "UVMap"
+        }
+      ],
+      "shader_contract": {
+        "atlas_UV": "R26_Finish_UV",
+        "detail_UV": "UVMap",
+        "detail_tiling": 2.0,
+        "normal_strength": 0.24,
+        "roughness": "clamp(Mask.G + (MicroRoughness.R - 0.5) * 0.07, 0, 1)",
+        "smoothness": "1 - computed roughness",
+        "normal": "Micro normal OpenGL +Y only, sampled at UVMap*2; strength0.24. No macro normal.",
+        "atlas_BaseColor": "sRGB RGB",
+        "atlas_Mask": "linear R metallic, G roughness, B dust, A 1-G"
+      },
+      "used_by_existing_object_patch": true,
+      "also_referenced_by_new_geometry_manifest": true
+    },
+    {
+      "name": "R26V2_Baked_Service_Decks",
+      "uv_layers": [
+        "R26_Finish_UV",
+        "UVMap"
+      ],
+      "textures": [
+        {
+          "texture_node": "Image Texture",
+          "image": "R29_PBR_bf80b31eca6dbb1a_sRGB",
+          "png": "Textures/bf80b31eca6dbb1a1eb0642453483bbe039ab86cd0d458c8622d9047919e8cf6.png",
+          "sha256": "bf80b31eca6dbb1a1eb0642453483bbe039ab86cd0d458c8622d9047919e8cf6",
+          "colorspace": "sRGB",
+          "alpha_mode": "CHANNEL_PACKED",
+          "extension": "EXTEND",
+          "interpolation": "Linear",
+          "source_image_name": "R26V2_Service_Decks_BaseColor.png",
+          "role": "base_color",
+          "uv_layer": "R26_Finish_UV"
+        },
+        {
+          "texture_node": "Image Texture.001",
+          "image": "R29_PBR_5797ec72901b46d4_Linear",
+          "png": "Textures/5797ec72901b46d4ad0d131034f8aa92b14821363f01612083272cb5ec0025b1.png",
+          "sha256": "5797ec72901b46d4ad0d131034f8aa92b14821363f01612083272cb5ec0025b1",
+          "colorspace": "Non-Color",
+          "alpha_mode": "CHANNEL_PACKED",
+          "extension": "EXTEND",
+          "interpolation": "Linear",
+          "source_image_name": "R26V2_Service_Decks_MetallicGloss.png",
+          "role": "metallic_roughness_dust_smoothness",
+          "uv_layer": "R26_Finish_UV"
+        },
+        {
+          "texture_node": "Image Texture.002",
+          "image": "R29_PBR_755d0dc342bf5e96_Linear",
+          "png": "Textures/755d0dc342bf5e9614e87f71d7539daf523cf802cad875a4262939e56fb8943a.png",
+          "sha256": "755d0dc342bf5e9614e87f71d7539daf523cf802cad875a4262939e56fb8943a",
+          "colorspace": "Non-Color",
+          "alpha_mode": "CHANNEL_PACKED",
+          "extension": "REPEAT",
+          "interpolation": "Linear",
+          "source_image_name": "R26_Isotropic_Microfinish_RoughnessDetail.png",
+          "role": "detail_roughness",
+          "uv_layer": "UVMap"
+        },
+        {
+          "texture_node": "Image Texture.003",
+          "image": "R29_PBR_e5f18076473ccf09_Linear",
+          "png": "Textures/e5f18076473ccf094c32546445df5e539d3b3bfaa6a86ebec03f396745b31244.png",
+          "sha256": "e5f18076473ccf094c32546445df5e539d3b3bfaa6a86ebec03f396745b31244",
+          "colorspace": "Non-Color",
+          "alpha_mode": "CHANNEL_PACKED",
+          "extension": "REPEAT",
+          "interpolation": "Linear",
+          "source_image_name": "R26_Isotropic_Microfinish_Normal_OpenGL.png",
+          "role": "detail_normal",
+          "uv_layer": "UVMap"
+        }
+      ],
+      "shader_contract": {
+        "atlas_UV": "R26_Finish_UV",
+        "detail_UV": "UVMap",
+        "detail_tiling": 2.0,
+        "normal_strength": 0.24,
+        "roughness": "clamp(Mask.G + (MicroRoughness.R - 0.5) * 0.07, 0, 1)",
+        "smoothness": "1 - computed roughness",
+        "normal": "Micro normal OpenGL +Y only, sampled at UVMap*2; strength0.24. No macro normal.",
+        "atlas_BaseColor": "sRGB RGB",
+        "atlas_Mask": "linear R metallic, G roughness, B dust, A 1-G"
+      },
+      "used_by_existing_object_patch": true,
+      "also_referenced_by_new_geometry_manifest": true
+    },
+    {
+      "name": "R27_HYD_Used_Coating",
+      "uv_layers": [
+        "R27_Industrial_Finish_UV"
+      ],
+      "textures": [
+        {
+          "texture_node": "Image Texture",
+          "image": "R29_PBR_6eca721d22d3b93f_sRGB",
+          "png": "Textures/6eca721d22d3b93f1e3fe2de3d64b0fe25e51d84c2b521a2ae53b8d34cdc5b88.png",
+          "sha256": "6eca721d22d3b93f1e3fe2de3d64b0fe25e51d84c2b521a2ae53b8d34cdc5b88",
+          "colorspace": "sRGB",
+          "alpha_mode": "CHANNEL_PACKED",
+          "extension": "EXTEND",
+          "interpolation": "Linear",
+          "source_image_name": "R27_HYD_Used_Coating_BaseColor.png",
+          "role": "base_color",
+          "uv_layer": "R27_Industrial_Finish_UV"
+        },
+        {
+          "texture_node": "Image Texture.001",
+          "image": "R29_PBR_7c1889ffbc10fc6b_Linear",
+          "png": "Textures/7c1889ffbc10fc6b7f3a7687020f75e0083b44d1713346688f5e28437b84e1c6.png",
+          "sha256": "7c1889ffbc10fc6b7f3a7687020f75e0083b44d1713346688f5e28437b84e1c6",
+          "colorspace": "Non-Color",
+          "alpha_mode": "CHANNEL_PACKED",
+          "extension": "EXTEND",
+          "interpolation": "Linear",
+          "source_image_name": "R27_HYD_Used_Coating_MetallicGloss.png",
+          "role": "metallic_roughness_dust_smoothness",
+          "uv_layer": "R27_Industrial_Finish_UV"
+        },
+        {
+          "texture_node": "Image Texture.002",
+          "image": "R29_PBR_55240c18469a09e5_Linear",
+          "png": "Textures/55240c18469a09e5060f3b44803a201020b618862ac24760ceca3e4c565340f7.png",
+          "sha256": "55240c18469a09e5060f3b44803a201020b618862ac24760ceca3e4c565340f7",
+          "colorspace": "Non-Color",
+          "alpha_mode": "CHANNEL_PACKED",
+          "extension": "EXTEND",
+          "interpolation": "Linear",
+          "source_image_name": "R27_HYD_Used_Coating_Normal_OpenGL.png",
+          "role": "macro_normal",
+          "uv_layer": "R27_Industrial_Finish_UV"
+        }
+      ],
+      "shader_contract": {
+        "atlas_UV": "R27_Industrial_Finish_UV",
+        "normal_strength": 0.8,
+        "roughness": "Mask.G",
+        "smoothness": "Mask.A = 1-Mask.G",
+        "normal": "Baked tangent OpenGL +Y atlas normal; strength0.8",
+        "atlas_BaseColor": "sRGB RGB",
+        "atlas_Mask": "linear R metallic, G roughness, B dust, A smoothness"
+      },
+      "used_by_existing_object_patch": true,
+      "also_referenced_by_new_geometry_manifest": true
+    },
+    {
+      "name": "R27_Access_Armor_Used_Coating",
+      "uv_layers": [
+        "R27_Industrial_Finish_UV"
+      ],
+      "textures": [
+        {
+          "texture_node": "Image Texture",
+          "image": "R29_PBR_56e3ccced1bbf510_sRGB",
+          "png": "Textures/56e3ccced1bbf5108b92de131adadf8e39086b8cd934bd1746baa72921481330.png",
+          "sha256": "56e3ccced1bbf5108b92de131adadf8e39086b8cd934bd1746baa72921481330",
+          "colorspace": "sRGB",
+          "alpha_mode": "CHANNEL_PACKED",
+          "extension": "EXTEND",
+          "interpolation": "Linear",
+          "source_image_name": "R27_Access_Armor_Used_Coating_BaseColor.png",
+          "role": "base_color",
+          "uv_layer": "R27_Industrial_Finish_UV"
+        },
+        {
+          "texture_node": "Image Texture.001",
+          "image": "R29_PBR_092d4a12191e13a4_Linear",
+          "png": "Textures/092d4a12191e13a4775baf6f8ddf8cbb5db6a4b288e4a5186d0d69442f7b7b56.png",
+          "sha256": "092d4a12191e13a4775baf6f8ddf8cbb5db6a4b288e4a5186d0d69442f7b7b56",
+          "colorspace": "Non-Color",
+          "alpha_mode": "CHANNEL_PACKED",
+          "extension": "EXTEND",
+          "interpolation": "Linear",
+          "source_image_name": "R27_Access_Armor_Used_Coating_MetallicGloss.png",
+          "role": "metallic_roughness_dust_smoothness",
+          "uv_layer": "R27_Industrial_Finish_UV"
+        },
+        {
+          "texture_node": "Image Texture.002",
+          "image": "R29_PBR_627870e2e57c24b6_Linear",
+          "png": "Textures/627870e2e57c24b68f2425590ea7b0afb20f942ddc60b4e8ef8f7d4d58294fa3.png",
+          "sha256": "627870e2e57c24b68f2425590ea7b0afb20f942ddc60b4e8ef8f7d4d58294fa3",
+          "colorspace": "Non-Color",
+          "alpha_mode": "CHANNEL_PACKED",
+          "extension": "EXTEND",
+          "interpolation": "Linear",
+          "source_image_name": "R27_Access_Armor_Used_Coating_Normal_OpenGL.png",
+          "role": "macro_normal",
+          "uv_layer": "R27_Industrial_Finish_UV"
+        }
+      ],
+      "shader_contract": {
+        "atlas_UV": "R27_Industrial_Finish_UV",
+        "normal_strength": 0.8,
+        "roughness": "Mask.G",
+        "smoothness": "Mask.A = 1-Mask.G",
+        "normal": "Baked tangent OpenGL +Y atlas normal; strength0.8",
+        "atlas_BaseColor": "sRGB RGB",
+        "atlas_Mask": "linear R metallic, G roughness, B dust, A smoothness"
+      },
+      "used_by_existing_object_patch": false,
+      "also_referenced_by_new_geometry_manifest": true
+    },
+    {
+      "name": "R28_Shaft_Mineral_Lining",
+      "uv_layers": [
+        "R28_Large_Surface_UV",
+        "R28_Metric_Detail_UV"
+      ],
+      "textures": [
+        {
+          "texture_node": "Image Texture",
+          "image": "R29_PBR_ee0e86ce9703793f_sRGB",
+          "png": "Textures/ee0e86ce9703793f3423ff7f81e890c33c1c2e8b435698aca9c6ce58a1179ae7.png",
+          "sha256": "ee0e86ce9703793f3423ff7f81e890c33c1c2e8b435698aca9c6ce58a1179ae7",
+          "colorspace": "sRGB",
+          "alpha_mode": "CHANNEL_PACKED",
+          "extension": "EXTEND",
+          "interpolation": "Linear",
+          "source_image_name": "R28_Shaft_Mineral_Lining_BaseColor.png",
+          "role": "base_color",
+          "uv_layer": "R28_Large_Surface_UV"
+        },
+        {
+          "texture_node": "Image Texture.001",
+          "image": "R29_PBR_03512fbada730321_Linear",
+          "png": "Textures/03512fbada7303211e97d9670cbe563aa014021976ef562084c2322f6949d6a4.png",
+          "sha256": "03512fbada7303211e97d9670cbe563aa014021976ef562084c2322f6949d6a4",
+          "colorspace": "Non-Color",
+          "alpha_mode": "CHANNEL_PACKED",
+          "extension": "EXTEND",
+          "interpolation": "Linear",
+          "source_image_name": "R28_Shaft_Mineral_Lining_MetallicGloss.png",
+          "role": "metallic_roughness_dust_smoothness",
+          "uv_layer": "R28_Large_Surface_UV"
+        },
+        {
+          "texture_node": "Image Texture.002",
+          "image": "R29_PBR_3c45f54fa36695bb_Linear",
+          "png": "Textures/3c45f54fa36695bbd8904ab731e0f552f69bd56536ee37217d4f0572e19ba1b3.png",
+          "sha256": "3c45f54fa36695bbd8904ab731e0f552f69bd56536ee37217d4f0572e19ba1b3",
+          "colorspace": "Non-Color",
+          "alpha_mode": "CHANNEL_PACKED",
+          "extension": "EXTEND",
+          "interpolation": "Linear",
+          "source_image_name": "R28_Shaft_Mineral_Lining_Normal_OpenGL.png",
+          "role": "macro_normal",
+          "uv_layer": "R28_Large_Surface_UV"
+        },
+        {
+          "texture_node": "Image Texture.003",
+          "image": "R29_PBR_b922989ffa110dc5_Linear",
+          "png": "Textures/b922989ffa110dc514f9913c3bec77ad7ef08c01a1f6fa0a8dc80d097080e5c2.png",
+          "sha256": "b922989ffa110dc514f9913c3bec77ad7ef08c01a1f6fa0a8dc80d097080e5c2",
+          "colorspace": "Non-Color",
+          "alpha_mode": "STRAIGHT",
+          "extension": "REPEAT",
+          "interpolation": "Linear",
+          "source_image_name": "R28_Mineral_Pores_2m_Normal_OpenGL.png",
+          "role": "detail_normal",
+          "uv_layer": "R28_Metric_Detail_UV"
+        }
+      ],
+      "shader_contract": {
+        "atlas_UV": "R28_Large_Surface_UV",
+        "detail_UV": "R28_Metric_Detail_UV",
+        "detail_tiling": 1.0,
+        "detail_repeat_metres": 2.0,
+        "normal_strength": 1.0,
+        "roughness": "Mask.G",
+        "smoothness": "Mask.A = 1-Mask.G",
+        "normal": "Decode and normalize macroEncoded + lerp((0.5,0.5,1), detailEncoded, factor) - (0.5,0.5,1). Same tangent orientation on both UVs.",
+        "detail_normal_factor": 0.7,
+        "atlas_BaseColor": "sRGB RGB",
+        "atlas_Mask": "linear R metallic, G roughness, B dust, A smoothness"
+      },
+      "used_by_existing_object_patch": true,
+      "also_referenced_by_new_geometry_manifest": true
+    },
+    {
+      "name": "R28_Suspension_Coating_And_Steel",
+      "uv_layers": [
+        "R28_Large_Surface_UV",
+        "R28_Metric_Detail_UV"
+      ],
+      "textures": [
+        {
+          "texture_node": "Image Texture",
+          "image": "R29_PBR_77d3504e740300a5_sRGB",
+          "png": "Textures/77d3504e740300a5c4d82e3d87b327747f1a2096db5d389782f2302d780592e8.png",
+          "sha256": "77d3504e740300a5c4d82e3d87b327747f1a2096db5d389782f2302d780592e8",
+          "colorspace": "sRGB",
+          "alpha_mode": "CHANNEL_PACKED",
+          "extension": "EXTEND",
+          "interpolation": "Linear",
+          "source_image_name": "R28_Suspension_Coating_And_Steel_BaseColor.png",
+          "role": "base_color",
+          "uv_layer": "R28_Large_Surface_UV"
+        },
+        {
+          "texture_node": "Image Texture.001",
+          "image": "R29_PBR_8d08a031ee9b3fb9_Linear",
+          "png": "Textures/8d08a031ee9b3fb9b8c7df2ee328d6a61bc20035707e72211207c63488407dd2.png",
+          "sha256": "8d08a031ee9b3fb9b8c7df2ee328d6a61bc20035707e72211207c63488407dd2",
+          "colorspace": "Non-Color",
+          "alpha_mode": "CHANNEL_PACKED",
+          "extension": "EXTEND",
+          "interpolation": "Linear",
+          "source_image_name": "R28_Suspension_Coating_And_Steel_MetallicGloss.png",
+          "role": "metallic_roughness_dust_smoothness",
+          "uv_layer": "R28_Large_Surface_UV"
+        },
+        {
+          "texture_node": "Image Texture.002",
+          "image": "R29_PBR_b748b9b36b251a1f_Linear",
+          "png": "Textures/b748b9b36b251a1f72a195f394d1a1c569631ab03e86c73af5d71a60fa3d8258.png",
+          "sha256": "b748b9b36b251a1f72a195f394d1a1c569631ab03e86c73af5d71a60fa3d8258",
+          "colorspace": "Non-Color",
+          "alpha_mode": "CHANNEL_PACKED",
+          "extension": "EXTEND",
+          "interpolation": "Linear",
+          "source_image_name": "R28_Suspension_Coating_And_Steel_Normal_OpenGL.png",
+          "role": "macro_normal",
+          "uv_layer": "R28_Large_Surface_UV"
+        },
+        {
+          "texture_node": "Image Texture.003",
+          "image": "R29_PBR_e5f18076473ccf09_Linear",
+          "png": "Textures/e5f18076473ccf094c32546445df5e539d3b3bfaa6a86ebec03f396745b31244.png",
+          "sha256": "e5f18076473ccf094c32546445df5e539d3b3bfaa6a86ebec03f396745b31244",
+          "colorspace": "Non-Color",
+          "alpha_mode": "CHANNEL_PACKED",
+          "extension": "REPEAT",
+          "interpolation": "Linear",
+          "source_image_name": "R26_Isotropic_Microfinish_Normal_OpenGL.png",
+          "role": "detail_normal",
+          "uv_layer": "R28_Metric_Detail_UV"
+        }
+      ],
+      "shader_contract": {
+        "atlas_UV": "R28_Large_Surface_UV",
+        "detail_UV": "R28_Metric_Detail_UV",
+        "detail_tiling": 1.0,
+        "detail_repeat_metres": 0.5,
+        "normal_strength": 1.0,
+        "roughness": "Mask.G",
+        "smoothness": "Mask.A = 1-Mask.G",
+        "normal": "Decode and normalize macroEncoded + lerp((0.5,0.5,1), detailEncoded, factor) - (0.5,0.5,1). Same tangent orientation on both UVs.",
+        "detail_normal_factor": 0.24,
+        "atlas_BaseColor": "sRGB RGB",
+        "atlas_Mask": "linear R metallic, G roughness, B dust, A smoothness"
+      },
+      "used_by_existing_object_patch": false,
+      "also_referenced_by_new_geometry_manifest": true
+    }
+  ],
+  "unique_image_count": 21,
+  "coverage": {
+    "objects": 19,
+    "changed_faces": 4639
+  },
+  "policy": "Validate vertex/topology hash, original UVMap, transforms and per-face source material NAME. Source slot indices are deliberately absent; compact R24 local slots are supported. Existing geometry and UVMap remain unchanged. Only final used new UV layers and changed-face material references are supplied. No sequential R26/R27/R28 installation required.",
+  "excluded": "R25/R26 new geometry and R29 replacements are delivered separately by the integrator. R21_04 old grillage is excluded because the R29 retained-geometry display supersedes it.",
+  "textures": [
+    {
+      "path": "Textures/b1c386536eb72caa33df5085bd50d4528b370aa6895461a9fd5567d88128fccb.png",
+      "sha256": "b1c386536eb72caa33df5085bd50d4528b370aa6895461a9fd5567d88128fccb",
+      "bytes": 7809756,
+      "width": 4096,
+      "height": 4096
+    },
+    {
+      "path": "Textures/1b07801b358c13a18a5cab0e178fb48d39247827fecaf516364c51416e36e315.png",
+      "sha256": "1b07801b358c13a18a5cab0e178fb48d39247827fecaf516364c51416e36e315",
+      "bytes": 14101637,
+      "width": 4096,
+      "height": 4096
+    },
+    {
+      "path": "Textures/755d0dc342bf5e9614e87f71d7539daf523cf802cad875a4262939e56fb8943a.png",
+      "sha256": "755d0dc342bf5e9614e87f71d7539daf523cf802cad875a4262939e56fb8943a",
+      "bytes": 701817,
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "Textures/e5f18076473ccf094c32546445df5e539d3b3bfaa6a86ebec03f396745b31244.png",
+      "sha256": "e5f18076473ccf094c32546445df5e539d3b3bfaa6a86ebec03f396745b31244",
+      "bytes": 1076932,
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "Textures/fdb837adb14bd1870fc9aeec0ca7e5cb971f23e5c3b2f3732e569c8d981e6483.png",
+      "sha256": "fdb837adb14bd1870fc9aeec0ca7e5cb971f23e5c3b2f3732e569c8d981e6483",
+      "bytes": 4577361,
+      "width": 4096,
+      "height": 4096
+    },
+    {
+      "path": "Textures/7866825c8bb4da1348d1b12793836e474451c51059e5b7876120767867cd1c24.png",
+      "sha256": "7866825c8bb4da1348d1b12793836e474451c51059e5b7876120767867cd1c24",
+      "bytes": 11308360,
+      "width": 4096,
+      "height": 4096
+    },
+    {
+      "path": "Textures/bf80b31eca6dbb1a1eb0642453483bbe039ab86cd0d458c8622d9047919e8cf6.png",
+      "sha256": "bf80b31eca6dbb1a1eb0642453483bbe039ab86cd0d458c8622d9047919e8cf6",
+      "bytes": 1605815,
+      "width": 2048,
+      "height": 2048
+    },
+    {
+      "path": "Textures/5797ec72901b46d4ad0d131034f8aa92b14821363f01612083272cb5ec0025b1.png",
+      "sha256": "5797ec72901b46d4ad0d131034f8aa92b14821363f01612083272cb5ec0025b1",
+      "bytes": 3252174,
+      "width": 2048,
+      "height": 2048
+    },
+    {
+      "path": "Textures/6eca721d22d3b93f1e3fe2de3d64b0fe25e51d84c2b521a2ae53b8d34cdc5b88.png",
+      "sha256": "6eca721d22d3b93f1e3fe2de3d64b0fe25e51d84c2b521a2ae53b8d34cdc5b88",
+      "bytes": 5308165,
+      "width": 4096,
+      "height": 4096
+    },
+    {
+      "path": "Textures/7c1889ffbc10fc6b7f3a7687020f75e0083b44d1713346688f5e28437b84e1c6.png",
+      "sha256": "7c1889ffbc10fc6b7f3a7687020f75e0083b44d1713346688f5e28437b84e1c6",
+      "bytes": 17469645,
+      "width": 4096,
+      "height": 4096
+    },
+    {
+      "path": "Textures/55240c18469a09e5060f3b44803a201020b618862ac24760ceca3e4c565340f7.png",
+      "sha256": "55240c18469a09e5060f3b44803a201020b618862ac24760ceca3e4c565340f7",
+      "bytes": 8168400,
+      "width": 4096,
+      "height": 4096
+    },
+    {
+      "path": "Textures/56e3ccced1bbf5108b92de131adadf8e39086b8cd934bd1746baa72921481330.png",
+      "sha256": "56e3ccced1bbf5108b92de131adadf8e39086b8cd934bd1746baa72921481330",
+      "bytes": 2555853,
+      "width": 2048,
+      "height": 2048
+    },
+    {
+      "path": "Textures/092d4a12191e13a4775baf6f8ddf8cbb5db6a4b288e4a5186d0d69442f7b7b56.png",
+      "sha256": "092d4a12191e13a4775baf6f8ddf8cbb5db6a4b288e4a5186d0d69442f7b7b56",
+      "bytes": 5817490,
+      "width": 2048,
+      "height": 2048
+    },
+    {
+      "path": "Textures/627870e2e57c24b68f2425590ea7b0afb20f942ddc60b4e8ef8f7d4d58294fa3.png",
+      "sha256": "627870e2e57c24b68f2425590ea7b0afb20f942ddc60b4e8ef8f7d4d58294fa3",
+      "bytes": 1676407,
+      "width": 2048,
+      "height": 2048
+    },
+    {
+      "path": "Textures/ee0e86ce9703793f3423ff7f81e890c33c1c2e8b435698aca9c6ce58a1179ae7.png",
+      "sha256": "ee0e86ce9703793f3423ff7f81e890c33c1c2e8b435698aca9c6ce58a1179ae7",
+      "bytes": 1551911,
+      "width": 2048,
+      "height": 2048
+    },
+    {
+      "path": "Textures/03512fbada7303211e97d9670cbe563aa014021976ef562084c2322f6949d6a4.png",
+      "sha256": "03512fbada7303211e97d9670cbe563aa014021976ef562084c2322f6949d6a4",
+      "bytes": 3304923,
+      "width": 2048,
+      "height": 2048
+    },
+    {
+      "path": "Textures/3c45f54fa36695bbd8904ab731e0f552f69bd56536ee37217d4f0572e19ba1b3.png",
+      "sha256": "3c45f54fa36695bbd8904ab731e0f552f69bd56536ee37217d4f0572e19ba1b3",
+      "bytes": 215672,
+      "width": 2048,
+      "height": 2048
+    },
+    {
+      "path": "Textures/b922989ffa110dc514f9913c3bec77ad7ef08c01a1f6fa0a8dc80d097080e5c2.png",
+      "sha256": "b922989ffa110dc514f9913c3bec77ad7ef08c01a1f6fa0a8dc80d097080e5c2",
+      "bytes": 244997,
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "path": "Textures/77d3504e740300a5c4d82e3d87b327747f1a2096db5d389782f2302d780592e8.png",
+      "sha256": "77d3504e740300a5c4d82e3d87b327747f1a2096db5d389782f2302d780592e8",
+      "bytes": 1257091,
+      "width": 2048,
+      "height": 2048
+    },
+    {
+      "path": "Textures/8d08a031ee9b3fb9b8c7df2ee328d6a61bc20035707e72211207c63488407dd2.png",
+      "sha256": "8d08a031ee9b3fb9b8c7df2ee328d6a61bc20035707e72211207c63488407dd2",
+      "bytes": 1634658,
+      "width": 2048,
+      "height": 2048
+    },
+    {
+      "path": "Textures/b748b9b36b251a1f72a195f394d1a1c569631ab03e86c73af5d71a60fa3d8258.png",
+      "sha256": "b748b9b36b251a1f72a195f394d1a1c569631ab03e86c73af5d71a60fa3d8258",
+      "bytes": 754316,
+      "width": 2048,
+      "height": 2048
+    }
+  ],
+  "delivery": "One copy per real PNG hash, lightweight material library using relative Textures paths. No packed image duplication. Keep library and Textures folder together.",
+  "URP_limitations": "Not a ready-made Unity shader. Use BaseColor as sRGB; masks as linear; import tangent maps as normal maps (+Y; importer handles convention). Bind atlas and detail UVs explicitly. Built-in shader UV choices may be insufficient; reproduce the stated multi-UV formulas in the established local shader, or rebake to its supported channels. UVMap is existing UV0, preserve it; new layers must not overwrite lightmap channels. Blender loop indices require source importer/mesh-corner correspondence, never direct Unity vertex indexing. Axis conversion, tangent handedness and mesh export remain the established local pipeline responsibility; no runtime or visual-equivalence validation claimed.",
+  "library_bytes": 115831,
+  "library_sha256": "b9f7d8b19d5df573a02cf501124cc052d801960471a55a612ff0320257090de6",
+  "texture_total_bytes": 94393380,
+  "normal_tangent_basis": "The normal tangent basis must follow the UV used by the normal map: R26 micro normal uses existing UVMap; R27 macro normal uses R27_Industrial_Finish_UV; R28 macro/detail have matching orientation and use their named UVs. A Unity importer that generates tangents only from a different UV channel is not equivalent. Rebind/regenerate the appropriate tangent basis through the established source export pipeline; preserve mirrored-axis handedness once.",
+  "portable_json_authority": "This external JSON is the authoritative delivery mapping, including semantic texture roles. Embedded blend text is informational; shader node connections are unchanged."
+}

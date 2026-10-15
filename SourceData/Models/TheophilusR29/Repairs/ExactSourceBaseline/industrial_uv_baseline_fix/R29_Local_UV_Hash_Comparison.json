@@ -1,0 +1,103 @@
+{
+  "evidence": "Parent relayed local read-only report 2026-10-15 09:42:56 UTC",
+  "hash_algorithm": "UVMap.data loop order; SHA256 of struct.pack('<2f', u, v) per loop",
+  "all_16_match": true,
+  "objects": [
+    {
+      "object": "R20_01_Articulated_Armored_Primary_Buttresses",
+      "reported_local_hash": "72ce56d21b086e4280d472e15e6322511238cad418deb2dc440f3f368610e4ce",
+      "reconstructed_R23_export_hash": "72ce56d21b086e4280d472e15e6322511238cad418deb2dc440f3f368610e4ce",
+      "match": true
+    },
+    {
+      "object": "R20_03_Nested_Transmission_Rings_And_Gear_Races",
+      "reported_local_hash": "9a38a74f21dfa15988e36a7fdeba0aa21c3e41851177ef0e4de00386292eb78e",
+      "reconstructed_R23_export_hash": "9a38a74f21dfa15988e36a7fdeba0aa21c3e41851177ef0e4de00386292eb78e",
+      "match": true
+    },
+    {
+      "object": "R20_04_Offset_Shoulder_Engine_Packs_And_Armor",
+      "reported_local_hash": "9f773523f988ea9f50558289be75304f9293ad840234c45f755892902bfc2488",
+      "reconstructed_R23_export_hash": "9f773523f988ea9f50558289be75304f9293ad840234c45f755892902bfc2488",
+      "match": true
+    },
+    {
+      "object": "R20_07_Upper_Stage_Articulated_Spine_And_Armor",
+      "reported_local_hash": "958e1bd3ef16ed006c889931a53ba910918b72e8cc8954337f22cd5285c6dab2",
+      "reconstructed_R23_export_hash": "958e1bd3ef16ed006c889931a53ba910918b72e8cc8954337f22cd5285c6dab2",
+      "match": true
+    },
+    {
+      "object": "R20_08_Upper_Lift_Drive_Core_And_Segmented_Casings",
+      "reported_local_hash": "5ef75ea680a7e76bab8dda1d3731924f230d27ef9acb11ca3b625e20c2e43ac4",
+      "reconstructed_R23_export_hash": "5ef75ea680a7e76bab8dda1d3731924f230d27ef9acb11ca3b625e20c2e43ac4",
+      "match": true
+    },
+    {
+      "object": "R19_07_Paired_Feed_Rams_And_Axial_Guides",
+      "reported_local_hash": "e4fc95a511bca1e3aecc92ceafaa0ba43215891d3b44a0d321d605961780a962",
+      "reconstructed_R23_export_hash": "e4fc95a511bca1e3aecc92ceafaa0ba43215891d3b44a0d321d605961780a962",
+      "match": true
+    },
+    {
+      "object": "R19_08_Travelling_Head_Topdrive_And_Clamp_Assembly",
+      "reported_local_hash": "f430b13e6c65cdd25a6a2e563b310fc5fc899054f661e17767ac1cdf4c26261e",
+      "reconstructed_R23_export_hash": "f430b13e6c65cdd25a6a2e563b310fc5fc899054f661e17767ac1cdf4c26261e",
+      "match": true
+    },
+    {
+      "object": "R18_14_Return_Separation_Vessel_Skids",
+      "reported_local_hash": "2b05c89e293c8eba5c119d58ad47b485cb2eb2c784c16bba8db16b2eb43b7d89",
+      "reconstructed_R23_export_hash": "2b05c89e293c8eba5c119d58ad47b485cb2eb2c784c16bba8db16b2eb43b7d89",
+      "match": true
+    },
+    {
+      "object": "R18_15_High_Pressure_Pump_And_Compressor_Skids",
+      "reported_local_hash": "876984ff5f3c8b873a58088f2dd79aa7dd0549aa3536a0d9c684e833c1c8bd1b",
+      "reconstructed_R23_export_hash": "876984ff5f3c8b873a58088f2dd79aa7dd0549aa3536a0d9c684e833c1c8bd1b",
+      "match": true
+    },
+    {
+      "object": "R18_16_Flanged_Process_Headers_And_Valve_Manifolds",
+      "reported_local_hash": "ccdeab7fcc351745c960b7e179ca7a7efff36bcecd7a10c560f2b19906506372",
+      "reconstructed_R23_export_hash": "ccdeab7fcc351745c960b7e179ca7a7efff36bcecd7a10c560f2b19906506372",
+      "match": true
+    },
+    {
+      "object": "R18_09_Pipe_Handling_Terrace",
+      "reported_local_hash": "25bb080a34d96ec80317e17d85abaf912b11f259fa0fb3e2ec3e63527b14b769",
+      "reconstructed_R23_export_hash": "25bb080a34d96ec80317e17d85abaf912b11f259fa0fb3e2ec3e63527b14b769",
+      "match": true
+    },
+    {
+      "object": "R18_13_Process_Equipment_Deck",
+      "reported_local_hash": "840da1739993828cb06ab756ba61c99ff70608d649cef0da221d205ab6bfd240",
+      "reconstructed_R23_export_hash": "840da1739993828cb06ab756ba61c99ff70608d649cef0da221d205ab6bfd240",
+      "match": true
+    },
+    {
+      "object": "R18_19_Machinery_House_Foundation",
+      "reported_local_hash": "7b45ca85209832a6761f5f22021f77c4239ac418b7779e5c0d219fe1e794771a",
+      "reconstructed_R23_export_hash": "7b45ca85209832a6761f5f22021f77c4239ac418b7779e5c0d219fe1e794771a",
+      "match": true
+    },
+    {
+      "object": "R19_11_Machine_Service_Walkways_And_Rails",
+      "reported_local_hash": "b0beb1d511847fa47446edfd620480f44cc93b40017a5232ba40bd13dcdeda71",
+      "reconstructed_R23_export_hash": "b0beb1d511847fa47446edfd620480f44cc93b40017a5232ba40bd13dcdeda71",
+      "match": true
+    },
+    {
+      "object": "R20_05_Central_Transfer_Hub_At_Existing_Bridge_Height",
+      "reported_local_hash": "78021d1423a42796f4e0303230bb1448d9f1ea337e8eae869b6337c4da6ac341",
+      "reconstructed_R23_export_hash": "78021d1423a42796f4e0303230bb1448d9f1ea337e8eae869b6337c4da6ac341",
+      "match": true
+    },
+    {
+      "object": "R21_02_Thick_Segmented_Shaft_Lining",
+      "reported_local_hash": "a492feadcbf4d22391d06fdab499ed39a97a6a58aec4637c747390561c89f5b4",
+      "reconstructed_R23_export_hash": "a492feadcbf4d22391d06fdab499ed39a97a6a58aec4637c747390561c89f5b4",
+      "match": true
+    }
+  ]
+}

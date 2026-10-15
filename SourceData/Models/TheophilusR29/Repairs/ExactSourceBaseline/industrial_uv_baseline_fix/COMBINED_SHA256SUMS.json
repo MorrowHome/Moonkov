@@ -1,0 +1,11 @@
+{
+  "README_R29_Exact_Source_Baseline_Correction.txt": "c474814261e378cef13dcbfb15264e36086053f17676559ac230bda1cc54162a",
+  "apply_r29_with_r23_serialized_uv_guard.py": "1e305d25884d62752b04762d2c06c77df26381e4a27bb2dbc63ce90c117b645e",
+  "r13_material_fingerprint.py": "db1d3a99daf4aac95ad7cef286f020c6ed792dcf637e75b6f2824247d68eef93",
+  "R29_Industrial_UV_Guard_Correction.json": "b179d0e7e68a9d16b9039731f417519774b465c2487b28a26b9499ef2de33a8d",
+  "R29_Exact_R13_Alias_Equivalence.json": "e67eb678fd58a169526f852ca7c3ccb77731101a9b307f276364228dc3476f09",
+  "R29_Authoritative_Source_Face_Material_Names.json": "79290cecc002280ffa70b77c920ba9d14d46ae83e9d407b5ef7fa22c8bc52cb8",
+  "R29_UV_Baseline_Diagnosis.json": "b53ebf8adb53a637d8c4355cd64b5239e4d2a679ccc20fdbbf5ec08c98065ed6",
+  "R29_Local_UV_Hash_Comparison.json": "c43cf67f3254e5dd37e317df26706527c43327f8053053536d480d9e0071d6f0",
+  "R29_Combined_Baseline_Correction_Verification.json": "5f85b546d800a2218fed3e4581dd3fbb195b476b8952f82fcd4995515ff2f6b2"
+}

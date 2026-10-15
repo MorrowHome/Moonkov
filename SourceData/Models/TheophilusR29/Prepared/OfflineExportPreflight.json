@@ -1,0 +1,41 @@
+{
+  "read_only": true,
+  "ready_objects": [
+    "R20_01_Articulated_Armored_Primary_Buttresses",
+    "R20_03_Nested_Transmission_Rings_And_Gear_Races",
+    "R20_04_Offset_Shoulder_Engine_Packs_And_Armor",
+    "R20_07_Upper_Stage_Articulated_Spine_And_Armor",
+    "R20_08_Upper_Lift_Drive_Core_And_Segmented_Casings",
+    "R24_00_R20_02_Actuators_With_Hero_Knee_Replaced",
+    "R19_07_Paired_Feed_Rams_And_Axial_Guides",
+    "R19_08_Travelling_Head_Topdrive_And_Clamp_Assembly",
+    "R18_14_Return_Separation_Vessel_Skids",
+    "R18_15_High_Pressure_Pump_And_Compressor_Skids",
+    "R18_16_Flanged_Process_Headers_And_Valve_Manifolds",
+    "R24_01_Hero_Knee_Forging_And_Thick_Armor",
+    "R24_02_Hero_Pin_Collar_Seal_And_Service_Cover",
+    "R18_09_Pipe_Handling_Terrace",
+    "R18_13_Process_Equipment_Deck",
+    "R18_19_Machinery_House_Foundation",
+    "R19_11_Machine_Service_Walkways_And_Rails",
+    "R20_05_Central_Transfer_Hub_At_Existing_Bridge_Height",
+    "R21_02_Thick_Segmented_Shaft_Lining"
+  ],
+  "already_applied": [],
+  "exact_alias_faces_by_object": {
+    "R20_01_Articulated_Armored_Primary_Buttresses": 4608,
+    "R20_03_Nested_Transmission_Rings_And_Gear_Races": 1440,
+    "R20_07_Upper_Stage_Articulated_Spine_And_Armor": 2480,
+    "R20_08_Upper_Lift_Drive_Core_And_Segmented_Casings": 538,
+    "R19_07_Paired_Feed_Rams_And_Axial_Guides": 452,
+    "R19_08_Travelling_Head_Topdrive_And_Clamp_Assembly": 232,
+    "R18_14_Return_Separation_Vessel_Skids": 66,
+    "R18_16_Flanged_Process_Headers_And_Valve_Manifolds": 432,
+    "R20_05_Central_Transfer_Hub_At_Existing_Bridge_Height": 192
+  },
+  "R13_authoritative_fingerprint": "63e1bcb5adbcbbc502534957f3aed985c10130d71babf314121b170f6363f134",
+  "corrected_UV_guards": 16,
+  "unchanged_R24_UV_guards": 3,
+  "objects_materials_UV_visibility_written": 0,
+  "scene_saved": false
+}

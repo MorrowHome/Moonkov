@@ -1,0 +1,549 @@
+{
+  "revision": "R24 toR29 minimal LOCAL GROUND material handoff",
+  "source_scene": "Moonkov_R29_Fabricated_Beams_And_Bearings_Latest.blend",
+  "material_library": "R29_Local_Ground_Three_Materials_External.blend",
+  "library_bytes": 92525,
+  "library_sha256": "34bbb40182b94d0f97c78cdad9a7ff0506447cfa21a7cc4dca167617aab240ef",
+  "library_materials": [
+    "R27S_Compacted_WorldContinuous_PBR",
+    "R27S_DustyClasts_WorldContinuous_PBR",
+    "R27S_FineDust_WorldContinuous_PBR"
+  ],
+  "library_node_groups": [
+    "R27_Continuous_World_Regolith_Reference"
+  ],
+  "objects": [
+    {
+      "object": "R27S_01_Compacted_Work_Fronts_And_Broad_Spoil_Gradients",
+      "mesh": "R27S_01_Compacted_Work_Fronts_And_Broad_Spoil_Gradients_Mesh",
+      "vertices": 2220,
+      "polygons": 4032,
+      "UV_channels": [
+        {
+          "index": 0,
+          "name": "UVMap",
+          "meaning": "dominant-axis physical metres"
+        },
+        {
+          "index": 1,
+          "name": "R8_Regolith_3p7m",
+          "meaning": "worldXY /3.7m"
+        },
+        {
+          "index": 2,
+          "name": "R8_Terrain_Global_4096m",
+          "meaning": "worldXY /4096m"
+        }
+      ],
+      "active_uv": "UVMap",
+      "materials": [
+        {
+          "slot": 0,
+          "final_cloud_material": "R28S_Compacted_Worksite_PBR",
+          "local_default_material": "R27S_Compacted_WorldContinuous_PBR",
+          "reuse_existing_R24": false,
+          "polygons": 4032
+        }
+      ],
+      "display_only": true,
+      "automatic_colliders": false
+    },
+    {
+      "object": "R27S_02_Stepped_Cut_Shoulder_And_Compressed_Faces",
+      "mesh": "R27S_02_Stepped_Cut_Shoulder_And_Compressed_Faces_Mesh",
+      "vertices": 768,
+      "polygons": 384,
+      "UV_channels": [
+        {
+          "index": 0,
+          "name": "UVMap",
+          "meaning": "dominant-axis physical metres"
+        },
+        {
+          "index": 1,
+          "name": "R8_Regolith_3p7m",
+          "meaning": "worldXY /3.7m"
+        },
+        {
+          "index": 2,
+          "name": "R8_Terrain_Global_4096m",
+          "meaning": "worldXY /4096m"
+        }
+      ],
+      "active_uv": "UVMap",
+      "materials": [
+        {
+          "slot": 0,
+          "final_cloud_material": "R28S_Compacted_Worksite_PBR",
+          "local_default_material": "R27S_Compacted_WorldContinuous_PBR",
+          "reuse_existing_R24": false,
+          "polygons": 192
+        },
+        {
+          "slot": 1,
+          "final_cloud_material": "R28S_DustyClasts_Worksite_PBR",
+          "local_default_material": "R27S_DustyClasts_WorldContinuous_PBR",
+          "reuse_existing_R24": false,
+          "polygons": 192
+        }
+      ],
+      "display_only": true,
+      "automatic_colliders": false
+    },
+    {
+      "object": "R27S_03_Local_Grading_And_Plate_Seat_Traces",
+      "mesh": "R27S_03_Local_Grading_And_Plate_Seat_Traces_Mesh",
+      "vertices": 54,
+      "polygons": 24,
+      "UV_channels": [
+        {
+          "index": 0,
+          "name": "UVMap",
+          "meaning": "dominant-axis physical metres"
+        },
+        {
+          "index": 1,
+          "name": "R8_Regolith_3p7m",
+          "meaning": "worldXY /3.7m"
+        },
+        {
+          "index": 2,
+          "name": "R8_Terrain_Global_4096m",
+          "meaning": "worldXY /4096m"
+        }
+      ],
+      "active_uv": "UVMap",
+      "materials": [
+        {
+          "slot": 0,
+          "final_cloud_material": "R28S_FineDust_Worksite_PBR",
+          "local_default_material": "R27S_FineDust_WorldContinuous_PBR",
+          "reuse_existing_R24": false,
+          "polygons": 24
+        }
+      ],
+      "display_only": true,
+      "automatic_colliders": false
+    },
+    {
+      "object": "R27S_04B_Eighteen_Density_Graded_Regolith_Clods",
+      "mesh": "R27S_04B_Eighteen_Density_Graded_Regolith_Clods_Mesh",
+      "vertices": 270,
+      "polygons": 252,
+      "UV_channels": [
+        {
+          "index": 0,
+          "name": "UVMap",
+          "meaning": "dominant-axis physical metres"
+        },
+        {
+          "index": 1,
+          "name": "R8_Regolith_3p7m",
+          "meaning": "worldXY /3.7m"
+        },
+        {
+          "index": 2,
+          "name": "R8_Terrain_Global_4096m",
+          "meaning": "worldXY /4096m"
+        }
+      ],
+      "active_uv": "UVMap",
+      "materials": [
+        {
+          "slot": 0,
+          "final_cloud_material": "R28S_Compacted_Worksite_PBR",
+          "local_default_material": "R27S_Compacted_WorldContinuous_PBR",
+          "reuse_existing_R24": false,
+          "polygons": 70
+        },
+        {
+          "slot": 1,
+          "final_cloud_material": "R28S_DustyClasts_Worksite_PBR",
+          "local_default_material": "R27S_DustyClasts_WorldContinuous_PBR",
+          "reuse_existing_R24": false,
+          "polygons": 126
+        },
+        {
+          "slot": 2,
+          "final_cloud_material": "R28S_FineDust_Worksite_PBR",
+          "local_default_material": "R27S_FineDust_WorldContinuous_PBR",
+          "reuse_existing_R24": false,
+          "polygons": 56
+        }
+      ],
+      "display_only": true,
+      "automatic_colliders": false
+    },
+    {
+      "object": "R27S_04_Nine_Local_Cut_Rock_Slabs",
+      "mesh": "R27S_04_Nine_Local_Cut_Rock_Slabs_Mesh",
+      "vertices": 126,
+      "polygons": 72,
+      "UV_channels": [
+        {
+          "index": 0,
+          "name": "UVMap",
+          "meaning": "dominant-axis physical metres"
+        },
+        {
+          "index": 1,
+          "name": "R8_Regolith_3p7m",
+          "meaning": "worldXY /3.7m"
+        },
+        {
+          "index": 2,
+          "name": "R8_Terrain_Global_4096m",
+          "meaning": "worldXY /4096m"
+        }
+      ],
+      "active_uv": "UVMap",
+      "materials": [
+        {
+          "slot": 0,
+          "final_cloud_material": "R28S_DustyClasts_Worksite_PBR",
+          "local_default_material": "R27S_DustyClasts_WorldContinuous_PBR",
+          "reuse_existing_R24": false,
+          "polygons": 72
+        }
+      ],
+      "display_only": true,
+      "automatic_colliders": false
+    },
+    {
+      "object": "R27S_05_Four_Anchored_Construction_Cover_Plates",
+      "mesh": "R27S_05_Four_Anchored_Construction_Cover_Plates_Mesh",
+      "vertices": 688,
+      "polygons": 416,
+      "UV_channels": [
+        {
+          "index": 0,
+          "name": "UVMap",
+          "meaning": "dominant-axis physical metres"
+        },
+        {
+          "index": 1,
+          "name": "R8_Regolith_3p7m",
+          "meaning": "worldXY /3.7m"
+        },
+        {
+          "index": 2,
+          "name": "R8_Terrain_Global_4096m",
+          "meaning": "worldXY /4096m"
+        }
+      ],
+      "active_uv": "UVMap",
+      "materials": [
+        {
+          "slot": 0,
+          "final_cloud_material": "R24_Dark_Forged_Joint_Steel",
+          "local_default_material": "R24_Dark_Forged_Joint_Steel",
+          "reuse_existing_R24": true,
+          "polygons": 188
+        },
+        {
+          "slot": 1,
+          "final_cloud_material": "R24_Slate_Gray_Industrial_Enamel",
+          "local_default_material": "R24_Slate_Gray_Industrial_Enamel",
+          "reuse_existing_R24": true,
+          "polygons": 4
+        },
+        {
+          "slot": 2,
+          "final_cloud_material": "R24_Exposed_Machined_Contact_Steel",
+          "local_default_material": "R24_Exposed_Machined_Contact_Steel",
+          "reuse_existing_R24": true,
+          "polygons": 224
+        }
+      ],
+      "display_only": true,
+      "automatic_colliders": false
+    }
+  ],
+  "default_policy": "Use the three R27 material families on the six new R27S local display meshes only; the steel cover plate reuses exact R24 materials. Do not bind R28 worksite materials by default.",
+  "forbidden_targets": [
+    "R21_DISPLAY_TERRAIN_CUT_Theophilus_Background4km_HOLE_MATCH_512",
+    "R21_DISPLAY_TERRAIN_CUT_Theophilus_Shoulder512m_SERIALIZED_COMP",
+    "all user mainTerrain materials and texture assets"
+  ],
+  "no_terrain_material_in_library": true,
+  "R28_worksite_mask": "Optional separate overlay only; disabled by default.",
+  "Unity_warning": "Blender node groups do NOT import as Unity shaders. Texture channels and world/UV mapping must be explicitly rebuilt in an independent display-only material; preserve the user existing Terrain material.",
+  "source_geometry_not_modified": true,
+  "no_render": true,
+  "no_local_execution": true,
+  "Unity_texture_count": 22,
+  "R28_default_enabled": false,
+  "Unity_shader_contract": "R29_Local_Ground_Shader_Reconstruction.json",
+  "apply_blender_entry": "apply_local_ground_blender.py",
+  "reopen_check": "R29_Local_Ground_External_Reopen_Check.json",
+  "cloud_rollback_packed_library": "R29_Local_Ground_Three_Materials.blend",
+  "cloud_rollback_library_bytes": 66362155,
+  "cloud_rollback_library_sha256": "9f3e21bf4f35810740023a42091ee7278d53c1256b7337b9cc9a014f21f72e1c",
+  "image_storage": "Relative //Textures/name.png, external files shared by Blender and Unity. No embedded pixel duplicates.",
+  "texture_dependencies": [
+    {
+      "name": "R26_Regolith_Compacted_BaseColor.png",
+      "aliases": [
+        "R26_Regolith_Compacted_BaseColor.png"
+      ],
+      "size": [
+        2048,
+        2048
+      ],
+      "sha256": "37d8ab19596756cb16dacb2a5e678c36d63fc563eda9070d6cd23f45ae0050c5",
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT",
+      "file_bytes": 2279703,
+      "relative_file": "Textures/R26_Regolith_Compacted_BaseColor.png"
+    },
+    {
+      "name": "R26_Regolith_Compacted_Roughness.png",
+      "aliases": [
+        "R26_Regolith_Compacted_Roughness.png"
+      ],
+      "size": [
+        2048,
+        2048
+      ],
+      "sha256": "0c2c021bdbe5db7efeac73d6a88f66e1c4cabb58c8ebaea3f54713262a99d7bb",
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT",
+      "file_bytes": 1842585,
+      "relative_file": "Textures/R26_Regolith_Compacted_Roughness.png"
+    },
+    {
+      "name": "R26_Regolith_Compacted_Normal_OpenGL.png",
+      "aliases": [
+        "R26_Regolith_Compacted_Normal_OpenGL.png"
+      ],
+      "size": [
+        2048,
+        2048
+      ],
+      "sha256": "e8f88452a5dfb312d7b9e4921947da62b288fd99bd96d00c07e453637e6f3ffb",
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT",
+      "file_bytes": 9659864,
+      "relative_file": "Textures/R26_Regolith_Compacted_Normal_OpenGL.png"
+    },
+    {
+      "name": "R26_Regolith_Macro32m.png",
+      "aliases": [
+        "R26_Regolith_Macro32m.png",
+        "R26_Regolith_Macro32m.png",
+        "R26_Regolith_Macro32m.png"
+      ],
+      "size": [
+        2048,
+        2048
+      ],
+      "sha256": "4de56d0ca40ff992b5fbcc68f875dca2a30787bc4eff67e3f20cf0d9d2974978",
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT",
+      "file_bytes": 333059,
+      "relative_file": "Textures/R26_Regolith_Macro32m.png"
+    },
+    {
+      "name": "R26_Regolith_Micro025m_Normal_OpenGL.png",
+      "aliases": [
+        "R26_Regolith_Micro025m_Normal_OpenGL.png",
+        "R26_Regolith_Micro025m_Normal_OpenGL.png",
+        "R26_Regolith_Micro025m_Normal_OpenGL.png"
+      ],
+      "size": [
+        2048,
+        2048
+      ],
+      "sha256": "e20362bd00ed2e7b3844ef1ddec05da339459bee8219352ff5d78d80ac181b1a",
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT",
+      "file_bytes": 9770668,
+      "relative_file": "Textures/R26_Regolith_Micro025m_Normal_OpenGL.png"
+    },
+    {
+      "name": "R27_Regolith_World64m_BaseColor.png",
+      "aliases": [
+        "R27_Regolith_World64m_BaseColor.png"
+      ],
+      "size": [
+        2048,
+        2048
+      ],
+      "sha256": "b7939003648ac8d962dac4e774dcc23a4300ef2555c75acfd3c9a1a38686420d",
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT",
+      "file_bytes": 1198806,
+      "relative_file": "Textures/R27_Regolith_World64m_BaseColor.png"
+    },
+    {
+      "name": "R27_Regolith_World64m_Roughness.png",
+      "aliases": [
+        "R27_Regolith_World64m_Roughness.png"
+      ],
+      "size": [
+        2048,
+        2048
+      ],
+      "sha256": "1d63885cce70a514f785c7d3e4f92e0b0d9dcddb12995bdbf4bd103743b7cf25",
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT",
+      "file_bytes": 896119,
+      "relative_file": "Textures/R27_Regolith_World64m_Roughness.png"
+    },
+    {
+      "name": "R27_Regolith_World64m_Height16.png",
+      "aliases": [
+        "R27_Regolith_World64m_Height16.png"
+      ],
+      "size": [
+        2048,
+        2048
+      ],
+      "sha256": "4ce271e880b906679dbdf413743d5415c00123c462ebcd6badf0f4e1956115fa",
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT",
+      "file_bytes": 6132890,
+      "relative_file": "Textures/R27_Regolith_World64m_Height16.png"
+    },
+    {
+      "name": "R27_Regolith_Macro256m.png",
+      "aliases": [
+        "R27_Regolith_Macro256m.png"
+      ],
+      "size": [
+        2048,
+        2048
+      ],
+      "sha256": "3aff285bea37905b1c4d36fbb2c166bbe560428e56d0b83a0fa05d9c66637367",
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT",
+      "file_bytes": 290131,
+      "relative_file": "Textures/R27_Regolith_Macro256m.png"
+    },
+    {
+      "name": "R26_Regolith_Compacted_Height16.png",
+      "aliases": [
+        "R26_Regolith_Compacted_Height16.png"
+      ],
+      "size": [
+        2048,
+        2048
+      ],
+      "sha256": "d93574b94a336703b20b5fe144cf7b4b5658dec1fdfb9ba449b763450bd10146",
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT",
+      "file_bytes": 7103610,
+      "relative_file": "Textures/R26_Regolith_Compacted_Height16.png"
+    },
+    {
+      "name": "R26S_World_Edge_Transition_Mask.png",
+      "aliases": [
+        "R26S_World_Edge_Transition_Mask.png",
+        "R26S_World_Edge_Transition_Mask.png",
+        "R26S_World_Edge_Transition_Mask.png"
+      ],
+      "size": [
+        1024,
+        1024
+      ],
+      "sha256": "2f5bfa7120e535b0b0539136a61863644f081275c14c9b8ee14cb001da70e733",
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT",
+      "file_bytes": 33206,
+      "relative_file": "Textures/R26S_World_Edge_Transition_Mask.png"
+    },
+    {
+      "name": "R26_Regolith_DustyClasts_BaseColor.png",
+      "aliases": [
+        "R26_Regolith_DustyClasts_BaseColor.png"
+      ],
+      "size": [
+        2048,
+        2048
+      ],
+      "sha256": "206b9e292cbf3d9c56769657fbcd7f09bee11ddec09b5d41972465e975e5e324",
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT",
+      "file_bytes": 2224527,
+      "relative_file": "Textures/R26_Regolith_DustyClasts_BaseColor.png"
+    },
+    {
+      "name": "R26_Regolith_DustyClasts_Roughness.png",
+      "aliases": [
+        "R26_Regolith_DustyClasts_Roughness.png"
+      ],
+      "size": [
+        2048,
+        2048
+      ],
+      "sha256": "6bca887837b070c0551b2d8532d1a340917a4ad3e7daf6279177d22064e00851",
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT",
+      "file_bytes": 1840588,
+      "relative_file": "Textures/R26_Regolith_DustyClasts_Roughness.png"
+    },
+    {
+      "name": "R26_Regolith_DustyClasts_Normal_OpenGL.png",
+      "aliases": [
+        "R26_Regolith_DustyClasts_Normal_OpenGL.png"
+      ],
+      "size": [
+        2048,
+        2048
+      ],
+      "sha256": "67df96ba3a12aadc22a7edb112a64b4070d9a60ec128618940274ad51d809afe",
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT",
+      "file_bytes": 10530523,
+      "relative_file": "Textures/R26_Regolith_DustyClasts_Normal_OpenGL.png"
+    },
+    {
+      "name": "R26_Regolith_FineDust_BaseColor.png",
+      "aliases": [
+        "R26_Regolith_FineDust_BaseColor.png"
+      ],
+      "size": [
+        2048,
+        2048
+      ],
+      "sha256": "1aeb296cdefb84e8bc0e241b0dfde1afba53abe0f41f4371c4b03f77ee222d49",
+      "colorspace": "sRGB",
+      "alpha_mode": "STRAIGHT",
+      "file_bytes": 2167584,
+      "relative_file": "Textures/R26_Regolith_FineDust_BaseColor.png"
+    },
+    {
+      "name": "R26_Regolith_FineDust_Roughness.png",
+      "aliases": [
+        "R26_Regolith_FineDust_Roughness.png"
+      ],
+      "size": [
+        2048,
+        2048
+      ],
+      "sha256": "fbf2a11500e726e955eecbea9230a2d0d9787defd8d15d2b02537b839607cef4",
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT",
+      "file_bytes": 1752542,
+      "relative_file": "Textures/R26_Regolith_FineDust_Roughness.png"
+    },
+    {
+      "name": "R26_Regolith_FineDust_Normal_OpenGL.png",
+      "aliases": [
+        "R26_Regolith_FineDust_Normal_OpenGL.png"
+      ],
+      "size": [
+        2048,
+        2048
+      ],
+      "sha256": "44861ca2df7e3fe2df33ef2c8d0cf0b8bb6c67de8b917d69ebea9d3f8666ebae",
+      "colorspace": "Non-Color",
+      "alpha_mode": "STRAIGHT",
+      "file_bytes": 8189384,
+      "relative_file": "Textures/R26_Regolith_FineDust_Normal_OpenGL.png"
+    }
+  ],
+  "default_delivery_zip": "R29_Local_Ground_External_Materials_And_Textures.zip",
+  "optional_R28_directory": "Optional_R28",
+  "previous_split_packages_default_transfer": false
+}

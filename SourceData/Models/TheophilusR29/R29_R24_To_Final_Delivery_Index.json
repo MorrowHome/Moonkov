@@ -1,0 +1,114 @@
+{
+  "title": "R24 installed display to R29 final art handoff",
+  "scope": "Cloud-prepared source assets only; no upload, no DOT00 contact, no local project change",
+  "source_scene": {
+    "file": "Moonkov_R29_Fabricated_Beams_And_Bearings_Latest.blend",
+    "bytes": 280848704,
+    "sha256": "c066a2c70aceed9a27adcafa549dfecb7a194fcfc8a2a52867aa9d422adc67ed",
+    "included_in_transfer": false
+  },
+  "baseline": {
+    "local_installed": "R21 + R23 + compact-slot R24",
+    "R24_geometry_package": "Moonkov_R24_R21_Base_Display_Delta.blend",
+    "R24_geometry_sha256": "7d732a3dbf58eb95238af19a86bb96977538a5fcfae9104dded843c35484e0ee",
+    "R24_mapping_sha256": "735a3a007c4265510edac8f5e9d932d17ec748baaa32c3e0376a9951705f77c4",
+    "R22_required": false
+  },
+  "default_delivery_archives": [
+    "Moonkov_R29_From_R24_Final_Geometry_And_Handoff.zip",
+    "Moonkov_R29_Industrial_Final_For_R24.zip",
+    "R29_Local_Ground_External_Materials_And_Textures.zip"
+  ],
+  "extraction": "Extract all three archives into one new directory; geometry/, industrial_patch/, local_ground/ are siblings. Preserve relative Textures paths.",
+  "new_geometry": {
+    "mesh_count": 34,
+    "source_vertices": 27660,
+    "source_faces": 24484,
+    "mapping": "geometry/R29_Final_Geometry_Manifest.json",
+    "editable_modifiers_preserved": true,
+    "images_in_geometry_library": 0,
+    "baseline_materials_to_reuse": [
+      "R23_Concrete_Metric_Surface",
+      "R23_Exposed_Steel_Calm_Finish",
+      "R23_Protective_Steel_Microfinish",
+      "R24_Dark_Forged_Joint_Steel",
+      "R24_Exposed_Machined_Contact_Steel",
+      "R24_Localized_Lunar_Dust_Deposit",
+      "R24_Recessed_Elastomer_Seal",
+      "R24_Service_Stencil_Offwhite",
+      "R24_Slate_Gray_Industrial_Enamel",
+      "R8_OffWhite_Ceramic_Coat",
+      "R8_Restrained_Safety_Ochre"
+    ]
+  },
+  "existing_object_material_patch": {
+    "objects": 19,
+    "changed_faces": 4639,
+    "mapping": "industrial_patch/R29_Industrial_Final_Mapping.json",
+    "face_UV_data": "industrial_patch/R29_Industrial_Final_Face_UV_Data.json",
+    "old_slot_indices_are_not_assumed": true
+  },
+  "hide_old_renderer_only": [
+    {
+      "object": "R21_04_Rim_Foundations_And_Machine_Suspension_Grillage",
+      "vertex_topology_float32_sha256": "e4f1feb5320ea2d44636ff1fb6eda8ec459964620aa5e5fbebf0f4031605be08",
+      "keep_source_mesh": true,
+      "keep_collision_and_interactions": true,
+      "replacement": "R29_00_R21_04_Display_Remainder"
+    }
+  ],
+  "required_material_libraries": {
+    "industrial": [
+      "R26V2_Baked_Heavy_Structures",
+      "R26V2_Baked_Hero_Mechanics",
+      "R26V2_Baked_Service_Decks",
+      "R27_Access_Armor_Used_Coating",
+      "R27_HYD_Used_Coating",
+      "R28_Shaft_Mineral_Lining",
+      "R28_Suspension_Coating_And_Steel"
+    ],
+    "local_ground": [
+      "R27S_Compacted_WorldContinuous_PBR",
+      "R27S_DustyClasts_WorldContinuous_PBR",
+      "R27S_FineDust_WorldContinuous_PBR"
+    ]
+  },
+  "dependency_order": [
+    "Back up local source/scene; verify R21+R23+R24 baseline",
+    "Apply final industrial library and 19-object exact material/UV patch",
+    "Load three local-ground materials only",
+    "Append 34 final meshes and resolve every placeholder via canonical slot names",
+    "Hide old R21_04 renderer only after replacement is present; preserve Collider/interaction",
+    "Optional R28 overlay remains OFF unless separately chosen"
+  ],
+  "Blender_reference_entry": "APPLY_IN_BLENDER_SOURCE_ONLY.py; explicit function call only; not a Unity importer",
+  "Terrain_materials_excluded": [
+    "R21_DISPLAY_TERRAIN_CUT_Theophilus_Background4km_HOLE_MATCH_512",
+    "R21_DISPLAY_TERRAIN_CUT_Theophilus_Shoulder512m_SERIALIZED_COMP"
+  ],
+  "optional_overlay": {
+    "directory": "local_ground/Optional_R28",
+    "enabled_by_default": false,
+    "local_existing_lunar_shader_retained": true
+  },
+  "material_UV_contracts": [
+    "industrial_patch/R29_Industrial_Final_Mapping.json",
+    "local_ground/R29_Local_Ground_Shader_Reconstruction.json",
+    "local_ground/R29_Unity_Local_Ground_Texture_Settings.json",
+    "geometry/R29_Final_Geometry_Manifest.json"
+  ],
+  "limits": [
+    "Blender named UV layers must be explicitly mapped during established local export; preserve lightmap channels.",
+    "Face-loop indices are not Unity vertex indices.",
+    "Multi-UV/tangent/world-space formulas require a compatible local shader; Blender nodes are not an imported URP shader.",
+    "Ground-module material appearance against existing local Terrain must be reviewed without replacing the Terrain base material.",
+    "No local runtime, shader compile, performance, collision or formal scene validation."
+  ],
+  "preserved_cloud_rollbacks": [
+    "Moonkov_R24_Hero_Modeling_Rollback.blend",
+    "Moonkov_R25_Descending_Guide_Rollback.blend",
+    "Moonkov_R26_Integrated_Art_Rollback.blend",
+    "Moonkov_R27_Continuous_Lunar_And_Weathered_Machine_Rollback.blend",
+    "Moonkov_R28_Workfront_And_Large_Surface_Rollback.blend"
+  ]
+}

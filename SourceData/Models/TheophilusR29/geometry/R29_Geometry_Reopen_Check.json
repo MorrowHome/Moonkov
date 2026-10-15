@@ -1,0 +1,187 @@
+{
+  "mesh_count": 34,
+  "root_count": 1,
+  "image_dependencies_in_geometry_package": 0,
+  "all_18_canonical_materials_resolved": true,
+  "named_material_UV_layers_present": true,
+  "verified_identical_R24_aliases": {
+    "R24_Dark_Forged_Joint_Steel.002": "R24_Dark_Forged_Joint_Steel",
+    "R24_Slate_Gray_Industrial_Enamel.002": "R24_Slate_Gray_Industrial_Enamel",
+    "R24_Exposed_Machined_Contact_Steel.002": "R24_Exposed_Machined_Contact_Steel"
+  },
+  "objects": [
+    {
+      "object": "R25_01_Descending_Throat_And_Split_Guide_Frame",
+      "all_slots_resolved": true,
+      "source_hash_UV_preserved": true
+    },
+    {
+      "object": "R25_02_Three_Heavy_Guide_Jaws_And_Recesses",
+      "all_slots_resolved": true,
+      "source_hash_UV_preserved": true
+    },
+    {
+      "object": "R25_03_Opposed_Clamp_Drives_And_Clevises",
+      "all_slots_resolved": true,
+      "source_hash_UV_preserved": true
+    },
+    {
+      "object": "R25_04_Exposed_Contact_Bands_And_Seals",
+      "all_slots_resolved": true,
+      "source_hash_UV_preserved": true
+    },
+    {
+      "object": "R25_05_Compact_Pipe_Branches_And_Supports",
+      "all_slots_resolved": true,
+      "source_hash_UV_preserved": true
+    },
+    {
+      "object": "R25_06_Guide_Service_Plate_And_Local_Use_Marks",
+      "all_slots_resolved": true,
+      "source_hash_UV_preserved": true
+    },
+    {
+      "object": "R25_07_Guide_Identification",
+      "all_slots_resolved": true,
+      "source_hash_UV_preserved": true
+    },
+    {
+      "object": "R26_ARMOR_01_Shoulder_Deep_Saddle_And_Perimeter",
+      "all_slots_resolved": true,
+      "source_hash_UV_preserved": true
+    },
+    {
+      "object": "R26_ARMOR_02_Shoulder_Offset_Armor_Cover",
+      "all_slots_resolved": true,
+      "source_hash_UV_preserved": true
+    },
+    {
+      "object": "R26_ARMOR_03_Recessed_Coupling_Bay_And_Interfaces",
+      "all_slots_resolved": true,
+      "source_hash_UV_preserved": true
+    },
+    {
+      "object": "R26_ARMOR_04_Shoulder_Load_Keys_And_Locking_Ends",
+      "all_slots_resolved": true,
+      "source_hash_UV_preserved": true
+    },
+    {
+      "object": "R26_ARMOR_05_Lower_Shank_Split_Thick_Plates",
+      "all_slots_resolved": true,
+      "source_hash_UV_preserved": true
+    },
+    {
+      "object": "R26_ARMOR_06_Shank_Service_Channel_And_Anchor_Hardware",
+      "all_slots_resolved": true,
+      "source_hash_UV_preserved": true
+    },
+    {
+      "object": "R26_ARMOR_07_Service_Identification_Plate",
+      "all_slots_resolved": true,
+      "source_hash_UV_preserved": true
+    },
+    {
+      "object": "R26_ARMOR_08_Service_ID",
+      "all_slots_resolved": true,
+      "source_hash_UV_preserved": true
+    },
+    {
+      "object": "R27S_01_Compacted_Work_Fronts_And_Broad_Spoil_Gradients",
+      "all_slots_resolved": true,
+      "source_hash_UV_preserved": true
+    },
+    {
+      "object": "R27S_02_Stepped_Cut_Shoulder_And_Compressed_Faces",
+      "all_slots_resolved": true,
+      "source_hash_UV_preserved": true
+    },
+    {
+      "object": "R27S_03_Local_Grading_And_Plate_Seat_Traces",
+      "all_slots_resolved": true,
+      "source_hash_UV_preserved": true
+    },
+    {
+      "object": "R27S_04_Nine_Local_Cut_Rock_Slabs",
+      "all_slots_resolved": true,
+      "source_hash_UV_preserved": true
+    },
+    {
+      "object": "R27S_04B_Eighteen_Density_Graded_Regolith_Clods",
+      "all_slots_resolved": true,
+      "source_hash_UV_preserved": true
+    },
+    {
+      "object": "R27S_05_Four_Anchored_Construction_Cover_Plates",
+      "all_slots_resolved": true,
+      "source_hash_UV_preserved": true
+    },
+    {
+      "object": "R29_00_R21_04_Display_Remainder",
+      "all_slots_resolved": true,
+      "source_hash_UV_preserved": true
+    },
+    {
+      "object": "R29_BEAMS_NEAR_01_Deep_Web_And_Segmented_Flanges",
+      "all_slots_resolved": true,
+      "source_hash_UV_preserved": true
+    },
+    {
+      "object": "R29_BEAMS_NEAR_02_Sparse_Stiffeners_And_Access_Rims",
+      "all_slots_resolved": true,
+      "source_hash_UV_preserved": true
+    },
+    {
+      "object": "R29_BEAMS_NEAR_03_Splice_And_End_Connection_Plates",
+      "all_slots_resolved": true,
+      "source_hash_UV_preserved": true
+    },
+    {
+      "object": "R29_BEAMS_FAR_01_Deep_Web_And_Segmented_Flanges",
+      "all_slots_resolved": true,
+      "source_hash_UV_preserved": true
+    },
+    {
+      "object": "R29_BEAMS_FAR_02_Sparse_Stiffeners_And_Access_Rims",
+      "all_slots_resolved": true,
+      "source_hash_UV_preserved": true
+    },
+    {
+      "object": "R29_BEAMS_FAR_03_Splice_And_End_Connection_Plates",
+      "all_slots_resolved": true,
+      "source_hash_UV_preserved": true
+    },
+    {
+      "object": "R29B_01_Stepped_Column_Foot_And_Baseplate",
+      "all_slots_resolved": true,
+      "source_hash_UV_preserved": true
+    },
+    {
+      "object": "R29B_02_Cast_Pedestal_And_Transverse_Crosshead",
+      "all_slots_resolved": true,
+      "source_hash_UV_preserved": true
+    },
+    {
+      "object": "R29B_03_Twin_Layered_Bearing_Shoes",
+      "all_slots_resolved": true,
+      "source_hash_UV_preserved": true
+    },
+    {
+      "object": "R29B_04_Four_Transverse_Load_Ribs",
+      "all_slots_resolved": true,
+      "source_hash_UV_preserved": true
+    },
+    {
+      "object": "R29B_05_Six_Foundation_Anchor_Sets",
+      "all_slots_resolved": true,
+      "source_hash_UV_preserved": true
+    },
+    {
+      "object": "R29B_06_Four_Bearing_Keeper_Locks",
+      "all_slots_resolved": true,
+      "source_hash_UV_preserved": true
+    }
+  ],
+  "no_render": true,
+  "no_Unity_execution": true,
+  "no_source_files_changed": true
+}
