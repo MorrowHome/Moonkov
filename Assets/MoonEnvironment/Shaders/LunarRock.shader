@@ -51,6 +51,7 @@ Shader "MoonEnvironment/LunarRock"
         Tags { "RenderType"="Opaque" "RenderPipeline"="UniversalPipeline" "Queue"="Geometry-100" "TerrainCompatible"="True" }
         HLSLINCLUDE
         #pragma target 3.5
+        #define MOON_ROCK 1
         #include "MoonInput.hlsl"
         void surf(Input IN,inout SurfaceOutputStandard o)
         {
@@ -62,12 +63,12 @@ Shader "MoonEnvironment/LunarRock"
                     +tex2D(_MainTex,IN.worldPos.xz/.7).rgb*w.y+tex2D(_MainTex,IN.worldPos.xy/.7).rgb*w.z;
             }
             float gray=dot(diffuse,float3(0.2126,0.7152,0.0722));
-            float4 plane=_GroundPlane;
+            float4 plane=MOON_ROCK_PROPERTY(_GroundPlane);
             float height=dot(plane.xyz,IN.worldPos)+plane.w;
-            float blendHeight=_BlendHeight;
+            float blendHeight=MOON_ROCK_PROPERTY(_BlendHeight);
             float dust=1-smoothstep(0,max(blendHeight,0.001),height);
-            float variation=_RockVariation;
-            float freshness=_RockFreshness;
+            float variation=MOON_ROCK_PROPERTY(_RockVariation);
+            float freshness=MOON_ROCK_PROPERTY(_RockFreshness);
             if (_ProceduralRock>.5)
             {
                 variation=IN.rockData.r;

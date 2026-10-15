@@ -17,6 +17,21 @@ float _MacroContrast, _FaciesStrength, _BedrockStrength, _ImpactReady, _Procedur
 float _MaterialFadeStart, _MaterialFadeEnd, _DistantVariation;
 float4 _DustTint, _BasaltTint;
 CBUFFER_END
+// Keep UnityPerMaterial identical for terrain and non-instanced rendering.
+// Grounding overrides live in an instance buffer only for instanced rocks.
+#if defined(MOON_ROCK)
+    #if defined(UNITY_INSTANCING_ENABLED)
+        UNITY_INSTANCING_BUFFER_START(MoonRockInstances)
+            UNITY_DEFINE_INSTANCED_PROP(float4, _GroundPlane)
+            UNITY_DEFINE_INSTANCED_PROP(float, _BlendHeight)
+            UNITY_DEFINE_INSTANCED_PROP(float, _RockVariation)
+            UNITY_DEFINE_INSTANCED_PROP(float, _RockFreshness)
+        UNITY_INSTANCING_BUFFER_END(MoonRockInstances)
+        #define MOON_ROCK_PROPERTY(name) UNITY_ACCESS_INSTANCED_PROP(MoonRockInstances, name)
+    #else
+        #define MOON_ROCK_PROPERTY(name) name
+    #endif
+#endif
 sampler2D _MainTex, _BumpMap, _Roughness, _HeightMap, _MicroTex, _MicroNormal;
 sampler2D _GroundTex, _GeologyMap, _TerrainHolesTexture;
 sampler2D _LocalTerrainGeometry;
