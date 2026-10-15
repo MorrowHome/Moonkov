@@ -1,0 +1,1130 @@
+{
+  "sourceAndUV": {
+    "source": "fixed R21 blend, no source save",
+    "accepted": [
+      {
+        "name": "R18_09_Pipe_Handling_Terrace",
+        "key": "Retained_00",
+        "stage": "R18",
+        "sourceCoordinateHash": "e7645be70799de923de0d46d80134335c1a3305574fc00322276601cd563e241",
+        "sourceCounts": [
+          1504,
+          1128,
+          4512
+        ],
+        "sourceUVLoops": 3168,
+        "expandedUVVertices": 4752,
+        "expandedVertices": 6768,
+        "materials": [
+          "R23_Protective_Steel_Microfinish",
+          "R23_Exposed_Steel_Calm_Finish",
+          "R8_OffWhite_Ceramic_Coat",
+          "R23_Matte_Deck_Fine_Finish",
+          "R23_Concrete_Metric_Surface",
+          "R8_Restrained_Safety_Ochre",
+          "R13_Machined_Steel_Contact",
+          "R13_Dark_Seal_And_Gasket",
+          "R6_Dark_Inspection_Glazing",
+          "R3_Weathered_WarmGray_Sheet"
+        ],
+        "sourceVisible": true,
+        "hiddenRollback": false,
+        "sourceCollections": [
+          "B_21_DEEP_WELL_EXTRACTION_FACILITY_R18"
+        ]
+      },
+      {
+        "name": "R18_10_Horizontal_Tubular_Storage_Racks",
+        "key": "Retained_01",
+        "stage": "R18",
+        "sourceCoordinateHash": "ba48f8c8420645a32dd8ec37ec569b22e042b9c7db4d28bdeeff94b6609e5c4c",
+        "sourceCounts": [
+          2808,
+          1674,
+          8424
+        ],
+        "sourceUVLoops": 2808,
+        "expandedUVVertices": 5076,
+        "expandedVertices": 15228,
+        "materials": [
+          "R23_Protective_Steel_Microfinish",
+          "R23_Exposed_Steel_Calm_Finish",
+          "R8_OffWhite_Ceramic_Coat",
+          "R23_Matte_Deck_Fine_Finish",
+          "R23_Concrete_Metric_Surface",
+          "R8_Restrained_Safety_Ochre",
+          "R13_Machined_Steel_Contact",
+          "R13_Dark_Seal_And_Gasket",
+          "R6_Dark_Inspection_Glazing",
+          "R3_Weathered_WarmGray_Sheet"
+        ],
+        "sourceVisible": true,
+        "hiddenRollback": false,
+        "sourceCollections": [
+          "B_21_DEEP_WELL_EXTRACTION_FACILITY_R18"
+        ]
+      },
+      {
+        "name": "R18_11_Pipe_Rack_Gantry_And_Handling_Sled",
+        "key": "Retained_02",
+        "stage": "R18",
+        "sourceCoordinateHash": "337ab173eea25157b213025c32f0e09e7d1e281f7344a8e34fec704b871a2789",
+        "sourceCounts": [
+          256,
+          214,
+          864
+        ],
+        "sourceUVLoops": 264,
+        "expandedUVVertices": 396,
+        "expandedVertices": 1308,
+        "materials": [
+          "R23_Protective_Steel_Microfinish",
+          "R23_Exposed_Steel_Calm_Finish",
+          "R8_OffWhite_Ceramic_Coat",
+          "R23_Matte_Deck_Fine_Finish",
+          "R23_Concrete_Metric_Surface",
+          "R8_Restrained_Safety_Ochre",
+          "R13_Machined_Steel_Contact",
+          "R13_Dark_Seal_And_Gasket",
+          "R6_Dark_Inspection_Glazing",
+          "R3_Weathered_WarmGray_Sheet"
+        ],
+        "sourceVisible": true,
+        "hiddenRollback": false,
+        "sourceCollections": [
+          "B_21_DEEP_WELL_EXTRACTION_FACILITY_R18"
+        ]
+      },
+      {
+        "name": "R18_13_Process_Equipment_Deck",
+        "key": "Retained_03",
+        "stage": "R18",
+        "sourceCoordinateHash": "ea2263340737a714d1664c7dde1d6d3e9478bfaf37bd8f365848b25d375d04eb",
+        "sourceCounts": [
+          1896,
+          1422,
+          5688
+        ],
+        "sourceUVLoops": 4056,
+        "expandedUVVertices": 6084,
+        "expandedVertices": 8532,
+        "materials": [
+          "R23_Protective_Steel_Microfinish",
+          "R23_Exposed_Steel_Calm_Finish",
+          "R8_OffWhite_Ceramic_Coat",
+          "R23_Matte_Deck_Fine_Finish",
+          "R23_Concrete_Metric_Surface",
+          "R8_Restrained_Safety_Ochre",
+          "R13_Machined_Steel_Contact",
+          "R13_Dark_Seal_And_Gasket",
+          "R6_Dark_Inspection_Glazing",
+          "R3_Weathered_WarmGray_Sheet"
+        ],
+        "sourceVisible": true,
+        "hiddenRollback": false,
+        "sourceCollections": [
+          "B_21_DEEP_WELL_EXTRACTION_FACILITY_R18"
+        ]
+      },
+      {
+        "name": "R18_14_Return_Separation_Vessel_Skids",
+        "key": "Retained_04",
+        "stage": "R18",
+        "sourceCoordinateHash": "a0ccf411990fc5a31b9d2c1e9651e701e94848d5afa2454e262ff08439c474da",
+        "sourceCounts": [
+          2544,
+          2058,
+          9072
+        ],
+        "sourceUVLoops": 5832,
+        "expandedUVVertices": 9108,
+        "expandedVertices": 14868,
+        "materials": [
+          "R23_Protective_Steel_Microfinish",
+          "R23_Exposed_Steel_Calm_Finish",
+          "R8_OffWhite_Ceramic_Coat",
+          "R23_Matte_Deck_Fine_Finish",
+          "R23_Concrete_Metric_Surface",
+          "R8_Restrained_Safety_Ochre",
+          "R13_Machined_Steel_Contact",
+          "R13_Dark_Seal_And_Gasket",
+          "R6_Dark_Inspection_Glazing",
+          "R3_Weathered_WarmGray_Sheet"
+        ],
+        "sourceVisible": true,
+        "hiddenRollback": false,
+        "sourceCollections": [
+          "B_21_DEEP_WELL_EXTRACTION_FACILITY_R18"
+        ]
+      },
+      {
+        "name": "R18_15_High_Pressure_Pump_And_Compressor_Skids",
+        "key": "Retained_05",
+        "stage": "R18",
+        "sourceCoordinateHash": "f7c99c8be11f087469c53bfc8e7f6ec8ac08553341020a3bc213083b605318bd",
+        "sourceCounts": [
+          2328,
+          2202,
+          9000
+        ],
+        "sourceUVLoops": 8856,
+        "expandedUVVertices": 13572,
+        "expandedVertices": 13788,
+        "materials": [
+          "R23_Protective_Steel_Microfinish",
+          "R23_Exposed_Steel_Calm_Finish",
+          "R8_OffWhite_Ceramic_Coat",
+          "R23_Matte_Deck_Fine_Finish",
+          "R23_Concrete_Metric_Surface",
+          "R8_Restrained_Safety_Ochre",
+          "R13_Machined_Steel_Contact",
+          "R13_Dark_Seal_And_Gasket",
+          "R6_Dark_Inspection_Glazing",
+          "R3_Weathered_WarmGray_Sheet"
+        ],
+        "sourceVisible": true,
+        "hiddenRollback": false,
+        "sourceCollections": [
+          "B_21_DEEP_WELL_EXTRACTION_FACILITY_R18"
+        ]
+      },
+      {
+        "name": "R18_16_Flanged_Process_Headers_And_Valve_Manifolds",
+        "key": "Retained_06",
+        "stage": "R18",
+        "sourceCoordinateHash": "fe0a408ef9eb2bb4c98dc33ab820de3284807226ff55bdaa3c0cb6626ba8e269",
+        "sourceCounts": [
+          3200,
+          2480,
+          11040
+        ],
+        "sourceUVLoops": 2976,
+        "expandedUVVertices": 5280,
+        "expandedVertices": 18240,
+        "materials": [
+          "R23_Protective_Steel_Microfinish",
+          "R23_Exposed_Steel_Calm_Finish",
+          "R8_OffWhite_Ceramic_Coat",
+          "R23_Matte_Deck_Fine_Finish",
+          "R23_Concrete_Metric_Surface",
+          "R8_Restrained_Safety_Ochre",
+          "R13_Machined_Steel_Contact",
+          "R13_Dark_Seal_And_Gasket",
+          "R6_Dark_Inspection_Glazing",
+          "R3_Weathered_WarmGray_Sheet"
+        ],
+        "sourceVisible": true,
+        "hiddenRollback": false,
+        "sourceCollections": [
+          "B_21_DEEP_WELL_EXTRACTION_FACILITY_R18"
+        ]
+      },
+      {
+        "name": "R18_19_Machinery_House_Foundation",
+        "key": "Retained_07",
+        "stage": "R18",
+        "sourceCoordinateHash": "0d7a39b641f7599c401a1afd26fb80edcf43337943c9cf294f3aba7a4cbbc573",
+        "sourceCounts": [
+          1280,
+          960,
+          3840
+        ],
+        "sourceUVLoops": 2736,
+        "expandedUVVertices": 4104,
+        "expandedVertices": 5760,
+        "materials": [
+          "R23_Protective_Steel_Microfinish",
+          "R23_Exposed_Steel_Calm_Finish",
+          "R8_OffWhite_Ceramic_Coat",
+          "R23_Matte_Deck_Fine_Finish",
+          "R23_Concrete_Metric_Surface",
+          "R8_Restrained_Safety_Ochre",
+          "R13_Machined_Steel_Contact",
+          "R13_Dark_Seal_And_Gasket",
+          "R6_Dark_Inspection_Glazing",
+          "R3_Weathered_WarmGray_Sheet"
+        ],
+        "sourceVisible": true,
+        "hiddenRollback": false,
+        "sourceCollections": [
+          "B_21_DEEP_WELL_EXTRACTION_FACILITY_R18"
+        ]
+      },
+      {
+        "name": "R18_20_Hoist_Power_House_Panels_And_Service_Vents",
+        "key": "Retained_08",
+        "stage": "R18",
+        "sourceCoordinateHash": "ffa47d7148578732fb8c5e61a0a2dce31aedbd16b83d9366ef763faf4ab3dfb7",
+        "sourceCounts": [
+          480,
+          360,
+          1440
+        ],
+        "sourceUVLoops": 1176,
+        "expandedUVVertices": 1764,
+        "expandedVertices": 2160,
+        "materials": [
+          "R23_Protective_Steel_Microfinish",
+          "R23_Exposed_Steel_Calm_Finish",
+          "R8_OffWhite_Ceramic_Coat",
+          "R23_Matte_Deck_Fine_Finish",
+          "R23_Concrete_Metric_Surface",
+          "R8_Restrained_Safety_Ochre",
+          "R13_Machined_Steel_Contact",
+          "R13_Dark_Seal_And_Gasket",
+          "R6_Dark_Inspection_Glazing",
+          "R3_Weathered_WarmGray_Sheet"
+        ],
+        "sourceVisible": true,
+        "hiddenRollback": false,
+        "sourceCollections": [
+          "B_21_DEEP_WELL_EXTRACTION_FACILITY_R18"
+        ]
+      },
+      {
+        "name": "R19_02_Sealed_Wellhead_Rotary_Table_And_BOP",
+        "key": "Retained_09",
+        "stage": "R19",
+        "sourceCoordinateHash": "b59eeeaaacb55fe95a294a803515d17711678eebe3c4b81e5c843b9126768a1b",
+        "sourceCounts": [
+          3152,
+          2192,
+          10224
+        ],
+        "sourceUVLoops": 3504,
+        "expandedUVVertices": 6780,
+        "expandedVertices": 17520,
+        "materials": [
+          "R23_Protective_Steel_Microfinish",
+          "R23_Exposed_Steel_Calm_Finish",
+          "R8_OffWhite_Ceramic_Coat",
+          "R23_Matte_Deck_Fine_Finish",
+          "R23_Concrete_Metric_Surface",
+          "R8_Restrained_Safety_Ochre",
+          "R13_Machined_Steel_Contact",
+          "R13_Dark_Seal_And_Gasket",
+          "R6_Dark_Inspection_Glazing",
+          "R3_Weathered_WarmGray_Sheet"
+        ],
+        "sourceVisible": true,
+        "hiddenRollback": false,
+        "sourceCollections": [
+          "B_22_INTEGRATED_CENTRAL_EXTRACTION_MACHINE_R19"
+        ]
+      },
+      {
+        "name": "R19_04_Equipment_Transfer_Beams_And_Winch_Cradles",
+        "key": "Retained_10",
+        "stage": "R19",
+        "sourceCoordinateHash": "6ba38a507debbb1ac6fcba499d34ab7e8b666eb82f6cfd3191cde80375354fdd",
+        "sourceCounts": [
+          120,
+          90,
+          360
+        ],
+        "sourceUVLoops": 288,
+        "expandedUVVertices": 432,
+        "expandedVertices": 540,
+        "materials": [
+          "R23_Protective_Steel_Microfinish",
+          "R23_Exposed_Steel_Calm_Finish",
+          "R8_OffWhite_Ceramic_Coat",
+          "R23_Matte_Deck_Fine_Finish",
+          "R23_Concrete_Metric_Surface",
+          "R8_Restrained_Safety_Ochre",
+          "R13_Machined_Steel_Contact",
+          "R13_Dark_Seal_And_Gasket",
+          "R6_Dark_Inspection_Glazing",
+          "R3_Weathered_WarmGray_Sheet"
+        ],
+        "sourceVisible": true,
+        "hiddenRollback": false,
+        "sourceCollections": [
+          "B_22_INTEGRATED_CENTRAL_EXTRACTION_MACHINE_R19"
+        ]
+      },
+      {
+        "name": "R19_05_Twin_Large_Drawworks_Drums_And_Brakes",
+        "key": "Retained_11",
+        "stage": "R19",
+        "sourceCoordinateHash": "c3b0449e561654dee4f139137fc91619a2a563e2296f211301e645bffd5b0680",
+        "sourceCounts": [
+          16736,
+          15940,
+          65184
+        ],
+        "sourceUVLoops": 62880,
+        "expandedUVVertices": 95376,
+        "expandedVertices": 99912,
+        "materials": [
+          "R23_Protective_Steel_Microfinish",
+          "R23_Exposed_Steel_Calm_Finish",
+          "R8_OffWhite_Ceramic_Coat",
+          "R23_Matte_Deck_Fine_Finish",
+          "R23_Concrete_Metric_Surface",
+          "R8_Restrained_Safety_Ochre",
+          "R13_Machined_Steel_Contact",
+          "R13_Dark_Seal_And_Gasket",
+          "R6_Dark_Inspection_Glazing",
+          "R3_Weathered_WarmGray_Sheet"
+        ],
+        "sourceVisible": true,
+        "hiddenRollback": false,
+        "sourceCollections": [
+          "B_22_INTEGRATED_CENTRAL_EXTRACTION_MACHINE_R19"
+        ]
+      },
+      {
+        "name": "R19_06_Winch_Reduction_Gearboxes_And_Drive_Motors",
+        "key": "Retained_12",
+        "stage": "R19",
+        "sourceCoordinateHash": "037dd80ed2739e94d3dde48abebcd2dbb1e93dc7592eda8a8d4eb5125960c3ec",
+        "sourceCounts": [
+          4112,
+          3804,
+          15664
+        ],
+        "sourceUVLoops": 14416,
+        "expandedUVVertices": 22104,
+        "expandedVertices": 24168,
+        "materials": [
+          "R23_Protective_Steel_Microfinish",
+          "R23_Exposed_Steel_Calm_Finish",
+          "R8_OffWhite_Ceramic_Coat",
+          "R23_Matte_Deck_Fine_Finish",
+          "R23_Concrete_Metric_Surface",
+          "R8_Restrained_Safety_Ochre",
+          "R13_Machined_Steel_Contact",
+          "R13_Dark_Seal_And_Gasket",
+          "R6_Dark_Inspection_Glazing",
+          "R3_Weathered_WarmGray_Sheet"
+        ],
+        "sourceVisible": true,
+        "hiddenRollback": false,
+        "sourceCollections": [
+          "B_22_INTEGRATED_CENTRAL_EXTRACTION_MACHINE_R19"
+        ]
+      },
+      {
+        "name": "R19_07_Paired_Feed_Rams_And_Axial_Guides",
+        "key": "Retained_13",
+        "stage": "R19",
+        "sourceCoordinateHash": "0578a77ed48b1c4749f1d82daafc049bfca1b2c8367273e9305b0c8c9974e161",
+        "sourceCounts": [
+          1296,
+          780,
+          3888
+        ],
+        "sourceUVLoops": 1728,
+        "expandedUVVertices": 3288,
+        "expandedVertices": 6984,
+        "materials": [
+          "R23_Protective_Steel_Microfinish",
+          "R23_Exposed_Steel_Calm_Finish",
+          "R8_OffWhite_Ceramic_Coat",
+          "R23_Matte_Deck_Fine_Finish",
+          "R23_Concrete_Metric_Surface",
+          "R8_Restrained_Safety_Ochre",
+          "R13_Machined_Steel_Contact",
+          "R13_Dark_Seal_And_Gasket",
+          "R6_Dark_Inspection_Glazing",
+          "R3_Weathered_WarmGray_Sheet"
+        ],
+        "sourceVisible": true,
+        "hiddenRollback": false,
+        "sourceCollections": [
+          "B_22_INTEGRATED_CENTRAL_EXTRACTION_MACHINE_R19"
+        ]
+      },
+      {
+        "name": "R19_08_Travelling_Head_Topdrive_And_Clamp_Assembly",
+        "key": "Retained_14",
+        "stage": "R19",
+        "sourceCoordinateHash": "486d8e6af053793d4941dca8534bbb08305aa4bfe9afa26583d16d9321caafa9",
+        "sourceCounts": [
+          2488,
+          2086,
+          9000
+        ],
+        "sourceUVLoops": 7800,
+        "expandedUVVertices": 12348,
+        "expandedVertices": 14484,
+        "materials": [
+          "R23_Protective_Steel_Microfinish",
+          "R23_Exposed_Steel_Calm_Finish",
+          "R8_OffWhite_Ceramic_Coat",
+          "R23_Matte_Deck_Fine_Finish",
+          "R23_Concrete_Metric_Surface",
+          "R8_Restrained_Safety_Ochre",
+          "R13_Machined_Steel_Contact",
+          "R13_Dark_Seal_And_Gasket",
+          "R6_Dark_Inspection_Glazing",
+          "R3_Weathered_WarmGray_Sheet"
+        ],
+        "sourceVisible": true,
+        "hiddenRollback": false,
+        "sourceCollections": [
+          "B_22_INTEGRATED_CENTRAL_EXTRACTION_MACHINE_R19"
+        ]
+      },
+      {
+        "name": "R19_10_Tubular_Magazine_And_Handling_Rail",
+        "key": "Retained_15",
+        "stage": "R19",
+        "sourceCoordinateHash": "f1e49f1c4e58403d76102bcb9e496c3b1916a6ac383ad77857bd3690bae172f0",
+        "sourceCounts": [
+          3504,
+          2160,
+          10896
+        ],
+        "sourceUVLoops": 5232,
+        "expandedUVVertices": 9216,
+        "expandedVertices": 19728,
+        "materials": [
+          "R23_Protective_Steel_Microfinish",
+          "R23_Exposed_Steel_Calm_Finish",
+          "R8_OffWhite_Ceramic_Coat",
+          "R23_Matte_Deck_Fine_Finish",
+          "R23_Concrete_Metric_Surface",
+          "R8_Restrained_Safety_Ochre",
+          "R13_Machined_Steel_Contact",
+          "R13_Dark_Seal_And_Gasket",
+          "R6_Dark_Inspection_Glazing",
+          "R3_Weathered_WarmGray_Sheet"
+        ],
+        "sourceVisible": true,
+        "hiddenRollback": false,
+        "sourceCollections": [
+          "B_22_INTEGRATED_CENTRAL_EXTRACTION_MACHINE_R19"
+        ]
+      },
+      {
+        "name": "R19_11_Machine_Service_Walkways_And_Rails",
+        "key": "Retained_16",
+        "stage": "R19",
+        "sourceCoordinateHash": "d7a6b335697868280951704eecdbaddaf8bfb42a429b4f6819fe14047b37ad90",
+        "sourceCounts": [
+          1832,
+          1614,
+          6456
+        ],
+        "sourceUVLoops": 912,
+        "expandedUVVertices": 1368,
+        "expandedVertices": 9684,
+        "materials": [
+          "R23_Protective_Steel_Microfinish",
+          "R23_Exposed_Steel_Calm_Finish",
+          "R8_OffWhite_Ceramic_Coat",
+          "R23_Matte_Deck_Fine_Finish",
+          "R23_Concrete_Metric_Surface",
+          "R8_Restrained_Safety_Ochre",
+          "R13_Machined_Steel_Contact",
+          "R13_Dark_Seal_And_Gasket",
+          "R6_Dark_Inspection_Glazing",
+          "R3_Weathered_WarmGray_Sheet"
+        ],
+        "sourceVisible": true,
+        "hiddenRollback": false,
+        "sourceCollections": [
+          "B_22_INTEGRATED_CENTRAL_EXTRACTION_MACHINE_R19"
+        ]
+      },
+      {
+        "name": "R19_12_Wellhead_Process_Return_Pipework",
+        "key": "Retained_17",
+        "stage": "R19",
+        "sourceCoordinateHash": "863edce671c319a0f6b2ddc82985c30b5df8e42aaae74ae07adbaf80e1eb6a89",
+        "sourceCounts": [
+          1920,
+          1470,
+          6624
+        ],
+        "sourceUVLoops": 2304,
+        "expandedUVVertices": 4212,
+        "expandedVertices": 11052,
+        "materials": [
+          "R23_Protective_Steel_Microfinish",
+          "R23_Exposed_Steel_Calm_Finish",
+          "R8_OffWhite_Ceramic_Coat",
+          "R23_Matte_Deck_Fine_Finish",
+          "R23_Concrete_Metric_Surface",
+          "R8_Restrained_Safety_Ochre",
+          "R13_Machined_Steel_Contact",
+          "R13_Dark_Seal_And_Gasket",
+          "R6_Dark_Inspection_Glazing",
+          "R3_Weathered_WarmGray_Sheet"
+        ],
+        "sourceVisible": true,
+        "hiddenRollback": false,
+        "sourceCollections": [
+          "B_22_INTEGRATED_CENTRAL_EXTRACTION_MACHINE_R19"
+        ]
+      },
+      {
+        "name": "R19_13_Tubular_Feed_Catwalk_To_Central_Axis",
+        "key": "Retained_18",
+        "stage": "R19",
+        "sourceCoordinateHash": "21cca97eece934234c506903d1db19578871b07deef3da63d2ef517bc7612fd2",
+        "sourceCounts": [
+          1120,
+          654,
+          3360
+        ],
+        "sourceUVLoops": 3360,
+        "expandedUVVertices": 6156,
+        "expandedVertices": 6156,
+        "materials": [
+          "R23_Protective_Steel_Microfinish",
+          "R23_Exposed_Steel_Calm_Finish",
+          "R8_OffWhite_Ceramic_Coat",
+          "R23_Matte_Deck_Fine_Finish",
+          "R23_Concrete_Metric_Surface",
+          "R8_Restrained_Safety_Ochre",
+          "R13_Machined_Steel_Contact",
+          "R13_Dark_Seal_And_Gasket",
+          "R6_Dark_Inspection_Glazing",
+          "R3_Weathered_WarmGray_Sheet"
+        ],
+        "sourceVisible": true,
+        "hiddenRollback": false,
+        "sourceCollections": [
+          "B_22_INTEGRATED_CENTRAL_EXTRACTION_MACHINE_R19"
+        ]
+      }
+    ],
+    "rejected": [],
+    "usedMaterials": [
+      "R13_Dark_Seal_And_Gasket",
+      "R13_Machined_Steel_Contact",
+      "R23_Concrete_Metric_Surface",
+      "R23_Exposed_Steel_Calm_Finish",
+      "R23_Matte_Deck_Fine_Finish",
+      "R23_Protective_Steel_Microfinish",
+      "R3_Weathered_WarmGray_Sheet",
+      "R6_Dark_Inspection_Glazing",
+      "R8_OffWhite_Ceramic_Coat",
+      "R8_Restrained_Safety_Ochre"
+    ],
+    "sourceHiddenLists": {
+      "B_RING_R18_DEEP_WELL_CANDIDATE.json:hidden_rejected_R17_meshes": [
+        "R15_INNER_LOAD_CAGE_AND_EXISTING_TOWER_CLEAR_CORE",
+        "R15_EIGHTY_SIX_METRE_CUTTING_NECK_AND_GROUND_CASSETTES",
+        "R15_GIANT_REDUCTION_AND_DRIVE_CASSETTES",
+        "R15_RING_PIER_REACTION_ARM_01",
+        "R15_RING_PIER_REACTION_ARM_02",
+        "R15_RING_PIER_REACTION_ARM_03",
+        "R15_RING_PIER_REACTION_ARM_04",
+        "R17_RETAINED_RADIAL_PORTAL_ROOFS_AND_LOAD_SPOKES",
+        "R17_NARROW_RECESSED_HUB_WITH_PRESERVED_ROUTE_OPENINGS",
+        "R17_COMPACT_UPPER_DRIVE_ENCLOSURE_AND_ANNULAR_CAP",
+        "R17_COMPACT_UPPER_THRUST_BEARING_RACES",
+        "R17_OUTRIGGER_LOAD_SEATS_FOR_UNMOVED_REACTION_AND_DRIVE_PINS",
+        "R17_EXPOSED_HELICAL_CUTTING_FLIGHT_01",
+        "R17_EXPOSED_HELICAL_CUTTING_FLIGHT_02",
+        "R17_EXPOSED_HELICAL_CUTTING_FLIGHT_03",
+        "R17_EXPOSED_HELICAL_CUTTING_FLIGHT_04",
+        "R17_EXPOSED_HELICAL_CUTTING_FLIGHT_05"
+      ],
+      "B_RING_R19_INTEGRATED_MACHINE_CANDIDATE.json:hidden_display_objects": [
+        "B_DESCENT_Cross_Brace_0134",
+        "B_DESCENT_Cross_Brace_0135",
+        "B_DESCENT_Cross_Brace_0138",
+        "B_DESCENT_Cross_Brace_0139",
+        "B_DESCENT_Cross_Brace_0142",
+        "B_DESCENT_Cross_Brace_0143",
+        "B_DESCENT_Cross_Brace_0146",
+        "B_DESCENT_Cross_Brace_0147",
+        "B_DESCENT_Cross_Brace_0150",
+        "B_DESCENT_Cross_Brace_0151",
+        "B_DESCENT_Cross_Brace_0154",
+        "B_DESCENT_Cross_Brace_0155",
+        "B_DESCENT_Cross_Brace_0158",
+        "B_DESCENT_Cross_Brace_0159",
+        "B_DESCENT_Enclosed_Lift_Car_0133",
+        "B_DESCENT_Enclosed_Lift_Car_0137",
+        "B_DESCENT_Enclosed_Lift_Car_0141",
+        "B_DESCENT_Enclosed_Lift_Car_0145",
+        "B_DESCENT_Enclosed_Lift_Car_0149",
+        "B_DESCENT_Enclosed_Lift_Car_0153",
+        "B_DESCENT_Enclosed_Lift_Car_0157",
+        "B_DESCENT_Transfer_Landing_0132",
+        "B_DESCENT_Transfer_Landing_0136",
+        "B_DESCENT_Transfer_Landing_0140",
+        "B_DESCENT_Transfer_Landing_0144",
+        "B_DESCENT_Transfer_Landing_0148",
+        "B_DESCENT_Transfer_Landing_0152",
+        "B_DESCENT_Transfer_Landing_0156",
+        "R10_EAST_SEGMENTED_SERVICE_CHASE",
+        "R10_EAST_STATIC_SERVICE_RISER",
+        "R10_HEAD_SERVICE_ENCLOSURE_SEGMENTS",
+        "R10_LEVEL_01_UNDERFRAME_AND_FIXED_RECEIVER",
+        "R10_LEVEL_02_UNDERFRAME_AND_FIXED_RECEIVER",
+        "R10_LEVEL_03_UNDERFRAME_AND_FIXED_RECEIVER",
+        "R10_LEVEL_04_UNDERFRAME_AND_FIXED_RECEIVER",
+        "R10_LEVEL_05_UNDERFRAME_AND_FIXED_RECEIVER",
+        "R10_LEVEL_06_UNDERFRAME_AND_FIXED_RECEIVER",
+        "R10_LEVEL_07_UNDERFRAME_AND_FIXED_RECEIVER",
+        "R10_MACHINE_HEAD_FIXED_GLAZING",
+        "R10_MACHINE_HEAD_LAYERED_SHELL_AND_INSPECTION_PANELS",
+        "R10_MACHINE_HEAD_PRIMARY_FRAME_AND_FLOOR",
+        "R10_MACHINE_HEAD_ROOF_GIRDERS_AND_LAYERED_COVER",
+        "R10_SHAFT_01_FIXED_ID",
+        "R10_SHAFT_CORNER_COLUMN_01",
+        "R10_SHAFT_CORNER_COLUMN_02",
+        "R10_SHAFT_CORNER_COLUMN_03",
+        "R10_SHAFT_CORNER_COLUMN_04",
+        "R10_SHAFT_NORTH_BRACE_NODES",
+        "R10_SHAFT_SOUTH_BRACE_NODES",
+        "R10_WEST_SEGMENTED_SERVICE_CHASE",
+        "R10_WEST_STATIC_SERVICE_RISER",
+        "R10_WINDING_MOTOR_FIXED_ENCLOSURE",
+        "R18_01_Wellhead_Operating_Deck",
+        "R18_02_Sealed_Wellhead_And_Pressure_Control",
+        "R18_03_Tapered_Derrick_Primary_Frame",
+        "R18_04_Derrick_Lattice_And_Monkeyboard",
+        "R18_05_Crown_Block_And_Travelling_Hoist",
+        "R18_06_Derrick_Maintenance_Ladder",
+        "R18_07_Drawworks_Winding_Drum_And_Motors",
+        "R18_08_Driller_Cabin",
+        "R18_12_Pipe_Catwalk_And_Laydown_Ramp",
+        "R18_17_Fluid_Conditioning_Deck",
+        "R18_18_Closed_Fluid_Tanks_And_Shaker_Units",
+        "R18_21_Service_Cable_Trays",
+        "R18_22_West_Deck_Access_Stair",
+        "R18_23_Process_Access_Stair",
+        "R18_24_Fluid_Deck_Access_Stair",
+        "R18_25_Sealed_Shaft_Service_Approach",
+        "R2_Visible_Winding_Drum",
+        "R2_Visible_Winding_Drum.001"
+      ],
+      "B_RING_R20_MECHANICAL_MEGASTRUCTURE.json:hidden_previous_display_objects": [
+        "R19_03_Raking_Headframe_Primary_Load_Legs",
+        "R19_09_Crown_Sheaves_And_Reeved_Hoist_Lines"
+      ],
+      "B_RING_R21_OPEN_SHAFT_TERRAIN_HOLE_SPEC.json:hidden_old_display_objects": [
+        "B_Sealed_Cap_Lock_Rib_0120",
+        "B_Sealed_Cap_Lock_Rib_0121",
+        "B_Sealed_Cap_Lock_Rib_0122",
+        "B_Sealed_Cap_Lock_Rib_0123",
+        "B_Sealed_Cap_Lock_Rib_0124",
+        "B_Sealed_Cap_Lock_Rib_0125",
+        "B_Sealed_Cap_Lock_Rib_0126",
+        "B_Sealed_Cap_Lock_Rib_0127",
+        "B_SHAFT_01_Raised_Surface_Collar",
+        "B_SHAFT_01_SEALED_CAP_NO_DEM_HOLE",
+        "R19_01_Octagonal_Well_Caisson_And_Foundation_Feet"
+      ]
+    },
+    "existingR20R21NotExported": true,
+    "terrainReferenceAndHiddenRollbackNotExported": true,
+    "geometryTransform": "Unity XYZ = Blender XZY, one winding reversal; world baked relative to B_RING_CONCEPT_ROOT; group at (2015,0,2130)",
+    "UVMapping": "same original exporter loop_triangles [0,2,1], UV0 overrides indexed by exact guarded source Blender loops"
+  },
+  "unityAssets": {
+    "newMeshAssets": 19,
+    "newMaterialsTextures": 0,
+    "reusedMaterials": 10,
+    "sceneChanged": false,
+    "oldDisplayRenderersMatched": 64,
+    "oldDisplayRenderersWouldDisable": 40,
+    "oldDisplayAlreadyDisabled": 24,
+    "hiddenListObjectsAbsent": 36,
+    "prior19AndThreeBridgesPresentEnabled": true,
+    "protectedFilesUnchanged": true,
+    "shaderErrors": false,
+    "meshes": [
+      {
+        "name": "R18_09_Pipe_Handling_Terrace",
+        "asset": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/R21Retained/Meshes/Retained_00.asset",
+        "vertices": 6768
+      },
+      {
+        "name": "R18_10_Horizontal_Tubular_Storage_Racks",
+        "asset": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/R21Retained/Meshes/Retained_01.asset",
+        "vertices": 15228
+      },
+      {
+        "name": "R18_11_Pipe_Rack_Gantry_And_Handling_Sled",
+        "asset": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/R21Retained/Meshes/Retained_02.asset",
+        "vertices": 1308
+      },
+      {
+        "name": "R18_13_Process_Equipment_Deck",
+        "asset": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/R21Retained/Meshes/Retained_03.asset",
+        "vertices": 8532
+      },
+      {
+        "name": "R18_14_Return_Separation_Vessel_Skids",
+        "asset": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/R21Retained/Meshes/Retained_04.asset",
+        "vertices": 14868
+      },
+      {
+        "name": "R18_15_High_Pressure_Pump_And_Compressor_Skids",
+        "asset": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/R21Retained/Meshes/Retained_05.asset",
+        "vertices": 13788
+      },
+      {
+        "name": "R18_16_Flanged_Process_Headers_And_Valve_Manifolds",
+        "asset": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/R21Retained/Meshes/Retained_06.asset",
+        "vertices": 18240
+      },
+      {
+        "name": "R18_19_Machinery_House_Foundation",
+        "asset": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/R21Retained/Meshes/Retained_07.asset",
+        "vertices": 5760
+      },
+      {
+        "name": "R18_20_Hoist_Power_House_Panels_And_Service_Vents",
+        "asset": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/R21Retained/Meshes/Retained_08.asset",
+        "vertices": 2160
+      },
+      {
+        "name": "R19_02_Sealed_Wellhead_Rotary_Table_And_BOP",
+        "asset": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/R21Retained/Meshes/Retained_09.asset",
+        "vertices": 17520
+      },
+      {
+        "name": "R19_04_Equipment_Transfer_Beams_And_Winch_Cradles",
+        "asset": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/R21Retained/Meshes/Retained_10.asset",
+        "vertices": 540
+      },
+      {
+        "name": "R19_05_Twin_Large_Drawworks_Drums_And_Brakes",
+        "asset": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/R21Retained/Meshes/Retained_11.asset",
+        "vertices": 99912
+      },
+      {
+        "name": "R19_06_Winch_Reduction_Gearboxes_And_Drive_Motors",
+        "asset": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/R21Retained/Meshes/Retained_12.asset",
+        "vertices": 24168
+      },
+      {
+        "name": "R19_07_Paired_Feed_Rams_And_Axial_Guides",
+        "asset": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/R21Retained/Meshes/Retained_13.asset",
+        "vertices": 6984
+      },
+      {
+        "name": "R19_08_Travelling_Head_Topdrive_And_Clamp_Assembly",
+        "asset": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/R21Retained/Meshes/Retained_14.asset",
+        "vertices": 14484
+      },
+      {
+        "name": "R19_10_Tubular_Magazine_And_Handling_Rail",
+        "asset": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/R21Retained/Meshes/Retained_15.asset",
+        "vertices": 19728
+      },
+      {
+        "name": "R19_11_Machine_Service_Walkways_And_Rails",
+        "asset": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/R21Retained/Meshes/Retained_16.asset",
+        "vertices": 9684
+      },
+      {
+        "name": "R19_12_Wellhead_Process_Return_Pipework",
+        "asset": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/R21Retained/Meshes/Retained_17.asset",
+        "vertices": 11052
+      },
+      {
+        "name": "R19_13_Tubular_Feed_Catwalk_To_Central_Axis",
+        "asset": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/R21Retained/Meshes/Retained_18.asset",
+        "vertices": 6156
+      }
+    ]
+  },
+  "oldDisplayRendererBaseline": [
+    {
+      "name": "B_DESCENT_Cross_Brace_0134",
+      "enabledBefore": false
+    },
+    {
+      "name": "B_DESCENT_Cross_Brace_0135",
+      "enabledBefore": false
+    },
+    {
+      "name": "B_DESCENT_Cross_Brace_0138",
+      "enabledBefore": false
+    },
+    {
+      "name": "B_DESCENT_Cross_Brace_0139",
+      "enabledBefore": false
+    },
+    {
+      "name": "B_DESCENT_Cross_Brace_0142",
+      "enabledBefore": false
+    },
+    {
+      "name": "B_DESCENT_Cross_Brace_0143",
+      "enabledBefore": false
+    },
+    {
+      "name": "B_DESCENT_Cross_Brace_0146",
+      "enabledBefore": false
+    },
+    {
+      "name": "B_DESCENT_Cross_Brace_0147",
+      "enabledBefore": false
+    },
+    {
+      "name": "B_DESCENT_Cross_Brace_0150",
+      "enabledBefore": false
+    },
+    {
+      "name": "B_DESCENT_Cross_Brace_0151",
+      "enabledBefore": false
+    },
+    {
+      "name": "B_DESCENT_Cross_Brace_0154",
+      "enabledBefore": false
+    },
+    {
+      "name": "B_DESCENT_Cross_Brace_0155",
+      "enabledBefore": false
+    },
+    {
+      "name": "B_DESCENT_Cross_Brace_0158",
+      "enabledBefore": false
+    },
+    {
+      "name": "B_DESCENT_Cross_Brace_0159",
+      "enabledBefore": false
+    },
+    {
+      "name": "B_DESCENT_Enclosed_Lift_Car_0133",
+      "enabledBefore": true
+    },
+    {
+      "name": "B_DESCENT_Enclosed_Lift_Car_0137",
+      "enabledBefore": true
+    },
+    {
+      "name": "B_DESCENT_Enclosed_Lift_Car_0141",
+      "enabledBefore": true
+    },
+    {
+      "name": "B_DESCENT_Enclosed_Lift_Car_0145",
+      "enabledBefore": true
+    },
+    {
+      "name": "B_DESCENT_Enclosed_Lift_Car_0149",
+      "enabledBefore": true
+    },
+    {
+      "name": "B_DESCENT_Enclosed_Lift_Car_0153",
+      "enabledBefore": true
+    },
+    {
+      "name": "B_DESCENT_Enclosed_Lift_Car_0157",
+      "enabledBefore": true
+    },
+    {
+      "name": "B_DESCENT_Transfer_Landing_0132",
+      "enabledBefore": true
+    },
+    {
+      "name": "B_DESCENT_Transfer_Landing_0136",
+      "enabledBefore": true
+    },
+    {
+      "name": "B_DESCENT_Transfer_Landing_0140",
+      "enabledBefore": true
+    },
+    {
+      "name": "B_DESCENT_Transfer_Landing_0144",
+      "enabledBefore": true
+    },
+    {
+      "name": "B_DESCENT_Transfer_Landing_0148",
+      "enabledBefore": true
+    },
+    {
+      "name": "B_DESCENT_Transfer_Landing_0152",
+      "enabledBefore": true
+    },
+    {
+      "name": "B_DESCENT_Transfer_Landing_0156",
+      "enabledBefore": true
+    },
+    {
+      "name": "B_SHAFT_01_Raised_Surface_Collar",
+      "enabledBefore": false
+    },
+    {
+      "name": "B_SHAFT_01_SEALED_CAP_NO_DEM_HOLE",
+      "enabledBefore": false
+    },
+    {
+      "name": "B_Sealed_Cap_Lock_Rib_0120",
+      "enabledBefore": false
+    },
+    {
+      "name": "B_Sealed_Cap_Lock_Rib_0121",
+      "enabledBefore": false
+    },
+    {
+      "name": "B_Sealed_Cap_Lock_Rib_0122",
+      "enabledBefore": false
+    },
+    {
+      "name": "B_Sealed_Cap_Lock_Rib_0123",
+      "enabledBefore": false
+    },
+    {
+      "name": "B_Sealed_Cap_Lock_Rib_0124",
+      "enabledBefore": false
+    },
+    {
+      "name": "B_Sealed_Cap_Lock_Rib_0125",
+      "enabledBefore": false
+    },
+    {
+      "name": "B_Sealed_Cap_Lock_Rib_0126",
+      "enabledBefore": false
+    },
+    {
+      "name": "B_Sealed_Cap_Lock_Rib_0127",
+      "enabledBefore": false
+    },
+    {
+      "name": "R10_EAST_SEGMENTED_SERVICE_CHASE",
+      "enabledBefore": true
+    },
+    {
+      "name": "R10_EAST_STATIC_SERVICE_RISER",
+      "enabledBefore": true
+    },
+    {
+      "name": "R10_HEAD_SERVICE_ENCLOSURE_SEGMENTS",
+      "enabledBefore": true
+    },
+    {
+      "name": "R10_LEVEL_01_UNDERFRAME_AND_FIXED_RECEIVER",
+      "enabledBefore": true
+    },
+    {
+      "name": "R10_LEVEL_02_UNDERFRAME_AND_FIXED_RECEIVER",
+      "enabledBefore": true
+    },
+    {
+      "name": "R10_LEVEL_03_UNDERFRAME_AND_FIXED_RECEIVER",
+      "enabledBefore": true
+    },
+    {
+      "name": "R10_LEVEL_04_UNDERFRAME_AND_FIXED_RECEIVER",
+      "enabledBefore": true
+    },
+    {
+      "name": "R10_LEVEL_05_UNDERFRAME_AND_FIXED_RECEIVER",
+      "enabledBefore": true
+    },
+    {
+      "name": "R10_LEVEL_06_UNDERFRAME_AND_FIXED_RECEIVER",
+      "enabledBefore": true
+    },
+    {
+      "name": "R10_LEVEL_07_UNDERFRAME_AND_FIXED_RECEIVER",
+      "enabledBefore": true
+    },
+    {
+      "name": "R10_MACHINE_HEAD_FIXED_GLAZING",
+      "enabledBefore": true
+    },
+    {
+      "name": "R10_MACHINE_HEAD_LAYERED_SHELL_AND_INSPECTION_PANELS",
+      "enabledBefore": true
+    },
+    {
+      "name": "R10_MACHINE_HEAD_PRIMARY_FRAME_AND_FLOOR",
+      "enabledBefore": true
+    },
+    {
+      "name": "R10_MACHINE_HEAD_ROOF_GIRDERS_AND_LAYERED_COVER",
+      "enabledBefore": true
+    },
+    {
+      "name": "R10_SHAFT_01_FIXED_ID",
+      "enabledBefore": true
+    },
+    {
+      "name": "R10_SHAFT_CORNER_COLUMN_01",
+      "enabledBefore": true
+    },
+    {
+      "name": "R10_SHAFT_CORNER_COLUMN_02",
+      "enabledBefore": true
+    },
+    {
+      "name": "R10_SHAFT_CORNER_COLUMN_03",
+      "enabledBefore": true
+    },
+    {
+      "name": "R10_SHAFT_CORNER_COLUMN_04",
+      "enabledBefore": true
+    },
+    {
+      "name": "R10_SHAFT_NORTH_BRACE_NODES",
+      "enabledBefore": true
+    },
+    {
+      "name": "R10_SHAFT_SOUTH_BRACE_NODES",
+      "enabledBefore": true
+    },
+    {
+      "name": "R10_WEST_SEGMENTED_SERVICE_CHASE",
+      "enabledBefore": true
+    },
+    {
+      "name": "R10_WEST_STATIC_SERVICE_RISER",
+      "enabledBefore": true
+    },
+    {
+      "name": "R10_WINDING_MOTOR_FIXED_ENCLOSURE",
+      "enabledBefore": true
+    },
+    {
+      "name": "R2_Visible_Winding_Drum",
+      "enabledBefore": true
+    },
+    {
+      "name": "R2_Visible_Winding_Drum.001",
+      "enabledBefore": true
+    }
+  ],
+  "hiddenListAbsentObjects": [
+    "R15_EIGHTY_SIX_METRE_CUTTING_NECK_AND_GROUND_CASSETTES",
+    "R15_GIANT_REDUCTION_AND_DRIVE_CASSETTES",
+    "R15_INNER_LOAD_CAGE_AND_EXISTING_TOWER_CLEAR_CORE",
+    "R15_RING_PIER_REACTION_ARM_01",
+    "R15_RING_PIER_REACTION_ARM_02",
+    "R15_RING_PIER_REACTION_ARM_03",
+    "R15_RING_PIER_REACTION_ARM_04",
+    "R17_COMPACT_UPPER_DRIVE_ENCLOSURE_AND_ANNULAR_CAP",
+    "R17_COMPACT_UPPER_THRUST_BEARING_RACES",
+    "R17_EXPOSED_HELICAL_CUTTING_FLIGHT_01",
+    "R17_EXPOSED_HELICAL_CUTTING_FLIGHT_02",
+    "R17_EXPOSED_HELICAL_CUTTING_FLIGHT_03",
+    "R17_EXPOSED_HELICAL_CUTTING_FLIGHT_04",
+    "R17_EXPOSED_HELICAL_CUTTING_FLIGHT_05",
+    "R17_NARROW_RECESSED_HUB_WITH_PRESERVED_ROUTE_OPENINGS",
+    "R17_OUTRIGGER_LOAD_SEATS_FOR_UNMOVED_REACTION_AND_DRIVE_PINS",
+    "R17_RETAINED_RADIAL_PORTAL_ROOFS_AND_LOAD_SPOKES",
+    "R18_01_Wellhead_Operating_Deck",
+    "R18_02_Sealed_Wellhead_And_Pressure_Control",
+    "R18_03_Tapered_Derrick_Primary_Frame",
+    "R18_04_Derrick_Lattice_And_Monkeyboard",
+    "R18_05_Crown_Block_And_Travelling_Hoist",
+    "R18_06_Derrick_Maintenance_Ladder",
+    "R18_07_Drawworks_Winding_Drum_And_Motors",
+    "R18_08_Driller_Cabin",
+    "R18_12_Pipe_Catwalk_And_Laydown_Ramp",
+    "R18_17_Fluid_Conditioning_Deck",
+    "R18_18_Closed_Fluid_Tanks_And_Shaker_Units",
+    "R18_21_Service_Cable_Trays",
+    "R18_22_West_Deck_Access_Stair",
+    "R18_23_Process_Access_Stair",
+    "R18_24_Fluid_Deck_Access_Stair",
+    "R18_25_Sealed_Shaft_Service_Approach",
+    "R19_01_Octagonal_Well_Caisson_And_Foundation_Feet",
+    "R19_03_Raking_Headframe_Primary_Load_Legs",
+    "R19_09_Crown_Sheaves_And_Reeved_Hoist_Lines"
+  ],
+  "beforeSceneCommit": "17e71aa1"
+}
