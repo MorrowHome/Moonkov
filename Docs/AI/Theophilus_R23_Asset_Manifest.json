@@ -1,0 +1,997 @@
+{
+  "inputs": [
+    {
+      "file": "Moonkov_R23_Material_Only_Delta.blend",
+      "sha256": "4aab93ab731dd1e9a47dbf812c83c14e1b9d5b6a6a2574d4716ac7a63ab0f272"
+    },
+    {
+      "file": "R23_R21_Material_UV_Handoff.json",
+      "sha256": "68e112c06bdeb0289ed146ff7d7ebd0e137e92f755c1a41ed158f94a48a7d708"
+    },
+    {
+      "file": "R23_R21_Metric_UV_Overrides.json",
+      "sha256": "29ab48046fd6448c06e4bb50ddbecaafa8b0542b9b3f20c12f175f07561affb7"
+    }
+  ],
+  "UV": {
+    "accepted": [
+      {
+        "name": "R20_01_Articulated_Armored_Primary_Buttresses",
+        "meshKey": "R21_Mesh_00",
+        "sourceCoordinateHash": "5d2cb0f968a8ba57b75dc353eddd96b60a4069be2fcbbc421f26ab26ea53296c",
+        "sourceVertexCount": 6912,
+        "sourcePolygonCount": 5920,
+        "sourceLoopCount": 25344,
+        "uvSourceLoops": 6144,
+        "uvExpandedVertices": 11520,
+        "uvVertexCount": 40512,
+        "materialSlots": [
+          {
+            "slot_index": 0,
+            "old_material": "R8_Dark_Protective_Steel",
+            "new_material": "R23_Protective_Steel_Microfinish"
+          },
+          {
+            "slot_index": 1,
+            "old_material": "R8_Rough_Exposed_Steel",
+            "new_material": "R23_Exposed_Steel_Calm_Finish"
+          },
+          {
+            "slot_index": 3,
+            "old_material": "R8_Matte_Deck_Plates",
+            "new_material": "R23_Matte_Deck_Fine_Finish"
+          },
+          {
+            "slot_index": 4,
+            "old_material": "R8_Scanned_Mineral_Support",
+            "new_material": "R23_Concrete_Metric_Surface"
+          }
+        ],
+        "originalR21ExportExactMatch": true
+      },
+      {
+        "name": "R20_02_Grouped_Actuator_Muscles_And_Heavy_Nodes",
+        "meshKey": "R21_Mesh_01",
+        "sourceCoordinateHash": "52aadb3b60ac280c740746b8047e30a5936391129743663ebc486fd89468420b",
+        "sourceVertexCount": 6176,
+        "sourcePolygonCount": 3440,
+        "sourceLoopCount": 18528,
+        "uvSourceLoops": 14976,
+        "uvExpandedVertices": 28368,
+        "uvVertexCount": 34944,
+        "materialSlots": [
+          {
+            "slot_index": 0,
+            "old_material": "R8_Dark_Protective_Steel",
+            "new_material": "R23_Protective_Steel_Microfinish"
+          },
+          {
+            "slot_index": 1,
+            "old_material": "R8_Rough_Exposed_Steel",
+            "new_material": "R23_Exposed_Steel_Calm_Finish"
+          },
+          {
+            "slot_index": 3,
+            "old_material": "R8_Matte_Deck_Plates",
+            "new_material": "R23_Matte_Deck_Fine_Finish"
+          },
+          {
+            "slot_index": 4,
+            "old_material": "R8_Scanned_Mineral_Support",
+            "new_material": "R23_Concrete_Metric_Surface"
+          }
+        ],
+        "originalR21ExportExactMatch": true
+      },
+      {
+        "name": "R20_03_Nested_Transmission_Rings_And_Gear_Races",
+        "meshKey": "R21_Mesh_02",
+        "sourceCoordinateHash": "8a03bf544c78ca5445fad65cd3d4b31718e44dcd7b2a9dea2dc46f4040f38695",
+        "sourceVertexCount": 10740,
+        "sourcePolygonCount": 9710,
+        "sourceLoopCount": 39560,
+        "uvSourceLoops": 31320,
+        "uvExpandedVertices": 47880,
+        "uvVertexCount": 60420,
+        "materialSlots": [
+          {
+            "slot_index": 0,
+            "old_material": "R8_Dark_Protective_Steel",
+            "new_material": "R23_Protective_Steel_Microfinish"
+          },
+          {
+            "slot_index": 1,
+            "old_material": "R8_Rough_Exposed_Steel",
+            "new_material": "R23_Exposed_Steel_Calm_Finish"
+          },
+          {
+            "slot_index": 3,
+            "old_material": "R8_Matte_Deck_Plates",
+            "new_material": "R23_Matte_Deck_Fine_Finish"
+          },
+          {
+            "slot_index": 4,
+            "old_material": "R8_Scanned_Mineral_Support",
+            "new_material": "R23_Concrete_Metric_Surface"
+          }
+        ],
+        "originalR21ExportExactMatch": true
+      },
+      {
+        "name": "R20_04_Offset_Shoulder_Engine_Packs_And_Armor",
+        "meshKey": "R21_Mesh_03",
+        "sourceCoordinateHash": "4def2510985b132adb12e90b49a7e6478f6b2f00a4db66506f0982c3a178b246",
+        "sourceVertexCount": 1600,
+        "sourcePolygonCount": 936,
+        "sourceLoopCount": 4800,
+        "uvSourceLoops": 3840,
+        "uvExpandedVertices": 7296,
+        "uvVertexCount": 8784,
+        "materialSlots": [
+          {
+            "slot_index": 0,
+            "old_material": "R8_Dark_Protective_Steel",
+            "new_material": "R23_Protective_Steel_Microfinish"
+          },
+          {
+            "slot_index": 1,
+            "old_material": "R8_Rough_Exposed_Steel",
+            "new_material": "R23_Exposed_Steel_Calm_Finish"
+          },
+          {
+            "slot_index": 3,
+            "old_material": "R8_Matte_Deck_Plates",
+            "new_material": "R23_Matte_Deck_Fine_Finish"
+          },
+          {
+            "slot_index": 4,
+            "old_material": "R8_Scanned_Mineral_Support",
+            "new_material": "R23_Concrete_Metric_Surface"
+          }
+        ],
+        "originalR21ExportExactMatch": true
+      },
+      {
+        "name": "R20_05_Central_Transfer_Hub_At_Existing_Bridge_Height",
+        "meshKey": "R21_Mesh_04",
+        "sourceCoordinateHash": "8abe61a191cf40c4c1cb2522be5b8e8d51db7ac352c74d3a9d12138ccd7bfc57",
+        "sourceVertexCount": 2120,
+        "sourcePolygonCount": 1892,
+        "sourceLoopCount": 7888,
+        "uvSourceLoops": 6928,
+        "uvExpandedVertices": 10584,
+        "uvVertexCount": 12312,
+        "materialSlots": [
+          {
+            "slot_index": 0,
+            "old_material": "R8_Dark_Protective_Steel",
+            "new_material": "R23_Protective_Steel_Microfinish"
+          },
+          {
+            "slot_index": 1,
+            "old_material": "R8_Rough_Exposed_Steel",
+            "new_material": "R23_Exposed_Steel_Calm_Finish"
+          },
+          {
+            "slot_index": 3,
+            "old_material": "R8_Matte_Deck_Plates",
+            "new_material": "R23_Matte_Deck_Fine_Finish"
+          },
+          {
+            "slot_index": 4,
+            "old_material": "R8_Scanned_Mineral_Support",
+            "new_material": "R23_Concrete_Metric_Surface"
+          }
+        ],
+        "originalR21ExportExactMatch": true
+      },
+      {
+        "name": "R20_06_NORTH_Radial_Arm_And_Bridge_End_Coupler",
+        "meshKey": "R21_Mesh_05",
+        "sourceCoordinateHash": "60ab188c543f54bc474963fe61d832f6e92b0701a18a5e53e0d14cc005c00076",
+        "sourceVertexCount": 1512,
+        "sourcePolygonCount": 866,
+        "sourceLoopCount": 4536,
+        "uvSourceLoops": 4248,
+        "uvExpandedVertices": 7884,
+        "uvVertexCount": 8412,
+        "materialSlots": [
+          {
+            "slot_index": 0,
+            "old_material": "R8_Dark_Protective_Steel",
+            "new_material": "R23_Protective_Steel_Microfinish"
+          },
+          {
+            "slot_index": 1,
+            "old_material": "R8_Rough_Exposed_Steel",
+            "new_material": "R23_Exposed_Steel_Calm_Finish"
+          },
+          {
+            "slot_index": 3,
+            "old_material": "R8_Matte_Deck_Plates",
+            "new_material": "R23_Matte_Deck_Fine_Finish"
+          },
+          {
+            "slot_index": 4,
+            "old_material": "R8_Scanned_Mineral_Support",
+            "new_material": "R23_Concrete_Metric_Surface"
+          }
+        ],
+        "originalR21ExportExactMatch": true
+      },
+      {
+        "name": "R20_06_EAST_Radial_Arm_And_Bridge_End_Coupler",
+        "meshKey": "R21_Mesh_06",
+        "sourceCoordinateHash": "3c32f2e15024729e2c7bac21457999d495f99c070db3a4a5fbc3e73b43ecad38",
+        "sourceVertexCount": 1512,
+        "sourcePolygonCount": 866,
+        "sourceLoopCount": 4536,
+        "uvSourceLoops": 4248,
+        "uvExpandedVertices": 7884,
+        "uvVertexCount": 8412,
+        "materialSlots": [
+          {
+            "slot_index": 0,
+            "old_material": "R8_Dark_Protective_Steel",
+            "new_material": "R23_Protective_Steel_Microfinish"
+          },
+          {
+            "slot_index": 1,
+            "old_material": "R8_Rough_Exposed_Steel",
+            "new_material": "R23_Exposed_Steel_Calm_Finish"
+          },
+          {
+            "slot_index": 3,
+            "old_material": "R8_Matte_Deck_Plates",
+            "new_material": "R23_Matte_Deck_Fine_Finish"
+          },
+          {
+            "slot_index": 4,
+            "old_material": "R8_Scanned_Mineral_Support",
+            "new_material": "R23_Concrete_Metric_Surface"
+          }
+        ],
+        "originalR21ExportExactMatch": true
+      },
+      {
+        "name": "R20_06_SOUTH_Radial_Arm_And_Bridge_End_Coupler",
+        "meshKey": "R21_Mesh_07",
+        "sourceCoordinateHash": "eec084f255e48569ad3b9a1011d904bfba8afabe49a34cd80a858d9fc8fe17dc",
+        "sourceVertexCount": 1512,
+        "sourcePolygonCount": 866,
+        "sourceLoopCount": 4536,
+        "uvSourceLoops": 4248,
+        "uvExpandedVertices": 7884,
+        "uvVertexCount": 8412,
+        "materialSlots": [
+          {
+            "slot_index": 0,
+            "old_material": "R8_Dark_Protective_Steel",
+            "new_material": "R23_Protective_Steel_Microfinish"
+          },
+          {
+            "slot_index": 1,
+            "old_material": "R8_Rough_Exposed_Steel",
+            "new_material": "R23_Exposed_Steel_Calm_Finish"
+          },
+          {
+            "slot_index": 3,
+            "old_material": "R8_Matte_Deck_Plates",
+            "new_material": "R23_Matte_Deck_Fine_Finish"
+          },
+          {
+            "slot_index": 4,
+            "old_material": "R8_Scanned_Mineral_Support",
+            "new_material": "R23_Concrete_Metric_Surface"
+          }
+        ],
+        "originalR21ExportExactMatch": true
+      },
+      {
+        "name": "R20_07_Upper_Stage_Articulated_Spine_And_Armor",
+        "meshKey": "R21_Mesh_08",
+        "sourceCoordinateHash": "f0e4d4b690f5fef0bfa789d33f5ea466c577fd37fa9bd39bd3b4e40611d56923",
+        "sourceVertexCount": 5824,
+        "sourcePolygonCount": 4280,
+        "sourceLoopCount": 19776,
+        "uvSourceLoops": 8832,
+        "uvExpandedVertices": 16656,
+        "uvVertexCount": 33648,
+        "materialSlots": [
+          {
+            "slot_index": 0,
+            "old_material": "R8_Dark_Protective_Steel",
+            "new_material": "R23_Protective_Steel_Microfinish"
+          },
+          {
+            "slot_index": 1,
+            "old_material": "R8_Rough_Exposed_Steel",
+            "new_material": "R23_Exposed_Steel_Calm_Finish"
+          },
+          {
+            "slot_index": 3,
+            "old_material": "R8_Matte_Deck_Plates",
+            "new_material": "R23_Matte_Deck_Fine_Finish"
+          },
+          {
+            "slot_index": 4,
+            "old_material": "R8_Scanned_Mineral_Support",
+            "new_material": "R23_Concrete_Metric_Surface"
+          }
+        ],
+        "originalR21ExportExactMatch": true
+      },
+      {
+        "name": "R20_08_Upper_Lift_Drive_Core_And_Segmented_Casings",
+        "meshKey": "R21_Mesh_09",
+        "sourceCoordinateHash": "247defa3761d901bd47e06288b588bfa60179665439b496153b3c7cf2c5c6339",
+        "sourceVertexCount": 4528,
+        "sourcePolygonCount": 3562,
+        "sourceLoopCount": 15576,
+        "uvSourceLoops": 13080,
+        "uvExpandedVertices": 21456,
+        "uvVertexCount": 25356,
+        "materialSlots": [
+          {
+            "slot_index": 0,
+            "old_material": "R8_Dark_Protective_Steel",
+            "new_material": "R23_Protective_Steel_Microfinish"
+          },
+          {
+            "slot_index": 1,
+            "old_material": "R8_Rough_Exposed_Steel",
+            "new_material": "R23_Exposed_Steel_Calm_Finish"
+          },
+          {
+            "slot_index": 3,
+            "old_material": "R8_Matte_Deck_Plates",
+            "new_material": "R23_Matte_Deck_Fine_Finish"
+          },
+          {
+            "slot_index": 4,
+            "old_material": "R8_Scanned_Mineral_Support",
+            "new_material": "R23_Concrete_Metric_Surface"
+          }
+        ],
+        "originalR21ExportExactMatch": true
+      },
+      {
+        "name": "R20_09_High_Crown_Sheaves_And_Armored_Head",
+        "meshKey": "R21_Mesh_10",
+        "sourceCoordinateHash": "8fb805d84908aadc40b897ca8e5401d85e2cd7bc4724aa3b67cbeb79f680d34f",
+        "sourceVertexCount": 5264,
+        "sourcePolygonCount": 4212,
+        "sourceLoopCount": 18480,
+        "uvSourceLoops": 15072,
+        "uvExpandedVertices": 23844,
+        "uvVertexCount": 30168,
+        "materialSlots": [
+          {
+            "slot_index": 0,
+            "old_material": "R8_Dark_Protective_Steel",
+            "new_material": "R23_Protective_Steel_Microfinish"
+          },
+          {
+            "slot_index": 1,
+            "old_material": "R8_Rough_Exposed_Steel",
+            "new_material": "R23_Exposed_Steel_Calm_Finish"
+          },
+          {
+            "slot_index": 3,
+            "old_material": "R8_Matte_Deck_Plates",
+            "new_material": "R23_Matte_Deck_Fine_Finish"
+          },
+          {
+            "slot_index": 4,
+            "old_material": "R8_Scanned_Mineral_Support",
+            "new_material": "R23_Concrete_Metric_Surface"
+          }
+        ],
+        "originalR21ExportExactMatch": true
+      },
+      {
+        "name": "R20_10_Routed_Hydraulics_Cable_Bundles_And_Service_Cassettes",
+        "meshKey": "R21_Mesh_11",
+        "sourceCoordinateHash": "0455a66e2bca22e59e2ceda131d1cd64a1937a364c5873d1eccbe99832bfaf84",
+        "sourceVertexCount": 9424,
+        "sourcePolygonCount": 5592,
+        "sourceLoopCount": 28272,
+        "uvSourceLoops": 22224,
+        "uvExpandedVertices": 40176,
+        "uvVertexCount": 51264,
+        "materialSlots": [
+          {
+            "slot_index": 0,
+            "old_material": "R8_Dark_Protective_Steel",
+            "new_material": "R23_Protective_Steel_Microfinish"
+          },
+          {
+            "slot_index": 1,
+            "old_material": "R8_Rough_Exposed_Steel",
+            "new_material": "R23_Exposed_Steel_Calm_Finish"
+          },
+          {
+            "slot_index": 3,
+            "old_material": "R8_Matte_Deck_Plates",
+            "new_material": "R23_Matte_Deck_Fine_Finish"
+          },
+          {
+            "slot_index": 4,
+            "old_material": "R8_Scanned_Mineral_Support",
+            "new_material": "R23_Concrete_Metric_Surface"
+          }
+        ],
+        "originalR21ExportExactMatch": true
+      },
+      {
+        "name": "R20_11_Drawworks_Armor_And_Cable_Returns",
+        "meshKey": "R21_Mesh_12",
+        "sourceCoordinateHash": "4498199289e8efa61d38ad1ba4c07a24705405deafea313532526aa16d183dd1",
+        "sourceVertexCount": 480,
+        "sourcePolygonCount": 296,
+        "sourceLoopCount": 1440,
+        "uvSourceLoops": 528,
+        "uvExpandedVertices": 960,
+        "uvVertexCount": 2544,
+        "materialSlots": [
+          {
+            "slot_index": 0,
+            "old_material": "R8_Dark_Protective_Steel",
+            "new_material": "R23_Protective_Steel_Microfinish"
+          },
+          {
+            "slot_index": 1,
+            "old_material": "R8_Rough_Exposed_Steel",
+            "new_material": "R23_Exposed_Steel_Calm_Finish"
+          },
+          {
+            "slot_index": 3,
+            "old_material": "R8_Matte_Deck_Plates",
+            "new_material": "R23_Matte_Deck_Fine_Finish"
+          },
+          {
+            "slot_index": 4,
+            "old_material": "R8_Scanned_Mineral_Support",
+            "new_material": "R23_Concrete_Metric_Surface"
+          }
+        ],
+        "originalR21ExportExactMatch": true
+      },
+      {
+        "name": "R21_01_Excavated_Rock_Wall_And_Uneven_Rim",
+        "meshKey": "R21_Mesh_13",
+        "sourceCoordinateHash": "0738743ad9ffc1a3d2441d1d484dca72561722a9d20ba161afec74112cc805c2",
+        "sourceVertexCount": 448,
+        "sourcePolygonCount": 320,
+        "sourceLoopCount": 1280,
+        "uvSourceLoops": 0,
+        "uvExpandedVertices": 0,
+        "uvVertexCount": 1920,
+        "materialSlots": [
+          {
+            "slot_index": 0,
+            "old_material": "R8_Dark_Protective_Steel",
+            "new_material": "R23_Protective_Steel_Microfinish"
+          },
+          {
+            "slot_index": 1,
+            "old_material": "R8_Rough_Exposed_Steel",
+            "new_material": "R23_Exposed_Steel_Calm_Finish"
+          },
+          {
+            "slot_index": 3,
+            "old_material": "R8_Matte_Deck_Plates",
+            "new_material": "R23_Matte_Deck_Fine_Finish"
+          },
+          {
+            "slot_index": 4,
+            "old_material": "R8_Scanned_Mineral_Support",
+            "new_material": "R23_Concrete_Metric_Surface"
+          }
+        ],
+        "originalR21ExportExactMatch": true
+      },
+      {
+        "name": "R21_02_Thick_Segmented_Shaft_Lining",
+        "meshKey": "R21_Mesh_14",
+        "sourceCoordinateHash": "a57de59cd14c65faf3115ad68980b0c00e2577e221ae2fa0d765642c3a20d85e",
+        "sourceVertexCount": 2304,
+        "sourcePolygonCount": 1664,
+        "sourceLoopCount": 6656,
+        "uvSourceLoops": 6656,
+        "uvExpandedVertices": 9984,
+        "uvVertexCount": 9984,
+        "materialSlots": [
+          {
+            "slot_index": 0,
+            "old_material": "R8_Dark_Protective_Steel",
+            "new_material": "R23_Protective_Steel_Microfinish"
+          },
+          {
+            "slot_index": 1,
+            "old_material": "R8_Rough_Exposed_Steel",
+            "new_material": "R23_Exposed_Steel_Calm_Finish"
+          },
+          {
+            "slot_index": 3,
+            "old_material": "R8_Matte_Deck_Plates",
+            "new_material": "R23_Matte_Deck_Fine_Finish"
+          },
+          {
+            "slot_index": 4,
+            "old_material": "R8_Scanned_Mineral_Support",
+            "new_material": "R23_Concrete_Metric_Surface"
+          }
+        ],
+        "originalR21ExportExactMatch": true
+      },
+      {
+        "name": "R21_03_Three_Descending_Inspection_Galleries",
+        "meshKey": "R21_Mesh_15",
+        "sourceCoordinateHash": "6c3e0e7f9df551a0d6e700313a3e57bea5c127e2395d23dd7cbecb7900671445",
+        "sourceVertexCount": 5760,
+        "sourcePolygonCount": 5184,
+        "sourceLoopCount": 20736,
+        "uvSourceLoops": 3456,
+        "uvExpandedVertices": 5184,
+        "uvVertexCount": 31104,
+        "materialSlots": [
+          {
+            "slot_index": 0,
+            "old_material": "R8_Dark_Protective_Steel",
+            "new_material": "R23_Protective_Steel_Microfinish"
+          },
+          {
+            "slot_index": 1,
+            "old_material": "R8_Rough_Exposed_Steel",
+            "new_material": "R23_Exposed_Steel_Calm_Finish"
+          },
+          {
+            "slot_index": 3,
+            "old_material": "R8_Matte_Deck_Plates",
+            "new_material": "R23_Matte_Deck_Fine_Finish"
+          },
+          {
+            "slot_index": 4,
+            "old_material": "R8_Scanned_Mineral_Support",
+            "new_material": "R23_Concrete_Metric_Surface"
+          }
+        ],
+        "originalR21ExportExactMatch": true
+      },
+      {
+        "name": "R21_04_Rim_Foundations_And_Machine_Suspension_Grillage",
+        "meshKey": "R21_Mesh_16",
+        "sourceCoordinateHash": "f5c9058598ab7138ab4eb73a58b2390cfb05cd9adc5e19a6ae98127a1a99fd07",
+        "sourceVertexCount": 1120,
+        "sourcePolygonCount": 840,
+        "sourceLoopCount": 3360,
+        "uvSourceLoops": 3168,
+        "uvExpandedVertices": 4752,
+        "uvVertexCount": 5040,
+        "materialSlots": [
+          {
+            "slot_index": 0,
+            "old_material": "R8_Dark_Protective_Steel",
+            "new_material": "R23_Protective_Steel_Microfinish"
+          },
+          {
+            "slot_index": 1,
+            "old_material": "R8_Rough_Exposed_Steel",
+            "new_material": "R23_Exposed_Steel_Calm_Finish"
+          },
+          {
+            "slot_index": 3,
+            "old_material": "R8_Matte_Deck_Plates",
+            "new_material": "R23_Matte_Deck_Fine_Finish"
+          },
+          {
+            "slot_index": 4,
+            "old_material": "R8_Scanned_Mineral_Support",
+            "new_material": "R23_Concrete_Metric_Surface"
+          }
+        ],
+        "originalR21ExportExactMatch": true
+      },
+      {
+        "name": "R21_05_Deep_Extraction_Riser_And_Suspended_Pipelines",
+        "meshKey": "R21_Mesh_17",
+        "sourceCoordinateHash": "3460ddbfd622fb802dd2b996b959ea140d821ec1d88c47f57a68424cc176cc7b",
+        "sourceVertexCount": 6272,
+        "sourcePolygonCount": 3864,
+        "sourceLoopCount": 18816,
+        "uvSourceLoops": 10272,
+        "uvExpandedVertices": 19608,
+        "uvVertexCount": 33264,
+        "materialSlots": [
+          {
+            "slot_index": 0,
+            "old_material": "R8_Dark_Protective_Steel",
+            "new_material": "R23_Protective_Steel_Microfinish"
+          },
+          {
+            "slot_index": 1,
+            "old_material": "R8_Rough_Exposed_Steel",
+            "new_material": "R23_Exposed_Steel_Calm_Finish"
+          },
+          {
+            "slot_index": 3,
+            "old_material": "R8_Matte_Deck_Plates",
+            "new_material": "R23_Matte_Deck_Fine_Finish"
+          },
+          {
+            "slot_index": 4,
+            "old_material": "R8_Scanned_Mineral_Support",
+            "new_material": "R23_Concrete_Metric_Surface"
+          }
+        ],
+        "originalR21ExportExactMatch": true
+      },
+      {
+        "name": "R21_06_Visible_Rock_Bottom_And_Rubble",
+        "meshKey": "R21_Mesh_18",
+        "sourceCoordinateHash": "d4830a45e4eddd17853b578a04869764750efacc8959c327e4e1cfa810abeb93",
+        "sourceVertexCount": 961,
+        "sourcePolygonCount": 1376,
+        "sourceLoopCount": 4416,
+        "uvSourceLoops": 0,
+        "uvExpandedVertices": 0,
+        "uvVertexCount": 4992,
+        "materialSlots": [
+          {
+            "slot_index": 0,
+            "old_material": "R8_Dark_Protective_Steel",
+            "new_material": "R23_Protective_Steel_Microfinish"
+          },
+          {
+            "slot_index": 1,
+            "old_material": "R8_Rough_Exposed_Steel",
+            "new_material": "R23_Exposed_Steel_Calm_Finish"
+          },
+          {
+            "slot_index": 3,
+            "old_material": "R8_Matte_Deck_Plates",
+            "new_material": "R23_Matte_Deck_Fine_Finish"
+          },
+          {
+            "slot_index": 4,
+            "old_material": "R8_Scanned_Mineral_Support",
+            "new_material": "R23_Concrete_Metric_Surface"
+          }
+        ],
+        "originalR21ExportExactMatch": true
+      }
+    ],
+    "rejected": [],
+    "notInstalled": [
+      "R18_09_Pipe_Handling_Terrace",
+      "R18_10_Horizontal_Tubular_Storage_Racks",
+      "R18_11_Pipe_Rack_Gantry_And_Handling_Sled",
+      "R18_13_Process_Equipment_Deck",
+      "R18_14_Return_Separation_Vessel_Skids",
+      "R18_15_High_Pressure_Pump_And_Compressor_Skids",
+      "R18_16_Flanged_Process_Headers_And_Valve_Manifolds",
+      "R18_19_Machinery_House_Foundation",
+      "R18_20_Hoist_Power_House_Panels_And_Service_Vents",
+      "R19_02_Sealed_Wellhead_Rotary_Table_And_BOP",
+      "R19_04_Equipment_Transfer_Beams_And_Winch_Cradles",
+      "R19_05_Twin_Large_Drawworks_Drums_And_Brakes",
+      "R19_06_Winch_Reduction_Gearboxes_And_Drive_Motors",
+      "R19_07_Paired_Feed_Rams_And_Axial_Guides",
+      "R19_08_Travelling_Head_Topdrive_And_Clamp_Assembly",
+      "R19_10_Tubular_Magazine_And_Handling_Rail",
+      "R19_11_Machine_Service_Walkways_And_Rails",
+      "R19_12_Wellhead_Process_Return_Pipework",
+      "R19_13_Tubular_Feed_Catwalk_To_Central_Axis"
+    ],
+    "materials": [
+      {
+        "new_material": "R23_Protective_Steel_Microfinish",
+        "source_material": "R8_Dark_Protective_Steel",
+        "base_color_linear_RGB": [
+          0.065,
+          0.073,
+          0.076
+        ],
+        "metallic": 0.06,
+        "roughness_range": [
+          0.565,
+          0.595
+        ],
+        "image_repeat_metres": 0.16,
+        "UV_units": "metres",
+        "UV_channel": "UVMap / source UV0",
+        "reused_images": [
+          "R8_Dark_Protective_Steel_MetallicGloss.png"
+        ],
+        "removed_macro_pattern_inputs": [
+          "BaseColor bitmap disconnected entirely",
+          "Normal bitmap disconnected entirely"
+        ],
+        "concrete_image_color_weight": 0,
+        "normal_strength": 0,
+        "procedural_noise_added": false,
+        "directionality": "isotropic surface; no brushed/grain-direction material was rotated",
+        "URP": {
+          "source_gloss_channel": "alpha (A), non-color",
+          "metallic_constant": 0.06,
+          "roughness_min_max": [
+            0.565,
+            0.595
+          ],
+          "smoothness_min_max": [
+            0.405,
+            0.435
+          ],
+          "smoothness_offset": 0.405,
+          "smoothness_alpha_scale": 0.03,
+          "formula": "smoothness = smoothness_offset + smoothness_alpha_scale * source_alpha",
+          "UV_tiling_xy": [
+            6.25,
+            6.25
+          ],
+          "baked_metallic_smoothness_channels": {
+            "R": "metallic_constant",
+            "A": "computed smoothness",
+            "G_B": "unused"
+          }
+        }
+      },
+      {
+        "new_material": "R23_Exposed_Steel_Calm_Finish",
+        "source_material": "R8_Rough_Exposed_Steel",
+        "base_color_linear_RGB": [
+          0.235,
+          0.25,
+          0.255
+        ],
+        "metallic": 0.78,
+        "roughness_range": [
+          0.47,
+          0.505
+        ],
+        "image_repeat_metres": 0.12,
+        "UV_units": "metres",
+        "UV_channel": "UVMap / source UV0",
+        "reused_images": [
+          "R8_Rough_Exposed_Steel_MetallicGloss.png"
+        ],
+        "removed_macro_pattern_inputs": [
+          "BaseColor bitmap disconnected entirely",
+          "Normal bitmap disconnected entirely"
+        ],
+        "concrete_image_color_weight": 0,
+        "normal_strength": 0,
+        "procedural_noise_added": false,
+        "directionality": "isotropic surface; no brushed/grain-direction material was rotated",
+        "URP": {
+          "source_gloss_channel": "alpha (A), non-color",
+          "metallic_constant": 0.78,
+          "roughness_min_max": [
+            0.47,
+            0.505
+          ],
+          "smoothness_min_max": [
+            0.495,
+            0.53
+          ],
+          "smoothness_offset": 0.495,
+          "smoothness_alpha_scale": 0.035,
+          "formula": "smoothness = smoothness_offset + smoothness_alpha_scale * source_alpha",
+          "UV_tiling_xy": [
+            8.333333333333334,
+            8.333333333333334
+          ],
+          "baked_metallic_smoothness_channels": {
+            "R": "metallic_constant",
+            "A": "computed smoothness",
+            "G_B": "unused"
+          }
+        }
+      },
+      {
+        "new_material": "R23_Matte_Deck_Fine_Finish",
+        "source_material": "R8_Matte_Deck_Plates",
+        "base_color_linear_RGB": [
+          0.135,
+          0.15,
+          0.155
+        ],
+        "metallic": 0.32,
+        "roughness_range": [
+          0.7,
+          0.735
+        ],
+        "image_repeat_metres": 0.2,
+        "UV_units": "metres",
+        "UV_channel": "UVMap / source UV0",
+        "reused_images": [
+          "R8_Matte_Deck_Plates_MetallicGloss.png"
+        ],
+        "removed_macro_pattern_inputs": [
+          "BaseColor bitmap disconnected entirely",
+          "Normal bitmap disconnected entirely"
+        ],
+        "concrete_image_color_weight": 0,
+        "normal_strength": 0,
+        "procedural_noise_added": false,
+        "directionality": "isotropic surface; no brushed/grain-direction material was rotated",
+        "URP": {
+          "source_gloss_channel": "alpha (A), non-color",
+          "metallic_constant": 0.32,
+          "roughness_min_max": [
+            0.7,
+            0.735
+          ],
+          "smoothness_min_max": [
+            0.265,
+            0.3
+          ],
+          "smoothness_offset": 0.265,
+          "smoothness_alpha_scale": 0.035,
+          "formula": "smoothness = smoothness_offset + smoothness_alpha_scale * source_alpha",
+          "UV_tiling_xy": [
+            5.0,
+            5.0
+          ],
+          "baked_metallic_smoothness_channels": {
+            "R": "metallic_constant",
+            "A": "computed smoothness",
+            "G_B": "unused"
+          }
+        }
+      },
+      {
+        "new_material": "R23_Concrete_Metric_Surface",
+        "source_material": "R8_Scanned_Mineral_Support",
+        "base_color_linear_RGB": [
+          0.31,
+          0.315,
+          0.295
+        ],
+        "metallic": 0,
+        "roughness_range": [
+          0.83,
+          0.875
+        ],
+        "image_repeat_metres": 2.0,
+        "UV_units": "metres",
+        "UV_channel": "UVMap / source UV0",
+        "reused_images": [
+          "R5_PH_Concrete008_MetallicGloss_2k.png",
+          "R5_PH_Concrete008_Neutral_BaseColor_2k.png",
+          "R5_PH_Concrete008_NormalGL_2k.png"
+        ],
+        "removed_macro_pattern_inputs": [],
+        "concrete_image_color_weight": 0.12,
+        "normal_strength": 0.12,
+        "procedural_noise_added": false,
+        "directionality": "isotropic surface; no brushed/grain-direction material was rotated",
+        "URP": {
+          "source_gloss_channel": "alpha (A), non-color",
+          "metallic_constant": 0,
+          "roughness_min_max": [
+            0.83,
+            0.875
+          ],
+          "smoothness_min_max": [
+            0.125,
+            0.17
+          ],
+          "smoothness_offset": 0.125,
+          "smoothness_alpha_scale": 0.045,
+          "formula": "smoothness = smoothness_offset + smoothness_alpha_scale * source_alpha",
+          "UV_tiling_xy": [
+            0.5,
+            0.5
+          ],
+          "baked_metallic_smoothness_channels": {
+            "R": "metallic_constant",
+            "A": "computed smoothness",
+            "G_B": "unused"
+          }
+        }
+      }
+    ],
+    "topologyHashEncoding": "source local vertex float32 little-endian XYZ",
+    "originalR21ExportVerified": "exact positions, normals, UV0 and submesh indices in original exporter triangle order; no geometry exported by R23"
+  },
+  "channelBake": {
+    "sources": {
+      "E:/UnityProjects/FPS_Template/Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/DenseRingConceptB/R8VisualSurfaces/Textures/R8_Dark_Protective_Steel_MetallicGloss.png": "2c7cbf4ef1e3bff4cb204a1d346fab0de23b48aa4e794c0459db8c63c41605e2",
+      "E:/UnityProjects/FPS_Template/Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/DenseRingConceptB/R8VisualSurfaces/Textures/R8_Rough_Exposed_Steel_MetallicGloss.png": "54d8efc5103da9b1c71bc8bacc58e3f842cd22d81c898d9a6a6e205f5dfa14b1",
+      "E:/UnityProjects/FPS_Template/Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/DenseRingConceptB/R8VisualSurfaces/Textures/R8_Matte_Deck_Plates_MetallicGloss.png": "2341e16c19e5270a5cbc82082e885ac8a14bbd032d47e73e949ec03a03f3168b",
+      "E:/UnityProjects/FPS_Template/Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/DenseRingConceptB/R5ConcreteSupports/Textures/R5_PH_Concrete008_MetallicGloss_2k.png": "cee28d21fa1325517f46ac0b4f1224514e8de339c3f32a581beea9bfd6bed0de",
+      "E:/UnityProjects/FPS_Template/Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/DenseRingConceptB/R5ConcreteSupports/Textures/R5_PH_Concrete008_Neutral_BaseColor_2k.png": "778e9de3de0f1ee7198fb3061227eb5a1c24f4057f1ca3c3a90f648bd3da19b4",
+      "E:/UnityProjects/FPS_Template/Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/DenseRingConceptB/R5ConcreteSupports/Textures/R5_PH_Concrete008_NormalGL_2k.png": "3d26d24586556ee400506888ad6496733a67bcc9020616c10119c1c343c5be24"
+    },
+    "outputs": [
+      {
+        "material": "R23_Protective_Steel_Microfinish",
+        "metallicSmoothness": "R23_Protective_Steel_Microfinish_MetallicSmoothness.png",
+        "baseColor": null,
+        "normal": null,
+        "roughnessMinMax": [
+          0.565,
+          0.595
+        ],
+        "sourceGlossChannel": "linear alpha",
+        "smoothnessFormula": "0.405 + 0.030000000000000027 * A",
+        "quantizationMaxAbsoluteError": 0.00196078431372549,
+        "sourceDimensions": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "material": "R23_Exposed_Steel_Calm_Finish",
+        "metallicSmoothness": "R23_Exposed_Steel_Calm_Finish_MetallicSmoothness.png",
+        "baseColor": null,
+        "normal": null,
+        "roughnessMinMax": [
+          0.47,
+          0.505
+        ],
+        "sourceGlossChannel": "linear alpha",
+        "smoothnessFormula": "0.495 + 0.03500000000000003 * A",
+        "quantizationMaxAbsoluteError": 0.00196078431372549,
+        "sourceDimensions": [
+          1024,
+          1024
+        ]
+      },
+      {
+        "material": "R23_Matte_Deck_Fine_Finish",
+        "metallicSmoothness": "R23_Matte_Deck_Fine_Finish_MetallicSmoothness.png",
+        "baseColor": null,
+        "normal": null,
+        "roughnessMinMax": [
+          0.7,
+          0.735
+        ],
+        "sourceGlossChannel": "linear alpha",
+        "smoothnessFormula": "0.265 + 0.03500000000000003 * A",
+        "quantizationMaxAbsoluteError": 0.00196078431372549,
+        "sourceDimensions": [
+          2048,
+          2048
+        ]
+      },
+      {
+        "material": "R23_Concrete_Metric_Surface",
+        "metallicSmoothness": "R23_Concrete_Metric_Surface_MetallicSmoothness.png",
+        "baseColor": "R23_Concrete_Metric_Surface_BaseColor.png",
+        "normal": "R23_Concrete_Metric_Surface_NormalGL.png",
+        "roughnessMinMax": [
+          0.83,
+          0.875
+        ],
+        "sourceGlossChannel": "linear alpha",
+        "smoothnessFormula": "0.125 + 0.04500000000000004 * A",
+        "quantizationMaxAbsoluteError": 0.00196078431372549,
+        "sourceDimensions": [
+          2048,
+          2048
+        ]
+      }
+    ],
+    "metallicSmoothnessLinear": true,
+    "concreteBakedInLinearSpace": true,
+    "additionalNoise": false
+  },
+  "assetsPrepared": {
+    "formalScene": "Assets/MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusGameScene.unity",
+    "existingTargetsVerified": 19,
+    "sourceTopologyCoordinateAndExportOrderMatch": true,
+    "newMaterials": 4,
+    "newTextures": 6,
+    "uvMeshCopies": 17,
+    "sourceUVLoops": 159240,
+    "mappedExpandedUVVertices": 271920,
+    "materialSlotsPrepared": 76,
+    "originalMeshMaterialTerrainHashesUnchanged": true,
+    "shaderSupported": true,
+    "shaderHasErrors": false,
+    "sceneChanged": false
+  }
+}
