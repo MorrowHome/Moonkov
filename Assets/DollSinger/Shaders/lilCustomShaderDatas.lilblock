@@ -1,2 +1,5 @@
 ShaderName "Moonkov/lilToonMoon"
 EditorName "Unity.MP_FPS.DollSinger.Editor.DollSingerMoonToonInspector"
+// The default URP template strips these variants before custom hooks run.
+Replace "#pragma skip_variants _ADDITIONAL_LIGHT_SHADOWS" "// Moonkov retains additional-light shadow variants."
+Replace "_MAIN_LIGHT_SHADOWS_SCREEN _ADDITIONAL_LIGHT_SHADOWS SCREEN_SPACE_SHADOWS_ON" "_MAIN_LIGHT_SHADOWS_SCREEN SCREEN_SPACE_SHADOWS_ON"
