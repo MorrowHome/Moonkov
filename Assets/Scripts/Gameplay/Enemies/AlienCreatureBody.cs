@@ -25,6 +25,7 @@ namespace Unity.MP_FPS
         private readonly BranchCreatureRig m_Branch;
         private readonly PredictiveFeet m_Feet;
         private readonly Vector3[] m_SpiderJoints = new Vector3[24];
+        private readonly bool[] m_SpiderLegSolved = new bool[8];
         private CreatureChainPresentation m_ChainView;
         private ChainFluidPresentation m_ChainFluid;
         private BranchFluidPresentation m_BranchFluid;
@@ -141,7 +142,8 @@ namespace Unity.MP_FPS
                 for (int leg = 0; leg < 8; leg++)
                 {
                     Vector3 root = PredictiveFeet.Hip(m_Feet.BodyPose, leg, m_Scale);
-                    SpiderLegKinematics.Solve(m_Feet.BodyPose, leg, m_Feet[leg].Position, m_Feet[leg].Normal, m_Mask, out var knee, out var toe, m_Scale);
+                    m_SpiderLegSolved[leg] = SpiderLegKinematics.Solve(m_Feet.BodyPose, leg, m_Feet[leg].Position, m_Feet[leg].Normal,
+                        m_Mask, out var knee, out var toe, m_Scale);
                     m_SpiderJoints[leg * 3] = root; m_SpiderJoints[leg * 3 + 1] = knee; m_SpiderJoints[leg * 3 + 2] = toe;
                 }
                 if (m_Render)
@@ -149,7 +151,7 @@ namespace Unity.MP_FPS
                     m_SpiderView.SetAppearance(liquid ? SpiderPresentation.Look.Fluid : SpiderPresentation.Look.Carapace, false);
                     if (m_SpiderView.Fluid != null)
                     { m_SpiderView.Fluid.Settings = m_Profile.Fluid; m_SpiderView.Fluid.AttractionEnabled = m_Profile.Fluid.attraction; m_SpiderView.Fluid.Predatory = m_Profile.Fluid.heavy; }
-                    m_SpiderView.Draw(Motor, m_Feet, SpiderPresentation.Stage.Umbrella, dt);
+                    m_SpiderView.Draw(Motor, m_Feet, SpiderPresentation.Stage.Umbrella, dt, m_SpiderJoints, m_SpiderLegSolved);
                 }
             }
         }

@@ -189,6 +189,15 @@ namespace Unity.MP_FPS.SpiderLab
 
         public void Draw(SurfaceMotor motor, PredictiveFeet feet, Stage stage, float dt)
         {
+            Draw(motor, feet, stage, dt, null, null);
+        }
+
+        /// <summary>Reuses eight world-space hip/knee/tip triples and their solve results from this update.</summary>
+        public void Draw(SurfaceMotor motor, PredictiveFeet feet, Stage stage, float dt,
+            Vector3[] solvedJoints, bool[] solveSucceeded)
+        {
+            bool useSolvedJoints = solvedJoints != null && solvedJoints.Length >= 24 &&
+                solveSucceeded != null && solveSucceeded.Length >= 8;
             var pose = feet.BodyPose;
             m_Root.SetPositionAndRotation(pose.Position, pose.Rotation);
             if (m_Stage != stage) { m_Stage = stage; ApplyVisibility(); }
@@ -218,9 +227,19 @@ namespace Unity.MP_FPS.SpiderLab
                 m_Toes[i].position = foot.Position;
                 m_ToeRenderers[i].sharedMaterial = foot.State == PredictiveFeet.ContactState.Swing ? m_Swing :
                     foot.State == PredictiveFeet.ContactState.Stance ? m_Stance : m_Recovery;
-                Vector3 hip = PredictiveFeet.Hip(pose, i, feet.Size);
-                bool blocked = !SpiderLegKinematics.Solve(pose, i, foot.Position, foot.Normal, m_Mask,
-                    out var knee, out var tip, feet.Size);
+                Vector3 hip, knee, tip;
+                bool blocked;
+                if (useSolvedJoints)
+                {
+                    hip = solvedJoints[i * 3]; knee = solvedJoints[i * 3 + 1]; tip = solvedJoints[i * 3 + 2];
+                    blocked = !solveSucceeded[i];
+                }
+                else
+                {
+                    hip = PredictiveFeet.Hip(pose, i, feet.Size);
+                    blocked = !SpiderLegKinematics.Solve(pose, i, foot.Position, foot.Normal, m_Mask,
+                        out knee, out tip, feet.Size);
+                }
                 Segment(m_Upper[i], hip, knee, .035f); Segment(m_Lower[i], knee, tip, .024f);
                 m_Knees[i].position = knee;
                 Vector3 upperAxis = (knee - hip).normalized;
