@@ -45,6 +45,8 @@ public sealed class DollSingerPmcDebugger : EditorWindow
             EditorGUILayout.LabelField($"PMC {b.Seed} — {b.Action} ({b.ActionScore:0})", EditorStyles.boldLabel);
             EditorGUILayout.LabelField(b.Reason);
             EditorGUILayout.LabelField($"HP {row.health:0} | confidence {b.Confidence:0.00} | pressure {b.Suppression:0.00} | visible {b.Visible}");
+            EditorGUILayout.LabelField($"Cover {b.CoverPhase} | peeks {b.CoverPeeks} | search {b.SearchStep} | uncertainty {b.ContactUncertainty:0.0}m");
+            EditorGUILayout.LabelField($"Medicine {b.Inventory.Count("medkit", carriedOnly: true)} | treating {b.HealUntil > 0} | leaving {b.Leaving}");
             EditorGUILayout.LabelField($"Caches {b.LootedCaches} | dust {b.Inventory.Count("dust")} | alloy {b.Inventory.Count("alloy")} | cells {b.Inventory.Count("cells")}");
             EditorGUILayout.LabelField($"Goal {b.TacticalGoal} | path failed {b.PathFailed} | extraction {b.ExtractionProgress:0.0}s");
             EditorGUILayout.Space(8);

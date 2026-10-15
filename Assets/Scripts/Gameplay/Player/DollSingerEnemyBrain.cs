@@ -6,7 +6,8 @@ using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS
 {
-    public enum PmcAction { Scavenge, Extract, Investigate, Search, Engage, Cover, Flank, Retreat, Reload }
+    public enum PmcAction { Scavenge, Extract, Investigate, Search, Engage, Cover, Flank, Retreat, Reload, HoldAngle, Heal }
+    public enum PmcCoverPhase { Approaching, Settling, Advancing, Holding, Returning }
 
     // Observations are the only way world knowledge enters a brain. Decision code uses
     // this snapshot, never a hidden opponent's current transform or inventory.
@@ -17,6 +18,10 @@ namespace Unity.MP_FPS
         public float Suspicion, Confidence;
         public double LastSeen = -100, LastHeard = -100;
         public bool Visible, Confirmed;
+        public Vector3 LastVisualPosition, HearingBias;
+        public float PositionUncertainty = 1;
+        public double HearingBiasUntil = -100;
+        public bool HadVisualSample;
     }
 
     public sealed class DollSingerEnemyBrain : IComponentData
@@ -41,10 +46,21 @@ namespace Unity.MP_FPS
         public double SensorBatch = -1;
         public double ActionStarted;
         public double NextFlank;
+        public double LastSenseTime = -100;
+        public float ContactUncertainty = 1;
+        public PmcCoverPhase CoverPhase;
+        public double CoverPhaseUntil, CoverExposureUntil, AvoidCoverUntil, SearchPauseUntil, SearchObservationTime = -100;
+        public int CoverPeeks;
+        public Vector3 CoverThreatPosition, AvoidCoverPosition, SearchAnchor, SearchHeading, SearchLookPoint;
+        public bool SearchFocusValid;
+        public double HealUntil, NextHeal;
+        public string HealItemId;
+        public int HealInventoryVersion;
         public bool Visible, HasCover, Leaving, Extracted, PathFailed, IsPeeking;
         public PmcAction Action;
         public string Reason = "entering expedition";
         public Unity.Mathematics.Random Random;
-        public float Uncertainty(double now) => Mathf.Clamp((float)(now - System.Math.Max(LastSeenTime, LastHeardTime)) * 1.1f, 1, 15);
+        public float Uncertainty(double now) => Mathf.Clamp(ContactUncertainty +
+            Mathf.Max(0, (float)(now - System.Math.Max(LastSeenTime, LastHeardTime))) * 1.1f, 1, 20);
     }
 }

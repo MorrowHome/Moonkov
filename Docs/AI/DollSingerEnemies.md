@@ -70,6 +70,70 @@ concealment. Navigation accepts complete paths only, retries stalled movement an
 skips unreachable supply objectives. The player controller retains movement
 authority; there is no teleport recovery or moving NavMeshAgent.
 
+## Player-like decisions (2026-10-15)
+
+This increment uses explicit observations, utility scores and timed action phases;
+it does not use deep learning or a runtime language model.
+
+- Motion estimates use consecutive sightings made by this observer. Reacquisition
+  starts with zero estimated velocity and a fresh reaction delay. Sound has a
+  persistent short-lived bearing error, with larger uncertainty through geometry;
+  a weaker sound does not overwrite a recent precise visual observation.
+- After losing an identified opponent, a raider briefly holds the remembered exit
+  (three seconds by default), then checks reachable sectors along the observed
+  motion. Search has travel, stop-and-look and abandonment phases. Near path turns
+  the actor slows and looks into the next segment. These are navigation-based
+  checks, not semantic understanding of rooms or doors.
+- Cover requires both head and torso occlusion. The actor reaches cover, settles,
+  advances to a reachable peek, briefly holds, and returns. Only the holding phase
+  permits cover fire. Damage interrupts exposure immediately. Repeated or punished
+  peeks retire that cover temporarily. The approach route is scored before the
+  peek path overwrites the reusable navigation probe. Flanking compares both sides
+  using path distance and exposure to the remembered threat.
+- A confirmed threat interrupts looting and searching. Wounded or loaded raiders
+  stop hunting stale contacts and can continue toward extraction after disengaging.
+  Low magazines may reload during a safe opening; no new ammunition is created.
+- Each new PMC carries two real medical injectors and can take more from caches.
+  Treatment requires a safe opening, no recent damage, and arrival at the chosen
+  position; it takes 3.5 seconds by default and prevents movement and firing.
+  Damage, renewed sight of a threat, a changed action, or an inventory version
+  change cancels treatment. Completion uses `RaidHealth.UseMedical`, prioritizing
+  severely injured head/chest, and consumes exactly one accessible injector.
+  Unused medicine stays in the death inventory. No medical hand animation is added.
+
+```mermaid
+stateDiagram-v2
+    [*] --> RaidGoal
+    RaidGoal --> Engage: confirmed threat
+    Engage --> HoldAngle: lost sight
+    HoldAngle --> Search: short watch expires
+    Search --> RaidGoal: hypotheses exhausted
+    Engage --> Cover: pressure or damage
+    Cover --> Peek: arrived and settled
+    Peek --> Cover: brief exposure or hit
+    Cover --> Heal: safe and injured, medicine available
+    Heal --> Cover: interrupted
+    Heal --> Extract: treatment complete, leaving
+    Engage --> Retreat: survival takes priority
+    Retreat --> Extract: contact broken
+```
+
+`HoldAngleSeconds`, `TacticalReloadFraction`, `HealSeconds` and `HealSafetySeconds`
+are additive tuning fields with defaults on `DollSingerAITuning`. Existing assets
+do not require scene or prefab rewiring. The PMC Debugger also shows cover phase,
+peek count, search step, observation uncertainty, medicine and treatment state.
+**Moonkov → AI → Check Humanlike Decisions** runs bounded Edit Mode checks of
+action transitions and the shared medical transaction without starting a raid.
+
+Validation for this increment: Unity Editor compilation completed without errors;
+the focused checks passed for cover arrival/holding/damage interruption, treatment
+timing and single consumption/cancellation, danger interrupting commitment,
+stale-contact extraction and bounded angle holding. The arrival checks include
+the navigation motor's stopping-radius boundary. The loaded tuning asset returns
+three-second angle holding and 3.5-second treatment defaults. Play Mode was not
+started or stopped for these checks. Live Host/client encounters, geometry-specific
+search/flanking quality, runtime cost and final tactical feel remain unverified.
+
 ## Configuration and inspection
 
 - `MoonRaidMap` retains enemy count, sight range and starting cells. Zero disables AI.
@@ -83,11 +147,11 @@ authority; there is no teleport recovery or moving NavMeshAgent.
 The bounded runtime NavMesh bake uses terrain and collider geometry. Imported
 unreadable meshes use conservative bounding boxes for Player compatibility.
 Scene cover density and nav connectivity limit tactical choices. Night visibility
-uses the global clock, not per-character physical shadow evaluation. Healing,
-crouching and grenades await corresponding player abilities. Squad communication
+uses the global clock, not per-character physical shadow evaluation. Crouching
+and grenades await corresponding player abilities. Squad communication
 and authored tactical links remain future work.
 
-Focused Host checks passed: three moving server actors and three client proxies;
+Historical baseline checks (before the 2026-10-15 decision changes): three moving server actors and three client proxies;
 gradual recognition; a physical blocker preserves last-known position; low HP and
 exhausted ammunition trigger retreat; timed search transfers real cache contents
 without duplicating quantities; extraction dwell removes actor/input without a

@@ -19,6 +19,11 @@ namespace Unity.MP_FPS
         [Min(.1f)] public float FirstShotError = 3.5f;
         [Min(30)] public float TurnSpeed = 160;
         [Range(.1f, .8f)] public float RetreatHealthFraction = .32f;
+        [Header("Combat patience and self care")]
+        [Range(1, 6)] public float HoldAngleSeconds = 3;
+        [Range(.1f, .6f)] public float TacticalReloadFraction = .3f;
+        [Min(1)] public float HealSeconds = 3.5f;
+        [Min(1)] public float HealSafetySeconds = 3;
         [Header("Raid objectives")]
         [Range(1, 8)] public int DesiredCaches = 3;
         [Min(.5f)] public float LootSearchSeconds = 2.5f;

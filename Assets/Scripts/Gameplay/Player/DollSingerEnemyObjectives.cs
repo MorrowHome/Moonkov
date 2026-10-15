@@ -45,7 +45,8 @@ namespace Unity.MP_FPS
                 {
                     // Use the same versioned, atomic transfer as a human, taking real shared loot.
                     foreach (var item in cache.Items.Where(i => i.Parent == LootInventoryExchange.Root &&
-                                 (i.Code == "cells" || i.Code == "alloy" || i.Code == "dust")).OrderBy(i => i.Code == "cells" ? 0 : 1).ToArray())
+                                 (i.Code == "cells" || i.Code == "medkit" || i.Code == "alloy" || i.Code == "dust"))
+                                 .OrderBy(i => i.Code == "medkit" ? 0 : i.Code == "cells" ? 1 : 2).ToArray())
                     {
                         foreach (string parent in CarryContainers(brain.Inventory))
                         {

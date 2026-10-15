@@ -121,7 +121,7 @@ namespace Unity.MP_FPS
 
             using var deaths = new EntityCommandBuffer(Allocator.Temp);
             foreach (var (enemy, pose, health, input, entity) in SystemAPI.Query<RefRO<DollSingerEnemy>,
-                         RefRO<LocalTransform>, RefRO<PredictedPlayerGhost>, RefRW<PlayerInputComponent>>()
+                         RefRO<LocalTransform>, RefRW<PredictedPlayerGhost>, RefRW<PlayerInputComponent>>()
                          .WithAll<Simulate>().WithEntityAccess())
             {
                 var brain = EntityManager.GetComponentObject<DollSingerEnemyBrain>(entity);
@@ -138,7 +138,7 @@ namespace Unity.MP_FPS
                 if (link.LinkedInstance == null) continue;
                 var ghost = link.LinkedInstance.GetComponent<PlayerGhost>();
                 if (ghost == null) continue;
-                input.ValueRW.Input = Think(brain, ghost, pose.ValueRO, health.ValueRO, map, now,
+                input.ValueRW.Input = Think(brain, ghost, pose.ValueRO, ref health.ValueRW, map, now,
                     (float)SystemAPI.Time.DeltaTime);
                 if (brain.Extracted)
                 {
@@ -306,6 +306,8 @@ namespace Unity.MP_FPS
                 EntityManager.AddComponentData(player, new DollSingerEnemy { InputEntity = input });
                 var inventory = InventoryGraph.Create(stash: false);
                 inventory.Equipped("Primary").LoadedAmmo = ammo;
+                // A finite raid loadout; unused medicine remains in the normal death inventory.
+                inventory.AddSupply("medkit", 2, parent: InventoryCatalog.Pockets, foundInRaid: true);
                 if (map.EnemyCells > 0) inventory.AddSupply("cells", map.EnemyCells, foundInRaid: true);
                 EntityManager.AddComponentObject(player, new DollSingerEnemyBrain { Inventory = inventory,
                     Seed = i + 1, Goal = position, ProgressPosition = position, SpawnTime = SystemAPI.Time.ElapsedTime,
