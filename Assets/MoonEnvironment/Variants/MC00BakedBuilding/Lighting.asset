@@ -1,0 +1,223 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48cb4394ba1f5da489041b33ea525f5d, type: 3}
+  m_Name: Lighting
+  m_EditorClassIdentifier: MoonEnvironment.Runtime::Unity.MP_FPS.Moon.BuildingBakedLightingData
+  baseline:
+    colorMaps:
+    - {fileID: 2800000, guid: 1e4f0e8964c4dab40983a42530cab5da, type: 3}
+    - {fileID: 2800000, guid: e998b196f270e6f40944c6759cf50282, type: 3}
+    - {fileID: 2800000, guid: da240878f53be774191368813af4b116, type: 3}
+    - {fileID: 2800000, guid: 11dc1136b18e5374a9804afafc53e154, type: 3}
+    - {fileID: 2800000, guid: b79d88e9fb28f624c9b95e022f30a91e, type: 3}
+    - {fileID: 2800000, guid: b24d41bace6ecbd4dab56fbb78dad287, type: 3}
+    probes: {fileID: 25800000, guid: 948a5902051f2be4fb8d3a5ac73567e7, type: 2}
+  environment:
+    colorMaps:
+    - {fileID: 2800000, guid: acca024a57e3765418f29774f9a5fcd6, type: 3}
+    - {fileID: 2800000, guid: e917251d966279a4d86521a396bb9ccf, type: 3}
+    - {fileID: 2800000, guid: 1df195a3667bef3488988a4fab03ed06, type: 3}
+    - {fileID: 2800000, guid: 183fad3b2ea425648bc1ccf943359c6b, type: 3}
+    - {fileID: 2800000, guid: 28a6f97db4556ed438a5a924b66fa73c, type: 3}
+    - {fileID: 2800000, guid: c36d64cb4ddad24429fe8fa41de2a246, type: 3}
+    probes: {fileID: 25800000, guid: d5285a8b008d2f24f902e7a430c5dd32, type: 2}
+  rooms:
+  - id: ORG_East_EVA_Pressure_Entry_01a046
+    onState:
+      colorMaps:
+      - {fileID: 2800000, guid: a2788d635595b23498132fdc03baffd4, type: 3}
+      - {fileID: 2800000, guid: 0e73e52e95368284b85bc13a3ac637b7, type: 3}
+      - {fileID: 2800000, guid: 4c95fdc7cada0d0489b365be95c3003f, type: 3}
+      - {fileID: 2800000, guid: e379ea690509bc146b1ebab53e25b646, type: 3}
+      - {fileID: 2800000, guid: 8a596b59758f8c84ab0e8e47be4c8d54, type: 3}
+      - {fileID: 2800000, guid: 6aa48efb46f544343ab741808ffea116, type: 3}
+      probes: {fileID: 25800000, guid: 0b86449a3bfa97b4394b142bb1b659b2, type: 2}
+  - id: ORG_FLOOR_L0_e8ed5d/ORG_CORRIDORS_12df41
+    onState:
+      colorMaps:
+      - {fileID: 2800000, guid: 678bd965f4f312b4faf7be29d446045c, type: 3}
+      - {fileID: 2800000, guid: fcfe1610ef6407b4aaa946f087748852, type: 3}
+      - {fileID: 2800000, guid: 0cf62edfb1a0d9b47b366e26f54e8b93, type: 3}
+      - {fileID: 2800000, guid: ed11ce5eabfde7e4a938700b76aebda6, type: 3}
+      - {fileID: 2800000, guid: 815561590a1793c47a30ba823693660e, type: 3}
+      - {fileID: 2800000, guid: 38e50d4820362c648a89737794c8290c, type: 3}
+      probes: {fileID: 25800000, guid: def59c1fcdfc06249ad9dd2cdd29d465, type: 2}
+  - id: ORG_FLOOR_L1_bdd3d3/ORG_CORRIDORS_eca8a1
+    onState:
+      colorMaps:
+      - {fileID: 2800000, guid: 5c0c8b74f4bedf74a9de66b2b25a77a8, type: 3}
+      - {fileID: 2800000, guid: bf68d75812a7e2349b746ada3ba186a2, type: 3}
+      - {fileID: 2800000, guid: a72fdee4c4d85af47afd2ee3aee26dd2, type: 3}
+      - {fileID: 2800000, guid: 7901cfe1c8d65ca40a4a15e56ae6d599, type: 3}
+      - {fileID: 2800000, guid: c18705e909299b6488f46a9d5f451852, type: 3}
+      - {fileID: 2800000, guid: 9129c841e2139ca4d829b5055510a43f, type: 3}
+      probes: {fileID: 25800000, guid: 792555dfb6686d249962577e0069508d, type: 2}
+  - id: ORG_FLOOR_L2_e66a81/ORG_CORRIDORS_3a2a06
+    onState:
+      colorMaps:
+      - {fileID: 2800000, guid: 71a38f8959274314ba24296a434aad64, type: 3}
+      - {fileID: 2800000, guid: b5f9c5b6625e87c4ca7e7e48ca764a7d, type: 3}
+      - {fileID: 2800000, guid: 749982992e673194091575e12ffcce51, type: 3}
+      - {fileID: 2800000, guid: 86c56e11a0f9506449281acb72a873af, type: 3}
+      - {fileID: 2800000, guid: 813f575d437a14f4e963e8a79bc70e66, type: 3}
+      - {fileID: 2800000, guid: 488f09524bc372e4bb85a3562f515e4f, type: 3}
+      probes: {fileID: 25800000, guid: 7aafbd19041ef794a9d43179d9b057a5, type: 2}
+  - id: ORG_North_crew_Pressure_Entry_c59810
+    onState:
+      colorMaps:
+      - {fileID: 2800000, guid: 6ef78f90bc6fff841b8eea933e2eb570, type: 3}
+      - {fileID: 2800000, guid: b148bba9b4e76e643ac3e9e4ff929ff7, type: 3}
+      - {fileID: 2800000, guid: 108ca88e6b032e14e863a14fd6a8bbd2, type: 3}
+      - {fileID: 2800000, guid: 9259e57134aba2044a79fa45d70b8306, type: 3}
+      - {fileID: 2800000, guid: a1df364a7209af64d93c20bafee7c4e9, type: 3}
+      - {fileID: 2800000, guid: 098edb7c3c237b64a8fbf4e3e47088f3, type: 3}
+      probes: {fileID: 25800000, guid: 36d45114e7b4b8140b3b49fd9fda1cb2, type: 2}
+  - id: ORG_ROOM_G01_b11275
+    onState:
+      colorMaps:
+      - {fileID: 2800000, guid: f81b7bf96f7accb4881e8b075596ac44, type: 3}
+      - {fileID: 2800000, guid: 12b8c4e8a534e524c8b0b10db73ba151, type: 3}
+      - {fileID: 2800000, guid: 67552f9d519c02a42977edad56c0edd1, type: 3}
+      - {fileID: 2800000, guid: d784907845a2a994a966a33c171891fe, type: 3}
+      - {fileID: 2800000, guid: 8a36b255e41c6794298d94757bbacb55, type: 3}
+      - {fileID: 2800000, guid: c3fd150bbe459694cabeda8533acb56d, type: 3}
+      probes: {fileID: 25800000, guid: 034863c3b4efb494c815102c122edc0b, type: 2}
+  - id: ORG_ROOM_G02_7d8d19
+    onState:
+      colorMaps:
+      - {fileID: 2800000, guid: 3870fe054bbf92f4c9882f7b32f51793, type: 3}
+      - {fileID: 2800000, guid: b97328ac4912bee419a5b956e86e4130, type: 3}
+      - {fileID: 2800000, guid: 72b21598cdf5dce49bdcd9cdf65b5c72, type: 3}
+      - {fileID: 2800000, guid: df4dcb15ad659824c893b42f9ae0ea29, type: 3}
+      - {fileID: 2800000, guid: 5d54ed87f9327154f93ddef6b8e36545, type: 3}
+      - {fileID: 2800000, guid: c04bad55dc879b74597ceae516fc08a9, type: 3}
+      probes: {fileID: 25800000, guid: 0741c1c6529220047b5a9b40007ff3f0, type: 2}
+  - id: ORG_ROOM_G03_0eae18
+    onState:
+      colorMaps:
+      - {fileID: 2800000, guid: bb85f99f6007db049a77aa0ead6ab778, type: 3}
+      - {fileID: 2800000, guid: 8c645387cc4649e4e934aa17503f38d5, type: 3}
+      - {fileID: 2800000, guid: faee46ce689d74747b96aa6e20964d89, type: 3}
+      - {fileID: 2800000, guid: 47addd88ddb80564eadf60d4666d4959, type: 3}
+      - {fileID: 2800000, guid: 7b8e359a8080565428a0a0d05057e2be, type: 3}
+      - {fileID: 2800000, guid: 916cef96d9d8a2e4c9874d3814a622d1, type: 3}
+      probes: {fileID: 25800000, guid: 4084366a0a0c61b438fa0fd52d40a6f8, type: 2}
+  - id: ORG_ROOM_G04_20632d
+    onState:
+      colorMaps:
+      - {fileID: 2800000, guid: 6c25feef49e5b954eb955154ee756660, type: 3}
+      - {fileID: 2800000, guid: 5d29f750361cd4c4a8c815871deb5095, type: 3}
+      - {fileID: 2800000, guid: 38f473febdc75de45a366688807dc895, type: 3}
+      - {fileID: 2800000, guid: da60997ca15021f4783a3f67b371042a, type: 3}
+      - {fileID: 2800000, guid: fea1c77f0d299ef4298e17433d9eca04, type: 3}
+      - {fileID: 2800000, guid: e4d96a21145f0a940b42baa217bfcdab, type: 3}
+      probes: {fileID: 25800000, guid: 270eff5d65e04794e93540953214201b, type: 2}
+  - id: ORG_ROOM_L11_afa823
+    onState:
+      colorMaps:
+      - {fileID: 2800000, guid: 414641a2e741db24b997652322dcc8aa, type: 3}
+      - {fileID: 2800000, guid: 764b8ff76514e39439a91335fed1dce1, type: 3}
+      - {fileID: 2800000, guid: 605c4dbced11fe64994a859d4ac07819, type: 3}
+      - {fileID: 2800000, guid: 2f6c43bea9a3e4944ba078f1c924c8a9, type: 3}
+      - {fileID: 2800000, guid: 821594603076c734294a01e721e87da8, type: 3}
+      - {fileID: 2800000, guid: eaafae520456f454db1e725cbed69929, type: 3}
+      probes: {fileID: 25800000, guid: 3db177107e91dca458ee78ddc7e4950b, type: 2}
+  - id: ORG_ROOM_L12_41e8b7
+    onState:
+      colorMaps:
+      - {fileID: 2800000, guid: 2d7a0a7ff41eb5949b1557ce37acb166, type: 3}
+      - {fileID: 2800000, guid: a01b22e2c3bc8c942836fd8f42713f98, type: 3}
+      - {fileID: 2800000, guid: 33ea088bcc0edb54eb892e73c58b6a99, type: 3}
+      - {fileID: 2800000, guid: d0483a8ad6aec06468ef4fb114afaf1b, type: 3}
+      - {fileID: 2800000, guid: 6223e842eb69f9a4a8611543e66d3eed, type: 3}
+      - {fileID: 2800000, guid: f39f08eaea19cc9449eda591dbf9c147, type: 3}
+      probes: {fileID: 25800000, guid: b12d1a3b2fb81cf45bf84a9e767fc769, type: 2}
+  - id: ORG_ROOM_L13_7cd9c8
+    onState:
+      colorMaps:
+      - {fileID: 2800000, guid: 76e654752fd2022468a9dcdc60290605, type: 3}
+      - {fileID: 2800000, guid: 2cea77a1efa401b4dba2e650edf34015, type: 3}
+      - {fileID: 2800000, guid: 3194efd4334322349abb42661f921e25, type: 3}
+      - {fileID: 2800000, guid: 8de813a754d7fd74b867dc6c04445757, type: 3}
+      - {fileID: 2800000, guid: 4297a71155fdfee499ee95064fdc3dda, type: 3}
+      - {fileID: 2800000, guid: 7fccc260f440bd04a83b3b4293ef4fe9, type: 3}
+      probes: {fileID: 25800000, guid: db791290177dc6949a8ae39b11ca0dbb, type: 2}
+  - id: ORG_ROOM_L14_b1cdce
+    onState:
+      colorMaps:
+      - {fileID: 2800000, guid: 807ea0f4a766bea43ab20e386bcf7fbe, type: 3}
+      - {fileID: 2800000, guid: 7cde20687effd3f4fbe33b7cb078fa10, type: 3}
+      - {fileID: 2800000, guid: c2d95ba634637c94593c5ab4d624ce44, type: 3}
+      - {fileID: 2800000, guid: 11f322bb54992354fbc690736e84ac00, type: 3}
+      - {fileID: 2800000, guid: d388a2a5d85ab2042b2f9f70357e33f0, type: 3}
+      - {fileID: 2800000, guid: 0db329c70c0f5e54e91f05c32e4b8a4b, type: 3}
+      probes: {fileID: 25800000, guid: e97acdabc358f904f9cd13d3ce06ed01, type: 2}
+  - id: ORG_ROOM_L21_bb1f24
+    onState:
+      colorMaps:
+      - {fileID: 2800000, guid: 50c1122e38ab4d24ca7322747149eae8, type: 3}
+      - {fileID: 2800000, guid: 0e6450fe1d1322d419468aec9315f45c, type: 3}
+      - {fileID: 2800000, guid: 5795a2f96d8f4294abd9ec5f734ace96, type: 3}
+      - {fileID: 2800000, guid: db4256e129e7f3243b39e7b9a5ab1e8e, type: 3}
+      - {fileID: 2800000, guid: 8ab71f1f62562044f8d2e58c7384334c, type: 3}
+      - {fileID: 2800000, guid: e55c6e1a3677542489f750ccd959f136, type: 3}
+      probes: {fileID: 25800000, guid: 0e99eb41837972148a50ca39b05de9a0, type: 2}
+  - id: ORG_ROOM_L22_588fae
+    onState:
+      colorMaps:
+      - {fileID: 2800000, guid: a727b97d5f259ef4b90b396d2959e5fc, type: 3}
+      - {fileID: 2800000, guid: 85f44680ef2401c438e90bf91cebafb6, type: 3}
+      - {fileID: 2800000, guid: 02dcd3098032da641a506fe67ba435c9, type: 3}
+      - {fileID: 2800000, guid: 06bb50ec4fabbd34fbccadc1934fc938, type: 3}
+      - {fileID: 2800000, guid: 66ea26cf99cb0064d9a141d399e0d775, type: 3}
+      - {fileID: 2800000, guid: 9c7dc105d3fcb894e92ff17989ece713, type: 3}
+      probes: {fileID: 25800000, guid: 43335cd86ddc29846b40e3a15a157f85, type: 2}
+  - id: ORG_ROOM_L23_2ef2a4
+    onState:
+      colorMaps:
+      - {fileID: 2800000, guid: ec6c270052dae8e4c8474e8d3b5b00c5, type: 3}
+      - {fileID: 2800000, guid: 32cbe99cae6789444a6fa437449f884f, type: 3}
+      - {fileID: 2800000, guid: f362da0e951e0674da147831b5f738f8, type: 3}
+      - {fileID: 2800000, guid: 74108ac8aec3300419da865161bd9552, type: 3}
+      - {fileID: 2800000, guid: 21f5f006d61d7d1438f22fbe54d16b1c, type: 3}
+      - {fileID: 2800000, guid: 60465618e35041e42b1904ce5306307a, type: 3}
+      probes: {fileID: 25800000, guid: 86d5f8e09879ab745b78b90872814f87, type: 2}
+  - id: ORG_STAIR_N_de40ea
+    onState:
+      colorMaps:
+      - {fileID: 2800000, guid: 82f31da227ec4d74d95b1054ecc5c93c, type: 3}
+      - {fileID: 2800000, guid: cf6d1abd66afffb4cbed58cd106f7a59, type: 3}
+      - {fileID: 2800000, guid: 22627e8720db2a146ad01855ba5fa83a, type: 3}
+      - {fileID: 2800000, guid: e5ee3abb34746db4983c134cfc9e9ac6, type: 3}
+      - {fileID: 2800000, guid: 81862ff401546814ea53273296e0268d, type: 3}
+      - {fileID: 2800000, guid: 7021a6680c0397740950cb5eeca12890, type: 3}
+      probes: {fileID: 25800000, guid: 050a3d71960b0614d815ec7f7acbc4f9, type: 2}
+  - id: ORG_STAIR_W_feb6fa
+    onState:
+      colorMaps:
+      - {fileID: 2800000, guid: 758e9a2b8b69ee04cb2b7483fdb9c1ae, type: 3}
+      - {fileID: 2800000, guid: c2e26d9da2cd1af43ad8140feaeeb5a7, type: 3}
+      - {fileID: 2800000, guid: 1fe665332addb574f9821e8ea826ced3, type: 3}
+      - {fileID: 2800000, guid: 4875b51e15eba7c48ab05ddc136aa0a3, type: 3}
+      - {fileID: 2800000, guid: c721b4ec8d7056d4da598fd2a6e49549, type: 3}
+      - {fileID: 2800000, guid: e85e5296abe515c4d8b52b02c019afbe, type: 3}
+      probes: {fileID: 25800000, guid: 250feb062df46ba498cd1fac1f3327fa, type: 2}
+  - id: ORG_West_cargo_Pressure_Entry_5a390b
+    onState:
+      colorMaps:
+      - {fileID: 2800000, guid: ccab3a911ee39f44a8813c8b64da8112, type: 3}
+      - {fileID: 2800000, guid: 488408932d250104ab77afef0b874173, type: 3}
+      - {fileID: 2800000, guid: 8108018830fa46b4d90e80fdefd4d783, type: 3}
+      - {fileID: 2800000, guid: 74dd9a38c3afbdd4fbe4fd42a78b1c30, type: 3}
+      - {fileID: 2800000, guid: b5677d3591b1eb840859e195ada82fcb, type: 3}
+      - {fileID: 2800000, guid: 5e14e876f20f81c4b8723f9db3766360, type: 3}
+      probes: {fileID: 25800000, guid: 3c686cfb9e3fae94bb268d361ead6e03, type: 2}

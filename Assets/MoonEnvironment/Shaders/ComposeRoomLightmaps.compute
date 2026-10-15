@@ -1,0 +1,33 @@
+#pragma kernel Initialize
+#pragma kernel Accumulate
+#pragma kernel Finalize
+
+// Full-HDR, linear irradiance only. RGBM/RGBD inputs must be decoded by the
+// editor before capture. Room bases all use exactly the baseline atlas layout.
+Texture2D<float4> _Baseline;
+Texture2D<float4> _Room;
+RWTexture2D<float4> _Result;
+int2 _Size;
+
+[numthreads(8, 8, 1)]
+void Initialize(uint3 id : SV_DispatchThreadID)
+{
+    if (any(id.xy >= (uint2)_Size)) return;
+    _Result[id.xy] = float4(_Baseline.Load(int3(id.xy, 0)).rgb, 1.0);
+}
+
+[numthreads(8, 8, 1)]
+void Accumulate(uint3 id : SV_DispatchThreadID)
+{
+    if (any(id.xy >= (uint2)_Size)) return;
+    float3 contribution = _Room.Load(int3(id.xy, 0)).rgb - _Baseline.Load(int3(id.xy, 0)).rgb;
+    // Do not clamp each contribution: a bake can contain small signed noise.
+    _Result[id.xy] = float4(_Result[id.xy].rgb + contribution, 1.0);
+}
+
+[numthreads(8, 8, 1)]
+void Finalize(uint3 id : SV_DispatchThreadID)
+{
+    if (any(id.xy >= (uint2)_Size)) return;
+    _Result[id.xy] = float4(max(_Result[id.xy].rgb, 0.0), 1.0);
+}
