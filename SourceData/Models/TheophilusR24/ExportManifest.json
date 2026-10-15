@@ -1,0 +1,293 @@
+{
+  "objects": [
+    {
+      "name": "R24_00_R20_02_Actuators_With_Hero_Knee_Replaced",
+      "key": "R24_Mesh_00",
+      "sourceCoordinateHash": "f05f053981304fb6c576a6998a7ad46b6b6cdcf04d5500e0f4a05790b13cd083",
+      "sourceCounts": [
+        6128,
+        3410,
+        18384
+      ],
+      "evaluatedVertices": 34692,
+      "triangles": 11564,
+      "materials": [
+        "R23_Protective_Steel_Microfinish",
+        "R23_Exposed_Steel_Calm_Finish",
+        "R13_Machined_Steel_Contact"
+      ],
+      "modifiersEvaluated": []
+    },
+    {
+      "name": "R24_01_Hero_Knee_Forging_And_Thick_Armor",
+      "key": "R24_Mesh_01",
+      "sourceCoordinateHash": "c51123f086e854e9eaffa06a1d640a37d459fcb060d443b3e7d75848121a994b",
+      "sourceCounts": [
+        128,
+        82,
+        384
+      ],
+      "evaluatedVertices": 9108,
+      "triangles": 3036,
+      "materials": [
+        "R24_Slate_Gray_Industrial_Enamel",
+        "R24_Dark_Forged_Joint_Steel"
+      ],
+      "modifiersEvaluated": [
+        "R24 editable machined edge bevel"
+      ]
+    },
+    {
+      "name": "R24_02_Hero_Pin_Collar_Seal_And_Service_Cover",
+      "key": "R24_Mesh_02",
+      "sourceCoordinateHash": "d7166e4ee47ddcc10d10eeb9733adaab1d75f6ca6f45f114e94b404a940e5135",
+      "sourceCounts": [
+        2168,
+        1726,
+        7656
+      ],
+      "evaluatedVertices": 62004,
+      "triangles": 20668,
+      "materials": [
+        "R24_Slate_Gray_Industrial_Enamel",
+        "R24_Exposed_Machined_Contact_Steel",
+        "R24_Dark_Forged_Joint_Steel",
+        "R24_Recessed_Elastomer_Seal"
+      ],
+      "modifiersEvaluated": [
+        "R24 editable machined edge bevel"
+      ]
+    },
+    {
+      "name": "R24_03_Hero_Actuator_Connections_And_Welds",
+      "key": "R24_Mesh_03",
+      "sourceCoordinateHash": "ab607922adeaf2bd1389152e9c194e9f134c25db3b9a1e67fd4568169b451dba",
+      "sourceCounts": [
+        2176,
+        1896,
+        8064
+      ],
+      "evaluatedVertices": 57360,
+      "triangles": 19120,
+      "materials": [
+        "R23_Exposed_Steel_Calm_Finish",
+        "R24_Exposed_Machined_Contact_Steel",
+        "R24_Dark_Forged_Joint_Steel",
+        "R24_Recessed_Elastomer_Seal"
+      ],
+      "modifiersEvaluated": [
+        "R24 editable machined edge bevel"
+      ]
+    },
+    {
+      "name": "R24_04_Hero_Service_ID",
+      "key": "R24_Mesh_04",
+      "sourceCoordinateHash": "fa35b36729f8989d8fc414b6636cf0f35246c47c7f5b6c166f53ca295c9875ce",
+      "sourceCounts": [
+        760,
+        558,
+        1864
+      ],
+      "evaluatedVertices": 2244,
+      "triangles": 748,
+      "materials": [
+        "R24_Service_Stencil_Offwhite"
+      ],
+      "modifiersEvaluated": []
+    },
+    {
+      "name": "R24_04_Hero_Service_Sub_ID",
+      "key": "R24_Mesh_05",
+      "sourceCoordinateHash": "3d95e8467772563653c3ea18b25cd5af8733ec85dd4ff03226d3476abdf27f1b",
+      "sourceCounts": [
+        4208,
+        3108,
+        10376
+      ],
+      "evaluatedVertices": 12480,
+      "triangles": 4160,
+      "materials": [
+        "R24_Service_Stencil_Offwhite"
+      ],
+      "modifiersEvaluated": []
+    },
+    {
+      "name": "R24_05_Local_Contact_Wear_And_Ledge_Dust",
+      "key": "R24_Mesh_06",
+      "sourceCoordinateHash": "56734d08af986f1eb4b93dbe4945316397720b8cb056b335df66b1abb676a1c9",
+      "sourceCounts": [
+        15,
+        3,
+        15
+      ],
+      "evaluatedVertices": 27,
+      "triangles": 9,
+      "materials": [
+        "R24_Exposed_Machined_Contact_Steel",
+        "R24_Localized_Lunar_Dust_Deposit"
+      ],
+      "modifiersEvaluated": []
+    },
+    {
+      "name": "R24_06_Shaft_Rim_Protective_Coping_And_Anchors",
+      "key": "R24_Mesh_07",
+      "sourceCoordinateHash": "dd8bab33d76a2dc02136af3c31dcfd0c7476f5923f333e1e748ce3d83b339bdf",
+      "sourceCounts": [
+        2240,
+        1712,
+        7488
+      ],
+      "evaluatedVertices": 92448,
+      "triangles": 30816,
+      "materials": [
+        "R23_Exposed_Steel_Calm_Finish",
+        "R24_Slate_Gray_Industrial_Enamel",
+        "R24_Exposed_Machined_Contact_Steel",
+        "R24_Dark_Forged_Joint_Steel"
+      ],
+      "modifiersEvaluated": [
+        "R24 editable machined edge bevel"
+      ]
+    },
+    {
+      "name": "R24_07_Lunar_Rim_Disturbed_Dust_And_Compaction",
+      "key": "R24_Mesh_08",
+      "sourceCoordinateHash": "d3d910306d6909ff7e5e11f6fbbf9c15090505a7f55a08f96b20066ab7486384",
+      "sourceCounts": [
+        208,
+        96,
+        384
+      ],
+      "evaluatedVertices": 576,
+      "triangles": 192,
+      "materials": [
+        "R24_Localized_Lunar_Dust_Deposit",
+        "R24_Compacted_Regolith_Trace"
+      ],
+      "modifiersEvaluated": []
+    },
+    {
+      "name": "R24_08_Restrained_Excavation_Fragment_Clusters",
+      "key": "R24_Mesh_09",
+      "sourceCoordinateHash": "7d7a0c5ee07f436f080a12ebd3c6ed79ecfc15367199d41e56cf481f17695ce5",
+      "sourceCounts": [
+        720,
+        1200,
+        3600
+      ],
+      "evaluatedVertices": 70608,
+      "triangles": 23536,
+      "materials": [
+        "R24_Localized_Lunar_Dust_Deposit",
+        "R24_Fresh_Cut_Rock_Fragments"
+      ],
+      "modifiersEvaluated": [
+        "R24 editable machined edge bevel"
+      ]
+    },
+    {
+      "name": "R24_09_Process_Skid_Fasteners_Seams_And_Access_Covers",
+      "key": "R24_Mesh_10",
+      "sourceCoordinateHash": "07fe6d4b9fb2985816c13d0dbd328cec58be66a9a3a99dfb8f5347b87908e800",
+      "sourceCounts": [
+        2600,
+        2156,
+        9336
+      ],
+      "evaluatedVertices": 78384,
+      "triangles": 26128,
+      "materials": [
+        "R24_Slate_Gray_Industrial_Enamel",
+        "R24_Exposed_Machined_Contact_Steel",
+        "R24_Dark_Forged_Joint_Steel",
+        "R24_Recessed_Elastomer_Seal"
+      ],
+      "modifiersEvaluated": [
+        "R24 editable machined edge bevel"
+      ]
+    },
+    {
+      "name": "R24_10_Vessel_Service_ID_1",
+      "key": "R24_Mesh_11",
+      "sourceCoordinateHash": "9211e5930137f15cfcf082389229d470e37722be872a1a3ba40052512d1d9bee",
+      "sourceCounts": [
+        1176,
+        866,
+        2892
+      ],
+      "evaluatedVertices": 3480,
+      "triangles": 1160,
+      "materials": [
+        "R24_Dark_Forged_Joint_Steel"
+      ],
+      "modifiersEvaluated": []
+    },
+    {
+      "name": "R24_10_Vessel_Service_ID_2",
+      "key": "R24_Mesh_12",
+      "sourceCoordinateHash": "6fa9e4d044625cb8dd5aab4b47d1f74cbcd441ae9612829a41aca8625e730882",
+      "sourceCounts": [
+        1516,
+        1121,
+        3742
+      ],
+      "evaluatedVertices": 4500,
+      "triangles": 1500,
+      "materials": [
+        "R24_Dark_Forged_Joint_Steel"
+      ],
+      "modifiersEvaluated": []
+    },
+    {
+      "name": "R24_10_Vessel_Service_ID_3",
+      "key": "R24_Mesh_13",
+      "sourceCoordinateHash": "44b442c91579636a10c509400ce101a9de28bb9dc28a02620f1f4cde2f2a95e4",
+      "sourceCounts": [
+        1748,
+        1295,
+        4322
+      ],
+      "evaluatedVertices": 5196,
+      "triangles": 1732,
+      "materials": [
+        "R24_Dark_Forged_Joint_Steel"
+      ],
+      "modifiersEvaluated": []
+    }
+  ],
+  "images": [
+    {
+      "name": "R8_Rough_Exposed_Steel_Normal_OpenGL.png",
+      "bytes": 671611,
+      "sha256": "298ae64a7144e9217b9e3dbe1da58d38b2278515dfe54534831c1925099b126b",
+      "colorSpace": "Non-Color"
+    },
+    {
+      "name": "R8_Rough_Exposed_Steel_MetallicGloss.png",
+      "bytes": 244671,
+      "sha256": "54d8efc5103da9b1c71bc8bacc58e3f842cd22d81c898d9a6a6e205f5dfa14b1",
+      "colorSpace": "Non-Color"
+    },
+    {
+      "name": "R8_Dark_Protective_Steel_MetallicGloss.png",
+      "bytes": 256787,
+      "sha256": "2c7cbf4ef1e3bff4cb204a1d346fab0de23b48aa4e794c0459db8c63c41605e2",
+      "colorSpace": "Non-Color"
+    }
+  ],
+  "materials": [
+    "R13_Machined_Steel_Contact",
+    "R23_Exposed_Steel_Calm_Finish",
+    "R23_Protective_Steel_Microfinish",
+    "R24_Compacted_Regolith_Trace",
+    "R24_Dark_Forged_Joint_Steel",
+    "R24_Exposed_Machined_Contact_Steel",
+    "R24_Fresh_Cut_Rock_Fragments",
+    "R24_Localized_Lunar_Dust_Deposit",
+    "R24_Recessed_Elastomer_Seal",
+    "R24_Service_Stencil_Offwhite",
+    "R24_Slate_Gray_Industrial_Enamel"
+  ],
+  "axis": "Blender XZY, one triangle winding reversal; source world minus (2015,2130,0), Unity root (2015,0,2130)",
+  "sourceSaved": false
+}

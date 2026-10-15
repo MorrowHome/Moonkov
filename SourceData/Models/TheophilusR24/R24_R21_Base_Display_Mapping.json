@@ -1,0 +1,1524 @@
+{
+  "revision": "R24 focused hero-display increment for R21 + R23",
+  "package_file": "Moonkov_R24_R21_Base_Display_Delta.blend",
+  "append_collection": "B_26_R24_LOWER_MACHINE_AND_RIM_HERO_FINISH",
+  "root_object": "R24_HERO_FINISH_DISPLAY_ROOT",
+  "applicable_base": {
+    "geometry": "R21 accepted deep shaft, including R20 upper machine and existing R18 process deck",
+    "materials_and_UV": "R23 R21-direct material/UV patch, 38 display objects",
+    "R22_required": false,
+    "R22_geometry_included": false,
+    "R22_materials_included": false
+  },
+  "preview_context_notice": "The approved R24 picture was rendered in the complete cloud context, which still contains earlier R22 panel and lining detail. Those surrounding R22 refinements are not dependencies of this R24 delta and are not included. The R24 hero knee, coping and small local accessories can be applied directly to R21 + R23; surrounding R21 surfaces will retain their R21 geometry.",
+  "objects": [
+    {
+      "object": "R24_00_R20_02_Actuators_With_Hero_Knee_Replaced",
+      "type": "MESH",
+      "parent": "R24_HERO_FINISH_DISPLAY_ROOT",
+      "vertex_count": 6128,
+      "polygon_count": 3410,
+      "loop_count": 18384,
+      "vertex_coordinate_float32_le_sha256": "f05f053981304fb6c576a6998a7ad46b6b6cdcf04d5500e0f4a05790b13cd083",
+      "matrix_world_blender_rows": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "world_bounds_blender": {
+        "min": [
+          1980.91748046875,
+          2095.91748046875,
+          133.43499755859375
+        ],
+        "max": [
+          2049.08251953125,
+          2164.08251953125,
+          251.6199951171875
+        ]
+      },
+      "uv_layer": "UVMap",
+      "uv_included_in_mesh": true,
+      "materials": [
+        {
+          "slot_index": 0,
+          "name": "R23_Protective_Steel_Microfinish",
+          "polygon_count": 550
+        },
+        {
+          "slot_index": 1,
+          "name": "R23_Exposed_Steel_Calm_Finish",
+          "polygon_count": 2200
+        },
+        {
+          "slot_index": 2,
+          "name": "R13_Machined_Steel_Contact",
+          "polygon_count": 660
+        }
+      ],
+      "editable_modifiers": [],
+      "export_modifier_policy": "Evaluate bevel modifiers for a game mesh export, but retain editable source mesh/modifier in the blend.",
+      "display_only": true,
+      "generate_collision": false
+    },
+    {
+      "object": "R24_01_Hero_Knee_Forging_And_Thick_Armor",
+      "type": "MESH",
+      "parent": "R24_HERO_FINISH_DISPLAY_ROOT",
+      "vertex_count": 128,
+      "polygon_count": 82,
+      "loop_count": 384,
+      "vertex_coordinate_float32_le_sha256": "c51123f086e854e9eaffa06a1d640a37d459fcb060d443b3e7d75848121a994b",
+      "matrix_world_blender_rows": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "world_bounds_blender": {
+        "min": [
+          1981.659912109375,
+          2096.659912109375,
+          148.5377655029297
+        ],
+        "max": [
+          1998.7930908203125,
+          2113.79296875,
+          156.4499969482422
+        ]
+      },
+      "uv_layer": "UVMap",
+      "uv_included_in_mesh": true,
+      "materials": [
+        {
+          "slot_index": 0,
+          "name": "R24_Slate_Gray_Industrial_Enamel",
+          "polygon_count": 60
+        },
+        {
+          "slot_index": 1,
+          "name": "R24_Dark_Forged_Joint_Steel",
+          "polygon_count": 22
+        }
+      ],
+      "editable_modifiers": [
+        {
+          "name": "R24 editable machined edge bevel",
+          "type": "BEVEL",
+          "width_metres": 0.07500000298023224,
+          "segments": 3
+        }
+      ],
+      "export_modifier_policy": "Evaluate bevel modifiers for a game mesh export, but retain editable source mesh/modifier in the blend.",
+      "display_only": true,
+      "generate_collision": false
+    },
+    {
+      "object": "R24_02_Hero_Pin_Collar_Seal_And_Service_Cover",
+      "type": "MESH",
+      "parent": "R24_HERO_FINISH_DISPLAY_ROOT",
+      "vertex_count": 2168,
+      "polygon_count": 1726,
+      "loop_count": 7656,
+      "vertex_coordinate_float32_le_sha256": "d7166e4ee47ddcc10d10eeb9733adaab1d75f6ca6f45f114e94b404a940e5135",
+      "matrix_world_blender_rows": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "world_bounds_blender": {
+        "min": [
+          1983.000244140625,
+          2097.06298828125,
+          150.65000915527344
+        ],
+        "max": [
+          1992.570556640625,
+          2107.679443359375,
+          155.6999969482422
+        ]
+      },
+      "uv_layer": "UVMap",
+      "uv_included_in_mesh": true,
+      "materials": [
+        {
+          "slot_index": 0,
+          "name": "R24_Slate_Gray_Industrial_Enamel",
+          "polygon_count": 10
+        },
+        {
+          "slot_index": 1,
+          "name": "R24_Exposed_Machined_Contact_Steel",
+          "polygon_count": 964
+        },
+        {
+          "slot_index": 2,
+          "name": "R24_Dark_Forged_Joint_Steel",
+          "polygon_count": 212
+        },
+        {
+          "slot_index": 3,
+          "name": "R24_Recessed_Elastomer_Seal",
+          "polygon_count": 540
+        }
+      ],
+      "editable_modifiers": [
+        {
+          "name": "R24 editable machined edge bevel",
+          "type": "BEVEL",
+          "width_metres": 0.03500000014901161,
+          "segments": 3
+        }
+      ],
+      "export_modifier_policy": "Evaluate bevel modifiers for a game mesh export, but retain editable source mesh/modifier in the blend.",
+      "display_only": true,
+      "generate_collision": false
+    },
+    {
+      "object": "R24_03_Hero_Actuator_Connections_And_Welds",
+      "type": "MESH",
+      "parent": "R24_HERO_FINISH_DISPLAY_ROOT",
+      "vertex_count": 2176,
+      "polygon_count": 1896,
+      "loop_count": 8064,
+      "vertex_coordinate_float32_le_sha256": "ab607922adeaf2bd1389152e9c194e9f134c25db3b9a1e67fd4568169b451dba",
+      "matrix_world_blender_rows": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "world_bounds_blender": {
+        "min": [
+          1985.9530029296875,
+          2099.562744140625,
+          137.14935302734375
+        ],
+        "max": [
+          1997.626708984375,
+          2112.626953125,
+          152.02590942382812
+        ]
+      },
+      "uv_layer": "UVMap",
+      "uv_included_in_mesh": true,
+      "materials": [
+        {
+          "slot_index": 0,
+          "name": "R23_Exposed_Steel_Calm_Finish",
+          "polygon_count": 24
+        },
+        {
+          "slot_index": 1,
+          "name": "R24_Exposed_Machined_Contact_Steel",
+          "polygon_count": 1008
+        },
+        {
+          "slot_index": 2,
+          "name": "R24_Dark_Forged_Joint_Steel",
+          "polygon_count": 702
+        },
+        {
+          "slot_index": 3,
+          "name": "R24_Recessed_Elastomer_Seal",
+          "polygon_count": 162
+        }
+      ],
+      "editable_modifiers": [
+        {
+          "name": "R24 editable machined edge bevel",
+          "type": "BEVEL",
+          "width_metres": 0.017999999225139618,
+          "segments": 3
+        }
+      ],
+      "export_modifier_policy": "Evaluate bevel modifiers for a game mesh export, but retain editable source mesh/modifier in the blend.",
+      "display_only": true,
+      "generate_collision": false
+    },
+    {
+      "object": "R24_04_Hero_Service_ID",
+      "type": "MESH",
+      "parent": "R24_HERO_FINISH_DISPLAY_ROOT",
+      "vertex_count": 760,
+      "polygon_count": 558,
+      "loop_count": 1864,
+      "vertex_coordinate_float32_le_sha256": "fa35b36729f8989d8fc414b6636cf0f35246c47c7f5b6c166f53ca295c9875ce",
+      "matrix_world_blender_rows": [
+        [
+          0.7071067690849304,
+          -3.0908619663705394e-08,
+          -0.7071067690849304,
+          1988.6708984375
+        ],
+        [
+          -0.7071067690849304,
+          -3.0908619663705394e-08,
+          -0.7071067690849304,
+          2100.842529296875
+        ],
+        [
+          0.0,
+          1.0,
+          -4.371138828673793e-08,
+          154.10000610351562
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "world_bounds_blender": {
+        "min": [
+          1987.7572021484375,
+          2099.90869140625,
+          154.09442138671875
+        ],
+        "max": [
+          1989.6048583984375,
+          2101.75634765625,
+          154.52842712402344
+        ]
+      },
+      "uv_layer": "UVMap",
+      "uv_included_in_mesh": true,
+      "materials": [
+        {
+          "slot_index": 0,
+          "name": "R24_Service_Stencil_Offwhite",
+          "polygon_count": 558
+        }
+      ],
+      "editable_modifiers": [],
+      "export_modifier_policy": "Evaluate bevel modifiers for a game mesh export, but retain editable source mesh/modifier in the blend.",
+      "display_only": true,
+      "generate_collision": false
+    },
+    {
+      "object": "R24_04_Hero_Service_Sub_ID",
+      "type": "MESH",
+      "parent": "R24_HERO_FINISH_DISPLAY_ROOT",
+      "vertex_count": 4208,
+      "polygon_count": 3108,
+      "loop_count": 10376,
+      "vertex_coordinate_float32_le_sha256": "3d95e8467772563653c3ea18b25cd5af8733ec85dd4ff03226d3476abdf27f1b",
+      "matrix_world_blender_rows": [
+        [
+          0.7071067690849304,
+          -3.0908619663705394e-08,
+          -0.7071067690849304,
+          1988.66943359375
+        ],
+        [
+          -0.7071067690849304,
+          -3.0908619663705394e-08,
+          -0.7071067690849304,
+          2100.841064453125
+        ],
+        [
+          0.0,
+          1.0,
+          -4.371138828673793e-08,
+          153.52000427246094
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "world_bounds_blender": {
+        "min": [
+          1987.72265625,
+          2099.887451171875,
+          153.5180206298828
+        ],
+        "max": [
+          1989.623046875,
+          2101.787841796875,
+          153.67202758789062
+        ]
+      },
+      "uv_layer": "UVMap",
+      "uv_included_in_mesh": true,
+      "materials": [
+        {
+          "slot_index": 0,
+          "name": "R24_Service_Stencil_Offwhite",
+          "polygon_count": 3108
+        }
+      ],
+      "editable_modifiers": [],
+      "export_modifier_policy": "Evaluate bevel modifiers for a game mesh export, but retain editable source mesh/modifier in the blend.",
+      "display_only": true,
+      "generate_collision": false
+    },
+    {
+      "object": "R24_05_Local_Contact_Wear_And_Ledge_Dust",
+      "type": "MESH",
+      "parent": "R24_HERO_FINISH_DISPLAY_ROOT",
+      "vertex_count": 15,
+      "polygon_count": 3,
+      "loop_count": 15,
+      "vertex_coordinate_float32_le_sha256": "56734d08af986f1eb4b93dbe4945316397720b8cb056b335df66b1abb676a1c9",
+      "matrix_world_blender_rows": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "world_bounds_blender": {
+        "min": [
+          1985.43017578125,
+          2102.281494140625,
+          152.0800018310547
+        ],
+        "max": [
+          1997.0394287109375,
+          2112.03955078125,
+          156.46200561523438
+        ]
+      },
+      "uv_layer": "UVMap",
+      "uv_included_in_mesh": true,
+      "materials": [
+        {
+          "slot_index": 0,
+          "name": "R24_Exposed_Machined_Contact_Steel",
+          "polygon_count": 1
+        },
+        {
+          "slot_index": 1,
+          "name": "R24_Localized_Lunar_Dust_Deposit",
+          "polygon_count": 2
+        }
+      ],
+      "editable_modifiers": [],
+      "export_modifier_policy": "Evaluate bevel modifiers for a game mesh export, but retain editable source mesh/modifier in the blend.",
+      "display_only": true,
+      "generate_collision": false
+    },
+    {
+      "object": "R24_06_Shaft_Rim_Protective_Coping_And_Anchors",
+      "type": "MESH",
+      "parent": "R24_HERO_FINISH_DISPLAY_ROOT",
+      "vertex_count": 2240,
+      "polygon_count": 1712,
+      "loop_count": 7488,
+      "vertex_coordinate_float32_le_sha256": "dd8bab33d76a2dc02136af3c31dcfd0c7476f5923f333e1e748ce3d83b339bdf",
+      "matrix_world_blender_rows": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "world_bounds_blender": {
+        "min": [
+          1960.100341796875,
+          2075.1005859375,
+          101.77853393554688
+        ],
+        "max": [
+          2069.8994140625,
+          2184.8994140625,
+          113.40666198730469
+        ]
+      },
+      "uv_layer": "UVMap",
+      "uv_included_in_mesh": true,
+      "materials": [
+        {
+          "slot_index": 0,
+          "name": "R23_Exposed_Steel_Calm_Finish",
+          "polygon_count": 576
+        },
+        {
+          "slot_index": 1,
+          "name": "R24_Slate_Gray_Industrial_Enamel",
+          "polygon_count": 576
+        },
+        {
+          "slot_index": 2,
+          "name": "R24_Exposed_Machined_Contact_Steel",
+          "polygon_count": 352
+        },
+        {
+          "slot_index": 3,
+          "name": "R24_Dark_Forged_Joint_Steel",
+          "polygon_count": 208
+        }
+      ],
+      "editable_modifiers": [
+        {
+          "name": "R24 editable machined edge bevel",
+          "type": "BEVEL",
+          "width_metres": 0.017999999225139618,
+          "segments": 3
+        }
+      ],
+      "export_modifier_policy": "Evaluate bevel modifiers for a game mesh export, but retain editable source mesh/modifier in the blend.",
+      "display_only": true,
+      "generate_collision": false
+    },
+    {
+      "object": "R24_07_Lunar_Rim_Disturbed_Dust_And_Compaction",
+      "type": "MESH",
+      "parent": "R24_HERO_FINISH_DISPLAY_ROOT",
+      "vertex_count": 208,
+      "polygon_count": 96,
+      "loop_count": 384,
+      "vertex_coordinate_float32_le_sha256": "d3d910306d6909ff7e5e11f6fbbf9c15090505a7f55a08f96b20066ab7486384",
+      "matrix_world_blender_rows": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "world_bounds_blender": {
+        "min": [
+          1966.095458984375,
+          2077.724853515625,
+          100.83071899414062
+        ],
+        "max": [
+          2084.48876953125,
+          2187.833251953125,
+          115.6977310180664
+        ]
+      },
+      "uv_layer": "UVMap",
+      "uv_included_in_mesh": true,
+      "materials": [
+        {
+          "slot_index": 0,
+          "name": "R24_Localized_Lunar_Dust_Deposit",
+          "polygon_count": 48
+        },
+        {
+          "slot_index": 1,
+          "name": "R24_Compacted_Regolith_Trace",
+          "polygon_count": 48
+        }
+      ],
+      "editable_modifiers": [],
+      "export_modifier_policy": "Evaluate bevel modifiers for a game mesh export, but retain editable source mesh/modifier in the blend.",
+      "display_only": true,
+      "generate_collision": false
+    },
+    {
+      "object": "R24_08_Restrained_Excavation_Fragment_Clusters",
+      "type": "MESH",
+      "parent": "R24_HERO_FINISH_DISPLAY_ROOT",
+      "vertex_count": 720,
+      "polygon_count": 1200,
+      "loop_count": 3600,
+      "vertex_coordinate_float32_le_sha256": "7d7a0c5ee07f436f080a12ebd3c6ed79ecfc15367199d41e56cf481f17695ce5",
+      "matrix_world_blender_rows": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "world_bounds_blender": {
+        "min": [
+          1973.12548828125,
+          2082.629638671875,
+          101.2372817993164
+        ],
+        "max": [
+          2075.226318359375,
+          2181.927734375,
+          112.46233367919922
+        ]
+      },
+      "uv_layer": "UVMap",
+      "uv_included_in_mesh": true,
+      "materials": [
+        {
+          "slot_index": 0,
+          "name": "R24_Localized_Lunar_Dust_Deposit",
+          "polygon_count": 800
+        },
+        {
+          "slot_index": 1,
+          "name": "R24_Fresh_Cut_Rock_Fragments",
+          "polygon_count": 400
+        }
+      ],
+      "editable_modifiers": [
+        {
+          "name": "R24 editable machined edge bevel",
+          "type": "BEVEL",
+          "width_metres": 0.012000000104308128,
+          "segments": 3
+        }
+      ],
+      "export_modifier_policy": "Evaluate bevel modifiers for a game mesh export, but retain editable source mesh/modifier in the blend.",
+      "display_only": true,
+      "generate_collision": false
+    },
+    {
+      "object": "R24_09_Process_Skid_Fasteners_Seams_And_Access_Covers",
+      "type": "MESH",
+      "parent": "R24_HERO_FINISH_DISPLAY_ROOT",
+      "vertex_count": 2600,
+      "polygon_count": 2156,
+      "loop_count": 9336,
+      "vertex_coordinate_float32_le_sha256": "07fe6d4b9fb2985816c13d0dbd328cec58be66a9a3a99dfb8f5347b87908e800",
+      "matrix_world_blender_rows": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "world_bounds_blender": {
+        "min": [
+          1965.9935302734375,
+          2059.60009765625,
+          122.49527740478516
+        ],
+        "max": [
+          2005.796142578125,
+          2084.39990234375,
+          128.28433227539062
+        ]
+      },
+      "uv_layer": "UVMap",
+      "uv_included_in_mesh": true,
+      "materials": [
+        {
+          "slot_index": 0,
+          "name": "R24_Slate_Gray_Industrial_Enamel",
+          "polygon_count": 30
+        },
+        {
+          "slot_index": 1,
+          "name": "R24_Exposed_Machined_Contact_Steel",
+          "polygon_count": 396
+        },
+        {
+          "slot_index": 2,
+          "name": "R24_Dark_Forged_Joint_Steel",
+          "polygon_count": 1700
+        },
+        {
+          "slot_index": 3,
+          "name": "R24_Recessed_Elastomer_Seal",
+          "polygon_count": 30
+        }
+      ],
+      "editable_modifiers": [
+        {
+          "name": "R24 editable machined edge bevel",
+          "type": "BEVEL",
+          "width_metres": 0.012000000104308128,
+          "segments": 3
+        }
+      ],
+      "export_modifier_policy": "Evaluate bevel modifiers for a game mesh export, but retain editable source mesh/modifier in the blend.",
+      "display_only": true,
+      "generate_collision": false
+    },
+    {
+      "object": "R24_10_Vessel_Service_ID_1",
+      "type": "MESH",
+      "parent": "R24_HERO_FINISH_DISPLAY_ROOT",
+      "vertex_count": 1176,
+      "polygon_count": 866,
+      "loop_count": 2892,
+      "vertex_coordinate_float32_le_sha256": "9211e5930137f15cfcf082389229d470e37722be872a1a3ba40052512d1d9bee",
+      "matrix_world_blender_rows": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          1971.0
+        ],
+        [
+          0.0,
+          -4.371138828673793e-08,
+          -1.0,
+          2068.8798828125
+        ],
+        [
+          0.0,
+          1.0,
+          -4.371138828673793e-08,
+          126.05000305175781
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "world_bounds_blender": {
+        "min": [
+          1970.1680908203125,
+          2068.8779296875,
+          126.04586029052734
+        ],
+        "max": [
+          1971.75830078125,
+          2068.8818359375,
+          126.36786651611328
+        ]
+      },
+      "uv_layer": "UVMap",
+      "uv_included_in_mesh": true,
+      "materials": [
+        {
+          "slot_index": 0,
+          "name": "R24_Dark_Forged_Joint_Steel",
+          "polygon_count": 866
+        }
+      ],
+      "editable_modifiers": [],
+      "export_modifier_policy": "Evaluate bevel modifiers for a game mesh export, but retain editable source mesh/modifier in the blend.",
+      "display_only": true,
+      "generate_collision": false
+    },
+    {
+      "object": "R24_10_Vessel_Service_ID_2",
+      "type": "MESH",
+      "parent": "R24_HERO_FINISH_DISPLAY_ROOT",
+      "vertex_count": 1516,
+      "polygon_count": 1121,
+      "loop_count": 3742,
+      "vertex_coordinate_float32_le_sha256": "6fa9e4d044625cb8dd5aab4b47d1f74cbcd441ae9612829a41aca8625e730882",
+      "matrix_world_blender_rows": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          1986.0
+        ],
+        [
+          0.0,
+          -4.371138828673793e-08,
+          -1.0,
+          2068.8798828125
+        ],
+        [
+          0.0,
+          1.0,
+          -4.371138828673793e-08,
+          126.05000305175781
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "world_bounds_blender": {
+        "min": [
+          1985.1680908203125,
+          2068.8779296875,
+          126.04586029052734
+        ],
+        "max": [
+          1986.834716796875,
+          2068.8818359375,
+          126.36786651611328
+        ]
+      },
+      "uv_layer": "UVMap",
+      "uv_included_in_mesh": true,
+      "materials": [
+        {
+          "slot_index": 0,
+          "name": "R24_Dark_Forged_Joint_Steel",
+          "polygon_count": 1121
+        }
+      ],
+      "editable_modifiers": [],
+      "export_modifier_policy": "Evaluate bevel modifiers for a game mesh export, but retain editable source mesh/modifier in the blend.",
+      "display_only": true,
+      "generate_collision": false
+    },
+    {
+      "object": "R24_10_Vessel_Service_ID_3",
+      "type": "MESH",
+      "parent": "R24_HERO_FINISH_DISPLAY_ROOT",
+      "vertex_count": 1748,
+      "polygon_count": 1295,
+      "loop_count": 4322,
+      "vertex_coordinate_float32_le_sha256": "44b442c91579636a10c509400ce101a9de28bb9dc28a02620f1f4cde2f2a95e4",
+      "matrix_world_blender_rows": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          2001.0
+        ],
+        [
+          0.0,
+          -4.371138828673793e-08,
+          -1.0,
+          2068.8798828125
+        ],
+        [
+          0.0,
+          1.0,
+          -4.371138828673793e-08,
+          126.05000305175781
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "world_bounds_blender": {
+        "min": [
+          2000.1680908203125,
+          2068.8779296875,
+          126.04586029052734
+        ],
+        "max": [
+          2001.8153076171875,
+          2068.8818359375,
+          126.36786651611328
+        ]
+      },
+      "uv_layer": "UVMap",
+      "uv_included_in_mesh": true,
+      "materials": [
+        {
+          "slot_index": 0,
+          "name": "R24_Dark_Forged_Joint_Steel",
+          "polygon_count": 1295
+        }
+      ],
+      "editable_modifiers": [],
+      "export_modifier_policy": "Evaluate bevel modifiers for a game mesh export, but retain editable source mesh/modifier in the blend.",
+      "display_only": true,
+      "generate_collision": false
+    }
+  ],
+  "materials": [
+    {
+      "name": "R13_Machined_Steel_Contact",
+      "included_in_delta_blend": true,
+      "reuse_existing_by_exact_name_if_unchanged": true,
+      "source": "Existing R21 material, unchanged, bundled for self-containment",
+      "local_mapping": "Reuse the existing material with this exact source name. No new shader interpretation is required for this unchanged material.",
+      "images": [
+        {
+          "image": "R8_Rough_Exposed_Steel_Normal_OpenGL.png",
+          "packed_in_blend": true,
+          "color_space": "Non-Color"
+        }
+      ]
+    },
+    {
+      "name": "R23_Exposed_Steel_Calm_Finish",
+      "included_in_delta_blend": true,
+      "reuse_existing_by_exact_name_if_unchanged": true,
+      "source": "R23 material patch already provided for R21",
+      "exact_R23_material_definition": {
+        "new_material": "R23_Exposed_Steel_Calm_Finish",
+        "source_material": "R8_Rough_Exposed_Steel",
+        "base_color_linear_RGB": [
+          0.235,
+          0.25,
+          0.255
+        ],
+        "metallic": 0.78,
+        "roughness_range": [
+          0.47,
+          0.505
+        ],
+        "image_repeat_metres": 0.12,
+        "UV_units": "metres",
+        "UV_channel": "UVMap / source UV0",
+        "reused_images": [
+          "R8_Rough_Exposed_Steel_MetallicGloss.png"
+        ],
+        "removed_macro_pattern_inputs": [
+          "BaseColor bitmap disconnected entirely",
+          "Normal bitmap disconnected entirely"
+        ],
+        "concrete_image_color_weight": 0,
+        "normal_strength": 0,
+        "procedural_noise_added": false,
+        "directionality": "isotropic surface; no brushed/grain-direction material was rotated",
+        "URP": {
+          "source_gloss_channel": "alpha (A), non-color",
+          "metallic_constant": 0.78,
+          "roughness_min_max": [
+            0.47,
+            0.505
+          ],
+          "smoothness_min_max": [
+            0.495,
+            0.53
+          ],
+          "smoothness_offset": 0.495,
+          "smoothness_alpha_scale": 0.035,
+          "formula": "smoothness = smoothness_offset + smoothness_alpha_scale * source_alpha",
+          "UV_tiling_xy": [
+            8.333333333333334,
+            8.333333333333334
+          ],
+          "baked_metallic_smoothness_channels": {
+            "R": "metallic_constant",
+            "A": "computed smoothness",
+            "G_B": "unused"
+          }
+        }
+      },
+      "UV_note": "UV0 is already included. Apply the material tiling once; do not reapply original-object loop overrides to this trimmed replacement mesh.",
+      "images": [
+        {
+          "image": "R8_Rough_Exposed_Steel_MetallicGloss.png",
+          "packed_in_blend": true,
+          "color_space": "Non-Color"
+        }
+      ]
+    },
+    {
+      "name": "R23_Protective_Steel_Microfinish",
+      "included_in_delta_blend": true,
+      "reuse_existing_by_exact_name_if_unchanged": true,
+      "source": "R23 material patch already provided for R21",
+      "exact_R23_material_definition": {
+        "new_material": "R23_Protective_Steel_Microfinish",
+        "source_material": "R8_Dark_Protective_Steel",
+        "base_color_linear_RGB": [
+          0.065,
+          0.073,
+          0.076
+        ],
+        "metallic": 0.06,
+        "roughness_range": [
+          0.565,
+          0.595
+        ],
+        "image_repeat_metres": 0.16,
+        "UV_units": "metres",
+        "UV_channel": "UVMap / source UV0",
+        "reused_images": [
+          "R8_Dark_Protective_Steel_MetallicGloss.png"
+        ],
+        "removed_macro_pattern_inputs": [
+          "BaseColor bitmap disconnected entirely",
+          "Normal bitmap disconnected entirely"
+        ],
+        "concrete_image_color_weight": 0,
+        "normal_strength": 0,
+        "procedural_noise_added": false,
+        "directionality": "isotropic surface; no brushed/grain-direction material was rotated",
+        "URP": {
+          "source_gloss_channel": "alpha (A), non-color",
+          "metallic_constant": 0.06,
+          "roughness_min_max": [
+            0.565,
+            0.595
+          ],
+          "smoothness_min_max": [
+            0.405,
+            0.435
+          ],
+          "smoothness_offset": 0.405,
+          "smoothness_alpha_scale": 0.03,
+          "formula": "smoothness = smoothness_offset + smoothness_alpha_scale * source_alpha",
+          "UV_tiling_xy": [
+            6.25,
+            6.25
+          ],
+          "baked_metallic_smoothness_channels": {
+            "R": "metallic_constant",
+            "A": "computed smoothness",
+            "G_B": "unused"
+          }
+        }
+      },
+      "UV_note": "UV0 is already included. Apply the material tiling once; do not reapply original-object loop overrides to this trimmed replacement mesh.",
+      "images": [
+        {
+          "image": "R8_Dark_Protective_Steel_MetallicGloss.png",
+          "packed_in_blend": true,
+          "color_space": "Non-Color"
+        }
+      ]
+    },
+    {
+      "name": "R24_Compacted_Regolith_Trace",
+      "included_in_delta_blend": true,
+      "reuse_existing_by_exact_name_if_unchanged": true,
+      "base_color_linear": [
+        0.135,
+        0.132,
+        0.125
+      ],
+      "metallic": 0,
+      "roughness": 0.94,
+      "coat": 0,
+      "macro_color_or_normal_noise": false,
+      "URP_scalar_mapping": {
+        "metallic": 0,
+        "smoothness": 0.06,
+        "smoothness_formula": "1 - Blender roughness",
+        "base_color_linear_rgb": [
+          0.135,
+          0.132,
+          0.125
+        ],
+        "base_color_srgb_rgb": [
+          0.4030274746728496,
+          0.39875866451438985,
+          0.3885728590463344
+        ],
+        "texture_inputs": "None; no macro BaseColor or Normal texture",
+        "coat_note": "Blender coat is a separate lobe. Preserve as an optional clear-coat feature in a suitable local shader; it is not baked into metallic or smoothness and is not claimed to transfer automatically.",
+        "coat_weight": 0,
+        "coat_roughness": 0.32,
+        "coat_smoothness": 0.68
+      },
+      "images": []
+    },
+    {
+      "name": "R24_Dark_Forged_Joint_Steel",
+      "included_in_delta_blend": true,
+      "reuse_existing_by_exact_name_if_unchanged": true,
+      "base_color_linear": [
+        0.085,
+        0.1,
+        0.11
+      ],
+      "metallic": 0.65,
+      "roughness": 0.46,
+      "coat": 0,
+      "macro_color_or_normal_noise": false,
+      "URP_scalar_mapping": {
+        "metallic": 0.65,
+        "smoothness": 0.54,
+        "smoothness_formula": "1 - Blender roughness",
+        "base_color_linear_rgb": [
+          0.085,
+          0.1,
+          0.11
+        ],
+        "base_color_srgb_rgb": [
+          0.32272611513876776,
+          0.3491902126282938,
+          0.36556462992983896
+        ],
+        "texture_inputs": "None; no macro BaseColor or Normal texture",
+        "coat_note": "Blender coat is a separate lobe. Preserve as an optional clear-coat feature in a suitable local shader; it is not baked into metallic or smoothness and is not claimed to transfer automatically.",
+        "coat_weight": 0,
+        "coat_roughness": 0.32,
+        "coat_smoothness": 0.68
+      },
+      "images": []
+    },
+    {
+      "name": "R24_Exposed_Machined_Contact_Steel",
+      "included_in_delta_blend": true,
+      "reuse_existing_by_exact_name_if_unchanged": true,
+      "base_color_linear": [
+        0.36,
+        0.385,
+        0.4
+      ],
+      "metallic": 0.92,
+      "roughness": 0.26,
+      "coat": 0,
+      "macro_color_or_normal_noise": false,
+      "URP_scalar_mapping": {
+        "metallic": 0.92,
+        "smoothness": 0.74,
+        "smoothness_formula": "1 - Blender roughness",
+        "base_color_linear_rgb": [
+          0.36,
+          0.385,
+          0.4
+        ],
+        "base_color_srgb_rgb": [
+          0.6342527406021728,
+          0.6538066176215832,
+          0.6651850846308363
+        ],
+        "texture_inputs": "None; no macro BaseColor or Normal texture",
+        "coat_note": "Blender coat is a separate lobe. Preserve as an optional clear-coat feature in a suitable local shader; it is not baked into metallic or smoothness and is not claimed to transfer automatically.",
+        "coat_weight": 0,
+        "coat_roughness": 0.32,
+        "coat_smoothness": 0.68
+      },
+      "images": []
+    },
+    {
+      "name": "R24_Fresh_Cut_Rock_Fragments",
+      "included_in_delta_blend": true,
+      "reuse_existing_by_exact_name_if_unchanged": true,
+      "base_color_linear": [
+        0.165,
+        0.16,
+        0.15
+      ],
+      "metallic": 0,
+      "roughness": 0.92,
+      "coat": 0,
+      "macro_color_or_normal_noise": false,
+      "URP_scalar_mapping": {
+        "metallic": 0,
+        "smoothness": 0.08,
+        "smoothness_formula": "1 - Blender roughness",
+        "base_color_linear_rgb": [
+          0.165,
+          0.16,
+          0.15
+        ],
+        "base_color_srgb_rgb": [
+          0.4429710587915529,
+          0.43662706741680085,
+          0.42358287124447963
+        ],
+        "texture_inputs": "None; no macro BaseColor or Normal texture",
+        "coat_note": "Blender coat is a separate lobe. Preserve as an optional clear-coat feature in a suitable local shader; it is not baked into metallic or smoothness and is not claimed to transfer automatically.",
+        "coat_weight": 0,
+        "coat_roughness": 0.32,
+        "coat_smoothness": 0.68
+      },
+      "images": []
+    },
+    {
+      "name": "R24_Localized_Lunar_Dust_Deposit",
+      "included_in_delta_blend": true,
+      "reuse_existing_by_exact_name_if_unchanged": true,
+      "base_color_linear": [
+        0.205,
+        0.19,
+        0.165
+      ],
+      "metallic": 0,
+      "roughness": 0.98,
+      "coat": 0,
+      "macro_color_or_normal_noise": false,
+      "URP_scalar_mapping": {
+        "metallic": 0,
+        "smoothness": 0.02,
+        "smoothness_formula": "1 - Blender roughness",
+        "base_color_linear_rgb": [
+          0.205,
+          0.19,
+          0.165
+        ],
+        "base_color_srgb_rgb": [
+          0.490108852625824,
+          0.4731206227190587,
+          0.4429710587915529
+        ],
+        "texture_inputs": "None; no macro BaseColor or Normal texture",
+        "coat_note": "Blender coat is a separate lobe. Preserve as an optional clear-coat feature in a suitable local shader; it is not baked into metallic or smoothness and is not claimed to transfer automatically.",
+        "coat_weight": 0,
+        "coat_roughness": 0.32,
+        "coat_smoothness": 0.68
+      },
+      "images": []
+    },
+    {
+      "name": "R24_Recessed_Elastomer_Seal",
+      "included_in_delta_blend": true,
+      "reuse_existing_by_exact_name_if_unchanged": true,
+      "base_color_linear": [
+        0.014,
+        0.018,
+        0.019
+      ],
+      "metallic": 0,
+      "roughness": 0.77,
+      "coat": 0,
+      "macro_color_or_normal_noise": false,
+      "URP_scalar_mapping": {
+        "metallic": 0,
+        "smoothness": 0.23,
+        "smoothness_formula": "1 - Blender roughness",
+        "base_color_linear_rgb": [
+          0.014,
+          0.018,
+          0.019
+        ],
+        "base_color_srgb_rgb": [
+          0.1231581965652013,
+          0.1428256813030392,
+          0.1473328784741263
+        ],
+        "texture_inputs": "None; no macro BaseColor or Normal texture",
+        "coat_note": "Blender coat is a separate lobe. Preserve as an optional clear-coat feature in a suitable local shader; it is not baked into metallic or smoothness and is not claimed to transfer automatically.",
+        "coat_weight": 0,
+        "coat_roughness": 0.32,
+        "coat_smoothness": 0.68
+      },
+      "images": []
+    },
+    {
+      "name": "R24_Service_Stencil_Offwhite",
+      "included_in_delta_blend": true,
+      "reuse_existing_by_exact_name_if_unchanged": true,
+      "base_color_linear": [
+        0.6,
+        0.62,
+        0.59
+      ],
+      "metallic": 0,
+      "roughness": 0.76,
+      "coat": 0,
+      "macro_color_or_normal_noise": false,
+      "URP_scalar_mapping": {
+        "metallic": 0,
+        "smoothness": 0.24,
+        "smoothness_formula": "1 - Blender roughness",
+        "base_color_linear_rgb": [
+          0.6,
+          0.62,
+          0.59
+        ],
+        "base_color_srgb_rgb": [
+          0.7977377330312598,
+          0.8094681498655941,
+          0.7917869007673474
+        ],
+        "texture_inputs": "None; no macro BaseColor or Normal texture",
+        "coat_note": "Blender coat is a separate lobe. Preserve as an optional clear-coat feature in a suitable local shader; it is not baked into metallic or smoothness and is not claimed to transfer automatically.",
+        "coat_weight": 0,
+        "coat_roughness": 0.32,
+        "coat_smoothness": 0.68
+      },
+      "images": []
+    },
+    {
+      "name": "R24_Slate_Gray_Industrial_Enamel",
+      "included_in_delta_blend": true,
+      "reuse_existing_by_exact_name_if_unchanged": true,
+      "base_color_linear": [
+        0.19,
+        0.215,
+        0.225
+      ],
+      "metallic": 0.09,
+      "roughness": 0.43,
+      "coat": 0.16,
+      "macro_color_or_normal_noise": false,
+      "URP_scalar_mapping": {
+        "metallic": 0.09,
+        "smoothness": 0.57,
+        "smoothness_formula": "1 - Blender roughness",
+        "base_color_linear_rgb": [
+          0.19,
+          0.215,
+          0.225
+        ],
+        "base_color_srgb_rgb": [
+          0.4731206227190587,
+          0.5010346012180562,
+          0.5116677655533537
+        ],
+        "texture_inputs": "None; no macro BaseColor or Normal texture",
+        "coat_note": "Blender coat is a separate lobe. Preserve as an optional clear-coat feature in a suitable local shader; it is not baked into metallic or smoothness and is not claimed to transfer automatically.",
+        "coat_weight": 0.16,
+        "coat_roughness": 0.32,
+        "coat_smoothness": 0.68
+      },
+      "images": []
+    }
+  ],
+  "packed_images": [
+    {
+      "image": "R8_Rough_Exposed_Steel_Normal_OpenGL.png",
+      "packed_in_blend": true,
+      "color_space": "Non-Color"
+    },
+    {
+      "image": "R8_Rough_Exposed_Steel_MetallicGloss.png",
+      "packed_in_blend": true,
+      "color_space": "Non-Color"
+    },
+    {
+      "image": "R8_Dark_Protective_Steel_MetallicGloss.png",
+      "packed_in_blend": true,
+      "color_space": "Non-Color"
+    }
+  ],
+  "display_replacement": {
+    "hide_renderer_only": "R20_02_Grouped_Actuator_Muscles_And_Heavy_Nodes",
+    "replacement": "R24_00_R20_02_Actuators_With_Hero_Knee_Replaced",
+    "source_guard_from_R23_R21_mapping": {
+      "object": "R20_02_Grouped_Actuator_Muscles_And_Heavy_Nodes",
+      "canonical_R21_display_name": "R20_02_Grouped_Actuator_Muscles_And_Heavy_Nodes",
+      "present_in_R21_direct_patch": true,
+      "preview_visible": true,
+      "vertex_count": 6176,
+      "polygon_count": 3440,
+      "loop_count": 18528,
+      "vertex_coordinate_sha256": "52aadb3b60ac280c740746b8047e30a5936391129743663ebc486fd89468420b",
+      "geometry_or_transform_changed": false,
+      "material_slots": [
+        {
+          "slot_index": 0,
+          "old_material": "R8_Dark_Protective_Steel",
+          "new_material": "R23_Protective_Steel_Microfinish"
+        },
+        {
+          "slot_index": 1,
+          "old_material": "R8_Rough_Exposed_Steel",
+          "new_material": "R23_Exposed_Steel_Calm_Finish"
+        },
+        {
+          "slot_index": 3,
+          "old_material": "R8_Matte_Deck_Plates",
+          "new_material": "R23_Matte_Deck_Fine_Finish"
+        },
+        {
+          "slot_index": 4,
+          "old_material": "R8_Scanned_Mineral_Support",
+          "new_material": "R23_Concrete_Metric_Surface"
+        }
+      ],
+      "updated_uv_loop_count": 14976,
+      "uv_rows_key": "R20_02_Grouped_Actuator_Muscles_And_Heavy_Nodes"
+    },
+    "scope": "Retain original mesh/data and all functional/collision objects. The replacement contains the remaining original actuator geometry with R23 UV/materials; three connected primitive components at the front knee were removed and replaced by the other R24 hero meshes."
+  },
+  "coordinates": {
+    "unit": "metre",
+    "source": "Blender world Z-up",
+    "target": "Unity world Y-up",
+    "unity_xyz_from_blender_xyz": [
+      "X",
+      "Z",
+      "Y"
+    ],
+    "apply_axis_conversion_exactly_once": true,
+    "keep_existing_world_alignment": true,
+    "root_blender_matrix_rows": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "warning": "The reflection of the axis swap requires the exporter/importer to handle triangle winding and normals. Do not apply the XZY swap a second time if the existing importer already performs it."
+  },
+  "application_steps": [
+    "Use the existing local R21 + R23 display baseline; no R22 import is needed.",
+    "Append only the named collection from the delta blend. Export with the established world-axis conversion exactly once and evaluate the included bevels if producing a game mesh.",
+    "Use the exact per-object compacted material slot order in this JSON. UVs are embedded in the delta meshes.",
+    "Disable only the renderer for the listed old R20_02 display, then enable the 14 named R24 meshes. Preserve the old object for rollback.",
+    "Do not regenerate colliders, replace TerrainData, move bridges, change interactive objects, or import preview lights/cameras."
+  ],
+  "rollback": "Disable/remove the newly imported R24 display instances and restore the old R20_02 renderer state. Full cloud rollback: Moonkov_R23_Repetition_Fix_Rollback.blend.",
+  "lighting": "No lights or cameras in the delta. The review-only shaft fill remains excluded.",
+  "limitations": "Art handoff only. No local Unity, Host, save, collision, shader-equivalence or performance acceptance is claimed.",
+  "package_bytes": 2012830,
+  "package_sha256": "7d732a3dbf58eb95238af19a86bb96977538a5fcfae9104dded843c35484e0ee"
+}
