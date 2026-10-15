@@ -127,4 +127,3 @@ for kind,entries in [('Patch',I['objects']),('New',G['objects'])]:
 (out/'Manifest.json').write_text(json.dumps({'objects':exported,'industrialChangedFaces':4639,'newMeshes':34,'patchedMeshes':19,'imageHashesVerified':43,'UVChannelMap':channels,'axis':'XZY once with reversed triangle winding; source world minus (2015,2130,0), Unity root at (2015,0,2130)','sourceSaved':False,'rendered':False},indent=2))
 (out/'objects.tsv').write_text('\n'.join('\t'.join([r['kind'],r['name'],r['key']]+r['materials']) for r in exported))
 print(json.dumps({'new':34,'patch':19,'changedFaces':4639,'newTriangles':sum(r['triangles'] for r in exported if r['kind']=='New'),'patchTriangles':sum(r['triangles'] for r in exported if r['kind']=='Patch'),'verifiedTextureHashes':43,'sourcesSaved':False}))
-

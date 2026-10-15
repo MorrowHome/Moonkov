@@ -1,0 +1,14 @@
+{
+  "stagedNewDocuments": 138,
+  "stagedExistingDocuments": 40,
+  "removedExistingDocuments": 0,
+  "modifiedTypes": {
+    "1660057539": 1,
+    "23": 20,
+    "33": 19
+  },
+  "preexistingUserDocumentsLeftUnstaged": 9,
+  "preexistingUserAddedDocumentsLeftUnstaged": 3,
+  "fullWorkingSceneNotStaged": true,
+  "indexBlob": "894d4ef11f2fc5c50107bb5dd4f14f236f925460"
+}
