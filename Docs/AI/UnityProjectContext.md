@@ -24,7 +24,9 @@
 
 约束：Markdown 图使用 Mermaid；Unity 验证遵循最小充分原则。不要把月球环境迁移扩大成联机玩法重构，不修改源 MMORPG。
 
-2026-10-15 用户实测反馈穿模后，正式地图巨构及 R3/R6/R7/R9、38 件 R18–R21 补静态非凸 MeshCollider；隐藏旧封盖排除，井底另用双面碰撞网格处理源面向下绕序。三处桥面／井底／井壁射线与保存重开通过；地形与玩法入口未改，未作角色走图或导航验收。当前碰撞状态以 `Docs/AI/Theophilus_Gameplay_Collision.json` 为准，之前“仅显示”记录是历史阶段。
+2026-10-15 用户实测反馈穿模后，正式地图巨构及 R6/R7/R9、38 件 R18–R21 补静态非凸 MeshCollider，R3 原有 53 个 BoxCollider 保留；隐藏旧封盖排除，井底另用双面碰撞网格处理源面向下绕序。三处桥面／井底／井壁射线与保存重开通过；地形与玩法入口未改，未作角色走图或导航验收。当前碰撞状态以 `Docs/AI/Theophilus_Gameplay_Collision.json` 为准，之前“仅显示”记录是历史阶段。
+
+同日针对 Play 帧率，正式地图 6000 块原始小石头从始终最高精度（总计约 4665 万三角形）改为 `MoonRockLod` 距离分级，近／中／远边界 18／80／600 m，原碰撞和源资产不变，R3 现有简化碰撞也保留。新增四份共享低精度网格，一个场景组件每 0.25 s 批量检查，无每石头 Update。固定 Scene 视角石头几何量降至约 52.8 万；同视角实际 Scene 渲染回调 CPU 提交中位数 5.58→4.99 ms（每阶段 6 帧）。未测 GPU 时间或真实 Play FPS，不能据此称已稳定目标帧率；未启动 Host 或账号部署。详见 `Docs/AI/Theophilus_Collision_Performance_Fix.md`。
 
 已查阅：`Packages/manifest.json`、`ProjectVersion.txt`、`GraphicsSettings.asset`、`EditorBuildSettings.asset`、`ProjectSettings.asset`、`GhostBridgeBootstrap.cs`、`GameManager.cs`、`SceneLoader.cs`、Starter Assets 控制器与输入脚本、源月球地形／材质／着色器／接地实现。
 

@@ -382421,6 +382421,9 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1947159228668865484, guid: 675f9882ac896674483c0f181f2b2d2d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 728697761}
     - targetCorrespondingSourceObject: {fileID: 4260637346796824925, guid: 675f9882ac896674483c0f181f2b2d2d, type: 3}
       insertIndex: -1
       addedObject: {fileID: 728697758}
@@ -382464,6 +382467,41 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!4 &728697759 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8051570274669408721, guid: 675f9882ac896674483c0f181f2b2d2d, type: 3}
+  m_PrefabInstance: {fileID: 728697755}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &728697760 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1947159228668865484, guid: 675f9882ac896674483c0f181f2b2d2d, type: 3}
+  m_PrefabInstance: {fileID: 728697755}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &728697761
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 728697760}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 721ec5dd76eb2364ba118a3e0fed5323, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: MoonEnvironment.Runtime::Unity.MP_FPS.Moon.MoonRockLod
+  rocks: {fileID: 728697759}
+  sourceMeshes:
+  - {fileID: -6515374482523227709, guid: 0cfdf488171549141baba9873836df71, type: 3}
+  - {fileID: 8902592029813573618, guid: e6e38a3d21adb7c4ca4170ae7d0107c5, type: 3}
+  middleMeshes:
+  - {fileID: 4300000, guid: d1a8513a98a2003478a6aacd70160c92, type: 2}
+  - {fileID: 4300000, guid: c8fc1189d10ef674ea273250451f63d6, type: 2}
+  distantMeshes:
+  - {fileID: 4300000, guid: 810137918fe77a54a8a23bb12aa1021c, type: 2}
+  - {fileID: 4300000, guid: d21eccd97ec2b5047af587580aca668e, type: 2}
+  fullDetailDistance: 18
+  middleDetailDistance: 80
+  visibilityDistance: 600
 --- !u!1 &728935822
 GameObject:
   m_ObjectHideFlags: 0

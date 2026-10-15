@@ -1,0 +1,80 @@
+{
+  "error": null,
+  "rockCount": 6000,
+  "initialRockTriangles": 46654920,
+  "rockTrianglesAtRecordedView": 527800,
+  "sourceMeshesAndEnabledStatesRestored": true,
+  "rockCollisionMeshesUnchanged": true,
+  "tierTransitionsPassed": true,
+  "sceneDirty": false,
+  "PlayStarted": false,
+  "renderMeasurement": "Editor Scene view at identical pose; not a Host/player FPS measurement",
+  "position": [
+    1935.72314,
+    501.75116,
+    1651.65
+  ],
+  "metricOrder": [
+    "triangles",
+    "drawCalls",
+    "renderSeconds",
+    "frameSeconds"
+  ],
+  "beforeMedian": [
+    108335457.0,
+    26624.0,
+    0.2777354121208191,
+    2.121920585632324
+  ],
+  "afterMedian": [
+    108335457.0,
+    26624.0,
+    0.2777354121208191,
+    2.121920585632324
+  ],
+  "beforeSamples": 8,
+  "afterSamples": 8,
+  "globalEditorStatsStale": true,
+  "globalEditorStatsNotUsedForPerformanceClaim": true,
+  "actualSceneViewCpuSubmission": {
+    "error": null,
+    "beforeCpuSubmitMilliseconds": 5.5776,
+    "afterCpuSubmitMilliseconds": 4.9936,
+    "beforeFrames": 6,
+    "afterFrames": 6,
+    "measurement": "Scene view CPU render submission; does not measure Play FPS or GPU time",
+    "playing": false,
+    "dirty": false
+  },
+  "LODMeshes": [
+    {
+      "variant": 0,
+      "tier": "Middle",
+      "sourceTriangles": 9958,
+      "triangles": 1193,
+      "ratio": 0.12
+    },
+    {
+      "variant": 0,
+      "tier": "Distant",
+      "sourceTriangles": 9958,
+      "triangles": 199,
+      "ratio": 0.02
+    },
+    {
+      "variant": 1,
+      "tier": "Middle",
+      "sourceTriangles": 5598,
+      "triangles": 671,
+      "ratio": 0.12
+    },
+    {
+      "variant": 1,
+      "tier": "Distant",
+      "sourceTriangles": 5598,
+      "triangles": 111,
+      "ratio": 0.02
+    }
+  ],
+  "sourceTriangleReductionAtRecordedView": 0.9886871523946457
+}
