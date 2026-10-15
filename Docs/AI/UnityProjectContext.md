@@ -8,6 +8,7 @@
 - 模板使用 Entities／NetCode 与 `GhostBridgeBootstrap`、GhostBridge 连接游戏对象和网络实体；原有脚本主要为 MonoBehaviour 加 ECS 系统。
 - 默认 Build Settings：MainMenu、GameScene、GameResourcesSubScene、Persistents、SpawnPointsSubScene。`GameManager`／`SceneLoader.cs` 负责模板游戏场景加载。
 - 2026-10-15 正式默认地图为 `MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusGameScene.unity`，配套 TheophilusSpawnPointsSubScene（8 个出生点）。已包含 Theophilus R7 接地、R8 表面/渲染与 R9/R10 塔显示增量，配置 12 个物资点和撤离区，复用原搜打撤、Ghost 资源与服务端敌人，移除本地验证角色驱动。用户明确要求后续直接修改正式地图、不再维护研究副本，并小步 commit 存档。Apollo12、MoonGameScene 与原 GameScene 主菜单预览保留；离线／Host／Client／独立 Server 使用同一入口，详见 `Docs/TheophilusGameMap.md`。
+- 2026-10-15 R21 已直接安装在正式地图：13 件 R20 机械与 6 件 R21 井体显示构件；四份正式专属 TerrainData 分别保留近／远景显示、碰撞职责，并同步切出 112 m、64 边形的保守栅格洞口。共享原 TerrainData、DEM、旧场景不改写；原三座径向桥、R7 接地与物资／撤离设置保留。新构件没有 Collider／导航，尚不代表可行走深井。R23 材质修正未接入。保存重开和五条射线已检查，Console 存在 SubScene.OnEnable 的重复加入断言；未确认产生时点，未做联机／画面验收。详见 `Docs/AI/Theophilus_R21_Delivery.md`。
 - 正式月球地图的 `Moon Raid` 配置最小搜打撤：服务端拾取验证、12 格背包、死亡／超时损失、8 秒撤离、连接内存仓库、结算后再次出战。复用现有光环战斗，未接数据库或敌人 AI；断线清空仓库。详见 `Docs/MinimumRaidLoop.md`。
 - 原有功能根为 `Assets/Scripts`、`Prefabs`、`Scenes`、`Data`、`InputSystems`、`Settings`；第三方／Unity 示例目录保持原样。
 - 月球功能集中在 `Assets/MoonEnvironment`，分 Runtime、Demo、Editor 三个程序集；Runtime 不依赖模板业务类或 Starter Assets。Demo 复用 Starter Assets 与 Input System。

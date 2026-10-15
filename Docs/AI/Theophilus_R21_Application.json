@@ -1,0 +1,105 @@
+{
+  "formalScene": "Assets/MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusGameScene.unity",
+  "r20DisplayMeshes": 13,
+  "r21DisplayMeshes": 6,
+  "newConstantMaterials": 4,
+  "newTexturesLightsCollidersRuntimeCode": 0,
+  "oldCapRenderersDisabled": 10,
+  "oldCapCollidersDisabled": 0,
+  "notInstalledLegacyObjectsSkipped": [
+    "R19_01_Octagonal_Well_Caisson_And_Foundation_Feet",
+    "R19_03_Raking_Headframe_Primary_Load_Legs",
+    "R19_09_Crown_Sheaves_And_Reeved_Hoist_Lines"
+  ],
+  "fourDedicatedTerrainData": true,
+  "cuts": [
+    {
+      "role": "NearDisplay",
+      "selectedWholeCells": 133512,
+      "newHoleCells": 133512,
+      "maskPatch": [
+        1692,
+        616,
+        356,
+        448
+      ]
+    },
+    {
+      "role": "NearCollision",
+      "selectedWholeCells": 133512,
+      "newHoleCells": 133512,
+      "maskPatch": [
+        1692,
+        616,
+        356,
+        448
+      ]
+    },
+    {
+      "role": "FarDisplay",
+      "selectedWholeCells": 2342,
+      "newHoleCells": 330,
+      "maskPatch": [
+        979,
+        1037,
+        57,
+        56
+      ]
+    },
+    {
+      "role": "FarCollision",
+      "selectedWholeCells": 2342,
+      "newHoleCells": 330,
+      "maskPatch": [
+        979,
+        1037,
+        57,
+        56
+      ]
+    }
+  ],
+  "probeResults": [
+    {
+      "label": "InsideCenter",
+      "allHits": 0,
+      "terrainHits": 0
+    },
+    {
+      "label": "InsideWest",
+      "allHits": 0,
+      "terrainHits": 0
+    },
+    {
+      "label": "InsideEastAcrossNearBoundary",
+      "allHits": 0,
+      "terrainHits": 0
+    },
+    {
+      "label": "OutsideWest",
+      "allHits": 1,
+      "terrainHits": 1
+    },
+    {
+      "label": "OutsideEast",
+      "allHits": 1,
+      "terrainHits": 1
+    }
+  ],
+  "sharedSourceHashesUnchanged": true,
+  "heightsAndTerrainMaterialsNotEdited": true,
+  "outsideHolesPreserved": true,
+  "originalRadialBridgesRetained": 3,
+  "r7RaidWiringRetained": true,
+  "terrainReferenceMeshesImported": false,
+  "legacyCollectionsImported": false,
+  "savedReopened": true,
+  "dirty": false,
+  "playing": false,
+  "screenshotsWalkPerformanceAcceptance": false,
+  "consoleReview": {
+    "errorEntries": 1,
+    "assertion": "Unity.Scenes.SubScene.AddSceneEntities:379 / OnEnable:359",
+    "originNotEstablished": true,
+    "finalScriptCompileDiagnostics": 0
+  }
+}
