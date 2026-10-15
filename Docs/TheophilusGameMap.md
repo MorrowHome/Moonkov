@@ -16,6 +16,8 @@ R23 针对明显纹理重复使用 4 个独立 URP Lit 材质和 6 张本批贴�
 
 针对 Play 帧率问题，正式场景的 6000 块石头新增 `MoonRockLod`：18 m 内保留原网格，18–80 m 使用共享中精度网格，80–600 m 使用共享远精度网格，更远处关闭显示；边界包含石头包围球半径。每 0.25 s 按真实主相机位置更新，仅在层级改变时切换网格，不增加每石头脚本或 LOD 子物体。原碰撞、材质、变换和最高精度源网格不变，组件关闭时恢复原显示。两种原石头分别有 9958／5598 三角形，中精度为 1193／671，远精度为 199／111。固定 Scene 视角的石头几何量由 46654920 降到 527800（约 98.9%）；这是几何量对照，不是 Play FPS。验证记录见 `Docs/AI/Theophilus_RockLOD_Validation.json`。
 
+MC00 新增本地 `InteriorVisibility`：室外关闭 4236 个当前启用的室内细节 Renderer 和 109 盏室内灯，靠近三个入口或进入室内区域时恢复；外壳、碰撞、气闸和联网状态保留。组件每 0.1 s 检查相机，仅区域切换时修改显示，具有退出缓冲。未拆分异步子场景、未卸载资产内存，也未做逐房间裁剪。21 个定点断言及同视角 Scene CPU 提交对照通过；Play 整帧 CPU／FPS 仍待实测。详见 `Docs/AI/Theophilus_Interior_Visibility.md`。
+
 地图包含一套现有 `GhostSpawnerManager`、`LeaderboardSpawner`，自动加载共享 `GameResourcesSubScene` 和新的 Theophilus 出生子场景。8 个出生点位于 A 起点南侧附近，使用实际地图地面定位并检查胶囊空间。原场景中 Apollo12 的出生坐标不会混入。
 
 `MoonRaidMap` 复用原搜打撤规则，配置 12 个地面物资点、A 起点东南侧撤离区，保留 8 秒撤离和原局时/生存设置。原 DollSinger 敌人数量 3 保留；8 个异形遭遇位置迁移至 Theophilus 物资点附近，Profile/注册 Ghost 仍为现有正式资源。未添加新的网络协议、角色控制器或离线专用玩法。
