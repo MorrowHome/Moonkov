@@ -1,0 +1,58 @@
+{
+  "formalScene": "Assets/MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusGameScene.unity",
+  "appliedObjects": 19,
+  "updatedMaterialSlots": 76,
+  "newMaterials": 4,
+  "newTextures": 6,
+  "UVEditedMeshes": 17,
+  "sourceUVLoops": 159240,
+  "mappedExpandedUVVertices": 271920,
+  "originalMeshesMaterialsTerrainHashesUnchanged": true,
+  "objectTransformsUnchanged": true,
+  "geometryTopologyNormalsCollidersRuntimeComponentsNotEdited": true,
+  "savedReopened": true,
+  "missingReferences": 0,
+  "dirty": false,
+  "playing": false,
+  "consoleErrorEntries": 1,
+  "consoleErrors": [
+    "AssertionException: Assertion failure. Value was False\r\nExpected: True\nUnityEngine.Assertions.Assert.Fail (System.String message, System.String userMessage) (at <2f52b751ded44e96b74c2c8a24c6c65b>:0)\nUnityEngine.Assertions.Assert.IsTrue (System.Boolean condition, System.String message) (at <2f52b751ded44e96b74c2c8a24c6c65b>:0)\nUnityEngine.Assertions.Assert.IsTrue (System.Boolean condition) (at <2f52b751ded44e96b74c2c8a24c6c65b>:0)\nUnity.Scenes.SubScene.AddSceneEntities () (at ./Library/PackageCache/com.unity.entities@b6946e39a4db/Unity.Scenes/SubScene.cs:379)\nUnity.Scenes.SubScene.OnEnable () (at ./Library/PackageCache/com.unity.entities@b6946e39a4db/Unity.Scenes/SubScene.cs:359)\n"
+  ],
+  "screenshotsWalkPerformancePhysicsReplay": false,
+  "visualAcceptance": false,
+  "notInstalledTargets": [
+    "R18_09_Pipe_Handling_Terrace",
+    "R18_10_Horizontal_Tubular_Storage_Racks",
+    "R18_11_Pipe_Rack_Gantry_And_Handling_Sled",
+    "R18_13_Process_Equipment_Deck",
+    "R18_14_Return_Separation_Vessel_Skids",
+    "R18_15_High_Pressure_Pump_And_Compressor_Skids",
+    "R18_16_Flanged_Process_Headers_And_Valve_Manifolds",
+    "R18_19_Machinery_House_Foundation",
+    "R18_20_Hoist_Power_House_Panels_And_Service_Vents",
+    "R19_02_Sealed_Wellhead_Rotary_Table_And_BOP",
+    "R19_04_Equipment_Transfer_Beams_And_Winch_Cradles",
+    "R19_05_Twin_Large_Drawworks_Drums_And_Brakes",
+    "R19_06_Winch_Reduction_Gearboxes_And_Drive_Motors",
+    "R19_07_Paired_Feed_Rams_And_Axial_Guides",
+    "R19_08_Travelling_Head_Topdrive_And_Clamp_Assembly",
+    "R19_10_Tubular_Magazine_And_Handling_Rail",
+    "R19_11_Machine_Service_Walkways_And_Rails",
+    "R19_12_Wellhead_Process_Return_Pipework",
+    "R19_13_Tubular_Feed_Catwalk_To_Central_Axis"
+  ],
+  "topologyMismatchTargets": [],
+  "UVUnchangedObjects": [
+    "R21_01_Excavated_Rock_Wall_And_Uneven_Rim",
+    "R21_06_Visible_Rock_Bottom_And_Rubble"
+  ],
+  "assetCommit": "91d24723",
+  "sceneDiff": {
+    "existingMeshRendererMaterialReferences": 19,
+    "existingMeshFilterReferences": 17,
+    "objectsAdded": 0,
+    "objectsRemoved": 0,
+    "otherFieldsChanged": 0
+  },
+  "finalScriptCompileDiagnostics": 0
+}
