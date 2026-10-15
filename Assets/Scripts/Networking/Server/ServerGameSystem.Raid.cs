@@ -13,12 +13,13 @@ namespace Unity.MP_FPS
             var map = MoonRaidMap.Active;
             if (map == null) return;
             var caches=LootContainers(ref state);
-            caches.Initialize(map.LootPositions.Length);
+            InitializeLootContainers(ref state);
             HandleLootRequests(ref state,ecb);
             HandleInventoryRequests(ref state, ecb);
+            RefreshLootContainers(ref state);
             float dt = SystemAPI.Time.DeltaTime;
             var loot = SystemAPI.GetSingletonRW<RaidLootWorld>();
-            // Empty containers stay in the world. A server World owns each cache's one item tree.
+            // Shells remain in the world; the server refills only safe, completely empty caches.
             loot.ValueRW.TakenMask=0;
             foreach(var cache in caches.Containers)
                 if(cache.Key<RaidLootContainers.FirstDeathBagId && !cache.Value.Items.Exists(i=>i.Parent==Inventory.LootInventoryExchange.Root))

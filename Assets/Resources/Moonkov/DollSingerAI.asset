@@ -12,6 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6eeb6e67999e75448910b5f23a7b265f, type: 3}
   m_Name: DollSingerAI
   m_EditorClassIdentifier:
+  MaxAlive: 0
+  InitialSpawnDelay: 2
+  ReinforcementBudget: 3
+  ReinforcementDelay: 75
+  ReinforcementWaveSize: 1
+  SpawnCutoffFraction: 0.65
+  SpawnRetrySeconds: 5
+  SpawnPlayerDistance: 30
+  SpawnVisibilityDistance: 80
+  SpawnActorSpacing: 8
+  SpawnInnerRadius: 4
+  SpawnOuterRadius: 16
+  SpawnAttempts: 24
   HalfViewAngle: 70
   RecognitionSeconds: 0.8
   MemorySeconds: 18

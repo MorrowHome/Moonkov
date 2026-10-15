@@ -5,6 +5,7 @@ using Unity.Entities;
 using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
+using Unity.MP_FPS.SpiderLab;
 
 namespace Unity.MP_FPS
 {
@@ -12,64 +13,281 @@ namespace Unity.MP_FPS
     [UpdateInGroup(typeof(SimulationSystemGroup))]
     public partial class AlienEnemySpawnSystem : SystemBase
     {
+        private sealed class EncounterState
+        {
+            public Entity Entity;
+            public int OwnerId;
+            public int SpawnCount;
+            public int CandidateCursor;
+            public double ReadyAt;
+            public bool DeathObserved;
+        }
+
         private AlienEncounterSettings m_Settings;
-        private readonly Dictionary<int, Entity> m_Spawned = new Dictionary<int, Entity>();
-        private readonly List<Vector3> m_Humans = new List<Vector3>();
-        private double m_NextSpawn;
+        private readonly List<EncounterState> m_Encounters = new List<EncounterState>();
+        private readonly List<RaidSpawnObserver> m_Observers = new List<RaidSpawnObserver>();
+        private System.Random m_Random;
+        private double m_NextCheck;
+        private int m_NextEncounter;
         private int m_NextId = -10000;
-        public int SpawnedCount => m_Spawned.Count;
+        private int m_AliveCount;
+        private int m_TotalSpawned;
+        public int SpawnedCount => m_AliveCount;
+        public int TotalSpawnedCount => m_TotalSpawned;
+
         protected override void OnCreate()
         {
-            RequireForUpdate<NetworkStreamInGame>(); RequireForUpdate<RaidLootWorld>();
+            RequireForUpdate<NetworkStreamInGame>();
+            RequireForUpdate<RaidLootWorld>();
         }
+
         protected override void OnUpdate()
         {
             var settings = AlienEncounterSettings.Active;
+            double now = SystemAPI.Time.ElapsedTime;
             if (!ReferenceEquals(settings, m_Settings))
             {
-                Retire(); m_Settings = settings; m_NextSpawn = 0;
+                ResetEncounters();
+                m_Settings = settings;
+                m_Random = new System.Random(System.Environment.TickCount);
+                if (settings) m_NextEncounter = m_Random.Next(Mathf.Max(1, settings.Count));
             }
-            if (!settings || !settings.Enabled || settings.Count == 0) { Retire(); return; }
-            if (SystemAPI.Time.ElapsedTime < m_NextSpawn) return;
-            m_NextSpawn = SystemAPI.Time.ElapsedTime + 1;
-            m_Humans.Clear();
-            foreach (var (pose, entity) in SystemAPI.Query<RefRO<LocalTransform>>().WithAll<PredictedPlayerGhost, GhostGameObjectLink>().WithEntityAccess())
-                if (ProceduralAlienEnemy.IsLivingHumanoid(EntityManager, entity)) m_Humans.Add(pose.ValueRO.Position);
-            if (m_Humans.Count == 0 || !GhostEntityPrefabSystem.TryGetServerInstance(out var prefabs) || !prefabs.PrefabsLoaded) return;
-            UnityEngine.Physics.SyncTransforms();
-            for (int i = 0; i < settings.Count; i++)
+            if (!settings) return;
+            if (now < m_NextCheck) return;
+            m_NextCheck = now + 1;
+
+            SynchronizeEncounters(settings, now);
+            RefreshPopulation(settings, now);
+            if (!settings.Enabled || settings.MaximumAliens == 0)
             {
-                if (m_Spawned.ContainsKey(i)) continue;
-                var spawn = settings[i]; if (!spawn.Profile || spawn.Prefab == null) continue;
-                var prefab = prefabs.GetEntityPrefab(spawn.Prefab.GhostGuid); if (prefab == Entity.Null) continue;
-                bool tooClose = false;
-                foreach (var point in m_Humans) if (Vector3.Distance(point, spawn.Position) < settings.MinimumPlayerSpawnDistance) { tooClose = true; break; }
-                if (tooClose) continue;
-                float scale = Mathf.Clamp(spawn.Profile.Scale, .1f, 4);
-                if (!UnityEngine.Physics.Raycast(spawn.Position + Vector3.up * 2, Vector3.down, out var floor, 6,
-                    LayerMask.GetMask("Default", "Ground"), QueryTriggerInteraction.Ignore)) continue;
-                Vector3 position = floor.point + floor.normal * SpiderLab.SurfaceMotor.Height * scale;
-                if (UnityEngine.Physics.CheckSphere(position, SpiderLab.SurfaceMotor.BodyRadius * scale,
-                    LayerMask.GetMask("Default", "Ground"), QueryTriggerInteraction.Ignore)) continue;
-                var entity = EntityManager.Instantiate(prefab); int id = m_NextId--;
-                EntityManager.SetComponentData(entity, LocalTransform.FromPositionRotation(position,
-                    Quaternion.LookRotation(Quaternion.Euler(0, spawn.Yaw, 0) * Vector3.forward, floor.normal)));
+                RetireActors();
+                return;
+            }
+            if (settings.Count == 0 || m_AliveCount >= settings.MaximumAliens ||
+                m_TotalSpawned >= settings.MaximumTotalSpawns) return;
+
+            m_Observers.Clear();
+            bool hasPlayer = false;
+            foreach (var (pose, health, entity) in SystemAPI.Query<RefRO<LocalTransform>, RefRO<PredictedPlayerGhost>>()
+                         .WithEntityAccess())
+            {
+                if (health.ValueRO.CurrentHealth <= 0) continue;
+                bool player = EntityManager.HasComponent<GhostOwner>(entity) &&
+                    EntityManager.GetComponentData<GhostOwner>(entity).NetworkId > 0 &&
+                    !EntityManager.HasComponent<DollSingerEnemy>(entity) &&
+                    ProceduralAlienEnemy.IsLivingHumanoid(EntityManager, entity);
+                hasPlayer |= player;
+                Vector3 forward = Vector3.zero;
+                if (player)
+                {
+                    var controller = health.ValueRO.ControllerState;
+                    forward = Quaternion.Euler(controller.PitchDegrees + controller.FreeLookOffset.y,
+                        controller.YawDegrees + controller.FreeLookOffset.x, 0) * Vector3.forward;
+                }
+                m_Observers.Add(new RaidSpawnObserver
+                {
+                    Position = pose.ValueRO.Position, Forward = forward, CheckVisibility = player
+                });
+            }
+            if (!hasPlayer || !GhostEntityPrefabSystem.TryGetServerInstance(out var prefabs) || !prefabs.PrefabsLoaded) return;
+            UnityEngine.Physics.SyncTransforms();
+            int spawnedThisCheck = 0;
+            int start = m_NextEncounter % settings.Count;
+            for (int offset = 0; offset < settings.Count; offset++)
+            {
+                int index = (start + offset) % settings.Count;
+                var state = m_Encounters[index];
+                if (!CanSpawnEncounter(settings, state, now)) continue;
+                var spawn = settings[index];
+                state.ReadyAt = now + settings.RetryDelay;
+                if (spawn == null || !spawn.Profile || spawn.Prefab == null) continue;
+                var prefab = prefabs.GetEntityPrefab(spawn.Prefab.GhostGuid);
+                if (prefab == Entity.Null || !TrySelectPosition(settings, spawn, state, out var position, out var rotation)) continue;
+
+                float scale = Mathf.Clamp(spawn.Profile.Scale, .1f, 4f);
+                var entity = EntityManager.Instantiate(prefab);
+                int id = m_NextId--;
+                EntityManager.SetComponentData(entity, LocalTransform.FromPositionRotation(position, rotation));
                 EntityManager.SetComponentData(entity, new GhostOwner { NetworkId = id });
                 EntityManager.SetComponentData(entity, new GhostGameObjectGuid { Guid = GhostGameObject.GenerateRandomHash() });
                 EntityManager.SetComponentData(entity, new ProceduralAlienEnemy.State { Scale = scale });
-                m_Spawned.Add(i, entity);
+                state.Entity = entity;
+                state.OwnerId = id;
+                state.DeathObserved = false;
+                state.SpawnCount++;
+                m_TotalSpawned++;
+                m_AliveCount++;
+                spawnedThisCheck++;
+                m_NextEncounter = (index + 1) % settings.Count;
+                // Ghost presentation is linked later; reserve this position immediately.
+                m_Observers.Add(new RaidSpawnObserver { Position = position });
                 LeaderboardManager.AddPlayer(id, new FixedString64Bytes("Xeno " + spawn.Profile.Species));
+                if (m_AliveCount >= settings.MaximumAliens || m_TotalSpawned >= settings.MaximumTotalSpawns ||
+                    spawnedThisCheck >= settings.MaximumSpawnsPerCheck) break;
             }
         }
-        private void Retire()
+
+        private bool CanSpawnEncounter(AlienEncounterSettings settings, EncounterState state, double now)
         {
-            foreach (var entity in m_Spawned.Values)
-                if (EntityManager.Exists(entity))
+            return settings.Enabled && m_AliveCount < settings.MaximumAliens &&
+                m_TotalSpawned < settings.MaximumTotalSpawns && state.Entity == Entity.Null &&
+                now >= state.ReadyAt && state.SpawnCount < settings.SpawnsPerEncounter;
+        }
+
+        private void SynchronizeEncounters(AlienEncounterSettings settings, double now)
+        {
+            while (m_Encounters.Count > settings.Count)
+            {
+                int last = m_Encounters.Count - 1;
+                RetireActor(m_Encounters[last]);
+                m_Encounters.RemoveAt(last);
+            }
+            while (m_Encounters.Count < settings.Count)
+                m_Encounters.Add(new EncounterState
                 {
-                    if (EntityManager.HasComponent<GhostOwner>(entity)) LeaderboardManager.RetireRaidActor(EntityManager.GetComponentData<GhostOwner>(entity).NetworkId);
-                    EntityManager.DestroyEntity(entity);
+                    ReadyAt = now + settings.InitialSpawnDelay,
+                    CandidateCursor = m_Random.Next(0, 1024)
+                });
+        }
+
+        private void RefreshPopulation(AlienEncounterSettings settings, double now)
+        {
+            m_AliveCount = 0;
+            foreach (var state in m_Encounters)
+            {
+                if (state.Entity == Entity.Null) continue;
+                bool hasHealth = EntityManager.Exists(state.Entity) && EntityManager.HasComponent<PredictedPlayerGhost>(state.Entity);
+                if (hasHealth && EntityManager.GetComponentData<PredictedPlayerGhost>(state.Entity).CurrentHealth > 0)
+                {
+                    m_AliveCount++;
+                    continue;
                 }
-            m_Spawned.Clear();
+                // Death owns its existing two-second animation/despawn. Begin the slot's
+                // cooldown once, even when GhostBridge retains a cleanup entity briefly.
+                if (!state.DeathObserved)
+                {
+                    state.DeathObserved = true;
+                    state.ReadyAt = now + settings.RespawnDelay + m_Random.NextDouble() * settings.RespawnDelayJitter;
+                    if (state.OwnerId != 0) LeaderboardManager.RetireRaidActor(state.OwnerId);
+                }
+                // Keep ownership until the corpse exits, so unloading also cleans it.
+                // The cooldown is also a bound if an unlinked ghost cannot animate death.
+                if (!hasHealth || now >= state.ReadyAt) RetireActor(state);
+            }
+        }
+
+        private bool TrySelectPosition(AlienEncounterSettings settings, AlienEncounterSettings.Spawn spawn,
+            EncounterState state, out Vector3 position, out Quaternion rotation)
+        {
+            position = default;
+            rotation = Quaternion.identity;
+            float scale = Mathf.Clamp(spawn.Profile.Scale, .1f, 4f);
+            float mantleRadius = spawn.Profile.IsChain ? Mathf.Max(SurfaceMotor.BodyRadius, spawn.Profile.Chain.radius) :
+                spawn.Profile.Species == AlienSpecies.Spider ? SurfaceMotor.BodyRadius :
+                Mathf.Max(SurfaceMotor.BodyRadius, Mathf.Max(spawn.Profile.Branch.bodyRadii.x, spawn.Profile.Branch.bodyRadii.z) * .7f);
+            float radius = mantleRadius * scale;
+            float height = Mathf.Max(radius * 2, (SurfaceMotor.Height + mantleRadius) * scale);
+            int anchors = 1 + (spawn.CandidatePositions?.Length ?? 0);
+            for (int attempt = 0; attempt < settings.CandidateAttempts; attempt++)
+            {
+                int cursor = state.CandidateCursor++;
+                int anchor = cursor % anchors;
+                Vector3 candidate = anchor == 0 ? spawn.Position : spawn.CandidatePositions[anchor - 1];
+                // Rotate a bounded search over all authored anchors; a new raid randomizes
+                // its starting point without changing Unity's global random stream.
+                int ringPoint = (cursor / anchors) % 9;
+                if (ringPoint > 0)
+                {
+                    float angle = (ringPoint - 1) * 45f * Mathf.Deg2Rad;
+                    float distance = settings.CandidateSearchRadius * ((cursor / anchors / 9) % 2 == 0 ? .5f : 1f);
+                    candidate += new Vector3(Mathf.Sin(angle), 0, Mathf.Cos(angle)) * distance;
+                }
+                if (!HasNearbyPlayer(candidate, settings.ActivationDistance) ||
+                    !RaidSpawnSafety.TryGroundPosition(candidate, radius, height, settings.MaximumSpawnSlope,
+                        out var ground, out var normal)) continue;
+                Vector3 forward = Vector3.ProjectOnPlane(Quaternion.Euler(0, spawn.Yaw, 0) * Vector3.forward, normal).normalized;
+                Vector3 bodyPosition = ground + normal * SurfaceMotor.Height * scale;
+                if (!RaidSpawnSafety.IsSafeFromObservers(bodyPosition, m_Observers, settings.MinimumPlayerSpawnDistance,
+                        settings.VisibilityDistance, Mathf.Max(3f, scale * 2f)) ||
+                    !HasBodyClearance(spawn.Profile, scale, ground, normal, forward, settings.MaximumSpawnSlope)) continue;
+                position = bodyPosition;
+                rotation = Quaternion.LookRotation(forward, normal);
+                return true;
+            }
+            return false;
+        }
+
+        private bool HasNearbyPlayer(Vector3 candidate, float distance)
+        {
+            float squared = distance * distance;
+            foreach (var observer in m_Observers)
+                if (observer.CheckVisibility && (observer.Position - candidate).sqrMagnitude <= squared) return true;
+            return false;
+        }
+
+        private static bool HasBodyClearance(AlienCreatureProfile profile, float scale, Vector3 ground,
+            Vector3 normal, Vector3 forward, float maxSlope)
+        {
+            // A head-sized sphere alone admits long chains through walls or across the
+            // shaft. Sample support and clearance along the initial body footprint.
+            int samples = profile.IsChain ? 4 : 8;
+            float extent = profile.IsChain ? profile.Chain.length * scale :
+                profile.Species == AlienSpecies.Spider ? 1.25f * scale : profile.Branch.reach * scale;
+            float radius = profile.IsChain ? Mathf.Max(SurfaceMotor.BodyRadius, profile.Chain.radius) * scale :
+                profile.Species == AlienSpecies.Spider ? .12f * scale : profile.Branch.rootRadius * scale;
+            float height = Mathf.Max(radius * 2f + .1f, (SurfaceMotor.Height + SurfaceMotor.BodyRadius) * scale);
+            Vector3 right = Vector3.Cross(normal, forward);
+            for (int i = 0; i < samples; i++)
+            {
+                float angle = i * Mathf.PI * 2f / samples;
+                Vector3 offset = profile.IsChain ? -forward * extent * (i + 1f) / samples :
+                    (forward * Mathf.Cos(angle) + right * Mathf.Sin(angle)) * extent;
+                Vector3 expected = ground + offset;
+                if (!RaidSpawnSafety.TryGroundPosition(expected, radius, height, maxSlope, out var support, out _) ||
+                    Mathf.Abs(Vector3.Dot(support - expected, normal)) > .6f * scale) return false;
+                // Check the tissue path above the support surface as well as each sample.
+                if (UnityEngine.Physics.CheckCapsule(ground + normal * (height + radius) * .65f,
+                    support + normal * (height + radius) * .65f, radius,
+                    LayerMask.GetMask("Default", "Ground"), QueryTriggerInteraction.Ignore)) return false;
+            }
+            return true;
+        }
+
+        private void RetireActor(EncounterState state)
+        {
+            if (state.OwnerId != 0) LeaderboardManager.RetireRaidActor(state.OwnerId);
+            if (state.Entity != Entity.Null && EntityManager.Exists(state.Entity)) EntityManager.DestroyEntity(state.Entity);
+            state.Entity = Entity.Null;
+            state.OwnerId = 0;
+        }
+
+        private void RetireActors()
+        {
+            foreach (var state in m_Encounters) RetireActor(state);
+            m_AliveCount = 0;
+        }
+
+        private void ResetEncounters()
+        {
+            RetireActors();
+            m_Encounters.Clear();
+            m_Observers.Clear();
+            m_TotalSpawned = 0;
+            m_NextCheck = 0;
+            m_NextEncounter = 0;
+        }
+
+        protected override void OnStopRunning()
+        {
+            // A temporarily empty dedicated server keeps the map's spent budget.
+            // Only changing the authored settings/map starts a fresh population.
+            RetireActors();
+            m_NextCheck = 0;
+        }
+
+        protected override void OnDestroy()
+        {
+            RetireActors();
         }
     }
 }

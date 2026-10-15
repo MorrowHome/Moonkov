@@ -7,7 +7,6 @@ using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.AI;
-using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS
 {
@@ -61,7 +60,6 @@ namespace Unity.MP_FPS
         private NavMeshDataInstance m_NavInstance;
         private AsyncOperation m_Build;
         private MoonRaidMap m_Map;
-        private bool m_Spawned;
         private double m_NextBuild, m_NextTargets;
         private double m_SensorBatch;
         private int m_NextId = -1000;
@@ -79,8 +77,23 @@ namespace Unity.MP_FPS
 
         protected override void OnDestroy()
         {
+            DestroyEnemies();
             ReleaseNavigation();
             if (m_Tuning != null && string.IsNullOrEmpty(m_Tuning.name)) Object.Destroy(m_Tuning);
+        }
+
+        protected override void OnStopRunning()
+        {
+            DestroyEnemies();
+            ReleaseNavigation();
+            m_Targets.Clear();
+            m_Tracks.Clear();
+            m_Events.Clear();
+            m_CoverReservations.Clear();
+            m_SpawnObservers.Clear();
+            m_NextBuild = m_NextTargets = 0;
+            // All transports can disconnect while the map/world remain alive. Retain the
+            // session budget and cutoff so reconnecting cannot manufacture another wave.
         }
 
         private void ReleaseNavigation()
@@ -100,24 +113,20 @@ namespace Unity.MP_FPS
             var map = MoonRaidMap.Active;
             double now = SystemAPI.Time.ElapsedTime;
             // Reference identity also detects an unloaded Unity object that now compares equal to null.
-            if (!object.ReferenceEquals(m_Map, map) || map != null && map.EnemyCount == 0 && m_NavData != null)
+            if (!object.ReferenceEquals(m_Map, map) || map != null && map.EnemyCount <= 0 && m_NavData != null)
             {
                 DestroyEnemies();
                 ReleaseNavigation();
                 m_Map = map;
-                m_Spawned = false;
-                m_NextBuild = 0;
-                m_Tracks.Clear();
-                m_CoverReservations.Clear();
+                ResetPopulation();
             }
-            if (map == null || map.EnemyCount == 0) return;
+            if (map == null || map.EnemyCount <= 0) return;
             if (!NavigationReady(map, now)) return;
             if (now >= m_NextTargets)
             {
                 CollectTargets(now);
                 m_NextTargets = now + .1;
             }
-            if (!m_Spawned && m_Targets.Count > 0) Spawn(map);
 
             using var deaths = new EntityCommandBuffer(Allocator.Temp);
             foreach (var (enemy, pose, health, input, entity) in SystemAPI.Query<RefRO<DollSingerEnemy>,
@@ -149,6 +158,7 @@ namespace Unity.MP_FPS
                 }
             }
             deaths.Playback(EntityManager);
+            UpdatePopulation(map, now);
         }
 
         private void DestroyEnemies()
@@ -185,6 +195,7 @@ namespace Unity.MP_FPS
             // Bound the bake to the expedition, rather than processing the entire lunar terrain.
             var bounds = new Bounds(map.LootPositions[0], Vector3.one);
             foreach (var point in map.LootPositions) bounds.Encapsulate(point);
+            foreach (var point in map.EnemySpawnPositions) bounds.Encapsulate(point);
             bounds.Encapsulate(map.ExtractionPosition);
             bounds.Expand(new Vector3(100, 100, 100));
             UnityEngine.Physics.SyncTransforms();
@@ -263,62 +274,6 @@ namespace Unity.MP_FPS
             m_ExpiredTracks.Clear();
             foreach (var pair in m_Tracks) if (now - pair.Value.SeenAt > 1) m_ExpiredTracks.Add(pair.Key);
             foreach (var entity in m_ExpiredTracks) m_Tracks.Remove(entity);
-        }
-
-        private void Spawn(MoonRaidMap map)
-        {
-            var prefab = SystemAPI.GetSingleton<PlayerEntityPrefabs>().DollSingerEntityPrefab;
-            if (prefab == Entity.Null || WeaponManager.Instance == null) return;
-            int spawned = 0;
-            for (int i = 0; i < map.EnemyCount; i++)
-            {
-                int patrol = (i * map.LootPositions.Length / map.EnemyCount + 2) % map.LootPositions.Length;
-                bool found = false;
-                Vector3 position = default;
-                for (int attempt = 0; attempt < map.LootPositions.Length; attempt++)
-                {
-                    var point = map.LootPositions[(patrol + attempt) % map.LootPositions.Length];
-                    var offset = Quaternion.Euler(0, i * 137 + attempt * 47, 0) * Vector3.forward * 5;
-                    if (!NavMesh.SamplePosition(point + offset, out var sample, 8, m_Filter)) continue;
-                    position = sample.position;
-                    if (m_Targets.Exists(t => Vector3.Distance(t.Position, position) < 12)) continue;
-                    found = true;
-                    break;
-                }
-                if (!found) continue;
-                var player = EntityManager.Instantiate(prefab);
-                var input = EntityManager.CreateEntity(typeof(PredictedClientInput));
-                int id = m_NextId--;
-                var name = new FixedString64Bytes("DollSinger " + (i + 1).ToString("00"));
-                EntityManager.SetComponentData(player, new GhostOwner { NetworkId = id });
-                EntityManager.SetComponentData(player, LocalTransform.FromPositionRotation(position + Vector3.up * .1f, quaternion.identity));
-                int ammo = WeaponManager.Instance.WeaponRegistry.GetWeaponData(2)?.MagazineSize ?? 30;
-                var healthState = new PredictedPlayerGhost { MaxHealth = 100, CurrentHealth = 100,
-                    EquippedWeaponID = DollSingerWeapons.None, CurrentAmmo = 0, InventoryWeapons = true,
-                    PrimaryWeaponID = DollSingerWeapons.None, SecondaryWeaponID = DollSingerWeapons.None, PistolWeaponID = DollSingerWeapons.None };
-                RaidHealth.Initialize(ref healthState);
-                EntityManager.SetComponentData(player, healthState);
-                EntityManager.SetComponentData(player, new GhostGameObjectGuid { Guid = GhostGameObject.GenerateRandomHash() });
-                EntityManager.SetComponentData(player, new PlayerGhost.PlayerData { Name = name });
-                EntityManager.AddComponentData(player, new PlayerCharacterInitialized());
-                EntityManager.SetComponentEnabled<PlayerCharacterInitialized>(player, false);
-                EntityManager.AddComponentData(player, new PlayerClientCommandInputLookup { ClientCommandInputEntity = input });
-                EntityManager.AddComponentData(player, new DollSingerEnemy { InputEntity = input });
-                var inventory = InventoryGraph.Create(stash: false);
-                inventory.Equipped("Primary").LoadedAmmo = ammo;
-                // A finite raid loadout; unused medicine remains in the normal death inventory.
-                inventory.AddSupply("medkit", 2, parent: InventoryCatalog.Pockets, foundInRaid: true);
-                if (map.EnemyCells > 0) inventory.AddSupply("cells", map.EnemyCells, foundInRaid: true);
-                EntityManager.AddComponentObject(player, new DollSingerEnemyBrain { Inventory = inventory,
-                    Seed = i + 1, Goal = position, ProgressPosition = position, SpawnTime = SystemAPI.Time.ElapsedTime,
-                    NextSense = SystemAPI.Time.ElapsedTime + i * .033, NextDecision = SystemAPI.Time.ElapsedTime + i * .067,
-                    Aggression = .4f + (i % 3) * .2f, Caution = .8f - (i % 3) * .2f,
-                    Random = new Unity.Mathematics.Random((uint)(id * id + 17)) });
-                LeaderboardManager.AddPlayer(id, name);
-                spawned++;
-            }
-            m_Spawned = true;
-            Debug.Log($"[DollSinger AI] Spawned {spawned}/{map.EnemyCount} enemies on the server.");
         }
 
         private bool ClearSight(Transform root, Vector3 eye, Vector3 targetPoint, Entity target)

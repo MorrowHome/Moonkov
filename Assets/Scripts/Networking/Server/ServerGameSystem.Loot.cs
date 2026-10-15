@@ -11,9 +11,61 @@ namespace Unity.MP_FPS
     public partial struct ServerGameSystem
     {
         private RaidLootContainers LootContainers(ref SystemState state) => state.EntityManager.GetComponentObject<RaidLootContainers>(SystemAPI.GetSingletonEntity<RaidLootWorld>());
+        private void InitializeLootContainers(ref SystemState state)
+        {
+            var map=MoonRaidMap.Active;
+            if(map==null)return;
+            var caches=LootContainers(ref state);
+            if(caches.Initialized && ReferenceEquals(caches.MapIdentity,map))return;
+            caches.Initialize(map.LootPositions.Length,map.GetLootProfile,map);
+            foreach(var (session,connection) in SystemAPI.Query<RefRO<RaidSession>>().WithEntityAccess())
+            {
+                if(!state.EntityManager.HasComponent<RaidInventoryState>(connection))continue;
+                var inventory=GetRaidInventory(ref state,connection);
+                inventory.OpenedLootId=-1;inventory.LastSentVersion=-1;inventory.LastSentLootVersion=-1;
+                inventory.SentDeathBags.Clear();
+            }
+        }
+        private void RefreshLootContainers(ref SystemState state)
+        {
+            var map=MoonRaidMap.Active;
+            if(map==null)return;
+            var caches=LootContainers(ref state);
+            double now=SystemAPI.Time.ElapsedTime;
+            if(now<caches.NextRefillCheck)return;
+            caches.NextRefillCheck=now+1;
+            bool hasActivePlayer=false;
+            foreach(var (session,joined,connection) in SystemAPI.Query<RefRO<RaidSession>,RefRO<JoinedClient>>().WithEntityAccess())
+            {
+                if(session.ValueRO.Phase==RaidPhase.Active && !SystemAPI.HasComponent<NetworkStreamRequestDisconnect>(connection) &&
+                    SystemAPI.HasComponent<NetworkId>(connection) && SystemAPI.GetComponent<NetworkId>(connection).Value>0 &&
+                    TryGetLivingPosition(ref state,joined.ValueRO.PlayerEntity,out _))
+                {hasActivePlayer=true;break;}
+            }
+            float radius=math.max(RaidRules.PickupRange,map.LootRefillPlayerRadius);
+            foreach(var refill in caches.RefillStates)
+            {
+                if(!caches.Containers.TryGetValue(refill.Key,out var cache) || refill.Key>=map.LootPositions.Length)continue;
+                bool blocked=!hasActivePlayer;
+                if(!blocked && !RaidLootRefillState.HasContents(cache))
+                {
+                    float3 target=map.LootPositions[refill.Key];
+                    foreach(var (session,joined,connection) in SystemAPI.Query<RefRO<RaidSession>,RefRO<JoinedClient>>().WithEntityAccess())
+                    {
+                        if(session.ValueRO.Phase!=RaidPhase.Active || SystemAPI.HasComponent<NetworkStreamRequestDisconnect>(connection) ||
+                            !TryGetLivingPosition(ref state,joined.ValueRO.PlayerEntity,out var position))continue;
+                        if(math.distancesq(position,target)<=radius*radius ||
+                            state.EntityManager.HasComponent<RaidInventoryState>(connection) && GetRaidInventory(ref state,connection).OpenedLootId==refill.Key)
+                        {blocked=true;break;}
+                    }
+                }
+                refill.Value.TryRefill(cache,now,map.LootRespawnSeconds,map.LootRefillLimit,blocked,caches.LootRandom);
+            }
+        }
         private void DropDeathInventory(ref SystemState state,Entity connection)
         {
             if(MoonRaidMap.Active==null || !state.EntityManager.HasComponent<RaidInventoryState>(connection) || !SystemAPI.HasComponent<JoinedClient>(connection))return;
+            InitializeLootContainers(ref state);
             var player=SystemAPI.GetComponent<JoinedClient>(connection).PlayerEntity;
             if(!SystemAPI.Exists(player) || !SystemAPI.HasComponent<LocalTransform>(player))return;
             var inventory=GetRaidInventory(ref state,connection);

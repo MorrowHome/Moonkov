@@ -28,6 +28,11 @@ namespace Unity.MP_FPS
     {
         public readonly System.Collections.Generic.Dictionary<int,InventoryGraph> Containers = new System.Collections.Generic.Dictionary<int,InventoryGraph>();
         public readonly System.Collections.Generic.Dictionary<int,RaidCorpseRecord> DeathBags = new System.Collections.Generic.Dictionary<int,RaidCorpseRecord>();
+        public readonly System.Collections.Generic.Dictionary<int,RaidLootRefillState> RefillStates = new System.Collections.Generic.Dictionary<int,RaidLootRefillState>();
+        public readonly Random LootRandom = new Random(Guid.NewGuid().GetHashCode());
+        public bool Initialized { get; private set; }
+        public object MapIdentity { get; private set; }
+        public double NextRefillCheck;
         public const int FirstDeathBagId=24;
         private int m_NextDeathBagId=FirstDeathBagId;
         public int Drop(InventoryGraph carried,Unity.Mathematics.float3 position,Unity.Mathematics.quaternion rotation=default,int characterIndex=2,double createdAt=0)
@@ -38,8 +43,29 @@ namespace Unity.MP_FPS
                 Rotation=Unity.Mathematics.math.lengthsq(rotation.value)>0 ? rotation : Unity.Mathematics.quaternion.identity,
                 CharacterIndex=characterIndex,CreatedAt=createdAt});return id;
         }
-        public void Initialize(int count)
-        {for(int index=0;index<count;index++)if(!Containers.ContainsKey(index))Containers.Add(index,LootInventoryExchange.CreateCache(index));}
+        public void Initialize(int count, Func<int,RaidLootProfile> profileFor = null, object mapIdentity = null)
+        {
+            if(Initialized && ReferenceEquals(MapIdentity,mapIdentity))return;
+            if(count<1 || count>FirstDeathBagId)throw new ArgumentOutOfRangeException(nameof(count));
+            int version=1;
+            if(Initialized)
+            {
+                // Queued transfer requests from the previous map must never match its replacement.
+                foreach(var cache in Containers.Values)version=Math.Max(version,checked(cache.Version+1));
+                Containers.Clear();DeathBags.Clear();RefillStates.Clear();
+            }
+            for(int index=0;index<count;index++)
+            {
+                var profile=profileFor!=null ? profileFor(index) : (RaidLootProfile)(index%4);
+                if(!Containers.ContainsKey(index))
+                {
+                    var graph=RaidLootTable.Create(profile,LootRandom);graph.Version=version;
+                    Containers.Add(index,graph);
+                }
+                RefillStates.Add(index,new RaidLootRefillState(profile));
+            }
+            Initialized=true;MapIdentity=mapIdentity;NextRefillCheck=0;
+        }
     }
     public sealed class RaidInventoryState : IComponentData
     {

@@ -1,6 +1,6 @@
 # DollSinger PMC raid actors
 
-The three DollSinger actors are independent raiders with supplies, finite ammunition
+The DollSinger actors are independent raiders with supplies, finite ammunition
 and an extraction objective. They use the same player ghost, movement controller,
 weapon cooldowns, reload cost, ballistics, health and death inventory as humans.
 Other PMCs are hostile competitors too; these actors are not a coordinated guard squad.
@@ -136,13 +136,33 @@ search/flanking quality, runtime cost and final tactical feel remain unverified.
 
 ## Configuration and inspection
 
-- `MoonRaidMap` retains enemy count, sight range and starting cells. Zero disables AI.
+- `MoonRaidMap` retains initial enemy count, sight range and starting cells. Zero disables AI.
+  Optional enemy spawn points separate entry locations from the supply route; empty lists use loot points.
 - `Assets/Resources/Moonkov/DollSingerAI.asset` holds recognition/reaction/memory,
   night sight, preferred range, aim error, retreat health, cache/departure goals,
-  search time and scheduling. Rebuild both platforms after changes.
+  search time and scheduling, plus population and placement controls. Rebuild both platforms after changes.
 - During Host Play Mode, open **Moonkov → AI → PMC Debugger** for each actor's
   decision/reason, confidence, pressure, supplies, path failure and extraction timer.
   Optional Scene drawing shows route, remembered contact and cover/peek.
+
+Population starts when the first living human is present, after a two-second delay.
+The initial count is limited by `MaxAlive` (zero uses the map count). The default map
+session has a finite budget of three additional actors: a vacancy from death or
+extraction can receive one reinforcement after 75 seconds. Failed placement retries
+after five seconds without consuming budget. All arrivals stop at 65% of the map's
+raid duration measured from the first living human; late joiners do not reset this
+shared population clock. No new actors arrive while no living humans remain.
+
+Placement first tries authored anchors, then randomized nearby positions. Candidates
+must be on the runtime NavMesh, have physical standing space and a complete path to
+the extraction area. They avoid the exit, other actors by eight metres, and living
+humans by 30 metres; visible positions within 80 metres are also rejected using the
+server controller look direction, including free look. Unsafe or unavailable locations defer spawning rather
+than consuming initial/reinforcement slots. Map changes and system shutdown remove
+actors, input entities and navigation. Only a map change starts a fresh population
+budget; disconnecting every client and reconnecting to the same world preserves the
+spent budget and cutoff. These new placement
+and reinforcement rules still need Host and second-client gameplay acceptance.
 
 The bounded runtime NavMesh bake uses terrain and collider geometry. Imported
 unreadable meshes use conservative bounding boxes for Player compatibility.

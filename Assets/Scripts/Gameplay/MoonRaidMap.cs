@@ -9,12 +9,20 @@ namespace Unity.MP_FPS
     {
         public static MoonRaidMap Active { get; private set; }
         [SerializeField] private Vector3[] m_LootPositions = new Vector3[0];
+        [SerializeField] private RaidLootProfile[] m_LootProfiles = new RaidLootProfile[0];
+        [SerializeField] private float[] m_LootYaw = new float[0];
+        [SerializeField] private Vector3[] m_LootGroundNormals = new Vector3[0];
+        [Tooltip("Dedicated PMC entry points. Empty uses the supply route for older maps.")]
+        [SerializeField] private Vector3[] m_EnemySpawnPositions = new Vector3[0];
         [SerializeField] private Vector3 m_ExtractionPosition;
         [SerializeField] private PanelSettings m_PanelSettings;
         [SerializeField, Min(30)] private float m_RaidDuration = 600;
         [SerializeField, Min(1)] private float m_ExtractionSeconds = 8;
         [SerializeField, Min(1)] private float m_ExtractionRadius = 5;
         [SerializeField, Min(10)] private float m_LootRespawnSeconds = 60;
+        [SerializeField, Min(3)] private float m_LootRefillPlayerRadius = 18;
+        [Tooltip("Maximum refills per cache in this server map session; zero disables refills.")]
+        [SerializeField, Range(0, 10)] private int m_LootRefillLimit = 2;
         [Header("DollSinger enemies (server authority)")]
         [SerializeField, Range(0, 12)] private int m_EnemyCount = 3;
         [SerializeField, Range(10, 100)] private float m_EnemySightRange = 45;
@@ -41,11 +49,21 @@ namespace Unity.MP_FPS
         private CorpsePresentationSettings m_CorpseSettings;
 
         public Vector3[] LootPositions => m_LootPositions;
+        public Vector3[] EnemySpawnPositions => m_EnemySpawnPositions != null && m_EnemySpawnPositions.Length > 0
+            ? m_EnemySpawnPositions : m_LootPositions;
+        public RaidLootProfile GetLootProfile(int index) => m_LootProfiles != null && index >= 0 && index < m_LootProfiles.Length
+            ? m_LootProfiles[index] : (RaidLootProfile)(Mathf.Abs(index) % 4);
+        public float GetLootYaw(int index) => m_LootYaw != null && index >= 0 && index < m_LootYaw.Length ? m_LootYaw[index] : 0;
+        public Vector3 GetLootGroundNormal(int index) => m_LootGroundNormals != null && index >= 0 &&
+            index < m_LootGroundNormals.Length && m_LootGroundNormals[index].sqrMagnitude > .5f
+            ? m_LootGroundNormals[index].normalized : Vector3.up;
         public Vector3 ExtractionPosition => m_ExtractionPosition;
         public float RaidDuration => m_RaidDuration;
         public float ExtractionSeconds => m_ExtractionSeconds;
         public float ExtractionRadius => m_ExtractionRadius;
         public float LootRespawnSeconds => m_LootRespawnSeconds;
+        public float LootRefillPlayerRadius => Mathf.Max(3, m_LootRefillPlayerRadius);
+        public int LootRefillLimit => Mathf.Clamp(m_LootRefillLimit, 0, 10);
         public int EnemyCount => m_EnemyCount;
         public float EnemySightRange => m_EnemySightRange;
         public int EnemyCells => m_EnemyCells;
@@ -65,12 +83,17 @@ namespace Unity.MP_FPS
 
         private void OnEnable()
         {
-            if (m_LootPositions.Length == 0 || m_LootPositions.Length > 24)
+            if (m_LootPositions == null || m_LootPositions.Length == 0 || m_LootPositions.Length > 24)
             {
                 Debug.LogError("Moon raid needs between 1 and 24 authored loot points.", this);
                 return;
             }
             Active = this;
+        }
+
+        private void OnDisable()
+        {
+            if (Active == this) Active = null;
         }
 
         private void Start()
@@ -87,7 +110,13 @@ namespace Unity.MP_FPS
             m_CacheVisuals = new RaidSupplyCacheVisuals(shader, m_LootPositions.Length);
             m_Markers = new GameObject[m_LootPositions.Length];
             for (int i = 0; i < m_Markers.Length; i++)
+            {
                 m_Markers[i] = m_CacheVisuals.Create(transform, m_LootPositions[i], i);
+                m_Markers[i].transform.rotation = Quaternion.FromToRotation(Vector3.up, GetLootGroundNormal(i)) *
+                    Quaternion.Euler(0, GetLootYaw(i), 0);
+                m_Markers[i].name += " / " + GetLootProfile(i);
+                m_Markers[i].SetActive(false); // Do not show stocked caches before the first server snapshot.
+            }
             Marker("Extraction zone", PrimitiveType.Cylinder, m_ExtractionPosition + Vector3.up * 0.08f,
                 new Vector3(m_ExtractionRadius * 2, 0.06f, m_ExtractionRadius * 2), m_ExtractionMaterial);
             Marker("Extraction beacon", PrimitiveType.Cylinder, m_ExtractionPosition + Vector3.up * 4,

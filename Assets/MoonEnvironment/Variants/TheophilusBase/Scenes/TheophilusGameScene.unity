@@ -75583,7 +75583,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Unity.MP_FPS.AlienEncounterSettings
   enableAliens: 1
   maximumAliens: 8
-  minimumPlayerSpawnDistance: 8
+  maximumTotalSpawns: 24
+  spawnsPerEncounter: 3
+  maximumSpawnsPerCheck: 2
+  initialSpawnDelay: 3
+  respawnDelay: 90
+  respawnDelayJitter: 25
+  retryDelay: 8
+  minimumPlayerSpawnDistance: 25
+  activationDistance: 240
+  visibilityDistance: 75
+  candidateSearchRadius: 12
+  candidateAttempts: 8
+  maximumSpawnSlope: 45
   encounters:
   - Profile: {fileID: 11400000, guid: 1be3ef20c43dd8246a59fb91bdee5ec4, type: 2}
     Prefab:
@@ -75601,6 +75613,7 @@ MonoBehaviour:
           w: 3196491532
     Position: {x: 1669, y: 207.29643, z: 2122}
     Yaw: -90
+    CandidatePositions: []
   - Profile: {fileID: 11400000, guid: a384afc0e05e8e546b77a1fb92a651ab, type: 2}
     Prefab:
       <GhostPrefab>k__BackingField:
@@ -75617,6 +75630,7 @@ MonoBehaviour:
           w: 1756937516
     Position: {x: 1631, y: 214.78218, z: 2244}
     Yaw: -90
+    CandidatePositions: []
   - Profile: {fileID: 11400000, guid: a8a41f3bf9208b24cb7e587aeb8dd7ed, type: 2}
     Prefab:
       <GhostPrefab>k__BackingField:
@@ -75633,6 +75647,7 @@ MonoBehaviour:
           w: 3891215356
     Position: {x: 1649, y: 214.75739, z: 2274}
     Yaw: -90
+    CandidatePositions: []
   - Profile: {fileID: 11400000, guid: b8135596a5b27f747b1b724bb3a4695a, type: 2}
     Prefab:
       <GhostPrefab>k__BackingField:
@@ -75649,6 +75664,7 @@ MonoBehaviour:
           w: 151017489
     Position: {x: 1681, y: 212.57611, z: 2224}
     Yaw: -90
+    CandidatePositions: []
   - Profile: {fileID: 11400000, guid: 02fada5ec9c9ab74784812c81a658b16, type: 2}
     Prefab:
       <GhostPrefab>k__BackingField:
@@ -75665,6 +75681,7 @@ MonoBehaviour:
           w: 1562882212
     Position: {x: 1655, y: 219.43227, z: 2329}
     Yaw: -90
+    CandidatePositions: []
   - Profile: {fileID: 11400000, guid: 032745e210dd20f44ae8588289da6ff6, type: 2}
     Prefab:
       <GhostPrefab>k__BackingField:
@@ -75681,6 +75698,7 @@ MonoBehaviour:
           w: 3588848638
     Position: {x: 1650, y: 220.13303, z: 2387}
     Yaw: -90
+    CandidatePositions: []
   - Profile: {fileID: 11400000, guid: 24a6c7dc5640215469880cf72d5b3678, type: 2}
     Prefab:
       <GhostPrefab>k__BackingField:
@@ -75697,6 +75715,7 @@ MonoBehaviour:
           w: 1821871415
     Position: {x: 1688, y: 221.48453, z: 2344}
     Yaw: -90
+    CandidatePositions: []
   - Profile: {fileID: 11400000, guid: 6fa2790f210aa8a4995f68d3929c87cd, type: 2}
     Prefab:
       <GhostPrefab>k__BackingField:
@@ -75713,6 +75732,7 @@ MonoBehaviour:
           w: 2444135052
     Position: {x: 1716, y: 214.01378, z: 2289}
     Yaw: -90
+    CandidatePositions: []
 --- !u!114 &145744448
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -75726,24 +75746,59 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Unity.MP_FPS.MoonRaidMap
   m_LootPositions:
-  - {x: 1772, y: 187.09697, z: 2160}
-  - {x: 1732, y: 194.43399, z: 2145}
-  - {x: 1692, y: 203.77878, z: 2130}
-  - {x: 1664, y: 207.89345, z: 2118}
-  - {x: 1626, y: 216.23271, z: 2240}
-  - {x: 1644, y: 215.08176, z: 2270}
-  - {x: 1676, y: 212.67738, z: 2220}
-  - {x: 1650, y: 219.68227, z: 2325}
-  - {x: 1645, y: 219.56824, z: 2383}
-  - {x: 1683, y: 219.61781, z: 2340}
-  - {x: 1711, y: 214.53644, z: 2285}
-  - {x: 1733, y: 223.21196, z: 2388}
+  - {x: 1772.0994, y: 187.08093, z: 2159.9668}
+  - {x: 1732.0677, y: 194.42569, z: 2144.966}
+  - {x: 1692.0677, y: 203.77048, z: 2129.966}
+  - {x: 1664.0344, y: 207.89005, z: 2117.9656}
+  - {x: 1628.0001, y: 216.23271, z: 2240}
+  - {x: 1642.2683, y: 217.45885, z: 2269}
+  - {x: 1676.0001, y: 215.06772, z: 2219.9995}
+  - {x: 1651.7322, y: 219.68227, z: 2325.9998}
+  - {x: 1644.0001, y: 220.38303, z: 2384.732}
+  - {x: 1682.9655, y: 219.6161, z: 2340}
+  - {x: 1711.0344, y: 214.53304, z: 2284.9656}
+  - {x: 1732.9331, y: 225.85504, z: 2387.9297}
+  m_LootProfiles: 000000000000000002000000030000000100000003000000000000000100000002000000030000000000000002000000
+  m_LootYaw:
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  m_LootGroundNormals:
+  - {x: 0.28382307, y: 0.954198, z: -0.09460769}
+  - {x: 0.19359699, y: 0.97629416, z: -0.096798494}
+  - {x: 0.19359699, y: 0.97629416, z: -0.096798494}
+  - {x: 0.09818836, y: 0.99031216, z: -0.09818836}
+  - {x: -0.000000005587935, y: 1, z: 0.00000023841855}
+  - {x: 0.00000008940696, y: 1, z: 0.000000119209275}
+  - {x: 0.00000017881392, y: 1, z: 0.00000017881392}
+  - {x: 0.000000018626451, y: 0.99999994, z: 0.00000011920928}
+  - {x: 0.000000044703484, y: 1, z: 0.000000059604645}
+  - {x: -0.09866512, y: 0.99512064, z: 0}
+  - {x: 0.09818836, y: 0.99031216, z: -0.09818836}
+  - {x: -0.19101198, y: 0.9607757, z: -0.20105831}
+  m_EnemySpawnPositions:
+  - {x: 1693.7378, y: 203.98679, z: 2141.8494}
+  - {x: 1616.4652, y: 215.93271, z: 2243.3076}
+  - {x: 1655.2406, y: 216.96635, z: 2314.5242}
+  - {x: 1675.4136, y: 219.2176, z: 2349.3257}
+  - {x: 1732.7236, y: 226.44249, z: 2399.9277}
   m_ExtractionPosition: {x: 1818, y: 172.1225, z: 2158}
   m_PanelSettings: {fileID: 11400000, guid: 5c62f99c56dafb646950dd9cfc028828, type: 2}
   m_RaidDuration: 600
   m_ExtractionSeconds: 8
   m_ExtractionRadius: 5
-  m_LootRespawnSeconds: 60
+  m_LootRespawnSeconds: 300
+  m_LootRefillPlayerRadius: 18
+  m_LootRefillLimit: 2
   m_EnemyCount: 3
   m_EnemySightRange: 45
   m_EnemyCells: 4

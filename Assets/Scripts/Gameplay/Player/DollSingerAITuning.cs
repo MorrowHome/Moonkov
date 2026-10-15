@@ -5,6 +5,23 @@ namespace Unity.MP_FPS
     [CreateAssetMenu(menuName = "Moonkov/DollSinger PMC tuning")]
     public sealed class DollSingerAITuning : ScriptableObject
     {
+        [Header("Server population and reinforcements")]
+        [Tooltip("Zero uses MoonRaidMap.EnemyCount. Initial population is capped by this limit.")]
+        [Range(0, 12)] public int MaxAlive = 0;
+        [Min(0)] public float InitialSpawnDelay = 2;
+        [Tooltip("Additional actors for the whole map session; zero disables reinforcements.")]
+        [Range(0, 24)] public int ReinforcementBudget = 3;
+        [Min(5)] public float ReinforcementDelay = 75;
+        [Range(1, 4)] public int ReinforcementWaveSize = 1;
+        [Range(.1f, 1)] public float SpawnCutoffFraction = .65f;
+        [Min(1)] public float SpawnRetrySeconds = 5;
+        [Header("Server spawn placement")]
+        [Min(8)] public float SpawnPlayerDistance = 30;
+        [Min(10)] public float SpawnVisibilityDistance = 80;
+        [Min(1)] public float SpawnActorSpacing = 8;
+        [Min(0)] public float SpawnInnerRadius = 4;
+        [Min(1)] public float SpawnOuterRadius = 16;
+        [Range(4, 48)] public int SpawnAttempts = 24;
         [Header("Perception and memory")]
         [Range(30, 100)] public float HalfViewAngle = 70;
         [Min(.1f)] public float RecognitionSeconds = .8f;
