@@ -70,6 +70,7 @@ Assets/Localization/Fonts/NotoSansCJKsc.asset filter=lfs diff=lfs merge=lfs -tex
 Assets/MoonEnvironment/Variants/Apollo12Base/Terrain/*.asset filter=lfs diff=lfs merge=lfs -text
 Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/Terrain/*.asset filter=lfs diff=lfs merge=lfs -text
 Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/DenseRingConceptB/R8VisualSurfaces/Terrain/*.asset filter=lfs diff=lfs merge=lfs -text
+Assets/MoonEnvironment/Variants/TheophilusBase/Terrain/R21/*.asset filter=lfs diff=lfs merge=lfs -text
 
 # Unity serializes empty values with trailing spaces. Preserve its generated format.
 *.meta whitespace=-blank-at-eol

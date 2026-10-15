@@ -370752,11 +370752,11 @@ PrefabInstance:
     - target: {fileID: 6569048645044652446, guid: 675f9882ac896674483c0f181f2b2d2d, type: 3}
       propertyPath: m_TerrainData
       value: 
-      objectReference: {fileID: 15600000, guid: f3e0254df6321e4419f85d0d845f87e6, type: 2}
+      objectReference: {fileID: 15600000, guid: eb5c526189eda114bb996cd1a94558e3, type: 2}
     - target: {fileID: 6992025794054698186, guid: 675f9882ac896674483c0f181f2b2d2d, type: 3}
       propertyPath: m_TerrainData
       value: 
-      objectReference: {fileID: 15600000, guid: 80ef7c288a74456488bf7027228566ad, type: 2}
+      objectReference: {fileID: 15600000, guid: 55b257f78ce158143b027e6bb2073f6e, type: 2}
     - target: {fileID: 6992025794054698186, guid: 675f9882ac896674483c0f181f2b2d2d, type: 3}
       propertyPath: m_MaterialTemplate
       value: 
@@ -370768,7 +370768,7 @@ PrefabInstance:
     - target: {fileID: 7681671103309528790, guid: 675f9882ac896674483c0f181f2b2d2d, type: 3}
       propertyPath: m_TerrainData
       value: 
-      objectReference: {fileID: 15600000, guid: d5479adf78f6aa047a5c216761bd6e46, type: 2}
+      objectReference: {fileID: 15600000, guid: b84c86fa3f28b124d9bd598e34cb7042, type: 2}
     - target: {fileID: 7681671103309528790, guid: 675f9882ac896674483c0f181f2b2d2d, type: 3}
       propertyPath: m_MaterialTemplate
       value: 
@@ -370780,7 +370780,7 @@ PrefabInstance:
     - target: {fileID: 9020332530819101036, guid: 675f9882ac896674483c0f181f2b2d2d, type: 3}
       propertyPath: m_TerrainData
       value: 
-      objectReference: {fileID: 15600000, guid: 2d8ecae1eedc7164cb5a0d9488745ef3, type: 2}
+      objectReference: {fileID: 15600000, guid: fefd36a9441c22f45a1c43b83edca581, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
