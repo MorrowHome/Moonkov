@@ -2409,7 +2409,117 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 1064981750362112
     m_Key: WATER / +50 HYDRATION, +10 FULLNESS
+    - m_Id: 2262980807634944
+    m_Key: Expansion capacitor
     m_Metadata:
+      m_Items: []
+  - m_Id: 2262980832800768
+    m_Key: Rapid charge bridge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2262980832800769
+    m_Key: Focus lens
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2262980832800770
+    m_Key: Fan array
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2262980832800771
+    m_Key: Pulse controller
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2262980832800772
+    m_Key: Hit marker
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2262980832800773
+    m_Key: MODIFY HALO
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2262980832800774
+    m_Key: HALO MODIFICATION
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2262980832800775
+    m_Key: STORAGE SLOT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2262980832800776
+    m_Key: SHAPING SLOT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2262980832800777
+    m_Key: UTILITY SLOT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2262980832800778
+    m_Key: REMOVE TO STORAGE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2262980832800779
+    m_Key: INSTALL MODULE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2262980832800780
+    m_Key: INSTALLED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2262980832800781
+    m_Key: REMOVE MODULES BEFORE SELLING
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2262980832800782
+    m_Key: "Base workshop \xB7 one module per slot \xB7 installed modules travel
+      with this halo."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2262980832800783
+    m_Key: Existing charged rounds are retained when reducing capacity; upgrades
+      do not add ammunition.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2262980832800784
+    m_Key: Buy compatible modules at the supply shop or recover them from caches.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2262980832800785
+    m_Key: "CAPACITY {0} / CHARGE {1:0.00}s / {2}E PER ROUND / {3} PELLETS / SPREAD
+      {4:0.00}\xB0"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2262980836995072
+    m_Key: Capacity +50%; charge time +35%. Segmented outer energy ring.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2262980836995073
+    m_Key: Charge time -40%; energy per round +50%. Pulsing radial bridges.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2262980836995074
+    m_Key: Shotgun spread -55%; capacity -1. Four inward focusing arcs.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2262980836995075
+    m_Key: Shotgun spread +60%; 12 pellets share the original total damage. Six open
+      fan blades.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2262980836995076
+    m_Key: Rifle fires three rounds per trigger press; 0.42s between bursts. Three
+      sequential nodes.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2262980836995077
+    m_Key: Energy per round +25%; confirmed hits mark the last impact position for
+      allies for 3s.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2262980836995078
+    m_Key: shop_remove_modules_first
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
       m_Items: []
   m_Metadata:
     m_Items: []

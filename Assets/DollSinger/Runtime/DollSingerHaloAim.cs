@@ -133,11 +133,24 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     private int localRevolverAmmo = 6;
     private float localReloadRemaining;
     private int weaponAmmo = 6;
-
-    public void SetNetworkWeapon(HaloWeapon weapon, int ammo, bool reloading, float reloadProgress, uint shotTick, uint reloadTick, int reloadTargetAmmo = -1)
+    private HaloModuleVisual rifleModules, shotgunModules;
+    private HaloModuleVisual CreateModuleVisual(Transform parent, bool rifle)
     {
+        if (!parent) return null;
+        var child = new GameObject("Halo modification layers"); child.layer = parent.gameObject.layer; child.transform.SetParent(parent, false);
+        var visual = child.AddComponent<HaloModuleVisual>(); visual.Configure(rifle); return visual;
+    }
+
+    public void SetNetworkWeapon(HaloWeapon weapon, int ammo, bool reloading, float reloadProgress, uint shotTick, uint reloadTick, int reloadTargetAmmo = -1, byte modules = 0, int magazineSize = 4, int burstIndex = 0)
+    {
+        if (!rifleModules && rifleVisual) rifleModules = CreateModuleVisual(rifleVisual.transform, true);
+        if (!shotgunModules && shotgunVisual) shotgunModules = CreateModuleVisual(shotgunVisual.transform, false);
+        if (rifleVisual) rifleVisual.SetMagazineCapacity(weapon == HaloWeapon.Rifle ? magazineSize : RifleHaloVisual.Capacity);
+        if (shotgunVisual) shotgunVisual.SetModuleProfile(weapon == HaloWeapon.Shotgun ? modules : (byte)0, weapon == HaloWeapon.Shotgun ? magazineSize : 4);
         SetWeaponEquipped(weapon, ammo);
         weaponAmmo = ammo;
+        if (weapon == HaloWeapon.Rifle && rifleModules) rifleModules.SetState(modules, ammo, magazineSize, reloading, reloadProgress, reloadTargetAmmo, shotTick, burstIndex);
+        if (weapon == HaloWeapon.Shotgun && shotgunModules) shotgunModules.SetState(modules, ammo, magazineSize, reloading, reloadProgress, reloadTargetAmmo, shotTick);
         if (rifleVisual) rifleVisual.SetNetworkState(ammo, reloading, reloadProgress, shotTick, reloadTick, reloadTargetAmmo);
         if (sniperVisual) sniperVisual.SetNetworkState(ammo, reloading, reloadProgress, shotTick, reloadTick, reloadTargetAmmo);
         if (revolverVisual) revolverVisual.SetNetworkState(ammo, reloading, reloadProgress, shotTick, reloadTick);
@@ -286,6 +299,8 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         if (shotgunVisual) shotgunVisual.SetAimBlend(aimBlend);
         if (rifleVisual) rifleVisual.SetAimBlend(aimBlend);
         if (sniperVisual) sniperVisual.SetAimBlend(aimBlend);
+        if (rifleModules) rifleModules.SetAimBlend(aimBlend);
+        if (shotgunModules) shotgunModules.SetAimBlend(aimBlend);
         if (!networkControlled && input)
         {
             if (localReloadRemaining <= 0f && input.WeaponSlotPressed != 0)

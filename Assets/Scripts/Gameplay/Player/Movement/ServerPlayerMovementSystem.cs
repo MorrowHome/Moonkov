@@ -23,6 +23,7 @@ namespace Unity.MP_FPS
         public uint WeaponId;
         public uint FireTick;
         public int PelletIndex;
+        public byte ModuleMask;
         public float3 InitialVelocity;
     }
 
@@ -309,7 +310,7 @@ namespace Unity.MP_FPS
                     {
                         var weaponData =
                             WeaponManager.Instance.WeaponRegistry.GetWeaponData(
-                                predictedPlayer.ValueRO.EquippedWeaponID);
+                                predictedPlayer.ValueRO.EquippedWeaponID, predictedPlayer.ValueRO.EquippedModules);
                         DollSingerWeapons.CompleteReload(ref predictedPlayer.ValueRW, weaponData);
                     }
                 }
@@ -339,7 +340,7 @@ namespace Unity.MP_FPS
                         WeaponManager.Instance.WeaponRegistry);
                     if (switchedWeapon) DollSingerWeapons.SyncEquipment(ref predictedPlayer.ValueRW, WeaponInventory(entity), WeaponManager.Instance.WeaponRegistry);
                     var weaponData =
-                        WeaponManager.Instance.WeaponRegistry.GetWeaponData(predictedPlayer.ValueRO.EquippedWeaponID);
+                        WeaponManager.Instance.WeaponRegistry.GetWeaponData(predictedPlayer.ValueRO.EquippedWeaponID, predictedPlayer.ValueRO.EquippedModules);
                     if (weaponData != null)
                     {
                         var shotRay = playerGhost.GetShotRay(input, weaponData.HitscanRange, out var aimPoint);
@@ -360,10 +361,7 @@ namespace Unity.MP_FPS
                             predictedPlayer.ValueRW.LastReloadTick = serverTick;
                         }
 
-                        if (wantsToShoot &&
-                            !predictedPlayer.ValueRO.ControllerState.IsReloadingState &&
-                            predictedPlayer.ValueRO.CurrentAmmo > 0 &&
-                            predictedPlayer.ValueRO.WeaponCooldown >= weaponData.CooldownInMs * RaidHealth.HandlingMultiplier(predictedPlayer.ValueRO))
+                        if (HaloModuleFire.TryFire(ref predictedPlayer.ValueRW, weaponData, input.Shoot, input.Aim, switchedWeapon))
                         {
                             predictedPlayer.ValueRW.WeaponCooldown = 0f;
                             predictedPlayer.ValueRW.CurrentAmmo--;
@@ -408,6 +406,8 @@ namespace Unity.MP_FPS
                                                 var hitPlayer = hitGhostObject.GetComponent<PlayerGhost>();
                                                 RaidHealth.Damage(ref targetPredictedPlayer.ValueRW,
                                                     RaidHealth.ResolveHit(hitPlayer, hit.collider, hit.point), weaponData.Damage, serverTick);
+                                                if (healthBeforeDamage > 0 && ((HaloModule)predictedPlayer.ValueRO.EquippedModules & HaloModule.HitMarker) != 0)
+                                                    VisualEffectManager.ServerInstance?.Server_RequestHaloMark(shooterNetworkId, commandInput.Tick.TickIndexForValidTick, hit.point);
 
                                                 if (healthBeforeDamage > 0 &&
                                                     targetPredictedPlayer.ValueRO.CurrentHealth <= 0)
@@ -462,6 +462,7 @@ namespace Unity.MP_FPS
                                                 WeaponId = predictedPlayer.ValueRO.EquippedWeaponID,
                                                 FireTick = serverTick,
                                                 PelletIndex = pellet,
+                                                ModuleMask = predictedPlayer.ValueRO.EquippedModules,
                                                 InitialVelocity = pelletDirection * weaponData.ProjectileSpeed
                                         });
                                         }
@@ -495,6 +496,7 @@ namespace Unity.MP_FPS
                             WeaponID = spawnData.WeaponId,
                             FireTick = spawnData.FireTick,
                             PelletIndex = spawnData.PelletIndex,
+                            ModuleMask = spawnData.ModuleMask,
                             Origin = spawnData.Position,
                             InitialVelocity = spawnData.InitialVelocity
                         });

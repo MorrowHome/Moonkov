@@ -24,6 +24,9 @@ namespace Unity.MP_FPS.Inventory
         public static readonly ShopOffer[] Offers = {
             new ShopOffer("rifle", 0, 20), new ShopOffer("pistol", 0, 7),
             new ShopOffer("shotgun", 0, 25), new ShopOffer("sniper", 0, 45), new ShopOffer("cells", 0, 2),
+            new ShopOffer("halo_capacitor", 18, 6), new ShopOffer("halo_charge_bridge", 18, 6),
+            new ShopOffer("halo_focus_lens", 22, 7), new ShopOffer("halo_fan_array", 22, 7),
+            new ShopOffer("halo_pulse_controller", 28, 9), new ShopOffer("halo_hit_marker", 25, 8),
             new ShopOffer("medkit", 0, 3), new ShopOffer("ration", 0, 2), new ShopOffer("water", 0, 2)
         };
         public static ShopOffer Find(string code) => Offers.FirstOrDefault(o => o.Code == code);
@@ -73,6 +76,8 @@ namespace Unity.MP_FPS.Inventory
                     var item = copy.Find(command.ItemId);
                     if (item == null || item.Code != offer.Code || item.Quantity < command.Quantity) return "inventory_Missing";
                     if (item.EmergencySupply) return "shop_emergency_supply";
+                    if (copy.Children(item.Id).Any()) return "shop_remove_modules_first";
+
                     if (copy.RootOf(item.Id) != "stash") return "shop_store_first";
                     int refund = ShopCatalog.SaleDust(item, command.Quantity, offer.SellDust);
                     BatteryEnergy.Take(item, command.Quantity); if (item.Quantity == 0) copy.Items.Remove(item);

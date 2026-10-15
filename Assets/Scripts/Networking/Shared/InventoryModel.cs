@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Unity.MP_FPS.Inventory
 {
-    public enum ItemKind { Root, Material, Cell, Helmet, LongGun, Pistol, Rig, Backpack, Medical, Food, Drink }
+    public enum ItemKind { Root, Material, Cell, Helmet, LongGun, Pistol, Rig, Backpack, Medical, Food, Drink, StorageModule, ShapingModule, UtilityModule }
     public enum InventoryError { None, Stale, Missing, Invalid, Incompatible, Bounds, Collision, Cycle, Full, Overweight, Inaccessible }
     public enum InventoryOperation { Move, Split, Merge }
 
@@ -30,7 +30,7 @@ namespace Unity.MP_FPS.Inventory
         public const string Stash = "stash", Equipment = "equipment", Pockets = "pockets";
         public const int MaxDepth = 8, MaxItems = 2048;
         public const float CarryWeightLimit = 45;
-        private static readonly string[] LootCodes = { "dust", "alloy", "cells", "small_pack", "rig", "ration", "water" };
+        private static readonly string[] LootCodes = { "dust", "alloy", "cells", "small_pack", "rig", "ration", "water", "halo_capacitor", "halo_charge_bridge", "halo_focus_lens", "halo_fan_array", "halo_pulse_controller", "halo_hit_marker" };
         public static string LootCode(int index) => LootCodes[index % LootCodes.Length];
         public static readonly IReadOnlyDictionary<string, ItemDefinition> Definitions = Build();
         private static Dictionary<string, ItemDefinition> Build()
@@ -56,6 +56,12 @@ namespace Unity.MP_FPS.Inventory
                 new ItemDefinition("pistol", "Halo Revolver", ItemKind.Pistol, 1, 1, 1, .8f),
                 new ItemDefinition("shotgun", "Halo Shotgun", ItemKind.LongGun, 2, 2, 1, 3.2f),
                 new ItemDefinition("sniper", "Halo Sniper", ItemKind.LongGun, 2, 2, 1, 4.5f),
+                new ItemDefinition("halo_capacitor", "Expansion capacitor", ItemKind.StorageModule, 1, 1, 1, .2f),
+                new ItemDefinition("halo_charge_bridge", "Rapid charge bridge", ItemKind.StorageModule, 1, 1, 1, .15f),
+                new ItemDefinition("halo_focus_lens", "Focus lens", ItemKind.ShapingModule, 1, 1, 1, .15f),
+                new ItemDefinition("halo_fan_array", "Fan array", ItemKind.ShapingModule, 1, 1, 1, .2f),
+                new ItemDefinition("halo_pulse_controller", "Pulse controller", ItemKind.ShapingModule, 1, 1, 1, .15f),
+                new ItemDefinition("halo_hit_marker", "Hit marker", ItemKind.UtilityModule, 1, 1, 1, .1f),
                 new ItemDefinition("rig", "R-04 Chest rig", ItemKind.Rig, 2, 3, 1, .9f,
                     new InventoryRegion("left", 1, 2), new InventoryRegion("center", 2, 2), new InventoryRegion("right", 1, 2)),
                 new ItemDefinition("backpack", "B-08 Expedition pack", ItemKind.Backpack, 3, 3, 1, 1.3f, new InventoryRegion("main", 5, 6)),
@@ -133,7 +139,12 @@ namespace Unity.MP_FPS.Inventory
             }
             WeaponKitVersion = 1;
         }
-        private InventoryRegion RegionFor(string parent, string region) => InventoryCatalog.Get(Find(parent)?.Code)?.Regions.FirstOrDefault(r => r.Id == region);
+        private InventoryRegion RegionFor(string parent, string region)
+        {
+            var code = Find(parent)?.Code;
+            return InventoryCatalog.Get(code)?.Regions.FirstOrDefault(r => r.Id == region) ??
+                (HaloModules.IsWeapon(code) ? HaloModules.Slots.FirstOrDefault(r => r.Id == region) : null);
+        }
         public InventoryError CanPlace(InventoryItem item, string parent, string region, int x, int y, bool rotated, string ignore = null)
         {
             var definition = InventoryCatalog.Get(item.Code); var target = Find(parent); var compartment = RegionFor(parent, region);
@@ -145,6 +156,8 @@ namespace Unity.MP_FPS.Inventory
                 if (depth >= InventoryCatalog.MaxDepth) return InventoryError.Cycle;
                 ancestor = Find(ancestor)?.Parent;
             }
+            if (HaloModules.IsWeapon(target.Code) && (!HaloModules.Compatible(target.Code, item.Code) ||
+                region != HaloModules.Slot(HaloModules.FromCode(item.Code)))) return InventoryError.Incompatible;
             if (compartment.SlotKind.HasValue)
             {
                 if (definition.Kind != compartment.SlotKind.Value || item.Quantity != 1) return InventoryError.Incompatible;
@@ -184,6 +197,12 @@ namespace Unity.MP_FPS.Inventory
         public InventoryError TryApply(InventoryCommand request, bool enforceWeight = true)
         {
             if (request == null || request.ExpectedVersion != Version) return InventoryError.Stale;
+            // Mounting, removing and swapping modules are base-only transactions. Whole
+            // weapon subtrees can still move freely during a raid.
+            var source = Find(request.ItemId);
+            if (HaloModules.IsWeapon(Find(source?.Parent)?.Code) ||
+                HaloModules.IsWeapon(Find(request.Parent)?.Code))
+                if (Find(InventoryCatalog.Stash) == null || Find("loot") != null) return InventoryError.Inaccessible;
             var copy = Clone(); var error = copy.Apply(request);
             if (error == InventoryError.None) error = copy.Validate();
             // Rearranging an already-heavy migrated kit is allowed; adding more weight is not.

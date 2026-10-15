@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UIElements;
 using Unity.Entities;
 using Unity.NetCode;
@@ -195,7 +195,7 @@ namespace Unity.MP_FPS
             // Update Ammo Label
             if (m_AmmoLabel != null)
             {
-                var weaponData = WeaponManager.Instance.WeaponRegistry.GetWeaponData(playerData.EquippedWeaponID);
+                var weaponData = WeaponManager.Instance.WeaponRegistry.GetWeaponData(playerData.EquippedWeaponID, playerData.EquippedModules);
                 int magazineSize = weaponData != null ? weaponData.MagazineSize : 0;
 
                 // Update Ammo Text and Color
@@ -240,7 +240,7 @@ namespace Unity.MP_FPS
                 m_shotFeedbackTimer -= Time.deltaTime;
             }
 
-            var weaponData = WeaponManager.Instance.WeaponRegistry.GetWeaponData(playerData.EquippedWeaponID);
+            var weaponData = WeaponManager.Instance.WeaponRegistry.GetWeaponData(playerData.EquippedWeaponID, playerData.EquippedModules);
 
             if (weaponData == null)
             {

@@ -98,7 +98,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                 predictedPlayer.ValueRW.ReloadTimer -= dt;
                 if (predictedPlayer.ValueRO.ReloadTimer <= 0f)
                 {
-                    var weaponData = WeaponManager.Instance.WeaponRegistry.GetWeaponData(predictedPlayer.ValueRO.EquippedWeaponID);
+                    var weaponData = WeaponManager.Instance.WeaponRegistry.GetWeaponData(predictedPlayer.ValueRO.EquippedWeaponID, predictedPlayer.ValueRO.EquippedModules);
                     DollSingerWeapons.CompleteReload(ref predictedPlayer.ValueRW, weaponData);
                 }
             }
@@ -201,7 +201,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
 
                         bool switchedWeapon = DollSingerWeapons.TryEquip(ref predictedPlayer.ValueRW, input,
                             WeaponManager.Instance.WeaponRegistry);
-                        var weaponData = WeaponManager.Instance.WeaponRegistry.GetWeaponData(predictedPlayer.ValueRO.EquippedWeaponID);
+                        var weaponData = WeaponManager.Instance.WeaponRegistry.GetWeaponData(predictedPlayer.ValueRO.EquippedWeaponID, predictedPlayer.ValueRO.EquippedModules);
                         if (weaponData != null)
                         {
                             var playerGhost = controllerLink.Controller.GetComponent<PlayerGhost>();
@@ -225,7 +225,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                                 predictedPlayer.ValueRW.LastReloadTick = commandInput.Tick.TickIndexForValidTick;
                             }
 
-                            if (wantsToShoot && !predictedPlayer.ValueRO.ControllerState.IsReloadingState && predictedPlayer.ValueRO.CurrentAmmo > 0 && predictedPlayer.ValueRO.WeaponCooldown >= weaponData.CooldownInMs * RaidHealth.HandlingMultiplier(predictedPlayer.ValueRO))
+                            if (HaloModuleFire.TryFire(ref predictedPlayer.ValueRW, weaponData, input.Shoot, input.Aim, switchedWeapon))
                             {
                                 predictedPlayer.ValueRW.WeaponCooldown = 0f;
                                 predictedPlayer.ValueRW.CurrentAmmo--;
@@ -263,7 +263,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                                             commandInput.Tick.TickIndexForValidTick,
                                             predictedPlayer.ValueRO.EquippedWeaponID,
                                             shotOriginPosition,
-                                            spawnRotation, pellet);
+                                            spawnRotation, pellet, predictedPlayer.ValueRO.EquippedModules);
                                     }
                                 }
                             }

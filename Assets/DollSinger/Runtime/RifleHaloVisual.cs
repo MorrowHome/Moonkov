@@ -25,11 +25,13 @@ namespace Unity.MP_FPS.DollSinger
         private readonly Vector3[] bladePoints = new Vector3[5], arcPoints = new Vector3[17], cellPoints = new Vector3[2];
         private float aimBlend, elapsed, shotPulse, releaseSlow, releaseFast, pressure, lockFlash, rotation, reloadStartRotation, progress;
         private uint lastFeedbackTick;
+        private int magazineCapacity = Capacity;
+        public void SetMagazineCapacity(int capacity) => magazineCapacity = Mathf.Max(1, capacity);
         private int ammo = Capacity, startAmmo, targetAmmo = Capacity;
         private uint lastShot, lastReload;
         private bool initialized, reloading, localReloading;
         public int VisibleAmmo => Mathf.Clamp(reloading ? Mathf.FloorToInt(Mathf.Lerp(startAmmo, targetAmmo,
-            Mathf.SmoothStep(0, 1, Mathf.InverseLerp(.18f, .82f, progress)))) : ammo, 0, Capacity);
+            Mathf.SmoothStep(0, 1, Mathf.InverseLerp(.18f, .82f, progress)))) : ammo, 0, magazineCapacity);
         public float ReloadProgress => progress;
         public float RotorRotation => rotation;
         public bool IsReloading => reloading;
@@ -66,7 +68,7 @@ namespace Unity.MP_FPS.DollSinger
         public void SetEquipped(bool equipped, int rounds)
         {
             if (gameObject.activeSelf == equipped) return;
-            ammo = Mathf.Clamp(rounds, 0, Capacity); startAmmo = ammo; targetAmmo = ammo;
+            ammo = Mathf.Max(0, rounds); startAmmo = ammo; targetAmmo = ammo;
             rotation = reloadStartRotation = progress = elapsed = shotPulse = lockFlash = 0;
             releaseSlow = releaseFast = pressure = 0; lastFeedbackTick = 0;
             reloading = localReloading = initialized = false; lastShot = lastReload = 0;
@@ -75,13 +77,13 @@ namespace Unity.MP_FPS.DollSinger
         public void SetNetworkState(int rounds, bool reload, float reloadProgress, uint shotTick, uint reloadTick, int reloadTarget)
         {
             if (!gameObject.activeSelf) return;
-            rounds = Mathf.Clamp(rounds, 0, Capacity);
+            rounds = Mathf.Max(0, rounds);
             if (!initialized) { lastShot = shotTick; lastReload = reloadTick; ammo = rounds; initialized = true; }
             if (Newer(lastShot, shotTick) || Newer(lastReload, reloadTick)) return;
             bool shot = Newer(shotTick, lastShot), newReload = Newer(reloadTick, lastReload);
             if (shot) { rotation += 360f / Capacity; PlayShot(shotTick); lastShot = shotTick; }
             if (newReload || reload && !reloading && progress == 0)
-            { BeginReload(rounds, reloadTarget < 0 ? Capacity : reloadTarget); lastReload = reloadTick; }
+            { BeginReload(rounds, reloadTarget < 0 ? magazineCapacity : reloadTarget); lastReload = reloadTick; }
             if (reload && !Newer(lastShot, lastReload)) AdvanceReload(reloadProgress);
             if (!reload && reloading) { if (rounds > startAmmo) AdvanceReload(1); else reloading = false; }
             // Replayed snapshots for a completed reload must not briefly show an empty magazine.
@@ -90,7 +92,7 @@ namespace Unity.MP_FPS.DollSinger
         private static bool Newer(uint tick, uint previous) => tick != 0 && (previous == 0 || (int)(tick - previous) > 0);
         private void BeginReload(int rounds, int target)
         {
-            startAmmo = rounds; targetAmmo = Mathf.Clamp(target, rounds, Capacity);
+            startAmmo = rounds; targetAmmo = Mathf.Max(rounds, Mathf.Min(target, magazineCapacity));
             reloadStartRotation = rotation; progress = 0; reloading = true;
         }
         private void AdvanceReload(float value)
@@ -108,7 +110,7 @@ namespace Unity.MP_FPS.DollSinger
             if (reload) AdvanceReload(reloadProgress);
             else if (localReloading && rounds > startAmmo) AdvanceReload(1);
             else reloading = false;
-            localReloading = reload; ammo = Mathf.Clamp(rounds, 0, Capacity);
+            localReloading = reload; ammo = Mathf.Max(0, rounds);
         }
         public void PlayShot(uint shotTick = 0)
         {
@@ -150,7 +152,7 @@ namespace Unity.MP_FPS.DollSinger
             float rotor = rotation + (reloading ? 0 : elapsed * 3f);
             float innerRotor = -rotation * .7f - elapsed * 5f;
             Color core = Color.Lerp(lightColor, Color.white, Mathf.Max(shotPulse * .45f, lockFlash * .65f));
-            int visible = VisibleAmmo;
+            int visible = Mathf.CeilToInt((float)VisibleAmmo / magazineCapacity * cells.Length);
             for (int i = 0; i < blades.Length; i++)
             {
                 float angle = i * 60 + rotor;

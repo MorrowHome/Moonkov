@@ -17,6 +17,15 @@ namespace Unity.MP_FPS
     {
         private Queue<ClientSpawnVfxRpc> _vfxQueue = new();
         private readonly Queue<ClientRifleImpactRpc> m_RifleImpactQueue = new();
+        private readonly Queue<ClientHaloMarkRpc> m_HaloMarkQueue = new();
+        private readonly Dictionary<int, uint> m_LastMarkTicks = new();
+        private HaloHitMarkerFeedback m_HaloMarks;
+        public void Server_RequestHaloMark(int owner, uint tick, Vector3 position)
+        {
+            if (owner <= 0 || (m_LastMarkTicks.TryGetValue(owner, out var last) && (int)(tick-last) <= 0)) return;
+            m_LastMarkTicks[owner] = tick;
+            m_HaloMarkQueue.Enqueue(new ClientHaloMarkRpc { OwnerNetworkId=owner, ShotTick=tick, Position=position });
+        }
         private RifleImpactFeedback m_RifleImpacts;
         public RifleImpactFeedback RifleImpacts
         {
@@ -40,6 +49,7 @@ namespace Unity.MP_FPS
 
         public void UpdateServer(float deltaTime)
         {
+            while (m_HaloMarkQueue.Count > 0) GhostGameObject.BroadcastRPC(m_HaloMarkQueue.Dequeue());
             while (m_RifleImpactQueue.Count > 0) GhostGameObject.BroadcastRPC(m_RifleImpactQueue.Dequeue());
             while (_vfxQueue.Count > 0)
             {
@@ -50,6 +60,11 @@ namespace Unity.MP_FPS
 
         public void UpdateClient(float deltaTime)
         {
+            while (GhostGameObject.ConsumeRPC(out ClientHaloMarkRpc mark))
+            {
+                if (!m_HaloMarks) m_HaloMarks = gameObject.AddComponent<HaloHitMarkerFeedback>();
+                m_HaloMarks.Present(mark);
+            }
             while (GhostGameObject.ConsumeRPC(out ClientRifleImpactRpc impact))
                 RifleImpacts.Present(impact, true, IsOwnedShooter(impact.OwnerNetworkId));
             while (GhostGameObject.ConsumeRPC(out ClientSpawnVfxRpc rpc))

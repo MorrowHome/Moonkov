@@ -3,7 +3,7 @@ using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client
 {
-    public enum StashArtKind { None, Dust, Alloy, Cell, Halo, Outfit, Helmet, Rifle, Pistol, ChestRig, Backpack, HaloRifle, HaloRevolver, HaloShotgun, Medical, HaloSniper, Ration, Water }
+    public enum StashArtKind { None, Dust, Alloy, Cell, Halo, Outfit, Helmet, Rifle, Pistol, ChestRig, Backpack, HaloRifle, HaloRevolver, HaloShotgun, Medical, HaloSniper, Ration, Water, HaloCapacitor, HaloChargeBridge, HaloFocusLens, HaloFanArray, HaloPulseController, HaloHitMarker }
 
     // Small original vector illustrations, kept sharp at the shared PanelSettings scale.
     [UxmlElement]
@@ -63,6 +63,13 @@ namespace Unity.MP_FPS.Client
                 case StashArtKind.Pistol: Pistol(); break;
                 case StashArtKind.ChestRig: ChestRig(); break;
                 case StashArtKind.Backpack: Backpack(); break;
+                case StashArtKind.HaloCapacitor: Module(HaloModule.Capacitor); break;
+                case StashArtKind.HaloChargeBridge: Module(HaloModule.ChargeBridge); break;
+                case StashArtKind.HaloFocusLens: Module(HaloModule.FocusLens); break;
+                case StashArtKind.HaloFanArray: Module(HaloModule.FanArray); break;
+                case StashArtKind.HaloPulseController: Module(HaloModule.PulseController); break;
+                case StashArtKind.HaloHitMarker: Module(HaloModule.HitMarker); break;
+
             }
         }
 

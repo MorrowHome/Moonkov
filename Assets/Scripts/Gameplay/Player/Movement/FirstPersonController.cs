@@ -1050,7 +1050,7 @@ public class FirstPersonController : MonoBehaviour
     }
 
     public void SpawnPredictedProjectile(uint spawnTick, uint weaponId, Vector3 spawnPosition,
-        Quaternion spawnRotation, int pelletIndex = 0)
+        Quaternion spawnRotation, int pelletIndex = 0, byte modules = 0)
     {
         foreach (var shot in Projectile.PredictedProjectiles)
             if (shot.SpawnTick == spawnTick && shot.WeaponID == weaponId && shot.PelletIndex == pelletIndex) return;
@@ -1070,7 +1070,7 @@ public class FirstPersonController : MonoBehaviour
         var instance = Instantiate(prefab, spawnPosition, spawnRotation,
             GhostBridgeBootstrap.Instance.ClientGameObjectHierarchy.transform);
         instance.GetComponent<Projectile>().InitializePrediction(weaponId, spawnPosition, spawnRotation, transform,
-            shotTick: spawnTick, pelletIndex: pelletIndex);
+            shotTick: spawnTick, pelletIndex: pelletIndex, modules: modules);
         Projectile.PredictedProjectiles.Add(new Projectile.PredictedProjectileInfo
         { Instance = instance, SpawnTick = spawnTick, WeaponID = weaponId, PelletIndex = pelletIndex, CreatedAt = Time.time });
     }

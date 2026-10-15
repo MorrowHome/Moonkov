@@ -8,7 +8,7 @@ using Unity.MP_FPS.Inventory;
 namespace Unity.MP_FPS.Client
 {
     // Presents authoritative snapshots. Dragging sends an intent; it never edits account quantities.
-    public sealed class ContainerInventoryView : IDisposable
+    public sealed partial class ContainerInventoryView : IDisposable
     {
         private sealed class Grid
         {
@@ -90,6 +90,9 @@ namespace Unity.MP_FPS.Client
                 case "ration":return StashArtKind.Ration; case "water":return StashArtKind.Water;
                 case "shotgun":return StashArtKind.HaloShotgun;
                 case "sniper":return StashArtKind.HaloSniper;
+                case "halo_capacitor":return StashArtKind.HaloCapacitor; case "halo_charge_bridge":return StashArtKind.HaloChargeBridge;
+                case "halo_focus_lens":return StashArtKind.HaloFocusLens; case "halo_fan_array":return StashArtKind.HaloFanArray;
+                case "halo_pulse_controller":return StashArtKind.HaloPulseController; case "halo_hit_marker":return StashArtKind.HaloHitMarker;
                 case "rig":return StashArtKind.ChestRig; case "backpack":case "small_pack":return StashArtKind.Backpack; default:return StashArtKind.None; }
         }
         public void Present(InventoryGraph graph, string message = null, bool operationCompleted = true, int lootId=-1)
@@ -179,10 +182,12 @@ namespace Unity.MP_FPS.Client
                     var itemDef = InventoryCatalog.Get(entry.Code); Text(tile, MoonkovLocalization.Text(itemDef.Name).Split(' ')[0].ToUpperInvariant(), "inventory-item-label");
                     Text(tile, itemDef.Container ? "OPEN ↗" : BatteryEnergy.IsCell(entry) ? $"{BatteryEnergy.Stored(entry)}E" : entry.Quantity.ToString(), "inventory-item-quantity");
                     tile.tooltip=MoonkovLocalization.Text(itemDef.Name) + " / " + entry.Quantity + MoonkovLocalization.Text(entry.FoundInRaid ? " / FOUND IN RAID" : " / BROUGHT IN");
+                    if (HaloModules.IsWeapon(entry.Code)) tile.tooltip += " / " + HaloModules.Summary(m_Graph, entry);
+                    if (HaloModules.FromCode(entry.Code) != HaloModule.None) tile.tooltip += " / " + MoonkovLocalization.Text(HaloModules.Description(entry.Code));
                     if (BatteryEnergy.IsCell(entry)) tile.tooltip += MoonkovLocalization.Format($" / {BatteryEnergy.Stored(entry)}/{entry.Quantity * BatteryEnergy.Capacity} ENERGY");
                     tile.RemoveManipulator(tile.clickable);
                     tile.AddManipulator(new Drag(this, () => m_Graph.Find(captured.Id), () => Describe(captured),
-                        () => { if (itemDef.Container) OpenContainer(captured); else Describe(captured); }));
+                        () => { if (HaloModules.IsWeapon(captured.Code) && m_Stash) OpenModification(captured); else if (itemDef.Container) OpenContainer(captured); else Describe(captured); }));
                     visual.Add(tile); m_Tiles[entry.Id]=tile; Position(tile, entry, grid.Cell);
                 }
                 if (item.Code == "stash")
@@ -233,6 +238,9 @@ namespace Unity.MP_FPS.Client
             foreach (var item in m_Graph.Items.Where(i=>InventoryCatalog.Get(i.Code).Kind==kind))
             { var captured=item; MoonkovTerminal.ActionButton(window, InventoryCatalog.Get(item.Code).Name, ()=> { m_Windows.Close(window); Command(new InventoryCommand { ItemId=captured.Id, Parent="equipment", Region=slot }); }); }
             var equipped=m_Graph.Equipped(slot);
+            if (equipped != null && HaloModules.IsWeapon(equipped.Code) && m_Stash)
+                MoonkovTerminal.ActionButton(window, "MODIFY HALO", () => { m_Windows.Close(window); OpenModification(equipped); });
+
             if (equipped!=null) MoonkovTerminal.ActionButton(window, "UNEQUIP / STORE", ()=> { m_Windows.Close(window); QuickTransfer(equipped); });
         }
         private void Context(InventoryItem item, Vector2 position)
@@ -250,6 +258,7 @@ namespace Unity.MP_FPS.Client
                     if (m_Busy || m_ReadOnlyReason != null) return;
                     m_Windows.Close(window); m_Busy = true; m_UseMedical(item);
                 });
+            if (HaloModules.IsWeapon(item.Code) && m_Stash) MoonkovTerminal.ActionButton(window, "MODIFY HALO", () => { m_Windows.Close(window); OpenModification(item); });
             MoonkovTerminal.ActionButton(window, "INSPECT", ()=> { m_Windows.Close(window); Describe(item); });
             if (InventoryCatalog.Get(item.Code).Container) MoonkovTerminal.ActionButton(window, "OPEN CONTAINER", ()=> { m_Windows.Close(window); OpenContainer(item); });
             MoonkovTerminal.ActionButton(window, "QUICK TRANSFER", ()=> { m_Windows.Close(window); QuickTransfer(item); });

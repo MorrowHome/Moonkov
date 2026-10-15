@@ -76,6 +76,9 @@ public struct PredictedPlayerGhost : IComponentData
     [GhostField] public uint EquippedWeaponID;
     [GhostField] public float WeaponCooldown;   // Timer to control rate of fire
     
+    [GhostField] public byte EquippedModules, PrimaryModules, SecondaryModules;
+    [GhostField] public int BurstRemaining, BurstSequence;
+    [GhostField] public bool BurstTriggerHeld;
     [GhostField] public int CurrentAmmo;
     // Only the inactive weapon uses its stored ammo; CurrentAmmo owns the equipped weapon.
     [GhostField] public int StoredHaloAmmo;

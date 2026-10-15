@@ -20,6 +20,7 @@ namespace Unity.MP_FPS
             [GhostField] public uint WeaponID;
             [GhostField] public uint FireTick;
             [GhostField] public int PelletIndex;
+            [GhostField] public byte ModuleMask;
             [GhostField] public float3 Origin;
             [GhostField] public float3 InitialVelocity;
         }
@@ -57,11 +58,11 @@ namespace Unity.MP_FPS
         private static Material s_BulletMaterial;
 
         public void InitializePrediction(uint weaponId, Vector3 origin, Quaternion rotation, Transform shooter,
-            float elapsed = 0f, uint shotTick = 0, int pelletIndex = 0)
+            float elapsed = 0f, uint shotTick = 0, int pelletIndex = 0, byte modules = 0)
         {
             var player = shooter ? shooter.GetComponent<PlayerGhost>() : null;
             m_Data = new ProjectileData { WeaponID = weaponId, Origin = origin, SpawnTick = shotTick,
-                PelletIndex = pelletIndex,
+                PelletIndex = pelletIndex, ModuleMask = modules,
                 OwnerNetworkId = player && player.GhostGameObject ? player.GhostGameObject.Owner : 0,
                 InitialVelocity = rotation * Vector3.forward * WeaponManager.Instance.WeaponRegistry.GetWeaponData(weaponId).ProjectileSpeed };
             m_Shooter = shooter;
@@ -72,7 +73,7 @@ namespace Unity.MP_FPS
 
         private void Initialize(bool server)
         {
-            m_Weapon = WeaponManager.Instance.WeaponRegistry.GetWeaponData(m_Data.WeaponID);
+            m_Weapon = WeaponManager.Instance.WeaponRegistry.GetWeaponData(m_Data.WeaponID, m_Data.ModuleMask);
             m_HitMask = LayerMask.GetMask(server ? "ServerPlayer" : "ClientPlayer", "Ground", "Default");
             m_Initialized = m_Weapon != null;
             if (!server && m_Initialized && m_Weapon.ShowProjectileBody && m_Body == null)
@@ -258,6 +259,8 @@ namespace Unity.MP_FPS
             else if (GhostGameObject.TryFindGhostGameObject(hit.collider.gameObject, out var target))
                 damageFlags = Damage(target, players, owners,
                     RaidHealth.ResolveHit(target.GetComponent<PlayerGhost>(), hit.collider, hit.point));
+            if (damageFlags != 0 && ((HaloModule)m_Data.ModuleMask & HaloModule.HitMarker) != 0)
+                VisualEffectManager.ServerInstance?.Server_RequestHaloMark(m_Data.OwnerNetworkId, m_Data.SpawnTick, hit.point);
             if (DollSingerWeapons.IsHalo(m_Data.WeaponID))
             {
                 VisualEffectManager.ServerInstance?.Server_RequestRifleImpact(new ClientRifleImpactRpc

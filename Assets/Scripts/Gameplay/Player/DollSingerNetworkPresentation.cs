@@ -127,14 +127,14 @@ namespace Unity.MP_FPS
                 owned ? m_OwnedViewRotation : headRotation, owned ? m_OwnedLean : state.Lean);
             m_Halo.SetNetworkPresentation(state.Aiming, viewRotation * Vector3.forward, ghost.AimPoint,
                 owned ? m_OwnedLightEnabled : state.HaloLightEnabled);
-            var weapon = WeaponManager.Instance.WeaponRegistry.GetWeaponData(ghost.EquippedWeaponID);
+            var weapon = WeaponManager.Instance.WeaponRegistry.GetWeaponData(ghost.EquippedWeaponID, ghost.EquippedModules);
             var haloWeapon = ghost.EquippedWeaponID == DollSingerWeapons.Halo ? DollSingerHaloAim.HaloWeapon.Rifle :
                 ghost.EquippedWeaponID == DollSingerWeapons.Revolver ? DollSingerHaloAim.HaloWeapon.Revolver :
                 ghost.EquippedWeaponID == DollSingerWeapons.Shotgun ? DollSingerHaloAim.HaloWeapon.Shotgun :
                 ghost.EquippedWeaponID == DollSingerWeapons.Sniper ? DollSingerHaloAim.HaloWeapon.Sniper : DollSingerHaloAim.HaloWeapon.None;
             m_Halo.SetNetworkWeapon(haloWeapon, ghost.CurrentAmmo,
                 state.IsReloadingState, weapon != null ? 1f - ghost.ReloadTimer / Mathf.Max(0.01f, weapon.ReloadTime) : 0f,
-                ghost.LastShotTick, ghost.LastReloadTick, ghost.ReloadTargetAmmo);
+                ghost.LastShotTick, ghost.LastReloadTick, ghost.ReloadTargetAmmo, ghost.EquippedModules, weapon?.MagazineSize ?? 4, ghost.BurstSequence);
             if (Role == MultiplayerRole.ClientOwned)
             {
                 m_View.SetNetworkLookRotation(m_OwnedViewRotation);
