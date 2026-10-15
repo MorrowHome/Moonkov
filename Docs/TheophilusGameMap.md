@@ -18,6 +18,8 @@ R23 针对明显纹理重复使用 4 个独立 URP Lit 材质和 6 张本批贴�
 
 MC00 新增本地 `InteriorVisibility`：室外关闭 4236 个当前启用的室内细节 Renderer 和 109 盏室内灯，靠近三个入口或进入室内区域时恢复；外壳、碰撞、气闸和联网状态保留。组件每 0.1 s 检查相机，仅区域切换时修改显示，具有退出缓冲。未拆分异步子场景、未卸载资产内存，也未做逐房间裁剪。21 个定点断言及同视角 Scene CPU 提交对照通过；Play 整帧 CPU／FPS 仍待实测。详见 `Docs/AI/Theophilus_Interior_Visibility.md`。
 
+R24 中央关节精修已作为 14 件独立显示增量接入，按映射绑定 11 个材质（8 新增、3 复用），3 张内嵌贴图归档。仅关闭旧 `R20_02_Grouped_Actuator_Muscles_And_Heavy_Nodes` 的 Renderer；旧对象、碰撞及其余 R21／R23 内容保留。新显示没有 Collider，不依赖 R22，不改 Terrain 或玩法。保存重开和必要引用／Shader 检查通过；未作截图、Play 或性能验收。详见 `Docs/AI/Theophilus_R24_Delivery.md`。
+
 地图包含一套现有 `GhostSpawnerManager`、`LeaderboardSpawner`，自动加载共享 `GameResourcesSubScene` 和新的 Theophilus 出生子场景。8 个出生点位于 A 起点南侧附近，使用实际地图地面定位并检查胶囊空间。原场景中 Apollo12 的出生坐标不会混入。
 
 `MoonRaidMap` 复用原搜打撤规则，配置 12 个地面物资点、A 起点东南侧撤离区，保留 8 秒撤离和原局时/生存设置。原 DollSinger 敌人数量 3 保留；8 个异形遭遇位置迁移至 Theophilus 物资点附近，Profile/注册 Ghost 仍为现有正式资源。未添加新的网络协议、角色控制器或离线专用玩法。
