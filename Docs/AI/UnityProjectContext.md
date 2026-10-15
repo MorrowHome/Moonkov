@@ -24,6 +24,8 @@
 
 约束：Markdown 图使用 Mermaid；Unity 验证遵循最小充分原则。不要把月球环境迁移扩大成联机玩法重构，不修改源 MMORPG。
 
+2026-10-15 用户实测反馈穿模后，正式地图巨构及 R3/R6/R7/R9、38 件 R18–R21 补静态非凸 MeshCollider；隐藏旧封盖排除，井底另用双面碰撞网格处理源面向下绕序。三处桥面／井底／井壁射线与保存重开通过；地形与玩法入口未改，未作角色走图或导航验收。当前碰撞状态以 `Docs/AI/Theophilus_Gameplay_Collision.json` 为准，之前“仅显示”记录是历史阶段。
+
 已查阅：`Packages/manifest.json`、`ProjectVersion.txt`、`GraphicsSettings.asset`、`EditorBuildSettings.asset`、`ProjectSettings.asset`、`GhostBridgeBootstrap.cs`、`GameManager.cs`、`SceneLoader.cs`、Starter Assets 控制器与输入脚本、源月球地形／材质／着色器／接地实现。
 
 未覆盖：模板完整联机端到端测试、构建平台差异、正式月球网络地图的出生点和 Ghost 资源配置、性能测量。

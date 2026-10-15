@@ -1,0 +1,53 @@
+{
+  "groups": [
+    {
+      "name": "B_RING_CONCEPT_ROOT",
+      "colliders": 1263,
+      "missing": 0
+    },
+    {
+      "name": "B_WEST_PASSIVE_STAIR_ACCESS_R3",
+      "colliders": 53,
+      "missing": null,
+      "collisionType": "Existing BoxCollider proxies preserved"
+    },
+    {
+      "name": "B_WEST_TRANSFER_06_DETAIL_R6",
+      "colliders": 13,
+      "missing": 0
+    },
+    {
+      "name": "R7_A_START_SAMPLE_SERVICE_ROOT",
+      "colliders": 22,
+      "missing": 0
+    },
+    {
+      "name": "B_RADIAL_SUPPORT_0197_DETAIL_R9",
+      "colliders": 13,
+      "missing": 0
+    },
+    {
+      "name": "R21_OPEN_SHAFT_WITH_R20_MECHANICAL_ROOT",
+      "colliders": 19,
+      "missing": 0
+    },
+    {
+      "name": "R21_RETAINED_R18_R19_ROOT",
+      "colliders": 19,
+      "missing": 0
+    }
+  ],
+  "threeBridgeDeckProbesPassed": true,
+  "bottomFromAbove": true,
+  "bottomY": 8.690304,
+  "liningFromInside": true,
+  "liningDistance": 52.34985,
+  "bottomProxyReason": "Source floor has downward-facing triangles; separate double-sided collision mesh, visual source unchanged",
+  "staticNonConvex": true,
+  "hiddenOldCapsExcluded": true,
+  "terrainDataNotEdited": true,
+  "savedReopened": true,
+  "HostOrGameplayWalkTest": false,
+  "addedMeshColliders": 1349,
+  "existingStairBoxCollidersPreserved": 53
+}
