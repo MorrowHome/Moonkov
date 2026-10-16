@@ -52,6 +52,7 @@ namespace Unity.MP_FPS
         private readonly List<SensorEvent> m_Events = new List<SensorEvent>();
         private readonly Dictionary<int, (Vector3 position, double expiry)> m_CoverReservations = new Dictionary<int, (Vector3, double)>();
         private DollSingerAITuning m_Tuning;
+        private DollSingerAITuning m_DefaultTuning;
         private readonly RaycastHit[] m_Hits = new RaycastHit[32];
         private readonly List<NavMeshBuildSource> m_Sources = new List<NavMeshBuildSource>();
         private static readonly int s_WorldMask = LayerMask.GetMask("Default", "Ground");
@@ -69,6 +70,7 @@ namespace Unity.MP_FPS
         {
             m_Tuning = Resources.Load<DollSingerAITuning>("Moonkov/DollSingerAI");
             if (m_Tuning == null) m_Tuning = ScriptableObject.CreateInstance<DollSingerAITuning>();
+            m_DefaultTuning = m_Tuning;
             RequireForUpdate<PlayerEntityPrefabs>();
             RequireForUpdate<NetworkStreamInGame>();
             RequireForUpdate<NetworkTime>();
@@ -79,7 +81,7 @@ namespace Unity.MP_FPS
         {
             DestroyEnemies();
             ReleaseNavigation();
-            if (m_Tuning != null && string.IsNullOrEmpty(m_Tuning.name)) Object.Destroy(m_Tuning);
+            if (m_DefaultTuning != null && string.IsNullOrEmpty(m_DefaultTuning.name)) Object.Destroy(m_DefaultTuning);
         }
 
         protected override void OnStopRunning()
@@ -118,6 +120,7 @@ namespace Unity.MP_FPS
                 DestroyEnemies();
                 ReleaseNavigation();
                 m_Map = map;
+                m_Tuning = map && map.EnemyTuning ? map.EnemyTuning : m_DefaultTuning;
                 ResetPopulation();
             }
             if (map == null || map.EnemyCount <= 0) return;

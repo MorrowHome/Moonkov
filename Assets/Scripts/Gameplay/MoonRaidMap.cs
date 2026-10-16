@@ -24,6 +24,8 @@ namespace Unity.MP_FPS
         [Tooltip("Maximum refills per cache in this server map session; zero disables refills.")]
         [SerializeField, Range(0, 10)] private int m_LootRefillLimit = 2;
         [Header("DollSinger enemies (server authority)")]
+        [Tooltip("Optional map-specific population and behavior tuning. Empty retains the shared default.")]
+        [SerializeField] private DollSingerAITuning m_EnemyTuning;
         [SerializeField, Range(0, 12)] private int m_EnemyCount = 3;
         [SerializeField, Range(10, 100)] private float m_EnemySightRange = 45;
         [SerializeField, Range(0, 12)] private int m_EnemyCells = 4;
@@ -69,6 +71,7 @@ namespace Unity.MP_FPS
         public float LootRefillPlayerRadius => Mathf.Max(3, m_LootRefillPlayerRadius);
         public int LootRefillLimit => Mathf.Clamp(m_LootRefillLimit, 0, 10);
         public int EnemyCount => m_EnemyCount;
+        public DollSingerAITuning EnemyTuning => m_EnemyTuning;
         public float EnemySightRange => m_EnemySightRange;
         public int EnemyCells => m_EnemyCells;
         public float StartHour => m_StartHour;
