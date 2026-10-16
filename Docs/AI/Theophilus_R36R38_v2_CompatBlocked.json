@@ -1,0 +1,191 @@
+{
+  "semantic_policy": "audited-432-to-official-511-v2",
+  "capabilities": {
+    "payload/Moonkov_R36_R38_Ten_Display_Meshes.blend": {
+      "uv_clone": {
+        "R36_01_Three_Buried_Edge_Dust_Lenses": {
+          "mesh": "R36_01_Three_Buried_Edge_Dust_Lenses_Mesh",
+          "explicit_clone": null,
+          "effective_clone": "UVMap",
+          "active": "UVMap",
+          "active_index": 0,
+          "layers": [
+            "UVMap",
+            "R8_Regolith_3p7m",
+            "R8_Terrain_Global_4096m"
+          ],
+          "raw_clone_flags": [
+            false,
+            false,
+            false
+          ]
+        },
+        "R36_02_Sparse_Coarse_Breakups": {
+          "mesh": "R36_02_Sparse_Coarse_Breakups_Mesh",
+          "explicit_clone": null,
+          "effective_clone": "UVMap",
+          "active": "UVMap",
+          "active_index": 0,
+          "layers": [
+            "UVMap",
+            "R8_Regolith_3p7m",
+            "R8_Terrain_Global_4096m"
+          ],
+          "raw_clone_flags": [
+            false,
+            false,
+            false
+          ]
+        },
+        "R36_03_Clustered_Mid_Clasts": {
+          "mesh": "R36_03_Clustered_Mid_Clasts_Mesh",
+          "explicit_clone": null,
+          "effective_clone": "UVMap",
+          "active": "UVMap",
+          "active_index": 0,
+          "layers": [
+            "UVMap",
+            "R8_Regolith_3p7m",
+            "R8_Terrain_Global_4096m"
+          ],
+          "raw_clone_flags": [
+            false,
+            false,
+            false
+          ]
+        },
+        "R36_04_Fading_Fine_Grains": {
+          "mesh": "R36_04_Fading_Fine_Grains_Mesh",
+          "explicit_clone": null,
+          "effective_clone": "UVMap",
+          "active": "UVMap",
+          "active_index": 0,
+          "layers": [
+            "UVMap",
+            "R8_Regolith_3p7m",
+            "R8_Terrain_Global_4096m"
+          ],
+          "raw_clone_flags": [
+            false,
+            false,
+            false
+          ]
+        },
+        "R38_01_Outer_Bearing_Saddles": {
+          "mesh": "R38_01_Outer_Bearing_Saddles_Mesh",
+          "explicit_clone": null,
+          "effective_clone": "R38_Metric_UV",
+          "active": "R38_Metric_UV",
+          "active_index": 0,
+          "layers": [
+            "R38_Metric_UV"
+          ],
+          "raw_clone_flags": [
+            false
+          ]
+        },
+        "R38_02_Open_Service_Bay_Knees": {
+          "mesh": "R38_02_Open_Service_Bay_Knees_Mesh",
+          "explicit_clone": null,
+          "effective_clone": "R38_Metric_UV",
+          "active": "R38_Metric_UV",
+          "active_index": 0,
+          "layers": [
+            "R38_Metric_UV"
+          ],
+          "raw_clone_flags": [
+            false
+          ]
+        },
+        "R38_03_Four_Cassette_Service_Deck": {
+          "mesh": "R38_03_Four_Cassette_Service_Deck_Mesh",
+          "explicit_clone": null,
+          "effective_clone": "R38_Metric_UV",
+          "active": "R38_Metric_UV",
+          "active_index": 0,
+          "layers": [
+            "R38_Metric_UV"
+          ],
+          "raw_clone_flags": [
+            false
+          ]
+        },
+        "R38_04_Open_Service_Railing": {
+          "mesh": "R38_04_Open_Service_Railing_Mesh",
+          "explicit_clone": null,
+          "effective_clone": "R38_Metric_UV",
+          "active": "R38_Metric_UV",
+          "active_index": 0,
+          "layers": [
+            "R38_Metric_UV"
+          ],
+          "raw_clone_flags": [
+            false
+          ]
+        },
+        "R38_05_Compact_Service_Isolator": {
+          "mesh": "R38_05_Compact_Service_Isolator_Mesh",
+          "explicit_clone": null,
+          "effective_clone": "R38_Metric_UV",
+          "active": "R38_Metric_UV",
+          "active_index": 0,
+          "layers": [
+            "R38_Metric_UV"
+          ],
+          "raw_clone_flags": [
+            false
+          ]
+        },
+        "R38_06_Personnel_Band_And_Bay_Approach": {
+          "mesh": "R38_06_Personnel_Band_And_Bay_Approach_Mesh",
+          "explicit_clone": null,
+          "effective_clone": "R38_Metric_UV",
+          "active": "R38_Metric_UV",
+          "active_index": 0,
+          "layers": [
+            "R38_Metric_UV"
+          ],
+          "raw_clone_flags": [
+            false
+          ]
+        }
+      },
+      "nodes": {}
+    }
+  },
+  "prerequisite_blockers": [],
+  "status": "BLOCKED",
+  "blender": [
+    5,
+    1,
+    1
+  ],
+  "build_hash": "b70da489d7f4",
+  "errors": [
+    {
+      "check": "original_baseline_guards",
+      "error": "AssertionError: Unknown MixRGB factor socket."
+    },
+    {
+      "check": "semantic_capabilities",
+      "error": "AssertionError: Unknown Bump input structure."
+    },
+    {
+      "check": "material R27S_Compacted_WorldContinuous_PBR",
+      "error": "AssertionError('Unknown MixRGB factor socket.')"
+    },
+    {
+      "check": "material R27S_DustyClasts_WorldContinuous_PBR",
+      "error": "AssertionError('Unknown MixRGB factor socket.')"
+    },
+    {
+      "check": "material R27S_FineDust_WorldContinuous_PBR",
+      "error": "AssertionError('Unknown MixRGB factor socket.')"
+    }
+  ],
+  "differences": [],
+  "scene_datablock_membership_unchanged": true,
+  "asset_files_written": 0,
+  "save_export_render_calls": 0,
+  "scope": "This package stage only; 4.3 regression is not 5.1.1 acceptance. Original expected hashes unchanged; only audited exact-version semantic projection, plus full reference descriptor comparison."
+}

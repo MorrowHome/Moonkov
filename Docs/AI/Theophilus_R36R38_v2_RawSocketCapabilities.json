@@ -1,0 +1,1049 @@
+{
+  "blender": [
+    5,
+    1,
+    1
+  ],
+  "build_hash": "b70da489d7f4",
+  "materials": {
+    "R27S_Compacted_WorldContinuous_PBR": {
+      "Mix (Legacy)": {
+        "bl_idname": "ShaderNodeMixRGB",
+        "inputs": [
+          {
+            "name": "Factor",
+            "identifier": "Fac",
+            "bl_idname": "NodeSocketFloatFactor",
+            "value": 1.0,
+            "is_linked": false
+          },
+          {
+            "name": "Color1",
+            "identifier": "Color1",
+            "bl_idname": "NodeSocketColor",
+            "value": [
+              0.5,
+              0.5,
+              0.5,
+              1.0
+            ],
+            "is_linked": true
+          },
+          {
+            "name": "Color2",
+            "identifier": "Color2",
+            "bl_idname": "NodeSocketColor",
+            "value": [
+              0.5,
+              0.5,
+              0.5,
+              1.0
+            ],
+            "is_linked": true
+          }
+        ]
+      },
+      "R27_Continuous_World_Regolith_Reference": {
+        "group": {
+          "Mix (Legacy)": {
+            "bl_idname": "ShaderNodeMixRGB",
+            "inputs": [
+              {
+                "name": "Factor",
+                "identifier": "Fac",
+                "bl_idname": "NodeSocketFloatFactor",
+                "value": 1.0,
+                "is_linked": false
+              },
+              {
+                "name": "Color1",
+                "identifier": "Color1",
+                "bl_idname": "NodeSocketColor",
+                "value": [
+                  0.5,
+                  0.5,
+                  0.5,
+                  1.0
+                ],
+                "is_linked": true
+              },
+              {
+                "name": "Color2",
+                "identifier": "Color2",
+                "bl_idname": "NodeSocketColor",
+                "value": [
+                  0.5,
+                  0.5,
+                  0.5,
+                  1.0
+                ],
+                "is_linked": true
+              }
+            ]
+          },
+          "Bump": {
+            "bl_idname": "ShaderNodeBump",
+            "inputs": [
+              {
+                "name": "Strength",
+                "identifier": "Strength",
+                "bl_idname": "NodeSocketFloatFactor",
+                "value": 1.0,
+                "is_linked": true
+              },
+              {
+                "name": "Distance",
+                "identifier": "Distance",
+                "bl_idname": "NodeSocketFloat",
+                "value": 0.0377499982714653,
+                "is_linked": false
+              },
+              {
+                "name": "Filter Width",
+                "identifier": "Filter Width",
+                "bl_idname": "NodeSocketFloat",
+                "value": 1.0,
+                "is_linked": false
+              },
+              {
+                "name": "Height",
+                "identifier": "Height",
+                "bl_idname": "NodeSocketFloat",
+                "value": 1.0,
+                "is_linked": true
+              },
+              {
+                "name": "Normal",
+                "identifier": "Normal",
+                "bl_idname": "NodeSocketVector",
+                "value": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "is_linked": false
+              }
+            ]
+          },
+          "Bump.001": {
+            "bl_idname": "ShaderNodeBump",
+            "inputs": [
+              {
+                "name": "Strength",
+                "identifier": "Strength",
+                "bl_idname": "NodeSocketFloatFactor",
+                "value": 0.949999988079071,
+                "is_linked": false
+              },
+              {
+                "name": "Distance",
+                "identifier": "Distance",
+                "bl_idname": "NodeSocketFloat",
+                "value": 0.5625195503234863,
+                "is_linked": false
+              },
+              {
+                "name": "Filter Width",
+                "identifier": "Filter Width",
+                "bl_idname": "NodeSocketFloat",
+                "value": 1.0,
+                "is_linked": false
+              },
+              {
+                "name": "Height",
+                "identifier": "Height",
+                "bl_idname": "NodeSocketFloat",
+                "value": 1.0,
+                "is_linked": true
+              },
+              {
+                "name": "Normal",
+                "identifier": "Normal",
+                "bl_idname": "NodeSocketVector",
+                "value": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "is_linked": true
+              }
+            ]
+          }
+        }
+      },
+      "R26S_Grain_Variation_Without_Brightness_Jump": {
+        "bl_idname": "ShaderNodeMixRGB",
+        "inputs": [
+          {
+            "name": "Factor",
+            "identifier": "Fac",
+            "bl_idname": "NodeSocketFloatFactor",
+            "value": 1.0,
+            "is_linked": false
+          },
+          {
+            "name": "Color1",
+            "identifier": "Color1",
+            "bl_idname": "NodeSocketColor",
+            "value": [
+              0.5,
+              0.5,
+              0.5,
+              1.0
+            ],
+            "is_linked": true
+          },
+          {
+            "name": "Color2",
+            "identifier": "Color2",
+            "bl_idname": "NodeSocketColor",
+            "value": [
+              0.12584196031093597,
+              0.12258478999137878,
+              0.1176207959651947,
+              1.0
+            ],
+            "is_linked": false
+          }
+        ]
+      },
+      "R26S_DEM_Matched_Grain_Color": {
+        "bl_idname": "ShaderNodeMixRGB",
+        "inputs": [
+          {
+            "name": "Factor",
+            "identifier": "Fac",
+            "bl_idname": "NodeSocketFloatFactor",
+            "value": 1.0,
+            "is_linked": false
+          },
+          {
+            "name": "Color1",
+            "identifier": "Color1",
+            "bl_idname": "NodeSocketColor",
+            "value": [
+              0.5,
+              0.5,
+              0.5,
+              1.0
+            ],
+            "is_linked": true
+          },
+          {
+            "name": "Color2",
+            "identifier": "Color2",
+            "bl_idname": "NodeSocketColor",
+            "value": [
+              0.5,
+              0.5,
+              0.5,
+              1.0
+            ],
+            "is_linked": true
+          }
+        ]
+      },
+      "R26S_Continuous_Color_Fade": {
+        "bl_idname": "ShaderNodeMixRGB",
+        "inputs": [
+          {
+            "name": "Factor",
+            "identifier": "Fac",
+            "bl_idname": "NodeSocketFloatFactor",
+            "value": 0.5,
+            "is_linked": true
+          },
+          {
+            "name": "Color1",
+            "identifier": "Color1",
+            "bl_idname": "NodeSocketColor",
+            "value": [
+              0.5,
+              0.5,
+              0.5,
+              1.0
+            ],
+            "is_linked": true
+          },
+          {
+            "name": "Color2",
+            "identifier": "Color2",
+            "bl_idname": "NodeSocketColor",
+            "value": [
+              0.5,
+              0.5,
+              0.5,
+              1.0
+            ],
+            "is_linked": true
+          }
+        ]
+      },
+      "R26S_Continuous_Roughness_Fade": {
+        "bl_idname": "ShaderNodeMixRGB",
+        "inputs": [
+          {
+            "name": "Factor",
+            "identifier": "Fac",
+            "bl_idname": "NodeSocketFloatFactor",
+            "value": 0.5,
+            "is_linked": true
+          },
+          {
+            "name": "Color1",
+            "identifier": "Color1",
+            "bl_idname": "NodeSocketColor",
+            "value": [
+              0.5,
+              0.5,
+              0.5,
+              1.0
+            ],
+            "is_linked": true
+          },
+          {
+            "name": "Color2",
+            "identifier": "Color2",
+            "bl_idname": "NodeSocketColor",
+            "value": [
+              0.5,
+              0.5,
+              0.5,
+              1.0
+            ],
+            "is_linked": true
+          }
+        ]
+      },
+      "R26S_Continuous_Normal_Fade": {
+        "bl_idname": "ShaderNodeMixRGB",
+        "inputs": [
+          {
+            "name": "Factor",
+            "identifier": "Fac",
+            "bl_idname": "NodeSocketFloatFactor",
+            "value": 0.5,
+            "is_linked": true
+          },
+          {
+            "name": "Color1",
+            "identifier": "Color1",
+            "bl_idname": "NodeSocketColor",
+            "value": [
+              0.5,
+              0.5,
+              0.5,
+              1.0
+            ],
+            "is_linked": true
+          },
+          {
+            "name": "Color2",
+            "identifier": "Color2",
+            "bl_idname": "NodeSocketColor",
+            "value": [
+              0.5,
+              0.5,
+              0.5,
+              1.0
+            ],
+            "is_linked": true
+          }
+        ]
+      }
+    },
+    "R27S_DustyClasts_WorldContinuous_PBR": {
+      "Mix (Legacy)": {
+        "bl_idname": "ShaderNodeMixRGB",
+        "inputs": [
+          {
+            "name": "Factor",
+            "identifier": "Fac",
+            "bl_idname": "NodeSocketFloatFactor",
+            "value": 1.0,
+            "is_linked": false
+          },
+          {
+            "name": "Color1",
+            "identifier": "Color1",
+            "bl_idname": "NodeSocketColor",
+            "value": [
+              0.5,
+              0.5,
+              0.5,
+              1.0
+            ],
+            "is_linked": true
+          },
+          {
+            "name": "Color2",
+            "identifier": "Color2",
+            "bl_idname": "NodeSocketColor",
+            "value": [
+              0.5,
+              0.5,
+              0.5,
+              1.0
+            ],
+            "is_linked": true
+          }
+        ]
+      },
+      "R27_Continuous_World_Regolith_Reference": {
+        "group": {
+          "Mix (Legacy)": {
+            "bl_idname": "ShaderNodeMixRGB",
+            "inputs": [
+              {
+                "name": "Factor",
+                "identifier": "Fac",
+                "bl_idname": "NodeSocketFloatFactor",
+                "value": 1.0,
+                "is_linked": false
+              },
+              {
+                "name": "Color1",
+                "identifier": "Color1",
+                "bl_idname": "NodeSocketColor",
+                "value": [
+                  0.5,
+                  0.5,
+                  0.5,
+                  1.0
+                ],
+                "is_linked": true
+              },
+              {
+                "name": "Color2",
+                "identifier": "Color2",
+                "bl_idname": "NodeSocketColor",
+                "value": [
+                  0.5,
+                  0.5,
+                  0.5,
+                  1.0
+                ],
+                "is_linked": true
+              }
+            ]
+          },
+          "Bump": {
+            "bl_idname": "ShaderNodeBump",
+            "inputs": [
+              {
+                "name": "Strength",
+                "identifier": "Strength",
+                "bl_idname": "NodeSocketFloatFactor",
+                "value": 1.0,
+                "is_linked": true
+              },
+              {
+                "name": "Distance",
+                "identifier": "Distance",
+                "bl_idname": "NodeSocketFloat",
+                "value": 0.0377499982714653,
+                "is_linked": false
+              },
+              {
+                "name": "Filter Width",
+                "identifier": "Filter Width",
+                "bl_idname": "NodeSocketFloat",
+                "value": 1.0,
+                "is_linked": false
+              },
+              {
+                "name": "Height",
+                "identifier": "Height",
+                "bl_idname": "NodeSocketFloat",
+                "value": 1.0,
+                "is_linked": true
+              },
+              {
+                "name": "Normal",
+                "identifier": "Normal",
+                "bl_idname": "NodeSocketVector",
+                "value": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "is_linked": false
+              }
+            ]
+          },
+          "Bump.001": {
+            "bl_idname": "ShaderNodeBump",
+            "inputs": [
+              {
+                "name": "Strength",
+                "identifier": "Strength",
+                "bl_idname": "NodeSocketFloatFactor",
+                "value": 0.949999988079071,
+                "is_linked": false
+              },
+              {
+                "name": "Distance",
+                "identifier": "Distance",
+                "bl_idname": "NodeSocketFloat",
+                "value": 0.5625195503234863,
+                "is_linked": false
+              },
+              {
+                "name": "Filter Width",
+                "identifier": "Filter Width",
+                "bl_idname": "NodeSocketFloat",
+                "value": 1.0,
+                "is_linked": false
+              },
+              {
+                "name": "Height",
+                "identifier": "Height",
+                "bl_idname": "NodeSocketFloat",
+                "value": 1.0,
+                "is_linked": true
+              },
+              {
+                "name": "Normal",
+                "identifier": "Normal",
+                "bl_idname": "NodeSocketVector",
+                "value": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "is_linked": true
+              }
+            ]
+          }
+        }
+      },
+      "R26S_Grain_Variation_Without_Brightness_Jump": {
+        "bl_idname": "ShaderNodeMixRGB",
+        "inputs": [
+          {
+            "name": "Factor",
+            "identifier": "Fac",
+            "bl_idname": "NodeSocketFloatFactor",
+            "value": 1.0,
+            "is_linked": false
+          },
+          {
+            "name": "Color1",
+            "identifier": "Color1",
+            "bl_idname": "NodeSocketColor",
+            "value": [
+              0.5,
+              0.5,
+              0.5,
+              1.0
+            ],
+            "is_linked": true
+          },
+          {
+            "name": "Color2",
+            "identifier": "Color2",
+            "bl_idname": "NodeSocketColor",
+            "value": [
+              0.1353743076324463,
+              0.13286913931369781,
+              0.12557122111320496,
+              1.0
+            ],
+            "is_linked": false
+          }
+        ]
+      },
+      "R26S_DEM_Matched_Grain_Color": {
+        "bl_idname": "ShaderNodeMixRGB",
+        "inputs": [
+          {
+            "name": "Factor",
+            "identifier": "Fac",
+            "bl_idname": "NodeSocketFloatFactor",
+            "value": 1.0,
+            "is_linked": false
+          },
+          {
+            "name": "Color1",
+            "identifier": "Color1",
+            "bl_idname": "NodeSocketColor",
+            "value": [
+              0.5,
+              0.5,
+              0.5,
+              1.0
+            ],
+            "is_linked": true
+          },
+          {
+            "name": "Color2",
+            "identifier": "Color2",
+            "bl_idname": "NodeSocketColor",
+            "value": [
+              0.5,
+              0.5,
+              0.5,
+              1.0
+            ],
+            "is_linked": true
+          }
+        ]
+      },
+      "R26S_Continuous_Color_Fade": {
+        "bl_idname": "ShaderNodeMixRGB",
+        "inputs": [
+          {
+            "name": "Factor",
+            "identifier": "Fac",
+            "bl_idname": "NodeSocketFloatFactor",
+            "value": 0.5,
+            "is_linked": true
+          },
+          {
+            "name": "Color1",
+            "identifier": "Color1",
+            "bl_idname": "NodeSocketColor",
+            "value": [
+              0.5,
+              0.5,
+              0.5,
+              1.0
+            ],
+            "is_linked": true
+          },
+          {
+            "name": "Color2",
+            "identifier": "Color2",
+            "bl_idname": "NodeSocketColor",
+            "value": [
+              0.5,
+              0.5,
+              0.5,
+              1.0
+            ],
+            "is_linked": true
+          }
+        ]
+      },
+      "R26S_Continuous_Roughness_Fade": {
+        "bl_idname": "ShaderNodeMixRGB",
+        "inputs": [
+          {
+            "name": "Factor",
+            "identifier": "Fac",
+            "bl_idname": "NodeSocketFloatFactor",
+            "value": 0.5,
+            "is_linked": true
+          },
+          {
+            "name": "Color1",
+            "identifier": "Color1",
+            "bl_idname": "NodeSocketColor",
+            "value": [
+              0.5,
+              0.5,
+              0.5,
+              1.0
+            ],
+            "is_linked": true
+          },
+          {
+            "name": "Color2",
+            "identifier": "Color2",
+            "bl_idname": "NodeSocketColor",
+            "value": [
+              0.5,
+              0.5,
+              0.5,
+              1.0
+            ],
+            "is_linked": true
+          }
+        ]
+      },
+      "R26S_Continuous_Normal_Fade": {
+        "bl_idname": "ShaderNodeMixRGB",
+        "inputs": [
+          {
+            "name": "Factor",
+            "identifier": "Fac",
+            "bl_idname": "NodeSocketFloatFactor",
+            "value": 0.5,
+            "is_linked": true
+          },
+          {
+            "name": "Color1",
+            "identifier": "Color1",
+            "bl_idname": "NodeSocketColor",
+            "value": [
+              0.5,
+              0.5,
+              0.5,
+              1.0
+            ],
+            "is_linked": true
+          },
+          {
+            "name": "Color2",
+            "identifier": "Color2",
+            "bl_idname": "NodeSocketColor",
+            "value": [
+              0.5,
+              0.5,
+              0.5,
+              1.0
+            ],
+            "is_linked": true
+          }
+        ]
+      }
+    },
+    "R27S_FineDust_WorldContinuous_PBR": {
+      "Mix (Legacy)": {
+        "bl_idname": "ShaderNodeMixRGB",
+        "inputs": [
+          {
+            "name": "Factor",
+            "identifier": "Fac",
+            "bl_idname": "NodeSocketFloatFactor",
+            "value": 1.0,
+            "is_linked": false
+          },
+          {
+            "name": "Color1",
+            "identifier": "Color1",
+            "bl_idname": "NodeSocketColor",
+            "value": [
+              0.5,
+              0.5,
+              0.5,
+              1.0
+            ],
+            "is_linked": true
+          },
+          {
+            "name": "Color2",
+            "identifier": "Color2",
+            "bl_idname": "NodeSocketColor",
+            "value": [
+              0.5,
+              0.5,
+              0.5,
+              1.0
+            ],
+            "is_linked": true
+          }
+        ]
+      },
+      "R27_Continuous_World_Regolith_Reference": {
+        "group": {
+          "Mix (Legacy)": {
+            "bl_idname": "ShaderNodeMixRGB",
+            "inputs": [
+              {
+                "name": "Factor",
+                "identifier": "Fac",
+                "bl_idname": "NodeSocketFloatFactor",
+                "value": 1.0,
+                "is_linked": false
+              },
+              {
+                "name": "Color1",
+                "identifier": "Color1",
+                "bl_idname": "NodeSocketColor",
+                "value": [
+                  0.5,
+                  0.5,
+                  0.5,
+                  1.0
+                ],
+                "is_linked": true
+              },
+              {
+                "name": "Color2",
+                "identifier": "Color2",
+                "bl_idname": "NodeSocketColor",
+                "value": [
+                  0.5,
+                  0.5,
+                  0.5,
+                  1.0
+                ],
+                "is_linked": true
+              }
+            ]
+          },
+          "Bump": {
+            "bl_idname": "ShaderNodeBump",
+            "inputs": [
+              {
+                "name": "Strength",
+                "identifier": "Strength",
+                "bl_idname": "NodeSocketFloatFactor",
+                "value": 1.0,
+                "is_linked": true
+              },
+              {
+                "name": "Distance",
+                "identifier": "Distance",
+                "bl_idname": "NodeSocketFloat",
+                "value": 0.0377499982714653,
+                "is_linked": false
+              },
+              {
+                "name": "Filter Width",
+                "identifier": "Filter Width",
+                "bl_idname": "NodeSocketFloat",
+                "value": 1.0,
+                "is_linked": false
+              },
+              {
+                "name": "Height",
+                "identifier": "Height",
+                "bl_idname": "NodeSocketFloat",
+                "value": 1.0,
+                "is_linked": true
+              },
+              {
+                "name": "Normal",
+                "identifier": "Normal",
+                "bl_idname": "NodeSocketVector",
+                "value": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "is_linked": false
+              }
+            ]
+          },
+          "Bump.001": {
+            "bl_idname": "ShaderNodeBump",
+            "inputs": [
+              {
+                "name": "Strength",
+                "identifier": "Strength",
+                "bl_idname": "NodeSocketFloatFactor",
+                "value": 0.949999988079071,
+                "is_linked": false
+              },
+              {
+                "name": "Distance",
+                "identifier": "Distance",
+                "bl_idname": "NodeSocketFloat",
+                "value": 0.5625195503234863,
+                "is_linked": false
+              },
+              {
+                "name": "Filter Width",
+                "identifier": "Filter Width",
+                "bl_idname": "NodeSocketFloat",
+                "value": 1.0,
+                "is_linked": false
+              },
+              {
+                "name": "Height",
+                "identifier": "Height",
+                "bl_idname": "NodeSocketFloat",
+                "value": 1.0,
+                "is_linked": true
+              },
+              {
+                "name": "Normal",
+                "identifier": "Normal",
+                "bl_idname": "NodeSocketVector",
+                "value": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "is_linked": true
+              }
+            ]
+          }
+        }
+      },
+      "R26S_Grain_Variation_Without_Brightness_Jump": {
+        "bl_idname": "ShaderNodeMixRGB",
+        "inputs": [
+          {
+            "name": "Factor",
+            "identifier": "Fac",
+            "bl_idname": "NodeSocketFloatFactor",
+            "value": 1.0,
+            "is_linked": false
+          },
+          {
+            "name": "Color1",
+            "identifier": "Color1",
+            "bl_idname": "NodeSocketColor",
+            "value": [
+              0.5,
+              0.5,
+              0.5,
+              1.0
+            ],
+            "is_linked": true
+          },
+          {
+            "name": "Color2",
+            "identifier": "Color2",
+            "bl_idname": "NodeSocketColor",
+            "value": [
+              0.14594773948192596,
+              0.13909724354743958,
+              0.13281062245368958,
+              1.0
+            ],
+            "is_linked": false
+          }
+        ]
+      },
+      "R26S_DEM_Matched_Grain_Color": {
+        "bl_idname": "ShaderNodeMixRGB",
+        "inputs": [
+          {
+            "name": "Factor",
+            "identifier": "Fac",
+            "bl_idname": "NodeSocketFloatFactor",
+            "value": 1.0,
+            "is_linked": false
+          },
+          {
+            "name": "Color1",
+            "identifier": "Color1",
+            "bl_idname": "NodeSocketColor",
+            "value": [
+              0.5,
+              0.5,
+              0.5,
+              1.0
+            ],
+            "is_linked": true
+          },
+          {
+            "name": "Color2",
+            "identifier": "Color2",
+            "bl_idname": "NodeSocketColor",
+            "value": [
+              0.5,
+              0.5,
+              0.5,
+              1.0
+            ],
+            "is_linked": true
+          }
+        ]
+      },
+      "R26S_Continuous_Color_Fade": {
+        "bl_idname": "ShaderNodeMixRGB",
+        "inputs": [
+          {
+            "name": "Factor",
+            "identifier": "Fac",
+            "bl_idname": "NodeSocketFloatFactor",
+            "value": 0.5,
+            "is_linked": true
+          },
+          {
+            "name": "Color1",
+            "identifier": "Color1",
+            "bl_idname": "NodeSocketColor",
+            "value": [
+              0.5,
+              0.5,
+              0.5,
+              1.0
+            ],
+            "is_linked": true
+          },
+          {
+            "name": "Color2",
+            "identifier": "Color2",
+            "bl_idname": "NodeSocketColor",
+            "value": [
+              0.5,
+              0.5,
+              0.5,
+              1.0
+            ],
+            "is_linked": true
+          }
+        ]
+      },
+      "R26S_Continuous_Roughness_Fade": {
+        "bl_idname": "ShaderNodeMixRGB",
+        "inputs": [
+          {
+            "name": "Factor",
+            "identifier": "Fac",
+            "bl_idname": "NodeSocketFloatFactor",
+            "value": 0.5,
+            "is_linked": true
+          },
+          {
+            "name": "Color1",
+            "identifier": "Color1",
+            "bl_idname": "NodeSocketColor",
+            "value": [
+              0.5,
+              0.5,
+              0.5,
+              1.0
+            ],
+            "is_linked": true
+          },
+          {
+            "name": "Color2",
+            "identifier": "Color2",
+            "bl_idname": "NodeSocketColor",
+            "value": [
+              0.5,
+              0.5,
+              0.5,
+              1.0
+            ],
+            "is_linked": true
+          }
+        ]
+      },
+      "R26S_Continuous_Normal_Fade": {
+        "bl_idname": "ShaderNodeMixRGB",
+        "inputs": [
+          {
+            "name": "Factor",
+            "identifier": "Fac",
+            "bl_idname": "NodeSocketFloatFactor",
+            "value": 0.5,
+            "is_linked": true
+          },
+          {
+            "name": "Color1",
+            "identifier": "Color1",
+            "bl_idname": "NodeSocketColor",
+            "value": [
+              0.5,
+              0.5,
+              0.5,
+              1.0
+            ],
+            "is_linked": true
+          },
+          {
+            "name": "Color2",
+            "identifier": "Color2",
+            "bl_idname": "NodeSocketColor",
+            "value": [
+              0.5,
+              0.5,
+              0.5,
+              1.0
+            ],
+            "is_linked": true
+          }
+        ]
+      }
+    }
+  },
+  "sourceBlendSaved": false
+}
