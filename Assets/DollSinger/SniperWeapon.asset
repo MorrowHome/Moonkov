@@ -16,6 +16,7 @@ MonoBehaviour:
   Type: 1
   ReticleType: 0
   CooldownInMs: 1.4
+  EquipTime: 0.34
   Damage: 110
   Automatic: 0
   AutoReloadWhenEmpty: 1

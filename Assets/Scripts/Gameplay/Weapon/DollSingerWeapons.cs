@@ -45,15 +45,16 @@ namespace Unity.MP_FPS
                 slot = primary != null ? 1 : secondary != null ? 2 : pistol != null ? 3 : 0;
                 active = slot == 0 ? null : graph?.Equipped(Slot(slot));
             }
+            state.EquippedWeaponSlot = slot;
             string id = active?.Id ?? "";
             byte modules = (byte)HaloModules.Mask(graph, active);
             if (state.EquippedWeaponItem.ToString() != id || state.EquippedWeaponID != WeaponId(active?.Code) || state.EquippedModules != modules)
             {
                 state.EquippedWeaponItem = id; state.EquippedWeaponID = WeaponId(active?.Code);
-                state.CurrentAmmo = Ammo(active, graph, registry); state.EquippedModules = modules; HaloModuleFire.Reset(ref state); state.ReloadTimer = 0f; state.ReloadTargetAmmo = 0;
-                state.ControllerState.IsReloadingState = false; state.WeaponCooldown = 0f;
+                state.CurrentAmmo = Ammo(active, graph, registry); state.EquippedModules = modules; state.ReloadTimer = 0f; state.ReloadTargetAmmo = 0;
+                state.ControllerState.IsReloadingState = false;
+                HaloModuleFire.BeginEquip(ref state, registry.GetWeaponData(state.EquippedWeaponID, state.EquippedModules));
             }
-            state.EquippedWeaponSlot = slot;
         }
         public static bool TryEquip(ref PredictedPlayerGhost state, in PlayerInput input, WeaponRegistry registry)
         {
@@ -65,14 +66,14 @@ namespace Unity.MP_FPS
             state.EquippedWeaponSlot = slot; state.EquippedWeaponItem = default;
             state.EquippedWeaponID = requested;
             state.EquippedModules = slot == 1 ? state.PrimaryModules : slot == 2 ? state.SecondaryModules : (byte)0;
-            HaloModuleFire.Reset(ref state);
             state.CurrentAmmo = slot == 1 ? state.PrimaryAmmo : slot == 2 ? state.SecondaryAmmo : state.PistolAmmo;
-            state.WeaponCooldown = 0f;
+            HaloModuleFire.BeginEquip(ref state, registry.GetWeaponData(requested, state.EquippedModules));
             return true;
         }
         public static void CompleteReload(ref PredictedPlayerGhost state, WeaponData weapon)
         {
             state.ControllerState.IsReloadingState = false;
+            state.ReloadTimer = 0f;
             if (weapon != null) state.CurrentAmmo = Mathf.Max(state.CurrentAmmo, Mathf.Min(state.ReloadTargetAmmo, weapon.MagazineSize));
             state.ReloadTargetAmmo = 0;
         }

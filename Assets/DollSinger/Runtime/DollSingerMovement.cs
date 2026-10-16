@@ -545,7 +545,7 @@ namespace Unity.MP_FPS.DollSinger {
             ReadLeanInput(canRead);
             m_LookInput = Vector2.zero;
             if (!canRead) return;
-            m_LookInput = input.Look;
+            m_LookInput = input.Look * (!m_FreeLookHeld && view ? view.AimLookSensitivity : 1f);
         }
 
         private void GroundedCheck() {
@@ -559,7 +559,7 @@ namespace Unity.MP_FPS.DollSinger {
         private void CameraRotation() {
             // if there is an input and camera position is not fixed
             if (m_CinemachineCameraTarget == null) return;
-            if (m_LookInput.sqrMagnitude >= k_Threshold && !m_LockCameraPosition) {
+            if (m_LookInput.sqrMagnitude > 0f && !m_LockCameraPosition) {
                 if (m_FreeLookHeld) {
                     m_FreeLookYaw = Mathf.Clamp(m_FreeLookYaw + m_LookInput.x,
                         -m_FreeLookYawLimit, m_FreeLookYawLimit);

@@ -17,8 +17,10 @@ public static class MoonkovShotChecks
         {
             var source=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/DollSinger/Prefabs/DollSingerNetworkPlayer.prefab");
             var shooter=UnityEngine.Object.Instantiate(source,holder.transform).GetComponent<PlayerGhost>();
+            PrepareController(shooter);
             shooter.transform.position=new Vector3(10000,0,-5);
             var target=UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/PlayerGhosts/ArmaturePlayer_Rifle.prefab"),holder.transform).GetComponent<PlayerGhost>();
+            PrepareController(target);
             target.transform.position=new Vector3(10000,0,0);target.gameObject.layer=(int)LayerIndex.ServerPlayer;
             foreach(var behaviour in holder.GetComponentsInChildren<MonoBehaviour>(true))behaviour.enabled=false;
             foreach(var camera in holder.GetComponentsInChildren<Camera>(true))camera.enabled=false;
@@ -41,6 +43,7 @@ public static class MoonkovShotChecks
             // and m_Animator3P is unassigned. The camera must still acquire its visible head.
             target.gameObject.SetActive(false);
             var proxy=UnityEngine.Object.Instantiate(source,holder.transform).GetComponent<PlayerGhost>();
+            PrepareController(proxy);
             proxy.transform.position=new Vector3(10000,0,0);
             foreach(var behaviour in proxy.GetComponentsInChildren<MonoBehaviour>(true))behaviour.enabled=false;
             foreach(var c in proxy.GetComponentsInChildren<Collider>(true))c.enabled=false;
@@ -53,8 +56,25 @@ public static class MoonkovShotChecks
             Physics.SyncTransforms();
             var point=shooter.GetComponent<DollSingerNetworkPresentation>().CaptureAimPoint(Unity.Mathematics.float2.zero,100);
             Require(Vector3.Distance(point,proxyHead.position)<.4f,"Camera aimed through the proxy at distant scenery.");
+            // More candidates than the original 32-slot camera query must still choose
+            // the nearest blocker, independent of PhysX's unordered result set.
+            var dense = new GameObject("Dense aim blockers");dense.transform.SetParent(holder.transform);
+            Vector3 origin = view.camera.transform.position;
+            for (int i = 0; i < 80; i++)
+            {
+                var blocker = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                blocker.transform.SetParent(dense.transform);
+                blocker.transform.position = origin + Vector3.forward * (1f + i * .02f);
+                blocker.transform.localScale = new Vector3(.1f, .1f, .01f);
+            }
+            Physics.SyncTransforms();
+            var blockedPoint = shooter.GetComponent<DollSingerNetworkPresentation>().CaptureAimPoint(Unity.Mathematics.float2.zero,100);
+            Require(Mathf.Abs(Vector3.Distance(origin, blockedPoint) - .995f) < .005f,
+                "Saturated camera query omitted the nearest wall.");
+            UnityEngine.Object.DestroyImmediate(dense);
             proxy.gameObject.SetActive(false);
             var authoritative=UnityEngine.Object.Instantiate(source,holder.transform).GetComponent<PlayerGhost>();
+            PrepareController(authoritative);
             authoritative.transform.position=new Vector3(10000,0,0);
             foreach(var behaviour in authoritative.GetComponentsInChildren<MonoBehaviour>(true))behaviour.enabled=false;
             foreach(var c in authoritative.GetComponentsInChildren<Collider>(true))c.enabled=false;
@@ -64,7 +84,17 @@ public static class MoonkovShotChecks
                 "Camera acquired the proxy, but the same target missed the server character.");
         }
         finally {UnityEngine.Object.DestroyImmediate(holder);EditorSceneManager.ClosePreviewScene(scene);Physics.SyncTransforms();}
-        Debug.Log("Head shot checks passed: visual target/ray agreement, reproduced capsule miss, head hit, self filtering and wall occlusion.");
+        Debug.Log("Head shot checks passed: visual target/ray agreement, reproduced capsule miss, head hit, self filtering, wall occlusion and 80 overlapping aim blockers.");
+    }
+    private static void PrepareController(PlayerGhost player)
+    {
+        // Edit-mode prefab instances do not execute the gameplay Awake methods.
+        player.Awake();
+        player.SetGhostGameObject(player.GetComponent<GhostGameObject>());
+        var controller = player.GetComponent<FirstPersonController>();
+        typeof(FirstPersonController).GetField("m_Controller",
+            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+            .SetValue(controller, player.GetComponent<UnityEngine.CharacterController>());
     }
     private static void Require(bool value,string message){if(!value)throw new Exception(message);}
 }

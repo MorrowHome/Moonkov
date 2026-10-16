@@ -18,6 +18,7 @@ namespace Unity.MP_FPS.SpiderLab
         private readonly Vector3[] m_Rest, m_Drag, m_DragVelocity;
         private readonly float[] m_Radii;
         private readonly Collider[] m_Nearby = new Collider[16];
+        private readonly SphereCollider m_ContactProbe;
         private readonly int m_Mask;
         private readonly Vector3[] m_Targets = new Vector3[8];
         private readonly SkinnedMeshRenderer m_Renderer;
@@ -115,6 +116,12 @@ namespace Unity.MP_FPS.SpiderLab
             // Legs may fold above the body or stretch toward a ceiling; authoring AABB is insufficient.
             m_Renderer.localBounds = new Bounds(Vector3.zero, Vector3.one * 5.4f);
             m_Renderer.updateWhenOffscreen = false;
+            // ComputePenetration needs a live shape. Ignore this query-only trigger in
+            // physics contacts and in our overlap queries; it dies with the skin root.
+            m_ContactProbe = m_Root.gameObject.AddComponent<SphereCollider>();
+            m_ContactProbe.isTrigger = true;
+            m_ContactProbe.excludeLayers = ~0;
+            m_ContactProbe.layerOverridePriority = 64;
         }
 
         private static Vector3[] ReadVectors(BinaryReader reader, int count)
@@ -202,7 +209,29 @@ namespace Unity.MP_FPS.SpiderLab
             float radius = m_Radii[index];
             float gap = radius;
             int count = Physics.OverlapSphereNonAlloc(point, radius + .012f, m_Nearby, m_Mask, QueryTriggerInteraction.Ignore);
-            for (int i = 0; i < count; i++) gap = Mathf.Min(gap, Vector3.Distance(point, m_Nearby[i].ClosestPoint(point)));
+            bool probeReady = false;
+            for (int i = 0; i < count; i++)
+            {
+                var nearby = m_Nearby[i];
+                if (nearby is BoxCollider || nearby is SphereCollider || nearby is CapsuleCollider ||
+                    nearby is MeshCollider mesh && mesh.convex)
+                {
+                    gap = Mathf.Min(gap, Vector3.Distance(point, nearby.ClosestPoint(point)));
+                    continue;
+                }
+                // ClosestPoint does not support terrain or non-convex meshes. A sphere
+                // against their actual surface preserves compression without using the AABB.
+                if (!probeReady)
+                {
+                    Vector3 size = m_Root.lossyScale;
+                    float probeScale = Mathf.Max(Mathf.Abs(size.x), Mathf.Max(Mathf.Abs(size.y), Mathf.Abs(size.z)));
+                    m_ContactProbe.radius = (radius + .012f) / Mathf.Max(probeScale, .0001f);
+                    probeReady = true;
+                }
+                if (Physics.ComputePenetration(m_ContactProbe, point, Quaternion.identity,
+                    nearby, nearby.transform.position, nearby.transform.rotation, out _, out float depth))
+                    gap = Mathf.Min(gap, Mathf.Max(0, radius + .012f - depth));
+            }
             float scale = count == 0 ? 1 : Mathf.Clamp((gap - .012f) / radius, .16f, 1);
             m_Bones[index].localScale = Vector3.one * scale;
         }
