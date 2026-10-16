@@ -2850,6 +2850,134 @@ MonoBehaviour:
     m_Key: No tradeable items to sell. Recover supplies and valuables in a raid.
     m_Metadata:
       m_Items: []
+  - m_Id: 3293010354515968
+    m_Key: AIRLOCK CONTROL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3293010396459008
+    m_Key: LIGHTING CONTROL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3293010396459009
+    m_Key: DISTANCE {0:0.0} m
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3293010396459010
+    m_Key: '{0:0.0} kPa / OUT {1:0}% / IN {2:0}%'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3293010396459011
+    m_Key: LIGHTS ON
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3293010396459012
+    m_Key: LIGHTS OFF
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3293010396459013
+    m_Key: LIGHTS MIXED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3293010396459014
+    m_Key: LIGHTS UNAVAILABLE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3293010396459015
+    m_Key: LIGHT COMMAND ACCEPTED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3293010396459016
+    m_Key: CONTROL BLOCKED BY OBSTACLE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3293010396459017
+    m_Key: SWITCH LIGHTS ON
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3293010396459018
+    m_Key: SWITCH LIGHTS OFF
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3293010396459019
+    m_Key: TOGGLE LIGHTS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3293010396459020
+    m_Key: SCROLL / D-PAD SELECT  {0}/{1}  |  F / X OPERATE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3293010396459021
+    m_Key: F / X OPERATE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3293010396459022
+    m_Key: READY / ACCEPTED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3293010396459023
+    m_Key: WAITING FOR SERVER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3293010396459024
+    m_Key: CLOSE THE OTHER DOOR FIRST
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3293010396459025
+    m_Key: PRESSURE DIFFERENCE TOO HIGH
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3293010396459026
+    m_Key: EQUALIZATION IN PROGRESS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3293010396459027
+    m_Key: CLOSE BOTH DOORS TO EQUALIZE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3293010396459028
+    m_Key: STEP CLEAR OF THE DOOR
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3293010396459029
+    m_Key: MOVE CLOSER TO THE BUTTON
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3293010396459030
+    m_Key: REQUEST EXPIRED / TRY AGAIN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3293010396459031
+    m_Key: AIRLOCK UNAVAILABLE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3293010396459032
+    m_Key: OPEN OUTER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3293010396459033
+    m_Key: CLOSE OUTER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3293010396459034
+    m_Key: OPEN INNER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3293010396459035
+    m_Key: CLOSE INNER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3293010396459036
+    m_Key: PRESSURIZE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3293010396459037
+    m_Key: DEPRESSURIZE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3293010396459038
+    m_Key: CANCEL EQUALIZATION
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
