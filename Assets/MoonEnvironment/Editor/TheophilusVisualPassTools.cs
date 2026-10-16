@@ -188,6 +188,108 @@ namespace Unity.MP_FPS.Moon.Editor
             return profile;
         }
 
+        [MenuItem("Tools/Moon Environment/Theophilus/Apply soft light atmosphere")]
+        public static void ApplyAtmosphere()
+        {
+            if (EditorApplication.isPlayingOrWillChangePlaymode)
+                throw new InvalidOperationException("Tune the formal look in Edit Mode.");
+            var profile = AssetDatabase.LoadAssetAtPath<VolumeProfile>(Folder + "/TheophilusLook.asset");
+            if (!profile || !profile.TryGet<Bloom>(out var bloom) ||
+                !profile.TryGet<ColorAdjustments>(out var color) || !profile.TryGet<SplitToning>(out var split))
+                throw new InvalidOperationException("Apply visual pass 01 before tuning atmosphere.");
+            Undo.RecordObjects(new UnityEngine.Object[] { bloom, color, split }, "Theophilus soft light atmosphere");
+            bloom.intensity.Override(3);
+            bloom.threshold.Override(.55f);
+            bloom.scatter.Override(.92f);
+            bloom.filter.Override(BloomFilterMode.Dual);
+            bloom.clamp.Override(32);
+            bloom.tint.Override(new Color(1,.965f,.92f));
+            bloom.highQualityFiltering.Override(false);
+            bloom.downscale.Override(BloomDownscaleMode.Quarter);
+            color.contrast.Override(4);
+            color.saturation.Override(0);
+            split.shadows.Override(new Color(.47f,.488f,.522f));
+            split.highlights.Override(new Color(.54f,.514f,.476f));
+            split.balance.Override(12);
+            EditorUtility.SetDirty(bloom);EditorUtility.SetDirty(color);EditorUtility.SetDirty(split);
+            foreach (string name in new[] { "LD2_Painted_Metal_Grey", "LD2_Hull_CeramicPaint", "LD2_Anodized_DarkAlloy",
+                         "LD2_Brushed_Aluminium", "LD2_Raw_StainlessSteel" })
+            {
+                var material = AssetDatabase.LoadAssetAtPath<Material>(Folder + "/Materials/" + name + "_Dust.mat");
+                if (!material) throw new InvalidOperationException("Missing formal finish: " + name);
+                Undo.RecordObject(material, "Clean paint sheen");
+                bool paint = name.Contains("Paint") || name.Contains("DarkAlloy");
+                material.SetFloat("_CoatStrength", paint ? .3f : 0);
+                material.SetFloat("_CoatSmoothness", .82f);
+                if (paint) material.EnableKeyword("_CLEARCOAT");
+                else { material.DisableKeyword("_CLEARCOAT"); material.SetFloat("_Smoothness",.62f); }
+                EditorUtility.SetDirty(material);
+            }
+            AssetDatabase.SaveAssets();
+        }
+
+        [MenuItem("Tools/Moon Environment/Theophilus/Apply atmosphere lamp emission")]
+        public static void ApplyAtmosphereLamps()
+        {
+            if (EditorApplication.isPlayingOrWillChangePlaymode)
+                throw new InvalidOperationException("Author atmosphere lamps in Edit Mode.");
+            var scene = SceneManager.GetSceneByPath(ScenePath);
+            if (!scene.IsValid() || !scene.isLoaded)
+                throw new InvalidOperationException("Open the formal Theophilus map first.");
+            var controls = scene.GetRootGameObjects().SelectMany(r => r.GetComponentsInChildren<LightCircuitControls>(true)).Single();
+            var serialized = new SerializedObject(controls);
+            var bindings = serialized.FindProperty("lights");
+            for (int i = 0; i < bindings.arraySize; i++)
+            {
+                var binding = bindings.GetArrayElementAtIndex(i);
+                var fixture = binding.FindPropertyRelative("fixture").objectReferenceValue as Light;
+                if (!fixture || !fixture.transform.parent) continue;
+                string name = fixture.transform.parent.name;
+                if (!name.Contains("G03") && !name.Contains("East EVA")) continue;
+                var targets = binding.FindPropertyRelative("emissiveTargets");
+                for (int j = 0; j < targets.arraySize; j++)
+                {
+                    var target = targets.GetArrayElementAtIndex(j);
+                    var original = target.FindPropertyRelative("onMaterial").objectReferenceValue as Material;
+                    var renderer = target.FindPropertyRelative("renderer").objectReferenceValue as Renderer;
+                    int slot = target.FindPropertyRelative("materialSlot").intValue;
+                    if (!original || !renderer) throw new InvalidOperationException("Missing lamp binding.");
+                    bool amber = original.name.Contains("Amber") || original.name.Contains("Warm");
+                    string path = Folder + "/Materials/" + (amber ? "AtmosphereAmberOn.mat" : "AtmosphereTaskOn.mat");
+                    var material = AssetDatabase.LoadAssetAtPath<Material>(path);
+                    if (!material)
+                    {
+                        material = new Material(original) { name = amber ? "Theophilus amber lamp on" : "Theophilus warm white lamp on" };
+                        AssetDatabase.CreateAsset(material, path);
+                    }
+                    // More optical bloom energy, without additional realtime illumination or shadows.
+                    material.EnableKeyword("_EMISSION");
+                    material.SetColor("_EmissionColor", amber ? new Color(18,7,1.8f) : new Color(18,13,8));
+                    EditorUtility.SetDirty(material);
+                    var slots = renderer.sharedMaterials;
+                    // Preserve a currently switched-off fixture. Its unchanged off material remains bound.
+                    if (slots[slot] == original)
+                    {
+                        Undo.RecordObject(renderer, "Atmosphere lamp emission");
+                        slots[slot] = material; renderer.sharedMaterials = slots;
+                        PrefabUtility.RecordPrefabInstancePropertyModifications(renderer);
+                        EditorUtility.SetDirty(renderer);
+                    }
+                    target.FindPropertyRelative("onMaterial").objectReferenceValue = material;
+                }
+            }
+            serialized.ApplyModifiedProperties();
+            // Rebind the existing adapter so its cached slot arrays reference the new on-materials.
+            // A fresh scene already starts this way; reapplying the tool must behave identically.
+            var owner = scene.GetRootGameObjects().SelectMany(r => r.GetComponentsInChildren<BuildingBakedLighting>(true)).Single();
+            controls.ConfigureBaked(owner);
+            EditorUtility.SetDirty(controls);
+            PrefabUtility.RecordPrefabInstancePropertyModifications(controls);
+            AssetDatabase.SaveAssets();
+            EditorSceneManager.MarkSceneDirty(scene);
+            if (!EditorSceneManager.SaveScene(scene)) throw new IOException("Could not save atmosphere lamp bindings.");
+        }
+
         private static Texture2D MakeDust()
         {
             var path = Folder + "/Textures/IndustrialDustMask.png";

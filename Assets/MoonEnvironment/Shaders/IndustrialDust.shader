@@ -16,6 +16,8 @@ Shader "MoonEnvironment/Industrial Dust"
         _DustAmount("Dust coverage", Range(0,1)) = 0.5
         _DustFloorY("Local floor world height", Float) = 211.64
         _DustTiling("Dust texture repeats per metre", Float) = 0.65
+        _CoatStrength("Clean paint clear coat", Range(0,1)) = 0
+        _CoatSmoothness("Clear coat smoothness", Range(0,1)) = 0.8
         [HideInInspector] _AtlasUVChannel("Base UV", Float) = 0
         [HideInInspector] _DetailUVChannel("Detail UV", Float) = 0
         [HideInInspector] _Cull("Cull", Float) = 2
@@ -33,6 +35,7 @@ Shader "MoonEnvironment/Industrial Dust"
             float _AtlasUVChannel, _DetailUVChannel;
             float _Metallic, _Smoothness, _BumpScale, _OcclusionStrength;
             float _DustAmount, _DustFloorY, _DustTiling, _Cull, _Cutoff;
+            float _CoatStrength, _CoatSmoothness;
         CBUFFER_END
         ENDHLSL
         Pass
@@ -46,6 +49,7 @@ Shader "MoonEnvironment/Industrial Dust"
             #pragma shader_feature_local _NORMALMAP
             #pragma shader_feature_local _METALLICSPECGLOSSMAP
             #pragma shader_feature_local _OCCLUSIONMAP
+            #pragma shader_feature_local_fragment _CLEARCOAT
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
             #pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS
             #pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS
@@ -118,6 +122,11 @@ Shader "MoonEnvironment/Industrial Dust"
                 surface.occlusion = occlusion;
                 surface.normalTS = half3(0,0,1);
                 surface.alpha = 1;
+                #if defined(_CLEARCOAT)
+                    // Dust breaks the coating rather than turning lunar powder into a wet surface.
+                    surface.clearCoatMask = _CoatStrength * (1-dust);
+                    surface.clearCoatSmoothness = _CoatSmoothness;
+                #endif
                 half4 color = UniversalFragmentPBR(lighting,surface);
                 color.rgb = MixFog(color.rgb,lighting.fogCoord);
                 return color;
