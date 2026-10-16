@@ -98,7 +98,10 @@ namespace Unity.MP_FPS.DollSinger.Editor
                 camera.nearClipPlane = 0.1f;
                 camera.farClipPlane = 2000f;
                 camera.allowHDR = true;
-                camera.GetUniversalAdditionalCameraData().renderPostProcessing = true;
+                var cameraData = camera.GetUniversalAdditionalCameraData();
+                cameraData.renderPostProcessing = true;
+                cameraData.antialiasing = AntialiasingMode.SubpixelMorphologicalAntiAliasing;
+                cameraData.antialiasingQuality = AntialiasingQuality.High;
                 view.camera = camera;
                 view.player = player;
                 view.input = input;
