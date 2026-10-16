@@ -115,8 +115,11 @@ namespace Unity.MP_FPS
             var visuals = new GameObject("Halo projectile visuals");
             visuals.transform.SetParent(transform, false);
             m_HaloVisual = visuals.AddComponent<HaloProjectileVisual>();
-            m_HaloVisual.Configure(source, m_Data.WeaponID == DollSingerWeapons.Revolver, m_Data.WeaponID == DollSingerWeapons.Shotgun, m_Data.WeaponID == DollSingerWeapons.Sniper);
-            m_HaloTrailSeconds = Mathf.Max(0.001f, source.networkBoltTrailSeconds);
+            m_HaloVisual.Configure(source, m_Data.WeaponID == DollSingerWeapons.Revolver, m_Data.WeaponID == DollSingerWeapons.Shotgun, m_Data.WeaponID == DollSingerWeapons.Sniper, m_Data.PelletIndex == 0);
+            float limit = HaloProjectileVisual.TrailLengthLimit(m_Data.WeaponID == DollSingerWeapons.Revolver,
+                m_Data.WeaponID == DollSingerWeapons.Shotgun, m_Data.WeaponID == DollSingerWeapons.Sniper);
+            m_HaloTrailSeconds = Mathf.Min(Mathf.Max(.001f, source.networkBoltTrailSeconds),
+                limit / Mathf.Max(1, ((Vector3)m_Data.InitialVelocity).magnitude));
             if (m_Body != null) m_Body.enabled = false;
             UpdateHaloVisual();
         }
@@ -124,9 +127,14 @@ namespace Unity.MP_FPS
         private void UpdateHaloVisual()
         {
             if (m_HaloVisual == null || m_Stopped) return;
-            var tail = Ballistics.Position(m_Data.Origin, m_Data.InitialVelocity, m_Weapon.ProjectileGravity,
-                Mathf.Max(0f, m_Age - m_HaloTrailSeconds));
-            m_HaloVisual.SetFlight(tail, transform.position);
+            // Keep the luminous trail outside the hands/eye; collision still starts at the real origin.
+            float emergence = .55f / Mathf.Max(1, ((Vector3)m_Data.InitialVelocity).magnitude);
+            float tailAge = Mathf.Min(m_Age, Mathf.Max(emergence, m_Age - m_HaloTrailSeconds));
+            var tail = Ballistics.Position(m_Data.Origin, m_Data.InitialVelocity, m_Weapon.ProjectileGravity, tailAge);
+            // Spawn/reconciliation may temporarily supply a transform on another tick.
+            // Derive both visual endpoints from the same age to avoid an origin-to-snapshot streak.
+            var head = Ballistics.Position(m_Data.Origin, m_Data.InitialVelocity, m_Weapon.ProjectileGravity, m_Age);
+            m_HaloVisual.SetFlight(tail, head);
         }
 
         private void ResolveShooter(bool server)

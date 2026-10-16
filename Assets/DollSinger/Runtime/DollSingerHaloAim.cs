@@ -54,6 +54,8 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     [Range(0f, 0.1f)] public float firstPersonThumbDepth = 0.02f;
     [Tooltip("Camera-space support wrist offset from the firing wrist.")]
     public Vector3 firstPersonSupportOffset = new Vector3(-0.12f, -0.08f, -0.04f);
+    [Tooltip("Maximum viewport-height fraction for ordinary first-person halos, including their release envelope.")]
+    [Range(.25f, .75f)] public float firstPersonHaloViewportFraction = .54f;
     [Header("Weapon gestures (camera-space metres)")]
     public Vector3 revolverSupportOffset = new Vector3(-0.19f, -0.18f, -0.10f);
     public Vector3 shotgunSupportOffset = new Vector3(-0.09f, 0.015f, -0.025f);
@@ -123,6 +125,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     private int aimLayerIndex = -1;
     private float aimBlend;
     private HaloBoltPool boltPool;
+    private HaloDischargeVisual discharge;
     private float nextLocalShotTime;
     private bool wantsAim;
     private bool revolverEquipped;
@@ -163,6 +166,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     }
     private void SetWeaponEquipped(HaloWeapon weapon, int ammo)
     {
+        if (visualWeapon != weapon && discharge) discharge.Clear();
         visualWeapon = weapon;
         revolverEquipped = weapon == HaloWeapon.Revolver;
         if (haloVisual) haloVisual.gameObject.SetActive(weapon != HaloWeapon.None);
@@ -206,7 +210,24 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         if (visualWeapon == HaloWeapon.Shotgun && shotgunVisual) shotgunVisual.PlayShot(shotTick);
         if (visualWeapon == HaloWeapon.Rifle && rifleVisual) rifleVisual.PlayShot(shotTick);
         if (visualWeapon == HaloWeapon.Sniper && sniperVisual) sniperVisual.PlayShot(shotTick);
+        PlayDischarge(shotTick);
         if (cosmeticFlight) FireCosmeticBolt(aimPoint);
+    }
+
+    private Color WeaponColor => visualWeapon == HaloWeapon.Sniper && sniperVisual ? sniperVisual.lightColor :
+        revolverEquipped && revolverVisual ? revolverVisual.lightColor :
+        visualWeapon == HaloWeapon.Shotgun && shotgunVisual ? shotgunVisual.lightColor : aimedHaloColor;
+
+    private void PlayDischarge(uint tick = 0)
+    {
+        if (!haloVisual || !beamCore || !beamCore.sharedMaterial) return;
+        if (!discharge)
+        {
+            var root = new GameObject("Halo pressure release"); root.layer = haloVisual.gameObject.layer;
+            root.transform.SetParent(haloVisual, false);
+            discharge = root.AddComponent<HaloDischargeVisual>(); discharge.Configure(beamCore.sharedMaterial);
+        }
+        discharge.Play(visualWeapon, WeaponColor, tick);
     }
 
     private void Awake() {
@@ -257,6 +278,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     }
 
     private void Update() {
+        if (discharge) discharge.Step(Time.deltaTime);
         if (!networkControlled && !input) return;
         if (!thirdPerson) thirdPerson = GetComponent<DollSingerMovement>();
         if (!networkControlled && !playerCamera) FindCamera();
@@ -342,6 +364,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
                     localRevolverAmmo--;
                     if (revolverVisual) revolverVisual.PlayShot();
                 }
+                PlayDischarge();
                 FireCosmeticBolt();
                 if (visualWeapon == HaloWeapon.Shotgun) { localShotgunAmmo--; if (shotgunVisual) shotgunVisual.PlayShot(); }
                 if (visualWeapon == HaloWeapon.Rifle) { localRifleAmmo--; if (rifleVisual) rifleVisual.PlayShot(); }
@@ -412,9 +435,17 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
             : Quaternion.LookRotation(aimDirection, transform.up);
         haloVisual.rotation = Quaternion.Slerp(restingRotation, aimingRotation, t);
         float haloScale = Mathf.Lerp(idleHaloScale, aimedHaloScale, t);
+        // Reach-limited eye-to-halo distance can be much shorter than the configured distance.
+        // Constrain ordinary halo size by the actual distance, preserving its art and central sight.
+        if (centred && visualWeapon != HaloWeapon.Sniper)
+        {
+            float distance = Vector3.Dot(centredPosition - aimingCamera.transform.position, aimingCamera.transform.forward);
+            float halfHeight = Mathf.Max(.01f, distance) * Mathf.Tan(aimingCamera.fieldOfView * .5f * Mathf.Deg2Rad);
+            haloScale = Mathf.Min(haloScale, firstPersonHaloViewportFraction * halfHeight / FirstPersonVisualRadius());
+        }
         // Keep the unfolding optic inside the zoomed viewport; other clients see full geometry.
         if (centred && visualWeapon == HaloWeapon.Sniper && sniperVisual)
-            haloScale = Mathf.Lerp(haloScale, sniperVisual.ScopeScale(firstPersonAimDistance, aimingCamera.fieldOfView), t);
+            haloScale = Mathf.Lerp(haloScale, sniperVisual.ScopeScale(Vector3.Distance(centredPosition, aimingCamera.transform.position), aimingCamera.fieldOfView), t);
         Vector3 parentScale = transform.lossyScale;
         haloVisual.localScale = new Vector3(haloScale / Mathf.Max(0.001f, parentScale.x),
             haloScale / Mathf.Max(0.001f, parentScale.y),
@@ -436,7 +467,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
             }
             if (haloLight) {
                 haloLight.color = new Color(color.r, color.g, color.b, 1f);
-                haloLight.intensity = Mathf.Lerp(idleLightIntensity, aimedLightIntensity, t);
+                haloLight.intensity = Mathf.Lerp(idleLightIntensity, aimedLightIntensity, t) + (discharge ? discharge.Flash * 5f : 0);
                 haloLight.range = lightRange;
                 haloLight.enabled = haloLightEnabled;
             }
@@ -457,13 +488,24 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
             }
             if (haloFaceLightBack) {
                 haloFaceLightBack.color = faceColor;
-                haloFaceLightBack.intensity = faceIntensity;
+                haloFaceLightBack.intensity = faceIntensity + (discharge ? discharge.Flash * 2f : 0);
                 haloFaceLightBack.range = lightRange;
                 haloFaceLightBack.spotAngle = faceSpotAngle;
                 haloFaceLightBack.innerSpotAngle = faceSpotAngle * 0.55f;
                 haloFaceLightBack.enabled = haloLightEnabled;
             }
         }
+    }
+
+    private float FirstPersonVisualRadius()
+    {
+        if (visualWeapon == HaloWeapon.Rifle && rifleVisual)
+            return Mathf.Max(.43f, (rifleVisual.ringRadius + .073f + rifleVisual.releaseExpansion * 1.25f) * rifleVisual.overallScale);
+        if (revolverEquipped && revolverVisual)
+            return Mathf.Max(.27f, revolverVisual.shotRadius + (revolverVisual.loadedSprite ? revolverVisual.loadedSprite.bounds.extents.magnitude : .1f));
+        if (visualWeapon == HaloWeapon.Shotgun && shotgunVisual && shotgunVisual.shell && shotgunVisual.shell.sprite)
+            return Mathf.Max(.43f, shotgunVisual.shell.sprite.bounds.extents.magnitude * 1.5f);
+        return .43f;
     }
 
     private bool TryGetFirstPersonCamera(out Camera ownedCamera)
@@ -649,6 +691,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         if (cameraOwner) cameraOwner.SetAimBlend(0f);
         SetBoltVisible(false);
         if (boltPool) boltPool.ClearActive();
+        if (discharge) discharge.Clear();
     }
 
     private void FindCamera() {

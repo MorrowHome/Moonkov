@@ -3,6 +3,9 @@ Shader "Moonkov/Rifle Impact"
     Properties
     {
         [HideInInspector] _ImpactLayer ("Impact layer", Float) = 0
+        [HideInInspector] _ContactStart ("Contact start", Float) = 0
+        [HideInInspector] _ContactDuration ("Contact duration", Float) = 1
+        [HideInInspector] _ContactMetal ("Metal contact", Float) = 0
     }
     SubShader
     {
@@ -19,6 +22,8 @@ Shader "Moonkov/Rifle Impact"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             CBUFFER_START(UnityPerMaterial)
                 half _ImpactLayer;
+                float _ContactStart, _ContactDuration;
+                half _ContactMetal;
             CBUFFER_END
             struct Attributes
             {
@@ -79,7 +84,7 @@ Shader "Moonkov/Rifle Impact"
                     float radius = length(p) + density * .035;
                     alpha = (1 - smoothstep(.08, .48, radius)) * (.76 + density * .24);
                 }
-                else
+                else if (_ImpactLayer < 4.5)
                 {
                     float radius = length(p);
                     half core = 1 - smoothstep(0, .19, radius);
@@ -87,6 +92,21 @@ Shader "Moonkov/Rifle Impact"
                         (1 - smoothstep(.1, .46, radius));
                     alpha = saturate(core + rays * .5);
                     color *= 1.5 + core * 2;
+                }
+                else
+                {
+                    float age = max(0, _Time.y - _ContactStart);
+                    float progress = age / max(.01, _ContactDuration);
+                    clip(1 - progress);
+                    float angle = atan2(p.y, p.x);
+                    float radius = length(p) + sin(angle * 7) * .014 + sin(angle * 13 + 1) * .009;
+                    float edge = 1 - smoothstep(.29, .46, radius);
+                    float rim = smoothstep(.17, .28, radius) * (1 - smoothstep(.31, .43, radius));
+                    float heat = exp(-age * 48);
+                    color = lerp(half3(.015,.017,.02), half3(.045,.05,.055), rim);
+                    half3 hot = lerp(half3(.8,.9,1), half3(1,.68,.28), _ContactMetal);
+                    color = lerp(color, hot * 2, heat * rim);
+                    alpha = edge * (1 - smoothstep(.45, 1, progress)) * .72;
                 }
                 return half4(color, input.color.a * alpha);
             }

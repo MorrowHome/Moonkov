@@ -28,6 +28,8 @@ namespace Unity.MP_FPS
         private SoundSystem.SoundInfo m_RifleBodySound, m_RifleSnapSound;
         private SoundSystem.SoundInfo m_WeaponTailSound;
         private RifleFeedbackLibrary m_WeaponFeedback;
+        private float m_LastShotSoundTime = float.NegativeInfinity, m_ShotSoundPressure;
+        private uint m_LastSoundWeapon;
 
         public DollSingerInput OwnedInput => m_Linked && Role == MultiplayerRole.ClientOwned ? m_Input : null;
         public bool IsThirdPerson => m_View != null && !m_View.IsFirstPerson;
@@ -173,16 +175,33 @@ namespace Unity.MP_FPS
                 var weapon = WeaponManager.Instance.WeaponRegistry.GetWeaponData(weaponId);
                 if (!m_WeaponFeedback) m_WeaponFeedback = Resources.Load<RifleFeedbackLibrary>("Moonkov/RifleFeedback");
                 var profile = m_WeaponFeedback?.ForWeapon(weaponId);
-                if (weaponId == DollSingerWeapons.Halo || profile != null)
+                if (weaponId == DollSingerWeapons.Shotgun && profile != null)
                 {
-                    // Keep the metallic strike, but let only the current pulse ring out fully.
+                    // Preserve the shotgun mix the player already likes.
                     GameManager.Instance.SoundSystem?.Stop(m_RifleBodySound, .025f);
                     GameManager.Instance.SoundSystem?.Stop(m_RifleSnapSound, .015f);
                     GameManager.Instance.SoundSystem?.Stop(m_WeaponTailSound, .03f);
-                    m_RifleBodySound = MoonkovAudio.Play(profile?.FireBody ?? weapon?.WeaponFireSfx, transform.position);
-                    m_RifleSnapSound = MoonkovAudio.Play(profile?.FireSnap ?? weapon?.WeaponFireLayerSfx,
-                        transform.position, profile == null ? .85f : 1f);
-                    m_WeaponTailSound = MoonkovAudio.Play(profile?.FireTail, transform.position);
+                    m_RifleBodySound = MoonkovAudio.Play(profile.FireBody, transform.position);
+                    m_RifleSnapSound = MoonkovAudio.Play(profile.FireSnap, transform.position);
+                    m_WeaponTailSound = MoonkovAudio.Play(profile.FireTail, transform.position);
+                }
+                else if (weaponId == DollSingerWeapons.Halo || profile != null)
+                {
+                    bool sustained = m_LastSoundWeapon == weaponId && Time.unscaledTime - m_LastShotSoundTime < .22f;
+                    m_ShotSoundPressure = sustained ? Mathf.Min(1, m_ShotSoundPressure + .18f) : 0;
+                    m_LastSoundWeapon = weaponId; m_LastShotSoundTime = Time.unscaledTime;
+                    // The new attack remains crisp; only the preceding body and resonance crossfade.
+                    GameManager.Instance.SoundSystem?.Stop(m_RifleBodySound, profile?.BodyCrossfade ?? .045f);
+                    GameManager.Instance.SoundSystem?.Stop(m_RifleSnapSound, .018f);
+                    GameManager.Instance.SoundSystem?.Stop(m_WeaponTailSound, profile?.TailCrossfade ?? .09f);
+                    bool owned = Role == MultiplayerRole.ClientOwned;
+                    Vector3 origin = m_Halo.haloVisual ? m_Halo.haloVisual.position : transform.position;
+                    float bodyGain = Mathf.Lerp(1, profile?.SustainedBodyGain ?? .9f, m_ShotSoundPressure);
+                    m_RifleBodySound = MoonkovAudio.PlayWeaponLayer(profile?.FireBody ?? weapon?.WeaponFireSfx,
+                        origin, bodyGain, owned ? .08f : 1f);
+                    m_RifleSnapSound = MoonkovAudio.PlayWeaponLayer(profile?.FireSnap ?? weapon?.WeaponFireLayerSfx,
+                        origin, .85f, owned ? 0f : 1f, m_ShotSoundPressure * (profile?.BurstPitchRise ?? 35f));
+                    m_WeaponTailSound = MoonkovAudio.PlayWeaponLayer(profile?.FireTail, origin, .85f, owned ? .2f : 1f);
                 }
                 else
                 {

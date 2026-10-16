@@ -25,6 +25,77 @@ public static class HaloWeaponFeedbackSetup
         AssetDatabase.SaveAssets();
     }
 
+    [MenuItem("Tools/Moonkov/Weapons/Install Shooting Audiovisual Revision")]
+    public static void InstallShootingRevision()
+    {
+        if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("Use Edit mode.");
+        const string clips = "Assets/Audio/Moonkov/Clips/Weapons/";
+        foreach (string name in new[] { "RiflePunch1", "RiflePunch2", "RiflePunch3", "RevolverPunch1", "RevolverPunch2",
+            "RevolverPunch3", "SniperPunch1", "SniperPunch2", "SniperPunch3", "DischargeCrack", "SniperAftershock" })
+        {
+            string path = clips + name + ".wav";
+            AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceSynchronousImport);
+            var importer = (AudioImporter)AssetImporter.GetAtPath(path);
+            importer.forceToMono = false;
+            var settings = importer.defaultSampleSettings;
+            settings.preloadAudioData = true;
+            settings.loadType = AudioClipLoadType.DecompressOnLoad;
+            settings.compressionFormat = AudioCompressionFormat.PCM;
+            settings.sampleRateSetting = AudioSampleRateSetting.PreserveSampleRate;
+            importer.defaultSampleSettings = settings; importer.SaveAndReimport();
+        }
+        var library = AssetDatabase.LoadAssetAtPath<RifleFeedbackLibrary>(LibraryPath);
+        var rifleBody = ShotDefinition("RifleShotBody", -6, 90, 18, "RiflePunch1", "RiflePunch2", "RiflePunch3");
+        var rifleSnap = ShotDefinition("RifleShotSnap", -27, 90, 12, "DischargeCrack");
+        var revolverBody = ShotDefinition("RevolverShotBody", -5, 90, 12, "RevolverPunch1", "RevolverPunch2", "RevolverPunch3");
+        var revolverSnap = ShotDefinition("RevolverShotSnap", -28, 90, 10, "DischargeCrack");
+        var sniperBody = ShotDefinition("SniperShotBody", -4, 120, 10, "SniperPunch1", "SniperPunch2", "SniperPunch3");
+        var sniperSnap = ShotDefinition("SniperShotSnap", -25, 120, 8, "DischargeCrack");
+        var sniperTail = ShotDefinition("SniperShotTail", -22, 120, 5, "SniperAftershock");
+        sniperTail.StartStopInfo.DelayMin = sniperTail.StartStopInfo.DelayMax = .018f;
+        EditorUtility.SetDirty(sniperTail); AssetDatabase.SaveAssetIfDirty(sniperTail);
+        library.Rifle = new HaloWeaponFeedbackProfile { FireBody = rifleBody, FireSnap = rifleSnap,
+            RockImpact = library.RockImpact, MetalImpact = library.MetalImpact, BodyImpact = library.BodyImpact,
+            HitConfirm = library.HitConfirm, KillConfirm = library.KillConfirm, BodyCrossfade = .045f,
+            SustainedBodyGain = .94f, BurstPitchRise = 20 };
+        library.Revolver.FireBody = revolverBody; library.Revolver.FireSnap = revolverSnap;
+        library.Revolver.BodyCrossfade = .06f; library.Revolver.SustainedBodyGain = 1; library.Revolver.BurstPitchRise = 0;
+        library.Sniper.FireBody = sniperBody; library.Sniper.FireSnap = sniperSnap; library.Sniper.FireTail = sniperTail;
+        library.Sniper.BodyCrossfade = .09f; library.Sniper.TailCrossfade = .12f;
+        library.Sniper.SustainedBodyGain = 1; library.Sniper.BurstPitchRise = 0;
+        // The shotgun's clips, levels and playback path are deliberately preserved.
+        EditorUtility.SetDirty(library); AssetDatabase.SaveAssetIfDirty(library);
+        foreach (var pair in new[] { ("HaloWeapon", rifleBody, rifleSnap), ("RevolverWeapon", revolverBody, revolverSnap),
+            ("SniperWeapon", sniperBody, sniperSnap) })
+        {
+            var weapon = AssetDatabase.LoadAssetAtPath<WeaponData>("Assets/DollSinger/" + pair.Item1 + ".asset");
+            weapon.WeaponFireSfx = pair.Item2; weapon.WeaponFireLayerSfx = pair.Item3;
+            EditorUtility.SetDirty(weapon); AssetDatabase.SaveAssetIfDirty(weapon);
+        }
+    }
+
+    private static SoundDef ShotDefinition(string name, float level, float range, float pitchSpread, params string[] clips)
+    {
+        var sound = UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<SoundDef>(Definitions + "HaloFire.asset"));
+        sound.name = name; sound.Clips = new System.Collections.Generic.List<AudioClip>();
+        foreach (var clip in clips) sound.Clips.Add(AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/Moonkov/Clips/Weapons/" + clip + ".wav"));
+        sound.VolumeScale = 1; sound.BasePitchInCents = 0;
+        sound.PlaybackType = SoundDef.PlaybackTypes.Random;
+        sound.PitchAndVolumeInfo.VolumeMin = level - .5f; sound.PitchAndVolumeInfo.VolumeMax = level;
+        sound.PitchAndVolumeInfo.PitchMin = -pitchSpread; sound.PitchAndVolumeInfo.PitchMax = pitchSpread;
+        sound.StartStopInfo.DelayMin = sound.StartStopInfo.DelayMax = sound.StartStopInfo.StopDelay = 0;
+        sound.StartStopInfo.StartOffsetPercentMin = sound.StartStopInfo.StartOffsetPercentMax = 0;
+        sound.DistanceInfo.SpatialBlend = 1; sound.DistanceInfo.VolumeDistMax = range;
+        sound.DistanceInfo.LPFRollOffCurveType = Interpolator.CurveType.Linear;
+        sound.DistanceInfo.LPF_MinCutoff = 2200; sound.DistanceInfo.LPF_MaxDistance = range;
+        sound.LowPassFilter.EnableComponent = true; sound.LowPassFilter.CutoffMin = sound.LowPassFilter.CutoffMax = 19000;
+        sound.HighPassFilter.EnableComponent = false; sound.DistortionFilter.EnableComponent = false;
+        var existing = AssetDatabase.LoadAssetAtPath<SoundDef>(Definitions + name + ".asset");
+        if (!existing) { AssetDatabase.CreateAsset(sound, Definitions + name + ".asset"); return sound; }
+        EditorUtility.CopySerialized(sound, existing); UnityEngine.Object.DestroyImmediate(sound);
+        EditorUtility.SetDirty(existing); AssetDatabase.SaveAssetIfDirty(existing); return existing;
+    }
+
     private static HaloWeaponFeedbackProfile Install(HaloWeaponFeedbackProfile current, HaloWeaponFeedbackProfile defaults)
     {
         // Unity may deserialize a newly added inline class as an empty instance instead of null.

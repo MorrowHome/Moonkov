@@ -42,12 +42,18 @@ namespace Unity.MP_FPS
             public Transform Root;
             public ParticleSystem Fragments, Surface;
             public ParticleSystemRenderer FragmentRenderer, SurfaceRenderer;
+            public MeshRenderer Contact;
+            public float ContactUntil;
         }
         private static readonly int ImpactLayerId = Shader.PropertyToID("_ImpactLayer");
         private readonly Receipt[] m_Receipts = new Receipt[256];
         private readonly ShotReceipt[] m_Shots = new ShotReceipt[128];
         private readonly ImpactEffect[] m_Pool = new ImpactEffect[16];
         private MaterialPropertyBlock m_Properties;
+        private Mesh m_ContactMesh;
+        private static readonly int ContactStartId = Shader.PropertyToID("_ContactStart");
+        private static readonly int ContactDurationId = Shader.PropertyToID("_ContactDuration");
+        private static readonly int ContactMetalId = Shader.PropertyToID("_ContactMetal");
         private Gradient m_FragmentFade, m_SparkCooling;
         private RifleFeedbackLibrary m_Library;
         private int m_NextReceipt, m_NextEffect, m_NextShot;
@@ -69,6 +75,12 @@ namespace Unity.MP_FPS
                 new GradientColorKey(new Color(.2f, .045f, .01f), 1) },
                 new[] { new GradientAlphaKey(1, 0), new GradientAlphaKey(1, .15f),
                     new GradientAlphaKey(0, 1) });
+            m_ContactMesh = new Mesh { name = "Pooled impact contact", hideFlags = HideFlags.DontSave };
+            m_ContactMesh.vertices = new[] { new Vector3(-.5f,-.5f,0), new Vector3(-.5f,.5f,0),
+                new Vector3(.5f,.5f,0), new Vector3(.5f,-.5f,0) };
+            m_ContactMesh.uv = new[] { Vector2.zero, Vector2.up, Vector2.one, Vector2.right };
+            m_ContactMesh.colors = new[] { Color.white, Color.white, Color.white, Color.white };
+            m_ContactMesh.triangles = new[] { 0,1,2,0,2,3 };
             for (int i = 0; i < m_Pool.Length; i++)
             {
                 var child = new GameObject("Rifle impact " + i);
@@ -76,6 +88,14 @@ namespace Unity.MP_FPS
                 var effect = new ImpactEffect { Root = child.transform };
                 effect.Fragments = CreateLayer("Fragments", effect.Root, 12, false, out effect.FragmentRenderer);
                 effect.Surface = CreateLayer("Surface response", effect.Root, 4, true, out effect.SurfaceRenderer);
+                var contact = new GameObject("Surface contact"); contact.transform.SetParent(effect.Root, false);
+                contact.transform.localPosition = Vector3.back * .02f;
+                contact.AddComponent<MeshFilter>().sharedMesh = m_ContactMesh;
+                effect.Contact = contact.AddComponent<MeshRenderer>();
+                effect.Contact.sharedMaterial = m_Library.ImpactMaterial;
+                effect.Contact.shadowCastingMode = ShadowCastingMode.Off; effect.Contact.receiveShadows = false;
+                effect.Contact.lightProbeUsage = LightProbeUsage.Off; effect.Contact.reflectionProbeUsage = ReflectionProbeUsage.Off;
+                effect.Contact.enabled = false;
                 m_Pool[i] = effect;
             }
         }
@@ -111,6 +131,7 @@ namespace Unity.MP_FPS
 
         private void SetLayer(ParticleSystemRenderer renderer, float layer)
         {
+            m_Properties.Clear();
             m_Properties.SetFloat(ImpactLayerId, layer);
             renderer.SetPropertyBlock(m_Properties);
         }
@@ -184,6 +205,15 @@ namespace Unity.MP_FPS
             normal = normal.sqrMagnitude > .001f ? normal.normalized : Vector3.up;
             effect.Root.SetPositionAndRotation(position + normal * .025f, Quaternion.LookRotation(normal));
             bool metal = kind == RifleImpactKind.Metal, body = kind == RifleImpactKind.Body;
+            effect.Contact.enabled = !body;
+            effect.ContactUntil = Time.time + (metal ? .85f : 1.1f);
+            float contactSize = (metal ? .09f : .12f) * Mathf.Sqrt(profile?.FragmentScale ?? 1);
+            effect.Contact.transform.localScale = Vector3.one * contactSize;
+            m_Properties.Clear(); m_Properties.SetFloat(ImpactLayerId, 5);
+            m_Properties.SetFloat(ContactStartId, Time.time);
+            m_Properties.SetFloat(ContactDurationId, metal ? .85f : 1.1f);
+            m_Properties.SetFloat(ContactMetalId, metal ? 1 : 0);
+            effect.Contact.SetPropertyBlock(m_Properties);
             var main = particles.main;
             main.startLifetime = new ParticleSystem.MinMaxCurve(metal ? .09f : .18f, metal ? .32f : .52f);
             float speed = profile?.FragmentSpeed ?? 1, scale = profile?.FragmentScale ?? 1;
@@ -226,5 +256,23 @@ namespace Unity.MP_FPS
                     velocity = Vector3.zero, startColor = new Color(.65f, .9f, 1f, .8f) }, 1);
             }
         }
+        private void Update()
+        {
+            foreach (var effect in m_Pool)
+                if (effect != null && effect.Contact.enabled && Time.time >= effect.ContactUntil)
+                    effect.Contact.enabled = false;
+        }
+        private void OnDisable()
+        {
+            foreach (var effect in m_Pool)
+                if (effect != null)
+                {
+                    effect.Contact.enabled = false;
+                    effect.Fragments.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
+                    effect.Surface.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
+                }
+        }
+        private void OnDestroy()
+        { if (m_ContactMesh) { if (Application.isPlaying) Destroy(m_ContactMesh); else DestroyImmediate(m_ContactMesh); } }
     }
 }

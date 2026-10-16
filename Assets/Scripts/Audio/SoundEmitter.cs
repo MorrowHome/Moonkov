@@ -21,6 +21,8 @@ public class SoundEmitter
     /// </summary>
     public class SoundDefOverrideData
     {
+        // Null uses the asset's spatialization; weapon ownership may override one playback.
+        public float? SpatialBlend;
         public float BasePitchInCents;  // Copied from SoundDef to allow user to override if required
         public float VolumeScale;       // Copied from SoundDef
         public float BaseLowPassCutoff; // Copied from SoundDef
@@ -66,6 +68,7 @@ public class SoundEmitter
     /// <param name="soundDef">The SoundDef to copy settings from</param>
     public void CopyOverrideDataFromSoundDef(SoundDef soundDef)
     {
+        SoundDefOverrideInfo.SpatialBlend = null;
         SoundDefOverrideInfo.BasePitchInCents = soundDef.BasePitchInCents;
         SoundDefOverrideInfo.VolumeScale = soundDef.VolumeScale;
         SoundDefOverrideInfo.BaseLowPassCutoff = soundDef.BaseLowPassCutoff;
@@ -187,7 +190,7 @@ public class SoundEmitter
         else
 #endif
         {
-            spatialBlend = m_SoundDef.DistanceInfo.SpatialBlend;  // Playing in editor, so use the SoundDef.SpatialBlend
+            spatialBlend = Mathf.Clamp01(SoundDefOverrideInfo.SpatialBlend ?? m_SoundDef.DistanceInfo.SpatialBlend);
         }
 
         foreach (SoundGameObject soundGameObject in ActiveSoundGameObjects)
