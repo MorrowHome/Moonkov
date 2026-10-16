@@ -8,6 +8,18 @@ namespace Unity.MP_FPS.SpiderLab
     public sealed class CreatureChainPresentation
     {
         private const int Sides = 16;
+        private static readonly Vector2[] Circle = CreateCircle();
+
+        private static Vector2[] CreateCircle()
+        {
+            var circle = new Vector2[Sides + 1];
+            for (int side = 0; side <= Sides; side++)
+            {
+                float angle = side / (float)Sides * Mathf.PI * 2;
+                circle[side] = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
+            }
+            return circle;
+        }
         private readonly Transform m_Root, m_Head;
         private readonly Mesh m_Tube, m_Bristles;
         private readonly Material m_Body, m_Belly, m_Accent;
@@ -96,6 +108,11 @@ namespace Unity.MP_FPS.SpiderLab
 
         public void Draw(CreatureChain chain, CreatureChainSettings s, bool caterpillar, float clock, float dt, bool detached = false)
         {
+            // The rig root does not move during Draw. Read Unity's transform once,
+            // rather than crossing into native code twice for every tube vertex.
+            Matrix4x4 worldToLocal = m_Root.worldToLocalMatrix;
+            Quaternion inverseRotation = Quaternion.Inverse(m_Root.rotation);
+            Vector3 fallbackRight = m_Root.right;
             m_Body.SetColor("_BaseColor", s.bodyColour); m_Belly.SetColor("_BaseColor", s.bellyColour);
             m_Body.SetFloat("_Smoothness", s.smoothness); m_Belly.SetFloat("_Smoothness", s.smoothness * .65f);
             m_Body.SetFloat("_Metallic", s.metallic); m_Belly.SetFloat("_Metallic", s.metallic);
@@ -103,16 +120,16 @@ namespace Unity.MP_FPS.SpiderLab
             {
                 Vector3 up = chain.Ups[ring], tangent = chain.Tangents[ring];
                 Vector3 right = Vector3.Cross(up, tangent).normalized;
-                if (right.sqrMagnitude < .1f) right = m_Root.right;
+                if (right.sqrMagnitude < .1f) right = fallbackRight;
                 up = Vector3.Cross(tangent, right).normalized;
                 for (int side = 0; side <= Sides; side++)
                 {
-                    float angle = side / (float)Sides * Mathf.PI * 2;
-                    Vector3 radial = right * Mathf.Cos(angle) + up * Mathf.Sin(angle) * s.verticalScale;
+                    Vector2 circle = Circle[side];
+                    Vector3 radial = right * circle.x + up * circle.y * s.verticalScale;
                     int index = ring * (Sides + 1) + side;
-                    m_Vertices[index] = m_Root.InverseTransformPoint(chain.Centres[ring] + radial * chain.Radii[ring]);
-                    Vector3 normal = right * Mathf.Cos(angle) + up * Mathf.Sin(angle) / s.verticalScale;
-                    m_Normals[index] = m_Root.InverseTransformDirection(normal.normalized);
+                    m_Vertices[index] = worldToLocal.MultiplyPoint3x4(chain.Centres[ring] + radial * chain.Radii[ring]);
+                    Vector3 normal = right * circle.x + up * circle.y / s.verticalScale;
+                    m_Normals[index] = inverseRotation * normal.normalized;
                 }
             }
             m_Tube.vertices = m_Vertices; m_Tube.normals = m_Normals; m_Tube.RecalculateBounds();
@@ -130,11 +147,11 @@ namespace Unity.MP_FPS.SpiderLab
                 m_Fork.SetPosition(0, tip); m_Fork.SetPosition(1, tip + forward * .04f - right * .018f);
                 m_Fork.SetPosition(2, tip + forward * .05f - right * .025f);
             }
-            DrawBristles(chain, s, caterpillar);
+            DrawBristles(chain, s, caterpillar, worldToLocal);
             DrawFeet(chain, s, caterpillar, dt, detached);
         }
 
-        private void DrawBristles(CreatureChain chain, CreatureChainSettings s, bool enabled)
+        private void DrawBristles(CreatureChain chain, CreatureChainSettings s, bool enabled, Matrix4x4 worldToLocal)
         {
             int count = enabled ? s.segments * s.bristlesPerSegment : 0;
             if (count != m_HairCount)
@@ -159,10 +176,10 @@ namespace Unity.MP_FPS.SpiderLab
                 Vector3 end = start + (radial - tangent * .4f).normalized * s.bristleLength * variation;
                 Vector3 thickness = tangent * .005f;
                 int v = i * 4;
-                m_HairVertices[v] = m_Root.InverseTransformPoint(start - thickness);
-                m_HairVertices[v + 1] = m_Root.InverseTransformPoint(start + thickness);
-                m_HairVertices[v + 2] = m_Root.InverseTransformPoint(end - thickness * .12f);
-                m_HairVertices[v + 3] = m_Root.InverseTransformPoint(end + thickness * .12f);
+                m_HairVertices[v] = worldToLocal.MultiplyPoint3x4(start - thickness);
+                m_HairVertices[v + 1] = worldToLocal.MultiplyPoint3x4(start + thickness);
+                m_HairVertices[v + 2] = worldToLocal.MultiplyPoint3x4(end - thickness * .12f);
+                m_HairVertices[v + 3] = worldToLocal.MultiplyPoint3x4(end + thickness * .12f);
             }
             if (count > 0) { m_Bristles.vertices = m_HairVertices; m_Bristles.RecalculateNormals(); m_Bristles.RecalculateBounds(); }
         }

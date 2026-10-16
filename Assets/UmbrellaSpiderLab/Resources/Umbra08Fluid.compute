@@ -22,7 +22,9 @@ StructuredBuffer<Particle> _Input;
 RWStructuredBuffer<Particle> _Output;
 RWStructuredBuffer<int> _Heads, _Next;
 RWStructuredBuffer<float> _Densities;
-RWTexture3D<uint> _Accum;
+// Metal supports buffer atomics, but not the texture atomics used by the splat.
+// Keep the same fixed-point voxel values in a linear buffer on every backend.
+RWStructuredBuffer<uint> _Accum;
 RWTexture3D<float> _WriteVolume;
 Texture3D<float> _ReadVolume;
 int _ParticleCount, _GridSide, _VolumeSide, _ObstacleCount, _GuideKind;
@@ -79,6 +81,7 @@ float3 Target(Seed seed, bool previous)
 }
 int3 Cell(float3 p) { return clamp((int3)floor((p + _HalfVolume) / Support), 0, _GridSide - 1); }
 int CellIndex(int3 p) { return (p.z * _GridSide + p.y) * _GridSide + p.x; }
+int VolumeIndex(int3 p) { return (p.z * _VolumeSide + p.y) * _VolumeSide + p.x; }
 float Kernel(float r2) { float w = max(0, 1 - r2 / (Support * Support)); return w * w * w; }
 
 [numthreads(64, 1, 1)] void Initialize(uint id : SV_DispatchThreadID)
@@ -222,7 +225,7 @@ float Kernel(float r2) { float w = max(0, 1 - r2 / (Support * Support)); return 
 }
 [numthreads(4, 4, 4)] void ClearVolume(uint3 id : SV_DispatchThreadID)
 {
-    if (all(id < _VolumeSide)) _Accum[id] = 0;
+    if (all(id < _VolumeSide)) _Accum[VolumeIndex(int3(id))] = 0;
 }
 void Splat(float3 position, float mass)
 {
@@ -232,7 +235,7 @@ void Splat(float3 position, float mass)
     {
         int3 c = baseCell + int3(x, y, z); if (any(c < 0) || any(c >= _VolumeSide)) continue;
         float weight = (x ? f.x : 1 - f.x) * (y ? f.y : 1 - f.y) * (z ? f.z : 1 - f.z);
-        InterlockedAdd(_Accum[c], (uint)(weight * mass * 65536));
+        InterlockedAdd(_Accum[VolumeIndex(c)], (uint)(weight * mass * 65536));
     }
 }
 [numthreads(64, 1, 1)] void Deposit(uint id : SV_DispatchThreadID)
@@ -253,7 +256,7 @@ void Splat(float3 position, float mass)
 {
     if (any(id >= _VolumeSide)) return;
     int3 a = int3(id); a.x = max(0, a.x - 1); int3 b = int3(id); b.x = min(_VolumeSide - 1, b.x + 1);
-    _WriteVolume[id] = (_Accum[a] * .25 + _Accum[id] * .5 + _Accum[b] * .25) / 65536.0;
+    _WriteVolume[id] = (_Accum[VolumeIndex(a)] * .25 + _Accum[VolumeIndex(int3(id))] * .5 + _Accum[VolumeIndex(b)] * .25) / 65536.0;
 }
 [numthreads(4, 4, 4)] void BlurY(uint3 id : SV_DispatchThreadID)
 {

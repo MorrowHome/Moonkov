@@ -30,6 +30,8 @@ namespace Unity.MP_FPS
             [GhostField] public bool AmbushEnabled;
         }
         [SerializeField] private AlienCreatureProfile profile;
+        [SerializeField, Min(0), Tooltip("Full-rate client rig distance at 45-degree FOV. Distant rigs update at 30/15 Hz; zero disables the budget. Server simulation is unchanged.")]
+        private float presentationDistance = 60;
         private AlienCreatureBody m_Body;
         private Entity m_Target;
         private Vector3 m_Spawn, m_LastSeen, m_RoamGoal;
@@ -43,6 +45,7 @@ namespace Unity.MP_FPS
         private static readonly List<ProceduralAlienEnemy> s_ClientAliens = new List<ProceduralAlienEnemy>();
         private float m_NextLod;
         private bool m_Liquid;
+        private float m_PresentationElapsed, m_NextPresentation;
         public AlienCreatureProfile Profile => profile;
         public AlienCreatureBody Body => m_Body;
         public Vector3 AimPoint => m_Body != null ? m_Body.AimPoint : transform.position;
@@ -64,7 +67,13 @@ namespace Unity.MP_FPS
             float scale = state.Scale > 0 ? state.Scale : profile.Scale;
             m_Body = new AlienCreatureBody(transform, profile, scale, Role != MultiplayerRole.Server,
                 LayerMask.NameToLayer(Role == MultiplayerRole.Server ? "ServerPlayer" : "ClientPlayer"));
-            if (Role != MultiplayerRole.Server) s_ClientAliens.Add(this);
+            if (Role != MultiplayerRole.Server)
+            {
+                s_ClientAliens.Add(this);
+                // Spread far-away rigs across frames instead of solving every
+                // creature on the same frame after a snapshot/spawn batch.
+                m_NextPresentation = Time.unscaledTime + (unchecked((uint)GhostGameObject.Owner) % 16) * .004f;
+            }
         }
         public static bool IsLivingHumanoid(EntityManager manager, Entity entity)
         {
@@ -240,9 +249,11 @@ namespace Unity.MP_FPS
         {
             if (m_Body == null || !GhostGameObject.GhostEntityExists() || !GhostHasComponent<State>()) return;
             var state = ReadGhostComponentData<State>();
+            bool immediate = m_Action != state.Action;
             if (Mathf.Abs(state.Scale - m_Body.Scale) > .002f && state.Scale > 0)
             {
                 m_Body.Dispose(); m_Body = new AlienCreatureBody(transform, profile, state.Scale, true, LayerMask.NameToLayer("ClientPlayer"));
+                immediate = true;
             }
             m_Action = state.Action;
             m_AmbushEnabled = state.AmbushEnabled;
@@ -253,10 +264,27 @@ namespace Unity.MP_FPS
                 m_AmbushEnabled ? profile.SpiderStrikeSeconds : .16f);
             if (Time.unscaledTime >= m_NextLod)
             { m_Liquid = WantsLiquid(); m_NextLod = Time.unscaledTime + .35f; }
+            m_PresentationElapsed += Mathf.Clamp(deltaTime, 0, .06f);
+            float interval = !Application.isPlaying || m_Liquid ? 0 : PresentationInterval(Camera.main, transform.position,
+                presentationDistance * Mathf.Max(1, m_Body.Scale));
+            if (!immediate && interval > 0 && Time.unscaledTime < m_NextPresentation) return;
+            m_NextPresentation = Time.unscaledTime + interval;
+            float presentationDt = Mathf.Min(m_PresentationElapsed, .1f);
+            m_PresentationElapsed = 0;
             float pulse = state.Action == AlienAction.Windup ? Mathf.Clamp01(state.ActionTime / profile.Windup) : state.Action == AlienAction.Strike ? 1 :
                 state.Action == AlienAction.Recover ? Mathf.Clamp01(1 - state.ActionTime / profile.Recovery) : 0;
             m_Body.Observe(new SurfaceMotor.Pose { Position = transform.position, Rotation = transform.rotation }, state.Velocity,
-                state.Detached, state.Phase, Mathf.Clamp(deltaTime, 0, .06f), pulse, m_Liquid);
+                state.Detached, state.Phase, presentationDt, pulse, m_Liquid);
+        }
+
+        private static float PresentationInterval(Camera viewer, Vector3 position, float fullRateDistance)
+        {
+            if (fullRateDistance <= 0 || !viewer || !viewer.isActiveAndEnabled || viewer.orthographic) return 0;
+            float zoom = Mathf.Max(1, Mathf.Tan(22.5f * Mathf.Deg2Rad) /
+                Mathf.Tan(Mathf.Max(1, viewer.fieldOfView) * .5f * Mathf.Deg2Rad));
+            float near = fullRateDistance * zoom;
+            float squared = (position - viewer.transform.position).sqrMagnitude;
+            return squared <= near * near ? 0 : squared <= near * near * 4 ? 1f / 30 : 1f / 15;
         }
         private bool WantsLiquid()
         {

@@ -12,6 +12,18 @@ namespace Unity.MP_FPS.SpiderLab
     {
         public const int Samples = 17;
         private const int Sides = 12;
+        private static readonly Vector3[] Circle = CreateCircle();
+
+        private static Vector3[] CreateCircle()
+        {
+            var circle = new Vector3[Sides + 1];
+            for (int side = 0; side <= Sides; side++)
+            {
+                float angle = side / (float)Sides * Mathf.PI * 2;
+                circle[side] = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0);
+            }
+            return circle;
+        }
         private readonly Transform m_Root, m_Body;
         private readonly Mesh m_Mesh;
         private readonly Material m_Material;
@@ -220,6 +232,8 @@ namespace Unity.MP_FPS.SpiderLab
                 m_Material.SetColor("_BaseColor", s.colour); m_Material.SetFloat("_Smoothness", s.smoothness);
                 m_Body.SetPositionAndRotation(body, pose.Rotation); m_Body.localScale = Vector3.Scale(RestBodyRadii * 2, BodyScale);
             }
+            Matrix4x4 worldToLocal = m_Render ? m_Root.worldToLocalMatrix : Matrix4x4.identity;
+            Quaternion inverseRotation = m_Render ? Quaternion.Inverse(m_Root.rotation) : Quaternion.identity;
             for (int a = 0; a < Branches; a++) for (int j = 0; j < Samples; j++)
             {
                 int bone = Index(a, j); Vector3 axis = Points[Index(a, Mathf.Min(j + 1, Samples - 1))] - Points[Index(a, Mathf.Max(j - 1, 0))];
@@ -228,15 +242,14 @@ namespace Unity.MP_FPS.SpiderLab
                 if (normalUp.sqrMagnitude < .1f) normalUp = pose.Right;
                 Rotations[bone] = Quaternion.LookRotation(axis, normalUp);
                 if (!m_Render) continue;
+                float ripple = 1 + s.ripple * Mathf.Sin(j * .9f + clock * 3 + a * 1.3f);
                 for (int side = 0; side <= Sides; side++)
                 {
-                    float angle = side / (float)Sides * Mathf.PI * 2;
-                    Vector3 radial = Rotations[bone] * new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0);
+                    Vector3 radial = Rotations[bone] * Circle[side];
                     if (slime) radial = Vector3.ProjectOnPlane(radial, up) + up * Vector3.Dot(radial, up) * .48f;
                     int vertex = (a * Samples + j) * (Sides + 1) + side;
-                    float ripple = 1 + s.ripple * Mathf.Sin(j * .9f + clock * 3 + a * 1.3f);
-                    m_Vertices[vertex] = m_Root.InverseTransformPoint(Points[bone] + radial * Radii[bone] * ripple);
-                    m_Normals[vertex] = m_Root.InverseTransformDirection(radial.normalized);
+                    m_Vertices[vertex] = worldToLocal.MultiplyPoint3x4(Points[bone] + radial * Radii[bone] * ripple);
+                    m_Normals[vertex] = inverseRotation * radial.normalized;
                 }
             }
             if (m_Render) { m_Mesh.vertices = m_Vertices; m_Mesh.normals = m_Normals; m_Mesh.RecalculateBounds(); }
