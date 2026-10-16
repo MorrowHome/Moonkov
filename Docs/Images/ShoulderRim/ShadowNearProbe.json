@@ -1,0 +1,44 @@
+{
+  "0": {
+    "faceMean": 0.7691437426731543,
+    "standardLitWitnessMean": 0.9617851307189543,
+    "roofHeight": 4,
+    "lightShadowNearPlane": 0.2,
+    "roofCasts": false
+  },
+  "1": {
+    "faceMean": 0.7691437426731543,
+    "standardLitWitnessMean": 0.9617867647058824,
+    "roofHeight": 4,
+    "lightShadowNearPlane": 0.2,
+    "roofCasts": true
+  },
+  "2": {
+    "faceMean": 0.0,
+    "standardLitWitnessMean": 0.0,
+    "roofHeight": 4,
+    "lightShadowNearPlane": 16,
+    "roofCasts": true
+  },
+  "3": {
+    "faceMean": 0.0,
+    "standardLitWitnessMean": 0.0,
+    "roofHeight": 4,
+    "lightShadowNearPlane": 128,
+    "roofCasts": true
+  },
+  "4": {
+    "faceMean": 0.0,
+    "standardLitWitnessMean": 0.0,
+    "roofHeight": 8,
+    "lightShadowNearPlane": 16,
+    "roofCasts": true
+  },
+  "5": {
+    "faceMean": 0.0,
+    "standardLitWitnessMean": 0.0,
+    "roofHeight": 8,
+    "lightShadowNearPlane": 128,
+    "roofCasts": true
+  }
+}

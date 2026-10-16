@@ -1,0 +1,32 @@
+{
+  "shoulder": {
+    "meanAbsoluteRgbByteDelta": 7.049389978213507,
+    "maxRgbByteDelta": 219.0,
+    "roiTopLeft": [
+      168,
+      390,
+      438,
+      560
+    ]
+  },
+  "outsideShoulder": {
+    "meanAbsoluteRgbByteDelta": 4.421142857142857,
+    "maxRgbByteDelta": 26.0,
+    "roiTopLeft": [
+      165,
+      420,
+      190,
+      490
+    ]
+  },
+  "face": {
+    "meanAbsoluteRgbByteDelta": 0.19904761904761906,
+    "maxRgbByteDelta": 1.0,
+    "roiTopLeft": [
+      450,
+      257,
+      520,
+      282
+    ]
+  }
+}

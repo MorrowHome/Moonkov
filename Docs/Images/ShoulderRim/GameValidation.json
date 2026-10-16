@@ -1,0 +1,16 @@
+{
+  "pass": true,
+  "state": "InGame",
+  "rows": [
+    {
+      "component": "Theophilus Scene Lighting",
+      "applied": 16,
+      "restored": 0.2,
+      "reapplied": 16,
+      "restoredPipe": "PC_RPAsset",
+      "activePipeline": "MoonSoftAnimePipeline (interior runtime)"
+    }
+  ],
+  "sceneCount": 3,
+  "characterCount": 8
+}

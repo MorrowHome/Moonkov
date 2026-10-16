@@ -1,0 +1,1 @@
+PASS: sun=0.7374, shade=0.0065, shade-lamp=0.7421, night=0.0062

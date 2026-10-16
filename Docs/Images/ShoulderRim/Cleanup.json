@@ -1,0 +1,8 @@
+{
+  "playing": false,
+  "pipeline": "PC_RPAsset",
+  "temporary": 0,
+  "scenes": [
+    "Assets/Scenes/MainMenu.unity"
+  ]
+}

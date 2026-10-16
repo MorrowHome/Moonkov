@@ -1,5 +1,7 @@
 # lilToon 角色材质与光影升级
 
+后续实装：[肩部边缘光与 Bloom](ShoulderRimLookDev.md)。本页旧相机截图使用 ARGB32 目标，不能作为 HDR Bloom 的当前验收；新捕获器已改为 FP16 并做 sRGB 校准。此前高顶棚漏光也已定位到方向光 shadow near plane，并完成局部及正式离线对局复核，证据见新文档。以下保留历史记录。
+
 2026-10-17，分支 `character-lookdev`。基线为 `4fc02012` 中的正式材质，与 `491d07e3` 相同。本版已应用到 13 份共享 DollSinger 材质及现有正式地图 Volume Profile；动画、Prefab、FBX、原颜色贴图、主贴图 UV 和渲染队列保持原状。
 
 ## 画面与实现

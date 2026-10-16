@@ -1,0 +1,63 @@
+{
+  "before": {
+    "samples": 480,
+    "submitMs": 1.3358500000000002,
+    "mainMs": 8.838146,
+    "gpuMs": 0.0,
+    "frameMs": 9.008974302560091,
+    "draws": 75.0,
+    "setPass": 47.0,
+    "triangles": 477345.0
+  },
+  "after": {
+    "samples": 480,
+    "submitMs": 1.3159,
+    "mainMs": 9.0691875,
+    "gpuMs": 0.0,
+    "frameMs": 9.309293702244759,
+    "draws": 75.0,
+    "setPass": 47.0,
+    "triangles": 477345.0
+  },
+  "hdr": [
+    {
+      "label": "hdr-before",
+      "maxRgb": 11.7890625,
+      "meanRgb": 0.46556925773620605,
+      "shoulderPeak": 7.9921875,
+      "pixelsAboveKnee": 1233,
+      "pixelsAboveThreshold": 568
+    },
+    {
+      "label": "hdr-after",
+      "maxRgb": 11.7890625,
+      "meanRgb": 0.46857497096061707,
+      "shoulderPeak": 7.9921875,
+      "pixelsAboveKnee": 4255,
+      "pixelsAboveThreshold": 1119
+    }
+  ],
+  "notes": "960x1080 fixed pose, FP16 linear camera target through post processing, sRGB PNG readback. Photos use the corrected 16m sun shadow near plane for both materials. Benchmarks compare previous sun near plane 0.2 vs corrected 16m as well as material/Bloom changes. Native GGX/Rim ablations only affect Body and InnerDress. Four interleaved before/after blocks, 60 warmup +120 sampled frames/block. PNG readback excluded. CPU submit is begin/end camera wall time, not GPU time; unavailable GPU is zero. HDR probes disable all post processing and use a linear FP16 target.",
+  "displaySamples": {
+    "front": {
+      "faceMean": 0.7945383886560358,
+      "shoulderMean": 0.4996171802054155
+    },
+    "shade": {
+      "faceMean": 0.0,
+      "shoulderMean": 0.026683473389355748
+    },
+    "highroof": {
+      "faceMean": 0.0,
+      "shoulderMean": 0.026683473389355748
+    },
+    "lamp": {
+      "faceMean": 0.824327536092242,
+      "shoulderMean": 0.518819421101774
+    },
+    "dark": {
+      "faceMean": 0.0,
+      "shoulderMean": 0.026683473389355748
+    }
+  }
+}

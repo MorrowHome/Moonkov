@@ -30,8 +30,8 @@ public static class MoonkovLilToonCapture
     class Shot { public string label,lighting,view;public int stage;public bool benchmark; }
     static readonly Queue<Shot> shots=new Queue<Shot>();
     static Camera camera;static GameObject actor;static Light key,fill;static Renderer roof;
-    static RenderTexture target,oldTarget;static RenderPipelineAsset pipeline;
-    static int vsync,frameRate,frames,lastFrame;static double started,submit,frameReady;
+    static RenderTexture target,readback,oldTarget;static RenderPipelineAsset pipeline;
+    static int vsync,frameRate,frames,lastFrame;static float oldKeyNear;static double started,submit,frameReady;
     static bool ready;static Shot shot;static Report report;
     static ProfilerRecorder cpuRecorder,gpuRecorder;
     static readonly Stopwatch timer=new Stopwatch();
@@ -48,15 +48,18 @@ public static class MoonkovLilToonCapture
         actor=GameObject.Find("lilToon Character");camera=GameObject.Find("lilToon Camera").GetComponent<Camera>();
         MoonkovLilToonLookDev.Pose(actor);
         key=GameObject.Find("lilToon Key").GetComponent<Light>();fill=GameObject.Find("lilToon Fill").GetComponent<Light>();
+        oldKeyNear=key.shadowNearPlane;key.shadowNearPlane=16;
         var roofObject=GameObject.CreatePrimitive(PrimitiveType.Cube);roofObject.name="Temporary LookDev shadow roof";roof=roofObject.GetComponent<Renderer>();
         roofObject.transform.position=new Vector3(0,4,0);roofObject.transform.localScale=new Vector3(16,.4f,16);
         roof.sharedMaterial=AssetDatabase.LoadAssetAtPath<Material>(MoonkovLilToonLookDev.Root+"/Floor.mat");
         pipeline=QualitySettings.renderPipeline;QualitySettings.renderPipeline=AssetDatabase.LoadAssetAtPath<UniversalRenderPipelineAsset>(MoonkovAnimeLightingSetup.PipelinePath);
         vsync=QualitySettings.vSyncCount;frameRate=Application.targetFrameRate;QualitySettings.vSyncCount=0;Application.targetFrameRate=-1;
-        oldTarget=camera.targetTexture;target=new RenderTexture(Width,Height,24,RenderTextureFormat.ARGB32,RenderTextureReadWrite.sRGB);target.Create();camera.targetTexture=target;
+        // Preserve HDR through Bloom; only the final PNG readback is 8-bit sRGB.
+        oldTarget=camera.targetTexture;target=new RenderTexture(Width,Height,24,RenderTextureFormat.ARGBHalf,RenderTextureReadWrite.Linear);target.Create();camera.targetTexture=target;
+        readback=new RenderTexture(Width,Height,0,RenderTextureFormat.ARGB32,RenderTextureReadWrite.sRGB);readback.Create();
         report=new Report {unity=Application.unityVersion,gpu=SystemInfo.graphicsDeviceName,api=SystemInfo.graphicsDeviceType.ToString(),scene=SceneManager.GetActiveScene().path,
             pipeline=QualitySettings.renderPipeline.name,width=Width,height=Height,renderTargetSrgb=target.sRGB,
-            notes="Editor Play fixed-pose capture. 60 warmup + 120 measured frames per block, A/B interleaved four times. GPU timings include the Editor; unavailable values are zero, not zero cost. CPU submit is begin/end camera elapsed, not GPU execution. Readback/PNG excluded from benchmark samples."};
+            notes="Editor Play fixed-pose capture, linear FP16 camera target, final PNG blit to sRGB. 60 warmup + 120 measured frames per block, A/B interleaved four times. GPU timings include the Editor; unavailable values are zero, not zero cost. CPU submit is begin/end camera elapsed, not GPU execution. Readback/PNG excluded from benchmark samples."};
         
         foreach(string light in new[]{"studio","sun","harsh","room","back","shade","lamp","dark"})
         foreach(int stage in new[]{0,1})
@@ -92,7 +95,7 @@ public static class MoonkovLilToonCapture
         key.intensity=shot.lighting=="studio"?1.0f:shot.lighting=="harsh"?4:1.6f;
         key.transform.rotation=Quaternion.LookRotation(-(shot.lighting=="back"?new Vector3(-.3f,.65f,-1):shot.lighting=="studio"?new Vector3(.6f,.65f,.65f):new Vector3(.3f,.75f,1)).normalized);
         fill.color=room?new Color(1,.79f,.62f):new Color(.68f,.8f,1);fill.intensity=room||shot.lighting=="lamp"?1.8f:.14f;
-        roof.shadowCastingMode=shot.lighting=="shade"||shot.lighting=="lamp"?ShadowCastingMode.On:ShadowCastingMode.Off;
+        roof.enabled=shot.lighting=="shade"||shot.lighting=="lamp";roof.shadowCastingMode=ShadowCastingMode.ShadowsOnly;
         RenderSettings.ambientLight=shot.lighting=="studio"?new Color(.055f,.065f,.085f):new Color(.015f,.015f,.015f);
         var sh=new SphericalHarmonicsL2();sh.AddAmbientLight(RenderSettings.ambientLight);RenderSettings.ambientProbe=sh;
         var position=new Vector3(.1f,1.32f,1.65f);var look=new Vector3(0,1.26f,0);float fov=28;
@@ -127,9 +130,9 @@ public static class MoonkovLilToonCapture
     }
     static void SaveImage(string path)
     {
-        var previous=RenderTexture.active;var image=new Texture2D(Width,Height,TextureFormat.RGB24,false);
-        try{RenderTexture.active=target;image.ReadPixels(new Rect(0,0,Width,Height),0,0);image.Apply();File.WriteAllBytes(path,image.EncodeToPNG());}
-        finally{RenderTexture.active=previous;UnityEngine.Object.DestroyImmediate(image);}
+        var previous=RenderTexture.active;bool oldSrgb=GL.sRGBWrite;var image=new Texture2D(Width,Height,TextureFormat.RGB24,false);
+        try{GL.sRGBWrite=true;Graphics.Blit(target,readback);RenderTexture.active=readback;image.ReadPixels(new Rect(0,0,Width,Height),0,0);image.Apply();File.WriteAllBytes(path,image.EncodeToPNG());}
+        finally{GL.sRGBWrite=oldSrgb;RenderTexture.active=previous;UnityEngine.Object.DestroyImmediate(image);}
     }
     static void Finish()
     {
@@ -147,6 +150,8 @@ public static class MoonkovLilToonCapture
             MoonkovLilToonLookDev.SetLook(actor,false);
             if(roof)UnityEngine.Object.Destroy(roof.gameObject);
             if(target){target.Release();UnityEngine.Object.DestroyImmediate(target);}
+            if(readback){readback.Release();UnityEngine.Object.DestroyImmediate(readback);}
+            if(key)key.shadowNearPlane=oldKeyNear;
         }
         camera=null;actor=null;target=null;shots.Clear();cpuRecorder.Dispose();gpuRecorder.Dispose();
     }

@@ -216,7 +216,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _RimColorTex:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 20a75eba95d784c0fa95b20117f8cce5, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _RimShadeMask:
@@ -498,23 +498,23 @@ Material:
     - _RimApplyTransparency: 1
     - _RimBackfaceMask: 1
     - _RimBlendMode: 1
-    - _RimBlur: 0.4
-    - _RimBorder: 0.6
+    - _RimBlur: 0.65
+    - _RimBorder: 0.45
     - _RimDirRange: 0
     - _RimDirStrength: 1
     - _RimEnableLighting: 1
-    - _RimFresnelPower: 4
+    - _RimFresnelPower: 2.2
     - _RimIndirBlur: 0.1
     - _RimIndirBorder: 0.5
     - _RimIndirRange: 0
-    - _RimMainStrength: 0.6
+    - _RimMainStrength: 0.1
     - _RimNormalStrength: 1
     - _RimPower: 3.5
     - _RimShadeBlur: 0.8
     - _RimShadeBorder: 0.5
     - _RimShadeFresnelPower: 2
     - _RimShadeNormalStrength: 1
-    - _RimShadowMask: 1
+    - _RimShadowMask: 0
     - _RimStrength: 0.2
     - _RimVRParallaxStrength: 1
     - _ShadeSmooth: 0.06
@@ -684,8 +684,8 @@ Material:
     - _OutlineTex_ScrollRotate: {r: 0, g: 0, b: 0, a: 0}
     - _ReflectionColor: {r: 1, g: 0.97, b: 0.94, a: 0.65}
     - _ReflectionCubeColor: {r: 0, g: 0, b: 0, a: 1}
-    - _RimColor: {r: 0.82, g: 0.91, b: 1, a: 0.06}
-    - _RimIndirColor: {r: 1, g: 0.85, b: 0.76, a: 0}
+    - _RimColor: {r: 5.5, g: 5.1, b: 4.7, a: 0.75}
+    - _RimIndirColor: {r: 1, g: 1, b: 1, a: 0}
     - _RimShadeColor: {r: 1, g: 0.78, b: 0.77, a: 0.22}
     - _ShadeColor: {r: 0.66, g: 0.56, b: 0.8, a: 1}
     - _Shadow2ndColor: {r: 0.78, g: 0.49, b: 0.52, a: 0.18}

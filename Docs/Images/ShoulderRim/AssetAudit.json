@@ -1,0 +1,12 @@
+{
+  "pass": true,
+  "changedMaterials": [
+    "Body",
+    "InnerDress"
+  ],
+  "otherMaterialsUnchanged": 11,
+  "restoreRoundtrip": true,
+  "sourceAtlasUvShaderQueuePreserved": true,
+  "mapMemoryBytes": 1400224,
+  "shaderErrors": 0
+}

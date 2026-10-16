@@ -68,3 +68,5 @@ Unity 官方也将 Bloom 定义为从明亮区域边界向外扩散的效果，T
 - 优先复用已有 Rim 与 Bloom，不增加额外全屏效果或每角色专属灯。只改变现有参数不代表 GPU 成本必然不变，最终以相同分辨率和镜头的性能对照为准。
 
 只读检查脚本：[InspectShoulderRim.cs](../Tools/LookDev/InspectShoulderRim.cs)。它读取当前资产，不修改材质与 Volume。
+
+已按此方向实装并加强亮带/泛光：[实际参数、前后对比、HDR 捕获、阴影修复与性能记录](ShoulderRimLookDev.md)。

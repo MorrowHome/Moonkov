@@ -55,7 +55,7 @@ namespace Unity.MP_FPS.Moon
         private bool previousFog;
         private bool applied;
         private Quaternion initialSunRotation;
-        private float initialSunIntensity, sunAzimuth;
+        private float initialSunIntensity, initialSunShadowNearPlane, sunAzimuth;
         private bool initialSunEnabled;
 
         private void OnEnable()
@@ -71,6 +71,10 @@ namespace Unity.MP_FPS.Moon
             {
                 initialSunRotation = sun.transform.rotation;
                 initialSunIntensity = sun.intensity;
+                initialSunShadowNearPlane = sun.shadowNearPlane;
+                // Small near cascades can clip overhead casters with the default
+                // 0.2m light near plane. Keep local roofs inside the shadow volume.
+                sun.shadowNearPlane = Mathf.Max(initialSunShadowNearPlane, 16f);
                 initialSunEnabled = sun.enabled;
                 sunAzimuth = sun.transform.eulerAngles.y;
             }
@@ -208,6 +212,7 @@ namespace Unity.MP_FPS.Moon
             {
                 sun.transform.rotation = initialSunRotation;
                 sun.intensity = initialSunIntensity;
+                sun.shadowNearPlane = initialSunShadowNearPlane;
                 sun.enabled = initialSunEnabled;
             }
             if (QualitySettings.renderPipeline == appliedPipeline) QualitySettings.renderPipeline = previousPipeline;
