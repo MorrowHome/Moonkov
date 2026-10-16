@@ -1,0 +1,1124 @@
+{
+  "semantic_policy": "audited-432-to-official-511-v2",
+  "capabilities": {
+    "uv_clone": {
+      "R20_11_Drawworks_Armor_And_Cable_Returns": {
+        "mesh": "R20_11_Drawworks_Armor_And_Cable_Returns_Mesh_RECON_R23",
+        "explicit_clone": null,
+        "effective_clone": "UVMap",
+        "active": "UVMap",
+        "active_index": 0,
+        "layers": [
+          "UVMap"
+        ],
+        "raw_clone_flags": [
+          false
+        ]
+      },
+      "R19_05_Twin_Large_Drawworks_Drums_And_Brakes": {
+        "mesh": "R19_05_Twin_Large_Drawworks_Drums_And_Brakes_Mesh_RECON_R23",
+        "explicit_clone": null,
+        "effective_clone": "UVMap",
+        "active": "UVMap",
+        "active_index": 0,
+        "layers": [
+          "UVMap"
+        ],
+        "raw_clone_flags": [
+          false
+        ]
+      },
+      "R25_01_Descending_Throat_And_Split_Guide_Frame": {
+        "mesh": "R25_01_Descending_Throat_And_Split_Guide_Frame_R29_LOCAL_GEOMET",
+        "explicit_clone": null,
+        "effective_clone": "UVMap",
+        "active": "UVMap",
+        "active_index": 0,
+        "layers": [
+          "UVMap",
+          "R26_Finish_UV"
+        ],
+        "raw_clone_flags": [
+          false,
+          false
+        ]
+      },
+      "R25_02_Three_Heavy_Guide_Jaws_And_Recesses": {
+        "mesh": "R25_02_Three_Heavy_Guide_Jaws_And_Recesses_R29_LOCAL_GEOMETRY",
+        "explicit_clone": null,
+        "effective_clone": "UVMap",
+        "active": "UVMap",
+        "active_index": 0,
+        "layers": [
+          "UVMap",
+          "R26_Finish_UV"
+        ],
+        "raw_clone_flags": [
+          false,
+          false
+        ]
+      },
+      "R25_03_Opposed_Clamp_Drives_And_Clevises": {
+        "mesh": "R25_03_Opposed_Clamp_Drives_And_Clevises_R29_LOCAL_GEOMETRY",
+        "explicit_clone": null,
+        "effective_clone": "UVMap",
+        "active": "UVMap",
+        "active_index": 0,
+        "layers": [
+          "UVMap",
+          "R26_Finish_UV"
+        ],
+        "raw_clone_flags": [
+          false,
+          false
+        ]
+      },
+      "R25_04_Exposed_Contact_Bands_And_Seals": {
+        "mesh": "R25_04_Exposed_Contact_Bands_And_Seals_R29_LOCAL_GEOMETRY",
+        "explicit_clone": null,
+        "effective_clone": "UVMap",
+        "active": "UVMap",
+        "active_index": 0,
+        "layers": [
+          "UVMap"
+        ],
+        "raw_clone_flags": [
+          false
+        ]
+      },
+      "R25_05_Compact_Pipe_Branches_And_Supports": {
+        "mesh": "R25_05_Compact_Pipe_Branches_And_Supports_R29_LOCAL_GEOMETRY",
+        "explicit_clone": null,
+        "effective_clone": "UVMap",
+        "active": "UVMap",
+        "active_index": 0,
+        "layers": [
+          "UVMap"
+        ],
+        "raw_clone_flags": [
+          false
+        ]
+      },
+      "R25_06_Guide_Service_Plate_And_Local_Use_Marks": {
+        "mesh": "R25_06_Guide_Service_Plate_And_Local_Use_Marks_R29_LOCAL_GEOMET",
+        "explicit_clone": null,
+        "effective_clone": "UVMap",
+        "active": "UVMap",
+        "active_index": 0,
+        "layers": [
+          "UVMap",
+          "R26_Finish_UV"
+        ],
+        "raw_clone_flags": [
+          false,
+          false
+        ]
+      },
+      "R25_07_Guide_Identification": {
+        "mesh": "R25_07_Guide_Identification_R29_LOCAL_GEOMETRY",
+        "explicit_clone": null,
+        "effective_clone": "UVMap",
+        "active": "UVMap",
+        "active_index": 0,
+        "layers": [
+          "UVMap"
+        ],
+        "raw_clone_flags": [
+          false
+        ]
+      },
+      "R26_ARMOR_01_Shoulder_Deep_Saddle_And_Perimeter": {
+        "mesh": "R26_ARMOR_01_Shoulder_Deep_Saddle_And_Perimeter_R29_LOCAL_GEOME",
+        "explicit_clone": null,
+        "effective_clone": "UVMap",
+        "active": "UVMap",
+        "active_index": 0,
+        "layers": [
+          "UVMap"
+        ],
+        "raw_clone_flags": [
+          false
+        ]
+      },
+      "R26_ARMOR_02_Shoulder_Offset_Armor_Cover": {
+        "mesh": "R26_ARMOR_02_Shoulder_Offset_Armor_Cover_R29_LOCAL_GEOMETRY",
+        "explicit_clone": null,
+        "effective_clone": "UVMap",
+        "active": "UVMap",
+        "active_index": 0,
+        "layers": [
+          "UVMap",
+          "R26_Finish_UV",
+          "R27_Industrial_Finish_UV"
+        ],
+        "raw_clone_flags": [
+          false,
+          false,
+          false
+        ]
+      },
+      "R26_ARMOR_03_Recessed_Coupling_Bay_And_Interfaces": {
+        "mesh": "R26_ARMOR_03_Recessed_Coupling_Bay_And_Interfaces_R29_LOCAL_GEO",
+        "explicit_clone": null,
+        "effective_clone": "UVMap",
+        "active": "UVMap",
+        "active_index": 0,
+        "layers": [
+          "UVMap"
+        ],
+        "raw_clone_flags": [
+          false
+        ]
+      },
+      "R26_ARMOR_04_Shoulder_Load_Keys_And_Locking_Ends": {
+        "mesh": "R26_ARMOR_04_Shoulder_Load_Keys_And_Locking_Ends_R29_LOCAL_GEOM",
+        "explicit_clone": null,
+        "effective_clone": "UVMap",
+        "active": "UVMap",
+        "active_index": 0,
+        "layers": [
+          "UVMap"
+        ],
+        "raw_clone_flags": [
+          false
+        ]
+      },
+      "R26_ARMOR_05_Lower_Shank_Split_Thick_Plates": {
+        "mesh": "R26_ARMOR_05_Lower_Shank_Split_Thick_Plates_R29_LOCAL_GEOMETRY",
+        "explicit_clone": null,
+        "effective_clone": "UVMap",
+        "active": "UVMap",
+        "active_index": 0,
+        "layers": [
+          "UVMap",
+          "R26_Finish_UV",
+          "R27_Industrial_Finish_UV"
+        ],
+        "raw_clone_flags": [
+          false,
+          false,
+          false
+        ]
+      },
+      "R26_ARMOR_06_Shank_Service_Channel_And_Anchor_Hardware": {
+        "mesh": "R26_ARMOR_06_Shank_Service_Channel_And_Anchor_Hardware_R29_LOCA",
+        "explicit_clone": null,
+        "effective_clone": "UVMap",
+        "active": "UVMap",
+        "active_index": 0,
+        "layers": [
+          "UVMap"
+        ],
+        "raw_clone_flags": [
+          false
+        ]
+      },
+      "R26_ARMOR_07_Service_Identification_Plate": {
+        "mesh": "R26_ARMOR_07_Service_Identification_Plate_R29_LOCAL_GEOMETRY",
+        "explicit_clone": null,
+        "effective_clone": "UVMap",
+        "active": "UVMap",
+        "active_index": 0,
+        "layers": [
+          "UVMap"
+        ],
+        "raw_clone_flags": [
+          false
+        ]
+      },
+      "R26_ARMOR_08_Service_ID": {
+        "mesh": "R26_ARMOR_08_Service_ID_R29_LOCAL_GEOMETRY",
+        "explicit_clone": null,
+        "effective_clone": "UVMap",
+        "active": "UVMap",
+        "active_index": 0,
+        "layers": [
+          "UVMap"
+        ],
+        "raw_clone_flags": [
+          false
+        ]
+      },
+      "R27S_01_Compacted_Work_Fronts_And_Broad_Spoil_Gradients": {
+        "mesh": "R27S_01_Compacted_Work_Fronts_And_Broad_Spoil_Gradients_R29_LOC",
+        "explicit_clone": null,
+        "effective_clone": "UVMap",
+        "active": "UVMap",
+        "active_index": 0,
+        "layers": [
+          "UVMap",
+          "R8_Regolith_3p7m",
+          "R8_Terrain_Global_4096m"
+        ],
+        "raw_clone_flags": [
+          false,
+          false,
+          false
+        ]
+      },
+      "R27S_02_Stepped_Cut_Shoulder_And_Compressed_Faces": {
+        "mesh": "R27S_02_Stepped_Cut_Shoulder_And_Compressed_Faces_R29_LOCAL_GEO",
+        "explicit_clone": null,
+        "effective_clone": "UVMap",
+        "active": "UVMap",
+        "active_index": 0,
+        "layers": [
+          "UVMap",
+          "R8_Regolith_3p7m",
+          "R8_Terrain_Global_4096m"
+        ],
+        "raw_clone_flags": [
+          false,
+          false,
+          false
+        ]
+      },
+      "R27S_03_Local_Grading_And_Plate_Seat_Traces": {
+        "mesh": "R27S_03_Local_Grading_And_Plate_Seat_Traces_R29_LOCAL_GEOMETRY",
+        "explicit_clone": null,
+        "effective_clone": "UVMap",
+        "active": "UVMap",
+        "active_index": 0,
+        "layers": [
+          "UVMap",
+          "R8_Regolith_3p7m",
+          "R8_Terrain_Global_4096m"
+        ],
+        "raw_clone_flags": [
+          false,
+          false,
+          false
+        ]
+      },
+      "R27S_04_Nine_Local_Cut_Rock_Slabs": {
+        "mesh": "R27S_04_Nine_Local_Cut_Rock_Slabs_R29_LOCAL_GEOMETRY",
+        "explicit_clone": null,
+        "effective_clone": "UVMap",
+        "active": "UVMap",
+        "active_index": 0,
+        "layers": [
+          "UVMap",
+          "R8_Regolith_3p7m",
+          "R8_Terrain_Global_4096m"
+        ],
+        "raw_clone_flags": [
+          false,
+          false,
+          false
+        ]
+      },
+      "R27S_04B_Eighteen_Density_Graded_Regolith_Clods": {
+        "mesh": "R27S_04B_Eighteen_Density_Graded_Regolith_Clods_R29_LOCAL_GEOME",
+        "explicit_clone": null,
+        "effective_clone": "UVMap",
+        "active": "UVMap",
+        "active_index": 0,
+        "layers": [
+          "UVMap",
+          "R8_Regolith_3p7m",
+          "R8_Terrain_Global_4096m"
+        ],
+        "raw_clone_flags": [
+          false,
+          false,
+          false
+        ]
+      },
+      "R27S_05_Four_Anchored_Construction_Cover_Plates": {
+        "mesh": "R27S_05_Four_Anchored_Construction_Cover_Plates_R29_LOCAL_GEOME",
+        "explicit_clone": null,
+        "effective_clone": "UVMap",
+        "active": "UVMap",
+        "active_index": 0,
+        "layers": [
+          "UVMap",
+          "R8_Regolith_3p7m",
+          "R8_Terrain_Global_4096m"
+        ],
+        "raw_clone_flags": [
+          false,
+          false,
+          false
+        ]
+      },
+      "R29_00_R21_04_Display_Remainder": {
+        "mesh": "R29_00_R21_04_Display_Remainder_R29_LOCAL_GEOMETRY",
+        "explicit_clone": null,
+        "effective_clone": "UVMap",
+        "active": "UVMap",
+        "active_index": 0,
+        "layers": [
+          "UVMap",
+          "R26_Finish_UV",
+          "R28_Large_Surface_UV",
+          "R28_Metric_Detail_UV"
+        ],
+        "raw_clone_flags": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "R29_BEAMS_NEAR_01_Deep_Web_And_Segmented_Flanges": {
+        "mesh": "R29_BEAMS_NEAR_01_Deep_Web_And_Segmented_Flanges_R29_LOCAL_GEOM",
+        "explicit_clone": null,
+        "effective_clone": "UVMap",
+        "active": "UVMap",
+        "active_index": 0,
+        "layers": [
+          "UVMap",
+          "R28_Large_Surface_UV",
+          "R28_Metric_Detail_UV"
+        ],
+        "raw_clone_flags": [
+          false,
+          false,
+          false
+        ]
+      },
+      "R29_BEAMS_NEAR_02_Sparse_Stiffeners_And_Access_Rims": {
+        "mesh": "R29_BEAMS_NEAR_02_Sparse_Stiffeners_And_Access_Rims_R29_LOCAL_G",
+        "explicit_clone": null,
+        "effective_clone": "UVMap",
+        "active": "UVMap",
+        "active_index": 0,
+        "layers": [
+          "UVMap",
+          "R28_Large_Surface_UV",
+          "R28_Metric_Detail_UV"
+        ],
+        "raw_clone_flags": [
+          false,
+          false,
+          false
+        ]
+      },
+      "R29_BEAMS_NEAR_03_Splice_And_End_Connection_Plates": {
+        "mesh": "R29_BEAMS_NEAR_03_Splice_And_End_Connection_Plates_R29_LOCAL_GE",
+        "explicit_clone": null,
+        "effective_clone": "UVMap",
+        "active": "UVMap",
+        "active_index": 0,
+        "layers": [
+          "UVMap",
+          "R28_Large_Surface_UV",
+          "R28_Metric_Detail_UV"
+        ],
+        "raw_clone_flags": [
+          false,
+          false,
+          false
+        ]
+      },
+      "R29_BEAMS_FAR_01_Deep_Web_And_Segmented_Flanges": {
+        "mesh": "R29_BEAMS_FAR_01_Deep_Web_And_Segmented_Flanges_R29_LOCAL_GEOME",
+        "explicit_clone": null,
+        "effective_clone": "UVMap",
+        "active": "UVMap",
+        "active_index": 0,
+        "layers": [
+          "UVMap",
+          "R28_Large_Surface_UV",
+          "R28_Metric_Detail_UV"
+        ],
+        "raw_clone_flags": [
+          false,
+          false,
+          false
+        ]
+      },
+      "R29_BEAMS_FAR_02_Sparse_Stiffeners_And_Access_Rims": {
+        "mesh": "R29_BEAMS_FAR_02_Sparse_Stiffeners_And_Access_Rims_R29_LOCAL_GE",
+        "explicit_clone": null,
+        "effective_clone": "UVMap",
+        "active": "UVMap",
+        "active_index": 0,
+        "layers": [
+          "UVMap",
+          "R28_Large_Surface_UV",
+          "R28_Metric_Detail_UV"
+        ],
+        "raw_clone_flags": [
+          false,
+          false,
+          false
+        ]
+      },
+      "R29_BEAMS_FAR_03_Splice_And_End_Connection_Plates": {
+        "mesh": "R29_BEAMS_FAR_03_Splice_And_End_Connection_Plates_R29_LOCAL_GEO",
+        "explicit_clone": null,
+        "effective_clone": "UVMap",
+        "active": "UVMap",
+        "active_index": 0,
+        "layers": [
+          "UVMap",
+          "R28_Large_Surface_UV",
+          "R28_Metric_Detail_UV"
+        ],
+        "raw_clone_flags": [
+          false,
+          false,
+          false
+        ]
+      },
+      "R29B_01_Stepped_Column_Foot_And_Baseplate": {
+        "mesh": "R29B_01_Stepped_Column_Foot_And_Baseplate_R29_LOCAL_GEOMETRY",
+        "explicit_clone": null,
+        "effective_clone": "UVMap",
+        "active": "UVMap",
+        "active_index": 0,
+        "layers": [
+          "UVMap"
+        ],
+        "raw_clone_flags": [
+          false
+        ]
+      },
+      "R29B_02_Cast_Pedestal_And_Transverse_Crosshead": {
+        "mesh": "R29B_02_Cast_Pedestal_And_Transverse_Crosshead_R29_LOCAL_GEOMET",
+        "explicit_clone": null,
+        "effective_clone": "UVMap",
+        "active": "UVMap",
+        "active_index": 0,
+        "layers": [
+          "UVMap"
+        ],
+        "raw_clone_flags": [
+          false
+        ]
+      },
+      "R29B_03_Twin_Layered_Bearing_Shoes": {
+        "mesh": "R29B_03_Twin_Layered_Bearing_Shoes_R29_LOCAL_GEOMETRY",
+        "explicit_clone": null,
+        "effective_clone": "UVMap",
+        "active": "UVMap",
+        "active_index": 0,
+        "layers": [
+          "UVMap"
+        ],
+        "raw_clone_flags": [
+          false
+        ]
+      },
+      "R29B_04_Four_Transverse_Load_Ribs": {
+        "mesh": "R29B_04_Four_Transverse_Load_Ribs_R29_LOCAL_GEOMETRY",
+        "explicit_clone": null,
+        "effective_clone": "UVMap",
+        "active": "UVMap",
+        "active_index": 0,
+        "layers": [
+          "UVMap"
+        ],
+        "raw_clone_flags": [
+          false
+        ]
+      },
+      "R29B_05_Six_Foundation_Anchor_Sets": {
+        "mesh": "R29B_05_Six_Foundation_Anchor_Sets_R29_LOCAL_GEOMETRY",
+        "explicit_clone": null,
+        "effective_clone": "UVMap",
+        "active": "UVMap",
+        "active_index": 0,
+        "layers": [
+          "UVMap"
+        ],
+        "raw_clone_flags": [
+          false
+        ]
+      },
+      "R29B_06_Four_Bearing_Keeper_Locks": {
+        "mesh": "R29B_06_Four_Bearing_Keeper_Locks_R29_LOCAL_GEOMETRY",
+        "explicit_clone": null,
+        "effective_clone": "UVMap",
+        "active": "UVMap",
+        "active_index": 0,
+        "layers": [
+          "UVMap"
+        ],
+        "raw_clone_flags": [
+          false
+        ]
+      }
+    },
+    "nodes": {
+      "R23_Protective_Steel_Microfinish": {
+        "Principled BSDF": {
+          "type": "ShaderNodeBsdfPrincipled",
+          "bl_static_type": "BSDF_PRINCIPLED",
+          "static_type_readonly": true,
+          "static_type_has_is_array": false,
+          "parent": null,
+          "location_absolute": [
+            10.0,
+            300.0
+          ]
+        },
+        "Material Output": {
+          "type": "ShaderNodeOutputMaterial",
+          "bl_static_type": "OUTPUT_MATERIAL",
+          "static_type_readonly": true,
+          "static_type_has_is_array": false,
+          "parent": null,
+          "location_absolute": [
+            300.0,
+            300.0
+          ]
+        },
+        "UV Map": {
+          "type": "ShaderNodeUVMap",
+          "bl_static_type": "UVMAP",
+          "static_type_readonly": true,
+          "static_type_has_is_array": false,
+          "parent": null,
+          "location_absolute": [
+            0.0,
+            0.0
+          ]
+        },
+        "Vector Math": {
+          "type": "ShaderNodeVectorMath",
+          "bl_static_type": "VECT_MATH",
+          "static_type_readonly": true,
+          "static_type_has_is_array": false,
+          "parent": null,
+          "location_absolute": [
+            0.0,
+            0.0
+          ]
+        },
+        "Image Texture": {
+          "type": "ShaderNodeTexImage",
+          "bl_static_type": "TEX_IMAGE",
+          "static_type_readonly": true,
+          "static_type_has_is_array": false,
+          "parent": null,
+          "location_absolute": [
+            0.0,
+            0.0
+          ]
+        },
+        "Math": {
+          "type": "ShaderNodeMath",
+          "bl_static_type": "MATH",
+          "static_type_readonly": true,
+          "static_type_has_is_array": false,
+          "parent": null,
+          "location_absolute": [
+            0.0,
+            0.0
+          ]
+        },
+        "Map Range": {
+          "type": "ShaderNodeMapRange",
+          "bl_static_type": "MAP_RANGE",
+          "static_type_readonly": true,
+          "static_type_has_is_array": false,
+          "parent": null,
+          "location_absolute": [
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "R24_Dark_Forged_Joint_Steel": {
+        "Principled BSDF": {
+          "type": "ShaderNodeBsdfPrincipled",
+          "bl_static_type": "BSDF_PRINCIPLED",
+          "static_type_readonly": true,
+          "static_type_has_is_array": false,
+          "parent": null,
+          "location_absolute": [
+            10.0,
+            300.0
+          ]
+        },
+        "Material Output": {
+          "type": "ShaderNodeOutputMaterial",
+          "bl_static_type": "OUTPUT_MATERIAL",
+          "static_type_readonly": true,
+          "static_type_has_is_array": false,
+          "parent": null,
+          "location_absolute": [
+            300.0,
+            300.0
+          ]
+        }
+      },
+      "R24_Exposed_Machined_Contact_Steel": {
+        "Principled BSDF": {
+          "type": "ShaderNodeBsdfPrincipled",
+          "bl_static_type": "BSDF_PRINCIPLED",
+          "static_type_readonly": true,
+          "static_type_has_is_array": false,
+          "parent": null,
+          "location_absolute": [
+            10.0,
+            300.0
+          ]
+        },
+        "Material Output": {
+          "type": "ShaderNodeOutputMaterial",
+          "bl_static_type": "OUTPUT_MATERIAL",
+          "static_type_readonly": true,
+          "static_type_has_is_array": false,
+          "parent": null,
+          "location_absolute": [
+            300.0,
+            300.0
+          ]
+        }
+      },
+      "R24_Localized_Lunar_Dust_Deposit": {
+        "Principled BSDF": {
+          "type": "ShaderNodeBsdfPrincipled",
+          "bl_static_type": "BSDF_PRINCIPLED",
+          "static_type_readonly": true,
+          "static_type_has_is_array": false,
+          "parent": null,
+          "location_absolute": [
+            10.0,
+            300.0
+          ]
+        },
+        "Material Output": {
+          "type": "ShaderNodeOutputMaterial",
+          "bl_static_type": "OUTPUT_MATERIAL",
+          "static_type_readonly": true,
+          "static_type_has_is_array": false,
+          "parent": null,
+          "location_absolute": [
+            300.0,
+            300.0
+          ]
+        }
+      },
+      "R24_Recessed_Elastomer_Seal": {
+        "Principled BSDF": {
+          "type": "ShaderNodeBsdfPrincipled",
+          "bl_static_type": "BSDF_PRINCIPLED",
+          "static_type_readonly": true,
+          "static_type_has_is_array": false,
+          "parent": null,
+          "location_absolute": [
+            10.0,
+            300.0
+          ]
+        },
+        "Material Output": {
+          "type": "ShaderNodeOutputMaterial",
+          "bl_static_type": "OUTPUT_MATERIAL",
+          "static_type_readonly": true,
+          "static_type_has_is_array": false,
+          "parent": null,
+          "location_absolute": [
+            300.0,
+            300.0
+          ]
+        }
+      },
+      "R24_Service_Stencil_Offwhite": {
+        "Principled BSDF": {
+          "type": "ShaderNodeBsdfPrincipled",
+          "bl_static_type": "BSDF_PRINCIPLED",
+          "static_type_readonly": true,
+          "static_type_has_is_array": false,
+          "parent": null,
+          "location_absolute": [
+            10.0,
+            300.0
+          ]
+        },
+        "Material Output": {
+          "type": "ShaderNodeOutputMaterial",
+          "bl_static_type": "OUTPUT_MATERIAL",
+          "static_type_readonly": true,
+          "static_type_has_is_array": false,
+          "parent": null,
+          "location_absolute": [
+            300.0,
+            300.0
+          ]
+        }
+      },
+      "R24_Slate_Gray_Industrial_Enamel": {
+        "Principled BSDF": {
+          "type": "ShaderNodeBsdfPrincipled",
+          "bl_static_type": "BSDF_PRINCIPLED",
+          "static_type_readonly": true,
+          "static_type_has_is_array": false,
+          "parent": null,
+          "location_absolute": [
+            10.0,
+            300.0
+          ]
+        },
+        "Material Output": {
+          "type": "ShaderNodeOutputMaterial",
+          "bl_static_type": "OUTPUT_MATERIAL",
+          "static_type_readonly": true,
+          "static_type_has_is_array": false,
+          "parent": null,
+          "location_absolute": [
+            300.0,
+            300.0
+          ]
+        }
+      }
+    },
+    "payload/Moonkov_R32_R35_Eleven_Display_Meshes.blend": {
+      "uv_clone": {
+        "R32_01_Deep_Maintenance_Rim_And_Mount": {
+          "mesh": "R32_01_Deep_Maintenance_Rim_And_Mount_Mesh",
+          "explicit_clone": null,
+          "effective_clone": "R32_Metric_UV",
+          "active": "R32_Metric_UV",
+          "active_index": 0,
+          "layers": [
+            "R32_Metric_UV"
+          ],
+          "raw_clone_flags": [
+            false
+          ]
+        },
+        "R32_02_Recessed_Sealed_Brake_Access_Cover": {
+          "mesh": "R32_02_Recessed_Sealed_Brake_Access_Cover_Mesh",
+          "explicit_clone": null,
+          "effective_clone": "R32_Metric_UV",
+          "active": "R32_Metric_UV",
+          "active_index": 0,
+          "layers": [
+            "R32_Metric_UV"
+          ],
+          "raw_clone_flags": [
+            false
+          ]
+        },
+        "R32_03_Extraction_Guides_Stops_And_Two_Cams": {
+          "mesh": "R32_03_Extraction_Guides_Stops_And_Two_Cams_Mesh",
+          "explicit_clone": null,
+          "effective_clone": "R32_Metric_UV",
+          "active": "R32_Metric_UV",
+          "active_index": 0,
+          "layers": [
+            "R32_Metric_UV"
+          ],
+          "raw_clone_flags": [
+            false
+          ]
+        },
+        "R32_04_Lubrication_Return_Lines_And_Two_Supports": {
+          "mesh": "R32_04_Lubrication_Return_Lines_And_Two_Supports_Mesh",
+          "explicit_clone": null,
+          "effective_clone": "R32_Metric_UV",
+          "active": "R32_Metric_UV",
+          "active_index": 0,
+          "layers": [
+            "R32_Metric_UV"
+          ],
+          "raw_clone_flags": [
+            false
+          ]
+        },
+        "R32_05_Service_Plate_Arrow_And_Ledge_Dust": {
+          "mesh": "R32_05_Service_Plate_Arrow_And_Ledge_Dust_Mesh",
+          "explicit_clone": null,
+          "effective_clone": "R32_Metric_UV",
+          "active": "R32_Metric_UV",
+          "active_index": 0,
+          "layers": [
+            "R32_Metric_UV"
+          ],
+          "raw_clone_flags": [
+            false
+          ]
+        },
+        "R32_06_DW01_Brake_Service_Stencil": {
+          "mesh": "R32_Service_Stencil_Text",
+          "explicit_clone": null,
+          "effective_clone": "UVMap",
+          "active": "UVMap",
+          "active_index": 0,
+          "layers": [
+            "UVMap"
+          ],
+          "raw_clone_flags": [
+            false
+          ]
+        },
+        "R35_01_Split_Cast_Housing_Cheeks": {
+          "mesh": "R35_01_Split_Cast_Housing_Cheeks_Mesh",
+          "explicit_clone": null,
+          "effective_clone": "R35_Local_Metric_UV",
+          "active": "R35_Local_Metric_UV",
+          "active_index": 0,
+          "layers": [
+            "R35_Local_Metric_UV"
+          ],
+          "raw_clone_flags": [
+            false
+          ]
+        },
+        "R35_02_Split_Flange_And_Sealing_Land": {
+          "mesh": "R35_02_Split_Flange_And_Sealing_Land_Mesh",
+          "explicit_clone": null,
+          "effective_clone": "R35_Local_Metric_UV",
+          "active": "R35_Local_Metric_UV",
+          "active_index": 0,
+          "layers": [
+            "R35_Local_Metric_UV"
+          ],
+          "raw_clone_flags": [
+            false
+          ]
+        },
+        "R35_03_Registered_Removable_Actuator_Cap": {
+          "mesh": "R35_03_Registered_Removable_Actuator_Cap_Mesh",
+          "explicit_clone": null,
+          "effective_clone": "R35_Local_Metric_UV",
+          "active": "R35_Local_Metric_UV",
+          "active_index": 0,
+          "layers": [
+            "R35_Local_Metric_UV"
+          ],
+          "raw_clone_flags": [
+            false
+          ]
+        },
+        "R35_04_Four_Cap_Studs_And_Two_Split_Clamps": {
+          "mesh": "R35_04_Four_Cap_Studs_And_Two_Split_Clamps_Mesh",
+          "explicit_clone": null,
+          "effective_clone": "R35_Local_Metric_UV",
+          "active": "R35_Local_Metric_UV",
+          "active_index": 0,
+          "layers": [
+            "R35_Local_Metric_UV"
+          ],
+          "raw_clone_flags": [
+            false
+          ]
+        },
+        "R35_05_Load_Return_Ribs_And_Lower_Keys": {
+          "mesh": "R35_05_Load_Return_Ribs_And_Lower_Keys_Mesh",
+          "explicit_clone": null,
+          "effective_clone": "R35_Local_Metric_UV",
+          "active": "R35_Local_Metric_UV",
+          "active_index": 0,
+          "layers": [
+            "R35_Local_Metric_UV"
+          ],
+          "raw_clone_flags": [
+            false
+          ]
+        }
+      },
+      "nodes": {}
+    },
+    "payload/Moonkov_R34_Baked_Materials_Only_Delta.blend": {
+      "uv_clone": {},
+      "nodes": {
+        "R34_01_Service_Shroud_Baked_PBR": {
+          "UV Map": {
+            "type": "ShaderNodeUVMap",
+            "bl_static_type": "UVMAP",
+            "static_type_readonly": true,
+            "static_type_has_is_array": false,
+            "parent": null,
+            "location_absolute": [
+              -700.0,
+              0.0
+            ]
+          },
+          "Principled BSDF": {
+            "type": "ShaderNodeBsdfPrincipled",
+            "bl_static_type": "BSDF_PRINCIPLED",
+            "static_type_readonly": true,
+            "static_type_has_is_array": false,
+            "parent": null,
+            "location_absolute": [
+              0.0,
+              0.0
+            ]
+          },
+          "Material Output": {
+            "type": "ShaderNodeOutputMaterial",
+            "bl_static_type": "OUTPUT_MATERIAL",
+            "static_type_readonly": true,
+            "static_type_has_is_array": false,
+            "parent": null,
+            "location_absolute": [
+              350.0,
+              0.0
+            ]
+          },
+          "BaseColor": {
+            "type": "ShaderNodeTexImage",
+            "bl_static_type": "TEX_IMAGE",
+            "static_type_readonly": true,
+            "static_type_has_is_array": false,
+            "parent": null,
+            "location_absolute": [
+              -430.0,
+              0.0
+            ]
+          },
+          "Metallic": {
+            "type": "ShaderNodeTexImage",
+            "bl_static_type": "TEX_IMAGE",
+            "static_type_readonly": true,
+            "static_type_has_is_array": false,
+            "parent": null,
+            "location_absolute": [
+              -430.0,
+              -270.0
+            ]
+          },
+          "Roughness": {
+            "type": "ShaderNodeTexImage",
+            "bl_static_type": "TEX_IMAGE",
+            "static_type_readonly": true,
+            "static_type_has_is_array": false,
+            "parent": null,
+            "location_absolute": [
+              -430.0,
+              -540.0
+            ]
+          },
+          "NormalTS": {
+            "type": "ShaderNodeTexImage",
+            "bl_static_type": "TEX_IMAGE",
+            "static_type_readonly": true,
+            "static_type_has_is_array": false,
+            "parent": null,
+            "location_absolute": [
+              -430.0,
+              -810.0
+            ]
+          },
+          "Normal Map": {
+            "type": "ShaderNodeNormalMap",
+            "bl_static_type": "NORMAL_MAP",
+            "static_type_readonly": true,
+            "static_type_has_is_array": false,
+            "parent": null,
+            "location_absolute": [
+              -170.0,
+              -700.0
+            ],
+            "base": "DISPLACED",
+            "convention": "OPENGL"
+          }
+        },
+        "R34_02_Brake_Cover_Baked_PBR": {
+          "UV Map": {
+            "type": "ShaderNodeUVMap",
+            "bl_static_type": "UVMAP",
+            "static_type_readonly": true,
+            "static_type_has_is_array": false,
+            "parent": null,
+            "location_absolute": [
+              -700.0,
+              0.0
+            ]
+          },
+          "Principled BSDF": {
+            "type": "ShaderNodeBsdfPrincipled",
+            "bl_static_type": "BSDF_PRINCIPLED",
+            "static_type_readonly": true,
+            "static_type_has_is_array": false,
+            "parent": null,
+            "location_absolute": [
+              0.0,
+              0.0
+            ]
+          },
+          "Material Output": {
+            "type": "ShaderNodeOutputMaterial",
+            "bl_static_type": "OUTPUT_MATERIAL",
+            "static_type_readonly": true,
+            "static_type_has_is_array": false,
+            "parent": null,
+            "location_absolute": [
+              350.0,
+              0.0
+            ]
+          },
+          "BaseColor": {
+            "type": "ShaderNodeTexImage",
+            "bl_static_type": "TEX_IMAGE",
+            "static_type_readonly": true,
+            "static_type_has_is_array": false,
+            "parent": null,
+            "location_absolute": [
+              -430.0,
+              0.0
+            ]
+          },
+          "Metallic": {
+            "type": "ShaderNodeTexImage",
+            "bl_static_type": "TEX_IMAGE",
+            "static_type_readonly": true,
+            "static_type_has_is_array": false,
+            "parent": null,
+            "location_absolute": [
+              -430.0,
+              -270.0
+            ]
+          },
+          "Roughness": {
+            "type": "ShaderNodeTexImage",
+            "bl_static_type": "TEX_IMAGE",
+            "static_type_readonly": true,
+            "static_type_has_is_array": false,
+            "parent": null,
+            "location_absolute": [
+              -430.0,
+              -540.0
+            ]
+          },
+          "NormalTS": {
+            "type": "ShaderNodeTexImage",
+            "bl_static_type": "TEX_IMAGE",
+            "static_type_readonly": true,
+            "static_type_has_is_array": false,
+            "parent": null,
+            "location_absolute": [
+              -430.0,
+              -810.0
+            ]
+          },
+          "Normal Map": {
+            "type": "ShaderNodeNormalMap",
+            "bl_static_type": "NORMAL_MAP",
+            "static_type_readonly": true,
+            "static_type_has_is_array": false,
+            "parent": null,
+            "location_absolute": [
+              -170.0,
+              -700.0
+            ],
+            "base": "DISPLACED",
+            "convention": "OPENGL"
+          }
+        }
+      }
+    }
+  },
+  "prerequisite_blockers": [],
+  "status": "PASS",
+  "blender": [
+    5,
+    1,
+    1
+  ],
+  "build_hash": "b70da489d7f4",
+  "errors": [],
+  "differences": [],
+  "scene_datablock_membership_unchanged": true,
+  "asset_files_written": 0,
+  "save_export_render_calls": 0,
+  "scope": "This package stage only; 4.3 regression is not 5.1.1 acceptance. Original expected hashes unchanged; only audited exact-version semantic projection, plus full reference descriptor comparison.",
+  "binary_sha256": "b952b58cafe44050ae016bda94c91de0968b028b1c7082a824d7087985619642",
+  "package_fingerprint": "c2dd684a52e34d647655e1ff4eff125cb52f282e65d8beec635e79e29ba07317",
+  "guarded_state": "97a0ce0eb55a8d4a7a17ab8236061524d6b0fa6d7186f982247ed88ab4617e13"
+}

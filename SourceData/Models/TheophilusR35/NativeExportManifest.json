@@ -1,0 +1,1151 @@
+{
+  "objects": [
+    {
+      "name": "R32_01_Deep_Maintenance_Rim_And_Mount",
+      "key": "R35New_00",
+      "vertices": 4512,
+      "triangles": 1504,
+      "materials": [
+        "R24_Dark_Forged_Joint_Steel"
+      ],
+      "sha256": "66f539bce28dce5b96518407dd6e957a984cf700b45614fd63bebdf788b1655c",
+      "uvChannels": [
+        0
+      ],
+      "kind": "New"
+    },
+    {
+      "name": "R32_02_Recessed_Sealed_Brake_Access_Cover",
+      "key": "R35New_01",
+      "vertices": 3408,
+      "triangles": 1136,
+      "materials": [
+        "R24_Slate_Gray_Industrial_Enamel",
+        "R24_Dark_Forged_Joint_Steel",
+        "R24_Recessed_Elastomer_Seal",
+        "R34_02_Brake_Cover_Baked_PBR"
+      ],
+      "sha256": "2060611c9c3d811e8b05aa11dca63e675a58784f1dda22a080c11652257dff2e",
+      "uvChannels": [
+        0
+      ],
+      "kind": "New"
+    },
+    {
+      "name": "R32_03_Extraction_Guides_Stops_And_Two_Cams",
+      "key": "R35New_02",
+      "vertices": 7908,
+      "triangles": 2636,
+      "materials": [
+        "R24_Dark_Forged_Joint_Steel",
+        "R24_Exposed_Machined_Contact_Steel"
+      ],
+      "sha256": "9f0073970ecacc9595521c1a76cf9a67a033522168bf2eb4757582558beff1aa",
+      "uvChannels": [
+        0
+      ],
+      "kind": "New"
+    },
+    {
+      "name": "R32_04_Lubrication_Return_Lines_And_Two_Supports",
+      "key": "R35New_03",
+      "vertices": 9852,
+      "triangles": 3284,
+      "materials": [
+        "R24_Dark_Forged_Joint_Steel",
+        "R24_Exposed_Machined_Contact_Steel"
+      ],
+      "sha256": "89e61f02a57e6677079c64c3e936c67ac0409d1d7e75d9b18145f6ea9eb4e63e",
+      "uvChannels": [
+        0
+      ],
+      "kind": "New"
+    },
+    {
+      "name": "R32_05_Service_Plate_Arrow_And_Ledge_Dust",
+      "key": "R35New_04",
+      "vertices": 3252,
+      "triangles": 1084,
+      "materials": [
+        "R24_Dark_Forged_Joint_Steel",
+        "R24_Service_Stencil_Offwhite",
+        "R24_Localized_Lunar_Dust_Deposit"
+      ],
+      "sha256": "791d1ab6160b8c0c40495a17e56752760aa410c03137bfa3faaf24e75196f4aa",
+      "uvChannels": [
+        0
+      ],
+      "kind": "New"
+    },
+    {
+      "name": "R32_06_DW01_Brake_Service_Stencil",
+      "key": "R35New_05",
+      "vertices": 1932,
+      "triangles": 644,
+      "materials": [
+        "R24_Service_Stencil_Offwhite"
+      ],
+      "sha256": "b705d3fcbe3dd0c8e0803d11e2c431b8828f8d239ba9a6237d2b4feac1270261",
+      "uvChannels": [
+        0
+      ],
+      "kind": "New"
+    },
+    {
+      "name": "R35_01_Split_Cast_Housing_Cheeks",
+      "key": "R35New_06",
+      "vertices": 1104,
+      "triangles": 368,
+      "materials": [
+        "R23_Protective_Steel_Microfinish"
+      ],
+      "sha256": "fb0e77d50484c7a6f478e30e72246728c2bd84000f003bcb322f71c9b36cc87b",
+      "uvChannels": [
+        0
+      ],
+      "kind": "New"
+    },
+    {
+      "name": "R35_02_Split_Flange_And_Sealing_Land",
+      "key": "R35New_07",
+      "vertices": 1320,
+      "triangles": 440,
+      "materials": [
+        "R24_Dark_Forged_Joint_Steel",
+        "R24_Recessed_Elastomer_Seal"
+      ],
+      "sha256": "26c0605e2f9a83d97025ae04c48a83b478b8fc858d7ecb665f582fb2b9421ba8",
+      "uvChannels": [
+        0
+      ],
+      "kind": "New"
+    },
+    {
+      "name": "R35_03_Registered_Removable_Actuator_Cap",
+      "key": "R35New_08",
+      "vertices": 6396,
+      "triangles": 2132,
+      "materials": [
+        "R24_Slate_Gray_Industrial_Enamel",
+        "R24_Dark_Forged_Joint_Steel",
+        "R24_Exposed_Machined_Contact_Steel",
+        "R24_Recessed_Elastomer_Seal"
+      ],
+      "sha256": "23c1a961b717b607567e298fe36d265fc545a979ef227348813f36772b62fdef",
+      "uvChannels": [
+        0
+      ],
+      "kind": "New"
+    },
+    {
+      "name": "R35_04_Four_Cap_Studs_And_Two_Split_Clamps",
+      "key": "R35New_09",
+      "vertices": 3816,
+      "triangles": 1272,
+      "materials": [
+        "R24_Dark_Forged_Joint_Steel",
+        "R24_Exposed_Machined_Contact_Steel"
+      ],
+      "sha256": "286d4f18c35ad0badb489aca11b8e488207af90c3d9bba167fea6aeae3af28a3",
+      "uvChannels": [
+        0
+      ],
+      "kind": "New"
+    },
+    {
+      "name": "R35_05_Load_Return_Ribs_And_Lower_Keys",
+      "key": "R35New_10",
+      "vertices": 660,
+      "triangles": 220,
+      "materials": [
+        "R23_Protective_Steel_Microfinish",
+        "R24_Dark_Forged_Joint_Steel"
+      ],
+      "sha256": "81633772eb76a49b0d1c73bbb641996d32924b03598c67cb83a09e7a404d53b9",
+      "uvChannels": [
+        0
+      ],
+      "kind": "New"
+    },
+    {
+      "name": "R20_11_Drawworks_Armor_And_Cable_Returns",
+      "key": "R35Patch_00",
+      "vertices": 2544,
+      "triangles": 848,
+      "materials": [
+        "R23_Protective_Steel_Microfinish",
+        "R23_Exposed_Steel_Calm_Finish",
+        "R8_OffWhite_Ceramic_Coat",
+        "R23_Matte_Deck_Fine_Finish",
+        "R23_Concrete_Metric_Surface",
+        "R8_Restrained_Safety_Ochre",
+        "R13_Machined_Steel_Contact",
+        "R13_Dark_Seal_And_Gasket",
+        "R6_Dark_Inspection_Glazing",
+        "R3_Weathered_WarmGray_Sheet",
+        "R34_01_Service_Shroud_Baked_PBR"
+      ],
+      "sha256": "0dcc54d5e796b4540eb53de3cc570c96e4b5eb3faa7bb6f17a221825dfa34456",
+      "uvChannels": [
+        0
+      ],
+      "kind": "Patch",
+      "baselineKey": "R35BaselineShroud"
+    }
+  ],
+  "baseline": {
+    "name": "R20_11_Drawworks_Armor_And_Cable_Returns",
+    "key": "R35BaselineShroud",
+    "vertices": 2544,
+    "triangles": 848,
+    "materials": [
+      "R23_Protective_Steel_Microfinish",
+      "R23_Exposed_Steel_Calm_Finish",
+      "R8_OffWhite_Ceramic_Coat",
+      "R23_Matte_Deck_Fine_Finish",
+      "R23_Concrete_Metric_Surface",
+      "R8_Restrained_Safety_Ochre",
+      "R13_Machined_Steel_Contact",
+      "R13_Dark_Seal_And_Gasket",
+      "R6_Dark_Inspection_Glazing",
+      "R3_Weathered_WarmGray_Sheet"
+    ],
+    "sha256": "ce3154ce49222ff99f7145f44e5ddaa905b541c66216bb08109db57857e43f7a",
+    "uvChannels": [
+      0
+    ]
+  },
+  "patches": [
+    {
+      "key": "Shroud",
+      "object": "R20_11_Drawworks_Armor_And_Cable_Returns",
+      "faces": [
+        2
+      ],
+      "new": "R34_01_Service_Shroud_Baked_PBR",
+      "uv_faces": [
+        {
+          "face": 2,
+          "vertices": [
+            0,
+            1,
+            9,
+            8
+          ],
+          "loop_indices": [
+            16,
+            17,
+            18,
+            19
+          ],
+          "uv": [
+            [
+              0.019999999552965164,
+              0.019999999552965164
+            ],
+            [
+              0.9800000190734863,
+              0.019999999552965164
+            ],
+            [
+              0.9800000190734863,
+              0.9800000190734863
+            ],
+            [
+              0.019999999552965164,
+              0.9800000190734863
+            ]
+          ]
+        }
+      ],
+      "texture_files": {
+        "BaseColor": "textures/R34_Shroud_BaseColor.png",
+        "Metallic": "textures/R34_Shroud_Metallic.png",
+        "Roughness": "textures/R34_Shroud_Roughness.png",
+        "NormalTS": "textures/R34_Shroud_NormalTS.png",
+        "MetallicSmoothness": "textures/R34_Shroud_MetallicSmoothness.png"
+      },
+      "size": [
+        2048,
+        2048
+      ],
+      "original_uv_hashes": {
+        "UVMap": "f0bc3bcb96ff8226f0efb7c735e9666dd8330bfe4b066b191f522ce686537219"
+      },
+      "original_uv_active_index": 0,
+      "original_uv_render": "UVMap",
+      "old_r33": "R33_01_Service_Shroud_Dry_Ceramic_And_Trapped_Dust",
+      "baseline_slots": [
+        "R23_Protective_Steel_Microfinish",
+        "R23_Exposed_Steel_Calm_Finish",
+        "R8_OffWhite_Ceramic_Coat",
+        "R23_Matte_Deck_Fine_Finish",
+        "R23_Concrete_Metric_Surface",
+        "R8_Restrained_Safety_Ochre",
+        "R13_Machined_Steel_Contact",
+        "R13_Dark_Seal_And_Gasket",
+        "R6_Dark_Inspection_Glazing",
+        "R3_Weathered_WarmGray_Sheet"
+      ],
+      "baseline_face_indices": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "baseline_target_materials": [
+        "R8_OffWhite_Ceramic_Coat"
+      ],
+      "applied_slot": 10
+    },
+    {
+      "key": "Cover",
+      "object": "R32_02_Recessed_Sealed_Brake_Access_Cover",
+      "faces": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "new": "R34_02_Brake_Cover_Baked_PBR",
+      "uv_faces": [
+        {
+          "face": 10,
+          "vertices": [
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23
+          ],
+          "loop_indices": [
+            48,
+            49,
+            50,
+            51,
+            52,
+            53,
+            54,
+            55
+          ],
+          "uv": [
+            [
+              0.04447788745164871,
+              0.20000000298023224
+            ],
+            [
+              0.4555221199989319,
+              0.20000000298023224
+            ],
+            [
+              0.47999998927116394,
+              0.2489684671163559
+            ],
+            [
+              0.47999998927116394,
+              0.9080315232276917
+            ],
+            [
+              0.4555221199989319,
+              0.9570000171661377
+            ],
+            [
+              0.04447788745164871,
+              0.9570000171661377
+            ],
+            [
+              0.019999999552965164,
+              0.9080315232276917
+            ],
+            [
+              0.019999999552965164,
+              0.2489684671163559
+            ]
+          ]
+        },
+        {
+          "face": 11,
+          "vertices": [
+            31,
+            30,
+            29,
+            28,
+            27,
+            26,
+            25,
+            24
+          ],
+          "loop_indices": [
+            56,
+            57,
+            58,
+            59,
+            60,
+            61,
+            62,
+            63
+          ],
+          "uv": [
+            [
+              0.5199999809265137,
+              0.2489684671163559
+            ],
+            [
+              0.5199999809265137,
+              0.9080315232276917
+            ],
+            [
+              0.5444778800010681,
+              0.9570000171661377
+            ],
+            [
+              0.9555221199989319,
+              0.9570000171661377
+            ],
+            [
+              0.9800000190734863,
+              0.9080315232276917
+            ],
+            [
+              0.9800000190734863,
+              0.2489684671163559
+            ],
+            [
+              0.9555221199989319,
+              0.20000000298023224
+            ],
+            [
+              0.5444778800010681,
+              0.20000000298023224
+            ]
+          ]
+        },
+        {
+          "face": 12,
+          "vertices": [
+            16,
+            24,
+            25,
+            17
+          ],
+          "loop_indices": [
+            64,
+            65,
+            66,
+            67
+          ],
+          "uv": [
+            [
+              0.019999999552965164,
+              0.03500000014901161
+            ],
+            [
+              0.019999999552965164,
+              0.07400000095367432
+            ],
+            [
+              0.4300000071525574,
+              0.07400000095367432
+            ],
+            [
+              0.4300000071525574,
+              0.03500000014901161
+            ]
+          ]
+        },
+        {
+          "face": 13,
+          "vertices": [
+            17,
+            25,
+            26,
+            18
+          ],
+          "loop_indices": [
+            68,
+            69,
+            70,
+            71
+          ],
+          "uv": [
+            [
+              0.45500001311302185,
+              0.03500000014901161
+            ],
+            [
+              0.45500001311302185,
+              0.07400000095367432
+            ],
+            [
+              0.4896000027656555,
+              0.07400000095367432
+            ],
+            [
+              0.4896000027656555,
+              0.03500000014901161
+            ]
+          ]
+        },
+        {
+          "face": 14,
+          "vertices": [
+            18,
+            26,
+            27,
+            19
+          ],
+          "loop_indices": [
+            72,
+            73,
+            74,
+            75
+          ],
+          "uv": [
+            [
+              0.5149999856948853,
+              0.03500000014901161
+            ],
+            [
+              0.5149999856948853,
+              0.07400000095367432
+            ],
+            [
+              0.843999981880188,
+              0.07400000095367432
+            ],
+            [
+              0.843999981880188,
+              0.03500000014901161
+            ]
+          ]
+        },
+        {
+          "face": 15,
+          "vertices": [
+            19,
+            27,
+            28,
+            20
+          ],
+          "loop_indices": [
+            76,
+            77,
+            78,
+            79
+          ],
+          "uv": [
+            [
+              0.8700000047683716,
+              0.03500000014901161
+            ],
+            [
+              0.8700000047683716,
+              0.07400000095367432
+            ],
+            [
+              0.9046000242233276,
+              0.07400000095367432
+            ],
+            [
+              0.9046000242233276,
+              0.03500000014901161
+            ]
+          ]
+        },
+        {
+          "face": 16,
+          "vertices": [
+            20,
+            28,
+            29,
+            21
+          ],
+          "loop_indices": [
+            80,
+            81,
+            82,
+            83
+          ],
+          "uv": [
+            [
+              0.019999999552965164,
+              0.10999999940395355
+            ],
+            [
+              0.019999999552965164,
+              0.14900000393390656
+            ],
+            [
+              0.4300000071525574,
+              0.14900000393390656
+            ],
+            [
+              0.4300000071525574,
+              0.10999999940395355
+            ]
+          ]
+        },
+        {
+          "face": 17,
+          "vertices": [
+            21,
+            29,
+            30,
+            22
+          ],
+          "loop_indices": [
+            84,
+            85,
+            86,
+            87
+          ],
+          "uv": [
+            [
+              0.45500001311302185,
+              0.10999999940395355
+            ],
+            [
+              0.45500001311302185,
+              0.14900000393390656
+            ],
+            [
+              0.4896000027656555,
+              0.14900000393390656
+            ],
+            [
+              0.4896000027656555,
+              0.10999999940395355
+            ]
+          ]
+        },
+        {
+          "face": 18,
+          "vertices": [
+            22,
+            30,
+            31,
+            23
+          ],
+          "loop_indices": [
+            88,
+            89,
+            90,
+            91
+          ],
+          "uv": [
+            [
+              0.5149999856948853,
+              0.10999999940395355
+            ],
+            [
+              0.5149999856948853,
+              0.14900000393390656
+            ],
+            [
+              0.843999981880188,
+              0.14900000393390656
+            ],
+            [
+              0.843999981880188,
+              0.10999999940395355
+            ]
+          ]
+        },
+        {
+          "face": 19,
+          "vertices": [
+            23,
+            31,
+            24,
+            16
+          ],
+          "loop_indices": [
+            92,
+            93,
+            94,
+            95
+          ],
+          "uv": [
+            [
+              0.8700000047683716,
+              0.10999999940395355
+            ],
+            [
+              0.8700000047683716,
+              0.14900000393390656
+            ],
+            [
+              0.9046000242233276,
+              0.14900000393390656
+            ],
+            [
+              0.9046000242233276,
+              0.10999999940395355
+            ]
+          ]
+        }
+      ],
+      "texture_files": {
+        "BaseColor": "textures/R34_Cover_BaseColor.png",
+        "Metallic": "textures/R34_Cover_Metallic.png",
+        "Roughness": "textures/R34_Cover_Roughness.png",
+        "NormalTS": "textures/R34_Cover_NormalTS.png",
+        "MetallicSmoothness": "textures/R34_Cover_MetallicSmoothness.png"
+      },
+      "size": [
+        2048,
+        1024
+      ],
+      "original_uv_hashes": {
+        "R32_Metric_UV": "0030c90e8f40f8675d62e190fe393a1b3f2a0070c1a8aa4d27d8808422a59124"
+      },
+      "original_uv_active_index": 0,
+      "original_uv_render": "R32_Metric_UV",
+      "old_r33": "R33_02_Brake_Cover_Enamel_Dust_And_Contact_Wear",
+      "baseline_slots": [
+        "R24_Slate_Gray_Industrial_Enamel",
+        "R24_Dark_Forged_Joint_Steel",
+        "R24_Recessed_Elastomer_Seal"
+      ],
+      "baseline_face_indices": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "baseline_target_materials": [
+        "R24_Slate_Gray_Industrial_Enamel",
+        "R24_Slate_Gray_Industrial_Enamel",
+        "R24_Slate_Gray_Industrial_Enamel",
+        "R24_Slate_Gray_Industrial_Enamel",
+        "R24_Slate_Gray_Industrial_Enamel",
+        "R24_Slate_Gray_Industrial_Enamel",
+        "R24_Slate_Gray_Industrial_Enamel",
+        "R24_Slate_Gray_Industrial_Enamel",
+        "R24_Slate_Gray_Industrial_Enamel",
+        "R24_Slate_Gray_Industrial_Enamel"
+      ],
+      "applied_slot": 3
+    }
+  ],
+  "receipt": {
+    "mapping_sha256": "4a695a1649611fa4a805a18b1f6a35bb3a52dc7d1c0f9228afab7c2b845e2464",
+    "created": {
+      "objects": [
+        "R32_01_Deep_Maintenance_Rim_And_Mount",
+        "R32_02_Recessed_Sealed_Brake_Access_Cover",
+        "R32_03_Extraction_Guides_Stops_And_Two_Cams",
+        "R32_04_Lubrication_Return_Lines_And_Two_Supports",
+        "R32_05_Service_Plate_Arrow_And_Ledge_Dust",
+        "R32_06_DW01_Brake_Service_Stencil",
+        "R32_MAINTENANCE_CASSETTE_DISPLAY_ROOT",
+        "R35_01_Split_Cast_Housing_Cheeks",
+        "R35_02_Split_Flange_And_Sealing_Land",
+        "R35_03_Registered_Removable_Actuator_Cap",
+        "R35_04_Four_Cap_Studs_And_Two_Split_Clamps",
+        "R35_05_Load_Return_Ribs_And_Lower_Keys",
+        "R35_ACTUATOR_HOUSING_DISPLAY_ROOT"
+      ],
+      "collections": [
+        "B_R32_DRAWWORKS_MAINTENANCE_CASSETTE_DISPLAY",
+        "B_R35_FRONT_DRUM_ACTUATOR_HOUSING_DISPLAY"
+      ],
+      "meshes": [
+        "R32_01_Deep_Maintenance_Rim_And_Mount_Mesh",
+        "R32_02_Recessed_Sealed_Brake_Access_Cover_Mesh",
+        "R32_03_Extraction_Guides_Stops_And_Two_Cams_Mesh",
+        "R32_04_Lubrication_Return_Lines_And_Two_Supports_Mesh",
+        "R32_05_Service_Plate_Arrow_And_Ledge_Dust_Mesh",
+        "R32_Service_Stencil_Text",
+        "R35_01_Split_Cast_Housing_Cheeks_Mesh",
+        "R35_02_Split_Flange_And_Sealing_Land_Mesh",
+        "R35_03_Registered_Removable_Actuator_Cap_Mesh",
+        "R35_04_Four_Cap_Studs_And_Two_Split_Clamps_Mesh",
+        "R35_05_Load_Return_Ribs_And_Lower_Keys_Mesh"
+      ],
+      "materials": [
+        "R34_01_Service_Shroud_Baked_PBR",
+        "R34_02_Brake_Cover_Baked_PBR"
+      ],
+      "node_groups": [],
+      "images": [
+        "R34_Cover_BaseColor",
+        "R34_Cover_Metallic",
+        "R34_Cover_NormalTS",
+        "R34_Cover_Roughness",
+        "R34_Shroud_BaseColor",
+        "R34_Shroud_Metallic",
+        "R34_Shroud_NormalTS",
+        "R34_Shroud_Roughness"
+      ]
+    },
+    "baseline_filepath": "E:\\UnityProjects\\FPS_Template\\LocalData\\AI\\AssetHandoffs\\TheophilusDenseRing\\R35_R39\\Baseline511\\Moonkov_R29_Reconstructed_Display_Baseline.blend",
+    "raw_uv_clone_before": {
+      "mesh": "R20_11_Drawworks_Armor_And_Cable_Returns_Mesh_RECON_R23",
+      "explicit_clone": null,
+      "effective_clone": "UVMap",
+      "active": "UVMap",
+      "active_index": 0,
+      "layers": [
+        "UVMap"
+      ],
+      "raw_clone_flags": [
+        false
+      ]
+    },
+    "raw_uv_clone_after": {
+      "mesh": "R20_11_Drawworks_Armor_And_Cable_Returns_Mesh_RECON_R23",
+      "explicit_clone": null,
+      "effective_clone": "UVMap",
+      "active": "UVMap",
+      "active_index": 0,
+      "layers": [
+        "UVMap",
+        "R34_Display_Surface_UV"
+      ],
+      "raw_clone_flags": [
+        false,
+        false
+      ]
+    }
+  },
+  "sourceBlendSaved": false,
+  "sourceBlend": "E:\\UnityProjects\\FPS_Template\\LocalData\\AI\\AssetHandoffs\\TheophilusDenseRing\\R35_R39\\Baseline511\\Moonkov_R29_Reconstructed_Display_Baseline.blend",
+  "geometryAxis": "XZY, reverse winding, world minus (2015,2130,0)",
+  "UnityRoot": [
+    2015,
+    0,
+    2130
+  ],
+  "lightmapChannelReserved": 1,
+  "sourceGuardsAfterExport": true
+}
