@@ -14,15 +14,16 @@ namespace Unity.MP_FPS
         [SerializeField, Range(0, 1)] private float m_OxygenFraction = .21f;
         [SerializeField, Min(0)] private float m_MinPressureKPa = 60;
         [SerializeField, Min(0)] private float m_MinOxygenPartialPressureKPa = 15;
+        [SerializeField] private AirlockController m_Chamber;
         [Tooltip("Breathable air always prevents hypoxia. Disable this when suit tanks require a separate refill station.")]
         [SerializeField] private bool m_AllowsSuitRefill = true;
         public bool AllowsSuitRefill { get => m_AllowsSuitRefill; set => m_AllowsSuitRefill = value; }
         public string AirspaceId => m_AirspaceId;
-        public float PressureKPa => m_PressureKPa;
-        public void Configure(string id, float pressureKPa, float oxygenFraction, int priority = 0)
+        public float PressureKPa => m_Chamber ? m_Chamber.State.PressureKPa : m_PressureKPa;
+        public void Configure(string id, float pressureKPa, float oxygenFraction, int priority = 0, AirlockController chamber = null)
         {
             m_AirspaceId = id; m_PressureKPa = Mathf.Max(0, pressureKPa);
-            m_OxygenFraction = Mathf.Clamp01(oxygenFraction); m_Priority = priority;
+            m_OxygenFraction = Mathf.Clamp01(oxygenFraction); m_Priority = priority; m_Chamber = chamber;
             m_Box = GetComponent<BoxCollider>();
         }
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -51,11 +52,11 @@ namespace Unity.MP_FPS
             }
             if (!selected) { sample = default; return false; }
             float pressure = selected.PressureKPa;
-            float fraction = selected.m_OxygenFraction;
-            float minimum = selected.m_MinPressureKPa;
-            float oxygenMinimum = selected.m_MinOxygenPartialPressureKPa;
-            bool valid = float.IsFinite(pressure) && float.IsFinite(fraction) &&
-                float.IsFinite(minimum) && float.IsFinite(oxygenMinimum) &&
+            float fraction = selected.m_Chamber ? selected.m_Chamber.Settings.SupplyOxygenFraction : selected.m_OxygenFraction;
+            float minimum = selected.m_Chamber ? selected.m_Chamber.Settings.BreathablePressureKPa : selected.m_MinPressureKPa;
+            float oxygenMinimum = selected.m_Chamber ? selected.m_Chamber.Settings.BreathableOxygenPartialPressureKPa : selected.m_MinOxygenPartialPressureKPa;
+            bool valid = AirlockSettings.Finite(pressure) && AirlockSettings.Finite(fraction) &&
+                AirlockSettings.Finite(minimum) && AirlockSettings.Finite(oxygenMinimum) &&
                 pressure >= 0 && fraction >= 0 && fraction <= 1 && minimum >= 0 && oxygenMinimum >= 0;
             sample = new AtmosphereSample(selected.m_AirspaceId, valid ? pressure : 0, valid ? fraction : 0,
                 valid && pressure >= minimum && pressure * fraction >= oxygenMinimum, selected.m_AllowsSuitRefill);

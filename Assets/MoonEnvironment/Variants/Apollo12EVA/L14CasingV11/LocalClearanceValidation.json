@@ -1,0 +1,237 @@
+{
+  "protectedSignatures": [
+    {
+      "name": "MC_L14 instrument calibration enclosure front lower panel_05893",
+      "sourceSnapshotSHA256Verified": true,
+      "currentUniqueVertices": 24,
+      "triangles": 44,
+      "maxVertexDistanceM": 0.00016361597629470517,
+      "maxBoundsFieldDifferenceM": 0.0001220703125,
+      "maxMatrixFieldDifference": 0.0001220703125,
+      "exactCrossImporterByteHashRequired": false
+    },
+    {
+      "name": "MC_L14 instrument calibration enclosure front top panel_05894",
+      "sourceSnapshotSHA256Verified": true,
+      "currentUniqueVertices": 24,
+      "triangles": 44,
+      "maxVertexDistanceM": 0.0001635619901734262,
+      "maxBoundsFieldDifferenceM": 0.0001220703125,
+      "maxMatrixFieldDifference": 0.0001220703125,
+      "exactCrossImporterByteHashRequired": false
+    },
+    {
+      "name": "MC_L14 instrument calibration enclosure shielded test window_05",
+      "sourceSnapshotSHA256Verified": true,
+      "currentUniqueVertices": 24,
+      "triangles": 44,
+      "maxVertexDistanceM": 4.9366243197097566e-05,
+      "maxBoundsFieldDifferenceM": 4.6506958007341836e-05,
+      "maxMatrixFieldDifference": 4.5820312500666205e-05,
+      "exactCrossImporterByteHashRequired": false
+    }
+  ],
+  "currentTargetMeshPairCount": 36,
+  "candidateTrianglesEnteringConvexTargetInteriors": 0,
+  "pairs": [
+    {
+      "candidate": "GAME11_L14_CASING_01",
+      "target": "MC_L14 instrument calibration enclosure front lower panel_05893",
+      "trianglesEnteringTargetInterior": 0
+    },
+    {
+      "candidate": "GAME11_L14_CASING_02",
+      "target": "MC_L14 instrument calibration enclosure front lower panel_05893",
+      "trianglesEnteringTargetInterior": 0
+    },
+    {
+      "candidate": "GAME11_L14_CASING_03",
+      "target": "MC_L14 instrument calibration enclosure front lower panel_05893",
+      "trianglesEnteringTargetInterior": 0
+    },
+    {
+      "candidate": "GAME11_L14_CASING_04",
+      "target": "MC_L14 instrument calibration enclosure front lower panel_05893",
+      "trianglesEnteringTargetInterior": 0
+    },
+    {
+      "candidate": "GAME11_L14_CASING_05",
+      "target": "MC_L14 instrument calibration enclosure front lower panel_05893",
+      "trianglesEnteringTargetInterior": 0
+    },
+    {
+      "candidate": "GAME11_L14_CASING_06",
+      "target": "MC_L14 instrument calibration enclosure front lower panel_05893",
+      "trianglesEnteringTargetInterior": 0
+    },
+    {
+      "candidate": "GAME11_L14_CASING_01",
+      "target": "MC_L14 instrument calibration enclosure front top panel_05894",
+      "trianglesEnteringTargetInterior": 0
+    },
+    {
+      "candidate": "GAME11_L14_CASING_02",
+      "target": "MC_L14 instrument calibration enclosure front top panel_05894",
+      "trianglesEnteringTargetInterior": 0
+    },
+    {
+      "candidate": "GAME11_L14_CASING_03",
+      "target": "MC_L14 instrument calibration enclosure front top panel_05894",
+      "trianglesEnteringTargetInterior": 0
+    },
+    {
+      "candidate": "GAME11_L14_CASING_04",
+      "target": "MC_L14 instrument calibration enclosure front top panel_05894",
+      "trianglesEnteringTargetInterior": 0
+    },
+    {
+      "candidate": "GAME11_L14_CASING_05",
+      "target": "MC_L14 instrument calibration enclosure front top panel_05894",
+      "trianglesEnteringTargetInterior": 0
+    },
+    {
+      "candidate": "GAME11_L14_CASING_06",
+      "target": "MC_L14 instrument calibration enclosure front top panel_05894",
+      "trianglesEnteringTargetInterior": 0
+    },
+    {
+      "candidate": "GAME11_L14_CASING_01",
+      "target": "MC_L14 instrument calibration enclosure shielded test window_05",
+      "trianglesEnteringTargetInterior": 0
+    },
+    {
+      "candidate": "GAME11_L14_CASING_02",
+      "target": "MC_L14 instrument calibration enclosure shielded test window_05",
+      "trianglesEnteringTargetInterior": 0
+    },
+    {
+      "candidate": "GAME11_L14_CASING_03",
+      "target": "MC_L14 instrument calibration enclosure shielded test window_05",
+      "trianglesEnteringTargetInterior": 0
+    },
+    {
+      "candidate": "GAME11_L14_CASING_04",
+      "target": "MC_L14 instrument calibration enclosure shielded test window_05",
+      "trianglesEnteringTargetInterior": 0
+    },
+    {
+      "candidate": "GAME11_L14_CASING_05",
+      "target": "MC_L14 instrument calibration enclosure shielded test window_05",
+      "trianglesEnteringTargetInterior": 0
+    },
+    {
+      "candidate": "GAME11_L14_CASING_06",
+      "target": "MC_L14 instrument calibration enclosure shielded test window_05",
+      "trianglesEnteringTargetInterior": 0
+    },
+    {
+      "candidate": "GAME11_L14_CASING_01",
+      "target": "MC_L14 instrument calibration enclosure window frame_05896",
+      "trianglesEnteringTargetInterior": 0
+    },
+    {
+      "candidate": "GAME11_L14_CASING_02",
+      "target": "MC_L14 instrument calibration enclosure window frame_05896",
+      "trianglesEnteringTargetInterior": 0
+    },
+    {
+      "candidate": "GAME11_L14_CASING_03",
+      "target": "MC_L14 instrument calibration enclosure window frame_05896",
+      "trianglesEnteringTargetInterior": 0
+    },
+    {
+      "candidate": "GAME11_L14_CASING_04",
+      "target": "MC_L14 instrument calibration enclosure window frame_05896",
+      "trianglesEnteringTargetInterior": 0
+    },
+    {
+      "candidate": "GAME11_L14_CASING_05",
+      "target": "MC_L14 instrument calibration enclosure window frame_05896",
+      "trianglesEnteringTargetInterior": 0
+    },
+    {
+      "candidate": "GAME11_L14_CASING_06",
+      "target": "MC_L14 instrument calibration enclosure window frame_05896",
+      "trianglesEnteringTargetInterior": 0
+    },
+    {
+      "candidate": "GAME11_L14_CASING_01",
+      "target": "MC_L14 instrument calibration enclosure window frame_05897",
+      "trianglesEnteringTargetInterior": 0
+    },
+    {
+      "candidate": "GAME11_L14_CASING_02",
+      "target": "MC_L14 instrument calibration enclosure window frame_05897",
+      "trianglesEnteringTargetInterior": 0
+    },
+    {
+      "candidate": "GAME11_L14_CASING_03",
+      "target": "MC_L14 instrument calibration enclosure window frame_05897",
+      "trianglesEnteringTargetInterior": 0
+    },
+    {
+      "candidate": "GAME11_L14_CASING_04",
+      "target": "MC_L14 instrument calibration enclosure window frame_05897",
+      "trianglesEnteringTargetInterior": 0
+    },
+    {
+      "candidate": "GAME11_L14_CASING_05",
+      "target": "MC_L14 instrument calibration enclosure window frame_05897",
+      "trianglesEnteringTargetInterior": 0
+    },
+    {
+      "candidate": "GAME11_L14_CASING_06",
+      "target": "MC_L14 instrument calibration enclosure window frame_05897",
+      "trianglesEnteringTargetInterior": 0
+    },
+    {
+      "candidate": "GAME11_L14_CASING_01",
+      "target": "MC_L14 instrument calibration enclosure window frame_05898",
+      "trianglesEnteringTargetInterior": 0
+    },
+    {
+      "candidate": "GAME11_L14_CASING_02",
+      "target": "MC_L14 instrument calibration enclosure window frame_05898",
+      "trianglesEnteringTargetInterior": 0
+    },
+    {
+      "candidate": "GAME11_L14_CASING_03",
+      "target": "MC_L14 instrument calibration enclosure window frame_05898",
+      "trianglesEnteringTargetInterior": 0
+    },
+    {
+      "candidate": "GAME11_L14_CASING_04",
+      "target": "MC_L14 instrument calibration enclosure window frame_05898",
+      "trianglesEnteringTargetInterior": 0
+    },
+    {
+      "candidate": "GAME11_L14_CASING_05",
+      "target": "MC_L14 instrument calibration enclosure window frame_05898",
+      "trianglesEnteringTargetInterior": 0
+    },
+    {
+      "candidate": "GAME11_L14_CASING_06",
+      "target": "MC_L14 instrument calibration enclosure window frame_05898",
+      "trianglesEnteringTargetInterior": 0
+    }
+  ],
+  "convexTargetsVerified": true,
+  "numericToleranceM": 1e-06,
+  "trimmedComponents": [
+    {
+      "sourceComponent": 16,
+      "minYGapToActualFrontPanelsM": 0.002107654223632238
+    },
+    {
+      "sourceComponent": 17,
+      "minYGapToActualFrontPanelsM": 0.002107654223632238
+    },
+    {
+      "sourceComponent": 31,
+      "minYGapToActualFrontPanelsM": 0.002107654223632238
+    }
+  ],
+  "minimumTrimmedComponentYGapToActualFrontPanelsM": 0.002107654223632238,
+  "allSideRearOverlapsRemoved": false,
+  "scope": "Only six fixed candidates vs six current protected front/window/frame targets; retained side/rear joints are outside this no-penetration check. No Play or dynamic interaction validation."
+}

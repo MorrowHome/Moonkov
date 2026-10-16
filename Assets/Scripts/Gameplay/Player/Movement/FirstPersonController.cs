@@ -410,7 +410,7 @@ public class FirstPersonController : MonoBehaviour
             {
                 var raycastResult = m_GroundCheckRaycastResults[i];
 
-                if (PlayerGhost && GhostGameObject.TryFindGhostGameObject(raycastResult.collider.gameObject, out var ghost) &&
+                if (!m_StandalonePreview && PlayerGhost && GhostGameObject.TryFindGhostGameObject(raycastResult.collider.gameObject, out var ghost) &&
                     !GhostGameObject.BroadClientServerRolesMatch(ghost.Role, PlayerGhost.Role))
                 {
                     // not a valid ground for this player (server hitting client object, or vice versa)
@@ -484,7 +484,7 @@ public class FirstPersonController : MonoBehaviour
             state.Jump = false;
             SetMovementType(ref state, MovementType.Standing);
 
-            bool isClientOwned = m_PlayerGhost && m_PlayerGhost.Role == MultiplayerRole.ClientOwned;
+            bool isClientOwned = !m_StandalonePreview && m_PlayerGhost && m_PlayerGhost.Role == MultiplayerRole.ClientOwned;
             if (isClientOwned && m_Animator_1P != null)
             {
                 if (m_Animator_1P.TryGetComponent<Unity.MP_FPS.EventHandler>(out var eventHandler))

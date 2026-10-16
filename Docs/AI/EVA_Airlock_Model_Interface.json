@@ -1,0 +1,130 @@
+{
+  "schema": "moonkov-eva-airlock-drive-interface-v1",
+  "status": "agreed-local-minimum-awaiting-cloud-pose-data",
+  "airlock_id": "EVA_EAST_01",
+  "local_baseline": {
+    "active_scene_at_inspection": "Assets/Scenes/MainMenu.unity",
+    "formal_gameplay_scene": "Assets/MoonEnvironment/Variants/Apollo12Base/Scenes/Apollo12GameScene.unity",
+    "documented_gameplay_building": "Assets/MoonEnvironment/Variants/MC00LightControlsFullV02/Prefabs/Apollo12MC00Candidate.prefab",
+    "oxygen_owner": "RaidHealth.TickOxygen / ServerGameSystem.UpdateSurvival / PredictedPlayerGhost.Oxygen",
+    "breathable_query": "BreathableZone.Contains",
+    "existing_EVA_door_motion_system": false,
+    "existing_motion_contract_is_NOT_EVA": true,
+    "existing_building_collision_does_NOT_establish_dynamic_door_collision": true
+  },
+  "coordinate_contract": {
+    "unity": "metres; X/Y/Z with Y up; imported asset root local frame",
+    "pose_format": "local_position_m[3], local_rotation_xyzw[4] relative to the dedicated PanelMotion parent",
+    "closed": "normalized drive=0; panels physically seal the aperture",
+    "open": "normalized drive=1; all panels clear the declared walk aperture",
+    "root_scale": [
+      1,
+      1,
+      1
+    ],
+    "root_origin": "one documented rigid frame per door at the aperture center; include its local pose relative to static airlock/building root",
+    "no_guessed_axis": true,
+    "no_author_world_axis_driving": true,
+    "no_reapply_37deg_study_rotation": true,
+    "do_not_move": [
+      "ORG_East_EVA_Pressure_Entry_01a046",
+      "ORG_EVA_DUST_HOLD_7e400f"
+    ],
+    "preserve_static_ORG_children": "shell, ramp, lamps, light buttons, core architecture stay fixed"
+  },
+  "doors": [
+    {
+      "door_id": "EVA_EAST_01.OUTER",
+      "root_name": "EVA_EAST_01_OuterDoorRoot",
+      "existing_parent": "ORG_East_EVA_Pressure_Entry_01a046",
+      "panel_ids": [
+        "EVA_EAST_01.OUTER.P00",
+        "EVA_EAST_01.OUTER.P01",
+        "EVA_EAST_01.OUTER.P02",
+        "EVA_EAST_01.OUTER.P03",
+        "EVA_EAST_01.OUTER.P04",
+        "EVA_EAST_01.OUTER.P05"
+      ]
+    },
+    {
+      "door_id": "EVA_EAST_01.INNER",
+      "root_name": "EVA_EAST_01_InnerDoorRoot",
+      "existing_parent": "ORG_EVA_DUST_HOLD_7e400f",
+      "panel_ids": [
+        "EVA_EAST_01.INNER.P00",
+        "EVA_EAST_01.INNER.P01",
+        "EVA_EAST_01.INNER.P02",
+        "EVA_EAST_01.INNER.P03",
+        "EVA_EAST_01.INNER.P04",
+        "EVA_EAST_01.INNER.P05"
+      ]
+    }
+  ],
+  "per_panel_required": [
+    "panel_id",
+    "source_mesh_name",
+    "dedicated_motion_transform_name",
+    "closed_local_position_m",
+    "closed_local_rotation_xyzw",
+    "open_local_position_m",
+    "open_local_rotation_xyzw",
+    "travel_length_m",
+    "collider_reference_or_local_box_center_size",
+    "sweep_clearance_bounds"
+  ],
+  "colliders": {
+    "moving_panels": "dedicated colliders parented to each motion transform; never static-combine these panels; no inherited old shell collider sealing the open aperture",
+    "occupancy_sensors": "separate fixed trigger volumes on the aperture; do not parent sensors to moving panels",
+    "body_room_volume": "separate fixed room-local BoxCollider volume, distinct from door and button colliders",
+    "not_bearing_approval": true
+  },
+  "buttons": {
+    "new_controls_only": true,
+    "do_not_rebind_existing_118_lamps_or_135_light_buttons": true,
+    "stable_ids": [
+      "EVA_EAST_01.OUTSIDE.OPEN_OUTER",
+      "EVA_EAST_01.CHAMBER.CLOSE_OUTER",
+      "EVA_EAST_01.CHAMBER.EQUALIZE_INSIDE",
+      "EVA_EAST_01.CHAMBER.OPEN_INNER",
+      "EVA_EAST_01.INSIDE.OPEN_INNER",
+      "EVA_EAST_01.CHAMBER.CLOSE_INNER",
+      "EVA_EAST_01.CHAMBER.EQUALIZE_OUTSIDE",
+      "EVA_EAST_01.CHAMBER.OPEN_OUTER"
+    ],
+    "required": [
+      "button_id",
+      "action",
+      "static_local_pose",
+      "interaction_box_or_anchor",
+      "indicator_surface_reference",
+      "status_text_anchor_optional"
+    ]
+  },
+  "room_ids": [
+    "EVA_EAST_01.CHAMBER",
+    "EVA_EAST_01.INSIDE",
+    "EVA_EAST_01.OUTSIDE"
+  ],
+  "room_interface": [
+    "fixed_chamber_volume_local_center_size",
+    "interior_volume_local_center_size",
+    "exterior_side_reference",
+    "outside_floor_plane",
+    "inside_floor_plane",
+    "clear_aperture_width_height_m",
+    "chamber_volume_segments: fixed root-local boxes, all with room_id EVA_EAST_01.CHAMBER; exact point-in-box union, never union AABB"
+  ],
+  "audio_anchors": [
+    "EVA_EAST_01.VALVE",
+    "EVA_EAST_01.PUMP",
+    "EVA_EAST_01.OUTER.LATCH",
+    "EVA_EAST_01.OUTER.MOTOR",
+    "EVA_EAST_01.INNER.LATCH",
+    "EVA_EAST_01.INNER.MOTOR"
+  ],
+  "audio_contract": "separate physical event and propagation route; pressure affects air conduction only, not all helmet/radio/structure channels; source recordings identified honestly",
+  "network_contract": "explicit stable airlock/button/panel IDs, never runtime instance IDs; server owns pressure, door state and validation; poses are client presentation of authoritative normalized door state",
+  "cloud_delivery_minimum": "reuse existing 12 mesh panels; include both outer and core-layer inner assembly, closed AND open pose data, dedicated dynamic colliders, fixed room/aperture sensors and new button/indicator anchors; retain original static parents",
+  "temporary_local_module": "replaceable graybox module using the same IDs and pose API until final cloud assembly arrives; no overwrite of formal map or existing optimized building prefab",
+  "volume_union_policy": "Multiple BreathableZone objects can share one AirspaceId/controller. Query membership in any individual box; no trigger enter/exit counters, so overlaps cannot remove atmosphere prematurely."
+}

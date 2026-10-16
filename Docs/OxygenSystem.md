@@ -6,7 +6,7 @@
 flowchart TD
     Map[MoonRaidMap 配置或可选 OxygenSettings] --> Tick[服务器 RaidOxygen.Tick]
     Room[BreathableZone 压力与氧分压] --> Sample[玩家位置上方 1 m 采样]
-    Airlock[可选气闸模块] -.-> Room
+    Airlock[AirlockController 气闸状态] --> Room
     Station[OxygenRefillZone 供氧站] --> Sample
     Sample --> Tick
     Motion[ControllerState 行走与冲刺] --> Tick
@@ -26,7 +26,7 @@ flowchart TD
 | 真空静止续航 | 600 秒；基础消耗约 0.167 点／秒 |
 | 行走／冲刺倍率 | 1.1／1.75；只在实际移动时应用 |
 | 低氧／危急阈值 | 25／10；HUD 显示储量、当前净消耗下的预计续航 |
-| 可呼吸环境 | 压力至少 60 kPa，氧分压至少 15 kPa；阈值可在区域中配置 |
+| 可呼吸环境 | 压力至少 60 kPa，氧分压至少 15 kPa；气闸可覆盖阈值 |
 | 默认房间空气 | 101.325 kPa、21% 氧气；环境安全时不消耗宇航服储量，不产生缺氧伤害 |
 | 空气自动补充 | `AllowsSuitRefill` 开启时每秒补 5 点；可以独立关闭 |
 | 储量归零 | 先等待 8 秒，再每秒造成 3 点胸部伤害；只计算这一帧中真正耗尽后的时间 |
@@ -52,7 +52,7 @@ flowchart TD
 
 **Tools > Moonkov > Oxygen > Preview Health Panel** 打开实际健康面板的编辑器预览。滑块设置储量，Vacuum／Breathable／Refill Station 切换环境，Step 10s 推进十秒真实氧气规则，Reset 恢复生命和三罐氧气。面板补氧按钮会消费窗口自己的临时库存；不修改玩家账号、地图或 Play Mode。
 
-**可呼吸房间：**模板仅有 `BreathableZone` 和 BoxCollider，没有渲染物体。默认范围 `6 × 3 × 6 m`，原点在地面；选中时显示绿色边框。用 BoxCollider 的 Center／Size 贴合实际密封房间，设置有意义的 Airspace Id。区域重叠时使用最高 Priority，同优先级不要依赖注册顺序。门口应明确划界，动态气闸模块可通过 `Configure` 更新独立区域的压力，不要让静态房间区域覆盖泄压中的气闸。
+**可呼吸房间：**模板仅有 `BreathableZone` 和 BoxCollider，没有渲染物体。默认范围 `6 × 3 × 6 m`，原点在地面；选中时显示绿色边框。用 BoxCollider 的 Center／Size 贴合实际密封房间，设置有意义的 Airspace Id。区域重叠时使用最高 Priority，同优先级不要依赖注册顺序。门口应明确划界，气闸区域应绑定对应 `AirlockController`，不要让静态房间区域覆盖泄压中的气闸。
 
 **补氧站：**模板有双气瓶、阀门、连接器与 `O2 / AUTO SUPPLY` 标识。正面为本地 `+Z`；根对象的触发范围为 `2.4 × 2.4 × 2 m`，中心 `(0, 1.2, 1.05)`，覆盖站前玩家躯干。柜体与底座有实体碰撞，其余装饰没有碰撞。青色选中边框表示供氧范围，关闭 Powered 后边框变灰。
 
@@ -76,7 +76,7 @@ flowchart TD
 ## 后续扩展入口
 
 - 平衡：修改共享 `OxygenSettings`，或保留每张地图自己的 `MoonRaidMap` 参数。
-- 压力与气闸：复用 `BreathableZone.Configure` 和 `TrySample`，在同一个位置采样路径内扩展；气闸控制器单独接入。
+- 压力与气闸：复用 `BreathableZone.TrySample` 和 `AirlockController`，在同一个位置采样路径内扩展。
 - 新补给物：增加带 `Oxygen` 数值的 `ConsumableDefinition`，接入现有道具目录与资源呈现。
 - 电力：驱动 `OxygenRefillZone.Powered`；有限气源或多人分配需要新增服务器库存规则，不能只在客户端扣除。
 - 装备容量与泄漏：当前固定容量为 `RaidOxygen.Capacity`；需要新玩法时同步扩展服务器状态与 HUD，避免客户端独自改变续航。
@@ -87,7 +87,7 @@ flowchart TD
 
 ## 验证边界
 
-实现阶段在当前工作区完成的验证如下；本次独立提交只检查暂存范围和差异，未重新运行 Unity。Unity Editor 编译通过；`Tools > Moonkov > Check Oxygen System` 的 46 条针对性断言通过，覆盖耗尽与宽限分帧、运动倍率、安全空气与储气分离、压力／氧分压与优先级、站点禁用及重叠、氧气罐原子消费和拒绝路径、营养及旧接口兼容。共享库存与物品目录所在的 `Backend/MoonPersistence` 编译通过，零警告零错误。
+本次验证完成：Unity Editor 编译通过；`Tools > Moonkov > Check Oxygen System` 的 46 条针对性断言通过，覆盖耗尽与宽限分帧、运动倍率、安全空气与储气分离、压力／氧分压与优先级、站点禁用及重叠、氧气罐原子消费和拒绝路径、营养及旧接口兼容。共享库存与物品目录所在的 `Backend/MoonPersistence` 编译通过，零警告零错误。
 
 配置及两个 prefab 已由 Unity 生成并检查组件引用；当前打开场景保持未修改。实际健康面板已在编辑器预览中渲染，确认氧气数据、补氧按钮和健康布局可见，满氧禁用补氧、20% 储量启用按钮。预览截图为 `Logs/OxygenHealthPreview.png`。全程未切换 Play Mode；尚未验证真实地图边界穿越、正式 HUD 的游戏画面、Host＋第二客户端、死亡重生／再次出战或目标设备性能，编辑器预览与规则检查不替代这些验收。
 

@@ -1,0 +1,129 @@
+{
+  "candidates": [
+    {
+      "event": "ValveAir_Loop",
+      "asset": "Assets/Audio/Moonkov/Airlock/Clips/ValveAir_Loop.wav",
+      "author": "Joseph SARDIN",
+      "license": "CC0 1.0",
+      "license_url": "https://bigsoundbank.com/licenses.html",
+      "page": "https://bigsoundbank.com/blow-on-hand-s0747.html",
+      "source_file": "0747.wav",
+      "source_sha256": "e78cc9c7275e429bd2f65ec1a2001b59e65d64db6e43f5350b75f0b99faf878a",
+      "source_encoding": "original WAV",
+      "crop_seconds": [
+        21,
+        4.0
+      ],
+      "loop": true,
+      "processing": "mono/DC removal, attenuation only, 20ms raised endpoints to zero; no noise synthesis",
+      "attenuation_gain": 0.8622953766499584,
+      "raw_selected_peak": 0.8117867948214214,
+      "processed_peak": 0.699981689453125,
+      "processed_near_full_scale_samples": 0,
+      "loop_end_delta": 0.0,
+      "sha256": "d0087a003eae3c5c4bf25ef06029680ced087dbfeef7e835daafcb1e26e3f7c8",
+      "subjective_audition": "review preview pending; objective waveform/clipping/endpoints inspected",
+      "usage": "replaceable everyday-equipment recording cue; not spacecraft recording"
+    },
+    {
+      "event": "Pump_Loop",
+      "asset": "Assets/Audio/Moonkov/Airlock/Clips/Pump_Loop.wav",
+      "author": "Joseph SARDIN",
+      "license": "CC0 1.0",
+      "license_url": "https://bigsoundbank.com/licenses.html",
+      "page": "https://bigsoundbank.com/air-compressor-s1487.html",
+      "source_file": "1487.mp3",
+      "source_sha256": "2b43dd74433050441aa42a779a44f999bddc678ca10a241fb9f64e69d2062c90",
+      "source_encoding": "official MP3 preview decoded",
+      "crop_seconds": [
+        25,
+        4.0
+      ],
+      "loop": true,
+      "processing": "mono/DC removal, attenuation only, 20ms raised endpoints to zero; no noise synthesis",
+      "attenuation_gain": 0.6926912811605128,
+      "raw_selected_peak": 1.0105511921952335,
+      "processed_peak": 0.699981689453125,
+      "processed_near_full_scale_samples": 0,
+      "loop_end_delta": 0.0,
+      "sha256": "4eee1cbb334a5b72cd865f49e5be73243e3c718808ecd7fe45a01181b69966e9",
+      "subjective_audition": "review preview pending; objective waveform/clipping/endpoints inspected",
+      "usage": "replaceable everyday-equipment recording cue; not spacecraft recording"
+    },
+    {
+      "event": "DoorMotor_Loop",
+      "asset": "Assets/Audio/Moonkov/Airlock/Clips/DoorMotor_Loop.wav",
+      "author": "Joseph SARDIN",
+      "license": "CC0 1.0",
+      "license_url": "https://bigsoundbank.com/licenses.html",
+      "page": "https://bigsoundbank.com/portail-automatique-coulissant-s0513.html",
+      "source_file": "0513.mp3",
+      "source_sha256": "f2a8cb1ffdf4a35c0a49f733f6530ce4d1bb7bccad43f2f8daa5a1ad0644027d",
+      "source_encoding": "official MP3 preview decoded",
+      "crop_seconds": [
+        0.3,
+        2.2
+      ],
+      "loop": true,
+      "processing": "mono/DC removal, attenuation only, 20ms raised endpoints to zero; no noise synthesis",
+      "attenuation_gain": 0.7016061472217349,
+      "raw_selected_peak": 0.9977107566287795,
+      "processed_peak": 0.70001220703125,
+      "processed_near_full_scale_samples": 0,
+      "loop_end_delta": 0.0,
+      "sha256": "e516ee213ee74b99bb824b0eed88eb106aaf79a02101dbfc64befa082f2e8125",
+      "subjective_audition": "review preview pending; objective waveform/clipping/endpoints inspected",
+      "usage": "replaceable everyday-equipment recording cue; not spacecraft recording"
+    },
+    {
+      "event": "LatchLock",
+      "asset": "Assets/Audio/Moonkov/Airlock/Clips/LatchLock.wav",
+      "author": "Joseph SARDIN",
+      "license": "CC0 1.0",
+      "license_url": "https://bigsoundbank.com/licenses.html",
+      "page": "https://bigsoundbank.com/barn-lock-locking-s1540.html",
+      "source_file": "1540.mp3",
+      "source_sha256": "f5496c9889340fd22dc7299799f49e3fb822c6431a1d49a5bfa093b3359d31b5",
+      "source_encoding": "official MP3 preview decoded",
+      "crop_seconds": [
+        0,
+        2.76325
+      ],
+      "loop": false,
+      "processing": "mono/DC removal, attenuation only, 20ms raised endpoints to zero; no noise synthesis",
+      "attenuation_gain": 0.6931410845769335,
+      "raw_selected_peak": 1.0098954102933502,
+      "processed_peak": 0.70001220703125,
+      "processed_near_full_scale_samples": 0,
+      "loop_end_delta": 0.0,
+      "sha256": "2ed0920904f2dddf2624832dc56a644950a2f6a91bd3d5c5a04f3ec21ba99c5f",
+      "subjective_audition": "review preview pending; objective waveform/clipping/endpoints inspected",
+      "usage": "replaceable everyday-equipment recording cue; not spacecraft recording"
+    },
+    {
+      "event": "LatchUnlock",
+      "asset": "Assets/Audio/Moonkov/Airlock/Clips/LatchUnlock.wav",
+      "author": "Joseph SARDIN",
+      "license": "CC0 1.0",
+      "license_url": "https://bigsoundbank.com/licenses.html",
+      "page": "https://bigsoundbank.com/barn-lock-unlocking-s1539.html",
+      "source_file": "1539.mp3",
+      "source_sha256": "439c989de19e9e7bbca2c92d53e8de8d6cb386cbaccb3ed382fb56e924bfea17",
+      "source_encoding": "official MP3 preview decoded",
+      "crop_seconds": [
+        0,
+        3.1316875
+      ],
+      "loop": false,
+      "processing": "mono/DC removal, attenuation only, 20ms raised endpoints to zero; no noise synthesis",
+      "attenuation_gain": 0.7419347822526335,
+      "raw_selected_peak": 0.9434791530795835,
+      "processed_peak": 0.699981689453125,
+      "processed_near_full_scale_samples": 0,
+      "loop_end_delta": 0.0,
+      "sha256": "da0ccbaea622bb6583994396022db6f9467efea546d552ad4d3c126937be0e3d",
+      "subjective_audition": "review preview pending; objective waveform/clipping/endpoints inspected",
+      "usage": "replaceable everyday-equipment recording cue; not spacecraft recording"
+    }
+  ]
+}

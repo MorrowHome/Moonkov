@@ -1,0 +1,14 @@
+.airlock-ui { position: absolute; left: 0; right: 0; top: 0; bottom: 0; display: none; align-items: center; justify-content: flex-end; padding-bottom: 40px; color: #ECECE6; -unity-font-definition: url("../../UI Toolkit/Fonts/Inter-Regular.ttf"); }
+.airlock-ui.is-visible { display: flex; }
+.airlock-card { width: 420px; padding: 16px 20px; background-color: rgba(7, 8, 10, 0.90); border-left-width: 3px; border-left-color: #FFE11A; }
+.airlock-caption { font-size: 11px; color: #FFE11A; margin-bottom: 8px; }
+.airlock-heading { flex-direction: row; align-items: center; margin-bottom: 10px; }
+.airlock-key { border-width: 1px; border-color: #FFE11A; color: #FFE11A; font-size: 22px; width: 38px; height: 34px; margin-right: 12px; -unity-text-align: middle-center; }
+.airlock-action { font-size: 20px; -unity-font-style: bold; }
+.airlock-pressure { font-size: 14px; margin-bottom: 8px; color: #CACBC4; }
+.airlock-row { padding: 5px 9px; font-size: 14px; color: #959B9D; border-left-width: 2px; border-left-color: rgba(0, 0, 0, 0); }
+.airlock-row.is-selected { color: #FFE11A; border-left-color: #FFE11A; background-color: rgba(255, 225, 26, 0.09); }
+.airlock-feedback { font-size: 13px; margin-top: 9px; color: #B5DCC4; white-space: normal; }
+.airlock-feedback.is-blocked { color: #EEAF85; }
+.airlock-hint { font-size: 11px; color: #92999B; margin-top: 7px; }
+.airlock-marker { position: absolute; width: 42px; height: 32px; border-width: 2px; border-color: #FFE11A; background-color: rgba(255, 225, 26, 0.10); }

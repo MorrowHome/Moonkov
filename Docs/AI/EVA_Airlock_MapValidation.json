@@ -1,0 +1,1013 @@
+{
+  "schema": "moonkov-eva-apollo12-validation-v1",
+  "status": "passed",
+  "project": "E:/UnityProjects/FPS_Template",
+  "scene": "Assets/MoonEnvironment/Variants/Apollo12EVA/Scenes/Apollo12_EVA_Walkthrough.unity",
+  "sourceScene": "Assets/MoonEnvironment/Variants/Apollo12Base/Scenes/Apollo12GameScene.unity",
+  "mapBinding": {
+    "scene": "Assets/MoonEnvironment/Variants/Apollo12EVA/Scenes/Apollo12_EVA_Walkthrough.unity",
+    "source": "Assets/MoonEnvironment/Variants/Apollo12Base/Scenes/Apollo12GameScene.unity",
+    "hardwareStatus": "Hardware increment binds separately through AirlockHardwareTools; door baseline and audio anchors retained",
+    "moduleWorldPosition": {
+      "x": 1105.5,
+      "y": 30.763179779052734,
+      "z": 1363.260009765625
+    },
+    "spawn": {
+      "x": 1105.5001220703125,
+      "y": 30.715436935424805,
+      "z": 1369.5
+    },
+    "lights": 249,
+    "lightButtons": 135,
+    "replacedLegacyObjects": [
+      "MC_EVA internal dust-hold wall stowed telescopic door panel_058",
+      "MC_EVA internal dust-hold wall individual leaf carriage_05802",
+      "MC_EVA internal dust-hold wall stowed telescopic door panel",
+      "MC_EVA internal dust-hold wall individual leaf carriage_05804",
+      "MC_EVA internal dust-hold wall stowed telescopic door panel.001",
+      "MC_EVA internal dust-hold wall individual leaf carriage_05806",
+      "MC_EVA internal dust-hold wall stowed telescopic door panel.002",
+      "MC_EVA internal dust-hold wall individual leaf carriage_05812",
+      "MC_EVA internal dust-hold wall stowed telescopic door panel.003",
+      "MC_EVA internal dust-hold wall individual leaf carriage_05814",
+      "MC_EVA internal dust-hold wall stowed telescopic door panel.004",
+      "MC_EVA internal dust-hold wall individual leaf carriage_05816",
+      "MC_East EVA outer isolation door stowed telescopic door panel_0",
+      "MC_East EVA outer isolation door individual leaf carriage_04152",
+      "MC_East EVA outer isolation door stowed telescopic door pan",
+      "MC_East EVA outer isolation door individual leaf carriage_04154",
+      "MC_East EVA outer isolation door stowed telescopic door pan.001",
+      "MC_East EVA outer isolation door individual leaf carriage_04156",
+      "MC_East EVA outer isolation door stowed telescopic door pan.002",
+      "MC_East EVA outer isolation door individual leaf carriage_04162",
+      "MC_East EVA outer isolation door stowed telescopic door pan.003",
+      "MC_East EVA outer isolation door individual leaf carriage_04164",
+      "MC_East EVA outer isolation door stowed telescopic door pan.004",
+      "MC_East EVA outer isolation door individual leaf carriage_04166"
+    ],
+    "disabledNetworkRoots": [
+      "GhostSpawnerManager",
+      "LeaderboardSpawner",
+      "GameResourcesSubScene",
+      "Apollo12 Spawn Points SubScene"
+    ]
+  },
+  "hardwareBinding": {
+    "prefab": "Assets/MoonEnvironment/Variants/Apollo12EVA/Hardware/EVA_AirHardware.prefab",
+    "meshCount": 3,
+    "reusedMaterials": 7,
+    "maxModuleBoundsDeltaM": 0.00022717505635228008,
+    "audioAnchorPosesUnchanged": true
+  },
+  "hardwareZipSHA256": "afc627a38173df2e181115942b7194745cd69d48a2ab8aa758cfcccc50fffd88",
+  "packageManifestVerified": true,
+  "priorLocalValidation": {
+    "path": "Docs/AI/EVA_Airlock_LocalValidation.json",
+    "status": "passed",
+    "observationCount": 28,
+    "appliesToNewMap": false
+  },
+  "compilation": {
+    "nativeBuilderAndHardwareCommandsCompiledAndExecuted": true,
+    "projectCompilationFailed": false,
+    "blockers": [],
+    "owner": "parallel weapon module changes outside EVA scope"
+  },
+  "playValidation": {
+    "ranOnApollo12Variant": true,
+    "reason": "28 observations passed with current formal prefab and simulated F input; separate enabled motor movement/jump/landing check passed after offline role fix"
+  },
+  "audio": {
+    "sourceLicense": "CC0",
+    "primarySourcePagesChecked": true,
+    "sourceManifest": "Assets/Audio/Moonkov/Airlock/Sources.json",
+    "subjectiveAudition": false,
+    "existingHelmetAndRadioPlaybackModified": false,
+    "globalAudioListenerMuteAdded": false,
+    "listenerOutputRmsVerified": true,
+    "metalStructureRoot": "MC00GameExport (Terrain count 0)"
+  },
+  "protectedFiles": {
+    "baselineCount": 86,
+    "parallelChangesObserved": [
+      "Assets/Scripts/Gameplay/Player\\DollSingerNetworkPresentation.cs",
+      "Assets/Scripts/Gameplay/Player\\Movement\\FirstPersonController.cs",
+      "Assets/Scripts/Gameplay/Player\\Movement\\ServerPlayerMovementSystem.cs",
+      "Assets/Scripts/Gameplay/Player\\Projectile\\Projectile.cs"
+    ],
+    "EVAEditsToProtectedPaths": [
+      "Assets/Scripts/Gameplay/Player/Movement/FirstPersonController.cs: two standalone-only role guards"
+    ]
+  },
+  "git": {
+    "committed": false,
+    "pushed": false
+  },
+  "editorState": {
+    "playing": false,
+    "runtimeLightingAccepted": false,
+    "statusLabelOrientationsAdjustedInMapCopy": true,
+    "saved": true,
+    "activeScene": "Assets/MoonEnvironment/Variants/Apollo12EVA/Scenes/Apollo12_EVA_Walkthrough.unity",
+    "sceneLightingMode": "authored"
+  },
+  "mapCycle": {
+    "utc": "2026-10-13T16:21:46.1266055Z",
+    "scene": "Assets/MoonEnvironment/Variants/Apollo12EVA/Scenes/Apollo12_EVA_Walkthrough.unity",
+    "status": "passed",
+    "failure": "",
+    "method": "Live Play frames; actual DollSinger prefab CharacterController.Move with native collision and floor. Movement/input temporarily disabled for scripted route; real camera ray presses gameplay buttons. Existing RaidHealth tick drives suit diagnostics. No physical keyboard input, network peers or subjective audio audition.",
+    "audioEvents": [
+      "InnerLocked:clip",
+      "InnerMotor:clip",
+      "InnerUnlock:clip",
+      "OuterLocked:clip",
+      "OuterMotor:clip",
+      "OuterUnlock:clip",
+      "Pump:clip",
+      "ValveFlow:clip"
+    ],
+    "pooledAudibleSourceObserved": true,
+    "maxListenerOutputRms": 0.04345633089542389,
+    "maxPumpOutputRms": 0.03815411403775215,
+    "maxOuterMotorOutputRms": 0.007439272943884134,
+    "characterPrefab": "Assets/DollSinger/Prefabs/DollSingerNetworkPlayer.prefab",
+    "observations": [
+      {
+        "check": "Outside vacuum drains existing suit reserve",
+        "actorLocal": {
+          "x": -0.000118255615234375,
+          "y": -0.08651882410049438,
+          "z": -6.24000358581543
+        },
+        "pressureKPa": 0.0,
+        "outer": 0.0,
+        "inner": 0.0,
+        "suitOxygen": 79.7663345336914,
+        "breathable": false
+      },
+      {
+        "check": "Input System F key opens outer door through actual Demo.Update and camera ray",
+        "actorLocal": {
+          "x": -0.000118255615234375,
+          "y": -0.08651882410049438,
+          "z": -6.24000358581543
+        },
+        "pressureKPa": 0.0,
+        "outer": 0.0,
+        "inner": 0.0,
+        "suitOxygen": 79.75728607177734,
+        "breathable": false
+      },
+      {
+        "check": "Walk reached 0,-4.35",
+        "actorLocal": {
+          "x": 3.814697265625e-06,
+          "y": 0.027367055416107178,
+          "z": -4.39625358581543
+        },
+        "pressureKPa": 0.0,
+        "outer": 1.0,
+        "inner": 0.0,
+        "suitOxygen": 79.39273834228516,
+        "breathable": false
+      },
+      {
+        "check": "CHAMBER.CLOSE_OUTER -> Obstructed",
+        "actorLocal": {
+          "x": 3.814697265625e-06,
+          "y": 0.027367055416107178,
+          "z": -4.39625358581543
+        },
+        "pressureKPa": 0.0,
+        "outer": 1.0,
+        "inner": 0.0,
+        "suitOxygen": 79.39273834228516,
+        "breathable": false
+      },
+      {
+        "check": "Actual capsule in aperture blocks closing; stopped motor silent",
+        "actorLocal": {
+          "x": 3.814697265625e-06,
+          "y": 0.027367055416107178,
+          "z": -4.39625358581543
+        },
+        "pressureKPa": 0.0,
+        "outer": 1.0,
+        "inner": 0.0,
+        "suitOxygen": 79.35595703125,
+        "breathable": false
+      },
+      {
+        "check": "Walk reached 0,-3",
+        "actorLocal": {
+          "x": 1.9073486328125e-06,
+          "y": 0.020002782344818115,
+          "z": -3.044567108154297
+        },
+        "pressureKPa": 0.0,
+        "outer": 1.0,
+        "inner": 0.0,
+        "suitOxygen": 79.24832153320312,
+        "breathable": false
+      },
+      {
+        "check": "CHAMBER.CLOSE_OUTER -> Accepted",
+        "actorLocal": {
+          "x": 1.9073486328125e-06,
+          "y": 0.020002782344818115,
+          "z": -3.044567108154297
+        },
+        "pressureKPa": 0.0,
+        "outer": 1.0,
+        "inner": 0.0,
+        "suitOxygen": 79.24832153320312,
+        "breathable": false
+      },
+      {
+        "check": "Walk reached 0,-4.35",
+        "actorLocal": {
+          "x": 3.814697265625e-06,
+          "y": 0.020002782344818115,
+          "z": -4.32899284362793
+        },
+        "pressureKPa": 0.0,
+        "outer": 1.0,
+        "inner": 0.0,
+        "suitOxygen": 79.1407699584961,
+        "breathable": false
+      },
+      {
+        "check": "Mid-close native capsule intrusion safely reopens outer door",
+        "actorLocal": {
+          "x": 3.814697265625e-06,
+          "y": 0.020002782344818115,
+          "z": -4.32899284362793
+        },
+        "pressureKPa": 0.0,
+        "outer": 1.0,
+        "inner": 0.0,
+        "suitOxygen": 79.13754272460938,
+        "breathable": false
+      },
+      {
+        "check": "Walk reached 0,-3",
+        "actorLocal": {
+          "x": 1.9073486328125e-06,
+          "y": 0.020004689693450928,
+          "z": -3.046642303466797
+        },
+        "pressureKPa": 0.0,
+        "outer": 1.0,
+        "inner": 0.0,
+        "suitOxygen": 79.03070831298828,
+        "breathable": false
+      },
+      {
+        "check": "CHAMBER.CLOSE_OUTER -> Accepted",
+        "actorLocal": {
+          "x": 1.9073486328125e-06,
+          "y": 0.020004689693450928,
+          "z": -3.046642303466797
+        },
+        "pressureKPa": 0.0,
+        "outer": 1.0,
+        "inner": 0.0,
+        "suitOxygen": 79.03070831298828,
+        "breathable": false
+      },
+      {
+        "check": "CHAMBER.OPEN_INNER -> PressureMismatch",
+        "actorLocal": {
+          "x": 1.9073486328125e-06,
+          "y": 0.020002782344818115,
+          "z": -3.046642303466797
+        },
+        "pressureKPa": 0.0,
+        "outer": 0.0,
+        "inner": 0.0,
+        "suitOxygen": 78.82538604736328,
+        "breathable": false
+      },
+      {
+        "check": "CHAMBER.EQUALIZE_INSIDE -> Accepted",
+        "actorLocal": {
+          "x": 1.9073486328125e-06,
+          "y": 0.020002782344818115,
+          "z": -3.046642303466797
+        },
+        "pressureKPa": 0.0,
+        "outer": 0.0,
+        "inner": 0.0,
+        "suitOxygen": 78.82538604736328,
+        "breathable": false
+      },
+      {
+        "check": "CHAMBER.OPEN_INNER -> Equalizing",
+        "actorLocal": {
+          "x": 1.9073486328125e-06,
+          "y": 0.020002782344818115,
+          "z": -3.046642303466797
+        },
+        "pressureKPa": 0.0,
+        "outer": 0.0,
+        "inner": 0.0,
+        "suitOxygen": 78.82538604736328,
+        "breathable": false
+      },
+      {
+        "check": "Three-segment union breathable; exterior vacuum excluded; suit drain stops",
+        "actorLocal": {
+          "x": 1.9073486328125e-06,
+          "y": 0.020002782344818115,
+          "z": -3.046642303466797
+        },
+        "pressureKPa": 101.32499694824219,
+        "outer": 0.0,
+        "inner": 0.0,
+        "suitOxygen": 92.11943817138672,
+        "breathable": true
+      },
+      {
+        "check": "CHAMBER.OPEN_INNER -> Accepted",
+        "actorLocal": {
+          "x": 1.9073486328125e-06,
+          "y": 0.020002782344818115,
+          "z": -3.046642303466797
+        },
+        "pressureKPa": 101.32499694824219,
+        "outer": 0.0,
+        "inner": 0.0,
+        "suitOxygen": 92.11943817138672,
+        "breathable": true
+      },
+      {
+        "check": "Walk reached 0,5.2",
+        "actorLocal": {
+          "x": 1.9073486328125e-06,
+          "y": 0.020002782344818115,
+          "z": 5.148305892944336
+        },
+        "pressureKPa": 101.32499694824219,
+        "outer": 0.0,
+        "inner": 1.0,
+        "suitOxygen": 100.0,
+        "breathable": true
+      },
+      {
+        "check": "Actual capsule crossed inner door; pressurized inside stops suit drain",
+        "actorLocal": {
+          "x": 1.9073486328125e-06,
+          "y": 0.020002782344818115,
+          "z": 5.148305892944336
+        },
+        "pressureKPa": 101.32499694824219,
+        "outer": 0.0,
+        "inner": 1.0,
+        "suitOxygen": 100.0,
+        "breathable": true
+      },
+      {
+        "check": "Walk reached 0,3",
+        "actorLocal": {
+          "x": 1.9073486328125e-06,
+          "y": 0.020002782344818115,
+          "z": 3.056385040283203
+        },
+        "pressureKPa": 101.32499694824219,
+        "outer": 0.0,
+        "inner": 1.0,
+        "suitOxygen": 100.0,
+        "breathable": true
+      },
+      {
+        "check": "CHAMBER.OPEN_OUTER -> OtherDoorNotSealed",
+        "actorLocal": {
+          "x": 1.9073486328125e-06,
+          "y": 0.020002782344818115,
+          "z": 3.056385040283203
+        },
+        "pressureKPa": 101.32499694824219,
+        "outer": 0.0,
+        "inner": 1.0,
+        "suitOxygen": 100.0,
+        "breathable": true
+      },
+      {
+        "check": "CHAMBER.EQUALIZE_OUTSIDE -> DoorsNotSealed",
+        "actorLocal": {
+          "x": 1.9073486328125e-06,
+          "y": 0.020002782344818115,
+          "z": 3.056385040283203
+        },
+        "pressureKPa": 101.32499694824219,
+        "outer": 0.0,
+        "inner": 1.0,
+        "suitOxygen": 100.0,
+        "breathable": true
+      },
+      {
+        "check": "CHAMBER.CLOSE_INNER -> Accepted",
+        "actorLocal": {
+          "x": 1.9073486328125e-06,
+          "y": 0.020002782344818115,
+          "z": 3.056385040283203
+        },
+        "pressureKPa": 101.32499694824219,
+        "outer": 0.0,
+        "inner": 1.0,
+        "suitOxygen": 100.0,
+        "breathable": true
+      },
+      {
+        "check": "CHAMBER.OPEN_OUTER -> PressureMismatch",
+        "actorLocal": {
+          "x": 1.9073486328125e-06,
+          "y": 0.020002782344818115,
+          "z": 3.056385040283203
+        },
+        "pressureKPa": 101.32499694824219,
+        "outer": 0.0,
+        "inner": 0.0,
+        "suitOxygen": 100.0,
+        "breathable": true
+      },
+      {
+        "check": "CHAMBER.EQUALIZE_OUTSIDE -> Accepted",
+        "actorLocal": {
+          "x": 1.9073486328125e-06,
+          "y": 0.020002782344818115,
+          "z": 3.056385040283203
+        },
+        "pressureKPa": 101.32499694824219,
+        "outer": 0.0,
+        "inner": 0.0,
+        "suitOxygen": 100.0,
+        "breathable": true
+      },
+      {
+        "check": "Depressurized chamber resumes suit drain",
+        "actorLocal": {
+          "x": 1.9073486328125e-06,
+          "y": 0.020002782344818115,
+          "z": 3.056385040283203
+        },
+        "pressureKPa": 0.0,
+        "outer": 0.0,
+        "inner": 0.0,
+        "suitOxygen": 99.1193618774414,
+        "breathable": false
+      },
+      {
+        "check": "CHAMBER.OPEN_OUTER -> Accepted",
+        "actorLocal": {
+          "x": 1.9073486328125e-06,
+          "y": 0.020002782344818115,
+          "z": 3.056385040283203
+        },
+        "pressureKPa": 0.0,
+        "outer": 0.0,
+        "inner": 0.0,
+        "suitOxygen": 99.1193618774414,
+        "breathable": false
+      },
+      {
+        "check": "Walk reached 0,-6.24",
+        "actorLocal": {
+          "x": 3.814697265625e-06,
+          "y": -0.0833926796913147,
+          "z": -6.20667839050293
+        },
+        "pressureKPa": 0.0,
+        "outer": 1.0,
+        "inner": 0.0,
+        "suitOxygen": 98.1388931274414,
+        "breathable": false
+      },
+      {
+        "check": "Returned outside through actual capsule route; air sound muted in vacuum",
+        "actorLocal": {
+          "x": 3.814697265625e-06,
+          "y": -0.08339649438858032,
+          "z": -6.20667839050293
+        },
+        "pressureKPa": 0.0,
+        "outer": 1.0,
+        "inner": 0.0,
+        "suitOxygen": 98.08625793457031,
+        "breathable": false
+      }
+    ]
+  },
+  "enabledFormalMotorCheck": {
+    "passed": true,
+    "newRuntimeErrors": 0,
+    "inputMoveObserved": true,
+    "horizontalDistanceM": 1.619995,
+    "jumpRiseM": 1.284914,
+    "groundedAtEnd": true,
+    "scope": "Offline standalone forward, jump and landing only; does not establish network regression coverage"
+  },
+  "interactionPrompt": {
+    "implementation": "UI Toolkit action list, selected row and world button marker, live pressure and rejection reason; scroll selects within a visible in-range bank and F dispatches selected action",
+    "scenePanelReferenceSaved": true,
+    "liveGameObservation": {
+      "choiceCount": 3,
+      "selectedAction": "EqualizeInside",
+      "pressureKPa": 101.325,
+      "visible": true
+    },
+    "wheelEndToEndValidation": "inconclusive; synthetic event check did not establish a stable result",
+    "manualInputValidation": "pending user testing",
+    "screenshotValidation": "stopped at user request; no further capture or visual acceptance",
+    "fullCycleRepeated": false,
+    "lightingChanges": false,
+    "multiplayerValidation": false
+  },
+  "assetHandoff20261014": {
+    "status": "partial",
+    "inputHashesVerified": true,
+    "entryZIP": {
+      "bytes": 9928495,
+      "sha256": "9f868b0a1f532afc07427fdabdae86eeed5815c7793d8833dc3934d140cff0d3",
+      "internalManifestFilesVerified": 4,
+      "uniqueExistingTargets": 0,
+      "expectedExistingTargets": 101,
+      "legacyTruncatedAliasesConsidered": 12,
+      "originRootExists": false,
+      "importedMeshes": 0,
+      "status": "blocked by missing v4 baseline target identities and origin frame; no guessed relation to current MC00"
+    },
+    "studyV10": {
+      "bytes": 70588474,
+      "sha256": "7f7db9969b060b20ed808b22b7caaa888a69adc465776eb88be29d83c90e992a",
+      "collection": "GAME_CANDIDATE_L14_SINGLE_UV0",
+      "candidateCount": 13,
+      "matchedVisuals": {
+        "matchedAndBound": 9,
+        "missingTargets": 4,
+        "materials": 10,
+        "textures": 30,
+        "maxVertexDistanceM": 0,
+        "maxBoundsErrorM": 0,
+        "sceneHierarchyTransformsComponentsUnchanged": true,
+        "allSceneColliderSerializationUnchanged": true,
+        "combinedRendererMembership": 0,
+        "screenshotOrPlayValidation": false,
+        "structureSHA256": "3416444f200e4795d3e1fbc66453b8d850c1628277b38974f7dd8496b10525a6",
+        "colliderSHA256": "3c7f16738f7c9e7797fc7ea50b971d38729e7871f09754bfe9164a786aeb5749"
+      },
+      "missingSourceObjects": [
+        "WQ_L14_SKIN_01_West_Closed_Cover_A",
+        "WQ_L14_SKIN_02_West_Closed_Cover_B",
+        "WQ_L14_SKIN_03_Rear_Closed_Cover_A",
+        "WQ_L14_SKIN_04_Rear_Closed_Cover_B"
+      ],
+      "exportedStudyPlacement": false,
+      "sourceBlendModified": false
+    },
+    "materials": {
+      "actualCompressedTextureReadbackPassed": true,
+      "baseColor": "sRGB BC7",
+      "normal": "Normal Map linear BC5, no green flip",
+      "packed": "linear BC7; R metallic/G AO/B unused/A smoothness",
+      "supportedShader": "Universal Render Pipeline/Lit",
+      "bindingsAndUV0Verified": true,
+      "subjectivePBRVisualAcceptance": false,
+      "performanceMeasured": false,
+      "additionalMaterialPartitions": 9
+    },
+    "protection": {
+      "filesChecked": 391,
+      "changed": []
+    },
+    "physicalRouteAndDrawers": {
+      "allSceneTransformsComponentsAndColliderSerializationUnchanged": true,
+      "manualTraversalAndDrawerOperationRan": false
+    },
+    "savedSceneReopenedBindings": 9,
+    "savedSceneDirty": false,
+    "editorPlayStopped": true,
+    "compilationFailed": false,
+    "consoleErrorsAtCheck": 0,
+    "screenshotValidationRan": false,
+    "full28CycleRepeated": false,
+    "multiplayerValidationRan": false,
+    "rollbackSceneCopy": "Temp/DOT00_20261014_AssetHandoff/Apollo12_EVA_Walkthrough_before_L14.unity",
+    "contractAlignmentSupplement": {
+      "missingPairs": [
+        {
+          "source_object": "WQ_L14_SKIN_01_West_Closed_Cover_A",
+          "candidate_object": "GAME10_L14_01"
+        },
+        {
+          "source_object": "WQ_L14_SKIN_02_West_Closed_Cover_B",
+          "candidate_object": "GAME10_L14_02"
+        },
+        {
+          "source_object": "WQ_L14_SKIN_03_Rear_Closed_Cover_A",
+          "candidate_object": "GAME10_L14_03"
+        },
+        {
+          "source_object": "WQ_L14_SKIN_04_Rear_Closed_Cover_B",
+          "candidate_object": "GAME10_L14_04"
+        }
+      ],
+      "buildingChainPrefix": "Apollo12MC00Candidate/Base 3 / modular FBX/MC00GameExport/MC00_Render/MC00_ROOT",
+      "outerRootSuffix": "ORG_EXTERIOR_12a68d/ORG_East_EVA_Pressure_Entry_01a046",
+      "innerRootSuffix": "ORG_FLOOR_L0_e8ed5d/ORG_SHARED_BOUNDARIES_203004/ORG_EVA_DUST_HOLD_7e400f",
+      "sourceModel": "Assets/MoonEnvironment/Variants/MC00LightControlsFullV02/Models/MC00_Render.fbx",
+      "buildingSourceRevision": "full_rollout_v02",
+      "buildingSourceBlend": "MC00_Game_Light_Controls_Full_v02.blend",
+      "buildingSourceSHA256": "e61f2fab253a0801f3ebb7084fbb7163e48bd156c9ce79074825e4e81d5ca5f0",
+      "independentAirlockChain": "EVA_SINGLE_MODULE_ORIGINAL_LOCAL_YUP_FRAME/EVA_EAST_01_CloudIncrement",
+      "entrySimilarObjects": [
+        "MC_East EVA aimed worklight housing_04205",
+        "MC_East EVA approach ramp edge rail handrail_04221"
+      ],
+      "historicalSliceInstallation": "No evidence found in current scene; history not audited, no assertion that installation never occurred",
+      "completeCandidateUniqueTextures": {
+        "BaseColor": 15,
+        "Normal": 14,
+        "Packed": 15,
+        "total": 44
+      },
+      "deliveredNewDataTextureCount": 28,
+      "deliveredNewDataBreakdown": {
+        "newFaceNormals": 13,
+        "newFacePacked": 13,
+        "newInheritedBodyPacked": 2
+      },
+      "actualCopiedTextureCount": 30,
+      "actualCopiedTextureRoles": {
+        "BaseColor": 10,
+        "Normal": 10,
+        "Packed": 10
+      },
+      "actualDataTextureOrigins": {
+        "newCandidateFaceNormals": 9,
+        "newCandidateFacePacked": 9,
+        "newGreyBodyPacked": 1,
+        "inheritedNormal": 1
+      },
+      "actualBaseColorOrigins": {
+        "reusedV9PrintedFaceBaseColors": 9,
+        "inheritedGreyBodyBaseColor": 1
+      },
+      "textureTransfer": "Copied original packed bytes from study; no rebake or reencoding; separate variant assets",
+      "newSceneChangesDuringSupplement": false,
+      "playPerformanceAndSubjectiveAudioRan": false
+    }
+  },
+  "l14CasingV11": {
+    "status": "installed and saved; static validation passed; dynamic and subjective acceptance pending",
+    "sourceBytes": 71152705,
+    "sourceSHA256": "93dc734d6170f975b850387b694be830c2402bf37f8e8dddd10d2baa4bc002e1",
+    "collection": "GAME_CANDIDATE_L14_CLOSED_CASING_MODULE",
+    "assetDirectory": "Assets/MoonEnvironment/Variants/Apollo12EVA/L14CasingV11",
+    "prefab": "Assets/MoonEnvironment/Variants/Apollo12EVA/L14CasingV11/Prefabs/L14_Closed_Casing_Static_V11.prefab",
+    "install": {
+      "meshes": 6,
+      "materials": 9,
+      "textures": 25,
+      "newColliders": 0,
+      "existingTransformsComponentsActiveStatesUnchanged": true,
+      "colliderSerializationUnchanged": true,
+      "drawerPhysicsProbesUnchanged": true,
+      "footprintWithinExistingPlinth": true,
+      "minimumDrawerAABBSeparationM": 6.962956,
+      "priorNineVisualsRetained": 9,
+      "existingStateSHA256": "7bc039137f28bb66142fda7a8f9bdc0ecec4d922b6a16f0d8e33ee322862a5e7",
+      "colliderSHA256": "3c7f16738f7c9e7797fc7ea50b971d38729e7871f09754bfe9164a786aeb5749",
+      "dynamicPlayValidationRan": false
+    },
+    "readback": {
+      "savedAndReopened": true,
+      "installedMeshCount": 6,
+      "existingNineRetained": 9,
+      "verifiedMaterialCount": 9,
+      "verifiedTextureCount": 25,
+      "newColliderCount": 0,
+      "roomBasisValidated": true,
+      "sceneDirty": false,
+      "PlayRan": false
+    },
+    "localClearance": {
+      "protectedSignatures": [
+        {
+          "name": "MC_L14 instrument calibration enclosure front lower panel_05893",
+          "sourceSnapshotSHA256Verified": true,
+          "currentUniqueVertices": 24,
+          "triangles": 44,
+          "maxVertexDistanceM": 0.00016361597629470517,
+          "maxBoundsFieldDifferenceM": 0.0001220703125,
+          "maxMatrixFieldDifference": 0.0001220703125,
+          "exactCrossImporterByteHashRequired": false
+        },
+        {
+          "name": "MC_L14 instrument calibration enclosure front top panel_05894",
+          "sourceSnapshotSHA256Verified": true,
+          "currentUniqueVertices": 24,
+          "triangles": 44,
+          "maxVertexDistanceM": 0.0001635619901734262,
+          "maxBoundsFieldDifferenceM": 0.0001220703125,
+          "maxMatrixFieldDifference": 0.0001220703125,
+          "exactCrossImporterByteHashRequired": false
+        },
+        {
+          "name": "MC_L14 instrument calibration enclosure shielded test window_05",
+          "sourceSnapshotSHA256Verified": true,
+          "currentUniqueVertices": 24,
+          "triangles": 44,
+          "maxVertexDistanceM": 4.9366243197097566e-05,
+          "maxBoundsFieldDifferenceM": 4.6506958007341836e-05,
+          "maxMatrixFieldDifference": 4.5820312500666205e-05,
+          "exactCrossImporterByteHashRequired": false
+        }
+      ],
+      "currentTargetMeshPairCount": 36,
+      "candidateTrianglesEnteringConvexTargetInteriors": 0,
+      "pairs": [
+        {
+          "candidate": "GAME11_L14_CASING_01",
+          "target": "MC_L14 instrument calibration enclosure front lower panel_05893",
+          "trianglesEnteringTargetInterior": 0
+        },
+        {
+          "candidate": "GAME11_L14_CASING_02",
+          "target": "MC_L14 instrument calibration enclosure front lower panel_05893",
+          "trianglesEnteringTargetInterior": 0
+        },
+        {
+          "candidate": "GAME11_L14_CASING_03",
+          "target": "MC_L14 instrument calibration enclosure front lower panel_05893",
+          "trianglesEnteringTargetInterior": 0
+        },
+        {
+          "candidate": "GAME11_L14_CASING_04",
+          "target": "MC_L14 instrument calibration enclosure front lower panel_05893",
+          "trianglesEnteringTargetInterior": 0
+        },
+        {
+          "candidate": "GAME11_L14_CASING_05",
+          "target": "MC_L14 instrument calibration enclosure front lower panel_05893",
+          "trianglesEnteringTargetInterior": 0
+        },
+        {
+          "candidate": "GAME11_L14_CASING_06",
+          "target": "MC_L14 instrument calibration enclosure front lower panel_05893",
+          "trianglesEnteringTargetInterior": 0
+        },
+        {
+          "candidate": "GAME11_L14_CASING_01",
+          "target": "MC_L14 instrument calibration enclosure front top panel_05894",
+          "trianglesEnteringTargetInterior": 0
+        },
+        {
+          "candidate": "GAME11_L14_CASING_02",
+          "target": "MC_L14 instrument calibration enclosure front top panel_05894",
+          "trianglesEnteringTargetInterior": 0
+        },
+        {
+          "candidate": "GAME11_L14_CASING_03",
+          "target": "MC_L14 instrument calibration enclosure front top panel_05894",
+          "trianglesEnteringTargetInterior": 0
+        },
+        {
+          "candidate": "GAME11_L14_CASING_04",
+          "target": "MC_L14 instrument calibration enclosure front top panel_05894",
+          "trianglesEnteringTargetInterior": 0
+        },
+        {
+          "candidate": "GAME11_L14_CASING_05",
+          "target": "MC_L14 instrument calibration enclosure front top panel_05894",
+          "trianglesEnteringTargetInterior": 0
+        },
+        {
+          "candidate": "GAME11_L14_CASING_06",
+          "target": "MC_L14 instrument calibration enclosure front top panel_05894",
+          "trianglesEnteringTargetInterior": 0
+        },
+        {
+          "candidate": "GAME11_L14_CASING_01",
+          "target": "MC_L14 instrument calibration enclosure shielded test window_05",
+          "trianglesEnteringTargetInterior": 0
+        },
+        {
+          "candidate": "GAME11_L14_CASING_02",
+          "target": "MC_L14 instrument calibration enclosure shielded test window_05",
+          "trianglesEnteringTargetInterior": 0
+        },
+        {
+          "candidate": "GAME11_L14_CASING_03",
+          "target": "MC_L14 instrument calibration enclosure shielded test window_05",
+          "trianglesEnteringTargetInterior": 0
+        },
+        {
+          "candidate": "GAME11_L14_CASING_04",
+          "target": "MC_L14 instrument calibration enclosure shielded test window_05",
+          "trianglesEnteringTargetInterior": 0
+        },
+        {
+          "candidate": "GAME11_L14_CASING_05",
+          "target": "MC_L14 instrument calibration enclosure shielded test window_05",
+          "trianglesEnteringTargetInterior": 0
+        },
+        {
+          "candidate": "GAME11_L14_CASING_06",
+          "target": "MC_L14 instrument calibration enclosure shielded test window_05",
+          "trianglesEnteringTargetInterior": 0
+        },
+        {
+          "candidate": "GAME11_L14_CASING_01",
+          "target": "MC_L14 instrument calibration enclosure window frame_05896",
+          "trianglesEnteringTargetInterior": 0
+        },
+        {
+          "candidate": "GAME11_L14_CASING_02",
+          "target": "MC_L14 instrument calibration enclosure window frame_05896",
+          "trianglesEnteringTargetInterior": 0
+        },
+        {
+          "candidate": "GAME11_L14_CASING_03",
+          "target": "MC_L14 instrument calibration enclosure window frame_05896",
+          "trianglesEnteringTargetInterior": 0
+        },
+        {
+          "candidate": "GAME11_L14_CASING_04",
+          "target": "MC_L14 instrument calibration enclosure window frame_05896",
+          "trianglesEnteringTargetInterior": 0
+        },
+        {
+          "candidate": "GAME11_L14_CASING_05",
+          "target": "MC_L14 instrument calibration enclosure window frame_05896",
+          "trianglesEnteringTargetInterior": 0
+        },
+        {
+          "candidate": "GAME11_L14_CASING_06",
+          "target": "MC_L14 instrument calibration enclosure window frame_05896",
+          "trianglesEnteringTargetInterior": 0
+        },
+        {
+          "candidate": "GAME11_L14_CASING_01",
+          "target": "MC_L14 instrument calibration enclosure window frame_05897",
+          "trianglesEnteringTargetInterior": 0
+        },
+        {
+          "candidate": "GAME11_L14_CASING_02",
+          "target": "MC_L14 instrument calibration enclosure window frame_05897",
+          "trianglesEnteringTargetInterior": 0
+        },
+        {
+          "candidate": "GAME11_L14_CASING_03",
+          "target": "MC_L14 instrument calibration enclosure window frame_05897",
+          "trianglesEnteringTargetInterior": 0
+        },
+        {
+          "candidate": "GAME11_L14_CASING_04",
+          "target": "MC_L14 instrument calibration enclosure window frame_05897",
+          "trianglesEnteringTargetInterior": 0
+        },
+        {
+          "candidate": "GAME11_L14_CASING_05",
+          "target": "MC_L14 instrument calibration enclosure window frame_05897",
+          "trianglesEnteringTargetInterior": 0
+        },
+        {
+          "candidate": "GAME11_L14_CASING_06",
+          "target": "MC_L14 instrument calibration enclosure window frame_05897",
+          "trianglesEnteringTargetInterior": 0
+        },
+        {
+          "candidate": "GAME11_L14_CASING_01",
+          "target": "MC_L14 instrument calibration enclosure window frame_05898",
+          "trianglesEnteringTargetInterior": 0
+        },
+        {
+          "candidate": "GAME11_L14_CASING_02",
+          "target": "MC_L14 instrument calibration enclosure window frame_05898",
+          "trianglesEnteringTargetInterior": 0
+        },
+        {
+          "candidate": "GAME11_L14_CASING_03",
+          "target": "MC_L14 instrument calibration enclosure window frame_05898",
+          "trianglesEnteringTargetInterior": 0
+        },
+        {
+          "candidate": "GAME11_L14_CASING_04",
+          "target": "MC_L14 instrument calibration enclosure window frame_05898",
+          "trianglesEnteringTargetInterior": 0
+        },
+        {
+          "candidate": "GAME11_L14_CASING_05",
+          "target": "MC_L14 instrument calibration enclosure window frame_05898",
+          "trianglesEnteringTargetInterior": 0
+        },
+        {
+          "candidate": "GAME11_L14_CASING_06",
+          "target": "MC_L14 instrument calibration enclosure window frame_05898",
+          "trianglesEnteringTargetInterior": 0
+        }
+      ],
+      "convexTargetsVerified": true,
+      "numericToleranceM": 1e-06,
+      "trimmedComponents": [
+        {
+          "sourceComponent": 16,
+          "minYGapToActualFrontPanelsM": 0.002107654223632238
+        },
+        {
+          "sourceComponent": 17,
+          "minYGapToActualFrontPanelsM": 0.002107654223632238
+        },
+        {
+          "sourceComponent": 31,
+          "minYGapToActualFrontPanelsM": 0.002107654223632238
+        }
+      ],
+      "minimumTrimmedComponentYGapToActualFrontPanelsM": 0.002107654223632238,
+      "allSideRearOverlapsRemoved": false,
+      "scope": "Only six fixed candidates vs six current protected front/window/frame targets; retained side/rear joints are outside this no-penetration check. No Play or dynamic interaction validation."
+    },
+    "oldFormulaExplanation": {
+      "oldFormula": "min(all GAME11_L14_CASING_05 vertex Y) - max(all vertices Y of current front lower panel_05893 and front top panel_05894)",
+      "coordinateSystem": "Blender ORG_ROOM_L14_b1cdce room-local XYZ metres; Y is front/back, +Y retreat",
+      "wholeCarrierMinY": -17.435020446777344,
+      "unionFrontPanelBackMaxY": -17.3900452,
+      "misleadingResultM": -0.044975246777344324,
+      "offendingVertexPositions": [
+        [
+          25.215526580810547,
+          -17.435020446777344,
+          7.525501251220703
+        ],
+        [
+          25.215526580810547,
+          -17.435020446777344,
+          7.548501014709473
+        ],
+        [
+          25.21652603149414,
+          -17.435020446777344,
+          6.961501121520996
+        ],
+        [
+          25.21652603149414,
+          -17.435020446777344,
+          7.548501014709473
+        ],
+        [
+          25.230533599853516,
+          -17.435020446777344,
+          7.525501251220703
+        ],
+        [
+          25.230533599853516,
+          -17.435020446777344,
+          7.548501014709473
+        ],
+        [
+          25.245532989501953,
+          -17.435020446777344,
+          6.961501121520996
+        ],
+        [
+          25.245532989501953,
+          -17.435020446777344,
+          7.548501014709473
+        ]
+      ],
+      "reason": "Whole merged-carrier extrema included vertices outside the three trimmed components. No corresponding component or overlapping XZ projection was selected; result was not an object-pair penetration measurement. It does not negate the 36-pair check. Exact physical role of the offending vertices was not independently assigned.",
+      "replacement": "Find three connected components matching contractual trimmed bounds, then min(component Y) - max(current two-front-panel Y); minimum 0.002107654223632238 m. Retained side/rear/support overlaps are not claimed absent."
+    },
+    "protection": {
+      "filesChecked": 478,
+      "changed": [],
+      "importedGeometryMatchesCheckedGeometry": true
+    },
+    "textureRoles": {
+      "BaseColor": 9,
+      "Normal": 7,
+      "Packed": 9
+    },
+    "actualFormatsBindingsWrapVerified": true,
+    "singleUV0Verified": true,
+    "newColliders": 0,
+    "existingSideRearSupportOverlapsRetained": true,
+    "entryV8Installed": false,
+    "oldNineUnchanged": true,
+    "PlayRan": false,
+    "full28CycleRepeated": false,
+    "screenshotsRan": false,
+    "performanceOrMultiplayerRan": false,
+    "subjectivePBRAndAudioAcceptance": false,
+    "changedScope": [
+      "Assets/MoonEnvironment/Variants/Apollo12EVA/L14CasingV11/",
+      "Assets/MoonEnvironment/Variants/Apollo12EVA/Scenes/Apollo12_EVA_Walkthrough.unity",
+      "Docs/AI/EVA_Airlock_Delivery.md",
+      "Docs/AI/EVA_Airlock_MapValidation.json"
+    ],
+    "rollbackCopy": "Temp/DOT00_20261014_AssetHandoff/v11/Apollo12_EVA_Walkthrough_before_casing_v11.unity"
+  }
+}

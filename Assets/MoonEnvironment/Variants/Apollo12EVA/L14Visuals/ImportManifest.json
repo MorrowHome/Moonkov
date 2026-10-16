@@ -1,0 +1,323 @@
+{
+  "sourceBlendSHA256": "7f7db9969b060b20ed808b22b7caaa888a69adc465776eb88be29d83c90e992a",
+  "sourceCollection": "GAME_CANDIDATE_L14_SINGLE_UV0",
+  "mode": "Selected nine exact-match candidate objects only; source geometry hidden; copy transforms reset solely in this unsaved export process. Bind extracted local mesh to existing target transform. No study/world placement imported.",
+  "objects": [
+    {
+      "source": "MC_L14 diagnostics workbench drawer_05911",
+      "candidate": "GAME10_L14_05",
+      "materials": [
+        "M10_L14_Body_Grey",
+        "M10_L14_05_SingleUV"
+      ]
+    },
+    {
+      "source": "MC_L14 diagnostics workbench drawer_05915",
+      "candidate": "GAME10_L14_06",
+      "materials": [
+        "M10_L14_Body_Grey",
+        "M10_L14_06_SingleUV"
+      ]
+    },
+    {
+      "source": "MC_L14 diagnostics workbench drawer_05931",
+      "candidate": "GAME10_L14_07",
+      "materials": [
+        "M10_L14_Body_Grey",
+        "M10_L14_07_SingleUV"
+      ]
+    },
+    {
+      "source": "MC_L14 diagnostics workbench drawer_05935",
+      "candidate": "GAME10_L14_08",
+      "materials": [
+        "M10_L14_Body_Grey",
+        "M10_L14_08_SingleUV"
+      ]
+    },
+    {
+      "source": "MC_L14 reference electronics instrument module_05960",
+      "candidate": "GAME10_L14_09",
+      "materials": [
+        "M10_L14_Body_Grey",
+        "M10_L14_09_SingleUV"
+      ]
+    },
+    {
+      "source": "MC_L14 reference electronics instrument module_05962",
+      "candidate": "GAME10_L14_10",
+      "materials": [
+        "M10_L14_Body_Grey",
+        "M10_L14_10_SingleUV"
+      ]
+    },
+    {
+      "source": "MC_L14 reference electronics instrument module_05964",
+      "candidate": "GAME10_L14_11",
+      "materials": [
+        "M10_L14_Body_Grey",
+        "M10_L14_11_SingleUV"
+      ]
+    },
+    {
+      "source": "MC_L14 reference electronics instrument module_05966",
+      "candidate": "GAME10_L14_12",
+      "materials": [
+        "M10_L14_Body_Grey",
+        "M10_L14_12_SingleUV"
+      ]
+    },
+    {
+      "source": "MC_L14 reference electronics instrument module_05968",
+      "candidate": "GAME10_L14_13",
+      "materials": [
+        "M10_L14_Body_Grey",
+        "M10_L14_13_SingleUV"
+      ]
+    }
+  ],
+  "materials": [
+    {
+      "name": "M10_L14_05_SingleUV",
+      "BaseColor": "M09_L14_Drawer_01_BaseColor.png",
+      "Normal": "M10_L14_05_NormalTS.png",
+      "Packed": "M10_L14_05_MetallicAO_Smoothness.png"
+    },
+    {
+      "name": "M10_L14_06_SingleUV",
+      "BaseColor": "M09_L14_Drawer_02_BaseColor.png",
+      "Normal": "M10_L14_06_NormalTS.png",
+      "Packed": "M10_L14_06_MetallicAO_Smoothness.png"
+    },
+    {
+      "name": "M10_L14_07_SingleUV",
+      "BaseColor": "M09_L14_Drawer_03_BaseColor.png",
+      "Normal": "M10_L14_07_NormalTS.png",
+      "Packed": "M10_L14_07_MetallicAO_Smoothness.png"
+    },
+    {
+      "name": "M10_L14_08_SingleUV",
+      "BaseColor": "M09_L14_Drawer_04_BaseColor.png",
+      "Normal": "M10_L14_08_NormalTS.png",
+      "Packed": "M10_L14_08_MetallicAO_Smoothness.png"
+    },
+    {
+      "name": "M10_L14_09_SingleUV",
+      "BaseColor": "M09_L14_Reference_01_BaseColor.png",
+      "Normal": "M10_L14_09_NormalTS.png",
+      "Packed": "M10_L14_09_MetallicAO_Smoothness.png"
+    },
+    {
+      "name": "M10_L14_10_SingleUV",
+      "BaseColor": "M09_L14_Reference_02_BaseColor.png",
+      "Normal": "M10_L14_10_NormalTS.png",
+      "Packed": "M10_L14_10_MetallicAO_Smoothness.png"
+    },
+    {
+      "name": "M10_L14_11_SingleUV",
+      "BaseColor": "M09_L14_Reference_03_BaseColor.png",
+      "Normal": "M10_L14_11_NormalTS.png",
+      "Packed": "M10_L14_11_MetallicAO_Smoothness.png"
+    },
+    {
+      "name": "M10_L14_12_SingleUV",
+      "BaseColor": "M09_L14_Reference_04_BaseColor.png",
+      "Normal": "M10_L14_12_NormalTS.png",
+      "Packed": "M10_L14_12_MetallicAO_Smoothness.png"
+    },
+    {
+      "name": "M10_L14_13_SingleUV",
+      "BaseColor": "M09_L14_Reference_05_BaseColor.png",
+      "Normal": "M10_L14_13_NormalTS.png",
+      "Packed": "M10_L14_13_MetallicAO_Smoothness.png"
+    },
+    {
+      "name": "M10_L14_Body_Grey",
+      "BaseColor": "LD2_Painted_Metal_Grey_BaseColor.png.001.png",
+      "Packed": "M10_L14_Body_Grey_MetallicAO_Smoothness.png",
+      "Normal": "Compact_75066932c53291_Normal.png"
+    }
+  ],
+  "textures": [
+    {
+      "file": "M09_L14_Drawer_01_BaseColor.png",
+      "role": "BaseColor",
+      "bytes": 226059,
+      "sha256": "ad4a0e5a23d7dd3b51435ced1e219008e6c1417a1cf9c53ff83aa118740ff6cd"
+    },
+    {
+      "file": "M10_L14_05_NormalTS.png",
+      "role": "Normal",
+      "bytes": 435389,
+      "sha256": "5a7c035ca9e1df6a30e0d95d0647cfbaa4aaabfa112d757949d410fee26e7280"
+    },
+    {
+      "file": "M10_L14_05_MetallicAO_Smoothness.png",
+      "role": "Packed",
+      "bytes": 539262,
+      "sha256": "5a7dcf8f4e99ca65801f866065097ae7d299841199b78d0fddd02517a1c51288"
+    },
+    {
+      "file": "M09_L14_Drawer_02_BaseColor.png",
+      "role": "BaseColor",
+      "bytes": 228787,
+      "sha256": "4cd1282d2961540a3dafd9dc5e5cce420d68be517ec684c687f67174c1360529"
+    },
+    {
+      "file": "M10_L14_06_NormalTS.png",
+      "role": "Normal",
+      "bytes": 435389,
+      "sha256": "4a1b80999e58d2ff4d78b64d2fec23d39342b18a54c2858db2e186eb7c6ee04a"
+    },
+    {
+      "file": "M10_L14_06_MetallicAO_Smoothness.png",
+      "role": "Packed",
+      "bytes": 539262,
+      "sha256": "5a7dcf8f4e99ca65801f866065097ae7d299841199b78d0fddd02517a1c51288"
+    },
+    {
+      "file": "M09_L14_Drawer_03_BaseColor.png",
+      "role": "BaseColor",
+      "bytes": 230246,
+      "sha256": "5ed1557916ab0dd8261b2395b533fdd2701e3c91071efb26976dcd6aafc7f66c"
+    },
+    {
+      "file": "M10_L14_07_NormalTS.png",
+      "role": "Normal",
+      "bytes": 436571,
+      "sha256": "f4c12bbf08dbe4e3b66a4b775155e673401f1c4c1ee996f4693f79d79955eed2"
+    },
+    {
+      "file": "M10_L14_07_MetallicAO_Smoothness.png",
+      "role": "Packed",
+      "bytes": 541276,
+      "sha256": "28bd973d5f2672bb38fcb5c559ad70b6cf96905be9f40b7adc48860a79ac0068"
+    },
+    {
+      "file": "M09_L14_Drawer_04_BaseColor.png",
+      "role": "BaseColor",
+      "bytes": 229482,
+      "sha256": "69a978af03485ea4ecbc95fbc9fac47dc915c6e0462fb39b9fd77e38bcd8a935"
+    },
+    {
+      "file": "M10_L14_08_NormalTS.png",
+      "role": "Normal",
+      "bytes": 435389,
+      "sha256": "5a7c035ca9e1df6a30e0d95d0647cfbaa4aaabfa112d757949d410fee26e7280"
+    },
+    {
+      "file": "M10_L14_08_MetallicAO_Smoothness.png",
+      "role": "Packed",
+      "bytes": 539262,
+      "sha256": "5a7dcf8f4e99ca65801f866065097ae7d299841199b78d0fddd02517a1c51288"
+    },
+    {
+      "file": "M09_L14_Reference_01_BaseColor.png",
+      "role": "BaseColor",
+      "bytes": 350811,
+      "sha256": "8fca4e37b788f219fd6bc77dc658b2067eed28ec6d84f8e6116a10eab87bdf3a"
+    },
+    {
+      "file": "M10_L14_09_NormalTS.png",
+      "role": "Normal",
+      "bytes": 213323,
+      "sha256": "e825d0dc78ff5e2171acbeced3e922d953770eb26e256b8272260ec482e4890e"
+    },
+    {
+      "file": "M10_L14_09_MetallicAO_Smoothness.png",
+      "role": "Packed",
+      "bytes": 269275,
+      "sha256": "0bda6f7a98fc87e7554a8cc86ccb5089d74eabca442960f3846bd7e32119b131"
+    },
+    {
+      "file": "M09_L14_Reference_02_BaseColor.png",
+      "role": "BaseColor",
+      "bytes": 348851,
+      "sha256": "ef4c0476b0c35a295a38e5e978365918723c55c15c2eb3ed3cdf78421d33068b"
+    },
+    {
+      "file": "M10_L14_10_NormalTS.png",
+      "role": "Normal",
+      "bytes": 213323,
+      "sha256": "e825d0dc78ff5e2171acbeced3e922d953770eb26e256b8272260ec482e4890e"
+    },
+    {
+      "file": "M10_L14_10_MetallicAO_Smoothness.png",
+      "role": "Packed",
+      "bytes": 269275,
+      "sha256": "0bda6f7a98fc87e7554a8cc86ccb5089d74eabca442960f3846bd7e32119b131"
+    },
+    {
+      "file": "M09_L14_Reference_03_BaseColor.png",
+      "role": "BaseColor",
+      "bytes": 352511,
+      "sha256": "7c42f45373c9f7fd2054c9c1451da325a8cfeb40e36a4b60b7eb876b4763a782"
+    },
+    {
+      "file": "M10_L14_11_NormalTS.png",
+      "role": "Normal",
+      "bytes": 213319,
+      "sha256": "297f81ca049f0401e2f7ac91b36c109423973ae1579edd235f383c8d8bd691ea"
+    },
+    {
+      "file": "M10_L14_11_MetallicAO_Smoothness.png",
+      "role": "Packed",
+      "bytes": 269275,
+      "sha256": "0bda6f7a98fc87e7554a8cc86ccb5089d74eabca442960f3846bd7e32119b131"
+    },
+    {
+      "file": "M09_L14_Reference_04_BaseColor.png",
+      "role": "BaseColor",
+      "bytes": 350968,
+      "sha256": "86980496ac94ddc5d5a964a34f5d6545c43fa8dec45c8c1ca910b82d838d1072"
+    },
+    {
+      "file": "M10_L14_12_NormalTS.png",
+      "role": "Normal",
+      "bytes": 213323,
+      "sha256": "e825d0dc78ff5e2171acbeced3e922d953770eb26e256b8272260ec482e4890e"
+    },
+    {
+      "file": "M10_L14_12_MetallicAO_Smoothness.png",
+      "role": "Packed",
+      "bytes": 269275,
+      "sha256": "0bda6f7a98fc87e7554a8cc86ccb5089d74eabca442960f3846bd7e32119b131"
+    },
+    {
+      "file": "M09_L14_Reference_05_BaseColor.png",
+      "role": "BaseColor",
+      "bytes": 350857,
+      "sha256": "c897839b8fd14888d10d5747c9d67379380663da62a24fad98746fd6a513221e"
+    },
+    {
+      "file": "M10_L14_13_NormalTS.png",
+      "role": "Normal",
+      "bytes": 213319,
+      "sha256": "297f81ca049f0401e2f7ac91b36c109423973ae1579edd235f383c8d8bd691ea"
+    },
+    {
+      "file": "M10_L14_13_MetallicAO_Smoothness.png",
+      "role": "Packed",
+      "bytes": 269275,
+      "sha256": "0bda6f7a98fc87e7554a8cc86ccb5089d74eabca442960f3846bd7e32119b131"
+    },
+    {
+      "file": "LD2_Painted_Metal_Grey_BaseColor.png.001.png",
+      "role": "BaseColor",
+      "bytes": 144929,
+      "sha256": "008540f0f7180ca39525aab214feb03a6b46df8fa7e7c8a5d7d48b5e7885d78f"
+    },
+    {
+      "file": "M10_L14_Body_Grey_MetallicAO_Smoothness.png",
+      "role": "Packed",
+      "bytes": 213145,
+      "sha256": "3e6d553699263da58d0912204c571456701bf6ffc5a050c6d6901b567ecc33d4"
+    },
+    {
+      "file": "Compact_75066932c53291_Normal.png",
+      "role": "Normal",
+      "bytes": 123246,
+      "sha256": "085a81cd481e127aa068a6e7625bc8dd791418ad238cebdee0c6cbbf044f290e"
+    }
+  ]
+}

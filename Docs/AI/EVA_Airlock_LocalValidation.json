@@ -1,0 +1,411 @@
+{
+  "schema": "moonkov-eva-local-validation-v1",
+  "validatedAt": "2026-10-13T15:26:31.828584Z",
+  "project": "E:/UnityProjects/FPS_Template",
+  "unity": "6000.5.10f1",
+  "status": "passed",
+  "sourceZipSha256": "140edb893ad9e272c024eada0534ff9fd77f65b81fe68305d4ed1d5535bf90ce",
+  "sourcePackageManifestVerified": true,
+  "binding": {
+    "sourceLeaves": 12,
+    "maxSourceCornerDeltaM": 0.0002428862,
+    "apertureBridgesPersisted": true
+  },
+  "compilation": {
+    "editorCompiled": true,
+    "scriptCompilationFailed": false,
+    "consoleErrorsAfterCycle": 0
+  },
+  "protectedFiles": {
+    "count": 79,
+    "changes": 0
+  },
+  "restoredScene": "Assets/Scenes/MainMenu.unity",
+  "playStopped": true,
+  "method": "Live Play frames; actual DollSinger prefab CharacterController.Move with native collision and floor. Movement/input temporarily disabled for scripted route; real camera ray presses gameplay buttons. Existing RaidHealth tick drives suit diagnostics. No physical keyboard input, network peers or subjective audio audition.",
+  "audioEvents": [
+    "InnerLocked:clip",
+    "InnerMotor:clip",
+    "InnerUnlock:clip",
+    "OuterLocked:clip",
+    "OuterMotor:clip",
+    "OuterUnlock:clip",
+    "Pump:clip",
+    "ValveFlow:clip"
+  ],
+  "pooledAudibleSourceObserved": true,
+  "observations": [
+    {
+      "check": "Outside vacuum drains existing suit reserve",
+      "actorLocal": {
+        "x": 3.814697265625E-06,
+        "y": -0.08151763677597046,
+        "z": -6.239992141723633
+      },
+      "pressureKPa": 0.0,
+      "outer": 0.0,
+      "inner": 0.0,
+      "suitOxygen": 79.70907592773438,
+      "breathable": false
+    },
+    {
+      "check": "OUTSIDE.OPEN_OUTER -> Accepted",
+      "actorLocal": {
+        "x": 3.814697265625E-06,
+        "y": -0.08151763677597046,
+        "z": -6.239992141723633
+      },
+      "pressureKPa": 0.0,
+      "outer": 0.0,
+      "inner": 0.0,
+      "suitOxygen": 79.70907592773438,
+      "breathable": false
+    },
+    {
+      "check": "Walk reached 0,-4.35",
+      "actorLocal": {
+        "x": 3.814697265625E-06,
+        "y": 0.03300374746322632,
+        "z": -4.423273086547852
+      },
+      "pressureKPa": 0.0,
+      "outer": 1.0,
+      "inner": 0.0,
+      "suitOxygen": 79.33287048339844,
+      "breathable": false
+    },
+    {
+      "check": "CHAMBER.CLOSE_OUTER -> Obstructed",
+      "actorLocal": {
+        "x": 3.814697265625E-06,
+        "y": 0.03300374746322632,
+        "z": -4.423273086547852
+      },
+      "pressureKPa": 0.0,
+      "outer": 1.0,
+      "inner": 0.0,
+      "suitOxygen": 79.33287048339844,
+      "breathable": false
+    },
+    {
+      "check": "Actual capsule in aperture blocks closing; stopped motor silent",
+      "actorLocal": {
+        "x": 3.814697265625E-06,
+        "y": 0.03300374746322632,
+        "z": -4.423273086547852
+      },
+      "pressureKPa": 0.0,
+      "outer": 1.0,
+      "inner": 0.0,
+      "suitOxygen": 79.29767608642578,
+      "breathable": false
+    },
+    {
+      "check": "Walk reached 0,-3",
+      "actorLocal": {
+        "x": 1.9073486328125E-06,
+        "y": 0.025003492832183838,
+        "z": -3.0715789794921875
+      },
+      "pressureKPa": 0.0,
+      "outer": 1.0,
+      "inner": 0.0,
+      "suitOxygen": 79.18466186523438,
+      "breathable": false
+    },
+    {
+      "check": "CHAMBER.CLOSE_OUTER -> Accepted",
+      "actorLocal": {
+        "x": 1.9073486328125E-06,
+        "y": 0.025003492832183838,
+        "z": -3.0715789794921875
+      },
+      "pressureKPa": 0.0,
+      "outer": 1.0,
+      "inner": 0.0,
+      "suitOxygen": 79.18466186523438,
+      "breathable": false
+    },
+    {
+      "check": "Walk reached 0,-4.35",
+      "actorLocal": {
+        "x": 3.814697265625E-06,
+        "y": 0.02500373125076294,
+        "z": -4.289506912231445
+      },
+      "pressureKPa": 0.0,
+      "outer": 1.0,
+      "inner": 0.0,
+      "suitOxygen": 79.08346557617188,
+      "breathable": false
+    },
+    {
+      "check": "Mid-close native capsule intrusion safely reopens outer door",
+      "actorLocal": {
+        "x": 3.814697265625E-06,
+        "y": 0.02500373125076294,
+        "z": -4.289506912231445
+      },
+      "pressureKPa": 0.0,
+      "outer": 1.0,
+      "inner": 0.0,
+      "suitOxygen": 79.08147430419922,
+      "breathable": false
+    },
+    {
+      "check": "Walk reached 0,-3",
+      "actorLocal": {
+        "x": 1.9073486328125E-06,
+        "y": 0.02500361204147339,
+        "z": -3.0605621337890625
+      },
+      "pressureKPa": 0.0,
+      "outer": 1.0,
+      "inner": 0.0,
+      "suitOxygen": 78.97834777832031,
+      "breathable": false
+    },
+    {
+      "check": "CHAMBER.CLOSE_OUTER -> Accepted",
+      "actorLocal": {
+        "x": 1.9073486328125E-06,
+        "y": 0.02500361204147339,
+        "z": -3.0605621337890625
+      },
+      "pressureKPa": 0.0,
+      "outer": 1.0,
+      "inner": 0.0,
+      "suitOxygen": 78.97834777832031,
+      "breathable": false
+    },
+    {
+      "check": "CHAMBER.OPEN_INNER -> PressureMismatch",
+      "actorLocal": {
+        "x": 1.9073486328125E-06,
+        "y": 0.025003373622894287,
+        "z": -3.0605621337890625
+      },
+      "pressureKPa": 0.0,
+      "outer": 0.0,
+      "inner": 0.0,
+      "suitOxygen": 78.76663970947266,
+      "breathable": false
+    },
+    {
+      "check": "CHAMBER.EQUALIZE_INSIDE -> Accepted",
+      "actorLocal": {
+        "x": 1.9073486328125E-06,
+        "y": 0.025003373622894287,
+        "z": -3.0605621337890625
+      },
+      "pressureKPa": 0.0,
+      "outer": 0.0,
+      "inner": 0.0,
+      "suitOxygen": 78.76663970947266,
+      "breathable": false
+    },
+    {
+      "check": "CHAMBER.OPEN_INNER -> Equalizing",
+      "actorLocal": {
+        "x": 1.9073486328125E-06,
+        "y": 0.025003373622894287,
+        "z": -3.0605621337890625
+      },
+      "pressureKPa": 0.0,
+      "outer": 0.0,
+      "inner": 0.0,
+      "suitOxygen": 78.76663970947266,
+      "breathable": false
+    },
+    {
+      "check": "Three-segment union breathable; exterior vacuum excluded; suit drain stops",
+      "actorLocal": {
+        "x": 1.9073486328125E-06,
+        "y": 0.025003373622894287,
+        "z": -3.0605621337890625
+      },
+      "pressureKPa": 101.32499694824219,
+      "outer": 0.0,
+      "inner": 0.0,
+      "suitOxygen": 92.05388641357422,
+      "breathable": true
+    },
+    {
+      "check": "CHAMBER.OPEN_INNER -> Accepted",
+      "actorLocal": {
+        "x": 1.9073486328125E-06,
+        "y": 0.025003373622894287,
+        "z": -3.0605621337890625
+      },
+      "pressureKPa": 101.32499694824219,
+      "outer": 0.0,
+      "inner": 0.0,
+      "suitOxygen": 92.05388641357422,
+      "breathable": true
+    },
+    {
+      "check": "Walk reached 0,5.2",
+      "actorLocal": {
+        "x": 1.9073486328125E-06,
+        "y": 0.025002658367156982,
+        "z": 5.140495300292969
+      },
+      "pressureKPa": 101.32499694824219,
+      "outer": 0.0,
+      "inner": 1.0,
+      "suitOxygen": 100.0,
+      "breathable": true
+    },
+    {
+      "check": "Actual capsule crossed inner door; pressurized inside stops suit drain",
+      "actorLocal": {
+        "x": 1.9073486328125E-06,
+        "y": 0.02500253915786743,
+        "z": 5.140495300292969
+      },
+      "pressureKPa": 101.32499694824219,
+      "outer": 0.0,
+      "inner": 1.0,
+      "suitOxygen": 100.0,
+      "breathable": true
+    },
+    {
+      "check": "Walk reached 0,3",
+      "actorLocal": {
+        "x": 1.9073486328125E-06,
+        "y": 0.025002896785736084,
+        "z": 3.074462890625
+      },
+      "pressureKPa": 101.32499694824219,
+      "outer": 0.0,
+      "inner": 1.0,
+      "suitOxygen": 100.0,
+      "breathable": true
+    },
+    {
+      "check": "CHAMBER.OPEN_OUTER -> OtherDoorNotSealed",
+      "actorLocal": {
+        "x": 1.9073486328125E-06,
+        "y": 0.025002896785736084,
+        "z": 3.074462890625
+      },
+      "pressureKPa": 101.32499694824219,
+      "outer": 0.0,
+      "inner": 1.0,
+      "suitOxygen": 100.0,
+      "breathable": true
+    },
+    {
+      "check": "CHAMBER.EQUALIZE_OUTSIDE -> DoorsNotSealed",
+      "actorLocal": {
+        "x": 1.9073486328125E-06,
+        "y": 0.025002896785736084,
+        "z": 3.074462890625
+      },
+      "pressureKPa": 101.32499694824219,
+      "outer": 0.0,
+      "inner": 1.0,
+      "suitOxygen": 100.0,
+      "breathable": true
+    },
+    {
+      "check": "CHAMBER.CLOSE_INNER -> Accepted",
+      "actorLocal": {
+        "x": 1.9073486328125E-06,
+        "y": 0.025002896785736084,
+        "z": 3.074462890625
+      },
+      "pressureKPa": 101.32499694824219,
+      "outer": 0.0,
+      "inner": 1.0,
+      "suitOxygen": 100.0,
+      "breathable": true
+    },
+    {
+      "check": "CHAMBER.OPEN_OUTER -> PressureMismatch",
+      "actorLocal": {
+        "x": 1.9073486328125E-06,
+        "y": 0.025002777576446533,
+        "z": 3.074462890625
+      },
+      "pressureKPa": 101.32499694824219,
+      "outer": 0.0,
+      "inner": 0.0,
+      "suitOxygen": 100.0,
+      "breathable": true
+    },
+    {
+      "check": "CHAMBER.EQUALIZE_OUTSIDE -> Accepted",
+      "actorLocal": {
+        "x": 1.9073486328125E-06,
+        "y": 0.025002777576446533,
+        "z": 3.074462890625
+      },
+      "pressureKPa": 101.32499694824219,
+      "outer": 0.0,
+      "inner": 0.0,
+      "suitOxygen": 100.0,
+      "breathable": true
+    },
+    {
+      "check": "Depressurized chamber resumes suit drain",
+      "actorLocal": {
+        "x": 1.9073486328125E-06,
+        "y": 0.025002777576446533,
+        "z": 3.074462890625
+      },
+      "pressureKPa": 0.0,
+      "outer": 0.0,
+      "inner": 0.0,
+      "suitOxygen": 99.12523651123047,
+      "breathable": false
+    },
+    {
+      "check": "CHAMBER.OPEN_OUTER -> Accepted",
+      "actorLocal": {
+        "x": 1.9073486328125E-06,
+        "y": 0.025002777576446533,
+        "z": 3.074462890625
+      },
+      "pressureKPa": 0.0,
+      "outer": 0.0,
+      "inner": 0.0,
+      "suitOxygen": 99.12523651123047,
+      "breathable": false
+    },
+    {
+      "check": "Walk reached 0,-6.24",
+      "actorLocal": {
+        "x": 3.814697265625E-06,
+        "y": -0.07408267259597778,
+        "z": -6.160646438598633
+      },
+      "pressureKPa": 0.0,
+      "outer": 1.0,
+      "inner": 0.0,
+      "suitOxygen": 98.15180206298828,
+      "breathable": false
+    },
+    {
+      "check": "Returned outside through actual capsule route; air sound muted in vacuum",
+      "actorLocal": {
+        "x": 3.814697265625E-06,
+        "y": -0.07408338785171509,
+        "z": -6.160646438598633
+      },
+      "pressureKPa": 0.0,
+      "outer": 1.0,
+      "inner": 0.0,
+      "suitOxygen": 98.09420013427734,
+      "breathable": false
+    }
+  ],
+  "limitations": [
+    "No host/client transport verification",
+    "No performance profiling",
+    "No subjective audio audition",
+    "Valve and pump entities remain provisional anchors",
+    "Independent local validation scene only; formal map not integrated",
+    "Helmet and radio route gains are separate code paths, not verified live voice chat or helmet playback"
+  ]
+}

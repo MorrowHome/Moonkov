@@ -1,0 +1,1993 @@
+{
+  "schema": "moonkov-l14-closed-casing-room-local-v1",
+  "asset_id": "L14_CLOSED_CASING_STATIC_V11",
+  "source_library_id": "libfile_5596709b43f881918e93b5ef58bef82b",
+  "source_version": 10,
+  "source_sha256": "7f7db9969b060b20ed808b22b7caaa888a69adc465776eb88be29d83c90e992a",
+  "module_root": "L14_CLOSED_CASING_MODULE_ROOT",
+  "candidate_collection": "GAME_CANDIDATE_L14_CLOSED_CASING_MODULE",
+  "default_state": "Hidden optional six-part module; author six-part source and all thirteen v10 candidates retained. Never export or show overlapping variants together.",
+  "installation_kind": "Optional new static visual family for Full v02 targets lacking WQ_L14_SKIN. Not a renderer replacement for unrelated original panels.",
+  "basis": {
+    "parent": "ORG_ROOM_L14_b1cdce",
+    "module_parent_local_matrix": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "units": "meters",
+    "source_blender": "right-handed Z-up",
+    "target_unity_local": "(Bx,Bz,By)",
+    "raw_gltf_local": "(Bx,Bz,-By)",
+    "raw_gltf_to_desired_unity_local": "(gx,gy,-gz); only if importer has not already performed handedness conversion",
+    "study_world_matrix_is_evidence_only": [
+      [
+        0.7986355423927307,
+        -0.6018149852752686,
+        0.0,
+        1614.53759765625
+      ],
+      [
+        0.6018149852752686,
+        0.7986355423927307,
+        0.0,
+        2149.00927734375
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        211.03614807128906
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "apply_once": "Attach to verified target room basis with identity module pose. Do not apply study translation, MC00_ROOT world or 37-degree rotation.",
+    "author_MC00_root_evidence": [
+      58,
+      -78,
+      0
+    ]
+  },
+  "objects": [
+    {
+      "source_object": "WQ_L14_SKIN_01_West_Closed_Cover_A",
+      "candidate_object": "GAME11_L14_CASING_01",
+      "singleuv_predecessor": "GAME10_L14_01",
+      "export_node": "L14_CASING_Part_01",
+      "parent_basis": "ORG_ROOM_L14_b1cdce",
+      "matrix_room_blender": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          25.22699737548828
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -16.1875
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          8.880000114440918
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_room_unity": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          25.22699737548828
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          8.880000114440918
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          -16.1875
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "mesh_local_bounds_blender": [
+        [
+          -0.016998291015625,
+          -1.1425018310546875,
+          -1.25
+        ],
+        [
+          0.01700592041015625,
+          1.1425018310546875,
+          1.25
+        ]
+      ],
+      "bounds_room_blender": [
+        [
+          25.209999084472656,
+          -17.330001831054688,
+          7.630000114440918
+        ],
+        [
+          25.244003295898438,
+          -15.044998168945312,
+          10.130000114440918
+        ]
+      ],
+      "bounds_room_unity": [
+        [
+          25.209999084472656,
+          7.630000114440918,
+          -17.330001831054688
+        ],
+        [
+          25.244003295898438,
+          10.130000114440918,
+          -15.044998168945312
+        ]
+      ],
+      "evaluated_vertices": 48,
+      "triangles": 92,
+      "material_slots": [
+        {
+          "slot": 0,
+          "source_material": "LD2_Hull_CeramicPaint",
+          "candidate_material": "M10_L14_Body_Hull"
+        },
+        {
+          "slot": 1,
+          "source_material": "M09_M09_L14_WestCover_A",
+          "candidate_material": "M10_L14_01_SingleUV"
+        }
+      ],
+      "role": "Closed static removable-cover visual shell with actual folded sheet returns. Linked to west cover B; make mesh single-user before unique edits.",
+      "collision": "no automatic collider; no operative cover/door; keep existing equipment collider and control identity",
+      "uv0": "UV0_Game",
+      "geometry_source_unchanged": true,
+      "geometry_adjustment": [],
+      "export_node_matrix_room_blender": [
+        [
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "source_object": "WQ_L14_SKIN_02_West_Closed_Cover_B",
+      "candidate_object": "GAME11_L14_CASING_02",
+      "singleuv_predecessor": "GAME10_L14_02",
+      "export_node": "L14_CASING_Part_02",
+      "parent_basis": "ORG_ROOM_L14_b1cdce",
+      "matrix_room_blender": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          25.22699737548828
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -13.8125
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          8.880000114440918
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_room_unity": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          25.22699737548828
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          8.880000114440918
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          -13.8125
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "mesh_local_bounds_blender": [
+        [
+          -0.016998291015625,
+          -1.1425018310546875,
+          -1.25
+        ],
+        [
+          0.01700592041015625,
+          1.1425018310546875,
+          1.25
+        ]
+      ],
+      "bounds_room_blender": [
+        [
+          25.209999084472656,
+          -14.955001831054688,
+          7.630000114440918
+        ],
+        [
+          25.244003295898438,
+          -12.669998168945312,
+          10.130000114440918
+        ]
+      ],
+      "bounds_room_unity": [
+        [
+          25.209999084472656,
+          7.630000114440918,
+          -14.955001831054688
+        ],
+        [
+          25.244003295898438,
+          10.130000114440918,
+          -12.669998168945312
+        ]
+      ],
+      "evaluated_vertices": 48,
+      "triangles": 92,
+      "material_slots": [
+        {
+          "slot": 0,
+          "source_material": "LD2_Hull_CeramicPaint",
+          "candidate_material": "M10_L14_Body_Hull"
+        },
+        {
+          "slot": 1,
+          "source_material": "M09_M09_L14_WestCover_B",
+          "candidate_material": "M10_L14_02_SingleUV"
+        }
+      ],
+      "role": "Closed static removable-cover visual shell with actual folded sheet returns. Linked to west cover B; make mesh single-user before unique edits.",
+      "collision": "no automatic collider; no operative cover/door; keep existing equipment collider and control identity",
+      "uv0": "UV0_Game",
+      "geometry_source_unchanged": true,
+      "geometry_adjustment": [],
+      "export_node_matrix_room_blender": [
+        [
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "source_object": "WQ_L14_SKIN_03_Rear_Closed_Cover_A",
+      "candidate_object": "GAME11_L14_CASING_03",
+      "singleuv_predecessor": "GAME10_L14_03",
+      "export_node": "L14_CASING_Part_03",
+      "parent_basis": "ORG_ROOM_L14_b1cdce",
+      "matrix_room_blender": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          27.137496948242188
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -12.476997375488281
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          8.880000114440918
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_room_unity": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          27.137496948242188
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          8.880000114440918
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          -12.476997375488281
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "mesh_local_bounds_blender": [
+        [
+          -0.8174972534179688,
+          -0.01700592041015625,
+          -1.25
+        ],
+        [
+          0.8175048828125,
+          0.016998291015625,
+          1.25
+        ]
+      ],
+      "bounds_room_blender": [
+        [
+          26.31999969482422,
+          -12.494003295898438,
+          7.630000114440918
+        ],
+        [
+          27.955001831054688,
+          -12.459999084472656,
+          10.130000114440918
+        ]
+      ],
+      "bounds_room_unity": [
+        [
+          26.31999969482422,
+          7.630000114440918,
+          -12.494003295898438
+        ],
+        [
+          27.955001831054688,
+          10.130000114440918,
+          -12.459999084472656
+        ]
+      ],
+      "evaluated_vertices": 48,
+      "triangles": 92,
+      "material_slots": [
+        {
+          "slot": 0,
+          "source_material": "LD2_Hull_CeramicPaint",
+          "candidate_material": "M10_L14_Body_Hull"
+        },
+        {
+          "slot": 1,
+          "source_material": "M09_M09_L14_RearCover_A",
+          "candidate_material": "M10_L14_03_SingleUV"
+        }
+      ],
+      "role": "Closed static removable-cover visual shell between protected source pipes. Linked to rear cover B; make mesh single-user before unique edits.",
+      "collision": "no automatic collider; no operative cover/door; keep existing equipment collider and control identity",
+      "uv0": "UV0_Game",
+      "geometry_source_unchanged": true,
+      "geometry_adjustment": [],
+      "export_node_matrix_room_blender": [
+        [
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "source_object": "WQ_L14_SKIN_04_Rear_Closed_Cover_B",
+      "candidate_object": "GAME11_L14_CASING_04",
+      "singleuv_predecessor": "GAME10_L14_04",
+      "export_node": "L14_CASING_Part_04",
+      "parent_basis": "ORG_ROOM_L14_b1cdce",
+      "matrix_room_blender": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          28.86249542236328
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -12.476997375488281
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          8.880000114440918
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_room_unity": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          28.86249542236328
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          8.880000114440918
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          -12.476997375488281
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "mesh_local_bounds_blender": [
+        [
+          -0.8174972534179688,
+          -0.01700592041015625,
+          -1.25
+        ],
+        [
+          0.8175048828125,
+          0.016998291015625,
+          1.25
+        ]
+      ],
+      "bounds_room_blender": [
+        [
+          28.044998168945312,
+          -12.494003295898438,
+          7.630000114440918
+        ],
+        [
+          29.68000030517578,
+          -12.459999084472656,
+          10.130000114440918
+        ]
+      ],
+      "bounds_room_unity": [
+        [
+          28.044998168945312,
+          7.630000114440918,
+          -12.494003295898438
+        ],
+        [
+          29.68000030517578,
+          10.130000114440918,
+          -12.459999084472656
+        ]
+      ],
+      "evaluated_vertices": 48,
+      "triangles": 92,
+      "material_slots": [
+        {
+          "slot": 0,
+          "source_material": "LD2_Hull_CeramicPaint",
+          "candidate_material": "M10_L14_Body_Hull"
+        },
+        {
+          "slot": 1,
+          "source_material": "M09_M09_L14_RearCover_B",
+          "candidate_material": "M10_L14_04_SingleUV"
+        }
+      ],
+      "role": "Closed static removable-cover visual shell between protected source pipes. Linked to rear cover B; make mesh single-user before unique edits.",
+      "collision": "no automatic collider; no operative cover/door; keep existing equipment collider and control identity",
+      "uv0": "UV0_Game",
+      "geometry_source_unchanged": true,
+      "geometry_adjustment": [],
+      "export_node_matrix_room_blender": [
+        [
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "source_object": "WQ_L14_SKIN_05_Seated_Carrier_And_Lower_Band",
+      "candidate_object": "GAME11_L14_CASING_05",
+      "singleuv_predecessor": "WQ_L14_SKIN_05_Seated_Carrier_And_Lower_Band",
+      "export_node": "L14_CASING_Part_05",
+      "parent_basis": "ORG_ROOM_L14_b1cdce",
+      "matrix_room_blender": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          27.95703125
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -14.94952392578125
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          8.582000732421875
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_room_unity": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          27.95703125
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          8.582000732421875
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          -14.94952392578125
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "mesh_local_bounds_blender": [
+        [
+          -2.7430038452148438,
+          -2.4854965209960938,
+          -1.621999740600586
+        ],
+        [
+          2.7429962158203125,
+          2.485504150390625,
+          1.6220006942749023
+        ]
+      ],
+      "bounds_room_blender": [
+        [
+          25.214027404785156,
+          -17.435020446777344,
+          6.960000991821289
+        ],
+        [
+          30.700027465820312,
+          -12.464019775390625,
+          10.204001426696777
+        ]
+      ],
+      "bounds_room_unity": [
+        [
+          25.214027404785156,
+          6.960000991821289,
+          -17.435020446777344
+        ],
+        [
+          30.700027465820312,
+          10.204001426696777,
+          -12.464019775390625
+        ]
+      ],
+      "evaluated_vertices": 792,
+      "triangles": 1452,
+      "material_slots": [
+        {
+          "slot": 0,
+          "source_material": "LD2_Structure_GraphiteCoat",
+          "candidate_material": "M11_L14_Graphite_SingleUV"
+        },
+        {
+          "slot": 1,
+          "source_material": "LD2_Painted_Metal_Grey",
+          "candidate_material": "M10_L14_Body_Grey"
+        },
+        {
+          "slot": 2,
+          "source_material": "LD2_Brushed_Aluminium",
+          "candidate_material": "M11_L14_Aluminium_SingleUV"
+        }
+      ],
+      "role": "One casing-local merged support family: seated carrier frames, coordinated lower protective zone and grounded-plinth contact. Disconnected authored parts intentionally merged; do not interpret as a single fabricated plate.",
+      "collision": "no automatic collider; no operative cover/door; keep existing equipment collider and control identity",
+      "uv0": "UV0_Game",
+      "geometry_source_unchanged": false,
+      "geometry_adjustment": [
+        {
+          "part_index": 16,
+          "base_vertices": [
+            128,
+            129,
+            130,
+            131,
+            132,
+            133,
+            134,
+            135
+          ],
+          "front_setback_m": 0.04208483886718639,
+          "new_front_room_y": -17.38793835449219,
+          "old_panel_rear_room_y": -17.389938354492188,
+          "moved": [
+            {
+              "vertex": 128,
+              "old_room_position": [
+                25.2330322265625,
+                -17.430023193359375,
+                10.156001091003418
+              ],
+              "new_room_position": [
+                25.2330322265625,
+                -17.387937545776367,
+                10.156001091003418
+              ]
+            },
+            {
+              "vertex": 129,
+              "old_room_position": [
+                25.253028869628906,
+                -17.430023193359375,
+                10.156001091003418
+              ],
+              "new_room_position": [
+                25.253028869628906,
+                -17.387937545776367,
+                10.156001091003418
+              ]
+            },
+            {
+              "vertex": 132,
+              "old_room_position": [
+                25.2330322265625,
+                -17.430023193359375,
+                10.204001426696777
+              ],
+              "new_room_position": [
+                25.2330322265625,
+                -17.387937545776367,
+                10.204001426696777
+              ]
+            },
+            {
+              "vertex": 133,
+              "old_room_position": [
+                25.253028869628906,
+                -17.430023193359375,
+                10.204001426696777
+              ],
+              "new_room_position": [
+                25.253028869628906,
+                -17.387937545776367,
+                10.204001426696777
+              ]
+            }
+          ]
+        },
+        {
+          "part_index": 17,
+          "base_vertices": [
+            136,
+            137,
+            138,
+            139,
+            140,
+            141,
+            142,
+            143
+          ],
+          "front_setback_m": 0.04008593749999889,
+          "new_front_room_y": -17.38793835449219,
+          "old_panel_rear_room_y": -17.389938354492188,
+          "moved": [
+            {
+              "vertex": 136,
+              "old_room_position": [
+                25.2330322265625,
+                -17.428024291992188,
+                6.970000743865967
+              ],
+              "new_room_position": [
+                25.2330322265625,
+                -17.387937545776367,
+                6.970000743865967
+              ]
+            },
+            {
+              "vertex": 137,
+              "old_room_position": [
+                25.253028869628906,
+                -17.428024291992188,
+                6.970000743865967
+              ],
+              "new_room_position": [
+                25.253028869628906,
+                -17.387937545776367,
+                6.970000743865967
+              ]
+            },
+            {
+              "vertex": 140,
+              "old_room_position": [
+                25.2330322265625,
+                -17.428024291992188,
+                10.170001029968262
+              ],
+              "new_room_position": [
+                25.2330322265625,
+                -17.387937545776367,
+                10.170001029968262
+              ]
+            },
+            {
+              "vertex": 141,
+              "old_room_position": [
+                25.253028869628906,
+                -17.428024291992188,
+                10.170001029968262
+              ],
+              "new_room_position": [
+                25.253028869628906,
+                -17.387937545776367,
+                10.170001029968262
+              ]
+            }
+          ]
+        },
+        {
+          "part_index": 31,
+          "base_vertices": [
+            248,
+            249,
+            250,
+            251,
+            252,
+            253,
+            254,
+            255
+          ],
+          "front_setback_m": 0.04708209228515514,
+          "new_front_room_y": -17.38793835449219,
+          "old_panel_rear_room_y": -17.389938354492188,
+          "moved": [
+            {
+              "vertex": 248,
+              "old_room_position": [
+                25.23603057861328,
+                -17.435020446777344,
+                6.960000991821289
+              ],
+              "new_room_position": [
+                25.23603057861328,
+                -17.387937545776367,
+                6.960000991821289
+              ]
+            },
+            {
+              "vertex": 249,
+              "old_room_position": [
+                25.256027221679688,
+                -17.435020446777344,
+                6.960000991821289
+              ],
+              "new_room_position": [
+                25.256027221679688,
+                -17.387937545776367,
+                6.960000991821289
+              ]
+            },
+            {
+              "vertex": 252,
+              "old_room_position": [
+                25.23603057861328,
+                -17.435020446777344,
+                7.010001182556152
+              ],
+              "new_room_position": [
+                25.23603057861328,
+                -17.387937545776367,
+                7.010001182556152
+              ]
+            },
+            {
+              "vertex": 253,
+              "old_room_position": [
+                25.256027221679688,
+                -17.435020446777344,
+                7.010001182556152
+              ],
+              "new_room_position": [
+                25.256027221679688,
+                -17.387937545776367,
+                7.010001182556152
+              ]
+            }
+          ]
+        }
+      ],
+      "export_node_matrix_room_blender": [
+        [
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "source_object": "WQ_L14_SKIN_06_Sparse_Captive_Release_Heads",
+      "candidate_object": "GAME11_L14_CASING_06",
+      "singleuv_predecessor": "WQ_L14_SKIN_06_Sparse_Captive_Release_Heads",
+      "export_node": "L14_CASING_Part_06",
+      "parent_basis": "ORG_ROOM_L14_b1cdce",
+      "matrix_room_blender": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          27.39013671875
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -13.827392578125
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          8.8800048828125
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_room_unity": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          27.39013671875
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          8.8800048828125
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          -13.827392578125
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "mesh_local_bounds_blender": [
+        [
+          -2.1839523315429688,
+          -1.3714523315429688,
+          -1.014000415802002
+        ],
+        [
+          2.1839523315429688,
+          1.3714523315429688,
+          1.0139999389648438
+        ]
+      ],
+      "bounds_room_blender": [
+        [
+          25.20618438720703,
+          -15.198844909667969,
+          7.866004467010498
+        ],
+        [
+          29.57408905029297,
+          -12.455940246582031,
+          9.894004821777344
+        ]
+      ],
+      "bounds_room_unity": [
+        [
+          25.20618438720703,
+          7.866004467010498,
+          -15.198844909667969
+        ],
+        [
+          29.57408905029297,
+          9.894004821777344,
+          -12.455940246582031
+        ]
+      ],
+      "evaluated_vertices": 256,
+      "triangles": 448,
+      "material_slots": [
+        {
+          "slot": 0,
+          "source_material": "LD2_Brushed_Aluminium",
+          "candidate_material": "M11_L14_Aluminium_SingleUV"
+        },
+        {
+          "slot": 1,
+          "source_material": "LD2_Anodized_DarkAlloy",
+          "candidate_material": "M11_L14_DarkAlloy_SingleUV"
+        }
+      ],
+      "role": "Eight static captive-release heads mounted on the four covers; decorative closed state only. No new access interaction or animation.",
+      "collision": "no automatic collider; no operative cover/door; keep existing equipment collider and control identity",
+      "uv0": "UV0_Game",
+      "geometry_source_unchanged": true,
+      "geometry_adjustment": [],
+      "export_node_matrix_room_blender": [
+        [
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ]
+      ]
+    }
+  ],
+  "materials": [
+    {
+      "material": "M10_L14_01_SingleUV",
+      "shader_target": "Universal Render Pipeline/Lit metallic workflow",
+      "base_color_factor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "metallic_scale": 1,
+      "smoothness_scale": 1,
+      "normal_scale": 1,
+      "base_map_image": "M09_L14_WestCover_A_BaseColor.png",
+      "normal_map_image": "M10_L14_01_NormalTS.png",
+      "metallic_occlusion_smoothness_image": "M10_L14_01_MetallicAO_Smoothness.png",
+      "uv": 0,
+      "tiling": [
+        1,
+        1
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "wrap": {
+        "base": "EXTEND",
+        "normal": "EXTEND",
+        "packed": "EXTEND"
+      },
+      "double_sided": false,
+      "alpha_mode": "OPAQUE",
+      "gltf_placeholder_material": "SLOT__M10_L14_01_SingleUV"
+    },
+    {
+      "material": "M10_L14_02_SingleUV",
+      "shader_target": "Universal Render Pipeline/Lit metallic workflow",
+      "base_color_factor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "metallic_scale": 1,
+      "smoothness_scale": 1,
+      "normal_scale": 1,
+      "base_map_image": "M09_L14_WestCover_B_BaseColor.png",
+      "normal_map_image": "M10_L14_02_NormalTS.png",
+      "metallic_occlusion_smoothness_image": "M10_L14_02_MetallicAO_Smoothness.png",
+      "uv": 0,
+      "tiling": [
+        1,
+        1
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "wrap": {
+        "base": "EXTEND",
+        "normal": "EXTEND",
+        "packed": "EXTEND"
+      },
+      "double_sided": false,
+      "alpha_mode": "OPAQUE",
+      "gltf_placeholder_material": "SLOT__M10_L14_02_SingleUV"
+    },
+    {
+      "material": "M10_L14_03_SingleUV",
+      "shader_target": "Universal Render Pipeline/Lit metallic workflow",
+      "base_color_factor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "metallic_scale": 1,
+      "smoothness_scale": 1,
+      "normal_scale": 1,
+      "base_map_image": "M09_L14_RearCover_A_BaseColor.png",
+      "normal_map_image": "M10_L14_03_NormalTS.png",
+      "metallic_occlusion_smoothness_image": "M10_L14_03_MetallicAO_Smoothness.png",
+      "uv": 0,
+      "tiling": [
+        1,
+        1
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "wrap": {
+        "base": "EXTEND",
+        "normal": "EXTEND",
+        "packed": "EXTEND"
+      },
+      "double_sided": false,
+      "alpha_mode": "OPAQUE",
+      "gltf_placeholder_material": "SLOT__M10_L14_03_SingleUV"
+    },
+    {
+      "material": "M10_L14_04_SingleUV",
+      "shader_target": "Universal Render Pipeline/Lit metallic workflow",
+      "base_color_factor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "metallic_scale": 1,
+      "smoothness_scale": 1,
+      "normal_scale": 1,
+      "base_map_image": "M09_L14_RearCover_B_BaseColor.png",
+      "normal_map_image": "M10_L14_04_NormalTS.png",
+      "metallic_occlusion_smoothness_image": "M10_L14_04_MetallicAO_Smoothness.png",
+      "uv": 0,
+      "tiling": [
+        1,
+        1
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "wrap": {
+        "base": "EXTEND",
+        "normal": "EXTEND",
+        "packed": "EXTEND"
+      },
+      "double_sided": false,
+      "alpha_mode": "OPAQUE",
+      "gltf_placeholder_material": "SLOT__M10_L14_04_SingleUV"
+    },
+    {
+      "material": "M10_L14_Body_Grey",
+      "shader_target": "Universal Render Pipeline/Lit metallic workflow",
+      "base_color_factor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "metallic_scale": 1,
+      "smoothness_scale": 1,
+      "normal_scale": 1,
+      "base_map_image": "LD2_Painted_Metal_Grey_BaseColor.png.001",
+      "normal_map_image": "Compact_75066932c53291_Normal.png",
+      "metallic_occlusion_smoothness_image": "M10_L14_Body_Grey_MetallicAO_Smoothness.png",
+      "uv": 0,
+      "tiling": [
+        1,
+        1
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "wrap": {
+        "base": "REPEAT",
+        "normal": "REPEAT",
+        "packed": "REPEAT"
+      },
+      "double_sided": false,
+      "alpha_mode": "OPAQUE",
+      "gltf_placeholder_material": "SLOT__M10_L14_Body_Grey"
+    },
+    {
+      "material": "M10_L14_Body_Hull",
+      "shader_target": "Universal Render Pipeline/Lit metallic workflow",
+      "base_color_factor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "metallic_scale": 1,
+      "smoothness_scale": 1,
+      "normal_scale": 1,
+      "base_map_image": "LD2_Hull_CeramicPaint_BaseColor.png.001",
+      "normal_map_image": "Compact_75066932c53291_Normal.png",
+      "metallic_occlusion_smoothness_image": "M10_L14_Body_Hull_MetallicAO_Smoothness.png",
+      "uv": 0,
+      "tiling": [
+        1,
+        1
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "wrap": {
+        "base": "REPEAT",
+        "normal": "REPEAT",
+        "packed": "REPEAT"
+      },
+      "double_sided": false,
+      "alpha_mode": "OPAQUE",
+      "gltf_placeholder_material": "SLOT__M10_L14_Body_Hull"
+    },
+    {
+      "material": "M11_L14_Aluminium_SingleUV",
+      "shader_target": "Universal Render Pipeline/Lit metallic workflow",
+      "base_color_factor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "metallic_scale": 1,
+      "smoothness_scale": 1,
+      "normal_scale": 1,
+      "base_map_image": "LD2_Brushed_Aluminium_BaseColor.png.001",
+      "normal_map_image": "LD2_Anodized_DarkAlloy_Normal.png",
+      "metallic_occlusion_smoothness_image": "M11_L14_Aluminium_SingleUV_MetallicAO_Smoothness.png",
+      "uv": 0,
+      "tiling": [
+        1,
+        1
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "wrap": {
+        "base": "REPEAT",
+        "normal": "REPEAT",
+        "packed": "REPEAT"
+      },
+      "double_sided": false,
+      "alpha_mode": "OPAQUE",
+      "gltf_placeholder_material": "SLOT__M11_L14_Aluminium_SingleUV"
+    },
+    {
+      "material": "M11_L14_DarkAlloy_SingleUV",
+      "shader_target": "Universal Render Pipeline/Lit metallic workflow",
+      "base_color_factor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "metallic_scale": 1,
+      "smoothness_scale": 1,
+      "normal_scale": 1,
+      "base_map_image": "LD2_Anodized_DarkAlloy_BaseColor.png",
+      "normal_map_image": "LD2_Anodized_DarkAlloy_Normal.png.001",
+      "metallic_occlusion_smoothness_image": "M11_L14_DarkAlloy_SingleUV_MetallicAO_Smoothness.png",
+      "uv": 0,
+      "tiling": [
+        1,
+        1
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "wrap": {
+        "base": "REPEAT",
+        "normal": "REPEAT",
+        "packed": "REPEAT"
+      },
+      "double_sided": false,
+      "alpha_mode": "OPAQUE",
+      "gltf_placeholder_material": "SLOT__M11_L14_DarkAlloy_SingleUV"
+    },
+    {
+      "material": "M11_L14_Graphite_SingleUV",
+      "shader_target": "Universal Render Pipeline/Lit metallic workflow",
+      "base_color_factor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "metallic_scale": 1,
+      "smoothness_scale": 1,
+      "normal_scale": 1,
+      "base_map_image": "LD2_Structure_GraphiteCoat_BaseColor.png.001",
+      "normal_map_image": "Compact_75066932c53291_Normal.png",
+      "metallic_occlusion_smoothness_image": "M11_L14_Graphite_SingleUV_MetallicAO_Smoothness.png",
+      "uv": 0,
+      "tiling": [
+        1,
+        1
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "wrap": {
+        "base": "REPEAT",
+        "normal": "REPEAT",
+        "packed": "REPEAT"
+      },
+      "double_sided": false,
+      "alpha_mode": "OPAQUE",
+      "gltf_placeholder_material": "SLOT__M11_L14_Graphite_SingleUV"
+    }
+  ],
+  "textures": [
+    {
+      "image": "M09_L14_WestCover_A_BaseColor.png",
+      "file": "M09_L14_WestCover_A_BaseColor.png",
+      "usage": "sRGB BaseMap",
+      "size": [
+        1024,
+        1120
+      ],
+      "packed_byte_sha256": "5ada8aab7ab22e5e775648d5015be905dd7bcdd97659e4ea9a506939a8e9fa89",
+      "color_space": "sRGB"
+    },
+    {
+      "image": "M10_L14_01_NormalTS.png",
+      "file": "M10_L14_01_NormalTS.png",
+      "usage": "Normal map, tangent +Y; no grayscale; no assumed green flip",
+      "size": [
+        2048,
+        2048
+      ],
+      "packed_byte_sha256": "04666a2806b3144dd733731fca04842b0b035807b4cf090b77a5a3847366e39e",
+      "color_space": "Non-Color"
+    },
+    {
+      "image": "M10_L14_01_MetallicAO_Smoothness.png",
+      "file": "M10_L14_01_MetallicAO_Smoothness.png",
+      "usage": "Linear data: R metallic/G occlusion/B unused/A smoothness",
+      "size": [
+        2048,
+        2048
+      ],
+      "packed_byte_sha256": "697c33c0d2d493c0d0148797b91ee1afb99fc5f35d1f091b5d1a783c98d015c6",
+      "color_space": "Non-Color"
+    },
+    {
+      "image": "M09_L14_WestCover_B_BaseColor.png",
+      "file": "M09_L14_WestCover_B_BaseColor.png",
+      "usage": "sRGB BaseMap",
+      "size": [
+        1024,
+        1120
+      ],
+      "packed_byte_sha256": "cd21a7532359f1bd1da3d94e527c2a65b3b6a72c1274a06746ba6ac74e6ba894",
+      "color_space": "sRGB"
+    },
+    {
+      "image": "M10_L14_02_NormalTS.png",
+      "file": "M10_L14_02_NormalTS.png",
+      "usage": "Normal map, tangent +Y; no grayscale; no assumed green flip",
+      "size": [
+        2048,
+        2048
+      ],
+      "packed_byte_sha256": "99cb25ba7d180defae3346f1c36847af502250cc39eaca91193f961de4c4a2be",
+      "color_space": "Non-Color"
+    },
+    {
+      "image": "M10_L14_02_MetallicAO_Smoothness.png",
+      "file": "M10_L14_02_MetallicAO_Smoothness.png",
+      "usage": "Linear data: R metallic/G occlusion/B unused/A smoothness",
+      "size": [
+        2048,
+        2048
+      ],
+      "packed_byte_sha256": "9060290e872588d5707a4c4fe14b93aa4d3dcaf7d19c478e67120d4a7aeae401",
+      "color_space": "Non-Color"
+    },
+    {
+      "image": "M09_L14_RearCover_A_BaseColor.png",
+      "file": "M09_L14_RearCover_A_BaseColor.png",
+      "usage": "sRGB BaseMap",
+      "size": [
+        768,
+        1120
+      ],
+      "packed_byte_sha256": "c36adfd8f8375a81f7c16be2be78a8db245a10bff814e6a522a72c1b6bbc7cdd",
+      "color_space": "sRGB"
+    },
+    {
+      "image": "M10_L14_03_NormalTS.png",
+      "file": "M10_L14_03_NormalTS.png",
+      "usage": "Normal map, tangent +Y; no grayscale; no assumed green flip",
+      "size": [
+        2048,
+        2048
+      ],
+      "packed_byte_sha256": "0cd4554b52d61e2d58fbc5b64db6b2cfdb3202c2dff2cced087a8c2255a42aa0",
+      "color_space": "Non-Color"
+    },
+    {
+      "image": "M10_L14_03_MetallicAO_Smoothness.png",
+      "file": "M10_L14_03_MetallicAO_Smoothness.png",
+      "usage": "Linear data: R metallic/G occlusion/B unused/A smoothness",
+      "size": [
+        2048,
+        2048
+      ],
+      "packed_byte_sha256": "345060bba5557e3036c9490742f40c3e08e6d264942b7d3e4c75d1769668f5e1",
+      "color_space": "Non-Color"
+    },
+    {
+      "image": "M09_L14_RearCover_B_BaseColor.png",
+      "file": "M09_L14_RearCover_B_BaseColor.png",
+      "usage": "sRGB BaseMap",
+      "size": [
+        768,
+        1120
+      ],
+      "packed_byte_sha256": "6dc6bf2d4e0f13b89837f8bacee45fee955d46be1f1dc09507fd4cc925e6f562",
+      "color_space": "sRGB"
+    },
+    {
+      "image": "M10_L14_04_NormalTS.png",
+      "file": "M10_L14_04_NormalTS.png",
+      "usage": "Normal map, tangent +Y; no grayscale; no assumed green flip",
+      "size": [
+        2048,
+        2048
+      ],
+      "packed_byte_sha256": "de4e37b0e006fcb48cd9dc90b94350a801ca568dd53227ea54ffb988121bc8b3",
+      "color_space": "Non-Color"
+    },
+    {
+      "image": "M10_L14_04_MetallicAO_Smoothness.png",
+      "file": "M10_L14_04_MetallicAO_Smoothness.png",
+      "usage": "Linear data: R metallic/G occlusion/B unused/A smoothness",
+      "size": [
+        2048,
+        2048
+      ],
+      "packed_byte_sha256": "61fa264e76b309183a27b422090c587c5a803ea1ab7b9df98019279b754e0bdc",
+      "color_space": "Non-Color"
+    },
+    {
+      "image": "LD2_Painted_Metal_Grey_BaseColor.png.001",
+      "file": "LD2_Painted_Metal_Grey_BaseColor.png",
+      "usage": "sRGB BaseMap",
+      "size": [
+        1024,
+        1024
+      ],
+      "packed_byte_sha256": "008540f0f7180ca39525aab214feb03a6b46df8fa7e7c8a5d7d48b5e7885d78f",
+      "color_space": "sRGB"
+    },
+    {
+      "image": "Compact_75066932c53291_Normal.png",
+      "file": "Compact_75066932c53291_Normal.png",
+      "usage": "Normal map, tangent +Y; no grayscale; no assumed green flip",
+      "size": [
+        512,
+        512
+      ],
+      "packed_byte_sha256": "085a81cd481e127aa068a6e7625bc8dd791418ad238cebdee0c6cbbf044f290e",
+      "color_space": "Non-Color"
+    },
+    {
+      "image": "M10_L14_Body_Grey_MetallicAO_Smoothness.png",
+      "file": "M10_L14_Body_Grey_MetallicAO_Smoothness.png",
+      "usage": "Linear data: R metallic/G occlusion/B unused/A smoothness",
+      "size": [
+        512,
+        512
+      ],
+      "packed_byte_sha256": "3e6d553699263da58d0912204c571456701bf6ffc5a050c6d6901b567ecc33d4",
+      "color_space": "Non-Color"
+    },
+    {
+      "image": "LD2_Hull_CeramicPaint_BaseColor.png.001",
+      "file": "LD2_Hull_CeramicPaint_BaseColor.png",
+      "usage": "sRGB BaseMap",
+      "size": [
+        1024,
+        1024
+      ],
+      "packed_byte_sha256": "2bf86fe832373f5c08e935ad1d77b72b37b7353e5a352f58ac82a844fc0a3e5b",
+      "color_space": "sRGB"
+    },
+    {
+      "image": "M10_L14_Body_Hull_MetallicAO_Smoothness.png",
+      "file": "M10_L14_Body_Hull_MetallicAO_Smoothness.png",
+      "usage": "Linear data: R metallic/G occlusion/B unused/A smoothness",
+      "size": [
+        512,
+        512
+      ],
+      "packed_byte_sha256": "df560de082f85171559535de31092071501739546eb57043594468a54dc06d17",
+      "color_space": "Non-Color"
+    },
+    {
+      "image": "LD2_Brushed_Aluminium_BaseColor.png.001",
+      "file": "LD2_Brushed_Aluminium_BaseColor.png",
+      "usage": "sRGB BaseMap",
+      "size": [
+        1024,
+        1024
+      ],
+      "packed_byte_sha256": "c40ab0faf0dac9db70f8ae4c7b0a909e7f39a79ddcd5e3fe1762ffc8a180585c",
+      "color_space": "sRGB"
+    },
+    {
+      "image": "LD2_Anodized_DarkAlloy_Normal.png",
+      "file": "LD2_Anodized_DarkAlloy_Normal.png",
+      "usage": "Normal map, tangent +Y; no grayscale; no assumed green flip",
+      "size": [
+        1024,
+        1024
+      ],
+      "packed_byte_sha256": "3797ce4de050ae5ffcd63e702878dc116b8c56dfe13039655685b5bdec0b1043",
+      "color_space": "Non-Color"
+    },
+    {
+      "image": "M11_L14_Aluminium_SingleUV_MetallicAO_Smoothness.png",
+      "file": "M11_L14_Aluminium_SingleUV_MetallicAO_Smoothness.png",
+      "usage": "Linear data: R metallic/G occlusion/B unused/A smoothness",
+      "size": [
+        1024,
+        1024
+      ],
+      "packed_byte_sha256": "8782b76b0ec1c20c5d74d0dd567ea856acf244af08dc6f6d1f0852cc040361f2",
+      "color_space": "Non-Color"
+    },
+    {
+      "image": "LD2_Anodized_DarkAlloy_BaseColor.png",
+      "file": "LD2_Anodized_DarkAlloy_BaseColor.png",
+      "usage": "sRGB BaseMap",
+      "size": [
+        1024,
+        1024
+      ],
+      "packed_byte_sha256": "f3e3a84e046e6f99d1093a148c3a2e17d40c7dc18ddc8115f042094cbac3f039",
+      "color_space": "sRGB"
+    },
+    {
+      "image": "LD2_Anodized_DarkAlloy_Normal.png.001",
+      "file": "LD2_Anodized_DarkAlloy_Normal.png",
+      "usage": "Normal map, tangent +Y; no grayscale; no assumed green flip",
+      "size": [
+        1024,
+        1024
+      ],
+      "packed_byte_sha256": "3797ce4de050ae5ffcd63e702878dc116b8c56dfe13039655685b5bdec0b1043",
+      "color_space": "Non-Color"
+    },
+    {
+      "image": "M11_L14_DarkAlloy_SingleUV_MetallicAO_Smoothness.png",
+      "file": "M11_L14_DarkAlloy_SingleUV_MetallicAO_Smoothness.png",
+      "usage": "Linear data: R metallic/G occlusion/B unused/A smoothness",
+      "size": [
+        1024,
+        1024
+      ],
+      "packed_byte_sha256": "78e3b595d9e9a4a64f5d1677817a75949f301c50d0ead49f1f7d48417873ae50",
+      "color_space": "Non-Color"
+    },
+    {
+      "image": "LD2_Structure_GraphiteCoat_BaseColor.png.001",
+      "file": "LD2_Structure_GraphiteCoat_BaseColor.png",
+      "usage": "sRGB BaseMap",
+      "size": [
+        1024,
+        1024
+      ],
+      "packed_byte_sha256": "bd68a24ce1bb25353954f8e9f696058364088ddeea32fbb7987fad2a204b7ac6",
+      "color_space": "sRGB"
+    },
+    {
+      "image": "M11_L14_Graphite_SingleUV_MetallicAO_Smoothness.png",
+      "file": "M11_L14_Graphite_SingleUV_MetallicAO_Smoothness.png",
+      "usage": "Linear data: R metallic/G occlusion/B unused/A smoothness",
+      "size": [
+        512,
+        512
+      ],
+      "packed_byte_sha256": "f8f4a2e2e5d12db1088f678403abb9c555743f9de1cccae8b2bab1bd37fb21c9",
+      "color_space": "Non-Color"
+    }
+  ],
+  "packing": "URP Metallic workflow: packed R=metallic G=AO B=unused A=smoothness=1-roughness; linear/sRGB off. Assign same packed image to Metallic and Occlusion. Smoothness Source=Metallic Alpha; scalar1. All channels sample UV0.",
+  "official_reference": "https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@14.0/manual/shaders-in-universalrp-channel-packed-texture.html",
+  "new_material_channel_checks": [
+    {
+      "material": "M11_L14_Graphite_SingleUV",
+      "original_ORM": "Compact_9969fc184c9600_ORM.png",
+      "new_packed": "M11_L14_Graphite_SingleUV_MetallicAO_Smoothness.png",
+      "max_channel_abs_error": 5.960464477539063e-08,
+      "normal_image_unchanged": "Compact_75066932c53291_Normal.png",
+      "uv_no_reprojection": true
+    },
+    {
+      "material": "M11_L14_Aluminium_SingleUV",
+      "original_ORM": "LD2_Brushed_Aluminium_ORM.png.001",
+      "new_packed": "M11_L14_Aluminium_SingleUV_MetallicAO_Smoothness.png",
+      "max_channel_abs_error": 1.1920928955078125e-07,
+      "normal_image_unchanged": "LD2_Anodized_DarkAlloy_Normal.png",
+      "uv_no_reprojection": true
+    },
+    {
+      "material": "M11_L14_DarkAlloy_SingleUV",
+      "original_ORM": "LD2_Anodized_DarkAlloy_ORM.png",
+      "new_packed": "M11_L14_DarkAlloy_SingleUV_MetallicAO_Smoothness.png",
+      "max_channel_abs_error": 5.960464477539063e-08,
+      "normal_image_unchanged": "LD2_Anodized_DarkAlloy_Normal.png.001",
+      "uv_no_reprojection": true
+    }
+  ],
+  "carrier_end_trim": [
+    {
+      "part_index": 16,
+      "base_vertices": [
+        128,
+        129,
+        130,
+        131,
+        132,
+        133,
+        134,
+        135
+      ],
+      "front_setback_m": 0.04208483886718639,
+      "new_front_room_y": -17.38793835449219,
+      "old_panel_rear_room_y": -17.389938354492188,
+      "moved": [
+        {
+          "vertex": 128,
+          "old_room_position": [
+            25.2330322265625,
+            -17.430023193359375,
+            10.156001091003418
+          ],
+          "new_room_position": [
+            25.2330322265625,
+            -17.387937545776367,
+            10.156001091003418
+          ]
+        },
+        {
+          "vertex": 129,
+          "old_room_position": [
+            25.253028869628906,
+            -17.430023193359375,
+            10.156001091003418
+          ],
+          "new_room_position": [
+            25.253028869628906,
+            -17.387937545776367,
+            10.156001091003418
+          ]
+        },
+        {
+          "vertex": 132,
+          "old_room_position": [
+            25.2330322265625,
+            -17.430023193359375,
+            10.204001426696777
+          ],
+          "new_room_position": [
+            25.2330322265625,
+            -17.387937545776367,
+            10.204001426696777
+          ]
+        },
+        {
+          "vertex": 133,
+          "old_room_position": [
+            25.253028869628906,
+            -17.430023193359375,
+            10.204001426696777
+          ],
+          "new_room_position": [
+            25.253028869628906,
+            -17.387937545776367,
+            10.204001426696777
+          ]
+        }
+      ]
+    },
+    {
+      "part_index": 17,
+      "base_vertices": [
+        136,
+        137,
+        138,
+        139,
+        140,
+        141,
+        142,
+        143
+      ],
+      "front_setback_m": 0.04008593749999889,
+      "new_front_room_y": -17.38793835449219,
+      "old_panel_rear_room_y": -17.389938354492188,
+      "moved": [
+        {
+          "vertex": 136,
+          "old_room_position": [
+            25.2330322265625,
+            -17.428024291992188,
+            6.970000743865967
+          ],
+          "new_room_position": [
+            25.2330322265625,
+            -17.387937545776367,
+            6.970000743865967
+          ]
+        },
+        {
+          "vertex": 137,
+          "old_room_position": [
+            25.253028869628906,
+            -17.428024291992188,
+            6.970000743865967
+          ],
+          "new_room_position": [
+            25.253028869628906,
+            -17.387937545776367,
+            6.970000743865967
+          ]
+        },
+        {
+          "vertex": 140,
+          "old_room_position": [
+            25.2330322265625,
+            -17.428024291992188,
+            10.170001029968262
+          ],
+          "new_room_position": [
+            25.2330322265625,
+            -17.387937545776367,
+            10.170001029968262
+          ]
+        },
+        {
+          "vertex": 141,
+          "old_room_position": [
+            25.253028869628906,
+            -17.428024291992188,
+            10.170001029968262
+          ],
+          "new_room_position": [
+            25.253028869628906,
+            -17.387937545776367,
+            10.170001029968262
+          ]
+        }
+      ]
+    },
+    {
+      "part_index": 31,
+      "base_vertices": [
+        248,
+        249,
+        250,
+        251,
+        252,
+        253,
+        254,
+        255
+      ],
+      "front_setback_m": 0.04708209228515514,
+      "new_front_room_y": -17.38793835449219,
+      "old_panel_rear_room_y": -17.389938354492188,
+      "moved": [
+        {
+          "vertex": 248,
+          "old_room_position": [
+            25.23603057861328,
+            -17.435020446777344,
+            6.960000991821289
+          ],
+          "new_room_position": [
+            25.23603057861328,
+            -17.387937545776367,
+            6.960000991821289
+          ]
+        },
+        {
+          "vertex": 249,
+          "old_room_position": [
+            25.256027221679688,
+            -17.435020446777344,
+            6.960000991821289
+          ],
+          "new_room_position": [
+            25.256027221679688,
+            -17.387937545776367,
+            6.960000991821289
+          ]
+        },
+        {
+          "vertex": 252,
+          "old_room_position": [
+            25.23603057861328,
+            -17.435020446777344,
+            7.010001182556152
+          ],
+          "new_room_position": [
+            25.23603057861328,
+            -17.387937545776367,
+            7.010001182556152
+          ]
+        },
+        {
+          "vertex": 253,
+          "old_room_position": [
+            25.256027221679688,
+            -17.435020446777344,
+            7.010001182556152
+          ],
+          "new_room_position": [
+            25.256027221679688,
+            -17.387937545776367,
+            7.010001182556152
+          ]
+        }
+      ]
+    }
+  ],
+  "excluded": [
+    "Reference electronics rack (different local pose; no transplant)",
+    "GAME10_L14_05..13 drawer/reference replacements",
+    "All inherited equipment panels/windows/controls",
+    "Terrain/entrance/airlock/118 light anchors/135 light buttons"
+  ],
+  "clearance_contract": "See L14_CLOSED_CASING_CLEARANCE.json; native source evidence only; target front-panel mesh/control accessibility not certified.",
+  "export_recipe": "EXPORT_L14_CLOSED_CASING_MODULE.py",
+  "export_material_policy": "PLACEHOLDER material slots plus explicit JSON/packed-image extraction. Do not let glTF importer infer URP smoothness from Blender nodes. Exporter writes only six meshes and one identity room-local root.",
+  "Unity_validation": false,
+  "export_root": "L14_CASING_ROOM_LOCAL_EXPORT_ROOT",
+  "export_bake": "Export-only temporary evaluated copies bake their documented room-local matrix into vertex positions exactly once. Export root and every mesh node are identity; positions are room-local metres. Stored candidate matrices remain explicitly recorded.",
+  "source_geometry_cross_check": [
+    {
+      "object": "GAME11_L14_CASING_01",
+      "source": "WQ_L14_SKIN_01_West_Closed_Cover_A",
+      "mesh_vertex_local_error_m": 0.0,
+      "placement": "Exact source parent_inverse * basis, independent of hidden evaluated matrix cache.",
+      "source_evaluated_room_bounds_max_error_m": 0.0
+    },
+    {
+      "object": "GAME11_L14_CASING_02",
+      "source": "WQ_L14_SKIN_02_West_Closed_Cover_B",
+      "mesh_vertex_local_error_m": 0.0,
+      "placement": "Exact source parent_inverse * basis, independent of hidden evaluated matrix cache.",
+      "source_evaluated_room_bounds_max_error_m": 0.0
+    },
+    {
+      "object": "GAME11_L14_CASING_03",
+      "source": "WQ_L14_SKIN_03_Rear_Closed_Cover_A",
+      "mesh_vertex_local_error_m": 0.0,
+      "placement": "Exact source parent_inverse * basis, independent of hidden evaluated matrix cache.",
+      "source_evaluated_room_bounds_max_error_m": 0.0
+    },
+    {
+      "object": "GAME11_L14_CASING_04",
+      "source": "WQ_L14_SKIN_04_Rear_Closed_Cover_B",
+      "mesh_vertex_local_error_m": 0.0,
+      "placement": "Exact source parent_inverse * basis, independent of hidden evaluated matrix cache.",
+      "source_evaluated_room_bounds_max_error_m": 0.0
+    }
+  ]
+}

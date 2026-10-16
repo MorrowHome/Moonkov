@@ -8,6 +8,12 @@ using UnityEngine;
 
 public class SoundGameObjectPool
 {
+    // Explicit ownership cleanup for independent validation scopes; regular GameManager ownership is unchanged.
+    public void Dispose()
+    {
+        if (m_SourceHolder) Object.Destroy(m_SourceHolder);
+        SoundGameObjectList?.Clear(); NextSoundGameObject = null; AvailableSoundObjectCount = 0;
+    }
     public List<SoundGameObject> SoundGameObjectList;
     public SoundGameObject NextSoundGameObject;
     public int AvailableSoundObjectCount;

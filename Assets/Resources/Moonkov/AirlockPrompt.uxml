@@ -1,0 +1,17 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="AirlockPrompt.uss" />
+    <ui:VisualElement name="airlockPrompt" class="airlock-ui" picking-mode="Ignore">
+        <ui:VisualElement name="airlockMarker" class="airlock-marker" picking-mode="Ignore" />
+        <ui:VisualElement class="airlock-card" picking-mode="Ignore">
+            <ui:Label text="AIRLOCK CONTROL" class="airlock-caption" />
+            <ui:VisualElement class="airlock-heading">
+                <ui:Label text="F" class="airlock-key" />
+                <ui:Label name="airlockAction" class="airlock-action" />
+            </ui:VisualElement>
+            <ui:Label name="airlockPressure" class="airlock-pressure" />
+            <ui:VisualElement name="airlockActions" />
+            <ui:Label name="airlockFeedback" class="airlock-feedback" />
+            <ui:Label name="airlockHint" class="airlock-hint" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

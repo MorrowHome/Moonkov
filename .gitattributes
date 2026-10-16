@@ -74,6 +74,8 @@ Assets/MoonEnvironment/Variants/TheophilusBase/Terrain/R21/*.asset filter=lfs di
 
 # Generated per-room probe coefficients and tetrahedralization are bulk bake data.
 Assets/MoonEnvironment/Variants/MC00BakedBuilding/States/*/Probes.asset filter=lfs diff=lfs merge=lfs -text
+# Lighting Data Assets contain binary bake results referenced by saved scenes.
+**/LightingData.asset filter=lfs diff=lfs merge=lfs -text
 
 # Unity serializes empty values with trailing spaces. Preserve its generated format.
 *.meta whitespace=-blank-at-eol
@@ -88,3 +90,5 @@ SourceData/Models/**/AuthorNotes/** whitespace=-blank-at-eol,-blank-at-eof
 Assets/Prefabs/Survival/*.prefab whitespace=-blank-at-eol
 Assets/Prefabs/Survival/*.mat whitespace=-blank-at-eol
 Assets/Resources/Moonkov/Oxygen/*.asset whitespace=-blank-at-eol
+# Airlock SoundDefs use Unity's empty serialized string formatting as well.
+Assets/Audio/Moonkov/Airlock/SoundDefs/*.asset whitespace=-blank-at-eol

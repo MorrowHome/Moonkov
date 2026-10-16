@@ -31,6 +31,7 @@ namespace Unity.MP_FPS
         private Label m_InventoryTitle;
         private Label m_Bag, m_Timer, m_Clock, m_Prompt, m_Exit, m_ResultText, m_SaveStatus;
         private VisualElement m_Interaction, m_InteractionDetails, m_ExtractionPanel, m_ExtractionTrack, m_ExtractionFill, m_Receipt;
+        private AirlockInteractionPrompt m_AirlockPrompt;
         private Label m_InteractionKey, m_InteractionState, m_InteractionRange, m_ReceiptText;
         private int m_FeedbackRaid;
         private int3 m_PreviousSupplies, m_ReceiptSupplies;
@@ -75,6 +76,9 @@ namespace Unity.MP_FPS
             MoonkovAudio.BindUI(m_Root);
             m_Root.pickingMode = PickingMode.Ignore;
             Resources.Load<VisualTreeAsset>("Moonkov/RaidUI").CloneTree(m_Root);
+            m_AirlockPrompt = GetComponent<AirlockInteractionPrompt>();
+            if (!m_AirlockPrompt) m_AirlockPrompt = gameObject.AddComponent<AirlockInteractionPrompt>();
+            m_AirlockPrompt.Initialize(GetComponent<UIDocument>());
             m_Status = m_Root.Q("raidStatus"); m_Timer = m_Root.Q<Label>("raidTimer"); m_Bag = m_Root.Q<Label>("raidBag");
             m_Clock = m_Root.Q<Label>("raidClock");
             m_Exit = m_Root.Q<Label>("raidExtraction"); m_Prompt = m_Root.Q<Label>("raidPrompt");
@@ -321,9 +325,16 @@ namespace Unity.MP_FPS
                     float candidate=Vector3.Distance(position,(Vector3)bag.Position);
                     if(candidate<distance){nearest=bag.LootId;distance=candidate;}
                 }
+                m_AirlockPrompt.RefreshSelection(Camera.main, position, !m_InventoryVisible && !m_InventoryRequestPending &&
+                    UnityEngine.Cursor.lockState == CursorLockMode.Locked && !GameSettings.Instance.IsPauseMenuOpen);
                 bool pressed = (Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame) ||
                                (Gamepad.current != null && Gamepad.current.buttonWest.wasPressedThisFrame);
-                if (nearest >= 0 && pressed && !m_InventoryVisible && !m_InventoryRequestPending && UnityEngine.Cursor.lockState == CursorLockMode.Locked && !GameSettings.Instance.IsPauseMenuOpen)
+                bool airlockInput = (Keyboard.current != null && Keyboard.current.fKey.wasPressedThisFrame) ||
+                    (Gamepad.current != null && Gamepad.current.buttonWest.wasPressedThisFrame);
+                bool airlockPressed = airlockInput && !m_InventoryVisible && !m_InventoryRequestPending &&
+                    UnityEngine.Cursor.lockState == CursorLockMode.Locked && !GameSettings.Instance.IsPauseMenuOpen &&
+                    AirlockButton.TryPressFromCamera(Camera.main, position, m_World);
+                if (nearest >= 0 && pressed && !airlockPressed && !m_InventoryVisible && !m_InventoryRequestPending && UnityEngine.Cursor.lockState == CursorLockMode.Locked && !GameSettings.Instance.IsPauseMenuOpen)
                 {
                     if(RequestLoot(nearest))
                     {
@@ -342,7 +353,11 @@ namespace Unity.MP_FPS
             bool interactionVisible = alive && ready && !settled && !m_InventoryVisible &&
                 !m_InventoryRequestPending && !GameSettings.Instance.IsPauseMenuOpen &&
                 UnityEngine.Cursor.lockState == CursorLockMode.Locked;
-            if (!interactionVisible) m_Interaction.EnableInClassList("is-visible", false);
+            if (!interactionVisible)
+            {
+                m_Interaction.EnableInClassList("is-visible", false);
+                m_AirlockPrompt.RefreshSelection(Camera.main, position, false);
+            }
             m_RefreshTimer -= Time.deltaTime;
             if (m_RefreshTimer > 0) return;
             m_RefreshTimer = 0.1f;
