@@ -1,0 +1,11 @@
+{
+  "changed_existing_file_ids": [
+    9223372036854775807,
+    1812889161,
+    1812889162
+  ],
+  "added_serialized_objects": 46,
+  "deleted_objects": 0,
+  "only_shroud_mesh_renderer_and_scene_roots_changed": true,
+  "all_other_scene_blocks_byte_exact": true
+}
