@@ -9,6 +9,7 @@ Edited for Moonkov, 2026-10-16. Files: `Clips/Raid/`. Exact source and output SH
   - Boots: **swuing**, [footstep-concrete.wav](https://www.freesound.org/people/swuing/sounds/38873/), **CC BY 3.0**. Used for Hard1–8.
   - Bone shell: **blukotek**, [bone shell](https://freesound.org/people/blukotek/sounds/249319/), CC0 1.0. Used with gravel for AlienContact1–4.
 - Aim/Light/DryFire/ReloadReady/Medical/Pickup/OxygenRefill use edits of the existing project's licensed cloth/equipment/container foley. Their original provenance remains in `Sources.json` and existing Sonniss license notices.
-- SuitBreath/Heartbeat/SuitWarning/ExtractStart/ExtractCancel/ExtractTick: deterministic original signal design in the rebuild script, no third-party recording.
+- **SuitBreath**: [Breathing Tired](https://opengameart.org/content/breathing-tired), **mikeask**, CC0 1.0. Noise expansion, pitch-preserving inhale/exhale time stretching, suit/helmet filtering and short damped resonance.
+- Heartbeat/SuitWarning/ExtractStart/ExtractCancel/ExtractTick: deterministic original signal design in the rebuild script, no third-party recording.
 
 No gunfire, hand-selected menu sounds, deployment voice or ship music is replaced by this revision.

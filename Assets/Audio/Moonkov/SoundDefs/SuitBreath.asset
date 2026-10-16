@@ -17,7 +17,7 @@ MonoBehaviour:
   Role: 5
   Priority: 65
   MaxVoices: 1
-  MinimumInterval: 2.9
+  MinimumInterval: 0.3
   Occlusion: 0
   MixerGroup: 1
   BasePitchInCents: 0
@@ -38,8 +38,8 @@ MonoBehaviour:
     StartOffsetPercentMax: 0
     StopDelay: 0
   PitchAndVolumeInfo:
-    VolumeMin: -26
-    VolumeMax: -25
+    VolumeMin: -23
+    VolumeMax: -22
     PitchMin: 0
     PitchMax: 0
   DistanceInfo:
