@@ -65,6 +65,8 @@ namespace Unity.MP_FPS.Moon.Editor
                 var data = light.GetComponent<UniversalAdditionalLightData>();
                 if (!data) data = Undo.AddComponent<UniversalAdditionalLightData>(light.gameObject);
                 Undo.RecordObject(data, "Set filtered fixture shadows");
+                // The calibrated Light bias values are otherwise ignored by URP.
+                data.usePipelineSettings = false;
                 data.softShadowQuality = SoftShadowQuality.Low;
                 var settings = new SerializedObject(data);
                 settings.FindProperty("m_AdditionalLightsShadowResolutionTier").intValue = UniversalAdditionalLightData.AdditionalLightsShadowResolutionTierLow;

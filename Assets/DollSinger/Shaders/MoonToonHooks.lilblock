@@ -1,10 +1,12 @@
-// Keep nearby toon self-shadow soft; darken distant sun occlusion per pixel.
+// Apply sun occlusion to direct sunlight, never to the room's baked probe light.
 
 // URP lilToon normally merges punctual lights into the main light in the
 // fragment shader. Keep them separate so the sun's occlusion cannot erase
 // lamps. The original forward pass adds fd.addLightColor after OVERRIDE_SHADOW.
 #if defined(LIL_URP) && !defined(LIL_OUTLINE) && \
     defined(LIL_USE_ADDITIONALLIGHT_MAINDIR_PS) && !defined(LIL_USE_LIGHTMAP)
+    #define MOON_TOON_SEPARATE_LIGHTS
+
     float3 MoonToonAdditionalLight(uint lightIndex, float3 positionWS, half4 shadowMask, uint renderingLayers)
     {
         // This overload resolves both realtime shadow maps and Mixed-light probe
@@ -48,7 +50,8 @@
 
     #undef LIL_GET_MAINLIGHT
     #define LIL_GET_MAINLIGHT(input,lc,ld,atten) \
-        lc = input.lightColor; \
+        lc = max(0.0, input.lightColor - LIL_MAINLIGHT_COLOR) + \
+            LIL_MAINLIGHT_COLOR * MoonToonShadowVisibility(input.positionWS, atten); \
         LIL_CORRECT_LIGHTCOLOR_PS(lc); \
         LIL_CORRECT_LIGHTDIRECTION_PS(ld)
 
@@ -90,8 +93,14 @@ float MoonToonShadowVisibility(float3 positionWS, float attenuation)
     #endif
 }
 
-#define OVERRIDE_SHADOW \
-    lilGetShading(fd LIL_SAMP_IN(sampler_MainTex)); \
-    float moonShadowVisibility = MoonToonShadowVisibility(fd.positionWS, fd.attenuation); \
-    fd.col.rgb *= moonShadowVisibility; \
-    fd.shadowmix *= moonShadowVisibility;
+#if defined(MOON_TOON_SEPARATE_LIGHTS)
+    // Sun visibility was already applied before clamping the lighting color.
+    // Passing it through lilToon's receive-shadow ramps again would darken the
+    // surviving probe light, removing the indirect fill under punctual shadows.
+    // Preserve attenuation for subsequent effects that still need the sun mask.
+    #define OVERRIDE_SHADOW \
+        float moonSunAttenuation = fd.attenuation; \
+        fd.attenuation = 1.0; \
+        lilGetShading(fd LIL_SAMP_IN(sampler_MainTex)); \
+        fd.attenuation = moonSunAttenuation;
+#endif

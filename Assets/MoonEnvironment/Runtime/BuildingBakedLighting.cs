@@ -260,12 +260,15 @@ namespace Unity.MP_FPS.Moon
                 owner = this;
                 applied = true;
                 AllocateOutputs();
-                Compose();
                 var maps = new LightmapData[outputMaps.Length];
                 for (int i = 0; i < maps.Length; i++) maps[i] = new LightmapData { lightmapColor = outputMaps[i] };
                 LightmapSettings.lightmapsMode = LightmapsMode.NonDirectional;
                 LightmapSettings.lightmaps = maps;
                 LightmapSettings.lightProbes = composedProbes;
+                // Unity updates SH on the active probe set. Writing the clone
+                // before binding it leaves its environment-only coefficients
+                // active until the first room switch triggers another Compose.
+                Compose();
                 foreach (var binding in renderers)
                 {
                     binding.renderer.lightmapIndex = binding.lightmapIndex;

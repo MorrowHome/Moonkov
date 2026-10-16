@@ -405,6 +405,18 @@ namespace Unity.MP_FPS.Moon.Editor
             holder.AddComponent<BuildingRenderClusters>().Configure(clusters.ToArray());
             var controller = holder.AddComponent<BuildingBakedLighting>();
             controller.Configure(data, bindings.ToArray(), circuits, composer);
+            // These retained lights also illuminate close-up toon characters.
+            // Filter their self-shadow silhouettes without raising atlas size or
+            // disabling architectural/dynamic shadow casting and receiving.
+            foreach (var key in circuits.SelectMany(c => c.realtimeLights))
+            {
+                var lightData = key.GetComponent<UniversalAdditionalLightData>();
+                if (!lightData) lightData = key.gameObject.AddComponent<UniversalAdditionalLightData>();
+                lightData.usePipelineSettings = false;
+                lightData.softShadowQuality = SoftShadowQuality.High;
+                PrefabUtility.RecordPrefabInstancePropertyModifications(lightData);
+                EditorUtility.SetDirty(lightData);
+            }
             // Keep existing button IDs and emission slots intact; change only their owner.
             controls.ConfigureBaked(controller); EditorUtility.SetDirty(controls);
             // Baked static light remains visible through doors. Stop the old whole-building
