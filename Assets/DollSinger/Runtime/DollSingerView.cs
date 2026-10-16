@@ -56,6 +56,11 @@ public class DollSingerView : MonoBehaviour
     [Tooltip("Smooths magnification when switching an already aimed weapon; the look direction stays unchanged.")]
     [Min(.01f)] public float weaponZoomTransitionSeconds = .16f;
 
+    [Tooltip("Aim turn speed relative to projection-matched sensitivity. One preserves fine screen-space control.")]
+    [SerializeField, Range(.1f, 2f)] private float aimedLookSensitivity = 1f;
+    public float AimLookSensitivity => Mathf.Lerp(1f, aimedLookSensitivity,
+        Mathf.SmoothStep(0f, 1f, aimBlend)) / Mathf.Max(1f, CurrentAimMagnification);
+
     [Header("First person head")]
     [Tooltip("Fallback eye position in front of the head bone, in character-local metres.")]
     public Vector3 fallbackEyeWorldOffset = new Vector3(0f, 0.08f, 0.05f);

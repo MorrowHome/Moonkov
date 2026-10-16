@@ -19,7 +19,10 @@ namespace Unity.MP_FPS
         private Quaternion m_OwnedViewRotation = Quaternion.identity;
         private float m_OwnedLean;
         private bool m_OwnedLightEnabled = true;
-        private readonly RaycastHit[] m_AimHits = new RaycastHit[32];
+        private RaycastHit[] m_AimHits = new RaycastHit[32];
+        private const int AimMask = ~(1 << (int)LayerIndex.ServerPlayer);
+        private bool m_OwnedAiming, m_HasOwnedAimPoint;
+        private Vector3 m_OwnedAimPoint;
         private MoonkovPlayerAudio m_Audio;
         private uint m_LastShotEffectTick;
         private SoundSystem.SoundInfo m_RifleBodySound, m_RifleSnapSound;
@@ -46,6 +49,7 @@ namespace Unity.MP_FPS
         {
             bool freeLooking = DollSingerLookController.Update(ref look, ref m_FreeLookOffset,
                 ref m_OwnedLean, out m_OwnedViewRotation, m_Input, m_Model, m_View, blocked, Time.deltaTime);
+            m_OwnedAiming = !blocked && m_Input.AimHeld && !freeLooking;
             freeLookOffset = m_FreeLookOffset;
             return freeLooking;
         }
@@ -58,8 +62,20 @@ namespace Unity.MP_FPS
             var target = ray.GetPoint(range);
             UnityEngine.Physics.SyncTransforms();
             // Host server colliders duplicate the client avatars; ignore that world here.
-            int count = gameObject.scene.GetPhysicsScene().Raycast(ray.origin,ray.direction, m_AimHits, range,
-                ~LayerMask.GetMask("ServerPlayer"), QueryTriggerInteraction.Ignore);
+            int count;
+            var physicsScene = gameObject.scene.GetPhysicsScene();
+            while ((count = physicsScene.Raycast(ray.origin, ray.direction, m_AimHits, range,
+                AimMask, QueryTriggerInteraction.Ignore)) == m_AimHits.Length)
+            {
+                // Unordered saturated queries can omit the closest wall or target.
+                // Grow only on saturation and reuse the buffer for subsequent frames.
+                if (m_AimHits.Length >= 4096)
+                {
+                    m_HasOwnedAimPoint = true;
+                    return m_OwnedAimPoint = ray.GetPoint(.05f);
+                }
+                System.Array.Resize(ref m_AimHits, m_AimHits.Length * 2);
+            }
             float nearest = range;
             for (int i = 0; i < count; i++)
             {
@@ -69,12 +85,14 @@ namespace Unity.MP_FPS
                 nearest = hit.distance;
                 target = hit.point;
             }
-            return target;
+            m_HasOwnedAimPoint = true;
+            return m_OwnedAimPoint = target;
         }
 
         public override void OnGhostLinked()
         {
             m_Linked = true;
+            m_OwnedAiming = m_HasOwnedAimPoint = false;
             m_OwnedLightEnabled = true;
             m_Audio = Role == MultiplayerRole.Server ? null : new MoonkovPlayerAudio();
             m_Model.SetNetworkViewPresentation(false, Quaternion.identity, 0f);
@@ -125,7 +143,9 @@ namespace Unity.MP_FPS
             bool owned = Role == MultiplayerRole.ClientOwned;
             m_Model.SetNetworkViewPresentation(owned ? m_View.IsFirstPerson : state.FirstPersonView,
                 owned ? m_OwnedViewRotation : headRotation, owned ? m_OwnedLean : state.Lean);
-            m_Halo.SetNetworkPresentation(state.Aiming, viewRotation * Vector3.forward, ghost.AimPoint,
+            m_Halo.SetNetworkPresentation(owned ? m_OwnedAiming : state.Aiming,
+                (owned ? m_OwnedViewRotation : viewRotation) * Vector3.forward,
+                owned && m_HasOwnedAimPoint ? m_OwnedAimPoint : (Vector3)ghost.AimPoint,
                 owned ? m_OwnedLightEnabled : state.HaloLightEnabled);
             var weapon = WeaponManager.Instance.WeaponRegistry.GetWeaponData(ghost.EquippedWeaponID, ghost.EquippedModules);
             var haloWeapon = ghost.EquippedWeaponID == DollSingerWeapons.Halo ? DollSingerHaloAim.HaloWeapon.Rifle :
@@ -133,7 +153,7 @@ namespace Unity.MP_FPS
                 ghost.EquippedWeaponID == DollSingerWeapons.Shotgun ? DollSingerHaloAim.HaloWeapon.Shotgun :
                 ghost.EquippedWeaponID == DollSingerWeapons.Sniper ? DollSingerHaloAim.HaloWeapon.Sniper : DollSingerHaloAim.HaloWeapon.None;
             m_Halo.SetNetworkWeapon(haloWeapon, ghost.CurrentAmmo,
-                state.IsReloadingState, weapon != null ? 1f - ghost.ReloadTimer / Mathf.Max(0.01f, weapon.ReloadTime) : 0f,
+                state.IsReloadingState, weapon != null ? 1f - ghost.ReloadTimer / Mathf.Max(0.01f, weapon.ReloadTime * RaidHealth.HandlingMultiplier(ghost)) : 0f,
                 ghost.LastShotTick, ghost.LastReloadTick, ghost.ReloadTargetAmmo, ghost.EquippedModules, weapon?.MagazineSize ?? 4, ghost.BurstSequence);
             if (Role == MultiplayerRole.ClientOwned)
             {

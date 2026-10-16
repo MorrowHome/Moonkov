@@ -298,10 +298,7 @@ namespace Unity.MP_FPS
             foreach (var predictedPlayer in SystemAPI.Query<RefRW<PredictedPlayerGhost>>()
                          .WithAll<Simulate>())
             {
-                if (predictedPlayer.ValueRO.WeaponCooldown < float.MaxValue)
-                {
-                    predictedPlayer.ValueRW.WeaponCooldown += deltaTime;
-                }
+                HaloModuleFire.AdvanceTimers(ref predictedPlayer.ValueRW, deltaTime);
 
                 if (predictedPlayer.ValueRO.ControllerState.IsReloadingState)
                 {
@@ -363,7 +360,7 @@ namespace Unity.MP_FPS
 
                         if (HaloModuleFire.TryFire(ref predictedPlayer.ValueRW, weaponData, input.Shoot, input.Aim, switchedWeapon))
                         {
-                            predictedPlayer.ValueRW.WeaponCooldown = 0f;
+                            HaloModuleFire.CommitShot(ref predictedPlayer.ValueRW, weaponData, deltaTime);
                             predictedPlayer.ValueRW.CurrentAmmo--;
                             predictedPlayer.ValueRW.LastShotTick = serverTick;
 

@@ -22,7 +22,7 @@ namespace Unity.MP_FPS
             }
             else
             {
-                if (!blocked) look += new float2(input.Look.x, -input.Look.y);
+                if (!blocked) look += new float2(input.Look.x, -input.Look.y) * view.AimLookSensitivity;
                 float step = model.m_FreeLookReturnSpeed * deltaTime;
                 freeLookOffset.x = Mathf.MoveTowards(freeLookOffset.x, 0f, step);
                 freeLookOffset.y = Mathf.MoveTowards(freeLookOffset.y, 0f, step);

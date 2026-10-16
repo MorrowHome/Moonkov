@@ -26,6 +26,9 @@ namespace Unity.MP_FPS
         [Header("Firing Mechanics")] [Tooltip("Seconds between shots (legacy field name).")]
         public float CooldownInMs = 10f;
 
+        [Min(0f), Tooltip("Seconds to ready a halo after equipping, independent of its firing interval.")]
+        public float EquipTime = 0.22f;
+
         public float Damage = 15f;
         public bool Automatic = true;
         public bool AutoReloadWhenEmpty;

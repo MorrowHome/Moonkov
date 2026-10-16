@@ -88,10 +88,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
 
         foreach (var predictedPlayer in SystemAPI.Query<RefRW<PredictedPlayerGhost>>().WithAll<Simulate>()) 
         {
-            if (predictedPlayer.ValueRO.WeaponCooldown < float.MaxValue)
-            {
-                predictedPlayer.ValueRW.WeaponCooldown += dt;
-            }
+            HaloModuleFire.AdvanceTimers(ref predictedPlayer.ValueRW, dt);
 
             if (predictedPlayer.ValueRO.ControllerState.IsReloadingState)
             {
@@ -227,7 +224,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
 
                             if (HaloModuleFire.TryFire(ref predictedPlayer.ValueRW, weaponData, input.Shoot, input.Aim, switchedWeapon))
                             {
-                                predictedPlayer.ValueRW.WeaponCooldown = 0f;
+                                HaloModuleFire.CommitShot(ref predictedPlayer.ValueRW, weaponData, dt);
                                 predictedPlayer.ValueRW.CurrentAmmo--;
                                 predictedPlayer.ValueRW.LastShotTick = commandInput.Tick.TickIndexForValidTick;
 
