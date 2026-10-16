@@ -1,0 +1,84 @@
+{
+  "date": "2026-10-16",
+  "scene": "Assets/MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusGameScene.unity",
+  "environment": "Unity 6000.5.10f1 Editor Play Mode; temporary offline profile; server and client running; fixed diagnostic camera copied from the game camera; CPU Profiler disabled for final comparison",
+  "measurement": {
+    "device": "Apple M5",
+    "screen": [
+      1920,
+      1080
+    ],
+    "view": "(1808.85, 180.59, 2167.68)",
+    "forward": "(-0.96, -0.21, -0.17)",
+    "fov": 45,
+    "before": {
+      "label": "disabled",
+      "frames": 127,
+      "medianMs": 60.998455,
+      "p95Ms": 77.39776,
+      "fps": 16.393858,
+      "drawCalls": 75123,
+      "triangles": 11903510,
+      "localLights": 87,
+      "springs": 4
+    },
+    "after": {
+      "label": "enabled",
+      "frames": 371,
+      "medianMs": 20.96904,
+      "p95Ms": 25.80496,
+      "fps": 47.6893539,
+      "drawCalls": 12673,
+      "triangles": 3549521,
+      "localLights": 11,
+      "springs": 4
+    },
+    "control": {
+      "label": "disabled-again",
+      "frames": 91,
+      "medianMs": 65.9307,
+      "p95Ms": 70.33146,
+      "fps": 15.16744,
+      "drawCalls": 75112,
+      "triangles": 11426470,
+      "localLights": 87,
+      "springs": 4
+    }
+  },
+  "causes": [
+    {
+      "name": "Punctual-light shadow submission",
+      "evidence": "Initial CPU profile: RenderPlayModeViewCameras about 31.8 ms, AdditionalLightsShadow about 13.7 ms; disabling local shadows reduced render submission from about 29.7 ms to about 8.1 ms."
+    },
+    {
+      "name": "Distant secondary bone simulation",
+      "evidence": "Initial CPU profile: SecondaryBoneSpring.LateUpdate about 6.4 ms across three active instances."
+    }
+  ],
+  "changes": {
+    "sceneLights": 158,
+    "lightDistanceMetres": 120,
+    "lightRangeIncluded": true,
+    "lightExitPaddingMetres": 20,
+    "refreshSeconds": 0.25,
+    "springSuspendMetres": 80,
+    "springResumeMetres": 60,
+    "scopeFovCompensation": true,
+    "lightPowerAndIntensityPreserved": true,
+    "directionalLightUnchanged": true,
+    "bakedLightmapsUnchanged": true
+  },
+  "validation": {
+    "editorCompilation": "passed",
+    "presentationRegressionAssertions": 14,
+    "sceneSerializedScope": "43 added documents (40 prefab light references, new GameObject/Transform/component), existing SceneRoots updated; no removed documents or other existing document changes",
+    "originalSceneRestored": "Assets/Scenes/MainMenu.unity; Edit Mode; clean",
+    "userProfile": "not used; isolated temporary profile"
+  },
+  "limitations": [
+    "This is a fixed-view Editor measurement, not a standalone build or complete-map frame-rate guarantee.",
+    "Distant punctual direct lighting is culled; authored light sources, baked lighting, geometry and circuit state remain. Night-time transitions still need visual acceptance.",
+    "GPU resident drawing with GPU occlusion was tested and reverted: it increased the warmed-up median frame time to about 92.7 ms on this machine.",
+    "All-map traversal, multiple network peers and target-platform builds were not run."
+  ]
+}

@@ -92,6 +92,10 @@ public sealed class SecondaryBoneSpring : MonoBehaviour {
     [Tooltip("Spring stiffening per m/s of body speed; keeps the lag shallow while sprinting.")]
     public float stiffnessSpeedGain = 0.25f;
 
+    [Header("Distance culling")]
+    [Tooltip("Pause cosmetic springs beyond this camera distance in metres. Zero keeps them always active; gameplay and animation remain independent.")]
+    [Min(0f)] public float simulationDistance = 80f;
+
     [Header("Airborne hair and skirt")]
     [Tooltip("Target speed that hair and skirt tips lag behind a falling body once airborne. Higher values lift them farther.")]
     [Min(0f)] public float airLagSpeed = 0.45f;
@@ -127,6 +131,8 @@ public sealed class SecondaryBoneSpring : MonoBehaviour {
     private float m_ChestLandingTimer;
     private float m_AirflowBlend;
     private CharacterController m_CharacterController;
+    private bool m_DistanceSuspended;
+    private float m_NextDistanceCheck;
     public float AirflowBlend => m_AirflowBlend;
 
     private sealed class SpringJoint {
@@ -140,6 +146,8 @@ public sealed class SecondaryBoneSpring : MonoBehaviour {
     }
 
     private void OnEnable() {
+        m_DistanceSuspended = false;
+        m_NextDistanceCheck = 0f;
         m_Hair.Clear();
         m_Skirt.Clear();
         m_Chest.Clear();
@@ -319,6 +327,27 @@ public sealed class SecondaryBoneSpring : MonoBehaviour {
 
     private void LateUpdate() {
         if (m_PresentationDriven) return;
+        if (Time.unscaledTime >= m_NextDistanceCheck) {
+            m_NextDistanceCheck = Time.unscaledTime + .25f;
+            var viewer = Camera.main;
+            float distance = m_DistanceSuspended ? simulationDistance * .75f : simulationDistance;
+            if (viewer && !viewer.orthographic)
+                distance *= Mathf.Max(1, Mathf.Tan(22.5f * Mathf.Deg2Rad) /
+                    Mathf.Tan(Mathf.Max(1, viewer.fieldOfView) * .5f * Mathf.Deg2Rad));
+            bool suspended = simulationDistance > 0f && viewer && !viewer.orthographic &&
+                (viewer.transform.position - transform.position).sqrMagnitude > distance * distance;
+            if (suspended != m_DistanceSuspended) {
+                m_DistanceSuspended = suspended;
+                // Reset both on leaving and returning. Never integrate accumulated
+                // off-screen time or retain a stale world-space tip after travel.
+                ResetTips(m_Hair); ResetTips(m_Skirt); ResetTips(m_Chest);
+                m_LastRootPosition = transform.position;
+                m_LastRootVelocity = Vector3.zero;
+                m_ChestLandingTimer = m_AirflowBlend = 0f;
+                m_ChestAmplitude = chestWalkAmplitude;
+            }
+        }
+        if (m_DistanceSuspended) return;
         Step(Time.deltaTime);
     }
 
