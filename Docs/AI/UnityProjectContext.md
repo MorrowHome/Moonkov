@@ -2,7 +2,7 @@
 
 分析日期：2026-10-02。基于实际项目配置、代表代码和已连接 Editor。
 
-- 项目根：`E:/UnityProjects/FPS_Template`。
+- 当前项目根：`/Users/morrow/UnityProjects/Moonkov`（2026-10-16 本地验证）；历史开发路径为 `E:/UnityProjects/FPS_Template`。
 - Unity 6000.5.10f1，URP 17.5.0；GraphicsSettings 指向现有 URP Pipeline。
 - Input System 1.20.0，activeInputHandler=1；保留已存在的 Starter Assets。
 - 模板使用 Entities／NetCode 与 `GhostBridgeBootstrap`、GhostBridge 连接游戏对象和网络实体；原有脚本主要为 MonoBehaviour 加 ECS 系统。
