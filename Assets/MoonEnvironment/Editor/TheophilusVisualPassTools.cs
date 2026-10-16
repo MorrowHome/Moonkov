@@ -198,10 +198,11 @@ namespace Unity.MP_FPS.Moon.Editor
                 !profile.TryGet<ColorAdjustments>(out var color) || !profile.TryGet<SplitToning>(out var split))
                 throw new InvalidOperationException("Apply visual pass 01 before tuning atmosphere.");
             Undo.RecordObjects(new UnityEngine.Object[] { bloom, color, split }, "Theophilus soft light atmosphere");
-            bloom.intensity.Override(3);
-            bloom.threshold.Override(.55f);
-            bloom.scatter.Override(.92f);
-            bloom.filter.Override(BloomFilterMode.Dual);
+            // Keep sunlit white structures below the bloom gate; soften HDR lamps locally.
+            bloom.intensity.Override(.25f);
+            bloom.threshold.Override(1.8f);
+            bloom.scatter.Override(.55f);
+            bloom.filter.Override(BloomFilterMode.Gaussian);
             bloom.clamp.Override(32);
             bloom.tint.Override(new Color(1,.965f,.92f));
             bloom.highQualityFiltering.Override(false);
