@@ -1,1 +1,48 @@
-{"exportedSourceSurfacePatches":1,"importedIndependentMeshCandidates":1,"newMaterials":1,"newTextures":4,"sceneBoundPatches":0,"nativeCandidateRequiresExplicitExistingTransformMappingBeforeBinding":true,"formalSceneWasDirty":false,"formalSceneDirtyPreserved":true,"formalSceneFileUnchanged":true,"sceneSaveReloadCalls":0,"meshRootOffsetForFutureBinding":[2015,0,2130],"lightmapChannelReserved":1,"sourceUVChannels":[0],"assets":[{"name":"B_NORTH_TRANSFER_Deck_0176","mesh":"Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/R39/Meshes/R39Patch.asset","materials":["Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/DenseRingConceptB/R8VisualSurfaces/Materials/R8_Matte_Deck_Plates.mat","Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/DenseRingConceptB/R8VisualSurfaces/Materials/R8_Matte_Deck_Plates.mat","Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/DenseRingConceptB/R8VisualSurfaces/Materials/R8_Matte_Deck_Plates.mat","Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/DenseRingConceptB/R8VisualSurfaces/Materials/R8_Matte_Deck_Plates.mat","Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/DenseRingConceptB/R8VisualSurfaces/Materials/R8_Matte_Deck_Plates.mat","Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/DenseRingConceptB/R8VisualSurfaces/Materials/R8_Matte_Deck_Plates.mat","Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/R39/Materials/R39_Deck0176_Industrial_Plated_Surface.mat"]}]}
+{
+  "exportedSourceSurfacePatches": 1,
+  "importedIndependentMeshCandidates": 1,
+  "newMaterials": 1,
+  "newTextures": 4,
+  "sceneBoundPatches": 0,
+  "nativeCandidateRequiresExplicitExistingTransformMappingBeforeBinding": false,
+  "formalSceneWasDirty": false,
+  "formalSceneDirtyPreserved": true,
+  "formalSceneFileUnchanged": true,
+  "sceneSaveReloadCalls": 0,
+  "meshRootOffsetForFutureBinding": [
+    2015,
+    0,
+    2130
+  ],
+  "lightmapChannelReserved": 1,
+  "sourceUVChannels": [
+    0
+  ],
+  "assets": [
+    {
+      "name": "B_NORTH_TRANSFER_Deck_0176",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/R39/Meshes/R39Patch.asset",
+      "materials": [
+        "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/DenseRingConceptB/R8VisualSurfaces/Materials/R8_Matte_Deck_Plates.mat",
+        "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/DenseRingConceptB/R8VisualSurfaces/Materials/R8_Matte_Deck_Plates.mat",
+        "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/DenseRingConceptB/R8VisualSurfaces/Materials/R8_Matte_Deck_Plates.mat",
+        "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/DenseRingConceptB/R8VisualSurfaces/Materials/R8_Matte_Deck_Plates.mat",
+        "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/DenseRingConceptB/R8VisualSurfaces/Materials/R8_Matte_Deck_Plates.mat",
+        "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/DenseRingConceptB/R8VisualSurfaces/Materials/R8_Matte_Deck_Plates.mat",
+        "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/R39/Materials/R39_Deck0176_Industrial_Plated_Surface.mat"
+      ]
+    }
+  ],
+  "independentMeshIsNowUnityBaselineUVOnlyCopy": true,
+  "UVOnlyMappingProof": {
+    "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/R39/Meshes/R39Patch.asset",
+    "sourceMesh": "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/DenseRingConceptB/R8VisualSurfaces/Meshes/R8_DisplayMesh_0522.asset",
+    "sourceSHA256": "5b68a638dfd75f3b5f3aa332a52c97ab456c0aa67a04936a26ddd46b74091ee2",
+    "originalUnityGeometryNormalsBoundsAndOtherUVsPreserved": true,
+    "exactSourceUV0NormalsTrianglesMatched": true,
+    "newSurfaceMaterialSlot": 6,
+    "changedSourceFaces": 1,
+    "sceneBoundPatches": 0,
+    "worldMeshNotAssignedToExistingTransform": true
+  }
+}

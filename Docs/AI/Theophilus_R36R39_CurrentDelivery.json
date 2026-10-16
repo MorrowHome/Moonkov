@@ -1,0 +1,46 @@
+{
+  "status": "INDEPENDENT_ASSETS_LOCALLY_COMMITTED_BINDING_BLOCKED_BY_CONCURRENT_UNSAVED_SCENE",
+  "R36_R38": {
+    "offlineExportedMeshes": 10,
+    "UnityImportedMeshes": 10,
+    "sceneBoundMeshes": 0,
+    "assets": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/R36R38",
+    "assetCommit": "a23182f8a8d2d4d5d4a3f7ae115cf32a3dcbc9a4"
+  },
+  "R39": {
+    "offlineExportedSurfacePatches": 1,
+    "UnityImportedUVOnlyMeshVariants": 1,
+    "UnityImportedMaterials": 1,
+    "UnityImportedTextures": 4,
+    "sceneBoundPatches": 0,
+    "assets": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/R39",
+    "assetCommit": "195b09a498cdb64b35f4ff4ebbd307c0e4a79e6e",
+    "mappingProof": {
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/R39/Meshes/R39Patch.asset",
+      "sourceMesh": "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/DenseRingConceptB/R8VisualSurfaces/Meshes/R8_DisplayMesh_0522.asset",
+      "sourceSHA256": "5b68a638dfd75f3b5f3aa332a52c97ab456c0aa67a04936a26ddd46b74091ee2",
+      "originalUnityGeometryNormalsBoundsAndOtherUVsPreserved": true,
+      "exactSourceUV0NormalsTrianglesMatched": true,
+      "newSurfaceMaterialSlot": 6,
+      "changedSourceFaces": 1,
+      "sceneBoundPatches": 0,
+      "worldMeshNotAssignedToExistingTransform": true
+    }
+  },
+  "currentSafety": {
+    "Play": false,
+    "compiling": false,
+    "baking": false,
+    "loadedScene": "Assets/Scenes/MainMenu.unity",
+    "loadedSceneDirty": true,
+    "formalSceneLoaded": false,
+    "gitLockNaturallyReleased": true,
+    "parallelTask": "排查 MC00 角色阴影断层",
+    "parallelTaskCurrentWork": "Restoring formal-map sky material reference"
+  },
+  "sceneLoadSaveReloadDiscardAfterDirtyGuard": 0,
+  "formalSceneWritesByThisContinuation": 0,
+  "newPushAttempts": 0,
+  "pushPolicy": "Local commits only; no automatic push",
+  "userFontShaderLightingChangesExcluded": true
+}

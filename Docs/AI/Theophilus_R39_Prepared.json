@@ -24,12 +24,14 @@
   "assetSourceContract": "SourceData/Models/TheophilusR39",
   "NativeExports": "SourceData/Models/TheophilusR39/NativeExports",
   "UnityImportBlocker": null,
-  "sceneBindingBlocker": "User re-entered Play before mapping asset replacement/binding. Formal disk scene unchanged; no Play transition or scene save performed.",
+  "sceneBindingBlocker": "Current loaded MainMenu scene has unsaved changes; parallel sky-material task is active. No scene load/save/discard attempted after guard rejected.",
   "R35UnityReinstalled": false,
   "R37Imported": false,
   "R40_R43Imported": false,
   "runtimeTestingByAgent": false,
   "performanceAcceptance": false,
   "assetReport": "Docs/AI/Theophilus_R39_Assets.json",
-  "meshIsDetachedWorldCoordinateCandidateNotYetMappedToExistingTransform": true
+  "meshIsDetachedWorldCoordinateCandidateNotYetMappedToExistingTransform": false,
+  "UnityUVOnlyVariantReady": true,
+  "originalUnityGeometryPreserved": true
 }

@@ -18,10 +18,11 @@
     "ScriptOverrides/r39_common.py": "fe8b73490e9ad7794d9e600183c075ed4a447bdc1651fbc41a587548e0f2780d",
     "ScriptOverrides/R39_Deck0176_Material_UV_Patch.json": "80952d21b7e1fede9ee9587d09cec6afc47dfda6f6c1be563aa2315a8ecb312b",
     "ScriptOverrides/rollback_r39_material_uv_patch.py": "2c9c647c124a59083b232ac6a4c9ca2b65abbf11c6d59051670208ec6ff0edbe",
-    "Tools/BindRemainingDisplay.cs": "e6a66381aec00d771f74595fb16146867bf35e59064dbad3f7909dc01adafd7f",
+    "Tools/BindRemainingDisplay.cs": "edbaa285156fcd3f779a3d828af7f74e1102243c14d7772486d313d67faca278",
     "Tools/ImportR39Detached.cs": "3f4803a91e6cc6dd79e86e627f1b735f6fbb580cc43cd8e5cd0f82198d0b81ed",
     "Tools/NativeDisplayExport.py": "91d3096e244eeb0c27f851eb527bdfdbfbfccb6681a460b229c3c73c3d6bd47d",
-    "Tools/PrepareR39FromSavedR38.py": "f6eb799031e2affa22a58450a1e4083b1c74d6dee500de1e10ddabc730bf45db"
+    "Tools/PrepareR39FromSavedR38.py": "f6eb799031e2affa22a58450a1e4083b1c74d6dee500de1e10ddabc730bf45db",
+    "R39UnityUVOnlyAsset.json": "af8581a847262b863613ec2768ed5818b2c74b8017243925f04ece58b32d6f8f"
   },
   "originalArchivePreserved": true,
   "guardOverridesAreExactAuthorizedChanges": true,
