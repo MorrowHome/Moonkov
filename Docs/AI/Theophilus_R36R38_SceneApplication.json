@@ -1,0 +1,25 @@
+{
+  "scene": "Assets/MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusGameScene.unity",
+  "saved": true,
+  "sceneBoundMeshes": 10,
+  "newMaterials": 0,
+  "newTextures": 0,
+  "newColliders": 0,
+  "existingRenderersCollidersTerrainMC00Preserved": true,
+  "MC00Lights": 118,
+  "MC00Buttons": 135,
+  "lightmapsProbesPreserved": true,
+  "root": "R36R38_FROM_R35_DISPLAY_ROOT",
+  "gitScope": {
+    "phase": "R36R38",
+    "addedRecords": 42,
+    "changedRecords": 1,
+    "removedRecords": 0,
+    "userModifiedRecordsExcluded": 2,
+    "userAddedRecordsExcluded": 0,
+    "indexBlob": "1fe444f924509117f7bd30d66416610b35c22877",
+    "wholeWorkingSceneNotStaged": true
+  },
+  "runtimeTestingByAgent": false,
+  "pushPerformed": false
+}
