@@ -1,0 +1,388 @@
+{
+  "date": "2026-10-16",
+  "branch": "mac/youhua",
+  "scene": "Assets/MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusGameScene.unity",
+  "target": {
+    "fps": 60,
+    "frameBudgetMs": 16.667,
+    "achieved": false,
+    "conclusion": "CPU work was reduced and a Metal compute failure was fixed. The formal scene has not passed a stable 60 FPS acceptance test. Indoor punctual-light shadow submission remains the primary measured bottleneck."
+  },
+  "environment": {
+    "unity": "6000.5.10f1",
+    "device": "Apple M5",
+    "memoryGB": 16,
+    "mode": "Editor Play Mode, temporary offline profile, server and client worlds",
+    "resolution": [
+      1920,
+      1080
+    ],
+    "fovDegrees": 45,
+    "gameCameras": 1,
+    "aliens": "7 server + 7 client objects",
+    "focus": "Application.isFocused remained false; these are background Editor measurements, not standalone player or foreground target-device acceptance.",
+    "freshEditorAllocatedBytes": 2124643557,
+    "freshGameplayAllocatedBytesApprox": 6800000000
+  },
+  "changes": [
+    {
+      "path": "Assets/Scripts/Gameplay/Enemies/ProceduralAlienEnemy.cs",
+      "change": "Client procedural rigs use full rate within 60 m, 30 Hz within 120 m and 15 Hz farther away, scaled for creature size and magnified FOV. Combat state changes and liquid presentation bypass the budget. Server simulation and ghost transform interpolation retain their cadence. Set presentationDistance=0 to opt out.",
+      "boundary": "Distant client rig poses and their child hitbox shapes use the same reduced presentation cadence; server hitboxes remain full rate. This is a cosmetic distance tradeoff, not a claim of identical distant animation."
+    },
+    {
+      "paths": [
+        "Assets/UmbrellaSpiderLab/Runtime/CreatureChainPresentation.cs",
+        "Assets/UmbrellaSpiderLab/Runtime/BranchCreatureRig.cs"
+      ],
+      "change": "Cache circular cross sections and per-draw root transforms, hoist per-ring ripple calculations, and avoid native transform calls for every generated vertex. Mesh topology and authored dimensions remain unchanged."
+    },
+    {
+      "path": "Assets/DollSinger/Runtime/SecondaryBoneSpring.cs",
+      "change": "Snapshot independent body capsule geometry once per spring step, sharing it across joints and substeps. Proxies parented under simulated bones retain live queries. No solver iteration or collision quality reduction."
+    },
+    {
+      "paths": [
+        "Assets/UmbrellaSpiderLab/Resources/Umbra08Fluid.compute",
+        "Assets/UmbrellaSpiderLab/Runtime/SkeletonFluidPresentation.cs"
+      ],
+      "change": "Replace unsupported Metal 3D texture atomics with linear uint structured-buffer atomics. Retain fixed-point splat weights, density resolution, blur and particle counts."
+    }
+  ],
+  "visualSettings": {
+    "sceneOrModelAssetsSaved": false,
+    "lightmapInputsChanged": false,
+    "renderResolutionChanged": false,
+    "msaaChanged": false,
+    "shadowResolutionOrDistanceChanged": false,
+    "textureMipQualityChanged": false,
+    "limitation": "Transform equivalence and GPU mass/finite-value checks passed; complete visual acceptance across all gameplay positions was not performed."
+  },
+  "verification": {
+    "editorChecks": {
+      "playing": false,
+      "compiling": false,
+      "scene": "Assets/Scenes/MainMenu.unity",
+      "scenes": 1,
+      "alien": "Alien performance: PASS (1055 assertions; near/scope/opt-out, transformed mesh equivalence, GPU accumulation/clear).",
+      "budget": "Presentation distance budgets: PASS (14 assertions; light power/geometry safety, hysteresis, restoration, spring resumption and opt-out).",
+      "contacts": "Tissue collider contacts: PASS (14 cases; repeated mesh/terrain queries; no ClosestPoint warnings). box, inside box, sphere, capsule, convex mesh, concave mesh at scale 0.45, concave mesh at scale 1, concave mesh at scale 1.4, deep mesh contact, clear of mesh, rotated mesh, empty concave bounds, terrain, no contacts"
+    },
+    "alienIntegration": {
+      "scene": "Assets/MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusGameScene.unity",
+      "capturedAt": "2026-10-16T12:49:00.3126240Z",
+      "cases": [
+        {
+          "species": "Spider",
+          "hitboxes": 17,
+          "particles": 5731,
+          "nonFinite": 0,
+          "humanDamaged": true,
+          "pmcDamaged": true,
+          "alienIgnored": true,
+          "projectileHit": true,
+          "diedAndDespawned": true,
+          "scaleReplicated": true,
+          "smallestRadius": 0.0804443359375,
+          "largestRadius": 0.322021484375
+        },
+        {
+          "species": "Snake",
+          "hitboxes": 13,
+          "particles": 3499,
+          "nonFinite": 0,
+          "humanDamaged": true,
+          "pmcDamaged": true,
+          "alienIgnored": true,
+          "projectileHit": true,
+          "diedAndDespawned": true,
+          "scaleReplicated": true,
+          "smallestRadius": 0.0489501953125,
+          "largestRadius": 0.196044921875
+        },
+        {
+          "species": "Caterpillar",
+          "hitboxes": 13,
+          "particles": 4493,
+          "nonFinite": 0,
+          "humanDamaged": true,
+          "pmcDamaged": true,
+          "alienIgnored": true,
+          "projectileHit": true,
+          "diedAndDespawned": true,
+          "scaleReplicated": true,
+          "smallestRadius": 0.0804443359375,
+          "largestRadius": 0.322021484375
+        },
+        {
+          "species": "Tentacle",
+          "hitboxes": 33,
+          "particles": 6871,
+          "nonFinite": 0,
+          "humanDamaged": true,
+          "pmcDamaged": true,
+          "alienIgnored": true,
+          "projectileHit": true,
+          "diedAndDespawned": true,
+          "scaleReplicated": true,
+          "smallestRadius": 0.0931396484375,
+          "largestRadius": 0.3724365234375
+        },
+        {
+          "species": "Centipede",
+          "hitboxes": 13,
+          "particles": 5724,
+          "nonFinite": 0,
+          "humanDamaged": true,
+          "pmcDamaged": true,
+          "alienIgnored": true,
+          "projectileHit": true,
+          "diedAndDespawned": true,
+          "scaleReplicated": true,
+          "smallestRadius": 0.0560302734375,
+          "largestRadius": 0.2239990234375
+        },
+        {
+          "species": "Leech",
+          "hitboxes": 13,
+          "particles": 3026,
+          "nonFinite": 0,
+          "humanDamaged": true,
+          "pmcDamaged": true,
+          "alienIgnored": true,
+          "projectileHit": true,
+          "diedAndDespawned": true,
+          "scaleReplicated": true,
+          "smallestRadius": 0.083984375,
+          "largestRadius": 0.3360595703125
+        },
+        {
+          "species": "Slime",
+          "hitboxes": 25,
+          "particles": 7905,
+          "nonFinite": 0,
+          "humanDamaged": true,
+          "pmcDamaged": true,
+          "alienIgnored": true,
+          "projectileHit": true,
+          "diedAndDespawned": true,
+          "scaleReplicated": true,
+          "smallestRadius": 0.14208984375,
+          "largestRadius": 0.568359375
+        },
+        {
+          "species": "Roots",
+          "hitboxes": 49,
+          "particles": 5449,
+          "nonFinite": 0,
+          "humanDamaged": true,
+          "pmcDamaged": true,
+          "alienIgnored": true,
+          "projectileHit": true,
+          "diedAndDespawned": true,
+          "scaleReplicated": true,
+          "smallestRadius": 0.073486328125,
+          "largestRadius": 0.2939453125
+        }
+      ],
+      "errors": []
+    },
+    "notRun": [
+      "Standalone macOS player build and benchmark",
+      "Multi-peer network session",
+      "Long-duration traversal and stable-60-FPS acceptance"
+    ]
+  },
+  "samplesWithoutProfilerOrFrameTimingPolling": {
+    "method": "2 s settle then 20 s per fixed camera. Record Time.unscaledDeltaTime once per Time.frameCount from EditorApplication.update. CPU Profiler disabled. No FrameTimingManager polling. Captured after the user restarted Unity.",
+    "spawn": {
+      "label": "no-profiler-no-frame-timing-spawn",
+      "frames": 631,
+      "seconds": 20.01113904099998,
+      "medianMs": 29.34275,
+      "p95Ms": 45.62758,
+      "p99Ms": 53.929287,
+      "averageFps": 31.5324379440456,
+      "under60Percent": 100,
+      "drawCalls": 12830,
+      "triangles": 3675585,
+      "screen": [
+        1920,
+        1080
+      ],
+      "device": "Apple M5",
+      "position": "(1808.85, 180.59, 2167.68)",
+      "forward": "(-0.96, -0.21, -0.17)",
+      "fov": 45,
+      "cameras": 1,
+      "aliens": 14
+    },
+    "exterior": {
+      "label": "no-profiler-no-frame-timing-exterior",
+      "frames": 844,
+      "seconds": 20.007192874999987,
+      "medianMs": 22.5611248,
+      "p95Ms": 28.2594166,
+      "p99Ms": 30.0376644,
+      "averageFps": 42.18482849008875,
+      "under60Percent": 100,
+      "drawCalls": 17221,
+      "triangles": 4220841,
+      "screen": [
+        1920,
+        1080
+      ],
+      "device": "Apple M5",
+      "position": "(1808.85, 180.59, 2167.68)",
+      "forward": "(-0.94, 0.28, 0.20)",
+      "fov": 45,
+      "cameras": 1,
+      "aliens": 14
+    },
+    "corridor": {
+      "label": "no-profiler-no-frame-timing-corridor",
+      "frames": 374,
+      "seconds": 20.003964124999982,
+      "medianMs": 52.8875847,
+      "p95Ms": 64.5576248,
+      "p99Ms": 68.49233,
+      "averageFps": 18.696294277622354,
+      "under60Percent": 100,
+      "drawCalls": 44412,
+      "triangles": 7278555,
+      "screen": [
+        1920,
+        1080
+      ],
+      "device": "Apple M5",
+      "position": "(1609.80, 213.29, 2122.00)",
+      "forward": "(0.34, 0.00, 0.94)",
+      "fov": 45,
+      "cameras": 1,
+      "aliens": 14
+    },
+    "interpretation": "All three captures exceed 16.667 ms. Samples are not a matched before/after benchmark. Live raid state, editor focus, memory pressure and run-to-run variation limit comparisons with earlier sessions."
+  },
+  "cpuDiagnosticABA": {
+    "method": "Full-rate rigs + live capsule queries / distance budget + cached capsules / restored control in the same fresh Editor run. Existing new mesh-transform caches are present in all phases. FrameTimingManager is polled in this diagnostic.",
+    "data": {
+      "aliens": 7,
+      "springs": 4,
+      "capsules": 10,
+      "before": {
+        "mainMedianMs": 22.654916,
+        "gpuMedianMs": 16.544374986551702,
+        "activeCameras": 1,
+        "allocatedBytes": 6798734911,
+        "label": "full-rate-and-live-capsules",
+        "frames": 325,
+        "seconds": 8.016156166000002,
+        "medianMs": 24.40725,
+        "p95Ms": 27.2399178,
+        "p99Ms": 31.7562485,
+        "averageFps": 40.542814439497384,
+        "under60Percent": 100,
+        "drawCalls": 12779,
+        "triangles": 3318903,
+        "position": "(1808.85, 180.59, 2167.68)",
+        "forward": "(-0.96, -0.21, -0.17)",
+        "fov": 45
+      },
+      "after": {
+        "mainMedianMs": 20.346332,
+        "gpuMedianMs": 15.946124913170934,
+        "activeCameras": 1,
+        "allocatedBytes": 6786922818,
+        "label": "budget-and-cached-capsules",
+        "frames": 505,
+        "seconds": 12.018498541000014,
+        "medianMs": 22.05275,
+        "p95Ms": 34.6246262,
+        "p99Ms": 51.1167946,
+        "averageFps": 42.01855793410308,
+        "under60Percent": 98.0198,
+        "drawCalls": 12617,
+        "triangles": 3073001,
+        "position": "(1808.85, 180.59, 2167.68)",
+        "forward": "(-0.96, -0.21, -0.17)",
+        "fov": 45
+      },
+      "control": {
+        "mainMedianMs": 21.144124,
+        "gpuMedianMs": 16.190958325751126,
+        "activeCameras": 1,
+        "allocatedBytes": 6778038553,
+        "label": "full-rate-and-live-restored",
+        "frames": 344,
+        "seconds": 8.001805625000003,
+        "medianMs": 22.9170361,
+        "p95Ms": 26.7664547,
+        "p99Ms": 28.8069515,
+        "averageFps": 42.99029471526899,
+        "under60Percent": 100,
+        "drawCalls": 12617,
+        "triangles": 3073001,
+        "position": "(1808.85, 180.59, 2167.68)",
+        "forward": "(-0.96, -0.21, -0.17)",
+        "fov": 45
+      }
+    },
+    "interpretation": "CPU median decreased in the optimized phase, but the restored control also improved and optimized P95 was worse. This does not establish a reliable overall FPS gain or improved frame-time tails."
+  },
+  "remainingBottleneck": {
+    "description": "Many overlapping local shadow lights repeatedly submit thousands of building meshes. Indoor captures have about 44,000 draw calls and 7.3 million submitted triangles; reducing alien work alone cannot reach the budget.",
+    "profileEvidence": "An earlier indoor CPU profile recorded RenderPlayModeViewCameras about 20.2 ms, Submit about 17.65 ms and AdditionalLightsShadow about 7.44 ms. Profiler memory-counter collection added about 8 ms; do not use that capture as an absolute gameplay FPS measurement.",
+    "nextWork": "Room/portal-aware light visibility or an authored static-shadow solution needs separate visual validation at doors, windows, light switches and moving characters. Blanket shadow removal was not adopted."
+  },
+  "rejectedExperiments": [
+    "Light influence-sphere/frustum gating did not give a useful measured gain.",
+    "Runtime static batching, spatial visible-mesh merging and shadow-only spatial merging were slower or increased submitted geometry.",
+    "Disabling the SRP Batcher globally and enabling GPU Resident Drawer were slower in the tested views.",
+    "Lower shadow resolution, 2x MSAA and mip-limit diagnostics did not demonstrate a convincing controlled win; all settings were restored.",
+    {
+      "name": "Selective instanced opaque shadow clones",
+      "data": {
+        "sources": 8660,
+        "uniqueMeshes": 3530,
+        "before": {
+          "name": "original shadows",
+          "frames": 188,
+          "seconds": 6.015672499999937,
+          "median": 31.4491653,
+          "p95": 37.52379,
+          "draws": 44517,
+          "triangles": 7511311,
+          "cameras": 1
+        },
+        "after": {
+          "name": "instanced shadow clones",
+          "frames": 292,
+          "seconds": 10.018001041999923,
+          "median": 32.796875,
+          "p95": 43.5245056,
+          "draws": 41014,
+          "triangles": 7511443,
+          "cameras": 1
+        },
+        "control": {
+          "name": "original shadows restored",
+          "frames": 171,
+          "seconds": 6.000944709000009,
+          "median": 34.32438,
+          "p95": 39.4331627,
+          "draws": 44517,
+          "triangles": 7511311,
+          "cameras": 1
+        }
+      },
+      "decision": "About 3,500 fewer draws, but no reliable frame-time improvement versus both original phases. Geometry and original shadow states restored; no production implementation."
+    },
+    "A temporary native MeshLodUtility generation experiment on copied meshes crashed Unity. It was abandoned. No mesh or scene assets were saved; crash blobs were preserved outside the repository in /tmp/moonkov-youhua-crash-20261016."
+  ],
+  "reproduceChecks": [
+    "In Edit Mode run Tools/Moonkov/Performance/Check alien presentation and GPU splats.",
+    "Run MoonkovPresentationBudgetChecks.Run() and Unity.MP_FPS.SpiderLab.Editor.LiquidSpiderContactChecks.Run().",
+    "Open the formal scene additively in Edit Mode, set it active, run AlienEnemyChecks.Run(), then restore the original active scene and close the temporary scene without saving. Integration report is written to Library/BuildValidation/AlienIntegration/report.json."
+  ],
+  "workspaceSafety": "Only task source files, regression checks and this evidence report are committed. The pre-existing NotoSansCJKsc.asset edit is excluded. Tests used isolated fixtures or /tmp offline profiles."
+}

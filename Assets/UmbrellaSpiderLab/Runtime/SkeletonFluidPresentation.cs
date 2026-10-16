@@ -29,7 +29,8 @@ namespace Unity.MP_FPS.SpiderLab
         private readonly Mesh m_BoxMesh;
         private readonly ComputeBuffer m_Seeds, m_Heads, m_Next, m_Densities, m_Bones, m_PreviousBones, m_Obstacles;
         private ComputeBuffer m_Read, m_Write;
-        private readonly RenderTexture m_Accum, m_VolumeA, m_VolumeB;
+        private readonly ComputeBuffer m_Accum;
+        private readonly RenderTexture m_VolumeA, m_VolumeB;
         private readonly Matrix4x4[] m_BoneMatrices, m_PreviousMatrices;
         private readonly Collider[] m_Nearby = new Collider[256];
         private readonly Obstacle[] m_Boxes = new Obstacle[MaximumObstacles];
@@ -87,7 +88,7 @@ namespace Unity.MP_FPS.SpiderLab
             m_Bones = new ComputeBuffer(boneCount, 64); m_PreviousBones = new ComputeBuffer(boneCount, 64);
             m_RestCentres = new ComputeBuffer(boneCount, 16);
             m_Obstacles = new ComputeBuffer(MaximumObstacles, 144);
-            m_Accum = Volume("Fluid particle splats", GraphicsFormat.R32_UInt, m_VolumeSide);
+            m_Accum = new ComputeBuffer(m_VolumeSide * m_VolumeSide * m_VolumeSide, sizeof(uint));
             m_VolumeA = Volume("Fluid density surface", GraphicsFormat.R32_SFloat, m_VolumeSide);
             m_VolumeB = Volume("Fluid density smoothing", GraphicsFormat.R32_SFloat, m_VolumeSide);
             k_Initialize = m_Solver.FindKernel("Initialize"); k_Transport = m_Solver.FindKernel("Transport");
@@ -111,7 +112,7 @@ namespace Unity.MP_FPS.SpiderLab
             foreach (int kernel in new[] { k_Density, k_Integrate })
                 m_Solver.SetBuffer(kernel, "_Densities", m_Densities);
             foreach (int kernel in new[] { k_ClearVolume, k_Deposit, k_ResolveX })
-                m_Solver.SetTexture(kernel, "_Accum", m_Accum);
+                m_Solver.SetBuffer(kernel, "_Accum", m_Accum);
             m_Solver.SetTexture(k_ResolveX, "_WriteVolume", m_VolumeA);
             m_Solver.SetTexture(k_BlurY, "_ReadVolume", m_VolumeA); m_Solver.SetTexture(k_BlurY, "_WriteVolume", m_VolumeB);
             m_Solver.SetTexture(k_BlurZ, "_ReadVolume", m_VolumeB); m_Solver.SetTexture(k_BlurZ, "_WriteVolume", m_VolumeA);
@@ -357,7 +358,8 @@ namespace Unity.MP_FPS.SpiderLab
             m_Bones.Release(); m_PreviousBones.Release(); m_Obstacles.Release();
             m_LinkIndices.Release(); m_LinkLengths.Release(); m_Filaments.Release();
             m_RestCentres.Release();
-            foreach (var texture in new[] { m_Accum, m_VolumeA, m_VolumeB }) { texture.Release(); Dispose(texture); }
+            m_Accum.Release();
+            foreach (var texture in new[] { m_VolumeA, m_VolumeB }) { texture.Release(); Dispose(texture); }
             Dispose(m_Root.gameObject); Dispose(m_BoxMesh); Dispose(m_Material); Dispose(m_Solver);
         }
 
