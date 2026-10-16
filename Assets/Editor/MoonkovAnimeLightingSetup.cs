@@ -14,6 +14,9 @@ public static class MoonkovAnimeLightingSetup
     public const string PipelinePath = "Assets/MoonEnvironment/Settings/MoonSoftAnimePipeline.asset";
     public const string RendererPath = "Assets/MoonEnvironment/Settings/MoonSoftAnimeRenderer.asset";
     public const string MatCapPath = "Assets/DollSinger/Art/Textures/SoftPearlMatCap.png";
+    public const string SkinMatCapPath = "Assets/DollSinger/Art/Textures/DewySkinMatCap.png";
+    public const string HairMatCapPath = "Assets/DollSinger/Art/Textures/SilkHairMatCap.png";
+    public const string ClothMatCapPath = "Assets/DollSinger/Art/Textures/SatinClothMatCap.png";
     public const string ScenePath = "Assets/MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusGameScene.unity";
     private const string Materials = "Assets/DollSinger/Art/Materials/";
     private static readonly string[] Names =
@@ -63,51 +66,65 @@ public static class MoonkovAnimeLightingSetup
         Float(material, "_Shadow2ndBorder", .15f);
         Float(material, "_Shadow2ndBlur", .2f);
         Float(material, "_ShadowBorderRange", .12f);
-        Color(material, "_ShadowColor", skin ? new Color(.98f,.92f,.94f) : new Color(.9f,.88f,.98f));
+        Color(material, "_ShadowColor", skin ? new Color(.98f,.86f,.90f) : new Color(.84f,.83f,.96f));
         Color(material, "_Shadow2ndColor", skin ? new Color(.94f,.85f,.9f,.25f) : new Color(.82f,.82f,.95f,.25f));
         if (skin) Color(material, "_Color", new Color(1,.995f,.99f));
+        else if (!eye && !eyeWhite && !line && !metal && !hair)
+            Color(material, "_Color", new Color(.98f,.99f,1));
         if (eye || eyeWhite || line) Color(material, "_ShadowColor", new Color(.96f,.95f,1));
 
         // Preserve all of the model's tuned outline geometry and shadow-distance controls.
         Color(material, "_OutlineColor", skin ? new Color(.20f,.13f,.18f) : new Color(.10f,.11f,.17f));
-        Float(material, "_UseRim", eye || eyeWhite || line ? 0 : 1);
+        Float(material, "_UseRim", line ? 0 : 1);
         Float(material, "_RimDirStrength", 0);
-        Float(material, "_RimFresnelPower", 3.5f);
-        Float(material, "_RimBorder", .45f);
-        Float(material, "_RimBlur", .5f);
+        Float(material, "_RimFresnelPower", 3);
+        Float(material, "_RimBorder", .35f);
+        Float(material, "_RimBlur", .65f);
         Float(material, "_RimEnableLighting", 1);
         Float(material, "_RimShadowMask", 1);
-        Float(material, "_RimMainStrength", .25f);
-        Color(material, "_RimColor", new Color(.94f,.96f,1,skin ? .12f : .22f));
+        Float(material, "_RimMainStrength", .6f);
+        Color(material, "_RimColor", new Color(.82f,.92f,1,skin ? .10f : eye || eyeWhite ? .16f : .24f));
 
-        bool glossy = !line && !eyeWhite;
+        bool glossy = !line;
         Float(material, "_UseReflection", glossy ? 1 : 0);
-        // The sheen follows actual light visibility. An outdoor reflection probe
-        // must not keep a character's hair/eyes bright inside a dark occluder.
+        // All sheen follows visible light, including the camera-relative reflection layers.
+        // Do not add unoccluded outdoor probe light to a character hiding indoors.
         Float(material, "_ApplyReflection", 0);
         Float(material, "_ApplySpecular", 1);
         Float(material, "_Metallic", 0);
-        Float(material, "_Smoothness", eye ? .94f : metal ? .76f : hair ? .62f : skin ? .63f : .48f);
-        Float(material, "_Reflectance", eye ? .08f : skin ? .025f : .04f);
+        Float(material, "_Smoothness", eye ? .86f : eyeWhite ? .72f : metal ? .8f : hair ? .58f : skin ? .56f : .55f);
+        Float(material, "_Reflectance", eye ? .04f : metal ? .08f : .025f);
         Float(material, "_SpecularToon", 0);
-        Float(material, "_GSAAStrength", .6f);
-        Float(material, "_UseAnisotropy", 0);
-        Color(material, "_ReflectionColor", new Color(.98f,.98f,1,eye ? .75f : metal ? .45f : hair ? .28f : skin ? .18f : .14f));
+        Float(material, "_GSAAStrength", .8f);
+        // Stretch the real light highlight along the hair instead of round plastic dots.
+        Float(material, "_UseAnisotropy", hair ? 1 : 0);
+        Float(material, "_Anisotropy2Reflection", hair ? 1 : 0);
+        Float(material, "_AnisotropyScale", .65f);
+        Float(material, "_AnisotropyTangentWidth", 1.6f);
+        Float(material, "_AnisotropyBitangentWidth", .7f);
+        Float(material, "_AnisotropySpecularStrength", .6f);
+        Float(material, "_Anisotropy2ndSpecularStrength", .12f);
+        Float(material, "_Anisotropy2ndTangentWidth", 2.5f);
+        Float(material, "_Anisotropy2ndBitangentWidth", 1.2f);
+        Float(material, "_Anisotropy2ndShift", .15f);
+        Color(material, "_ReflectionColor", new Color(.88f,.94f,1,eye ? .35f : metal ? .4f : hair ? .20f : .12f));
 
         Float(material, "_UseMatCap", glossy ? 1 : 0);
         if (glossy)
         {
-            material.SetTexture("_MatCapTex", Require<Texture2D>(MatCapPath));
+            string path = skin ? SkinMatCapPath : hair ? HairMatCapPath : metal || eye || eyeWhite ? MatCapPath : ClothMatCapPath;
+            material.SetTexture("_MatCapTex", Require<Texture2D>(path));
             Float(material, "_MatCapBlendMode", 1);
             Float(material, "_MatCapEnableLighting", 1);
             Float(material, "_MatCapShadowMask", 1);
-            Float(material, "_MatCapMainStrength", eye ? 0 : skin ? .5f : .35f);
-            Color(material, "_MatCapColor", new Color(.96f,.98f,1,eye ? .65f : hair ? .45f : metal ? .55f : skin ? .25f : .28f));
+            Float(material, "_MatCapMainStrength", skin ? .65f : hair ? .55f : metal ? .6f : eye ? .1f : .5f);
+            Float(material, "_MatCapLod", 0);
+            Color(material, "_MatCapColor", new Color(.92f,.97f,1,eye ? .45f : eyeWhite ? .10f : hair ? .85f : metal ? .55f : skin ? .56f : .55f));
         }
         Float(material, "_UseBacklight", skin ? 1 : 0);
         if (skin)
         {
-            Color(material, "_BacklightColor", new Color(.95f,.68f,.65f,.12f));
+            Color(material, "_BacklightColor", new Color(1,.72f,.68f,.20f));
             Float(material, "_BacklightBorder", .25f);
             Float(material, "_BacklightBlur", .5f);
             Float(material, "_BacklightDirectivity", 3);
@@ -119,32 +136,74 @@ public static class MoonkovAnimeLightingSetup
     public static void UpdatePearlMatCap()
     {
         RequireEditMode();
-        if (AssetDatabase.LoadAssetAtPath<Texture2D>(MatCapPath)) return;
-        const int size = 128;
+        WriteMatCap(MatCapPath, 0);
+        WriteMatCap(SkinMatCapPath, 1);
+        WriteMatCap(HairMatCapPath, 2);
+        WriteMatCap(ClothMatCapPath, 3);
+    }
+
+    // Continuous reflected sky / softbox gradients, rather than painted circular glints.
+    // Every material has its own shape and contrast; no UV or source texture is replaced.
+    private static void WriteMatCap(string path, int surface)
+    {
+        const int size = 256;
         var texture = new Texture2D(size,size,TextureFormat.RGB24,false);
         try
         {
             var pixels = new Color[size*size];
-            for(int y=0;y<size;y++)
-            for(int x=0;x<size;x++)
+            for (int y=0;y<size;y++)
+            for (int x=0;x<size;x++)
             {
                 float u=2f*x/(size-1)-1, v=2f*y/(size-1)-1;
-                if(u*u+v*v>1) { pixels[y*size+x]=new Color(0,0,0,1); continue; }
-                float key=Mathf.Exp(-Mathf.Pow((u+.23f)/.14f,2)-Mathf.Pow((v-.3f)/.3f,2));
-                float fill=Mathf.Exp(-Mathf.Pow((u-.24f)/.3f,2)-Mathf.Pow((v+.05f)/.45f,2));
-                float rim=Mathf.Pow(1-Mathf.Sqrt(1-u*u-v*v),5);
-                pixels[y*size+x]=new Color(1,.96f,.94f)*key*.9f + new Color(.65f,.78f,1)*fill*.3f + new Color(.82f,.88f,1)*rim*.08f;
+                float radius=Mathf.Min(1,Mathf.Sqrt(u*u+v*v));
+                float z=Mathf.Sqrt(1-radius*radius);
+                float fresnel=Mathf.Pow(1-z,1.6f);
+                float side=Gaussian(u+.68f,.25f)*Gaussian(v-.08f,.95f);
+                float opposite=Gaussian(u-.78f,.18f)*Gaussian(v+.12f,.75f);
+                Color cool=new Color(.56f,.76f,1), warm=new Color(1,.87f,.78f);
+                Color color;
+                if (surface==1)
+                {
+                    // Hydrated skin: a thin grazing veil, soft warm lift, no white cheek spot.
+                    float veil=Gaussian(u+.24f,.5f)*Gaussian(v-.18f,.65f);
+                    color=cool*(.025f+.38f*fresnel+.33f*side)+warm*(.22f*opposite+.12f*veil);
+                }
+                else if (surface==2)
+                {
+                    // Hair follows a curved, wide satin ribbon with a softer second reflection.
+                    float ribbon=Gaussian(v-.30f+.12f*u*u,.14f)*(.65f+.35f*Gaussian(u,.8f));
+                    float lower=Gaussian(v+.42f-.08f*u,.28f);
+                    color=cool*(.025f+.22f*fresnel+.12f*side+.14f*lower)+new Color(.9f,.95f,1)*ribbon*.72f;
+                }
+                else if (surface==3)
+                {
+                    // Silk: long gradients pick up the garment's normal / fold changes.
+                    float fold=Gaussian(u+.38f+.18f*v,.24f)*Gaussian(v-.15f,.85f);
+                    color=cool*(.025f+.34f*fresnel+.36f*fold)+warm*.16f*opposite;
+                }
+                else
+                {
+                    // Cornea and polished trim: broad window reflection plus thin edge sparkle.
+                    float window=Gaussian(u+.43f,.16f)*Gaussian(v-.4f,.48f);
+                    color=cool*(.035f+.38f*fresnel+.12f*opposite)+new Color(.94f,.98f,1)*window*.65f;
+                }
+                pixels[y*size+x]=color;
             }
             texture.SetPixels(pixels);texture.Apply();
-            File.WriteAllBytes(MatCapPath,texture.EncodeToPNG());
+            byte[] bytes=texture.EncodeToPNG();
+            // Repeated previews must not reimport unchanged textures or dirty their metadata.
+            if (File.Exists(path) && System.Linq.Enumerable.SequenceEqual(File.ReadAllBytes(path),bytes)) return;
+            File.WriteAllBytes(path,bytes);
         }
         finally { UnityEngine.Object.DestroyImmediate(texture); }
-        AssetDatabase.ImportAsset(MatCapPath,ImportAssetOptions.ForceSynchronousImport);
-        var importer=(TextureImporter)AssetImporter.GetAtPath(MatCapPath);
+        AssetDatabase.ImportAsset(path,ImportAssetOptions.ForceSynchronousImport);
+        var importer=(TextureImporter)AssetImporter.GetAtPath(path);
         importer.textureType=TextureImporterType.Default;importer.sRGBTexture=true;importer.mipmapEnabled=true;
         importer.wrapMode=TextureWrapMode.Clamp;importer.textureCompression=TextureImporterCompression.Uncompressed;
         importer.SaveAndReimport();
     }
+
+    private static float Gaussian(float value, float width) => Mathf.Exp(-value*value/(width*width));
 
     [MenuItem("Tools/Moonkov/Rendering/Update Soft MMD Color Grade")]
     public static void UpdateColorGrade()
