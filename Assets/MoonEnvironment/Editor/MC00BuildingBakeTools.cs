@@ -84,6 +84,21 @@ namespace Unity.MP_FPS.Moon.Editor
                     indirectSampleCount = 64, environmentSampleCount = 32, maxBounces = 2 };
                 AssetDatabase.CreateAsset(settings, Folder + "/LightingSettings.lighting");
             }
+            var geometryParameters = AssetDatabase.LoadAssetAtPath<LightmapParameters>(Folder + "/MC00Geometry.giparams");
+            if (!geometryParameters)
+            {
+                var defaults = LightmapParameters.GetLightmapParametersForLightingSettings(settings);
+                geometryParameters = defaults ? UnityEngine.Object.Instantiate(defaults) : new LightmapParameters();
+                geometryParameters.name = "MC00Geometry";
+                AssetDatabase.CreateAsset(geometryParameters, Folder + "/MC00Geometry.giparams");
+            }
+            // MC00 sits kilometres from the origin. The default 0.1 mm ray offset
+            // causes self-occlusion blotches there; 5 mm was verified on its walls.
+            // Retain every other lightmap parameter and the authored material/UV data.
+            geometryParameters.pushoff = .005f;
+            LightmapParameters.SetLightmapParametersForLightingSettings(geometryParameters, settings);
+            EditorUtility.SetDirty(geometryParameters); EditorUtility.SetDirty(settings);
+            AssetDatabase.SaveAssetIfDirty(geometryParameters); AssetDatabase.SaveAssetIfDirty(settings);
             Lightmapping.lightingSettings = settings;
             RenderSettings.ambientMode = AmbientMode.Flat; RenderSettings.ambientLight = Color.black;
             RenderSettings.ambientIntensity = 0; RenderSettings.reflectionIntensity = 0; RenderSettings.skybox = null;
@@ -213,6 +228,8 @@ namespace Unity.MP_FPS.Moon.Editor
         }
         static void Capture()
         {
+            bool zeroBaseline = !job.environment && job.next < 0;
+            if (zeroBaseline) ValidateZeroBaselineScene();
             if (LightmapSettings.lightmaps.Length == 0 || !LightmapSettings.lightProbes || LightmapSettings.lightProbes.count == 0)
                 throw new InvalidOperationException("Bake returned no lightmaps/probes.");
             foreach (var chunk in manifest.chunks)
@@ -255,10 +272,77 @@ namespace Unity.MP_FPS.Moon.Editor
             state.probes = UnityEngine.Object.Instantiate(LightmapSettings.lightProbes);
             state.probes.name = "MC00 circuit probes"; state.probes.hideFlags = HideFlags.None;
             AssetDatabase.CreateAsset(state.probes, folder + "/Probes.asset");
+            if (zeroBaseline) WriteZeroBaseline(state);
             if (job.environment) data.environment = state;
             else if (job.next < 0) data.baseline = state; else data.rooms[job.next].onState = state;
             File.WriteAllText(Folder + "/manifest.json", JsonUtility.ToJson(manifest, true));
             EditorUtility.SetDirty(data); AssetDatabase.SaveAssets();
+        }
+
+        // Repair an already captured reference without rebaking any room or changing
+        // its atlas GUIDs, dimensions, UV bindings, or native probe positions.
+        public static void ExportZeroBaseline()
+        {
+            if (EditorApplication.isPlayingOrWillChangePlaymode || Lightmapping.isRunning || job != null && job.running)
+                throw new InvalidOperationException("Finish the bake before exporting the zero baseline.");
+            ValidateZeroBaselineScene();
+            var lighting = AssetDatabase.LoadAssetAtPath<BuildingBakedLightingData>(DataPath);
+            WriteZeroBaseline(lighting ? lighting.baseline : null);
+            Status = "Exported physical zero baseline; room and environment states unchanged";
+        }
+
+        static void ValidateZeroBaselineScene()
+        {
+            var scene = SceneManager.GetActiveScene();
+            var ambient = RenderSettings.ambientLight;
+            if (SceneManager.sceneCount != 1 || scene.path != ScenePath || RenderSettings.ambientMode != AmbientMode.Flat ||
+                ambient.r != 0 || ambient.g != 0 || ambient.b != 0 || RenderSettings.skybox)
+                throw new InvalidOperationException("A zero baseline requires only the MC00 bake scene and a black Flat environment without a skybox.");
+            var ambientProbe = RenderSettings.ambientProbe;
+            for (int c = 0; c < 3; c++) for (int k = 0; k < 9; k++)
+                if (!(Mathf.Abs(ambientProbe[c, k]) <= .000001f))
+                    throw new InvalidOperationException("The ambient probe must be zero before exporting the zero baseline.");
+            foreach (var root in scene.GetRootGameObjects())
+            {
+                if (root.GetComponentsInChildren<Light>(true).Any(light => light.enabled))
+                    throw new InvalidOperationException("Disable every bake-scene light before exporting the zero baseline.");
+                foreach (var renderer in root.GetComponentsInChildren<Renderer>(true))
+                {
+                    if (!renderer.enabled || !renderer.gameObject.activeInHierarchy ||
+                        (GameObjectUtility.GetStaticEditorFlags(renderer.gameObject) & StaticEditorFlags.ContributeGI) == 0) continue;
+                    foreach (var material in renderer.sharedMaterials)
+                        if (material && (material.globalIlluminationFlags & (MaterialGlobalIlluminationFlags.BakedEmissive |
+                            MaterialGlobalIlluminationFlags.EmissiveIsBlack)) == MaterialGlobalIlluminationFlags.BakedEmissive)
+                            throw new InvalidOperationException("A zero baseline cannot discard baked emission: " + material.name);
+                }
+            }
+        }
+
+        static void WriteZeroBaseline(BuildingBakedLightingData.State state)
+        {
+            if (state == null || state.colorMaps == null || state.colorMaps.Length == 0 || !state.probes || state.probes.count == 0)
+                throw new InvalidOperationException("Capture a complete baseline layout before exporting zero radiance.");
+            var paths = state.colorMaps.Select(map => map ? AssetDatabase.GetAssetPath(map) : "").ToArray();
+            if (paths.Any(path => !path.StartsWith(Folder + "/States/", StringComparison.Ordinal) ||
+                !path.EndsWith(".exr", StringComparison.OrdinalIgnoreCase)))
+                throw new InvalidOperationException("Baseline maps must be captured MC00 EXR assets.");
+            for (int i = 0; i < paths.Length; i++)
+            {
+                var map = state.colorMaps[i];
+                var zero = new Texture2D(map.width, map.height, TextureFormat.RGBAFloat, false, true);
+                try
+                {
+                    var pixels = new Color[map.width * map.height];
+                    // Alpha 1 marks valid texels; RGB alone represents zero radiance.
+                    for (int p = 0; p < pixels.Length; p++) pixels[p] = Color.black;
+                    zero.SetPixels(pixels); zero.Apply(false, false);
+                    File.WriteAllBytes(paths[i], zero.EncodeToEXR(Texture2D.EXRFlags.OutputAsFloat | Texture2D.EXRFlags.CompressZIP));
+                }
+                finally { UnityEngine.Object.DestroyImmediate(zero); }
+                AssetDatabase.ImportAsset(paths[i], ImportAssetOptions.ForceSynchronousImport | ImportAssetOptions.ForceUpdate);
+            }
+            state.probes.bakedProbes = new SphericalHarmonicsL2[state.probes.count];
+            EditorUtility.SetDirty(state.probes); AssetDatabase.SaveAssetIfDirty(state.probes);
         }
 
         [MenuItem("Tools/Moon Environment/MC00 Building Bake/3 - Install in loaded formal map")]
