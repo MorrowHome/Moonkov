@@ -17,7 +17,7 @@ using BodyPart = Unity.MP_FPS.BodyPart;
 /// <summary>Focused integration fixtures against the loaded formal MC00 colliders.
 /// Uses isolated ECS worlds and real Ghost links / projectile damage code. It does
 /// not authenticate accounts, alter saves, or claim a transport/late-join test.</summary>
-public static class AlienEnemyChecks
+public static partial class AlienEnemyChecks
 {
     [Serializable] private sealed class Result
     {
@@ -118,14 +118,15 @@ public static class AlienEnemyChecks
         Require(report.errors.Count == 0, "New errors during integration fixtures: " + string.Join("; ", report.errors));
         Debug.Log("Alien integration fixtures passed: humans and PMCs, alien exclusion, projectile damage, death, scaled hitboxes and client reconstruction.");
     }
-    private static ProceduralAlienEnemy Alien(Transform holder, World world, AlienCreatureProfile profile, Vector3 position, MultiplayerRole role, int id)
+    private static ProceduralAlienEnemy Alien(Transform holder, World world, AlienCreatureProfile profile, Vector3 position, MultiplayerRole role, int id, bool ambush = false)
     {
         var go = new GameObject("Fixture " + profile.Species + " " + role); go.transform.SetParent(holder, false); go.transform.position = position;
         var ghost = go.AddComponent<GhostGameObject>(); var actor = go.AddComponent<ProceduralAlienEnemy>();
         var serialized = new SerializedObject(actor); serialized.FindProperty("profile").objectReferenceValue = profile; serialized.ApplyModifiedPropertiesWithoutUndo();
         var manager = world.EntityManager;
         var entity = manager.CreateEntity(typeof(GhostGameObjectGuid), typeof(ProceduralAlienEnemy.State), typeof(PredictedPlayerGhost), typeof(GhostOwner), typeof(LocalTransform));
-        manager.SetComponentData(entity, new ProceduralAlienEnemy.State { Scale = profile.Scale });
+        manager.SetComponentData(entity, new ProceduralAlienEnemy.State { Scale = profile.Scale, AmbushEnabled = ambush,
+            Action = ambush ? AlienAction.Ambush : AlienAction.Roam });
         manager.SetComponentData(entity, new PredictedPlayerGhost { MaxHealth = 100, CurrentHealth = 100 });
         manager.SetComponentData(entity, new GhostOwner { NetworkId = id }); manager.SetComponentData(entity, LocalTransform.FromPosition(position));
         manager.AddComponentObject(entity, new GhostGameObjectLink { LinkedInstance = ghost });

@@ -101,6 +101,7 @@ namespace Unity.MP_FPS
                 var spawn = settings[index];
                 state.ReadyAt = now + settings.RetryDelay;
                 if (spawn == null || !spawn.Profile || spawn.Prefab == null) continue;
+                if (spawn.Ambush && state.SpawnCount > 0) continue;
                 var prefab = prefabs.GetEntityPrefab(spawn.Prefab.GhostGuid);
                 if (prefab == Entity.Null || !TrySelectPosition(settings, spawn, state, out var position, out var rotation)) continue;
 
@@ -110,7 +111,11 @@ namespace Unity.MP_FPS
                 EntityManager.SetComponentData(entity, LocalTransform.FromPositionRotation(position, rotation));
                 EntityManager.SetComponentData(entity, new GhostOwner { NetworkId = id });
                 EntityManager.SetComponentData(entity, new GhostGameObjectGuid { Guid = GhostGameObject.GenerateRandomHash() });
-                EntityManager.SetComponentData(entity, new ProceduralAlienEnemy.State { Scale = scale });
+                EntityManager.SetComponentData(entity, new ProceduralAlienEnemy.State
+                {
+                    Scale = scale, AmbushEnabled = spawn.Ambush && spawn.Profile.Species == AlienSpecies.Spider,
+                    Action = spawn.Ambush && spawn.Profile.Species == AlienSpecies.Spider ? AlienAction.Ambush : AlienAction.Roam
+                });
                 state.Entity = entity;
                 state.OwnerId = id;
                 state.DeathObserved = false;
@@ -182,6 +187,8 @@ namespace Unity.MP_FPS
             position = default;
             rotation = Quaternion.identity;
             float scale = Mathf.Clamp(spawn.Profile.Scale, .1f, 4f);
+            if (spawn.Ambush && spawn.Profile.Species == AlienSpecies.Spider)
+                return TryAmbushPosition(settings, spawn, scale, out position, out rotation);
             float mantleRadius = spawn.Profile.IsChain ? Mathf.Max(SurfaceMotor.BodyRadius, spawn.Profile.Chain.radius) :
                 spawn.Profile.Species == AlienSpecies.Spider ? SurfaceMotor.BodyRadius :
                 Mathf.Max(SurfaceMotor.BodyRadius, Mathf.Max(spawn.Profile.Branch.bodyRadii.x, spawn.Profile.Branch.bodyRadii.z) * .7f);
@@ -215,6 +222,42 @@ namespace Unity.MP_FPS
                 return true;
             }
             return false;
+        }
+
+        private bool TryAmbushPosition(AlienEncounterSettings settings, AlienEncounterSettings.Spawn spawn,
+            float scale, out Vector3 position, out Quaternion rotation)
+        {
+            position = default; rotation = Quaternion.identity;
+            Vector3 normal = spawn.SurfaceNormal.sqrMagnitude > .5f ? spawn.SurfaceNormal.normalized : Vector3.up;
+            int mask = LayerMask.GetMask("Default", "Ground");
+            if (!HasNearbyPlayer(spawn.Position, settings.ActivationDistance) ||
+                !UnityEngine.Physics.Raycast(spawn.Position + normal * .5f, -normal, out var support, 1,
+                    mask, QueryTriggerInteraction.Ignore) || Vector3.Dot(support.normal, normal) < .85f) return false;
+            position = support.point + support.normal * SurfaceMotor.Height * scale;
+            if (UnityEngine.Physics.CheckSphere(position, SurfaceMotor.BodyRadius * scale, mask, QueryTriggerInteraction.Ignore)) return false;
+            foreach (var observer in m_Observers)
+            {
+                float distance = Vector3.Distance(position, observer.Position);
+                if (distance < (observer.CheckVisibility ? settings.MinimumPlayerSpawnDistance : Mathf.Max(3, scale * 2))) return false;
+                if (!observer.CheckVisibility || distance > settings.VisibilityDistance) continue;
+                Vector3 eye = observer.Position + Vector3.up * 1.6f;
+                if (observer.Forward.sqrMagnitude > .01f && Vector3.Dot(observer.Forward.normalized, (position - eye).normalized) < .5f) continue;
+                // Do not offset above a ceiling perch: that would hide the visibility
+                // ray inside the ceiling and allow a visible pop-in underneath it.
+                if (!UnityEngine.Physics.Linecast(eye, position, mask, QueryTriggerInteraction.Ignore)) return false;
+            }
+            // A perched spider needs real support underneath its initial leg footprint.
+            Vector3 forward = Vector3.ProjectOnPlane(Quaternion.Euler(0, spawn.Yaw, 0) * Vector3.forward, normal);
+            if (forward.sqrMagnitude < .01f) forward = Vector3.ProjectOnPlane(Vector3.up, normal);
+            forward.Normalize(); Vector3 right = Vector3.Cross(normal, forward);
+            for (int i = 0; i < 4; i++)
+            {
+                Vector3 foot = support.point + (i < 2 ? forward : right) * (i % 2 == 0 ? 1 : -1) * .65f * scale;
+                if (!UnityEngine.Physics.Raycast(foot + normal * .35f, -normal, out var leg, .7f, mask,
+                    QueryTriggerInteraction.Ignore) || Vector3.Dot(leg.normal, normal) < .75f) return false;
+            }
+            rotation = Quaternion.LookRotation(forward, normal);
+            return true;
         }
 
         private bool HasNearbyPlayer(Vector3 candidate, float distance)

@@ -28,6 +28,11 @@ namespace Unity.MP_FPS
         [Range(.15f, 2)] public float Recovery = .55f;
         [Min(.3f)] public float AttackCooldown = 1.6f;
         [Range(0, 8)] public float LungeSpeed = 3;
+        [Header("Spider ambush encounters")]
+        [Min(1)] public float SpiderAmbushRange = 6;
+        [Min(.3f)] public float SpiderWindup = .75f;
+        [Min(.2f)] public float SpiderStrikeSeconds = .45f;
+        [Min(.3f)] public float SpiderRecovery = 1.1f;
         [Header("客户端表现")]
         public bool Liquid = true;
         [Min(2)] public float LiquidDistance = 24;

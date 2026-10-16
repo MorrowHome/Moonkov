@@ -30,10 +30,14 @@ namespace Unity.MP_FPS
         private ChainFluidPresentation m_ChainFluid;
         private BranchFluidPresentation m_BranchFluid;
         private SpiderPresentation m_SpiderView;
+        private AlienCreatureFeedback m_Feedback;
+        private SurfaceMotor.Pose m_SpiderPose;
+        private AlienAction m_CombatAction;
+        private float m_ActionTime, m_WindupDuration, m_RecoveryDuration, m_StrikeDuration;
         private float m_Phase, m_Clock;
         private bool m_Folded;
         public SurfaceMotor Motor { get; }
-        public Vector3 AimPoint => m_Chain != null ? m_Chain.Centres[CreatureChain.Rings / 2] : m_Branch != null ? m_Branch.Points[0] : m_Feet.BodyPose.Position;
+        public Vector3 AimPoint => m_Chain != null ? m_Chain.Centres[CreatureChain.Rings / 2] : m_Branch != null ? m_Branch.Points[0] : m_SpiderPose.Position;
         public float Scale => m_Scale;
         public int HitboxCount => m_Capsules.Count + m_Spheres.Count;
         public SkeletonFluidPresentation Fluid => m_ChainFluid?.Fluid ?? m_BranchFluid?.Fluid ?? m_SpiderView?.Fluid;
@@ -55,7 +59,11 @@ namespace Unity.MP_FPS
                 var gait = JsonUtility.FromJson<PredictiveFeet.GaitSettings>(JsonUtility.ToJson(profile.Gait));
                 gait.compression *= m_Scale; gait.bodyBob *= m_Scale; gait.strideCycleDistance *= m_Scale;
                 m_Feet = new PredictiveFeet(m_Mask, m_Scale) { Settings = gait }; m_Feet.Reset(Motor.Current);
-                if (render) m_SpiderView = new SpiderPresentation(owner, m_Mask, m_Scale);
+                if (render)
+                {
+                    m_SpiderView = new SpiderPresentation(owner, m_Mask, m_Scale);
+                    m_Feedback = new AlienCreatureFeedback(m_Scale);
+                }
             }
             else
             {
@@ -77,6 +85,17 @@ namespace Unity.MP_FPS
             s.lateralAmplitude *= scale; s.wavelength *= scale; s.archHeight *= scale;
             s.headLift *= scale; s.sprintHeadLift *= scale; s.legReach *= scale;
             s.legRadius *= scale; s.footLift *= scale; s.bristleLength *= scale;
+        }
+        /// <summary>Call before Tick/Observe with authoritative action age in seconds.
+        /// Both peers solve the same attack silhouette; audio observes client snapshots only.</summary>
+        public void SetCombatPresentation(AlienAction action, float actionTime, uint attackSequence, float health,
+            float windupDuration = 0, float recoveryDuration = 0, float strikeDuration = 0)
+        {
+            m_CombatAction = action; m_ActionTime = Mathf.Max(0, actionTime);
+            m_WindupDuration = windupDuration > 0 ? windupDuration : m_Profile.Windup;
+            m_RecoveryDuration = recoveryDuration > 0 ? recoveryDuration : m_Profile.Recovery;
+            m_StrikeDuration = strikeDuration > 0 ? strikeDuration : .24f;
+            m_Feedback?.Observe(action, m_ActionTime, attackSequence, health, AimPoint);
         }
         public void Tick(Vector3 intent, float speed, float yaw, float dt, float action, bool liquid)
         {
@@ -139,22 +158,64 @@ namespace Unity.MP_FPS
                 if (!Motor.Detached && m_Folded) { m_Feet.EndFold(Motor.Current); m_Folded = false; }
                 if (Motor.Detached) m_Feet.TickFolded(Motor.Current, dt);
                 else m_Feet.Tick(Motor, input, speed, yaw, dt);
-                for (int leg = 0; leg < 8; leg++)
-                {
-                    Vector3 root = PredictiveFeet.Hip(m_Feet.BodyPose, leg, m_Scale);
-                    m_SpiderLegSolved[leg] = SpiderLegKinematics.Solve(m_Feet.BodyPose, leg, m_Feet[leg].Position, m_Feet[leg].Normal,
-                        m_Mask, out var knee, out var toe, m_Scale);
-                    m_SpiderJoints[leg * 3] = root; m_SpiderJoints[leg * 3 + 1] = knee; m_SpiderJoints[leg * 3 + 2] = toe;
-                }
+                SolveSpiderCombatPose();
                 if (m_Render)
                 {
                     m_SpiderView.SetAppearance(liquid ? SpiderPresentation.Look.Fluid : SpiderPresentation.Look.Carapace, false);
                     if (m_SpiderView.Fluid != null)
                     { m_SpiderView.Fluid.Settings = m_Profile.Fluid; m_SpiderView.Fluid.AttractionEnabled = m_Profile.Fluid.attraction; m_SpiderView.Fluid.Predatory = m_Profile.Fluid.heavy; }
-                    m_SpiderView.Draw(Motor, m_Feet, SpiderPresentation.Stage.Umbrella, dt, m_SpiderJoints, m_SpiderLegSolved);
+                    m_SpiderView.Draw(Motor, m_Feet, SpiderPresentation.Stage.Umbrella, dt, m_SpiderJoints, m_SpiderLegSolved, m_SpiderPose);
+                    m_Feedback.Tick(Motor, m_Feet, m_CombatAction, dt);
                 }
             }
         }
+
+        private void SolveSpiderCombatPose()
+        {
+            float strikeTime = Mathf.Clamp01(m_ActionTime / Mathf.Max(.01f, m_StrikeDuration));
+            float windup = m_CombatAction == AlienAction.Windup ? Ease(m_ActionTime / Mathf.Max(.01f, m_WindupDuration)) :
+                m_CombatAction == AlienAction.Strike ? 1 - Ease(strikeTime / .3f) : 0;
+            float strike = m_CombatAction == AlienAction.Strike ? Mathf.Sin(strikeTime * Mathf.PI) : 0;
+            float recover = m_CombatAction == AlienAction.Recover ? 1 - Ease(m_ActionTime / Mathf.Max(.01f, m_RecoveryDuration)) :
+                m_CombatAction == AlienAction.Strike ? Ease((strikeTime - .75f) / .25f) : 0;
+            float dead = m_CombatAction == AlienAction.Dead ? Ease(m_ActionTime / .65f) : 0;
+            m_SpiderPose = m_Feet.BodyPose;
+            var surface = Motor.Current;
+            // The six supporting feet retain their real anchors during the warning.
+            // Move hips before IK so the shell, legs and damage volumes remain aligned.
+            m_SpiderPose.Position += surface.Up * (-.17f * windup - .07f * recover - .23f * dead) * m_Scale;
+            m_SpiderPose.Rotation *= Quaternion.Euler(-16 * windup + 13 * strike + 7 * recover, 0, 0);
+            for (int leg = 0; leg < 8; leg++)
+            {
+                Vector3 target = m_Feet[leg].Position;
+                Vector3 radial = m_SpiderPose.Rotation * PredictiveFeet.Radial(leg);
+                // The forward pair opens toward the target; the remaining legs brace.
+                if (leg == 0 || leg == 7)
+                    target += (surface.Up * (.40f * windup + .22f * strike) +
+                        surface.Forward * (-.18f * windup + .50f * strike)) * m_Scale;
+                Vector3 hip = PredictiveFeet.Hip(m_SpiderPose, leg, m_Scale);
+                bool solved = SpiderLegKinematics.Solve(m_SpiderPose, leg, target, m_Feet[leg].Normal,
+                    m_Mask, out var knee, out var toe, m_Scale);
+                if (dead > 0)
+                {
+                    // Curl in the support plane with fixed segment lengths. Raising the usual
+                    // live IK knee would leave a tall, apparently alert silhouette after death.
+                    Vector3 foldedTip = m_SpiderPose.Position + (radial * .75f + m_SpiderPose.Up * .04f) * m_Scale;
+                    Vector3 delta = foldedTip - hip;
+                    float distance = Mathf.Clamp(delta.magnitude, .22f * m_Scale, PredictiveFeet.MaxReach * m_Scale);
+                    Vector3 direction = delta.normalized;
+                    Vector3 bend = Vector3.ProjectOnPlane(Vector3.Cross(surface.Up, radial) + surface.Up * .08f, direction).normalized;
+                    float upper = PredictiveFeet.UpperLength * m_Scale, lower = PredictiveFeet.LowerLength * m_Scale;
+                    float along = (upper * upper - lower * lower + distance * distance) / (2 * distance);
+                    Vector3 foldedKnee = hip + direction * along + bend * Mathf.Sqrt(Mathf.Max(0, upper * upper - along * along));
+                    knee = Vector3.Lerp(knee, foldedKnee, dead);
+                    toe = Vector3.Lerp(toe, hip + direction * distance, dead);
+                }
+                m_SpiderLegSolved[leg] = solved;
+                m_SpiderJoints[leg * 3] = hip; m_SpiderJoints[leg * 3 + 1] = knee; m_SpiderJoints[leg * 3 + 2] = toe;
+            }
+        }
+        private static float Ease(float t) { t = Mathf.Clamp01(t); return t * t * (3 - 2 * t); }
 
         private void BuildHitboxes(int layer)
         {
@@ -204,8 +265,13 @@ namespace Unity.MP_FPS
         {
             Motor.Detach(direction); m_Chain?.ReleaseContacts(); m_ChainView?.ResetContacts(); m_Branch?.ResetContacts();
         }
+        public void Launch(Vector3 velocity)
+        {
+            Motor.Launch(velocity); m_Chain?.ReleaseContacts(); m_ChainView?.ResetContacts(); m_Branch?.ResetContacts();
+        }
         public void Dispose()
         {
+            m_Feedback?.Dispose();
             m_ChainFluid?.Release(); m_BranchFluid?.Release(); m_SpiderView?.Release(); m_ChainView?.Release(); m_Branch?.Release();
             if (m_HitRoot) { m_HitRoot.gameObject.SetActive(false); if (Application.isPlaying) Object.Destroy(m_HitRoot.gameObject); else Object.DestroyImmediate(m_HitRoot.gameObject); }
         }

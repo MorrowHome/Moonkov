@@ -10,13 +10,13 @@ using UnityEngine;
 
 namespace Unity.MP_FPS
 {
-    public enum AlienAction : byte { Roam, Chase, Search, Windup, Strike, Recover, Dead }
+    public enum AlienAction : byte { Roam, Chase, Search, Windup, Strike, Recover, Dead, Ambush, Reposition }
 
     /// <summary>Server-only intent, perception and damage; interpolated clients derive
     /// cosmetic rigs from snapshots. Target eligibility requires a real PlayerGhost:
     /// humans and PMC bots are eligible, other aliens never are.</summary>
     [DisallowMultipleComponent]
-    public sealed class ProceduralAlienEnemy : GhostMonoBehaviour, IUpdateServer, IUpdateClient
+    public sealed partial class ProceduralAlienEnemy : GhostMonoBehaviour, IUpdateServer, IUpdateClient
     {
         public struct State : IComponentData
         {
@@ -27,6 +27,7 @@ namespace Unity.MP_FPS
             [GhostField(Quantization = 1000)] public float3 Velocity;
             [GhostField] public uint AttackSequence;
             [GhostField] public bool Detached;
+            [GhostField] public bool AmbushEnabled;
         }
         [SerializeField] private AlienCreatureProfile profile;
         private AlienCreatureBody m_Body;
@@ -57,6 +58,9 @@ namespace Unity.MP_FPS
             if (!profile) { Debug.LogError("Alien profile is missing.", this); return; }
             var state = ReadGhostComponentData<State>();
             m_Spawn = transform.position; m_RoamGoal = m_Spawn;
+            m_AmbushEnabled = state.AmbushEnabled && profile.Species == AlienSpecies.Spider;
+            m_Action = state.Action;
+            m_LastHealth = profile.Health;
             float scale = state.Scale > 0 ? state.Scale : profile.Scale;
             m_Body = new AlienCreatureBody(transform, profile, scale, Role != MultiplayerRole.Server,
                 LayerMask.NameToLayer(Role == MultiplayerRole.Server ? "ServerPlayer" : "ClientPlayer"));
@@ -82,6 +86,7 @@ namespace Unity.MP_FPS
             if (health.CurrentHealth <= 0)
             {
                 if (m_Action != AlienAction.Dead) ChangeAction(AlienAction.Dead);
+                UpdateCombatPresentation(health.CurrentHealth);
                 m_Body.Tick(Vector3.zero, 0, 0, dt, 0, false); WriteState();
                 if (m_Clock - m_ActionStarted > 2)
                 {
@@ -97,6 +102,12 @@ namespace Unity.MP_FPS
                 transform.position = pose.Position + pose.Up * SurfaceMotor.Height * (scale - m_Body.Scale);
                 m_Body.Dispose();
                 m_Body = new AlienCreatureBody(transform, profile, scale, false, LayerMask.NameToLayer("ServerPlayer"));
+            }
+            if (m_AmbushEnabled)
+            {
+                UpdateAmbush(dt, health.CurrentHealth);
+                WriteState();
+                return;
             }
             if (m_Clock >= m_NextSense && m_Action != AlienAction.Windup && m_Action != AlienAction.Strike)
             { Sense(); m_NextSense = m_Clock + .15f; }
@@ -126,6 +137,7 @@ namespace Unity.MP_FPS
             float yaw = intent.sqrMagnitude > .01f ? Mathf.Clamp(Vector3.SignedAngle(m_Body.Motor.Current.Forward, intent,
                 m_Body.Motor.Current.Up) / Mathf.Max(.001f, dt), -profile.TurnSpeed, profile.TurnSpeed) : 0;
             float before = m_Body.Motor.Travel;
+            UpdateCombatPresentation(health.CurrentHealth);
             m_Body.Tick(intent, speed, yaw, dt, ActionPulse(), false);
             m_Stuck = speed > .01f && intent.sqrMagnitude > .01f && m_Body.Motor.Travel - before < .002f ? m_Stuck + dt : 0;
             if (m_Stuck > .85f && !m_Body.Motor.Detached) { m_Body.Escape(intent); m_Stuck = 0; }
@@ -220,7 +232,8 @@ namespace Unity.MP_FPS
         private void WriteState()
         {
             WriteGhostComponentData(new State { Action = m_Action, Scale = m_Body.Scale, Phase = m_Body.Phase,
-                ActionTime = m_Clock - m_ActionStarted, Velocity = m_Body.Motor.Velocity, AttackSequence = m_Attacks, Detached = m_Body.Motor.Detached });
+                ActionTime = m_Clock - m_ActionStarted, Velocity = m_Body.Motor.Velocity, AttackSequence = m_Attacks,
+                Detached = m_Body.Motor.Detached, AmbushEnabled = m_AmbushEnabled });
         }
 
         public void UpdateClient(float deltaTime)
@@ -232,6 +245,12 @@ namespace Unity.MP_FPS
                 m_Body.Dispose(); m_Body = new AlienCreatureBody(transform, profile, state.Scale, true, LayerMask.NameToLayer("ClientPlayer"));
             }
             m_Action = state.Action;
+            m_AmbushEnabled = state.AmbushEnabled;
+            float health = GhostHasComponent<PredictedPlayerGhost>() ? ReadGhostComponentData<PredictedPlayerGhost>().CurrentHealth : profile.Health;
+            m_Body.SetCombatPresentation(state.Action, state.ActionTime, state.AttackSequence, health,
+                m_AmbushEnabled ? profile.SpiderWindup : profile.Windup,
+                m_AmbushEnabled ? profile.SpiderRecovery : profile.Recovery,
+                m_AmbushEnabled ? profile.SpiderStrikeSeconds : .16f);
             if (Time.unscaledTime >= m_NextLod)
             { m_Liquid = WantsLiquid(); m_NextLod = Time.unscaledTime + .35f; }
             float pulse = state.Action == AlienAction.Windup ? Mathf.Clamp01(state.ActionTime / profile.Windup) : state.Action == AlienAction.Strike ? 1 :

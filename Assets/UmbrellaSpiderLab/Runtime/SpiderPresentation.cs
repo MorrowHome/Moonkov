@@ -194,11 +194,11 @@ namespace Unity.MP_FPS.SpiderLab
 
         /// <summary>Reuses eight world-space hip/knee/tip triples and their solve results from this update.</summary>
         public void Draw(SurfaceMotor motor, PredictiveFeet feet, Stage stage, float dt,
-            Vector3[] solvedJoints, bool[] solveSucceeded)
+            Vector3[] solvedJoints, bool[] solveSucceeded, SurfaceMotor.Pose? bodyPose = null)
         {
             bool useSolvedJoints = solvedJoints != null && solvedJoints.Length >= 24 &&
                 solveSucceeded != null && solveSucceeded.Length >= 8;
-            var pose = feet.BodyPose;
+            var pose = bodyPose ?? feet.BodyPose;
             m_Root.SetPositionAndRotation(pose.Position, pose.Rotation);
             if (m_Stage != stage) { m_Stage = stage; ApplyVisibility(); }
             Vector3 acceleration = (motor.Velocity - m_PreviousVelocity) / Mathf.Max(.001f, dt);

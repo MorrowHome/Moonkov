@@ -88133,6 +88133,8 @@ MonoBehaviour:
           w: 3196491532
     Position: {x: 1669, y: 207.29643, z: 2122}
     Yaw: -90
+    Ambush: 0
+    SurfaceNormal: {x: 0, y: 1, z: 0}
     CandidatePositions: []
   - Profile: {fileID: 11400000, guid: a384afc0e05e8e546b77a1fb92a651ab, type: 2}
     Prefab:
@@ -88150,6 +88152,8 @@ MonoBehaviour:
           w: 1756937516
     Position: {x: 1631, y: 214.78218, z: 2244}
     Yaw: -90
+    Ambush: 0
+    SurfaceNormal: {x: 0, y: 1, z: 0}
     CandidatePositions: []
   - Profile: {fileID: 11400000, guid: a8a41f3bf9208b24cb7e587aeb8dd7ed, type: 2}
     Prefab:
@@ -88167,6 +88171,8 @@ MonoBehaviour:
           w: 3891215356
     Position: {x: 1649, y: 214.75739, z: 2274}
     Yaw: -90
+    Ambush: 0
+    SurfaceNormal: {x: 0, y: 1, z: 0}
     CandidatePositions: []
   - Profile: {fileID: 11400000, guid: b8135596a5b27f747b1b724bb3a4695a, type: 2}
     Prefab:
@@ -88184,6 +88190,8 @@ MonoBehaviour:
           w: 151017489
     Position: {x: 1681, y: 212.57611, z: 2224}
     Yaw: -90
+    Ambush: 0
+    SurfaceNormal: {x: 0, y: 1, z: 0}
     CandidatePositions: []
   - Profile: {fileID: 11400000, guid: 02fada5ec9c9ab74784812c81a658b16, type: 2}
     Prefab:
@@ -88201,6 +88209,8 @@ MonoBehaviour:
           w: 1562882212
     Position: {x: 1655, y: 219.43227, z: 2329}
     Yaw: -90
+    Ambush: 0
+    SurfaceNormal: {x: 0, y: 1, z: 0}
     CandidatePositions: []
   - Profile: {fileID: 11400000, guid: 032745e210dd20f44ae8588289da6ff6, type: 2}
     Prefab:
@@ -88218,6 +88228,8 @@ MonoBehaviour:
           w: 3588848638
     Position: {x: 1650, y: 220.13303, z: 2387}
     Yaw: -90
+    Ambush: 0
+    SurfaceNormal: {x: 0, y: 1, z: 0}
     CandidatePositions: []
   - Profile: {fileID: 11400000, guid: 24a6c7dc5640215469880cf72d5b3678, type: 2}
     Prefab:
@@ -88235,6 +88247,8 @@ MonoBehaviour:
           w: 1821871415
     Position: {x: 1688, y: 221.48453, z: 2344}
     Yaw: -90
+    Ambush: 0
+    SurfaceNormal: {x: 0, y: 1, z: 0}
     CandidatePositions: []
   - Profile: {fileID: 11400000, guid: 6fa2790f210aa8a4995f68d3929c87cd, type: 2}
     Prefab:
@@ -88252,6 +88266,8 @@ MonoBehaviour:
           w: 2444135052
     Position: {x: 1716, y: 214.01378, z: 2289}
     Yaw: -90
+    Ambush: 0
+    SurfaceNormal: {x: 0, y: 1, z: 0}
     CandidatePositions: []
 --- !u!114 &145744448
 MonoBehaviour:
@@ -88325,6 +88341,9 @@ MonoBehaviour:
   m_StartHour: 7
   m_DayLengthMinutes: 24
   m_TimeRunning: 1
+  m_OxygenSettings: {fileID: 0}
+  m_OxygenWalkingMultiplier: 1.1
+  m_OxygenSprintingMultiplier: 1.75
   m_OutdoorOxygenSeconds: 600
   m_OxygenRecoveryPerSecond: 5
   m_HypoxiaGraceSeconds: 8
@@ -231470,6 +231489,7 @@ MonoBehaviour:
   m_MinPressureKPa: 60
   m_MinOxygenPartialPressureKPa: 15
   m_Chamber: {fileID: 83519679}
+  m_AllowsSuitRefill: 1
 --- !u!65 &348693591
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -362418,6 +362438,59 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 558319501}
   m_Mesh: {fileID: -3433734461513798471, guid: f813da1b4296fdf439dabeab95450f8b, type: 3}
+--- !u!1 &558331832
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 558331834}
+  - component: {fileID: 558331833}
+  m_Layer: 0
+  m_Name: MC00 Spider Ambush Navigation
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &558331833
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 558331832}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 830d185cbf6318e41860cbcf099f0b54, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Unity.MP_FPS.AlienSurfaceNavigation
+  worldBounds:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 0, y: 0, z: 0}
+  sampleSpacing: 0.75
+  bakedScale: 1
+  nodes: []
+  links: []
+  lastBakeReport: Physics query budget exceeded; reduce bounds or increase spacing.
+    Previous graph preserved.
+--- !u!4 &558331834
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 558331832}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &558383538
 GameObject:
   m_ObjectHideFlags: 0
@@ -476969,6 +477042,7 @@ MonoBehaviour:
   m_MinPressureKPa: 60
   m_MinOxygenPartialPressureKPa: 15
   m_Chamber: {fileID: 83519679}
+  m_AllowsSuitRefill: 1
 --- !u!65 &732403865
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -851037,6 +851111,7 @@ MonoBehaviour:
   m_MinPressureKPa: 60
   m_MinOxygenPartialPressureKPa: 15
   m_Chamber: {fileID: 83519679}
+  m_AllowsSuitRefill: 1
 --- !u!65 &1273697491
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1050536,6 +1050611,7 @@ MonoBehaviour:
   m_MinPressureKPa: 60
   m_MinOxygenPartialPressureKPa: 15
   m_Chamber: {fileID: 83519679}
+  m_AllowsSuitRefill: 1
 --- !u!4 &1605327343
 Transform:
   m_ObjectHideFlags: 0
@@ -1097231,6 +1097307,7 @@ MonoBehaviour:
   m_MinPressureKPa: 60
   m_MinOxygenPartialPressureKPa: 15
   m_Chamber: {fileID: 83519679}
+  m_AllowsSuitRefill: 1
 --- !u!4 &1681952137
 Transform:
   m_ObjectHideFlags: 0
@@ -1200792,6 +1200869,7 @@ MonoBehaviour:
   m_MinPressureKPa: 60
   m_MinOxygenPartialPressureKPa: 15
   m_Chamber: {fileID: 0}
+  m_AllowsSuitRefill: 1
 --- !u!65 &1856920690
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1366381,4 +1366459,5 @@ SceneRoots:
   - {fileID: 1437220552}
   - {fileID: 2018363826}
   - {fileID: 1910778759}
+  - {fileID: 558331834}
   - {fileID: 931700718}

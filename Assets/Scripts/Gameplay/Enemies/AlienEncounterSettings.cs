@@ -13,6 +13,9 @@ namespace Unity.MP_FPS
             public GhostSpawner.GhostReference Prefab = new GhostSpawner.GhostReference();
             public Vector3 Position;
             [Range(-180, 180)] public float Yaw;
+            [Tooltip("Spider encounter: attach at Position along SurfaceNormal and wait before pouncing.")]
+            public bool Ambush;
+            public Vector3 SurfaceNormal = Vector3.up;
             [Tooltip("Optional additional world-space anchors. Position remains a valid candidate.")]
             public Vector3[] CandidatePositions = Array.Empty<Vector3>();
         }

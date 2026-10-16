@@ -107,6 +107,16 @@ namespace Unity.MP_FPS.SpiderLab
             m_State.Velocity = m_State.FlightVelocity;
         }
 
+        /// <summary>Server-selected ballistic attack. Shares the existing swept flight
+        /// and contact recovery; the target is locked before launch.</summary>
+        public void Launch(Vector3 velocity)
+        {
+            m_State.Corner = default; m_State.Surface = null; m_State.Supported = false;
+            m_State.Detached = true; m_State.DetachedTime = 0;
+            m_State.FlightVelocity = velocity;
+            m_State.Velocity = velocity;
+        }
+
         // The predictor runs the exact same queries/transition geometry on a value copy. It cannot
         // mutate the actor, contact anchors, counters, or the live transition when planning feet.
         public Pose Predict(Vector2 input, float speed, float yawDegrees, float seconds)
