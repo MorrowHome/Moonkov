@@ -1,0 +1,37 @@
+{
+  "files": [
+    {
+      "package": "R29_R35",
+      "path": "E:\\UnityProjects\\FPS_Template\\LocalData\\AI\\AssetHandoffs\\TheophilusDenseRing\\R35_R39\\CompatWork511v2\\R29_R35\\compat_semantics.py",
+      "before_sha256": "6015c9bec0580c32bd5540f8a6ade2547fdc55c36a29e7dd7a2e622505c0cd4e",
+      "after_sha256": "9fe274a8a381bd45a90d95fe0c5fd4acb0c11f52d5edc89fb823331d29852331",
+      "replacement_counts": [
+        1,
+        1
+      ]
+    },
+    {
+      "package": "R36_R38",
+      "path": "E:\\UnityProjects\\FPS_Template\\LocalData\\AI\\AssetHandoffs\\TheophilusDenseRing\\R35_R39\\CompatWork511v2\\R36_R38\\compat_semantics.py",
+      "before_sha256": "6015c9bec0580c32bd5540f8a6ade2547fdc55c36a29e7dd7a2e622505c0cd4e",
+      "after_sha256": "9fe274a8a381bd45a90d95fe0c5fd4acb0c11f52d5edc89fb823331d29852331",
+      "replacement_counts": [
+        1,
+        1
+      ]
+    },
+    {
+      "package": "R39",
+      "path": "E:\\UnityProjects\\FPS_Template\\LocalData\\AI\\AssetHandoffs\\TheophilusDenseRing\\R35_R39\\CompatWork511v2\\R39\\compat_semantics.py",
+      "before_sha256": "6015c9bec0580c32bd5540f8a6ade2547fdc55c36a29e7dd7a2e622505c0cd4e",
+      "after_sha256": "9fe274a8a381bd45a90d95fe0c5fd4acb0c11f52d5edc89fb823331d29852331",
+      "replacement_counts": [
+        1,
+        1
+      ]
+    }
+  ],
+  "original_archives_changed": false,
+  "PASS_receipts_modified": false,
+  "other_guard_files_changed": false
+}
