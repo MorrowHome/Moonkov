@@ -28,30 +28,42 @@ namespace Unity.MP_FPS
         {
             new Table(new[] { new Entry("ration", 1, 1, 2), new Entry("water", 1) }, new[]
             {
-                new Entry("oxygen_canister", 30, 1, 2), new Entry("cells", 24, 1, 3),
-                new Entry("medkit", 18), new Entry("dust", 16, 2, 5),
-                new Entry("small_pack", 7), new Entry("alloy", 5, 1, 2)
+                new Entry("oxygen_canister", 20, 1, 2), new Entry("cells", 16, 1, 3),
+                new Entry("medkit", 10), new Entry("dust", 10, 2, 5),
+                new Entry("energy_gel", 14, 1, 2), new Entry("protein_bar", 12, 1, 2),
+                new Entry("electrolyte", 12), new Entry("med_gel", 8, 1, 2),
+                new Entry("oxygen_reserve", 6), new Entry("sling_pack", 5),
+                new Entry("small_pack", 5), new Entry("alloy", 5, 1, 2)
             }, 2, 3),
             new Table(new[] { new Entry("medkit", 1, 2, 4) }, new[]
             {
-                new Entry("water", 28, 1, 2), new Entry("oxygen_canister", 28, 1, 2),
-                new Entry("ration", 22, 1, 2), new Entry("cells", 15, 1, 2),
-                new Entry("small_pack", 7)
+                new Entry("med_gel", 30, 2, 3), new Entry("trauma_kit", 18),
+                new Entry("electrolyte", 16, 1, 2), new Entry("oxygen_reserve", 12),
+                new Entry("water", 12, 1, 2), new Entry("oxygen_canister", 12, 1, 2),
+                new Entry("ration", 8, 1, 2), new Entry("cells", 8, 1, 2),
+                new Entry("small_pack", 4)
             }, 2, 3),
             new Table(new[] { new Entry("alloy", 1, 2, 5), new Entry("dust", 1, 3, 8) }, new[]
             {
-                new Entry("cells", 35, 2, 5), new Entry("oxygen_canister", 20),
-                new Entry("halo_capacitor", 15), new Entry("halo_charge_bridge", 13),
-                new Entry("halo_focus_lens", 7), new Entry("halo_hit_marker", 6),
-                new Entry("small_pack", 4)
+                new Entry("cells", 18, 2, 5), new Entry("oxygen_canister", 10),
+                new Entry("halo_capacitor", 8), new Entry("halo_charge_bridge", 8),
+                new Entry("halo_focus_lens", 4), new Entry("halo_hit_marker", 4),
+                new Entry("circuit_board", 22, 1, 2), new Entry("copper_coil", 20, 1, 2),
+                new Entry("ceramic_plate", 16, 1, 2), new Entry("optical_sensor", 10),
+                new Entry("data_drive", 6), new Entry("helium3_sample", 4),
+                new Entry("quantum_core", 2), new Entry("black_box", 2)
             }, 2, 3),
             new Table(new[] { new Entry("cells", 1, 2, 4) }, new[]
             {
-                new Entry("halo_capacitor", 16), new Entry("halo_charge_bridge", 16),
-                new Entry("halo_focus_lens", 12), new Entry("halo_fan_array", 12),
-                new Entry("halo_pulse_controller", 12), new Entry("halo_hit_marker", 10),
-                new Entry("helmet", 8), new Entry("rig", 5), new Entry("compact", 3),
-                new Entry("pistol", 3), new Entry("shotgun", 2), new Entry("sniper", 1)
+                new Entry("halo_capacitor", 12), new Entry("halo_charge_bridge", 12),
+                new Entry("halo_focus_lens", 10), new Entry("halo_fan_array", 10),
+                new Entry("halo_pulse_controller", 10), new Entry("halo_hit_marker", 8),
+                new Entry("scout_rig", 12), new Entry("field_rig", 8),
+                new Entry("sling_pack", 10), new Entry("cargo_pack", 4),
+                new Entry("helmet", 8), new Entry("rig", 6), new Entry("compact", 3),
+                new Entry("pistol", 3), new Entry("shotgun", 2), new Entry("sniper", 1),
+                new Entry("optical_sensor", 8), new Entry("data_drive", 6),
+                new Entry("black_box", 3), new Entry("quantum_core", 1)
             }, 2, 4)
         };
 

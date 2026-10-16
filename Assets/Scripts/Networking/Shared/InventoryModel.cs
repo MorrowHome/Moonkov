@@ -51,6 +51,20 @@ namespace Unity.MP_FPS.Inventory
                 new ItemDefinition("ration", "Expedition ration", ItemKind.Food, 1, 1, 3, .25f),
                 new ItemDefinition("water", "Sealed drinking water", ItemKind.Drink, 1, 2, 2, .5f),
                 new ItemDefinition("oxygen_canister", "O-40 Emergency oxygen canister", ItemKind.Oxygen, 1, 1, 3, .35f),
+                new ItemDefinition("med_gel", "Sealed medical gel", ItemKind.Medical, 1, 1, 6, .08f),
+                new ItemDefinition("trauma_kit", "Field trauma kit", ItemKind.Medical, 1, 2, 2, .45f),
+                new ItemDefinition("energy_gel", "Energy gel", ItemKind.Food, 1, 1, 5, .08f),
+                new ItemDefinition("protein_bar", "Protein bar", ItemKind.Food, 1, 1, 4, .15f),
+                new ItemDefinition("electrolyte", "Electrolyte pouch", ItemKind.Drink, 1, 1, 3, .3f),
+                new ItemDefinition("oxygen_reserve", "O-80 Reserve oxygen cylinder", ItemKind.Oxygen, 1, 2, 2, .8f),
+                new ItemDefinition("circuit_board", "Control circuit board", ItemKind.Material, 1, 1, 4, .18f),
+                new ItemDefinition("copper_coil", "Copper induction coil", ItemKind.Material, 2, 1, 3, .65f),
+                new ItemDefinition("ceramic_plate", "Technical ceramic plate", ItemKind.Material, 2, 2, 2, .9f),
+                new ItemDefinition("optical_sensor", "Optical sensor", ItemKind.Material, 1, 1, 2, .22f),
+                new ItemDefinition("data_drive", "Encrypted data drive", ItemKind.Material, 1, 1, 1, .12f),
+                new ItemDefinition("helium3_sample", "Helium-3 sample", ItemKind.Material, 1, 2, 1, .6f),
+                new ItemDefinition("quantum_core", "Quantum processor", ItemKind.Material, 2, 1, 1, .4f),
+                new ItemDefinition("black_box", "Survey black box", ItemKind.Material, 2, 2, 1, 1.6f),
                 new ItemDefinition("helmet", "L-01 Flight helmet", ItemKind.Helmet, 2, 2, 1, 1.2f),
                 new ItemDefinition("rifle", "Halo Rifle", ItemKind.LongGun, 2, 2, 1, 3.2f),
                 new ItemDefinition("compact", "Halo Rifle (Compact)", ItemKind.LongGun, 2, 2, 1, 2.4f),
@@ -66,7 +80,13 @@ namespace Unity.MP_FPS.Inventory
                 new ItemDefinition("rig", "R-04 Chest rig", ItemKind.Rig, 2, 3, 1, .9f,
                     new InventoryRegion("left", 1, 2), new InventoryRegion("center", 2, 2), new InventoryRegion("right", 1, 2)),
                 new ItemDefinition("backpack", "B-08 Expedition pack", ItemKind.Backpack, 3, 3, 1, 1.3f, new InventoryRegion("main", 5, 6)),
-                new ItemDefinition("small_pack", "B-04 Scout pack", ItemKind.Backpack, 2, 3, 1, .7f, new InventoryRegion("main", 4, 4))
+                new ItemDefinition("small_pack", "B-04 Scout pack", ItemKind.Backpack, 2, 3, 1, .7f, new InventoryRegion("main", 4, 4)),
+                new ItemDefinition("scout_rig", "R-02 Scout rig", ItemKind.Rig, 2, 2, 1, .5f,
+                    new InventoryRegion("left", 1, 2), new InventoryRegion("center", 1, 2), new InventoryRegion("right", 1, 2)),
+                new ItemDefinition("field_rig", "R-06 Field rig", ItemKind.Rig, 3, 3, 1, 1.4f,
+                    new InventoryRegion("left", 2, 2), new InventoryRegion("center", 2, 2), new InventoryRegion("right", 2, 2)),
+                new ItemDefinition("sling_pack", "B-03 Sling pack", ItemKind.Backpack, 2, 2, 1, .45f, new InventoryRegion("main", 3, 4)),
+                new ItemDefinition("cargo_pack", "B-12 Cargo pack", ItemKind.Backpack, 4, 4, 1, 2.8f, new InventoryRegion("main", 6, 7))
             };
             var result = new Dictionary<string, ItemDefinition>(); foreach (var def in defs) result.Add(def.Code, def); return result;
         }
@@ -167,7 +187,7 @@ namespace Unity.MP_FPS.Inventory
             else
             {
                 // Pockets and rig pouches are for supplies, never bags or other wearable gear.
-                if ((target.Code == "pockets" || target.Code == "rig") && definition.Container) return InventoryError.Incompatible;
+                if ((target.Code == "pockets" || InventoryCatalog.Get(target.Code)?.Kind == ItemKind.Rig) && definition.Container) return InventoryError.Incompatible;
                 int width = rotated ? definition.Height : definition.Width, height = rotated ? definition.Width : definition.Height;
                 int rows = Rows(parent, compartment);
                 if (x < 0 || y < 0 || x > compartment.Width - width || y > rows - height) return InventoryError.Bounds;
@@ -321,7 +341,7 @@ namespace Unity.MP_FPS.Inventory
             if (item == null) return false;
             BatteryEnergy.Take(item, 1); if (item.Quantity == 0) Items.Remove(item); Version++; return true;
         }
-        public bool MedicalAccessible(InventoryItem item) => item != null && item.Code == "medkit" &&
+        public bool MedicalAccessible(InventoryItem item) => item != null && ConsumableCatalog.MedicalRestore(item.Code) > 0 &&
             (item.Parent == InventoryCatalog.Pockets || item.Parent == Equipped("ChestRig")?.Id);
 
         // Food/water may be used from any carried bag. Emergency suit canisters
@@ -353,7 +373,7 @@ namespace Unity.MP_FPS.Inventory
             if (!MedicalAccessible(item)) return InventoryError.Inaccessible;
             if (float.IsNaN(health) || float.IsInfinity(health) || float.IsNaN(maximum) || float.IsInfinity(maximum) ||
                 health < 0f || (!allowZeroHealth && health == 0f) || maximum <= health || item.Quantity < 1) return InventoryError.Invalid;
-            healed = Math.Min(maximum, health + 40f);
+            healed = Math.Min(maximum, health + ConsumableCatalog.MedicalRestore(item.Code));
             if (--item.Quantity == 0) Items.Remove(item);
             Version++;
             return InventoryError.None;

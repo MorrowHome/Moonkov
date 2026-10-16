@@ -14,6 +14,7 @@ namespace Unity.MP_FPS.Inventory
     [Serializable] public sealed class ShopOffer
     {
         public string Code, Name;
+        // -1 means sell-only loot; zero remains a free purchase for starter supplies.
         public int BuyDust, SellDust;
         public ShopOffer() { }
         public ShopOffer(string code, int buy, int sell)
@@ -27,7 +28,17 @@ namespace Unity.MP_FPS.Inventory
             new ShopOffer("halo_capacitor", 18, 6), new ShopOffer("halo_charge_bridge", 18, 6),
             new ShopOffer("halo_focus_lens", 22, 7), new ShopOffer("halo_fan_array", 22, 7),
             new ShopOffer("halo_pulse_controller", 28, 9), new ShopOffer("halo_hit_marker", 25, 8),
-            new ShopOffer("medkit", 0, 3), new ShopOffer("ration", 0, 2), new ShopOffer("water", 0, 2), new ShopOffer("oxygen_canister", 0, 3)
+            new ShopOffer("medkit", 0, 3), new ShopOffer("ration", 0, 2), new ShopOffer("water", 0, 2),
+            new ShopOffer("oxygen_canister", 0, 3),
+            new ShopOffer("med_gel", 5, 1), new ShopOffer("trauma_kit", 18, 6),
+            new ShopOffer("energy_gel", 4, 1), new ShopOffer("protein_bar", 6, 2),
+            new ShopOffer("electrolyte", 5, 1), new ShopOffer("oxygen_reserve", 12, 4),
+            new ShopOffer("scout_rig", 18, 6), new ShopOffer("field_rig", 48, 16),
+            new ShopOffer("sling_pack", 24, 8), new ShopOffer("cargo_pack", 96, 32),
+            new ShopOffer("circuit_board", -1, 8), new ShopOffer("copper_coil", -1, 6),
+            new ShopOffer("ceramic_plate", -1, 7), new ShopOffer("optical_sensor", -1, 16),
+            new ShopOffer("data_drive", -1, 28), new ShopOffer("helium3_sample", -1, 45),
+            new ShopOffer("quantum_core", -1, 80), new ShopOffer("black_box", -1, 60)
         };
         public static ShopOffer Find(string code) => Offers.FirstOrDefault(o => o.Code == code);
         public static int SaleDust(InventoryItem item, int quantity, int fullPrice) => BatteryEnergy.IsCell(item)
@@ -64,12 +75,22 @@ namespace Unity.MP_FPS.Inventory
                 if (offer == null || definition == null || command.Quantity < 1 || command.Quantity > definition.MaxStack) return "shop_invalid";
                 if (command.Operation == ShopOperation.Buy)
                 {
-                    if (!string.IsNullOrEmpty(command.ItemId)) return "shop_invalid";
+                    if (!string.IsNullOrEmpty(command.ItemId) || offer.BuyDust < 0) return "shop_invalid";
                     int cost = offer.BuyDust * command.Quantity;
                     if (copy.Count("dust") < cost) return "shop_insufficient_dust";
                     foreach (var stack in copy.Items.Where(i => i.Code == "dust").ToArray())
                     { int take = Math.Min(cost, stack.Quantity); stack.Quantity -= take; cost -= take; if (stack.Quantity == 0) copy.Items.Remove(stack); if (cost == 0) break; }
-                    if (copy.AddSupply(offer.Code, command.Quantity, "stash") != InventoryError.None) return "inventory_Full";
+                    if (definition.Container)
+                    {
+                        for (int i = 0; i < command.Quantity; i++)
+                        {
+                            var purchased = new InventoryItem { Id = Guid.NewGuid().ToString("D"), Code = offer.Code };
+                            if (!copy.FindSpace(purchased, "stash", out var region, out var x, out var y)) return "inventory_Full";
+                            purchased.Parent = "stash"; purchased.Region = region; purchased.X = x; purchased.Y = y;
+                            copy.Items.Add(purchased);
+                        }
+                    }
+                    else if (copy.AddSupply(offer.Code, command.Quantity, "stash") != InventoryError.None) return "inventory_Full";
                 }
                 else if (command.Operation == ShopOperation.Sell)
                 {
@@ -77,7 +98,6 @@ namespace Unity.MP_FPS.Inventory
                     if (item == null || item.Code != offer.Code || item.Quantity < command.Quantity) return "inventory_Missing";
                     if (item.EmergencySupply) return "shop_emergency_supply";
                     if (copy.Children(item.Id).Any()) return "shop_remove_modules_first";
-
                     if (copy.RootOf(item.Id) != "stash") return "shop_store_first";
                     int refund = ShopCatalog.SaleDust(item, command.Quantity, offer.SellDust);
                     BatteryEnergy.Take(item, command.Quantity); if (item.Quantity == 0) copy.Items.Remove(item);

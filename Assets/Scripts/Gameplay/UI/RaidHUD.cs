@@ -136,23 +136,38 @@ namespace Unity.MP_FPS
             if (m_World == null || !m_World.IsCreated) return;
             var player = m_PlayerQuery.HasSingleton<PredictedPlayerGhost>() ? m_PlayerQuery.GetSingleton<PredictedPlayerGhost>() : default;
             int medicines = 0, food = 0, water = 0, oxygenCanisters = 0;
+            string foodCode = null, waterCode = null, oxygenCode = null;
+            float medicalRestore = 0;
             if (!m_InventoryQuery.IsEmptyIgnoreFilter)
             {
                 var inventory = m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
                 if (inventory.RaidId == m_Snapshot.RaidId && inventory.Graph != null)
                     foreach (var item in inventory.Graph.Items)
                     {
-                        if (inventory.Graph.MedicalAccessible(item)) medicines += item.Quantity;
+                        if (inventory.Graph.MedicalAccessible(item))
+                        {
+                            medicines += item.Quantity;
+                            if (medicalRestore == 0) medicalRestore = Inventory.ConsumableCatalog.MedicalRestore(item.Code);
+                        }
                         if (inventory.Graph.ConsumableAccessible(item))
                         {
-                            if (item.Code == "ration") food += item.Quantity;
-                            else if (item.Code == "water") water += item.Quantity;
-                            else if (item.Code == RaidOxygenConsumables.CanisterCode) oxygenCanisters += item.Quantity;
+                            var supply = Inventory.ConsumableCatalog.Get(item.Code);
+                            if (supply.Oxygen > 0) { oxygenCanisters += item.Quantity; if (oxygenCode == null) oxygenCode = item.Code; }
+                            else if (supply.Food)
+                            {
+                                food += item.Quantity;
+                                if (foodCode == null && RaidNutrition.CanConsume(player, supply)) foodCode = item.Code;
+                            }
+                            else
+                            {
+                                water += item.Quantity;
+                                if (waterCode == null && RaidNutrition.CanConsume(player, supply)) waterCode = item.Code;
+                            }
                         }
                     }
             }
             if (m_InventoryVisible && m_HealthSelected) m_HealthView.Present(player, medicines, m_InventoryRequestPending,
-                food, water, oxygenCanisters);
+                food, water, oxygenCanisters, foodCode, waterCode, oxygenCode, medicalRestore);
             bool oxygenReady = player.BodyHealthInitialized && player.CurrentHealth > 0 && !m_WasSettled;
             bool needsSuitAir = RaidOxygen.NeedsSuitAir(player);
             m_OxygenPanel.style.display = oxygenReady ? DisplayStyle.Flex : DisplayStyle.None;
@@ -349,7 +364,8 @@ namespace Unity.MP_FPS
                 if (batteryGraph != null) MoonkovLocalization.Set(m_Bag,
                     "CARRIED / {0} supplies\nDust {1}   Alloy {2}   Cells {3}\nENERGY {4} / READY {5}\n[4] MEDICAL / {6}",
                     count, m_Snapshot.Dust, m_Snapshot.Alloy, m_Snapshot.Cells,
-                    batteryGraph.CellEnergy(carriedOnly: true), batteryGraph.CellEnergy(accessibleOnly: true), batteryGraph.Count("medkit", true));
+                    batteryGraph.CellEnergy(carriedOnly: true), batteryGraph.CellEnergy(accessibleOnly: true),
+                    batteryGraph.Count("medkit", true) + batteryGraph.Count("med_gel", true) + batteryGraph.Count("trauma_kit", true));
             }
             bool deathBag=nearest>=RaidLootContainers.FirstDeathBagId;
             bool empty=deathBag ? deathBags.Bags[nearest].Empty : nearest>=0 && (m_Snapshot.TakenMask & (1u<<nearest))!=0;

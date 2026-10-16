@@ -22,6 +22,8 @@ namespace Unity.MP_FPS.Client
         private bool m_Ready, m_Busy;
         private int m_Medicines;
         private int m_Food, m_Water, m_OxygenCanisters;
+        private string m_FoodCode, m_WaterCode, m_OxygenCode;
+        private float m_MedicalRestore;
         private string m_Feedback;
         public RaidHealthView(VisualElement parent, Action<BodyPart> heal, Action<string> consume = null)
         {
@@ -69,14 +71,16 @@ namespace Unity.MP_FPS.Client
             m_Diagram.Present(m_State, m_Selected); RenderTreatment();
         }
         private void Treat() { if (m_Treat.enabledSelf) m_Heal(m_Selected); }
-        private void Eat() { if (m_Eat.enabledSelf) m_Consume?.Invoke("ration"); }
-        private void Drink() { if (m_Drink.enabledSelf) m_Consume?.Invoke("water"); }
-        private void RefillOxygen() { if (m_RefillOxygen.enabledSelf) m_Consume?.Invoke(RaidOxygenConsumables.CanisterCode); }
+        private void Eat() { if (m_Eat.enabledSelf) m_Consume?.Invoke(m_FoodCode); }
+        private void Drink() { if (m_Drink.enabledSelf) m_Consume?.Invoke(m_WaterCode); }
+        private void RefillOxygen() { if (m_RefillOxygen.enabledSelf) m_Consume?.Invoke(m_OxygenCode); }
         public void Message(string source) { m_Feedback = source; RenderTreatment(); }
-        public void Present(in PredictedPlayerGhost state, int medicines, bool busy, int food = 0, int water = 0, int oxygenCanisters = 0)
+        public void Present(in PredictedPlayerGhost state, int medicines, bool busy, int food = 0, int water = 0, int oxygenCanisters = 0,
+            string foodCode = "ration", string waterCode = "water", string oxygenCode = "oxygen_canister", float medicalRestore = 40)
         {
             m_State = state; m_Ready = state.BodyHealthInitialized; m_Medicines = medicines; m_Busy = busy;
             m_Food = food; m_Water = water; m_OxygenCanisters = oxygenCanisters;
+            m_FoodCode = foodCode; m_WaterCode = waterCode; m_OxygenCode = oxygenCode; m_MedicalRestore = medicalRestore;
             MoonkovLocalization.Set(m_Root.Q<Label>("healthTotal"), m_Ready ? "{0:0} / {1:0}" : "Waiting for health snapshot", state.CurrentHealth, state.MaxHealth);
             for (int i = 0; i < RaidHealth.PartCount; i++)
             {
@@ -128,10 +132,11 @@ namespace Unity.MP_FPS.Client
         private void RenderOxygen()
         {
             m_RefillOxygen.SetEnabled(m_Ready && !m_Busy && m_Consume != null && m_OxygenCanisters > 0 &&
-                RaidOxygenConsumables.CanConsume(m_State, Inventory.ConsumableCatalog.Get(RaidOxygenConsumables.CanisterCode)));
+                RaidOxygenConsumables.CanConsume(m_State, Inventory.ConsumableCatalog.Get(m_OxygenCode)));
             MoonkovLocalization.Set(m_RefillOxygen, "REFILL O₂ / {0}", m_OxygenCanisters);
             MoonkovLocalization.Set(m_Root.Q<Label>("healthOxygenSupplyStatus"),
-                "Canister: +40% oxygen. Use supplies in pockets or the chest rig; excess oxygen is lost.");
+                "Next cylinder: +{0:0}% oxygen. Keep it in pockets or the chest rig; excess oxygen is lost.",
+                Inventory.ConsumableCatalog.Get(m_OxygenCode)?.Oxygen ?? 0);
             bool hypoxic = m_Ready && m_State.CurrentHealth > 0 && RaidOxygen.NeedsSuitAir(m_State) && m_State.Oxygen <= 0;
             var grace = m_Root.Q<Label>("healthOxygenGrace");
             grace.style.display = hypoxic ? DisplayStyle.Flex : DisplayStyle.None;
@@ -146,12 +151,12 @@ namespace Unity.MP_FPS.Client
         }
         private void RenderNutrition()
         {
-            m_Eat.SetEnabled(m_Ready && !m_Busy && m_Consume != null && m_Food > 0 && RaidNutrition.CanConsume(m_State, Inventory.ConsumableCatalog.Get("ration")));
-            m_Drink.SetEnabled(m_Ready && !m_Busy && m_Consume != null && m_Water > 0 && RaidNutrition.CanConsume(m_State, Inventory.ConsumableCatalog.Get("water")));
+            m_Eat.SetEnabled(m_Ready && !m_Busy && m_Consume != null && m_Food > 0 && RaidNutrition.CanConsume(m_State, Inventory.ConsumableCatalog.Get(m_FoodCode)));
+            m_Drink.SetEnabled(m_Ready && !m_Busy && m_Consume != null && m_Water > 0 && RaidNutrition.CanConsume(m_State, Inventory.ConsumableCatalog.Get(m_WaterCode)));
             MoonkovLocalization.Set(m_Eat, "EAT / {0}", m_Food); MoonkovLocalization.Set(m_Drink, "DRINK / {0}", m_Water);
             MoonkovLocalization.Set(m_Root.Q<Label>("healthFoodStatus"),
-                m_State.Satiety + 35 > 100 ? "Not enough stomach capacity for a ration. Drinking remains available." :
-                "Ration: +45 energy, -5 hydration, +35 fullness. Water: +50 hydration, +10 fullness. Use carried supplies.");
+                "Next food: {0}. Next drink: {1}. Inspect supplies in inventory for recovery and fullness.",
+                Inventory.InventoryCatalog.Get(m_FoodCode)?.Name ?? "NONE", Inventory.InventoryCatalog.Get(m_WaterCode)?.Name ?? "NONE");
         }
         public static string EffectText(SurvivalEffects effects)
         {
@@ -173,11 +178,13 @@ namespace Unity.MP_FPS.Client
         {
             MoonkovLocalization.Set(m_Root.Q<Label>("healthSelectedPart"), "TREATMENT / {0}", MoonkovLocalization.Text(Name(m_Selected)));
             MoonkovLocalization.Set(m_Root.Q<Label>("healthMedicalCount"), "ACCESSIBLE MEDICAL / {0}", m_Medicines);
+            MoonkovLocalization.Set(m_Treat, "TREAT SELECTED PART / +{0:0} HP", m_MedicalRestore);
             m_Treat.SetEnabled(m_Ready && !m_Busy && m_Medicines > 0 && RaidHealth.CanHeal(m_State, m_Selected));
             MoonkovLocalization.Set(m_Root.Q<Label>("healthMedicalStatus"), m_Busy ? "Waiting for server confirmation…" :
                 !string.IsNullOrEmpty(m_Feedback) ? m_Feedback : !m_Ready ? "Waiting for health snapshot" :
                 m_Medicines == 0 ? "Medical supplies must be in pockets or the chest rig." :
-                !RaidHealth.CanHeal(m_State, m_Selected) ? "This body part does not need treatment." : "One injector restores up to 40 HP to the selected part.");
+                !RaidHealth.CanHeal(m_State, m_Selected) ? "This body part does not need treatment." :
+                "Uses the first accessible medicine. Choose a specific item from inventory to control consumption.");
         }
         public void Dispose() { m_Treat.clicked -= Treat; m_Eat.clicked -= Eat; m_Drink.clicked -= Drink; m_RefillOxygen.clicked -= RefillOxygen; m_Root.RemoveFromHierarchy(); }
     }

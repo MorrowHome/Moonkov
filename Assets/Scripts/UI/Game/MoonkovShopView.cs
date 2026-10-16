@@ -59,7 +59,7 @@ namespace Unity.MP_FPS.Client
                 MoonkovTerminal.Text(m_List, "Finish or leave your active raid before trading or requesting emergency supplies.", "terminal-copy");
             if (m_Offers == null)
             { MoonkovTerminal.Text(m_List, m_Busy ? "Connecting to supplier…" : "Sign in and reopen this supplier to load current stock.", "terminal-copy"); return; }
-            if (m_Tab == 0) foreach (var offer in m_Offers) BuyRow(offer);
+            if (m_Tab == 0) foreach (var offer in m_Offers) { if (offer.BuyDust >= 0) BuyRow(offer); }
             else if (m_Tab == 1) SellRows();
             else Recovery();
         }
@@ -86,8 +86,7 @@ namespace Unity.MP_FPS.Client
             var definition = InventoryCatalog.Get(offer.Code);
             var row = Product(offer.Code, offer.Name, MoonkovLocalization.Format($"{definition.Width * definition.Height} GRID CELL(S)  /  {offer.BuyDust} DUST EACH"));
             if (offer.Code == "cells") MoonkovTerminal.Text(row.Q(className: "terminal-shop-description"), MoonkovLocalization.Format($"{BatteryEnergy.Capacity} ENERGY / FULL CELL"), "terminal-copy");
-            if (ConsumableCatalog.Get(offer.Code) != null)
-                MoonkovTerminal.Text(row.Q(className: "terminal-shop-description"), StockDetail(new InventoryItem { Code = offer.Code }), "terminal-copy");
+            MoonkovTerminal.Text(row.Q(className: "terminal-shop-description"), MoonkovItemPresentation.Details(offer.Code), "terminal-copy");
             var order = new VisualElement(); order.AddToClassList("terminal-shop-order"); row.Add(order);
             int quantity = offer.Code == "cells" ? 3 : 1;
             Button buy = null;
@@ -102,7 +101,7 @@ namespace Unity.MP_FPS.Client
             if (graph != null) foreach (var item in graph.Items.Where(i => m_Offers.Any(o => o.Code == i.Code)).ToArray())
             {
                 var offer = m_Offers.First(o => o.Code == item.Code); rows++;
-                string detail = graph.Children(item.Id).Any() ? "REMOVE MODULES BEFORE SELLING" : item.EmergencySupply ? "EMERGENCY SUPPLY / CANNOT BE SOLD" : graph.RootOf(item.Id) != "stash" ? "RETURN TO STORAGE TO SELL" :
+                string detail = graph.Children(item.Id).Any() ? (InventoryCatalog.Get(item.Code).Container ? "EMPTY CONTAINER BEFORE SELLING" : "REMOVE MODULES BEFORE SELLING") : item.EmergencySupply ? "EMERGENCY SUPPLY / CANNOT BE SOLD" : graph.RootOf(item.Id) != "stash" ? "RETURN TO STORAGE TO SELL" :
                     MoonkovLocalization.Format($"{offer.SellDust} DUST EACH  /  ") + StockDetail(item);
                 var row = Product(item.Code, offer.Name, detail);
                 var order = new VisualElement(); order.AddToClassList("terminal-shop-order"); row.Add(order);
@@ -111,17 +110,14 @@ namespace Unity.MP_FPS.Client
                 sell = MoonkovTerminal.ActionButton(order, MoonkovLocalization.Format($"SELL / {ShopCatalog.SaleDust(item, quantity, offer.SellDust)} DUST"), () => Order(ShopOperation.Sell, item.Code, item.Id, quantity));
                 sell.SetEnabled(Ready && !item.EmergencySupply && graph.RootOf(item.Id) == "stash" && !graph.Children(item.Id).Any());
             }
-            if (rows == 0) MoonkovTerminal.Text(m_List, "No halo weapons or energy cells to sell. Recover supplies in a raid to restock.", "terminal-copy");
+            if (rows == 0) MoonkovTerminal.Text(m_List, "No tradeable items to sell. Recover supplies and valuables in a raid.", "terminal-copy");
         }
         private static string StockDetail(InventoryItem item)
         {
             if (HaloModules.FromCode(item.Code) != HaloModule.None) return MoonkovLocalization.Text(HaloModules.Description(item.Code));
-            if (item.Code == "ration") return MoonkovLocalization.Text("RATION / +45 ENERGY, -5 HYDRATION, +35 FULLNESS");
-            if (item.Code == "water") return MoonkovLocalization.Text("WATER / +50 HYDRATION, +10 FULLNESS");
-            if (item.Code == "oxygen_canister") return MoonkovLocalization.Text("OXYGEN / +40 RESERVE / USE FROM POCKETS OR CHEST RIG");
             if (item.Code == "cells") return MoonkovLocalization.Format($"{BatteryEnergy.Stored(item)}/{item.Quantity * BatteryEnergy.Capacity} ENERGY / VALUE SCALES WITH CHARGE");
             if (ShopCatalog.IsWeapon(item.Code)) return item.LoadedAmmo < 0 ? MoonkovLocalization.Text("FULL MAGAZINE") : MoonkovLocalization.Format($"{item.LoadedAmmo} ROUNDS");
-            return MoonkovLocalization.Text("USE / RESTORE 40 HP");
+            return MoonkovItemPresentation.Details(item.Code);
         }
         private void Recovery()
         {

@@ -3,7 +3,8 @@ using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client
 {
-    public enum StashArtKind { None, Dust, Alloy, Cell, Halo, Outfit, Helmet, Rifle, Pistol, ChestRig, Backpack, HaloRifle, HaloRevolver, HaloShotgun, Medical, HaloSniper, Ration, Water, HaloCapacitor, HaloChargeBridge, HaloFocusLens, HaloFanArray, HaloPulseController, HaloHitMarker, OxygenCanister }
+    public enum StashArtKind { None, Dust, Alloy, Cell, Halo, Outfit, Helmet, Rifle, Pistol, ChestRig, Backpack, HaloRifle, HaloRevolver, HaloShotgun, Medical, HaloSniper, Ration, Water, HaloCapacitor, HaloChargeBridge, HaloFocusLens, HaloFanArray, HaloPulseController, HaloHitMarker, OxygenCanister,
+        MedicalGel, TraumaKit, EnergyGel, ProteinBar, Electrolyte, OxygenReserve, ScoutRig, FieldRig, SlingPack, CargoPack, CircuitBoard, CopperCoil, CeramicPlate, OpticalSensor, DataDrive, HeliumSample, QuantumCore, BlackBox }
 
     // Small original vector illustrations, kept sharp at the shared PanelSettings scale.
     [UxmlElement]
@@ -57,6 +58,24 @@ namespace Unity.MP_FPS.Client
                 case StashArtKind.Ration: Ration(); break;
                 case StashArtKind.Water: Water(); break;
                 case StashArtKind.OxygenCanister: OxygenCanister(); break;
+                case StashArtKind.MedicalGel: MedicalGel(); break;
+                case StashArtKind.TraumaKit: TraumaKit(); break;
+                case StashArtKind.EnergyGel: EnergyGel(); break;
+                case StashArtKind.ProteinBar: ProteinBar(); break;
+                case StashArtKind.Electrolyte: Electrolyte(); break;
+                case StashArtKind.OxygenReserve: OxygenReserve(); break;
+                case StashArtKind.ScoutRig: ScoutRig(); break;
+                case StashArtKind.FieldRig: FieldRig(); break;
+                case StashArtKind.SlingPack: SlingPack(); break;
+                case StashArtKind.CargoPack: CargoPack(); break;
+                case StashArtKind.CircuitBoard: CircuitBoard(); break;
+                case StashArtKind.CopperCoil: CopperCoil(); break;
+                case StashArtKind.CeramicPlate: CeramicPlate(); break;
+                case StashArtKind.OpticalSensor: OpticalSensor(); break;
+                case StashArtKind.DataDrive: DataDrive(); break;
+                case StashArtKind.HeliumSample: HeliumSample(); break;
+                case StashArtKind.QuantumCore: QuantumCore(); break;
+                case StashArtKind.BlackBox: BlackBox(); break;
                 case StashArtKind.Halo: Halo(); break;
                 case StashArtKind.Outfit: Outfit(); break;
                 case StashArtKind.Helmet: Helmet(); break;
@@ -70,7 +89,6 @@ namespace Unity.MP_FPS.Client
                 case StashArtKind.HaloFanArray: Module(HaloModule.FanArray); break;
                 case StashArtKind.HaloPulseController: Module(HaloModule.PulseController); break;
                 case StashArtKind.HaloHitMarker: Module(HaloModule.HitMarker); break;
-
             }
         }
 

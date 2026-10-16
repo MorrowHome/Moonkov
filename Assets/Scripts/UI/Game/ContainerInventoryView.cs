@@ -89,6 +89,15 @@ namespace Unity.MP_FPS.Client
                 case "helmet":return StashArtKind.Helmet; case "rifle":case "compact":return StashArtKind.HaloRifle; case "pistol":return StashArtKind.HaloRevolver;
                 case "ration":return StashArtKind.Ration; case "water":return StashArtKind.Water;
                 case "oxygen_canister":return StashArtKind.OxygenCanister;
+                case "med_gel":return StashArtKind.MedicalGel; case "trauma_kit":return StashArtKind.TraumaKit;
+                case "energy_gel":return StashArtKind.EnergyGel; case "protein_bar":return StashArtKind.ProteinBar;
+                case "electrolyte":return StashArtKind.Electrolyte; case "oxygen_reserve":return StashArtKind.OxygenReserve;
+                case "scout_rig":return StashArtKind.ScoutRig; case "field_rig":return StashArtKind.FieldRig;
+                case "sling_pack":return StashArtKind.SlingPack; case "cargo_pack":return StashArtKind.CargoPack;
+                case "circuit_board":return StashArtKind.CircuitBoard; case "copper_coil":return StashArtKind.CopperCoil;
+                case "ceramic_plate":return StashArtKind.CeramicPlate; case "optical_sensor":return StashArtKind.OpticalSensor;
+                case "data_drive":return StashArtKind.DataDrive; case "helium3_sample":return StashArtKind.HeliumSample;
+                case "quantum_core":return StashArtKind.QuantumCore; case "black_box":return StashArtKind.BlackBox;
                 case "shotgun":return StashArtKind.HaloShotgun;
                 case "sniper":return StashArtKind.HaloSniper;
                 case "halo_capacitor":return StashArtKind.HaloCapacitor; case "halo_charge_bridge":return StashArtKind.HaloChargeBridge;
@@ -183,6 +192,7 @@ namespace Unity.MP_FPS.Client
                     var itemDef = InventoryCatalog.Get(entry.Code); Text(tile, MoonkovLocalization.Text(itemDef.Name).Split(' ')[0].ToUpperInvariant(), "inventory-item-label");
                     Text(tile, itemDef.Container ? "OPEN ↗" : BatteryEnergy.IsCell(entry) ? $"{BatteryEnergy.Stored(entry)}E" : entry.Quantity.ToString(), "inventory-item-quantity");
                     tile.tooltip=MoonkovLocalization.Text(itemDef.Name) + " / " + entry.Quantity + MoonkovLocalization.Text(entry.FoundInRaid ? " / FOUND IN RAID" : " / BROUGHT IN");
+                    tile.tooltip += "\n" + MoonkovItemPresentation.Details(entry.Code);
                     if (HaloModules.IsWeapon(entry.Code)) tile.tooltip += " / " + HaloModules.Summary(m_Graph, entry);
                     if (HaloModules.FromCode(entry.Code) != HaloModule.None) tile.tooltip += " / " + MoonkovLocalization.Text(HaloModules.Description(entry.Code));
                     if (BatteryEnergy.IsCell(entry)) tile.tooltip += MoonkovLocalization.Format($" / {BatteryEnergy.Stored(entry)}/{entry.Quantity * BatteryEnergy.Capacity} ENERGY");
@@ -215,7 +225,8 @@ namespace Unity.MP_FPS.Client
                 "{0} · {1} · {2:0.0} KG · {3} · {4}/{5} ENERGY · ACTIVE CELL {6}/{7}",
                 def.Name, item.Quantity, def.Weight*item.Quantity, Path(item.Parent),
                 BatteryEnergy.Stored(item), item.Quantity * BatteryEnergy.Capacity, BatteryEnergy.Charge(item), BatteryEnergy.Capacity);
-            else MoonkovLocalization.Set(m_Message, "{0} · {1} · {2:0.0} KG · {3}", def.Name, item.Quantity, def.Weight*item.Quantity, Path(item.Parent));
+            else MoonkovLocalization.Set(m_Message, "{0} · ×{1} · {2:0.##} KG TOTAL · {3} · {4}",
+                def.Name, item.Quantity, def.Weight*item.Quantity, Path(item.Parent), MoonkovItemPresentation.Details(item.Code));
         }
         private string Path(string id)
         {
@@ -241,14 +252,13 @@ namespace Unity.MP_FPS.Client
             var equipped=m_Graph.Equipped(slot);
             if (equipped != null && HaloModules.IsWeapon(equipped.Code) && m_Stash)
                 MoonkovTerminal.ActionButton(window, "MODIFY HALO", () => { m_Windows.Close(window); OpenModification(equipped); });
-
             if (equipped!=null) MoonkovTerminal.ActionButton(window, "UNEQUIP / STORE", ()=> { m_Windows.Close(window); QuickTransfer(equipped); });
         }
         private void Context(InventoryItem item, Vector2 position)
         {
             var window=m_Windows.Open(InventoryCatalog.Get(item.Code).Name, m_Root.WorldToLocal(position), true);
             if (m_UseConsumable != null && m_Graph.ConsumableAccessible(item))
-                MoonkovTerminal.ActionButton(window, ConsumableCatalog.Get(item.Code).Oxygen > 0 ? "REFILL SUIT / +40 OXYGEN" : ConsumableCatalog.Get(item.Code).Food ? "EAT / +45 ENERGY" : "DRINK / +50 HYDRATION", () =>
+                MoonkovTerminal.ActionButton(window, MoonkovItemPresentation.UseAction(item.Code), () =>
                 {
                     if (m_Busy || m_ReadOnlyReason != null) return;
                     m_Windows.Close(window); m_Busy = true; m_UseConsumable(item);
@@ -256,7 +266,7 @@ namespace Unity.MP_FPS.Client
             else if (m_UseConsumable != null && ConsumableCatalog.Get(item.Code)?.Oxygen > 0 && m_Graph.Carried(item))
                 Text(window, "Move the oxygen canister to a pocket or equipped chest rig before use.", "inventory-caption");
             if (m_UseMedical != null && m_Graph.MedicalAccessible(item))
-                MoonkovTerminal.ActionButton(window, "USE / RESTORE 40 HP", () =>
+                MoonkovTerminal.ActionButton(window, MoonkovItemPresentation.UseAction(item.Code), () =>
                 {
                     if (m_Busy || m_ReadOnlyReason != null) return;
                     m_Windows.Close(window); m_Busy = true; m_UseMedical(item);

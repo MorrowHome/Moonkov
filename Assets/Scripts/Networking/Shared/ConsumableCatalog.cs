@@ -15,6 +15,26 @@ namespace Unity.MP_FPS.Inventory
         private static readonly ConsumableDefinition Ration = new ConsumableDefinition(45, -5, 35);
         private static readonly ConsumableDefinition Water = new ConsumableDefinition(0, 50, 10);
         private static readonly ConsumableDefinition OxygenCanister = new ConsumableDefinition(0, 0, 0, 40);
-        public static ConsumableDefinition Get(string code) => code == "ration" ? Ration : code == "water" ? Water : code == "oxygen_canister" ? OxygenCanister : null;
+        private static readonly ConsumableDefinition EnergyGel = new ConsumableDefinition(25, -2, 10);
+        private static readonly ConsumableDefinition ProteinBar = new ConsumableDefinition(35, -8, 20);
+        private static readonly ConsumableDefinition Electrolyte = new ConsumableDefinition(0, 35, 5);
+        private static readonly ConsumableDefinition OxygenReserve = new ConsumableDefinition(0, 0, 0, 80);
+
+        public static ConsumableDefinition Get(string code)
+        {
+            switch (code)
+            {
+                case "ration": return Ration;
+                case "water": return Water;
+                case "oxygen_canister": return OxygenCanister;
+                case "energy_gel": return EnergyGel;
+                case "protein_bar": return ProteinBar;
+                case "electrolyte": return Electrolyte;
+                case "oxygen_reserve": return OxygenReserve;
+                default: return null;
+            }
+        }
+        public static float MedicalRestore(string code) => code == "medkit" ? 40 :
+            code == "med_gel" ? 20 : code == "trauma_kit" ? 70 : 0;
     }
 }
