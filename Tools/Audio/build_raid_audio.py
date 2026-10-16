@@ -53,12 +53,21 @@ def existing(rel):return base/rel
 for name,rel,rate,length in [('Aim','Character/Cloth1.wav',1.2,.15),('Light','Interaction/Equipment.wav',1.7,.09),('DryFire','Interaction/Equipment.wav',1.9,.075),('ReloadReady','Interaction/Equipment.wav',1.12,.22),('Medical','Character/Cloth2.wav',.85,.65),('Pickup','Interaction/Container.wav',1.3,.28),('OxygenRefill','Character/Cloth1.wav',.65,.7)]:
  p=existing(rel); x=speed(read(p),rate)[:int(length*RATE)]
  write(name,x,[p],'Short edited existing licensed foley, trimmed, varispeed and edge fades',.6)
-# Electronic suit telemetry is intentionally designed, unlike organic creature vocals.
-rng=np.random.default_rng(20261016)
-t=np.arange(int(RATE*2.8))/RATE
-noise=eq(rng.normal(0,1,len(t)),180,1800)
-env=np.sin(np.pi*np.clip(t/1.1,0,1))**1.7+.65*np.sin(np.pi*np.clip((t-1.45)/1.25,0,1))**1.6
-write('SuitBreath',noise*env,[],'Seeded filtered airflow; separated inhale/exhale; no outdoor wind; peak -8dBFS',.4)
+# A real breathing performance, heard through a closed suit/helmet. Stretch time without lowering vocal pitch.
+def tempo(x,factor):
+ raw=subprocess.check_output(['ffmpeg','-v','error','-f','f32le','-ar',str(RATE),'-ac','1','-i','pipe:0','-af',f'atempo={factor}','-f','f32le','pipe:1'],input=x.astype('<f4').tobytes())
+ return np.frombuffer(raw,'<f4').astype(float)
+p=SRC/'BreathingTired.wav'; raw=eq(read(p),110,2400)
+meter=np.sqrt(np.convolve(raw*raw,np.ones(960)/960,mode='same'))
+floor=float(np.sqrt(np.mean(raw[int(.85*RATE):int(1.15*RATE)]**2)))
+raw*=np.clip((meter-floor*.8)/(meter+1e-7),0,1)**.7
+inhale=tempo(raw[int(.08*RATE):int(.72*RATE)],.61)
+exhale=tempo(raw[int(1.2*RATE):int(1.95*RATE)],.56)
+cycle=mix(inhale,delay(exhale,1.45));cycle=np.pad(cycle,(0,max(0,int(3.35*RATE)-len(cycle))))
+# Low body resonance and a 12ms damped reflection suggest a small enclosed helmet, with no room reverb.
+cycle=mix(cycle,eq(cycle,90,420)*.3,delay(eq(cycle,180,900)*.12,.012))
+write('SuitBreath',cycle,[p],'mikeask CC0 breathing; gated room noise; pitch-preserving inhale/exhale stretch; HP110/LP2400; close helmet body and 12ms damped resonance; no external wind',.4)
+# Restrained electronic suit telemetry.
 t=np.arange(int(RATE*.95))/RATE
 heart=np.zeros_like(t)
 for onset,freq,gain in [(0,58,1),(.19,72,.62)]:
@@ -70,7 +79,7 @@ for name,notes in [('SuitWarning',[(0,780,.12),(.22,620,.15)]),('ExtractStart',[
   v=t-at; env=np.sin(np.pi*np.clip(v/duration,0,1))**2
   x+=(np.sin(2*np.pi*f*v)+.12*np.sin(2*np.pi*f*2*v))*env
  write(name,x,[],'Designed restrained suit telemetry; sine-squared envelopes; no harsh square-wave alarm',.55)
-manifest=dict(collections=[dict(name='Monster Sound Effects 2',author='Ogrebane',license='CC0-1.0',url='https://opengameart.org/content/monster-sound-effects-2',archive='https://opengameart.org/sites/default/files/monster_sfx_pack_2.zip'),dict(name='Footsteps on different surfaces',author='congusbongus (mastering); Ali_6868 (gravel); Eelke (metal); swuing (boots); blukotek (bones)',license='CC0-1.0 gravel/bones; CC-BY-3.0 metal/boots',url='https://opengameart.org/content/footsteps-on-different-surfaces',archive='https://opengameart.org/sites/default/files/footsteps_0.zip')],clips=records)
+manifest=dict(collections=[dict(name='Monster Sound Effects 2',author='Ogrebane',license='CC0-1.0',url='https://opengameart.org/content/monster-sound-effects-2',archive='https://opengameart.org/sites/default/files/monster_sfx_pack_2.zip'),dict(name='Footsteps on different surfaces',author='congusbongus (mastering); Ali_6868 (gravel); Eelke (metal); swuing (boots); blukotek (bones)',license='CC0-1.0 gravel/bones; CC-BY-3.0 metal/boots',url='https://opengameart.org/content/footsteps-on-different-surfaces',archive='https://opengameart.org/sites/default/files/footsteps_0.zip'),dict(name='Breathing Tired',author='mikeask',license='CC0-1.0',url='https://opengameart.org/content/breathing-tired',download='https://opengameart.org/sites/default/files/breathing%20tired.wav')],clips=records)
 (ROOT/'Assets/Audio/Moonkov/RaidAudioSources.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n')
 y=np.zeros(RATE*22)
 for name,at,gain in [('Regolith1',.2,.7),('Regolith3',.9,.7),('Regolith5',1.6,.7),('Metal1',3,.6),('Metal4',3.7,.6),('Metal6',4.4,.6),('AlienIdle1',6,.5),('AlienWarning2',8.2,.65),('AlienStrike1',10,.7),('AlienHurt2',11.5,.6),('AlienDeath3',13,.7),('AlienContact1',15,.5),('AlienContact3',15.3,.5),('SuitBreath',17,.35),('SuitWarning',20.4,.4)]:

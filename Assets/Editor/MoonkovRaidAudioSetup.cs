@@ -35,7 +35,7 @@ public static class MoonkovRaidAudioSetup
         foreach (string name in new[] { "Aim", "Light", "DryFire", "ReloadReady", "Medical", "Pickup", "OxygenRefill" })
             typeof(MoonkovAudioLibrary).GetField(name).SetValue(lib,
                 Bank(name, name, 1, name == "Aim" ? -23 : -17, SoundDef.MixRole.Interaction, 0, 3, .12f));
-        lib.SuitBreath = Bank("SuitBreath", "SuitBreath", 1, -25, SoundDef.MixRole.Suit, 0, 1, 2.9f);
+        lib.SuitBreath = Bank("SuitBreath", "SuitBreath", 1, -22, SoundDef.MixRole.Suit, 0, 1, .3f);
         lib.Heartbeat = Bank("Heartbeat", "Heartbeat", 1, -24, SoundDef.MixRole.Suit, 0, 1, 1);
         lib.SuitWarning = Bank("SuitWarning", "SuitWarning", 1, -18, SoundDef.MixRole.Suit, 0, 1, 3);
         lib.ExtractStart = Bank("ExtractStart", "ExtractStart", 1, -18, SoundDef.MixRole.Suit, 0, 1, .5f);

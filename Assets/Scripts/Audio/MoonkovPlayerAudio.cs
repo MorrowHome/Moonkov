@@ -11,7 +11,7 @@ namespace Unity.MP_FPS
         private Vector3 m_Position;
         private SoundDef m_Surface;
         private float m_LastStepTime = -1, m_BreathAt, m_HeartAt, m_Health, m_Oxygen, m_Energy, m_Hydration;
-        private bool m_Reloading;
+        private bool m_Reloading, m_WasSealed, m_BreathEffort;
         private int m_Ammo;
         private SoundSystem.SoundInfo m_BreathSound, m_HeartSound;
         private float m_FallSpeed;
@@ -35,7 +35,8 @@ namespace Unity.MP_FPS
                 m_ReloadTick = ghost.LastReloadTick; m_JumpTick = ghost.LastJumpTick;
                 m_LandTick = ghost.LastLandTick; m_HitTick = ghost.LastHitTick;
                 m_Weapon = ghost.EquippedWeaponID; m_Position = position;
-                Remember(ghost); m_BreathAt = Time.unscaledTime + 3; m_HeartAt = Time.unscaledTime + 1;
+                Remember(ghost); m_BreathAt = Time.unscaledTime + .75f; m_HeartAt = Time.unscaledTime + 1;
+                m_WasSealed = !ghost.BreathableAir;
                 return; // A late join must not replay historical events.
             }
             if (NewTick(ghost.LastReloadTick, ref m_ReloadTick))
@@ -62,12 +63,22 @@ namespace Unity.MP_FPS
                 if (m_Health > 0 && ghost.Oxygen > m_Oxygen + 5) LocalOrWorld(library.OxygenRefill, position, true);
                 if (m_Health > 0 && (ghost.Energy > m_Energy + 2 || ghost.Hydration > m_Hydration + 2))
                     LocalOrWorld(library.Cloth, position, true, .8f);
+                bool sealedSuit = !ghost.BreathableAir;
+                bool effort = ghost.ControllerState.Sprinting || ghost.CurrentHealth < ghost.MaxHealth * .35f ||
+                    sealedSuit && ghost.Oxygen <= 10;
+                if (sealedSuit != m_WasSealed || effort != m_BreathEffort)
+                {
+                    GameManager.Instance?.SoundSystem?.Stop(m_BreathSound, .3f);
+                    m_BreathSound = null;
+                    m_BreathAt = Time.unscaledTime + .45f;
+                    m_WasSealed = sealedSuit; m_BreathEffort = effort;
+                }
                 if (Time.unscaledTime >= m_BreathAt)
                 {
-                    bool effort = ghost.ControllerState.Sprinting || ghost.CurrentHealth < ghost.MaxHealth * .35f;
-                    if (!ghost.BreathableAir || effort)
-                        m_BreathSound = LocalOrWorld(library.SuitBreath, position, true, effort ? .75f : .32f);
-                    m_BreathAt = Time.unscaledTime + (effort ? 3.4f : 5.5f);
+                    if (sealedSuit || effort)
+                        m_BreathSound = MoonkovAudio.PlayWeaponLayer(library.SuitBreath, position,
+                            effort ? 1f : .65f, 0, effort ? 180 : -15);
+                    m_BreathAt = Time.unscaledTime + (effort ? 3.2f : 4.1f);
                 }
                 if (ghost.CurrentHealth < ghost.MaxHealth * .28f && Time.unscaledTime >= m_HeartAt)
                 {
