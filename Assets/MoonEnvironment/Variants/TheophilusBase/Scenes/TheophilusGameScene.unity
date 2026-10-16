@@ -1368844,6 +1368844,808 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1700531001}
   m_Mesh: {fileID: 4300000, guid: 9a0c730d0b3f33f4aacdc25301dae926, type: 2}
+--- !u!1 &31446431
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 31446432}
+  - component: {fileID: 31446434}
+  - component: {fileID: 31446433}
+  m_Layer: 0
+  m_Name: N rooms and stairs
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &31446432
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 31446431}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 838932979}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &31446433
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 31446431}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04c9c4a7dcd787b4f9c16ad764a92643, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Unity.MP_FPS.BreathableZone
+  m_Footprint:
+  - {x: 22.819046, y: 9.9999}
+  - {x: 22.825974, y: 10.002677}
+  - {x: 23.38261, y: 10.500083}
+  - {x: 24.215607, y: 11.3656225}
+  - {x: 24.944633, y: 12.25981}
+  - {x: 25.567158, y: 13.17829}
+  - {x: 26.080017, y: 14.117763}
+  - {x: 26.481167, y: 15.07363}
+  - {x: 26.768959, y: 16.042208}
+  - {x: 26.942228, y: 17.018946}
+  - {x: 27.000011, y: 18.000063}
+  - {x: 26.942122, y: 18.981134}
+  - {x: 26.769005, y: 19.957914}
+  - {x: 26.481304, y: 20.92631}
+  - {x: 26.080109, y: 21.882235}
+  - {x: 25.56718, y: 22.821527}
+  - {x: 24.944683, y: 23.740305}
+  - {x: 24.215504, y: 24.634333}
+  - {x: 23.38263, y: 25.500044}
+  - {x: 22.449776, y: 26.33352}
+  - {x: 21.42057, y: 27.131384}
+  - {x: 20.299755, y: 27.89017}
+  - {x: 19.091923, y: 28.606615}
+  - {x: 17.80231, y: 29.277643}
+  - {x: 16.436584, y: 29.900179}
+  - {x: 15.00037, y: 30.472033}
+  - {x: 13.499973, y: 30.990335}
+  - {x: 11.941738, y: 31.453127}
+  - {x: 10.332417, y: 31.858168}
+  - {x: 8.678844, y: 32.203873}
+  - {x: 6.9881554, y: 32.488903}
+  - {x: 5.7443733, y: 32.65002}
+  - {x: -5.7443275, y: 32.65001}
+  - {x: -6.9881516, y: 32.488884}
+  - {x: -8.678917, y: 32.204033}
+  - {x: -10.332481, y: 31.858263}
+  - {x: -11.941818, y: 31.453192}
+  - {x: -13.5, y: 30.990374}
+  - {x: -15.000435, y: 30.472025}
+  - {x: -16.436546, y: 29.900358}
+  - {x: -17.802422, y: 29.277678}
+  - {x: -19.091866, y: 28.606512}
+  - {x: -20.299713, y: 27.890142}
+  - {x: -21.420502, y: 27.131468}
+  - {x: -22.4497, y: 26.333593}
+  - {x: -23.38272, y: 25.499979}
+  - {x: -24.215569, y: 24.634245}
+  - {x: -24.944748, y: 23.740252}
+  - {x: -25.567123, y: 22.821577}
+  - {x: -26.080032, y: 21.882372}
+  - {x: -26.481285, y: 20.926428}
+  - {x: -26.768974, y: 19.957926}
+  - {x: -26.9421, y: 18.980993}
+  - {x: -27.000023, y: 18.000074}
+  - {x: -26.942238, y: 17.018927}
+  - {x: -26.76912, y: 16.042143}
+  - {x: -26.481178, y: 15.07363}
+  - {x: -26.079979, y: 14.117705}
+  - {x: -25.567055, y: 13.178412}
+  - {x: -24.944801, y: 12.259749}
+  - {x: -24.215614, y: 11.365729}
+  - {x: -23.382744, y: 10.500014}
+  - {x: -22.826096, y: 10.002692}
+  - {x: -22.819054, y: 10.000045}
+  m_AirspaceId: EVA_EAST_01.INSIDE
+  m_Priority: 10
+  m_PressureKPa: 101.325
+  m_OxygenFraction: 0.21
+  m_MinPressureKPa: 60
+  m_MinOxygenPartialPressureKPa: 15
+  m_Chamber: {fileID: 0}
+  m_AllowsSuitRefill: 0
+--- !u!65 &31446434
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 31446431}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 54.000034, y: 22.65012, z: 17.68}
+  m_Center: {x: -0.000005722046, y: 21.32496, z: 9.440001}
+--- !u!1 &836896304
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 836896305}
+  - component: {fileID: 836896307}
+  - component: {fileID: 836896306}
+  m_Layer: 0
+  m_Name: W rooms and stairs
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &836896305
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 836896304}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 838932979}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &836896306
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 836896304}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04c9c4a7dcd787b4f9c16ad764a92643, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Unity.MP_FPS.BreathableZone
+  m_Footprint:
+  - {x: 34.450775, y: 3.5000532}
+  - {x: 34.45684, y: 3.4966733}
+  - {x: 34.96644, y: 2.6670682}
+  - {x: 35.588478, y: 1.500015}
+  - {x: 36.143723, y: 0.28813925}
+  - {x: 36.629818, y: -0.9636155}
+  - {x: 37.04475, y: -2.2497327}
+  - {x: 37.386753, y: -3.5648344}
+  - {x: 37.40004, y: -3.6315534}
+  - {x: 37.40005, y: -14.368537}
+  - {x: 37.386677, y: -14.435172}
+  - {x: 37.04479, y: -15.750214}
+  - {x: 36.62974, y: -17.036306}
+  - {x: 36.143764, y: -18.288115}
+  - {x: 35.58836, y: -19.49993}
+  - {x: 34.966545, y: -20.66702}
+  - {x: 34.28031, y: -21.78391}
+  - {x: 33.533066, y: -22.846205}
+  - {x: 32.72782, y: -23.84918}
+  - {x: 31.86823, y: -24.788565}
+  - {x: 30.957808, y: -25.660482}
+  - {x: 30.000246, y: -26.460928}
+  - {x: 29.000036, y: -27.186514}
+  - {x: 27.961172, y: -27.834234}
+  - {x: 26.888288, y: -28.401518}
+  - {x: 25.785965, y: -28.885519}
+  - {x: 24.658741, y: -29.284346}
+  - {x: 23.511547, y: -29.596418}
+  - {x: 22.349457, y: -29.820372}
+  - {x: 21.177246, y: -29.955046}
+  - {x: 19.999954, y: -29.999998}
+  - {x: 18.82275, y: -29.955015}
+  - {x: 17.650566, y: -29.820349}
+  - {x: 16.488384, y: -29.596525}
+  - {x: 15.34124, y: -29.28433}
+  - {x: 14.2141075, y: -28.885534}
+  - {x: 13.111687, y: -28.401464}
+  - {x: 12.038818, y: -27.834295}
+  - {x: 10.999939, y: -27.186476}
+  - {x: 9.999802, y: -26.460867}
+  - {x: 9.042271, y: -25.660353}
+  - {x: 9.002926, y: -25.622747}
+  - {x: 8.999981, y: -25.61579}
+  - {x: 8.999943, y: 3.4960172}
+  - {x: 9.003986, y: 3.4999769}
+  m_AirspaceId: EVA_EAST_01.INSIDE
+  m_Priority: 10
+  m_PressureKPa: 101.325
+  m_OxygenFraction: 0.21
+  m_MinPressureKPa: 60
+  m_MinOxygenPartialPressureKPa: 15
+  m_Chamber: {fileID: 0}
+  m_AllowsSuitRefill: 0
+--- !u!65 &836896307
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 836896304}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 28.400112, y: 33.500053, z: 17.68}
+  m_Center: {x: 23.199999, y: -13.249971, z: 9.440001}
+--- !u!1 &838932978
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 838932979}
+  m_Layer: 0
+  m_Name: MC00 Pressurized Interior
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &838932979
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 838932978}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.2243683, y: 0.670566, z: 0.67056614, w: 0.22436827}
+  m_LocalPosition: {x: 1614.5376, y: 211.03615, z: 2149.0093}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 931149549}
+  - {fileID: 1217159504}
+  - {fileID: 1778264519}
+  - {fileID: 1001095904}
+  - {fileID: 31446432}
+  - {fileID: 836896305}
+  - {fileID: 974984008}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &931149548
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 931149549}
+  - component: {fileID: 931149551}
+  - component: {fileID: 931149550}
+  m_Layer: 0
+  m_Name: E lower west
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &931149549
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 931149548}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 838932979}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &931149550
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 931149548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04c9c4a7dcd787b4f9c16ad764a92643, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Unity.MP_FPS.BreathableZone
+  m_Footprint:
+  - {x: -33.65383, y: 3.49662}
+  - {x: -33.64778, y: 3.499954}
+  - {x: -24, y: 3.499936}
+  - {x: -24, y: -29.399597}
+  - {x: -24.399925, y: -29.284445}
+  - {x: -25.464462, y: -28.885542}
+  - {x: -26.5056, y: -28.40145}
+  - {x: -27.518951, y: -27.834372}
+  - {x: -28.500114, y: -27.186468}
+  - {x: -29.444733, y: -26.460905}
+  - {x: -30.348846, y: -25.66049}
+  - {x: -31.20884, y: -24.78861}
+  - {x: -32.020737, y: -23.849318}
+  - {x: -32.78132, y: -22.846281}
+  - {x: -33.4871, y: -21.78391}
+  - {x: -34.135002, y: -20.666922}
+  - {x: -34.722366, y: -19.500044}
+  - {x: -35.24675, y: -18.288145}
+  - {x: -35.705986, y: -17.036337}
+  - {x: -36.09783, y: -15.7502365}
+  - {x: -36.42074, y: -14.435119}
+  - {x: -36.673286, y: -13.096946}
+  - {x: -36.854492, y: -11.74108}
+  - {x: -36.9636, y: -10.373382}
+  - {x: -36.99993, y: -9.000045}
+  - {x: -36.96369, y: -7.6264496}
+  - {x: -36.854492, y: -6.2590103}
+  - {x: -36.67334, y: -4.903076}
+  - {x: -36.42076, y: -3.5648572}
+  - {x: -36.097862, y: -2.2497633}
+  - {x: -35.70591, y: -0.96363837}
+  - {x: -35.246895, y: 0.28804007}
+  - {x: -34.722496, y: 1.5000226}
+  - {x: -34.134956, y: 2.6669614}
+  m_AirspaceId: EVA_EAST_01.INSIDE
+  m_Priority: 10
+  m_PressureKPa: 101.325
+  m_OxygenFraction: 0.21
+  m_MinPressureKPa: 60
+  m_MinOxygenPartialPressureKPa: 15
+  m_Chamber: {fileID: 0}
+  m_AllowsSuitRefill: 0
+--- !u!65 &931149551
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 931149548}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 12.999931, y: 32.89955, z: 6}
+  m_Center: {x: -30.499966, y: -12.949821, z: 3.6}
+--- !u!1 &974984007
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 974984008}
+  - component: {fileID: 974984010}
+  - component: {fileID: 974984009}
+  m_Layer: 0
+  m_Name: Transfer hub
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &974984008
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 974984007}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 838932979}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &974984009
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 974984007}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04c9c4a7dcd787b4f9c16ad764a92643, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Unity.MP_FPS.BreathableZone
+  m_Footprint:
+  - {x: 8.995941, y: -3.0000074}
+  - {x: 8.999985, y: -2.99604}
+  - {x: 8.999977, y: 9.996078}
+  - {x: 8.995918, y: 10.000052}
+  - {x: -8.996071, y: 10.000091}
+  - {x: -8.9999695, y: 9.995933}
+  - {x: -9.000008, y: -2.9959257}
+  - {x: -8.996048, y: -2.9999692}
+  m_AirspaceId: EVA_EAST_01.INSIDE
+  m_Priority: 10
+  m_PressureKPa: 101.325
+  m_OxygenFraction: 0.21
+  m_MinPressureKPa: 60
+  m_MinOxygenPartialPressureKPa: 15
+  m_Chamber: {fileID: 0}
+  m_AllowsSuitRefill: 0
+--- !u!65 &974984010
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 974984007}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 17.999992, y: 13.000098, z: 17.68}
+  m_Center: {x: -0.000011444092, y: 3.5000417, z: 9.440001}
+--- !u!1 &1001095903
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1001095904}
+  - component: {fileID: 1001095906}
+  - component: {fileID: 1001095905}
+  m_Layer: 0
+  m_Name: E upper
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1001095904
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1001095903}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 838932979}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1001095905
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1001095903}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04c9c4a7dcd787b4f9c16ad764a92643, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Unity.MP_FPS.BreathableZone
+  m_Footprint:
+  - {x: -33.65383, y: 3.49662}
+  - {x: -33.64778, y: 3.499954}
+  - {x: -9.003967, y: 3.4999082}
+  - {x: -8.999908, y: 3.495941}
+  - {x: -9.000053, y: -24.996359}
+  - {x: -9.002777, y: -25.003302}
+  - {x: -9.650993, y: -25.660513}
+  - {x: -10.555283, y: -26.46086}
+  - {x: -11.4999695, y: -27.186491}
+  - {x: -12.481071, y: -27.834402}
+  - {x: -13.494385, y: -28.401426}
+  - {x: -14.53553, y: -28.88548}
+  - {x: -15.600105, y: -29.284483}
+  - {x: -16.68348, y: -29.596464}
+  - {x: -16.700706, y: -29.599966}
+  - {x: -23.299355, y: -29.599936}
+  - {x: -23.316551, y: -29.596388}
+  - {x: -24.399925, y: -29.284445}
+  - {x: -25.464462, y: -28.885542}
+  - {x: -26.5056, y: -28.40145}
+  - {x: -27.518951, y: -27.834372}
+  - {x: -28.500114, y: -27.186468}
+  - {x: -29.444733, y: -26.460905}
+  - {x: -30.348846, y: -25.66049}
+  - {x: -31.20884, y: -24.78861}
+  - {x: -32.020737, y: -23.849318}
+  - {x: -32.78132, y: -22.846281}
+  - {x: -33.4871, y: -21.78391}
+  - {x: -34.135002, y: -20.666922}
+  - {x: -34.722366, y: -19.500044}
+  - {x: -35.24675, y: -18.288145}
+  - {x: -35.705986, y: -17.036337}
+  - {x: -36.09783, y: -15.7502365}
+  - {x: -36.42074, y: -14.435119}
+  - {x: -36.673286, y: -13.096946}
+  - {x: -36.854492, y: -11.74108}
+  - {x: -36.9636, y: -10.373382}
+  - {x: -36.99993, y: -9.000045}
+  - {x: -36.96369, y: -7.6264496}
+  - {x: -36.854492, y: -6.2590103}
+  - {x: -36.67334, y: -4.903076}
+  - {x: -36.42076, y: -3.5648572}
+  - {x: -36.097862, y: -2.2497633}
+  - {x: -35.70591, y: -0.96363837}
+  - {x: -35.246895, y: 0.28804007}
+  - {x: -34.722496, y: 1.5000226}
+  - {x: -34.134956, y: 2.6669614}
+  m_AirspaceId: EVA_EAST_01.INSIDE
+  m_Priority: 10
+  m_PressureKPa: 101.325
+  m_OxygenFraction: 0.21
+  m_MinPressureKPa: 60
+  m_MinOxygenPartialPressureKPa: 15
+  m_Chamber: {fileID: 0}
+  m_AllowsSuitRefill: 0
+--- !u!65 &1001095906
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1001095903}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 28.000023, y: 33.099922, z: 5.6800003}
+  m_Center: {x: -22.99992, y: -13.050005, z: 9.44}
+--- !u!1 &1217159503
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1217159504}
+  - component: {fileID: 1217159506}
+  - component: {fileID: 1217159505}
+  m_Layer: 0
+  m_Name: E lower east
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1217159504
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1217159503}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 838932979}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1217159505
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1217159503}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04c9c4a7dcd787b4f9c16ad764a92643, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Unity.MP_FPS.BreathableZone
+  m_Footprint:
+  - {x: -16, y: 3.4999213}
+  - {x: -9.003967, y: 3.4999082}
+  - {x: -8.999908, y: 3.495941}
+  - {x: -9.000053, y: -24.996359}
+  - {x: -9.002777, y: -25.003302}
+  - {x: -9.650993, y: -25.660513}
+  - {x: -10.555283, y: -26.46086}
+  - {x: -11.4999695, y: -27.186491}
+  - {x: -12.481071, y: -27.834402}
+  - {x: -13.494385, y: -28.401426}
+  - {x: -14.53553, y: -28.88548}
+  - {x: -15.600105, y: -29.284483}
+  - {x: -16, y: -29.399641}
+  m_AirspaceId: EVA_EAST_01.INSIDE
+  m_Priority: 10
+  m_PressureKPa: 101.325
+  m_OxygenFraction: 0.21
+  m_MinPressureKPa: 60
+  m_MinOxygenPartialPressureKPa: 15
+  m_Chamber: {fileID: 0}
+  m_AllowsSuitRefill: 0
+--- !u!65 &1217159506
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1217159503}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 7.0000916, y: 32.899563, z: 6}
+  m_Center: {x: -12.499954, y: -12.94986, z: 3.6}
+--- !u!1 &1778264518
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1778264519}
+  - component: {fileID: 1778264521}
+  - component: {fileID: 1778264520}
+  m_Layer: 0
+  m_Name: E lower inside
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1778264519
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1778264518}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 838932979}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1778264520
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1778264518}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04c9c4a7dcd787b4f9c16ad764a92643, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Unity.MP_FPS.BreathableZone
+  m_Footprint:
+  - {x: -33.65383, y: 3.49662}
+  - {x: -33.64778, y: 3.499954}
+  - {x: -9.003967, y: 3.4999082}
+  - {x: -8.999908, y: 3.495941}
+  - {x: -9.0000515, y: -24.7}
+  - {x: -31.28543, y: -24.7}
+  - {x: -32.020737, y: -23.849318}
+  - {x: -32.78132, y: -22.846281}
+  - {x: -33.4871, y: -21.78391}
+  - {x: -34.135002, y: -20.666922}
+  - {x: -34.722366, y: -19.500044}
+  - {x: -35.24675, y: -18.288145}
+  - {x: -35.705986, y: -17.036337}
+  - {x: -36.09783, y: -15.7502365}
+  - {x: -36.42074, y: -14.435119}
+  - {x: -36.673286, y: -13.096946}
+  - {x: -36.854492, y: -11.74108}
+  - {x: -36.9636, y: -10.373382}
+  - {x: -36.99993, y: -9.000045}
+  - {x: -36.96369, y: -7.6264496}
+  - {x: -36.854492, y: -6.2590103}
+  - {x: -36.67334, y: -4.903076}
+  - {x: -36.42076, y: -3.5648572}
+  - {x: -36.097862, y: -2.2497633}
+  - {x: -35.70591, y: -0.96363837}
+  - {x: -35.246895, y: 0.28804007}
+  - {x: -34.722496, y: 1.5000226}
+  - {x: -34.134956, y: 2.6669614}
+  m_AirspaceId: EVA_EAST_01.INSIDE
+  m_Priority: 10
+  m_PressureKPa: 101.325
+  m_OxygenFraction: 0.21
+  m_MinPressureKPa: 60
+  m_MinOxygenPartialPressureKPa: 15
+  m_Chamber: {fileID: 0}
+  m_AllowsSuitRefill: 0
+--- !u!65 &1778264521
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1778264518}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 28.000023, y: 28.199955, z: 6}
+  m_Center: {x: -22.99992, y: -10.600023, z: 3.6}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -1368876,3 +1369678,4 @@ SceneRoots:
   - {fileID: 504501812}
   - {fileID: 1463475862}
   - {fileID: 1193001102}
+  - {fileID: 838932979}

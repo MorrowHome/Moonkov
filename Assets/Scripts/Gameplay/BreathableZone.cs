@@ -8,6 +8,8 @@ namespace Unity.MP_FPS
     {
         private static readonly List<BreathableZone> s_Zones = new List<BreathableZone>();
         private BoxCollider m_Box;
+        [Tooltip("Optional closed footprint in local XY; local Z is height. Empty uses the whole box.")]
+        [SerializeField] private Vector2[] m_Footprint = System.Array.Empty<Vector2>();
         [SerializeField] private string m_AirspaceId;
         [SerializeField] private int m_Priority;
         [SerializeField, Min(0)] private float m_PressureKPa = 101.325f;
@@ -20,6 +22,8 @@ namespace Unity.MP_FPS
         public bool AllowsSuitRefill { get => m_AllowsSuitRefill; set => m_AllowsSuitRefill = value; }
         public string AirspaceId => m_AirspaceId;
         public float PressureKPa => m_Chamber ? m_Chamber.State.PressureKPa : m_PressureKPa;
+        public void ConfigureFootprint(Vector2[] footprint) =>
+            m_Footprint = footprint == null ? System.Array.Empty<Vector2>() : (Vector2[])footprint.Clone();
         public void Configure(string id, float pressureKPa, float oxygenFraction, int priority = 0, AirlockController chamber = null)
         {
             m_AirspaceId = id; m_PressureKPa = Mathf.Max(0, pressureKPa);
@@ -45,9 +49,11 @@ namespace Unity.MP_FPS
             {
                 if (!zone || !zone.isActiveAndEnabled || !zone.m_Box || !zone.m_Box.enabled ||
                     Application.isPlaying && !Application.IsPlaying(zone.gameObject)) continue;
-                var local = zone.transform.InverseTransformPoint(position) - zone.m_Box.center;
+                var point = zone.transform.InverseTransformPoint(position);
+                var local = point - zone.m_Box.center;
                 var half = zone.m_Box.size * .5f;
                 if (Mathf.Abs(local.x) <= half.x && Mathf.Abs(local.y) <= half.y && Mathf.Abs(local.z) <= half.z &&
+                    zone.ContainsFootprint(point) &&
                     (!selected || zone.m_Priority > selected.m_Priority)) selected = zone;
             }
             if (!selected) { sample = default; return false; }
@@ -62,12 +68,36 @@ namespace Unity.MP_FPS
                 valid && pressure >= minimum && pressure * fraction >= oxygenMinimum, selected.m_AllowsSuitRefill);
             return true;
         }
+        private bool ContainsFootprint(Vector3 point)
+        {
+            if (m_Footprint == null || m_Footprint.Length == 0) return true;
+            if (m_Footprint.Length < 3) return false;
+            bool inside = false;
+            for (int i = 0, j = m_Footprint.Length - 1; i < m_Footprint.Length; j = i++)
+            {
+                var a = m_Footprint[j];
+                var b = m_Footprint[i];
+                if ((a.y > point.y) != (b.y > point.y) &&
+                    point.x < (b.x - a.x) * (point.y - a.y) / (b.y - a.y) + a.x)
+                    inside = !inside;
+            }
+            return inside;
+        }
         private void OnDrawGizmosSelected()
         {
             var box = GetComponent<BoxCollider>();
             Gizmos.color = new Color(.3f, 1, .5f, .8f);
             Gizmos.matrix = transform.localToWorldMatrix;
             Gizmos.DrawWireCube(box.center, box.size);
+            if (m_Footprint == null || m_Footprint.Length < 3) return;
+            for (int i = 0; i < m_Footprint.Length; i++)
+            {
+                var a = m_Footprint[i]; var b = m_Footprint[(i + 1) % m_Footprint.Length];
+                float bottom = box.center.z - box.size.z * .5f, top = box.center.z + box.size.z * .5f;
+                Gizmos.DrawLine(new Vector3(a.x, a.y, bottom), new Vector3(b.x, b.y, bottom));
+                Gizmos.DrawLine(new Vector3(a.x, a.y, top), new Vector3(b.x, b.y, top));
+                Gizmos.DrawLine(new Vector3(a.x, a.y, bottom), new Vector3(a.x, a.y, top));
+            }
         }
     }
     public readonly struct AtmosphereSample
