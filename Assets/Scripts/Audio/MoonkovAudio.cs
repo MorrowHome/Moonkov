@@ -40,6 +40,22 @@ namespace Unity.MP_FPS
             return game.SoundSystem?.CreateEmitter(sound, position, volume);
         }
 
+        // Uses the same emitter/source pool and mixer, with per-playback ownership and pitch.
+        public static SoundSystem.SoundInfo PlayWeaponLayer(SoundDef sound, Vector3 position,
+            float volume, float spatialBlend, float pitchCents = 0)
+        {
+            var game = GameManager.Instance;
+            if (!Application.isPlaying || game == null || game.IsHeadless || sound == null ||
+                sound.Clips == null || sound.Clips.Count == 0) return null;
+            var info = new SoundSystem.SoundInfo
+            {
+                SoundDefinition = sound, Position = position,
+                SoundDefOverrideInfo = new SoundEmitter.SoundDefOverrideData(sound)
+                { SpatialBlend = Mathf.Clamp01(spatialBlend), BasePitchInCents = sound.BasePitchInCents + pitchCents }
+            };
+            return game.SoundSystem != null && game.SoundSystem.PlayEmitter(info, volume) ? info : null;
+        }
+
         public static void Click() => Play(Library?.Click, Vector3.zero);
         public static void Confirm() => Play(Library?.Confirm, Vector3.zero);
         public static void Error() => Play(Library?.Error, Vector3.zero);

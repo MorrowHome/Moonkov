@@ -15,13 +15,13 @@ MonoBehaviour:
   EditorVolume: 1
   UnityAudioMixer: {fileID: 24100000, guid: fddb343a82968524eb1e9a6f65433d7e, type: 2}
   MixerGroup: 1
-  BasePitchInCents: 100
-  VolumeScale: 1.0792793
+  BasePitchInCents: 0
+  VolumeScale: 1
   BaseLowPassCutoff: 0
   PlaybackType: 0
   PlayCount: 1
   Clips:
-  - {fileID: 8300000, guid: 2a98a8768d2fc274fb95c70dac4e2c3e, type: 3}
+  - {fileID: 8300000, guid: 600eb47d32dca4221a4ffa8b36da2e42, type: 3}
   RepeatInfo:
     LoopCount: 1
     RepeatMin: 1
@@ -31,21 +31,21 @@ MonoBehaviour:
     DelayMax: 0
     StartOffsetPercentMin: 0
     StartOffsetPercentMax: 0
-    StopDelay: 0.12
+    StopDelay: 0
   PitchAndVolumeInfo:
-    VolumeMin: -21.5
-    VolumeMax: -21
-    PitchMin: -20
-    PitchMax: 20
+    VolumeMin: -28.5
+    VolumeMax: -28
+    PitchMin: -10
+    PitchMax: 10
   DistanceInfo:
     VolumeDistMin: 1.5
     VolumeDistMax: 90
     SpatialBlend: 1
     DopplerScale: 0
     VolumeRolloffMode: 1
-    LPFRollOffCurveType: 0
-    LPF_MinCutoff: 0
-    LPF_MaxDistance: 0
+    LPFRollOffCurveType: 1
+    LPF_MinCutoff: 2200
+    LPF_MaxDistance: 90
     HPFRollOffCurveType: 0
     HPF_MinCutoff: 0
     HPF_MaxDistance: 0
@@ -54,9 +54,9 @@ MonoBehaviour:
     PanMin: 0
     PanMax: 0
   LowPassFilter:
-    EnableComponent: 0
-    CutoffMin: 22000
-    CutoffMax: 22000
+    EnableComponent: 1
+    CutoffMin: 19000
+    CutoffMax: 19000
   HighPassFilter:
     EnableComponent: 0
     CutoffMin: 22000

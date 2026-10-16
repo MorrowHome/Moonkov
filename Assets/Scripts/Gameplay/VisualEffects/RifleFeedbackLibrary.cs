@@ -8,6 +8,11 @@ namespace Unity.MP_FPS
     {
         public SoundDef FireBody, FireSnap, FireTail;
         public SoundDef RockImpact, MetalImpact, BodyImpact, HitConfirm, KillConfirm;
+        [Header("Shot mix")]
+        [Range(.01f, .15f)] public float BodyCrossfade = .045f;
+        [Range(.01f, .2f)] public float TailCrossfade = .09f;
+        [Range(.6f, 1f)] public float SustainedBodyGain = .9f;
+        [Range(0f, 100f)] public float BurstPitchRise = 35f;
         [Min(.1f)] public float FragmentScale = 1f, FragmentSpeed = 1f, FragmentCount = 1f;
         [Range(0f, .25f)] public float SurfaceSoundInterval;
         public bool ImpactFlash;
@@ -23,14 +28,15 @@ namespace Unity.MP_FPS
         public Material ImpactMaterial;
         public SoundDef RockImpact, MetalImpact, BodyImpact;
         public SoundDef HitConfirm, KillConfirm;
-        public HaloWeaponFeedbackProfile Revolver, Shotgun, Sniper;
+        public HaloWeaponFeedbackProfile Rifle, Revolver, Shotgun, Sniper;
 
         public HaloWeaponFeedbackProfile ForWeapon(uint weaponId) => weaponId switch
         {
+            DollSingerWeapons.Halo => Rifle,
             DollSingerWeapons.Revolver => Revolver,
             DollSingerWeapons.Shotgun => Shotgun,
             DollSingerWeapons.Sniper => Sniper,
-            _ => null // Keep the existing rifle mix and feedback as the baseline.
+            _ => null
         };
     }
 }
