@@ -64,7 +64,7 @@
 
 float MoonToonShadowVisibility(float3 positionWS, float attenuation)
 {
-    #if defined(LIL_URP) && defined(LIL_USE_SHADOW) && !defined(LIL_OUTLINE)
+    #if defined(LIL_URP) && defined(LIL_USE_SHADOW)
         if (attenuation >= 0.999) return 1.0;
         uint cascade = 0;
         #if defined(_MAIN_LIGHT_SHADOWS_CASCADE)
@@ -93,7 +93,27 @@ float MoonToonShadowVisibility(float3 positionWS, float attenuation)
     #endif
 }
 
+#if defined(LIL_URP) && defined(LIL_OUTLINE) && defined(LIL_USE_SHADOW)
+    // Native outline lighting does not attenuate the sun. Match the body's
+    // distant-occlusion rule so a lit blue/red contour cannot reveal a hidden player.
+    #define BEFORE_OUTLINE_COLOR \
+        fd.lightColor = max(0.0, input.lightColor - LIL_MAINLIGHT_COLOR) + \
+            LIL_MAINLIGHT_COLOR * MoonToonShadowVisibility(fd.positionWS, \
+                MainLightRealtimeShadow(TransformWorldToShadowCoord(fd.positionWS))); \
+        LIL_CORRECT_LIGHTCOLOR_PS(fd.lightColor);
+#endif
+
 #if defined(MOON_TOON_SEPARATE_LIGHTS)
+    // lilToon's light ceiling limits diffuse and GGX together. Keep the capped
+    // diffuse color, but let excess direct sun drive native specular only.
+    // Visibility is sampled before the ceiling, so no HDR sun survives a roof.
+    #define OVERRIDE_REFLECTION \
+        float3 moonDiffuseLight = fd.lightColor; \
+        fd.lightColor += max(0.0, LIL_MAINLIGHT_COLOR - _LightMaxLimit) * \
+            MoonToonShadowVisibility(fd.positionWS, fd.attenuation) * (1.0 - _AsUnlit); \
+        lilReflection(fd LIL_SAMP_IN(sampler_MainTex) LIL_HDRP_POSITION_INPUT_VAR); \
+        fd.lightColor = moonDiffuseLight;
+
     // Sun visibility was already applied before clamping the lighting color.
     // Passing it through lilToon's receive-shadow ramps again would darken the
     // surviving probe light, removing the indirect fill under punctual shadows.

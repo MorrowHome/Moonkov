@@ -1,0 +1,8 @@
+{
+  "sun": 0.8054883022594637,
+  "shade": 0.005545593293828569,
+  "lamp": 0.7108715382762474,
+  "dark": 0.004670044322397248,
+  "shadeToSun": 0.006884759565437145,
+  "note": "Same face ROI (440,548)-(514,570), display RGB luma; not illuminance/full-character visibility. Upper ornament is lit at roof boundary. Extended live-game high-roof diagnostic remains unresolved; see Diagnostics."
+}

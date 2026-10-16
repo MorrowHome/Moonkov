@@ -1,0 +1,23 @@
+{
+  "face_base": {
+    "meanAbsoluteRgbChangeBytes": 0.17772317772317772,
+    "p99MaxChannelIncreaseBytes": 10.730000000000018,
+    "maximumChannelIncreaseBytes": 57.0
+  },
+  "gold_shoulder": {
+    "meanAbsoluteRgbChangeBytes": 0.6815906432748537,
+    "p99MaxChannelIncreaseBytes": 19.0,
+    "maximumChannelIncreaseBytes": 55.0
+  },
+  "gold_glasses": {
+    "meanAbsoluteRgbChangeBytes": 0.17721819130269834,
+    "p99MaxChannelIncreaseBytes": 7.0,
+    "maximumChannelIncreaseBytes": 57.0
+  },
+  "blue_cloth": {
+    "meanAbsoluteRgbChangeBytes": 0.000546000546000546,
+    "p99MaxChannelIncreaseBytes": 0.0,
+    "maximumChannelIncreaseBytes": 1.0
+  },
+  "conditions": "Same final material, camera/pose/grade/light direction, directional intensity 1.6 vs 4. Diffuse capped at 1, excess main light reaches native GGX. Screenshot RGB bytes are not HDR radiance."
+}

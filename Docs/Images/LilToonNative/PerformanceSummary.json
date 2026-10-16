@@ -1,0 +1,26 @@
+{
+  "before": {
+    "samples": 480,
+    "submitMs": 1.8387000000000002,
+    "mainMs": 14.953396000000001,
+    "gpuMs": 0.0,
+    "frameMs": 15.056792180985212,
+    "draws": 90.0,
+    "setPass": 50.0,
+    "triangles": 597557.0
+  },
+  "after": {
+    "samples": 480,
+    "submitMs": 1.4004500000000002,
+    "mainMs": 10.699125,
+    "gpuMs": 0.0,
+    "frameMs": 10.847938247025013,
+    "draws": 90.0,
+    "setPass": 50.0,
+    "triangles": 597557.0
+  },
+  "comparison": "Fixed pose, 960x1080, same native-compatible shader, grade/exposure and lighting; 4 interleaved A/B blocks; 60 warmup +120 measured frames/block",
+  "gpuAvailable": false,
+  "limitations": "Editor CPU timings include Editor activity; no standalone FPS or GPU cost conclusion. Both sets use the corrected outline and HDR specular hooks; their incremental GPU cost is not isolated.",
+  "dataMapResidentEditorBytes": 7045872
+}

@@ -1,0 +1,2 @@
+RUNNING: Assets/Scenes/MainMenu.unity; pipeline=MoonSoftAnimePipeline (interior runtime)
+PASS: real map lighting, fixed-pose duplicate; same camera and Volume; no added lights
