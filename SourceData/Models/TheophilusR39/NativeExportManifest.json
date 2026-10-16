@@ -1,0 +1,335 @@
+{
+  "objects": [
+    {
+      "name": "B_NORTH_TRANSFER_Deck_0176",
+      "key": "R39Patch",
+      "vertices": 36,
+      "triangles": 12,
+      "materials": [
+        "R8_Matte_Deck_Plates",
+        "R8_Matte_Deck_Plates",
+        "R8_Matte_Deck_Plates",
+        "R8_Matte_Deck_Plates",
+        "R8_Matte_Deck_Plates",
+        "R8_Matte_Deck_Plates",
+        "R39_Deck0176_Industrial_Plated_Surface"
+      ],
+      "sha256": "3a10aab72bc779cdfca5391293cff24c9d5e504e2642577b22522574f8cc84af",
+      "uvChannels": {
+        "UVMap": 0
+      },
+      "kind": "Patch"
+    }
+  ],
+  "baseline": {
+    "name": "B_NORTH_TRANSFER_Deck_0176",
+    "key": "R39Baseline",
+    "vertices": 36,
+    "triangles": 12,
+    "materials": [
+      "R8_Matte_Deck_Plates",
+      "R8_Matte_Deck_Plates",
+      "R8_Matte_Deck_Plates",
+      "R8_Matte_Deck_Plates",
+      "R8_Matte_Deck_Plates",
+      "R8_Matte_Deck_Plates"
+    ],
+    "sha256": "16d9bd62bb262d4974f957c0d0bed8b327dedddcfffb3bfbf0867ea78d549a81",
+    "uvChannels": {
+      "UVMap": 0
+    }
+  },
+  "patch": {
+    "revision": "R39",
+    "source": "Moonkov_R38_West_Transfer_Cloud_Reference_Candidate.blend",
+    "source_sha256": "de75d2f75a71f0e29ede262eaa11490e188639bd0fd7260d1eca55376e226366",
+    "target_object": "B_NORTH_TRANSFER_Deck_0176",
+    "target_mesh": "B_NORTH_TRANSFER_Deck_0176_R8_SurfaceMesh",
+    "target_face": 4,
+    "target_face_vertices": [
+      2,
+      3,
+      7,
+      6
+    ],
+    "target_geometry": "a1e01a4d155937de5115da038882c3027e89168127a2ad82d28a5c1992d82f9e",
+    "before_object_signature": "0a37b285b514c67dbebf92fa215c7e6d7e63b194bee86359cf24b30b89346dba",
+    "after_object_signature": "8f0d6d80f64028791677f2e99228cbdfc77cd05abfc71fa156705974ac312f2a",
+    "before": {
+      "slots": [
+        "R8_Matte_Deck_Plates",
+        "R8_Matte_Deck_Plates",
+        "R8_Matte_Deck_Plates",
+        "R8_Matte_Deck_Plates",
+        "R8_Matte_Deck_Plates",
+        "R8_Matte_Deck_Plates"
+      ],
+      "face_materials": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "uv": {
+        "UVMap": [
+          [
+            5.833333492279053,
+            0.0
+          ],
+          [
+            5.833333492279053,
+            0.5833308100700378
+          ],
+          [
+            0.0,
+            0.5833308100700378
+          ],
+          [
+            0.0,
+            1.515824466814808e-12
+          ],
+          [
+            0.0,
+            1.515824466814808e-12
+          ],
+          [
+            5.833333492279053,
+            0.0
+          ],
+          [
+            5.833333492279053,
+            0.5833308100700378
+          ],
+          [
+            0.0,
+            0.5833308100700378
+          ],
+          [
+            9.6478271484375,
+            6.954244136810303
+          ],
+          [
+            4.869435787200928,
+            10.300089836120605
+          ],
+          [
+            0.0,
+            3.3458454608917236
+          ],
+          [
+            4.778391361236572,
+            0.0
+          ],
+          [
+            8.489583015441895,
+            0.0
+          ],
+          [
+            8.489583015441895,
+            0.5833308100700378
+          ],
+          [
+            0.0,
+            0.5833308100700378
+          ],
+          [
+            0.0,
+            0.0
+          ],
+          [
+            4.869435787200928,
+            0.0
+          ],
+          [
+            9.6478271484375,
+            3.3458454608917236
+          ],
+          [
+            4.778391361236572,
+            10.300089836120605
+          ],
+          [
+            0.0,
+            6.954244136810303
+          ],
+          [
+            0.0,
+            0.5833308100700378
+          ],
+          [
+            0.0,
+            1.515824466814808e-12
+          ],
+          [
+            8.489583015441895,
+            0.0
+          ],
+          [
+            8.489583015441895,
+            0.5833308100700378
+          ]
+        ]
+      },
+      "active_uv_index": 0,
+      "uv_active_render": [
+        true
+      ]
+    },
+    "after": {
+      "slots": [
+        "R8_Matte_Deck_Plates",
+        "R8_Matte_Deck_Plates",
+        "R8_Matte_Deck_Plates",
+        "R8_Matte_Deck_Plates",
+        "R8_Matte_Deck_Plates",
+        "R8_Matte_Deck_Plates",
+        "R39_Deck0176_Industrial_Plated_Surface"
+      ],
+      "face_materials": [
+        0,
+        0,
+        0,
+        0,
+        6,
+        0
+      ],
+      "uv": {
+        "UVMap": [
+          [
+            5.833333492279053,
+            0.0
+          ],
+          [
+            5.833333492279053,
+            0.5833308100700378
+          ],
+          [
+            0.0,
+            0.5833308100700378
+          ],
+          [
+            0.0,
+            1.515824466814808e-12
+          ],
+          [
+            0.0,
+            1.515824466814808e-12
+          ],
+          [
+            5.833333492279053,
+            0.0
+          ],
+          [
+            5.833333492279053,
+            0.5833308100700378
+          ],
+          [
+            0.0,
+            0.5833308100700378
+          ],
+          [
+            9.6478271484375,
+            6.954244136810303
+          ],
+          [
+            4.869435787200928,
+            10.300089836120605
+          ],
+          [
+            0.0,
+            3.3458454608917236
+          ],
+          [
+            4.778391361236572,
+            0.0
+          ],
+          [
+            8.489583015441895,
+            0.0
+          ],
+          [
+            8.489583015441895,
+            0.5833308100700378
+          ],
+          [
+            0.0,
+            0.5833308100700378
+          ],
+          [
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0
+          ],
+          [
+            1.0,
+            1.0
+          ],
+          [
+            0.0,
+            0.5833308100700378
+          ],
+          [
+            0.0,
+            1.515824466814808e-12
+          ],
+          [
+            8.489583015441895,
+            0.0
+          ],
+          [
+            8.489583015441895,
+            0.5833308100700378
+          ]
+        ]
+      },
+      "active_uv_index": 0,
+      "uv_active_render": [
+        true
+      ]
+    },
+    "new_material": "R39_Deck0176_Industrial_Plated_Surface",
+    "new_material_signature": "4e09f0e925b20c79ca9aa858bf37c525ce351b8f47e7bba72aeda621a7bc6c79",
+    "new_images": [
+      "R39_Deck0176_BaseColor_sRGB.png",
+      "R39_Deck0176_Normal_OpenGL.png",
+      "R39_Deck0176_Roughness_Linear.png",
+      "R39_Deck0176_MetallicSmoothness_Linear.png"
+    ],
+    "material_library": "Moonkov_R39_Deck0176_Material_Patch.blend",
+    "material_library_sha256": "4423aea0278f4457a71550dec5b334943da50b0b8c39ed73d8bda108b63a16a6",
+    "textures": {
+      "R39_Deck0176_BaseColor_sRGB.png": "1668819b81c685aa64b9c3e475a436e1869e8d56374ccaa111636bad76f18ab1",
+      "R39_Deck0176_Normal_OpenGL.png": "aab94ece5826f2e1eed8efafe910d0ae1ea45e966c37a08d4dce3e40a08a1092",
+      "R39_Deck0176_Roughness_Linear.png": "2d52827caa9d1046bdff62c88556a8ee4d13720fa4210bf3a83d63ed0f9bea1a",
+      "R39_Deck0176_MetallicSmoothness_Linear.png": "54423774beb3a74274827dcb0739e373feca58e5bc4b5e9f165b494e5bbdb8c2"
+    },
+    "changes": "Only existing top polygon material assignment and its four UV coordinates; append one object-local material slot; no topology, coordinates, transforms or modifiers changed.",
+    "limits": "Blender cloud reference only. Texture/UV handoff is not Unity import or runtime validation."
+  },
+  "sourceWorkingBlend": "E:\\UnityProjects\\FPS_Template\\LocalData\\AI\\AssetHandoffs\\TheophilusDenseRing\\R35_R39\\WorkBlends\\Moonkov_R38_Display_Working.blend",
+  "workingBlend": "E:\\UnityProjects\\FPS_Template\\LocalData\\AI\\AssetHandoffs\\TheophilusDenseRing\\R35_R39\\WorkBlends\\Moonkov_R39_Display_Working.blend",
+  "workingBlendSHA256": "b4f529352c21e6ee5724d639ee6692f43ff89796877a552bc3d1fea386853e05",
+  "workingBlendBytes": 105152622,
+  "targetObject": "B_NORTH_TRANSFER_Deck_0176",
+  "sourceChangedTopFaces": 1,
+  "sourceChangedUVCoordinates": 4,
+  "newMaterials": 1,
+  "newTextures": 4,
+  "UnityChanged": false,
+  "sceneBoundPatches": 0,
+  "geometryUnchanged": true,
+  "nativeMeshCoordinateConvention": "Baked source world XZY minus (2015,2130,0); for future binding requires explicit Unity baseline mapping, not direct assignment to an arbitrary existing transform."
+}

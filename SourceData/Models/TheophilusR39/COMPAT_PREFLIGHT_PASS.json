@@ -1,0 +1,250 @@
+{
+  "semantic_policy": "audited-432-to-official-511-v2",
+  "capabilities": {
+    "uv_clone": {
+      "B_NORTH_TRANSFER_Deck_0176": {
+        "mesh": "B_NORTH_TRANSFER_Deck_0176_R8_SurfaceMesh",
+        "explicit_clone": null,
+        "effective_clone": "UVMap",
+        "active": "UVMap",
+        "active_index": 0,
+        "layers": [
+          "UVMap"
+        ],
+        "raw_clone_flags": [
+          false
+        ]
+      }
+    },
+    "nodes": {
+      "R8_Matte_Deck_Plates": {
+        "Material Output": {
+          "type": "ShaderNodeOutputMaterial",
+          "bl_static_type": "OUTPUT_MATERIAL",
+          "static_type_readonly": true,
+          "static_type_has_is_array": false,
+          "parent": null,
+          "location_absolute": [
+            0.0,
+            0.0
+          ]
+        },
+        "Principled BSDF": {
+          "type": "ShaderNodeBsdfPrincipled",
+          "bl_static_type": "BSDF_PRINCIPLED",
+          "static_type_readonly": true,
+          "static_type_has_is_array": false,
+          "parent": null,
+          "location_absolute": [
+            0.0,
+            0.0
+          ]
+        },
+        "UV Map": {
+          "type": "ShaderNodeUVMap",
+          "bl_static_type": "UVMAP",
+          "static_type_readonly": true,
+          "static_type_has_is_array": false,
+          "parent": null,
+          "location_absolute": [
+            0.0,
+            0.0
+          ]
+        },
+        "Image Texture": {
+          "type": "ShaderNodeTexImage",
+          "bl_static_type": "TEX_IMAGE",
+          "static_type_readonly": true,
+          "static_type_has_is_array": false,
+          "parent": null,
+          "location_absolute": [
+            0.0,
+            0.0
+          ]
+        },
+        "Image Texture.001": {
+          "type": "ShaderNodeTexImage",
+          "bl_static_type": "TEX_IMAGE",
+          "static_type_readonly": true,
+          "static_type_has_is_array": false,
+          "parent": null,
+          "location_absolute": [
+            0.0,
+            0.0
+          ]
+        },
+        "Normal Map": {
+          "type": "ShaderNodeNormalMap",
+          "bl_static_type": "NORMAL_MAP",
+          "static_type_readonly": true,
+          "static_type_has_is_array": false,
+          "parent": null,
+          "location_absolute": [
+            0.0,
+            0.0
+          ],
+          "base": "DISPLACED",
+          "convention": "OPENGL"
+        },
+        "Image Texture.002": {
+          "type": "ShaderNodeTexImage",
+          "bl_static_type": "TEX_IMAGE",
+          "static_type_readonly": true,
+          "static_type_has_is_array": false,
+          "parent": null,
+          "location_absolute": [
+            0.0,
+            0.0
+          ]
+        },
+        "Separate Color": {
+          "type": "ShaderNodeSeparateColor",
+          "bl_static_type": "SEPARATE_COLOR",
+          "static_type_readonly": true,
+          "static_type_has_is_array": false,
+          "parent": null,
+          "location_absolute": [
+            0.0,
+            0.0
+          ]
+        },
+        "Math": {
+          "type": "ShaderNodeMath",
+          "bl_static_type": "MATH",
+          "static_type_readonly": true,
+          "static_type_has_is_array": false,
+          "parent": null,
+          "location_absolute": [
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    "payload/Moonkov_R39_Deck0176_Material_Patch.blend": {
+      "uv_clone": {},
+      "nodes": {
+        "R39_Deck0176_Industrial_Plated_Surface": {
+          "Material Output": {
+            "type": "ShaderNodeOutputMaterial",
+            "bl_static_type": "OUTPUT_MATERIAL",
+            "static_type_readonly": true,
+            "static_type_has_is_array": false,
+            "parent": null,
+            "location_absolute": [
+              430.0,
+              100.0
+            ]
+          },
+          "Principled BSDF": {
+            "type": "ShaderNodeBsdfPrincipled",
+            "bl_static_type": "BSDF_PRINCIPLED",
+            "static_type_readonly": true,
+            "static_type_has_is_array": false,
+            "parent": null,
+            "location_absolute": [
+              120.0,
+              100.0
+            ]
+          },
+          "UV Map": {
+            "type": "ShaderNodeUVMap",
+            "bl_static_type": "UVMAP",
+            "static_type_readonly": true,
+            "static_type_has_is_array": false,
+            "parent": null,
+            "location_absolute": [
+              -780.0,
+              60.0
+            ]
+          },
+          "R39_BaseColor": {
+            "type": "ShaderNodeTexImage",
+            "bl_static_type": "TEX_IMAGE",
+            "static_type_readonly": true,
+            "static_type_has_is_array": false,
+            "parent": null,
+            "location_absolute": [
+              -550.0,
+              480.0
+            ]
+          },
+          "R39_Normal": {
+            "type": "ShaderNodeTexImage",
+            "bl_static_type": "TEX_IMAGE",
+            "static_type_readonly": true,
+            "static_type_has_is_array": false,
+            "parent": null,
+            "location_absolute": [
+              -550.0,
+              180.0
+            ]
+          },
+          "Normal Map": {
+            "type": "ShaderNodeNormalMap",
+            "bl_static_type": "NORMAL_MAP",
+            "static_type_readonly": true,
+            "static_type_has_is_array": false,
+            "parent": null,
+            "location_absolute": [
+              -220.0,
+              -190.0
+            ],
+            "base": "DISPLACED",
+            "convention": "OPENGL"
+          },
+          "R39_Roughness": {
+            "type": "ShaderNodeTexImage",
+            "bl_static_type": "TEX_IMAGE",
+            "static_type_readonly": true,
+            "static_type_has_is_array": false,
+            "parent": null,
+            "location_absolute": [
+              -550.0,
+              -120.0
+            ]
+          },
+          "R39_MetallicSmoothness": {
+            "type": "ShaderNodeTexImage",
+            "bl_static_type": "TEX_IMAGE",
+            "static_type_readonly": true,
+            "static_type_has_is_array": false,
+            "parent": null,
+            "location_absolute": [
+              -550.0,
+              -420.0
+            ]
+          },
+          "Separate Color": {
+            "type": "ShaderNodeSeparateColor",
+            "bl_static_type": "SEPARATE_COLOR",
+            "static_type_readonly": true,
+            "static_type_has_is_array": false,
+            "parent": null,
+            "location_absolute": [
+              -220.0,
+              -450.0
+            ]
+          }
+        }
+      }
+    }
+  },
+  "prerequisite_blockers": [],
+  "status": "PASS",
+  "blender": [
+    5,
+    1,
+    1
+  ],
+  "build_hash": "b70da489d7f4",
+  "errors": [],
+  "differences": [],
+  "scene_datablock_membership_unchanged": true,
+  "asset_files_written": 0,
+  "save_export_render_calls": 0,
+  "scope": "This package stage only; 4.3 regression is not 5.1.1 acceptance. Original expected hashes unchanged; only audited exact-version semantic projection, plus full reference descriptor comparison.",
+  "binary_sha256": "b952b58cafe44050ae016bda94c91de0968b028b1c7082a824d7087985619642",
+  "package_fingerprint": "c5867054eb5e34a7d631cb2bf80ec884a0d465af810cf333a8efe607400a4ef5",
+  "guarded_state": "dae46a73739cc760e3a21590a228647025543ce732eed57ed456c2944b51fdeb"
+}

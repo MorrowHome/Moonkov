@@ -1,0 +1,30 @@
+{
+  "files": {
+    "COMPAT_PREFLIGHT_PASS.json": "f14bd5c2dffaf218a6d051ef421161e5687da8a3b3947985e890086c32a6b008",
+    "COMPAT_PREFLIGHT_REPORT.json": "f14bd5c2dffaf218a6d051ef421161e5687da8a3b3947985e890086c32a6b008",
+    "Moonkov_R39_Lightweight_Material_UV_Handoff.zip": "f5145e372271012268a4609b113fc5f12c9c82d440f1758afdb1c33f5e0fa7cf",
+    "NativeExportManifest.json": "a1116f9a48f0fbbc6e4d357f6d4e24163aeddc056bdce74ccba5ea85f3ed1537",
+    "R39UnityBaselineComparison.json": "fc50b4fad79f00958d963ebf283c618e58e950aea0d12c27488f16c0e7756ec0",
+    "R39UnityTargetReadOnly.json": "b7040014fec96aaa7906dd0ef0510713a4222c92bca92a3b06acc8c50065e09f",
+    "R39UnityUVOnlyMappingContract.json": "bcf87b332ac7f31dab490fd893710bbb045d47a6030ba8f11111b3030dbda6f1",
+    "NativeExports/R39Baseline.bin": "16d9bd62bb262d4974f957c0d0bed8b327dedddcfffb3bfbf0867ea78d549a81",
+    "NativeExports/R39Patch.bin": "3a10aab72bc779cdfca5391293cff24c9d5e504e2642577b22522574f8cc84af",
+    "ScriptOverrides/apply_r39_material_uv_patch.py": "5d6df21bbb967f0cfc3c5d878644d3e4fb7e4f017ee566c79477d590234369cf",
+    "ScriptOverrides/COMPAT_CHECK_ONLY.py": "62144e5f340fd40e84b0c4eb38f31500b692d20df3fa6cc18577ad222f20f357",
+    "ScriptOverrides/compat_readonly.py": "e9174aec421c92e35fa9a661fc2db396a935cd94d1ed35502f2e8ac6c907a87c",
+    "ScriptOverrides/COMPAT_REFERENCE_432.json": "83b66efcb7f330e4c467298d0c3d288f241b0c8a9708bac442221fefe556007f",
+    "ScriptOverrides/compat_semantics.py": "9fe274a8a381bd45a90d95fe0c5fd4acb0c11f52d5edc89fb823331d29852331",
+    "ScriptOverrides/generate_r39_surface.py": "e7dce7fcb58804a7ef6c3d4a7d0a3f5064e283ef5dc5d3740b25d9075df9f65c",
+    "ScriptOverrides/r39_common.py": "fe8b73490e9ad7794d9e600183c075ed4a447bdc1651fbc41a587548e0f2780d",
+    "ScriptOverrides/R39_Deck0176_Material_UV_Patch.json": "80952d21b7e1fede9ee9587d09cec6afc47dfda6f6c1be563aa2315a8ecb312b",
+    "ScriptOverrides/rollback_r39_material_uv_patch.py": "2c9c647c124a59083b232ac6a4c9ca2b65abbf11c6d59051670208ec6ff0edbe",
+    "Tools/BindRemainingDisplay.cs": "e6a66381aec00d771f74595fb16146867bf35e59064dbad3f7909dc01adafd7f",
+    "Tools/ImportR39Detached.cs": "3f4803a91e6cc6dd79e86e627f1b735f6fbb580cc43cd8e5cd0f82198d0b81ed",
+    "Tools/NativeDisplayExport.py": "91d3096e244eeb0c27f851eb527bdfdbfbfccb6681a460b229c3c73c3d6bd47d",
+    "Tools/PrepareR39FromSavedR38.py": "f6eb799031e2affa22a58450a1e4083b1c74d6dee500de1e10ddabc730bf45db"
+  },
+  "originalArchivePreserved": true,
+  "guardOverridesAreExactAuthorizedChanges": true,
+  "workingBlendRetainedUnderLocalData": true,
+  "sceneBindingNotPerformed": true
+}

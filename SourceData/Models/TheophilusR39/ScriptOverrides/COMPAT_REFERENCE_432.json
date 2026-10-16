@@ -1,0 +1,2194 @@
+{
+  "reference_blender": "4.3.2",
+  "purpose": "Additional exact read-only diagnostics only. Does not replace any original acceptance hash. Direct library-open state differs legitimately from appended state and is compared only to the same direct-open operation.",
+  "baseline_objects": [
+    "B_NORTH_TRANSFER_Deck_0176"
+  ],
+  "baseline_materials": {
+    "R8_Matte_Deck_Plates": {
+      "properties": {
+        "use_fake_user": false,
+        "use_extra_user": false,
+        "is_runtime_data": false,
+        "tag": false,
+        "surface_render_method": "DITHERED",
+        "displacement_method": "BUMP",
+        "blend_method": "HASHED",
+        "alpha_threshold": 0.5,
+        "use_transparency_overlap": true,
+        "show_transparent_back": true,
+        "use_backface_culling": false,
+        "use_backface_culling_shadow": false,
+        "use_backface_culling_lightprobe_volume": true,
+        "use_transparent_shadow": true,
+        "use_raytrace_refraction": false,
+        "use_screen_refraction": false,
+        "use_sss_translucency": false,
+        "refraction_depth": 0.0,
+        "thickness_mode": "SPHERE",
+        "use_thickness_from_shadow": false,
+        "volume_intersection_method": "FAST",
+        "max_vertex_displacement": 0.0,
+        "preview_render_type": "SPHERE",
+        "use_preview_world": false,
+        "pass_index": 0,
+        "use_nodes": true,
+        "paint_active_slot": 0,
+        "paint_clone_slot": 0,
+        "diffuse_color": [
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          1.0
+        ],
+        "specular_color": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "roughness": 0.4000000059604645,
+        "specular_intensity": 0.5,
+        "metallic": 0.0,
+        "line_color": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "line_priority": 0
+      },
+      "nodes": {
+        "nodes": {
+          "Material Output": {
+            "type": "ShaderNodeOutputMaterial",
+            "properties": {
+              "location": [
+                0.0,
+                0.0
+              ],
+              "width": 140.0,
+              "height": 100.0,
+              "label": "",
+              "warning_propagation": "ALL",
+              "use_custom_color": false,
+              "color": [
+                0.6079999804496765,
+                0.6079999804496765,
+                0.6079999804496765
+              ],
+              "select": true,
+              "show_options": true,
+              "show_preview": false,
+              "hide": false,
+              "mute": false,
+              "show_texture": false,
+              "bl_idname": "ShaderNodeOutputMaterial",
+              "bl_label": "Material Output",
+              "bl_description": "Output surface material information for use in rendering",
+              "bl_icon": "NONE",
+              "bl_static_type": "OUTPUT_MATERIAL",
+              "bl_width_default": 140.0,
+              "bl_width_min": 100.0,
+              "bl_width_max": 700.0,
+              "bl_height_default": 100.0,
+              "bl_height_min": 30.0,
+              "bl_height_max": 30.0,
+              "is_active_output": true,
+              "target": "ALL"
+            },
+            "inputs": [
+              [
+                "Surface",
+                "Surface",
+                "NodeSocketShader",
+                null
+              ],
+              [
+                "Volume",
+                "Volume",
+                "NodeSocketShader",
+                null
+              ],
+              [
+                "Displacement",
+                "Displacement",
+                "NodeSocketVector",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Thickness",
+                "Thickness",
+                "NodeSocketFloat",
+                0.0
+              ]
+            ],
+            "outputs": []
+          },
+          "Principled BSDF": {
+            "type": "ShaderNodeBsdfPrincipled",
+            "properties": {
+              "location": [
+                0.0,
+                0.0
+              ],
+              "width": 240.0,
+              "height": 100.0,
+              "label": "",
+              "warning_propagation": "ALL",
+              "use_custom_color": false,
+              "color": [
+                0.6079999804496765,
+                0.6079999804496765,
+                0.6079999804496765
+              ],
+              "select": true,
+              "show_options": true,
+              "show_preview": false,
+              "hide": false,
+              "mute": false,
+              "show_texture": false,
+              "bl_idname": "ShaderNodeBsdfPrincipled",
+              "bl_label": "Principled BSDF",
+              "bl_description": "Physically-based, easy-to-use shader for rendering surface materials, based on the OpenPBR model",
+              "bl_icon": "NONE",
+              "bl_static_type": "BSDF_PRINCIPLED",
+              "bl_width_default": 240.0,
+              "bl_width_min": 140.0,
+              "bl_width_max": 700.0,
+              "bl_height_default": 100.0,
+              "bl_height_min": 30.0,
+              "bl_height_max": 30.0,
+              "distribution": "MULTI_GGX",
+              "subsurface_method": "RANDOM_WALK"
+            },
+            "inputs": [
+              [
+                "Base Color",
+                "Base Color",
+                "NodeSocketColor",
+                [
+                  0.800000011920929,
+                  0.800000011920929,
+                  0.800000011920929,
+                  1.0
+                ]
+              ],
+              [
+                "Metallic",
+                "Metallic",
+                "NodeSocketFloatFactor",
+                0.0
+              ],
+              [
+                "Roughness",
+                "Roughness",
+                "NodeSocketFloatFactor",
+                0.5
+              ],
+              [
+                "IOR",
+                "IOR",
+                "NodeSocketFloat",
+                1.5
+              ],
+              [
+                "Alpha",
+                "Alpha",
+                "NodeSocketFloatFactor",
+                1.0
+              ],
+              [
+                "Normal",
+                "Normal",
+                "NodeSocketVector",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Weight",
+                "Weight",
+                "NodeSocketFloat",
+                0.0
+              ],
+              [
+                "Diffuse Roughness",
+                "Diffuse Roughness",
+                "NodeSocketFloatFactor",
+                0.0
+              ],
+              [
+                "Subsurface Weight",
+                "Subsurface Weight",
+                "NodeSocketFloatFactor",
+                0.0
+              ],
+              [
+                "Subsurface Radius",
+                "Subsurface Radius",
+                "NodeSocketVector",
+                [
+                  1.0,
+                  0.20000000298023224,
+                  0.10000000149011612
+                ]
+              ],
+              [
+                "Subsurface Scale",
+                "Subsurface Scale",
+                "NodeSocketFloatDistance",
+                0.05000000074505806
+              ],
+              [
+                "Subsurface IOR",
+                "Subsurface IOR",
+                "NodeSocketFloatFactor",
+                1.399999976158142
+              ],
+              [
+                "Subsurface Anisotropy",
+                "Subsurface Anisotropy",
+                "NodeSocketFloatFactor",
+                0.0
+              ],
+              [
+                "Specular IOR Level",
+                "Specular IOR Level",
+                "NodeSocketFloatFactor",
+                0.5
+              ],
+              [
+                "Specular Tint",
+                "Specular Tint",
+                "NodeSocketColor",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              [
+                "Anisotropic",
+                "Anisotropic",
+                "NodeSocketFloatFactor",
+                0.0
+              ],
+              [
+                "Anisotropic Rotation",
+                "Anisotropic Rotation",
+                "NodeSocketFloatFactor",
+                0.0
+              ],
+              [
+                "Tangent",
+                "Tangent",
+                "NodeSocketVector",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Transmission Weight",
+                "Transmission Weight",
+                "NodeSocketFloatFactor",
+                0.0
+              ],
+              [
+                "Coat Weight",
+                "Coat Weight",
+                "NodeSocketFloatFactor",
+                0.0
+              ],
+              [
+                "Coat Roughness",
+                "Coat Roughness",
+                "NodeSocketFloatFactor",
+                0.029999999329447746
+              ],
+              [
+                "Coat IOR",
+                "Coat IOR",
+                "NodeSocketFloat",
+                1.5
+              ],
+              [
+                "Coat Tint",
+                "Coat Tint",
+                "NodeSocketColor",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              [
+                "Coat Normal",
+                "Coat Normal",
+                "NodeSocketVector",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              [
+                "Sheen Weight",
+                "Sheen Weight",
+                "NodeSocketFloatFactor",
+                0.0
+              ],
+              [
+                "Sheen Roughness",
+                "Sheen Roughness",
+                "NodeSocketFloatFactor",
+                0.5
+              ],
+              [
+                "Sheen Tint",
+                "Sheen Tint",
+                "NodeSocketColor",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              [
+                "Emission Color",
+                "Emission Color",
+                "NodeSocketColor",
+                [
+                  1.0,
+                  1.0,
+                  1.0,
+                  1.0
+                ]
+              ],
+              [
+                "Emission Strength",
+                "Emission Strength",
+                "NodeSocketFloat",
+                0.0
+              ],
+              [
+                "Thin Film Thickness",
+                "Thin Film Thickness",
+                "NodeSocketFloatWavelength",
+                0.0
+              ],
+              [
+                "Thin Film IOR",
+                "Thin Film IOR",
+                "NodeSocketFloat",
+                1.3300000429153442
+              ]
+            ],
+            "outputs": [
+              [
+                "BSDF",
+                "BSDF",
+                "NodeSocketShader",
+                null
+              ]
+            ]
+          },
+          "UV Map": {
+            "type": "ShaderNodeUVMap",
+            "properties": {
+              "location": [
+                0.0,
+                0.0
+              ],
+              "width": 150.0,
+              "height": 100.0,
+              "label": "",
+              "warning_propagation": "ALL",
+              "use_custom_color": false,
+              "color": [
+                0.6079999804496765,
+                0.6079999804496765,
+                0.6079999804496765
+              ],
+              "select": true,
+              "show_options": true,
+              "show_preview": false,
+              "hide": false,
+              "mute": false,
+              "show_texture": false,
+              "bl_idname": "ShaderNodeUVMap",
+              "bl_label": "UV Map",
+              "bl_description": "Retrieve a UV map from the geometry, or the default fallback if none is specified",
+              "bl_icon": "NONE",
+              "bl_static_type": "UVMAP",
+              "bl_width_default": 150.0,
+              "bl_width_min": 120.0,
+              "bl_width_max": 700.0,
+              "bl_height_default": 100.0,
+              "bl_height_min": 30.0,
+              "bl_height_max": 30.0,
+              "from_instancer": false,
+              "uv_map": "UVMap"
+            },
+            "inputs": [],
+            "outputs": [
+              [
+                "UV",
+                "UV",
+                "NodeSocketVector",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ]
+            ]
+          },
+          "Image Texture": {
+            "type": "ShaderNodeTexImage",
+            "properties": {
+              "location": [
+                0.0,
+                0.0
+              ],
+              "width": 240.0,
+              "height": 100.0,
+              "label": "BaseColor",
+              "warning_propagation": "ALL",
+              "use_custom_color": false,
+              "color": [
+                0.6079999804496765,
+                0.6079999804496765,
+                0.6079999804496765
+              ],
+              "select": true,
+              "show_options": true,
+              "show_preview": false,
+              "hide": false,
+              "mute": false,
+              "show_texture": false,
+              "bl_idname": "ShaderNodeTexImage",
+              "bl_label": "Image Texture",
+              "bl_description": "Sample an image file as a texture",
+              "bl_icon": "NONE",
+              "bl_static_type": "TEX_IMAGE",
+              "bl_width_default": 240.0,
+              "bl_width_min": 140.0,
+              "bl_width_max": 700.0,
+              "bl_height_default": 100.0,
+              "bl_height_min": 30.0,
+              "bl_height_max": 30.0,
+              "projection": "FLAT",
+              "interpolation": "Linear",
+              "projection_blend": 0.0,
+              "extension": "REPEAT"
+            },
+            "inputs": [
+              [
+                "Vector",
+                "Vector",
+                "NodeSocketVector",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ]
+            ],
+            "outputs": [
+              [
+                "Color",
+                "Color",
+                "NodeSocketColor",
+                [
+                  0.800000011920929,
+                  0.800000011920929,
+                  0.800000011920929,
+                  1.0
+                ]
+              ],
+              [
+                "Alpha",
+                "Alpha",
+                "NodeSocketFloat",
+                0.0
+              ]
+            ],
+            "image": {
+              "name": "R8_Matte_Deck_Plates_BaseColor.png",
+              "sha256": "9c4019e528cc8a9ac0bdb8ae11f42008967e5a80be4f9539889aae6c96ad1c56",
+              "colorspace": "sRGB",
+              "alpha_mode": "STRAIGHT"
+            },
+            "texture_mapping": {
+              "vector_type": "POINT",
+              "translation": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "rotation": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "scale": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "use_min": false,
+              "use_max": false,
+              "mapping_x": "X",
+              "mapping_y": "Y",
+              "mapping_z": "Z",
+              "mapping": "FLAT"
+            }
+          },
+          "Image Texture.001": {
+            "type": "ShaderNodeTexImage",
+            "properties": {
+              "location": [
+                0.0,
+                0.0
+              ],
+              "width": 240.0,
+              "height": 100.0,
+              "label": "Normal_OpenGL",
+              "warning_propagation": "ALL",
+              "use_custom_color": false,
+              "color": [
+                0.6079999804496765,
+                0.6079999804496765,
+                0.6079999804496765
+              ],
+              "select": true,
+              "show_options": true,
+              "show_preview": false,
+              "hide": false,
+              "mute": false,
+              "show_texture": false,
+              "bl_idname": "ShaderNodeTexImage",
+              "bl_label": "Image Texture",
+              "bl_description": "Sample an image file as a texture",
+              "bl_icon": "NONE",
+              "bl_static_type": "TEX_IMAGE",
+              "bl_width_default": 240.0,
+              "bl_width_min": 140.0,
+              "bl_width_max": 700.0,
+              "bl_height_default": 100.0,
+              "bl_height_min": 30.0,
+              "bl_height_max": 30.0,
+              "projection": "FLAT",
+              "interpolation": "Linear",
+              "projection_blend": 0.0,
+              "extension": "REPEAT"
+            },
+            "inputs": [
+              [
+                "Vector",
+                "Vector",
+                "NodeSocketVector",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ]
+            ],
+            "outputs": [
+              [
+                "Color",
+                "Color",
+                "NodeSocketColor",
+                [
+                  0.800000011920929,
+                  0.800000011920929,
+                  0.800000011920929,
+                  1.0
+                ]
+              ],
+              [
+                "Alpha",
+                "Alpha",
+                "NodeSocketFloat",
+                0.0
+              ]
+            ],
+            "image": {
+              "name": "R8_Matte_Deck_Plates_Normal_OpenGL.png",
+              "sha256": "6d84a86c959554c8fc5f23739888242d6bc2dd1bf52635edad68546829e3e6a5",
+              "colorspace": "Non-Color",
+              "alpha_mode": "CHANNEL_PACKED"
+            },
+            "texture_mapping": {
+              "vector_type": "POINT",
+              "translation": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "rotation": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "scale": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "use_min": false,
+              "use_max": false,
+              "mapping_x": "X",
+              "mapping_y": "Y",
+              "mapping_z": "Z",
+              "mapping": "FLAT"
+            }
+          },
+          "Normal Map": {
+            "type": "ShaderNodeNormalMap",
+            "properties": {
+              "location": [
+                0.0,
+                0.0
+              ],
+              "width": 150.0,
+              "height": 100.0,
+              "label": "",
+              "warning_propagation": "ALL",
+              "use_custom_color": false,
+              "color": [
+                0.6079999804496765,
+                0.6079999804496765,
+                0.6079999804496765
+              ],
+              "select": true,
+              "show_options": true,
+              "show_preview": false,
+              "hide": false,
+              "mute": false,
+              "show_texture": false,
+              "bl_idname": "ShaderNodeNormalMap",
+              "bl_label": "Normal Map",
+              "bl_description": "Generate a perturbed normal from an RGB normal map image. Typically used for faking highly detailed surfaces",
+              "bl_icon": "NONE",
+              "bl_static_type": "NORMAL_MAP",
+              "bl_width_default": 150.0,
+              "bl_width_min": 120.0,
+              "bl_width_max": 700.0,
+              "bl_height_default": 100.0,
+              "bl_height_min": 30.0,
+              "bl_height_max": 30.0,
+              "space": "TANGENT",
+              "uv_map": "UVMap"
+            },
+            "inputs": [
+              [
+                "Strength",
+                "Strength",
+                "NodeSocketFloat",
+                1.0
+              ],
+              [
+                "Color",
+                "Color",
+                "NodeSocketColor",
+                [
+                  0.5,
+                  0.5,
+                  1.0,
+                  1.0
+                ]
+              ]
+            ],
+            "outputs": [
+              [
+                "Normal",
+                "Normal",
+                "NodeSocketVector",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ]
+            ]
+          },
+          "Image Texture.002": {
+            "type": "ShaderNodeTexImage",
+            "properties": {
+              "location": [
+                0.0,
+                0.0
+              ],
+              "width": 240.0,
+              "height": 100.0,
+              "label": "MetallicGloss",
+              "warning_propagation": "ALL",
+              "use_custom_color": false,
+              "color": [
+                0.6079999804496765,
+                0.6079999804496765,
+                0.6079999804496765
+              ],
+              "select": true,
+              "show_options": true,
+              "show_preview": false,
+              "hide": false,
+              "mute": false,
+              "show_texture": false,
+              "bl_idname": "ShaderNodeTexImage",
+              "bl_label": "Image Texture",
+              "bl_description": "Sample an image file as a texture",
+              "bl_icon": "NONE",
+              "bl_static_type": "TEX_IMAGE",
+              "bl_width_default": 240.0,
+              "bl_width_min": 140.0,
+              "bl_width_max": 700.0,
+              "bl_height_default": 100.0,
+              "bl_height_min": 30.0,
+              "bl_height_max": 30.0,
+              "projection": "FLAT",
+              "interpolation": "Linear",
+              "projection_blend": 0.0,
+              "extension": "REPEAT"
+            },
+            "inputs": [
+              [
+                "Vector",
+                "Vector",
+                "NodeSocketVector",
+                [
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              ]
+            ],
+            "outputs": [
+              [
+                "Color",
+                "Color",
+                "NodeSocketColor",
+                [
+                  0.800000011920929,
+                  0.800000011920929,
+                  0.800000011920929,
+                  1.0
+                ]
+              ],
+              [
+                "Alpha",
+                "Alpha",
+                "NodeSocketFloat",
+                0.0
+              ]
+            ],
+            "image": {
+              "name": "R8_Matte_Deck_Plates_MetallicGloss.png",
+              "sha256": "2341e16c19e5270a5cbc82082e885ac8a14bbd032d47e73e949ec03a03f3168b",
+              "colorspace": "Non-Color",
+              "alpha_mode": "CHANNEL_PACKED"
+            },
+            "texture_mapping": {
+              "vector_type": "POINT",
+              "translation": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "rotation": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "scale": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "min": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "max": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "use_min": false,
+              "use_max": false,
+              "mapping_x": "X",
+              "mapping_y": "Y",
+              "mapping_z": "Z",
+              "mapping": "FLAT"
+            }
+          },
+          "Separate Color": {
+            "type": "ShaderNodeSeparateColor",
+            "properties": {
+              "location": [
+                0.0,
+                0.0
+              ],
+              "width": 140.0,
+              "height": 100.0,
+              "label": "",
+              "warning_propagation": "ALL",
+              "use_custom_color": false,
+              "color": [
+                0.6079999804496765,
+                0.6079999804496765,
+                0.6079999804496765
+              ],
+              "select": true,
+              "show_options": true,
+              "show_preview": false,
+              "hide": false,
+              "mute": false,
+              "show_texture": false,
+              "bl_idname": "ShaderNodeSeparateColor",
+              "bl_label": "Separate Color",
+              "bl_description": "Split a color into its individual components using multiple models",
+              "bl_icon": "NONE",
+              "bl_static_type": "SEPARATE_COLOR",
+              "bl_width_default": 140.0,
+              "bl_width_min": 100.0,
+              "bl_width_max": 700.0,
+              "bl_height_default": 100.0,
+              "bl_height_min": 30.0,
+              "bl_height_max": 30.0,
+              "mode": "RGB"
+            },
+            "inputs": [
+              [
+                "Color",
+                "Color",
+                "NodeSocketColor",
+                [
+                  0.800000011920929,
+                  0.800000011920929,
+                  0.800000011920929,
+                  1.0
+                ]
+              ]
+            ],
+            "outputs": [
+              [
+                "Red",
+                "Red",
+                "NodeSocketFloat",
+                0.0
+              ],
+              [
+                "Green",
+                "Green",
+                "NodeSocketFloat",
+                0.0
+              ],
+              [
+                "Blue",
+                "Blue",
+                "NodeSocketFloat",
+                0.0
+              ]
+            ]
+          },
+          "Math": {
+            "type": "ShaderNodeMath",
+            "properties": {
+              "location": [
+                0.0,
+                0.0
+              ],
+              "width": 140.0,
+              "height": 100.0,
+              "label": "",
+              "warning_propagation": "ALL",
+              "use_custom_color": false,
+              "color": [
+                0.6079999804496765,
+                0.6079999804496765,
+                0.6079999804496765
+              ],
+              "select": true,
+              "show_options": true,
+              "show_preview": false,
+              "hide": false,
+              "mute": false,
+              "show_texture": false,
+              "bl_idname": "ShaderNodeMath",
+              "bl_label": "Math",
+              "bl_description": "Perform math operations",
+              "bl_icon": "NONE",
+              "bl_static_type": "MATH",
+              "bl_width_default": 140.0,
+              "bl_width_min": 100.0,
+              "bl_width_max": 700.0,
+              "bl_height_default": 100.0,
+              "bl_height_min": 30.0,
+              "bl_height_max": 30.0,
+              "operation": "SUBTRACT",
+              "use_clamp": false
+            },
+            "inputs": [
+              [
+                "Value",
+                "Value",
+                "NodeSocketFloat",
+                1.0
+              ],
+              [
+                "Value",
+                "Value_001",
+                "NodeSocketFloat",
+                0.5
+              ],
+              [
+                "Value",
+                "Value_002",
+                "NodeSocketFloat",
+                0.5
+              ]
+            ],
+            "outputs": [
+              [
+                "Value",
+                "Value",
+                "NodeSocketFloat",
+                0.0
+              ]
+            ]
+          }
+        },
+        "links": [
+          [
+            "Principled BSDF",
+            0,
+            "Material Output",
+            0
+          ],
+          [
+            "UV Map",
+            0,
+            "Image Texture",
+            0
+          ],
+          [
+            "Image Texture",
+            0,
+            "Principled BSDF",
+            0
+          ],
+          [
+            "UV Map",
+            0,
+            "Image Texture.001",
+            0
+          ],
+          [
+            "Image Texture.001",
+            0,
+            "Normal Map",
+            1
+          ],
+          [
+            "Normal Map",
+            0,
+            "Principled BSDF",
+            5
+          ],
+          [
+            "UV Map",
+            0,
+            "Image Texture.002",
+            0
+          ],
+          [
+            "Image Texture.002",
+            0,
+            "Separate Color",
+            0
+          ],
+          [
+            "Separate Color",
+            0,
+            "Principled BSDF",
+            1
+          ],
+          [
+            "Image Texture.002",
+            1,
+            "Math",
+            1
+          ],
+          [
+            "Math",
+            0,
+            "Principled BSDF",
+            2
+          ]
+        ]
+      }
+    }
+  },
+  "locked_original_files": {
+    "Moonkov_R39_Deck0176_Material_Patch.blend": "4423aea0278f4457a71550dec5b334943da50b0b8c39ed73d8bda108b63a16a6",
+    "R39_Deck0176_Material_UV_Patch.json": "80952d21b7e1fede9ee9587d09cec6afc47dfda6f6c1be563aa2315a8ecb312b",
+    "textures/R39_Deck0176_BaseColor_sRGB.png": "1668819b81c685aa64b9c3e475a436e1869e8d56374ccaa111636bad76f18ab1",
+    "textures/R39_Deck0176_Normal_OpenGL.png": "aab94ece5826f2e1eed8efafe910d0ae1ea45e966c37a08d4dce3e40a08a1092",
+    "textures/R39_Deck0176_Roughness_Linear.png": "2d52827caa9d1046bdff62c88556a8ee4d13720fa4210bf3a83d63ed0f9bea1a",
+    "textures/R39_Deck0176_MetallicSmoothness_Linear.png": "54423774beb3a74274827dcb0739e373feca58e5bc4b5e9f165b494e5bbdb8c2"
+  },
+  "payload_states": {
+    "Moonkov_R39_Deck0176_Material_Patch.blend": {
+      "objects": {},
+      "materials": {
+        "R39_Deck0176_Industrial_Plated_Surface": {
+          "original_signature": "4e09f0e925b20c79ca9aa858bf37c525ce351b8f47e7bba72aeda621a7bc6c79",
+          "descriptor": {
+            "properties": {
+              "use_fake_user": true,
+              "use_extra_user": false,
+              "is_runtime_data": false,
+              "tag": false,
+              "surface_render_method": "DITHERED",
+              "displacement_method": "BUMP",
+              "blend_method": "HASHED",
+              "alpha_threshold": 0.5,
+              "use_transparency_overlap": true,
+              "show_transparent_back": true,
+              "use_backface_culling": false,
+              "use_backface_culling_shadow": false,
+              "use_backface_culling_lightprobe_volume": true,
+              "use_transparent_shadow": true,
+              "use_raytrace_refraction": false,
+              "use_screen_refraction": false,
+              "use_sss_translucency": false,
+              "refraction_depth": 0.0,
+              "thickness_mode": "SPHERE",
+              "use_thickness_from_shadow": false,
+              "volume_intersection_method": "FAST",
+              "max_vertex_displacement": 0.0,
+              "preview_render_type": "SPHERE",
+              "use_preview_world": false,
+              "pass_index": 0,
+              "use_nodes": true,
+              "paint_active_slot": 0,
+              "paint_clone_slot": 0,
+              "diffuse_color": [
+                0.08900000154972076,
+                0.10199999809265137,
+                0.10700000077486038,
+                1.0
+              ],
+              "specular_color": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "roughness": 0.4000000059604645,
+              "specular_intensity": 0.5,
+              "metallic": 0.0,
+              "line_color": [
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "line_priority": 0
+            },
+            "nodes": {
+              "nodes": {
+                "Material Output": {
+                  "type": "ShaderNodeOutputMaterial",
+                  "properties": {
+                    "location": [
+                      430.0,
+                      100.0
+                    ],
+                    "width": 140.0,
+                    "height": 100.0,
+                    "label": "",
+                    "warning_propagation": "ALL",
+                    "use_custom_color": false,
+                    "color": [
+                      0.6079999804496765,
+                      0.6079999804496765,
+                      0.6079999804496765
+                    ],
+                    "select": true,
+                    "show_options": true,
+                    "show_preview": false,
+                    "hide": false,
+                    "mute": false,
+                    "show_texture": false,
+                    "bl_idname": "ShaderNodeOutputMaterial",
+                    "bl_label": "Material Output",
+                    "bl_description": "Output surface material information for use in rendering",
+                    "bl_icon": "NONE",
+                    "bl_static_type": "OUTPUT_MATERIAL",
+                    "bl_width_default": 140.0,
+                    "bl_width_min": 100.0,
+                    "bl_width_max": 700.0,
+                    "bl_height_default": 100.0,
+                    "bl_height_min": 30.0,
+                    "bl_height_max": 30.0,
+                    "is_active_output": true,
+                    "target": "ALL"
+                  },
+                  "inputs": [
+                    [
+                      "Surface",
+                      "Surface",
+                      "NodeSocketShader",
+                      null
+                    ],
+                    [
+                      "Volume",
+                      "Volume",
+                      "NodeSocketShader",
+                      null
+                    ],
+                    [
+                      "Displacement",
+                      "Displacement",
+                      "NodeSocketVector",
+                      [
+                        0.0,
+                        0.0,
+                        0.0
+                      ]
+                    ],
+                    [
+                      "Thickness",
+                      "Thickness",
+                      "NodeSocketFloat",
+                      0.0
+                    ]
+                  ],
+                  "outputs": []
+                },
+                "Principled BSDF": {
+                  "type": "ShaderNodeBsdfPrincipled",
+                  "properties": {
+                    "location": [
+                      120.0,
+                      100.0
+                    ],
+                    "width": 240.0,
+                    "height": 100.0,
+                    "label": "",
+                    "warning_propagation": "ALL",
+                    "use_custom_color": false,
+                    "color": [
+                      0.6079999804496765,
+                      0.6079999804496765,
+                      0.6079999804496765
+                    ],
+                    "select": true,
+                    "show_options": true,
+                    "show_preview": false,
+                    "hide": false,
+                    "mute": false,
+                    "show_texture": false,
+                    "bl_idname": "ShaderNodeBsdfPrincipled",
+                    "bl_label": "Principled BSDF",
+                    "bl_description": "Physically-based, easy-to-use shader for rendering surface materials, based on the OpenPBR model",
+                    "bl_icon": "NONE",
+                    "bl_static_type": "BSDF_PRINCIPLED",
+                    "bl_width_default": 240.0,
+                    "bl_width_min": 140.0,
+                    "bl_width_max": 700.0,
+                    "bl_height_default": 100.0,
+                    "bl_height_min": 30.0,
+                    "bl_height_max": 30.0,
+                    "distribution": "MULTI_GGX",
+                    "subsurface_method": "RANDOM_WALK"
+                  },
+                  "inputs": [
+                    [
+                      "Base Color",
+                      "Base Color",
+                      "NodeSocketColor",
+                      [
+                        0.800000011920929,
+                        0.800000011920929,
+                        0.800000011920929,
+                        1.0
+                      ]
+                    ],
+                    [
+                      "Metallic",
+                      "Metallic",
+                      "NodeSocketFloatFactor",
+                      0.2800000011920929
+                    ],
+                    [
+                      "Roughness",
+                      "Roughness",
+                      "NodeSocketFloatFactor",
+                      0.7350000143051147
+                    ],
+                    [
+                      "IOR",
+                      "IOR",
+                      "NodeSocketFloat",
+                      1.5
+                    ],
+                    [
+                      "Alpha",
+                      "Alpha",
+                      "NodeSocketFloatFactor",
+                      1.0
+                    ],
+                    [
+                      "Normal",
+                      "Normal",
+                      "NodeSocketVector",
+                      [
+                        0.0,
+                        0.0,
+                        0.0
+                      ]
+                    ],
+                    [
+                      "Weight",
+                      "Weight",
+                      "NodeSocketFloat",
+                      0.0
+                    ],
+                    [
+                      "Diffuse Roughness",
+                      "Diffuse Roughness",
+                      "NodeSocketFloatFactor",
+                      0.0
+                    ],
+                    [
+                      "Subsurface Weight",
+                      "Subsurface Weight",
+                      "NodeSocketFloatFactor",
+                      0.0
+                    ],
+                    [
+                      "Subsurface Radius",
+                      "Subsurface Radius",
+                      "NodeSocketVector",
+                      [
+                        1.0,
+                        0.20000000298023224,
+                        0.10000000149011612
+                      ]
+                    ],
+                    [
+                      "Subsurface Scale",
+                      "Subsurface Scale",
+                      "NodeSocketFloatDistance",
+                      0.05000000074505806
+                    ],
+                    [
+                      "Subsurface IOR",
+                      "Subsurface IOR",
+                      "NodeSocketFloatFactor",
+                      1.399999976158142
+                    ],
+                    [
+                      "Subsurface Anisotropy",
+                      "Subsurface Anisotropy",
+                      "NodeSocketFloatFactor",
+                      0.0
+                    ],
+                    [
+                      "Specular IOR Level",
+                      "Specular IOR Level",
+                      "NodeSocketFloatFactor",
+                      0.5
+                    ],
+                    [
+                      "Specular Tint",
+                      "Specular Tint",
+                      "NodeSocketColor",
+                      [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                      ]
+                    ],
+                    [
+                      "Anisotropic",
+                      "Anisotropic",
+                      "NodeSocketFloatFactor",
+                      0.0
+                    ],
+                    [
+                      "Anisotropic Rotation",
+                      "Anisotropic Rotation",
+                      "NodeSocketFloatFactor",
+                      0.0
+                    ],
+                    [
+                      "Tangent",
+                      "Tangent",
+                      "NodeSocketVector",
+                      [
+                        0.0,
+                        0.0,
+                        0.0
+                      ]
+                    ],
+                    [
+                      "Transmission Weight",
+                      "Transmission Weight",
+                      "NodeSocketFloatFactor",
+                      0.0
+                    ],
+                    [
+                      "Coat Weight",
+                      "Coat Weight",
+                      "NodeSocketFloatFactor",
+                      0.0
+                    ],
+                    [
+                      "Coat Roughness",
+                      "Coat Roughness",
+                      "NodeSocketFloatFactor",
+                      0.029999999329447746
+                    ],
+                    [
+                      "Coat IOR",
+                      "Coat IOR",
+                      "NodeSocketFloat",
+                      1.5
+                    ],
+                    [
+                      "Coat Tint",
+                      "Coat Tint",
+                      "NodeSocketColor",
+                      [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                      ]
+                    ],
+                    [
+                      "Coat Normal",
+                      "Coat Normal",
+                      "NodeSocketVector",
+                      [
+                        0.0,
+                        0.0,
+                        0.0
+                      ]
+                    ],
+                    [
+                      "Sheen Weight",
+                      "Sheen Weight",
+                      "NodeSocketFloatFactor",
+                      0.0
+                    ],
+                    [
+                      "Sheen Roughness",
+                      "Sheen Roughness",
+                      "NodeSocketFloatFactor",
+                      0.5
+                    ],
+                    [
+                      "Sheen Tint",
+                      "Sheen Tint",
+                      "NodeSocketColor",
+                      [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                      ]
+                    ],
+                    [
+                      "Emission Color",
+                      "Emission Color",
+                      "NodeSocketColor",
+                      [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                      ]
+                    ],
+                    [
+                      "Emission Strength",
+                      "Emission Strength",
+                      "NodeSocketFloat",
+                      0.0
+                    ],
+                    [
+                      "Thin Film Thickness",
+                      "Thin Film Thickness",
+                      "NodeSocketFloatWavelength",
+                      0.0
+                    ],
+                    [
+                      "Thin Film IOR",
+                      "Thin Film IOR",
+                      "NodeSocketFloat",
+                      1.3300000429153442
+                    ]
+                  ],
+                  "outputs": [
+                    [
+                      "BSDF",
+                      "BSDF",
+                      "NodeSocketShader",
+                      null
+                    ]
+                  ]
+                },
+                "UV Map": {
+                  "type": "ShaderNodeUVMap",
+                  "properties": {
+                    "location": [
+                      -780.0,
+                      60.0
+                    ],
+                    "width": 150.0,
+                    "height": 100.0,
+                    "label": "Single existing deck top: metric 20.375 x 14 m",
+                    "warning_propagation": "ALL",
+                    "use_custom_color": false,
+                    "color": [
+                      0.6079999804496765,
+                      0.6079999804496765,
+                      0.6079999804496765
+                    ],
+                    "select": true,
+                    "show_options": true,
+                    "show_preview": false,
+                    "hide": false,
+                    "mute": false,
+                    "show_texture": false,
+                    "bl_idname": "ShaderNodeUVMap",
+                    "bl_label": "UV Map",
+                    "bl_description": "Retrieve a UV map from the geometry, or the default fallback if none is specified",
+                    "bl_icon": "NONE",
+                    "bl_static_type": "UVMAP",
+                    "bl_width_default": 150.0,
+                    "bl_width_min": 120.0,
+                    "bl_width_max": 700.0,
+                    "bl_height_default": 100.0,
+                    "bl_height_min": 30.0,
+                    "bl_height_max": 30.0,
+                    "from_instancer": false,
+                    "uv_map": "UVMap"
+                  },
+                  "inputs": [],
+                  "outputs": [
+                    [
+                      "UV",
+                      "UV",
+                      "NodeSocketVector",
+                      [
+                        0.0,
+                        0.0,
+                        0.0
+                      ]
+                    ]
+                  ]
+                },
+                "R39_BaseColor": {
+                  "type": "ShaderNodeTexImage",
+                  "properties": {
+                    "location": [
+                      -550.0,
+                      480.0
+                    ],
+                    "width": 240.0,
+                    "height": 100.0,
+                    "label": "BaseColor",
+                    "warning_propagation": "ALL",
+                    "use_custom_color": false,
+                    "color": [
+                      0.6079999804496765,
+                      0.6079999804496765,
+                      0.6079999804496765
+                    ],
+                    "select": true,
+                    "show_options": true,
+                    "show_preview": false,
+                    "hide": false,
+                    "mute": false,
+                    "show_texture": false,
+                    "bl_idname": "ShaderNodeTexImage",
+                    "bl_label": "Image Texture",
+                    "bl_description": "Sample an image file as a texture",
+                    "bl_icon": "NONE",
+                    "bl_static_type": "TEX_IMAGE",
+                    "bl_width_default": 240.0,
+                    "bl_width_min": 140.0,
+                    "bl_width_max": 700.0,
+                    "bl_height_default": 100.0,
+                    "bl_height_min": 30.0,
+                    "bl_height_max": 30.0,
+                    "projection": "FLAT",
+                    "interpolation": "Linear",
+                    "projection_blend": 0.0,
+                    "extension": "EXTEND"
+                  },
+                  "inputs": [
+                    [
+                      "Vector",
+                      "Vector",
+                      "NodeSocketVector",
+                      [
+                        0.0,
+                        0.0,
+                        0.0
+                      ]
+                    ]
+                  ],
+                  "outputs": [
+                    [
+                      "Color",
+                      "Color",
+                      "NodeSocketColor",
+                      [
+                        0.800000011920929,
+                        0.800000011920929,
+                        0.800000011920929,
+                        1.0
+                      ]
+                    ],
+                    [
+                      "Alpha",
+                      "Alpha",
+                      "NodeSocketFloat",
+                      0.0
+                    ]
+                  ],
+                  "image": {
+                    "name": "R39_Deck0176_BaseColor_sRGB.png",
+                    "sha256": "1668819b81c685aa64b9c3e475a436e1869e8d56374ccaa111636bad76f18ab1",
+                    "colorspace": "sRGB",
+                    "alpha_mode": "STRAIGHT"
+                  },
+                  "texture_mapping": {
+                    "vector_type": "POINT",
+                    "translation": [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    "rotation": [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    "scale": [
+                      1.0,
+                      1.0,
+                      1.0
+                    ],
+                    "min": [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    "max": [
+                      1.0,
+                      1.0,
+                      1.0
+                    ],
+                    "use_min": false,
+                    "use_max": false,
+                    "mapping_x": "X",
+                    "mapping_y": "Y",
+                    "mapping_z": "Z",
+                    "mapping": "FLAT"
+                  }
+                },
+                "R39_Normal": {
+                  "type": "ShaderNodeTexImage",
+                  "properties": {
+                    "location": [
+                      -550.0,
+                      180.0
+                    ],
+                    "width": 240.0,
+                    "height": 100.0,
+                    "label": "Normal",
+                    "warning_propagation": "ALL",
+                    "use_custom_color": false,
+                    "color": [
+                      0.6079999804496765,
+                      0.6079999804496765,
+                      0.6079999804496765
+                    ],
+                    "select": true,
+                    "show_options": true,
+                    "show_preview": false,
+                    "hide": false,
+                    "mute": false,
+                    "show_texture": false,
+                    "bl_idname": "ShaderNodeTexImage",
+                    "bl_label": "Image Texture",
+                    "bl_description": "Sample an image file as a texture",
+                    "bl_icon": "NONE",
+                    "bl_static_type": "TEX_IMAGE",
+                    "bl_width_default": 240.0,
+                    "bl_width_min": 140.0,
+                    "bl_width_max": 700.0,
+                    "bl_height_default": 100.0,
+                    "bl_height_min": 30.0,
+                    "bl_height_max": 30.0,
+                    "projection": "FLAT",
+                    "interpolation": "Linear",
+                    "projection_blend": 0.0,
+                    "extension": "EXTEND"
+                  },
+                  "inputs": [
+                    [
+                      "Vector",
+                      "Vector",
+                      "NodeSocketVector",
+                      [
+                        0.0,
+                        0.0,
+                        0.0
+                      ]
+                    ]
+                  ],
+                  "outputs": [
+                    [
+                      "Color",
+                      "Color",
+                      "NodeSocketColor",
+                      [
+                        0.800000011920929,
+                        0.800000011920929,
+                        0.800000011920929,
+                        1.0
+                      ]
+                    ],
+                    [
+                      "Alpha",
+                      "Alpha",
+                      "NodeSocketFloat",
+                      0.0
+                    ]
+                  ],
+                  "image": {
+                    "name": "R39_Deck0176_Normal_OpenGL.png",
+                    "sha256": "aab94ece5826f2e1eed8efafe910d0ae1ea45e966c37a08d4dce3e40a08a1092",
+                    "colorspace": "Non-Color",
+                    "alpha_mode": "STRAIGHT"
+                  },
+                  "texture_mapping": {
+                    "vector_type": "POINT",
+                    "translation": [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    "rotation": [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    "scale": [
+                      1.0,
+                      1.0,
+                      1.0
+                    ],
+                    "min": [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    "max": [
+                      1.0,
+                      1.0,
+                      1.0
+                    ],
+                    "use_min": false,
+                    "use_max": false,
+                    "mapping_x": "X",
+                    "mapping_y": "Y",
+                    "mapping_z": "Z",
+                    "mapping": "FLAT"
+                  }
+                },
+                "Normal Map": {
+                  "type": "ShaderNodeNormalMap",
+                  "properties": {
+                    "location": [
+                      -220.0,
+                      -190.0
+                    ],
+                    "width": 150.0,
+                    "height": 100.0,
+                    "label": "",
+                    "warning_propagation": "ALL",
+                    "use_custom_color": false,
+                    "color": [
+                      0.6079999804496765,
+                      0.6079999804496765,
+                      0.6079999804496765
+                    ],
+                    "select": true,
+                    "show_options": true,
+                    "show_preview": false,
+                    "hide": false,
+                    "mute": false,
+                    "show_texture": false,
+                    "bl_idname": "ShaderNodeNormalMap",
+                    "bl_label": "Normal Map",
+                    "bl_description": "Generate a perturbed normal from an RGB normal map image. Typically used for faking highly detailed surfaces",
+                    "bl_icon": "NONE",
+                    "bl_static_type": "NORMAL_MAP",
+                    "bl_width_default": 150.0,
+                    "bl_width_min": 120.0,
+                    "bl_width_max": 700.0,
+                    "bl_height_default": 100.0,
+                    "bl_height_min": 30.0,
+                    "bl_height_max": 30.0,
+                    "space": "TANGENT",
+                    "uv_map": "UVMap"
+                  },
+                  "inputs": [
+                    [
+                      "Strength",
+                      "Strength",
+                      "NodeSocketFloat",
+                      1.0
+                    ],
+                    [
+                      "Color",
+                      "Color",
+                      "NodeSocketColor",
+                      [
+                        0.5,
+                        0.5,
+                        1.0,
+                        1.0
+                      ]
+                    ]
+                  ],
+                  "outputs": [
+                    [
+                      "Normal",
+                      "Normal",
+                      "NodeSocketVector",
+                      [
+                        0.0,
+                        0.0,
+                        0.0
+                      ]
+                    ]
+                  ]
+                },
+                "R39_Roughness": {
+                  "type": "ShaderNodeTexImage",
+                  "properties": {
+                    "location": [
+                      -550.0,
+                      -120.0
+                    ],
+                    "width": 240.0,
+                    "height": 100.0,
+                    "label": "Roughness",
+                    "warning_propagation": "ALL",
+                    "use_custom_color": false,
+                    "color": [
+                      0.6079999804496765,
+                      0.6079999804496765,
+                      0.6079999804496765
+                    ],
+                    "select": true,
+                    "show_options": true,
+                    "show_preview": false,
+                    "hide": false,
+                    "mute": false,
+                    "show_texture": false,
+                    "bl_idname": "ShaderNodeTexImage",
+                    "bl_label": "Image Texture",
+                    "bl_description": "Sample an image file as a texture",
+                    "bl_icon": "NONE",
+                    "bl_static_type": "TEX_IMAGE",
+                    "bl_width_default": 240.0,
+                    "bl_width_min": 140.0,
+                    "bl_width_max": 700.0,
+                    "bl_height_default": 100.0,
+                    "bl_height_min": 30.0,
+                    "bl_height_max": 30.0,
+                    "projection": "FLAT",
+                    "interpolation": "Linear",
+                    "projection_blend": 0.0,
+                    "extension": "EXTEND"
+                  },
+                  "inputs": [
+                    [
+                      "Vector",
+                      "Vector",
+                      "NodeSocketVector",
+                      [
+                        0.0,
+                        0.0,
+                        0.0
+                      ]
+                    ]
+                  ],
+                  "outputs": [
+                    [
+                      "Color",
+                      "Color",
+                      "NodeSocketColor",
+                      [
+                        0.800000011920929,
+                        0.800000011920929,
+                        0.800000011920929,
+                        1.0
+                      ]
+                    ],
+                    [
+                      "Alpha",
+                      "Alpha",
+                      "NodeSocketFloat",
+                      0.0
+                    ]
+                  ],
+                  "image": {
+                    "name": "R39_Deck0176_Roughness_Linear.png",
+                    "sha256": "2d52827caa9d1046bdff62c88556a8ee4d13720fa4210bf3a83d63ed0f9bea1a",
+                    "colorspace": "Non-Color",
+                    "alpha_mode": "STRAIGHT"
+                  },
+                  "texture_mapping": {
+                    "vector_type": "POINT",
+                    "translation": [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    "rotation": [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    "scale": [
+                      1.0,
+                      1.0,
+                      1.0
+                    ],
+                    "min": [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    "max": [
+                      1.0,
+                      1.0,
+                      1.0
+                    ],
+                    "use_min": false,
+                    "use_max": false,
+                    "mapping_x": "X",
+                    "mapping_y": "Y",
+                    "mapping_z": "Z",
+                    "mapping": "FLAT"
+                  }
+                },
+                "R39_MetallicSmoothness": {
+                  "type": "ShaderNodeTexImage",
+                  "properties": {
+                    "location": [
+                      -550.0,
+                      -420.0
+                    ],
+                    "width": 240.0,
+                    "height": 100.0,
+                    "label": "MetallicSmoothness",
+                    "warning_propagation": "ALL",
+                    "use_custom_color": false,
+                    "color": [
+                      0.6079999804496765,
+                      0.6079999804496765,
+                      0.6079999804496765
+                    ],
+                    "select": true,
+                    "show_options": true,
+                    "show_preview": false,
+                    "hide": false,
+                    "mute": false,
+                    "show_texture": false,
+                    "bl_idname": "ShaderNodeTexImage",
+                    "bl_label": "Image Texture",
+                    "bl_description": "Sample an image file as a texture",
+                    "bl_icon": "NONE",
+                    "bl_static_type": "TEX_IMAGE",
+                    "bl_width_default": 240.0,
+                    "bl_width_min": 140.0,
+                    "bl_width_max": 700.0,
+                    "bl_height_default": 100.0,
+                    "bl_height_min": 30.0,
+                    "bl_height_max": 30.0,
+                    "projection": "FLAT",
+                    "interpolation": "Linear",
+                    "projection_blend": 0.0,
+                    "extension": "EXTEND"
+                  },
+                  "inputs": [
+                    [
+                      "Vector",
+                      "Vector",
+                      "NodeSocketVector",
+                      [
+                        0.0,
+                        0.0,
+                        0.0
+                      ]
+                    ]
+                  ],
+                  "outputs": [
+                    [
+                      "Color",
+                      "Color",
+                      "NodeSocketColor",
+                      [
+                        0.800000011920929,
+                        0.800000011920929,
+                        0.800000011920929,
+                        1.0
+                      ]
+                    ],
+                    [
+                      "Alpha",
+                      "Alpha",
+                      "NodeSocketFloat",
+                      0.0
+                    ]
+                  ],
+                  "image": {
+                    "name": "R39_Deck0176_MetallicSmoothness_Linear.png",
+                    "sha256": "54423774beb3a74274827dcb0739e373feca58e5bc4b5e9f165b494e5bbdb8c2",
+                    "colorspace": "Non-Color",
+                    "alpha_mode": "STRAIGHT"
+                  },
+                  "texture_mapping": {
+                    "vector_type": "POINT",
+                    "translation": [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    "rotation": [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    "scale": [
+                      1.0,
+                      1.0,
+                      1.0
+                    ],
+                    "min": [
+                      0.0,
+                      0.0,
+                      0.0
+                    ],
+                    "max": [
+                      1.0,
+                      1.0,
+                      1.0
+                    ],
+                    "use_min": false,
+                    "use_max": false,
+                    "mapping_x": "X",
+                    "mapping_y": "Y",
+                    "mapping_z": "Z",
+                    "mapping": "FLAT"
+                  }
+                },
+                "Separate Color": {
+                  "type": "ShaderNodeSeparateColor",
+                  "properties": {
+                    "location": [
+                      -220.0,
+                      -450.0
+                    ],
+                    "width": 140.0,
+                    "height": 100.0,
+                    "label": "",
+                    "warning_propagation": "ALL",
+                    "use_custom_color": false,
+                    "color": [
+                      0.6079999804496765,
+                      0.6079999804496765,
+                      0.6079999804496765
+                    ],
+                    "select": true,
+                    "show_options": true,
+                    "show_preview": false,
+                    "hide": false,
+                    "mute": false,
+                    "show_texture": false,
+                    "bl_idname": "ShaderNodeSeparateColor",
+                    "bl_label": "Separate Color",
+                    "bl_description": "Split a color into its individual components using multiple models",
+                    "bl_icon": "NONE",
+                    "bl_static_type": "SEPARATE_COLOR",
+                    "bl_width_default": 140.0,
+                    "bl_width_min": 100.0,
+                    "bl_width_max": 700.0,
+                    "bl_height_default": 100.0,
+                    "bl_height_min": 30.0,
+                    "bl_height_max": 30.0,
+                    "mode": "RGB"
+                  },
+                  "inputs": [
+                    [
+                      "Color",
+                      "Color",
+                      "NodeSocketColor",
+                      [
+                        0.800000011920929,
+                        0.800000011920929,
+                        0.800000011920929,
+                        1.0
+                      ]
+                    ]
+                  ],
+                  "outputs": [
+                    [
+                      "Red",
+                      "Red",
+                      "NodeSocketFloat",
+                      0.0
+                    ],
+                    [
+                      "Green",
+                      "Green",
+                      "NodeSocketFloat",
+                      0.0
+                    ],
+                    [
+                      "Blue",
+                      "Blue",
+                      "NodeSocketFloat",
+                      0.0
+                    ]
+                  ]
+                }
+              },
+              "links": [
+                [
+                  "Principled BSDF",
+                  0,
+                  "Material Output",
+                  0
+                ],
+                [
+                  "UV Map",
+                  0,
+                  "R39_BaseColor",
+                  0
+                ],
+                [
+                  "R39_BaseColor",
+                  0,
+                  "Principled BSDF",
+                  0
+                ],
+                [
+                  "UV Map",
+                  0,
+                  "R39_Normal",
+                  0
+                ],
+                [
+                  "R39_Normal",
+                  0,
+                  "Normal Map",
+                  1
+                ],
+                [
+                  "Normal Map",
+                  0,
+                  "Principled BSDF",
+                  5
+                ],
+                [
+                  "UV Map",
+                  0,
+                  "R39_Roughness",
+                  0
+                ],
+                [
+                  "R39_Roughness",
+                  0,
+                  "Principled BSDF",
+                  2
+                ],
+                [
+                  "UV Map",
+                  0,
+                  "R39_MetallicSmoothness",
+                  0
+                ],
+                [
+                  "R39_MetallicSmoothness",
+                  0,
+                  "Separate Color",
+                  0
+                ],
+                [
+                  "Separate Color",
+                  0,
+                  "Principled BSDF",
+                  1
+                ]
+              ]
+            }
+          }
+        }
+      },
+      "images": [
+        "R39_Deck0176_BaseColor_sRGB.png",
+        "R39_Deck0176_MetallicSmoothness_Linear.png",
+        "R39_Deck0176_Normal_OpenGL.png",
+        "R39_Deck0176_Roughness_Linear.png"
+      ]
+    }
+  }
+}

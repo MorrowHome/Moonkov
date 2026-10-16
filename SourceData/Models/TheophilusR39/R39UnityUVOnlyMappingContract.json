@@ -1,0 +1,30 @@
+{
+  "meshPath": "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/DenseRingConceptB/R8VisualSurfaces/Meshes/R8_DisplayMesh_0522.asset",
+  "sha256": "5b68a638dfd75f3b5f3aa332a52c97ab456c0aa67a04936a26ddd46b74091ee2",
+  "GUID": "b74bba32e3db2a64e80daf3e96141451",
+  "fileId": 4300000,
+  "vertexCount": 36,
+  "expectedMatrix": [
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    2015.0,
+    0.0,
+    2130.0,
+    1.0
+  ],
+  "UV0AndNormalsFloat32Exact": true,
+  "indicesExact": true,
+  "targetFilterFileId": 2211411780604271973,
+  "targetRendererFileId": 8696738014525456645,
+  "geometryPolicy": "Clone versioned existing Unity mesh; preserve positions/normals/other UV channels/bounds and Transform exactly. Use exact source baseline UV0 and triangle identities for UV/material-only patch."
+}
