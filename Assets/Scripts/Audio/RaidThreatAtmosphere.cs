@@ -82,11 +82,10 @@ namespace Unity.MP_FPS
             if (Valid(m_Bed)) m_Bed.Handle.Emitter.SetVolume(Mathf.Lerp(.45f, .8f, m_Pressure));
             if (nearby && Time.time >= m_NextRustle)
             {
-                m_NextRustle = Time.time + Range(4, 8);
+                m_NextRustle = Time.time + Range(7, 13);
                 Stop(ref m_Rustle);
-                bool muffled = UnityEngine.Physics.Linecast(listener, source,
-                    LayerMask.GetMask("Default", "Ground"), QueryTriggerInteraction.Ignore);
-                m_Rustle = MoonkovAudio.Play(alienRustle, source, muffled ? .3f : .7f);
+                // The nearest active replicated creature owns this cue. Central pooled occlusion handles walls.
+                m_Rustle = MoonkovAudio.Play(MoonkovAudio.Library?.AlienIdle ?? alienRustle, source, .7f);
             }
             if (Time.time < m_NextCreak) return;
             m_NextCreak = Time.time + Range(14, 25);

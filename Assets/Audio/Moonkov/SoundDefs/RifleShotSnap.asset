@@ -14,6 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier:
   EditorVolume: 1
   UnityAudioMixer: {fileID: 24100000, guid: fddb343a82968524eb1e9a6f65433d7e, type: 2}
+  Role: 1
+  Priority: 80
+  MaxVoices: 8
+  MinimumInterval: 0
+  Occlusion: 1
   MixerGroup: 1
   BasePitchInCents: 0
   VolumeScale: 1

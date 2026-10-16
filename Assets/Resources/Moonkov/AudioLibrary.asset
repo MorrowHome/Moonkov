@@ -26,5 +26,25 @@ MonoBehaviour:
   RegolithFootsteps: {fileID: 11400000, guid: 93bc775f9d18ada4cb8030e04550cfca, type: 2}
   MetalFootsteps: {fileID: 11400000, guid: a31a507dbb38d50469d4505d1c7fa898, type: 2}
   Cloth: {fileID: 11400000, guid: c93a300bab3de7c4da9766f1fa8d65ca, type: 2}
+  HardFootsteps: {fileID: 11400000, guid: a18b4562ead5d405a852504090872edf, type: 2}
+  AlienContact: {fileID: 11400000, guid: 74fc8ef0d1a7f483d8285f0569da08a1, type: 2}
+  AlienWarning: {fileID: 11400000, guid: b13e79327619c4fb7a8546d561d193f6, type: 2}
+  AlienStrike: {fileID: 11400000, guid: 566c43191cc55449490b0fcacb9ab98d, type: 2}
+  AlienHurt: {fileID: 11400000, guid: 4a60d314cc7e6419e9c0245fcbfab83f, type: 2}
+  AlienDeath: {fileID: 11400000, guid: caaa4c4cd142e48079e67075fbe44f4a, type: 2}
+  AlienIdle: {fileID: 11400000, guid: cc12647e994be4fee99ebc4e50120ad2, type: 2}
+  Aim: {fileID: 11400000, guid: f7358ed7c9f3e45acb46b515e2b623f5, type: 2}
+  Light: {fileID: 11400000, guid: 37d7df992175d49faabca71e962ff081, type: 2}
+  DryFire: {fileID: 11400000, guid: 88dc5833a2b0c43c6aeb0b5c1c3d843f, type: 2}
+  ReloadReady: {fileID: 11400000, guid: 3c0eeac280a1f46dbb83f91c1aceaa82, type: 2}
+  Medical: {fileID: 11400000, guid: 57297e9813a1d4de3aa576c4289e8c46, type: 2}
+  Pickup: {fileID: 11400000, guid: 2434afff2f2144ed1b86ae56d7c73d21, type: 2}
+  OxygenRefill: {fileID: 11400000, guid: dbcde348502924a7e806bf2ddeb58784, type: 2}
+  SuitBreath: {fileID: 11400000, guid: d1a7b658f8beb4c1cb3d3a86d0b868b6, type: 2}
+  Heartbeat: {fileID: 11400000, guid: 52252a31512034af2a31c03625970cd0, type: 2}
+  SuitWarning: {fileID: 11400000, guid: 1f7f46808c7c24032a414513142ba298, type: 2}
+  ExtractStart: {fileID: 11400000, guid: c9a5cd419b5844e4aa91bc1d3ed3d190, type: 2}
+  ExtractCancel: {fileID: 11400000, guid: c2197aa8a3f44492eb92eb8fb48854ff, type: 2}
+  ExtractTick: {fileID: 11400000, guid: 28e7d4409b4994afcbe9b5b4ccc0e952, type: 2}
   ShipInterior: {fileID: 11400000, guid: dbc155221efdcdb499d7e1a3fac1c6b7, type: 2}
   DeployConfirm: {fileID: 11400000, guid: cf73b4f8232750148bcd13ac5efe416a, type: 2}

@@ -1,0 +1,734 @@
+{
+  "collections": [
+    {
+      "name": "Monster Sound Effects 2",
+      "author": "Ogrebane",
+      "license": "CC0-1.0",
+      "url": "https://opengameart.org/content/monster-sound-effects-2",
+      "archive": "https://opengameart.org/sites/default/files/monster_sfx_pack_2.zip"
+    },
+    {
+      "name": "Footsteps on different surfaces",
+      "author": "congusbongus (mastering); Ali_6868 (gravel); Eelke (metal); swuing (boots); blukotek (bones)",
+      "license": "CC0-1.0 gravel/bones; CC-BY-3.0 metal/boots",
+      "url": "https://opengameart.org/content/footsteps-on-different-surfaces",
+      "archive": "https://opengameart.org/sites/default/files/footsteps_0.zip"
+    }
+  ],
+  "clips": [
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/Regolith1.wav",
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Footsteps/footsteps/gravel/0.ogg",
+          "sha256": "90d33dd0aff925581c97d8577a23d435e14089a789e7361792fd0ca69b888b54"
+        }
+      ],
+      "processing": "Recorded gravel contact; speed 0.9; HP65Hz, restrained HF, low contact body; 4ms/45ms edge fades; peak -2.5dBFS",
+      "seconds": 0.2063,
+      "peak_dbfs": -2.5,
+      "sha256": "1ce3fbad71a5b66092b07324aa874369aa6d49465b0265cbca8d46ce7387e932"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/Regolith2.wav",
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Footsteps/footsteps/gravel/1.ogg",
+          "sha256": "9a7a083c54c10e5bedafc7f1473967fc074418e798b97c0ad378dcf49b91b35c"
+        }
+      ],
+      "processing": "Recorded gravel contact; speed 0.9; HP65Hz, restrained HF, low contact body; 4ms/45ms edge fades; peak -2.5dBFS",
+      "seconds": 0.1151,
+      "peak_dbfs": -2.5,
+      "sha256": "2b525f9523402d4be9483f7bd6c281ea8600cf8938060ffc6ddd6f9ab9d9d03d"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/Regolith3.wav",
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Footsteps/footsteps/gravel/2.ogg",
+          "sha256": "cdf6230d7e83d5b4bea374bfde49ea0e596c26755dbc35a1e07f520ff856edee"
+        }
+      ],
+      "processing": "Recorded gravel contact; speed 0.9; HP65Hz, restrained HF, low contact body; 4ms/45ms edge fades; peak -2.5dBFS",
+      "seconds": 0.2757,
+      "peak_dbfs": -2.5,
+      "sha256": "1306925284567df15d96a96a3d3289955f4a42d47157345ee83f38978227feba"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/Regolith4.wav",
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Footsteps/footsteps/gravel/3.ogg",
+          "sha256": "e535f14af2de8868809be1455f6d6fc10642f642e5f57d46ad4cecc726244bdf"
+        }
+      ],
+      "processing": "Recorded gravel contact; speed 0.9; HP65Hz, restrained HF, low contact body; 4ms/45ms edge fades; peak -2.5dBFS",
+      "seconds": 0.1722,
+      "peak_dbfs": -2.5,
+      "sha256": "f47c8456253418849ee40e18fd8d4c1786ec029571b7ea4ebe7b145dde6adda9"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/Regolith5.wav",
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Footsteps/footsteps/gravel/4.ogg",
+          "sha256": "0cd2f6771e69792c472c60d48146c8951566915a3da7ffd041325a4ea60c9352"
+        }
+      ],
+      "processing": "Recorded gravel contact; speed 0.9; HP65Hz, restrained HF, low contact body; 4ms/45ms edge fades; peak -2.5dBFS",
+      "seconds": 0.2678,
+      "peak_dbfs": -2.5,
+      "sha256": "53332670a83f27e1cc88730688c06b25130c23f775ca76de47e11d7b8d4b56be"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/Regolith6.wav",
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Footsteps/footsteps/gravel/5.ogg",
+          "sha256": "b6f2f32e114c92e8f2ee6fdcf22abb7452ee339c9c4fa37e158e1e601cde9e32"
+        }
+      ],
+      "processing": "Recorded gravel contact; speed 0.9; HP65Hz, restrained HF, low contact body; 4ms/45ms edge fades; peak -2.5dBFS",
+      "seconds": 0.2516,
+      "peak_dbfs": -2.5,
+      "sha256": "b023f48842a45f4cdc823432b55fe1352d6880e39849b5bbf1ed0f975707edb0"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/Regolith7.wav",
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Footsteps/footsteps/gravel/6.ogg",
+          "sha256": "0621550377dc4566facfbdb4a50a13f09c9d67e56848ec53a7899f948c0a4652"
+        }
+      ],
+      "processing": "Recorded gravel contact; speed 0.9; HP65Hz, restrained HF, low contact body; 4ms/45ms edge fades; peak -2.5dBFS",
+      "seconds": 0.209,
+      "peak_dbfs": -2.5,
+      "sha256": "68d985d3febb661f09fde93c9a4e332d1254c6de6ed36391381423346c3a51d2"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/Regolith8.wav",
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Footsteps/footsteps/gravel/7.ogg",
+          "sha256": "6c4316d2fd702bbb337789fac46d68cbad60ce5cbdc4261d5e4cc29041c4c82e"
+        }
+      ],
+      "processing": "Recorded gravel contact; speed 0.9; HP65Hz, restrained HF, low contact body; 4ms/45ms edge fades; peak -2.5dBFS",
+      "seconds": 0.2551,
+      "peak_dbfs": -2.5,
+      "sha256": "4758066e954ab02124a20e7b8e7846a1cdce0f4aa03761b3b68bfeea3b41ac57"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/Metal1.wav",
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Footsteps/footsteps/metal/0.ogg",
+          "sha256": "c4e3dbf5d4000b98aca5a06c210cc8b38644cc16b3e291453aee1e2afac4cd3e"
+        }
+      ],
+      "processing": "Recorded metal contact; speed 0.91; HP65Hz, restrained HF, low contact body; 4ms/45ms edge fades; peak -2.5dBFS",
+      "seconds": 0.3274,
+      "peak_dbfs": -2.5,
+      "sha256": "0ed54b4884a37d0e7cbf20cf32ae12198e06cabfa991ecc308d778fd73f1328c"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/Metal2.wav",
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Footsteps/footsteps/metal/1.ogg",
+          "sha256": "d9a8005ce36786ce98d565961b6c506e83a9b99f5af8ef47d37692197ae55862"
+        }
+      ],
+      "processing": "Recorded metal contact; speed 0.91; HP65Hz, restrained HF, low contact body; 4ms/45ms edge fades; peak -2.5dBFS",
+      "seconds": 0.3797,
+      "peak_dbfs": -2.5,
+      "sha256": "32494975d0e5bc70310e78b04627db32ace0f51505a7d4e32d2b22eec3ec82a1"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/Metal3.wav",
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Footsteps/footsteps/metal/2.ogg",
+          "sha256": "8d9d7378a393ddbd4e5b44ea4ba49df775108ffdf9c943dda88aa5fe5de0572c"
+        }
+      ],
+      "processing": "Recorded metal contact; speed 0.91; HP65Hz, restrained HF, low contact body; 4ms/45ms edge fades; peak -2.5dBFS",
+      "seconds": 0.3549,
+      "peak_dbfs": -2.5,
+      "sha256": "5b51908bf6869422bebc25d00592c69b6c2e123f8d517ac7268c5c4fe0f36719"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/Metal4.wav",
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Footsteps/footsteps/metal/3.ogg",
+          "sha256": "3d619b68ec3e8e1d92429a9d21b370f6d36a8d4a6576d4d240057c335a181ffe"
+        }
+      ],
+      "processing": "Recorded metal contact; speed 0.91; HP65Hz, restrained HF, low contact body; 4ms/45ms edge fades; peak -2.5dBFS",
+      "seconds": 0.2008,
+      "peak_dbfs": -2.5,
+      "sha256": "83aea48a390aed4606d48ba7602a14b954b1035d81634d36dae338690cb8fadc"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/Metal5.wav",
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Footsteps/footsteps/metal/4.ogg",
+          "sha256": "8cf3a86a63de1b7c2a6412d7342a131e3882de039c8116dc8f966d106bcc0696"
+        }
+      ],
+      "processing": "Recorded metal contact; speed 0.91; HP65Hz, restrained HF, low contact body; 4ms/45ms edge fades; peak -2.5dBFS",
+      "seconds": 0.1512,
+      "peak_dbfs": -2.5,
+      "sha256": "fd4377ccc877e987e552756372ed0a87bd206963cad4e15a1dbd54c95b8ba6ac"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/Metal6.wav",
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Footsteps/footsteps/metal/5.ogg",
+          "sha256": "81f31cbe3ede086c6f0588602a34826b5c6eacc1c3b956092cf55f2b76db81f6"
+        }
+      ],
+      "processing": "Recorded metal contact; speed 0.91; HP65Hz, restrained HF, low contact body; 4ms/45ms edge fades; peak -2.5dBFS",
+      "seconds": 0.3109,
+      "peak_dbfs": -2.5,
+      "sha256": "c61b0263d2db07a3af32e5a25e9ca511556553a62e08186c01e2147b7f477e25"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/Metal7.wav",
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Footsteps/footsteps/metal/6.ogg",
+          "sha256": "97b779681d7fcbcad936da098f53c19416475bd4ab27813bed5eac7dcc919382"
+        }
+      ],
+      "processing": "Recorded metal contact; speed 0.91; HP65Hz, restrained HF, low contact body; 4ms/45ms edge fades; peak -2.5dBFS",
+      "seconds": 0.2723,
+      "peak_dbfs": -2.5,
+      "sha256": "5db085923f2d155e56465fdb6149b20fec26687c51c925efd58c6b151b13180b"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/Metal8.wav",
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Footsteps/footsteps/metal/7.ogg",
+          "sha256": "b330ac4f2b147808920b12153c5a81433bbf233f48c942fc5dddedd2586631aa"
+        }
+      ],
+      "processing": "Recorded metal contact; speed 0.91; HP65Hz, restrained HF, low contact body; 4ms/45ms edge fades; peak -2.5dBFS",
+      "seconds": 0.1842,
+      "peak_dbfs": -2.5,
+      "sha256": "e6caa3ea51463d7ff26d789a7290bd2904f649555849e2385b81f7021f82c38b"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/Hard1.wav",
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Footsteps/footsteps/boots/0.ogg",
+          "sha256": "28a77e3fc5cc53f5a45d08a429dd335bb6dd9fc3b6c5de23dd5fc0c6efc59cad"
+        }
+      ],
+      "processing": "Recorded boots contact; speed 0.94; HP65Hz, restrained HF, low contact body; 4ms/45ms edge fades; peak -2.5dBFS",
+      "seconds": 0.1432,
+      "peak_dbfs": -2.5,
+      "sha256": "2da38e3267057b4e500432a5e2c9dca5841b59dfa008fbdd66f97820475772c7"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/Hard2.wav",
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Footsteps/footsteps/boots/1.ogg",
+          "sha256": "638eb70bd1a36d83a81d123f59efa63b3619241f073a82bb318442f7cbd5048c"
+        }
+      ],
+      "processing": "Recorded boots contact; speed 0.94; HP65Hz, restrained HF, low contact body; 4ms/45ms edge fades; peak -2.5dBFS",
+      "seconds": 0.1401,
+      "peak_dbfs": -2.5,
+      "sha256": "1840b75847503d2f5adeac476cdce53813aa6930ef8a7225b6abb5df65360c30"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/Hard3.wav",
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Footsteps/footsteps/boots/2.ogg",
+          "sha256": "1d91bd437de4da810a27ce4c605e3f8e51a63f4c8a430d54d1209c0ef4a7e142"
+        }
+      ],
+      "processing": "Recorded boots contact; speed 0.94; HP65Hz, restrained HF, low contact body; 4ms/45ms edge fades; peak -2.5dBFS",
+      "seconds": 0.1401,
+      "peak_dbfs": -2.5,
+      "sha256": "38516da2505236439971086d37e643f7f0c178f6c736c806e0b67ad61dc13301"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/Hard4.wav",
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Footsteps/footsteps/boots/3.ogg",
+          "sha256": "78b45022cc4b70400e23bf8ad68c8a68d3b788dc1346de545d3130ba6d46f8cd"
+        }
+      ],
+      "processing": "Recorded boots contact; speed 0.94; HP65Hz, restrained HF, low contact body; 4ms/45ms edge fades; peak -2.5dBFS",
+      "seconds": 0.1401,
+      "peak_dbfs": -2.5,
+      "sha256": "c4c4c4a310772ee6b178e10ce43ca4a02a1da31be597601e9a053924179bba48"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/Hard5.wav",
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Footsteps/footsteps/boots/4.ogg",
+          "sha256": "0f397ea2dafa9e63a2c63eb94c59f9819346c658203e2c2dec2aa213ca2e0ecf"
+        }
+      ],
+      "processing": "Recorded boots contact; speed 0.94; HP65Hz, restrained HF, low contact body; 4ms/45ms edge fades; peak -2.5dBFS",
+      "seconds": 0.1401,
+      "peak_dbfs": -2.5,
+      "sha256": "2e38b17ebab1139c1492a1eec70fe22fdde2e03235d0ae0843db9f812ab18cdf"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/Hard6.wav",
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Footsteps/footsteps/boots/5.ogg",
+          "sha256": "847351c4c3f8b4b408450a8b2f221fea6c8951e08bca7c01838addbc4ec469f4"
+        }
+      ],
+      "processing": "Recorded boots contact; speed 0.94; HP65Hz, restrained HF, low contact body; 4ms/45ms edge fades; peak -2.5dBFS",
+      "seconds": 0.1401,
+      "peak_dbfs": -2.5,
+      "sha256": "4d18a9cc38a2d00f4fee575b41f3d73be02bed6d02b7f286468315ac4de7ba5c"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/Hard7.wav",
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Footsteps/footsteps/boots/6.ogg",
+          "sha256": "2d09729a7181c7199e039088a730ae878274dc7a7c17155fe1e2a6e0fbd5634c"
+        }
+      ],
+      "processing": "Recorded boots contact; speed 0.94; HP65Hz, restrained HF, low contact body; 4ms/45ms edge fades; peak -2.5dBFS",
+      "seconds": 0.1401,
+      "peak_dbfs": -2.5,
+      "sha256": "1c6a553310191200744171e0a459c4fb43ab4f95eb738cae5e7038f7b08e6994"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/Hard8.wav",
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Footsteps/footsteps/boots/7.ogg",
+          "sha256": "6ccd764d6a995977a1a7fd286fbbd3c82e35d798c9692104910488d7bdfc78d1"
+        }
+      ],
+      "processing": "Recorded boots contact; speed 0.94; HP65Hz, restrained HF, low contact body; 4ms/45ms edge fades; peak -2.5dBFS",
+      "seconds": 0.1401,
+      "peak_dbfs": -2.5,
+      "sha256": "5593bdf259f7c036f91093a1fd6096b47c10b51e122e5f3fae09fce555009f1f"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/AlienWarning1.wav",
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Monsters/monster_sfx_pack_2/monster-1.wav",
+          "sha256": "e75b804529fd936c299dfd0121e284d38455bc111ae93b1d3c6988bcc74a441d"
+        }
+      ],
+      "processing": "Ogrebane mouth performance; varispeed 0.67, parallel low throat at 0.496; HP60Hz, LP4500Hz; 37/83ms damped resonances; edge fades; peak -2.5dBFS",
+      "seconds": 1.15,
+      "peak_dbfs": -2.5,
+      "sha256": "32ae9a01902a55f09ede2cda3a20026073c58c22a784ecf010df78f28b3c5da7"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/AlienWarning2.wav",
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Monsters/monster_sfx_pack_2/monster-4.wav",
+          "sha256": "30540cb9954b3332474173db515f9af6bd2783641aab110d4a7132a16c6d178f"
+        }
+      ],
+      "processing": "Ogrebane mouth performance; varispeed 0.67, parallel low throat at 0.496; HP60Hz, LP4500Hz; 37/83ms damped resonances; edge fades; peak -2.5dBFS",
+      "seconds": 1.15,
+      "peak_dbfs": -2.5,
+      "sha256": "485b858b14d88664ef25fd2aef92c5e80c512cc3d17d0b33557fb38898acddb8"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/AlienWarning3.wav",
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Monsters/monster_sfx_pack_2/monster-9.wav",
+          "sha256": "ffbb1bd3e16bcd89ee9ca4467e5d047bbc53effa13d3fe3889a5ae636c19fc23"
+        }
+      ],
+      "processing": "Ogrebane mouth performance; varispeed 0.67, parallel low throat at 0.496; HP60Hz, LP4500Hz; 37/83ms damped resonances; edge fades; peak -2.5dBFS",
+      "seconds": 1.0453,
+      "peak_dbfs": -2.5,
+      "sha256": "2e2564a63fb25dc40855ac0c417a20b090f9c6d1dfdd44f54529261df8965f60"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/AlienStrike1.wav",
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Monsters/monster_sfx_pack_2/monster-2.wav",
+          "sha256": "93f8f15311863734d8813a2b7d61e21361cf547289108b6e04406b82771e1b5e"
+        }
+      ],
+      "processing": "Ogrebane mouth performance; varispeed 0.77, parallel low throat at 0.570; HP60Hz, LP4500Hz; 37/83ms damped resonances; edge fades; peak -2.5dBFS",
+      "seconds": 0.55,
+      "peak_dbfs": -2.5,
+      "sha256": "3951f3f4abf84e8333f31a0dd3136872743f2ad6d304387f770ebf370fb8641b"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/AlienStrike2.wav",
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Monsters/monster_sfx_pack_2/monster-6.wav",
+          "sha256": "41897f19fbace7d20fd478d430f9fed7ed6a45c298f38d86e058c7b60210b0c2"
+        }
+      ],
+      "processing": "Ogrebane mouth performance; varispeed 0.77, parallel low throat at 0.570; HP60Hz, LP4500Hz; 37/83ms damped resonances; edge fades; peak -2.5dBFS",
+      "seconds": 0.55,
+      "peak_dbfs": -2.5,
+      "sha256": "c846f35fc21489d434f9a10512435a5f289beb2b00ebead7a86451d891e6f8cf"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/AlienStrike3.wav",
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Monsters/monster_sfx_pack_2/monster-8.wav",
+          "sha256": "8d8d8408616bfdee87f1ebbd6d3f00dd0c12cd108598e11cb6ef8913e0c4eaae"
+        }
+      ],
+      "processing": "Ogrebane mouth performance; varispeed 0.77, parallel low throat at 0.570; HP60Hz, LP4500Hz; 37/83ms damped resonances; edge fades; peak -2.5dBFS",
+      "seconds": 0.55,
+      "peak_dbfs": -2.5,
+      "sha256": "fc5ab490a17236ecd44996cdf6ac465487959dd5a89e2edd0974ccc002ab54bc"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/AlienHurt1.wav",
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Monsters/monster_sfx_pack_2/monster-10.wav",
+          "sha256": "409dd097b89a96770112de1ca0fafcba21386fff4f8818848be1cbcc51d4c165"
+        }
+      ],
+      "processing": "Ogrebane mouth performance; varispeed 0.88, parallel low throat at 0.651; HP60Hz, LP4500Hz; 37/83ms damped resonances; edge fades; peak -2.5dBFS",
+      "seconds": 0.45,
+      "peak_dbfs": -2.5,
+      "sha256": "1ba4b4d7ad1509bc984e87b32dc5cbcb21c00e86c36336d73b4f35d8c08806a4"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/AlienHurt2.wav",
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Monsters/monster_sfx_pack_2/monster-12.wav",
+          "sha256": "16ec7099f5047b48d9d86a83dcde58cc3e67d9a05fd205dc8f8c93bafd8d3806"
+        }
+      ],
+      "processing": "Ogrebane mouth performance; varispeed 0.88, parallel low throat at 0.651; HP60Hz, LP4500Hz; 37/83ms damped resonances; edge fades; peak -2.5dBFS",
+      "seconds": 0.45,
+      "peak_dbfs": -2.5,
+      "sha256": "b869f32d626b897f1d369e6e1e8084e1c300536f0b35908c6de96f5f50103293"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/AlienHurt3.wav",
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Monsters/monster_sfx_pack_2/monster-15.wav",
+          "sha256": "d9a15ef348544aa0c8b2c2dc01abcc5dda13301e935b1fe831becd66246a7795"
+        }
+      ],
+      "processing": "Ogrebane mouth performance; varispeed 0.88, parallel low throat at 0.651; HP60Hz, LP4500Hz; 37/83ms damped resonances; edge fades; peak -2.5dBFS",
+      "seconds": 0.45,
+      "peak_dbfs": -2.5,
+      "sha256": "bbf0d6e5536d6f4fc9b764a07f708b528cc5b6d48b0b375a5eb0dc9e49d5a07a"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/AlienDeath1.wav",
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Monsters/monster_sfx_pack_2/monster-5.wav",
+          "sha256": "43b73bff8f483c0bbc15d9724b7723985b5805d42b767061a519fe8ccd6df752"
+        }
+      ],
+      "processing": "Ogrebane mouth performance; varispeed 0.6, parallel low throat at 0.444; HP60Hz, LP4500Hz; 37/83ms damped resonances; edge fades; peak -2.5dBFS",
+      "seconds": 0.9384,
+      "peak_dbfs": -2.5,
+      "sha256": "e9e78178865791778973d3d2655633a0a06ac356da85b6bb5c139e61c938e3cd"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/AlienDeath2.wav",
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Monsters/monster_sfx_pack_2/monster-14.wav",
+          "sha256": "b8aef9df2c3823ad26650f2c30f95dedd7ecd274e009ac4a09bfd4856c7a2931"
+        }
+      ],
+      "processing": "Ogrebane mouth performance; varispeed 0.6, parallel low throat at 0.444; HP60Hz, LP4500Hz; 37/83ms damped resonances; edge fades; peak -2.5dBFS",
+      "seconds": 1.1,
+      "peak_dbfs": -2.5,
+      "sha256": "825f70ae7618629997404b5a383ac4fb290acc548e0bf22b0eaa9ba4bd2453ad"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/AlienDeath3.wav",
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Monsters/monster_sfx_pack_2/monster-17.wav",
+          "sha256": "8949eaa585bc489dfa73dce76b6722089719f939fccbd233f3b0345dfc2b6c78"
+        }
+      ],
+      "processing": "Ogrebane mouth performance; varispeed 0.6, parallel low throat at 0.444; HP60Hz, LP4500Hz; 37/83ms damped resonances; edge fades; peak -2.5dBFS",
+      "seconds": 0.7965,
+      "peak_dbfs": -2.5,
+      "sha256": "6a6c81919905bb79192f208ba40c0655faae34922663a65852fec3d6af41595d"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/AlienIdle1.wav",
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Monsters/monster_sfx_pack_2/monster-3.wav",
+          "sha256": "c2f6954cc3a67610b229c98c7cea6301cc788192571facef8d8ebd336a799419"
+        }
+      ],
+      "processing": "Ogrebane mouth performance; varispeed 0.62, parallel low throat at 0.459; HP60Hz, LP4500Hz; 37/83ms damped resonances; edge fades; peak -2.5dBFS",
+      "seconds": 1.0898,
+      "peak_dbfs": -2.5,
+      "sha256": "b946dcbecb881faa840c31e29866f91977be82a9f5c221328c7999e455aafd49"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/AlienIdle2.wav",
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Monsters/monster_sfx_pack_2/monster-7.wav",
+          "sha256": "f7bc1606de5edbfda001146b35254ea53907c9ffa55d737c67f8433d292035d1"
+        }
+      ],
+      "processing": "Ogrebane mouth performance; varispeed 0.62, parallel low throat at 0.459; HP60Hz, LP4500Hz; 37/83ms damped resonances; edge fades; peak -2.5dBFS",
+      "seconds": 0.9831,
+      "peak_dbfs": -2.5,
+      "sha256": "8750b496cb7a202a1963eff4d46620109ec8f19640be3e6de5a07d5ea9bf5197"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/AlienIdle3.wav",
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Monsters/monster_sfx_pack_2/monster-13.wav",
+          "sha256": "4861d5c0d870c034e2e88af0467d0c8407b2219a632419d4ff1842765e356bfa"
+        }
+      ],
+      "processing": "Ogrebane mouth performance; varispeed 0.62, parallel low throat at 0.459; HP60Hz, LP4500Hz; 37/83ms damped resonances; edge fades; peak -2.5dBFS",
+      "seconds": 1.1715,
+      "peak_dbfs": -2.5,
+      "sha256": "5012b3d65f3c851cd91c693267c4f4b65e8edfc4ad5a6aa1c14d7ab1213be789"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/AlienContact1.wav",
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Footsteps/footsteps/bones/0.ogg",
+          "sha256": "979aef9bca51ed0aab0d21585ce979ca0a98da42b694b76b12c6b24a06e999c7"
+        },
+        {
+          "path": "LocalData/RaidAudio/Sources/Footsteps/footsteps/gravel/3.ogg",
+          "sha256": "e535f14af2de8868809be1455f6d6fc10642f642e5f57d46ad4cecc726244bdf"
+        }
+      ],
+      "processing": "Shell/bone articulation + dry gravel shear; separate contacts at real gait cadence",
+      "seconds": 0.1734,
+      "peak_dbfs": -2.5,
+      "sha256": "508b39021172e0645b423e92aaf820c9b6805293ca9c5f8a91e765d61a48c43b"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/AlienContact2.wav",
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Footsteps/footsteps/bones/1.ogg",
+          "sha256": "1fea2a69b0aa7498a2fcf06f6b7445ffcf68a567fb653e2df8d415c2d9e2c40f"
+        },
+        {
+          "path": "LocalData/RaidAudio/Sources/Footsteps/footsteps/gravel/4.ogg",
+          "sha256": "0cd2f6771e69792c472c60d48146c8951566915a3da7ffd041325a4ea60c9352"
+        }
+      ],
+      "processing": "Shell/bone articulation + dry gravel shear; separate contacts at real gait cadence",
+      "seconds": 0.2136,
+      "peak_dbfs": -2.5,
+      "sha256": "8658b283ce96b4eedc101a0694d749e2debf01bc212dd0786618582f465977b2"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/AlienContact3.wav",
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Footsteps/footsteps/bones/2.ogg",
+          "sha256": "c0addde3a96bb7ab44c71b6bb5bbbf77c1e4596c5b4f96161d49d3ace10ff9ce"
+        },
+        {
+          "path": "LocalData/RaidAudio/Sources/Footsteps/footsteps/gravel/5.ogg",
+          "sha256": "b6f2f32e114c92e8f2ee6fdcf22abb7452ee339c9c4fa37e158e1e601cde9e32"
+        }
+      ],
+      "processing": "Shell/bone articulation + dry gravel shear; separate contacts at real gait cadence",
+      "seconds": 0.2016,
+      "peak_dbfs": -2.5,
+      "sha256": "6a158fe0d08df58f0c145e667828f7e01c28a658e8a272fa90a5eea5fb0f25b6"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/AlienContact4.wav",
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Footsteps/footsteps/bones/3.ogg",
+          "sha256": "2e06f7663fa3ea8e14f9ee3b3f2106f15716a82e83dee4a408b2d2c35929d560"
+        },
+        {
+          "path": "LocalData/RaidAudio/Sources/Footsteps/footsteps/gravel/6.ogg",
+          "sha256": "0621550377dc4566facfbdb4a50a13f09c9d67e56848ec53a7899f948c0a4652"
+        }
+      ],
+      "processing": "Shell/bone articulation + dry gravel shear; separate contacts at real gait cadence",
+      "seconds": 0.1717,
+      "peak_dbfs": -2.5,
+      "sha256": "bfd656cae2b3ba4b158167393e4f662f99c97c7935d0373828a68cd1a376492e"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/Aim.wav",
+      "sources": [
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Character/Cloth1.wav",
+          "sha256": "bda332c95092ed92daa7c43bd8c62c2d034d79dddb30b0c55d06e7da66325d95"
+        }
+      ],
+      "processing": "Short edited existing licensed foley, trimmed, varispeed and edge fades",
+      "seconds": 0.15,
+      "peak_dbfs": -4.44,
+      "sha256": "2d1cffed018a448a4f25a9cbe2feaa47284009016614cefcb654ff3adbbd3ef5"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/Light.wav",
+      "sources": [
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Interaction/Equipment.wav",
+          "sha256": "3e7648a945b3a154a35d7ac391fc0c517c4fa2b5a37680e2ed6ec7f6e83c90b5"
+        }
+      ],
+      "processing": "Short edited existing licensed foley, trimmed, varispeed and edge fades",
+      "seconds": 0.09,
+      "peak_dbfs": -4.44,
+      "sha256": "06fa70e7bc9493922b63441aa33ebddfc20da3a363f4a6dc75e60442c0fd8c89"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/DryFire.wav",
+      "sources": [
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Interaction/Equipment.wav",
+          "sha256": "3e7648a945b3a154a35d7ac391fc0c517c4fa2b5a37680e2ed6ec7f6e83c90b5"
+        }
+      ],
+      "processing": "Short edited existing licensed foley, trimmed, varispeed and edge fades",
+      "seconds": 0.075,
+      "peak_dbfs": -4.44,
+      "sha256": "4bece94b01ccbabba35e0aeda9101473041a8a880325c9479b09c8c93848b307"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/ReloadReady.wav",
+      "sources": [
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Interaction/Equipment.wav",
+          "sha256": "3e7648a945b3a154a35d7ac391fc0c517c4fa2b5a37680e2ed6ec7f6e83c90b5"
+        }
+      ],
+      "processing": "Short edited existing licensed foley, trimmed, varispeed and edge fades",
+      "seconds": 0.2143,
+      "peak_dbfs": -4.44,
+      "sha256": "34da90db05778826e12903ce7442bc7c562c2b116c2ae762136435513ea173ed"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/Medical.wav",
+      "sources": [
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Character/Cloth2.wav",
+          "sha256": "1fbc517c83fc2d255bd33e7f7137cfbcb3df8d60dc4adcd76a013ed5ce649fa4"
+        }
+      ],
+      "processing": "Short edited existing licensed foley, trimmed, varispeed and edge fades",
+      "seconds": 0.65,
+      "peak_dbfs": -4.44,
+      "sha256": "4034112c9eefee668bcc392e4641efa473ec7cfc91fb43c5c73a9a4545734d35"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/Pickup.wav",
+      "sources": [
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Interaction/Container.wav",
+          "sha256": "9b9c4a39c1dc6658fff65f33b952dd4cea0d4ace919f16c080132a4a9575c458"
+        }
+      ],
+      "processing": "Short edited existing licensed foley, trimmed, varispeed and edge fades",
+      "seconds": 0.28,
+      "peak_dbfs": -4.44,
+      "sha256": "bdadc60d18b7c2079bd96705faa5bdf99434f9c8e3d13e747436609d3803773b"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/OxygenRefill.wav",
+      "sources": [
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Character/Cloth1.wav",
+          "sha256": "bda332c95092ed92daa7c43bd8c62c2d034d79dddb30b0c55d06e7da66325d95"
+        }
+      ],
+      "processing": "Short edited existing licensed foley, trimmed, varispeed and edge fades",
+      "seconds": 0.7,
+      "peak_dbfs": -4.44,
+      "sha256": "4ce072274b8d1ea817d62d8630e6f2c88f1a7a05a2a171cd66902b550537f5c9"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/SuitBreath.wav",
+      "sources": [],
+      "processing": "Seeded filtered airflow; separated inhale/exhale; no outdoor wind; peak -8dBFS",
+      "seconds": 2.8,
+      "peak_dbfs": -7.96,
+      "sha256": "78cfb8a8abd2cc5880b87628bf64b43e2c4c84eb98ee241364f0fc34f452705f"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/Heartbeat.wav",
+      "sources": [],
+      "processing": "Double soft thoracic pulse; HP35Hz; critical-health use only",
+      "seconds": 0.95,
+      "peak_dbfs": -5.19,
+      "sha256": "cf9d0b658cc1451a64cfe5625d7350b6f88024dbce5ef5b02e14ce0da3822791"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/SuitWarning.wav",
+      "sources": [],
+      "processing": "Designed restrained suit telemetry; sine-squared envelopes; no harsh square-wave alarm",
+      "seconds": 0.65,
+      "peak_dbfs": -5.19,
+      "sha256": "224ca39110f4473da3c062ace0e4276d52ca4bff2ae3af36e815bb7fc40a10cd"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/ExtractStart.wav",
+      "sources": [],
+      "processing": "Designed restrained suit telemetry; sine-squared envelopes; no harsh square-wave alarm",
+      "seconds": 0.65,
+      "peak_dbfs": -5.19,
+      "sha256": "9f08ab9f690b826b4522eabfa2a09767633ec3a617285a039b3215086ebd2b68"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/ExtractCancel.wav",
+      "sources": [],
+      "processing": "Designed restrained suit telemetry; sine-squared envelopes; no harsh square-wave alarm",
+      "seconds": 0.65,
+      "peak_dbfs": -5.19,
+      "sha256": "b0a4c98ced2209c1cc810688ac7c8bfdc8395d61a346c8a3d4e31591b56b91fb"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Raid/ExtractTick.wav",
+      "sources": [],
+      "processing": "Designed restrained suit telemetry; sine-squared envelopes; no harsh square-wave alarm",
+      "seconds": 0.65,
+      "peak_dbfs": -5.19,
+      "sha256": "28cbc1a832efa181aa0a8990f5967fcafafe87346c6b67194f1e16edcc10fc02"
+    }
+  ]
+}

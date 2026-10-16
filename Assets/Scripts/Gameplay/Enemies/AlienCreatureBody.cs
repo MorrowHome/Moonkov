@@ -45,6 +45,7 @@ namespace Unity.MP_FPS
         public AlienCreatureBody(Transform owner, AlienCreatureProfile profile, float scale, bool render, int hitLayer)
         {
             m_Owner = owner; m_Profile = profile; m_Scale = Mathf.Clamp(scale, .1f, 4); m_Render = render;
+            if (render) m_Feedback = new AlienCreatureFeedback(m_Scale, profile.Species);
             m_Mask = LayerMask.GetMask("Default", "Ground");
             Motor = new SurfaceMotor(owner.position, owner.rotation, m_Mask, m_Scale);
             if (profile.IsChain)
@@ -62,7 +63,6 @@ namespace Unity.MP_FPS
                 if (render)
                 {
                     m_SpiderView = new SpiderPresentation(owner, m_Mask, m_Scale);
-                    m_Feedback = new AlienCreatureFeedback(m_Scale);
                 }
             }
             else
@@ -165,9 +165,9 @@ namespace Unity.MP_FPS
                     if (m_SpiderView.Fluid != null)
                     { m_SpiderView.Fluid.Settings = m_Profile.Fluid; m_SpiderView.Fluid.AttractionEnabled = m_Profile.Fluid.attraction; m_SpiderView.Fluid.Predatory = m_Profile.Fluid.heavy; }
                     m_SpiderView.Draw(Motor, m_Feet, SpiderPresentation.Stage.Umbrella, dt, m_SpiderJoints, m_SpiderLegSolved, m_SpiderPose);
-                    m_Feedback.Tick(Motor, m_Feet, m_CombatAction, dt);
                 }
             }
+            m_Feedback?.Tick(Motor, m_Feet, m_CombatAction, dt);
         }
 
         private void SolveSpiderCombatPose()

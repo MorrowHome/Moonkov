@@ -122,6 +122,14 @@ public class SoundDef : ScriptableObject
     public AudioMixer UnityAudioMixer;
 
 #endif
+    public enum MixRole { Default, Weapon, Foley, Creature, Ambience, Suit, Interaction }
+    [Header("Playback budget / mix")]
+    public MixRole Role;
+    [Range(0, 256)] public int Priority = 128;
+    [Min(0)] public int MaxVoices;
+    [Min(0)] public float MinimumInterval;
+    public bool Occlusion;
+
     [Header("Sound Definition")]
     public SoundMixer.SoundMixerGroup MixerGroup;
     [Space(5)]
