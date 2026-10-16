@@ -81,6 +81,8 @@ public class SoundSystem : ISoundSystem
     public List<SoundEmitter> m_SoundEmitterActiveList;   // Contains the sound emitters that are actually active (playing or reserved)
 
     private int m_SequenceId;
+    private readonly Dictionary<SoundDef, float> m_LastStarted = new Dictionary<SoundDef, float>();
+    private readonly Dictionary<SoundDef, int> m_LastClip = new Dictionary<SoundDef, int>();
     private Interpolator m_MasterVolume = new Interpolator(1.0f, Interpolator.CurveType.SmoothStep);
     private SoundMixer m_SoundMixer;
     private Transform m_ListenerTransform;
@@ -96,6 +98,7 @@ public class SoundSystem : ISoundSystem
     /// <param name="mixer">Audio mixer for managing audio groups</param>
     public void Init(Transform listenerTransform, int maxSoundEmitters, SoundGameObjectPool soundGameObjectPool, AudioMixer mixer)
     {
+        m_LastStarted.Clear(); m_LastClip.Clear();
         SoundGameObjects = soundGameObjectPool; // 
 
         m_ListenerTransform = listenerTransform;
@@ -164,6 +167,8 @@ public class SoundSystem : ISoundSystem
             soundEmitter.UnreserveAndKill();    // Kill all emitters and SoundGameObjects
         }
         m_SoundEmitterActiveList.Clear();
+        m_LastStarted.Clear();
+        m_LastClip.Clear();
     }
 
     /// <summary>
@@ -300,6 +305,7 @@ public class SoundSystem : ISoundSystem
             }
         }
         SoundEmitter soundEmitter = CreateSoundEmitterForPool(soundGameObjectPool);     // No available SoundEmitters. Create another and add it to the pool
+        soundEmitter.SeqId = m_SequenceId++;
         soundEmitter.Allocated = true;
         m_SoundEmitterPool.Add(soundEmitter);
         return soundEmitter;
@@ -312,9 +318,43 @@ public class SoundSystem : ISoundSystem
             return null;
         }
 
-        bool freshlyAllocated = soundInfo.Handle == null || soundInfo.Handle.Emitter.Allocated == false;
+        var definition = soundInfo.SoundDefinition;
+        if (definition.Clips == null || definition.Clips.Count == 0) return null;
+        Vector3 origin = soundInfo.SoundTransform ? soundInfo.SoundTransform.TransformPoint(soundInfo.Position) : soundInfo.Position;
+        float spatial = soundInfo.SoundDefOverrideInfo?.SpatialBlend ?? definition.DistanceInfo.SpatialBlend;
+        // Linear rolloff is silent at maxDistance; don't spend a pooled voice there.
+        if (m_ListenerTransform && spatial >= .99f && definition.DistanceInfo.VolumeRolloffMode == AudioRolloffMode.Linear &&
+            (origin - m_ListenerTransform.position).sqrMagnitude >= definition.DistanceInfo.VolumeDistMax * definition.DistanceInfo.VolumeDistMax) return null;
+        bool freshlyAllocated = soundInfo.Handle == null || !soundInfo.Handle.IsValid();
         if (freshlyAllocated)
         {
+            if (definition.MinimumInterval > 0 && m_LastStarted.TryGetValue(definition, out float started) &&
+                Time.unscaledTime - started < definition.MinimumInterval) return null;
+            if (definition.MaxVoices > 0)
+            {
+                int voices = 0;
+                foreach (var active in m_SoundEmitterActiveList)
+                    if (active.Active && active.Definition == definition) voices++;
+                if (voices >= definition.MaxVoices) return null;
+            }
+        }
+        if (freshlyAllocated)
+        {
+            // A full source pool must not let ambience/foley swallow an incoming attack or shot.
+            while (SoundGameObjects.AvailableSoundObjectCount < definition.PlayCount)
+            {
+                int victim = -1, lowestPriority = definition.Priority;
+                for (int i = 0; i < m_SoundEmitterActiveList.Count; i++)
+                {
+                    var candidate = m_SoundEmitterActiveList[i];
+                    if (candidate.Reserved != SoundEmitter.ReservedInfo.FreeAfterPlaybackCompletes ||
+                        candidate.Definition.Priority <= lowestPriority) continue;
+                    lowestPriority = candidate.Definition.Priority; victim = i;
+                }
+                if (victim < 0) return null;
+                m_SoundEmitterActiveList[victim].UnreserveAndKill();
+                m_SoundEmitterActiveList.RemoveAt(victim);
+            }
             soundInfo.Handle = AllocateSoundEmitter(soundInfo);    // Allocates a SoundEmitter and set the soundDef and Reserve information
         }
 
@@ -336,9 +376,20 @@ public class SoundSystem : ISoundSystem
             soundEmitter.CopyOverrideDataFromSoundDef(soundInfo.SoundDefinition);
         }
 
+        soundEmitter.SetVolume(volume); // Must be set before the very first DSP block.
+        if (definition.PlaybackType == SoundDef.PlaybackTypes.RandomNotLast && definition.Clips.Count > 1)
+        {
+            int index = Random.Range(0, definition.Clips.Count);
+            if (m_LastClip.TryGetValue(definition, out int last) && index == last)
+                index = (last + Random.Range(1, definition.Clips.Count)) % definition.Clips.Count;
+            soundEmitter.UserClipIndex = (uint)index;
+        }
         if (Play(soundEmitter, soundInfo.Position, soundInfo.SoundTransform) == true)
         {
-            soundEmitter.SetVolume(volume);
+            m_LastStarted[definition] = Time.unscaledTime;
+            m_LastClip[definition] = (int)soundEmitter.UserClipIndex;
+            if (definition.Role == SoundDef.MixRole.Weapon && m_ListenerTransform &&
+                (origin - m_ListenerTransform.position).sqrMagnitude < 144) MoonkovSoundMix.NotifyWeapon();
             return soundInfo;
         }
 
@@ -375,7 +426,7 @@ public class SoundSystem : ISoundSystem
             return false;   // Failed to obtain SoundGameObjects.
         }
 
-        m_SoundEmitterActiveList.Add(soundEmitter);
+        if (!m_SoundEmitterActiveList.Contains(soundEmitter)) m_SoundEmitterActiveList.Add(soundEmitter);
         soundEmitter.Play(m_ListenerTransform, m_SoundMixer.MixerGroups);
         return true;
     }
@@ -384,7 +435,7 @@ public class SoundSystem : ISoundSystem
     {
         for (int i = 0; i < m_SoundEmitterActiveList.Count; i++)
         {
-            if (m_SoundEmitterActiveList[i].Update(m_SoundMixer.MixerGroups) == false)
+            if (m_SoundEmitterActiveList[i].Update(m_SoundMixer.MixerGroups, m_ListenerTransform) == false)
             {
                 m_SoundEmitterActiveList.RemoveAt(i);  // Emitter is no longer active. Remove it from active list.
                 i--;

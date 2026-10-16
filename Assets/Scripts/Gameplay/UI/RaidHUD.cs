@@ -201,9 +201,13 @@ namespace Unity.MP_FPS
                 (effects & (SurvivalEffects.Hungry | SurvivalEffects.Starving | SurvivalEffects.Thirsty | SurvivalEffects.Dehydrated)) != 0;
             if (alert && Time.unscaledTime >= m_NextOxygenAlert)
             {
-                MoonkovAudio.Error(); m_NextOxygenAlert = Time.unscaledTime + (critical ? 10 : 20);
+                MoonkovAudio.Play(oxygenWarning ? MoonkovAudio.Library?.SuitWarning : MoonkovAudio.Library?.Notification, Vector3.zero); m_NextOxygenAlert = Time.unscaledTime + (critical ? 10 : 20);
             }
         }
+
+        private bool m_AudioExtracting;
+        private float m_ExtractionSoundAt;
+        private int m_ExtractionSoundRaid;
 
         private void SetInventory(bool visible)
         {
@@ -386,6 +390,19 @@ namespace Unity.MP_FPS
             bool empty=deathBag ? deathBags.Bags[nearest].Empty : nearest>=0 && (m_Snapshot.TakenMask & (1u<<nearest))!=0;
             RefreshInteraction(nearest, distance, deathBag, empty, interactionVisible && !m_AirlockPrompt.HasSelection);
             bool extracting = alive && !settled && m_Snapshot.ExtractionRemaining >= 0;
+            if (m_ExtractionSoundRaid != m_Snapshot.RaidId)
+            { m_ExtractionSoundRaid = m_Snapshot.RaidId; m_AudioExtracting = false; m_ExtractionSoundAt = 0; }
+            if (extracting != m_AudioExtracting)
+            {
+                if (extracting || alive && !settled)
+                    MoonkovAudio.Play(extracting ? MoonkovAudio.Library?.ExtractStart : MoonkovAudio.Library?.ExtractCancel, Vector3.zero);
+                m_AudioExtracting = extracting; m_ExtractionSoundAt = Time.unscaledTime + 1;
+            }
+            if (extracting && m_Snapshot.ExtractionRemaining <= 3 && Time.unscaledTime >= m_ExtractionSoundAt)
+            {
+                MoonkovAudio.Play(MoonkovAudio.Library?.ExtractTick, Vector3.zero, .65f);
+                m_ExtractionSoundAt = Time.unscaledTime + 1;
+            }
             m_ExtractionPanel.EnableInClassList("is-visible", alive && !settled && (extracting || check));
             m_ExtractionTrack.style.display = extracting ? DisplayStyle.Flex : DisplayStyle.None;
             if (extracting)
@@ -447,6 +464,7 @@ namespace Unity.MP_FPS
                 m_PreviousSupplies = supplies;
                 if (math.any(gained > 0))
                 {
+                    MoonkovAudio.Play(MoonkovAudio.Library?.Pickup, Vector3.zero, .8f);
                     if (Time.unscaledTime >= m_ReceiptUntil && !m_ReceiptQueued) m_ReceiptSupplies = default;
                     m_ReceiptSupplies += gained;
                     m_ReceiptUntil = Time.unscaledTime + 3.2f;

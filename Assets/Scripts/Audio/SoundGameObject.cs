@@ -60,6 +60,11 @@ public class SoundGameObject
     // dsp time at which a PlayDelayed/PlayScheduled source will actually start.
     // 0 means "playback starts immediately or has already started".
     private double m_PendingStartDsp;
+    private float m_NextOcclusion, m_OcclusionGain = 1, m_OcclusionCutoff = 22000;
+    private bool m_Occluded;
+    private static readonly RaycastHit[] s_Obstacles = new RaycastHit[12];
+    private static int s_OcclusionFrame, s_OcclusionBudget;
+    private static readonly int s_OcclusionMask = LayerMask.GetMask("Default", "Ground");
 
 #if UNITY_EDITOR
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -305,10 +310,12 @@ public class SoundGameObject
         SoundEmitter.SoundDefOverrideData soundDefOverrideData = soundEmitter.SoundDefOverrideInfo;
 
         m_CalculateDistance = InitDistanceCurves(soundDef);
-        if (m_CalculateDistance)
-        {
-            m_ListenerTransform = listenerTransform;
-        }
+        m_ListenerTransform = listenerTransform;
+        m_Occluded = false;
+        m_OcclusionGain = 1;
+        m_OcclusionCutoff = 22000;
+        m_NextOcclusion = 0;
+        m_AudioSource.priority = soundDef.Priority;
 
         // Get clip from list based on index type (random, user, sequencial..)
         uint clipIndex = GetClipIndex(soundDef, soundEmitter);
@@ -428,18 +435,9 @@ public class SoundGameObject
         return Mathf.Pow(2.0f, decibel / 6.0f);
     }
 
-    private Vector3 GetPosition()
-    {
-        if (m_PositionType == PositionType.Position)
-        {
-            return m_AudioSource.transform.position;
-        }
-        else if (m_PositionType == PositionType.ParentTransform)
-        {
-            return m_AudioSource.transform.parent.transform.position;
-        }
-        return Vector3.zero;
-    }
+    public void RefreshListener(Transform listener) => m_ListenerTransform = listener;
+
+    private Vector3 GetPosition() => m_AudioSource ? m_AudioSource.transform.position : Vector3.zero;
 
     private bool InitDistanceCurves(SoundDef soundDef)
     {
@@ -535,8 +533,16 @@ public class SoundGameObject
             UpdateDistanceCurves();
         }
         SetDistanceCurveAudio();
-
-        m_AudioSource.volume = m_Volume * soundEmitter.Volume * soundEmitter.SoundDefOverrideInfo.VolumeScale;
+        if (m_LowPassFilter && !m_SoundDef.LowPassFilter.EnableComponent) m_LowPassFilter.enabled = false;
+        UpdateOcclusion();
+        if (m_LowPassFilter && m_SoundDef.Occlusion && m_SpatialBlendValue > .5f)
+        {
+            float distanceCutoff = m_SoundDef.LowPassFilter.EnableComponent ? m_LowPassFilter.cutoffFrequency : 22000;
+            m_LowPassFilter.enabled = true;
+            m_LowPassFilter.cutoffFrequency = Mathf.Min(distanceCutoff, m_OcclusionCutoff);
+        }
+        m_AudioSource.volume = m_Volume * soundEmitter.Volume * soundEmitter.SoundDefOverrideInfo.VolumeScale *
+            m_OcclusionGain * soundEmitter.FadeOutTime.GetValue() * MoonkovSoundMix.Gain(m_SoundDef.Role);
     }
 
     private uint GetClipIndex(SoundDef soundDef, SoundEmitter soundEmitter)
@@ -549,17 +555,8 @@ public class SoundGameObject
         }
         else if (soundDef.PlaybackType == SoundDef.PlaybackTypes.RandomNotLast)
         {
-            if (soundDef.Clips.Count > 2)
-            {
-                clipIndex = GetRandomClipIndexButNotLast(soundEmitter, soundDef);  
-                    // More than two clips, so choose one but not the last one
-            }
-            else
-            {
-                clipIndex = (uint)Random.Range(0, soundDef.Clips.Count);   
-                    // If we've only 2 to choose from, just do a normal random lookup.
-                    // Otherwise it would just toggle between the two.
-            }
+            // Selected per SoundDef by SoundSystem, independent of emitter pool reuse.
+            clipIndex = soundEmitter.UserClipIndex % (uint)soundDef.Clips.Count;
         }
         else if (soundDef.PlaybackType == SoundDef.PlaybackTypes.Random)
         {
@@ -576,13 +573,33 @@ public class SoundGameObject
         return clipIndex;
     }
 
-    private uint GetRandomClipIndexButNotLast(SoundEmitter soundEmitter, SoundDef soundDef)
+    private void UpdateOcclusion()
     {
-        uint randomOffset = (uint)Random.Range(1, soundDef.Clips.Count - 1);  
-            // Select next random footstep AudioClip. But don't use the same one twice in a row
-        soundEmitter.RandomClipIndex += randomOffset;
-        soundEmitter.RandomClipIndex %= (uint)soundDef.Clips.Count;
-        return soundEmitter.RandomClipIndex;
+        if (!m_SoundDef.Occlusion || m_SpatialBlendValue <= .5f || !m_ListenerTransform) return;
+        if (s_OcclusionFrame != Time.frameCount) { s_OcclusionFrame = Time.frameCount; s_OcclusionBudget = 6; }
+        if (Time.unscaledTime >= m_NextOcclusion && s_OcclusionBudget > 0)
+        {
+            s_OcclusionBudget--;
+            m_NextOcclusion = Time.unscaledTime + .16f;
+            Vector3 start = m_ListenerTransform.position, delta = GetPosition() - start;
+            float distance = delta.magnitude;
+            m_Occluded = false;
+            if (distance > 1.2f)
+            {
+                var scene = m_AudioSource.gameObject.scene.GetPhysicsScene();
+                int count = scene.Raycast(start, delta / distance, s_Obstacles, distance - .35f,
+                    s_OcclusionMask, QueryTriggerInteraction.Ignore);
+                for (int i = 0; i < count; i++)
+                {
+                    var hit = s_Obstacles[i];
+                    if (hit.distance < .3f || hit.collider.transform.IsChildOf(m_ListenerTransform.root) ||
+                        m_PositionType == PositionType.ParentTransform && m_Parent && hit.collider.transform.IsChildOf(m_Parent.transform)) continue;
+                    m_Occluded = true; break;
+                }
+            }
+        }
+        float blend = 1 - Mathf.Exp(-Time.unscaledDeltaTime * 14);
+        m_OcclusionGain = Mathf.Lerp(m_OcclusionGain, m_Occluded ? .42f : 1, blend);
+        m_OcclusionCutoff = Mathf.Lerp(m_OcclusionCutoff, m_Occluded ? 1500 : 22000, blend);
     }
-
 }

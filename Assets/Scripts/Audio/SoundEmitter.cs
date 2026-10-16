@@ -58,6 +58,7 @@ public class SoundEmitter
     public bool Active;            // True = Active SoundGameObjects or SoundEmitter is reserved
 
     private SoundGameObjectPool m_SoundGameObjectPool;  // Pool of SoundGameObjects that can be allocated for this emitter
+    public SoundDef Definition => m_SoundDef;
     private SoundDef m_SoundDef;    // SoundDef that is being processed for this Emitter
     private int m_RepeatCount;      // Current repeat count (1 > SoundDef RandomRepeat(min/max)) 0 will play once (as will 1)
     private Transform m_ListenerTransform;
@@ -204,7 +205,7 @@ public class SoundEmitter
     /// </summary>
     /// <param name="mixerGroups">Array of audio mixer groups</param>
     /// <returns>True if the emitter is still active, false if it should be removed</returns>
-    public bool Update(AudioMixerGroup[] mixerGroups)
+    public bool Update(AudioMixerGroup[] mixerGroups, Transform listener = null)
     {
         if (!Active)
         {
@@ -217,6 +218,11 @@ public class SoundEmitter
             return false;
         }
 
+        if (listener && listener != m_ListenerTransform)
+        {
+            m_ListenerTransform = listener;
+            foreach (var source in ActiveSoundGameObjects) source.RefreshListener(listener);
+        }
         int activeAudioSourceCounter = 0;
         foreach (SoundGameObject soundGameObject in ActiveSoundGameObjects)
         {

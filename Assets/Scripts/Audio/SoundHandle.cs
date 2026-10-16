@@ -16,7 +16,7 @@ public class SoundHandle
     /// <returns>True if the handle is still valid, false otherwise</returns>
     public bool IsValid()
     {
-        return Emitter != null && Emitter.SeqId == Seq; // Are we still attached to the same SoundEmitter ?
+        return Emitter != null && Emitter.Allocated && Emitter.SeqId == Seq; // Are we still attached to the same SoundEmitter ?
     }
 
     /// <summary>

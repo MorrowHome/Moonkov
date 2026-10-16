@@ -252,12 +252,11 @@ namespace Unity.MP_FPS
                 // create camera
                 CreateClientCamera();
 
-                // Move the AudioListener to the player model instead of the camera, suppressing
-                // the others. This has to be undone in RestoreAudioListeners: the listener lived
-                // on m_OwnerVisuals, so dying or extracting destroyed it while every other
-                // listener stayed disabled, and Unity plays nothing at all without an enabled
-                // AudioListener in the scene.
-                m_AddedListener = m_OwnerVisuals.AddComponent<AudioListener>();
+                // A dedicated camera child follows the rendered head turn/lean rather than model animation.
+                // It never borrows or duplicates a prefab listener, and is released with this ownership.
+                var listening = new GameObject("Owned audio listener").transform;
+                listening.SetParent(m_PlayerCamera ? m_PlayerCamera.transform : m_OwnerVisuals.transform, false);
+                m_AddedListener = listening.gameObject.AddComponent<AudioListener>();
                 m_SuppressedListeners.Clear();
                 foreach (var a in Resources.FindObjectsOfTypeAll<AudioListener>())
                 {
@@ -267,8 +266,7 @@ namespace Unity.MP_FPS
                     a.enabled = false;
                 }
 
-                // Attach the listener to the player model rather than the camera
-                GameManager.Instance.SoundSystem.SetListenerTransform(m_OwnerVisuals.transform);
+                GameManager.Instance.SoundSystem.SetListenerTransform(listening);
             }
             else if (Role == MultiplayerRole.ClientProxy)
             {
@@ -295,7 +293,7 @@ namespace Unity.MP_FPS
 
         /// <summary>
         /// Puts the AudioListeners back the way they were before this client took ownership.
-        /// Without it, the listener that lived on the owner visuals dies with the ghost while
+        /// Without it, the owned listener dies with the ghost while
         /// every other listener stays disabled, which silences the death screen and the ship
         /// after extraction. The camera listener is also re-enabled explicitly, because Unity
         /// produces no sound at all when no enabled AudioListener exists.
@@ -309,6 +307,11 @@ namespace Unity.MP_FPS
                 if (listener != null) listener.enabled = true;
             }
             m_SuppressedListeners.Clear();
+            if (m_AddedListener)
+            {
+                m_AddedListener.enabled = false;
+                Destroy(m_AddedListener.gameObject);
+            }
             m_AddedListener = null;
 
             var camera = MainCameraSingleton.Instance;

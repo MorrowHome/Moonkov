@@ -11,9 +11,14 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9e391dc00640197458a5ba0d2ba8c59b, type: 3}
   m_Name: MetalFootsteps
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier:
   EditorVolume: 1
   UnityAudioMixer: {fileID: 24100000, guid: fddb343a82968524eb1e9a6f65433d7e, type: 2}
+  Role: 2
+  Priority: 140
+  MaxVoices: 8
+  MinimumInterval: 0.025
+  Occlusion: 1
   MixerGroup: 2
   BasePitchInCents: 0
   VolumeScale: 1
@@ -21,10 +26,14 @@ MonoBehaviour:
   PlaybackType: 1
   PlayCount: 1
   Clips:
-  - {fileID: 8300000, guid: 04a5e2a6c9cc6944e8635fe423d90c33, type: 3}
-  - {fileID: 8300000, guid: d138a50dfa1d3f344a02ee2b8357a178, type: 3}
-  - {fileID: 8300000, guid: a799b0feb8d8a3c4585ef378b238661e, type: 3}
-  - {fileID: 8300000, guid: 89a5b1abdfd249c449caf32ef2376bb5, type: 3}
+  - {fileID: 8300000, guid: f096bea9f7d224b66bf476ac582c9655, type: 3}
+  - {fileID: 8300000, guid: 0dc62a46458b14d4c96a9087e4b6cf20, type: 3}
+  - {fileID: 8300000, guid: 367dc6eb86bff446388d0e25520093a5, type: 3}
+  - {fileID: 8300000, guid: 769224d9d13da405586eb604880bd72a, type: 3}
+  - {fileID: 8300000, guid: 2e9ca3b0a843c4580a279280150dcd2f, type: 3}
+  - {fileID: 8300000, guid: d03709967ee9b4f9cb230dbbf1c022e7, type: 3}
+  - {fileID: 8300000, guid: f5137f07536d041b7943930d4ab0f2ed, type: 3}
+  - {fileID: 8300000, guid: 645098c9a0e05481f8359b32f56fc2e5, type: 3}
   RepeatInfo:
     LoopCount: 1
     RepeatMin: 1
@@ -36,19 +45,19 @@ MonoBehaviour:
     StartOffsetPercentMax: 0
     StopDelay: 0
   PitchAndVolumeInfo:
-    VolumeMin: -21.5
-    VolumeMax: -19
-    PitchMin: -70
-    PitchMax: 70
+    VolumeMin: -15
+    VolumeMax: -14
+    PitchMin: -45
+    PitchMax: 45
   DistanceInfo:
     VolumeDistMin: 1.5
-    VolumeDistMax: 12
+    VolumeDistMax: 18
     SpatialBlend: 1
     DopplerScale: 0
     VolumeRolloffMode: 1
-    LPFRollOffCurveType: 0
-    LPF_MinCutoff: 0
-    LPF_MaxDistance: 0
+    LPFRollOffCurveType: 1
+    LPF_MinCutoff: 1500
+    LPF_MaxDistance: 18
     HPFRollOffCurveType: 0
     HPF_MinCutoff: 0
     HPF_MaxDistance: 0
@@ -57,9 +66,9 @@ MonoBehaviour:
     PanMin: 0
     PanMax: 0
   LowPassFilter:
-    EnableComponent: 0
-    CutoffMin: 22000
-    CutoffMax: 22000
+    EnableComponent: 1
+    CutoffMin: 14000
+    CutoffMax: 14000
   HighPassFilter:
     EnableComponent: 0
     CutoffMin: 22000

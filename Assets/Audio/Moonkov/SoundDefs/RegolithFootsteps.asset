@@ -11,9 +11,14 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9e391dc00640197458a5ba0d2ba8c59b, type: 3}
   m_Name: RegolithFootsteps
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier:
   EditorVolume: 1
   UnityAudioMixer: {fileID: 24100000, guid: fddb343a82968524eb1e9a6f65433d7e, type: 2}
+  Role: 2
+  Priority: 140
+  MaxVoices: 8
+  MinimumInterval: 0.025
+  Occlusion: 1
   MixerGroup: 2
   BasePitchInCents: 0
   VolumeScale: 1
@@ -21,10 +26,14 @@ MonoBehaviour:
   PlaybackType: 1
   PlayCount: 1
   Clips:
-  - {fileID: 8300000, guid: f219a0de15f0c564fb95f1288a450175, type: 3}
-  - {fileID: 8300000, guid: 8a471e9bdd7628743a329d62dd3beaa9, type: 3}
-  - {fileID: 8300000, guid: 57b3449483da019469bde2033b27ce8c, type: 3}
-  - {fileID: 8300000, guid: aede167ae1e5a4244bb921d0c5ea80af, type: 3}
+  - {fileID: 8300000, guid: f567806a0760748b3ba7c944c29f97bf, type: 3}
+  - {fileID: 8300000, guid: 5d7a0455ff1ed4920a4d0fe7f307f5ad, type: 3}
+  - {fileID: 8300000, guid: 30b9dfbb6e985461f96da0654247d54c, type: 3}
+  - {fileID: 8300000, guid: a04dc03cf7e2e4c2f971b5a3fc4996c8, type: 3}
+  - {fileID: 8300000, guid: 6e0089281ccac479b8373e01d1f9e3bf, type: 3}
+  - {fileID: 8300000, guid: c64a82baf09fd423ab3c2bbdfc21cfaf, type: 3}
+  - {fileID: 8300000, guid: 3043a3c4cdf9f4260a94f1747afb893a, type: 3}
+  - {fileID: 8300000, guid: 7465e284a120040ef905dd551471ebe3, type: 3}
   RepeatInfo:
     LoopCount: 1
     RepeatMin: 1
@@ -36,19 +45,19 @@ MonoBehaviour:
     StartOffsetPercentMax: 0
     StopDelay: 0
   PitchAndVolumeInfo:
-    VolumeMin: -21.5
-    VolumeMax: -19
-    PitchMin: -70
-    PitchMax: 70
+    VolumeMin: -13.5
+    VolumeMax: -12.5
+    PitchMin: -45
+    PitchMax: 45
   DistanceInfo:
     VolumeDistMin: 1.5
-    VolumeDistMax: 10
+    VolumeDistMax: 13
     SpatialBlend: 1
     DopplerScale: 0
     VolumeRolloffMode: 1
-    LPFRollOffCurveType: 0
-    LPF_MinCutoff: 0
-    LPF_MaxDistance: 0
+    LPFRollOffCurveType: 1
+    LPF_MinCutoff: 1500
+    LPF_MaxDistance: 13
     HPFRollOffCurveType: 0
     HPF_MinCutoff: 0
     HPF_MaxDistance: 0
@@ -57,9 +66,9 @@ MonoBehaviour:
     PanMin: 0
     PanMax: 0
   LowPassFilter:
-    EnableComponent: 0
-    CutoffMin: 22000
-    CutoffMax: 22000
+    EnableComponent: 1
+    CutoffMin: 14000
+    CutoffMax: 14000
   HighPassFilter:
     EnableComponent: 0
     CutoffMin: 22000

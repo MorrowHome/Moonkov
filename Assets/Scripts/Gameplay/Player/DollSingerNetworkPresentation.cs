@@ -30,6 +30,8 @@ namespace Unity.MP_FPS
         private RifleFeedbackLibrary m_WeaponFeedback;
         private float m_LastShotSoundTime = float.NegativeInfinity, m_ShotSoundPressure;
         private uint m_LastSoundWeapon;
+        private bool m_AudioAiming;
+        private float m_DryFireAt;
 
         public DollSingerInput OwnedInput => m_Linked && Role == MultiplayerRole.ClientOwned ? m_Input : null;
         public bool IsThirdPerson => m_View != null && !m_View.IsFirstPerson;
@@ -38,7 +40,11 @@ namespace Unity.MP_FPS
 
         public bool ReadOwnedLight(bool canRead)
         {
-            if (canRead && m_Input.LightPressed) m_OwnedLightEnabled = !m_OwnedLightEnabled;
+            if (canRead && m_Input.LightPressed)
+            {
+                m_OwnedLightEnabled = !m_OwnedLightEnabled;
+                MoonkovAudio.Play(MoonkovAudio.Library?.Light, transform.position);
+            }
             return m_OwnedLightEnabled;
         }
 
@@ -96,6 +102,8 @@ namespace Unity.MP_FPS
             m_Linked = true;
             m_OwnedAiming = m_HasOwnedAimPoint = false;
             m_OwnedLightEnabled = true;
+            m_AudioAiming = false; m_DryFireAt = 0;
+            m_Audio?.Stop();
             m_Audio = Role == MultiplayerRole.Server ? null : new MoonkovPlayerAudio();
             m_Model.SetNetworkViewPresentation(false, Quaternion.identity, 0f);
             m_Model.enabled = Role != MultiplayerRole.Server;
@@ -159,6 +167,16 @@ namespace Unity.MP_FPS
                 ghost.LastShotTick, ghost.LastReloadTick, ghost.ReloadTargetAmmo, ghost.EquippedModules, weapon?.MagazineSize ?? 4, ghost.BurstSequence);
             if (Role == MultiplayerRole.ClientOwned)
             {
+                bool audibleAim = m_OwnedAiming && ghost.CurrentHealth > 0;
+                if (audibleAim != m_AudioAiming) MoonkovAudio.Play(MoonkovAudio.Library?.Aim, transform.position, .65f);
+                m_AudioAiming = audibleAim;
+                if (m_Input.FirePressed && ghost.CurrentHealth > 0 && ghost.CurrentAmmo <= 0 &&
+                    !state.IsReloadingState && ghost.WeaponEquipRemaining <= 0 && Time.unscaledTime >= m_DryFireAt &&
+                    !GameSettings.Instance.IsPauseMenuOpen && !RaidHUD.PointerRequested)
+                {
+                    MoonkovAudio.Play(MoonkovAudio.Library?.DryFire, transform.position);
+                    m_DryFireAt = Time.unscaledTime + .35f;
+                }
                 m_View.SetNetworkLookRotation(m_OwnedViewRotation);
                 m_View.SetAimBlend(m_Halo.AimBlend);
                 m_View.SetWeaponAimMagnification(m_Halo.ScopeMagnification);
@@ -214,6 +232,7 @@ namespace Unity.MP_FPS
 
         public override void OnGhostPreDestroy()
         {
+            m_Audio?.Stop();
             GameManager.Instance?.SoundSystem?.Stop(m_RifleBodySound, .025f);
             GameManager.Instance?.SoundSystem?.Stop(m_RifleSnapSound, .015f);
             GameManager.Instance?.SoundSystem?.Stop(m_WeaponTailSound, .03f);
