@@ -1,0 +1,62 @@
+{
+  "playing": false,
+  "unity": "6000.5.10f1",
+  "authoredCharacterPipelineHDR": true,
+  "bloomActive": true,
+  "threshold": 1.5,
+  "linearThreshold": 2.44006157,
+  "linearSoftKneeStarts": 1.22003078,
+  "intensity": 0.1,
+  "scatter": 0.55,
+  "materials": [
+    {
+      "name": "Body",
+      "rimEnabled": 1,
+      "rimAlpha": 0.06,
+      "rimFresnelPower": 4,
+      "rimBorder": 0.6,
+      "rimBlur": 0.4,
+      "rimMainStrength": 0.6,
+      "rimLighting": 1,
+      "rimShadowMask": 1,
+      "lightMax": 1
+    },
+    {
+      "name": "Face",
+      "rimEnabled": 1,
+      "rimAlpha": 0.06,
+      "rimFresnelPower": 4,
+      "rimBorder": 0.6,
+      "rimBlur": 0.4,
+      "rimMainStrength": 0.6,
+      "rimLighting": 1,
+      "rimShadowMask": 1,
+      "lightMax": 1
+    },
+    {
+      "name": "Dress",
+      "rimEnabled": 0,
+      "rimAlpha": 0.12,
+      "rimFresnelPower": 4,
+      "rimBorder": 0.6,
+      "rimBlur": 0.4,
+      "rimMainStrength": 0.6,
+      "rimLighting": 1,
+      "rimShadowMask": 1,
+      "lightMax": 1
+    },
+    {
+      "name": "Hair",
+      "rimEnabled": 1,
+      "rimAlpha": 0.12,
+      "rimFresnelPower": 4,
+      "rimBorder": 0.6,
+      "rimBlur": 0.4,
+      "rimMainStrength": 0.6,
+      "rimLighting": 1,
+      "rimShadowMask": 1,
+      "lightMax": 1
+    }
+  ],
+  "scope": "Read-only authored asset inspection. Not a runtime Volume stack or rendered shoulder test."
+}
