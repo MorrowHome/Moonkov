@@ -32,6 +32,10 @@ namespace Unity.MP_FPS
         [SerializeField, Min(1)] private float m_DayLengthMinutes = 24;
         [SerializeField] private bool m_TimeRunning = true;
         [Header("Survival (server authority)")]
+        [Tooltip("Optional shared oxygen profile. When empty, existing scene values below are retained.")]
+        [SerializeField] private OxygenSettings m_OxygenSettings;
+        [SerializeField, Min(1)] private float m_OxygenWalkingMultiplier = 1.1f;
+        [SerializeField, Min(1)] private float m_OxygenSprintingMultiplier = 1.75f;
         [SerializeField, Min(1)] private float m_OutdoorOxygenSeconds = 600;
         [SerializeField, Min(0)] private float m_OxygenRecoveryPerSecond = 5;
         [SerializeField, Min(0)] private float m_HypoxiaGraceSeconds = 8;
@@ -70,10 +74,13 @@ namespace Unity.MP_FPS
         public float StartHour => m_StartHour;
         public float DayLengthMinutes => Mathf.Max(1, m_DayLengthMinutes);
         public bool TimeRunning => m_TimeRunning;
-        public float OutdoorOxygenSeconds => Mathf.Max(1, m_OutdoorOxygenSeconds);
-        public float OxygenRecoveryPerSecond => m_OxygenRecoveryPerSecond;
-        public float HypoxiaGraceSeconds => m_HypoxiaGraceSeconds;
-        public float HypoxiaDamagePerSecond => m_HypoxiaDamagePerSecond;
+        public OxygenParameters OxygenParameters => m_OxygenSettings ? m_OxygenSettings.Parameters :
+            new OxygenParameters(m_OutdoorOxygenSeconds, m_OxygenRecoveryPerSecond, m_HypoxiaGraceSeconds,
+                m_HypoxiaDamagePerSecond, m_OxygenWalkingMultiplier, m_OxygenSprintingMultiplier);
+        public float OutdoorOxygenSeconds => OxygenParameters.OutdoorSeconds;
+        public float OxygenRecoveryPerSecond => OxygenParameters.AirRefillPerSecond;
+        public float HypoxiaGraceSeconds => OxygenParameters.GraceSeconds;
+        public float HypoxiaDamagePerSecond => OxygenParameters.DamagePerSecond;
         public float EnergyReserveSeconds => m_EnergyReserveSeconds;
         public float HydrationReserveSeconds => m_HydrationReserveSeconds;
         public float DigestionSeconds => m_DigestionSeconds;

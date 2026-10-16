@@ -118,6 +118,7 @@ namespace Unity.MP_FPS.Client
             if (HaloModules.FromCode(item.Code) != HaloModule.None) return MoonkovLocalization.Text(HaloModules.Description(item.Code));
             if (item.Code == "ration") return MoonkovLocalization.Text("RATION / +45 ENERGY, -5 HYDRATION, +35 FULLNESS");
             if (item.Code == "water") return MoonkovLocalization.Text("WATER / +50 HYDRATION, +10 FULLNESS");
+            if (item.Code == "oxygen_canister") return MoonkovLocalization.Text("OXYGEN / +40 RESERVE / USE FROM POCKETS OR CHEST RIG");
             if (item.Code == "cells") return MoonkovLocalization.Format($"{BatteryEnergy.Stored(item)}/{item.Quantity * BatteryEnergy.Capacity} ENERGY / VALUE SCALES WITH CHARGE");
             if (ShopCatalog.IsWeapon(item.Code)) return item.LoadedAmmo < 0 ? MoonkovLocalization.Text("FULL MAGAZINE") : MoonkovLocalization.Format($"{item.LoadedAmmo} ROUNDS");
             return MoonkovLocalization.Text("USE / RESTORE 40 HP");

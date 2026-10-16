@@ -29,15 +29,18 @@ namespace Unity.MP_FPS
             if (state.Hydration <= 0) effects |= SurvivalEffects.Dehydrated;
             else if (state.Hydration <= LowThreshold) effects |= SurvivalEffects.Thirsty;
             if (state.Satiety >= FullThreshold) effects |= SurvivalEffects.FullStomach;
-            if (state.Oxygen <= 0) effects |= SurvivalEffects.Hypoxia;
-            else if (state.Oxygen <= 10) effects |= SurvivalEffects.LowOxygen;
+            if (RaidOxygen.NeedsSuitAir(state))
+            {
+                if (state.Oxygen <= 0) effects |= SurvivalEffects.Hypoxia;
+                else if (state.Oxygen <= 10) effects |= SurvivalEffects.LowOxygen;
+            }
             if (state.LeftArmHealth <= 0 || state.RightArmHealth <= 0) effects |= SurvivalEffects.ArmDisabled;
             if (state.LeftLegHealth <= 0 || state.RightLegHealth <= 0) effects |= SurvivalEffects.LegDisabled;
             if (state.AbdomenHealth <= 0) effects |= SurvivalEffects.AbdomenDisabled;
             return effects;
         }
         public static bool CanConsume(in PredictedPlayerGhost state, ConsumableDefinition item) =>
-            state.BodyHealthInitialized && state.CurrentHealth > 0 && item != null &&
+            state.BodyHealthInitialized && state.CurrentHealth > 0 && item != null && item.Oxygen <= 0 &&
             (item.Food ? state.Energy < Capacity && state.Satiety + item.Satiety <= Capacity : state.Hydration < Capacity);
         public static InventoryError Consume(ref PredictedPlayerGhost state, InventoryGraph graph, string id, int version)
         {
@@ -95,7 +98,8 @@ namespace Unity.MP_FPS
             state.LastHitPart = BodyPart.Auto; state.ControllerState.IsHit = true;
         }
         public static bool CanSprint(in PredictedPlayerGhost state) => !state.BodyHealthInitialized ||
-            (state.Energy > 0 && state.Hydration > 0 && state.Oxygen > 0 && state.LeftLegHealth > 0 && state.RightLegHealth > 0);
+            (state.Energy > 0 && state.Hydration > 0 && (state.Oxygen > 0 || !RaidOxygen.NeedsSuitAir(state)) &&
+             state.LeftLegHealth > 0 && state.RightLegHealth > 0);
         public static FirstPersonController.ControllerConsts Movement(in PredictedPlayerGhost state,
             FirstPersonController.ControllerConsts constants)
         {
@@ -105,7 +109,7 @@ namespace Unity.MP_FPS
             if (state.Hydration <= LowThreshold)
             { constants.Walk.Speed *= state.Hydration <= 0 ? .75f : .9f; constants.Sprint.Speed *= .85f; constants.JumpHeight *= .8f; }
             if (state.Satiety >= FullThreshold) constants.Sprint.Speed *= .85f;
-            if (state.Oxygen <= 10)
+            if (state.Oxygen <= 10 && RaidOxygen.NeedsSuitAir(state))
             { constants.Walk.Speed *= state.Oxygen <= 0 ? .65f : .85f; constants.Sprint.Speed *= .8f; constants.JumpHeight *= .7f; }
             if (state.LeftLegHealth <= 0 || state.RightLegHealth <= 0)
             { constants.Walk.Speed *= .65f; constants.JumpHeight *= .5f; }
@@ -117,7 +121,7 @@ namespace Unity.MP_FPS
             if (!state.BodyHealthInitialized) return 1;
             float multiplier = state.LeftArmHealth <= 0 || state.RightArmHealth <= 0 ? 1.4f : 1;
             if (state.Hydration <= LowThreshold) multiplier *= state.Hydration <= 0 ? 1.25f : 1.1f;
-            if (state.Oxygen <= 10) multiplier *= 1.1f;
+            if (state.Oxygen <= 10 && RaidOxygen.NeedsSuitAir(state)) multiplier *= 1.1f;
             return multiplier;
         }
     }

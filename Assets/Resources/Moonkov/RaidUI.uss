@@ -39,7 +39,20 @@
 .raid-inventory-tabs { flex-direction: row; flex-shrink: 0; margin-bottom: 10px; }
 .raid-ui .raid-inventory-tabs .raid-tab { margin: 0 10px 0 0; height: 32px; min-width: 140px; color: #506354; background-color: #c8cebe; letter-spacing: 1px; }
 .raid-ui .raid-inventory-tabs .raid-tab-active { color: #f1eee2; background-color: #485f51; }
-.raid-oxygen-warning { position: absolute; left: 3%; top: 8%; max-width: 440px; padding: 12px 18px; background-color: rgba(20, 16, 10, 0.84); border-left-width: 3px; border-left-color: #e0ac51; font-size: 13px; white-space: normal; display: none; }
+.raid-oxygen-panel { position: absolute; left: 3%; top: 24px; width: 276px; padding: 12px 16px; background-color: rgba(12, 22, 22, 0.88); border-left-width: 3px; border-left-color: #98ccba; display: none; }
+.raid-oxygen-heading { flex-direction: row; justify-content: space-between; align-items: center; }
+.raid-ui .raid-oxygen-reserve { font-size: 21px; color: #d4e9df; margin: 0; -unity-font-definition: url("../../UI Toolkit/RobotoMono-Medium.ttf"); }
+.raid-ui .raid-oxygen-time { font-size: 11px; color: #c0d7cc; margin: 0 0 0 12px; }
+.raid-oxygen-track { height: 4px; margin-top: 9px; background-color: rgba(161, 204, 187, 0.15); }
+.raid-oxygen-fill { height: 100%; background-color: #a6d4bb; }
+.raid-ui .raid-oxygen-air { font-size: 10px; color: #adc4b7; margin: 8px 0 0 0; }
+.raid-oxygen-panel.oxygen-low { border-left-color: #e0ac51; }
+.raid-oxygen-panel.oxygen-low .raid-oxygen-fill { background-color: #e0ac51; }
+.raid-ui .raid-oxygen-panel.oxygen-low .raid-oxygen-reserve { color: #edc279; }
+.raid-oxygen-panel.oxygen-critical { border-left-color: #e26049; }
+.raid-oxygen-panel.oxygen-critical .raid-oxygen-fill { background-color: #e26049; }
+.raid-ui .raid-oxygen-panel.oxygen-critical .raid-oxygen-reserve { color: #ff8c78; }
+.raid-oxygen-warning { position: absolute; left: 3%; top: 140px; max-width: 440px; padding: 12px 18px; background-color: rgba(20, 16, 10, 0.84); border-left-width: 3px; border-left-color: #e0ac51; font-size: 13px; white-space: normal; display: none; }
 .raid-ui .raid-oxygen-warning { color: #edc279; }
 .raid-ui .raid-oxygen-warning.oxygen-critical { color: #ff8c78; border-left-color: #e26049; }
 .raid-ui .raid-inventory-header Button { color: #ECECE6; background-color: rgba(255, 255, 255, 0.06); }

@@ -11,6 +11,14 @@
                 <ui:VisualElement class="health-meter"><ui:VisualElement name="healthOxygenFill" class="health-meter-fill" /></ui:VisualElement>
                 <ui:Label name="healthOxygenStage" class="health-oxygen-stage" />
                 <ui:Label name="healthAir" class="health-caption" />
+                <ui:Label name="healthOxygenTime" class="health-caption" />
+                <ui:Label name="healthAtmosphere" class="health-caption" />
+                <ui:Label name="healthOxygenRate" class="health-caption" />
+                <ui:Label name="healthOxygenGrace" class="health-help health-danger" />
+                <ui:VisualElement class="health-consume-actions">
+                    <ui:Button name="healthRefillOxygen" text="REFILL O₂" />
+                </ui:VisualElement>
+                <ui:Label name="healthOxygenSupplyStatus" class="health-help" />
             </ui:VisualElement>
             <ui:VisualElement class="health-nutrition-card">
                 <ui:Label text="NUTRITION / DIGESTION" class="health-section-title" />

@@ -88,6 +88,7 @@ namespace Unity.MP_FPS.Client
             switch (code) { case "dust":return StashArtKind.Dust; case "alloy":return StashArtKind.Alloy; case "cells":return StashArtKind.Cell; case "medkit":return StashArtKind.Medical;
                 case "helmet":return StashArtKind.Helmet; case "rifle":case "compact":return StashArtKind.HaloRifle; case "pistol":return StashArtKind.HaloRevolver;
                 case "ration":return StashArtKind.Ration; case "water":return StashArtKind.Water;
+                case "oxygen_canister":return StashArtKind.OxygenCanister;
                 case "shotgun":return StashArtKind.HaloShotgun;
                 case "sniper":return StashArtKind.HaloSniper;
                 case "halo_capacitor":return StashArtKind.HaloCapacitor; case "halo_charge_bridge":return StashArtKind.HaloChargeBridge;
@@ -247,11 +248,13 @@ namespace Unity.MP_FPS.Client
         {
             var window=m_Windows.Open(InventoryCatalog.Get(item.Code).Name, m_Root.WorldToLocal(position), true);
             if (m_UseConsumable != null && m_Graph.ConsumableAccessible(item))
-                MoonkovTerminal.ActionButton(window, ConsumableCatalog.Get(item.Code).Food ? "EAT / +45 ENERGY" : "DRINK / +50 HYDRATION", () =>
+                MoonkovTerminal.ActionButton(window, ConsumableCatalog.Get(item.Code).Oxygen > 0 ? "REFILL SUIT / +40 OXYGEN" : ConsumableCatalog.Get(item.Code).Food ? "EAT / +45 ENERGY" : "DRINK / +50 HYDRATION", () =>
                 {
                     if (m_Busy || m_ReadOnlyReason != null) return;
                     m_Windows.Close(window); m_Busy = true; m_UseConsumable(item);
                 });
+            else if (m_UseConsumable != null && ConsumableCatalog.Get(item.Code)?.Oxygen > 0 && m_Graph.Carried(item))
+                Text(window, "Move the oxygen canister to a pocket or equipped chest rig before use.", "inventory-caption");
             if (m_UseMedical != null && m_Graph.MedicalAccessible(item))
                 MoonkovTerminal.ActionButton(window, "USE / RESTORE 40 HP", () =>
                 {

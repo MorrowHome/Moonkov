@@ -2409,7 +2409,9 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 1064981750362112
     m_Key: WATER / +50 HYDRATION, +10 FULLNESS
-    - m_Id: 2262980807634944
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2262980807634944
     m_Key: Expansion capacitor
     m_Metadata:
       m_Items: []
@@ -2519,7 +2521,106 @@ MonoBehaviour:
     m_Key: shop_remove_modules_first
     m_Metadata:
       m_Items: []
-  m_Metadata:
+  - m_Id: 2834712132071424
+    m_Key: "O\u2082 / {0:0}%"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2834712165625856
+    m_Key: EST. {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2834712165625857
+    m_Key: ESTIMATED RESERVE / {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2834712165625858
+    m_Key: NO NET DRAIN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2834712165625859
+    m_Key: BREATHABLE / REFILLING
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2834712165625860
+    m_Key: BREATHABLE / RESERVE HELD
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2834712165625861
+    m_Key: UNBREATHABLE / REFILLING
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2834712165625862
+    m_Key: UNBREATHABLE / SUIT SUPPLY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2834712165625863
+    m_Key: UNBREATHABLE / RESERVE IN USE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2834712165625864
+    m_Key: RESERVE EMPTY / SUPPLY AVAILABLE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2834712165625865
+    m_Key: CRITICAL OXYGEN RESERVE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2834712165625866
+    m_Key: LOW OXYGEN RESERVE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2834712165625867
+    m_Key: "PRESSURE {0:0.0} kPa / O\u2082 PARTIAL {1:0.0} kPa"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2834712165625868
+    m_Key: DRAIN {0:0.00}%/s / SUPPLY {1:0.00}%/s
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2834712165625869
+    m_Key: "REFILL O\u2082"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2834712165625870
+    m_Key: "REFILL O\u2082 / {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2834712165625871
+    m_Key: 'Canister: +40% oxygen. Use supplies in pockets or the chest rig; excess
+      oxygen is lost.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2834712165625872
+    m_Key: HYPOXIA / HEALTH LOSS IN {0:0.0}s
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2834712165625873
+    m_Key: HYPOXIA / HEALTH LOSS ACTIVE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2834712165625874
+    m_Key: HYPOXIA / NO SPRINT, SEEK AIR
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2834712165625875
+    m_Key: 'Cannot refill oxygen: reserve is full or the player is inactive.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2834712165625876
+    m_Key: O-40 Emergency oxygen canister
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2834712165625877
+    m_Key: REFILL SUIT / +40 OXYGEN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2834712165625878
+    m_Key: OXYGEN / +40 RESERVE / USE FROM POCKETS OR CHEST RIG
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2834712165625879
+    m_Key: Move the oxygen canister to a pocket or equipped chest rig before use.
+    m_Metadata:
       m_Items: []
   m_Metadata:
     m_Items: []

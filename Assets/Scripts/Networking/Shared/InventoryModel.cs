@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Unity.MP_FPS.Inventory
 {
-    public enum ItemKind { Root, Material, Cell, Helmet, LongGun, Pistol, Rig, Backpack, Medical, Food, Drink, StorageModule, ShapingModule, UtilityModule }
+    public enum ItemKind { Root, Material, Cell, Helmet, LongGun, Pistol, Rig, Backpack, Medical, Food, Drink, StorageModule, ShapingModule, UtilityModule, Oxygen }
     public enum InventoryError { None, Stale, Missing, Invalid, Incompatible, Bounds, Collision, Cycle, Full, Overweight, Inaccessible }
     public enum InventoryOperation { Move, Split, Merge }
 
@@ -30,7 +30,7 @@ namespace Unity.MP_FPS.Inventory
         public const string Stash = "stash", Equipment = "equipment", Pockets = "pockets";
         public const int MaxDepth = 8, MaxItems = 2048;
         public const float CarryWeightLimit = 45;
-        private static readonly string[] LootCodes = { "dust", "alloy", "cells", "small_pack", "rig", "ration", "water", "halo_capacitor", "halo_charge_bridge", "halo_focus_lens", "halo_fan_array", "halo_pulse_controller", "halo_hit_marker" };
+        private static readonly string[] LootCodes = { "dust", "alloy", "cells", "small_pack", "rig", "ration", "water", "halo_capacitor", "halo_charge_bridge", "halo_focus_lens", "halo_fan_array", "halo_pulse_controller", "halo_hit_marker", "oxygen_canister" };
         public static string LootCode(int index) => LootCodes[index % LootCodes.Length];
         public static readonly IReadOnlyDictionary<string, ItemDefinition> Definitions = Build();
         private static Dictionary<string, ItemDefinition> Build()
@@ -50,6 +50,7 @@ namespace Unity.MP_FPS.Inventory
                 new ItemDefinition("medkit", "M-40 Medical injector", ItemKind.Medical, 1, 1, 4, .15f),
                 new ItemDefinition("ration", "Expedition ration", ItemKind.Food, 1, 1, 3, .25f),
                 new ItemDefinition("water", "Sealed drinking water", ItemKind.Drink, 1, 2, 2, .5f),
+                new ItemDefinition("oxygen_canister", "O-40 Emergency oxygen canister", ItemKind.Oxygen, 1, 1, 3, .35f),
                 new ItemDefinition("helmet", "L-01 Flight helmet", ItemKind.Helmet, 2, 2, 1, 1.2f),
                 new ItemDefinition("rifle", "Halo Rifle", ItemKind.LongGun, 2, 2, 1, 3.2f),
                 new ItemDefinition("compact", "Halo Rifle (Compact)", ItemKind.LongGun, 2, 2, 1, 2.4f),
@@ -323,10 +324,13 @@ namespace Unity.MP_FPS.Inventory
         public bool MedicalAccessible(InventoryItem item) => item != null && item.Code == "medkit" &&
             (item.Parent == InventoryCatalog.Pockets || item.Parent == Equipped("ChestRig")?.Id);
 
-        // Food/water may be used from any carried bag while the inventory is open.
+        // Food/water may be used from any carried bag. Emergency suit canisters
+        // must be immediately accessible in a pocket or the equipped chest rig.
         // Joined loot snapshots and the personal stash are never consumable here.
         public bool ConsumableAccessible(InventoryItem item) => item != null &&
-            ConsumableCatalog.Get(item.Code) != null && Carried(item);
+            ConsumableCatalog.Get(item.Code) != null && Carried(item) &&
+            (ConsumableCatalog.Get(item.Code).Oxygen <= 0 ||
+                item.Parent == InventoryCatalog.Pockets || item.Parent == Equipped("ChestRig")?.Id);
         public InventoryError ConsumeOne(string itemId, int expectedVersion)
         {
             if (expectedVersion != Version) return InventoryError.Stale;

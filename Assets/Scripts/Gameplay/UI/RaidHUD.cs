@@ -18,7 +18,8 @@ namespace Unity.MP_FPS
         private Client.RaidHealthView m_HealthView;
         private VisualElement m_EquipmentHost, m_HealthHost;
         private Button m_EquipmentTab, m_HealthTab;
-        private Label m_OxygenWarning;
+        private Label m_OxygenWarning, m_OxygenReserve, m_OxygenTime, m_OxygenAir;
+        private VisualElement m_OxygenPanel, m_OxygenFill;
         private bool m_HealthSelected;
         private float m_NextOxygenAlert;
         private EntityQuery m_InventoryQuery;
@@ -103,6 +104,9 @@ namespace Unity.MP_FPS
             m_HealthTab = m_Root.Q<Button>("raidHealthTab"); m_HealthTab.clicked += HealthTab;
             m_HealthSelected = false; m_NextOxygenAlert = 0;
             m_OxygenWarning = m_Root.Q<Label>("raidOxygenWarning");
+            m_OxygenPanel = m_Root.Q("raidOxygenPanel"); m_OxygenFill = m_Root.Q("raidOxygenFill");
+            m_OxygenReserve = m_Root.Q<Label>("raidOxygenReserve"); m_OxygenTime = m_Root.Q<Label>("raidOxygenTime");
+            m_OxygenAir = m_Root.Q<Label>("raidOxygenAir");
             m_InventorySequence=0; m_InventoryRequestId=0;
             m_InventoryRequestPending=false;
             m_LootOpenPending=false;m_OpenedLootId=-1;
@@ -131,7 +135,7 @@ namespace Unity.MP_FPS
         {
             if (m_World == null || !m_World.IsCreated) return;
             var player = m_PlayerQuery.HasSingleton<PredictedPlayerGhost>() ? m_PlayerQuery.GetSingleton<PredictedPlayerGhost>() : default;
-            int medicines = 0, food = 0, water = 0;
+            int medicines = 0, food = 0, water = 0, oxygenCanisters = 0;
             if (!m_InventoryQuery.IsEmptyIgnoreFilter)
             {
                 var inventory = m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
@@ -140,12 +144,29 @@ namespace Unity.MP_FPS
                     {
                         if (inventory.Graph.MedicalAccessible(item)) medicines += item.Quantity;
                         if (inventory.Graph.ConsumableAccessible(item))
-                        { if (item.Code == "ration") food += item.Quantity; else if (item.Code == "water") water += item.Quantity; }
+                        {
+                            if (item.Code == "ration") food += item.Quantity;
+                            else if (item.Code == "water") water += item.Quantity;
+                            else if (item.Code == RaidOxygenConsumables.CanisterCode) oxygenCanisters += item.Quantity;
+                        }
                     }
             }
-            if (m_InventoryVisible && m_HealthSelected) m_HealthView.Present(player, medicines, m_InventoryRequestPending, food, water);
+            if (m_InventoryVisible && m_HealthSelected) m_HealthView.Present(player, medicines, m_InventoryRequestPending,
+                food, water, oxygenCanisters);
+            bool oxygenReady = player.BodyHealthInitialized && player.CurrentHealth > 0 && !m_WasSettled;
+            bool needsSuitAir = RaidOxygen.NeedsSuitAir(player);
+            m_OxygenPanel.style.display = oxygenReady ? DisplayStyle.Flex : DisplayStyle.None;
+            if (oxygenReady)
+            {
+                MoonkovLocalization.Set(m_OxygenReserve, "O₂ / {0:0}%", player.Oxygen);
+                MoonkovLocalization.Set(m_OxygenTime, "EST. {0}", Client.RaidHealthView.OxygenTimeText(player));
+                MoonkovLocalization.Set(m_OxygenAir, Client.RaidHealthView.OxygenAirText(player));
+                m_OxygenFill.style.width = Length.Percent(Mathf.Clamp(player.Oxygen, 0, 100));
+                m_OxygenPanel.EnableInClassList("oxygen-low", player.Oxygen <= 25);
+                m_OxygenPanel.EnableInClassList("oxygen-critical", needsSuitAir && player.Oxygen <= 10);
+            }
             var effects = RaidNutrition.Effects(player);
-            bool oxygenWarning = player.BodyHealthInitialized && player.CurrentHealth > 0 && player.Oxygen <= 25;
+            bool oxygenWarning = oxygenReady && needsSuitAir && player.Oxygen <= 25;
             var otherEffects = effects & ~(SurvivalEffects.LowOxygen | SurvivalEffects.Hypoxia);
             bool warning = (oxygenWarning || otherEffects != SurvivalEffects.None) && !m_WasSettled;
             m_OxygenWarning.style.display = warning ? DisplayStyle.Flex : DisplayStyle.None;
@@ -153,12 +174,11 @@ namespace Unity.MP_FPS
             bool critical = (oxygenWarning && player.Oxygen <= 10) || (effects & (SurvivalEffects.Starving | SurvivalEffects.Dehydrated)) != 0;
             m_OxygenWarning.EnableInClassList("oxygen-critical", critical);
             string text = oxygenWarning ? string.Format(System.Globalization.CultureInfo.CurrentCulture,
-                MoonkovLocalization.Text(player.BreathableAir ? "OXYGEN REFILLING / {0:0}%" :
-                player.Oxygen <= 0 ? "HYPOXIA / SEEK PRESSURIZED AIR" : "LOW OXYGEN / {0:0}%"), player.Oxygen) : "";
+                MoonkovLocalization.Text(player.Oxygen <= 0 ? "HYPOXIA / SEEK PRESSURIZED AIR" : "LOW OXYGEN / {0:0}%"), player.Oxygen) : "";
             string nutritionText = Client.RaidHealthView.EffectText(otherEffects);
             if (!string.IsNullOrEmpty(nutritionText)) text += (text.Length > 0 ? "\n" : "") + nutritionText;
             MoonkovLocalization.Set(m_OxygenWarning, text);
-            bool alert = (oxygenWarning && !player.BreathableAir) ||
+            bool alert = oxygenWarning ||
                 (effects & (SurvivalEffects.Hungry | SurvivalEffects.Starving | SurvivalEffects.Thirsty | SurvivalEffects.Dehydrated)) != 0;
             if (alert && Time.unscaledTime >= m_NextOxygenAlert)
             {
@@ -492,9 +512,12 @@ namespace Unity.MP_FPS
             if (m_InventoryRequestPending || m_Snapshot.Phase != RaidPhase.Active || m_InventoryQuery.IsEmptyIgnoreFilter) return;
             var inventory = m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
             var player = m_PlayerQuery.HasSingleton<PredictedPlayerGhost>() ? m_PlayerQuery.GetSingleton<PredictedPlayerGhost>() : default;
-            if (!RaidNutrition.CanConsume(player, Inventory.ConsumableCatalog.Get(item.Code)))
+            var definition = Inventory.ConsumableCatalog.Get(item.Code);
+            bool oxygenSupply = definition != null && definition.Oxygen > 0;
+            if (!(oxygenSupply ? RaidOxygen.CanRefill(player) : RaidNutrition.CanConsume(player, definition)))
             {
-                const string message = "Cannot consume: resource is full, stomach capacity is insufficient, or the player is inactive.";
+                string message = oxygenSupply ? "Cannot refill oxygen: reserve is full or the player is inactive." :
+                    "Cannot consume: resource is full, stomach capacity is insufficient, or the player is inactive.";
                 m_InventoryView.Present(inventory.Graph, message); m_HealthView.Message(message); return;
             }
             m_InventoryRequestId = System.Math.Max(m_InventoryRequestId, inventory.RequestId) + 1;

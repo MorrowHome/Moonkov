@@ -83,3 +83,8 @@ Assets/MoonEnvironment/Variants/**/*.mat whitespace=-blank-at-eol
 Assets/MoonEnvironment/Variants/**/*.unity whitespace=-blank-at-eol
 # Preserve the model author's delivered notes and CSV formatting.
 SourceData/Models/**/AuthorNotes/** whitespace=-blank-at-eol,-blank-at-eof
+
+# Reusable oxygen prefabs, materials and settings use Unity serialization.
+Assets/Prefabs/Survival/*.prefab whitespace=-blank-at-eol
+Assets/Prefabs/Survival/*.mat whitespace=-blank-at-eol
+Assets/Resources/Moonkov/Oxygen/*.asset whitespace=-blank-at-eol

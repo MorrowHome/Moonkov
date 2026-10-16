@@ -7,6 +7,16 @@
             <ui:Label name="raidClock" class="raid-caption" />
             <ui:Label name="raidBag" class="raid-copy" />
         </ui:VisualElement>
+        <ui:VisualElement name="raidOxygenPanel" class="raid-oxygen-panel" picking-mode="Ignore">
+            <ui:VisualElement class="raid-oxygen-heading" picking-mode="Ignore">
+                <ui:Label name="raidOxygenReserve" class="raid-oxygen-reserve" picking-mode="Ignore" />
+                <ui:Label name="raidOxygenTime" class="raid-oxygen-time" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:VisualElement class="raid-oxygen-track" picking-mode="Ignore">
+                <ui:VisualElement name="raidOxygenFill" class="raid-oxygen-fill" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:Label name="raidOxygenAir" class="raid-oxygen-air" picking-mode="Ignore" />
+        </ui:VisualElement>
         <ui:Label name="raidOxygenWarning" class="raid-oxygen-warning" picking-mode="Ignore" />
         <ui:VisualElement class="raid-interaction-anchor" picking-mode="Ignore">
             <ui:VisualElement name="raidInteraction" class="raid-interaction" picking-mode="Ignore">

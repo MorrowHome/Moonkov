@@ -24,10 +24,10 @@ namespace Unity.MP_FPS
                 var position = (Vector3)SystemAPI.GetComponent<LocalTransform>(player).Position;
                 // Check torso rather than the feet to avoid treating a doorway's
                 // floor contact as breathable before the character has entered.
-                bool air = BreathableZone.Contains(position + Vector3.up);
-                RaidHealth.TickOxygen(ref health.ValueRW, air, SystemAPI.Time.DeltaTime,
-                    map.OutdoorOxygenSeconds, map.OxygenRecoveryPerSecond,
-                    map.HypoxiaGraceSeconds, map.HypoxiaDamagePerSecond, tick);
+                var samplePosition = position + Vector3.up;
+                BreathableZone.TrySample(samplePosition, out var atmosphere);
+                RaidOxygen.Tick(ref health.ValueRW, atmosphere, map.OxygenParameters, SystemAPI.Time.DeltaTime,
+                    tick, OxygenRefillZone.SampleSupply(samplePosition, atmosphere.Breathable));
                 RaidNutrition.Tick(ref health.ValueRW, SystemAPI.Time.DeltaTime,
                     map.EnergyReserveSeconds, map.HydrationReserveSeconds, map.DigestionSeconds,
                     map.NutritionGraceSeconds, map.StarvationDamagePerSecond, map.DehydrationDamagePerSecond, tick);

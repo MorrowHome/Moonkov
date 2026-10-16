@@ -3,7 +3,7 @@ using UnityEngine.UIElements;
 
 namespace Unity.MP_FPS.Client
 {
-    public enum StashArtKind { None, Dust, Alloy, Cell, Halo, Outfit, Helmet, Rifle, Pistol, ChestRig, Backpack, HaloRifle, HaloRevolver, HaloShotgun, Medical, HaloSniper, Ration, Water, HaloCapacitor, HaloChargeBridge, HaloFocusLens, HaloFanArray, HaloPulseController, HaloHitMarker }
+    public enum StashArtKind { None, Dust, Alloy, Cell, Halo, Outfit, Helmet, Rifle, Pistol, ChestRig, Backpack, HaloRifle, HaloRevolver, HaloShotgun, Medical, HaloSniper, Ration, Water, HaloCapacitor, HaloChargeBridge, HaloFocusLens, HaloFanArray, HaloPulseController, HaloHitMarker, OxygenCanister }
 
     // Small original vector illustrations, kept sharp at the shared PanelSettings scale.
     [UxmlElement]
@@ -56,6 +56,7 @@ namespace Unity.MP_FPS.Client
                 case StashArtKind.Medical: Medical(); break;
                 case StashArtKind.Ration: Ration(); break;
                 case StashArtKind.Water: Water(); break;
+                case StashArtKind.OxygenCanister: OxygenCanister(); break;
                 case StashArtKind.Halo: Halo(); break;
                 case StashArtKind.Outfit: Outfit(); break;
                 case StashArtKind.Helmet: Helmet(); break;
@@ -117,6 +118,18 @@ namespace Unity.MP_FPS.Client
             Box(0xb5cfcc, 33, 42, 7, 39); Box(0xe5e5cf, 28, 53, 44, 20);
             Ring(0x557c7c, 2, 50, 63, 6);
             Line(0x456d6d, 2, new Vector2(29, 85), new Vector2(70, 85));
+        }
+        private void OxygenCanister()
+        {
+            // Distinct valve, pressure gauge and cyan shell read at one inventory cell.
+            Box(0x25383b, 43, 10, 14, 12); Box(0xb1bcb9, 35, 7, 30, 6);
+            Shape(0x296e77, new Vector2(37, 23), new Vector2(63, 23), new Vector2(72, 34),
+                new Vector2(72, 82), new Vector2(65, 91), new Vector2(35, 91), new Vector2(28, 82), new Vector2(28, 34));
+            Box(0x55b5be, 34, 32, 31, 49); Box(0x96d5d6, 36, 35, 6, 40);
+            Box(0xd4e5d9, 28, 50, 44, 24); Ring(0x245b65, 2.5f, 45, 61, 7);
+            Line(0x245b65, 2, new Vector2(56, 56), new Vector2(63, 56), new Vector2(63, 61), new Vector2(56, 66), new Vector2(63, 66));
+            Ring(0xd5ddcf, 2, 67, 24, 8); Line(0xe9bd62, 2, new Vector2(67, 24), new Vector2(70, 20));
+            Box(0x263e43, 33, 84, 34, 6);
         }
         private void Dust()
         {

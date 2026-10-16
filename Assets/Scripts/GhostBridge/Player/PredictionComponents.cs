@@ -66,7 +66,12 @@ public struct PredictedPlayerGhost : IComponentData
     [GhostField] public float Oxygen;
     [GhostField] public bool BreathableAir;
     [GhostField] public BodyPart LastHitPart;
-    public float HypoxiaSeconds;
+    [GhostField] public float HypoxiaSeconds;
+    [GhostField] public float OxygenGraceRemaining;
+    [GhostField] public float OxygenDrainPerSecond;
+    [GhostField] public float OxygenSupplyPerSecond;
+    [GhostField] public float AmbientPressureKPa;
+    [GhostField] public float AmbientOxygenPartialPressureKPa;
     [GhostField] public float Energy;
     [GhostField] public float Hydration;
     [GhostField] public float Satiety;

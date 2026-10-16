@@ -11,6 +11,7 @@
 .health-oxygen-card { margin-top: 10px; padding: 12px; background-color: #dce1d6; border-left-width: 3px; border-left-color: #5c796e; }
 .health-oxygen-value { font-size: 32px; }
 .health-oxygen-stage { margin-top: 12px; font-size: 14px; }
+.health-oxygen-card .health-caption { margin-bottom: 3px; }
 .health-help { font-size: 11px; margin-top: 12px; }
 .health-meter { height: 5px; background-color: #b8bdae; margin-top: 6px; }
 .health-meter-fill { height: 100%; background-color: #64846c; }

@@ -32,7 +32,7 @@ namespace Unity.MP_FPS
                 if (state.EntityManager.HasComponent<RaidInventoryState>(connection) && GetRaidInventory(ref state,connection).RaidId==session.RaidId) continue;
             var graph=InventoryGraph.Create(stash:false); graph.AddSupply("cells",session.Cells);
             if (!session.PersistentDeployment)
-            { graph.AddSupply("medkit", 2); graph.AddSupply("ration", 2); graph.AddSupply("water", 2); }
+            { graph.AddSupply("medkit", 2); graph.AddSupply("ration", 2); graph.AddSupply("water", 2); graph.AddSupply("oxygen_canister", 1); }
                 SetRaidInventory(ref state,connection,graph,session.RaidId);
             }
         }
@@ -56,7 +56,11 @@ namespace Unity.MP_FPS
                             SystemAPI.Exists(player) && SystemAPI.HasComponent<PredictedPlayerGhost>(player))
                         {
                             var ghost = SystemAPI.GetComponentRW<PredictedPlayerGhost>(player);
-                            inventory.Error = RaidNutrition.Consume(ref ghost.ValueRW, inventory.Graph, r.ItemId.ToString(), r.ExpectedVersion);
+                            string itemId = r.ItemId.ToString();
+                            var item = inventory.Graph.Find(itemId);
+                            inventory.Error = ConsumableCatalog.Get(item?.Code)?.Oxygen > 0
+                                ? RaidOxygenConsumables.Consume(ref ghost.ValueRW, inventory.Graph, itemId, r.ExpectedVersion)
+                                : RaidNutrition.Consume(ref ghost.ValueRW, inventory.Graph, itemId, r.ExpectedVersion);
                         }
                         inventory.LastSentVersion = -1;
                     }

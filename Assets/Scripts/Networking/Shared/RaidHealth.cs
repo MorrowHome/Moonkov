@@ -58,7 +58,7 @@ namespace Unity.MP_FPS
             state.HeadHealth = 35; state.ChestHealth = 85; state.AbdomenHealth = 70;
             state.LeftArmHealth = state.RightArmHealth = 60;
             state.LeftLegHealth = state.RightLegHealth = 65;
-            state.Oxygen = OxygenCapacity; state.BreathableAir = false; state.HypoxiaSeconds = 0;
+            RaidOxygen.Initialize(ref state);
             RaidNutrition.Initialize(ref state);
             Synchronize(ref state);
         }
@@ -120,21 +120,11 @@ namespace Unity.MP_FPS
         public static void TickOxygen(ref PredictedPlayerGhost state, bool breathable, float dt,
             float outdoorSeconds, float recoveryPerSecond, float graceSeconds, float damagePerSecond, uint tick)
         {
-            if (!state.BodyHealthInitialized || state.CurrentHealth <= 0 || dt <= 0) return;
-            state.BreathableAir = breathable;
-            if (breathable)
-            {
-                state.Oxygen = Mathf.Min(OxygenCapacity, state.Oxygen + Mathf.Max(0, recoveryPerSecond) * dt);
-                state.HypoxiaSeconds = 0; return;
-            }
-            float rate = OxygenCapacity / Mathf.Max(1, outdoorSeconds);
-            float exhaustedTime = Mathf.Max(0, dt - state.Oxygen / rate);
-            state.Oxygen = Mathf.Max(0, state.Oxygen - dt * rate);
-            if (exhaustedTime <= 0) { state.HypoxiaSeconds = 0; return; }
-            float prior = Mathf.Max(0, state.HypoxiaSeconds - graceSeconds);
-            state.HypoxiaSeconds += exhaustedTime;
-            float exposure = Mathf.Max(0, state.HypoxiaSeconds - graceSeconds) - prior;
-            if (exposure > 0) Damage(ref state, BodyPart.Chest, exposure * Mathf.Max(0, damagePerSecond), tick);
+            // Compatibility entry point for existing airlock previews and callers.
+            // This overload retains their constant-rate consumption contract.
+            var atmosphere = new AtmosphereSample(null, breathable ? 101.325f : 0, breathable ? .21f : 0, breathable);
+            var settings = new OxygenParameters(outdoorSeconds, recoveryPerSecond, graceSeconds, damagePerSecond, 1, 1);
+            RaidOxygen.Tick(ref state, atmosphere, settings, dt, tick);
         }
         public static FirstPersonController.ControllerConsts Movement(in PredictedPlayerGhost state,
             FirstPersonController.ControllerConsts constants)
