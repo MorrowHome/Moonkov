@@ -14,6 +14,7 @@ public static class MoonkovSoftAnimePreview
     public static void Compare()
     {
         if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("Edit Mode only.");
+        MoonkovAnimeLightingSetup.UpdatePearlMatCap();
         MoonkovAnimeLightingSetup.UpdateColorGrade();
         MoonkovAnimeLightingSetup.UpdateRenderer();
         Capture("before", MoonkovAnimeLightingSetup.OriginalProfilePath);

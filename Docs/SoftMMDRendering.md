@@ -1,37 +1,50 @@
-# 柔和 MMD / VRChat 风格预览
+# 柔亮 MMD / VRChat 风格与战术阴影
 
-2026-10-16，分支 `anime-toon-lighting`。用户明确选择奶白肤色、浅彩阴影、水润眼睛；上一版硬阴影方案已撤回。**当前正式角色材质和 Theophilus 场景保持原样，本分支先提供可审阅预览，等待画面方向确认。**
+2026-10-16，分支 `anime-toon-lighting`。已按用户选择，将柔和、奶白肤色、浅彩阴影及进一步要求的光泽与通透感应用到共享角色材质和正式 Theophilus 地图。保留真实遮挡造成的变暗，未增加最低照明或角色自发光。
 
-![左：原效果；右：柔和 MMD 预览](Images/SoftMMDPortraitComparison.png)
+![当前珠光与水润高光预览（受控 Editor 机位）](Images/SoftMMDPearl.png)
 
-## 已完成
+## 角色与材质
 
-- `MoonkovAnimeLightingSetup.ConfigureSoftMaterial` 在预览材质副本上应用浅粉肤色阴影、浅紫衣物阴影、较柔和的明暗过渡和低强度高光。描边宽度、透明模式、贴图和原有近/远遮光距离不改；没有增加自发光或最低照明。
-- 独立 `MoonAnimePostProcessing` 使用 Neutral、+0.4 EV、对比度 -4、饱和度 -2、轻微冷暖分离、Bloom 0.18 / 阈值 1.5、暗角 0.04。复制自正式地图的 `TheophilusLook`，沿用其 Bloom 降采样等成本配置。
-- 独立 `MoonSoftAnimeRenderer` 复制自 `MoonRenderer`，只把 SSAO 的 `AfterOpaque` 从 true 改为 false。前者在不透明表面着色后全屏乘 AO，近景脸颊、眼下和肩膀出现明显灰斑；改为 URP 光照阶段使用 AO 后，本次 lilToon 角色近景不再叠这层灰斑。URP Lit 环境仍可使用 AO；没有新增 AO 遮罩或渲染 Pass。
-- 独立 `MoonSoftAnimePipeline` 复制正式场景使用的 `MC00BakedPipeline`，仅换为上述 Renderer。原共享管线、Renderer、正式 VolumeProfile 不改写。
-- 原 13 份角色材质已逐项恢复，Git 检查没有角色材质差异。字体的用户未提交修改未纳入本次任务。
+- 13 份共享 DollSinger 材质：肤色使用浅粉阴影，衣料使用浅紫阴影，过渡较柔和。眉毛、睫毛及眼白保持干净；描边宽度、透明模式、源贴图、近/远遮光距离不改。
+- 新增一张共享 128×128 `SoftPearlMatCap`，用柔光箱形状生成珠光反射。头发、皮肤、白色衣料、眼睛及饰件使用不同强度；眉毛、睫毛、眼白不叠高光。皮肤有低强度暖色背光，眼睛与饰件使用更集中的镜面高光。
+- MatCap 开启照明与阴影遮罩，背光接收阴影；镜面高光使用真实灯光。环境反射项关闭，避免室外反射探针让角色在遮挡里仍亮着。`_LightMinLimit=0`、`_AsUnlit=0` 和原 `_MoonShadowNear/Far` 保留。
+- 这些共享材质影响本地玩家、网络玩家、菜单和复用同材质的敌人。没有增加运行时材质实例、补光灯或网络字段。
 
-## 复现预览
+## 正式地图接入
 
-Edit Mode 菜单：`Tools → Moonkov → Rendering → Compare Current With Soft MMD`。
+- 独立 `MoonAnimePostProcessing`：Neutral、+0.4 EV、对比度 -4、饱和度 -2、轻微冷暖分离、Bloom 0.18 / 阈值 1.5、暗角 0.04。复制正式 `TheophilusLook`，沿用原 Bloom 降采样配置。
+- 独立 `MoonSoftAnimeRenderer`：保留现有 SSAO 功能，把 `AfterOpaque` 改为 false，由 URP 光照阶段消费 AO。原来的不透明表面着色后全屏相乘会在 lilToon 脸颊、眼下和肩膀形成灰斑；新配置避免这层灰斑。该顺序可能需要深度法线前置 Pass，没有测量其 GPU 成本。
+- 独立 `MoonSoftAnimePipeline`：复制正式场景使用的 `MC00BakedPipeline`，只引用新 Renderer。原共享管线、Renderer、旧 Profile 不改写。
+- 正式 `TheophilusGameScene` 仅替换现有 Volume 的 Profile 和 MoonSceneLighting 的 Pipeline 两个引用；太阳、环境光、天文时钟、地形、碰撞及玩法保持原配置。保存时产生的文档重排及空默认字段未纳入最终场景差异。
+- 新开正式单机对局确认实际管线为 `MoonSoftAnimePipeline (interior runtime)`，地图 Volume 使用 `MoonAnimePostProcessing`，本地网络角色正常生成。
 
-该工具生成/更新独立预览 Profile、Renderer、Pipeline，在临时 PreviewScene 中复制玩家和材质，生成 `Library/BuildValidation/AnimeLighting/before-*` 与 `soft-*`。`before` 指运行该工具时的当前源材质，不是永久保存的历史基线。
+## Play 模式战术阴影验证
 
-两侧使用同一角色、姿势、相机和太阳光（2.2 强度，色温为显式暖白色）。输出顺光、侧光、背光及顺光近景；这些是受控 Editor 渲染，不是正式地图游玩截图。太阳、环境设置、Quality 管线覆盖和临时资源均在 finally 中恢复/释放。没有启动 Host、账号登录或修改玩家存档。
+![同一机位：阳光、顶棚遮挡阴影、阴影中的局部灯](Images/SoftMMDTacticalShadows.png)
 
-## 画面确认后的应用入口
+在正式 Theophilus 单机对局运行时，使用相同角色视觉模型与最终共享材质配置建立临时受控舞台。普通 Game Camera 连续渲染，每阶段等待八个实际渲染帧；用实体顶棚投射阴影，另测顶棚下点光源及无太阳状态。额外白色 URP Lit 球作为遮光参照。没有用 Editor PreviewScene 的同步渲染结果证明游戏阴影。
 
-1. `Apply Soft MMD Character Look`：更新共享角色材质，本地玩家、网络玩家、复用这些材质的敌人和菜单模型都会受影响。
-2. `Use Soft MMD Lighting In Open Theophilus Scene`：正式地图已打开时，只替换现有 Volume 的 Profile 和现有 MoonSceneLighting 的 Pipeline 引用，不添加灯，不调整太阳、天文时钟或环境光。保存场景需显式执行。
+同一面部 100×100 像素区域的归一化采样亮度：
 
-本轮未执行这两个应用入口。当前正式游戏画面保持原效果。
+| 状态 | 采样值 |
+| --- | ---: |
+| 阳光下 | 0.5812 |
+| 顶棚遮挡 | 0.0043 |
+| 遮挡下开启局部灯 | 0.5470 |
+| 无太阳、无局部灯 | 0.0035 |
 
-## 验证与限制
+遮挡后约为阳光下的 0.74%，新增珠光未让脸部在暗处保持明亮。该值是同一渲染目标的相对采样，不是照度或显示器校准值，也不是全图所有位置的可见性保证。身体接收真实遮光后，高光随灯光一起衰减；发光武器、光环照明和射击效果仍有原本的暴露位置作用。
 
-- Unity 6000.5.10f1 / URP 17.5，本机 Metal；Editor 脚本编译通过。
-- 两种配置各四个受控渲染，近景已人工检查；确认原效果与预览的 AO 灰斑差异。
-- 验证器确认预览前后 16 份角色目录下的材质文件字节一致；活动场景 dirty 状态、管线、太阳和环境光一致，PreviewScene 数量恢复，没有临时场景泄漏。
-- 当前目录材质的 Shader 诊断无 Error；没有修改 lilToon 包、Shader 源码或项目全局质量设置。
-- Theophilus 在打开/脚本重载后仍出现此前文档记录的 `SubScene.AddSceneEntities / OnEnable` 断言；本轮另外产生过一次 Pipeline eval 的 5 秒调度超时。没有把 Console 称为零错误。后续采用足够时限的 run_script，最终验证通过。
-- 尚未应用到正式地图，未作真实游玩、多人、目标平台独立构建、GPU 帧时或低照度实机验收，也不据此宣称达到某款商业游戏的最终美术品质。
+正式网络玩家的 `DollSinger_Body` 实测 `receiveShadows=true`、`shadowCastingMode=On`，使用现有 Moonkov lilToon Shader；第一人称完整影子副本继续为 ShadowsOnly。没有修改原遮光 Shader。
+
+测试使用 `Library/BuildValidation/AnimeLighting/Profile-*` 临时档案，不使用玩家原存档。退出后清理临时舞台、相机、材质与光源，恢复管线、太阳及玩家名称并退出 Play。
+
+## 工具与验证边界
+
+- `Tools → Moonkov → Rendering → Compare Current With Soft MMD` 生成/更新独立配置，在临时 PreviewScene 中复制模型和材质，输出顺光、侧光、背光及近景。`before-*` 为当前源材质配原地图 Pipeline/Profile，`soft-*` 为柔亮材质副本配新 Pipeline/Profile；两者不是单变量 MatCap 对照，亦不是永久历史基线。预览不覆盖正式源材质，生成独立配置会写入自己的资产。
+- `Apply Soft MMD Character Look` 可重新应用材质；`Use Soft MMD Lighting In Open Theophilus Scene` 只改两个场景引用，不自动保存其他场景编辑。
+- Unity 6000.5.10f1 / URP 17.5 / Metal：Editor 编译通过；新增材质纹理引用有效，Shader 诊断无 Error。初次只读预览验证确认源材质字节不变、场景状态与渲染设置恢复、无临时场景泄漏。
+- 原始记录：`Library/BuildValidation/AnimeLighting/LiveShadowResult.txt`、`live-tactical-*.png`。早期 `tactical-*.png` 为未通过的同步诊断，不是最终证据。
+- Theophilus 原有 `SubScene.AddSceneEntities / OnEnable` 断言仍可在打开/重载时出现；另有验证工具编译/调度错误，未称 Console 零错误。最终 Play 验证及脚本编译通过。
+- 未作多人双方目视对战、整图走位、独立构建或 GPU/FPS 预算验收。观感需继续结合实际游戏场景评估，不宣称达到某款商业游戏的最终美术品质。

@@ -1250249,7 +1250249,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: MoonEnvironment.Runtime::Unity.MP_FPS.Moon.MoonSceneLighting
   sun: {fileID: 728697756}
-  pipeline: {fileID: 11400000, guid: 31043ff342af98840900ca793fa9af2d, type: 2}
+  pipeline: {fileID: 11400000, guid: eebd84058dcbd43fcb5d271f94fd5673, type: 2}
   spaceSkybox: {fileID: 2100000, guid: c1a38f090deef91489b3e48b739cf681, type: 2}
   nightAmbient: {r: 0, g: 0, b: 0, a: 1}
   ambientFill: {r: 0.015, g: 0.015, b: 0.015, a: 1}
@@ -1262912,7 +1262912,7 @@ MonoBehaviour:
   priority: 10
   blendDistance: 0
   weight: 1
-  sharedProfile: {fileID: 11400000, guid: d1c48de6887ed5f4094e382b458eee31, type: 2}
+  sharedProfile: {fileID: 11400000, guid: 189d927e5ee8b44e0b0c6787d364e1fa, type: 2}
 --- !u!4 &1957424981
 Transform:
   m_ObjectHideFlags: 0

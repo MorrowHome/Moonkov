@@ -1,17 +1,19 @@
 using System;
+using System.IO;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
-/// <summary>Authored lilToon look. No runtime lights, material clones, or extra render passes.</summary>
+/// <summary>Authored lilToon look without adding runtime lights or material instances.</summary>
 public static class MoonkovAnimeLightingSetup
 {
     public const string ProfilePath = "Assets/MoonEnvironment/Settings/MoonAnimePostProcessing.asset";
     public const string OriginalProfilePath = "Assets/MoonEnvironment/Variants/TheophilusBase/VisualPass01/TheophilusLook.asset";
     public const string PipelinePath = "Assets/MoonEnvironment/Settings/MoonSoftAnimePipeline.asset";
     public const string RendererPath = "Assets/MoonEnvironment/Settings/MoonSoftAnimeRenderer.asset";
+    public const string MatCapPath = "Assets/DollSinger/Art/Textures/SoftPearlMatCap.png";
     public const string ScenePath = "Assets/MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusGameScene.unity";
     private const string Materials = "Assets/DollSinger/Art/Materials/";
     private static readonly string[] Names =
@@ -24,6 +26,7 @@ public static class MoonkovAnimeLightingSetup
     public static void ApplyCharacterLook()
     {
         RequireEditMode();
+        UpdatePearlMatCap();
         // Validate the entire target set before starting to edit shared assets.
         var materials = Array.ConvertAll(Names, name => Require<Material>(Materials + name + ".mat"));
         foreach (var material in materials)
@@ -77,15 +80,70 @@ public static class MoonkovAnimeLightingSetup
         Float(material, "_RimMainStrength", .25f);
         Color(material, "_RimColor", new Color(.94f,.96f,1,skin ? .12f : .22f));
 
-        Float(material, "_UseReflection", hair || metal || eye ? 1 : 0);
+        bool glossy = !line && !eyeWhite;
+        Float(material, "_UseReflection", glossy ? 1 : 0);
+        // The sheen follows actual light visibility. An outdoor reflection probe
+        // must not keep a character's hair/eyes bright inside a dark occluder.
         Float(material, "_ApplyReflection", 0);
         Float(material, "_ApplySpecular", 1);
         Float(material, "_Metallic", 0);
-        Float(material, "_Smoothness", eye ? .9f : metal ? .65f : .35f);
+        Float(material, "_Smoothness", eye ? .94f : metal ? .76f : hair ? .62f : skin ? .63f : .48f);
+        Float(material, "_Reflectance", eye ? .08f : skin ? .025f : .04f);
         Float(material, "_SpecularToon", 0);
         Float(material, "_GSAAStrength", .6f);
         Float(material, "_UseAnisotropy", 0);
-        Color(material, "_ReflectionColor", new Color(.95f,.97f,1,eye ? .45f : metal ? .28f : .10f));
+        Color(material, "_ReflectionColor", new Color(.98f,.98f,1,eye ? .75f : metal ? .45f : hair ? .28f : skin ? .18f : .14f));
+
+        Float(material, "_UseMatCap", glossy ? 1 : 0);
+        if (glossy)
+        {
+            material.SetTexture("_MatCapTex", Require<Texture2D>(MatCapPath));
+            Float(material, "_MatCapBlendMode", 1);
+            Float(material, "_MatCapEnableLighting", 1);
+            Float(material, "_MatCapShadowMask", 1);
+            Float(material, "_MatCapMainStrength", eye ? 0 : skin ? .5f : .35f);
+            Color(material, "_MatCapColor", new Color(.96f,.98f,1,eye ? .65f : hair ? .45f : metal ? .55f : skin ? .25f : .28f));
+        }
+        Float(material, "_UseBacklight", skin ? 1 : 0);
+        if (skin)
+        {
+            Color(material, "_BacklightColor", new Color(.95f,.68f,.65f,.12f));
+            Float(material, "_BacklightBorder", .25f);
+            Float(material, "_BacklightBlur", .5f);
+            Float(material, "_BacklightDirectivity", 3);
+            Float(material, "_BacklightMainStrength", .6f);
+            Float(material, "_BacklightReceiveShadow", 1);
+        }
+    }
+
+    public static void UpdatePearlMatCap()
+    {
+        RequireEditMode();
+        if (AssetDatabase.LoadAssetAtPath<Texture2D>(MatCapPath)) return;
+        const int size = 128;
+        var texture = new Texture2D(size,size,TextureFormat.RGB24,false);
+        try
+        {
+            var pixels = new Color[size*size];
+            for(int y=0;y<size;y++)
+            for(int x=0;x<size;x++)
+            {
+                float u=2f*x/(size-1)-1, v=2f*y/(size-1)-1;
+                if(u*u+v*v>1) { pixels[y*size+x]=new Color(0,0,0,1); continue; }
+                float key=Mathf.Exp(-Mathf.Pow((u+.23f)/.14f,2)-Mathf.Pow((v-.3f)/.3f,2));
+                float fill=Mathf.Exp(-Mathf.Pow((u-.24f)/.3f,2)-Mathf.Pow((v+.05f)/.45f,2));
+                float rim=Mathf.Pow(1-Mathf.Sqrt(1-u*u-v*v),5);
+                pixels[y*size+x]=new Color(1,.96f,.94f)*key*.9f + new Color(.65f,.78f,1)*fill*.3f + new Color(.82f,.88f,1)*rim*.08f;
+            }
+            texture.SetPixels(pixels);texture.Apply();
+            File.WriteAllBytes(MatCapPath,texture.EncodeToPNG());
+        }
+        finally { UnityEngine.Object.DestroyImmediate(texture); }
+        AssetDatabase.ImportAsset(MatCapPath,ImportAssetOptions.ForceSynchronousImport);
+        var importer=(TextureImporter)AssetImporter.GetAtPath(MatCapPath);
+        importer.textureType=TextureImporterType.Default;importer.sRGBTexture=true;importer.mipmapEnabled=true;
+        importer.wrapMode=TextureWrapMode.Clamp;importer.textureCompression=TextureImporterCompression.Uncompressed;
+        importer.SaveAndReimport();
     }
 
     [MenuItem("Tools/Moonkov/Rendering/Update Soft MMD Color Grade")]

@@ -31,3 +31,5 @@
 已查阅：`Packages/manifest.json`、`ProjectVersion.txt`、`GraphicsSettings.asset`、`EditorBuildSettings.asset`、`ProjectSettings.asset`、`GhostBridgeBootstrap.cs`、`GameManager.cs`、`SceneLoader.cs`、Starter Assets 控制器与输入脚本、源月球地形／材质／着色器／接地实现。
 
 未覆盖：模板完整联机端到端测试、构建平台差异、正式月球网络地图的出生点和 Ghost 资源配置、性能测量。
+
+2026-10-16：正式 Theophilus 已接入柔亮 MMD 渲染（`MoonSoftAnimePipeline` / `MoonSoftAnimeRenderer` / `MoonAnimePostProcessing`），共享角色材质增加受光照控制的珠光 MatCap、皮肤背光和水润高光。保持原太阳/环境光、最低亮度 0、遮光距离；Play 受控顶棚测试中阴影脸部采样为阳光下约 0.74%，局部灯可重新照亮。正式离线对局确认新管线的 interior runtime 副本、Volume 和 owned 网络角色。未作多人/整图/FPS 验收，详见 `Docs/SoftMMDRendering.md`。
