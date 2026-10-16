@@ -1,0 +1,78 @@
+{
+  "scene": "Assets/MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusGameScene.unity",
+  "saved": true,
+  "sceneBoundSurfacePatches": 1,
+  "target": "B_NORTH_TRANSFER_Deck_0176",
+  "changedFaces": 1,
+  "newMaterialSlots": 1,
+  "originalGeometryNormalsTransformAndOtherUVChannelsPreserved": true,
+  "collidersTerrainMC00Preserved": true,
+  "lightmapBindingPreserved": true,
+  "changedExistingPrefabSourceFileIds": [
+    "2211411780604271973",
+    "8696738014525456645"
+  ],
+  "serializedSceneRecord": "885272968",
+  "serializedChangeScope": [
+    "target MeshFilter m_Mesh reference",
+    "target MeshRenderer m_Materials.Array.size = 7",
+    "target MeshRenderer m_Materials.Array.data[6]"
+  ],
+  "existingMaterialSlots0Through5Preserved": true,
+  "allOtherSerializedSceneRecordsPreserved": true,
+  "runtimeTestingByAgent": false,
+  "pushPerformed": false,
+  "gitScope": {
+    "baseCommit": "471d3229d6d95b4a3b25c8a22c64d0bc88e8421b",
+    "changedSceneRecord": "885272968",
+    "targetMeshFilterSourceFileID": "2211411780604271973",
+    "targetRendererSourceFileID": "8696738014525456645",
+    "meshReferenceChanged": true,
+    "newMaterialSlot": 6,
+    "arraySize": 7,
+    "existingMaterialSlots0Through5Preserved": true,
+    "allOtherHEADSerializedSceneBytesPreserved": true,
+    "workingSceneFileNotWritten": true,
+    "otherWorktreeModifiedSceneRecordsExcluded": 8,
+    "otherWorktreeAddedSceneRecordsExcluded": 0,
+    "workingSceneSHA256": "fc9f2b107610a87cde4662458cd70494aa7b29cbae0b86d9e1de46123d441b8d",
+    "wholeWorkingSceneNotStaged": true,
+    "concurrentGitOperations": [
+      {
+        "id": 17000,
+        "parent": 12008,
+        "operation": "fetch",
+        "updateHeadOK": false
+      },
+      {
+        "id": 40140,
+        "parent": 17000,
+        "operation": "fetch",
+        "updateHeadOK": false
+      },
+      {
+        "id": 23852,
+        "parent": 40140,
+        "operation": "remote-https",
+        "updateHeadOK": false
+      },
+      {
+        "id": 26996,
+        "parent": 23852,
+        "operation": "transport",
+        "updateHeadOK": false
+      },
+      {
+        "id": 52328,
+        "parent": 40140,
+        "operation": "unpack-objects",
+        "updateHeadOK": false
+      }
+    ],
+    "fetchHasNoUpdateHeadOK": true,
+    "normalGitIndexLockUsed": true,
+    "indexBlob": "a91d7ace93b340ca81c6788431bb5de93973fc4a"
+  },
+  "localSceneCommit": "SELF (the Git commit containing this delivery record)",
+  "commitBlocker": null
+}

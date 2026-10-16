@@ -18,13 +18,13 @@
   "UnityImportedMeshes": 1,
   "UnityImportedMaterials": 1,
   "UnityImportedTextures": 4,
-  "sceneBoundObjects": 0,
+  "sceneBoundObjects": 1,
   "sourceMaterialCount": 1,
   "sourceTextureCount": 4,
   "assetSourceContract": "SourceData/Models/TheophilusR39",
   "NativeExports": "SourceData/Models/TheophilusR39/NativeExports",
   "UnityImportBlocker": null,
-  "sceneBindingBlocker": "Current loaded MainMenu scene has unsaved changes; parallel sky-material task is active. No scene load/save/discard attempted after guard rejected.",
+  "sceneBindingBlocker": null,
   "R35UnityReinstalled": false,
   "R37Imported": false,
   "R40_R43Imported": false,
@@ -33,5 +33,6 @@
   "assetReport": "Docs/AI/Theophilus_R39_Assets.json",
   "meshIsDetachedWorldCoordinateCandidateNotYetMappedToExistingTransform": false,
   "UnityUVOnlyVariantReady": true,
-  "originalUnityGeometryPreserved": true
+  "originalUnityGeometryPreserved": true,
+  "sceneApplicationReport": "Docs/AI/Theophilus_R39_SceneApplication.json"
 }

@@ -1,19 +1,20 @@
 {
-  "status": "R36_R38_BOUND_AND_SAVED_R39_PENDING",
+  "status": "R36_R38_AND_R39_BOUND_SAVED_LOCALLY_COMMITTED",
   "R36_R38": {
     "offlineExportedMeshes": 10,
     "UnityImportedMeshes": 10,
     "sceneBoundMeshes": 10,
     "assets": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/R36R38",
     "assetCommit": "a23182f8a8d2d4d5d4a3f7ae115cf32a3dcbc9a4",
-    "sceneApplicationReport": "Docs/AI/Theophilus_R36R38_SceneApplication.json"
+    "sceneApplicationReport": "Docs/AI/Theophilus_R36R38_SceneApplication.json",
+    "sceneBindCommit": "0405b4347e9e67a9a6ce2045d886c5631159fccb"
   },
   "R39": {
     "offlineExportedSurfacePatches": 1,
     "UnityImportedUVOnlyMeshVariants": 1,
     "UnityImportedMaterials": 1,
     "UnityImportedTextures": 4,
-    "sceneBoundPatches": 0,
+    "sceneBoundPatches": 1,
     "assets": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/R39",
     "assetCommit": "195b09a498cdb64b35f4ff4ebbd307c0e4a79e6e",
     "mappingProof": {
@@ -24,8 +25,62 @@
       "exactSourceUV0NormalsTrianglesMatched": true,
       "newSurfaceMaterialSlot": 6,
       "changedSourceFaces": 1,
-      "sceneBoundPatches": 0,
+      "sceneBoundPatches": 1,
       "worldMeshNotAssignedToExistingTransform": true
+    },
+    "sceneApplicationReport": "Docs/AI/Theophilus_R39_SceneApplication.json",
+    "sceneBindCommit": "SELF (the Git commit containing this delivery record)",
+    "commitBlocker": null,
+    "latestCommitScope": {
+      "baseCommit": "471d3229d6d95b4a3b25c8a22c64d0bc88e8421b",
+      "changedSceneRecord": "885272968",
+      "targetMeshFilterSourceFileID": "2211411780604271973",
+      "targetRendererSourceFileID": "8696738014525456645",
+      "meshReferenceChanged": true,
+      "newMaterialSlot": 6,
+      "arraySize": 7,
+      "existingMaterialSlots0Through5Preserved": true,
+      "allOtherHEADSerializedSceneBytesPreserved": true,
+      "workingSceneFileNotWritten": true,
+      "otherWorktreeModifiedSceneRecordsExcluded": 8,
+      "otherWorktreeAddedSceneRecordsExcluded": 0,
+      "workingSceneSHA256": "fc9f2b107610a87cde4662458cd70494aa7b29cbae0b86d9e1de46123d441b8d",
+      "wholeWorkingSceneNotStaged": true,
+      "concurrentGitOperations": [
+        {
+          "id": 17000,
+          "parent": 12008,
+          "operation": "fetch",
+          "updateHeadOK": false
+        },
+        {
+          "id": 40140,
+          "parent": 17000,
+          "operation": "fetch",
+          "updateHeadOK": false
+        },
+        {
+          "id": 23852,
+          "parent": 40140,
+          "operation": "remote-https",
+          "updateHeadOK": false
+        },
+        {
+          "id": 26996,
+          "parent": 23852,
+          "operation": "transport",
+          "updateHeadOK": false
+        },
+        {
+          "id": 52328,
+          "parent": 40140,
+          "operation": "unpack-objects",
+          "updateHeadOK": false
+        }
+      ],
+      "fetchHasNoUpdateHeadOK": true,
+      "normalGitIndexLockUsed": true,
+      "indexBlob": "a91d7ace93b340ca81c6788431bb5de93973fc4a"
     }
   },
   "currentSafety": {
@@ -36,11 +91,24 @@
     "loadedSceneDirty": false,
     "formalSceneLoaded": true,
     "gitLockNaturallyReleased": true,
-    "preexistingUserSkyChangesPreservedAndExcluded": true
+    "preexistingUserSkyChangesPreservedAndExcluded": true,
+    "editorStateIsHistoricalBindingSnapshot": true
   },
   "sceneLoadSaveReloadDiscardAfterDirtyGuard": 0,
-  "formalSceneWritesByThisContinuation": 1,
+  "formalSceneWritesByThisContinuation": 2,
   "newPushAttempts": 0,
   "pushPolicy": "Local commits only; no automatic push",
-  "userFontShaderLightingChangesExcluded": true
+  "userFontShaderLightingChangesExcluded": true,
+  "validation": {
+    "R36R38AddedSceneRecords": 42,
+    "R36R38ExistingRecordChanges": "SceneRoots append only",
+    "R39ChangedSceneRecords": 1,
+    "R39PrefabOverrideScope": "target mesh plus material slot size and slot 6 only",
+    "MC00Lights": 118,
+    "MC00Buttons": 135,
+    "originalCollidersTerrainLightmapProbesPreserved": true,
+    "screenshotsTaken": 0,
+    "PlayEnteredByAgent": false,
+    "runtimeOrPerformanceAcceptance": false
+  }
 }
