@@ -31,3 +31,5 @@
 已查阅：`Packages/manifest.json`、`ProjectVersion.txt`、`GraphicsSettings.asset`、`EditorBuildSettings.asset`、`ProjectSettings.asset`、`GhostBridgeBootstrap.cs`、`GameManager.cs`、`SceneLoader.cs`、Starter Assets 控制器与输入脚本、源月球地形／材质／着色器／接地实现。
 
 未覆盖：模板完整联机端到端测试、构建平台差异、正式月球网络地图的出生点和 Ghost 资源配置、性能测量。
+
+2026-10-17：DollSinger 姿态扩展使用 Quaternius／KayKit 的 CC0 Humanoid 资源，新增下蹲、趴下、踮脚；输入标志位和现有 ControllerState.StateFlags 传递姿态，本地、预测、服务端共用高度／限速／顶上空间规则。控制器新增 Stances 层，踮脚以脚尖锚定和既有腿部 IK 适配。当前实际项目路径为 `/Users/morrow/UnityProjects/Moonkov`，Unity 6000.5.10f1 可通过已有 Pipeline／CLI 连接。详见 `Docs/DollSingerStances.md`。

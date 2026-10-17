@@ -30,7 +30,7 @@ namespace Unity.MP_FPS
             if (thirdPerson) freeLookOffset = float2.zero;
             look.y = math.clamp(look.y, -80f, 80f);
             freeLookOffset.y = math.clamp(look.y + freeLookOffset.y, -80f, 80f) - look.y;
-            lean = blocked || thirdPerson ? 0f :
+            lean = blocked || thirdPerson || model.Stance == DollSingerStance.Prone || input.Stance == DollSingerStance.Prone ? 0f :
                 Mathf.MoveTowards(lean, input.LeanTarget, deltaTime * model.m_LeanSpeed);
             Quaternion bodyRotation = freeLooking ? model.transform.rotation : Quaternion.Euler(0f, look.x, 0f);
             if (!blocked && !thirdPerson) lean = view.LimitLeanAmount(lean, bodyRotation);

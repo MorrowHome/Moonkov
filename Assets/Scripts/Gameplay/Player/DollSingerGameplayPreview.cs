@@ -75,18 +75,19 @@ namespace Unity.MP_FPS
                 Lean = canRead && view.IsFirstPerson ? lean : 0f,
                 MoveInput = canRead ? (float2)input.Move : float2.zero
             };
+            command.SetStance(input.Stance);
             command.SetFlag(PlayerInput.InputFlag.Jump, canRead && input.JumpPressed);
             command.SetFlag(PlayerInput.InputFlag.Sprint, canRead && input.SprintHeld);
             command.SetFlag(PlayerInput.InputFlag.Aim, canRead && input.AimHeld && !freeLooking);
             command.SetFlag(PlayerInput.InputFlag.ThirdPerson, !view.IsFirstPerson);
 
             var displacement = float3.zero;
-            FirstPersonController.AccumulateMovement(ref state, ref displacement, command, constants, Time.deltaTime);
+            FirstPersonController.AccumulateMovement(ref state, ref displacement, command, constants, Time.deltaTime, motor);
             motor.ApplyMovementUpdate(ref state, constants, displacement, Time.deltaTime);
             model.ApplyNetworkPresentation(state.MovementSpeed, state.JumpFallSpeed,
                 state.MovementType == FirstPersonController.MovementType.Standing,
                 state.Sprinting, state.JumpTriggered, Time.deltaTime,
-                state.AnimatorMotion, ((Quaternion)state.CurrentRotation).eulerAngles.y);
+                state.AnimatorMotion, ((Quaternion)state.CurrentRotation).eulerAngles.y, state.Stance);
             model.SetNetworkViewPresentation(view.IsFirstPerson, viewRotation, lean, freeLooking);
             state.JumpTriggered = state.LandTriggered = false;
         }

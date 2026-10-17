@@ -1,6 +1,7 @@
 //#define DEBUG_RENDER_MOVEMENT
 
 using System;
+using Unity.MP_FPS.DollSinger;
 using System.Runtime.CompilerServices;
 using Unity.MP_FPS;
 using Unity.Mathematics;
@@ -56,10 +57,19 @@ public class FirstPersonController : MonoBehaviour
             LandTrigger = 1 << 7,
             Aiming = 1 << 8,
             Sprinting = 1 << 9,
-            HaloLightDisabled = 1 << 10
+            HaloLightDisabled = 1 << 10,
+            StanceLow = 1 << 11,
+            StanceHigh = 1 << 12
         }
 
         //WARNING WARNING: Adding more members to this struct might break network serialisation speak to Claire/Andy B
+
+        [GhostField(SendData = false)]
+        public DollSingerStance Stance
+        {
+            get => (DollSingerStance)((StateFlags >> 11) & 3u);
+            set => StateFlags = (StateFlags & ~(3u << 11)) | (((uint)value & 3u) << 11);
+        }
 
         // booleans
         public uint StateFlags;
@@ -249,6 +259,8 @@ public class FirstPersonController : MonoBehaviour
     private CharacterController m_Controller;
     public CharacterController CharacterController => m_Controller;
 
+    private float m_StandingHeight;
+    private Vector3 m_StandingCenter;
     private PlayerGhost m_PlayerGhost;
     private PlayerGhost PlayerGhost => m_PlayerGhost;
 
@@ -287,6 +299,8 @@ public class FirstPersonController : MonoBehaviour
     private void Awake()
     {
         TryGetComponent(out m_Controller);
+        m_StandingHeight = m_Controller.height;
+        m_StandingCenter = m_Controller.center;
         Debug.Assert(m_Controller, "[THIRDPERSONCONTROLLER] Player has no CharacterController component");
 
         TryGetComponent(out m_PlayerGhost);
@@ -302,9 +316,15 @@ public class FirstPersonController : MonoBehaviour
         m_Controller.excludeLayers = excludeLayers;
     }
 
+    public float StanceHeightOffset => m_Controller.height - m_StandingHeight;
+
+    public void ApplyStanceCapsule(DollSingerStance stance) =>
+        DollSingerStances.Apply(m_Controller, stance, m_StandingHeight, m_StandingCenter);
+
     public void ApplyMovementUpdate(ref ControllerState state, in ControllerConsts consts,
         in float3 accumulatedMovement, float deltaTime)
     {
+        DollSingerStances.Apply(m_Controller, state.Stance, m_StandingHeight, m_StandingCenter);
         ApplyMove(ref state, consts, accumulatedMovement, deltaTime);
         GroundedCheck(ref state, consts);
 
@@ -718,7 +738,8 @@ public class FirstPersonController : MonoBehaviour
                 case MovementType.Standing:
                 case MovementType.Jumping:
                 case MovementType.Falling:
-                    stateConsts = input.Sprint && !input.Aim ? consts.Sprint : consts.Walk;
+                    stateConsts = state.Sprinting ? consts.Sprint : consts.Walk;
+                    stateConsts.Speed *= DollSingerStances.SpeedScale(state.Stance);
                     break;
                 default:
                     Debug.LogError(
@@ -790,18 +811,23 @@ public class FirstPersonController : MonoBehaviour
     {
         state.Aiming = input.Aim;
         state.HaloLightEnabled = input.HaloLightEnabled;
-        state.Sprinting = input.Sprint && !input.Aim;
+        state.Sprinting = input.Sprint && !input.Aim && state.Stance == DollSingerStance.Standing;
         state.FirstPersonView = !input.ThirdPerson;
         state.FreeLooking = state.FirstPersonView && input.FreeLooking;
         state.FreeLookOffset = state.FirstPersonView
             ? math.clamp(input.FreeLookOffset, new float2(-70f, -45f), new float2(70f, 45f))
             : float2.zero;
-        state.Lean = state.FirstPersonView ? math.clamp(input.Lean, -1f, 1f) : 0f;
+        state.Lean = state.FirstPersonView && state.Stance != DollSingerStance.Prone ? math.clamp(input.Lean, -1f, 1f) : 0f;
     }
 
     public static void AccumulateMovement(ref ControllerState state,
-        ref float3 accumulatedMovement, in PlayerInput input, in ControllerConsts consts, float deltaTime)
+        ref float3 accumulatedMovement, in PlayerInput input, in ControllerConsts consts, float deltaTime,
+        FirstPersonController motor = null)
     {
+        if (motor != null)
+            state.Stance = DollSingerStances.Resolve(motor.m_Controller, (Vector3)(state.CurrentPosition + accumulatedMovement),
+                state.Stance, input.Stance, state.MovementType == MovementType.Standing,
+                motor.m_StandingHeight, motor.m_StandingCenter);
         ProcessInputs(ref state, input, deltaTime);
         state.TimeInState += deltaTime;
 
@@ -1080,7 +1106,7 @@ public class FirstPersonController : MonoBehaviour
     {
         bool jumped = false;
 
-        if (input.Jump
+        if (input.Jump && state.Stance == DollSingerStance.Standing
             && state.JumpTimeoutDelta <= 0f)
         {
             // the square root of H * -2 * G = how much velocity needed to reach desired height

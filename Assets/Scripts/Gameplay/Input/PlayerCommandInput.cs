@@ -1,3 +1,4 @@
+using Unity.MP_FPS.DollSinger;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
@@ -15,7 +16,10 @@ public struct PlayerInput
         EquipHalo = 1 << 6,
         EquipRevolver = 1 << 7,
         EquipPistol = 1 << 8,
-        HaloLightDisabled = 1 << 9
+        HaloLightDisabled = 1 << 9,
+        Crouch = 1 << 10,
+        Prone = 1 << 11,
+        Tiptoe = 1 << 12
     }
 
     public float2 MoveInput;
@@ -28,6 +32,17 @@ public struct PlayerInput
     public float3 AimPoint;
 
     public uint InputFlags;
+
+    public DollSingerStance Stance => (InputFlags & (uint)InputFlag.Prone) != 0 ? DollSingerStance.Prone :
+        (InputFlags & (uint)InputFlag.Crouch) != 0 ? DollSingerStance.Crouching :
+        (InputFlags & (uint)InputFlag.Tiptoe) != 0 ? DollSingerStance.Tiptoe : DollSingerStance.Standing;
+
+    public void SetStance(DollSingerStance stance)
+    {
+        SetFlag(InputFlag.Crouch, stance == DollSingerStance.Crouching);
+        SetFlag(InputFlag.Prone, stance == DollSingerStance.Prone);
+        SetFlag(InputFlag.Tiptoe, stance == DollSingerStance.Tiptoe);
+    }
 
     public bool Jump => (InputFlags & (uint)InputFlag.Jump) != 0;
     public bool Shoot => (InputFlags & (uint)InputFlag.Shoot) != 0;
@@ -59,7 +74,7 @@ public struct PlayerInput
         var result = this;
         const uint knownFlags = (uint)(InputFlag.Jump | InputFlag.Shoot | InputFlag.Sprint | InputFlag.Reload |
             InputFlag.Aim | InputFlag.ThirdPerson | InputFlag.EquipHalo | InputFlag.EquipRevolver |
-            InputFlag.EquipPistol | InputFlag.HaloLightDisabled);
+            InputFlag.EquipPistol | InputFlag.HaloLightDisabled | InputFlag.Crouch | InputFlag.Prone | InputFlag.Tiptoe);
         result.InputFlags &= knownFlags;
         result.MoveInput = math.all(math.isfinite(MoveInput)) ? math.clamp(MoveInput, -1f, 1f) : float2.zero;
         float moveLengthSq = math.lengthsq(result.MoveInput);

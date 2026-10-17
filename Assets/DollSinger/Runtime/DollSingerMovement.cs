@@ -167,6 +167,14 @@ namespace Unity.MP_FPS.DollSinger {
         private float m_HeadLookWeight;
 
         // Out
+        private DollSingerStance m_Stance;
+        private float m_StandingHeight;
+        private Vector3 m_StandingCenter;
+        private static readonly int k_AnimIDStance = Animator.StringToHash("Stance");
+        private int m_StanceLayer = -1;
+        private float m_TiptoeBlend;
+        private Transform m_LeftToe, m_RightToe;
+        public DollSingerStance Stance => m_Stance;
         private bool m_NetworkDriven;
         private float m_NetworkSpeed;
         public float CurrentSpeed => m_NetworkDriven ? m_NetworkSpeed : m_Controller == null ? 0f :
@@ -227,6 +235,8 @@ namespace Unity.MP_FPS.DollSinger {
             m_LeftThigh = animator.GetBoneTransform(HumanBodyBones.LeftUpperLeg);
             m_LeftCalf = animator.GetBoneTransform(HumanBodyBones.LeftLowerLeg);
             m_LeftFoot = animator.GetBoneTransform(HumanBodyBones.LeftFoot);
+            m_LeftToe = animator.GetBoneTransform(HumanBodyBones.LeftToes);
+            m_RightToe = animator.GetBoneTransform(HumanBodyBones.RightToes);
             m_RightThigh = animator.GetBoneTransform(HumanBodyBones.RightUpperLeg);
             m_RightCalf = animator.GetBoneTransform(HumanBodyBones.RightLowerLeg);
             m_RightFoot = animator.GetBoneTransform(HumanBodyBones.RightFoot);
@@ -290,7 +300,7 @@ namespace Unity.MP_FPS.DollSinger {
 
         public void SetNetworkLeanAmount(float lean)
         {
-            m_LeanState = m_LeanTarget = Mathf.Clamp(lean, -1f, 1f);
+            m_LeanState = m_LeanTarget = m_Stance == DollSingerStance.Prone ? 0f : Mathf.Clamp(lean, -1f, 1f);
         }
 
         // Network prediction owns the root CharacterController. Keep this component
@@ -310,10 +320,11 @@ namespace Unity.MP_FPS.DollSinger {
 
         public void ApplyNetworkPresentation(float speed, float verticalVelocity, bool grounded,
             bool sprinting, bool jumped, float deltaTime, Vector3 worldMovement = default,
-            float? bodyYaw = null)
+            float? bodyYaw = null, DollSingerStance stance = DollSingerStance.Standing)
         {
             m_NetworkDriven = true;
             m_NetworkSpeed = speed;
+            ApplyStanceAnimation(stance, grounded, deltaTime);
             m_VerticalVelocity = verticalVelocity;
             m_Grounded = grounded;
             m_SprintInput = sprinting;
@@ -339,6 +350,8 @@ namespace Unity.MP_FPS.DollSinger {
 
         private void Awake() {
             m_Controller = GetComponent<CharacterController>();
+            m_StandingHeight = m_Controller.height;
+            m_StandingCenter = m_Controller.center;
             m_HasAnimator = TryGetComponent(out m_Animator);
             if (m_HasAnimator) {
                 foreach (var parameter in m_Animator.parameters) {
@@ -364,6 +377,7 @@ namespace Unity.MP_FPS.DollSinger {
                         m_HasMoveZParameter = true;
                 }
                 m_TurnLayer = m_Animator.GetLayerIndex("Turn In Place");
+                m_StanceLayer = m_Animator.GetLayerIndex("Stances");
                 bool hasDirection = false, hasPlayback = false;
                 foreach (var parameter in m_Animator.parameters) {
                     if (parameter.type != AnimatorControllerParameterType.Float) continue;
@@ -378,6 +392,9 @@ namespace Unity.MP_FPS.DollSinger {
         private void OnDisable()
         {
             ResetTurnAnimation();
+            m_TiptoeBlend = 0f;
+            m_Stance = DollSingerStance.Standing;
+            if (m_Animator && m_StanceLayer >= 0) m_Animator.SetLayerWeight(m_StanceLayer, 0f);
             m_LeanState = m_LeanTarget = 0f;
             m_AppliedLeanOffset = Vector3.zero;
             m_FreeLookYaw = m_FreeLookPitch = m_HeadLookWeight = 0f;
@@ -411,6 +428,12 @@ namespace Unity.MP_FPS.DollSinger {
             if (IsFreeLooking) IsLocallyAiming = false;
             m_HeadLookWeight = Mathf.MoveTowards(m_HeadLookWeight,
                 IsFirstPersonView ? 1f : 0f, Time.deltaTime * 6f);
+            var stance = DollSingerStances.Resolve(m_Controller, transform.position, m_Stance,
+                input ? input.Stance : DollSingerStance.Standing, m_Grounded, m_StandingHeight, m_StandingCenter);
+            DollSingerStances.Apply(m_Controller, stance, m_StandingHeight, m_StandingCenter);
+            ApplyStanceAnimation(stance, m_Grounded, Time.deltaTime);
+            m_SprintInput &= m_Stance == DollSingerStance.Standing;
+            m_JumpInput &= m_Stance == DollSingerStance.Standing;
             JumpedThisFrame = false;
             JumpAndGravity();
             Move();
@@ -421,8 +444,9 @@ namespace Unity.MP_FPS.DollSinger {
 
         private void LateUpdate() {
             m_AppliedLeanOffset = Vector3.zero;
-            if (!IsFirstPersonView) { m_LeanState = m_LeanTarget = 0f; return; }
-            ApplyBodyLean();
+            if (!IsFirstPersonView || m_Stance == DollSingerStance.Prone) m_LeanState = m_LeanTarget = 0f;
+            else ApplyBodyLean();
+            ApplyTiptoePose();
         }
 
         // There is no lean animation on this rig, so the upper-body roll is applied on top
@@ -497,7 +521,7 @@ namespace Unity.MP_FPS.DollSinger {
         }
 
         private void OnAnimatorIK(int layerIndex) {
-            if (layerIndex != 0 || !m_HasAnimator || !m_Animator.isHuman) return;
+            if ((layerIndex != 0 && layerIndex != m_StanceLayer) || !m_HasAnimator || !m_Animator.isHuman) return;
             // clampWeight 0 = no restriction. In first person the head has to track the
             // camera exactly, otherwise the hair that frames the view drifts off screen.
             m_Animator.SetLookAtWeight(m_HeadLookWeight, 0f, 1f, 0f, 0f);
@@ -529,11 +553,39 @@ namespace Unity.MP_FPS.DollSinger {
             m_FreeLookYaw = m_FreeLookPitch = 0f;
         }
 
+        private void ApplyStanceAnimation(DollSingerStance stance, bool grounded, float deltaTime)
+        {
+            m_Stance = stance;
+            m_TiptoeBlend = Mathf.MoveTowards(m_TiptoeBlend,
+                stance == DollSingerStance.Tiptoe && grounded ? 1f : 0f, Mathf.Max(0f, deltaTime) * 5f);
+            if (!m_HasAnimator || m_StanceLayer < 0) return;
+            m_Animator.SetInteger(k_AnimIDStance, (int)stance);
+            m_Animator.SetLayerWeight(m_StanceLayer, Mathf.MoveTowards(m_Animator.GetLayerWeight(m_StanceLayer),
+                stance == DollSingerStance.Standing || !grounded ? 0f : 1f, Mathf.Max(0f, deltaTime) * 5f));
+        }
+
+        private void ApplyTiptoePose()
+        {
+            if (m_TiptoeBlend <= .001f || !EnsureLeanBones() || !m_PelvisBone || !m_LeftToe || !m_RightToe) return;
+            // Rotate around the animated toe contacts. The same two-bone solve used by lean
+            // preserves leg lengths and keeps the shoe tips on the ground while heels rise.
+            Quaternion raise = Quaternion.AngleAxis(35f * m_TiptoeBlend, transform.right);
+            Vector3 leftContact = m_LeftToe.position + transform.forward * .08f;
+            Vector3 rightContact = m_RightToe.position + transform.forward * .08f;
+            Vector3 left = leftContact + raise * (m_LeftFoot.position - leftContact);
+            Vector3 right = rightContact + raise * (m_RightFoot.position - rightContact);
+            Quaternion leftRotation = raise * m_LeftFoot.rotation, rightRotation = raise * m_RightFoot.rotation;
+            Vector3 leftKnee = m_LeftCalf.position, rightKnee = m_RightCalf.position;
+            m_PelvisBone.position += transform.up * (.06f * m_TiptoeBlend);
+            KeepFootAnchor(m_LeftThigh, m_LeftCalf, m_LeftFoot, left, leftRotation, leftKnee);
+            KeepFootAnchor(m_RightThigh, m_RightCalf, m_RightFoot, right, rightRotation, rightKnee);
+        }
+
         // Tarkov scheme: hold Q/E to lean and spring back on release, Alt+Q/Alt+E to latch
         // the lean. Pressing the same Alt combo again unlatches and returns to upright;
         // the opposite Alt combo switches sides.
         private void ReadLeanInput(bool canRead) {
-            m_LeanTarget = canRead && IsFirstPersonView ? input.LeanTarget : 0f;
+            m_LeanTarget = canRead && IsFirstPersonView && m_Stance != DollSingerStance.Prone ? input.LeanTarget : 0f;
         }
 
         private void ReadInput() {
@@ -590,7 +642,7 @@ namespace Unity.MP_FPS.DollSinger {
 
         private void Move() {
             // set target speed based on move speed, sprint speed and if sprint is pressed
-            float targetSpeed = m_SprintInput ? m_SprintSpeed : m_MoveSpeed;
+            float targetSpeed = (m_SprintInput ? m_SprintSpeed : m_MoveSpeed) * DollSingerStances.SpeedScale(m_Stance);
 
             // Apply movement immediately; smooth only the animation blend below.
             if (m_MoveInput == Vector2.zero) targetSpeed = 0.0f;
@@ -681,6 +733,7 @@ namespace Unity.MP_FPS.DollSinger {
         private void ApplyTurnAnimation(float bodyYaw, float speed, bool grounded, float deltaTime)
         {
             if (m_TurnLayer < 0 || !m_HasTurnParameters) return;
+            grounded &= m_Stance == DollSingerStance.Standing;
             float angle = m_HasBodyYawSample ? Mathf.DeltaAngle(m_PreviousBodyYaw, bodyYaw) : 0f;
             bool hadSample = m_HasBodyYawSample;
             m_PreviousBodyYaw = bodyYaw;
