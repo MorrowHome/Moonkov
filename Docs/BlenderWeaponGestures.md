@@ -103,3 +103,24 @@ unity command eval_file --project-path . --caller plugin --skill unity-feature-i
 - [6 倍](AI/BlenderGestureValidation/Unity-Sniper-NaturalZoom-6x.png)
 
 额外执行旧 `SniperHaloSetup.Validate` 时，在未改动的库存流程 `Store exact ammo` 断言失败（进入光学检查之前）；本次未修改库存逻辑，报告保留该限制。最终脚本编译成功，编辑器恢复 MainMenu／非 Play 状态，时间倍率为 1。
+
+
+## 2026-10-18 补正：光环缩小与开镜过渡
+
+上一节固定光环世界尺寸的处理已撤回；手势仍与景物使用同一 FOV 正常放大，光环则根据视野缩小，使瞄准光学保持在屏内（默认 6 倍、70° 基准视野时约 0.12 世界缩放）。不重新缩小或退后手势来塞满屏幕。
+
+此前第一帧追踪未成形的双手，手部相机向腰侧移动约 58 cm，随后又把手臂抬起、放下的过渡一起放大。还有两个时序问题：手部相机启用与取景更新使用不同阈值，第一帧可能沿用普通武器的取景位置；网络表现层先于 HaloAim 更新，向相机传入了上一帧的瞄准混合值，快速取消开镜时姿态会先放下而相机仍在放大。
+
+现在狙击的前段瞄准时间用于摆好手势和移动光环，完成后才缩小 FOV；退出时先恢复 FOV，再放下双臂。手部相机中心修正随姿态形成逐渐加入，不追踪腰侧待机双手；所有启用帧立即更新取景。HaloAim 在当前帧推进状态后、相机 LateUpdate 之前同步拥有者的瞄准值，避免网络玩家的一帧滞后。
+
+狙击拥有者与普通武器一样，在瞄准时屏蔽主相机内的躯干、裙装表面；手臂继续由手部相机绘制。第三人称和完整阴影保留。骨骼烘焙和最终闭框姿态不变。
+
+验证：[完整报告](AI/BlenderGestureValidation/SniperAimTransitionChecks.txt)。四武器完整动作回归通过；新增开关镜过渡检查覆盖 554 个实际渲染帧、俯仰 -65／0／+65 和 16:9／4:3。24 次 40／80／140／220 ms 中断开镜另覆盖 211 帧；固定在较大 15 Hz 模拟帧步长再检查 24 次中断，60 帧通过（不是地图实际 FPS 测试）。拥有者／观察者相机渲染回调分别核对了躯干屏蔽和完整原网格保留。
+
+最终复测中，手势闭合后才进入放大，退出放大后才允许放下；中央手臂网格无侵入，开镜光环恢复屏内大小。逐帧记录见 [相机和姿态时间线](AI/BlenderGestureValidation/SniperAimTransitionFrames.txt)。以下为原始实际输出；录像左上第一人称、右上正面、左下侧面、右下背面，0.12 倍时间倍率慢放完整开／关镜。
+
+- [修复前的过渡帧](AI/BlenderGestureValidation/Unity-Sniper-AimTransition-Before.png)
+- [修复后的完全开镜](AI/BlenderGestureValidation/Unity-Sniper-Scope-Fixed.png)
+- [修复后的四机位连续过渡录像](AI/BlenderGestureValidation/Unity-Sniper-AimTransition.mp4)
+
+Unity 脚本编译完成。合并分支后的音效脚本缓存错误通过 AssetDatabase.Refresh 同步解决；临时探针曾访问主验证器已清理的 Mesh，该探针已修正。最后一轮快速中断、相机可见性检查及录像无新增错误。当前验证仍使用演示场景中的正式网络玩家，没有启动正式地图、多人对局或独立构建，也未覆盖全部移动姿态。

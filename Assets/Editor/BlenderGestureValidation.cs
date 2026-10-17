@@ -158,7 +158,6 @@ public static class BlenderGestureValidation
     // central 12% square clear, even when all finger joints are below it.
     private static void ClearAim(WeaponGestureLab lab)
     {
-        if (lab.WeaponIndex == 3) return;
         // Compensate the FBX hierarchy scale before applying localToWorldMatrix.
         armRenderer.BakeMesh(armSurface, true);
         var vertices = armSurface.vertices;
@@ -350,7 +349,7 @@ public static class BlenderGestureValidation
         // eye-to-hand distance and is unrelated to optical magnification.
         var animator = lab.Halo.GetComponent<Animator>(); float animatorSpeed = animator.speed;
         animator.speed = 0;
-        Vector2 baseSize = Vector2.zero; float baseHaloSize = 0; Vector3 baseHaloPosition = Vector3.zero;
+        Vector2 baseSize = Vector2.zero; float previousHaloSize = float.PositiveInfinity; Vector3 baseHaloPosition = Vector3.zero;
         foreach (float zoom in new[] { 1f, 2f, 4f, 6f, 12f })
         {
             lab.Halo.sniperVisual.scopeMagnification = zoom;
@@ -359,16 +358,81 @@ public static class BlenderGestureValidation
             var camera = lab.PlayerView.GestureCamera;
             Vector2 span = camera.WorldToViewportPoint(bones["人指先.L"].position) - camera.WorldToViewportPoint(bones["人指先.R"].position);
             var normalized = span / lab.PlayerView.CurrentAimMagnification;
-            if (zoom == 1) { baseSize = normalized; baseHaloSize = lab.Halo.haloVisual.lossyScale.x; baseHaloPosition = lab.Halo.haloVisual.position; }
+            if (zoom == 1) { baseSize = normalized; baseHaloPosition = lab.Halo.haloVisual.position; }
             Require(Vector2.Distance(normalized, baseSize)<.0001f, "Sniper gesture did not magnify with the world at " + zoom);
-            Require(Mathf.Abs(lab.Halo.haloVisual.lossyScale.x-baseHaloSize)<.00001f, "Zoom resized the sniper halo");
+            float haloSize = lab.Halo.haloVisual.lossyScale.x;
+            float expectedSize = Mathf.Min(lab.Halo.aimedHaloScale, lab.Halo.sniperVisual.ScopeScale(
+                Vector3.Distance(lab.Halo.haloVisual.position, lab.PlayerView.camera.transform.position), lab.PlayerView.camera.fieldOfView));
+            Require(Mathf.Abs(haloSize-expectedSize)<.00001f && haloSize<=previousHaloSize,
+                "Sniper halo did not shrink to fit the scope");
+            previousHaloSize = haloSize;
             Require(Vector3.Distance(lab.Halo.haloVisual.position,baseHaloPosition)<.0001f, "Zoom moved the sniper halo");
         }
         lab.Halo.sniperVisual.scopeMagnification = scopeMagnification;
         animator.speed = animatorSpeed;
         yield return new WaitForSeconds(.7f);
-        report.Add("Sniper uses owner FOV with zero hand-camera depth offset; 1/2/4/6/12x zoom magnifies the unchanged frame proportionally. Halo world size/position stay fixed. Optical cropping is expected; automatic screen fitting is disabled. Frame centre remains within 0.5 output pixels through actions, pitch and aspect changes.");
+        report.Add("Sniper hands retain owner FOV, zero depth offset and proportional optical zoom at 1/2/4/6/12x. The halo shrinks with FOV to fit the scope; its world position is stable. Frame centre remains within 0.5 output pixels through actions, pitch and aspect changes. Skinned arms leave the central aiming area clear.");
+        yield return CheckSniperTransitions(lab, bones, root, report);
         UnityEngine.Object.Destroy(armSurface);
         Status = "PASS"; File.WriteAllLines(Output + "/checks.txt", report); Debug.Log("Blender gesture validation PASS: " + string.Join("\n", report));
+    }
+
+    private static IEnumerator CheckSniperTransitions(WeaponGestureLab lab, Dictionary<string, Transform> bones,
+        VisualElement root, List<string> report)
+    {
+        int frames = 0; float maximumOffset = 0;
+        root.Q<Toggle>("firstPerson").value = true;
+        foreach (float pitch in new[] { -65f, 0f, 65f })
+        foreach (float aspect in new[] { 16f/9f, 4f/3f })
+        {
+            root.Q<Slider>("pitch").value = pitch; lab.PlayerView.camera.aspect = aspect;
+            // Start with another weapon's fitted hand camera to catch stale
+            // projection/position on the very first active sniper frame.
+            lab.SelectWeapon(0); root.Q<Toggle>("aim").value = true; yield return new WaitForSeconds(.4f);
+            root.Q<Toggle>("aim").value = false; yield return new WaitForSeconds(.4f);
+            lab.SelectWeapon(3);
+            foreach (bool aim in new[] { true, false, true })
+            {
+                root.Q<Toggle>("aim").value = aim;
+                float start = Time.time;
+                while (Time.time-start<.5f)
+                {
+                    yield return new WaitForEndOfFrame(); frames++;
+                    float blend = lab.Halo.AimBlend;
+                    var camera = lab.PlayerView.GestureCamera;
+                    if (!lab.PlayerView.GestureHandsActive) continue;
+                    Require(Mathf.Abs(camera.transform.localPosition.z)<.00001f,
+                        "First sniper frame retained another weapon's hand camera");
+                    maximumOffset = Mathf.Max(maximumOffset, camera.transform.localPosition.magnitude);
+                    if (blend<.1f) Require(camera.transform.localPosition.magnitude<.1f,
+                        "Aim transition chased the resting hands down the body");
+                    if (lab.PlayerView.CurrentAimMagnification>1.01f)
+                    {
+                        Require(blend>.45f, "Zoom overlapped the lowering/raising pose");
+                        Shape(bones, camera, new List<string>()); ClearAim(lab);
+                    }
+                }
+            }
+        }
+        root.Q<Slider>("pitch").value = 0; lab.PlayerView.camera.aspect = 16f/9f;
+        report.Add($"Sniper aim-in/out/in: {frames} actual rendered frames, pitch -65/0/+65, 16:9 and 4:3. Pose closed before zoom; lowering after unzoom; no resting-hand camera teleport; central arm geometry clear. Maximum camera offset {maximumOffset:F4} m.");
+        frames = 0;
+        foreach (float interval in new[] { .04f, .08f, .14f, .22f })
+        for (int repeat = 0; repeat<6; repeat++)
+        {
+            root.Q<Toggle>("aim").value = !root.Q<Toggle>("aim").value;
+            float start = Time.time;
+            while (Time.time-start<interval)
+            {
+                yield return new WaitForEndOfFrame(); frames++;
+                if (lab.PlayerView.CurrentAimMagnification>1.01f)
+                {
+                    Require(lab.Halo.AimBlend>.45f, "Interrupted aim left camera one frame behind pose");
+                    Shape(bones, lab.PlayerView.GestureCamera, new List<string>()); ClearAim(lab);
+                }
+            }
+        }
+        root.Q<Toggle>("aim").value = true; yield return new WaitForSeconds(.5f);
+        report.Add($"24 interrupted aim toggles at 40/80/140/220 ms, {frames} rendered frames: current pose and zoom synchronized; frame remains closed and central arm geometry clear while zoomed.");
     }
 }
