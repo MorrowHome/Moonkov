@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Snake
   m_EditorClassIdentifier: Assembly-CSharp::Unity.MP_FPS.AlienCreatureProfile
   Species: 1
-  Scale: 0.55
+  Scale: 0.4
   Health: 140
-  Speed: 8.181818
+  Speed: 11.25
   TurnSpeed: 300
   SightRange: 35
   HearingRange: 12
@@ -27,6 +27,13 @@ MonoBehaviour:
   Recovery: 0.55
   AttackCooldown: 1.6
   LungeSpeed: 3
+  Boss: 0
+  EnrageHealthFraction: 0.5
+  FaceAttachSeconds: 2.4
+  SpiderAmbushRange: 6
+  SpiderWindup: 0.75
+  SpiderStrikeSeconds: 0.45
+  SpiderRecovery: 1.1
   Liquid: 1
   LiquidDistance: 24
   MaximumLiquidEnemies: 2

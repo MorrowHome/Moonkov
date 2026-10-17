@@ -53,11 +53,11 @@ namespace Unity.MP_FPS
         public void ApplyDefaults(AlienSpecies species)
         {
             Species = species;
-            if (species == AlienSpecies.Caterpillar) { Chain = CreatureChainSettings.CaterpillarDefaults(); Speed = 2.5f; }
-            else if (species == AlienSpecies.Centipede) { Chain = ProceduralMenagerieExperiment.CentipedeDefaults(); Speed = 4.8f; }
-            else if (species == AlienSpecies.Leech) { Chain = ProceduralMenagerieExperiment.LeechDefaults(); Speed = 2.7f; }
-            else if (species == AlienSpecies.Snake) { Speed = 4.5f; Scale = .55f; }
-            else if (species == AlienSpecies.Slime) { Branch = BranchCreatureSettings.SlimeDefaults(); Speed = 2.5f; Health = 180; }
+            if (species == AlienSpecies.Caterpillar) { Chain = CreatureChainSettings.CaterpillarDefaults(); Speed = 2.5f; Scale = .55f; }
+            else if (species == AlienSpecies.Centipede) { Chain = ProceduralMenagerieExperiment.CentipedeDefaults(); Speed = 4.8f; Scale = .85f; }
+            else if (species == AlienSpecies.Leech) { Chain = ProceduralMenagerieExperiment.LeechDefaults(); Speed = 2.7f; Scale = .22f; }
+            else if (species == AlienSpecies.Snake) { Speed = 4.5f; Scale = .4f; }
+            else if (species == AlienSpecies.Slime) { Branch = BranchCreatureSettings.SlimeDefaults(); Speed = 2.5f; Health = 180; Scale = .8f; }
             else if (species == AlienSpecies.Roots) { Branch = BranchCreatureSettings.RootsDefaults(); Speed = 1.4f; AttackReach = 2.6f; }
             else if (species == AlienSpecies.Spider) { Speed = 5.5f; Scale = .45f; }
             else if (species == AlienSpecies.FaceHugger) { Speed = 4.8f; Scale = .45f; Health = 65; Damage = 18; Liquid = false; }

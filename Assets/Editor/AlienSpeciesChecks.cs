@@ -12,6 +12,20 @@ using Object = UnityEngine.Object;
 
 public static partial class AlienEnemyChecks
 {
+    [MenuItem("Tools/Moonkov/Aliens/Check authored species sizes in combat")]
+    public static void RunSizeContract()
+    {
+        if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("Exit Play first.");
+        var report = new SpeciesReport();
+        try
+        {
+            foreach (var species in new[] { AlienSpecies.Leech, AlienSpecies.Snake, AlienSpecies.Caterpillar, AlienSpecies.Centipede, AlienSpecies.Slime })
+                CheckSpecies(species, report, true);
+        }
+        catch (Exception error) { report.error = error.Message; throw; }
+        finally { Directory.CreateDirectory("Library/BuildValidation/AlienIntegration"); File.WriteAllText("Library/BuildValidation/AlienIntegration/species-size-contract.json", JsonUtility.ToJson(report, true)); }
+        Debug.Log("Authored size combat contracts passed: " + string.Join("; ", report.passed));
+    }
     public static void RunFaceSeparationContract()
     {
         var report = new SpeciesReport();
@@ -120,7 +134,7 @@ public static partial class AlienEnemyChecks
         finally { Directory.CreateDirectory("Library/BuildValidation/AlienIntegration"); File.WriteAllText("Library/BuildValidation/AlienIntegration/species-contract.json", JsonUtility.ToJson(report, true)); }
         Debug.Log("Species contracts passed: " + string.Join("; ", report.passed));
     }
-    private static void CheckSpecies(AlienSpecies species, SpeciesReport report)
+    private static void CheckSpecies(AlienSpecies species, SpeciesReport report, bool authoredSize = false)
     {
         using var world = new World("Alien species fixture " + species, WorldFlags.GameServer);
         world.GetOrCreateSystemManaged<GhostGameObjectLifetimeSystem>();
@@ -130,7 +144,11 @@ public static partial class AlienEnemyChecks
         var profile = ScriptableObject.CreateInstance<AlienCreatureProfile>();
         try
         {
-            profile.ApplyDefaults(species); profile.Scale = .65f; profile.Damage = 12; profile.Liquid = false;
+            profile.ApplyDefaults(species);
+            if (authoredSize)
+                EditorUtility.CopySerialized(AssetDatabase.LoadAssetAtPath<AlienCreatureProfile>("Assets/AlienCreatures/Profiles/" + species + ".asset"), profile);
+            else profile.Scale = .65f;
+            profile.Damage = 12; profile.Liquid = false;
             profile.AttackCooldown = 20; profile.PatrolRadius = 0; profile.Boss = species == AlienSpecies.Tentacle || species == AlienSpecies.Roots;
             Vector3 origin = new Vector3(-9000, 1000, -9000);
             var floor = new GameObject("Temporary physical floor"); floor.transform.SetParent(holder.transform);
