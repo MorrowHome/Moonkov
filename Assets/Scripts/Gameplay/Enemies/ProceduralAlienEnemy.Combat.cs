@@ -112,6 +112,8 @@ namespace Unity.MP_FPS
                 bool hit = false;
                 switch (m_Pattern.Kind)
                 {
+                    case AlienAttackKind.LeechDrain:
+                        hit = entity == m_Target && Vector3.Distance(AimPoint, point) <= m_Pattern.Radius + .35f; break;
                     case AlienAttackKind.Bite:
                     case AlienAttackKind.Charge:
                         hit = DistanceToSegment(point, previous, transform.position) <= m_Pattern.Radius + .35f; break;
@@ -146,20 +148,27 @@ namespace Unity.MP_FPS
                 m_StrikeVictims.Add(entity);
                 if (m_Pattern.Kind == AlienAttackKind.FaceLeap)
                 { AttachFace(entity); break; }
-                ApplyAlienDamage(entity, profile.Damage * m_Pattern.DamageScale, BodyPart.Chest);
+                float drained = ApplyAlienDamage(entity, profile.Damage * m_Pattern.DamageScale, BodyPart.Chest);
+                if (m_Pattern.Kind == AlienAttackKind.LeechDrain && drained > 0)
+                {
+                    var own = ReadGhostComponentData<PredictedPlayerGhost>();
+                    own.CurrentHealth = Mathf.Min(own.MaxHealth, own.CurrentHealth + drained * .5f);
+                    manager.SetComponentData(GhostGameObject.LinkedEntity, own);
+                }
             }
         }
 
-        private void ApplyAlienDamage(Entity target, float amount, BodyPart part)
+        private float ApplyAlienDamage(Entity target, float amount, BodyPart part)
         {
             var manager = GhostGameObject.EntityManager;
-            if (!IsLivingHumanoid(manager, target)) return;
+            if (!IsLivingHumanoid(manager, target)) return 0;
             var health = manager.GetComponentData<PredictedPlayerGhost>(target);
             float damaged = RaidHealth.Damage(ref health, part, amount, GhostGameObject.GetCurrentTick());
             manager.SetComponentData(target, health);
             if (damaged > 0) m_Hits++;
             if (health.CurrentHealth <= 0 && manager.HasComponent<GhostOwner>(target))
                 LeaderboardManager.Instance?.AddKill(GhostGameObject.Owner, manager.GetComponentData<GhostOwner>(target).NetworkId);
+            return damaged;
         }
 
         private Pose TargetHead(Entity entity)
@@ -213,7 +222,7 @@ namespace Unity.MP_FPS
             m_BossPhase = state.BossPhase;
             m_Pattern = AlienCombatPattern.For(profile, state.BossPhase, state.AttackSequence, state.AttackKind);
             m_AttachedTarget = state.AttachedTarget;
-            if (Role == MultiplayerRole.Server || profile.Species == AlienSpecies.Spider || profile.Species == AlienSpecies.Leech) return;
+            if (Role == MultiplayerRole.Server || profile.Species == AlienSpecies.Spider || profile.Species == AlienSpecies.FaceHugger || profile.Species == AlienSpecies.Leech) return;
             m_AttackPresentation ??= new AlienAttackPresentation(transform);
             m_AttackPresentation.Observe(state, m_Pattern, profile.Boss);
         }

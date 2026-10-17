@@ -12,6 +12,13 @@ using Object = UnityEngine.Object;
 
 public static partial class AlienEnemyChecks
 {
+    public static void RunFaceSeparationContract()
+    {
+        var report = new SpeciesReport();
+        CheckSpecies(AlienSpecies.Leech, report);
+        CheckSpecies(AlienSpecies.FaceHugger, report);
+        Debug.Log("Leech / face parasite contracts passed: " + string.Join("; ", report.passed));
+    }
     public static void RunRoofAmbushContract()
     {
         var settings = Object.FindAnyObjectByType<AlienEncounterSettings>();
@@ -106,7 +113,7 @@ public static partial class AlienEnemyChecks
         var report = new SpeciesReport();
         try
         {
-            foreach (var species in new[] { AlienSpecies.Centipede, AlienSpecies.Caterpillar, AlienSpecies.Leech, AlienSpecies.Tentacle, AlienSpecies.Roots, AlienSpecies.Slime, AlienSpecies.Snake })
+            foreach (var species in new[] { AlienSpecies.Centipede, AlienSpecies.Caterpillar, AlienSpecies.Leech, AlienSpecies.FaceHugger, AlienSpecies.Tentacle, AlienSpecies.Roots, AlienSpecies.Slime, AlienSpecies.Snake })
                 CheckSpecies(species, report);
         }
         catch (Exception error) { report.error = error.Message; throw; }
@@ -130,6 +137,7 @@ public static partial class AlienEnemyChecks
             floor.transform.position = origin - Vector3.up * .25f; floor.AddComponent<BoxCollider>().size = new Vector3(40, .5f, 40);
             Physics.SyncTransforms();
             var actor = Alien(holder.transform, world, profile, origin + Vector3.up * .56f * profile.Scale, MultiplayerRole.Server, -13000);
+            if (species == AlienSpecies.Leech) SetHealth(manager, actor.GhostGameObject.LinkedEntity, 50);
             var target = Humanoid(holder.transform, world, origin + Vector3.forward * 2.25f, false, 42);
             GhostGameObject extra = null;
             if (species == AlienSpecies.Centipede) extra = Humanoid(holder.transform, world, origin + Vector3.forward * 5, false, 43);
@@ -150,7 +158,7 @@ public static partial class AlienEnemyChecks
                         target.transform.position = escape; manager.SetComponentData(target.LinkedEntity, LocalTransform.FromPosition(escape));
                     }
                 }
-                if (species == AlienSpecies.Leech && actor.Action == AlienAction.Attached)
+                if (species == AlienSpecies.FaceHugger && actor.Action == AlienAction.Attached)
                 {
                     if (!attached)
                     {
@@ -167,13 +175,17 @@ public static partial class AlienEnemyChecks
                 if (attached && actor.AttachedTarget == Entity.Null) released = true;
             }
             Require(windup, species + " never attacked");
-            if (species == AlienSpecies.Leech) Require(attached && followed && released, "Face attachment did not follow/release its victim");
+            if (species == AlienSpecies.FaceHugger) Require(attached && followed && released, "Face attachment did not follow/release its victim");
             else if (species == AlienSpecies.Roots)
             {
                 Require(actor.DamageCount == 0, "Root spikes tracked the dodging target");
                 Require(Vector3.Distance(start, actor.transform.position) < .05f, "Root boss left its defended area");
             }
             else Require(actor.DamageCount > 0, species + " attack failed to hit stationary target");
+            if (species == AlienSpecies.Leech)
+                Require(actor.AttachedTarget == Entity.Null && actor.AttackKind == AlienAttackKind.LeechDrain &&
+                    manager.GetComponentData<PredictedPlayerGhost>(actor.GhostGameObject.LinkedEntity).CurrentHealth > 50,
+                    "Leech did not drain health without attaching to the face");
             if (extra) Require(manager.GetComponentData<PredictedPlayerGhost>(extra.LinkedEntity).CurrentHealth < 100, "Charge failed to sweep second target");
             if (profile.Boss) Require(actor.BossPhase == 2, "Boss did not enter its low-health phase");
             if (species == AlienSpecies.Caterpillar || species == AlienSpecies.Slime) Require(actor.DamageCount == 3, species + " did not produce exactly three area pulses");

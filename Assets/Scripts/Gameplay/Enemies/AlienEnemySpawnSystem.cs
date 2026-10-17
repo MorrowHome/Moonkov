@@ -191,7 +191,7 @@ namespace Unity.MP_FPS
             if (spawn.Profile.Species == AlienSpecies.Spider)
                 return TryAmbushPosition(settings, spawn, scale, out position, out rotation);
             float mantleRadius = spawn.Profile.IsChain ? Mathf.Max(SurfaceMotor.BodyRadius, spawn.Profile.Chain.radius) :
-                spawn.Profile.Species == AlienSpecies.Spider ? SurfaceMotor.BodyRadius :
+                (spawn.Profile.Species == AlienSpecies.Spider || spawn.Profile.Species == AlienSpecies.FaceHugger) ? SurfaceMotor.BodyRadius :
                 Mathf.Max(SurfaceMotor.BodyRadius, Mathf.Max(spawn.Profile.Branch.bodyRadii.x, spawn.Profile.Branch.bodyRadii.z) * .7f);
             float radius = mantleRadius * scale;
             float height = Mathf.Max(radius * 2, (SurfaceMotor.Height + mantleRadius) * scale);
@@ -283,9 +283,9 @@ namespace Unity.MP_FPS
             // shaft. Sample support and clearance along the initial body footprint.
             int samples = profile.IsChain ? 4 : 8;
             float extent = profile.IsChain ? profile.Chain.length * scale :
-                profile.Species == AlienSpecies.Spider ? 1.25f * scale : profile.Branch.reach * scale;
+                (profile.Species == AlienSpecies.Spider || profile.Species == AlienSpecies.FaceHugger) ? 1.25f * scale : profile.Branch.reach * scale;
             float radius = profile.IsChain ? Mathf.Max(SurfaceMotor.BodyRadius, profile.Chain.radius) * scale :
-                profile.Species == AlienSpecies.Spider ? .12f * scale : profile.Branch.rootRadius * scale;
+                (profile.Species == AlienSpecies.Spider || profile.Species == AlienSpecies.FaceHugger) ? .12f * scale : profile.Branch.rootRadius * scale;
             float height = Mathf.Max(radius * 2f + .1f, (SurfaceMotor.Height + SurfaceMotor.BodyRadius) * scale);
             Vector3 right = Vector3.Cross(normal, forward);
             for (int i = 0; i < samples; i++)

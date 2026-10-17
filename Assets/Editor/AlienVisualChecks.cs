@@ -16,7 +16,7 @@ public static class AlienVisualChecks
         var previousScene = SceneManager.GetActiveScene();
         var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
         var root = new GameObject("Temporary face attachment preview"); SceneManager.MoveGameObjectToScene(root, scene);
-        var profile = AssetDatabase.LoadAssetAtPath<AlienCreatureProfile>("Assets/AlienCreatures/Profiles/Leech.asset");
+        var profile = AssetDatabase.LoadAssetAtPath<AlienCreatureProfile>("Assets/AlienCreatures/Profiles/FaceHugger.asset");
         AlienCreatureBody body = null; RenderTexture target = null; Texture2D pixels = null; Material headMaterial = null; Camera camera = null;
         try
         {
@@ -25,7 +25,7 @@ public static class AlienVisualChecks
             Object.DestroyImmediate(head.GetComponent<Collider>());
             headMaterial = new Material(Shader.Find("Universal Render Pipeline/Lit")); headMaterial.SetColor("_BaseColor", new Color(.65f, .65f, .65f));
             head.GetComponent<Renderer>().sharedMaterial = headMaterial;
-            var creature = new GameObject("Attached leech"); creature.transform.SetParent(root.transform, false);
+            var creature = new GameObject("Attached face parasite"); creature.transform.SetParent(root.transform, false);
             creature.transform.position = new Vector3(0, 1.6f, .12f);
             body = new AlienCreatureBody(creature.transform, profile, profile.Scale, true, LayerMask.NameToLayer("ClientPlayer"));
             body.SetAttachedPose(creature.transform.position, Quaternion.identity);

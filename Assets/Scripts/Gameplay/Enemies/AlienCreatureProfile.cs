@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Unity.MP_FPS
 {
-    public enum AlienSpecies : byte { Spider, Snake, Caterpillar, Tentacle, Centipede, Leech, Slime, Roots }
+    public enum AlienSpecies : byte { Spider, Snake, Caterpillar, Tentacle, Centipede, Leech, Slime, Roots, FaceHugger }
 
     /// <summary>Shared authoring data only. Scale is uniform and authoritative: body
     /// dimensions, motor contacts, hitboxes, strike reach and liquid bounds use it.
@@ -60,6 +60,7 @@ namespace Unity.MP_FPS
             else if (species == AlienSpecies.Slime) { Branch = BranchCreatureSettings.SlimeDefaults(); Speed = 2.5f; Health = 180; }
             else if (species == AlienSpecies.Roots) { Branch = BranchCreatureSettings.RootsDefaults(); Speed = 1.4f; AttackReach = 2.6f; }
             else if (species == AlienSpecies.Spider) { Speed = 5.5f; Scale = .45f; }
+            else if (species == AlienSpecies.FaceHugger) { Speed = 4.8f; Scale = .45f; Health = 65; Damage = 18; Liquid = false; }
             else Speed = 3.2f;
             Fluid = species == AlienSpecies.Spider ? new SpiderFluidSettings() : species == AlienSpecies.Centipede ?
                 ProceduralMenagerieExperiment.CentipedeFluidDefaults() : IsChain ? ChainFluidPresentation.Defaults(IsLarva) : BranchFluidPresentation.Defaults(BranchSpecies);

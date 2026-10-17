@@ -88773,6 +88773,44 @@ MonoBehaviour:
     Ambush: 1
     SurfaceNormal: {x: 0.00000008940697, y: -1, z: -0.00000017881393}
     CandidatePositions: []
+  - Profile: {fileID: 11400000, guid: 19e594e995d8e4249966ec67c627608d, type: 2}
+    Prefab:
+      <GhostPrefab>k__BackingField:
+        m_AssetGUID: ad4ecd740cff8294eb04378944bb8b27
+        m_SubObjectName:
+        m_SubObjectType:
+        m_SubObjectGUID:
+        m_EditorAssetChanged: 0
+      m_GhostGuid:
+        Value:
+          x: 1205658842
+          y: 1227423680
+          z: 2557690046
+          w: 1924709188
+    Position: {x: 1599.9199, y: 211.63614, z: 2156.7761}
+    Yaw: 323
+    Ambush: 0
+    SurfaceNormal: {x: 0, y: 1, z: 0}
+    CandidatePositions: []
+  - Profile: {fileID: 11400000, guid: 19e594e995d8e4249966ec67c627608d, type: 2}
+    Prefab:
+      <GhostPrefab>k__BackingField:
+        m_AssetGUID: ad4ecd740cff8294eb04378944bb8b27
+        m_SubObjectName:
+        m_SubObjectType:
+        m_SubObjectGUID:
+        m_EditorAssetChanged: 0
+      m_GhostGuid:
+        Value:
+          x: 1205658842
+          y: 1227423680
+          z: 2557690046
+          w: 1924709188
+    Position: {x: 1593.9015, y: 211.63614, z: 2165.7625}
+    Yaw: 323
+    Ambush: 0
+    SurfaceNormal: {x: 0, y: 1, z: 0}
+    CandidatePositions: []
 --- !u!114 &145744448
 MonoBehaviour:
   m_ObjectHideFlags: 0
