@@ -24,6 +24,7 @@ namespace Unity.MP_FPS
         private readonly CreatureChain m_Chain;
         private readonly BranchCreatureRig m_Branch;
         private readonly PredictiveFeet m_Feet;
+        private readonly FaceHuggerRig m_FaceRig;
         private readonly Vector3[] m_SpiderJoints = new Vector3[24];
         private readonly bool[] m_SpiderLegSolved = new bool[8];
         private CreatureChainPresentation m_ChainView;
@@ -37,7 +38,7 @@ namespace Unity.MP_FPS
         private float m_Phase, m_Clock;
         private bool m_Folded;
         public SurfaceMotor Motor { get; }
-        public Vector3 AimPoint => m_Chain != null ? m_Chain.Centres[CreatureChain.Rings / 2] : m_Branch != null ? m_Branch.Points[0] : m_SpiderPose.Position;
+        public Vector3 AimPoint => m_FaceRig != null ? m_FaceRig.Centre : m_Chain != null ? m_Chain.Centres[CreatureChain.Rings / 2] : m_Branch != null ? m_Branch.Points[0] : m_SpiderPose.Position;
         public float Scale => m_Scale;
         public int HitboxCount => m_Capsules.Count + m_Spheres.Count;
         public SkeletonFluidPresentation Fluid => m_ChainFluid?.Fluid ?? m_BranchFluid?.Fluid ?? m_SpiderView?.Fluid;
@@ -55,12 +56,13 @@ namespace Unity.MP_FPS
                 m_Chain = new CreatureChain(m_Mask); m_Chain.Reset(Motor.Current, m_ChainShape.length);
                 if (render) m_ChainView = new CreatureChainPresentation(owner, m_Mask);
             }
-            else if (profile.Species == AlienSpecies.Spider)
+            else if (profile.Species == AlienSpecies.Spider || profile.Species == AlienSpecies.FaceHugger)
             {
                 var gait = JsonUtility.FromJson<PredictiveFeet.GaitSettings>(JsonUtility.ToJson(profile.Gait));
                 gait.compression *= m_Scale; gait.bodyBob *= m_Scale; gait.strideCycleDistance *= m_Scale;
                 m_Feet = new PredictiveFeet(m_Mask, m_Scale) { Settings = gait }; m_Feet.Reset(Motor.Current);
-                if (render)
+                if (profile.Species == AlienSpecies.FaceHugger) m_FaceRig = new FaceHuggerRig(owner, m_Scale, render);
+                else if (render)
                 {
                     m_SpiderView = new SpiderPresentation(owner, m_Mask, m_Scale);
                 }
@@ -99,6 +101,12 @@ namespace Unity.MP_FPS
         }
         public void Tick(Vector3 intent, float speed, float yaw, float dt, float action, bool liquid)
         {
+            if (m_CombatAction == AlienAction.Attached && m_Profile.Species == AlienSpecies.FaceHugger)
+            {
+                m_Owner.SetPositionAndRotation(Motor.Current.Position, Motor.Current.Rotation);
+                UpdateRig(Vector2.zero, 0, 0, dt, false, 1); UpdateHitboxes();
+                return;
+            }
             var pose = Motor.Current;
             var basis = pose.Rotation * Quaternion.AngleAxis(Motor.Transitioning ? 0 : yaw * dt, Vector3.up);
             Vector2 input = new Vector2(Vector3.Dot(intent, basis * Vector3.right), Vector3.Dot(intent, basis * Vector3.forward));
@@ -121,6 +129,7 @@ namespace Unity.MP_FPS
             UpdateRig(input, velocity.magnitude, 0, dt, liquid, action); UpdateHitboxes();
         }
         public float Phase => m_Phase;
+        public void SetAttachedPose(Vector3 position, Quaternion rotation) => Motor.SetAttachedPose(position, rotation);
         private void UpdateRig(Vector2 input, float speed, float yaw, float dt, bool liquid, float action)
         {
             m_Clock += dt;
@@ -151,6 +160,15 @@ namespace Unity.MP_FPS
                     m_BranchFluid.Draw(Motor, m_Profile.Fluid, dt);
                 }
                 else m_BranchFluid?.Fluid.SetVisible(false);
+            }
+            else if (m_FaceRig != null)
+            {
+                if (Motor.Detached && !m_Folded) { m_Feet.BeginFold(); m_Folded = true; }
+                if (!Motor.Detached && m_Folded) { m_Feet.EndFold(Motor.Current); m_Folded = false; }
+                if (Motor.Detached) m_Feet.TickFolded(Motor.Current, dt);
+                else m_Feet.Tick(Motor, input, speed, yaw, dt);
+                m_FaceRig.Tick(Motor.Current, m_Feet, m_CombatAction, m_ActionTime, m_Clock);
+                if (m_Render) m_Feedback.Tick(Motor, m_Feet, m_CombatAction, dt);
             }
             else
             {
@@ -215,12 +233,13 @@ namespace Unity.MP_FPS
                 m_SpiderJoints[leg * 3] = hip; m_SpiderJoints[leg * 3 + 1] = knee; m_SpiderJoints[leg * 3 + 2] = toe;
             }
         }
+
         private static float Ease(float t) { t = Mathf.Clamp01(t); return t * t * (3 - 2 * t); }
 
         private void BuildHitboxes(int layer)
         {
             Sphere(layer);
-            int count = m_Chain != null ? 12 : m_Branch != null ? m_Branch.Branches * 4 : 16;
+            int count = m_FaceRig != null ? FaceHuggerRig.Fingers * 3 + FaceHuggerRig.TailPoints - 1 : m_Chain != null ? 12 : m_Branch != null ? m_Branch.Branches * 4 : 16;
             for (int i = 0; i < count; i++)
             {
                 var go = new GameObject("Alien tissue segment " + i); go.layer = layer; go.transform.SetParent(m_HitRoot, false);
@@ -236,11 +255,21 @@ namespace Unity.MP_FPS
         {
             if (m_Spheres.Count == 0) return;
             var body = m_Spheres[0]; body.transform.position = AimPoint;
-            body.radius = (m_Chain != null ? m_ChainShape.radius : m_Branch != null ? m_BranchShape.bodyRadii.x * .7f : .23f * m_Scale);
+            body.radius = m_FaceRig != null ? m_FaceRig.BodyRadius : (m_Chain != null ? m_ChainShape.radius : m_Branch != null ? m_BranchShape.bodyRadii.x * .7f : .23f * m_Scale);
             for (int i = 0; i < m_Capsules.Count; i++)
             {
                 Vector3 a, b; float radius;
-                if (m_Chain != null)
+                if (m_FaceRig != null)
+                {
+                    if (i < FaceHuggerRig.Fingers * 3)
+                    {
+                        a = m_FaceRig.FingerPoint(i / 3, i % 3 / 3f);
+                        b = m_FaceRig.FingerPoint(i / 3, (i % 3 + 1) / 3f);
+                    }
+                    else { int first = i - FaceHuggerRig.Fingers * 3; a = m_FaceRig.Tail[first]; b = m_FaceRig.Tail[first + 1]; }
+                    radius = m_CombatAction == AlienAction.Attached ? .025f : .025f * m_Scale / .45f;
+                }
+                else if (m_Chain != null)
                 {
                     int first = i * 8, last = Mathf.Min(first + 8, CreatureChain.Rings - 1);
                     a = m_Chain.Centres[first]; b = m_Chain.Centres[last]; radius = Mathf.Max(.015f, m_Chain.Radii[first] * m_ChainShape.verticalScale);
@@ -272,6 +301,7 @@ namespace Unity.MP_FPS
         public void Dispose()
         {
             m_Feedback?.Dispose();
+            m_FaceRig?.Dispose();
             m_ChainFluid?.Release(); m_BranchFluid?.Release(); m_SpiderView?.Release(); m_ChainView?.Release(); m_Branch?.Release();
             if (m_HitRoot) { m_HitRoot.gameObject.SetActive(false); if (Application.isPlaying) Object.Destroy(m_HitRoot.gameObject); else Object.DestroyImmediate(m_HitRoot.gameObject); }
         }

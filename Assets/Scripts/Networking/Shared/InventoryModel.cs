@@ -45,6 +45,8 @@ namespace Unity.MP_FPS.Inventory
                     new InventoryRegion("1", 1, 1), new InventoryRegion("2", 1, 1), new InventoryRegion("3", 1, 1), new InventoryRegion("4", 1, 1)),
                 new ItemDefinition("loot", "Supply cache", ItemKind.Root, 0, 0, 1, 0, new InventoryRegion("main", 6, 5)),
                 new ItemDefinition("dust", "Moon dust", ItemKind.Material, 1, 1, 20, .15f),
+                new ItemDefinition("alien_tissue", "Sealed alien tissue", ItemKind.Material, 1, 1, 10, .12f),
+                new ItemDefinition("alien_core", "Alien boss nucleus", ItemKind.Material, 1, 1, 2, .4f),
                 new ItemDefinition("alloy", "Lunar alloy", ItemKind.Material, 2, 1, 10, .6f),
                 new ItemDefinition("cells", "Energy cell", ItemKind.Cell, 1, 1, 12, .2f),
                 new ItemDefinition("medkit", "M-40 Medical injector", ItemKind.Medical, 1, 1, 4, .15f),

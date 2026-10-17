@@ -50,6 +50,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ad4ecd740cff8294eb04378944bb8b27
+    m_Address: Assets/AlienCreatures/Prefabs/XenoFaceHugger.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b0752bc8487bdf04eb9662e973d879c6
     m_Address: Assets/AlienCreatures/Prefabs/XenoSlime.prefab
     m_ReadOnly: 0

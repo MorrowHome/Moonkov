@@ -2978,6 +2978,14 @@ MonoBehaviour:
     m_Key: CANCEL EQUALIZATION
     m_Metadata:
       m_Items: []
+  - m_Id: 3743485948342272
+    m_Key: Sealed alien tissue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3743485990285312
+    m_Key: Alien boss nucleus
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

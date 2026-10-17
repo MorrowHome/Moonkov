@@ -109,7 +109,7 @@ public static class AlienEnemySetup
             if (Physics.Raycast(point + Vector3.up * 3, Vector3.down, out var hit, 8, mask, QueryTriggerInteraction.Ignore)) return hit.point;
         throw new InvalidOperationException("No physical floor for alien spawn " + preferred);
     }
-    private static void RegisterResources(GameObject[] prefabs)
+    internal static void RegisterResources(GameObject[] prefabs)
     {
         var scene = SceneManager.GetSceneByPath(ResourcesScene); bool opened = !scene.isLoaded;
         if (opened) scene = EditorSceneManager.OpenScene(ResourcesScene, OpenSceneMode.Additive);

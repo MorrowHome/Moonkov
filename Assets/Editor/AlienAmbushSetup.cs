@@ -14,6 +14,24 @@ public static class AlienAmbushSetup
     public const string ScenePath = "Assets/MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusGameScene.unity";
     public const string NavigationName = "MC00 Spider Ambush Navigation";
 
+    [MenuItem("Tools/Moonkov/Aliens/Configure species and boss roles")]
+    public static void ConfigureCombatRoles()
+    {
+        foreach (var species in new[] { AlienSpecies.Tentacle, AlienSpecies.Roots })
+        {
+            var profile = AssetDatabase.LoadAssetAtPath<AlienCreatureProfile>("Assets/AlienCreatures/Profiles/" + species + ".asset");
+            if (!profile) throw new InvalidOperationException("Missing boss profile " + species);
+            Undo.RecordObject(profile, "Configure alien boss");
+            profile.Boss = true; profile.EnrageHealthFraction = .5f;
+            profile.Scale = species == AlienSpecies.Tentacle ? 1.1f : 1.2f;
+            profile.Health = species == AlienSpecies.Tentacle ? 900 : 1200;
+            profile.Damage = species == AlienSpecies.Tentacle ? 28 : 24;
+            profile.Speed = species == AlienSpecies.Tentacle ? 2.6f / profile.Scale : 1;
+            EditorUtility.SetDirty(profile); AssetDatabase.SaveAssetIfDirty(profile);
+        }
+        Debug.Log("Tentacle and Roots boss profiles saved. Half-health phase, one spawn per map, tissue and nucleus rewards.");
+    }
+
     [MenuItem("Tools/Moonkov/Aliens/Set up MC00 spider ambush")]
     public static void Run()
     {
@@ -40,12 +58,9 @@ public static class AlienAmbushSetup
             navigation = go.AddComponent<AlienSurfaceNavigation>();
         }
         var localBounds = new Bounds(new Vector3(-6.5f, 3.35f, 22), new Vector3(19, 6.2f, 24));
-        var worldBounds = new Bounds(frame.TransformPoint(localBounds.center), Vector3.zero);
-        for (int x = -1; x <= 1; x += 2) for (int y = -1; y <= 1; y += 2) for (int z = -1; z <= 1; z += 2)
-            worldBounds.Encapsulate(frame.TransformPoint(localBounds.center + Vector3.Scale(localBounds.extents, new Vector3(x, y, z))));
         Physics.SyncTransforms();
         Undo.RecordObject(navigation, "Bake MC00 spider surfaces");
-        if (!navigation.Bake(worldBounds, 1.25f, profile.Scale)) throw new InvalidOperationException(navigation.LastBakeReport);
+        if (!navigation.Bake(localBounds, 1.1f, profile.Scale, frame)) throw new InvalidOperationException(navigation.LastBakeReport);
 
         var data = new SerializedObject(settings);
         var slots = data.FindProperty("encounters");

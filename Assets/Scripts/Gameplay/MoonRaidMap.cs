@@ -167,6 +167,11 @@ namespace Unity.MP_FPS
             foreach(var bag in state.Bags.Values)
             {
                 if(m_DeathBags.ContainsKey(bag.LootId))continue;
+                if(bag.CharacterIndex == -1)
+                {
+                    m_DeathBags.Add(bag.LootId, AlienLootVisual.Create(transform, bag));
+                    continue;
+                }
                 var corpse=CorpseVisual.Spawn(transform,m_CorpseSettings,bag);
                 m_DeathBags.Add(bag.LootId,corpse.gameObject);
             }

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Unity.MP_FPS
 {
-    public enum AlienSpecies : byte { Spider, Snake, Caterpillar, Tentacle, Centipede, Leech, Slime, Roots }
+    public enum AlienSpecies : byte { Spider, Snake, Caterpillar, Tentacle, Centipede, Leech, Slime, Roots, FaceHugger }
 
     /// <summary>Shared authoring data only. Scale is uniform and authoritative: body
     /// dimensions, motor contacts, hitboxes, strike reach and liquid bounds use it.
@@ -28,6 +28,10 @@ namespace Unity.MP_FPS
         [Range(.15f, 2)] public float Recovery = .55f;
         [Min(.3f)] public float AttackCooldown = 1.6f;
         [Range(0, 8)] public float LungeSpeed = 3;
+        [Header("Combat role")]
+        public bool Boss;
+        [Range(.15f, .8f)] public float EnrageHealthFraction = .5f;
+        [Min(.5f)] public float FaceAttachSeconds = 2.4f;
         [Header("Spider ambush encounters")]
         [Min(1)] public float SpiderAmbushRange = 6;
         [Min(.3f)] public float SpiderWindup = .75f;
@@ -49,13 +53,14 @@ namespace Unity.MP_FPS
         public void ApplyDefaults(AlienSpecies species)
         {
             Species = species;
-            if (species == AlienSpecies.Caterpillar) { Chain = CreatureChainSettings.CaterpillarDefaults(); Speed = 2.5f; }
-            else if (species == AlienSpecies.Centipede) { Chain = ProceduralMenagerieExperiment.CentipedeDefaults(); Speed = 4.8f; }
-            else if (species == AlienSpecies.Leech) { Chain = ProceduralMenagerieExperiment.LeechDefaults(); Speed = 2.7f; }
-            else if (species == AlienSpecies.Snake) { Speed = 4.5f; Scale = .55f; }
-            else if (species == AlienSpecies.Slime) { Branch = BranchCreatureSettings.SlimeDefaults(); Speed = 2.5f; Health = 180; }
+            if (species == AlienSpecies.Caterpillar) { Chain = CreatureChainSettings.CaterpillarDefaults(); Speed = 2.5f; Scale = .55f; }
+            else if (species == AlienSpecies.Centipede) { Chain = ProceduralMenagerieExperiment.CentipedeDefaults(); Speed = 4.8f; Scale = .85f; }
+            else if (species == AlienSpecies.Leech) { Chain = ProceduralMenagerieExperiment.LeechDefaults(); Speed = 2.7f; Scale = .22f; }
+            else if (species == AlienSpecies.Snake) { Speed = 4.5f; Scale = .4f; }
+            else if (species == AlienSpecies.Slime) { Branch = BranchCreatureSettings.SlimeDefaults(); Speed = 2.5f; Health = 180; Scale = .8f; }
             else if (species == AlienSpecies.Roots) { Branch = BranchCreatureSettings.RootsDefaults(); Speed = 1.4f; AttackReach = 2.6f; }
             else if (species == AlienSpecies.Spider) { Speed = 5.5f; Scale = .45f; }
+            else if (species == AlienSpecies.FaceHugger) { Speed = 4.8f; Scale = .45f; Health = 65; Damage = 18; Liquid = false; }
             else Speed = 3.2f;
             Fluid = species == AlienSpecies.Spider ? new SpiderFluidSettings() : species == AlienSpecies.Centipede ?
                 ProceduralMenagerieExperiment.CentipedeFluidDefaults() : IsChain ? ChainFluidPresentation.Defaults(IsLarva) : BranchFluidPresentation.Defaults(BranchSpecies);

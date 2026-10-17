@@ -101,7 +101,7 @@ namespace Unity.MP_FPS
                 var spawn = settings[index];
                 state.ReadyAt = now + settings.RetryDelay;
                 if (spawn == null || !spawn.Profile || spawn.Prefab == null) continue;
-                if (spawn.Ambush && state.SpawnCount > 0) continue;
+                if ((spawn.Ambush || spawn.Profile.Boss) && state.SpawnCount > 0) continue;
                 var prefab = prefabs.GetEntityPrefab(spawn.Prefab.GhostGuid);
                 if (prefab == Entity.Null || !TrySelectPosition(settings, spawn, state, out var position, out var rotation)) continue;
 
@@ -113,8 +113,9 @@ namespace Unity.MP_FPS
                 EntityManager.SetComponentData(entity, new GhostGameObjectGuid { Guid = GhostGameObject.GenerateRandomHash() });
                 EntityManager.SetComponentData(entity, new ProceduralAlienEnemy.State
                 {
-                    Scale = scale, AmbushEnabled = spawn.Ambush && spawn.Profile.Species == AlienSpecies.Spider,
-                    Action = spawn.Ambush && spawn.Profile.Species == AlienSpecies.Spider ? AlienAction.Ambush : AlienAction.Roam
+                    Scale = scale, AmbushEnabled = spawn.Profile.Species == AlienSpecies.Spider,
+                    Action = spawn.Profile.Species == AlienSpecies.Spider ? AlienAction.Ambush : AlienAction.Roam,
+                    BossPhase = 1
                 });
                 state.Entity = entity;
                 state.OwnerId = id;
@@ -126,7 +127,7 @@ namespace Unity.MP_FPS
                 m_NextEncounter = (index + 1) % settings.Count;
                 // Ghost presentation is linked later; reserve this position immediately.
                 m_Observers.Add(new RaidSpawnObserver { Position = position });
-                LeaderboardManager.AddPlayer(id, new FixedString64Bytes("Xeno " + spawn.Profile.Species));
+                LeaderboardManager.AddPlayer(id, new FixedString64Bytes((spawn.Profile.Boss ? "Boss " : "Xeno ") + spawn.Profile.Species));
                 if (m_AliveCount >= settings.MaximumAliens || m_TotalSpawned >= settings.MaximumTotalSpawns ||
                     spawnedThisCheck >= settings.MaximumSpawnsPerCheck) break;
             }
@@ -187,10 +188,10 @@ namespace Unity.MP_FPS
             position = default;
             rotation = Quaternion.identity;
             float scale = Mathf.Clamp(spawn.Profile.Scale, .1f, 4f);
-            if (spawn.Ambush && spawn.Profile.Species == AlienSpecies.Spider)
+            if (spawn.Profile.Species == AlienSpecies.Spider)
                 return TryAmbushPosition(settings, spawn, scale, out position, out rotation);
             float mantleRadius = spawn.Profile.IsChain ? Mathf.Max(SurfaceMotor.BodyRadius, spawn.Profile.Chain.radius) :
-                spawn.Profile.Species == AlienSpecies.Spider ? SurfaceMotor.BodyRadius :
+                (spawn.Profile.Species == AlienSpecies.Spider || spawn.Profile.Species == AlienSpecies.FaceHugger) ? SurfaceMotor.BodyRadius :
                 Mathf.Max(SurfaceMotor.BodyRadius, Mathf.Max(spawn.Profile.Branch.bodyRadii.x, spawn.Profile.Branch.bodyRadii.z) * .7f);
             float radius = mantleRadius * scale;
             float height = Mathf.Max(radius * 2, (SurfaceMotor.Height + mantleRadius) * scale);
@@ -230,8 +231,15 @@ namespace Unity.MP_FPS
             position = default; rotation = Quaternion.identity;
             Vector3 normal = spawn.SurfaceNormal.sqrMagnitude > .5f ? spawn.SurfaceNormal.normalized : Vector3.up;
             int mask = LayerMask.GetMask("Default", "Ground");
-            if (!HasNearbyPlayer(spawn.Position, settings.ActivationDistance) ||
-                !UnityEngine.Physics.Raycast(spawn.Position + normal * .5f, -normal, out var support, 1,
+            Vector3 anchor = spawn.Position;
+            if (!spawn.Ambush)
+            {
+                if (!UnityEngine.Physics.Raycast(anchor + Vector3.up, Vector3.up, out var ceiling, 14, mask,
+                    QueryTriggerInteraction.Ignore) || ceiling.normal.y > -.65f) return false;
+                anchor = ceiling.point; normal = ceiling.normal;
+            }
+            if (!HasNearbyPlayer(anchor, settings.ActivationDistance) ||
+                !UnityEngine.Physics.Raycast(anchor + normal * .5f, -normal, out var support, 1,
                     mask, QueryTriggerInteraction.Ignore) || Vector3.Dot(support.normal, normal) < .85f) return false;
             position = support.point + support.normal * SurfaceMotor.Height * scale;
             if (UnityEngine.Physics.CheckSphere(position, SurfaceMotor.BodyRadius * scale, mask, QueryTriggerInteraction.Ignore)) return false;
@@ -275,9 +283,9 @@ namespace Unity.MP_FPS
             // shaft. Sample support and clearance along the initial body footprint.
             int samples = profile.IsChain ? 4 : 8;
             float extent = profile.IsChain ? profile.Chain.length * scale :
-                profile.Species == AlienSpecies.Spider ? 1.25f * scale : profile.Branch.reach * scale;
+                (profile.Species == AlienSpecies.Spider || profile.Species == AlienSpecies.FaceHugger) ? 1.25f * scale : profile.Branch.reach * scale;
             float radius = profile.IsChain ? Mathf.Max(SurfaceMotor.BodyRadius, profile.Chain.radius) * scale :
-                profile.Species == AlienSpecies.Spider ? .12f * scale : profile.Branch.rootRadius * scale;
+                (profile.Species == AlienSpecies.Spider || profile.Species == AlienSpecies.FaceHugger) ? .12f * scale : profile.Branch.rootRadius * scale;
             float height = Mathf.Max(radius * 2f + .1f, (SurfaceMotor.Height + SurfaceMotor.BodyRadius) * scale);
             Vector3 right = Vector3.Cross(normal, forward);
             for (int i = 0; i < samples; i++)

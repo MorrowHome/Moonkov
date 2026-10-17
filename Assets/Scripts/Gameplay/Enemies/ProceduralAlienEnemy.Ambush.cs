@@ -11,13 +11,15 @@ namespace Unity.MP_FPS
         private AlienSurfaceNavigation m_Navigation;
         private readonly AlienSurfaceNavigation.Route m_Route = new AlienSurfaceNavigation.Route();
         public bool AmbushEnabled => m_AmbushEnabled;
+        public string NavigationFailure => m_Route.LastFailure;
+        public Vector3 RepositionGoal => m_RepositionGoal;
 
         private void UpdateCombatPresentation(float health)
         {
             m_Body.SetCombatPresentation(m_Action, m_Clock - m_ActionStarted, m_Attacks, health,
-                m_AmbushEnabled ? profile.SpiderWindup : profile.Windup,
-                m_AmbushEnabled ? profile.SpiderRecovery : profile.Recovery,
-                m_AmbushEnabled ? profile.SpiderStrikeSeconds : .16f);
+                m_AmbushEnabled ? profile.SpiderWindup : Mathf.Max(.1f, m_Pattern.Windup),
+                m_AmbushEnabled ? profile.SpiderRecovery : Mathf.Max(.1f, m_Pattern.Recovery),
+                m_AmbushEnabled ? profile.SpiderStrikeSeconds : Mathf.Max(.1f, m_Pattern.Active));
         }
 
         private void UpdateAmbush(float dt, float health)
@@ -55,13 +57,19 @@ namespace Unity.MP_FPS
             }
             else if (m_Action != AlienAction.Windup && m_Action != AlienAction.Strike && m_Action != AlienAction.Recover)
             {
-                if (m_Action == AlienAction.Reposition && m_Clock < m_RepositionUntil &&
-                    Vector3.Distance(transform.position, m_RepositionGoal) > .6f) { }
+                if (m_Action == AlienAction.Reposition &&
+                    (m_Body.Motor.Current.Up.y > -.65f || Vector3.Distance(transform.position, m_RepositionGoal) > .8f))
+                {
+                    if (m_Clock >= m_RepositionUntil) BeginReposition(remembered ? m_LastSeen : m_Spawn);
+                }
                 else if (remembered && m_Visible && distance <= profile.SpiderAmbushRange && m_Clock >= m_NextAttack)
                 {
                     // Commit to a point at the start of the visible windup. A player
                     // can evade it; flight never steers towards their new position.
                     m_StrikePoint = ContactPoint(m_Target);
+                    m_Pattern = AlienCombatPattern.For(profile, 1, m_Attacks + 1);
+                    m_CombatPoint = m_StrikePoint; m_CombatOrigin = transform.position;
+                    m_CombatDirection = (m_StrikePoint - transform.position).normalized;
                     ChangeAction(AlienAction.Windup); m_Attacks++;
                     m_NextAttack = m_Clock + Mathf.Max(profile.AttackCooldown,
                         profile.SpiderWindup + profile.SpiderStrikeSeconds + profile.SpiderRecovery + .6f);
@@ -109,7 +117,7 @@ namespace Unity.MP_FPS
                     m_RepositionGoal = perch;
                 m_NextPerch = m_Clock + 2;
             }
-            m_RepositionUntil = m_Clock + 4;
+            m_RepositionUntil = m_Clock + 12;
             ChangeAction(AlienAction.Reposition);
         }
     }

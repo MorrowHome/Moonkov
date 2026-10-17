@@ -1,0 +1,41 @@
+{
+  "skill_name": "design-taste-frontend",
+  "how_to_run": "Manual behavioral cases. Provide relevant existing UI files or screenshots with the request. Evaluate requested artifacts and observable behavior. Do not use the upstream website inspector or treat these cases as completed tests. Live mutations and Play Mode remain subject to user scope and project rules.",
+  "evals": [
+    {
+      "id": 1,
+      "name": "lunar-combat-hud",
+      "prompt": "改进现有 Unity UI Toolkit 月面撤离射击 HUD：亮地表下氧气和弹药看不清，中心交互提示遮住瞄准目标。保留已有玩法与数据绑定，只调整 UI。",
+      "expected_output": "修复现有 UXML/USS 与必要控制器的层级、对比和遮挡；危险不只靠颜色；实际场景验证与静态检查分开报告。不会强制加照片、滚动动画或网页布局，也不会修改氧气规则。",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "inventory-density-and-state",
+      "prompt": "现有背包是规则格子，有装备图标和品质边框。请保持高信息密度，改善中文长名称、选中态、物品比较和拖动失败反馈。使用当前 UI 框架。",
+      "expected_output": "保留有用途的网格、边框和品质标识；名称属性可读；悬停、选中与拖动可区分；比较单位一致；取消或失败后物品状态正确。不会按网页禁令移除格子和边框。",
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "shop-transaction-feedback",
+      "prompt": "商店能购买物品，但余额不足时按钮没有说明，等待服务器期间能重复点击。补齐 UI 反馈，不改变现有价格和交易权限。",
+      "expected_output": "复用真实交易结果，说明不可购买原因，等待中阻止重复提交，失败可恢复，成功后反映实际余额与物品。不会用本地成功动画替代服务器结果或调整经济。",
+      "files": []
+    },
+    {
+      "id": 4,
+      "name": "ugui-settings-small-change",
+      "prompt": "这个项目设置页使用 uGUI，只需要让手柄焦点更清楚，并在取消弹窗后回到原按钮。不要迁移框架或重做整页。",
+      "expected_output": "沿用现有 Selectable 和导航，补齐指定控件焦点与恢复行为，只验证相关路径。不会强制改 UI Toolkit、另做 HTML 原型或扩大成全界面重构。",
+      "files": []
+    },
+    {
+      "id": 5,
+      "name": "explicit-browser-prototype",
+      "prompt": "先做一个独立 HTML 游戏背包交互原型，使用样例物品，暂不接 Unity。要能选物品、看中文详情、比较属性。",
+      "expected_output": "交付可操作浏览器原型，使用游戏 UI 层级与状态；标明样例数据及未接 Unity。不会把原型称为已接入游戏，也不会套用营销网页的图片或动画配额。",
+      "files": []
+    }
+  ]
+}
