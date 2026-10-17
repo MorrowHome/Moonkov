@@ -24,6 +24,8 @@ namespace Unity.MP_FPS.DollSinger
         public Vector2 Look { get; private set; }
         public bool JumpPressed { get; private set; }
         public bool SprintHeld { get; private set; }
+        public DollSingerStance Stance { get; private set; }
+        private DollSingerStance toggledStance;
         public bool AimHeld { get; private set; }
         public bool FirePressed { get; private set; }
         public bool FireHeld { get; private set; }
@@ -88,6 +90,13 @@ namespace Unity.MP_FPS.DollSinger
                     (keyboard.wKey.isPressed ? 1 : 0) - (keyboard.sKey.isPressed ? 1 : 0));
                 JumpPressed = keyboard.spaceKey.wasPressedThisFrame;
                 SprintHeld = keyboard.leftShiftKey.isPressed || keyboard.rightShiftKey.isPressed;
+                if (keyboard.cKey.wasPressedThisFrame)
+                    toggledStance = toggledStance == DollSingerStance.Crouching ? DollSingerStance.Standing : DollSingerStance.Crouching;
+                if (keyboard.zKey.wasPressedThisFrame)
+                    toggledStance = toggledStance == DollSingerStance.Prone ? DollSingerStance.Standing : DollSingerStance.Prone;
+                if (JumpPressed) toggledStance = DollSingerStance.Standing;
+                Stance = keyboard.leftCtrlKey.isPressed ? DollSingerStance.Crouching :
+                    keyboard.xKey.isPressed && toggledStance == DollSingerStance.Standing ? DollSingerStance.Tiptoe : toggledStance;
                 ViewPressed = keyboard.vKey.wasPressedThisFrame;
                 LightPressed = keyboard.lKey.wasPressedThisFrame;
                 ReloadPressed = keyboard.rKey.wasPressedThisFrame;
@@ -122,6 +131,14 @@ namespace Unity.MP_FPS.DollSinger
                 FirePressed |= gamepad.rightTrigger.wasPressedThisFrame;
                 FireHeld |= gamepad.rightTrigger.isPressed;
                 ViewPressed |= gamepad.rightStickButton.wasPressedThisFrame;
+                if (gamepad.buttonEast.wasPressedThisFrame)
+                    toggledStance = toggledStance == DollSingerStance.Crouching ? DollSingerStance.Standing : DollSingerStance.Crouching;
+                if (gamepad.dpad.down.wasPressedThisFrame)
+                    toggledStance = toggledStance == DollSingerStance.Prone ? DollSingerStance.Standing : DollSingerStance.Prone;
+                if (gamepad.buttonSouth.wasPressedThisFrame) toggledStance = DollSingerStance.Standing;
+                if (gamepad.buttonEast.wasPressedThisFrame || gamepad.dpad.down.wasPressedThisFrame || gamepad.buttonSouth.wasPressedThisFrame)
+                    Stance = toggledStance;
+                if (gamepad.rightShoulder.isPressed && toggledStance == DollSingerStance.Standing) Stance = DollSingerStance.Tiptoe;
             }
             Move = Vector2.ClampMagnitude(Move, 1f);
         }
@@ -131,6 +148,7 @@ namespace Unity.MP_FPS.DollSinger
             Move = Look = Vector2.zero;
             JumpPressed = SprintHeld = AimHeld = FirePressed = ViewPressed = LightPressed = ReloadPressed = false;
             FireHeld = false;
+            Stance = toggledStance;
             AltHeld = false;
             LeanTarget = 0f;
             Scroll = 0f;
@@ -148,7 +166,7 @@ namespace Unity.MP_FPS.DollSinger
 
         private void OnApplicationFocus(bool focused)
         {
-            if (!focused) SetCapture(false);
+            if (!focused) { toggledStance = DollSingerStance.Standing; SetCapture(false); }
         }
 
         private void OnDisable()

@@ -515,7 +515,7 @@ namespace Unity.MP_FPS
                      in SystemAPI
                          .Query<RefRW<PredictedPlayerGhost>, RefRO<PlayerClientCommandInputLookup>,
                              RefRO<PredictedPlayerControllerConsts>>()
-                         .WithAll<Simulate>()
+                         .WithAll<Simulate, PlayerControllerLink>()
                          .WithEntityAccess())
             {
                 var predictedClient = predictedClientInputComponentLookup[inputLookup.ValueRO.ClientCommandInputEntity];
@@ -531,7 +531,7 @@ namespace Unity.MP_FPS
                                 ref predictedPlayer.ValueRW.AccumulatedMovement,
                                 RaidHealth.RestrictInput(predictedPlayer.ValueRO, input),
                                 RaidHealth.Movement(predictedPlayer.ValueRO, controllerConsts.ValueRO.ControllerConsts),
-                                movementDt);
+                                movementDt, SystemAPI.ManagedAPI.GetComponent<PlayerControllerLink>(entity).Controller);
                         }
                     }
 

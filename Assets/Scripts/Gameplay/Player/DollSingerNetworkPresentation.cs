@@ -13,6 +13,7 @@ namespace Unity.MP_FPS
         [SerializeField] private DollSingerView m_View;
         [SerializeField] private DollSingerHaloAim m_Halo;
         private bool m_Linked;
+        private FirstPersonController m_Motor;
         private bool m_ViewActivated;
         private uint m_LastJumpTick;
         private float2 m_FreeLookOffset;
@@ -50,7 +51,7 @@ namespace Unity.MP_FPS
 
         public Vector3 GetGameplayLeanOffset(float lean, Quaternion bodyRotation, bool thirdPerson)
         {
-            return thirdPerson ? Vector3.zero : m_Model.GetLeanOffset(lean, bodyRotation);
+            return thirdPerson || m_Model.Stance == DollSingerStance.Prone ? Vector3.zero : m_Model.GetLeanOffset(lean, bodyRotation);
         }
 
         public bool UpdateOwnedLook(ref float2 look, out float2 freeLookOffset, bool blocked)
@@ -100,6 +101,7 @@ namespace Unity.MP_FPS
         public override void OnGhostLinked()
         {
             m_Linked = true;
+            m_Motor = GetComponent<FirstPersonController>();
             m_OwnedAiming = m_HasOwnedAimPoint = false;
             m_OwnedLightEnabled = true;
             m_AudioAiming = false; m_DryFireAt = 0;
@@ -139,6 +141,7 @@ namespace Unity.MP_FPS
 
             var ghost = ReadGhostComponentData<PredictedPlayerGhost>();
             var state = ghost.ControllerState;
+            m_Motor.ApplyStanceCapsule(state.Stance);
             m_Audio?.Update(ghost, transform, Role == MultiplayerRole.ClientOwned, Time.deltaTime);
             bool jumped = ghost.LastJumpTick != 0 &&
                 (m_LastJumpTick == 0 || (int)(ghost.LastJumpTick - m_LastJumpTick) > 0);
@@ -146,7 +149,7 @@ namespace Unity.MP_FPS
             m_Model.ApplyNetworkPresentation(state.MovementSpeed, state.JumpFallSpeed,
                 state.MovementType == FirstPersonController.MovementType.Standing,
                 state.Sprinting, jumped, Time.deltaTime, (Vector3)state.AnimatorMotion,
-                ((Quaternion)state.CurrentRotation).eulerAngles.y);
+                ((Quaternion)state.CurrentRotation).eulerAngles.y, state.Stance);
             var viewRotation = Quaternion.Euler(state.PitchDegrees, state.YawDegrees, 0f);
             var headLook = new float2(state.YawDegrees, state.PitchDegrees) + state.FreeLookOffset;
             var headRotation = Quaternion.Euler(headLook.y, headLook.x, 0f);

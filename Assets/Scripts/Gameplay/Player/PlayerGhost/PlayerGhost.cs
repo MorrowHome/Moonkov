@@ -87,7 +87,7 @@ namespace Unity.MP_FPS
             if (TryGetComponent<DollSingerNetworkPresentation>(out var dollSinger))
             {
                 // A stable gameplay anchor also exists on a headless server, where the model is inactive.
-                origin = ShotOrigin.position;
+                origin = ShotOrigin.position + Vector3.up * Controller.StanceHeightOffset;
                 Vector3 leanOffset = dollSinger.GetGameplayLeanOffset(input.Lean,
                     Quaternion.Euler(0f, input.LookYawPitchDegrees.x, 0f), input.ThirdPerson);
                 origin += DollSingerMovement.ConstrainLeanOffset(origin, leanOffset, transform,

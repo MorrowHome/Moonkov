@@ -83,3 +83,5 @@ lilToon 使用 FPS_Template 已安装的包；不复制 Shader 包，也不修�
 ## 验收范围
 
 本次已完成 Unity 脚本编译、必要资产与骨骼引用、缺失脚本和材质 Shader 检查。Editor 当前 MoonDemo 有未保存修改，因此未替换该场景或执行 Play Mode；运行时初始化、摆动幅度、手裙穿模和真实键鼠手感仍需要实际游玩验收。碰撞代理是骨骼级近似，不能保证任意动作下网格完全不相交。后续调整可直接在预制体上的 SecondaryBoneSpring、SkirtHandAvoidance、DollSingerView 与 DollSingerHaloAim 中完成。
+
+新增下蹲、趴下与踮脚：**C**／**Z** 切换姿态，按住 **X** 踮脚；按住左 Ctrl 临时下蹲。动作来源、碰撞规则、手柄映射与验证见 [姿态动作](DollSingerStances.md)。

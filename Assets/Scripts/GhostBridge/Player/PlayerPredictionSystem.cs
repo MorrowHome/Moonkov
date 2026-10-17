@@ -270,7 +270,7 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                         FirstPersonController.AccumulateMovement(ref predictedPlayer.ValueRW.ControllerState,
                             ref predictedPlayer.ValueRW.AccumulatedMovement,
                             RaidHealth.RestrictInput(predictedPlayer.ValueRO, input),
-                            RaidHealth.Movement(predictedPlayer.ValueRO, controllerConsts.ValueRO.ControllerConsts), accumulateDT);
+                            RaidHealth.Movement(predictedPlayer.ValueRO, controllerConsts.ValueRO.ControllerConsts), accumulateDT, controllerLink.Controller);
 
                         if (predictedPlayer.ValueRW.ControllerState.JumpTriggered)
                         {

@@ -87,6 +87,7 @@ public partial class ClientInputReaderSystem : SystemBase
                 playerInput.Lean = canRead && !_dollSingerPresentation.IsThirdPerson
                     ? _dollSingerPresentation.OwnedLeanAmount : 0f;
                 playerInput.MoveInput = canRead ? _dollSingerInput.Move : Vector2.zero;
+                playerInput.SetStance(_dollSingerInput.Stance);
                 playerInput.SetFlag(PlayerInput.InputFlag.Jump, canRead && _dollSingerInput.JumpPressed);
                 playerInput.SetFlag(PlayerInput.InputFlag.Sprint, canRead && _dollSingerInput.SprintHeld);
                 playerInput.SetFlag(PlayerInput.InputFlag.Aim, canRead && _dollSingerInput.AimHeld && !playerInput.FreeLooking);
