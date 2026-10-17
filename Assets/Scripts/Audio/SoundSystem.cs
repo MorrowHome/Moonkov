@@ -115,6 +115,24 @@ public class SoundSystem : ISoundSystem
     }
 
 
+    // Ownership teardown must also reclaim already-fading sources whose caller dropped its handle.
+    public void StopAttachedTo(Transform owner)
+    {
+        if (!owner) return;
+        for (int i = m_SoundEmitterActiveList.Count - 1; i >= 0; i--)
+        {
+            var emitter = m_SoundEmitterActiveList[i];
+            bool attached = false;
+            foreach (var source in emitter.ActiveSoundGameObjects)
+                if (source.m_AudioSource && source.m_AudioSource.transform.IsChildOf(owner)) { attached = true; break; }
+            if (!attached) continue;
+            emitter.UnreserveAndKill(); m_SoundEmitterActiveList.RemoveAt(i);
+        }
+    }
+
+    public bool IsWithinHearing(Vector3 position, float range) => m_ListenerTransform &&
+        (position - m_ListenerTransform.position).sqrMagnitude <= range * range;
+
     /// <summary>
     /// Sets the listener transform for spatial audio calculations.
     /// In most cases, this would be the Transform of the GameObject that contains the AudioListener component

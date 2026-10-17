@@ -1,5 +1,24 @@
 # Moonkov 音效系统
 
+## 2026-10-18 接触与待机细节（feat/raid-audio-details）
+
+- 异形待机声音改由每只客户端异形自身驱动，替代氛围层给最近异形代播。首次随机等待 2.5–7.5 秒，之后低鸣间隔 8–16 秒；静止身体细响 5–11 秒，扑击后有一次收束动作声。音源附着自身、保留尺寸／物种音高差异，28 m 内才调度。休眠伏击、死亡和远处不会产生这些细节；攻击蓄力会淡出已有待机声。全局待机低鸣最多 3 路，遇到并发限制会错开重试，非战斗声随枪声让位。
+- 异形爬墙／天花板根据复制来的姿态法线、位移及真实表面射线产生壳体拖擦；平地沿墙移动另检查身体附近的墙面。离开支撑、没有位移、攻击中或传送时不产生摩擦。粗糙／金属接触使用不同声库，每只最短约 0.52 秒一次。
+- 玩家服装蹭墙只有实际近墙且沿面滑动才触发；正面顶墙、静止、触发器、自身碰撞体和远处墙面排除。自己的接触声保留一定方向感，其他角色完全 3D；沿用遮挡、材质标记、SFX／Footsteps 路由及原音量设置。
+- 蹲起／趴下／起身有衣料和束带动作声，静止身体转向累计约 50° 后有低声装备轻响。匍匐以身体／衣料拖动代替靴子步声；蹲行及踮脚用较短步距和更低接触音量。由已呈现的客户端姿态变化触发，不改输入、碰撞规则或网络字段；晚加入不重放历史动作。
+- 新增 8 库 × 3 变体 = 24 个 48 kHz 单声道 PCM 短音，总长约 12.17 秒，WAV 文件合计约 1.17 MB（十进制，不含 meta）。使用 AntumDeluge 的 CC0 真实拖擦和 Kenney 的 CC0 衣料／皮带／金属件素材，辅以项目原有 CC0 壳体接触层；配方、原素材／成品 SHA256 见 `Assets/Audio/Moonkov/AudioDetailSources.json`，授权见 `Licenses/AudioDetails.md`，分发声明放入 `StreamingAssets/MoonkovAudioDetailCredits.txt`。重建脚本 `Tools/Audio/build_audio_details.py` 只写 Details 目录及其清单。
+- 所有声音沿用 64 个池化 AudioSource。接触探测复用静态命中数组，每个移动角色约 160 ms 检查，所有角色共用每帧最多 12 条细节射线；远处异形不作细节探测。未增加每只怪物常驻 AudioSource／运行时生成的音频；释放异形时先归还其附着音源，再销毁角色。
+
+已安装好音频库引用，无需手动绑场景。菜单 `Moonkov/Audio/Install contact and idle details` 可单独重建本轮设置；原整套 Raid 安装菜单末尾也调用它，避免回退到旧待机策略。测试菜单为 `Tools/Moonkov/Check Contact And Idle Audio`。
+
+验证（Unity 6000.5.10f1 / macOS / Editor Play）：
+
+- 本轮音频资产／接触几何检查及原 Raid 音频、射击 AV 检查通过；覆盖真实沿墙接触、自身／触发器排除、顶墙静止静音、离墙缓存失效、传送／卡帧抑制和表面法线。
+- 只读呈现状态的隔离 Play 测试中，两只异形分别发出待机声，休眠及 100 m 远异形无细节声；贴壁拖擦、身体细响、玩家蹭墙、姿态切换、匍匐和转身装备声均观察到。重复快照下蓄力／扑击／受伤／死亡各一次，最大同时播放 7 源、监听输出峰值 0.216（仅代表该测试片段）。踮脚源增益约为站立步声的 28%。销毁后无无效源；另通过“蓄力淡出期间立即死亡销毁”回收检查。
+- 临时离线档案的真实 ClientWorld／ServerWorld 战局中，四种姿态均到达客户端，实际移动约 6.20 m，观察到地面步声、封闭服装呼吸、姿态切换、匍匐及装备轻响。结束后返回飞船，释放临时档案并退出 Play。没有改玩家真实档案。
+- 24 个成品和引用源文件 SHA256 核对通过。战局检查 Console 0 error；未打独立 macOS 构建、未做远程双机听觉验收，最终音色与细节电平仍可在耳机实玩中继续调校。
+
+
 ## 2026-10-16 局内声音重做
 
 - 新增 56 个 48 kHz、单声道 PCM 短音，共约 27.3 秒、2.6 MB 解压音频数据（磁盘含 meta 约 2.8 MB）。源文件、SHA256 和处理配方在 `Assets/Audio/Moonkov/RaidAudioSources.json`；授权及必须随资源分发的 CC BY 署名见 `Assets/Audio/Moonkov/Licenses/RaidAudio.md`，同步副本 `Assets/StreamingAssets/MoonkovRaidAudioCredits.txt` 随 Unity 构建分发。重建脚本 `Tools/Audio/build_raid_audio.py` 使用 numpy／ffmpeg，原压缩包放在被忽略的 `LocalData/RaidAudio/Sources`。

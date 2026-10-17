@@ -1,4 +1,5 @@
 using UnityEngine;
+using Unity.MP_FPS.DollSinger;
 
 namespace Unity.MP_FPS
 {
@@ -10,6 +11,11 @@ namespace Unity.MP_FPS
         private float m_Stride, m_SurfaceTimer;
         private Vector3 m_Position;
         private SoundDef m_Surface;
+        private DollSingerStance m_Stance;
+        private float m_TurnTravel, m_Yaw, m_GearAt;
+        private readonly MoonkovSurfaceFoley m_Wall = new MoonkovSurfaceFoley();
+        private UnityEngine.CharacterController m_Capsule;
+        private SoundSystem.SoundInfo m_WallSound, m_MovementSound, m_StanceSound;
         private float m_LastStepTime = -1, m_BreathAt, m_HeartAt, m_Health, m_Oxygen, m_Energy, m_Hydration;
         private bool m_Reloading, m_WasSealed, m_BreathEffort;
         private int m_Ammo;
@@ -37,6 +43,8 @@ namespace Unity.MP_FPS
                 m_Weapon = ghost.EquippedWeaponID; m_Position = position;
                 Remember(ghost); m_BreathAt = Time.unscaledTime + .75f; m_HeartAt = Time.unscaledTime + 1;
                 m_WasSealed = !ghost.BreathableAir;
+                m_Stance = ghost.ControllerState.Stance; m_Yaw = ((Quaternion)ghost.ControllerState.CurrentRotation).eulerAngles.y;
+                m_Capsule = player.GetComponent<UnityEngine.CharacterController>();
                 return; // A late join must not replay historical events.
             }
             if (NewTick(ghost.LastReloadTick, ref m_ReloadTick))
@@ -87,6 +95,13 @@ namespace Unity.MP_FPS
                 }
             }
             else if (owned) Stop();
+            if (ghost.CurrentHealth > 0 && m_Stance != ghost.ControllerState.Stance)
+            {
+                m_StanceSound = LocalOrWorld(library.StanceChange, position, owned,
+                    ghost.ControllerState.Stance == DollSingerStance.Prone || m_Stance == DollSingerStance.Prone ? .85f : .5f);
+                m_Stride = 0; m_TurnTravel = 0;
+            }
+            m_Stance = ghost.ControllerState.Stance;
             Remember(ghost);
             m_Weapon = ghost.EquippedWeaponID;
             m_FallSpeed = Mathf.Max(m_FallSpeed, -ghost.ControllerState.JumpFallSpeed);
@@ -97,10 +112,35 @@ namespace Unity.MP_FPS
             bool grounded = ghost.ControllerState.MovementType == FirstPersonController.MovementType.Standing;
             if (!grounded || ghost.CurrentHealth <= 0f || deltaTime <= 0f || deltaTime > .25f || travel.magnitude > 2f)
             {
-                m_Stride = 0f;
+                m_Stride = 0f; m_TurnTravel = 0; m_Wall.Reset();
                 return;
             }
-            if (travel.sqrMagnitude < .000001f) { m_Stride = 0; return; }
+            float yaw = ((Quaternion)ghost.ControllerState.CurrentRotation).eulerAngles.y;
+            float turn = Mathf.Abs(Mathf.DeltaAngle(m_Yaw, yaw)); m_Yaw = yaw;
+            if (travel.sqrMagnitude < .000001f)
+            {
+                m_Stride = 0; m_Wall.Reset();
+                if (turn < 90) m_TurnTravel += turn;
+                if (m_TurnTravel >= 50 && Time.time >= m_GearAt && m_Stance != DollSingerStance.Prone)
+                {
+                    m_MovementSound = LocalOrWorld(library.GearMotion, position, owned, .4f);
+                    m_TurnTravel = 0; m_GearAt = Time.time + .9f;
+                }
+                return;
+            }
+            m_TurnTravel = 0;
+            if ((owned || MoonkovAudio.CanHearDetail(position, 12)) && ghost.ControllerState.MovementSpeed > .15f)
+            {
+                float height = m_Capsule ? m_Capsule.height : DollSingerStances.Height(m_Stance, 1.7f, .25f);
+                Vector3 center = m_Capsule ? player.TransformPoint(m_Capsule.center) : position + Vector3.up * (height * .55f);
+                float reach = (m_Capsule ? m_Capsule.radius : .25f) + .12f;
+                if (m_Wall.TrySlide(player, center, travel, reach, deltaTime, out var wall))
+                {
+                    bool metal = RifleImpactSurface.Classify(wall.collider) == RifleImpactKind.Metal;
+                    m_WallSound = MoonkovAudio.PlayWeaponLayer(metal ? library.SuitWallMetal : library.SuitWallBrush,
+                        wall.point, ghost.ControllerState.Sprinting ? .8f : .55f, owned ? .65f : 1);
+                }
+            }
             m_SurfaceTimer -= deltaTime;
             if (m_SurfaceTimer <= 0f)
             {
@@ -108,11 +148,19 @@ namespace Unity.MP_FPS
                 SampleSurface(player, library);
             }
             m_Stride += travel.magnitude;
-            float stride = ghost.ControllerState.Sprinting ? 1.35f : .9f;
+            float stride = m_Stance == DollSingerStance.Prone ? .55f :
+                m_Stance == DollSingerStance.Crouching || m_Stance == DollSingerStance.Tiptoe ? .6f :
+                ghost.ControllerState.Sprinting ? 1.35f : .9f;
             if (m_Stride < stride || Time.unscaledTime - m_LastStepTime < .18f) return;
             m_Stride %= stride; // At most one step after a stalled frame or reconciliation.
             m_LastStepTime = Time.unscaledTime;
-            float volume = ghost.ControllerState.Sprinting ? 1f : .72f;
+            if (m_Stance == DollSingerStance.Prone)
+            {
+                m_MovementSound = LocalOrWorld(library.Crawl, position, owned, .65f);
+                return;
+            }
+            float volume = m_Stance == DollSingerStance.Tiptoe ? .2f :
+                m_Stance == DollSingerStance.Crouching ? .38f : ghost.ControllerState.Sprinting ? 1f : .72f;
             LocalOrWorld(m_Surface ?? library.RegolithFootsteps, position, owned, volume);
             LocalOrWorld(library.Cloth, position, owned, .2f * volume);
         }
@@ -125,7 +173,9 @@ namespace Unity.MP_FPS
         {
             var system = GameManager.Instance?.SoundSystem;
             system?.Stop(m_BreathSound, .12f); system?.Stop(m_HeartSound, .12f);
-            m_BreathSound = m_HeartSound = null;
+            system?.Stop(m_WallSound, .08f); system?.Stop(m_MovementSound, .08f); system?.Stop(m_StanceSound, .08f);
+            m_BreathSound = m_HeartSound = m_WallSound = m_MovementSound = m_StanceSound = null;
+            m_Wall.Reset();
         }
         private static SoundSystem.SoundInfo LocalOrWorld(SoundDef sound, Vector3 position, bool owned, float gain = 1)
             => MoonkovAudio.PlayWeaponLayer(sound, position, gain, owned ? .08f : 1);

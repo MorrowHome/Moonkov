@@ -52,6 +52,7 @@ public static class MoonkovRaidAudioSetup
         foreach (string name in new[] { "HaloRecharge", "RevolverRecharge", "HaloImpact", "Hit", "Death" })
             Policy(name, SoundDef.MixRole.Default, 8, .02f, true, 100);
         AssetDatabase.Refresh();
+        MoonkovAudioDetailSetup.Install();
         Debug.Log("Raid audio installed: recorded contact/vocal banks, suit/detail cues and pooled mix policies.");
     }
     private static SoundDef Bank(string name, string prefix, int count, float db, SoundDef.MixRole role,

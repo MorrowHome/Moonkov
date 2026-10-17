@@ -56,6 +56,13 @@ namespace Unity.MP_FPS
             return game.SoundSystem != null && game.SoundSystem.PlayEmitter(info, volume) ? info : null;
         }
 
+        public static bool CanHearDetail(Vector3 position, float range)
+        {
+            var game = GameManager.Instance;
+            return Application.isPlaying && game && !game.IsHeadless && game.SoundSystem is SoundSystem system &&
+                system.IsWithinHearing(position, range);
+        }
+
         public static void Click() => Play(Library?.Click, Vector3.zero);
         public static void Confirm() => Play(Library?.Confirm, Vector3.zero);
         public static void Error() => Play(Library?.Error, Vector3.zero);
