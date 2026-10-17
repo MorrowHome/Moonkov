@@ -1,0 +1,27 @@
+{
+  "pass": true,
+  "changedMaterials": [
+    "Face",
+    "Body",
+    "EyeWhite",
+    "Dress",
+    "Jewel",
+    "Hair",
+    "Eyes",
+    "Shoes",
+    "Glasses",
+    "InnerDress",
+    "DressDetail"
+  ],
+  "unchangedMaterials": [
+    "Brows",
+    "Lashes"
+  ],
+  "restoreRoundtrip": true,
+  "globalGradeUnchanged": true,
+  "sourceAtlasUvShaderQueuePreserved": true,
+  "diffuseColorAndRampsPreserved": true,
+  "shaderErrors": 0,
+  "mapCount": 13,
+  "mapMemoryBytes": 9101456
+}

@@ -172,7 +172,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MatCapBlendMask:
-        m_Texture: {fileID: 2800000, guid: 781a4fc10b42e43708b86644765bf794, type: 3}
+        m_Texture: {fileID: 2800000, guid: 13b822900238647a5acd12d7ed13fc67, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MatCapBumpMap:
@@ -208,7 +208,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ReflectionColorTex:
-        m_Texture: {fileID: 2800000, guid: f597db9385b0b4afe8f0a014f674b86e, type: 3}
+        m_Texture: {fileID: 2800000, guid: 39ca37b2d0197450fafc085de8865a65, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ReflectionCubeTex:
@@ -216,7 +216,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _RimColorTex:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: c7da7c477131a447daba7113b3811ace, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _RimShadeMask:
@@ -248,7 +248,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SmoothnessTex:
-        m_Texture: {fileID: 2800000, guid: f597db9385b0b4afe8f0a014f674b86e, type: 3}
+        m_Texture: {fileID: 2800000, guid: 39ca37b2d0197450fafc085de8865a65, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
@@ -291,7 +291,7 @@ Material:
     - _AudioLinkVertexUVMode: 1
     - _BackfaceForceShadow: 0
     - _BacklightBackfaceMask: 1
-    - _BacklightBlur: 0.6
+    - _BacklightBlur: 0.8
     - _BacklightBorder: 0.15
     - _BacklightDirectivity: 3
     - _BacklightMainStrength: 0.6
@@ -489,7 +489,7 @@ Material:
     - _OutlineZWrite: 1
     - _Parallax: 0.02
     - _ParallaxOffset: 0.5
-    - _Reflectance: 0.035
+    - _Reflectance: 0.04
     - _ReflectionApplyTransparency: 1
     - _ReflectionBlendMode: 1
     - _ReflectionCubeEnableLighting: 1
@@ -498,23 +498,23 @@ Material:
     - _RimApplyTransparency: 1
     - _RimBackfaceMask: 1
     - _RimBlendMode: 1
-    - _RimBlur: 0.4
-    - _RimBorder: 0.6
+    - _RimBlur: 0.75
+    - _RimBorder: 0.5
     - _RimDirRange: 0
     - _RimDirStrength: 1
     - _RimEnableLighting: 1
-    - _RimFresnelPower: 4
+    - _RimFresnelPower: 3.5
     - _RimIndirBlur: 0.1
     - _RimIndirBorder: 0.5
     - _RimIndirRange: 0
-    - _RimMainStrength: 0.6
+    - _RimMainStrength: 0.2
     - _RimNormalStrength: 1
     - _RimPower: 2.98
     - _RimShadeBlur: 0.8
     - _RimShadeBorder: 0.5
     - _RimShadeFresnelPower: 2
     - _RimShadeNormalStrength: 1
-    - _RimShadowMask: 1
+    - _RimShadowMask: 0
     - _RimStrength: 0.134
     - _RimVRParallaxStrength: 1
     - _ShadeSmooth: 0.093
@@ -630,7 +630,7 @@ Material:
     - _AudioLinkVertexStrength: {r: 0, g: 0, b: 0, a: 1}
     - _AudioLinkVertexUVParams: {r: 0.25, g: 0, b: 0, a: 0.125}
     - _BackfaceColor: {r: 0, g: 0, b: 0, a: 0}
-    - _BacklightColor: {r: 1, g: 0.58, b: 0.47, a: 0.12}
+    - _BacklightColor: {r: 1, g: 0.65, b: 0.55, a: 0.18}
     - _BaseColor: {r: 1, g: 0.97, b: 0.95, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _Color2nd: {r: 1, g: 1, b: 1, a: 1}
@@ -677,15 +677,15 @@ Material:
     - _MatCap2ndBlendUV1: {r: 0, g: 0, b: 0, a: 0}
     - _MatCap2ndColor: {r: 1, g: 1, b: 1, a: 1}
     - _MatCapBlendUV1: {r: 0, g: 0, b: 0, a: 0}
-    - _MatCapColor: {r: 1, g: 0.98, b: 0.96, a: 0.26}
+    - _MatCapColor: {r: 1, g: 0.98, b: 0.96, a: 0.22}
     - _OutlineColor: {r: 0.24, g: 0.12, b: 0.14, a: 1}
     - _OutlineLitColor: {r: 1, g: 0.2, b: 0, a: 0}
     - _OutlineTexHSVG: {r: 0, g: 1, b: 1, a: 1}
     - _OutlineTex_ScrollRotate: {r: 0, g: 0, b: 0, a: 0}
-    - _ReflectionColor: {r: 1, g: 0.97, b: 0.94, a: 0.65}
+    - _ReflectionColor: {r: 1, g: 0.97, b: 0.94, a: 0.8}
     - _ReflectionCubeColor: {r: 0, g: 0, b: 0, a: 1}
-    - _RimColor: {r: 0.82, g: 0.91, b: 1, a: 0.06}
-    - _RimIndirColor: {r: 1, g: 0.85, b: 0.76, a: 0}
+    - _RimColor: {r: 2.5, g: 2, b: 1.95, a: 0.3}
+    - _RimIndirColor: {r: 1, g: 1, b: 1, a: 0}
     - _RimShadeColor: {r: 1, g: 0.78, b: 0.77, a: 0.22}
     - _ShadeColor: {r: 0.7971698, g: 0.38730422, b: 0.41718882, a: 1}
     - _Shadow2ndColor: {r: 0.78, g: 0.49, b: 0.52, a: 0.18}

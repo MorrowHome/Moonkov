@@ -68,7 +68,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: a8df98efe36254d66afe8ed231b85874, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DissolveMask:
@@ -176,7 +176,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MatCapBumpMap:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: a8df98efe36254d66afe8ed231b85874, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MatCapTex:
@@ -305,7 +305,7 @@ Material:
     - _BlendOpFA: 4
     - _Bump2ndMap_UVMode: 0
     - _Bump2ndScale: 1
-    - _BumpScale: 1
+    - _BumpScale: 0.55
     - _ColorMask: 15
     - _Cull: 0
     - _Cutoff: 0.01
@@ -431,8 +431,8 @@ Material:
     - _MatCapBackfaceMask: 0
     - _MatCapBlend: 1
     - _MatCapBlendMode: 1
-    - _MatCapBumpScale: 1
-    - _MatCapCustomNormal: 0
+    - _MatCapBumpScale: 0.75
+    - _MatCapCustomNormal: 1
     - _MatCapEnableLighting: 1
     - _MatCapLod: 0
     - _MatCapMainStrength: 0.15
@@ -487,9 +487,9 @@ Material:
     - _OutlineZClip: 1
     - _OutlineZTest: 2
     - _OutlineZWrite: 1
-    - _Parallax: 0.02
+    - _Parallax: 0.026
     - _ParallaxOffset: 0.5
-    - _Reflectance: 0.035
+    - _Reflectance: 0.065
     - _ReflectionApplyTransparency: 1
     - _ReflectionBlendMode: 1
     - _ReflectionCubeEnableLighting: 1
@@ -514,7 +514,7 @@ Material:
     - _RimShadeBorder: 0.5
     - _RimShadeFresnelPower: 2
     - _RimShadeNormalStrength: 1
-    - _RimShadowMask: 1
+    - _RimShadowMask: 0
     - _RimStrength: 0.2
     - _RimVRParallaxStrength: 1
     - _ShadeSmooth: 0.06
@@ -544,7 +544,7 @@ Material:
     - _ShadowStrength: 0.55
     - _ShadowStrengthMaskLOD: 0
     - _ShiftBackfaceUV: 0
-    - _Smoothness: 0.9
+    - _Smoothness: 0.96
     - _SpecSharp: 64
     - _SpecStrength: 0.7
     - _SpecularBlur: 0
@@ -591,7 +591,7 @@ Material:
     - _UseAudioLink: 0
     - _UseBacklight: 0
     - _UseBump2ndMap: 0
-    - _UseBumpMap: 0
+    - _UseBumpMap: 1
     - _UseClippingCanceller: 0
     - _UseDither: 0
     - _UseEmission: 0
@@ -677,15 +677,15 @@ Material:
     - _MatCap2ndBlendUV1: {r: 0, g: 0, b: 0, a: 0}
     - _MatCap2ndColor: {r: 1, g: 1, b: 1, a: 1}
     - _MatCapBlendUV1: {r: 0, g: 0, b: 0, a: 0}
-    - _MatCapColor: {r: 1, g: 0.98, b: 0.95, a: 0.24}
+    - _MatCapColor: {r: 1, g: 0.98, b: 0.96, a: 0.42}
     - _OutlineColor: {r: 0.07, g: 0.09, b: 0.15, a: 1}
     - _OutlineLitColor: {r: 1, g: 0.2, b: 0, a: 0}
     - _OutlineTexHSVG: {r: 0, g: 1, b: 1, a: 1}
     - _OutlineTex_ScrollRotate: {r: 0, g: 0, b: 0, a: 0}
-    - _ReflectionColor: {r: 1, g: 0.97, b: 0.94, a: 0.55}
+    - _ReflectionColor: {r: 1, g: 1, b: 1, a: 0.95}
     - _ReflectionCubeColor: {r: 0, g: 0, b: 0, a: 1}
     - _RimColor: {r: 0.82, g: 0.91, b: 1, a: 0.12}
-    - _RimIndirColor: {r: 1, g: 0.85, b: 0.76, a: 0}
+    - _RimIndirColor: {r: 1, g: 1, b: 1, a: 0}
     - _RimShadeColor: {r: 0.57, g: 0.66, b: 0.83, a: 0.4}
     - _ShadeColor: {r: 0.66, g: 0.56, b: 0.8, a: 1}
     - _Shadow2ndColor: {r: 0.43, g: 0.47, b: 0.64, a: 0.28}

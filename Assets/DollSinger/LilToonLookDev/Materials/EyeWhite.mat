@@ -514,7 +514,7 @@ Material:
     - _RimShadeBorder: 0.5
     - _RimShadeFresnelPower: 2
     - _RimShadeNormalStrength: 1
-    - _RimShadowMask: 1
+    - _RimShadowMask: 0
     - _RimStrength: 0.2
     - _RimVRParallaxStrength: 1
     - _ShadeSmooth: 0.06
@@ -604,7 +604,7 @@ Material:
     - _UseOutline: 0
     - _UsePOM: 0
     - _UseParallax: 0
-    - _UseReflection: 0
+    - _UseReflection: 1
     - _UseRim: 0
     - _UseRimShade: 0
     - _UseShadow: 1
@@ -682,10 +682,10 @@ Material:
     - _OutlineLitColor: {r: 1, g: 0.2, b: 0, a: 0}
     - _OutlineTexHSVG: {r: 0, g: 1, b: 1, a: 1}
     - _OutlineTex_ScrollRotate: {r: 0, g: 0, b: 0, a: 0}
-    - _ReflectionColor: {r: 1, g: 0.97, b: 0.94, a: 0.22}
+    - _ReflectionColor: {r: 1, g: 1, b: 1, a: 0.12}
     - _ReflectionCubeColor: {r: 0, g: 0, b: 0, a: 1}
     - _RimColor: {r: 0.82, g: 0.91, b: 1, a: 0.12}
-    - _RimIndirColor: {r: 1, g: 0.85, b: 0.76, a: 0}
+    - _RimIndirColor: {r: 1, g: 1, b: 1, a: 0}
     - _RimShadeColor: {r: 0.57, g: 0.66, b: 0.83, a: 0.4}
     - _ShadeColor: {r: 0.66, g: 0.56, b: 0.8, a: 1}
     - _Shadow2ndColor: {r: 0.43, g: 0.47, b: 0.64, a: 0.28}

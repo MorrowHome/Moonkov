@@ -104,15 +104,26 @@ float MoonToonShadowVisibility(float3 positionWS, float attenuation)
 #endif
 
 #if defined(MOON_TOON_SEPARATE_LIGHTS)
-    // lilToon's light ceiling limits diffuse and GGX together. Keep the capped
-    // diffuse color, but let excess direct sun drive native specular only.
-    // Visibility is sampled before the ceiling, so no HDR sun survives a roof.
+    // Native GGX treats fd.lightColor as directional light, although it also
+    // contains ambient/probe fill. A polished surface can amplify that tiny
+    // fill into a false sun glint under a roof. Use visible direct sources for
+    // specular; leave the original diffuse/probe lighting completely intact.
     #define OVERRIDE_REFLECTION \
         float3 moonDiffuseLight = fd.lightColor; \
-        fd.lightColor += max(0.0, LIL_MAINLIGHT_COLOR - _LightMaxLimit) * \
-            MoonToonShadowVisibility(fd.positionWS, fd.attenuation) * (1.0 - _AsUnlit); \
+        fd.lightColor = (LIL_MAINLIGHT_COLOR * \
+            MoonToonShadowVisibility(fd.positionWS, fd.attenuation) + fd.addLightColor) * (1.0 - _AsUnlit); \
         lilReflection(fd LIL_SAMP_IN(sampler_MainTex) LIL_HDRP_POSITION_INPUT_VAR); \
         fd.lightColor = moonDiffuseLight;
+
+    // HDR artistic rim colors must not amplify dim probe light into a luminous
+    // silhouette. Shadowed lamps are already represented by fd.addLightColor.
+    // Retain the native light ceiling and shape; only separate its light source.
+    #define OVERRIDE_RIMLIGHT \
+        float3 moonRimDiffuseLight = fd.lightColor; \
+        fd.lightColor = min(_LightMaxLimit, (LIL_MAINLIGHT_COLOR * \
+            MoonToonShadowVisibility(fd.positionWS, fd.attenuation) + fd.addLightColor) * (1.0 - _AsUnlit)); \
+        lilGetRim(fd LIL_SAMP_IN(sampler_MainTex)); \
+        fd.lightColor = moonRimDiffuseLight;
 
     // Sun visibility was already applied before clamping the lighting color.
     // Passing it through lilToon's receive-shadow ramps again would darken the

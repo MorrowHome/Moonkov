@@ -1,0 +1,1 @@
+FAIL: sun face=0.6779 full-frame peak=1.0000 mean=0.1340, shade face=0.0050 full-frame peak=0.2745 mean=0.0010, shade-lamp face=0.6161 full-frame peak=1.0000 mean=0.1082, night face=0.0049 full-frame peak=0.2706 mean=0.0009
