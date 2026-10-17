@@ -82,13 +82,13 @@ public class DollSingerView : MonoBehaviour
     {
         gestureHands?.Present(active && firstPerson && isActiveAndEnabled && camera && camera.isActiveAndEnabled,
             viewfinder && camera ? camera.fieldOfView : gestureFieldOfView, camera, viewfinder,
-            viewfinder ? SniperPoseBlend(aimBlend) : aimBlend);
+            AimPoseBlend(aimBlend));
     }
 
-    // Raise/close the frame before zooming through it. Reversing the same
-    // timeline unzooms before either arm is allowed to lower past the lens.
-    public static float SniperPoseBlend(float aim) => Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0f, .45f, aim));
-    private float ZoomBlend => firstPerson && weaponAimMagnification > 0
+    // Finish raising the gesture before zooming. Reverse the same timeline
+    // to unzoom before any weapon's arms lower past the lens.
+    public static float AimPoseBlend(float aim) => Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0f, .45f, aim));
+    private float ZoomBlend => firstPerson
         ? Mathf.InverseLerp(.55f, 1f, aimBlend) : aimBlend;
 
     private DollSingerMovement movement;

@@ -333,12 +333,13 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
             view.SetAimBlend(aimBlend);
             view.SetWeaponAimMagnification(ScopeMagnification);
         }
-        if (revolverVisual) revolverVisual.SetAimBlend(aimBlend);
-        if (shotgunVisual) shotgunVisual.SetAimBlend(aimBlend);
-        if (rifleVisual) rifleVisual.SetAimBlend(aimBlend);
-        if (sniperVisual) sniperVisual.SetAimBlend(DollSingerView.SniperPoseBlend(aimBlend));
-        if (rifleModules) rifleModules.SetAimBlend(aimBlend);
-        if (shotgunModules) shotgunModules.SetAimBlend(aimBlend);
+        float poseBlend = DollSingerView.AimPoseBlend(aimBlend);
+        if (revolverVisual) revolverVisual.SetAimBlend(poseBlend);
+        if (shotgunVisual) shotgunVisual.SetAimBlend(poseBlend);
+        if (rifleVisual) rifleVisual.SetAimBlend(poseBlend);
+        if (sniperVisual) sniperVisual.SetAimBlend(poseBlend);
+        if (rifleModules) rifleModules.SetAimBlend(poseBlend);
+        if (shotgunModules) shotgunModules.SetAimBlend(poseBlend);
         if (!networkControlled && input)
         {
             if (localReloadRemaining <= 0f && input.WeaponSlotPressed != 0)
@@ -425,7 +426,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
             case HaloWeapon.Sniper when sniperVisual: reload = sniperVisual.IsReloading; progress = sniperVisual.ReloadProgress; break;
         }
         Vector3 direction = networkControlled ? networkDirection : playerCamera ? playerCamera.transform.forward : transform.forward;
-        float poseBlend = visualWeapon == HaloWeapon.Sniper ? DollSingerView.SniperPoseBlend(aimBlend) : aimBlend;
+        float poseBlend = DollSingerView.AimPoseBlend(aimBlend);
         bakedGestures.Apply((int)visualWeapon, poseBlend, Time.time - gestureShotTime, reload, progress, gestureTransitionSeconds, chest, direction);
     }
 
@@ -436,7 +437,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         bool centred = TryGetFirstPersonCamera(out var aimingCamera);
         if (view) view.SetGestureHandsActive(centred && aimBlend > .001f, visualWeapon == HaloWeapon.Sniper);
         Vector3 centredPosition = centred ? GetFirstPersonHaloPosition(aimingCamera) : Vector3.zero;
-        float layoutBlend = visualWeapon == HaloWeapon.Sniper ? DollSingerView.SniperPoseBlend(aimBlend) : aimBlend;
+        float layoutBlend = DollSingerView.AimPoseBlend(aimBlend);
         float t = layoutBlend * layoutBlend * (3f - 2f * layoutBlend);
         if (centred && view.GestureHandsActive)
         {

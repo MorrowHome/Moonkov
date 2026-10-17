@@ -112,7 +112,9 @@ namespace Unity.MP_FPS.DollSinger
         public void Present(bool active, float fieldOfView, Camera owner, bool viewfinder, float poseBlend)
         {
             if (!Camera) return;
-            this.poseBlend = Mathf.SmoothStep(0f, 1f, poseBlend);
+            float presentationBlend = Mathf.SmoothStep(0f, 1f, poseBlend);
+            if (!Mathf.Approximately(this.poseBlend, presentationBlend)) reframe = true;
+            this.poseBlend = presentationBlend;
             if (active && (!Active || viewfinder != wasViewfinder ||
                 !Mathf.Approximately(lastAspect, owner.aspect) || !Mathf.Approximately(lastFieldOfView, fieldOfView)))
             {
@@ -210,6 +212,16 @@ namespace Unity.MP_FPS.DollSinger
                     Camera.transform.localPosition += new Vector3(shift.x * 2f * handDepth * tangent * Camera.aspect / scale,
                         shift.y * 2f * handDepth * tangent / scale, 0);
                 }
+                // Let resting arms enter/leave naturally at the eye. Fitting
+                // waist-level hands immediately pulls detached upper arms into
+                // view, and reusing that fit makes cancellation snap between sizes.
+                var fittedProjection = Camera.projectionMatrix;
+                Camera.transform.localPosition *= poseBlend;
+                Camera.ResetProjectionMatrix();
+                var blendedProjection = Camera.projectionMatrix;
+                blendedProjection.m00 = Mathf.Lerp(blendedProjection.m00, fittedProjection.m00, poseBlend);
+                blendedProjection.m11 = Mathf.Lerp(blendedProjection.m11, fittedProjection.m11, poseBlend);
+                Camera.projectionMatrix = blendedProjection;
                 return;
             }
         }

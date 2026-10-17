@@ -41,11 +41,23 @@ public static class BlenderGestureValidation
 
     private static IEnumerator Guard(IEnumerator routine)
     {
-        while (true)
+        var pending = new Stack<IEnumerator>(); pending.Push(routine);
+        while (pending.Count>0)
         {
             object current;
-            try { if (!routine.MoveNext()) break; current = routine.Current; }
-            catch (Exception e) { if (armSurface) UnityEngine.Object.Destroy(armSurface); Status = "FAILED: " + e; Debug.LogException(e); File.WriteAllText(Output + "/checks.txt", Status); yield break; }
+            try
+            {
+                var active = pending.Peek();
+                if (!active.MoveNext()) { pending.Pop(); continue; }
+                current = active.Current;
+                if (current is IEnumerator nested) { pending.Push(nested); continue; }
+            }
+            catch (Exception e)
+            {
+                foreach (var active in pending) (active as IDisposable)?.Dispose();
+                if (armSurface) UnityEngine.Object.Destroy(armSurface);
+                Status = "FAILED: " + e; Debug.LogException(e); File.WriteAllText(Output + "/checks.txt", Status); yield break;
+            }
             yield return current;
         }
     }
@@ -373,8 +385,66 @@ public static class BlenderGestureValidation
         yield return new WaitForSeconds(.7f);
         report.Add("Sniper hands retain owner FOV, zero depth offset and proportional optical zoom at 1/2/4/6/12x. The halo shrinks with FOV to fit the scope; its world position is stable. Frame centre remains within 0.5 output pixels through actions, pitch and aspect changes. Skinned arms leave the central aiming area clear.");
         yield return CheckSniperTransitions(lab, bones, root, report);
+        yield return CheckOrdinaryTransitions(lab, bones, root, report);
         UnityEngine.Object.Destroy(armSurface);
         Status = "PASS"; File.WriteAllLines(Output + "/checks.txt", report); Debug.Log("Blender gesture validation PASS: " + string.Join("\n", report));
+    }
+
+    private static IEnumerator CheckOrdinaryTransitions(WeaponGestureLab lab, Dictionary<string, Transform> bones,
+        VisualElement root, List<string> report)
+    {
+        int frames = 0;
+        foreach (int weapon in new[] { 0, 1, 2 })
+        {
+            lab.SelectWeapon(weapon);
+            foreach (float pitch in new[] { -65f, 0f, 65f })
+            foreach (float aspect in new[] { 16f/9f, 4f/3f })
+            {
+                root.Q<Slider>("pitch").value = pitch; lab.PlayerView.camera.aspect = aspect;
+                root.Q<Toggle>("aim").value = false; yield return new WaitForSeconds(.4f);
+                foreach (bool aim in new[] { true, false })
+                {
+                    root.Q<Toggle>("aim").value = aim; float start = Time.time;
+                    while (Time.time-start<.4f)
+                    {
+                        yield return new WaitForEndOfFrame(); frames++;
+                        if (lab.PlayerView.GestureHandsActive) ClearAim(lab);
+                        if (lab.PlayerView.CurrentAimMagnification>1.01f)
+                        {
+                            Require(lab.Halo.AimBlend>.45f, "Ordinary weapon zoom overlapped raising/lowering arms");
+                            Visible(lab, bones); PointAtAim(lab, bones);
+                        }
+                    }
+                }
+            }
+        }
+        root.Q<Slider>("pitch").value = 0; lab.PlayerView.camera.aspect = 16f/9f;
+        float captureDelta = Time.captureDeltaTime;
+        try
+        {
+            foreach (float step in new[] { 0f, 1f/15f })
+            foreach (int weapon in new[] { 0, 1, 2 })
+            {
+                Time.captureDeltaTime = step; lab.SelectWeapon(weapon);
+                root.Q<Toggle>("aim").value = false; yield return new WaitForSeconds(.4f);
+                foreach (float interval in new[] { .04f, .08f, .14f, .22f })
+                for (int repeat = 0; repeat<6; repeat++)
+                {
+                    root.Q<Toggle>("aim").value = !root.Q<Toggle>("aim").value;
+                    float start = Time.time;
+                    while (Time.time-start<interval)
+                    {
+                        yield return new WaitForEndOfFrame(); frames++;
+                        if (lab.PlayerView.GestureHandsActive) ClearAim(lab);
+                        if (lab.PlayerView.CurrentAimMagnification>1.01f)
+                        { Require(lab.Halo.AimBlend>.45f, "Interrupted ordinary aim lagged pose"); Visible(lab, bones); PointAtAim(lab, bones); }
+                    }
+                }
+            }
+        }
+        finally { Time.captureDeltaTime = captureDelta; }
+        root.Q<Toggle>("aim").value = true; yield return new WaitForSeconds(.5f);
+        report.Add($"Rifle/revolver/shotgun aim transitions: {frames} rendered frames, pitch -65/0/+65, 16:9 / 4:3; central skinned arm clearance throughout raising/lowering. 144 interrupted aim toggles at 40/80/140/220 ms across normal and simulated 15 Hz steps; pose before zoom and unzoom before lowering; visible settled hands and revolver pointing preserved.");
     }
 
     private static IEnumerator CheckSniperTransitions(WeaponGestureLab lab, Dictionary<string, Transform> bones,
