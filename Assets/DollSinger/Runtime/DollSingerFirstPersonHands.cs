@@ -1,0 +1,180 @@
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
+
+namespace Unity.MP_FPS.DollSinger
+{
+    /// <summary>Owner-only arm projection. World optics retain their gameplay magnification.</summary>
+    public sealed class DollSingerFirstPersonHands : IDisposable
+    {
+        public Camera Camera { get; }
+        public Mesh BodyWithoutArms { get; }
+        public bool Active { get; private set; }
+        private readonly SkinnedMeshRenderer renderer;
+        private readonly SkinnedMeshRenderer source;
+        private readonly Mesh armMesh;
+        private readonly List<Camera> stack;
+        private readonly Transform[] rightHandBones, leftHandBones;
+        private Rect safeFrame = Rect.MinMaxRect(.07f, .08f, .93f, .46f);
+
+        public DollSingerFirstPersonHands(SkinnedMeshRenderer source, Mesh body, Camera owner, Animator animator)
+        {
+            this.source = source;
+            int layer = LayerMask.NameToLayer("FirstPersonOverlay");
+            if (layer < 0 || !owner || !animator || !animator.isHuman) return;
+            var data = owner.GetUniversalAdditionalCameraData();
+            stack = data.cameraStack;
+            if (stack == null) return;
+            var left = animator.GetBoneTransform(HumanBodyBones.LeftUpperArm);
+            var right = animator.GetBoneTransform(HumanBodyBones.RightUpperArm);
+            var rightHand = animator.GetBoneTransform(HumanBodyBones.RightHand);
+            var leftHand = animator.GetBoneTransform(HumanBodyBones.LeftHand);
+            if (!left || !right || !rightHand || !leftHand) return;
+            var armBones = new bool[source.bones.Length];
+            for (int i = 0; i < armBones.Length; i++)
+                armBones[i] = source.bones[i] &&
+                    ((left && source.bones[i].IsChildOf(left)) || (right && source.bones[i].IsChildOf(right)));
+            rightHandBones = rightHand.GetComponentsInChildren<Transform>(true);
+            leftHandBones = leftHand.GetComponentsInChildren<Transform>(true);
+            var weights = body.boneWeights;
+            var armVertices = new bool[body.vertexCount];
+            for (int i = 0; i < weights.Length; i++)
+            {
+                var w = weights[i];
+                float sum = (armBones[w.boneIndex0] ? w.weight0 : 0) + (armBones[w.boneIndex1] ? w.weight1 : 0) +
+                    (armBones[w.boneIndex2] ? w.weight2 : 0) + (armBones[w.boneIndex3] ? w.weight3 : 0);
+                armVertices[i] = sum >= .5f;
+            }
+            armMesh = UnityEngine.Object.Instantiate(body);
+            armMesh.name = "DollSinger gesture arms (owner only)";
+            BodyWithoutArms = UnityEngine.Object.Instantiate(body);
+            BodyWithoutArms.name = "DollSinger first person body without gesture arms";
+            var arms = new List<int>();
+            var torso = new List<int>();
+            for (int s = 0; s < body.subMeshCount; s++)
+            {
+                arms.Clear(); torso.Clear();
+                var indices = body.GetTriangles(s);
+                for (int i = 0; i < indices.Length; i += 3)
+                {
+                    var destination = armVertices[indices[i]] || armVertices[indices[i + 1]] || armVertices[indices[i + 2]] ? arms : torso;
+                    destination.Add(indices[i]); destination.Add(indices[i + 1]); destination.Add(indices[i + 2]);
+                }
+                armMesh.SetTriangles(arms, s, false);
+                BodyWithoutArms.SetTriangles(torso, s, false);
+            }
+            var armObject = new GameObject("FirstPersonGestureArms (Runtime)") { hideFlags = HideFlags.DontSave, layer = layer };
+            armObject.transform.SetParent(source.transform, false);
+            renderer = armObject.AddComponent<SkinnedMeshRenderer>();
+            renderer.sharedMesh = armMesh;
+            renderer.sharedMaterials = source.sharedMaterials;
+            renderer.bones = source.bones;
+            renderer.rootBone = source.rootBone;
+            renderer.localBounds = source.localBounds;
+            renderer.quality = source.quality;
+            renderer.renderingLayerMask = source.renderingLayerMask;
+            renderer.updateWhenOffscreen = true;
+            renderer.shadowCastingMode = ShadowCastingMode.Off;
+            renderer.receiveShadows = source.receiveShadows;
+            renderer.forceRenderingOff = true;
+            var cameraObject = new GameObject("FirstPersonGestureCamera (Runtime)") { hideFlags = HideFlags.DontSave };
+            cameraObject.transform.SetParent(owner.transform, false);
+            Camera = cameraObject.AddComponent<Camera>();
+            Camera.enabled = false;
+            Camera.cullingMask = 1 << layer;
+            Camera.nearClipPlane = .015f;
+            Camera.farClipPlane = 3f;
+            Camera.allowHDR = owner.allowHDR;
+            Camera.allowMSAA = owner.allowMSAA;
+            var overlay = Camera.GetUniversalAdditionalCameraData();
+            overlay.renderType = CameraRenderType.Overlay;
+            overlay.renderPostProcessing = false;
+            overlay.volumeLayerMask = 0;
+        }
+
+        public void Present(bool active, float fieldOfView, Camera owner, bool viewfinder)
+        {
+            if (!Camera) return;
+            Active = active;
+            safeFrame = Rect.MinMaxRect(.07f, viewfinder ? .15f : .08f, .93f, viewfinder ? .80f : .46f);
+            Camera.fieldOfView = fieldOfView;
+            Camera.rect = owner.rect;
+            Camera.aspect = owner.aspect;
+            Camera.enabled = active;
+            if (active && !stack.Contains(Camera)) stack.Add(Camera);
+            else if (!active) stack.Remove(Camera);
+            renderer.forceRenderingOff = true;
+            if (active)
+                for (int i = 0; i < armMesh.blendShapeCount; i++) renderer.SetBlendShapeWeight(i, source.GetBlendShapeWeight(i));
+        }
+
+        public void FrameHands()
+        {
+            if (!Active || !Camera) return;
+            // Leave room for recoil and charging. Reframe only when the final hands
+            // would leave their safe area; tracking every movement would cancel the animation.
+            if (InsideFrame(rightHandBones) && InsideFrame(leftHandBones)) return;
+            var root = Camera.transform.parent;
+            var min = Vector3.one * float.PositiveInfinity;
+            var max = Vector3.one * float.NegativeInfinity;
+            IncludeBounds(root, rightHandBones, ref min, ref max);
+            IncludeBounds(root, leftHandBones, ref min, ref max);
+            float tan = Mathf.Tan(Camera.fieldOfView * .5f * Mathf.Deg2Rad);
+            var center = (min + max) * .5f;
+            // Physical reach clamps the wrists at extreme pitch/prone. Move only the arm
+            // projection camera back to fit the final fingers; never scale bones or the world optic.
+            float depth = Mathf.Max(Mathf.Max((max.x - min.x + .035f) / (1.60f * tan * Camera.aspect),
+                (max.y - min.y + .035f) / (1.7f * safeFrame.height * tan)), .25f);
+            float z = Mathf.Min(0, min.z - depth);
+            float middleDepth = center.z - z;
+            Camera.transform.localPosition = new Vector3(center.x,
+                center.y + (1f - 2f * safeFrame.center.y) * middleDepth * tan, z);
+        }
+
+        private bool InsideFrame(Transform[] bones)
+        {
+            foreach (var bone in bones)
+            {
+                var p = Camera.WorldToViewportPoint(bone.position);
+                if (p.z < .04f || !safeFrame.Contains(new Vector2(p.x, p.y))) return false;
+            }
+            return true;
+        }
+
+        private static void IncludeBounds(Transform cameraRoot, Transform[] bones, ref Vector3 min, ref Vector3 max)
+        {
+            foreach (var bone in bones)
+            {
+                var p = cameraRoot.InverseTransformPoint(bone.position);
+                min = Vector3.Min(min, p); max = Vector3.Max(max, p);
+            }
+        }
+
+        public void BeforeCamera(Camera camera)
+        {
+            if (renderer) renderer.forceRenderingOff = !Active || camera != Camera;
+        }
+
+        public void AfterCamera(Camera camera)
+        {
+            if (renderer) renderer.forceRenderingOff = true;
+        }
+
+        public void Dispose()
+        {
+            Active = false;
+            if (Camera) { stack.Remove(Camera); Camera.enabled = false; Destroy(Camera.gameObject); }
+            if (renderer) { renderer.forceRenderingOff = true; Destroy(renderer.gameObject); }
+            Destroy(armMesh); Destroy(BodyWithoutArms);
+        }
+
+        private static void Destroy(UnityEngine.Object value)
+        {
+            if (!value) return;
+            if (Application.isPlaying) UnityEngine.Object.Destroy(value);
+            else UnityEngine.Object.DestroyImmediate(value);
+        }
+    }
+}
