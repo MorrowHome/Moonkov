@@ -3,7 +3,7 @@ using UnityEngine.Rendering;
 
 namespace Unity.MP_FPS.DollSinger
 {
-    /// <summary>Six-blade iris, counter-rotating rings and a thirty-cell capacitor magazine.</summary>
+    /// <summary>Authored feather silhouettes on the existing iris / capacitor animation.</summary>
     [DefaultExecutionOrder(110)]
     public sealed class RifleHaloVisual : MonoBehaviour
     {
@@ -13,16 +13,19 @@ namespace Unity.MP_FPS.DollSinger
         [Range(.3f, 1f)] public float idleScale = .68f;
         [Header("Halo size (sight dot stays small)")]
         [Min(.1f)] public float overallScale = 1.75f;
-        [Min(.001f)] public float lineWidth = .024f;
         [Min(.01f)] public float ringRadius = .135f;
         [Header("Shot response")]
         [Min(0f)] public float releaseExpansion = .019f;
         [Min(0f)] public float wristTravel = .016f;
         [Range(0f, 12f)] public float wristAngle = 5f;
-        public LineRenderer[] blades, outerArcs, innerArcs, cells;
-        public LineRenderer sight, chargeSweep;
+        [Header("Flat ink artwork")]
+        public Material artworkMaterial;
+        public Sprite petalSprite, outerArcSprite, innerArcSprite, cellSprite;
+        public SpriteRenderer[] petals, outerInk, innerInk, magazineInk;
+        public SpriteRenderer chargeInk;
+        public LineRenderer sight;
 
-        private readonly Vector3[] bladePoints = new Vector3[5], arcPoints = new Vector3[17], cellPoints = new Vector3[2];
+        private readonly Vector3[] sightPoints = new Vector3[17];
         private float aimBlend, elapsed, shotPulse, releaseSlow, releaseFast, pressure, lockFlash, rotation, reloadStartRotation, progress;
         private uint lastFeedbackTick;
         private int magazineCapacity = Capacity;
@@ -38,22 +41,28 @@ namespace Unity.MP_FPS.DollSinger
         public float ShotRelease => Mathf.Clamp01((releaseSlow - releaseFast) * 1.8f);
         public float ShotPressure => pressure;
 
-        // Called by the asset installer only. Runtime reuses these fixed renderers and point buffers.
+        // Called by the asset installer only. Runtime only poses these fixed sprites.
         public void BuildGeometry()
         {
-            blades = CreateLines("Blade", 6, 5, lineWidth);
-            outerArcs = CreateLines("Outer ring", 6, 17, lineWidth);
-            innerArcs = CreateLines("Inner ring", 3, 17, lineWidth * .65f);
-            cells = CreateLines("Energy cell", Capacity, 2, lineWidth * 1.2f);
+            petals = CreateInk("Feather", 6, petalSprite);
+            outerInk = CreateInk("Broken rim", 6, outerArcSprite);
+            innerInk = CreateInk("Counterstroke", 3, innerArcSprite);
+            magazineInk = CreateInk("Energy seed", Capacity, cellSprite);
             sight = CreateLine("Sight dot", 17, .0015f);
-            chargeSweep = CreateLine("Charge relay", 17, lineWidth * 1.5f);
+            chargeInk = CreateInk("Charge relay", 1, outerArcSprite)[0];
             ApplyLayout();
         }
-        private LineRenderer[] CreateLines(string name, int count, int points, float width)
+        private SpriteRenderer[] CreateInk(string name, int count, Sprite sprite)
         {
-            var lines = new LineRenderer[count];
-            for (int i = 0; i < count; i++) lines[i] = CreateLine(name + " " + i, points, width);
-            return lines;
+            var ink = new SpriteRenderer[count];
+            for (int i = 0; i < count; i++)
+            {
+                var child = new GameObject(name + " " + i); child.transform.SetParent(transform, false);
+                ink[i] = child.AddComponent<SpriteRenderer>();
+                ink[i].sprite = sprite; ink[i].sharedMaterial = artworkMaterial;
+                ink[i].shadowCastingMode = ShadowCastingMode.Off; ink[i].receiveShadows = false;
+            }
+            return ink;
         }
         private LineRenderer CreateLine(string name, int points, float width)
         {
@@ -135,59 +144,58 @@ namespace Unity.MP_FPS.DollSinger
         }
         private static Vector3 Polar(float radius, float degrees, float z = 0)
         { float a = degrees * Mathf.Deg2Rad; return new Vector3(Mathf.Cos(a) * radius, Mathf.Sin(a) * radius, z); }
-        private static void Tint(LineRenderer line, Color color, float alpha)
-        { color.a = alpha; line.startColor = line.endColor = color; }
-        private void Arc(LineRenderer line, float radius, float from, float span, float z = 0)
+        private static void PoseInk(SpriteRenderer ink, float radius, float angle, float scale, Color color, float alpha,
+            float width = 1f, float length = 1f)
         {
-            if (!line) return;
-            for (int i = 0; i < arcPoints.Length; i++) arcPoints[i] = Polar(radius, from + span * i / (arcPoints.Length - 1), z);
-            line.SetPositions(arcPoints);
+            ink.transform.localPosition = Polar(radius * scale, angle);
+            ink.transform.localRotation = Quaternion.Euler(0, 0, angle);
+            ink.transform.localScale = new Vector3(scale * width, scale * length, 1);
+            color.a = alpha; ink.color = color;
         }
         public void ApplyLayout()
         {
-            if (blades == null || outerArcs == null || innerArcs == null || cells == null) return;
+            if (petals == null || petals.Length != 6 || outerInk == null || innerInk == null || magazineInk == null) return;
             float scale = overallScale * Mathf.Lerp(idleScale, 1, aimBlend);
             float open = reloading ? Mathf.SmoothStep(0, 1, progress / .18f) * (1 - Mathf.SmoothStep(0, 1, (progress - .82f) / .18f)) : 0;
             float expansion = .046f * open + releaseExpansion * ShotRelease * (1 + pressure * .25f);
             float rotor = rotation + (reloading ? 0 : elapsed * 3f);
             float innerRotor = -rotation * .7f - elapsed * 5f;
             Color core = Color.Lerp(lightColor, Color.white, Mathf.Max(shotPulse * .45f, lockFlash * .65f));
-            int visible = Mathf.CeilToInt((float)VisibleAmmo / magazineCapacity * cells.Length);
-            for (int i = 0; i < blades.Length; i++)
+            int visible = Mathf.CeilToInt((float)VisibleAmmo / magazineCapacity * magazineInk.Length);
+            for (int i = 0; i < petals.Length; i++)
             {
                 float angle = i * 60 + rotor;
-                bladePoints[0] = Polar((ringRadius + expansion) * scale, angle - 12);
-                bladePoints[1] = Polar((ringRadius + .054f + expansion) * scale, angle - 7);
-                bladePoints[2] = Polar((ringRadius + .073f + expansion) * scale, angle + 1);
-                bladePoints[3] = Polar((ringRadius + .034f + expansion) * scale, angle + 12);
-                bladePoints[4] = bladePoints[0];
-                blades[i].SetPositions(bladePoints); Tint(blades[i], core, .75f);
-                blades[i].widthMultiplier = outerArcs[i].widthMultiplier = lineWidth;
-                Arc(outerArcs[i], (ringRadius + expansion * .65f) * scale, angle + 17, 33);
-                Tint(outerArcs[i], core, .8f);
+                // Alternating long / short feathers create a deliberate six-part rhythm.
+                PoseInk(petals[i], ringRadius + .036f + expansion, angle, scale, core, .92f,
+                    i % 2 == 0 ? 1f : .93f, i % 2 == 0 ? 1f : .89f);
+                PoseInk(outerInk[i], ringRadius + expansion * .65f, angle + 33.5f, scale, core, .82f);
             }
-            for (int i = 0; i < innerArcs.Length; i++)
+            for (int i = 0; i < innerInk.Length; i++)
             {
-                Arc(innerArcs[i], (ringRadius - .045f - open * .012f - shotPulse * .008f) * scale, innerRotor + i * 120 + 20, 78);
-                Tint(innerArcs[i], Color.Lerp(lightColor, Color.white, .35f + shotPulse * .3f), .45f + shotPulse * .15f);
-                innerArcs[i].widthMultiplier = lineWidth * .65f;
+                PoseInk(innerInk[i], ringRadius - .045f - open * .012f - shotPulse * .008f,
+                    innerRotor + i * 120 + 59, scale, Color.Lerp(lightColor, Color.white, .35f + shotPulse * .3f), .65f);
             }
-            for (int i = 0; i < cells.Length; i++)
+            for (int i = 0; i < magazineInk.Length; i++)
             {
-                float angle = i * 360f / Capacity + 90;
-                float r = (ringRadius + .018f + expansion * .4f) * scale;
-                cellPoints[0] = Polar(r, angle); cellPoints[1] = Polar(r + .012f * scale, angle);
-                cells[i].SetPositions(cellPoints); Tint(cells[i], i < visible ? core : lightColor, i < visible ? .95f : .09f);
-                cells[i].widthMultiplier = lineWidth * 1.2f;
+                // Six groups of five: exact ammo feedback without a dense picket-fence rim.
+                float angle = i / 5 * 60f + i % 5 * 8f + 94f;
+                PoseInk(magazineInk[i], ringRadius - .021f + expansion * .4f, angle, scale,
+                    i < visible ? core : lightColor, i < visible ? .9f : .09f,
+                    i % 5 == 0 ? .92f : .62f, .42f);
             }
-            Arc(sight, Mathf.Lerp(.012f, .0023f, aimBlend), 0, 360);
-            if (sight) Tint(sight, Color.Lerp(lightColor, Color.white, aimBlend * .65f), .95f);
-            if (chargeSweep)
+            if (sight)
             {
-                chargeSweep.widthMultiplier = lineWidth * 1.5f;
-                chargeSweep.enabled = reloading;
-                Arc(chargeSweep, (ringRadius + .040f + expansion) * scale, 90 - progress * 720, 36);
-                Tint(chargeSweep, Color.Lerp(lightColor, Color.white, .65f), .9f * open);
+                for (int i = 0; i < sightPoints.Length; i++)
+                    sightPoints[i] = Polar(Mathf.Lerp(.012f, .0023f, aimBlend), 360f * i / (sightPoints.Length - 1));
+                sight.SetPositions(sightPoints);
+                var color = Color.Lerp(lightColor, Color.white, aimBlend * .65f); color.a = .95f;
+                sight.startColor = sight.endColor = color;
+            }
+            if (chargeInk)
+            {
+                chargeInk.enabled = reloading;
+                PoseInk(chargeInk, ringRadius + .040f + expansion, 108 - progress * 720, scale,
+                    Color.Lerp(lightColor, Color.white, .65f), .9f * open, 1.5f);
             }
         }
     }

@@ -131,7 +131,7 @@ public static class HaloWeaponSetup
                         }
                     var shotgun = copy.GetComponentInChildren<ShotgunHaloVisual>(true);
                     shotgun.SetEquipped(weapon == DollSingerHaloAim.HaloWeapon.Shotgun, 4); shotgun.ApplyLayout();
-                    var renderers = copy.GetComponentsInChildren<Renderer>().Where(r => r.enabled).ToArray();
+                    var renderers = copy.GetComponentsInChildren<Renderer>().Where(r => r.enabled && r.gameObject.activeInHierarchy).ToArray();
                     var bounds = renderers[0].bounds; foreach (var renderer in renderers) bounds.Encapsulate(renderer.bounds);
                     pixels = Rasterize(renderers, bounds);
                     if (!pixels.GetPixels32().Any(c => c.a > 10)) throw new Exception("Empty icon: " + weapon + " renderers=" + renderers.Length + " bounds=" + bounds);
