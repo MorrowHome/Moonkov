@@ -3,7 +3,7 @@ using UnityEngine.Rendering;
 
 namespace Unity.MP_FPS.DollSinger
 {
-    /// <summary>Authored feather silhouettes on the existing iris / capacitor animation.</summary>
+    /// <summary>Solid flat iris plates on the existing iris / capacitor animation.</summary>
     [DefaultExecutionOrder(110)]
     public sealed class RifleHaloVisual : MonoBehaviour
     {
@@ -44,10 +44,10 @@ namespace Unity.MP_FPS.DollSinger
         // Called by the asset installer only. Runtime only poses these fixed sprites.
         public void BuildGeometry()
         {
-            petals = CreateInk("Feather", 6, petalSprite);
-            outerInk = CreateInk("Broken rim", 6, outerArcSprite);
-            innerInk = CreateInk("Counterstroke", 3, innerArcSprite);
-            magazineInk = CreateInk("Energy seed", Capacity, cellSprite);
+            petals = CreateInk("Iris plate", 6, petalSprite);
+            outerInk = CreateInk("Outer bridge", 6, outerArcSprite);
+            innerInk = CreateInk("Inner bracket", 3, innerArcSprite);
+            magazineInk = CreateInk("Energy cell", Capacity, cellSprite);
             sight = CreateLine("Sight dot", 17, .0015f);
             chargeInk = CreateInk("Charge relay", 1, outerArcSprite)[0];
             ApplyLayout();
@@ -165,22 +165,21 @@ namespace Unity.MP_FPS.DollSinger
             for (int i = 0; i < petals.Length; i++)
             {
                 float angle = i * 60 + rotor;
-                // Alternating long / short feathers create a deliberate six-part rhythm.
-                PoseInk(petals[i], ringRadius + .036f + expansion, angle, scale, core, .92f,
-                    i % 2 == 0 ? 1f : .93f, i % 2 == 0 ? 1f : .89f);
-                PoseInk(outerInk[i], ringRadius + expansion * .65f, angle + 33.5f, scale, core, .82f);
+                PoseInk(petals[i], ringRadius + .036f + expansion, angle, scale, core, 1f);
+                PoseInk(outerInk[i], ringRadius + expansion * .65f, angle + 33.5f, scale, core, 1f);
             }
             for (int i = 0; i < innerInk.Length; i++)
             {
                 PoseInk(innerInk[i], ringRadius - .045f - open * .012f - shotPulse * .008f,
-                    innerRotor + i * 120 + 59, scale, Color.Lerp(lightColor, Color.white, .35f + shotPulse * .3f), .65f);
+                    innerRotor + i * 120 + 59, scale, core, 1f);
             }
             for (int i = 0; i < magazineInk.Length; i++)
             {
                 // Six groups of five: exact ammo feedback without a dense picket-fence rim.
                 float angle = i / 5 * 60f + i % 5 * 8f + 94f;
+                magazineInk[i].enabled = i < visible;
                 PoseInk(magazineInk[i], ringRadius - .021f + expansion * .4f, angle, scale,
-                    i < visible ? core : lightColor, i < visible ? .9f : .09f,
+                    core, 1f,
                     i % 5 == 0 ? .92f : .62f, .42f);
             }
             if (sight)
@@ -188,14 +187,14 @@ namespace Unity.MP_FPS.DollSinger
                 for (int i = 0; i < sightPoints.Length; i++)
                     sightPoints[i] = Polar(Mathf.Lerp(.012f, .0023f, aimBlend), 360f * i / (sightPoints.Length - 1));
                 sight.SetPositions(sightPoints);
-                var color = Color.Lerp(lightColor, Color.white, aimBlend * .65f); color.a = .95f;
+                var color = core; color.a = 1f;
                 sight.startColor = sight.endColor = color;
             }
             if (chargeInk)
             {
                 chargeInk.enabled = reloading;
                 PoseInk(chargeInk, ringRadius + .040f + expansion, 108 - progress * 720, scale,
-                    Color.Lerp(lightColor, Color.white, .65f), .9f * open, 1.5f);
+                    core, open, 1.5f);
             }
         }
     }

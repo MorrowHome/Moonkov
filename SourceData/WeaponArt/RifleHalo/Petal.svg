@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="-50 -50 100 100" width="400" height="400">
-  <!-- Swept feather: a broad heel, hooked tip and a cut running against the sweep. -->
-  <path fill="white" fill-rule="evenodd" d="M -36 17 C -29 24 -16 27 -4 23 C 13 17 27 -2 38 -39 L 23 -26 L 25 -36 C 13 -18 4 -12 -8 -10 L -25 -8 L -18 -2 L -37 6 L -29 10 Z M -18 14 C -3 13 11 4 22 -13 C 12 8 0 19 -18 17 Z"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-50 -50 100 100" width="800" height="800">
+  <!-- One solid iris plate. Broad faces, six clean edges, no decorative cuts. -->
+  <path fill="white" d="M -33 -40 L 9 -44 L 37 -11 L 34 28 L -8 43 L -36 18 Z"/>
 </svg>

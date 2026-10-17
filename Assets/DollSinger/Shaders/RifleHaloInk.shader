@@ -4,7 +4,7 @@ Shader "DollSinger/RifleHaloInk"
     {
         [PerRendererData] _MainTex ("Ink mask", 2D) = "white" {}
         _Color ("Tint", Color) = (1,1,1,1)
-        _Gain ("Energy brightness", Float) = 1.5
+        _Gain ("Flat ink intensity", Range(0,1)) = 1
         [HideInInspector] _RendererColor ("RendererColor", Color) = (1,1,1,1)
     }
     SubShader

@@ -19,8 +19,9 @@ public static class RifleHaloSetup
             AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceSynchronousImport);
             var importer = (TextureImporter)AssetImporter.GetAtPath(path);
             importer.textureType = TextureImporterType.Sprite; importer.spriteImportMode = SpriteImportMode.Single;
-            importer.spritePixelsPerUnit = name == "Cell" ? 8000 : 4000;
-            importer.alphaIsTransparency = true; importer.mipmapEnabled = false;
+            importer.spritePixelsPerUnit = name == "Cell" ? 16000 : 8000;
+            importer.alphaIsTransparency = true; importer.mipmapEnabled = true;
+            importer.filterMode = FilterMode.Trilinear;
             importer.textureCompression = TextureImporterCompression.Uncompressed;
             importer.npotScale = TextureImporterNPOTScale.None; importer.wrapMode = TextureWrapMode.Clamp;
             var settings = new TextureImporterSettings(); importer.ReadTextureSettings(settings);
@@ -36,7 +37,15 @@ public static class RifleHaloSetup
             AssetDatabase.CreateAsset(material, materialPath);
         }
         material.shader = Shader.Find("DollSinger/RifleHaloInk");
-        material.SetFloat("_Gain", 1.5f); material.SetColor("_Color", Color.white); EditorUtility.SetDirty(material);
+        material.SetFloat("_Gain", 1f); material.SetColor("_Color", Color.white); EditorUtility.SetDirty(material);
+        string sightPath = Art + "RifleSight.mat";
+        var sightMaterial = AssetDatabase.LoadAssetAtPath<Material>(sightPath);
+        if (!sightMaterial)
+        {
+            sightMaterial = new Material(Shader.Find("DollSinger/RifleHaloLine"));
+            AssetDatabase.CreateAsset(sightMaterial, sightPath);
+        }
+        sightMaterial.SetFloat("_Gain", 1f); EditorUtility.SetDirty(sightMaterial);
         // Load the existing root to retain the component / transform IDs used by nested player prefabs.
         var root = PrefabUtility.LoadPrefabContents(Prefab);
         try
@@ -44,6 +53,7 @@ public static class RifleHaloSetup
             var visual = root.GetComponent<RifleHaloVisual>();
             while (root.transform.childCount > 0) UnityEngine.Object.DestroyImmediate(root.transform.GetChild(0).gameObject);
             visual.artworkMaterial = material;
+            visual.lineMaterial = sightMaterial;
             visual.petalSprite = AssetDatabase.LoadAssetAtPath<Sprite>(Art + "Petal.png");
             visual.outerArcSprite = AssetDatabase.LoadAssetAtPath<Sprite>(Art + "OuterArc.png");
             visual.innerArcSprite = AssetDatabase.LoadAssetAtPath<Sprite>(Art + "InnerArc.png");
@@ -107,15 +117,22 @@ public static class RifleHaloSetup
             var point = rifle.sight.GetPosition(0);
             Require(point.magnitude < .003f && rifle.magazineInk.All(c => c.sharedMaterial && c.sprite), "Tiny sight and ink references");
             Require(root.GetComponentsInChildren<LineRenderer>(true).Length == 1 && rifle.petals.All(p => p.sprite), "Only the tiny sight uses a line");
+            rifle.SetLocalState(30, false, 0); rifle.ApplyLayout();
+            var flatParts = rifle.petals.Concat(rifle.outerInk).Concat(rifle.innerInk).Concat(rifle.magazineInk);
+            var solid = rifle.lightColor; solid.a = 1f;
+            Require(flatParts.All(p => p.color == solid && Mathf.Abs(p.transform.localPosition.z) < .00001f), "Static art is one opaque colour on a single plane");
+            Require(rifle.artworkMaterial.GetFloat("_Gain") == 1f && rifle.lineMaterial.GetFloat("_Gain") == 1f, "Flat art has no HDR amplification");
+            rifle.SetLocalState(0, false, 0); rifle.ApplyLayout();
+            Require(rifle.magazineInk.All(p => !p.enabled), "Spent cells disappear instead of leaving translucent ink");
         }
         finally { UnityEngine.Object.DestroyImmediate(root); }
-        Debug.Log("Rifle halo checks passed: bindings, thumb clearance, shot/reload replay, partial recharge, empty reset and tiny sight.");
+        Debug.Log("Rifle halo checks passed: bindings, shot/reload replay, partial recharge, empty reset, tiny sight, solid colour and coplanar artwork.");
     }
     // Four native camera renders cover the artwork and the existing release/recharge poses.
     public static void RenderArtworkPreview()
     {
         const int size = 640;
-        string folder = Path.GetFullPath("LocalData/RifleHaloArtwork"); Directory.CreateDirectory(folder);
+        string folder = Path.GetFullPath("LocalData/RifleHaloFlatArtwork"); Directory.CreateDirectory(folder);
         var scene = EditorSceneManager.NewPreviewScene();
         var root = UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(Prefab));
         SceneManager.MoveGameObjectToScene(root, scene);
@@ -125,7 +142,7 @@ public static class RifleHaloSetup
         camera.overrideSceneCullingMask = EditorSceneManager.GetSceneCullingMask(scene);
         camera.transform.position = new Vector3(0, 0, -2); camera.clearFlags = CameraClearFlags.SolidColor;
         camera.backgroundColor = new Color(.025f, .029f, .04f); camera.nearClipPlane = .1f; camera.farClipPlane = 5;
-        var target = new RenderTexture(size, size, 24); camera.targetTexture = target;
+        var target = new RenderTexture(size, size, 24) { antiAliasing = 4 }; camera.targetTexture = target;
         var pixels = new Texture2D(size, size, TextureFormat.RGB24, false);
         var sheet = new Texture2D(size * 2, size * 2, TextureFormat.RGB24, false);
         var previous = RenderTexture.active;
