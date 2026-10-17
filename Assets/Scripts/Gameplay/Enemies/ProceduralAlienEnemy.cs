@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace Unity.MP_FPS
 {
-    public enum AlienAction : byte { Roam, Chase, Search, Windup, Strike, Recover, Dead, Ambush, Reposition }
+    public enum AlienAction : byte { Roam, Chase, Search, Windup, Strike, Recover, Dead, Ambush, Reposition, Attached }
 
     /// <summary>Server-only intent, perception and damage; interpolated clients derive
     /// cosmetic rigs from snapshots. Target eligibility requires a real PlayerGhost:
@@ -28,6 +28,12 @@ namespace Unity.MP_FPS
             [GhostField] public uint AttackSequence;
             [GhostField] public bool Detached;
             [GhostField] public bool AmbushEnabled;
+            [GhostField] public AlienAttackKind AttackKind;
+            [GhostField(Quantization = 100)] public float3 AttackPoint;
+            [GhostField(Quantization = 100)] public float3 AttackOrigin;
+            [GhostField(Quantization = 1000)] public float3 AttackDirection;
+            [GhostField] public byte BossPhase;
+            [GhostField] public Entity AttachedTarget;
         }
         [SerializeField] private AlienCreatureProfile profile;
         [SerializeField, Min(0), Tooltip("Full-rate client rig distance at 45-degree FOV. Distant rigs update at 30/15 Hz; zero disables the budget. Server simulation is unchanged.")]
@@ -61,7 +67,7 @@ namespace Unity.MP_FPS
             if (!profile) { Debug.LogError("Alien profile is missing.", this); return; }
             var state = ReadGhostComponentData<State>();
             m_Spawn = transform.position; m_RoamGoal = m_Spawn;
-            m_AmbushEnabled = state.AmbushEnabled && profile.Species == AlienSpecies.Spider;
+            m_AmbushEnabled = profile.Species == AlienSpecies.Spider && (state.AmbushEnabled || Role == MultiplayerRole.Server);
             m_Action = state.Action;
             m_LastHealth = profile.Health;
             float scale = state.Scale > 0 ? state.Scale : profile.Scale;
@@ -94,7 +100,12 @@ namespace Unity.MP_FPS
             var health = ReadGhostComponentData<PredictedPlayerGhost>();
             if (health.CurrentHealth <= 0)
             {
-                if (m_Action != AlienAction.Dead) ChangeAction(AlienAction.Dead);
+                if (m_Action != AlienAction.Dead)
+                {
+                    if (m_AttachedTarget != Entity.Null) ReleaseFace();
+                    ChangeAction(AlienAction.Dead);
+                    DropAlienLoot();
+                }
                 UpdateCombatPresentation(health.CurrentHealth);
                 m_Body.Tick(Vector3.zero, 0, 0, dt, 0, false); WriteState();
                 if (m_Clock - m_ActionStarted > 2)
@@ -118,38 +129,7 @@ namespace Unity.MP_FPS
                 WriteState();
                 return;
             }
-            if (m_Clock >= m_NextSense && m_Action != AlienAction.Windup && m_Action != AlienAction.Strike)
-            { Sense(); m_NextSense = m_Clock + .15f; }
-            if (!IsLivingHumanoid(manager, m_Target)) { m_Target = Entity.Null; m_Visible = false; }
-            bool remembered = m_Target != Entity.Null && m_Clock - m_LastSeenAt <= profile.MemorySeconds;
-            Vector3 goal = remembered ? m_LastSeen : PatrolGoal();
-            float distance = Vector3.Distance(AimPoint, goal);
-            if (m_Visible && IsLivingHumanoid(manager, m_Target)) distance = Vector3.Distance(AimPoint, ContactPoint(m_Target));
-            float reach = profile.AttackReach * m_Body.Scale + .35f;
-            if (m_Action == AlienAction.Windup && m_Clock - m_ActionStarted >= profile.Windup)
-            { ChangeAction(AlienAction.Strike); TryStrike(); }
-            else if (m_Action == AlienAction.Strike && m_Clock - m_ActionStarted >= .16f) ChangeAction(AlienAction.Recover);
-            else if (m_Action == AlienAction.Recover && m_Clock - m_ActionStarted >= profile.Recovery)
-                ChangeAction(remembered ? AlienAction.Chase : AlienAction.Roam);
-            else if (m_Action != AlienAction.Windup && m_Action != AlienAction.Strike && m_Action != AlienAction.Recover)
-            {
-                if (remembered && m_Visible && distance <= reach && m_Clock >= m_NextAttack)
-                { ChangeAction(AlienAction.Windup); m_Attacks++; m_NextAttack = m_Clock + profile.AttackCooldown; }
-                else ChangeAction(remembered ? m_Visible ? AlienAction.Chase : AlienAction.Search : AlienAction.Roam);
-            }
-            Vector3 tangent = Vector3.ProjectOnPlane(goal - m_Body.Motor.Current.Position, m_Body.Motor.Current.Up);
-            Vector3 intent = tangent.sqrMagnitude > .1f ? tangent.normalized : Vector3.zero;
-            float speed = (m_Action == AlienAction.Roam ? profile.Speed * .45f : profile.Speed) * m_Body.Scale;
-            if (m_Action == AlienAction.Windup || m_Action == AlienAction.Recover) speed = 0;
-            if (m_Action == AlienAction.Strike) speed = profile.LungeSpeed * m_Body.Scale;
-            if (distance < .6f && m_Action == AlienAction.Roam) speed = 0;
-            float yaw = intent.sqrMagnitude > .01f ? Mathf.Clamp(Vector3.SignedAngle(m_Body.Motor.Current.Forward, intent,
-                m_Body.Motor.Current.Up) / Mathf.Max(.001f, dt), -profile.TurnSpeed, profile.TurnSpeed) : 0;
-            float before = m_Body.Motor.Travel;
-            UpdateCombatPresentation(health.CurrentHealth);
-            m_Body.Tick(intent, speed, yaw, dt, ActionPulse(), false);
-            m_Stuck = speed > .01f && intent.sqrMagnitude > .01f && m_Body.Motor.Travel - before < .002f ? m_Stuck + dt : 0;
-            if (m_Stuck > .85f && !m_Body.Motor.Detached) { m_Body.Escape(intent); m_Stuck = 0; }
+            UpdateSpeciesCombat(dt, health);
             WriteState();
         }
 
@@ -242,7 +222,9 @@ namespace Unity.MP_FPS
         {
             WriteGhostComponentData(new State { Action = m_Action, Scale = m_Body.Scale, Phase = m_Body.Phase,
                 ActionTime = m_Clock - m_ActionStarted, Velocity = m_Body.Motor.Velocity, AttackSequence = m_Attacks,
-                Detached = m_Body.Motor.Detached, AmbushEnabled = m_AmbushEnabled });
+                Detached = m_Body.Motor.Detached, AmbushEnabled = m_AmbushEnabled,
+                AttackKind = m_Pattern.Kind, AttackPoint = m_CombatPoint, AttackOrigin = m_CombatOrigin,
+                AttackDirection = m_CombatDirection, BossPhase = m_BossPhase, AttachedTarget = m_AttachedTarget });
         }
 
         public void UpdateClient(float deltaTime)
@@ -257,13 +239,20 @@ namespace Unity.MP_FPS
             }
             m_Action = state.Action;
             m_AmbushEnabled = state.AmbushEnabled;
+            ObserveSpeciesAttack(state);
+            if (state.Action == AlienAction.Attached && IsLivingHumanoid(GhostGameObject.EntityManager, state.AttachedTarget))
+            {
+                var head = TargetHead(state.AttachedTarget);
+                transform.SetPositionAndRotation(head.position, head.rotation);
+            }
             float health = GhostHasComponent<PredictedPlayerGhost>() ? ReadGhostComponentData<PredictedPlayerGhost>().CurrentHealth : profile.Health;
             m_Body.SetCombatPresentation(state.Action, state.ActionTime, state.AttackSequence, health,
-                m_AmbushEnabled ? profile.SpiderWindup : profile.Windup,
-                m_AmbushEnabled ? profile.SpiderRecovery : profile.Recovery,
-                m_AmbushEnabled ? profile.SpiderStrikeSeconds : .16f);
+                m_AmbushEnabled ? profile.SpiderWindup : m_Pattern.Windup,
+                m_AmbushEnabled ? profile.SpiderRecovery : m_Pattern.Recovery,
+                m_AmbushEnabled ? profile.SpiderStrikeSeconds : m_Pattern.Active);
             if (Time.unscaledTime >= m_NextLod)
             { m_Liquid = WantsLiquid(); m_NextLod = Time.unscaledTime + .35f; }
+            if (state.Action == AlienAction.Attached) m_Liquid = false;
             m_PresentationElapsed += Mathf.Clamp(deltaTime, 0, .06f);
             float interval = !Application.isPlaying || m_Liquid ? 0 : PresentationInterval(Camera.main, transform.position,
                 presentationDistance * Mathf.Max(1, m_Body.Scale));
@@ -271,8 +260,11 @@ namespace Unity.MP_FPS
             m_NextPresentation = Time.unscaledTime + interval;
             float presentationDt = Mathf.Min(m_PresentationElapsed, .1f);
             m_PresentationElapsed = 0;
-            float pulse = state.Action == AlienAction.Windup ? Mathf.Clamp01(state.ActionTime / profile.Windup) : state.Action == AlienAction.Strike ? 1 :
-                state.Action == AlienAction.Recover ? Mathf.Clamp01(1 - state.ActionTime / profile.Recovery) : 0;
+            float windup = m_AmbushEnabled ? profile.SpiderWindup : Mathf.Max(.01f, m_Pattern.Windup);
+            float recovery = m_AmbushEnabled ? profile.SpiderRecovery : Mathf.Max(.01f, m_Pattern.Recovery);
+            float pulse = state.Action == AlienAction.Windup ? Mathf.Clamp01(state.ActionTime / windup) :
+                state.Action == AlienAction.Strike || state.Action == AlienAction.Attached ? 1 :
+                state.Action == AlienAction.Recover ? Mathf.Clamp01(1 - state.ActionTime / recovery) : 0;
             m_Body.Observe(new SurfaceMotor.Pose { Position = transform.position, Rotation = transform.rotation }, state.Velocity,
                 state.Detached, state.Phase, presentationDt, pulse, m_Liquid);
         }
@@ -305,7 +297,7 @@ namespace Unity.MP_FPS
         }
         public override void OnGhostPreDestroy() { Release(); }
         private void OnDestroy() { Release(); }
-        private void Release() { s_ClientAliens.Remove(this); m_Body?.Dispose(); m_Body = null; }
+        private void Release() { s_ClientAliens.Remove(this); m_AttackPresentation?.Dispose(); m_AttackPresentation = null; m_Body?.Dispose(); m_Body = null; }
     }
 
     public sealed class ProceduralAlienEnemyBaker : Baker<ProceduralAlienEnemy>

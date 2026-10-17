@@ -23,6 +23,7 @@ namespace Unity.MP_FPS.Inventory
     public static class ShopCatalog
     {
         public static readonly ShopOffer[] Offers = {
+            new ShopOffer("alien_tissue", -1, 8), new ShopOffer("alien_core", -1, 65),
             new ShopOffer("rifle", 0, 20), new ShopOffer("pistol", 0, 7),
             new ShopOffer("shotgun", 0, 25), new ShopOffer("sniper", 0, 45), new ShopOffer("cells", 0, 2),
             new ShopOffer("halo_capacitor", 18, 6), new ShopOffer("halo_charge_bridge", 18, 6),

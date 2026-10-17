@@ -28,6 +28,10 @@ namespace Unity.MP_FPS
         [Range(.15f, 2)] public float Recovery = .55f;
         [Min(.3f)] public float AttackCooldown = 1.6f;
         [Range(0, 8)] public float LungeSpeed = 3;
+        [Header("Combat role")]
+        public bool Boss;
+        [Range(.15f, .8f)] public float EnrageHealthFraction = .5f;
+        [Min(.5f)] public float FaceAttachSeconds = 2.4f;
         [Header("Spider ambush encounters")]
         [Min(1)] public float SpiderAmbushRange = 6;
         [Min(.3f)] public float SpiderWindup = .75f;

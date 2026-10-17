@@ -99,6 +99,12 @@ namespace Unity.MP_FPS
         }
         public void Tick(Vector3 intent, float speed, float yaw, float dt, float action, bool liquid)
         {
+            if (m_CombatAction == AlienAction.Attached && m_Profile.Species == AlienSpecies.Leech)
+            {
+                m_Owner.SetPositionAndRotation(Motor.Current.Position, Motor.Current.Rotation);
+                UpdateRig(Vector2.zero, 0, 0, dt, false, 1); UpdateHitboxes();
+                return;
+            }
             var pose = Motor.Current;
             var basis = pose.Rotation * Quaternion.AngleAxis(Motor.Transitioning ? 0 : yaw * dt, Vector3.up);
             Vector2 input = new Vector2(Vector3.Dot(intent, basis * Vector3.right), Vector3.Dot(intent, basis * Vector3.forward));
@@ -121,13 +127,15 @@ namespace Unity.MP_FPS
             UpdateRig(input, velocity.magnitude, 0, dt, liquid, action); UpdateHitboxes();
         }
         public float Phase => m_Phase;
+        public void SetAttachedPose(Vector3 position, Quaternion rotation) => Motor.SetAttachedPose(position, rotation);
         private void UpdateRig(Vector2 input, float speed, float yaw, float dt, bool liquid, float action)
         {
             m_Clock += dt;
             float drive = Mathf.Clamp01(Motor.Velocity.magnitude / Mathf.Max(.1f, m_Profile.Speed * m_Scale));
             if (m_Chain != null)
             {
-                if (m_Profile.Species == AlienSpecies.Leech) m_Chain.TickSuction(Motor.Current, m_ChainShape, m_Phase, speed > .01f ? 1 : 0, dt, Motor.Detached, Motor.BodyHeight);
+                if (m_Profile.Species == AlienSpecies.Leech && m_CombatAction == AlienAction.Attached) SolveFaceWrap();
+                else if (m_Profile.Species == AlienSpecies.Leech) m_Chain.TickSuction(Motor.Current, m_ChainShape, m_Phase, speed > .01f ? 1 : 0, dt, Motor.Detached, Motor.BodyHeight);
                 else m_Chain.Tick(Motor.Current, m_ChainShape, m_Profile.IsLarva, drive, dt, action, Motor.Detached, Motor.BodyHeight);
                 if (m_Render)
                 {
@@ -214,6 +222,24 @@ namespace Unity.MP_FPS
                 m_SpiderLegSolved[leg] = solved;
                 m_SpiderJoints[leg * 3] = hip; m_SpiderJoints[leg * 3 + 1] = knee; m_SpiderJoints[leg * 3 + 2] = toe;
             }
+        }
+
+        private void SolveFaceWrap()
+        {
+            // A compact helix surrounds the skull, leaving the centre of the local
+            // view open. Tissue colliders follow the same world-space chain.
+            var head = Motor.Current;
+            for (int i = 0; i < CreatureChain.Rings; i++)
+            {
+                float t = i / (float)(CreatureChain.Rings - 1);
+                float angle = t * Mathf.PI * 3.5f;
+                m_Chain.Centres[i] = head.Position + head.Right * (Mathf.Cos(angle) * .22f) +
+                    head.Forward * (Mathf.Sin(angle) * .24f) + head.Up * Mathf.Lerp(-.13f, .12f, t);
+                m_Chain.Ups[i] = head.Up;
+                m_Chain.Radii[i] = Mathf.Lerp(.018f, .055f, Mathf.Sin(t * Mathf.PI));
+            }
+            for (int i = 0; i < CreatureChain.Rings; i++)
+                m_Chain.Tangents[i] = (m_Chain.Centres[Mathf.Max(0, i - 1)] - m_Chain.Centres[Mathf.Min(CreatureChain.Rings - 1, i + 1)]).normalized;
         }
         private static float Ease(float t) { t = Mathf.Clamp01(t); return t * t * (3 - 2 * t); }
 

@@ -118,9 +118,9 @@ public static partial class AlienEnemyChecks
         Require(report.errors.Count == 0, "New errors during integration fixtures: " + string.Join("; ", report.errors));
         Debug.Log("Alien integration fixtures passed: humans and PMCs, alien exclusion, projectile damage, death, scaled hitboxes and client reconstruction.");
     }
-    private static ProceduralAlienEnemy Alien(Transform holder, World world, AlienCreatureProfile profile, Vector3 position, MultiplayerRole role, int id, bool ambush = false)
+    private static ProceduralAlienEnemy Alien(Transform holder, World world, AlienCreatureProfile profile, Vector3 position, MultiplayerRole role, int id, bool ambush = false, Quaternion? rotation = null)
     {
-        var go = new GameObject("Fixture " + profile.Species + " " + role); go.transform.SetParent(holder, false); go.transform.position = position;
+        var go = new GameObject("Fixture " + profile.Species + " " + role); go.transform.SetParent(holder, false); go.transform.SetPositionAndRotation(position, rotation ?? Quaternion.identity);
         var ghost = go.AddComponent<GhostGameObject>(); var actor = go.AddComponent<ProceduralAlienEnemy>();
         var serialized = new SerializedObject(actor); serialized.FindProperty("profile").objectReferenceValue = profile; serialized.ApplyModifiedPropertiesWithoutUndo();
         var manager = world.EntityManager;
@@ -128,7 +128,7 @@ public static partial class AlienEnemyChecks
         manager.SetComponentData(entity, new ProceduralAlienEnemy.State { Scale = profile.Scale, AmbushEnabled = ambush,
             Action = ambush ? AlienAction.Ambush : AlienAction.Roam });
         manager.SetComponentData(entity, new PredictedPlayerGhost { MaxHealth = 100, CurrentHealth = 100 });
-        manager.SetComponentData(entity, new GhostOwner { NetworkId = id }); manager.SetComponentData(entity, LocalTransform.FromPosition(position));
+        manager.SetComponentData(entity, new GhostOwner { NetworkId = id }); manager.SetComponentData(entity, LocalTransform.FromPositionRotation(position, rotation ?? Quaternion.identity));
         manager.AddComponentObject(entity, new GhostGameObjectLink { LinkedInstance = ghost });
         ghost.LinkGhost(world, entity, role); return actor;
     }

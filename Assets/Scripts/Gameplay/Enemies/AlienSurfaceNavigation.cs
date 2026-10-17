@@ -54,6 +54,7 @@ namespace Unity.MP_FPS
         private static readonly Vector3[] s_Directions =
             { Vector3.up, Vector3.down, Vector3.right, Vector3.left, Vector3.forward, Vector3.back };
         private static readonly List<AlienSurfaceNavigation> s_Active = new List<AlienSurfaceNavigation>();
+        private static bool s_Discovered;
         [SerializeField] private Bounds worldBounds;
         [SerializeField, Min(.35f)] private float sampleSpacing = .75f;
         [SerializeField, Range(.1f, 4)] private float bakedScale = 1;
@@ -71,13 +72,21 @@ namespace Unity.MP_FPS
         public float SampleSpacing => sampleSpacing;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetStatics() => s_Active.Clear();
+        private static void ResetStatics() { s_Active.Clear(); s_Discovered = false; }
         private void OnEnable() { if (!s_Active.Contains(this)) s_Active.Add(this); }
         private void OnDisable() => s_Active.Remove(this);
         private void OnValidate() { m_Adjacency = null; m_Revision++; }
         public bool Contains(Vector3 position) => worldBounds.Contains(position);
         public static AlienSurfaceNavigation Find(Vector3 position)
         {
+            // Covers Edit Mode fixtures and Enter Play with domain reload disabled.
+            // Discovery runs once, never once per enemy tick; later loads register normally.
+            if (!s_Discovered)
+            {
+                s_Discovered = true;
+                foreach (var graph in UnityEngine.Object.FindObjectsByType<AlienSurfaceNavigation>())
+                    if (graph.isActiveAndEnabled && !s_Active.Contains(graph)) s_Active.Add(graph);
+            }
             foreach (var graph in s_Active)
                 if (graph && graph.isActiveAndEnabled && graph.Contains(position) && graph.nodes.Length > 0) return graph;
             return null;
@@ -85,7 +94,7 @@ namespace Unity.MP_FPS
 
         /// <summary>Authoring only. Samples real colliders within a bounded region; failure leaves
         /// the previous graph intact. Caller owns dirtying/saving its scene after success.</summary>
-        public bool Bake(Bounds bounds, float spacing = .75f, float clearanceScale = 1)
+        public bool Bake(Bounds bounds, float spacing = .75f, float clearanceScale = 1, Transform samplingSpace = null)
         {
             if (!Finite(bounds.center) || !Finite(bounds.size) || bounds.size.x <= 0 || bounds.size.y <= 0 || bounds.size.z <= 0)
             { lastBakeReport = "Invalid sampling bounds; previous graph preserved."; return false; }
@@ -108,18 +117,22 @@ namespace Unity.MP_FPS
             {
                 var origin = min + new Vector3(Mathf.Min(x * spacing, bounds.size.x),
                     Mathf.Min(y * spacing, bounds.size.y), Mathf.Min(z * spacing, bounds.size.z));
+                if (samplingSpace) origin = samplingSpace.TransformPoint(origin);
                 foreach (var direction in s_Directions)
                 {
-                    if (!Ray(origin, direction, spacing * 1.05f, out var hit) || !bounds.Contains(hit.point)) continue;
+                    Vector3 ray = samplingSpace ? samplingSpace.TransformDirection(direction) : direction;
+                    if (!Ray(origin, ray, spacing * 1.05f, out var hit) ||
+                        !bounds.Contains(samplingSpace ? samplingSpace.InverseTransformPoint(hit.point) : hit.point)) continue;
                     var node = new Node { Point = hit.point, Normal = hit.normal.normalized };
-                    if (!Support(node, clearanceScale)) continue;
                     var key = Cell(node.Point, merge);
-                    if (!duplicate.TryGetValue(key, out var bucket)) duplicate[key] = bucket = new List<int>();
                     bool exists = false;
-                    foreach (int index in bucket)
-                        if (Vector3.Dot(found[index].Normal, node.Normal) > .96f &&
-                            (found[index].Point - node.Point).sqrMagnitude < merge * merge) { exists = true; break; }
-                    if (exists) continue;
+                    for (int dx = -1; dx <= 1 && !exists; dx++) for (int dy = -1; dy <= 1 && !exists; dy++) for (int dz = -1; dz <= 1 && !exists; dz++)
+                        if (duplicate.TryGetValue(key + new Vector3Int(dx, dy, dz), out var nearby))
+                            foreach (int index in nearby)
+                                if (Vector3.Dot(found[index].Normal, node.Normal) > .96f &&
+                                    (found[index].Point - node.Point).sqrMagnitude < merge * merge) { exists = true; break; }
+                    if (exists || !Support(node, clearanceScale)) continue;
+                    if (!duplicate.TryGetValue(key, out var bucket)) duplicate[key] = bucket = new List<int>();
                     bucket.Add(found.Count); found.Add(node);
                     if (found.Count > MaximumNodes)
                     { m_QueryBudget = -1; lastBakeReport = "Node limit exceeded; use smaller bounds or larger spacing. Previous graph preserved."; return false; }
@@ -135,9 +148,17 @@ namespace Unity.MP_FPS
             }
             float cornerReach = spacing * 2.9f + SurfaceMotor.Height * clearanceScale;
             int range = Mathf.CeilToInt(cornerReach / spacing);
+            var considered = new HashSet<long>();
+            var connected = new HashSet<long>();
+            var candidates = new List<int>[14];
+            for (int i = 0; i < candidates.Length; i++) candidates[i] = new List<int>();
             for (int i = 0; i < found.Count && !m_BudgetExceeded; i++)
             {
                 var key = Cell(found[i].Point, spacing);
+                foreach (var list in candidates) list.Clear();
+                Vector3 tangent = Vector3.Cross(found[i].Normal, Vector3.up);
+                if (tangent.sqrMagnitude < .01f) tangent = Vector3.right;
+                tangent.Normalize(); Vector3 bitangent = Vector3.Cross(found[i].Normal, tangent);
                 for (int x = -range; x <= range && !m_BudgetExceeded; x++)
                 for (int y = -range; y <= range && !m_BudgetExceeded; y++)
                 for (int z = -range; z <= range && !m_BudgetExceeded; z++)
@@ -145,27 +166,62 @@ namespace Unity.MP_FPS
                     if (!cells.TryGetValue(key + new Vector3Int(x, y, z), out var bucket)) continue;
                     foreach (int j in bucket)
                     {
-                        if (j <= i) continue;
+                        if (j == i) continue;
                         float dot = Vector3.Dot(found[i].Normal, found[j].Normal);
+                        // This indoor graph needs coplanar travel and right-angle
+                        // wall transitions, not every decorative bevel on furniture.
+                        if (dot <= .94f && Mathf.Abs(dot) > .12f) continue;
                         float distance = Vector3.Distance(found[i].Point, found[j].Point);
                         if (dot < -.7f || distance > (dot > .94f ? spacing * 1.6f : cornerReach)) continue;
-                        if (Traverse(found[i], found[j], clearanceScale, spacing, out float cost) &&
-                            Traverse(found[j], found[i], clearanceScale, spacing, out _))
-                            builtLinks.Add(new Link { A = i, B = j, Cost = cost });
-                        if (m_BudgetExceeded) break;
+                        Vector3 delta = found[j].Point - found[i].Point;
+                        int group;
+                        if (dot > .94f)
+                        {
+                            if (Mathf.Abs(Vector3.Dot(delta, found[i].Normal)) > .16f * clearanceScale + .035f) continue;
+                            float angle = Mathf.Atan2(Vector3.Dot(delta, bitangent), Vector3.Dot(delta, tangent));
+                            group = Mathf.FloorToInt((angle + Mathf.PI) * 8 / (Mathf.PI * 2)) % 8;
+                        }
+                        else
+                        {
+                            Vector3 n = found[j].Normal;
+                            group = 8 + (Mathf.Abs(n.y) > .7f ? (n.y > 0 ? 0 : 1) : Mathf.Abs(n.x) > Mathf.Abs(n.z) ? (n.x > 0 ? 2 : 3) : (n.z > 0 ? 4 : 5));
+                        }
+                        var list = candidates[group];
+                        int at = 0;
+                        while (at < list.Count && (found[list[at]].Point - found[i].Point).sqrMagnitude < delta.sqrMagnitude) at++;
+                        int limit = 2;
+                        if (at < limit) { list.Insert(at, j); if (list.Count > limit) list.RemoveAt(limit); }
                     }
                 }
+                foreach (var list in candidates)
+                    foreach (int j in list)
+                    {
+                        int a = Mathf.Min(i, j), b = Mathf.Max(i, j);
+                        long pair = ((long)a << 32) | (uint)b;
+                        if (connected.Contains(pair)) break;
+                        if (!considered.Add(pair)) continue;
+                        bool flat = Vector3.Dot(found[i].Normal, found[j].Normal) > .94f;
+                        if (Traverse(found[i], found[j], clearanceScale, spacing, out float cost) &&
+                            (flat || Traverse(found[j], found[i], clearanceScale, spacing, out _)))
+                        { builtLinks.Add(new Link { A = i, B = j, Cost = cost }); connected.Add(pair); break; }
+                        if (m_BudgetExceeded) break;
+                    }
             }
+            int usedQueries = MaximumBakeQueries - Mathf.Max(0, m_QueryBudget);
             m_QueryBudget = -1;
             if (m_BudgetExceeded || found.Count == 0 || builtLinks.Count == 0)
             {
-                lastBakeReport = m_BudgetExceeded ? "Physics query budget exceeded; reduce bounds or increase spacing. Previous graph preserved." :
+                lastBakeReport = m_BudgetExceeded ? $"Graph budget exceeded: {found.Count} nodes, {builtLinks.Count} links, {usedQueries} queries. Previous graph preserved." :
                     "No connected supported surfaces found; previous graph preserved.";
                 return false;
             }
-            worldBounds = bounds; sampleSpacing = spacing; bakedScale = clearanceScale;
+            worldBounds = samplingSpace ? new Bounds(samplingSpace.TransformPoint(bounds.center), Vector3.zero) : bounds;
+            if (samplingSpace)
+                for (int x = -1; x <= 1; x += 2) for (int y = -1; y <= 1; y += 2) for (int z = -1; z <= 1; z += 2)
+                    worldBounds.Encapsulate(samplingSpace.TransformPoint(bounds.center + Vector3.Scale(bounds.extents, new Vector3(x, y, z))));
+            sampleSpacing = spacing; bakedScale = clearanceScale;
             nodes = found.ToArray(); links = builtLinks.ToArray(); m_Adjacency = null; m_Revision++;
-            lastBakeReport = $"{nodes.Length} supported nodes, {links.Length} links; spacing {spacing:F2} m, body scale {clearanceScale:F2}.";
+            lastBakeReport = $"{nodes.Length} supported nodes, {links.Length} links, {usedQueries} queries; spacing {spacing:F2} m, body scale {clearanceScale:F2}.";
             return true;
         }
 
@@ -233,7 +289,7 @@ namespace Unity.MP_FPS
             for (int i = 0; i < nodes.Length; i++)
             {
                 var node = nodes[i]; var body = node.BodyPosition(scale);
-                if (!reachable[i] || node.Normal.y >= .5f || Vector3.Distance(origin, body) > radius || body.y < target.y + .3f) continue;
+                if (!reachable[i] || node.Normal.y > -.65f || Vector3.Distance(origin, body) > radius || body.y < target.y + .8f) continue;
                 float score = Vector3.Distance(body, target) + Vector3.Distance(body, origin) * .15f;
                 if (score >= best || !Support(node, scale) || !Visible(body, target)) continue;
                 best = score; bodyPosition = body;
