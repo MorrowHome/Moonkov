@@ -3,7 +3,7 @@ using UnityEngine.Rendering;
 
 namespace Unity.MP_FPS.DollSinger
 {
-    /// <summary>Solid flat iris plates on the existing iris / capacitor animation.</summary>
+    /// <summary>Regular concentric iris sectors on the existing iris / capacitor animation.</summary>
     [DefaultExecutionOrder(110)]
     public sealed class RifleHaloVisual : MonoBehaviour
     {
@@ -45,8 +45,8 @@ namespace Unity.MP_FPS.DollSinger
         public void BuildGeometry()
         {
             petals = CreateInk("Iris plate", 6, petalSprite);
-            outerInk = CreateInk("Outer bridge", 6, outerArcSprite);
-            innerInk = CreateInk("Inner bracket", 3, innerArcSprite);
+            outerInk = CreateInk("Middle ring", 6, outerArcSprite);
+            innerInk = CreateInk("Inner ring", 3, innerArcSprite);
             magazineInk = CreateInk("Energy cell", Capacity, cellSprite);
             sight = CreateLine("Sight dot", 17, .0015f);
             chargeInk = CreateInk("Charge relay", 1, outerArcSprite)[0];
@@ -166,21 +166,20 @@ namespace Unity.MP_FPS.DollSinger
             {
                 float angle = i * 60 + rotor;
                 PoseInk(petals[i], ringRadius + .036f + expansion, angle, scale, core, 1f);
-                PoseInk(outerInk[i], ringRadius + expansion * .65f, angle + 33.5f, scale, core, 1f);
+                PoseInk(outerInk[i], ringRadius + expansion * .65f, angle, scale, core, 1f);
             }
             for (int i = 0; i < innerInk.Length; i++)
             {
                 PoseInk(innerInk[i], ringRadius - .045f - open * .012f - shotPulse * .008f,
-                    innerRotor + i * 120 + 59, scale, core, 1f);
+                    innerRotor + i * 120, scale, core, 1f);
             }
             for (int i = 0; i < magazineInk.Length; i++)
             {
-                // Six groups of five: exact ammo feedback without a dense picket-fence rim.
-                float angle = i / 5 * 60f + i % 5 * 8f + 94f;
+                // Identical squares on an exact twelve-degree grid, with no decorative marks.
+                float angle = i * 360f / Capacity;
                 magazineInk[i].enabled = i < visible;
                 PoseInk(magazineInk[i], ringRadius - .021f + expansion * .4f, angle, scale,
-                    core, 1f,
-                    i % 5 == 0 ? .92f : .62f, .42f);
+                    core, 1f, .9f, .9f);
             }
             if (sight)
             {

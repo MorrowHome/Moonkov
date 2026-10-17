@@ -132,7 +132,7 @@ public static class RifleHaloSetup
     public static void RenderArtworkPreview()
     {
         const int size = 640;
-        string folder = Path.GetFullPath("LocalData/RifleHaloFlatArtwork"); Directory.CreateDirectory(folder);
+        string folder = Path.GetFullPath("LocalData/RifleHaloRegularArtwork"); Directory.CreateDirectory(folder);
         var scene = EditorSceneManager.NewPreviewScene();
         var root = UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(Prefab));
         SceneManager.MoveGameObjectToScene(root, scene);

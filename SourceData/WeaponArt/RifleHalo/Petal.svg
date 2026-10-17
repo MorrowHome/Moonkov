@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="-50 -50 100 100" width="800" height="800">
-  <!-- One solid iris plate. Broad faces, six clean edges, no decorative cuts. -->
-  <path fill="white" d="M -33 -40 L 9 -44 L 37 -11 L 34 28 L -8 43 L -36 18 Z"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-50 -90 100 180" width="800" height="1440">
+  <!-- Concentric annular sector: centre (-171,0), radii 148/204, sweep 48 degrees. -->
+  <path fill="white" d="M 15.363273 -82.974275 A 204 204 0 0 1 15.363273 82.974275 L -35.795273 60.197023 A 148 148 0 0 0 -35.795273 -60.197023 Z"/>
 </svg>
