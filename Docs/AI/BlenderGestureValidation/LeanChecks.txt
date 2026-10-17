@@ -1,3 +1,4 @@
+Includes sniper opening-centre alignment within 0.5 output pixels.
 PASS weapon 0 pitch -65 lean -1
 PASS weapon 0 pitch -65 lean 1
 PASS weapon 0 pitch 0 lean -1
@@ -16,15 +17,15 @@ PASS weapon 2 pitch 0 lean -1
 PASS weapon 2 pitch 0 lean 1
 PASS weapon 2 pitch 65 lean -1
 PASS weapon 2 pitch 65 lean 1
-sniper: index bend 0.000 deg, thumb/index right-angle error 0.000 deg, maximum contact gap 0.154 mm
+sniper: index bend 0.020 deg, thumb/index right-angle error 0.000 deg, maximum contact gap 0.154 mm
 PASS weapon 3 pitch -65 lean -1
 sniper: index bend 0.000 deg, thumb/index right-angle error 0.000 deg, maximum contact gap 0.154 mm
 PASS weapon 3 pitch -65 lean 1
-sniper: index bend 0.000 deg, thumb/index right-angle error 0.000 deg, maximum contact gap 0.154 mm
+sniper: index bend 0.000 deg, thumb/index right-angle error 0.001 deg, maximum contact gap 0.155 mm
 PASS weapon 3 pitch 0 lean -1
 sniper: index bend 0.000 deg, thumb/index right-angle error 0.000 deg, maximum contact gap 0.154 mm
 PASS weapon 3 pitch 0 lean 1
 sniper: index bend 0.000 deg, thumb/index right-angle error 0.000 deg, maximum contact gap 0.154 mm
 PASS weapon 3 pitch 65 lean -1
-sniper: index bend 0.000 deg, thumb/index right-angle error 0.000 deg, maximum contact gap 0.154 mm
+sniper: index bend 0.020 deg, thumb/index right-angle error 0.000 deg, maximum contact gap 0.154 mm
 PASS weapon 3 pitch 65 lean 1

@@ -18,6 +18,7 @@ namespace Unity.MP_FPS.DollSinger
         private readonly Mesh armMesh;
         private readonly List<Camera> stack;
         private readonly Transform[] rightHandBones, leftHandBones;
+        private readonly Transform leftIndexTip, rightIndexTip, leftThumbTip, rightThumbTip;
         private bool reframe = true, wasViewfinder;
         private float lastAspect, lastFieldOfView;
         private Quaternion framedOwnerRotation;
@@ -42,6 +43,16 @@ namespace Unity.MP_FPS.DollSinger
                     ((left && source.bones[i].IsChildOf(left)) || (right && source.bones[i].IsChildOf(right)));
             rightHandBones = rightHand.GetComponentsInChildren<Transform>(true);
             leftHandBones = leftHand.GetComponentsInChildren<Transform>(true);
+            foreach (var bone in rightHandBones)
+            {
+                if (bone.name == "人指先.R") rightIndexTip = bone;
+                if (bone.name == "親指先.R") rightThumbTip = bone;
+            }
+            foreach (var bone in leftHandBones)
+            {
+                if (bone.name == "人指先.L") leftIndexTip = bone;
+                if (bone.name == "親指先.L") leftThumbTip = bone;
+            }
             var weights = body.boneWeights;
             var armVertices = new bool[body.vertexCount];
             for (int i = 0; i < weights.Length; i++)
@@ -131,7 +142,11 @@ namespace Unity.MP_FPS.DollSinger
             if (!wasViewfinder && Quaternion.Angle(framedOwnerRotation, Camera.transform.parent.rotation) > .05f) force = true;
             // Leave room for recoil and charging. Reframe only when the final hands
             // would leave their safe area; tracking every movement would cancel the animation.
-            if (!force && !reframe && InsideFrame(rightHandBones) && InsideFrame(leftHandBones)) return;
+            if (!force && !reframe && InsideFrame(rightHandBones) && InsideFrame(leftHandBones))
+            {
+                if (wasViewfinder) CenterViewfinder();
+                return;
+            }
             reframe = false;
             framedOwnerRotation = Camera.transform.parent.rotation;
             var root = Camera.transform.parent;
@@ -198,6 +213,20 @@ namespace Unity.MP_FPS.DollSinger
             float middleDepth = center.z - z;
             Camera.transform.localPosition = new Vector3(center.x,
                 center.y + (1f - 2f * safeFrame.center.y) * middleDepth * tan, z);
+            CenterViewfinder();
+        }
+
+        private void CenterViewfinder()
+        {
+            if (!leftIndexTip || !rightIndexTip || !leftThumbTip || !rightThumbTip) return;
+            // The two pairs of touching fingertips form opposite frame corners.
+            // Centre the opening, rather than the asymmetric curled fingers/palms.
+            // Update even while it fits on screen: the eye moves as the head turns.
+            // Keep depth so the authored recoil and opening animation retain their size change.
+            Vector3 center = Camera.transform.parent.InverseTransformPoint(
+                (leftIndexTip.position + rightThumbTip.position + rightIndexTip.position + leftThumbTip.position) * .25f);
+            var position = Camera.transform.localPosition;
+            Camera.transform.localPosition = new Vector3(center.x, center.y, position.z);
         }
 
         private void IncludeViewport(Transform[] bones, ref Vector2 min, ref Vector2 max)

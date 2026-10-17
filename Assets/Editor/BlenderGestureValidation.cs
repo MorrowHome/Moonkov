@@ -119,6 +119,15 @@ public static class BlenderGestureValidation
     }
     private static void Visible(WeaponGestureLab lab, Dictionary<string, Transform> bones)
     {
+        if (lab.WeaponIndex == 3)
+        {
+            Vector3 center = (bones["人指先.L"].position + bones["親指先.R"].position +
+                bones["人指先.R"].position + bones["親指先.L"].position) * .25f;
+            var uv = lab.PlayerView.GestureCamera.WorldToViewportPoint(center);
+            var owner = lab.PlayerView.camera;
+            float pixels = new Vector2((uv.x-.5f)*owner.pixelWidth, (uv.y-.5f)*owner.pixelHeight).magnitude;
+            Require(pixels < .5f, "Sniper frame centre drifted from crosshair: " + pixels + " pixels");
+        }
         foreach (var name in new[] { "手首.L", "手首.R" })
         foreach (var bone in bones[name].GetComponentsInChildren<Transform>())
         {
@@ -305,12 +314,31 @@ public static class BlenderGestureValidation
             if (fp) { Visible(lab, bones); ClearAim(lab); Shape(bones, lab.PlayerView.GestureCamera, report); }
         }
         root.Q<Toggle>("firstPerson").value = true; root.Q<Slider>("pitch").value = 0;
+        float gestureFov = lab.PlayerView.gestureFieldOfView;
+        foreach (float aspect in new[] { 16f/9f, 4f/3f })
+        foreach (float fov in new[] { 50f, 65f, 80f })
+        foreach (float pitch in new[] { -65f, 0f, 65f, 0f })
+        {
+            lab.PlayerView.camera.aspect = aspect; lab.PlayerView.gestureFieldOfView = fov;
+            root.Q<Slider>("pitch").value = pitch;
+            yield return new WaitForSeconds(.2f); yield return new WaitForEndOfFrame();
+            Visible(lab, bones);
+        }
+        lab.PlayerView.gestureFieldOfView = gestureFov; lab.PlayerView.camera.aspect = 16f/9f;
+        float sweepStart = Time.time;
+        while (Time.time - sweepStart < 3f)
+        {
+            root.Q<Slider>("pitch").value = 65f * Mathf.Sin((Time.time-sweepStart)*Mathf.PI*2f/3f);
+            yield return new WaitForEndOfFrame(); Visible(lab, bones);
+        }
+        root.Q<Slider>("pitch").value = 0;
         root.Q<Toggle>("aim").value = false; yield return new WaitForSeconds(.4f);
         root.Q<Toggle>("aim").value = true; yield return new WaitForSeconds(.5f); yield return new WaitForEndOfFrame();
         Shape(bones, lab.PlayerView.GestureCamera, report);
         lab.SetPaused(true); var hand = bones["手首.L"].position; yield return new WaitForSecondsRealtime(.15f); yield return new WaitForEndOfFrame();
         Require(Vector3.Distance(hand, bones["手首.L"].position) < .00001f, "Frozen gesture drifted."); lab.SetPaused(false);
         report.Add("FP/TP modes, pitch -65/0/+65, aim-out/in, pause/resume passed.");
+        report.Add("Sniper frame opening stays within 0.5 output pixels of the crosshair through idle/fire/reload, continuous pitch, 16:9 / 4:3 and gesture FOV 50/65/80.");
         UnityEngine.Object.Destroy(armSurface);
         Status = "PASS"; File.WriteAllLines(Output + "/checks.txt", report); Debug.Log("Blender gesture validation PASS: " + string.Join("\n", report));
     }
