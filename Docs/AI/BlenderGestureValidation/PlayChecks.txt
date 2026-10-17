@@ -1,0 +1,14 @@
+Actual DollSingerNetworkPlayer in WeaponGestureLab; four simultaneous cameras. Blender exact-rig bake.
+weapon 1: idle, fire, reload; all four cameras active; exact local rotations and owner finger visibility passed
+weapon 2: idle, fire, reload; all four cameras active; exact local rotations and owner finger visibility passed
+weapon 3: idle, fire, reload; all four cameras active; exact local rotations and owner finger visibility passed
+sniper: index bend 0.028 deg, thumb/index right-angle error 0.001 deg, maximum contact gap 0.154 mm
+weapon 4: idle, fire, reload; all four cameras active; exact local rotations and owner finger visibility passed
+revolver offhand stroke 122.9 mm; maximum Blender/runtime rotation difference 0.000 deg
+sniper: index bend 0.000 deg, thumb/index right-angle error 0.000 deg, maximum contact gap 0.154 mm
+sniper: index bend 0.000 deg, thumb/index right-angle error 0.000 deg, maximum contact gap 0.154 mm
+sniper: index bend 0.000 deg, thumb/index right-angle error 0.000 deg, maximum contact gap 0.154 mm
+sniper: index bend 0.000 deg, thumb/index right-angle error 0.000 deg, maximum contact gap 0.154 mm
+FP/TP modes, pitch -65/0/+65, aim-out/in, pause/resume passed.
+Blender revision e37e7129d32a; maximum adjacent 60fps local rotation 9.457 deg; no discontinuous local rotation flip in source fire/reload tracks.
+Exit Play: timeScale=1, gesture cameras=0, GestureLab render textures=0.

@@ -23,8 +23,12 @@
 
 `WeaponGestureLab.cs` 驱动控制和四份运行时 RenderTexture；`WeaponGestureLab.uxml/.uss` 为 UI Toolkit 界面；`WeaponGestureLabSetup.cs` 创建／打开独立场景。场景仅首次不存在时生成，不会自动覆盖手工修改。退出时释放 RenderTexture 和玩家实例，恢复原先的时间倍率与鼠标状态。
 
-本次已撤回未提交的狙击姿态试验，保留上一次提交的手势作为观察基线。场景搭建不代表手腕反转、狙击合框或左轮单动速射动作已经修好；后续动画可在此场景中用正式玩家验收。
+当前四种武器使用 `ArtSource/DollSinger/WeaponGestures.blend` 的完整双臂动作，包含原 MMD 骨架的加权扭转辅助骨骼。Unity 直接采样其局部旋转，原先按屏幕锚点重摆手腕的解算已移除。左轮使用开放左掌拨击、回位的单动速射循环；狙击沿用本轮确认的 Blender 闭合直角框，食指保持伸直。原模型指长决定框的长宽。源文件、导出方法和对照图见 [Blender 手势](BlenderWeaponGestures.md)。
+
+Play 后可运行 `Tools / Moonkov / Validate Blender Gestures In Playing Lab`，直接检查本场景的正式玩家，输出到 `Temp/GestureValidation/Blender`。这项检查包括源动作一致性、食指伸直、拇指直角、合框、手指可见性、射击、装填及瞄准切换；仍须同时检查输出画面。
 
 ## 已验证
 
 Unity 脚本编译通过；实际 Play 验证了四机位实时显示、正式网络 Prefab 引用、第一／第三人称切换、切枪、UI 单发开火、换弹和单机位放大。暂停后游戏时间与手腕位置保持不变，观察机位仍可调整。退出 Play 后时间倍率恢复为 1，演示 RenderTexture 与手部相机均无残留。未启动联网对局或打包独立程序。
+
+2026-10-17：四武器实际 Play 验证通过，第一人称及三个第三人称观察机位均已查看。狙击恢复直角框，食指关节角误差最大约 0.028°、闭合间隙约 0.155 mm；与 Blender 同机位对照图及独立关节坐标对比保存在 `Docs/AI/BlenderGestureValidation`。未进行联网对局或独立程序构建。

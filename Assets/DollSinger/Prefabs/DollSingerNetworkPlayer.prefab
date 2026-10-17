@@ -188,6 +188,7 @@ MonoBehaviour:
   m_Animator_1P: {fileID: 0}
   m_Animator_3P: {fileID: 0}
   m_EnableAnimationLogging: 0
+  m_StandalonePreview: 0
 --- !u!114 &5189483525945704937
 MonoBehaviour:
   m_ObjectHideFlags: 0

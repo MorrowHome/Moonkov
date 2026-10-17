@@ -3856,6 +3856,7 @@ MonoBehaviour:
   flashlightRange: 80
   flashlightAngle: 48
   flashlightIntensity: 45
+  gestureBake: {fileID: 4900000, guid: 14b20615f8bd3446bb80a867b002316d, type: 3}
   input: {fileID: 5454841194306245068}
   view: {fileID: 4506668622313829390}
   networkControlled: 0

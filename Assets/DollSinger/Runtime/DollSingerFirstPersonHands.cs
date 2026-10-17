@@ -17,7 +17,8 @@ namespace Unity.MP_FPS.DollSinger
         private readonly Mesh armMesh;
         private readonly List<Camera> stack;
         private readonly Transform[] rightHandBones, leftHandBones;
-        private Rect safeFrame = Rect.MinMaxRect(.07f, .08f, .93f, .46f);
+        private bool reframe = true, wasViewfinder;
+        private Rect safeFrame = Rect.MinMaxRect(.07f, .03f, .93f, .62f);
 
         public DollSingerFirstPersonHands(SkinnedMeshRenderer source, Mesh body, Camera owner, Animator animator)
         {
@@ -97,8 +98,10 @@ namespace Unity.MP_FPS.DollSinger
         public void Present(bool active, float fieldOfView, Camera owner, bool viewfinder)
         {
             if (!Camera) return;
+            if (active && (!Active || viewfinder != wasViewfinder)) reframe = true;
+            wasViewfinder = viewfinder;
             Active = active;
-            safeFrame = Rect.MinMaxRect(.07f, viewfinder ? .15f : .08f, .93f, viewfinder ? .80f : .46f);
+            safeFrame = Rect.MinMaxRect(.07f, viewfinder ? .08f : .03f, .93f, viewfinder ? .90f : .62f);
             Camera.fieldOfView = fieldOfView;
             Camera.rect = owner.rect;
             Camera.aspect = owner.aspect;
@@ -115,7 +118,8 @@ namespace Unity.MP_FPS.DollSinger
             if (!Active || !Camera) return;
             // Leave room for recoil and charging. Reframe only when the final hands
             // would leave their safe area; tracking every movement would cancel the animation.
-            if (InsideFrame(rightHandBones) && InsideFrame(leftHandBones)) return;
+            if (!reframe && InsideFrame(rightHandBones) && InsideFrame(leftHandBones)) return;
+            reframe = false;
             var root = Camera.transform.parent;
             var min = Vector3.one * float.PositiveInfinity;
             var max = Vector3.one * float.NegativeInfinity;
@@ -126,7 +130,7 @@ namespace Unity.MP_FPS.DollSinger
             // Physical reach clamps the wrists at extreme pitch/prone. Move only the arm
             // projection camera back to fit the final fingers; never scale bones or the world optic.
             float depth = Mathf.Max(Mathf.Max((max.x - min.x + .035f) / (1.60f * tan * Camera.aspect),
-                (max.y - min.y + .035f) / (1.7f * safeFrame.height * tan)), .25f);
+                (max.y - min.y + .035f) / (1.7f * safeFrame.height * tan)), wasViewfinder ? .14f : .18f);
             float z = Mathf.Min(0, min.z - depth);
             float middleDepth = center.z - z;
             Camera.transform.localPosition = new Vector3(center.x,
