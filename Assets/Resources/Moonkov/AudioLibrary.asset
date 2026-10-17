@@ -33,6 +33,14 @@ MonoBehaviour:
   AlienHurt: {fileID: 11400000, guid: 4a60d314cc7e6419e9c0245fcbfab83f, type: 2}
   AlienDeath: {fileID: 11400000, guid: caaa4c4cd142e48079e67075fbe44f4a, type: 2}
   AlienIdle: {fileID: 11400000, guid: cc12647e994be4fee99ebc4e50120ad2, type: 2}
+  SuitWallBrush: {fileID: 11400000, guid: 3235eb610ebec435ca7b63cbb8b60e35, type: 2}
+  SuitWallMetal: {fileID: 11400000, guid: 47367667cc5de4a46a060db4ef2a5982, type: 2}
+  Crawl: {fileID: 11400000, guid: f25cae8b341bb4e98afba56208f3b246, type: 2}
+  StanceChange: {fileID: 11400000, guid: 9bcf83dfa7a3a4ad4be56a6bbb9f1c31, type: 2}
+  GearMotion: {fileID: 11400000, guid: bd978767524dc48afa508f1e4dac70be, type: 2}
+  AlienWallScrape: {fileID: 11400000, guid: dfceaef5f4bca4f8aadb5b2e669091fd, type: 2}
+  AlienWallMetal: {fileID: 11400000, guid: 1c4a3d916f291466c8e8c59234ae6404, type: 2}
+  AlienIdleMotion: {fileID: 11400000, guid: 90b2e3c0a9df04cc883a4146ac96e84e, type: 2}
   Aim: {fileID: 11400000, guid: f7358ed7c9f3e45acb46b515e2b623f5, type: 2}
   Light: {fileID: 11400000, guid: 37d7df992175d49faabca71e962ff081, type: 2}
   DryFire: {fileID: 11400000, guid: 88dc5833a2b0c43c6aeb0b5c1c3d843f, type: 2}

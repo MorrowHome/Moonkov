@@ -45,7 +45,7 @@ namespace Unity.MP_FPS
         public AlienCreatureBody(Transform owner, AlienCreatureProfile profile, float scale, bool render, int hitLayer)
         {
             m_Owner = owner; m_Profile = profile; m_Scale = Mathf.Clamp(scale, .1f, 4); m_Render = render;
-            if (render) m_Feedback = new AlienCreatureFeedback(m_Scale, profile.Species);
+            if (render) m_Feedback = new AlienCreatureFeedback(m_Scale, profile.Species, owner);
             m_Mask = LayerMask.GetMask("Default", "Ground");
             Motor = new SurfaceMotor(owner.position, owner.rotation, m_Mask, m_Scale);
             if (profile.IsChain)

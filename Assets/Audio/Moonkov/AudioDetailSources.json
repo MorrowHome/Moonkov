@@ -1,0 +1,443 @@
+{
+  "collections": [
+    {
+      "name": "Scrapes",
+      "author": "AntumDeluge",
+      "license": "CC0-1.0",
+      "url": "https://opengameart.org/content/scrapes",
+      "download": "https://opengameart.org/sites/default/files/scrapes.zip",
+      "sha256": "9598070ddd77ed99e922df1d4472a249624adcd945794d1b6eba88ac77f6a014"
+    },
+    {
+      "name": "50 RPG sound effects",
+      "author": "Kenney",
+      "license": "CC0-1.0",
+      "url": "https://opengameart.org/node/21999",
+      "download": "https://opengameart.org/sites/default/files/RPGsounds_Kenney.zip",
+      "sha256": "3ae398ad63e293f9c450bda22d5d81c3af69c74df66fc1400f33c012c0bbc231"
+    }
+  ],
+  "existing_shell_layer": "AlienContact: see RaidAudioSources.json / RaidAudio.md (CC0)",
+  "clips": [
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Details/SuitWallBrush1.wav",
+      "sources": [
+        {
+          "path": "LocalData/AudioDetails/Sources/Kenney/OGG/cloth1.ogg",
+          "sha256": "ddb93a3671233f95da0e0b10367f082f7eb42fa6caaddcf776410aa8833c747d"
+        },
+        {
+          "path": "LocalData/AudioDetails/Sources/Scrapes/scrape-3.wav",
+          "sha256": "5586c252106affc44e71fcc5781bafb7c6d6d49c301b92f69a210f0d7435d508"
+        }
+      ],
+      "processing": "Fabric contact with restrained abrasive surface shear; HP75Hz; 18ms/70ms fades; -4.44dBFS peak; mono PCM16/48k",
+      "seconds": 0.4891,
+      "sha256": "c8b3feb82f7c420ab847c9955be5c9bf46726b868cb03f3ec769e6dc079942ec"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Details/SuitWallMetal1.wav",
+      "sources": [
+        {
+          "path": "LocalData/AudioDetails/Sources/Kenney/OGG/cloth1.ogg",
+          "sha256": "ddb93a3671233f95da0e0b10367f082f7eb42fa6caaddcf776410aa8833c747d"
+        },
+        {
+          "path": "LocalData/AudioDetails/Sources/Scrapes/scrape-3.wav",
+          "sha256": "5586c252106affc44e71fcc5781bafb7c6d6d49c301b92f69a210f0d7435d508"
+        },
+        {
+          "path": "LocalData/AudioDetails/Sources/Kenney/OGG/metalLatch.ogg",
+          "sha256": "ba9ba60b172b3ebc131a940f25793cd2e207aca7af73dc80d637277f060f1708"
+        }
+      ],
+      "processing": "Fabric contact, brighter shear and soft real metal fastening resonance; HP75Hz; 18ms/70ms fades; -4.44dBFS peak; mono PCM16/48k",
+      "seconds": 0.4891,
+      "sha256": "e7451259e746800a960d104c757063de56dac63a480bad7112f4fc9e9a0f32de"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Details/AlienWallScrape1.wav",
+      "sources": [
+        {
+          "path": "LocalData/AudioDetails/Sources/Scrapes/scrape-3.wav",
+          "sha256": "5586c252106affc44e71fcc5781bafb7c6d6d49c301b92f69a210f0d7435d508"
+        },
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Raid/AlienContact1.wav",
+          "sha256": "508b39021172e0645b423e92aaf820c9b6805293ca9c5f8a91e765d61a48c43b"
+        }
+      ],
+      "processing": "Recorded cinder-block scraping with quiet shell articulation; HP75Hz; 18ms/70ms fades; -4.44dBFS peak; mono PCM16/48k",
+      "seconds": 0.4839,
+      "sha256": "2b45b8a83729d46b2fd55d2469bec36b6db7288bc60e40c7e2e1a683721a35b5"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Details/AlienWallMetal1.wav",
+      "sources": [
+        {
+          "path": "LocalData/AudioDetails/Sources/Scrapes/scrape-3.wav",
+          "sha256": "5586c252106affc44e71fcc5781bafb7c6d6d49c301b92f69a210f0d7435d508"
+        },
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Raid/AlienContact1.wav",
+          "sha256": "508b39021172e0645b423e92aaf820c9b6805293ca9c5f8a91e765d61a48c43b"
+        },
+        {
+          "path": "LocalData/AudioDetails/Sources/Kenney/OGG/metalLatch.ogg",
+          "sha256": "ba9ba60b172b3ebc131a940f25793cd2e207aca7af73dc80d637277f060f1708"
+        }
+      ],
+      "processing": "Scrape with shell articulation and recorded metallic resonance; HP75Hz; 18ms/70ms fades; -4.44dBFS peak; mono PCM16/48k",
+      "seconds": 0.4839,
+      "sha256": "6ae14627b94f1ae977f2ec3b09fde698176180644bf847576ae2d8b614f0359c"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Details/Crawl1.wav",
+      "sources": [
+        {
+          "path": "LocalData/AudioDetails/Sources/Kenney/OGG/clothBelt.ogg",
+          "sha256": "f29560a2aea95bbfeb643e1e8f56ec2b6f7e32f32ce4e140645a36db81de3253"
+        },
+        {
+          "path": "LocalData/AudioDetails/Sources/Scrapes/scrape-3.wav",
+          "sha256": "5586c252106affc44e71fcc5781bafb7c6d6d49c301b92f69a210f0d7435d508"
+        }
+      ],
+      "processing": "Long cloth/belt pull and low floor friction, no heel strike; HP75Hz; 18ms/70ms fades; -4.44dBFS peak; mono PCM16/48k",
+      "seconds": 0.7865,
+      "sha256": "188dd31cddf597df4c606641216b512c0ef6d65801c257e7b6cf4c90c529f5e9"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Details/StanceChange1.wav",
+      "sources": [
+        {
+          "path": "LocalData/AudioDetails/Sources/Kenney/OGG/clothBelt.ogg",
+          "sha256": "f29560a2aea95bbfeb643e1e8f56ec2b6f7e32f32ce4e140645a36db81de3253"
+        },
+        {
+          "path": "LocalData/AudioDetails/Sources/Kenney/OGG/cloth1.ogg",
+          "sha256": "ddb93a3671233f95da0e0b10367f082f7eb42fa6caaddcf776410aa8833c747d"
+        }
+      ],
+      "processing": "Short clothing compression and harness adjustment; HP75Hz; 18ms/70ms fades; -4.44dBFS peak; mono PCM16/48k",
+      "seconds": 0.4891,
+      "sha256": "93694215924f26c440d2c1a76d0126160aa1f6df823b00f0b45f6113e32d4112"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Details/GearMotion1.wav",
+      "sources": [
+        {
+          "path": "LocalData/AudioDetails/Sources/Kenney/OGG/beltHandle1.ogg",
+          "sha256": "2ef665bd8b65dbe669f4560be38a6d8f04a162e618b15a49e3e71b58e558aab0"
+        },
+        {
+          "path": "LocalData/AudioDetails/Sources/Kenney/OGG/cloth1.ogg",
+          "sha256": "ddb93a3671233f95da0e0b10367f082f7eb42fa6caaddcf776410aa8833c747d"
+        },
+        {
+          "path": "LocalData/AudioDetails/Sources/Kenney/OGG/metalLatch.ogg",
+          "sha256": "ba9ba60b172b3ebc131a940f25793cd2e207aca7af73dc80d637277f060f1708"
+        }
+      ],
+      "processing": "Quiet belt/fabric articulation with restrained fastening detail; HP75Hz; 18ms/70ms fades; -4.44dBFS peak; mono PCM16/48k",
+      "seconds": 0.27,
+      "sha256": "9a90dcdf26e52f12b0a758b20047b0fa27629fe57d270021ad2fb28ab9a4c34d"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Details/AlienIdleMotion1.wav",
+      "sources": [
+        {
+          "path": "LocalData/AudioDetails/Sources/Kenney/OGG/creak1.ogg",
+          "sha256": "8a346186fd297254248cab8e8117060a52a5cf2a84f603153a762108550ea95e"
+        },
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Raid/AlienContact1.wav",
+          "sha256": "508b39021172e0645b423e92aaf820c9b6805293ca9c5f8a91e765d61a48c43b"
+        }
+      ],
+      "processing": "Low short body creak and shell tension; no generated vocal tone; HP75Hz; 18ms/70ms fades; -4.44dBFS peak; mono PCM16/48k",
+      "seconds": 0.6579,
+      "sha256": "af7d18630bdd54804a86a6b761695098689a71e17d3c06aaf20763a2066b23a7"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Details/SuitWallBrush2.wav",
+      "sources": [
+        {
+          "path": "LocalData/AudioDetails/Sources/Kenney/OGG/cloth2.ogg",
+          "sha256": "8a7451193c38bc05483aec25dd193e163a15d44cf7fff04ac7912573231b0201"
+        },
+        {
+          "path": "LocalData/AudioDetails/Sources/Scrapes/scrape-4.wav",
+          "sha256": "70f45f23b790881887bb45cc8f041b92140d27c0e7bf4e99dc679decfaa97dd1"
+        }
+      ],
+      "processing": "Fabric contact with restrained abrasive surface shear; HP75Hz; 18ms/70ms fades; -4.44dBFS peak; mono PCM16/48k",
+      "seconds": 0.4687,
+      "sha256": "19ab6aa4efdc4836c0128bdaf924411e033e627a19a934c9990cbb8bd3b072cf"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Details/SuitWallMetal2.wav",
+      "sources": [
+        {
+          "path": "LocalData/AudioDetails/Sources/Kenney/OGG/cloth2.ogg",
+          "sha256": "8a7451193c38bc05483aec25dd193e163a15d44cf7fff04ac7912573231b0201"
+        },
+        {
+          "path": "LocalData/AudioDetails/Sources/Scrapes/scrape-4.wav",
+          "sha256": "70f45f23b790881887bb45cc8f041b92140d27c0e7bf4e99dc679decfaa97dd1"
+        },
+        {
+          "path": "LocalData/AudioDetails/Sources/Kenney/OGG/metalLatch.ogg",
+          "sha256": "ba9ba60b172b3ebc131a940f25793cd2e207aca7af73dc80d637277f060f1708"
+        }
+      ],
+      "processing": "Fabric contact, brighter shear and soft real metal fastening resonance; HP75Hz; 18ms/70ms fades; -4.44dBFS peak; mono PCM16/48k",
+      "seconds": 0.4687,
+      "sha256": "8766ae34d7a0a71df3bb90faebd149dd23aeac31cf1e82b8baa87d519344517e"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Details/AlienWallScrape2.wav",
+      "sources": [
+        {
+          "path": "LocalData/AudioDetails/Sources/Scrapes/scrape-4.wav",
+          "sha256": "70f45f23b790881887bb45cc8f041b92140d27c0e7bf4e99dc679decfaa97dd1"
+        },
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Raid/AlienContact2.wav",
+          "sha256": "8658b283ce96b4eedc101a0694d749e2debf01bc212dd0786618582f465977b2"
+        }
+      ],
+      "processing": "Recorded cinder-block scraping with quiet shell articulation; HP75Hz; 18ms/70ms fades; -4.44dBFS peak; mono PCM16/48k",
+      "seconds": 0.4687,
+      "sha256": "a752b117064f6e2d8778476c360c08c4f2d65b2f735880cb846c299a297fcf6a"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Details/AlienWallMetal2.wav",
+      "sources": [
+        {
+          "path": "LocalData/AudioDetails/Sources/Scrapes/scrape-4.wav",
+          "sha256": "70f45f23b790881887bb45cc8f041b92140d27c0e7bf4e99dc679decfaa97dd1"
+        },
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Raid/AlienContact2.wav",
+          "sha256": "8658b283ce96b4eedc101a0694d749e2debf01bc212dd0786618582f465977b2"
+        },
+        {
+          "path": "LocalData/AudioDetails/Sources/Kenney/OGG/metalLatch.ogg",
+          "sha256": "ba9ba60b172b3ebc131a940f25793cd2e207aca7af73dc80d637277f060f1708"
+        }
+      ],
+      "processing": "Scrape with shell articulation and recorded metallic resonance; HP75Hz; 18ms/70ms fades; -4.44dBFS peak; mono PCM16/48k",
+      "seconds": 0.4687,
+      "sha256": "45ef83611c2e45101d4bacaf53ad09a625f86177df11982ce0a89d9b3f050c7e"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Details/Crawl2.wav",
+      "sources": [
+        {
+          "path": "LocalData/AudioDetails/Sources/Kenney/OGG/clothBelt2.ogg",
+          "sha256": "d545b1d9f20e6188140aaf551a96f1e82fe0d15f7ca066fac8b065e1231e0038"
+        },
+        {
+          "path": "LocalData/AudioDetails/Sources/Scrapes/scrape-4.wav",
+          "sha256": "70f45f23b790881887bb45cc8f041b92140d27c0e7bf4e99dc679decfaa97dd1"
+        }
+      ],
+      "processing": "Long cloth/belt pull and low floor friction, no heel strike; HP75Hz; 18ms/70ms fades; -4.44dBFS peak; mono PCM16/48k",
+      "seconds": 0.7609,
+      "sha256": "ee8ef6937d61b0d2d4e73e8b5bb57081d49b9854b8bcbfa19db29578b0b5ac07"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Details/StanceChange2.wav",
+      "sources": [
+        {
+          "path": "LocalData/AudioDetails/Sources/Kenney/OGG/clothBelt2.ogg",
+          "sha256": "d545b1d9f20e6188140aaf551a96f1e82fe0d15f7ca066fac8b065e1231e0038"
+        },
+        {
+          "path": "LocalData/AudioDetails/Sources/Kenney/OGG/cloth2.ogg",
+          "sha256": "8a7451193c38bc05483aec25dd193e163a15d44cf7fff04ac7912573231b0201"
+        }
+      ],
+      "processing": "Short clothing compression and harness adjustment; HP75Hz; 18ms/70ms fades; -4.44dBFS peak; mono PCM16/48k",
+      "seconds": 0.4511,
+      "sha256": "0942d2be08044b1d90fb4fce93867db4456f83fa1ed8f048241aa318e6a6daa2"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Details/GearMotion2.wav",
+      "sources": [
+        {
+          "path": "LocalData/AudioDetails/Sources/Kenney/OGG/beltHandle2.ogg",
+          "sha256": "f3b692d5c83263c25bce779805b212dbab515d18a603c695fc6a1e8650cf5366"
+        },
+        {
+          "path": "LocalData/AudioDetails/Sources/Kenney/OGG/cloth2.ogg",
+          "sha256": "8a7451193c38bc05483aec25dd193e163a15d44cf7fff04ac7912573231b0201"
+        },
+        {
+          "path": "LocalData/AudioDetails/Sources/Kenney/OGG/metalLatch.ogg",
+          "sha256": "ba9ba60b172b3ebc131a940f25793cd2e207aca7af73dc80d637277f060f1708"
+        }
+      ],
+      "processing": "Quiet belt/fabric articulation with restrained fastening detail; HP75Hz; 18ms/70ms fades; -4.44dBFS peak; mono PCM16/48k",
+      "seconds": 0.3048,
+      "sha256": "aeb1e0472add11670dfe045f32f23934bcc5d3b1ecd5e50164c12b00ac0db71e"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Details/AlienIdleMotion2.wav",
+      "sources": [
+        {
+          "path": "LocalData/AudioDetails/Sources/Kenney/OGG/creak2.ogg",
+          "sha256": "8a990afdc03aebb91d528f5385e2f95582dbfa8e2c12c71098ab01be9142294a"
+        },
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Raid/AlienContact2.wav",
+          "sha256": "8658b283ce96b4eedc101a0694d749e2debf01bc212dd0786618582f465977b2"
+        }
+      ],
+      "processing": "Low short body creak and shell tension; no generated vocal tone; HP75Hz; 18ms/70ms fades; -4.44dBFS peak; mono PCM16/48k",
+      "seconds": 0.625,
+      "sha256": "35189fcb9a4ee4efec31b19e0deca3a45ae16c9ffe63f320eda2948587226e84"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Details/SuitWallBrush3.wav",
+      "sources": [
+        {
+          "path": "LocalData/AudioDetails/Sources/Kenney/OGG/cloth3.ogg",
+          "sha256": "a48632d17a4f1416541d261a32a31612e01267144c407fa3ecab3ff410f0085b"
+        },
+        {
+          "path": "LocalData/AudioDetails/Sources/Scrapes/scrape-5.wav",
+          "sha256": "1b9a0bed92b019fa2029996e2e8c7e86ff45bab24b1c1b742bf0cd0b3e160cff"
+        }
+      ],
+      "processing": "Fabric contact with restrained abrasive surface shear; HP75Hz; 18ms/70ms fades; -4.44dBFS peak; mono PCM16/48k",
+      "seconds": 0.4891,
+      "sha256": "0793847a6611a0b1da11908c919619ce9c33636b0701ca9243f6a228f08a1c1f"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Details/SuitWallMetal3.wav",
+      "sources": [
+        {
+          "path": "LocalData/AudioDetails/Sources/Kenney/OGG/cloth3.ogg",
+          "sha256": "a48632d17a4f1416541d261a32a31612e01267144c407fa3ecab3ff410f0085b"
+        },
+        {
+          "path": "LocalData/AudioDetails/Sources/Scrapes/scrape-5.wav",
+          "sha256": "1b9a0bed92b019fa2029996e2e8c7e86ff45bab24b1c1b742bf0cd0b3e160cff"
+        },
+        {
+          "path": "LocalData/AudioDetails/Sources/Kenney/OGG/metalLatch.ogg",
+          "sha256": "ba9ba60b172b3ebc131a940f25793cd2e207aca7af73dc80d637277f060f1708"
+        }
+      ],
+      "processing": "Fabric contact, brighter shear and soft real metal fastening resonance; HP75Hz; 18ms/70ms fades; -4.44dBFS peak; mono PCM16/48k",
+      "seconds": 0.4891,
+      "sha256": "4f29ee36cdb18a8f9c402abf1966b3c730701919ca621b8a0003344faf5d3a89"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Details/AlienWallScrape3.wav",
+      "sources": [
+        {
+          "path": "LocalData/AudioDetails/Sources/Scrapes/scrape-5.wav",
+          "sha256": "1b9a0bed92b019fa2029996e2e8c7e86ff45bab24b1c1b742bf0cd0b3e160cff"
+        },
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Raid/AlienContact3.wav",
+          "sha256": "6a158fe0d08df58f0c145e667828f7e01c28a658e8a272fa90a5eea5fb0f25b6"
+        }
+      ],
+      "processing": "Recorded cinder-block scraping with quiet shell articulation; HP75Hz; 18ms/70ms fades; -4.44dBFS peak; mono PCM16/48k",
+      "seconds": 0.4545,
+      "sha256": "f9d328b46b8e6fb97d21b1eb4fb23a82a4109fe7fa026668cb65f9fb9fa6ab53"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Details/AlienWallMetal3.wav",
+      "sources": [
+        {
+          "path": "LocalData/AudioDetails/Sources/Scrapes/scrape-5.wav",
+          "sha256": "1b9a0bed92b019fa2029996e2e8c7e86ff45bab24b1c1b742bf0cd0b3e160cff"
+        },
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Raid/AlienContact3.wav",
+          "sha256": "6a158fe0d08df58f0c145e667828f7e01c28a658e8a272fa90a5eea5fb0f25b6"
+        },
+        {
+          "path": "LocalData/AudioDetails/Sources/Kenney/OGG/metalLatch.ogg",
+          "sha256": "ba9ba60b172b3ebc131a940f25793cd2e207aca7af73dc80d637277f060f1708"
+        }
+      ],
+      "processing": "Scrape with shell articulation and recorded metallic resonance; HP75Hz; 18ms/70ms fades; -4.44dBFS peak; mono PCM16/48k",
+      "seconds": 0.4545,
+      "sha256": "0447081a4ad8bbb8eba7e8f097ca5e38d3c2290fd1a7e5595220289abb0ef599"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Details/Crawl3.wav",
+      "sources": [
+        {
+          "path": "LocalData/AudioDetails/Sources/Kenney/OGG/clothBelt.ogg",
+          "sha256": "f29560a2aea95bbfeb643e1e8f56ec2b6f7e32f32ce4e140645a36db81de3253"
+        },
+        {
+          "path": "LocalData/AudioDetails/Sources/Scrapes/scrape-5.wav",
+          "sha256": "1b9a0bed92b019fa2029996e2e8c7e86ff45bab24b1c1b742bf0cd0b3e160cff"
+        }
+      ],
+      "processing": "Long cloth/belt pull and low floor friction, no heel strike; HP75Hz; 18ms/70ms fades; -4.44dBFS peak; mono PCM16/48k",
+      "seconds": 0.7368,
+      "sha256": "e0f8383e45675102b55becfee985a4d1984646bbe557c012b8f08b5f10642a7b"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Details/StanceChange3.wav",
+      "sources": [
+        {
+          "path": "LocalData/AudioDetails/Sources/Kenney/OGG/clothBelt.ogg",
+          "sha256": "f29560a2aea95bbfeb643e1e8f56ec2b6f7e32f32ce4e140645a36db81de3253"
+        },
+        {
+          "path": "LocalData/AudioDetails/Sources/Kenney/OGG/cloth3.ogg",
+          "sha256": "a48632d17a4f1416541d261a32a31612e01267144c407fa3ecab3ff410f0085b"
+        }
+      ],
+      "processing": "Short clothing compression and harness adjustment; HP75Hz; 18ms/70ms fades; -4.44dBFS peak; mono PCM16/48k",
+      "seconds": 0.4891,
+      "sha256": "4a2f4b84411506501d17bdc768f87ba8003048c6fa1a86633e98d259df48995a"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Details/GearMotion3.wav",
+      "sources": [
+        {
+          "path": "LocalData/AudioDetails/Sources/Kenney/OGG/beltHandle2.ogg",
+          "sha256": "f3b692d5c83263c25bce779805b212dbab515d18a603c695fc6a1e8650cf5366"
+        },
+        {
+          "path": "LocalData/AudioDetails/Sources/Kenney/OGG/cloth3.ogg",
+          "sha256": "a48632d17a4f1416541d261a32a31612e01267144c407fa3ecab3ff410f0085b"
+        },
+        {
+          "path": "LocalData/AudioDetails/Sources/Kenney/OGG/metalLatch.ogg",
+          "sha256": "ba9ba60b172b3ebc131a940f25793cd2e207aca7af73dc80d637277f060f1708"
+        }
+      ],
+      "processing": "Quiet belt/fabric articulation with restrained fastening detail; HP75Hz; 18ms/70ms fades; -4.44dBFS peak; mono PCM16/48k",
+      "seconds": 0.2977,
+      "sha256": "d7505187c29edae6c7cae410202af89725c47e1f68bf251e5f4bd501d423d55e"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/Details/AlienIdleMotion3.wav",
+      "sources": [
+        {
+          "path": "LocalData/AudioDetails/Sources/Kenney/OGG/creak1.ogg",
+          "sha256": "8a346186fd297254248cab8e8117060a52a5cf2a84f603153a762108550ea95e"
+        },
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Raid/AlienContact3.wav",
+          "sha256": "6a158fe0d08df58f0c145e667828f7e01c28a658e8a272fa90a5eea5fb0f25b6"
+        }
+      ],
+      "processing": "Low short body creak and shell tension; no generated vocal tone; HP75Hz; 18ms/70ms fades; -4.44dBFS peak; mono PCM16/48k",
+      "seconds": 0.5952,
+      "sha256": "7c4756f72d2d2eb5aa41969fcff07ab08e7cad7c2545bd7256fbeb4823d54e45"
+    }
+  ]
+}

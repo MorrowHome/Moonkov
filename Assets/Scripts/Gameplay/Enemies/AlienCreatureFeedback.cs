@@ -8,9 +8,13 @@ namespace Unity.MP_FPS
     /// no per-creature generated AudioClips and no gameplay authority.</summary>
     public sealed class AlienCreatureFeedback : IDisposable
     {
-        private enum Cue { Step, Warning, Strike, Hurt, Collapse, Count }
+        private enum Cue { Step, Warning, Strike, Hurt, Collapse, Idle, Motion, Wall, Count }
         private readonly SoundSystem.SoundInfo[] m_Handles = new SoundSystem.SoundInfo[(int)Cue.Count];
         private readonly float m_Pitch;
+        private readonly Transform m_Anchor;
+        private readonly System.Random m_Random;
+        private readonly MoonkovSurfaceFoley m_Wall = new MoonkovSurfaceFoley();
+        private float m_IdleIn, m_MotionIn, m_SurfaceTravel, m_ScrapeIn;
         private ISoundSystem m_System;
         private AlienAction m_PreviousAction;
         private uint m_AttackSequence;
@@ -19,8 +23,11 @@ namespace Unity.MP_FPS
         private Vector3 m_Position;
         private bool m_HasState, m_HasFeet, m_Detached, m_Disposed;
 
-        public AlienCreatureFeedback(float scale, AlienSpecies species = AlienSpecies.Spider)
+        public AlienCreatureFeedback(float scale, AlienSpecies species = AlienSpecies.Spider, Transform anchor = null)
         {
+            m_Anchor = anchor;
+            m_Random = new System.Random((anchor ? anchor.GetEntityId().GetHashCode() : UnityEngine.Random.Range(1, int.MaxValue)) ^ (int)species * 997);
+            m_IdleIn = Range(2.5f, 7.5f); m_MotionIn = Range(3, 7);
             float speciesPitch = species == AlienSpecies.Slime || species == AlienSpecies.Leech ? -180 :
                 species == AlienSpecies.Centipede || species == AlienSpecies.Spider ? 80 : -70;
             m_Pitch = Mathf.Clamp(-300 * Mathf.Log(Mathf.Max(.25f, scale) / .65f, 2), -350, 250) +
@@ -36,7 +43,14 @@ namespace Unity.MP_FPS
             }
             bool changed = action != m_PreviousAction;
             if (action != AlienAction.Windup) Stop(Cue.Warning, .08f);
-            if (changed && action == AlienAction.Windup) Play(Cue.Warning, position, .95f);
+            if (changed && action == AlienAction.Windup)
+            {
+                Stop(Cue.Idle, .1f); Stop(Cue.Motion, .1f);
+                m_IdleIn = Mathf.Max(m_IdleIn, 3); m_MotionIn = Mathf.Max(m_MotionIn, 2);
+                Play(Cue.Warning, position, .95f);
+            }
+            if (changed && action == AlienAction.Recover && m_PreviousAction == AlienAction.Strike)
+                Play(Cue.Motion, position, .45f);
             bool newAttack = attackSequence != 0 && unchecked((int)(attackSequence - m_AttackSequence)) > 0;
             if (action == AlienAction.Strike && actionTime < .25f && (changed || newAttack))
                 Play(Cue.Strike, position, 1);
@@ -44,6 +58,7 @@ namespace Unity.MP_FPS
             if (changed && action == AlienAction.Dead)
             {
                 Stop(Cue.Step); Stop(Cue.Strike, .06f); Stop(Cue.Hurt, .05f);
+                Stop(Cue.Idle, .1f); Stop(Cue.Motion, .1f); Stop(Cue.Wall, .08f);
                 Play(Cue.Collapse, position, .9f);
             }
             else if (health > 0 && health < m_Health - .01f && Time.unscaledTime >= m_HurtAt)
@@ -55,6 +70,8 @@ namespace Unity.MP_FPS
         public void Tick(SurfaceMotor motor, PredictiveFeet feet, AlienAction action, float dt)
         {
             if (m_Disposed || !m_HasState) return;
+            if (dt <= 0 || dt > .25f) { m_Position = motor.Current.Position; m_Wall.Reset(); return; }
+            TickDetails(motor, action, dt);
             m_StepCooldown = Mathf.Max(0, m_StepCooldown - dt);
             if (!m_HasFeet)
             {
@@ -84,16 +101,73 @@ namespace Unity.MP_FPS
                 m_StepCooldown = .15f;
             }
         }
-        private void Play(Cue cue, Vector3 position, float volume)
+        private float Range(float min, float max) => min + (float)m_Random.NextDouble() * (max - min);
+
+        private void TickDetails(SurfaceMotor motor, AlienAction action, float dt)
+        {
+            Vector3 position = motor.Current.Position;
+            if (m_Health <= 0 || action == AlienAction.Dead || action == AlienAction.Ambush ||
+                !MoonkovAudio.CanHearDetail(position, 28))
+            { m_Wall.Reset(); m_SurfaceTravel = 0; return; }
+            bool attacking = action == AlienAction.Windup || action == AlienAction.Strike;
+            if (!attacking)
+            {
+                m_IdleIn -= dt; m_MotionIn -= dt;
+                if (m_IdleIn <= 0)
+                {
+                    bool played = Play(Cue.Idle, position, action == AlienAction.Chase ? .48f : .7f);
+                    m_IdleIn = played ? Range(8, 16) : Range(.8f, 1.6f);
+                }
+                if (m_MotionIn <= 0 && motor.Velocity.sqrMagnitude < .09f && motor.Supported)
+                {
+                    m_MotionIn = Play(Cue.Motion, position, .4f) ? Range(5, 11) : Range(1, 2);
+                }
+            }
+            Vector3 displacement = position - m_Position;
+            m_ScrapeIn = Mathf.Max(0, m_ScrapeIn - dt);
+            if (attacking || motor.Detached || !motor.Supported || !m_HasFeet || displacement.magnitude > 2 ||
+                motor.Velocity.sqrMagnitude < .04f)
+            { m_SurfaceTravel = 0; m_Wall.Reset(); return; }
+            RaycastHit hit;
+            bool scrape = false;
+            if (Vector3.Dot(motor.Current.Up, Vector3.up) < .65f)
+            {
+                m_SurfaceTravel += displacement.magnitude;
+                if (m_SurfaceTravel >= .3f && m_ScrapeIn <= 0 &&
+                    MoonkovSurfaceFoley.TrySupportContact(m_Anchor, position, motor.Current.Up, motor.BodyHeight + .15f, out hit))
+                { m_SurfaceTravel = 0; scrape = true; }
+                else return;
+            }
+            else scrape = m_Wall.TrySlide(m_Anchor, position, displacement, motor.CollisionRadius + .13f, dt, out hit);
+            if (!scrape || m_ScrapeIn > 0) return;
+            var library = MoonkovAudio.Library;
+            bool metal = RifleImpactSurface.Classify(hit.collider) == RifleImpactKind.Metal;
+            Play(Cue.Wall, hit.point, Mathf.Lerp(.35f, .7f, Mathf.Clamp01(motor.Velocity.magnitude / 5)),
+                metal ? library?.AlienWallMetal : library?.AlienWallScrape);
+            m_ScrapeIn = .52f;
+        }
+
+        private bool Play(Cue cue, Vector3 position, float volume, SoundDef overrideSound = null)
         {
             var game = GameManager.Instance;
             var library = MoonkovAudio.Library;
-            if (!Application.isPlaying || !game || game.IsHeadless || game.SoundSystem == null || !library) return;
+            if (!Application.isPlaying || !game || game.IsHeadless || game.SoundSystem == null || !library) return false;
             m_System = game.SoundSystem;
             SoundDef sound = cue == Cue.Step ? library.AlienContact : cue == Cue.Warning ? library.AlienWarning :
-                cue == Cue.Strike ? library.AlienStrike : cue == Cue.Hurt ? library.AlienHurt : library.AlienDeath;
+                cue == Cue.Strike ? library.AlienStrike : cue == Cue.Hurt ? library.AlienHurt :
+                cue == Cue.Idle ? library.AlienIdle : cue == Cue.Motion ? library.AlienIdleMotion :
+                cue == Cue.Collapse ? library.AlienDeath : null;
+            sound = overrideSound ?? sound;
             Stop(cue, .025f);
-            m_Handles[(int)cue] = MoonkovAudio.PlayWeaponLayer(sound, position, volume, 1, m_Pitch);
+            var info = new SoundSystem.SoundInfo
+            {
+                SoundDefinition = sound, SoundTransform = m_Anchor,
+                Position = m_Anchor ? m_Anchor.InverseTransformPoint(position) : position,
+                SoundDefOverrideInfo = sound ? new SoundEmitter.SoundDefOverrideData(sound)
+                    { SpatialBlend = 1, BasePitchInCents = sound.BasePitchInCents + m_Pitch } : null
+            };
+            m_Handles[(int)cue] = sound && m_System.PlayEmitter(info, volume) ? info : null;
+            return m_Handles[(int)cue] != null;
         }
         private void Stop(Cue cue, float fade = 0)
         {
@@ -105,7 +179,8 @@ namespace Unity.MP_FPS
         {
             if (m_Disposed) return;
             m_Disposed = true;
-            for (int i = 0; i < m_Handles.Length; i++) Stop((Cue)i, .08f);
+            for (int i = 0; i < m_Handles.Length; i++) Stop((Cue)i);
+            if (m_System is SoundSystem system && m_Anchor) system.StopAttachedTo(m_Anchor);
         }
     }
 }
