@@ -103,6 +103,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     [SerializeField] private TextAsset gestureBake;
     private DollSingerBakedGestures bakedGestures;
     private float gestureShotTime = float.NegativeInfinity;
+    private float gestureReframeUntil;
     private uint gestureShotTick;
     private bool gestureTickInitialized;
     private Animator animator;
@@ -175,7 +176,11 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     private void SetWeaponEquipped(HaloWeapon weapon, int ammo)
     {
         if (visualWeapon != weapon && discharge) discharge.Clear();
-        if (visualWeapon != weapon) gestureShotTime = float.NegativeInfinity;
+        if (visualWeapon != weapon)
+        {
+            gestureShotTime = float.NegativeInfinity;
+            gestureReframeUntil = Time.time + gestureTransitionSeconds + .04f;
+        }
         visualWeapon = weapon;
         revolverEquipped = weapon == HaloWeapon.Revolver;
         if (haloVisual) haloVisual.gameObject.SetActive(weapon != HaloWeapon.None);
@@ -309,8 +314,10 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
 #else
         bool aimingInput = manualAim;
 #endif
+        bool wasAiming = wantsAim;
         wantsAim = visualWeapon != HaloWeapon.None && (networkControlled ? networkAiming :
             thirdPerson && thirdPerson.enabled && playerCamera && aimingInput);
+        if (wantsAim && !wasAiming) gestureReframeUntil = Time.time + aimInSeconds + .04f;
         if (thirdPerson) thirdPerson.IsLocallyAiming = wantsAim;
         if (!networkControlled && input && input.enabled && input.LightPressed)
             haloLightEnabled = !haloLightEnabled;
@@ -425,7 +432,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         float t = aimBlend * aimBlend * (3f - 2f * aimBlend);
         if (centred && t > 0.001f)
         {
-            view.FrameGestureHands();
+            view.FrameGestureHands(visualWeapon != HaloWeapon.Sniper && Time.time <= gestureReframeUntil);
         }
         Vector3 headPosition = head.position + transform.up * 0.27f +
                                transform.right * Mathf.Sin(Time.time * 1.8f) * 0.008f + transform.up * hhh;

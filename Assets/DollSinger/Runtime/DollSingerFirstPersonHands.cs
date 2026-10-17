@@ -12,13 +12,16 @@ namespace Unity.MP_FPS.DollSinger
         public Camera Camera { get; }
         public Mesh BodyWithoutArms { get; }
         public bool Active { get; private set; }
+        public bool HideOwnerBody => Active && !wasViewfinder;
         private readonly SkinnedMeshRenderer renderer;
         private readonly SkinnedMeshRenderer source;
         private readonly Mesh armMesh;
         private readonly List<Camera> stack;
         private readonly Transform[] rightHandBones, leftHandBones;
         private bool reframe = true, wasViewfinder;
-        private Rect safeFrame = Rect.MinMaxRect(.07f, .03f, .93f, .62f);
+        private float lastAspect, lastFieldOfView;
+        private Quaternion framedOwnerRotation;
+        private Rect safeFrame = Rect.MinMaxRect(.07f, .04f, .93f, .34f);
 
         public DollSingerFirstPersonHands(SkinnedMeshRenderer source, Mesh body, Camera owner, Animator animator)
         {
@@ -98,10 +101,16 @@ namespace Unity.MP_FPS.DollSinger
         public void Present(bool active, float fieldOfView, Camera owner, bool viewfinder)
         {
             if (!Camera) return;
-            if (active && (!Active || viewfinder != wasViewfinder)) reframe = true;
+            if (active && (!Active || viewfinder != wasViewfinder ||
+                !Mathf.Approximately(lastAspect, owner.aspect) || !Mathf.Approximately(lastFieldOfView, fieldOfView)))
+            {
+                reframe = true;
+                Camera.ResetProjectionMatrix();
+            }
             wasViewfinder = viewfinder;
+            lastAspect = owner.aspect; lastFieldOfView = fieldOfView;
             Active = active;
-            safeFrame = Rect.MinMaxRect(.07f, viewfinder ? .08f : .03f, .93f, viewfinder ? .90f : .62f);
+            safeFrame = Rect.MinMaxRect(.07f, viewfinder ? .08f : .04f, .93f, viewfinder ? .90f : .34f);
             Camera.fieldOfView = fieldOfView;
             Camera.rect = owner.rect;
             Camera.aspect = owner.aspect;
@@ -113,18 +122,72 @@ namespace Unity.MP_FPS.DollSinger
                 for (int i = 0; i < armMesh.blendShapeCount; i++) renderer.SetBlendShapeWeight(i, source.GetBlendShapeWeight(i));
         }
 
-        public void FrameHands()
+        public void FrameHands(bool force = false)
         {
             if (!Active || !Camera) return;
+            // Head pitch moves the real eye as well as rotating it. Reusing a fit
+            // from another viewing angle makes the hands drift, then snap at the
+            // viewport boundary. Track looking, while leaving shot recoil intact.
+            if (!wasViewfinder && Quaternion.Angle(framedOwnerRotation, Camera.transform.parent.rotation) > .05f) force = true;
             // Leave room for recoil and charging. Reframe only when the final hands
             // would leave their safe area; tracking every movement would cancel the animation.
-            if (!reframe && InsideFrame(rightHandBones) && InsideFrame(leftHandBones)) return;
+            if (!force && !reframe && InsideFrame(rightHandBones) && InsideFrame(leftHandBones)) return;
             reframe = false;
+            framedOwnerRotation = Camera.transform.parent.rotation;
             var root = Camera.transform.parent;
             var min = Vector3.one * float.PositiveInfinity;
             var max = Vector3.one * float.NegativeInfinity;
             IncludeBounds(root, rightHandBones, ref min, ref max);
             IncludeBounds(root, leftHandBones, ref min, ref max);
+            if (!wasViewfinder)
+            {
+                // Keep a centred principal point: a finger parallel to the aim ray
+                // must converge on the actual crosshair. Uniform scale preserves
+                // angles; camera translation places the hands in the lower strip.
+                Camera.transform.localPosition = new Vector3(0, 0, Mathf.Min(-.10f, min.z - .15f));
+                Camera.ResetProjectionMatrix();
+                var low = Vector2.one * float.PositiveInfinity;
+                var high = Vector2.one * float.NegativeInfinity;
+                IncludeViewport(rightHandBones, ref low, ref high);
+                IncludeViewport(leftHandBones, ref low, ref high);
+                var size = high - low;
+                var middle = (low + high) * .5f;
+                float scale = Mathf.Min(1f, Mathf.Min(safeFrame.width / (size.x + .06f),
+                    safeFrame.height / (size.y + .06f))) * .88f;
+                var fit = Matrix4x4.identity;
+                var projection = Camera.projectionMatrix;
+                fit.m00 = fit.m11 = scale;
+                Camera.projectionMatrix = fit * projection;
+                float handDepth = (min.z + max.z) * .5f - Camera.transform.localPosition.z;
+                float tangent = Mathf.Tan(Camera.fieldOfView * .5f * Mathf.Deg2Rad);
+                // Re-evaluate after translation for the two hands' different depths.
+                for (int i = 0; i < 12; i++)
+                {
+                    low = Vector2.one * float.PositiveInfinity; high = Vector2.one * float.NegativeInfinity;
+                    IncludeViewport(rightHandBones, ref low, ref high);
+                    IncludeViewport(leftHandBones, ref low, ref high);
+                    // Translating a perspective camera changes the apparent span
+                    // of hands at different depths. Fit again after translation;
+                    // a single scale computed at the real eye can crop a thumb.
+                    size = high - low;
+                    float shrink = Mathf.Min(1f, Mathf.Min((safeFrame.width - .02f) / Mathf.Max(.001f, size.x),
+                        (safeFrame.height - .02f) / Mathf.Max(.001f, size.y)));
+                    if (shrink < .99f)
+                    {
+                        scale *= shrink * .96f;
+                        fit.m00 = fit.m11 = scale;
+                        Camera.projectionMatrix = fit * projection;
+                        low = Vector2.one * float.PositiveInfinity; high = Vector2.one * float.NegativeInfinity;
+                        IncludeViewport(rightHandBones, ref low, ref high);
+                        IncludeViewport(leftHandBones, ref low, ref high);
+                    }
+                    middle = (low + high) * .5f;
+                    var shift = middle - safeFrame.center;
+                    Camera.transform.localPosition += new Vector3(shift.x * 2f * handDepth * tangent * Camera.aspect / scale,
+                        shift.y * 2f * handDepth * tangent / scale, 0);
+                }
+                return;
+            }
             float tan = Mathf.Tan(Camera.fieldOfView * .5f * Mathf.Deg2Rad);
             var center = (min + max) * .5f;
             // Physical reach clamps the wrists at extreme pitch/prone. Move only the arm
@@ -135,6 +198,15 @@ namespace Unity.MP_FPS.DollSinger
             float middleDepth = center.z - z;
             Camera.transform.localPosition = new Vector3(center.x,
                 center.y + (1f - 2f * safeFrame.center.y) * middleDepth * tan, z);
+        }
+
+        private void IncludeViewport(Transform[] bones, ref Vector2 min, ref Vector2 max)
+        {
+            foreach (var bone in bones)
+            {
+                Vector2 point = Camera.WorldToViewportPoint(bone.position);
+                min = Vector2.Min(min, point); max = Vector2.Max(max, point);
+            }
         }
 
         private bool InsideFrame(Transform[] bones)

@@ -109,6 +109,8 @@ namespace Unity.MP_FPS.DollSinger {
         private Transform m_SpineBone;
         private Transform m_PelvisBone;
         private Transform m_HeadBone;
+        private Transform m_NeckBone;
+        private Quaternion m_HeadBindRotation, m_NeckBindRotation;
         private Transform m_LeftThigh, m_LeftCalf, m_LeftFoot;
         private Transform m_RightThigh, m_RightCalf, m_RightFoot;
         private bool m_ChestBoneSearched;
@@ -224,6 +226,10 @@ namespace Unity.MP_FPS.DollSinger {
             m_ChestBone = animator.GetBoneTransform(HumanBodyBones.UpperChest)
                 ?? animator.GetBoneTransform(HumanBodyBones.Chest);
             m_HeadBone = animator.GetBoneTransform(HumanBodyBones.Head);
+            m_NeckBone = animator.GetBoneTransform(HumanBodyBones.Neck);
+            Quaternion inverseBody = Quaternion.Inverse(transform.rotation);
+            if (m_HeadBone) m_HeadBindRotation = inverseBody * m_HeadBone.rotation;
+            if (m_NeckBone) m_NeckBindRotation = inverseBody * m_NeckBone.rotation;
             m_LeftThigh = animator.GetBoneTransform(HumanBodyBones.LeftUpperLeg);
             m_LeftCalf = animator.GetBoneTransform(HumanBodyBones.LeftLowerLeg);
             m_LeftFoot = animator.GetBoneTransform(HumanBodyBones.LeftFoot);
@@ -372,6 +378,8 @@ namespace Unity.MP_FPS.DollSinger {
                 }
                 m_HasTurnParameters = hasDirection && hasPlayback;
             }
+            // Capture the imported bone axes before the Animator evaluates its first pose.
+            EnsureLeanBones();
         }
 
         private void OnEnable() => ResetTurnAnimation();
@@ -422,7 +430,27 @@ namespace Unity.MP_FPS.DollSinger {
         private void LateUpdate() {
             m_AppliedLeanOffset = Vector3.zero;
             if (!IsFirstPersonView) { m_LeanState = m_LeanTarget = 0f; return; }
+            StabilizeHeadLook();
             ApplyBodyLean();
+        }
+
+        private void StabilizeHeadLook()
+        {
+            if (!m_HeadBone || m_HeadLookWeight <= .001f) return;
+            // Humanoid LookAt constrains forward, but on this MMD rig it adds up to
+            // 37 degrees of roll at high pitch. The neck roll also shifts the eye
+            // sideways. Keep its solved pitch/yaw and remove only that extra roll.
+            if (m_NeckBone)
+            {
+                Quaternion direction = m_NeckBone.rotation * Quaternion.Inverse(m_NeckBindRotation);
+                Quaternion upright = Quaternion.LookRotation(direction * Vector3.forward, transform.up);
+                m_NeckBone.rotation = Quaternion.Slerp(m_NeckBone.rotation,
+                    upright * m_NeckBindRotation, m_HeadLookWeight);
+            }
+            Quaternion look = m_NetworkDriven ? m_NetworkHeadRotation :
+                view ? view.transform.rotation : m_MainCamera ? m_MainCamera.transform.rotation : transform.rotation;
+            m_HeadBone.rotation = Quaternion.Slerp(m_HeadBone.rotation,
+                look * m_HeadBindRotation, m_HeadLookWeight);
         }
 
         // There is no lean animation on this rig, so the upper-body roll is applied on top

@@ -76,7 +76,7 @@ public class DollSingerView : MonoBehaviour
     [Range(50f, 80f)] public float gestureFieldOfView = 65f;
     private DollSingerFirstPersonHands gestureHands;
     public Camera GestureCamera => gestureHands?.Camera;
-    public void FrameGestureHands() => gestureHands?.FrameHands();
+    public void FrameGestureHands(bool force = false) => gestureHands?.FrameHands(force);
     public bool GestureHandsActive => gestureHands != null && gestureHands.Active;
     public void SetGestureHandsActive(bool active, bool viewfinder = false)
     {
@@ -94,6 +94,7 @@ public class DollSingerView : MonoBehaviour
     private UnityEngine.Mesh firstPersonMesh;
     private SkinnedMeshRenderer fullShadowRenderer;
     private ShadowCastingMode thirdPersonShadowMode;
+    private bool thirdPersonForceRenderingOff;
     private bool firstPersonPresentationActive;
     private bool renderingFirstPersonMesh;
     private float[] shadowBlendWeights;
@@ -102,6 +103,7 @@ public class DollSingerView : MonoBehaviour
     {
         public Camera camera;
         public bool firstPersonMesh;
+        public bool forceRenderingOff;
     }
 
     private Vector3 thirdPersonRestPosition;
@@ -492,6 +494,7 @@ public class DollSingerView : MonoBehaviour
         thirdPersonMaterials = bodyRenderer.sharedMaterials;
         thirdPersonMesh = bodyRenderer.sharedMesh;
         thirdPersonShadowMode = bodyRenderer.shadowCastingMode;
+        thirdPersonForceRenderingOff = bodyRenderer.forceRenderingOff;
         firstPersonMesh = BuildFirstPersonMesh(thirdPersonMesh, bodyRenderer.bones, thirdPersonMaterials);
         if (!firstPersonMesh) return;
         gestureHands = new DollSingerFirstPersonHands(bodyRenderer, firstPersonMesh, camera, character.GetComponent<Animator>());
@@ -625,7 +628,12 @@ public class DollSingerView : MonoBehaviour
     {
         gestureHands?.BeforeCamera(renderingCamera);
         if (!bodyRenderer || !firstPersonMesh) return;
-        cameraMeshStates.Push(new CameraMeshState { camera = renderingCamera, firstPersonMesh = renderingFirstPersonMesh });
+        cameraMeshStates.Push(new CameraMeshState { camera = renderingCamera, firstPersonMesh = renderingFirstPersonMesh,
+            forceRenderingOff = bodyRenderer.forceRenderingOff });
+        // The separate full shadow renderer and observer cameras keep the complete
+        // body. During normal owner aiming, the skirt cannot cover the world optic.
+        bodyRenderer.forceRenderingOff |= firstPersonPresentationActive && renderingCamera == camera &&
+            gestureHands != null && gestureHands.HideOwnerBody;
         SetCameraMesh(firstPersonPresentationActive && renderingCamera == camera);
     }
 
@@ -636,10 +644,13 @@ public class DollSingerView : MonoBehaviour
         if (cameraMeshStates.Peek().camera != renderingCamera)
         {
             cameraMeshStates.Clear();
+            bodyRenderer.forceRenderingOff = thirdPersonForceRenderingOff;
             SetCameraMesh(false);
             return;
         }
-        SetCameraMesh(cameraMeshStates.Pop().firstPersonMesh && firstPersonPresentationActive);
+        var state = cameraMeshStates.Pop();
+        bodyRenderer.forceRenderingOff = state.forceRenderingOff;
+        SetCameraMesh(state.firstPersonMesh && firstPersonPresentationActive);
     }
 
     private void SetCameraMesh(bool firstPersonMeshActive)
@@ -671,6 +682,7 @@ public class DollSingerView : MonoBehaviour
         {
             if (thirdPersonMesh) bodyRenderer.sharedMesh = thirdPersonMesh;
             bodyRenderer.shadowCastingMode = thirdPersonShadowMode;
+            bodyRenderer.forceRenderingOff = thirdPersonForceRenderingOff;
         }
         renderingFirstPersonMesh = false;
         firstPersonPresentationActive = false;
