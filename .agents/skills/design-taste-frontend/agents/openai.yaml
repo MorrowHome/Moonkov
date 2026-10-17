@@ -1,0 +1,4 @@
+interface:
+  display_name: "Game UI Design Taste"
+  short_description: "Design readable game UI for existing Unity screens"
+  default_prompt: "使用 $design-taste-frontend 设计或改进游戏 UI，沿用现有框架，完成视觉层级、交互状态与必要的 Unity 接入。"
