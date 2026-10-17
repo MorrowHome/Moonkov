@@ -1,0 +1,79 @@
+{
+  "success": true,
+  "command": "command run_script",
+  "data": {
+    "command": "run_script",
+    "parameters": {
+      "file": "Tools/LookDev/ValidateHairSkirtAssets.cs",
+      "entry": "ValidateHairSkirtAssets.Main",
+      "timeout_ms": "30000"
+    },
+    "result": {
+      "diagnostics": [],
+      "compileMs": 78,
+      "executeMs": 24,
+      "assemblyName": "PipelineRunScript_ValidateHairSkirtAssets_a1696139dc9c461386c947b73bb1d0c9",
+      "success": true,
+      "result": {
+        "pass": true,
+        "baseline": "857b6833",
+        "changes": {
+          "Dress": [
+            "_RimColor",
+            "_RimColorTex",
+            "_RimMainStrength",
+            "_RimBorder",
+            "_RimBlur",
+            "_RimFresnelPower",
+            "_RimDirRange"
+          ],
+          "Hair": [
+            "_RimBorder",
+            "_RimBlur",
+            "_RimFresnelPower",
+            "_RimDirRange"
+          ],
+          "InnerDress": [
+            "_RimColor",
+            "_RimColorTex",
+            "_RimMainStrength",
+            "_RimBorder",
+            "_RimBlur",
+            "_RimFresnelPower",
+            "_RimDirRange"
+          ],
+          "DressDetail": [
+            "_RimColor",
+            "_RimColorTex",
+            "_RimMainStrength",
+            "_RimBorder",
+            "_RimBlur",
+            "_RimFresnelPower",
+            "_RimDirRange"
+          ]
+        },
+        "unchangedMaterials": [
+          "Face",
+          "Body",
+          "EyeWhite",
+          "Jewel",
+          "Brows",
+          "Eyes",
+          "Lashes",
+          "Shoes",
+          "Glasses"
+        ],
+        "shaderErrors": 0,
+        "formalCopiesMatch": true,
+        "noEmissionOrUnlitFloor": true
+      }
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "/Users/morrow/UnityProjects/Moonkov"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

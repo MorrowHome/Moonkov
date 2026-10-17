@@ -1,0 +1,35 @@
+{
+  "success": true,
+  "command": "command run_script",
+  "data": {
+    "command": "run_script",
+    "parameters": {
+      "file": "/tmp/moonkov-hair-skirt/Cleanup.cs",
+      "entry": "HairSkirtCleanup.Main",
+      "timeout_ms": "30000"
+    },
+    "result": {
+      "diagnostics": [],
+      "compileMs": 21,
+      "executeMs": 0,
+      "assemblyName": "PipelineRunScript_Cleanup_4864281f904b4a13b5e7d77ad19a0e75",
+      "success": true,
+      "result": {
+        "pass": true,
+        "playing": false,
+        "pipeline": "PC_RPAsset",
+        "scenes": [
+          "MainMenu"
+        ],
+        "profileNameSessionCleared": true
+      }
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "/Users/morrow/UnityProjects/Moonkov"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -65,7 +65,7 @@ public static class MoonkovFullBodyLookDev
             F(m,"_Anisotropy2ndTangentWidth",2);F(m,"_Anisotropy2ndBitangentWidth",.9f);F(m,"_Anisotropy2ndSpecularStrength",.2f);
             F(m,"_Smoothness",.68f);F(m,"_Reflectance",.04f);C(m,"_ReflectionColor",new Color(.94f,.97f,1,.75f));
             F(m,"_UseRim",1);m.SetTexture("_RimColorTex",null);C(m,"_RimColor",new Color(2.1f,2.4f,2.8f,.34f));
-            F(m,"_RimFresnelPower",3.3f);F(m,"_RimBorder",.55f);F(m,"_RimBlur",.65f);F(m,"_RimMainStrength",.75f);
+            F(m,"_RimFresnelPower",1.6f);F(m,"_RimBorder",.24f);F(m,"_RimBlur",.6f);F(m,"_RimMainStrength",.75f);F(m,"_RimDirRange",.25f);
         }
         else if(n=="Eyes")
         {
@@ -94,8 +94,9 @@ public static class MoonkovFullBodyLookDev
             m.SetTexture("_SmoothnessTex",Map(atlas+"Response"));m.SetTexture("_ReflectionColorTex",Map(atlas+"Response"));
             F(m,"_Smoothness",1);F(m,"_Metallic",.58f);F(m,"_Reflectance",.04f);C(m,"_ReflectionColor",new Color(1,.97f,.91f,.72f));
             F(m,"_UseMatCap",0);F(m,"_UseRim",1);m.SetTexture("_RimColorTex",Map(atlas+"Rim"));
-            C(m,"_RimColor",new Color(2.2f,2.6f,3,n=="Shoes"?.22f:.4f));F(m,"_RimMainStrength",.8f);
-            F(m,"_RimFresnelPower",3.5f);F(m,"_RimBorder",.5f);F(m,"_RimBlur",.75f);
+            bool shoes=n=="Shoes";
+            C(m,"_RimColor",shoes?new Color(2.2f,2.6f,3,.22f):new Color(2.4f,2.8f,3.2f,.55f));F(m,"_RimMainStrength",shoes?.8f:1);
+            F(m,"_RimFresnelPower",shoes?3.5f:1.6f);F(m,"_RimBorder",shoes?.5f:.23f);F(m,"_RimBlur",shoes?.75f:.6f);F(m,"_RimDirRange",shoes?0:.15f);
         }
     }
 
@@ -162,7 +163,7 @@ public static class MoonkovFullBodyLookDev
             try
             {
                 Write(atlas+"Response",(u,v)=>{var c=source.GetPixelBilinear(u,v);float g=gold(c),blue=Mathf.Clamp01((c.b-c.r)*3);float s=Mathf.Lerp(atlas=="xiezi"?.34f:Mathf.Lerp(.4f,.53f,blue),.88f,g);return new Color(s,s,s,Mathf.Lerp(Mathf.Lerp(.22f,.38f,blue),.88f,g));});
-                Write(atlas+"Rim",(u,v)=>{var c=source.GetPixelBilinear(u,v);float g=gold(c);return new Color(1,1,1,Mathf.Lerp(.28f+.35f*Mathf.Clamp01((c.b-c.r)*3),.15f,g));});
+                Write(atlas+"Rim",(u,v)=>{var c=source.GetPixelBilinear(u,v);float g=gold(c),blue=Mathf.Clamp01((c.b-c.r)*3);float a=atlas=="xiezi"?Mathf.Lerp(.28f+.35f*blue,.15f,g):Mathf.Lerp(.1f+.7f*blue,.06f,g);return new Color(1,1,1,a);});
             }
             finally{UnityEngine.Object.DestroyImmediate(source);}
         }

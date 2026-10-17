@@ -35,3 +35,5 @@
 2026-10-16：正式 Theophilus 已接入柔亮 MMD 渲染（`MoonSoftAnimePipeline` / `MoonSoftAnimeRenderer` / `MoonAnimePostProcessing`），共享角色材质使用受光照控制的皮肤薄层、发丝光带、衣料缎光、眼睛/饰件四类 MatCap；头发使用双层各向异性高光，皮肤保留暖背光。保持原太阳/环境光、最低亮度 0、遮光距离；Play 受控顶棚测试中阴影脸部采样为阳光下约 0.74%，局部灯可重新照亮。正式离线对局确认新管线的 interior runtime 副本、Volume 和 owned 网络角色。未作多人/整图/FPS 验收，详见 `Docs/SoftMMDRendering.md`。
 
 2026-10-17：DollSinger 正式材质后续已升级为全身分区受光边缘光，当前以 `Docs/FullBodyRimLookDev.md` 为准。11 份共享材质与原生 LookDev 副本同步，眉毛/睫毛不变；Body 图集中皮肤、蓝白袜料、金饰分别处理，皮肤 Rim 带轻微暖红，主色/UV/阴影 ramp 与全局 Volume 保持原状。现有 MoonToon hook 将 GGX/Rim 的直接光与环境漫反射分离，避免暗处微弱 Probe 填充被放大成亮点；使用 `Full Body` 菜单应用/回退，旧 Native/MMD/Shoulder Rim 菜单可能覆盖当前效果。保留冻结 Before 与实际截图/性能记录，GPU/多人/打包版验收未完成。
+
+2026-10-17 后续：针对头发/裙料亮带不明显，仅加宽 Hair、Dress、InnerDress、DressDetail 的 lilToon Rim，白布/金饰限强、蓝布保色，其余九份材质和 Volume 不变。最新以 `Docs/HairSkirtRimLookDev.md` 为准；独立冻结 `857b6833` 于 `FullBody/HairSkirtBefore`，旧 `Restore Previous Look` 仍指向 `9507d1c0`。同条件 A/B、正式地图及真实遮挡复核通过，顶棚/无太阳全帧峰值仍约 2/255。GPU 数据不可用。

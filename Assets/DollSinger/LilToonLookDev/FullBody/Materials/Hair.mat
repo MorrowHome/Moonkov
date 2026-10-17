@@ -498,12 +498,12 @@ Material:
     - _RimApplyTransparency: 1
     - _RimBackfaceMask: 1
     - _RimBlendMode: 1
-    - _RimBlur: 0.65
-    - _RimBorder: 0.55
-    - _RimDirRange: 0
+    - _RimBlur: 0.6
+    - _RimBorder: 0.24
+    - _RimDirRange: 0.25
     - _RimDirStrength: 1
     - _RimEnableLighting: 1
-    - _RimFresnelPower: 3.3
+    - _RimFresnelPower: 1.6
     - _RimIndirBlur: 0.1
     - _RimIndirBorder: 0.5
     - _RimIndirRange: 0

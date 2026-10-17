@@ -1,0 +1,53 @@
+{
+  "success": true,
+  "command": "command run_script",
+  "data": {
+    "command": "run_script",
+    "parameters": {
+      "file": "Tools/LookDev/ValidateFullBodyAssets.cs",
+      "entry": "ValidateFullBodyAssets.Main",
+      "timeout_ms": "30000"
+    },
+    "result": {
+      "diagnostics": [],
+      "compileMs": 223,
+      "executeMs": 11345,
+      "assemblyName": "PipelineRunScript_ValidateFullBodyAssets_c59f4c778d914bae9ddc718994aea8df",
+      "success": true,
+      "result": {
+        "pass": true,
+        "changedMaterials": [
+          "Face",
+          "Body",
+          "EyeWhite",
+          "Dress",
+          "Jewel",
+          "Hair",
+          "Eyes",
+          "Shoes",
+          "Glasses",
+          "InnerDress",
+          "DressDetail"
+        ],
+        "unchangedMaterials": [
+          "Brows",
+          "Lashes"
+        ],
+        "restoreRoundtrip": true,
+        "globalGradeUnchanged": true,
+        "sourceAtlasUvShaderQueuePreserved": true,
+        "diffuseColorAndRampsPreserved": true,
+        "shaderErrors": 0,
+        "mapCount": 13,
+        "mapMemoryBytes": 9101456
+      }
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "/Users/morrow/UnityProjects/Moonkov"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

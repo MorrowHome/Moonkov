@@ -1,0 +1,27 @@
+{
+  "success": true,
+  "command": "command run_script",
+  "data": {
+    "command": "run_script",
+    "parameters": {
+      "file": "Tools/LookDev/ValidateHairSkirtShadow.cs",
+      "entry": "HairSkirtLiveShadowProbe.Start",
+      "timeout_ms": "30000"
+    },
+    "result": {
+      "diagnostics": [],
+      "compileMs": 94,
+      "executeMs": 12,
+      "assemblyName": "PipelineRunScript_ValidateHairSkirtShadow_0733da5efefe4e4488b36798e0779b4e",
+      "success": true,
+      "result": "Started actual Play-mode solar/roof/lamp/night visibility test."
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "/Users/morrow/UnityProjects/Moonkov"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

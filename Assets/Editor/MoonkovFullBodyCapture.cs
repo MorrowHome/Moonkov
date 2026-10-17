@@ -13,7 +13,7 @@ using UnityEngine.SceneManagement;
 /// <summary>Actual camera captures; material/lighting/Bloom ablations and interleaved costs.</summary>
 public static class MoonkovFullBodyCapture
 {
-    public const string Output="Docs/Images/FullBody";
+    public static string Output="Docs/Images/FullBody";
     const int Width=960,Height=1080;
     class Shot{public string label,light,view;public int mode;public bool bloom,hdr,benchmark;}
     [Serializable] public class Sample{public int stage,draws,setPass,triangles;public double submitMs,mainMs,gpuMs,frameMs;}
@@ -28,16 +28,17 @@ public static class MoonkovFullBodyCapture
     public static void Quick()=>Start(false);
     [MenuItem("Tools/Moonkov/lilToon/Full Body/Capture Full In Play")]
     public static void Full()=>Start(true);
-    public static void Start(bool full)
+    public static void Start(bool full,string baselineFolder=null,string outputFolder=null)
     {
         if(!EditorApplication.isPlaying||SceneManager.GetActiveScene().path!=MoonkovLilToonLookDev.ScenePath)throw new InvalidOperationException("Open lilToon LookDev scene in Play");
-        if(camera)throw new InvalidOperationException("Capture already running");Directory.CreateDirectory(Output);
+        if(camera)throw new InvalidOperationException("Capture already running");
+        Output=outputFolder??"Docs/Images/FullBody";Directory.CreateDirectory(Output);
         actor=GameObject.Find("lilToon Character");camera=GameObject.Find("lilToon Camera").GetComponent<Camera>();MoonkovLilToonLookDev.Pose(actor);
         key=GameObject.Find("lilToon Key").GetComponent<Light>();fill=GameObject.Find("lilToon Fill").GetComponent<Light>();RenderSettings.sun=key;oldKeyNear=key.shadowNearPlane;
         modes=new Material[4][];
         for(int mode=0;mode<4;mode++)modes[mode]=MoonkovFullBodyLookDev.Names.Select(n=>
         {
-            var source=MoonkovFullBodyLookDev.Get(n,mode==0);if(!source)throw new InvalidOperationException("Build full body copies first");
+            var source=mode==0&&baselineFolder!=null?AssetDatabase.LoadAssetAtPath<Material>(baselineFolder+"/"+n+".mat"):MoonkovFullBodyLookDev.Get(n,mode==0);if(!source)throw new InvalidOperationException("Build full body copies first");
             var m=new Material(source){name=n};temporaryMaterials.Add(m);
             if(mode==1)m.SetFloat("_UseRim",0);if(mode==2)m.SetFloat("_UseReflection",0);return m;
         }).ToArray();

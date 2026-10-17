@@ -1,0 +1,2 @@
+RUNNING: Assets/Scenes/MainMenu.unity; pipeline=MoonSoftAnimePipeline (interior runtime); sunlit location=(1733.56, 194.62, 2158.18)
+PASS: real map lighting, fixed-pose duplicate; same camera and final Bloom for both; no added lights; FP16 scene target and sRGB readback

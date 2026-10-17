@@ -1,0 +1,27 @@
+{
+  "success": true,
+  "command": "command run_script",
+  "data": {
+    "command": "run_script",
+    "parameters": {
+      "file": "Tools/LookDev/CaptureHairSkirtInGame.cs",
+      "entry": "HairSkirtWorldCapture.Start",
+      "timeout_ms": "30000"
+    },
+    "result": {
+      "diagnostics": [],
+      "compileMs": 182,
+      "executeMs": 16,
+      "assemblyName": "PipelineRunScript_CaptureHairSkirtInGame_301dba4d67b84d4da8f6012c39886964",
+      "success": true,
+      "result": "Actual game light and camera comparison started"
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "/Users/morrow/UnityProjects/Moonkov"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

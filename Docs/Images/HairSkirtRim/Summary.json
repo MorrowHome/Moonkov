@@ -1,0 +1,71 @@
+{
+  "notes": "960x1080 fixed pose; FP16 linear camera target, sRGB PNG readback. Both stages use the same Bloom 0.65/1.5/0.68, exposure, lights, 16m sun shadow near plane and pipeline. Only 13 material references switch; Brows/Lashes copies are unchanged. Four interleaved before/after blocks, 60 warmup +120 sampled frames/block. PNG readback excluded. CPU submit is camera begin/end wall time, not GPU time; unavailable GPU is zero. HDR probes disable post processing.",
+  "hdr": [
+    {
+      "label": "hdr-before",
+      "maxRgb": 47.46875,
+      "meanRgb": 0.11702996492385864,
+      "shoulderPeak": 5.01953125,
+      "pixelsAboveKnee": 2384,
+      "pixelsAboveThreshold": 296
+    },
+    {
+      "label": "hdr-after",
+      "maxRgb": 47.46875,
+      "meanRgb": 0.14332571625709534,
+      "shoulderPeak": 5.03515625,
+      "pixelsAboveKnee": 15943,
+      "pixelsAboveThreshold": 2049
+    }
+  ],
+  "before": {
+    "samples": 480,
+    "submitMs": 0.86245,
+    "mainMs": 4.0070625,
+    "gpuMs": 0.0,
+    "frameMs": 4.030350130051374,
+    "draws": 75.0,
+    "setPass": 47.0,
+    "triangles": 477345.0
+  },
+  "after": {
+    "samples": 480,
+    "submitMs": 0.84155,
+    "mainMs": 4.017125,
+    "gpuMs": 0.0,
+    "frameMs": 4.03966847807169,
+    "draws": 75.0,
+    "setPass": 47.0,
+    "triangles": 477345.0
+  },
+  "display": {
+    "side-full": {
+      "meanBefore": 0.23267034691963207,
+      "meanAfter": 0.23918688473331723,
+      "meanAbsoluteRgbDelta": 0.006748511004195917,
+      "whiteFractionBefore": 0.00013792438271604938,
+      "whiteFractionAfter": 0.0001388888888888889
+    },
+    "front-full": {
+      "meanBefore": 0.270665248275236,
+      "meanAfter": 0.27876214899540064,
+      "meanAbsoluteRgbDelta": 0.008337248093681915,
+      "whiteFractionBefore": 8.294753086419753e-05,
+      "whiteFractionAfter": 8.294753086419753e-05
+    },
+    "highroof-full": {
+      "meanBefore": 0.05741327513515694,
+      "meanAfter": 0.05741327513515694,
+      "meanAbsoluteRgbDelta": 0.0,
+      "whiteFractionBefore": 0.0,
+      "whiteFractionAfter": 0.0
+    },
+    "dark-full": {
+      "meanBefore": 0.05741327513515694,
+      "meanAfter": 0.05741327513515694,
+      "meanAbsoluteRgbDelta": 0.0,
+      "whiteFractionBefore": 0.0,
+      "whiteFractionAfter": 0.0
+    }
+  }
+}
