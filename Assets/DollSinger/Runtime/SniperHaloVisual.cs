@@ -12,7 +12,10 @@ namespace Unity.MP_FPS.DollSinger
         public Color lightColor = new Color(.25f, .8f, 1f);
         [Min(.1f)] public float overallScale = 1.55f;
         [Range(1f, 12f)] public float scopeMagnification = 6f;
+        [Range(.35f, .85f)] public float scopeViewportFraction = .8f;
         public float AimedRadius => .175f * overallScale;
+        public float ScopeScale(float distance, float fieldOfView) => scopeViewportFraction * Mathf.Max(.01f, distance)
+            * Mathf.Tan(fieldOfView * .5f * Mathf.Deg2Rad) / Mathf.Max(.001f, AimedRadius);
         [Min(.001f)] public float lineWidth = .020f;
         [Header("Precision release")]
         [Min(0f)] public float wristTravel = .024f;

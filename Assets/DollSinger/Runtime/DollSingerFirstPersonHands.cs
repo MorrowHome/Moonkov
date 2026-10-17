@@ -12,7 +12,7 @@ namespace Unity.MP_FPS.DollSinger
         public Camera Camera { get; }
         public Mesh BodyWithoutArms { get; }
         public bool Active { get; private set; }
-        public bool HideOwnerBody => Active && !wasViewfinder;
+        public bool HideOwnerBody => Active;
         private readonly SkinnedMeshRenderer renderer;
         private readonly SkinnedMeshRenderer source;
         private readonly Mesh armMesh;
@@ -20,7 +20,7 @@ namespace Unity.MP_FPS.DollSinger
         private readonly Transform[] rightHandBones, leftHandBones;
         private readonly Transform leftIndexTip, rightIndexTip, leftThumbTip, rightThumbTip;
         private bool reframe = true, wasViewfinder;
-        private float lastAspect, lastFieldOfView;
+        private float lastAspect, lastFieldOfView, poseBlend;
         private Quaternion framedOwnerRotation;
         private Rect safeFrame = Rect.MinMaxRect(.07f, .04f, .93f, .34f);
 
@@ -109,9 +109,12 @@ namespace Unity.MP_FPS.DollSinger
             overlay.volumeLayerMask = 0;
         }
 
-        public void Present(bool active, float fieldOfView, Camera owner, bool viewfinder)
+        public void Present(bool active, float fieldOfView, Camera owner, bool viewfinder, float poseBlend)
         {
             if (!Camera) return;
+            float presentationBlend = Mathf.SmoothStep(0f, 1f, poseBlend);
+            if (!Mathf.Approximately(this.poseBlend, presentationBlend)) reframe = true;
+            this.poseBlend = presentationBlend;
             if (active && (!Active || viewfinder != wasViewfinder ||
                 !Mathf.Approximately(lastAspect, owner.aspect) || !Mathf.Approximately(lastFieldOfView, fieldOfView)))
             {
@@ -209,6 +212,16 @@ namespace Unity.MP_FPS.DollSinger
                     Camera.transform.localPosition += new Vector3(shift.x * 2f * handDepth * tangent * Camera.aspect / scale,
                         shift.y * 2f * handDepth * tangent / scale, 0);
                 }
+                // Let resting arms enter/leave naturally at the eye. Fitting
+                // waist-level hands immediately pulls detached upper arms into
+                // view, and reusing that fit makes cancellation snap between sizes.
+                var fittedProjection = Camera.projectionMatrix;
+                Camera.transform.localPosition *= poseBlend;
+                Camera.ResetProjectionMatrix();
+                var blendedProjection = Camera.projectionMatrix;
+                blendedProjection.m00 = Mathf.Lerp(blendedProjection.m00, fittedProjection.m00, poseBlend);
+                blendedProjection.m11 = Mathf.Lerp(blendedProjection.m11, fittedProjection.m11, poseBlend);
+                Camera.projectionMatrix = blendedProjection;
                 return;
             }
         }
@@ -223,7 +236,9 @@ namespace Unity.MP_FPS.DollSinger
             Vector3 center = Camera.transform.parent.InverseTransformPoint(
                 (leftIndexTip.position + rightThumbTip.position + rightIndexTip.position + leftThumbTip.position) * .25f);
             var position = Camera.transform.localPosition;
-            Camera.transform.localPosition = new Vector3(center.x, center.y, position.z);
+            // Resting hands are beside the hips. Tracking that centre immediately
+            // teleports the lens down the body and magnifies near-plane fragments.
+            Camera.transform.localPosition = new Vector3(center.x * poseBlend, center.y * poseBlend, position.z);
         }
 
         private void IncludeViewport(Transform[] bones, ref Vector2 min, ref Vector2 max)

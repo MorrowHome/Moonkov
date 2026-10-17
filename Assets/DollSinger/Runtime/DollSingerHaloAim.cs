@@ -325,14 +325,21 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
             Time.deltaTime / (wantsAim ? aimInSeconds : aimOutSeconds));
         if (aimLayerIndex >= 0) animator.SetLayerWeight(aimLayerIndex, bakedGestures != null ? 0f : aimBlend);
         if (hasAimBlendParameter) animator.SetFloat(AimBlendId, aimBlend);
-        if (cameraOwner) cameraOwner.SetAimBlend(aimBlend);
-        if (cameraOwner) cameraOwner.SetWeaponAimMagnification(ScopeMagnification);
-        if (revolverVisual) revolverVisual.SetAimBlend(aimBlend);
-        if (shotgunVisual) shotgunVisual.SetAimBlend(aimBlend);
-        if (rifleVisual) rifleVisual.SetAimBlend(aimBlend);
-        if (sniperVisual) sniperVisual.SetAimBlend(aimBlend);
-        if (rifleModules) rifleModules.SetAimBlend(aimBlend);
-        if (shotgunModules) shotgunModules.SetAimBlend(aimBlend);
+        // Network presentation runs before this Update and otherwise forwards
+        // the previous frame's blend. Commit the newly advanced pose/zoom state
+        // before DollSingerView.LateUpdate, including for network-owned players.
+        if (view && view.isActiveAndEnabled && view.player == gameObject)
+        {
+            view.SetAimBlend(aimBlend);
+            view.SetWeaponAimMagnification(ScopeMagnification);
+        }
+        float poseBlend = DollSingerView.AimPoseBlend(aimBlend);
+        if (revolverVisual) revolverVisual.SetAimBlend(poseBlend);
+        if (shotgunVisual) shotgunVisual.SetAimBlend(poseBlend);
+        if (rifleVisual) rifleVisual.SetAimBlend(poseBlend);
+        if (sniperVisual) sniperVisual.SetAimBlend(poseBlend);
+        if (rifleModules) rifleModules.SetAimBlend(poseBlend);
+        if (shotgunModules) shotgunModules.SetAimBlend(poseBlend);
         if (!networkControlled && input)
         {
             if (localReloadRemaining <= 0f && input.WeaponSlotPressed != 0)
@@ -419,7 +426,8 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
             case HaloWeapon.Sniper when sniperVisual: reload = sniperVisual.IsReloading; progress = sniperVisual.ReloadProgress; break;
         }
         Vector3 direction = networkControlled ? networkDirection : playerCamera ? playerCamera.transform.forward : transform.forward;
-        bakedGestures.Apply((int)visualWeapon, aimBlend, Time.time - gestureShotTime, reload, progress, gestureTransitionSeconds, chest, direction);
+        float poseBlend = DollSingerView.AimPoseBlend(aimBlend);
+        bakedGestures.Apply((int)visualWeapon, poseBlend, Time.time - gestureShotTime, reload, progress, gestureTransitionSeconds, chest, direction);
     }
 
     private void LateUpdate() {
@@ -429,8 +437,9 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         bool centred = TryGetFirstPersonCamera(out var aimingCamera);
         if (view) view.SetGestureHandsActive(centred && aimBlend > .001f, visualWeapon == HaloWeapon.Sniper);
         Vector3 centredPosition = centred ? GetFirstPersonHaloPosition(aimingCamera) : Vector3.zero;
-        float t = aimBlend * aimBlend * (3f - 2f * aimBlend);
-        if (centred && t > 0.001f)
+        float layoutBlend = DollSingerView.AimPoseBlend(aimBlend);
+        float t = layoutBlend * layoutBlend * (3f - 2f * layoutBlend);
+        if (centred && view.GestureHandsActive)
         {
             view.FrameGestureHands(visualWeapon != HaloWeapon.Sniper && Time.time <= gestureReframeUntil);
         }
@@ -458,6 +467,9 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
             : Quaternion.LookRotation(aimDirection, transform.up);
         haloVisual.rotation = Quaternion.Slerp(restingRotation, aimingRotation, t);
         float haloScale = Mathf.Lerp(idleHaloScale, aimedHaloScale, t);
+        if (centred && visualWeapon == HaloWeapon.Sniper && sniperVisual)
+            haloScale = Mathf.Lerp(haloScale, Mathf.Min(aimedHaloScale,
+                sniperVisual.ScopeScale(Vector3.Distance(centredPosition, aimingCamera.transform.position), aimingCamera.fieldOfView)), t);
         // Reach-limited eye-to-halo distance can be much shorter than the configured distance.
         // Constrain ordinary halo size by the actual distance, preserving its art and central sight.
         if (centred && visualWeapon != HaloWeapon.Sniper)
@@ -592,7 +604,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         if (thirdPerson) thirdPerson.IsLocallyAiming = false;
         if (animator && aimLayerIndex >= 0) animator.SetLayerWeight(aimLayerIndex, 0f);
         if (animator && hasAimBlendParameter) animator.SetFloat(AimBlendId, 0f);
-        if (cameraOwner) cameraOwner.SetAimBlend(0f);
+        if (view && view.player == gameObject) view.SetAimBlend(0f);
         SetBoltVisible(false);
         if (boltPool) boltPool.ClearActive();
         if (discharge) discharge.Clear();

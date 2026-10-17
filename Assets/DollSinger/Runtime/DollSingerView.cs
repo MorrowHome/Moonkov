@@ -81,8 +81,15 @@ public class DollSingerView : MonoBehaviour
     public void SetGestureHandsActive(bool active, bool viewfinder = false)
     {
         gestureHands?.Present(active && firstPerson && isActiveAndEnabled && camera && camera.isActiveAndEnabled,
-            viewfinder && camera ? camera.fieldOfView : gestureFieldOfView, camera, viewfinder);
+            viewfinder && camera ? camera.fieldOfView : gestureFieldOfView, camera, viewfinder,
+            AimPoseBlend(aimBlend));
     }
+
+    // Finish raising the gesture before zooming. Reverse the same timeline
+    // to unzoom before any weapon's arms lower past the lens.
+    public static float AimPoseBlend(float aim) => Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0f, .45f, aim));
+    private float ZoomBlend => firstPerson
+        ? Mathf.InverseLerp(.55f, 1f, aimBlend) : aimBlend;
 
     private DollSingerMovement movement;
     private Transform eyeAnchor;
@@ -123,7 +130,7 @@ public class DollSingerView : MonoBehaviour
         ? weaponAimMagnification : Mathf.Clamp(aimMagnification, 1f, 3f);
     public float CurrentAimMagnification => Mathf.Lerp(1f,
         presentedWeaponMagnification,
-        Mathf.SmoothStep(0f, 1f, aimBlend));
+        Mathf.SmoothStep(0f, 1f, ZoomBlend));
     private bool appliedFirstPerson;
     private bool networkLookDriven;
     private Quaternion networkLookRotation;
@@ -631,7 +638,7 @@ public class DollSingerView : MonoBehaviour
         cameraMeshStates.Push(new CameraMeshState { camera = renderingCamera, firstPersonMesh = renderingFirstPersonMesh,
             forceRenderingOff = bodyRenderer.forceRenderingOff });
         // The separate full shadow renderer and observer cameras keep the complete
-        // body. During normal owner aiming, the skirt cannot cover the world optic.
+        // body. During owner aiming, the skirt/torso cannot cross the zoomed sight.
         bodyRenderer.forceRenderingOff |= firstPersonPresentationActive && renderingCamera == camera &&
             gestureHands != null && gestureHands.HideOwnerBody;
         SetCameraMesh(firstPersonPresentationActive && renderingCamera == camera);
