@@ -1,0 +1,403 @@
+{
+  "scope": "Saved Blender Actions; rifle, revolver, shotgun; 60fps surface intersections. Adjacent same-hand palm/forearm seams, upper-arm attachment and head excluded. Head look/cloth are checked on actual Unity mesh snapshots.",
+  "motions": [
+    {
+      "weapon": 1,
+      "pitch": 0,
+      "intersections": {},
+      "anatomyFailures": {},
+      "anglesDegrees": {
+        "minimumFlexion": -0.0012870638478403185,
+        "maximumFlexion": 84.99979977468175,
+        "maximumWristBend": 64.29135852612343
+      },
+      "frames": 74
+    },
+    {
+      "weapon": 1,
+      "pitch": -80,
+      "intersections": {},
+      "anatomyFailures": {},
+      "anglesDegrees": {
+        "minimumFlexion": -0.0010573986307013583,
+        "maximumFlexion": 84.9998253407819,
+        "maximumWristBend": 70.39257526639906
+      },
+      "frames": 74
+    },
+    {
+      "weapon": 1,
+      "pitch": -65,
+      "intersections": {},
+      "anatomyFailures": {},
+      "anglesDegrees": {
+        "minimumFlexion": -0.0010956051105030853,
+        "maximumFlexion": 84.99986246603619,
+        "maximumWristBend": 62.031194288252856
+      },
+      "frames": 74
+    },
+    {
+      "weapon": 1,
+      "pitch": -50,
+      "intersections": {},
+      "anatomyFailures": {},
+      "anglesDegrees": {
+        "minimumFlexion": -0.0010482206401902742,
+        "maximumFlexion": 84.99979027692912,
+        "maximumWristBend": 57.68754914596158
+      },
+      "frames": 74
+    },
+    {
+      "weapon": 1,
+      "pitch": -40,
+      "intersections": {},
+      "anatomyFailures": {},
+      "anglesDegrees": {
+        "minimumFlexion": -0.0010612406278968814,
+        "maximumFlexion": 84.99983556114702,
+        "maximumWristBend": 61.17340449076929
+      },
+      "frames": 74
+    },
+    {
+      "weapon": 1,
+      "pitch": -20,
+      "intersections": {},
+      "anatomyFailures": {},
+      "anglesDegrees": {
+        "minimumFlexion": -0.0010377618864288267,
+        "maximumFlexion": 84.99987302662686,
+        "maximumWristBend": 65.0977853010485
+      },
+      "frames": 74
+    },
+    {
+      "weapon": 1,
+      "pitch": 15,
+      "intersections": {},
+      "anatomyFailures": {},
+      "anglesDegrees": {
+        "minimumFlexion": -0.0012748975560392542,
+        "maximumFlexion": 84.99996710523911,
+        "maximumWristBend": 62.92035833231778
+      },
+      "frames": 74
+    },
+    {
+      "weapon": 1,
+      "pitch": 30,
+      "intersections": {},
+      "anatomyFailures": {},
+      "anglesDegrees": {
+        "minimumFlexion": -0.0010740471440411894,
+        "maximumFlexion": 84.99989521475179,
+        "maximumWristBend": 59.14851613677247
+      },
+      "frames": 74
+    },
+    {
+      "weapon": 1,
+      "pitch": 45,
+      "intersections": {},
+      "anatomyFailures": {},
+      "anglesDegrees": {
+        "minimumFlexion": -0.0012097972570987306,
+        "maximumFlexion": 84.99984126797973,
+        "maximumWristBend": 56.892685653930265
+      },
+      "frames": 74
+    },
+    {
+      "weapon": 1,
+      "pitch": 65,
+      "intersections": {},
+      "anatomyFailures": {},
+      "anglesDegrees": {
+        "minimumFlexion": -0.001339037177514924,
+        "maximumFlexion": 84.9999341108463,
+        "maximumWristBend": 61.25883968463131
+      },
+      "frames": 74
+    },
+    {
+      "weapon": 1,
+      "pitch": 80,
+      "intersections": {},
+      "anatomyFailures": {},
+      "anglesDegrees": {
+        "minimumFlexion": -0.0010649758993347713,
+        "maximumFlexion": 84.99993745651956,
+        "maximumWristBend": 53.76496103296842
+      },
+      "frames": 74
+    },
+    {
+      "weapon": 2,
+      "pitch": 0,
+      "intersections": {},
+      "anatomyFailures": {},
+      "anglesDegrees": {
+        "minimumFlexion": -0.0009475247738603852,
+        "maximumFlexion": 85.00036363719616,
+        "maximumWristBend": 54.606778433077906
+      },
+      "frames": 88
+    },
+    {
+      "weapon": 2,
+      "pitch": -80,
+      "intersections": {},
+      "anatomyFailures": {},
+      "anglesDegrees": {
+        "minimumFlexion": -0.0009937030176291376,
+        "maximumFlexion": 85.00030176888399,
+        "maximumWristBend": 62.95056507129325
+      },
+      "frames": 88
+    },
+    {
+      "weapon": 2,
+      "pitch": -65,
+      "intersections": {},
+      "anatomyFailures": {},
+      "anglesDegrees": {
+        "minimumFlexion": -0.0009843710670694083,
+        "maximumFlexion": 85.00028925123719,
+        "maximumWristBend": 58.20907507022708
+      },
+      "frames": 88
+    },
+    {
+      "weapon": 2,
+      "pitch": -50,
+      "intersections": {},
+      "anatomyFailures": {},
+      "anglesDegrees": {
+        "minimumFlexion": -0.0009843706615316067,
+        "maximumFlexion": 85.0004417421656,
+        "maximumWristBend": 56.02226342157677
+      },
+      "frames": 88
+    },
+    {
+      "weapon": 2,
+      "pitch": -40,
+      "intersections": {},
+      "anatomyFailures": {},
+      "anglesDegrees": {
+        "minimumFlexion": -0.0009982475352042222,
+        "maximumFlexion": 85.0003940293872,
+        "maximumWristBend": 55.31333418195905
+      },
+      "frames": 88
+    },
+    {
+      "weapon": 2,
+      "pitch": -20,
+      "intersections": {},
+      "anatomyFailures": {},
+      "anglesDegrees": {
+        "minimumFlexion": -0.001036218767293469,
+        "maximumFlexion": 85.00035633845566,
+        "maximumWristBend": 54.86539330071668
+      },
+      "frames": 88
+    },
+    {
+      "weapon": 2,
+      "pitch": 15,
+      "intersections": {},
+      "anatomyFailures": {},
+      "anglesDegrees": {
+        "minimumFlexion": -0.00095230674695226,
+        "maximumFlexion": 85.00034640247173,
+        "maximumWristBend": 52.445115768322665
+      },
+      "frames": 88
+    },
+    {
+      "weapon": 2,
+      "pitch": 30,
+      "intersections": {},
+      "anatomyFailures": {},
+      "anglesDegrees": {
+        "minimumFlexion": -0.0009614021627671877,
+        "maximumFlexion": 85.00047568262767,
+        "maximumWristBend": 54.027537410325806
+      },
+      "frames": 88
+    },
+    {
+      "weapon": 2,
+      "pitch": 45,
+      "intersections": {},
+      "anatomyFailures": {},
+      "anglesDegrees": {
+        "minimumFlexion": -0.000989155008119822,
+        "maximumFlexion": 85.00036107229158,
+        "maximumWristBend": 58.7508693534835
+      },
+      "frames": 88
+    },
+    {
+      "weapon": 2,
+      "pitch": 65,
+      "intersections": {},
+      "anatomyFailures": {},
+      "anglesDegrees": {
+        "minimumFlexion": -0.0009910531584181226,
+        "maximumFlexion": 85.00033543273173,
+        "maximumWristBend": 72.41747682603206
+      },
+      "frames": 88
+    },
+    {
+      "weapon": 2,
+      "pitch": 80,
+      "intersections": {},
+      "anatomyFailures": {},
+      "anglesDegrees": {
+        "minimumFlexion": -0.0009683402471221388,
+        "maximumFlexion": 85.00036105285534,
+        "maximumWristBend": 70.68741723002451
+      },
+      "frames": 88
+    },
+    {
+      "weapon": 3,
+      "pitch": 0,
+      "intersections": {},
+      "anatomyFailures": {},
+      "anglesDegrees": {
+        "minimumFlexion": -0.0012086143066285962,
+        "maximumFlexion": 90.00044762600915,
+        "maximumWristBend": 51.393225655005686
+      },
+      "frames": 99
+    },
+    {
+      "weapon": 3,
+      "pitch": -80,
+      "intersections": {},
+      "anatomyFailures": {},
+      "anglesDegrees": {
+        "minimumFlexion": -0.0011130150103611527,
+        "maximumFlexion": 90.00038651778813,
+        "maximumWristBend": 58.996025333362766
+      },
+      "frames": 99
+    },
+    {
+      "weapon": 3,
+      "pitch": -65,
+      "intersections": {},
+      "anatomyFailures": {},
+      "anglesDegrees": {
+        "minimumFlexion": -0.0011336778753131842,
+        "maximumFlexion": 90.00040635416761,
+        "maximumWristBend": 59.39526355072835
+      },
+      "frames": 99
+    },
+    {
+      "weapon": 3,
+      "pitch": -50,
+      "intersections": {},
+      "anatomyFailures": {},
+      "anglesDegrees": {
+        "minimumFlexion": -0.0011149356841259818,
+        "maximumFlexion": 90.00036772832944,
+        "maximumWristBend": 58.787130827787095
+      },
+      "frames": 99
+    },
+    {
+      "weapon": 3,
+      "pitch": -40,
+      "intersections": {},
+      "anatomyFailures": {},
+      "anglesDegrees": {
+        "minimumFlexion": -0.0010925184622327551,
+        "maximumFlexion": 90.00039886094825,
+        "maximumWristBend": 56.65792863706234
+      },
+      "frames": 99
+    },
+    {
+      "weapon": 3,
+      "pitch": -20,
+      "intersections": {},
+      "anatomyFailures": {},
+      "anglesDegrees": {
+        "minimumFlexion": -0.0011779734411920056,
+        "maximumFlexion": 90.00034803905135,
+        "maximumWristBend": 52.43318001274807
+      },
+      "frames": 99
+    },
+    {
+      "weapon": 3,
+      "pitch": 15,
+      "intersections": {},
+      "anatomyFailures": {},
+      "anglesDegrees": {
+        "minimumFlexion": -0.0013193245109802093,
+        "maximumFlexion": 90.0004279190207,
+        "maximumWristBend": 71.3976239423881
+      },
+      "frames": 99
+    },
+    {
+      "weapon": 3,
+      "pitch": 30,
+      "intersections": {},
+      "anatomyFailures": {},
+      "anglesDegrees": {
+        "minimumFlexion": -0.0012699457553595514,
+        "maximumFlexion": 90.00047707146453,
+        "maximumWristBend": 68.90882913996401
+      },
+      "frames": 99
+    },
+    {
+      "weapon": 3,
+      "pitch": 45,
+      "intersections": {},
+      "anatomyFailures": {},
+      "anglesDegrees": {
+        "minimumFlexion": -0.0013072273768474692,
+        "maximumFlexion": 90.00050950736875,
+        "maximumWristBend": 68.94733774650454
+      },
+      "frames": 99
+    },
+    {
+      "weapon": 3,
+      "pitch": 65,
+      "intersections": {},
+      "anatomyFailures": {},
+      "anglesDegrees": {
+        "minimumFlexion": -0.0011704792946199936,
+        "maximumFlexion": 90.00055559633303,
+        "maximumWristBend": 55.488040175644215
+      },
+      "frames": 99
+    },
+    {
+      "weapon": 3,
+      "pitch": 80,
+      "intersections": {},
+      "anatomyFailures": {},
+      "anglesDegrees": {
+        "minimumFlexion": -0.0011712037145872455,
+        "maximumFlexion": 90.0005557518594,
+        "maximumWristBend": 62.212627790899404
+      },
+      "frames": 99
+    }
+  ],
+  "revision": "989de9868b58",
+  "passed": true
+}

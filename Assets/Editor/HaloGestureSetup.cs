@@ -52,44 +52,96 @@ public static class HaloGestureSetup
         Debug.Log("Editable revolver, shotgun and sniper gestures installed in Halo Aim");
     }
 
-    static AnimationClip CreatePose(AnimationClip source, string name, int weapon)
+    [MenuItem("Tools/Doll Singer/Rebuild Expressive Weapon Gestures")]
+    public static void RebuildExpressive()
+    {
+        if (EditorApplication.isPlaying) throw new InvalidOperationException("Stop Play Mode first.");
+        InstallMissing();
+        var source = AssetDatabase.LoadAssetAtPath<AnimationClip>(Folder + "DollSinger_FingerGunAim.anim");
+        var controller = AssetDatabase.LoadAssetAtPath<AnimatorController>(ControllerPath);
+        var layer = controller.layers.First(l => l.name == "Halo Aim");
+        string[] states = { "FingerGunAim", "RevolverGesture", "ShotgunGesture", "SniperGesture" };
+        for (int weapon = 1; weapon <= 4; weapon++)
+        {
+            var state = layer.stateMachine.states.Select(s => s.state).Single(s => s.name == states[weapon - 1]);
+            state.motion = CreatePose(source, weapon == 1 ? "RifleGesture" : states[weapon - 1], weapon, true);
+            EditorUtility.SetDirty(state);
+        }
+        EditorUtility.SetDirty(controller);
+        AssetDatabase.SaveAssets();
+    }
+
+    static AnimationClip CreatePose(AnimationClip source, string name, int weapon, bool overwrite = false)
     {
         string path = Folder + "DollSinger_" + name + ".anim";
         var existing = AssetDatabase.LoadAssetAtPath<AnimationClip>(path);
-        if (existing) return existing;
+        if (existing && !overwrite) return existing;
         var clip = UnityEngine.Object.Instantiate(source); clip.name = "DollSinger_" + name;
-        // Keep the established shoulder/wrist and raised thumb contract. Only
-        // finger muscles and the revolver's relaxed support arm differ by weapon.
-        if (weapon == 2)
-        {
-            Finger(clip, "Right", "Middle", -.65f, 0);
-            Finger(clip, "Right", "Ring", -.72f, 0);
-            Finger(clip, "Right", "Little", -.8f, -.1f);
-            Curve(clip, "Left Arm Down-Up", -.55f);
-            Curve(clip, "Left Arm Front-Back", .15f);
-            Curve(clip, "Left Forearm Stretch", .25f);
-        }
-        else if (weapon == 3)
+        // Whole arm silhouettes are authored alongside both hands; camera-space placement
+        // only presents these same Humanoid fingers to the owner, without changing aim.
+        Curve(clip, "Right Arm Down-Up", -.1f);
+        Curve(clip, "Right Arm Front-Back", .65f);
+        Curve(clip, "Right Forearm Stretch", .25f);
+        Curve(clip, "Left Arm Down-Up", -.15f);
+        Curve(clip, "Left Arm Front-Back", .65f);
+        Curve(clip, "Left Forearm Stretch", .1f);
+        if (weapon == 1) // Thunder rail: sword fingers and a raised command seal.
         {
             foreach (string side in new[] { "Left", "Right" })
             {
-                Finger(clip, side, "Index", .7f, -.12f);
-                Finger(clip, side, "Middle", .7f, -.06f);
-                Finger(clip, side, "Ring", .65f, .10f);
-                Finger(clip, side, "Little", .6f, .15f);
-                Finger(clip, side, "Thumb", .85f, .2f);
+                Finger(clip, side, "Index", .9f, -.12f);
+                Finger(clip, side, "Middle", .9f, -.12f);
+                Finger(clip, side, "Ring", -.85f, 0);
+                Finger(clip, side, "Little", -.85f, 0);
+                Finger(clip, side, "Thumb", .35f, .25f);
             }
+            Curve(clip, "Left Forearm Stretch", -.15f);
         }
-        else
+        else if (weapon == 2) // Judgment: cocked finger gun, offhand victory sigil.
         {
-            Finger(clip, "Right", "Index", .8f, 0);
-            Finger(clip, "Right", "Middle", .8f, 0);
-            Finger(clip, "Right", "Ring", -.72f, 0);
-            Finger(clip, "Right", "Little", -.8f, 0);
-            Finger(clip, "Left", "Index", .3f, -.05f);
-            Finger(clip, "Left", "Middle", .3f, 0);
-            Finger(clip, "Left", "Ring", .2f, 0);
-            Finger(clip, "Left", "Little", .1f, 0);
+            Finger(clip, "Right", "Index", .95f, .08f);
+            Finger(clip, "Right", "Middle", -.85f, 0);
+            Finger(clip, "Right", "Ring", -.9f, 0);
+            Finger(clip, "Right", "Little", -.9f, 0);
+            Finger(clip, "Right", "Thumb", .95f, .55f);
+            Finger(clip, "Left", "Index", .9f, -.6f);
+            Finger(clip, "Left", "Middle", .9f, .6f);
+            Finger(clip, "Left", "Ring", -.85f, 0);
+            Finger(clip, "Left", "Little", -.85f, 0);
+            Finger(clip, "Left", "Thumb", .6f, .3f);
+            Curve(clip, "Left Arm Down-Up", .1f);
+        }
+        else if (weapon == 3) // Rupture: two cupped, fanned palms around the energy shell.
+        {
+            foreach (string side in new[] { "Left", "Right" })
+            {
+                Finger(clip, side, "Index", .55f, -.65f);
+                Finger(clip, side, "Middle", .6f, -.2f);
+                Finger(clip, side, "Ring", .45f, .35f);
+                Finger(clip, side, "Little", .35f, .7f);
+                Finger(clip, side, "Thumb", .8f, .65f);
+            }
+            Curve(clip, "Right Forearm Stretch", -.05f);
+            Curve(clip, "Left Forearm Stretch", -.05f);
+        }
+        else // Viewfinder: opposite thumb/index corners form a photographer's frame.
+        {
+            foreach (string side in new[] { "Left", "Right" })
+            {
+                Finger(clip, side, "Index", .95f, 0);
+                Finger(clip, side, "Thumb", .95f, .9f);
+                Finger(clip, side, "Middle", -.9f, 0);
+                Finger(clip, side, "Ring", -.9f, 0);
+                Finger(clip, side, "Little", -.9f, 0);
+            }
+            Curve(clip, "Left Forearm Stretch", -.2f);
+        }
+        if (existing)
+        {
+            EditorUtility.CopySerialized(clip, existing);
+            UnityEngine.Object.DestroyImmediate(clip);
+            EditorUtility.SetDirty(existing);
+            return existing;
         }
         AssetDatabase.CreateAsset(clip, path); return clip;
     }

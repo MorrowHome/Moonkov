@@ -40,6 +40,7 @@ public sealed class SkirtHandAvoidance : MonoBehaviour {
     private float m_CoverBlend;
     private float m_HandCoverBlend;
     private int m_CoverLayerIndex = -1;
+    private static readonly AvatarIKGoal[] HandGoals = { AvatarIKGoal.LeftHand, AvatarIKGoal.RightHand };
     private bool m_PresentationDriven;
     private float m_PresentationDeltaTime, m_PresentationAim;
 
@@ -71,6 +72,7 @@ public sealed class SkirtHandAvoidance : MonoBehaviour {
         // The humanoid position IK changes wrist orientation after OnAnimatorIK.
         // Roll the final hands around their finger axes so their palms face the
         // body without bending the fingers or moving the wrist targets.
+        if (haloAim && haloAim.OwnsHandPose) return;
         if (!animator || !animator.isHuman || m_HandCoverBlend <= 0.001f ||
             coverHandIKWeight <= 0f ||
             coverPalmFacingWeight <= 0f) return;
@@ -82,6 +84,25 @@ public sealed class SkirtHandAvoidance : MonoBehaviour {
 
     private void OnAnimatorIK(int layerIndex) {
         if (!animator || !animator.isHuman) return;
+        // Weapon intent owns both hands immediately, including the aim-in/out boundary.
+        // Clear residual cloth goals/hints on earlier layers; only the weapon layer may solve them.
+        if (haloAim && haloAim.OwnsHandPose)
+        {
+            ResetOffsets();
+            foreach (var goal in HandGoals)
+            {
+                animator.SetIKPositionWeight(goal, 0f);
+                animator.SetIKRotationWeight(goal, 0f);
+            }
+            animator.SetIKHintPositionWeight(AvatarIKHint.LeftElbow, 0f);
+            animator.SetIKHintPositionWeight(AvatarIKHint.RightElbow, 0f);
+            if (layerIndex == haloAim.AimLayerIndex)
+            {
+                haloAim.TryApplyHandIK(AvatarIKGoal.LeftHand);
+                haloAim.TryApplyHandIK(AvatarIKGoal.RightHand);
+            }
+            return;
+        }
         if (m_PresentationDriven) {
             if (layerIndex != 0) return;
             if (m_PresentationAim > 0.001f) {
