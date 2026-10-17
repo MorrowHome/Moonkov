@@ -1,0 +1,30 @@
+PASS weapon 0 pitch -65 lean -1
+PASS weapon 0 pitch -65 lean 1
+PASS weapon 0 pitch 0 lean -1
+PASS weapon 0 pitch 0 lean 1
+PASS weapon 0 pitch 65 lean -1
+PASS weapon 0 pitch 65 lean 1
+PASS weapon 1 pitch -65 lean -1
+PASS weapon 1 pitch -65 lean 1
+PASS weapon 1 pitch 0 lean -1
+PASS weapon 1 pitch 0 lean 1
+PASS weapon 1 pitch 65 lean -1
+PASS weapon 1 pitch 65 lean 1
+PASS weapon 2 pitch -65 lean -1
+PASS weapon 2 pitch -65 lean 1
+PASS weapon 2 pitch 0 lean -1
+PASS weapon 2 pitch 0 lean 1
+PASS weapon 2 pitch 65 lean -1
+PASS weapon 2 pitch 65 lean 1
+sniper: index bend 0.028 deg, thumb/index right-angle error 0.000 deg, maximum contact gap 0.154 mm
+PASS weapon 3 pitch -65 lean -1
+sniper: index bend 0.000 deg, thumb/index right-angle error 0.000 deg, maximum contact gap 0.154 mm
+PASS weapon 3 pitch -65 lean 1
+sniper: index bend 0.028 deg, thumb/index right-angle error 0.000 deg, maximum contact gap 0.155 mm
+PASS weapon 3 pitch 0 lean -1
+sniper: index bend 0.000 deg, thumb/index right-angle error 0.001 deg, maximum contact gap 0.155 mm
+PASS weapon 3 pitch 0 lean 1
+sniper: index bend 0.000 deg, thumb/index right-angle error 0.000 deg, maximum contact gap 0.154 mm
+PASS weapon 3 pitch 65 lean -1
+sniper: index bend 0.000 deg, thumb/index right-angle error 0.000 deg, maximum contact gap 0.154 mm
+PASS weapon 3 pitch 65 lean 1

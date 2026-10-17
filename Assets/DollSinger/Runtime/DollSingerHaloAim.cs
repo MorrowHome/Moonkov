@@ -466,9 +466,6 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
             float halfHeight = Mathf.Max(.01f, distance) * Mathf.Tan(aimingCamera.fieldOfView * .5f * Mathf.Deg2Rad);
             haloScale = Mathf.Min(haloScale, firstPersonHaloViewportFraction * halfHeight / FirstPersonVisualRadius());
         }
-        // Keep the unfolding optic inside the zoomed viewport; other clients see full geometry.
-        if (centred && visualWeapon == HaloWeapon.Sniper && sniperVisual)
-            haloScale = Mathf.Lerp(haloScale, sniperVisual.ScopeScale(Vector3.Distance(centredPosition, aimingCamera.transform.position), aimingCamera.fieldOfView), t);
         Vector3 parentScale = transform.lossyScale;
         haloVisual.localScale = new Vector3(haloScale / Mathf.Max(0.001f, parentScale.x),
             haloScale / Mathf.Max(0.001f, parentScale.y),
@@ -576,7 +573,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         float clearance = thumbClearance;
         if (view && view.camera)
             clearance = Mathf.Min(clearance, firstPersonAimDistance *
-                Mathf.Tan(view.camera.fieldOfView * .5f * Mathf.Deg2Rad) *
+                Mathf.Tan((visualWeapon == HaloWeapon.Sniper ? view.firstPersonFieldOfView : view.camera.fieldOfView) * .5f * Mathf.Deg2Rad) *
                 (visualWeapon == HaloWeapon.Rifle ? .10f : thumbScreenGap) * 2f);
         Vector3 thumbPosition = haloPosition - cameraTransform.up * clearance -
                                cameraTransform.forward * firstPersonThumbDepth;
