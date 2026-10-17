@@ -1,0 +1,48 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="WeaponGestureLab.uss" />
+    <ui:VisualElement name="lab" class="lab">
+        <ui:VisualElement class="heading">
+            <ui:Label text="手势演示场景" class="title" />
+            <ui:Label text="正式网络玩家 · 同一实例 · 四机位同步" class="subtitle" />
+            <ui:Button name="grid" text="四机位总览" />
+        </ui:VisualElement>
+        <ui:VisualElement class="toolbar">
+            <ui:Button name="rifle" text="1 步枪" /><ui:Button name="revolver" text="2 左轮" />
+            <ui:Button name="shotgun" text="3 霰弹" /><ui:Button name="sniper" text="4 狙击" />
+            <ui:Toggle name="aim" label="瞄准" value="true" />
+            <ui:Button name="fire" text="开火 / Space" /><ui:Toggle name="repeatFire" label="循环射击" />
+            <ui:Button name="reload" text="换弹 / R" /><ui:Toggle name="pause" label="暂停" />
+        </ui:VisualElement>
+        <ui:VisualElement class="toolbar settings">
+            <ui:Toggle name="firstPerson" label="玩家第一人称" value="true" />
+            <ui:Slider name="pitch" label="俯仰" low-value="-70" high-value="70" value="0" show-input-field="true" />
+            <ui:Slider name="orbit" label="观察机位环绕" low-value="-180" high-value="180" value="0" show-input-field="true" />
+            <ui:Slider name="distance" label="特写 / 距离" low-value="0.45" high-value="3" value="1.25" show-input-field="true" />
+            <ui:Slider name="speed" label="播放速度" low-value="0.1" high-value="1" value="1" show-input-field="true" />
+        </ui:VisualElement>
+        <ui:VisualElement name="views" class="views">
+            <ui:VisualElement name="topRow" class="view-row">
+                <ui:VisualElement name="ownerCard" class="view-card">
+                    <ui:Button name="focusOwner" text="玩家相机 · 第一人称 / 点击放大" class="view-title" />
+                    <ui:Image name="ownerImage" class="view-image" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:VisualElement name="frontCard" class="view-card">
+                    <ui:Button name="focusFront" text="第三人称 · 正面 / 点击放大" class="view-title" />
+                    <ui:Image name="frontImage" class="view-image" picking-mode="Ignore" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="bottomRow" class="view-row">
+                <ui:VisualElement name="sideCard" class="view-card">
+                    <ui:Button name="focusSide" text="第三人称 · 右侧 / 点击放大" class="view-title" />
+                    <ui:Image name="sideImage" class="view-image" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:VisualElement name="backCard" class="view-card">
+                    <ui:Button name="focusBack" text="第三人称 · 背面 / 点击放大" class="view-title" />
+                    <ui:Image name="backImage" class="view-image" picking-mode="Ignore" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:Label name="status" class="status" />
+        <ui:Label text="切枪 1–4 · 单发 Space · 换弹 R · P 暂停 · 点击机位标题放大 · 环绕与距离在暂停时仍可调整" class="help" />
+    </ui:VisualElement>
+</ui:UXML>
