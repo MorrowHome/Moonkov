@@ -452,9 +452,11 @@ namespace Unity.MP_FPS.DollSinger {
 
         private void LateUpdate() {
             m_AppliedLeanOffset = Vector3.zero;
-            if (!IsFirstPersonView || m_Stance == DollSingerStance.Prone) m_LeanState = m_LeanTarget = 0f;
             StabilizeHeadLook();
+            if (!IsFirstPersonView || m_Stance == DollSingerStance.Prone) m_LeanState = m_LeanTarget = 0f;
             else ApplyBodyLean();
+            ApplyTiptoePose();
+        }
 
         private void StabilizeHeadLook()
         {
