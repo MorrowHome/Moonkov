@@ -72,7 +72,7 @@ public class DollSingerView : MonoBehaviour
     [Range(0.04f, 0.2f)] public float lookDownBodyClearance = 0.075f;
 
     [Header("First person gesture presentation")]
-    [Tooltip("Independent arm projection keeps both gestures visible even through high-magnification optics.")]
+    [Tooltip("Presentation FOV for ordinary weapon gestures. The sniper follows the player camera's zoom.")]
     [Range(50f, 80f)] public float gestureFieldOfView = 65f;
     private DollSingerFirstPersonHands gestureHands;
     public Camera GestureCamera => gestureHands?.Camera;
@@ -81,7 +81,7 @@ public class DollSingerView : MonoBehaviour
     public void SetGestureHandsActive(bool active, bool viewfinder = false)
     {
         gestureHands?.Present(active && firstPerson && isActiveAndEnabled && camera && camera.isActiveAndEnabled,
-            gestureFieldOfView, camera, viewfinder);
+            viewfinder && camera ? camera.fieldOfView : gestureFieldOfView, camera, viewfinder);
     }
 
     private DollSingerMovement movement;

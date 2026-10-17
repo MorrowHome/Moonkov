@@ -109,14 +109,8 @@ public static class SniperHaloSetup
             Require(Mathf.Approximately(view.TargetAimMagnification, 6), "Six times first person scope target");
             view.SetWeaponAimMagnification(0);
             Require(Mathf.Approximately(view.TargetAimMagnification, view.aimMagnification), "Other weapon zoom target restores");
-            // Projection must keep the optic within the viewport even when base FOV changes.
-            foreach (float baseFov in new[] { 40f, 70f, 100f })
-            {
-                float scopeFov = 2 * Mathf.Atan(Mathf.Tan(baseFov * .5f * Mathf.Deg2Rad) / visual.scopeMagnification) * Mathf.Rad2Deg;
-                float scale = visual.ScopeScale(.45f, scopeFov);
-                float viewportFraction = visual.AimedRadius * scale / (.45f * Mathf.Tan(scopeFov * .5f * Mathf.Deg2Rad));
-                Require(Mathf.Abs(viewportFraction - visual.scopeViewportFraction) < .001f, "Scope fits configured FOV");
-            }
+            // Runtime optical zoom is covered in BlenderGestureValidation:
+            // the authored optic is no longer resized to fit the viewport.
         }
         finally { UnityEngine.Object.DestroyImmediate(root); }
         Require(AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Resources/HaloIcons/Sniper.png"), "Original-shape icon");

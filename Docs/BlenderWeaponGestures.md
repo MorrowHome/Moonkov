@@ -34,7 +34,7 @@
 
 ## 验证
 
-在 `WeaponGestureLab.unity` 中 Play，再运行 `Tools / Moonkov / Validate Blender Gestures In Playing Lab`。会检查四种武器的定姿、完整射击和装填时间段，所有手指可见性，第一／第三人称模式，俯仰 -65/0/+65，退出／进入瞄准和暂停恢复。测试不会启动服务器或伤害判定。
+在 `WeaponGestureLab.unity` 中 Play，再运行 `Tools / Moonkov / Validate Blender Gestures In Playing Lab`。会检查四种武器的定姿、完整射击和装填时间段，普通武器的所有手指可见性，第一／第三人称模式，俯仰 -65/0/+65，退出／进入瞄准和暂停恢复。测试不会启动服务器或伤害判定。
 
 最终烘焙版本为 `989de9868b58`。Unity 6000.5.10f1 脚本编译完成，当前 Console 为 0 条错误，保留测试前已有的 7 条警告。两份正式玩家 Prefab 均无缺失脚本，且引用同一份最新烘焙。退出 Play 后时间倍率恢复为 1，临时手部相机和演示 RenderTexture 均为 0。
 
@@ -84,3 +84,22 @@ unity command eval_file --project-path . --caller plugin --skill unity-feature-i
 ![狙击框中心对齐后的正式玩家四机位](AI/BlenderGestureValidation/Unity-Sniper-Centered.png)
 
 [原始第一人称画面](AI/BlenderGestureValidation/Unity-Sniper-Centered-Owner.png)
+
+
+## 2026-10-18：狙击使用正常视角放大
+
+此前主相机在 6 倍瞄准时为约 13.313°，手部相机仍为固定 65°，还会后退取景；世界光环另按屏幕占比缩小（实测完全瞄准时缩放约 0.12）。这些补偿造成手势、光环和景物不遵循同一放大关系。
+
+现在保留源姿态，狙击手部相机直接使用玩家相机 FOV，取消沿深度方向的退后和自动装入屏幕；只保留框开口中心的横纵对齐。光环使用原本的世界尺寸（完全瞄准时 0.45），放大不再修改光环尺寸或随视野改变触手避让距离。手势、光环和世界都正常随视野放大；高倍率会自然裁掉边缘的手和框，不再保证高倍率下完整看见两手。普通三种武器的呈现路径不变。
+
+下方旧截图和居中验收为此前版本的历史记录。新验收额外覆盖 1／2／4／6／12 倍：两相机 FOV 相同，手部相机深度偏移为零；框的投影尺寸与实际倍率成正比；光环世界大小和位置不随倍率改变。完整动作、俯仰、长宽比和骨骼一致性仍由同一验证器检查。
+
+本次 Unity 演示场景回归 PASS，包含四武器动作与原有姿态校验；24 组侧倾回归 PASS。比例检查期间暂停 Animator 的待机呼吸，避免跨帧眼位变化干扰光学比例比较，随后恢复动画速度。报告：[倍率和动作](AI/BlenderGestureValidation/NaturalZoomChecks.txt)、[侧倾](AI/BlenderGestureValidation/NaturalZoomLeanChecks.txt)。仍未进入正式地图或联机对局验收。
+
+以下为同一实际玩家相机的 1／2／6 倍原始输出，加入临时世界棋盘检验景物放大；拍摄后删除棋盘并恢复倍率与动画。6 倍时框边和双手均自然位于屏幕外。
+
+- [1 倍](AI/BlenderGestureValidation/Unity-Sniper-NaturalZoom-1x.png)
+- [2 倍](AI/BlenderGestureValidation/Unity-Sniper-NaturalZoom-2x.png)
+- [6 倍](AI/BlenderGestureValidation/Unity-Sniper-NaturalZoom-6x.png)
+
+额外执行旧 `SniperHaloSetup.Validate` 时，在未改动的库存流程 `Store exact ammo` 断言失败（进入光学检查之前）；本次未修改库存逻辑，报告保留该限制。最终脚本编译成功，编辑器恢复 MainMenu／非 Play 状态，时间倍率为 1。

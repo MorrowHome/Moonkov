@@ -136,6 +136,15 @@ namespace Unity.MP_FPS.DollSinger
         public void FrameHands(bool force = false)
         {
             if (!Active || !Camera) return;
+            if (wasViewfinder)
+            {
+                // Pose first, then zoom with the world. Do not move backwards or
+                // refit the hands to cancel the owner's optical magnification.
+                Camera.ResetProjectionMatrix();
+                Camera.transform.localPosition = Vector3.zero;
+                CenterViewfinder();
+                return;
+            }
             // Head pitch moves the real eye as well as rotating it. Reusing a fit
             // from another viewing angle makes the hands drift, then snap at the
             // viewport boundary. Track looking, while leaving shot recoil intact.
@@ -144,7 +153,6 @@ namespace Unity.MP_FPS.DollSinger
             // would leave their safe area; tracking every movement would cancel the animation.
             if (!force && !reframe && InsideFrame(rightHandBones) && InsideFrame(leftHandBones))
             {
-                if (wasViewfinder) CenterViewfinder();
                 return;
             }
             reframe = false;
@@ -203,17 +211,6 @@ namespace Unity.MP_FPS.DollSinger
                 }
                 return;
             }
-            float tan = Mathf.Tan(Camera.fieldOfView * .5f * Mathf.Deg2Rad);
-            var center = (min + max) * .5f;
-            // Physical reach clamps the wrists at extreme pitch/prone. Move only the arm
-            // projection camera back to fit the final fingers; never scale bones or the world optic.
-            float depth = Mathf.Max(Mathf.Max((max.x - min.x + .035f) / (1.60f * tan * Camera.aspect),
-                (max.y - min.y + .035f) / (1.7f * safeFrame.height * tan)), wasViewfinder ? .14f : .18f);
-            float z = Mathf.Min(0, min.z - depth);
-            float middleDepth = center.z - z;
-            Camera.transform.localPosition = new Vector3(center.x,
-                center.y + (1f - 2f * safeFrame.center.y) * middleDepth * tan, z);
-            CenterViewfinder();
         }
 
         private void CenterViewfinder()

@@ -127,6 +127,13 @@ public static class BlenderGestureValidation
             var owner = lab.PlayerView.camera;
             float pixels = new Vector2((uv.x-.5f)*owner.pixelWidth, (uv.y-.5f)*owner.pixelHeight).magnitude;
             Require(pixels < .5f, "Sniper frame centre drifted from crosshair: " + pixels + " pixels");
+            Require(Mathf.Abs(lab.PlayerView.GestureCamera.fieldOfView-owner.fieldOfView)<.001f,
+                "Sniper hands are not using the owner's zoom");
+            Require(Mathf.Abs(lab.PlayerView.GestureCamera.transform.localPosition.z)<.00001f,
+                "Sniper hand camera moved backwards to cancel zoom");
+            // A normal optical zoom can crop the hands at the viewport edges.
+            // Do not force them back inside the screen and undo magnification.
+            return;
         }
         foreach (var name in new[] { "手首.L", "手首.R" })
         foreach (var bone in bones[name].GetComponentsInChildren<Transform>())
@@ -262,7 +269,7 @@ public static class BlenderGestureValidation
                 yield return new WaitForEndOfFrame();
                 error = Mathf.Max(error, Compare(bake, lab, bones)); Visible(lab, bones); ClearAim(lab); PointAtAim(lab, bones);
             }
-            report.Add($"weapon {weapon + 1}: idle, fire, reload; all four cameras active; exact local rotations and owner finger visibility passed");
+            report.Add($"weapon {weapon + 1}: idle, fire, reload; all four cameras active; exact local rotations and owner projection passed");
         }
         Require(fanDistance > .055f, "Revolver offhand did not fan the hammer: " + fanDistance);
         report.Add($"revolver offhand stroke {fanDistance * 1000:F1} mm; maximum Blender/runtime rotation difference {error:F3} deg");
@@ -338,7 +345,29 @@ public static class BlenderGestureValidation
         lab.SetPaused(true); var hand = bones["手首.L"].position; yield return new WaitForSecondsRealtime(.15f); yield return new WaitForEndOfFrame();
         Require(Vector3.Distance(hand, bones["手首.L"].position) < .00001f, "Frozen gesture drifted."); lab.SetPaused(false);
         report.Add("FP/TP modes, pitch -65/0/+65, aim-out/in, pause/resume passed.");
-        report.Add("Sniper frame opening stays within 0.5 output pixels of the crosshair through idle/fire/reload, continuous pitch, 16:9 / 4:3 and gesture FOV 50/65/80.");
+        float scopeMagnification = lab.Halo.sniperVisual.scopeMagnification;
+        // Hold the body animation at one pose. Idle breathing changes the
+        // eye-to-hand distance and is unrelated to optical magnification.
+        var animator = lab.Halo.GetComponent<Animator>(); float animatorSpeed = animator.speed;
+        animator.speed = 0;
+        Vector2 baseSize = Vector2.zero; float baseHaloSize = 0; Vector3 baseHaloPosition = Vector3.zero;
+        foreach (float zoom in new[] { 1f, 2f, 4f, 6f, 12f })
+        {
+            lab.Halo.sniperVisual.scopeMagnification = zoom;
+            yield return new WaitForSeconds(.7f); yield return new WaitForEndOfFrame();
+            Visible(lab, bones); Shape(bones, lab.PlayerView.GestureCamera, report);
+            var camera = lab.PlayerView.GestureCamera;
+            Vector2 span = camera.WorldToViewportPoint(bones["人指先.L"].position) - camera.WorldToViewportPoint(bones["人指先.R"].position);
+            var normalized = span / lab.PlayerView.CurrentAimMagnification;
+            if (zoom == 1) { baseSize = normalized; baseHaloSize = lab.Halo.haloVisual.lossyScale.x; baseHaloPosition = lab.Halo.haloVisual.position; }
+            Require(Vector2.Distance(normalized, baseSize)<.0001f, "Sniper gesture did not magnify with the world at " + zoom);
+            Require(Mathf.Abs(lab.Halo.haloVisual.lossyScale.x-baseHaloSize)<.00001f, "Zoom resized the sniper halo");
+            Require(Vector3.Distance(lab.Halo.haloVisual.position,baseHaloPosition)<.0001f, "Zoom moved the sniper halo");
+        }
+        lab.Halo.sniperVisual.scopeMagnification = scopeMagnification;
+        animator.speed = animatorSpeed;
+        yield return new WaitForSeconds(.7f);
+        report.Add("Sniper uses owner FOV with zero hand-camera depth offset; 1/2/4/6/12x zoom magnifies the unchanged frame proportionally. Halo world size/position stay fixed. Optical cropping is expected; automatic screen fitting is disabled. Frame centre remains within 0.5 output pixels through actions, pitch and aspect changes.");
         UnityEngine.Object.Destroy(armSurface);
         Status = "PASS"; File.WriteAllLines(Output + "/checks.txt", report); Debug.Log("Blender gesture validation PASS: " + string.Join("\n", report));
     }
