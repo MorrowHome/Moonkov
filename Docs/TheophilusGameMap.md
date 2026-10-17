@@ -4,6 +4,8 @@
 
 正式场景：`Assets/MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusGameScene.unity`；出生子场景：同目录 `TheophilusSpawnPointsSubScene.unity`。两者均登记并启用在 Build Settings。原 Apollo12 地图和旧研究场景仅作为历史来源保留，不再维护研究副本。
 
+2026-10-16 恢复正式天空：此前场景 RenderSettings 与 `MoonSceneLighting.spaceSkybox` 都引用 `R8_StudySpaceSky`，其星图强度／白昼可见度为 0，太阳与地球显示亮度也为 0。现改为正式专属 `Variants/TheophilusBase/Materials/TheophilusSky.mat`，从此前调好的 `Apollo12Sky` 复制参数（星图 0.25、白昼可见度 0.5、亮星增强 3、弥散星场 0.3，并保留原太阳／地球配置）。原研究材质与 Apollo12 材质不改写，昼夜／天文方向继续由原运行时代码驱动。已保存两处场景引用，隔离天空渲染预览确认恒星与银河可见、Shader 无错误；未重进正式 Play。预览为 `Library/BuildValidation/TheophilusSkyRestore/SkyRestored.png`。
+
 正式地图包含 Theophilus 地形、基地、八楼、气闸、巨构、R7 接地和 R8 表面/渲染配置。R9/R10 承托塔和中央下降塔的历史资产保留，中央旧显示按 R21 最终候选清单隐藏。气闸的 `AirlockPrototypeDemo` 与本地诊断读数移除，角色由正式 Ghost/玩家流程生成；不再生成本地验证角色。原 F/滚轮交互、气闸服务端规则及声音走现有正式系统。
 
 R21 直接接入此正式场景：保留既有内容，增加 13 件 R20 机械构件与 6 件 R21 井体显示构件，禁用 10 个旧封盖 Renderer。正式近景、远景的显示与碰撞各使用一份独立 TerrainData（共四份），按交付 JSON 的 112 m、64 边形洞口同步裁切 holes；只有四角均在边界内的格子才开洞。近景格子 0.25 m、远景格子 2 m，边缘保留保守的栅格轮廓。原共享地形、DEM 与历史场景不改写。
