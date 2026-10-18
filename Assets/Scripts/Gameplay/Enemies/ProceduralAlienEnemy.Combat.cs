@@ -224,7 +224,7 @@ namespace Unity.MP_FPS
             m_AttachedTarget = state.AttachedTarget;
             if (Role == MultiplayerRole.Server || profile.Species == AlienSpecies.Spider || profile.Species == AlienSpecies.FaceHugger || profile.Species == AlienSpecies.Leech) return;
             m_AttackPresentation ??= new AlienAttackPresentation(transform);
-            m_AttackPresentation.Observe(state, m_Pattern, profile.Boss);
+            m_AttackPresentation.Observe(state, m_Pattern);
         }
 
         private static float GroundDistance(Vector3 a, Vector3 b) => new Vector2(a.x - b.x, a.z - b.z).magnitude;

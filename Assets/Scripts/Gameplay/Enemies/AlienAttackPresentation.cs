@@ -4,78 +4,35 @@ using Object = UnityEngine.Object;
 
 namespace Unity.MP_FPS
 {
-    /// <summary>Client-only warnings from committed snapshots. No damage or target
+    /// <summary>Client-only physical attack effects from committed snapshots. No damage or target
     /// selection occurs here, including when joining an attack already in progress.</summary>
     public sealed class AlienAttackPresentation : IDisposable
     {
         private readonly GameObject m_Root;
-        private readonly LineRenderer[] m_Lines = new LineRenderer[3];
-        private readonly Material m_Material;
         private readonly Transform[] m_Impacts = new Transform[3];
-        private Mesh m_Spike;
+        private Mesh m_Spike, m_Residue;
         private Material m_ImpactMaterial;
-        private readonly Vector3[] m_Points = new Vector3[49];
         public AlienAttackPresentation(Transform owner)
         {
-            m_Root = new GameObject("Alien attack warning"); m_Root.transform.SetParent(owner, false);
-            var shader = Shader.Find("Universal Render Pipeline/Unlit");
-            if (!shader) shader = Shader.Find("Unlit/Color");
-            m_Material = new Material(shader) { hideFlags = HideFlags.DontSave };
-            for (int i = 0; i < m_Lines.Length; i++)
-            {
-                var go = new GameObject("Warning boundary " + i); go.transform.SetParent(m_Root.transform, false);
-                var line = go.AddComponent<LineRenderer>(); line.sharedMaterial = m_Material;
-                line.useWorldSpace = true; line.loop = false; line.widthMultiplier = .045f;
-                line.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; line.receiveShadows = false;
-                m_Lines[i] = line; line.enabled = false;
-            }
+            m_Root = new GameObject("Alien attack effects"); m_Root.transform.SetParent(owner, false);
         }
-        public void Observe(ProceduralAlienEnemy.State state, AlienCombatPattern pattern, bool boss)
+        public void Observe(ProceduralAlienEnemy.State state, AlienCombatPattern pattern)
         {
-            bool visible = (state.Action == AlienAction.Windup || state.Action == AlienAction.Strike) && state.AttackSequence > 0;
-            for (int i = 0; i < m_Lines.Length; i++) m_Lines[i].enabled = false;
             foreach (var impact in m_Impacts) if (impact) impact.gameObject.SetActive(false);
-            if (!visible || pattern.Kind == AlienAttackKind.FaceLeap || pattern.Kind == AlienAttackKind.RoofPounce) return;
-            Color color = pattern.Kind == AlienAttackKind.AcidSpit || pattern.Kind == AlienAttackKind.SlimePulse ?
-                new Color(.4f, .9f, .32f) : boss ? new Color(.95f, .25f, .16f) : new Color(.9f, .65f, .2f);
-            m_Material.SetColor("_BaseColor", color); m_Material.SetColor("_Color", color);
+            // Windup is communicated by the creature's pose and sound. Never draw
+            // circles, sectors or charge lanes over the world to expose hit geometry.
+            if (state.Action != AlienAction.Strike || state.AttackSequence == 0) return;
+            if (pattern.Kind != AlienAttackKind.RootSpikes && pattern.Kind != AlienAttackKind.AcidSpit &&
+                pattern.Kind != AlienAttackKind.SlimePulse && pattern.Kind != AlienAttackKind.TentacleSlam) return;
             Vector3 centre = state.AttackPoint;
-            if (pattern.Kind == AlienAttackKind.SlimePulse || pattern.Kind == AlienAttackKind.TentacleSweep) centre = state.AttackOrigin;
+            if (pattern.Kind == AlienAttackKind.SlimePulse) centre = state.AttackOrigin;
             centre.y += .07f;
-            if (pattern.Kind == AlienAttackKind.Charge || pattern.Kind == AlienAttackKind.Bite)
-            {
-                Vector3 end = (Vector3)state.AttackOrigin + (Vector3)state.AttackDirection * pattern.Speed * pattern.Active;
-                var side = Vector3.Cross(Vector3.up, state.AttackDirection).normalized * pattern.Radius;
-                m_Points[0] = (Vector3)state.AttackOrigin + side; m_Points[1] = end + side;
-                m_Points[2] = end - side; m_Points[3] = (Vector3)state.AttackOrigin - side; m_Points[4] = m_Points[0];
-                Draw(0, 5); return;
-            }
-            if (pattern.Kind == AlienAttackKind.TentacleSweep)
-            {
-                Vector3 facing = state.AttackDirection;
-                int count = state.BossPhase > 1 ? 2 : 1;
-                for (int side = 0; side < count; side++)
-                {
-                    m_Points[0] = centre;
-                    for (int i = 0; i <= 32; i++) m_Points[i + 1] = centre + Quaternion.AngleAxis(-65 + i * 130f / 32 + side * 180, Vector3.up) * facing * pattern.Radius;
-                    m_Points[34] = centre; Draw(side, 35);
-                }
-                return;
-            }
             int patches = pattern.Kind == AlienAttackKind.RootSpikes ? 3 : 1;
             Vector3 right = Vector3.Cross(Vector3.up, state.AttackDirection).normalized;
             for (int patch = 0; patch < patches; patch++)
             {
                 Vector3 point = centre + right * (patch == 0 ? 0 : patch == 1 ? pattern.Radius * 2.7f : -pattern.Radius * 2.7f);
-                for (int i = 0; i < m_Points.Length; i++)
-                {
-                    float angle = i * Mathf.PI * 2 / (m_Points.Length - 1);
-                    m_Points[i] = point + new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * pattern.Radius;
-                }
-                Draw(patch, m_Points.Length);
-                if (state.Action == AlienAction.Strike && (pattern.Kind == AlienAttackKind.RootSpikes ||
-                    pattern.Kind == AlienAttackKind.AcidSpit || pattern.Kind == AlienAttackKind.SlimePulse || pattern.Kind == AlienAttackKind.TentacleSlam))
-                    DrawImpact(patch, point, pattern, state.ActionTime);
+                DrawImpact(patch, point, pattern, state.ActionTime);
             }
         }
         private void DrawImpact(int index, Vector3 point, AlienCombatPattern pattern, float age)
@@ -87,10 +44,10 @@ namespace Unity.MP_FPS
                 m_ImpactMaterial.SetFloat("_Smoothness", roots ? .45f : .85f);
             }
             m_ImpactMaterial.SetColor("_BaseColor", roots ? new Color(.15f, .035f, .08f) :
-                pattern.Kind == AlienAttackKind.TentacleSlam ? new Color(.22f, .045f, .06f) : new Color(.12f, .27f, .055f));
+                pattern.Kind == AlienAttackKind.TentacleSlam ? new Color(.16f, .12f, .09f) : new Color(.12f, .27f, .055f));
             if (!m_Impacts[index])
             {
-                var go = new GameObject(roots ? "Erupting root spike" : "Acid impact pool"); go.transform.SetParent(m_Root.transform, false);
+                var go = new GameObject(roots ? "Erupting root spike" : pattern.Kind == AlienAttackKind.TentacleSlam ? "Impact residue" : "Acid impact pool"); go.transform.SetParent(m_Root.transform, false);
                 var filter = go.AddComponent<MeshFilter>(); go.AddComponent<MeshRenderer>().sharedMaterial = m_ImpactMaterial;
                 if (roots)
                 {
@@ -99,9 +56,8 @@ namespace Unity.MP_FPS
                 }
                 else
                 {
-                    // Reuse Unity's sphere mesh as a shallow liquid patch, without a collider.
-                    var sample = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                    filter.sharedMesh = sample.GetComponent<MeshFilter>().sharedMesh; Destroy(sample);
+                    if (!m_Residue) m_Residue = BuildResidue();
+                    filter.sharedMesh = m_Residue;
                 }
                 m_Impacts[index] = go.transform;
             }
@@ -127,12 +83,23 @@ namespace Unity.MP_FPS
             var mesh = new Mesh { name = "Alien root eruption", hideFlags = HideFlags.DontSave };
             mesh.vertices = vertices; mesh.triangles = triangles; mesh.RecalculateNormals(); mesh.RecalculateBounds(); return mesh;
         }
-        private void Draw(int index, int count)
+        private static Mesh BuildResidue()
         {
-            var line = m_Lines[index]; line.enabled = true; line.positionCount = count;
-            for (int i = 0; i < count; i++) line.SetPosition(i, m_Points[i]);
+            // An uneven, lit deposit is part of the impact, not an exact range marker.
+            const int sides = 24;
+            var vertices = new Vector3[sides + 1]; var triangles = new int[sides * 3];
+            vertices[0] = Vector3.up * .25f;
+            for (int i = 0; i < sides; i++)
+            {
+                float angle = i * Mathf.PI * 2 / sides;
+                float radius = .43f + .055f * Mathf.Sin(angle * 5 + .7f) + .025f * Mathf.Cos(angle * 9);
+                vertices[i + 1] = new Vector3(Mathf.Cos(angle) * radius, 0, Mathf.Sin(angle) * radius);
+                triangles[i * 3] = 0; triangles[i * 3 + 1] = (i + 1) % sides + 1; triangles[i * 3 + 2] = i + 1;
+            }
+            var mesh = new Mesh { name = "Irregular alien residue", hideFlags = HideFlags.DontSave };
+            mesh.vertices = vertices; mesh.triangles = triangles; mesh.RecalculateNormals(); mesh.RecalculateBounds(); return mesh;
         }
-        public void Dispose() { Destroy(m_Root); Destroy(m_Material); Destroy(m_ImpactMaterial); Destroy(m_Spike); }
+        public void Dispose() { Destroy(m_Root); Destroy(m_ImpactMaterial); Destroy(m_Spike); Destroy(m_Residue); }
         private static void Destroy(Object value) { if (!value) return; if (Application.isPlaying) Object.Destroy(value); else Object.DestroyImmediate(value); }
     }
 }
