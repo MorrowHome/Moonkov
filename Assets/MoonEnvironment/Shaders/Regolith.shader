@@ -114,12 +114,12 @@ Shader "MoonEnvironment/Regolith"
                 float2 weights=tex2D(_PreservedTerrainControl,controlUV).rg;
                 weights/=max(weights.x+weights.y,1e-5);
                 preservedTint=weights.x*_PreservedLowTint.rgb+weights.y*_PreservedHighTint.rgb;
-                // Keep the current pattern instead of painting the old noise,
-                // slope and impact colour masks over the restored surface.
-                rock=weights.x;
+                // Preserve only the authored broad colour pattern. Keep the
+                // original rock/geology values for metre-scale grain, blended
+                // normals and roughness; low/high colour weights do not describe
+                // whether a patch is exposed bedrock or fine powder.
                 facies=1;
                 macro=1;
-                geology=0;
             }
             o.Albedo=_Color.rgb*lerp(0.45,lerp(0.38,gray,0.65)*lerp(1,microGray*2,0.18*fineFade)*macro,_DetailStrength);
             o.Albedo*=_ReflectanceScale*facies*preservedTint;
