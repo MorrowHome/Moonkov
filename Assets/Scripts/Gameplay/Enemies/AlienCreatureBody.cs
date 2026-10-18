@@ -89,6 +89,7 @@ namespace Unity.MP_FPS
             BuildHitboxes(hitLayer); UpdateHitboxes();
             if (render && profile.VoidLiquid)
             { m_VoidAppearance = new AlienVoidAppearance(owner); m_VoidAppearance.Refresh(); }
+            if (render) Moon.MoonSilverPrintSubject.Protect(owner.gameObject);
         }
 
         private static void ScaleChain(CreatureChainSettings s, float scale)

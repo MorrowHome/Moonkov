@@ -1291587,6 +1291587,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: MoonEnvironment.Runtime::Unity.MP_FPS.Moon.MoonSilverPrint
   material: {fileID: 2100000, guid: a04f0cdbf038b7b4fb7e2c118326b4d9, type: 2}
+  subjectMaskMaterial: {fileID: 2100000, guid: 0beb4dc7eb92a6c48b2b1fdf63c95d61, type: 2}
   intensity: 1
   exposure: 0.3
   blackPoint: 0.035

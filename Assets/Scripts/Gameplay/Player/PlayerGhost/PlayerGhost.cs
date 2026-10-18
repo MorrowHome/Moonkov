@@ -278,6 +278,9 @@ namespace Unity.MP_FPS
                 ? (int)LayerIndex.ServerPlayer
                 : (int)LayerIndex.ClientPlayer;
 
+            if (Role != MultiplayerRole.Server)
+                Moon.MoonSilverPrintSubject.Protect(gameObject);
+
             PlayerGhostManager.TryGetInstanceByRole(Role, out var playerManager);
             playerManager.Register(this);
         }

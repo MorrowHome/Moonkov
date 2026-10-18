@@ -21,6 +21,8 @@ Shader "MoonEnvironment/SilverPrint"
             float4 _SilverGraphic; // tonal separation, contour strength, pixel width
             float _SilverHasDepth;
             TEXTURE2D_X_FLOAT(_SilverDepth);
+            TEXTURE2D_X(_SilverProtection);
+            float4 _SilverProtectionScaleBias;
 
             float3 ReadDisplay(float2 uv)
             {
@@ -100,6 +102,16 @@ Shader "MoonEnvironment/SilverPrint"
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
                 float2 uv = input.texcoord;
                 float4 original = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, uv);
+                float2 screenUV = (uv - _BlitScaleBias.zw) / _BlitScaleBias.xy;
+                float2 protectedUV = screenUV * _SilverProtectionScaleBias.xy + _SilverProtectionScaleBias.zw;
+                float2 protectedPixel = _SilverSourceTexel.xy * abs(_SilverProtectionScaleBias.xy / _BlitScaleBias.xy);
+                // One-pixel conservative edge guard also preserves post-AA silhouette colors.
+                float preserve = SAMPLE_TEXTURE2D_X(_SilverProtection, sampler_PointClamp, protectedUV).r;
+                preserve = max(preserve, SAMPLE_TEXTURE2D_X(_SilverProtection, sampler_PointClamp, protectedUV + float2(protectedPixel.x,0)).r);
+                preserve = max(preserve, SAMPLE_TEXTURE2D_X(_SilverProtection, sampler_PointClamp, protectedUV - float2(protectedPixel.x,0)).r);
+                preserve = max(preserve, SAMPLE_TEXTURE2D_X(_SilverProtection, sampler_PointClamp, protectedUV + float2(0,protectedPixel.y)).r);
+                preserve = max(preserve, SAMPLE_TEXTURE2D_X(_SilverProtection, sampler_PointClamp, protectedUV - float2(0,protectedPixel.y)).r);
+                if (preserve > .5) return original;
                 float3 c = original.rgb;
                 #ifndef UNITY_COLORSPACE_GAMMA
                     c = LinearToSRGB(max(c, 0));
@@ -111,7 +123,6 @@ Shader "MoonEnvironment/SilverPrint"
                     + Luma(ReadDisplay(uv + float2(0, pixel.y)))
                     + Luma(ReadDisplay(uv - float2(0, pixel.y)))) * .25;
 
-                float2 screenUV = (uv - _BlitScaleBias.zw) / _BlitScaleBias.xy;
                 float2 meterUV = screenUV * _SilverMeterScaleBias.xy + _SilverMeterScaleBias.zw;
                 float4 local = SAMPLE_TEXTURE2D_X(_SilverMeter, sampler_LinearClamp, meterUV);
                 float patina = 0;
