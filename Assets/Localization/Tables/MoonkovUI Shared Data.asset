@@ -3252,6 +3252,32 @@ MonoBehaviour:
     m_Key: Store all required organs and tissue in personal storage before researching.
     m_Metadata:
       m_Items: []
+  - m_Id: 3910561480585216
+    m_Key: E-01 Energy grenade
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3910561526722560
+    m_Key: 3s FUSE / 6m BLAST / UP TO 480 DAMAGE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3910561526722561
+    m_Key: '[G] throws from pockets or an equipped rig. Bounces, then releases an
+      energy blast after 3 seconds. Cover blocks the blast; nearby damage can kill
+      the thrower. Move grenades out of backpacks before throwing.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3910561526722562
+    m_Key: '[G] ENERGY GRENADE / {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3910561526722563
+    m_Key: THROW REQUESTED...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3910561526722564
+    m_Key: THROW REJECTED / CHECK RIG AND CLEARANCE
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

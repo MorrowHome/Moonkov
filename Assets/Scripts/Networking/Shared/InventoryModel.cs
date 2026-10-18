@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Unity.MP_FPS.Inventory
 {
-    public enum ItemKind { Root, Material, Cell, Helmet, LongGun, Pistol, Rig, Backpack, Medical, Food, Drink, StorageModule, ShapingModule, UtilityModule, Oxygen }
+    public enum ItemKind { Root, Material, Cell, Helmet, LongGun, Pistol, Rig, Backpack, Medical, Food, Drink, StorageModule, ShapingModule, UtilityModule, Oxygen, Throwable }
     public enum InventoryError { None, Stale, Missing, Invalid, Incompatible, Bounds, Collision, Cycle, Full, Overweight, Inaccessible }
     public enum InventoryOperation { Move, Split, Merge }
 
@@ -51,6 +51,7 @@ namespace Unity.MP_FPS.Inventory
                 new ItemDefinition("alien_neural_core", "Rare alien neural organ", ItemKind.Food, 1, 1, 1, .35f),
                 new ItemDefinition("alloy", "Lunar alloy", ItemKind.Material, 2, 1, 10, .6f),
                 new ItemDefinition("cells", "Energy cell", ItemKind.Cell, 1, 1, 12, .2f),
+                new ItemDefinition("energy_grenade", "E-01 Energy grenade", ItemKind.Throwable, 1, 1, 3, .25f),
                 new ItemDefinition("medkit", "M-40 Medical injector", ItemKind.Medical, 1, 1, 4, .15f),
                 new ItemDefinition("ration", "Expedition ration", ItemKind.Food, 1, 1, 3, .25f),
                 new ItemDefinition("water", "Sealed drinking water", ItemKind.Drink, 1, 2, 2, .5f),

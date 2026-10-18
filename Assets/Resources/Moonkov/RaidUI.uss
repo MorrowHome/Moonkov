@@ -1,5 +1,6 @@
 .raid-ui { position: absolute; left: 0; right: 0; top: 0; bottom: 0; color: #ECECE6; -unity-font-definition: url("../../UI Toolkit/Fonts/Inter-Regular.ttf"); }
 .raid-ui Label { color: #ECECE6; -unity-text-align: middle-left; white-space: normal; }
+.raid-grenade { font-size: 13px; color: rgb(117, 224, 255); margin-top: 2px; white-space: normal; }
 .raid-status { position: absolute; left: 3%; bottom: 4%; padding: 18px 22px; background-color: rgba(7, 8, 10, 0.78); border-left-width: 3px; border-left-color: #FFE11A; border-radius: 0; }
 .raid-caption { font-size: 10px; letter-spacing: 3px; margin-bottom: 14px; -unity-font-definition: url("../../UI Toolkit/RobotoMono-Medium.ttf"); }
 .raid-ui .raid-caption { color: #FFE11A; }

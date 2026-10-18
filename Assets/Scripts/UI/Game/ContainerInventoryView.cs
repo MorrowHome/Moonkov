@@ -93,6 +93,7 @@ namespace Unity.MP_FPS.Client
                 case "alien_tissue":return StashArtKind.AlienTissue;
                 case "helmet":return StashArtKind.Helmet; case "rifle":case "compact":return StashArtKind.HaloRifle; case "pistol":return StashArtKind.HaloRevolver;
                 case "ration":return StashArtKind.Ration; case "water":return StashArtKind.Water;
+                case "energy_grenade":return StashArtKind.EnergyGrenade;
                 case "oxygen_canister":return StashArtKind.OxygenCanister;
                 case "med_gel":return StashArtKind.MedicalGel; case "trauma_kit":return StashArtKind.TraumaKit;
                 case "energy_gel":return StashArtKind.EnergyGel; case "protein_bar":return StashArtKind.ProteinBar;

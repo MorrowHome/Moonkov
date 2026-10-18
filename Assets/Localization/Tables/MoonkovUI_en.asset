@@ -3248,6 +3248,32 @@ MonoBehaviour:
       researching.
     m_Metadata:
       m_Items: []
+  - m_Id: 3910561480585216
+    m_Localized: E-01 Energy grenade
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3910561526722560
+    m_Localized: 3s FUSE / 6m BLAST / UP TO 480 DAMAGE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3910561526722561
+    m_Localized: '[G] throws from pockets or an equipped rig. Bounces, then releases
+      an energy blast after 3 seconds. Cover blocks the blast; nearby damage can
+      kill the thrower. Move grenades out of backpacks before throwing.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3910561526722562
+    m_Localized: '[G] ENERGY GRENADE / {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3910561526722563
+    m_Localized: THROW REQUESTED...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3910561526722564
+    m_Localized: THROW REJECTED / CHECK RIG AND CLEARANCE
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

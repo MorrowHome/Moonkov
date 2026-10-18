@@ -9,7 +9,7 @@ using UnityEngine.UIElements;
 namespace Unity.MP_FPS
 {
     [RequireComponent(typeof(UIDocument))]
-    public sealed class RaidHUD : MonoBehaviour
+    public sealed partial class RaidHUD : MonoBehaviour
     {
         private World m_World;
         private EntityQuery m_StateQuery, m_PlayerQuery, m_ConnectionQuery;
@@ -313,6 +313,7 @@ namespace Unity.MP_FPS
             float distance = RaidRules.PickupRange;
             Vector3 position = default;
             bool alive = m_PlayerQuery.HasSingleton<PredictedPlayerGhost>() && m_PlayerQuery.GetSingleton<PredictedPlayerGhost>().CurrentHealth > 0;
+            UpdateGrenades(alive && ready && !settled);
             if (alive && ready && !settled && !m_InventoryVisible && !m_InventoryRequestPending &&
                 !GameSettings.Instance.IsPauseMenuOpen && UnityEngine.Cursor.lockState == CursorLockMode.Locked &&
                 Keyboard.current != null && Keyboard.current.digit4Key.wasPressedThisFrame && !m_InventoryQuery.IsEmptyIgnoreFilter)

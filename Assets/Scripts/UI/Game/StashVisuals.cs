@@ -5,7 +5,7 @@ namespace Unity.MP_FPS.Client
 {
     public enum StashArtKind { None, Dust, Alloy, Cell, Halo, Outfit, Helmet, Rifle, Pistol, ChestRig, Backpack, HaloRifle, HaloRevolver, HaloShotgun, Medical, HaloSniper, Ration, Water, HaloCapacitor, HaloChargeBridge, HaloFocusLens, HaloFanArray, HaloPulseController, HaloHitMarker, OxygenCanister,
         MedicalGel, TraumaKit, EnergyGel, ProteinBar, Electrolyte, OxygenReserve, ScoutRig, FieldRig, SlingPack, CargoPack, CircuitBoard, CopperCoil, CeramicPlate, OpticalSensor, DataDrive, HeliumSample, QuantumCore, BlackBox, AlienMeat, AlienOrgan, AlienTissue,
-        AlienSpider, AlienSnake, AlienCaterpillar, AlienTentacle, AlienCentipede, AlienLeech, AlienSlime, AlienRoots, AlienFaceHugger }
+        AlienSpider, AlienSnake, AlienCaterpillar, AlienTentacle, AlienCentipede, AlienLeech, AlienSlime, AlienRoots, AlienFaceHugger, EnergyGrenade }
 
     // Small original vector illustrations, kept sharp at the shared PanelSettings scale.
     [UxmlElement]
@@ -52,6 +52,7 @@ namespace Unity.MP_FPS.Client
             m_Origin = new Vector2((contentRect.width - width * m_Scale) * 0.5f, (contentRect.height - height * m_Scale) * 0.5f);
             switch (m_Kind)
             {
+                case StashArtKind.EnergyGrenade: EnergyGrenade(); break;
                 case StashArtKind.Dust: Dust(); break;
                 case StashArtKind.Alloy: Alloy(); break;
                 case StashArtKind.Cell: Cell(); break;

@@ -6,6 +6,7 @@
             <ui:Label name="raidTimer" class="raid-timer" />
             <ui:Label name="raidClock" class="raid-caption" />
             <ui:Label name="raidBag" class="raid-copy" />
+            <ui:Label name="raidGrenade" class="raid-grenade" picking-mode="Ignore" />
         </ui:VisualElement>
         <ui:VisualElement name="raidOxygenPanel" class="raid-oxygen-panel" picking-mode="Ignore">
             <ui:VisualElement class="raid-oxygen-heading" picking-mode="Ignore">

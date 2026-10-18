@@ -7,6 +7,7 @@ namespace Unity.MP_FPS.Client
     {
         public static string Effect(string code)
         {
+            if (code == EnergyGrenadeRules.Code) return MoonkovLocalization.Text("3s FUSE / 6m BLAST / UP TO 480 DAMAGE");
             float restore = ConsumableCatalog.MedicalRestore(code);
             if (restore > 0) return MoonkovLocalization.Format($"RESTORE UP TO {restore:0} HP");
             var supply = ConsumableCatalog.Get(code);
@@ -63,6 +64,7 @@ namespace Unity.MP_FPS.Client
             string description;
             switch (code)
             {
+                case "energy_grenade": description = "[G] throws from pockets or an equipped rig. Bounces, then releases an energy blast after 3 seconds. Cover blocks the blast; nearby damage can kill the thrower. Move grenades out of backpacks before throwing."; break;
                 case "alien_raw_meat": description = "Dissect alien remains to harvest. Restores living tissue and energy, but causes severe thirst. Cannot revive destroyed body parts."; break;
                 case "alien_tissue": description = "Alien tissue harvested by dissection. Keep it as a biological specimen."; break;
                 case "alien_core": description = "A boss nucleus preserved as a rare biological specimen."; break;

@@ -32,7 +32,7 @@ namespace Unity.MP_FPS
                 if (state.EntityManager.HasComponent<RaidInventoryState>(connection) && GetRaidInventory(ref state,connection).RaidId==session.RaidId) continue;
             var graph=InventoryGraph.Create(stash:false); graph.AddSupply("cells",session.Cells);
             if (!session.PersistentDeployment)
-            { graph.AddSupply("medkit", 2); graph.AddSupply("ration", 2); graph.AddSupply("water", 2); graph.AddSupply("oxygen_canister", 1); }
+            { graph.AddSupply("medkit", 2); graph.AddSupply("ration", 2); graph.AddSupply("water", 2); graph.AddSupply("oxygen_canister", 1); graph.AddSupply("energy_grenade", 2); }
                 SetRaidInventory(ref state,connection,graph,session.RaidId);
             }
         }

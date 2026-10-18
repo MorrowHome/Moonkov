@@ -31,7 +31,7 @@ namespace Unity.MP_FPS.Inventory
             new ShopOffer("halo_focus_lens", 22, 7), new ShopOffer("halo_fan_array", 22, 7),
             new ShopOffer("halo_pulse_controller", 28, 9), new ShopOffer("halo_hit_marker", 25, 8),
             new ShopOffer("medkit", 0, 3), new ShopOffer("ration", 0, 2), new ShopOffer("water", 0, 2),
-            new ShopOffer("oxygen_canister", 0, 3),
+            new ShopOffer("oxygen_canister", 0, 3), new ShopOffer("energy_grenade", 12, 4),
             new ShopOffer("med_gel", 5, 1), new ShopOffer("trauma_kit", 18, 6),
             new ShopOffer("energy_gel", 4, 1), new ShopOffer("protein_bar", 6, 2),
             new ShopOffer("electrolyte", 5, 1), new ShopOffer("oxygen_reserve", 12, 4),
