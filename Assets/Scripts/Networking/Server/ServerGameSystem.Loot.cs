@@ -22,7 +22,7 @@ namespace Unity.MP_FPS
             {
                 if(!state.EntityManager.HasComponent<RaidInventoryState>(connection))continue;
                 var inventory=GetRaidInventory(ref state,connection);
-                inventory.OpenedLootId=-1;inventory.LastSentVersion=-1;inventory.LastSentLootVersion=-1;
+                inventory.OpenedLootId=-1;inventory.DissectingLootId=-1;inventory.LastSentVersion=-1;inventory.LastSentLootVersion=-1;
                 inventory.SentDeathBags.Clear();
             }
         }
@@ -126,7 +126,14 @@ namespace Unity.MP_FPS
                     {
                         inventory.RequestId=r.RequestId;
                         bool accepted=r.RaidId==session.RaidId && (r.LootId==-1 || CanAccessLoot(ref state,connection,r.LootId,session));
+                        inventory.DissectingLootId=-1;
                         inventory.OpenedLootId=accepted ? r.LootId : -1;
+                        if(accepted && caches.RequiresDissection(r.LootId))
+                        {
+                            var player=SystemAPI.GetComponent<JoinedClient>(connection).PlayerEntity;
+                            inventory.BeginDissection(r.LootId,SystemAPI.Time.ElapsedTime,SystemAPI.GetComponent<LocalTransform>(player).Position,
+                                SystemAPI.GetComponent<PredictedPlayerGhost>(player).LastHitTick);
+                        }
                         inventory.Error=accepted ? InventoryError.None : InventoryError.Inaccessible;
                         inventory.LastSentVersion=-1;
                     }
@@ -143,7 +150,8 @@ namespace Unity.MP_FPS
                     {
                         inventory.RequestId=r.RequestId;
                         inventory.Error=r.RaidId!=session.ValueRO.RaidId || inventory.OpenedLootId!=r.LootId ||
-                            !CanAccessLoot(ref state,connection,r.LootId,session.ValueRO) || !caches.Containers.TryGetValue(r.LootId,out var cache)
+                            !CanAccessLoot(ref state,connection,r.LootId,session.ValueRO) || caches.RequiresDissection(r.LootId) ||
+                            !caches.Containers.TryGetValue(r.LootId,out var cache)
                             ? InventoryError.Inaccessible
                             : LootInventoryExchange.TryApply(inventory.Graph,cache,new InventoryCommand {ExpectedVersion=r.ExpectedVersion,Operation=r.Operation,
                                 ItemId=r.ItemId.ToString(),Parent=r.Parent.ToString(),Region=r.Region.ToString(),TargetId=r.TargetId.ToString(),
@@ -158,6 +166,19 @@ namespace Unity.MP_FPS
         private void RefreshLootAccess(ref SystemState state,Entity connection,RaidSession session)
         {
             var inventory=GetRaidInventory(ref state,connection);
+            if(inventory.DissectingLootId>=0)
+            {
+                int id=inventory.DissectingLootId;
+                bool accessible=CanAccessLoot(ref state,connection,id,session) && inventory.RaidId==session.RaidId;
+                var position=inventory.DissectionOrigin;uint damageTick=inventory.DissectionDamageTick;
+                if(accessible)
+                {
+                    var player=SystemAPI.GetComponent<JoinedClient>(connection).PlayerEntity;
+                    position=SystemAPI.GetComponent<LocalTransform>(player).Position;
+                    damageTick=SystemAPI.GetComponent<PredictedPlayerGhost>(player).LastHitTick;
+                }
+                inventory.RefreshDissection(LootContainers(ref state),accessible,position,damageTick,SystemAPI.Time.ElapsedTime);
+            }
             if(inventory.OpenedLootId<0 || session.Phase==RaidPhase.Active && session.SnapshotTimer>0) return;
             if(CanAccessLoot(ref state,connection,inventory.OpenedLootId,session)) return;
             inventory.OpenedLootId=-1;inventory.Error=InventoryError.Inaccessible;inventory.LastSentVersion=-1;

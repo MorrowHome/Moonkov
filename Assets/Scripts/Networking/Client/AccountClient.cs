@@ -229,6 +229,8 @@ namespace Unity.MP_FPS
                 case "shop_store_first": return "Return this item to personal storage before selling it.";
                 case "shop_request_conflict": return "This order ID already belongs to a different transaction. Refresh the supplier.";
                 case "shop_invalid": return "This supplier order is no longer valid. Refresh the catalogue.";
+                case "research_complete": return "This permanent halo research is already complete.";
+                case "research_materials": return "Store 3 rare neural organs and 5 alien tissue in personal storage before researching.";
                 default: return "Inventory request rejected. Items remain unchanged. [" + code + "]";
             }
         }

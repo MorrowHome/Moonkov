@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Unity.MP_FPS.Inventory
 {
-    public enum ShopOperation { Buy, Sell, Emergency }
+    public enum ShopOperation { Buy, Sell, Emergency, Research }
     [Serializable] public sealed class ShopCommand
     {
         public string RequestId, Code, ItemId;
@@ -22,6 +22,7 @@ namespace Unity.MP_FPS.Inventory
     }
     public static class ShopCatalog
     {
+        public const int ResearchOrgans = 3, ResearchTissue = 5;
         public static readonly ShopOffer[] Offers = {
             new ShopOffer("alien_tissue", -1, 8), new ShopOffer("alien_core", -1, 65),
             new ShopOffer("rifle", 0, 20), new ShopOffer("pistol", 0, 7),
@@ -57,7 +58,22 @@ namespace Unity.MP_FPS.Inventory
                 command == null || !Guid.TryParse(command.RequestId, out _)) return "shop_invalid";
             if (command.ExpectedVersion != graph.Version) return "inventory_Stale";
             var copy = graph.Clone();
-            if (command.Operation == ShopOperation.Emergency)
+            if (command.Operation == ShopOperation.Research)
+            {
+                if(command.Code!="halo_biology" || !string.IsNullOrEmpty(command.ItemId) || command.Quantity!=1)return "shop_invalid";
+                if(copy.HaloResearchLevel!=0)return "research_complete";
+                bool Spend(string code,int quantity)
+                {
+                    var stock=copy.Items.Where(i=>i.Code==code && copy.RootOf(i.Id)=="stash" && !i.EmergencySupply).ToArray();
+                    if(stock.Sum(i=>i.Quantity)<quantity)return false;
+                    foreach(var stack in stock)
+                    { int take=Math.Min(quantity,stack.Quantity);stack.Quantity-=take;quantity-=take;if(stack.Quantity==0)copy.Items.Remove(stack);if(quantity==0)break; }
+                    return true;
+                }
+                if(!Spend("alien_neural_core",ShopCatalog.ResearchOrgans) || !Spend("alien_tissue",ShopCatalog.ResearchTissue))return "research_materials";
+                copy.HaloResearchLevel=1;
+            }
+            else if (command.Operation == ShopOperation.Emergency)
             {
                 if (!string.IsNullOrEmpty(command.Code) || !string.IsNullOrEmpty(command.ItemId) || command.Quantity != 0) return "shop_invalid";
                 if (!ShopCatalog.CanClaim(copy)) return "shop_has_weapon";

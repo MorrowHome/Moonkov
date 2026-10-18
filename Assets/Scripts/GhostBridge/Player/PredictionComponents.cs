@@ -84,7 +84,8 @@ public struct PredictedPlayerGhost : IComponentData
     // Slot recovery survives switching so drawing a weapon cannot bypass its firing interval.
     [GhostField] public float PrimaryFireRecovery, SecondaryFireRecovery, PistolFireRecovery;
     
-    [GhostField] public byte EquippedModules, PrimaryModules, SecondaryModules;
+    [GhostField] public byte EquippedModules, PrimaryModules, SecondaryModules, PistolModules;
+    [GhostField] public float AlienSurgeSeconds;
     [GhostField] public int BurstRemaining, BurstSequence;
     [GhostField] public bool BurstTriggerHeld;
     [GhostField] public int CurrentAmmo;

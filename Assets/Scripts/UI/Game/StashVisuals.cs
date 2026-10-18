@@ -4,7 +4,7 @@ using UnityEngine.UIElements;
 namespace Unity.MP_FPS.Client
 {
     public enum StashArtKind { None, Dust, Alloy, Cell, Halo, Outfit, Helmet, Rifle, Pistol, ChestRig, Backpack, HaloRifle, HaloRevolver, HaloShotgun, Medical, HaloSniper, Ration, Water, HaloCapacitor, HaloChargeBridge, HaloFocusLens, HaloFanArray, HaloPulseController, HaloHitMarker, OxygenCanister,
-        MedicalGel, TraumaKit, EnergyGel, ProteinBar, Electrolyte, OxygenReserve, ScoutRig, FieldRig, SlingPack, CargoPack, CircuitBoard, CopperCoil, CeramicPlate, OpticalSensor, DataDrive, HeliumSample, QuantumCore, BlackBox }
+        MedicalGel, TraumaKit, EnergyGel, ProteinBar, Electrolyte, OxygenReserve, ScoutRig, FieldRig, SlingPack, CargoPack, CircuitBoard, CopperCoil, CeramicPlate, OpticalSensor, DataDrive, HeliumSample, QuantumCore, BlackBox, AlienMeat, AlienOrgan, AlienTissue }
 
     // Small original vector illustrations, kept sharp at the shared PanelSettings scale.
     [UxmlElement]
@@ -76,6 +76,9 @@ namespace Unity.MP_FPS.Client
                 case StashArtKind.HeliumSample: HeliumSample(); break;
                 case StashArtKind.QuantumCore: QuantumCore(); break;
                 case StashArtKind.BlackBox: BlackBox(); break;
+                case StashArtKind.AlienMeat: AlienMeat(); break;
+                case StashArtKind.AlienOrgan: AlienOrgan(); break;
+                case StashArtKind.AlienTissue: AlienMeat(true); break;
                 case StashArtKind.Halo: Halo(); break;
                 case StashArtKind.Outfit: Outfit(); break;
                 case StashArtKind.Helmet: Helmet(); break;

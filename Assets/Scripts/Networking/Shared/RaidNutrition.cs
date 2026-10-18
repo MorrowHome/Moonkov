@@ -9,7 +9,7 @@ namespace Unity.MP_FPS
     {
         None = 0, Hungry = 1, Starving = 2, Thirsty = 4, Dehydrated = 8,
         FullStomach = 16, LowOxygen = 32, Hypoxia = 64,
-        ArmDisabled = 128, LegDisabled = 256, AbdomenDisabled = 512
+        ArmDisabled = 128, LegDisabled = 256, AbdomenDisabled = 512, AlienSurge = 1024
     }
 
     public static class RaidNutrition
@@ -19,6 +19,7 @@ namespace Unity.MP_FPS
         {
             state.Energy = state.Hydration = Capacity; state.Satiety = 25;
             state.StarvationSeconds = state.DehydrationSeconds = 0;
+            state.AlienSurgeSeconds = 0;
         }
         public static SurvivalEffects Effects(in PredictedPlayerGhost state)
         {
@@ -37,11 +38,13 @@ namespace Unity.MP_FPS
             if (state.LeftArmHealth <= 0 || state.RightArmHealth <= 0) effects |= SurvivalEffects.ArmDisabled;
             if (state.LeftLegHealth <= 0 || state.RightLegHealth <= 0) effects |= SurvivalEffects.LegDisabled;
             if (state.AbdomenHealth <= 0) effects |= SurvivalEffects.AbdomenDisabled;
+            if (state.AlienSurgeSeconds > 0) effects |= SurvivalEffects.AlienSurge;
             return effects;
         }
         public static bool CanConsume(in PredictedPlayerGhost state, ConsumableDefinition item) =>
             state.BodyHealthInitialized && state.CurrentHealth > 0 && item != null && item.Oxygen <= 0 &&
-            (item.Food ? state.Energy < Capacity && state.Satiety + item.Satiety <= Capacity : state.Hydration < Capacity);
+            (item.Food ? (state.Energy < Capacity || item.Health > 0 && HasInjuredLivingTissue(state) || item.SurgeSeconds > state.AlienSurgeSeconds) &&
+                state.Satiety + item.Satiety <= Capacity : state.Hydration < Capacity);
         public static InventoryError Consume(ref PredictedPlayerGhost state, InventoryGraph graph, string id, int version)
         {
             if (graph == null) return InventoryError.Invalid;
@@ -58,6 +61,17 @@ namespace Unity.MP_FPS
             state.Energy = Mathf.Clamp(state.Energy + definition.Energy, 0, Capacity);
             state.Hydration = Mathf.Clamp(state.Hydration + definition.Hydration, 0, Capacity);
             state.Satiety = Mathf.Clamp(state.Satiety + definition.Satiety, 0, Capacity);
+            if (definition.SurgeSeconds > 0) state.AlienSurgeSeconds = definition.SurgeSeconds;
+            float healing = definition.Health;
+            // Food restores living tissue only; it cannot revive a destroyed body part.
+            for (int i = 0; i < RaidHealth.PartCount && healing > 0; i++)
+            {
+                var part = (BodyPart)i;
+                float current = RaidHealth.Get(state, part);
+                if (current <= 0) continue;
+                float restore = Mathf.Min(healing, RaidHealth.Maximum(part) - current);
+                RaidHealth.Set(ref state, part, current + restore); healing -= restore;
+            }
             if (state.Energy > 0) state.StarvationSeconds = 0;
             if (state.Hydration > 0) state.DehydrationSeconds = 0;
             return InventoryError.None;
@@ -66,6 +80,7 @@ namespace Unity.MP_FPS
             float digestionSeconds, float graceSeconds, float starvationDamage, float dehydrationDamage, uint tick)
         {
             if (!state.BodyHealthInitialized || state.CurrentHealth <= 0 || dt <= 0 || !float.IsFinite(dt)) return;
+            state.AlienSurgeSeconds = Mathf.Max(0, state.AlienSurgeSeconds - dt);
             bool moving = state.ControllerState.MovementSpeed > .1f;
             bool sprinting = moving && state.ControllerState.Sprinting;
             float abdomen = state.AbdomenHealth <= 0 ? 2 : 1;
@@ -76,6 +91,12 @@ namespace Unity.MP_FPS
             state.Satiety = Mathf.Max(0, state.Satiety - Capacity / Mathf.Max(1, digestionSeconds) * dt);
             float damage = hungryTime * Mathf.Max(0, starvationDamage) + thirstyTime * Mathf.Max(0, dehydrationDamage);
             if (damage > 0) DamageSystemic(ref state, damage, tick);
+        }
+        private static bool HasInjuredLivingTissue(in PredictedPlayerGhost state)
+        {
+            for(int i=0;i<RaidHealth.PartCount;i++)
+            { float health=RaidHealth.Get(state,(BodyPart)i); if(health>0 && health<RaidHealth.Maximum((BodyPart)i))return true; }
+            return false;
         }
         private static float Drain(ref float resource, ref float depletedSeconds, float rate, float dt, float grace)
         {

@@ -86,6 +86,9 @@ namespace Unity.MP_FPS.Client
         public static StashArtKind Art(string code)
         {
             switch (code) { case "dust":return StashArtKind.Dust; case "alloy":return StashArtKind.Alloy; case "cells":return StashArtKind.Cell; case "medkit":return StashArtKind.Medical;
+                case "alien_raw_meat":return StashArtKind.AlienMeat;
+                case "alien_neural_core":case "alien_core":return StashArtKind.AlienOrgan;
+                case "alien_tissue":return StashArtKind.AlienTissue;
                 case "helmet":return StashArtKind.Helmet; case "rifle":case "compact":return StashArtKind.HaloRifle; case "pistol":return StashArtKind.HaloRevolver;
                 case "ration":return StashArtKind.Ration; case "water":return StashArtKind.Water;
                 case "oxygen_canister":return StashArtKind.OxygenCanister;

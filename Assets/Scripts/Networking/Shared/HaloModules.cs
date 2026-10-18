@@ -7,6 +7,7 @@ namespace Unity.MP_FPS.Inventory
     // so the existing item tree handles ownership, deployment, death and settlement.
     public static class HaloModules
     {
+        // Detachable modules only; research and organ buffs use the two high mask bits.
         public static readonly string[] Codes = { "halo_capacitor", "halo_charge_bridge", "halo_focus_lens",
             "halo_fan_array", "halo_pulse_controller", "halo_hit_marker" };
         public static readonly InventoryRegion[] Slots = {
@@ -31,8 +32,10 @@ namespace Unity.MP_FPS.Inventory
         }
         public static HaloModule Mask(InventoryGraph graph, InventoryItem weapon)
         {
-            if (graph == null || weapon == null || !IsWeapon(weapon.Code)) return HaloModule.None;
-            HaloModule result = HaloModule.None;
+            if (graph == null || weapon == null) return HaloModule.None;
+            var kind = InventoryCatalog.Get(weapon.Code)?.Kind;
+            if (kind != ItemKind.LongGun && kind != ItemKind.Pistol) return HaloModule.None;
+            HaloModule result = graph.HaloResearchLevel > 0 ? HaloModule.BiologicalResearch : HaloModule.None;
             foreach (var item in graph.Children(weapon.Id))
                 if (Compatible(weapon.Code, item.Code) && item.Region == Slot(FromCode(item.Code))) result |= FromCode(item.Code);
             return result;

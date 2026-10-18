@@ -15,14 +15,17 @@ namespace Unity.MP_FPS
         public static string Encode(InventoryGraph graph) => Newtonsoft.Json.JsonConvert.SerializeObject(graph,
             new Newtonsoft.Json.JsonSerializerSettings { StringEscapeHandling=Newtonsoft.Json.StringEscapeHandling.EscapeNonAscii });
         public static InventoryGraph Decode(string json) => Newtonsoft.Json.JsonConvert.DeserializeObject<InventoryGraph>(json);
-        public static string EncodeSnapshot(InventoryGraph graph,int lootId,int lootVersion) => Newtonsoft.Json.JsonConvert.SerializeObject(
-            new RaidInventorySnapshot {Graph=graph,LootId=lootId,LootVersion=lootVersion},
+        public static string EncodeSnapshot(InventoryGraph graph,int lootId,int lootVersion,int dissectingLootId=-1,float dissectionRemaining=0) => Newtonsoft.Json.JsonConvert.SerializeObject(
+            new RaidInventorySnapshot {Graph=graph,LootId=lootId,LootVersion=lootVersion,
+                DissectingLootId=dissectingLootId,DissectionRemaining=dissectionRemaining},
             new Newtonsoft.Json.JsonSerializerSettings {StringEscapeHandling=Newtonsoft.Json.StringEscapeHandling.EscapeNonAscii});
     }
     public sealed class RaidInventorySnapshot
     {
         public InventoryGraph Graph;
         public int LootId=-1, LootVersion;
+        public int DissectingLootId=-1;
+        public float DissectionRemaining;
     }
     public sealed class RaidLootContainers : IComponentData
     {
@@ -35,6 +38,10 @@ namespace Unity.MP_FPS
         public double NextRefillCheck;
         public const int FirstDeathBagId=24;
         private int m_NextDeathBagId=FirstDeathBagId;
+        // A fresh alien bag starts at version 1. Dissection advances it before
+        // any inventory transfer is allowed; human corpses retain their old flow.
+        public bool RequiresDissection(int id) => DeathBags.TryGetValue(id,out var corpse) && corpse.CharacterIndex==-1 &&
+            Containers.TryGetValue(id,out var graph) && graph.Version==1;
         public int Drop(InventoryGraph carried,Unity.Mathematics.float3 position,Unity.Mathematics.quaternion rotation=default,int characterIndex=2,double createdAt=0)
         {
             var graph=LootInventoryExchange.DropOnDeath(carried);
@@ -75,6 +82,28 @@ namespace Unity.MP_FPS
         public uint Sequence, RequestId;
         public InventoryError Error;
         public int OpenedLootId=-1, LastSentLootVersion=-1;
+        public int DissectingLootId=-1;
+        public double DissectionUntil;
+        public Unity.Mathematics.float3 DissectionOrigin;
+        public uint DissectionDamageTick;
+        public void BeginDissection(int id,double now,Unity.Mathematics.float3 origin,uint damageTick)
+        {
+            DissectingLootId=id;DissectionUntil=now+AlienHarvest.DissectionSeconds;
+            DissectionOrigin=origin;DissectionDamageTick=damageTick;OpenedLootId=-1;LastSentVersion=-1;
+        }
+        public void RefreshDissection(RaidLootContainers caches,bool accessible,Unity.Mathematics.float3 position,uint damageTick,double now)
+        {
+            if(DissectingLootId<0)return;
+            accessible=accessible && Unity.Mathematics.math.distancesq(position,DissectionOrigin)<=.75f*.75f && damageTick==DissectionDamageTick;
+            if(accessible && now<DissectionUntil)return;
+            int id=DissectingLootId;DissectingLootId=-1;LastSentVersion=-1;
+            Error=accessible ? InventoryError.None : InventoryError.Inaccessible;
+            if(accessible)
+            {
+                if(caches.RequiresDissection(id))caches.Containers[id].Version++;
+                OpenedLootId=id;
+            }
+        }
         public readonly System.Collections.Generic.Dictionary<int,int> SentDeathBags = new System.Collections.Generic.Dictionary<int,int>();
         public static void UpdateTotals(InventoryGraph graph, ref RaidSession session)
         {
@@ -124,6 +153,7 @@ namespace Unity.MP_FPS
         public Unity.Mathematics.quaternion Rotation;
         public float Age;
         public bool Empty;
+        public bool RequiresDissection => CharacterIndex==-1 && Version==1;
     }
     public sealed class RaidDeathBagClientState : IComponentData
     {
@@ -161,6 +191,8 @@ namespace Unity.MP_FPS
         public uint Sequence, RequestId;
         public InventoryError Error;
         public int LootId=-1, LootVersion;
+        public int DissectingLootId=-1;
+        public float DissectionRemaining;
         private uint m_IncomingSequence;
         private int m_IncomingRaid, m_Received;
         private string[] m_Chunks;
@@ -181,6 +213,8 @@ namespace Unity.MP_FPS
                 if (graph == null || graph.Find("stash") != null || graph.Validate() != InventoryError.None) return false;
                 if(snapshot?.Graph!=null && (snapshot.LootId>=0)!=(graph.Find(LootInventoryExchange.Root)!=null)) return false;
                 LootId=snapshot?.Graph!=null ? snapshot.LootId : -1; LootVersion=snapshot?.Graph!=null ? snapshot.LootVersion : 0;
+                DissectingLootId=snapshot?.DissectingLootId ?? -1;
+                DissectionRemaining=snapshot?.DissectionRemaining ?? 0;
                 Graph = graph; RaidId = chunk.RaidId; Sequence = chunk.Sequence; RequestId = chunk.RequestId; Error = chunk.Error; return true;
             }
             catch (Exception) { return false; }

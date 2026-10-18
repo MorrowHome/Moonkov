@@ -27,6 +27,9 @@ namespace Unity.MP_FPS
         private float m_InventoryRequestedAt;
         private bool m_InventoryRequestPending;
         private bool m_LootOpenPending;
+        private int m_DissectingLootId=-1;
+        private float m_DissectionEndsAt;
+        private bool m_DissectionInterrupted;
         private int m_OpenedLootId=-1;
         private Label m_InventoryTitle;
         private Label m_Bag, m_Timer, m_Clock, m_Prompt, m_Exit, m_ResultText, m_SaveStatus;
@@ -113,7 +116,7 @@ namespace Unity.MP_FPS
             m_OxygenAir = m_Root.Q<Label>("raidOxygenAir");
             m_InventorySequence=0; m_InventoryRequestId=0;
             m_InventoryRequestPending=false;
-            m_LootOpenPending=false;m_OpenedLootId=-1;
+            m_LootOpenPending=false;m_OpenedLootId=-1;m_DissectingLootId=-1;
             m_Root.Q<Button>("raidPackClose").clicked += ClosePack;
             MoonkovLocalization.Bind(m_Root);
         }
@@ -129,7 +132,7 @@ namespace Unity.MP_FPS
             m_EquipmentTab.EnableInClassList("raid-tab-active", !health);
             m_HealthTab.EnableInClassList("raid-tab-active", health);
             MoonkovLocalization.Set(m_InventoryTitle, health ? "HEALTH / SUIT STATUS" :
-                m_OpenedLootId >= RaidLootContainers.FirstDeathBagId ? "FALLEN EXPEDITION / CARRIED INVENTORY" :
+                m_OpenedLootId >= RaidLootContainers.FirstDeathBagId ? "REMAINS / CARRIED INVENTORY" :
                 m_OpenedLootId >= 0 ? "SUPPLY CACHE / CARRIED INVENTORY" : "CHARACTER / CARRIED INVENTORY");
             if (health) m_InventoryView.Suspend();
             else if (m_InventoryVisible) m_InventoryView.Show();
@@ -211,7 +214,11 @@ namespace Unity.MP_FPS
 
         private void SetInventory(bool visible)
         {
-            if(m_InventoryRequestPending && m_Snapshot.Phase==RaidPhase.Active && !visible)return;
+            if(m_InventoryRequestPending && m_Snapshot.Phase==RaidPhase.Active && !visible)
+            {
+                if(m_DissectingLootId<0)return;
+                RequestLoot(-1);m_DissectingLootId=-1;
+            }
             if (visible != m_InventoryVisible) MoonkovAudio.Play(MoonkovAudio.Library?.Container, Vector3.zero);
             if(!visible && m_OpenedLootId>=0 && m_Snapshot.Phase==RaidPhase.Active)RequestLoot(-1);
             m_InventoryVisible = visible; m_Inventory.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
@@ -347,7 +354,11 @@ namespace Unity.MP_FPS
                         m_HealthSelected = false;
                         m_EquipmentHost.style.display = DisplayStyle.Flex; m_HealthHost.style.display = DisplayStyle.None;
                         m_EquipmentTab.EnableInClassList("raid-tab-active", true); m_HealthTab.EnableInClassList("raid-tab-active", false);
-                        string opening=nearest>=RaidLootContainers.FirstDeathBagId ? "Searching fallen expedition…" : "Opening supply cache…";
+                        bool dissect=deathBags.Bags.TryGetValue(nearest,out var remains) && remains.RequiresDissection;
+                        m_DissectingLootId=dissect ? nearest : -1;
+                        m_DissectionEndsAt=Time.unscaledTime+Inventory.AlienHarvest.DissectionSeconds;
+                        string opening=dissect ? "Dissecting alien… Stay still. Close to cancel; moving or damage interrupts."
+                            : nearest>=RaidLootContainers.FirstDeathBagId ? "Searching fallen expedition…" : "Opening supply cache…";
                         m_LootOpenPending=true;m_InventoryView.Present(null,opening,operationCompleted:false);
                         m_InventoryView.SetReadOnly(opening);SetInventory(true);
                     }
@@ -388,7 +399,8 @@ namespace Unity.MP_FPS
             }
             bool deathBag=nearest>=RaidLootContainers.FirstDeathBagId;
             bool empty=deathBag ? deathBags.Bags[nearest].Empty : nearest>=0 && (m_Snapshot.TakenMask & (1u<<nearest))!=0;
-            RefreshInteraction(nearest, distance, deathBag, empty, interactionVisible && !m_AirlockPrompt.HasSelection);
+            bool alien=deathBag && deathBags.Bags[nearest].CharacterIndex==-1;
+            RefreshInteraction(nearest, distance, deathBag, empty, interactionVisible && !m_AirlockPrompt.HasSelection,alien);
             bool extracting = alive && !settled && m_Snapshot.ExtractionRemaining >= 0;
             if (m_ExtractionSoundRaid != m_Snapshot.RaidId)
             { m_ExtractionSoundRaid = m_Snapshot.RaidId; m_AudioExtracting = false; m_ExtractionSoundAt = 0; }
@@ -424,7 +436,7 @@ namespace Unity.MP_FPS
             }
         }
 
-        private void RefreshInteraction(int nearest, float distance, bool deathBag, bool empty, bool allowed)
+        private void RefreshInteraction(int nearest, float distance, bool deathBag, bool empty, bool allowed,bool alien=false)
         {
             bool error = Time.unscaledTime < m_LootErrorUntil;
             bool visible = allowed && (nearest >= 0 || error);
@@ -436,11 +448,12 @@ namespace Unity.MP_FPS
             m_InteractionDetails.style.display = error ? DisplayStyle.None : DisplayStyle.Flex;
             if (error)
             {
-                MoonkovLocalization.Set(m_Prompt, "Cannot reach this container. Move closer with a clear line of sight.");
+                MoonkovLocalization.Set(m_Prompt, m_DissectionInterrupted ? "Dissection interrupted. Stay beside the remains and avoid damage." :
+                    "Cannot reach this container. Move closer with a clear line of sight.");
                 return;
             }
             // Reuse the localized action wording; the physical key now has its own visual.
-            string prompt = deathBag ? MoonkovLocalization.Text("[E]  SEARCH FALLEN EXPEDITION")
+            string prompt = alien ? MoonkovLocalization.Text("[E]  DISSECT / SEARCH ALIEN REMAINS") : deathBag ? MoonkovLocalization.Text("[E]  SEARCH FALLEN EXPEDITION")
                 : MoonkovLocalization.Format($"[E]  OPEN SUPPLY CACHE / {nearest + 1:00}");
             if (prompt.StartsWith("[E]", System.StringComparison.Ordinal)) prompt = prompt.Substring(3).TrimStart();
             MoonkovLocalization.Set(m_Prompt, prompt);
@@ -504,22 +517,37 @@ namespace Unity.MP_FPS
         {
             if (m_World==null || !m_World.IsCreated || m_InventoryQuery.IsEmptyIgnoreFilter) return;
             var inventory=m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
-            if(m_InventoryRequestPending && Time.unscaledTime-m_InventoryRequestedAt>5)
+            if(m_InventoryRequestPending && Time.unscaledTime-m_InventoryRequestedAt>(m_DissectingLootId>=0 ? Inventory.AlienHarvest.DissectionSeconds+5 : 5))
             {
+                m_DissectingLootId=-1;
                 m_InventoryRequestPending=false;m_LootOpenPending=false;m_InventoryView.SetReadOnly(null);
                 m_InventoryView.Present(inventory.Graph,"Waiting for the server. Retry after the connection recovers.",lootId:inventory.LootId);
                 m_HealthView.Message("Waiting for the server. Retry after the connection recovers.");
             }
             if (inventory.Graph==null || inventory.RaidId!=m_Snapshot.RaidId) return;
+            if(m_DissectingLootId>=0)
+                MoonkovLocalization.Set(m_InventoryTitle,"DISSECTING ALIEN / {0:0.0}s",Mathf.Max(0,m_DissectionEndsAt-Time.unscaledTime));
             if (inventory.Sequence!=m_InventorySequence)
             {
                 m_InventorySequence=inventory.Sequence;
+                if(inventory.DissectingLootId>=0 && inventory.RequestId==m_InventoryRequestId)
+                {
+                    m_DissectingLootId=inventory.DissectingLootId;
+                    m_DissectionEndsAt=Time.unscaledTime+inventory.DissectionRemaining;
+                    m_InventoryView.Present(null,"Dissecting alien… Stay still. Close to cancel; moving or damage interrupts.",operationCompleted:false);
+                    m_InventoryView.SetReadOnly("Dissecting alien… Stay still. Close to cancel; moving or damage interrupts.");
+                    return;
+                }
                 bool wasOpen=m_OpenedLootId>=0;
                 bool acknowledged = !m_InventoryRequestPending || inventory.RequestId == m_InventoryRequestId || wasOpen && inventory.LootId<0;
                 if (acknowledged) m_InventoryRequestPending = false;
                 m_OpenedLootId=inventory.LootId;
-                if(acknowledged){m_LootOpenPending=false;m_InventoryView.SetReadOnly(null);}
-                MoonkovLocalization.Set(m_InventoryTitle, inventory.LootId>=RaidLootContainers.FirstDeathBagId ? "FALLEN EXPEDITION / CARRIED INVENTORY"
+                if(acknowledged)
+                {
+                    m_DissectionInterrupted=m_DissectingLootId>=0 && inventory.Error==Inventory.InventoryError.Inaccessible;
+                    m_DissectingLootId=-1;m_LootOpenPending=false;m_InventoryView.SetReadOnly(null);
+                }
+                MoonkovLocalization.Set(m_InventoryTitle, inventory.LootId>=RaidLootContainers.FirstDeathBagId ? "REMAINS / CARRIED INVENTORY"
                     : inventory.LootId>=0 ? "SUPPLY CACHE / CARRIED INVENTORY" : "CHARACTER / CARRIED INVENTORY");
                 m_InventoryView.Present(inventory.Graph,acknowledged && inventory.Error!=Inventory.InventoryError.None ? MoonkovLocalization.Format($"Inventory: {inventory.Error.ToString()}") : null,
                     operationCompleted: acknowledged,lootId:inventory.LootId);

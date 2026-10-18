@@ -12,6 +12,8 @@ namespace Unity.MP_FPS.Client
             var supply = ConsumableCatalog.Get(code);
             if (supply == null) return "";
             var effects = new List<string>(4);
+            if (supply.Health > 0) effects.Add(MoonkovLocalization.Format($"RESTORE UP TO {supply.Health:0} HP"));
+            if (supply.SurgeSeconds > 0) effects.Add(MoonkovLocalization.Text("DAMAGE +30% / 60s"));
             if (supply.Energy != 0) effects.Add(MoonkovLocalization.Format($"{supply.Energy:+0;-0;0} ENERGY"));
             if (supply.Hydration != 0) effects.Add(MoonkovLocalization.Format($"{supply.Hydration:+0;-0;0} HYDRATION"));
             if (supply.Satiety != 0) effects.Add(MoonkovLocalization.Format($"{supply.Satiety:+0;-0;0} FULLNESS"));
@@ -59,6 +61,10 @@ namespace Unity.MP_FPS.Client
             string description;
             switch (code)
             {
+                case "alien_raw_meat": description = "Dissect alien remains to harvest. Restores living tissue and energy, but causes severe thirst. Cannot revive destroyed body parts."; break;
+                case "alien_tissue": description = "Alien tissue harvested by dissection. Keep it as a biological specimen."; break;
+                case "alien_core": description = "A boss nucleus preserved as a rare biological specimen."; break;
+                case "alien_neural_core": description = "Extract and store for permanent halo research, or eat now for +30% halo damage for 60s. Causes severe thirst. Reusing refreshes duration; does not stack."; break;
                 case "med_gel": description = "Compact first aid for a selected body part. Keep it in pockets or an equipped rig."; break;
                 case "trauma_kit": description = "High-capacity single-use treatment for a selected body part. Use from an equipped rig."; break;
                 case "energy_gel": description = "A light snack with low stomach occupancy. Consumes a little hydration."; break;

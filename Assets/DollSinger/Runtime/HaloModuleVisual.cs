@@ -121,6 +121,16 @@ namespace Unity.MP_FPS.DollSinger
                 Diamond(radius+.015f,270,.032f,Fade(Violet,.85f));
                 Arc(radius+.015f,252,36,.006f,Fade(Violet,.4f));
             }
+            if ((modules & (HaloModule.BiologicalResearch | HaloModule.AlienSurge)) != 0)
+            {
+                float pulse = .75f + .15f * Mathf.Sin(elapsed * 3) + flash * .1f;
+                for (int i = 0; i < 6; i++)
+                {
+                    float angle = i * 60 + elapsed * 8;
+                    Arc(radius + .06f, angle + 8, 40, .014f, Fade(Violet, pulse), 6);
+                    Diamond(radius + .06f, angle, .021f, Fade(Violet, pulse));
+                }
+            }
             mesh.Clear(false);
             mesh.SetVertices(vertices,0,vertexCount); mesh.SetColors(colors,0,vertexCount);
             mesh.SetTriangles(triangles,0,vertexCount/4*6,0,true);

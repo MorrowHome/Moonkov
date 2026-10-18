@@ -5,10 +5,10 @@ namespace Unity.MP_FPS.Inventory
     // never to the use RPC; old item kinds and inventory saves keep their IDs.
     public sealed class ConsumableDefinition
     {
-        public readonly float Energy, Hydration, Satiety, Oxygen;
+        public readonly float Energy, Hydration, Satiety, Oxygen, Health, SurgeSeconds;
         public bool Food => Energy > 0;
-        public ConsumableDefinition(float energy, float hydration, float satiety, float oxygen = 0)
-        { Energy = energy; Hydration = hydration; Satiety = satiety; Oxygen = oxygen; }
+        public ConsumableDefinition(float energy, float hydration, float satiety, float oxygen = 0, float health = 0, float surgeSeconds = 0)
+        { Energy = energy; Hydration = hydration; Satiety = satiety; Oxygen = oxygen; Health = health; SurgeSeconds = surgeSeconds; }
     }
     public static class ConsumableCatalog
     {
@@ -19,6 +19,8 @@ namespace Unity.MP_FPS.Inventory
         private static readonly ConsumableDefinition ProteinBar = new ConsumableDefinition(35, -8, 20);
         private static readonly ConsumableDefinition Electrolyte = new ConsumableDefinition(0, 35, 5);
         private static readonly ConsumableDefinition OxygenReserve = new ConsumableDefinition(0, 0, 0, 80);
+        private static readonly ConsumableDefinition AlienMeat = new ConsumableDefinition(35, -20, 30, health: 20);
+        private static readonly ConsumableDefinition NeuralOrgan = new ConsumableDefinition(10, -25, 15, surgeSeconds: 60);
 
         public static ConsumableDefinition Get(string code)
         {
@@ -31,6 +33,8 @@ namespace Unity.MP_FPS.Inventory
                 case "protein_bar": return ProteinBar;
                 case "electrolyte": return Electrolyte;
                 case "oxygen_reserve": return OxygenReserve;
+                case "alien_raw_meat": return AlienMeat;
+                case "alien_neural_core": return NeuralOrgan;
                 default: return null;
             }
         }

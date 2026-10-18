@@ -124,7 +124,8 @@ namespace Unity.MP_FPS
             inventory.LastSentVersion = inventory.Graph.Version; inventory.Sequence++;
             inventory.LastSentLootVersion=lootVersion;
             var snapshot=cache==null ? inventory.Graph : LootInventoryExchange.Snapshot(inventory.Graph,cache);
-            var json = RaidInventoryTransport.EncodeSnapshot(snapshot,cache==null ? -1 : inventory.OpenedLootId,lootVersion);
+            var json = RaidInventoryTransport.EncodeSnapshot(snapshot,cache==null ? -1 : inventory.OpenedLootId,lootVersion,
+                inventory.DissectingLootId,(float)System.Math.Max(0,inventory.DissectionUntil-SystemAPI.Time.ElapsedTime));
             const int fragmentSize = RaidInventoryTransport.ChunkCharacters;
             int count = (json.Length + fragmentSize - 1) / fragmentSize;
             for (int index = 0; index < count; index++)

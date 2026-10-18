@@ -13,9 +13,9 @@ namespace Unity.MP_FPS
         public WeaponData GetWeaponData(uint weaponID, byte modules)
         {
             var original = GetWeaponData(weaponID);
-            // Only rifle and shotgun currently accept modules. Cache runtime-only
-            // copies; never mutate a shared asset or allocate on every shot/tick.
-            if (original == null || modules == 0 || (weaponID != DollSingerWeapons.Halo && weaponID != DollSingerWeapons.Shotgun)) return original;
+            // Attachments use the rifle/shotgun slots; biological research and
+            // temporary organ buffs affect every halo. Cache runtime-only copies.
+            if (original == null || modules == 0 || !DollSingerWeapons.IsHalo(weaponID)) return original;
             ulong key = ((ulong)weaponID << 8) | modules;
             if (m_ModuleVariants.TryGetValue(key, out var cached)) return cached;
             var variant = Instantiate(original);
@@ -34,6 +34,8 @@ namespace Unity.MP_FPS
                 { variant.SpreadDegrees *= 1.6f; variant.PelletCount = 12; variant.Damage = original.Damage * original.PelletCount / 12f; }
             }
             if ((mask & HaloModule.HitMarker) != 0) variant.EnergyPerRound = Mathf.CeilToInt(variant.EnergyPerRound * 1.25f);
+            if ((mask & HaloModule.BiologicalResearch) != 0) variant.Damage *= 1.6f;
+            if ((mask & HaloModule.AlienSurge) != 0) variant.Damage *= 1.3f;
             m_ModuleVariants.Add(key, variant);
             return variant;
         }

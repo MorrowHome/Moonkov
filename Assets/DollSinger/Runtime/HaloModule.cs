@@ -8,6 +8,7 @@ namespace Unity.MP_FPS
     [Flags] public enum HaloModule : byte
     {
         None = 0, Capacitor = 1, ChargeBridge = 2, FocusLens = 4,
-        FanArray = 8, PulseController = 16, HitMarker = 32
+        FanArray = 8, PulseController = 16, HitMarker = 32,
+        BiologicalResearch = 64, AlienSurge = 128
     }
 }

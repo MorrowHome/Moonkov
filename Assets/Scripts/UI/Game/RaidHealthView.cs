@@ -167,6 +167,8 @@ namespace Unity.MP_FPS.Client
             Add(SurvivalEffects.Thirsty, "THIRSTY / MOVEMENT AND HANDLING SLOWED");
             Add(SurvivalEffects.Dehydrated, "DEHYDRATED / NO SPRINT, HEALTH LOSS AFTER GRACE");
             Add(SurvivalEffects.FullStomach, "FULL STOMACH / SPRINT SPEED REDUCED");
+            if((effects & SurvivalEffects.AlienSurge)!=0)
+                lines.Add(MoonkovLocalization.Text("ALIEN SURGE / HALO DAMAGE +30%"));
             Add(SurvivalEffects.LowOxygen, "LOW OXYGEN / MOVEMENT AND HANDLING SLOWED");
             Add(SurvivalEffects.Hypoxia, "HYPOXIA / NO SPRINT, SEEK AIR");
             Add(SurvivalEffects.LegDisabled, "LEG DISABLED / SPRINT LIMITED");

@@ -2980,6 +2980,102 @@ MonoBehaviour:
     m_Localized: Alien boss nucleus
     m_Metadata:
       m_Items: []
+  - m_Id: 3902840895188992
+    m_Localized: Raw alien meat
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3902840928743424
+    m_Localized: Rare alien neural organ
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3902840928743425
+    m_Localized: "Dissecting alien\u2026 Stay still. Close to cancel; moving or damage
+      interrupts."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3902840928743426
+    m_Localized: DISSECTING ALIEN / {0:0.0}s
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3902840928743427
+    m_Localized: '[E]  DISSECT / SEARCH ALIEN REMAINS'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3902840928743428
+    m_Localized: REMAINS / CARRIED INVENTORY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3902840928743429
+    m_Localized: Dissection interrupted. Stay beside the remains and avoid damage.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3902840928743430
+    m_Localized: Dissect alien remains to harvest. Restores living tissue and energy,
+      but causes severe thirst. Cannot revive destroyed body parts.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3902840928743431
+    m_Localized: Alien tissue harvested by dissection. Keep it as a biological specimen.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3902840928743432
+    m_Localized: A boss nucleus preserved as a rare biological specimen.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3902840928743433
+    m_Localized: Extract and store for permanent halo research, or eat now for +30%
+      halo damage for 60s. Causes severe thirst. Reusing refreshes duration; does
+      not stack.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3902840928743434
+    m_Localized: DAMAGE +30% / 60s
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3902840928743435
+    m_Localized: ALIEN SURGE / HALO DAMAGE +30%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3902840928743436
+    m_Localized: HALO RESEARCH
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3902840928743437
+    m_Localized: BIOLOGICAL HALO RESEARCH
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3902840928743438
+    m_Localized: RESEARCH COMPLETE / ALL HALO DAMAGE +60% / PERMANENT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3902840928743439
+    m_Localized: Consume 3 rare neural organs and 5 alien tissue from personal storage.
+      Permanently increases all halo damage by 60%, including future weapons. Retained
+      after death.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3902840928743440
+    m_Localized: STORED ORGANS {0}/3 / TISSUE {1}/5
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3902840928743441
+    m_Localized: CONSUME MATERIALS / RESEARCH +60%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3902840928743442
+    m_Localized: Permanent halo research saved. All halo damage +60% on your next
+      deployment.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3902840928743443
+    m_Localized: This permanent halo research is already complete.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3902840928743444
+    m_Localized: Store 3 rare neural organs and 5 alien tissue in personal storage
+      before researching.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -38,6 +38,13 @@ namespace Unity.MP_FPS
             state.PrimaryWeaponID = WeaponId(primary?.Code); state.SecondaryWeaponID = WeaponId(secondary?.Code); state.PistolWeaponID = WeaponId(pistol?.Code);
             state.PrimaryAmmo = Ammo(primary, graph, registry); state.SecondaryAmmo = Ammo(secondary, graph, registry); state.PistolAmmo = Ammo(pistol, graph, registry);
             state.PrimaryModules = (byte)HaloModules.Mask(graph, primary); state.SecondaryModules = (byte)HaloModules.Mask(graph, secondary);
+            state.PistolModules = (byte)HaloModules.Mask(graph, pistol);
+            if(state.AlienSurgeSeconds>0)
+            {
+                state.PrimaryModules |= (byte)HaloModule.AlienSurge;
+                state.SecondaryModules |= (byte)HaloModule.AlienSurge;
+                state.PistolModules |= (byte)HaloModule.AlienSurge;
+            }
             int slot = state.EquippedWeaponSlot;
             var active = slot > 0 ? graph?.Equipped(Slot(slot)) : null;
             if (WeaponId(active?.Code) == None)
@@ -48,6 +55,7 @@ namespace Unity.MP_FPS
             state.EquippedWeaponSlot = slot;
             string id = active?.Id ?? "";
             byte modules = (byte)HaloModules.Mask(graph, active);
+            if(state.AlienSurgeSeconds>0)modules |= (byte)HaloModule.AlienSurge;
             if (state.EquippedWeaponItem.ToString() != id || state.EquippedWeaponID != WeaponId(active?.Code) || state.EquippedModules != modules)
             {
                 state.EquippedWeaponItem = id; state.EquippedWeaponID = WeaponId(active?.Code);
@@ -65,7 +73,7 @@ namespace Unity.MP_FPS
             StoreAmmo(ref state);
             state.EquippedWeaponSlot = slot; state.EquippedWeaponItem = default;
             state.EquippedWeaponID = requested;
-            state.EquippedModules = slot == 1 ? state.PrimaryModules : slot == 2 ? state.SecondaryModules : (byte)0;
+            state.EquippedModules = slot == 1 ? state.PrimaryModules : slot == 2 ? state.SecondaryModules : state.PistolModules;
             state.CurrentAmmo = slot == 1 ? state.PrimaryAmmo : slot == 2 ? state.SecondaryAmmo : state.PistolAmmo;
             HaloModuleFire.BeginEquip(ref state, registry.GetWeaponData(requested, state.EquippedModules));
             return true;
