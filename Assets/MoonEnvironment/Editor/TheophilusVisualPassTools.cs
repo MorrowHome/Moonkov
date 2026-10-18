@@ -6,7 +6,6 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Rendering;
-using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 
 namespace Unity.MP_FPS.Moon.Editor
@@ -162,57 +161,29 @@ namespace Unity.MP_FPS.Moon.Editor
             var path = Folder + "/TheophilusLook.asset";
             var profile = AssetDatabase.LoadAssetAtPath<VolumeProfile>(path);
             if (profile) return profile;
+            // Preserve the map's original neutral look; finishes belong to local materials.
+            var baselinePath = AssetDatabase.GUIDToAssetPath("1c0457de01bdbf149ae7da786ae90f46");
+            var baseline = AssetDatabase.LoadAssetAtPath<VolumeProfile>(baselinePath);
+            if (!baseline) throw new InvalidOperationException("Missing original neutral volume profile.");
             profile = ScriptableObject.CreateInstance<VolumeProfile>();
-            profile.name = "Theophilus formal look";
+            profile.name = "Theophilus neutral look";
             AssetDatabase.CreateAsset(profile, path);
-            var tone = profile.Add<Tonemapping>(true); tone.mode.value = TonemappingMode.ACES;
-            var color = profile.Add<ColorAdjustments>(true);
-            color.postExposure.value = .75f;
-            color.contrast.value = 7;
-            color.saturation.value = -7;
-            var split = profile.Add<SplitToning>(true);
-            split.shadows.value = new Color(.482f,.493f,.512f);
-            split.highlights.value = new Color(.518f,.507f,.486f);
-            split.balance.value = 8;
-            var bloom = profile.Add<Bloom>(true);
-            bloom.threshold.value = 1.5f;
-            bloom.intensity.value = .18f;
-            bloom.scatter.value = .5f;
-            bloom.highQualityFiltering.value = false;
-            bloom.downscale.value = BloomDownscaleMode.Quarter;
-            var vignette = profile.Add<Vignette>(true);
-            vignette.intensity.value = .085f;
-            vignette.smoothness.value = .75f;
-            foreach (var component in profile.components) AssetDatabase.AddObjectToAsset(component, profile);
+            foreach (var source in baseline.components)
+            {
+                var component = UnityEngine.Object.Instantiate(source);
+                component.name = source.name;
+                profile.components.Add(component);
+                AssetDatabase.AddObjectToAsset(component, profile);
+            }
             EditorUtility.SetDirty(profile);
             return profile;
         }
 
-        [MenuItem("Tools/Moon Environment/Theophilus/Apply soft light atmosphere")]
+        [MenuItem("Tools/Moon Environment/Theophilus/Apply local material sheen")]
         public static void ApplyAtmosphere()
         {
             if (EditorApplication.isPlayingOrWillChangePlaymode)
-                throw new InvalidOperationException("Tune the formal look in Edit Mode.");
-            var profile = AssetDatabase.LoadAssetAtPath<VolumeProfile>(Folder + "/TheophilusLook.asset");
-            if (!profile || !profile.TryGet<Bloom>(out var bloom) ||
-                !profile.TryGet<ColorAdjustments>(out var color) || !profile.TryGet<SplitToning>(out var split))
-                throw new InvalidOperationException("Apply visual pass 01 before tuning atmosphere.");
-            Undo.RecordObjects(new UnityEngine.Object[] { bloom, color, split }, "Theophilus soft light atmosphere");
-            // Keep sunlit white structures below the bloom gate; soften HDR lamps locally.
-            bloom.intensity.Override(.25f);
-            bloom.threshold.Override(1.8f);
-            bloom.scatter.Override(.55f);
-            bloom.filter.Override(BloomFilterMode.Gaussian);
-            bloom.clamp.Override(32);
-            bloom.tint.Override(new Color(1,.965f,.92f));
-            bloom.highQualityFiltering.Override(false);
-            bloom.downscale.Override(BloomDownscaleMode.Quarter);
-            color.contrast.Override(4);
-            color.saturation.Override(0);
-            split.shadows.Override(new Color(.47f,.488f,.522f));
-            split.highlights.Override(new Color(.54f,.514f,.476f));
-            split.balance.Override(12);
-            EditorUtility.SetDirty(bloom);EditorUtility.SetDirty(color);EditorUtility.SetDirty(split);
+                throw new InvalidOperationException("Tune local materials in Edit Mode.");
             foreach (string name in new[] { "LD2_Painted_Metal_Grey", "LD2_Hull_CeramicPaint", "LD2_Anodized_DarkAlloy",
                          "LD2_Brushed_Aluminium", "LD2_Raw_StainlessSteel" })
             {

@@ -1,5 +1,11 @@
 # Theophilus 第一轮视觉精修
 
+**2026-10-18：已按要求撤掉影响主塔的全局风格化后处理。** 正式 `TheophilusLook.asset` 的覆盖项恢复为第一轮之前 `R8_StudyNeutralVolume` 的原始配置：Neutral 色调映射、零额外曝光、零对比度／饱和度偏移、白色滤色，不再包含本轮新增的 Bloom、冷暖分离和暗角。下文调色与 Bloom 参数仅为历史记录。
+
+重新创建配置时也复制原中性配置；原 `Apply soft light atmosphere` 菜单改为 `Apply local material sheen`，仅处理入口和 G03 的局部材质，不再改全局后处理。保留原主塔几何和材质、入口贴花、房间反射与局部材质工作。
+
+本次通过 Unity Editor API 修改独立配置，并核对其组件和序列化参数与原中性配置一致。没有保存当前含未保存编辑的场景，没有切换 Play。验证限于配置恢复及 Editor 编译状态，未作新的实机画面或帧率验收。
+
 2026-10-16。直接接入正式 `TheophilusGameScene`，范围为正式调色、东侧 EVA 入口和 G03 服务间。其他地图、共享原材质与烘焙照明基底不改。
 
 - 正式地图优先级 10 的 Volume 改用独立 `VisualPass01/TheophilusLook.asset`：ACES、曝光 +0.75 EV、对比度 7、饱和度 -7、轻微冷暖分离和 0.085 暗角。Bloom 强度 0.18、阈值 1.5，使用四分之一分辨率；没有景深、运动模糊或常驻色差。
