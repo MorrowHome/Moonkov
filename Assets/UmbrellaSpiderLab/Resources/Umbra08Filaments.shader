@@ -9,6 +9,8 @@ Shader "SpiderLab/Umbra08 Liquid Filaments"
         _FilmVariation("Wet film variation", Float) = .045
         _CoatMask("Wet clear coat", Range(0, 1)) = .45
         _CoatSmoothness("Clear coat smoothness", Range(0, 1)) = .88
+        _VoidAmount("Gameplay black liquid", Range(0,1)) = 0
+        _VoidCharge("Gameplay contraction", Range(0,2)) = 0
         [HideInInspector] _DensityTex("Particle density volume", 3D) = "white" {}
         [HideInInspector] _HalfVolume("Bounds half-size", Float) = 2.8
         [HideInInspector] _VolumeResolution("Volume resolution", Float) = 96
@@ -30,6 +32,7 @@ Shader "SpiderLab/Umbra08 Liquid Filaments"
         float _ThreadDensity, _RadiusMin, _RadiusMax, _RadiusVariation, _Necking, _RootPooling;
         float _Sag, _VelocityLag, _BreakLength, _BreakStretch;
         float _Threshold, _HalfVolume, _VolumeResolution;
+        float _VoidAmount, _VoidCharge;
         CBUFFER_END
         #include "Umbra08LiquidStyle.hlsl"
         struct Attributes { float3 parameter : POSITION; float2 endpoints : TEXCOORD0; float2 rest : TEXCOORD1; };
@@ -114,6 +117,7 @@ Shader "SpiderLab/Umbra08 Liquid Filaments"
                 UmbraLiquidStyle(TransformWorldToObject(v.positionWS), surface.albedo, surface.smoothness,
                                 surface.clearCoatMask, surface.clearCoatSmoothness); surface.occlusion = surface.alpha = 1; surface.normalTS = half3(0,0,1);
                 half4 color = UniversalFragmentPBR(data, surface);
+                color.rgb += UmbraVoidEmission(TransformWorldToObject(v.positionWS), data.normalWS, data.viewDirectionWS);
                 color.rgb = MixFog(color.rgb, ComputeFogFactor(TransformWorldToHClip(v.positionWS).z)); return color;
             }
             ENDHLSL

@@ -177,7 +177,7 @@ namespace Unity.MP_FPS.SpiderLab
         }
 
         public void Draw(CreatureChain chain, CreatureChainPresentation body, CreatureChainSettings s,
-            SurfaceMotor motor, SpiderFluidSettings style, float dt)
+            SurfaceMotor motor, SpiderFluidSettings style, float dt, LiquidReaction reaction = default)
         {
             m_Pivot.SetPositionAndRotation(chain.Centres[CreatureChain.Rings / 2], motor.Current.Rotation);
             var toLocal = m_Pivot.worldToLocalMatrix;
@@ -201,6 +201,7 @@ namespace Unity.MP_FPS.SpiderLab
                     m_Matrices[bone + j] = toLocal * Matrix4x4.TRS(m_LegPoints[leg * 3 + j], rotation, Vector3.one * m_PhysicalScale) * m_RestInverse[bone + j];
                 }
             }
+            Fluid.Reaction = reaction;
             Fluid.Settings = style; Fluid.Predatory = style.heavy; Fluid.AttractionEnabled = style.attraction;
             Fluid.SetVisible(true); Fluid.Draw(m_Matrices, m_Centres, motor.Velocity, dt);
         }

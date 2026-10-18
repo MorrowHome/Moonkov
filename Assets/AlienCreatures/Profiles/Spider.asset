@@ -27,6 +27,8 @@ MonoBehaviour:
   Recovery: 0.55
   AttackCooldown: 1.6
   LungeSpeed: 3
+  VoidLiquid: 1
+  LiquidReactionStrength: 1
   Liquid: 1
   LiquidDistance: 24
   MaximumLiquidEnemies: 2

@@ -51,6 +51,7 @@ namespace Unity.MP_FPS.SpiderLab
         public bool AttractionEnabled { get; set; } = true;
         public bool Predatory { get; set; } = true;
         public SpiderFluidSettings Settings { get; set; } = new SpiderFluidSettings();
+        public LiquidReaction Reaction { get; set; }
         public ComputeBuffer Particles => m_Read;
         public RenderTexture DensityVolume => m_VolumeA;
         public Transform Root => m_Root;
@@ -209,6 +210,11 @@ namespace Unity.MP_FPS.SpiderLab
         private void DrawPrepared(Vector3 velocity, float dt)
         {
             ApplySettings();
+            Vector3 centre = m_Root.InverseTransformPoint(Reaction.Centre);
+            Vector3 direction = m_Root.InverseTransformDirection(Reaction.Direction).normalized;
+            m_Solver.SetVector("_ReactionCentre", new Vector4(centre.x, centre.y, centre.z, Mathf.Clamp01(Reaction.Strength)));
+            m_Solver.SetVector("_ReactionDirection", new Vector4(direction.x, direction.y, direction.z, Mathf.Clamp01(Reaction.Charge)));
+            m_Solver.SetVector("_ReactionState", new Vector4(Mathf.Clamp01(Reaction.Burst), Mathf.Clamp01(Reaction.Recovery), 0, 0));
             Matrix4x4 currentRoot = m_Root.localToWorldMatrix;
             Matrix4x4 transport = m_Root.worldToLocalMatrix * m_PreviousRoot;
             m_Bones.SetData(m_BoneMatrices);

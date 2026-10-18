@@ -96,7 +96,7 @@ namespace Unity.MP_FPS.SpiderLab
             });
         }
 
-        public void Draw(SurfaceMotor motor, SpiderFluidSettings style, float dt)
+        public void Draw(SurfaceMotor motor, SpiderFluidSettings style, float dt, LiquidReaction reaction = default)
         {
             m_Pivot.SetPositionAndRotation(m_Rig.Points[0], motor.Current.Rotation);
             var local = m_Pivot.worldToLocalMatrix;
@@ -109,6 +109,7 @@ namespace Unity.MP_FPS.SpiderLab
                 m_Matrices[i] = local * Matrix4x4.TRS(m_Rig.Points[i], m_Rig.Rotations[i], new Vector3(scale, scale, 1)) *
                     m_Rig.RestInverse[i] * Matrix4x4.Scale(Vector3.one * m_PhysicalScale);
             }
+            Fluid.Reaction = reaction;
             Fluid.Settings = style; Fluid.Predatory = style.heavy; Fluid.AttractionEnabled = style.attraction;
             Fluid.SetVisible(true); Fluid.Draw(m_Matrices, m_Centres, motor.Velocity, dt);
         }

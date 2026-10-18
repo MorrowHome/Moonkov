@@ -37,6 +37,7 @@ float _BodyAttraction, _FootAttraction, _BodyDamping, _FootDamping, _Viscosity, 
 float4 _AccelerationLimits;
 float _BondDensity, _BreakLength, _BreakStretch, _BondTension, _BondDamping;
 float4x4 _PreviousToCurrent;
+float4 _ReactionCentre, _ReactionDirection, _ReactionState;
 
 static const float Support = .13;
 static const float RestDensity = 11.2;
@@ -171,15 +172,30 @@ float Kernel(float r2) { float w = max(0, 1 - r2 / (Support * Support)); return 
     float3 targetVelocity = (target - Target(seed, true)) / max(_FrameDt, .001);
     float3 offset = target - p.position;
     float distance = length(offset);
+    float reaction = _ReactionCentre.w;
+    float charge = _ReactionDirection.w * reaction;
+    float burst = _ReactionState.x * reaction;
+    float recall = _ReactionState.y * reaction;
+    float3 radial = p.position - _ReactionCentre.xyz;
+    float radius = max(.04, length(radial));
+    // Only a sparse portion sheds into droplets. The same SPH particles, viscosity,
+    // tensile bonds and collision solver carry the mass out and pull it back again.
+    float parcel = step(.84, frac(sin((id + 1) * 12.9898) * 43758.5453));
+    float forward = saturate(dot(radial / radius, _ReactionDirection.xyz) * .65 + .5);
+    force += -radial * (charge * 24) +
+        (radial / radius * .45 + _ReactionDirection.xyz * forward) * (burst * parcel * 115);
+    offset += _ReactionDirection.xyz * (charge * .07);
     // A small free band permits pooling and rearrangement around the skeleton.
     // Attraction grows outside it; switching it off leaves gravity/pressure/viscosity active.
     float distal = _GuideKind > 0 ? seed.bones.z : saturate((((int)seed.bones.y - 1) % 11 - 4) / 5.0) * (1 - seed.weights.x);
     // Keep the newly allocated shin/toe volume with fast moving distal bones.
     // The mantle has weaker attraction and can still pool, sag and stretch visibly.
     float pull = lerp(lerp(280, _BodyAttraction, _Predatory), lerp(650, _FootAttraction, _Predatory), distal);
+    pull *= (1 + recall * .65) * (1 - burst * parcel * .68);
     // Critically damped tissue settles without the original rubber-like overshoot.
     // Distal guidance stays strong so the accepted shin/toe volume is retained.
     float damping = lerp(lerp(8, _BodyDamping, _Predatory), lerp(18, _FootDamping, _Predatory), distal);
+    damping *= (1 + recall * .25) * (1 - burst * parcel * .55);
     force += _Attraction * (offset * max(0, 1 - lerp(.035, _FreeFlowRadius, _Predatory) / max(distance, .0001)) * pull +
                            (targetVelocity - p.velocity) * damping);
     float limit = lerp(lerp(240, _AccelerationLimits.x, _Predatory), lerp(420, _AccelerationLimits.y, _Predatory), distal);

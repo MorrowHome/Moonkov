@@ -230,9 +230,9 @@ namespace Unity.MP_FPS
             m_BossPhase = state.BossPhase;
             m_Pattern = AlienCombatPattern.For(profile, state.BossPhase, state.AttackSequence, state.AttackKind);
             m_AttachedTarget = state.AttachedTarget;
-            if (Role == MultiplayerRole.Server || profile.Species == AlienSpecies.Spider || profile.Species == AlienSpecies.FaceHugger || profile.Species == AlienSpecies.Leech) return;
-            m_AttackPresentation ??= new AlienAttackPresentation(transform);
-            m_AttackPresentation.Observe(state, m_Pattern);
+            if (Role == MultiplayerRole.Server) return;
+            m_AttackPresentation ??= new AlienAttackPresentation(transform, profile);
+            m_AttackPresentation.Observe(state, m_Pattern, m_Body.AttackSocket);
         }
 
         private static float GroundDistance(Vector3 a, Vector3 b) => new Vector2(a.x - b.x, a.z - b.z).magnitude;

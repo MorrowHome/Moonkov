@@ -34,6 +34,8 @@ MonoBehaviour:
   SpiderWindup: 0.75
   SpiderStrikeSeconds: 0.45
   SpiderRecovery: 1.1
+  VoidLiquid: 1
+  LiquidReactionStrength: 1
   Liquid: 1
   LiquidDistance: 24
   MaximumLiquidEnemies: 2

@@ -8,6 +8,8 @@ Shader "SpiderLab/Umbra08 Particle Fluid Surface"
         _HalfVolume("Fluid bounds half-size", Float) = 2.8
         _VolumeResolution("Volume resolution", Float) = 96
         _Predatory("Heavy viscous style", Range(0, 1)) = 1
+        _VoidAmount("Gameplay black liquid", Range(0,1)) = 0
+        _VoidCharge("Gameplay contraction", Range(0,2)) = 0
         [HideInInspector] _DensityTex("Particle density volume", 3D) = "white" {}
     }
     SubShader
@@ -20,6 +22,7 @@ Shader "SpiderLab/Umbra08 Particle Fluid Surface"
         CBUFFER_START(UnityPerMaterial)
         half4 _BaseColor; float _Threshold; half _Smoothness; float _Predatory;
         float _FilmVariation, _CoatMask, _CoatSmoothness, _HalfVolume, _VolumeResolution;
+        float _VoidAmount, _VoidCharge;
         CBUFFER_END
         #include "Umbra08LiquidStyle.hlsl"
         struct Attributes { float4 positionOS : POSITION; UNITY_VERTEX_INPUT_INSTANCE_ID };
@@ -112,6 +115,7 @@ Shader "SpiderLab/Umbra08 Particle Fluid Surface"
                 float3 local = TransformWorldToObject(world);
                 UmbraLiquidStyle(local, surface.albedo, surface.smoothness, surface.clearCoatMask, surface.clearCoatSmoothness);
                 surface.occlusion = surface.alpha = 1; surface.normalTS = half3(0,0,1);
+                surface.emission = UmbraVoidEmission(local, normal, data.viewDirectionWS);
                 FragmentOutput o; o.color = UniversalFragmentPBR(data, surface);
                 o.color.rgb = MixFog(o.color.rgb, ComputeFogFactor(TransformWorldToHClip(world).z));
                 o.depth = DeviceDepth(world); return o;

@@ -48,6 +48,9 @@ namespace Unity.MP_FPS
         public float UprightHeight(float scale) => StiltHeight * scale;
         public float UprightRadius(float scale) => Mathf.Max(.32f, StiltThickness * 3.5f) * scale;
         [Header("客户端表现")]
+        [Tooltip("黑色湿润组织与攻击时的液体收拢、甩出、拉丝和回聚。只影响客户端外观。")]
+        public bool VoidLiquid = true;
+        [Range(0, 1)] public float LiquidReactionStrength = 1;
         public bool Liquid = true;
         [Min(2)] public float LiquidDistance = 24;
         [Range(0, 8)] public int MaximumLiquidEnemies = 2;
