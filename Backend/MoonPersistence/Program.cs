@@ -106,7 +106,9 @@ app.MapGet("/internal/health", async (NpgsqlDataSource db, CancellationToken ct)
 {
     await using var command = db.CreateCommand("SELECT 1");
     await command.ExecuteScalarAsync(ct);
-    return Results.Ok(new { status = "ready" });
+    return Results.Ok(new { status = "ready", features = new[] { "alien-harvest-v1", "halo-research-v1" },
+        build = typeof(InventoryRepository).Assembly.GetCustomAttributes(false)
+            .OfType<System.Reflection.AssemblyInformationalVersionAttribute>().FirstOrDefault()?.InformationalVersion });
 });
 app.MapPost("/internal/profiles/resolve", async (ResolveProfile request, StashRepository store, CancellationToken ct) =>
 {
