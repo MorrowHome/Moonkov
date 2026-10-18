@@ -19,6 +19,12 @@ namespace Unity.MP_FPS.Moon
         [SerializeField, Range(.5f, 2)] private float contrast = 1.15f;
         [SerializeField, Range(0, 1)] private float silverRelief = .32f;
         [SerializeField, Range(0, .1f)] private float grain = .022f;
+        [Header("清晰线条与黑白分界 / Graphic edges")]
+        [Tooltip("Separate midtones into stronger black and white masses while retaining a smooth transition.")]
+        [SerializeField, Range(0, 1)] private float tonalSeparation = .5f;
+        [Tooltip("Thin foreground-side ink contour from relative depth discontinuities.")]
+        [SerializeField, Range(0, 1)] private float contourStrength = .65f;
+        [SerializeField, Range(.5f, 2)] private float contourWidth = 1;
         [Header("纯钴蓝点色 / Cobalt accents")]
         [SerializeField, ColorUsage(false)] private Color accentColor = new Color(0, .04f, 1);
         [SerializeField, Range(0, 1)] private float accentStrength = .92f;
@@ -41,6 +47,7 @@ namespace Unity.MP_FPS.Moon
         private static readonly int AccentColorId = Shader.PropertyToID("_SilverAccentColor");
         private static readonly int OpticsId = Shader.PropertyToID("_SilverOptics");
         private static readonly int SurfaceId = Shader.PropertyToID("_SilverSurface");
+        private static readonly int GraphicId = Shader.PropertyToID("_SilverGraphic");
 
         public float Intensity { get => intensity; set => intensity = Mathf.Clamp01(value); }
 
@@ -73,6 +80,7 @@ namespace Unity.MP_FPS.Moon
             runtimeMaterial.SetVector(AccentId, new Vector4(accentStrength, accentThreshold, 0, 0));
             runtimeMaterial.SetVector(OpticsId, new Vector4(halation, halationThreshold, halationRadius, localAdaptation));
             runtimeMaterial.SetVector(SurfaceId, new Vector4(surfacePatina, 0, 0, 0));
+            runtimeMaterial.SetVector(GraphicId, new Vector4(tonalSeparation, contourStrength, contourWidth, 0));
             // Shader performs its art direction in display space; do not implicitly linearize this swatch.
             runtimeMaterial.SetVector(AccentColorId, new Vector4(accentColor.r, accentColor.g, accentColor.b, 1));
             renderer.EnqueuePass(pass);

@@ -1291589,19 +1291589,22 @@ MonoBehaviour:
   material: {fileID: 2100000, guid: a04f0cdbf038b7b4fb7e2c118326b4d9, type: 2}
   intensity: 1
   exposure: 0.3
-  blackPoint: 0.025
-  whitePoint: 0.92
-  contrast: 1.15
+  blackPoint: 0.035
+  whitePoint: 0.86
+  contrast: 1.25
   silverRelief: 0.32
-  grain: 0.022
+  grain: 0.012
+  tonalSeparation: 0.5
+  contourStrength: 0.65
+  contourWidth: 1
   accentColor: {r: 0, g: 0.04, b: 1, a: 1}
   accentStrength: 0.92
   accentThreshold: 0.22
-  localAdaptation: 0.45
-  halation: 0.24
-  halationThreshold: 0.72
-  halationRadius: 2.4
-  surfacePatina: 0.12
+  localAdaptation: 0.3
+  halation: 0.1
+  halationThreshold: 0.82
+  halationRadius: 1.5
+  surfacePatina: 0.07
   previewInSceneView: 1
 --- !u!4 &1973396617
 Transform:
