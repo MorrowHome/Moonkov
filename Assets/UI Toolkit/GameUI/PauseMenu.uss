@@ -1,0 +1,6 @@
+@import url("../../Resources/Moonkov/UI/Components/MoonkovControls.uss");
+.moonkov-pause { background-color: rgba(3, 4, 7, 0.66); }
+.moonkov-pause .container { width: 400px; max-width: 90%; background-color: transparent; background-image: none; border-width: 0; padding: 0; opacity: 1; }
+.moonkov-pause .pause-caption { color: #b1b6c6; font-size: 12px; letter-spacing: 3px; margin-bottom: 20px; }
+.moonkov-pause .mk-button { background-color: rgba(16, 17, 22, 0.92); }
+.moonkov-pause .mk-action-title { -unity-text-align: middle-left; }

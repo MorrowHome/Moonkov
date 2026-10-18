@@ -1,0 +1,7 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Button name="inventoryItem" class="inventory-item mk-card">
+        <ui:VisualElement name="stateFx" class="mk-state-fx" picking-mode="Ignore" />
+        <ui:Label name="itemLabel" class="inventory-item-label" picking-mode="Ignore" />
+        <ui:Label name="quantity" class="inventory-item-quantity" picking-mode="Ignore" />
+    </ui:Button>
+</ui:UXML>

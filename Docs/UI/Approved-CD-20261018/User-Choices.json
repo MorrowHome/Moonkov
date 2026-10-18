@@ -1,0 +1,293 @@
+{
+  "schemaVersion": 2,
+  "project": "Moonkov",
+  "candidateSides": {
+    "left": "C",
+    "right": "D"
+  },
+  "choiceMeanings": {
+    "left": "左",
+    "right": "右",
+    "both": "都可以",
+    "neither": "都不行"
+  },
+  "approvedHome": [
+    "C",
+    "D"
+  ],
+  "choices": [
+    {
+      "id": "00-home",
+      "title": "主界面（已认可）",
+      "choice": "both",
+      "choiceLabel": "都可以",
+      "feedback": ""
+    },
+    {
+      "id": "01-account",
+      "title": "账户入口",
+      "choice": "both",
+      "choiceLabel": "都可以",
+      "feedback": ""
+    },
+    {
+      "id": "02-session",
+      "title": "联机连接面板",
+      "choice": "both",
+      "choiceLabel": "都可以",
+      "feedback": ""
+    },
+    {
+      "id": "03-host",
+      "title": "创建主机弹窗",
+      "choice": "both",
+      "choiceLabel": "都可以",
+      "feedback": ""
+    },
+    {
+      "id": "04-direct",
+      "title": "直连弹窗",
+      "choice": "both",
+      "choiceLabel": "都可以",
+      "feedback": ""
+    },
+    {
+      "id": "05-connection",
+      "title": "连接状态与错误",
+      "choice": "both",
+      "choiceLabel": "都可以",
+      "feedback": ""
+    },
+    {
+      "id": "06-loading",
+      "title": "加载界面",
+      "choice": "both",
+      "choiceLabel": "都可以",
+      "feedback": ""
+    },
+    {
+      "id": "07-warehouse",
+      "title": "仓库与装备",
+      "choice": "right",
+      "choiceLabel": "右",
+      "feedback": ""
+    },
+    {
+      "id": "08-item",
+      "title": "物品检查与容器窗口",
+      "choice": "right",
+      "choiceLabel": "右",
+      "feedback": ""
+    },
+    {
+      "id": "09-halo",
+      "title": "光环构筑总览",
+      "choice": "left",
+      "choiceLabel": "左",
+      "feedback": ""
+    },
+    {
+      "id": "10-workshop",
+      "title": "武器模块改装",
+      "choice": "neither",
+      "choiceLabel": "都不行",
+      "feedback": "这是什么？和光环构筑什么关系？我们没有枪啊。即使有，这看着也眼花缭乱的"
+    },
+    {
+      "id": "11-suppliers",
+      "title": "供应商目录",
+      "choice": "right",
+      "choiceLabel": "右",
+      "feedback": ""
+    },
+    {
+      "id": "12-shop",
+      "title": "购买与出售",
+      "choice": "right",
+      "choiceLabel": "右",
+      "feedback": ""
+    },
+    {
+      "id": "13-emergency",
+      "title": "应急补给",
+      "choice": "right",
+      "choiceLabel": "右",
+      "feedback": ""
+    },
+    {
+      "id": "14-research",
+      "title": "光环研究",
+      "choice": "both",
+      "choiceLabel": "都可以",
+      "feedback": ""
+    },
+    {
+      "id": "15-tasks",
+      "title": "任务",
+      "choice": "right",
+      "choiceLabel": "右",
+      "feedback": ""
+    },
+    {
+      "id": "16-base",
+      "title": "基地",
+      "choice": "right",
+      "choiceLabel": "右",
+      "feedback": ""
+    },
+    {
+      "id": "17-comms",
+      "title": "通讯",
+      "choice": "right",
+      "choiceLabel": "右",
+      "feedback": ""
+    },
+    {
+      "id": "18-settings",
+      "title": "设置",
+      "choice": "both",
+      "choiceLabel": "都可以",
+      "feedback": ""
+    },
+    {
+      "id": "19-op-operator",
+      "title": "出击01角色",
+      "choice": "both",
+      "choiceLabel": "都可以",
+      "feedback": ""
+    },
+    {
+      "id": "20-op-location",
+      "title": "出击02地点",
+      "choice": "left",
+      "choiceLabel": "左",
+      "feedback": ""
+    },
+    {
+      "id": "21-op-briefing",
+      "title": "出击03简报",
+      "choice": "right",
+      "choiceLabel": "右",
+      "feedback": ""
+    },
+    {
+      "id": "22-op-recovery",
+      "title": "出击04回收",
+      "choice": "right",
+      "choiceLabel": "右",
+      "feedback": ""
+    },
+    {
+      "id": "23-op-ready",
+      "title": "出击05确认",
+      "choice": "left",
+      "choiceLabel": "左",
+      "feedback": ""
+    },
+    {
+      "id": "24-hud",
+      "title": "局内HUD",
+      "choice": "right",
+      "choiceLabel": "右",
+      "feedback": ""
+    },
+    {
+      "id": "25-raidpack",
+      "title": "局内背包",
+      "choice": "left",
+      "choiceLabel": "左",
+      "feedback": ""
+    },
+    {
+      "id": "26-loot",
+      "title": "搜刮与战利品",
+      "choice": "left",
+      "choiceLabel": "左",
+      "feedback": ""
+    },
+    {
+      "id": "27-health",
+      "title": "健康与治疗",
+      "choice": "left",
+      "choiceLabel": "左",
+      "feedback": ""
+    },
+    {
+      "id": "28-halo-light",
+      "title": "光环灯光调节",
+      "choice": "right",
+      "choiceLabel": "右",
+      "feedback": ""
+    },
+    {
+      "id": "29-interaction",
+      "title": "拾取气闸灯光交互",
+      "choice": "both",
+      "choiceLabel": "都可以",
+      "feedback": ""
+    },
+    {
+      "id": "30-extraction",
+      "title": "撤离倒计时",
+      "choice": "right",
+      "choiceLabel": "右",
+      "feedback": ""
+    },
+    {
+      "id": "31-result",
+      "title": "行动结果",
+      "choice": "left",
+      "choiceLabel": "左",
+      "feedback": ""
+    },
+    {
+      "id": "32-cargo",
+      "title": "结算物资清单",
+      "choice": "left",
+      "choiceLabel": "左",
+      "feedback": ""
+    },
+    {
+      "id": "33-storage-result",
+      "title": "结算入库与再出击",
+      "choice": "left",
+      "choiceLabel": "左",
+      "feedback": ""
+    },
+    {
+      "id": "34-pause",
+      "title": "局内菜单",
+      "choice": "neither",
+      "choiceLabel": "都不行",
+      "feedback": "局内菜单不需要背景图片，就在当前画面加上滤镜然后现实操作卡片就行"
+    },
+    {
+      "id": "35-respawn",
+      "title": "死亡与重生",
+      "choice": "neither",
+      "choiceLabel": "都不行",
+      "feedback": "哪来的重生界面？不过倒是可以显示怎么死的。那这样的话右边的吧"
+    },
+    {
+      "id": "36-score",
+      "title": "非撤离模式战绩与行动记录",
+      "choice": "right",
+      "choiceLabel": "右",
+      "feedback": ""
+    },
+    {
+      "id": "37-diagnostics",
+      "title": "连接与会话信息",
+      "choice": "both",
+      "choiceLabel": "都可以",
+      "feedback": ""
+    },
+    {
+      "id": "38-hud-alerts",
+      "title": "局内受伤缺氧与换弹状态",
+      "choice": "right",
+      "choiceLabel": "右",
+      "feedback": ""
+    }
+  ]
+}

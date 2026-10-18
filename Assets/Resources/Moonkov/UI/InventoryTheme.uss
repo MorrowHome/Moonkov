@@ -1,0 +1,48 @@
+@import url("Components/MoonkovControls.uss");
+.inventory-view { background-color: var(--mk-surface); color: var(--mk-ink); padding: 12px; }
+.inventory-view Label { color: var(--mk-ink); }
+.inventory-view Button { color: var(--mk-ink); letter-spacing: 0; }
+.inventory-view .inventory-character { width: 43%; margin-right: 16px; }
+.inventory-view.inventory-with-stash .inventory-character { width: 32%; margin-right: 16px; }
+.inventory-view.inventory-with-stash .inventory-containers { width: 28%; margin-right: 16px; }
+.inventory-view .inventory-stash,
+.inventory-view .inventory-loot-pane { background-color: var(--mk-panel); border-color: var(--mk-line); border-top-color: var(--mk-ink); padding: 12px; }
+.inventory-view.inventory-with-stash .inventory-character { border-width: 1px; border-color: var(--mk-line); padding: 12px; }
+.inventory-view.inventory-with-stash .inventory-character-title { border-bottom-width: 1px; border-bottom-color: var(--mk-line); padding-bottom: 8px; margin-bottom: 8px; }
+.inventory-view .inventory-character-title { font-size: 24px; letter-spacing: 1px; }
+.inventory-view .inventory-caption { color: var(--mk-muted); font-size: 12px; letter-spacing: 0; }
+.inventory-view .inventory-slot { width: 23%; height: 22%; border-color: #636c7a; border-left-color: #636c7a; padding: 8px; }
+.inventory-view .inventory-slot-0 { left: 0; top: 2%; }
+.inventory-view .inventory-slot-1 { left: 0; top: 34%; }
+.inventory-view .inventory-slot-2 { left: 0; top: 68%; }
+.inventory-view .inventory-slot-3 { left: 77%; top: 9%; }
+.inventory-view .inventory-slot-4 { left: 77%; top: 42%; }
+.inventory-view .inventory-slot-5 { left: 77%; top: 76%; }
+.inventory-view .stash-character-render { left: 10%; right: 10%; }
+.inventory-view .inventory-slot-label { font-size: 11px; letter-spacing: 0; color: var(--mk-muted); }
+.inventory-view .inventory-slot-item { font-size: 11px; color: var(--mk-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.inventory-view .inventory-equipped { border-left-width: 3px; border-left-color: var(--mk-accent); }
+.inventory-view .inventory-container { border-bottom-color: var(--mk-line); margin-bottom: 16px; padding-bottom: 10px; }
+.inventory-view .inventory-section-title { font-size: 16px; letter-spacing: 0; margin-bottom: 8px; }
+.inventory-view .inventory-region-title { font-size: 11px; letter-spacing: 0; color: var(--mk-muted); }
+.inventory-view .inventory-grid { background-color: var(--mk-panel); }
+.inventory-view .inventory-item { border-width: 1px; border-color: var(--mk-line); background-color: var(--mk-surface); }
+.inventory-view .inventory-item:hover { background-color: var(--mk-panel); border-color: var(--mk-ink); }
+.inventory-view .inventory-item:focus,
+.inventory-view .inventory-selected { border-width: 2px; border-color: var(--mk-accent); }
+.inventory-view .inventory-selected > .mk-state-fx { opacity: 0.12; }
+.inventory-view .inventory-item-label { font-size: 10px; color: var(--mk-ink); letter-spacing: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.inventory-view .inventory-item-quantity { font-size: 11px; color: var(--mk-ink); background-color: var(--mk-panel); }
+.inventory-view .inventory-hint { color: var(--mk-muted); border-top-color: var(--mk-line); font-size: 12px; }
+.inventory-view .inventory-weight { font-size: 12px; }
+.inventory-view .inventory-ghost { background-color: var(--mk-surface); border-color: var(--mk-accent); }
+.inventory-view .terminal-window,
+.inventory-view .terminal-context { background-color: var(--mk-surface); border-color: var(--mk-line); border-top-color: var(--mk-accent); }
+.inventory-view .terminal-window-header { border-bottom-color: var(--mk-line); }
+.inventory-view .terminal-window-header .terminal-heading { color: var(--mk-ink); font-size: 16px; }
+.inventory-view .terminal-button { background-color: var(--mk-panel); color: var(--mk-ink); }
+.inventory-view .terminal-button:hover { border-color: var(--mk-accent); }
+.inventory-view .terminal-button:focus { border-width: 2px; border-color: var(--mk-accent); }
+.inventory-view .terminal-button:disabled { color: var(--mk-muted); opacity: 0.45; }
+.inventory-view .unity-base-field__label { color: var(--mk-muted); }
+.inventory-view .unity-base-field__input { color: var(--mk-ink); background-color: var(--mk-panel); }

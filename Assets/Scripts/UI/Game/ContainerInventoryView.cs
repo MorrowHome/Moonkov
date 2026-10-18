@@ -21,6 +21,7 @@ namespace Unity.MP_FPS.Client
         private readonly Action<InventoryItem> m_UseMedical;
         private readonly Action<InventoryItem> m_UseConsumable;
         private readonly TerminalWindows m_Windows;
+        private readonly VisualTreeAsset m_ItemTemplate, m_ContainerTemplate, m_SlotTemplate;
         private readonly bool m_Stash;
         private readonly List<Grid> m_Grids = new List<Grid>();
         private readonly Dictionary<LoadoutSlot, Button> m_Slots = new Dictionary<LoadoutSlot, Button>();
@@ -31,6 +32,7 @@ namespace Unity.MP_FPS.Client
         private Drag m_Drag;
         private bool m_Busy, m_Disposed, m_Rebuilding;
         private string m_ReadOnlyReason;
+        private string m_SelectedItemId;
         private int m_LootId=-1;
         private int m_RenderedVersion = int.MinValue;
         private int m_EscapeHandledFrame = -1;
@@ -49,7 +51,12 @@ namespace Unity.MP_FPS.Client
             m_UseConsumable = useConsumable;
             m_Root = TerminalLayout.Clone("ContainerInventory", "containerInventory");
             m_Root.EnableInClassList("inventory-with-stash", showStash);
-            m_Root.styleSheets.Add(Resources.Load<StyleSheet>("Moonkov/ContainerUI")); parent.Add(m_Root);
+            m_Root.EnableInClassList("moonkov-controls-light", !showStash);
+            m_Root.styleSheets.Add(Resources.Load<StyleSheet>("Moonkov/ContainerUI"));
+            m_Root.styleSheets.Add(Resources.Load<StyleSheet>("Moonkov/UI/InventoryTheme")); parent.Add(m_Root);
+            m_ItemTemplate = Resources.Load<VisualTreeAsset>("Moonkov/UI/Components/InventoryItem");
+            m_ContainerTemplate = Resources.Load<VisualTreeAsset>("Moonkov/UI/Components/InventoryContainer");
+            m_SlotTemplate = Resources.Load<VisualTreeAsset>("Moonkov/UI/Components/EquipmentSlot");
             m_Body = m_Root.Q<VisualElement>("inventoryBody");
             m_LootPane = m_Root.Q<VisualElement>("lootPane");
             m_CharacterPane = m_Root.Q<VisualElement>("characterPane");
@@ -59,7 +66,11 @@ namespace Unity.MP_FPS.Client
             for (int n = 0; n < slots.Length; n++)
             {
                 string slot = slots[n];
-                var button = m_Root.Q<Button>("inventorySlot" + slot);
+                var button = (Button)TerminalLayout.Clone(m_SlotTemplate, "equipmentSlot");
+                button.name = "inventorySlot" + slot;
+                button.AddToClassList("inventory-slot-" + n);
+                MoonkovLocalization.Set(button.Q<Label>("slotLabel"), SlotLabel(slot));
+                m_Root.Q("slotLayer").Add(button);
                 m_Slots.Add((LoadoutSlot)Enum.Parse(typeof(LoadoutSlot), slot), button);
                 button.RemoveManipulator(button.clickable);
                 button.AddManipulator(new Drag(this, () => m_Graph?.Equipped(slot), () => ChooseSlot(slot), () =>
@@ -153,6 +164,7 @@ namespace Unity.MP_FPS.Client
                 MoonkovLocalization.Set(button.Q<Label>("item"), m_Graph == null ? "LOADING" : item == null ? "EMPTY" : InventoryCatalog.Get(item.Code).Name);
                 if (item != null) { var icon = new StashItemArt(Art(item.Code)); icon.AddToClassList("inventory-equipment-icon"); art.Add(icon); m_Tiles[item.Id] = button; }
                 button.EnableInClassList("inventory-equipped", item != null);
+                button.EnableInClassList("inventory-selected", item != null && item.Id == m_SelectedItemId);
             }
             if (m_Graph == null)
             {
@@ -174,12 +186,14 @@ namespace Unity.MP_FPS.Client
         }
         private void AddContainer(VisualElement pane, InventoryItem item, string title)
         {
-            var group = new VisualElement(); group.AddToClassList("inventory-container"); pane.Add(group);
-            Text(group, title, "inventory-section-title");
-            if (item == null) { Text(group, m_Graph == null ? "LOADING…" : "NOT EQUIPPED", "inventory-caption"); return; }
+            var group = TerminalLayout.Clone(m_ContainerTemplate, "inventoryContainer"); pane.Add(group);
+            MoonkovLocalization.Set(group.Q<Label>("containerTitle"), title);
+            var caption = group.Q<Label>("containerCaption");
+            if (item == null) { MoonkovLocalization.Set(caption, m_Graph == null ? "LOADING…" : "NOT EQUIPPED"); return; }
             var def = InventoryCatalog.Get(item.Code);
-            if (def.Kind != ItemKind.Root) Text(group, def.Name, "inventory-caption");
-            var regionRow = new VisualElement(); regionRow.AddToClassList("inventory-regions"); group.Add(regionRow);
+            if (def.Kind != ItemKind.Root) MoonkovLocalization.Set(caption, def.Name);
+            else caption.style.display = DisplayStyle.None;
+            var regionRow = group.Q("containerRegions");
             foreach (var region in def.Regions)
             {
                 if (region.SlotKind.HasValue) continue;
@@ -188,15 +202,16 @@ namespace Unity.MP_FPS.Client
                 VisualElement gridParent = wrapper;
                 if (item.Code == "stash" || item.Code=="loot") { var scroll = new ScrollView(ScrollViewMode.Vertical); scroll.AddToClassList("inventory-warehouse-scroll"); wrapper.Add(scroll); gridParent = scroll; }
                 int rows = m_Graph.Rows(item.Id,region);
-                var visual = new StashGridVisual(region.Width, rows); visual.AddToClassList("inventory-grid"); visual.style.width=region.Width*48; visual.style.height=rows*48; gridParent.Add(visual);
+                var visual = new StashGridVisual(region.Width, rows) { LineColor = m_Stash ? new Color(.28f, .30f, .36f, .6f) : new Color(.42f, .45f, .50f, .4f) }; visual.AddToClassList("inventory-grid"); visual.style.width=region.Width*48; visual.style.height=rows*48; gridParent.Add(visual);
                 var grid = new Grid { Parent=item.Id, Region=region.Id, Definition=region, Element=visual }; m_Grids.Add(grid);
                 foreach (var entry in m_Graph.Children(item.Id, region.Id))
                 {
                     var captured = entry;
-                    var tile = new Button(() => Describe(captured)); tile.AddToClassList("inventory-item"); tile.name="inventoryItem"+entry.Id;
-                    var icon = new StashItemArt(Art(entry.Code)); icon.AddToClassList("inventory-item-art"); tile.Add(icon);
-                    var itemDef = InventoryCatalog.Get(entry.Code); Text(tile, MoonkovLocalization.Text(itemDef.Name).Split(' ')[0].ToUpperInvariant(), "inventory-item-label");
-                    Text(tile, itemDef.Container ? "OPEN ↗" : BatteryEnergy.IsCell(entry) ? $"{BatteryEnergy.Stored(entry)}E" : entry.Quantity.ToString(), "inventory-item-quantity");
+                    var tile = (Button)TerminalLayout.Clone(m_ItemTemplate, "inventoryItem"); tile.name="inventoryItem"+entry.Id;
+                    var icon = new StashItemArt(Art(entry.Code)); icon.AddToClassList("inventory-item-art"); tile.Insert(1, icon);
+                    var itemDef = InventoryCatalog.Get(entry.Code); MoonkovLocalization.Set(tile.Q<Label>("itemLabel"), MoonkovLocalization.Text(itemDef.Name).Split(' ')[0].ToUpperInvariant());
+                    MoonkovLocalization.Set(tile.Q<Label>("quantity"), itemDef.Container ? "OPEN ↗" : BatteryEnergy.IsCell(entry) ? $"{BatteryEnergy.Stored(entry)}E" : entry.Quantity.ToString());
+                    tile.EnableInClassList("inventory-selected", entry.Id == m_SelectedItemId);
                     tile.tooltip=MoonkovLocalization.Text(itemDef.Name) + " / " + entry.Quantity + MoonkovLocalization.Text(entry.FoundInRaid ? " / FOUND IN RAID" : " / BROUGHT IN");
                     tile.tooltip += "\n" + MoonkovItemPresentation.Details(entry.Code);
                     if (HaloModules.IsWeapon(entry.Code)) tile.tooltip += " / " + HaloModules.Summary(m_Graph, entry);
@@ -207,12 +222,13 @@ namespace Unity.MP_FPS.Client
                         () => { if (HaloModules.IsWeapon(captured.Code) && m_Stash) OpenModification(captured); else if (itemDef.Container) OpenContainer(captured); else Describe(captured); }));
                     visual.Add(tile); m_Tiles[entry.Id]=tile; Position(tile, entry, grid.Cell);
                 }
-                if (item.Code == "stash")
+                if (item.Code == "stash" || pane == m_ContainerPane && region.Width >= 3)
                 {
-                    wrapper.style.flexGrow=1; wrapper.style.minWidth=0; regionRow.style.flexGrow=1; group.style.flexGrow=1;
+                    wrapper.style.flexGrow=1; wrapper.style.width=Length.Percent(100); wrapper.style.minWidth=0;
+                    if (item.Code == "stash") { regionRow.style.flexGrow=1; group.style.flexGrow=1; }
                     wrapper.RegisterCallback<GeometryChangedEvent>(evt =>
                     {
-                        float cell = Mathf.Clamp((evt.newRect.width-16)/region.Width, 20, 44);
+                        float cell = Mathf.Clamp((evt.newRect.width-16)/region.Width, 24, item.Code == "stash" ? 44 : 48);
                         if (Mathf.Abs(grid.Cell-cell)<.1f) return; grid.Cell=cell; visual.style.width=region.Width*cell; visual.style.height=rows*cell;
                         foreach (var entry in m_Graph.Children(item.Id, region.Id)) if (m_Tiles.TryGetValue(entry.Id, out var tile)) Position(tile, entry, cell);
                     });
@@ -226,6 +242,8 @@ namespace Unity.MP_FPS.Client
         }
         private void Describe(InventoryItem item)
         {
+            m_SelectedItemId = item.Id;
+            foreach (var pair in m_Tiles) pair.Value.EnableInClassList("inventory-selected", pair.Key == item.Id);
             var def=InventoryCatalog.Get(item.Code);
             if (BatteryEnergy.IsCell(item)) MoonkovLocalization.Set(m_Message,
                 "{0} · {1} · {2:0.0} KG · {3} · {4}/{5} ENERGY · ACTIVE CELL {6}/{7}",

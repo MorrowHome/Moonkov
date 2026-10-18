@@ -12,8 +12,14 @@ namespace Unity.MP_FPS.Client
         {
             var tree = Resources.Load<VisualTreeAsset>("Moonkov/UI/" + assetName);
             if (tree == null) throw new InvalidOperationException("Missing Moonkov UI layout: " + assetName);
+            return Clone(tree, elementName);
+        }
+
+        internal static VisualElement Clone(VisualTreeAsset tree, string elementName)
+        {
+            if (tree == null) throw new InvalidOperationException("Missing Moonkov UI component: " + elementName);
             var element = tree.CloneTree().Q<VisualElement>(elementName);
-            if (element == null) throw new InvalidOperationException(assetName + " is missing UI binding: " + elementName);
+            if (element == null) throw new InvalidOperationException(tree.name + " is missing UI binding: " + elementName);
             element.RemoveFromHierarchy();
             MoonkovLocalization.Bind(element);
             return element;

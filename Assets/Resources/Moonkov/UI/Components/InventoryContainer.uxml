@@ -1,0 +1,7 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="inventoryContainer" class="inventory-container">
+        <ui:Label name="containerTitle" class="inventory-section-title" picking-mode="Ignore" />
+        <ui:Label name="containerCaption" class="inventory-caption" picking-mode="Ignore" />
+        <ui:VisualElement name="containerRegions" class="inventory-regions" />
+    </ui:VisualElement>
+</ui:UXML>

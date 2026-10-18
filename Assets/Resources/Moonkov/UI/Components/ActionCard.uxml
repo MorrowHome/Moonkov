@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Button name="actionCard" class="mk-card mk-button">
+        <ui:VisualElement name="stateFx" class="mk-state-fx" picking-mode="Ignore" />
+        <ui:Label name="actionIndex" class="mk-action-index" picking-mode="Ignore" />
+        <ui:Label name="actionTitle" class="mk-action-title" picking-mode="Ignore" />
+        <ui:Label text="↗" class="mk-action-arrow" picking-mode="Ignore" />
+    </ui:Button>
+</ui:UXML>

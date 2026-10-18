@@ -1,0 +1,42 @@
+.moonkov-controls {
+    --mk-surface: #101116;
+    --mk-panel: #191a21;
+    --mk-ink: #f1f2ed;
+    --mk-muted: #a3a7b4;
+    --mk-line: #41444f;
+    --mk-accent: #5039f5;
+    color: var(--mk-ink);
+}
+.moonkov-controls-light {
+    --mk-surface: #f1f2ee;
+    --mk-panel: #e1e3df;
+    --mk-ink: #16181f;
+    --mk-muted: #555c6b;
+    --mk-line: #9da3ad;
+}
+.moonkov-controls .mk-card {
+    border-radius: 0;
+    border-width: 1px;
+    border-color: var(--mk-line);
+    background-color: var(--mk-panel);
+    background-image: none;
+    color: var(--mk-ink);
+}
+.moonkov-controls .mk-card:hover { border-color: var(--mk-accent); }
+.moonkov-controls .mk-card:focus { border-width: 2px; border-color: var(--mk-accent); }
+.moonkov-controls .mk-card:active { border-color: var(--mk-ink); }
+.moonkov-controls .mk-card:disabled { opacity: 0.45; }
+.moonkov-controls .mk-state-fx {
+    position: absolute; left: 0; right: 0; top: 0; bottom: 0;
+    background-color: var(--mk-accent); opacity: 0;
+}
+.moonkov-controls .mk-card:hover > .mk-state-fx,
+.moonkov-controls .mk-card:focus > .mk-state-fx { opacity: 0.08; }
+.moonkov-controls .mk-card:active > .mk-state-fx { opacity: 0.22; }
+.moonkov-controls .mk-button {
+    height: 84px; min-width: 0; margin: 0 0 12px; padding: 14px 24px;
+    border-left-width: 3px; letter-spacing: 0;
+}
+.moonkov-controls .mk-action-title { font-size: 24px; color: var(--mk-ink); }
+.moonkov-controls .mk-action-index { font-size: 11px; color: var(--mk-muted); margin-bottom: 5px; }
+.moonkov-controls .mk-action-arrow { position: absolute; right: 20px; bottom: 24px; font-size: 24px; color: var(--mk-ink); }

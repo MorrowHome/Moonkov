@@ -8,3 +8,22 @@ Existing original MenuCharacterView RenderTexture extracted, model and prefab un
 Offscreen runtime panel capture in Edit Mode failed: no screenshot saved.
 No Play, physical keyboard/controller, account networking or performance acceptance.
 Home theme restored to C after check.
+
+BATCH 1 / EDITABLE COMPONENTS
+Six equipment slot template instances; 22 item instances in sample inventory.
+Mouse double-click opened original backpack window; physical mouse drag transferred cell stack to pocket.
+Ctrl-modified UI event transferred stack back; Esc UI event closed top window.
+Physical Escape through desktop targeted main editor, so physical Escape was not accepted as verified.
+1600x900 and 1280x720 sample inventory layout inspected; clipped long slot names fixed with ellipsis.
+Pause cloned three original action bindings. Original page transitions unchanged.
+Batch1-Warehouse-Window/Drag/Compact.png are real editor preview captures, not final art acceptance.
+Chinese runtime attempt found null SelectedLocale before mutation: English fallback only; no locale pref changed.
+
+COMMAND CARD REFINEMENT / MULTI-EDITOR
+Project root checked: E:/UnityProjects/FPS_Template; no editor launched, no other project mutation.
+Existing preview read without Show/Focus/Play: width 1600; primary 646.5x253.5; medium 317x181.5.
+OPERATION/EQUIPMENT/HALO original button IDs and cloned titles found; footer height 108/72, title size 50/28.
+Latest source import and MCP command compilation succeeded. Console query returned zero errors/warnings.
+New capture helper requires application active AND focusedWindow equal to existing MoonkovUIPreview.
+No new reliable post-refinement render was captured; invalid foreground-app image removed.
+Latest C/D visual acceptance, compact main-card render, full CJK, Play, physical controller, networking and performance remain unverified.

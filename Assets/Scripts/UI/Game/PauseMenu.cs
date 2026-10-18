@@ -23,6 +23,10 @@ namespace Unity.MP_FPS
         void OnEnable()
         {
             var root = GetComponent<UIDocument>().rootVisualElement;
+            root.Q("ResumeCard").Q<Button>().name = UIElementNames.ResumeButton;
+            root.Q("MainMenuCard").Q<Button>().name = UIElementNames.MainMenuButton;
+            root.Q("QuitCard").Q<Button>().name = UIElementNames.QuitButton;
+            MoonkovLocalization.Bind(root);
             GameInput.Actions.UI.TogglePauseMenu.performed += TogglePauseMenuVisibility;
 
             root.SetBinding("style.display", new DataBinding

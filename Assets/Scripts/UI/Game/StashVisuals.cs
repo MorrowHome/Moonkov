@@ -271,6 +271,8 @@ namespace Unity.MP_FPS.Client
     public sealed class StashGridVisual : VisualElement
     {
         private readonly int m_Columns, m_Rows;
+        private Color m_LineColor = new Color(0.24f, 0.26f, 0.25f, 0.18f);
+        public Color LineColor { get => m_LineColor; set { m_LineColor = value; MarkDirtyRepaint(); } }
         public StashGridVisual(int columns, int rows)
         {
             m_Columns = columns; m_Rows = rows;
@@ -282,7 +284,7 @@ namespace Unity.MP_FPS.Client
             float w = contentRect.width, h = contentRect.height;
             if (w < 1 || h < 1) return;
             var painter = context.painter2D;
-            painter.strokeColor = new Color(0.24f, 0.26f, 0.25f, 0.18f); painter.lineWidth = 1;
+            painter.strokeColor = m_LineColor; painter.lineWidth = 1;
             painter.BeginPath();
             for (int x = 0; x <= m_Columns; x++)
             {

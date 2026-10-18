@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Button name="equipmentSlot" class="inventory-slot mk-card">
+        <ui:VisualElement name="stateFx" class="mk-state-fx" picking-mode="Ignore" />
+        <ui:Label name="slotLabel" class="inventory-slot-label" picking-mode="Ignore" />
+        <ui:VisualElement name="art" class="inventory-slot-art" picking-mode="Ignore" />
+        <ui:Label name="item" text="EMPTY" class="inventory-slot-item" picking-mode="Ignore" />
+    </ui:Button>
+</ui:UXML>

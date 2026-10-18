@@ -37,6 +37,8 @@ namespace Unity.MP_FPS.Client
             m_Root = root; m_Prepare = prepare; root.AddToClassList("moonkov-terminal");
             var homeStyle = Resources.Load<StyleSheet>("Moonkov/UI/ApprovedHome");
             if (homeStyle != null && !root.styleSheets.Contains(homeStyle)) root.styleSheets.Add(homeStyle);
+            var loadoutStyle = Resources.Load<StyleSheet>("Moonkov/UI/ApprovedLoadout");
+            if (loadoutStyle != null && !root.styleSheets.Contains(loadoutStyle)) root.styleSheets.Add(loadoutStyle);
             m_HomeDark = PlayerPrefs.GetInt("Moonkov.HomeDark", 0) != 0;
             ApplyHomeTheme();
             root.focusable = true;
@@ -82,6 +84,7 @@ namespace Unity.MP_FPS.Client
             bool moved = page != m_Page || !m_Ready;
             m_Page = page; m_Step = 0; m_ShownStep = -1; m_Windows?.CloseAll();
             m_Root.EnableInClassList("terminal-is-ship", page == 0);
+            m_Root.EnableInClassList("terminal-is-loadout", page == 1);
             for (int i = 0; i < m_Tabs.Count; i++) m_Tabs[i].EnableInClassList("terminal-tab-selected", i == page);
             m_Gear.style.display = page == 1 ? DisplayStyle.Flex : DisplayStyle.None;
             m_Content.style.display = page == 1 ? DisplayStyle.None : DisplayStyle.Flex;

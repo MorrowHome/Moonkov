@@ -1,128 +1,129 @@
-/* Approved C/D home treatment. Every selector is limited to the ship page. */
-.moon-approved-home.terminal-is-ship { background-color: #f2f3f0; background-image: url("ApprovedHome/HomeLightBackdrop.png"); background-size: cover; background-position: center; }
+/* Main menu: printed command cards, with functional type kept separate from imagery. */
+.moon-approved-home.terminal-is-ship {
+    --home-paper: #f1f2ee;
+    --home-ink: #14161c;
+    --home-muted: #525967;
+    --home-edge: #30353e;
+    --home-emphasis: #3e29d8;
+    background-color: #f1f2ee;
+    background-image: url("ApprovedHome/HomeLightBackdrop.png");
+    background-size: cover; background-position: center;
+}
+.moon-home-dark.terminal-is-ship {
+    --home-paper: #101216; --home-ink: #f0f1eb; --home-muted: #b9bdc7; --home-edge: #a5aab3;
+    background-color: #08090c; background-image: url("ApprovedHome/HomeDarkBackdrop.png");
+}
 .moon-approved-home.terminal-is-ship .terminal-scene-shade,
 .moon-approved-home.terminal-is-ship > .terminal-chrome { display: none; }
 .moon-approved-home.terminal-is-ship .terminal-content { overflow: visible; }
 .moon-approved-home.terminal-is-ship .terminal-home-hero { left: 0; top: 2%; }
-.moon-approved-home.terminal-is-ship .terminal-home-title { font-size: 98px; letter-spacing: -3px; color: #111217; }
+.moon-approved-home.terminal-is-ship .terminal-home-title { font-size: 104px; letter-spacing: -3px; color: var(--home-ink); }
 .moon-approved-home.terminal-is-ship .terminal-home-title-ghost { display: none; }
-.moon-approved-home.terminal-is-ship .terminal-home-kicker { color: #343640; font-size: 12px; letter-spacing: 6px; margin-bottom: 0; }
-.moon-approved-home.terminal-is-ship .terminal-home-caption { color: #30323b; background-color: transparent; padding: 0; font-size: 11px; letter-spacing: 3px; }
+.moon-approved-home.terminal-is-ship .terminal-home-kicker { color: var(--home-ink); font-size: 12px; letter-spacing: 6px; margin-bottom: 0; }
+.moon-approved-home.terminal-is-ship .terminal-home-caption { color: var(--home-ink); background-color: transparent; padding: 0; font-size: 11px; letter-spacing: 3px; }
 .moon-approved-home.terminal-is-ship .terminal-home-version { display: none; }
-.moon-approved-home.terminal-is-ship .terminal-home-description { border-left-color: #3825e8; color: #535661; font-size: 10px; margin-top: 8px; }
+.moon-approved-home.terminal-is-ship .terminal-home-description { border-left-color: var(--home-emphasis); color: var(--home-muted); font-size: 11px; margin-top: 8px; }
 .moon-approved-home.terminal-is-ship .terminal-character-art { left: 10%; right: 43%; top: 5%; bottom: 0; }
-.moon-approved-home.terminal-is-ship .terminal-home-menu {
-    width: 43%; min-width: 430px; max-width: 800px; top: 11%; bottom: 12%; right: 0;
-}
-.moon-approved-home.terminal-is-ship .terminal-home-menu-head { flex-shrink: 0; height: 22px; margin-bottom: 12px; padding-bottom: 4px; border-bottom-color: #858894; }
+.moon-approved-home.terminal-is-ship .terminal-home-menu { width: 43%; min-width: 430px; max-width: 800px; top: 9%; bottom: 10%; right: 0; }
+.moon-approved-home.terminal-is-ship .home-menu-surface { position: absolute; left: -18px; right: -18px; top: -16px; bottom: -14px; background-color: var(--home-paper); }
+.moon-approved-home.terminal-is-ship .terminal-home-menu-head { flex-shrink: 0; height: 22px; margin-bottom: 12px; padding-bottom: 5px; border-bottom-width: 1px; border-bottom-color: var(--home-edge); }
 .moon-approved-home.terminal-is-ship .terminal-home-menu-head .terminal-eyebrow,
-.moon-approved-home.terminal-is-ship .terminal-home-menu-count { color: #4b4e59; font-size: 10px; letter-spacing: 2px; }
+.moon-approved-home.terminal-is-ship .terminal-home-menu-count { color: var(--home-muted); font-size: 11px; letter-spacing: 2px; }
 .moon-approved-home.terminal-is-ship .terminal-home-action {
-    background-color: #0a0b10; border-width: 1px; border-color: #5d606b;
-    padding: 20px 24px; margin: 0; border-radius: 0; overflow: hidden;
-    transition-property: border-color; transition-duration: 0.12s;
+    background-color: var(--home-paper); border-width: 2px; border-color: var(--home-edge);
+    padding: 0; margin: 0; border-radius: 0; overflow: hidden;
 }
-.moon-approved-home.terminal-is-ship .terminal-home-deploy {
-    height: auto; min-height: 128px; flex-grow: 2; flex-basis: 0; flex-shrink: 1;
-    border-left-width: 6px; border-left-color: #3e2aef; margin-bottom: 12px;
-}
-.moon-approved-home.terminal-is-ship .home-card-image { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-size: cover; background-position: center; }
-.moon-approved-home.terminal-is-ship .home-card-moon { background-image: url("ApprovedHome/CardMoon.png"); }
-.moon-approved-home.terminal-is-ship .home-card-industrial { background-image: url("ApprovedHome/CardIndustrial.png"); opacity: 0.23; }
-.moon-approved-home.terminal-is-ship .home-card-halo { background-image: url("ApprovedHome/CardHalo.png"); opacity: 0.78; }
-.moon-approved-home.terminal-is-ship .terminal-home-action-name { color: #f8f8f5; font-size: 24px; letter-spacing: 0; margin-bottom: 6px; }
-.moon-approved-home.terminal-is-ship .terminal-home-deploy .terminal-home-action-name { color: #f8f8f5; font-size: 44px; }
-.moon-approved-home.terminal-is-ship .terminal-home-action-caption { color: #d2d3dd; font-size: 11px; letter-spacing: 2px; }
-.moon-approved-home.terminal-is-ship .terminal-home-action-index {
-    left: 18px; right: auto; top: 12px; font-size: 12px;
-    color: #d9dbe4; -unity-text-outline-width: 0; letter-spacing: 1px;
-}
-.moon-approved-home.terminal-is-ship .terminal-home-action-arrow { border-color: #f8f8f5; width: 8px; height: 8px; right: 20px; bottom: 24px; }
-.moon-approved-home.terminal-is-ship .terminal-home-grid { flex-grow: 1.45; flex-basis: 0; min-height: 108px; margin: 0 0 12px; }
-.moon-approved-home.terminal-is-ship .terminal-home-grid .terminal-home-action { height: auto; margin: 0; padding: 16px 20px; }
-.moon-approved-home.terminal-is-ship #homeAction1 { background-color: #eff0ed; margin-right: 12px; }
-.moon-approved-home.terminal-is-ship #homeAction1 .terminal-home-action-name,
-.moon-approved-home.terminal-is-ship #homeAction1 .terminal-home-action-caption,
-.moon-approved-home.terminal-is-ship #homeAction1 .terminal-home-action-index { color: #15161d; }
-.moon-approved-home.terminal-is-ship #homeAction1 .terminal-home-action-arrow { border-color: #15161d; }
-.moon-approved-home.terminal-is-ship .terminal-home-services { flex-grow: 1; flex-basis: 0; min-height: 64px; margin: 0; }
-.moon-approved-home.terminal-is-ship .terminal-home-chip {
-    height: auto; margin: 0 6px 0 0; padding: 12px 8px;
-    justify-content: flex-end; align-items: flex-start;
-    border-width: 1px; border-color: #aaaeba; border-bottom-width: 2px;
-    background-color: #f6f7f4; color: #15161d; overflow: hidden;
-}
+.moon-approved-home.terminal-is-ship .home-command-content { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
+.moon-approved-home.terminal-is-ship .home-card-contents { flex-grow: 1; }
+.moon-approved-home.terminal-is-ship .home-card-image { position: absolute; left: 0; right: 0; top: 0; bottom: 72px; background-size: cover; background-position: center; }
+.moon-approved-home.terminal-is-ship #homeAction0 .home-card-image { background-image: url("ApprovedHome/CardMoon.png"); bottom: 0; }
+.moon-approved-home.terminal-is-ship #homeAction1 .home-card-image { background-image: url("ApprovedHome/CardIndustrial.png"); }
+.moon-approved-home.terminal-is-ship #homeAction2 .home-card-image { background-image: url("ApprovedHome/CardHalo.png"); }
+.moon-approved-home.terminal-is-ship .home-card-copy { position: absolute; left: 0; right: 0; bottom: 0; height: 72px; padding: 10px 70px 10px 20px; background-color: var(--home-paper); border-top-width: 1px; border-top-color: var(--home-edge); justify-content: center; }
+.moon-approved-home.terminal-is-ship .terminal-home-action-name { color: var(--home-ink); font-size: 28px; letter-spacing: 0; margin: 0 0 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.moon-approved-home.terminal-is-ship .terminal-home-action-caption { color: var(--home-muted); font-size: 11px; letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.moon-approved-home.terminal-is-ship .terminal-home-action-index { position: absolute; left: 12px; right: auto; top: 12px; padding: 3px 6px; background-color: #101216; color: #f0f1eb; font-size: 11px; letter-spacing: 2px; -unity-text-outline-width: 0; }
+.moon-approved-home.terminal-is-ship .terminal-home-action-arrow { position: absolute; right: 16px; bottom: 16px; width: 42px; height: 38px; rotate: 0deg; translate: 0 0; border-width: 0; background-color: var(--home-ink); color: var(--home-paper); font-size: 28px; -unity-text-align: middle-center; }
+.moon-approved-home.terminal-is-ship .home-card-focus-mark { position: absolute; top: 0; right: 0; width: 32px; height: 5px; background-color: var(--home-ink); opacity: 0; }
+.moon-approved-home.terminal-is-ship .terminal-home-deploy { height: auto; min-height: 140px; flex-grow: 2; flex-basis: 0; flex-shrink: 1; border-left-width: 7px; border-left-color: var(--home-emphasis); margin-bottom: 12px; }
+.moon-approved-home.terminal-is-ship .terminal-home-deploy .home-card-copy { height: 108px; padding: 12px 94px 14px 24px; background-color: #101216; border-top-color: #50555f; }
+.moon-approved-home.terminal-is-ship .terminal-home-deploy .terminal-home-action-name { color: #f0f1eb; font-size: 50px; letter-spacing: 0; margin-bottom: 4px; }
+.moon-approved-home.terminal-is-ship .terminal-home-deploy .terminal-home-action-caption { color: #c7cbd3; font-size: 12px; }
+.moon-approved-home.terminal-is-ship .terminal-home-deploy .terminal-home-action-arrow { width: 56px; height: 50px; right: 20px; bottom: 26px; background-color: #f0f1eb; color: #101216; font-size: 34px; }
+.moon-approved-home.terminal-is-ship .terminal-home-grid { flex-grow: 1.45; flex-basis: 0; min-height: 126px; margin: 0 0 12px; }
+.moon-approved-home.terminal-is-ship .terminal-home-grid .terminal-home-action { height: auto; margin: 0; padding: 0; }
+.moon-approved-home.terminal-is-ship #homeAction1 { margin-right: 12px; }
+.moon-approved-home.terminal-is-ship .terminal-home-services { flex-grow: 1; flex-basis: 0; min-height: 88px; margin: 0; }
+.moon-approved-home.terminal-is-ship .terminal-home-chip { height: auto; margin: 0 7px 0 0; padding: 0; justify-content: flex-end; border-width: 1px; border-color: var(--home-edge); background-color: var(--home-paper); overflow: hidden; }
 .moon-approved-home.terminal-is-ship .home-settings-chip { margin-right: 0; }
-.moon-approved-home.terminal-is-ship .home-service-image { position: absolute; left: 0; right: 0; top: 0; bottom: 38%; background-size: cover; background-position: center; opacity: 0.82; }
-.moon-approved-home.terminal-is-ship .home-chip-name { color: #15161d; font-size: 16px; letter-spacing: 0; }
-.moon-approved-home.terminal-is-ship .terminal-home-chip-index { color: #5d606b; font-size: 10px; left: 8px; top: 8px; }
-.moon-approved-home.terminal-is-ship .terminal-home-resources { height: 42px; flex-shrink: 0; margin-top: 14px; padding-top: 6px; border-top-color: #9296a0; }
-.moon-approved-home.terminal-is-ship .terminal-home-resource { border-left-color: #4432df; }
-.moon-approved-home.terminal-is-ship .terminal-home-resource-name { color: #545865; font-size: 9px; letter-spacing: 1px; }
-.moon-approved-home.terminal-is-ship .terminal-home-resource-value { color: #111217; font-size: 17px; margin-top: 0; }
+.moon-approved-home.terminal-is-ship .home-service-image { position: absolute; left: 0; right: 0; top: 0; bottom: 42px; background-size: cover; background-position: center; opacity: 1; }
+.moon-approved-home.terminal-is-ship .home-card-industrial { background-image: url("ApprovedHome/CardIndustrial.png"); }
+.moon-approved-home.terminal-is-ship .home-card-moon { background-image: url("ApprovedHome/CardMoon.png"); }
+.moon-approved-home.terminal-is-ship .home-card-halo { background-image: url("ApprovedHome/CardHalo.png"); }
+.moon-approved-home.terminal-is-ship .home-chip-copy { height: 42px; justify-content: center; padding-left: 8px; padding-right: 31px; background-color: var(--home-paper); border-top-width: 1px; border-top-color: var(--home-edge); }
+.moon-approved-home.terminal-is-ship .home-chip-name { color: var(--home-ink); font-size: 15px; letter-spacing: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.moon-approved-home.terminal-is-ship .terminal-home-chip-index { color: #f0f1eb; background-color: #101216; font-size: 10px; left: 6px; top: 6px; padding: 2px 4px; }
+.moon-approved-home.terminal-is-ship .home-chip-arrow { position: absolute; right: 6px; bottom: 9px; width: 24px; height: 24px; background-color: var(--home-ink); color: var(--home-paper); font-size: 19px; -unity-text-align: middle-center; }
+.moon-approved-home.terminal-is-ship .terminal-home-action:hover,
+.moon-approved-home.terminal-is-ship .terminal-home-action:focus,
+.moon-approved-home.terminal-is-ship .terminal-home-chip:hover,
+.moon-approved-home.terminal-is-ship .terminal-home-chip:focus { border-color: var(--home-ink); }
+.moon-approved-home.terminal-is-ship .terminal-home-action:hover .home-card-copy,
+.moon-approved-home.terminal-is-ship .terminal-home-action:focus .home-card-copy,
+.moon-approved-home.terminal-is-ship .terminal-home-chip:hover .home-chip-copy,
+.moon-approved-home.terminal-is-ship .terminal-home-chip:focus .home-chip-copy { background-color: var(--home-ink); }
+.moon-approved-home.terminal-is-ship .terminal-home-action:hover .terminal-home-action-name,
+.moon-approved-home.terminal-is-ship .terminal-home-action:focus .terminal-home-action-name,
+.moon-approved-home.terminal-is-ship .terminal-home-action:hover .terminal-home-action-caption,
+.moon-approved-home.terminal-is-ship .terminal-home-action:focus .terminal-home-action-caption,
+.moon-approved-home.terminal-is-ship .terminal-home-chip:hover .home-chip-name,
+.moon-approved-home.terminal-is-ship .terminal-home-chip:focus .home-chip-name { color: var(--home-paper); }
+.moon-approved-home.terminal-is-ship .terminal-home-action:hover .terminal-home-action-arrow,
+.moon-approved-home.terminal-is-ship .terminal-home-action:focus .terminal-home-action-arrow,
+.moon-approved-home.terminal-is-ship .terminal-home-chip:hover .home-chip-arrow,
+.moon-approved-home.terminal-is-ship .terminal-home-chip:focus .home-chip-arrow { background-color: var(--home-paper); color: var(--home-ink); translate: 0 0; }
+.moon-approved-home.terminal-is-ship .terminal-home-action:focus .home-card-focus-mark { opacity: 1; }
+.moon-approved-home.terminal-is-ship .terminal-home-deploy:hover .home-card-copy,
+.moon-approved-home.terminal-is-ship .terminal-home-deploy:focus .home-card-copy { background-color: #24272f; }
+.moon-approved-home.terminal-is-ship .terminal-home-deploy:hover .terminal-home-action-name,
+.moon-approved-home.terminal-is-ship .terminal-home-deploy:focus .terminal-home-action-name { color: #f0f1eb; }
+.moon-approved-home.terminal-is-ship .terminal-home-deploy:hover .terminal-home-action-caption,
+.moon-approved-home.terminal-is-ship .terminal-home-deploy:focus .terminal-home-action-caption { color: #f0f1eb; }
+.moon-approved-home.terminal-is-ship .terminal-home-deploy:hover .terminal-home-action-arrow,
+.moon-approved-home.terminal-is-ship .terminal-home-deploy:focus .terminal-home-action-arrow { background-color: #f0f1eb; color: #101216; }
+.moon-approved-home.terminal-is-ship .terminal-home-action:active .home-card-copy,
+.moon-approved-home.terminal-is-ship .terminal-home-chip:active .home-chip-copy { background-color: #3a3e48; }
+.moon-approved-home.terminal-is-ship .terminal-home-action:active .terminal-home-action-name,
+.moon-approved-home.terminal-is-ship .terminal-home-action:active .terminal-home-action-caption,
+.moon-approved-home.terminal-is-ship .terminal-home-chip:active .home-chip-name { color: #f0f1eb; }
+.moon-approved-home.terminal-is-ship .terminal-home-action:disabled,
+.moon-approved-home.terminal-is-ship .terminal-home-chip:disabled { opacity: 0.42; }
+.moon-approved-home.terminal-is-ship .terminal-home-resources { height: 42px; flex-shrink: 0; margin-top: 14px; padding-top: 6px; border-top-color: var(--home-edge); }
+.moon-approved-home.terminal-is-ship .terminal-home-resource { border-left-color: var(--home-edge); }
+.moon-approved-home.terminal-is-ship .terminal-home-resource-name { color: var(--home-muted); font-size: 10px; letter-spacing: 1px; }
+.moon-approved-home.terminal-is-ship .terminal-home-resource-value { color: var(--home-ink); font-size: 18px; margin-top: 0; }
 .moon-approved-home.terminal-is-ship .terminal-home-operator-card { left: 0; bottom: 5%; width: 230px; padding: 0; }
-.moon-approved-home.terminal-is-ship .terminal-home-operator-card .terminal-eyebrow { color: #383b45; font-size: 10px; }
-.moon-approved-home.terminal-is-ship .terminal-home-operator { color: #101117; font-size: 27px; letter-spacing: 0; }
-.moon-approved-home.terminal-is-ship .terminal-home-player { color: #4d515d; font-size: 10px; letter-spacing: 1px; }
+.moon-approved-home.terminal-is-ship .terminal-home-operator-card .terminal-eyebrow { color: var(--home-muted); font-size: 10px; }
+.moon-approved-home.terminal-is-ship .terminal-home-operator { color: var(--home-ink); font-size: 27px; letter-spacing: 0; }
+.moon-approved-home.terminal-is-ship .terminal-home-player { color: var(--home-muted); font-size: 11px; letter-spacing: 1px; }
 .moon-approved-home.terminal-is-ship .terminal-home-operator-card .terminal-positive,
-.moon-approved-home.terminal-is-ship .terminal-home-operator-card .terminal-warning { color: #262a35; font-size: 11px; margin-top: 8px; padding-top: 8px; border-top-color: #777c88; }
+.moon-approved-home.terminal-is-ship .terminal-home-operator-card .terminal-warning { color: var(--home-ink); font-size: 11px; margin-top: 8px; padding-top: 8px; border-top-color: var(--home-edge); }
 .moon-approved-home.terminal-is-ship .terminal-home-ticker { display: none; }
 .moon-approved-home.terminal-is-ship .home-theme-switch,
-.moon-approved-home.terminal-is-ship .home-observe {
-    position: absolute; top: 0; right: 0; height: 30px; padding: 0 12px;
-    border-radius: 0; border-width: 1px; border-color: #7f8491;
-    background-color: #eff0ed; color: #252733; font-size: 10px;
-    -unity-font-definition: url("../../../UI Toolkit/RobotoMono-Medium.ttf");
-}
+.moon-approved-home.terminal-is-ship .home-observe { position: absolute; top: 0; right: 0; height: 30px; padding: 0 12px; border-radius: 0; border-width: 1px; border-color: var(--home-edge); background-color: var(--home-paper); color: var(--home-ink); font-size: 11px; }
 .moon-approved-home.terminal-is-ship .home-observe { right: 145px; }
-.moon-approved-home.terminal-is-ship .terminal-home-action:hover,
-.moon-approved-home.terminal-is-ship .terminal-home-chip:hover { border-color: #4530f0; }
-.moon-approved-home.terminal-is-ship .terminal-home-action:focus,
-.moon-approved-home.terminal-is-ship .terminal-home-chip:focus,
 .moon-approved-home.terminal-is-ship .home-theme-switch:focus,
-.moon-approved-home.terminal-is-ship .home-observe:focus { border-width: 2px; border-color: #4530f0; }
-.moon-approved-home.terminal-is-ship .terminal-home-action:active,
-.moon-approved-home.terminal-is-ship .terminal-home-chip:active { border-color: #f1f2ee; background-color: #4130cb; }
-.moon-approved-home.terminal-is-ship .terminal-home-action:hover .terminal-home-action-name,
-.moon-approved-home.terminal-is-ship .terminal-home-action:focus .terminal-home-action-name { color: #f8f8f5; }
-.moon-approved-home.terminal-is-ship #homeAction1:hover .terminal-home-action-name,
-.moon-approved-home.terminal-is-ship #homeAction1:focus .terminal-home-action-name { color: #292057; }
-.moon-approved-home.terminal-is-ship .terminal-home-action:disabled { opacity: 0.48; }
-.moon-approved-home.terminal-is-ship .terminal-home-menu-compact { min-width: 380px; top: 9%; bottom: 8%; }
-.moon-approved-home.terminal-is-ship .terminal-home-menu-compact .terminal-home-deploy { min-height: 100px; padding: 14px 20px; }
-.moon-approved-home.terminal-is-ship .terminal-home-menu-compact .terminal-home-deploy .terminal-home-action-name { font-size: 32px; }
-.moon-approved-home.terminal-is-ship .terminal-home-menu-compact .terminal-home-grid { min-height: 84px; }
-.moon-approved-home.terminal-is-ship .terminal-home-menu-compact .terminal-home-action-name { font-size: 18px; }
-.moon-approved-home.terminal-is-ship .terminal-home-menu-compact .terminal-home-chip { min-height: 52px; }
+.moon-approved-home.terminal-is-ship .home-observe:focus { border-width: 2px; }
+.moon-approved-home.terminal-is-ship .stash-account-name { color: var(--home-ink); }
+.moon-approved-home.terminal-is-ship .stash-small-button { color: var(--home-ink); border-color: var(--home-edge); background-color: var(--home-paper); }
+.moon-approved-home.terminal-is-ship .terminal-home-menu-compact { min-width: 380px; top: 8%; bottom: 8%; }
+.moon-approved-home.terminal-is-ship .terminal-home-menu-compact .terminal-home-deploy { min-height: 126px; }
+.moon-approved-home.terminal-is-ship .terminal-home-menu-compact .terminal-home-deploy .home-card-copy { height: 88px; padding-left: 18px; }
+.moon-approved-home.terminal-is-ship .terminal-home-menu-compact .terminal-home-deploy .terminal-home-action-name { font-size: 36px; }
+.moon-approved-home.terminal-is-ship .terminal-home-menu-compact .terminal-home-grid { min-height: 112px; }
+.moon-approved-home.terminal-is-ship .terminal-home-menu-compact .terminal-home-action-name { font-size: 22px; }
+.moon-approved-home.terminal-is-ship .terminal-home-menu-compact .home-card-copy { height: 68px; padding-left: 12px; padding-right: 56px; }
+.moon-approved-home.terminal-is-ship .terminal-home-menu-compact .home-card-image { bottom: 68px; }
+.moon-approved-home.terminal-is-ship .terminal-home-menu-compact .terminal-home-action-arrow { right: 10px; width: 34px; height: 32px; }
+.moon-approved-home.terminal-is-ship .terminal-home-menu-compact .terminal-home-deploy .home-card-image { bottom: 0; }
 .moon-approved-home.terminal-is-ship .terminal-home-menu-compact .home-chip-name { font-size: 13px; }
-.moon-home-dark.terminal-is-ship { background-color: #06070a; background-image: url("ApprovedHome/HomeDarkBackdrop.png"); }
-.moon-home-dark.terminal-is-ship .terminal-home-title,
-.moon-home-dark.terminal-is-ship .terminal-home-kicker,
-.moon-home-dark.terminal-is-ship .terminal-home-caption,
-.moon-home-dark.terminal-is-ship .terminal-home-operator { color: #f2f3ef; }
-.moon-home-dark.terminal-is-ship .terminal-home-description,
-.moon-home-dark.terminal-is-ship .terminal-home-operator-card .terminal-eyebrow,
-.moon-home-dark.terminal-is-ship .terminal-home-player,
-.moon-home-dark.terminal-is-ship .terminal-home-operator-card .terminal-positive,
-.moon-home-dark.terminal-is-ship .terminal-home-menu-head .terminal-eyebrow,
-.moon-home-dark.terminal-is-ship .terminal-home-menu-count { color: #c4c7d1; }
-.moon-home-dark.terminal-is-ship .terminal-home-deploy { border-color: #6956ff; border-left-color: #4430f0; }
-.moon-home-dark.terminal-is-ship #homeAction1,
-.moon-home-dark.terminal-is-ship .terminal-home-chip { background-color: #11131a; border-color: #727784; }
-.moon-home-dark.terminal-is-ship #homeAction1 .home-card-industrial { opacity: 0.72; }
-.moon-home-dark.terminal-is-ship #homeAction1 .terminal-home-action-name,
-.moon-home-dark.terminal-is-ship #homeAction1 .terminal-home-action-caption,
-.moon-home-dark.terminal-is-ship #homeAction1 .terminal-home-action-index,
-.moon-home-dark.terminal-is-ship .home-chip-name,
-.moon-home-dark.terminal-is-ship .terminal-home-resource-value { color: #f5f6f2; }
-.moon-home-dark.terminal-is-ship #homeAction1:hover .terminal-home-action-name,
-.moon-home-dark.terminal-is-ship #homeAction1:focus .terminal-home-action-name { color: #f5f6f2; }
-.moon-home-dark.terminal-is-ship #homeAction1 .terminal-home-action-arrow { border-color: #f5f6f2; }
-.moon-approved-home.terminal-is-ship .terminal-home-chip:active .home-chip-name { color: #f5f6f2; }
-.moon-home-dark.terminal-is-ship .terminal-home-operator-card .terminal-warning { color: #e3bd68; }
-.moon-home-dark.terminal-is-ship .terminal-home-resource-name { color: #a8aebb; }
-.moon-home-dark.terminal-is-ship .home-theme-switch,
-.moon-home-dark.terminal-is-ship .home-observe { background-color: #101219; color: #ebeef4; }
-.moon-home-dark.terminal-is-ship .stash-account-name { color: #d6d9e2; }
-.moon-home-light.terminal-is-ship .stash-account-name { color: #353946; }
-.moon-home-light.terminal-is-ship .stash-small-button { color: #353946; border-color: #777d8a; }

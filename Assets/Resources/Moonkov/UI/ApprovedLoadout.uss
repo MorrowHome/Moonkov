@@ -1,0 +1,39 @@
+.moonkov-terminal.terminal-is-loadout {
+    background-color: #08090c; padding-left: 24px; padding-right: 24px;
+}
+.moonkov-terminal.terminal-is-loadout > .terminal-chrome,
+.moonkov-terminal.terminal-is-loadout .terminal-scene-shade { display: none; }
+.moonkov-terminal.terminal-is-loadout .stash-header { height: 94px; border-bottom-width: 1px; border-bottom-color: #646973; }
+.moonkov-terminal.terminal-is-loadout .stash-brand { width: 242px; }
+.moonkov-terminal.terminal-is-loadout .stash-brand-title { font-size: 38px; letter-spacing: -1px; }
+.moonkov-terminal.terminal-is-loadout .stash-page-heading {
+    height: 66px; padding-left: 20px; justify-content: center;
+    border-left-width: 1px; border-left-color: #646973;
+    background-image: url("ApprovedHome/CardIndustrial.png"); background-size: cover; background-position: right;
+    -unity-background-image-tint-color: #404249;
+}
+.moonkov-terminal.terminal-is-loadout .stash-page-title { font-size: 26px; }
+.moonkov-terminal.terminal-is-loadout .stash-account { background-color: #08090c; padding-left: 18px; padding-right: 12px; margin-right: 12px; }
+.moonkov-terminal.terminal-is-loadout .stash-small-button { background-color: #181b22; border-width: 1px; border-color: #69717e; color: #f0f1eb; }
+.moonkov-terminal.terminal-is-loadout .terminal-nav { height: 54px; border-bottom-color: #646973; }
+.moonkov-terminal.terminal-is-loadout .terminal-nav-tabs > .terminal-tab { min-width: 118px; border-right-width: 1px; border-right-color: #303641; }
+.moonkov-terminal.terminal-is-loadout .terminal-tab-label { font-size: 12px; color: #d8dbe0; letter-spacing: 0; }
+.moonkov-terminal.terminal-is-loadout .terminal-tab-index { color: #9199a7; }
+.moonkov-terminal.terminal-is-loadout .terminal-tab-selected,
+.moonkov-terminal.terminal-is-loadout .terminal-tab-selected:hover,
+.moonkov-terminal.terminal-is-loadout .terminal-tab-selected:focus { background-color: #e6e8e3; }
+.moonkov-terminal.terminal-is-loadout .terminal-tab-selected .terminal-tab-label,
+.moonkov-terminal.terminal-is-loadout .terminal-tab-selected .terminal-tab-index { color: #15181f; }
+.moonkov-terminal.terminal-is-loadout .terminal-tab:hover,
+.moonkov-terminal.terminal-is-loadout .terminal-tab:focus { border-bottom-width: 2px; border-bottom-color: #e6e8e3; }
+.moonkov-terminal.terminal-is-loadout .terminal-nav-indicator { height: 3px; background-color: #4834dd; }
+.moonkov-terminal.terminal-is-loadout .terminal-nav-status { display: none; }
+.moonkov-terminal.terminal-is-loadout .stash-body { padding-top: 18px; padding-bottom: 0; }
+.moonkov-terminal.terminal-is-loadout .stash-footer { height: 62px; border-top-color: #646973; }
+.moonkov-terminal.terminal-is-loadout .stash-footer-button { min-width: 132px; padding-left: 18px; padding-right: 18px; border-width: 1px; border-color: #69717e; background-color: #181b22; color: #f0f1eb; }
+.moonkov-terminal.terminal-is-loadout .stash-footer-spacer > .terminal-ticker { display: none; }
+.moonkov-terminal.terminal-is-loadout .stash-footer-caption,
+.moonkov-terminal.terminal-is-loadout .stash-footer-hint { color: #9299a6; font-size: 10px; }
+.moonkov-terminal.terminal-is-loadout .stash-deploy-button { width: 200px; height: 42px; background-color: #e6e8e3; color: #15181f; border-width: 1px; border-color: #e6e8e3; }
+.moonkov-terminal.terminal-is-loadout .stash-deploy-button:hover,
+.moonkov-terminal.terminal-is-loadout .stash-deploy-button:focus { background-color: #bfc4cf; border-color: #4834dd; }
