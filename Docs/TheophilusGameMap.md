@@ -4,6 +4,12 @@
 
 正式场景：`Assets/MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusGameScene.unity`；出生子场景：同目录 `TheophilusSpawnPointsSubScene.unity`。两者均登记并启用在 Build Settings。原 Apollo12 地图和旧研究场景仅作为历史来源保留，不再维护研究副本。
 
+2026-10-18 精细月面从 512×512 m 扩到 1536×1536 m（面积 9 倍）：原中心保持不动，周围新增八块 512 m、2049 高度采样的 Terrain，范围 X=1024–2560、Z=1408–2944。外围继续使用原 4096 m DEM。25 cm 是生成几何的网格间距，原始观测仍为 3 m；新增细小起伏和月坑为确定性合成，不是新增观测数据。新块使用现有 R8 月壤材质／TerrainLayer，在中心边界 32 m 范围衔接原地形，外边界平滑接回 DEM；原中心地形、基地接地和深井洞口资产不改写。
+
+新增 6144 块岩石复用原 `MoonRockLod` 的两套原始／中距／远距共享网格与 18／80／600 m 配置，每块地形一个控制器；不添加每石头 Update。直径至少 0.65 m 的 3326 块岩石使用既有远距简化网格作静态碰撞，小碎石仅显示。新 Terrain 共用显示／碰撞数据；远景显示及碰撞分别复制到 `Terrain/Expanded` 后扩切洞口，原四份 R21 TerrainData 保留。Prefab 实例显式记录 TerrainData 覆盖，避免重开后恢复旧显示地形而发生重叠碎斑。
+
+本次 Unity 编译及保存重开通过：12 条内部接缝逐高度采样最大差 0；外边界抽样差 0；八块新增地形各一条地面射线通过；八个 LOD 控制器的网格引用及距离与原配置一致。远景显示／碰撞各 589824 个格子的扩区切洞检查通过，扩区外 holes 不变；一次修正后的区域渲染确认无此前重叠碎斑。证据在 `Library/BuildValidation/LunarExpansion/`。Console 仍有既往已记录的 `SubScene.AddSceneEntities/OnEnable` 断言；未测 Play FPS、角色走图、Host／Client 或构建。编辑器入口为 `Tools > Moon Environment > Theophilus Expansion`，逐块生成后 Connect and Save；已完成的八块不会重复生成。
+
 2026-10-16 恢复正式天空：此前场景 RenderSettings 与 `MoonSceneLighting.spaceSkybox` 都引用 `R8_StudySpaceSky`，其星图强度／白昼可见度为 0，太阳与地球显示亮度也为 0。现改为正式专属 `Variants/TheophilusBase/Materials/TheophilusSky.mat`，从此前调好的 `Apollo12Sky` 复制参数（星图 0.25、白昼可见度 0.5、亮星增强 3、弥散星场 0.3，并保留原太阳／地球配置）。原研究材质与 Apollo12 材质不改写，昼夜／天文方向继续由原运行时代码驱动。已保存两处场景引用，隔离天空渲染预览确认恒星与银河可见、Shader 无错误；未重进正式 Play。预览为 `Library/BuildValidation/TheophilusSkyRestore/SkyRestored.png`。
 
 正式地图包含 Theophilus 地形、基地、八楼、气闸、巨构、R7 接地和 R8 表面/渲染配置。R9/R10 承托塔和中央下降塔的历史资产保留，中央旧显示按 R21 最终候选清单隐藏。气闸的 `AirlockPrototypeDemo` 与本地诊断读数移除，角色由正式 Ghost/玩家流程生成；不再生成本地验证角色。原 F/滚轮交互、气闸服务端规则及声音走现有正式系统。
