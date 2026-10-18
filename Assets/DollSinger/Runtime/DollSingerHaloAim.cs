@@ -202,6 +202,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     public void EditorPreviewFire() => FireCosmeticBolt();
 #endif
 
+    public uint LightingSettings { get; set; }
     public float AimBlend => aimBlend;
     public float ScopeMagnification => visualWeapon == HaloWeapon.Sniper && sniperVisual ? sniperVisual.scopeMagnification : 0;
     private int LocalAmmo(HaloWeapon weapon) => weapon == HaloWeapon.Rifle ? localRifleAmmo : weapon == HaloWeapon.Shotgun ? localShotgunAmmo : weapon == HaloWeapon.Sniper ? localSniperAmmo : localRevolverAmmo;
@@ -319,8 +320,11 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
             thirdPerson && thirdPerson.enabled && playerCamera && aimingInput);
         if (wantsAim && !wasAiming) gestureReframeUntil = Time.time + aimInSeconds + .04f;
         if (thirdPerson) thirdPerson.IsLocallyAiming = wantsAim;
-        if (!networkControlled && input && input.enabled && input.LightPressed)
-            haloLightEnabled = !haloLightEnabled;
+        if (!networkControlled && input && input.enabled)
+        {
+            LightingSettings = input.LightingSettings;
+            if (input.LightPressed) haloLightEnabled = !haloLightEnabled;
+        }
         aimBlend = Mathf.MoveTowards(aimBlend, wantsAim ? 1f : 0f,
             Time.deltaTime / (wantsAim ? aimInSeconds : aimOutSeconds));
         if (aimLayerIndex >= 0) animator.SetLayerWeight(aimLayerIndex, bakedGestures != null ? 0f : aimBlend);
@@ -483,7 +487,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
             haloScale / Mathf.Max(0.001f, parentScale.y),
             haloScale / Mathf.Max(0.001f, parentScale.z));
         if (haloStrokes != null) {
-            Color color = visualWeapon == HaloWeapon.Sniper && sniperVisual ? sniperVisual.lightColor : revolverEquipped && revolverVisual ? revolverVisual.lightColor : visualWeapon == HaloWeapon.Shotgun && shotgunVisual ? shotgunVisual.lightColor : Color.Lerp(idleHaloColor, aimedHaloColor, t);
+            Color color = visualWeapon == HaloWeapon.Sniper && sniperVisual ? sniperVisual.lightColor : revolverEquipped && revolverVisual ? revolverVisual.lightColor : visualWeapon == HaloWeapon.Shotgun && shotgunVisual ? shotgunVisual.lightColor : visualWeapon == HaloWeapon.Rifle && rifleVisual ? rifleVisual.lightColor : Color.Lerp(idleHaloColor, aimedHaloColor, t);
             foreach (var stroke in haloStrokes) {
                 if (!stroke) continue;
                 stroke.startColor = color;
@@ -497,23 +501,25 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
                     stroke.endColor = glow;
                 }
             }
+            float idleIntensity = idleLightIntensity * HaloLighting.IdlePercent(LightingSettings) / 100f;
+            float aimScale = HaloLighting.AimPercent(LightingSettings) / 100f;
+            float idleRange = HaloLighting.Range(LightingSettings, lightRange);
             if (haloLight) {
                 haloLight.color = new Color(color.r, color.g, color.b, 1f);
-                haloLight.intensity = Mathf.Lerp(idleLightIntensity, aimedLightIntensity, t) + (discharge ? discharge.Flash * 5f : 0);
-                haloLight.range = lightRange;
+                haloLight.intensity = Mathf.Lerp(idleIntensity, aimedLightIntensity * aimScale, t) + (discharge ? discharge.Flash * 5f : 0);
+                haloLight.range = Mathf.Lerp(idleRange, lightRange, t);
                 haloLight.enabled = haloLightEnabled;
             }
             // The two spot lights approximate a disc-shaped area light on each
             // ring face (local +/-Z is the ring's hole axis). Aiming turns the
             // front face into a long-throw flashlight along the aim direction.
-            float faceIntensity = Mathf.Lerp(idleLightIntensity, aimedLightIntensity, t) *
+            float faceIntensity = Mathf.Lerp(idleIntensity, aimedLightIntensity * aimScale, t) *
                                   faceLightIntensityScale;
             Color faceColor = new Color(color.r, color.g, color.b, 1f);
             if (haloFaceLightFront) {
-                // A neutral beam preserves terrain contrast instead of tinting the path cyan.
-                haloFaceLightFront.color = Color.Lerp(faceColor, new Color(1f, 0.96f, 0.86f), t);
-                haloFaceLightFront.intensity = Mathf.Lerp(faceIntensity, flashlightIntensity, t);
-                haloFaceLightFront.range = Mathf.Lerp(lightRange, flashlightRange, t);
+                haloFaceLightFront.color = faceColor;
+                haloFaceLightFront.intensity = Mathf.Lerp(faceIntensity, flashlightIntensity * aimScale, t);
+                haloFaceLightFront.range = Mathf.Lerp(idleRange, HaloLighting.AimRange(LightingSettings, flashlightRange), t);
                 haloFaceLightFront.spotAngle = Mathf.Lerp(faceSpotAngle, flashlightAngle, t);
                 haloFaceLightFront.innerSpotAngle = haloFaceLightFront.spotAngle * Mathf.Lerp(0.55f, 0.72f, t);
                 haloFaceLightFront.enabled = haloLightEnabled;
@@ -521,7 +527,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
             if (haloFaceLightBack) {
                 haloFaceLightBack.color = faceColor;
                 haloFaceLightBack.intensity = faceIntensity + (discharge ? discharge.Flash * 2f : 0);
-                haloFaceLightBack.range = lightRange;
+                haloFaceLightBack.range = Mathf.Lerp(idleRange, lightRange, t);
                 haloFaceLightBack.spotAngle = faceSpotAngle;
                 haloFaceLightBack.innerSpotAngle = faceSpotAngle * 0.55f;
                 haloFaceLightBack.enabled = haloLightEnabled;

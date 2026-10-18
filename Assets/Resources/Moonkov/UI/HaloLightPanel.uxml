@@ -1,0 +1,33 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="HaloLightPanel.uss" />
+    <ui:VisualElement class="halo-light-panel">
+        <ui:Label text="HALO LIGHTING" class="halo-light-title" />
+        <ui:Label name="haloLightStatus" class="halo-light-status" />
+        <ui:VisualElement class="halo-light-tabs">
+            <ui:Button name="haloIdleTab" text="EVERYDAY" />
+            <ui:Button name="haloAimTab" text="AIM PREVIEW" />
+        </ui:VisualElement>
+        <ui:VisualElement name="haloIdleControls">
+            <ui:VisualElement class="halo-light-heading">
+                <ui:Label text="LIGHT RANGE" /><ui:Label name="haloRangeValue" class="halo-light-value" />
+            </ui:VisualElement>
+            <ui:Slider name="haloRange" low-value="1" high-value="12" />
+            <ui:VisualElement class="halo-light-heading">
+                <ui:Label text="LIGHT INTENSITY" /><ui:Label name="haloIdleValue" class="halo-light-value" />
+            </ui:VisualElement>
+            <ui:SliderInt name="haloIdleStrength" low-value="0" high-value="200" />
+        </ui:VisualElement>
+        <ui:VisualElement name="haloAimControls">
+            <ui:VisualElement class="halo-light-heading">
+                <ui:Label text="AIM LIGHT RANGE" /><ui:Label name="haloAimRangeValue" class="halo-light-value" />
+            </ui:VisualElement>
+            <ui:Slider name="haloAimRange" low-value="5" high-value="160" />
+            <ui:VisualElement class="halo-light-heading">
+                <ui:Label text="AIM INTENSITY" /><ui:Label name="haloAimValue" class="halo-light-value" />
+            </ui:VisualElement>
+            <ui:SliderInt name="haloAimStrength" low-value="0" high-value="200" />
+        </ui:VisualElement>
+        <ui:Button name="haloLightReset" text="RESTORE DEFAULTS" />
+        <ui:Label text="Release L to close. Tap L to switch the light. Changes are saved automatically." class="halo-light-hint" />
+    </ui:VisualElement>
+</ui:UXML>

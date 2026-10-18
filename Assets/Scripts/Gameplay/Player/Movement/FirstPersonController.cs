@@ -73,6 +73,7 @@ public class FirstPersonController : MonoBehaviour
 
         // booleans
         public uint StateFlags;
+        public uint HaloLightingSettings;
 
         [GhostField(SendData = false)]
         public bool HaloLightEnabled
@@ -811,6 +812,7 @@ public class FirstPersonController : MonoBehaviour
     {
         state.Aiming = input.Aim;
         state.HaloLightEnabled = input.HaloLightEnabled;
+        state.HaloLightingSettings = HaloLighting.Sanitize(input.HaloLightingSettings);
         state.Sprinting = input.Sprint && !input.Aim && state.Stance == DollSingerStance.Standing;
         state.FirstPersonView = !input.ThirdPerson;
         state.FreeLooking = state.FirstPersonView && input.FreeLooking;

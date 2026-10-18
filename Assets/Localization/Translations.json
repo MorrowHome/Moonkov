@@ -715,5 +715,16 @@
   "TREAT SELECTED PART / +{0:0} HP": "治疗选定部位 / 最多恢复 {0:0} 生命",
   "Uses the first accessible medicine. Choose a specific item from inventory to control consumption.": "使用首件可取用的医疗用品。可在背包中选择指定物品，控制本次消耗。",
   "NONE": "无",
-  "No tradeable items to sell. Recover supplies and valuables in a raid.": "没有可出售的物品。可在行动中回收补给与贵重战利品。"
+  "No tradeable items to sell. Recover supplies and valuables in a raid.": "没有可出售的物品。可在行动中回收补给与贵重战利品。",
+  "HALO LIGHTING": "光环照明",
+  "EVERYDAY": "日常照明",
+  "AIM PREVIEW": "瞄准预览",
+  "LIGHT RANGE": "照明范围",
+  "LIGHT INTENSITY": "照明强度",
+  "AIM INTENSITY": "瞄准强度",
+  "RESTORE DEFAULTS": "恢复默认",
+  "{0:0.0} m": "{0:0.0} 米",
+  "Release L to close. Tap L to switch the light. Changes are saved automatically.": "松开 L 关闭，短按 L 开关灯。调整会自动保存。",
+  "AIM LIGHT RANGE": "瞄准照明范围",
+  "{0:0} m": "{0:0} 米"
 }

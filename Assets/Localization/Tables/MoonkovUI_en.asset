@@ -2629,219 +2629,235 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625880
-    m_Localized: "Sealed medical gel"
+    m_Localized: Sealed medical gel
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625881
-    m_Localized: "Field trauma kit"
+    m_Localized: Field trauma kit
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625882
-    m_Localized: "Energy gel"
+    m_Localized: Energy gel
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625883
-    m_Localized: "Protein bar"
+    m_Localized: Protein bar
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625884
-    m_Localized: "Electrolyte pouch"
+    m_Localized: Electrolyte pouch
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625885
-    m_Localized: "O-80 Reserve oxygen cylinder"
+    m_Localized: O-80 Reserve oxygen cylinder
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625886
-    m_Localized: "R-02 Scout rig"
+    m_Localized: R-02 Scout rig
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625887
-    m_Localized: "R-06 Field rig"
+    m_Localized: R-06 Field rig
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625888
-    m_Localized: "B-03 Sling pack"
+    m_Localized: B-03 Sling pack
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625889
-    m_Localized: "B-12 Cargo pack"
+    m_Localized: B-12 Cargo pack
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625890
-    m_Localized: "Control circuit board"
+    m_Localized: Control circuit board
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625891
-    m_Localized: "Copper induction coil"
+    m_Localized: Copper induction coil
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625892
-    m_Localized: "Technical ceramic plate"
+    m_Localized: Technical ceramic plate
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625893
-    m_Localized: "Optical sensor"
+    m_Localized: Optical sensor
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625894
-    m_Localized: "Encrypted data drive"
+    m_Localized: Encrypted data drive
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625895
-    m_Localized: "Helium-3 sample"
+    m_Localized: Helium-3 sample
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625896
-    m_Localized: "Quantum processor"
+    m_Localized: Quantum processor
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625897
-    m_Localized: "Survey black box"
+    m_Localized: Survey black box
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625898
-    m_Localized: "RESTORE UP TO {0:0} HP"
+    m_Localized: RESTORE UP TO {0:0} HP
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625899
-    m_Localized: "USE / RESTORE UP TO {0:0} HP"
+    m_Localized: USE / RESTORE UP TO {0:0} HP
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625900
-    m_Localized: "{0:+0;-0;0} ENERGY"
+    m_Localized: '{0:+0;-0;0} ENERGY'
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625901
-    m_Localized: "{0:+0;-0;0} HYDRATION"
+    m_Localized: '{0:+0;-0;0} HYDRATION'
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625902
-    m_Localized: "{0:+0;-0;0} FULLNESS"
+    m_Localized: '{0:+0;-0;0} FULLNESS'
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625903
-    m_Localized: "{0:+0;-0;0} OXYGEN"
+    m_Localized: '{0:+0;-0;0} OXYGEN'
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625904
-    m_Localized: "REFILL SUIT"
+    m_Localized: REFILL SUIT
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625905
-    m_Localized: "{0}\u00d7{1} FOOTPRINT / {2:0.##} KG EACH / STACK {3}"
+    m_Localized: "{0}\xD7{1} FOOTPRINT / {2:0.##} KG EACH / STACK {3}"
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625906
-    m_Localized: "{0} STORAGE CELLS / COMPARTMENTS {1}"
+    m_Localized: '{0} STORAGE CELLS / COMPARTMENTS {1}'
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625907
-    m_Localized: "RECOVER AND SELL TO THE SUPPLIER"
+    m_Localized: RECOVER AND SELL TO THE SUPPLIER
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625908
-    m_Localized: "{0} \u00b7 \u00d7{1} \u00b7 {2:0.##} KG TOTAL \u00b7 {3} \u00b7 {4}"
+    m_Localized: "{0} \xB7 \xD7{1} \xB7 {2:0.##} KG TOTAL \xB7 {3} \xB7 {4}"
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625909
-    m_Localized: "EMPTY CONTAINER BEFORE SELLING"
+    m_Localized: EMPTY CONTAINER BEFORE SELLING
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625910
-    m_Localized: "Compact first aid for a selected body part. Keep it in pockets or an equipped rig."
+    m_Localized: Compact first aid for a selected body part. Keep it in pockets or
+      an equipped rig.
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625911
-    m_Localized: "High-capacity single-use treatment for a selected body part. Use from an equipped rig."
+    m_Localized: High-capacity single-use treatment for a selected body part. Use
+      from an equipped rig.
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625912
-    m_Localized: "A light snack with low stomach occupancy. Consumes a little hydration."
+    m_Localized: A light snack with low stomach occupancy. Consumes a little hydration.
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625913
-    m_Localized: "Dense field food. Plan drinking water alongside its energy recovery."
+    m_Localized: Dense field food. Plan drinking water alongside its energy recovery.
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625914
-    m_Localized: "Compact drinking supply with low stomach occupancy."
+    m_Localized: Compact drinking supply with low stomach occupancy.
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625915
-    m_Localized: "A large suit-air refill. Use from an equipped rig; excess oxygen is lost."
+    m_Localized: A large suit-air refill. Use from an equipped rig; excess oxygen
+      is lost.
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625916
-    m_Localized: "Light chest storage with three narrow compartments. Keeps medical supplies and cells accessible."
+    m_Localized: Light chest storage with three narrow compartments. Keeps medical
+      supplies and cells accessible.
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625917
-    m_Localized: "Roomy chest storage with three broad compartments. Carries larger medical and oxygen supplies within reach."
+    m_Localized: Roomy chest storage with three broad compartments. Carries larger
+      medical and oxygen supplies within reach.
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625918
-    m_Localized: "A light backpack for short scavenging trips. Move medicine, oxygen and cells into the rig before use."
+    m_Localized: A light backpack for short scavenging trips. Move medicine, oxygen
+      and cells into the rig before use.
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625919
-    m_Localized: "A heavy pack with a large continuous grid for bulky loot. Total carried weight still applies."
+    m_Localized: A heavy pack with a large continuous grid for bulky loot. Total
+      carried weight still applies.
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625920
-    m_Localized: "Recovered control electronics. Trade goods for the lunar supplier."
+    m_Localized: Recovered control electronics. Trade goods for the lunar supplier.
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625921
-    m_Localized: "A dense industrial induction coil. Its sale value comes with extra carried weight."
+    m_Localized: A dense industrial induction coil. Its sale value comes with extra
+      carried weight.
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625922
-    m_Localized: "Industrial ceramic stock. A trade good, not wearable armor."
+    m_Localized: Industrial ceramic stock. A trade good, not wearable armor.
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625923
-    m_Localized: "An intact precision sensor. Compact trade goods recovered from lunar equipment."
+    m_Localized: An intact precision sensor. Compact trade goods recovered from lunar
+      equipment.
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625924
-    m_Localized: "An encrypted survey archive. Extract it and sell it for moon dust."
+    m_Localized: An encrypted survey archive. Extract it and sell it for moon dust.
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625925
-    m_Localized: "A sealed helium-3 research sample. Valuable trade goods; does not refill suit oxygen."
+    m_Localized: A sealed helium-3 research sample. Valuable trade goods; does not
+      refill suit oxygen.
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625926
-    m_Localized: "A rare quantum processor. High-value cargo to bring back from a raid."
+    m_Localized: A rare quantum processor. High-value cargo to bring back from a
+      raid.
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625927
-    m_Localized: "A recovered survey recorder. Bulky, valuable cargo worth reserving pack space for."
+    m_Localized: A recovered survey recorder. Bulky, valuable cargo worth reserving
+      pack space for.
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625928
-    m_Localized: "Next cylinder: +{0:0}% oxygen. Keep it in pockets or the chest rig; excess oxygen is lost."
+    m_Localized: 'Next cylinder: +{0:0}% oxygen. Keep it in pockets or the chest
+      rig; excess oxygen is lost.'
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625929
-    m_Localized: "Next food: {0}. Next drink: {1}. Inspect supplies in inventory for recovery and fullness."
+    m_Localized: 'Next food: {0}. Next drink: {1}. Inspect supplies in inventory
+      for recovery and fullness.'
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625930
-    m_Localized: "TREAT SELECTED PART / +{0:0} HP"
+    m_Localized: TREAT SELECTED PART / +{0:0} HP
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625931
-    m_Localized: "Uses the first accessible medicine. Choose a specific item from inventory to control consumption."
+    m_Localized: Uses the first accessible medicine. Choose a specific item from
+      inventory to control consumption.
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625932
-    m_Localized: "NONE"
+    m_Localized: NONE
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625933
-    m_Localized: "No tradeable items to sell. Recover supplies and valuables in a raid."
+    m_Localized: No tradeable items to sell. Recover supplies and valuables in a
+      raid.
     m_Metadata:
       m_Items: []
   - m_Id: 3293010354515968
@@ -2978,6 +2994,51 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 3743485990285312
     m_Localized: Alien boss nucleus
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3911256175009792
+    m_Localized: AIM LIGHT RANGE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3911256183398400
+    m_Localized: '{0:0} m'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3911256183398401
+    m_Localized: HALO LIGHTING
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3911256183398402
+    m_Localized: EVERYDAY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3911256183398403
+    m_Localized: AIM PREVIEW
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3911256183398404
+    m_Localized: LIGHT RANGE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3911256183398405
+    m_Localized: LIGHT INTENSITY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3911256183398406
+    m_Localized: AIM INTENSITY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3911256183398407
+    m_Localized: RESTORE DEFAULTS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3911256183398408
+    m_Localized: '{0:0.0} m'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3911256183398409
+    m_Localized: Release L to close. Tap L to switch the light. Changes are saved
+      automatically.
     m_Metadata:
       m_Items: []
   references:

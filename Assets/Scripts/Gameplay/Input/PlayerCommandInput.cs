@@ -31,6 +31,7 @@ public struct PlayerInput
     // Camera-centre target intent. The server still owns the shot origin, raycast and damage.
     public float3 AimPoint;
 
+    public uint HaloLightingSettings;
     public uint InputFlags;
 
     public DollSingerStance Stance => (InputFlags & (uint)InputFlag.Prone) != 0 ? DollSingerStance.Prone :
@@ -76,6 +77,7 @@ public struct PlayerInput
             InputFlag.Aim | InputFlag.ThirdPerson | InputFlag.EquipHalo | InputFlag.EquipRevolver |
             InputFlag.EquipPistol | InputFlag.HaloLightDisabled | InputFlag.Crouch | InputFlag.Prone | InputFlag.Tiptoe);
         result.InputFlags &= knownFlags;
+        result.HaloLightingSettings = HaloLighting.Sanitize(HaloLightingSettings);
         result.MoveInput = math.all(math.isfinite(MoveInput)) ? math.clamp(MoveInput, -1f, 1f) : float2.zero;
         float moveLengthSq = math.lengthsq(result.MoveInput);
         if (moveLengthSq > 1f) result.MoveInput *= math.rsqrt(moveLengthSq);
@@ -107,6 +109,7 @@ public struct PlayerInput
         bool bufferedThirdPerson = ThirdPerson;
         if (updateContinuousState)
         {
+            HaloLightingSettings = input.HaloLightingSettings;
             MoveInput = input.MoveInput;
             LookYawPitchDegrees = input.LookYawPitchDegrees;
             FreeLookOffset = input.FreeLookOffset;

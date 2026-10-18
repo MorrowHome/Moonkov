@@ -20,6 +20,7 @@ namespace Unity.MP_FPS
         private Quaternion m_OwnedViewRotation = Quaternion.identity;
         private float m_OwnedLean;
         private bool m_OwnedLightEnabled = true;
+        private Client.HaloLightPanel m_LightPanel;
         private RaycastHit[] m_AimHits = new RaycastHit[32];
         private const int AimMask = ~(1 << (int)LayerIndex.ServerPlayer);
         private bool m_OwnedAiming, m_HasOwnedAimPoint;
@@ -56,6 +57,12 @@ namespace Unity.MP_FPS
 
         public bool UpdateOwnedLook(ref float2 look, out float2 freeLookOffset, bool blocked)
         {
+            if (m_Input.LightAdjusting)
+            {
+                m_OwnedAiming = m_Input.LightPreviewAiming;
+                freeLookOffset = m_FreeLookOffset;
+                return false;
+            }
             bool freeLooking = DollSingerLookController.Update(ref look, ref m_FreeLookOffset,
                 ref m_OwnedLean, out m_OwnedViewRotation, m_Input, m_Model, m_View, blocked, Time.deltaTime);
             m_OwnedAiming = !blocked && m_Input.AimHeld && !freeLooking;
@@ -103,6 +110,7 @@ namespace Unity.MP_FPS
             m_Linked = true;
             m_Motor = GetComponent<FirstPersonController>();
             m_OwnedAiming = m_HasOwnedAimPoint = false;
+            m_LightPanel?.Dispose(); m_LightPanel = null;
             m_OwnedLightEnabled = true;
             m_AudioAiming = false; m_DryFireAt = 0;
             m_Audio?.Stop();
@@ -141,6 +149,17 @@ namespace Unity.MP_FPS
 
             var ghost = ReadGhostComponentData<PredictedPlayerGhost>();
             var state = ghost.ControllerState;
+            if (Role == MultiplayerRole.ClientOwned)
+            {
+                if (ghost.CurrentHealth <= 0) m_Input.CancelLightAdjustment();
+                if (m_Input.LightAdjusting && m_LightPanel == null)
+                {
+                    var hud = FindAnyObjectByType<RaidHUD>();
+                    if (hud) m_LightPanel = new Client.HaloLightPanel(hud.GetComponent<UnityEngine.UIElements.UIDocument>().rootVisualElement, m_Input, m_Halo);
+                }
+                m_LightPanel?.Refresh(m_OwnedLightEnabled);
+            }
+            m_Halo.LightingSettings = Role == MultiplayerRole.ClientOwned ? m_Input.LightingSettings : state.HaloLightingSettings;
             m_Motor.ApplyStanceCapsule(state.Stance);
             m_Audio?.Update(ghost, transform, Role == MultiplayerRole.ClientOwned, Time.deltaTime);
             bool jumped = ghost.LastJumpTick != 0 &&
@@ -235,6 +254,7 @@ namespace Unity.MP_FPS
 
         public override void OnGhostPreDestroy()
         {
+            m_LightPanel?.Dispose(); m_LightPanel = null;
             m_Audio?.Stop();
             GameManager.Instance?.SoundSystem?.Stop(m_RifleBodySound, .025f);
             GameManager.Instance?.SoundSystem?.Stop(m_RifleSnapSound, .015f);
