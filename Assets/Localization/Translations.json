@@ -783,5 +783,16 @@
   "Permanent: all halo magazine capacities +40%. Upgrades do not grant free ammunition.": "所有光环弹容量永久提高 40%。升级不会凭空补充弹药。",
   "ROOT RESERVE / OXYGEN DRAIN -25% / SPEED -10%": "根须储备 / 耗氧 -25% / 移速 -10%",
   "ADRENAL RUSH / SPEED +15% / THIRST +50%": "肾上腺兴奋 / 移速 +15% / 耗水 +50%",
-  "NEURAL OVERDRIVE / FIRE INTERVAL -20% / THIRST +75%": "神经超频 / 开火间隔 -20% / 耗水 +75%"
+  "NEURAL OVERDRIVE / FIRE INTERVAL -20% / THIRST +75%": "神经超频 / 开火间隔 -20% / 耗水 +75%",
+  "HALO LIGHTING": "光环照明",
+  "EVERYDAY": "日常照明",
+  "AIM PREVIEW": "瞄准预览",
+  "LIGHT RANGE": "照明范围",
+  "LIGHT INTENSITY": "照明强度",
+  "AIM INTENSITY": "瞄准强度",
+  "RESTORE DEFAULTS": "恢复默认",
+  "{0:0.0} m": "{0:0.0} 米",
+  "Release L to close. Tap L to switch the light. Changes are saved automatically.": "松开 L 关闭，短按 L 开关灯。调整会自动保存。",
+  "AIM LIGHT RANGE": "瞄准照明范围",
+  "{0:0} m": "{0:0} 米"
 }

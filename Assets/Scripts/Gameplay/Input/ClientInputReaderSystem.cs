@@ -78,23 +78,23 @@ public partial class ClientInputReaderSystem : SystemBase
 
             if (_dollSingerInput != null)
             {
-                var playerInput = new PlayerInput();
+                var playerInput = new PlayerInput { HaloLightingSettings = _dollSingerInput.LightingSettings };
                 bool canRead = !blocked && _dollSingerInput.CanReadPlayerInput;
                 playerInput.SetFlag(PlayerInput.InputFlag.HaloLightDisabled,
                     !_dollSingerPresentation.ReadOwnedLight(canRead));
                 playerInput.FreeLooking = _dollSingerPresentation.UpdateOwnedLook(
                     ref _accumulatedLook, out playerInput.FreeLookOffset, !canRead);
-                playerInput.Lean = canRead && !_dollSingerPresentation.IsThirdPerson
+                playerInput.Lean = (canRead || _dollSingerInput.LightAdjusting) && !_dollSingerPresentation.IsThirdPerson
                     ? _dollSingerPresentation.OwnedLeanAmount : 0f;
                 playerInput.MoveInput = canRead ? _dollSingerInput.Move : Vector2.zero;
                 playerInput.SetStance(_dollSingerInput.Stance);
                 playerInput.SetFlag(PlayerInput.InputFlag.Jump, canRead && _dollSingerInput.JumpPressed);
                 playerInput.SetFlag(PlayerInput.InputFlag.Sprint, canRead && _dollSingerInput.SprintHeld);
-                playerInput.SetFlag(PlayerInput.InputFlag.Aim, canRead && _dollSingerInput.AimHeld && !playerInput.FreeLooking);
+                playerInput.SetFlag(PlayerInput.InputFlag.Aim, !blocked && (_dollSingerInput.LightAdjusting ? _dollSingerInput.LightPreviewAiming : canRead && _dollSingerInput.AimHeld) && !playerInput.FreeLooking);
                 playerInput.SetFlag(PlayerInput.InputFlag.ThirdPerson, _dollSingerPresentation.IsThirdPerson);
                 var equipped = EntityManager.GetComponentData<PredictedPlayerGhost>(currentLocalPlayer);
                 var weapon = WeaponManager.Instance.WeaponRegistry.GetWeaponData(equipped.EquippedWeaponID);
-                playerInput.SetFlag(PlayerInput.InputFlag.Shoot, playerInput.Aim &&
+                playerInput.SetFlag(PlayerInput.InputFlag.Shoot, canRead && playerInput.Aim &&
                     (weapon != null && !weapon.Automatic ? _dollSingerInput.FirePressed : _dollSingerInput.FireHeld));
                 playerInput.SetFlag(PlayerInput.InputFlag.EquipHalo, canRead && _dollSingerInput.WeaponSlotPressed == 1);
                 playerInput.SetFlag(PlayerInput.InputFlag.EquipRevolver, canRead && _dollSingerInput.WeaponSlotPressed == 2);

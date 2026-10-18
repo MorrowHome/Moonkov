@@ -31,6 +31,29 @@ namespace Unity.MP_FPS.DollSinger
         public bool FireHeld { get; private set; }
         public bool ViewPressed { get; private set; }
         public bool LightPressed { get; private set; }
+        private HaloLightPress lightPress;
+        private bool suppressFireUntilRelease;
+        public bool LightAdjusting => lightPress.Adjusting;
+        public bool LightPreviewAiming { get; set; }
+        public uint LightingSettings { get; set; }
+        private uint savedLightingSettings;
+        private const string LightingPreference = "Moonkov.HaloLighting";
+
+        public void CancelLightAdjustment()
+        {
+            if (LightAdjusting) suppressFireUntilRelease = true;
+            lightPress.Cancel();
+            SaveLighting();
+        }
+
+        private void SaveLighting()
+        {
+            LightingSettings = HaloLighting.Sanitize(LightingSettings);
+            if (savedLightingSettings == LightingSettings) return;
+            savedLightingSettings = LightingSettings;
+            PlayerPrefs.SetInt(LightingPreference, (int)LightingSettings);
+            PlayerPrefs.Save();
+        }
         public bool ReloadPressed { get; private set; }
         public int WeaponSlotPressed { get; private set; }
         public bool AltHeld { get; private set; }
@@ -42,6 +65,8 @@ namespace Unity.MP_FPS.DollSinger
 
         private void OnEnable()
         {
+            LightingSettings = savedLightingSettings = HaloLighting.Sanitize((uint)PlayerPrefs.GetInt(LightingPreference, 0));
+            lightPress.Cancel();
             previousLock = Cursor.lockState;
             previousVisible = Cursor.visible;
             wasBlocked = IsGameplayBlocked;
@@ -61,6 +86,7 @@ namespace Unity.MP_FPS.DollSinger
             ClearFrame();
             if (IsGameplayBlocked)
             {
+                CancelLightAdjustment();
                 wasBlocked = true;
                 SetCapture(false);
                 return;
@@ -75,7 +101,29 @@ namespace Unity.MP_FPS.DollSinger
             var mouse = Mouse.current;
             if (keyboard != null && keyboard.escapeKey.wasPressedThisFrame)
             {
+                CancelLightAdjustment();
                 SetCapture(false);
+                return;
+            }
+            bool wasAdjusting = LightAdjusting;
+            bool toggleLight = lightPress.Step(keyboard != null && keyboard.lKey.wasPressedThisFrame,
+                keyboard != null && keyboard.lKey.isPressed, Time.unscaledTime,
+                Application.isFocused && (CanReadPlayerInput || wasAdjusting));
+            if (LightAdjusting)
+            {
+                if (!wasAdjusting)
+                {
+                    LightPreviewAiming = mouse != null && mouse.rightButton.isPressed;
+                    SetCapture(false);
+                }
+                AimHeld = LightPreviewAiming;
+                return;
+            }
+            if (wasAdjusting)
+            {
+                SaveLighting();
+                suppressFireUntilRelease = true;
+                SetCapture(true);
                 return;
             }
             if (!CanReadPlayerInput)
@@ -98,7 +146,7 @@ namespace Unity.MP_FPS.DollSinger
                 Stance = keyboard.leftCtrlKey.isPressed ? DollSingerStance.Crouching :
                     keyboard.xKey.isPressed && toggledStance == DollSingerStance.Standing ? DollSingerStance.Tiptoe : toggledStance;
                 ViewPressed = keyboard.vKey.wasPressedThisFrame;
-                LightPressed = keyboard.lKey.wasPressedThisFrame;
+                LightPressed = toggleLight;
                 ReloadPressed = keyboard.rKey.wasPressedThisFrame;
                 WeaponSlotPressed = keyboard.digit1Key.wasPressedThisFrame ? 1 :
                     keyboard.digit2Key.wasPressedThisFrame ? 2 : keyboard.digit3Key.wasPressedThisFrame ? 3 : 0;
@@ -140,6 +188,13 @@ namespace Unity.MP_FPS.DollSinger
                     Stance = toggledStance;
                 if (gamepad.rightShoulder.isPressed && toggledStance == DollSingerStance.Standing) Stance = DollSingerStance.Tiptoe;
             }
+            if (suppressFireUntilRelease)
+            {
+                bool held = (mouse != null && mouse.leftButton.isPressed) ||
+                    (gamepad != null && gamepad.rightTrigger.isPressed);
+                FirePressed = FireHeld = false;
+                if (!held) suppressFireUntilRelease = false;
+            }
             Move = Vector2.ClampMagnitude(Move, 1f);
         }
 
@@ -166,11 +221,12 @@ namespace Unity.MP_FPS.DollSinger
 
         private void OnApplicationFocus(bool focused)
         {
-            if (!focused) { toggledStance = DollSingerStance.Standing; SetCapture(false); }
+            if (!focused) { CancelLightAdjustment(); toggledStance = DollSingerStance.Standing; SetCapture(false); }
         }
 
         private void OnDisable()
         {
+            CancelLightAdjustment();
             captured = false;
             lockedLean = 0f;
             ClearFrame();
