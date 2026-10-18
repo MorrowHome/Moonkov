@@ -43,6 +43,11 @@ Shader "MoonEnvironment/Regolith"
         _GeologyStrength("Geological variation", Range(0,1)) = 0.65
         _EjectaBrightness("Fresh ejecta reflectance variation", Range(0,0.4)) = 0.16
         [HideInInspector] _TerrainHolesTexture("Terrain Holes Texture", 2D) = "white" {}
+        [Toggle] _PreserveTerrainPattern("Keep authored Terrain layer pattern", Float) = 0
+        [HideInInspector] _PreservedTerrainControl("Existing low/high layer weights", 2D) = "red" {}
+        [HideInInspector] _PreservedTerrainRect("Terrain world XZ origin / size", Vector) = (0,0,1,1)
+        _PreservedLowTint("Low layer relative linear colour", Vector) = (0.8,0.8,0.8,0)
+        _PreservedHighTint("High layer relative linear colour", Vector) = (1.2,1.2,1.2,0)
     }
     SubShader
     {
@@ -98,8 +103,26 @@ Shader "MoonEnvironment/Regolith"
             float materialNear=MoonMaterialNearWeight(IN.worldPos);
             float3 facies=MoonFacies(IN.worldPos,1-saturate(IN.worldNormal.y),geology,rock);
             float macro=MoonMacro(IN.worldPos)*MoonGeologyTint(geology,materialNear);
+            float3 preservedTint=1;
+            UNITY_BRANCH if (_PreserveTerrainPattern>.5)
+            {
+                // Read each existing Terrain's actual alphamap, including the
+                // expanded tiles. The half-texel mapping matches Terrain/Lit.
+                float2 controlUV=saturate((IN.worldPos.xz-_PreservedTerrainRect.xy)/max(_PreservedTerrainRect.zw,1));
+                controlUV=(controlUV*(_PreservedTerrainControl_TexelSize.zw-1)+.5)
+                    *_PreservedTerrainControl_TexelSize.xy;
+                float2 weights=tex2D(_PreservedTerrainControl,controlUV).rg;
+                weights/=max(weights.x+weights.y,1e-5);
+                preservedTint=weights.x*_PreservedLowTint.rgb+weights.y*_PreservedHighTint.rgb;
+                // Keep the current pattern instead of painting the old noise,
+                // slope and impact colour masks over the restored surface.
+                rock=weights.x;
+                facies=1;
+                macro=1;
+                geology=0;
+            }
             o.Albedo=_Color.rgb*lerp(0.45,lerp(0.38,gray,0.65)*lerp(1,microGray*2,0.18*fineFade)*macro,_DetailStrength);
-            o.Albedo*=_ReflectanceScale*facies;
+            o.Albedo*=_ReflectanceScale*facies*preservedTint;
             // Exposed zones use a separate metre-scale sample. Broad rock plates
             // coexist with fine powder instead of the same grain everywhere.
             float2 bedUV=IN.worldPos.xz/1.15;

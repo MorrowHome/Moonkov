@@ -4,6 +4,10 @@
 
 正式场景：`Assets/MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusGameScene.unity`；出生子场景：同目录 `TheophilusSpawnPointsSubScene.unity`。两者均登记并启用在 Build Settings。原 Apollo12 地图和旧研究场景仅作为历史来源保留，不再维护研究副本。
 
+2026-10-18 月壤表面恢复：正式地图的十块显示 Terrain 改用 `Materials/OriginalRegolith/` 下的专用材质，主色、粗颗粒/细颗粒法线、高度、粗糙度贴图和相位反射参数复制自 `d432063` 对应的 `Materials/LunarRegolith.mat`。当前各块 TerrainData 的 LowTone/HighTone alphamap 直接作为只读混合权重，R8 两张底色仅提取平均色调来保留斑纹分布，不再覆盖旧版颗粒细节；关闭此适配时共享 Regolith shader 保持原行为。没有重绘 TerrainLayer 或 alphamap，没有修改高度、holes、碰撞、扩区、基地、岩石和灯光。由于旧 shader 不使用原生 Terrain/Lit basemap，显示距离设为 8000 m，远处细节由纹理 mip 过滤。当前灯光与后处理保持现状，因此这是月壤表面恢复，并非整个场景回滚。编辑入口：`Tools > Moon Environment > Theophilus > Restore Original Regolith Detail`。
+
+本次材质导入与绑定检查：10/10 块 Terrain 使用恢复材质，全部控制图引用与各自现有 alphamap 一致，Regolith Shader 未报告错误；场景保存差异仅为十块 Terrain 的材质及显示距离，共 20 行替换。未进入 Play、未截图，也未运行构建、性能或多人测试，最终近景材质观感仍由用户验收。
+
 2026-10-18 精细月面从 512×512 m 扩到 1536×1536 m（面积 9 倍）：原中心保持不动，周围新增八块 512 m、2049 高度采样的 Terrain，范围 X=1024–2560、Z=1408–2944。外围继续使用原 4096 m DEM。25 cm 是生成几何的网格间距，原始观测仍为 3 m；新增细小起伏和月坑为确定性合成，不是新增观测数据。新块使用现有 R8 月壤材质／TerrainLayer，在中心边界 32 m 范围衔接原地形，外边界平滑接回 DEM；原中心地形、基地接地和深井洞口资产不改写。
 
 新增 6144 块岩石复用原 `MoonRockLod` 的两套原始／中距／远距共享网格与 18／80／600 m 配置，每块地形一个控制器；不添加每石头 Update。直径至少 0.65 m 的 3326 块岩石使用既有远距简化网格作静态碰撞，小碎石仅显示。新 Terrain 共用显示／碰撞数据；远景显示及碰撞分别复制到 `Terrain/Expanded` 后扩切洞口，原四份 R21 TerrainData 保留。Prefab 实例显式记录 TerrainData 覆盖，避免重开后恢复旧显示地形而发生重叠碎斑。
