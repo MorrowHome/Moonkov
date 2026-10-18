@@ -2,6 +2,9 @@ Shader "Moon/R29 Local Ground Display"
 {
     Properties
     {
+        _SilverSand("Mineral facets: strength / cells per m / density / fade m", Vector) = (0, 8, 0.48, 45)
+        _SilverSheen("Sheen: strength / minimum smoothness / facet spread", Vector) = (0, 0, 1.6, 0)
+
         [MainTexture] _BaseMap("Local base color", 2D) = "white" {}
         [MainColor] _BaseColor("Tint", Color) = (1,1,1,1)
         _RoughnessMap("Local roughness", 2D) = "white" {}
@@ -27,6 +30,8 @@ Shader "Moon/R29 Local Ground Display"
         HLSLINCLUDE
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
         CBUFFER_START(UnityPerMaterial)
+            float4 _SilverSand;
+            float4 _SilverSheen;
             half4 _BaseColor;
             float4 _LocalMean;
             float _NormalStrength, _AtlasUVChannel, _DetailUVChannel;
@@ -68,6 +73,7 @@ Shader "Moon/R29 Local Ground Display"
             TEXTURE2D(_Macro256); SAMPLER(sampler_Macro256);
             TEXTURE2D(_Macro32); SAMPLER(sampler_Macro32);
             TEXTURE2D(_EdgeMask); SAMPLER(sampler_EdgeMask);
+            #define MOON_SILVER_SAND 1
             #include "R29Surface.hlsl"
             half4 R29Fragment(R29Varyings input) : SV_Target
             {

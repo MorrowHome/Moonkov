@@ -5,6 +5,10 @@
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/SurfaceData.hlsl"
 
+#if defined(MOON_SILVER_SAND)
+#include "Assets/MoonEnvironment/Shaders/SilverSand.hlsl"
+#endif
+
 struct R29Attributes
 {
     float4 positionOS : POSITION;
@@ -110,11 +114,18 @@ half4 R29Light(R29Varyings input, half3 albedo, half metallic, half smoothness, 
     SurfaceData surface = (SurfaceData)0;
     surface.albedo = albedo;
     surface.metallic = metallic;
+    #if defined(MOON_SILVER_SAND)
+    surface.smoothness = max(smoothness, _SilverSheen.y);
+    #else
     surface.smoothness = smoothness;
+    #endif
     surface.normalTS = half3(0,0,1);
     surface.occlusion = 1;
     surface.alpha = 1;
     half4 color = UniversalFragmentPBR(data, surface);
+    #if defined(MOON_SILVER_SAND)
+    color.rgb += SilverSandLighting(data);
+    #endif
     color.rgb = MixFog(color.rgb, data.fogCoord);
     return color;
 }
