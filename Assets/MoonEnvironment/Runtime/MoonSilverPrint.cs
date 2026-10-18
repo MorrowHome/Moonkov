@@ -1,8 +1,8 @@
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.RenderGraphModule;
-using UnityEngine.Rendering.RenderGraphModule.Util;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.Experimental.Rendering;
 
 namespace Unity.MP_FPS.Moon
 {
@@ -23,6 +23,14 @@ namespace Unity.MP_FPS.Moon
         [SerializeField, ColorUsage(false)] private Color accentColor = new Color(0, .04f, 1);
         [SerializeField, Range(0, 1)] private float accentStrength = .92f;
         [SerializeField, Range(0, 1)] private float accentThreshold = .22f;
+        [Header("光影与银盐晕光 / Light and halation")]
+        [Tooltip("Bounded local shadow lift. Real black stays black; no temporal exposure pumping.")]
+        [SerializeField, Range(0, 1)] private float localAdaptation = .45f;
+        [SerializeField, Range(0, .5f)] private float halation = .16f;
+        [SerializeField, Range(.5f, .98f)] private float halationThreshold = .78f;
+        [SerializeField, Range(.5f, 4)] private float halationRadius = 1.8f;
+        [Tooltip("World-anchored silver mottling; does not slide over stationary architecture when the camera moves.")]
+        [SerializeField, Range(0, .3f)] private float surfacePatina = .1f;
         [SerializeField] private bool previewInSceneView = true;
 
         private Material runtimeMaterial;
@@ -31,6 +39,8 @@ namespace Unity.MP_FPS.Moon
         private static readonly int TextureId = Shader.PropertyToID("_SilverTexture");
         private static readonly int AccentId = Shader.PropertyToID("_SilverAccent");
         private static readonly int AccentColorId = Shader.PropertyToID("_SilverAccentColor");
+        private static readonly int OpticsId = Shader.PropertyToID("_SilverOptics");
+        private static readonly int SurfaceId = Shader.PropertyToID("_SilverSurface");
 
         public float Intensity { get => intensity; set => intensity = Mathf.Clamp01(value); }
 
@@ -61,6 +71,8 @@ namespace Unity.MP_FPS.Moon
             runtimeMaterial.SetVector(ToneId, new Vector4(exposure, blackPoint, whitePoint, contrast));
             runtimeMaterial.SetVector(TextureId, new Vector4(silverRelief, grain, intensity, 0));
             runtimeMaterial.SetVector(AccentId, new Vector4(accentStrength, accentThreshold, 0, 0));
+            runtimeMaterial.SetVector(OpticsId, new Vector4(halation, halationThreshold, halationRadius, localAdaptation));
+            runtimeMaterial.SetVector(SurfaceId, new Vector4(surfacePatina, 0, 0, 0));
             // Shader performs its art direction in display space; do not implicitly linearize this swatch.
             runtimeMaterial.SetVector(AccentColorId, new Vector4(accentColor.r, accentColor.g, accentColor.b, 1));
             renderer.EnqueuePass(pass);
@@ -77,6 +89,15 @@ namespace Unity.MP_FPS.Moon
         private sealed class SilverPrintPass : ScriptableRenderPass
         {
             private readonly Material grade;
+            private readonly MaterialPropertyBlock properties = new MaterialPropertyBlock();
+            private static readonly int SourceId = Shader.PropertyToID("_BlitTexture");
+            private static readonly int ScaleBiasId = Shader.PropertyToID("_BlitScaleBias");
+            private static readonly int SourceTexelId = Shader.PropertyToID("_SilverSourceTexel");
+            private static readonly int MeterId = Shader.PropertyToID("_SilverMeter");
+            private static readonly int MeterScaleId = Shader.PropertyToID("_SilverMeterScaleBias");
+            private static readonly int DepthId = Shader.PropertyToID("_SilverDepth");
+            private static readonly int DepthScaleId = Shader.PropertyToID("_SilverDepthScaleBias");
+            private static readonly int HasDepthId = Shader.PropertyToID("_SilverHasDepth");
 
             public SilverPrintPass(Material grade)
             {
@@ -84,6 +105,7 @@ namespace Unity.MP_FPS.Moon
                 // Tonemapping is finished, but gameplay damage overlays at 600 retain their warning colors.
                 renderPassEvent = (RenderPassEvent)((int)RenderPassEvent.AfterRenderingPostProcessing - 1);
                 requiresIntermediateTexture = true;
+                ConfigureInput(ScriptableRenderPassInput.Depth);
             }
 
             public override void RecordRenderGraph(RenderGraph renderGraph, ContextContainer frameData)
@@ -95,9 +117,81 @@ namespace Unity.MP_FPS.Moon
                 descriptor.name = "Moon silver print";
                 descriptor.clearBuffer = false;
                 var destination = renderGraph.CreateTexture(descriptor);
-                var parameters = new RenderGraphUtils.BlitMaterialParameters(source, destination, grade, 0);
-                renderGraph.AddBlitPass(parameters, passName: "Moon silver print");
+                // Graph-owned quarter-size buffers serve both the local tone meter and optical halo.
+                // Keep alpha: it holds the extracted highlights independently from mean scene color.
+                descriptor.width = Mathf.Max(1, descriptor.width / 4);
+                descriptor.height = Mathf.Max(1, descriptor.height / 4);
+                descriptor.msaaSamples = MSAASamples.None;
+                descriptor.colorFormat = GraphicsFormat.R16G16B16A16_SFloat;
+                descriptor.filterMode = FilterMode.Bilinear;
+                descriptor.name = "Silver light field";
+                var lightField = renderGraph.CreateTexture(descriptor);
+                descriptor.name = "Silver horizontal blur";
+                var horizontal = renderGraph.CreateTexture(descriptor);
+                descriptor.name = "Silver local light";
+                var localLight = renderGraph.CreateTexture(descriptor);
+                AddPass(renderGraph, source, lightField, TextureHandle.nullHandle, 1, "Silver light extraction");
+                AddPass(renderGraph, lightField, horizontal, TextureHandle.nullHandle, 2, "Silver horizontal blur");
+                AddPass(renderGraph, horizontal, localLight, TextureHandle.nullHandle, 3, "Silver vertical blur");
+                AddPass(renderGraph, source, destination, localLight, 0, "Moon silver print", resources.cameraDepthTexture);
                 resources.cameraColor = destination;
+            }
+
+            private void AddPass(RenderGraph graph, TextureHandle source, TextureHandle destination,
+                TextureHandle meter, int shaderPass, string name, TextureHandle depth = default)
+            {
+                using var builder = graph.AddRasterRenderPass<PassData>(name, out var data);
+                data.source = source;
+                data.destination = destination;
+                data.meter = meter;
+                data.depth = depth;
+                data.material = grade;
+                data.properties = properties;
+                data.shaderPass = shaderPass;
+                var descriptor = graph.GetTextureDesc(source);
+                data.texel = new Vector4(1f / descriptor.width, 1f / descriptor.height, descriptor.width, descriptor.height);
+                builder.UseTexture(source, AccessFlags.Read);
+                if (meter.IsValid()) builder.UseTexture(meter, AccessFlags.Read);
+                if (depth.IsValid()) builder.UseTexture(depth, AccessFlags.Read);
+                builder.SetRenderAttachment(destination, 0, AccessFlags.Write);
+                builder.SetRenderFunc(static (PassData passData, RasterGraphContext context) =>
+                {
+                    var block = passData.properties;
+                    block.Clear();
+                    block.SetTexture(SourceId, passData.source);
+                    block.SetVector(SourceTexelId, passData.texel);
+                    block.SetVector(ScaleBiasId, ScaleBias(context, passData.source, passData.destination));
+                    block.SetFloat(HasDepthId, passData.depth.IsValid() ? 1 : 0);
+                    if (passData.depth.IsValid())
+                    {
+                        block.SetTexture(DepthId, passData.depth);
+                        block.SetVector(DepthScaleId, ScaleBias(context, passData.depth, passData.destination));
+                    }
+                    if (passData.meter.IsValid())
+                    {
+                        block.SetTexture(MeterId, passData.meter);
+                        block.SetVector(MeterScaleId, ScaleBias(context, passData.meter, passData.destination));
+                    }
+                    context.cmd.DrawProcedural(Matrix4x4.identity, passData.material, passData.shaderPass,
+                        MeshTopology.Triangles, 3, 1, block);
+                });
+            }
+
+            private static Vector4 ScaleBias(RasterGraphContext context, TextureHandle source, TextureHandle destination)
+            {
+                RTHandle handle = source;
+                Vector2 scale = handle.useScaling ? (Vector2)handle.rtHandleProperties.rtHandleScale : Vector2.one;
+                bool flip = context.GetTextureUVOrigin(in source) != context.GetTextureUVOrigin(in destination);
+                return flip ? new Vector4(scale.x, -scale.y, 0, scale.y) : new Vector4(scale.x, scale.y, 0, 0);
+            }
+
+            private sealed class PassData
+            {
+                public TextureHandle source, destination, meter, depth;
+                public Material material;
+                public MaterialPropertyBlock properties;
+                public Vector4 texel;
+                public int shaderPass;
             }
         }
     }
