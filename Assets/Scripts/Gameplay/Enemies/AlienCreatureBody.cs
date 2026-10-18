@@ -31,6 +31,7 @@ namespace Unity.MP_FPS
         private CreatureChainPresentation m_ChainView;
         private ChainFluidPresentation m_ChainFluid;
         private BranchFluidPresentation m_BranchFluid;
+        private ArticulatedAlienFluid m_ArticulatedFluid;
         private SpiderPresentation m_SpiderView;
         private AlienCreatureFeedback m_Feedback;
         private SurfaceMotor.Pose m_SpiderPose;
@@ -42,7 +43,7 @@ namespace Unity.MP_FPS
         public Vector3 AimPoint => m_StiltRig != null ? m_StiltRig.Chest : m_FaceRig != null ? m_FaceRig.Centre : m_Chain != null ? m_Chain.Centres[CreatureChain.Rings / 2] : m_Branch != null ? m_Branch.Points[0] : m_SpiderPose.Position;
         public float Scale => m_Scale;
         public int HitboxCount => m_Capsules.Count + m_Spheres.Count;
-        public SkeletonFluidPresentation Fluid => m_ChainFluid?.Fluid ?? m_BranchFluid?.Fluid ?? m_SpiderView?.Fluid;
+        public SkeletonFluidPresentation Fluid => m_ArticulatedFluid?.Fluid ?? m_ChainFluid?.Fluid ?? m_BranchFluid?.Fluid ?? m_SpiderView?.Fluid;
 
         public AlienCreatureBody(Transform owner, AlienCreatureProfile profile, float scale, bool render, int hitLayer)
         {
@@ -106,7 +107,7 @@ namespace Unity.MP_FPS
             if (m_CombatAction == AlienAction.Attached && m_Profile.Species == AlienSpecies.FaceHugger)
             {
                 m_Owner.SetPositionAndRotation(Motor.Current.Position, Motor.Current.Rotation);
-                UpdateRig(Vector2.zero, 0, 0, dt, false, 1); UpdateHitboxes();
+                UpdateRig(Vector2.zero, 0, 0, dt, liquid, 1); UpdateHitboxes();
                 return;
             }
             var pose = Motor.Current;
@@ -138,7 +139,9 @@ namespace Unity.MP_FPS
             m_Clock += dt;
             if (m_StiltRig != null)
             {
+                m_StiltRig.SetVisible(m_Render && !liquid);
                 m_StiltRig.Tick(Motor, m_CombatAction, m_ActionTime, m_WindupDuration, m_StrikeDuration, m_Clock, dt);
+                UpdateArticulatedFluid(liquid, dt);
                 if (m_Render) m_Feedback.Tick(Motor, null, m_CombatAction, dt);
                 return;
             }
@@ -176,7 +179,9 @@ namespace Unity.MP_FPS
                 if (!Motor.Detached && m_Folded) { m_Feet.EndFold(Motor.Current); m_Folded = false; }
                 if (Motor.Detached) m_Feet.TickFolded(Motor.Current, dt);
                 else m_Feet.Tick(Motor, input, speed, yaw, dt);
+                m_FaceRig.SetVisible(m_Render && !liquid);
                 m_FaceRig.Tick(Motor.Current, m_Feet, m_CombatAction, m_ActionTime, m_Clock);
+                UpdateArticulatedFluid(liquid, dt);
                 if (m_Render) m_Feedback.Tick(Motor, m_Feet, m_CombatAction, dt);
             }
             else
@@ -195,6 +200,17 @@ namespace Unity.MP_FPS
                 }
             }
             m_Feedback?.Tick(Motor, m_Feet, m_CombatAction, dt);
+        }
+
+        private void UpdateArticulatedFluid(bool liquid, float dt)
+        {
+            if (!m_Render) return;
+            if (liquid)
+            {
+                m_ArticulatedFluid ??= new ArticulatedAlienFluid(m_Owner, m_Mask, m_Scale, m_StiltRig, m_FaceRig);
+                m_ArticulatedFluid.Draw(Motor, m_Profile.Fluid, dt, m_CombatAction == AlienAction.Attached);
+            }
+            else m_ArticulatedFluid?.Fluid.SetVisible(false);
         }
 
         private void SolveSpiderCombatPose()
@@ -316,6 +332,7 @@ namespace Unity.MP_FPS
             m_Feedback?.Dispose();
             m_FaceRig?.Dispose();
             m_StiltRig?.Dispose();
+            m_ArticulatedFluid?.Release();
             m_ChainFluid?.Release(); m_BranchFluid?.Release(); m_SpiderView?.Release(); m_ChainView?.Release(); m_Branch?.Release();
             if (m_HitRoot) { m_HitRoot.gameObject.SetActive(false); if (Application.isPlaying) Object.Destroy(m_HitRoot.gameObject); else Object.DestroyImmediate(m_HitRoot.gameObject); }
         }

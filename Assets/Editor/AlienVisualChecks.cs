@@ -29,7 +29,8 @@ public static class AlienVisualChecks
             creature.transform.position = new Vector3(0, 1.6f, .12f);
             body = new AlienCreatureBody(creature.transform, profile, profile.Scale, true, LayerMask.NameToLayer("ClientPlayer"));
             body.SetAttachedPose(creature.transform.position, Quaternion.identity);
-            body.SetCombatPresentation(AlienAction.Attached, .5f, 1, 100); body.Tick(Vector3.zero, 0, 0, 1f / 30, 1, false);
+            body.SetCombatPresentation(AlienAction.Attached, .5f, 1, 100);
+            for(int frame=0;frame<16;frame++) body.Tick(Vector3.zero, 0, 0, 1f/60, 1, true);
             var lamp = new GameObject("Preview light"); lamp.transform.SetParent(root.transform, false);
             var light = lamp.AddComponent<Light>(); light.type = LightType.Directional; light.intensity = 2;
             lamp.transform.rotation = Quaternion.Euler(35, -25, 0);

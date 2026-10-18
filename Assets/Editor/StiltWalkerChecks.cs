@@ -95,7 +95,7 @@ public static class StiltWalkerVisualChecks
                 var go=new GameObject(profile.name); go.transform.SetParent(root.transform,false); go.transform.localPosition=new Vector3(i*2.7f,SurfaceMotor.Height*profile.Scale,0);
                 bodies[i]=new AlienCreatureBody(go.transform,profile,profile.Scale,true,LayerMask.NameToLayer("ClientPlayer"));
                 bodies[i].SetCombatPresentation(AlienAction.Roam,0,0,profile.Health);
-                bodies[i].Tick(Vector3.zero,0,0,1f/30,0,false);
+                for(int frame=0;frame<16;frame++) bodies[i].Tick(Vector3.zero,0,0,1f/60,0,true);
             }
             var lamp=new GameObject("Lineup light"); lamp.transform.SetParent(root.transform,false);
             var light=lamp.AddComponent<Light>(); light.type=LightType.Directional; light.intensity=2.5f; lamp.transform.rotation=Quaternion.Euler(35,-25,0);

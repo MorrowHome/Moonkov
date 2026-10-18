@@ -15,6 +15,8 @@ namespace Unity.MP_FPS
         public readonly Vector3[] Tail = new Vector3[TailPoints];
         public Vector3 Centre { get; private set; }
         public float BodyRadius { get; private set; }
+        public Quaternion CoreRotation => m_BodyRotation;
+        public Vector3 CoreRadii { get; private set; }
         private readonly float m_Size;
         private readonly GameObject m_Visual;
         private readonly Transform m_Palm;
@@ -56,6 +58,7 @@ namespace Unity.MP_FPS
             Centre = gripping ? surface.Position + surface.Forward * .12f : pose.Position;
             m_BodyRotation = gripping ? Quaternion.LookRotation(surface.Up, surface.Forward) : pose.Rotation;
             BodyRadius = .17f * size;
+            CoreRadii = new Vector3(.145f, .047f, .21f) * size;
             float curl = action == AlienAction.Windup ? Mathf.Clamp01(age / .65f) : action == AlienAction.Dead ? Mathf.Clamp01(age / .5f) : 0;
             if (!gripping) Centre -= pose.Up * (.055f * curl * size);
             for (int finger = 0; finger < Fingers; finger++)
@@ -116,10 +119,11 @@ namespace Unity.MP_FPS
                         pose.Up * ((curl * .32f + (surface.Up.y < .5f ? .05f : -.12f)) * t * size);
                 }
             }
-            if (!m_Visual) return;
+            if (!m_Visual || !m_Visual.activeSelf) return;
             m_Palm.SetPositionAndRotation(Centre, m_BodyRotation); m_Palm.localScale = Vector3.one * size;
             DrawLimbs(size);
         }
+        public void SetVisible(bool visible) { if (m_Visual) m_Visual.SetActive(visible); }
 
         private GameObject MeshObject(string name, Mesh mesh, Material material)
         {

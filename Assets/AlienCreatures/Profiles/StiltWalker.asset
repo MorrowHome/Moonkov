@@ -38,7 +38,7 @@ MonoBehaviour:
   StiltThickness: 0.085
   StiltStride: 0.85
   StiltStepSeconds: 0.55
-  Liquid: 0
+  Liquid: 1
   LiquidDistance: 24
   MaximumLiquidEnemies: 2
   Chain:

@@ -70,9 +70,9 @@ namespace Unity.MP_FPS
             else if (species == AlienSpecies.Slime) { Branch = BranchCreatureSettings.SlimeDefaults(); Speed = 2.5f; Health = 180; Scale = .8f; }
             else if (species == AlienSpecies.Roots) { Branch = BranchCreatureSettings.RootsDefaults(); Speed = 1.4f; AttackReach = 2.6f; }
             else if (species == AlienSpecies.Spider) { Speed = 5.5f; Scale = .45f; }
-            else if (species == AlienSpecies.FaceHugger) { Speed = 4.8f; Scale = .45f; Health = 65; Damage = 18; Liquid = false; }
+            else if (species == AlienSpecies.FaceHugger) { Speed = 4.8f; Scale = .45f; Health = 65; Damage = 18; Liquid = true; }
             else if (species == AlienSpecies.StiltWalker)
-            { Speed = 3.1f; Scale = 1; Health = 210; Damage = 32; Liquid = false; TurnSpeed = 150; AttackReach = 3.1f; Windup = .95f; Recovery = 1.35f; AttackCooldown = 3.2f; }
+            { Speed = 3.1f; Scale = 1; Health = 210; Damage = 32; Liquid = true; TurnSpeed = 150; AttackReach = 3.1f; Windup = .95f; Recovery = 1.35f; AttackCooldown = 3.2f; }
             else Speed = 3.2f;
             Fluid = species == AlienSpecies.Spider ? new SpiderFluidSettings() : species == AlienSpecies.Centipede ?
                 ProceduralMenagerieExperiment.CentipedeFluidDefaults() : IsChain ? ChainFluidPresentation.Defaults(IsLarva) : BranchFluidPresentation.Defaults(BranchSpecies);

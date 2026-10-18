@@ -252,7 +252,6 @@ namespace Unity.MP_FPS
                 m_AmbushEnabled ? profile.SpiderStrikeSeconds : m_Pattern.Active);
             if (Time.unscaledTime >= m_NextLod)
             { m_Liquid = WantsLiquid(); m_NextLod = Time.unscaledTime + .35f; }
-            if (state.Action == AlienAction.Attached) m_Liquid = false;
             m_PresentationElapsed += Mathf.Clamp(deltaTime, 0, .06f);
             float interval = !Application.isPlaying || m_Liquid ? 0 : PresentationInterval(Camera.main, transform.position,
                 presentationDistance * Mathf.Max(1, m_Body.Scale));

@@ -12,6 +12,16 @@
 - 蜘蛛伏击使用 `SpiderAmbushRange`、`SpiderWindup`、`SpiderStrikeSeconds`、`SpiderRecovery`。Boss 使用 `Boss`、`EnrageHealthFraction`。
 - 刷新数量、次数、位置和延迟在正式地图 `Moon Raid` 的 `AlienEncounterSettings` 上调整，不在敌人预制体上。
 
+## 新身体的液体接入
+
+长脚窥行者、长颈变体和抱脸虫默认开启 `Liquid`，使用原有 `SkeletonFluidPresentation` GPU 粒子解算、密度体积重建与 `FluidFilaments` 黏滞拉丝。`ArticulatedAlienFluid` 把长腿、躯干、手指和尾巴的实际关节转换为连续的加权体积引导，不以实体骨架或湿润材质替代流体。
+
+抱脸状态也保留液体；进入/离开附着时按当前引导重置粒子，避免把旧位置的液体拖过玩家头部。实体骨架继续作为超距、GPU 数量预算或设备能力不足时的回退；服务端只计算组织命中体，不创建流体资源。现有最近两只、24 m 的默认预算仍生效。
+
+`Profile → Fluid` 继续控制黏度、吸引、质量、表面阈值、拉丝密度、断裂与材质；`LiquidDistance` 和 `MaximumLiquidEnemies` 控制预算。等比例图和抱脸图已替换成实际液体渲染。
+
+定向入口 `Check articulated GPU fluid integration` 覆盖三个 Profile 的移动、液体/实体切换和释放，以及抱脸附着：4125 / 3602 / 6304 个粒子，附着时仍为 6304；四项读取均为 0 个非有限值。报告位于 `Library/BuildValidation/AlienIntegration/articulated-fluid.json`。离屏渲染不等同于真实 Host/第二客户端、第一人称视野遮挡、持续运行性能和目标机验收。
+
 ## 直立异形：长脚窥行者
 
 新增两个可独立调参的预制体：`XenoStiltWalker.prefab` → `StiltWalker.asset`（约 3.2 m），`XenoStiltWatcher.prefab` → `StiltWatcher.asset`（约 4.2 m）。两者属于 `StiltWalker` 物种，使用细长颈躯、反折长腿、垂臂和狭窄骨面；高度不是把地爬骨架整体拉大。灰色 1.8 m 人形仅为预览比例参照。

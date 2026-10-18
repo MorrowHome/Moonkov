@@ -15,6 +15,8 @@ namespace Unity.MP_FPS
         public readonly float[] Radii = new float[Segments];
         public Vector3 Chest { get; private set; }
         public Vector3 Head { get; private set; }
+        public Quaternion HeadRotation { get; private set; }
+        public Vector3 HeadRadii => new Vector3(.105f * m_Scale, .06f * Height, .105f * m_Scale);
         public readonly float Height, Thickness, CollisionRadius;
         private readonly AlienCreatureProfile m_Profile;
         private readonly float m_Scale;
@@ -122,13 +124,15 @@ namespace Unity.MP_FPS
                 float minimum = ground.y + Radii[i] + .01f;
                 A[i].y = Mathf.Max(minimum, A[i].y); B[i].y = Mathf.Max(minimum, B[i].y);
             }
-            if (!m_Root) return;
+            HeadRotation = Quaternion.LookRotation(forward, up) * Quaternion.Euler(8 + rake * 12, -10, -12);
+            if (!m_Root || !m_Root.activeSelf) return;
             Draw();
-            var rotation = Quaternion.LookRotation(forward, up) * Quaternion.Euler(8 + rake * 12, -10, -12);
-            m_Head.SetPositionAndRotation(Head, rotation); m_Head.localScale = new Vector3(.105f * m_Scale, .06f * Height, .105f * m_Scale);
+            var rotation = HeadRotation;
+            m_Head.SetPositionAndRotation(Head, rotation); m_Head.localScale = HeadRadii;
             m_MaskFace.SetPositionAndRotation(Head + forward * .075f * m_Scale, rotation);
             m_MaskFace.localScale = new Vector3(.075f * m_Scale, .052f * Height, .055f * m_Scale);
         }
+        public void SetVisible(bool visible) { if (m_Root) m_Root.SetActive(visible); }
         private Vector3 Foot(Vector3 target)
         {
             return UnityEngine.Physics.Raycast(target + Vector3.up * .5f, Vector3.down, out var hit, 1.2f, m_Mask,
