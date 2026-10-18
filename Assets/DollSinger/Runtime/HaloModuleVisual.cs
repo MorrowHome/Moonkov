@@ -7,9 +7,9 @@ namespace Unity.MP_FPS.DollSinger
     // buffers and renderer are reused while aiming, charging and firing.
     public sealed class HaloModuleVisual : MonoBehaviour
     {
-        private readonly Vector3[] vertices = new Vector3[1024];
-        private readonly Color[] colors = new Color[1024];
-        private readonly int[] triangles = new int[1536];
+        private readonly Vector3[] vertices = new Vector3[2048];
+        private readonly Color[] colors = new Color[2048];
+        private readonly int[] triangles = new int[3072];
         private Mesh mesh;
         private Material material;
         private HaloModule modules;
@@ -38,7 +38,7 @@ namespace Unity.MP_FPS.DollSinger
             renderer.shadowCastingMode = ShadowCastingMode.Off; renderer.receiveShadows = false;
         }
 
-        public void SetState(byte mask, int rounds, int magazine, bool reload, float chargeProgress, int targetAmmo, uint tick, int burstIndex = 0)
+        public void SetState(ushort mask, int rounds, int magazine, bool reload, float chargeProgress, int targetAmmo, uint tick, int burstIndex = 0)
         {
             modules = (HaloModule)mask; ammo = rounds; capacity = Mathf.Max(1, magazine);
             reloading = reload; progress = Mathf.Clamp01(chargeProgress); target = Mathf.Max(rounds, targetAmmo);
@@ -121,14 +121,20 @@ namespace Unity.MP_FPS.DollSinger
                 Diamond(radius+.015f,270,.032f,Fade(Violet,.85f));
                 Arc(radius+.015f,252,36,.006f,Fade(Violet,.4f));
             }
-            if ((modules & (HaloModule.BiologicalResearch | HaloModule.AlienSurge)) != 0)
+            if((modules&HaloModule.BiologicalCapacity)!=0)for(int i=0;i<8;i++)Arc(radius+.09f,i*45+4,32,.008f,Fade(Gold,.7f),4);
+            if((modules&HaloModule.BiologicalCharging)!=0)for(int i=0;i<4;i++)Line(Polar(radius-.04f,i*90),Polar(radius+.07f,i*90+10),.009f,Fade(Cyan,.7f));
+            if((modules&HaloModule.BiologicalStability)!=0)for(int i=0;i<4;i++)Arc(radius-.06f,i*90+20,35,.008f,Fade(Cyan,.6f),4);
+            if ((modules & (HaloModule.BiologicalResearch | HaloModule.AlienSurge | HaloModule.FoodEffectMask)) != 0)
             {
                 float pulse = .75f + .15f * Mathf.Sin(elapsed * 3) + flash * .1f;
+                var effect=(AlienFoodEffect)((ushort)modules>>12);
+                Color bio=effect==AlienFoodEffect.Regeneration || effect==AlienFoodEffect.OxygenReserve ? new Color(.4f,1,.6f) :
+                    effect==AlienFoodEffect.VenomPower || effect==AlienFoodEffect.ContractilePower ? new Color(1,.4f,.3f) : Violet;
                 for (int i = 0; i < 6; i++)
                 {
                     float angle = i * 60 + elapsed * 8;
-                    Arc(radius + .06f, angle + 8, 40, .014f, Fade(Violet, pulse), 6);
-                    Diamond(radius + .06f, angle, .021f, Fade(Violet, pulse));
+                    Arc(radius + .06f, angle + 8, 40, .014f, Fade(bio, pulse), 6);
+                    Diamond(radius + .06f, angle, .021f, Fade(bio, pulse));
                 }
             }
             mesh.Clear(false);

@@ -25,7 +25,7 @@ public static class AlienHarvestChecks
         var loot=new RaidLootContainers();
         var boss=AlienHarvest.Create(true,new System.Random(1));
         Check(boss.Validate()==InventoryError.None && boss.Count("alien_raw_meat")==4 && boss.Count("alien_neural_core")==1,"boss harvest");
-        int id=loot.Drop(boss,default,characterIndex:-1);
+        int id=loot.DropHarvest(boss,default);
         Check(loot.RequiresDissection(id),"sealed remains");
         var first=new RaidInventoryState();var second=new RaidInventoryState();
         first.BeginDissection(id,0,default,0);second.BeginDissection(id,0,default,0);
@@ -37,7 +37,7 @@ public static class AlienHarvestChecks
         Check(first.OpenedLootId==id && second.OpenedLootId==id && version==2 && loot.Containers[id].Version==version,"one shared harvest");
         foreach(int interruption in new[]{0,1,2})
         {
-            int fresh=loot.Drop(AlienHarvest.Create(false,new System.Random(5)),default,characterIndex:-1);
+            int fresh=loot.DropHarvest(AlienHarvest.Create(false,new System.Random(5)),default);
             first.BeginDissection(fresh,10,default,1);
             first.RefreshDissection(loot,interruption!=0,interruption==1 ? new Unity.Mathematics.float3(1,0,0) : default,
                 interruption==2 ? 2u : 1u,16);
@@ -96,9 +96,64 @@ public static class AlienHarvestChecks
             Check(weapon.Damage==10,"shared weapon asset unchanged");
         }
         finally {Object.DestroyImmediate(registry);Object.DestroyImmediate(weapon);}
+        CheckSpeciesAndBranches();
         Directory.CreateDirectory("Library/BuildValidation/AlienHarvest");
         File.WriteAllText("Library/BuildValidation/AlienHarvest/report.json",new JObject { ["passed"]=s_Passed,["scope"]="Edit Mode rules and transport; no Play or multiplayer acceptance" }.ToString());
         Debug.Log("Alien harvest checks passed: "+s_Passed);
+    }
+
+    private static void CheckSpeciesAndBranches()
+    {
+        var names=Enum.GetNames(typeof(AlienSpecies));
+        Check(names.Length==AlienBiology.Organs.Length,"one organ definition per species");
+        foreach(string species in names)
+        {
+            var organ=AlienBiology.Species(species);
+            Check(organ!=null && InventoryCatalog.Get(organ.Code)!=null,"registered species "+species);
+            foreach(bool boss in new[]{false,true})
+            {
+                var cache=AlienHarvest.Create(boss,new System.Random(1),species);
+                Check(cache.Validate()==InventoryError.None && cache.Count(organ.Code)==1 && cache.Items.Where(i=>i.Code.StartsWith("alien_")).All(i=>i.FoundInRaid),"species harvest "+species+boss);
+            }
+            var carried=InventoryGraph.Create(false,false);carried.AddSupply(organ.Code,1);
+            var health=default(PredictedPlayerGhost);RaidHealth.Initialize(ref health);health.Energy=30;health.Hydration=100;health.Satiety=0;
+            RaidHealth.Set(ref health,BodyPart.Chest,50);
+            Check(RaidNutrition.Consume(ref health,carried,carried.Items.Single(i=>i.Code==organ.Code).Id,carried.Version)==InventoryError.None,"species organ use "+species);
+            if(organ.Food.EffectSeconds>0)
+            {
+                Check(health.AlienFoodEffect==organ.Food.Effect && health.AlienFoodEffectSeconds==organ.Food.EffectSeconds,"replicated activity "+species);
+                float hp=health.CurrentHealth;
+                RaidNutrition.Tick(ref health,2,100,100,100,10000,0,0,1);
+                if(species=="Leech")Check(Mathf.Abs(health.CurrentHealth-hp-2)<.01f,"regeneration heals living tissue");
+                if(species=="Centipede")Check(Mathf.Abs(health.CurrentHealth-hp+1.2f)<.02f,"venom damage is authoritative");
+                if(species=="Slime")Check(Mathf.Abs(RaidHealth.Damage(ref health,BodyPart.LeftArm,20,2)-15)<.01f,"gel combat reduction");
+                RaidNutrition.Tick(ref health,100,10000,10000,10000,10000,0,0,3);
+                Check(health.AlienFoodEffectSeconds==0 && health.AlienFoodEffect==AlienFoodEffect.None,"species activity expires "+species);
+            }
+        }
+        var graph=InventoryGraph.Create(starter:false);graph.HaloResearchLevel=1;
+        foreach(var research in AlienBiology.Research.Where(r=>r.Branch!=0))
+        {
+            for(int i=0;i<research.Materials.Length;i++)graph.AddSupply(research.Materials[i],research.Quantities[i],"stash");
+            var command=new ShopCommand {RequestId=Guid.NewGuid().ToString("D"),ExpectedVersion=graph.Version,Operation=ShopOperation.Research,Code=research.Code,Quantity=1};
+            Check(ShopRules.Apply(graph,command,out var next)==null && research.Unlocked(next),"branch unlock "+research.Code);graph=next;
+        }
+        var decoded=RaidInventoryTransport.Decode(RaidInventoryTransport.Encode(graph));
+        Check(decoded.HaloResearchBranches==7 && decoded.HaloResearchLevel==1 && decoded.ExtractLoadout().HaloResearchBranches==7,"old firepower and new branches survive save/deploy");
+        var registry=ScriptableObject.CreateInstance<WeaponRegistry>();var weapon=ScriptableObject.CreateInstance<WeaponData>();
+        weapon.MagazineSize=10;weapon.ReloadTime=4;weapon.SpreadDegrees=10;weapon.Damage=10;weapon.CooldownInMs=1;
+        registry.Weapons=new List<WeaponData>{weapon,weapon,weapon,weapon,weapon,weapon};
+        try
+        {
+            foreach(uint id in new[]{DollSingerWeapons.Halo,DollSingerWeapons.Revolver,DollSingerWeapons.Shotgun,DollSingerWeapons.Sniper})
+            {
+                var result=registry.GetWeaponData(id,(ushort)(HaloModule.BiologicalCapacity|HaloModule.BiologicalCharging|HaloModule.BiologicalStability));
+                Check(result.MagazineSize==14 && Mathf.Abs(result.ReloadTime-3)<.01f && Mathf.Abs(result.SpreadDegrees-7)<.01f,"branch stats "+id);
+                Check(Mathf.Abs(registry.GetWeaponData(id,(ushort)((int)AlienFoodEffect.ContractilePower<<12)).Damage-14)<.01f,"contractile power "+id);
+                Check(Mathf.Abs(registry.GetWeaponData(id,(ushort)((int)AlienFoodEffect.NeuralOverdrive<<12)).CooldownInMs-.8f)<.01f,"neural firing interval "+id);
+            }
+        }
+        finally {Object.DestroyImmediate(registry);Object.DestroyImmediate(weapon);}
     }
 
     public static void RunBatch()

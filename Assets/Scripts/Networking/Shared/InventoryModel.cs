@@ -92,7 +92,9 @@ namespace Unity.MP_FPS.Inventory
                 new ItemDefinition("sling_pack", "B-03 Sling pack", ItemKind.Backpack, 2, 2, 1, .45f, new InventoryRegion("main", 3, 4)),
                 new ItemDefinition("cargo_pack", "B-12 Cargo pack", ItemKind.Backpack, 4, 4, 1, 2.8f, new InventoryRegion("main", 6, 7))
             };
-            var result = new Dictionary<string, ItemDefinition>(); foreach (var def in defs) result.Add(def.Code, def); return result;
+            var result = new Dictionary<string, ItemDefinition>(); foreach (var def in defs) result.Add(def.Code, def);
+            foreach(var organ in AlienBiology.Organs)result.Add(organ.Code,new ItemDefinition(organ.Code,organ.Name,ItemKind.Food,1,1,3,.2f));
+            return result;
         }
         public static ItemDefinition Get(string code) => code != null && Definitions.TryGetValue(code, out var value) ? value : null;
     }
@@ -116,10 +118,11 @@ namespace Unity.MP_FPS.Inventory
         public int Version = 1, StashRows = 80, LootRows = 5;
         public int WeaponKitVersion;
         public int HaloResearchLevel;
+        public int HaloResearchBranches;
         public List<InventoryItem> Items = new List<InventoryItem>();
         public InventoryItem Find(string id) => Items.Find(i => i.Id == id);
         public InventoryGraph Clone() => new InventoryGraph { Version = Version, StashRows = StashRows, LootRows = LootRows, WeaponKitVersion = WeaponKitVersion,
-            HaloResearchLevel = HaloResearchLevel, Items = Items.ConvertAll(i => i.Clone()) };
+            HaloResearchLevel = HaloResearchLevel, HaloResearchBranches = HaloResearchBranches, Items = Items.ConvertAll(i => i.Clone()) };
         public int Rows(string parent, InventoryRegion region) => Find(parent)?.Code == "stash" ? StashRows : Find(parent)?.Code == "loot" ? LootRows : region.Height;
         public IEnumerable<InventoryItem> Children(string parent, string region = null) => Items.Where(i => i.Parent == parent && (region == null || i.Region == region));
         public string RootOf(string id)
@@ -279,7 +282,7 @@ namespace Unity.MP_FPS.Inventory
             // A world-loot snapshot joins two owners; account/actor graphs keep the
             // original limit. The extra loot root must also fit a maximum-sized drop.
             int limit=Items!=null && Items.Any(i=>i?.Id=="loot") ? InventoryCatalog.MaxItems*2 : InventoryCatalog.MaxItems;
-            if (Version < 1 || HaloResearchLevel < 0 || HaloResearchLevel > 1 || Items == null || Items.Count > limit || StashRows < 1 || StashRows > 4096 || LootRows < 1 || LootRows > 24) return InventoryError.Invalid;
+            if (Version < 1 || HaloResearchLevel < 0 || HaloResearchLevel > 1 || HaloResearchBranches < 0 || HaloResearchBranches > 7 || Items == null || Items.Count > limit || StashRows < 1 || StashRows > 4096 || LootRows < 1 || LootRows > 24) return InventoryError.Invalid;
             var ids = new HashSet<string>();
             foreach (var item in Items)
             {

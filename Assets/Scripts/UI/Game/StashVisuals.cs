@@ -4,7 +4,8 @@ using UnityEngine.UIElements;
 namespace Unity.MP_FPS.Client
 {
     public enum StashArtKind { None, Dust, Alloy, Cell, Halo, Outfit, Helmet, Rifle, Pistol, ChestRig, Backpack, HaloRifle, HaloRevolver, HaloShotgun, Medical, HaloSniper, Ration, Water, HaloCapacitor, HaloChargeBridge, HaloFocusLens, HaloFanArray, HaloPulseController, HaloHitMarker, OxygenCanister,
-        MedicalGel, TraumaKit, EnergyGel, ProteinBar, Electrolyte, OxygenReserve, ScoutRig, FieldRig, SlingPack, CargoPack, CircuitBoard, CopperCoil, CeramicPlate, OpticalSensor, DataDrive, HeliumSample, QuantumCore, BlackBox, AlienMeat, AlienOrgan, AlienTissue }
+        MedicalGel, TraumaKit, EnergyGel, ProteinBar, Electrolyte, OxygenReserve, ScoutRig, FieldRig, SlingPack, CargoPack, CircuitBoard, CopperCoil, CeramicPlate, OpticalSensor, DataDrive, HeliumSample, QuantumCore, BlackBox, AlienMeat, AlienOrgan, AlienTissue,
+        AlienSpider, AlienSnake, AlienCaterpillar, AlienTentacle, AlienCentipede, AlienLeech, AlienSlime, AlienRoots, AlienFaceHugger }
 
     // Small original vector illustrations, kept sharp at the shared PanelSettings scale.
     [UxmlElement]
@@ -79,6 +80,10 @@ namespace Unity.MP_FPS.Client
                 case StashArtKind.AlienMeat: AlienMeat(); break;
                 case StashArtKind.AlienOrgan: AlienOrgan(); break;
                 case StashArtKind.AlienTissue: AlienMeat(true); break;
+                case StashArtKind.AlienSpider:case StashArtKind.AlienSnake:case StashArtKind.AlienCaterpillar:
+                case StashArtKind.AlienTentacle:case StashArtKind.AlienCentipede:case StashArtKind.AlienLeech:
+                case StashArtKind.AlienSlime:case StashArtKind.AlienRoots:case StashArtKind.AlienFaceHugger:
+                    SpeciesOrgan((int)m_Kind-(int)StashArtKind.AlienSpider);break;
                 case StashArtKind.Halo: Halo(); break;
                 case StashArtKind.Outfit: Outfit(); break;
                 case StashArtKind.Helmet: Helmet(); break;

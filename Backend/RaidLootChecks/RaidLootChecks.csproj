@@ -3,6 +3,7 @@
   <ItemGroup>
     <Compile Include="../../Assets/Scripts/Networking/Shared/InventoryModel.cs" Link="Shared/InventoryModel.cs" />
     <Compile Include="../../Assets/Scripts/Networking/Shared/ConsumableCatalog.cs" Link="Shared/ConsumableCatalog.cs" />
+    <Compile Include="../../Assets/Scripts/Networking/Shared/AlienBiology.cs" Link="Shared/AlienBiology.cs" />
     <Compile Include="../../Assets/Scripts/Networking/Shared/BatteryEnergy.cs" Link="Shared/BatteryEnergy.cs" />
     <Compile Include="../../Assets/DollSinger/Runtime/HaloModule.cs" Link="Shared/HaloModule.cs" Condition="Exists('../../Assets/DollSinger/Runtime/HaloModule.cs')" />
     <Compile Include="../../Assets/Scripts/Networking/Shared/HaloModules.cs" Link="Shared/HaloModules.cs" Condition="Exists('../../Assets/Scripts/Networking/Shared/HaloModules.cs')" />

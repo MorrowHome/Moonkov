@@ -40,7 +40,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Backend/Start-Backend.ps1 -B
 powershell -NoProfile -ExecutionPolicy Bypass -File Backend/Start-Backend.ps1 -Background -Update
 ```
 
-`-Update` 仅停止项目 PID 文件记录、且命令行匹配本项目后端 DLL 的进程，保留账号数据库、服务器密钥和监听地址；使用 `-Lan` 开放的服务更新时仍带 `-Lan`。启动器等待数据库健康检查通过，并确认 `halo-research-v1` 能力后才报告就绪。受服务器密钥保护的 `/internal/health` 返回 `build` 和 `features`，可识别异形掉落及永久光环研究的新后端。
+`-Update` 仅停止项目 PID 文件记录、且命令行匹配本项目后端 DLL 的进程，保留账号数据库、服务器密钥和监听地址；使用 `-Lan` 开放的服务更新时仍带 `-Lan`。启动器等待数据库健康检查通过，并确认 `species-harvest-v2` 能力后才报告就绪。受服务器密钥保护的 `/internal/health` 返回 `build` 和 `features`，可识别异形掉落及永久光环研究的新后端。
 
 ## 异形掉落与联机研究验证（2026-10-18）
 
@@ -58,7 +58,7 @@ Unity 空闲 Edit Mode 下可通过现有 Pipeline 运行真实 UDP 检查：
 unity command run_script Tools/Validation/AlienHarvestTransportChecks.cs --project-path E:/UnityProjects/FPS_Template --caller plugin --skill unity-cli
 ```
 
-它创建 1 个服务器 World 和 2 个独立客户端 World，使用现有生成的 RPC 序列化器及实际 `ServerGameSystem` 请求处理方法，验证解剖等待、受伤中断、完成后共享搜索、并发争抢、服务器食用及重复请求。测试清理临时 World、UDP 驱动和临时地图对象，结果保存在 `Library/BuildValidation/AlienHarvest/transport.txt`。本轮双账号 HTTP 检查 36 项、UDP 检查 13 项通过；这不代替正式地图 Play、真实角色 Ghost 的画面观察或跨设备网络验收。
+它创建 1 个服务器 World 和 2 个独立客户端 World，使用现有生成的 RPC 序列化器及实际 `ServerGameSystem` 请求处理方法，验证解剖等待、受伤中断、完成后共享搜索、并发争抢、服务器食用及重复请求。测试清理临时 World、UDP 驱动和临时地图对象，结果保存在 `Library/BuildValidation/AlienHarvest/transport.txt`。本轮规则检查 103 项、双账号 HTTP 检查 49 项、UDP 检查 16 项通过；这不代替正式地图 Play、真实角色 Ghost 的画面观察或跨设备网络验收。
 
 如果发行配置指向公网，但本机开发不希望绕经 VPS/VPN，可在项目根目录创建
 `moon-client.editor.local.json`：

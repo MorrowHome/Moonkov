@@ -3076,6 +3076,178 @@ MonoBehaviour:
       before researching.
     m_Metadata:
       m_Items: []
+  - m_Id: 3909354947096576
+    m_Localized: Spider silk gland
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3909354984845312
+    m_Localized: '60s: spread -40%; energy +5, hydration -15. Replaces other species-organ
+      activity.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3909354984845313
+    m_Localized: Snake adrenal gland
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3909354984845314
+    m_Localized: '45s: movement +15%, hydration drain +50%. Energy +10, hydration
+      -10. Replaces other species-organ activity.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3909354984845315
+    m_Localized: Caterpillar nutrient sac
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3909354984845316
+    m_Localized: Energy +60, healing up to 10 HP, hydration -5, fullness +45. A heavy
+      survival meal.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3909354984845317
+    m_Localized: Tentacle contractile heart
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3909354984845318
+    m_Localized: '45s: halo damage +40%, movement -15%. Energy +10, hydration -15.
+      Replaces other species-organ activity.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3909354984845319
+    m_Localized: Centipede venom gland
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3909354984845320
+    m_Localized: '45s: halo damage +35%, poison costs 0.6 HP/s and can kill. Energy
+      +5, hydration -10. Replaces other species-organ activity.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3909354984845321
+    m_Localized: Leech regeneration sac
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3909354984845322
+    m_Localized: '60s: restore living tissue at 1 HP/s, energy drain +50%. Energy
+      +5, hydration -10. Replaces other species-organ activity.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3909354984845323
+    m_Localized: Slime gel bladder
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3909354984845324
+    m_Localized: '45s: incoming combat damage -25%, movement -20%. Energy +5, hydration
+      -10. Replaces other species-organ activity.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3909354984845325
+    m_Localized: Root oxygen nodule
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3909354984845326
+    m_Localized: '90s: suit oxygen drain -25%, movement -10%. Energy +15, hydration
+      -10. Replaces other species-organ activity.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3909354984845327
+    m_Localized: Facehugger neural ganglion
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3909354984845328
+    m_Localized: '45s: firing interval -20%, spread -30%, hydration drain +75%. Energy
+      +5, hydration -15. Replaces other species-organ activity.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3909354984845329
+    m_Localized: BIOLOGICAL FIREPOWER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3909354984845330
+    m_Localized: 'Permanent: all halo damage +60%. Retained after death.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3909354984845331
+    m_Localized: BIOLOGICAL CAPACITY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3909354984845332
+    m_Localized: 'Permanent: all halo magazine capacities +40%. Upgrades do not grant
+      free ammunition.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3909354984845333
+    m_Localized: BIOLOGICAL CHARGING
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3909354984845334
+    m_Localized: 'Permanent: all halo recharge times -25%.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3909354984845335
+    m_Localized: BIOLOGICAL STABILITY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3909354984845336
+    m_Localized: 'Permanent: all halo spread -30% and handling penalties -15%.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3909354984845337
+    m_Localized: SILK FOCUS / SPREAD -40%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3909354984845338
+    m_Localized: ADRENAL RUSH / SPEED +15% / THIRST +50%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3909354984845339
+    m_Localized: CONTRACTILE POWER / DAMAGE +40% / SPEED -15%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3909354984845340
+    m_Localized: VENOM POWER / DAMAGE +35% / POISON 0.6 HP/s
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3909354984845341
+    m_Localized: REGENERATION / +1 HP/s / HUNGER +50%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3909354984845342
+    m_Localized: GEL ARMOR / COMBAT DAMAGE -25% / SPEED -20%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3909354984845343
+    m_Localized: ROOT RESERVE / OXYGEN DRAIN -25% / SPEED -10%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3909354984845344
+    m_Localized: NEURAL OVERDRIVE / FIRE INTERVAL -20% / THIRST +75%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3909354984845345
+    m_Localized: CONSUME MATERIALS / RESEARCH
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3909354984845346
+    m_Localized: RESEARCH COMPLETE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3909354984845347
+    m_Localized: '{0}: {1}/{2}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3909354984845348
+    m_Localized: '{0} / {1:0}s'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3909354984845349
+    m_Localized: Permanent halo research saved. It applies to all halo weapons on
+      your next deployment.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3909354984845350
+    m_Localized: Store all required organs and tissue in personal storage before
+      researching.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

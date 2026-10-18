@@ -16,11 +16,11 @@ namespace Unity.MP_FPS
             if (query.IsEmptyIgnoreFilter) return;
             var loot = manager.GetComponentObject<RaidLootContainers>(query.GetSingletonEntity());
             if (!loot.Initialized) return;
-            var inventory = AlienHarvest.Create(profile.Boss, loot.LootRandom);
+            var inventory = AlienHarvest.Create(profile.Boss, loot.LootRandom,profile.Species.ToString());
             Vector3 point = transform.position;
             if (!UnityEngine.Physics.Raycast(point + Vector3.up * .1f, Vector3.down, out var floor, 100,
                 LayerMask.GetMask("Default", "Ground"), QueryTriggerInteraction.Ignore)) return;
-            loot.Drop(inventory, floor.point, Quaternion.FromToRotation(Vector3.up, floor.normal), -1, World.Time.ElapsedTime);
+            loot.DropHarvest(inventory, floor.point, Quaternion.FromToRotation(Vector3.up, floor.normal), World.Time.ElapsedTime);
         }
     }
 }

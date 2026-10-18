@@ -68,14 +68,17 @@ namespace Unity.MP_FPS.Client
         {
             var graph=PlayerProfileClient.Inventory;
             if(graph==null)return;
-            int organs=graph.Items.Where(i=>i.Code=="alien_neural_core" && graph.RootOf(i.Id)=="stash" && !i.EmergencySupply).Sum(i=>i.Quantity);
-            int tissue=graph.Items.Where(i=>i.Code=="alien_tissue" && graph.RootOf(i.Id)=="stash" && !i.EmergencySupply).Sum(i=>i.Quantity);
-            var row=Product("alien_neural_core","BIOLOGICAL HALO RESEARCH",graph.HaloResearchLevel>0 ?
-                "RESEARCH COMPLETE / ALL HALO DAMAGE +60% / PERMANENT" :
-                "Consume 3 rare neural organs and 5 alien tissue from personal storage. Permanently increases all halo damage by 60%, including future weapons. Retained after death.");
-            MoonkovTerminal.Text(m_List,MoonkovLocalization.Format($"STORED ORGANS {organs}/3 / TISSUE {tissue}/5"),"terminal-copy");
-            var upgrade=MoonkovTerminal.ActionButton(row,"CONSUME MATERIALS / RESEARCH +60%",()=>Order(ShopOperation.Research,"halo_biology",null,1),"terminal-primary");
-            upgrade.SetEnabled(Ready && graph.HaloResearchLevel==0 && organs>=ShopCatalog.ResearchOrgans && tissue>=ShopCatalog.ResearchTissue);
+            foreach(var research in AlienBiology.Research)
+            {
+                bool unlocked=research.Unlocked(graph);
+                var row=Product(research.Icon,research.Name,research.Description);
+                var copy=row.Q(className:"terminal-shop-description");
+                foreach(var material in research.Materials.Select((code,index)=>new {code,index}))
+                    MoonkovTerminal.Text(copy,MoonkovLocalization.Format($"{InventoryCatalog.Get(material.code).Name}: {research.Stored(graph,material.code)}/{research.Quantities[material.index]}"),"terminal-copy");
+                var upgrade=MoonkovTerminal.ActionButton(row,unlocked ? "RESEARCH COMPLETE" : "CONSUME MATERIALS / RESEARCH",
+                    ()=>Order(ShopOperation.Research,research.Code,null,1),"terminal-primary");
+                upgrade.SetEnabled(Ready && !unlocked && research.CanAfford(graph));
+            }
         }
         private VisualElement Product(string code, string name, string detail)
         {
@@ -156,7 +159,7 @@ namespace Unity.MP_FPS.Client
             {
                 await PlayerProfileClient.TradeAsync(command, m_Stop.Token);
                 m_Pending = null;
-                if (!m_Disposed) MoonkovLocalization.Set(m_Status, command.Operation == ShopOperation.Research ? "Permanent halo research saved. All halo damage +60% on your next deployment." :
+                if (!m_Disposed) MoonkovLocalization.Set(m_Status, command.Operation == ShopOperation.Research ? "Permanent halo research saved. It applies to all halo weapons on your next deployment." :
                     command.Operation == ShopOperation.Emergency ? "Emergency kit received. Open storage to check your pistol slot and carried cells." : "Trade confirmed. Inventory and moon dust updated.");
             }
             catch (AccountClient.InventoryRequestException ex)

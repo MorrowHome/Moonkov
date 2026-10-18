@@ -14,6 +14,7 @@ namespace Unity.MP_FPS.Client
             var effects = new List<string>(4);
             if (supply.Health > 0) effects.Add(MoonkovLocalization.Format($"RESTORE UP TO {supply.Health:0} HP"));
             if (supply.SurgeSeconds > 0) effects.Add(MoonkovLocalization.Text("DAMAGE +30% / 60s"));
+            if(supply.EffectSeconds>0)effects.Add(MoonkovLocalization.Text(AlienBiology.Activity(supply.Effect)));
             if (supply.Energy != 0) effects.Add(MoonkovLocalization.Format($"{supply.Energy:+0;-0;0} ENERGY"));
             if (supply.Hydration != 0) effects.Add(MoonkovLocalization.Format($"{supply.Hydration:+0;-0;0} HYDRATION"));
             if (supply.Satiety != 0) effects.Add(MoonkovLocalization.Format($"{supply.Satiety:+0;-0;0} FULLNESS"));
@@ -58,6 +59,7 @@ namespace Unity.MP_FPS.Client
 
         private static string Description(string code)
         {
+            var organ=AlienBiology.Organ(code);if(organ!=null)return MoonkovLocalization.Text(organ.Description);
             string description;
             switch (code)
             {

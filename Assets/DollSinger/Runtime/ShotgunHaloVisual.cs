@@ -23,7 +23,7 @@ namespace Unity.MP_FPS.DollSinger
         private uint lastShot, lastReload;
         private int capacity = 4;
         private HaloModule modules;
-        public void SetModuleProfile(byte mask, int magazine)
+        public void SetModuleProfile(ushort mask, int magazine)
         { modules = (HaloModule)mask; capacity = Mathf.Max(1, magazine); }
         private int ammo = 4;
         private int reloadTarget = 4;

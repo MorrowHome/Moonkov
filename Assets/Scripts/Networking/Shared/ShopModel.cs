@@ -23,7 +23,7 @@ namespace Unity.MP_FPS.Inventory
     public static class ShopCatalog
     {
         public const int ResearchOrgans = 3, ResearchTissue = 5;
-        public static readonly ShopOffer[] Offers = {
+        public static readonly ShopOffer[] Offers = new[] {
             new ShopOffer("alien_tissue", -1, 8), new ShopOffer("alien_core", -1, 65),
             new ShopOffer("rifle", 0, 20), new ShopOffer("pistol", 0, 7),
             new ShopOffer("shotgun", 0, 25), new ShopOffer("sniper", 0, 45), new ShopOffer("cells", 0, 2),
@@ -41,7 +41,7 @@ namespace Unity.MP_FPS.Inventory
             new ShopOffer("ceramic_plate", -1, 7), new ShopOffer("optical_sensor", -1, 16),
             new ShopOffer("data_drive", -1, 28), new ShopOffer("helium3_sample", -1, 45),
             new ShopOffer("quantum_core", -1, 80), new ShopOffer("black_box", -1, 60)
-        };
+        }.Concat(AlienBiology.Organs.Select(o=>new ShopOffer(o.Code,-1,o.SellDust))).ToArray();
         public static ShopOffer Find(string code) => Offers.FirstOrDefault(o => o.Code == code);
         public static int SaleDust(InventoryItem item, int quantity, int fullPrice) => BatteryEnergy.IsCell(item)
             ? BatteryEnergy.PortionEnergy(item, quantity) * fullPrice / BatteryEnergy.Capacity : quantity * fullPrice;
@@ -60,8 +60,9 @@ namespace Unity.MP_FPS.Inventory
             var copy = graph.Clone();
             if (command.Operation == ShopOperation.Research)
             {
-                if(command.Code!="halo_biology" || !string.IsNullOrEmpty(command.ItemId) || command.Quantity!=1)return "shop_invalid";
-                if(copy.HaloResearchLevel!=0)return "research_complete";
+                var research=AlienBiology.FindResearch(command.Code);
+                if(research==null || !string.IsNullOrEmpty(command.ItemId) || command.Quantity!=1)return "shop_invalid";
+                if(research.Unlocked(copy))return "research_complete";
                 bool Spend(string code,int quantity)
                 {
                     var stock=copy.Items.Where(i=>i.Code==code && copy.RootOf(i.Id)=="stash" && !i.EmergencySupply).ToArray();
@@ -70,8 +71,9 @@ namespace Unity.MP_FPS.Inventory
                     { int take=Math.Min(quantity,stack.Quantity);stack.Quantity-=take;quantity-=take;if(stack.Quantity==0)copy.Items.Remove(stack);if(quantity==0)break; }
                     return true;
                 }
-                if(!Spend("alien_neural_core",ShopCatalog.ResearchOrgans) || !Spend("alien_tissue",ShopCatalog.ResearchTissue))return "research_materials";
-                copy.HaloResearchLevel=1;
+                for(int i=0;i<research.Materials.Length;i++)
+                    if(!Spend(research.Materials[i],research.Quantities[i]))return "research_materials";
+                research.Unlock(copy);
             }
             else if (command.Operation == ShopOperation.Emergency)
             {

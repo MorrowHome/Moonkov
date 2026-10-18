@@ -20,7 +20,7 @@ namespace Unity.MP_FPS
             [GhostField] public uint WeaponID;
             [GhostField] public uint FireTick;
             [GhostField] public int PelletIndex;
-            [GhostField] public byte ModuleMask;
+            [GhostField] public ushort ModuleMask;
             [GhostField] public float3 Origin;
             [GhostField] public float3 InitialVelocity;
         }
@@ -58,7 +58,7 @@ namespace Unity.MP_FPS
         private static Material s_BulletMaterial;
 
         public void InitializePrediction(uint weaponId, Vector3 origin, Quaternion rotation, Transform shooter,
-            float elapsed = 0f, uint shotTick = 0, int pelletIndex = 0, byte modules = 0)
+            float elapsed = 0f, uint shotTick = 0, int pelletIndex = 0, ushort modules = 0)
         {
             var player = shooter ? shooter.GetComponent<PlayerGhost>() : null;
             m_Data = new ProjectileData { WeaponID = weaponId, Origin = origin, SpawnTick = shotTick,

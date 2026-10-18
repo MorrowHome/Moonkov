@@ -6,9 +6,12 @@ namespace Unity.MP_FPS.Inventory
     public sealed class ConsumableDefinition
     {
         public readonly float Energy, Hydration, Satiety, Oxygen, Health, SurgeSeconds;
+        public readonly AlienFoodEffect Effect;
+        public readonly float EffectSeconds;
         public bool Food => Energy > 0;
-        public ConsumableDefinition(float energy, float hydration, float satiety, float oxygen = 0, float health = 0, float surgeSeconds = 0)
-        { Energy = energy; Hydration = hydration; Satiety = satiety; Oxygen = oxygen; Health = health; SurgeSeconds = surgeSeconds; }
+        public ConsumableDefinition(float energy, float hydration, float satiety, float oxygen = 0, float health = 0, float surgeSeconds = 0,
+            AlienFoodEffect effect = AlienFoodEffect.None,float effectSeconds = 0)
+        { Energy = energy; Hydration = hydration; Satiety = satiety; Oxygen = oxygen; Health = health; SurgeSeconds = surgeSeconds; Effect=effect;EffectSeconds=effectSeconds; }
     }
     public static class ConsumableCatalog
     {
@@ -35,7 +38,7 @@ namespace Unity.MP_FPS.Inventory
                 case "oxygen_reserve": return OxygenReserve;
                 case "alien_raw_meat": return AlienMeat;
                 case "alien_neural_core": return NeuralOrgan;
-                default: return null;
+                default: return AlienBiology.Organ(code)?.Food;
             }
         }
         public static float MedicalRestore(string code) => code == "medkit" ? 40 :

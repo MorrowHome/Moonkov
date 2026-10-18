@@ -51,6 +51,7 @@ namespace Unity.MP_FPS
             bool moving = state.ControllerState.MovementSpeed > .1f;
             float exertion = moving ? (state.ControllerState.Sprinting ? parameters.SprintingMultiplier : parameters.WalkingMultiplier) : 1;
             state.OxygenDrainPerSecond = atmosphere.Breathable ? 0 : Capacity / parameters.OutdoorSeconds * exertion;
+            if(state.AlienFoodEffectSeconds>0 && state.AlienFoodEffect==AlienFoodEffect.OxygenReserve)state.OxygenDrainPerSecond*=.75f;
             float ambientRefill = atmosphere.Breathable && atmosphere.AllowsSuitRefill ? parameters.AirRefillPerSecond : 0;
             // Overlapping sources do not multiply supply. A station can also supply a sealed suit in vacuum.
             state.OxygenSupplyPerSecond = Mathf.Max(ambientRefill, FiniteNonnegative(stationSupplyPerSecond));

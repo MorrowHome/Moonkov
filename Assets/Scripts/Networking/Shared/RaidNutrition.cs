@@ -20,6 +20,7 @@ namespace Unity.MP_FPS
             state.Energy = state.Hydration = Capacity; state.Satiety = 25;
             state.StarvationSeconds = state.DehydrationSeconds = 0;
             state.AlienSurgeSeconds = 0;
+            state.AlienFoodEffect=AlienFoodEffect.None;state.AlienFoodEffectSeconds=0;
         }
         public static SurvivalEffects Effects(in PredictedPlayerGhost state)
         {
@@ -43,7 +44,8 @@ namespace Unity.MP_FPS
         }
         public static bool CanConsume(in PredictedPlayerGhost state, ConsumableDefinition item) =>
             state.BodyHealthInitialized && state.CurrentHealth > 0 && item != null && item.Oxygen <= 0 &&
-            (item.Food ? (state.Energy < Capacity || item.Health > 0 && HasInjuredLivingTissue(state) || item.SurgeSeconds > state.AlienSurgeSeconds) &&
+            (item.Food ? (state.Energy < Capacity || item.Health > 0 && HasInjuredLivingTissue(state) || item.SurgeSeconds > state.AlienSurgeSeconds ||
+                item.EffectSeconds>0 && (state.AlienFoodEffect!=item.Effect || state.AlienFoodEffectSeconds<item.EffectSeconds)) &&
                 state.Satiety + item.Satiety <= Capacity : state.Hydration < Capacity);
         public static InventoryError Consume(ref PredictedPlayerGhost state, InventoryGraph graph, string id, int version)
         {
@@ -62,7 +64,14 @@ namespace Unity.MP_FPS
             state.Hydration = Mathf.Clamp(state.Hydration + definition.Hydration, 0, Capacity);
             state.Satiety = Mathf.Clamp(state.Satiety + definition.Satiety, 0, Capacity);
             if (definition.SurgeSeconds > 0) state.AlienSurgeSeconds = definition.SurgeSeconds;
-            float healing = definition.Health;
+            if(definition.EffectSeconds>0) {state.AlienFoodEffect=definition.Effect;state.AlienFoodEffectSeconds=definition.EffectSeconds;}
+            RestoreLivingTissue(ref state,definition.Health);
+            if (state.Energy > 0) state.StarvationSeconds = 0;
+            if (state.Hydration > 0) state.DehydrationSeconds = 0;
+            return InventoryError.None;
+        }
+        private static void RestoreLivingTissue(ref PredictedPlayerGhost state,float healing)
+        {
             // Food restores living tissue only; it cannot revive a destroyed body part.
             for (int i = 0; i < RaidHealth.PartCount && healing > 0; i++)
             {
@@ -72,20 +81,30 @@ namespace Unity.MP_FPS
                 float restore = Mathf.Min(healing, RaidHealth.Maximum(part) - current);
                 RaidHealth.Set(ref state, part, current + restore); healing -= restore;
             }
-            if (state.Energy > 0) state.StarvationSeconds = 0;
-            if (state.Hydration > 0) state.DehydrationSeconds = 0;
-            return InventoryError.None;
         }
         public static void Tick(ref PredictedPlayerGhost state, float dt, float energySeconds, float hydrationSeconds,
             float digestionSeconds, float graceSeconds, float starvationDamage, float dehydrationDamage, uint tick)
         {
             if (!state.BodyHealthInitialized || state.CurrentHealth <= 0 || dt <= 0 || !float.IsFinite(dt)) return;
             state.AlienSurgeSeconds = Mathf.Max(0, state.AlienSurgeSeconds - dt);
+            float activeTime=Mathf.Min(dt,Mathf.Max(0,state.AlienFoodEffectSeconds));
+            float activeFraction=activeTime/dt;
+            if(activeTime>0)
+            {
+                if(state.AlienFoodEffect==AlienFoodEffect.Regeneration)RestoreLivingTissue(ref state,activeTime);
+                else if(state.AlienFoodEffect==AlienFoodEffect.VenomPower)DamageSystemic(ref state,activeTime*.6f,tick);
+            }
+            if(state.CurrentHealth<=0)return;
             bool moving = state.ControllerState.MovementSpeed > .1f;
             bool sprinting = moving && state.ControllerState.Sprinting;
             float abdomen = state.AbdomenHealth <= 0 ? 2 : 1;
             float energyRate = Capacity / Mathf.Max(1, energySeconds) * abdomen * (sprinting ? 1.75f : moving ? 1.1f : 1);
             float waterRate = Capacity / Mathf.Max(1, hydrationSeconds) * abdomen * (sprinting ? 1.4f : moving ? 1.1f : 1);
+            if(state.AlienFoodEffect==AlienFoodEffect.Regeneration)energyRate*=1+.5f*activeFraction;
+            if(state.AlienFoodEffect==AlienFoodEffect.AdrenalRush)waterRate*=1+.5f*activeFraction;
+            if(state.AlienFoodEffect==AlienFoodEffect.NeuralOverdrive)waterRate*=1+.75f*activeFraction;
+            state.AlienFoodEffectSeconds=Mathf.Max(0,state.AlienFoodEffectSeconds-dt);
+            if(state.AlienFoodEffectSeconds<=0)state.AlienFoodEffect=AlienFoodEffect.None;
             float hungryTime = Drain(ref state.Energy, ref state.StarvationSeconds, energyRate, dt, graceSeconds);
             float thirstyTime = Drain(ref state.Hydration, ref state.DehydrationSeconds, waterRate, dt, graceSeconds);
             state.Satiety = Mathf.Max(0, state.Satiety - Capacity / Mathf.Max(1, digestionSeconds) * dt);
@@ -135,6 +154,12 @@ namespace Unity.MP_FPS
             if (state.LeftLegHealth <= 0 || state.RightLegHealth <= 0)
             { constants.Walk.Speed *= .65f; constants.JumpHeight *= .5f; }
             if (!CanSprint(state)) constants.Sprint.Speed = constants.Walk.Speed;
+            if(state.AlienFoodEffectSeconds>0)
+            {
+                float speed=state.AlienFoodEffect==AlienFoodEffect.AdrenalRush ? 1.15f : state.AlienFoodEffect==AlienFoodEffect.ContractilePower ? .85f :
+                    state.AlienFoodEffect==AlienFoodEffect.GelArmor ? .8f : state.AlienFoodEffect==AlienFoodEffect.OxygenReserve ? .9f : 1;
+                constants.Walk.Speed*=speed;constants.Sprint.Speed*=speed;
+            }
             return constants;
         }
         public static float HandlingMultiplier(in PredictedPlayerGhost state)
@@ -143,6 +168,7 @@ namespace Unity.MP_FPS
             float multiplier = state.LeftArmHealth <= 0 || state.RightArmHealth <= 0 ? 1.4f : 1;
             if (state.Hydration <= LowThreshold) multiplier *= state.Hydration <= 0 ? 1.25f : 1.1f;
             if (state.Oxygen <= 10 && RaidOxygen.NeedsSuitAir(state)) multiplier *= 1.1f;
+            if(((HaloModule)state.EquippedModules&HaloModule.BiologicalStability)!=0)multiplier=1+(multiplier-1)*.85f;
             return multiplier;
         }
     }

@@ -42,7 +42,7 @@ try {
             Start-Sleep -Milliseconds 250
         }
         if (!$ready) { throw 'Persistence service did not become ready. Inspect LocalData/backend.stderr.log.' }
-        if ($health.features -notcontains 'halo-research-v1') { throw 'The running service does not support biological halo research.' }
+        if ($health.features -notcontains 'species-harvest-v2') { throw 'The running service does not support species harvest and research branches.' }
         Write-Host "Persistence service ready (PID $($serviceProcess.Id)); alien harvest and permanent halo research enabled."
     } else { & $dotnet run --project MoonPersistence.csproj --no-launch-profile -- @launchArguments }
 }

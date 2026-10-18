@@ -72,6 +72,7 @@ namespace Unity.MP_FPS
         public static float Damage(ref PredictedPlayerGhost state, BodyPart part, float amount, uint tick)
         {
             if (state.CurrentHealth <= 0 || amount <= 0 || float.IsNaN(amount) || float.IsInfinity(amount) || Maximum(part) <= 0) return 0;
+            if(state.AlienFoodEffectSeconds>0 && state.AlienFoodEffect==AlienFoodEffect.GelArmor)amount*=.75f;
             float before = state.CurrentHealth;
             if (!state.BodyHealthInitialized) state.CurrentHealth = Mathf.Max(0, before - amount);
             else

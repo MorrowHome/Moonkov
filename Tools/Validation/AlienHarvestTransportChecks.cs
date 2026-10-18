@@ -139,7 +139,7 @@ public static class AlienHarvestTransportChecks
                 manager.AddComponentObject(connections[i],inventories[i]);
             }
             var loot=manager.GetComponentObject<RaidLootContainers>(Singleton<RaidLootWorld>(server));loot.Initialize(1);
-            int bag=loot.Drop(AlienHarvest.Create(true,new System.Random(1)),origin,characterIndex:-1);
+            int bag=loot.DropHarvest(AlienHarvest.Create(true,new System.Random(1),"Slime"),origin);
             string organ=loot.Containers[bag].Items.Single(i=>i.Code=="alien_neural_core").Id;
             var clients=new[]{new RaidInventoryClientState(),new RaidInventoryClientState()};
             void Process(string method)
@@ -184,6 +184,18 @@ public static class AlienHarvestTransportChecks
             int usedVersion=inventories[winner].Graph.Version;
             Send(worlds[winner+1],use);Pump(()=>Entities<RaidConsumableUseRpc>(server).Length==1);Process("HandleInventoryRequests");
             Check(inventories[winner].Graph.Version==usedVersion,"replayed consume RPC has no second effect");
+            string gel=loot.Containers[bag].Items.Single(i=>i.Code=="alien_gel_bladder").Id;
+            Send(worlds[winner+1],new RaidLootMoveRpc {RaidId=1,LootId=bag,RequestId=6,ExpectedVersion=inventories[winner].Graph.Version,
+                ExpectedLootVersion=loot.Containers[bag].Version,ItemId=gel,Parent="pockets",Region="1"});
+            Pump(()=>Entities<RaidLootMoveRpc>(server).Length==1);Process("HandleLootRequests");Snapshot();
+            Pump(()=>clients[winner].RequestId==6,Receive);
+            Check(clients[winner].Graph.Count("alien_gel_bladder",true)==1,"species organ crosses real UDP inventory snapshots");
+            Send(worlds[winner+1],new RaidConsumableUseRpc {RaidId=1,RequestId=7,ExpectedVersion=clients[winner].Graph.Version,ItemId=gel});
+            Pump(()=>Entities<RaidConsumableUseRpc>(server).Length==1);Process("HandleInventoryRequests");
+            var gelState=manager.GetComponentData<PredictedPlayerGhost>(actors[winner]);
+            Check(gelState.AlienFoodEffect==AlienFoodEffect.GelArmor && gelState.AlienFoodEffectSeconds==45 && inventories[winner].Graph.Count("alien_gel_bladder")==0,
+                "server grants the species-specific activity from a real consume RPC");
+            Check(Math.Abs(RaidHealth.Damage(ref gelState,BodyPart.LeftArm,20,10)-15)<.01f,"species armor affects authoritative combat damage");
             string result="Alien transport checks passed: "+s_Checks+". One UDP server, two clients, production RPC handlers, dissection interruption, shared loot race and authoritative consumption. No formal-map Play or rendered ghost acceptance.";
             Directory.CreateDirectory("Library/BuildValidation/AlienHarvest");File.WriteAllText("Library/BuildValidation/AlienHarvest/transport.txt",result);return result;
         }

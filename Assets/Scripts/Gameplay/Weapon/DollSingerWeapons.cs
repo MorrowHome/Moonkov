@@ -12,7 +12,7 @@ namespace Unity.MP_FPS
         private static string Slot(int slot) => slot == 1 ? "Primary" : slot == 2 ? "Secondary" : "Pistol";
         private static int Ammo(InventoryItem item, InventoryGraph graph, WeaponRegistry registry)
         {
-            var weapon = registry.GetWeaponData(WeaponId(item?.Code), (byte)HaloModules.Mask(graph, item));
+            var weapon = registry.GetWeaponData(WeaponId(item?.Code), (ushort)HaloModules.Mask(graph, item));
             if (item == null || weapon == null) return 0;
             item.LoadedAmmo = item.LoadedAmmo < 0 ? registry.GetWeaponData(WeaponId(item.Code)).MagazineSize : Mathf.Max(0, item.LoadedAmmo);
             return item.LoadedAmmo;
@@ -37,13 +37,15 @@ namespace Unity.MP_FPS
             var primary = graph?.Equipped("Primary"); var secondary = graph?.Equipped("Secondary"); var pistol = graph?.Equipped("Pistol");
             state.PrimaryWeaponID = WeaponId(primary?.Code); state.SecondaryWeaponID = WeaponId(secondary?.Code); state.PistolWeaponID = WeaponId(pistol?.Code);
             state.PrimaryAmmo = Ammo(primary, graph, registry); state.SecondaryAmmo = Ammo(secondary, graph, registry); state.PistolAmmo = Ammo(pistol, graph, registry);
-            state.PrimaryModules = (byte)HaloModules.Mask(graph, primary); state.SecondaryModules = (byte)HaloModules.Mask(graph, secondary);
-            state.PistolModules = (byte)HaloModules.Mask(graph, pistol);
+            state.PrimaryModules = (ushort)HaloModules.Mask(graph, primary); state.SecondaryModules = (ushort)HaloModules.Mask(graph, secondary);
+            state.PistolModules = (ushort)HaloModules.Mask(graph, pistol);
+            ushort activity=state.AlienFoodEffectSeconds>0 ? (ushort)((int)state.AlienFoodEffect<<12) : (ushort)0;
+            state.PrimaryModules|=activity;state.SecondaryModules|=activity;state.PistolModules|=activity;
             if(state.AlienSurgeSeconds>0)
             {
-                state.PrimaryModules |= (byte)HaloModule.AlienSurge;
-                state.SecondaryModules |= (byte)HaloModule.AlienSurge;
-                state.PistolModules |= (byte)HaloModule.AlienSurge;
+                state.PrimaryModules |= (ushort)HaloModule.AlienSurge;
+                state.SecondaryModules |= (ushort)HaloModule.AlienSurge;
+                state.PistolModules |= (ushort)HaloModule.AlienSurge;
             }
             int slot = state.EquippedWeaponSlot;
             var active = slot > 0 ? graph?.Equipped(Slot(slot)) : null;
@@ -54,8 +56,9 @@ namespace Unity.MP_FPS
             }
             state.EquippedWeaponSlot = slot;
             string id = active?.Id ?? "";
-            byte modules = (byte)HaloModules.Mask(graph, active);
-            if(state.AlienSurgeSeconds>0)modules |= (byte)HaloModule.AlienSurge;
+            ushort modules = (ushort)HaloModules.Mask(graph, active);
+            modules|=activity;
+            if(state.AlienSurgeSeconds>0)modules |= (ushort)HaloModule.AlienSurge;
             if (state.EquippedWeaponItem.ToString() != id || state.EquippedWeaponID != WeaponId(active?.Code) || state.EquippedModules != modules)
             {
                 state.EquippedWeaponItem = id; state.EquippedWeaponID = WeaponId(active?.Code);

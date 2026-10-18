@@ -17,7 +17,7 @@ namespace Unity.MP_FPS.Client
             Text(scroll, InventoryCatalog.Get(weapon.Code).Name, "inventory-section-title");
             Text(scroll, "Base workshop 路 one module per slot 路 installed modules travel with this halo.", "inventory-caption");
             var registry=WeaponManager.Instance != null ? WeaponManager.Instance.WeaponRegistry : null;
-            var data=registry?.GetWeaponData(DollSingerWeapons.WeaponId(weapon.Code), (byte)HaloModules.Mask(m_Graph,weapon));
+            var data=registry?.GetWeaponData(DollSingerWeapons.WeaponId(weapon.Code), (ushort)HaloModules.Mask(m_Graph,weapon));
             if(data != null)
                 Text(scroll, MoonkovLocalization.Format($"CAPACITY {data.MagazineSize} / CHARGE {data.ReloadTime:0.00}s / {data.EnergyPerRound}E PER ROUND / {data.PelletCount} PELLETS / SPREAD {data.SpreadDegrees:0.00}掳"), "inventory-caption");
             Text(scroll, "Existing charged rounds are retained when reducing capacity; upgrades do not add ammunition.", "inventory-caption");

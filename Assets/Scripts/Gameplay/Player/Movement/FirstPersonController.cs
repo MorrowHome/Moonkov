@@ -1076,7 +1076,7 @@ public class FirstPersonController : MonoBehaviour
     }
 
     public void SpawnPredictedProjectile(uint spawnTick, uint weaponId, Vector3 spawnPosition,
-        Quaternion spawnRotation, int pelletIndex = 0, byte modules = 0)
+        Quaternion spawnRotation, int pelletIndex = 0, ushort modules = 0)
     {
         foreach (var shot in Projectile.PredictedProjectiles)
             if (shot.SpawnTick == spawnTick && shot.WeaponID == weaponId && shot.PelletIndex == pelletIndex) return;

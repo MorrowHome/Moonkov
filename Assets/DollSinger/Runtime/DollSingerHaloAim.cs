@@ -152,14 +152,14 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         var visual = child.AddComponent<HaloModuleVisual>(); visual.Configure(rifle); return visual;
     }
 
-    public void SetNetworkWeapon(HaloWeapon weapon, int ammo, bool reloading, float reloadProgress, uint shotTick, uint reloadTick, int reloadTargetAmmo = -1, byte modules = 0, int magazineSize = 4, int burstIndex = 0)
+    public void SetNetworkWeapon(HaloWeapon weapon, int ammo, bool reloading, float reloadProgress, uint shotTick, uint reloadTick, int reloadTargetAmmo = -1, ushort modules = 0, int magazineSize = 4, int burstIndex = 0)
     {
         if (!rifleModules && rifleVisual) rifleModules = CreateModuleVisual(rifleVisual.transform, true);
         if (!shotgunModules && shotgunVisual) shotgunModules = CreateModuleVisual(shotgunVisual.transform, false);
         if (!revolverModules && revolverVisual) revolverModules = CreateModuleVisual(revolverVisual.transform, false);
         if (!sniperModules && sniperVisual) sniperModules = CreateModuleVisual(sniperVisual.transform, true);
         if (rifleVisual) rifleVisual.SetMagazineCapacity(weapon == HaloWeapon.Rifle ? magazineSize : RifleHaloVisual.Capacity);
-        if (shotgunVisual) shotgunVisual.SetModuleProfile(weapon == HaloWeapon.Shotgun ? modules : (byte)0, weapon == HaloWeapon.Shotgun ? magazineSize : 4);
+        if (shotgunVisual) shotgunVisual.SetModuleProfile(weapon == HaloWeapon.Shotgun ? modules : (ushort)0, weapon == HaloWeapon.Shotgun ? magazineSize : 4);
         ObserveGestureShot(shotTick);
         SetWeaponEquipped(weapon, ammo);
         weaponAmmo = ammo;

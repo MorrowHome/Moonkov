@@ -6,6 +6,35 @@ namespace Unity.MP_FPS.Client
 {
     public sealed partial class StashItemArt
     {
+        private void SpeciesOrgan(int species)
+        {
+            uint color=species==4 ? 0xbf8b4eu : species==5 || species==7 ? 0x678d68u : species==6 ? 0x5ba1a0u : 0xa675abu;
+            if(species==0)
+            {
+                Shape(color,new Vector2(50,26),new Vector2(66,43),new Vector2(62,68),new Vector2(38,68),new Vector2(34,43));
+                for(int i=0;i<4;i++) {float y=34+i*12;Line(color,4,new Vector2(39,y),new Vector2(21,y-9),new Vector2(12,y+4));Line(color,4,new Vector2(61,y),new Vector2(79,y-9),new Vector2(88,y+4));}
+            }
+            else if(species==1)
+                Line(color,13,new Vector2(29,21),new Vector2(65,21),new Vector2(75,36),new Vector2(61,49),new Vector2(34,49),new Vector2(24,64),new Vector2(39,79),new Vector2(73,79));
+            else if(species==2)
+            {for(int i=0;i<4;i++){Ring(color,10,29+i*14,55+Mathf.Sin(i)*8,14);Ring(0xd8ddb1,2,29+i*14,55+Mathf.Sin(i)*8,5);}}
+            else if(species==3)
+            {
+                Shape(color,new Vector2(50,27),new Vector2(66,18),new Vector2(77,32),new Vector2(72,56),new Vector2(50,73),new Vector2(28,56),new Vector2(23,32),new Vector2(34,18));
+                for(int i=0;i<4;i++)Line(color,5,new Vector2(34+i*10,61),new Vector2(19+i*20,78),new Vector2(14+i*22,88));
+            }
+            else if(species==4)
+            {Box(color,40,18,20,65);for(int i=0;i<6;i++){float y=23+i*10;Line(color,3,new Vector2(43,y),new Vector2(27,y-4),new Vector2(20,y+5));Line(color,3,new Vector2(57,y),new Vector2(73,y-4),new Vector2(80,y+5));}}
+            else if(species==5)
+            {Shape(color,new Vector2(50,12),new Vector2(75,52),new Vector2(71,75),new Vector2(50,87),new Vector2(29,75),new Vector2(25,52));Ring(0xb7d3a0,4,50,63,13);}
+            else if(species==6)
+            {Shape(color,new Vector2(16,74),new Vector2(20,46),new Vector2(38,22),new Vector2(63,26),new Vector2(82,54),new Vector2(87,76),new Vector2(58,85),new Vector2(28,83));Ring(0xb2e6cf,4,47,53,12);Ring(0xb2e6cf,3,68,68,6);}
+            else if(species==7)
+            {Ring(color,8,50,40,20);Line(color,6,new Vector2(50,54),new Vector2(48,73),new Vector2(34,89));Line(color,5,new Vector2(49,65),new Vector2(68,72),new Vector2(78,88));Line(color,4,new Vector2(37,52),new Vector2(24,68),new Vector2(17,86));}
+            else
+            {Ring(color,8,50,46,22);for(int i=0;i<6;i++){float a=i*Mathf.PI/3;var p=new Vector2(50+Mathf.Cos(a)*23,46+Mathf.Sin(a)*23);Line(color,4,p,new Vector2(50+Mathf.Cos(a)*40,46+Mathf.Sin(a)*35));}Line(color,6,new Vector2(51,67),new Vector2(65,82),new Vector2(84,81));}
+            Ring(0xe0d5b6,2,50,50,8);
+        }
         private void AlienMeat(bool specimen=false)
         {
             if(specimen){Box(0x526b6b,15,12,70,76);Box(0xb2cebc,20,17,60,66);}

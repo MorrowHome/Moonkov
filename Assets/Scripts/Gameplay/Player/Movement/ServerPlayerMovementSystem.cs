@@ -23,7 +23,7 @@ namespace Unity.MP_FPS
         public uint WeaponId;
         public uint FireTick;
         public int PelletIndex;
-        public byte ModuleMask;
+        public ushort ModuleMask;
         public float3 InitialVelocity;
     }
 

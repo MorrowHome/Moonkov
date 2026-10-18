@@ -10,13 +10,13 @@ namespace Unity.MP_FPS
         public List<WeaponData> Weapons;
         private readonly Dictionary<ulong, WeaponData> m_ModuleVariants = new Dictionary<ulong, WeaponData>();
 
-        public WeaponData GetWeaponData(uint weaponID, byte modules)
+        public WeaponData GetWeaponData(uint weaponID, ushort modules)
         {
             var original = GetWeaponData(weaponID);
             // Attachments use the rifle/shotgun slots; biological research and
             // temporary organ buffs affect every halo. Cache runtime-only copies.
             if (original == null || modules == 0 || !DollSingerWeapons.IsHalo(weaponID)) return original;
-            ulong key = ((ulong)weaponID << 8) | modules;
+            ulong key = ((ulong)weaponID << 16) | modules;
             if (m_ModuleVariants.TryGetValue(key, out var cached)) return cached;
             var variant = Instantiate(original);
             variant.hideFlags = HideFlags.HideAndDontSave;
@@ -36,6 +36,16 @@ namespace Unity.MP_FPS
             if ((mask & HaloModule.HitMarker) != 0) variant.EnergyPerRound = Mathf.CeilToInt(variant.EnergyPerRound * 1.25f);
             if ((mask & HaloModule.BiologicalResearch) != 0) variant.Damage *= 1.6f;
             if ((mask & HaloModule.AlienSurge) != 0) variant.Damage *= 1.3f;
+            if ((mask & HaloModule.BiologicalCapacity) != 0) variant.MagazineSize=Mathf.CeilToInt(variant.MagazineSize*1.4f);
+            if ((mask & HaloModule.BiologicalCharging) != 0) variant.ReloadTime*=.75f;
+            if ((mask & HaloModule.BiologicalStability) != 0) variant.SpreadDegrees*=.7f;
+            switch(AlienBiology.Effect(modules))
+            {
+                case AlienFoodEffect.SilkFocus:variant.SpreadDegrees*=.6f;break;
+                case AlienFoodEffect.ContractilePower:variant.Damage*=1.4f;break;
+                case AlienFoodEffect.VenomPower:variant.Damage*=1.35f;break;
+                case AlienFoodEffect.NeuralOverdrive:variant.CooldownInMs*=.8f;variant.SpreadDegrees*=.7f;break;
+            }
             m_ModuleVariants.Add(key, variant);
             return variant;
         }

@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS.Client
 {
@@ -109,6 +110,11 @@ namespace Unity.MP_FPS.Client
             NutritionMeter("Hydration", "HYDRATION / {0:0}%", state.Hydration);
             NutritionMeter("Satiety", "STOMACH / {0:0}% FULL", state.Satiety);
             string consequence = EffectText(RaidNutrition.Effects(state));
+            if(state.AlienFoodEffectSeconds>0)
+            {
+                if(!string.IsNullOrEmpty(consequence))consequence+="\n";
+                consequence+=MoonkovLocalization.Format($"{AlienBiology.Activity(state.AlienFoodEffect)} / {state.AlienFoodEffectSeconds:0}s");
+            }
             MoonkovLocalization.Set(m_Root.Q<Label>("healthConsequences"), m_Ready ?
                 string.IsNullOrEmpty(consequence) ? "NO NEGATIVE CONDITIONS" : consequence : "");
             RenderNutrition();

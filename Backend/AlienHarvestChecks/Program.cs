@@ -91,7 +91,8 @@ try
         Check(pa.PlayerId!=pb.PlayerId,"two authenticated accounts");
         var graph=InventoryGraph.Create(starter:false);graph.WeaponKitVersion=1;
         graph.AddSupply("alien_neural_core",3,"stash");graph.AddSupply("alien_tissue",5,"stash");await Save(pa.PlayerId,graph);
-        var empty=InventoryGraph.Create(starter:false);empty.WeaponKitVersion=1;await Save(pb.PlayerId,empty);
+        var empty=InventoryGraph.Create(starter:false);empty.WeaponKitVersion=1;
+        empty.Items.Add(new InventoryItem {Id=Guid.NewGuid().ToString("D"),Code="cargo_pack",Parent="equipment",Region="Backpack"});await Save(pb.PlayerId,empty);
         var command=new ShopCommand {RequestId=Guid.NewGuid().ToString("D"),ExpectedVersion=graph.Version,Operation=ShopOperation.Research,Code="halo_biology",Quantity=1};
         Task<HttpResponseMessage> Trade(HttpClient client,ShopCommand request)=>client.PostAsJsonAsync("auth/shop/trade",request,wire);
         var races=await Task.WhenAll(Trade(a,command),Trade(a,command));
@@ -106,28 +107,40 @@ try
         await Reject(await Trade(a,conflict),"shop_request_conflict");
         command.RequestId=Guid.NewGuid().ToString("D");command.ExpectedVersion=graph.Version;
         await Reject(await Trade(a,command),"research_complete");
+        foreach(var research in AlienBiology.Research.Where(r=>r.Branch!=0))
+        {
+            for(int i=0;i<research.Materials.Length;i++)graph.AddSupply(research.Materials[i],research.Quantities[i],"stash");
+            await Save(pa.PlayerId,graph);
+            var request=new ShopCommand {RequestId=Guid.NewGuid().ToString("D"),ExpectedVersion=graph.Version,Operation=ShopOperation.Research,Code=research.Code,Quantity=1};
+            pa=await ProfileOf(await Trade(a,request));graph=InventoryRepository.Decode(pa.InventoryJson!);
+            Check(research.Unlocked(graph),"online research branch "+research.Code);
+        }
+        Check(graph.HaloResearchBranches==7,"all independent branches persisted");
         var deploymentA=new Deployment(pa.PlayerId,Guid.NewGuid(),0);
         pa=await ProfileOf(await server.PostAsJsonAsync("internal/deployments",deploymentA,wire));
-        Check(InventoryRepository.Decode(pa.RaidInventoryJson!).HaloResearchLevel==1,"online deploy carries permanent research");
+        Check(InventoryRepository.Decode(pa.RaidInventoryJson!).HaloResearchLevel==1 && InventoryRepository.Decode(pa.RaidInventoryJson!).HaloResearchBranches==7,"online deploy carries permanent research");
         await Reject(await Trade(a,command),"raid_active");
         var deploymentB=new Deployment(pb.PlayerId,Guid.NewGuid(),0);
         pb=await ProfileOf(await server.PostAsJsonAsync("internal/deployments",deploymentB,wire));
         var raid=InventoryRepository.Decode(pb.RaidInventoryJson!);
-        var corpse=LootInventoryExchange.DropOnDeath(AlienHarvest.Create(true,new Random(1)));
-        int pocket=1;
+        var corpse=AlienHarvest.Create(true,new Random(1),"Tentacle");
+        string cargo=raid.Equipped("Backpack")!.Id;
         foreach(var item in corpse.Items.Where(i=>i.Parent=="loot").ToArray())
-            Check(LootInventoryExchange.TryApply(raid,corpse,new InventoryCommand {ExpectedVersion=raid.Version,ItemId=item.Id,Parent="pockets",Region=(pocket++).ToString()},corpse.Version)==InventoryError.None,"shared corpse loot enters raid inventory");
+        {
+            Check(raid.FindSpace(item,cargo,out var region,out int x,out int y),"harvest cargo space");
+            Check(LootInventoryExchange.TryApply(raid,corpse,new InventoryCommand {ExpectedVersion=raid.Version,ItemId=item.Id,Parent=cargo,Region=region,X=x,Y=y},corpse.Version)==InventoryError.None,"shared corpse loot enters raid inventory");
+        }
         var settlement=new Settlement(pb.PlayerId,deploymentB.DeploymentId,"Extracted",0,0,0,deploymentB.DeploymentId,InventoryRepository.Encode(raid));
         pb=await ProfileOf(await server.PostAsJsonAsync("internal/settlements",settlement,wire));
         pb=await ProfileOf(await server.PostAsJsonAsync("internal/settlements",settlement,wire));
         var extracted=InventoryRepository.Decode(pb.InventoryJson!);
-        Check(extracted.Count("alien_neural_core")==1 && extracted.Count("alien_raw_meat")==4 && extracted.Count("alien_tissue")==5 &&
+        Check(extracted.Count("alien_neural_core")==1 && extracted.Count("alien_raw_meat")==4 && extracted.Count("alien_tissue")==5 && extracted.Count("alien_contractile_heart")==1 &&
             extracted.Items.Where(i=>i.Code.StartsWith("alien_")).All(i=>i.FoundInRaid),"extraction persists new items once with provenance");
         pa=await ProfileOf(await server.PostAsJsonAsync("internal/settlements",new Settlement(pa.PlayerId,deploymentA.DeploymentId,"Dead",0,0,0,deploymentA.DeploymentId),wire));
-        Check(InventoryRepository.Decode(pa.InventoryJson!).HaloResearchLevel==1,"online death retains research");
+        Check(InventoryRepository.Decode(pa.InventoryJson!).HaloResearchLevel==1 && InventoryRepository.Decode(pa.InventoryJson!).HaloResearchBranches==7,"online death retains research");
         await Stop();await Start();
         pa=await ProfileOf(await a.GetAsync("auth/me"));pb=await ProfileOf(await b.GetAsync("auth/me"));
-        Check(InventoryRepository.Decode(pa.InventoryJson!).HaloResearchLevel==1 && InventoryRepository.Decode(pb.InventoryJson!).Count("alien_neural_core")==1,"backend restart preserves both accounts");
+        Check(InventoryRepository.Decode(pa.InventoryJson!).HaloResearchLevel==1 && InventoryRepository.Decode(pa.InventoryJson!).HaloResearchBranches==7 && InventoryRepository.Decode(pb.InventoryJson!).Count("alien_neural_core")==1,"backend restart preserves both accounts");
     }
     finally {await Stop();}
 }

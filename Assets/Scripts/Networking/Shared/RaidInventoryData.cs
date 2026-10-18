@@ -45,6 +45,18 @@ namespace Unity.MP_FPS
         public int Drop(InventoryGraph carried,Unity.Mathematics.float3 position,Unity.Mathematics.quaternion rotation=default,int characterIndex=2,double createdAt=0)
         {
             var graph=LootInventoryExchange.DropOnDeath(carried);
+            return RegisterDrop(graph,position,rotation,characterIndex,createdAt);
+        }
+        public int DropHarvest(InventoryGraph cache,Unity.Mathematics.float3 position,Unity.Mathematics.quaternion rotation=default,double createdAt=0)
+        {
+            if(cache==null || cache.Validate()!=InventoryError.None || cache.Find(LootInventoryExchange.Root)==null || cache.Find("stash")!=null ||
+                cache.Items.Exists(i=>cache.Carried(i) && InventoryCatalog.Get(i.Code).Kind!=ItemKind.Root))
+                throw new ArgumentException("Alien harvest must be a validated loot container.");
+            var graph=cache.Clone();graph.Version=1;
+            return RegisterDrop(graph,position,rotation,-1,createdAt);
+        }
+        private int RegisterDrop(InventoryGraph graph,Unity.Mathematics.float3 position,Unity.Mathematics.quaternion rotation,int characterIndex,double createdAt)
+        {
             int id=m_NextDeathBagId++;
             Containers.Add(id,graph);DeathBags.Add(id,new RaidCorpseRecord {Position=position,
                 Rotation=Unity.Mathematics.math.lengthsq(rotation.value)>0 ? rotation : Unity.Mathematics.quaternion.identity,
