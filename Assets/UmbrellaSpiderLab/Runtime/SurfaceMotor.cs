@@ -86,6 +86,45 @@ namespace Unity.MP_FPS.SpiderLab
             Advance(ref m_State, input, speed, yawDegrees, dt);
         }
 
+        /// <summary>Ground-only locomotion for an upright body. Sweeps its complete
+        /// height and checks support before moving; never climbs walls or ceilings.</summary>
+        public void TickGroundedCapsule(Vector2 input, float speed, float yawDegrees, float dt, float height, float radius)
+        {
+            if (dt <= 0) return;
+            Vector3 before = Current.Position;
+            Quaternion rotation = Quaternion.Euler(0, Current.Rotation.eulerAngles.y + yawDegrees * dt, 0);
+            Vector3 foot = before - Vector3.up * BodyHeight;
+            Vector3 movement = rotation * new Vector3(input.x, 0, input.y) * (speed * dt);
+            bool supported = UnityEngine.Physics.Raycast(foot + Vector3.up * .45f, Vector3.down, out var floor, .9f, m_Mask,
+                QueryTriggerInteraction.Ignore) && floor.normal.y >= .75f;
+            bool blocked = false;
+            if (supported)
+            {
+                foot = floor.point;
+                float distance = movement.magnitude;
+                Vector3 lower = foot + Vector3.up * (radius + .025f), upper = foot + Vector3.up * (height - radius);
+                blocked = UnityEngine.Physics.CheckCapsule(lower, upper, radius, m_Mask, QueryTriggerInteraction.Ignore) ||
+                    (distance > .0001f && UnityEngine.Physics.CapsuleCast(lower, upper, radius, movement / distance, distance + .025f,
+                        m_Mask, QueryTriggerInteraction.Ignore));
+                if (!blocked && distance > .0001f)
+                {
+                    Vector3 next = foot + movement;
+                    if (UnityEngine.Physics.Raycast(next + Vector3.up * .45f, Vector3.down, out var support, .9f, m_Mask,
+                        QueryTriggerInteraction.Ignore) && support.normal.y >= .75f &&
+                        !UnityEngine.Physics.CheckCapsule(support.point + Vector3.up * (radius + .025f),
+                            support.point + Vector3.up * (height - radius), radius, m_Mask, QueryTriggerInteraction.Ignore))
+                    { foot = support.point; floor = support; }
+                    else blocked = true;
+                }
+            }
+            m_State.Corner = default; m_State.Detached = false; m_State.Supported = supported;
+            m_State.Surface = supported ? floor.collider : null;
+            m_State.Pose = new Pose { Position = supported ? foot + Vector3.up * BodyHeight : before, Rotation = rotation };
+            m_State.Velocity = (Current.Position - before) / dt;
+            m_State.Travel += Vector3.Distance(before, Current.Position);
+            if (blocked) m_State.Blocked++;
+        }
+
         /// <summary>Presentation-only pose from an authoritative snapshot. Never call
         /// this on the server motor: clients use its value-copy predictor for feet only.</summary>
         public void Observe(Pose pose, Vector3 velocity, bool detached)

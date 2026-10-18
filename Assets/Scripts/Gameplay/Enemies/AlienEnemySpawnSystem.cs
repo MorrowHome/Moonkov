@@ -193,8 +193,8 @@ namespace Unity.MP_FPS
             float mantleRadius = spawn.Profile.IsChain ? Mathf.Max(SurfaceMotor.BodyRadius, spawn.Profile.Chain.radius) :
                 (spawn.Profile.Species == AlienSpecies.Spider || spawn.Profile.Species == AlienSpecies.FaceHugger) ? SurfaceMotor.BodyRadius :
                 Mathf.Max(SurfaceMotor.BodyRadius, Mathf.Max(spawn.Profile.Branch.bodyRadii.x, spawn.Profile.Branch.bodyRadii.z) * .7f);
-            float radius = mantleRadius * scale;
-            float height = Mathf.Max(radius * 2, (SurfaceMotor.Height + mantleRadius) * scale);
+            float radius = spawn.Profile.IsUpright ? spawn.Profile.UprightRadius(scale) : mantleRadius * scale;
+            float height = spawn.Profile.IsUpright ? spawn.Profile.UprightHeight(scale) : Mathf.Max(radius * 2, (SurfaceMotor.Height + mantleRadius) * scale);
             int anchors = 1 + (spawn.CandidatePositions?.Length ?? 0);
             for (int attempt = 0; attempt < settings.CandidateAttempts; attempt++)
             {
@@ -218,6 +218,8 @@ namespace Unity.MP_FPS
                 if (!RaidSpawnSafety.IsSafeFromObservers(bodyPosition, m_Observers, settings.MinimumPlayerSpawnDistance,
                         settings.VisibilityDistance, Mathf.Max(3f, scale * 2f)) ||
                     !HasBodyClearance(spawn.Profile, scale, ground, normal, forward, settings.MaximumSpawnSlope)) continue;
+                if (spawn.Profile.IsUpright && !RaidSpawnSafety.IsSafeFromObservers(ground + Vector3.up * (height - 1.5f),
+                    m_Observers, settings.MinimumPlayerSpawnDistance, settings.VisibilityDistance, Mathf.Max(3f, scale * 2f))) continue;
                 position = bodyPosition;
                 rotation = Quaternion.LookRotation(forward, normal);
                 return true;
@@ -279,6 +281,9 @@ namespace Unity.MP_FPS
         private static bool HasBodyClearance(AlienCreatureProfile profile, float scale, Vector3 ground,
             Vector3 normal, Vector3 forward, float maxSlope)
         {
+            if (profile.IsUpright)
+                return RaidSpawnSafety.TryGroundPosition(ground, profile.UprightRadius(scale), profile.UprightHeight(scale),
+                    maxSlope, out var uprightFloor, out _) && Mathf.Abs(uprightFloor.y - ground.y) < .15f;
             // A head-sized sphere alone admits long chains through walls or across the
             // shaft. Sample support and clearance along the initial body footprint.
             int samples = profile.IsChain ? 4 : 8;

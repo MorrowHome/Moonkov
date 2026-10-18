@@ -88777,9 +88777,9 @@ MonoBehaviour:
     Prefab:
       <GhostPrefab>k__BackingField:
         m_AssetGUID: ad4ecd740cff8294eb04378944bb8b27
-        m_SubObjectName:
-        m_SubObjectType:
-        m_SubObjectGUID:
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_SubObjectGUID: 
         m_EditorAssetChanged: 0
       m_GhostGuid:
         Value:
@@ -88796,9 +88796,9 @@ MonoBehaviour:
     Prefab:
       <GhostPrefab>k__BackingField:
         m_AssetGUID: ad4ecd740cff8294eb04378944bb8b27
-        m_SubObjectName:
-        m_SubObjectType:
-        m_SubObjectGUID:
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_SubObjectGUID: 
         m_EditorAssetChanged: 0
       m_GhostGuid:
         Value:
@@ -88807,6 +88807,63 @@ MonoBehaviour:
           z: 2557690046
           w: 1924709188
     Position: {x: 1593.9015, y: 211.63614, z: 2165.7625}
+    Yaw: 323
+    Ambush: 0
+    SurfaceNormal: {x: 0, y: 1, z: 0}
+    CandidatePositions: []
+  - Profile: {fileID: 11400000, guid: 57752ddc92136084890a566dbef09863, type: 2}
+    Prefab:
+      <GhostPrefab>k__BackingField:
+        m_AssetGUID: 989b7cafc97d6204db417b0e04e7afb8
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_SubObjectGUID: 
+        m_EditorAssetChanged: 0
+      m_GhostGuid:
+        Value:
+          x: 4207393161
+          y: 1076287388
+          z: 3770094781
+          w: 2348449344
+    Position: {x: 1603.5194, y: 211.63614, z: 2156.9844}
+    Yaw: 323
+    Ambush: 0
+    SurfaceNormal: {x: 0, y: 1, z: 0}
+    CandidatePositions: []
+  - Profile: {fileID: 11400000, guid: 57752ddc92136084890a566dbef09863, type: 2}
+    Prefab:
+      <GhostPrefab>k__BackingField:
+        m_AssetGUID: 989b7cafc97d6204db417b0e04e7afb8
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_SubObjectGUID: 
+        m_EditorAssetChanged: 0
+      m_GhostGuid:
+        Value:
+          x: 4207393161
+          y: 1076287388
+          z: 3770094781
+          w: 2348449344
+    Position: {x: 1596.2977, y: 211.63614, z: 2166.5679}
+    Yaw: 323
+    Ambush: 0
+    SurfaceNormal: {x: 0, y: 1, z: 0}
+    CandidatePositions: []
+  - Profile: {fileID: 11400000, guid: 3b4b9a3aaf1688c44a5de0aad174c829, type: 2}
+    Prefab:
+      <GhostPrefab>k__BackingField:
+        m_AssetGUID: 7d3cf20b043acde4ebd0b998bca78bbb
+        m_SubObjectName: 
+        m_SubObjectType: 
+        m_SubObjectGUID: 
+        m_EditorAssetChanged: 0
+      m_GhostGuid:
+        Value:
+          x: 2955920343
+          y: 1323082560
+          z: 2308640190
+          w: 3149429451
+    Position: {x: 1592.6866, y: 211.63614, z: 2171.3596}
     Yaw: 323
     Ambush: 0
     SurfaceNormal: {x: 0, y: 1, z: 0}

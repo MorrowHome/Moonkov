@@ -1,6 +1,28 @@
 # 正式地图的程序化异形敌人
 
-当前正式入口是 `TheophilusGameScene`，其中 `AlienEncounterSettings` 注册蜘蛛、蛇、毛毛虫、触手兽、蜈蚣、水蛭、黏液兽、根须与独立抱脸虫九种异形。Apollo12 保留历史配置。正式预制体不添加实验输入和摄像机，已有 DollSinger / PMC 敌人继续使用原服务端 AI。
+当前正式入口是 `TheophilusGameScene`，其中 `AlienEncounterSettings` 注册蜘蛛、蛇、毛毛虫、触手兽、蜈蚣、水蛭、黏液兽、根须、独立抱脸虫与长脚窥行者十种异形（直立类有两个高度预制体）。Apollo12 保留历史配置。正式预制体不添加实验输入和摄像机，已有 DollSinger / PMC 敌人继续使用原服务端 AI。
+
+## 预制体与参数入口
+
+所有正式异形都有 Ghost 预制体，位于 `Assets/AlienCreatures/Prefabs/`。选中例如 `XenoLeech.prefab`，在 `ProceduralAlienEnemy` 组件中点开 **Profile**；也可在组件右键菜单选择 **Edit creature profile**。参数资产位于 `Assets/AlienCreatures/Profiles/`。身体网格和组织命中体由程序化骨架在运行时生成，因此直接打开预制体并不会显示完整怪物身体；它不是缺少模型引用。
+
+- 整体大小改 `Scale`；生命改 `Health`（生成时读取）；速度改 `Speed`，实际巡游/追击还受 Scale 和行为系数影响。
+- 感知与行动改 `SightRange`、`HearingRange`、`MemorySeconds`、`TurnSpeed`、`PatrolRadius`；伤害与攻击间隔改 `Damage`、`AttackCooldown`。
+- 长脚窥行者直接使用 `AttackReach`、`Windup`、`Recovery`；其他物种有自己的攻击模式，具体几何和节奏在 `AlienCombatPattern.cs`，不能假定通用旧字段会覆盖全部物种。
+- 蜘蛛伏击使用 `SpiderAmbushRange`、`SpiderWindup`、`SpiderStrikeSeconds`、`SpiderRecovery`。Boss 使用 `Boss`、`EnrageHealthFraction`。
+- 刷新数量、次数、位置和延迟在正式地图 `Moon Raid` 的 `AlienEncounterSettings` 上调整，不在敌人预制体上。
+
+## 直立异形：长脚窥行者
+
+新增两个可独立调参的预制体：`XenoStiltWalker.prefab` → `StiltWalker.asset`（约 3.2 m），`XenoStiltWatcher.prefab` → `StiltWatcher.asset`（约 4.2 m）。两者属于 `StiltWalker` 物种，使用细长颈躯、反折长腿、垂臂和狭窄骨面；高度不是把地爬骨架整体拉大。灰色 1.8 m 人形仅为预览比例参照。
+
+![左为 4.2 m，中央为 3.2 m，右为 1.8 m 人形参照](AI/AlienUprightComparison.png)
+
+Profile 中的 **长脚窥行者 / 直立体型** 可调 `StiltHeight`、`StiltThickness`、`StiltStride`、`StiltStepSeconds`。Height 是 Scale=1 的脚底到头顶高度；改变骨架比例后需重新生成该敌人。行走时双脚交替固定落地，攻击时前倾、抬臂蓄力，随后向锁定方向伸臂抓击；单轮不会重复伤害同一目标，也不画攻击范围线。
+
+正式 MC00 配置两个 3.2 m 与一个 4.2 m 刷新槽，继续受全图活体和生成预算限制，并不保证三个同时出现。生成和移动均检查完整高度的胶囊净空，不攀墙、不钻过低矮门洞；生成可见性额外检查头部。地面路线优先使用现有人形 NavMesh，实际高度仍由运动碰撞限制；人形 NavMesh 不区分这两种身高，遇到路线中的低门洞会停止，尚未实现按身高重新搜索其他门洞的全图路线。
+
+解剖复用现有「触手收缩心脏」物品及其食用、中文说明、图标和研究用途。接入入口为 `Set up upright stilt walkers`；定向检查入口为 `Check upright combat and full-height clearance`。本轮通过两个高度的单轮命中、高位组织命中体、服务端不分配渲染器、低门洞生成/移动拒绝、现有器官掉落检查，并完成等比例造型渲染。未替代真实 Host/第二客户端、完整路线、玩家第一人称恐怖感和性能验收。
 
 ## 2026-10-18：解剖、异形食物与局外光环研究
 
@@ -153,7 +175,7 @@ Scale、战斗参数和液态材质 / 解算参数可以运行时调整；其他
 
 仅真实存活玩家进入默认 240 m 激活范围才尝试生成；靠近玩家、玩家当前视野内无遮挡、无地面、斜坡过陡、身体空间被占据或身体跨越断崖时会延后。其他活体也保留最小间距，防止同次生成互相重叠。接地高度和身体检查随 Profile.Scale 变化，长身体沿尾部检查，触手与蜘蛛检查周围落脚空间。所有物理搜索都有尝试上限；无法安全生成时保留等待状态。地图卸载时清理活体与仍保留的死亡 Ghost。
 
-九个预制体通过现有 `GhostPrefabsAuthoring` 和 Addressables 注册，均为服务端控制的插值 Ghost。它们复用现有 `PredictedPlayerGhost` 的生命字段，因此现有 hitscan、弹丸和范围攻击继续经服务端命中处理；没有添加玩家输入或玩家移动组件。身体与肢体的命中体在服务端使用 `ServerPlayer` 层，客户端使用 `ClientPlayer` 层，命中反馈按肉体分类。死亡停止攻击、生成一次可搜取的组织残骸，短暂保留姿态后由服务端销毁。
+现有十一个预制体通过现有 `GhostPrefabsAuthoring` 和 Addressables 注册，均为服务端控制的插值 Ghost。它们复用现有 `PredictedPlayerGhost` 的生命字段，因此现有 hitscan、弹丸和范围攻击继续经服务端命中处理；没有添加玩家输入或玩家移动组件。身体与肢体的命中体在服务端使用 `ServerPlayer` 层，客户端使用 `ClientPlayer` 层，命中反馈按肉体分类。死亡停止攻击、生成一次可搜取的组织残骸，短暂保留姿态后由服务端销毁。
 
 服务端不创建材质、渲染网格或 GPU 液体；只解接触、姿态和命中体。客户端默认只让最近两个异形运行 GPU 液体，超过距离或预算使用实体回退外观；预算和距离也在 Profile 中暴露。判断按 World 分开，近距离敌人切换不会影响生命或 AI。
 

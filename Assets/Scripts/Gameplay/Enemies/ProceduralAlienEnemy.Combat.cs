@@ -72,7 +72,8 @@ namespace Unity.MP_FPS
             else if ((m_Action == AlienAction.Chase || m_Action == AlienAction.Search || m_Action == AlienAction.Roam) && profile.Species != AlienSpecies.Roots)
             {
                 Vector3 goal = remembered ? m_LastSeen : PatrolGoal();
-                var graph = AlienSurfaceNavigation.Find(m_Spawn);
+                if (profile.IsUpright) goal = UprightWaypoint(goal);
+                var graph = profile.IsUpright ? null : AlienSurfaceNavigation.Find(m_Spawn);
                 if (graph && graph.Contains(goal))
                 {
                     if (graph.TryGetSteering(m_Route, m_Body.Motor, goal, m_Clock, out var waypoint)) goal = waypoint;
@@ -112,6 +113,13 @@ namespace Unity.MP_FPS
                 bool hit = false;
                 switch (m_Pattern.Kind)
                 {
+                    case AlienAttackKind.StiltRake:
+                        Vector3 rakeEnd = m_CombatOrigin + m_CombatDirection * m_Pattern.Range;
+                        hit = DistanceToSegment(Vector3.ProjectOnPlane(point, Vector3.up),
+                            Vector3.ProjectOnPlane(m_CombatOrigin, Vector3.up), Vector3.ProjectOnPlane(rakeEnd, Vector3.up)) <= m_Pattern.Radius &&
+                            Vector3.Dot(point - m_CombatOrigin, m_CombatDirection) >= 0 &&
+                            Mathf.Abs(point.y - m_CombatOrigin.y) <= profile.UprightHeight(m_Body.Scale);
+                        break;
                     case AlienAttackKind.LeechDrain:
                         hit = entity == m_Target && Vector3.Distance(AimPoint, point) <= m_Pattern.Radius + .35f; break;
                     case AlienAttackKind.Bite:

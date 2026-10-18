@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Unity.MP_FPS
 {
-    public enum AlienSpecies : byte { Spider, Snake, Caterpillar, Tentacle, Centipede, Leech, Slime, Roots, FaceHugger }
+    public enum AlienSpecies : byte { Spider, Snake, Caterpillar, Tentacle, Centipede, Leech, Slime, Roots, FaceHugger, StiltWalker }
 
     /// <summary>Shared authoring data only. Scale is uniform and authoritative: body
     /// dimensions, motor contacts, hitboxes, strike reach and liquid bounds use it.
@@ -37,6 +37,16 @@ namespace Unity.MP_FPS
         [Min(.3f)] public float SpiderWindup = .75f;
         [Min(.2f)] public float SpiderStrikeSeconds = .45f;
         [Min(.3f)] public float SpiderRecovery = 1.1f;
+        [Header("长脚窥行者 / 直立体型")]
+        [Min(1.8f), Tooltip("Scale=1 时从脚底到头顶的高度，单位米。改变后重新生成敌人。")]
+        public float StiltHeight = 3.2f;
+        [Range(.04f, .18f), Tooltip("肢体粗细，不会把长腿整体放胖。")]
+        public float StiltThickness = .085f;
+        [Range(.3f, 1.3f)] public float StiltStride = .85f;
+        [Range(.25f, 1.5f)] public float StiltStepSeconds = .55f;
+        public bool IsUpright => Species == AlienSpecies.StiltWalker;
+        public float UprightHeight(float scale) => StiltHeight * scale;
+        public float UprightRadius(float scale) => Mathf.Max(.32f, StiltThickness * 3.5f) * scale;
         [Header("客户端表现")]
         public bool Liquid = true;
         [Min(2)] public float LiquidDistance = 24;
@@ -61,6 +71,8 @@ namespace Unity.MP_FPS
             else if (species == AlienSpecies.Roots) { Branch = BranchCreatureSettings.RootsDefaults(); Speed = 1.4f; AttackReach = 2.6f; }
             else if (species == AlienSpecies.Spider) { Speed = 5.5f; Scale = .45f; }
             else if (species == AlienSpecies.FaceHugger) { Speed = 4.8f; Scale = .45f; Health = 65; Damage = 18; Liquid = false; }
+            else if (species == AlienSpecies.StiltWalker)
+            { Speed = 3.1f; Scale = 1; Health = 210; Damage = 32; Liquid = false; TurnSpeed = 150; AttackReach = 3.1f; Windup = .95f; Recovery = 1.35f; AttackCooldown = 3.2f; }
             else Speed = 3.2f;
             Fluid = species == AlienSpecies.Spider ? new SpiderFluidSettings() : species == AlienSpecies.Centipede ?
                 ProceduralMenagerieExperiment.CentipedeFluidDefaults() : IsChain ? ChainFluidPresentation.Defaults(IsLarva) : BranchFluidPresentation.Defaults(BranchSpecies);

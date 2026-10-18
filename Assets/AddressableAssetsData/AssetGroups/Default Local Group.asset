@@ -35,6 +35,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7d3cf20b043acde4ebd0b998bca78bbb
+    m_Address: Assets/AlienCreatures/Prefabs/XenoStiltWatcher.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 83a79bf5320972c46ae675e08e77534b
     m_Address: Assets/Prefabs/ActorGhosts/Projectile.prefab
     m_ReadOnly: 0
@@ -47,6 +52,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 97444351532aae84c86615bdc2db8b86
     m_Address: Assets/AlienCreatures/Prefabs/XenoSnake.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 989b7cafc97d6204db417b0e04e7afb8
+    m_Address: Assets/AlienCreatures/Prefabs/XenoStiltWalker.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

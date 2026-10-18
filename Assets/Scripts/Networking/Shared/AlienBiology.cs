@@ -45,7 +45,9 @@ namespace Unity.MP_FPS.Inventory
             new HaloResearchDefinition("halo_stability","BIOLOGICAL STABILITY","Permanent: all halo spread -30% and handling penalties -15%.","alien_silk_gland",4,new[]{"alien_silk_gland","alien_neural_ganglion","alien_tissue"},new[]{2,2,5})
         };
         public static AlienOrganDefinition Organ(string code)=>Organs.FirstOrDefault(o=>o.Code==code);
-        public static AlienOrganDefinition Species(string species)=>Organs.FirstOrDefault(o=>o.Species==species);
+        // Upright variants share the contractile heart item and its existing food,
+        // Chinese text, icon and research integration; no new inventory code needed.
+        public static AlienOrganDefinition Species(string species)=>Organs.FirstOrDefault(o=>o.Species==(species=="StiltWalker"?"Tentacle":species));
         public static HaloResearchDefinition FindResearch(string code)=>Research.FirstOrDefault(r=>r.Code==code);
         public static AlienFoodEffect Effect(ushort modules)=>(AlienFoodEffect)(modules>>12);
         public static string Activity(AlienFoodEffect effect)
