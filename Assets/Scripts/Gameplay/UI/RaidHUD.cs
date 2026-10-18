@@ -234,9 +234,16 @@ namespace Unity.MP_FPS
         {
             int count = m_Snapshot.Dust + m_Snapshot.Alloy + m_Snapshot.Cells;
             string title = m_Snapshot.Phase == RaidPhase.Extracted ? "SURVIVED" : m_Snapshot.Phase == RaidPhase.Dead ? "KILLED IN ACTION" : "TIME EXPIRED";
-            MoonkovLocalization.Set(m_ResultText, m_ResultStep == 0 ? MoonkovLocalization.Format($"{title}\n\nEXPEDITION {m_Snapshot.RaidId:000}\n{(m_Snapshot.Phase == RaidPhase.Extracted ? "Cargo recovered" : "Carried cargo lost")} / {count} supplies")
-                : m_ResultStep == 1 ? MoonkovLocalization.Format($"{(m_Snapshot.Phase == RaidPhase.Extracted ? "RECOVERED CARGO" : "LOST CARGO")}\n\nMoon dust      {m_Snapshot.Dust}\nAlloy               {m_Snapshot.Alloy}\nEnergy cells   {m_Snapshot.Cells}")
-                : MoonkovLocalization.Format($"PERSONAL STORAGE\n\nMoon dust      {m_Snapshot.StashDust}\nAlloy               {m_Snapshot.StashAlloy}\nEnergy cells   {m_Snapshot.StashCells}"));
+            MoonkovLocalization.Set(m_Root.Q<Label>("raidResultHeading"), m_ResultStep == 0 ? title : m_ResultStep == 1 ?
+                m_Snapshot.Phase == RaidPhase.Extracted ? "RECOVERED CARGO" : "LOST CARGO" : "PERSONAL STORAGE");
+            MoonkovLocalization.Set(m_ResultText, MoonkovLocalization.Format($"EXPEDITION {m_Snapshot.RaidId:000}\n{(m_Snapshot.Phase == RaidPhase.Extracted ? "Cargo recovered" : "Carried cargo lost")} / {count} supplies"));
+            m_Result.EnableInClassList("raid-result-failed", m_Snapshot.Phase != RaidPhase.Extracted);
+            m_Result.EnableInClassList("raid-result-cargo", m_ResultStep == 1);
+            m_Result.EnableInClassList("raid-result-storage", m_ResultStep == 2);
+            m_Root.Q("raidManifest").style.display = m_ResultStep == 0 ? DisplayStyle.None : DisplayStyle.Flex;
+            MoonkovLocalization.Set(m_Root.Q<Label>("raidManifestDust"), "{0:N0}", m_ResultStep == 2 ? m_Snapshot.StashDust : m_Snapshot.Dust);
+            MoonkovLocalization.Set(m_Root.Q<Label>("raidManifestAlloy"), "{0:N0}", m_ResultStep == 2 ? m_Snapshot.StashAlloy : m_Snapshot.Alloy);
+            MoonkovLocalization.Set(m_Root.Q<Label>("raidManifestCells"), "{0:N0}", m_ResultStep == 2 ? m_Snapshot.StashCells : m_Snapshot.Cells);
             for (int i = 0; i < 3; i++) m_Root.Q<Label>("raidStep" + i).EnableInClassList("raid-step-active", i == m_ResultStep);
             m_ResultBack.SetEnabled(m_ResultStep > 0); m_ResultNext.style.display = m_ResultStep < 2 ? DisplayStyle.Flex : DisplayStyle.None;
             m_Deploy.style.display = m_Return.style.display = m_ResultStep == 2 ? DisplayStyle.Flex : DisplayStyle.None;

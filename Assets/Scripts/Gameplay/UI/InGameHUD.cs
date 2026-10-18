@@ -19,6 +19,7 @@ namespace Unity.MP_FPS
         private ProgressBar m_AmmoBar;
         private Label m_AmmoLabel;
         private Label m_ReloadingLabel;
+        private Label m_HealthState, m_HealthValue;
         private VisualElement m_Reticle;
         private static InGameHUD s_Active;
         private VisualElement m_RifleHit;
@@ -45,7 +46,7 @@ namespace Unity.MP_FPS
 
         // The reticle will stay white for at least 100ms after a shot.
         private const float k_ShotFeedbackDuration = 0.1f;
-        private static readonly Color k_HealthBarColor = new Color(0.29f, 0.83f, 0.43f, 0.75f);
+        private static readonly Color k_HealthBarColor = new Color(.92f, .93f, .90f);
         private const string k_CrossReticleClass = "kits-reticle-cross";
         private const string k_TCrossReticleClass = "kits-reticle-tcross";
         private const string k_CircularCrossClass = "kits-reticle-circularcross";
@@ -71,6 +72,8 @@ namespace Unity.MP_FPS
             m_AmmoLabel = m_RootElement.Q<Label>("ammo-label");
             m_AmmoBar = m_RootElement.Q<ProgressBar>("player-ammo-bar");
             m_ReloadingLabel = m_RootElement.Q<Label>("reloading-label");
+            m_HealthState = m_RootElement.Q<Label>("health-state");
+            m_HealthValue = m_RootElement.Q<Label>("health-value");
             m_Reticle = m_RootElement.Q<VisualElement>("player-reticle");
             m_RifleHit = m_RootElement.Q<VisualElement>("rifle-hit-confirmation");
             if (m_RifleHit == null)
@@ -186,7 +189,10 @@ namespace Unity.MP_FPS
                 m_HealthBar.value = playerData.CurrentHealth;
 
                 float healthPercent = RaidHealth.DangerFraction(playerData);
-                Color healthColor = Color.Lerp(Color.red, k_HealthBarColor, healthPercent);
+                Color healthColor = healthPercent < .35f ? new Color(.95f, .47f, .38f) : k_HealthBarColor;
+                healthPanel?.EnableInClassList("health-critical", healthPercent < .35f);
+                MoonkovLocalization.Set(m_HealthState, healthPercent < .35f ? "HEALTH / CRITICAL" : "HEALTH");
+                MoonkovLocalization.Set(m_HealthValue, "{0:0}/{1:0}", playerData.CurrentHealth, m_HealthBar.highValue);
 
                 // Apply the calculated color to the fill element's background
                 m_PlayerHealthBarFill.style.backgroundColor = healthColor;

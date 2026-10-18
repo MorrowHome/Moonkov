@@ -1,5 +1,6 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
     <ui:VisualElement class="home-card-contents" picking-mode="Ignore">
+        <ui:VisualElement class="home-card-plate" picking-mode="Ignore" />
         <ui:VisualElement class="home-card-image" picking-mode="Ignore" />
         <ui:Label name="cardIndex" class="terminal-home-action-index" picking-mode="Ignore" />
         <ui:VisualElement class="home-card-copy" picking-mode="Ignore">

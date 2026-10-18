@@ -1,16 +1,21 @@
 .halo-light-host { position: absolute; left: 0; right: 0; top: 0; bottom: 0; justify-content: center; align-items: flex-end; padding-right: 28px; }
-.halo-light-panel { width: 340px; max-width: 90%; padding: 22px; background-color: rgba(12, 18, 25, 0.96); border-width: 1px; border-color: #506773; border-left-width: 3px; border-left-color: #FFE11A; color: #ecece6; }
+.halo-light-panel { width: 340px; max-width: 90%; padding: 22px; background-color: rgba(8,9,12,0.96); border-width: 1px; border-color: #5c626d; border-left-width: 3px; border-left-color: #f1f2ed; color: #f1f2ed; }
 .halo-light-title { font-size: 22px; margin-bottom: 8px; }
-.halo-light-status { font-size: 12px; color: #FFE11A; margin-bottom: 14px; }
+.halo-light-status { font-size: 12px; color: #f1f2ed; margin-bottom: 14px; }
 .halo-light-tabs { flex-direction: row; margin-bottom: 18px; }
-.halo-light-panel Button { height: 34px; background-color: #263641; color: #ecece6; border-width: 1px; border-color: #506773; padding-left: 10px; padding-right: 10px; }
+.halo-light-panel Button { height: 34px; background-color: #20232b; color: #f1f2ed; border-width: 1px; border-color: #5c626d; padding-left: 10px; padding-right: 10px; }
 .halo-light-tabs Button { flex-grow: 1; margin-left: 0; margin-right: 6px; }
-.halo-light-panel Button:hover { background-color: #3c5260; }
-.halo-light-panel Button.halo-selected { border-bottom-color: #FFE11A; border-bottom-width: 3px; color: #FFE11A; }
+.halo-light-panel Button:hover { background-color: #333843; }
+.halo-light-panel Button.halo-selected { border-bottom-color: #f1f2ed; border-bottom-width: 3px; color: #f1f2ed; }
 .halo-light-heading { flex-direction: row; justify-content: space-between; margin-bottom: 4px; font-size: 15px; }
-.halo-light-value { color: #FFE11A; }
+.halo-light-value { color: #f1f2ed; }
 .halo-light-panel Slider, .halo-light-panel SliderInt { margin-bottom: 22px; height: 24px; }
-.halo-light-panel .unity-base-slider__tracker { height: 4px; background-color: #506773; }
-.halo-light-panel .unity-base-slider__dragger { background-color: #FFE11A; border-width: 0; width: 14px; height: 20px; }
-.halo-light-hint { margin-top: 14px; font-size: 12px; color: #bdcbd2; white-space: normal; }
+.halo-light-panel .unity-base-slider__tracker { height: 4px; background-color: #5c626d; }
+.halo-light-panel .unity-base-slider__dragger { background-color: #f1f2ed; border-width: 0; width: 14px; height: 20px; }
+.halo-light-hint { margin-top: 14px; font-size: 12px; color: #b1b6c2; white-space: normal; }
 .halo-hidden { display: none; }
+
+.halo-light-panel Button.halo-selected { border-bottom-color: #164BFF; background-color: #f1f2ed; color: #14171e; }
+.halo-light-panel Button:focus { border-width: 2px; border-color: #164BFF; }
+.halo-light-panel Button:active { background-color: #164BFF; color: #ffffff; }
+.halo-light-panel Button:disabled { opacity: 0.45; }

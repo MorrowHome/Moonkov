@@ -45,6 +45,12 @@ namespace Unity.MP_FPS
 
         private static void ApplyFont(TextElement element)
         {
+            if (element.ClassListContains("terminal-home-title") || element.ClassListContains("stash-brand-title") || element.ClassListContains("archive-access-brand"))
+            {
+                element.style.unityFontDefinition = StyleKeyword.Null;
+                element.style.letterSpacing = StyleKeyword.Null;
+                return;
+            }
             if (s_CurrentFont == null) return;
             element.style.unityFontDefinition = FontDefinition.FromSDFFont(s_CurrentFont);
             if (LocalizationSettings.SelectedLocale?.Identifier.Code == "zh-Hans") element.style.letterSpacing = 0;

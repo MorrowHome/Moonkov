@@ -10,7 +10,7 @@
                     <moon:TechFrame picking-mode="Ignore" delay="0.08" />
                     <ui:Label class="terminal-eyebrow" text="STANDARD HALO / COMPONENT SCHEMATIC" />
                     <ui:Label class="terminal-title" text="H-01   /   FIELD ISSUE" />
-                    <moon:HaloSchematic class="halo-schematic terminal-halo-schematic" picking-mode="Ignore">
+                    <ui:VisualElement class="halo-schematic terminal-halo-schematic" picking-mode="Ignore">
                         <ui:Button class="terminal-node" text="FOCUSING LENS" name="haloNode0">
                             <ui:Label class="terminal-node-index" picking-mode="Ignore" text="N1" />
                         </ui:Button>
@@ -32,18 +32,18 @@
                         <ui:Button class="terminal-node" text="CONTROL MODULE" name="haloNode6">
                             <ui:Label class="terminal-node-index" picking-mode="Ignore" text="N7" />
                         </ui:Button>
-                    </moon:HaloSchematic>
+                    </ui:VisualElement>
                     <ui:Label class="terminal-eyebrow" text="SELECT A NODE TO INSPECT ITS ROLE" />
                 </ui:VisualElement>
                 <ui:VisualElement class="terminal-panel terminal-side">
                     <moon:TechFrame picking-mode="Ignore" delay="0.16" />
                     <ui:Label class="terminal-eyebrow" text="LOADOUT INFORMATION" />
                     <ui:VisualElement class="terminal-row terminal-meters">
-                        <moon:ArcMeter class="arc-meter" picking-mode="Ignore" value="0.0" meter-color="#FFE11AFF">
+                        <moon:ArcMeter class="arc-meter" picking-mode="Ignore" value="0.0" meter-color="#4631DFFF">
                             <ui:Label class="terminal-meter-value" text="—" />
                             <ui:Label class="terminal-meter-name" text="DMG" />
                         </moon:ArcMeter>
-                        <moon:ArcMeter class="arc-meter" picking-mode="Ignore" value="0.0" meter-color="#3FE0D0FF">
+                        <moon:ArcMeter class="arc-meter" picking-mode="Ignore" value="0.0" meter-color="#737D8AFF">
                             <ui:Label class="terminal-meter-value" text="—" />
                             <ui:Label class="terminal-meter-name" text="CAP" />
                         </moon:ArcMeter>
@@ -68,7 +68,8 @@
                         <ui:Label class="terminal-stat-name" text="RANGE" />
                         <ui:Label class="terminal-stat-value" text="—" name="statValue3" />
                     </ui:VisualElement>
-                    <ui:Label class="terminal-copy" text="Modular halo assembly is awaiting workshop access. Your current field weapon remains standard issue." />
+                    <ui:Label class="terminal-copy" text="Choose an owned halo to install, replace or remove compatible modules in storage." />
+                    <ui:Button name="modifyHalo" class="terminal-primary" text="MODIFY HALO" />
                     <ui:Button class="terminal-button" enabled="false" tooltip="No modular loadout service is available." text="SAVE HALO PRESET" />
                     <ui:Button class="terminal-button" enabled="false" tooltip="No modular loadout service is available." text="ASSEMBLE LOADOUT" />
                 </ui:VisualElement>

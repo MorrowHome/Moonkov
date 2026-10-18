@@ -35,9 +35,9 @@
                 <ui:VisualElement class="terminal-panel terminal-wide">
                     <moon:TechFrame picking-mode="Ignore" delay="0.16" />
                     <ui:Label class="terminal-eyebrow" text="COMMUNICATIONS / 00 MESSAGES" />
-                    <moon:SignalWave class="signal-wave terminal-comms-wave" picking-mode="Ignore">
+                    <ui:VisualElement class="signal-wave terminal-comms-wave" picking-mode="Ignore">
                         <ui:Label class="terminal-wave-tag" picking-mode="Ignore" text="CARRIER  /  148.250 MHZ" />
-                    </moon:SignalWave>
+                    </ui:VisualElement>
                     <ui:Label class="terminal-hero-title" text="CHANNEL QUIET" />
                     <ui:Label class="terminal-copy" text="Supplier rewards, recovery notices and crew messages will appear here when communications service is available." />
                     <ui:Button class="terminal-button" enabled="false" tooltip="There are no message attachments." text="CLAIM ATTACHMENTS" />

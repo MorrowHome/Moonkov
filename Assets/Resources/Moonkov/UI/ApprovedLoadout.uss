@@ -26,7 +26,7 @@
 .moonkov-terminal.terminal-is-loadout .terminal-tab-selected .terminal-tab-index { color: #15181f; }
 .moonkov-terminal.terminal-is-loadout .terminal-tab:hover,
 .moonkov-terminal.terminal-is-loadout .terminal-tab:focus { border-bottom-width: 2px; border-bottom-color: #e6e8e3; }
-.moonkov-terminal.terminal-is-loadout .terminal-nav-indicator { height: 3px; background-color: #4834dd; }
+.moonkov-terminal.terminal-is-loadout .terminal-nav-indicator { height: 3px; background-color: #164BFF; }
 .moonkov-terminal.terminal-is-loadout .terminal-nav-status { display: none; }
 .moonkov-terminal.terminal-is-loadout .stash-body { padding-top: 18px; padding-bottom: 0; }
 .moonkov-terminal.terminal-is-loadout .stash-footer { height: 62px; border-top-color: #646973; }
@@ -36,4 +36,4 @@
 .moonkov-terminal.terminal-is-loadout .stash-footer-hint { color: #9299a6; font-size: 10px; }
 .moonkov-terminal.terminal-is-loadout .stash-deploy-button { width: 200px; height: 42px; background-color: #e6e8e3; color: #15181f; border-width: 1px; border-color: #e6e8e3; }
 .moonkov-terminal.terminal-is-loadout .stash-deploy-button:hover,
-.moonkov-terminal.terminal-is-loadout .stash-deploy-button:focus { background-color: #bfc4cf; border-color: #4834dd; }
+.moonkov-terminal.terminal-is-loadout .stash-deploy-button:focus { background-color: #bfc4cf; border-color: #164BFF; }

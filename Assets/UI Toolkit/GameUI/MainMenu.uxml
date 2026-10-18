@@ -3,14 +3,17 @@
     <ui:Style src="GameUIStyleSheet.uss" />
     <ui:Style src="StashScreen.uss" />
     <ui:Style src="MoonkovTerminal.uss" />
-    <ui:VisualElement name="Canvas" picking-mode="Ignore" class="canvas canvas-transparent-background moonkov-login">
+    <ui:Style src="../../Resources/Moonkov/UI/AccessTheme.uss" />
+    <ui:Style src="../../Resources/Moonkov/UI/AccountProposal.uss" />
+    <ui:VisualElement name="Canvas" picking-mode="Ignore" class="canvas canvas-transparent-background moonkov-login archive-ui archive-light archive-access">
         <ui:VisualElement name="HidingBackground" picking-mode="Ignore" class="background" />
+        <ui:VisualElement class="archive-access-exhibit" picking-mode="Ignore"><ui:Label text="MOONKOV" class="archive-access-brand" /><ui:Label text="LUNAR EXPEDITION" class="archive-access-note" /></ui:VisualElement>
         <ui:VisualElement name="Container" picking-mode="Ignore" class="container">
             <ui:VisualElement class="login-heading">
                 <ui:Label text="ESCAPE FROM MOONKOV" class="login-title" />
                 <ui:Label text="ORBITAL ACCESS / LUNAR EXPEDITION" class="login-caption" />
             </ui:VisualElement>
-            <ui:VisualElement name="UIWrapper" picking-mode="Ignore">
+            <ui:ScrollView name="UIWrapper" class="archive-form-scroll" mode="Vertical" horizontal-scroller-visibility="Hidden">
                 <ui:VisualElement name="ConnectionPanel" picking-mode="Ignore">
                     <ui:VisualElement name="InputPlayerName" class="section-separator">
                         <ui:Label text="Player Name" name="PlayerName" />
@@ -31,9 +34,9 @@
                     <ui:Button text="Matchmake" name="QuickJoin" class="hidden" />
                     <ui:Button text="QUIT" name="QuitButton" />
                 </ui:VisualElement>
-            </ui:VisualElement>
+            </ui:ScrollView>
         </ui:VisualElement>
         <ui:Instance template="StashScreen" name="stashScreenHost" class="stash-host" />
-        <ui:Button name="ProfileMode" text="SINGLEPLAYER" style="position: absolute; left: 24px; bottom: 24px; width: 190px; height: 34px;" />
+        <ui:Button name="ProfileMode" text="SINGLEPLAYER" />
     </ui:VisualElement>
 </ui:UXML>

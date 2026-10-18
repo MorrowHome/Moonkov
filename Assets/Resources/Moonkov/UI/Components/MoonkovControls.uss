@@ -1,10 +1,10 @@
 .moonkov-controls {
     --mk-surface: #101116;
-    --mk-panel: #191a21;
+    --mk-panel: #121419;
     --mk-ink: #f1f2ed;
     --mk-muted: #a3a7b4;
-    --mk-line: #41444f;
-    --mk-accent: #5039f5;
+    --mk-line: #34383f;
+    --mk-accent: #164BFF;
     color: var(--mk-ink);
 }
 .moonkov-controls-light {

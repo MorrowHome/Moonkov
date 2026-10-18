@@ -1,0 +1,51 @@
+{
+  "source": "User-approved 11-suppliers-D.png; four unchanged illustration crops only",
+  "coordinates": "top-left x0,y0,x1,y1",
+  "containsCharacter": false,
+  "slices": [
+    {
+      "file": "Supplier_Logistics.png",
+      "source": "11-suppliers-D.png",
+      "rect": [
+        930,
+        285,
+        1120,
+        500
+      ],
+      "type": "illustration"
+    },
+    {
+      "file": "Supplier_Medical.png",
+      "source": "11-suppliers-D.png",
+      "rect": [
+        1435,
+        290,
+        1610,
+        485
+      ],
+      "type": "illustration"
+    },
+    {
+      "file": "Supplier_Engineer.png",
+      "source": "11-suppliers-D.png",
+      "rect": [
+        915,
+        580,
+        1118,
+        738
+      ],
+      "type": "illustration"
+    },
+    {
+      "file": "Supplier_Emergency.png",
+      "source": "11-suppliers-D.png",
+      "rect": [
+        1442,
+        570,
+        1612,
+        732
+      ],
+      "type": "illustration"
+    }
+  ]
+}

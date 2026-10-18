@@ -1,7 +1,9 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
     <ui:Style src="GameUIStyleSheet.uss" />
     <ui:Style src="MoonkovTerminal.uss" />
-    <ui:VisualElement name="Canvas" class="canvas moonkov-login" picking-mode="Ignore">
+    <ui:Style src="../../Resources/Moonkov/UI/AccessTheme.uss" />
+    <ui:VisualElement name="Canvas" class="canvas moonkov-login archive-ui archive-light archive-loading" picking-mode="Ignore">
+        <ui:VisualElement class="archive-loading-photo" picking-mode="Ignore" />
         <ui:VisualElement name="Container" class="container container-in-game" picking-mode="Ignore">
             <ui:Label text="LUNAR EXPEDITION" class="login-caption" />
             <ui:Label text="PREPARING DESCENT" class="login-title" />

@@ -10,7 +10,7 @@
                 <ui:VisualElement class="terminal-panel terminal-wide terminal-blueprint-panel">
                     <moon:TechFrame picking-mode="Ignore" delay="0.08" />
                     <ui:Label class="terminal-eyebrow" text="HULL  /  DECK PLAN" />
-                    <moon:ShipBlueprint class="ship-blueprint terminal-blueprint" picking-mode="Ignore" />
+                    <ui:VisualElement class="ship-blueprint terminal-blueprint" picking-mode="Ignore" />
                 </ui:VisualElement>
                 <ui:VisualElement class="terminal-panel terminal-resources">
                     <moon:TechFrame picking-mode="Ignore" delay="0.16" />
@@ -26,16 +26,6 @@
                     <ui:VisualElement class="terminal-row terminal-stat">
                         <ui:Label class="terminal-stat-name" text="ENERGY CELLS" />
                         <ui:Label class="terminal-stat-value" text="0" name="statValue2" />
-                    </ui:VisualElement>
-                    <ui:VisualElement class="terminal-row terminal-meters">
-                        <moon:ArcMeter class="arc-meter" picking-mode="Ignore" value="0.25" meter-color="#3FE07AFF">
-                            <ui:Label class="terminal-meter-value" text="25%" />
-                            <ui:Label class="terminal-meter-name" text="POWER" />
-                        </moon:ArcMeter>
-                        <moon:ArcMeter class="arc-meter" picking-mode="Ignore" value="0.92" meter-color="#3FE0D0FF">
-                            <ui:Label class="terminal-meter-value" text="92%" />
-                            <ui:Label class="terminal-meter-name" text="HULL" />
-                        </moon:ArcMeter>
                     </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>

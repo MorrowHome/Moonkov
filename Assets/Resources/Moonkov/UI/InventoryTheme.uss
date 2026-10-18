@@ -1,4 +1,5 @@
 @import url("Components/MoonkovControls.uss");
+@import url("ApprovedPages.uss");
 .inventory-view { background-color: var(--mk-surface); color: var(--mk-ink); padding: 12px; }
 .inventory-view Label { color: var(--mk-ink); }
 .inventory-view Button { color: var(--mk-ink); letter-spacing: 0; }
@@ -10,8 +11,12 @@
 .inventory-view.inventory-with-stash .inventory-character { border-width: 1px; border-color: var(--mk-line); padding: 12px; }
 .inventory-view.inventory-with-stash .inventory-character-title { border-bottom-width: 1px; border-bottom-color: var(--mk-line); padding-bottom: 8px; margin-bottom: 8px; }
 .inventory-view .inventory-character-title { font-size: 24px; letter-spacing: 1px; }
+.inventory-view .inventory-character-title, .inventory-view .inventory-section-title { -unity-font-style: bold; }
+.inventory-view .inventory-section-title { font-size: 20px; }
 .inventory-view .inventory-caption { color: var(--mk-muted); font-size: 12px; letter-spacing: 0; }
-.inventory-view .inventory-slot { width: 23%; height: 22%; border-color: #636c7a; border-left-color: #636c7a; padding: 8px; }
+.inventory-view .inventory-slot { width: 23%; height: 22%; background-color: var(--mk-panel); border-color: #636c7a; border-left-color: #636c7a; padding: 8px; }
+.inventory-view .inventory-slot:hover { background-color: var(--archive-raised); border-color: var(--mk-ink); }
+.inventory-view .inventory-slot:active { background-color: #172b54; }
 .inventory-view .inventory-slot-0 { left: 0; top: 2%; }
 .inventory-view .inventory-slot-1 { left: 0; top: 34%; }
 .inventory-view .inventory-slot-2 { left: 0; top: 68%; }
@@ -21,7 +26,7 @@
 .inventory-view .stash-character-render { left: 10%; right: 10%; }
 .inventory-view .inventory-slot-label { font-size: 11px; letter-spacing: 0; color: var(--mk-muted); }
 .inventory-view .inventory-slot-item { font-size: 11px; color: var(--mk-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.inventory-view .inventory-equipped { border-left-width: 3px; border-left-color: var(--mk-accent); }
+.inventory-view .inventory-equipped { background-color: var(--mk-panel); border-left-width: 3px; border-left-color: var(--mk-accent); }
 .inventory-view .inventory-container { border-bottom-color: var(--mk-line); margin-bottom: 16px; padding-bottom: 10px; }
 .inventory-view .inventory-section-title { font-size: 16px; letter-spacing: 0; margin-bottom: 8px; }
 .inventory-view .inventory-region-title { font-size: 11px; letter-spacing: 0; color: var(--mk-muted); }
@@ -46,3 +51,10 @@
 .inventory-view .terminal-button:disabled { color: var(--mk-muted); opacity: 0.45; }
 .inventory-view .unity-base-field__label { color: var(--mk-muted); }
 .inventory-view .unity-base-field__input { color: var(--mk-ink); background-color: var(--mk-panel); }
+
+.inventory-view .archive-workshop { width: 720px; height: 78%; max-height: 88%; }
+.inventory-view .inventory-item-label { font-size: 11px; }
+.inventory-view .inventory-section-title { font-size: 20px; }
+.inventory-view .inventory-item-art { margin-top: 12px; }
+.inventory-view .inventory-item:hover { background-color: #20252d; }
+.inventory-view.moonkov-controls-light .inventory-item:hover { background-color: #d0d4d3; }

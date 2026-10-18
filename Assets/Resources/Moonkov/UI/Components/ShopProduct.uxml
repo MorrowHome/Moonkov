@@ -1,0 +1,9 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="shopProduct" class="terminal-shop-product">
+        <ui:VisualElement name="productArt" class="terminal-shop-art" picking-mode="Ignore" />
+        <ui:VisualElement name="productDescription" class="terminal-shop-description">
+            <ui:Label name="productTitle" class="terminal-heading" />
+            <ui:Label name="productDetail" class="terminal-copy" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

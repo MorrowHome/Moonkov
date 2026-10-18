@@ -1,0 +1,19 @@
+home: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+home-dark: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+warehouse: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+suppliers: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+settings: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+account: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+shop: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+emergency: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+research: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+result: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+cargo: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+storage: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+airlock: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+hud-bright: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+hud-dark: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+warehouse-compact: native runtime panel 1280x720; local fixtures; not a gameplay/network acceptance.
+settings-compact: native runtime panel 1280x720; local fixtures; not a gameplay/network acceptance.
+home-compact: native runtime panel 1280x720; local fixtures; not a gameplay/network acceptance.
+COMPLETE

@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="moduleGroup" class="archive-module-group">
+        <ui:Label name="moduleSlotTitle" class="inventory-section-title" />
+        <ui:VisualElement name="moduleSlotContents" />
+    </ui:VisualElement>
+</ui:UXML>

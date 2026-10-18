@@ -9,6 +9,7 @@
             <ui:Button name="homeObserve" class="home-observe" text="OBSERVE MOON  ↗" />
             <ui:Image class="terminal-character-art" picking-mode="Ignore" name="characterView" />
             <ui:VisualElement class="terminal-home-hero" picking-mode="Ignore">
+                <ui:VisualElement class="home-brand-plate" picking-mode="Ignore" />
                 <ui:Label class="terminal-home-kicker" text="ESCAPE FROM" />
                 <ui:VisualElement class="terminal-home-mark" picking-mode="Ignore">
                     <ui:Label class="terminal-home-title-ghost" text="MOONKOV" />
@@ -37,7 +38,7 @@
                     <ui:Button class="terminal-home-action" tooltip="EQUIPMENT" text="" name="homeAction1">
                         <ui:Instance template="HomeCommandCard" class="home-command-content">
                             <ui:AttributeOverrides element-name="cardIndex" text="02" />
-                            <ui:AttributeOverrides element-name="cardTitle" text="EQUIPMENT" />
+                            <ui:AttributeOverrides element-name="cardTitle" text="LOADOUT / STORAGE" />
                             <ui:AttributeOverrides element-name="cardSubtitle" text="LOADOUT  /  STASH" />
                         </ui:Instance>
                     </ui:Button>
@@ -50,31 +51,36 @@
                     </ui:Button>
                 </ui:VisualElement>
                 <ui:VisualElement class="terminal-row terminal-home-services">
-                    <ui:Button class="terminal-home-chip" text="" name="homeChip0">
-                        <ui:VisualElement class="home-service-image home-card-industrial" picking-mode="Ignore" />
-                        <ui:Label class="terminal-home-chip-index" picking-mode="Ignore" text="04" />
-                        <ui:VisualElement class="home-chip-copy" picking-mode="Ignore"><ui:Label class="home-chip-name" picking-mode="Ignore" text="SUPPLIERS" /></ui:VisualElement>
-                        <ui:Label text="→" class="home-chip-arrow" picking-mode="Ignore" />
-                    </ui:Button>
                     <ui:Button class="terminal-home-chip" text="" name="homeChip1">
+                        <ui:VisualElement class="home-service-plate" picking-mode="Ignore" />
                         <ui:VisualElement class="home-service-image home-card-moon" picking-mode="Ignore" />
                         <ui:Label class="terminal-home-chip-index" picking-mode="Ignore" text="05" />
                         <ui:VisualElement class="home-chip-copy" picking-mode="Ignore"><ui:Label class="home-chip-name" picking-mode="Ignore" text="TASKS" /></ui:VisualElement>
                         <ui:Label text="→" class="home-chip-arrow" picking-mode="Ignore" />
                     </ui:Button>
                     <ui:Button class="terminal-home-chip" text="" name="homeChip2">
+                        <ui:VisualElement class="home-service-plate" picking-mode="Ignore" />
                         <ui:VisualElement class="home-service-image home-card-industrial" picking-mode="Ignore" />
                         <ui:Label class="terminal-home-chip-index" picking-mode="Ignore" text="06" />
                         <ui:VisualElement class="home-chip-copy" picking-mode="Ignore"><ui:Label class="home-chip-name" picking-mode="Ignore" text="BASE" /></ui:VisualElement>
                         <ui:Label text="→" class="home-chip-arrow" picking-mode="Ignore" />
                     </ui:Button>
                     <ui:Button class="terminal-home-chip" text="" name="homeChip3">
+                        <ui:VisualElement class="home-service-plate" picking-mode="Ignore" />
                         <ui:VisualElement class="home-service-image home-card-halo" picking-mode="Ignore" />
                         <ui:Label class="terminal-home-chip-index" picking-mode="Ignore" text="07" />
                         <ui:VisualElement class="home-chip-copy" picking-mode="Ignore"><ui:Label class="home-chip-name" picking-mode="Ignore" text="COMMS" /></ui:VisualElement>
                         <ui:Label text="→" class="home-chip-arrow" picking-mode="Ignore" />
                     </ui:Button>
+                    <ui:Button class="terminal-home-chip" text="" name="homeChip0">
+                        <ui:VisualElement class="home-service-plate" picking-mode="Ignore" />
+                        <ui:VisualElement class="home-service-image home-card-industrial" picking-mode="Ignore" />
+                        <ui:Label class="terminal-home-chip-index" picking-mode="Ignore" text="04" />
+                        <ui:VisualElement class="home-chip-copy" picking-mode="Ignore"><ui:Label class="home-chip-name" picking-mode="Ignore" text="SUPPLIERS" /></ui:VisualElement>
+                        <ui:Label text="→" class="home-chip-arrow" picking-mode="Ignore" />
+                    </ui:Button>
                     <ui:Button class="terminal-home-chip home-settings-chip" tooltip="SETTINGS" text="" name="homeAction3">
+                        <ui:VisualElement class="home-service-plate" picking-mode="Ignore" />
                         <ui:VisualElement class="home-service-image home-card-halo" picking-mode="Ignore" />
                         <ui:Label class="terminal-home-chip-index" picking-mode="Ignore" text="08" />
                         <ui:VisualElement class="home-chip-copy" picking-mode="Ignore"><ui:Label class="home-chip-name" picking-mode="Ignore" text="SETTINGS" /></ui:VisualElement>

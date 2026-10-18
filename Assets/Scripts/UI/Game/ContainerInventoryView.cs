@@ -52,6 +52,8 @@ namespace Unity.MP_FPS.Client
             m_Root = TerminalLayout.Clone("ContainerInventory", "containerInventory");
             m_Root.EnableInClassList("inventory-with-stash", showStash);
             m_Root.EnableInClassList("moonkov-controls-light", !showStash);
+            m_Root.AddToClassList("archive-ui");
+            m_Root.EnableInClassList("archive-light", !showStash);
             m_Root.styleSheets.Add(Resources.Load<StyleSheet>("Moonkov/ContainerUI"));
             m_Root.styleSheets.Add(Resources.Load<StyleSheet>("Moonkov/UI/InventoryTheme")); parent.Add(m_Root);
             m_ItemTemplate = Resources.Load<VisualTreeAsset>("Moonkov/UI/Components/InventoryItem");
@@ -228,7 +230,7 @@ namespace Unity.MP_FPS.Client
                     if (item.Code == "stash") { regionRow.style.flexGrow=1; group.style.flexGrow=1; }
                     wrapper.RegisterCallback<GeometryChangedEvent>(evt =>
                     {
-                        float cell = Mathf.Clamp((evt.newRect.width-16)/region.Width, 24, item.Code == "stash" ? 44 : 48);
+                        float cell = Mathf.Clamp((evt.newRect.width-16)/region.Width, 24, item.Code == "stash" ? 60 : 64);
                         if (Mathf.Abs(grid.Cell-cell)<.1f) return; grid.Cell=cell; visual.style.width=region.Width*cell; visual.style.height=rows*cell;
                         foreach (var entry in m_Graph.Children(item.Id, region.Id)) if (m_Tiles.TryGetValue(entry.Id, out var tile)) Position(tile, entry, cell);
                     });

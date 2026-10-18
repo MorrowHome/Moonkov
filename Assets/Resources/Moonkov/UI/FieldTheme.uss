@@ -1,0 +1,78 @@
+@import url("ArchiveTheme.uss");
+/* Field UI uses backing and short rules, never the menu collage over combat. */
+.raid-ui .raid-status { left: auto; right: 28px; top: 24px; bottom: auto; width: 214px; padding: 12px 16px; background-color: rgba(8,9,12,0.88); border-width: 1px; border-color: #5c626d; border-left-width: 3px; border-left-color: #f1f2ed; }
+.raid-ui .raid-caption { color: #b1b6c2; font-size: 10px; letter-spacing: 1px; margin-bottom: 6px; }
+.raid-ui .raid-timer { color: #f1f2ed; font-size: 25px; letter-spacing: 1px; }
+.raid-ui .raid-status .raid-copy { font-size: 12px; color: #d9dde3; margin: 6px 0; }
+.raid-ui .raid-grenade { color: #d9dde3; font-size: 12px; margin: 2px 0; }
+.raid-ui .raid-oxygen-panel { left: 28px; top: 24px; width: 258px; padding: 12px 16px; border-width: 1px; border-color: #5c626d; border-left-width: 3px; border-left-color: #f1f2ed; background-color: rgba(8,9,12,0.88); }
+.raid-ui .raid-oxygen-reserve { color: #f1f2ed; font-size: 22px; }
+.raid-ui .raid-oxygen-time, .raid-ui .raid-oxygen-air { color: #c8cdd5; font-size: 12px; letter-spacing: 0; }
+.raid-ui .raid-oxygen-track { background-color: #404651; }
+.raid-ui .raid-oxygen-fill { background-color: #e8eae6; }
+.raid-ui .oxygen-low { border-left-color: #e9bb75; }
+.raid-ui .oxygen-critical { border-left-color: #f28c78; }
+.raid-ui .raid-oxygen-warning { top: 142px; left: 28px; max-width: 360px; font-size: 13px; color: #f0c994; background-color: rgba(18,12,9,0.94); padding: 10px 14px; }
+.raid-ui .raid-oxygen-warning.oxygen-critical { color: #ffb0a0; }
+.raid-ui .raid-extraction-panel { top: 192px; right: 28px; max-width: 360px; min-width: 230px; padding: 12px 16px; background-color: rgba(8,9,12,0.9); border-color: #5c626d; border-right-color: #b6d3ba; }
+.raid-ui .raid-extraction { color: #d8e9dc; font-size: 17px; letter-spacing: 0; }
+.raid-ui .raid-extraction-fill { background-color: #b6d3ba; }
+.raid-ui .raid-receipt { bottom: 148px; right: 28px; background-color: rgba(8,9,12,0.9); border-left-color: #e8eae6; }
+.raid-ui .raid-receipt-caption { color: #b1b6c2; letter-spacing: 1px; }
+.raid-ui .raid-receipt-copy { color: #f1f2ed; font-size: 13px; letter-spacing: 0; }
+.raid-ui .raid-interaction { background-color: rgba(8,9,12,0.94); border-color: #5c626d; border-left-color: #f1f2ed; }
+.raid-ui .raid-interaction-key { color: #14171e; border-color: #f1f2ed; background-color: #f1f2ed; font-size: 14px; }
+.raid-ui .raid-prompt { color: #f1f2ed; font-size: 15px; letter-spacing: 0; }
+.raid-ui .raid-interaction-state, .raid-ui .raid-interaction-range { color: #b1b6c2; font-size: 12px; letter-spacing: 0; }
+.raid-ui .raid-interaction.is-error { border-left-color: #f28c78; }
+.raid-ui .raid-interaction.is-error .raid-prompt { color: #ffb0a0; }
+.raid-ui .raid-inventory-window { width: 94%; max-width: 1720px; height: 92%; padding: 18px; background-color: #f1f2ee; border-color: #929ba5; border-top-color: #164BFF; }
+.raid-ui .raid-inventory-header { height: 42px; margin-bottom: 10px; border-bottom-color: #929ba5; }
+.raid-ui .raid-inventory-title { color: #14171e; font-size: 23px; letter-spacing: 0; }
+.raid-ui .raid-inventory-header Button { background-color: #e3e5e1; color: #14171e; border-width: 1px; border-color: #929ba5; font-size: 12px; letter-spacing: 0; }
+.raid-ui .raid-inventory-tabs .raid-tab { color: #525b68; background-color: #e3e5e1; border-width: 1px; border-color: #929ba5; font-size: 13px; letter-spacing: 0; }
+.raid-ui .raid-inventory-tabs .raid-tab-active { color: #f1f2ed; background-color: #14171e; border-bottom-width: 3px; border-bottom-color: #164BFF; }
+.raid-ui .raid-inventory-header Button:hover, .raid-ui .raid-inventory-tabs Button:hover { border-color: #14171e; }
+.raid-ui Button:focus { border-width: 2px; border-color: #164BFF; }
+.raid-ui Button:active { background-color: #164BFF; color: #ffffff; }
+.raid-ui Button:disabled { opacity: 0.45; }
+.raid-ui .raid-result-overlay { background-color: #f1f2ee; }
+.raid-ui .raid-result-exhibit { position: absolute; right: 0; top: 0; bottom: 0; width: 38%; background-color: #08090c; background-image: url("ApprovedHome/CardMoon.png"); background-size: cover; background-position: center; border-left-width: 5px; border-left-color: #164BFF; }
+.raid-ui .raid-result-window { width: 56%; max-width: 900px; max-height: 92%; align-self: flex-start; margin-left: 5%; padding: 24px; }
+.raid-ui .raid-result-window Label { color: #14171e; }
+.raid-ui .raid-result-window > .raid-caption { color: #525b68; }
+.raid-ui .raid-stepper { margin: 12px 0 24px; border-bottom-color: #929ba5; }
+.raid-ui .raid-stepper Label { color: #525b68; font-size: 12px; letter-spacing: 0; }
+.raid-ui .raid-stepper .raid-step-active { color: #14171e; border-bottom-width: 3px; border-bottom-color: #164BFF; padding-bottom: 8px; }
+.raid-ui .raid-result-heading { font-size: 46px; letter-spacing: -1px; white-space: normal; margin: 8px 0 16px; }
+.raid-ui .raid-result-text { min-height: 0; font-size: 18px; letter-spacing: 0; white-space: normal; margin-bottom: 18px; }
+.raid-ui .raid-result-window .raid-copy { color: #525b68; font-size: 13px; margin: 12px 0; }
+.raid-ui .raid-manifest { border-top-width: 1px; border-top-color: #929ba5; margin: 8px 0 16px; }
+.raid-ui .raid-manifest-row { flex-direction: row; align-items: center; min-height: 48px; border-bottom-width: 1px; border-bottom-color: #b1b6c2; padding: 8px 12px; }
+.raid-ui .raid-manifest-row Label { font-size: 16px; }
+.raid-ui .raid-manifest-name { flex-grow: 1; }
+.raid-ui .raid-manifest-value { min-width: 100px; -unity-text-align: middle-right; }
+.raid-ui .raid-result-actions { margin-top: 20px; }
+.raid-ui .raid-result-actions Button { color: #14171e; background-color: #e3e5e1; border-width: 1px; border-color: #929ba5; font-size: 13px; letter-spacing: 0; padding: 8px 14px; }
+.raid-ui .raid-result-actions .raid-primary { color: #f1f2ed; background-color: #14171e; border-left-width: 4px; border-left-color: #164BFF; }
+.raid-ui .raid-result-window .unity-base-field__label { color: #525b68; font-size: 13px; min-width: 160px; }
+.raid-ui .raid-result-window .unity-base-field__input { background-color: #e3e5e1; color: #14171e; border-bottom-color: #164BFF; }
+.raid-ui .raid-result-failed .raid-result-heading { color: #963d32; border-left-width: 4px; border-left-color: #963d32; padding-left: 16px; }
+.raid-ui .raid-result-cargo .raid-result-exhibit { width: 30%; }
+.raid-ui .raid-result-cargo .raid-result-window { width: 64%; }
+.raid-ui .raid-result-storage .raid-result-exhibit { width: 34%; background-image: url("ApprovedHome/CardIndustrial.png"); }
+/* Result C uses a left lunar print and a large right-hand report. */
+.raid-ui .raid-result-exhibit { left: 0; right: auto; width: 40%; background-image: url("ApprovedHome/HomeLightBackdrop.png"); background-position: left; border-left-width: 0; border-right-width: 4px; border-right-color: #164bff; }
+.raid-ui .raid-result-window { align-self: flex-end; width: 55%; margin-left: 0; margin-right: 3%; padding: 20px; }
+.raid-ui .raid-result-heading { font-size: 72px; -unity-font-style: bold; margin-bottom: 24px; }
+.raid-ui .raid-stepper Label { font-size: 18px; padding: 16px 8px; }
+.raid-ui .raid-stepper .raid-step-active { color: #f1f2ed; background-color: #14171e; }
+.raid-ui .raid-result-window > .raid-caption { font-size: 20px; color: #14171e; -unity-font-style: bold; }
+.raid-ui .raid-result-text { font-size: 22px; }
+.raid-ui .raid-result-actions Button { flex-grow: 1; min-height: 56px; font-size: 20px; margin-right: 12px; }
+.raid-ui .raid-result-actions #raidResultNext { background-color: #164bff; color: #ffffff; }
+.raid-ui .raid-result-cargo .raid-result-exhibit { width: 31%; }
+.raid-ui .raid-result-cargo .raid-result-window { width: 63%; }
+.raid-ui .raid-result-storage .raid-result-exhibit { width: 35%; }
+.raid-ui .raid-result-storage .raid-result-window { width: 59%; }
+.raid-ui .raid-result-window .raid-stepper .raid-step-active { color: #f1f2ed; }

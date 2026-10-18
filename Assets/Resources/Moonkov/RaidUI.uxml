@@ -1,6 +1,7 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
     <ui:Style src="RaidUI.uss" />
-    <ui:VisualElement name="raidPresentation" class="raid-ui" picking-mode="Ignore">
+    <ui:Style src="UI/FieldTheme.uss" />
+    <ui:VisualElement name="raidPresentation" class="raid-ui archive-ui" picking-mode="Ignore">
         <ui:VisualElement name="raidStatus" class="raid-status" picking-mode="Ignore">
             <ui:Label text="LUNAR EXPEDITION" class="raid-caption" />
             <ui:Label name="raidTimer" class="raid-timer" />
@@ -56,6 +57,7 @@
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="raidResult" class="raid-overlay raid-result-overlay">
+            <ui:VisualElement class="raid-result-exhibit" picking-mode="Ignore" />
             <ui:VisualElement class="raid-result-window">
                 <ui:Label text="EXPEDITION DEBRIEF" class="raid-caption" />
                 <ui:VisualElement class="raid-stepper">
@@ -63,7 +65,13 @@
                     <ui:Label name="raidStep1" text="02 / CARGO" />
                     <ui:Label name="raidStep2" text="03 / STORAGE" />
                 </ui:VisualElement>
+                <ui:Label name="raidResultHeading" class="raid-result-heading" />
                 <ui:Label name="raidResultText" class="raid-result-text" />
+                <ui:VisualElement name="raidManifest" class="raid-manifest">
+                    <ui:VisualElement class="raid-manifest-row"><ui:Label text="MOON DUST" class="raid-manifest-name" /><ui:Label name="raidManifestDust" class="raid-manifest-value" /></ui:VisualElement>
+                    <ui:VisualElement class="raid-manifest-row"><ui:Label text="ALLOY" class="raid-manifest-name" /><ui:Label name="raidManifestAlloy" class="raid-manifest-value" /></ui:VisualElement>
+                    <ui:VisualElement class="raid-manifest-row"><ui:Label text="ENERGY CELLS" class="raid-manifest-name" /><ui:Label name="raidManifestCells" class="raid-manifest-value" /></ui:VisualElement>
+                </ui:VisualElement>
                 <ui:Label name="raidSaveStatus" class="raid-copy" />
                 <ui:VisualElement name="raidLoadout" class="raid-loadout">
                     <ui:IntegerField name="raidCarryCells" label="ENERGY CELLS TO CARRY" is-delayed="true" />

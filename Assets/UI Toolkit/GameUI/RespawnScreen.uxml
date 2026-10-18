@@ -5,8 +5,9 @@
     xmlns:uie="UnityEditor.UIElements"
     xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd"
 >
-    <ui:VisualElement name="respawn-screen-container" style="flex-grow: 1; justify-content: center; align-items: center; background-color: rgba(0, 0, 0, 0.7);">
-        <ui:Label text="YOU ARE DEAD" name="death-message" style="font-size: 48px; color: rgb(255, 85, 85); -unity-font-style: bold;" />
-        <ui:Label name="respawn-timer-label" style="font-size: 32px; color: white; margin-top: 20px;" />
+    <ui:Style src="../../Resources/Moonkov/UI/AuxiliaryTheme.uss" />
+    <ui:VisualElement name="respawn-screen-container" class="archive-death canvas">
+        <ui:Label text="KILLED IN ACTION" name="death-message" class="archive-death-title" />
+        <ui:Label name="respawn-timer-label" style="display: none;" />
     </ui:VisualElement>
 </ui:UXML>

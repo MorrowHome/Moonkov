@@ -1,0 +1,81 @@
+/* Shared functional language; artwork and composition belong to each screen. */
+.archive-ui {
+    --archive-ground: #08090c;
+    --archive-panel: #111318;
+    --archive-raised: #172b54;
+    --archive-ink: #f1f2ed;
+    --archive-muted: #b1b6c2;
+    --archive-rule: #565c69;
+    --archive-accent: #164BFF;
+    --archive-alert: #f09c73;
+    color: var(--archive-ink);
+    -unity-font-definition: url("../../../UI Toolkit/Fonts/Inter-Regular.ttf");
+}
+.archive-ui.archive-light {
+    --archive-ground: #f1f2ee;
+    --archive-panel: #e3e5e1;
+    --archive-raised: #d0d4d3;
+    --archive-ink: #14171e;
+    --archive-muted: #525b68;
+    --archive-rule: #929ba5;
+    --archive-alert: #a43c2e;
+}
+.archive-ui Label { color: var(--archive-ink); }
+.archive-ui Button { border-radius: 0; letter-spacing: 0; -unity-font-style: normal; }
+.archive-ui .terminal-button, .archive-ui .terminal-primary, .archive-ui .archive-button {
+    min-height: 38px; padding: 8px 16px; margin: 0 8px 6px 0;
+    border-width: 1px; border-color: var(--archive-rule); border-radius: 0;
+    background-color: var(--archive-panel); color: var(--archive-ink);
+    font-size: 13px; letter-spacing: 0;
+    transition-property: background-color, color, border-color; transition-duration: 0.12s;
+}
+.archive-ui .terminal-primary, .archive-ui .archive-primary {
+    background-color: var(--archive-ink); color: var(--archive-ground); border-color: var(--archive-ink);
+    border-left-width: 4px; border-left-color: var(--archive-accent);
+}
+.archive-ui .terminal-button:hover, .archive-ui .archive-button:hover {
+    background-color: var(--archive-raised); border-color: var(--archive-ink);
+}
+.archive-ui .terminal-primary:hover, .archive-ui .archive-primary:hover { background-color: var(--archive-muted); }
+.archive-ui Button:focus { border-width: 2px; border-color: var(--archive-accent); }
+.archive-ui .terminal-button:active, .archive-ui .terminal-primary:active, .archive-ui .archive-button:active {
+    background-color: var(--archive-accent); color: #ffffff;
+}
+.archive-ui Button:disabled { opacity: 0.45; }
+.archive-ui .terminal-tab-selected { border-bottom-width: 3px; border-bottom-color: var(--archive-accent); }
+.archive-ui .terminal-copy { font-size: 13px; white-space: normal; color: var(--archive-muted); letter-spacing: 0; margin: 8px 0 16px; }
+.archive-ui .terminal-eyebrow { font-size: 11px; letter-spacing: 1px; color: var(--archive-muted); margin-bottom: 12px; }
+.archive-ui .terminal-title { color: var(--archive-ink); font-size: 30px; letter-spacing: 0; white-space: normal; margin: 0 0 16px; }
+.archive-ui .terminal-heading { color: var(--archive-ink); font-size: 18px; letter-spacing: 0; white-space: normal; }
+.archive-ui .terminal-positive { color: var(--archive-ink); border-left-width: 3px; border-left-color: var(--archive-accent); padding-left: 10px; font-size: 12px; letter-spacing: 0; }
+.archive-ui .terminal-warning { color: var(--archive-alert); font-size: 13px; letter-spacing: 0; white-space: normal; }
+.archive-ui .terminal-stat { min-height: 38px; align-items: center; border-bottom-width: 1px; border-bottom-color: var(--archive-rule); padding: 8px 0; }
+.archive-ui .terminal-stat-name { color: var(--archive-muted); font-size: 12px; letter-spacing: 0; flex-shrink: 0; width: 36%; }
+.archive-ui .terminal-stat-value { color: var(--archive-ink); font-size: 13px; white-space: normal; letter-spacing: 0; flex-grow: 1; flex-shrink: 1; min-width: 0; -unity-text-align: middle-right; }
+.archive-ui .unity-base-field__label { color: var(--archive-muted); font-size: 13px; letter-spacing: 0; }
+.archive-ui .unity-base-field__input {
+    color: var(--archive-ink); background-color: var(--archive-panel); border-radius: 0;
+    border-width: 1px; border-color: var(--archive-rule); padding: 8px 12px; min-height: 34px;
+}
+.archive-ui .unity-base-field__input:focus { border-width: 2px; border-color: var(--archive-accent); }
+.archive-ui .unity-base-slider__tracker { background-color: var(--archive-rule); height: 3px; }
+.archive-ui .unity-base-slider__dragger { background-color: var(--archive-ink); border-width: 1px; border-color: var(--archive-ground); border-radius: 0; width: 12px; height: 20px; }
+.archive-ui .unity-toggle__checkmark { border-radius: 0; border-width: 1px; border-color: var(--archive-rule); background-color: var(--archive-panel); }
+.archive-ui .unity-toggle__input:checked .unity-toggle__checkmark { background-color: var(--archive-accent); -unity-background-image-tint-color: #ffffff; }
+.archive-ui .unity-scroller { background-color: transparent; width: 10px; }
+.archive-ui .unity-scroller--horizontal { height: 10px; width: auto; }
+.archive-ui .unity-scroller__low-button, .archive-ui .unity-scroller__high-button { display: none; }
+.archive-ui .unity-scroller .unity-base-slider__dragger { background-color: var(--archive-rule); border-width: 0; min-width: 5px; }
+.archive-ui .terminal-window, .archive-ui .terminal-context {
+    background-color: var(--archive-ground); border-width: 1px; border-color: var(--archive-rule);
+    border-top-width: 3px; border-top-color: var(--archive-accent); padding: 20px;
+    max-width: 94%; max-height: 88%;
+}
+.archive-ui .terminal-window > .tech-frame, .archive-ui .terminal-context > .tech-frame { display: none; }
+.archive-ui .terminal-window-header { border-bottom-color: var(--archive-rule); margin-bottom: 16px; }
+.archive-ui .terminal-window-close { width: 34px; height: 34px; margin: 0; padding: 0; font-size: 24px; background-color: var(--archive-raised); border-width: 1px; border-color: var(--archive-rule); color: var(--archive-ink); }
+.archive-ui .terminal-toast { background-color: var(--archive-ground); color: var(--archive-ink); border-left-width: 3px; border-left-color: var(--archive-accent); font-size: 14px; letter-spacing: 0; }
+.archive-ui .archive-photo { background-size: cover; background-position: center; }
+.archive-ui .archive-moon-photo { background-image: url("ApprovedHome/CardMoon.png"); }
+.archive-ui .archive-industrial-photo { background-image: url("ApprovedHome/CardIndustrial.png"); }
+.archive-ui .archive-halo-photo { background-image: url("ApprovedHome/CardHalo.png"); }

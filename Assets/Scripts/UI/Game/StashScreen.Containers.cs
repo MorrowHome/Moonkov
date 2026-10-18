@@ -16,6 +16,7 @@ namespace Unity.MP_FPS.Client
             foreach (var child in body.Children()) child.style.display=DisplayStyle.None;
             m_Containers=new ContainerInventoryView(body, true, SendContainerCommand);
             m_Terminal.LoadoutShowing += ShowContainers; m_Terminal.Navigating += m_Containers.Suspend;
+            m_Terminal.HaloModificationRequested += OpenHaloWorkshop;
             if (m_Preview)
             {
                 m_PreviewInventory=InventoryGraph.Create();
@@ -30,6 +31,7 @@ namespace Unity.MP_FPS.Client
             PresentContainers();
         }
         private void ShowContainers() { PresentContainers(); m_Containers.Show(); }
+        private void OpenHaloWorkshop() { m_Terminal.Navigate(1); m_Containers.OpenWorkshop(); }
         private void PresentContainers()
         {
             if (m_Containers == null) return;
@@ -57,6 +59,7 @@ namespace Unity.MP_FPS.Client
             m_ContainerStop.Cancel(); m_ContainerStop.Dispose();
             PlayerProfileClient.InventoryChanged -= PresentContainers;
             m_Terminal.LoadoutShowing -= ShowContainers;
+            m_Terminal.HaloModificationRequested -= OpenHaloWorkshop;
             m_Terminal.Navigating -= m_Containers.Suspend; m_Containers.Dispose();
         }
     }

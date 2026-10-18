@@ -1,0 +1,16 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="shopCatalog" class="archive-shop-catalog">
+        <ui:VisualElement name="shopHead" class="terminal-row terminal-shop-head" />
+        <ui:VisualElement name="shopTabs" class="terminal-row terminal-shop-tabs" />
+        <ui:VisualElement class="archive-shop-body">
+            <ui:VisualElement class="archive-shop-print" picking-mode="Ignore" />
+            <ui:ScrollView name="shopList" class="terminal-shop-list" mode="Vertical" />
+            <ui:VisualElement class="archive-shop-inspector" picking-mode="Ignore">
+                <ui:Label name="inspectTitle" class="terminal-title" />
+                <ui:VisualElement name="inspectArt" class="archive-shop-inspect-art" />
+                <ui:Label name="inspectDetail" class="terminal-copy" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="shopStatusHost" />
+    </ui:VisualElement>
+</ui:UXML>

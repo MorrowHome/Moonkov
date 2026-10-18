@@ -13,7 +13,7 @@ namespace Unity.MP_FPS.Client
         private readonly LunarBackdrop m_Shade;
         private readonly Action m_Prepare;
         private readonly List<Button> m_Tabs = new List<Button>();
-        private readonly string[] m_Pages = { "SHIP", "CHARACTER", "HALO BUILD", "SUPPLIERS", "OPERATIONS", "TASKS", "BASE", "COMMS", "SETTINGS" };
+        private readonly string[] m_Pages = { "SHIP", "LOADOUT / STORAGE", "HALO BUILD", "SUPPLIERS", "OPERATIONS", "TASKS", "BASE", "COMMS", "SETTINGS" };
         private readonly TerminalWindows m_Windows;
         private MenuCharacterView m_Character;
         private int m_Page, m_Step, m_ShownStep = -1;
@@ -31,10 +31,14 @@ namespace Unity.MP_FPS.Client
         public MenuCharacterView Character => m_Character;
         public event Action Navigating;
         public event Action LoadoutShowing;
+        public event Action HaloModificationRequested;
 
         public MoonkovTerminal(VisualElement root, Action prepare)
         {
             m_Root = root; m_Prepare = prepare; root.AddToClassList("moonkov-terminal");
+            root.AddToClassList("archive-ui");
+            var pageStyle = Resources.Load<StyleSheet>("Moonkov/UI/ApprovedPages");
+            if (pageStyle != null && !root.styleSheets.Contains(pageStyle)) root.styleSheets.Add(pageStyle);
             var homeStyle = Resources.Load<StyleSheet>("Moonkov/UI/ApprovedHome");
             if (homeStyle != null && !root.styleSheets.Contains(homeStyle)) root.styleSheets.Add(homeStyle);
             var loadoutStyle = Resources.Load<StyleSheet>("Moonkov/UI/ApprovedLoadout");
@@ -85,6 +89,7 @@ namespace Unity.MP_FPS.Client
             m_Page = page; m_Step = 0; m_ShownStep = -1; m_Windows?.CloseAll();
             m_Root.EnableInClassList("terminal-is-ship", page == 0);
             m_Root.EnableInClassList("terminal-is-loadout", page == 1);
+            ApplyPageTheme();
             for (int i = 0; i < m_Tabs.Count; i++) m_Tabs[i].EnableInClassList("terminal-tab-selected", i == page);
             m_Gear.style.display = page == 1 ? DisplayStyle.Flex : DisplayStyle.None;
             m_Content.style.display = page == 1 ? DisplayStyle.None : DisplayStyle.Flex;
@@ -130,6 +135,7 @@ namespace Unity.MP_FPS.Client
         }
         private void Render()
         {
+            ApplyPageTheme();
             DisposeCharacter();
             m_Content.Clear(); s_FrameDelay = .08f;
             m_Content.EnableInClassList("terminal-content-page", m_Page != 0);
@@ -214,28 +220,32 @@ namespace Unity.MP_FPS.Client
         private void ApplyHomeTheme()
         {
             m_Root.AddToClassList("moon-approved-home");
+            m_Root.AddToClassList("moon-proposal-plates");
             m_Root.EnableInClassList("moon-home-light", !m_HomeDark);
             m_Root.EnableInClassList("moon-home-dark", m_HomeDark);
+        }
+
+        private void ApplyPageTheme()
+        {
+            m_Root.EnableInClassList("archive-pages", m_Page != 0);
+            // The approved choices mix light and dark screens; "both" permits either.
+            bool light = m_Page == 2 || m_Page == 8 || m_Page == 4 && (m_Step < 2 || m_Step == 4);
+            m_Root.EnableInClassList("archive-light", light);
+            m_Root.EnableInClassList("archive-halo-page", m_Page == 2);
+            m_Root.EnableInClassList("archive-compact", m_Root.contentRect.width < 1400 || m_Root.contentRect.height < 780);
         }
 
 
         private void Halo()
         {
             TerminalLayout.Populate(m_Content, "Halo");
-            var schematic = m_Content.Q<HaloSchematic>();
+            m_Content.Q<Button>("modifyHalo").clicked += () => HaloModificationRequested?.Invoke();
+            var schematic = m_Content.Q<VisualElement>(className: "terminal-halo-schematic");
             var nodes = schematic.Query<Button>(className: "terminal-node").ToList();
-            void UpdateNodes()
-            {
-                float w = schematic.contentRect.width, h = schematic.contentRect.height;
-                if (w < 1 || h < 1) return;
-                schematic.SetNodes(nodes.Select(n => new Vector2(n.layout.x * 100 / w, n.layout.y * 100 / h)));
-            }
-            schematic.RegisterCallback<GeometryChangedEvent>(_ => UpdateNodes());
             for (int i = 0; i < nodes.Count; i++)
             {
                 var button = nodes[i]; string node = button.text;
                 button.clicked += () => DescribeNode(node);
-                button.RegisterCallback<GeometryChangedEvent>(_ => UpdateNodes());
                 TerminalMotion.Fade(button, .45f + i * .08f, .4f);
             }
             var weapon = WeaponManager.Instance != null && WeaponManager.Instance.WeaponRegistry != null ? WeaponManager.Instance.WeaponRegistry.GetWeaponData(2) : null;
@@ -372,10 +382,15 @@ namespace Unity.MP_FPS.Client
         private void BindAudioSlider(string name, string channel, float value)
         {
             var slider = m_Content.Q<Slider>(name); slider.SetValueWithoutNotify(value);
-            slider.RegisterValueChangedCallback(e => MoonkovAudio.SetVolume(channel, e.newValue));
+            var readout = m_Content.Q<Label>(name + "Value");
+            var tracker = slider.Q(className: "unity-base-slider__tracker");
+            var fill = new VisualElement { pickingMode = PickingMode.Ignore }; fill.AddToClassList("archive-slider-fill"); tracker?.Add(fill);
+            void Present(float v) { MoonkovLocalization.Set(readout, "{0:0}%", v * 100); fill.style.width = Length.Percent(v * 100); }
+            Present(value);
+            slider.RegisterValueChangedCallback(e => { MoonkovAudio.SetVolume(channel, e.newValue); Present(e.newValue); });
         }
         private void NavGeometryChanged(GeometryChangedEvent evt) => MoveIndicator(false);
-        private void ContentGeometryChanged(GeometryChangedEvent evt) => UpdateHomeMenuSize();
+        private void ContentGeometryChanged(GeometryChangedEvent evt) { UpdateHomeMenuSize(); ApplyPageTheme(); }
 
         // Endless marquee; the copy is doubled so the loop has no seam.
         internal static VisualElement Ticker(VisualElement parent, string text)

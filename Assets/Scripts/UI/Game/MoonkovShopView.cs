@@ -13,6 +13,10 @@ namespace Unity.MP_FPS.Client
         private readonly Label m_Balance, m_Status;
         private readonly Button m_Retry;
         private readonly Button[] m_Tabs;
+        private readonly VisualElement m_InspectArt;
+        private readonly Label m_InspectTitle, m_InspectDetail;
+        private VisualElement m_SelectedRow;
+        private string m_SelectedCode;
         private readonly CancellationTokenSource m_Stop = new CancellationTokenSource();
         private ShopOffer[] m_Offers;
         private ShopCommand m_Pending;
@@ -22,16 +26,19 @@ namespace Unity.MP_FPS.Client
         public MoonkovShopView(VisualElement window, Action openStorage, bool recovery = false)
         {
             m_Window = window; m_Tab = recovery ? 2 : 0; window.AddToClassList("terminal-shop-window");
-            var head = MoonkovTerminal.Row(window); head.AddToClassList("terminal-shop-head");
+            var catalog = TerminalLayout.Clone("Components/ShopCatalog", "shopCatalog"); window.Add(catalog);
+            m_InspectArt = catalog.Q("inspectArt"); m_InspectTitle = catalog.Q<Label>("inspectTitle"); m_InspectDetail = catalog.Q<Label>("inspectDetail");
+            var head = catalog.Q("shopHead");
             m_Balance = MoonkovTerminal.Text(head, "MOON DUST / —", "terminal-heading");
             MoonkovTerminal.ActionButton(head, "OPEN STORAGE", openStorage);
-            var tabs = MoonkovTerminal.Row(window); tabs.AddToClassList("terminal-shop-tabs");
+            var tabs = catalog.Q("shopTabs");
             string[] names = { "BUY", "SELL", "EMERGENCY SUPPLY", "HALO RESEARCH" }; m_Tabs = new Button[4];
             for (int i = 0; i < names.Length; i++)
             { int tab = i; m_Tabs[i] = MoonkovTerminal.ActionButton(tabs, names[i], () => { m_Tab = tab; Render(); }); }
-            m_List = new ScrollView(ScrollViewMode.Vertical); m_List.AddToClassList("terminal-shop-list"); window.Add(m_List);
-            m_Status = MoonkovTerminal.Text(window, "Contacting lunar supply…", "terminal-copy"); m_Status.AddToClassList("terminal-shop-status");
-            m_Retry = MoonkovTerminal.ActionButton(window, "CHECK LAST ORDER", () => Execute(m_Pending)); m_Retry.style.display = DisplayStyle.None;
+            m_List = catalog.Q<ScrollView>("shopList");
+            var statusHost = catalog.Q("shopStatusHost");
+            m_Status = MoonkovTerminal.Text(statusHost, "Contacting lunar supply…", "terminal-copy"); m_Status.AddToClassList("terminal-shop-status");
+            m_Retry = MoonkovTerminal.ActionButton(statusHost, "CHECK LAST ORDER", () => Execute(m_Pending)); m_Retry.style.display = DisplayStyle.None;
             window.RegisterCallback<DetachFromPanelEvent>(Detached); PlayerProfileClient.InventoryChanged += Changed;
             Load();
         }
@@ -51,7 +58,9 @@ namespace Unity.MP_FPS.Client
         private bool Ready => !m_Busy && m_Pending == null && m_Offers != null && PlayerProfileClient.Inventory != null && !PlayerProfileClient.RaidActive;
         private void Render()
         {
+            m_Window.EnableInClassList("is-busy", m_Busy);
             m_List.Clear();
+            m_SelectedRow = null; m_InspectArt.Clear(); MoonkovLocalization.Set(m_InspectTitle, ""); MoonkovLocalization.Set(m_InspectDetail, "");
             MoonkovLocalization.Set(m_Balance, "MOON DUST / {0}", PlayerProfileClient.StashDust);
             for (int i = 0; i < m_Tabs.Length; i++) m_Tabs[i].EnableInClassList("terminal-tab-selected", i == m_Tab);
             m_Retry.style.display = m_Pending != null && !m_Busy ? DisplayStyle.Flex : DisplayStyle.None;
@@ -82,10 +91,22 @@ namespace Unity.MP_FPS.Client
         }
         private VisualElement Product(string code, string name, string detail)
         {
-            var row = new VisualElement(); row.AddToClassList("terminal-shop-product"); m_List.Add(row);
-            var art = new StashItemArt(ContainerInventoryView.Art(code)); art.AddToClassList("terminal-shop-art"); row.Add(art);
-            var description = new VisualElement(); description.AddToClassList("terminal-shop-description"); row.Add(description);
-            MoonkovTerminal.Text(description, name, "terminal-heading"); MoonkovTerminal.Text(description, detail, "terminal-copy");
+            var row = TerminalLayout.Clone("Components/ShopProduct", "shopProduct"); m_List.Add(row);
+            var art = new StashItemArt(ContainerInventoryView.Art(code)); art.style.flexGrow = 1;
+            row.Q("productArt").Add(art);
+            MoonkovLocalization.Set(row.Q<Label>("productTitle"), name);
+            MoonkovLocalization.Set(row.Q<Label>("productDetail"), detail);
+            void Select()
+            {
+                m_SelectedRow?.RemoveFromClassList("archive-product-selected"); m_SelectedRow = row; m_SelectedCode = code;
+                row.AddToClassList("archive-product-selected");
+                MoonkovLocalization.Set(m_InspectTitle, name); MoonkovLocalization.Set(m_InspectDetail, detail);
+                m_InspectArt.Clear(); var preview = new StashItemArt(ContainerInventoryView.Art(code)); preview.style.flexGrow = 1; m_InspectArt.Add(preview);
+            }
+            row.focusable = true;
+            row.RegisterCallback<PointerDownEvent>(evt => { if (evt.button == 0) Select(); });
+            row.RegisterCallback<FocusInEvent>(_ => Select());
+            if (m_SelectedRow == null || m_SelectedCode == code) Select();
             return row;
         }
         private void Quantity(VisualElement parent, int maximum, int initial, Action<int> changed)

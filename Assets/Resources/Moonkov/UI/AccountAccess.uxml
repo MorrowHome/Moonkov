@@ -1,0 +1,17 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="AccountPanel" class="archive-account-form">
+        <ui:VisualElement class="archive-account-titleplate" picking-mode="Ignore" />
+        <ui:Label text="ACCOUNT ACCESS" class="archive-account-native-title" />
+        <ui:Label text="ACCOUNT" class="archive-account-native-caption" />
+        <ui:TextField name="accountUsername" label="Username" max-length="32" />
+        <ui:TextField name="accountPassword" label="Password" max-length="128" is-password-field="true" />
+        <ui:Label name="accountMessage" text="Username: 3-32 letters, digits or underscores.&#10;Password: at least 8 characters." class="archive-form-status" />
+        <ui:VisualElement class="archive-form-actions">
+            <ui:Button name="accountLogin" text="LOG IN" class="archive-button archive-primary"><ui:Label text="→" class="archive-account-arrow" picking-mode="Ignore" /></ui:Button>
+            <ui:Button name="accountRegister" text="REGISTER" class="archive-button"><ui:Label text="→" class="archive-account-arrow" picking-mode="Ignore" /></ui:Button>
+        </ui:VisualElement>
+        <ui:VisualElement name="accountSecondaryActions" class="archive-account-secondary">
+            <ui:Button name="accountQuit" text="QUIT" class="archive-button"><ui:Label text="→" class="archive-account-arrow" picking-mode="Ignore" /></ui:Button>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

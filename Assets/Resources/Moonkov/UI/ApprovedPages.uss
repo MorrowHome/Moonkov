@@ -1,0 +1,201 @@
+@import url("ArchiveTheme.uss");
+/* Non-home terminal pages: a quiet frame, then a composition suited to the job. */
+.moonkov-terminal.archive-pages { background-color: var(--archive-ground); padding: 0 24px; }
+.archive-pages > .terminal-chrome, .archive-pages > .terminal-scene-shade { display: none; }
+.archive-pages .stash-header { height: 90px; border-bottom-color: var(--archive-rule); }
+.archive-pages .stash-brand { width: 280px; }
+.archive-pages .stash-brand-title { font-size: 48px; letter-spacing: -2px; color: var(--archive-ink); -unity-font-definition: url("../../../UI Toolkit/Fonts/Roboto-Black.ttf"); }
+.archive-pages .stash-page-title { font-size: 24px; letter-spacing: 0; color: var(--archive-ink); }
+.archive-pages .stash-eyebrow { color: var(--archive-muted); font-size: 10px; letter-spacing: 1px; }
+.archive-pages .stash-account-name { color: var(--archive-ink); }
+.archive-pages .stash-small-button { height: 32px; color: var(--archive-ink); background-color: var(--archive-panel); border-width: 1px; border-color: var(--archive-rule); letter-spacing: 0; }
+.archive-pages .terminal-nav { height: 52px; border-bottom-color: var(--archive-rule); }
+.archive-pages .archive-navigation-host { height: 52px; flex-shrink: 0; }
+.terminal-is-ship .archive-navigation-host { display: none; }
+.archive-pages .terminal-nav-status { display: none; }
+.archive-pages .terminal-nav-tabs > .terminal-tab { min-width: 96px; flex-grow: 1; padding: 6px 12px; border-width: 0; border-right-width: 1px; border-right-color: var(--archive-rule); background-color: var(--archive-ground); }
+.archive-pages .terminal-nav-tabs > .terminal-tab-major { min-width: 146px; flex-grow: 1.6; }
+.archive-pages .terminal-tab-index { color: var(--archive-muted); font-size: 10px; margin-right: 6px; }
+.archive-pages .terminal-tab-label { color: var(--archive-ink); font-size: 14px; letter-spacing: 0; -unity-font-style: bold; }
+.archive-pages .terminal-nav-tabs > .terminal-tab:hover { background-color: var(--archive-raised); }
+.archive-pages .terminal-nav-tabs > .terminal-tab-selected { background-color: var(--archive-ink); border-bottom-width: 3px; border-bottom-color: var(--archive-accent); }
+.archive-pages .terminal-tab-selected .terminal-tab-label, .archive-pages .terminal-tab-selected .terminal-tab-index { color: var(--archive-ground); }
+.archive-pages .terminal-nav-indicator { background-color: var(--archive-accent); }
+.archive-pages .terminal-content { padding: 20px 0 12px; }
+.archive-pages .terminal-page-index { display: none; }
+.archive-pages .terminal-panel { background-color: var(--archive-panel); border-width: 1px; border-color: var(--archive-rule); padding: 22px; margin-right: 16px; }
+.archive-pages .terminal-panel > .tech-frame { display: none; }
+.archive-pages .terminal-side { width: 30%; }
+.archive-pages .terminal-wide { width: 66%; }
+.archive-pages .terminal-page-actions { margin-right: 0; }
+.archive-pages .stash-footer { height: 54px; border-top-color: var(--archive-rule); }
+.archive-pages .stash-footer-button { min-width: 116px; background-color: var(--archive-panel); color: var(--archive-ink); border-width: 1px; border-color: var(--archive-rule); letter-spacing: 0; }
+.archive-pages .stash-footer-caption, .archive-pages .stash-footer-hint { color: var(--archive-muted); font-size: 11px; letter-spacing: 0; }
+.archive-pages .stash-footer-spacer > .terminal-ticker { display: none; }
+.archive-pages .stash-deploy-button { width: 180px; height: 38px; background-color: var(--archive-ink); color: var(--archive-ground); border-left-width: 4px; border-left-color: var(--archive-accent); font-size: 13px; letter-spacing: 0; }
+.archive-pages .stash-deploy-button:hover { background-color: var(--archive-muted); }
+.archive-pages .archive-page-layout { flex-direction: row; flex-grow: 1; min-height: 0; }
+.archive-pages .archive-exhibit { width: 29%; margin-right: 24px; padding: 24px; justify-content: flex-end; background-size: cover; background-position: center; background-color: #08090c; }
+.archive-pages .archive-exhibit Label { background-color: #08090c; color: #f1f2ed; padding: 12px; font-size: 24px; white-space: normal; }
+.archive-pages .archive-exhibit .terminal-eyebrow { font-size: 11px; padding-bottom: 0; margin: 0; }
+.archive-pages .archive-directory { flex-grow: 1; min-width: 0; min-height: 0; }
+.archive-pages .archive-directory-row { flex-direction: row; flex-grow: 1; flex-basis: 0; min-height: 0; margin-bottom: 14px; }
+.archive-pages .archive-contact { height: auto; align-self: stretch; flex-grow: 1; flex-basis: 0; min-width: 0; margin: 0 12px 0 0; padding: 0; background-color: #111318; border-width: 1px; border-color: #727987; overflow: hidden; }
+.archive-pages .archive-contact-content { flex-grow: 1; height: 100%; padding: 24px; justify-content: flex-end; }
+.archive-pages .archive-contact-photo { position: absolute; top: 0; right: 0; bottom: 0; width: 48%; background-size: cover; background-position: right; opacity: 0.58; }
+.archive-pages #supplier0 .archive-contact-photo, .archive-pages #supplier1 .archive-contact-photo { background-image: url("ApprovedHome/CardIndustrial.png"); }
+.archive-pages #supplier2 .archive-contact-photo { background-image: url("ApprovedHome/CardHalo.png"); }
+.archive-pages #emergencySupply .archive-contact-photo { background-image: url("ApprovedHome/CardMoon.png"); }
+.archive-pages .archive-contact > TemplateContainer { flex-grow: 1; height: 100%; }
+.archive-pages .archive-contact-content Label { color: #f1f2ed; background-color: #111318; align-self: flex-start; padding: 3px 6px; white-space: normal; }
+.archive-pages .archive-contact-title { font-size: 28px; margin-right: 30px; -unity-font-style: bold; }
+.archive-pages .archive-contact-index { position: absolute; top: 12px; left: 12px; font-size: 11px; }
+.archive-pages .archive-contact-detail { font-size: 14px; max-width: 82%; }
+.archive-pages .archive-contact-arrow { position: absolute; bottom: 18px; right: 18px; font-size: 30px; }
+.archive-pages .archive-contact:hover, .archive-pages .archive-contact:focus { background-color: #172b54; border-width: 2px; border-color: #f1f2ed; border-left-width: 5px; border-left-color: #164BFF; }
+.archive-pages .archive-contact:active { background-color: #164bff; border-color: #164BFF; }
+.archive-pages .archive-task-list { width: 30%; background-color: transparent; }
+.archive-pages .terminal-objectives .terminal-stat { min-height: 62px; border-left-width: 3px; border-left-color: var(--archive-accent); padding-left: 16px; margin-bottom: 12px; }
+.archive-pages .terminal-task-progress { min-height: 90px; }
+.archive-pages .terminal-task-chain { margin-top: 24px; }
+.archive-pages .terminal-settings-wave, .archive-pages .terminal-standing, .archive-pages .terminal-trader-stripes { display: none; }
+.archive-pages .terminal-objectives { border-left-width: 0; padding-left: 0; }
+.archive-pages.stash-root .terminal-task-progress-copy .terminal-heading { color: var(--archive-muted); }
+.archive-pages.stash-root .terminal-slider .unity-base-slider__dragger { background-color: var(--archive-ink); }
+.archive-pages.stash-root Toggle:checked .unity-toggle__checkmark { background-color: var(--archive-accent); border-color: var(--archive-accent); -unity-background-image-tint-color: #ffffff; }
+.archive-pages.stash-root .terminal-stepper .terminal-button:hover, .archive-pages.stash-root .terminal-stepper .terminal-button:focus { color: var(--archive-ink); background-color: var(--archive-raised); }
+.archive-pages.stash-root .terminal-stepper .terminal-button { color: var(--archive-ink); background-color: var(--archive-panel); -unity-font-style: bold; }
+.archive-pages.stash-root .terminal-stepper .terminal-tab-selected, .archive-pages.stash-root .terminal-stepper .terminal-tab-selected:hover, .archive-pages.stash-root .terminal-stepper .terminal-tab-selected:focus { background-color: var(--archive-ink); color: var(--archive-ground); }
+.archive-pages.stash-root .terminal-map-tag { color: #f1f2ed; }
+.archive-pages.stash-root .terminal-keys .terminal-stat-value { color: var(--archive-ink); }
+.archive-pages .terminal-wave-tag { display: none; }
+.archive-pages .terminal-slider { height: 58px; margin: 8px 0 16px; }
+.archive-pages .terminal-slider > .unity-base-field__label { min-width: 160px; font-size: 14px; }
+.archive-pages .terminal-toggle, .archive-pages .terminal-language { min-height: 42px; margin: 12px 0; }
+.archive-pages .terminal-toggle Label { color: var(--archive-ink); font-size: 14px; }
+.archive-pages .terminal-title, .archive-pages .terminal-heading, .archive-pages .stash-page-title { -unity-font-style: bold; }
+.archive-pages .terminal-slider .unity-base-field__input { background-color: transparent; border-width: 0; padding: 0; }
+.archive-pages .terminal-slider .unity-base-slider__tracker { background-color: #132c68; }
+.archive-pages .terminal-slider .archive-slider-fill { position: absolute; left: 0; top: 0; bottom: 0; background-color: #164bff; }
+.archive-pages .archive-audio-value { color: var(--archive-ink); font-size: 15px; min-width: 50px; margin-left: 12px; -unity-text-align: middle-right; }
+.archive-pages .archive-settings-banner { height: 110px; flex-shrink: 0; margin-bottom: 16px; padding: 22px 28px; border-left-width: 5px; border-left-color: #164bff; background-color: #08090c; background-image: url("ApprovedHome/CardMoon.png"); background-size: cover; background-position: right; }
+.archive-pages .archive-settings-banner Label { color: #f1f2ed; background-color: #08090c; align-self: flex-start; padding-right: 18px; font-size: 42px; -unity-font-style: bold; }
+.archive-pages .archive-settings-main { background-color: var(--archive-ground); border-width: 0; padding: 12px 24px; }
+.archive-pages .archive-settings-row { min-height: 62px; flex-direction: row; align-items: center; background-color: var(--archive-panel); margin-bottom: 10px; padding: 0 16px; }
+.archive-pages .archive-settings-row > .terminal-slider { flex-grow: 1; height: 56px; margin: 0; }
+.archive-pages .archive-settings-row .unity-base-field__label { font-size: 16px; -unity-font-style: bold; }
+.archive-pages .archive-settings-row .terminal-language { flex-grow: 1; }
+.archive-pages .archive-settings-row .terminal-toggle { flex-grow: 1; }
+.archive-pages .terminal-keys .terminal-stat { min-height: 48px; }
+.archive-pages .terminal-keys .terminal-stat-name { width: 50%; }
+.archive-pages .terminal-stepper { height: 44px; margin-bottom: 18px; margin-right: 0; }
+.archive-pages .terminal-stepper .terminal-button { margin: 0 8px 0 0; }
+.archive-pages .terminal-stepper .terminal-tab-selected { background-color: var(--archive-ink); color: var(--archive-ground); }
+.archive-pages .terminal-stepper-fill { background-color: var(--archive-accent); }
+.archive-pages .terminal-step-counter { color: var(--archive-accent); font-size: 34px; }
+.archive-pages .terminal-operator-portrait { border-bottom-color: var(--archive-accent); background-color: var(--archive-raised); }
+.archive-pages .terminal-operator-designation { color: var(--archive-muted); }
+.archive-pages .terminal-operator-profile { padding-left: 24px; }
+.archive-pages .terminal-operation-map { flex-grow: 1; min-height: 150px; background-image: url("ApprovedHome/CardMoon.png"); background-size: cover; background-position: center; }
+.archive-pages .terminal-map-tag { color: #f1f2ed; background-color: #111318; padding: 8px 12px; }
+.archive-pages .terminal-cargo-gauge { background-color: var(--archive-raised); height: 4px; margin: 12px 0; }
+.archive-pages .terminal-cargo-gauge-fill { background-color: var(--archive-accent); }
+.archive-pages .terminal-hazard-banner { padding: 18px; border-left-width: 3px; border-left-color: var(--archive-alert); background-color: var(--archive-raised); }
+.archive-pages .terminal-hazard-stripes { display: none; }
+.archive-pages .terminal-halo-schematic { flex-grow: 1; min-height: 260px; background-image: url("ApprovedHome/CardHalo.png"); background-size: contain; background-position: center; background-repeat: no-repeat; position: relative; }
+.archive-pages .terminal-node { position: absolute; width: 22%; min-height: 58px; margin: 0; padding: 12px 8px; background-color: #111318; border-width: 1px; border-color: #949ca8; color: #f1f2ed; letter-spacing: 0; font-size: 12px; white-space: normal; }
+.archive-pages .terminal-node:hover, .archive-pages .terminal-node:focus { border-width: 2px; border-color: #f1f2ed; border-left-width: 4px; border-left-color: #164BFF; }
+.archive-pages .terminal-node-index { color: #c6cbd2; font-size: 9px; position: absolute; left: 6px; top: 2px; }
+.archive-pages .terminal-blueprint { background-image: url("ApprovedHome/CardIndustrial.png"); background-size: cover; background-position: center; min-height: 160px; flex-grow: 1; }
+.archive-pages .terminal-resources { width: 30%; }
+.archive-pages .terminal-module-row { height: auto; min-height: 140px; }
+.archive-pages .terminal-module { padding: 16px; }
+.archive-pages .terminal-module-index { display: none; }
+.archive-pages .terminal-comms-wave { height: 38%; min-height: 120px; background-image: url("ApprovedHome/CardHalo.png"); background-size: cover; background-position: center; }
+.archive-pages .terminal-hero-title { color: var(--archive-ink); font-size: 48px; letter-spacing: -1px; }
+.archive-pages .terminal-contact { border-bottom-color: var(--archive-rule); min-height: 48px; }
+.archive-pages .terminal-contact-name, .archive-pages .terminal-contact-state { color: var(--archive-muted); font-size: 12px; letter-spacing: 0; }
+.archive-pages .terminal-contact-led { background-color: var(--archive-rule); }
+.archive-ui .terminal-shop-window { width: 860px; height: 76%; max-height: 760px; }
+.archive-ui .terminal-shop-head { min-height: 48px; }
+.archive-ui .terminal-shop-tabs { flex-shrink: 0; }
+.archive-ui .terminal-shop-list { max-height: none; min-height: 90px; flex-shrink: 1; }
+.archive-ui .terminal-shop-product { background-color: var(--archive-panel); padding: 14px 12px; border-bottom-color: var(--archive-rule); min-height: 116px; }
+.archive-ui .terminal-shop-art { width: 88px; height: 88px; background-color: var(--archive-ground); margin-right: 18px; }
+.archive-ui .terminal-shop-order { width: 178px; }
+.archive-ui .terminal-shop-description .terminal-copy { font-size: 12px; margin-bottom: 8px; }
+.archive-ui .terminal-shop-status { color: var(--archive-ink); border-left-width: 3px; border-left-color: var(--archive-accent); padding-left: 12px; }
+.archive-ui .archive-workshop { width: 720px; height: 78%; }
+.archive-ui .archive-module-group { margin-bottom: 20px; padding: 16px; border-width: 1px; border-color: var(--archive-rule); background-color: var(--archive-panel); }
+.archive-pages.archive-compact .stash-header { height: 64px; }
+.archive-pages.archive-compact .stash-brand { width: 180px; }
+.archive-pages.archive-compact .stash-brand-title { font-size: 30px; }
+.archive-pages.archive-compact .terminal-content { padding-top: 12px; }
+.archive-pages.archive-compact .terminal-panel { padding: 16px; margin-right: 12px; }
+.archive-pages.archive-compact .terminal-title { font-size: 24px; margin-bottom: 12px; }
+.archive-pages.archive-compact .terminal-copy { font-size: 12px; margin-bottom: 10px; }
+.archive-pages.archive-compact .archive-exhibit { width: 23%; margin-right: 16px; padding: 12px; }
+.archive-pages.archive-compact .archive-contact-content { padding: 12px; }
+.archive-pages.archive-compact .archive-contact-title { font-size: 18px; }
+.archive-pages.archive-compact .terminal-module-row { min-height: 128px; }
+.archive-pages.archive-compact .terminal-keys .terminal-stat { min-height: 38px; padding: 6px 0; }
+.archive-pages.archive-compact .terminal-slider { height: 40px; margin-bottom: 12px; }
+.archive-pages.archive-compact .archive-settings-banner { height: 84px; padding: 16px 24px; }
+.archive-pages.archive-compact .archive-settings-banner Label { font-size: 34px; }
+.archive-pages.archive-compact .archive-settings-row { min-height: 50px; margin-bottom: 8px; }
+.archive-pages.archive-compact .archive-settings-row .unity-base-field__label { min-width: 120px; font-size: 14px; }
+.archive-pages.archive-compact .archive-settings-row > .terminal-slider { height: 44px; margin: 0; }
+.archive-pages.archive-compact .archive-settings-main { padding: 6px 12px; }
+
+.archive-halo-page .terminal-meters { display: none; }
+.archive-halo-page .terminal-side { border-width: 0; background-color: var(--archive-ground); padding-top: 26px; }
+.archive-halo-page .terminal-side > .terminal-eyebrow { color: var(--archive-ink); font-size: 28px; -unity-font-style: bold; }
+/* Settings C: offset archive sheet, with the printed exhibit outside the controls. */
+.archive-pages .archive-settings-page { padding-left: 19%; }
+.archive-pages .archive-settings-exhibit { position: absolute; left: 0; top: 0; bottom: 0; width: 17%; background-image: url("ApprovedHome/CardIndustrial.png"); background-size: cover; background-position: center; border-left-width: 4px; border-left-color: #164bff; }
+.archive-pages .archive-settings-banner { height: 120px; margin-bottom: 20px; }
+.archive-pages .archive-settings-main { padding: 0; margin-right: 22px; width: 65%; }
+.archive-pages .archive-settings-row { background-color: #ffffff; min-height: 68px; margin-bottom: 10px; }
+.archive-pages .archive-settings-row .unity-base-field__label { color: #14171e; min-width: 160px; font-size: 18px; }
+.archive-pages .archive-settings-row .unity-base-slider__tracker { height: 8px; }
+.archive-pages .archive-settings-row .unity-base-slider__dragger { width: 22px; height: 22px; border-radius: 11px; border-width: 1px; border-color: #929ba5; background-color: #f1f2ed; margin-top: -7px; }
+.archive-pages .terminal-keys { border-width: 0; background-color: transparent; padding: 0 0 0 18px; }
+.archive-pages .terminal-keys .terminal-heading { font-size: 24px; margin-bottom: 20px; }
+.archive-pages .terminal-keys .terminal-stat { flex-direction: row-reverse; justify-content: flex-end; min-height: 54px; border-width: 0; }
+.archive-pages .terminal-keys .terminal-stat-name { color: #14171e; font-size: 14px; width: auto; flex-grow: 1; margin-left: 14px; }
+.archive-pages .terminal-keys .terminal-stat-value { flex-grow: 0; width: 110px; min-height: 38px; font-size: 12px; color: #f1f2ed; background-color: #14171e; -unity-text-align: middle-center; padding: 5px; }
+.archive-pages .terminal-toggle .unity-base-field__input { background-color: transparent; border-width: 0; }
+.archive-pages .terminal-toggle .unity-toggle__checkmark { width: 24px; height: 24px; border-color: #525b68; }
+.archive-pages.archive-compact .archive-settings-page { padding-left: 14%; }
+.archive-pages.archive-compact .archive-settings-exhibit { width: 12%; }
+.archive-pages.archive-compact .archive-settings-row { min-height: 50px; }
+.archive-pages.archive-compact .terminal-keys .terminal-stat { min-height: 40px; }
+.archive-pages.archive-compact .terminal-keys .terminal-stat-value { width: 84px; min-height: 30px; font-size: 11px; }
+/* Catalogue D: live offers in a scan column; selected product remains beside it. */
+.archive-ui .terminal-shop-window { width: 94%; height: 84%; max-width: 1600px; max-height: 900px; }
+.archive-shop-catalog { flex-grow: 1; min-height: 0; }
+.archive-ui .terminal-shop-head { flex-shrink: 0; justify-content: space-between; }
+.archive-ui .terminal-shop-tabs { flex-shrink: 0; padding: 8px 0 16px; }
+.archive-ui .terminal-shop-tabs Button { flex-grow: 1; flex-basis: 0; min-height: 48px; font-size: 18px; }
+.archive-shop-body { flex-direction: row; flex-grow: 1; min-height: 0; margin-bottom: 16px; }
+.archive-shop-print { width: 15%; margin-right: 18px; background-image: url("ApprovedHome/CardMoon.png"); background-size: cover; background-position: center; border-left-width: 4px; border-left-color: #164bff; }
+.archive-ui .archive-shop-body > .terminal-shop-list { width: 52%; flex-grow: 1; margin-right: 18px; }
+.archive-ui .terminal-shop-product { flex-direction: row; align-items: center; border-width: 1px; border-color: #414650; margin-bottom: 8px; min-height: 124px; padding: 12px; }
+.archive-ui .terminal-shop-description { flex-grow: 1; flex-shrink: 1; min-width: 80px; margin-right: 12px; }
+.archive-ui .terminal-shop-product .terminal-heading { font-size: 20px; -unity-font-style: bold; }
+.archive-ui .terminal-shop-order { width: 170px; flex-shrink: 0; }
+.archive-ui .terminal-shop-product.archive-product-selected { border-width: 2px; border-color: #164bff; background-color: #101a32; }
+.archive-shop-inspector { width: 28%; padding: 20px; border-width: 1px; border-color: #777e8b; }
+.archive-shop-inspect-art { height: 52%; min-height: 170px; background-color: #08090c; margin: 14px 0 20px; }
+.archive-shop-inspector .terminal-title { font-size: 28px; -unity-font-style: bold; }
+.archive-shop-inspector .terminal-copy { font-size: 16px; }
+.archive-pages .archive-settings-page { position: relative; flex-grow: 1; min-height: 0; }
+.archive-pages.stash-root .terminal-keys .terminal-stat-value { color: #f1f2ed; }
+.archive-pages.stash-root .archive-settings-row .unity-base-slider__dragger { background-color: #f1f2ed; }
+.archive-ui .terminal-shop-head, .archive-ui .terminal-shop-tabs { flex-direction: row; align-items: center; }
+.archive-ui .terminal-shop-head .terminal-heading { margin-right: 20px; }
+.archive-ui .terminal-shop-tabs Button { margin-bottom: 0; }
+.archive-pages #supplier0 .archive-contact-photo { background-image: url("ProposalSlices/Supplier_Logistics.png"); opacity: 1; }
+.archive-pages #supplier1 .archive-contact-photo { background-image: url("ProposalSlices/Supplier_Medical.png"); opacity: 1; }
+.archive-pages #supplier2 .archive-contact-photo { background-image: url("ProposalSlices/Supplier_Engineer.png"); opacity: 1; }
+.archive-pages #emergencySupply .archive-contact-photo { background-image: url("ProposalSlices/Supplier_Emergency.png"); opacity: 1; }

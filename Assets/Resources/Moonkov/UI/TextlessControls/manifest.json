@@ -1,0 +1,207 @@
+{
+  "source": "Image tool cleanup of approved original control art; every functional text/index/arrow removed",
+  "atlasSize": [
+    1639,
+    960
+  ],
+  "sprites": [
+    {
+      "name": "HomeC_Deploy",
+      "rect": [
+        19,
+        20,
+        516,
+        193
+      ]
+    },
+    {
+      "name": "HomeC_Storage",
+      "rect": [
+        566,
+        41,
+        816,
+        187
+      ]
+    },
+    {
+      "name": "HomeC_Halo",
+      "rect": [
+        893,
+        40,
+        1179,
+        189
+      ]
+    },
+    {
+      "name": "HomeC_Tasks",
+      "rect": [
+        1368,
+        41,
+        1464,
+        189
+      ]
+    },
+    {
+      "name": "HomeC_Base",
+      "rect": [
+        188,
+        214,
+        289,
+        365
+      ]
+    },
+    {
+      "name": "HomeC_Comms",
+      "rect": [
+        610,
+        213,
+        711,
+        365
+      ]
+    },
+    {
+      "name": "HomeC_Suppliers",
+      "rect": [
+        976,
+        213,
+        1077,
+        365
+      ]
+    },
+    {
+      "name": "HomeC_Settings",
+      "rect": [
+        1353,
+        214,
+        1486,
+        365
+      ]
+    },
+    {
+      "name": "HomeD_Deploy",
+      "rect": [
+        24,
+        382,
+        514,
+        554
+      ]
+    },
+    {
+      "name": "HomeD_Storage",
+      "rect": [
+        560,
+        393,
+        824,
+        546
+      ]
+    },
+    {
+      "name": "HomeD_Halo",
+      "rect": [
+        903,
+        393,
+        1173,
+        546
+      ]
+    },
+    {
+      "name": "HomeD_Tasks",
+      "rect": [
+        1350,
+        420,
+        1485,
+        521
+      ]
+    },
+    {
+      "name": "HomeD_Base",
+      "rect": [
+        167,
+        575,
+        308,
+        674
+      ]
+    },
+    {
+      "name": "HomeD_Comms",
+      "rect": [
+        606,
+        574,
+        740,
+        674
+      ]
+    },
+    {
+      "name": "HomeD_Suppliers",
+      "rect": [
+        968,
+        574,
+        1102,
+        674
+      ]
+    },
+    {
+      "name": "HomeD_Settings",
+      "rect": [
+        1277,
+        576,
+        1558,
+        670
+      ]
+    },
+    {
+      "name": "AccountC_Login",
+      "rect": [
+        72,
+        703,
+        400,
+        790
+      ]
+    },
+    {
+      "name": "AccountC_Register",
+      "rect": [
+        491,
+        702,
+        812,
+        790
+      ]
+    },
+    {
+      "name": "AccountC_Single",
+      "rect": [
+        868,
+        691,
+        1199,
+        802
+      ]
+    },
+    {
+      "name": "AccountC_Quit",
+      "rect": [
+        1263,
+        691,
+        1574,
+        801
+      ]
+    },
+    {
+      "name": "AccountC_UsernameLabel",
+      "rect": [
+        155,
+        844,
+        318,
+        907
+      ]
+    },
+    {
+      "name": "AccountC_PasswordLabel",
+      "rect": [
+        574,
+        844,
+        741,
+        907
+      ]
+    }
+  ]
+}

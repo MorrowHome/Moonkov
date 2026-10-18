@@ -215,7 +215,7 @@ namespace Unity.MP_FPS.Client
             m_State = state; m_Selected = selected; if (changed) MarkDirtyRepaint();
         }
         public static Color ConditionColor(float fraction) => fraction <= 0 ? new Color(.25f, .24f, .23f) :
-            fraction < .3f ? new Color(.72f, .28f, .22f) : fraction < .7f ? new Color(.72f, .54f, .24f) : new Color(.42f, .55f, .43f);
+            fraction < .3f ? new Color(.72f, .28f, .22f) : fraction < .7f ? new Color(.72f, .54f, .24f) : new Color(.42f, .47f, .55f);
         private void Draw(MeshGenerationContext context)
         {
             if (contentRect.width < 1 || contentRect.height < 1) return;
@@ -225,7 +225,7 @@ namespace Unity.MP_FPS.Client
             void Shape(BodyPart part, params Vector2[] points)
             {
                 painter.fillColor = m_State.BodyHealthInitialized ? ConditionColor(RaidHealth.Get(m_State, part) / RaidHealth.Maximum(part)) : Color.gray;
-                painter.strokeColor = part == m_Selected ? new Color(.18f, .26f, .20f) : new Color(.70f, .73f, .65f);
+                painter.strokeColor = part == m_Selected ? new Color(.086f, .294f, 1f) : new Color(.70f, .74f, .79f);
                 painter.lineWidth = part == m_Selected ? 3f : 1f;
                 painter.BeginPath(); painter.MoveTo(origin + points[0] * scale);
                 for (int i = 1; i < points.Length; i++) painter.LineTo(origin + points[i] * scale);

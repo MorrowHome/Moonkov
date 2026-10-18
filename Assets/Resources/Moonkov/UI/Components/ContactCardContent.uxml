@@ -1,0 +1,9 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement class="archive-contact-content" picking-mode="Ignore">
+        <ui:VisualElement class="archive-contact-photo" picking-mode="Ignore" />
+        <ui:Label name="contactIndex" class="archive-contact-index" picking-mode="Ignore" />
+        <ui:Label name="contactTitle" class="archive-contact-title" picking-mode="Ignore" />
+        <ui:Label name="contactDetail" class="archive-contact-detail" picking-mode="Ignore" />
+        <ui:Label text="→" class="archive-contact-arrow" picking-mode="Ignore" />
+    </ui:VisualElement>
+</ui:UXML>

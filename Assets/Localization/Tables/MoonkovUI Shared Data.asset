@@ -3322,6 +3322,51 @@ MonoBehaviour:
     m_Key: Release L to close. Tap L to switch the light. Changes are saved automatically.
     m_Metadata:
       m_Items: []
+  - m_Id: 4040610695360512
+    m_Key: HEALTH / CRITICAL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4040610758275072
+    m_Key: MISSION RECORD
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4040610758275073
+    m_Key: SUPPLIERS / MARKET
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4040610758275074
+    m_Key: Choose an owned halo to install, replace or remove compatible modules
+      in storage.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4040610758275075
+    m_Key: No halo weapon is available. Open supply to acquire field equipment.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4047306272550912
+    m_Key: OPERATION
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4047306301911040
+    m_Key: ADVANCED ACTIONS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4047306301911041
+    m_Key: '{0:0}%'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4047306301911042
+    m_Key: TEAM
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4047306301911043
+    m_Key: LOADOUT / STORAGE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4076388859260928
+    m_Key: ACCOUNT ACCESS
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

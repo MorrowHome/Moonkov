@@ -4,20 +4,20 @@
     --home-ink: #14161c;
     --home-muted: #525967;
     --home-edge: #30353e;
-    --home-emphasis: #3e29d8;
+    --home-emphasis: #164BFF;
     background-color: #f1f2ee;
     background-image: url("ApprovedHome/HomeLightBackdrop.png");
     background-size: cover; background-position: center;
 }
 .moon-home-dark.terminal-is-ship {
-    --home-paper: #101216; --home-ink: #f0f1eb; --home-muted: #b9bdc7; --home-edge: #a5aab3;
+    --home-paper: #101724; --home-ink: #f0f1eb; --home-muted: #b9bdc7; --home-edge: #a5aab3;
     background-color: #08090c; background-image: url("ApprovedHome/HomeDarkBackdrop.png");
 }
 .moon-approved-home.terminal-is-ship .terminal-scene-shade,
 .moon-approved-home.terminal-is-ship > .terminal-chrome { display: none; }
 .moon-approved-home.terminal-is-ship .terminal-content { overflow: visible; }
-.moon-approved-home.terminal-is-ship .terminal-home-hero { left: 0; top: 2%; }
-.moon-approved-home.terminal-is-ship .terminal-home-title { font-size: 104px; letter-spacing: -3px; color: var(--home-ink); }
+.moon-approved-home.terminal-is-ship .terminal-home-hero { left: 0; top: 0; background-color: var(--home-paper); padding: 12px 20px 16px 0; }
+.moon-approved-home.terminal-is-ship .terminal-home-title { font-size: 104px; letter-spacing: -3px; color: var(--home-ink); -unity-font-definition: url("../../../UI Toolkit/Fonts/Roboto-Black.ttf"); }
 .moon-approved-home.terminal-is-ship .terminal-home-title-ghost { display: none; }
 .moon-approved-home.terminal-is-ship .terminal-home-kicker { color: var(--home-ink); font-size: 12px; letter-spacing: 6px; margin-bottom: 0; }
 .moon-approved-home.terminal-is-ship .terminal-home-caption { color: var(--home-ink); background-color: transparent; padding: 0; font-size: 11px; letter-spacing: 3px; }
@@ -40,7 +40,7 @@
 .moon-approved-home.terminal-is-ship #homeAction1 .home-card-image { background-image: url("ApprovedHome/CardIndustrial.png"); }
 .moon-approved-home.terminal-is-ship #homeAction2 .home-card-image { background-image: url("ApprovedHome/CardHalo.png"); }
 .moon-approved-home.terminal-is-ship .home-card-copy { position: absolute; left: 0; right: 0; bottom: 0; height: 72px; padding: 10px 70px 10px 20px; background-color: var(--home-paper); border-top-width: 1px; border-top-color: var(--home-edge); justify-content: center; }
-.moon-approved-home.terminal-is-ship .terminal-home-action-name { color: var(--home-ink); font-size: 28px; letter-spacing: 0; margin: 0 0 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.moon-approved-home.terminal-is-ship .terminal-home-action-name { color: var(--home-ink); font-size: 28px; letter-spacing: 0; margin: 0 0 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; -unity-font-style: bold; }
 .moon-approved-home.terminal-is-ship .terminal-home-action-caption { color: var(--home-muted); font-size: 11px; letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .moon-approved-home.terminal-is-ship .terminal-home-action-index { position: absolute; left: 12px; right: auto; top: 12px; padding: 3px 6px; background-color: #101216; color: #f0f1eb; font-size: 11px; letter-spacing: 2px; -unity-text-outline-width: 0; }
 .moon-approved-home.terminal-is-ship .terminal-home-action-arrow { position: absolute; right: 16px; bottom: 16px; width: 42px; height: 38px; rotate: 0deg; translate: 0 0; border-width: 0; background-color: var(--home-ink); color: var(--home-paper); font-size: 28px; -unity-text-align: middle-center; }
@@ -127,3 +127,90 @@
 .moon-approved-home.terminal-is-ship .terminal-home-menu-compact .terminal-home-action-arrow { right: 10px; width: 34px; height: 32px; }
 .moon-approved-home.terminal-is-ship .terminal-home-menu-compact .terminal-home-deploy .home-card-image { bottom: 0; }
 .moon-approved-home.terminal-is-ship .terminal-home-menu-compact .home-chip-name { font-size: 13px; }
+.moon-approved-home.terminal-is-ship .terminal-home-hero { width: 480px; padding: 8px 12px 12px 0; }
+.moon-approved-home.terminal-is-ship .terminal-home-title { font-size: 96px; height: 112px; -unity-text-align: middle-left; }
+.moon-approved-home.terminal-is-ship .terminal-home-kicker { height: 18px; margin: 0 0 0 6px; }
+.moon-approved-home.terminal-is-ship .terminal-home-description { display: none; }
+.moon-approved-home.terminal-is-ship .home-chip-name { -unity-font-style: bold; }
+/* Clean continuous canvases. Every functional caption below is a real Label. */
+.home-card-plate, .home-service-plate, .home-brand-plate { display: none; }
+.moon-approved-home.terminal-is-ship { background-image: url("ApprovedHome/HomeCleanC.png"); background-size: 100% 100%; }
+.moon-approved-home.moon-home-dark.terminal-is-ship { background-image: url("ApprovedHome/HomeCleanD.png"); }
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .terminal-content { position: absolute; left: 0; right: 0; top: 0; bottom: 0; padding: 0; }
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .terminal-home-hero,
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .home-menu-surface,
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .terminal-home-menu-head,
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .home-card-image,
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .home-service-image { display: none; }
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .home-card-plate,
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .home-service-plate { display: flex; position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-size: 100% 100%; }
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .terminal-home-menu { top: 18.8%; bottom: auto; right: 2.2%; width: 39.2%; height: 65.8%; min-width: 0; }
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .terminal-home-action,
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .terminal-home-chip { background-color: transparent; border-width: 0; margin: 0; padding: 0; }
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .terminal-home-deploy { min-height: 0; flex-grow: 1.245; flex-basis: 0; margin-bottom: 12px; }
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .terminal-home-grid { min-height: 0; flex-grow: 1; flex-basis: 0; margin-bottom: 12px; }
+.moon-approved-home.moon-proposal-plates.terminal-is-ship #homeAction1 { margin-right: 12px; flex-grow: 0.94; }
+.moon-approved-home.moon-proposal-plates.terminal-is-ship #homeAction2 { flex-grow: 1.06; }
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .terminal-home-services { position: relative; min-height: 0; flex-grow: 0.973; flex-basis: 0; }
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .terminal-home-chip { margin-right: 10px; }
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .home-settings-chip { margin-right: 0; flex-grow: 1.4; }
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .home-card-copy { display: flex; background-color: transparent; border-width: 0; height: 44%; padding: 10px 45px 12px 22px; }
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .terminal-home-action-name { font-size: 27px; -unity-font-style: normal; margin-bottom: 4px; }
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .terminal-home-action-caption { font-size: 11px; }
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .terminal-home-deploy .home-card-copy { height: 55%; padding: 10px 80px 14px 40px; }
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .terminal-home-deploy .terminal-home-action-name { font-size: 48px; color: #f1f2ed; }
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .terminal-home-deploy .terminal-home-action-caption { color: #c0c9ec; }
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .terminal-home-action-index { background-color: transparent; color: #aab1bf; }
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .terminal-home-action-arrow { background-color: transparent; border-width: 0; color: var(--home-ink); font-size: 25px; width: 32px; height: 30px; right: 16px; bottom: 16px; }
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .terminal-home-deploy .terminal-home-action-arrow { color: #f1f2ed; }
+.moon-approved-home.moon-proposal-plates.terminal-is-ship #homeAction2 .terminal-home-action-name,
+.moon-approved-home.moon-proposal-plates.terminal-is-ship #homeAction2 .terminal-home-action-caption,
+.moon-approved-home.moon-proposal-plates.terminal-is-ship #homeAction2 .terminal-home-action-arrow { color: #f1f2ed; }
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .home-chip-copy { display: flex; height: 39%; padding: 4px 20px 4px 10px; border-width: 0; background-color: transparent; }
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .home-chip-name { font-size: 17px; -unity-font-style: normal; color: var(--home-ink); }
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .terminal-home-chip-index { color: #f1f2ed; background-color: transparent; }
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .home-chip-arrow { background-color: transparent; color: var(--home-ink); width: 18px; height: 20px; right: 8px; bottom: 10px; }
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .terminal-home-resources { position: absolute; top: 100%; left: 0; right: 0; height: 42px; }
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .terminal-home-operator-card { bottom: 1.5%; left: 3%; }
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .terminal-home-operator-card .terminal-eyebrow,
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .terminal-home-operator,
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .terminal-home-player { display: none; }
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .home-observe { top: 2%; right: 175px; }
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .home-theme-switch { top: 2%; right: 3%; }
+.moon-approved-home.moon-proposal-plates.terminal-is-ship #homeAction0 .home-card-plate { background-image: url("TextlessControls/HomeC_Deploy.png"); }
+.moon-approved-home.moon-proposal-plates.terminal-is-ship #homeAction1 .home-card-plate { background-image: url("TextlessControls/HomeC_Storage.png"); }
+.moon-approved-home.moon-proposal-plates.terminal-is-ship #homeAction2 .home-card-plate { background-image: url("TextlessControls/HomeC_Halo.png"); }
+.moon-approved-home.moon-proposal-plates.terminal-is-ship #homeChip1 .home-service-plate { background-image: url("TextlessControls/HomeC_Tasks.png"); }
+.moon-approved-home.moon-proposal-plates.terminal-is-ship #homeChip2 .home-service-plate { background-image: url("TextlessControls/HomeC_Base.png"); }
+.moon-approved-home.moon-proposal-plates.terminal-is-ship #homeChip3 .home-service-plate { background-image: url("TextlessControls/HomeC_Comms.png"); }
+.moon-approved-home.moon-proposal-plates.terminal-is-ship #homeChip0 .home-service-plate { background-image: url("TextlessControls/HomeC_Suppliers.png"); }
+.moon-approved-home.moon-proposal-plates.terminal-is-ship #homeAction3 .home-service-plate { background-image: url("TextlessControls/HomeC_Settings.png"); }
+.moon-approved-home.moon-proposal-plates.moon-home-dark.terminal-is-ship .terminal-home-menu { top: 16.3%; width: 36.5%; right: 2.4%; height: 69.3%; }
+.moon-approved-home.moon-proposal-plates.moon-home-dark.terminal-is-ship .terminal-home-deploy { flex-grow: 1.18; }
+.moon-approved-home.moon-proposal-plates.moon-home-dark.terminal-is-ship .terminal-home-services { flex-grow: 1.14; }
+.moon-approved-home.moon-proposal-plates.moon-home-dark.terminal-is-ship #homeAction0 .home-card-plate { background-image: url("TextlessControls/HomeD_Deploy.png"); }
+.moon-approved-home.moon-proposal-plates.moon-home-dark.terminal-is-ship #homeAction1 .home-card-plate { background-image: url("TextlessControls/HomeD_Storage.png"); }
+.moon-approved-home.moon-proposal-plates.moon-home-dark.terminal-is-ship #homeAction2 .home-card-plate { background-image: url("TextlessControls/HomeD_Halo.png"); }
+.moon-approved-home.moon-proposal-plates.moon-home-dark.terminal-is-ship #homeChip1 .home-service-plate { background-image: url("TextlessControls/HomeD_Tasks.png"); }
+.moon-approved-home.moon-proposal-plates.moon-home-dark.terminal-is-ship #homeChip2 .home-service-plate { background-image: url("TextlessControls/HomeD_Base.png"); }
+.moon-approved-home.moon-proposal-plates.moon-home-dark.terminal-is-ship #homeChip3 .home-service-plate { background-image: url("TextlessControls/HomeD_Comms.png"); }
+.moon-approved-home.moon-proposal-plates.moon-home-dark.terminal-is-ship #homeChip0 .home-service-plate { background-image: url("TextlessControls/HomeD_Suppliers.png"); }
+.moon-approved-home.moon-proposal-plates.moon-home-dark.terminal-is-ship #homeAction3 .home-service-plate { background-image: url("TextlessControls/HomeD_Settings.png"); }
+.moon-approved-home.moon-proposal-plates.moon-home-dark.terminal-is-ship .terminal-home-chip { position: absolute; top: 0; width: 23.5%; height: 54%; margin: 0; }
+.moon-approved-home.moon-proposal-plates.moon-home-dark.terminal-is-ship #homeChip1 { left: 0; }
+.moon-approved-home.moon-proposal-plates.moon-home-dark.terminal-is-ship #homeChip2 { left: 25.5%; }
+.moon-approved-home.moon-proposal-plates.moon-home-dark.terminal-is-ship #homeChip0 { left: 51%; }
+.moon-approved-home.moon-proposal-plates.moon-home-dark.terminal-is-ship #homeChip3 { left: 76.5%; }
+.moon-approved-home.moon-proposal-plates.moon-home-dark.terminal-is-ship #homeAction3 { left: 0; top: 60%; width: 52%; height: 40%; }
+.moon-approved-home.moon-proposal-plates.moon-home-dark.terminal-is-ship .home-chip-copy { height: 50%; padding-left: 16px; }
+.moon-approved-home.moon-proposal-plates.moon-home-dark.terminal-is-ship .terminal-home-chip-index { display: none; }
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .terminal-home-action:hover .home-card-copy,
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .terminal-home-action:focus .home-card-copy,
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .terminal-home-chip:hover .home-chip-copy,
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .terminal-home-chip:focus .home-chip-copy { background-color: transparent; }
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .terminal-home-action:hover .home-card-plate,
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .terminal-home-chip:hover .home-service-plate { -unity-background-image-tint-color: #cad9ff; }
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .terminal-home-action:focus,
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .terminal-home-chip:focus { border-width: 2px; border-color: #164bff; }
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .terminal-home-action:active .home-card-plate,
+.moon-approved-home.moon-proposal-plates.terminal-is-ship .terminal-home-chip:active .home-service-plate { -unity-background-image-tint-color: #849fe8; }

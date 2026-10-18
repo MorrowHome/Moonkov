@@ -36,18 +36,14 @@ namespace Unity.MP_FPS.Client
             m_ProfileModeButton = m_MainMenu.Q<Button>("ProfileMode");
             m_ProfileModeButton.clicked += SwitchProfileMode;
             m_ConnectionPanel = m_MainMenu.Q<VisualElement>("ConnectionPanel");
-            m_AccountPanel = new VisualElement { name = "AccountPanel" };
-            m_AccountPanel.Add(new Label("MOON RAID ACCOUNT"));
-            m_Username = new TextField("Username") { maxLength = 32, value = AccountClient.DisplayName ?? "" };
-            m_Password = new TextField("Password") { isPasswordField = true, maxLength = 128 };
-            m_AccountPanel.Add(m_Username); m_AccountPanel.Add(m_Password);
-            m_Login = new Button(() => RunAccountAction(false)) { text = "LOG IN" };
-            m_Register = new Button(() => RunAccountAction(true)) { text = "REGISTER" };
-            m_AccountPanel.Add(m_Login); m_AccountPanel.Add(m_Register);
-            m_AccountPanel.Add(new Button(OnQuitPressed) { text = "QUIT" });
-            m_AccountMessage = new Label("Username: 3-32 letters, digits or underscores.\nPassword: at least 8 characters.");
-            m_AccountMessage.style.whiteSpace = WhiteSpace.Normal;
-            m_AccountPanel.Add(m_AccountMessage);
+            m_AccountPanel = TerminalLayout.Clone("AccountAccess", "AccountPanel");
+            m_Username = m_AccountPanel.Q<TextField>("accountUsername");
+            m_Username.SetValueWithoutNotify(AccountClient.DisplayName ?? "");
+            m_Password = m_AccountPanel.Q<TextField>("accountPassword");
+            m_Login = m_AccountPanel.Q<Button>("accountLogin"); m_Login.clicked += () => RunAccountAction(false);
+            m_Register = m_AccountPanel.Q<Button>("accountRegister"); m_Register.clicked += () => RunAccountAction(true);
+            m_AccountPanel.Q<Button>("accountQuit").clicked += OnQuitPressed;
+            m_AccountMessage = m_AccountPanel.Q<Label>("accountMessage");
             m_ConnectionPanel.parent.Insert(0, m_AccountPanel);
             m_LoggedInLabel = new Label();
             m_Logout = new Button(Logout) { text = "LOG OUT" };
@@ -88,6 +84,16 @@ namespace Unity.MP_FPS.Client
             m_ProfileModeButton.tooltip = MoonkovLocalization.Text(PlayerProfileClient.SupportsSinglePlayer
                 ? "Open the independent local stash and single-player raids." : "Single player requires a Client+Server build.");
             bool showStash = loggedIn && !m_ShowConnectionMenu;
+            m_MainMenu.Q("Canvas").EnableInClassList("archive-access-stash", showStash);
+            var canvas = m_MainMenu.Q("Canvas");
+            canvas.EnableInClassList("archive-access-account", !loggedIn);
+            canvas.AddToClassList("archive-login-plates");
+            var modeHost = loggedIn ? canvas : m_AccountPanel.Q("accountSecondaryActions");
+            if (m_ProfileModeButton.parent != modeHost)
+            {
+                m_ProfileModeButton.RemoveFromHierarchy();
+                if (loggedIn) modeHost.Add(m_ProfileModeButton); else modeHost.Insert(0, m_ProfileModeButton);
+            }
             m_LoginMoon.style.display = showStash ? DisplayStyle.None : DisplayStyle.Flex;
             m_AccountPanel.style.display = loggedIn ? DisplayStyle.None : DisplayStyle.Flex;
             m_ConnectionPanel.style.display = loggedIn && m_ShowConnectionMenu ? DisplayStyle.Flex : DisplayStyle.None;
@@ -104,6 +110,8 @@ namespace Unity.MP_FPS.Client
             m_Login.SetEnabled(!m_AccountBusy && m_AccountConfigurationValid);
             m_Register.SetEnabled(!m_AccountBusy && m_AccountConfigurationValid); m_Logout.SetEnabled(!m_AccountBusy);
             m_Username.SetEnabled(!m_AccountBusy); m_Password.SetEnabled(!m_AccountBusy);
+            m_AccountPanel.EnableInClassList("is-busy", m_AccountBusy);
+            m_AccountMessage.EnableInClassList("is-error", !string.IsNullOrEmpty(m_AccountError));
         }
 
         private async void RestoreLogin()
