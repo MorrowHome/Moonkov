@@ -15,14 +15,14 @@ namespace Unity.MP_FPS
         [Header("Scale / 统一尺寸倍率")]
         [Range(.1f, 4)] public float Scale = .65f;
         [Header("服务端感知、运动与近战")]
-        [Min(1)] public float Health = 140;
+        [Min(1)] public float Health = 180;
         [Min(.1f)] public float Speed = 3.5f;
         [Range(60, 720)] public float TurnSpeed = 300;
-        [Min(1)] public float SightRange = 35;
-        [Min(0)] public float HearingRange = 12;
-        [Min(.1f)] public float MemorySeconds = 5;
+        [Min(1)] public float SightRange = 42;
+        [Min(0)] public float HearingRange = 16;
+        [Min(.1f)] public float MemorySeconds = 8;
         [Min(0)] public float PatrolRadius = 8;
-        [Min(1)] public float Damage = 24;
+        [Min(1)] public float Damage = 30;
         [Min(.1f)] public float AttackReach = 1.6f;
         [Range(.15f, 1.5f)] public float Windup = .42f;
         [Range(.15f, 2)] public float Recovery = .55f;
@@ -30,6 +30,18 @@ namespace Unity.MP_FPS
         [Range(0, 8)] public float LungeSpeed = 3;
         [Header("Combat role")]
         public bool Boss;
+        [Header("Boss 追击与换位 / 世界米每秒")]
+        [Min(0)] public float BossPursuitSpeed = 4.8f;
+        [Min(0)] public float BossRepositionSpeed = 8;
+        [Range(.2f, 1.5f)] public float BossRepositionSeconds = .5f;
+        [Min(1)] public float BossRepositionCooldown = 4;
+        [Min(1)] public float BossPreferredDistance = 4.5f;
+        [Header("黏液喷射 / 毛毛虫、黏液兽与 Boss")]
+        [Tooltip("每几次攻击喷射一次；0 为关闭。")]
+        [Min(0)] public int MucusEveryAttacks = 3;
+        [Min(2)] public float MucusRange = 14;
+        [Min(3)] public float MucusSpeed = 18;
+        [Range(.5f, 5)] public float MucusBlindSeconds = 2.6f;
         [Range(.15f, .8f)] public float EnrageHealthFraction = .5f;
         [Min(.5f)] public float FaceAttachSeconds = 2.4f;
         [Header("Spider ambush encounters")]
@@ -66,16 +78,17 @@ namespace Unity.MP_FPS
         public void ApplyDefaults(AlienSpecies species)
         {
             Species = species;
-            if (species == AlienSpecies.Caterpillar) { Chain = CreatureChainSettings.CaterpillarDefaults(); Speed = 2.5f; Scale = .55f; }
-            else if (species == AlienSpecies.Centipede) { Chain = ProceduralMenagerieExperiment.CentipedeDefaults(); Speed = 4.8f; Scale = .85f; }
-            else if (species == AlienSpecies.Leech) { Chain = ProceduralMenagerieExperiment.LeechDefaults(); Speed = 2.7f; Scale = .22f; }
-            else if (species == AlienSpecies.Snake) { Speed = 4.5f; Scale = .4f; }
-            else if (species == AlienSpecies.Slime) { Branch = BranchCreatureSettings.SlimeDefaults(); Speed = 2.5f; Health = 180; Scale = .8f; }
+            MucusEveryAttacks = species == AlienSpecies.Tentacle || species == AlienSpecies.Roots ? 3 : 0;
+            if (species == AlienSpecies.Caterpillar) { Chain = CreatureChainSettings.CaterpillarDefaults(); Speed = 2.9f; Scale = .55f; MucusEveryAttacks = 2; }
+            else if (species == AlienSpecies.Centipede) { Chain = ProceduralMenagerieExperiment.CentipedeDefaults(); Speed = 5.5f; Scale = .85f; }
+            else if (species == AlienSpecies.Leech) { Chain = ProceduralMenagerieExperiment.LeechDefaults(); Speed = 3.1f; Scale = .22f; }
+            else if (species == AlienSpecies.Snake) { Speed = 5.2f; Scale = .4f; }
+            else if (species == AlienSpecies.Slime) { Branch = BranchCreatureSettings.SlimeDefaults(); Speed = 2.9f; Health = 230; Scale = .8f; MucusEveryAttacks = 2; }
             else if (species == AlienSpecies.Roots) { Branch = BranchCreatureSettings.RootsDefaults(); Speed = 1.4f; AttackReach = 2.6f; }
-            else if (species == AlienSpecies.Spider) { Speed = 5.5f; Scale = .45f; }
-            else if (species == AlienSpecies.FaceHugger) { Speed = 4.8f; Scale = .45f; Health = 65; Damage = 18; Liquid = true; }
+            else if (species == AlienSpecies.Spider) { Speed = 6.3f; Scale = .45f; }
+            else if (species == AlienSpecies.FaceHugger) { Speed = 5.5f; Scale = .45f; Health = 85; Damage = 22; Liquid = true; }
             else if (species == AlienSpecies.StiltWalker)
-            { Speed = 3.1f; Scale = 1; Health = 210; Damage = 32; Liquid = true; TurnSpeed = 150; AttackReach = 3.1f; Windup = .95f; Recovery = 1.35f; AttackCooldown = 3.2f; }
+            { Speed = 3.6f; Scale = 1; Health = 280; Damage = 38; Liquid = true; TurnSpeed = 150; AttackReach = 3.1f; Windup = .85f; Recovery = 1.1f; AttackCooldown = 2.7f; }
             else Speed = 3.2f;
             Fluid = species == AlienSpecies.Spider ? new SpiderFluidSettings() : species == AlienSpecies.Centipede ?
                 ProceduralMenagerieExperiment.CentipedeFluidDefaults() : IsChain ? ChainFluidPresentation.Defaults(IsLarva) : BranchFluidPresentation.Defaults(BranchSpecies);

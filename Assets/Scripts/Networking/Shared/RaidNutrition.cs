@@ -20,6 +20,7 @@ namespace Unity.MP_FPS
             state.Energy = state.Hydration = Capacity; state.Satiety = 25;
             state.StarvationSeconds = state.DehydrationSeconds = 0;
             state.AlienSurgeSeconds = 0;
+            state.MucusBlindSeconds = 0;
             state.AlienFoodEffect=AlienFoodEffect.None;state.AlienFoodEffectSeconds=0;
         }
         public static SurvivalEffects Effects(in PredictedPlayerGhost state)
@@ -85,7 +86,9 @@ namespace Unity.MP_FPS
         public static void Tick(ref PredictedPlayerGhost state, float dt, float energySeconds, float hydrationSeconds,
             float digestionSeconds, float graceSeconds, float starvationDamage, float dehydrationDamage, uint tick)
         {
-            if (!state.BodyHealthInitialized || state.CurrentHealth <= 0 || dt <= 0 || !float.IsFinite(dt)) return;
+            if (dt <= 0 || !float.IsFinite(dt)) return;
+            state.MucusBlindSeconds = state.CurrentHealth > 0 ? Mathf.Max(0,state.MucusBlindSeconds-dt) : 0;
+            if (!state.BodyHealthInitialized || state.CurrentHealth <= 0) return;
             state.AlienSurgeSeconds = Mathf.Max(0, state.AlienSurgeSeconds - dt);
             float activeTime=Mathf.Min(dt,Mathf.Max(0,state.AlienFoodEffectSeconds));
             float activeFraction=activeTime/dt;

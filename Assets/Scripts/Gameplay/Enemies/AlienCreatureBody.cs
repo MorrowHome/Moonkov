@@ -130,6 +130,9 @@ namespace Unity.MP_FPS
             }
             if (m_Feet != null) gaitSpeed *= m_Feet.SpeedScale;
             if (m_StiltRig != null) Motor.TickGroundedCapsule(input, gaitSpeed, yaw, dt, m_StiltRig.Height, m_StiltRig.CollisionRadius);
+            else if (m_Profile.Boss) Motor.TickGroundedCapsule(input, gaitSpeed, yaw, dt,
+                Mathf.Max(1.1f, m_Profile.Branch.bodyRadii.y * 2 + .4f) * m_Scale,
+                Mathf.Max(SurfaceMotor.BodyRadius, m_Profile.Branch.bodyRadii.x * .7f) * m_Scale);
             else Motor.Tick(input, gaitSpeed, yaw, dt);
             m_Owner.SetPositionAndRotation(Motor.Current.Position, Motor.Current.Rotation);
             UpdateRig(input, speed, yaw, dt, liquid, action); UpdateHitboxes();

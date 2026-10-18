@@ -22,6 +22,9 @@ namespace Unity.MP_FPS
 
         private float _currentIntensity = 0f;
         private static readonly int IntensityID = Shader.PropertyToID("_Intensity");
+        private Material m_MucusMaterial;
+        private FullScreenPassWrapper m_MucusPass;
+        private float m_MucusRemaining, m_MucusElapsed;
 
         void Awake()
         {
@@ -45,7 +48,7 @@ namespace Unity.MP_FPS
         private void InjectRenderPass(ScriptableRenderContext context, Camera camera)
         {
             // Only proceed if the effect is active.
-            if (_currentIntensity <= 0)
+            if (_currentIntensity <= 0 && m_MucusRemaining <= 0)
             {
                 return;
             }
@@ -53,12 +56,14 @@ namespace Unity.MP_FPS
             if (_playerGhost != null && camera == _playerGhost.GetPlayerCamera())
             {
                 // Setup and enqueue the pass for this camera's renderer.
-                _damagePass.EnqueuePass(camera);
+                if (_currentIntensity > 0) _damagePass.EnqueuePass(camera);
+                if (m_MucusRemaining > 0) m_MucusPass?.EnqueuePass(camera);
             }
         }
 
         void Update()
         {
+            UpdateMucus();
             // The update logic now only needs to manage the intensity value.
             // The toggling of the feature is gone.
             if (_currentIntensity > 0)
@@ -69,6 +74,31 @@ namespace Unity.MP_FPS
                 UpdateVignetteMaterial();
             }
         }
+
+        private void UpdateMucus()
+        {
+            float remaining=0;
+            var ghost=_playerGhost ? _playerGhost.GhostGameObject : null;
+            if(ghost && ghost.Role==MultiplayerRole.ClientOwned && ghost.GhostEntityExists() && ghost.GhostHasComponent<PredictedPlayerGhost>())
+            {
+                var state=ghost.ReadGhostComponentData<PredictedPlayerGhost>();
+                if(state.CurrentHealth>0)remaining=state.MucusBlindSeconds;
+            }
+            if(remaining>m_MucusRemaining+.15f)m_MucusElapsed=0;
+            m_MucusRemaining=remaining;
+            if(remaining<=0)return;
+            if(!m_MucusMaterial)
+            {
+                var shader=Resources.Load<Shader>("Moonkov/AlienMucusScreen");
+                if(!shader)return;
+                m_MucusMaterial=new Material(shader){name="Local camera / alien mucus",hideFlags=HideFlags.DontSave};
+                m_MucusPass=new FullScreenPassWrapper("_AlienMucusPass",m_MucusMaterial,0,false,false);
+            }
+            m_MucusElapsed+=Time.deltaTime;
+            m_MucusMaterial.SetFloat("_Remaining",remaining);
+            m_MucusMaterial.SetFloat("_Elapsed",m_MucusElapsed);
+        }
+        private void OnDisable(){m_MucusRemaining=0;}
 
         /// <summary>
         /// Triggers the damage effect with a default intensity.
@@ -122,6 +152,7 @@ namespace Unity.MP_FPS
 
         void OnDestroy()
         {
+            if(m_MucusMaterial)Destroy(m_MucusMaterial);
             if (_runtimeDamageMaterial != null)
             {
                 Destroy(_runtimeDamageMaterial);

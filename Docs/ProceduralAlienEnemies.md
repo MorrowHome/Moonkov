@@ -1,5 +1,17 @@
 # 正式地图的程序化异形敌人
 
+## 2026-10-18：战斗压力、Boss 换位与喷脸黏液
+
+正式 11 份 Profile 已加强生命、伤害、感知和移动速度。普通基础异形为 180 生命 / 30 基础伤害，黏液兽为 230 / 30，抱脸虫为 85 / 22，3.2 m 与 4.2 m 直立异形分别为 280 / 38 和 360 / 38。各招仍使用自身伤害倍率。视距 42 m、听觉 16 m、追踪记忆 8 秒；蜘蛛仍保留天花板伏击节奏。
+
+触手兽 Boss 为 1100 生命 / 36 基础伤害，追击速度 4.8 m/s、突进速度 8 m/s；根须 Boss 为 1400 / 32，以 6 m/s 拔根换位，出招时重新扎根。距离过远、累计受伤超过最大生命的 8% 或完成一轮攻击后，会按冷却接近或侧移；半血后移动更快、换位间隔更短。运动检查地面支撑和胶囊扫掠，不能瞬移穿墙、攀墙或飞越缺口。触手横扫需要更接近玩家，Boss 的前摇和恢复窗口也已缩短。换位不会额外造成接触伤害。
+
+毛毛虫和黏液兽每两次攻击喷射一次黏液，两个 Boss 每三次攻击一次。前摇锁定头部位置，随后喷出可见液团；服务端逐段扫掠飞行路径，墙体和其他实体可以挡住，横移可躲避。命中身体只造成伤害，命中头部才写入默认 2.6 秒的黏液遮挡。效果只绘制在受击本地玩家的摄像机上，呈不规则湿润黑绿斑块与滴痕，保留视野空隙，最后 0.75 秒渐退，不修改输入和相机转向；死亡时隐藏，重新部署清除。已有 GPU 液体与表现预算继续生效，局内仍不画攻击范围线。
+
+参数入口仍是 `Assets/AlienCreatures/Profiles/`：`BossPursuitSpeed`、`BossRepositionSpeed`、`BossRepositionSeconds`、`BossRepositionCooldown`、`BossPreferredDistance` 调机动；`MucusEveryAttacks`（0 关闭）、`MucusRange`（按体型调整射程）、`MucusSpeed` 和 `MucusBlindSeconds` 调黏液。飞行时间限制为 0.2–1.2 秒。镜头效果复用 `DamageVisualsController`，并修正共用全屏 Pass 的注入时间，使覆盖层在场景之后绘制。
+
+定向入口 `Tools → Moonkov → Aliens → Check boss movement and mucus counterplay` 通过两个 Boss 的实际位移、墙体拦截、根须攻击后换位，以及喷脸、身体命中、横移躲避、墙体挡弹和计时重置检查。独立 URP 镜头渲染通过局部遮挡与零残留恢复检查，Shader 无错误。报告在 `Library/BuildValidation/AlienIntegration/pressure-contract.txt` 和 `mucus-lens.txt`。这些是隔离服务端与离屏证据，尚未覆盖正式地图 Play、Host / 第二客户端的画面与实战平衡。新增 Ghost 字段要求客户端与服务器使用同版构建。
+
 ## 黑色活体液态表现
 
 正式地图的 11 份 Profile（10 类异形，直立类两个身高）统一使用黑色湿润组织、黑曜甲面和克制的灰紫裂隙。近处保留真实 GPU 粒子压力、黏性、凝聚、密度等值面和亚体素拉丝；远处实体外观使用同一套黑色材质。`VoidLiquid` 外观开关在生成时读取，`LiquidReactionStrength` 可运行时调整攻击液体反应强度。已有液体距离、最近数量和远距姿态降频仍然生效。
@@ -24,7 +36,7 @@
 - 整体大小改 `Scale`；生命改 `Health`（生成时读取）；速度改 `Speed`，实际巡游/追击还受 Scale 和行为系数影响。
 - 感知与行动改 `SightRange`、`HearingRange`、`MemorySeconds`、`TurnSpeed`、`PatrolRadius`；伤害与攻击间隔改 `Damage`、`AttackCooldown`。
 - 长脚窥行者直接使用 `AttackReach`、`Windup`、`Recovery`；其他物种有自己的攻击模式，具体几何和节奏在 `AlienCombatPattern.cs`，不能假定通用旧字段会覆盖全部物种。
-- 蜘蛛伏击使用 `SpiderAmbushRange`、`SpiderWindup`、`SpiderStrikeSeconds`、`SpiderRecovery`。Boss 使用 `Boss`、`EnrageHealthFraction`。
+- 蜘蛛伏击使用 `SpiderAmbushRange`、`SpiderWindup`、`SpiderStrikeSeconds`、`SpiderRecovery`。Boss 使用 `Boss`、`EnrageHealthFraction` 及顶部的机动参数。
 - 刷新数量、次数、位置和延迟在正式地图 `Moon Raid` 的 `AlienEncounterSettings` 上调整，不在敌人预制体上。
 
 ## 新身体的液体接入
@@ -96,13 +108,13 @@ Profile 中的 **长脚窥行者 / 直立体型** 可调 `StiltHeight`、`StiltT
 |---|---|---|
 | 蜘蛛 | 优先从屋顶/天花板藏身点等待，锁定玩家位置后向下扑击；扑空或命中后优先沿墙回顶 | 听到蓄力后侧移，利用扑空与回顶过程射击 |
 | 蛇 | 短距离直线突进撕咬，一次出招对每目标最多命中一次 | 横向避开锁定方向 |
-| 毛毛虫 | 在锁定的酸液落点产生三次范围伤害 | 观察吐酸动作，避开落地酸液 |
+| 毛毛虫 | 酸液落点三次范围伤害，与喷脸黏液交替 | 观察吐酸动作，避开落地酸液与飞行液团 |
 | 蜈蚣 | 长距离冲撞，扫过路径上的多个目标，各命中一次 | 离开冲撞走廊，别沿冲撞方向后退 |
 | 水蛭 | 近距离对同一目标连续吸血三次，将实际伤害的 50% 转为自身生命；不再抱脸 | 前摇时拉开距离，打断其吸血机会 |
 | 抱脸虫 | 独立的第九物种，低矮爬行后蓄力起跳，命中头部后附着，默认 2.4 秒后松脱 | 躲开起跳；附着后可由队友射击其腹部或抓握肢体 |
-| 黏液兽 | 身体周围连续三次范围脉冲 | 在前摇期间拉开距离 |
-| 触手兽 Boss | 900 生命、较大体型；主动接近，前方扇形横扫与锁点砸击交替 | 观察触手蓄力和抬起方向，利用出招后的恢复窗口 |
-| 根须 Boss | 1200 生命、固定区域防守；在三个分离地块爆发突刺，保留中间通道 | 观察根须蓄力，移动避开地刺并选择间隙接近/撤离 |
+| 黏液兽 | 身体周围三次脉冲，与喷脸黏液交替 | 拉开距离并横移躲避液团 |
+| 触手兽 Boss | 1100 生命；追击、突进与侧移，横扫和锁点砸击间隔喷脸黏液 | 观察触手蓄力，避开液团，利用出招后的恢复窗口 |
+| 根须 Boss | 1400 生命；攻击间隙拔根换位，在三个分离地块爆发突刺并间隔喷脸黏液 | 移动避开地刺和液团，利用换位及出招窗口 |
 
 两个 Boss 在半血后进入第二阶段：前摇和恢复略缩短，触手兽增加反向横扫或第二次砸击，根须增加突刺轮次。一个 Boss 遭遇每张地图只生成一次。`AlienCreatureProfile.Boss`、`EnrageHealthFraction`、`FaceAttachSeconds` 可以调节；Boss 参数由 `Tools → Moonkov → Aliens → Configure species and boss roles` 设置。
 

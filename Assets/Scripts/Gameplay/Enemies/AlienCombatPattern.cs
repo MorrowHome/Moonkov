@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Unity.MP_FPS
 {
-    public enum AlienAttackKind : byte { Bite, Charge, AcidSpit, TentacleSweep, FaceLeap, SlimePulse, RootSpikes, TentacleSlam, RoofPounce, LeechDrain, StiltRake }
+    public enum AlienAttackKind : byte { Bite, Charge, AcidSpit, TentacleSweep, FaceLeap, SlimePulse, RootSpikes, TentacleSlam, RoofPounce, LeechDrain, StiltRake, MucusSpit }
 
     /// <summary>Species define different timing and hit geometry. Boss phase is
     /// committed at windup, so a health change cannot silently resize a warning.</summary>
@@ -32,10 +32,20 @@ namespace Unity.MP_FPS
                     p.Range = 6; p.Radius = p.Kind == AlienAttackKind.TentacleSlam ? 2 : 5;
                     p.Windup = 1.1f; p.Active = .75f; p.Recovery = 1.5f; p.Pulses = phase > 1 ? 2 : 1; break;
             }
+            bool canSpit = profile.Species == AlienSpecies.Caterpillar || profile.Species == AlienSpecies.Slime ||
+                profile.Boss && (profile.Species == AlienSpecies.Tentacle || profile.Species == AlienSpecies.Roots);
+            if (committed == AlienAttackKind.MucusSpit || !committed.HasValue && canSpit && profile.MucusEveryAttacks > 0 && sequence % (uint)profile.MucusEveryAttacks == 0)
+                p = new AlienCombatPattern { Kind = AlienAttackKind.MucusSpit, Range = profile.MucusRange,
+                    Radius = .18f, Windup = .7f, Active = 1.2f, Recovery = .75f, Speed = 0, DamageScale = .4f, Pulses = 1 };
+            if (profile.Boss && p.Kind != AlienAttackKind.MucusSpit)
+            {
+                p.Windup *= .8f; p.Recovery *= .65f;
+                if (p.Kind == AlienAttackKind.TentacleSweep) p.Range = p.Radius * .9f;
+            }
             // Bound large profiles without shrinking their attacks into their own body.
             float reachScale = profile.IsUpright ? scale : Mathf.Clamp(scale / .65f, .7f, 1.8f);
             p.Range *= reachScale;
-            p.Radius *= reachScale;
+            if (p.Kind != AlienAttackKind.MucusSpit) p.Radius *= reachScale;
             if (profile.Boss && phase > 1) { p.Windup *= .8f; p.Recovery *= .85f; }
             return p;
         }

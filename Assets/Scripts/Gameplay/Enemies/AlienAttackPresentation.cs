@@ -30,7 +30,7 @@ namespace Unity.MP_FPS
         public void Observe(ProceduralAlienEnemy.State state, AlienCombatPattern pattern, Vector3 socket = default)
         {
             foreach (var impact in m_Impacts) if (impact) impact.gameObject.SetActive(false);
-            if (m_Style && m_Profile && m_Profile.VoidLiquid) DrawLiquidAttack(state, pattern, socket);
+            if (m_Style && m_Profile && (m_Profile.VoidLiquid || pattern.Kind == AlienAttackKind.MucusSpit)) DrawLiquidAttack(state, pattern, socket);
             // Windup is communicated by the creature's pose and sound. Never draw
             // circles, sectors or charge lanes over the world to expose hit geometry.
             if (state.Action != AlienAction.Strike || state.AttackSequence == 0) return;
@@ -100,6 +100,13 @@ namespace Unity.MP_FPS
             if (direction.sqrMagnitude < .01f) direction = m_Root.transform.forward;
             Vector3 right = Vector3.Cross(Vector3.up,direction).normalized;
             float scale = m_Profile.Scale;
+            if (pattern.Kind == AlienAttackKind.MucusSpit && (windup || strike))
+            {
+                float flight=AlienMucusTrajectory.FlightTime(state.AttackOrigin,state.AttackPoint,m_Profile.MucusSpeed);
+                m_Globule.gameObject.SetActive(windup || state.MucusInFlight && state.ActionTime<=flight+.12f);
+                m_Globule.position=windup ? socket : AlienMucusTrajectory.Point(state.AttackOrigin,state.AttackPoint,m_Profile.MucusSpeed,Mathf.Min(state.ActionTime,flight+.12f));
+                m_Globule.localScale=Vector3.one*(windup?.12f+.1f*Mathf.Clamp01(state.ActionTime/pattern.Windup):.28f);
+            }
             if (pattern.Kind == AlienAttackKind.AcidSpit && windup)
             {
                 float t = Mathf.Clamp01(state.ActionTime / Mathf.Max(.05f,pattern.Windup));

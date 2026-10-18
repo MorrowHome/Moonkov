@@ -24,9 +24,14 @@ public static class AlienAmbushSetup
             Undo.RecordObject(profile, "Configure alien boss");
             profile.Boss = true; profile.EnrageHealthFraction = .5f;
             profile.Scale = species == AlienSpecies.Tentacle ? 1.1f : 1.2f;
-            profile.Health = species == AlienSpecies.Tentacle ? 900 : 1200;
-            profile.Damage = species == AlienSpecies.Tentacle ? 28 : 24;
-            profile.Speed = species == AlienSpecies.Tentacle ? 2.6f / profile.Scale : 1;
+            profile.Health = species == AlienSpecies.Tentacle ? 1100 : 1400;
+            profile.Damage = species == AlienSpecies.Tentacle ? 36 : 32;
+            profile.BossPursuitSpeed = species == AlienSpecies.Tentacle ? 4.8f : 3.1f;
+            profile.BossPreferredDistance = species == AlienSpecies.Tentacle ? 4.5f : 8;
+            profile.BossRepositionSpeed = species == AlienSpecies.Tentacle ? 8 : 6;
+            profile.BossRepositionSeconds = species == AlienSpecies.Tentacle ? .5f : .65f;
+            profile.MucusEveryAttacks = 3;
+            profile.Speed = profile.BossPursuitSpeed / profile.Scale;
             EditorUtility.SetDirty(profile); AssetDatabase.SaveAssetIfDirty(profile);
         }
         Debug.Log("Tentacle and Roots boss profiles saved. Half-health phase, one spawn per map, tissue and nucleus rewards.");

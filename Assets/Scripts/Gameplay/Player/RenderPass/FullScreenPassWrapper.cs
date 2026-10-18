@@ -8,9 +8,12 @@ namespace Unity.MP_FPS
         private FullScreenPassRendererFeature.FullScreenRenderPass _fullScreenRenderPass;
 
         public FullScreenPassWrapper(string passName, Material material, int passIndex, bool fetchActiveColor,
-            bool bindDepthStencilAttachment)
+            bool bindDepthStencilAttachment, RenderPassEvent injectionPoint = RenderPassEvent.AfterRenderingPostProcessing)
         {
             _fullScreenRenderPass = new FullScreenPassRendererFeature.FullScreenRenderPass(passName);
+            // The URP pass defaults to BeforeRendering; the subsequent camera clear
+            // would erase a camera overlay injected at that point.
+            _fullScreenRenderPass.renderPassEvent = injectionPoint;
             _fullScreenRenderPass.SetupMembers(material, passIndex, fetchActiveColor, bindDepthStencilAttachment);
         }
 

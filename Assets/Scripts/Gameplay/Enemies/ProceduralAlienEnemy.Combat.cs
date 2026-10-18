@@ -24,18 +24,21 @@ namespace Unity.MP_FPS
         private void UpdateSpeciesCombat(float dt, PredictedPlayerGhost health)
         {
             var manager = GhostGameObject.EntityManager;
+            TickMucusProjectile();
             if (m_Action == AlienAction.Attached) { TickFaceAttachment(dt, health.CurrentHealth); return; }
             if (m_Clock >= m_NextSense && m_Action != AlienAction.Windup && m_Action != AlienAction.Strike)
             { Sense(); m_NextSense = m_Clock + .2f; }
             bool living = IsLivingHumanoid(manager, m_Target);
             if (!living) { m_Target = Entity.Null; m_Visible = false; }
             bool remembered = living && m_Clock - m_LastSeenAt <= profile.MemorySeconds;
+            if (TickBossMobility(dt, health, remembered)) return;
             float age = m_Clock - m_ActionStarted;
             if ((m_Action == AlienAction.Windup || m_Action == AlienAction.Strike) && !living)
                 ChangeAction(AlienAction.Recover);
             else if (m_Action == AlienAction.Windup && age >= m_Pattern.Windup)
             {
                 ChangeAction(AlienAction.Strike); m_Pulse = 0; m_StrikeVictims.Clear();
+                if (m_Pattern.Kind == AlienAttackKind.MucusSpit) StartMucusProjectile();
                 if (m_Pattern.Kind == AlienAttackKind.FaceLeap)
                 {
                     Vector3 velocity = (m_CombatPoint - transform.position) / m_Pattern.Active + Vector3.up * (10 * m_Pattern.Active);
@@ -53,9 +56,10 @@ namespace Unity.MP_FPS
                 if (remembered && m_Visible && m_Clock >= m_NextAttack && Vector3.Distance(AimPoint, ContactPoint(m_Target)) <= next.Range)
                 {
                     m_Pattern = next; m_BossPhase = phase; m_Attacks++;
-                    m_CombatOrigin = transform.position;
-                    m_CombatPoint = m_Pattern.Kind == AlienAttackKind.FaceLeap ? TargetHead(m_Target).position : m_LastSeen - Vector3.up;
-                    if (m_Pattern.Kind != AlienAttackKind.FaceLeap && UnityEngine.Physics.Raycast(m_CombatPoint + Vector3.up * 2, Vector3.down,
+                    bool headShot = m_Pattern.Kind == AlienAttackKind.FaceLeap || m_Pattern.Kind == AlienAttackKind.MucusSpit;
+                    m_CombatOrigin = m_Pattern.Kind == AlienAttackKind.MucusSpit ? m_Body.AttackSocket + transform.forward * .4f + Vector3.up * .12f : transform.position;
+                    m_CombatPoint = headShot ? TargetHead(m_Target).position : m_LastSeen - Vector3.up;
+                    if (!headShot && UnityEngine.Physics.Raycast(m_CombatPoint + Vector3.up * 2, Vector3.down,
                         out var floor, 6, LayerMask.GetMask("Default", "Ground"), QueryTriggerInteraction.Ignore)) m_CombatPoint = floor.point + floor.normal * .04f;
                     m_CombatDirection = Vector3.ProjectOnPlane(m_CombatPoint - transform.position, Vector3.up).normalized;
                     if (m_CombatDirection.sqrMagnitude < .01f) m_CombatDirection = transform.forward;
@@ -72,8 +76,8 @@ namespace Unity.MP_FPS
             else if ((m_Action == AlienAction.Chase || m_Action == AlienAction.Search || m_Action == AlienAction.Roam) && profile.Species != AlienSpecies.Roots)
             {
                 Vector3 goal = remembered ? m_LastSeen : PatrolGoal();
-                if (profile.IsUpright) goal = UprightWaypoint(goal);
-                var graph = profile.IsUpright ? null : AlienSurfaceNavigation.Find(m_Spawn);
+                if (profile.IsUpright || profile.Boss) goal = UprightWaypoint(goal);
+                var graph = profile.IsUpright || profile.Boss ? null : AlienSurfaceNavigation.Find(m_Spawn);
                 if (graph && graph.Contains(goal))
                 {
                     if (graph.TryGetSteering(m_Route, m_Body.Motor, goal, m_Clock, out var waypoint)) goal = waypoint;
@@ -81,6 +85,7 @@ namespace Unity.MP_FPS
                 }
                 intent = Vector3.ProjectOnPlane(goal - transform.position, m_Body.Motor.Current.Up).normalized;
                 speed = profile.Speed * m_Body.Scale * (m_Action == AlienAction.Roam ? .35f : .8f);
+                if (profile.Boss && m_Action != AlienAction.Roam) speed = profile.BossPursuitSpeed * (m_BossPhase > 1 ? 1.15f : 1);
                 if (Vector3.Distance(goal, transform.position) < .7f) speed = 0;
             }
             float yaw = intent.sqrMagnitude > .01f ? Mathf.Clamp(Vector3.SignedAngle(m_Body.Motor.Current.Forward, intent, m_Body.Motor.Current.Up) /
@@ -97,6 +102,7 @@ namespace Unity.MP_FPS
 
         private void ResolveSpeciesAttack(Vector3 previous)
         {
+            if (m_Pattern.Kind == AlienAttackKind.MucusSpit) return;
             float age = m_Clock - m_ActionStarted;
             bool moving = m_Pattern.Kind == AlienAttackKind.Bite || m_Pattern.Kind == AlienAttackKind.Charge || m_Pattern.Kind == AlienAttackKind.FaceLeap;
             if (!moving && (m_Pulse >= m_Pattern.Pulses || age < m_Pulse * m_Pattern.Active / m_Pattern.Pulses + .08f)) return;

@@ -197,7 +197,7 @@ public static partial class AlienEnemyChecks
             else if (species == AlienSpecies.Roots)
             {
                 Require(actor.DamageCount == 0, "Root spikes tracked the dodging target");
-                Require(Vector3.Distance(start, actor.transform.position) < .05f, "Root boss left its defended area");
+                Require(actor.BossRepositions > 0, "Root boss did not relocate between defended patches");
             }
             else Require(actor.DamageCount > 0, species + " attack failed to hit stationary target");
             if (species == AlienSpecies.Leech)

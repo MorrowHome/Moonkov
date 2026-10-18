@@ -86,6 +86,7 @@ public struct PredictedPlayerGhost : IComponentData
     
     [GhostField] public ushort EquippedModules, PrimaryModules, SecondaryModules, PistolModules;
     [GhostField] public float AlienSurgeSeconds;
+    [GhostField(Quantization = 100)] public float MucusBlindSeconds;
     [GhostField] public AlienFoodEffect AlienFoodEffect;
     [GhostField] public float AlienFoodEffectSeconds;
     [GhostField] public int BurstRemaining, BurstSequence;
