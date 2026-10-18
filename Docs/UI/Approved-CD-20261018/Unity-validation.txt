@@ -1,0 +1,10 @@
+EDITOR PRESENTER CHECK
+1280x720 content target / preview window 1280x746
+Theme after NavigationSubmit: C (dark=False); prior D -> C
+Equipment callback left home: True
+Ship callback returned: True
+Prior 1600x900: geometry resolved, 8 home destination buttons enabled; theme NavigationSubmit toggled.
+Existing original MenuCharacterView RenderTexture extracted, model and prefab unchanged.
+Offscreen runtime panel capture in Edit Mode failed: no screenshot saved.
+No Play, physical keyboard/controller, account networking or performance acceptance.
+Home theme restored to C after check.

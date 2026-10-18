@@ -18,6 +18,7 @@ namespace Unity.MP_FPS.Client
         private MenuCharacterView m_Character;
         private int m_Page, m_Step, m_ShownStep = -1;
         private bool m_Busy, m_Ready;
+        private bool m_HomeDark;
         private string m_Player;
         private int m_Dust, m_Alloy, m_Cells;
         private readonly Label m_Title, m_Subtitle, m_Clock;
@@ -34,6 +35,10 @@ namespace Unity.MP_FPS.Client
         public MoonkovTerminal(VisualElement root, Action prepare)
         {
             m_Root = root; m_Prepare = prepare; root.AddToClassList("moonkov-terminal");
+            var homeStyle = Resources.Load<StyleSheet>("Moonkov/UI/ApprovedHome");
+            if (homeStyle != null && !root.styleSheets.Contains(homeStyle)) root.styleSheets.Add(homeStyle);
+            m_HomeDark = PlayerPrefs.GetInt("Moonkov.HomeDark", 0) != 0;
+            ApplyHomeTheme();
             root.focusable = true;
             m_Title = root.Q<Label>(className: "stash-page-title");
             m_Subtitle = root.Q<VisualElement>(className: "stash-page-heading").Q<Label>(className: "stash-eyebrow");
@@ -148,6 +153,20 @@ namespace Unity.MP_FPS.Client
         private void Ship()
         {
             TerminalLayout.Populate(m_Content, "Ship");
+            // The wordmark is a fixed Latin brand, while functional text keeps the locale font.
+            var wordmark = m_Content.Q<Label>(className: "terminal-home-title");
+            wordmark.style.unityFontDefinition = StyleKeyword.Null;
+            wordmark.style.letterSpacing = StyleKeyword.Null;
+            var theme = m_Content.Q<Button>("homeTheme");
+            theme.text = m_HomeDark ? "D / COMMAND" : "C / ARCHIVE";
+            theme.clicked += () =>
+            {
+                m_HomeDark = !m_HomeDark;
+                PlayerPrefs.SetInt("Moonkov.HomeDark", m_HomeDark ? 1 : 0);
+                ApplyHomeTheme();
+                theme.text = m_HomeDark ? "D / COMMAND" : "C / ARCHIVE";
+            };
+            m_Content.Q<Button>("homeObserve").clicked += m_Shade.OpenObserver;
             m_Character = new MenuCharacterView(element: m_Content.Q<Image>("characterView"));
             TerminalMotion.Reveal(m_Character.Element, .05f, -60, 0, 1.1f);
             var hero = m_Content.Q<VisualElement>(className: "terminal-home-hero");
@@ -187,6 +206,13 @@ namespace Unity.MP_FPS.Client
         {
             var menu = m_Content.Q<VisualElement>(className: "terminal-home-menu");
             menu?.EnableInClassList("terminal-home-menu-compact", m_Content.contentRect.height < 500 || m_Content.contentRect.width < 1120);
+        }
+
+        private void ApplyHomeTheme()
+        {
+            m_Root.AddToClassList("moon-approved-home");
+            m_Root.EnableInClassList("moon-home-light", !m_HomeDark);
+            m_Root.EnableInClassList("moon-home-dark", m_HomeDark);
         }
 
 

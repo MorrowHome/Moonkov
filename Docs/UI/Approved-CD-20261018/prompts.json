@@ -1,0 +1,303 @@
+{
+  "referencePolicy": "Only user-approved C/D home images are direction references. Do not redraw project DollSinger. Other page proposals must match existing project controls. No decorative people outside equipment/operator pages. No watermark/player UI copying.",
+  "finalCharacterHandling": {
+    "original": "Project-DollSinger.png / existing Unity MenuCharacterView RenderTexture",
+    "layered": [
+      "07-warehouse",
+      "19-op-operator",
+      "25-raidpack"
+    ],
+    "preserveApprovedHome": true,
+    "medicalDiagramException": true
+  },
+  "uiArtAssets": {
+    "HomeLightBackdrop": {
+      "source": "Assets/Resources/Moonkov/UI/ApprovedHome/HomeLightBackdrop.png",
+      "prompt": "Create a production UI BACKGROUND ASSET derived from approved light C reference. 16:9 full bleed. Cold white paper, detailed high-contrast lunar photographic hemisphere cut into offset rectangular halftone print fragments behind LEFT 55% of canvas, a few cobalt print swatches, fine orbital lines, subtle lunar ground plane at bottom. Reserve RIGHT 45% mostly clean pale gray/white for real menu controls. Reserve upper-left 28% a quiet clean white patch for real wordmark. Central-left foreground will hold a live 3D DollSinger, so keep a dark lunar patch behind body but no actual character. NO text, numbers, wordmark, UI cards, buttons, character, people or watermark. Original arrangement with the same premium archive style. Texture restrained, no global dirty wash."
+    },
+    "HomeDarkBackdrop": {
+      "source": "Assets/Resources/Moonkov/UI/ApprovedHome/HomeDarkBackdrop.png",
+      "prompt": "Create a production UI BACKGROUND ASSET derived from approved dark D reference. 16:9 full bleed. Rich quiet black, a detailed oversized lunar hemisphere behind LEFT 55%, cut into a few displaced black/white photographic strips, sparse cobalt print fragments, fine orbital arcs, a low monochrome industrial ground silhouette at bottom. Reserve RIGHT 45% quiet almost black for real controls. Upper-left must have black breathing room for real wordmark. Central-left foreground will hold live 3D DollSinger. NO text, numbers, UI panels, controls, character, people, wordmark or watermark. Preserve approved dark lunar command collage, not architectural bridge copies."
+    },
+    "CardMoon": {
+      "source": "Assets/Resources/Moonkov/UI/ApprovedHome/CardMoon.png",
+      "prompt": "Create a wide approximately 3:1 production MENU CARD ART asset. Black archival background, highly detailed monochrome cratered lunar edge enters from RIGHT, one precise orbital arc, one small cobalt-blue printed fragment at far-right. LEFT 60% deep black and calm for real Chinese button text to be added in Unity. No words, labels, controls, numbers, people, character, watermark. Same approved Moonkov C/D art identity; no excessive neon/glow."
+    },
+    "CardIndustrial": {
+      "source": "Assets/Resources/Moonkov/UI/ApprovedHome/CardIndustrial.png",
+      "prompt": "Create a wide approximately 2:1 production MENU CARD ART asset. High-contrast monochrome lunar industrial laboratory facade and offset precise metal/concrete structural planes, editorial architectural photo collage. Occupy upper and right edges, leave bottom-left quiet dark gray for real labels. Thin precise hairline plus a small deep cobalt print block. No words, UI controls, numbers, character or watermarks. Original building, no copied giant bridge architecture."
+    },
+    "CardHalo": {
+      "source": "Assets/Resources/Moonkov/UI/ApprovedHome/CardHalo.png",
+      "prompt": "Create a wide approximately 2:1 production MENU CARD ART asset. On black, a delicate monochrome orbital/optical HALO apparatus technical still life, open rings and controlled fine wireframe curves centered toward upper-right. A few sparse crisp white registration marks, one small cobalt line, bottom-left quiet black for real button label. No words, labels, numerals, stats, controls, people, watermark. Refined tactile photographic/diagrammatic collage in approved Moonkov C/D style, no neon glowing sci-fi hexagons."
+    }
+  },
+  "screenBriefs": [
+    {
+      "id": "01-account",
+      "title": "账户入口",
+      "source": "Assets/Scripts/UI/Game/MainMenu.Account.cs",
+      "spec": "Account access page. Username, password, login, register, single-player entry, quit; show one readable account-service error and retained input, no password text revealed. Moon print composition with no character art. Labels 账户接入 用户名 密码 登录 注册 单人模式 退出. No OAuth/payment/new services.",
+      "finalCharacterPolicy": "no decorative human/portrait/character"
+    },
+    {
+      "id": "02-session",
+      "title": "联机连接面板",
+      "source": "Assets/UI Toolkit/GameUI/MainMenu.uxml",
+      "spec": "Crew connection page. Player name, DollSinger fixed operator, Relay / Direct route choice, crew session name, create/join crew, host, join, back. Original presentation fields only. One selected radio route and text-field focus visible. 联机终端 玩家名称 会话名称 中继 直连 创建或加入 主持行动 加入行动 返回.",
+      "finalCharacterPolicy": "no decorative human/portrait/character"
+    },
+    {
+      "id": "03-host",
+      "title": "创建主机弹窗",
+      "source": "Assets/UI Toolkit/GameUI/StartHostPopup.uxml",
+      "spec": "HOST dialog over quiet home background. Only Port input, Start and Cancel, text focus and validation space. 创建主机 端口 启动 取消. No region/player-limit/password options.",
+      "finalCharacterPolicy": "no decorative human/portrait/character"
+    },
+    {
+      "id": "04-direct",
+      "title": "直连弹窗",
+      "source": "Assets/UI Toolkit/GameUI/DirectConnectPopup.uxml",
+      "spec": "DIRECT CONNECT dialog. IP address and port fields, Connect and Cancel. Input values can use 127.0.0.1 and 7979 as existing defaults. 直连服务器 地址 端口 连接 取消. Distinct readable input-focus and disabled duplicate-submit state.",
+      "finalCharacterPolicy": "no decorative human/portrait/character"
+    },
+    {
+      "id": "05-connection",
+      "title": "连接状态与错误",
+      "source": "Assets/UI Toolkit/GameUI/ConnectionStatus.uxml",
+      "spec": "Connecting status overlay over menu. Pending connection message, restrained progress mark, Cancel button; a clearly styled status/error message sample 连接超时，请重试 with retry guidance. Show a single cohesive UI, not a multi-panel state board. No real network statistics or invented endpoints.",
+      "finalCharacterPolicy": "no decorative human/portrait/character"
+    },
+    {
+      "id": "06-loading",
+      "title": "加载界面",
+      "source": "Assets/UI Toolkit/GameUI/Loading.uxml",
+      "spec": "Full loading/descent screen. Large cropped lunar image and restrained progress bar with status 正在准备降落 / 正在建立行动, one gameplay tip 背包打开时行动仍在继续. No character-stat cards or false gameplay widgets. Cinematic archival composition with substantial negative space.",
+      "finalCharacterPolicy": "no decorative human/portrait/character"
+    },
+    {
+      "id": "07-warehouse",
+      "title": "仓库与装备",
+      "source": "Assets/Resources/Moonkov/UI/ContainerInventory.uxml",
+      "spec": "New warehouse organization: three concurrent columns character/equipment, carried pockets/rig/backpack, personal storage 10-column multi-cell grid. Six equipment slots SURROUND DollSinger, not piled on one side. Clear items and quiet flat graphite grid surfaces, no bevel/grunge/glow inside cells. Keep the approved HOME art's precise typography and lunar print accents limited to header/edges. One selected rifle and compact action strip, no permanent fourth panel. Existing items rifle/pistol/helmet/rig/backpack/moon dust/alloy/cells only; sample counts. 个人仓库 随身容器 装备 头盔 胸挂 背包 主武器 副武器 手枪 装备 转移.",
+      "finalCharacterPolicy": "separate original Project-DollSinger.png overlay; no AI person in base image"
+    },
+    {
+      "id": "08-item",
+      "title": "物品检查与容器窗口",
+      "source": "Assets/Scripts/UI/Game/ContainerInventoryView.cs",
+      "spec": "Inventory contextual UI shown in use: selected existing backpack, open container contents window with grid, small associated item inspection text and contextual 装备 / 转移 / 查看 actions, close and focus-return semantics suggested. No new item attributes or economic fields. Quiet dense backdrop; no massive item poster blocking all cells.",
+      "finalCharacterPolicy": "no decorative human/portrait/character"
+    },
+    {
+      "id": "09-halo",
+      "title": "光环构筑总览",
+      "source": "Assets/Resources/Moonkov/UI/Halo.uxml",
+      "spec": "Existing HALO component overview. Halo ring schematic with seven labeled component nodes: focusing lens, left emitter, frame, right emitter, core, amplifier, control. Selected node detail and current weapon damage/capacity/range fields showing — placeholders, standard issue state. Main overview assembly/preset service buttons visibly unavailable. 光环构筑 聚焦镜 左发射器 框架 右发射器 核心 放大器 控制模块 标准配置 尚未开放. No invented skill tree.",
+      "finalCharacterPolicy": "no decorative human/portrait/character"
+    },
+    {
+      "id": "10-workshop",
+      "title": "武器模块改装",
+      "source": "Assets/Scripts/UI/Game/ContainerInventoryView.Modules.cs",
+      "spec": "Actual inventory weapon-module workshop dialog. Weapon preview, three real slot classes STORAGE/SHAPING/UTILITY, installed module rows, compatible owned modules with install/replace/remove-to-storage actions. No arbitrary new module names or buffs: use generic 已安装模块 / 可用模块 and known slot names 储能 塑形 功能. Explain 已装填弹药保留，不因升级增加弹药. Disabled no-compatible-module state visible.",
+      "finalCharacterPolicy": "no decorative human/portrait/character"
+    },
+    {
+      "id": "11-suppliers",
+      "title": "供应商目录",
+      "source": "Assets/Resources/Moonkov/UI/Suppliers.uxml",
+      "spec": "Supplier directory with three existing contacts UNITED EARTH LOGISTICS / LUNAR MEDICAL BUREAU / THE SALVAGE ENGINEER, plus emergency-supply entry. Strong art-directed unequal contact panels and clean Chinese hierarchy. No invented stock numbers, new NPC portraits, reputation or live chat. 供应商 地球联合物流 月面医疗局 回收工程师 应急补给.",
+      "finalCharacterPolicy": "no decorative human/portrait/character"
+    },
+    {
+      "id": "12-shop",
+      "title": "购买与出售",
+      "source": "Assets/Scripts/UI/Game/MoonkovShopView.cs",
+      "spec": "Trading window buy/sell tabs; actual existing item types, product descriptions, quantity +/- control, moon-dust balance and price fields use em dash instead of invented economy values. One selected product and disabled insufficient/unknown balance purchase. 购买 出售 应急补给 光环研究 数量 月尘余额 打开仓库 查询上笔订单. Precise list not repeated round cards.",
+      "finalCharacterPolicy": "no decorative human/portrait/character"
+    },
+    {
+      "id": "13-emergency",
+      "title": "应急补给",
+      "source": "Assets/Scripts/UI/Game/MoonkovShopView.cs",
+      "spec": "Emergency supply tab in shop. Basic available recovery supplies from existing equipment set, read-only explanation of availability and disabled claim when unavailable; no timers/cooldowns/prices invented. 应急补给 基础装备 查看仓库 暂不可领取. Art direction in header and one equipment dossier, usable content list.",
+      "finalCharacterPolicy": "no decorative human/portrait/character"
+    },
+    {
+      "id": "14-research",
+      "title": "光环研究",
+      "source": "Assets/Scripts/UI/Game/MoonkovShopView.cs",
+      "spec": "HALO RESEARCH shop tab. Research/module catalogue from existing HaloModules; generic storage/shaping/utility module families, selected research detail, currently unavailable or owned state, transaction feedback area. Use — for cost/stat unknown; do not invent research progression tree, levels or perks. 光环研究 储能 塑形 功能 已解锁 研究 暂不可用.",
+      "finalCharacterPolicy": "no decorative human/portrait/character"
+    },
+    {
+      "id": "15-tasks",
+      "title": "任务",
+      "source": "Assets/Resources/Moonkov/UI/Tasks.uxml",
+      "spec": "Existing lunar recovery objective screen: collect surface supplies, carry them to extraction, finish a successful return. 0/3 example progress and selectable objective detail; additional supplier contracts/ship expansion/deep survey remain DISABLED/未开放. 任务 每一次归航都有价值 收集物资 管理背包 成功撤离 规划行动. No new quest rewards or timers.",
+      "finalCharacterPolicy": "no decorative human/portrait/character"
+    },
+    {
+      "id": "16-base",
+      "title": "基地",
+      "source": "Assets/Resources/Moonkov/UI/Base.uxml",
+      "spec": "Existing base page: ship cargo stores (moon dust/alloy/cells) with sample values or —, open-storage action, construction/crafting/upgrade feature explicitly unavailable. 基地 物资储备 打开仓库 升级与制造 尚未开放. Lunar industrial archival cutaway as editorial image, no functional invented room builder.",
+      "finalCharacterPolicy": "no decorative human/portrait/character"
+    },
+    {
+      "id": "17-comms",
+      "title": "通讯",
+      "source": "Assets/Resources/Moonkov/UI/Comms.uxml",
+      "spec": "Existing ship communications page. Empty incoming message list/no transmissions; contacts freight, medical, salvage shown offline, unavailable channel controls disabled. 通讯 舰船频道 暂无来信 离线. Strong elegant empty state, no fabricated messages or functioning social network.",
+      "finalCharacterPolicy": "no decorative human/portrait/character"
+    },
+    {
+      "id": "18-settings",
+      "title": "设置",
+      "source": "Assets/Resources/Moonkov/UI/Settings.uxml",
+      "spec": "Settings page with existing controls ONLY: language Chinese/English, master audio, gameplay effects, interface audio, always-show-field-status toggle. Right keyboard/mouse reference TAB inventory / hold H status / E pickup / R inventory rotate / right-click advanced / ESC close. No graphics-performance settings, resolution picker or invented remapping. Clear slider hover/focus and toggle state. 设置 语言 主音量 游戏音效 界面音效 始终显示状态.",
+      "finalCharacterPolicy": "no decorative human/portrait/character"
+    },
+    {
+      "id": "19-op-operator",
+      "title": "出击01角色",
+      "source": "Assets/Resources/Moonkov/UI/OperationOperator.uxml",
+      "spec": "Step 1 of FIVE-step deployment flow: operator DollSinger portrait/full model and equipment check explanation, operator confirmed. Stepper 角色 地点 简报 回收 确认, mission-summary sidebar, Back/Continue. Do not add operator roster or new characters. 角色已确认 检查随身装备 继续 返回.",
+      "finalCharacterPolicy": "separate original Project-DollSinger.png overlay; no AI person in base image"
+    },
+    {
+      "id": "20-op-location",
+      "title": "出击02地点",
+      "source": "Assets/Resources/Moonkov/UI/OperationLocation.uxml",
+      "spec": "Step 2 location confirmation: SINGLE available lunar supply-recovery map, Moon surface sector/Theophilus image. One map dossier and route/extraction-beacon explanation. No selectable extra maps or tactical tracking system invented. 地点 月面物资回收 绿色撤离信标 继续 返回, same five-step shell as operator screen.",
+      "finalCharacterPolicy": "no decorative human/portrait/character"
+    },
+    {
+      "id": "21-op-briefing",
+      "title": "出击03简报",
+      "source": "Assets/Resources/Moonkov/UI/OperationBriefing.uxml",
+      "spec": "Step 3 briefing with real energy-cell carry amount integer control and carry/stash summary, recover/manage/extract instructions, death/timeout loses carried supplies, unused charge retained. Unknown counts — or sample clearly visual. 简报 搜集 生存 撤离 携带能量电池 继续 返回. Do not invent oxygen/economy rules beyond known systems.",
+      "finalCharacterPolicy": "no decorative human/portrait/character"
+    },
+    {
+      "id": "22-op-recovery",
+      "title": "出击04回收",
+      "source": "Assets/Resources/Moonkov/UI/OperationRecovery.uxml",
+      "spec": "Step 4 recovery-contract notice. Insurance NOT offered, purchase visibly disabled, warning 未投保 / 回收保险尚未开放, explanation lost cargo cannot be claimed after death. Continue/back works in real flow. A warning sheet with icon/text distinct from blue brand, no pricing and no fake service.",
+      "finalCharacterPolicy": "no decorative human/portrait/character"
+    },
+    {
+      "id": "23-op-ready",
+      "title": "出击05确认",
+      "source": "Assets/Resources/Moonkov/UI/OperationReady.uxml",
+      "spec": "Final deployment readiness confirmation: fixed DollSinger, carried energy cells sample or —, no recovery coverage, connection terminal primary action. 保持准备就绪 行动员 携带物资 无回收保障 打开连接终端 返回. Five-step completed hierarchy; a clear selected main action, no invented matchmaking services.",
+      "finalCharacterPolicy": "no decorative human/portrait/character"
+    },
+    {
+      "id": "24-hud",
+      "title": "局内HUD",
+      "source": "Assets/UI Toolkit/GameUI/PlayerHUD.uxml + Assets/Resources/Moonkov/RaidUI.uxml",
+      "spec": "First-person gameplay HUD ONLY existing: minimal reticle, ammo/reloading, health, oxygen reserve and time/air warning, raid timer, bag cargo, grenade availability, small pickup receipt. No stamina (hidden), minimap, compass, quests, skill bars or squad portraits. Keep 80%+ center view unobstructed. SCHEME C background bright lunar industrial exterior; SCHEME D dim industrial interior. Both must keep information legible on light/dark via compact backing/outline, emergency red plus label, tiny blue brand markers. NOT a giant menu pasted over gameplay; no moon collage artwork over battlefield.",
+      "finalCharacterPolicy": "no decorative human/portrait/character"
+    },
+    {
+      "id": "25-raidpack",
+      "title": "局内背包",
+      "source": "Assets/Resources/Moonkov/RaidUI.uxml#raidInventory",
+      "spec": "In-raid inventory overlay with equipment/health tabs, carried containers only, no account warehouse. DollSinger equipment and pockets/rig/backpack, close TAB, no pause fiction: world continues. Three useful equipment-container grouping with breathing room, equipment slots surrounding operator where room permits. Calm flat grids, one selected item; game environment visible around overlay edges. 局内背包 装备 健康 关闭 TAB.",
+      "finalCharacterPolicy": "separate original Project-DollSinger.png overlay; no AI person in base image"
+    },
+    {
+      "id": "26-loot",
+      "title": "搜刮与战利品",
+      "source": "Assets/Scripts/UI/Game/ContainerInventoryView.cs + Assets/Scripts/Gameplay/UI/RaidHUD.cs",
+      "spec": "Opened loot cache / death bag overlay. Two inventories: carried containers and source cache, clear drag/quick-transfer relationship, loot-cache title, pending transfer feedback, source stays clear. Existing item types only. 搜刮 物资箱 随身容器 转移中 关闭. Could use a corpse/dissection source caption when appropriate, no fictional loot rarity, no account warehouse in raid.",
+      "finalCharacterPolicy": "no decorative human/portrait/character"
+    },
+    {
+      "id": "27-health",
+      "title": "健康与治疗",
+      "source": "Assets/Resources/Moonkov/UI/RaidHealth.uxml",
+      "spec": "Actual raid health panel: body-part diagram selection, total health, active conditions, treatment inventory/action, oxygen reserve/air/time/refill, nutrition energy/hydration/satiety and eat/drink. Sample values allowed, no new disease system. Keep columns grouped for readability, selected body part and one unavailable consume action. 健康与防护服 身体部位 当前状态 治疗 补充氧气 进食 饮水.",
+      "finalCharacterPolicy": "neutral medical diagram only"
+    },
+    {
+      "id": "28-halo-light",
+      "title": "光环灯光调节",
+      "source": "Assets/Resources/Moonkov/UI/HaloLightPanel.uxml",
+      "spec": "Compact in-game Halo light settings popover while holding L. Everyday / Aim preview tabs, normal light range/intensity sliders and aim range/intensity sliders (only active tab visible), restore defaults. Tap L toggles; release closes; auto-saved. 灯光调节 日常 瞄准预览 范围 强度 恢复默认 松开L关闭. Preserve battlefield and tiny focus/selected indicator, no giant neon bloom.",
+      "finalCharacterPolicy": "no decorative human/portrait/character"
+    },
+    {
+      "id": "29-interaction",
+      "title": "拾取气闸灯光交互",
+      "source": "Assets/Resources/Moonkov/AirlockPrompt.uxml + RaidUI.uxml#raidInteraction",
+      "spec": "World interaction UI demonstrated over first-person industrial view: one focused airlock/light control card with F key, open/close or light on/off action, pressure/range/availability and brief feedback; small unobtrusive pickup receipt with E pickup nearby can be in separate screen edge. No multiple simultaneous competing center prompts, one authoritative target. 气闸控制 F 开启 压差 暂不可用 plus short explanatory label as relevant. HUD remains minimal. Do not invent hacking minigame.",
+      "finalCharacterPolicy": "no decorative human/portrait/character"
+    },
+    {
+      "id": "30-extraction",
+      "title": "撤离倒计时",
+      "source": "Assets/Resources/Moonkov/RaidUI.uxml#raidExtractionPanel",
+      "spec": "In-game extraction countdown overlay inside an existing green beacon zone. Minimal timer/progress and status 处于撤离区域 / 保持在信标内, existing oxygen/ammo cues at edges. Battlefield mostly clear, no full-screen collage. Use green for actual extraction zone in world, restrained violet for brand UI not replacing zone meaning; red/amber warning if interrupted. No invented helicopter or transport system.",
+      "finalCharacterPolicy": "no decorative human/portrait/character"
+    },
+    {
+      "id": "31-result",
+      "title": "行动结果",
+      "source": "Assets/Resources/Moonkov/RaidUI.uxml#raidResult",
+      "spec": "First step of raid debrief. SCHEME C successful extraction; SCHEME D raid failed/death/timeout. Large clear result label with distinct icon/text, save/settlement status, three-step RESULT/CARGO/STORAGE, continue and return actions. 任务结算 撤离成功 or 行动失败 结果 物资 入库 继续 返回舰船. No XP/levels, made-up kills/rewards or achievements.",
+      "finalCharacterPolicy": "no decorative human/portrait/character"
+    },
+    {
+      "id": "32-cargo",
+      "title": "结算物资清单",
+      "source": "Assets/Resources/Moonkov/RaidUI.uxml#raidResult step 2",
+      "spec": "Raid debrief step 2 cargo manifest: recovered/lost items existing types, quantities, clear settlement availability and server-save status, Back/Continue. Narrative moon archival framing, crisp dense manifest instead of marketing cards. 物资清单 已回收 / 已损失 上一步 继续. No item prices, XP or economy invention.",
+      "finalCharacterPolicy": "no decorative human/portrait/character"
+    },
+    {
+      "id": "33-storage-result",
+      "title": "结算入库与再出击",
+      "source": "Assets/Resources/Moonkov/RaidUI.uxml#raidResult step 3",
+      "spec": "Raid debrief step 3 STORAGE / readiness: stored supplies, save/settlement pending or done, next energy-cell carry integer selection, deploy-again and return-to-ship. Actions disabled while awaiting settlement. 入库完成 保存中 携带能量电池 再次出击 返回舰船. No fake successful save.",
+      "finalCharacterPolicy": "no decorative human/portrait/character"
+    },
+    {
+      "id": "34-pause",
+      "title": "局内菜单",
+      "source": "Assets/UI Toolkit/GameUI/PauseMenu.uxml",
+      "spec": "In-game pause/menu overlay with ONLY Resume, Main Menu, Quit. Show live gameplay dimmed behind but do not claim multiplayer world is paused. 继续游戏 返回主菜单 退出游戏. One focus state, huge battlefield breathing room, brand-level composition reduced to a cropped archival moon graphic at edge.",
+      "finalCharacterPolicy": "no decorative human/portrait/character"
+    },
+    {
+      "id": "35-respawn",
+      "title": "死亡与重生",
+      "source": "Assets/UI Toolkit/GameUI/RespawnScreen.uxml",
+      "spec": "Existing non-raid death/respawn overlay: YOU ARE DEAD / respawn countdown, restrained death camera background. 玩家阵亡 即将重生. Must not invent revive/insurance/purchase buttons. Mark as non-raid mode in catalog, distinct from raid loss settlement. Minimal visual severity.",
+      "finalCharacterPolicy": "no decorative human/portrait/character"
+    },
+    {
+      "id": "36-score",
+      "title": "非撤离模式战绩与行动记录",
+      "source": "Assets/UI Toolkit/GameUI/Leaderboard/LeaderboardUi.uxml + ActionFeedUi.uxml",
+      "spec": "Existing non-raid scoreboard table: player name / kills / deaths, small action/kill feed at corner. No invented ranking/XP/season. 队员 击杀 阵亡 行动记录. This screen applies non-raid modes only, not added to extraction mode. Simple sample names and values, clean line-weight and number alignment.",
+      "finalCharacterPolicy": "no decorative human/portrait/character"
+    },
+    {
+      "id": "37-diagnostics",
+      "title": "连接与会话信息",
+      "source": "Assets/UI Toolkit/SessionInfo/SessionInfo.uxml + GameUI/NetworkStatus.uxml",
+      "spec": "Existing technical/session diagnostic overlay: connection status, network role, session name, hardware/build/args labels, debug toggle. Compact structured text on quiet backing. No invented charts/telemetry service or exposing real private identifiers; values use — or local example. 会话信息 连接状态 网络角色 会话名称 硬件 构建. Explicitly a diagnostic panel, not gameplay HUD.",
+      "finalCharacterPolicy": "no decorative human/portrait/character"
+    },
+    {
+      "id": "38-hud-alerts",
+      "title": "局内受伤缺氧与换弹状态",
+      "source": "Assets/Scripts/Gameplay/UI/RaidHUD.cs + PlayerHUD.uxml",
+      "spec": "HUD critical-state variant demonstrating existing low oxygen warning, injured/low health status, reloading and short loot pickup receipt, minimal centered target. Different from normal HUD: urgency via clear icon+Chinese label and small red/amber accents, no violent full-screen glitch, no huge vignette, no new status stats. 缺氧警告 受伤 装填中 已拾取. SCHEME C bright moon exterior; SCHEME D dark base interior. Keep aiming center and threats unobscured.",
+      "finalCharacterPolicy": "no decorative human/portrait/character"
+    }
+  ]
+}

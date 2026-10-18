@@ -1,9 +1,11 @@
-<ui:UXML xmlns:moon="Unity.MP_FPS.Client" xmlns:ui="UnityEngine.UIElements">
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
     <ui:Style src="project://database/Assets/UI Toolkit/GameUI/StashScreen.uss" />
     <ui:Style src="project://database/Assets/UI Toolkit/GameUI/MoonkovTerminal.uss" />
     <ui:Style src="project://database/Assets/Resources/Moonkov/UI/TerminalLayout.uss" />
     <ui:VisualElement name="layoutPreview" class="stash-root moonkov-terminal terminal-is-ship terminal-layout-preview">
         <ui:VisualElement name="terminalPage" class="terminal-content">
+            <ui:Button name="homeTheme" class="home-theme-switch" text="C / ARCHIVE" />
+            <ui:Button name="homeObserve" class="home-observe" text="OBSERVE MOON  ↗" />
             <ui:Image class="terminal-character-art" picking-mode="Ignore" name="characterView" />
             <ui:VisualElement class="terminal-home-hero" picking-mode="Ignore">
                 <ui:Label class="terminal-home-kicker" text="ESCAPE FROM" />
@@ -20,51 +22,56 @@
             <ui:VisualElement class="terminal-home-menu">
                 <ui:VisualElement class="terminal-row terminal-home-menu-head">
                     <ui:Label class="terminal-eyebrow" text="COMMAND DECK" />
-                    <ui:Label class="terminal-home-menu-count" text="SELECT  /  09 SYSTEMS" />
+                    <ui:Label class="terminal-home-menu-count" text="SELECT  /  08 SYSTEMS" />
                 </ui:VisualElement>
                 <ui:Button class="terminal-home-action terminal-home-deploy" tooltip="OPERATION" text="" name="homeAction0">
-                    <moon:TechFrame picking-mode="Ignore" delay="0.4" />
-                    <moon:HazardStripes class="hazard-stripes terminal-home-deploy-stripes" picking-mode="Ignore" stripe-color="#07080A29" moving="true" />
-                    <ui:Label class="terminal-home-action-index" picking-mode="Ignore" text="05" />
+                    <ui:VisualElement class="home-card-image home-card-moon" picking-mode="Ignore" />
+                    <ui:Label class="terminal-home-action-index" picking-mode="Ignore" text="01" />
                     <ui:Label class="terminal-home-action-name" picking-mode="Ignore" text="OPERATION" />
                     <ui:Label class="terminal-home-action-caption" picking-mode="Ignore" text="LUNAR SUPPLY RECOVERY  /  DEPLOY" />
                     <ui:VisualElement class="terminal-home-action-arrow" picking-mode="Ignore" />
                 </ui:Button>
                 <ui:VisualElement class="terminal-row terminal-home-grid">
                     <ui:Button class="terminal-home-action" tooltip="CHARACTER" text="" name="homeAction1">
-                        <moon:TechFrame picking-mode="Ignore" delay="0.4" />
+                        <ui:VisualElement class="home-card-image home-card-industrial" picking-mode="Ignore" />
                         <ui:Label class="terminal-home-action-index" picking-mode="Ignore" text="02" />
                         <ui:Label class="terminal-home-action-name" picking-mode="Ignore" text="CHARACTER" />
                         <ui:Label class="terminal-home-action-caption" picking-mode="Ignore" text="LOADOUT  /  STASH" />
                         <ui:VisualElement class="terminal-home-action-arrow" picking-mode="Ignore" />
                     </ui:Button>
                     <ui:Button class="terminal-home-action" tooltip="HALO" text="" name="homeAction2">
-                        <moon:TechFrame picking-mode="Ignore" delay="0.4" />
+                        <ui:VisualElement class="home-card-image home-card-halo" picking-mode="Ignore" />
                         <ui:Label class="terminal-home-action-index" picking-mode="Ignore" text="03" />
                         <ui:Label class="terminal-home-action-name" picking-mode="Ignore" text="HALO" />
                         <ui:Label class="terminal-home-action-caption" picking-mode="Ignore" text="WEAPON SCHEMATIC" />
                         <ui:VisualElement class="terminal-home-action-arrow" picking-mode="Ignore" />
                     </ui:Button>
-                    <ui:Button class="terminal-home-action" tooltip="SETTINGS" text="" name="homeAction3">
-                        <moon:TechFrame picking-mode="Ignore" delay="0.4" />
-                        <ui:Label class="terminal-home-action-index" picking-mode="Ignore" text="09" />
-                        <ui:Label class="terminal-home-action-name" picking-mode="Ignore" text="SETTINGS" />
-                        <ui:Label class="terminal-home-action-caption" picking-mode="Ignore" text="TERMINAL" />
-                        <ui:VisualElement class="terminal-home-action-arrow" picking-mode="Ignore" />
-                    </ui:Button>
                 </ui:VisualElement>
                 <ui:VisualElement class="terminal-row terminal-home-services">
-                    <ui:Button class="terminal-home-chip" text="SUPPLIERS" name="homeChip0">
+                    <ui:Button class="terminal-home-chip" text="" name="homeChip0">
+                        <ui:VisualElement class="home-service-image home-card-industrial" picking-mode="Ignore" />
                         <ui:Label class="terminal-home-chip-index" picking-mode="Ignore" text="04" />
+                        <ui:Label class="home-chip-name" picking-mode="Ignore" text="SUPPLIERS" />
                     </ui:Button>
-                    <ui:Button class="terminal-home-chip" text="TASKS" name="homeChip1">
+                    <ui:Button class="terminal-home-chip" text="" name="homeChip1">
+                        <ui:VisualElement class="home-service-image home-card-moon" picking-mode="Ignore" />
+                        <ui:Label class="terminal-home-chip-index" picking-mode="Ignore" text="05" />
+                        <ui:Label class="home-chip-name" picking-mode="Ignore" text="TASKS" />
+                    </ui:Button>
+                    <ui:Button class="terminal-home-chip" text="" name="homeChip2">
+                        <ui:VisualElement class="home-service-image home-card-industrial" picking-mode="Ignore" />
                         <ui:Label class="terminal-home-chip-index" picking-mode="Ignore" text="06" />
+                        <ui:Label class="home-chip-name" picking-mode="Ignore" text="BASE" />
                     </ui:Button>
-                    <ui:Button class="terminal-home-chip" text="BASE" name="homeChip2">
+                    <ui:Button class="terminal-home-chip" text="" name="homeChip3">
+                        <ui:VisualElement class="home-service-image home-card-halo" picking-mode="Ignore" />
                         <ui:Label class="terminal-home-chip-index" picking-mode="Ignore" text="07" />
+                        <ui:Label class="home-chip-name" picking-mode="Ignore" text="COMMS" />
                     </ui:Button>
-                    <ui:Button class="terminal-home-chip" text="COMMS" name="homeChip3">
+                    <ui:Button class="terminal-home-chip home-settings-chip" tooltip="SETTINGS" text="" name="homeAction3">
+                        <ui:VisualElement class="home-service-image home-card-halo" picking-mode="Ignore" />
                         <ui:Label class="terminal-home-chip-index" picking-mode="Ignore" text="08" />
+                        <ui:Label class="home-chip-name" picking-mode="Ignore" text="SETTINGS" />
                     </ui:Button>
                 </ui:VisualElement>
                 <ui:VisualElement class="terminal-row terminal-home-resources">
@@ -83,7 +90,6 @@
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement class="terminal-home-operator-card">
-                <moon:TechFrame picking-mode="Ignore" delay="0.6" />
                 <ui:Label class="terminal-eyebrow" text="OPERATOR  /  ACTIVE" />
                 <ui:Label class="terminal-home-operator" text="DOLLSINGER" />
                 <ui:Label class="terminal-home-player" text="UNREGISTERED CREW" />
