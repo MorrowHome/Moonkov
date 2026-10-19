@@ -57,7 +57,7 @@
 .inventory-view .inventory-section-title { font-size: 20px; }
 .inventory-view .inventory-item-art { margin-top: 12px; }
 .inventory-view .inventory-item:hover { background-color: #20252d; }
-.inventory-view.moonkov-controls-light .inventory-item:hover { background-color: #d0d4d3; }
+.inventory-view.moonkov-controls-light .inventory-item:hover { background-color: #203252; }
 /* High-density storage: three work areas, clean engraved cells, clear item focus. */
 .inventory-view.inventory-with-stash { padding: 0; background-color: transparent; }
 .inventory-view.inventory-with-stash .inventory-character { width: 34%; margin-right: 14px; padding: 12px; background-color: #08090c; border-color: #69717e; }
@@ -82,12 +82,12 @@
 .inventory-view .inventory-character-title { font-size: 22px; -unity-font-style: normal; }
 .inventory-view .inventory-section-title { font-size: 18px; -unity-font-style: normal; border-left-width: 3px; border-left-color: #164bff; padding-left: 8px; }
 .inventory-view .inventory-hint { font-size: 12px; min-height: 32px; color: #d0d5dd; background-color: #08090c; padding: 6px 10px; }
-.inventory-view.moonkov-controls-light { background-color: #f1f2ed; }
-.inventory-view.moonkov-controls-light .inventory-grid { background-color: #e0e3e1; }
-.inventory-view.moonkov-controls-light .inventory-item { background-color: #f1f2ed; border-color: #929ba5; }
+.inventory-view.moonkov-controls-light { background-color: #101318; }
+.inventory-view.moonkov-controls-light .inventory-grid { background-color: #10151e; }
+.inventory-view.moonkov-controls-light .inventory-item { background-color: #101318; border-color: #929ba5; }
 .inventory-view.moonkov-controls-light .inventory-item-label,
-.inventory-view.moonkov-controls-light .inventory-item-quantity { color: #14171e; background-color: #f1f2ed; }
-.inventory-view.moonkov-controls-light .inventory-selected { border-color: #164bff; background-color: #cfdcff; }
-.inventory-view.moonkov-controls-light .inventory-slot { background-color: #f1f2ed; border-color: #929ba5; }
-.inventory-view.moonkov-controls-light .inventory-slot-label { color: #525b68; }
-.inventory-view.moonkov-controls-light .inventory-slot-item { color: #14171e; }
+.inventory-view.moonkov-controls-light .inventory-item-quantity { color: #f1f2ed; background-color: #101318; }
+.inventory-view.moonkov-controls-light .inventory-selected { border-color: #164bff; background-color: #122c67; }
+.inventory-view.moonkov-controls-light .inventory-slot { background-color: #101318; border-color: #929ba5; }
+.inventory-view.moonkov-controls-light .inventory-slot-label { color: #b1bbcc; }
+.inventory-view.moonkov-controls-light .inventory-slot-item { color: #f1f2ed; }

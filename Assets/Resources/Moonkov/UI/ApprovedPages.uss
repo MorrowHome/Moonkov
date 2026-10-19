@@ -155,7 +155,7 @@
 .archive-pages .archive-settings-exhibit { position: absolute; left: 0; top: 0; bottom: 0; width: 17%; background-image: url("ApprovedHome/CardIndustrial.png"); background-size: cover; background-position: center; border-left-width: 4px; border-left-color: #164bff; }
 .archive-pages .archive-settings-banner { height: 120px; margin-bottom: 20px; }
 .archive-pages .archive-settings-main { padding: 0; margin-right: 22px; width: 65%; }
-.archive-pages .archive-settings-row { background-color: #ffffff; min-height: 68px; margin-bottom: 10px; }
+.archive-pages .archive-settings-row { background-color: #101318; min-height: 68px; margin-bottom: 10px; }
 .archive-pages .archive-settings-row .unity-base-field__label { color: #14171e; min-width: 160px; font-size: 18px; }
 .archive-pages .archive-settings-row .unity-base-slider__tracker { height: 8px; }
 .archive-pages .archive-settings-row .unity-base-slider__dragger { width: 22px; height: 22px; border-radius: 11px; border-width: 1px; border-color: #929ba5; background-color: #f1f2ed; margin-top: -7px; }

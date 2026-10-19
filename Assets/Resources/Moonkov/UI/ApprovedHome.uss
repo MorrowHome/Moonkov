@@ -13,6 +13,7 @@
     --home-paper: #101724; --home-ink: #f0f1eb; --home-muted: #b9bdc7; --home-edge: #a5aab3;
     background-color: #08090c; background-image: url("ApprovedHome/HomeDarkBackdrop.png");
 }
+.moon-approved-home.terminal-is-ship .home-theme-switch { display: none; }
 .moon-approved-home.terminal-is-ship .terminal-scene-shade,
 .moon-approved-home.terminal-is-ship > .terminal-chrome { display: none; }
 .moon-approved-home.terminal-is-ship .terminal-content { overflow: visible; }

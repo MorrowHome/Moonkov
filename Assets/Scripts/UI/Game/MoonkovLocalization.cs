@@ -101,7 +101,8 @@ namespace Unity.MP_FPS
                 ApplyFont(element);
                 // Input values are player content. Localize field labels and buttons,
                 // never usernames, passwords, chat or numeric editing buffers.
-                if (element.ClassListContains("unity-text-element--inner-input-field")) return;
+                if (element.ClassListContains("unity-text-element--inner-input-field") ||
+                    element.ClassListContains("unity-text-element--inner-input-field-component")) return;
                 if (!s_Bindings.TryGetValue(element, out var binding) || element.text != binding.Rendered)
                     Set(element, element.text);
             });

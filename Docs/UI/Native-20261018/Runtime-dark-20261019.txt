@@ -1,0 +1,16 @@
+home: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+account: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+session: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+host: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+halo: native node submit updates inspector; center selection restores original HaloIcons/Rifle; no inventory transaction
+halo: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+deployment: native NavigationSubmit callback once; equipment/footer round-trip after layout; busy launch disabled; no account transaction
+deployment: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+warehouse: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+raidpack: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+loot: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+result: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+cargo: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+storage: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+settings-compact: native runtime panel 1280x720; local fixtures; not a gameplay/network acceptance.
+COMPLETE

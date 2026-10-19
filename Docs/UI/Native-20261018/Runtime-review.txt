@@ -1,5 +1,4 @@
-halo: native node submit updates inspector; center selection restores original HaloIcons/Rifle; no inventory transaction
-halo: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
-halo-compact: native runtime panel 1280x720; local fixtures; not a gameplay/network acceptance.
-warehouse-compact: native runtime panel 1280x720; local fixtures; not a gameplay/network acceptance.
+account text: chars=3; classes=unity-text-element,unity-label,unity-base-field__label,unity-base-text-field__label,unity-text-field__label; color=RGBA(0.945, 0.949, 0.929, 1.000); size=18; bounds=(x:894.00, y:346.00, width:159.00, height:54.00); font=NotoSansCJKsc (UnityEngine.TextCore.Text.FontAsset)
+account text: chars=12; classes=unity-text-element,unity-text-element__selectable,unity-text-element--inner-input-field-component; color=RGBA(0.945, 0.949, 0.929, 1.000); size=20; bounds=(x:1071.00, y:353.00, width:406.00, height:40.00); font=NotoSansCJKsc (UnityEngine.TextCore.Text.FontAsset)
+account: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
 COMPLETE

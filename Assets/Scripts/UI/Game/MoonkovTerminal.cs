@@ -18,7 +18,6 @@ namespace Unity.MP_FPS.Client
         private MenuCharacterView m_Character;
         private int m_Page;
         private bool m_Busy, m_Ready;
-        private bool m_HomeDark;
         private string m_Player;
         private int m_Dust, m_Alloy, m_Cells;
         private readonly Label m_Title, m_Subtitle, m_Clock;
@@ -44,7 +43,6 @@ namespace Unity.MP_FPS.Client
             var loadoutStyle = Resources.Load<StyleSheet>("Moonkov/UI/ApprovedLoadout");
             if (loadoutStyle != null && !root.styleSheets.Contains(loadoutStyle)) root.styleSheets.Add(loadoutStyle);
             root.styleSheets.Add(Resources.Load<StyleSheet>("Moonkov/UI/ProposalSystem"));
-            m_HomeDark = PlayerPrefs.GetInt("Moonkov.HomeDark", 0) != 0;
             ApplyHomeTheme();
             root.focusable = true;
             m_Title = root.Q<Label>(className: "stash-page-title");
@@ -173,14 +171,8 @@ namespace Unity.MP_FPS.Client
             wordmark.style.unityFontDefinition = StyleKeyword.Null;
             wordmark.style.letterSpacing = StyleKeyword.Null;
             var theme = m_Content.Q<Button>("homeTheme");
-            theme.text = m_HomeDark ? "D / COMMAND" : "C / ARCHIVE";
-            theme.clicked += () =>
-            {
-                m_HomeDark = !m_HomeDark;
-                PlayerPrefs.SetInt("Moonkov.HomeDark", m_HomeDark ? 1 : 0);
-                ApplyHomeTheme();
-                theme.text = m_HomeDark ? "D / COMMAND" : "C / ARCHIVE";
-            };
+            // The user selected a game-wide dark direction; retire the light variant switch.
+            theme.style.display = DisplayStyle.None;
             m_Content.Q<Button>("homeObserve").clicked += m_Shade.OpenObserver;
             m_Character = new MenuCharacterView(element: m_Content.Q<Image>("characterView"));
             TerminalMotion.Reveal(m_Character.Element, .05f, -60, 0, 1.1f);
@@ -227,17 +219,16 @@ namespace Unity.MP_FPS.Client
         {
             m_Root.AddToClassList("moon-approved-home");
             m_Root.AddToClassList("moon-proposal-plates");
-            m_Root.EnableInClassList("moon-home-light", !m_HomeDark);
-            m_Root.EnableInClassList("moon-home-dark", m_HomeDark);
+            m_Root.RemoveFromClassList("moon-home-light");
+            m_Root.AddToClassList("moon-home-dark");
         }
 
         private void ApplyPageTheme()
         {
             m_Root.EnableInClassList("archive-pages", m_Page != 0);
-            // The approved choices mix light and dark screens; "both" permits either.
-            bool light = m_Page == 2 || m_Page == 4;
+            // All runtime terminal pages now share dark surface roles.
             for (int i = 0; i < m_Pages.Length; i++) m_Root.EnableInClassList("archive-page-" + i, m_Page == i);
-            m_Root.EnableInClassList("archive-light", light);
+            m_Root.RemoveFromClassList("archive-light");
             m_Root.EnableInClassList("archive-halo-page", m_Page == 2);
             m_Root.EnableInClassList("archive-compact", m_Root.contentRect.width < 1400 || m_Root.contentRect.height < 780);
         }

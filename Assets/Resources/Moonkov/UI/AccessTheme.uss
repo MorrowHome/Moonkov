@@ -1,72 +1,72 @@
 @import url("ArchiveTheme.uss");
-.archive-access { background-color: #f1f2ee; background-image: none; position: relative; }
+.archive-access { background-color: #101318; background-image: none; position: relative; }
 .archive-access > .terminal-scene-shade { visibility: hidden; }
 .archive-access .archive-access-exhibit { position: absolute; left: 0; top: 0; bottom: 0; width: 46%; background-color: #08090c; background-image: url("ApprovedHome/CardMoon.png"); background-size: cover; background-position: center; border-right-width: 6px; border-right-color: #164BFF; padding: 6%; justify-content: flex-end; }
 .archive-access .archive-access-exhibit Label { color: #f1f2ed; background-color: #08090c; align-self: flex-start; padding: 6px 12px; }
 .archive-access .archive-access-brand { font-size: 68px; letter-spacing: -3px; -unity-font-definition: url("../../../UI Toolkit/Fonts/Roboto-Black.ttf"); }
 .archive-access .archive-access-note { font-size: 12px; letter-spacing: 2px; }
-.archive-access > .container { position: absolute; left: 51%; right: 5%; top: 5%; bottom: 10%; width: auto; padding: 24px; background-color: #f1f2ee; border-width: 0; opacity: 1; }
+.archive-access > .container { position: absolute; left: 51%; right: 5%; top: 5%; bottom: 10%; width: auto; padding: 24px; background-color: #101318; border-width: 0; opacity: 1; }
 .archive-access .login-heading { margin-bottom: 20px; flex-shrink: 0; }
-.archive-access .login-title { color: #14171e; font-size: 28px; letter-spacing: 0; white-space: normal; }
-.archive-access .login-caption { color: #525b68; font-size: 11px; letter-spacing: 1px; white-space: normal; }
+.archive-access .login-title { color: #f1f2ed; font-size: 28px; letter-spacing: 0; white-space: normal; }
+.archive-access .login-caption { color: #b1bbcc; font-size: 11px; letter-spacing: 1px; white-space: normal; }
 .archive-access .archive-form-scroll { flex-grow: 1; min-height: 0; }
 .archive-access #ConnectionPanel { flex-grow: 1; }
-.archive-access .archive-form-title { color: #14171e; font-size: 20px; margin-bottom: 18px; }
+.archive-access .archive-form-title { color: #f1f2ed; font-size: 20px; margin-bottom: 18px; }
 .archive-access TextField, .archive-access IntegerField { height: auto; min-height: 42px; margin: 0 0 14px; flex-direction: column; background-color: transparent; }
-.archive-access .unity-base-field__label { color: #525b68; margin: 0 0 6px; font-size: 13px; }
-.archive-access .unity-text-field__input, .archive-access .unity-integer-field__input { background-color: #e3e5e1; color: #14171e; border-width: 1px; border-color: #929ba5; border-radius: 0; padding: 8px 12px; min-height: 38px; font-size: 16px; }
-.archive-access Button { min-height: 40px; height: auto; padding: 9px 16px; margin: 0 0 10px; font-size: 14px; color: #14171e; background-color: #e3e5e1; border-width: 1px; border-color: #929ba5; letter-spacing: 0; }
-.archive-access Button:hover { background-color: #d0d4d3; border-color: #14171e; }
+.archive-access .unity-base-field__label { color: #b1bbcc; margin: 0 0 6px; font-size: 13px; }
+.archive-access .unity-text-field__input, .archive-access .unity-integer-field__input { background-color: #18202d; color: #f1f2ed; border-width: 1px; border-color: #929ba5; border-radius: 0; padding: 8px 12px; min-height: 38px; font-size: 16px; }
+.archive-access Button { min-height: 40px; height: auto; padding: 9px 16px; margin: 0 0 10px; font-size: 14px; color: #f1f2ed; background-color: #18202d; border-width: 1px; border-color: #929ba5; letter-spacing: 0; }
+.archive-access Button:hover { background-color: #203252; border-color: #c7d4e9; }
 .archive-access Button:focus { border-width: 2px; border-color: #164BFF; }
 .archive-access Button:active { background-color: #164BFF; color: #ffffff; }
 .archive-access .archive-form-actions { flex-direction: row; margin-top: 10px; }
 .archive-access .archive-form-actions Button { flex-grow: 1; flex-basis: 0; margin-right: 10px; }
 .archive-access #accountLogin, .archive-access #CreateJoinGame { background-color: #14171e; color: #f1f2ed; border-left-width: 4px; border-left-color: #164BFF; }
-.archive-access .archive-form-status { font-size: 13px; color: #525b68; white-space: normal; padding: 12px 0; margin: 0 0 16px; border-top-width: 1px; border-top-color: #929ba5; }
-.archive-access .archive-form-status.is-error { color: #a43c2e; border-left-width: 3px; border-left-color: #a43c2e; padding-left: 12px; }
+.archive-access .archive-form-status { font-size: 13px; color: #b1bbcc; white-space: normal; padding: 12px 0; margin: 0 0 16px; border-top-width: 1px; border-top-color: #929ba5; }
+.archive-access .archive-form-status.is-error { color: #ff9a87; border-left-width: 3px; border-left-color: #a43c2e; padding-left: 12px; }
 .archive-access .is-busy .archive-form-status { border-left-width: 3px; border-left-color: #164BFF; padding-left: 12px; }
 .archive-access .section-separator { padding: 8px 0; margin: 0 0 8px; border-bottom-color: #929ba5; }
-.archive-access .section-separator Label { color: #14171e; font-size: 13px; letter-spacing: 0; }
+.archive-access .section-separator Label { color: #f1f2ed; font-size: 13px; letter-spacing: 0; }
 .archive-access #ConnetionModeOption { margin: 0 0 16px; }
-.archive-access #ConnetionModeOption Label { color: #14171e; font-size: 13px; }
+.archive-access #ConnetionModeOption Label { color: #f1f2ed; font-size: 13px; }
 .archive-access #ProfileMode { position: absolute; right: 6%; bottom: 4%; min-width: 220px; border-left-width: 4px; border-left-color: #164BFF; }
 .archive-access-stash #ProfileMode { top: 16px; bottom: auto; right: 250px; min-width: 170px; min-height: 30px; height: 30px; font-size: 11px; padding: 4px 12px; }
 .archive-access .stash-host { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
 .archive-dialog { background-color: rgba(3,4,7,0.72); }
-.archive-dialog > .container { width: 480px; max-width: 88%; padding: 28px; opacity: 1; background-color: #f1f2ee; border-color: #929ba5; border-left-color: #164BFF; }
-.archive-dialog Label { color: #14171e; font-size: 14px; }
+.archive-dialog > .container { width: 480px; max-width: 88%; padding: 28px; opacity: 1; background-color: #101318; border-color: #929ba5; border-left-color: #164BFF; }
+.archive-dialog Label { color: #f1f2ed; font-size: 14px; }
 .archive-dialog .archive-dialog-title { font-size: 30px; margin: 0 0 22px; padding-bottom: 16px; border-bottom-width: 1px; border-bottom-color: #929ba5; }
 .archive-dialog TextField { height: 42px; margin-bottom: 16px; }
-.archive-dialog .unity-text-field__input { color: #14171e; background-color: #e3e5e1; border-width: 1px; border-color: #929ba5; border-radius: 0; padding: 8px 12px; font-size: 16px; }
-.archive-dialog Button { height: 40px; font-size: 14px; margin-top: 10px; border-width: 1px; border-color: #929ba5; background-color: #e3e5e1; color: #14171e; }
+.archive-dialog .unity-text-field__input { color: #f1f2ed; background-color: #18202d; border-width: 1px; border-color: #929ba5; border-radius: 0; padding: 8px 12px; font-size: 16px; }
+.archive-dialog Button { height: 40px; font-size: 14px; margin-top: 10px; border-width: 1px; border-color: #929ba5; background-color: #18202d; color: #f1f2ed; }
 .archive-dialog Button:hover, .archive-dialog Button:focus { border-width: 2px; border-color: #164BFF; }
 .archive-dialog #StartButton, .archive-dialog #ConfirmButton { background-color: #14171e; color: #f1f2ed; border-left-width: 4px; border-left-color: #164BFF; }
 .archive-dialog .section-separator { border-width: 0; padding: 0; }
 .archive-connection > .container { align-self: flex-end; margin: 0 4% 4% 0; width: 480px; }
 .archive-connection #ConnectionStatus { white-space: normal; font-size: 18px; }
-.archive-loading { background-color: #f1f2ee; background-image: none; }
+.archive-loading { background-color: #101318; background-image: none; }
 .archive-loading .archive-loading-photo { position: absolute; top: 0; bottom: 0; right: 0; width: 58%; background-image: url("ApprovedHome/CardIndustrial.png"); background-size: cover; background-position: center; border-left-width: 6px; border-left-color: #164BFF; }
-.archive-loading > .container { position: absolute; left: 6%; top: 28%; width: 42%; padding: 24px; border-width: 0; opacity: 1; background-color: #f1f2ee; }
-.archive-loading .login-title { color: #14171e; font-size: 38px; white-space: normal; }
-.archive-loading .login-caption { color: #525b68; font-size: 13px; letter-spacing: 0; white-space: normal; margin: 18px 0; }
-.archive-loading #LoadingStatus { color: #14171e; font-size: 15px; white-space: normal; }
+.archive-loading > .container { position: absolute; left: 6%; top: 28%; width: 42%; padding: 24px; border-width: 0; opacity: 1; background-color: #101318; }
+.archive-loading .login-title { color: #f1f2ed; font-size: 38px; white-space: normal; }
+.archive-loading .login-caption { color: #b1bbcc; font-size: 13px; letter-spacing: 0; white-space: normal; margin: 18px 0; }
+.archive-loading #LoadingStatus { color: #f1f2ed; font-size: 15px; white-space: normal; }
 .archive-loading ProgressBar { margin-top: 18px; height: 6px; }
 .archive-loading .unity-progress-bar__background { height: 6px; border-radius: 0; background-color: #b1b6c2; }
 .archive-loading .unity-progress-bar__progress { height: 6px; border-radius: 0; background-color: #164BFF; }
 .archive-loading .unity-progress-bar__title { display: none; }
 /* Override the legacy login selector at equal specificity so fields remain visible. */
-.archive-access TextField .unity-text-field__input, .archive-access IntegerField .unity-integer-field__input { background-color: #e3e5e1; color: #14171e; border-width: 1px; border-color: #929ba5; min-height: 42px; }
+.archive-access TextField .unity-text-field__input, .archive-access IntegerField .unity-integer-field__input { background-color: #18202d; color: #f1f2ed; border-width: 1px; border-color: #929ba5; min-height: 42px; }
 .archive-access TextField:focus .unity-text-field__input { border-width: 2px; border-color: #164bff; }
 .archive-access .login-title, .archive-access .archive-form-title { -unity-font-style: bold; }
 .archive-access .unity-base-field__label { -unity-text-align: middle-left; align-self: flex-start; }
 /* Session C is a full clean canvas; dialogs retain live connection controls. */
-.archive-access { background-image: url("PageArt/Operations.png"); background-size: cover; background-position: center; }
+.archive-access { background-image: url("PageArt/ArchiveDark.png"); background-size: cover; background-position: center; }
 .archive-access .archive-access-exhibit { background-image: none; background-color: transparent; border-width: 0; }
-.archive-access > .container { background-color: #f1f2ed; border-width: 1px; border-color: #929ba5; border-top-width: 4px; border-top-color: #164bff; }
+.archive-access > .container { background-color: #101318; border-width: 1px; border-color: #929ba5; border-top-width: 4px; border-top-color: #164bff; }
 .archive-dialog > .container { border-top-width: 4px; border-top-color: #164bff; padding: 28px; }
 .archive-dialog .archive-dialog-title { background-image: url("ApprovedHome/CardMoon.png"); background-size: cover; color: #f1f2ed; padding: 20px; margin: -28px -28px 20px; }
 .archive-dialog #StartButton, .archive-dialog #ConfirmButton { background-color: #164bff; color: #ffffff; border-color: #8aa5ff; }
-.archive-loading { background-image: url("PageArt/Base.png"); background-size: cover; background-color: #08090c; }
+.archive-loading { background-image: url("PageArt/Base.png"); background-size: cover; background-color: #08090c; -unity-background-image-tint-color: #687589; }
 .archive-loading .archive-loading-photo { display: none; }
 .archive-loading > .container { top: auto; bottom: 10%; left: 6%; width: 52%; padding: 24px; background-color: rgba(8,9,12,0.96); border-left-width: 4px; border-left-color: #164bff; }
 .archive-loading .login-title { color: #f1f2ed; }

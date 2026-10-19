@@ -51,9 +51,9 @@ namespace Unity.MP_FPS.Client
             m_UseConsumable = useConsumable;
             m_Root = TerminalLayout.Clone("ContainerInventory", "containerInventory");
             m_Root.EnableInClassList("inventory-with-stash", showStash);
-            m_Root.EnableInClassList("moonkov-controls-light", !showStash);
+            m_Root.RemoveFromClassList("moonkov-controls-light");
             m_Root.AddToClassList("archive-ui");
-            m_Root.EnableInClassList("archive-light", !showStash);
+            m_Root.RemoveFromClassList("archive-light");
             m_Root.styleSheets.Add(Resources.Load<StyleSheet>("Moonkov/ContainerUI"));
             m_Root.styleSheets.Add(Resources.Load<StyleSheet>("Moonkov/UI/InventoryTheme")); parent.Add(m_Root);
             m_ItemTemplate = Resources.Load<VisualTreeAsset>("Moonkov/UI/Components/InventoryItem");

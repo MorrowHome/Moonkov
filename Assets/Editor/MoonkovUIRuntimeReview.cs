@@ -126,7 +126,9 @@ public static class MoonkovUIRuntimeReview
                 Resources.Load<VisualTreeAsset>("Moonkov/UI/AccountAccess").CloneTree(panel.parent);
                 var canvas = s_Root.Q("Canvas"); canvas.AddToClassList("archive-access-account"); canvas.AddToClassList("archive-login-plates");
                 var mode = s_Root.Q<Button>("ProfileMode"); mode.RemoveFromHierarchy(); s_Root.Q("accountSecondaryActions").Insert(0, mode);
-                s_Root.Q<TextField>("accountUsername").Focus();
+                var username = s_Root.Q<TextField>("accountUsername");
+                username.SetValueWithoutNotify("local_review"); // local visual fixture; never submitted
+                username.Focus();
             }
         }
         else if (name == "host") Load("Assets/UI Toolkit/GameUI/StartHostPopup.uxml");
@@ -316,6 +318,12 @@ public static class MoonkovUIRuntimeReview
         {
             if (s_Root.resolvedStyle.display == DisplayStyle.None) throw new Exception("Review root unexpectedly hidden");
             bool compact = Cases[s_Index].EndsWith("-compact");
+            if (Cases[s_Index] == "account")
+            {
+                var field = s_Root.Q<TextField>("accountUsername");
+                foreach (var text in field.Query<TextElement>().ToList())
+                    Evidence.Add("account text: chars=" + text.text.Length + "; classes=" + string.Join(",", text.GetClasses()) + "; color=" + text.resolvedStyle.color + "; size=" + text.resolvedStyle.fontSize + "; bounds=" + text.worldBound + "; font=" + text.resolvedStyle.unityFontDefinition);
+            }
             var image = new Texture2D(compact ? 1280 : s_Target.width, compact ? 720 : s_Target.height, TextureFormat.RGB24, false);
             var previous = RenderTexture.active;
             try

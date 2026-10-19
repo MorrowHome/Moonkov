@@ -1,6 +1,6 @@
-/* White C uses one continuous cleaned original canvas. Controls use original coordinates. */
-.archive-access.archive-access-account { background-image: url("ApprovedAccount/AccountCleanC-v2.png"); background-size: 100% 100%; background-position: center; }
-.archive-access-account .archive-access-exhibit,
+/* Dark account surface; functional controls retain their existing coordinates. */
+.archive-access.archive-access-account { background-color: #08090c; background-image: url("PageArt/ArchiveDark.png"); background-size: 100% 100%; background-position: center; }
+.archive-access-account .archive-access-exhibit { display: flex; justify-content: flex-start; border-width: 0; background-color: transparent; }
 .archive-access-account .login-heading,
 .archive-access-account .archive-account-titleplate,
 .archive-access-account .archive-form-title { display: none; }
@@ -13,13 +13,13 @@
 .archive-access-account #accountPassword { position: absolute; left: 55.86%; right: 6.58%; height: 5.95%; min-height: 0; margin: 0; flex-direction: row; align-items: stretch; }
 .archive-access-account #accountUsername { top: 38.47%; }
 .archive-access-account #accountPassword { top: 46.12%; }
-.archive-access-account TextField > .unity-base-field__label { width: 26.45%; min-width: 0; align-self: stretch; margin: 0; padding: 0 10px; color: #14171e; font-size: 18px; -unity-text-align: middle-left; }
+.archive-access-account TextField > .unity-base-field__label { width: 26.45%; min-width: 0; align-self: stretch; margin: 0; padding: 0 10px; color: #f1f2ed; font-size: 18px; -unity-text-align: middle-left; }
 .archive-access.archive-access-account TextField .unity-text-field__input { background-color: #080b12; color: #f1f2ed; border-width: 1px; border-color: #5d6570; font-size: 20px; min-height: 0; padding: 5px 16px; -unity-text-align: middle-left; }
 .archive-access.archive-access-account TextField:focus .unity-text-field__input { border-color: #164bff; border-width: 2px; }
-.archive-access-account.archive-login-plates #accountUsername > .unity-base-field__label { color: #14171e; padding-left: 58px; background-image: url("TextlessControls/AccountC_UsernameLabel.png"); background-size: 100% 100%; }
-.archive-access-account.archive-login-plates #accountPassword > .unity-base-field__label { color: #14171e; padding-left: 58px; background-image: url("TextlessControls/AccountC_PasswordLabel.png"); background-size: 100% 100%; }
-.archive-access-account #accountMessage { position: absolute; left: 55.86%; right: 6.58%; top: 53.24%; height: 4.9%; min-height: 0; padding: 4px 12px; margin: 0; border-width: 0; background-color: transparent; font-size: 14px; color: #525b68; white-space: normal; -unity-text-align: middle-left; }
-.archive-access-account #accountMessage.is-error { background-color: #ffe4e0; border-width: 1px; border-color: #b63a30; color: #982b22; }
+.archive-access-account.archive-login-plates #accountUsername > .unity-base-field__label,
+.archive-access-account.archive-login-plates #accountPassword > .unity-base-field__label { color: #f1f2ed; padding-left: 16px; background-image: none; background-color: #17243b; border-left-width: 3px; border-left-color: #164bff; }
+.archive-access-account #accountMessage { position: absolute; left: 55.86%; right: 6.58%; top: 53.24%; height: 4.9%; min-height: 0; padding: 4px 12px; margin: 0; border-width: 0; background-color: transparent; font-size: 14px; color: #b1bbcc; white-space: normal; -unity-text-align: middle-left; }
+.archive-access-account #accountMessage.is-error { background-color: #321a20; border-width: 1px; border-color: #b63a30; color: #ff9a87; }
 .archive-access-account .archive-form-actions { position: absolute; left: 55.68%; right: 3.65%; top: 60.04%; height: 9.35%; flex-direction: row; padding: 0; margin: 0; }
 .archive-access-account .archive-account-secondary { position: absolute; left: 54.37%; right: 3.23%; top: 73.33%; height: 14.55%; flex-direction: row; padding: 0; margin: 0; }
 .archive-access-account .archive-form-actions Button,
@@ -30,7 +30,7 @@
 .archive-access-account.archive-login-plates #accountQuit,
 .archive-access-account.archive-login-plates #ProfileMode { color: #f1f2ed; background-color: transparent; background-size: 100% 100%; border-width: 0; }
 .archive-access-account.archive-login-plates #accountLogin { background-image: url("TextlessControls/AccountC_Login.png"); }
-.archive-access-account.archive-login-plates #accountRegister { background-image: url("TextlessControls/AccountC_Register.png"); }
+.archive-access-account.archive-login-plates #accountRegister { background-image: none; background-color: #17243b; border-width: 1px; border-color: #63728a; }
 .archive-access-account.archive-login-plates #accountQuit { background-image: url("TextlessControls/AccountC_Quit.png"); }
 .archive-access-account.archive-login-plates #ProfileMode { background-image: url("TextlessControls/AccountC_Single.png"); }
 .archive-access-account.archive-login-plates Button:hover { -unity-background-image-tint-color: #cad9ff; }
@@ -38,9 +38,9 @@
 .archive-access-account.archive-login-plates Button:active { -unity-background-image-tint-color: #849fe8; }
 .archive-access-account.archive-login-plates Button:disabled { opacity: 0.4; }
 /* Editable functional typography. Only non-interactive brand logos belong to the canvas. */
-.archive-access-account .archive-account-native-title { position: absolute; left: 55.56%; top: 22.8%; height: 9%; color: #111318; font-size: 64px; -unity-font-style: normal; -unity-text-align: middle-left; }
-.archive-access-account .archive-account-native-caption { position: absolute; left: 55.86%; top: 32.6%; color: #111318; font-size: 14px; letter-spacing: 4px; }
-.archive-access-account.archive-login-plates #accountRegister { color: #111318; }
+.archive-access-account .archive-account-native-title { position: absolute; left: 55.56%; top: 22.8%; height: 9%; color: #f1f2ed; font-size: 64px; -unity-font-style: normal; -unity-text-align: middle-left; }
+.archive-access-account .archive-account-native-caption { position: absolute; left: 55.86%; top: 32.6%; color: #f1f2ed; font-size: 14px; letter-spacing: 4px; }
+.archive-access-account.archive-login-plates #accountRegister { color: #f1f2ed; }
 .archive-access-account.archive-login-plates #accountLogin,
 .archive-access-account.archive-login-plates #accountRegister { -unity-slice-left: 14; -unity-slice-right: 14; -unity-slice-top: 12; -unity-slice-bottom: 12; }
 .archive-access-account.archive-login-plates #accountLogin,
@@ -48,5 +48,7 @@
 .archive-access-account.archive-login-plates #accountQuit,
 .archive-access-account.archive-login-plates #ProfileMode { font-size: 32px; -unity-font-style: normal; -unity-text-align: middle-center; }
 .archive-account-arrow { position: absolute; right: 10%; top: 25%; bottom: 25%; width: 30px; font-size: 26px; color: #f1f2ed; -unity-text-align: middle-center; }
-#accountRegister .archive-account-arrow { color: #111318; }
+#accountRegister .archive-account-arrow { color: #f1f2ed; }
 .archive-access-account TextField .unity-text-field__input .unity-text-element { -unity-text-align: middle-left; }
+.archive-access-account TextField .unity-text-element--inner-input-field,
+.archive-access-account TextField .unity-text-element--inner-input-field-component { color: #f1f2ed; font-size: 20px; }

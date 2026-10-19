@@ -8,11 +8,12 @@
     color: var(--mk-ink);
 }
 .moonkov-controls-light {
-    --mk-surface: #f1f2ee;
-    --mk-panel: #e1e3df;
-    --mk-ink: #16181f;
-    --mk-muted: #555c6b;
-    --mk-line: #9da3ad;
+    /* Compatibility alias for older component previews. */
+    --mk-surface: #101116;
+    --mk-panel: #121419;
+    --mk-ink: #f1f2ed;
+    --mk-muted: #a3a7b4;
+    --mk-line: #34383f;
 }
 .moonkov-controls .mk-card {
     border-radius: 0;

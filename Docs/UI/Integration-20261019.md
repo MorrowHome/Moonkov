@@ -1,6 +1,6 @@
 # Moonkov 全界面接入：2026-10-19
 
-这轮是项目内 UI Toolkit 实现，不是网页或整屏样稿。主菜单 C/D 和白色 C 账户入口沿用上次已接入版本；其余入口使用同一字体、边线、蓝色选择状态与独立图片层。功能文字、编号、箭头、数量和错误均保留为原生 UI。
+这轮是项目内 UI Toolkit 实现，不是网页或整屏样稿。最新用户指示为全游戏 UI 改成深色：主菜单固定深色 D；登录、管理页、准备台、局内背包/搜刮、连接弹窗和结算统一深色表面、浅色文字与蓝色选择状态。此前的白色 C 资源保留供 Git 回退，不再作为运行时主题。功能文字、编号、箭头、数量和错误均保留为原生 UI。
 
 ## 层级调整
 
@@ -26,7 +26,7 @@ flowchart LR
 
 | 认可提案 / 功能 | 真实项目入口与实现 |
 |---|---|
-| 00 主界面、01 账户 | Ship.uxml、AccountAccess.uxml；上一轮原生实现保持 |
+| 00 主界面、01 账户 | Ship.uxml、AccountAccess.uxml；主菜单固定 D，账户使用干净深色底图与原生品牌文字，表单坐标和事件保持 |
 | 02–06 连接与加载 | MainMenu、StartHostPopup、DirectConnectPopup、ConnectionStatus、Loading；原表单/事件与加载状态保留 |
 | 07 仓库、08 检查/容器 | ContainerInventoryView、ContainerInventory.uxml、ItemInspection.uxml、Window.uxml；库存版本、拖放坐标、事务未替换 |
 | 09 光环、10 改装 | Halo.uxml 的原光环外观和六种真实模块节点，与右侧原生检查区；MODIFY HALO 进入已有拥有物选择/模块安装面板；不展示普通枪改装 |
@@ -35,7 +35,7 @@ flowchart LR
 | 19–23 原出击各步 | 合并至 Operation.uxml 单页准备台，未丢弃携带输入、地点说明、回收风险与最终动作 |
 | 24 HUD、25 背包、26 搜刮、27 健康 | PlayerHUD、RaidUI、ContainerInventoryView、RaidHealthView；只显示已有生命、弹药、氧气、货物等真实来源 |
 | 28 灯光、29 交互、30 撤离、38 警告 | HaloLightPanel、RaidHUD、AirlockPrompt；原按住/关闭、交互与撤离显示契约保持 |
-| 31–33 结果/货物/入库 | RaidHUD 原三页结果，连续白色月面底图与原生明细；真实保存结果决定可继续/返回 |
+| 31–33 结果/货物/入库 | RaidHUD 原三页结果，深色月面底图与原生明细；真实保存结果决定可继续/返回 |
 | 34 暂停、35 死亡 | 原 PauseMenu 与 Respawn，仅压暗真实画面；不添加假复活或背景关卡图 |
 | 36 计分、37 诊断 | 现有 ListView/状态字段，保留显示条件与数据绑定 |
 
@@ -46,7 +46,7 @@ flowchart LR
 - ProposalSystem.uss：管理页面一级导航、各页构图、准备台和节点状态。ArchiveTheme / MoonkovControls：共享颜色与状态；InventoryTheme / FieldTheme / AccessTheme：密集库存、局内与连接界面。
 - Components/ItemInspection.uxml：独立物品检查组件；Components/PrimaryNavigation.uxml：分级摄影入口。ArchiveCardFrame.cs：原生 Painter2D 静态切角、状态边线和构筑轨道线，不烘焙文字、不改变命中区、不新增循环刷新。默认/悬停/焦点/按下/选中由原按钮与事件驱动；其他现有导航、商品、装备槽、模块槽等继续是可编辑 UXML。
 - PageArt：四张无字连续画布和五张独立摄影插画裁切。manifest.json 记录来源与矩形。原提案不作破坏修改；人物继续由原 MenuCharacterView 渲染。
-- 颜色：纸白 #F1F2ED、近黑 #08090C、强调蓝 #164BFF、深蓝 #12234B、危险红 #963D32。功能字号以中文可读性为准，标题约 22–38px，正文 14–16px，密集次要物品标记 11–13px；不是把图中微型标注当正文。
+- 颜色：近黑底 #08090C、深色面板 #101318、输入表面 #18202D、浅色正文 #F1F2ED、强调蓝 #164BFF、深蓝 #12234B、危险提示 #FF9A87。旧 archive-light / moonkov-controls-light 样式类仅兼容旧 UXML，颜色角色也改为深色。功能字号以中文可读性为准，标题约 22–38px，正文 14–16px，密集次要物品标记 11–13px；不是把图中微型标注当正文。
 - 四张背景为静态压缩纹理，不使用实时后处理或新增循环动画。移除对应 USS background-image 即可关闭画布纹理；原生控件与文本仍成立。背景压缩、最高尺寸 2048、无 mipmap；4K 锐度与 GPU 成本尚未实测。
 - 悬停/焦点/选中使用亮边、蓝色状态及原生文字；禁用由真实 Button 状态决定；错误保留文字/标记与危险色；拖拽、等待、失败仍走原库存与账号控制器。
 
@@ -66,6 +66,10 @@ flowchart LR
 
 用户明确指出光环图是游戏中的真实外观，头盔/胸挂/背包不是战术装备，后续会有专门美术。本轮已恢复 StashVisuals 原先的 HaloIcons/Rifle、Revolver、Shotgun、Sniper 引用，撤掉上一轮 ArchiveHaloMark 线稿替代，以及整个生成的 InventoryArt 图集和映射。没有接入随后生成的机械光环 atlas。
 
-构筑页布局重新设计，不恢复旧版排布：真实光环作为中央主视觉放大，左侧储能、右侧整形、下方功能模块采用错位切角卡片；右侧用摄影标题区与纸白信息区区分层级，取消原先的通栏表单框与中央小卡片。围绕原 Halo Rifle 图显示现有的电容、充能桥、聚焦透镜、扇形阵列、脉冲控制器、命中标记模块；名称与说明读取 InventoryCatalog/HaloModules，不再使用提案中臆造的发射器/框架/核心照片。没有新增或重命名任何库存物品。头盔、胸挂、背包沿用项目原有表现，留待专门美术替换。原物品的颜色不被 UI 蓝白规范强制覆盖。
+构筑页布局重新设计，不恢复旧版排布：真实光环作为中央主视觉放大，左侧储能、右侧整形、下方功能模块采用错位切角卡片；右侧用摄影标题区与深色信息区区分层级，取消原先的通栏表单框与中央小卡片。围绕原 Halo Rifle 图显示现有的电容、充能桥、聚焦透镜、扇形阵列、脉冲控制器、命中标记模块；名称与说明读取 InventoryCatalog/HaloModules，不再使用提案中臆造的发射器/框架/核心照片。没有新增或重命名任何库存物品。头盔、胸挂、背包沿用项目原有表现，留待专门美术替换。原物品的颜色不被 UI 蓝白规范强制覆盖。
 
 本次纠偏检查聚焦构筑页与共享一级导航：halo、warehouse-compact、settings-compact、deployment，随后复查修正的对比度/标题间距和新增 halo-compact。旧截图仍可追溯，不能把旧侧栏截图当成当前状态。物理键鼠/手柄和 GPU 性能边界仍如上所述；原生事件检查不代表实际设备全流程验收。
+
+最新深色统一仅更改主题选择和表面/文字/状态颜色，未再次重排页面。淡色摄影背景只调整该背景层的 tint，不染色人物、光环或物品图。HUD 保留已有深色承托；暂停/死亡等已有深色页面保持原状。验证针对本轮从浅色转深色的 13 个状态：home、account、session、host、halo、deployment、warehouse、raidpack、loot、result、cargo、storage、settings-compact；未为同一主题重拍全部历史截图。
+
+登录额外复查一个包含 local_review 展示用户名的聚焦状态，未提交登录。输入光标与选区使用 UI Toolkit 原生 USS 自定义属性 --unity-cursor-color / --unity-selection-color，依据 [Unity TextField 文档](https://docs.unity3d.com/cn/current/Manual/UIE-uxml-element-TextField.html)。复查发现不透明选区遮住文字，改为 28% 透明度的蓝色后确认选中文字可读。另兼容当前 Unity 实际使用的 inner-input-field-component 类名，让输入值保持为玩家内容，不进入本地化字符串绑定；未改变字段校验和登录事务。
