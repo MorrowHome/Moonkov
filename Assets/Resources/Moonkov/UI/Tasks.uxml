@@ -48,7 +48,7 @@
                     </ui:VisualElement>
                     <ui:Label class="terminal-positive" text="成功撤离后自动保存 · 首次收益不重复发放" />
                     <ui:Button class="terminal-primary" text="准备出战" name="planOperation" />
-                    <ui:Label class="terminal-copy" text="物品带回后仍可保留。调查记录与研究材料分别处理，不会因为阅读记录而消耗材料。" />
+                    <ui:Label class="terminal-copy" text="月核碎片和事故档案盘可在供应商出售换月尘，用于购买现有装备；也可继续保留。专属研究配方尚未开放，阅读调查记录不会消耗材料。" />
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>

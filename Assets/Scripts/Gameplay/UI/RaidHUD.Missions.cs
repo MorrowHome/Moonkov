@@ -21,6 +21,8 @@ namespace Unity.MP_FPS
         private string m_MissionOperation;
         private bool m_MissionPinned = true, m_MissionDetailsVisible;
         private bool m_MissionConfiguring;
+        private string m_MissionNotice;
+        private float m_MissionNoticeUntil;
         private readonly System.Collections.Generic.List<Label> m_MissionNodeLabels = new System.Collections.Generic.List<Label>();
         private Client.StashItemArt m_MissionIcon;
         private Label m_MissionResult;
@@ -59,6 +61,7 @@ namespace Unity.MP_FPS
             };
             m_MissionSequence = m_MissionRequest = 0; m_MissionOperation = null; m_MissionHolding = -1;
             m_MissionDetailsVisible = false; m_MissionConfiguring = false; m_MissionPinned = true;
+            m_MissionNotice = null; m_MissionNoticeUntil = 0;
             m_MissionNodeLabels.Clear();
             m_MissionHud.Query<VisualElement>().ForEach(e => e.pickingMode = PickingMode.Ignore);
             m_MissionInteraction.Query<VisualElement>().ForEach(e => e.pickingMode = PickingMode.Ignore);
@@ -110,6 +113,7 @@ namespace Unity.MP_FPS
             if (m_MissionOperation != snapshot.OperationId.ToString())
             {
                 SetMissionDetails(false); m_MissionOperation = snapshot.OperationId.ToString(); m_MissionPinned = true;
+                MissionNotice("发现 MC00 设施信号 · 无需接取，直接操作有效。去向与流程可按 J 查看。");
                 m_Root.Q<Button>("missionPin").text = "取消追踪";
                 if (live) MoonkovAudio.Play(MoonkovAudio.Library?.Notification, Vector3.zero, .65f);
             }
@@ -162,7 +166,12 @@ namespace Unity.MP_FPS
             bool terminal = snapshot.Phase == MissionPhase.Expired || snapshot.Phase == MissionPhase.Resolved;
             bool selected = (target >= 0 || output) && !terminal;
             m_MissionInteraction.style.display = selected ? DisplayStyle.Flex : DisplayStyle.None;
-            if (m_MissionHolding >= 0 && (!held || target != m_MissionHolding || !selected)) CancelMissionHold();
+            if (m_MissionHolding >= 0 && (!held || target != m_MissionHolding || !selected))
+            {
+                if (!terminal && (snapshot.CompletedMask & (1u << m_MissionHolding)) == 0)
+                    MissionNotice("当前操作已中断 · 已完成的其他步骤保留，重新靠近设备后按住 F 继续。");
+                CancelMissionHold();
+            }
             if (output)
             {
                 m_MissionAction.text = "F  打开任务输出槽"; m_MissionActionNote.text = $"{best:0.0} 米 · 物品尚未入库，死亡会丢失";
@@ -171,7 +180,13 @@ namespace Unity.MP_FPS
             }
             if (!selected) return false;
             if (snapshot.RequestId == m_MissionRequest && snapshot.Result != MissionActionResult.Started && snapshot.Result != MissionActionResult.Running)
+            {
+                if (m_MissionHolding >= 0 && snapshot.Result == MissionActionResult.Invalid)
+                    MissionNotice("操作未完成 · 请检查站位与视线；受伤会中断长按，已完成步骤不丢失。");
+                else if (m_MissionHolding >= 0 && snapshot.Result == MissionActionResult.Busy)
+                    MissionNotice("其他人正在操作这台设备 · 可以稍后重试，或先完成其他步骤。");
                 m_MissionHolding = -1;
+            }
             var objective = definition.Objectives[target];
             bool done = (snapshot.CompletedMask & (1u << target)) != 0;
             bool prerequisite = objective.RecordBeforePrerequisites || (snapshot.CompletedMask & objective.Prerequisites) == objective.Prerequisites;
@@ -188,6 +203,7 @@ namespace Unity.MP_FPS
             if (!string.IsNullOrWhiteSpace(inscription)) m_MissionActionNote.text += "\n" + inscription;
             if (!done && !process && prerequisite && pressed)
             {
+                m_MissionNoticeUntil = 0;
                 if (configuration)
                 {
                     OpenMissionConfiguration(objective, target); return true;
@@ -272,7 +288,11 @@ namespace Unity.MP_FPS
                 bool done = (snapshot.CompletedMask & (1u << i)) != 0;
                 var node = definition.Objectives[i];
                 if (!done && next < 0) next = i;
-                var label = m_MissionNodeLabels[i]; label.text = (done ? "已完成  " : $"{i + 1:00}  ") + node.Name;
+                bool ready = (snapshot.CompletedMask & node.Prerequisites) == node.Prerequisites;
+                bool terminal = snapshot.Phase == MissionPhase.Expired || snapshot.Phase == MissionPhase.Resolved;
+                string state = done ? "已完成" : terminal ? "已结束" : !ready && node.RecordBeforePrerequisites ? "可提前读取" :
+                    !ready ? "待前置" : node.Kind == MissionObjectiveKind.Process ? "自动运行" : "可操作";
+                var label = m_MissionNodeLabels[i]; label.text = $"{i + 1:00}  {state}  {node.Name}";
                 label.EnableInClassList("mission-node-complete", done);
             }
             var position = m_PlayerQuery.HasSingleton<LocalTransform>() ? (Vector3)m_PlayerQuery.GetSingleton<LocalTransform>().Position : Vector3.zero;
@@ -284,9 +304,7 @@ namespace Unity.MP_FPS
                 if (inventory.Graph != null && inventory.RaidId == m_Snapshot.RaidId)
                     foreach (var item in inventory.Graph.Items) if (MissionInventory.IsArtifact(item.Code) && item.MissionOperationId == snapshot.OperationId.ToString() && inventory.Graph.Carried(item)) carried++;
             }
-            m_MissionStep.text = snapshot.Phase == MissionPhase.Expired ? "回收窗口已关闭" : snapshot.Phase == MissionPhase.Resolved ? "本次产物已回收或遗失" :
-                snapshot.Phase == MissionPhase.OutputReady ? "取得任务产物并撤离" : next >= 0 ? definition.Objectives[next].Name : "设施操作完成";
-            if (live && carried > 0) m_MissionStep.text = "携带任务产物成功撤离";
+            m_MissionStep.text = Time.unscaledTime < m_MissionNoticeUntil ? m_MissionNotice : MissionStepCopy(definition, snapshot, carried);
             float progress = next < 0 ? 1 : next < 4 ? snapshot.ProgressA[next] : snapshot.ProgressB[next - 4];
             m_MissionFill.style.width = Length.Percent(progress * 100);
             string layer = anchor.Position.y - position.y > 3 ? "楼上" : position.y - anchor.Position.y > 3 ? "楼下" : "当前层附近";
@@ -306,10 +324,65 @@ namespace Unity.MP_FPS
             else if (snapshot.Phase == MissionPhase.OutputReady && snapshot.OutputRemaining == 0) m_MissionRisk.text = "输出槽已空 · 可继续探索或提前撤离";
             if (live && carried > 0 && snapshot.Remaining <= 60 && snapshot.Phase != MissionPhase.Expired)
                 m_MissionRisk.text = $"回收窗口将在 {snapshot.Remaining:0} 秒后关闭！未撤出的产物将失效，请立即返回。";
-            if (!m_MissionConfiguring) m_Root.Q<Label>("missionClue").text = definition.ArtifactCode == "mooncore_fragment" ?
-                "残留记录：备用线路曾被人为隔离。夹具内的结晶带有重复编号，可能来自另一批次。" :
-                "事故痕迹：设备烧损前仍在持续上传。两个校验标签保留了不同时间戳；恢复档案可查明最后一次操作。";
-            m_Root.Q<Label>("missionOutcome").text = "不接取、不追踪也有效。设施完成与本人安全带回分别记录；首次收益仅发放一次。";
+            if (!m_MissionConfiguring) m_Root.Q<Label>("missionClue").text = "路线提示：从 MC00 入口沿楼梯前往 L22。楼层与直线方向是定位参考，不是穿墙路线。\n" +
+                (definition.ArtifactCode == "mooncore_fragment" ?
+                "配电 A/B 顺序不限，两路完成后在取样机启动切割。夹具内结晶带有重复编号，可能来自另一批次。" :
+                "自检和标签读取可以穿插进行，提前扫描会保留；两处校验齐全后返回终端确认下载。事故设备曾在烧损前持续上传。");
+            m_Root.Q<Label>("missionOutcome").text = (definition.ArtifactCode == "mooncore_fragment" ? "首次有效带回月核 +30 月尘" : "首次有效带回档案 +20 月尘") +
+                "；若也是首次非保底回收，另 +10。材料保留，可在供应商出售换月尘、购买现有装备。专属研究配方尚未开放。";
+        }
+
+        private void MissionNotice(string text)
+        { m_MissionNotice = text; m_MissionNoticeUntil = Time.unscaledTime + 4; }
+
+        private static string MissionStepCopy(MissionDefinition definition, RaidMissionSnapshotRpc snapshot, int carried)
+        {
+            bool Done(string id)
+            {
+                for (int i = 0; i < definition.Objectives.Length; i++)
+                    if (definition.Objectives[i].Id == id) return (snapshot.CompletedMask & (1u << i)) != 0;
+                return false;
+            }
+            string Running(string id, string action)
+            {
+                foreach (var node in definition.Objectives)
+                    if (node.Id == id) return $"{action} · 自动运行 {node.Seconds:0.#} 秒，无需持续按住";
+                return action + " · 设备自动运行，无需持续按住";
+            }
+            if (snapshot.Phase == MissionPhase.Expired) return "回收窗口已关闭 · 本批未撤出的产物已失效";
+            if (snapshot.Phase == MissionPhase.Resolved) return "本次设施行动结束 · 个人成果以撤离保存为准";
+            if (carried > 0) return $"已携带 {carried} 件任务产物 · 返回撤离点，尚未入库";
+            if (snapshot.Phase == MissionPhase.OutputReady) return snapshot.OutputRemaining > 0 ?
+                "设备完成 · 按 F 打开输出槽，取走产物后撤离" : "输出槽已空 · 产物已被取走，可继续探索或撤离";
+            if (definition.ArtifactCode == "mooncore_fragment")
+            {
+                if (Done("start")) return Running("cutting", "正在切割");
+                if (Done("power_a") && Done("power_b")) return "两路供电已恢复 · 前往取样机启动切割";
+                if (Done("power_a")) return "A 路已隔离 · 继续恢复维修配电 B";
+                if (Done("power_b")) return "B 路已恢复 · 继续隔离烧损的 A 支路";
+                return "前往 MC00 · L22，恢复两处供电，A/B 顺序不限";
+            }
+            int scanned = (Done("tag_a") ? 1 : 0) + (Done("tag_b") ? 1 : 0);
+            if (Done("download_start")) return Running("download", "正在下载");
+            if (!Done("self_check")) return scanned > 0 ? $"校验标签已记录 {scanned}/2 · 可回档案终端完成自检" :
+                "前往 MC00 · L22，自检或先读取配电柜上的校验标签";
+            return scanned < 2 ? $"自检完成 · 读取两柜校验标签 {scanned}/2，已扫结果保留" :
+                "自检与校验已齐全 · 返回档案终端确认下载";
+        }
+
+        private static string MissionInventoryFailure(InventoryError error)
+        {
+            switch (error)
+            {
+                case InventoryError.Full: case InventoryError.Bounds: case InventoryError.Collision:
+                    return "空间不足：每件任务产物需要 1×1 空位。先整理口袋、胸挂或背包，再从输出槽取走。";
+                case InventoryError.Incompatible: return "该装备槽不能放任务产物，请选择口袋、胸挂或背包空位。";
+                case InventoryError.Overweight: return "携带重量已达上限，先移出部分物品再取任务产物。";
+                case InventoryError.Missing: return "这件产物已不在原位置，可能已被取走，请等待库存刷新后确认。";
+                case InventoryError.Stale: return "库存或输出槽已有变化，请等待界面刷新后重试。";
+                case InventoryError.Inaccessible: return "输出槽暂不可访问，请靠近设备并确认回收窗口仍开放；普通撤离不受影响。";
+                default: return "操作尚未确认，请等待库存刷新后重试；未确认的物品不计入回收。";
+            }
         }
 
         private void RenderMissionResult(RaidMissionSnapshotRpc snapshot)
@@ -318,15 +391,19 @@ namespace Unity.MP_FPS
             { m_MissionResult.style.display = DisplayStyle.None; return; }
             m_MissionResult.style.display = DisplayStyle.Flex;
             if (m_Snapshot.Phase != RaidPhase.Extracted) { m_MissionResult.text = "本次未安全带回任务产物；已有调查发现与首次奖励保留。"; return; }
-            if (m_Snapshot.SaveState == RaidSaveState.Saving || m_Snapshot.SaveState == RaidSaveState.Retrying)
-            { m_MissionResult.text = $"已撤离 · 带回任务产物 {snapshot.RecoveredArtifacts} 件 · 等待保存确认。"; return; }
+            if (m_Snapshot.SaveState == RaidSaveState.Saving)
+            { m_MissionResult.text = $"已撤离 · 正在保存 {snapshot.RecoveredArtifacts} 件任务产物，到账结果尚未确认。"; return; }
+            if (m_Snapshot.SaveState == RaidSaveState.Retrying)
+            { m_MissionResult.text = $"已撤离 · {snapshot.RecoveredArtifacts} 件任务产物的保存正在重试。当前尚未确认到账，请等待结果刷新。"; return; }
             if (m_Snapshot.SaveState == RaidSaveState.SessionOnly)
             { m_MissionResult.text = "当前仅连接内存模式，任务成长未写入账号；离线档案或已配置的账号服务可持久保存。"; return; }
             if (snapshot.SaveState != RaidSaveState.Saved)
             { m_MissionResult.text = "已撤离，正在同步任务保存结果…"; return; }
             int added = snapshot.MissionFirstsSaved & ~snapshot.MissionFirstsBefore;
             int reward = ((added & 1) != 0 ? 10 : 0) + ((added & 2) != 0 ? 30 : 0) + ((added & 4) != 0 ? 20 : 0);
-            m_MissionResult.text = $"任务产物已保存 {snapshot.RecoveredArtifacts} 件。" + (reward > 0 ? $"首次成长奖励 +{reward} 月尘，调查记录已保存。" : "首次奖励不重复发放；带回材料已保留。");
+            m_MissionResult.text = (snapshot.RecoveredArtifacts > 0 ? $"任务产物已保存 {snapshot.RecoveredArtifacts} 件。" : "本次回收结果已保存。") +
+                (reward > 0 ? $"首次成长奖励 +{reward} 月尘，调查记录已保存。" : "首次奖励不重复发放，已有调查记录保留。") +
+                (snapshot.RecoveredArtifacts > 0 ? "材料保留在仓库，可在供应商出售换月尘或保留；专属研究配方尚未开放。" : "");
         }
 
         private void UpdateMissionMarker(bool visible)

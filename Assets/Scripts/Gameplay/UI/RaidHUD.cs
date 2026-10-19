@@ -562,6 +562,7 @@ namespace Unity.MP_FPS
                     return;
                 }
                 bool wasOpen=m_OpenedLootId>=0;
+                bool missionCache = m_OpenedLootId >= RaidLootContainers.FirstMissionCacheId || inventory.LootId >= RaidLootContainers.FirstMissionCacheId;
                 bool acknowledged = !m_InventoryRequestPending || inventory.RequestId == m_InventoryRequestId || wasOpen && inventory.LootId<0;
                 if (acknowledged) m_InventoryRequestPending = false;
                 m_OpenedLootId=inventory.LootId;
@@ -573,9 +574,13 @@ namespace Unity.MP_FPS
                 MoonkovLocalization.Set(m_InventoryTitle, inventory.LootId>=RaidLootContainers.FirstMissionCacheId ? "任务输出槽 / 随身装备"
                     : inventory.LootId>=RaidLootContainers.FirstDeathBagId ? "REMAINS / CARRIED INVENTORY"
                     : inventory.LootId>=0 ? "SUPPLY CACHE / CARRIED INVENTORY" : "CHARACTER / CARRIED INVENTORY");
-                m_InventoryView.Present(inventory.Graph,acknowledged && inventory.Error!=Inventory.InventoryError.None ? MoonkovLocalization.Format($"Inventory: {inventory.Error.ToString()}") : null,
+                string inventoryMessage = acknowledged && inventory.Error != Inventory.InventoryError.None ?
+                    missionCache ? MissionInventoryFailure(inventory.Error) : MoonkovLocalization.Format($"Inventory: {inventory.Error.ToString()}") : null;
+                m_InventoryView.Present(inventory.Graph,inventoryMessage,
                     operationCompleted: acknowledged,lootId:inventory.LootId);
-                if (acknowledged) m_HealthView.Message(inventory.Error == Inventory.InventoryError.None ? "" : MoonkovLocalization.Format($"Inventory: {inventory.Error.ToString()}"));
+                if (acknowledged) m_HealthView.Message(inventoryMessage ?? "");
+                if (missionCache && acknowledged && inventory.Error == Inventory.InventoryError.Inaccessible)
+                    MissionNotice(m_MissionSnapshot.Phase == Missions.MissionPhase.Expired ? "回收窗口已关闭 · 本批未撤出的产物失效，普通搜刮与撤离仍可继续。" : inventoryMessage);
                 if (m_HealthSelected) MoonkovLocalization.Set(m_InventoryTitle, "HEALTH / SUIT STATUS");
                 if(inventory.LootId<0 && (wasOpen || acknowledged && inventory.Error==Inventory.InventoryError.Inaccessible))
                 {if(inventory.Error==Inventory.InventoryError.Inaccessible)m_LootErrorUntil=Time.unscaledTime+3;SetInventory(false);}
