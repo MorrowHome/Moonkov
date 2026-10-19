@@ -1291589,23 +1291589,24 @@ MonoBehaviour:
   material: {fileID: 2100000, guid: a04f0cdbf038b7b4fb7e2c118326b4d9, type: 2}
   subjectMaskMaterial: {fileID: 2100000, guid: 0beb4dc7eb92a6c48b2b1fdf63c95d61, type: 2}
   intensity: 1
-  exposure: 0.3
-  blackPoint: 0.035
-  whitePoint: 0.86
-  contrast: 1.25
+  exposure: 0.1
+  blackPoint: 0.018
+  whitePoint: 0.97
+  contrast: 1.08
+  shadingRetention: 0.65
   silverRelief: 0.32
-  grain: 0.012
-  tonalSeparation: 0.5
-  contourStrength: 0.65
+  grain: 0.006
+  tonalSeparation: 0.22
+  contourStrength: 0.6
   contourWidth: 1
   accentColor: {r: 0, g: 0.04, b: 1, a: 1}
   accentStrength: 0.92
   accentThreshold: 0.22
-  localAdaptation: 0.3
-  halation: 0.1
-  halationThreshold: 0.82
+  localAdaptation: 0.15
+  halation: 0.12
+  halationThreshold: 0.86
   halationRadius: 1.5
-  surfacePatina: 0.07
+  surfacePatina: 0.035
   previewInSceneView: 1
 --- !u!4 &1973396617
 Transform:
