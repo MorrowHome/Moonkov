@@ -2,6 +2,8 @@
 
 Unity **6000.5.10f1 / URP 17.5** 的 FPS 模板，保留原有 `MainMenu → GameScene` 联机入口。
 
+New to Git or Unity? See the [English setup guide: clone and run on Windows](Docs/CloneAndRun.en.md), including Git LFS and keeping large installs/caches off C:.
+
 ## DollSinger 本地角色
 
 在 Unity 选择 **Tools → Doll Singer → Open Demo**，然后点击 Play。
