@@ -134,17 +134,20 @@ namespace Unity.MP_FPS
             var view = Camera.main;
             Vector3 eye = view ? view.transform.position : (Vector3)local.Position + Vector3.up * 1.4f;
             Vector3 forward = view ? view.transform.forward : Vector3.forward;
-            int target = -1; bool output = false; float best = 3;
+            int target = -1, targetPriority = -1; bool output = false; float best = 3;
             for (int i = 0; i < definition.Objectives.Length; i++)
             {
                 var node = definition.Objectives[i]; var anchor = site.Anchor(node.Anchor);
                 if (anchor == null) continue;
                 float distance = Vector3.Distance(local.Position, anchor.Position);
-                if (distance > best || Vector3.Dot(forward, (anchor.Position - eye).normalized) < .92f ||
+                if (distance > 3 || Vector3.Dot(forward, (anchor.Position - eye).normalized) < .92f ||
                     UnityEngine.Physics.Linecast(eye, anchor.Position, LayerMask.GetMask("Default", "Ground"), QueryTriggerInteraction.Ignore)) continue;
                 bool completed = (snapshot.CompletedMask & (1u << i)) != 0;
-                if (completed && target >= 0) continue;
-                best = distance; target = i;
+                bool ready = node.RecordBeforePrerequisites || (snapshot.CompletedMask & node.Prerequisites) == node.Prerequisites;
+                // Several steps share a machine. A locked download/process must never hide its actionable start/self-check.
+                int priority = completed ? 0 : !ready ? 1 : node.Kind == MissionObjectiveKind.Process ? 2 : 3;
+                if (target >= 0 && (priority < targetPriority || priority == targetPriority && distance >= best)) continue;
+                best = distance; target = i; targetPriority = priority;
             }
             if (snapshot.Phase == MissionPhase.OutputReady && snapshot.OutputLootId >= 0)
             {
@@ -294,6 +297,8 @@ namespace Unity.MP_FPS
             m_MissionLocation.text += " · " + MissionCardinals[cardinal];
             m_MissionRisk.text = snapshot.Phase == MissionPhase.Offered ? $"设施信号可用 · {snapshot.Remaining:0} 秒" :
                 snapshot.Phase == MissionPhase.OutputReady ? "物品尚未入库 · 可以争抢 · 死亡会掉落" : $"回收窗口 {snapshot.Remaining:0} 秒 · 可随时撤离";
+            if (snapshot.Phase == MissionPhase.Expired) m_MissionRisk.text = "回收窗口已关闭 · 本批未撤出产物失效 · 普通搜刮与撤离仍可继续";
+            else if (snapshot.Phase == MissionPhase.Resolved) m_MissionRisk.text = "本次设施行动结束 · 可继续普通搜刮或撤离";
             if (live && carried > 0) m_MissionRisk.text = $"已携带 {carried} 件 · 尚未入库 · 窗口 {snapshot.Remaining:0} 秒";
             else if (snapshot.Phase == MissionPhase.OutputReady && snapshot.OutputRemaining == 0) m_MissionRisk.text = "输出槽已空 · 可继续探索或提前撤离";
             if (live && carried > 0 && snapshot.Remaining <= 60 && snapshot.Phase != MissionPhase.Expired)

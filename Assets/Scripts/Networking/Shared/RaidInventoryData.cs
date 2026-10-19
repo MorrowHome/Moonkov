@@ -38,6 +38,7 @@ namespace Unity.MP_FPS
         public object MapIdentity { get; private set; }
         public double NextRefillCheck;
         public const int FirstDeathBagId=24;
+        public const int FirstMissionCacheId = 1000000000;
         private int m_NextDeathBagId=FirstDeathBagId;
         // A fresh alien bag starts at version 1. Dissection advances it before
         // any inventory transfer is allowed; human corpses retain their old flow.

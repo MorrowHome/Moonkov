@@ -136,6 +136,7 @@ namespace Unity.MP_FPS
             m_EquipmentTab.EnableInClassList("raid-tab-active", !health);
             m_HealthTab.EnableInClassList("raid-tab-active", health);
             MoonkovLocalization.Set(m_InventoryTitle, health ? "HEALTH / SUIT STATUS" :
+                m_OpenedLootId >= RaidLootContainers.FirstMissionCacheId ? "任务输出槽 / 随身装备" :
                 m_OpenedLootId >= RaidLootContainers.FirstDeathBagId ? "REMAINS / CARRIED INVENTORY" :
                 m_OpenedLootId >= 0 ? "SUPPLY CACHE / CARRIED INVENTORY" : "CHARACTER / CARRIED INVENTORY");
             if (health) m_InventoryView.Suspend();
@@ -569,7 +570,8 @@ namespace Unity.MP_FPS
                     m_DissectionInterrupted=m_DissectingLootId>=0 && inventory.Error==Inventory.InventoryError.Inaccessible;
                     m_DissectingLootId=-1;m_LootOpenPending=false;m_InventoryView.SetReadOnly(null);
                 }
-                MoonkovLocalization.Set(m_InventoryTitle, inventory.LootId>=RaidLootContainers.FirstDeathBagId ? "REMAINS / CARRIED INVENTORY"
+                MoonkovLocalization.Set(m_InventoryTitle, inventory.LootId>=RaidLootContainers.FirstMissionCacheId ? "任务输出槽 / 随身装备"
+                    : inventory.LootId>=RaidLootContainers.FirstDeathBagId ? "REMAINS / CARRIED INVENTORY"
                     : inventory.LootId>=0 ? "SUPPLY CACHE / CARRIED INVENTORY" : "CHARACTER / CARRIED INVENTORY");
                 m_InventoryView.Present(inventory.Graph,acknowledged && inventory.Error!=Inventory.InventoryError.None ? MoonkovLocalization.Format($"Inventory: {inventory.Error.ToString()}") : null,
                     operationCompleted: acknowledged,lootId:inventory.LootId);

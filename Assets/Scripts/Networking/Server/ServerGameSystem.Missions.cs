@@ -224,7 +224,7 @@ namespace Unity.MP_FPS
                     Parent = LootInventoryExchange.Root, Region = "main", X = i % 6, Y = i / 6, FoundInRaid = true,
                     MissionWorldId = context.WorldId, MissionOperationId = context.Operation.Id, MissionContentVersion = definition.Version });
             if (cache.Validate() != InventoryError.None) throw new InvalidOperationException("Mission output failed inventory validation.");
-            context.OutputLootId = 1000000000 + context.Epoch;
+            context.OutputLootId = RaidLootContainers.FirstMissionCacheId + context.Epoch;
             var anchor = context.Site.Anchor(definition.ArtifactCode == "mooncore_fragment" ? "sampler" : "archive");
             var loot = LootContainers(ref state); loot.Containers.Add(context.OutputLootId, cache);
             loot.MissionCaches.Add(context.OutputLootId, anchor.Position); context.OutputProduced = true;
