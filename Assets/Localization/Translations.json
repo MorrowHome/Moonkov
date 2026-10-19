@@ -1,4 +1,9 @@
 {
+  "SURFACE / LIVE": "地表地图 / 实时",
+  "SURFACE / NO IMAGE": "地表地图 / 无影像",
+  "EXIT / {0:0} m": "撤离点 / {0:0} 米",
+  "YOU": "自身",
+  "EXIT": "撤离",
   "E-01 Energy grenade": "E-01 能量手雷",
   "3s FUSE / 6m BLAST / UP TO 480 DAMAGE": "3 秒引信 / 6 米爆炸半径 / 最高 480 伤害",
   "[G] throws from pockets or an equipped rig. Bounces, then releases an energy blast after 3 seconds. Cover blocks the blast; nearby damage can kill the thrower. Move grenades out of backpacks before throwing.": "按 G 从口袋或已装备的胸挂投出。能量球碰撞后弹跳，3 秒后释放能量冲击。伤害随距离衰减，掩体可阻挡爆炸，近距离也可能炸死自己。背包内的手雷需先移至口袋或胸挂。",

@@ -3423,6 +3423,26 @@ MonoBehaviour:
     m_Key: 03 / BRIEFING
     m_Metadata:
       m_Items: []
+  - m_Id: 4344814630612992
+    m_Key: SURFACE / LIVE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4344814680944640
+    m_Key: SURFACE / NO IMAGE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4344814680944641
+    m_Key: EXIT / {0:0} m
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4344814680944642
+    m_Key: YOU
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4344814680944643
+    m_Key: EXIT
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

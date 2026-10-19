@@ -3436,6 +3436,26 @@ MonoBehaviour:
     m_Localized: 03 / BRIEFING
     m_Metadata:
       m_Items: []
+  - m_Id: 4344814630612992
+    m_Localized: SURFACE / LIVE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4344814680944640
+    m_Localized: SURFACE / NO IMAGE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4344814680944641
+    m_Localized: EXIT / {0:0} m
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4344814680944642
+    m_Localized: YOU
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4344814680944643
+    m_Localized: EXIT
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -1,7 +1,26 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
     <ui:Style src="RaidUI.uss" />
     <ui:Style src="UI/FieldTheme.uss" />
+    <ui:Style src="UI/RaidMinimap.uss" />
     <ui:VisualElement name="raidPresentation" class="raid-ui archive-ui" picking-mode="Ignore">
+        <ui:VisualElement name="raidMinimap" class="raid-minimap" picking-mode="Ignore">
+            <ui:VisualElement class="raid-minimap-heading" picking-mode="Ignore">
+                <ui:Label name="raidMinimapSignal" text="SURFACE / LIVE" picking-mode="Ignore" />
+                <ui:Label text="240 m" class="raid-minimap-range" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:VisualElement class="raid-minimap-viewport" picking-mode="Ignore">
+                <ui:Image name="raidMinimapImage" class="raid-minimap-layer" picking-mode="Ignore" />
+                <ui:VisualElement name="raidMinimapOverlay" class="raid-minimap-layer" picking-mode="Ignore" />
+                <ui:Label text="N" class="raid-minimap-north" picking-mode="Ignore" />
+                <ui:Label text="60 m" class="raid-minimap-scale" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:VisualElement class="raid-minimap-legend" picking-mode="Ignore">
+                <ui:Label text="YOU" class="raid-minimap-you" picking-mode="Ignore" />
+                <ui:Label text="SUPPLY" class="raid-minimap-supply" picking-mode="Ignore" />
+                <ui:Label text="EXIT" class="raid-minimap-exit" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:Label name="raidMinimapDistance" class="raid-minimap-distance" picking-mode="Ignore" />
+        </ui:VisualElement>
         <ui:VisualElement name="raidStatus" class="raid-status" picking-mode="Ignore">
             <ui:Label text="LUNAR EXPEDITION" class="raid-caption" />
             <ui:Label name="raidTimer" class="raid-timer" />

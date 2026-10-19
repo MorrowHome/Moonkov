@@ -35,6 +35,7 @@ namespace Unity.MP_FPS
         private Label m_Bag, m_Timer, m_Clock, m_Prompt, m_Exit, m_ResultText, m_SaveStatus;
         private VisualElement m_Interaction, m_InteractionDetails, m_ExtractionPanel, m_ExtractionTrack, m_ExtractionFill, m_Receipt;
         private AirlockInteractionPrompt m_AirlockPrompt;
+        private RaidMinimapView m_Minimap;
         private Label m_InteractionKey, m_InteractionState, m_InteractionRange, m_ReceiptText;
         private int m_FeedbackRaid;
         private int3 m_PreviousSupplies, m_ReceiptSupplies;
@@ -79,6 +80,7 @@ namespace Unity.MP_FPS
             MoonkovAudio.BindUI(m_Root);
             m_Root.pickingMode = PickingMode.Ignore;
             Resources.Load<VisualTreeAsset>("Moonkov/RaidUI").CloneTree(m_Root);
+            m_Minimap = new RaidMinimapView(m_Root);
             m_AirlockPrompt = GetComponent<AirlockInteractionPrompt>();
             if (!m_AirlockPrompt) m_AirlockPrompt = gameObject.AddComponent<AirlockInteractionPrompt>();
             m_AirlockPrompt.Initialize(GetComponent<UIDocument>());
@@ -269,9 +271,9 @@ namespace Unity.MP_FPS
         {
             bool inGame = GameSettings.Instance.GameState == GlobalGameState.InGame;
             m_Root.style.display = inGame ? DisplayStyle.Flex : DisplayStyle.None;
-            if (!inGame) return;
+            if (!inGame) { m_Minimap.Hide(); return; }
             if (m_World == null || !m_World.IsCreated) InitializeWorld();
-            if (m_World == null || !m_World.IsCreated || m_StateQuery.IsEmptyIgnoreFilter) return;
+            if (m_World == null || !m_World.IsCreated || m_StateQuery.IsEmptyIgnoreFilter) { m_Minimap.Hide(); return; }
             m_Snapshot = m_StateQuery.GetSingleton<RaidClientState>().Snapshot;
             UpdateInventoryView();
             bool ready = m_Snapshot.RaidId > 0;
@@ -320,6 +322,14 @@ namespace Unity.MP_FPS
             float distance = RaidRules.PickupRange;
             Vector3 position = default;
             bool alive = m_PlayerQuery.HasSingleton<PredictedPlayerGhost>() && m_PlayerQuery.GetSingleton<PredictedPlayerGhost>().CurrentHealth > 0;
+            if (alive && ready && !settled && !m_InventoryVisible && !GameSettings.Instance.IsPauseMenuOpen)
+            {
+                var local = m_PlayerQuery.GetSingleton<LocalTransform>();
+                var view = Camera.main;
+                Vector3 forward = view ? view.transform.forward : (Vector3)math.mul(local.Rotation, math.forward());
+                m_Minimap.Present(MoonRaidMap.Active, local.Position, forward, m_Snapshot.TakenMask);
+            }
+            else m_Minimap.Hide();
             UpdateGrenades(alive && ready && !settled);
             if (alive && ready && !settled && !m_InventoryVisible && !m_InventoryRequestPending &&
                 !GameSettings.Instance.IsPauseMenuOpen && UnityEngine.Cursor.lockState == CursorLockMode.Locked &&
@@ -669,6 +679,7 @@ namespace Unity.MP_FPS
 
         private void OnDisable()
         {
+            m_Minimap?.Dispose(); m_Minimap = null;
             m_AirlockPrompt?.RefreshSelection(null, default, false);
             if (m_Root != null) MoonkovAudio.UnbindUI(m_Root);
             m_InventoryView?.Dispose(); m_InventoryView=null;

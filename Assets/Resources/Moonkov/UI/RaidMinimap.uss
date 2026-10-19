@@ -1,0 +1,18 @@
+.raid-ui .raid-minimap { position: absolute; top: 24px; right: 28px; width: 244px; padding: 10px; display: none; background-color: rgba(8,9,12,0.94); border-width: 1px; border-color: #5c626d; border-top-width: 3px; border-top-color: #164bff; }
+.raid-minimap-heading { flex-direction: row; justify-content: space-between; margin-bottom: 8px; }
+.raid-ui .raid-minimap-heading Label { margin: 0; font-size: 11px; color: #d9dde3; white-space: nowrap; }
+.raid-ui .raid-minimap-heading .raid-minimap-range { color: #929da9; }
+.raid-minimap-viewport { height: 220px; width: 220px; flex-shrink: 0; overflow: hidden; background-color: #10151b; }
+.raid-minimap-layer { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
+.raid-ui .raid-minimap-north { position: absolute; top: 3px; left: 98px; width: 24px; margin: 0; color: #ffffff; background-color: rgba(8,9,12,0.82); font-size: 12px; -unity-text-align: middle-center; }
+.raid-ui .raid-minimap-scale { position: absolute; bottom: 6px; left: 8px; width: 55px; padding-top: 2px; margin: 0; border-top-width: 2px; border-top-color: #c8cdd5; color: #e8eae6; font-size: 10px; background-color: rgba(8,9,12,0.65); }
+.raid-minimap-legend { flex-direction: row; justify-content: space-between; margin-top: 7px; }
+.raid-ui .raid-minimap-legend Label { font-size: 11px; margin: 0; white-space: nowrap; }
+.raid-ui .raid-minimap-you { color: #f1f2ed; }
+.raid-ui .raid-minimap-supply { color: #e9bb75; }
+.raid-ui .raid-minimap-exit { color: #9fe0ba; }
+.raid-ui .raid-minimap-distance { margin: 6px 0 0 0; font-size: 12px; color: #b6d3ba; white-space: nowrap; }
+/* Keep survival warnings and extraction clear of the surface instrument. */
+.raid-ui .raid-oxygen-panel { left: 28px; right: auto; top: 184px; }
+.raid-ui .raid-oxygen-warning { left: 28px; right: auto; top: 310px; max-width: 280px; }
+.raid-ui .raid-extraction-panel { top: 370px; max-width: 280px; }
