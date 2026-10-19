@@ -1,24 +1,66 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
-    <ui:Style src="project://database/Assets/UI Toolkit/GameUI/StashScreen.uss" />
-    <ui:Style src="project://database/Assets/UI Toolkit/GameUI/MoonkovTerminal.uss" />
-    <ui:Style src="project://database/Assets/Resources/Moonkov/UI/TerminalLayout.uss" />
-    <ui:VisualElement name="layoutPreview" class="stash-root moonkov-terminal terminal-layout-preview">
-        <ui:VisualElement name="terminalPage">
-            <ui:Label class="terminal-title" text="READY FOR DEPLOYMENT" />
-            <ui:VisualElement class="terminal-row terminal-stat">
-                <ui:Label class="terminal-stat-name" text="OPERATOR" />
-                <ui:Label class="terminal-stat-value" text="DOLLSINGER" name="statValue0" />
+    <ui:Style src="../../../UI Toolkit/GameUI/StashScreen.uss" />
+    <ui:Style src="../../../UI Toolkit/GameUI/MoonkovTerminal.uss" />
+    <ui:Style src="ArchiveTheme.uss" />
+    <ui:Style src="OperationProposal.uss" />
+    <ui:VisualElement name="layoutPreview" class="stash-root moonkov-terminal archive-ui archive-pages archive-page-4 operation-step-4" style="width: 1600px; height: 900px;">
+        <ui:VisualElement name="terminalPage" style="flex-grow: 1;">
+            <ui:VisualElement class="op-page op-ready">
+                <ui:VisualElement class="op-check-row">
+                    <ui:Label text="01" class="op-check-number" />
+                    <ui:VisualElement class="op-check-label">
+                        <ui:Label text="OPERATOR" class="op-heading" />
+                        <ui:Label text="DOLLSINGER" class="op-copy" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="op-check-value">
+                        <ui:Label text="OPERATOR CONFIRMED" class="op-value" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="op-check-row">
+                    <ui:Label text="02" class="op-check-number" />
+                    <ui:VisualElement class="op-check-label">
+                        <ui:Label text="CARGO" class="op-heading" />
+                        <ui:Label text="ENERGY CELLS" class="op-copy" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="op-check-value">
+                        <ui:VisualElement class="op-ready-cell" name="readyCellArt" />
+                        <ui:Label text="" class="op-value" name="readyCarry" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="op-check-row">
+                    <ui:Label text="03" class="op-check-number" />
+                    <ui:VisualElement class="op-check-label">
+                        <ui:Label text="RECOVERY" class="op-heading" />
+                        <ui:Label text="NO RECOVERY COVERAGE" class="op-copy" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="op-check-value">
+                        <ui:Label text="NO CONTRACT" class="op-value op-warning" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="op-check-row">
+                    <ui:Label text="04" class="op-check-number" />
+                    <ui:VisualElement class="op-check-label">
+                        <ui:Label text="OPEN CONNECTION TERMINAL" class="op-heading" />
+                        <ui:Label text="Your session host determines the map and mission timing. Connection setup follows the readiness check." class="op-copy" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="op-check-value">
+                        <ui:VisualElement class="op-photo op-terminal-photo" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="op-check-row op-final-row">
+                    <ui:Label text="05" class="op-check-number" />
+                    <ui:VisualElement class="op-check-label">
+                        <ui:Label text="READY FOR DEPLOYMENT" class="op-heading" />
+                        <ui:Label text="Host a session or join an existing crew in the connection terminal. Selected cells are taken from storage; unused cells return only after extraction." class="op-copy" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="op-check-value">
+                        <ui:Button name="launch" class="op-button op-launch">
+                            <ui:Label text="OPEN CONNECTION TERMINAL" class="op-button-label" />
+                            <ui:Label text="→" class="op-arrow" />
+                        </ui:Button>
+                    </ui:VisualElement>
+                </ui:VisualElement>
             </ui:VisualElement>
-            <ui:VisualElement class="terminal-row terminal-stat">
-                <ui:Label class="terminal-stat-name" text="CARGO" />
-                <ui:Label class="terminal-stat-value" text="4 ENERGY CELLS" name="statValue1" />
-            </ui:VisualElement>
-            <ui:VisualElement class="terminal-row terminal-stat">
-                <ui:Label class="terminal-stat-name" text="RECOVERY" />
-                <ui:Label class="terminal-stat-value" text="NO CONTRACT" name="statValue2" />
-            </ui:VisualElement>
-            <ui:Label class="terminal-copy" text="Host a session or join an existing crew in the connection terminal. Selected cells are taken from storage; unused cells return only after extraction." />
-            <ui:Button class="terminal-primary terminal-launch" text="OPEN CONNECTION TERMINAL" name="launch" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

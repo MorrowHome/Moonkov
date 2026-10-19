@@ -1,21 +1,42 @@
-<ui:UXML xmlns:moon="Unity.MP_FPS.Client" xmlns:ui="UnityEngine.UIElements">
-    <ui:Style src="project://database/Assets/UI Toolkit/GameUI/StashScreen.uss" />
-    <ui:Style src="project://database/Assets/UI Toolkit/GameUI/MoonkovTerminal.uss" />
-    <ui:Style src="project://database/Assets/Resources/Moonkov/UI/TerminalLayout.uss" />
-    <ui:VisualElement name="layoutPreview" class="stash-root moonkov-terminal terminal-layout-preview">
-        <ui:VisualElement name="terminalPage">
-            <ui:VisualElement class="terminal-operator-showcase">
-                <ui:VisualElement class="terminal-operator-portrait">
-                    <ui:Image name="operatorPortrait" class="terminal-operator-character" picking-mode="Ignore" />
-                    <ui:Label text="FIELD OPERATOR / 01" class="terminal-operator-portrait-caption" picking-mode="Ignore" />
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="../../../UI Toolkit/GameUI/StashScreen.uss" />
+    <ui:Style src="../../../UI Toolkit/GameUI/MoonkovTerminal.uss" />
+    <ui:Style src="ArchiveTheme.uss" />
+    <ui:Style src="OperationProposal.uss" />
+    <ui:VisualElement name="layoutPreview" class="stash-root moonkov-terminal archive-ui archive-pages archive-page-4 operation-step-0" style="width: 1600px; height: 900px;">
+        <ui:VisualElement name="terminalPage" style="flex-grow: 1;">
+            <ui:VisualElement class="op-page op-operator">
+                <ui:Image name="operatorPortrait" class="op-character" picking-mode="Ignore" />
+                <ui:VisualElement class="op-operator-id">
+                    <ui:Label text="OPERATOR" class="op-kicker" />
+                    <ui:Label text="DOLLSINGER" class="op-title" />
+                    <ui:Label text="HALO / FIELD LOADOUT" class="op-kicker" />
                 </ui:VisualElement>
-                <ui:VisualElement class="terminal-operator-profile">
-                    <ui:Label text="LUNAR EXPEDITION" class="terminal-eyebrow" />
-                    <ui:Label text="DOLLSINGER" class="terminal-title terminal-operator-name" />
-                    <ui:Label text="HALO / FIELD LOADOUT" class="terminal-operator-designation" />
-                    <ui:VisualElement class="terminal-operator-divider" />
-                    <ui:Label text="Your equipment is taken from the character loadout. Check your halo weapons and carried supplies before deployment." class="terminal-copy" />
-                    <ui:Label text="OPERATOR CONFIRMED" class="terminal-positive" />
+                <ui:VisualElement class="op-operator-check">
+                    <ui:VisualElement class="op-confirmed">
+                        <ui:Label text="OPERATOR CONFIRMED" class="op-title" />
+                        <ui:Label text="Your equipment is taken from the character loadout. Check your halo weapons and carried supplies before deployment." class="op-copy" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="op-equipment">
+                        <ui:Label text="EQUIPMENT CHECK" class="op-heading" />
+                        <ui:VisualElement class="op-equipment-list" name="operationEquipment" />
+                        <ui:Button name="reviewEquipment" class="op-button op-review">
+                            <ui:Label text="LOADOUT / STORAGE" class="op-button-label" />
+                            <ui:Label text="→" class="op-arrow" />
+                        </ui:Button>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="op-operator-mission">
+                    <ui:VisualElement class="op-photo op-operator-photo" />
+                    <ui:Label text="MISSION SUMMARY" class="op-heading" />
+                    <ui:Label text="LUNAR SUPPLY RECOVERY" class="op-title" />
+                    <ui:Label text="Locate supply caches and navigate back to the extraction beacon. Additional regions are not charted for deployment." class="op-copy" />
+                    <ui:VisualElement class="op-mission-rules">
+                        <ui:Label text="RECOVER. SURVIVE. EXTRACT." class="op-heading" />
+                        <ui:Label text="[E] COLLECT NEARBY SUPPLIES" class="op-copy" />
+                        <ui:Label text="[TAB] CHECK YOUR RAID PACK" class="op-copy" />
+                        <ui:Label text="STAY INSIDE THE GREEN BEACON" class="op-copy" />
+                    </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>

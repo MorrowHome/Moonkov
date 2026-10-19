@@ -1,0 +1,10 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="equipmentRow" class="op-equipment-row">
+        <ui:VisualElement name="equipmentArt" class="op-equipment-art" />
+        <ui:VisualElement class="op-equipment-label">
+            <ui:Label name="equipmentSlot" class="op-kicker" />
+            <ui:Label name="equipmentName" class="op-copy" />
+        </ui:VisualElement>
+        <ui:Label name="equipmentState" class="op-equipment-state" />
+    </ui:VisualElement>
+</ui:UXML>

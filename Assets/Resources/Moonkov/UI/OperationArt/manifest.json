@@ -1,0 +1,113 @@
+{
+  "cleanCanvases": {
+    "OperatorD": "exec-82c26f40-a03c-418e-a95c-59f2cdff6202.png",
+    "BriefingD": "exec-92d3d42d-9704-455e-ac61-d411dcd6937a.png",
+    "RecoveryD": "exec-7dfa6624-c896-4758-8a8d-02144f2df689.png",
+    "ReadyCDark": "exec-372f68af-dc71-4443-bc4f-3710d3b64a0c.png"
+  },
+  "method": "Imagegen cleanup of selected approved proposal; removed text, controls, character and sample items. Native UI supplies functional content.",
+  "illustrationCrops": [
+    {
+      "name": "OperatorMission",
+      "source": "19-op-operator-D.png",
+      "rect": [
+        1205,
+        190,
+        1640,
+        330
+      ]
+    },
+    {
+      "name": "BriefingMission",
+      "source": "21-op-briefing-D.png",
+      "rect": [
+        1205,
+        54,
+        1640,
+        192
+      ]
+    },
+    {
+      "name": "Recover",
+      "source": "21-op-briefing-D.png",
+      "rect": [
+        640,
+        337,
+        938,
+        430
+      ]
+    },
+    {
+      "name": "Survive",
+      "source": "21-op-briefing-D.png",
+      "rect": [
+        978,
+        337,
+        1286,
+        430
+      ]
+    },
+    {
+      "name": "Extract",
+      "source": "21-op-briefing-D.png",
+      "rect": [
+        1322,
+        337,
+        1627,
+        430
+      ]
+    },
+    {
+      "name": "Area",
+      "source": "20-op-location-C.png",
+      "rect": [
+        790,
+        608,
+        968,
+        681
+      ]
+    },
+    {
+      "name": "Beacon",
+      "source": "20-op-location-C.png",
+      "rect": [
+        1277,
+        612,
+        1427,
+        725
+      ]
+    },
+    {
+      "name": "Warning",
+      "source": "22-op-recovery-D.png",
+      "rect": [
+        769,
+        356,
+        911,
+        478
+      ]
+    },
+    {
+      "name": "Terminal",
+      "source": "23-op-ready-C.png",
+      "rect": [
+        1165,
+        542,
+        1288,
+        632
+      ]
+    }
+  ],
+  "selection": {
+    "operator": "19 D",
+    "location": "20 C layout dark adaptation",
+    "briefing": "21 D",
+    "recovery": "22 D",
+    "ready": "23 C layout dark adaptation"
+  },
+  "locationCanvas": {
+    "asset": "../PageArt/Operations.png",
+    "source": "20-op-location-C.png",
+    "treatment": "Existing textless clean canvas, background-only deep blue tint #202837. Native hero and area/beacon information follow C."
+  }
+}

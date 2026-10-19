@@ -812,5 +812,12 @@
   "ONLINE": "可用",
   "OFFLINE": "未开放",
   "Personal storage is available at the cargo terminal.": "个人仓库可通过货舱终端访问。",
-  "SUPPLIER CONTRACTS": "供应商合同"
+  "SUPPLIER CONTRACTS": "供应商合同",
+  "EQUIPMENT CHECK": "随身装备检查",
+  "RECOVER": "搜集",
+  "SURVIVE": "生存",
+  "EXTRACT": "撤离",
+  "EXTRACTION BEACON": "撤离信标",
+  "{0} ENERGY CELLS": "{0} 枚能量电池",
+  "03 / BRIEFING": "03 / 出击简报"
 }

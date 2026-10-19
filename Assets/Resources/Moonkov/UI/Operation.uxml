@@ -1,48 +1,54 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
-    <ui:VisualElement name="terminalPage">
-        <ui:VisualElement class="deployment-desk">
-            <ui:VisualElement class="deployment-mission">
-                <ui:Label text="LUNAR SUPPLY RECOVERY" class="deployment-title" />
-                <ui:Label text="MOON / SURFACE SECTOR" class="terminal-eyebrow" />
-                <ui:VisualElement class="deployment-map" picking-mode="Ignore">
-                    <ui:Label text="AVAILABLE OPERATION: LUNAR SUPPLY RECOVERY" class="deployment-map-caption" />
-                </ui:VisualElement>
-                <ui:VisualElement class="deployment-protocol">
-                    <ui:Label text="RECOVER. SURVIVE. EXTRACT." class="terminal-heading" />
-                    <ui:Label text="Locate supply caches and navigate back to the extraction beacon. Additional regions are not charted for deployment." class="terminal-copy" />
-                    <ui:Label text="[E] COLLECT NEARBY SUPPLIES" class="deployment-rule" />
-                    <ui:Label text="[TAB] CHECK YOUR RAID PACK" class="deployment-rule" />
-                    <ui:Label text="STAY INSIDE THE GREEN BEACON" class="deployment-rule" />
-                </ui:VisualElement>
+    <ui:Style src="../../../UI Toolkit/GameUI/StashScreen.uss" />
+    <ui:Style src="../../../UI Toolkit/GameUI/MoonkovTerminal.uss" />
+    <ui:Style src="ArchiveTheme.uss" />
+    <ui:Style src="OperationProposal.uss" />
+    <ui:VisualElement name="layoutPreview" class="stash-root moonkov-terminal archive-ui archive-pages archive-page-4 operation-step-0" style="width: 1600px; height: 900px;">
+        <ui:VisualElement name="terminalPage" style="flex-grow: 1;">
+            <ui:VisualElement class="op-stage" name="operationMain" />
+            <ui:VisualElement class="op-brand">
+                <ui:Label text="ESCAPE FROM" class="op-kicker" />
+                <ui:Label text="MOONKOV" class="op-brand-title stash-brand-title" />
+                <ui:VisualElement class="op-blue-rule" />
+                <ui:Label text="LUNAR EXPEDITION" class="op-kicker" />
             </ui:VisualElement>
-            <ui:VisualElement class="deployment-sheet">
-                <ui:ScrollView mode="Vertical" class="deployment-details" horizontal-scroller-visibility="Hidden">
-                    <ui:Label text="READY FOR DEPLOYMENT" class="deployment-sheet-title" />
-                    <ui:VisualElement class="deployment-check">
-                        <ui:Label text="OPERATOR" class="terminal-eyebrow" />
-                        <ui:Label text="DOLLSINGER" class="terminal-heading" />
-                        <ui:VisualElement class="deployment-actions">
-                            <ui:Button name="reviewEquipment" text="LOADOUT / STORAGE" class="terminal-button" />
-                            <ui:Button name="reviewHalo" text="HALO BUILD" class="terminal-button" />
-                        </ui:VisualElement>
-                    </ui:VisualElement>
-                    <ui:VisualElement class="deployment-check">
-                        <ui:Label text="CARGO" class="terminal-eyebrow" />
-                        <ui:Label name="carrySummary" class="terminal-heading" />
-                        <ui:IntegerField name="operationCarryCells" class="terminal-carry-field" label="ENERGY CELLS TO CARRY" is-delayed="true" />
-                        <ui:VisualElement class="terminal-cargo-gauge"><ui:VisualElement class="terminal-cargo-gauge-fill" /></ui:VisualElement>
-                        <ui:Label text="Cells leave storage when the server accepts deployment. [R] spends battery energy for missing rounds, according to the weapon's energy cost. Unspent charge stays in the cell." class="terminal-copy" />
-                    </ui:VisualElement>
-                    <ui:VisualElement class="deployment-check deployment-risk">
-                        <ui:Label text="!  NO RECOVERY COVERAGE" class="terminal-warning" />
-                        <ui:Label text="Drone insurance is not currently offered. You are deploying without a recovery contract. Lost cargo cannot be claimed after death." class="terminal-copy" />
-                        <ui:Label text="Carried supplies are lost on death or timeout. Storage is credited after a successful server settlement. The session controls the extraction countdown." class="terminal-copy" />
-                    </ui:VisualElement>
-                    <ui:Label text="Your session host determines the map and mission timing. Connection setup follows the readiness check." class="terminal-copy" />
-                </ui:ScrollView>
-                <ui:Button name="launch" text="OPEN CONNECTION TERMINAL" class="terminal-primary deployment-launch" />
-                <ui:Button name="back" text="BACK" class="terminal-button" />
+            <ui:VisualElement class="op-stepper" name="operationStepper">
+                <ui:Button name="operationStep0" class="op-step">
+                    <ui:Label text="01" class="op-step-number" />
+                    <ui:Label text="OPERATOR" class="op-step-label" />
+                    <ui:Label text="OPERATOR" class="op-step-code" />
+                </ui:Button>
+                <ui:Button name="operationStep1" class="op-step">
+                    <ui:Label text="02" class="op-step-number" />
+                    <ui:Label text="LOCATION" class="op-step-label" />
+                    <ui:Label text="LOCATION" class="op-step-code" />
+                </ui:Button>
+                <ui:Button name="operationStep2" class="op-step">
+                    <ui:Label text="03" class="op-step-number" />
+                    <ui:Label text="BRIEFING" class="op-step-label" />
+                    <ui:Label text="BRIEFING" class="op-step-code" />
+                </ui:Button>
+                <ui:Button name="operationStep3" class="op-step">
+                    <ui:Label text="04" class="op-step-number" />
+                    <ui:Label text="RECOVERY" class="op-step-label" />
+                    <ui:Label text="RECOVERY" class="op-step-code" />
+                </ui:Button>
+                <ui:Button name="operationStep4" class="op-step">
+                    <ui:Label text="05" class="op-step-number" />
+                    <ui:Label text="READY" class="op-step-label" />
+                    <ui:Label text="CONFIRM" class="op-step-code" />
+                </ui:Button>
             </ui:VisualElement>
+            <ui:Button name="back" class="op-button op-back">
+                <ui:Label class="op-back-arrow" text="←" />
+                <ui:Label text="BACK" class="op-button-label" />
+                <ui:Label text="→" class="op-arrow" />
+            </ui:Button>
+            <ui:Button name="operationContinue" class="op-button op-continue">
+                <ui:VisualElement class="op-action-art" picking-mode="Ignore" />
+                <ui:Label text="CONTINUE" class="op-button-label" />
+                <ui:Label text="→" class="op-arrow" />
+            </ui:Button>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

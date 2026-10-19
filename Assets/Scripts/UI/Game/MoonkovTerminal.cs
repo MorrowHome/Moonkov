@@ -7,7 +7,7 @@ using UnityEngine.UIElements;
 namespace Unity.MP_FPS.Client
 {
     // Navigation and presentation; shop transactions go through the account inventory service.
-    public sealed class MoonkovTerminal : IDisposable
+    public sealed partial class MoonkovTerminal : IDisposable
     {
         private readonly VisualElement m_Root, m_Gear, m_Content, m_Nav, m_NavTabs, m_Indicator, m_Chrome, m_FooterTicker;
         private readonly LunarBackdrop m_Shade;
@@ -43,6 +43,7 @@ namespace Unity.MP_FPS.Client
             var loadoutStyle = Resources.Load<StyleSheet>("Moonkov/UI/ApprovedLoadout");
             if (loadoutStyle != null && !root.styleSheets.Contains(loadoutStyle)) root.styleSheets.Add(loadoutStyle);
             root.styleSheets.Add(Resources.Load<StyleSheet>("Moonkov/UI/ProposalSystem"));
+            root.styleSheets.Add(Resources.Load<StyleSheet>("Moonkov/UI/OperationProposal"));
             ApplyHomeTheme();
             root.focusable = true;
             m_Title = root.Q<Label>(className: "stash-page-title");
@@ -86,6 +87,7 @@ namespace Unity.MP_FPS.Client
         {
             Navigating?.Invoke(); DisposeCharacter();
             bool moved = page != m_Page || !m_Ready;
+            if (page == 4 && m_Page != 4) m_OperationStep = 0;
             m_Page = page; m_Windows?.CloseAll();
             m_Root.EnableInClassList("terminal-is-ship", page == 0);
             m_Root.EnableInClassList("terminal-is-loadout", page == 1);
@@ -229,6 +231,7 @@ namespace Unity.MP_FPS.Client
             // All runtime terminal pages now share dark surface roles.
             for (int i = 0; i < m_Pages.Length; i++) m_Root.EnableInClassList("archive-page-" + i, m_Page == i);
             m_Root.RemoveFromClassList("archive-light");
+            for (int i = 0; i < 5; i++) m_Root.EnableInClassList("operation-step-" + i, m_Page == 4 && m_OperationStep == i);
             m_Root.EnableInClassList("archive-halo-page", m_Page == 2);
             m_Root.EnableInClassList("archive-compact", m_Root.contentRect.width < 1400 || m_Root.contentRect.height < 780);
         }
@@ -299,34 +302,6 @@ namespace Unity.MP_FPS.Client
         {
             var window = m_Windows.Open(name);
             new MoonkovShopView(window, () => { m_Windows.Close(window); Navigate(1); }, recovery);
-        }
-
-        private void Operation()
-        {
-            TerminalLayout.Populate(m_Content, "Operation");
-            m_Content.Q<Button>("reviewEquipment").clicked += () => Navigate(1);
-            m_Content.Q<Button>("reviewHalo").clicked += () => Navigate(2);
-            var carry = m_Content.Q<IntegerField>("operationCarryCells");
-            carry.SetValueWithoutNotify(PlayerProfileClient.CarryCells);
-            carry.SetEnabled(!m_Busy);
-            var cargo = m_Content.Q<Label>("carrySummary");
-            var gauge = m_Content.Q<VisualElement>(className: "terminal-cargo-gauge-fill");
-            void PresentCarry()
-            {
-                MoonkovLocalization.Set(cargo, "Carry {0}/{1} / Stash {2}", PlayerProfileClient.CarryCells, RaidRules.BagCapacity, m_Cells);
-                gauge.style.width = Length.Percent(100f * PlayerProfileClient.CarryCells / Mathf.Max(1, RaidRules.BagCapacity));
-            }
-            carry.RegisterValueChangedCallback(evt =>
-            {
-                PlayerProfileClient.SelectCarryCells(evt.newValue);
-                carry.SetValueWithoutNotify(PlayerProfileClient.CarryCells);
-                PresentCarry();
-            });
-            PresentCarry();
-            var launch = m_Content.Q<Button>("launch");
-            launch.clicked += m_Prepare;
-            launch.SetEnabled(!m_Busy);
-            m_Content.Q<Button>("back").clicked += () => Navigate(0);
         }
 
         private void Tasks()

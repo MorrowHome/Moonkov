@@ -3408,6 +3408,34 @@ MonoBehaviour:
     m_Localized: SUPPLIER CONTRACTS
     m_Metadata:
       m_Items: []
+  - m_Id: 4257899961135104
+    m_Localized: EQUIPMENT CHECK
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4257899994689536
+    m_Localized: RECOVER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4257899994689537
+    m_Localized: SURVIVE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4257899994689538
+    m_Localized: EXTRACT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4257899994689539
+    m_Localized: EXTRACTION BEACON
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4257899994689540
+    m_Localized: '{0} ENERGY CELLS'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4257899994689541
+    m_Localized: 03 / BRIEFING
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

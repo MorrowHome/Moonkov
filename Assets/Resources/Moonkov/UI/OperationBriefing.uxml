@@ -1,29 +1,64 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
-    <ui:Style src="project://database/Assets/UI Toolkit/GameUI/StashScreen.uss" />
-    <ui:Style src="project://database/Assets/UI Toolkit/GameUI/MoonkovTerminal.uss" />
-    <ui:Style src="project://database/Assets/Resources/Moonkov/UI/TerminalLayout.uss" />
-    <ui:VisualElement name="layoutPreview" class="stash-root moonkov-terminal terminal-layout-preview">
-        <ui:VisualElement name="terminalPage">
-            <ui:Label class="terminal-title" text="RECOVER. SURVIVE. EXTRACT." />
-            <ui:Label name="carrySummary" class="terminal-copy" text="Carry 0/12 / Stash 0" />
-            <ui:IntegerField name="operationCarryCells" class="terminal-carry-field" label="ENERGY CELLS TO CARRY" is-delayed="true" />
-            <ui:VisualElement class="terminal-cargo-gauge">
-                <ui:VisualElement class="terminal-cargo-gauge-fill" />
+    <ui:Style src="../../../UI Toolkit/GameUI/StashScreen.uss" />
+    <ui:Style src="../../../UI Toolkit/GameUI/MoonkovTerminal.uss" />
+    <ui:Style src="ArchiveTheme.uss" />
+    <ui:Style src="OperationProposal.uss" />
+    <ui:VisualElement name="layoutPreview" class="stash-root moonkov-terminal archive-ui archive-pages archive-page-4 operation-step-2" style="width: 1600px; height: 900px;">
+        <ui:VisualElement name="terminalPage" style="flex-grow: 1;">
+            <ui:VisualElement class="op-page op-briefing">
+                <ui:VisualElement class="op-brief-top">
+                    <ui:VisualElement class="op-brief-title">
+                        <ui:Label text="03 / BRIEFING" class="op-kicker" />
+                        <ui:Label text="BRIEFING" class="op-large-title" />
+                        <ui:Label text="RECOVER. SURVIVE. EXTRACT." class="op-kicker" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="op-brief-intro">
+                        <ui:VisualElement class="op-photo op-brief-photo" />
+                        <ui:Label text="Carried supplies are lost on death or timeout. Storage is credited after a successful server settlement. The session controls the extraction countdown." class="op-copy" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="op-protocols">
+                    <ui:VisualElement class="op-protocol-card">
+                        <ui:VisualElement class="op-photo op-protocol-photo op-photo-recover" />
+                        <ui:Label text="01" class="op-kicker" />
+                        <ui:Label text="RECOVER" class="op-heading" />
+                        <ui:Label text="[E] COLLECT NEARBY SUPPLIES" class="op-copy" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="op-protocol-card">
+                        <ui:VisualElement class="op-photo op-protocol-photo op-photo-survive" />
+                        <ui:Label text="02" class="op-kicker" />
+                        <ui:Label text="SURVIVE" class="op-heading" />
+                        <ui:Label text="[TAB] CHECK YOUR RAID PACK" class="op-copy" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="op-protocol-card op-protocol-last">
+                        <ui:VisualElement class="op-photo op-protocol-photo op-photo-extract" />
+                        <ui:Label text="03" class="op-kicker" />
+                        <ui:Label text="EXTRACT" class="op-heading" />
+                        <ui:Label text="STAY INSIDE THE GREEN BEACON" class="op-copy" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="op-carry-band">
+                    <ui:Label text="ENERGY CELLS TO CARRY" class="op-heading" />
+                    <ui:VisualElement class="op-carry-content">
+                        <ui:VisualElement class="op-cell-art" name="carryCellArt" />
+                        <ui:VisualElement class="op-carry-controls">
+                            <ui:VisualElement class="op-amount-control">
+                                <ui:Button name="carryMinus" text="−" class="op-amount-button" />
+                                <ui:IntegerField name="operationCarryCells" class="op-carry-field" is-delayed="true" />
+                                <ui:Button name="carryPlus" text="+" class="op-amount-button" />
+                            </ui:VisualElement>
+                            <ui:Label text="Cells leave storage when the server accepts deployment. [R] spends battery energy for missing rounds, according to the weapon's energy cost. Unspent charge stays in the cell." class="op-copy" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="op-carry-summary">
+                            <ui:Label text="CARGO" class="op-kicker" />
+                            <ui:Label text="" class="op-heading" name="carrySummary" />
+                            <ui:VisualElement class="op-gauge">
+                                <ui:VisualElement class="terminal-cargo-gauge-fill" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
             </ui:VisualElement>
-            <ui:Label class="terminal-copy" text="Cells leave storage when the server accepts deployment. [R] spends battery energy for missing rounds, according to the weapon's energy cost. Unspent charge stays in the cell." />
-            <ui:VisualElement class="terminal-row terminal-stat">
-                <ui:Label class="terminal-stat-name" text="01 / RECOVER" />
-                <ui:Label class="terminal-stat-value" text="[E] COLLECT NEARBY SUPPLIES" name="statValue0" />
-            </ui:VisualElement>
-            <ui:VisualElement class="terminal-row terminal-stat">
-                <ui:Label class="terminal-stat-name" text="02 / MANAGE" />
-                <ui:Label class="terminal-stat-value" text="[TAB] CHECK YOUR RAID PACK" name="statValue1" />
-            </ui:VisualElement>
-            <ui:VisualElement class="terminal-row terminal-stat">
-                <ui:Label class="terminal-stat-name" text="03 / EXTRACT" />
-                <ui:Label class="terminal-stat-value" text="STAY INSIDE THE GREEN BEACON" name="statValue2" />
-            </ui:VisualElement>
-            <ui:Label class="terminal-copy" text="Carried supplies are lost on death or timeout. Storage is credited after a successful server settlement. The session controls the extraction countdown." />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

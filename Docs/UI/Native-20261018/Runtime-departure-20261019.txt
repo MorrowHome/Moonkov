@@ -1,0 +1,12 @@
+operator: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+location: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+briefing: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+recovery: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+departure: native stepper, Continue 0-4, Back/Continue, existing launch callback once; busy carry and launch disabled; no profile transaction
+ready: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+operator-compact: native runtime panel 1280x720; local fixtures; not a gameplay/network acceptance.
+location-compact: native runtime panel 1280x720; local fixtures; not a gameplay/network acceptance.
+briefing-compact: native runtime panel 1280x720; local fixtures; not a gameplay/network acceptance.
+recovery-compact: native runtime panel 1280x720; local fixtures; not a gameplay/network acceptance.
+ready-compact: native runtime panel 1280x720; local fixtures; not a gameplay/network acceptance.
+COMPLETE

@@ -19,7 +19,7 @@ using BodyPart = Unity.MP_FPS.BodyPart;
 public static class MoonkovUIRuntimeReview
 {
     private const string Pending = "Moonkov.UIReview.Pending", StartScene = "Moonkov.UIReview.StartScene";
-    private static readonly string[] AllCases = { "home", "home-dark", "warehouse", "halo", "suppliers", "tasks", "base", "comms", "settings", "deployment", "account", "session", "host", "direct", "connecting", "loading", "raidpack", "loot", "health", "halo-light", "interaction", "extraction", "result", "cargo", "storage", "pause", "death", "score", "diagnostics", "hud-bright", "hud-dark", "hud-alerts", "workshop", "shop", "emergency", "research", "airlock", "warehouse-compact", "settings-compact", "home-compact", "deployment-compact", "halo-compact", "item" };
+    private static readonly string[] AllCases = { "home", "home-dark", "warehouse", "halo", "suppliers", "tasks", "base", "comms", "settings", "deployment", "account", "session", "host", "direct", "connecting", "loading", "raidpack", "loot", "health", "halo-light", "interaction", "extraction", "result", "cargo", "storage", "pause", "death", "score", "diagnostics", "hud-bright", "hud-dark", "hud-alerts", "workshop", "shop", "emergency", "research", "airlock", "warehouse-compact", "settings-compact", "home-compact", "deployment-compact", "halo-compact", "item", "operator", "location", "briefing", "recovery", "ready", "operator-compact", "location-compact", "briefing-compact", "recovery-compact", "ready-compact" };
     private static string[] Cases = AllCases;
     private static GameObject s_Object;
     private static PanelSettings s_Settings;
@@ -29,7 +29,7 @@ public static class MoonkovUIRuntimeReview
     private static ContainerInventoryView s_Inventory;
     private static RaidHealthView s_Health;
     private static Scene s_Scene;
-    private static int s_Index, s_PrepareCalls;
+    private static int s_Index, s_PrepareCalls, s_CharacterSettledFrame;
     private static double s_Ready;
     private static bool s_Running, s_KeepCurrentPlay, s_DeploymentVerified;
     private static UnityEngine.Localization.Locale s_PreviousLocale;
@@ -106,7 +106,7 @@ public static class MoonkovUIRuntimeReview
     }
     private static void Build()
     {
-        s_DeploymentVerified = false;
+        s_DeploymentVerified = false; s_CharacterSettledFrame = -1;
         DisposeViews(); s_Root.Clear(); s_Root.styleSheets.Clear(); s_Root.ClearClassList();
         s_Root.style.backgroundColor = new Color(.03f, .035f, .045f);
         s_Root.style.display = DisplayStyle.Flex;
@@ -115,7 +115,7 @@ public static class MoonkovUIRuntimeReview
         s_Root.style.flexGrow = compact ? 0 : 1;
         s_Root.style.width = compact ? new StyleLength(1280) : new StyleLength(Length.Percent(100));
         s_Root.style.height = compact ? new StyleLength(720) : new StyleLength(Length.Percent(100));
-        if (new[] { "home", "home-dark", "warehouse", "halo", "suppliers", "tasks", "base", "comms", "settings", "deployment" }.Contains(name)) BuildTerminal(name);
+        if (new[] { "home", "home-dark", "warehouse", "halo", "suppliers", "tasks", "base", "comms", "settings", "deployment", "operator", "location", "briefing", "recovery", "ready" }.Contains(name)) BuildTerminal(name);
         else if (compact) BuildTerminal(name.Replace("-compact", ""));
         else if (name == "account" || name == "session")
         {
@@ -185,10 +185,22 @@ public static class MoonkovUIRuntimeReview
         if (name == "home-dark") { var root = s_Root.Q("stashScreen"); root.RemoveFromClassList("moon-home-light"); root.AddToClassList("moon-home-dark"); }
         if (page == 4)
         {
-            if (s_Root.Q("operationStepper") != null) throw new Exception("Legacy five-page deployment is still visible");
-            if (s_Root.Q<IntegerField>("operationCarryCells") == null || s_Root.Q<Button>("launch") == null)
-                throw new Exception("Deployment decision controls missing");
-            s_Root.Q<Button>("launch").Focus();
+            if (s_Root.Q("operationStepper") == null) throw new Exception("Five-page departure navigation missing");
+            int step = Array.IndexOf(new[] { "operator", "location", "briefing", "recovery", "ready" }, name);
+            if (step < 0) step = 0;
+            int selected = step;
+            s_Root.schedule.Execute(() =>
+            {
+                try
+                {
+                    Submit(s_Root.Q<Button>("operationStep" + selected));
+                    var portrait = s_Root.Q<Image>("operatorPortrait");
+                    if ((selected == 0) != (portrait != null)) throw new Exception("Character must be exclusive to the operator step");
+                    if (selected == 2 && s_Root.Q<IntegerField>("operationCarryCells").value != PlayerProfileClient.CarryCells) throw new Exception("Carry field must show current profile selection");
+                    if (selected == 3 && s_Root.Q<Button>("purchaseContract").enabledSelf) throw new Exception("Unavailable insurance must stay disabled");
+                }
+                catch (Exception ex) { Evidence.Add(ex.ToString()); Finish(false); }
+            }).StartingIn(150);
         }
     }
     private static InventoryGraph InventoryFixture()
@@ -311,12 +323,70 @@ public static class MoonkovUIRuntimeReview
     private static void Load(string path) { AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(path).CloneTree(s_Root); }
     private static void Set(string name, string text) { var e = s_Root.Q<Label>(name); if (e != null) MoonkovLocalization.Set(e, text); }
     private static void Submit(Button button) { button.Focus(); using (var evt = NavigationSubmitEvent.GetPooled()) button.SendEvent(evt); }
+    // Exercise the real native buttons without modifying account inventory or launching a raid.
+    private static void VerifyOperationFlow(int step)
+    {
+        try
+        {
+            if (!s_Root.Q("stashScreen").ClassListContains("operation-step-" + step)) throw new Exception("Departure flow stopped at step " + step);
+            if (step < 4)
+            {
+                if (step == 2)
+                {
+                    s_Stash.Present("LOCAL UI REVIEW", 2, 128, 36, 12, true, true);
+                    if (s_Root.Q<IntegerField>("operationCarryCells").enabledSelf || s_Root.Q<Button>("carryPlus").enabledSelf || s_Root.Q<Button>("carryMinus").enabledSelf) throw new Exception("Busy carry controls must be disabled");
+                    s_Stash.Present("LOCAL UI REVIEW", 2, 128, 36, 12, true, false);
+                }
+                s_Root.schedule.Execute(() =>
+                {
+                    Submit(s_Root.Q<Button>("operationContinue"));
+                    s_Root.schedule.Execute(() => VerifyOperationFlow(step + 1)).StartingIn(180);
+                }).StartingIn(180);
+                return;
+            }
+            Submit(s_Root.Q<Button>("back"));
+            s_Root.schedule.Execute(() =>
+            {
+                try
+                {
+                    if (!s_Root.Q("stashScreen").ClassListContains("operation-step-3")) throw new Exception("Native Back did not return to recovery");
+                    Submit(s_Root.Q<Button>("operationContinue"));
+                    s_Root.schedule.Execute(() =>
+                    {
+                        try
+                        {
+                            int before = s_PrepareCalls;
+                            Submit(s_Root.Q<Button>("launch"));
+                            if (s_PrepareCalls != before + 1) throw new Exception("Launch must call existing prepare callback once");
+                            s_Stash.Present("LOCAL UI REVIEW", 2, 128, 36, 12, true, true);
+                            if (s_Root.Q<Button>("launch").enabledSelf) throw new Exception("Busy launch must be disabled");
+                            s_DeploymentVerified = true;
+                            Evidence.Add("departure: native stepper, Continue 0-4, Back/Continue, existing launch callback once; busy carry and launch disabled; no profile transaction");
+                            s_Ready = EditorApplication.timeSinceStartup + .8;
+                        }
+                        catch (Exception ex) { Evidence.Add(ex.ToString()); Finish(false); }
+                    }).StartingIn(180);
+                }
+                catch (Exception ex) { Evidence.Add(ex.ToString()); Finish(false); }
+            }).StartingIn(180);
+        }
+        catch (Exception ex) { Evidence.Add(ex.ToString()); Finish(false); }
+    }
     private static void Tick()
     {
         if (!s_Running || EditorApplication.timeSinceStartup < s_Ready) return;
         try
         {
             if (s_Root.resolvedStyle.display == DisplayStyle.None) throw new Exception("Review root unexpectedly hidden");
+            var stage = s_Root.Q("operationMain");
+            if (stage != null && stage.resolvedStyle.opacity < .99f) { s_Ready = EditorApplication.timeSinceStartup + .15; return; }
+            var portrait = s_Root.Q<Image>("operatorPortrait");
+            if (portrait != null)
+            {
+                if (portrait.image == null) { s_Ready = EditorApplication.timeSinceStartup + .15; return; }
+                if (s_CharacterSettledFrame < 0) { s_CharacterSettledFrame = Time.frameCount; s_Ready = EditorApplication.timeSinceStartup + .3; return; }
+                if (Time.frameCount <= s_CharacterSettledFrame) return;
+            }
             bool compact = Cases[s_Index].EndsWith("-compact");
             if (Cases[s_Index] == "account")
             {
@@ -334,31 +404,14 @@ public static class MoonkovUIRuntimeReview
                     for (int x = 10; x < image.width; x += 71)
                         brightest = Mathf.Max(brightest, image.GetPixel(x, y).maxColorComponent);
                 if (brightest < .03f) throw new InvalidOperationException("Invalid blank RenderTexture; no visual acceptance: " + Cases[s_Index]);
-                File.WriteAllBytes(Path.Combine(Output, Cases[s_Index] == "deployment" && s_DeploymentVerified ? "deployment-busy.png" : Cases[s_Index] + ".png"), image.EncodeToPNG());
+                File.WriteAllBytes(Path.Combine(Output, Cases[s_Index] == "ready" && s_DeploymentVerified ? "ready-busy.png" : Cases[s_Index] + ".png"), image.EncodeToPNG());
             }
             finally { RenderTexture.active = previous; UnityEngine.Object.DestroyImmediate(image); }
-            if (Cases[s_Index] == "deployment" && !s_DeploymentVerified)
+            if (Cases[s_Index] == "ready" && !s_DeploymentVerified)
             {
-                int before = s_PrepareCalls;
-                Submit(s_Root.Q<Button>("launch"));
-                if (s_PrepareCalls != before + 1) throw new Exception("Native deployment submit did not reach existing prepare callback exactly once");
-                Submit(s_Root.Q<Button>("reviewEquipment"));
-                if (!s_Root.Q("stashScreen").ClassListContains("terminal-is-loadout")) throw new Exception("Equipment review navigation failed");
-                // Allow UITK to resolve the footer's visibility after changing pages.
-                s_Ready = EditorApplication.timeSinceStartup + .8;
-                s_Root.schedule.Execute(() =>
-                {
-                    try
-                    {
-                        Submit(s_Root.Q<Button>("stashDeploy"));
-                        if (!s_Root.Q("stashScreen").ClassListContains("archive-page-4")) throw new Exception("Native footer did not return to deployment desk");
-                        s_Stash.Present("LOCAL UI REVIEW", 2, 128, 36, 12, true, true);
-                        if (s_Root.Q<Button>("launch").enabledSelf) throw new Exception("Busy deployment must be disabled");
-                        s_DeploymentVerified = true;
-                        Evidence.Add("deployment: native NavigationSubmit callback once; equipment/footer round-trip after layout; busy launch disabled; no account transaction");
-                    }
-                    catch (Exception ex) { Evidence.Add(ex.ToString()); Finish(false); }
-                }).StartingIn(300);
+                s_Ready = double.MaxValue;
+                Submit(s_Root.Q<Button>("operationStep0"));
+                s_Root.schedule.Execute(() => VerifyOperationFlow(0)).StartingIn(180);
                 return;
             }
             if (Cases[s_Index] == "item" && s_Root.Q("itemInspection") == null) throw new Exception("Native item inspection window missing");

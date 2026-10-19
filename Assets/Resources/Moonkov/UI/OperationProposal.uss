@@ -1,0 +1,261 @@
+/* Chosen departure proposals: 19D / 20C / 21D / 22D / 23C. Native text and controls. */
+.moonkov-terminal.archive-page-4 { padding: 0; background-color: #08090c; background-size: cover; background-position: center; -unity-background-image-tint-color: white; }
+.moonkov-terminal.archive-page-4 .stash-header,
+.moonkov-terminal.archive-page-4 .archive-navigation-host,
+.moonkov-terminal.archive-page-4 .stash-footer { display: none; }
+.moonkov-terminal.archive-page-4 #terminalContent { position: absolute; top: 0; left: 0; right: 0; bottom: 0; padding: 0; margin: 0; overflow: hidden; }
+.moonkov-terminal.archive-page-4.operation-step-0 { background-image: url("OperationArt/OperatorD.png"); }
+.moonkov-terminal.archive-page-4.operation-step-1 { background-image: url("PageArt/Operations.png"); -unity-background-image-tint-color: #202837; }
+.moonkov-terminal.archive-page-4.operation-step-2 { background-image: url("OperationArt/BriefingD.png"); }
+.moonkov-terminal.archive-page-4.operation-step-3 { background-image: url("OperationArt/RecoveryD.png"); }
+.moonkov-terminal.archive-page-4.operation-step-4 { background-image: url("OperationArt/ReadyCDark.png"); }
+.moonkov-terminal.archive-page-4 .op-stage,
+.moonkov-terminal.archive-page-4 .op-page { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
+.moonkov-terminal.archive-page-4 .op-page Label { margin: 0; padding: 0; color: #f1f2ed; white-space: normal; letter-spacing: 0; }
+.moonkov-terminal.archive-page-4 .op-page .op-kicker,
+.moonkov-terminal.archive-page-4 .op-kicker { font-size: 11px; color: #b5bfcc; margin-bottom: 8px; letter-spacing: 2px; }
+.moonkov-terminal.archive-page-4 .op-page .op-copy { font-size: 16px; color: #c3c9d2; white-space: normal; margin-top: 6px; margin-bottom: 10px; }
+.moonkov-terminal.archive-page-4 .op-page .op-heading { font-size: 24px; -unity-font-style: bold; margin-bottom: 10px; }
+.moonkov-terminal.archive-page-4 .op-page .op-title { font-size: 34px; -unity-font-style: bold; margin-bottom: 12px; }
+.moonkov-terminal.archive-page-4 .op-page .op-large-title { font-size: 54px; -unity-font-style: bold; margin-bottom: 14px; }
+.moonkov-terminal.archive-page-4 .op-brand { position: absolute; top: 5.5%; left: 3%; width: 36%; }
+.moonkov-terminal.archive-page-4 .op-brand-title { -unity-font-definition: url("../../../UI Toolkit/Fonts/Roboto-Black.ttf"); font-size: 74px; letter-spacing: -3px; color: #f1f2ed; margin: 0; padding: 0; }
+.moonkov-terminal.archive-page-4 .op-brand .op-kicker { margin: 0; padding: 0; font-size: 10px; color: #e2e5eb; letter-spacing: 3px; }
+.moonkov-terminal.archive-page-4 .op-blue-rule { height: 5px; width: 48px; background-color: #164bff; margin: 12px 0; }
+.moonkov-terminal.archive-page-4 .op-stepper { position: absolute; left: 50%; right: 2.5%; top: 5%; height: 112px; flex-direction: row; border-top-width: 1px; border-bottom-width: 1px; border-color: #66707f; background-color: rgba(6,8,12,0.92); }
+.moonkov-terminal.archive-page-4 .op-step { height: auto; flex-direction: column; flex-grow: 1; flex-basis: 0; min-width: 0; margin: 0; padding: 12px 16px; border-width: 0; border-radius: 0; border-bottom-width: 3px; border-bottom-color: transparent; border-left-width: 1px; border-left-color: #505967; background-color: transparent; align-items: flex-start; justify-content: center; color: #b9c2cd; }
+.moonkov-terminal.archive-page-4 .op-step-number { font-size: 20px; margin: 0; color: #b9c2cd; }
+.moonkov-terminal.archive-page-4 .op-step-label { font-size: 22px; margin: 4px 0; -unity-font-style: bold; color: #d3d8df; }
+.moonkov-terminal.archive-page-4 .op-step-code { font-size: 9px; letter-spacing: 1px; color: #8994a6; margin: 0; }
+.moonkov-terminal.archive-page-4 .op-step.terminal-tab-selected { background-color: #102555; border-bottom-color: #164bff; }
+.moonkov-terminal.archive-page-4 .op-step.terminal-tab-selected Label { color: white; }
+.moonkov-terminal.archive-page-4 .op-step:hover,
+.moonkov-terminal.archive-page-4 .op-step:focus { background-color: #182d54; border-bottom-color: #f1f2ed; }
+.moonkov-terminal.archive-page-4 .op-step:active { background-color: #164bff; }
+.moonkov-terminal.archive-page-4 .op-button { height: auto; border-radius: 0; border-width: 1px; border-color: #9aabbd; background-color: #090d14; padding: 12px 24px; margin: 0; min-height: 44px; flex-direction: row; align-items: center; justify-content: space-between; color: #f1f2ed; }
+.moonkov-terminal.archive-page-4 .op-button-label { font-size: 24px; -unity-font-style: bold; color: #f1f2ed; white-space: normal; margin: 0; }
+.moonkov-terminal.archive-page-4 .op-arrow { font-size: 32px; color: #f1f2ed; margin: 0 0 0 12px; }
+.moonkov-terminal.archive-page-4 .op-button:hover,
+.moonkov-terminal.archive-page-4 .op-button:focus { border-color: white; border-width: 2px; background-color: #153981; }
+.moonkov-terminal.archive-page-4 .op-button:active { background-color: #0a1a42; translate: 0 2px; }
+.moonkov-terminal.archive-page-4 .op-button:disabled { opacity: 0.45; border-color: #536176; }
+.moonkov-terminal.archive-page-4 .op-back { position: absolute; left: 2.5%; bottom: 5.5%; width: 15%; height: 60px; }
+.moonkov-terminal.archive-page-4 .op-back .op-arrow { display: none; }
+.moonkov-terminal.archive-page-4 .op-continue { position: absolute; right: 2.5%; bottom: 5.5%; width: 28%; height: 76px; background-color: #164bff; }
+.moonkov-terminal.archive-page-4 .op-photo { background-size: cover; background-position: center; }
+/* 19D: live operator, equipment check column, separate mission brief column. */
+.moonkov-terminal.archive-page-4 .op-character { position: absolute; left: 7%; width: 35%; top: 18%; bottom: 7%; -unity-background-scale-mode: scale-to-fit; }
+.moonkov-terminal.archive-page-4 .op-operator-id { position: absolute; top: 72%; left: 3%; width: 32%; padding: 14px; background-color: rgba(5,7,10,0.86); border-left-width: 3px; border-left-color: #164bff; }
+.moonkov-terminal.archive-page-4 .op-operator-check { position: absolute; left: 43%; right: 29%; top: 20%; bottom: 17%; }
+.moonkov-terminal.archive-page-4 .op-confirmed { padding: 22px; background-color: rgba(5,7,10,0.97); border-top-width: 3px; border-top-color: #164bff; border-bottom-width: 1px; border-bottom-color: #6c7585; }
+.moonkov-terminal.archive-page-4 .op-equipment { flex-grow: 1; min-height: 0; padding: 18px; background-color: rgba(5,7,10,0.97); }
+.moonkov-terminal.archive-page-4 .op-equipment-list { flex-grow: 1; min-height: 0; }
+.moonkov-terminal.archive-page-4 .op-equipment-row { flex-direction: row; flex-grow: 1; flex-basis: 0; min-height: 42px; border-width: 1px; border-color: #616d7d; margin-bottom: 8px; padding: 5px; background-color: #0b0e14; align-items: center; }
+.moonkov-terminal.archive-page-4 .op-equipment-art { width: 60px; height: 100%; margin-right: 10px; }
+.moonkov-terminal.archive-page-4 .op-equipment-label { flex-grow: 1; flex-basis: 0; min-width: 0; }
+.moonkov-terminal.archive-page-4 .op-equipment-row .op-kicker { font-size: 11px; margin-bottom: 2px; }
+.moonkov-terminal.archive-page-4 .op-equipment-row .op-copy { font-size: 14px; margin: 0; }
+.moonkov-terminal.archive-page-4 .op-equipment-state { color: #b6caff; margin-right: 8px; }
+.moonkov-terminal.archive-page-4 .op-review { margin-top: 4px; min-height: 42px; }
+.moonkov-terminal.archive-page-4 .op-review .op-button-label { font-size: 16px; }
+.moonkov-terminal.archive-page-4 .op-review .op-arrow { font-size: 20px; }
+.moonkov-terminal.archive-page-4 .op-operator-mission { position: absolute; left: 72%; right: 2.5%; top: 20%; bottom: 15%; padding: 20px; background-color: rgba(5,7,10,0.97); border-width: 1px; border-color: #727c8c; }
+.moonkov-terminal.archive-page-4 .op-operator-photo { height: 27%; margin: -20px -20px 18px; background-image: url("OperationArt/OperatorMission.png"); }
+.moonkov-terminal.archive-page-4 .op-mission-rules { margin-top: 18px; padding-top: 15px; border-top-width: 1px; border-top-color: #626b79; }
+/* 20C: vertical step rail, large lunar site hero, split supporting information. */
+.moonkov-terminal.archive-page-4.operation-step-1 .op-brand-title { font-size: 52px; }
+.moonkov-terminal.archive-page-4.operation-step-1 .op-stepper { flex-direction: column; left: 2%; right: auto; width: 13%; top: 28%; bottom: 23%; height: auto; }
+.moonkov-terminal.archive-page-4.operation-step-1 .op-step { border-left-width: 3px; border-left-color: #687484; padding: 10px; }
+.moonkov-terminal.archive-page-4.operation-step-1 .op-step.terminal-tab-selected { border-left-color: #164bff; background-color: #164bff; }
+.moonkov-terminal.archive-page-4.operation-step-1 .op-step-number { position: absolute; left: 8px; top: 14px; }
+.moonkov-terminal.archive-page-4.operation-step-1 .op-step-label,
+.moonkov-terminal.archive-page-4.operation-step-1 .op-step-code { margin-left: 34px; }
+.moonkov-terminal.archive-page-4.operation-step-1 .op-step-label { font-size: 20px; }
+.moonkov-terminal.archive-page-4 .op-location-hero { position: absolute; left: 46%; right: 2.5%; top: 19%; height: 39%; border-width: 1px; border-left-width: 12px; border-left-color: #164bff; padding: 28px; background-color: #080b11; background-image: url("ApprovedHome/CardMoon.png"); background-size: cover; -unity-background-image-tint-color: #6b7a90; }
+.moonkov-terminal.archive-page-4 .op-location-hero .op-large-title { width: 66%; font-size: 44px; margin-top: 24px; }
+.moonkov-terminal.archive-page-4 .op-location-hero .op-copy { width: 52%; background-color: rgba(5,7,10,0.92); padding: 10px; }
+.moonkov-terminal.archive-page-4 .op-location-info { position: absolute; left: 46%; right: 2.5%; top: 60%; bottom: 22%; flex-direction: row; background-color: rgba(5,7,10,0.97); border-width: 1px; border-color: #737e8c; padding: 15px; }
+.moonkov-terminal.archive-page-4 .op-area-info { flex-basis: 0; flex-grow: 1; padding-right: 18px; border-right-width: 1px; border-right-color: #626b79; }
+.moonkov-terminal.archive-page-4 .op-beacon-info { flex-basis: 0; flex-grow: 1; padding-left: 18px; }
+.moonkov-terminal.archive-page-4 .op-area-info .op-heading,
+.moonkov-terminal.archive-page-4 .op-beacon-info .op-heading { font-size: 18px; }
+.moonkov-terminal.archive-page-4 .op-area-info .op-copy,
+.moonkov-terminal.archive-page-4 .op-beacon-info .op-copy { font-size: 14px; }
+.moonkov-terminal.archive-page-4 .op-area-photo { width: 35%; height: 58px; background-image: url("OperationArt/Area.png"); margin-bottom: 8px; display: none; }
+.moonkov-terminal.archive-page-4 .op-beacon-photo { width: 88px; height: 60px; background-image: url("OperationArt/Beacon.png"); position: absolute; right: 6px; bottom: 0; }
+.moonkov-terminal.archive-page-4.operation-step-1 .op-back { left: 61%; width: 15%; bottom: 11%; }
+.moonkov-terminal.archive-page-4.operation-step-1 .op-continue { width: 20%; bottom: 11%; height: 60px; }
+/* 21D: asymmetric title/scene, three protocol cards, wide adjustable cargo band. */
+.moonkov-terminal.archive-page-4.operation-step-2 .op-brand-title { font-size: 44px; }
+.moonkov-terminal.archive-page-4.operation-step-2 .op-brand { width: 30%; top: 4%; }
+.moonkov-terminal.archive-page-4.operation-step-2 .op-stepper { top: 2%; left: 38%; height: 65px; }
+.moonkov-terminal.archive-page-4.operation-step-2 .op-step { padding: 4px 14px; flex-direction: row; align-items: center; }
+.moonkov-terminal.archive-page-4.operation-step-2 .op-step-number { font-size: 14px; margin-right: 8px; }
+.moonkov-terminal.archive-page-4.operation-step-2 .op-step-label { font-size: 16px; }
+.moonkov-terminal.archive-page-4.operation-step-2 .op-step-code { display: none; }
+.moonkov-terminal.archive-page-4 .op-briefing { left: 37%; right: 2%; top: 12%; bottom: 17%; }
+.moonkov-terminal.archive-page-4 .op-brief-top { height: 31%; flex-direction: row; }
+.moonkov-terminal.archive-page-4 .op-brief-title { width: 37%; padding: 18px; border-left-width: 8px; border-left-color: #164bff; background-color: rgba(5,7,10,0.96); }
+.moonkov-terminal.archive-page-4 .op-brief-intro { flex-grow: 1; flex-basis: 0; background-color: rgba(5,7,10,0.98); padding: 0 15px; }
+.moonkov-terminal.archive-page-4 .op-brief-photo { height: 48%; background-image: url("OperationArt/BriefingMission.png"); margin: 0 -15px 4px; }
+.moonkov-terminal.archive-page-4 .op-brief-intro .op-copy { font-size: 14px; }
+.moonkov-terminal.archive-page-4 .op-protocols { height: 35%; flex-direction: row; padding: 12px 0; }
+.moonkov-terminal.archive-page-4 .op-protocol-card { flex-grow: 1; flex-basis: 0; min-width: 0; margin-right: 12px; border-width: 1px; border-color: #6b7686; background-color: #080b10; padding: 12px; }
+.moonkov-terminal.archive-page-4 .op-protocol-card.op-protocol-last { margin-right: 0; }
+.moonkov-terminal.archive-page-4 .op-protocol-photo { height: 45%; margin: -12px -12px 10px; }
+.moonkov-terminal.archive-page-4 .op-photo-recover { background-image: url("OperationArt/Recover.png"); }
+.moonkov-terminal.archive-page-4 .op-photo-survive { background-image: url("OperationArt/Survive.png"); }
+.moonkov-terminal.archive-page-4 .op-photo-extract { background-image: url("OperationArt/Extract.png"); }
+.moonkov-terminal.archive-page-4 .op-protocol-card .op-heading { font-size: 25px; margin: 0 0 4px; }
+.moonkov-terminal.archive-page-4 .op-protocol-card .op-copy { font-size: 14px; }
+.moonkov-terminal.archive-page-4 .op-protocol-card .op-kicker { display: none; }
+.moonkov-terminal.archive-page-4 .op-carry-band { flex-grow: 1; min-height: 0; padding: 18px; border-width: 1px; border-color: #9ca7b5; border-left-width: 8px; border-left-color: #164bff; background-color: #080b10; }
+.moonkov-terminal.archive-page-4 .op-carry-content { flex-direction: row; flex-grow: 1; min-height: 0; }
+.moonkov-terminal.archive-page-4 .op-cell-art { width: 15%; margin-right: 12px; }
+.moonkov-terminal.archive-page-4 .op-carry-controls { width: 50%; padding-right: 20px; }
+.moonkov-terminal.archive-page-4 .op-amount-control { height: 58px; flex-direction: row; }
+.moonkov-terminal.archive-page-4 .op-amount-button { height: 100%; width: 58px; margin: 0; padding: 0; font-size: 32px; color: white; border-radius: 0; border-width: 1px; border-color: #93a1b7; background-color: #153579; }
+.moonkov-terminal.archive-page-4 .op-amount-button:hover,
+.moonkov-terminal.archive-page-4 .op-amount-button:focus { background-color: #164bff; border-color: white; }
+.moonkov-terminal.archive-page-4 .op-amount-button:active { background-color: #0a1531; }
+.moonkov-terminal.archive-page-4 .op-carry-field { flex-grow: 1; min-width: 0; margin: 0; border-width: 1px; border-color: #9aabbd; }
+.moonkov-terminal.archive-page-4 .op-carry-field .unity-base-field__input { background-color: #080b10; font-size: 34px; color: #f1f2ed; -unity-text-align: middle-center; --unity-cursor-color: #f1f2ed; --unity-selection-color: rgba(22,75,255,0.28); }
+.moonkov-terminal.archive-page-4 .op-carry-controls .op-copy { font-size: 12px; }
+.moonkov-terminal.archive-page-4 .op-carry-summary { flex-grow: 1; min-width: 0; padding-left: 16px; border-left-width: 1px; border-left-color: #6b7686; }
+.moonkov-terminal.archive-page-4 .op-carry-summary .op-heading { font-size: 20px; }
+.moonkov-terminal.archive-page-4 .op-gauge { height: 4px; background-color: #566074; margin-top: 8px; }
+.moonkov-terminal.archive-page-4 .op-gauge .terminal-cargo-gauge-fill { height: 100%; background-color: #164bff; }
+/* 22D: dominant warning band and genuinely unavailable recovery contract. */
+.moonkov-terminal.archive-page-4 .op-recovery { left: 44%; right: 3.5%; top: 21%; bottom: 23%; padding: 24px; background-color: rgba(5,7,10,0.97); border-top-width: 1px; border-top-color: #929aa6; }
+.moonkov-terminal.archive-page-4 .op-recovery-heading { flex-direction: row; align-items: center; padding-bottom: 12px; }
+.moonkov-terminal.archive-page-4 .op-recovery-heading .op-large-title { width: 48%; }
+.moonkov-terminal.archive-page-4 .op-recovery-heading .op-copy { flex-grow: 1; flex-basis: 0; padding-left: 24px; border-left-width: 1px; border-left-color: #828b98; }
+.moonkov-terminal.archive-page-4 .op-recovery-warning { flex-direction: row; height: 34%; min-height: 110px; border-width: 2px; border-color: #ed3d4d; padding: 12px; background-color: #160b10; }
+.moonkov-terminal.archive-page-4 .op-warning-photo { width: 21%; margin-right: 24px; background-image: url("OperationArt/Warning.png"); }
+.moonkov-terminal.archive-page-4 .op-warning-copy { flex-grow: 1; justify-content: center; }
+.moonkov-terminal.archive-page-4 .op-page .op-danger-title { font-size: 38px; -unity-font-style: bold; color: #ff5666; margin-bottom: 6px; }
+.moonkov-terminal.archive-page-4 .op-warning-copy .op-title { font-size: 28px; }
+.moonkov-terminal.archive-page-4 .op-recovery-info { flex-direction: row; align-items: center; padding: 14px 0; margin: 12px 0; border-top-width: 1px; border-bottom-width: 1px; border-color: #788291; }
+.moonkov-terminal.archive-page-4 .op-info-icon { font-size: 30px; width: 44px; }
+.moonkov-terminal.archive-page-4 .op-recovery-info .op-copy { flex-grow: 1; flex-basis: 0; margin: 0; }
+.moonkov-terminal.archive-page-4 .op-contract { flex-grow: 1; min-height: 68px; border-radius: 0; padding: 14px 24px; margin: 0; align-items: flex-start; justify-content: center; background-color: #23262e; border-width: 1px; border-color: #81838c; }
+.moonkov-terminal.archive-page-4 .op-contract .op-title { font-size: 26px; margin-bottom: 4px; }
+.moonkov-terminal.archive-page-4 .op-contract-status { position: absolute; right: 28px; top: 10px; font-size: 40px; }
+.moonkov-terminal.archive-page-4.operation-step-3 .op-back { left: 55%; width: 17%; bottom: 12%; }
+.moonkov-terminal.archive-page-4.operation-step-3 .op-continue { width: 24%; bottom: 12%; height: 66px; }
+/* 23C: five wide split summaries, launch embedded into the last row. No character. */
+.moonkov-terminal.archive-page-4 .op-ready { left: 49%; right: 2.5%; top: 20%; bottom: 17%; }
+.moonkov-terminal.archive-page-4 .op-check-row { flex-grow: 1; flex-basis: 0; min-height: 0; flex-direction: row; align-items: center; border-width: 1px; border-color: #707b8b; border-left-width: 6px; border-left-color: #164bff; background-color: rgba(5,7,10,0.97); margin-bottom: 12px; padding: 10px 15px; }
+.moonkov-terminal.archive-page-4 .op-check-number { width: 10%; font-size: 38px; color: #8993a2; }
+.moonkov-terminal.archive-page-4 .op-check-label { width: 47%; padding: 0 10px; }
+.moonkov-terminal.archive-page-4 .op-check-label .op-heading { font-size: 24px; margin: 0 0 4px; }
+.moonkov-terminal.archive-page-4 .op-check-label .op-copy { font-size: 14px; margin: 0; }
+.moonkov-terminal.archive-page-4 .op-check-value { flex-grow: 1; flex-basis: 0; min-width: 0; height: 100%; padding-left: 14px; border-left-width: 1px; border-left-color: #6b7686; justify-content: center; }
+.moonkov-terminal.archive-page-4 .op-value { font-size: 20px; color: #f1f2ed; }
+.moonkov-terminal.archive-page-4 .op-page .op-warning { color: #ff8b87; }
+.moonkov-terminal.archive-page-4 .op-ready-cell { width: 60px; height: 60px; position: absolute; left: 8px; top: 5px; }
+.moonkov-terminal.archive-page-4 .op-check-value #readyCarry { margin-left: 65px; }
+.moonkov-terminal.archive-page-4 .op-terminal-photo { width: 100%; height: 100%; background-image: url("OperationArt/Terminal.png"); }
+.moonkov-terminal.archive-page-4 .op-final-row { padding-right: 0; }
+.moonkov-terminal.archive-page-4 .op-final-row .op-check-value { padding-left: 0; border-width: 0; margin: -10px 0; }
+.moonkov-terminal.archive-page-4 .op-launch { width: 100%; height: 100%; padding: 16px; background-color: #164bff; border-color: #a2baff; }
+.moonkov-terminal.archive-page-4 .op-launch .op-button-label { font-size: 23px; }
+.moonkov-terminal.archive-page-4.operation-step-4 .op-continue { display: none; }
+.moonkov-terminal.archive-page-4.operation-step-4 .op-back { left: 50%; bottom: 9%; height: 50px; width: 15%; }
+.moonkov-terminal.archive-page-4.operation-step-4 .op-stepper { height: 80px; }
+.moonkov-terminal.archive-page-4.operation-step-4 .op-step-code { display: none; }
+.moonkov-terminal.archive-page-4.archive-compact .op-brand-title { font-size: 56px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-brand .op-kicker { font-size: 9px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-stepper { height: 86px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-step { padding: 6px 10px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-step-label { font-size: 18px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-step-number { font-size: 16px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-step-code { font-size: 8px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-page .op-copy { font-size: 13px; margin-top: 4px; margin-bottom: 8px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-page .op-heading { font-size: 20px; margin-bottom: 8px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-page .op-title { font-size: 27px; margin-bottom: 10px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-page .op-large-title { font-size: 40px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-confirmed,
+.moonkov-terminal.archive-page-4.archive-compact .op-equipment,
+.moonkov-terminal.archive-page-4.archive-compact .op-operator-mission { padding: 14px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-operator-photo { margin: -14px -14px 12px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-equipment-row { min-height: 36px; margin-bottom: 5px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-equipment-art { width: 42px; margin-right: 6px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-equipment-row .op-copy { font-size: 12px; margin: 0; }
+.moonkov-terminal.archive-page-4.archive-compact .op-review { padding: 6px 12px; min-height: 34px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-review .op-button-label { font-size: 14px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-mission-rules { margin-top: 8px; padding-top: 8px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-button-label { font-size: 20px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-back { height: 50px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-continue { height: 60px; }
+.moonkov-terminal.archive-page-4.archive-compact.operation-step-1 .op-brand-title,
+.moonkov-terminal.archive-page-4.archive-compact.operation-step-2 .op-brand-title { font-size: 40px; }
+.moonkov-terminal.archive-page-4.archive-compact.operation-step-1 .op-stepper { height: auto; }
+.moonkov-terminal.archive-page-4.archive-compact .op-location-hero { padding: 18px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-location-hero .op-large-title { font-size: 34px; margin-top: 14px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-location-info { padding: 10px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-area-info .op-heading,
+.moonkov-terminal.archive-page-4.archive-compact .op-beacon-info .op-heading { font-size: 16px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-area-info .op-copy,
+.moonkov-terminal.archive-page-4.archive-compact .op-beacon-info .op-copy { font-size: 12px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-beacon-photo { width: 65px; height: 48px; }
+.moonkov-terminal.archive-page-4.archive-compact.operation-step-2 .op-stepper { height: 50px; }
+.moonkov-terminal.archive-page-4.archive-compact.operation-step-2 .op-step-label { font-size: 14px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-brief-title { padding: 12px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-brief-title .op-large-title { font-size: 42px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-brief-intro .op-copy { font-size: 12px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-protocols { padding: 8px 0; }
+.moonkov-terminal.archive-page-4.archive-compact .op-protocol-card { padding: 8px; margin-right: 8px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-protocol-photo { margin: -8px -8px 8px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-protocol-card .op-heading { font-size: 22px; margin-bottom: 2px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-protocol-card .op-copy { font-size: 12px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-carry-band { padding: 12px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-carry-band .op-heading { font-size: 18px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-amount-control { height: 44px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-amount-button { width: 44px; font-size: 26px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-carry-field .unity-base-field__input { font-size: 28px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-carry-controls .op-copy { font-size: 11px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-carry-summary .op-heading { font-size: 16px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-recovery { padding: 18px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-recovery-warning { min-height: 90px; padding: 8px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-page .op-danger-title { font-size: 28px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-warning-copy .op-title { font-size: 23px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-recovery-info { padding: 10px 0; margin: 8px 0; }
+.moonkov-terminal.archive-page-4.archive-compact .op-contract { min-height: 58px; padding: 10px 18px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-contract .op-title { font-size: 22px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-check-row { margin-bottom: 9px; padding: 8px 10px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-check-number { font-size: 30px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-check-label { padding: 0 8px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-check-label .op-heading { font-size: 19px; margin-bottom: 4px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-check-label .op-copy { font-size: 12px; margin: 0; }
+.moonkov-terminal.archive-page-4.archive-compact .op-value { font-size: 16px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-ready-cell { width: 42px; height: 42px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-check-value #readyCarry { margin-left: 44px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-launch { padding: 10px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-launch .op-button-label { font-size: 17px; }
+.moonkov-terminal.archive-page-4.archive-compact.operation-step-4 .op-back { height: 42px; }
+
+.moonkov-terminal.archive-page-4 .op-button:focus, .moonkov-terminal.archive-page-4 .op-button:hover { -unity-background-image-tint-color: #164bff; color: #ffffff; }
+.moonkov-terminal.archive-page-4 .op-step-code { display: none; }
+.moonkov-terminal.archive-page-4 .op-step-label { margin-top: 6px; }
+.moonkov-terminal.archive-page-4 .op-brand-title { font-size: 74px; }
+.moonkov-terminal.archive-page-4.operation-step-1 .op-brand-title { font-size: 52px; }
+.moonkov-terminal.archive-page-4.operation-step-2 .op-brand-title { font-size: 44px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-brand-title { font-size: 56px; }
+.moonkov-terminal.archive-page-4.archive-compact.operation-step-1 .op-brand-title, .moonkov-terminal.archive-page-4.archive-compact.operation-step-2 .op-brand-title { font-size: 40px; }
+.moonkov-terminal.archive-page-4 .op-operator-id { background-color: rgba(5,7,10,0.96); }
+.moonkov-terminal.archive-page-4 .op-final-row .op-check-label .op-copy { font-size: 12px; }
+
+/* Image accents are independent children: functional text never stretches with the picture. */
+.moonkov-terminal.archive-page-4 .op-action-art { position: absolute; right: 0; top: 0; bottom: 0; width: 44%; background-image: url("ApprovedHome/CardMoon.png"); background-size: cover; background-position: right; -unity-background-image-tint-color: #a9c0ff; opacity: 0.24; }
+.moonkov-terminal.archive-page-4 .op-back-arrow { font-size: 30px; margin: 0 16px 0 0; color: #f1f2ed; }
+.moonkov-terminal.archive-page-4 .op-back { justify-content: flex-start; }
+.moonkov-terminal.archive-page-4 .op-operator-id { top: 40%; width: 16%; padding: 12px; }
+.moonkov-terminal.archive-page-4 .op-operator-id .op-title { font-size: 30px; }
+.moonkov-terminal.archive-page-4.operation-step-4 .op-brand { background-color: rgba(5,7,10,0.96); padding: 12px 18px; width: 30%; top: 4%; left: 2%; }
+.moonkov-terminal.archive-page-4 .op-area-photo { display: flex; position: absolute; left: 0; top: 36px; bottom: 6px; width: 31%; height: auto; margin: 0; }
+.moonkov-terminal.archive-page-4 .op-area-info .op-copy { margin-left: 35%; }
+.moonkov-terminal.archive-page-4 .op-beacon-info .op-copy { width: 63%; }
+.moonkov-terminal.archive-page-4.archive-compact .op-operator-id .op-title { font-size: 24px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-back-arrow { font-size: 24px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-area-photo { top: 30px; }

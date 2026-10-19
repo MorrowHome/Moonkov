@@ -6,21 +6,23 @@
 
 主菜单继续保留认可的分级卡片。用户否定上一轮的等高黑色侧栏后，管理页面改为页顶三个主要摄影入口（行动、仓库、光环），搭配收敛的次级导航。主要入口使用不同图片和可编辑的切角边线，保留原九个 Button ID 与事件；移除占据左侧的等高黑按钮列。仓库使用装备、随身容器、个人仓库三块区域，六个装备槽环绕真实角色模型。物品操作和容器命中区域保持规则矩形。
 
-出击准备由原五个重复分页收束为一张准备台：左侧是现有地点与行动规则，右侧是角色/装备入口、真实携带电池输入、无回收保障提示和最终确认。风险说明与行动说明都保留；长内容由标准 ScrollView 承载。没有增加区域、组队、保险购买或其他玩法。
+出击准备恢复为五个独立子界面，按用户选定提案逐页落地：19 角色 D、20 地点 C 的布局、21 简报 D、22 回收 D、23 确认 C 的布局。所有页面采用最新指定的深色/蓝色方向。此前擅自合并的单页准备台已替换；不以同一面板模板替代不同构图。详细对应、组件参数和最新截图见 [出战五步接入记录](Departure-20261019.md)。
 
 ```mermaid
 flowchart LR
-    Home[主界面] --> Desk[出击准备台]
-    Desk --> Gear[仓库与装备]
-    Desk --> Halo[光环改装]
-    Gear --> Desk
-    Halo --> Desk
-    Desk --> Confirm[原有准备回调]
-    Confirm --> Online[联机连接终端]
-    Confirm --> Offline[原单人出击流程]
+    Home[主界面出击入口] --> Operator[角色 D]
+    Operator --> Location[地点 C 深色]
+    Location --> Briefing[简报 D / 真实携带量]
+    Briefing --> Recovery[回收 D / 保险未开放]
+    Recovery --> Ready[确认 C 深色]
+    Ready --> Prepare[原有准备回调]
+    Prepare --> Online[联机连接终端]
+    Prepare --> Offline[原单人出击流程]
+    Operator --> Gear[仓库与装备]
+    Gear --> Operator
 ```
 
-最终操作仍调用原 m_Prepare；没有绕过账号、携带数量、部署、结算或服务端校验。准备中的 busy 状态继续禁用输入和最终操作。原 TerminalMotion 换页实现未更改。
+最终操作仍调用原 m_Prepare；没有绕过账号、携带数量、部署、结算或服务端校验。准备中的 busy 状态继续禁用携带输入、加减控件和最终操作。原 TerminalMotion 换页实现未更改。
 
 ## 接入对应关系
 
@@ -32,7 +34,7 @@ flowchart LR
 | 09 光环、10 改装 | Halo.uxml 的原光环外观和六种真实模块节点，与右侧原生检查区；MODIFY HALO 进入已有拥有物选择/模块安装面板；不展示普通枪改装 |
 | 11–14 供应商/交易/紧急补给/研究 | Suppliers、ShopCatalog、ShopProduct、MoonkovShopView；原真实商品与研究事务保持 |
 | 15 任务、16 基地、17 通讯、18 设置 | 原各 UXML 与 presenter，分别采用目标流程、基地全景/资源、安静频道、黑色设置表；未实现项继续禁用 |
-| 19–23 原出击各步 | 合并至 Operation.uxml 单页准备台，未丢弃携带输入、地点说明、回收风险与最终动作 |
+| 19–23 出击五步 | Operation 作为可复用步骤/返回/继续组件，OperationOperator / Location / Briefing / Recovery / Ready 为独立原生页面；OperationProposal.uss 按选定提案控制各自布局 |
 | 24 HUD、25 背包、26 搜刮、27 健康 | PlayerHUD、RaidUI、ContainerInventoryView、RaidHealthView；只显示已有生命、弹药、氧气、货物等真实来源 |
 | 28 灯光、29 交互、30 撤离、38 警告 | HaloLightPanel、RaidHUD、AirlockPrompt；原按住/关闭、交互与撤离显示契约保持 |
 | 31–33 结果/货物/入库 | RaidHUD 原三页结果，深色月面底图与原生明细；真实保存结果决定可继续/返回 |
@@ -43,7 +45,7 @@ flowchart LR
 
 ## 编辑、素材与成本
 
-- ProposalSystem.uss：管理页面一级导航、各页构图、准备台和节点状态。ArchiveTheme / MoonkovControls：共享颜色与状态；InventoryTheme / FieldTheme / AccessTheme：密集库存、局内与连接界面。
+- ProposalSystem.uss：管理页面一级导航与节点状态；OperationProposal.uss 单独负责五个出战子界面及其按钮状态。ArchiveTheme / MoonkovControls：共享颜色与状态；InventoryTheme / FieldTheme / AccessTheme：密集库存、局内与连接界面。
 - Components/ItemInspection.uxml：独立物品检查组件；Components/PrimaryNavigation.uxml：分级摄影入口。ArchiveCardFrame.cs：原生 Painter2D 静态切角、状态边线和构筑轨道线，不烘焙文字、不改变命中区、不新增循环刷新。默认/悬停/焦点/按下/选中由原按钮与事件驱动；其他现有导航、商品、装备槽、模块槽等继续是可编辑 UXML。
 - PageArt：四张无字连续画布和五张独立摄影插画裁切。manifest.json 记录来源与矩形。原提案不作破坏修改；人物继续由原 MenuCharacterView 渲染。
 - 颜色：近黑底 #08090C、深色面板 #101318、输入表面 #18202D、浅色正文 #F1F2ED、强调蓝 #164BFF、深蓝 #12234B、危险提示 #FF9A87。旧 archive-light / moonkov-controls-light 样式类仅兼容旧 UXML，颜色角色也改为深色。功能字号以中文可读性为准，标题约 22–38px，正文 14–16px，密集次要物品标记 11–13px；不是把图中微型标注当正文。
@@ -73,3 +75,7 @@ flowchart LR
 最新深色统一仅更改主题选择和表面/文字/状态颜色，未再次重排页面。淡色摄影背景只调整该背景层的 tint，不染色人物、光环或物品图。HUD 保留已有深色承托；暂停/死亡等已有深色页面保持原状。验证针对本轮从浅色转深色的 13 个状态：home、account、session、host、halo、deployment、warehouse、raidpack、loot、result、cargo、storage、settings-compact；未为同一主题重拍全部历史截图。
 
 登录额外复查一个包含 local_review 展示用户名的聚焦状态，未提交登录。输入光标与选区使用 UI Toolkit 原生 USS 自定义属性 --unity-cursor-color / --unity-selection-color，依据 [Unity TextField 文档](https://docs.unity3d.com/cn/current/Manual/UIE-uxml-element-TextField.html)。复查发现不透明选区遮住文字，改为 28% 透明度的蓝色后确认选中文字可读。另兼容当前 Unity 实际使用的 inner-input-field-component 类名，让输入值保持为玩家内容，不进入本地化字符串绑定；未改变字段校验和登录事务。
+
+## 最新出战五步修正
+
+此前本文件关于“准备台”的描述和 deployment 截图是历史实现。当前入口在 MainMenu 的既有出击/准备按钮内，恢复五个独立子页。最终原生截图与专项记录：Native-20261018/operator、location、briefing、recovery、ready.png，五张对应的 -compact.png，以及 ready-busy.png；Runtime-departure-20261019.txt。未再次更动其他一级页面。

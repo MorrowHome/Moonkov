@@ -1,15 +1,30 @@
-<ui:UXML xmlns:moon="Unity.MP_FPS.Client" xmlns:ui="UnityEngine.UIElements">
-    <ui:Style src="project://database/Assets/UI Toolkit/GameUI/StashScreen.uss" />
-    <ui:Style src="project://database/Assets/UI Toolkit/GameUI/MoonkovTerminal.uss" />
-    <ui:Style src="project://database/Assets/Resources/Moonkov/UI/TerminalLayout.uss" />
-    <ui:VisualElement name="layoutPreview" class="stash-root moonkov-terminal terminal-layout-preview">
-        <ui:VisualElement name="terminalPage">
-            <ui:Label class="terminal-title" text="MOON / SURFACE SECTOR" />
-            <ui:VisualElement class="lunar-schematic terminal-operation-map" picking-mode="Ignore">
-                <ui:Label class="terminal-map-tag" picking-mode="Ignore" text="SECTOR 07  /  MARE IMBRIUM" />
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="../../../UI Toolkit/GameUI/StashScreen.uss" />
+    <ui:Style src="../../../UI Toolkit/GameUI/MoonkovTerminal.uss" />
+    <ui:Style src="ArchiveTheme.uss" />
+    <ui:Style src="OperationProposal.uss" />
+    <ui:VisualElement name="layoutPreview" class="stash-root moonkov-terminal archive-ui archive-pages archive-page-4 operation-step-1" style="width: 1600px; height: 900px;">
+        <ui:VisualElement name="terminalPage" style="flex-grow: 1;">
+            <ui:VisualElement class="op-page op-location">
+                <ui:VisualElement class="op-location-hero" name="locationHero">
+                    <ui:Label text="LOCATION" class="op-heading" />
+                    <ui:Label text="LUNAR SUPPLY RECOVERY" class="op-large-title" />
+                    <ui:Label text="MOON / SURFACE SECTOR" class="op-kicker" />
+                    <ui:Label text="Locate supply caches and navigate back to the extraction beacon. Additional regions are not charted for deployment." class="op-copy" />
+                </ui:VisualElement>
+                <ui:VisualElement class="op-location-info">
+                    <ui:VisualElement class="op-area-info">
+                        <ui:VisualElement class="op-photo op-area-photo" />
+                        <ui:Label text="MOON / SURFACE SECTOR" class="op-heading" />
+                        <ui:Label text="Your session host determines the map and mission timing. Connection setup follows the readiness check." class="op-copy" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="op-beacon-info">
+                        <ui:Label text="EXTRACTION BEACON" class="op-heading" />
+                        <ui:VisualElement class="op-photo op-beacon-photo" />
+                        <ui:Label text="STAY INSIDE THE GREEN BEACON" class="op-copy" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
             </ui:VisualElement>
-            <ui:Label class="terminal-eyebrow" text="AVAILABLE OPERATION: LUNAR SUPPLY RECOVERY" />
-            <ui:Label class="terminal-copy" text="Locate supply caches and navigate back to the extraction beacon. Additional regions are not charted for deployment." />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
