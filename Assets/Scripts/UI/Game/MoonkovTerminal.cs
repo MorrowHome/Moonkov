@@ -92,7 +92,11 @@ namespace Unity.MP_FPS.Client
             m_Root.EnableInClassList("terminal-is-ship", page == 0);
             m_Root.EnableInClassList("terminal-is-loadout", page == 1);
             ApplyPageTheme();
-            for (int i = 0; i < m_Tabs.Count; i++) m_Tabs[i].EnableInClassList("terminal-tab-selected", i == page);
+            for (int i = 0; i < m_Tabs.Count; i++)
+            {
+                m_Tabs[i].EnableInClassList("terminal-tab-selected", i == page);
+                m_Tabs[i].Q<ArchiveCardFrame>()?.MarkDirtyRepaint();
+            }
             m_Gear.style.display = page == 1 ? DisplayStyle.Flex : DisplayStyle.None;
             m_Content.style.display = page == 1 ? DisplayStyle.None : DisplayStyle.Flex;
             m_Shade.Mode = page == 0 ? BackdropMode.Ship : BackdropMode.Page;
@@ -279,7 +283,11 @@ namespace Unity.MP_FPS.Client
             var image = m_Content.Q("haloComponentArt"); image.Clear();
             var art = new StashItemArt(ContainerInventoryView.Art(code)); art.style.flexGrow = 1; image.Add(art);
             var nodes = m_Content.Query<Button>(className: "terminal-node").ToList();
-            for (int i = 0; i < nodes.Count; i++) nodes[i].EnableInClassList("terminal-node-selected", i == index);
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                nodes[i].EnableInClassList("terminal-node-selected", i == index);
+                nodes[i].Q<ArchiveCardFrame>()?.MarkDirtyRepaint();
+            }
         }
 
         private void Suppliers()

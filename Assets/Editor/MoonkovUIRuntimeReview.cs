@@ -19,7 +19,7 @@ using BodyPart = Unity.MP_FPS.BodyPart;
 public static class MoonkovUIRuntimeReview
 {
     private const string Pending = "Moonkov.UIReview.Pending", StartScene = "Moonkov.UIReview.StartScene";
-    private static readonly string[] AllCases = { "home", "home-dark", "warehouse", "halo", "suppliers", "tasks", "base", "comms", "settings", "deployment", "account", "session", "host", "direct", "connecting", "loading", "raidpack", "loot", "health", "halo-light", "interaction", "extraction", "result", "cargo", "storage", "pause", "death", "score", "diagnostics", "hud-bright", "hud-dark", "hud-alerts", "workshop", "shop", "emergency", "research", "airlock", "warehouse-compact", "settings-compact", "home-compact", "deployment-compact", "item" };
+    private static readonly string[] AllCases = { "home", "home-dark", "warehouse", "halo", "suppliers", "tasks", "base", "comms", "settings", "deployment", "account", "session", "host", "direct", "connecting", "loading", "raidpack", "loot", "health", "halo-light", "interaction", "extraction", "result", "cargo", "storage", "pause", "death", "score", "diagnostics", "hud-bright", "hud-dark", "hud-alerts", "workshop", "shop", "emergency", "research", "airlock", "warehouse-compact", "settings-compact", "home-compact", "deployment-compact", "halo-compact", "item" };
     private static string[] Cases = AllCases;
     private static GameObject s_Object;
     private static PanelSettings s_Settings;

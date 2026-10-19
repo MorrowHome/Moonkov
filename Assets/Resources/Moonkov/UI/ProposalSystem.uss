@@ -1,23 +1,41 @@
 /* Approved Moonkov language, native controls. This sheet owns page composition. */
 .moonkov-terminal.archive-pages { padding: 0 24px; background-color: #08090c; background-image: url("PageArt/ArchiveDark.png"); background-size: cover; background-position: center; }
-.moonkov-terminal.archive-pages .stash-header { height: 82px; background-color: rgba(8,9,12,0.88); border-bottom-color: #68717e; }
-.moonkov-terminal.archive-pages .stash-brand { width: 230px; }
-.moonkov-terminal.archive-pages .stash-brand-title { font-size: 38px; color: #f1f2ed; }
-.moonkov-terminal.archive-pages .stash-page-title { font-size: 25px; -unity-font-style: normal; }
-.moonkov-terminal.archive-pages .archive-navigation-host { position: absolute; top: 104px; left: 24px; bottom: 80px; width: 168px; height: auto; }
-.moonkov-terminal.archive-pages .terminal-nav { height: 100%; padding: 0; border-width: 0; background-color: rgba(8,9,12,0.9); }
-.moonkov-terminal.archive-pages .terminal-nav-tabs { flex-direction: column; flex-grow: 1; }
-.moonkov-terminal.archive-pages .terminal-nav-tabs > .terminal-tab { width: 100%; min-width: 0; min-height: 42px; flex-basis: 0; flex-grow: 1; flex-direction: row; margin: 0 0 8px; padding: 8px 12px; border-width: 1px; border-color: #555e6d; background-color: rgba(8,9,12,0.94); }
-.moonkov-terminal.archive-pages .terminal-tab-label { font-size: 16px; color: #eef0eb; -unity-font-style: normal; }
-.moonkov-terminal.archive-pages .terminal-tab-index { color: #969eab; font-size: 10px; width: 18px; }
-.moonkov-terminal.archive-pages .terminal-nav-tabs > .terminal-tab-selected { background-color: #164bff; border-color: #adbfff; border-left-width: 4px; border-left-color: #ffffff; }
-.moonkov-terminal.archive-pages .terminal-tab-selected .terminal-tab-label,
-.moonkov-terminal.archive-pages .terminal-tab-selected .terminal-tab-index { color: #ffffff; }
-.moonkov-terminal.archive-pages .terminal-nav-tabs > .terminal-tab:hover { border-color: #ffffff; background-color: #12234b; }
-.moonkov-terminal.archive-pages .terminal-nav-tabs > .terminal-tab:focus { border-width: 2px; border-color: #bed1ff; }
+.moonkov-terminal.archive-pages .stash-header { height: 68px; background-color: rgba(8,9,12,0.94); border-bottom-width: 0; }
+.moonkov-terminal.archive-pages .stash-brand { width: 220px; }
+.moonkov-terminal.archive-pages .stash-brand-title { font-size: 40px; color: #f1f2ed; }
+.moonkov-terminal.archive-pages .stash-brand .stash-eyebrow { display: none; }
+.moonkov-terminal.archive-pages .stash-page-heading { background-image: none; height: auto; padding-left: 20px; border-left-width: 1px; border-left-color: #69717e; }
+.moonkov-terminal.archive-pages .stash-page-title { font-size: 22px; -unity-font-style: bold; }
+/* Three illustrated command entries, then a quiet group of secondary routes. */
+.moonkov-terminal.archive-pages .archive-navigation-host { position: relative; top: auto; left: auto; right: auto; bottom: auto; width: auto; height: 82px; margin-top: 8px; }
+.moonkov-terminal.archive-pages .terminal-nav { height: 100%; padding: 0; border-width: 0; background-color: rgba(8,9,12,0.94); }
+.moonkov-terminal.archive-pages .terminal-nav-scroll { flex-grow: 1; height: 100%; }
+.moonkov-terminal.archive-pages .terminal-nav-scroll .unity-scroll-view__content-container { flex-grow: 1; width: 100%; }
+.moonkov-terminal.archive-pages .terminal-nav-tabs { flex-direction: row; flex-grow: 1; width: 100%; }
+.moonkov-terminal.archive-pages .terminal-nav-tabs > .terminal-tab { width: auto; min-width: 76px; height: 76px; min-height: 0; flex-basis: 0; flex-grow: 1; flex-direction: column; justify-content: center; margin: 0 8px 0 0; padding: 12px 8px; border-width: 0; border-bottom-width: 1px; border-bottom-color: #6b7482; background-color: transparent; }
+.moonkov-terminal.archive-pages .terminal-nav-tabs > .terminal-tab-major { min-width: 160px; flex-grow: 2.1; padding: 12px 18px; border-width: 0; justify-content: flex-end; }
+.moonkov-terminal.archive-pages .terminal-tab-label { font-size: 15px; color: #c4cad3; -unity-font-style: normal; }
+.moonkov-terminal.archive-pages .terminal-tab-index { display: none; }
+.moonkov-terminal.archive-pages .terminal-tab-major .terminal-tab-label { position: absolute; left: 16px; bottom: 12px; font-size: 20px; color: #ffffff; -unity-font-style: bold; }
+.moonkov-terminal.archive-pages .terminal-tab-major .terminal-tab-index { display: flex; position: absolute; top: 11px; left: 16px; color: #a9b6ce; font-size: 10px; }
+.archive-card-frame { position: absolute; top: 0; left: 0; right: 0; bottom: 0; }
+.nav-entry-art { position: absolute; top: 9px; right: 14px; bottom: 9px; width: 49%; background-size: cover; background-position: right; opacity: 0.55; }
+.nav-entry-operation { background-image: url("ApprovedHome/CardMoon.png"); }
+.nav-entry-storage { background-image: url("ApprovedHome/CardIndustrial.png"); }
+.nav-entry-halo { background-image: url("TextlessControls/HomeD_Halo.png"); }
+.moonkov-terminal.archive-pages .nav-entry-arrow { position: absolute; right: 13px; bottom: 10px; font-size: 16px; color: #f1f2ed; }
+.moonkov-terminal.archive-pages .terminal-nav-tabs > .terminal-tab-selected { background-color: transparent; border-bottom-color: #164bff; border-bottom-width: 3px; }
+.moonkov-terminal.archive-pages .terminal-nav-tabs > .terminal-tab-major.terminal-tab-selected { border-width: 0; }
+.moonkov-terminal.archive-pages .terminal-tab-selected .terminal-tab-label { color: #ffffff; -unity-font-style: bold; }
+.moonkov-terminal.archive-pages .terminal-tab-selected .nav-entry-art { opacity: 0.9; }
+.moonkov-terminal.archive-pages .terminal-nav-tabs > .terminal-tab:hover,
+.moonkov-terminal.archive-pages .terminal-nav-tabs > .terminal-tab:focus { background-color: transparent; border-bottom-color: #f1f2ed; }
+.moonkov-terminal.archive-pages .terminal-nav-tabs > .terminal-tab:active { background-color: #12234b; }
+.moonkov-terminal.archive-pages .terminal-tab:focus .terminal-tab-label,
+.moonkov-terminal.archive-pages .terminal-tab:hover .terminal-tab-label { color: #ffffff; }
 .moonkov-terminal.archive-pages .terminal-nav-indicator { display: none; }
-.moonkov-terminal.archive-pages .stash-body { margin-left: 188px; padding-top: 22px; min-height: 0; }
-.moonkov-terminal.archive-pages #terminalContent { margin-left: 188px; padding-top: 22px; min-height: 0; }
+.moonkov-terminal.archive-pages .stash-body,
+.moonkov-terminal.archive-pages #terminalContent { margin-left: 0; padding-top: 14px; min-height: 0; }
 .moonkov-terminal.archive-pages .stash-footer { height: 62px; background-color: rgba(8,9,12,0.94); }
 .moonkov-terminal.archive-pages .stash-footer-caption,
 .moonkov-terminal.archive-pages .stash-footer-hint { color: #aab2c0; }
@@ -34,7 +52,7 @@
 .moonkov-terminal.archive-pages .terminal-panel { background-color: rgba(8,9,12,0.96); border-color: #5c6471; }
 .moonkov-terminal.archive-pages.archive-light { background-color: #f1f2ed; }
 .moonkov-terminal.archive-pages.archive-light .stash-page-title { color: #f1f2ed; }
-.moonkov-terminal.archive-page-2 { background-image: none; }
+.moonkov-terminal.archive-page-2 { background-image: url("PageArt/Operations.png"); }
 .moonkov-terminal.archive-page-4 { background-image: url("PageArt/Operations.png"); }
 /* One preparation desk replaces the repeated five-page wizard. */
 .deployment-desk { flex-direction: row; flex-grow: 1; min-height: 0; }
@@ -63,13 +81,6 @@
 .deployment-sheet .terminal-cargo-gauge-fill { background-color: #164bff; height: 100%; }
 .deployment-sheet .deployment-risk .terminal-warning { color: #963d32; font-size: 17px; margin-bottom: 12px; white-space: normal; }
 .deployment-sheet .deployment-launch { flex-shrink: 0; min-height: 64px; margin: 16px 0 10px; }
-/* Construction: real item art on a lunar work surface, separate paper inspector. */
-.moonkov-terminal.archive-page-2 .terminal-halo-panel { background-color: transparent; border-width: 0; }
-.moonkov-terminal.archive-page-2 .terminal-side { background-color: #f1f2ed; border-width: 1px; border-color: #929ba5; }
-.moonkov-terminal.archive-page-2 .terminal-node { background-color: #08090c; color: #f1f2ed; border-width: 1px; border-color: #9099a8; font-size: 15px; }
-.moonkov-terminal.archive-page-2 .terminal-node:hover,
-.moonkov-terminal.archive-page-2 .terminal-node:focus,
-.moonkov-terminal.archive-page-2 .terminal-node-selected { background-color: #12234b; border-width: 2px; border-color: #164bff; }
 /* Supplier D: four independently selectable photo entries, no extra exhibit column. */
 .moonkov-terminal.archive-page-3 .archive-exhibit { display: none; }
 .moonkov-terminal.archive-page-3 .archive-contact { background-color: #08090c; border-color: #7b8595; }
@@ -111,12 +122,14 @@
 .moonkov-terminal.archive-page-8 .terminal-keys .terminal-stat-name { color: #f1f2ed; }
 .moonkov-terminal.archive-page-8 .terminal-keys .terminal-stat-value { background-color: #101318; border-width: 1px; border-color: #7b8595; color: #f1f2ed; }
 /* Density changes preserve the same hierarchy, never overlapping input targets. */
-.moonkov-terminal.archive-compact .archive-navigation-host { width: 136px; top: 82px; bottom: 70px; }
-.moonkov-terminal.archive-compact .stash-header { height: 64px; }
+.moonkov-terminal.archive-compact .archive-navigation-host { height: 72px; }
+.moonkov-terminal.archive-compact .stash-header { height: 58px; }
 .moonkov-terminal.archive-compact .stash-body,
-.moonkov-terminal.archive-compact #terminalContent { margin-left: 154px; padding-top: 16px; }
+.moonkov-terminal.archive-compact #terminalContent { margin-left: 0; padding-top: 12px; }
 .moonkov-terminal.archive-compact .terminal-tab-label { font-size: 14px; }
-.moonkov-terminal.archive-compact .terminal-nav-tabs > .terminal-tab { margin-bottom: 5px; padding: 6px; }
+.moonkov-terminal.archive-compact .terminal-nav-tabs > .terminal-tab { height: 64px; min-width: 64px; margin-right: 6px; padding: 6px; }
+.moonkov-terminal.archive-compact .terminal-nav-tabs > .terminal-tab-major { min-width: 148px; }
+.moonkov-terminal.archive-compact .terminal-tab-major .terminal-tab-label { font-size: 17px; }
 .moonkov-terminal.archive-compact .deployment-mission { padding: 16px; margin-right: 14px; }
 .moonkov-terminal.archive-compact .deployment-title { font-size: 28px; }
 .moonkov-terminal.archive-compact .deployment-sheet { padding: 16px; width: 44%; min-width: 280px; }
@@ -152,17 +165,61 @@
 .moonkov-terminal.archive-page-3 { background-image: none; background-color: #08090c; }
 .moonkov-terminal.archive-page-5 { background-image: url("PageArt/TaskExhibit.png"); background-size: 38% 100%; background-position: left; background-repeat: no-repeat; }
 .moonkov-terminal.archive-page-7 { background-image: none; background-color: #08090c; }
-/* Rebuilt construction composition: real halo in the center, actual slot families around it. */
-.moonkov-terminal.archive-page-2 .terminal-halo-schematic { background-color: #08090c; background-image: url("ApprovedHome/CardMoon.png"); background-size: cover; background-position: right; -unity-background-image-tint-color: #667482; }
-.moonkov-terminal.archive-page-2 .terminal-node { width: 25%; height: 22%; }
-.moonkov-terminal.archive-page-2 #haloNode0 { left: 0; top: 12%; }
-.moonkov-terminal.archive-page-2 #haloNode1 { left: 0; top: 42%; }
-.moonkov-terminal.archive-page-2 #haloNode2 { left: 75%; top: 7%; }
-.moonkov-terminal.archive-page-2 #haloNode3 { left: 75%; top: 34%; }
-.moonkov-terminal.archive-page-2 #haloNode4 { left: 33%; top: 30%; width: 34%; height: 36%; }
-.moonkov-terminal.archive-page-2 #haloNode5 { left: 75%; top: 61%; }
-.moonkov-terminal.archive-page-2 #haloNode6 { left: 33%; top: 78%; width: 34%; }
+/* Construction is an exhibit, not seven equal boxes on a form. */
+.moonkov-terminal.archive-light .stash-header { background-color: rgba(241,242,237,0.96); }
+.moonkov-terminal.archive-light .terminal-nav { background-color: rgba(241,242,237,0.96); }
+.moonkov-terminal.archive-light .stash-header .stash-brand-title,
+.moonkov-terminal.archive-light .stash-header .stash-page-title,
+.moonkov-terminal.archive-light .stash-header .stash-account-name { color: #08090c; }
+.moonkov-terminal.archive-light .stash-header .stash-eyebrow { color: #525b68; }
+.moonkov-terminal.archive-light .terminal-tab-label { color: #242b35; }
+.moonkov-terminal.archive-light .terminal-tab-major .terminal-tab-label { color: #ffffff; }
+.moonkov-terminal.archive-light .terminal-tab-selected .terminal-tab-label { color: #164bff; }
+.moonkov-terminal.archive-light .terminal-tab-major.terminal-tab-selected .terminal-tab-label { color: #ffffff; }
+.moonkov-terminal.archive-light .terminal-tab:focus .terminal-tab-label,
+.moonkov-terminal.archive-light .terminal-tab:hover .terminal-tab-label { color: #164bff; }
+.moonkov-terminal.archive-page-2 .halo-composition { flex-grow: 1; min-height: 0; }
+.moonkov-terminal.archive-page-2 .terminal-halo-panel { width: 65%; padding: 0; margin-right: 24px; position: relative; background-color: transparent; border-width: 0; }
+.moonkov-terminal.archive-page-2 .terminal-halo-panel > .terminal-title { position: absolute; top: 25px; left: 20px; font-size: 40px; -unity-font-style: bold; color: #ffffff; background-color: #08090c; padding: 5px 18px 8px 0; }
+.moonkov-terminal.archive-page-2 .terminal-halo-panel > .terminal-eyebrow { position: absolute; top: 10px; left: 20px; color: #bfc7d4; background-color: #08090c; padding: 2px 8px 2px 0; }
+.moonkov-terminal.archive-page-2 .terminal-halo-panel > .halo-inspection-help { top: auto; bottom: 8px; }
+.moonkov-terminal.archive-page-2 .terminal-halo-schematic { background-color: #08090c; background-image: url("ApprovedHome/CardMoon.png"); background-size: cover; background-position: right; -unity-background-image-tint-color: #56616d; min-height: 0; margin: 0; }
+.halo-orbit-guides { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
+.moonkov-terminal.archive-page-2 .terminal-node { width: 20%; height: 20%; background-color: transparent; border-width: 0; padding: 0; }
+.moonkov-terminal.archive-page-2 .terminal-node:hover,
+.moonkov-terminal.archive-page-2 .terminal-node:focus,
+.moonkov-terminal.archive-page-2 .terminal-node-selected { background-color: transparent; border-width: 0; }
+.moonkov-terminal.archive-page-2 .halo-node-art { top: 14px; bottom: 34px; left: 14%; right: 14%; }
+.moonkov-terminal.archive-page-2 .halo-node-title { font-size: 14px; -unity-font-style: bold; background-color: transparent; left: 12px; right: 12px; bottom: 8px; }
+.moonkov-terminal.archive-page-2 #haloNode0 { left: 2%; top: 27%; }
+.moonkov-terminal.archive-page-2 #haloNode1 { left: 0; top: 57%; }
+.moonkov-terminal.archive-page-2 #haloNode2 { left: 76%; top: 12%; }
+.moonkov-terminal.archive-page-2 #haloNode3 { left: 79%; top: 40%; }
+.moonkov-terminal.archive-page-2 #haloNode4 { left: 28%; top: 24%; width: 42%; height: 50%; }
+.moonkov-terminal.archive-page-2 #haloNode4 .halo-node-art { left: 0; right: 0; top: 0; bottom: 42px; }
+.moonkov-terminal.archive-page-2 #haloNode4 .halo-node-title { background-color: #08090c; font-size: 22px; padding: 6px 10px; left: 18%; right: 18%; }
+.moonkov-terminal.archive-page-2 #haloNode4 .terminal-node-index { display: none; }
+.moonkov-terminal.archive-page-2 #haloNode5 { left: 75%; top: 68%; }
+.moonkov-terminal.archive-page-2 #haloNode6 { left: 38%; top: 81%; width: 25%; height: 18%; }
 .moonkov-terminal.archive-page-2 .halo-group-caption { position: absolute; color: #f1f2ed; border-left-width: 3px; border-left-color: #164bff; font-size: 12px; padding: 3px 8px; background-color: #08090c; }
-.halo-storage-caption { left: 0; top: 3%; }
-.halo-shaping-caption { left: 75%; top: 0; }
-.halo-utility-caption { left: 33%; top: 70%; }
+.halo-storage-caption { left: 2%; top: 21%; }
+.halo-shaping-caption { left: 76%; top: 6%; }
+.halo-utility-caption { left: 38%; top: 76%; }
+.moonkov-terminal.archive-page-2 .terminal-side { width: 33%; padding: 0; margin-right: 0; background-color: #f1f2ed; border-width: 0; }
+.halo-inspector-hero { height: 190px; flex-shrink: 0; padding: 22px; border-left-width: 5px; border-left-color: #164bff; background-color: #08090c; background-image: url("ApprovedHome/CardMoon.png"); background-size: cover; background-position: right; }
+.moonkov-terminal.archive-page-2 .halo-inspector-hero .terminal-eyebrow { color: #d1d7e1; font-size: 11px; }
+.moonkov-terminal.archive-page-2 .halo-inspector-hero .terminal-title { color: #ffffff; font-size: 34px; -unity-font-style: bold; max-width: 63%; margin-top: 22px; white-space: normal; }
+.moonkov-terminal.archive-page-2 .halo-component-art { position: absolute; top: 48px; right: 18px; width: 34%; height: 124px; margin: 0; background-color: rgba(8,9,12,0.8); }
+.moonkov-terminal.archive-page-2 .terminal-side > .terminal-stat { height: 40px; min-height: 0; flex-shrink: 0; margin: 0 20px; }
+.moonkov-terminal.archive-page-2 #haloComponentDescription { padding: 18px 20px; margin: 0; font-size: 14px; }
+.moonkov-terminal.archive-page-2 #modifyHalo { margin: 0 20px 12px; flex-shrink: 0; }
+.halo-unavailable-actions { flex-direction: row; margin: 0 20px 12px; }
+.moonkov-terminal.archive-page-2 .halo-unavailable-actions .terminal-button { width: 48%; flex-grow: 1; min-width: 0; height: 54px; margin-right: 8px; padding: 6px; font-size: 12px; white-space: normal; }
+.moonkov-terminal.archive-compact.archive-page-2 .terminal-halo-panel { margin-right: 18px; }
+.moonkov-terminal.archive-compact.archive-page-2 .halo-inspector-hero { height: 144px; padding: 16px; }
+.moonkov-terminal.archive-compact.archive-page-2 .halo-inspector-hero .terminal-title { font-size: 26px; margin-top: 16px; }
+.moonkov-terminal.archive-compact.archive-page-2 .halo-component-art { top: 40px; height: 90px; }
+.moonkov-terminal.archive-compact.archive-page-2 .terminal-side > .terminal-stat { height: 32px; }
+.moonkov-terminal.archive-compact.archive-page-2 #haloComponentDescription { font-size: 13px; padding: 10px 16px; }
+.moonkov-terminal.archive-compact.archive-page-2 #modifyHalo { min-height: 42px; margin-bottom: 8px; }
+.moonkov-terminal.archive-compact.archive-page-2 .terminal-halo-panel > .terminal-title { font-size: 30px; }

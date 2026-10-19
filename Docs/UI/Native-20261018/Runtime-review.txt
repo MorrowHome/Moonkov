@@ -1,3 +1,5 @@
 halo: native node submit updates inspector; center selection restores original HaloIcons/Rifle; no inventory transaction
 halo: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+halo-compact: native runtime panel 1280x720; local fixtures; not a gameplay/network acceptance.
+warehouse-compact: native runtime panel 1280x720; local fixtures; not a gameplay/network acceptance.
 COMPLETE

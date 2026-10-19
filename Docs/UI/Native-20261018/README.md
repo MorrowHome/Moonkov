@@ -2,7 +2,7 @@
 
 当前接入说明见 ../Integration-20261019.md。本目录为真实 Unity UXML/presenter 的离屏渲染记录，不是网页稿。LOCAL REVIEW 标记表示本地展示数据，不代表账号、交易或联机验收。
 
-最新入口/布局：主菜单 C/D、白色 C 账户入口；管理页左侧一级导航；Operation 单页出击准备台已替代原五次分页。deployment.png 是默认状态，deployment-busy.png 是忙碌禁用状态，deployment-compact.png 是 1280×720。item.png 由真实右键菜单进入独立原生检查窗口。
+最新入口/布局：主菜单 C/D、白色 C 账户入口；管理页已撤掉等高黑色侧栏，使用页顶三个摄影入口与次级导航。构筑页放大中央真实光环、模块错位环绕、右侧摄影标题/纸白信息区。Operation 单页出击准备台已替代原五次分页。deployment.png 是默认状态，deployment-busy.png 是忙碌禁用状态。item.png 由真实右键菜单进入独立原生检查窗口。
 
 Runtime-interaction-20261019.txt 记录：原生 NavigationSubmit 只触发一次准备回调、装备与底部准备入口往返、busy 禁用，以及原生物品检查菜单。所有交易回调使用明确的本地 fixture，没有账号写入。原换页效果未更改。
 
@@ -15,3 +15,5 @@ Runtime-review-all.txt、Runtime-review-layout.txt 和 before-*.png 为历史记
 物品美术纠正：当前 halo/warehouse/raidpack/item/shop 等目标截图使用恢复后的原 HaloIcons 与原 StashItemArt；已撤掉生成的战术头盔/胸挂/背包图集。旧提案与历史截图保留供追溯，不是这些物品的最终美术。
 
 Runtime-art-restore-20261019.txt 记录恢复物品外观后的 12 个受影响页面；构筑页使用新布局，保留真实物品外观与数据。Runtime-review.txt 的末次专项检查另含原生模块选择、右侧检查区更新，以及真实 HaloIcons 资源断言。
+
+Runtime-navigation-20261019.txt 记录本次一级导航和构筑页纠偏的首批检查。最新构图以 halo、halo-compact、warehouse-compact、settings-compact、deployment 为准；其余截图为此前一轮记录。本次没有重拍全部界面，也没有新生成物品美术。
