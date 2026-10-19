@@ -1167,30 +1167,35 @@ MonoBehaviour:
   - Id: entry
     Label: "\u5165\u53E3 / \u5F02\u5E38\u8BBE\u65BD\u4FE1\u53F7"
     Region: "MC00 \xB7 \u5165\u53E3"
+    Inscription: 
     Position: {x: 1647.0969, y: 212.98615, z: 2135.2292}
     Approach: {x: 1646.5778, y: 210.57791, z: 2134.8381}
     Yaw: 233
   - Id: power_a
     Label: "L22 / \u9694\u79BB\u67DC\u4E0E 18:42 \u6821\u9A8C\u6807\u7B7E"
     Region: "MC00 \xB7 L22"
+    Inscription: "\u94ED\u724C A\uFF5C18:42 \u70ED\u635F\u6545\u969C\u3002"
     Position: {x: 1591.1404, y: 224.98615, z: 2156.5461}
     Approach: {x: 1590.621, y: 223.69614, z: 2156.155}
     Yaw: 232.99997
   - Id: power_b
     Label: "L22 / \u6BCD\u7EBF\u67DC\u4E0E 18:47 \u6821\u9A8C\u6807\u7B7E"
     Region: "MC00 \xB7 L22"
+    Inscription: "\u94ED\u724C B\uFF5C18:47 \u5907\u7528\u6BCD\u7EBF\u5E26\u7535\u3002"
     Position: {x: 1604.2396, y: 224.97415, z: 2159.2024}
     Approach: {x: 1604.7588, y: 223.69614, z: 2159.5935}
     Yaw: 52.99998
   - Id: sampler
     Label: "L22 / \u6708\u6838\u5C01\u5B58\u88C5\u7F6E"
     Region: "MC00 \xB7 L22"
+    Inscription: 
     Position: {x: 1596.6725, y: 224.61115, z: 2153.0266}
     Approach: {x: 1596.1531, y: 223.69614, z: 2152.6355}
     Yaw: 233
   - Id: archive
     Label: "L22 / \u4E8B\u6545\u6863\u6848\u7EC8\u7AEF"
     Region: "MC00 \xB7 L22"
+    Inscription: 
     Position: {x: 1594.8915, y: 224.61115, z: 2151.6846}
     Approach: {x: 1595.4105, y: 223.69614, z: 2152.0757}
     Yaw: 53

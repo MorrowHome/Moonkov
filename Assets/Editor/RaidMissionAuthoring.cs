@@ -107,6 +107,7 @@ public static class RaidMissionAuthoring
                 var point = source.position + direction * .4f;
                 if (Physics.Linecast(stand + Vector3.up * 1.4f, point, LayerMask.GetMask("Default", "Ground"), QueryTriggerInteraction.Ignore)) continue;
                 return new RaidMissionAnchor { Id = id, Label = label, Region = id == "entry" ? "MC00 · 入口" : "MC00 · L22",
+                    Inscription = id == "power_a" ? "铭牌 A｜18:42 热损故障。" : id == "power_b" ? "铭牌 B｜18:47 备用母线带电。" : null,
                     Position = point, Approach = stand, Yaw = Quaternion.LookRotation(direction).eulerAngles.y };
             }
         }

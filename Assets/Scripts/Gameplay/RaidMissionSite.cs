@@ -8,6 +8,7 @@ namespace Unity.MP_FPS
     public sealed class RaidMissionAnchor
     {
         public string Id, Label, Region = "MC00";
+        [TextArea] public string Inscription;
         public Vector3 Position, Approach;
         public float Yaw;
     }

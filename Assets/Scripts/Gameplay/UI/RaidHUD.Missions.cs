@@ -184,6 +184,8 @@ namespace Unity.MP_FPS
             if (snapshot.RequestId == m_MissionRequest && snapshot.Result == MissionActionResult.Busy) m_MissionActionNote.text = "设备正由其他人操作，稍后重试";
             if (configuration && !done && snapshot.RequestId == m_MissionRequest && snapshot.Result == MissionActionResult.Invalid)
                 m_MissionActionNote.text = "线路未接通 · 按 F 根据故障牌重新配置";
+            var inscription = site.Anchor(objective.Anchor)?.Inscription;
+            if (!string.IsNullOrWhiteSpace(inscription)) m_MissionActionNote.text += "\n" + inscription;
             if (!done && !process && prerequisite && pressed)
             {
                 if (configuration)
@@ -246,7 +248,8 @@ namespace Unity.MP_FPS
                 }) { text = objective.Choices[i] };
                 controls.Add(button);
             }
-            m_Root.Q<Label>("missionClue").text = "故障牌：A 支路烧损。隔离故障支路后，备用母线才能接通；切断母线会让封存设施失电。";
+            m_Root.Q<Label>("missionClue").text = (RaidMissionSite.Active.Anchor(objective.Anchor)?.Inscription ?? "") +
+                "\n故障牌：A 支路烧损。隔离故障支路后，备用母线才能接通；切断母线会让封存设施失电。";
             controls.Q<Button>()?.Focus();
         }
 
