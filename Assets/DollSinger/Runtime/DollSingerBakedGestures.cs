@@ -5,16 +5,19 @@ using UnityEngine;
 namespace Unity.MP_FPS.DollSinger
 {
     /// <summary>Samples Blender's exact-rig local rotations, including MMD's weighted twist bones.</summary>
-    internal sealed class DollSingerBakedGestures
+    public sealed class DollSingerBakedGestures
     {
-        [Serializable] private sealed class Motion
+        [Serializable] private class Pose
+        {
+            public float[] pose, fire, reload;
+            public float pitch;
+        }
+        [Serializable] private sealed class Motion : Pose
         {
             public int weapon, poseFrames, fireFrames, reloadFrames;
             public string name;
             public float fireSeconds;
-            public float[] pose, fire, reload;
-            public float pitch;
-            public Motion[] aimPoses;
+            public Pose[] aimPoses;
         }
         [Serializable] private sealed class Library
         {
@@ -79,11 +82,11 @@ namespace Unity.MP_FPS.DollSinger
         }
 
         public void Apply(int weapon, float blend, float shotAge, bool reloading, float reloadProgress,
-            float transitionSeconds, Transform chest, Vector3 aimDirection)
+            float transitionSeconds, Transform chest, Vector3 aimDirection, float deltaTime = -1f)
         {
             if (blend <= .0001f || weapon < 1 || weapon > 4) { initialized = false; return; }
             Motion motion = library.motions[weapon - 1];
-            Motion low = motion, high = motion;
+            Pose low = motion, high = motion;
             float authoredPitch = 0, pitchMix = 0;
             if (motion.aimPoses != null && motion.aimPoses.Length > 0 && aimDirection.sqrMagnitude > .001f)
             {
@@ -101,7 +104,7 @@ namespace Unity.MP_FPS.DollSinger
                 Array.Copy(target, previous, target.Length);
                 currentWeapon = weapon; transition = initialized ? 0 : 1;
             }
-            transition = Mathf.MoveTowards(transition, 1, Time.deltaTime / Mathf.Max(.01f, transitionSeconds));
+            transition = Mathf.MoveTowards(transition, 1, (deltaTime < 0 ? Time.deltaTime : deltaTime) / Mathf.Max(.01f, transitionSeconds));
             float mix = Mathf.SmoothStep(0, 1, transition);
             float[] samples = low.pose, highSamples = high.pose;
             float frame = 0; int count = 1;

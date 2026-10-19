@@ -115,7 +115,7 @@ namespace Unity.MP_FPS.Client
             {
                 TerminalMotion.Fade(m_Gear, .1f, .45f);
                 if (LoadoutShowing != null) { LoadoutShowing(); return; }
-                m_Character = new MenuCharacterView(idleOnly: true);
+                m_Character = new MenuCharacterView();
                 m_Character.Element.RemoveFromClassList("terminal-character-art");
                 m_Character.Element.AddToClassList("stash-character-render");
                 var stage = m_Root.Q<VisualElement>("stashCharacterStage"); stage.Insert(0, m_Character.Element);

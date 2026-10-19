@@ -40,7 +40,7 @@ namespace Unity.MP_FPS.Client
             switch (m_OperationStep)
             {
                 case 0:
-                    m_Character = new MenuCharacterView(idleOnly: true, element: m_Content.Q<Image>("operatorPortrait"));
+                    m_Character = new MenuCharacterView(element: m_Content.Q<Image>("operatorPortrait"));
                     // MenuCharacterView adds the shared home class; this exhibit owns its framing.
                     m_Character.Element.RemoveFromClassList("terminal-character-art");
                     PopulateOperationEquipment();

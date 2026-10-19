@@ -1,4 +1,6 @@
 using System.IO;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEditor.Animations;
@@ -183,18 +185,7 @@ public sealed partial class MoonkovUIPreview : EditorWindow
             var settings = AssetDatabase.LoadAssetAtPath<MenuCharacterSettings>(settingsPath);
             if (settings == null) { settings = CreateInstance<MenuCharacterSettings>(); AssetDatabase.CreateAsset(settings, settingsPath); }
             settings.VisualPrefab = visual;
-            settings.Motions = new[] {
-                AssetDatabase.LoadAssetAtPath<AnimationClip>("Assets/DollSinger/Animation/Locomotion/Unarmed_Idle.anim"),
-                AssetDatabase.LoadAssetAtPath<AnimationClip>("Assets/DollSinger/Animation/DollSinger_FingerGunAim.anim"),
-                AssetDatabase.LoadAssetAtPath<AnimationClip>("Assets/DollSinger/Animation/Locomotion/Turn_Left.anim"),
-                AssetDatabase.LoadAssetAtPath<AnimationClip>("Assets/DollSinger/Animation/Locomotion/Turn_Right.anim")
-            };
-            var controller = AssetDatabase.LoadAssetAtPath<AnimatorController>("Assets/DollSinger/Animation/DollSingerThirdPersonHalo.controller");
-            AvatarMask turnMask = null;
-            foreach (var layer in controller.layers) if (layer.name == "Halo Aim") settings.HaloAimMask = layer.avatarMask;
-            foreach (var layer in controller.layers) if (layer.name == "Turn In Place") turnMask = layer.avatarMask;
-            settings.MotionMasks = new[] { null, settings.HaloAimMask, turnMask, turnMask };
-            foreach (var clip in settings.Motions) if (clip == null) throw new System.Exception("A menu motion clip is missing.");
+            ConfigureMenuMotions(settings);
             EditorUtility.SetDirty(settings); AssetDatabase.SaveAssets();
             var window = GetWindow<MoonkovUIPreview>(); window.CreateGUI(); window.Repaint();
             Debug.Log("Menu character rebuilt: live model, visible halo, masked Halo Aim gesture, random holds and smooth idle transitions.");
@@ -202,41 +193,120 @@ public sealed partial class MoonkovUIPreview : EditorWindow
         finally { EditorSceneManager.ClosePreviewScene(scene); }
     }
 
+    [MenuItem("Tools/Moonkov/Update Menu Motions")]
+    public static void UpdateMenuMotions()
+    {
+        var settings = AssetDatabase.LoadAssetAtPath<MenuCharacterSettings>("Assets/Resources/Moonkov/MenuCharacterSettings.asset");
+        if (settings == null) throw new System.Exception("Rebuild the menu character first.");
+        ConfigureMenuMotions(settings);
+        EditorUtility.SetDirty(settings); AssetDatabase.SaveAssets();
+        Debug.Log($"Menu motion catalog updated: {settings.Motions.Length} entries, all character clips and four weapons' aim/fire/reload bakes.");
+    }
+
+    private static void ConfigureMenuMotions(MenuCharacterSettings settings)
+    {
+        var controller = AssetDatabase.LoadAssetAtPath<AnimatorController>("Assets/DollSinger/Animation/DollSingerThirdPersonHalo.controller");
+        var turns = controller.layers.First(layer => layer.name == "Turn In Place").avatarMask;
+        settings.HaloAimMask = controller.layers.First(layer => layer.name == "Halo Aim").avatarMask;
+        settings.GestureBake = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/DollSinger/Animation/Blender/WeaponGestures.json");
+        var clips = new List<AnimationClip> {
+            AssetDatabase.LoadAssetAtPath<AnimationClip>("Assets/DollSinger/Animation/Locomotion/Unarmed_Idle.anim"),
+            AssetDatabase.LoadAssetAtPath<AnimationClip>("Assets/DollSinger/Animation/DollSinger_FingerGunAim.anim"),
+            AssetDatabase.LoadAssetAtPath<AnimationClip>("Assets/DollSinger/Animation/Locomotion/Turn_Left.anim"),
+            AssetDatabase.LoadAssetAtPath<AnimationClip>("Assets/DollSinger/Animation/Locomotion/Turn_Right.anim")
+        };
+        var available = controller.animationClips.Concat(AssetDatabase.FindAssets("t:AnimationClip", new[] { "Assets/DollSinger/Animation" })
+            .Select(AssetDatabase.GUIDToAssetPath).Where(path => path.EndsWith(".anim", System.StringComparison.OrdinalIgnoreCase))
+            .Select(AssetDatabase.LoadAssetAtPath<AnimationClip>)).Distinct().OrderBy(clip => clip.name, System.StringComparer.Ordinal);
+        foreach (var clip in available) if (!clips.Contains(clip)) clips.Add(clip);
+        var masks = new List<AvatarMask>();
+        var options = new List<MenuCharacterMotion>();
+        foreach (var clip in clips)
+        {
+            if (clip == null || !clip.isHumanMotion || clip.length <= 0) throw new System.Exception("Invalid menu motion: " + clip);
+            int weapon = clip.name == "DollSinger_RifleGesture" ? 1 : clip.name == "DollSinger_RevolverGesture" ? 2 :
+                clip.name == "DollSinger_ShotgunGesture" ? 3 : clip.name == "DollSinger_SniperGesture" ? 4 : 0;
+            bool turn = clip.name == "Turn_Left" || clip.name == "Turn_Right";
+            bool upper = weapon > 0 || clip.name == "DollSinger_FingerGunAim" || clip.name == "DollSinger_FreeFallCover";
+            masks.Add(turn ? turns : upper ? settings.HaloAimMask : null);
+            options.Add(new MenuCharacterMotion {
+                Name = clip.name, Loop = clip.isLooping && !turn, Weapon = weapon,
+                HoldSeconds = upper ? 3.5f : 0, Turn = turn ? clip.name == "Turn_Left" ? -1 : 1 : 0,
+                PreserveHands = upper || clip.name.StartsWith("Prone_") || clip.name.StartsWith("Crouch_"),
+                Tiptoe = clip.name.StartsWith("Tiptoe_")
+            });
+        }
+        for (int weapon = 1; weapon <= 4; weapon++)
+        {
+            var aim = options.First(option => option.Weapon == weapon);
+            foreach (var action in new[] { MenuWeaponAction.Fire, MenuWeaponAction.Reload })
+            {
+                clips.Add(clips[0]); masks.Add(null);
+                options.Add(new MenuCharacterMotion { Name = aim.Name + "_" + action, Weapon = weapon, WeaponAction = action,
+                    Loop = true, PreserveHands = true, HoldSeconds = action == MenuWeaponAction.Fire ? 1.5f : weapon == 1 ? 2f : weapon == 4 ? 3f : 1f });
+            }
+        }
+        settings.Motions = clips.ToArray(); settings.MotionMasks = masks.ToArray(); settings.MotionOptions = options.ToArray();
+    }
+
     [MenuItem("Tools/Moonkov/Validate Menu Character")]
     public static void ValidateMenuCharacter()
     {
         var view = new MenuCharacterView();
-        var host = new VisualElement(); host.style.width = 600; host.style.height = 720;
-        host.style.position = Position.Absolute; host.style.left = -2000; host.style.top = 0;
-        var window = GetWindow<MoonkovUIPreview>(); window.rootVisualElement.Add(host); host.Add(view.Element);
-        view.Element.style.position = Position.Absolute; view.Element.style.left = 0; view.Element.style.right = 0;
-        view.Element.style.top = 0; view.Element.style.bottom = 0;
-        EditorApplication.delayCall += () =>
+        try
         {
+            var settings = Resources.Load<MenuCharacterSettings>("Moonkov/MenuCharacterSettings");
+            if (settings.MotionOptions.Length != settings.Motions.Length || settings.MotionMasks.Length != settings.Motions.Length || settings.GestureBake == null)
+                throw new System.Exception("The menu motion catalog is incomplete.");
+            var controller = AssetDatabase.LoadAssetAtPath<AnimatorController>("Assets/DollSinger/Animation/DollSingerThirdPersonHalo.controller");
+            if (controller.animationClips.Any(clip => !settings.Motions.Contains(clip))) throw new System.Exception("A character motion was omitted.");
+            var seen = new HashSet<int>();
+            float maximumAim = 0;
+            int previousMotion = 0, lastAction = 0;
+            bool complete = false;
+            for (int frame = 0; frame < 24000; frame++)
+            {
+                view.Advance(.1f); maximumAim = Mathf.Max(maximumAim, view.HaloAimWeight);
+                int current = view.CurrentMotionIndex;
+                if (current != 0 && current != previousMotion)
+                {
+                    if (seen.Count == settings.Motions.Length - 1)
+                    {
+                        if (lastAction == current) throw new System.Exception("Motion repeated across shuffle cycles.");
+                        complete = true; break;
+                    }
+                    if (!seen.Add(current)) throw new System.Exception("A motion repeated before the catalog was exhausted: " + view.CurrentMotion);
+                    lastAction = current;
+                }
+                previousMotion = current;
+            }
+            if (!complete) throw new System.Exception("Automatic playback did not cover every motion.");
+            var model = view.DisplayScene.GetRootGameObjects().Single().GetComponentInChildren<Animator>();
+            if (model.fireEvents || model.applyRootMotion || model.runtimeAnimatorController != null)
+                throw new System.Exception("The display animator may trigger gameplay or root motion.");
+            foreach (var bone in model.GetComponentsInChildren<Transform>())
+                if (!float.IsFinite(bone.position.sqrMagnitude)) throw new System.Exception("Invalid pose: " + bone.name);
+            view.Render(new Vector2(600, 720));
+            if (view.MotionChanges < 4 || view.Target == null || view.Target.width < 1000) throw new System.Exception("Menu motion or high resolution rendering failed.");
+            if (!view.HaloVisible || maximumAim < .99f) throw new System.Exception("Halo or Halo Aim pose is missing.");
+            var previous = RenderTexture.active;
+            var image = new Texture2D(view.Target.width, view.Target.height, TextureFormat.RGBA32, false);
             try
             {
-                float maximumAim = 0;
-                for (int frame = 0; frame < 500; frame++) { view.Advance(.1f); maximumAim = Mathf.Max(maximumAim, view.HaloAimWeight); }
-                view.Render();
-                if (view.MotionChanges < 4 || view.Target == null || view.Target.width < 1000) throw new System.Exception("Menu motion or high resolution rendering failed.");
-                if (!view.HaloVisible || maximumAim < .99f) throw new System.Exception("Halo or Halo Aim pose is missing.");
-                var previous = RenderTexture.active;
-                var image = new Texture2D(view.Target.width, view.Target.height, TextureFormat.RGBA32, false);
-                try
-                {
-                    RenderTexture.active = view.Target; image.ReadPixels(new Rect(0, 0, image.width, image.height), 0, 0); image.Apply();
-                    int visible = 0; foreach (var color in image.GetPixels32()) if (color.a > 128) visible++;
-                    if (visible < image.width * image.height / 50) throw new System.Exception("Character render is empty.");
-                    Debug.Log($"Menu character check passed: {view.Target.width}x{view.Target.height}, {view.MotionChanges} transitions, visible halo, full Halo Aim weight, nonempty render.");
-                }
-                finally { RenderTexture.active = previous; DestroyImmediate(image); }
+                RenderTexture.active = view.Target; image.ReadPixels(new Rect(0, 0, image.width, image.height), 0, 0); image.Apply();
+                int visible = 0; foreach (var color in image.GetPixels32()) if (color.a > 128) visible++;
+                if (visible < image.width * image.height / 50) throw new System.Exception("Character render is empty.");
+                Directory.CreateDirectory("LocalData/MenuMotions");
+                File.WriteAllBytes("LocalData/MenuMotions/ValidatedCharacter.png", image.EncodeToPNG());
+                Debug.Log($"Menu character check passed: {seen.Count}/{settings.Motions.Length - 1} actions without repetition, {view.Target.width}x{view.Target.height}, {view.MotionChanges} transitions, visible halo, full aim weight, finite bones, nonempty render.");
             }
-            finally
-            {
-                var displayScene = view.DisplayScene;
-                view.Dispose(); host.RemoveFromHierarchy();
-                if (displayScene.IsValid() && displayScene.isLoaded) Debug.LogError("Menu character leaked its preview scene.");
-            }
-        };
+            finally { RenderTexture.active = previous; DestroyImmediate(image); }
+        }
+        finally
+        {
+            var displayScene = view.DisplayScene;
+            view.Dispose();
+            if (displayScene.IsValid() && displayScene.isLoaded) Debug.LogError("Menu character leaked its preview scene.");
+        }
     }
 }

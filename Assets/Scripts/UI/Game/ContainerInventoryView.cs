@@ -141,7 +141,7 @@ namespace Unity.MP_FPS.Client
         public void Show()
         {
             if (m_Character != null || m_Disposed || m_Graph?.Find(LootInventoryExchange.Root)!=null) return;
-            m_Character = new MenuCharacterView(idleOnly: true);
+            m_Character = new MenuCharacterView();
             m_Character.Element.RemoveFromClassList("terminal-character-art"); m_Character.Element.AddToClassList("stash-character-render");
             m_CharacterStage.Insert(0, m_Character.Element);
             m_Character.FrameRendered += m_CharacterStage.Q<StashEquipmentGuides>().MarkDirtyRepaint;

@@ -524,6 +524,10 @@ namespace Unity.MP_FPS.DollSinger {
         // the feet. Preserve the animated knee bend and ankle rotation, including while walking.
         private void KeepFootAnchor(Transform thigh, Transform calf, Transform foot,
             Vector3 footPosition, Quaternion footRotation, Vector3 kneePosition)
+            => KeepFootAnchor(transform, thigh, calf, foot, footPosition, footRotation, kneePosition);
+
+        private static void KeepFootAnchor(Transform root, Transform thigh, Transform calf, Transform foot,
+            Vector3 footPosition, Quaternion footRotation, Vector3 kneePosition)
         {
             if (!thigh || !calf || !foot) return;
             Vector3 hip = thigh.position;
@@ -536,8 +540,8 @@ namespace Unity.MP_FPS.DollSinger {
             distance = Mathf.Clamp(distance, Mathf.Abs(upperLength - lowerLength) + 0.0001f,
                 upperLength + lowerLength - 0.0001f);
             Vector3 bend = Vector3.ProjectOnPlane(kneePosition - hip, axis);
-            if (bend.sqrMagnitude < 0.000001f) bend = Vector3.ProjectOnPlane(transform.forward, axis);
-            if (bend.sqrMagnitude < 0.000001f) bend = Vector3.ProjectOnPlane(transform.up, axis);
+            if (bend.sqrMagnitude < 0.000001f) bend = Vector3.ProjectOnPlane(root.forward, axis);
+            if (bend.sqrMagnitude < 0.000001f) bend = Vector3.ProjectOnPlane(root.up, axis);
             float along = (upperLength * upperLength + distance * distance - lowerLength * lowerLength)
                 / (2f * distance);
             float height = Mathf.Sqrt(Mathf.Max(0f, upperLength * upperLength - along * along));
@@ -595,18 +599,38 @@ namespace Unity.MP_FPS.DollSinger {
         private void ApplyTiptoePose()
         {
             if (m_TiptoeBlend <= .001f || !EnsureLeanBones() || !m_PelvisBone || !m_LeftToe || !m_RightToe) return;
+            RaiseTiptoe(transform, m_TiptoeBlend, m_PelvisBone, m_LeftToe, m_RightToe,
+                m_LeftThigh, m_LeftCalf, m_LeftFoot, m_RightThigh, m_RightCalf, m_RightFoot);
+        }
+
+        // The menu uses the same toe-contact solve without enabling a movement controller.
+        public static void ApplyTiptoePresentation(Animator animator, float blend)
+        {
+            if (blend <= .001f || !animator || !animator.isHuman) return;
+            var pelvis = animator.GetBoneTransform(HumanBodyBones.Hips);
+            var leftToe = animator.GetBoneTransform(HumanBodyBones.LeftToes);
+            var rightToe = animator.GetBoneTransform(HumanBodyBones.RightToes);
+            if (!pelvis || !leftToe || !rightToe) return;
+            RaiseTiptoe(animator.transform, blend, pelvis, leftToe, rightToe,
+                animator.GetBoneTransform(HumanBodyBones.LeftUpperLeg), animator.GetBoneTransform(HumanBodyBones.LeftLowerLeg), animator.GetBoneTransform(HumanBodyBones.LeftFoot),
+                animator.GetBoneTransform(HumanBodyBones.RightUpperLeg), animator.GetBoneTransform(HumanBodyBones.RightLowerLeg), animator.GetBoneTransform(HumanBodyBones.RightFoot));
+        }
+
+        private static void RaiseTiptoe(Transform root, float blend, Transform pelvis, Transform leftToe, Transform rightToe,
+            Transform leftThigh, Transform leftCalf, Transform leftFoot, Transform rightThigh, Transform rightCalf, Transform rightFoot)
+        {
             // Rotate around the animated toe contacts. The same two-bone solve used by lean
             // preserves leg lengths and keeps the shoe tips on the ground while heels rise.
-            Quaternion raise = Quaternion.AngleAxis(35f * m_TiptoeBlend, transform.right);
-            Vector3 leftContact = m_LeftToe.position + transform.forward * .08f;
-            Vector3 rightContact = m_RightToe.position + transform.forward * .08f;
-            Vector3 left = leftContact + raise * (m_LeftFoot.position - leftContact);
-            Vector3 right = rightContact + raise * (m_RightFoot.position - rightContact);
-            Quaternion leftRotation = raise * m_LeftFoot.rotation, rightRotation = raise * m_RightFoot.rotation;
-            Vector3 leftKnee = m_LeftCalf.position, rightKnee = m_RightCalf.position;
-            m_PelvisBone.position += transform.up * (.06f * m_TiptoeBlend);
-            KeepFootAnchor(m_LeftThigh, m_LeftCalf, m_LeftFoot, left, leftRotation, leftKnee);
-            KeepFootAnchor(m_RightThigh, m_RightCalf, m_RightFoot, right, rightRotation, rightKnee);
+            Quaternion raise = Quaternion.AngleAxis(35f * blend, root.right);
+            Vector3 leftContact = leftToe.position + root.forward * .08f;
+            Vector3 rightContact = rightToe.position + root.forward * .08f;
+            Vector3 left = leftContact + raise * (leftFoot.position - leftContact);
+            Vector3 right = rightContact + raise * (rightFoot.position - rightContact);
+            Quaternion leftRotation = raise * leftFoot.rotation, rightRotation = raise * rightFoot.rotation;
+            Vector3 leftKnee = leftCalf.position, rightKnee = rightCalf.position;
+            pelvis.position += root.up * (.06f * blend);
+            KeepFootAnchor(root, leftThigh, leftCalf, leftFoot, left, leftRotation, leftKnee);
+            KeepFootAnchor(root, rightThigh, rightCalf, rightFoot, right, rightRotation, rightKnee);
         }
 
         // Tarkov scheme: hold Q/E to lean and spring back on release, Alt+Q/Alt+E to latch

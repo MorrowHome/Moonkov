@@ -24,7 +24,8 @@ namespace Unity.MP_FPS.Client
         public float HaloAimWeight { get; private set; }
         public bool HaloVisible => m_Halo != null && m_Halo.gameObject.activeInHierarchy;
         public Scene DisplayScene => m_Scene;
-        public string CurrentMotion => m_Settings.Motions[m_Motion].name;
+        public int CurrentMotionIndex => m_Motion;
+        public string CurrentMotion => m_Settings.Motion(m_Motion).Name ?? m_Settings.Motions[m_Motion].name;
         private readonly MenuCharacterSettings m_Settings;
         private readonly bool m_IdleOnly;
         private Animator m_Animator;
@@ -43,6 +44,10 @@ namespace Unity.MP_FPS.Client
         private AnimationClipPlayable m_BaseIdle;
         private SecondaryBoneSpring m_Spring;
         private SkirtHandAvoidance m_HandAvoidance;
+        private DollSingerBakedGestures m_Gestures;
+        private AvatarMask m_FullBodyMask;
+        private Transform m_Chest;
+        private SkinnedMeshRenderer[] m_Renderers;
         private Transform m_Halo, m_Head, m_Finger;
         private LineRenderer[] m_HaloStrokes;
         private double m_BaseTime;
@@ -50,10 +55,12 @@ namespace Unity.MP_FPS.Client
         private IVisualElementScheduledItem m_Timer;
         private Bounds m_Bounds;
         private int m_Slot, m_Motion, m_LastAction;
-        private float m_Remaining, m_Blend;
+        private int[] m_ActionBag;
+        private int m_BagRemaining;
+        private float m_Remaining, m_Blend, m_FadeSeconds;
         private double m_LastTime;
         private Vector2 m_EditorViewport;
-        private bool m_Transition, m_Disposed, m_EditorScene;
+        private bool m_Transition, m_Disposed, m_EditorScene, m_GestureActive;
 
         public MenuCharacterView(bool idleOnly = false, Image element = null)
         {
@@ -78,6 +85,8 @@ namespace Unity.MP_FPS.Client
         private void CreateStage()
         {
             m_Slot = 0; m_Motion = 0; m_Blend = 0; m_BaseTime = 0; m_Transition = false;
+            m_Times[0] = m_Times[1] = 0;
+            m_GestureActive = false;
 #if UNITY_EDITOR
             if (!Application.isPlaying) { m_Scene = EditorSceneManager.NewPreviewScene(); m_EditorScene = true; }
             else
@@ -97,12 +106,18 @@ namespace Unity.MP_FPS.Client
             animator.runtimeAnimatorController = null;
             animator.applyRootMotion = false;
             animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
+            animator.fireEvents = false;
             m_Stage.SetActive(true);
             animator.Rebind();
             m_Spring = m_Model.GetComponentInChildren<SecondaryBoneSpring>(true);
             m_HandAvoidance = m_Model.GetComponentInChildren<SkirtHandAvoidance>(true);
             m_HandAvoidance?.PreparePresentation(0, 0);
             m_Spring?.InitializePresentation();
+            m_Chest = animator.GetBoneTransform(HumanBodyBones.Chest);
+            if (m_Settings.GestureBake != null) m_Gestures = new DollSingerBakedGestures(animator, m_Settings.GestureBake);
+            m_FullBodyMask = new AvatarMask { name = "Menu full body", hideFlags = HideFlags.HideAndDontSave };
+            for (int part = 0; part < (int)AvatarMaskBodyPart.LastBodyPart; part++)
+                m_FullBodyMask.SetHumanoidBodyPartActive((AvatarMaskBodyPart)part, true);
             m_Graph = PlayableGraph.Create("Moonkov menu motions");
             m_Graph.SetTimeUpdateMode(DirectorUpdateMode.Manual);
             m_Mixer = AnimationMixerPlayable.Create(m_Graph, 2);
@@ -112,7 +127,7 @@ namespace Unity.MP_FPS.Client
             m_Graph.Connect(m_BaseIdle, 0, m_Layers, 0);
             m_Graph.Connect(m_Mixer, 0, m_Layers, 1);
             m_Layers.SetInputWeight(0, 1); m_Layers.SetInputWeight(1, 1);
-            if (m_Settings.HaloAimMask != null) m_Layers.SetLayerMaskFromAvatarMask(1, m_Settings.HaloAimMask);
+            m_Layers.SetLayerMaskFromAvatarMask(1, m_FullBodyMask);
             AnimationPlayableOutput.Create(m_Graph, "Character", animator).SetSourcePlayable(m_Layers);
             SetClip(0, 0);
             m_Mixer.SetInputWeight(0, 1f);
@@ -131,7 +146,8 @@ namespace Unity.MP_FPS.Client
             UpdateHalo();
 
             bool found = false;
-            foreach (var renderer in m_Model.GetComponentsInChildren<SkinnedMeshRenderer>())
+            m_Renderers = m_Model.GetComponentsInChildren<SkinnedMeshRenderer>();
+            foreach (var renderer in m_Renderers)
             {
                 renderer.updateWhenOffscreen = true;
                 renderer.forceRenderingOff = false;
@@ -185,20 +201,44 @@ namespace Unity.MP_FPS.Client
         }
         private void BeginNextMotion()
         {
-            // A short gesture always returns to neutral idle; idle picks a different gesture.
-            int next = m_Motion == 0 && m_Settings.Motions.Length > 1 ? m_Random.Next(1, m_Settings.Motions.Length) : 0;
-            if (next != 0 && m_Settings.Motions.Length > 2)
-                while (next == m_LastAction) next = m_Random.Next(1, m_Settings.Motions.Length);
+            // Shuffle without replacement: every configured action gets a turn before any repeat.
+            int next = m_Motion == 0 && m_Settings.Motions.Length > 1 ? TakeAction() : 0;
             if (next != 0)
             {
                 m_LastAction = next;
                 var mask = m_Settings.MotionMasks != null && next < m_Settings.MotionMasks.Length ? m_Settings.MotionMasks[next] : m_Settings.HaloAimMask;
-                if (mask != null) m_Layers.SetLayerMaskFromAvatarMask(1, mask);
+                m_Layers.SetLayerMaskFromAvatarMask(1, mask != null ? mask : m_FullBodyMask);
             }
+            var options = m_Settings.Motion(next);
+            var clip = m_Settings.Motions[next];
+            m_FadeSeconds = Mathf.Max(.01f, m_Settings.CrossfadeSeconds);
+            if (next != 0 && !options.Loop && options.Weapon == 0)
+                m_FadeSeconds = Mathf.Min(m_FadeSeconds, Mathf.Max(.05f, clip.length * .25f));
             SetClip(1 - m_Slot, next);
             m_Motion = next; m_Transition = true; m_Blend = 0;
-            m_Remaining = next == 0 ? IdleDuration() : next == 1 ? Mathf.Lerp(2f, 4f, (float)m_Random.NextDouble()) : m_Settings.Motions[next].length + m_Settings.CrossfadeSeconds;
+            float hold = options.HoldSeconds > 0 ? options.HoldSeconds : options.Loop
+                ? Mathf.Max(clip.length, Mathf.Lerp(m_Settings.LoopInterval.x, m_Settings.LoopInterval.y, (float)m_Random.NextDouble())) : clip.length;
+            m_Remaining = next == 0 ? IdleDuration() : hold + m_FadeSeconds;
             MotionChanges++;
+        }
+
+        private int TakeAction()
+        {
+            int count = m_Settings.Motions.Length - 1;
+            if (m_ActionBag == null || m_ActionBag.Length != count) { m_ActionBag = new int[count]; m_BagRemaining = 0; }
+            if (m_BagRemaining == 0)
+            {
+                for (int i = 0; i < count; i++) m_ActionBag[i] = i + 1;
+                for (int i = count - 1; i > 0; i--)
+                {
+                    int other = m_Random.Next(i + 1);
+                    (m_ActionBag[i], m_ActionBag[other]) = (m_ActionBag[other], m_ActionBag[i]);
+                }
+                if (count > 1 && m_ActionBag[count - 1] == m_LastAction)
+                    (m_ActionBag[0], m_ActionBag[count - 1]) = (m_ActionBag[count - 1], m_ActionBag[0]);
+                m_BagRemaining = count;
+            }
+            return m_ActionBag[--m_BagRemaining];
         }
 
         private void Tick()
@@ -235,34 +275,64 @@ namespace Unity.MP_FPS.Client
                 if (!m_Clips[i].IsValid()) continue;
                 var clip = m_Settings.Motions[m_Indices[i]];
                 m_Times[i] += dt;
-                m_Clips[i].SetTime(m_Indices[i] == 0 && clip.isLooping ? m_Times[i] % clip.length : Math.Min(m_Times[i], clip.length));
+                m_Clips[i].SetTime(m_Settings.Motion(m_Indices[i]).Loop ? m_Times[i] % clip.length : Math.Min(m_Times[i], clip.length));
             }
             if (m_Transition)
             {
-                m_Blend = Mathf.Min(1f, m_Blend + dt / m_Settings.CrossfadeSeconds);
+                m_Blend = Mathf.Min(1f, m_Blend + dt / m_FadeSeconds);
                 float weight = Mathf.SmoothStep(0, 1, m_Blend);
                 m_Mixer.SetInputWeight(m_Slot, 1f - weight); m_Mixer.SetInputWeight(1 - m_Slot, weight);
                 if (m_Blend >= 1) { m_Slot = 1 - m_Slot; m_Transition = false; }
             }
-            float aimWeight = MotionWeight(1);
-            m_HandAvoidance?.PreparePresentation(dt, aimWeight);
+            float preserveHands = 0, turn = 0, tiptoe = 0;
+            bool gestureActive = false;
+            for (int i = 0; i < 2; i++)
+            {
+                if (!m_Clips[i].IsValid()) continue;
+                var options = m_Settings.Motion(m_Indices[i]);
+                float weight = m_Mixer.GetInputWeight(i);
+                if (options.PreserveHands) preserveHands += weight;
+                turn += options.Turn * weight;
+                if (options.Tiptoe) tiptoe += weight;
+                if (options.Weapon > 0 && weight > .0001f) gestureActive = true;
+            }
+            m_HandAvoidance?.PreparePresentation(dt, preserveHands);
+            if (m_GestureActive || gestureActive) m_Gestures?.RestoreBeforeAnimation();
+            m_GestureActive = gestureActive;
             m_Graph.Evaluate(0);
             m_Model.transform.localPosition = Vector3.zero;
-            float turn = (MotionWeight(3) - MotionWeight(2)) * m_Settings.TurnDegrees;
-            m_Model.transform.localRotation = Quaternion.Euler(0, m_Settings.Yaw + turn, 0);
+            m_Model.transform.localRotation = Quaternion.Euler(0, m_Settings.Yaw + turn * m_Settings.TurnDegrees, 0);
+            DollSingerMovement.ApplyTiptoePresentation(m_Animator, tiptoe);
+            ApplyWeaponGesture(dt);
             m_Spring?.SimulatePresentation(dt);
             UpdateHalo();
+            // Keep a stable standing frame, expanding it only when a new pose needs more room.
+            foreach (var renderer in m_Renderers) m_Bounds.Encapsulate(renderer.bounds);
+            if (m_Halo != null) m_Bounds.Encapsulate(m_Halo.position + m_Model.transform.up * .2f);
         }
-        private float MotionWeight(int motion)
+
+        private void ApplyWeaponGesture(float dt)
         {
-            float weight = 0;
+            if (m_Gestures == null || m_Chest == null) return;
             for (int i = 0; i < 2; i++)
-                if (m_Clips[i].IsValid() && m_Indices[i] == motion) weight += m_Mixer.GetInputWeight(i);
-            return weight;
+            {
+                if (!m_Clips[i].IsValid()) continue;
+                var options = m_Settings.Motion(m_Indices[i]);
+                if (options.Weapon == 0 || m_Mixer.GetInputWeight(i) <= 0) continue;
+                float age = (float)m_Times[i] - m_Settings.CrossfadeSeconds;
+                m_Gestures.Apply(options.Weapon, m_Mixer.GetInputWeight(i),
+                    options.WeaponAction == MenuWeaponAction.Fire ? age : float.PositiveInfinity,
+                    options.WeaponAction == MenuWeaponAction.Reload, age / Mathf.Max(.01f, options.HoldSeconds),
+                    m_Settings.CrossfadeSeconds, m_Chest, m_Model.transform.forward, dt);
+                return;
+            }
         }
         private void UpdateHalo()
         {
-            HaloAimWeight = MotionWeight(1);
+            HaloAimWeight = 0;
+            for (int i = 0; i < 2; i++)
+                if (m_Clips[i].IsValid() && (m_Settings.Motion(m_Indices[i]).Weapon > 0 || m_Indices[i] == 1))
+                    HaloAimWeight += m_Mixer.GetInputWeight(i);
             if (m_Halo == null || m_Head == null || m_Finger == null) return;
             // Same head-to-fingertip path and ring orientation as DollSingerHaloAim.LateUpdate.
             var root = m_Model.transform;
@@ -282,10 +352,12 @@ namespace Unity.MP_FPS.Client
                 stroke.startColor = tint; stroke.endColor = tint;
             }
         }
-        public void Render()
+        public void Render() => Render(Element.contentRect.size);
+
+        public void Render(Vector2 viewport)
         {
             if (m_Disposed || m_Camera == null) return;
-            float width = Element.contentRect.width, height = Element.contentRect.height;
+            float width = viewport.x, height = viewport.y;
             if (!float.IsFinite(width) || !float.IsFinite(height) || width < 2 || height < 2) return;
             float scale = Mathf.Min(m_Settings.ResolutionScale, m_Settings.MaximumResolution / Mathf.Max(width, height));
             int w = Mathf.Max(16, Mathf.CeilToInt(width * scale / 16f) * 16);
@@ -338,11 +410,13 @@ namespace Unity.MP_FPS.Client
         private void ReleaseStage()
         {
             if (m_Graph.IsValid()) m_Graph.Destroy();
+            if (m_FullBodyMask != null) { Destroy(m_FullBodyMask); m_FullBodyMask = null; }
             ReleaseTarget();
             if (m_Stage != null) { m_Stage.SetActive(false); Destroy(m_Stage); }
             m_Stage = null; m_Camera = null; m_Model = null; m_Animator = null;
             m_Halo = null; m_Head = null; m_Finger = null; m_HaloStrokes = null;
             m_Spring = null; m_HandAvoidance = null;
+            m_Gestures = null; m_Chest = null; m_Renderers = null;
             if (!m_Scene.IsValid()) return;
 #if UNITY_EDITOR
             if (m_EditorScene) { EditorSceneManager.ClosePreviewScene(m_Scene); m_Scene = default; return; }

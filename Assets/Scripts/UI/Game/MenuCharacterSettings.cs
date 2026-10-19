@@ -9,6 +9,9 @@ namespace Unity.MP_FPS.Client
         public AnimationClip[] Motions;
         public AvatarMask HaloAimMask;
         public AvatarMask[] MotionMasks;
+        public MenuCharacterMotion[] MotionOptions;
+        public TextAsset GestureBake;
+        public Vector2 LoopInterval = new Vector2(3f, 5f);
         [Range(0f, 45f)] public float TurnDegrees = 18f;
         public Color IdleHaloColor = new Color(1f, .28f, .52f, 1f);
         public Color AimedHaloColor = new Color(1f, .08f, .25f, 1f);
@@ -18,5 +21,20 @@ namespace Unity.MP_FPS.Client
         [Range(512, 3072)] public int MaximumResolution = 2048;
         [Min(.1f)] public float CrossfadeSeconds = .65f;
         public Vector2 IdleInterval = new Vector2(6f, 11f);
+
+        public MenuCharacterMotion Motion(int index) => MotionOptions != null && index < MotionOptions.Length
+            ? MotionOptions[index] : new MenuCharacterMotion { Loop = index == 0, Turn = index == 2 ? -1 : index == 3 ? 1 : 0 };
+    }
+
+    public enum MenuWeaponAction { Aim, Fire, Reload }
+
+    [System.Serializable]
+    public struct MenuCharacterMotion
+    {
+        public string Name;
+        public bool Loop, PreserveHands, Tiptoe;
+        public float HoldSeconds, Turn;
+        public int Weapon;
+        public MenuWeaponAction WeaponAction;
     }
 }
