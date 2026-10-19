@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Unity.MP_FPS.Inventory
 {
-    public enum ShopOperation { Buy, Sell, Emergency, Research }
+    public enum ShopOperation { Buy, Sell, Emergency, Research, Fabricate }
     [Serializable] public sealed class ShopCommand
     {
         public string RequestId, Code, ItemId;
@@ -28,6 +28,7 @@ namespace Unity.MP_FPS.Inventory
             new ShopOffer("rifle", 0, 20), new ShopOffer("pistol", 0, 7),
             new ShopOffer("shotgun", 0, 25), new ShopOffer("sniper", 0, 45), new ShopOffer("cells", 0, 2),
             new ShopOffer("halo_capacitor", 18, 6), new ShopOffer("halo_charge_bridge", 18, 6),
+            new ShopOffer("halo_mooncore_recycler", -1, 9),
             new ShopOffer("halo_focus_lens", 22, 7), new ShopOffer("halo_fan_array", 22, 7),
             new ShopOffer("halo_pulse_controller", 28, 9), new ShopOffer("halo_hit_marker", 25, 8),
             new ShopOffer("medkit", 0, 3), new ShopOffer("ration", 0, 2), new ShopOffer("water", 0, 2),
@@ -59,22 +60,28 @@ namespace Unity.MP_FPS.Inventory
                 command == null || !Guid.TryParse(command.RequestId, out _)) return "shop_invalid";
             if (command.ExpectedVersion != graph.Version) return "inventory_Stale";
             var copy = graph.Clone();
-            if (command.Operation == ShopOperation.Research)
+            if (command.Operation == ShopOperation.Research || command.Operation == ShopOperation.Fabricate)
             {
-                var research=AlienBiology.FindResearch(command.Code);
+                bool fabricate=command.Operation==ShopOperation.Fabricate;
+                var research=fabricate ? (command.Code==AlienBiology.MooncoreFabrication.Code ? AlienBiology.MooncoreFabrication : null) : AlienBiology.FindResearch(command.Code);
                 if(research==null || !string.IsNullOrEmpty(command.ItemId) || command.Quantity!=1)return "shop_invalid";
-                if(research.Unlocked(copy))return "research_complete";
+                if(fabricate && !research.Unlocked(copy))return "fabrication_locked";
+                if(!fabricate && research.Unlocked(copy))return "research_complete";
                 bool Spend(string code,int quantity)
                 {
-                    var stock=copy.Items.Where(i=>i.Code==code && copy.RootOf(i.Id)=="stash" && !i.EmergencySupply).ToArray();
+                    var stock=copy.Items.Where(i=>HaloResearchDefinition.CanSpend(copy,i,code)).ToArray();
                     if(stock.Sum(i=>i.Quantity)<quantity)return false;
                     foreach(var stack in stock)
                     { int take=Math.Min(quantity,stack.Quantity);stack.Quantity-=take;quantity-=take;if(stack.Quantity==0)copy.Items.Remove(stack);if(quantity==0)break; }
                     return true;
                 }
                 for(int i=0;i<research.Materials.Length;i++)
-                    if(!Spend(research.Materials[i],research.Quantities[i]))return "research_materials";
-                research.Unlock(copy);
+                    if(!Spend(research.Materials[i],research.Quantities[i]))return fabricate ? "fabrication_materials" : "research_materials";
+                if(fabricate)
+                {
+                    if(copy.AddSupply(research.Code,1,"stash")!=InventoryError.None)return "inventory_Full";
+                }
+                else research.Unlock(copy);
             }
             else if (command.Operation == ShopOperation.Emergency)
             {

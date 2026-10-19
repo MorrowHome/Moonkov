@@ -28,6 +28,7 @@
                         <ui:AttributeOverrides element-name="contactDetail" text="Trade with moon dust. Lost every halo? Emergency supply can get you back into the field." />
                     </ui:Instance></ui:Button>
                 </ui:VisualElement>
+                <ui:Button name="mooncoreResearch" class="terminal-primary" text="MOONCORE RESEARCH / FABRICATION" />
                 <ui:Button class="terminal-button" enabled="false" tooltip="The player market is not open." text="OPEN PLAYER MARKET" />
             </ui:VisualElement>
         </ui:VisualElement>

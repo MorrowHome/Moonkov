@@ -48,7 +48,8 @@
                     </ui:VisualElement>
                     <ui:Label class="terminal-positive" text="成功撤离后自动保存 · 首次收益不重复发放" />
                     <ui:Button class="terminal-primary" text="准备出战" name="planOperation" />
-                    <ui:Label class="terminal-copy" text="月核碎片和事故档案盘可在供应商出售换月尘，用于购买现有装备；也可继续保留。专属研究配方尚未开放，阅读调查记录不会消耗材料。" />
+                    <ui:Button name="mooncoreResearch" class="terminal-button" text="MOONCORE RESEARCH / FABRICATION" />
+                    <ui:Label class="terminal-copy" text="Recovered Mooncore fragments fund stabilization research and repeatable recycler fabrication. Install the module in Halo modification. Knowledge survives death; equipment can be lost. Reading records consumes nothing. Fragments and archive drives can still be sold." />
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>

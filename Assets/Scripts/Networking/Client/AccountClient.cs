@@ -230,7 +230,9 @@ namespace Unity.MP_FPS
                 case "shop_request_conflict": return "This order ID already belongs to a different transaction. Refresh the supplier.";
                 case "shop_invalid": return "This supplier order is no longer valid. Refresh the catalogue.";
                 case "research_complete": return "This permanent halo research is already complete.";
-                case "research_materials": return "Store all required organs and tissue in personal storage before researching.";
+                case "research_materials": return "Store the required materials before researching. Mooncore fragments must have been successfully extracted.";
+                case "fabrication_locked": return "Research Mooncore stabilization before fabricating this module.";
+                case "fabrication_materials": return "Not enough fabrication materials in storage. Recover a Mooncore fragment and store a copper coil.";
                 default: return "Inventory request rejected. Items remain unchanged. [" + code + "]";
             }
         }

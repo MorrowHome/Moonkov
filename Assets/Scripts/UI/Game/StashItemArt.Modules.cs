@@ -69,6 +69,16 @@ namespace Unity.MP_FPS.Client
             }
             switch(module)
             {
+                case HaloModule.MooncoreRecycler:
+                    color=0x9ED7E0u;
+                    for(int i=0;i<3;i++)
+                    {
+                        float angle=30+i*120;
+                        Arc(34,angle,82); Arc(24,angle+8,66);
+                        Line(0xB8C9DAu,4,Point(24,angle+8),Point(34,angle+8));
+                        Line(color,3,Point(30,angle+68),Point(34,angle+82),Point(40,angle+71));
+                    }
+                    break;
                 case HaloModule.Capacitor:
                     for(int i=0;i<6;i++) Arc(32,i*60+5,48);
                     Arc(23,0,360); break;

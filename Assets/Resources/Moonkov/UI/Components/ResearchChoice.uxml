@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="researchChoice" class="research-choice">
+        <ui:Button name="selectResearch" class="terminal-button">
+            <ui:Label name="choiceName" class="research-choice-title" />
+            <ui:Label name="choiceState" class="research-choice-state" />
+        </ui:Button>
+    </ui:VisualElement>
+</ui:UXML>

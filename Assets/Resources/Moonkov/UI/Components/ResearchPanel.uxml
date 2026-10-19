@@ -1,0 +1,39 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="../Research.uss" />
+    <ui:VisualElement name="researchPanel" class="research-panel">
+        <ui:ScrollView name="researchChoices" class="research-choices" mode="Vertical" />
+        <ui:VisualElement class="research-main">
+            <ui:VisualElement class="research-header">
+                <ui:VisualElement name="researchArt" class="research-art" picking-mode="Ignore" />
+                <ui:VisualElement class="research-heading">
+                    <ui:Label name="researchTitle" class="terminal-title" />
+                    <ui:Label name="researchDescription" class="terminal-copy" />
+                    <ui:Label name="researchState" class="research-state" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="researchStages" class="research-stages">
+                <ui:Button name="researchStage" class="terminal-button" text="01 / PERMANENT RESEARCH" />
+                <ui:Button name="fabricationStage" class="terminal-button" text="02 / FABRICATE MODULE" />
+            </ui:VisualElement>
+            <ui:VisualElement class="research-details">
+            <ui:ScrollView class="research-explanation" mode="Vertical">
+                <ui:Label name="researchEffect" class="terminal-copy research-effect" />
+                <ui:Label name="researchComparison" class="terminal-copy" />
+                <ui:Label name="researchNumbers" class="terminal-copy research-effect" />
+                <ui:Label name="researchSource" class="terminal-copy research-source" />
+            </ui:ScrollView>
+            <ui:ScrollView class="research-payment" mode="Vertical">
+                <ui:Label text="MATERIALS IN STORAGE / REQUIRED" class="terminal-heading" />
+                <ui:VisualElement name="researchMaterials" />
+                <ui:Label name="researchActionHint" class="terminal-copy" />
+                <ui:Button name="researchConfirm" class="terminal-primary" />
+                <ui:VisualElement class="research-navigation">
+                    <ui:Button name="goFabrication" class="terminal-button" text="GO TO FABRICATION" />
+                    <ui:Button name="goWorkshop" class="terminal-button" text="GO TO HALO MODIFICATION" />
+                </ui:VisualElement>
+            </ui:ScrollView>
+            </ui:VisualElement>
+            <ui:Label name="researchOwnership" class="terminal-copy research-source" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

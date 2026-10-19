@@ -84,7 +84,8 @@ namespace Unity.MP_FPS.Client
                 case "ceramic_plate": description = "Industrial ceramic stock. A trade good, not wearable armor."; break;
                 case "optical_sensor": description = "An intact precision sensor. Compact trade goods recovered from lunar equipment."; break;
                 case "data_drive": description = "An encrypted survey archive. Extract it and sell it for moon dust."; break;
-                case "mooncore_fragment": description = "MC00 封存设施的异常结晶。成功带回自动记录首次回收；可出售或保留，后续研究配方尚未开放。真实占用背包，死亡会掉落。"; break;
+                case "mooncore_fragment": description = "An anomalous MC00 crystal. Successfully extract it, then store it for Mooncore stabilization research and repeatable recycler fabrication at Suppliers → Halo research. Research and fabrication consume separate fragments only when confirmed. Can still be sold; carried fragments drop on death."; break;
+                case "halo_mooncore_recycler": description = "Fabricated after Mooncore stabilization research. Install in a rifle or shotgun storage slot: energy per round reduced by one third (rounded up), charge time +20%. Knowledge is permanent; this physical module can be lost on death."; break;
                 case "mc00_archive_drive": description = "MC00 事故设备恢复的档案。成功带回自动保存调查发现。未入库前死亡会丢失，其他玩家可拾取。"; break;
                 case "helium3_sample": description = "A sealed helium-3 research sample. Valuable trade goods; does not refill suit oxygen."; break;
                 case "quantum_core": description = "A rare quantum processor. High-value cargo to bring back from a raid."; break;

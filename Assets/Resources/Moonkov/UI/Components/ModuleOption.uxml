@@ -1,0 +1,14 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="moduleOption" class="workshop-option">
+        <ui:VisualElement class="workshop-option-header">
+            <ui:VisualElement name="moduleArt" class="workshop-option-art" picking-mode="Ignore" />
+            <ui:VisualElement class="workshop-option-copy">
+                <ui:Label name="moduleName" class="inventory-region-title" />
+                <ui:Label name="moduleDescription" class="inventory-caption" />
+                <ui:Label name="moduleState" class="inventory-caption" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:Label name="moduleComparison" class="inventory-caption" />
+        <ui:Button name="moduleAction" class="terminal-button" />
+    </ui:VisualElement>
+</ui:UXML>

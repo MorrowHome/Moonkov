@@ -293,15 +293,17 @@ namespace Unity.MP_FPS.Client
                 string supplier = names[i]; m_Content.Q<Button>("supplier" + i).clicked += () => SupplierDetail(supplier);
             }
             m_Content.Q<Button>("emergencySupply").clicked += () => OpenShop("LUNAR EMERGENCY SUPPLY", true);
+            m_Content.Q<Button>("mooncoreResearch").clicked += () => OpenShop("HALO RESEARCH", research: true);
         }
         private void SupplierDetail(string name)
         {
             OpenShop(name);
         }
-        private void OpenShop(string name, bool recovery = false)
+        private void OpenShop(string name, bool recovery = false, bool research = false)
         {
             var window = m_Windows.Open(name);
-            new MoonkovShopView(window, () => { m_Windows.Close(window); Navigate(1); }, recovery);
+            new MoonkovShopView(window, () => { m_Windows.Close(window); Navigate(1); }, recovery,
+                () => { m_Windows.Close(window); HaloModificationRequested?.Invoke(); }, research);
         }
 
         private void Tasks()
@@ -322,6 +324,7 @@ namespace Unity.MP_FPS.Client
                 "档案：18:42 故障隔离，18:47 设备仍在上传。最后一次操作身份尚未确认。" : "档案：留意失联设备恢复信号，校验两处时间标签，再取出事故记录。";
             TerminalMotion.Cascade(m_Content.Q<VisualElement>(className: "terminal-objectives"), .5f, .12f, 30, 0);
             m_Content.Q<Button>("planOperation").clicked += Prepare;
+            m_Content.Q<Button>("mooncoreResearch").clicked += () => OpenShop("HALO RESEARCH", research: true);
         }
         private void Base()
         {

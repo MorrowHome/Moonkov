@@ -26,6 +26,8 @@ namespace Unity.MP_FPS
             { variant.MagazineSize = Mathf.CeilToInt(original.MagazineSize * 1.5f); variant.ReloadTime *= 1.35f; }
             else if ((mask & HaloModule.ChargeBridge) != 0)
             { variant.ReloadTime *= .6f; variant.EnergyPerRound = Mathf.CeilToInt(variant.EnergyPerRound * 1.5f); }
+            else if ((mask & HaloModule.MooncoreRecycler) != 0)
+            { variant.ReloadTime *= 1.2f; variant.EnergyPerRound = Mathf.CeilToInt(variant.EnergyPerRound * (2f / 3f)); }
             if (weaponID == DollSingerWeapons.Shotgun)
             {
                 if ((mask & HaloModule.FocusLens) != 0)

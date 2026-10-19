@@ -13,6 +13,7 @@ namespace Unity.MP_FPS.Client
         private readonly Label m_Balance, m_Status;
         private readonly Button m_Retry;
         private readonly Button[] m_Tabs;
+        private readonly MoonkovResearchView m_Research;
         private readonly VisualElement m_InspectArt;
         private readonly Label m_InspectTitle, m_InspectDetail;
         private VisualElement m_SelectedRow;
@@ -23,10 +24,13 @@ namespace Unity.MP_FPS.Client
         private bool m_Busy, m_Disposed;
         private int m_Tab;
 
-        public MoonkovShopView(VisualElement window, Action openStorage, bool recovery = false)
+        public MoonkovShopView(VisualElement window, Action openStorage, bool recovery = false, Action openWorkshop = null, bool research = false)
         {
-            m_Window = window; m_Tab = recovery ? 2 : 0; window.AddToClassList("terminal-shop-window");
+            m_Window = window; m_Tab = research ? 3 : recovery ? 2 : 0; window.AddToClassList("terminal-shop-window");
+            window.styleSheets.Add(UnityEngine.Resources.Load<StyleSheet>("Moonkov/UI/Research"));
             var catalog = TerminalLayout.Clone("Components/ShopCatalog", "shopCatalog"); window.Add(catalog);
+            m_Research = new MoonkovResearchView((operation, code) => Order(operation, code, null, 1), openWorkshop);
+            catalog.Insert(3, m_Research.Root);
             m_InspectArt = catalog.Q("inspectArt"); m_InspectTitle = catalog.Q<Label>("inspectTitle"); m_InspectDetail = catalog.Q<Label>("inspectDetail");
             var head = catalog.Q("shopHead");
             m_Balance = MoonkovTerminal.Text(head, "MOON DUST / —", "terminal-heading");
@@ -59,6 +63,8 @@ namespace Unity.MP_FPS.Client
         private void Render()
         {
             m_Window.EnableInClassList("is-busy", m_Busy);
+            m_Window.Q(className: "archive-shop-body").EnableInClassList("research-hidden", m_Tab == 3);
+            m_Research.Root.EnableInClassList("research-hidden", m_Tab != 3);
             m_List.Clear();
             m_SelectedRow = null; m_InspectArt.Clear(); MoonkovLocalization.Set(m_InspectTitle, ""); MoonkovLocalization.Set(m_InspectDetail, "");
             MoonkovLocalization.Set(m_Balance, "MOON DUST / {0}", PlayerProfileClient.StashDust);
@@ -75,19 +81,7 @@ namespace Unity.MP_FPS.Client
         }
         private void Research()
         {
-            var graph=PlayerProfileClient.Inventory;
-            if(graph==null)return;
-            foreach(var research in AlienBiology.Research)
-            {
-                bool unlocked=research.Unlocked(graph);
-                var row=Product(research.Icon,research.Name,research.Description);
-                var copy=row.Q(className:"terminal-shop-description");
-                foreach(var material in research.Materials.Select((code,index)=>new {code,index}))
-                    MoonkovTerminal.Text(copy,MoonkovLocalization.Format($"{InventoryCatalog.Get(material.code).Name}: {research.Stored(graph,material.code)}/{research.Quantities[material.index]}"),"terminal-copy");
-                var upgrade=MoonkovTerminal.ActionButton(row,unlocked ? "RESEARCH COMPLETE" : "CONSUME MATERIALS / RESEARCH",
-                    ()=>Order(ShopOperation.Research,research.Code,null,1),"terminal-primary");
-                upgrade.SetEnabled(Ready && !unlocked && research.CanAfford(graph));
-            }
+            m_Research.Present(PlayerProfileClient.Inventory, Ready, m_Busy, m_Pending != null);
         }
         private VisualElement Product(string code, string name, string detail)
         {
@@ -180,7 +174,9 @@ namespace Unity.MP_FPS.Client
             {
                 await PlayerProfileClient.TradeAsync(command, m_Stop.Token);
                 m_Pending = null;
-                if (!m_Disposed) MoonkovLocalization.Set(m_Status, command.Operation == ShopOperation.Research ? "Permanent halo research saved. It applies to all halo weapons on your next deployment." :
+                if (!m_Disposed) MoonkovLocalization.Set(m_Status, command.Operation == ShopOperation.Fabricate ? "Module fabricated in storage. Go to Halo modification to install it before deployment." :
+                    command.Operation == ShopOperation.Research && command.Code == AlienBiology.MooncoreResearch.Code ? "Mooncore knowledge saved permanently. Go to fabrication next; no module has been granted or equipped." :
+                    command.Operation == ShopOperation.Research ? "Permanent halo research saved. It applies to all halo weapons on your next deployment." :
                     command.Operation == ShopOperation.Emergency ? "Emergency kit received. Open storage to check your pistol slot and carried cells." : "Trade confirmed. Inventory and moon dust updated.");
             }
             catch (AccountClient.InventoryRequestException ex)

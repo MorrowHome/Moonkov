@@ -1,0 +1,41 @@
+.research-panel { flex-grow: 1; min-height: 0; flex-direction: row; margin-bottom: 12px; }
+.research-choices { width: 248px; flex-shrink: 0; margin-right: 20px; background-color: #101318; padding: 12px; }
+.research-choices .terminal-heading { margin-top: 12px; margin-bottom: 12px; font-size: 17px; }
+.research-choice { margin-bottom: 8px; }
+.research-choice Button { min-height: 76px; align-items: flex-start; white-space: normal; padding: 12px; }
+.research-choice-title { font-size: 18px; white-space: normal; }
+.research-choice-state { font-size: 14px; margin-top: 6px; white-space: normal; color: #c7d2df; }
+.research-choice.is-selected Button, .research-stages .is-selected { background-color: #164bff; border-color: #a6bbff; color: white; }
+.research-main { flex-grow: 1; flex-basis: 0; min-width: 0; background-color: #101318; padding: 18px; }
+.research-main Label { white-space: normal; flex-shrink: 0; }
+.research-header { flex-direction: row; align-items: center; margin-bottom: 12px; }
+.research-art { width: 128px; height: 128px; flex-shrink: 0; margin-right: 20px; background-color: #080b10; }
+.research-art > * { flex-grow: 1; }
+.research-heading { flex-grow: 1; flex-shrink: 1; }
+.research-heading .terminal-title { font-size: 28px; margin-bottom: 8px; }
+.research-main .terminal-copy { font-size: 16px; margin-bottom: 10px; color: #d3dae5; }
+.research-state { font-size: 17px; color: #b0e6ee; margin-top: 6px; }
+.research-stages, .research-navigation { flex-direction: row; flex-wrap: wrap; margin-bottom: 10px; }
+.research-stages Button, .research-navigation Button { flex-grow: 1; min-height: 42px; margin-right: 8px; }
+.research-effect { border-left-width: 3px; border-left-color: #81d7df; padding: 10px 12px; background-color: #14202b; }
+.research-main .research-source { color: #aebdd0; font-size: 14px; }
+.research-details { flex-direction: row; flex-grow: 1; min-height: 0; margin-bottom: 12px; }
+.research-explanation { flex-grow: 1; flex-basis: 0; min-width: 0; margin-right: 20px; }
+.research-payment { width: 330px; flex-shrink: 0; border-left-width: 1px; border-left-color: #414958; padding-left: 16px; }
+.research-payment .terminal-heading { font-size: 17px; margin-bottom: 8px; }
+.research-material { flex-direction: row; align-items: center; margin-bottom: 8px; }
+.research-material-art { width: 40px; height: 40px; margin-right: 12px; flex-shrink: 0; }
+.research-material-art > * { flex-grow: 1; }
+.research-material-copy { flex-grow: 1; }
+.research-material-copy Label { font-size: 15px; color: #dde5ef; }
+.research-material.is-missing Label { color: #f3c8a8; }
+.research-payment .terminal-primary { min-height: 50px; margin-top: 8px; margin-bottom: 12px; }
+.research-hidden { display: none; }
+.workshop-option { margin-top: 10px; padding: 8px; background-color: #111821; }
+.workshop-option-header { flex-direction: row; }
+.workshop-option-art { width: 54px; height: 54px; margin-right: 12px; flex-shrink: 0; }
+.workshop-option-art > * { flex-grow: 1; }
+.workshop-option-copy { flex-grow: 1; flex-shrink: 1; }
+.workshop-option Label { white-space: normal; }
+.workshop-option > Label { margin-top: 8px; }
+.workshop-option Button { margin-top: 8px; min-height: 40px; }

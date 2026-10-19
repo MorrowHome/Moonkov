@@ -1,0 +1,9 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="researchMaterial" class="research-material">
+        <ui:VisualElement name="materialArt" class="research-material-art" picking-mode="Ignore" />
+        <ui:VisualElement class="research-material-copy">
+            <ui:Label name="materialName" />
+            <ui:Label name="materialCount" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

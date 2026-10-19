@@ -3456,6 +3456,280 @@ MonoBehaviour:
     m_Localized: EXIT
     m_Metadata:
       m_Items: []
+  - m_Id: 4443858321289216
+    m_Localized: Mooncore fragment
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620864
+    m_Localized: Mooncore recycler
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620865
+    m_Localized: MOONCORE RESEARCH
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620866
+    m_Localized: MOONCORE RESEARCH / FABRICATION
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620867
+    m_Localized: MOONCORE STABILIZATION
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620868
+    m_Localized: Permanently unlocks fabrication of the Mooncore recycler. Research
+      grants knowledge, not an equipped module.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620869
+    m_Localized: Fabricate one physical storage-slot module in personal storage.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620871
+    m_Localized: 01 / PERMANENT RESEARCH
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620872
+    m_Localized: 02 / FABRICATE MODULE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620873
+    m_Localized: MATERIALS IN STORAGE / REQUIRED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620874
+    m_Localized: GO TO FABRICATION
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620875
+    m_Localized: GO TO HALO MODIFICATION
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620876
+    m_Localized: READY TO RESEARCH
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620877
+    m_Localized: MATERIALS MISSING
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620878
+    m_Localized: STORAGE SLOT / Rifle, compact rifle and shotgun. Replaces capacitor
+      or rapid charge bridge. Energy reduction is rounded up before the hit-marker
+      surcharge; existing biological research still applies.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620879
+    m_Localized: "SOURCE: MC00 random Mooncore event \u2192 carry the fragment through
+      a successful extraction \u2192 move it to storage. Circuit boards and copper
+      coils come from supply caches. Only recovered, non-emergency materials count."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620880
+    m_Localized: Recover the required alien organs and tissue, then move them to
+      personal storage.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620881
+    m_Localized: Permanent knowledge is retained after death and applies on your
+      next deployment.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620882
+    m_Localized: Research does not grant free ammunition or a physical module.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620883
+    m_Localized: READY / {0} OWNED / {1} REQUIRED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620884
+    m_Localized: MISSING {2} / {0} OWNED / {1} REQUIRED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620885
+    m_Localized: SUBMITTING / WAIT FOR CONFIRMATION
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620886
+    m_Localized: CONFIRMATION UNKNOWN / CHECK LAST ORDER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620887
+    m_Localized: LOCKED / RESEARCH FIRST
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620888
+    m_Localized: STORAGE FULL / FREE SPACE AND RETRY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620889
+    m_Localized: READY TO FABRICATE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620890
+    m_Localized: RESEARCH COMPLETE / KNOWLEDGE SAVED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620891
+    m_Localized: NOT RESEARCHED / MATERIALS MISSING
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620892
+    m_Localized: BASE TRANSACTION UNAVAILABLE / FINISH RAID OR RECONNECT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620893
+    m_Localized: Consumes the materials shown above and creates 1 module in storage.
+      No charge if storage cannot accept it. Install it in Halo modification before
+      deployment.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620894
+    m_Localized: Consumes 1 recovered fragment and 2 circuit boards. Permanently
+      unlocks fabrication; no module is granted. Fabricating your first module is
+      a separate cost.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620895
+    m_Localized: Consumes the materials shown above once and permanently saves this
+      research.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620896
+    m_Localized: CONSUME MATERIALS / FABRICATE 1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620897
+    m_Localized: RESEARCH AND PERMANENTLY UNLOCK
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620898
+    m_Localized: OWNED {0} / INSTALLED {1}. Knowledge survives death; physical modules
+      can be lost with your equipment. Owning a module does not equip it.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620899
+    m_Localized: Permanent knowledge survives death. No physical item is granted.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620901
+    m_Localized: "{0}: ENERGY {1} \u2192 {2} / CHARGE {3:0.00}s \u2192 {4:0.00}s"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620902
+    m_Localized: Module fabricated in storage. Go to Halo modification to install
+      it before deployment.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620903
+    m_Localized: Mooncore knowledge saved permanently. Go to fabrication next; no
+      module has been granted or equipped.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620904
+    m_Localized: Store the required materials before researching. Mooncore fragments
+      must have been successfully extracted.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620905
+    m_Localized: Research Mooncore stabilization before fabricating this module.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620906
+    m_Localized: Not enough fabrication materials in storage. Recover a Mooncore
+      fragment and store a copper coil.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620907
+    m_Localized: Removing requires a free storage cell. The module remains a physical
+      item.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620908
+    m_Localized: STORAGE FULL / FREE SPACE BEFORE REMOVING
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620909
+    m_Localized: 'CURRENT: {0}E / {1:0.00}s / {2} ROUNDS / {3:0.##} DAMAGE
+
+      AFTER:
+      {4}E / {5:0.00}s / {6} ROUNDS / {7:0.##} DAMAGE'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620910
+    m_Localized: 'Cannot install: replacement space or carried weight is insufficient.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620911
+    m_Localized: SLOT CONFLICT / replaces the installed module; the old module returns
+      to the incoming module's location.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620912
+    m_Localized: AVAILABLE SLOT / install this physical module before deployment.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620913
+    m_Localized: OWNED / NOT INSTALLED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620914
+    m_Localized: "Mooncore recycler: research and fabricate at Suppliers \u2192 Halo
+      research. Other compatible modules can be bought or recovered from caches."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620915
+    m_Localized: "An anomalous MC00 crystal. Successfully extract it, then store
+      it for Mooncore stabilization research and repeatable recycler fabrication
+      at Suppliers \u2192 Halo research. Research and fabrication consume separate
+      fragments only when confirmed. Can still be sold; carried fragments drop on
+      death."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620917
+    m_Localized: "; first non-emergency recovery also grants +10. Keep the fragment
+      for Suppliers \u2192 Halo research: permanent stabilization research, then
+      repeatable recycler fabrication. Confirmed actions consume separate materials.
+      Selling remains available."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620918
+    m_Localized: ; first non-emergency recovery also grants +10. Archive drives remain
+      trade goods; no archive research recipe is available.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620919
+    m_Localized: "Recovered materials are retained. Mooncore fragments can fund stabilization
+      research and repeatable recycler fabrication at Suppliers \u2192 Halo research;
+      install the crafted module before deploying. Archive drives remain trade goods."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4443858371620920
+    m_Localized: Recovered Mooncore fragments fund stabilization research and repeatable
+      recycler fabrication. Install the module in Halo modification. Knowledge survives
+      death; equipment can be lost. Reading records consumes nothing. Fragments and
+      archive drives can still be sold.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4445446490304512
+    m_Localized: Energy per round reduced by one third (rounded up); charge time
+      +20%. Capacity and base damage unchanged. Cold-silver return arcs pulse during
+      charging and firing.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4445446532247552
+    m_Localized: "BEFORE \u2192 AFTER / ENERGY PER ROUND 100% \u2192 2/3 (rounded
+      up) / CHARGE TIME 100% \u2192 120%"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4445446532247553
+    m_Localized: 'Fabricated after Mooncore stabilization research. Install in a
+      rifle or shotgun storage slot: energy per round reduced by one third (rounded
+      up), charge time +20%. Knowledge is permanent; this physical module can be
+      lost on death.'
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -329,7 +329,9 @@ namespace Unity.MP_FPS
                 "配电 A/B 顺序不限，两路完成后在取样机启动切割。夹具内结晶带有重复编号，可能来自另一批次。" :
                 "自检和标签读取可以穿插进行，提前扫描会保留；两处校验齐全后返回终端确认下载。事故设备曾在烧损前持续上传。");
             m_Root.Q<Label>("missionOutcome").text = (definition.ArtifactCode == "mooncore_fragment" ? "首次有效带回月核 +30 月尘" : "首次有效带回档案 +20 月尘") +
-                "；若也是首次非保底回收，另 +10。材料保留，可在供应商出售换月尘、购买现有装备。专属研究配方尚未开放。";
+                MoonkovLocalization.Text(definition.ArtifactCode == "mooncore_fragment" ?
+                    "; first non-emergency recovery also grants +10. Keep the fragment for Suppliers → Halo research: permanent stabilization research, then repeatable recycler fabrication. Confirmed actions consume separate materials. Selling remains available." :
+                    "; first non-emergency recovery also grants +10. Archive drives remain trade goods; no archive research recipe is available.");
         }
 
         private void MissionNotice(string text)
@@ -403,7 +405,7 @@ namespace Unity.MP_FPS
             int reward = ((added & 1) != 0 ? 10 : 0) + ((added & 2) != 0 ? 30 : 0) + ((added & 4) != 0 ? 20 : 0);
             m_MissionResult.text = (snapshot.RecoveredArtifacts > 0 ? $"任务产物已保存 {snapshot.RecoveredArtifacts} 件。" : "本次回收结果已保存。") +
                 (reward > 0 ? $"首次成长奖励 +{reward} 月尘，调查记录已保存。" : "首次奖励不重复发放，已有调查记录保留。") +
-                (snapshot.RecoveredArtifacts > 0 ? "材料保留在仓库，可在供应商出售换月尘或保留；专属研究配方尚未开放。" : "");
+                (snapshot.RecoveredArtifacts > 0 ? MoonkovLocalization.Text("Recovered materials are retained. Mooncore fragments can fund stabilization research and repeatable recycler fabrication at Suppliers → Halo research; install the crafted module before deploying. Archive drives remain trade goods.") : "");
         }
 
         private void UpdateMissionMarker(bool visible)

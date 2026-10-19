@@ -5,7 +5,7 @@ namespace Unity.MP_FPS.Client
 {
     public enum StashArtKind { None, Dust, Alloy, Cell, Halo, Outfit, Helmet, Rifle, Pistol, ChestRig, Backpack, HaloRifle, HaloRevolver, HaloShotgun, Medical, HaloSniper, Ration, Water, HaloCapacitor, HaloChargeBridge, HaloFocusLens, HaloFanArray, HaloPulseController, HaloHitMarker, OxygenCanister,
         MedicalGel, TraumaKit, EnergyGel, ProteinBar, Electrolyte, OxygenReserve, ScoutRig, FieldRig, SlingPack, CargoPack, CircuitBoard, CopperCoil, CeramicPlate, OpticalSensor, DataDrive, HeliumSample, QuantumCore, BlackBox, AlienMeat, AlienOrgan, AlienTissue,
-        AlienSpider, AlienSnake, AlienCaterpillar, AlienTentacle, AlienCentipede, AlienLeech, AlienSlime, AlienRoots, AlienFaceHugger, EnergyGrenade, MooncoreFragment, MissionArchive }
+        AlienSpider, AlienSnake, AlienCaterpillar, AlienTentacle, AlienCentipede, AlienLeech, AlienSlime, AlienRoots, AlienFaceHugger, EnergyGrenade, MooncoreFragment, MissionArchive, HaloMooncoreRecycler }
 
     // Small original vector illustrations, kept sharp at the shared PanelSettings scale.
     [UxmlElement]
@@ -100,6 +100,7 @@ namespace Unity.MP_FPS.Client
                 case StashArtKind.HaloFanArray: Module(HaloModule.FanArray); break;
                 case StashArtKind.HaloPulseController: Module(HaloModule.PulseController); break;
                 case StashArtKind.HaloHitMarker: Module(HaloModule.HitMarker); break;
+                case StashArtKind.HaloMooncoreRecycler: Module(HaloModule.MooncoreRecycler); break;
             }
         }
 

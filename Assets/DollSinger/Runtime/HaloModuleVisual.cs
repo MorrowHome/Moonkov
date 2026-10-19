@@ -85,6 +85,19 @@ namespace Unity.MP_FPS.DollSinger
                 int lit = Mathf.CeilToInt(Mathf.Clamp01((float)visible/capacity)*segments);
                 for (int i=0;i<segments;i++) Arc(radius+.045f,90+i*360f/segments,360f/segments-6,.012f,Fade(Gold,i<lit?.95f:.16f));
             }
+            if ((modules & HaloModule.MooncoreRecycler) != 0)
+            {
+                var silver = new Color(.68f, .81f, .94f);
+                for (int i=0;i<3;i++)
+                {
+                    float angle=30+i*120;
+                    Arc(radius+.055f,angle,88,.015f,Fade(silver,.75f+flash*.25f),12);
+                    Arc(radius+.025f,angle+8,72,.01f,Fade(Cyan,.35f+flash*.65f),10);
+                    Line(Polar(radius+.025f,angle+8),Polar(radius+.055f,angle+8),.018f,Fade(silver,.9f));
+                    float flow=angle+80-(reloading ? (progress*2+elapsed*.4f)%1 : flash)*62;
+                    Arc(radius+.04f,flow,14,.018f,Fade(Cyan,reloading?.95f:.3f+flash*.7f),3);
+                }
+            }
             if ((modules & HaloModule.ChargeBridge) != 0)
                 for (int i=0;i<6;i++)
                 {

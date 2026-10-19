@@ -20,7 +20,9 @@ namespace Unity.MP_FPS.Inventory
         public HaloResearchDefinition(string code,string name,string description,string icon,int branch,string[] materials,int[] quantities)
         {Code=code;Name=name;Description=description;Icon=icon;Branch=branch;Materials=materials;Quantities=quantities;}
         public bool Unlocked(InventoryGraph graph)=>Branch==0 ? graph.HaloResearchLevel>0 : (graph.HaloResearchBranches&Branch)!=0;
-        public int Stored(InventoryGraph graph,string code)=>graph.Items.Where(i=>i.Code==code && graph.RootOf(i.Id)=="stash" && !i.EmergencySupply).Sum(i=>i.Quantity);
+        public static bool CanSpend(InventoryGraph graph,InventoryItem item,string code)=>item.Code==code && graph.RootOf(item.Id)=="stash" && !item.EmergencySupply &&
+            (!MissionInventory.IsArtifact(code) || (item.MissionRecovered && MissionInventory.ValidSource(item)));
+        public int Stored(InventoryGraph graph,string code)=>graph.Items.Where(i=>CanSpend(graph,i,code)).Sum(i=>i.Quantity);
         public bool CanAfford(InventoryGraph graph)=>Materials.Select((code,index)=>Stored(graph,code)>=Quantities[index]).All(value=>value);
         public void Unlock(InventoryGraph graph) {if(Branch==0)graph.HaloResearchLevel=1;else graph.HaloResearchBranches|=Branch;}
     }
@@ -38,7 +40,14 @@ namespace Unity.MP_FPS.Inventory
             new AlienOrganDefinition("Roots","alien_root_nodule","Root oxygen nodule","90s: suit oxygen drain -25%, movement -10%. Energy +15, hydration -10. Replaces other species-organ activity.",new ConsumableDefinition(15,-10,15,effect:AlienFoodEffect.OxygenReserve,effectSeconds:90),50),
             new AlienOrganDefinition("FaceHugger","alien_neural_ganglion","Facehugger neural ganglion","45s: firing interval -20%, spread -30%, hydration drain +75%. Energy +5, hydration -15. Replaces other species-organ activity.",new ConsumableDefinition(5,-15,10,effect:AlienFoodEffect.NeuralOverdrive,effectSeconds:45),32)
         };
+        public static readonly HaloResearchDefinition MooncoreResearch = new HaloResearchDefinition(
+            "mooncore_stabilization","MOONCORE STABILIZATION","Permanently unlocks fabrication of the Mooncore recycler. Research grants knowledge, not an equipped module.",
+            "halo_mooncore_recycler",8,new[]{"mooncore_fragment","circuit_board"},new[]{1,2});
+        public static readonly HaloResearchDefinition MooncoreFabrication = new HaloResearchDefinition(
+            "halo_mooncore_recycler","Mooncore recycler","Fabricate one physical storage-slot module in personal storage.",
+            "halo_mooncore_recycler",8,new[]{"mooncore_fragment","copper_coil"},new[]{1,1});
         public static readonly HaloResearchDefinition[] Research = {
+            MooncoreResearch,
             new HaloResearchDefinition("halo_biology","BIOLOGICAL FIREPOWER","Permanent: all halo damage +60%. Retained after death.","alien_neural_core",0,new[]{"alien_neural_core","alien_tissue"},new[]{3,5}),
             new HaloResearchDefinition("halo_capacity","BIOLOGICAL CAPACITY","Permanent: all halo magazine capacities +40%. Upgrades do not grant free ammunition.","alien_contractile_heart",1,new[]{"alien_nutrient_sac","alien_gel_bladder","alien_contractile_heart"},new[]{2,2,1}),
             new HaloResearchDefinition("halo_charge","BIOLOGICAL CHARGING","Permanent: all halo recharge times -25%.","alien_root_nodule",2,new[]{"alien_adrenal_gland","alien_root_nodule","alien_tissue"},new[]{2,1,5}),

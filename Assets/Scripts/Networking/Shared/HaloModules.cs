@@ -7,7 +7,7 @@ namespace Unity.MP_FPS.Inventory
     // so the existing item tree handles ownership, deployment, death and settlement.
     public static class HaloModules
     {
-        // Detachable modules use bits 0..5. Persistent biology uses bits 6..10;
+        // Detachable modules use bits 0..5 and 11. Persistent biology uses bits 6..10;
         // the active species-organ effect is encoded in bits 12..15.
         public static readonly string[] Codes = { "halo_capacitor", "halo_charge_bridge", "halo_focus_lens",
             "halo_fan_array", "halo_pulse_controller", "halo_hit_marker" };
@@ -18,11 +18,13 @@ namespace Unity.MP_FPS.Inventory
         };
         public static HaloModule FromCode(string code)
         {
+            // Keep Codes as the original cache-loot pool; this module requires fabrication.
+            if (code == "halo_mooncore_recycler") return HaloModule.MooncoreRecycler;
             int index = Array.IndexOf(Codes, code);
             return index < 0 ? HaloModule.None : (HaloModule)(1 << index);
         }
         public static bool IsWeapon(string code) => code == "shotgun" || code == "rifle" || code == "compact";
-        public static string Slot(HaloModule module) => module == HaloModule.Capacitor || module == HaloModule.ChargeBridge ? "Storage" :
+        public static string Slot(HaloModule module) => module == HaloModule.Capacitor || module == HaloModule.ChargeBridge || module == HaloModule.MooncoreRecycler ? "Storage" :
             module == HaloModule.HitMarker ? "Utility" : "Shaping";
         public static bool Compatible(string weapon, string module)
         {
@@ -50,6 +52,7 @@ namespace Unity.MP_FPS.Inventory
             {
                 case HaloModule.Capacitor: return "Capacity +50%; charge time +35%. Segmented outer energy ring.";
                 case HaloModule.ChargeBridge: return "Charge time -40%; energy per round +50%. Pulsing radial bridges.";
+                case HaloModule.MooncoreRecycler: return "Energy per round reduced by one third (rounded up); charge time +20%. Capacity and base damage unchanged. Cold-silver return arcs pulse during charging and firing.";
                 case HaloModule.FocusLens: return "Shotgun spread -55%; capacity -1. Four inward focusing arcs.";
                 case HaloModule.FanArray: return "Shotgun spread +60%; 12 pellets share the original total damage. Six open fan blades.";
                 case HaloModule.PulseController: return "Rifle fires three rounds per trigger press; 0.42s between bursts. Three sequential nodes.";

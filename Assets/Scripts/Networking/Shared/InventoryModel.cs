@@ -67,7 +67,7 @@ namespace Unity.MP_FPS.Inventory
                 new ItemDefinition("ceramic_plate", "Technical ceramic plate", ItemKind.Material, 2, 2, 2, .9f),
                 new ItemDefinition("optical_sensor", "Optical sensor", ItemKind.Material, 1, 1, 2, .22f),
                 new ItemDefinition("data_drive", "Encrypted data drive", ItemKind.Material, 1, 1, 1, .12f),
-                new ItemDefinition("mooncore_fragment", "月核碎片", ItemKind.Material, 1, 1, 1, .3f),
+                new ItemDefinition("mooncore_fragment", "Mooncore fragment", ItemKind.Material, 1, 1, 1, .3f),
                 new ItemDefinition("mc00_archive_drive", "MC00 事故档案盘", ItemKind.Material, 1, 1, 1, .12f),
                 new ItemDefinition("helium3_sample", "Helium-3 sample", ItemKind.Material, 1, 2, 1, .6f),
                 new ItemDefinition("quantum_core", "Quantum processor", ItemKind.Material, 2, 1, 1, .4f),
@@ -80,6 +80,7 @@ namespace Unity.MP_FPS.Inventory
                 new ItemDefinition("sniper", "Halo Sniper", ItemKind.LongGun, 2, 2, 1, 4.5f),
                 new ItemDefinition("halo_capacitor", "Expansion capacitor", ItemKind.StorageModule, 1, 1, 1, .2f),
                 new ItemDefinition("halo_charge_bridge", "Rapid charge bridge", ItemKind.StorageModule, 1, 1, 1, .15f),
+                new ItemDefinition("halo_mooncore_recycler", "Mooncore recycler", ItemKind.StorageModule, 1, 1, 1, .2f),
                 new ItemDefinition("halo_focus_lens", "Focus lens", ItemKind.ShapingModule, 1, 1, 1, .15f),
                 new ItemDefinition("halo_fan_array", "Fan array", ItemKind.ShapingModule, 1, 1, 1, .2f),
                 new ItemDefinition("halo_pulse_controller", "Pulse controller", ItemKind.ShapingModule, 1, 1, 1, .15f),
@@ -125,6 +126,7 @@ namespace Unity.MP_FPS.Inventory
         public int Version = 1, StashRows = 80, LootRows = 5;
         public int WeaponKitVersion;
         public int HaloResearchLevel;
+        // Bits 0..2: existing biology; bit 3: mooncore fabrication knowledge only.
         public int HaloResearchBranches;
         // Account facts; never merged from a client/raid graph. Bits: recovery, mooncore, archive.
         public int MissionFirsts;
@@ -291,7 +293,7 @@ namespace Unity.MP_FPS.Inventory
             // A world-loot snapshot joins two owners; account/actor graphs keep the
             // original limit. The extra loot root must also fit a maximum-sized drop.
             int limit=Items!=null && Items.Any(i=>i?.Id=="loot") ? InventoryCatalog.MaxItems*2 : InventoryCatalog.MaxItems;
-            if (Version < 1 || HaloResearchLevel < 0 || HaloResearchLevel > 1 || HaloResearchBranches < 0 || HaloResearchBranches > 7 || MissionFirsts < 0 || MissionFirsts > 7 || Items == null || Items.Count > limit || StashRows < 1 || StashRows > 4096 || LootRows < 1 || LootRows > 24) return InventoryError.Invalid;
+            if (Version < 1 || HaloResearchLevel < 0 || HaloResearchLevel > 1 || HaloResearchBranches < 0 || HaloResearchBranches > 15 || MissionFirsts < 0 || MissionFirsts > 7 || Items == null || Items.Count > limit || StashRows < 1 || StashRows > 4096 || LootRows < 1 || LootRows > 24) return InventoryError.Invalid;
             var ids = new HashSet<string>();
             foreach (var item in Items)
             {
