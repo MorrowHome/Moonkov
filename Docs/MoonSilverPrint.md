@@ -62,7 +62,11 @@ HUD 原生界面不作资产修改，现有警示覆盖仍在本效果之后；�
 - UI、ClientPlayer、ServerPlayer、FirstPersonOverlay 层的可见 Renderer 也进入保护遮罩。普通 Default 层的角色由上述所属对象注册覆盖，不修改物理 Layer 或材质。
 - 新的非环境展示对象可在所属根节点添加 `MoonSilverPrintSubject`，或创建完外观后调用 `Protect(root)`。子层级新增装备会自动刷新；已知外观重建可直接调用 `Refresh()`，避免等待最多半秒的缓存更新。
 
-保护使用一张全尺寸 R8 遮罩和一次额外绘制，只重绘受保护对象。遮罩对比已解析的场景深度，所以墙后的角色不会让墙面出现原色缺口；轮廓外扩一像素以保留抗锯齿颜色。透明/裁剪对象采用保守的几何轮廓保护，透空区域可能保留少量原画背景。缺少遮罩材质或场景深度时跳过银盐处理，不退回全屏染色。
+保护使用一张全尺寸 R8 遮罩和一个额外绘制阶段。不透明对象的遮罩必须与实际场景深度重合，避免裁剪透空处或墙后角色让背景出现原色缺口；轮廓外扩一像素以保留抗锯齿颜色。缺少遮罩材质或场景深度时跳过银盐处理，不退回全屏染色。
+
+2026-10-19 修复敌人周围的方框：流体 Shader 的立方体只是射线步进容器，不能直接拿它的网格当角色轮廓。`Umbra08FluidSurface` 现在在专用遮罩 Pass 中重用密度追踪与真实命中深度；`Umbra08Filaments`、`Umbra08Viscous` 重用原有顶点变形；攻击线与三种 Halo Shader 按实际透明度裁剪。原生覆盖 Pass 使用 `LightMode=MoonSilverPrintSubjectMask`、`Name=SilverPrintSubjectMask` 主动加入保护，并通过 RendererList 保留 SpriteRenderer 的纹理、颜色和实例绑定；这些 Shader 应用于角色附件，不应拿来绘制需要银盐处理的环境物体。普通已注册角色继续使用深度匹配的通用遮罩。未知、不写入深度的透明 Shader 不再退回实心网格遮罩，新增这类角色特效时需实现原生覆盖 Pass。
+
+修复前后复现与验证范围见 [流体容器遮罩修复](ArtDirection/20261019-FluidMaskFix/README.md)。半透明像素仍保留已混合的原画颜色；这属于后处理遮罩的近似，没有重新分离透明物体与其后的背景。
 
 三列实景对比与检查记录见 [环境 / 角色 / UI 对比](ArtDirection/20261019-EnvironmentOnly/README.md)。使用真实 `MenuCharacterVisual.prefab` 和正式地图；UI 层探针、墙后遮挡探针和独立角色相机的开关比较最大通道差值均为 0（8 位输出）。通过 C# / Shader 编译及编辑器相机验证；未据此声称通过多人 Host/Client 或 GPU 性能验收。
 

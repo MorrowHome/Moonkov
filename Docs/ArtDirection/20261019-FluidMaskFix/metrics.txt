@@ -1,0 +1,2 @@
+Before empty proxy region delta=222; after=0; opaque=0; fluid=0; occluded wall=0
+Transparent sprite empty region delta=0; visible ink preservation delta=0; filtered versus original visible ink delta=196; compiled mask passes=8

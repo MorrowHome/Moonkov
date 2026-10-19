@@ -124,6 +124,24 @@ Shader "SpiderLab/Umbra08 Liquid Filaments"
         }
         Pass
         {
+            Name "SilverPrintSubjectMask"
+            Tags { "LightMode"="MoonSilverPrintSubjectMask" }
+            ZWrite Off ZTest Always
+            HLSLPROGRAM
+            #pragma target 4.5
+            #pragma vertex ThreadVertex
+            #pragma fragment SubjectMaskFrag
+            #include "Assets/MoonEnvironment/Shaders/SilverPrintSubjectDepth.hlsl"
+            half4 SubjectMaskFrag(Varyings v) : SV_Target
+            {
+                clip(v.life - .02);
+                MoonSubjectDepthTest(v.positionCS, v.positionCS.z, true);
+                return 1;
+            }
+            ENDHLSL
+        }
+        Pass
+        {
             Name "ShadowCaster"
             Tags { "LightMode"="ShadowCaster" }
             ColorMask 0

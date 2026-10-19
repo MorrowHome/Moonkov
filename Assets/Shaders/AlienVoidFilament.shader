@@ -27,5 +27,30 @@ Shader "Moonkov/Alien Void Filament"
             }
             ENDHLSL
         }
+        Pass
+        {
+            Name "SilverPrintSubjectMask"
+            Tags { "LightMode"="MoonSilverPrintSubjectMask" }
+            ZWrite Off ZTest Always Cull Off
+            HLSLPROGRAM
+            #pragma vertex SubjectMaskVert
+            #pragma fragment SubjectMaskFrag
+            #include "Assets/MoonEnvironment/Shaders/SilverPrintSubjectDepth.hlsl"
+            CBUFFER_START(UnityPerMaterial)
+                half4 _BaseColor, _VoidTint;
+            CBUFFER_END
+            struct Attributes { float4 positionOS : POSITION; float2 uv : TEXCOORD0; float4 color : COLOR; };
+            struct Varyings { float4 positionCS : SV_POSITION; float2 uv : TEXCOORD0; half4 color : COLOR; };
+            Varyings SubjectMaskVert(Attributes v)
+            {
+                Varyings o; o.positionCS=TransformObjectToHClip(v.positionOS.xyz); o.uv=v.uv; o.color=v.color; return o;
+            }
+            half4 SubjectMaskFrag(Varyings v) : SV_Target
+            {
+                clip((1 - smoothstep(.7,1,abs(v.uv.y*2-1))) * v.color.a - .01);
+                MoonSubjectDepthTest(v.positionCS, v.positionCS.z, false); return 1;
+            }
+            ENDHLSL
+        }
     }
 }

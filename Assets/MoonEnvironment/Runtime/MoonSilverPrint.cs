@@ -130,6 +130,10 @@ namespace Unity.MP_FPS.Moon
                 new ShaderTagId("UniversalForward"), new ShaderTagId("UniversalForwardOnly"),
                 new ShaderTagId("SRPDefaultUnlit")
             };
+            private static readonly List<ShaderTagId> SubjectCoverageTags = new List<ShaderTagId>
+            {
+                new ShaderTagId("MoonSilverPrintSubjectMask")
+            };
 
             public SilverPrintPass(Material grade)
             {
@@ -246,10 +250,18 @@ namespace Unity.MP_FPS.Moon
                     cameraData, frameData.Get<UniversalLightData>(), SortingCriteria.CommonOpaque);
                 drawing.overrideMaterial = SubjectMaskMaterial;
                 drawing.overrideMaterialPassIndex = 0;
-                var filtering = new FilteringSettings(RenderQueueRange.all, SubjectLayers);
+                var filtering = new FilteringSettings(RenderQueueRange.opaque, SubjectLayers);
                 data.layerSubjects = graph.CreateRendererList(new RendererListParams(
                     frameData.Get<UniversalRenderingData>().cullResults, drawing, filtering));
+                var coverageDrawing = RenderingUtils.CreateDrawingSettings(SubjectCoverageTags,
+                    frameData.Get<UniversalRenderingData>(), cameraData, frameData.Get<UniversalLightData>(), SortingCriteria.CommonOpaque);
+                // These actor shaders explicitly opt in to native coverage. Drawing
+                // through the cull results also preserves SpriteRenderer bindings.
+                var coverageFiltering = new FilteringSettings(RenderQueueRange.all);
+                data.coverageSubjects = graph.CreateRendererList(new RendererListParams(
+                    frameData.Get<UniversalRenderingData>().cullResults, coverageDrawing, coverageFiltering));
                 builder.UseRendererList(data.layerSubjects);
+                builder.UseRendererList(data.coverageSubjects);
                 builder.UseTexture(data.depth, AccessFlags.Read);
                 builder.SetRenderAttachment(mask, 0, AccessFlags.Write);
                 builder.AllowGlobalStateModification(true);
@@ -258,12 +270,23 @@ namespace Unity.MP_FPS.Moon
                     context.cmd.SetGlobalTexture(SubjectDepthId, passData.depth);
                     context.cmd.SetGlobalVector(SubjectDepthScaleId, ScaleBias(context, passData.depth, passData.mask));
                     context.cmd.DrawRendererList(passData.layerSubjects);
+                    context.cmd.DrawRendererList(passData.coverageSubjects);
                     foreach (var renderer in passData.renderers)
                     {
                         if (!renderer) continue;
                         renderer.GetSharedMaterials(passData.materials);
                         for (int i = 0; i < passData.materials.Count; i++)
-                            if (passData.materials[i]) context.cmd.DrawRenderer(renderer, passData.material, i, 0);
+                        {
+                            var sourceMaterial = passData.materials[i];
+                            if (!sourceMaterial) continue;
+                            int coveragePass = sourceMaterial.FindPass("SilverPrintSubjectMask");
+                            if (coveragePass >= 0) continue; // Drawn with its native renderer list above.
+                            if (sourceMaterial.renderQueue <= (int)RenderQueue.GeometryLast ||
+                                (sourceMaterial.HasProperty("_ZWrite") && sourceMaterial.GetFloat("_ZWrite") > .5f))
+                                context.cmd.DrawRenderer(renderer, passData.material, i, 0);
+                            // Unknown non-depth-writing shaders cannot safely use a solid
+                            // replacement mask. They must supply their actual coverage pass.
+                        }
                     }
                 });
                 return mask;
@@ -289,7 +312,7 @@ namespace Unity.MP_FPS.Moon
             private sealed class SubjectPassData
             {
                 public TextureHandle mask, depth;
-                public RendererListHandle layerSubjects;
+                public RendererListHandle layerSubjects, coverageSubjects;
                 public Material material;
                 public List<Renderer> renderers;
                 public List<Material> materials;

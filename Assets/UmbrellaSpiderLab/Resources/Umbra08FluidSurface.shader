@@ -124,6 +124,27 @@ Shader "SpiderLab/Umbra08 Particle Fluid Surface"
         }
         Pass
         {
+            Name "SilverPrintSubjectMask"
+            Tags { "LightMode"="MoonSilverPrintSubjectMask" }
+            ZWrite Off ZTest Always
+            HLSLPROGRAM
+            #pragma target 4.5
+            #pragma vertex Vert
+            #pragma fragment SubjectMaskFrag
+            #include "Assets/MoonEnvironment/Shaders/SilverPrintSubjectDepth.hlsl"
+            half4 SubjectMaskFrag(Varyings v) : SV_Target
+            {
+                UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(v);
+                float3 origin = TransformWorldToObject(GetCameraPositionWS());
+                float3 direction = normalize(TransformWorldToObject(v.positionWS) - origin), hit;
+                if (!Trace(origin, direction, hit)) discard;
+                MoonSubjectDepthTest(v.positionCS, DeviceDepth(TransformObjectToWorld(hit)), true);
+                return 1;
+            }
+            ENDHLSL
+        }
+        Pass
+        {
             Name "ShadowCaster"
             Tags { "LightMode"="ShadowCaster" }
             ColorMask 0 Cull Back

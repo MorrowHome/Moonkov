@@ -25,5 +25,28 @@ Shader "DollSinger/RifleHaloLine"
             }
             ENDHLSL
         }
+        Pass
+        {
+            Name "SilverPrintSubjectMask"
+            Tags { "LightMode"="MoonSilverPrintSubjectMask" }
+            Blend Off ZWrite Off ZTest Always
+            HLSLPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            #include "Assets/MoonEnvironment/Shaders/SilverPrintSubjectDepth.hlsl"
+            CBUFFER_START(UnityPerMaterial)
+            half _Gain;
+            CBUFFER_END
+            struct Input { float4 vertex:POSITION; half4 color:COLOR; float2 uv:TEXCOORD0; };
+            struct Output { float4 position:SV_POSITION; half4 color:COLOR; float2 uv:TEXCOORD0; };
+            Output vert(Input v) { Output o; o.position=TransformObjectToHClip(v.vertex.xyz); o.color=v.color; o.uv=v.uv; return o; }
+            half4 frag(Output i):SV_Target
+            {
+                clip(i.color.a - .01);
+                MoonSubjectDepthTest(i.position, i.position.z, false); return 1;
+            }
+            ENDHLSL
+        }
     }
 }

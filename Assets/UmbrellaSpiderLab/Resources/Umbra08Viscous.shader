@@ -111,6 +111,32 @@ Shader "SpiderLab/Umbra08 Viscous"
         }
         Pass
         {
+            Name "SilverPrintSubjectMask"
+            Tags { "LightMode"="MoonSilverPrintSubjectMask" }
+            ZWrite Off ZTest Always
+            HLSLPROGRAM
+            #pragma target 3.5
+            #pragma vertex SubjectMaskVert
+            #pragma fragment SubjectMaskFrag
+            #pragma multi_compile_instancing
+            #include "Assets/MoonEnvironment/Shaders/SilverPrintSubjectDepth.hlsl"
+            struct SubjectMaskOutput { float4 positionCS : SV_POSITION; UNITY_VERTEX_OUTPUT_STEREO };
+            SubjectMaskOutput SubjectMaskVert(SkinInput v)
+            {
+                UNITY_SETUP_INSTANCE_ID(v);
+                SubjectMaskOutput o = (SubjectMaskOutput)0;
+                UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
+                o.positionCS = TransformObjectToHClip(FlowPosition(v)); return o;
+            }
+            half4 SubjectMaskFrag(SubjectMaskOutput v) : SV_Target
+            {
+                UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(v);
+                MoonSubjectDepthTest(v.positionCS, v.positionCS.z, true); return 1;
+            }
+            ENDHLSL
+        }
+        Pass
+        {
             Name "ShadowCaster"
             Tags { "LightMode"="ShadowCaster" }
             ZWrite On ZTest LEqual ColorMask 0

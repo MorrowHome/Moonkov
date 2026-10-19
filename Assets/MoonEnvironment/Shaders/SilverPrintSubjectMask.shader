@@ -12,10 +12,7 @@ Shader "MoonEnvironment/SilverPrintSubjectMask"
             #pragma vertex Vert
             #pragma fragment Frag
             #pragma multi_compile_instancing
-            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-
-            TEXTURE2D_X_FLOAT(_MoonSubjectSceneDepth);
-            float4 _MoonSubjectDepthScaleBias;
+            #include "SilverPrintSubjectDepth.hlsl"
 
             struct Attributes
             {
@@ -38,14 +35,7 @@ Shader "MoonEnvironment/SilverPrintSubjectMask"
             half4 Frag(Varyings input) : SV_Target
             {
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
-                float2 uv = GetNormalizedScreenSpaceUV(input.positionCS);
-                uv = uv * _MoonSubjectDepthScaleBias.xy + _MoonSubjectDepthScaleBias.zw;
-                float raw = SAMPLE_TEXTURE2D_X(_MoonSubjectSceneDepth, sampler_PointClamp, uv).r;
-                float sceneEye = LinearEyeDepth(raw, _ZBufferParams);
-                float subjectEye = LinearEyeDepth(input.positionCS.z, _ZBufferParams);
-                // Depth test against the resolved opaque scene avoids MSAA attachment
-                // mismatches and prevents actors behind walls from punching holes in the grade.
-                clip(sceneEye + max(.0005, sceneEye * .00001) - subjectEye);
+                MoonSubjectDepthTest(input.positionCS, input.positionCS.z, true);
                 return 1;
             }
             ENDHLSL
