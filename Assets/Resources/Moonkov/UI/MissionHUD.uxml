@@ -1,0 +1,31 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="MissionHUD.uss" />
+    <ui:VisualElement name="missionHud" class="mission-hud" picking-mode="Ignore">
+        <ui:Label text="局内发现 / 无需接取" class="mission-eyebrow" />
+        <ui:Label name="missionTitle" class="mission-title" />
+        <ui:Label name="missionStep" class="mission-step" />
+        <ui:VisualElement class="mission-track"><ui:VisualElement name="missionFill" class="mission-fill" /></ui:VisualElement>
+        <ui:Label name="missionLocation" class="mission-location" />
+        <ui:Label name="missionRisk" class="mission-risk" />
+        <ui:Label text="J  事件详情 · 追踪只影响显示" class="mission-hint" />
+    </ui:VisualElement>
+    <ui:VisualElement name="missionInteraction" class="mission-interaction" picking-mode="Ignore">
+        <ui:Label name="missionAction" class="mission-step" />
+        <ui:Label name="missionActionNote" class="mission-location" />
+    </ui:VisualElement>
+    <ui:VisualElement name="missionDetails" class="mission-modal" picking-mode="Position">
+        <ui:VisualElement class="mission-sheet">
+            <ui:Label text="设施记录 / MC00" class="mission-eyebrow" />
+            <ui:Label name="missionDetailTitle" class="mission-title" />
+            <ui:Label text="已知事件。所有有效行动都会记录；不追踪也能完成。" class="mission-step" />
+            <ui:ScrollView class="mission-scroll"><ui:VisualElement name="missionNodes" /></ui:ScrollView>
+            <ui:VisualElement name="missionControls" class="mission-controls" />
+            <ui:Label name="missionClue" class="mission-clue" />
+            <ui:Label name="missionOutcome" class="mission-risk" />
+            <ui:VisualElement class="mission-actions">
+                <ui:Button name="missionPin" text="取消追踪" />
+                <ui:Button name="missionClose" text="返回战局" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -58,12 +58,13 @@ namespace Unity.MP_FPS
         private float m_LootErrorUntil;
         private int m_PreviousCount = -1;
         private static RaidHUD s_Active;
-        public static bool InventoryOpen => s_Active != null && s_Active.m_InventoryVisible;
-        public static bool PointerRequested => s_Active != null && (s_Active.m_InventoryVisible || s_Active.m_WasSettled);
+        public static bool InventoryOpen => s_Active != null && (s_Active.m_InventoryVisible || s_Active.m_MissionDetailsVisible);
+        public static bool PointerRequested => InventoryOpen || (s_Active != null && s_Active.m_WasSettled);
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetPresentation() => s_Active = null;
         public static bool CloseInventory()
         {
+            if (s_Active != null && s_Active.m_MissionDetailsVisible) { s_Active.SetMissionDetails(false); return true; }
             if (!InventoryOpen) return false;
             if (!s_Active.m_HealthSelected && s_Active.m_InventoryView.Escape()) return true;
             s_Active.SetInventory(false); return true;
@@ -121,6 +122,7 @@ namespace Unity.MP_FPS
             m_LootOpenPending=false;m_OpenedLootId=-1;m_DissectingLootId=-1;
             m_Root.Q<Button>("raidPackClose").clicked += ClosePack;
             MoonkovLocalization.Bind(m_Root);
+            InitializeMissions();
         }
 
         private void EquipmentTab() => SelectHealth(false);
@@ -216,6 +218,7 @@ namespace Unity.MP_FPS
 
         private void SetInventory(bool visible)
         {
+            if (visible && m_MissionDetailsVisible) SetMissionDetails(false);
             if(m_InventoryRequestPending && m_Snapshot.Phase==RaidPhase.Active && !visible)
             {
                 if(m_DissectingLootId<0)return;
@@ -331,6 +334,7 @@ namespace Unity.MP_FPS
             }
             else m_Minimap.Hide();
             UpdateGrenades(alive && ready && !settled);
+            bool missionControl = UpdateMissions(alive && ready && !settled);
             if (alive && ready && !settled && !m_InventoryVisible && !m_InventoryRequestPending &&
                 !GameSettings.Instance.IsPauseMenuOpen && UnityEngine.Cursor.lockState == CursorLockMode.Locked &&
                 Keyboard.current != null && Keyboard.current.digit4Key.wasPressedThisFrame && !m_InventoryQuery.IsEmptyIgnoreFilter)
@@ -360,10 +364,10 @@ namespace Unity.MP_FPS
                                (Gamepad.current != null && Gamepad.current.buttonWest.wasPressedThisFrame);
                 bool controlInput = (Keyboard.current != null && Keyboard.current.fKey.wasPressedThisFrame) ||
                     (Gamepad.current != null && Gamepad.current.buttonWest.wasPressedThisFrame);
-                bool controlPressed = controlInput && !m_InventoryVisible && !m_InventoryRequestPending &&
+                bool controlPressed = !missionControl && controlInput && !m_InventoryVisible && !m_InventoryRequestPending &&
                     UnityEngine.Cursor.lockState == CursorLockMode.Locked && !GameSettings.Instance.IsPauseMenuOpen &&
                     m_AirlockPrompt.TryInteract(Camera.main, position, m_World);
-                if (nearest >= 0 && pressed && !controlPressed && !m_InventoryVisible && !m_InventoryRequestPending && UnityEngine.Cursor.lockState == CursorLockMode.Locked && !GameSettings.Instance.IsPauseMenuOpen)
+                if (nearest >= 0 && pressed && !controlPressed && !missionControl && !m_InventoryVisible && !m_InventoryRequestPending && UnityEngine.Cursor.lockState == CursorLockMode.Locked && !GameSettings.Instance.IsPauseMenuOpen)
                 {
                     if(RequestLoot(nearest))
                     {
@@ -679,6 +683,7 @@ namespace Unity.MP_FPS
 
         private void OnDisable()
         {
+            CancelMissionHold();
             m_Minimap?.Dispose(); m_Minimap = null;
             m_AirlockPrompt?.RefreshSelection(null, default, false);
             if (m_Root != null) MoonkovAudio.UnbindUI(m_Root);
@@ -693,7 +698,8 @@ namespace Unity.MP_FPS
             }
             m_World = null;
             if (s_Active == this) s_Active = null;
-            if (m_InventoryVisible) Utils.SetCursorVisible(GameSettings.Instance.IsPauseMenuOpen);
+            if (m_InventoryVisible || m_MissionDetailsVisible) Utils.SetCursorVisible(GameSettings.Instance.IsPauseMenuOpen);
+            m_MissionDetailsVisible = false;
             m_InventoryVisible = false;
             m_Root?.Clear();
         }

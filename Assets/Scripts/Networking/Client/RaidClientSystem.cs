@@ -11,7 +11,7 @@ namespace Unity.MP_FPS
 
         protected override void OnCreate()
         {
-            m_State = EntityManager.CreateEntity(typeof(RaidClientState));
+            m_State = EntityManager.CreateEntity(typeof(RaidClientState), typeof(RaidMissionClientState));
             EntityManager.AddComponentObject(m_State, new RaidInventoryClientState());
             EntityManager.AddComponentObject(m_State,new RaidDeathBagClientState());
         }
@@ -19,6 +19,14 @@ namespace Unity.MP_FPS
         protected override void OnUpdate()
         {
             using var ecb = new EntityCommandBuffer(Allocator.Temp);
+            foreach(var (mission,received,entity) in SystemAPI.Query<RefRO<RaidMissionSnapshotRpc>,RefRW<ReceiveRpcCommandRequest>>().WithEntityAccess())
+            {
+                received.ValueRW.Consume();
+                var current=EntityManager.GetComponentData<RaidMissionClientState>(m_State).Snapshot;
+                if(mission.ValueRO.Sequence>current.Sequence || !mission.ValueRO.WorldId.Equals(current.WorldId))
+                    EntityManager.SetComponentData(m_State,new RaidMissionClientState {Snapshot=mission.ValueRO});
+                ecb.DestroyEntity(entity);
+            }
             foreach(var (bag,received,entity) in SystemAPI.Query<RefRO<RaidCorpseRpc>,RefRW<ReceiveRpcCommandRequest>>().WithEntityAccess())
             {
                 received.ValueRW.Consume();EntityManager.GetComponentObject<RaidDeathBagClientState>(m_State).Receive(bag.ValueRO);ecb.DestroyEntity(entity);

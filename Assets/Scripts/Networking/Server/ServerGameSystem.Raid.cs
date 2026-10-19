@@ -14,6 +14,7 @@ namespace Unity.MP_FPS
             if (map == null) return;
             var caches=LootContainers(ref state);
             InitializeLootContainers(ref state);
+            HandleMissions(ref state, ecb);
             HandleLootRequests(ref state,ecb);
             HandleInventoryRequests(ref state, ecb);
             RefreshLootContainers(ref state);

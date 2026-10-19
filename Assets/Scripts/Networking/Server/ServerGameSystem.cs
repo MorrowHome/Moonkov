@@ -50,6 +50,7 @@ namespace Unity.MP_FPS
             _joinedClientLookup = state.GetComponentLookup<JoinedClient>();
             var lootEntity=state.EntityManager.CreateSingleton(new RaidLootWorld());
             state.EntityManager.AddComponentObject(lootEntity,new RaidLootContainers());
+            state.EntityManager.AddComponentObject(lootEntity,new RaidMissionWorld());
             m_PersistenceEntity = state.EntityManager.CreateEntity();
         }
 

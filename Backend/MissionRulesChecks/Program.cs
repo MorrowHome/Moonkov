@@ -6,6 +6,11 @@ void Check(bool value, string name) { if (!value) throw new Exception(name); che
 MissionOperation Create(MissionDefinition d) => new(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), 1, d, 0);
 double Finish(MissionOperation op, string actor, int node, uint request, double now)
 {
+    if (op.Objective(node).Kind == MissionObjectiveKind.Configure)
+    {
+        Check(op.Configure(actor, 1, node, request, op.Objective(node).ExpectedChoice, now) == MissionActionResult.Completed, "configure " + node);
+        return now + .1;
+    }
     Check(op.Begin(actor, 1, node, request, now) == MissionActionResult.Started, "begin " + node);
     double end = now + op.Objective(node).Seconds;
     for (double t = now + .5; t < end; t += .5)
@@ -22,13 +27,13 @@ var nan = moon.Copy(); nan.Objectives[0].Seconds = float.NaN;
 Check(nan.Validate() != null, "nonfinite content rejected");
 var op = Create(moon);
 moon.Objectives[0].Seconds = 300;
-Check(op.Objective(0).Seconds == 4, "freeze definitions");
+Check(op.Objective(0).Seconds == 1, "freeze definitions");
 Check(op.Begin("actor", 1, 2, 1, 0) == MissionActionResult.Prerequisite, "cannot skip power");
 Check(op.Begin("actor", 9, 0, 2, 0) == MissionActionResult.Invalid, "old epoch rejected");
 Check(op.Begin("actor", 1, 0, 2, double.NaN) == MissionActionResult.Invalid, "nonfinite server time");
 double time = Finish(op, "actor", 0, 2, 1);
 Check(op.Completed(0) && !op.Completed(1), "individual switches");
-Check(op.Begin("actor", 1, 0, 3, time) == MissionActionResult.AlreadyCompleted, "no duplicate power");
+Check(op.Configure("actor", 1, 0, 3, 1, time) == MissionActionResult.AlreadyCompleted, "no duplicate power");
 time = Finish(op, "late-player", 1, 1, time + .1);
 time = Finish(op, "third-player", 2, 1, time);
 op.Tick(time + 44);
@@ -37,21 +42,24 @@ op.Tick(time + 45);
 Check(op.Phase == MissionPhase.OutputReady && op.Completed(3), "complete without acceptance or tracking");
 Check(op.Resolve() && !op.Resolve(), "resolve once");
 var conflict = Create(MissionCatalog.Mooncore());
-Check(conflict.Begin("A", 1, 0, 1, 0) == MissionActionResult.Started, "lock actor");
-Check(conflict.Begin("B", 1, 0, 1, .1) == MissionActionResult.Busy, "lock contention");
+Check(conflict.Begin("A", 1, 1, 1, 0) == MissionActionResult.Started, "lock actor");
+Check(conflict.Begin("B", 1, 1, 1, .1) == MissionActionResult.Busy, "lock contention");
 conflict.Cancel("A");
-Check(conflict.Begin("B", 1, 0, 2, .2) == MissionActionResult.Started, "release after cancel");
-Check(conflict.Begin("B", 1, 0, 2, .3) == MissionActionResult.Running, "retry does not restart");
-Check(conflict.Begin("B", 1, 0, 1, .4) == MissionActionResult.Stale, "old request rejected");
+Check(conflict.Begin("B", 1, 1, 2, .2) == MissionActionResult.Started, "release after cancel");
+Check(conflict.Begin("B", 1, 1, 2, .3) == MissionActionResult.Running, "retry does not restart");
+Check(conflict.Begin("B", 1, 1, 1, .4) == MissionActionResult.Stale, "old request rejected");
 conflict.Tick(3);
 Check(conflict.Renew("B", 2, 3) == MissionActionResult.Stale, "lease expires on disconnect");
-Check(conflict.Begin("A", 1, 0, 2, 3) == MissionActionResult.Started, "unlock after expiry");
+Check(conflict.Begin("A", 1, 1, 2, 3) == MissionActionResult.Started, "unlock after expiry");
 Check(conflict.Renew("A", 2, 2) == MissionActionResult.Invalid, "time cannot go backwards");
 var late = Create(MissionCatalog.Mooncore()); late.Tick(120);
 Check(late.Phase == MissionPhase.Expired, "unvisited offer expires");
 Check(late.Begin("A", 1, 0, 1, 121) == MissionActionResult.Expired, "expired cannot activate");
-var active = Create(MissionCatalog.Mooncore()); active.Begin("A", 1, 0, 1, 1); active.Tick(601);
+var active = Create(MissionCatalog.Mooncore()); active.Begin("A", 1, 1, 1, 1); active.Tick(601);
 Check(active.Phase == MissionPhase.Expired, "active deadline");
+var configure = Create(MissionCatalog.Mooncore());
+Check(configure.Configure("A", 1, 0, 1, 2, 1) == MissionActionResult.Invalid && !configure.Completed(0), "wrong circuit choice does not advance");
+Check(configure.Configure("A", 1, 0, 2, 1, 2) == MissionActionResult.Completed, "valid physical circuit choice");
 var arc = Create(archive);
 time = Finish(arc, "explorer", 1, 1, 1);
 Check(arc.Completed(1) && !arc.Completed(0), "early scan retained");

@@ -1,0 +1,25 @@
+.mission-hud { position: absolute; top: 360px; right: 24px; width: 300px; padding: 14px; background-color: rgba(13, 17, 24, 0.94); border-left-width: 3px; border-left-color: rgb(22, 75, 255); display: none; }
+.mission-eyebrow { color: rgb(164, 176, 194); font-size: 11px; margin-bottom: 7px; }
+.mission-title { color: rgb(241, 242, 237); font-size: 22px; -unity-font-style: bold; margin-bottom: 9px; white-space: normal; }
+.mission-step { color: rgb(241, 242, 237); font-size: 15px; white-space: normal; margin-bottom: 6px; }
+.mission-location { color: rgb(182, 193, 209); font-size: 13px; white-space: normal; }
+.mission-risk { color: rgb(255, 154, 135); font-size: 13px; white-space: normal; margin-top: 9px; }
+.mission-hint { color: rgb(164, 176, 194); font-size: 11px; white-space: normal; margin-top: 11px; }
+.mission-track { height: 3px; margin-top: 5px; margin-bottom: 8px; background-color: rgb(43, 52, 69); }
+.mission-fill { height: 3px; background-color: rgb(75, 120, 255); width: 0; }
+.mission-interaction { position: absolute; left: 34%; right: 34%; bottom: 190px; padding: 12px; background-color: rgba(13, 17, 24, 0.96); display: none; }
+.mission-modal { position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.72); align-items: center; justify-content: center; display: none; }
+.mission-sheet { width: 76%; max-width: 840px; max-height: 84%; padding: 24px; background-color: rgb(15, 20, 29); border-top-width: 3px; border-top-color: rgb(22, 75, 255); }
+.mission-scroll { min-height: 120px; max-height: 310px; margin-top: 16px; margin-bottom: 14px; }
+.mission-node { padding-top: 9px; padding-bottom: 9px; border-bottom-width: 1px; border-bottom-color: rgb(43, 52, 69); color: rgb(241, 242, 237); font-size: 15px; white-space: normal; }
+.mission-node-complete { color: rgb(151, 201, 183); }
+.mission-clue { color: rgb(188, 199, 215); font-size: 14px; white-space: normal; margin-top: 10px; }
+.mission-actions { flex-direction: row; justify-content: flex-end; margin-top: 20px; }
+.mission-actions > Button { min-width: 130px; min-height: 38px; margin-left: 12px; color: rgb(241, 242, 237); background-color: rgb(28, 39, 60); border-width: 1px; border-color: rgb(93, 113, 151); font-size: 15px; }
+.mission-actions > Button:hover, .mission-actions > Button:focus { background-color: rgb(22, 75, 255); }
+.mission-actions > Button:active { background-color: rgb(18, 35, 75); }
+.mission-compact .mission-hud { width: 250px; top: 350px; right: 14px; padding: 11px; }
+.mission-compact .mission-title { font-size: 19px; }
+.mission-compact .mission-interaction { left: 26%; right: 26%; bottom: 145px; }
+.mission-controls > Button { min-height: 34px; margin-bottom: 7px; padding-left: 12px; color: rgb(241, 242, 237); background-color: rgb(28, 39, 60); font-size: 14px; -unity-text-align: middle-left; }
+.mission-controls > Button:hover, .mission-controls > Button:focus { background-color: rgb(22, 75, 255); }

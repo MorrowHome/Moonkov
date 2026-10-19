@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Unity.MP_FPS.Missions
 {
-    public enum MissionObjectiveKind : byte { Interact, Scan, Process }
+    public enum MissionObjectiveKind : byte { Interact, Scan, Process, Configure }
     public enum MissionPhase : byte { Offered, Active, OutputReady, Resolved, Expired }
     public enum MissionActionResult : byte { Started, Running, Completed, AlreadyCompleted, Busy, Prerequisite, Invalid, Expired, Stale }
 
@@ -16,7 +16,10 @@ namespace Unity.MP_FPS.Missions
         public uint Prerequisites;
         public float Seconds;
         public bool RecordBeforePrerequisites;
-        public MissionObjectiveDefinition Copy() => (MissionObjectiveDefinition)MemberwiseClone();
+        public string[] Choices;
+        public int ExpectedChoice;
+        public MissionObjectiveDefinition Copy()
+        { var n = (MissionObjectiveDefinition)MemberwiseClone(); n.Choices = Choices == null ? null : (string[])Choices.Clone(); return n; }
     }
 
     [Serializable]
@@ -44,6 +47,8 @@ namespace Unity.MP_FPS.Missions
                     !Enum.IsDefined(typeof(MissionObjectiveKind), n.Kind) || !Finite(n.Seconds, .1f, 600) ||
                     (n.Prerequisites & ~all) != 0 || (n.Prerequisites & (1u << i)) != 0)
                     return "mission_objective";
+                if (n.Kind == MissionObjectiveKind.Configure && (n.Choices == null || n.Choices.Length < 2 || n.Choices.Length > 6 ||
+                    n.ExpectedChoice < 1 || n.ExpectedChoice > n.Choices.Length || Array.Exists(n.Choices, string.IsNullOrWhiteSpace))) return "mission_configuration";
             }
             // A topological pass rejects cycles without executing content-authored code.
             uint visited = 0;
@@ -73,7 +78,8 @@ namespace Unity.MP_FPS.Missions
         {
             Id = "mc00_mooncore", Name = "封存样本", ArtifactCode = "mooncore_fragment", Weight = 45, OutputCount = 2,
             Objectives = new[] {
-                Node("power_a", "power_a", "恢复备用配电 A", 4),
+                new MissionObjectiveDefinition { Id = "power_a", Anchor = "power_a", Name = "隔离烧损的供电 A 线路", Kind = MissionObjectiveKind.Configure,
+                    Seconds = 1, ExpectedChoice = 1, Choices = new[] { "断开烧损支路，保留备用母线", "重新合上烧损支路", "切断整座设施电源" } },
                 Node("power_b", "power_b", "恢复维修配电 B", 4),
                 Node("start", "sampler", "启动月核切割", 3, 3),
                 Node("cutting", "sampler", "等待切割完成", 45, 4, MissionObjectiveKind.Process)
@@ -146,7 +152,7 @@ namespace Unity.MP_FPS.Missions
             if (!m_Requests.ContainsKey(actor) && m_Requests.Count >= 256) return MissionActionResult.Busy;
             m_Requests[actor] = request;
             var objective = m_Definition.Objectives[node];
-            if (objective.Kind == MissionObjectiveKind.Process) return MissionActionResult.Invalid;
+            if (objective.Kind == MissionObjectiveKind.Process || objective.Kind == MissionObjectiveKind.Configure) return MissionActionResult.Invalid;
             if (Completed(node)) return MissionActionResult.AlreadyCompleted;
             if (!objective.RecordBeforePrerequisites && !Prerequisites(objective)) return MissionActionResult.Prerequisite;
             foreach (var interaction in m_Interactions.Values)
@@ -168,6 +174,24 @@ namespace Unity.MP_FPS.Missions
             Complete(action.Node);
             StartProcesses(now);
             return MissionActionResult.Completed;
+        }
+
+        public MissionActionResult Configure(string actor, int epoch, int node, uint request, int choice, double now)
+        {
+            if (!ValidTime(now) || now < m_LastTime || string.IsNullOrWhiteSpace(actor) || actor.Length > 128 ||
+                epoch != Epoch || node < 0 || node >= ObjectiveCount || request == 0) return MissionActionResult.Invalid;
+            Tick(now);
+            if (Phase == MissionPhase.Expired || Phase == MissionPhase.Resolved) return MissionActionResult.Expired;
+            if (m_Requests.TryGetValue(actor, out var old) && request <= old) return MissionActionResult.Stale;
+            if (!m_Requests.ContainsKey(actor) && m_Requests.Count >= 256) return MissionActionResult.Busy;
+            m_Requests[actor] = request;
+            var n = m_Definition.Objectives[node];
+            if (n.Kind != MissionObjectiveKind.Configure) return MissionActionResult.Invalid;
+            if (Completed(node)) return MissionActionResult.AlreadyCompleted;
+            if (!Prerequisites(n)) return MissionActionResult.Prerequisite;
+            if (choice != n.ExpectedChoice) return MissionActionResult.Invalid;
+            if (Phase == MissionPhase.Offered) { Phase = MissionPhase.Active; Deadline = now + m_Definition.ActiveSeconds; Revision++; }
+            Complete(node); StartProcesses(now); return MissionActionResult.Completed;
         }
 
         public void Cancel(string actor)

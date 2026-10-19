@@ -95,6 +95,7 @@ namespace Unity.MP_FPS
         {
             position=default;var map=MoonRaidMap.Active;
             if(map!=null && id>=0 && id<map.LootPositions.Length){position=map.LootPositions[id];return true;}
+            if(LootContainers(ref state).MissionCaches.TryGetValue(id,out position))return true;
             if(!LootContainers(ref state).DeathBags.TryGetValue(id,out var corpse))return false;
             position=corpse.Position+new float3(0,.25f,0);return true;
         }
