@@ -32,7 +32,7 @@ namespace Unity.MP_FPS.Client
             window.style.left = position.HasValue ? Mathf.Max(0, position.Value.x) : 70 + offset;
             window.style.top = position.HasValue ? Mathf.Max(0, position.Value.y) : 70 + offset;
             var header = window.Q<VisualElement>("windowHeader");
-            window.Q<Label>("windowTitle").text = title;
+            MoonkovLocalization.Set(window.Q<Label>("windowTitle"), title);
             window.Q<Button>("windowClose").clicked += () => Close(window);
             TerminalMotion.Fade(window, 0, .28f);
             header.AddManipulator(new WindowDrag(window));

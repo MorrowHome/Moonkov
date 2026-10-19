@@ -1,0 +1,11 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="itemInspection" class="archive-item-inspection">
+        <ui:VisualElement name="inspectionArt" class="archive-item-art" picking-mode="Ignore" />
+        <ui:VisualElement class="archive-item-copy">
+            <ui:Label name="inspectionTitle" class="terminal-title" />
+            <ui:Label name="inspectionStats" class="terminal-heading" />
+            <ui:Label name="inspectionDetail" class="terminal-copy" />
+            <ui:VisualElement name="inspectionActions" class="archive-item-actions" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

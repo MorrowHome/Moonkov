@@ -76,3 +76,19 @@
 .raid-ui .raid-result-storage .raid-result-exhibit { width: 35%; }
 .raid-ui .raid-result-storage .raid-result-window { width: 59%; }
 .raid-ui .raid-result-window .raid-stepper .raid-step-active { color: #f1f2ed; }
+/* Field D: corner instruments, clear center, real live values only. */
+.raid-ui .raid-status { left: 28px; right: auto; width: 214px; border-left-color: #164bff; background-color: rgba(8,9,12,0.92); }
+.raid-ui .raid-timer { font-size: 32px; }
+.raid-ui .raid-oxygen-panel { left: auto; right: 28px; width: 280px; border-left-color: #164bff; background-color: rgba(8,9,12,0.92); }
+.raid-ui .raid-oxygen-warning { left: auto; right: 28px; top: 138px; max-width: 360px; border-left-width: 4px; border-left-color: #ad4236; }
+.raid-ui .raid-cargo-instrument { position: absolute; right: 28px; bottom: 190px; min-width: 160px; padding: 10px 14px; background-color: rgba(8,9,12,0.92); border-width: 1px; border-color: #7b8595; border-left-width: 3px; border-left-color: #164bff; }
+.raid-ui .raid-cargo-instrument Label { font-size: 14px; color: #f1f2ed; white-space: normal; }
+.raid-ui .raid-result-overlay { background-color: #f1f2ed; background-image: url("PageArt/Operations.png"); background-size: cover; background-position: center; }
+.raid-ui .raid-result-exhibit { display: none; }
+.raid-ui .raid-result-window { background-color: #f1f2ed; border-width: 1px; border-color: #929ba5; border-top-width: 4px; border-top-color: #164bff; width: 55%; margin-right: 3%; }
+.raid-ui .raid-result-heading { font-size: 60px; -unity-font-style: normal; }
+.raid-ui .raid-inventory-window { border-top-width: 4px; border-top-color: #164bff; }
+.raid-ui .raid-inventory-window > .raid-inventory-header { background-image: url("ApprovedHome/CardMoon.png"); background-size: cover; background-position: right; padding: 5px 12px; height: 52px; }
+.raid-ui .raid-inventory-window .raid-inventory-title { color: #f1f2ed; background-color: #08090c; padding: 4px 12px; }
+.raid-ui .raid-inventory-header Button { background-color: #08090c; color: #f1f2ed; border-width: 1px; border-color: #929ba5; }
+.raid-ui .raid-inventory-header Button:focus { border-width: 2px; border-color: #164bff; }

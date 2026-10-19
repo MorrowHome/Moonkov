@@ -1,4 +1,3 @@
-home: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
-home-dark: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
-home-compact: native runtime panel 1280x720; local fixtures; not a gameplay/network acceptance.
+halo: native node submit updates inspector; center selection restores original HaloIcons/Rifle; no inventory transaction
+halo: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
 COMPLETE

@@ -34,15 +34,15 @@
                     <ui:Label class="terminal-title" text="EVERY RETURN COUNTS" />
                     <ui:Label class="terminal-copy" text="Your ship needs recovered materials. Search the lunar caches, manage your limited cargo space and make it back to the extraction zone." />
                     <ui:VisualElement class="terminal-objectives">
-                        <ui:VisualElement class="terminal-row terminal-stat">
+                        <ui:VisualElement class="terminal-row terminal-stat protocol-recover">
                             <ui:Label class="terminal-stat-name" text="OBJECTIVE 01" />
                             <ui:Label class="terminal-stat-value" text="COLLECT ANY SURFACE SUPPLY" name="statValue0" />
                         </ui:VisualElement>
-                        <ui:VisualElement class="terminal-row terminal-stat">
+                        <ui:VisualElement class="terminal-row terminal-stat protocol-manage">
                             <ui:Label class="terminal-stat-name" text="OBJECTIVE 02" />
                             <ui:Label class="terminal-stat-value" text="REACH THE EXTRACTION BEACON" name="statValue1" />
                         </ui:VisualElement>
-                        <ui:VisualElement class="terminal-row terminal-stat">
+                        <ui:VisualElement class="terminal-row terminal-stat protocol-extract">
                             <ui:Label class="terminal-stat-name" text="OBJECTIVE 03" />
                             <ui:Label class="terminal-stat-value" text="SURVIVE THE EXTRACTION COUNTDOWN" name="statValue2" />
                         </ui:VisualElement>

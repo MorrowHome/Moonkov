@@ -16,7 +16,7 @@ namespace Unity.MP_FPS.Client
         private readonly string[] m_Pages = { "SHIP", "LOADOUT / STORAGE", "HALO BUILD", "SUPPLIERS", "OPERATIONS", "TASKS", "BASE", "COMMS", "SETTINGS" };
         private readonly TerminalWindows m_Windows;
         private MenuCharacterView m_Character;
-        private int m_Page, m_Step, m_ShownStep = -1;
+        private int m_Page;
         private bool m_Busy, m_Ready;
         private bool m_HomeDark;
         private string m_Player;
@@ -43,6 +43,7 @@ namespace Unity.MP_FPS.Client
             if (homeStyle != null && !root.styleSheets.Contains(homeStyle)) root.styleSheets.Add(homeStyle);
             var loadoutStyle = Resources.Load<StyleSheet>("Moonkov/UI/ApprovedLoadout");
             if (loadoutStyle != null && !root.styleSheets.Contains(loadoutStyle)) root.styleSheets.Add(loadoutStyle);
+            root.styleSheets.Add(Resources.Load<StyleSheet>("Moonkov/UI/ProposalSystem"));
             m_HomeDark = PlayerPrefs.GetInt("Moonkov.HomeDark", 0) != 0;
             ApplyHomeTheme();
             root.focusable = true;
@@ -69,6 +70,7 @@ namespace Unity.MP_FPS.Client
             }).Every(500);
             m_Content = root.Q<VisualElement>("terminalContent");
             m_Content.RegisterCallback<GeometryChangedEvent>(ContentGeometryChanged);
+            m_Root.RegisterCallback<GeometryChangedEvent>(ContentGeometryChanged);
             var spacer = root.Q<VisualElement>(className: "stash-footer-spacer");
             if (spacer != null) m_FooterTicker = Ticker(spacer, k_Ticker);
             m_Chrome = new TerminalChrome(); root.Add(m_Chrome);
@@ -86,7 +88,7 @@ namespace Unity.MP_FPS.Client
         {
             Navigating?.Invoke(); DisposeCharacter();
             bool moved = page != m_Page || !m_Ready;
-            m_Page = page; m_Step = 0; m_ShownStep = -1; m_Windows?.CloseAll();
+            m_Page = page; m_Windows?.CloseAll();
             m_Root.EnableInClassList("terminal-is-ship", page == 0);
             m_Root.EnableInClassList("terminal-is-loadout", page == 1);
             ApplyPageTheme();
@@ -229,7 +231,8 @@ namespace Unity.MP_FPS.Client
         {
             m_Root.EnableInClassList("archive-pages", m_Page != 0);
             // The approved choices mix light and dark screens; "both" permits either.
-            bool light = m_Page == 2 || m_Page == 8 || m_Page == 4 && (m_Step < 2 || m_Step == 4);
+            bool light = m_Page == 2 || m_Page == 4;
+            for (int i = 0; i < m_Pages.Length; i++) m_Root.EnableInClassList("archive-page-" + i, m_Page == i);
             m_Root.EnableInClassList("archive-light", light);
             m_Root.EnableInClassList("archive-halo-page", m_Page == 2);
             m_Root.EnableInClassList("archive-compact", m_Root.contentRect.width < 1400 || m_Root.contentRect.height < 780);
@@ -242,10 +245,17 @@ namespace Unity.MP_FPS.Client
             m_Content.Q<Button>("modifyHalo").clicked += () => HaloModificationRequested?.Invoke();
             var schematic = m_Content.Q<VisualElement>(className: "terminal-halo-schematic");
             var nodes = schematic.Query<Button>(className: "terminal-node").ToList();
+            string[] codes = { "halo_capacitor", "halo_charge_bridge", "halo_focus_lens", "halo_fan_array", "rifle", "halo_pulse_controller", "halo_hit_marker" };
             for (int i = 0; i < nodes.Count; i++)
             {
-                var button = nodes[i]; string node = button.text;
-                button.clicked += () => DescribeNode(node);
+                int index = i;
+                var button = nodes[i];
+                MoonkovLocalization.Set(button.Q<Label>(className: "halo-node-title"), global::Unity.MP_FPS.Inventory.InventoryCatalog.Get(codes[i]).Name);
+                var art = new StashItemArt(ContainerInventoryView.Art(codes[i]));
+                art.style.position = Position.Absolute; art.style.left = art.style.right = art.style.top = art.style.bottom = 0;
+                button.Q(className: "halo-node-art").Add(art);
+                button.clicked += () => DescribeNode(index);
+                button.RegisterCallback<FocusInEvent>(_ => DescribeNode(index));
                 TerminalMotion.Fade(button, .45f + i * .08f, .4f);
             }
             var weapon = WeaponManager.Instance != null && WeaponManager.Instance.WeaponRegistry != null ? WeaponManager.Instance.WeaponRegistry.GetWeaponData(2) : null;
@@ -256,14 +266,20 @@ namespace Unity.MP_FPS.Client
             m_Content.Q<Label>("statValue1").text = display[0];
             m_Content.Q<Label>("statValue2").text = display[1];
             m_Content.Q<Label>("statValue3").text = weapon != null ? display[2] + " m" : "—";
+            DescribeNode(4);
         }
-        private void DescribeNode(string node)
+        private void DescribeNode(int index)
         {
-            var window = m_Windows.Open(node);
-            var art = new StashItemArt(StashArtKind.Halo); art.AddToClassList("terminal-inspect-art"); window.Add(art);
-            Text(window, node, "terminal-title");
-            Text(window, node == "CORE" ? "The power source at the center of the halo assembly." : "A component of the lunar halo weapon. Replaceable modules will become available through the workshop.", "terminal-copy");
-            Stat(window, "CONFIGURATION", "STANDARD ISSUE"); Disabled(window, "REPLACE MODULE", "Workshop assembly is not available.");
+            string[] codes = { "halo_capacitor", "halo_charge_bridge", "halo_focus_lens", "halo_fan_array", "rifle", "halo_pulse_controller", "halo_hit_marker" };
+            string code = codes[index];
+            MoonkovLocalization.Set(m_Content.Q<Label>("haloComponentTitle"), global::Unity.MP_FPS.Inventory.InventoryCatalog.Get(code).Name);
+            MoonkovLocalization.Set(m_Content.Q<Label>("haloComponentDescription"), index == 4
+                ? "Choose an owned halo to install, replace or remove compatible modules in storage."
+                : global::Unity.MP_FPS.Inventory.HaloModules.Description(code));
+            var image = m_Content.Q("haloComponentArt"); image.Clear();
+            var art = new StashItemArt(ContainerInventoryView.Art(code)); art.style.flexGrow = 1; image.Add(art);
+            var nodes = m_Content.Query<Button>(className: "terminal-node").ToList();
+            for (int i = 0; i < nodes.Count; i++) nodes[i].EnableInClassList("terminal-node-selected", i == index);
         }
 
         private void Suppliers()
@@ -289,59 +305,29 @@ namespace Unity.MP_FPS.Client
         private void Operation()
         {
             TerminalLayout.Populate(m_Content, "Operation");
-            string[] steps = { "OPERATOR", "LOCATION", "BRIEFING", "RECOVERY", "READY" };
-            string[] layouts = { "OperationOperator", "OperationLocation", "OperationBriefing", "OperationRecovery", "OperationReady" };
-            var stepper = m_Content.Q<VisualElement>("operationStepper");
-            var buttons = stepper.Query<Button>().ToList();
-            var fill = stepper.Q<VisualElement>(className: "terminal-stepper-fill");
-            float from = m_ShownStep < 0 ? 0 : (m_ShownStep + .5f) / steps.Length, to = (m_Step + .5f) / steps.Length; m_ShownStep = m_Step;
-            fill.style.width = Length.Percent(from * 100);
-            TerminalMotion.Tween(fill, .7f, t => fill.style.width = Length.Percent(Mathf.Lerp(from, to, TerminalMotion.OutExpo(t)) * 100), .1f);
-            for (int i = 0; i < buttons.Count; i++)
+            m_Content.Q<Button>("reviewEquipment").clicked += () => Navigate(1);
+            m_Content.Q<Button>("reviewHalo").clicked += () => Navigate(2);
+            var carry = m_Content.Q<IntegerField>("operationCarryCells");
+            carry.SetValueWithoutNotify(PlayerProfileClient.CarryCells);
+            carry.SetEnabled(!m_Busy);
+            var cargo = m_Content.Q<Label>("carrySummary");
+            var gauge = m_Content.Q<VisualElement>(className: "terminal-cargo-gauge-fill");
+            void PresentCarry()
             {
-                int step = i; buttons[i].clicked += () => { m_Step = step; Render(); };
-                buttons[i].EnableInClassList("terminal-tab-selected", i == m_Step);
-                buttons[i].EnableInClassList("terminal-step-done", i < m_Step);
+                MoonkovLocalization.Set(cargo, "Carry {0}/{1} / Stash {2}", PlayerProfileClient.CarryCells, RaidRules.BagCapacity, m_Cells);
+                gauge.style.width = Length.Percent(100f * PlayerProfileClient.CarryCells / Mathf.Max(1, RaidRules.BagCapacity));
             }
-            var main = m_Content.Q<VisualElement>("operationMain");
-            main.Q<Label>(className: "terminal-eyebrow").text = "EXPEDITION / " + steps[m_Step];
-            TerminalLayout.Populate(main, layouts[m_Step]);
-            m_Content.Q<Label>(className: "terminal-step-counter").text = (m_Step + 1).ToString("00") + " / " + steps.Length.ToString("00");
-            var summary = m_Content.Q<VisualElement>(className: "terminal-side");
-            summary.Q<Label>("statValue1").text = RaidRules.BagCapacity + " SUPPLIES";
-            if (m_Step == 0)
+            carry.RegisterValueChangedCallback(evt =>
             {
-                m_Character = new MenuCharacterView(element: main.Q<Image>("operatorPortrait"));
-                m_Character.Element.RemoveFromClassList("terminal-character-art");
-            }
-            else if (m_Step == 2)
-            {
-                PlayerProfileClient.SelectCarryCells(PlayerProfileClient.CarryCells);
-                var carry = main.Q<IntegerField>("operationCarryCells");
-                carry.SetValueWithoutNotify(PlayerProfileClient.CarryCells); carry.SetEnabled(!m_Busy);
-                var cargo = main.Q<Label>("carrySummary");
-                var gauge = main.Q<VisualElement>(className: "terminal-cargo-gauge-fill");
-                void PresentCarry()
-                {
-                    MoonkovLocalization.Set(cargo, "Carry {0}/{1} / Stash {2}" , PlayerProfileClient.CarryCells, RaidRules.BagCapacity, m_Cells);
-                    gauge.style.width = Length.Percent(100f * PlayerProfileClient.CarryCells / Mathf.Max(1, RaidRules.BagCapacity));
-                }
-                carry.RegisterValueChangedCallback(evt =>
-                {
-                    PlayerProfileClient.SelectCarryCells(evt.newValue); carry.SetValueWithoutNotify(PlayerProfileClient.CarryCells); PresentCarry();
-                });
+                PlayerProfileClient.SelectCarryCells(evt.newValue);
+                carry.SetValueWithoutNotify(PlayerProfileClient.CarryCells);
                 PresentCarry();
-            }
-            else if (m_Step == 4)
-            {
-                main.Q<Label>("statValue0").text = "DOLLSINGER";
-                main.Q<Label>("statValue1").text = PlayerProfileClient.CarryCells + " ENERGY CELLS";
-                var go = main.Q<Button>("launch"); go.clicked += m_Prepare; go.SetEnabled(!m_Busy);
-            }
-            m_Content.Q<Button>("back").clicked += () => { if (m_Step > 0) { m_Step--; Render(); } else Navigate(0); };
-            var next = m_Content.Q<Button>("continue");
-            next.style.display = m_Step < 4 ? DisplayStyle.Flex : DisplayStyle.None;
-            next.SetEnabled(!m_Busy); next.clicked += () => { m_Step++; Render(); };
+            });
+            PresentCarry();
+            var launch = m_Content.Q<Button>("launch");
+            launch.clicked += m_Prepare;
+            launch.SetEnabled(!m_Busy);
+            m_Content.Q<Button>("back").clicked += () => Navigate(0);
         }
 
         private void Tasks()
@@ -447,6 +433,7 @@ namespace Unity.MP_FPS.Client
             m_IndicatorTimer?.Pause();
             m_NavTabs.UnregisterCallback<GeometryChangedEvent>(NavGeometryChanged);
             m_Content.UnregisterCallback<GeometryChangedEvent>(ContentGeometryChanged);
+            m_Root.UnregisterCallback<GeometryChangedEvent>(ContentGeometryChanged);
             for (int i = 0; i < m_Tabs.Count; i++) m_Tabs[i].clicked -= m_NavActions[i];
             m_Shade.Dispose(); m_Shade.RemoveFromHierarchy(); m_Chrome.RemoveFromHierarchy(); m_FooterTicker?.RemoveFromHierarchy();
             m_Root.Query(className: "terminal-wipe").ForEach(e => e.RemoveFromHierarchy());

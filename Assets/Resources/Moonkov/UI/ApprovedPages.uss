@@ -199,3 +199,21 @@
 .archive-pages #supplier1 .archive-contact-photo { background-image: url("ProposalSlices/Supplier_Medical.png"); opacity: 1; }
 .archive-pages #supplier2 .archive-contact-photo { background-image: url("ProposalSlices/Supplier_Engineer.png"); opacity: 1; }
 .archive-pages #emergencySupply .archive-contact-photo { background-image: url("ProposalSlices/Supplier_Emergency.png"); opacity: 1; }
+/* Full catalogue and item windows share the original monochrome print and native labels. */
+.archive-ui .terminal-shop-window { background-color: #08090c; border-color: #7b8595; border-top-width: 4px; border-top-color: #164bff; }
+.archive-ui .archive-shop-print { background-image: url("PageArt/ArchiveDark.png"); background-position: left; width: 12%; }
+.archive-ui .archive-shop-inspector { background-color: #101318; border-color: #7b8595; }
+.archive-ui .archive-shop-inspector .terminal-title { -unity-font-style: normal; }
+.archive-ui .terminal-shop-product { background-color: #101318; border-color: #414958; }
+.archive-ui .terminal-shop-tabs Button { font-size: 17px; }
+.archive-ui .terminal-shop-tabs .terminal-tab-selected { background-color: #164bff; color: #ffffff; border-color: #a6bbff; }
+.archive-ui .terminal-window-header { background-image: url("ApprovedHome/CardMoon.png"); background-size: cover; background-position: right; padding: 8px 12px; }
+.archive-ui .terminal-window-header .terminal-heading { color: #f1f2ed; background-color: #08090c; padding: 4px 8px; }
+.archive-ui .archive-module-group { background-color: #101318; border-left-width: 3px; border-left-color: #164bff; }
+.archive-ui .archive-inspection-window { width: 760px; height: 430px; max-width: 92%; max-height: 88%; }
+.archive-item-inspection { flex-direction: row; flex-grow: 1; min-height: 0; }
+.archive-item-art { width: 42%; margin-right: 24px; background-color: #08090c; border-width: 1px; border-color: #5c6471; }
+.archive-item-copy { flex-grow: 1; flex-basis: 0; min-width: 0; }
+.archive-item-copy .terminal-title { font-size: 28px; -unity-font-style: normal; }
+.archive-item-copy .terminal-heading { font-size: 15px; white-space: normal; margin-bottom: 14px; }
+.archive-item-actions { margin-top: 20px; }

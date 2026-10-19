@@ -6,30 +6,33 @@
         <ui:VisualElement name="terminalPage" class="terminal-content terminal-content-page">
             <ui:Label class="terminal-page-index" picking-mode="Ignore" text="03" />
             <ui:VisualElement class="terminal-row">
-                <ui:VisualElement class="terminal-panel terminal-wide">
+                <ui:VisualElement class="terminal-panel terminal-wide terminal-halo-panel">
                     <moon:TechFrame picking-mode="Ignore" delay="0.08" />
                     <ui:Label class="terminal-eyebrow" text="STANDARD HALO / COMPONENT SCHEMATIC" />
-                    <ui:Label class="terminal-title" text="H-01   /   FIELD ISSUE" />
+                    <ui:Label class="terminal-title" text="HALO BUILD" />
                     <ui:VisualElement class="halo-schematic terminal-halo-schematic" picking-mode="Ignore">
-                        <ui:Button class="terminal-node" text="FOCUSING LENS" name="haloNode0">
+                        <ui:Label text="STORAGE SLOT" class="halo-group-caption halo-storage-caption" picking-mode="Ignore" />
+                        <ui:Label text="SHAPING SLOT" class="halo-group-caption halo-shaping-caption" picking-mode="Ignore" />
+                        <ui:Label text="UTILITY SLOT" class="halo-group-caption halo-utility-caption" picking-mode="Ignore" />
+                        <ui:Button class="terminal-node" name="haloNode0"><ui:VisualElement class="halo-node-art" picking-mode="Ignore" /><ui:Label text="Expansion capacitor" class="halo-node-title" picking-mode="Ignore" />
                             <ui:Label class="terminal-node-index" picking-mode="Ignore" text="N1" />
                         </ui:Button>
-                        <ui:Button class="terminal-node" text="LEFT EMITTER" name="haloNode1">
+                        <ui:Button class="terminal-node" name="haloNode1"><ui:VisualElement class="halo-node-art" picking-mode="Ignore" /><ui:Label text="Rapid charge bridge" class="halo-node-title" picking-mode="Ignore" />
                             <ui:Label class="terminal-node-index" picking-mode="Ignore" text="N2" />
                         </ui:Button>
-                        <ui:Button class="terminal-node" text="HALO FRAME" name="haloNode2">
+                        <ui:Button class="terminal-node" name="haloNode2"><ui:VisualElement class="halo-node-art" picking-mode="Ignore" /><ui:Label text="Focus lens" class="halo-node-title" picking-mode="Ignore" />
                             <ui:Label class="terminal-node-index" picking-mode="Ignore" text="N3" />
                         </ui:Button>
-                        <ui:Button class="terminal-node" text="RIGHT EMITTER" name="haloNode3">
+                        <ui:Button class="terminal-node" name="haloNode3"><ui:VisualElement class="halo-node-art" picking-mode="Ignore" /><ui:Label text="Fan array" class="halo-node-title" picking-mode="Ignore" />
                             <ui:Label class="terminal-node-index" picking-mode="Ignore" text="N4" />
                         </ui:Button>
-                        <ui:Button class="terminal-node" text="CORE" name="haloNode4">
+                        <ui:Button class="terminal-node" name="haloNode4"><ui:VisualElement class="halo-node-art" picking-mode="Ignore" /><ui:Label text="Halo Rifle" class="halo-node-title" picking-mode="Ignore" />
                             <ui:Label class="terminal-node-index" picking-mode="Ignore" text="N5" />
                         </ui:Button>
-                        <ui:Button class="terminal-node" text="AMPLIFIER" name="haloNode5">
+                        <ui:Button class="terminal-node" name="haloNode5"><ui:VisualElement class="halo-node-art" picking-mode="Ignore" /><ui:Label text="Pulse controller" class="halo-node-title" picking-mode="Ignore" />
                             <ui:Label class="terminal-node-index" picking-mode="Ignore" text="N6" />
                         </ui:Button>
-                        <ui:Button class="terminal-node" text="CONTROL MODULE" name="haloNode6">
+                        <ui:Button class="terminal-node" name="haloNode6"><ui:VisualElement class="halo-node-art" picking-mode="Ignore" /><ui:Label text="Hit marker" class="halo-node-title" picking-mode="Ignore" />
                             <ui:Label class="terminal-node-index" picking-mode="Ignore" text="N7" />
                         </ui:Button>
                     </ui:VisualElement>
@@ -37,9 +40,9 @@
                 </ui:VisualElement>
                 <ui:VisualElement class="terminal-panel terminal-side">
                     <moon:TechFrame picking-mode="Ignore" delay="0.16" />
-                    <ui:Label class="terminal-eyebrow" text="LOADOUT INFORMATION" />
+                    <ui:Label class="terminal-eyebrow" text="LOADOUT INFORMATION" /><ui:Label name="haloComponentTitle" text="Halo Rifle" class="terminal-title" /><ui:VisualElement name="haloComponentArt" class="halo-component-art" picking-mode="Ignore" />
                     <ui:VisualElement class="terminal-row terminal-meters">
-                        <moon:ArcMeter class="arc-meter" picking-mode="Ignore" value="0.0" meter-color="#4631DFFF">
+                        <moon:ArcMeter class="arc-meter" picking-mode="Ignore" value="0.0" meter-color="#164BFFFF">
                             <ui:Label class="terminal-meter-value" text="—" />
                             <ui:Label class="terminal-meter-name" text="DMG" />
                         </moon:ArcMeter>
@@ -68,7 +71,7 @@
                         <ui:Label class="terminal-stat-name" text="RANGE" />
                         <ui:Label class="terminal-stat-value" text="—" name="statValue3" />
                     </ui:VisualElement>
-                    <ui:Label class="terminal-copy" text="Choose an owned halo to install, replace or remove compatible modules in storage." />
+                    <ui:Label name="haloComponentDescription" class="terminal-copy" text="Choose an owned halo to install, replace or remove compatible modules in storage." />
                     <ui:Button name="modifyHalo" class="terminal-primary" text="MODIFY HALO" />
                     <ui:Button class="terminal-button" enabled="false" tooltip="No modular loadout service is available." text="SAVE HALO PRESET" />
                     <ui:Button class="terminal-button" enabled="false" tooltip="No modular loadout service is available." text="ASSEMBLE LOADOUT" />

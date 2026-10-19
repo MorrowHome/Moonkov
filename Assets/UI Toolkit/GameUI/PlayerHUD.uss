@@ -42,3 +42,9 @@
 }
 /* Reticle anchors to the viewport, independently of preceding HUD instruments. */
 #reticle-container { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
+#health-info-container { width: 300px; border-left-color: #164bff; background-image: url("../../Resources/Moonkov/UI/ApprovedHome/CardMoon.png"); background-size: cover; -unity-background-image-tint-color: #20232b; }
+#health-heading { background-color: rgba(8,9,12,0.92); padding: 4px 8px; }
+#health-state { font-size: 14px; }
+#health-value { font-size: 22px; }
+#weapon-info-container { width: 250px; border-right-color: #164bff; background-color: rgba(8,9,12,0.94); }
+#ammo-label { font-size: 32px; }

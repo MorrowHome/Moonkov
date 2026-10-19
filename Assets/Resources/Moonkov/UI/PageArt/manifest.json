@@ -1,0 +1,62 @@
+{
+  "cleanCanvases": {
+    "Operations": "exec-ed73d7d9-5462-4617-87d1-71e3d104c5f2.png",
+    "Technical": "exec-a0831b64-5277-4469-94f2-49252ae1b6e4.png",
+    "Base": "exec-5ca78aed-0825-4f36-a5cf-7276ceb13294.png",
+    "ArchiveDark": "exec-302fcfee-648d-44ad-8bed-d70207cff3ae.png"
+  },
+  "illustrationCrops": [
+    {
+      "name": "CommsPrint",
+      "source": "17-comms-D.png",
+      "rect": [
+        350,
+        345,
+        1140,
+        615
+      ]
+    },
+    {
+      "name": "TaskRecover",
+      "source": "15-tasks-D.png",
+      "rect": [
+        782,
+        180,
+        1020,
+        245
+      ]
+    },
+    {
+      "name": "TaskManage",
+      "source": "15-tasks-D.png",
+      "rect": [
+        782,
+        292,
+        1015,
+        355
+      ]
+    },
+    {
+      "name": "TaskExtract",
+      "source": "15-tasks-D.png",
+      "rect": [
+        782,
+        400,
+        1015,
+        460
+      ]
+    },
+    {
+      "name": "TaskExhibit",
+      "source": "15-tasks-D.png",
+      "rect": [
+        0,
+        0,
+        580,
+        941
+      ]
+    }
+  ],
+  "textPolicy": "No functional text baked into control art; native UITK text only",
+  "itemArtPolicy": "No generated equipment imagery. HaloIcons and original StashItemArt own item appearance."
+}

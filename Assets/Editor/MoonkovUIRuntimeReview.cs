@@ -19,7 +19,7 @@ using BodyPart = Unity.MP_FPS.BodyPart;
 public static class MoonkovUIRuntimeReview
 {
     private const string Pending = "Moonkov.UIReview.Pending", StartScene = "Moonkov.UIReview.StartScene";
-    private static readonly string[] AllCases = { "home", "home-dark", "warehouse", "halo", "suppliers", "tasks", "base", "comms", "settings", "operator", "location", "briefing", "recovery", "ready", "account", "session", "host", "direct", "connecting", "loading", "raidpack", "loot", "health", "halo-light", "interaction", "extraction", "result", "cargo", "storage", "pause", "death", "score", "diagnostics", "hud-bright", "hud-dark", "hud-alerts", "workshop", "shop", "emergency", "research", "airlock", "warehouse-compact", "settings-compact", "home-compact" };
+    private static readonly string[] AllCases = { "home", "home-dark", "warehouse", "halo", "suppliers", "tasks", "base", "comms", "settings", "deployment", "account", "session", "host", "direct", "connecting", "loading", "raidpack", "loot", "health", "halo-light", "interaction", "extraction", "result", "cargo", "storage", "pause", "death", "score", "diagnostics", "hud-bright", "hud-dark", "hud-alerts", "workshop", "shop", "emergency", "research", "airlock", "warehouse-compact", "settings-compact", "home-compact", "deployment-compact", "item" };
     private static string[] Cases = AllCases;
     private static GameObject s_Object;
     private static PanelSettings s_Settings;
@@ -29,9 +29,10 @@ public static class MoonkovUIRuntimeReview
     private static ContainerInventoryView s_Inventory;
     private static RaidHealthView s_Health;
     private static Scene s_Scene;
-    private static int s_Index;
+    private static int s_Index, s_PrepareCalls;
     private static double s_Ready;
-    private static bool s_Running;
+    private static bool s_Running, s_KeepCurrentPlay, s_DeploymentVerified;
+    private static UnityEngine.Localization.Locale s_PreviousLocale;
     private static readonly List<string> Evidence = new List<string>();
     private static readonly string Output = Path.GetFullPath(Path.Combine(Application.dataPath, "../Docs/UI/Native-20261018"));
     static MoonkovUIRuntimeReview() { EditorApplication.playModeStateChanged += State; }
@@ -53,6 +54,15 @@ public static class MoonkovUIRuntimeReview
         SessionState.SetBool(Pending, true);
         EditorApplication.EnterPlaymode();
     }
+    public static void ReviewCurrentPlay(params string[] cases)
+    {
+        if (!EditorApplication.isPlaying || s_Running) throw new InvalidOperationException("Requires current Play and no active review");
+        if (cases == null || cases.Length == 0 || cases.Any(c => !AllCases.Contains(c))) throw new ArgumentException("Unknown review case");
+        SessionState.SetString("Moonkov.UIReview.Cases", string.Join("|", cases));
+        s_KeepCurrentPlay = true;
+        Setup();
+    }
+
     private static void State(PlayModeStateChange state)
     {
         if (!SessionState.GetBool(Pending, false)) return;
@@ -81,6 +91,7 @@ public static class MoonkovUIRuntimeReview
             var doc = s_Object.AddComponent<UIDocument>(); doc.panelSettings = s_Settings;
             s_Root = doc.rootVisualElement; s_Root.style.flexGrow = 1;
             s_Root.style.width = Length.Percent(100); s_Root.style.height = Length.Percent(100);
+            s_PreviousLocale = LocalizationSettings.SelectedLocale;
             var locale = LocalizationSettings.AvailableLocales.GetLocale("zh-Hans");
             if (locale != null) LocalizationSettings.SelectedLocale = locale; // no PlayerPrefs write
             s_Index = 0; s_Running = true; Build(); EditorApplication.update += Tick;
@@ -95,6 +106,7 @@ public static class MoonkovUIRuntimeReview
     }
     private static void Build()
     {
+        s_DeploymentVerified = false;
         DisposeViews(); s_Root.Clear(); s_Root.styleSheets.Clear(); s_Root.ClearClassList();
         s_Root.style.backgroundColor = new Color(.03f, .035f, .045f);
         s_Root.style.display = DisplayStyle.Flex;
@@ -103,7 +115,7 @@ public static class MoonkovUIRuntimeReview
         s_Root.style.flexGrow = compact ? 0 : 1;
         s_Root.style.width = compact ? new StyleLength(1280) : new StyleLength(Length.Percent(100));
         s_Root.style.height = compact ? new StyleLength(720) : new StyleLength(Length.Percent(100));
-        if (AllCases.Take(14).Contains(name)) BuildTerminal(name);
+        if (new[] { "home", "home-dark", "warehouse", "halo", "suppliers", "tasks", "base", "comms", "settings", "deployment" }.Contains(name)) BuildTerminal(name);
         else if (compact) BuildTerminal(name.Replace("-compact", ""));
         else if (name == "account" || name == "session")
         {
@@ -125,6 +137,21 @@ public static class MoonkovUIRuntimeReview
         else if (name == "death") Load("Assets/UI Toolkit/GameUI/Respawn.uxml");
         else if (name == "score") Load("Assets/UI Toolkit/GameUI/Leaderboard/LeaderboardUi.uxml");
         else if (name == "diagnostics") Load("Assets/UI Toolkit/GameUI/NetworkStatus.uxml");
+        else if (name == "item")
+        {
+            Load("Assets/UI Toolkit/GameUI/StashScreen.uxml");
+            s_Stash = new StashScreen(s_Root, () => { }, () => { }, () => { }, preview: true);
+            s_Stash.Present("LOCAL UI REVIEW", 2, 128, 36, 12, true, false);
+            s_Stash.NavigatePage(1);
+            s_Root.schedule.Execute(() =>
+            {
+                var tile = s_Root.Q<Button>(className: "inventory-item");
+                using (var down = PointerDownEvent.GetPooled(new Event { type = EventType.MouseDown, button = 1, mousePosition = tile.worldBound.center })) tile.SendEvent(down);
+                var inspect = s_Root.Query<Button>(className: "terminal-button").ToList().FirstOrDefault(b => b.text == "INSPECT" || b.text == MoonkovLocalization.Text("INSPECT"));
+                if (inspect == null) throw new Exception("Native item inspect action missing");
+                Submit(inspect);
+            }).StartingIn(400);
+        }
         else if (name == "workshop")
         {
             s_Root.AddToClassList("archive-ui");
@@ -147,18 +174,19 @@ public static class MoonkovUIRuntimeReview
     private static void BuildTerminal(string name)
     {
         Load("Assets/UI Toolkit/GameUI/StashScreen.uxml");
-        s_Stash = new StashScreen(s_Root, () => { }, () => { }, () => { }, preview: true);
+        s_Stash = new StashScreen(s_Root, () => { s_PrepareCalls++; }, () => { }, () => { }, preview: true);
         s_Stash.Present("LOCAL UI REVIEW", 2, 128, 36, 12, true, false);
         int page = name == "warehouse" ? 1 : name == "halo" ? 2 : name == "suppliers" ? 3 : name == "tasks" ? 5 : name == "base" ? 6 : name == "comms" ? 7 : name == "settings" ? 8 : name == "home" || name == "home-dark" ? 0 : 4;
         s_Stash.NavigatePage(page);
         for (int i = 0; i < 9; i++) if (s_Root.Q<Button>("terminalTab" + i) == null) throw new Exception("Missing first-level entry " + i);
         if (page == 1) s_Root.Q<Button>(className: "inventory-item")?.Focus();
         if (name == "home-dark") { var root = s_Root.Q("stashScreen"); root.RemoveFromClassList("moon-home-light"); root.AddToClassList("moon-home-dark"); }
-        int step = Array.IndexOf(new[] { "operator", "location", "briefing", "recovery", "ready" }, name);
-        if (page == 4 && step > 0)
+        if (page == 4)
         {
-            var buttons = s_Root.Q("operationStepper").Query<Button>().ToList();
-            Submit(buttons[step]);
+            if (s_Root.Q("operationStepper") != null) throw new Exception("Legacy five-page deployment is still visible");
+            if (s_Root.Q<IntegerField>("operationCarryCells") == null || s_Root.Q<Button>("launch") == null)
+                throw new Exception("Deployment decision controls missing");
+            s_Root.Q<Button>("launch").Focus();
         }
     }
     private static InventoryGraph InventoryFixture()
@@ -293,9 +321,50 @@ public static class MoonkovUIRuntimeReview
             try
             {
                 RenderTexture.active = s_Target; image.ReadPixels(new Rect(0, s_Target.height - image.height, image.width, image.height), 0, 0); image.Apply();
-                File.WriteAllBytes(Path.Combine(Output, Cases[s_Index] + ".png"), image.EncodeToPNG());
+                float brightest = 0;
+                for (int y = 10; y < image.height; y += 71)
+                    for (int x = 10; x < image.width; x += 71)
+                        brightest = Mathf.Max(brightest, image.GetPixel(x, y).maxColorComponent);
+                if (brightest < .03f) throw new InvalidOperationException("Invalid blank RenderTexture; no visual acceptance: " + Cases[s_Index]);
+                File.WriteAllBytes(Path.Combine(Output, Cases[s_Index] == "deployment" && s_DeploymentVerified ? "deployment-busy.png" : Cases[s_Index] + ".png"), image.EncodeToPNG());
             }
             finally { RenderTexture.active = previous; UnityEngine.Object.DestroyImmediate(image); }
+            if (Cases[s_Index] == "deployment" && !s_DeploymentVerified)
+            {
+                int before = s_PrepareCalls;
+                Submit(s_Root.Q<Button>("launch"));
+                if (s_PrepareCalls != before + 1) throw new Exception("Native deployment submit did not reach existing prepare callback exactly once");
+                Submit(s_Root.Q<Button>("reviewEquipment"));
+                if (!s_Root.Q("stashScreen").ClassListContains("terminal-is-loadout")) throw new Exception("Equipment review navigation failed");
+                // Allow UITK to resolve the footer's visibility after changing pages.
+                s_Ready = EditorApplication.timeSinceStartup + .8;
+                s_Root.schedule.Execute(() =>
+                {
+                    try
+                    {
+                        Submit(s_Root.Q<Button>("stashDeploy"));
+                        if (!s_Root.Q("stashScreen").ClassListContains("archive-page-4")) throw new Exception("Native footer did not return to deployment desk");
+                        s_Stash.Present("LOCAL UI REVIEW", 2, 128, 36, 12, true, true);
+                        if (s_Root.Q<Button>("launch").enabledSelf) throw new Exception("Busy deployment must be disabled");
+                        s_DeploymentVerified = true;
+                        Evidence.Add("deployment: native NavigationSubmit callback once; equipment/footer round-trip after layout; busy launch disabled; no account transaction");
+                    }
+                    catch (Exception ex) { Evidence.Add(ex.ToString()); Finish(false); }
+                }).StartingIn(300);
+                return;
+            }
+            if (Cases[s_Index] == "item" && s_Root.Q("itemInspection") == null) throw new Exception("Native item inspection window missing");
+            if (Cases[s_Index] == "halo")
+            {
+                Submit(s_Root.Q<Button>("haloNode0"));
+                if (!s_Root.Q("haloNode0").ClassListContains("terminal-node-selected") ||
+                    s_Root.Q<Label>("haloComponentTitle").text != MoonkovLocalization.Text(InventoryCatalog.Get("halo_capacitor").Name))
+                    throw new Exception("Construction node selection did not update the native inspector");
+                Submit(s_Root.Q<Button>("haloNode4"));
+                if (s_Root.Q("haloComponentArt").Q<Image>().image != Resources.Load<Texture2D>("HaloIcons/Rifle"))
+                    throw new Exception("Construction must retain the real project halo appearance");
+                Evidence.Add("halo: native node submit updates inspector; center selection restores original HaloIcons/Rifle; no inventory transaction");
+            }
             Evidence.Add(Cases[s_Index] + ": native runtime panel " + (compact ? "1280x720" : "1600x900") + "; local fixtures; not a gameplay/network acceptance.");
             if (++s_Index < Cases.Length) Build(); else Finish(true);
         }
@@ -305,11 +374,15 @@ public static class MoonkovUIRuntimeReview
     {
         Evidence.Add(success ? "COMPLETE" : "FAILED");
         Directory.CreateDirectory(Output); File.WriteAllLines(Path.Combine(Output, "Runtime-review.txt"), Evidence);
-        Cleanup(); EditorApplication.ExitPlaymode();
+        Cleanup();
+        if (!s_KeepCurrentPlay) EditorApplication.ExitPlaymode();
+        s_KeepCurrentPlay = false;
     }
     private static void Cleanup()
     {
         s_Running = false; EditorApplication.update -= Tick; DisposeViews();
+        if (s_PreviousLocale != null) LocalizationSettings.SelectedLocale = s_PreviousLocale;
+        s_PreviousLocale = null;
         if (s_Object) UnityEngine.Object.DestroyImmediate(s_Object);
         if (s_Settings) UnityEngine.Object.DestroyImmediate(s_Settings);
         if (s_Target) { s_Target.Release(); UnityEngine.Object.DestroyImmediate(s_Target); }

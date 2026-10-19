@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.UIElements;
-using System.Collections.Generic;
 
 namespace Unity.MP_FPS.Client
 {
@@ -16,24 +15,6 @@ namespace Unity.MP_FPS.Client
         private Painter2D m_Painter;
         private Vector2 m_Origin;
         private float m_Scale;
-        private bool m_ArchiveSprite;
-        private static Dictionary<string, Sprite> s_ArchiveSprites;
-
-        private static Sprite ArchiveSprite(StashArtKind kind)
-        {
-            string name = kind == StashArtKind.Helmet ? "Helmet" : kind == StashArtKind.ChestRig || kind == StashArtKind.ScoutRig || kind == StashArtKind.FieldRig ? "Rig" :
-                kind == StashArtKind.Backpack || kind == StashArtKind.SlingPack || kind == StashArtKind.CargoPack ? "Backpack" : kind == StashArtKind.Dust ? "Dust" :
-                kind == StashArtKind.Alloy ? "Alloy" : kind == StashArtKind.Cell ? "Cell" : null;
-            if (name == null) return null;
-            if (s_ArchiveSprites == null)
-            {
-                var sprites = Resources.LoadAll<Sprite>("Moonkov/UI/InventoryArt/InventoryAtlas");
-                if (sprites.Length == 0) return null;
-                s_ArchiveSprites = new Dictionary<string, Sprite>();
-                foreach (var sprite in sprites) s_ArchiveSprites[sprite.name] = sprite;
-            }
-            return s_ArchiveSprites.TryGetValue(name, out var result) ? result : null;
-        }
 
         public StashItemArt() : this(StashArtKind.None) { }
         public StashItemArt(StashArtKind kind)
@@ -50,10 +31,10 @@ namespace Unity.MP_FPS.Client
             set
             {
                 m_Kind = value; Clear();
-                var sprite = ArchiveSprite(value); m_ArchiveSprite = sprite != null;
-                if (m_ArchiveSprite)
+                if (value == StashArtKind.HaloRifle || value == StashArtKind.HaloRevolver || value == StashArtKind.HaloShotgun || value == StashArtKind.HaloSniper)
                 {
-                    var icon = new Image { sprite = sprite, scaleMode = ScaleMode.ScaleToFit, pickingMode = PickingMode.Ignore };
+                    var icon = new Image { image = Resources.Load<Texture2D>("HaloIcons/" +
+                        (value == StashArtKind.HaloRifle ? "Rifle" : value == StashArtKind.HaloRevolver ? "Revolver" : value == StashArtKind.HaloSniper ? "Sniper" : "Shotgun")), scaleMode = ScaleMode.ScaleToFit, pickingMode = PickingMode.Ignore };
                     icon.style.position = Position.Absolute; icon.style.left = icon.style.right = icon.style.top = icon.style.bottom = 0;
                     Add(icon);
                 }
@@ -63,7 +44,7 @@ namespace Unity.MP_FPS.Client
 
         private void Draw(MeshGenerationContext context)
         {
-            if (m_ArchiveSprite || contentRect.width < 1 || contentRect.height < 1) return;
+            if (contentRect.width < 1 || contentRect.height < 1) return;
             m_Painter = context.painter2D;
             float width = m_Kind == StashArtKind.Cell ? 60 : 100;
             float height = m_Kind == StashArtKind.Rifle ? 45 : m_Kind == StashArtKind.Alloy || m_Kind == StashArtKind.Pistol ? 60 : 100;
@@ -72,7 +53,6 @@ namespace Unity.MP_FPS.Client
             switch (m_Kind)
             {
                 case StashArtKind.EnergyGrenade: EnergyGrenade(); break;
-                case StashArtKind.HaloRifle: case StashArtKind.HaloRevolver: case StashArtKind.HaloShotgun: case StashArtKind.HaloSniper: ArchiveHaloMark(); break;
                 case StashArtKind.Dust: Dust(); break;
                 case StashArtKind.Alloy: Alloy(); break;
                 case StashArtKind.Cell: Cell(); break;
@@ -230,46 +210,6 @@ namespace Unity.MP_FPS.Client
             Shape(0x93c2c3, new Vector2(50, 9), new Vector2(54, 14), new Vector2(50, 19), new Vector2(46, 14));
             Line(0xe0dec0, 2, new Vector2(19, 35), new Vector2(16, 42));
             Line(0xe0dec0, 2, new Vector2(81, 35), new Vector2(84, 42));
-        }
-
-        private void ArchiveHaloMark()
-        {
-            // Preserve the game's four halo silhouettes, rendered as quiet instrument marks.
-            var p = m_Painter;
-            void Arc(float radius, float start, float end, float width, uint color)
-            {
-                p.strokeColor = C(color); p.lineWidth = width * m_Scale;
-                p.BeginPath(); p.Arc(P(50, 50), radius * m_Scale, Angle.Degrees(start), Angle.Degrees(end)); p.Stroke();
-            }
-            if (m_Kind == StashArtKind.HaloRevolver)
-            {
-                for (int i = 0; i < 6; i++)
-                {
-                    float a = (i * 60 - 90) * Mathf.Deg2Rad; var center = new Vector2(50 + Mathf.Cos(a) * 32, 50 + Mathf.Sin(a) * 32);
-                    var points = new Vector2[7];
-                    for (int n = 0; n <= 6; n++) points[n] = center + new Vector2(Mathf.Cos(n * Mathf.PI / 3), Mathf.Sin(n * Mathf.PI / 3)) * 10;
-                    Line(0xc7cdd5, 3, points); Ring(0x828c9a, 1.3f, center.x, center.y, 4);
-                }
-                Ring(0xd9dfe6, 1, 50, 50, 2);
-            }
-            else if (m_Kind == StashArtKind.HaloShotgun)
-            {
-                Line(0xd9dfe6, 2.5f, new Vector2(20, 20), new Vector2(80, 20), new Vector2(80, 80), new Vector2(20, 80), new Vector2(20, 20));
-                Line(0x8a96a8, 2, new Vector2(50, 8), new Vector2(92, 50), new Vector2(50, 92), new Vector2(8, 50), new Vector2(50, 8));
-                Line(0xd9dfe6, 1, new Vector2(46, 46), new Vector2(54, 54)); Line(0xd9dfe6, 1, new Vector2(54, 46), new Vector2(46, 54));
-            }
-            else
-            {
-                bool sniper = m_Kind == StashArtKind.HaloSniper;
-                for (int i = 0; i < 4; i++)
-                {
-                    float a = i * 90 + (sniper ? 8 : 12);
-                    Arc(39, a, a + 66, sniper ? 3 : 9, 0x7d8796);
-                    Arc(39, a + 1, a + 64, sniper ? 1.3f : 5, 0xd9dfe6);
-                    Arc(30, a, a + 66, 1.5f, 0xb4bdca);
-                }
-                Ring(0xc7cdd5, 1, 50, 50, 3);
-            }
         }
 
         private void Outfit()

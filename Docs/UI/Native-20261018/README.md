@@ -1,19 +1,17 @@
-# Moonkov 原生 UI 记录
+# Moonkov 原生 UI 渲染记录
 
-分支：feat/better-UI。登录固定白色 C，主菜单 C/D 各自保留原构图。
+当前接入说明见 ../Integration-20261019.md。本目录为真实 Unity UXML/presenter 的离屏渲染记录，不是网页稿。LOCAL REVIEW 标记表示本地展示数据，不代表账号、交易或联机验收。
 
-最新素材结构：连续的干净背景 + 独立无字图片控件 + 原生 Unity UI Toolkit 文字。HomeCleanC/D 和 AccountCleanC-v2 由认可的原提案清除人物与功能控件/标题得到，背景不再用矩形拼接。主菜单角色仍由项目原 MenuCharacterView 渲染。
+最新入口/布局：主菜单 C/D、白色 C 账户入口；管理页左侧一级导航；Operation 单页出击准备台已替代原五次分页。deployment.png 是默认状态，deployment-busy.png 是忙碌禁用状态，deployment-compact.png 是 1280×720。item.png 由真实右键菜单进入独立原生检查窗口。
 
-TextlessControls 的 22 张 PNG 仅含边框、插画与图标；按钮文案、编号、箭头、账户标题、字段标签、错误信息和数据均为 Button/Label/TextField。控件图片不承担任何可翻译文字。登录/注册边框采用 USS 9-slice，摄影插画使用图片层；文字字号独立于图片尺寸。
+Runtime-interaction-20261019.txt 记录：原生 NavigationSubmit 只触发一次准备回调、装备与底部准备入口往返、busy 禁用，以及原生物品检查菜单。所有交易回调使用明确的本地 fixture，没有账号写入。原换页效果未更改。
 
-编辑入口：AccountAccess.uxml + AccountProposal.uss；Ship.uxml + Components/HomeCommandCard.uxml + ApprovedHome.uss。各入口保留原名称、事件与导航，TerminalMotion.cs 未修改。后续特效可叠加至各控件状态层。已保留淡蓝悬停着色、蓝色焦点边、按下变暗和禁用透明度。
+主菜单与登录从实际 MainMenu.unity 验证；actual-mainmenu-entry-20261019.png 是本轮实际 Game View，核对真实 MainMenu 控制器、原节点绑定和 ProposalSystem 样式连接。actual-mainmenu-entry.png 是上一轮记录。本轮各页面视觉检查以 1600×900、仓库/设置/准备台 1280×720 为限。原提案保留在 ../Approved-CD-20261018，不能当作运行截图。
 
-最新验证：正式 Assets/Scenes/MainMenu.unity 启动及真实 MainMenu 控制器，账户原生字段和标题存在，Game View 2560×1440 截图 actual-mainmenu-entry.png。主菜单 C/D 为真实 UXML/控制器的离屏本地数据验证（1600×900），另检查 C 的 1280×720。home*.png 的 NATIVE UNITY UI / LOCAL REVIEW DATA 标记明确其数据来源。没有提交登录/注册、没有账号/交易写入。
+Runtime-review-all.txt、Runtime-review-layout.txt 和 before-*.png 为历史记录；Runtime-review.txt 为最后一批针对性结果。原 operator/location/briefing/recovery/ready.png 是废弃的五步旧结构，不再表示运行入口。
 
-此前全案例渲染见 Runtime-review-all.txt，属于较早一轮；除更新的 home*.png、actual-mainmenu-entry.png 外，其他截图是早期组件接入记录，不能代表最新美术验收。其余页面已接入组件与样式，但仍不能声称全部达到选定提案。部分物品仍使用旧图标。
+全黑离屏输出不计为通过，工具已增加拒绝条件。没有控制桌面，没有修改本次 UI 范围外的渲染管线、光照或性能设置；没有真实性能数据。实际账号/交易、Host/client、物理手柄、4K/超宽屏与正式地图动态明暗仍未验收。
 
-未验证：真实登录/注册响应、购买/结算、Host/client 联机、物理手柄、4K/超宽屏、GPU 帧率或正式地图动态明暗。没有本次 UI 的真实性能测量。没有改渲染管线、场景光照、性能设置，未使用电脑接管工具。
+物品美术纠正：当前 halo/warehouse/raidpack/item/shop 等目标截图使用恢复后的原 HaloIcons 与原 StashItemArt；已撤掉生成的战术头盔/胸挂/背包图集。旧提案与历史截图保留供追溯，不是这些物品的最终美术。
 
-入口修复：恢复 MainMenu.uxml 原有 HidingBackground 节点，避免 MainMenu.OnEnable 既有绑定空引用。验证不保存或替换用户当前场景；只结束本工具启动的 Play，并恢复此前 playModeStartScene。
-
-交互状态截图 actual-account-focus.png 来自同一实际入口，展示控件的蓝色状态反馈；它不等于物理键盘/手柄的完整导航验收。单人/退出两个次级入口已核对世界坐标不重叠。
+Runtime-art-restore-20261019.txt 记录恢复物品外观后的 12 个受影响页面；构筑页使用新布局，保留真实物品外观与数据。Runtime-review.txt 的末次专项检查另含原生模块选择、右侧检查区更新，以及真实 HaloIcons 资源断言。

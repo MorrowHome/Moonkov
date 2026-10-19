@@ -58,3 +58,36 @@
 .inventory-view .inventory-item-art { margin-top: 12px; }
 .inventory-view .inventory-item:hover { background-color: #20252d; }
 .inventory-view.moonkov-controls-light .inventory-item:hover { background-color: #d0d4d3; }
+/* High-density storage: three work areas, clean engraved cells, clear item focus. */
+.inventory-view.inventory-with-stash { padding: 0; background-color: transparent; }
+.inventory-view.inventory-with-stash .inventory-character { width: 34%; margin-right: 14px; padding: 12px; background-color: #08090c; border-color: #69717e; }
+.inventory-view.inventory-with-stash .inventory-containers { width: 27%; margin-right: 14px; padding: 12px; background-color: #08090c; border-width: 1px; border-color: #69717e; }
+.inventory-view.inventory-with-stash .inventory-stash { padding: 12px; background-color: #08090c; border-color: #69717e; }
+.inventory-view .inventory-grid { background-color: #080b10; }
+.inventory-view .inventory-item { border-width: 1px; border-color: #434a56; background-color: #101319; }
+.inventory-view .inventory-item-art { left: 7%; right: 7%; top: 15%; bottom: 14%; }
+.inventory-view .inventory-item-label { font-size: 11px; color: #bfc6d1; background-color: rgba(8,9,12,0.8); }
+.inventory-view .inventory-item-quantity { font-size: 13px; color: #f1f2ed; background-color: #08090c; padding: 1px 3px; }
+.inventory-view .inventory-item:hover { border-color: #f1f2ed; background-color: #1c2432; }
+.inventory-view .inventory-item:focus,
+.inventory-view .inventory-selected { border-width: 2px; border-color: #164bff; background-color: #112044; }
+.inventory-view .inventory-slot { background-color: rgba(8,9,12,0.96); border-color: #7b8595; height: 23%; width: 26%; }
+.inventory-view .inventory-slot-0 { left: 0; top: 0; }
+.inventory-view .inventory-slot-1 { left: 0; top: 35%; }
+.inventory-view .inventory-slot-2 { left: 0; top: 72%; }
+.inventory-view .inventory-slot-3 { left: 74%; top: 6%; }
+.inventory-view .inventory-slot-4 { left: 74%; top: 43%; }
+.inventory-view .inventory-slot-5 { left: 74%; top: 76%; }
+.inventory-view .inventory-slot-label { font-size: 12px; color: #bfc6d1; }
+.inventory-view .inventory-character-title { font-size: 22px; -unity-font-style: normal; }
+.inventory-view .inventory-section-title { font-size: 18px; -unity-font-style: normal; border-left-width: 3px; border-left-color: #164bff; padding-left: 8px; }
+.inventory-view .inventory-hint { font-size: 12px; min-height: 32px; color: #d0d5dd; background-color: #08090c; padding: 6px 10px; }
+.inventory-view.moonkov-controls-light { background-color: #f1f2ed; }
+.inventory-view.moonkov-controls-light .inventory-grid { background-color: #e0e3e1; }
+.inventory-view.moonkov-controls-light .inventory-item { background-color: #f1f2ed; border-color: #929ba5; }
+.inventory-view.moonkov-controls-light .inventory-item-label,
+.inventory-view.moonkov-controls-light .inventory-item-quantity { color: #14171e; background-color: #f1f2ed; }
+.inventory-view.moonkov-controls-light .inventory-selected { border-color: #164bff; background-color: #cfdcff; }
+.inventory-view.moonkov-controls-light .inventory-slot { background-color: #f1f2ed; border-color: #929ba5; }
+.inventory-view.moonkov-controls-light .inventory-slot-label { color: #525b68; }
+.inventory-view.moonkov-controls-light .inventory-slot-item { color: #14171e; }

@@ -1,0 +1,168 @@
+/* Approved Moonkov language, native controls. This sheet owns page composition. */
+.moonkov-terminal.archive-pages { padding: 0 24px; background-color: #08090c; background-image: url("PageArt/ArchiveDark.png"); background-size: cover; background-position: center; }
+.moonkov-terminal.archive-pages .stash-header { height: 82px; background-color: rgba(8,9,12,0.88); border-bottom-color: #68717e; }
+.moonkov-terminal.archive-pages .stash-brand { width: 230px; }
+.moonkov-terminal.archive-pages .stash-brand-title { font-size: 38px; color: #f1f2ed; }
+.moonkov-terminal.archive-pages .stash-page-title { font-size: 25px; -unity-font-style: normal; }
+.moonkov-terminal.archive-pages .archive-navigation-host { position: absolute; top: 104px; left: 24px; bottom: 80px; width: 168px; height: auto; }
+.moonkov-terminal.archive-pages .terminal-nav { height: 100%; padding: 0; border-width: 0; background-color: rgba(8,9,12,0.9); }
+.moonkov-terminal.archive-pages .terminal-nav-tabs { flex-direction: column; flex-grow: 1; }
+.moonkov-terminal.archive-pages .terminal-nav-tabs > .terminal-tab { width: 100%; min-width: 0; min-height: 42px; flex-basis: 0; flex-grow: 1; flex-direction: row; margin: 0 0 8px; padding: 8px 12px; border-width: 1px; border-color: #555e6d; background-color: rgba(8,9,12,0.94); }
+.moonkov-terminal.archive-pages .terminal-tab-label { font-size: 16px; color: #eef0eb; -unity-font-style: normal; }
+.moonkov-terminal.archive-pages .terminal-tab-index { color: #969eab; font-size: 10px; width: 18px; }
+.moonkov-terminal.archive-pages .terminal-nav-tabs > .terminal-tab-selected { background-color: #164bff; border-color: #adbfff; border-left-width: 4px; border-left-color: #ffffff; }
+.moonkov-terminal.archive-pages .terminal-tab-selected .terminal-tab-label,
+.moonkov-terminal.archive-pages .terminal-tab-selected .terminal-tab-index { color: #ffffff; }
+.moonkov-terminal.archive-pages .terminal-nav-tabs > .terminal-tab:hover { border-color: #ffffff; background-color: #12234b; }
+.moonkov-terminal.archive-pages .terminal-nav-tabs > .terminal-tab:focus { border-width: 2px; border-color: #bed1ff; }
+.moonkov-terminal.archive-pages .terminal-nav-indicator { display: none; }
+.moonkov-terminal.archive-pages .stash-body { margin-left: 188px; padding-top: 22px; min-height: 0; }
+.moonkov-terminal.archive-pages #terminalContent { margin-left: 188px; padding-top: 22px; min-height: 0; }
+.moonkov-terminal.archive-pages .stash-footer { height: 62px; background-color: rgba(8,9,12,0.94); }
+.moonkov-terminal.archive-pages .stash-footer-caption,
+.moonkov-terminal.archive-pages .stash-footer-hint { color: #aab2c0; }
+.moonkov-terminal.archive-pages .stash-deploy-button { background-color: #164bff; color: white; border-width: 1px; border-color: #93acff; }
+.moonkov-terminal.archive-pages .terminal-title,
+.moonkov-terminal.archive-pages .terminal-heading { -unity-font-style: normal; }
+.moonkov-terminal.archive-pages .terminal-copy { font-size: 15px; }
+.moonkov-terminal.archive-pages .terminal-primary { background-color: #164bff; color: #ffffff; border-color: #8aa5ff; min-height: 50px; font-size: 18px; }
+.moonkov-terminal.archive-pages .terminal-primary:hover,
+.moonkov-terminal.archive-pages .terminal-primary:focus { background-color: #1436a6; border-color: #ffffff; }
+.moonkov-terminal.archive-pages .terminal-primary:active { background-color: #0a205c; }
+.moonkov-terminal.archive-pages .terminal-button { min-height: 42px; font-size: 15px; }
+.moonkov-terminal.archive-pages Button:disabled { opacity: 0.4; }
+.moonkov-terminal.archive-pages .terminal-panel { background-color: rgba(8,9,12,0.96); border-color: #5c6471; }
+.moonkov-terminal.archive-pages.archive-light { background-color: #f1f2ed; }
+.moonkov-terminal.archive-pages.archive-light .stash-page-title { color: #f1f2ed; }
+.moonkov-terminal.archive-page-2 { background-image: none; }
+.moonkov-terminal.archive-page-4 { background-image: url("PageArt/Operations.png"); }
+/* One preparation desk replaces the repeated five-page wizard. */
+.deployment-desk { flex-direction: row; flex-grow: 1; min-height: 0; }
+.deployment-mission { flex-grow: 1; flex-basis: 0; min-width: 0; margin-right: 22px; padding: 24px; background-color: #08090c; border-width: 1px; border-color: #555e6d; }
+.deployment-title { color: #f1f2ed; font-size: 38px; -unity-font-style: normal; margin-bottom: 10px; white-space: normal; }
+.deployment-mission .terminal-eyebrow { color: #b3bed1; font-size: 12px; }
+.deployment-map { flex-grow: 1; min-height: 100px; background-image: url("ApprovedHome/CardMoon.png"); background-size: cover; background-position: center; margin: 16px 0; border-left-width: 4px; border-left-color: #164bff; justify-content: flex-end; }
+.deployment-map-caption { color: #f1f2ed; font-size: 14px; white-space: normal; padding: 12px; background-color: rgba(8,9,12,0.92); }
+.deployment-protocol .terminal-heading { color: #f1f2ed; font-size: 24px; margin-bottom: 10px; }
+.deployment-protocol .terminal-copy { color: #b8c0cd; }
+.deployment-rule { color: #f1f2ed; border-top-width: 1px; border-top-color: #525b68; padding: 10px 0; font-size: 14px; white-space: normal; }
+.deployment-sheet { width: 43%; min-width: 290px; background-color: #f1f2ed; padding: 24px; border-width: 1px; border-color: #929ba5; }
+.deployment-details { flex-grow: 1; min-height: 0; }
+.deployment-details .unity-scroll-view__content-container { padding-right: 12px; }
+.deployment-sheet-title { font-size: 28px; color: #14171e; margin-bottom: 20px; white-space: normal; }
+.deployment-check { border-top-width: 1px; border-top-color: #929ba5; padding: 16px 0 4px; }
+.deployment-check .terminal-heading { font-size: 20px; color: #14171e; }
+.deployment-sheet .terminal-copy { font-size: 14px; color: #525b68; margin-bottom: 12px; }
+.deployment-sheet .terminal-eyebrow { color: #525b68; font-size: 12px; }
+.deployment-actions { flex-direction: row; margin: 12px 0; }
+.deployment-actions Button { flex-grow: 1; flex-basis: 0; margin-right: 8px; min-width: 0; padding: 6px; font-size: 13px; }
+.deployment-sheet .terminal-carry-field { height: 48px; margin: 10px 0; }
+.deployment-sheet .terminal-carry-field .unity-base-field__label { width: 60%; min-width: 0; font-size: 14px; white-space: normal; }
+.deployment-sheet .terminal-carry-field .unity-base-field__input { color: #14171e; font-size: 22px; background-color: #e0e3e1; }
+.deployment-sheet .terminal-cargo-gauge { height: 4px; background-color: #aab2bd; margin-bottom: 16px; }
+.deployment-sheet .terminal-cargo-gauge-fill { background-color: #164bff; height: 100%; }
+.deployment-sheet .deployment-risk .terminal-warning { color: #963d32; font-size: 17px; margin-bottom: 12px; white-space: normal; }
+.deployment-sheet .deployment-launch { flex-shrink: 0; min-height: 64px; margin: 16px 0 10px; }
+/* Construction: real item art on a lunar work surface, separate paper inspector. */
+.moonkov-terminal.archive-page-2 .terminal-halo-panel { background-color: transparent; border-width: 0; }
+.moonkov-terminal.archive-page-2 .terminal-side { background-color: #f1f2ed; border-width: 1px; border-color: #929ba5; }
+.moonkov-terminal.archive-page-2 .terminal-node { background-color: #08090c; color: #f1f2ed; border-width: 1px; border-color: #9099a8; font-size: 15px; }
+.moonkov-terminal.archive-page-2 .terminal-node:hover,
+.moonkov-terminal.archive-page-2 .terminal-node:focus,
+.moonkov-terminal.archive-page-2 .terminal-node-selected { background-color: #12234b; border-width: 2px; border-color: #164bff; }
+/* Supplier D: four independently selectable photo entries, no extra exhibit column. */
+.moonkov-terminal.archive-page-3 .archive-exhibit { display: none; }
+.moonkov-terminal.archive-page-3 .archive-contact { background-color: #08090c; border-color: #7b8595; }
+.moonkov-terminal.archive-page-3 .archive-contact-photo { width: 60%; background-position: right; }
+.moonkov-terminal.archive-page-3 .archive-contact-content { padding: 24px; }
+.moonkov-terminal.archive-page-3 .archive-contact-title { font-size: 30px; -unity-font-style: normal; }
+/* Tasks D: mission scan column + illustrated protocol, not fake progress. */
+.moonkov-terminal.archive-page-5 .terminal-side { width: 33%; }
+.moonkov-terminal.archive-page-5 .terminal-wide { width: 65%; }
+.moonkov-terminal.archive-page-5 .terminal-task-progress { min-height: 120px; }
+.moonkov-terminal.archive-page-5 .terminal-task-progress .arc-meter { display: none; }
+.moonkov-terminal.archive-page-5 .terminal-objectives .terminal-stat { min-height: 85px; padding-left: 110px; background-size: 90px 70px; background-position: left; background-repeat: no-repeat; }
+.moonkov-terminal.archive-page-5 .terminal-objectives .terminal-stat-name { width: 32%; }
+/* Base D: full-width industrial panorama, then three real resource rows. */
+.moonkov-terminal.archive-page-6 { background-image: url("PageArt/Base.png"); }
+.moonkov-terminal.archive-page-6 .terminal-base-overview { flex-grow: 1.8; flex-basis: 0; margin-bottom: 18px; }
+.moonkov-terminal.archive-page-6 .terminal-blueprint-panel { background-color: rgba(8,9,12,0.32); border-width: 0; }
+.moonkov-terminal.archive-page-6 .terminal-blueprint-panel .terminal-blueprint { background-image: none; background-color: transparent; }
+.moonkov-terminal.archive-page-6 .terminal-resources { background-color: rgba(8,9,12,0.94); }
+.moonkov-terminal.archive-page-6 .terminal-module-row { flex-grow: 1; flex-basis: 0; }
+.moonkov-terminal.archive-page-6 .terminal-module-index { display: none; }
+.moonkov-terminal.archive-page-6 .terminal-module { background-color: rgba(8,9,12,0.94); min-width: 0; }
+.moonkov-terminal.archive-page-6 .terminal-module .terminal-copy { font-size: 13px; }
+/* Comms D is a quiet central channel with a narrow status register. */
+.moonkov-terminal.archive-page-7 .terminal-side { width: 30%; }
+.moonkov-terminal.archive-page-7 .terminal-wide { width: 68%; background-image: url("PageArt/CommsPrint.png"); background-size: cover; background-position: center; justify-content: flex-end; }
+.moonkov-terminal.archive-page-7 .terminal-comms-wave { display: none; }
+.moonkov-terminal.archive-page-7 .terminal-wide Label { background-color: #08090c; padding: 8px; }
+.moonkov-terminal.archive-page-7 .terminal-contact { min-height: 76px; flex-wrap: wrap; padding: 12px 0; }
+/* Settings D: black functional sheet; no unrelated white catalogue rows. */
+.moonkov-terminal.archive-page-8 .archive-settings-page { padding-left: 12%; }
+.moonkov-terminal.archive-page-8 .archive-settings-exhibit { width: 10%; background-image: none; border-width: 0; }
+.moonkov-terminal.archive-page-8 .archive-settings-banner { height: 90px; padding: 12px 20px; background-image: none; border-left-width: 4px; margin-bottom: 14px; }
+.moonkov-terminal.archive-page-8 .archive-settings-banner Label { font-size: 40px; -unity-font-style: normal; }
+.moonkov-terminal.archive-page-8 .archive-settings-main { background-color: #08090c; width: 66%; padding: 0; }
+.moonkov-terminal.archive-page-8 .archive-settings-row { background-color: #101318; border-width: 1px; border-color: #414958; border-left-width: 4px; border-left-color: #164bff; min-height: 62px; padding: 0 18px; }
+.moonkov-terminal.archive-page-8 .archive-settings-row .unity-base-field__label { color: #f1f2ed; font-size: 16px; -unity-font-style: normal; min-width: 140px; }
+.moonkov-terminal.archive-page-8 .archive-settings-row .unity-base-field__input { color: #f1f2ed; }
+.moonkov-terminal.archive-page-8 .terminal-keys .terminal-stat-name { color: #f1f2ed; }
+.moonkov-terminal.archive-page-8 .terminal-keys .terminal-stat-value { background-color: #101318; border-width: 1px; border-color: #7b8595; color: #f1f2ed; }
+/* Density changes preserve the same hierarchy, never overlapping input targets. */
+.moonkov-terminal.archive-compact .archive-navigation-host { width: 136px; top: 82px; bottom: 70px; }
+.moonkov-terminal.archive-compact .stash-header { height: 64px; }
+.moonkov-terminal.archive-compact .stash-body,
+.moonkov-terminal.archive-compact #terminalContent { margin-left: 154px; padding-top: 16px; }
+.moonkov-terminal.archive-compact .terminal-tab-label { font-size: 14px; }
+.moonkov-terminal.archive-compact .terminal-nav-tabs > .terminal-tab { margin-bottom: 5px; padding: 6px; }
+.moonkov-terminal.archive-compact .deployment-mission { padding: 16px; margin-right: 14px; }
+.moonkov-terminal.archive-compact .deployment-title { font-size: 28px; }
+.moonkov-terminal.archive-compact .deployment-sheet { padding: 16px; width: 44%; min-width: 280px; }
+.moonkov-terminal.archive-compact .deployment-sheet-title { font-size: 22px; }
+.moonkov-terminal.archive-compact .deployment-rule { font-size: 12px; padding: 7px 0; }
+.moonkov-terminal.archive-compact .deployment-launch { min-height: 48px; font-size: 17px; }
+.moonkov-terminal.archive-compact .archive-settings-page { padding-left: 0; }
+.moonkov-terminal.archive-compact .archive-settings-exhibit { display: none; }
+.moonkov-terminal.archive-compact .archive-settings-row { min-height: 48px; }
+.moonkov-terminal.archive-compact .archive-settings-row .unity-base-field__label { font-size: 14px; min-width: 110px; }
+.moonkov-terminal.archive-page-5 .terminal-objectives > .terminal-stat { background-image: url("PageArt/TaskRecover.png"); }
+.moonkov-terminal.archive-page-5 .terminal-objectives > .protocol-manage { background-image: url("PageArt/TaskManage.png"); }
+.moonkov-terminal.archive-page-5 .terminal-objectives > .protocol-extract { background-image: url("PageArt/TaskExtract.png"); }
+.moonkov-terminal.archive-pages .stash-header .stash-eyebrow { color: #aab2c0; }
+.moonkov-terminal.archive-pages .stash-header .stash-account-name { color: #f1f2ed; }
+.moonkov-terminal.archive-pages .stash-header .stash-small-button { color: #f1f2ed; background-color: #101318; }
+.halo-component-art { height: 130px; margin: 8px 0 20px; background-size: contain; background-position: center; background-repeat: no-repeat; background-color: #08090c; }
+.moonkov-terminal.archive-light .stash-header,
+.moonkov-terminal.archive-light .stash-footer { background-color: #08090c; }
+.moonkov-terminal.archive-page-4 .deployment-mission Label { color: #f1f2ed; }
+.moonkov-terminal.archive-page-4 .deployment-mission .terminal-copy { color: #bfc6d1; }
+.moonkov-terminal.archive-page-4 .deployment-title { font-size: 36px; }
+.moonkov-terminal.archive-page-4 .deployment-map-caption { color: #f1f2ed; }
+.moonkov-terminal.archive-page-4 .stash-deploy-button { display: none; }
+.moonkov-terminal.archive-page-2 .terminal-node { background-image: none; padding: 0; }
+.halo-node-art { position: absolute; left: 10%; right: 10%; top: 8px; bottom: 32px; background-size: contain; background-position: center; background-repeat: no-repeat; }
+.moonkov-terminal.archive-page-2 .halo-node-title { position: absolute; left: 8px; right: 8px; bottom: 6px; color: #f1f2ed; background-color: #08090c; font-size: 14px; -unity-text-align: middle-center; }
+.moonkov-terminal.archive-page-2 .terminal-side Button:disabled { color: #525b68; }
+/* Keep the channel print at its photographic aspect ratio. */
+.moonkov-terminal.archive-page-7 .terminal-wide { background-size: contain; background-repeat: no-repeat; background-color: #08090c; }
+/* Page families differ in artwork as well as in layout. */
+.moonkov-terminal.archive-page-1 { background-image: url("PageArt/Technical.png"); }
+.moonkov-terminal.archive-page-3 { background-image: none; background-color: #08090c; }
+.moonkov-terminal.archive-page-5 { background-image: url("PageArt/TaskExhibit.png"); background-size: 38% 100%; background-position: left; background-repeat: no-repeat; }
+.moonkov-terminal.archive-page-7 { background-image: none; background-color: #08090c; }
+/* Rebuilt construction composition: real halo in the center, actual slot families around it. */
+.moonkov-terminal.archive-page-2 .terminal-halo-schematic { background-color: #08090c; background-image: url("ApprovedHome/CardMoon.png"); background-size: cover; background-position: right; -unity-background-image-tint-color: #667482; }
+.moonkov-terminal.archive-page-2 .terminal-node { width: 25%; height: 22%; }
+.moonkov-terminal.archive-page-2 #haloNode0 { left: 0; top: 12%; }
+.moonkov-terminal.archive-page-2 #haloNode1 { left: 0; top: 42%; }
+.moonkov-terminal.archive-page-2 #haloNode2 { left: 75%; top: 7%; }
+.moonkov-terminal.archive-page-2 #haloNode3 { left: 75%; top: 34%; }
+.moonkov-terminal.archive-page-2 #haloNode4 { left: 33%; top: 30%; width: 34%; height: 36%; }
+.moonkov-terminal.archive-page-2 #haloNode5 { left: 75%; top: 61%; }
+.moonkov-terminal.archive-page-2 #haloNode6 { left: 33%; top: 78%; width: 34%; }
+.moonkov-terminal.archive-page-2 .halo-group-caption { position: absolute; color: #f1f2ed; border-left-width: 3px; border-left-color: #164bff; font-size: 12px; padding: 3px 8px; background-color: #08090c; }
+.halo-storage-caption { left: 0; top: 3%; }
+.halo-shaping-caption { left: 75%; top: 0; }
+.halo-utility-caption { left: 33%; top: 70%; }

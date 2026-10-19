@@ -1,0 +1,13 @@
+halo: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+warehouse: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+warehouse-compact: native runtime panel 1280x720; local fixtures; not a gameplay/network acceptance.
+settings-compact: native runtime panel 1280x720; local fixtures; not a gameplay/network acceptance.
+deployment-compact: native runtime panel 1280x720; local fixtures; not a gameplay/network acceptance.
+item: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+shop: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+emergency: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+research: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+raidpack: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+loot: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+workshop: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+COMPLETE

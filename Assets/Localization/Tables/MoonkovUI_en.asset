@@ -3380,6 +3380,34 @@ MonoBehaviour:
     m_Localized: ACCOUNT ACCESS
     m_Metadata:
       m_Items: []
+  - m_Id: 4089738892685312
+    m_Localized: LUNAR SUPPLY RECOVERY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4089738917851136
+    m_Localized: '!  NO RECOVERY COVERAGE'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4089738917851137
+    m_Localized: OPEN STORAGE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4089738917851138
+    m_Localized: ONLINE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4089738917851139
+    m_Localized: OFFLINE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4089738917851140
+    m_Localized: Personal storage is available at the cargo terminal.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4089738917851141
+    m_Localized: SUPPLIER CONTRACTS
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

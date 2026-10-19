@@ -19,3 +19,11 @@
 .halo-light-panel Button:focus { border-width: 2px; border-color: #164BFF; }
 .halo-light-panel Button:active { background-color: #164BFF; color: #ffffff; }
 .halo-light-panel Button:disabled { opacity: 0.45; }
+/* Halo-light D uses a contained printed header, with native slider tracks. */
+.halo-light-host { align-items: flex-start; padding-left: 4%; padding-right: 0; }
+.halo-light-panel { width: 400px; padding: 24px; border-left-width: 4px; border-left-color: #164bff; }
+.halo-light-title { font-size: 30px; padding: 12px 16px; margin: -24px -24px 18px; background-image: url("ApprovedHome/CardMoon.png"); background-position: right; background-size: cover; }
+.halo-light-panel Button.halo-selected { background-color: #164bff; color: #ffffff; }
+.halo-light-heading { font-size: 18px; margin-bottom: 12px; }
+.halo-light-panel .unity-base-slider__tracker { height: 6px; background-color: #3454a1; }
+.halo-light-panel .unity-base-slider__dragger { width: 20px; height: 20px; border-radius: 10px; }

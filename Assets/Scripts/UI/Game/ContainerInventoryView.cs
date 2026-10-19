@@ -298,13 +298,35 @@ namespace Unity.MP_FPS.Client
                     m_Windows.Close(window); m_Busy = true; m_UseMedical(item);
                 });
             if (HaloModules.IsWeapon(item.Code) && m_Stash) MoonkovTerminal.ActionButton(window, "MODIFY HALO", () => { m_Windows.Close(window); OpenModification(item); });
-            MoonkovTerminal.ActionButton(window, "INSPECT", ()=> { m_Windows.Close(window); Describe(item); });
+            MoonkovTerminal.ActionButton(window, "INSPECT", ()=> { m_Windows.Close(window); OpenInspection(item); });
             if (InventoryCatalog.Get(item.Code).Container) MoonkovTerminal.ActionButton(window, "OPEN CONTAINER", ()=> { m_Windows.Close(window); OpenContainer(item); });
             MoonkovTerminal.ActionButton(window, "QUICK TRANSFER", ()=> { m_Windows.Close(window); QuickTransfer(item); });
             if (InventoryCatalog.Get("equipment").Regions.Any(r => r.SlotKind == InventoryCatalog.Get(item.Code).Kind))
                 MoonkovTerminal.ActionButton(window, "EQUIP", ()=> { m_Windows.Close(window); foreach (var region in InventoryCatalog.Get("equipment").Regions) if (region.SlotKind==InventoryCatalog.Get(item.Code).Kind) { Command(new InventoryCommand { ItemId=item.Id, Parent="equipment", Region=region.Id }); break; } });
             if (item.Quantity>1) MoonkovTerminal.ActionButton(window, "SPLIT STACK", ()=> { m_Windows.Close(window); Split(item); });
         }
+        private void OpenInspection(InventoryItem item)
+        {
+            Describe(item);
+            var definition = InventoryCatalog.Get(item.Code);
+            var window = m_Windows.Open(definition.Name);
+            window.AddToClassList("archive-inspection-window");
+            var content = TerminalLayout.Clone("Components/ItemInspection", "itemInspection");
+            window.Add(content);
+            var art = new StashItemArt(Art(item.Code)); art.style.flexGrow = 1;
+            content.Q("inspectionArt").Add(art);
+            MoonkovLocalization.Set(content.Q<Label>("inspectionTitle"), definition.Name);
+            MoonkovLocalization.Set(content.Q<Label>("inspectionStats"), "{0} · ×{1} · {2:0.##} KG TOTAL · {3} · {4}",
+                definition.Name, item.Quantity, definition.Weight * item.Quantity, Path(item.Parent), definition.Width + " × " + definition.Height);
+            MoonkovLocalization.Set(content.Q<Label>("inspectionDetail"), MoonkovItemPresentation.Details(item.Code));
+            var actions = content.Q("inspectionActions");
+            var transfer = MoonkovTerminal.ActionButton(actions, "QUICK TRANSFER", () => { m_Windows.Close(window); QuickTransfer(item); });
+            transfer.SetEnabled(!m_Busy && m_ReadOnlyReason == null);
+            if (definition.Container) MoonkovTerminal.ActionButton(actions, "OPEN CONTAINER", () => { m_Windows.Close(window); OpenContainer(item); });
+            if (m_Stash && HaloModules.IsWeapon(item.Code))
+                MoonkovTerminal.ActionButton(actions, "MODIFY HALO", () => { m_Windows.Close(window); OpenModification(item); });
+        }
+
         private void Split(InventoryItem item)
         {
             var window=m_Windows.Open("SPLIT STACK", null, true); var amount=new IntegerField("QUANTITY") { value=Mathf.Max(1,item.Quantity/2), isDelayed=true }; window.Add(amount);

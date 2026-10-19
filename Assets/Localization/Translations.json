@@ -805,5 +805,12 @@
   "{0:0}%": "{0:0}%",
   "TEAM": "队伍",
   "LOADOUT / STORAGE": "仓库与装备",
-  "ACCOUNT ACCESS": "账户接入"
+  "ACCOUNT ACCESS": "账户接入",
+  "LUNAR SUPPLY RECOVERY": "月球物资回收",
+  "!  NO RECOVERY COVERAGE": "!  无回收保障",
+  "OPEN STORAGE": "打开仓库",
+  "ONLINE": "可用",
+  "OFFLINE": "未开放",
+  "Personal storage is available at the cargo terminal.": "个人仓库可通过货舱终端访问。",
+  "SUPPLIER CONTRACTS": "供应商合同"
 }

@@ -1,52 +1,47 @@
-<ui:UXML xmlns:moon="Unity.MP_FPS.Client" xmlns:ui="UnityEngine.UIElements">
-    <ui:Style src="project://database/Assets/UI Toolkit/GameUI/StashScreen.uss" />
-    <ui:Style src="project://database/Assets/UI Toolkit/GameUI/MoonkovTerminal.uss" />
-    <ui:Style src="project://database/Assets/Resources/Moonkov/UI/TerminalLayout.uss" />
-    <ui:VisualElement name="layoutPreview" class="stash-root moonkov-terminal terminal-layout-preview">
-        <ui:VisualElement name="terminalPage" class="terminal-content terminal-content-page">
-            <ui:Label name="pageIndex" class="terminal-page-index" picking-mode="Ignore" text="05" />
-            <ui:VisualElement name="operationStepper" class="terminal-row terminal-stepper">
-                <ui:VisualElement class="terminal-stepper-rail" picking-mode="Ignore">
-                    <ui:VisualElement class="terminal-stepper-fill" picking-mode="Ignore" />
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="terminalPage">
+        <ui:VisualElement class="deployment-desk">
+            <ui:VisualElement class="deployment-mission">
+                <ui:Label text="LUNAR SUPPLY RECOVERY" class="deployment-title" />
+                <ui:Label text="MOON / SURFACE SECTOR" class="terminal-eyebrow" />
+                <ui:VisualElement class="deployment-map" picking-mode="Ignore">
+                    <ui:Label text="AVAILABLE OPERATION: LUNAR SUPPLY RECOVERY" class="deployment-map-caption" />
                 </ui:VisualElement>
-                <ui:Button class="terminal-button" text="01  OPERATOR" />
-                <ui:Button class="terminal-button" text="02  LOCATION" />
-                <ui:Button class="terminal-button" text="03  BRIEFING" />
-                <ui:Button class="terminal-button" text="04  RECOVERY" />
-                <ui:Button class="terminal-button" text="05  READY" />
-            </ui:VisualElement>
-            <ui:VisualElement class="terminal-row">
-                <ui:VisualElement name="operationMain" class="terminal-panel terminal-wide">
-                    <moon:TechFrame picking-mode="Ignore" delay="0.08" />
-                    <ui:Label class="terminal-eyebrow" text="EXPEDITION / OPERATOR" />
-                </ui:VisualElement>
-                <ui:VisualElement class="terminal-panel terminal-side">
-                    <moon:TechFrame picking-mode="Ignore" delay="0.16" />
-                    <ui:Label class="terminal-eyebrow" text="MISSION SUMMARY" />
-                    <ui:Label class="terminal-step-counter" text="01 / 05" />
-                    <ui:Label class="terminal-title" text="LUNAR RECOVERY" />
-                    <ui:VisualElement class="terminal-row terminal-stat">
-                        <ui:Label class="terminal-stat-name" text="LOCATION" />
-                        <ui:Label class="terminal-stat-value" text="MOON / SURFACE SECTOR" name="statValue0" />
-                    </ui:VisualElement>
-                    <ui:VisualElement class="terminal-row terminal-stat">
-                        <ui:Label class="terminal-stat-name" text="CAPACITY" />
-                        <ui:Label class="terminal-stat-value" text="12 SUPPLIES" name="statValue1" />
-                    </ui:VisualElement>
-                    <ui:VisualElement class="terminal-row terminal-stat">
-                        <ui:Label class="terminal-stat-name" text="EXTRACTION" />
-                        <ui:Label class="terminal-stat-value" text="GREEN BEACON" name="statValue2" />
-                    </ui:VisualElement>
-                    <ui:VisualElement class="terminal-row terminal-stat">
-                        <ui:Label class="terminal-stat-name" text="TEAM" />
-                        <ui:Label class="terminal-stat-value" text="SESSION PARTICIPANTS" name="statValue3" />
-                    </ui:VisualElement>
-                    <ui:Label class="terminal-copy" text="Your session host determines the map and mission timing. Connection setup follows the readiness check." />
+                <ui:VisualElement class="deployment-protocol">
+                    <ui:Label text="RECOVER. SURVIVE. EXTRACT." class="terminal-heading" />
+                    <ui:Label text="Locate supply caches and navigate back to the extraction beacon. Additional regions are not charted for deployment." class="terminal-copy" />
+                    <ui:Label text="[E] COLLECT NEARBY SUPPLIES" class="deployment-rule" />
+                    <ui:Label text="[TAB] CHECK YOUR RAID PACK" class="deployment-rule" />
+                    <ui:Label text="STAY INSIDE THE GREEN BEACON" class="deployment-rule" />
                 </ui:VisualElement>
             </ui:VisualElement>
-            <ui:VisualElement class="terminal-row terminal-page-actions">
-                <ui:Button class="terminal-button" text="BACK" name="back" />
-                <ui:Button class="terminal-primary" text="CONTINUE" name="continue" />
+            <ui:VisualElement class="deployment-sheet">
+                <ui:ScrollView mode="Vertical" class="deployment-details" horizontal-scroller-visibility="Hidden">
+                    <ui:Label text="READY FOR DEPLOYMENT" class="deployment-sheet-title" />
+                    <ui:VisualElement class="deployment-check">
+                        <ui:Label text="OPERATOR" class="terminal-eyebrow" />
+                        <ui:Label text="DOLLSINGER" class="terminal-heading" />
+                        <ui:VisualElement class="deployment-actions">
+                            <ui:Button name="reviewEquipment" text="LOADOUT / STORAGE" class="terminal-button" />
+                            <ui:Button name="reviewHalo" text="HALO BUILD" class="terminal-button" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="deployment-check">
+                        <ui:Label text="CARGO" class="terminal-eyebrow" />
+                        <ui:Label name="carrySummary" class="terminal-heading" />
+                        <ui:IntegerField name="operationCarryCells" class="terminal-carry-field" label="ENERGY CELLS TO CARRY" is-delayed="true" />
+                        <ui:VisualElement class="terminal-cargo-gauge"><ui:VisualElement class="terminal-cargo-gauge-fill" /></ui:VisualElement>
+                        <ui:Label text="Cells leave storage when the server accepts deployment. [R] spends battery energy for missing rounds, according to the weapon's energy cost. Unspent charge stays in the cell." class="terminal-copy" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="deployment-check deployment-risk">
+                        <ui:Label text="!  NO RECOVERY COVERAGE" class="terminal-warning" />
+                        <ui:Label text="Drone insurance is not currently offered. You are deploying without a recovery contract. Lost cargo cannot be claimed after death." class="terminal-copy" />
+                        <ui:Label text="Carried supplies are lost on death or timeout. Storage is credited after a successful server settlement. The session controls the extraction countdown." class="terminal-copy" />
+                    </ui:VisualElement>
+                    <ui:Label text="Your session host determines the map and mission timing. Connection setup follows the readiness check." class="terminal-copy" />
+                </ui:ScrollView>
+                <ui:Button name="launch" text="OPEN CONNECTION TERMINAL" class="terminal-primary deployment-launch" />
+                <ui:Button name="back" text="BACK" class="terminal-button" />
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>

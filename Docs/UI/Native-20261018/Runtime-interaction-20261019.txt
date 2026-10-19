@@ -1,0 +1,5 @@
+deployment: native NavigationSubmit callback once; equipment/footer round-trip after layout; busy launch disabled; no account transaction
+deployment: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+deployment-compact: native runtime panel 1280x720; local fixtures; not a gameplay/network acceptance.
+item: native runtime panel 1600x900; local fixtures; not a gameplay/network acceptance.
+COMPLETE

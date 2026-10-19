@@ -59,3 +59,15 @@
 .archive-access TextField:focus .unity-text-field__input { border-width: 2px; border-color: #164bff; }
 .archive-access .login-title, .archive-access .archive-form-title { -unity-font-style: bold; }
 .archive-access .unity-base-field__label { -unity-text-align: middle-left; align-self: flex-start; }
+/* Session C is a full clean canvas; dialogs retain live connection controls. */
+.archive-access { background-image: url("PageArt/Operations.png"); background-size: cover; background-position: center; }
+.archive-access .archive-access-exhibit { background-image: none; background-color: transparent; border-width: 0; }
+.archive-access > .container { background-color: #f1f2ed; border-width: 1px; border-color: #929ba5; border-top-width: 4px; border-top-color: #164bff; }
+.archive-dialog > .container { border-top-width: 4px; border-top-color: #164bff; padding: 28px; }
+.archive-dialog .archive-dialog-title { background-image: url("ApprovedHome/CardMoon.png"); background-size: cover; color: #f1f2ed; padding: 20px; margin: -28px -28px 20px; }
+.archive-dialog #StartButton, .archive-dialog #ConfirmButton { background-color: #164bff; color: #ffffff; border-color: #8aa5ff; }
+.archive-loading { background-image: url("PageArt/Base.png"); background-size: cover; background-color: #08090c; }
+.archive-loading .archive-loading-photo { display: none; }
+.archive-loading > .container { top: auto; bottom: 10%; left: 6%; width: 52%; padding: 24px; background-color: rgba(8,9,12,0.96); border-left-width: 4px; border-left-color: #164bff; }
+.archive-loading .login-title { color: #f1f2ed; }
+.archive-loading .login-caption, .archive-loading #LoadingStatus { color: #bfc6d1; }
