@@ -53,6 +53,7 @@ public static class MoonkovRaidAudioSetup
             Policy(name, SoundDef.MixRole.Default, 8, .02f, true, 100);
         AssetDatabase.Refresh();
         MoonkovAudioDetailSetup.Install();
+        MoonkovAlienAudioSetup.Install();
         Debug.Log("Raid audio installed: recorded contact/vocal banks, suit/detail cues and pooled mix policies.");
     }
     private static SoundDef Bank(string name, string prefix, int count, float db, SoundDef.MixRole role,

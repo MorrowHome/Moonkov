@@ -1,0 +1,333 @@
+{
+  "license": "CC0-1.0",
+  "provenance": [
+    "RaidAudioSources.json (Ogrebane mouth and blukotek/Ali_6868 shell/gravel)",
+    "AudioDetailSources.json (Kenney cloth and AntumDeluge scrape)"
+  ],
+  "clips": [
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/AlienCombat/AlienSwing1.wav",
+      "sha256": "3c454fb71a1c8e2dff3960e22b7522df0820882d290989141dc6583828cbb554",
+      "seconds": 0.5243,
+      "sources": [
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Details/Crawl1.wav",
+          "sha256": "188dd31cddf597df4c606641216b512c0ef6d65801c257e7b6cf4c90c529f5e9"
+        },
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Details/AlienWallScrape1.wav",
+          "sha256": "2b45b8a83729d46b2fd55d2469bec36b6db7288bc60e40c7e2e1a683721a35b5"
+        },
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Raid/AlienContact1.wav",
+          "sha256": "508b39021172e0645b423e92aaf820c9b6805293ca9c5f8a91e765d61a48c43b"
+        }
+      ],
+      "processing": "Short air/cloth shear, abrasive leading edge and shell snap; varispeed 1.5/1.8/1.35; HP45Hz; 8/85ms edge fades; peak -3.10dBFS; mono PCM16/48k"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/AlienCombat/AlienSpit1.wav",
+      "sha256": "80d23c6a1db6372caa09239728d6220bc9b82bf316fc4b90d9771241561739ec",
+      "seconds": 0.4067,
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Monsters/monster_sfx_pack_2/monster-6.wav",
+          "sha256": "41897f19fbace7d20fd478d430f9fed7ed6a45c298f38d86e058c7b60210b0c2"
+        }
+      ],
+      "processing": "Close mouth expulsion, restrained 26ms damped reflection; HP45Hz; 8/85ms edge fades; peak -3.10dBFS; mono PCM16/48k"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/AlienCombat/AlienImpact1.wav",
+      "sha256": "92104bcae59ea069a37ee18f35a2198a7b9caeaa4dda9932008a38c4f931b22f",
+      "seconds": 0.5692,
+      "sources": [
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Raid/AlienContact1.wav",
+          "sha256": "508b39021172e0645b423e92aaf820c9b6805293ca9c5f8a91e765d61a48c43b"
+        },
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Details/AlienWallScrape1.wav",
+          "sha256": "2b45b8a83729d46b2fd55d2469bec36b6db7288bc60e40c7e2e1a683721a35b5"
+        }
+      ],
+      "processing": "Shell impact with abrasive breakup and lower recorded contact body; HP45Hz; 8/85ms edge fades; peak -3.10dBFS; mono PCM16/48k"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/AlienCombat/AlienWetMove1.wav",
+      "sha256": "25038d1ef4832c848b87ab57e97bb2405a55132a0692ef38dc50b54d41620c15",
+      "seconds": 0.8739,
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Monsters/monster_sfx_pack_2/monster-6.wav",
+          "sha256": "41897f19fbace7d20fd478d430f9fed7ed6a45c298f38d86e058c7b60210b0c2"
+        },
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Details/Crawl1.wav",
+          "sha256": "188dd31cddf597df4c606641216b512c0ef6d65801c257e7b6cf4c90c529f5e9"
+        }
+      ],
+      "processing": "Quiet organic mouth texture and cloth shear for suction/slime travel; no boot strike; HP45Hz; 8/85ms edge fades; peak -3.10dBFS; mono PCM16/48k"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/AlienCombat/AlienHeavyStep1.wav",
+      "sha256": "0e4fdc50cb01a6f40f68add9fb61de9d53c0bb980ee320f80d2d4977e57966a1",
+      "seconds": 0.7444,
+      "sources": [
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Raid/AlienContact1.wav",
+          "sha256": "508b39021172e0645b423e92aaf820c9b6805293ca9c5f8a91e765d61a48c43b"
+        },
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Details/AlienWallScrape1.wav",
+          "sha256": "2b45b8a83729d46b2fd55d2469bec36b6db7288bc60e40c7e2e1a683721a35b5"
+        }
+      ],
+      "processing": "Heavy shell/floor contact with low recorded body, 35ms settling layer; HP45Hz; 8/85ms edge fades; peak -3.10dBFS; mono PCM16/48k"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/AlienCombat/AlienGrip1.wav",
+      "sha256": "aef2f9b23c22518d29cfb18ea079449929dd3a7fc241e9301d9ea32ae9e2f831",
+      "seconds": 0.4687,
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Monsters/monster_sfx_pack_2/monster-6.wav",
+          "sha256": "41897f19fbace7d20fd478d430f9fed7ed6a45c298f38d86e058c7b60210b0c2"
+        },
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Raid/AlienContact1.wav",
+          "sha256": "508b39021172e0645b423e92aaf820c9b6805293ca9c5f8a91e765d61a48c43b"
+        }
+      ],
+      "processing": "Short suction/grasp mouth performance with small shell tension; HP45Hz; 8/85ms edge fades; peak -3.10dBFS; mono PCM16/48k"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/AlienCombat/AlienBossVoice1.wav",
+      "sha256": "540c43f4b896183cef477645a8783b00afa58115540e4ed454e0e3c3635cb0d0",
+      "seconds": 2.1696,
+      "sources": [
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Raid/AlienWarning1.wav",
+          "sha256": "32ae9a01902a55f09ede2cda3a20026073c58c22a784ecf010df78f28b3c5da7"
+        }
+      ],
+      "processing": "Large throat vocal from CC0 recorded warning, parallel low body, 40ms damped resonance; HP45Hz; 8/85ms edge fades; peak -3.10dBFS; mono PCM16/48k"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/AlienCombat/AlienSwing2.wav",
+      "sha256": "5237657b1c4f78757a8fe0edcaf6765db1e312cc795fb62ed4ff83a0a3719c88",
+      "seconds": 0.5072,
+      "sources": [
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Details/Crawl2.wav",
+          "sha256": "ee8ef6937d61b0d2d4e73e8b5bb57081d49b9854b8bcbfa19db29578b0b5ac07"
+        },
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Details/AlienWallScrape2.wav",
+          "sha256": "a752b117064f6e2d8778476c360c08c4f2d65b2f735880cb846c299a297fcf6a"
+        },
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Raid/AlienContact2.wav",
+          "sha256": "8658b283ce96b4eedc101a0694d749e2debf01bc212dd0786618582f465977b2"
+        }
+      ],
+      "processing": "Short air/cloth shear, abrasive leading edge and shell snap; varispeed 1.5/1.8/1.35; HP45Hz; 8/85ms edge fades; peak -3.10dBFS; mono PCM16/48k"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/AlienCombat/AlienSpit2.wav",
+      "sha256": "d8825beb818ff174d9385ee9f9b0e3cdf062676ad97a32446a35fdad0269cf47",
+      "seconds": 0.3385,
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Monsters/monster_sfx_pack_2/monster-8.wav",
+          "sha256": "8d8d8408616bfdee87f1ebbd6d3f00dd0c12cd108598e11cb6ef8913e0c4eaae"
+        }
+      ],
+      "processing": "Close mouth expulsion, restrained 26ms damped reflection; HP45Hz; 8/85ms edge fades; peak -3.10dBFS; mono PCM16/48k"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/AlienCombat/AlienImpact2.wav",
+      "sha256": "638d5bdcbd014c418ba9a32df80af0d34321f181eefaadc749590ba8ebd64825",
+      "seconds": 0.5514,
+      "sources": [
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Raid/AlienContact2.wav",
+          "sha256": "8658b283ce96b4eedc101a0694d749e2debf01bc212dd0786618582f465977b2"
+        },
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Details/AlienWallScrape2.wav",
+          "sha256": "a752b117064f6e2d8778476c360c08c4f2d65b2f735880cb846c299a297fcf6a"
+        }
+      ],
+      "processing": "Shell impact with abrasive breakup and lower recorded contact body; HP45Hz; 8/85ms edge fades; peak -3.10dBFS; mono PCM16/48k"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/AlienCombat/AlienWetMove2.wav",
+      "sha256": "c6e4dc49ac761632d59025ffeea18cda7cf873ef46cc0865c0c11ef6f7b28fdc",
+      "seconds": 0.8454,
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Monsters/monster_sfx_pack_2/monster-8.wav",
+          "sha256": "8d8d8408616bfdee87f1ebbd6d3f00dd0c12cd108598e11cb6ef8913e0c4eaae"
+        },
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Details/Crawl2.wav",
+          "sha256": "ee8ef6937d61b0d2d4e73e8b5bb57081d49b9854b8bcbfa19db29578b0b5ac07"
+        }
+      ],
+      "processing": "Quiet organic mouth texture and cloth shear for suction/slime travel; no boot strike; HP45Hz; 8/85ms edge fades; peak -3.10dBFS; mono PCM16/48k"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/AlienCombat/AlienHeavyStep2.wav",
+      "sha256": "a9d3efa70a7f3f8b77e4afb5f01b9bcd933b9e1bed57d392673782b125dcd4b6",
+      "seconds": 0.7211,
+      "sources": [
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Raid/AlienContact2.wav",
+          "sha256": "8658b283ce96b4eedc101a0694d749e2debf01bc212dd0786618582f465977b2"
+        },
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Details/AlienWallScrape2.wav",
+          "sha256": "a752b117064f6e2d8778476c360c08c4f2d65b2f735880cb846c299a297fcf6a"
+        }
+      ],
+      "processing": "Heavy shell/floor contact with low recorded body, 35ms settling layer; HP45Hz; 8/85ms edge fades; peak -3.10dBFS; mono PCM16/48k"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/AlienCombat/AlienGrip2.wav",
+      "sha256": "f9528348db1a09d88a46ae16aaefd42a9a4be4812fd394513303a8a8bea6db10",
+      "seconds": 0.3984,
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Monsters/monster_sfx_pack_2/monster-8.wav",
+          "sha256": "8d8d8408616bfdee87f1ebbd6d3f00dd0c12cd108598e11cb6ef8913e0c4eaae"
+        },
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Raid/AlienContact2.wav",
+          "sha256": "8658b283ce96b4eedc101a0694d749e2debf01bc212dd0786618582f465977b2"
+        }
+      ],
+      "processing": "Short suction/grasp mouth performance with small shell tension; HP45Hz; 8/85ms edge fades; peak -3.10dBFS; mono PCM16/48k"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/AlienCombat/AlienBossVoice2.wav",
+      "sha256": "066b201b5b078f35b4a6193aea8f5b105b8aaa45873f3410b30a4dd33c442b6e",
+      "seconds": 2.1696,
+      "sources": [
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Raid/AlienWarning2.wav",
+          "sha256": "485b858b14d88664ef25fd2aef92c5e80c512cc3d17d0b33557fb38898acddb8"
+        }
+      ],
+      "processing": "Large throat vocal from CC0 recorded warning, parallel low body, 40ms damped resonance; HP45Hz; 8/85ms edge fades; peak -3.10dBFS; mono PCM16/48k"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/AlienCombat/AlienSwing3.wav",
+      "sha256": "19391cba5170625f503002a9714fe2930c2b9bf5c38b8d95b0a115c7e498c16a",
+      "seconds": 0.4912,
+      "sources": [
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Details/Crawl3.wav",
+          "sha256": "e0f8383e45675102b55becfee985a4d1984646bbe557c012b8f08b5f10642a7b"
+        },
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Details/AlienWallScrape3.wav",
+          "sha256": "f9d328b46b8e6fb97d21b1eb4fb23a82a4109fe7fa026668cb65f9fb9fa6ab53"
+        },
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Raid/AlienContact3.wav",
+          "sha256": "6a158fe0d08df58f0c145e667828f7e01c28a658e8a272fa90a5eea5fb0f25b6"
+        }
+      ],
+      "processing": "Short air/cloth shear, abrasive leading edge and shell snap; varispeed 1.5/1.8/1.35; HP45Hz; 8/85ms edge fades; peak -3.10dBFS; mono PCM16/48k"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/AlienCombat/AlienSpit3.wav",
+      "sha256": "429a7f2348c5fc4aac212482ff7af8e8a29c2f0592350e52cee4e9e52eb7c508",
+      "seconds": 0.446,
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Monsters/monster_sfx_pack_2/monster-12.wav",
+          "sha256": "16ec7099f5047b48d9d86a83dcde58cc3e67d9a05fd205dc8f8c93bafd8d3806"
+        }
+      ],
+      "processing": "Close mouth expulsion, restrained 26ms damped reflection; HP45Hz; 8/85ms edge fades; peak -3.10dBFS; mono PCM16/48k"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/AlienCombat/AlienImpact3.wav",
+      "sha256": "b591201dea822ecab1db7aac336a16d636f99256cec9383958c51df761cb3549",
+      "seconds": 0.5347,
+      "sources": [
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Raid/AlienContact3.wav",
+          "sha256": "6a158fe0d08df58f0c145e667828f7e01c28a658e8a272fa90a5eea5fb0f25b6"
+        },
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Details/AlienWallScrape3.wav",
+          "sha256": "f9d328b46b8e6fb97d21b1eb4fb23a82a4109fe7fa026668cb65f9fb9fa6ab53"
+        }
+      ],
+      "processing": "Shell impact with abrasive breakup and lower recorded contact body; HP45Hz; 8/85ms edge fades; peak -3.10dBFS; mono PCM16/48k"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/AlienCombat/AlienWetMove3.wav",
+      "sha256": "02c9cffa34665ae9736253fdcd244fe48e29d6a68fd08fd9784c8634615f1eff",
+      "seconds": 0.8187,
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Monsters/monster_sfx_pack_2/monster-12.wav",
+          "sha256": "16ec7099f5047b48d9d86a83dcde58cc3e67d9a05fd205dc8f8c93bafd8d3806"
+        },
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Details/Crawl3.wav",
+          "sha256": "e0f8383e45675102b55becfee985a4d1984646bbe557c012b8f08b5f10642a7b"
+        }
+      ],
+      "processing": "Quiet organic mouth texture and cloth shear for suction/slime travel; no boot strike; HP45Hz; 8/85ms edge fades; peak -3.10dBFS; mono PCM16/48k"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/AlienCombat/AlienHeavyStep3.wav",
+      "sha256": "50270543189745de12470c58edd806f389bed310c3c6e69e05ab0e0a7de50a21",
+      "seconds": 0.6993,
+      "sources": [
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Raid/AlienContact3.wav",
+          "sha256": "6a158fe0d08df58f0c145e667828f7e01c28a658e8a272fa90a5eea5fb0f25b6"
+        },
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Details/AlienWallScrape3.wav",
+          "sha256": "f9d328b46b8e6fb97d21b1eb4fb23a82a4109fe7fa026668cb65f9fb9fa6ab53"
+        }
+      ],
+      "processing": "Heavy shell/floor contact with low recorded body, 35ms settling layer; HP45Hz; 8/85ms edge fades; peak -3.10dBFS; mono PCM16/48k"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/AlienCombat/AlienGrip3.wav",
+      "sha256": "b69b0c08debf057b94587d4dc360494a8ba59ab8522c2a539cabe485af510541",
+      "seconds": 0.48,
+      "sources": [
+        {
+          "path": "LocalData/RaidAudio/Sources/Monsters/monster_sfx_pack_2/monster-12.wav",
+          "sha256": "16ec7099f5047b48d9d86a83dcde58cc3e67d9a05fd205dc8f8c93bafd8d3806"
+        },
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Raid/AlienContact3.wav",
+          "sha256": "6a158fe0d08df58f0c145e667828f7e01c28a658e8a272fa90a5eea5fb0f25b6"
+        }
+      ],
+      "processing": "Short suction/grasp mouth performance with small shell tension; HP45Hz; 8/85ms edge fades; peak -3.10dBFS; mono PCM16/48k"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/AlienCombat/AlienBossVoice3.wav",
+      "sha256": "b3605c337375228338293856c72cf5390a78e1acb5124c280ecd0571f7a88e86",
+      "seconds": 1.9756,
+      "sources": [
+        {
+          "path": "Assets/Audio/Moonkov/Clips/Raid/AlienWarning3.wav",
+          "sha256": "2e2564a63fb25dc40855ac0c417a20b090f9c6d1dfdd44f54529261df8965f60"
+        }
+      ],
+      "processing": "Large throat vocal from CC0 recorded warning, parallel low body, 40ms damped resonance; HP45Hz; 8/85ms edge fades; peak -3.10dBFS; mono PCM16/48k"
+    }
+  ]
+}

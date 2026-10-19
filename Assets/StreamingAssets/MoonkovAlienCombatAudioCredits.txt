@@ -1,0 +1,9 @@
+Moonkov alien combat foley — 2026-10-19
+All new AlienCombat clips are edits of CC0 1.0 recordings already held in this project:
+Ogrebane — Monster Sound Effects 2: https://opengameart.org/content/monster-sound-effects-2
+blukotek / Ali_6868 — bone/gravel layers: https://opengameart.org/content/footsteps-on-different-surfaces
+Kenney — 50 RPG sound effects: https://opengameart.org/node/21999
+AntumDeluge — Scrapes: https://opengameart.org/content/scrapes
+License: https://creativecommons.org/publicdomain/zero/1.0/
+No metal/boots CC BY recordings are used in these new clips. Existing CC BY notices remain in MoonkovRaidAudioCredits.txt.
+Exact source/output SHA256 and edit recipes: Assets/Audio/Moonkov/AlienCombatAudioSources.json.

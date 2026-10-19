@@ -12,6 +12,7 @@ namespace Unity.MP_FPS
         public SoundDef AlienContact, AlienWarning, AlienStrike, AlienHurt, AlienDeath, AlienIdle;
         public SoundDef SuitWallBrush, SuitWallMetal, Crawl, StanceChange, GearMotion;
         public SoundDef AlienWallScrape, AlienWallMetal, AlienIdleMotion;
+        public SoundDef AlienSwing, AlienSpit, AlienImpact, AlienWetMove, AlienHeavyStep, AlienGrip, AlienBossVoice;
         public SoundDef Aim, Light, DryFire, ReloadReady, Medical, Pickup, OxygenRefill;
         public SoundDef SuitBreath, Heartbeat, SuitWarning, ExtractStart, ExtractCancel, ExtractTick;
         public SoundDef ShipInterior;

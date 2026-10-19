@@ -15,8 +15,8 @@ MonoBehaviour:
   EditorVolume: 1
   UnityAudioMixer: {fileID: 24100000, guid: fddb343a82968524eb1e9a6f65433d7e, type: 2}
   Role: 3
-  Priority: 70
-  MaxVoices: 10
+  Priority: 120
+  MaxVoices: 8
   MinimumInterval: 0.04
   Occlusion: 1
   MixerGroup: 1
@@ -47,13 +47,13 @@ MonoBehaviour:
     PitchMax: 45
   DistanceInfo:
     VolumeDistMin: 2.5
-    VolumeDistMax: 18
+    VolumeDistMax: 26
     SpatialBlend: 1
     DopplerScale: 0
     VolumeRolloffMode: 1
     LPFRollOffCurveType: 1
     LPF_MinCutoff: 1500
-    LPF_MaxDistance: 18
+    LPF_MaxDistance: 26
     HPFRollOffCurveType: 0
     HPF_MinCutoff: 0
     HPF_MaxDistance: 0

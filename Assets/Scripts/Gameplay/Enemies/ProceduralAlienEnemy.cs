@@ -247,6 +247,7 @@ namespace Unity.MP_FPS
                 transform.SetPositionAndRotation(head.position, head.rotation);
             }
             float health = GhostHasComponent<PredictedPlayerGhost>() ? ReadGhostComponentData<PredictedPlayerGhost>().CurrentHealth : profile.Health;
+            m_Body.ObserveAttackAudio(state, m_Pattern);
             m_Body.SetCombatPresentation(state.Action, state.ActionTime, state.AttackSequence, health,
                 m_AmbushEnabled ? profile.SpiderWindup : m_Pattern.Windup,
                 m_AmbushEnabled ? profile.SpiderRecovery : m_Pattern.Recovery,

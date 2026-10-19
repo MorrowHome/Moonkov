@@ -14,6 +14,8 @@ namespace Unity.MP_FPS
         public readonly Vector3[] A = new Vector3[Segments], B = new Vector3[Segments];
         public readonly float[] Radii = new float[Segments];
         public Vector3 Chest { get; private set; }
+        public int CompletedSteps { get; private set; }
+        public Vector3 LastFootstep { get; private set; }
         public Vector3 Head { get; private set; }
         public Quaternion HeadRotation { get; private set; }
         public Vector3 HeadRadii => new Vector3(.105f * m_Scale, .06f * Height, .105f * m_Scale);
@@ -78,7 +80,8 @@ namespace Unity.MP_FPS
                 m_StepAge += dt;
                 float t = Mathf.Clamp01(m_StepAge / stepSeconds), ease = t * t * (3 - 2 * t);
                 m_Feet[m_Swing] = Vector3.Lerp(m_StepStart, m_StepEnd, ease) + up * (Mathf.Sin(t * Mathf.PI) * .14f * m_Scale);
-                if (t >= 1) { m_NextFoot = 1 - m_Swing; m_Swing = -1; }
+                if (t >= 1)
+                { LastFootstep = m_Feet[m_Swing]; CompletedSteps++; m_NextFoot = 1 - m_Swing; m_Swing = -1; }
             }
             float load = action == AlienAction.Windup ? Mathf.Clamp01(age / Mathf.Max(.01f, windup)) : 0;
             float rake = action == AlienAction.Strike ? Mathf.Sin(Mathf.Clamp01(age / Mathf.Max(.01f, strike)) * Mathf.PI) : 0;

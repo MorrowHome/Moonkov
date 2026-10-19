@@ -41,6 +41,13 @@ MonoBehaviour:
   AlienWallScrape: {fileID: 11400000, guid: dfceaef5f4bca4f8aadb5b2e669091fd, type: 2}
   AlienWallMetal: {fileID: 11400000, guid: 1c4a3d916f291466c8e8c59234ae6404, type: 2}
   AlienIdleMotion: {fileID: 11400000, guid: 90b2e3c0a9df04cc883a4146ac96e84e, type: 2}
+  AlienSwing: {fileID: 11400000, guid: e8eb60f86acdb45f2b4124aa28e599a1, type: 2}
+  AlienSpit: {fileID: 11400000, guid: 82de756bced63455ead6f58046016121, type: 2}
+  AlienImpact: {fileID: 11400000, guid: df05960b62e5341dfa3c974eea8977d6, type: 2}
+  AlienWetMove: {fileID: 11400000, guid: cf8e349f4c26a4226819a96deaafeb11, type: 2}
+  AlienHeavyStep: {fileID: 11400000, guid: 34b84908e0b734e67b18c9fb5544b268, type: 2}
+  AlienGrip: {fileID: 11400000, guid: b2126a0fd3f274424925fc91b86ef41d, type: 2}
+  AlienBossVoice: {fileID: 11400000, guid: fd59981d6f0414ec9abd7c0041548a57, type: 2}
   Aim: {fileID: 11400000, guid: f7358ed7c9f3e45acb46b515e2b623f5, type: 2}
   Light: {fileID: 11400000, guid: 37d7df992175d49faabca71e962ff081, type: 2}
   DryFire: {fileID: 11400000, guid: 88dc5833a2b0c43c6aeb0b5c1c3d843f, type: 2}

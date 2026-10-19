@@ -112,6 +112,10 @@ namespace Unity.MP_FPS
             m_StrikeDuration = strikeDuration > 0 ? strikeDuration : .24f;
             m_Feedback?.Observe(action, m_ActionTime, attackSequence, health, AimPoint);
         }
+        // Called once per rendered snapshot, independently of the visual rig LOD.
+        public void ObserveAttackAudio(in ProceduralAlienEnemy.State state, in AlienCombatPattern pattern)
+            => m_Feedback?.ObserveAttackDetails(state, pattern, AttackSocket);
+
         public void Tick(Vector3 intent, float speed, float yaw, float dt, float action, bool liquid)
         {
             if (m_CombatAction == AlienAction.Attached && m_Profile.Species == AlienSpecies.FaceHugger)
@@ -160,7 +164,7 @@ namespace Unity.MP_FPS
                 m_StiltRig.SetVisible(m_Render && !liquid);
                 m_StiltRig.Tick(Motor, m_CombatAction, m_ActionTime, m_WindupDuration, m_StrikeDuration, m_Clock, dt);
                 UpdateArticulatedFluid(liquid, dt);
-                if (m_Render) m_Feedback.Tick(Motor, null, m_CombatAction, dt);
+                if (m_Render) m_Feedback.Tick(Motor, null, m_CombatAction, dt, m_StiltRig.CompletedSteps, m_StiltRig.LastFootstep);
                 return;
             }
             float drive = Mathf.Clamp01(Motor.Velocity.magnitude / Mathf.Max(.1f, m_Profile.Speed * m_Scale));
@@ -202,7 +206,6 @@ namespace Unity.MP_FPS
                 m_FaceRig.SetVisible(m_Render && !liquid);
                 m_FaceRig.Tick(Motor.Current, m_Feet, m_CombatAction, m_ActionTime, m_Clock);
                 UpdateArticulatedFluid(liquid, dt);
-                if (m_Render) m_Feedback.Tick(Motor, m_Feet, m_CombatAction, dt);
             }
             else
             {
