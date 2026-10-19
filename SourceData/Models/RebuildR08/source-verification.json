@@ -1,0 +1,32 @@
+{
+  "file": "E:\\Code\\Codex\\2026-10-19\\task\\R08\\downloads\\Moonkov_Rebuild_R08_North_Entry_Alignment_FULL_EDITABLE.blend",
+  "bytes": 305168030,
+  "sha256": "b56a88516f3bb1ddc34ab9c109ccbe0ff9cf46cfc78df8685bcfeb7368742034",
+  "parts": [
+    {
+      "name": "Moonkov_Rebuild_R08_North_Entry_Alignment_FULL_EDITABLE.blend.001",
+      "bytes": 100663296,
+      "sha256": "14b468fd3e289dfab196ea93d8d2872d0a138f2018bf6dbdc270519798f00b8c",
+      "verified": true
+    },
+    {
+      "name": "Moonkov_Rebuild_R08_North_Entry_Alignment_FULL_EDITABLE.blend.002",
+      "bytes": 100663296,
+      "sha256": "b8f0a65e9acabcd92442f6c659246d1d95eec20328bfee3c313d370ebd4e4ebf",
+      "verified": true
+    },
+    {
+      "name": "Moonkov_Rebuild_R08_North_Entry_Alignment_FULL_EDITABLE.blend.003",
+      "bytes": 100663296,
+      "sha256": "a9b06b742a3313fce38da8e668fa1da328c2dae2865b1fc8dbdc303d233e4164",
+      "verified": true
+    },
+    {
+      "name": "Moonkov_Rebuild_R08_North_Entry_Alignment_FULL_EDITABLE.blend.004",
+      "bytes": 3178142,
+      "sha256": "80ba0a3827d1ef72c4d238f60f45f78088e0fb82dc3dc5d74458ec9187c04e1a",
+      "verified": true
+    }
+  ],
+  "verified": true
+}

@@ -1,0 +1,95 @@
+{
+  "status": "R08_DISPLAY_BOUND_AND_SAVED_STATIC_VALIDATION_PASSED",
+  "baselineCommit": "a1082834167ff60edccabc28372284a06f15c9f9",
+  "branch": "feat/aliens",
+  "sourceSHA256": "b56a88516f3bb1ddc34ab9c109ccbe0ff9cf46cfc78df8685bcfeb7368742034",
+  "packageSHA256": "f701ad981644b0e9212597919e59c93a93bb5fb0d934f66c3e7f5e3614e4b752",
+  "application": {
+    "scene": "Assets/MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusGameScene.unity",
+    "formalBeforeSHA256": "9aa11fc3ee9ea890688ddb9d22ac435d9b3d89247d914827b5fdacb4ce27b8ff",
+    "formalAfterSHA256": "5c5be2050e87f2e139d09708c3ac2af01770786cc8c8134573f463c539c1369c",
+    "saved": true,
+    "root": "REBUILD_R08_DISPLAY_ROOT",
+    "prefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+    "displayObjects": 1271,
+    "partitions": 31,
+    "triangles": 279994,
+    "newMaterials": 9,
+    "reusedMaterials": 8,
+    "existingProtectedObjects": 115621,
+    "existingProtectedObjectsHashUnchanged": true,
+    "existingTerrainMaterialsTexturesShadersParametersUnchanged": true,
+    "MC00Lights": 118,
+    "MC00Buttons": 135,
+    "oldRailMatches": 0,
+    "oldRenderersDisabled": 0,
+    "duplicateIncrements": 0,
+    "preservedLocalLunarSlots": 26,
+    "newColliders": 0,
+    "newLights": 0,
+    "newRuntimeScripts": 0,
+    "northToeUnityWorld": [
+      1880.30847,
+      240.5736,
+      2431.206
+    ],
+    "westApproachUnityWorld": [
+      1825.25,
+      167.695343,
+      2082.0
+    ],
+    "formalActive": true,
+    "selectedNorthToe": true,
+    "sceneViewFramed": true,
+    "PlayStarted": false,
+    "HostStarted": false,
+    "runtimeOrPerformanceAcceptance": false
+  },
+  "sceneSerializationProof": {
+    "oldRecords": 58504,
+    "oldRecordsRemoved": [],
+    "changedOldRecords": [
+      {
+        "id": "145744447",
+        "type": "114"
+      },
+      {
+        "id": "9223372036854775807",
+        "type": "1660057539"
+      }
+    ],
+    "addedRecords": 1,
+    "liveSceneUnrelatedNormalization": "maximumBosses: 1; effective default unchanged; excluded from task commit",
+    "commitCandidateOldRecordsExceptSceneRootsByteIdentical": true,
+    "commitCandidateSHA256": "20e9cb14f59e710d52535279036c68866512427ee21f01667ef32432b0813e58",
+    "beforeSHA256": "9aa11fc3ee9ea890688ddb9d22ac435d9b3d89247d914827b5fdacb4ce27b8ff",
+    "afterSHA256": "5c5be2050e87f2e139d09708c3ac2af01770786cc8c8134573f463c539c1369c"
+  },
+  "protectedFiles": {
+    "baselineCount": 16791,
+    "changedPaths": [
+      "Assets/Localization/Fonts/NotoSansCJKsc.asset",
+      "Assets/MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusGameScene.unity"
+    ],
+    "onlySceneAndPreexistingUncommittedFontMayDiffer": true,
+    "preexistingFontExcludedFromCommit": true,
+    "allExistingMaterialsShadersTexturesTerrainDataDEMCullingLODBatchingLightingAssetsByteIdentical": true
+  },
+  "newPrefabComponentTypes": [
+    "GameObject",
+    "Transform",
+    "MeshRenderer",
+    "MeshFilter"
+  ],
+  "rollback": {
+    "visibleRevert": "Disable or remove only REBUILD_R08_DISPLAY_ROOT; no old renderer was disabled.",
+    "versionControl": "Revert only the task scene-binding commit, then optionally its preceding asset commit. Never reset or stage the pre-existing font edit."
+  },
+  "limits": [
+    "No Play/Host/account persistence/deployment/SubScene runtime debugging/alien work",
+    "No target-device frame-time/GPU/LOD/culling acceptance",
+    "New geometry has no colliders or NavMesh; existing collision is byte-identical",
+    "Six pre-existing FONT UV warnings retained; Unity tangents regenerated on exported triangles",
+    "Static Unity material/placement checks do not establish final artist visual parity"
+  ]
+}
