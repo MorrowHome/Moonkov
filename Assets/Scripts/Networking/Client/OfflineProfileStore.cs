@@ -21,6 +21,7 @@ namespace Unity.MP_FPS
             public string DeploymentId, RaidInventoryJson;
             public int CarriedCells;
             public Dictionary<string, string> Receipts = new Dictionary<string, string>();
+            public HashSet<string> MissionArtifacts = new HashSet<string>();
         }
 
         private readonly object m_Lock = new object();
@@ -61,7 +62,7 @@ namespace Unity.MP_FPS
         {
             if (save == null || save.Format != 1 || !Guid.TryParse(save.PlayerId, out _) ||
                 save.Inventory?.Items == null || save.Inventory.Validate() != InventoryError.None || save.Inventory.Find("stash") == null ||
-                save.Inventory.Find("loot") != null || save.Receipts == null ||
+                save.Inventory.Find("loot") != null || save.Receipts == null || save.MissionArtifacts == null ||
                 (save.DeploymentId != null && (!Guid.TryParse(save.DeploymentId, out _) ||
                     string.IsNullOrEmpty(save.RaidInventoryJson) || !RaidRules.ValidLoadout(save.CarriedCells))))
                 throw new InvalidDataException("Unsupported or damaged single-player save.");
@@ -215,6 +216,8 @@ namespace Unity.MP_FPS
                     if (raid == null || raid.Validate() != InventoryError.None || raid.Find("stash") != null || raid.Find("loot") != null ||
                         raid.Count("dust", true) != payload.Dust || raid.Count("alloy", true) != payload.Alloy || raid.Count("cells", true) != payload.Cells)
                         throw new InvalidDataException("Invalid single-player extraction inventory.");
+                    foreach (var artifact in raid.Items.Where(i => MissionInventory.IsArtifact(i.Code) && !i.MissionRecovered))
+                        if (!next.MissionArtifacts.Add(artifact.Id)) throw new InvalidDataException("Mission artifact was already extracted.");
                     InventoryError error;
                     while ((error = next.Inventory.ReturnLoadout(raid)) == InventoryError.Full && next.Inventory.StashRows < 4096)
                         next.Inventory.StashRows = Math.Min(4096, next.Inventory.StashRows * 2);

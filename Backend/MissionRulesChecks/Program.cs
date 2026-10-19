@@ -1,4 +1,5 @@
 using Unity.MP_FPS.Missions;
+using Unity.MP_FPS.Inventory;
 
 int checks = 0;
 void Check(bool value, string name) { if (!value) throw new Exception(name); checks++; }
@@ -79,4 +80,37 @@ Check(director.TryOffer(templates, 280, 299, false, _ => true) == null, "do not 
 var last = director.TryOffer(templates, 320, 350, false, _ => true);
 Check(last?.Id == "mc00_archive", "shorter eligible task");
 Check(director.TryOffer(templates, 321, 600, false, _ => true) == null, "no deployment reroll");
-Console.WriteLine($"PASS {checks} mission-rule checks; two complete flows; no acceptance/UI prerequisite.");
+InventoryItem Artifact(string code, string region = "1") => new InventoryItem {
+    Id = Guid.NewGuid().ToString(), Code = code, Parent = "pockets", Region = region, FoundInRaid = true,
+    MissionWorldId = Guid.NewGuid().ToString(), MissionOperationId = Guid.NewGuid().ToString(), MissionContentVersion = 1
+};
+var carried = InventoryGraph.Create(false, false);
+var artifact = Artifact("mooncore_fragment"); carried.Items.Add(artifact);
+Check(carried.Validate() == InventoryError.None, "valid sourced artifact");
+var forged = carried.Clone(); forged.Items[2].MissionOperationId = null;
+Check(forged.Validate() == InventoryError.Invalid, "artifact requires server source");
+var account = InventoryGraph.Create(true, false);
+Check(account.ReturnLoadout(carried) == InventoryError.None, "atomic return/reward");
+Check(account.MissionFirsts == 3 && account.Count("dust") == 40, "first extraction plus first mooncore");
+Check(account.Find(artifact.Id)?.MissionRecovered == true, "source marked recovered");
+int version = account.Version;
+Check(account.ReturnLoadout(carried) == InventoryError.Invalid && account.Version == version && account.Count("dust") == 40, "duplicate return leaves account intact");
+var nextRaid = account.ExtractLoadout();
+Check(nextRaid.MissionFirsts == 0 && account.MissionFirsts == 3, "raid cannot own account facts");
+Check(account.ReturnLoadout(nextRaid) == InventoryError.None && account.Count("dust") == 40, "redeploy source does not repeat first reward");
+var nextSource = InventoryGraph.Create(false, false); nextSource.Items.Add(Artifact("mooncore_fragment", "2"));
+Check(account.ReturnLoadout(nextSource) == InventoryError.None && account.Count("dust") == 40, "second source not second first reward");
+var archiveRaid = InventoryGraph.Create(false, false); archiveRaid.Items.Add(Artifact("mc00_archive_drive", "3"));
+Check(account.ReturnLoadout(archiveRaid) == InventoryError.None && account.MissionFirsts == 7 && account.Count("dust") == 60, "independent archive first reward");
+var dead = InventoryGraph.Create(false, false); var lost = Artifact("mooncore_fragment"); dead.Items.Add(lost);
+var deathBag = LootInventoryExchange.DropOnDeath(dead);
+Check(dead.Find(lost.Id) == null && deathBag.Find(lost.Id) != null, "death transfers unique artifact");
+var looter = InventoryGraph.Create(false, false);
+Check(LootInventoryExchange.TryApply(looter, deathBag, new InventoryCommand { Operation = InventoryOperation.Move, ExpectedVersion = looter.Version,
+    ItemId = lost.Id, Parent = "pockets", Region = "1" }, deathBag.Version) == InventoryError.None, "late looter obtains actual item");
+Check(deathBag.Find(lost.Id) == null && looter.Find(lost.Id).MissionOperationId == lost.MissionOperationId, "source preserved through death loot");
+var looterAccount = InventoryGraph.Create(true, false);
+Check(looterAccount.ReturnLoadout(looter) == InventoryError.None && looterAccount.MissionFirsts == 3, "no contribution/acceptance gate for recovered loot");
+var badFacts = account.Clone(); badFacts.MissionFirsts = 8;
+Check(badFacts.Validate() == InventoryError.Invalid, "unknown fact bits rejected");
+Console.WriteLine($"PASS {checks} mission/inventory checks; two complete rule flows; automatic recovery rewards and death transfer.");

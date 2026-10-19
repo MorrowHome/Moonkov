@@ -67,6 +67,8 @@ namespace Unity.MP_FPS.Inventory
                 new ItemDefinition("ceramic_plate", "Technical ceramic plate", ItemKind.Material, 2, 2, 2, .9f),
                 new ItemDefinition("optical_sensor", "Optical sensor", ItemKind.Material, 1, 1, 2, .22f),
                 new ItemDefinition("data_drive", "Encrypted data drive", ItemKind.Material, 1, 1, 1, .12f),
+                new ItemDefinition("mooncore_fragment", "月核碎片", ItemKind.Material, 1, 1, 1, .3f),
+                new ItemDefinition("mc00_archive_drive", "MC00 事故档案盘", ItemKind.Material, 1, 1, 1, .12f),
                 new ItemDefinition("helium3_sample", "Helium-3 sample", ItemKind.Material, 1, 2, 1, .6f),
                 new ItemDefinition("quantum_core", "Quantum processor", ItemKind.Material, 2, 1, 1, .4f),
                 new ItemDefinition("black_box", "Survey black box", ItemKind.Material, 2, 2, 1, 1.6f),
@@ -107,6 +109,10 @@ namespace Unity.MP_FPS.Inventory
         // Missing in old saves means full. One partial cell per stack; the rest are full.
         public int CellCharge = -1;
         public bool EmergencySupply;
+        // Assigned only by the authoritative facility output. Kept through loot/death/return.
+        public string MissionWorldId, MissionOperationId;
+        public int MissionContentVersion;
+        public bool MissionRecovered;
         public InventoryItem Clone() => (InventoryItem)MemberwiseClone();
     }
     [Serializable] public sealed class InventoryCommand
@@ -120,10 +126,12 @@ namespace Unity.MP_FPS.Inventory
         public int WeaponKitVersion;
         public int HaloResearchLevel;
         public int HaloResearchBranches;
+        // Account facts; never merged from a client/raid graph. Bits: recovery, mooncore, archive.
+        public int MissionFirsts;
         public List<InventoryItem> Items = new List<InventoryItem>();
         public InventoryItem Find(string id) => Items.Find(i => i.Id == id);
         public InventoryGraph Clone() => new InventoryGraph { Version = Version, StashRows = StashRows, LootRows = LootRows, WeaponKitVersion = WeaponKitVersion,
-            HaloResearchLevel = HaloResearchLevel, HaloResearchBranches = HaloResearchBranches, Items = Items.ConvertAll(i => i.Clone()) };
+            HaloResearchLevel = HaloResearchLevel, HaloResearchBranches = HaloResearchBranches, MissionFirsts = MissionFirsts, Items = Items.ConvertAll(i => i.Clone()) };
         public int Rows(string parent, InventoryRegion region) => Find(parent)?.Code == "stash" ? StashRows : Find(parent)?.Code == "loot" ? LootRows : region.Height;
         public IEnumerable<InventoryItem> Children(string parent, string region = null) => Items.Where(i => i.Parent == parent && (region == null || i.Region == region));
         public string RootOf(string id)
@@ -283,7 +291,7 @@ namespace Unity.MP_FPS.Inventory
             // A world-loot snapshot joins two owners; account/actor graphs keep the
             // original limit. The extra loot root must also fit a maximum-sized drop.
             int limit=Items!=null && Items.Any(i=>i?.Id=="loot") ? InventoryCatalog.MaxItems*2 : InventoryCatalog.MaxItems;
-            if (Version < 1 || HaloResearchLevel < 0 || HaloResearchLevel > 1 || HaloResearchBranches < 0 || HaloResearchBranches > 7 || Items == null || Items.Count > limit || StashRows < 1 || StashRows > 4096 || LootRows < 1 || LootRows > 24) return InventoryError.Invalid;
+            if (Version < 1 || HaloResearchLevel < 0 || HaloResearchLevel > 1 || HaloResearchBranches < 0 || HaloResearchBranches > 7 || MissionFirsts < 0 || MissionFirsts > 7 || Items == null || Items.Count > limit || StashRows < 1 || StashRows > 4096 || LootRows < 1 || LootRows > 24) return InventoryError.Invalid;
             var ids = new HashSet<string>();
             foreach (var item in Items)
             {
@@ -291,6 +299,7 @@ namespace Unity.MP_FPS.Inventory
                 var def = InventoryCatalog.Get(item.Code);
                 if (item.Id == null || !ids.Add(item.Id) || def == null || item.Quantity <= 0 || item.Quantity > def.MaxStack || item.LoadedAmmo < -1 || item.LoadedAmmo > 10000) return InventoryError.Invalid;
                 if (item.CellCharge != -1 && (!BatteryEnergy.IsCell(item) || item.CellCharge < 1 || item.CellCharge > BatteryEnergy.Capacity)) return InventoryError.Invalid;
+                if (!MissionInventory.ValidSource(item)) return InventoryError.Invalid;
                 if (def.Kind == ItemKind.Root)
                 { if (item.Id != item.Code || item.Parent != null || item.Quantity != 1) return InventoryError.Invalid; }
                 else if (!Guid.TryParse(item.Id, out _) || item.Parent == null) return InventoryError.Invalid;
@@ -425,6 +434,7 @@ namespace Unity.MP_FPS.Inventory
         public InventoryGraph ExtractLoadout()
         {
             var raid = Clone(); raid.Items.RemoveAll(i => !Carried(i));
+            raid.MissionFirsts = 0;
             var taken = new HashSet<string>(raid.Items.Where(i => InventoryCatalog.Get(i.Code).Kind != ItemKind.Root).Select(i => i.Id));
             Items.RemoveAll(i => taken.Contains(i.Id));
             raid.Version = 1; Version++; return raid;
@@ -447,8 +457,52 @@ namespace Unity.MP_FPS.Inventory
                 copy.Items.Add(item);
             }
             copy.Items.AddRange(raid.Items.Where(i => i.Parent != null && i.Parent != "equipment" && i.Parent != "pockets").Select(i => i.Clone()));
+            var missionError = MissionInventory.RecordRecovery(copy, raid);
+            if (missionError != InventoryError.None) return missionError;
             var error = copy.Validate(); if (error != InventoryError.None) return error;
-            Items = copy.Items; Version++; return InventoryError.None;
+            Items = copy.Items; MissionFirsts = copy.MissionFirsts; StashRows = copy.StashRows; Version++; return InventoryError.None;
+        }
+    }
+
+    // Shared by online/offline ReturnLoadout so inventory and first rewards commit together.
+    // No UI discovery, accepted-task list or pinned-state input can affect this calculation.
+    public static class MissionInventory
+    {
+        public const int FirstRecovery = 1, FirstMooncore = 2, FirstArchive = 4;
+        public static bool IsArtifact(string code) => code == "mooncore_fragment" || code == "mc00_archive_drive";
+        public static bool ValidSource(InventoryItem item)
+        {
+            if (!IsArtifact(item.Code)) return item.MissionWorldId == null && item.MissionOperationId == null && item.MissionContentVersion == 0 && !item.MissionRecovered;
+            return item.Quantity == 1 && item.FoundInRaid && !item.EmergencySupply && item.MissionContentVersion == 1 &&
+                Guid.TryParse(item.MissionWorldId, out var world) && world != Guid.Empty &&
+                Guid.TryParse(item.MissionOperationId, out var operation) && operation != Guid.Empty;
+        }
+        public static InventoryError RecordRecovery(InventoryGraph account, InventoryGraph raid)
+        {
+            if (account == null || raid == null || account.Find("stash") == null) return InventoryError.Invalid;
+            int facts = 0;
+            foreach (var item in raid.Items)
+            {
+                if (!raid.Carried(item) || item.EmergencySupply || !item.FoundInRaid) continue;
+                if (!IsArtifact(item.Code)) { facts |= FirstRecovery; continue; }
+                if (!ValidSource(item)) return InventoryError.Invalid;
+                if (!item.MissionRecovered)
+                    facts |= FirstRecovery | (item.Code == "mooncore_fragment" ? FirstMooncore : FirstArchive);
+                var returned = account.Find(item.Id);
+                if (returned == null) return InventoryError.Invalid;
+                returned.MissionRecovered = true;
+            }
+            int added = facts & ~account.MissionFirsts;
+            int dust = ((added & FirstRecovery) != 0 ? 10 : 0) + ((added & FirstMooncore) != 0 ? 30 : 0) + ((added & FirstArchive) != 0 ? 20 : 0);
+            if (dust > 0)
+            {
+                InventoryError result;
+                while ((result = account.AddSupply("dust", dust, "stash")) == InventoryError.Full && account.StashRows < 4096)
+                    account.StashRows = Math.Min(4096, account.StashRows * 2);
+                if (result != InventoryError.None) return result;
+            }
+            account.MissionFirsts |= facts;
+            return InventoryError.None;
         }
     }
 }

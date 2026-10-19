@@ -116,6 +116,19 @@ public sealed partial class InventoryRepository
         if (raid.Find("stash") != null || raid.Find("loot")!=null || raid.Count("dust", true) != request.Dust || raid.Count("alloy", true) != request.Alloy || raid.Count("cells", true) != request.Cells
             || raid.Validate() != InventoryError.None) throw new ReceiptConflictException();
         if (request.Outcome != "Extracted") return;
+        foreach (var artifact in raid.Items.Where(i => MissionInventory.IsArtifact(i.Code) && !i.MissionRecovered))
+        {
+            // Inside the same player/settlement transaction. A second account cannot
+            // bank a second copy of a server-origin artifact even with a new receipt ID.
+            await using var source = new NpgsqlCommand("""
+                INSERT INTO mission_artifact_receipts (id,player_id,settlement_id,world_id,operation_id,content_version)
+                VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (id) DO NOTHING
+                """, connection, transaction);
+            source.Parameters.AddWithValue(Guid.Parse(artifact.Id)); source.Parameters.AddWithValue(request.PlayerId);
+            source.Parameters.AddWithValue(request.SettlementId); source.Parameters.AddWithValue(Guid.Parse(artifact.MissionWorldId));
+            source.Parameters.AddWithValue(Guid.Parse(artifact.MissionOperationId)); source.Parameters.AddWithValue(artifact.MissionContentVersion);
+            if (await source.ExecuteNonQueryAsync(ct) != 1) throw new ReceiptConflictException();
+        }
         var graph = await ReadGraphAsync(connection, transaction, request.PlayerId, ct);
         var result = graph.ReturnLoadout(raid);
         if (result != InventoryError.None) throw new DeploymentRejectedException("return_" + result);

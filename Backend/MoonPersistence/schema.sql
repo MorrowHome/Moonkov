@@ -115,3 +115,15 @@ CREATE TABLE IF NOT EXISTS inventory_trades (
     PRIMARY KEY (player_id, request_id)
 );
 INSERT INTO schema_version VALUES (6) ON CONFLICT DO NOTHING;
+
+-- Version 7: one successful first extraction of each mission artifact across all accounts.
+CREATE TABLE IF NOT EXISTS mission_artifact_receipts (
+    id uuid PRIMARY KEY,
+    player_id uuid NOT NULL REFERENCES players(id),
+    settlement_id uuid NOT NULL REFERENCES raid_settlements(id),
+    world_id uuid NOT NULL,
+    operation_id uuid NOT NULL,
+    content_version integer NOT NULL CHECK (content_version > 0),
+    created_at timestamptz NOT NULL DEFAULT now()
+);
+INSERT INTO schema_version VALUES (7) ON CONFLICT DO NOTHING;
