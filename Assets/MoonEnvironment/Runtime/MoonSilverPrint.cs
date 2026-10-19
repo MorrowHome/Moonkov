@@ -20,6 +20,8 @@ namespace Unity.MP_FPS.Moon
         [SerializeField, Range(0, .45f)] private float blackPoint = .035f;
         [SerializeField, Range(.5f, 1)] private float whitePoint = .82f;
         [SerializeField, Range(.5f, 2)] private float contrast = 1.15f;
+        [Tooltip("Retain continuous illumination gradients before the print contrast curve, so rounded forms and surface highlights keep their shading.")]
+        [SerializeField, Range(0, 1)] private float shadingRetention;
         [SerializeField, Range(0, 1)] private float silverRelief = .32f;
         [SerializeField, Range(0, .1f)] private float grain = .022f;
         [Header("清晰线条与黑白分界 / Graphic edges")]
@@ -88,7 +90,7 @@ namespace Unity.MP_FPS.Moon
             runtimeMaterial.SetVector(AccentId, new Vector4(accentStrength, accentThreshold, 0, 0));
             runtimeMaterial.SetVector(OpticsId, new Vector4(halation, halationThreshold, halationRadius, localAdaptation));
             runtimeMaterial.SetVector(SurfaceId, new Vector4(surfacePatina, 0, 0, 0));
-            runtimeMaterial.SetVector(GraphicId, new Vector4(tonalSeparation, contourStrength, contourWidth, 0));
+            runtimeMaterial.SetVector(GraphicId, new Vector4(tonalSeparation, contourStrength, contourWidth, shadingRetention));
             // Shader performs its art direction in display space; do not implicitly linearize this swatch.
             runtimeMaterial.SetVector(AccentColorId, new Vector4(accentColor.r, accentColor.g, accentColor.b, 1));
             renderer.EnqueuePass(pass);

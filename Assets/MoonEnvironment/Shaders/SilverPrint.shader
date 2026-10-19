@@ -18,7 +18,7 @@ Shader "MoonEnvironment/SilverPrint"
             TEXTURE2D_X(_SilverMeter);
             float4 _SilverDepthScaleBias;
             float4 _SilverSurface;
-            float4 _SilverGraphic; // tonal separation, contour strength, pixel width
+            float4 _SilverGraphic; // tonal separation, contour strength, pixel width, continuous shading retention
             float _SilverHasDepth;
             TEXTURE2D_X_FLOAT(_SilverDepth);
             TEXTURE2D_X(_SilverProtection);
@@ -167,9 +167,13 @@ Shader "MoonEnvironment/SilverPrint"
                     / max(.01, _SilverTone.z - _SilverTone.y));
                 // Compress the bright shoulder before shaping contrast: silver surfaces retain texture.
                 value = saturate(value / (1 + max(0, value - .72) * .6));
+                float continuousShading = value;
                 value = lerp(value, smoothstep(0, 1, value), .55);
                 value = saturate((value - .5) * _SilverTone.w + .5);
                 value = lerp(value, smoothstep(.28, .72, value), _SilverGraphic.x);
+                // Recover lighting gradients before adding fine texture and thin contours.
+                // This is independent of global effect intensity and retains the cobalt palette.
+                value = lerp(value, continuousShading, _SilverGraphic.w);
                 value = saturate(value + patina * (4 * value * (1 - value)));
                 value = saturate(value + (luminance - neighbours) * _SilverTexture.x * 3);
                 // Stationary fine grain avoids animated noise/flicker during aiming.
