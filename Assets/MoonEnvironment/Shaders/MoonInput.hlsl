@@ -16,6 +16,9 @@ float _GrainNormalStrength, _FineNormalStrength, _ParallaxMetres, _FragmentMode;
 float _MacroContrast, _FaciesStrength, _BedrockStrength, _ImpactReady, _ProceduralRock;
 float _MaterialFadeStart, _MaterialFadeEnd, _DistantVariation;
 float4 _DustTint, _BasaltTint;
+// Optional detail-only additions. Zero defaults keep the original lunar surface.
+float _OverlayNormalStrength, _OverlayNormalMetres;
+float4 _SilverSand, _SilverSheen;
 CBUFFER_END
 // Keep UnityPerMaterial identical for terrain and non-instanced rendering.
 // Grounding overrides live in an instance buffer only for instanced rocks.
@@ -36,6 +39,7 @@ sampler2D _MainTex, _BumpMap, _Roughness, _HeightMap, _MicroTex, _MicroNormal;
 sampler2D _GroundTex, _GeologyMap, _TerrainHolesTexture;
 sampler2D _LocalTerrainGeometry;
 sampler2D _ImpactGeology;
+sampler2D _OverlayNormalMap;
 #include "MoonPhase.hlsl"
 #include "MoonSurface.hlsl"
 struct SurfaceOutputStandard

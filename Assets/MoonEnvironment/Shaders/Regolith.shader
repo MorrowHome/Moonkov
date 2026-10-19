@@ -19,6 +19,11 @@ Shader "MoonEnvironment/Regolith"
         _GrainNormalStrength("Grain normal strength", Range(0,1.5)) = 0.55
         _FineNormalStrength("Fine normal strength", Range(0,1)) = 0.18
         _ParallaxMetres("Near grain relief in metres", Range(0,0.025)) = 0.008
+        _OverlayNormalMap("Optional additional normal (no colour)", 2D) = "bump" {}
+        _OverlayNormalStrength("Additional normal strength (0 = original)", Range(0,1)) = 0
+        _OverlayNormalMetres("Additional normal tile size (m)", Float) = 3.7
+        _SilverSand("Mineral glints: strength / cells per m / density / fade m", Vector) = (0,8,0.48,45)
+        _SilverSheen("Glint sheen: strength / unused / spread / unused", Vector) = (0,0,1.6,0)
         _MacroContrast("Landscape material contrast", Range(0,1)) = 0.8
         _MaterialFadeStart("Preserve near material contrast to (m)", Float) = 35
         _MaterialFadeEnd("Distant material blend complete (m)", Float) = 180
@@ -51,6 +56,7 @@ Shader "MoonEnvironment/Regolith"
         #pragma target 3.5
         #define MOON_TERRAIN 1
         #include "MoonInput.hlsl"
+        #include "SilverSand.hlsl"
         void SampleGrain(float2 uv,float2 dx,float2 dy,float2 cell,float parallax,float3 viewDir,out float gray,out float3 normal,out float roughness)
         {
             float2 seed=MoonHash(cell),cs=float2(cos(seed.x*6.2831853),sin(seed.x*6.2831853));
@@ -113,6 +119,11 @@ Shader "MoonEnvironment/Regolith"
             normal.xy+=microNormal.xy*_FineNormalStrength*fineFade;
             normal.xy=lerp(normal.xy,bedNormal.xy*1.2,bedWeight);
             normal.xy*=1-geology.b*0.18;
+            UNITY_BRANCH if (_OverlayNormalStrength>0)
+            {
+                float3 overlay=UnpackNormal(tex2D(_OverlayNormalMap,IN.worldPos.xz/max(_OverlayNormalMetres,.01)));
+                normal.xy+=overlay.xy*_OverlayNormalStrength;
+            }
             o.Normal=normalize(lerp(float3(0,0,1),normal,_DetailStrength));
             o.Metallic = 0;
             o.Smoothness = (1-roughness)*0.2*(1-geology.r*0.2);
@@ -153,7 +164,9 @@ half4 MoonFragment(MoonVaryings input) : SV_Target
     SurfaceData pbr = (SurfaceData)0;
     pbr.albedo=surface.Albedo; pbr.normalTS=surface.Normal; pbr.smoothness=surface.Smoothness;
     pbr.occlusion=surface.Occlusion; pbr.alpha=1;
-    return UniversalFragmentPBR(inputData,pbr);
+    half4 lit=UniversalFragmentPBR(inputData,pbr);
+    lit.rgb+=SilverSandLighting(inputData);
+    return lit;
 #else
     Light mainLight=MoonMainLight(input);
     half3 color=MoonLight(surface,normal,view,mainLight) + surface.Albedo *
@@ -173,6 +186,7 @@ half4 MoonFragment(MoonVaryings input) : SV_Target
         color+=MoonLight(surface,normal,view,light);
     LIGHT_LOOP_END
     #endif
+    color+=SilverSandLighting(inputData);
     return half4(color,1);
 #endif
 }

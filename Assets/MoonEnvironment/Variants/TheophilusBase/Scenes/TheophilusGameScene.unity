@@ -493128,7 +493128,7 @@ PrefabInstance:
     - target: {fileID: 3923438036036122386, guid: 675f9882ac896674483c0f181f2b2d2d, type: 3}
       propertyPath: regolith
       value: 
-      objectReference: {fileID: 2100000, guid: 526dae9028e3e82468197b2aee292109, type: 2}
+      objectReference: {fileID: 2100000, guid: 4f916715a7242c8458b84965a40fded3, type: 2}
     - target: {fileID: 3923438036036122386, guid: 675f9882ac896674483c0f181f2b2d2d, type: 3}
       propertyPath: surfaceDetail.enabled
       value: 0
@@ -493152,10 +493152,10 @@ PrefabInstance:
     - target: {fileID: 6992025794054698186, guid: 675f9882ac896674483c0f181f2b2d2d, type: 3}
       propertyPath: m_MaterialTemplate
       value: 
-      objectReference: {fileID: 2100000, guid: 0b8259c55477f9b47b73e02378ebde3e, type: 2}
+      objectReference: {fileID: 2100000, guid: 4f916715a7242c8458b84965a40fded3, type: 2}
     - target: {fileID: 6992025794054698186, guid: 675f9882ac896674483c0f181f2b2d2d, type: 3}
       propertyPath: m_SplatMapDistance
-      value: 75
+      value: 8000
       objectReference: {fileID: 0}
     - target: {fileID: 7681671103309528790, guid: 675f9882ac896674483c0f181f2b2d2d, type: 3}
       propertyPath: m_TerrainData
@@ -493164,10 +493164,10 @@ PrefabInstance:
     - target: {fileID: 7681671103309528790, guid: 675f9882ac896674483c0f181f2b2d2d, type: 3}
       propertyPath: m_MaterialTemplate
       value: 
-      objectReference: {fileID: 2100000, guid: a6529fe8c1d00b84d86acd037d672b03, type: 2}
+      objectReference: {fileID: 2100000, guid: 4f916715a7242c8458b84965a40fded3, type: 2}
     - target: {fileID: 7681671103309528790, guid: 675f9882ac896674483c0f181f2b2d2d, type: 3}
       propertyPath: m_SplatMapDistance
-      value: 75
+      value: 8000
       objectReference: {fileID: 0}
     - target: {fileID: 9020332530819101036, guid: 675f9882ac896674483c0f181f2b2d2d, type: 3}
       propertyPath: m_TerrainData
