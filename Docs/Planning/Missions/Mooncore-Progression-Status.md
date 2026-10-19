@@ -39,4 +39,4 @@ flowchart LR
 - 参数调整后只复核真实步枪/霰弹参数，均通过（3→2 / 12→8，2→2.4 秒）。Unity 脚本导入成功，`compilationFailed=false`。
 - 中文原生研究面板已建立，但后台 runtime/Editor 离屏捕获未产生有效画面；屏幕捕获因 Unity 不在前台而跳过。用户明确选择“暂时不方便，记录视觉待验收”，因此未继续截图或切换 Play。中文布局与光环回流效果的最终目视验收仍待完成。保留 `Tools / Moonkov / Mooncore / Review Research Layout` 供之后一次原生检查；使用隔离示例库存，无玩家写入。
 - 未做完整 Play 走图、实机听感、Host/第二客户端或 HTTP/数据库集成回归；不以本轮静态/Editor 证据替代这些验收。
-- 提交与推送：待本轮最终检查后记录。本任务不包含先前地图提交或并行改动。
+- 实现提交：`a4efcf58 feat(progression): connect recovered mooncore research fabrication and halo modules`；交付记录提交紧随其后，推送目标 `origin/feat/aliens`。本任务不包含先前地图提交或并行改动。最终推送结果见本聊天交付回复。
