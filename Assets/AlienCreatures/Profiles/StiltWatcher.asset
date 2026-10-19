@@ -14,20 +14,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Unity.MP_FPS.AlienCreatureProfile
   Species: 9
   Scale: 1
-  Health: 360
-  Speed: 2.6
-  TurnSpeed: 150
+  Health: 680
+  Speed: 3.2
+  TurnSpeed: 75
   SightRange: 42
   HearingRange: 16
-  MemorySeconds: 8
+  MemorySeconds: 11
   PatrolRadius: 8
-  Damage: 38
-  AttackReach: 3.6
+  Damage: 48
+  AttackReach: 4.2
   Windup: 1.05
   Recovery: 1.35
   AttackCooldown: 2.7
   LungeSpeed: 3
   Boss: 0
+  ThreatTier: 1
+  DisplayName: "\u957F\u9888\u76D1\u89C6\u8005"
+  EncounterHint: "\u7CBE\u82F1\uFF1A4.2 \u7C73\u957F\u9888\u8F6E\u5ED3\uFF0C\u7F13\u6162\u903C\u8FD1\u540E\u957F\u8DDD\u6293\u51FB\uFF1B\u501F\u4F4E\u77EE\u901A\u9053\u8131\u79BB\u3002"
+  Approach: 2
+  PreferredDistance: 7
+  FlankDistance: 4.5
+  StalkPauseSeconds: 1.4
+  BossDisplaySeconds: 1.8
   BossPursuitSpeed: 4.8
   BossRepositionSpeed: 8
   BossRepositionSeconds: 0.5

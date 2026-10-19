@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace Unity.MP_FPS
 {
-    public enum AlienAction : byte { Roam, Chase, Search, Windup, Strike, Recover, Dead, Ambush, Reposition, Attached }
+    public enum AlienAction : byte { Roam, Chase, Search, Windup, Strike, Recover, Dead, Ambush, Reposition, Attached, Dominance }
 
     /// <summary>Server-only intent, perception and damage; interpolated clients derive
     /// cosmetic rigs from snapshots. Target eligibility requires a real PlayerGhost:
@@ -264,6 +264,7 @@ namespace Unity.MP_FPS
             float recovery = m_AmbushEnabled ? profile.SpiderRecovery : Mathf.Max(.01f, m_Pattern.Recovery);
             float pulse = state.Action == AlienAction.Windup ? Mathf.Clamp01(state.ActionTime / windup) :
                 state.Action == AlienAction.Strike || state.Action == AlienAction.Attached ? 1 :
+                state.Action == AlienAction.Dominance ? .65f * Mathf.Sin(Mathf.Clamp01(state.ActionTime / profile.BossDisplaySeconds) * Mathf.PI) :
                 state.Action == AlienAction.Recover ? Mathf.Clamp01(1 - state.ActionTime / recovery) : 0;
             m_Body.Observe(new SurfaceMotor.Pose { Position = transform.position, Rotation = transform.rotation }, state.Velocity,
                 state.Detached, state.Phase, presentationDt, pulse, m_Liquid);

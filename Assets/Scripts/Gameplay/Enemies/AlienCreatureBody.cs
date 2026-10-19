@@ -35,6 +35,7 @@ namespace Unity.MP_FPS
         private SpiderPresentation m_SpiderView;
         private AlienCreatureFeedback m_Feedback;
         private AlienVoidAppearance m_VoidAppearance;
+        private AlienBossSilhouette m_BossSilhouette;
         private LiquidReaction m_LiquidReaction;
         private SkeletonFluidPresentation m_LastFluid;
         private bool m_LastLiquid;
@@ -53,7 +54,7 @@ namespace Unity.MP_FPS
         public AlienCreatureBody(Transform owner, AlienCreatureProfile profile, float scale, bool render, int hitLayer)
         {
             m_Owner = owner; m_Profile = profile; m_Scale = Mathf.Clamp(scale, .1f, 4); m_Render = render;
-            if (render) m_Feedback = new AlienCreatureFeedback(m_Scale, profile.Species, owner);
+            if (render) m_Feedback = new AlienCreatureFeedback(m_Scale, profile.Species, owner, profile.Tier, profile.Approach);
             m_Mask = LayerMask.GetMask("Default", "Ground");
             Motor = new SurfaceMotor(owner.position, owner.rotation, m_Mask, m_Scale);
             if (profile.IsUpright) m_StiltRig = new StiltWalkerRig(owner, profile, m_Scale, render, m_Mask);
@@ -82,6 +83,7 @@ namespace Unity.MP_FPS
                 m_BranchShape.rootRadius *= m_Scale; m_BranchShape.tipRadius *= m_Scale;
                 m_BranchShape.lift *= m_Scale; m_BranchShape.curl *= m_Scale; m_BranchShape.actionExtension *= m_Scale;
                 m_Branch = new BranchCreatureRig(owner, m_Mask, m_BranchShape, profile.BranchSpecies, render);
+                if (render && profile.Boss) m_BossSilhouette = new AlienBossSilhouette(owner, profile, m_Scale);
             }
             m_HitRoot = new GameObject("Alien authoritative body hitboxes").transform;
             m_HitRoot.SetParent(owner, false); m_HitRoot.gameObject.layer = hitLayer;
@@ -132,8 +134,7 @@ namespace Unity.MP_FPS
             if (m_Feet != null) gaitSpeed *= m_Feet.SpeedScale;
             if (m_StiltRig != null) Motor.TickGroundedCapsule(input, gaitSpeed, yaw, dt, m_StiltRig.Height, m_StiltRig.CollisionRadius);
             else if (m_Profile.Boss) Motor.TickGroundedCapsule(input, gaitSpeed, yaw, dt,
-                Mathf.Max(1.1f, m_Profile.Branch.bodyRadii.y * 2 + .4f) * m_Scale,
-                Mathf.Max(SurfaceMotor.BodyRadius, m_Profile.Branch.bodyRadii.x * .7f) * m_Scale);
+                m_Profile.GroundBodyHeight(m_Scale), m_Profile.GroundBodyRadius(m_Scale));
             else Motor.Tick(input, gaitSpeed, yaw, dt);
             m_Owner.SetPositionAndRotation(Motor.Current.Position, Motor.Current.Rotation);
             UpdateRig(input, speed, yaw, dt, liquid, action); UpdateHitboxes();
@@ -182,10 +183,12 @@ namespace Unity.MP_FPS
             else if (m_Branch != null)
             {
                 m_Branch.Tick(Motor, m_BranchShape, m_Clock, drive, action, dt);
+                m_BossSilhouette?.Observe(AimPoint, Motor.Current.Rotation, m_CombatAction, m_ActionTime);
                 m_Branch.SetVisible(m_Render && !liquid);
                 if (m_Render && liquid)
                 {
-                    m_BranchFluid ??= new BranchFluidPresentation(m_Owner, m_Mask, m_Branch, m_BranchShape, m_Profile.BranchSpecies, m_Scale, m_Profile.Branch);
+                    m_BranchFluid ??= new BranchFluidPresentation(m_Owner, m_Mask, m_Branch, m_BranchShape, m_Profile.BranchSpecies, m_Scale, m_Profile.Branch,
+                        m_Profile.Boss ? .085f : .045f);
                     m_BranchFluid.Draw(Motor, m_Profile.Fluid, dt, m_LiquidReaction);
                 }
                 else m_BranchFluid?.Fluid.SetVisible(false);
@@ -354,6 +357,7 @@ namespace Unity.MP_FPS
         }
         public void Dispose()
         {
+            m_BossSilhouette?.Dispose();
             m_VoidAppearance?.Dispose();
             m_Feedback?.Dispose();
             m_FaceRig?.Dispose();

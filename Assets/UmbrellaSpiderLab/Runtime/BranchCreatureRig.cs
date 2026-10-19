@@ -160,7 +160,7 @@ namespace Unity.MP_FPS.SpiderLab
                 Vector3 goal = predicted - up * (motor.BodyHeight - .05f * motor.Size);
                 if (motor.Detached) goal = root + radial * s.reach * .28f + up * .12f;
                 bool hasSurface = false;
-                if (!motor.Detached && Physics.Raycast(predicted + up * .6f, -up, out var ground, 2, m_Mask, QueryTriggerInteraction.Ignore))
+                if (!motor.Detached && Physics.Raycast(predicted + up * (.6f * motor.Size), -up, out var ground, 2 * motor.Size, m_Mask, QueryTriggerInteraction.Ignore))
                 {
                     hasSurface = true;
                     goal = ground.point + ground.normal * .05f;

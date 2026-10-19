@@ -32,7 +32,7 @@ namespace Unity.MP_FPS.SpiderLab
         }
 
         public BranchFluidPresentation(Transform owner, int mask, BranchCreatureRig rig, BranchCreatureSettings s,
-            ProceduralMenagerieExperiment.Species species, float physicalScale = 1, BranchCreatureSettings restShape = null)
+            ProceduralMenagerieExperiment.Species species, float physicalScale = 1, BranchCreatureSettings restShape = null, float particleSpacing = .045f)
         {
             m_PhysicalScale = Mathf.Clamp(physicalScale, .1f, 4);
             m_Rig = rig; m_Pivot = new GameObject("Weighted branched liquid guide").transform;
@@ -41,7 +41,7 @@ namespace Unity.MP_FPS.SpiderLab
             m_Matrices = new Matrix4x4[rig.BoneCount]; m_Centres = new Vector4[rig.BoneCount];
             for (int i = 0; i < rig.BoneCount; i++) m_Centres[i] = new Vector4(rig.Rest[i].x / m_PhysicalScale, rig.Rest[i].y / m_PhysicalScale, rig.Rest[i].z / m_PhysicalScale, 1);
             var seeds = new List<SkeletonFluidPresentation.Seed>();
-            const float spacing = .045f;
+            float spacing = Mathf.Clamp(particleSpacing, .045f, .12f);
             Vector3 r = rig.RestBodyRadii / m_PhysicalScale;
             for (float z = -r.z; z <= r.z; z += spacing)
             for (float y = -r.y; y <= r.y; y += spacing)

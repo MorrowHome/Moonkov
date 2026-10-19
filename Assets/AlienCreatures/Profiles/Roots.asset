@@ -13,26 +13,34 @@ MonoBehaviour:
   m_Name: Roots
   m_EditorClassIdentifier: Assembly-CSharp::Unity.MP_FPS.AlienCreatureProfile
   Species: 7
-  Scale: 1.2
-  Health: 1400
-  Speed: 2.5833333
-  TurnSpeed: 300
-  SightRange: 42
-  HearingRange: 16
-  MemorySeconds: 8
-  PatrolRadius: 8
-  Damage: 32
+  Scale: 4
+  Health: 4400
+  Speed: 0.55
+  TurnSpeed: 45
+  SightRange: 65
+  HearingRange: 28
+  MemorySeconds: 14
+  PatrolRadius: 3
+  Damage: 42
   AttackReach: 2.6
   Windup: 0.42
   Recovery: 0.55
   AttackCooldown: 1.6
   LungeSpeed: 3
   Boss: 1
-  BossPursuitSpeed: 3.1
-  BossRepositionSpeed: 6
-  BossRepositionSeconds: 0.65
-  BossRepositionCooldown: 4
-  BossPreferredDistance: 8
+  ThreatTier: 2
+  DisplayName: "\u846C\u6839\u4E3B\u5BB0"
+  EncounterHint: "\u5DE8\u578B\u9996\u9886\uFF1A\u624E\u6839\u5C01\u9501\u8FDC\u5904\u843D\u70B9\uFF0C\u653B\u51FB\u95F4\u62D4\u6839\u6362\u4F4D\uFF1B\u6839\u523A\u95F4\u7559\u6709\u901A\u8DEF\uFF0C\u534A\u8840\u8FDE\u53D1\u3002"
+  Approach: 0
+  PreferredDistance: 7
+  FlankDistance: 3
+  StalkPauseSeconds: 1.4
+  BossDisplaySeconds: 1.8
+  BossPursuitSpeed: 2.2
+  BossRepositionSpeed: 3.8
+  BossRepositionSeconds: 1.1
+  BossRepositionCooldown: 6
+  BossPreferredDistance: 18
   MucusEveryAttacks: 3
   MucusRange: 14
   MucusSpeed: 18
@@ -50,8 +58,8 @@ MonoBehaviour:
   VoidLiquid: 1
   LiquidReactionStrength: 1
   Liquid: 1
-  LiquidDistance: 24
-  MaximumLiquidEnemies: 2
+  LiquidDistance: 22
+  MaximumLiquidEnemies: 1
   Chain:
     length: 4.6
     radius: 0.14
@@ -89,26 +97,26 @@ MonoBehaviour:
     smoothness: 0.48
     metallic: 0.08
   Branch:
-    bodyRadii: {x: 0.3, y: 0.36, z: 0.38}
+    bodyRadii: {x: 0.65, y: 1.05, z: 0.65}
     arms: 6
-    reach: 2.1
-    rootRadius: 0.09
-    tipRadius: 0.035
+    reach: 3.6
+    rootRadius: 0.16
+    tipRadius: 0.045
     speed: 1.4
     burstMultiplier: 1.8
     turnSpeed: 260
-    frequency: 0.65
+    frequency: 0.3
     stanceFraction: 0.75
     prediction: 0.22
-    lift: 0.18
-    curl: 0.42
+    lift: 0.16
+    curl: 0.25
     follow: 16
     stuckDelay: 0.85
     bodyStretch: 0.15
-    ripple: 0.045
+    ripple: 0.01
     actionDuration: 1.1
     actionExtension: 0.65
-    growthRate: 0.28
+    growthRate: 0.6
     colour: {r: 0.025, g: 0.035, b: 0.041, a: 1}
     smoothness: 0.84
   Gait:

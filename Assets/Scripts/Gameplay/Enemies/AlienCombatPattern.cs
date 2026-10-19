@@ -47,6 +47,17 @@ namespace Unity.MP_FPS
             p.Range *= reachScale;
             if (p.Kind != AlienAttackKind.MucusSpit) p.Radius *= reachScale;
             if (profile.Boss && phase > 1) { p.Windup *= .8f; p.Recovery *= .85f; }
+            if (profile.Boss)
+            {
+                // Giant limbs must reach their visible tips. Retain local slam/spike
+                // patches and a readable minimum warning even during enrage.
+                float limbReach = profile.Branch.reach * scale * 1.1f;
+                if (p.Kind == AlienAttackKind.TentacleSweep) p.Range = p.Radius = limbReach;
+                if (p.Kind == AlienAttackKind.TentacleSlam || p.Kind == AlienAttackKind.RootSpikes)
+                    p.Range = Mathf.Max(p.Range, limbReach + 8);
+                p.Windup = Mathf.Max(p.Windup, p.Kind == AlienAttackKind.MucusSpit ? .85f : 1.15f);
+                p.Recovery = Mathf.Max(p.Recovery, phase > 1 ? .9f : 1.2f);
+            }
             return p;
         }
     }

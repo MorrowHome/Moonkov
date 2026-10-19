@@ -25,19 +25,19 @@ namespace Unity.MP_FPS
             }
             if (m_BossMoveHealth<=0) m_BossMoveHealth=health.CurrentHealth;
             if (!remembered || !m_Visible || m_Clock<m_NextBossMove ||
-                m_Action==AlienAction.Windup || m_Action==AlienAction.Strike || m_Action==AlienAction.Recover) return false;
+                m_Action==AlienAction.Windup || m_Action==AlienAction.Strike || m_Action==AlienAction.Recover || m_Action==AlienAction.Dominance) return false;
             Vector3 target=m_LastSeen, delta=Vector3.ProjectOnPlane(target-transform.position,Vector3.up);
             float distance=delta.magnitude;
             bool damaged=m_BossMoveHealth-health.CurrentHealth>health.MaxHealth*.08f;
             bool far=distance>profile.BossPreferredDistance*1.4f;
             bool afterAttack=m_Attacks>m_BossMoveAttack;
-            if ((!far && !damaged && !afterAttack) || distance<1 || distance>24) return false;
+            if ((!far && !damaged && !afterAttack) || distance<1 || distance>profile.SightRange) return false;
             Vector3 forward=delta.normalized;
             Vector3 desired=far ? target-forward*profile.BossPreferredDistance :
                 transform.position+Vector3.Cross(Vector3.up,forward)*(m_Attacks%2==0?3:-3)-forward*1.2f;
             desired=transform.position+Vector3.ClampMagnitude(desired-transform.position,profile.BossRepositionSpeed*profile.BossRepositionSeconds);
-            float radius=Mathf.Max(.23f,profile.Branch.bodyRadii.x*.7f)*m_Body.Scale;
-            if (!RaidSpawnSafety.TryGroundPosition(desired,radius,1.2f*m_Body.Scale,35,out var floor,out _))
+            float radius=profile.GroundBodyRadius(m_Body.Scale);
+            if (!RaidSpawnSafety.TryGroundPosition(desired,radius,profile.GroundBodyHeight(m_Body.Scale),35,out var floor,out _))
             {m_NextBossMove=m_Clock+1;return false;}
             m_BossDestination=floor+Vector3.up*m_Body.Motor.BodyHeight;
             m_BossMoveHealth=health.CurrentHealth;m_BossMoveAttack=m_Attacks;BossRepositions++;

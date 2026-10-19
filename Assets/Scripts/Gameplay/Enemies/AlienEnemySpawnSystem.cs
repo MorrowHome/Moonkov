@@ -31,6 +31,7 @@ namespace Unity.MP_FPS
         private int m_NextEncounter;
         private int m_NextId = -10000;
         private int m_AliveCount;
+        private int m_AliveBossCount;
         private int m_TotalSpawned;
         public int SpawnedCount => m_AliveCount;
         public int TotalSpawnedCount => m_TotalSpawned;
@@ -101,6 +102,7 @@ namespace Unity.MP_FPS
                 var spawn = settings[index];
                 state.ReadyAt = now + settings.RetryDelay;
                 if (spawn == null || !spawn.Profile || spawn.Prefab == null) continue;
+                if (spawn.Profile.Boss && (m_AliveBossCount >= settings.MaximumBosses || HasSpawnedBoss(settings, spawn.Profile))) continue;
                 if ((spawn.Ambush || spawn.Profile.Boss) && state.SpawnCount > 0) continue;
                 var prefab = prefabs.GetEntityPrefab(spawn.Prefab.GhostGuid);
                 if (prefab == Entity.Null || !TrySelectPosition(settings, spawn, state, out var position, out var rotation)) continue;
@@ -123,11 +125,12 @@ namespace Unity.MP_FPS
                 state.SpawnCount++;
                 m_TotalSpawned++;
                 m_AliveCount++;
+                if (spawn.Profile.Boss) m_AliveBossCount++;
                 spawnedThisCheck++;
                 m_NextEncounter = (index + 1) % settings.Count;
                 // Ghost presentation is linked later; reserve this position immediately.
                 m_Observers.Add(new RaidSpawnObserver { Position = position });
-                LeaderboardManager.AddPlayer(id, new FixedString64Bytes((spawn.Profile.Boss ? "Boss " : "Xeno ") + spawn.Profile.Species));
+                LeaderboardManager.AddPlayer(id, new FixedString64Bytes(spawn.Profile.CreatureName));
                 if (m_AliveCount >= settings.MaximumAliens || m_TotalSpawned >= settings.MaximumTotalSpawns ||
                     spawnedThisCheck >= settings.MaximumSpawnsPerCheck) break;
             }
@@ -138,6 +141,15 @@ namespace Unity.MP_FPS
             return settings.Enabled && m_AliveCount < settings.MaximumAliens &&
                 m_TotalSpawned < settings.MaximumTotalSpawns && state.Entity == Entity.Null &&
                 now >= state.ReadyAt && state.SpawnCount < settings.SpawnsPerEncounter;
+        }
+
+        private bool HasSpawnedBoss(AlienEncounterSettings settings, AlienCreatureProfile profile)
+        {
+            // Multiple authored anchors for the same boss are alternatives, not
+            // extra lives. This survives death/retirement for the current raid.
+            for (int i = 0; i < m_Encounters.Count; i++)
+                if (m_Encounters[i].SpawnCount > 0 && settings[i].Profile == profile) return true;
+            return false;
         }
 
         private void SynchronizeEncounters(AlienEncounterSettings settings, double now)
@@ -159,13 +171,16 @@ namespace Unity.MP_FPS
         private void RefreshPopulation(AlienEncounterSettings settings, double now)
         {
             m_AliveCount = 0;
-            foreach (var state in m_Encounters)
+            m_AliveBossCount = 0;
+            for (int index = 0; index < m_Encounters.Count; index++)
             {
+                var state = m_Encounters[index];
                 if (state.Entity == Entity.Null) continue;
                 bool hasHealth = EntityManager.Exists(state.Entity) && EntityManager.HasComponent<PredictedPlayerGhost>(state.Entity);
                 if (hasHealth && EntityManager.GetComponentData<PredictedPlayerGhost>(state.Entity).CurrentHealth > 0)
                 {
                     m_AliveCount++;
+                    if (settings[index].Profile && settings[index].Profile.Boss) m_AliveBossCount++;
                     continue;
                 }
                 // Death owns its existing two-second animation/despawn. Begin the slot's
@@ -194,7 +209,7 @@ namespace Unity.MP_FPS
                 (spawn.Profile.Species == AlienSpecies.Spider || spawn.Profile.Species == AlienSpecies.FaceHugger) ? SurfaceMotor.BodyRadius :
                 Mathf.Max(SurfaceMotor.BodyRadius, Mathf.Max(spawn.Profile.Branch.bodyRadii.x, spawn.Profile.Branch.bodyRadii.z) * .7f);
             float radius = spawn.Profile.IsUpright ? spawn.Profile.UprightRadius(scale) : mantleRadius * scale;
-            float height = spawn.Profile.IsUpright ? spawn.Profile.UprightHeight(scale) : Mathf.Max(radius * 2, (SurfaceMotor.Height + mantleRadius) * scale);
+            float height = spawn.Profile.Boss || spawn.Profile.IsUpright ? spawn.Profile.GroundBodyHeight(scale) : Mathf.Max(radius * 2, (SurfaceMotor.Height + mantleRadius) * scale);
             int anchors = 1 + (spawn.CandidatePositions?.Length ?? 0);
             for (int attempt = 0; attempt < settings.CandidateAttempts; attempt++)
             {
@@ -220,11 +235,27 @@ namespace Unity.MP_FPS
                     !HasBodyClearance(spawn.Profile, scale, ground, normal, forward, settings.MaximumSpawnSlope)) continue;
                 if (spawn.Profile.IsUpright && !RaidSpawnSafety.IsSafeFromObservers(ground + Vector3.up * (height - 1.5f),
                     m_Observers, settings.MinimumPlayerSpawnDistance, settings.VisibilityDistance, Mathf.Max(3f, scale * 2f))) continue;
+                if (spawn.Profile.Boss && !BossHiddenFromObservers(settings, spawn.Profile, ground, height, scale)) continue;
                 position = bodyPosition;
                 rotation = Quaternion.LookRotation(forward, normal);
                 return true;
             }
             return false;
+        }
+
+        private bool BossHiddenFromObservers(AlienEncounterSettings settings, AlienCreatureProfile profile, Vector3 ground, float height, float scale)
+        {
+            if (!RaidSpawnSafety.IsSafeFromObservers(ground + Vector3.up * (height - 1.5f), m_Observers,
+                settings.MinimumPlayerSpawnDistance, settings.VisibilityDistance, profile.Branch.reach * scale)) return false;
+            // Check the outer silhouette too: hiding the mantle behind a rock does
+            // not make twenty metres of visible appendages safe to spawn.
+            for (int side = 0; side < 4; side++)
+            {
+                Vector3 tip = ground + Quaternion.Euler(0, side * 90, 0) * Vector3.forward * (profile.Branch.reach * scale);
+                if (!RaidSpawnSafety.IsSafeFromObservers(tip, m_Observers, settings.MinimumPlayerSpawnDistance,
+                    settings.VisibilityDistance, 3)) return false;
+            }
+            return true;
         }
 
         private bool TryAmbushPosition(AlienEncounterSettings settings, AlienEncounterSettings.Spawn spawn,

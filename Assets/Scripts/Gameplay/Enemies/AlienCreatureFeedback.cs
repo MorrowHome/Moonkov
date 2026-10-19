@@ -11,6 +11,9 @@ namespace Unity.MP_FPS
         private enum Cue { Step, Warning, Strike, Hurt, Collapse, Idle, Motion, Wall, Count }
         private readonly SoundSystem.SoundInfo[] m_Handles = new SoundSystem.SoundInfo[(int)Cue.Count];
         private readonly float m_Pitch;
+        private readonly AlienThreatTier m_Tier;
+        private readonly AlienApproach m_Approach;
+        private readonly float m_ContactDistance;
         private readonly Transform m_Anchor;
         private readonly System.Random m_Random;
         private readonly MoonkovSurfaceFoley m_Wall = new MoonkovSurfaceFoley();
@@ -23,15 +26,18 @@ namespace Unity.MP_FPS
         private Vector3 m_Position;
         private bool m_HasState, m_HasFeet, m_Detached, m_Disposed;
 
-        public AlienCreatureFeedback(float scale, AlienSpecies species = AlienSpecies.Spider, Transform anchor = null)
+        public AlienCreatureFeedback(float scale, AlienSpecies species = AlienSpecies.Spider, Transform anchor = null,
+            AlienThreatTier tier = AlienThreatTier.Common, AlienApproach approach = AlienApproach.Direct)
         {
+            m_Tier = tier; m_Approach = approach;
+            m_ContactDistance = tier == AlienThreatTier.Boss ? 2.5f : .8f;
             m_Anchor = anchor;
             m_Random = new System.Random((anchor ? anchor.GetEntityId().GetHashCode() : UnityEngine.Random.Range(1, int.MaxValue)) ^ (int)species * 997);
             m_IdleIn = Range(2.5f, 7.5f); m_MotionIn = Range(3, 7);
             float speciesPitch = species == AlienSpecies.Slime || species == AlienSpecies.Leech ? -180 :
                 species == AlienSpecies.Centipede || species == AlienSpecies.Spider ? 80 : -70;
             m_Pitch = Mathf.Clamp(-300 * Mathf.Log(Mathf.Max(.25f, scale) / .65f, 2), -350, 250) +
-                speciesPitch + UnityEngine.Random.Range(-65f, 65f);
+                speciesPitch + UnityEngine.Random.Range(-35f, 35f) - (tier == AlienThreatTier.Boss ? 450 : tier == AlienThreatTier.Elite ? 120 : 0);
         }
         public void Observe(AlienAction action, float actionTime, uint attackSequence, float health, Vector3 position)
         {
@@ -42,12 +48,12 @@ namespace Unity.MP_FPS
                 return; // Late snapshots never replay historical attacks/deaths.
             }
             bool changed = action != m_PreviousAction;
-            if (action != AlienAction.Windup) Stop(Cue.Warning, .08f);
-            if (changed && action == AlienAction.Windup)
+            if (action != AlienAction.Windup && action != AlienAction.Dominance) Stop(Cue.Warning, .08f);
+            if (changed && (action == AlienAction.Windup || action == AlienAction.Dominance))
             {
                 Stop(Cue.Idle, .1f); Stop(Cue.Motion, .1f);
                 m_IdleIn = Mathf.Max(m_IdleIn, 3); m_MotionIn = Mathf.Max(m_MotionIn, 2);
-                Play(Cue.Warning, position, .95f);
+                Play(Cue.Warning, position, action == AlienAction.Dominance ? 1.3f : .95f);
             }
             if (changed && action == AlienAction.Recover && m_PreviousAction == AlienAction.Strike)
                 Play(Cue.Motion, position, .45f);
@@ -89,7 +95,7 @@ namespace Unity.MP_FPS
             if (feet == null && distance < 2 && distance > .001f)
             {
                 m_Travel += distance;
-                if (m_Travel >= .8f) { step = true; m_Travel %= .8f; }
+                if (m_Travel >= m_ContactDistance) { step = true; m_Travel %= m_ContactDistance; }
             }
             if (landed)
             {
@@ -98,7 +104,7 @@ namespace Unity.MP_FPS
             else if (step && m_StepCooldown <= 0 && motor.Velocity.sqrMagnitude > .04f)
             {
                 Play(Cue.Step, motor.Current.Position, Mathf.Lerp(.45f, .8f, Mathf.Clamp01(motor.Velocity.magnitude / 6)));
-                m_StepCooldown = .15f;
+                m_StepCooldown = m_Tier == AlienThreatTier.Boss ? .65f : .15f;
             }
         }
         private float Range(float min, float max) => min + (float)m_Random.NextDouble() * (max - min);
@@ -107,16 +113,16 @@ namespace Unity.MP_FPS
         {
             Vector3 position = motor.Current.Position;
             if (m_Health <= 0 || action == AlienAction.Dead || action == AlienAction.Ambush ||
-                !MoonkovAudio.CanHearDetail(position, 28))
+                !MoonkovAudio.CanHearDetail(position, m_Tier == AlienThreatTier.Boss ? 65 : 28))
             { m_Wall.Reset(); m_SurfaceTravel = 0; return; }
-            bool attacking = action == AlienAction.Windup || action == AlienAction.Strike;
-            if (!attacking)
+            bool attacking = action == AlienAction.Windup || action == AlienAction.Strike || action == AlienAction.Dominance;
+            if (!attacking && !(m_Approach == AlienApproach.Stalk && action == AlienAction.Chase))
             {
                 m_IdleIn -= dt; m_MotionIn -= dt;
                 if (m_IdleIn <= 0)
                 {
                     bool played = Play(Cue.Idle, position, action == AlienAction.Chase ? .48f : .7f);
-                    m_IdleIn = played ? Range(8, 16) : Range(.8f, 1.6f);
+                    m_IdleIn = played ? Range(12, 24) : Range(.8f, 1.6f);
                 }
                 if (m_MotionIn <= 0 && motor.Velocity.sqrMagnitude < .09f && motor.Supported)
                 {

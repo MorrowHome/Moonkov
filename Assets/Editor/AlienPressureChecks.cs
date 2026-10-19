@@ -58,6 +58,10 @@ public static partial class AlienEnemyChecks
         var holder = new GameObject("Temporary boss pressure fixture");
         var profile = Object.Instantiate(AssetDatabase.LoadAssetAtPath<AlienCreatureProfile>("Assets/AlienCreatures/Profiles/" + species + ".asset"));
         profile.Liquid = false; profile.Damage = 1; profile.PatrolRadius = 0;
+        // This fixture isolates the original short-distance mobility contract;
+        // giant body, introduction and phase timing have their own horror checks.
+        profile.Scale = 1; profile.BossDisplaySeconds = .6f;
+        profile.BossPreferredDistance = species == AlienSpecies.Roots ? 8 : 4.5f;
         Vector3 origin = new Vector3(-9200, 1000, -9200);
         try
         {
@@ -66,7 +70,7 @@ public static partial class AlienEnemyChecks
             Humanoid(holder.transform, world, origin + Vector3.forward * (afterAttack ? 6 : 12), false, 42);
             Vector3 start = actor.transform.position, previous = start;
             bool strike = false;
-            Step(actor, 1);
+            Step(actor, 21);
             previous = actor.transform.position;
             if (wall)
             {

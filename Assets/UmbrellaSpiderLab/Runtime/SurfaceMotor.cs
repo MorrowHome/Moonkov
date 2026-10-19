@@ -102,7 +102,8 @@ namespace Unity.MP_FPS.SpiderLab
             {
                 foot = floor.point;
                 float distance = movement.magnitude;
-                Vector3 lower = foot + Vector3.up * (radius + .025f), upper = foot + Vector3.up * (height - radius);
+                float clearance = .025f + radius * Mathf.Tan(Vector3.Angle(floor.normal, Vector3.up) * Mathf.Deg2Rad);
+                Vector3 lower = foot + Vector3.up * (radius + clearance), upper = foot + Vector3.up * (height - radius + clearance);
                 blocked = UnityEngine.Physics.CheckCapsule(lower, upper, radius, m_Mask, QueryTriggerInteraction.Ignore) ||
                     (distance > .0001f && UnityEngine.Physics.CapsuleCast(lower, upper, radius, movement / distance, distance + .025f,
                         m_Mask, QueryTriggerInteraction.Ignore));
@@ -110,10 +111,14 @@ namespace Unity.MP_FPS.SpiderLab
                 {
                     Vector3 next = foot + movement;
                     if (UnityEngine.Physics.Raycast(next + Vector3.up * .45f, Vector3.down, out var support, .9f, m_Mask,
-                        QueryTriggerInteraction.Ignore) && support.normal.y >= .75f &&
-                        !UnityEngine.Physics.CheckCapsule(support.point + Vector3.up * (radius + .025f),
-                            support.point + Vector3.up * (height - radius), radius, m_Mask, QueryTriggerInteraction.Ignore))
-                    { foot = support.point; floor = support; }
+                        QueryTriggerInteraction.Ignore) && support.normal.y >= .75f)
+                    {
+                        float nextClearance = .025f + radius * Mathf.Tan(Vector3.Angle(support.normal, Vector3.up) * Mathf.Deg2Rad);
+                        if (!UnityEngine.Physics.CheckCapsule(support.point + Vector3.up * (radius + nextClearance),
+                            support.point + Vector3.up * (height - radius + nextClearance), radius, m_Mask, QueryTriggerInteraction.Ignore))
+                        { foot = support.point; floor = support; }
+                        else blocked = true;
+                    }
                     else blocked = true;
                 }
             }

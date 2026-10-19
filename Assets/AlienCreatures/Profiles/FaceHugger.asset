@@ -28,6 +28,14 @@ MonoBehaviour:
   AttackCooldown: 1.6
   LungeSpeed: 3
   Boss: 0
+  ThreatTier: 0
+  DisplayName: "\u8986\u9762\u5BC4\u751F\u866B"
+  EncounterHint: "\u8D34\u5730\u7ED5\u4FA7\u540E\u8DC3\u5411\u9762\u90E8\uFF1B\u8D77\u8DF3\u524D\u51FB\u6740\uFF0C\u843D\u7A7A\u540E\u4F18\u5148\u6E05\u9664\u3002"
+  Approach: 1
+  PreferredDistance: 7
+  FlankDistance: 3
+  StalkPauseSeconds: 1.4
+  BossDisplaySeconds: 1.8
   BossPursuitSpeed: 4.8
   BossRepositionSpeed: 8
   BossRepositionSeconds: 0.5
@@ -43,6 +51,10 @@ MonoBehaviour:
   SpiderWindup: 0.75
   SpiderStrikeSeconds: 0.45
   SpiderRecovery: 1.1
+  StiltHeight: 3.2
+  StiltThickness: 0.085
+  StiltStride: 0.85
+  StiltStepSeconds: 0.55
   VoidLiquid: 1
   LiquidReactionStrength: 1
   Liquid: 1

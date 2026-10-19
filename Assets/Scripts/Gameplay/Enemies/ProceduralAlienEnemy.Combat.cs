@@ -31,6 +31,7 @@ namespace Unity.MP_FPS
             bool living = IsLivingHumanoid(manager, m_Target);
             if (!living) { m_Target = Entity.Null; m_Visible = false; }
             bool remembered = living && m_Clock - m_LastSeenAt <= profile.MemorySeconds;
+            if (TickBossDisplay(dt, health, remembered)) return;
             if (TickBossMobility(dt, health, remembered)) return;
             float age = m_Clock - m_ActionStarted;
             if ((m_Action == AlienAction.Windup || m_Action == AlienAction.Strike) && !living)
@@ -53,7 +54,7 @@ namespace Unity.MP_FPS
             {
                 byte phase = profile.Boss && health.CurrentHealth <= health.MaxHealth * profile.EnrageHealthFraction ? (byte)2 : (byte)1;
                 var next = AlienCombatPattern.For(profile, phase, m_Attacks + 1);
-                if (remembered && m_Visible && m_Clock >= m_NextAttack && Vector3.Distance(AimPoint, ContactPoint(m_Target)) <= next.Range)
+                if (remembered && m_Visible && m_Clock >= m_NextAttack && CanBeginSpeciesAttack(next))
                 {
                     m_Pattern = next; m_BossPhase = phase; m_Attacks++;
                     bool headShot = m_Pattern.Kind == AlienAttackKind.FaceLeap || m_Pattern.Kind == AlienAttackKind.MucusSpit;
@@ -75,7 +76,8 @@ namespace Unity.MP_FPS
             { intent = Vector3.ProjectOnPlane(m_CombatDirection, m_Body.Motor.Current.Up).normalized; speed = m_Pattern.Speed; }
             else if ((m_Action == AlienAction.Chase || m_Action == AlienAction.Search || m_Action == AlienAction.Roam) && profile.Species != AlienSpecies.Roots)
             {
-                Vector3 goal = remembered ? m_LastSeen : PatrolGoal();
+                bool pause = false;
+                Vector3 goal = remembered ? HuntGoal(m_LastSeen, out pause) : PatrolGoal();
                 if (profile.IsUpright || profile.Boss) goal = UprightWaypoint(goal);
                 var graph = profile.IsUpright || profile.Boss ? null : AlienSurfaceNavigation.Find(m_Spawn);
                 if (graph && graph.Contains(goal))
@@ -86,14 +88,26 @@ namespace Unity.MP_FPS
                 intent = Vector3.ProjectOnPlane(goal - transform.position, m_Body.Motor.Current.Up).normalized;
                 speed = profile.Speed * m_Body.Scale * (m_Action == AlienAction.Roam ? .35f : .8f);
                 if (profile.Boss && m_Action != AlienAction.Roam) speed = profile.BossPursuitSpeed * (m_BossPhase > 1 ? 1.15f : 1);
-                if (Vector3.Distance(goal, transform.position) < .7f) speed = 0;
+                if (pause || Vector3.Distance(goal, transform.position) < .7f) speed = 0;
             }
-            float yaw = intent.sqrMagnitude > .01f ? Mathf.Clamp(Vector3.SignedAngle(m_Body.Motor.Current.Forward, intent, m_Body.Motor.Current.Up) /
+            Vector3 facingIntent = m_Action == AlienAction.Windup ? m_CombatDirection : intent;
+            float yaw = facingIntent.sqrMagnitude > .01f ? Mathf.Clamp(Vector3.SignedAngle(m_Body.Motor.Current.Forward, facingIntent, m_Body.Motor.Current.Up) /
                 Mathf.Max(.001f, dt), -profile.TurnSpeed, profile.TurnSpeed) : 0;
             Vector3 previous = transform.position;
             UpdateCombatPresentation(health.CurrentHealth);
             m_Body.Tick(intent, speed, yaw, dt, CombatPulse(), false);
+            ObserveHuntMovement(previous, speed, dt);
             if (m_Action == AlienAction.Strike) ResolveSpeciesAttack(previous);
+        }
+
+        private bool CanBeginSpeciesAttack(AlienCombatPattern next)
+        {
+            Vector3 target = ContactPoint(m_Target);
+            if (Vector3.Distance(AimPoint, target) > next.Range) return false;
+            // A heavy mantle cannot warn forward and then sweep behind itself.
+            // Roots erupt remotely and do not require a forward-facing melee arc.
+            return !profile.Boss || profile.Species == AlienSpecies.Roots ||
+                Vector3.Angle(transform.forward, Vector3.ProjectOnPlane(target - transform.position, Vector3.up)) <= 60;
         }
 
         private float CombatPulse() => m_Action == AlienAction.Windup ? Mathf.Clamp01((m_Clock - m_ActionStarted) / Mathf.Max(.01f, m_Pattern.Windup)) :

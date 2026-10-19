@@ -4,6 +4,8 @@ using UnityEngine;
 namespace Unity.MP_FPS
 {
     public enum AlienSpecies : byte { Spider, Snake, Caterpillar, Tentacle, Centipede, Leech, Slime, Roots, FaceHugger, StiltWalker }
+    public enum AlienThreatTier : byte { Common, Elite, Boss }
+    public enum AlienApproach : byte { Direct, Flank, Stalk, KeepDistance }
 
     /// <summary>Shared authoring data only. Scale is uniform and authoritative: body
     /// dimensions, motor contacts, hitboxes, strike reach and liquid bounds use it.
@@ -30,6 +32,22 @@ namespace Unity.MP_FPS
         [Range(0, 8)] public float LungeSpeed = 3;
         [Header("Combat role")]
         public bool Boss;
+        [Header("威胁层级与追猎特点")]
+        public AlienThreatTier ThreatTier;
+        public string DisplayName;
+        [TextArea] public string EncounterHint;
+        public AlienApproach Approach;
+        [Min(1)] public float PreferredDistance = 7;
+        [Range(0, 6)] public float FlankDistance = 3;
+        [Range(.3f, 3)] public float StalkPauseSeconds = 1.4f;
+        [Range(.6f, 3)] public float BossDisplaySeconds = 1.8f;
+        public AlienThreatTier Tier => Boss ? AlienThreatTier.Boss : ThreatTier;
+        public string CreatureName => string.IsNullOrWhiteSpace(DisplayName) ? Species.ToString() : DisplayName;
+        public float GroundBodyRadius(float scale) => IsUpright ? UprightRadius(scale) :
+            Mathf.Max(SurfaceBodyRadius, Mathf.Max(Branch.bodyRadii.x, Branch.bodyRadii.z) * .7f) * scale;
+        private const float SurfaceBodyRadius = .23f;
+        public float GroundBodyHeight(float scale) => IsUpright ? UprightHeight(scale) :
+            Mathf.Max(GroundBodyRadius(scale) * 2, (Branch.bodyRadii.y * 2 + .4f) * scale);
         [Header("Boss 追击与换位 / 世界米每秒")]
         [Min(0)] public float BossPursuitSpeed = 4.8f;
         [Min(0)] public float BossRepositionSpeed = 8;

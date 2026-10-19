@@ -11,6 +11,7 @@ namespace Unity.MP_FPS
             var reaction = new LiquidReaction { Centre = centre, Direction = direction,
                 Strength = profile.VoidLiquid ? profile.LiquidReactionStrength : 0 };
             if (action == AlienAction.Windup) reaction.Charge = Mathf.SmoothStep(0, 1, age / Mathf.Max(.05f, windup));
+            else if (action == AlienAction.Dominance) reaction.Charge = .65f * Mathf.Sin(Mathf.Clamp01(age / profile.BossDisplaySeconds) * Mathf.PI);
             else if (action == AlienAction.Strike || action == AlienAction.Attached)
             {
                 int pulses = profile.Species == AlienSpecies.Slime || profile.Species == AlienSpecies.Caterpillar || profile.Species == AlienSpecies.Leech ? 3 : 1;

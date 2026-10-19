@@ -28,6 +28,14 @@ MonoBehaviour:
   AttackCooldown: 1.6
   LungeSpeed: 3
   Boss: 0
+  ThreatTier: 0
+  DisplayName: "\u88C2\u989A\u6E38\u86C7"
+  EncounterHint: "\u6CBF\u4FA7\u7FFC\u8D34\u5730\u903C\u8FD1\uFF1B\u907F\u5F00\u76F4\u7EBF\u54AC\u51FB\uFF0C\u8F6C\u5411\u65F6\u53CD\u51FB\u3002"
+  Approach: 1
+  PreferredDistance: 7
+  FlankDistance: 3
+  StalkPauseSeconds: 1.4
+  BossDisplaySeconds: 1.8
   BossPursuitSpeed: 4.8
   BossRepositionSpeed: 8
   BossRepositionSeconds: 0.5
@@ -63,9 +71,9 @@ MonoBehaviour:
     speed: 3.2
     burstMultiplier: 1.6
     turnSpeed: 190
-    lateralAmplitude: 0.28
+    lateralAmplitude: 0.14
     wavelength: 1.65
-    waveFrequency: 1.4
+    waveFrequency: 1.1
     contraction: 0.28
     archHeight: 0.075
     headLift: 0.045

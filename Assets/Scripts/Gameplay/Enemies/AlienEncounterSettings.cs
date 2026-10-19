@@ -23,6 +23,7 @@ namespace Unity.MP_FPS
         [Header("Population per loaded raid map")]
         [SerializeField] private bool enableAliens = true;
         [SerializeField, Range(0, 16)] private int maximumAliens = 8;
+        [SerializeField, Range(1, 2)] private int maximumBosses = 1;
         [SerializeField, Min(0)] private int maximumTotalSpawns = 24;
         [SerializeField, Min(1)] private int spawnsPerEncounter = 3;
         [SerializeField, Range(1, 8)] private int maximumSpawnsPerCheck = 2;
@@ -43,6 +44,7 @@ namespace Unity.MP_FPS
         // A low population cap must not silently remove later species from selection.
         public int Count => encounters?.Length ?? 0;
         public int MaximumAliens => Mathf.Clamp(maximumAliens, 0, 16);
+        public int MaximumBosses => Mathf.Clamp(maximumBosses, 1, 2);
         public int MaximumTotalSpawns => Mathf.Max(0, maximumTotalSpawns);
         public int SpawnsPerEncounter => Mathf.Max(1, spawnsPerEncounter);
         public int MaximumSpawnsPerCheck => Mathf.Clamp(maximumSpawnsPerCheck, 1, 8);

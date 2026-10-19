@@ -28,6 +28,14 @@ MonoBehaviour:
   AttackCooldown: 1.6
   LungeSpeed: 3
   Boss: 0
+  ThreatTier: 0
+  DisplayName: "\u4F0F\u9876\u86DB"
+  EncounterHint: "\u7559\u610F\u5934\u9876\u522E\u64E6\u58F0\uFF1B\u8D77\u6251\u524D\u4FA7\u79FB\uFF0C\u843D\u5730\u540E\u53CD\u51FB\u3002"
+  Approach: 0
+  PreferredDistance: 7
+  FlankDistance: 3
+  StalkPauseSeconds: 1.4
+  BossDisplaySeconds: 1.8
   BossPursuitSpeed: 4.8
   BossRepositionSpeed: 8
   BossRepositionSeconds: 0.5
