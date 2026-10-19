@@ -1,5 +1,6 @@
 using System;
 using Unity.MP_FPS;
+using Unity.MP_FPS.SpiderLab;
 using UnityEditor;
 using UnityEngine;
 
@@ -32,6 +33,34 @@ public static class MoonkovAlienAudioChecks
             "Giant encounter sounds still use small-creature hearing range");
         Debug.Log("Alien combat audio banks, PCM import, levels and giant hearing ranges passed.");
     }
+    public static string CheckStoppedFootfall()
+    {
+        Require(EditorApplication.isPlaying && GameManager.Instance, "Initialized Play mode required");
+        var system = (SoundSystem)GameManager.Instance.SoundSystem;
+        Transform listener = null;
+        foreach (var a in UnityEngine.Object.FindObjectsByType<AudioListener>()) if (a.enabled) { listener = a.transform; break; }
+        Require(listener, "Missing listener");
+        var actor = new GameObject("Stopped body footfall regression"); actor.transform.position = listener.position + Vector3.forward * 3;
+        var audio = new AlienCreatureFeedback(1, AlienSpecies.StiltWalker, actor.transform);
+        var motor = new SurfaceMotor(actor.transform.position, Quaternion.identity, LayerMask.GetMask("Default", "Ground"));
+        try
+        {
+            system.SetListenerTransform(listener);
+            motor.Observe(new SurfaceMotor.Pose { Position = actor.transform.position, Rotation = Quaternion.identity }, Vector3.zero, false);
+            audio.Observe(AlienAction.Chase, 0, 0, 100, actor.transform.position);
+            audio.Tick(motor, null, AlienAction.Chase, .016f, 0, actor.transform.position);
+            audio.Tick(motor, null, AlienAction.Windup, .016f, 1, actor.transform.position);
+            bool heard = false;
+            foreach (var e in system.m_SoundEmitterActiveList)
+                if (e.Active && e.Definition == MoonkovAudio.Library.AlienHeavyStep)
+                    foreach (var source in e.ActiveSoundGameObjects)
+                        heard |= source.m_AudioSource && source.m_AudioSource.transform.parent == actor.transform && source.m_AudioSource.isPlaying;
+            Require(heard, "An actual planted step was silenced when the body stopped");
+            return "Planted foot after body stops still plays: passed";
+        }
+        finally { audio.Dispose(); UnityEngine.Object.DestroyImmediate(actor); }
+    }
+
     public static string CheckDelayedStrike()
     {
         Require(EditorApplication.isPlaying && GameManager.Instance, "Initialized Play mode required");

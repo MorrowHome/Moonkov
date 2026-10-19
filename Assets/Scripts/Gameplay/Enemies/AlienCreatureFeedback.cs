@@ -108,7 +108,9 @@ namespace Unity.MP_FPS
             {
                 PlayContact(footPosition ?? motor.Current.Position - motor.Current.Up * motor.BodyHeight, 1.1f); m_StepCooldown = .2f;
             }
-            else if (step && m_StepCooldown <= 0 && motor.Velocity.sqrMagnitude > .04f)
+            // A planted foot can finish its swing after the body has stopped for a warning.
+            else if (step && m_StepCooldown <= 0 &&
+                (feet != null || completedSteps >= 0 || motor.Velocity.sqrMagnitude > .04f))
             {
                 PlayContact(footPosition ?? motor.Current.Position - motor.Current.Up * motor.BodyHeight,
                     Mathf.Lerp(.6f, .95f, Mathf.Clamp01(motor.Velocity.magnitude / 6)));
