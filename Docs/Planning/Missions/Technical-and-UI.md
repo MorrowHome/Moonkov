@@ -1,6 +1,6 @@
 # 随机任务界面与后端规格
 
-关联：`MS-030` 至 `MS-039`。与[总体规则](README.md)和[月核流程](MC00-Mooncore.md)一起评审。以下新增类型、接口、文件和配置均为拟议；本次没有实现运行代码。
+关联：`MS-030` 至 `MS-039`。与[总体规则](README.md)和[月核流程](MC00-Mooncore.md)一起评审。以下描述目标规格，实际完成范围与证据见[实施状态](Implementation-Status.md)；拟议接口不能当成已实现 API。
 
 ## MS-030 界面总原则
 
@@ -282,13 +282,13 @@ stateDiagram-v2
 ### 迁移与能力握手
 
 - 旧档新增空事实集；已有真实任务来源回执可一次性迁移，不能按普通 `quantum_core` 物品推断月核完成。
-- 协议、档案与内容版本分别管理。服务健康能力拟新增 `missions-v1`；缺能力时任务入口不进入生成池，客户端显示版本不兼容而非照常完成后丢奖励。
+- 协议、档案与内容版本分别管理。服务健康能力增加 `missions-v1`，个人档案响应提供 `MissionSchemaVersion`；缺能力时不生成新任务，客户端给出会话版本说明。
 - 部署固定内容哈希；未知定义或不支持奖励策略拒绝创建新实例，不影响已保存回执读取。
 - 坏配置停用对应模板，不扩大到全图任务服务；已有运行实例继续使用自己的冻结版本。
 
 ## MS-038 实现拆分与资源交付
 
-以下为建议提交顺序，不是本轮已经发生的实现，也不承诺具体天数：
+以下为设计拆分；当前落地证据与未验收项以[实施状态](Implementation-Status.md)为准，不承诺具体天数：
 
 1. **共享规则与内容**：任务定义、状态迁移、无接取事实模型、月核/档案模板与静态校验。
 2. **随机导演**：权重、合格区域、时间余量、冷却、并发、固定种子回放；无合格候选安全退让。
@@ -299,17 +299,17 @@ stateDiagram-v2
 7. **艺术与音频**：设备状态、取样动作、碎片/档案图标与世界表现、有限声效；明确缺失资产。
 8. **闭环检查**：先规则/存档，再受影响双端与正式地图路线；失败才扩大检查。
 
-拟议路径：
+实际复用路径：
 
-- `Assets/Scripts/Networking/Shared/Missions/`：纯规则、DTO、内容导出结构。
+- `Assets/Scripts/Networking/Shared/RaidMissionRules.cs`、`RaidMissionNetwork.cs`：纯规则与有限 RPC。
 - `Assets/Scripts/Networking/Server/ServerGameSystem.Missions.cs`：服务器事件接入。
-- `Assets/Scripts/Gameplay/Missions/`：设备作者组件、锚点、表现与导演配置。
-- `Assets/Scripts/Networking/Client/MissionClientSystem.cs`：受序号保护的快照消费。
-- `Assets/Scripts/UI/Game/Missions/` 与 `Assets/Resources/Moonkov/UI/Missions/`：Presenter、UXML/USS。
-- `Assets/Resources/Moonkov/Missions/`：内容资产；图标进入项目已有图标体系。
-- `Backend/MoonPersistence/InventoryRepository.Missions.cs`：与现有库存锁和事务共用的任务逻辑。
+- `Assets/Scripts/Gameplay/RaidMissionSite.cs`、`RaidMissionDevice.cs`：锚点、模板配置和物理表现。
+- `RaidClientSystem`：现有客户端系统内消费受序号保护的任务快照。
+- `Assets/Scripts/Gameplay/UI/RaidHUD.Missions.cs`、`Assets/Resources/Moonkov/UI/MissionHUD.*`：Presenter、UXML/USS；成长页复用 `Tasks.uxml`。
+- `Assets/MoonEnvironment/Variants/TheophilusBase/Missions/`：正式场景设备、网格、材质与声音；图标复用 `StashVisuals` 的 Painter2D。
+- `Backend/MoonPersistence/InventoryRepository.Containers.cs` 与共享 `InventoryModel.MissionInventory`：复用库存锁和撤离事务，不再另建一套任务物品服务。
 
-这些路径落地前须核对 asmdef 依赖，不能因目录方便让 Shared 引入客户端程序集。只修改正式场景，避免创建另一个“任务演示地图”替代实际接入。
+Shared 不引用客户端程序集。正式地图接入不由隔离验证场景代替；夹具只用于验证规则、RPC 和原生 UI。
 
 ## MS-039 最小必要验证用例
 

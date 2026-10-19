@@ -31,6 +31,7 @@ namespace Unity.MP_FPS
             public string DeploymentId, CellStackId;
             public int CarriedCells;
             public string InventoryJson, RaidInventoryJson;
+            public int MissionSchemaVersion;
         }
 
         public sealed class Settlement
@@ -89,6 +90,16 @@ namespace Unity.MP_FPS
         public readonly Dictionary<Entity, RaidSession> ReadyRaids = new Dictionary<Entity, RaidSession>();
         public readonly Dictionary<Entity, RaidInventoryState> Inventories = new Dictionary<Entity, RaidInventoryState>();
         public bool Enabled => m_Http != null || m_Offline != null;
+        public bool MissionsSupported
+        {
+            get
+            {
+                if (m_Offline != null || !Enabled) return true;
+                if (Profiles.Count == 0) return false;
+                foreach (var profile in Profiles.Values) if (profile.MissionSchemaVersion < 1) return false;
+                return true;
+            }
+        }
         private readonly OfflineProfileStore m_Offline;
         private readonly HttpClient m_Http;
         private readonly CancellationTokenSource m_Stop = new CancellationTokenSource();

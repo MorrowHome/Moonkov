@@ -5,7 +5,7 @@ namespace Unity.MP_FPS.Client
 {
     public enum StashArtKind { None, Dust, Alloy, Cell, Halo, Outfit, Helmet, Rifle, Pistol, ChestRig, Backpack, HaloRifle, HaloRevolver, HaloShotgun, Medical, HaloSniper, Ration, Water, HaloCapacitor, HaloChargeBridge, HaloFocusLens, HaloFanArray, HaloPulseController, HaloHitMarker, OxygenCanister,
         MedicalGel, TraumaKit, EnergyGel, ProteinBar, Electrolyte, OxygenReserve, ScoutRig, FieldRig, SlingPack, CargoPack, CircuitBoard, CopperCoil, CeramicPlate, OpticalSensor, DataDrive, HeliumSample, QuantumCore, BlackBox, AlienMeat, AlienOrgan, AlienTissue,
-        AlienSpider, AlienSnake, AlienCaterpillar, AlienTentacle, AlienCentipede, AlienLeech, AlienSlime, AlienRoots, AlienFaceHugger, EnergyGrenade }
+        AlienSpider, AlienSnake, AlienCaterpillar, AlienTentacle, AlienCentipede, AlienLeech, AlienSlime, AlienRoots, AlienFaceHugger, EnergyGrenade, MooncoreFragment, MissionArchive }
 
     // Small original vector illustrations, kept sharp at the shared PanelSettings scale.
     [UxmlElement]
@@ -75,6 +75,8 @@ namespace Unity.MP_FPS.Client
                 case StashArtKind.CeramicPlate: CeramicPlate(); break;
                 case StashArtKind.OpticalSensor: OpticalSensor(); break;
                 case StashArtKind.DataDrive: DataDrive(); break;
+                case StashArtKind.MooncoreFragment: MooncoreFragment(); break;
+                case StashArtKind.MissionArchive: MissionArchive(); break;
                 case StashArtKind.HeliumSample: HeliumSample(); break;
                 case StashArtKind.QuantumCore: QuantumCore(); break;
                 case StashArtKind.BlackBox: BlackBox(); break;
@@ -102,6 +104,26 @@ namespace Unity.MP_FPS.Client
         }
 
         private Vector2 P(float x, float y) => m_Origin + new Vector2(x, y) * m_Scale;
+        private void MooncoreFragment()
+        {
+            Shape(0x788fa3, new Vector2(50, 8), new Vector2(76, 33), new Vector2(68, 70), new Vector2(44, 88), new Vector2(27, 58), new Vector2(33, 24));
+            Shape(0xbad4df, new Vector2(50, 8), new Vector2(54, 47), new Vector2(33, 24));
+            Shape(0xe8f0e9, new Vector2(50, 8), new Vector2(76, 33), new Vector2(54, 47));
+            Shape(0x3d576c, new Vector2(54, 47), new Vector2(76, 33), new Vector2(68, 70), new Vector2(44, 88));
+            Box(0x39434e, 15, 42, 14, 30); Box(0x39434e, 71, 42, 14, 30);
+            Box(0xa8adb0, 17, 44, 9, 20); Box(0xa8adb0, 74, 44, 9, 20);
+            Line(0xcbd6d4, 2, new Vector2(27, 73), new Vector2(36, 83), new Vector2(65, 83), new Vector2(72, 73));
+            Line(0x6f9edf, 2, new Vector2(40, 31), new Vector2(54, 47), new Vector2(47, 68));
+        }
+        private void MissionArchive()
+        {
+            Shape(0x414f60, new Vector2(22, 16), new Vector2(70, 16), new Vector2(82, 29), new Vector2(82, 84), new Vector2(22, 84));
+            Box(0xc9d1cd, 29, 24, 38, 31); Box(0x26384d, 34, 30, 29, 4);
+            Box(0x72828e, 34, 39, 23, 3); Box(0x72828e, 34, 46, 27, 2);
+            Box(0x99adbf, 29, 62, 43, 9);
+            for (int i = 0; i < 6; i++) Box(0xd6c59c, 32 + i * 6, 78, 3, 10);
+            Line(0x7fa3df, 3, new Vector2(16, 31), new Vector2(16, 73));
+        }
         private static Color C(uint rgb) => new Color(((rgb >> 16) & 255) / 255f, ((rgb >> 8) & 255) / 255f, (rgb & 255) / 255f);
         private void Shape(uint color, params Vector2[] points)
         {

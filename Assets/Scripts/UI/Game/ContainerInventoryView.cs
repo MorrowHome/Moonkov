@@ -116,6 +116,7 @@ namespace Unity.MP_FPS.Client
                 case "circuit_board":return StashArtKind.CircuitBoard; case "copper_coil":return StashArtKind.CopperCoil;
                 case "ceramic_plate":return StashArtKind.CeramicPlate; case "optical_sensor":return StashArtKind.OpticalSensor;
                 case "data_drive":return StashArtKind.DataDrive; case "helium3_sample":return StashArtKind.HeliumSample;
+                case "mooncore_fragment":return StashArtKind.MooncoreFragment; case "mc00_archive_drive":return StashArtKind.MissionArchive;
                 case "quantum_core":return StashArtKind.QuantumCore; case "black_box":return StashArtKind.BlackBox;
                 case "shotgun":return StashArtKind.HaloShotgun;
                 case "sniper":return StashArtKind.HaloSniper;

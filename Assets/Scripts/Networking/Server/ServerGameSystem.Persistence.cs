@@ -186,6 +186,8 @@ namespace Unity.MP_FPS
                     session.ValueRW.SaveState = RaidSaveState.Saved;
                     session.ValueRW.SnapshotTimer = 0;
                     context.Profiles[save.Connection] = profile;
+                    if (state.EntityManager.HasComponent<RaidInventoryState>(save.Connection) && !string.IsNullOrEmpty(profile.InventoryJson))
+                        GetRaidInventory(ref state, save.Connection).MissionFirstsSaved = RaidInventoryTransport.Decode(profile.InventoryJson).MissionFirsts;
                 }
                 removeSaves.Add(pair.Key);
             }

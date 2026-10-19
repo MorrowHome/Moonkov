@@ -4,7 +4,7 @@
 
 - [中文完整策划](Moonkov_Project_Plan.zh-CN.md)
 - [Complete English plan](Moonkov_Project_Plan.en.md)
-- [随机局内任务系统设计（中文提案）](Missions/README.md)：无需接取的随机任务、MC00 月核完整流程、界面追踪与后端结算；仅设计，尚未实现。
+- [随机局内任务系统](Missions/README.md)：无需接取的随机任务、MC00 具体流程、界面追踪与后端结算；分阶段实现与验证范围见其中的实施状态。
 
 ## 中文阅读顺序
 

@@ -93,7 +93,7 @@ namespace Unity.MP_FPS
                 {
                     PlayerId = m_Save.PlayerId, DisplayName = "Single-player Operator",
                     Dust = m_Save.Inventory.Count("dust"), Alloy = m_Save.Inventory.Count("alloy"),
-                    Cells = m_Save.Inventory.Count("cells"), InventoryJson = RaidInventoryTransport.Encode(m_Save.Inventory)
+                    Cells = m_Save.Inventory.Count("cells"), InventoryJson = RaidInventoryTransport.Encode(m_Save.Inventory), MissionSchemaVersion = 1
                 };
             }
         }

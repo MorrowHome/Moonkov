@@ -18,11 +18,14 @@ namespace Unity.MP_FPS
     // Two bounded vectors cover all eight authored nodes. No unbounded list in an RPC.
     public struct RaidMissionSnapshotRpc : IRpcCommand
     {
-        public int RaidId, Epoch, DefinitionIndex, OutputLootId;
+        public int RaidId, Epoch, DefinitionIndex, OutputLootId, OutputRemaining;
+        public int MissionFirstsBefore, MissionFirstsSaved, RecoveredArtifacts;
         public uint Sequence, CompletedMask, RequestId;
         public FixedString64Bytes WorldId, OperationId;
         public MissionPhase Phase;
         public MissionActionResult Result;
+        public RaidSaveState SaveState;
+        public bool BackendSupported;
         public float Remaining;
         public float4 ProgressA, ProgressB;
     }

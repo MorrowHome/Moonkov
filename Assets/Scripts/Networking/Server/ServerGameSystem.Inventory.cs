@@ -14,6 +14,8 @@ namespace Unity.MP_FPS
             if (state.EntityManager.HasComponent<RaidInventoryState>(connection)) inventory = state.EntityManager.GetComponentObject<RaidInventoryState>(connection);
             else { inventory = new RaidInventoryState(); state.EntityManager.AddComponentObject(connection, inventory); }
             inventory.Graph = graph; inventory.RaidId=raidId; inventory.LastSentVersion = -1; inventory.OpenedLootId=-1;inventory.LastSentLootVersion=-1;
+            inventory.MissionFirstsBefore = inventory.MissionFirstsSaved = Persistence(ref state).Profiles.TryGetValue(connection, out var profile) &&
+                !string.IsNullOrEmpty(profile.InventoryJson) ? RaidInventoryTransport.Decode(profile.InventoryJson).MissionFirsts : 0;
             Persistence(ref state).Inventories[connection] = inventory;
             return inventory;
         }

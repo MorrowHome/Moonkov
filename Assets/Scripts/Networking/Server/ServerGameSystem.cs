@@ -59,7 +59,7 @@ namespace Unity.MP_FPS
         {
             // Initialize before borrowing buffers/lookups: adding the managed context
             // is a structural change, and the World now has its session-mode marker.
-            Persistence(ref state);
+            var persistence = Persistence(ref state);
             _joinedClientLookup.Update(ref state);
 
             var ecb = SystemAPI.GetSingletonRW<BeginSimulationEntityCommandBufferSystem.Singleton>()
@@ -82,6 +82,7 @@ namespace Unity.MP_FPS
 
             PollPersistence(ref state, ecb);
             HandleJoinRequests(ref state, gameplayMapsEntity, playerEntityPrefabs, ecb);
+            state.EntityManager.GetComponentObject<RaidMissionWorld>(SystemAPI.GetSingletonEntity<RaidLootWorld>()).BackendCompatible = persistence.MissionsSupported;
             if(MoonRaidMap.Active!=null)EnsureRaidInventories(ref state);
             UpdateSurvival(ref state);
             HandlePlayerDeathAndRespawn(ref state, ecb);

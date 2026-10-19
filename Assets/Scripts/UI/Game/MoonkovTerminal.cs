@@ -307,6 +307,19 @@ namespace Unity.MP_FPS.Client
         private void Tasks()
         {
             TerminalLayout.Populate(m_Content, "Tasks");
+            var graph = PlayerProfileClient.Inventory;
+            int facts = graph?.MissionFirsts ?? 0, count = 0;
+            for (int i = 0; i < 3; i++)
+            {
+                bool complete = (facts & (1 << i)) != 0; if (complete) count++;
+                m_Content.Q<Label>("statValue" + i).text = graph == null ? "待载入档案" : complete ? "已保存" : "尚未带回";
+            }
+            m_Content.Q<ArcMeter>().Value = count / 3f;
+            m_Content.Q<Label>("missionCareerCount").text = graph == null ? "—/3" : count + "/3";
+            m_Content.Q<Label>("mooncoreKnowledge").text = (facts & Inventory.MissionInventory.FirstMooncore) != 0 ?
+                "月核：夹具出现重复批次编号，说明异常结晶曾被重新封存。样本来源仍待进一步调查。" : "月核：留意 MC00 的封存异常。完成线路隔离和取样，将真实碎片带回。";
+            m_Content.Q<Label>("archiveKnowledge").text = (facts & Inventory.MissionInventory.FirstArchive) != 0 ?
+                "档案：18:42 故障隔离，18:47 设备仍在上传。最后一次操作身份尚未确认。" : "档案：留意失联设备恢复信号，校验两处时间标签，再取出事故记录。";
             TerminalMotion.Cascade(m_Content.Q<VisualElement>(className: "terminal-objectives"), .5f, .12f, 30, 0);
             m_Content.Q<Button>("planOperation").clicked += Prepare;
         }

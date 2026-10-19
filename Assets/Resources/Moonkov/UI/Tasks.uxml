@@ -8,48 +8,47 @@
             <ui:VisualElement class="terminal-row">
                 <ui:VisualElement class="terminal-panel terminal-side">
                     <moon:TechFrame picking-mode="Ignore" delay="0.08" />
-                    <ui:Label class="terminal-eyebrow" text="EXPEDITION OBJECTIVES" />
-                    <ui:Label class="terminal-eyebrow" text="ACTIVE / FIELD PROTOCOL" />
+                    <ui:Label class="terminal-eyebrow" text="设施调查 / 回收记录" />
+                    <ui:Label class="terminal-eyebrow" text="局内随机出现 · 无需接取" />
                     <ui:VisualElement class="terminal-row terminal-task-progress">
-                        <moon:ArcMeter class="arc-meter" picking-mode="Ignore" value="0.0" meter-color="#FFE11AFF">
-                            <ui:Label class="terminal-meter-value" text="0/3" />
-                            <ui:Label class="terminal-meter-name" text="DONE" />
+                        <moon:ArcMeter class="arc-meter" picking-mode="Ignore" value="0.0" meter-color="#164BFFFF">
+                            <ui:Label name="missionCareerCount" class="terminal-meter-value" text="—/3" />
+                            <ui:Label class="terminal-meter-name" text="首次发现" />
                         </moon:ArcMeter>
                         <ui:VisualElement class="terminal-task-progress-copy">
-                            <ui:Label class="terminal-title" text="LUNAR RECOVERY" />
-                            <ui:Label class="terminal-heading" text="YOUR FIRST RETURN" />
+                            <ui:Label class="terminal-title" text="月面调查" />
+                            <ui:Label class="terminal-heading" text="每次带回都有去向" />
                         </ui:VisualElement>
                     </ui:VisualElement>
-                    <ui:Label class="terminal-copy" text="Recover supplies from the surface." />
+                    <ui:Label class="terminal-copy" text="设施状态每次行动重新生成；已经保存的调查发现和首次奖励永久保留。死亡仍会丢失携带物。" />
                     <ui:VisualElement class="terminal-task-chain">
-                        <ui:Label class="terminal-eyebrow" text="TASK CHAINS" />
-                        <ui:Button class="terminal-button" enabled="false" tooltip="Additional task chains are not available yet." text="SUPPLIER CONTRACTS" />
-                        <ui:Button class="terminal-button" enabled="false" tooltip="Additional task chains are not available yet." text="SHIP EXPANSION" />
-                        <ui:Button class="terminal-button" enabled="false" tooltip="Additional task chains are not available yet." text="DEEP SURVEY" />
+                        <ui:Label class="terminal-eyebrow" text="已保存的调查" />
+                        <ui:Label name="mooncoreKnowledge" class="terminal-copy" text="月核：尚未取得有效调查记录。" />
+                        <ui:Label name="archiveKnowledge" class="terminal-copy" text="档案：尚未恢复事故时间线。" />
                     </ui:VisualElement>
                 </ui:VisualElement>
                 <ui:VisualElement class="terminal-panel terminal-wide">
                     <moon:TechFrame picking-mode="Ignore" delay="0.16" />
-                    <ui:Label class="terminal-eyebrow" text="MISSION BRIEF" />
-                    <ui:Label class="terminal-title" text="EVERY RETURN COUNTS" />
-                    <ui:Label class="terminal-copy" text="Your ship needs recovered materials. Search the lunar caches, manage your limited cargo space and make it back to the extraction zone." />
+                    <ui:Label class="terminal-eyebrow" text="自动记录 / 不设接取门槛" />
+                    <ui:Label class="terminal-title" text="发现、回收、带回" />
+                    <ui:Label class="terminal-copy" text="MC00 可能出现月核封存异常或事故档案信号。你可以直接参与、争抢或绕开；HUD 追踪只负责指引。设施完成、取得物品和安全带回分别记录。" />
                     <ui:VisualElement class="terminal-objectives">
                         <ui:VisualElement class="terminal-row terminal-stat protocol-recover">
-                            <ui:Label class="terminal-stat-name" text="OBJECTIVE 01" />
-                            <ui:Label class="terminal-stat-value" text="COLLECT ANY SURFACE SUPPLY" name="statValue0" />
+                            <ui:Label class="terminal-stat-name" text="第一份回收物 · 首次 10 月尘" />
+                            <ui:Label class="terminal-stat-value" text="待载入" name="statValue0" />
                         </ui:VisualElement>
                         <ui:VisualElement class="terminal-row terminal-stat protocol-manage">
-                            <ui:Label class="terminal-stat-name" text="OBJECTIVE 02" />
-                            <ui:Label class="terminal-stat-value" text="REACH THE EXTRACTION BEACON" name="statValue1" />
+                            <ui:Label class="terminal-stat-name" text="月核样本 · 首次 30 月尘与分析记录" />
+                            <ui:Label class="terminal-stat-value" text="待载入" name="statValue1" />
                         </ui:VisualElement>
                         <ui:VisualElement class="terminal-row terminal-stat protocol-extract">
-                            <ui:Label class="terminal-stat-name" text="OBJECTIVE 03" />
-                            <ui:Label class="terminal-stat-value" text="SURVIVE THE EXTRACTION COUNTDOWN" name="statValue2" />
+                            <ui:Label class="terminal-stat-name" text="事故档案 · 首次 20 月尘与时间线" />
+                            <ui:Label class="terminal-stat-value" text="待载入" name="statValue2" />
                         </ui:VisualElement>
                     </ui:VisualElement>
-                    <ui:Label class="terminal-positive" text="REWARD / ALL SUCCESSFULLY EXTRACTED CARGO" />
-                    <ui:Button class="terminal-primary" text="PLAN THIS OPERATION" name="planOperation" />
-                    <ui:Label class="terminal-copy" text="This is the expedition protocol. Separate quest rewards and progression are not available yet." />
+                    <ui:Label class="terminal-positive" text="成功撤离后自动保存 · 首次收益不重复发放" />
+                    <ui:Button class="terminal-primary" text="准备出战" name="planOperation" />
+                    <ui:Label class="terminal-copy" text="物品带回后仍可保留。调查记录与研究材料分别处理，不会因为阅读记录而消耗材料。" />
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>

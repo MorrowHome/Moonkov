@@ -35,6 +35,7 @@ namespace Unity.MP_FPS
         public int Epoch, DefinitionIndex, OutputLootId = -1;
         public double NextSend, EndedAt;
         public bool OutputProduced;
+        public bool BackendCompatible = true;
     }
 
     public partial struct ServerGameSystem
@@ -57,7 +58,7 @@ namespace Unity.MP_FPS
             foreach (var (session, joined) in SystemAPI.Query<RefRO<RaidSession>, RefRO<JoinedClient>>())
                 if (session.ValueRO.Phase == RaidPhase.Active && TryGetLivingPosition(ref state, joined.ValueRO.PlayerEntity, out var p) &&
                     math.distancesq(p, site.Center) <= 300 * 300) audience = math.max(audience, session.ValueRO.TimeLeft);
-            if (context.Operation == null)
+            if (context.Operation == null && context.BackendCompatible)
             {
                 var chosen = context.Director.TryOffer(site.Definitions, now, audience, false, d => MissionAnchorsReady(site, d));
                 if (chosen != null)
@@ -152,13 +153,22 @@ namespace Unity.MP_FPS
                 if (context.Operation != null && TryGetLivingPosition(ref state, joined.ValueRO.PlayerEntity, out var p) &&
                     math.distancesq(p, site.Center) <= site.DiscoveryRadius * site.DiscoveryRadius) context.Known.Add(connection);
                 var snapshot = new RaidMissionSnapshotRpc { RaidId = session.ValueRO.RaidId, Sequence = context.Sequence,
-                    WorldId = context.WorldId, OutputLootId = -1, DefinitionIndex = -1 };
+                    WorldId = context.WorldId, OutputLootId = -1, DefinitionIndex = -1, SaveState = session.ValueRO.SaveState, BackendSupported = context.BackendCompatible };
+                if (state.EntityManager.HasComponent<RaidInventoryState>(connection))
+                {
+                    var inventory = GetRaidInventory(ref state, connection);
+                    snapshot.MissionFirstsBefore = inventory.MissionFirstsBefore; snapshot.MissionFirstsSaved = inventory.MissionFirstsSaved;
+                    if (session.ValueRO.Phase == RaidPhase.Extracted)
+                        foreach (var item in inventory.Graph.Items) if (MissionInventory.IsArtifact(item.Code) && !item.MissionRecovered && inventory.Graph.Carried(item)) snapshot.RecoveredArtifacts++;
+                }
                 if (context.Operation != null && context.Known.Contains(connection))
                 {
                     var op = context.Operation;
                     snapshot.OperationId = op.Id; snapshot.Epoch = op.Epoch; snapshot.Phase = op.Phase;
                     snapshot.CompletedMask = op.CompletedMask; snapshot.DefinitionIndex = context.DefinitionIndex;
                     snapshot.Remaining = (float)System.Math.Max(0, op.Deadline - now); snapshot.OutputLootId = context.OutputLootId;
+                    if (context.OutputLootId >= 0 && LootContainers(ref state).Containers.TryGetValue(context.OutputLootId, out var output))
+                        foreach (var item in output.Items) if (MissionInventory.IsArtifact(item.Code)) snapshot.OutputRemaining++;
                     for (int i = 0; i < op.ObjectiveCount; i++)
                         if (i < 4) snapshot.ProgressA[i] = op.Progress(i, now); else snapshot.ProgressB[i - 4] = op.Progress(i, now);
                     if (context.Actors.TryGetValue(connection, out var actor)) { snapshot.RequestId = actor.AcknowledgedRequest; snapshot.Result = actor.Result; }
@@ -211,11 +221,11 @@ namespace Unity.MP_FPS
             cache.Items.Add(new InventoryItem { Id = LootInventoryExchange.Root, Code = LootInventoryExchange.Root });
             for (int i = 0; i < definition.OutputCount; i++)
                 cache.Items.Add(new InventoryItem { Id = Guid.NewGuid().ToString("D"), Code = definition.ArtifactCode,
-                    Parent = LootInventoryExchange.Root, Region = "main", X = i, FoundInRaid = true,
+                    Parent = LootInventoryExchange.Root, Region = "main", X = i % 6, Y = i / 6, FoundInRaid = true,
                     MissionWorldId = context.WorldId, MissionOperationId = context.Operation.Id, MissionContentVersion = definition.Version });
             if (cache.Validate() != InventoryError.None) throw new InvalidOperationException("Mission output failed inventory validation.");
             context.OutputLootId = 1000000000 + context.Epoch;
-            var anchor = context.Site.Anchor(definition.Id == "mc00_mooncore" ? "sampler" : "archive");
+            var anchor = context.Site.Anchor(definition.ArtifactCode == "mooncore_fragment" ? "sampler" : "archive");
             var loot = LootContainers(ref state); loot.Containers.Add(context.OutputLootId, cache);
             loot.MissionCaches.Add(context.OutputLootId, anchor.Position); context.OutputProduced = true;
         }

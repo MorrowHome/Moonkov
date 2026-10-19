@@ -91,6 +91,7 @@ namespace Unity.MP_FPS
     {
         public InventoryGraph Graph;
         public int RaidId;
+        public int MissionFirstsBefore, MissionFirstsSaved;
         public int LastSentVersion = -1;
         public uint Sequence, RequestId;
         public InventoryError Error;

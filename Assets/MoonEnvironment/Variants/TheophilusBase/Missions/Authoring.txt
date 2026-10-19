@@ -1,0 +1,6 @@
+Formal MC00 sources; ground/capsule/line-of-sight authoring only. Runtime route/Play not yet accepted.
+entry | 入口 / 异常设施信号 | device=(1647.097, 212.986, 2135.229) | approach=(1646.578, 210.578, 2134.838)
+power_a | L22 / 隔离柜与 18:42 校验标签 | device=(1591.140, 224.986, 2156.546) | approach=(1590.621, 223.696, 2156.155)
+power_b | L22 / 母线柜与 18:47 校验标签 | device=(1604.240, 224.974, 2159.202) | approach=(1604.759, 223.696, 2159.594)
+sampler | L22 / 月核封存装置 | device=(1596.672, 224.611, 2153.027) | approach=(1596.153, 223.696, 2152.635)
+archive | L22 / 事故档案终端 | device=(1594.891, 224.611, 2151.685) | approach=(1595.411, 223.696, 2152.076)

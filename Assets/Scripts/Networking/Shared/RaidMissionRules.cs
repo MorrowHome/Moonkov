@@ -92,8 +92,8 @@ namespace Unity.MP_FPS.Missions
             MinAudienceSeconds = 300, ActiveSeconds = 420,
             Objectives = new[] {
                 Node("self_check", "archive", "运行档案设备自检", 3),
-                Node("tag_a", "tag_a", "扫描校验标签 A", 4, 1, MissionObjectiveKind.Scan, true),
-                Node("tag_b", "tag_b", "扫描校验标签 B", 4, 1, MissionObjectiveKind.Scan, true),
+                Node("tag_a", "power_a", "读取隔离柜的 18:42 校验标签", 4, 1, MissionObjectiveKind.Scan, true),
+                Node("tag_b", "power_b", "读取母线柜的 18:47 校验标签", 4, 1, MissionObjectiveKind.Scan, true),
                 Node("download_start", "archive", "确认档案下载", 1, 7),
                 Node("download", "archive", "等待档案下载", 20, 8, MissionObjectiveKind.Process)
             }

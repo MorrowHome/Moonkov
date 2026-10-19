@@ -40,6 +40,7 @@ namespace Unity.MP_FPS.Inventory
             new ShopOffer("circuit_board", -1, 8), new ShopOffer("copper_coil", -1, 6),
             new ShopOffer("ceramic_plate", -1, 7), new ShopOffer("optical_sensor", -1, 16),
             new ShopOffer("data_drive", -1, 28), new ShopOffer("helium3_sample", -1, 45),
+            new ShopOffer("mooncore_fragment", -1, 50), new ShopOffer("mc00_archive_drive", -1, 35),
             new ShopOffer("quantum_core", -1, 80), new ShopOffer("black_box", -1, 60)
         }.Concat(AlienBiology.Organs.Select(o=>new ShopOffer(o.Code,-1,o.SellDust))).ToArray();
         public static ShopOffer Find(string code) => Offers.FirstOrDefault(o => o.Code == code);

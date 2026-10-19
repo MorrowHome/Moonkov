@@ -23,3 +23,4 @@
 .mission-compact .mission-interaction { left: 26%; right: 26%; bottom: 145px; }
 .mission-controls > Button { min-height: 34px; margin-bottom: 7px; padding-left: 12px; color: rgb(241, 242, 237); background-color: rgb(28, 39, 60); font-size: 14px; -unity-text-align: middle-left; }
 .mission-controls > Button:hover, .mission-controls > Button:focus { background-color: rgb(22, 75, 255); }
+.mission-world-marker { position: absolute; max-width: 185px; padding: 7px; color: rgb(224, 234, 249); background-color: rgba(13, 21, 36, 0.88); font-size: 13px; white-space: normal; border-bottom-width: 2px; border-bottom-color: rgb(75, 120, 255); }

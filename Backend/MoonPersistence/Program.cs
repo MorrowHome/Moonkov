@@ -106,7 +106,7 @@ app.MapGet("/internal/health", async (NpgsqlDataSource db, CancellationToken ct)
 {
     await using var command = db.CreateCommand("SELECT 1");
     await command.ExecuteScalarAsync(ct);
-    return Results.Ok(new { status = "ready", features = new[] { "alien-harvest-v1", "halo-research-v1", "species-harvest-v2" },
+    return Results.Ok(new { status = "ready", features = new[] { "alien-harvest-v1", "halo-research-v1", "species-harvest-v2", "missions-v1" },
         build = typeof(InventoryRepository).Assembly.GetCustomAttributes(false)
             .OfType<System.Reflection.AssemblyInformationalVersionAttribute>().FirstOrDefault()?.InformationalVersion });
 });
@@ -160,6 +160,6 @@ public sealed record ResolveProfile(string GuestToken, string DisplayName);
 public sealed record Settlement(Guid PlayerId, Guid SettlementId, string Outcome, int Dust, int Alloy, int Cells, Guid? DeploymentId=null, string? InventoryJson=null);
 public sealed record Profile(Guid PlayerId, int Dust, int Alloy, int Cells, string DisplayName,
     Guid? DeploymentId=null, int CarriedCells=0, Guid? CellStackId=null, IReadOnlyList<InventoryStack>? Items=null,
-    string? InventoryJson=null, string? RaidInventoryJson=null, Guid? ActiveDeploymentId=null);
+    string? InventoryJson=null, string? RaidInventoryJson=null, Guid? ActiveDeploymentId=null, int MissionSchemaVersion=1);
 public sealed class ReceiptConflictException : Exception;
 public sealed class ProfileNotFoundException : Exception;

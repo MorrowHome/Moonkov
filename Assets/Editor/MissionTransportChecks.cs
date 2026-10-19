@@ -63,7 +63,8 @@ public static class MissionTransportChecks
     }
     public static string Run()
     {
-        if (UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode || MoonRaidMap.Active || RaidMissionSite.Active || World.All.Count != 0)
+        if (UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode || MoonRaidMap.Active || RaidMissionSite.Active ||
+            RaidMissionAuthoring.HasLiveWorlds())
             throw new InvalidOperationException("Mission transport checks require idle Edit Mode, no active map or game Worlds.");
         s_Time = 0; s_Checks = 0;
         var drivers = NetworkStreamReceiveSystem.DriverConstructor;
