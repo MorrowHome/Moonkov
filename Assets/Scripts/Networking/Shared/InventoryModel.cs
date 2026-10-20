@@ -81,6 +81,7 @@ namespace Unity.MP_FPS.Inventory
                 new ItemDefinition("aegis", "Aegis / 天枢", ItemKind.LongGun, 2, 2, 1, 6.2f),
                 new ItemDefinition("vesper", "Vesper / 望舒", ItemKind.LongGun, 2, 2, 1, 3.8f),
                 new ItemDefinition("thorn", "Thorn / 星棘", ItemKind.LongGun, 2, 2, 1, 3.3f),
+                new ItemDefinition("nocturne", "Nocturne / 夜曲", ItemKind.LongGun, 2, 2, 1, 3.7f),
                 new ItemDefinition("tempest", "Tempest / 岚轮", ItemKind.LongGun, 2, 2, 1, 4.1f),
                 new ItemDefinition("rondo", "Rondo / 回环", ItemKind.LongGun, 2, 2, 1, 3.0f),
                 new ItemDefinition("sundown", "Sundown / 坠日", ItemKind.LongGun, 2, 2, 1, 5.2f),

@@ -141,6 +141,12 @@ public static class HaloArsenalValidation
         var thorn=registry.GetWeaponData(10);var state=Ready(thorn,10,8);
         Require(HaloModuleFire.TryFire(ref state,thorn,true,true,false),"Thorn shot");state.CurrentAmmo--;HaloModuleFire.CommitShot(ref state,thorn,1f/60);
         Require(thorn.PelletCount==5&&state.CurrentAmmo==7&&thorn.EnergyPerRound==10,"Thorn one round / five projectiles / 10 energy");
+        var nocturne=registry.GetWeaponData(DollSingerWeapons.Nocturne);var precise=Ready(nocturne,DollSingerWeapons.Nocturne,10);
+        Require(HaloModuleFire.TryFire(ref precise,nocturne,true,true,false),"Nocturne trigger");precise.CurrentAmmo--;HaloModuleFire.CommitShot(ref precise,nocturne,1f/60);
+        Require(nocturne.PelletCount==2&&precise.CurrentAmmo==9&&nocturne.EnergyPerRound==14,"Nocturne two rays / one round / 14 energy");
+        Require(WeaponSpread.Direction(Vector3.forward,nocturne,0,100)!=WeaponSpread.Direction(Vector3.forward,nocturne,1,100),"Nocturne paired rays distinct");
+        Require(!HaloModuleFire.TryFire(ref precise,nocturne,true,true,false),"Nocturne cooldown gate");
+        Report.Add("Nocturne: two distinct deterministic precision rays per trigger, one magazine round and 14 energy per replacement round; immediate second shot blocked by cooldown.");
         var sundown=registry.GetWeaponData(11);var point=Ballistics.Position(Vector3.zero,Vector3.forward*sundown.ProjectileSpeed,sundown.ProjectileGravity,1);
         Require(Mathf.Abs(point.y+.81f)<.001f&&Mathf.Abs(point.z-22)<.001f,"Sundown gravity");
         Report.Add("Shared tick-based spread: 40 ticks per weapon, deterministic rays within configured cone. Thorn = 5 directions, 1 magazine round, 10 energy per replacement round. Sundown at 1 s = 22 m forward, 0.81 m drop.");

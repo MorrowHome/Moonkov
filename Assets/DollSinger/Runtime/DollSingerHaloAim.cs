@@ -8,7 +8,7 @@ namespace Unity.MP_FPS.DollSinger
 /// </summary>
 [DefaultExecutionOrder(100)]
 public sealed class DollSingerHaloAim : MonoBehaviour {
-    public enum HaloWeapon { None, Rifle, Revolver, Shotgun, Sniper, Cicada, Trine, Aegis, Vesper, Thorn, Sundown, Rondo, Tempest }
+    public enum HaloWeapon { None, Rifle, Revolver, Shotgun, Sniper, Cicada, Trine, Aegis, Vesper, Thorn, Sundown, Rondo, Tempest, Nocturne }
     [Header("Standalone demo equipment (network equipment comes from inventory)")]
     public HaloWeapon localPrimary = HaloWeapon.Rifle;
     public HaloWeapon localSecondary = HaloWeapon.Shotgun;

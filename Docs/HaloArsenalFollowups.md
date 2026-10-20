@@ -27,3 +27,15 @@ Bake revision：`5b0ef4c950a4`，此前十一个 motion 保持不变。新增完
 - [动作检查](AI/HaloArsenalFollowups/Tempest/Gestures.txt)：正式玩家四机位，待机／射击／装填、俯仰 -80 到 +80、16:9／4:3、中央手臂网格留白与 48 次中断开关镜通过。Unity 编译和本地 Play 无新增运行异常；验证范围同上，不代称正式地图或联机实战。
 
 后端共享清单的 `MoonPersistence` .NET 10 编译通过（0 警告、0 错误）。ShopChecks 已成功构建，但因本地缺少 `appsettings.local.json`，未执行数据库／HTTP 集成检查；Unity 内采购和装备夹具结果不等同于该后端检查。
+
+## 夜曲 Nocturne / ID 14
+
+双翼与上下两枚宽实心棱晶构成独立光环。右手食指／小指前伸成角印，左掌在下承托；射击短促后坐，装填展开角印并横向收掌。半自动每 0.62 s 触发两条同时发射的精密弹道，每弹 38 伤害，总计 76；10 发容量，每次只扣 1 发、每弹补充花费 14 能量。弹速 780 m/s、散布 0.18°、3.5 倍瞄准、装填 2.6 s，售价 68 月尘。主／副武器槽与实验室「夜曲」按钮均已接入。
+
+Bake revision：`6cae2ec5d512`，之前十二套动作数据逐项保持一致。新增独立 SVG／PNG／图标／材质／Prefab／WeaponData 和完整原骨架 pose/fire/reload／俯仰 Actions。指向修正作用于完整双臂，保持 Blender 的手腕、小臂和指关节局部旋转。
+
+- [第一人称](AI/HaloArsenalFollowups/Nocturne/nocturne-owner.png) · [关闭投射灯](AI/HaloArsenalFollowups/Nocturne/nocturne-unlit-owner.png) · [四机位片段](AI/HaloArsenalFollowups/Nocturne/Nocturne-Actions.mp4)
+- [规则与实际伤害](AI/HaloArsenalFollowups/Nocturne/Rules.txt)：两条不同且可重放的精密弹道，1 发扣弹／14 能量补弹，冷却门控；采购、装备、弹量持久化、有限电池和旧武器规则通过。真实 Projectile→Impact→ECS 命中累计造成 76 伤害，弹道外目标不受范围伤害。
+- [动作检查](AI/HaloArsenalFollowups/Nocturne/Gestures.txt)：正式网络玩家实例，第一人称／正面／侧面／背面；待机、射击、装填的局部骨骼旋转保持原烘焙。俯仰 -80～+80、16:9／4:3、食指指向准星、中央手臂网格留白、连续转头和 48 次快速中断开关镜通过。
+
+Unity 编译及本地 Play 验证通过，后端共享清单 .NET 10 编译通过。仍未进行实时 Host/Client、正式地图实战或独立构建；数据库 HTTP 集成检查受缺少本地配置限制。

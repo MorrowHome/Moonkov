@@ -44,6 +44,7 @@ namespace Unity.MP_FPS
             DollSingerWeapons.Sundown => Shotgun,
             DollSingerWeapons.Rondo => Rifle,
             DollSingerWeapons.Tempest => Shotgun,
+            DollSingerWeapons.Nocturne => Sniper,
             _ => null
         };
     }

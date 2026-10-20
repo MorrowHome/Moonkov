@@ -113,7 +113,7 @@ public static class BlenderGestureValidation
                 float authoredPitch = m.aimPoses == null ? 0 : pitch;
                 expected = Quaternion.LookRotation(aim, Vector3.up) * Quaternion.Euler(-authoredPitch,0,0) * bake.chestBindRotation * expected;
                 // Directional signs share one common correction across both complete arm chains.
-                if (lab.WeaponIndex != 1 && lab.WeaponIndex != 4 && lab.WeaponIndex != 7 && lab.WeaponIndex != 10) max = Mathf.Max(max, Quaternion.Angle(expected, bones[bake.bones[i]].rotation));
+                if (lab.WeaponIndex != 1 && lab.WeaponIndex != 4 && lab.WeaponIndex != 7 && lab.WeaponIndex != 10 && lab.WeaponIndex != 12) max = Mathf.Max(max, Quaternion.Angle(expected, bones[bake.bones[i]].rotation));
             }
             else max = Mathf.Max(max, Quaternion.Angle(expected, bones[bake.bones[i]].localRotation));
         }
@@ -168,7 +168,7 @@ public static class BlenderGestureValidation
     }
     private static void PointAtAim(WeaponGestureLab lab, Dictionary<string, Transform> bones)
     {
-        if (lab.WeaponIndex != 1 && lab.WeaponIndex != 4 && lab.WeaponIndex != 7 && lab.WeaponIndex != 10) return;
+        if (lab.WeaponIndex != 1 && lab.WeaponIndex != 4 && lab.WeaponIndex != 7 && lab.WeaponIndex != 10 && lab.WeaponIndex != 12) return;
         var camera = lab.PlayerView.GestureCamera;
         Vector2 a = camera.WorldToViewportPoint(bones["人指１.R"].position);
         Vector2 b = camera.WorldToViewportPoint(bones["人指先.R"].position);

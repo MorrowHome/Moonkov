@@ -19,7 +19,7 @@ def cut(body,hole):
   points=' '.join(f'{x+r*math.cos(i*math.tau/96):.3f},{y+r*math.sin(i*math.tau/96):.3f}' for i in range(96))
  return f'<path d="M {outer.attrib["points"]} Z M {points} Z" fill="{outer.attrib["fill"]}" fill-rule="evenodd"/>'
 
-for code in ['cicada','trine','aegis','vesper','thorn','sundown','rondo','tempest']:
+for code in ['cicada','trine','aegis','vesper','thorn','sundown','rondo','tempest','nocturne']:
  core='';accent=''
  if code=='cicada':
   # Two broad, swept sabre wings; deliberately asymmetric tips and a fork crown.
@@ -61,6 +61,15 @@ for code in ['cicada','trine','aegis','vesper','thorn','sundown','rondo','tempes
    core+=polygon([pt(137,a),pt(175,a-23),pt(210,a-27),pt(300,a),pt(210,a+27),pt(175,a+23)],G)
    accent+=polygon([pt(282,a),pt(211,a-14),pt(166,a),pt(211,a+14)],W)
    accent+=polygon([pt(242,a+15),pt(217,a+20),pt(186,a+20),pt(204,a+14)],D)
+ elif code=='nocturne':
+  wing=[(60,225),(175,42),(251,90),(205,175),(179,320),(210,474),(270,570),(176,598),(75,430),(101,320)]
+  inlay=[(86,228),(176,78),(219,96),(176,179),(147,323),(176,458),(226,552),(187,563),(111,422),(130,320)]
+  spine=[(320,22),(366,110),(345,170),(320,192),(295,170),(274,110)]
+  for mirror in [False,True]:
+   core+=polygon([(640-x if mirror else x,y) for x,y in wing],W)
+   accent+=polygon([(640-x if mirror else x,y) for x,y in inlay],G)
+   core+=polygon([(x,640-y if mirror else y) for x,y in spine],G)
+   accent+=polygon([(320,640-y if mirror else y) for y in [48,147]]+[(335,530 if mirror else 110)],W)
  elif code=='tempest':
   for i in range(6):
    a=-90+i*60;color=W if i%2 else G

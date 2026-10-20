@@ -60,6 +60,13 @@ def make_pose(weapon,phase=0,mode='pose',fan_scale=1):
   wr=Vector((.095,1.16,.205))+Vector((0,.008,.027))*hit+Vector((-.030,-.025,-.040))*gather
   wl=Vector((-.095,1.20,.120))+Vector((-.010,.008,-.020))*hit+Vector((.040,-.065,.055))*gather
   guideL=(-.31,1.10,.02)
+ elif weapon==13:
+  # Two forward horn rays, with a low open supporting palm below the wrist.
+  hand('R',(0,0,1),(1,.15,0),G);hand('L',(.94,.20,.20),(0,1,-.15),G)
+  fingers('R','horn',G,openness=.8*gather);fingers('L','open',G)
+  wr=Vector((.075,1.16,.22))+Vector((0,.008,-.028))*hit+Vector((-.025,-.025,-.030))*gather
+  wl=Vector((-.075,1.12,.18))+Vector((-.015,-.006,-.012))*hit+Vector((-.040,-.035,.020))*gather
+  guideR=(.29,1.04,.08);guideL=(-.29,1.02,.08)
  elif weapon==12:
   hand('R',(.35-.25*hit,.93,.10),(0,0,-1),G);hand('L',(.30,.95,-.05),(1,0,0),G)
   fingers('R','grip',G,openness=.35*gather);fingers('L','open',G,overrides={d:[35*gather,45*gather,20*gather] for d in ['人指','中指','薬指','小指']})
@@ -97,7 +104,7 @@ def make_pose(weapon,phase=0,mode='pose',fan_scale=1):
 pitched=(ROOT/'Tools/Blender/weapon_gestures.py').read_text().split('def make_pitched_pose')[1].split('# Record Blender actions')[0]
 pitched='def make_pitched_pose'+pitched.replace('limit=-30 if weapon==1 else -60','limit=-90 if weapon>=5 else (-30 if weapon==1 else -60)')
 exec(compile(pitched,'pitch-helper','exec'),globals())
-entries=[(5,'Cicada_TwinBlades',.065),(6,'Trine_ThreefoldSeal',.085),(7,'Aegis_AnchorPalms',.11),(8,'Vesper_PrecisionSword',.24),(9,'Thorn_FiveNeedles',.36),(10,'Sundown_SolarRelease',.60),(11,'Rondo_TwinRefrain',.14),(12,'Tempest_VortexPress',.24)]
+entries=[(5,'Cicada_TwinBlades',.065),(6,'Trine_ThreefoldSeal',.085),(7,'Aegis_AnchorPalms',.11),(8,'Vesper_PrecisionSword',.24),(9,'Thorn_FiveNeedles',.36),(10,'Sundown_SolarRelease',.60),(11,'Rondo_TwinRefrain',.14),(12,'Tempest_VortexPress',.24),(13,'Nocturne_NightSeal',.30)]
 # Idempotent re-authoring is confined to the six new action name prefixes.
 if not export_only:
  for action in list(bpy.data.actions):
