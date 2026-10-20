@@ -8,7 +8,7 @@ namespace Unity.MP_FPS.DollSinger
 /// </summary>
 [DefaultExecutionOrder(100)]
 public sealed class DollSingerHaloAim : MonoBehaviour {
-    public enum HaloWeapon { None, Rifle, Revolver, Shotgun, Sniper }
+    public enum HaloWeapon { None, Rifle, Revolver, Shotgun, Sniper, Cicada, Trine, Aegis, Vesper, Thorn, Sundown }
     [Header("Standalone demo equipment (network equipment comes from inventory)")]
     public HaloWeapon localPrimary = HaloWeapon.Rifle;
     public HaloWeapon localSecondary = HaloWeapon.Shotgun;
@@ -19,6 +19,8 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     public RifleHaloVisual rifleVisual;
     public SniperHaloVisual sniperVisual;
     public ShotgunHaloVisual shotgunVisual;
+    public ArsenalHaloVisual[] arsenalVisuals = System.Array.Empty<ArsenalHaloVisual>();
+    public ArsenalHaloVisual ArsenalVisual { get { int i = (int)visualWeapon - 5; return i >= 0 && i < arsenalVisuals.Length ? arsenalVisuals[i] : null; } }
     public LineRenderer[] haloStrokes;
     public LineRenderer[] haloGlowStrokes;
     public Light haloLight;
@@ -102,6 +104,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     [Header("Blender authored whole-arm gestures")]
     [SerializeField] private TextAsset gestureBake;
     private DollSingerBakedGestures bakedGestures;
+    private ILocalArsenalDriver localArsenal;
     private float gestureShotTime = float.NegativeInfinity;
     private float gestureReframeUntil;
     private uint gestureShotTick;
@@ -143,7 +146,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     private int localSniperAmmo = SniperHaloVisual.Capacity;
     private int localRevolverAmmo = 6;
     private float localReloadRemaining;
-    private int weaponAmmo = 6;
+    private int weaponAmmo = 6, gestureBurstIndex;
     private HaloModuleVisual rifleModules, shotgunModules, revolverModules, sniperModules;
     private HaloModuleVisual CreateModuleVisual(Transform parent, bool rifle)
     {
@@ -160,9 +163,11 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         if (!sniperModules && sniperVisual) sniperModules = CreateModuleVisual(sniperVisual.transform, true);
         if (rifleVisual) rifleVisual.SetMagazineCapacity(weapon == HaloWeapon.Rifle ? magazineSize : RifleHaloVisual.Capacity);
         if (shotgunVisual) shotgunVisual.SetModuleProfile(weapon == HaloWeapon.Shotgun ? modules : (ushort)0, weapon == HaloWeapon.Shotgun ? magazineSize : 4);
+        gestureBurstIndex = burstIndex;
         ObserveGestureShot(shotTick);
         SetWeaponEquipped(weapon, ammo);
         weaponAmmo = ammo;
+        if (ArsenalVisual) ArsenalVisual.SetNetworkState(ammo, magazineSize, reloading, reloadProgress, shotTick, reloadTick, reloadTargetAmmo, burstIndex);
         if (weapon == HaloWeapon.Rifle && rifleModules) rifleModules.SetState(modules, ammo, magazineSize, reloading, reloadProgress, reloadTargetAmmo, shotTick, burstIndex);
         if (weapon == HaloWeapon.Shotgun && shotgunModules) shotgunModules.SetState(modules, ammo, magazineSize, reloading, reloadProgress, reloadTargetAmmo, shotTick);
         if (weapon == HaloWeapon.Revolver && revolverModules) revolverModules.SetState(modules, ammo, magazineSize, reloading, reloadProgress, reloadTargetAmmo, shotTick);
@@ -182,10 +187,12 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         if (visualWeapon != weapon && discharge) discharge.Clear();
         if (visualWeapon != weapon)
         {
+            if (!networkControlled) localArsenal?.CancelBurst();
             gestureShotTime = float.NegativeInfinity;
             gestureReframeUntil = Time.time + gestureTransitionSeconds + .04f;
         }
         visualWeapon = weapon;
+        foreach (var visual in arsenalVisuals) if (visual) visual.SetEquipped(visual.weapon == weapon);
         revolverEquipped = weapon == HaloWeapon.Revolver;
         if (haloVisual) haloVisual.gameObject.SetActive(weapon != HaloWeapon.None);
         if (revolverVisual) revolverVisual.SetEquipped(revolverEquipped, ammo);
@@ -208,8 +215,8 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
 
     public uint LightingSettings { get; set; }
     public float AimBlend => aimBlend;
-    public float ScopeMagnification => visualWeapon == HaloWeapon.Sniper && sniperVisual ? sniperVisual.scopeMagnification : 0;
-    private int LocalAmmo(HaloWeapon weapon) => weapon == HaloWeapon.Rifle ? localRifleAmmo : weapon == HaloWeapon.Shotgun ? localShotgunAmmo : weapon == HaloWeapon.Sniper ? localSniperAmmo : localRevolverAmmo;
+    public float ScopeMagnification => visualWeapon == HaloWeapon.Sniper && sniperVisual ? sniperVisual.scopeMagnification : ArsenalVisual ? ArsenalVisual.magnification : 0;
+    private int LocalAmmo(HaloWeapon weapon) => (int)weapon >= 5 ? localArsenal?.Ammo(weapon) ?? 0 : weapon == HaloWeapon.Rifle ? localRifleAmmo : weapon == HaloWeapon.Shotgun ? localShotgunAmmo : weapon == HaloWeapon.Sniper ? localSniperAmmo : localRevolverAmmo;
     public int AimLayerIndex => aimLayerIndex;
 
     public void SetNetworkPresentation(bool aiming, Vector3 direction, Vector3 aimPoint, bool lightEnabled = true)
@@ -231,11 +238,12 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         if (visualWeapon == HaloWeapon.Shotgun && shotgunVisual) shotgunVisual.PlayShot(shotTick);
         if (visualWeapon == HaloWeapon.Rifle && rifleVisual) rifleVisual.PlayShot(shotTick);
         if (visualWeapon == HaloWeapon.Sniper && sniperVisual) sniperVisual.PlayShot(shotTick);
+        if (ArsenalVisual) ArsenalVisual.PlayShot(shotTick);
         PlayDischarge(shotTick);
         if (cosmeticFlight) FireCosmeticBolt(aimPoint);
     }
 
-    private Color WeaponColor => visualWeapon == HaloWeapon.Sniper && sniperVisual ? sniperVisual.lightColor :
+    public Color WeaponColor => ArsenalVisual ? ArsenalVisual.lightColor : visualWeapon == HaloWeapon.Sniper && sniperVisual ? sniperVisual.lightColor :
         revolverEquipped && revolverVisual ? revolverVisual.lightColor :
         visualWeapon == HaloWeapon.Shotgun && shotgunVisual ? shotgunVisual.lightColor : aimedHaloColor;
 
@@ -262,6 +270,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
                 hasGestureParameter = true;
         }
         if (!input) input = GetComponent<DollSingerInput>();
+        localArsenal = GetComponent<ILocalArsenalDriver>();
         var skirtAvoidance = GetComponent<SkirtHandAvoidance>();
         if (skirtAvoidance) skirtAvoidance.haloAim = this;
         if (!animator || !animator.isHuman) {
@@ -341,6 +350,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
             view.SetAimBlend(aimBlend);
             view.SetWeaponAimMagnification(ScopeMagnification);
         }
+        if (ArsenalVisual) ArsenalVisual.SetAimBlend(DollSingerView.AimPoseBlend(aimBlend));
         float poseBlend = DollSingerView.AimPoseBlend(aimBlend);
         if (revolverVisual) revolverVisual.SetAimBlend(poseBlend);
         if (shotgunVisual) shotgunVisual.SetAimBlend(poseBlend);
@@ -352,11 +362,19 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         if (sniperModules) sniperModules.SetAimBlend(poseBlend);
         if (!networkControlled && input)
         {
-            if (localReloadRemaining <= 0f && input.WeaponSlotPressed != 0)
+            if (localReloadRemaining <= 0f && !(localArsenal?.Reloading ?? false) && input.WeaponSlotPressed != 0)
             {
                 var next = input.WeaponSlotPressed == 1 ? localPrimary : input.WeaponSlotPressed == 2 ? localSecondary : localPistol;
                 SetWeaponEquipped(next, LocalAmmo(next));
                 nextLocalShotTime = Time.time + (revolverEquipped ? localRevolverShotInterval : localShotInterval);
+            }
+            if (ArsenalVisual)
+            {
+                if (localArsenal != null && localArsenal.Step(this, visualWeapon, input.FireHeld, input.FirePressed,
+                    input.ReloadPressed, wantsAim && aimBlend > .65f, Time.deltaTime))
+                { gestureShotTime = Time.time; PlayDischarge(); FireCosmeticBolt(); }
+                weaponAmmo = LocalAmmo(visualWeapon);
+                return;
             }
             if (localReloadRemaining > 0f)
             {
@@ -435,9 +453,10 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
             case HaloWeapon.Shotgun when shotgunVisual: reload = shotgunVisual.IsReloading; progress = shotgunVisual.ReloadProgress; break;
             case HaloWeapon.Sniper when sniperVisual: reload = sniperVisual.IsReloading; progress = sniperVisual.ReloadProgress; break;
         }
+        if (ArsenalVisual) { reload = ArsenalVisual.IsReloading; progress = ArsenalVisual.ReloadProgress; }
         Vector3 direction = networkControlled ? networkDirection : playerCamera ? playerCamera.transform.forward : transform.forward;
         float poseBlend = DollSingerView.AimPoseBlend(aimBlend);
-        bakedGestures.Apply((int)visualWeapon, poseBlend, Time.time - gestureShotTime, reload, progress, gestureTransitionSeconds, chest, direction);
+        bakedGestures.Apply((int)visualWeapon, poseBlend, Time.time - gestureShotTime, reload, progress, gestureTransitionSeconds, chest, direction, burstIndex: gestureBurstIndex);
     }
 
     private void LateUpdate() {
@@ -445,7 +464,8 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         { if (view) view.SetGestureHandsActive(false); return; }
         ApplyBakedGestures();
         bool centred = TryGetFirstPersonCamera(out var aimingCamera);
-        if (view) view.SetGestureHandsActive(centred && aimBlend > .001f, visualWeapon == HaloWeapon.Sniper);
+        if (view) view.SetGestureHandsActive(centred && aimBlend > .001f, visualWeapon == HaloWeapon.Sniper,
+            visualWeapon == HaloWeapon.Cicada ? .03f : 0);
         Vector3 centredPosition = centred ? GetFirstPersonHaloPosition(aimingCamera) : Vector3.zero;
         float layoutBlend = DollSingerView.AimPoseBlend(aimBlend);
         float t = layoutBlend * layoutBlend * (3f - 2f * layoutBlend);
@@ -493,7 +513,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
             haloScale / Mathf.Max(0.001f, parentScale.y),
             haloScale / Mathf.Max(0.001f, parentScale.z));
         if (haloStrokes != null) {
-            Color color = visualWeapon == HaloWeapon.Sniper && sniperVisual ? sniperVisual.lightColor : revolverEquipped && revolverVisual ? revolverVisual.lightColor : visualWeapon == HaloWeapon.Shotgun && shotgunVisual ? shotgunVisual.lightColor : visualWeapon == HaloWeapon.Rifle && rifleVisual ? rifleVisual.lightColor : Color.Lerp(idleHaloColor, aimedHaloColor, t);
+            Color color = ArsenalVisual ? ArsenalVisual.lightColor : visualWeapon == HaloWeapon.Sniper && sniperVisual ? sniperVisual.lightColor : revolverEquipped && revolverVisual ? revolverVisual.lightColor : visualWeapon == HaloWeapon.Shotgun && shotgunVisual ? shotgunVisual.lightColor : visualWeapon == HaloWeapon.Rifle && rifleVisual ? rifleVisual.lightColor : Color.Lerp(idleHaloColor, aimedHaloColor, t);
             foreach (var stroke in haloStrokes) {
                 if (!stroke) continue;
                 stroke.startColor = color;
@@ -549,7 +569,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
             return Mathf.Max(.27f, revolverVisual.shotRadius + (revolverVisual.loadedSprite ? revolverVisual.loadedSprite.bounds.extents.magnitude : .1f));
         if (visualWeapon == HaloWeapon.Shotgun && shotgunVisual && shotgunVisual.shell && shotgunVisual.shell.sprite)
             return Mathf.Max(.43f, shotgunVisual.shell.sprite.bounds.extents.magnitude * 1.5f);
-        return .43f;
+        return ArsenalVisual ? .32f : .43f;
     }
 
     private bool TryGetFirstPersonCamera(out Camera ownedCamera)

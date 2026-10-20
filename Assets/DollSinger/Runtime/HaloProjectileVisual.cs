@@ -31,7 +31,7 @@ namespace Unity.MP_FPS.DollSinger
             m_Light.renderMode = LightRenderMode.ForcePixel;
             m_Light.shadows = LightShadows.None;
             m_Light.color = revolver && source.revolverVisual ? source.revolverVisual.lightColor :
-                sniper && source.sniperVisual ? source.sniperVisual.lightColor : shotgun && source.shotgunVisual ? source.shotgunVisual.lightColor : source.aimedHaloColor;
+                sniper && source.sniperVisual ? source.sniperVisual.lightColor : shotgun && source.shotgunVisual ? source.shotgunVisual.lightColor : source.WeaponColor;
             m_Light.intensity = Mathf.Min(6f, Mathf.Max(0f, source.boltLightIntensity)) * (sniper ? 1.25f : .8f);
             if (m_Core)
             {

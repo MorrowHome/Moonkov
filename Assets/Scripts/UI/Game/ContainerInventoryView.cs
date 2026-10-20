@@ -119,6 +119,13 @@ namespace Unity.MP_FPS.Client
                 case "quantum_core":return StashArtKind.QuantumCore; case "black_box":return StashArtKind.BlackBox;
                 case "shotgun":return StashArtKind.HaloShotgun;
                 case "sniper":return StashArtKind.HaloSniper;
+                case "cicada":return StashArtKind.HaloCicada;
+                case "trine":return StashArtKind.HaloTrine;
+                case "aegis":return StashArtKind.HaloAegis;
+                case "vesper":return StashArtKind.HaloVesper;
+                case "thorn":return StashArtKind.HaloThorn;
+                case "sundown":return StashArtKind.HaloSundown;
+
                 case "halo_capacitor":return StashArtKind.HaloCapacitor; case "halo_charge_bridge":return StashArtKind.HaloChargeBridge;
                 case "halo_focus_lens":return StashArtKind.HaloFocusLens; case "halo_fan_array":return StashArtKind.HaloFanArray;
                 case "halo_pulse_controller":return StashArtKind.HaloPulseController; case "halo_hit_marker":return StashArtKind.HaloHitMarker;

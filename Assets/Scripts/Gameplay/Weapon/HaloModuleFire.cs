@@ -26,12 +26,12 @@ namespace Unity.MP_FPS
             state.PistolFireRecovery = Mathf.Max(0, state.PistolFireRecovery - deltaTime);
         }
 
-        private static bool IsPulse(in PredictedPlayerGhost state) =>
-            state.EquippedWeaponID == DollSingerWeapons.Halo &&
+        private static bool IsPulse(in PredictedPlayerGhost state, WeaponData weapon) =>
+            (weapon != null && weapon.BurstCount > 1) || state.EquippedWeaponID == DollSingerWeapons.Halo &&
             ((HaloModule)state.EquippedModules & HaloModule.PulseController) != 0;
 
         private static float Interval(in PredictedPlayerGhost state, WeaponData weapon, bool betweenBursts) =>
-            Mathf.Max(.001f, betweenBursts ? Mathf.Max(.42f, weapon.CooldownInMs) : weapon.CooldownInMs) *
+            Mathf.Max(.001f, weapon.BurstCount > 1 ? (betweenBursts ? weapon.BurstCooldown : weapon.BurstInterval) : betweenBursts ? Mathf.Max(.42f, weapon.CooldownInMs) : weapon.CooldownInMs) *
             RaidHealth.HandlingMultiplier(state);
 
         public static void BeginEquip(ref PredictedPlayerGhost state, WeaponData weapon)
@@ -43,12 +43,12 @@ namespace Unity.MP_FPS
             state.WeaponEquipRemaining = DollSingerWeapons.IsHalo(state.EquippedWeaponID)
                 ? Mathf.Max(0, weapon.EquipTime) * RaidHealth.HandlingMultiplier(state) : 0;
             state.WeaponCooldown = DollSingerWeapons.IsHalo(state.EquippedWeaponID)
-                ? Interval(state, weapon, IsPulse(state)) - recovery : 0;
+                ? Interval(state, weapon, IsPulse(state, weapon)) - recovery : 0;
         }
 
         public static bool TryFire(ref PredictedPlayerGhost state, WeaponData weapon, bool trigger, bool aiming, bool switched)
         {
-            bool pulse = IsPulse(state);
+            bool pulse = IsPulse(state, weapon);
             bool pressed = trigger && !state.BurstTriggerHeld;
             state.BurstTriggerHeld = trigger;
             bool blocked = weapon == null || switched || state.CurrentHealth <= 0 ||
@@ -57,7 +57,7 @@ namespace Unity.MP_FPS
 
             // Semi-auto input is already a press event; pulse rifles receive a held trigger.
             // A single pending press expires quickly and follows the current aim when released.
-            if (((!weapon.Automatic && trigger) || (pulse && pressed)) &&
+            if (((!pulse && !weapon.Automatic && trigger) || (pulse && pressed)) &&
                 (!state.ControllerState.IsReloadingState || state.ReloadTimer <= InputBufferSeconds))
                 state.FireBufferRemaining = InputBufferSeconds;
 
@@ -83,9 +83,9 @@ namespace Unity.MP_FPS
             {
                 if (state.FireBufferRemaining <= 0) return false;
                 state.FireBufferRemaining = 0;
-                state.BurstRemaining = 3;
+                state.BurstRemaining = weapon.BurstCount > 1 ? weapon.BurstCount : 3;
             }
-            state.BurstSequence = 3 - state.BurstRemaining;
+            state.BurstSequence = (weapon.BurstCount > 1 ? weapon.BurstCount : 3) - state.BurstRemaining;
             state.BurstRemaining--;
             return true;
         }
@@ -94,7 +94,7 @@ namespace Unity.MP_FPS
         // a buffered semi-auto press, or a hitch never buys several accelerated shots.
         public static void CommitShot(ref PredictedPlayerGhost state, WeaponData weapon, float deltaTime)
         {
-            bool pulse = IsPulse(state);
+            bool pulse = IsPulse(state, weapon);
             float firedInterval = Interval(state, weapon, pulse && state.BurstSequence == 0);
             float remainder = state.WeaponCooldown - firedInterval;
             bool preserveRemainder = (weapon.Automatic || pulse) && deltaTime <= firedInterval &&

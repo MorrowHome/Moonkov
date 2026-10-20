@@ -5,10 +5,11 @@ namespace Unity.MP_FPS
 {
     public static class DollSingerWeapons
     {
-        public const uint Halo = 2, Revolver = 3, Shotgun = 4, Sniper = 5, None = uint.MaxValue;
-        public static bool IsHalo(uint id) => id == Halo || id == Revolver || id == Shotgun || id == Sniper;
+        public const uint Halo = 2, Revolver = 3, Shotgun = 4, Sniper = 5, Cicada = 6, Trine = 7, Aegis = 8, Vesper = 9, Thorn = 10, Sundown = 11, None = uint.MaxValue;
+        public static bool IsHalo(uint id) => id >= Halo && id <= Sundown;
         public static uint WeaponId(string code) => code == "rifle" || code == "compact" ? Halo :
-            code == "pistol" ? Revolver : code == "shotgun" ? Shotgun : code == "sniper" ? Sniper : None;
+            code == "pistol" ? Revolver : code == "shotgun" ? Shotgun : code == "sniper" ? Sniper :
+            code == "cicada" ? Cicada : code == "trine" ? Trine : code == "aegis" ? Aegis : code == "vesper" ? Vesper : code == "thorn" ? Thorn : code == "sundown" ? Sundown : None;
         private static string Slot(int slot) => slot == 1 ? "Primary" : slot == 2 ? "Secondary" : "Pistol";
         private static int Ammo(InventoryItem item, InventoryGraph graph, WeaponRegistry registry)
         {

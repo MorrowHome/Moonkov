@@ -1,0 +1,17 @@
+cicada: purchased at 30 dust; primary/secondary equip, exact magazine persistence, 2-round partial charge, insufficient energy and both production sprite bindings passed.
+trine: purchased at 42 dust; primary/secondary equip, exact magazine persistence, 2-round partial charge, insufficient energy and both production sprite bindings passed.
+aegis: purchased at 64 dust; primary/secondary equip, exact magazine persistence, 2-round partial charge, insufficient energy and both production sprite bindings passed.
+vesper: purchased at 58 dust; primary/secondary equip, exact magazine persistence, 2-round partial charge, insufficient energy and both production sprite bindings passed.
+thorn: purchased at 50 dust; primary/secondary equip, exact magazine persistence, 2-round partial charge, insufficient energy and both production sprite bindings passed.
+sundown: purchased at 72 dust; primary/secondary equip, exact magazine persistence, 2-round partial charge, insufficient energy and both production sprite bindings passed.
+Trine: held trigger yields exactly 3 shots; 1/2 remaining rounds, sequences 0/1/2, 0.085 s spacing, release/repress, short input buffer, equip gate, reload/death/switch/aim cancellation and deterministic restored-state prediction passed at 60 Hz.
+Shared tick-based spread: 40 ticks per weapon, deterministic rays within configured cone. Thorn = 5 directions, 1 magazine round, 10 energy per replacement round. Sundown at 1 s = 22 m forward, 0.81 m drop.
+Actual ECS health + isolated PhysicsScene AOE: unowned alien damaged once despite two colliders, initialized PMC takes exactly 96 total damage, shooter immune, other PMC is damageable, wall occlusion and cross-scene isolation respected, lethal flags and dead victim filtering passed. Actual swept-radius collision hits thin wall.
+cicada: real Projectile.Advance(server=true) swept collision -> Impact -> ECS damage = 8 from 1 projectile(s). Fixture supplies spawn data, not a network transport.
+trine: real Projectile.Advance(server=true) swept collision -> Impact -> ECS damage = 17 from 1 projectile(s). Fixture supplies spawn data, not a network transport.
+aegis: real Projectile.Advance(server=true) swept collision -> Impact -> ECS damage = 18 from 1 projectile(s). Fixture supplies spawn data, not a network transport.
+vesper: real Projectile.Advance(server=true) swept collision -> Impact -> ECS damage = 42 from 1 projectile(s). Fixture supplies spawn data, not a network transport.
+thorn: real Projectile.Advance(server=true) swept collision -> Impact -> ECS damage = 45 from 5 projectile(s). Fixture supplies spawn data, not a network transport.
+sundown: real Projectile.Advance(server=true) swept collision -> Impact -> ECS damage = 96 from 1 projectile(s). Fixture supplies spawn data, not a network transport.
+Standalone DollSingerPlayer: installed main-assembly driver uses shared burst timing; held Trine fires exactly 3, slot switch retains 21 rounds, finite-battery reload restores 24. This is a cosmetic character, not authoritative combat.
+Legacy halo module rules passed. No live Host/Client or standalone build is implied by these checks.

@@ -76,6 +76,13 @@ namespace Unity.MP_FPS.Inventory
                 new ItemDefinition("pistol", "Halo Revolver", ItemKind.Pistol, 1, 1, 1, .8f),
                 new ItemDefinition("shotgun", "Halo Shotgun", ItemKind.LongGun, 2, 2, 1, 3.2f),
                 new ItemDefinition("sniper", "Halo Sniper", ItemKind.LongGun, 2, 2, 1, 4.5f),
+                new ItemDefinition("cicada", "Cicada / 蝉鸣", ItemKind.LongGun, 2, 2, 1, 2.2f),
+                new ItemDefinition("trine", "Trine / 三律", ItemKind.LongGun, 2, 2, 1, 3.1f),
+                new ItemDefinition("aegis", "Aegis / 天枢", ItemKind.LongGun, 2, 2, 1, 6.2f),
+                new ItemDefinition("vesper", "Vesper / 望舒", ItemKind.LongGun, 2, 2, 1, 3.8f),
+                new ItemDefinition("thorn", "Thorn / 星棘", ItemKind.LongGun, 2, 2, 1, 3.3f),
+                new ItemDefinition("sundown", "Sundown / 坠日", ItemKind.LongGun, 2, 2, 1, 5.2f),
+
                 new ItemDefinition("halo_capacitor", "Expansion capacitor", ItemKind.StorageModule, 1, 1, 1, .2f),
                 new ItemDefinition("halo_charge_bridge", "Rapid charge bridge", ItemKind.StorageModule, 1, 1, 1, .15f),
                 new ItemDefinition("halo_focus_lens", "Focus lens", ItemKind.ShapingModule, 1, 1, 1, .15f),

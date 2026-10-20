@@ -18,8 +18,14 @@ public static class BlenderGestureValidation
         public int fireFrames, reloadFrames;
         public float fireSeconds, pitch;
         public Motion[] aimPoses;
+        public FireVariant[] burstFires;
         public float[] pose, fire, reload;
     }
+    [Serializable] private class FireVariant { public float[] values; }
+    private static bool arsenal;
+    private static int[] OrdinaryWeapons => arsenal ? new[] {0,1,2,4,5,6,7,8,9} : new[] {0,1,2};
+    [MenuItem("Tools/Moonkov/Validate Ten Weapon Gestures In Playing Lab")]
+    public static void RunArsenal() { arsenal = true; Start(); }
     [Serializable] private class Bake { public string revision; public string[] bones; public Motion[] motions; public Quaternion chestBindRotation; }
     private static readonly string Output = "Temp/GestureValidation/Blender";
     public static string Status { get; private set; } = "Not run";
@@ -30,7 +36,8 @@ public static class BlenderGestureValidation
     private static readonly BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
 
     [MenuItem("Tools/Moonkov/Validate Blender Gestures In Playing Lab")]
-    public static void Run()
+    public static void Run() { arsenal = false; Start(); }
+    private static void Start()
     {
         var lab = UnityEngine.Object.FindAnyObjectByType<WeaponGestureLab>();
         if (!EditorApplication.isPlaying || !lab) throw new InvalidOperationException("Play WeaponGestureLab first.");
@@ -85,10 +92,12 @@ public static class BlenderGestureValidation
         if (lab.Reloading)
         {
             float progress = lab.WeaponIndex == 0 ? lab.Halo.rifleVisual.ReloadProgress : lab.WeaponIndex == 1 ? lab.Halo.revolverVisual.ReloadProgress :
-                lab.WeaponIndex == 2 ? lab.Halo.shotgunVisual.ReloadProgress : lab.Halo.sniperVisual.ReloadProgress;
+                lab.WeaponIndex == 2 ? lab.Halo.shotgunVisual.ReloadProgress : lab.WeaponIndex == 3 ? lab.Halo.sniperVisual.ReloadProgress : lab.Halo.ArsenalVisual.ReloadProgress;
             values = low.reload; highValues = high.reload; count = m.reloadFrames; frame = progress * (count - 1);
         }
         else if (age >= 0 && age < m.fireSeconds) { values = low.fire; highValues = high.fire; count = m.fireFrames; frame = age / m.fireSeconds * (count - 1); }
+        if (!lab.Reloading && age >= 0 && age < m.fireSeconds && low.burstFires != null)
+        { int sequence=(int)typeof(DollSingerHaloAim).GetField("gestureBurstIndex",Private).GetValue(lab.Halo); values=low.burstFires[sequence].values; highValues=high.burstFires[sequence].values; }
         int a = Mathf.Clamp(Mathf.FloorToInt(frame), 0, count - 1), b = Mathf.Min(a + 1, count - 1);
         float max = 0;
         for (int i = 0; i < bake.bones.Length; i++)
@@ -101,8 +110,8 @@ public static class BlenderGestureValidation
                 // cannot detect an entire arm pair rolling at steep look angles.
                 float authoredPitch = m.aimPoses == null ? 0 : pitch;
                 expected = Quaternion.LookRotation(aim, Vector3.up) * Quaternion.Euler(-authoredPitch,0,0) * bake.chestBindRotation * expected;
-                // The revolver's tiny common correction aligns interpolated chains.
-                if (lab.WeaponIndex != 1) max = Mathf.Max(max, Quaternion.Angle(expected, bones[bake.bones[i]].rotation));
+                // Directional signs share one common correction across both complete arm chains.
+                if (lab.WeaponIndex != 1 && lab.WeaponIndex != 4 && lab.WeaponIndex != 7) max = Mathf.Max(max, Quaternion.Angle(expected, bones[bake.bones[i]].rotation));
             }
             else max = Mathf.Max(max, Quaternion.Angle(expected, bones[bake.bones[i]].localRotation));
         }
@@ -152,19 +161,19 @@ public static class BlenderGestureValidation
         {
             var uv = lab.PlayerView.GestureCamera.WorldToViewportPoint(bone.position);
             Require(uv.z > .015f && uv.x > .01f && uv.x < .99f && uv.y > .01f && uv.y < .99f, "Finger left owner viewport: " + bone.name);
-            if (lab.WeaponIndex < 3) Require(uv.y < .42f, "Hand entered aiming area: " + bone.name);
+            if (lab.WeaponIndex != 3) Require(uv.y < .42f, "Hand entered aiming area: " + bone.name);
         }
     }
     private static void PointAtAim(WeaponGestureLab lab, Dictionary<string, Transform> bones)
     {
-        if (lab.WeaponIndex != 1) return;
+        if (lab.WeaponIndex != 1 && lab.WeaponIndex != 4 && lab.WeaponIndex != 7) return;
         var camera = lab.PlayerView.GestureCamera;
         Vector2 a = camera.WorldToViewportPoint(bones["人指１.R"].position);
         Vector2 b = camera.WorldToViewportPoint(bones["人指先.R"].position);
         // Use pixel coordinates so non-square viewports do not distort the angle.
         var pixel = new Vector2(camera.pixelWidth, camera.pixelHeight);
         Require(Vector2.Angle(Vector2.Scale(b-a,pixel), Vector2.Scale(Vector2.one*.5f-a,pixel)) < 1f,
-            "Revolver index does not point at crosshair");
+            "Directional index does not point at crosshair: weapon "+lab.WeaponIndex);
     }
     // Test the rendered arm triangles too: sleeves and forearms must leave the
     // central 12% square clear, even when all finger joints are below it.
@@ -257,15 +266,16 @@ public static class BlenderGestureValidation
         armRenderer = lab.Halo.GetComponentsInChildren<SkinnedMeshRenderer>(true).First(x => x.name == "FirstPersonGestureArms (Runtime)");
         armSurface = new Mesh(); armTriangles = armRenderer.sharedMesh.triangles;
         float error = 0, fanDistance = 0;
-        for (int weapon = 0; weapon < 4; weapon++)
+        for (int weapon = 0; weapon < (arsenal ? 10 : 4); weapon++)
         {
             lab.SelectWeapon(weapon); yield return new WaitForSeconds(.6f); yield return new WaitForEndOfFrame();
             error = Mathf.Max(error, Compare(bake, lab, bones)); Visible(lab, bones); ClearAim(lab); PointAtAim(lab, bones);
+            FingerFan(lab,bones);
             if (weapon == 3) Shape(bones, lab.PlayerView.GestureCamera, report);
             ScreenCapture.CaptureScreenshot(Path.GetFullPath(Output + $"/{weapon + 1}-idle.png")); yield return new WaitForEndOfFrame();
             Vector3 offhand = bones["手首.L"].position;
             lab.Fire(); float start = Time.time; bool captured = false;
-            while (Time.time - start < bake.motions[weapon].fireSeconds + .04f)
+            while (Time.time - start < Mathf.Max(bake.motions[weapon].fireSeconds, weapon == 5 ? .3f : 0) + .04f)
             {
                 yield return new WaitForEndOfFrame();
                 error = Mathf.Max(error, Compare(bake, lab, bones)); Visible(lab, bones); ClearAim(lab); PointAtAim(lab, bones);
@@ -280,6 +290,7 @@ public static class BlenderGestureValidation
                 yield return new WaitForEndOfFrame();
                 error = Mathf.Max(error, Compare(bake, lab, bones)); Visible(lab, bones); ClearAim(lab); PointAtAim(lab, bones);
             }
+            if (weapon >= 4) SaveViews(lab, HaloArsenal.Entries[weapon-4].Code);
             report.Add($"weapon {weapon + 1}: idle, fire, reload; all four cameras active; exact local rotations and owner projection passed");
         }
         Require(fanDistance > .055f, "Revolver offhand did not fan the hammer: " + fanDistance);
@@ -287,18 +298,19 @@ public static class BlenderGestureValidation
         // The normal weapons retain a clear aiming window at steep pitch and
         // both common aspect ratios. Inspect the actual deformed arm triangles.
         foreach (float aspect in new[] { 16f/9f, 4f/3f })
-        foreach (int weapon in new[] { 0, 1, 2 })
+        foreach (int weapon in OrdinaryWeapons)
         foreach (float pitch in new[] { -80f, -65f, -40f, 0f, 15f, 30f, 45f, 65f, 70f, 75f, 80f })
         {
             lab.SelectWeapon(weapon); root.Q<Slider>("pitch").value = pitch;
             lab.PlayerView.camera.aspect = aspect;
             yield return new WaitForSeconds(.4f); yield return new WaitForEndOfFrame();
             error = Mathf.Max(error,Compare(bake,lab,bones)); Visible(lab, bones); ClearAim(lab); PointAtAim(lab, bones); HeadLook(lab, bones);
+            FingerFan(lab,bones);
         }
         // Reproduce looking up continuously, rather than only checking settled
         // endpoints. The hand projection must not retain another angle's fit.
         lab.PlayerView.camera.aspect = 16f/9f;
-        foreach(int weapon in new[]{0,1,2})
+        foreach(int weapon in OrdinaryWeapons)
         {
             lab.SelectWeapon(weapon); root.Q<Slider>("pitch").value = 0;
             yield return new WaitForSeconds(.4f);
@@ -390,11 +402,35 @@ public static class BlenderGestureValidation
         Status = "PASS"; File.WriteAllLines(Output + "/checks.txt", report); Debug.Log("Blender gesture validation PASS: " + string.Join("\n", report));
     }
 
+    internal static void SaveViews(WeaponGestureLab lab, string code)
+    {
+        var cameras = new[] { lab.PlayerView.camera }.Concat(lab.Observers).ToArray();
+        for (int i=0;i<cameras.Length;i++)
+        {
+            var previous=RenderTexture.active; RenderTexture.active=cameras[i].targetTexture;
+            var texture=new Texture2D(cameras[i].targetTexture.width,cameras[i].targetTexture.height,TextureFormat.RGB24,false);
+            texture.ReadPixels(new Rect(0,0,texture.width,texture.height),0,0);texture.Apply();
+            File.WriteAllBytes(Output+"/"+code+"-"+new[]{"owner","front","side","back"}[i]+".png",texture.EncodeToPNG());
+            UnityEngine.Object.Destroy(texture);RenderTexture.active=previous;
+        }
+    }
+    private static void FingerFan(WeaponGestureLab lab, Dictionary<string,Transform> bones)
+    {
+        if(lab.WeaponIndex!=5&&lab.WeaponIndex!=8)return;
+        var names=lab.WeaponIndex==5?new[]{"人指先.R","中指先.R","薬指先.R"}:new[]{"親指先.R","人指先.R","中指先.R","薬指先.R","小指先.R"};
+        var camera=lab.PlayerView.GestureCamera;
+        var pixel=new Vector2(camera.pixelWidth,camera.pixelHeight);
+        for(int i=0;i<names.Length;i++)for(int j=i+1;j<names.Length;j++)
+        {
+            Vector2 a=camera.WorldToViewportPoint(bones[names[i]].position),b=camera.WorldToViewportPoint(bones[names[j]].position);
+            Require(Vector2.Scale(a-b,pixel).magnitude>10,"Fan fingers overlap in first person: weapon "+lab.WeaponIndex+" "+names[i]+"/"+names[j]);
+        }
+    }
     private static IEnumerator CheckOrdinaryTransitions(WeaponGestureLab lab, Dictionary<string, Transform> bones,
         VisualElement root, List<string> report)
     {
         int frames = 0;
-        foreach (int weapon in new[] { 0, 1, 2 })
+        foreach (int weapon in OrdinaryWeapons)
         {
             lab.SelectWeapon(weapon);
             foreach (float pitch in new[] { -65f, 0f, 65f })
@@ -423,7 +459,7 @@ public static class BlenderGestureValidation
         try
         {
             foreach (float step in new[] { 0f, 1f/15f })
-            foreach (int weapon in new[] { 0, 1, 2 })
+            foreach (int weapon in OrdinaryWeapons)
             {
                 Time.captureDeltaTime = step; lab.SelectWeapon(weapon);
                 root.Q<Toggle>("aim").value = false; yield return new WaitForSeconds(.4f);
@@ -444,7 +480,7 @@ public static class BlenderGestureValidation
         }
         finally { Time.captureDeltaTime = captureDelta; }
         root.Q<Toggle>("aim").value = true; yield return new WaitForSeconds(.5f);
-        report.Add($"Rifle/revolver/shotgun aim transitions: {frames} rendered frames, pitch -65/0/+65, 16:9 / 4:3; central skinned arm clearance throughout raising/lowering. 144 interrupted aim toggles at 40/80/140/220 ms across normal and simulated 15 Hz steps; pose before zoom and unzoom before lowering; visible settled hands and revolver pointing preserved.");
+        report.Add($"{OrdinaryWeapons.Length} ordinary weapon aim transitions: {frames} rendered frames, pitch -65/0/+65, 16:9 / 4:3; central skinned arm clearance throughout raising/lowering. {OrdinaryWeapons.Length*48} interrupted aim toggles at 40/80/140/220 ms across normal and simulated 15 Hz steps; pose before zoom and unzoom before lowering; visible settled hands and revolver pointing preserved.");
     }
 
     private static IEnumerator CheckSniperTransitions(WeaponGestureLab lab, Dictionary<string, Transform> bones,

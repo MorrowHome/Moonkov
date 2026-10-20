@@ -36,6 +36,12 @@ namespace Unity.MP_FPS
             DollSingerWeapons.Revolver => Revolver,
             DollSingerWeapons.Shotgun => Shotgun,
             DollSingerWeapons.Sniper => Sniper,
+            DollSingerWeapons.Cicada => Rifle,
+            DollSingerWeapons.Trine => Rifle,
+            DollSingerWeapons.Aegis => Rifle,
+            DollSingerWeapons.Vesper => Sniper,
+            DollSingerWeapons.Thorn => Shotgun,
+            DollSingerWeapons.Sundown => Shotgun,
             _ => null
         };
     }

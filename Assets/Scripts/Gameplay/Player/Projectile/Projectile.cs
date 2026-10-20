@@ -258,11 +258,9 @@ namespace Unity.MP_FPS
             byte damageFlags = 0;
             if (m_Weapon.Behavior == ProjectileBehavior.AreaOfEffect)
             {
-                var damaged = new HashSet<Entity>();
-                var colliders = UnityEngine.Physics.OverlapSphere(hit.point, m_Weapon.AoeRadius, LayerMask.GetMask("ServerPlayer"));
-                foreach (var collider in colliders)
-                    if (GhostGameObject.TryFindGhostGameObject(collider.gameObject, out var target) && damaged.Add(target.LinkedEntity))
-                        Damage(target, players, owners, BodyPart.Chest);
+                ProjectileBlast.Apply(GhostGameObject.World, gameObject.scene.GetPhysicsScene(),
+                    hit.point+hit.normal*.03f, m_Weapon.AoeRadius, m_Weapon.Damage,
+                    m_Data.OwnerNetworkId, GhostGameObject.GetCurrentTick(), out damageFlags);
             }
             else if (GhostGameObject.TryFindGhostGameObject(hit.collider.gameObject, out var target))
                 damageFlags = Damage(target, players, owners,
@@ -284,13 +282,14 @@ namespace Unity.MP_FPS
 
         private byte Damage(GhostGameObject target, ComponentLookup<PredictedPlayerGhost> players, ComponentLookup<GhostOwner> owners, BodyPart part)
         {
-            if (target.World != GhostGameObject.World || !players.HasComponent(target.LinkedEntity) || !owners.HasComponent(target.LinkedEntity)) return 0;
-            int owner = owners[target.LinkedEntity].NetworkId;
-            if (owner == m_Data.OwnerNetworkId) return 0;
+            if (target.World != GhostGameObject.World || !players.HasComponent(target.LinkedEntity)) return 0;
+            bool hasOwner = owners.HasComponent(target.LinkedEntity);
+            int owner = hasOwner ? owners[target.LinkedEntity].NetworkId : int.MinValue;
+            if (hasOwner && owner == m_Data.OwnerNetworkId) return 0;
             var player = players.GetRefRW(target.LinkedEntity);
             if (player.ValueRO.CurrentHealth <= 0 || m_Weapon.Damage <= 0) return 0;
             RaidHealth.Damage(ref player.ValueRW, part, m_Weapon.Damage, GhostGameObject.GetCurrentTick());
-            if (player.ValueRO.CurrentHealth <= 0 && LeaderboardManager.Instance != null)
+            if (player.ValueRO.CurrentHealth <= 0 && hasOwner && LeaderboardManager.Instance != null)
                 LeaderboardManager.Instance.AddKill(m_Data.OwnerNetworkId, owner);
             return (byte)(player.ValueRO.CurrentHealth <= 0 ? 3 : 1);
         }

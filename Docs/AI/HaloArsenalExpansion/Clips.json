@@ -1,0 +1,98 @@
+[
+  {
+    "weapon": "cicada",
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 1280,
+        "height": 720,
+        "nb_frames": "81"
+      }
+    ],
+    "format": {
+      "duration": "3.375000"
+    }
+  },
+  {
+    "weapon": "trine",
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 1280,
+        "height": 720,
+        "nb_frames": "93"
+      }
+    ],
+    "format": {
+      "duration": "3.875000"
+    }
+  },
+  {
+    "weapon": "aegis",
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 1280,
+        "height": 720,
+        "nb_frames": "141"
+      }
+    ],
+    "format": {
+      "duration": "5.875000"
+    }
+  },
+  {
+    "weapon": "vesper",
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 1280,
+        "height": 720,
+        "nb_frames": "98"
+      }
+    ],
+    "format": {
+      "duration": "4.083333"
+    }
+  },
+  {
+    "weapon": "thorn",
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 1280,
+        "height": 720,
+        "nb_frames": "100"
+      }
+    ],
+    "format": {
+      "duration": "4.166667"
+    }
+  },
+  {
+    "weapon": "sundown",
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 1280,
+        "height": 720,
+        "nb_frames": "122"
+      }
+    ],
+    "format": {
+      "duration": "5.083333"
+    }
+  }
+]

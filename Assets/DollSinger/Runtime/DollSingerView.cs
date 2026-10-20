@@ -78,11 +78,11 @@ public class DollSingerView : MonoBehaviour
     public Camera GestureCamera => gestureHands?.Camera;
     public void FrameGestureHands(bool force = false) => gestureHands?.FrameHands(force);
     public bool GestureHandsActive => gestureHands != null && gestureHands.Active;
-    public void SetGestureHandsActive(bool active, bool viewfinder = false)
+    public void SetGestureHandsActive(bool active, bool viewfinder = false, float verticalOffset = 0)
     {
         gestureHands?.Present(active && firstPerson && isActiveAndEnabled && camera && camera.isActiveAndEnabled,
             viewfinder && camera ? camera.fieldOfView : gestureFieldOfView, camera, viewfinder,
-            AimPoseBlend(aimBlend));
+            AimPoseBlend(aimBlend), verticalOffset);
     }
 
     // Finish raising the gesture before zooming. Reverse the same timeline
