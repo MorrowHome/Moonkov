@@ -1,0 +1,2803 @@
+{
+  "output": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR19",
+  "formal": "Assets/MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusGameScene.unity",
+  "formalBeforeSHA256": "c180199aef175a7af4b0fd24ce0dc75c8a572439e8c7946c3480ff37d6cd40d4",
+  "priorPrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+  "priorPrefabSHA256": "ebe9371eb93439f6036d3b73bfe7c9a9ec89f3f0abebe030c0f471a0444df35e",
+  "sourceSHA256": "b61cfb1c9e1b35fad0b3a1d287b3ddda1845c448397e0511fae00367f4c7acdc",
+  "nativeManifestSHA256": "2dbbf13092ca0b1ed84ee1c45556fb86678c79ec127dac69b453978f43486cc7",
+  "objects": [
+    {
+      "name": "R18_Court_East_Solid_Return",
+      "key": "327b99bf7b30",
+      "exportObject": "GX_327b99bf7b30_R18_Court_East_Solid_Return",
+      "partition": "R19_00_REPLACEMENT_MESHES_DO_NOT_INSTANTIATE",
+      "vertices": 324,
+      "triangles": 108,
+      "materials": [
+        "R19_MineralBase_PRIVATE_PBR"
+      ],
+      "sha256": "6f3164d0ddf2ad0cb6b1b0cdc27188b8ae64393b41d7d398e8493416e41dea73",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1751.760009765625,
+          205.27963256835938,
+          2261.39990234375
+        ],
+        [
+          1752.0,
+          206.47962951660156,
+          2265.800048828125
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R18_Wall_Lower_East_South",
+      "key": "a1f63b3f4591",
+      "exportObject": "GX_a1f63b3f4591_R18_Wall_Lower_East_South",
+      "partition": "R19_00_REPLACEMENT_MESHES_DO_NOT_INSTANTIATE",
+      "vertices": 324,
+      "triangles": 108,
+      "materials": [
+        "R19_CoatedPanel_PRIVATE_PBR"
+      ],
+      "sha256": "f46ccb90ecfb6b97954765c306b3ff6343634db27ba77396d4b5ad6ab633f558",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1749.1600341796875,
+          204.39962768554688,
+          2253.39990234375
+        ],
+        [
+          1749.5,
+          208.5796356201172,
+          2257.85009765625
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R18_Wall_Lower_Entry_Header",
+      "key": "3b3f2df7ff32",
+      "exportObject": "GX_3b3f2df7ff32_R18_Wall_Lower_Entry_Header",
+      "partition": "R19_00_REPLACEMENT_MESHES_DO_NOT_INSTANTIATE",
+      "vertices": 324,
+      "triangles": 108,
+      "materials": [
+        "R19_CoatedPanel_PRIVATE_PBR"
+      ],
+      "sha256": "33ce40b51a78fb9b1e5ef502b1afb4ca7e58bf3bf06c830ac195c74589e45966",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1749.1600341796875,
+          206.9996337890625,
+          2257.85009765625
+        ],
+        [
+          1749.5,
+          208.5796356201172,
+          2259.64990234375
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R18_Wall_South_East_Pier",
+      "key": "f686b841de59",
+      "exportObject": "GX_f686b841de59_R18_Wall_South_East_Pier",
+      "partition": "R19_00_REPLACEMENT_MESHES_DO_NOT_INSTANTIATE",
+      "vertices": 324,
+      "triangles": 108,
+      "materials": [
+        "R19_CoatedPanel_PRIVATE_PBR"
+      ],
+      "sha256": "01e0c4fb16b2daa2be66262a61d31ae8e93fa629688778b152a70bb65bd9826e",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1748.4599609375,
+          204.39962768554688,
+          2253.39990234375
+        ],
+        [
+          1749.5,
+          208.5796356201172,
+          2253.760009765625
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R18_Wall_South_Vent_Header",
+      "key": "bef5ec1e3e99",
+      "exportObject": "GX_bef5ec1e3e99_R18_Wall_South_Vent_Header",
+      "partition": "R19_00_REPLACEMENT_MESHES_DO_NOT_INSTANTIATE",
+      "vertices": 324,
+      "triangles": 108,
+      "materials": [
+        "R19_CoatedPanel_PRIVATE_PBR"
+      ],
+      "sha256": "0347cc4f89155476e9e61b3128284ad159036e3eb31deb315760e24df8df9c25",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1745.1400146484375,
+          207.4496307373047,
+          2253.39990234375
+        ],
+        [
+          1748.4599609375,
+          208.5796356201172,
+          2253.760009765625
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R18_Wall_South_Vent_Sill",
+      "key": "8c43f03ee020",
+      "exportObject": "GX_8c43f03ee020_R18_Wall_South_Vent_Sill",
+      "partition": "R19_00_REPLACEMENT_MESHES_DO_NOT_INSTANTIATE",
+      "vertices": 324,
+      "triangles": 108,
+      "materials": [
+        "R19_CoatedPanel_PRIVATE_PBR"
+      ],
+      "sha256": "106e70102061658e497804b1cfe96905c81a1bff4dafd2ae9525a4234f85eb65",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1745.1400146484375,
+          204.39962768554688,
+          2253.39990234375
+        ],
+        [
+          1748.4599609375,
+          205.0496368408203,
+          2253.760009765625
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R18_Wall_South_West_Pier",
+      "key": "47fef11fc674",
+      "exportObject": "GX_47fef11fc674_R18_Wall_South_West_Pier",
+      "partition": "R19_00_REPLACEMENT_MESHES_DO_NOT_INSTANTIATE",
+      "vertices": 324,
+      "triangles": 108,
+      "materials": [
+        "R19_CoatedPanel_PRIVATE_PBR"
+      ],
+      "sha256": "2ac9a1d3db3cbfef5577d5ab152fb65e4c14fce2def10dc6c954bd809023b8a8",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1744.0999755859375,
+          204.39962768554688,
+          2253.39990234375
+        ],
+        [
+          1745.1400146484375,
+          208.5796356201172,
+          2253.760009765625
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R18_Wall_Upper_East_South",
+      "key": "c363494d40e7",
+      "exportObject": "GX_c363494d40e7_R18_Wall_Upper_East_South",
+      "partition": "R19_00_REPLACEMENT_MESHES_DO_NOT_INSTANTIATE",
+      "vertices": 324,
+      "triangles": 108,
+      "materials": [
+        "R19_CoatedPanel_PRIVATE_PBR"
+      ],
+      "sha256": "c3582971d4cfaae0dcc78114759490ac90ec64aee6b8c49ea726dd118bc15b98",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1749.1600341796875,
+          205.2996368408203,
+          2259.89990234375
+        ],
+        [
+          1749.5,
+          210.0496368408203,
+          2263.199951171875
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R18_Wall_Upper_Entry_Header",
+      "key": "0a7ad100d155",
+      "exportObject": "GX_0a7ad100d155_R18_Wall_Upper_Entry_Header",
+      "partition": "R19_00_REPLACEMENT_MESHES_DO_NOT_INSTANTIATE",
+      "vertices": 324,
+      "triangles": 108,
+      "materials": [
+        "R19_CoatedPanel_PRIVATE_PBR"
+      ],
+      "sha256": "c9ca1385e130288eda138df0cb315f2babcd8c7bbe6b8223d2a872ec7553f85e",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1749.1600341796875,
+          207.89962768554688,
+          2263.199951171875
+        ],
+        [
+          1749.5,
+          210.0496368408203,
+          2265.0
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R19_Access_Cover_Gasket_Bottom",
+      "key": "f102a6af1ce0",
+      "exportObject": "GX_f102a6af1ce0_R19_Access_Cover_Gasket_Bottom",
+      "partition": "R19_01_ADDITIVE_FACADE",
+      "vertices": 36,
+      "triangles": 12,
+      "materials": [
+        "R19_Recessed_Seal_PRIVATE"
+      ],
+      "sha256": "322cd211aec5d22b40d4cb0b0d6c9e990b13ef345566a4404bb793b1accd0d66",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1749.52001953125,
+          205.3776397705078,
+          2256.81689453125
+        ],
+        [
+          1749.5350341796875,
+          205.3986358642578,
+          2257.472900390625
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R19_Access_Cover_Gasket_Left",
+      "key": "973689699dc6",
+      "exportObject": "GX_973689699dc6_R19_Access_Cover_Gasket_Left",
+      "partition": "R19_01_ADDITIVE_FACADE",
+      "vertices": 36,
+      "triangles": 12,
+      "materials": [
+        "R19_Recessed_Seal_PRIVATE"
+      ],
+      "sha256": "e01d5608cc56919be7ae918cc0d27fa10aefba376f3172654b093a6b235512b6",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1749.52001953125,
+          205.379638671875,
+          2256.81689453125
+        ],
+        [
+          1749.5350341796875,
+          206.2496337890625,
+          2256.837890625
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R19_Access_Cover_Gasket_Right",
+      "key": "e3a1ff2e0bfe",
+      "exportObject": "GX_e3a1ff2e0bfe_R19_Access_Cover_Gasket_Right",
+      "partition": "R19_01_ADDITIVE_FACADE",
+      "vertices": 36,
+      "triangles": 12,
+      "materials": [
+        "R19_Recessed_Seal_PRIVATE"
+      ],
+      "sha256": "7bd1cbcdfb6b37992b2099cc206b8f886ec29ffa3b967b815bc4ad00d3c2b5e0",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1749.52001953125,
+          205.379638671875,
+          2257.451904296875
+        ],
+        [
+          1749.5350341796875,
+          206.2496337890625,
+          2257.472900390625
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R19_Access_Cover_Gasket_Top",
+      "key": "9b2ad1fe73a6",
+      "exportObject": "GX_9b2ad1fe73a6_R19_Access_Cover_Gasket_Top",
+      "partition": "R19_01_ADDITIVE_FACADE",
+      "vertices": 36,
+      "triangles": 12,
+      "materials": [
+        "R19_Recessed_Seal_PRIVATE"
+      ],
+      "sha256": "374f74a6793767f15eb618bea378c883193ee2cfe67281717ba915ccdb50df2c",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1749.52001953125,
+          206.23162841796875,
+          2256.81689453125
+        ],
+        [
+          1749.5350341796875,
+          206.2526397705078,
+          2257.472900390625
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R19_Access_Cover_Grip_Recess",
+      "key": "475c1f526ef1",
+      "exportObject": "GX_475c1f526ef1_R19_Access_Cover_Grip_Recess",
+      "partition": "R19_01_ADDITIVE_FACADE",
+      "vertices": 324,
+      "triangles": 108,
+      "materials": [
+        "R19_Recessed_Seal_PRIVATE"
+      ],
+      "sha256": "67608168497ff55ae82b37e26383c5b248fa8af161559c9791d31ca1ea43b5ce",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1749.54296875,
+          205.6996307373047,
+          2257.340087890625
+        ],
+        [
+          1749.5570068359375,
+          205.879638671875,
+          2257.385009765625
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R19_Access_Cover_Grip_Used_Lip_0",
+      "key": "5f0e37f64bbf",
+      "exportObject": "GX_5f0e37f64bbf_R19_Access_Cover_Grip_Used_Lip_0",
+      "partition": "R19_01_ADDITIVE_FACADE",
+      "vertices": 324,
+      "triangles": 108,
+      "materials": [
+        "R05_exposed_alloy"
+      ],
+      "sha256": "717f058dc969962a28740128740e54d276f5e0426085455430bf49470aff1e2e",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1749.5469970703125,
+          205.70362854003906,
+          2257.343017578125
+        ],
+        [
+          1749.5589599609375,
+          205.71163940429688,
+          2257.382080078125
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R19_Access_Cover_Grip_Used_Lip_1",
+      "key": "849efa833604",
+      "exportObject": "GX_849efa833604_R19_Access_Cover_Grip_Used_Lip_1",
+      "partition": "R19_01_ADDITIVE_FACADE",
+      "vertices": 324,
+      "triangles": 108,
+      "materials": [
+        "R05_exposed_alloy"
+      ],
+      "sha256": "4d0d08ca4adf1c1c255465bd999643e2cc20875173f3f9d8a2ba2245738dcc53",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1749.5469970703125,
+          205.86863708496094,
+          2257.343017578125
+        ],
+        [
+          1749.5589599609375,
+          205.8766326904297,
+          2257.382080078125
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R19_Captive_Latch_Polished_Seat_00",
+      "key": "7e9e5b808f7e",
+      "exportObject": "GX_7e9e5b808f7e_R19_Captive_Latch_Polished_Seat_00",
+      "partition": "R19_01_ADDITIVE_FACADE",
+      "vertices": 324,
+      "triangles": 108,
+      "materials": [
+        "R05_exposed_alloy"
+      ],
+      "sha256": "4aec41d782419ddbcc3edeef3286ca6db8540cef02b181aec375a9c8b013befe",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1749.5450439453125,
+          205.45663452148438,
+          2256.886962890625
+        ],
+        [
+          1749.5560302734375,
+          205.48263549804688,
+          2256.9130859375
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R19_Captive_Latch_Polished_Seat_01",
+      "key": "4d69a0655650",
+      "exportObject": "GX_4d69a0655650_R19_Captive_Latch_Polished_Seat_01",
+      "partition": "R19_01_ADDITIVE_FACADE",
+      "vertices": 324,
+      "triangles": 108,
+      "materials": [
+        "R05_exposed_alloy"
+      ],
+      "sha256": "82875d29dd8d3b8f8f3deb459ebb8726660b01993370f1647e616216c25126ec",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1749.5450439453125,
+          205.45663452148438,
+          2257.376953125
+        ],
+        [
+          1749.5560302734375,
+          205.48263549804688,
+          2257.403076171875
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R19_Captive_Latch_Polished_Seat_02",
+      "key": "8b96367254d1",
+      "exportObject": "GX_8b96367254d1_R19_Captive_Latch_Polished_Seat_02",
+      "partition": "R19_01_ADDITIVE_FACADE",
+      "vertices": 324,
+      "triangles": 108,
+      "materials": [
+        "R05_exposed_alloy"
+      ],
+      "sha256": "fe227ba51bf8cd504232628eee13acbae59e180dbbff6242eafa64e9b6d2c0fc",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1749.5450439453125,
+          206.14663696289062,
+          2256.886962890625
+        ],
+        [
+          1749.5560302734375,
+          206.17263793945312,
+          2256.9130859375
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R19_Captive_Latch_Polished_Seat_03",
+      "key": "da2196b84722",
+      "exportObject": "GX_da2196b84722_R19_Captive_Latch_Polished_Seat_03",
+      "partition": "R19_01_ADDITIVE_FACADE",
+      "vertices": 324,
+      "triangles": 108,
+      "materials": [
+        "R05_exposed_alloy"
+      ],
+      "sha256": "c7b224acd725c84a8d16396281b5507f4d72556450c668a001a77a75451de987",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1749.5450439453125,
+          206.14663696289062,
+          2257.376953125
+        ],
+        [
+          1749.5560302734375,
+          206.17263793945312,
+          2257.403076171875
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R19_Captive_Latch_Recess_00",
+      "key": "8091fca87a1a",
+      "exportObject": "GX_8091fca87a1a_R19_Captive_Latch_Recess_00",
+      "partition": "R19_01_ADDITIVE_FACADE",
+      "vertices": 324,
+      "triangles": 108,
+      "materials": [
+        "R19_Recessed_Seal_PRIVATE"
+      ],
+      "sha256": "2bb4d5a40030475dbe583742f17837cfb6dcf2c73908fe1db0d763ff1d0b703b",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1749.552001953125,
+          205.46713256835938,
+          2256.89306640625
+        ],
+        [
+          1749.5579833984375,
+          205.47213745117188,
+          2256.906982421875
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R19_Captive_Latch_Recess_01",
+      "key": "ac7d82af8a89",
+      "exportObject": "GX_ac7d82af8a89_R19_Captive_Latch_Recess_01",
+      "partition": "R19_01_ADDITIVE_FACADE",
+      "vertices": 324,
+      "triangles": 108,
+      "materials": [
+        "R19_Recessed_Seal_PRIVATE"
+      ],
+      "sha256": "a2ba65cd77180635ea212dd0823e835153f76f8386fb05076fc5a349571d988d",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1749.552001953125,
+          205.46713256835938,
+          2257.383056640625
+        ],
+        [
+          1749.5579833984375,
+          205.47213745117188,
+          2257.39697265625
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R19_Captive_Latch_Recess_02",
+      "key": "22a6d26f8cbb",
+      "exportObject": "GX_22a6d26f8cbb_R19_Captive_Latch_Recess_02",
+      "partition": "R19_01_ADDITIVE_FACADE",
+      "vertices": 324,
+      "triangles": 108,
+      "materials": [
+        "R19_Recessed_Seal_PRIVATE"
+      ],
+      "sha256": "5d5414dd954ca91ece640c7a5ef8e746692f4da8cd8d76b6993a66d84b486625",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1749.552001953125,
+          206.15713500976562,
+          2256.89306640625
+        ],
+        [
+          1749.5579833984375,
+          206.16213989257812,
+          2256.906982421875
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R19_Captive_Latch_Recess_03",
+      "key": "13aa289f7f00",
+      "exportObject": "GX_13aa289f7f00_R19_Captive_Latch_Recess_03",
+      "partition": "R19_01_ADDITIVE_FACADE",
+      "vertices": 324,
+      "triangles": 108,
+      "materials": [
+        "R19_Recessed_Seal_PRIVATE"
+      ],
+      "sha256": "a5f4fefa140a1fc126e89951cc04501f9c9614cdda1d8a34c07d9a37acf6bb24",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1749.552001953125,
+          206.15713500976562,
+          2257.383056640625
+        ],
+        [
+          1749.5579833984375,
+          206.16213989257812,
+          2257.39697265625
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R19_Lower_East_Main_Cassette_01",
+      "key": "fb178f3bdcfc",
+      "exportObject": "GX_fb178f3bdcfc_R19_Lower_East_Main_Cassette_01",
+      "partition": "R19_01_ADDITIVE_FACADE",
+      "vertices": 540,
+      "triangles": 180,
+      "materials": [
+        "R19_CoatedPanel_PRIVATE_PBR"
+      ],
+      "sha256": "7f7b1449c88693706a389a668895236486323a6cee1330613895fe95d30454da",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1749.489990234375,
+          205.1696319580078,
+          2253.4599609375
+        ],
+        [
+          1749.531982421875,
+          208.0846405029297,
+          2254.889892578125
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R19_Lower_East_Main_Cassette_02",
+      "key": "9a2e5c1c11c9",
+      "exportObject": "GX_9a2e5c1c11c9_R19_Lower_East_Main_Cassette_02",
+      "partition": "R19_01_ADDITIVE_FACADE",
+      "vertices": 540,
+      "triangles": 180,
+      "materials": [
+        "R19_CoatedPanel_PRIVATE_PBR"
+      ],
+      "sha256": "405db4f64402baabcc9187cc4c2861486b7ce487b0ba548231ebfbb4c48406d9",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1749.489990234375,
+          205.1696319580078,
+          2254.9150390625
+        ],
+        [
+          1749.531982421875,
+          208.0846405029297,
+          2256.360107421875
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R19_Lower_East_Main_Cassette_03",
+      "key": "bb1ee606f39f",
+      "exportObject": "GX_bb1ee606f39f_R19_Lower_East_Main_Cassette_03",
+      "partition": "R19_01_ADDITIVE_FACADE",
+      "vertices": 540,
+      "triangles": 180,
+      "materials": [
+        "R19_CoatedPanel_PRIVATE_PBR"
+      ],
+      "sha256": "a00bfd1073b1e7ca8a4f3e0bd111a6d8afe4c84d9d9aae0ee3a9ceba76cc2856",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1749.489990234375,
+          205.1696319580078,
+          2256.385009765625
+        ],
+        [
+          1749.531982421875,
+          208.0846405029297,
+          2257.679931640625
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R19_Lower_East_Mineral_Plinth_01",
+      "key": "e858135b3275",
+      "exportObject": "GX_e858135b3275_R19_Lower_East_Mineral_Plinth_01",
+      "partition": "R19_01_ADDITIVE_FACADE",
+      "vertices": 444,
+      "triangles": 148,
+      "materials": [
+        "R19_MineralBase_PRIVATE_PBR"
+      ],
+      "sha256": "3a187f2c1844490b6a8c5e618418d2945d864f2f3e8bada97eb0af1d5a91e478",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1749.489990234375,
+          204.4196319580078,
+          2253.4599609375
+        ],
+        [
+          1749.5240478515625,
+          205.11962890625,
+          2254.889892578125
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R19_Lower_East_Mineral_Plinth_02",
+      "key": "088de0be8435",
+      "exportObject": "GX_088de0be8435_R19_Lower_East_Mineral_Plinth_02",
+      "partition": "R19_01_ADDITIVE_FACADE",
+      "vertices": 444,
+      "triangles": 148,
+      "materials": [
+        "R19_MineralBase_PRIVATE_PBR"
+      ],
+      "sha256": "541ae822a7c1cc36ad1ae5497c4bfa142f611f5793ad5c3e1fbd58df8dd10c2a",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1749.489990234375,
+          204.4196319580078,
+          2254.9150390625
+        ],
+        [
+          1749.5240478515625,
+          205.11962890625,
+          2256.360107421875
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R19_Lower_East_Mineral_Plinth_03",
+      "key": "ccfcb31e236f",
+      "exportObject": "GX_ccfcb31e236f_R19_Lower_East_Mineral_Plinth_03",
+      "partition": "R19_01_ADDITIVE_FACADE",
+      "vertices": 444,
+      "triangles": 148,
+      "materials": [
+        "R19_MineralBase_PRIVATE_PBR"
+      ],
+      "sha256": "c6299b87c86b363ab42d55c633260de83abaec7d1ed0ec1cc23ff6857cdb63b3",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1749.489990234375,
+          204.4196319580078,
+          2256.385009765625
+        ],
+        [
+          1749.5240478515625,
+          205.11962890625,
+          2257.679931640625
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R19_Lower_East_Plinth_Sealed_Joint_01",
+      "key": "feaae84db40d",
+      "exportObject": "GX_feaae84db40d_R19_Lower_East_Plinth_Sealed_Joint_01",
+      "partition": "R19_01_ADDITIVE_FACADE",
+      "vertices": 36,
+      "triangles": 12,
+      "materials": [
+        "R19_Recessed_Seal_PRIVATE"
+      ],
+      "sha256": "7701f50d0fcc50dae7528f4014a328d421a81b0e62bc6abd0cb4849df5c973c9",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1749.4930419921875,
+          205.1266326904297,
+          2253.4599609375
+        ],
+        [
+          1749.511962890625,
+          205.16163635253906,
+          2254.889892578125
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R19_Lower_East_Plinth_Sealed_Joint_02",
+      "key": "47f484c55d95",
+      "exportObject": "GX_47f484c55d95_R19_Lower_East_Plinth_Sealed_Joint_02",
+      "partition": "R19_01_ADDITIVE_FACADE",
+      "vertices": 36,
+      "triangles": 12,
+      "materials": [
+        "R19_Recessed_Seal_PRIVATE"
+      ],
+      "sha256": "71f6d6590119e839940109aad1d88bb2d063e47b390a19545a92ae0c0e7c2483",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1749.4930419921875,
+          205.1266326904297,
+          2254.9150390625
+        ],
+        [
+          1749.511962890625,
+          205.16163635253906,
+          2256.360107421875
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R19_Lower_East_Plinth_Sealed_Joint_03",
+      "key": "b959c5e48ef1",
+      "exportObject": "GX_b959c5e48ef1_R19_Lower_East_Plinth_Sealed_Joint_03",
+      "partition": "R19_01_ADDITIVE_FACADE",
+      "vertices": 36,
+      "triangles": 12,
+      "materials": [
+        "R19_Recessed_Seal_PRIVATE"
+      ],
+      "sha256": "95ba5db52b11e9578a34c50966d52a981fd30ca125fa67be6ae0afcbff6f86bc",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1749.4930419921875,
+          205.1266326904297,
+          2256.385009765625
+        ],
+        [
+          1749.511962890625,
+          205.16163635253906,
+          2257.679931640625
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R19_Lower_East_Vertical_Sealed_Joint_01",
+      "key": "1d61ba56d474",
+      "exportObject": "GX_1d61ba56d474_R19_Lower_East_Vertical_Sealed_Joint_01",
+      "partition": "R19_01_ADDITIVE_FACADE",
+      "vertices": 36,
+      "triangles": 12,
+      "materials": [
+        "R19_Recessed_Seal_PRIVATE"
+      ],
+      "sha256": "088805995fd414d4c08dca4acec374a04308febe2878ac7cde14c0a84c80a9b9",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1749.4930419921875,
+          204.4196319580078,
+          2254.886962890625
+        ],
+        [
+          1749.511962890625,
+          208.0846405029297,
+          2254.91796875
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R19_Lower_East_Vertical_Sealed_Joint_02",
+      "key": "bac96b521afc",
+      "exportObject": "GX_bac96b521afc_R19_Lower_East_Vertical_Sealed_Joint_02",
+      "partition": "R19_01_ADDITIVE_FACADE",
+      "vertices": 36,
+      "triangles": 12,
+      "materials": [
+        "R19_Recessed_Seal_PRIVATE"
+      ],
+      "sha256": "bcc4ceca326388dd4f31e902d32fb008da095749fa487e227f500190b3686257",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1749.4930419921875,
+          204.4196319580078,
+          2256.35693359375
+        ],
+        [
+          1749.511962890625,
+          208.0846405029297,
+          2256.387939453125
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R19_Lower_Entry_Header_Cassette",
+      "key": "2542ab9bd88c",
+      "exportObject": "GX_2542ab9bd88c_R19_Lower_Entry_Header_Cassette",
+      "partition": "R19_01_ADDITIVE_FACADE",
+      "vertices": 540,
+      "triangles": 180,
+      "materials": [
+        "R19_CoatedPanel_PRIVATE_PBR"
+      ],
+      "sha256": "43d52c973ec8f779e6583a066c6b5059e43fc9b9a7fe63d74d6e952a26f50ab9",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1749.489990234375,
+          207.19464111328125,
+          2257.909912109375
+        ],
+        [
+          1749.531982421875,
+          208.0846405029297,
+          2259.590087890625
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R19_Lower_Entry_Service_Access_Cover",
+      "key": "e530c69f0400",
+      "exportObject": "GX_e530c69f0400_R19_Lower_Entry_Service_Access_Cover",
+      "partition": "R19_01_ADDITIVE_FACADE",
+      "vertices": 540,
+      "triangles": 180,
+      "materials": [
+        "R19_Service_Cover_Enamel_PRIVATE_PBR"
+      ],
+      "sha256": "df78a6883776ff342749ff3644c728676ab209db3abc6d0710ef81d38e4c3484",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1749.52001953125,
+          205.38963317871094,
+          2256.830078125
+        ],
+        [
+          1749.5550537109375,
+          206.23963928222656,
+          2257.4599609375
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R19_South_East_Pier_Main_Cassette_01",
+      "key": "5d0a1d9bb73f",
+      "exportObject": "GX_5d0a1d9bb73f_R19_South_East_Pier_Main_Cassette_01",
+      "partition": "R19_01_ADDITIVE_FACADE",
+      "vertices": 540,
+      "triangles": 180,
+      "materials": [
+        "R19_CoatedPanel_PRIVATE_PBR"
+      ],
+      "sha256": "86a32f7b8e32e218790cd3e892b53cd558af1d91314b8a6f96afdbf272c345e2",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1748.52001953125,
+          205.1696319580078,
+          2253.367919921875
+        ],
+        [
+          1749.4300537109375,
+          208.0846405029297,
+          2253.409912109375
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R19_South_East_Pier_Mineral_Plinth_01",
+      "key": "6c341c149eb3",
+      "exportObject": "GX_6c341c149eb3_R19_South_East_Pier_Mineral_Plinth_01",
+      "partition": "R19_01_ADDITIVE_FACADE",
+      "vertices": 444,
+      "triangles": 148,
+      "materials": [
+        "R19_MineralBase_PRIVATE_PBR"
+      ],
+      "sha256": "75f82b3865c069341382de714acf2557a45bc9a5ed04df0c7176a08427d9f0ce",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1748.52001953125,
+          204.4196319580078,
+          2253.3759765625
+        ],
+        [
+          1749.4300537109375,
+          205.11962890625,
+          2253.409912109375
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R19_South_East_Pier_Plinth_Sealed_Joint_01",
+      "key": "96bfef796c4f",
+      "exportObject": "GX_96bfef796c4f_R19_South_East_Pier_Plinth_Sealed_Joint_01",
+      "partition": "R19_01_ADDITIVE_FACADE",
+      "vertices": 36,
+      "triangles": 12,
+      "materials": [
+        "R19_Recessed_Seal_PRIVATE"
+      ],
+      "sha256": "4bbf715809f995759b04feb4d6803d1af470a54134f67b5c306e1d63c14f1ea3",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1748.52001953125,
+          205.1266326904297,
+          2253.387939453125
+        ],
+        [
+          1749.4300537109375,
+          205.16163635253906,
+          2253.406982421875
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R19_South_Header_Top_Fold",
+      "key": "e66614bb909b",
+      "exportObject": "GX_e66614bb909b_R19_South_Header_Top_Fold",
+      "partition": "R19_01_ADDITIVE_FACADE",
+      "vertices": 324,
+      "triangles": 108,
+      "materials": [
+        "R19_CoatedPanel_PRIVATE_PBR"
+      ],
+      "sha256": "d5ff6333850f9b0e477063deaf781b54bf167917b7061849c6c7644638df5e54",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1745.199951171875,
+          208.02963256835938,
+          2253.3779296875
+        ],
+        [
+          1748.4000244140625,
+          208.09463500976562,
+          2253.406982421875
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R19_South_West_Pier_Main_Cassette_01",
+      "key": "fd32574d4b70",
+      "exportObject": "GX_fd32574d4b70_R19_South_West_Pier_Main_Cassette_01",
+      "partition": "R19_01_ADDITIVE_FACADE",
+      "vertices": 540,
+      "triangles": 180,
+      "materials": [
+        "R19_CoatedPanel_PRIVATE_PBR"
+      ],
+      "sha256": "75d682d3a13ac2d8c1b4bcd5407e4ab7cdd01723d8bcdcde77ac313d7fd64e7f",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1744.1700439453125,
+          205.1696319580078,
+          2253.367919921875
+        ],
+        [
+          1745.0799560546875,
+          208.0846405029297,
+          2253.409912109375
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R19_South_West_Pier_Mineral_Plinth_01",
+      "key": "5aa603c56ecd",
+      "exportObject": "GX_5aa603c56ecd_R19_South_West_Pier_Mineral_Plinth_01",
+      "partition": "R19_01_ADDITIVE_FACADE",
+      "vertices": 444,
+      "triangles": 148,
+      "materials": [
+        "R19_MineralBase_PRIVATE_PBR"
+      ],
+      "sha256": "2ca5f771bdbcf7b0984285c4a99f4bd67886c1318518783dc140313df58a013b",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1744.1700439453125,
+          204.4196319580078,
+          2253.3759765625
+        ],
+        [
+          1745.0799560546875,
+          205.11962890625,
+          2253.409912109375
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R19_South_West_Pier_Plinth_Sealed_Joint_01",
+      "key": "592e289657d8",
+      "exportObject": "GX_592e289657d8_R19_South_West_Pier_Plinth_Sealed_Joint_01",
+      "partition": "R19_01_ADDITIVE_FACADE",
+      "vertices": 36,
+      "triangles": 12,
+      "materials": [
+        "R19_Recessed_Seal_PRIVATE"
+      ],
+      "sha256": "efaf087e9afe6e2f2079e9c6ed5459de18afc9cbbc6061bdf0f63e6497e52b72",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1744.1700439453125,
+          205.1266326904297,
+          2253.387939453125
+        ],
+        [
+          1745.0799560546875,
+          205.16163635253906,
+          2253.406982421875
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R19_Upper_East_Main_Cassette_01",
+      "key": "c1208f25fc71",
+      "exportObject": "GX_c1208f25fc71_R19_Upper_East_Main_Cassette_01",
+      "partition": "R19_01_ADDITIVE_FACADE",
+      "vertices": 540,
+      "triangles": 180,
+      "materials": [
+        "R19_CoatedPanel_PRIVATE_PBR"
+      ],
+      "sha256": "4ec4ce67e508dd6ff77c77ebd6fed5e8386818b7419e584ae5a0c72bde2b3bc7",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1749.489990234375,
+          206.06964111328125,
+          2259.969970703125
+        ],
+        [
+          1749.531982421875,
+          209.7046356201172,
+          2261.429931640625
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R19_Upper_East_Main_Cassette_02",
+      "key": "c94418b48aad",
+      "exportObject": "GX_c94418b48aad_R19_Upper_East_Main_Cassette_02",
+      "partition": "R19_01_ADDITIVE_FACADE",
+      "vertices": 540,
+      "triangles": 180,
+      "materials": [
+        "R19_CoatedPanel_PRIVATE_PBR"
+      ],
+      "sha256": "1ea6205a93811e2dd74c855496650886079587ccd0b76d2b5a67470e258b40e9",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1749.489990234375,
+          206.06964111328125,
+          2261.455078125
+        ],
+        [
+          1749.531982421875,
+          209.7046356201172,
+          2263.030029296875
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R19_Upper_East_Mineral_Plinth_01",
+      "key": "0061140d67a8",
+      "exportObject": "GX_0061140d67a8_R19_Upper_East_Mineral_Plinth_01",
+      "partition": "R19_01_ADDITIVE_FACADE",
+      "vertices": 444,
+      "triangles": 148,
+      "materials": [
+        "R19_MineralBase_PRIVATE_PBR"
+      ],
+      "sha256": "2bba618eca16399d2c841d8ada2acee5f75ae0be3f088fc849910ccfe4e6469f",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1749.489990234375,
+          205.31964111328125,
+          2259.969970703125
+        ],
+        [
+          1749.5240478515625,
+          206.01963806152344,
+          2261.429931640625
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R19_Upper_East_Mineral_Plinth_02",
+      "key": "5528d2068df4",
+      "exportObject": "GX_5528d2068df4_R19_Upper_East_Mineral_Plinth_02",
+      "partition": "R19_01_ADDITIVE_FACADE",
+      "vertices": 444,
+      "triangles": 148,
+      "materials": [
+        "R19_MineralBase_PRIVATE_PBR"
+      ],
+      "sha256": "ec09e7608a1945b8620bdd6667f9ad8cae047e43d9b399690966ed26197c7a0b",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1749.489990234375,
+          205.31964111328125,
+          2261.455078125
+        ],
+        [
+          1749.5240478515625,
+          206.01963806152344,
+          2263.030029296875
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R19_Upper_East_Plinth_Sealed_Joint_01",
+      "key": "94a84d55357e",
+      "exportObject": "GX_94a84d55357e_R19_Upper_East_Plinth_Sealed_Joint_01",
+      "partition": "R19_01_ADDITIVE_FACADE",
+      "vertices": 36,
+      "triangles": 12,
+      "materials": [
+        "R19_Recessed_Seal_PRIVATE"
+      ],
+      "sha256": "dcee5ec002df1aad2f57539eac7e9e5adbaa50275e9f3a718da9238f8f4b0355",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1749.4930419921875,
+          206.02662658691406,
+          2259.969970703125
+        ],
+        [
+          1749.511962890625,
+          206.06163024902344,
+          2261.429931640625
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R19_Upper_East_Plinth_Sealed_Joint_02",
+      "key": "1468b3b92410",
+      "exportObject": "GX_1468b3b92410_R19_Upper_East_Plinth_Sealed_Joint_02",
+      "partition": "R19_01_ADDITIVE_FACADE",
+      "vertices": 36,
+      "triangles": 12,
+      "materials": [
+        "R19_Recessed_Seal_PRIVATE"
+      ],
+      "sha256": "3a9b246f6ba55d37897de321b3e5558c578b6029ee05acaa593cf30ea6b1f28b",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1749.4930419921875,
+          206.02662658691406,
+          2261.455078125
+        ],
+        [
+          1749.511962890625,
+          206.06163024902344,
+          2263.030029296875
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R19_Upper_East_Vertical_Sealed_Joint_01",
+      "key": "74a87972ddaa",
+      "exportObject": "GX_74a87972ddaa_R19_Upper_East_Vertical_Sealed_Joint_01",
+      "partition": "R19_01_ADDITIVE_FACADE",
+      "vertices": 36,
+      "triangles": 12,
+      "materials": [
+        "R19_Recessed_Seal_PRIVATE"
+      ],
+      "sha256": "e9aa5c0e76aa007954ebd298242b35f970dd772472c52b8cee6f59bfee6d277a",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1749.4930419921875,
+          205.31964111328125,
+          2261.427001953125
+        ],
+        [
+          1749.511962890625,
+          209.7046356201172,
+          2261.4580078125
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    },
+    {
+      "name": "R19_Upper_Entry_Header_Cassette",
+      "key": "76af142c80ca",
+      "exportObject": "GX_76af142c80ca_R19_Upper_Entry_Header_Cassette",
+      "partition": "R19_01_ADDITIVE_FACADE",
+      "vertices": 540,
+      "triangles": 180,
+      "materials": [
+        "R19_CoatedPanel_PRIVATE_PBR"
+      ],
+      "sha256": "db1046e93977b8a369b1bede2641df7837eeaf34e515f6a656b24a58c4816f45",
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "worldBounds": [
+        [
+          1749.489990234375,
+          208.09463500976562,
+          2263.260009765625
+        ],
+        [
+          1749.531982421875,
+          209.7046356201172,
+          2264.93994140625
+        ]
+      ],
+      "boundsDriftMetres": 0.0003662109375,
+      "exactFBXLocalVertexBytes": true,
+      "sourceUVPreserved": true,
+      "sourcePivotPreserved": true
+    }
+  ],
+  "replacements": [
+    {
+      "GX": "GX_327b99bf7b30_R18_Court_East_Solid_Return",
+      "key": "327b99bf7b30",
+      "name": "R18_Court_East_Solid_Return",
+      "priorPartition": "R18_SERVICE_HOUSE_05_INTEGRATED_SERVICE_COURT",
+      "priorMesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/327b99bf7b30.asset",
+      "priorMeshSHA256": "fffa5b04309ae9267f853091d014bbff1512cb667afe5b85010ee0bc2d81f06f",
+      "oldPayload": "E:\\Code\\Codex\\2026-10-19\\task\\R09_R18\\NativePrepared\\327b99bf7b30.bin",
+      "oldPayloadSHA256": "d6a8253e94c573f1b963bc23afd551021c981f6c12901a26a1c9c5914288801c",
+      "oldMaterials": [
+        "B_GrayWhite_Rough_Cladding"
+      ],
+      "newMaterials": [
+        "R19_MineralBase_PRIVATE_PBR"
+      ],
+      "worldBounds": [
+        [
+          1751.760009765625,
+          205.27963256835938,
+          2261.39990234375
+        ],
+        [
+          1752.0,
+          206.47962951660156,
+          2265.800048828125
+        ]
+      ]
+    },
+    {
+      "GX": "GX_a1f63b3f4591_R18_Wall_Lower_East_South",
+      "key": "a1f63b3f4591",
+      "name": "R18_Wall_Lower_East_South",
+      "priorPartition": "R18_SERVICE_HOUSE_02_SOLID_SHELL_AND_OPEN_PORTALS",
+      "priorMesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/a1f63b3f4591.asset",
+      "priorMeshSHA256": "7b56202af31161daff696425f78063117f099159bcf4d6082393ad6fce0410f5",
+      "oldPayload": "E:\\Code\\Codex\\2026-10-19\\task\\R09_R18\\NativePrepared\\a1f63b3f4591.bin",
+      "oldPayloadSHA256": "ed44d3fabe579901c9ffc200d320ec3d26174d3bdc670f59b144fa41b11f5193",
+      "oldMaterials": [
+        "B_GrayWhite_Rough_Cladding"
+      ],
+      "newMaterials": [
+        "R19_CoatedPanel_PRIVATE_PBR"
+      ],
+      "worldBounds": [
+        [
+          1749.1600341796875,
+          204.39962768554688,
+          2253.39990234375
+        ],
+        [
+          1749.5,
+          208.5796356201172,
+          2257.85009765625
+        ]
+      ]
+    },
+    {
+      "GX": "GX_3b3f2df7ff32_R18_Wall_Lower_Entry_Header",
+      "key": "3b3f2df7ff32",
+      "name": "R18_Wall_Lower_Entry_Header",
+      "priorPartition": "R18_SERVICE_HOUSE_02_SOLID_SHELL_AND_OPEN_PORTALS",
+      "priorMesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/3b3f2df7ff32.asset",
+      "priorMeshSHA256": "960ca00c2fc250c05a1cbfa06373269525f6cc2a3b05a6ee5a2e61ac2bf7ac90",
+      "oldPayload": "E:\\Code\\Codex\\2026-10-19\\task\\R09_R18\\NativePrepared\\3b3f2df7ff32.bin",
+      "oldPayloadSHA256": "8670a288565e5f980e1b713d4da12f9353694e3d265c63680813d8a369115863",
+      "oldMaterials": [
+        "B_GrayWhite_Rough_Cladding"
+      ],
+      "newMaterials": [
+        "R19_CoatedPanel_PRIVATE_PBR"
+      ],
+      "worldBounds": [
+        [
+          1749.1600341796875,
+          206.9996337890625,
+          2257.85009765625
+        ],
+        [
+          1749.5,
+          208.5796356201172,
+          2259.64990234375
+        ]
+      ]
+    },
+    {
+      "GX": "GX_f686b841de59_R18_Wall_South_East_Pier",
+      "key": "f686b841de59",
+      "name": "R18_Wall_South_East_Pier",
+      "priorPartition": "R18_SERVICE_HOUSE_02_SOLID_SHELL_AND_OPEN_PORTALS",
+      "priorMesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/f686b841de59.asset",
+      "priorMeshSHA256": "85ab206762a446b6aa37848b09e917868379bef671d86def71e3c064ec469e62",
+      "oldPayload": "E:\\Code\\Codex\\2026-10-19\\task\\R09_R18\\NativePrepared\\f686b841de59.bin",
+      "oldPayloadSHA256": "128a8749d2a0ed5a2522ff99d124a6a9ff79a2b5532bd5439b07655e3383ec8b",
+      "oldMaterials": [
+        "B_GrayWhite_Rough_Cladding"
+      ],
+      "newMaterials": [
+        "R19_CoatedPanel_PRIVATE_PBR"
+      ],
+      "worldBounds": [
+        [
+          1748.4599609375,
+          204.39962768554688,
+          2253.39990234375
+        ],
+        [
+          1749.5,
+          208.5796356201172,
+          2253.760009765625
+        ]
+      ]
+    },
+    {
+      "GX": "GX_bef5ec1e3e99_R18_Wall_South_Vent_Header",
+      "key": "bef5ec1e3e99",
+      "name": "R18_Wall_South_Vent_Header",
+      "priorPartition": "R18_SERVICE_HOUSE_02_SOLID_SHELL_AND_OPEN_PORTALS",
+      "priorMesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/bef5ec1e3e99.asset",
+      "priorMeshSHA256": "1d62eb1ae6e2d6071e04de9f7a50ab81e3b1ca898d7e848603f702424ce95649",
+      "oldPayload": "E:\\Code\\Codex\\2026-10-19\\task\\R09_R18\\NativePrepared\\bef5ec1e3e99.bin",
+      "oldPayloadSHA256": "a35dbf0cf9ef551b4a36021feb08d79697cf28d80de22176ddd919183ec4e88f",
+      "oldMaterials": [
+        "B_GrayWhite_Rough_Cladding"
+      ],
+      "newMaterials": [
+        "R19_CoatedPanel_PRIVATE_PBR"
+      ],
+      "worldBounds": [
+        [
+          1745.1400146484375,
+          207.4496307373047,
+          2253.39990234375
+        ],
+        [
+          1748.4599609375,
+          208.5796356201172,
+          2253.760009765625
+        ]
+      ]
+    },
+    {
+      "GX": "GX_8c43f03ee020_R18_Wall_South_Vent_Sill",
+      "key": "8c43f03ee020",
+      "name": "R18_Wall_South_Vent_Sill",
+      "priorPartition": "R18_SERVICE_HOUSE_02_SOLID_SHELL_AND_OPEN_PORTALS",
+      "priorMesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/8c43f03ee020.asset",
+      "priorMeshSHA256": "188062fb702dea9c50e80bc20a8abb220c0ed7ee8925b91db778b9555f27f4fb",
+      "oldPayload": "E:\\Code\\Codex\\2026-10-19\\task\\R09_R18\\NativePrepared\\8c43f03ee020.bin",
+      "oldPayloadSHA256": "b9740d7c881cf4e349310fa7f3fa941ba7874d582616ba78a26cb3760539ec8a",
+      "oldMaterials": [
+        "B_GrayWhite_Rough_Cladding"
+      ],
+      "newMaterials": [
+        "R19_CoatedPanel_PRIVATE_PBR"
+      ],
+      "worldBounds": [
+        [
+          1745.1400146484375,
+          204.39962768554688,
+          2253.39990234375
+        ],
+        [
+          1748.4599609375,
+          205.0496368408203,
+          2253.760009765625
+        ]
+      ]
+    },
+    {
+      "GX": "GX_47fef11fc674_R18_Wall_South_West_Pier",
+      "key": "47fef11fc674",
+      "name": "R18_Wall_South_West_Pier",
+      "priorPartition": "R18_SERVICE_HOUSE_02_SOLID_SHELL_AND_OPEN_PORTALS",
+      "priorMesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/47fef11fc674.asset",
+      "priorMeshSHA256": "25637bb010c4868bffcd71e00891962f36a7597917b75670aa86a3e9852d0f6a",
+      "oldPayload": "E:\\Code\\Codex\\2026-10-19\\task\\R09_R18\\NativePrepared\\47fef11fc674.bin",
+      "oldPayloadSHA256": "a30c4ae119428460852af744ca413bf1037f7563d2465cba2a756b39157b12f0",
+      "oldMaterials": [
+        "B_GrayWhite_Rough_Cladding"
+      ],
+      "newMaterials": [
+        "R19_CoatedPanel_PRIVATE_PBR"
+      ],
+      "worldBounds": [
+        [
+          1744.0999755859375,
+          204.39962768554688,
+          2253.39990234375
+        ],
+        [
+          1745.1400146484375,
+          208.5796356201172,
+          2253.760009765625
+        ]
+      ]
+    },
+    {
+      "GX": "GX_c363494d40e7_R18_Wall_Upper_East_South",
+      "key": "c363494d40e7",
+      "name": "R18_Wall_Upper_East_South",
+      "priorPartition": "R18_SERVICE_HOUSE_02_SOLID_SHELL_AND_OPEN_PORTALS",
+      "priorMesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/c363494d40e7.asset",
+      "priorMeshSHA256": "321be0618f11c511a0fd3981ce3549058df67886b2add93cbb7ea855548aafb9",
+      "oldPayload": "E:\\Code\\Codex\\2026-10-19\\task\\R09_R18\\NativePrepared\\c363494d40e7.bin",
+      "oldPayloadSHA256": "aa2f869587785f30274168ddbeda2f129ee7446fc418578cd42fc6745fc911f9",
+      "oldMaterials": [
+        "B_GrayWhite_Rough_Cladding"
+      ],
+      "newMaterials": [
+        "R19_CoatedPanel_PRIVATE_PBR"
+      ],
+      "worldBounds": [
+        [
+          1749.1600341796875,
+          205.2996368408203,
+          2259.89990234375
+        ],
+        [
+          1749.5,
+          210.0496368408203,
+          2263.199951171875
+        ]
+      ]
+    },
+    {
+      "GX": "GX_0a7ad100d155_R18_Wall_Upper_Entry_Header",
+      "key": "0a7ad100d155",
+      "name": "R18_Wall_Upper_Entry_Header",
+      "priorPartition": "R18_SERVICE_HOUSE_02_SOLID_SHELL_AND_OPEN_PORTALS",
+      "priorMesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/0a7ad100d155.asset",
+      "priorMeshSHA256": "05812e2038062dffd0ed57a4028631e83359c48500cdae67ca41768431a0af52",
+      "oldPayload": "E:\\Code\\Codex\\2026-10-19\\task\\R09_R18\\NativePrepared\\0a7ad100d155.bin",
+      "oldPayloadSHA256": "4bc5ba4275eeea835cb92c6181b79455d5644ea82300a1c5cc2932e395a18e45",
+      "oldMaterials": [
+        "B_GrayWhite_Rough_Cladding"
+      ],
+      "newMaterials": [
+        "R19_CoatedPanel_PRIVATE_PBR"
+      ],
+      "worldBounds": [
+        [
+          1749.1600341796875,
+          207.89962768554688,
+          2263.199951171875
+        ],
+        [
+          1749.5,
+          210.0496368408203,
+          2265.0
+        ]
+      ]
+    }
+  ],
+  "materials": [
+    {
+      "identity": "R05_exposed_alloy",
+      "policy": "REUSE_VERIFIED_EXISTING_LOCAL_MATERIAL_ONLY_DO_NOT_OVERWRITE",
+      "new_asset_namespace": null,
+      "base_color_texture": null,
+      "base_color_constant_scene_linear": [
+        0.30000001192092896,
+        0.3400000035762787,
+        0.3400000035762787,
+        1.0
+      ],
+      "base_color_multiplier_if_texture": null,
+      "roughness_texture": null,
+      "roughness_constant_if_unlinked": 0.41999998688697815,
+      "metallic_constant": 0.7799999713897705,
+      "optional_URP_metallic_smoothness_texture": null,
+      "normal_texture_OpenGL": null,
+      "uv_channel_index": 0,
+      "uv_layer": "R19_Meter_UV",
+      "texture_scale": [
+        1,
+        1
+      ],
+      "texture_offset": [
+        0,
+        0
+      ],
+      "normal_strength": null,
+      "warning": "For R05_exposed_alloy these values are provenance only; reuse verified local material, do not recreate or overwrite it.",
+      "path": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Materials/R05_exposed_alloy.mat",
+      "create": false,
+      "beforeSHA256": "ec099cfea29006adcc2a41357174ab9944a203e7f99d4f3ccab82ce7e534152c"
+    },
+    {
+      "identity": "R19_CoatedPanel_PRIVATE_PBR",
+      "policy": "CREATE_NEW_PRIVATE_MATERIAL_ONLY",
+      "new_asset_namespace": "Moonkov/R19/PrivateMaterials",
+      "base_color_texture": "textures/R19_CoatedPanel_BaseColor_sRGB.png",
+      "base_color_constant_scene_linear": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929,
+        1.0
+      ],
+      "base_color_multiplier_if_texture": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "roughness_texture": "textures/R19_CoatedPanel_Roughness_Linear.png",
+      "roughness_constant_if_unlinked": 0.699999988079071,
+      "metallic_constant": 0.0,
+      "optional_URP_metallic_smoothness_texture": "textures/R19_CoatedPanel_MetallicSmoothness_Linear.png",
+      "normal_texture_OpenGL": "textures/R19_CoatedPanel_Normal_OpenGL.png",
+      "uv_channel_index": 0,
+      "uv_layer": "R19_Meter_UV",
+      "texture_scale": [
+        1,
+        1
+      ],
+      "texture_offset": [
+        0,
+        0
+      ],
+      "normal_strength": 1,
+      "warning": "Create only dedicated new R19 asset; never remap global old material name.",
+      "path": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR19/Materials/R19_CoatedPanel_PRIVATE_PBR.mat",
+      "create": true,
+      "beforeSHA256": null
+    },
+    {
+      "identity": "R19_MineralBase_PRIVATE_PBR",
+      "policy": "CREATE_NEW_PRIVATE_MATERIAL_ONLY",
+      "new_asset_namespace": "Moonkov/R19/PrivateMaterials",
+      "base_color_texture": "textures/R19_MineralBase_BaseColor_sRGB.png",
+      "base_color_constant_scene_linear": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929,
+        1.0
+      ],
+      "base_color_multiplier_if_texture": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "roughness_texture": "textures/R19_MineralBase_Roughness_Linear.png",
+      "roughness_constant_if_unlinked": 0.699999988079071,
+      "metallic_constant": 0.0,
+      "optional_URP_metallic_smoothness_texture": "textures/R19_MineralBase_MetallicSmoothness_Linear.png",
+      "normal_texture_OpenGL": "textures/R19_MineralBase_Normal_OpenGL.png",
+      "uv_channel_index": 0,
+      "uv_layer": "R19_Meter_UV",
+      "texture_scale": [
+        1,
+        1
+      ],
+      "texture_offset": [
+        0,
+        0
+      ],
+      "normal_strength": 1,
+      "warning": "Create only dedicated new R19 asset; never remap global old material name.",
+      "path": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR19/Materials/R19_MineralBase_PRIVATE_PBR.mat",
+      "create": true,
+      "beforeSHA256": null
+    },
+    {
+      "identity": "R19_Recessed_Seal_PRIVATE",
+      "policy": "CREATE_NEW_PRIVATE_MATERIAL_ONLY",
+      "new_asset_namespace": "Moonkov/R19/PrivateMaterials",
+      "base_color_texture": null,
+      "base_color_constant_scene_linear": [
+        0.03500000014901161,
+        0.0430000014603138,
+        0.04699999839067459,
+        1.0
+      ],
+      "base_color_multiplier_if_texture": null,
+      "roughness_texture": null,
+      "roughness_constant_if_unlinked": 0.8799999952316284,
+      "metallic_constant": 0.0,
+      "optional_URP_metallic_smoothness_texture": null,
+      "normal_texture_OpenGL": null,
+      "uv_channel_index": 0,
+      "uv_layer": "R19_Meter_UV",
+      "texture_scale": [
+        1,
+        1
+      ],
+      "texture_offset": [
+        0,
+        0
+      ],
+      "normal_strength": null,
+      "warning": "Create only dedicated new R19 asset; never remap global old material name.",
+      "path": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR19/Materials/R19_Recessed_Seal_PRIVATE.mat",
+      "create": true,
+      "beforeSHA256": null
+    },
+    {
+      "identity": "R19_Service_Cover_Enamel_PRIVATE_PBR",
+      "policy": "CREATE_NEW_PRIVATE_MATERIAL_ONLY",
+      "new_asset_namespace": "Moonkov/R19/PrivateMaterials",
+      "base_color_texture": null,
+      "base_color_constant_scene_linear": [
+        0.18000000715255737,
+        0.20999999344348907,
+        0.22499999403953552,
+        1.0
+      ],
+      "base_color_multiplier_if_texture": null,
+      "roughness_texture": "textures/R19_CoatedPanel_Roughness_Linear.png",
+      "roughness_constant_if_unlinked": 0.699999988079071,
+      "metallic_constant": 0.0,
+      "optional_URP_metallic_smoothness_texture": "textures/R19_CoatedPanel_MetallicSmoothness_Linear.png",
+      "normal_texture_OpenGL": "textures/R19_CoatedPanel_Normal_OpenGL.png",
+      "uv_channel_index": 0,
+      "uv_layer": "R19_Meter_UV",
+      "texture_scale": [
+        1,
+        1
+      ],
+      "texture_offset": [
+        0,
+        0
+      ],
+      "normal_strength": 1,
+      "warning": "Create only dedicated new R19 asset; never remap global old material name.",
+      "path": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR19/Materials/R19_Service_Cover_Enamel_PRIVATE_PBR.mat",
+      "create": true,
+      "beforeSHA256": null
+    }
+  ],
+  "textures": [
+    {
+      "source": "E:\\Code\\Codex\\2026-10-19\\task\\R19\\Handoff\\textures\\R19_CoatedPanel_BaseColor_sRGB.png",
+      "path": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR19/Textures/R19_CoatedPanel_BaseColor_sRGB.png",
+      "sha256": "ba4f6f25a59edae630b70f9476840602187f794a545e4e19adcb16336bd484bf",
+      "normal": false,
+      "srgb": true,
+      "linear": false
+    },
+    {
+      "source": "E:\\Code\\Codex\\2026-10-19\\task\\R19\\Handoff\\textures\\R19_CoatedPanel_MetallicSmoothness_Linear.png",
+      "path": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR19/Textures/R19_CoatedPanel_MetallicSmoothness_Linear.png",
+      "sha256": "ed02316c41516ba5f0065e3a26a21f82ae0d930498bb92cc6c65a66caddef465",
+      "normal": false,
+      "srgb": false,
+      "linear": true
+    },
+    {
+      "source": "E:\\Code\\Codex\\2026-10-19\\task\\R19\\Handoff\\textures\\R19_CoatedPanel_Normal_OpenGL.png",
+      "path": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR19/Textures/R19_CoatedPanel_Normal_OpenGL.png",
+      "sha256": "b2b1dea37165e5c70209cde876052b6c1603d814a2ebb9efeff88cff433d866b",
+      "normal": true,
+      "srgb": false,
+      "linear": true
+    },
+    {
+      "source": "E:\\Code\\Codex\\2026-10-19\\task\\R19\\Handoff\\textures\\R19_CoatedPanel_Roughness_Linear.png",
+      "path": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR19/Textures/R19_CoatedPanel_Roughness_Linear.png",
+      "sha256": "173aacd425b6edb235387497db72bdb9f24da3b013a09804e97e2edcd6d0412b",
+      "normal": false,
+      "srgb": false,
+      "linear": true
+    },
+    {
+      "source": "E:\\Code\\Codex\\2026-10-19\\task\\R19\\Handoff\\textures\\R19_MineralBase_BaseColor_sRGB.png",
+      "path": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR19/Textures/R19_MineralBase_BaseColor_sRGB.png",
+      "sha256": "b0006a222cd1109ee9f4e8b7e5fc90861c60884e89efebed1ba476c096d0803f",
+      "normal": false,
+      "srgb": true,
+      "linear": false
+    },
+    {
+      "source": "E:\\Code\\Codex\\2026-10-19\\task\\R19\\Handoff\\textures\\R19_MineralBase_MetallicSmoothness_Linear.png",
+      "path": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR19/Textures/R19_MineralBase_MetallicSmoothness_Linear.png",
+      "sha256": "cb1863927dd5b403def0ac0148d7296801f07a14c172e2d4f4f2c71b64a01c29",
+      "normal": false,
+      "srgb": false,
+      "linear": true
+    },
+    {
+      "source": "E:\\Code\\Codex\\2026-10-19\\task\\R19\\Handoff\\textures\\R19_MineralBase_Normal_OpenGL.png",
+      "path": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR19/Textures/R19_MineralBase_Normal_OpenGL.png",
+      "sha256": "4fb8f54ef415abcf917bc921304899b795c9c7f712ee59021f2b3e6f39cd4571",
+      "normal": true,
+      "srgb": false,
+      "linear": true
+    },
+    {
+      "source": "E:\\Code\\Codex\\2026-10-19\\task\\R19\\Handoff\\textures\\R19_MineralBase_Roughness_Linear.png",
+      "path": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR19/Textures/R19_MineralBase_Roughness_Linear.png",
+      "sha256": "2bde1ece000e9e54b591518fb8bc77a219326f3c398343e7b97cdf5b7d59963e",
+      "normal": false,
+      "srgb": false,
+      "linear": true
+    }
+  ],
+  "newMaterialCount": 4,
+  "reuseMaterialCount": 1,
+  "replacementCount": 9,
+  "additiveCount": 43,
+  "renderOnlyNoCollisions": true,
+  "R16Applied": false,
+  "R20Applied": false
+}

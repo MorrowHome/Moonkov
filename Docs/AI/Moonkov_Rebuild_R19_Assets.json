@@ -1,0 +1,154 @@
+{
+  "sourceVerification": {
+    "file": "Moonkov_R19_Delta_Display_Handoff_20261020.zip",
+    "bytes": 5686154,
+    "sha256": "7d1b2fb57b5fb00bb4f15c1fcf1365a3473cce12d6232c55b19419a4affaf724",
+    "privateDownloadVerified": true,
+    "sourceBlendSHA256": "b61cfb1c9e1b35fad0b3a1d287b3ddda1845c448397e0511fae00367f4c7acdc",
+    "objects": 52,
+    "partitions": 2,
+    "allFBXLocalVertexBytesExact": true,
+    "FBXMaxBoundsDriftMetres": 0.0003662109375,
+    "sharingPermissionsChanged": false
+  },
+  "independentImport": {
+    "meshAssets": 52,
+    "replacementMeshesNotInstantiated": 9,
+    "additiveMeshes": 43,
+    "triangles": 5272,
+    "newMaterials": 4,
+    "reusedMaterials": 1,
+    "textures": [
+      {
+        "path": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR19/Textures/R19_CoatedPanel_BaseColor_sRGB.png",
+        "normal": false,
+        "sRGB": true,
+        "normalGreenFlipped": false,
+        "width": 1024,
+        "height": 1536,
+        "mipmaps": true,
+        "maxTextureSize": 2048,
+        "readable": false
+      },
+      {
+        "path": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR19/Textures/R19_CoatedPanel_MetallicSmoothness_Linear.png",
+        "normal": false,
+        "sRGB": false,
+        "normalGreenFlipped": false,
+        "width": 1024,
+        "height": 1536,
+        "mipmaps": true,
+        "maxTextureSize": 2048,
+        "readable": false
+      },
+      {
+        "path": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR19/Textures/R19_CoatedPanel_Normal_OpenGL.png",
+        "normal": true,
+        "sRGB": false,
+        "normalGreenFlipped": false,
+        "width": 1024,
+        "height": 1536,
+        "mipmaps": true,
+        "maxTextureSize": 2048,
+        "readable": false
+      },
+      {
+        "path": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR19/Textures/R19_CoatedPanel_Roughness_Linear.png",
+        "normal": false,
+        "sRGB": false,
+        "normalGreenFlipped": false,
+        "width": 1024,
+        "height": 1536,
+        "mipmaps": true,
+        "maxTextureSize": 2048,
+        "readable": false
+      },
+      {
+        "path": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR19/Textures/R19_MineralBase_BaseColor_sRGB.png",
+        "normal": false,
+        "sRGB": true,
+        "normalGreenFlipped": false,
+        "width": 1024,
+        "height": 1536,
+        "mipmaps": true,
+        "maxTextureSize": 2048,
+        "readable": false
+      },
+      {
+        "path": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR19/Textures/R19_MineralBase_MetallicSmoothness_Linear.png",
+        "normal": false,
+        "sRGB": false,
+        "normalGreenFlipped": false,
+        "width": 1024,
+        "height": 1536,
+        "mipmaps": true,
+        "maxTextureSize": 2048,
+        "readable": false
+      },
+      {
+        "path": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR19/Textures/R19_MineralBase_Normal_OpenGL.png",
+        "normal": true,
+        "sRGB": false,
+        "normalGreenFlipped": false,
+        "width": 1024,
+        "height": 1536,
+        "mipmaps": true,
+        "maxTextureSize": 2048,
+        "readable": false
+      },
+      {
+        "path": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR19/Textures/R19_MineralBase_Roughness_Linear.png",
+        "normal": false,
+        "sRGB": false,
+        "normalGreenFlipped": false,
+        "width": 1024,
+        "height": 1536,
+        "mipmaps": true,
+        "maxTextureSize": 2048,
+        "readable": false
+      }
+    ],
+    "materials": [
+      {
+        "name": "R05_exposed_alloy",
+        "path": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Materials/R05_exposed_alloy.mat",
+        "created": false,
+        "shader": "Universal Render Pipeline/Lit"
+      },
+      {
+        "name": "R19_CoatedPanel_PRIVATE_PBR",
+        "path": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR19/Materials/R19_CoatedPanel_PRIVATE_PBR.mat",
+        "created": true,
+        "shader": "Universal Render Pipeline/Lit"
+      },
+      {
+        "name": "R19_MineralBase_PRIVATE_PBR",
+        "path": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR19/Materials/R19_MineralBase_PRIVATE_PBR.mat",
+        "created": true,
+        "shader": "Universal Render Pipeline/Lit"
+      },
+      {
+        "name": "R19_Recessed_Seal_PRIVATE",
+        "path": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR19/Materials/R19_Recessed_Seal_PRIVATE.mat",
+        "created": true,
+        "shader": "Universal Render Pipeline/Lit"
+      },
+      {
+        "name": "R19_Service_Cover_Enamel_PRIVATE_PBR",
+        "path": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR19/Materials/R19_Service_Cover_Enamel_PRIVATE_PBR.mat",
+        "created": true,
+        "shader": "Universal Render Pipeline/Lit"
+      }
+    ],
+    "existingFormalSceneUnchanged": true,
+    "existingR09R18PrefabUnchanged": true,
+    "R20Applied": false
+  },
+  "replacementSnapshotProof": "SourceData/Models/RebuildR19/SourceReplacementProof.json",
+  "nativeGeometryProof": "SourceData/Models/RebuildR19/NativeGeometryReplacementProof.json",
+  "privateMaterials": 4,
+  "reusedOldMaterials": 1,
+  "textures": 8,
+  "R20Applied": false,
+  "rollbackOrder": "Restore the 9 old display references and remove the 43 additive objects before removing R19 assets."
+}

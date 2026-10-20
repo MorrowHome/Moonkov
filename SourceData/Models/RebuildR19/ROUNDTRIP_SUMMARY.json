@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "partitions": 2,
+  "objects": 52,
+  "max_world_bounds_error_m": 0.0003691437468944514,
+  "max_pivot_error_m": 0.0,
+  "quality_gates": [],
+  "nonunit_export_tangents": [],
+  "source_unchanged": true,
+  "Unity_verified": false
+}

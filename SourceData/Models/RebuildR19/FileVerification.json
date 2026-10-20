@@ -1,0 +1,76 @@
+{
+  "protectedExistingFiles": 22618,
+  "changedOldFilesOnlyPriorPrefabAndScene": [
+    "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+    "Assets/MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusGameScene.unity"
+  ],
+  "priorPrefabChangedRecords": 18,
+  "priorPrefabOnly9MeshAnd9MaterialReferencesChanged": true,
+  "oldPrefabRecordsAddedOrRemoved": 0,
+  "GXToPrefabComponentMapping": [
+    {
+      "GX": "GX_327b99bf7b30_R18_Court_East_Solid_Return",
+      "meshFilterFileID": "495543998972173255",
+      "rendererFileID": "8246040269865112100",
+      "onlyMeshAndMaterialReferencesChanged": true
+    },
+    {
+      "GX": "GX_a1f63b3f4591_R18_Wall_Lower_East_South",
+      "meshFilterFileID": "4684745595550755547",
+      "rendererFileID": "7850383592124187546",
+      "onlyMeshAndMaterialReferencesChanged": true
+    },
+    {
+      "GX": "GX_3b3f2df7ff32_R18_Wall_Lower_Entry_Header",
+      "meshFilterFileID": "3228222644617857459",
+      "rendererFileID": "4610502739995283749",
+      "onlyMeshAndMaterialReferencesChanged": true
+    },
+    {
+      "GX": "GX_f686b841de59_R18_Wall_South_East_Pier",
+      "meshFilterFileID": "8455221179688142627",
+      "rendererFileID": "1591831646589364942",
+      "onlyMeshAndMaterialReferencesChanged": true
+    },
+    {
+      "GX": "GX_bef5ec1e3e99_R18_Wall_South_Vent_Header",
+      "meshFilterFileID": "4275876518377584915",
+      "rendererFileID": "6189296241700329270",
+      "onlyMeshAndMaterialReferencesChanged": true
+    },
+    {
+      "GX": "GX_8c43f03ee020_R18_Wall_South_Vent_Sill",
+      "meshFilterFileID": "1090474189919483263",
+      "rendererFileID": "5654360722211185817",
+      "onlyMeshAndMaterialReferencesChanged": true
+    },
+    {
+      "GX": "GX_47fef11fc674_R18_Wall_South_West_Pier",
+      "meshFilterFileID": "2023507821511603784",
+      "rendererFileID": "8285319957543258637",
+      "onlyMeshAndMaterialReferencesChanged": true
+    },
+    {
+      "GX": "GX_c363494d40e7_R18_Wall_Upper_East_South",
+      "meshFilterFileID": "363576063261113897",
+      "rendererFileID": "3695847954595051029",
+      "onlyMeshAndMaterialReferencesChanged": true
+    },
+    {
+      "GX": "GX_0a7ad100d155_R18_Wall_Upper_Entry_Header",
+      "meshFilterFileID": "778929189358176233",
+      "rendererFileID": "4143402407862699859",
+      "onlyMeshAndMaterialReferencesChanged": true
+    }
+  ],
+  "sceneOldRecordsRemoved": 0,
+  "sceneOldChangedOnlySceneRoots": true,
+  "newScenePrefabInstances": 1,
+  "existingUncommittedDefaultFieldExcludedFromSceneCommit": true,
+  "sceneCommitCandidateSHA256": "75be002cfcbbcd644ec6648a2c86d04315cec00f68a2d788cf665ee83a0cfebe",
+  "existingMaterialsTexturesShadersDEMPhysicsLightmapsLODCullingBatchMeshesUnchanged": true,
+  "priorPrefabBeforeSHA256": "ebe9371eb93439f6036d3b73bfe7c9a9ec89f3f0abebe030c0f471a0444df35e",
+  "priorPrefabAfterSHA256": "ba769eefea03fd6779073a01c0fbd39e7ec404f9017cec0f624d2f78baff1a20",
+  "formalWorkingSHA256": "8ec8481856281fa2f3455fa3101e0a621ef156059a5bede24d30fa6d08f1b11a",
+  "R20Applied": false
+}

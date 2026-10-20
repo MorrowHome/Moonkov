@@ -1,0 +1,56 @@
+[
+  {
+    "GX": "GX_327b99bf7b30_R18_Court_East_Solid_Return",
+    "priorPartition": "R18_SERVICE_HOUSE_05_INTEGRATED_SERVICE_COURT",
+    "previousSnapshotExact": true,
+    "matrixExact": true
+  },
+  {
+    "GX": "GX_a1f63b3f4591_R18_Wall_Lower_East_South",
+    "priorPartition": "R18_SERVICE_HOUSE_02_SOLID_SHELL_AND_OPEN_PORTALS",
+    "previousSnapshotExact": true,
+    "matrixExact": true
+  },
+  {
+    "GX": "GX_3b3f2df7ff32_R18_Wall_Lower_Entry_Header",
+    "priorPartition": "R18_SERVICE_HOUSE_02_SOLID_SHELL_AND_OPEN_PORTALS",
+    "previousSnapshotExact": true,
+    "matrixExact": true
+  },
+  {
+    "GX": "GX_f686b841de59_R18_Wall_South_East_Pier",
+    "priorPartition": "R18_SERVICE_HOUSE_02_SOLID_SHELL_AND_OPEN_PORTALS",
+    "previousSnapshotExact": true,
+    "matrixExact": true
+  },
+  {
+    "GX": "GX_bef5ec1e3e99_R18_Wall_South_Vent_Header",
+    "priorPartition": "R18_SERVICE_HOUSE_02_SOLID_SHELL_AND_OPEN_PORTALS",
+    "previousSnapshotExact": true,
+    "matrixExact": true
+  },
+  {
+    "GX": "GX_8c43f03ee020_R18_Wall_South_Vent_Sill",
+    "priorPartition": "R18_SERVICE_HOUSE_02_SOLID_SHELL_AND_OPEN_PORTALS",
+    "previousSnapshotExact": true,
+    "matrixExact": true
+  },
+  {
+    "GX": "GX_47fef11fc674_R18_Wall_South_West_Pier",
+    "priorPartition": "R18_SERVICE_HOUSE_02_SOLID_SHELL_AND_OPEN_PORTALS",
+    "previousSnapshotExact": true,
+    "matrixExact": true
+  },
+  {
+    "GX": "GX_c363494d40e7_R18_Wall_Upper_East_South",
+    "priorPartition": "R18_SERVICE_HOUSE_02_SOLID_SHELL_AND_OPEN_PORTALS",
+    "previousSnapshotExact": true,
+    "matrixExact": true
+  },
+  {
+    "GX": "GX_0a7ad100d155_R18_Wall_Upper_Entry_Header",
+    "priorPartition": "R18_SERVICE_HOUSE_02_SOLID_SHELL_AND_OPEN_PORTALS",
+    "previousSnapshotExact": true,
+    "matrixExact": true
+  }
+]

@@ -1,0 +1,1259 @@
+{
+  "requires_base_package_sha256": "6a34722eda6de2d0f7696b346da3083500b7e5965eaf2f924246f3d7cfcfdb85",
+  "replacement_count": 9,
+  "additive_count": 43,
+  "replacement_targets": [
+    {
+      "source_object": "R18_Court_East_Solid_Return",
+      "stable_export_object": "GX_327b99bf7b30_R18_Court_East_Solid_Return",
+      "prior_partition": "R18_SERVICE_HOUSE_05_INTEGRATED_SERVICE_COURT",
+      "replacement_partition": "R19_00_REPLACEMENT_MESHES_DO_NOT_INSTANTIATE",
+      "expected_previous_mesh": {
+        "vertices": 56,
+        "polygons": 54,
+        "loops": 216,
+        "triangles": 108,
+        "world_bounds": [
+          [
+            1751.760009765625,
+            1752.0
+          ],
+          [
+            2261.39990234375,
+            2265.800048828125
+          ],
+          [
+            205.27999877929688,
+            206.47999572753906
+          ]
+        ],
+        "local_vertex_sha256": "13725af9dd038534a6cbe68689f4d675c88082f888d311127a3a8afe3c4bf755",
+        "material_slots": [
+          "B_GrayWhite_Rough_Cladding"
+        ],
+        "face_material_counts": {
+          "B_GrayWhite_Rough_Cladding": 54
+        },
+        "face_material_sequence_sha256": "8c6dac2a43b7c3b7d123a917d4a06d29448978fc580a6aca3de2a18796096ade",
+        "uv_layers": [
+          {
+            "name": "R18_GameExport_UV0_Box_1LocalUnit",
+            "index": 0,
+            "sha256_float32": "068c6b5ad8b7b8ec24511b81f0f4f52a354afb409ac645df91005915201ab253",
+            "finite": true,
+            "nonzero_geometry_triangles_with_zero_uv_area": 0,
+            "range": [
+              [
+                -4.396728515625,
+                4.396728515625
+              ],
+              [
+                0.00341796875,
+                4.396728515625
+              ]
+            ],
+            "sha256_float32_canonical_zero": "068c6b5ad8b7b8ec24511b81f0f4f52a354afb409ac645df91005915201ab253"
+          }
+        ],
+        "max_polygon_vertices": 4,
+        "loop_vertex_index_sha256": "1f7ee80b7ec861cddfe95c218ddc3d835d243c66b9bb3026aacfa7ed54f375b0",
+        "polygon_loop_start_sha256": "4e8a8597613845324249043fc11a993e3804959730c7dd0208c82432fbe3485e",
+        "polygon_loop_total_sha256": "3419f30020cb90115ea8d0d960b7c1d0fb4edc7f42fd25acbb2d849f5149a998"
+      },
+      "replacement_mesh": {
+        "vertices": 56,
+        "polygons": 54,
+        "loops": 216,
+        "triangles": 108,
+        "world_bounds": [
+          [
+            1751.760009765625,
+            1752.0
+          ],
+          [
+            2261.39990234375,
+            2265.800048828125
+          ],
+          [
+            205.27999877929688,
+            206.47999572753906
+          ]
+        ],
+        "local_vertex_sha256": "13725af9dd038534a6cbe68689f4d675c88082f888d311127a3a8afe3c4bf755",
+        "material_slots": [
+          "R19_MineralBase_PRIVATE_PBR"
+        ],
+        "face_material_counts": {
+          "R19_MineralBase_PRIVATE_PBR": 54
+        },
+        "face_material_sequence_sha256": "d29b544736db2de201925a765afd97348ef77a99d39c0e020c0d046e4ff97062",
+        "uv_layers": [
+          {
+            "name": "R19_Meter_UV",
+            "index": 0,
+            "sha256_float32": "b5c188074f445f6daa409de775f598741cff6aacd800730cb842e12ecef4e977",
+            "finite": true,
+            "nonzero_geometry_triangles_with_zero_uv_area": 0,
+            "range": [
+              [
+                1.9150023460388184,
+                3.1000125408172607
+              ],
+              [
+                -0.0033335366751998663,
+                2.0666747093200684
+              ]
+            ],
+            "sha256_float32_canonical_zero": "b5c188074f445f6daa409de775f598741cff6aacd800730cb842e12ecef4e977"
+          }
+        ],
+        "max_polygon_vertices": 4,
+        "loop_vertex_index_sha256": "1f7ee80b7ec861cddfe95c218ddc3d835d243c66b9bb3026aacfa7ed54f375b0",
+        "polygon_loop_start_sha256": "4e8a8597613845324249043fc11a993e3804959730c7dd0208c82432fbe3485e",
+        "polygon_loop_total_sha256": "3419f30020cb90115ea8d0d960b7c1d0fb4edc7f42fd25acbb2d849f5149a998"
+      },
+      "matrix_world_blender": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "operation": "On unique existing display target only: capture current MeshFilter.sharedMesh + renderer.sharedMaterials + enabled state; swap render mesh and private material slots. Preserve transform, hierarchy, components, collider.sharedMesh and all physics. Never instantiate replacement FBX. If merged/optimized or nonunique, HOLD this replacement; do not disable whole aggregate.",
+      "rollback": "Restore captured original display mesh/material references and enabled state; do not touch shared source assets or colliders."
+    },
+    {
+      "source_object": "R18_Wall_Lower_East_South",
+      "stable_export_object": "GX_a1f63b3f4591_R18_Wall_Lower_East_South",
+      "prior_partition": "R18_SERVICE_HOUSE_02_SOLID_SHELL_AND_OPEN_PORTALS",
+      "replacement_partition": "R19_00_REPLACEMENT_MESHES_DO_NOT_INSTANTIATE",
+      "expected_previous_mesh": {
+        "vertices": 56,
+        "polygons": 54,
+        "loops": 216,
+        "triangles": 108,
+        "world_bounds": [
+          [
+            1749.1600341796875,
+            1749.5
+          ],
+          [
+            2253.39990234375,
+            2257.85009765625
+          ],
+          [
+            204.39999389648438,
+            208.5800018310547
+          ]
+        ],
+        "local_vertex_sha256": "c91e1019b0fdf748bd577729ae5abc08c54cfe0a86db7f4aa2ee90dbc382e97c",
+        "material_slots": [
+          "B_GrayWhite_Rough_Cladding"
+        ],
+        "face_material_counts": {
+          "B_GrayWhite_Rough_Cladding": 54
+        },
+        "face_material_sequence_sha256": "8c6dac2a43b7c3b7d123a917d4a06d29448978fc580a6aca3de2a18796096ade",
+        "uv_layers": [
+          {
+            "name": "R18_GameExport_UV0_Box_1LocalUnit",
+            "index": 0,
+            "sha256_float32": "5031283a04a40b545f9128f6185e43c2939bc966d3b7cf8cf40df4838f14f3f2",
+            "finite": true,
+            "nonzero_geometry_triangles_with_zero_uv_area": 0,
+            "range": [
+              [
+                -4.44677734375,
+                4.44677734375
+              ],
+              [
+                0.00341796875,
+                4.44677734375
+              ]
+            ],
+            "sha256_float32_canonical_zero": "5031283a04a40b545f9128f6185e43c2939bc966d3b7cf8cf40df4838f14f3f2"
+          }
+        ],
+        "max_polygon_vertices": 4,
+        "loop_vertex_index_sha256": "1f7ee80b7ec861cddfe95c218ddc3d835d243c66b9bb3026aacfa7ed54f375b0",
+        "polygon_loop_start_sha256": "4e8a8597613845324249043fc11a993e3804959730c7dd0208c82432fbe3485e",
+        "polygon_loop_total_sha256": "3419f30020cb90115ea8d0d960b7c1d0fb4edc7f42fd25acbb2d849f5149a998"
+      },
+      "replacement_mesh": {
+        "vertices": 56,
+        "polygons": 54,
+        "loops": 216,
+        "triangles": 108,
+        "world_bounds": [
+          [
+            1749.1600341796875,
+            1749.5
+          ],
+          [
+            2253.39990234375,
+            2257.85009765625
+          ],
+          [
+            204.39999389648438,
+            208.5800018310547
+          ]
+        ],
+        "local_vertex_sha256": "c91e1019b0fdf748bd577729ae5abc08c54cfe0a86db7f4aa2ee90dbc382e97c",
+        "material_slots": [
+          "R19_CoatedPanel_PRIVATE_PBR"
+        ],
+        "face_material_counts": {
+          "R19_CoatedPanel_PRIVATE_PBR": 54
+        },
+        "face_material_sequence_sha256": "c8c9d3ab735e240143766f9915748087f3cee3372e2e76d4488391e04850bc30",
+        "uv_layers": [
+          {
+            "name": "R19_Meter_UV",
+            "index": 0,
+            "sha256_float32": "996a8c2cac8441574e92651d5ae64a0b1d8c877792f0e8fa688c725b3c7b7ffd",
+            "finite": true,
+            "nonzero_geometry_triangles_with_zero_uv_area": 0,
+            "range": [
+              [
+                -2.441406286379788e-05,
+                1.350000023841858
+              ],
+              [
+                -1.627604251552839e-05,
+                0.7416829466819763
+              ]
+            ],
+            "sha256_float32_canonical_zero": "996a8c2cac8441574e92651d5ae64a0b1d8c877792f0e8fa688c725b3c7b7ffd"
+          }
+        ],
+        "max_polygon_vertices": 4,
+        "loop_vertex_index_sha256": "1f7ee80b7ec861cddfe95c218ddc3d835d243c66b9bb3026aacfa7ed54f375b0",
+        "polygon_loop_start_sha256": "4e8a8597613845324249043fc11a993e3804959730c7dd0208c82432fbe3485e",
+        "polygon_loop_total_sha256": "3419f30020cb90115ea8d0d960b7c1d0fb4edc7f42fd25acbb2d849f5149a998"
+      },
+      "matrix_world_blender": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "operation": "On unique existing display target only: capture current MeshFilter.sharedMesh + renderer.sharedMaterials + enabled state; swap render mesh and private material slots. Preserve transform, hierarchy, components, collider.sharedMesh and all physics. Never instantiate replacement FBX. If merged/optimized or nonunique, HOLD this replacement; do not disable whole aggregate.",
+      "rollback": "Restore captured original display mesh/material references and enabled state; do not touch shared source assets or colliders."
+    },
+    {
+      "source_object": "R18_Wall_Lower_Entry_Header",
+      "stable_export_object": "GX_3b3f2df7ff32_R18_Wall_Lower_Entry_Header",
+      "prior_partition": "R18_SERVICE_HOUSE_02_SOLID_SHELL_AND_OPEN_PORTALS",
+      "replacement_partition": "R19_00_REPLACEMENT_MESHES_DO_NOT_INSTANTIATE",
+      "expected_previous_mesh": {
+        "vertices": 56,
+        "polygons": 54,
+        "loops": 216,
+        "triangles": 108,
+        "world_bounds": [
+          [
+            1749.1600341796875,
+            1749.5
+          ],
+          [
+            2257.85009765625,
+            2259.64990234375
+          ],
+          [
+            207.0,
+            208.5800018310547
+          ]
+        ],
+        "local_vertex_sha256": "2997610b0d256a557f925e92fce44746807dec01ac81c28c4dbf85c2c5b69abd",
+        "material_slots": [
+          "B_GrayWhite_Rough_Cladding"
+        ],
+        "face_material_counts": {
+          "B_GrayWhite_Rough_Cladding": 54
+        },
+        "face_material_sequence_sha256": "8c6dac2a43b7c3b7d123a917d4a06d29448978fc580a6aca3de2a18796096ade",
+        "uv_layers": [
+          {
+            "name": "R18_GameExport_UV0_Box_1LocalUnit",
+            "index": 0,
+            "sha256_float32": "33bff1037be59b2d7bee89633b8617f10df0135faa701d0eec1b706d304c4831",
+            "finite": true,
+            "nonzero_geometry_triangles_with_zero_uv_area": 0,
+            "range": [
+              [
+                -1.79638671875,
+                1.79638671875
+              ],
+              [
+                0.00341796875,
+                1.79638671875
+              ]
+            ],
+            "sha256_float32_canonical_zero": "33bff1037be59b2d7bee89633b8617f10df0135faa701d0eec1b706d304c4831"
+          }
+        ],
+        "max_polygon_vertices": 4,
+        "loop_vertex_index_sha256": "1f7ee80b7ec861cddfe95c218ddc3d835d243c66b9bb3026aacfa7ed54f375b0",
+        "polygon_loop_start_sha256": "4e8a8597613845324249043fc11a993e3804959730c7dd0208c82432fbe3485e",
+        "polygon_loop_total_sha256": "3419f30020cb90115ea8d0d960b7c1d0fb4edc7f42fd25acbb2d849f5149a998"
+      },
+      "replacement_mesh": {
+        "vertices": 56,
+        "polygons": 54,
+        "loops": 216,
+        "triangles": 108,
+        "world_bounds": [
+          [
+            1749.1600341796875,
+            1749.5
+          ],
+          [
+            2257.85009765625,
+            2259.64990234375
+          ],
+          [
+            207.0,
+            208.5800018310547
+          ]
+        ],
+        "local_vertex_sha256": "2997610b0d256a557f925e92fce44746807dec01ac81c28c4dbf85c2c5b69abd",
+        "material_slots": [
+          "R19_CoatedPanel_PRIVATE_PBR"
+        ],
+        "face_material_counts": {
+          "R19_CoatedPanel_PRIVATE_PBR": 54
+        },
+        "face_material_sequence_sha256": "c8c9d3ab735e240143766f9915748087f3cee3372e2e76d4488391e04850bc30",
+        "uv_layers": [
+          {
+            "name": "R19_Meter_UV",
+            "index": 0,
+            "sha256_float32": "4c9006f985ab82b7a922d3c04d313ab2e6b620d951571d4a8e2e3d9baf84b0b5",
+            "finite": true,
+            "nonzero_geometry_triangles_with_zero_uv_area": 0,
+            "range": [
+              [
+                1.112524390220642,
+                1.562475562095642
+              ],
+              [
+                0.4333333373069763,
+                1.041650414466858
+              ]
+            ],
+            "sha256_float32_canonical_zero": "4c9006f985ab82b7a922d3c04d313ab2e6b620d951571d4a8e2e3d9baf84b0b5"
+          }
+        ],
+        "max_polygon_vertices": 4,
+        "loop_vertex_index_sha256": "1f7ee80b7ec861cddfe95c218ddc3d835d243c66b9bb3026aacfa7ed54f375b0",
+        "polygon_loop_start_sha256": "4e8a8597613845324249043fc11a993e3804959730c7dd0208c82432fbe3485e",
+        "polygon_loop_total_sha256": "3419f30020cb90115ea8d0d960b7c1d0fb4edc7f42fd25acbb2d849f5149a998"
+      },
+      "matrix_world_blender": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "operation": "On unique existing display target only: capture current MeshFilter.sharedMesh + renderer.sharedMaterials + enabled state; swap render mesh and private material slots. Preserve transform, hierarchy, components, collider.sharedMesh and all physics. Never instantiate replacement FBX. If merged/optimized or nonunique, HOLD this replacement; do not disable whole aggregate.",
+      "rollback": "Restore captured original display mesh/material references and enabled state; do not touch shared source assets or colliders."
+    },
+    {
+      "source_object": "R18_Wall_South_East_Pier",
+      "stable_export_object": "GX_f686b841de59_R18_Wall_South_East_Pier",
+      "prior_partition": "R18_SERVICE_HOUSE_02_SOLID_SHELL_AND_OPEN_PORTALS",
+      "replacement_partition": "R19_00_REPLACEMENT_MESHES_DO_NOT_INSTANTIATE",
+      "expected_previous_mesh": {
+        "vertices": 56,
+        "polygons": 54,
+        "loops": 216,
+        "triangles": 108,
+        "world_bounds": [
+          [
+            1748.4599609375,
+            1749.5
+          ],
+          [
+            2253.39990234375,
+            2253.760009765625
+          ],
+          [
+            204.39999389648438,
+            208.5800018310547
+          ]
+        ],
+        "local_vertex_sha256": "c403d8ab8a938c347d2817eed780b76af25762d0f20892d94b235c0ba028bae4",
+        "material_slots": [
+          "B_GrayWhite_Rough_Cladding"
+        ],
+        "face_material_counts": {
+          "B_GrayWhite_Rough_Cladding": 54
+        },
+        "face_material_sequence_sha256": "8c6dac2a43b7c3b7d123a917d4a06d29448978fc580a6aca3de2a18796096ade",
+        "uv_layers": [
+          {
+            "name": "R18_GameExport_UV0_Box_1LocalUnit",
+            "index": 0,
+            "sha256_float32": "d148f1998c2be4e6a607f5feef23597427563e03e79be65f91f35428a64af1c9",
+            "finite": true,
+            "nonzero_geometry_triangles_with_zero_uv_area": 0,
+            "range": [
+              [
+                -1.0364990234375,
+                1.0364990234375
+              ],
+              [
+                0.00341796875,
+                4.176483154296875
+              ]
+            ],
+            "sha256_float32_canonical_zero": "d148f1998c2be4e6a607f5feef23597427563e03e79be65f91f35428a64af1c9"
+          }
+        ],
+        "max_polygon_vertices": 4,
+        "loop_vertex_index_sha256": "1f7ee80b7ec861cddfe95c218ddc3d835d243c66b9bb3026aacfa7ed54f375b0",
+        "polygon_loop_start_sha256": "4e8a8597613845324249043fc11a993e3804959730c7dd0208c82432fbe3485e",
+        "polygon_loop_total_sha256": "3419f30020cb90115ea8d0d960b7c1d0fb4edc7f42fd25acbb2d849f5149a998"
+      },
+      "replacement_mesh": {
+        "vertices": 56,
+        "polygons": 54,
+        "loops": 216,
+        "triangles": 108,
+        "world_bounds": [
+          [
+            1748.4599609375,
+            1749.5
+          ],
+          [
+            2253.39990234375,
+            2253.760009765625
+          ],
+          [
+            204.39999389648438,
+            208.5800018310547
+          ]
+        ],
+        "local_vertex_sha256": "c403d8ab8a938c347d2817eed780b76af25762d0f20892d94b235c0ba028bae4",
+        "material_slots": [
+          "R19_CoatedPanel_PRIVATE_PBR"
+        ],
+        "face_material_counts": {
+          "R19_CoatedPanel_PRIVATE_PBR": 54
+        },
+        "face_material_sequence_sha256": "c8c9d3ab735e240143766f9915748087f3cee3372e2e76d4488391e04850bc30",
+        "uv_layers": [
+          {
+            "name": "R19_Meter_UV",
+            "index": 0,
+            "sha256_float32": "489504fb3a3972d51e8007307a145a1b49b61ba8456a2f70080f6e7ece67a5df",
+            "finite": true,
+            "nonzero_geometry_triangles_with_zero_uv_area": 0,
+            "range": [
+              [
+                -2.441406286379788e-05,
+                1.350000023841858
+              ],
+              [
+                -1.627604251552839e-05,
+                0.696666955947876
+              ]
+            ],
+            "sha256_float32_canonical_zero": "489504fb3a3972d51e8007307a145a1b49b61ba8456a2f70080f6e7ece67a5df"
+          }
+        ],
+        "max_polygon_vertices": 4,
+        "loop_vertex_index_sha256": "1f7ee80b7ec861cddfe95c218ddc3d835d243c66b9bb3026aacfa7ed54f375b0",
+        "polygon_loop_start_sha256": "4e8a8597613845324249043fc11a993e3804959730c7dd0208c82432fbe3485e",
+        "polygon_loop_total_sha256": "3419f30020cb90115ea8d0d960b7c1d0fb4edc7f42fd25acbb2d849f5149a998"
+      },
+      "matrix_world_blender": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "operation": "On unique existing display target only: capture current MeshFilter.sharedMesh + renderer.sharedMaterials + enabled state; swap render mesh and private material slots. Preserve transform, hierarchy, components, collider.sharedMesh and all physics. Never instantiate replacement FBX. If merged/optimized or nonunique, HOLD this replacement; do not disable whole aggregate.",
+      "rollback": "Restore captured original display mesh/material references and enabled state; do not touch shared source assets or colliders."
+    },
+    {
+      "source_object": "R18_Wall_South_Vent_Header",
+      "stable_export_object": "GX_bef5ec1e3e99_R18_Wall_South_Vent_Header",
+      "prior_partition": "R18_SERVICE_HOUSE_02_SOLID_SHELL_AND_OPEN_PORTALS",
+      "replacement_partition": "R19_00_REPLACEMENT_MESHES_DO_NOT_INSTANTIATE",
+      "expected_previous_mesh": {
+        "vertices": 56,
+        "polygons": 54,
+        "loops": 216,
+        "triangles": 108,
+        "world_bounds": [
+          [
+            1745.1400146484375,
+            1748.4599609375
+          ],
+          [
+            2253.39990234375,
+            2253.760009765625
+          ],
+          [
+            207.4499969482422,
+            208.5800018310547
+          ]
+        ],
+        "local_vertex_sha256": "84e88ca630490416018ee2baedc3d9913fe016864778b55838707a8c614ee14f",
+        "material_slots": [
+          "B_GrayWhite_Rough_Cladding"
+        ],
+        "face_material_counts": {
+          "B_GrayWhite_Rough_Cladding": 54
+        },
+        "face_material_sequence_sha256": "8c6dac2a43b7c3b7d123a917d4a06d29448978fc580a6aca3de2a18796096ade",
+        "uv_layers": [
+          {
+            "name": "R18_GameExport_UV0_Box_1LocalUnit",
+            "index": 0,
+            "sha256_float32": "fb956df93331612ec2165da96a1e5cc7bf018827caafefb341aaadee1465f5e4",
+            "finite": true,
+            "nonzero_geometry_triangles_with_zero_uv_area": 0,
+            "range": [
+              [
+                -3.31640625,
+                3.31640625
+              ],
+              [
+                0.00341796875,
+                1.1264801025390625
+              ]
+            ],
+            "sha256_float32_canonical_zero": "fb956df93331612ec2165da96a1e5cc7bf018827caafefb341aaadee1465f5e4"
+          }
+        ],
+        "max_polygon_vertices": 4,
+        "loop_vertex_index_sha256": "1f7ee80b7ec861cddfe95c218ddc3d835d243c66b9bb3026aacfa7ed54f375b0",
+        "polygon_loop_start_sha256": "4e8a8597613845324249043fc11a993e3804959730c7dd0208c82432fbe3485e",
+        "polygon_loop_total_sha256": "3419f30020cb90115ea8d0d960b7c1d0fb4edc7f42fd25acbb2d849f5149a998"
+      },
+      "replacement_mesh": {
+        "vertices": 56,
+        "polygons": 54,
+        "loops": 216,
+        "triangles": 108,
+        "world_bounds": [
+          [
+            1745.1400146484375,
+            1748.4599609375
+          ],
+          [
+            2253.39990234375,
+            2253.760009765625
+          ],
+          [
+            207.4499969482422,
+            208.5800018310547
+          ]
+        ],
+        "local_vertex_sha256": "84e88ca630490416018ee2baedc3d9913fe016864778b55838707a8c614ee14f",
+        "material_slots": [
+          "R19_CoatedPanel_PRIVATE_PBR"
+        ],
+        "face_material_counts": {
+          "R19_CoatedPanel_PRIVATE_PBR": 54
+        },
+        "face_material_sequence_sha256": "c8c9d3ab735e240143766f9915748087f3cee3372e2e76d4488391e04850bc30",
+        "uv_layers": [
+          {
+            "name": "R19_Meter_UV",
+            "index": 0,
+            "sha256_float32": "fc489679534de53ab30d16adcfd938ac34c93c1f2261dc2d2d1405daa0469856",
+            "finite": true,
+            "nonzero_geometry_triangles_with_zero_uv_area": 0,
+            "range": [
+              [
+                -2.441406286379788e-05,
+                1.089990258216858
+              ],
+              [
+                -1.627604251552839e-05,
+                0.6966670155525208
+              ]
+            ],
+            "sha256_float32_canonical_zero": "fc489679534de53ab30d16adcfd938ac34c93c1f2261dc2d2d1405daa0469856"
+          }
+        ],
+        "max_polygon_vertices": 4,
+        "loop_vertex_index_sha256": "1f7ee80b7ec861cddfe95c218ddc3d835d243c66b9bb3026aacfa7ed54f375b0",
+        "polygon_loop_start_sha256": "4e8a8597613845324249043fc11a993e3804959730c7dd0208c82432fbe3485e",
+        "polygon_loop_total_sha256": "3419f30020cb90115ea8d0d960b7c1d0fb4edc7f42fd25acbb2d849f5149a998"
+      },
+      "matrix_world_blender": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "operation": "On unique existing display target only: capture current MeshFilter.sharedMesh + renderer.sharedMaterials + enabled state; swap render mesh and private material slots. Preserve transform, hierarchy, components, collider.sharedMesh and all physics. Never instantiate replacement FBX. If merged/optimized or nonunique, HOLD this replacement; do not disable whole aggregate.",
+      "rollback": "Restore captured original display mesh/material references and enabled state; do not touch shared source assets or colliders."
+    },
+    {
+      "source_object": "R18_Wall_South_Vent_Sill",
+      "stable_export_object": "GX_8c43f03ee020_R18_Wall_South_Vent_Sill",
+      "prior_partition": "R18_SERVICE_HOUSE_02_SOLID_SHELL_AND_OPEN_PORTALS",
+      "replacement_partition": "R19_00_REPLACEMENT_MESHES_DO_NOT_INSTANTIATE",
+      "expected_previous_mesh": {
+        "vertices": 56,
+        "polygons": 54,
+        "loops": 216,
+        "triangles": 108,
+        "world_bounds": [
+          [
+            1745.1400146484375,
+            1748.4599609375
+          ],
+          [
+            2253.39990234375,
+            2253.760009765625
+          ],
+          [
+            204.39999389648438,
+            205.0500030517578
+          ]
+        ],
+        "local_vertex_sha256": "0f489d1517d8b34aa89c9bbd914661551eb75f01ff1f393feb1526ec4e00afaf",
+        "material_slots": [
+          "B_GrayWhite_Rough_Cladding"
+        ],
+        "face_material_counts": {
+          "B_GrayWhite_Rough_Cladding": 54
+        },
+        "face_material_sequence_sha256": "8c6dac2a43b7c3b7d123a917d4a06d29448978fc580a6aca3de2a18796096ade",
+        "uv_layers": [
+          {
+            "name": "R18_GameExport_UV0_Box_1LocalUnit",
+            "index": 0,
+            "sha256_float32": "5079dbe16a002aed6bd2a62b160ffb4e25a136d2cf173a80bd9ab527f720ece1",
+            "finite": true,
+            "nonzero_geometry_triangles_with_zero_uv_area": 0,
+            "range": [
+              [
+                -3.31640625,
+                3.31640625
+              ],
+              [
+                0.00341796875,
+                0.646514892578125
+              ]
+            ],
+            "sha256_float32_canonical_zero": "5079dbe16a002aed6bd2a62b160ffb4e25a136d2cf173a80bd9ab527f720ece1"
+          }
+        ],
+        "max_polygon_vertices": 4,
+        "loop_vertex_index_sha256": "1f7ee80b7ec861cddfe95c218ddc3d835d243c66b9bb3026aacfa7ed54f375b0",
+        "polygon_loop_start_sha256": "4e8a8597613845324249043fc11a993e3804959730c7dd0208c82432fbe3485e",
+        "polygon_loop_total_sha256": "3419f30020cb90115ea8d0d960b7c1d0fb4edc7f42fd25acbb2d849f5149a998"
+      },
+      "replacement_mesh": {
+        "vertices": 56,
+        "polygons": 54,
+        "loops": 216,
+        "triangles": 108,
+        "world_bounds": [
+          [
+            1745.1400146484375,
+            1748.4599609375
+          ],
+          [
+            2253.39990234375,
+            2253.760009765625
+          ],
+          [
+            204.39999389648438,
+            205.0500030517578
+          ]
+        ],
+        "local_vertex_sha256": "0f489d1517d8b34aa89c9bbd914661551eb75f01ff1f393feb1526ec4e00afaf",
+        "material_slots": [
+          "R19_CoatedPanel_PRIVATE_PBR"
+        ],
+        "face_material_counts": {
+          "R19_CoatedPanel_PRIVATE_PBR": 54
+        },
+        "face_material_sequence_sha256": "c8c9d3ab735e240143766f9915748087f3cee3372e2e76d4488391e04850bc30",
+        "uv_layers": [
+          {
+            "name": "R19_Meter_UV",
+            "index": 0,
+            "sha256_float32": "b9bc3dd1aa96b33c350d28d0f0624ea3730f48bc37f1450ccf64fc359b244057",
+            "finite": true,
+            "nonzero_geometry_triangles_with_zero_uv_area": 0,
+            "range": [
+              [
+                -2.441406286379788e-05,
+                1.089990258216858
+              ],
+              [
+                -1.627604251552839e-05,
+                0.10833384096622467
+              ]
+            ],
+            "sha256_float32_canonical_zero": "b9bc3dd1aa96b33c350d28d0f0624ea3730f48bc37f1450ccf64fc359b244057"
+          }
+        ],
+        "max_polygon_vertices": 4,
+        "loop_vertex_index_sha256": "1f7ee80b7ec861cddfe95c218ddc3d835d243c66b9bb3026aacfa7ed54f375b0",
+        "polygon_loop_start_sha256": "4e8a8597613845324249043fc11a993e3804959730c7dd0208c82432fbe3485e",
+        "polygon_loop_total_sha256": "3419f30020cb90115ea8d0d960b7c1d0fb4edc7f42fd25acbb2d849f5149a998"
+      },
+      "matrix_world_blender": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "operation": "On unique existing display target only: capture current MeshFilter.sharedMesh + renderer.sharedMaterials + enabled state; swap render mesh and private material slots. Preserve transform, hierarchy, components, collider.sharedMesh and all physics. Never instantiate replacement FBX. If merged/optimized or nonunique, HOLD this replacement; do not disable whole aggregate.",
+      "rollback": "Restore captured original display mesh/material references and enabled state; do not touch shared source assets or colliders."
+    },
+    {
+      "source_object": "R18_Wall_South_West_Pier",
+      "stable_export_object": "GX_47fef11fc674_R18_Wall_South_West_Pier",
+      "prior_partition": "R18_SERVICE_HOUSE_02_SOLID_SHELL_AND_OPEN_PORTALS",
+      "replacement_partition": "R19_00_REPLACEMENT_MESHES_DO_NOT_INSTANTIATE",
+      "expected_previous_mesh": {
+        "vertices": 56,
+        "polygons": 54,
+        "loops": 216,
+        "triangles": 108,
+        "world_bounds": [
+          [
+            1744.0999755859375,
+            1745.1400146484375
+          ],
+          [
+            2253.39990234375,
+            2253.760009765625
+          ],
+          [
+            204.39999389648438,
+            208.5800018310547
+          ]
+        ],
+        "local_vertex_sha256": "9838eabbe00088dd1851d6a3ff98ab99aabe435312753bf95c531f88d5873419",
+        "material_slots": [
+          "B_GrayWhite_Rough_Cladding"
+        ],
+        "face_material_counts": {
+          "B_GrayWhite_Rough_Cladding": 54
+        },
+        "face_material_sequence_sha256": "8c6dac2a43b7c3b7d123a917d4a06d29448978fc580a6aca3de2a18796096ade",
+        "uv_layers": [
+          {
+            "name": "R18_GameExport_UV0_Box_1LocalUnit",
+            "index": 0,
+            "sha256_float32": "b1460bd63c25f3c6e85868f8ca8b688aba976f44d75d0a5b435dfaebd98ef4f6",
+            "finite": true,
+            "nonzero_geometry_triangles_with_zero_uv_area": 0,
+            "range": [
+              [
+                -1.036376953125,
+                1.036376953125
+              ],
+              [
+                0.00341796875,
+                4.176483154296875
+              ]
+            ],
+            "sha256_float32_canonical_zero": "b1460bd63c25f3c6e85868f8ca8b688aba976f44d75d0a5b435dfaebd98ef4f6"
+          }
+        ],
+        "max_polygon_vertices": 4,
+        "loop_vertex_index_sha256": "1f7ee80b7ec861cddfe95c218ddc3d835d243c66b9bb3026aacfa7ed54f375b0",
+        "polygon_loop_start_sha256": "4e8a8597613845324249043fc11a993e3804959730c7dd0208c82432fbe3485e",
+        "polygon_loop_total_sha256": "3419f30020cb90115ea8d0d960b7c1d0fb4edc7f42fd25acbb2d849f5149a998"
+      },
+      "replacement_mesh": {
+        "vertices": 56,
+        "polygons": 54,
+        "loops": 216,
+        "triangles": 108,
+        "world_bounds": [
+          [
+            1744.0999755859375,
+            1745.1400146484375
+          ],
+          [
+            2253.39990234375,
+            2253.760009765625
+          ],
+          [
+            204.39999389648438,
+            208.5800018310547
+          ]
+        ],
+        "local_vertex_sha256": "9838eabbe00088dd1851d6a3ff98ab99aabe435312753bf95c531f88d5873419",
+        "material_slots": [
+          "R19_CoatedPanel_PRIVATE_PBR"
+        ],
+        "face_material_counts": {
+          "R19_CoatedPanel_PRIVATE_PBR": 54
+        },
+        "face_material_sequence_sha256": "c8c9d3ab735e240143766f9915748087f3cee3372e2e76d4488391e04850bc30",
+        "uv_layers": [
+          {
+            "name": "R19_Meter_UV",
+            "index": 0,
+            "sha256_float32": "154741e32f999ab107041b5484186c047ab1c5fb368dd60c9ce09e248bec29ab",
+            "finite": true,
+            "nonzero_geometry_triangles_with_zero_uv_area": 0,
+            "range": [
+              [
+                -2.441406286379788e-05,
+                0.2600036561489105
+              ],
+              [
+                -1.627604251552839e-05,
+                0.696666955947876
+              ]
+            ],
+            "sha256_float32_canonical_zero": "154741e32f999ab107041b5484186c047ab1c5fb368dd60c9ce09e248bec29ab"
+          }
+        ],
+        "max_polygon_vertices": 4,
+        "loop_vertex_index_sha256": "1f7ee80b7ec861cddfe95c218ddc3d835d243c66b9bb3026aacfa7ed54f375b0",
+        "polygon_loop_start_sha256": "4e8a8597613845324249043fc11a993e3804959730c7dd0208c82432fbe3485e",
+        "polygon_loop_total_sha256": "3419f30020cb90115ea8d0d960b7c1d0fb4edc7f42fd25acbb2d849f5149a998"
+      },
+      "matrix_world_blender": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "operation": "On unique existing display target only: capture current MeshFilter.sharedMesh + renderer.sharedMaterials + enabled state; swap render mesh and private material slots. Preserve transform, hierarchy, components, collider.sharedMesh and all physics. Never instantiate replacement FBX. If merged/optimized or nonunique, HOLD this replacement; do not disable whole aggregate.",
+      "rollback": "Restore captured original display mesh/material references and enabled state; do not touch shared source assets or colliders."
+    },
+    {
+      "source_object": "R18_Wall_Upper_East_South",
+      "stable_export_object": "GX_c363494d40e7_R18_Wall_Upper_East_South",
+      "prior_partition": "R18_SERVICE_HOUSE_02_SOLID_SHELL_AND_OPEN_PORTALS",
+      "replacement_partition": "R19_00_REPLACEMENT_MESHES_DO_NOT_INSTANTIATE",
+      "expected_previous_mesh": {
+        "vertices": 56,
+        "polygons": 54,
+        "loops": 216,
+        "triangles": 108,
+        "world_bounds": [
+          [
+            1749.1600341796875,
+            1749.5
+          ],
+          [
+            2259.89990234375,
+            2263.199951171875
+          ],
+          [
+            205.3000030517578,
+            210.0500030517578
+          ]
+        ],
+        "local_vertex_sha256": "09753fe079eade7d3580258c9248a4e80228071a87cd74dbb8bf24408847ec50",
+        "material_slots": [
+          "B_GrayWhite_Rough_Cladding"
+        ],
+        "face_material_counts": {
+          "B_GrayWhite_Rough_Cladding": 54
+        },
+        "face_material_sequence_sha256": "8c6dac2a43b7c3b7d123a917d4a06d29448978fc580a6aca3de2a18796096ade",
+        "uv_layers": [
+          {
+            "name": "R18_GameExport_UV0_Box_1LocalUnit",
+            "index": 0,
+            "sha256_float32": "64406aaee1b213d4ab63c27c91c2740a4b441b9f473775ec67ef0d8b0242df69",
+            "finite": true,
+            "nonzero_geometry_triangles_with_zero_uv_area": 0,
+            "range": [
+              [
+                -3.296630859375,
+                3.296630859375
+              ],
+              [
+                0.00341796875,
+                4.7465057373046875
+              ]
+            ],
+            "sha256_float32_canonical_zero": "64406aaee1b213d4ab63c27c91c2740a4b441b9f473775ec67ef0d8b0242df69"
+          }
+        ],
+        "max_polygon_vertices": 4,
+        "loop_vertex_index_sha256": "1f7ee80b7ec861cddfe95c218ddc3d835d243c66b9bb3026aacfa7ed54f375b0",
+        "polygon_loop_start_sha256": "4e8a8597613845324249043fc11a993e3804959730c7dd0208c82432fbe3485e",
+        "polygon_loop_total_sha256": "3419f30020cb90115ea8d0d960b7c1d0fb4edc7f42fd25acbb2d849f5149a998"
+      },
+      "replacement_mesh": {
+        "vertices": 56,
+        "polygons": 54,
+        "loops": 216,
+        "triangles": 108,
+        "world_bounds": [
+          [
+            1749.1600341796875,
+            1749.5
+          ],
+          [
+            2259.89990234375,
+            2263.199951171875
+          ],
+          [
+            205.3000030517578,
+            210.0500030517578
+          ]
+        ],
+        "local_vertex_sha256": "09753fe079eade7d3580258c9248a4e80228071a87cd74dbb8bf24408847ec50",
+        "material_slots": [
+          "R19_CoatedPanel_PRIVATE_PBR"
+        ],
+        "face_material_counts": {
+          "R19_CoatedPanel_PRIVATE_PBR": 54
+        },
+        "face_material_sequence_sha256": "c8c9d3ab735e240143766f9915748087f3cee3372e2e76d4488391e04850bc30",
+        "uv_layers": [
+          {
+            "name": "R19_Meter_UV",
+            "index": 0,
+            "sha256_float32": "1c3c092e9bcfa49e746e49c4e93cd06244e30f3d0875263d2c8ae76a17bc5aad",
+            "finite": true,
+            "nonzero_geometry_triangles_with_zero_uv_area": 0,
+            "range": [
+              [
+                1.265008568763733,
+                2.4499878883361816
+              ],
+              [
+                5.086262717668433e-07,
+                1.6333253383636475
+              ]
+            ],
+            "sha256_float32_canonical_zero": "1c3c092e9bcfa49e746e49c4e93cd06244e30f3d0875263d2c8ae76a17bc5aad"
+          }
+        ],
+        "max_polygon_vertices": 4,
+        "loop_vertex_index_sha256": "1f7ee80b7ec861cddfe95c218ddc3d835d243c66b9bb3026aacfa7ed54f375b0",
+        "polygon_loop_start_sha256": "4e8a8597613845324249043fc11a993e3804959730c7dd0208c82432fbe3485e",
+        "polygon_loop_total_sha256": "3419f30020cb90115ea8d0d960b7c1d0fb4edc7f42fd25acbb2d849f5149a998"
+      },
+      "matrix_world_blender": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "operation": "On unique existing display target only: capture current MeshFilter.sharedMesh + renderer.sharedMaterials + enabled state; swap render mesh and private material slots. Preserve transform, hierarchy, components, collider.sharedMesh and all physics. Never instantiate replacement FBX. If merged/optimized or nonunique, HOLD this replacement; do not disable whole aggregate.",
+      "rollback": "Restore captured original display mesh/material references and enabled state; do not touch shared source assets or colliders."
+    },
+    {
+      "source_object": "R18_Wall_Upper_Entry_Header",
+      "stable_export_object": "GX_0a7ad100d155_R18_Wall_Upper_Entry_Header",
+      "prior_partition": "R18_SERVICE_HOUSE_02_SOLID_SHELL_AND_OPEN_PORTALS",
+      "replacement_partition": "R19_00_REPLACEMENT_MESHES_DO_NOT_INSTANTIATE",
+      "expected_previous_mesh": {
+        "vertices": 56,
+        "polygons": 54,
+        "loops": 216,
+        "triangles": 108,
+        "world_bounds": [
+          [
+            1749.1600341796875,
+            1749.5
+          ],
+          [
+            2263.199951171875,
+            2265.0
+          ],
+          [
+            207.89999389648438,
+            210.0500030517578
+          ]
+        ],
+        "local_vertex_sha256": "5af4bbc9202f67654a374a5a42de7333283e766504743d97482f53c85a4b4da1",
+        "material_slots": [
+          "B_GrayWhite_Rough_Cladding"
+        ],
+        "face_material_counts": {
+          "B_GrayWhite_Rough_Cladding": 54
+        },
+        "face_material_sequence_sha256": "8c6dac2a43b7c3b7d123a917d4a06d29448978fc580a6aca3de2a18796096ade",
+        "uv_layers": [
+          {
+            "name": "R18_GameExport_UV0_Box_1LocalUnit",
+            "index": 0,
+            "sha256_float32": "32fc6f8cae2b314c09a4ce49601724300c7d81be59639f10ba54a1265e098d9b",
+            "finite": true,
+            "nonzero_geometry_triangles_with_zero_uv_area": 0,
+            "range": [
+              [
+                -1.796875,
+                1.796875
+              ],
+              [
+                0.00341796875,
+                2.146514892578125
+              ]
+            ],
+            "sha256_float32_canonical_zero": "32fc6f8cae2b314c09a4ce49601724300c7d81be59639f10ba54a1265e098d9b"
+          }
+        ],
+        "max_polygon_vertices": 4,
+        "loop_vertex_index_sha256": "1f7ee80b7ec861cddfe95c218ddc3d835d243c66b9bb3026aacfa7ed54f375b0",
+        "polygon_loop_start_sha256": "4e8a8597613845324249043fc11a993e3804959730c7dd0208c82432fbe3485e",
+        "polygon_loop_total_sha256": "3419f30020cb90115ea8d0d960b7c1d0fb4edc7f42fd25acbb2d849f5149a998"
+      },
+      "replacement_mesh": {
+        "vertices": 56,
+        "polygons": 54,
+        "loops": 216,
+        "triangles": 108,
+        "world_bounds": [
+          [
+            1749.1600341796875,
+            1749.5
+          ],
+          [
+            2263.199951171875,
+            2265.0
+          ],
+          [
+            207.89999389648438,
+            210.0500030517578
+          ]
+        ],
+        "local_vertex_sha256": "5af4bbc9202f67654a374a5a42de7333283e766504743d97482f53c85a4b4da1",
+        "material_slots": [
+          "R19_CoatedPanel_PRIVATE_PBR"
+        ],
+        "face_material_counts": {
+          "R19_CoatedPanel_PRIVATE_PBR": 54
+        },
+        "face_material_sequence_sha256": "c8c9d3ab735e240143766f9915748087f3cee3372e2e76d4488391e04850bc30",
+        "uv_layers": [
+          {
+            "name": "R19_Meter_UV",
+            "index": 0,
+            "sha256_float32": "3beb2ee294a270da894a445559826441fd1c46fcb564c70a3926228dc10ef4aa",
+            "finite": true,
+            "nonzero_geometry_triangles_with_zero_uv_area": 0,
+            "range": [
+              [
+                1.2650084495544434,
+                2.9000000953674316
+              ],
+              [
+                0.43333229422569275,
+                1.9333332777023315
+              ]
+            ],
+            "sha256_float32_canonical_zero": "3beb2ee294a270da894a445559826441fd1c46fcb564c70a3926228dc10ef4aa"
+          }
+        ],
+        "max_polygon_vertices": 4,
+        "loop_vertex_index_sha256": "1f7ee80b7ec861cddfe95c218ddc3d835d243c66b9bb3026aacfa7ed54f375b0",
+        "polygon_loop_start_sha256": "4e8a8597613845324249043fc11a993e3804959730c7dd0208c82432fbe3485e",
+        "polygon_loop_total_sha256": "3419f30020cb90115ea8d0d960b7c1d0fb4edc7f42fd25acbb2d849f5149a998"
+      },
+      "matrix_world_blender": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "operation": "On unique existing display target only: capture current MeshFilter.sharedMesh + renderer.sharedMaterials + enabled state; swap render mesh and private material slots. Preserve transform, hierarchy, components, collider.sharedMesh and all physics. Never instantiate replacement FBX. If merged/optimized or nonunique, HOLD this replacement; do not disable whole aggregate.",
+      "rollback": "Restore captured original display mesh/material references and enabled state; do not touch shared source assets or colliders."
+    }
+  ],
+  "additive_partition": "R19_01_ADDITIVE_FACADE",
+  "duplicate_guard": "Before addition, exact stable IDs must be absent from target R19 namespace. Repeat application must be idempotent or stop; never append duplicates.",
+  "preserve_existing_optimization": "If an old display is merged, instanced or batched so a single intended owner cannot be proven, do not mutate it. Ask parent for mapping work only; apply other uniquely mapped additions separately.",
+  "no_global_name_hide": true,
+  "no_old_asset_overwrite": true,
+  "no_collision_changes": true,
+  "no_DEM_lunar_material_changes": true,
+  "no_118_135_changes": true,
+  "no_automatic_R16_seam_override": true,
+  "R20_excluded": true
+}

@@ -1,0 +1,193 @@
+{
+  "materials": [
+    {
+      "identity": "R05_exposed_alloy",
+      "policy": "REUSE_VERIFIED_EXISTING_LOCAL_MATERIAL_ONLY_DO_NOT_OVERWRITE",
+      "new_asset_namespace": null,
+      "base_color_texture": null,
+      "base_color_constant_scene_linear": [
+        0.30000001192092896,
+        0.3400000035762787,
+        0.3400000035762787,
+        1.0
+      ],
+      "base_color_multiplier_if_texture": null,
+      "roughness_texture": null,
+      "roughness_constant_if_unlinked": 0.41999998688697815,
+      "metallic_constant": 0.7799999713897705,
+      "optional_URP_metallic_smoothness_texture": null,
+      "normal_texture_OpenGL": null,
+      "uv_channel_index": 0,
+      "uv_layer": "R19_Meter_UV",
+      "texture_scale": [
+        1,
+        1
+      ],
+      "texture_offset": [
+        0,
+        0
+      ],
+      "normal_strength": null,
+      "warning": "For R05_exposed_alloy these values are provenance only; reuse verified local material, do not recreate or overwrite it."
+    },
+    {
+      "identity": "R19_CoatedPanel_PRIVATE_PBR",
+      "policy": "CREATE_NEW_PRIVATE_MATERIAL_ONLY",
+      "new_asset_namespace": "Moonkov/R19/PrivateMaterials",
+      "base_color_texture": "textures/R19_CoatedPanel_BaseColor_sRGB.png",
+      "base_color_constant_scene_linear": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929,
+        1.0
+      ],
+      "base_color_multiplier_if_texture": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "roughness_texture": "textures/R19_CoatedPanel_Roughness_Linear.png",
+      "roughness_constant_if_unlinked": 0.699999988079071,
+      "metallic_constant": 0.0,
+      "optional_URP_metallic_smoothness_texture": "textures/R19_CoatedPanel_MetallicSmoothness_Linear.png",
+      "normal_texture_OpenGL": "textures/R19_CoatedPanel_Normal_OpenGL.png",
+      "uv_channel_index": 0,
+      "uv_layer": "R19_Meter_UV",
+      "texture_scale": [
+        1,
+        1
+      ],
+      "texture_offset": [
+        0,
+        0
+      ],
+      "normal_strength": 1,
+      "warning": "Create only dedicated new R19 asset; never remap global old material name."
+    },
+    {
+      "identity": "R19_MineralBase_PRIVATE_PBR",
+      "policy": "CREATE_NEW_PRIVATE_MATERIAL_ONLY",
+      "new_asset_namespace": "Moonkov/R19/PrivateMaterials",
+      "base_color_texture": "textures/R19_MineralBase_BaseColor_sRGB.png",
+      "base_color_constant_scene_linear": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929,
+        1.0
+      ],
+      "base_color_multiplier_if_texture": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "roughness_texture": "textures/R19_MineralBase_Roughness_Linear.png",
+      "roughness_constant_if_unlinked": 0.699999988079071,
+      "metallic_constant": 0.0,
+      "optional_URP_metallic_smoothness_texture": "textures/R19_MineralBase_MetallicSmoothness_Linear.png",
+      "normal_texture_OpenGL": "textures/R19_MineralBase_Normal_OpenGL.png",
+      "uv_channel_index": 0,
+      "uv_layer": "R19_Meter_UV",
+      "texture_scale": [
+        1,
+        1
+      ],
+      "texture_offset": [
+        0,
+        0
+      ],
+      "normal_strength": 1,
+      "warning": "Create only dedicated new R19 asset; never remap global old material name."
+    },
+    {
+      "identity": "R19_Recessed_Seal_PRIVATE",
+      "policy": "CREATE_NEW_PRIVATE_MATERIAL_ONLY",
+      "new_asset_namespace": "Moonkov/R19/PrivateMaterials",
+      "base_color_texture": null,
+      "base_color_constant_scene_linear": [
+        0.03500000014901161,
+        0.0430000014603138,
+        0.04699999839067459,
+        1.0
+      ],
+      "base_color_multiplier_if_texture": null,
+      "roughness_texture": null,
+      "roughness_constant_if_unlinked": 0.8799999952316284,
+      "metallic_constant": 0.0,
+      "optional_URP_metallic_smoothness_texture": null,
+      "normal_texture_OpenGL": null,
+      "uv_channel_index": 0,
+      "uv_layer": "R19_Meter_UV",
+      "texture_scale": [
+        1,
+        1
+      ],
+      "texture_offset": [
+        0,
+        0
+      ],
+      "normal_strength": null,
+      "warning": "Create only dedicated new R19 asset; never remap global old material name."
+    },
+    {
+      "identity": "R19_Service_Cover_Enamel_PRIVATE_PBR",
+      "policy": "CREATE_NEW_PRIVATE_MATERIAL_ONLY",
+      "new_asset_namespace": "Moonkov/R19/PrivateMaterials",
+      "base_color_texture": null,
+      "base_color_constant_scene_linear": [
+        0.18000000715255737,
+        0.20999999344348907,
+        0.22499999403953552,
+        1.0
+      ],
+      "base_color_multiplier_if_texture": null,
+      "roughness_texture": "textures/R19_CoatedPanel_Roughness_Linear.png",
+      "roughness_constant_if_unlinked": 0.699999988079071,
+      "metallic_constant": 0.0,
+      "optional_URP_metallic_smoothness_texture": "textures/R19_CoatedPanel_MetallicSmoothness_Linear.png",
+      "normal_texture_OpenGL": "textures/R19_CoatedPanel_Normal_OpenGL.png",
+      "uv_channel_index": 0,
+      "uv_layer": "R19_Meter_UV",
+      "texture_scale": [
+        1,
+        1
+      ],
+      "texture_offset": [
+        0,
+        0
+      ],
+      "normal_strength": 1,
+      "warning": "Create only dedicated new R19 asset; never remap global old material name."
+    }
+  ],
+  "source_graph_provenance": "EXPORT_MANIFEST.json/materials",
+  "derived_URP_maps": [
+    {
+      "file": "textures/R19_CoatedPanel_MetallicSmoothness_Linear.png",
+      "sha256": "ed02316c41516ba5f0065e3a26a21f82ae0d930498bb92cc6c65a66caddef465",
+      "bytes": 695811,
+      "source": "textures/R19_CoatedPanel_Roughness_Linear.png",
+      "source_sha256": "173aacd425b6edb235387497db72bdb9f24da3b013a09804e97e2edcd6d0412b",
+      "formula": "R=G=B=0; A=255-source_R_8bit. No filtering, color conversion, or source change. Import linear (sRGB false).",
+      "role": "Optional standard URP metallic-smoothness input; smoothness multiplier 1, channel alpha. Engine result NOT tested."
+    },
+    {
+      "file": "textures/R19_MineralBase_MetallicSmoothness_Linear.png",
+      "sha256": "cb1863927dd5b403def0ac0148d7296801f07a14c172e2d4f4f2c71b64a01c29",
+      "bytes": 253122,
+      "source": "textures/R19_MineralBase_Roughness_Linear.png",
+      "source_sha256": "2bde1ece000e9e54b591518fb8bc77a219326f3c398343e7b97cdf5b7d59963e",
+      "formula": "R=G=B=0; A=255-source_R_8bit. No filtering, color conversion, or source change. Import linear (sRGB false).",
+      "role": "Optional standard URP metallic-smoothness input; smoothness multiplier 1, channel alpha. Engine result NOT tested."
+    }
+  ],
+  "texture_rules": {
+    "BaseColor": "sRGB true",
+    "Roughness": "sRGB false; do not bind directly as smoothness",
+    "Normal": "NormalMap import; tangent-space OpenGL +Y; no automatic green flip; validate under target importer/shader",
+    "MetallicSmoothness": "sRGB false; RGB metallic=0; alpha smoothness=1-roughness",
+    "UV": "Authored meter-scale in UV0, 4x6m nominal; no additional scale applied",
+    "target_shader_verified": false
+  }
+}

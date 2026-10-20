@@ -1,0 +1,16 @@
+[
+  {
+    "materialFamily": "CoatedPanel",
+    "pixels": 1572864,
+    "RGBMetallicZero": true,
+    "alphaExactly255MinusRoughnessR": true,
+    "sourcePixelsUnmodified": true
+  },
+  {
+    "materialFamily": "MineralBase",
+    "pixels": 1572864,
+    "RGBMetallicZero": true,
+    "alphaExactly255MinusRoughnessR": true,
+    "sourcePixelsUnmodified": true
+  }
+]
