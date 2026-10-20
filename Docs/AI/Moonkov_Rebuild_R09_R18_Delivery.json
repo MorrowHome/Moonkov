@@ -1,0 +1,174 @@
+{
+  "status": "R09_R18_DISPLAY_SAVED_STATIC_CHECKS_PASSED_WITH_EXPLICIT_R16_OMISSION",
+  "packageSHA256": "6a34722eda6de2d0f7696b346da3083500b7e5965eaf2f924246f3d7cfcfdb85",
+  "sourceSHA256": "d840a1ad99f65a153f7bda34d73adbb830b7d1cad5654d3270f5cd23c6f788e0",
+  "baselineCommit": "d11dd3f536cba5cc5fb39ee369fbf7a37d538c73",
+  "branch": "feat/aliens",
+  "application": {
+    "scene": "Assets/MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusGameScene.unity",
+    "saved": true,
+    "prefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+    "root": "REBUILD_R09_R18_DISPLAY_ROOT",
+    "formalBeforeSHA256": "20e9cb14f59e710d52535279036c68866512427ee21f01667ef32432b0813e58",
+    "formalAfterUnitySaveSHA256": "c180199aef175a7af4b0fd24ce0dc75c8a572439e8c7946c3480ff37d6cd40d4",
+    "displayObjects": 1629,
+    "partitions": 33,
+    "triangles": 121395,
+    "protectedObjects": 120769,
+    "protectedHash": "4962F57421B7DE76171077429A4F4A1FDC4A8005B89F881C5CA2EA291E46DBC3",
+    "protectedObjectsUnchanged": true,
+    "oldCollidersUnchanged": 15335,
+    "oldR08CollidersUnchanged": 0,
+    "lights": 118,
+    "buttons": 135,
+    "terrain": [
+      {
+        "name": "Near terrain / 25cm geometry",
+        "data": "Assets/MoonEnvironment/Variants/TheophilusBase/Terrain/R21/R21_NearDisplay.asset",
+        "material": "Assets/MoonEnvironment/Variants/TheophilusBase/Materials/TheophilusOriginalRegolith.mat"
+      },
+      {
+        "name": "Observed DEM / native 3m",
+        "data": "Assets/MoonEnvironment/Variants/TheophilusBase/Terrain/R21/R21_FarDisplay.asset",
+        "material": "Assets/MoonEnvironment/Variants/TheophilusBase/Materials/TheophilusOriginalRegolith.mat"
+      }
+    ],
+    "lightmapsProbesUnchanged": true,
+    "oldRenderersDisabled": 0,
+    "newColliders": 0,
+    "newLights": 0,
+    "newRuntimeScripts": 0,
+    "newMaterials": 0,
+    "newTextures": 0,
+    "R16OldRodCorrectionApplied": false,
+    "R19Applied": false,
+    "R20Applied": false,
+    "PlayStarted": false,
+    "HostStarted": false,
+    "runtimeOrPerformanceAcceptance": false
+  },
+  "oldSceneRecords": 58505,
+  "oldSceneRecordsRemoved": 0,
+  "oldRecordsChangedInCanonicalSceneOnlySceneRoots": true,
+  "newPrefabInstances": 1,
+  "defaultFieldNormalizationExcluded": [
+    "145744447"
+  ],
+  "canonicalSceneSHA256": "9303434d2370d7f86059dfe0d5000a19e100c96bf88d3f3c5035de25d9952b65",
+  "protectedExistingFiles": 19356,
+  "existingFilesChangedOnlyFormalScene": [
+    "Assets/MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusGameScene.unity"
+  ],
+  "allExistingMaterialsTexturesShadersDEMTerrainLightmapsLODCullingAndBatchAssetsByteIdentical": true,
+  "newPrefabComponentTypes": [
+    "GameObject",
+    "Transform",
+    "MeshFilter",
+    "MeshRenderer"
+  ],
+  "R16OldRodOverrideApplied": false,
+  "R19Applied": false,
+  "R20Applied": false,
+  "qualityGatesFile": "QUALITY_GATES_EXACT.json",
+  "rollback": {
+    "visible": "Disable or remove only REBUILD_R09_R18_DISPLAY_ROOT; no old renderer disabled.",
+    "git": "Revert the task scene-binding commit, optionally the preceding asset/source commit; never reset unrelated work."
+  },
+  "limits": [
+    "EditMode/static verification, no Play/Host/runtime/performance acceptance.",
+    "R16 target is unique but combined renderer/submesh/triangle ownership is unproven; 14 old rods are not changed.",
+    "R14 image/ORM/normal maps not bound; 15 source identities use 9 existing local material assets. R19 is a separate handoff.",
+    "Current formal branch R08 has 0 increment colliders; earlier e0edffe3 collision commit remains on its separate local branch and is not automatically merged.",
+    "Source gates retained: 8 old text UV objects / 2394 collapsed-UV triangles; 3 tangent objects / 4 zero vectors; 4 near-degenerate objects / 9 triangles."
+  ],
+  "staticVerification": {
+    "savedSceneClean": true,
+    "existingObjects": 120769,
+    "existingObjectHashUnchanged": true,
+    "meshes": 1629,
+    "renderers": 1629,
+    "partitions": 33,
+    "triangles": 121395,
+    "allMaterialBindingsCorrect": true,
+    "allShaderReferencesSupported": true,
+    "UV0Preserved": true,
+    "UV1Reserved": true,
+    "finiteGeneratedTangents": true,
+    "newColliders": 0,
+    "newLights": 0,
+    "newScripts": 0,
+    "oldColliderCount": 15335,
+    "R16OldSeamOverrideApplied": false,
+    "R19Applied": false,
+    "R20Applied": false,
+    "PlayStarted": false,
+    "HostStarted": false,
+    "runtimeOrPerformanceAccepted": false
+  },
+  "R16Decision": {
+    "action": "R16 omission/replacement of 14 inherited malformed rods",
+    "applied": false,
+    "status": "BLOCKED_LOCAL_PER_TRIANGLE_OWNERSHIP",
+    "target": "B_R06_SOUTHWEST_RIM_EB01_01",
+    "uniqueInstanceMatches": 1,
+    "targetEvidence": [
+      {
+        "path": "B_RING_CONCEPT_ROOT/B_R06_SOUTHWEST_RIM_EB01_01",
+        "id": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-4040807865168724913-885272968",
+        "position": [
+          2015.0,
+          0.0,
+          2130.0
+        ],
+        "renderers": []
+      }
+    ],
+    "sourceNameRendererMatches": 0,
+    "reason": "Unique instance GameObject exists but contains no descendant MeshRenderers. Optimized geometry has no proven source-object to combined-renderer/submesh/triangle mapping. Source-name/position guesses cannot justify selective omission.",
+    "safeAdditiveGalleryAppliedSeparately": true,
+    "oldRendererDisabled": 0,
+    "oldCollidersChanged": 0,
+    "sharedMeshReplaced": 0,
+    "required": "Per-triangle or per-submesh provenance for the 14 exact target occurrences, including all remaining non-seam triangles and other instances; then local cloned display mesh replacement with unchanged old colliders."
+  },
+  "sourceVerification": {
+    "file": "Moonkov_Cumulative_R09_R18_Display_FBX_Review_Handoff_20261020.zip",
+    "bytes": 9966177,
+    "sha256": "6a34722eda6de2d0f7696b346da3083500b7e5965eaf2f924246f3d7cfcfdb85",
+    "privateDriveDownloadVerified": true,
+    "sourceBlendSHA256": "d840a1ad99f65a153f7bda34d73adbb830b7d1cad5654d3270f5cd23c6f788e0",
+    "objects": 1629,
+    "partitions": 33,
+    "perRevisionMeshes": {
+      "R09": 165,
+      "R10": 68,
+      "R11": 83,
+      "R12": 692,
+      "R13": 160,
+      "R15": 114,
+      "R16": 151,
+      "R17": 66,
+      "R18": 130
+    },
+    "allFBXLocalVertexHashesExact": true,
+    "maxBlenderBoundsDriftMetres": 0.0003662109375,
+    "noSharingOrPermissionChanges": true
+  },
+  "console": {
+    "compilationFailed": false,
+    "existingErrors": [
+      {
+        "timestampUtc": "2026-10-20T06:18:19.4935262Z",
+        "message": "AssertionException: Assertion failure. Value was False\r\nExpected: True"
+      },
+      {
+        "timestampUtc": "2026-10-20T13:39:44.0343717Z",
+        "message": "Failed to handle /api/exec request: Main thread operation timed out after 5000ms"
+      }
+    ],
+    "newAssetImportErrorsObservedAfterIndependentImport": 0,
+    "note": "Pre-task SubScene assertion retained without runtime investigation; one earlier CLI read timeout retained. Console was not cleared."
+  },
+  "sceneNormalization": "Unity added effective-default maximumBosses:1; it remains in the live saved file but is excluded from the isolated scene commit candidate. No old behavioral value changes.",
+  "commits": "Recorded after isolated local commits; no push by this task."
+}
