@@ -1,0 +1,26 @@
+{
+  "action": "R16 omission/replacement of 14 inherited malformed rods",
+  "applied": false,
+  "status": "BLOCKED_LOCAL_PER_TRIANGLE_OWNERSHIP",
+  "target": "B_R06_SOUTHWEST_RIM_EB01_01",
+  "uniqueInstanceMatches": 1,
+  "targetEvidence": [
+    {
+      "path": "B_RING_CONCEPT_ROOT/B_R06_SOUTHWEST_RIM_EB01_01",
+      "id": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-4040807865168724913-885272968",
+      "position": [
+        2015.0,
+        0.0,
+        2130.0
+      ],
+      "renderers": []
+    }
+  ],
+  "sourceNameRendererMatches": 0,
+  "reason": "Unique instance GameObject exists but contains no descendant MeshRenderers. Optimized geometry has no proven source-object to combined-renderer/submesh/triangle mapping. Source-name/position guesses cannot justify selective omission.",
+  "safeAdditiveGalleryAppliedSeparately": true,
+  "oldRendererDisabled": 0,
+  "oldCollidersChanged": 0,
+  "sharedMeshReplaced": 0,
+  "required": "Per-triangle or per-submesh provenance for the 14 exact target occurrences, including all remaining non-seam triangles and other instances; then local cloned display mesh replacement with unchanged old colliders."
+}

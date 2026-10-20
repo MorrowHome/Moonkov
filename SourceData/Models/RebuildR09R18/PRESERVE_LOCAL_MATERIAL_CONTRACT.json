@@ -1,0 +1,1581 @@
+{
+  "integration_policy": {
+    "review_only_no_automatic_import": true,
+    "separate_from_R08_handoff": true,
+    "cumulative_R09_R12_do_not_layer_on_standalone_R09_duplicate": true,
+    "base_geometry_exported": false,
+    "terrain_geometry_exported": false,
+    "automatic_material_import": false,
+    "import_or_replace_cloud_terrain_materials": false,
+    "import_source_textures": false,
+    "preserve_current_local_lunar_surface_material_textures_shader_settings": true,
+    "protected_lunar_source_material_names": [],
+    "protected_R23_R24_source_material_names": [
+      "R23_Matte_Deck_Fine_Finish",
+      "R24_Service_Stencil_Offwhite",
+      "R24_Slate_Gray_Industrial_Enamel"
+    ],
+    "preserve_existing_Unity_materials": true,
+    "no_collision_or_gameplay_changes": true,
+    "no_generated_lights": true,
+    "preserve_118_light_and_135_button_ids": true,
+    "preserve_baked_MC00_lighting_static_chunks_indoor_culling_rock_LOD": true,
+    "preserve_existing_R08_colliders": true,
+    "automatic_collider_deletion_or_replacement": false,
+    "generate_colliders_from_FBX": false,
+    "native_meshbin_contract": "not_known_do_not_treat_this_JSON_as_native",
+    "cumulative_R09_R15_supersedes_R09_R12": true,
+    "bundled_R14_compact_maps_review_only": true,
+    "automatic_R14_material_binding": false,
+    "cumulative_R09_R16_supersedes_R09_R15": true,
+    "automatic_instance_seam_replacement": false,
+    "local_per_instance_renderer_mapping_verified": false,
+    "cumulative_R09_R18_supersedes_R09_R16": true
+  },
+  "protected_slot_references": [
+    {
+      "source_object": "R09_Approach_Continuous_Union_Floor",
+      "export_object": "GX_c4420d570270_R09_Approach_Continuous_Union_Floor",
+      "partition": "R09_01_EXISTING_PLATFORM_APPROACH",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R09_Cartridge_Main_Shell",
+      "export_object": "GX_4cb65bb39cb0_R09_Cartridge_Main_Shell",
+      "partition": "R09_03_HOIST_AND_LOAD_MECHANISMS",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R09_Hoist_Electric_Motor",
+      "export_object": "GX_111680ad0679_R09_Hoist_Electric_Motor",
+      "partition": "R09_03_HOIST_AND_LOAD_MECHANISMS",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R09_Machine_Loading_Real_Ramp_Toe_Transition",
+      "export_object": "GX_e07e2d09d3e3_R09_Machine_Loading_Real_Ramp_Toe_Transition",
+      "partition": "R09_04_REAL_ENTRY_TRANSITIONS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R09_Personnel_Ramp_To_Threshold_Infill",
+      "export_object": "GX_9b3985cd05b9_R09_Personnel_Ramp_To_Threshold_Infill",
+      "partition": "R09_04_REAL_ENTRY_TRANSITIONS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R09_Personnel_Real_Ramp_Toe_Transition",
+      "export_object": "GX_ae10064d1294_R09_Personnel_Real_Ramp_Toe_Transition",
+      "partition": "R09_04_REAL_ENTRY_TRANSITIONS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R09_Runway_0_Real_I_Section",
+      "export_object": "GX_913df2d2a726_R09_Runway_0_Real_I_Section",
+      "partition": "R09_02_OPEN_TRANSFER_GANTRY",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R09_Runway_1_Real_I_Section",
+      "export_object": "GX_30ba49daa82b_R09_Runway_1_Real_I_Section",
+      "partition": "R09_02_OPEN_TRANSFER_GANTRY",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R10_Bypass_Continuous_Deck",
+      "export_object": "GX_6709a8fdeef9_R10_Bypass_Continuous_Deck",
+      "partition": "R10_01_BYPASS_FLOOR",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R10_Shelter_Offset_Folded_Roof_0",
+      "export_object": "GX_da8c327eb0b4_R10_Shelter_Offset_Folded_Roof_0",
+      "partition": "R10_04_SPLIT_ROOF_TRANSFER_SHELTER",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R10_Shelter_Offset_Folded_Roof_1",
+      "export_object": "GX_f49074145c15_R10_Shelter_Offset_Folded_Roof_1",
+      "partition": "R10_04_SPLIT_ROOF_TRANSFER_SHELTER",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R11_Walkover_Continuous_Floor",
+      "export_object": "GX_63a93cb9a97f_R11_Walkover_Continuous_Floor",
+      "partition": "R11_01_CONTINUOUS_WALKOVER_FLOOR",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R12_Floor_A_Court_Link",
+      "export_object": "GX_280ab3b4a3c7_R12_Floor_A_Court_Link",
+      "partition": "R12_FLOORS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R12_Floor_A_Hall",
+      "export_object": "GX_85dad6d7b22d_R12_Floor_A_Hall",
+      "partition": "R12_FLOORS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R12_Floor_B_Court_Ramp",
+      "export_object": "GX_ce403f35a2d5_R12_Floor_B_Court_Ramp",
+      "partition": "R12_FLOORS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R12_Floor_B_Separator",
+      "export_object": "GX_cf3808cb5afd_R12_Floor_B_Separator",
+      "partition": "R12_FLOORS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R12_Floor_C_Loading",
+      "export_object": "GX_40b9ef4f3188_R12_Floor_C_Loading",
+      "partition": "R12_FLOORS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R12_Floor_C_M02_Apron_Join",
+      "export_object": "GX_1710896e98bb_R12_Floor_C_M02_Apron_Join",
+      "partition": "R12_FLOORS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R12_Floor_Court_B_Threshold",
+      "export_object": "GX_31b5c1d6a8d5_R12_Floor_Court_B_Threshold",
+      "partition": "R12_FLOORS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R12_Floor_Court_C_Threshold",
+      "export_object": "GX_b61a4877fcd9_R12_Floor_Court_C_Threshold",
+      "partition": "R12_FLOORS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R12_Floor_Court_One",
+      "export_object": "GX_262a04514b46_R12_Floor_Court_One",
+      "partition": "R12_FLOORS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R12_Floor_Court_Two",
+      "export_object": "GX_1bbc368ede2b_R12_Floor_Court_Two",
+      "partition": "R12_FLOORS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R12_Floor_Exterior_Flank_North",
+      "export_object": "GX_4dc113698fdc_R12_Floor_Exterior_Flank_North",
+      "partition": "R12_FLOORS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R12_Floor_Exterior_Flank_Return",
+      "export_object": "GX_dbb1171417fe_R12_Floor_Exterior_Flank_Return",
+      "partition": "R12_FLOORS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R12_Floor_M01_Apron_Join",
+      "export_object": "GX_50d5569f1b10_R12_Floor_M01_Apron_Join",
+      "partition": "R12_FLOORS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R15_Loading_Drive_Removable_Cover_0",
+      "export_object": "GX_50e0feec622a_R15_Loading_Drive_Removable_Cover_0",
+      "partition": "R15_01_PRIMARY_LOADING_PORTAL",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R15_Loading_East_Impact_Shoe",
+      "export_object": "GX_47e5f275f354_R15_Loading_East_Impact_Shoe",
+      "partition": "R15_01_PRIMARY_LOADING_PORTAL",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R15_Loading_Fabrication_Label",
+      "export_object": "GX_4fa47e240843_R15_Loading_Fabrication_Label",
+      "partition": "R15_01_PRIMARY_LOADING_PORTAL",
+      "source_slot_index": 0,
+      "source_material": "R24_Service_Stencil_Offwhite",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R15_Loading_Lintel_Cap",
+      "export_object": "GX_e183232188ba_R15_Loading_Lintel_Cap",
+      "partition": "R15_01_PRIMARY_LOADING_PORTAL",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R15_Loading_West_Impact_Shoe",
+      "export_object": "GX_cd807daa8af7_R15_Loading_West_Impact_Shoe",
+      "partition": "R15_01_PRIMARY_LOADING_PORTAL",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R15_Personnel_East_Shallow_Surround",
+      "export_object": "GX_2f90fcb510a6_R15_Personnel_East_Shallow_Surround",
+      "partition": "R15_02_PERSONNEL_SURROUND",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R15_Personnel_Entry_Label",
+      "export_object": "GX_b0047dda4040_R15_Personnel_Entry_Label",
+      "partition": "R15_02_PERSONNEL_SURROUND",
+      "source_slot_index": 0,
+      "source_material": "R24_Service_Stencil_Offwhite",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R15_Personnel_Header",
+      "export_object": "GX_cb437d4b0066_R15_Personnel_Header",
+      "partition": "R15_02_PERSONNEL_SURROUND",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R15_Personnel_West_Shallow_Surround",
+      "export_object": "GX_09452db66a00_R15_Personnel_West_Shallow_Surround",
+      "partition": "R15_02_PERSONNEL_SURROUND",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R15_Service_Cassette_0_1_Removable_Panel",
+      "export_object": "GX_075e43bba306_R15_Service_Cassette_0_1_Removable_Panel",
+      "partition": "R15_03_WALL_SERVICE_CASSETTES",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R15_Service_Cassette_1_1_Removable_Panel",
+      "export_object": "GX_ddf80637b948_R15_Service_Cassette_1_1_Removable_Panel",
+      "partition": "R15_03_WALL_SERVICE_CASSETTES",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R15_Service_Identification_Plate",
+      "export_object": "GX_947f12de3570_R15_Service_Identification_Plate",
+      "partition": "R15_03_WALL_SERVICE_CASSETTES",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R15_Service_Isolation_Spine",
+      "export_object": "GX_81a1471ede88_R15_Service_Isolation_Spine",
+      "partition": "R15_03_WALL_SERVICE_CASSETTES",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R15_Service_Label",
+      "export_object": "GX_369523821c59_R15_Service_Label",
+      "partition": "R15_03_WALL_SERVICE_CASSETTES",
+      "source_slot_index": 0,
+      "source_material": "R24_Service_Stencil_Offwhite",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Back_Upper_Cap",
+      "export_object": "GX_a6944bf63234_R16_Gallery_Back_Upper_Cap",
+      "partition": "R16_GALLERY_01_OPEN_STRUCTURAL_FRAME",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Bay_00_Bearing_Feet",
+      "export_object": "GX_b0a65aa3f502_R16_Gallery_Bay_00_Bearing_Feet",
+      "partition": "R16_GALLERY_02_RECESSED_SERVICE_BACKPLANE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Bay_00_ID",
+      "export_object": "GX_a1080eaa537b_R16_Gallery_Bay_00_ID",
+      "partition": "R16_GALLERY_02_RECESSED_SERVICE_BACKPLANE",
+      "source_slot_index": 0,
+      "source_material": "R24_Service_Stencil_Offwhite",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Bay_00_Recess_Perimeter",
+      "export_object": "GX_5d47d719e6a7_R16_Gallery_Bay_00_Recess_Perimeter",
+      "partition": "R16_GALLERY_02_RECESSED_SERVICE_BACKPLANE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Bay_01_Bearing_Feet",
+      "export_object": "GX_78db1a007e7f_R16_Gallery_Bay_01_Bearing_Feet",
+      "partition": "R16_GALLERY_02_RECESSED_SERVICE_BACKPLANE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Bay_01_ID",
+      "export_object": "GX_910e70109bec_R16_Gallery_Bay_01_ID",
+      "partition": "R16_GALLERY_02_RECESSED_SERVICE_BACKPLANE",
+      "source_slot_index": 0,
+      "source_material": "R24_Service_Stencil_Offwhite",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Bay_01_Recess_Perimeter",
+      "export_object": "GX_391f4e6006b4_R16_Gallery_Bay_01_Recess_Perimeter",
+      "partition": "R16_GALLERY_02_RECESSED_SERVICE_BACKPLANE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Bay_02_Bearing_Feet",
+      "export_object": "GX_0146faab2cb6_R16_Gallery_Bay_02_Bearing_Feet",
+      "partition": "R16_GALLERY_02_RECESSED_SERVICE_BACKPLANE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Bay_02_ID",
+      "export_object": "GX_977b71a1b494_R16_Gallery_Bay_02_ID",
+      "partition": "R16_GALLERY_02_RECESSED_SERVICE_BACKPLANE",
+      "source_slot_index": 0,
+      "source_material": "R24_Service_Stencil_Offwhite",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Bay_02_Recess_Perimeter",
+      "export_object": "GX_fbfc045688f1_R16_Gallery_Bay_02_Recess_Perimeter",
+      "partition": "R16_GALLERY_02_RECESSED_SERVICE_BACKPLANE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Bay_03_Bearing_Feet",
+      "export_object": "GX_f2fab76066a5_R16_Gallery_Bay_03_Bearing_Feet",
+      "partition": "R16_GALLERY_02_RECESSED_SERVICE_BACKPLANE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Bay_03_ID",
+      "export_object": "GX_88a9bd01c972_R16_Gallery_Bay_03_ID",
+      "partition": "R16_GALLERY_02_RECESSED_SERVICE_BACKPLANE",
+      "source_slot_index": 0,
+      "source_material": "R24_Service_Stencil_Offwhite",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Bay_03_Recess_Perimeter",
+      "export_object": "GX_925f3e854849_R16_Gallery_Bay_03_Recess_Perimeter",
+      "partition": "R16_GALLERY_02_RECESSED_SERVICE_BACKPLANE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Branch_Coupling_0_1.18",
+      "export_object": "GX_ddd4725ae28a_R16_Gallery_Branch_Coupling_0_1.18",
+      "partition": "R16_GALLERY_02_RECESSED_SERVICE_BACKPLANE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Branch_Coupling_0_2.78",
+      "export_object": "GX_6f6584a2c74a_R16_Gallery_Branch_Coupling_0_2.78",
+      "partition": "R16_GALLERY_02_RECESSED_SERVICE_BACKPLANE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Branch_Coupling_1_1.18",
+      "export_object": "GX_c95b6d10164b_R16_Gallery_Branch_Coupling_1_1.18",
+      "partition": "R16_GALLERY_02_RECESSED_SERVICE_BACKPLANE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Branch_Coupling_1_2.78",
+      "export_object": "GX_0749d94249b4_R16_Gallery_Branch_Coupling_1_2.78",
+      "partition": "R16_GALLERY_02_RECESSED_SERVICE_BACKPLANE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Branch_Coupling_2_1.18",
+      "export_object": "GX_d9fd7af87582_R16_Gallery_Branch_Coupling_2_1.18",
+      "partition": "R16_GALLERY_02_RECESSED_SERVICE_BACKPLANE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Branch_Coupling_2_2.78",
+      "export_object": "GX_8fb68e443a46_R16_Gallery_Branch_Coupling_2_2.78",
+      "partition": "R16_GALLERY_02_RECESSED_SERVICE_BACKPLANE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Branch_Riser_2",
+      "export_object": "GX_a4ffcc37073e_R16_Gallery_Branch_Riser_2",
+      "partition": "R16_GALLERY_02_RECESSED_SERVICE_BACKPLANE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Branch_Sealed_Service_End_1",
+      "export_object": "GX_21f7a1a89a82_R16_Gallery_Branch_Sealed_Service_End_1",
+      "partition": "R16_GALLERY_02_RECESSED_SERVICE_BACKPLANE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Branch_Sealed_Service_End_2",
+      "export_object": "GX_205d57ecd383_R16_Gallery_Branch_Sealed_Service_End_2",
+      "partition": "R16_GALLERY_02_RECESSED_SERVICE_BACKPLANE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Distribution_Bay_0_Header_Drop",
+      "export_object": "GX_66f7169d1792_R16_Gallery_Distribution_Bay_0_Header_Drop",
+      "partition": "R16_GALLERY_03_CONTINUOUS_DISTRIBUTION_SPINE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Distribution_Bay_1_Header_Drop",
+      "export_object": "GX_086abf52fa61_R16_Gallery_Distribution_Bay_1_Header_Drop",
+      "partition": "R16_GALLERY_03_CONTINUOUS_DISTRIBUTION_SPINE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Distribution_Bay_2_Header_Drop",
+      "export_object": "GX_fc36ce49d831_R16_Gallery_Distribution_Bay_2_Header_Drop",
+      "partition": "R16_GALLERY_03_CONTINUOUS_DISTRIBUTION_SPINE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Distribution_Bay_3_Header_Drop",
+      "export_object": "GX_b16f3b25f51b_R16_Gallery_Distribution_Bay_3_Header_Drop",
+      "partition": "R16_GALLERY_03_CONTINUOUS_DISTRIBUTION_SPINE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Distribution_Continuous_Tray_Sides",
+      "export_object": "GX_cc30c3664a7c_R16_Gallery_Distribution_Continuous_Tray_Sid",
+      "partition": "R16_GALLERY_03_CONTINUOUS_DISTRIBUTION_SPINE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Distribution_Main_Coupling_0_0",
+      "export_object": "GX_d95dda044612_R16_Gallery_Distribution_Main_Coupling_0_0",
+      "partition": "R16_GALLERY_03_CONTINUOUS_DISTRIBUTION_SPINE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Distribution_Main_Coupling_0_1",
+      "export_object": "GX_da13b486acf5_R16_Gallery_Distribution_Main_Coupling_0_1",
+      "partition": "R16_GALLERY_03_CONTINUOUS_DISTRIBUTION_SPINE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Distribution_Main_Coupling_0_2",
+      "export_object": "GX_8587a07dd741_R16_Gallery_Distribution_Main_Coupling_0_2",
+      "partition": "R16_GALLERY_03_CONTINUOUS_DISTRIBUTION_SPINE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Distribution_Main_Coupling_0_3",
+      "export_object": "GX_f36e4dce2f07_R16_Gallery_Distribution_Main_Coupling_0_3",
+      "partition": "R16_GALLERY_03_CONTINUOUS_DISTRIBUTION_SPINE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Distribution_Main_Coupling_0_4",
+      "export_object": "GX_bcc005fcac18_R16_Gallery_Distribution_Main_Coupling_0_4",
+      "partition": "R16_GALLERY_03_CONTINUOUS_DISTRIBUTION_SPINE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Distribution_Main_Coupling_1_0",
+      "export_object": "GX_35ab3653c6ef_R16_Gallery_Distribution_Main_Coupling_1_0",
+      "partition": "R16_GALLERY_03_CONTINUOUS_DISTRIBUTION_SPINE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Distribution_Main_Coupling_1_1",
+      "export_object": "GX_2c92e062eb65_R16_Gallery_Distribution_Main_Coupling_1_1",
+      "partition": "R16_GALLERY_03_CONTINUOUS_DISTRIBUTION_SPINE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Distribution_Main_Coupling_1_2",
+      "export_object": "GX_c4c0e90054f7_R16_Gallery_Distribution_Main_Coupling_1_2",
+      "partition": "R16_GALLERY_03_CONTINUOUS_DISTRIBUTION_SPINE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Distribution_Main_Coupling_1_3",
+      "export_object": "GX_d2fa3a2454f9_R16_Gallery_Distribution_Main_Coupling_1_3",
+      "partition": "R16_GALLERY_03_CONTINUOUS_DISTRIBUTION_SPINE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Distribution_Main_Coupling_1_4",
+      "export_object": "GX_fdd32948fee2_R16_Gallery_Distribution_Main_Coupling_1_4",
+      "partition": "R16_GALLERY_03_CONTINUOUS_DISTRIBUTION_SPINE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Frame_00_Back_Collar",
+      "export_object": "GX_46bb51917b1f_R16_Gallery_Frame_00_Back_Collar",
+      "partition": "R16_GALLERY_01_OPEN_STRUCTURAL_FRAME",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Frame_00_Back_Floor_Shoe",
+      "export_object": "GX_0e87c124b304_R16_Gallery_Frame_00_Back_Floor_Shoe",
+      "partition": "R16_GALLERY_01_OPEN_STRUCTURAL_FRAME",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Frame_00_Front_Collar",
+      "export_object": "GX_d2628bbc874c_R16_Gallery_Frame_00_Front_Collar",
+      "partition": "R16_GALLERY_01_OPEN_STRUCTURAL_FRAME",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Frame_00_Front_Floor_Shoe",
+      "export_object": "GX_b11877caf8d0_R16_Gallery_Frame_00_Front_Floor_Shoe",
+      "partition": "R16_GALLERY_01_OPEN_STRUCTURAL_FRAME",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Frame_00_Knee_0",
+      "export_object": "GX_5ac3b1f1635d_R16_Gallery_Frame_00_Knee_0",
+      "partition": "R16_GALLERY_01_OPEN_STRUCTURAL_FRAME",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Frame_00_Knee_1",
+      "export_object": "GX_5a6aacf7f33c_R16_Gallery_Frame_00_Knee_1",
+      "partition": "R16_GALLERY_01_OPEN_STRUCTURAL_FRAME",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Frame_01_Back_Collar",
+      "export_object": "GX_a05b89ba539f_R16_Gallery_Frame_01_Back_Collar",
+      "partition": "R16_GALLERY_01_OPEN_STRUCTURAL_FRAME",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Frame_01_Back_Floor_Shoe",
+      "export_object": "GX_888c98c08ff2_R16_Gallery_Frame_01_Back_Floor_Shoe",
+      "partition": "R16_GALLERY_01_OPEN_STRUCTURAL_FRAME",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Frame_01_Front_Collar",
+      "export_object": "GX_fc8f67123247_R16_Gallery_Frame_01_Front_Collar",
+      "partition": "R16_GALLERY_01_OPEN_STRUCTURAL_FRAME",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Frame_01_Front_Floor_Shoe",
+      "export_object": "GX_b375e6eac323_R16_Gallery_Frame_01_Front_Floor_Shoe",
+      "partition": "R16_GALLERY_01_OPEN_STRUCTURAL_FRAME",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Frame_01_Knee_0",
+      "export_object": "GX_8eaf357471f5_R16_Gallery_Frame_01_Knee_0",
+      "partition": "R16_GALLERY_01_OPEN_STRUCTURAL_FRAME",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Frame_01_Knee_1",
+      "export_object": "GX_7e3a12dd0fca_R16_Gallery_Frame_01_Knee_1",
+      "partition": "R16_GALLERY_01_OPEN_STRUCTURAL_FRAME",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Frame_02_Back_Collar",
+      "export_object": "GX_e755eb3d8bc1_R16_Gallery_Frame_02_Back_Collar",
+      "partition": "R16_GALLERY_01_OPEN_STRUCTURAL_FRAME",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Frame_02_Back_Floor_Shoe",
+      "export_object": "GX_90615a0f3797_R16_Gallery_Frame_02_Back_Floor_Shoe",
+      "partition": "R16_GALLERY_01_OPEN_STRUCTURAL_FRAME",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Frame_02_Front_Collar",
+      "export_object": "GX_9ef6b8f1ae75_R16_Gallery_Frame_02_Front_Collar",
+      "partition": "R16_GALLERY_01_OPEN_STRUCTURAL_FRAME",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Frame_02_Front_Floor_Shoe",
+      "export_object": "GX_212c142543df_R16_Gallery_Frame_02_Front_Floor_Shoe",
+      "partition": "R16_GALLERY_01_OPEN_STRUCTURAL_FRAME",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Frame_02_Knee_0",
+      "export_object": "GX_691fdd3be975_R16_Gallery_Frame_02_Knee_0",
+      "partition": "R16_GALLERY_01_OPEN_STRUCTURAL_FRAME",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Frame_02_Knee_1",
+      "export_object": "GX_fd635a41c0e1_R16_Gallery_Frame_02_Knee_1",
+      "partition": "R16_GALLERY_01_OPEN_STRUCTURAL_FRAME",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Frame_03_Back_Collar",
+      "export_object": "GX_646b41d3fb63_R16_Gallery_Frame_03_Back_Collar",
+      "partition": "R16_GALLERY_01_OPEN_STRUCTURAL_FRAME",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Frame_03_Back_Floor_Shoe",
+      "export_object": "GX_38c95c2587d9_R16_Gallery_Frame_03_Back_Floor_Shoe",
+      "partition": "R16_GALLERY_01_OPEN_STRUCTURAL_FRAME",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Frame_03_Front_Collar",
+      "export_object": "GX_b1a5125063da_R16_Gallery_Frame_03_Front_Collar",
+      "partition": "R16_GALLERY_01_OPEN_STRUCTURAL_FRAME",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Frame_03_Front_Floor_Shoe",
+      "export_object": "GX_43a5d8f79c59_R16_Gallery_Frame_03_Front_Floor_Shoe",
+      "partition": "R16_GALLERY_01_OPEN_STRUCTURAL_FRAME",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Frame_03_Knee_0",
+      "export_object": "GX_1fc62f3dc09a_R16_Gallery_Frame_03_Knee_0",
+      "partition": "R16_GALLERY_01_OPEN_STRUCTURAL_FRAME",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Frame_03_Knee_1",
+      "export_object": "GX_bc3c62a1d252_R16_Gallery_Frame_03_Knee_1",
+      "partition": "R16_GALLERY_01_OPEN_STRUCTURAL_FRAME",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Frame_04_Back_Collar",
+      "export_object": "GX_67d30deeffe3_R16_Gallery_Frame_04_Back_Collar",
+      "partition": "R16_GALLERY_01_OPEN_STRUCTURAL_FRAME",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Frame_04_Back_Floor_Shoe",
+      "export_object": "GX_33a07154d9b7_R16_Gallery_Frame_04_Back_Floor_Shoe",
+      "partition": "R16_GALLERY_01_OPEN_STRUCTURAL_FRAME",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Frame_04_Front_Collar",
+      "export_object": "GX_422a3c4ad7c8_R16_Gallery_Frame_04_Front_Collar",
+      "partition": "R16_GALLERY_01_OPEN_STRUCTURAL_FRAME",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Frame_04_Front_Floor_Shoe",
+      "export_object": "GX_b620a814ad29_R16_Gallery_Frame_04_Front_Floor_Shoe",
+      "partition": "R16_GALLERY_01_OPEN_STRUCTURAL_FRAME",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Frame_04_Knee_0",
+      "export_object": "GX_09e46ae2b3ac_R16_Gallery_Frame_04_Knee_0",
+      "partition": "R16_GALLERY_01_OPEN_STRUCTURAL_FRAME",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Frame_04_Knee_1",
+      "export_object": "GX_51df28493e2a_R16_Gallery_Frame_04_Knee_1",
+      "partition": "R16_GALLERY_01_OPEN_STRUCTURAL_FRAME",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Front_Upper_Cap",
+      "export_object": "GX_68f0a782f488_R16_Gallery_Front_Upper_Cap",
+      "partition": "R16_GALLERY_01_OPEN_STRUCTURAL_FRAME",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Gallery_Entry_Identity",
+      "export_object": "GX_8c1eaaeab068_R16_Gallery_Gallery_Entry_Identity",
+      "partition": "R16_GALLERY_01_OPEN_STRUCTURAL_FRAME",
+      "source_slot_index": 0,
+      "source_material": "R24_Service_Stencil_Offwhite",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Heat_Exchange_Top_Plenum",
+      "export_object": "GX_05edbd1b1985_R16_Gallery_Heat_Exchange_Top_Plenum",
+      "partition": "R16_GALLERY_02_RECESSED_SERVICE_BACKPLANE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Power_Isolation_Cover_1",
+      "export_object": "GX_2b04a402fd60_R16_Gallery_Power_Isolation_Cover_1",
+      "partition": "R16_GALLERY_02_RECESSED_SERVICE_BACKPLANE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Power_Meter_Band",
+      "export_object": "GX_de7ac09f6592_R16_Gallery_Power_Meter_Band",
+      "partition": "R16_GALLERY_02_RECESSED_SERVICE_BACKPLANE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R16_Gallery_Service_Access_Ledge_Brackets",
+      "export_object": "GX_64840fc5920c_R16_Gallery_Service_Access_Ledge_Brackets",
+      "partition": "R16_GALLERY_02_RECESSED_SERVICE_BACKPLANE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R17_Workcell_Bed_East_Shoe_00",
+      "export_object": "GX_34b7f94c6dfa_R17_Workcell_Bed_East_Shoe_00",
+      "partition": "R17_WORKCELL_01_MACHINE_BED_AND_FIXTURE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R17_Workcell_Bed_East_Shoe_01",
+      "export_object": "GX_9f115914f3ff_R17_Workcell_Bed_East_Shoe_01",
+      "partition": "R17_WORKCELL_01_MACHINE_BED_AND_FIXTURE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R17_Workcell_Bed_East_Shoe_02",
+      "export_object": "GX_1bbad0761b17_R17_Workcell_Bed_East_Shoe_02",
+      "partition": "R17_WORKCELL_01_MACHINE_BED_AND_FIXTURE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R17_Workcell_Bed_Massive_Fixture_Plate",
+      "export_object": "GX_93a84ff56ab9_R17_Workcell_Bed_Massive_Fixture_Plate",
+      "partition": "R17_WORKCELL_01_MACHINE_BED_AND_FIXTURE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R17_Workcell_Bed_Transverse_Tie_00",
+      "export_object": "GX_952d8a1ccdba_R17_Workcell_Bed_Transverse_Tie_00",
+      "partition": "R17_WORKCELL_01_MACHINE_BED_AND_FIXTURE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R17_Workcell_Bed_Transverse_Tie_01",
+      "export_object": "GX_76ab7b0b4aeb_R17_Workcell_Bed_Transverse_Tie_01",
+      "partition": "R17_WORKCELL_01_MACHINE_BED_AND_FIXTURE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R17_Workcell_Bed_Transverse_Tie_02",
+      "export_object": "GX_748d4744be70_R17_Workcell_Bed_Transverse_Tie_02",
+      "partition": "R17_WORKCELL_01_MACHINE_BED_AND_FIXTURE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R17_Workcell_Bed_Transverse_Tie_03",
+      "export_object": "GX_ffcf6e22d6ac_R17_Workcell_Bed_Transverse_Tie_03",
+      "partition": "R17_WORKCELL_01_MACHINE_BED_AND_FIXTURE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R17_Workcell_Bed_West_Shoe_00",
+      "export_object": "GX_1965830c9528_R17_Workcell_Bed_West_Shoe_00",
+      "partition": "R17_WORKCELL_01_MACHINE_BED_AND_FIXTURE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R17_Workcell_Bed_West_Shoe_01",
+      "export_object": "GX_b51ab7f71add_R17_Workcell_Bed_West_Shoe_01",
+      "partition": "R17_WORKCELL_01_MACHINE_BED_AND_FIXTURE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R17_Workcell_Bed_West_Shoe_02",
+      "export_object": "GX_65b18ea1382a_R17_Workcell_Bed_West_Shoe_02",
+      "partition": "R17_WORKCELL_01_MACHINE_BED_AND_FIXTURE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R17_Workcell_Machine_Captive_Ram_Carriage",
+      "export_object": "GX_4f91fc87f479_R17_Workcell_Machine_Captive_Ram_Carriage",
+      "partition": "R17_WORKCELL_02_HEAVY_MACHINE_FRAME",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R17_Workcell_Machine_East_Bed_Guard",
+      "export_object": "GX_e8a6da893dce_R17_Workcell_Machine_East_Bed_Guard",
+      "partition": "R17_WORKCELL_01_MACHINE_BED_AND_FIXTURE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R17_Workcell_Machine_East_Foundation_Shoe",
+      "export_object": "GX_2fd9858cef31_R17_Workcell_Machine_East_Foundation_Shoe",
+      "partition": "R17_WORKCELL_02_HEAVY_MACHINE_FRAME",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R17_Workcell_Machine_East_Tapered_Casting",
+      "export_object": "GX_7a84f6240439_R17_Workcell_Machine_East_Tapered_Casting",
+      "partition": "R17_WORKCELL_02_HEAVY_MACHINE_FRAME",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R17_Workcell_Machine_West_Foundation_Shoe",
+      "export_object": "GX_134aa793d5c5_R17_Workcell_Machine_West_Foundation_Shoe",
+      "partition": "R17_WORKCELL_02_HEAVY_MACHINE_FRAME",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R17_Workcell_Machine_West_Tapered_Casting",
+      "export_object": "GX_5b60d0c64576_R17_Workcell_Machine_West_Tapered_Casting",
+      "partition": "R17_WORKCELL_02_HEAVY_MACHINE_FRAME",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R17_Workcell_Rear_Drive_Inspection_Panel_00",
+      "export_object": "GX_c08ca88d5d1d_R17_Workcell_Rear_Drive_Inspection_Panel_00",
+      "partition": "R17_WORKCELL_02_HEAVY_MACHINE_FRAME",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R17_Workcell_Rear_Drive_Inspection_Panel_01",
+      "export_object": "GX_732fd252e410_R17_Workcell_Rear_Drive_Inspection_Panel_01",
+      "partition": "R17_WORKCELL_02_HEAVY_MACHINE_FRAME",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R17_Workcell_Rear_Drive_Upper_Duct",
+      "export_object": "GX_35a295e22561_R17_Workcell_Rear_Drive_Upper_Duct",
+      "partition": "R17_WORKCELL_02_HEAVY_MACHINE_FRAME",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R17_Workcell_Shield_East_Shoe_00",
+      "export_object": "GX_92b86c0f5461_R17_Workcell_Shield_East_Shoe_00",
+      "partition": "R17_WORKCELL_03_STEPPED_PROTECTIVE_SHIELDING",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R17_Workcell_Shield_East_Shoe_01",
+      "export_object": "GX_8d21b8f177e5_R17_Workcell_Shield_East_Shoe_01",
+      "partition": "R17_WORKCELL_03_STEPPED_PROTECTIVE_SHIELDING",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R17_Workcell_Shield_East_Shoe_02",
+      "export_object": "GX_69bc186196bc_R17_Workcell_Shield_East_Shoe_02",
+      "partition": "R17_WORKCELL_03_STEPPED_PROTECTIVE_SHIELDING",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R17_Workcell_Shield_East_Short_Rear_Return",
+      "export_object": "GX_6b5b60080251_R17_Workcell_Shield_East_Short_Rear_Return",
+      "partition": "R17_WORKCELL_03_STEPPED_PROTECTIVE_SHIELDING",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R17_Workcell_Shield_West_Shoe_00",
+      "export_object": "GX_74804c1f8c47_R17_Workcell_Shield_West_Shoe_00",
+      "partition": "R17_WORKCELL_03_STEPPED_PROTECTIVE_SHIELDING",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R17_Workcell_Shield_West_Shoe_01",
+      "export_object": "GX_64863c8dd360_R17_Workcell_Shield_West_Shoe_01",
+      "partition": "R17_WORKCELL_03_STEPPED_PROTECTIVE_SHIELDING",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R17_Workcell_Shield_West_Shoe_02",
+      "export_object": "GX_75dc5fe10ab7_R17_Workcell_Shield_West_Shoe_02",
+      "partition": "R17_WORKCELL_03_STEPPED_PROTECTIVE_SHIELDING",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R17_Workcell_Shield_West_Stepped_Opaque_Casting",
+      "export_object": "GX_2f51a7fc5c65_R17_Workcell_Shield_West_Stepped_Opaque_Cast",
+      "partition": "R17_WORKCELL_03_STEPPED_PROTECTIVE_SHIELDING",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Court_Upper_Ground_Closed_Base",
+      "export_object": "GX_1f4d0e7eb167_R18_Court_Upper_Ground_Closed_Base",
+      "partition": "R18_SERVICE_HOUSE_05_INTEGRATED_SERVICE_COURT",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Court_Upper_Solid_Riser_01",
+      "export_object": "GX_102d4b64852a_R18_Court_Upper_Solid_Riser_01",
+      "partition": "R18_SERVICE_HOUSE_04_PAVEMENT_ENTRY_AND_REAL_STAIRS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Court_Upper_Solid_Riser_02",
+      "export_object": "GX_81fe9e77bc33_R18_Court_Upper_Solid_Riser_02",
+      "partition": "R18_SERVICE_HOUSE_04_PAVEMENT_ENTRY_AND_REAL_STAIRS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Court_Upper_Solid_Riser_03",
+      "export_object": "GX_2a8dcf7eb35f_R18_Court_Upper_Solid_Riser_03",
+      "partition": "R18_SERVICE_HOUSE_04_PAVEMENT_ENTRY_AND_REAL_STAIRS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Court_Upper_Solid_Riser_04",
+      "export_object": "GX_36c389db5a07_R18_Court_Upper_Solid_Riser_04",
+      "partition": "R18_SERVICE_HOUSE_04_PAVEMENT_ENTRY_AND_REAL_STAIRS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Court_Upper_Solid_Riser_05",
+      "export_object": "GX_47b5c0a607d7_R18_Court_Upper_Solid_Riser_05",
+      "partition": "R18_SERVICE_HOUSE_04_PAVEMENT_ENTRY_AND_REAL_STAIRS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Entry_Lower_Room_Landing",
+      "export_object": "GX_77c0ca1743ac_R18_Entry_Lower_Room_Landing",
+      "partition": "R18_SERVICE_HOUSE_04_PAVEMENT_ENTRY_AND_REAL_STAIRS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Entry_Lower_Turning_Landing",
+      "export_object": "GX_15acba6fca6c_R18_Entry_Lower_Turning_Landing",
+      "partition": "R18_SERVICE_HOUSE_04_PAVEMENT_ENTRY_AND_REAL_STAIRS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Entry_Main_Solid_Riser_01",
+      "export_object": "GX_49e972d346d5_R18_Entry_Main_Solid_Riser_01",
+      "partition": "R18_SERVICE_HOUSE_04_PAVEMENT_ENTRY_AND_REAL_STAIRS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Entry_Main_Solid_Riser_02",
+      "export_object": "GX_bedc3804696d_R18_Entry_Main_Solid_Riser_02",
+      "partition": "R18_SERVICE_HOUSE_04_PAVEMENT_ENTRY_AND_REAL_STAIRS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Entry_Main_Solid_Riser_03",
+      "export_object": "GX_c9f7ecc9ef06_R18_Entry_Main_Solid_Riser_03",
+      "partition": "R18_SERVICE_HOUSE_04_PAVEMENT_ENTRY_AND_REAL_STAIRS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Entry_Main_Solid_Riser_04",
+      "export_object": "GX_884bdb6b355f_R18_Entry_Main_Solid_Riser_04",
+      "partition": "R18_SERVICE_HOUSE_04_PAVEMENT_ENTRY_AND_REAL_STAIRS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Entry_Main_Solid_Riser_05",
+      "export_object": "GX_e9152e36bff8_R18_Entry_Main_Solid_Riser_05",
+      "partition": "R18_SERVICE_HOUSE_04_PAVEMENT_ENTRY_AND_REAL_STAIRS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Entry_Main_Solid_Riser_06",
+      "export_object": "GX_ae08cda7c4cc_R18_Entry_Main_Solid_Riser_06",
+      "partition": "R18_SERVICE_HOUSE_04_PAVEMENT_ENTRY_AND_REAL_STAIRS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Entry_Main_Solid_Riser_07",
+      "export_object": "GX_a0da6148a6ee_R18_Entry_Main_Solid_Riser_07",
+      "partition": "R18_SERVICE_HOUSE_04_PAVEMENT_ENTRY_AND_REAL_STAIRS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Entry_Main_Solid_Riser_08",
+      "export_object": "GX_f4f430690f1c_R18_Entry_Main_Solid_Riser_08",
+      "partition": "R18_SERVICE_HOUSE_04_PAVEMENT_ENTRY_AND_REAL_STAIRS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Entry_Main_Solid_Riser_09",
+      "export_object": "GX_a6708f5dbfed_R18_Entry_Main_Solid_Riser_09",
+      "partition": "R18_SERVICE_HOUSE_04_PAVEMENT_ENTRY_AND_REAL_STAIRS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Entry_Main_Solid_Riser_10",
+      "export_object": "GX_56bef45ae0b7_R18_Entry_Main_Solid_Riser_10",
+      "partition": "R18_SERVICE_HOUSE_04_PAVEMENT_ENTRY_AND_REAL_STAIRS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Entry_Main_Solid_Riser_11",
+      "export_object": "GX_b59b24a122d6_R18_Entry_Main_Solid_Riser_11",
+      "partition": "R18_SERVICE_HOUSE_04_PAVEMENT_ENTRY_AND_REAL_STAIRS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Entry_Main_Solid_Riser_12",
+      "export_object": "GX_df7a1fa51cdf_R18_Entry_Main_Solid_Riser_12",
+      "partition": "R18_SERVICE_HOUSE_04_PAVEMENT_ENTRY_AND_REAL_STAIRS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Entry_Main_Solid_Riser_13",
+      "export_object": "GX_2be65acc59e7_R18_Entry_Main_Solid_Riser_13",
+      "partition": "R18_SERVICE_HOUSE_04_PAVEMENT_ENTRY_AND_REAL_STAIRS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Floor_Lower_Room",
+      "export_object": "GX_79adbeb25999_R18_Floor_Lower_Room",
+      "partition": "R18_SERVICE_HOUSE_01_STEPPED_CLOSED_BEARING_BASE",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Floor_Upper_North_Room",
+      "export_object": "GX_16e6f94990c1_R18_Floor_Upper_North_Room",
+      "partition": "R18_SERVICE_HOUSE_01_STEPPED_CLOSED_BEARING_BASE",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Floor_Upper_Stair_East_Cheek",
+      "export_object": "GX_3023cc0685b1_R18_Floor_Upper_Stair_East_Cheek",
+      "partition": "R18_SERVICE_HOUSE_01_STEPPED_CLOSED_BEARING_BASE",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Floor_Upper_Stair_West_Cheek",
+      "export_object": "GX_79a69e25ff24_R18_Floor_Upper_Stair_West_Cheek",
+      "partition": "R18_SERVICE_HOUSE_01_STEPPED_CLOSED_BEARING_BASE",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Internal_Stair_Solid_Riser_01",
+      "export_object": "GX_de9bb24f108e_R18_Internal_Stair_Solid_Riser_01",
+      "partition": "R18_SERVICE_HOUSE_04_PAVEMENT_ENTRY_AND_REAL_STAIRS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Internal_Stair_Solid_Riser_02",
+      "export_object": "GX_f52f069e0871_R18_Internal_Stair_Solid_Riser_02",
+      "partition": "R18_SERVICE_HOUSE_04_PAVEMENT_ENTRY_AND_REAL_STAIRS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Internal_Stair_Solid_Riser_03",
+      "export_object": "GX_16e2fcad3b96_R18_Internal_Stair_Solid_Riser_03",
+      "partition": "R18_SERVICE_HOUSE_04_PAVEMENT_ENTRY_AND_REAL_STAIRS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Internal_Stair_Solid_Riser_04",
+      "export_object": "GX_c101aa9511b8_R18_Internal_Stair_Solid_Riser_04",
+      "partition": "R18_SERVICE_HOUSE_04_PAVEMENT_ENTRY_AND_REAL_STAIRS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Internal_Stair_Solid_Riser_05",
+      "export_object": "GX_47f38cf1692a_R18_Internal_Stair_Solid_Riser_05",
+      "partition": "R18_SERVICE_HOUSE_04_PAVEMENT_ENTRY_AND_REAL_STAIRS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Pavement_Approach_Solid_Tread_01",
+      "export_object": "GX_197d9a6a2a68_R18_Pavement_Approach_Solid_Tread_01",
+      "partition": "R18_SERVICE_HOUSE_04_PAVEMENT_ENTRY_AND_REAL_STAIRS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Pavement_Approach_Solid_Tread_02",
+      "export_object": "GX_7a2a83083a49_R18_Pavement_Approach_Solid_Tread_02",
+      "partition": "R18_SERVICE_HOUSE_04_PAVEMENT_ENTRY_AND_REAL_STAIRS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Pavement_Approach_Solid_Tread_03",
+      "export_object": "GX_bf695576ca00_R18_Pavement_Approach_Solid_Tread_03",
+      "partition": "R18_SERVICE_HOUSE_04_PAVEMENT_ENTRY_AND_REAL_STAIRS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Pavement_Approach_Solid_Tread_04",
+      "export_object": "GX_d267244a24a1_R18_Pavement_Approach_Solid_Tread_04",
+      "partition": "R18_SERVICE_HOUSE_04_PAVEMENT_ENTRY_AND_REAL_STAIRS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Pavement_Approach_Solid_Tread_05",
+      "export_object": "GX_81892a623540_R18_Pavement_Approach_Solid_Tread_05",
+      "partition": "R18_SERVICE_HOUSE_04_PAVEMENT_ENTRY_AND_REAL_STAIRS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Pavement_Approach_Solid_Tread_06",
+      "export_object": "GX_228057823dca_R18_Pavement_Approach_Solid_Tread_06",
+      "partition": "R18_SERVICE_HOUSE_04_PAVEMENT_ENTRY_AND_REAL_STAIRS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Pavement_Approach_Solid_Tread_07",
+      "export_object": "GX_722d4d7a6901_R18_Pavement_Approach_Solid_Tread_07",
+      "partition": "R18_SERVICE_HOUSE_04_PAVEMENT_ENTRY_AND_REAL_STAIRS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Pavement_Approach_Solid_Tread_08",
+      "export_object": "GX_f86da9f1b0a2_R18_Pavement_Approach_Solid_Tread_08",
+      "partition": "R18_SERVICE_HOUSE_04_PAVEMENT_ENTRY_AND_REAL_STAIRS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Pavement_Approach_Solid_Tread_09",
+      "export_object": "GX_b9e8fb9425d1_R18_Pavement_Approach_Solid_Tread_09",
+      "partition": "R18_SERVICE_HOUSE_04_PAVEMENT_ENTRY_AND_REAL_STAIRS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Pavement_Approach_Solid_Tread_10",
+      "export_object": "GX_4bd17e213470_R18_Pavement_Approach_Solid_Tread_10",
+      "partition": "R18_SERVICE_HOUSE_04_PAVEMENT_ENTRY_AND_REAL_STAIRS",
+      "source_slot_index": 0,
+      "source_material": "R23_Matte_Deck_Fine_Finish",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Roof_Lower_Closed_Deck",
+      "export_object": "GX_7c608f80602e_R18_Roof_Lower_Closed_Deck",
+      "partition": "R18_SERVICE_HOUSE_03_STEPPED_ROOF_ASSEMBLY",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Roof_Upper_Closed_Deck",
+      "export_object": "GX_4555624c050e_R18_Roof_Upper_Closed_Deck",
+      "partition": "R18_SERVICE_HOUSE_03_STEPPED_ROOF_ASSEMBLY",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Service_Vent_Deep_Louver_00",
+      "export_object": "GX_6b9cff1f79ab_R18_Service_Vent_Deep_Louver_00",
+      "partition": "R18_SERVICE_HOUSE_06_RECESSED_SERVICE_FACADE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Service_Vent_Deep_Louver_01",
+      "export_object": "GX_cb928c93cde2_R18_Service_Vent_Deep_Louver_01",
+      "partition": "R18_SERVICE_HOUSE_06_RECESSED_SERVICE_FACADE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Service_Vent_Deep_Louver_02",
+      "export_object": "GX_d14dea840b38_R18_Service_Vent_Deep_Louver_02",
+      "partition": "R18_SERVICE_HOUSE_06_RECESSED_SERVICE_FACADE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Service_Vent_Deep_Louver_03",
+      "export_object": "GX_03ed1986959e_R18_Service_Vent_Deep_Louver_03",
+      "partition": "R18_SERVICE_HOUSE_06_RECESSED_SERVICE_FACADE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Service_Vent_Deep_Louver_04",
+      "export_object": "GX_4c357d7d2268_R18_Service_Vent_Deep_Louver_04",
+      "partition": "R18_SERVICE_HOUSE_06_RECESSED_SERVICE_FACADE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Service_Vent_Deep_Louver_05",
+      "export_object": "GX_749b4255a31f_R18_Service_Vent_Deep_Louver_05",
+      "partition": "R18_SERVICE_HOUSE_06_RECESSED_SERVICE_FACADE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Service_Vent_Deep_Louver_06",
+      "export_object": "GX_00948661a226_R18_Service_Vent_Deep_Louver_06",
+      "partition": "R18_SERVICE_HOUSE_06_RECESSED_SERVICE_FACADE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    },
+    {
+      "source_object": "R18_Service_Vent_Deep_Louver_07",
+      "export_object": "GX_b72516acf98f_R18_Service_Vent_Deep_Louver_07",
+      "partition": "R18_SERVICE_HOUSE_06_RECESSED_SERVICE_FACADE",
+      "source_slot_index": 0,
+      "source_material": "R24_Slate_Gray_Industrial_Enamel",
+      "policy": "EXCLUDED_SOURCE_SETTINGS_MANUAL_PRESERVE_CURRENT_LOCAL_MAPPING_ONLY"
+    }
+  ],
+  "source_image_dependencies_reference_only": [
+    {
+      "source_image": "R8_Matte_Deck_Plates_MetallicGloss.png",
+      "source_filepath_basename": "R8_Matte_Deck_Plates_MetallicGloss.png",
+      "colorspace": "Non-Color",
+      "size": [
+        2048,
+        2048
+      ],
+      "source_packed_payloads": [
+        {
+          "index": 0,
+          "bytes": 644112,
+          "sha256": "2341e16c19e5270a5cbc82082e885ac8a14bbd032d47e73e949ec03a03f3168b"
+        }
+      ],
+      "file_bundled": false,
+      "source_materials": [
+        "R23_Matte_Deck_Fine_Finish"
+      ],
+      "policy": "REFERENCE_ONLY_PRESERVE_CURRENT_LOCAL_TEXTURE_ASSIGNMENTS_NO_IMPORT"
+    }
+  ],
+  "automatic_binding_allowed": false
+}

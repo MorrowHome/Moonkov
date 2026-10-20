@@ -1,0 +1,49 @@
+var root=@"E:\Code\Codex\2026-10-19\task\R09_R18";
+void Need(bool ok,string message) { if(!ok) throw new Exception(message); }
+string Sha(string path) { using(var h=System.Security.Cryptography.SHA256.Create()) return BitConverter.ToString(h.ComputeHash(System.IO.File.ReadAllBytes(path))).Replace("-","").ToLowerInvariant(); }
+string Scenes() { var a=new List<string>(); for(int i=0;i<UnityEngine.SceneManagement.SceneManager.sceneCount;i++){var s=UnityEngine.SceneManagement.SceneManager.GetSceneAt(i);a.Add(s.path+":"+s.isDirty+":"+s.isLoaded);}return string.Join("\n",a); }
+var jsonType=AppDomain.CurrentDomain.GetAssemblies().Single(a=>a.GetName().Name=="Newtonsoft.Json").GetType("Newtonsoft.Json.JsonConvert");
+object F(object obj,string key) { return obj.GetType().GetProperty("Item",new[]{typeof(string)}).GetValue(obj,new object[]{key}); }
+T V<T>(object obj) { return (T)obj.GetType().GetMethod("ToObject",new[]{typeof(Type)}).Invoke(obj,new object[]{typeof(T)}); }
+object[] Rows(object obj) { return ((System.Collections.IEnumerable)obj).Cast<object>().ToArray(); }
+void Report(string name,object value) { var text=(string)jsonType.GetMethod("SerializeObject",new[]{typeof(object)}).Invoke(null,new[]{value});System.IO.File.WriteAllText(System.IO.Path.Combine(root,name),text); }
+void Ensure(string path) { if(AssetDatabase.IsValidFolder(path))return; Need(!System.IO.Directory.Exists(path),"Existing unregistered folder: "+path);int cut=path.LastIndexOf('/');Ensure(path.Substring(0,cut));AssetDatabase.CreateFolder(path.Substring(0,cut),path.Substring(cut+1)); }
+Need(Application.dataPath.Replace('\\','/')=="E:/UnityProjects/FPS_Template/Assets","Wrong project");
+Need(!EditorApplication.isPlayingOrWillChangePlaymode&&!EditorApplication.isCompiling&&!Lightmapping.isRunning,"Editor occupied");
+var plan=jsonType.GetMethod("DeserializeObject",new[]{typeof(string),typeof(Type)}).Invoke(null,new object[]{System.IO.File.ReadAllText(System.IO.Path.Combine(root,"ImportPlan.json")),typeof(object)});
+string output=V<string>(F(plan,"output")),formal=V<string>(F(plan,"formal"));
+Need(Sha(formal)==V<string>(F(plan,"formalBeforeSHA256")),"Formal scene changed since plan");
+Need(!System.IO.Directory.Exists(output),"R09_R18 destination exists; inspect instead of overwriting");
+Need(Sha(System.IO.Path.Combine(root,"NativePrepared/Manifest.json"))==V<string>(F(plan,"nativeManifestSHA256")),"Native manifest changed");
+string beforeScenes=Scenes();var active=UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+Need(Enumerable.Range(0,UnityEngine.SceneManagement.SceneManager.sceneCount).All(i=>!UnityEngine.SceneManagement.SceneManager.GetSceneAt(i).isDirty),"Unsaved user scene");
+var sourceMaterials=new Dictionary<string,Material>();
+foreach(var spec in Rows(F(plan,"materials")))if(!V<bool>(F(spec,"create"))){string p=V<string>(F(spec,"path"));var mat=AssetDatabase.LoadAssetAtPath<Material>(p);Need(mat&&mat.shader&&mat.shader.isSupported&&!EditorUtility.IsDirty(mat),"Existing material unavailable/dirty: "+p);Need(Sha(p)==V<string>(F(spec,"beforeSHA256")),"Existing material changed: "+p);sourceMaterials.Add(V<string>(F(spec,"source")),mat);}
+var shader=Shader.Find("Universal Render Pipeline/Lit");Need(shader&&shader.isSupported,"Existing URP Lit unavailable");
+Ensure(output+"/Meshes");
+foreach(var spec in Rows(F(plan,"materials")))if(V<bool>(F(spec,"create"))){var c=V<float[]>(F(spec,"baseColorGamma"));var mat=new Material(shader){name=V<string>(F(spec,"source")),enableInstancing=true};mat.SetColor("_BaseColor",new Color(c[0],c[1],c[2],c[3]));mat.SetFloat("_Metallic",V<float>(F(spec,"metallic")));mat.SetFloat("_Smoothness",V<float>(F(spec,"smoothness")));AssetDatabase.CreateAsset(mat,V<string>(F(spec,"path")));sourceMaterials.Add(V<string>(F(spec,"source")),mat);}
+var meshes=new Dictionary<string,Mesh>();int completed=0,totalTriangles=0;
+AssetDatabase.StartAssetEditing();
+try { foreach(var entry in Rows(F(plan,"objects"))){string key=V<string>(F(entry,"key"));string p=System.IO.Path.Combine(root,"NativePrepared",key+".bin");Need(Sha(p)==V<string>(F(entry,"sha256")),"Payload changed: "+key);
+ using(var r=new System.IO.BinaryReader(System.IO.File.OpenRead(p))){int count=r.ReadInt32();Need(count==V<int>(F(entry,"vertices")),"Vertex count differs");var vertices=new Vector3[count];var normals=new Vector3[count];var uv=new Vector2[count];for(int i=0;i<count;i++)vertices[i]=new Vector3(r.ReadSingle(),r.ReadSingle(),r.ReadSingle());for(int i=0;i<count;i++)normals[i]=new Vector3(r.ReadSingle(),r.ReadSingle(),r.ReadSingle());Need(r.ReadInt32()==1&&r.ReadInt32()==0,"Unexpected UV contract");for(int i=0;i<count;i++)uv[i]=new Vector2(r.ReadSingle(),r.ReadSingle());for(int i=0;i<count;i++)Need(uv[i]==new Vector2(r.ReadSingle(),r.ReadSingle()),"Tangent basis differs");int slots=r.ReadInt32();Need(slots==Rows(F(entry,"materials")).Count(),"Material count differs");var mesh=new Mesh{name="R09_R18_"+key,indexFormat=count>65535?UnityEngine.Rendering.IndexFormat.UInt32:UnityEngine.Rendering.IndexFormat.UInt16};mesh.vertices=vertices;mesh.normals=normals;mesh.uv=uv;mesh.subMeshCount=slots;int indexCount=0;for(int slot=0;slot<slots;slot++){int n=r.ReadInt32();var ids=new int[n];for(int j=0;j<n;j++){ids[j]=r.ReadInt32();Need(ids[j]>=0&&ids[j]<count,"Invalid index");}mesh.SetTriangles(ids,slot,false);indexCount+=n;}Need(r.BaseStream.Position==r.BaseStream.Length&&indexCount/3==V<int>(F(entry,"triangles")),"Native payload invalid");mesh.RecalculateTangents();mesh.RecalculateBounds();Need(mesh.uv2.Length==0&&mesh.tangents.Length==count,"Mesh UV/tangent contract differs");Need(mesh.tangents.All(t=>!float.IsNaN(t.x)&&!float.IsInfinity(t.x)&&!float.IsNaN(t.y)&&!float.IsInfinity(t.y)&&!float.IsNaN(t.z)&&!float.IsInfinity(t.z)),"Non-finite tangent");AssetDatabase.CreateAsset(mesh,output+"/Meshes/"+key+".asset");meshes.Add(key,mesh);totalTriangles+=indexCount/3;}
+ completed++; if(completed%100==0)Report("stage-progress.json",new{completed,total=1629});
+ }} finally { AssetDatabase.StopAssetEditing(); }
+Need(meshes.Count==1629&&totalTriangles==121395,"Native scope differs");
+foreach(var e in Rows(F(plan,"objects"))){var key=V<string>(F(e,"key"));meshes[key]=AssetDatabase.LoadAssetAtPath<Mesh>(output+"/Meshes/"+key+".asset");}
+foreach(var spec in Rows(F(plan,"materials")))sourceMaterials[V<string>(F(spec,"source"))]=AssetDatabase.LoadAssetAtPath<Material>(V<string>(F(spec,"path")));
+var scratch=UnityEditor.SceneManagement.EditorSceneManager.NewScene(UnityEditor.SceneManagement.NewSceneSetup.EmptyScene,UnityEditor.SceneManagement.NewSceneMode.Additive);
+GameObject display=null;double maxDrift=0;
+try {
+ 
+ display=new GameObject("REBUILD_R09_R18_DISPLAY_ROOT");if(display.scene!=scratch)UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(display,scratch);Need(display.scene==scratch,"Wrong temporary scene");var groups=new Dictionary<string,Transform>();
+ foreach(var entry in Rows(F(plan,"objects"))){string partition=V<string>(F(entry,"partition"));if(!groups.ContainsKey(partition)){var group=new GameObject(partition);group.transform.SetParent(display.transform,false);groups.Add(partition,group.transform);}var go=new GameObject(V<string>(F(entry,"name")));go.transform.SetParent(groups[partition],false);var p=V<float[]>(F(entry,"position"));var q=V<float[]>(F(entry,"rotation"));var s=V<float[]>(F(entry,"scale"));go.transform.localPosition=new Vector3(p[0],p[1],p[2]);go.transform.localRotation=new Quaternion(q[0],q[1],q[2],q[3]);go.transform.localScale=new Vector3(s[0],s[1],s[2]);var mesh=meshes[V<string>(F(entry,"key"))];go.AddComponent<MeshFilter>().sharedMesh=mesh;var renderer=go.AddComponent<MeshRenderer>();renderer.sharedMaterials=Rows(F(entry,"materials")).Select(v=>sourceMaterials[V<string>(v)]).ToArray();renderer.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.On;renderer.receiveShadows=true;
+ var b=V<float[][]>(F(entry,"worldBounds"));var min=new Vector3(float.PositiveInfinity,float.PositiveInfinity,float.PositiveInfinity);var max=new Vector3(float.NegativeInfinity,float.NegativeInfinity,float.NegativeInfinity);foreach(var v in mesh.vertices){var w=go.transform.TransformPoint(v);min=Vector3.Min(min,w);max=Vector3.Max(max,w);}for(int i=0;i<3;i++){maxDrift=Math.Max(maxDrift,Math.Abs(min[i]-b[0][i]));maxDrift=Math.Max(maxDrift,Math.Abs(max[i]-b[1][i]));}Need(maxDrift<0.002,"Unity world placement differs: "+go.name);
+ }
+ Need(display.GetComponentsInChildren<MeshRenderer>(true).Length==1629&&groups.Count==33,"Prefab display scope differs");
+ Need(display.GetComponentsInChildren<Collider>(true).Length==0&&display.GetComponentsInChildren<Light>(true).Length==0&&display.GetComponentsInChildren<MonoBehaviour>(true).Length==0,"Non-display component in prefab");
+ var prefab=PrefabUtility.SaveAsPrefabAsset(display,output+"/RebuildR09R18_Display.prefab",out bool ok);Need(ok&&prefab,"Prefab save failed");
+} finally { if(display)UnityEngine.Object.DestroyImmediate(display);UnityEngine.SceneManagement.SceneManager.SetActiveScene(active);UnityEditor.SceneManagement.EditorSceneManager.CloseScene(scratch,true); }
+foreach(var spec in Rows(F(plan,"materials")))if(!V<bool>(F(spec,"create")))Need(Sha(V<string>(F(spec,"path")))==V<string>(F(spec,"beforeSHA256")),"Existing material was modified");
+Need(Sha(formal)==V<string>(F(plan,"formalBeforeSHA256"))&&Scenes()==beforeScenes,"Independent import changed existing scene state");
+var result=new{meshAssets=1629,partitions=33,triangles=totalTriangles,newMaterials=0,reusedMaterials=9,protectedLocalSlotReferences=190,cloudLunarMaterialsCreated=0,newTextures=0,newColliders=0,newLights=0,newRuntimeScripts=0,unityWorldBoundsMaxDriftMetres=maxDrift,existingScenesUnchanged=true,existingMaterialsUnchanged=true,sceneBound=false,prefab=output+"/RebuildR09R18_Display.prefab"};
+Report("UnityIndependentImport.json",result);return result;

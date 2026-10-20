@@ -1,0 +1,73 @@
+{
+  "source": {
+    "file": "Moonkov_Cumulative_R09_R18_Display_FBX_Review_Handoff_20261020.zip",
+    "bytes": 9966177,
+    "sha256": "6a34722eda6de2d0f7696b346da3083500b7e5965eaf2f924246f3d7cfcfdb85",
+    "privateDriveDownloadVerified": true,
+    "sourceBlendSHA256": "d840a1ad99f65a153f7bda34d73adbb830b7d1cad5654d3270f5cd23c6f788e0",
+    "objects": 1629,
+    "partitions": 33,
+    "perRevisionMeshes": {
+      "R09": 165,
+      "R10": 68,
+      "R11": 83,
+      "R12": 692,
+      "R13": 160,
+      "R15": 114,
+      "R16": 151,
+      "R17": 66,
+      "R18": 130
+    },
+    "allFBXLocalVertexHashesExact": true,
+    "maxBlenderBoundsDriftMetres": 0.0003662109375,
+    "noSharingOrPermissionChanges": true
+  },
+  "independentImport": {
+    "meshAssets": 1629,
+    "partitions": 33,
+    "triangles": 121395,
+    "newMaterials": 0,
+    "reusedMaterials": 9,
+    "protectedLocalSlotReferences": 190,
+    "cloudLunarMaterialsCreated": 0,
+    "newTextures": 0,
+    "newColliders": 0,
+    "newLights": 0,
+    "newRuntimeScripts": 0,
+    "unityWorldBoundsMaxDriftMetres": 0.0001220703125,
+    "existingScenesUnchanged": true,
+    "existingMaterialsUnchanged": true,
+    "sceneBound": false,
+    "prefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab"
+  },
+  "materialMapping": "SourceData/Models/RebuildR09R18/ImportPlan.json",
+  "R16Decision": {
+    "action": "R16 omission/replacement of 14 inherited malformed rods",
+    "applied": false,
+    "status": "BLOCKED_LOCAL_PER_TRIANGLE_OWNERSHIP",
+    "target": "B_R06_SOUTHWEST_RIM_EB01_01",
+    "uniqueInstanceMatches": 1,
+    "targetEvidence": [
+      {
+        "path": "B_RING_CONCEPT_ROOT/B_R06_SOUTHWEST_RIM_EB01_01",
+        "id": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-4040807865168724913-885272968",
+        "position": [
+          2015.0,
+          0.0,
+          2130.0
+        ],
+        "renderers": []
+      }
+    ],
+    "sourceNameRendererMatches": 0,
+    "reason": "Unique instance GameObject exists but contains no descendant MeshRenderers. Optimized geometry has no proven source-object to combined-renderer/submesh/triangle mapping. Source-name/position guesses cannot justify selective omission.",
+    "safeAdditiveGalleryAppliedSeparately": true,
+    "oldRendererDisabled": 0,
+    "oldCollidersChanged": 0,
+    "sharedMeshReplaced": 0,
+    "required": "Per-triangle or per-submesh provenance for the 14 exact target occurrences, including all remaining non-seam triangles and other instances; then local cloned display mesh replacement with unchanged old colliders."
+  },
+  "R19Applied": false,
+  "R20Applied": false,
+  "rollback": "Remove the new display root before reverting asset/source commit; no old renderer disabled."
+}

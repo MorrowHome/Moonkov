@@ -1,0 +1,216 @@
+{
+  "status": "EXACT_OPEN_REVIEW_GATES_NOT_RUNTIME_ACCEPTANCE",
+  "source_sha256": "d840a1ad99f65a153f7bda34d73adbb830b7d1cad5654d3270f5cd23c6f788e0",
+  "binary_tangent_quality_review": [
+    {
+      "partition": "R11_02_THROUGH_GIRDER_FRAME",
+      "source_object": "R11_Through_Web_Approach_Left_1",
+      "object": "GX_d533c902dada_R11_Through_Web_Approach_Left_1",
+      "layers": [
+        {
+          "index": 0,
+          "name": "R09_R12_GameExport_UV0_Box_1LocalUnit",
+          "mapping": "ByPolygonVertex",
+          "reference": "Direct",
+          "vectors": 488,
+          "encoded_vectors": 488,
+          "finite": true,
+          "zero_vectors": 2,
+          "zero_loop_indices": [
+            240,
+            243
+          ],
+          "nonunit_vectors": 2,
+          "length_min": 0.0,
+          "length_max": 1.000000105189615,
+          "array_sha256": "104b1c24efa91547e2acb1d8b438177728deb359b2084aa32993e48ac4b33bce"
+        }
+      ],
+      "status": "REVIEW_REQUIRED_NOT_NORMAL_MAP_READY"
+    },
+    {
+      "partition": "R11_04_OPEN_EDGE_GUARDS",
+      "source_object": "R11_Guard_Top_Approach_Left_2",
+      "object": "GX_8499b0c3b4cb_R11_Guard_Top_Approach_Left_2",
+      "layers": [
+        {
+          "index": 0,
+          "name": "R09_R12_GameExport_UV0_Box_1LocalUnit",
+          "mapping": "ByPolygonVertex",
+          "reference": "Direct",
+          "vectors": 128,
+          "encoded_vectors": 128,
+          "finite": true,
+          "zero_vectors": 1,
+          "zero_loop_indices": [
+            3
+          ],
+          "nonunit_vectors": 1,
+          "length_min": 0.0,
+          "length_max": 1.0000001145506967,
+          "array_sha256": "653e02e322eb276a6664fc26279e58f95425884b5064fbf0398effb4e466354b"
+        }
+      ],
+      "status": "REVIEW_REQUIRED_NOT_NORMAL_MAP_READY"
+    },
+    {
+      "partition": "R11_04_OPEN_EDGE_GUARDS",
+      "source_object": "R11_Guard_Mid_Approach_Right_1",
+      "object": "GX_e704981056f7_R11_Guard_Mid_Approach_Right_1",
+      "layers": [
+        {
+          "index": 0,
+          "name": "R09_R12_GameExport_UV0_Box_1LocalUnit",
+          "mapping": "ByPolygonVertex",
+          "reference": "Direct",
+          "vectors": 418,
+          "encoded_vectors": 418,
+          "finite": true,
+          "zero_vectors": 1,
+          "zero_loop_indices": [
+            27
+          ],
+          "nonunit_vectors": 1,
+          "length_min": 0.0,
+          "length_max": 1.0000001287712663,
+          "array_sha256": "49bb672d83a674fcb9f8f188fce5ae4df2af6b32b206cddeaeb9d390e807bdc0"
+        }
+      ],
+      "status": "REVIEW_REQUIRED_NOT_NORMAL_MAP_READY"
+    }
+  ],
+  "preserved_uv_quality_review": [
+    {
+      "partition": "R15_01_PRIMARY_LOADING_PORTAL",
+      "source_object": "R15_Loading_Fabrication_Label",
+      "object": "GX_4fa47e240843_R15_Loading_Fabrication_Label",
+      "layer": "UVMap",
+      "nonzero_geometry_triangles_with_zero_uv_area": 134,
+      "uv_sha256_float32": "29b20126df3dd72dfdec7f2d84cf3a3362bb1b31def990c6eced5c44bf8ff580"
+    },
+    {
+      "partition": "R15_02_PERSONNEL_SURROUND",
+      "source_object": "R15_Personnel_Entry_Label",
+      "object": "GX_b0047dda4040_R15_Personnel_Entry_Label",
+      "layer": "UVMap",
+      "nonzero_geometry_triangles_with_zero_uv_area": 302,
+      "uv_sha256_float32": "36e956b6b63df05a19c467e1c644bf29f2c779a9fccc578188d58015405496d0"
+    },
+    {
+      "partition": "R15_03_WALL_SERVICE_CASSETTES",
+      "source_object": "R15_Service_Label",
+      "object": "GX_369523821c59_R15_Service_Label",
+      "layer": "UVMap",
+      "nonzero_geometry_triangles_with_zero_uv_area": 86,
+      "uv_sha256_float32": "1e00ec3af38966a66dc9c58a4bc089772595c0eb77f4837019a68acecdbff4f3"
+    },
+    {
+      "partition": "R16_GALLERY_01_OPEN_STRUCTURAL_FRAME",
+      "source_object": "R16_Gallery_Gallery_Entry_Identity",
+      "object": "GX_8c1eaaeab068_R16_Gallery_Gallery_Entry_Identity",
+      "layer": "UVMap",
+      "nonzero_geometry_triangles_with_zero_uv_area": 214,
+      "uv_sha256_float32": "9be47d760a0a99c2fb556ee53bb24b55beb9e1e6b14d3a1763f26fc15600d02e"
+    },
+    {
+      "partition": "R16_GALLERY_02_RECESSED_SERVICE_BACKPLANE",
+      "source_object": "R16_Gallery_Bay_00_ID",
+      "object": "GX_a1080eaa537b_R16_Gallery_Bay_00_ID",
+      "layer": "UVMap",
+      "nonzero_geometry_triangles_with_zero_uv_area": 356,
+      "uv_sha256_float32": "aa2424efee22d03ac63aefe8d74eae42388d3d0f33c17bf3460e8e75f160f19f"
+    },
+    {
+      "partition": "R16_GALLERY_02_RECESSED_SERVICE_BACKPLANE",
+      "source_object": "R16_Gallery_Bay_01_ID",
+      "object": "GX_910e70109bec_R16_Gallery_Bay_01_ID",
+      "layer": "UVMap",
+      "nonzero_geometry_triangles_with_zero_uv_area": 326,
+      "uv_sha256_float32": "2c299f9c0b701a754861c8dd4b794516030f52697095b00849cba5e5990c188e"
+    },
+    {
+      "partition": "R16_GALLERY_02_RECESSED_SERVICE_BACKPLANE",
+      "source_object": "R16_Gallery_Bay_02_ID",
+      "object": "GX_977b71a1b494_R16_Gallery_Bay_02_ID",
+      "layer": "UVMap",
+      "nonzero_geometry_triangles_with_zero_uv_area": 556,
+      "uv_sha256_float32": "291f89a8f744ebe21da22915b760d630c4a32186c968cc39b83580ace88c838b"
+    },
+    {
+      "partition": "R16_GALLERY_02_RECESSED_SERVICE_BACKPLANE",
+      "source_object": "R16_Gallery_Bay_03_ID",
+      "object": "GX_88a9bd01c972_R16_Gallery_Bay_03_ID",
+      "layer": "UVMap",
+      "nonzero_geometry_triangles_with_zero_uv_area": 420,
+      "uv_sha256_float32": "4f548674109a076d3948252138d93675575aba6d8cfddf880c8233c98a7699db"
+    }
+  ],
+  "near_degenerate_local_geometry_review": [
+    {
+      "partition": "R16_GALLERY_02_RECESSED_SERVICE_BACKPLANE",
+      "source_object": "R16_Gallery_Bay_00_ID",
+      "object": "GX_a1080eaa537b_R16_Gallery_Bay_00_ID",
+      "triangles": [
+        27,
+        207
+      ],
+      "count": 2,
+      "threshold": "reimported local triangle cross-product magnitude area2 <= 1e-12",
+      "status": "REVIEW_REQUIRED_GEOMETRY_QUALITY_NOT_SERIALIZATION_FAILURE"
+    },
+    {
+      "partition": "R16_GALLERY_02_RECESSED_SERVICE_BACKPLANE",
+      "source_object": "R16_Gallery_Bay_01_ID",
+      "object": "GX_910e70109bec_R16_Gallery_Bay_01_ID",
+      "triangles": [
+        96,
+        261
+      ],
+      "count": 2,
+      "threshold": "reimported local triangle cross-product magnitude area2 <= 1e-12",
+      "status": "REVIEW_REQUIRED_GEOMETRY_QUALITY_NOT_SERIALIZATION_FAILURE"
+    },
+    {
+      "partition": "R16_GALLERY_02_RECESSED_SERVICE_BACKPLANE",
+      "source_object": "R16_Gallery_Bay_02_ID",
+      "object": "GX_977b71a1b494_R16_Gallery_Bay_02_ID",
+      "triangles": [
+        27,
+        102,
+        308,
+        383
+      ],
+      "count": 4,
+      "threshold": "reimported local triangle cross-product magnitude area2 <= 1e-12",
+      "status": "REVIEW_REQUIRED_GEOMETRY_QUALITY_NOT_SERIALIZATION_FAILURE"
+    },
+    {
+      "partition": "R16_GALLERY_02_RECESSED_SERVICE_BACKPLANE",
+      "source_object": "R16_Gallery_Bay_03_ID",
+      "object": "GX_88a9bd01c972_R16_Gallery_Bay_03_ID",
+      "triangles": [
+        402
+      ],
+      "count": 1,
+      "threshold": "reimported local triangle cross-product magnitude area2 <= 1e-12",
+      "status": "REVIEW_REQUIRED_GEOMETRY_QUALITY_NOT_SERIALIZATION_FAILURE"
+    }
+  ],
+  "near_degenerate_triangle_area2_threshold": 1e-12,
+  "new_R17_R18_quality_gate_objects": [],
+  "generated_uv_issues": [],
+  "shader_visual_acceptance": false,
+  "automatic_uv_or_geometry_repair_allowed": false,
+  "importer_recomputed_tangents_are_not_delivered_binary_repair": true,
+  "totals": {
+    "binary_tangent_objects": 3,
+    "binary_zero_tangent_vectors": 4,
+    "collapsed_UV_objects": 8,
+    "collapsed_UV_triangles_by_revision": {
+      "R15": 522,
+      "R16": 1872
+    },
+    "near_degenerate_geometry_objects": 4,
+    "near_degenerate_geometry_triangles": 9
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "status": "REVIEW_READY_WITH_EXPLICIT_QUALITY_AND_LOCAL_MAPPING_GATES",
+  "scope": "One cumulative R09\u2013R18 display asset export. No new full-map revision or Unity acceptance.",
+  "source": "/workspace/scratch/d244658c6343/moonkov_rebuild_R18_west_service_house_20261020/Moonkov_Rebuild_R18_West_Service_House_FULL_EDITABLE.blend",
+  "source_sha256": "d840a1ad99f65a153f7bda34d73adbb830b7d1cad5654d3270f5cd23c6f788e0",
+  "source_bytes": 308488076,
+  "actual_source_counts": {
+    "objects": 8599,
+    "mesh_datablocks": 6906,
+    "mesh_objects": 8387,
+    "materials": 182,
+    "images": 120
+  },
+  "objects": 1629,
+  "partitions": 33,
+  "inherited_objects_exact": 1433,
+  "inherited_FBX_files_byte_exact": 24,
+  "new_revision_counts": {
+    "R17": 66,
+    "R18": 130
+  },
+  "new_partition_counts": {
+    "R17_WORKCELL_01_MACHINE_BED_AND_FIXTURE": 28,
+    "R17_WORKCELL_02_HEAVY_MACHINE_FRAME": 19,
+    "R17_WORKCELL_03_STEPPED_PROTECTIVE_SHIELDING": 19,
+    "R18_SERVICE_HOUSE_01_STEPPED_CLOSED_BEARING_BASE": 15,
+    "R18_SERVICE_HOUSE_05_INTEGRATED_SERVICE_COURT": 5,
+    "R18_SERVICE_HOUSE_04_PAVEMENT_ENTRY_AND_REAL_STAIRS": 54,
+    "R18_SERVICE_HOUSE_02_SOLID_SHELL_AND_OPEN_PORTALS": 30,
+    "R18_SERVICE_HOUSE_06_RECESSED_SERVICE_FACADE": 16,
+    "R18_SERVICE_HOUSE_03_STEPPED_ROOF_ASSEMBLY": 10
+  },
+  "compact_R14_maps_exact": 18,
+  "compact_map_bytes": 755055,
+  "material_identities": 15,
+  "protected_local_slot_references": 190,
+  "geometry_totals": {
+    "vertices": 64418,
+    "polygons": 66274,
+    "loops": 253943,
+    "triangles": 121395
+  },
+  "serial_validation": {
+    "status": "PASS_BLENDER_INTEGRITY_WITH_QUALITY_REVIEW",
+    "partitions_passed": 33,
+    "objects_passed": 1629,
+    "source_unchanged": true,
+    "new_R17_R18_gate_objects": []
+  },
+  "quality_gates": {
+    "binary_tangent_objects": 3,
+    "binary_zero_tangent_vectors": 4,
+    "collapsed_UV_objects": 8,
+    "collapsed_UV_triangles_by_revision": {
+      "R15": 522,
+      "R16": 1872
+    },
+    "near_degenerate_geometry_objects": 4,
+    "near_degenerate_geometry_triangles": 9
+  },
+  "seam_override": "BLOCKED_UNVERIFIED_LOCAL_PER_INSTANCE_RENDERER_SUBMESH_OWNERSHIP",
+  "seam_manifest_role": "byte-exact historical R16 cloud reference, not executable Unity mapping",
+  "final_R18_contact_correction_exported": true,
+  "old_R18_previews_not_rerendered_or_bundled": true,
+  "local_computer_Unity_Git_Host_runtime_actions": false,
+  "source_saved_or_rendered": false,
+  "full_map_QA_repeated": false,
+  "automatic_integration_allowed": false,
+  "source_contracts_are_historical_not_new_full_scene_QA": true
+}

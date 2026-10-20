@@ -1,0 +1,23 @@
+{
+  "status": "CUMULATIVE_REVIEW_ONLY",
+  "current_package": "Moonkov_Cumulative_R09_R18_Display_FBX_Review_Handoff_20261020.zip",
+  "supersedes_cumulative_display_packages": [
+    "Moonkov_Cumulative_R09_R16_Display_FBX_Review_Handoff_20261020.zip",
+    "Moonkov_Cumulative_R09_R15_Display_FBX_Review_Handoff_20261020.zip",
+    "Moonkov_Cumulative_R09_R12_Display_FBX_Review_Handoff_20261019.zip",
+    "Moonkov_R09_Only_Display_Increments_FBX_Review_Handoff_20261019.zip"
+  ],
+  "prior_R09_R16_zip_sha256": "6978ccd76f57cb2823a6d954f0abc11dc0522e1587841338304850842279b541",
+  "does_not_replace_R08_baseline_or_colliders": true,
+  "unchanged_inherited_rows": 1433,
+  "new_R17_rows": 66,
+  "new_R18_rows": 130,
+  "total_rows": 1629,
+  "unchanged_inherited_partitions": 24,
+  "new_R17_R18_partitions": 9,
+  "compact_R14_maps": 18,
+  "prior_package_layers_must_not_duplicate": true,
+  "existing_local_delta_mapping_verified": false,
+  "automatic_import_or_cleanup_allowed": false,
+  "independent_seam_override": "INSTANCE_REPAIR_REVIEW_MANIFEST.json; BLOCKED on verified local per-instance renderer/submesh ownership."
+}
