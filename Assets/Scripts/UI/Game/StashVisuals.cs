@@ -5,7 +5,7 @@ namespace Unity.MP_FPS.Client
 {
     public enum StashArtKind { None, Dust, Alloy, Cell, Halo, Outfit, Helmet, Rifle, Pistol, ChestRig, Backpack, HaloRifle, HaloRevolver, HaloShotgun, Medical, HaloSniper, Ration, Water, HaloCapacitor, HaloChargeBridge, HaloFocusLens, HaloFanArray, HaloPulseController, HaloHitMarker, OxygenCanister,
         MedicalGel, TraumaKit, EnergyGel, ProteinBar, Electrolyte, OxygenReserve, ScoutRig, FieldRig, SlingPack, CargoPack, CircuitBoard, CopperCoil, CeramicPlate, OpticalSensor, DataDrive, HeliumSample, QuantumCore, BlackBox, AlienMeat, AlienOrgan, AlienTissue,
-        AlienSpider, AlienSnake, AlienCaterpillar, AlienTentacle, AlienCentipede, AlienLeech, AlienSlime, AlienRoots, AlienFaceHugger, EnergyGrenade, HaloCicada, HaloTrine, HaloAegis, HaloVesper, HaloThorn, HaloSundown, HaloRondo }
+        AlienSpider, AlienSnake, AlienCaterpillar, AlienTentacle, AlienCentipede, AlienLeech, AlienSlime, AlienRoots, AlienFaceHugger, EnergyGrenade, HaloCicada, HaloTrine, HaloAegis, HaloVesper, HaloThorn, HaloSundown, HaloRondo, HaloTempest }
 
     // Small original vector illustrations, kept sharp at the shared PanelSettings scale.
     [UxmlElement]
@@ -34,7 +34,7 @@ namespace Unity.MP_FPS.Client
                 if (value >= StashArtKind.HaloCicada || value == StashArtKind.HaloRifle || value == StashArtKind.HaloRevolver || value == StashArtKind.HaloShotgun || value == StashArtKind.HaloSniper)
                 {
                     var icon = new Image { image = Resources.Load<Texture2D>("HaloIcons/" +
-                        (value >= StashArtKind.HaloCicada ? new[] { "Cicada", "Trine", "Aegis", "Vesper", "Thorn", "Sundown", "Rondo" }[(int)value-(int)StashArtKind.HaloCicada] : value == StashArtKind.HaloRifle ? "Rifle" : value == StashArtKind.HaloRevolver ? "Revolver" : value == StashArtKind.HaloSniper ? "Sniper" : "Shotgun")), scaleMode = ScaleMode.ScaleToFit, pickingMode = PickingMode.Ignore };
+                        (value >= StashArtKind.HaloCicada ? new[] { "Cicada", "Trine", "Aegis", "Vesper", "Thorn", "Sundown", "Rondo", "Tempest" }[(int)value-(int)StashArtKind.HaloCicada] : value == StashArtKind.HaloRifle ? "Rifle" : value == StashArtKind.HaloRevolver ? "Revolver" : value == StashArtKind.HaloSniper ? "Sniper" : "Shotgun")), scaleMode = ScaleMode.ScaleToFit, pickingMode = PickingMode.Ignore };
                     icon.style.position = Position.Absolute; icon.style.left = icon.style.right = icon.style.top = icon.style.bottom = 0;
                     Add(icon);
                 }

@@ -58,6 +58,8 @@ public static class HaloArsenalValidation
     {
         var weapon=registry.GetWeaponData(entry.Id);
         Require(weapon && weapon.MagazineSize==entry.Capacity && weapon.EnergyPerRound==entry.Energy && weapon.ProjectileGhostPrefab!=null,entry.Code+" data/projectile");
+        Require(weapon.Behavior==(entry.BlastRadius>0?ProjectileBehavior.AreaOfEffect:ProjectileBehavior.DirectDamage)&&
+            (entry.BlastRadius==0||Mathf.Approximately(weapon.AoeRadius,entry.BlastRadius)),entry.Code+" blast configuration");
         Require(DollSingerWeapons.WeaponId(entry.Code)==entry.Id && InventoryCatalog.Get(entry.Code)?.Kind==ItemKind.LongGun,entry.Code+" mapping");
         foreach(string path in new[]{"Assets/DollSinger/Prefabs/DollSingerPlayer.prefab","Assets/DollSinger/Prefabs/DollSingerNetworkPlayer.prefab"})
         {
@@ -142,6 +144,12 @@ public static class HaloArsenalValidation
         var sundown=registry.GetWeaponData(11);var point=Ballistics.Position(Vector3.zero,Vector3.forward*sundown.ProjectileSpeed,sundown.ProjectileGravity,1);
         Require(Mathf.Abs(point.y+.81f)<.001f&&Mathf.Abs(point.z-22)<.001f,"Sundown gravity");
         Report.Add("Shared tick-based spread: 40 ticks per weapon, deterministic rays within configured cone. Thorn = 5 directions, 1 magazine round, 10 energy per replacement round. Sundown at 1 s = 22 m forward, 0.81 m drop.");
+        var tempest=registry.GetWeaponData(DollSingerWeapons.Tempest);var continuous=Ready(tempest,DollSingerWeapons.Tempest,tempest.MagazineSize);
+        Require(Simulate(tempest,ref continuous,_=>true,120).Count==8&&continuous.CurrentAmmo==6,"Tempest sustained cadence");
+        Require(Simulate(tempest,ref continuous,_=>true,180).Count==6&&continuous.CurrentAmmo==0,"Tempest empty magazine gate");
+        var arc=Ballistics.Position(Vector3.zero,Vector3.forward*tempest.ProjectileSpeed,tempest.ProjectileGravity,1);
+        Require(Mathf.Abs(arc.z-34)<.001f&&Mathf.Abs(arc.y+1.62f)<.001f,"Tempest arc");
+        Report.Add("Tempest: held fire produces 8 actual shared-rule shots in 2 seconds at 60 Hz, consumes remaining 6 then stops at zero; 1-second arc = 34 m forward / 1.62 m drop.");
     }
     private static void CheckBlast(WeaponRegistry registry)
     {
@@ -194,10 +202,13 @@ public static class HaloArsenalValidation
             var victim=new GameObject("Unowned alien projectile victim");SceneManager.MoveGameObjectToScene(victim,scene);victim.layer=LayerMask.NameToLayer("ServerPlayer");victim.AddComponent<SphereCollider>().radius=.5f;
             var target=manager.CreateEntity(typeof(GhostGameObjectGuid),typeof(PredictedPlayerGhost));
             var ghost=victim.AddComponent<GhostGameObject>();ghost.LinkGhost(world,target,MultiplayerRole.Server);manager.AddComponentObject(target,new GhostGameObjectLink{LinkedInstance=ghost});
+            var flank=new GameObject("Off-ray splash victim");SceneManager.MoveGameObjectToScene(flank,scene);flank.transform.position=new Vector3(.8f,0,-.7f);flank.layer=victim.layer;flank.AddComponent<SphereCollider>().radius=.12f;
+            var flankEntity=manager.CreateEntity(typeof(GhostGameObjectGuid),typeof(PredictedPlayerGhost));var flankGhost=flank.AddComponent<GhostGameObject>();flankGhost.LinkGhost(world,flankEntity,MultiplayerRole.Server);manager.AddComponentObject(flankEntity,new GhostGameObjectLink{LinkedInstance=flankGhost});
             Physics.SyncTransforms();scene.GetPhysicsScene().Simulate(.02f);
             foreach(var entry in HaloArsenal.Entries)
             {
                 var weapon=registry.GetWeaponData(entry.Id);manager.SetComponentData(target,new PredictedPlayerGhost{MaxHealth=1000,CurrentHealth=1000});
+                manager.SetComponentData(flankEntity,new PredictedPlayerGhost{MaxHealth=1000,CurrentHealth=1000});
                 for(int pellet=0;pellet<weapon.PelletCount;pellet++)
                 {
                     var root=new GameObject(entry.Code+" actual authoritative projectile");SceneManager.MoveGameObjectToScene(root,scene);
@@ -213,7 +224,10 @@ public static class HaloArsenalValidation
                 }
                 float health=manager.GetComponentData<PredictedPlayerGhost>(target).CurrentHealth;
                 Require(Mathf.Abs(health-(1000-weapon.Damage*weapon.PelletCount))<.01f,entry.Code+" actual server projectile damage: "+health);
+                float splash=1000-manager.GetComponentData<PredictedPlayerGhost>(flankEntity).CurrentHealth;
+                Require(Mathf.Abs(splash-(entry.BlastRadius>0?weapon.Damage*weapon.PelletCount:0))<.01f,entry.Code+" off-ray splash damage: "+splash);
                 Report.Add(entry.Code+": real Projectile.Advance(server=true) swept collision -> Impact -> ECS damage = "+(1000-health)+" from "+weapon.PelletCount+" projectile(s). Fixture supplies spawn data, not a network transport.");
+                if(entry.BlastRadius>0)Report.Add(entry.Code+": a separate victim outside the projectile ray received "+splash+" actual splash damage inside radius "+entry.BlastRadius+" m.");
             }
         }
         finally

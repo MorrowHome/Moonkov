@@ -36,8 +36,8 @@ public static class HaloArsenalSetup
             data.PelletCount=entry.Pellets;data.SpreadDegrees=entry.Spread;data.Automatic=entry.Automatic;
             data.BurstCount=entry.BurstCount;data.BurstInterval=entry.BurstCount>1?entry.Interval:.085f;data.BurstCooldown=entry.BurstCooldown;
             data.AutoReloadWhenEmpty=true;data.ShowProjectileBody=true;data.Type=WeaponType.Projectile;
-            data.ProjectileLifetime=entry.Id==DollSingerWeapons.Sundown?6:4;data.ProjectileRadius=entry.Id==DollSingerWeapons.Sundown?.055f:.009f;
-            data.Behavior=entry.Id==DollSingerWeapons.Sundown?ProjectileBehavior.AreaOfEffect:ProjectileBehavior.DirectDamage;data.AoeRadius=3.5f;
+            data.ProjectileLifetime=entry.BlastRadius>0?6:4;data.ProjectileRadius=entry.BlastRadius>0?.055f:.009f;
+            data.Behavior=entry.BlastRadius>0?ProjectileBehavior.AreaOfEffect:ProjectileBehavior.DirectDamage;data.AoeRadius=entry.BlastRadius>0?entry.BlastRadius:3.5f;
             EditorUtility.SetDirty(data);
             while(registry.Weapons.Count<=entry.Id)registry.Weapons.Add(null);registry.Weapons[(int)entry.Id]=data;
             var root=new GameObject(title+" Halo");

@@ -8,7 +8,7 @@ namespace Unity.MP_FPS.DollSinger
 /// </summary>
 [DefaultExecutionOrder(100)]
 public sealed class DollSingerHaloAim : MonoBehaviour {
-    public enum HaloWeapon { None, Rifle, Revolver, Shotgun, Sniper, Cicada, Trine, Aegis, Vesper, Thorn, Sundown, Rondo }
+    public enum HaloWeapon { None, Rifle, Revolver, Shotgun, Sniper, Cicada, Trine, Aegis, Vesper, Thorn, Sundown, Rondo, Tempest }
     [Header("Standalone demo equipment (network equipment comes from inventory)")]
     public HaloWeapon localPrimary = HaloWeapon.Rifle;
     public HaloWeapon localSecondary = HaloWeapon.Shotgun;
@@ -465,7 +465,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         ApplyBakedGestures();
         bool centred = TryGetFirstPersonCamera(out var aimingCamera);
         if (view) view.SetGestureHandsActive(centred && aimBlend > .001f, visualWeapon == HaloWeapon.Sniper,
-            visualWeapon == HaloWeapon.Cicada ? .03f : 0);
+            visualWeapon == HaloWeapon.Cicada ? .03f : visualWeapon == HaloWeapon.Tempest ? .025f : 0);
         Vector3 centredPosition = centred ? GetFirstPersonHaloPosition(aimingCamera) : Vector3.zero;
         float layoutBlend = DollSingerView.AimPoseBlend(aimBlend);
         float t = layoutBlend * layoutBlend * (3f - 2f * layoutBlend);

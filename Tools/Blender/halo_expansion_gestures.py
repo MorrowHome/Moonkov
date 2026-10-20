@@ -60,6 +60,12 @@ def make_pose(weapon,phase=0,mode='pose',fan_scale=1):
   wr=Vector((.095,1.16,.205))+Vector((0,.008,.027))*hit+Vector((-.030,-.025,-.040))*gather
   wl=Vector((-.095,1.20,.120))+Vector((-.010,.008,-.020))*hit+Vector((.040,-.065,.055))*gather
   guideL=(-.31,1.10,.02)
+ elif weapon==12:
+  hand('R',(.35-.25*hit,.93,.10),(0,0,-1),G);hand('L',(.30,.95,-.05),(1,0,0),G)
+  fingers('R','grip',G,openness=.35*gather);fingers('L','open',G,overrides={d:[35*gather,45*gather,20*gather] for d in ['人指','中指','薬指','小指']})
+  wr=Vector((.085,1.105,.205))+Vector((-.010,.014,.035))*hit+Vector((-.060,.065,.015))*gather
+  wl=Vector((-.080,1.18,.190))+Vector((-.005,-.012,-.015))*hit+Vector((.005,.012,-.025))*gather
+  guideR=(.29,1.0,.08);guideL=(-.29,1.11,.10)
  elif weapon==11:
   hand('R',(0,0,1),(0,1,0),G);hand('L',(0,0,1),(0,1,0),G)
   fingers('R','gun',G);fingers('L','gun',G)
@@ -91,7 +97,7 @@ def make_pose(weapon,phase=0,mode='pose',fan_scale=1):
 pitched=(ROOT/'Tools/Blender/weapon_gestures.py').read_text().split('def make_pitched_pose')[1].split('# Record Blender actions')[0]
 pitched='def make_pitched_pose'+pitched.replace('limit=-30 if weapon==1 else -60','limit=-90 if weapon>=5 else (-30 if weapon==1 else -60)')
 exec(compile(pitched,'pitch-helper','exec'),globals())
-entries=[(5,'Cicada_TwinBlades',.065),(6,'Trine_ThreefoldSeal',.085),(7,'Aegis_AnchorPalms',.11),(8,'Vesper_PrecisionSword',.24),(9,'Thorn_FiveNeedles',.36),(10,'Sundown_SolarRelease',.60),(11,'Rondo_TwinRefrain',.14)]
+entries=[(5,'Cicada_TwinBlades',.065),(6,'Trine_ThreefoldSeal',.085),(7,'Aegis_AnchorPalms',.11),(8,'Vesper_PrecisionSword',.24),(9,'Thorn_FiveNeedles',.36),(10,'Sundown_SolarRelease',.60),(11,'Rondo_TwinRefrain',.14),(12,'Tempest_VortexPress',.24)]
 # Idempotent re-authoring is confined to the six new action name prefixes.
 if not export_only:
  for action in list(bpy.data.actions):

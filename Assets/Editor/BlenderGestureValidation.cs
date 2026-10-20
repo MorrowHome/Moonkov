@@ -413,15 +413,16 @@ public static class BlenderGestureValidation
         Status = "PASS"; File.WriteAllLines(Output + "/checks.txt", report); Debug.Log("Blender gesture validation PASS: " + string.Join("\n", report));
     }
 
-    internal static void SaveViews(WeaponGestureLab lab, string code)
+    internal static void SaveViews(WeaponGestureLab lab, string code, string folder = null)
     {
+        string destination=folder??Output;Directory.CreateDirectory(destination);
         var cameras = new[] { lab.PlayerView.camera }.Concat(lab.Observers).ToArray();
         for (int i=0;i<cameras.Length;i++)
         {
             var previous=RenderTexture.active; RenderTexture.active=cameras[i].targetTexture;
             var texture=new Texture2D(cameras[i].targetTexture.width,cameras[i].targetTexture.height,TextureFormat.RGB24,false);
             texture.ReadPixels(new Rect(0,0,texture.width,texture.height),0,0);texture.Apply();
-            File.WriteAllBytes(Output+"/"+code+"-"+new[]{"owner","front","side","back"}[i]+".png",texture.EncodeToPNG());
+            File.WriteAllBytes(destination+"/"+code+"-"+new[]{"owner","front","side","back"}[i]+".png",texture.EncodeToPNG());
             UnityEngine.Object.Destroy(texture);RenderTexture.active=previous;
         }
     }

@@ -126,6 +126,7 @@ namespace Unity.MP_FPS.Client
                 case "thorn":return StashArtKind.HaloThorn;
                 case "sundown":return StashArtKind.HaloSundown;
                 case "rondo":return StashArtKind.HaloRondo;
+                case "tempest":return StashArtKind.HaloTempest;
 
                 case "halo_capacitor":return StashArtKind.HaloCapacitor; case "halo_charge_bridge":return StashArtKind.HaloChargeBridge;
                 case "halo_focus_lens":return StashArtKind.HaloFocusLens; case "halo_fan_array":return StashArtKind.HaloFanArray;

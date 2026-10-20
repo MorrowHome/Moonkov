@@ -53,8 +53,8 @@ public static class HaloArsenalCapture
                 int total=Mathf.CeilToInt((1.25f+weapon.ReloadTime+.4f)*24);
                 for(int frame=0;frame<total;frame++)
                 {
-                    if(frame==12||frame==18&&weapon.Automatic)lab.Fire();
-                    if(frame==30)lab.Reload();
+                    if(frame==12){ui.Q<Toggle>("repeatFire").value=weapon.Automatic;lab.Fire();}
+                    if(frame==30){ui.Q<Toggle>("repeatFire").value=false;lab.Reload();}
                     yield return new WaitForEndOfFrame();
                     var previous=RenderTexture.active;
                     for(int view=0;view<4;view++)
@@ -68,7 +68,7 @@ public static class HaloArsenalCapture
                 uint lighting=lab.Halo.LightingSettings;
                 lab.Halo.LightingSettings=HaloLighting.Pack(lab.Halo.lightRange,0,0);
                 yield return new WaitForEndOfFrame();yield return new WaitForEndOfFrame();
-                BlenderGestureValidation.SaveViews(lab,entry.Code+"-unlit");
+                BlenderGestureValidation.SaveViews(lab,entry.Code+"-unlit","Temp/GestureValidation/Arsenal/"+entry.Code);
                 lab.Halo.LightingSettings=lighting;
             }
             Status="PASS";

@@ -19,7 +19,7 @@ def cut(body,hole):
   points=' '.join(f'{x+r*math.cos(i*math.tau/96):.3f},{y+r*math.sin(i*math.tau/96):.3f}' for i in range(96))
  return f'<path d="M {outer.attrib["points"]} Z M {points} Z" fill="{outer.attrib["fill"]}" fill-rule="evenodd"/>'
 
-for code in ['cicada','trine','aegis','vesper','thorn','sundown','rondo']:
+for code in ['cicada','trine','aegis','vesper','thorn','sundown','rondo','tempest']:
  core='';accent=''
  if code=='cicada':
   # Two broad, swept sabre wings; deliberately asymmetric tips and a fork crown.
@@ -61,6 +61,11 @@ for code in ['cicada','trine','aegis','vesper','thorn','sundown','rondo']:
    core+=polygon([pt(137,a),pt(175,a-23),pt(210,a-27),pt(300,a),pt(210,a+27),pt(175,a+23)],G)
    accent+=polygon([pt(282,a),pt(211,a-14),pt(166,a),pt(211,a+14)],W)
    accent+=polygon([pt(242,a+15),pt(217,a+20),pt(186,a+20),pt(204,a+14)],D)
+ elif code=='tempest':
+  for i in range(6):
+   a=-90+i*60;color=W if i%2 else G
+   core+=polygon([pt(146,a-4),pt(168,a+27),pt(245,a+31),pt(298,a+15),pt(248,a-10),pt(205,a-16)],color)
+   accent+=polygon([pt(173,a+3),pt(216,a+6),pt(270,a+18),pt(225,a+21)],G if color==W else W)
  elif code=='rondo':
   # Paired counter-rotating magatama seals; two broad comma bodies.
   for a,color in [(190,W),(10,G)]:

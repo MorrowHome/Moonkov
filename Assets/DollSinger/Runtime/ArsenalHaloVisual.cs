@@ -47,7 +47,8 @@ namespace Unity.MP_FPS.DollSinger
             float loaded = reloading ? progress : (float)ammo / capacity;
             var tint = Color.white * (ammo == 0 && !reloading ? .28f : 1f + pulse * .18f); tint.a = 1;
             if (core) { core.color = tint; core.transform.localScale = Vector3.one * (1 + pulse * .035f); }
-            float rotation = weapon == DollSingerHaloAim.HaloWeapon.Aegis ? phase * 9 + pulse * 6 :
+            if (core && weapon == DollSingerHaloAim.HaloWeapon.Tempest) core.transform.localRotation=Quaternion.Euler(0,0,-phase*8);
+            float rotation = weapon == DollSingerHaloAim.HaloWeapon.Tempest ? phase*35+pulse*15 : weapon == DollSingerHaloAim.HaloWeapon.Aegis ? phase * 9 + pulse * 6 :
                 weapon == DollSingerHaloAim.HaloWeapon.Rondo ? (burstIndex==0?1:-1)*pulse*12 :
                 weapon == DollSingerHaloAim.HaloWeapon.Thorn ? pulse * 4 : weapon == DollSingerHaloAim.HaloWeapon.Trine ? 0 : Mathf.Sin(phase) * 1.5f;
             if (accent)
