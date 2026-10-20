@@ -17,7 +17,7 @@ public static class HaloArsenalValidation
 {
     private static readonly List<string> Report=new List<string>();
     private static void Require(bool value,string message) { if(!value)throw new InvalidOperationException(message); }
-    [MenuItem("Tools/Moonkov/Check Six Halo Arsenal Rules")]
+    [MenuItem("Tools/Moonkov/Check Halo Arsenal Rules")]
     public static void Run()
     {
         Require(EditorApplication.isPlaying,"Run these physics/health checks in Play mode.");
@@ -37,15 +37,18 @@ public static class HaloArsenalValidation
         {
             var root=UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/DollSinger/Prefabs/DollSingerPlayer.prefab"),staging.transform);
             var halo=root.GetComponentInChildren<DollSingerHaloAim>(true);var driver=halo.GetComponent<LocalHaloArsenalDriver>();Require(driver,"Local arsenal driver binding");
-            driver.Step(halo,DollSingerHaloAim.HaloWeapon.Trine,false,false,false,true,.3f);
-            int shots=0;
-            for(int frame=0;frame<90;frame++)if(driver.Step(halo,DollSingerHaloAim.HaloWeapon.Trine,true,frame==0,false,true,1f/60))shots++;
-            Require(shots==3&&driver.Ammo(DollSingerHaloAim.HaloWeapon.Trine)==21,"Standalone Trine held trigger");
-            driver.CancelBurst();driver.Step(halo,DollSingerHaloAim.HaloWeapon.Cicada,false,false,false,true,.3f);driver.CancelBurst();
-            Require(driver.Ammo(DollSingerHaloAim.HaloWeapon.Trine)==21,"Standalone switch preserved magazine");
-            for(int frame=0;frame<180;frame++)driver.Step(halo,DollSingerHaloAim.HaloWeapon.Trine,false,false,frame==0,true,1f/60);
-            Require(driver.Ammo(DollSingerHaloAim.HaloWeapon.Trine)==24&&!driver.Reloading,"Standalone recharge");
-            Report.Add("Standalone DollSingerPlayer: installed main-assembly driver uses shared burst timing; held Trine fires exactly 3, slot switch retains 21 rounds, finite-battery reload restores 24. This is a cosmetic character, not authoritative combat.");
+            foreach(var entry in HaloArsenal.Entries.Where(e=>e.BurstCount>1))
+            {
+                driver.CancelBurst();driver.Step(halo,entry.Gesture,false,false,false,true,.3f);
+                int shots=0;
+                for(int frame=0;frame<90;frame++)if(driver.Step(halo,entry.Gesture,true,frame==0,false,true,1f/60))shots++;
+                Require(shots==entry.BurstCount&&driver.Ammo(entry.Gesture)==entry.Capacity-entry.BurstCount,entry.Code+" standalone held trigger");
+                driver.CancelBurst();driver.Step(halo,DollSingerHaloAim.HaloWeapon.Cicada,false,false,false,true,.3f);driver.CancelBurst();
+                Require(driver.Ammo(entry.Gesture)==entry.Capacity-entry.BurstCount,entry.Code+" standalone persisted magazine");
+                for(int frame=0;frame<180;frame++)driver.Step(halo,entry.Gesture,false,false,frame==0,true,1f/60);
+                Require(driver.Ammo(entry.Gesture)==entry.Capacity&&!driver.Reloading,entry.Code+" standalone recharge");
+                Report.Add(entry.Code+": standalone player held trigger fires exactly "+entry.BurstCount+"; slot switch preserves ammo and finite-battery reload restores capacity. Cosmetic character, not authoritative combat.");
+            }
         }
         finally{UnityEngine.Object.DestroyImmediate(staging);}
     }
@@ -94,33 +97,36 @@ public static class HaloArsenalValidation
     }
     private static void CheckBurst(WeaponRegistry registry)
     {
-        var weapon=registry.GetWeaponData(DollSingerWeapons.Trine);
-        foreach(int ammo in new[]{1,2,24})
+        foreach(var entry in HaloArsenal.Entries.Where(e=>e.BurstCount>1))
         {
-            var state=Ready(weapon,7,ammo);var shots=Simulate(weapon,ref state,_=>true,90);
-            Require(shots.Count==Mathf.Min(ammo,3)&&state.CurrentAmmo==ammo-shots.Count,"Trine held trigger / partial "+ammo);
+        var weapon=registry.GetWeaponData(entry.Id);
+        foreach(int ammo in new[]{1,2,weapon.MagazineSize})
+        {
+            var state=Ready(weapon,entry.Id,ammo);var shots=Simulate(weapon,ref state,_=>true,90);
+            Require(shots.Count==Mathf.Min(ammo,weapon.BurstCount)&&state.CurrentAmmo==ammo-shots.Count,"Trine held trigger / partial "+ammo);
             Require(shots.Select(s=>s.sequence).SequenceEqual(Enumerable.Range(0,shots.Count)),"Trine sequence");
-            if(shots.Count==3)Require(shots[1].time>=.08f&&shots[2].time-shots[1].time>=.08f,"Trine interval");
+            for(int i=1;i<shots.Count;i++)Require(shots[i].time-shots[i-1].time>=weapon.BurstInterval-1f/60-.0001f,entry.Code+" interval");
         }
-        var original=Ready(weapon,7,24);var replay=original;
+        var original=Ready(weapon,entry.Id,weapon.MagazineSize);var replay=original;
         var a=Simulate(weapon,ref original,f=>f<20||f>=40,90);var b=Simulate(weapon,ref replay,f=>f<20||f>=40,90);
-        Require(a.Count==6&&a.SequenceEqual(b)&&original.CurrentAmmo==replay.CurrentAmmo,"Trine deterministic restored prediction state");
+        Require(a.Count==weapon.BurstCount*2&&a.SequenceEqual(b)&&original.CurrentAmmo==replay.CurrentAmmo,"Trine deterministic restored prediction state");
         foreach(string cancel in new[]{"death","reload","switch","aim"})
         {
-            var state=Ready(weapon,7,24);Require(HaloModuleFire.TryFire(ref state,weapon,true,true,false),"Trine starts");
+            var state=Ready(weapon,entry.Id,weapon.MagazineSize);Require(HaloModuleFire.TryFire(ref state,weapon,true,true,false),"Trine starts");
             HaloModuleFire.CommitShot(ref state,weapon,1f/60);HaloModuleFire.AdvanceTimers(ref state,.1f);
             if(cancel=="death")state.CurrentHealth=0;if(cancel=="reload"){state.ControllerState.IsReloadingState=true;state.ReloadTimer=1;}
             Require(!HaloModuleFire.TryFire(ref state,weapon,false,cancel!="aim",cancel=="switch")&&state.BurstRemaining==0,"Trine cancel "+cancel);
         }
-        var equip=Ready(weapon,7,24);HaloModuleFire.BeginEquip(ref equip,weapon);
+        var equip=Ready(weapon,entry.Id,weapon.MagazineSize);HaloModuleFire.BeginEquip(ref equip,weapon);
         Require(!HaloModuleFire.TryFire(ref equip,weapon,true,true,false),"Trine equip gate");
-        var buffered=Ready(weapon,7,24);buffered.WeaponCooldown=.20f;
-        var c=Simulate(weapon,ref buffered,f=>f==0,30);Require(c.Count==3,"Trine buffered press near cooldown");
-        Report.Add("Trine: held trigger yields exactly 3 shots; 1/2 remaining rounds, sequences 0/1/2, 0.085 s spacing, release/repress, short input buffer, equip gate, reload/death/switch/aim cancellation and deterministic restored-state prediction passed at 60 Hz.");
+        var buffered=Ready(weapon,entry.Id,weapon.MagazineSize);buffered.WeaponCooldown=weapon.BurstCooldown-.08f;
+        var c=Simulate(weapon,ref buffered,f=>f==0,30);Require(c.Count==weapon.BurstCount,"Trine buffered press near cooldown");
+        Report.Add(entry.Code+": "+weapon.BurstCount+" actual shots per press; held trigger, 1/2 remaining rounds, sequences, interval, release/repress, short input buffer, equip gate, reload/death/switch/aim cancellation and deterministic restored-state prediction passed at 60 Hz.");
+        }
     }
     private static void CheckSpread(WeaponRegistry registry)
     {
-        foreach(uint id in new uint[]{6,7,8,9,10})
+        foreach(uint id in HaloArsenal.Entries.Where(e=>e.Spread>0).Select(e=>e.Id))
         {
             var weapon=registry.GetWeaponData(id);var directions=new HashSet<Vector3>();
             for(uint tick=100;tick<140;tick++)for(int p=0;p<weapon.PelletCount;p++)

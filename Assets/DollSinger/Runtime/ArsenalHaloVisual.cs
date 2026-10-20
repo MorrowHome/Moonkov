@@ -2,13 +2,14 @@ using UnityEngine;
 
 namespace Unity.MP_FPS.DollSinger
 {
-    /// <summary>Six authored sprite assemblies; state comes exclusively from the equipped weapon.</summary>
+    /// <summary>Authored sprite assemblies; state comes exclusively from the equipped weapon.</summary>
     public sealed class ArsenalHaloVisual : MonoBehaviour
     {
         public DollSingerHaloAim.HaloWeapon weapon;
         public SpriteRenderer core, accent;
         public SpriteRenderer[] nodes = System.Array.Empty<SpriteRenderer>();
         public Color lightColor = new Color(1f, .89f, .63f);
+        public bool sequenceNodes;
         public float magnification, recoil = .018f;
         private bool equipped, reloading, synchronized;
         private float progress, aim, shotAge = 10, phase;
@@ -47,6 +48,7 @@ namespace Unity.MP_FPS.DollSinger
             var tint = Color.white * (ammo == 0 && !reloading ? .28f : 1f + pulse * .18f); tint.a = 1;
             if (core) { core.color = tint; core.transform.localScale = Vector3.one * (1 + pulse * .035f); }
             float rotation = weapon == DollSingerHaloAim.HaloWeapon.Aegis ? phase * 9 + pulse * 6 :
+                weapon == DollSingerHaloAim.HaloWeapon.Rondo ? (burstIndex==0?1:-1)*pulse*12 :
                 weapon == DollSingerHaloAim.HaloWeapon.Thorn ? pulse * 4 : weapon == DollSingerHaloAim.HaloWeapon.Trine ? 0 : Mathf.Sin(phase) * 1.5f;
             if (accent)
             {
@@ -60,7 +62,7 @@ namespace Unity.MP_FPS.DollSinger
             for (int i = 0; i < nodes.Length; i++) if (nodes[i])
             {
                 bool lit = (i + .5f) / nodes.Length <= loaded;
-                float sequential = weapon == DollSingerHaloAim.HaloWeapon.Trine && i % 3 == burstIndex ? pulse : 0;
+                float sequential = (weapon == DollSingerHaloAim.HaloWeapon.Trine || sequenceNodes) && i == burstIndex ? pulse : 0;
                 nodes[i].color = lit ? lightColor * (1.2f + sequential * 2) : lightColor * .2f;
             }
             transform.localPosition = Vector3.back * (pulse * recoil);

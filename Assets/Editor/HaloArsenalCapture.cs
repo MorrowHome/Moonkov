@@ -11,9 +11,12 @@ using Unity.MP_FPS.DollSinger;
 /// <summary>Four actual RenderTextures, frame-locked at 24fps for external lossless-to-MP4 encoding.</summary>
 public static class HaloArsenalCapture
 {
+    private static uint selected;
+    public static void RunWeapon(uint id) { selected=id;Start(); }
     public static string Status {get;private set;}="Not run";
     [MenuItem("Tools/Moonkov/Capture Six Arsenal Action Clips")]
-    public static void Run()
+    public static void Run() { selected=0;Start(); }
+    private static void Start()
     {
         var lab=UnityEngine.Object.FindAnyObjectByType<WeaponGestureLab>();
         if(!EditorApplication.isPlaying||!lab)throw new InvalidOperationException("Play the weapon gesture lab first.");
@@ -42,10 +45,10 @@ public static class HaloArsenalCapture
             lab.SetPaused(false);ui.Q<Slider>("speed").value=1;ui.Q<Slider>("pitch").value=0;ui.Q<Slider>("orbit").value=0;
             ui.Q<Toggle>("aim").value=true;ui.Q<Toggle>("firstPerson").value=true;ui.Q<Toggle>("repeatFire").value=false;
             lab.PlayerView.camera.aspect=16f/9;lab.FocusView(-1);Time.captureDeltaTime=1f/24;
-            foreach(var entry in HaloArsenal.Entries)
+            foreach(var entry in HaloArsenal.Entries.Where(e=>selected==0||e.Id==selected))
             {
                 lab.SelectWeapon((int)entry.Id-2);yield return new WaitForSeconds(.5f);
-                string path="Temp/HaloArsenal/Clips/"+entry.Code;Directory.CreateDirectory(path);
+                string path="Temp/HaloArsenal/Clips/"+entry.Code;Directory.CreateDirectory(path);foreach(var previousFrame in Directory.GetFiles(path,"*.png"))File.Delete(previousFrame);
                 var weapon=AssetDatabase.LoadAssetAtPath<WeaponRegistry>("Assets/Data/Weapons/WeaponRegistry.asset").GetWeaponData(entry.Id);
                 int total=Mathf.CeilToInt((1.25f+weapon.ReloadTime+.4f)*24);
                 for(int frame=0;frame<total;frame++)

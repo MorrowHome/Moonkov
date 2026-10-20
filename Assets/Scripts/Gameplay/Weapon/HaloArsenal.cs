@@ -7,21 +7,22 @@ namespace Unity.MP_FPS
         public readonly struct Entry
         {
             public readonly string Code, Name;
-            public readonly int Capacity, Energy, Pellets;
-            public readonly float Interval, Damage, Reload, Equip, Speed, Spread, Gravity, Scope;
+            public readonly int Capacity, Energy, Pellets, BurstCount;
+            public readonly float Interval, Damage, Reload, Equip, Speed, Spread, Gravity, Scope, BurstCooldown;
             public readonly bool Automatic;
             public readonly uint Id;
-            public Entry(uint id,string code,string name,int capacity,int energy,float interval,float damage,float reload,float equip,float speed,float spread=0,int pellets=1,float gravity=1.62f,float scope=0,bool automatic=false)
-            { Id=id;Code=code;Name=name;Capacity=capacity;Energy=energy;Interval=interval;Damage=damage;Reload=reload;Equip=equip;Speed=speed;Spread=spread;Pellets=pellets;Gravity=gravity;Scope=scope;Automatic=automatic; }
+            public Entry(uint id,string code,string name,int capacity,int energy,float interval,float damage,float reload,float equip,float speed,float spread=0,int pellets=1,float gravity=1.62f,float scope=0,bool automatic=false,int burst=1,float burstCooldown=.28f)
+            { Id=id;Code=code;Name=name;Capacity=capacity;Energy=energy;Interval=interval;Damage=damage;Reload=reload;Equip=equip;Speed=speed;Spread=spread;Pellets=pellets;Gravity=gravity;Scope=scope;Automatic=automatic;BurstCount=burst;BurstCooldown=burstCooldown; }
             public DollSingerHaloAim.HaloWeapon Gesture => (DollSingerHaloAim.HaloWeapon)(Id-1);
         }
         public static readonly Entry[] Entries = {
             new Entry(6,"cicada","Cicada / 蝉鸣",36,2,.065f,8,1.7f,.18f,240,3.4f,automatic:true),
-            new Entry(7,"trine","Trine / 三律",24,4,.085f,17,2.2f,.24f,420,.6f),
+            new Entry(7,"trine","Trine / 三律",24,4,.085f,17,2.2f,.24f,420,.6f,burst:3),
             new Entry(8,"aegis","Aegis / 天枢",72,4,.11f,18,4.2f,.55f,360,1.9f,automatic:true),
             new Entry(9,"vesper","Vesper / 望舒",12,8,.32f,42,2.4f,.30f,650,.12f,scope:2.8f),
             new Entry(10,"thorn","Thorn / 星棘",8,10,.55f,9,2.5f,.27f,530,1.4f,5),
-            new Entry(11,"sundown","Sundown / 坠日",3,18,1.05f,96,3.4f,.42f,22,0,1,1.62f)
+            new Entry(11,"sundown","Sundown / 坠日",3,18,1.05f,96,3.4f,.42f,22,0,1,1.62f),
+            new Entry(12,"rondo","Rondo / 回环",16,6,.07f,26,2.1f,.24f,360,.55f,burst:2,burstCooldown:.38f)
         };
         public static Entry? Find(uint id) { int i=(int)id-6; return i>=0 && i<Entries.Length ? Entries[i] : (Entry?)null; }
     }

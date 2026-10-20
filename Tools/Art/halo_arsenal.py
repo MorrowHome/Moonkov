@@ -19,7 +19,7 @@ def cut(body,hole):
   points=' '.join(f'{x+r*math.cos(i*math.tau/96):.3f},{y+r*math.sin(i*math.tau/96):.3f}' for i in range(96))
  return f'<path d="M {outer.attrib["points"]} Z M {points} Z" fill="{outer.attrib["fill"]}" fill-rule="evenodd"/>'
 
-for code in ['cicada','trine','aegis','vesper','thorn','sundown']:
+for code in ['cicada','trine','aegis','vesper','thorn','sundown','rondo']:
  core='';accent=''
  if code=='cicada':
   # Two broad, swept sabre wings; deliberately asymmetric tips and a fork crown.
@@ -61,6 +61,14 @@ for code in ['cicada','trine','aegis','vesper','thorn','sundown']:
    core+=polygon([pt(137,a),pt(175,a-23),pt(210,a-27),pt(300,a),pt(210,a+27),pt(175,a+23)],G)
    accent+=polygon([pt(282,a),pt(211,a-14),pt(166,a),pt(211,a+14)],W)
    accent+=polygon([pt(242,a+15),pt(217,a+20),pt(186,a+20),pt(204,a+14)],D)
+ elif code=='rondo':
+  # Paired counter-rotating magatama seals; two broad comma bodies.
+  for a,color in [(190,W),(10,G)]:
+   core+=arcband(278,163,a,a+135,color,n=24)
+   core+=polygon([pt(278,a+124),pt(163,a+124),pt(296,a+158)],color)
+   x,y=pt(215,a+5);core+=disc(x,y,49,color)
+   accent+=disc(x,y,26,D if color==W else W)
+   accent+=arcband(245,211,a+36,a+87,G if color==W else W,n=12)
  else:
   for a,b in [(-163,-67),(-53,39),(53,133)]:core+=arcband(278,160,a,b,G,n=8)
   for a,b in [(-152,-119),(-41,-9),(65,96)]:accent+=arcband(257,201,a,b,W,n=4)
@@ -72,4 +80,4 @@ for code in ['cicada','trine','aegis','vesper','thorn','sundown']:
   path=SRC/f'{code}-{kind}.svg';path.write_text(svg(body));cairosvg.svg2png(url=str(path),write_to=str(OUT/f'{code}-{kind}.png'))
  # Namespace masks so the icon and composed production layers render identically.
  path=SRC/f'{code}-Icon.svg';path.write_text(svg(core+accent));cairosvg.svg2png(url=str(path),write_to=str(ICONS/(code.title()+'.png')))
-print('18 flat filled production sprites and 6 icons exported from vector masters.')
+print('Independent flat filled components and icons exported from vector masters.')

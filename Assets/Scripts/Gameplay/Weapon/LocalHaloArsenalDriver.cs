@@ -8,7 +8,7 @@ namespace Unity.MP_FPS
     public sealed class LocalHaloArsenalDriver : MonoBehaviour, ILocalArsenalDriver
     {
         public WeaponRegistry registry;
-        private readonly PredictedPlayerGhost[] states=new PredictedPlayerGhost[6];
+        private readonly PredictedPlayerGhost[] states=new PredictedPlayerGhost[HaloArsenal.Entries.Length];
         private InventoryGraph battery;
         private int active=-1;
         private uint shotTick,reloadTick;
@@ -17,17 +17,17 @@ namespace Unity.MP_FPS
         {
             if(battery!=null)return;
             battery=InventoryGraph.Create(starter:false);battery.AddSupply("cells",4,"pockets");
-            for(int i=0;i<6;i++)states[i]=new PredictedPlayerGhost{CurrentHealth=100,EquippedWeaponID=(uint)(i+6),CurrentAmmo=registry.GetWeaponData((uint)(i+6)).MagazineSize,WeaponCooldown=10,EquippedWeaponSlot=1};
+            for(int i=0;i<states.Length;i++)states[i]=new PredictedPlayerGhost{CurrentHealth=100,EquippedWeaponID=(uint)(i+6),CurrentAmmo=registry.GetWeaponData((uint)(i+6)).MagazineSize,WeaponCooldown=10,EquippedWeaponSlot=1};
         }
         public int Ammo(DollSingerHaloAim.HaloWeapon weapon)
-        {Initialize();int i=(int)weapon-5;return i>=0&&i<6?states[i].CurrentAmmo:0;}
+        {Initialize();int i=(int)weapon-5;return i>=0&&i<states.Length?states[i].CurrentAmmo:0;}
         public void CancelBurst(){if(active>=0)HaloModuleFire.Reset(ref states[active]);active=-1;}
         public bool Step(DollSingerHaloAim halo,DollSingerHaloAim.HaloWeapon gesture,bool held,bool pressed,bool reload,bool aiming,float deltaTime)
         {
             Initialize();int index=(int)gesture-5;var weapon=registry.GetWeaponData((uint)(index+6));
             ref var state=ref states[index];
             if(active!=index){if(active>=0)HaloModuleFire.Reset(ref states[active]);active=index;HaloModuleFire.BeginEquip(ref state,weapon);}
-            for(int i=0;i<6;i++)HaloModuleFire.AdvanceTimers(ref states[i],deltaTime);
+            for(int i=0;i<states.Length;i++)HaloModuleFire.AdvanceTimers(ref states[i],deltaTime);
             if(state.ControllerState.IsReloadingState)
             {state.ReloadTimer=Mathf.Max(0,state.ReloadTimer-deltaTime);if(state.ReloadTimer==0)DollSingerWeapons.CompleteReload(ref state,weapon);}
             if(!state.ControllerState.IsReloadingState&&(reload||state.CurrentAmmo==0)&&battery.TryRecharge(state.CurrentAmmo,weapon.MagazineSize,weapon.EnergyPerRound,out int target))

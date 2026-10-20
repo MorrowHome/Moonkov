@@ -139,7 +139,7 @@ namespace Unity.MP_FPS.DollSinger
             // Interpolating complete arm chains can slightly change their combined
             // orientation between authored pitch poses. Align the pointing pair as
             // one unit; never turn the wrist or fingers independently.
-            if ((weapon == 2 || weapon == 5 || weapon == 8) && aimDirection.sqrMagnitude > .001f)
+            if ((weapon == 2 || weapon == 5 || weapon == 8 || weapon == 11) && aimDirection.sqrMagnitude > .001f)
             {
                 Vector3 index = correction * (rightIndexTip.position - rightIndex.position);
                 correction = Quaternion.Slerp(Quaternion.identity, Quaternion.FromToRotation(index, aimDirection), blend) * correction;

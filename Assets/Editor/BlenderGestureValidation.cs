@@ -23,11 +23,13 @@ public static class BlenderGestureValidation
     }
     [Serializable] private class FireVariant { public float[] values; }
     private static bool arsenal;
-    private static int[] OrdinaryWeapons => arsenal ? new[] {0,1,2,4,5,6,7,8,9} : new[] {0,1,2};
+    private static int focused=-1;
+    public static void RunWeapon(int index) { focused=index;arsenal=true;Start(); }
+    private static int[] OrdinaryWeapons => focused>=0 ? new[]{focused} : new[]{0,1,2}.Concat(arsenal?Enumerable.Range(4,HaloArsenal.Entries.Length):Enumerable.Empty<int>()).ToArray();
     [MenuItem("Tools/Moonkov/Validate Ten Weapon Gestures In Playing Lab")]
-    public static void RunArsenal() { arsenal = true; Start(); }
+    public static void RunArsenal() { focused=-1; arsenal = true; Start(); }
     [Serializable] private class Bake { public string revision; public string[] bones; public Motion[] motions; public Quaternion chestBindRotation; }
-    private static readonly string Output = "Temp/GestureValidation/Blender";
+    private static string Output => focused<0?"Temp/GestureValidation/Blender":"Temp/GestureValidation/Arsenal/"+HaloArsenal.Entries[focused-4].Code;
     public static string Status { get; private set; } = "Not run";
     private static Mesh armSurface;
     private static SkinnedMeshRenderer armRenderer;
@@ -36,7 +38,7 @@ public static class BlenderGestureValidation
     private static readonly BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
 
     [MenuItem("Tools/Moonkov/Validate Blender Gestures In Playing Lab")]
-    public static void Run() { arsenal = false; Start(); }
+    public static void Run() { focused=-1; arsenal = false; Start(); }
     private static void Start()
     {
         var lab = UnityEngine.Object.FindAnyObjectByType<WeaponGestureLab>();
@@ -111,7 +113,7 @@ public static class BlenderGestureValidation
                 float authoredPitch = m.aimPoses == null ? 0 : pitch;
                 expected = Quaternion.LookRotation(aim, Vector3.up) * Quaternion.Euler(-authoredPitch,0,0) * bake.chestBindRotation * expected;
                 // Directional signs share one common correction across both complete arm chains.
-                if (lab.WeaponIndex != 1 && lab.WeaponIndex != 4 && lab.WeaponIndex != 7) max = Mathf.Max(max, Quaternion.Angle(expected, bones[bake.bones[i]].rotation));
+                if (lab.WeaponIndex != 1 && lab.WeaponIndex != 4 && lab.WeaponIndex != 7 && lab.WeaponIndex != 10) max = Mathf.Max(max, Quaternion.Angle(expected, bones[bake.bones[i]].rotation));
             }
             else max = Mathf.Max(max, Quaternion.Angle(expected, bones[bake.bones[i]].localRotation));
         }
@@ -166,7 +168,7 @@ public static class BlenderGestureValidation
     }
     private static void PointAtAim(WeaponGestureLab lab, Dictionary<string, Transform> bones)
     {
-        if (lab.WeaponIndex != 1 && lab.WeaponIndex != 4 && lab.WeaponIndex != 7) return;
+        if (lab.WeaponIndex != 1 && lab.WeaponIndex != 4 && lab.WeaponIndex != 7 && lab.WeaponIndex != 10) return;
         var camera = lab.PlayerView.GestureCamera;
         Vector2 a = camera.WorldToViewportPoint(bones["人指１.R"].position);
         Vector2 b = camera.WorldToViewportPoint(bones["人指先.R"].position);
@@ -266,7 +268,7 @@ public static class BlenderGestureValidation
         armRenderer = lab.Halo.GetComponentsInChildren<SkinnedMeshRenderer>(true).First(x => x.name == "FirstPersonGestureArms (Runtime)");
         armSurface = new Mesh(); armTriangles = armRenderer.sharedMesh.triangles;
         float error = 0, fanDistance = 0;
-        for (int weapon = 0; weapon < (arsenal ? 10 : 4); weapon++)
+        foreach (int weapon in focused>=0?new[]{focused}.AsEnumerable():Enumerable.Range(0,arsenal?HaloArsenal.Entries.Length+4:4))
         {
             lab.SelectWeapon(weapon); yield return new WaitForSeconds(.6f); yield return new WaitForEndOfFrame();
             error = Mathf.Max(error, Compare(bake, lab, bones)); Visible(lab, bones); ClearAim(lab); PointAtAim(lab, bones);
@@ -275,7 +277,9 @@ public static class BlenderGestureValidation
             ScreenCapture.CaptureScreenshot(Path.GetFullPath(Output + $"/{weapon + 1}-idle.png")); yield return new WaitForEndOfFrame();
             Vector3 offhand = bones["手首.L"].position;
             lab.Fire(); float start = Time.time; bool captured = false;
-            while (Time.time - start < Mathf.Max(bake.motions[weapon].fireSeconds, weapon == 5 ? .3f : 0) + .04f)
+            var data=AssetDatabase.LoadAssetAtPath<WeaponRegistry>("Assets/Data/Weapons/WeaponRegistry.asset").GetWeaponData((uint)(weapon+2));
+            float fireDuration=bake.motions[weapon].fireSeconds+(data.BurstCount-1)*data.BurstInterval+.025f;
+            while (Time.time - start < fireDuration + .04f)
             {
                 yield return new WaitForEndOfFrame();
                 error = Mathf.Max(error, Compare(bake, lab, bones)); Visible(lab, bones); ClearAim(lab); PointAtAim(lab, bones);
@@ -293,8 +297,8 @@ public static class BlenderGestureValidation
             if (weapon >= 4) SaveViews(lab, HaloArsenal.Entries[weapon-4].Code);
             report.Add($"weapon {weapon + 1}: idle, fire, reload; all four cameras active; exact local rotations and owner projection passed");
         }
-        Require(fanDistance > .055f, "Revolver offhand did not fan the hammer: " + fanDistance);
-        report.Add($"revolver offhand stroke {fanDistance * 1000:F1} mm; maximum Blender/runtime rotation difference {error:F3} deg");
+        if(focused<0) Require(fanDistance > .055f, "Revolver offhand did not fan the hammer: " + fanDistance);
+        if(focused<0) report.Add($"revolver offhand stroke {fanDistance * 1000:F1} mm; maximum Blender/runtime rotation difference {error:F3} deg");
         // The normal weapons retain a clear aiming window at steep pitch and
         // both common aspect ratios. Inspect the actual deformed arm triangles.
         foreach (float aspect in new[] { 16f/9f, 4f/3f })
@@ -331,6 +335,13 @@ public static class BlenderGestureValidation
         report.Add("Continuous pitch sweep 0/-80/0/+80/0: visible fingers, clear arm geometry, pointing direction and projection continuity passed.");
         report.Add("Head forward/up track the owner camera within 0.15 degrees through pitch/aspect samples and continuous look-up; no extra Humanoid head roll.");
         lab.PlayerView.camera.aspect = 16f/9f;
+        if(focused>=0)
+        {
+            root.Q<Slider>("pitch").value=0;
+            yield return CheckOrdinaryTransitions(lab,bones,root,report);
+            UnityEngine.Object.Destroy(armSurface);Status="PASS";
+            File.WriteAllLines(Output+"/checks.txt",report);Debug.Log("Focused arsenal gesture PASS: "+HaloArsenal.Entries[focused-4].Code);yield break;
+        }
         lab.SelectWeapon(3); root.Q<Slider>("pitch").value = 0;
         yield return new WaitForSeconds(.5f);
         report.Add("Revolver index converges on crosshair within 1 degree in idle/fire/reload and pitch/aspect checks. Normal weapons: finger joints below 42% viewport height; deformed arm triangles leave central 12% square clear through fire/reload, authored and interpolated pitch -80 through +80 and 16:9 / 4:3.");

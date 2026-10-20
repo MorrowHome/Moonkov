@@ -10,15 +10,17 @@ using Unity.MP_FPS.DollSinger;
 public static class HaloArsenalSetup
 {
     private const string Art="Assets/DollSinger/Art/HaloArsenal/";
-    [MenuItem("Tools/Moonkov/Install Six Halo Arsenal Weapons")]
-    public static void Install()
+    [MenuItem("Tools/Moonkov/Install Halo Arsenal Weapons")]
+    public static void Install() => InstallOne(0);
+    public static void InstallOne(uint onlyId)
     {
         if(EditorApplication.isPlayingOrWillChangePlaymode)throw new InvalidOperationException("Stop Play before installing halo assets.");
         AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
-        foreach(var entry in HaloArsenal.Entries)
+        var selected=HaloArsenal.Entries.Where(e=>onlyId==0||e.Id==onlyId).ToArray();
+        foreach(var entry in selected)
         foreach(string part in new[]{"Shell","Sigil","Node"}) ImportSprite(Art+entry.Code+"-"+part+".png");
         var registry=AssetDatabase.LoadAssetAtPath<WeaponRegistry>("Assets/Data/Weapons/WeaponRegistry.asset");
-        foreach(var entry in HaloArsenal.Entries)
+        foreach(var entry in selected)
         {
             string title=char.ToUpperInvariant(entry.Code[0])+entry.Code.Substring(1);
             string materialPath=Art+title+".mat";
@@ -32,7 +34,7 @@ public static class HaloArsenalSetup
             data.CooldownInMs=entry.Interval;data.Damage=entry.Damage;data.ReloadTime=entry.Reload;
             data.EquipTime=entry.Equip;data.ProjectileSpeed=entry.Speed;data.ProjectileGravity=entry.Gravity;
             data.PelletCount=entry.Pellets;data.SpreadDegrees=entry.Spread;data.Automatic=entry.Automatic;
-            data.BurstCount=entry.Id==DollSingerWeapons.Trine?3:1;data.BurstInterval=.085f;data.BurstCooldown=.28f;
+            data.BurstCount=entry.BurstCount;data.BurstInterval=entry.BurstCount>1?entry.Interval:.085f;data.BurstCooldown=entry.BurstCooldown;
             data.AutoReloadWhenEmpty=true;data.ShowProjectileBody=true;data.Type=WeaponType.Projectile;
             data.ProjectileLifetime=entry.Id==DollSingerWeapons.Sundown?6:4;data.ProjectileRadius=entry.Id==DollSingerWeapons.Sundown?.055f:.009f;
             data.Behavior=entry.Id==DollSingerWeapons.Sundown?ProjectileBehavior.AreaOfEffect:ProjectileBehavior.DirectDamage;data.AoeRadius=3.5f;
@@ -45,7 +47,8 @@ public static class HaloArsenalSetup
                 visual.recoil=entry.Id==DollSingerWeapons.Aegis?.035f:entry.Id==DollSingerWeapons.Sundown?.05f:.018f;
                 visual.lightColor=entry.Id==DollSingerWeapons.Vesper?new Color(.83f,.90f,1):new Color(1,.88f,.64f);
                 visual.core=Layer(root.transform,"Shell",entry.Code,material);visual.accent=Layer(root.transform,"Sigil",entry.Code,material);
-                int count=entry.Id==DollSingerWeapons.Trine?3:entry.Id==DollSingerWeapons.Thorn?5:6;
+                visual.sequenceNodes=entry.BurstCount>1;
+                int count=entry.BurstCount>1?entry.BurstCount:entry.Id==DollSingerWeapons.Thorn?5:6;
                 visual.nodes=new SpriteRenderer[count];
                 for(int i=0;i<count;i++)
                 {
@@ -63,7 +66,7 @@ public static class HaloArsenalSetup
             var root=PrefabUtility.LoadPrefabContents(path);
             try
             {
-                var halo=root.GetComponentInChildren<DollSingerHaloAim>(true);var visuals=new ArsenalHaloVisual[6];
+                var halo=root.GetComponentInChildren<DollSingerHaloAim>(true);var visuals=new ArsenalHaloVisual[HaloArsenal.Entries.Length];
                 foreach(var entry in HaloArsenal.Entries)
                 {
                     int index=(int)entry.Id-6;
@@ -88,11 +91,11 @@ public static class HaloArsenalSetup
         var previous=EditorSceneManager.GetActiveScene().path;
         var scene=EditorSceneManager.OpenScene("Assets/DollSinger/Scenes/WeaponGestureLab.unity");
         var lab=UnityEngine.Object.FindAnyObjectByType<WeaponGestureLab>();var serialized=new SerializedObject(lab);
-        var weapons=serialized.FindProperty("m_Weapons");weapons.arraySize=10;
-        for(int i=0;i<10;i++)weapons.GetArrayElementAtIndex(i).objectReferenceValue=registry.GetWeaponData((uint)(i+2));
+        var weapons=serialized.FindProperty("m_Weapons");weapons.arraySize=registry.Weapons.Count-2;
+        for(int i=0;i<weapons.arraySize;i++)weapons.GetArrayElementAtIndex(i).objectReferenceValue=registry.GetWeaponData((uint)(i+2));
         serialized.ApplyModifiedPropertiesWithoutUndo();EditorSceneManager.MarkSceneDirty(scene);EditorSceneManager.SaveScene(scene);
         if(!string.IsNullOrEmpty(previous))EditorSceneManager.OpenScene(previous);
-        AssetDatabase.SaveAssets();Debug.Log("Six arsenal definitions, sprite assemblies, two production prefabs and 10-weapon lab installed.");
+        AssetDatabase.SaveAssets();Debug.Log("Arsenal definitions, sprite assemblies, two production prefabs and weapon lab installed.");
     }
     private static void ImportSprite(string path)
     {

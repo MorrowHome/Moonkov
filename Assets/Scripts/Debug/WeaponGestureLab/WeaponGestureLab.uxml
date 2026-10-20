@@ -10,6 +10,7 @@
             <ui:Button name="rifle" text="1 步枪" /><ui:Button name="revolver" text="2 左轮" />
             <ui:Button name="shotgun" text="3 霰弹" /><ui:Button name="sniper" text="4 狙击" />
             <ui:Button name="cicada" text="5 蝉鸣" /><ui:Button name="trine" text="6 三律" /><ui:Button name="aegis" text="7 天枢" /><ui:Button name="vesper" text="8 望舒" /><ui:Button name="thorn" text="9 星棘" /><ui:Button name="sundown" text="0 坠日" />
+            <ui:Button name="rondo" text="回环" />
             <ui:Toggle name="aim" label="瞄准" value="true" />
             <ui:Button name="fire" text="开火 / Space" /><ui:Toggle name="repeatFire" label="循环射击" />
             <ui:Button name="reload" text="换弹 / R" /><ui:Toggle name="pause" label="暂停" />

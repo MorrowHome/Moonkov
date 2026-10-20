@@ -33,7 +33,7 @@ namespace Unity.MP_FPS
         private int m_Ammo, m_WeaponIndex, m_LastStatusFrame;
         private uint m_ShotTick, m_ReloadTick;
         private PredictedPlayerGhost m_BurstState;
-        private static readonly string[] WeaponNames={"rifle","revolver","shotgun","sniper","cicada","trine","aegis","vesper","thorn","sundown"};
+        private static readonly string[] WeaponNames=new[]{"rifle","revolver","shotgun","sniper"}.Concat(HaloArsenal.Entries.Select(e=>e.Code)).ToArray();
         public GameObject Player { get; private set; }
         public DollSingerView PlayerView => m_View;
         public DollSingerHaloAim Halo => m_Halo;

@@ -60,6 +60,13 @@ def make_pose(weapon,phase=0,mode='pose',fan_scale=1):
   wr=Vector((.095,1.16,.205))+Vector((0,.008,.027))*hit+Vector((-.030,-.025,-.040))*gather
   wl=Vector((-.095,1.20,.120))+Vector((-.010,.008,-.020))*hit+Vector((.040,-.065,.055))*gather
   guideL=(-.31,1.10,.02)
+ elif weapon==11:
+  hand('R',(0,0,1),(0,1,0),G);hand('L',(0,0,1),(0,1,0),G)
+  fingers('R','gun',G);fingers('L','gun',G)
+  right=hit if burst_digit==0 else bell(.5+phase*.5,.25) if mode=='fire' else 0
+  left=hit if burst_digit==1 else 0
+  wr=Vector((.095,1.14,.22))+Vector((0,.008,-.026))*right+Vector((-.035,.025,-.040))*gather
+  wl=Vector((-.095,1.11,.18))+Vector((0,.008,-.026))*left+Vector((.035,.045,-.020))*gather
  elif weapon==9:
   hand('R',(.02,1,-.10),(1,0,0),G);hand('L',(.82,.42,.20),(0,1,-.3),G)
   claw=8*(1-hit)+57*gather
@@ -84,7 +91,7 @@ def make_pose(weapon,phase=0,mode='pose',fan_scale=1):
 pitched=(ROOT/'Tools/Blender/weapon_gestures.py').read_text().split('def make_pitched_pose')[1].split('# Record Blender actions')[0]
 pitched='def make_pitched_pose'+pitched.replace('limit=-30 if weapon==1 else -60','limit=-90 if weapon>=5 else (-30 if weapon==1 else -60)')
 exec(compile(pitched,'pitch-helper','exec'),globals())
-entries=[(5,'Cicada_TwinBlades',.065),(6,'Trine_ThreefoldSeal',.085),(7,'Aegis_AnchorPalms',.11),(8,'Vesper_PrecisionSword',.24),(9,'Thorn_FiveNeedles',.36),(10,'Sundown_SolarRelease',.60)]
+entries=[(5,'Cicada_TwinBlades',.065),(6,'Trine_ThreefoldSeal',.085),(7,'Aegis_AnchorPalms',.11),(8,'Vesper_PrecisionSword',.24),(9,'Thorn_FiveNeedles',.36),(10,'Sundown_SolarRelease',.60),(11,'Rondo_TwinRefrain',.14)]
 # Idempotent re-authoring is confined to the six new action name prefixes.
 if not export_only:
  for action in list(bpy.data.actions):
@@ -97,9 +104,9 @@ for weapon,name,seconds in entries:
  for pitch in [0,-80,-65,-40,-20,20,40,65,80]:
   burst_digit=0;label=name if pitch==0 else name+'_Pitch'+str(pitch)
   motion=author_motion(weapon,label,seconds,pitch)
-  if weapon==6:
+  if weapon in [6,11]:
    motion['burstFires']=[{'values':motion['fire']}]
-   for digit in [1,2]:
+   for digit in range(1,3 if weapon==6 else 2):
     burst_digit=digit;action_name=label+'_fire'+str(digit);action=bpy.data.actions.get(action_name)
     if not export_only:action=bpy.data.actions.new(action_name)
     if not action:raise ValueError('Missing '+action_name)
