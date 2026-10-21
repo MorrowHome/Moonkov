@@ -1,37 +1,49 @@
-.clash-root { position: absolute; left: 0; right: 0; top: 0; bottom: 0; color: #f0f2ed; }
-.clash-battle { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
+@import url("ArchiveTheme.uss");
+@import url("Components/MoonkovControls.uss");
+.clash-root, .clash-battle { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
 .clash-hidden { display: none; }
-.clash-panel { background-color: rgba(8, 13, 20, .92); border-width: 1px; border-color: #687584; padding: 12px 16px; }
-.clash-heading { color: #d7bc80; font-size: 14px; margin-bottom: 8px; }
-.clash-copy { color: #bdc8d4; font-size: 13px; white-space: normal; margin-bottom: 10px; }
-.clash-lobby { position: absolute; left: 0; right: 0; top: 0; bottom: 0; align-items: center; justify-content: center; background-color: rgba(4, 7, 12, .93); }
-.clash-lobby-window { width: 700px; max-width: 90%; max-height: 90%; border-top-width: 4px; border-top-color: #cfb276; }
-.clash-lobby-title { font-size: 26px; margin-bottom: 8px; }
-.clash-lobby-body { min-height: 0; flex-shrink: 1; }
-.clash-line { flex-direction: row; align-items: center; margin-bottom: 10px; }
-.clash-line > Button { min-height: 34px; padding: 6px 12px; margin-right: 8px; }
-.clash-line > TextField { flex-grow: 1; margin-right: 8px; }
-.clash-line > DropdownField { flex-grow: 1; margin-right: 8px; }
-.clash-roster { margin-top: 10px; margin-bottom: 12px; }
-.clash-member { min-height: 26px; color: #cee1f0; font-size: 14px; white-space: normal; }
-.clash-ready { background-color: #344d43; border-width: 1px; border-color: #91b89b; color: #ecf2e9; }
-.clash-error { color: #e5b386; font-size: 13px; white-space: normal; min-height: 24px; }
-.clash-header { position: absolute; top: 16px; left: 28%; right: 28%; align-items: stretch; }
-.clash-clock { color: #f2ede0; font-size: 27px; -unity-text-align: middle-center; }
-.clash-phase { font-size: 13px; color: #d4bf95; -unity-text-align: middle-center; white-space: normal; }
-.clash-objective { color: #eff1ea; font-size: 14px; white-space: normal; margin-top: 8px; }
-.clash-progress { height: 18px; margin-top: 5px; }
-.clash-bounty { color: #d9c28b; font-size: 14px; white-space: normal; margin-top: 7px; }
-.clash-team { position: absolute; top: 116px; left: 20px; width: 225px; }
-.clash-warning { position: absolute; left: 30%; right: 30%; bottom: 170px; color: #f5ddbf; border-left-width: 4px; border-left-color: #cb7959; font-size: 16px; white-space: normal; -unity-text-align: middle-center; }
-.clash-action { position: absolute; left: 30%; right: 30%; bottom: 120px; padding: 10px 14px; color: #e9eef2; font-size: 14px; white-space: normal; -unity-text-align: middle-center; }
-.clash-sense { position: absolute; top: 20px; right: 20px; width: 220px; }
-.clash-exit { position: absolute; bottom: 215px; right: 20px; width: 235px; white-space: normal; font-size: 14px; }
-.clash-map { position: absolute; top: 105px; right: 20px; width: 205px; height: 205px; background-color: rgba(7, 13, 20, .86); border-width: 1px; border-color: #687584; }
+.clash-root { color: var(--archive-ink); }
+.clash-root .clash-copy { color: var(--archive-muted); font-size: 13px; white-space: normal; margin-bottom: 12px; }
+.clash-heading { color: var(--archive-muted); font-size: 11px; margin-bottom: 6px; }
+.raid-ui .clash-root .clash-header { left: 20px; right: auto; top: 16px; bottom: auto; width: 210px; padding: 10px 14px; }
+.clash-header .clash-objective { font-size: 12px; white-space: normal; margin-top: 5px; }
+.clash-header .raid-caption { font-size: 11px; white-space: normal; margin-bottom: 4px; }
+.clash-header .raid-timer { font-size: 32px; margin: 0; }
+.clash-progress { height: 6px; margin-top: 6px; }
+.clash-progress .unity-progress-bar__title { display: none; }
+.clash-progress .unity-progress-bar__progress { background-color: var(--archive-accent); }
+.clash-team { position: absolute; left: 20px; bottom: 245px; width: 210px; border-left-width: 2px; border-left-color: var(--archive-accent); padding: 6px 10px; background-color: rgba(8,9,12,.72); }
+.clash-team .clash-roster { margin: 0; }
+.clash-member { color: var(--archive-ink); font-size: 12px; min-height: 22px; white-space: normal; }
+.clash-sidebar { position: absolute; right: 20px; top: 16px; width: 170px; }
+.clash-sidebar .clash-map { width: 170px; height: 170px; background-color: rgba(8,9,12,.70); border-width: 1px; border-color: var(--archive-rule); }
+.clash-sidebar .clash-sense { padding: 6px 0; }
+.clash-sidebar .clash-copy { margin: 0; font-size: 11px; }
+.clash-sidebar .clash-exit { font-size: 11px; white-space: normal; border-top-width: 1px; border-top-color: var(--archive-rule); padding: 6px 0; background-color: rgba(8,9,12,.65); }
+.clash-warning, .clash-action { position: absolute; left: 30%; right: 30%; bottom: 230px; padding: 8px 12px; color: var(--archive-ink); border-left-width: 3px; border-left-color: var(--archive-accent); background-color: rgba(8,9,12,.88); font-size: 13px; white-space: normal; -unity-text-align: middle-center; }
+.clash-warning { bottom: 280px; border-left-color: var(--archive-alert); }
 .clash-marker-layer { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
-.clash-friendly-marker { position: absolute; width: 170px; margin-left: -85px; color: #add7f3; font-size: 12px; -unity-text-align: middle-center; white-space: normal; }
-.clash-friendly-down { color: #f3c385; }
-.clash-sense-layer { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(9, 17, 23, .25); }
-.clash-sense-contact { position: absolute; width: 40px; height: 20px; margin-left: -20px; margin-top: -10px; background-color: rgba(222, 147, 73, .36); border-width: 1px; border-color: rgba(240, 176, 104, .75); border-radius: 12px; }
-.clash-finished { position: absolute; left: 25%; right: 25%; top: 25%; align-items: stretch; }
-.clash-finished Button { margin-top: 12px; min-height: 38px; }
+.clash-root .clash-friendly-marker { position: absolute; width: 150px; margin-left: -75px; color: #c5d8ff; font-size: 11px; -unity-text-align: middle-center; white-space: normal; }
+.clash-root .clash-friendly-down { color: var(--archive-alert); }
+.clash-sense-layer { display: none; }
+.clash-lobby { position: absolute; left: 0; right: 0; top: 0; bottom: 0; align-items: center; justify-content: center; background-color: rgba(8,9,12,.88); }
+.clash-lobby-window { width: 680px; max-width: 94%; max-height: 90%; }
+.clash-root .bounty-archive-window { position: relative; width: 100%; max-width: 100%; max-height: 100%; }
+.clash-root .terminal-window-header { flex-direction: row; align-items: center; border-bottom-width: 1px; padding-bottom: 12px; }
+.clash-lobby-title { font-size: 25px; color: var(--archive-ink); white-space: normal; }
+.clash-lobby-body { min-height: 0; flex-shrink: 1; }
+.clash-line { flex-direction: row; align-items: center; margin-bottom: 8px; }
+.clash-line > Button { min-height: 34px; padding: 6px 10px; margin-right: 8px; }
+.clash-line > TextField, .clash-line > DropdownField { flex-grow: 1; margin-right: 8px; }
+.clash-roster { margin: 8px 0; }
+.clash-error { color: var(--archive-alert); font-size: 12px; white-space: normal; min-height: 20px; }
+.clash-finished { position: absolute; left: 50%; top: 22%; width: 520px; margin-left: -260px; }
+.clash-finished Button { margin-top: 8px; }
+.clash-menu-open .clash-battle, .clash-menu-open .clash-marker-layer { display: none; }
+.clash-compact .clash-header { left: 12px; top: 12px; width: 190px; }
+.clash-compact .clash-team { left: 12px; width: 190px; }
+.clash-compact .clash-sidebar { right: 12px; top: 12px; width: 146px; }
+.clash-compact .clash-sidebar .clash-map { width: 146px; height: 146px; }
+.clash-compact .clash-finished { width: 480px; margin-left: -240px; top: 16%; }
+
+.clash-lobby-actions { flex-shrink: 0; margin-top: 10px; margin-bottom: 0; }

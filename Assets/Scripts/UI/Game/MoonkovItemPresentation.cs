@@ -65,7 +65,7 @@ namespace Unity.MP_FPS.Client
             switch (code)
             {
                 case "vitality_shot": description = "Inject for 3 seconds to fill surviving body parts to their current recoverable health limit. Does not revive destroyed parts or restore health lost to Bounty Clash downs."; break;
-                case "stamina_shot": description = "Inject for 3 seconds. Grants 600 seconds of stamina recovery support. Keep in pockets or an equipped rig."; break;
+                case "stamina_shot": description = "Inject for 3 seconds to prevent sprint fatigue for 420 seconds. Does not refill hunger, thirst or oxygen, or heal injured legs."; break;
                 case "antidote_shot": description = "Inject for 3 seconds to clear poison and gain 600 seconds of immunity to tactical poison clouds. Does not prevent other damage."; break;
                 case "dynamite_bundle": description = "Select, then left click to throw after a 1-second action. Explodes after a 4-second fuse: up to 650 damage within 8 metres. Cover blocks the blast. Clears concertina wire; can kill teammates and the thrower."; break;
                 case "frag_bomb": description = "Select, then left click to throw after a 1-second action. A 4-second fuse triggers up to 320 damage within 8 metres and 8 seconds of bleeding. Cover blocks the blast. Does not clear concertina wire."; break;

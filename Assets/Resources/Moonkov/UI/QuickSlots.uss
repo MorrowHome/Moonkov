@@ -1,19 +1,27 @@
-.quick-slots { position: absolute; bottom: 16px; left: 5%; right: 5%; align-items: center; }
-.quick-slots-row { width: 100%; max-width: 630px; flex-direction: row; justify-content: center; }
-.quick-slot { flex-grow: 1; flex-shrink: 1; flex-basis: 0; min-width: 0; height: 78px; margin: 0 2px; padding: 2px; background-color: rgba(9, 15, 23, .94); border-width: 1px; border-color: #6c7682; position: relative; }
-.quick-slot:hover { border-color: #d4c499; }
-.quick-slot-selected { border-width: 2px; border-color: #e2c88c; background-color: rgba(70, 58, 34, .95); }
-.quick-slot-key { position: absolute; left: 4px; top: 1px; color: #eff0e8; font-size: 12px; }
-.quick-slot-count { position: absolute; right: 3px; top: 1px; color: #f0e2bf; font-size: 12px; }
-.quick-slot-icon { position: absolute; left: 8px; right: 8px; top: 17px; bottom: 19px; }
+/* Same item component and state classes as the inventory; only hotbar sizing lives here. */
+.quick-slots-pixel-root { position: absolute; left: 0; top: 0; transform-origin: 0% 0%; --mk-surface: #08090c; --mk-panel: #111318; }
+.quick-slots { position: absolute; bottom: 28px; left: 5%; right: 5%; align-items: center; }
+.quick-slots-narrow .quick-slots { bottom: 100px; }
+.quick-slots.quick-slots-inventory { bottom: 16px; }
+.quick-slots-row.inventory-view { width: 100%; max-width: 504px; flex-direction: row; justify-content: center; padding: 0; background-color: transparent; }
+.quick-slots-row .quick-slot { flex-grow: 1; flex-shrink: 1; flex-basis: 0; min-width: 0; height: 64px; margin: 0 2px; padding: 0; position: relative; }
+.quick-slots-row.inventory-view .inventory-item { background-color: var(--mk-panel); }
+.quick-slots-row.inventory-view .inventory-selected { background-color: #112044; }
+.quick-slots-row .quick-slot-key { position: absolute; left: 4px; top: 1px; color: var(--mk-ink); font-size: 12px; }
+.quick-slots-row .quick-slot-count { position: absolute; left: auto; right: 2px; top: 1px; bottom: auto; height: 16px; min-height: 0; max-height: 16px; margin: 0; color: var(--mk-ink); font-size: 13px; background-color: transparent; padding: 0; }
+.quick-slot-icon { position: absolute; left: 6px; right: 6px; top: 18px; bottom: 18px; }
 .quick-slot-art { flex-grow: 1; }
-.quick-slot-name { position: absolute; bottom: 2px; left: 2px; right: 2px; color: #eff0e8; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; -unity-text-align: middle-center; }
-.quick-slot-empty { opacity: .58; }
-.quick-slot-unavailable { border-color: #bd7772; background-color: rgba(59, 24, 24, .94); }
+.quick-slots-row .quick-slot-name { position: absolute; top: auto; bottom: 1px; left: 1px; right: 1px; height: 14px; min-height: 0; max-height: 14px; margin: 0; padding: 0; color: var(--mk-ink); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; -unity-text-align: middle-center; background-color: transparent; }
+.quick-slots-row .quick-slot-empty { opacity: 1; }
+.quick-slots-row .quick-slot-empty .quick-slot-key { color: var(--mk-muted); }
+.quick-slots-row.inventory-view .quick-slot-unavailable { border-color: #bd7772; background-color: #231417; }
 .quick-slot-unavailable .quick-slot-icon { opacity: .35; }
-.quick-slot-unavailable .quick-slot-count { color: #ffb1a4; font-size: 16px; }
-.quick-slot-caption, .quick-slot-detail { width: 100%; max-width: 630px; min-height: 20px; color: #eef1ec; background-color: rgba(5, 9, 14, .92); font-size: 12px; -unity-text-align: middle-center; white-space: normal; padding: 2px 5px; }
-.quick-slot-detail { color: #e2c88c; }
+.quick-slots-row .quick-slot-unavailable .quick-slot-count { color: #ffb1a4; font-size: 16px; }
+.quick-slot-caption, .quick-slot-detail { max-width: 504px; min-height: 20px; color: var(--mk-ink); background-color: rgba(8,9,12,.92); font-size: 12px; -unity-text-align: middle-center; white-space: normal; padding: 2px 6px; margin-top: 4px; }
 .quick-slots-busy .quick-slot { opacity: .65; }
-.quick-slot-drop-valid { border-width: 2px; border-color: #9acda7; }
-.quick-slot-drop-invalid { border-width: 2px; border-color: #f09484; }
+.quick-slots-row.inventory-view .quick-slot-drop-valid { border-width: 2px; border-color: var(--mk-accent); }
+.quick-slots-row.inventory-view .quick-slot-drop-invalid { border-width: 2px; border-color: #f09484; }
+.quick-slots-exhausted .quick-slot-caption { color: #ffb1a4; }
+.quick-slots-pixel-root .clash-cargo { position: absolute; left: 12px; right: auto; bottom: 150px; min-width: 0; width: 180px; padding: 8px 10px; background-color: rgba(8,9,12,.92); border-width: 1px; border-color: #687584; }
+.quick-slots-pixel-root .clash-cargo Label { font-size: 12px; color: #f1f2ed; white-space: normal; }
+.quick-slots-pixel-root.quick-slots-narrow .clash-cargo { bottom: 190px; }

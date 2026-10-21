@@ -11,6 +11,7 @@
 [Uu]nity[Cc]rash[Rr]eports/
 # Unity may create a matching folder meta for local validation caches under Assets.
 /Assets/Library.meta
+/Assets/Temp.meta
 
 # Generated local build state. Archive release content-state files with release artifacts.
 /Assets/AddressableAssetsData/Windows/

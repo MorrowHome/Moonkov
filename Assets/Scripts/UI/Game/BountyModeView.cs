@@ -8,7 +8,8 @@ namespace Unity.MP_FPS.Client
     // A local preference picker. Connection approval belongs to the server handshake.
     public sealed class BountyModeView : IDisposable
     {
-        private readonly VisualElement m_Root;
+        private readonly VisualElement m_Root, m_Container;
+        private readonly StyleSheet m_Sheet;
         private readonly Button m_Expedition, m_Clash, m_Close;
         private readonly Label m_Availability;
         private readonly Action<bool> m_Select;
@@ -19,9 +20,16 @@ namespace Unity.MP_FPS.Client
         public BountyModeView(VisualElement host, Action<bool> select)
         {
             m_Select = select;
-            var sheet = Resources.Load<StyleSheet>("Moonkov/UI/BountyModePicker");
-            host.styleSheets.Add(sheet);
-            m_Root = TerminalLayout.Clone("BountyModePicker", "bountyModePicker"); host.Add(m_Root);
+            // Keep the CloneTree stylesheet scope. Loading a StyleSheet by the shared
+            // UXML/USS resource basename can resolve the UXML's inlineStyle subasset.
+            m_Container = Resources.Load<VisualTreeAsset>("Moonkov/UI/BountyModePicker").CloneTree();
+            m_Container.pickingMode = PickingMode.Ignore;
+            m_Container.style.position = Position.Absolute; m_Container.style.left = m_Container.style.top = 0;
+            host.Add(m_Container); m_Root = m_Container.Q("bountyModePicker");
+            m_Sheet = m_Container.styleSheets.count > 0 ? m_Container.styleSheets[0] : null;
+            MoonkovLocalization.Bind(m_Root);
+            BountyUIComposition.ModeCard(m_Root.Q<Button>("modeExpedition")); BountyUIComposition.ModeCard(m_Root.Q<Button>("modeBountyClash"));
+            BountyUIComposition.Window(m_Root.Q("modeWindow"));
             m_Expedition = m_Root.Q<Button>("modeExpedition"); m_Clash = m_Root.Q<Button>("modeBountyClash");
             m_Close = m_Root.Q<Button>("modeClose"); m_Availability = m_Root.Q<Label>("modeAvailability");
             m_Expedition.clicked += Expedition; m_Clash.clicked += Clash; m_Close.clicked += Close;
@@ -30,10 +38,12 @@ namespace Unity.MP_FPS.Client
         public Button CreateEntry(VisualElement host)
         {
             var button = new Button(); button.AddToClassList("bounty-mode-entry");
+            if (m_Sheet) button.styleSheets.Add(m_Sheet);
             button.clicked += Open; host.Add(button); m_Entries.Add(button); return button;
         }
         public void Present(bool clash, bool offline)
         {
+            RefreshViewport();
             m_ClashSelected = clash; m_Offline = offline;
             foreach (var entry in m_Entries) MoonkovLocalization.Set(entry, clash ? "MODE / BOUNTY CLASH" : "MODE / EXPEDITION");
             m_Expedition.EnableInClassList("bounty-mode-selected", !clash);
@@ -41,13 +51,26 @@ namespace Unity.MP_FPS.Client
             m_Clash.SetEnabled(!offline);
             MoonkovLocalization.Set(m_Availability, offline
                 ? "Bounty Clash needs online accounts and at least two teams. Single player remains available in Expedition."
-                : "A server with the same mode and rules version is required. Your team is assigned by the server.");
+                : "Invite your teammates to a room, then get ready together.");
         }
         private void Open()
         {
+            RefreshViewport();
             foreach (var entry in m_Entries) if (entry.panel?.focusController.focusedElement == entry) m_Opener = entry;
-            m_Root.RemoveFromClassList("bounty-hidden"); m_Root.BringToFront();
+            m_Root.RemoveFromClassList("bounty-hidden"); m_Container.BringToFront();
             if (m_ClashSelected && !m_Offline) m_Clash.Focus(); else m_Expedition.Focus();
+        }
+        private void RefreshViewport()
+        {
+            var parent = m_Container.parent; var camera = Camera.main;
+            float pixels = camera ? camera.pixelWidth : Screen.width;
+            float height = camera ? camera.pixelHeight : Screen.height;
+            if (parent == null || parent.contentRect.width < 1 || pixels < 1 || height < 1) return;
+            float width = Mathf.Min(pixels, parent.contentRect.width), scale = parent.contentRect.width / width;
+            m_Container.style.right = StyleKeyword.Auto; m_Container.style.bottom = StyleKeyword.Auto;
+            m_Container.style.width = width; m_Container.style.height = height * width / pixels;
+            m_Container.style.transformOrigin = new TransformOrigin(Length.Percent(0), Length.Percent(0), 0);
+            m_Container.style.scale = new Scale(new Vector3(scale, scale, 1));
         }
         private void Close() { m_Root.AddToClassList("bounty-hidden"); m_Opener?.Focus(); }
         private void Expedition() { m_Select(false); Close(); }
@@ -57,7 +80,7 @@ namespace Unity.MP_FPS.Client
         {
             foreach (var entry in m_Entries) { entry.clicked -= Open; entry.RemoveFromHierarchy(); }
             m_Expedition.clicked -= Expedition; m_Clash.clicked -= Clash; m_Close.clicked -= Close;
-            m_Root.UnregisterCallback<KeyDownEvent>(Key); m_Root.RemoveFromHierarchy();
+            m_Root.UnregisterCallback<KeyDownEvent>(Key); m_Container.RemoveFromHierarchy();
         }
     }
 }

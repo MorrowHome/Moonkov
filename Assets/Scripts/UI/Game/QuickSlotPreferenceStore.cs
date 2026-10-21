@@ -8,6 +8,7 @@ namespace Unity.MP_FPS.Client
         #if UNITY_EDITOR
         // Installed before profile/HUD initialization by an isolated validation fixture.
         public static IQuickSlotStore ValidationStore { get; set; }
+        public static string ValidationScope { get; set; }
 #endif
         private const string Prefix = "Moonkov.QuickSlots.v2.";
         public QuickSlotSave Load(string scope)

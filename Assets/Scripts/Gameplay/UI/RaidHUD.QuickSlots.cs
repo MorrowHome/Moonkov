@@ -42,14 +42,28 @@ namespace Unity.MP_FPS
         private float m_QuickInteractionHintUntil;
         private uint m_QuickTacticalRequest, m_QuickTrackedTacticalRequest;
         private float m_QuickTacticalRequestedAt;
+        private TacticalItemAction m_QuickRequestedAction;
         private uint m_QuickOwnerRequest;
         private TacticalItemFeedback m_QuickOwnerFeedback;
         private InventoryError m_QuickOwnerError;
         private int m_QuickRaid;
         private Unity.Entities.World m_QuickWorld;
         private string m_QuickProfileScope;
+        private static string QuickPreferenceScope
+        {
+            get
+            {
+#if UNITY_EDITOR
+                if (QuickSlotPreferenceStore.ValidationStore != null && !string.IsNullOrEmpty(QuickSlotPreferenceStore.ValidationScope))
+                    return QuickSlotPreferenceStore.ValidationScope;
+#endif
+                return PlayerProfileClient.LocalPreferenceScope;
+            }
+        }
         private TacticalItemOwnerRpc QuickOwner => TacticalItemsFeedback.LocalOwner.RaidId == m_Snapshot.RaidId ? TacticalItemsFeedback.LocalOwner : default;
-        private bool QuickBusy => m_InventoryRequestPending || TimedActionActive || QuickOwner.Remaining > 0 || m_QuickTacticalRequest != 0;
+        private bool QuickTacticalActionPending => QuickOwner.Remaining > 0 || m_QuickTacticalRequest != 0;
+        private bool QuickTacticalCancelPending => m_QuickTacticalRequest != 0 && m_QuickRequestedAction == TacticalItemAction.Cancel;
+        private bool QuickBusy => m_InventoryRequestPending || TimedActionActive || QuickTacticalActionPending;
         private RaidInventoryClientState QuickInventory => m_World != null && m_World.IsCreated && !m_InventoryQuery.IsEmptyIgnoreFilter
             ? m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity()) : null;
         private InventoryGraph QuickGraph => QuickInventory is { } inventory && inventory.RaidId == m_Snapshot.RaidId ? inventory.Graph : null;
@@ -77,6 +91,7 @@ namespace Unity.MP_FPS
                 if (!QuickCanBind) return;
                 m_QuickBindings.Clear(slot); QuickNotice(m_QuickBindings.Reason);
             });
+            m_QuickView.Element.parent.Add(m_ActionPanel);
             m_InventoryView.QuickSlotDrop = DropOnQuickSlot;
             m_InventoryView.QuickSlotDragPreview = (item, point) => m_QuickView?.PreviewDrop(item == null ? -1 : m_QuickView.Hit(point), QuickSlotBindings.CanBind(QuickGraph, item));
             m_Root.RegisterCallback<KeyDownEvent>(BindQuickKey, TrickleDown.TrickleDown);
@@ -89,7 +104,7 @@ namespace Unity.MP_FPS
             if (!QuickCanBind || QuickTyping(evt.target as VisualElement) || evt.ctrlKey || evt.altKey || evt.commandKey) return;
             int slot = (int)evt.keyCode - (int)KeyCode.Alpha1;
             if (slot < 0 || slot >= QuickSlotBindings.Count) return;
-            m_QuickBindings.UseProfile(PlayerProfileClient.LocalPreferenceScope);
+            m_QuickBindings.UseProfile(QuickPreferenceScope);
             m_QuickBindings.Bind(slot, m_InventoryView.QuickSlotCandidate, QuickGraph);
             QuickNotice(m_QuickBindings.Reason); evt.StopImmediatePropagation();
         }
@@ -99,7 +114,7 @@ namespace Unity.MP_FPS
             if (slot < 0) return false;
             if (QuickCanBind)
             {
-                m_QuickBindings.UseProfile(PlayerProfileClient.LocalPreferenceScope);
+                m_QuickBindings.UseProfile(QuickPreferenceScope);
                 m_QuickBindings.Bind(slot, item, QuickGraph); QuickNotice(m_QuickBindings.Reason);
             }
             return true; // A rejected hotbar drop must never become an inventory move.
@@ -108,16 +123,16 @@ namespace Unity.MP_FPS
         private int SelectQuickSlot(int number)
         {
             if (m_QuickBindings == null) return 0;
-            m_QuickBindings.UseProfile(PlayerProfileClient.LocalPreferenceScope);
-            m_QuickBindings.InitializeWeapons(QuickGraph);
+            m_QuickBindings.UseProfile(QuickPreferenceScope);
             m_QuickBindings.Validate(QuickGraph);
             if (number == 0 || !QuickAlive || DarkSightRequested || PointerRequested || GameSettings.Instance.IsPauseMenuOpen ||
                 QuickTyping(m_Root.panel?.focusController.focusedElement as VisualElement)) return 0;
             if (QuickBusy)
             {
-                if (QuickOwner.Remaining > 0 && m_QuickTacticalRequest == 0) SendQuickTactical(TacticalItemAction.Cancel);
+                if (QuickTacticalActionPending && !QuickTacticalCancelPending) SendQuickTactical(TacticalItemAction.Cancel);
                 return 0;
             }
+            m_QuickBindings.InitializeWeapons(QuickGraph);
             var item = m_QuickBindings.Select(number - 1, QuickGraph);
             if (item == null) { QuickNotice(m_QuickBindings.Reason); return 0; }
             RaidQuickSlotInput.ReleasePrimary();
@@ -160,6 +175,7 @@ namespace Unity.MP_FPS
             if (!Send(new RaidTacticalItemActionRpc { RaidId = m_Snapshot.RaidId, ExpectedVersion = graph.Version,
                 RequestId = request, ItemId = itemId ?? "", TargetId = target, Action = action }))
             { QuickNotice("Not connected. Item remains in its container."); return; }
+            m_QuickRequestedAction = action;
             m_QuickTacticalRequest = m_QuickTrackedTacticalRequest = request; m_QuickTacticalRequestedAt = Time.unscaledTime;
             m_InventoryRequestedAt = Time.unscaledTime; m_InventoryRequestPending = true;
             QuickNotice(action == TacticalItemAction.Cancel ? "Cancellation requested." : "Use requested. Waiting for server.");
@@ -168,7 +184,7 @@ namespace Unity.MP_FPS
         {
             if (m_QuickView == null) return;
             m_QuickActive = active && QuickAlive;
-            string scope = PlayerProfileClient.LocalPreferenceScope;
+            string scope = QuickPreferenceScope;
             if (m_QuickRaid != m_Snapshot.RaidId || m_QuickWorld != m_World || m_QuickProfileScope != scope)
             {
                 m_QuickRaid = m_Snapshot.RaidId; m_QuickWorld = m_World; m_QuickProfileScope = scope;
@@ -180,7 +196,7 @@ namespace Unity.MP_FPS
             }
             m_QuickBindings.UseProfile(scope);
             var graph = QuickGraph;
-            m_QuickBindings.InitializeWeapons(graph);
+            if (m_QuickActive) m_QuickBindings.InitializeWeapons(graph);
             if (!m_QuickActive) m_QuickBindings.Deselect();
             m_QuickBindings.Validate(graph);
             var owner = QuickOwner;
@@ -199,23 +215,37 @@ namespace Unity.MP_FPS
             if (m_QuickTacticalRequest != 0 && Time.unscaledTime - m_QuickTacticalRequestedAt > 8)
             { m_QuickTacticalRequest = 0; QuickNotice("Waiting for the server. Retry after the connection recovers."); }
             bool menu = PointerRequested || GameSettings.Instance.IsPauseMenuOpen;
-            if (owner.Remaining > 0 && m_QuickTacticalRequest == 0 && (menu || !m_QuickActive || Keyboard.current?.xKey.wasPressedThisFrame == true))
+            if (QuickTacticalActionPending && !QuickTacticalCancelPending && (menu || !m_QuickActive || Keyboard.current?.xKey.wasPressedThisFrame == true && !QuickTyping(m_Root.panel?.focusController.focusedElement as VisualElement)))
                 SendQuickTactical(TacticalItemAction.Cancel);
             var selected = m_QuickBindings.SelectedItem(graph);
             TacticalItemsFeedback.SetSelectedItem(m_QuickActive ? selected?.Code : null);
             TacticalItemsFeedback.SetPresentationBlocked(!m_QuickActive || menu || DarkSightRequested || QuickTyping(m_Root.panel?.focusController.focusedElement as VisualElement));
             m_QuickView.Element.style.display = m_Snapshot.RaidId > 0 ? DisplayStyle.Flex : DisplayStyle.None;
-            m_QuickView.Present(m_QuickBindings, graph, !m_QuickActive || QuickBusy, m_InventoryVisible,
-                !m_QuickActive ? "Item use unavailable while inactive or downed." : owner.Remaining > 0 ?
+            string status = !m_QuickActive ? "Item use unavailable while inactive or downed." : DarkSightRequested ? "DARK SIGHT / RELEASE V TO USE ITEMS" : QuickTacticalCancelPending ? "Cancellation requested." : owner.Remaining > 0 ?
                 MoonkovLocalization.Format($"USING ITEM / {owner.Remaining:0.0}s · X CANCEL") : QuickBusy ? "Action in progress. X cancels timed actions." :
-                Time.unscaledTime < m_QuickStatusUntil ? m_QuickStatus : Time.unscaledTime < m_QuickInteractionHintUntil ? m_QuickInteractionHint : null);
+                Time.unscaledTime < m_QuickStatusUntil ? m_QuickStatus : Time.unscaledTime < m_QuickInteractionHintUntil ? m_QuickInteractionHint : null;
+            if (status == null && !m_InventoryVisible) status = QuickSprintCaption(owner);
+            m_QuickView.Element.EnableInClassList("quick-slots-exhausted", m_QuickActive && owner.SprintTracked && owner.SprintExhausted && !m_InventoryVisible);
+            m_QuickView.Present(m_QuickBindings, graph, !m_QuickActive || QuickBusy || DarkSightRequested, m_InventoryVisible, status);
+        }
+        private static string QuickSprintCaption(in TacticalItemOwnerRpc owner)
+        {
+            string text = !owner.SprintTracked ? "" : owner.SprintExhausted
+                ? MoonkovLocalization.Format($"SPRINT {Mathf.Clamp(owner.SprintStamina, 0, 100):0}% / FATIGUED / REST TO RECOVER")
+                : MoonkovLocalization.Format($"SPRINT {Mathf.Clamp(owner.SprintStamina, 0, 100):0}% / 1–9 SELECT");
+            if (owner.StaminaSeconds > 0)
+                text += (text.Length > 0 ? " / " : "") + MoonkovLocalization.Format($"STAMINA BOOST {owner.StaminaSeconds:0}s");
+            if (owner.AntidoteSeconds > 0)
+                text += (text.Length > 0 ? " / " : "") + MoonkovLocalization.Format($"ANTIDOTE {owner.AntidoteSeconds:0}s");
+            return text.Length > 0 ? text : null;
         }
         private bool TryQuickTacticalInteraction(bool active)
         {
             if (!active || !QuickAlive || QuickBusy || PointerRequested || GameSettings.Instance.IsPauseMenuOpen ||
                 UnityEngine.Cursor.lockState != CursorLockMode.Locked || !Application.isFocused ||
                 QuickTyping(m_Root.panel?.focusController.focusedElement as VisualElement)) return false;
-            var entity = m_PlayerQuery.GetSingletonEntity(); var em = m_World.EntityManager;
+            if (!TryGetLocalPlayerEntity(out var entity)) return false;
+            var em = m_World.EntityManager;
             if (!em.HasComponent<GhostGameObjectLink>(entity)) return false;
             var root = em.GetComponentObject<GhostGameObjectLink>(entity).LinkedInstance;
             if (!root) return false;
@@ -241,7 +271,7 @@ namespace Unity.MP_FPS
         {
             TacticalItemFeedback.Started => "Item action started. Keep still; X cancels.",
             TacticalItemFeedback.Completed => "Item action completed.",
-            TacticalItemFeedback.Cancelled => "Item action cancelled. Nothing consumed.",
+            TacticalItemFeedback.Cancelled => "Cancellation processed. Check inventory.",
             TacticalItemFeedback.Interrupted => "Item action interrupted. Nothing consumed.",
             TacticalItemFeedback.NeedGround => "Aim at clear ground within reach.",
             TacticalItemFeedback.Limit => "Too many active objects. Remove a trap first.",

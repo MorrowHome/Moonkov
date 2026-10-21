@@ -23,7 +23,11 @@ namespace Unity.MP_FPS
         private readonly double[] m_ContactTimes = new double[BountyClashRules.MaxPlayers - 1];
         private readonly ClashSenseContactRpc[] m_IncomingContacts = new ClashSenseContactRpc[BountyClashRules.MaxPlayers - 1];
         private readonly double[] m_IncomingContactTimes = new double[BountyClashRules.MaxPlayers - 1];
-        private uint m_IncomingContactSequence;
+        private uint m_IncomingContactSequence, m_BoostStoppedThrough, m_ViewStoppedThrough;
+        private bool m_ViewRequested, m_BoostRequested;
+        private uint ObservedSenseSequence => System.Math.Max(Snapshot.Sequence, System.Math.Max(Sense.Sequence, m_IncomingContactSequence));
+        private bool CarrierAlive => Approved && HasSnapshot && Snapshot.Connected && Snapshot.IsCarrier &&
+            Snapshot.Life == ClashLife.Alive && Snapshot.Phase == ClashPhase.Active;
         public ClashResult LastFailure;
         public double FailureAt;
 
@@ -33,9 +37,17 @@ namespace Unity.MP_FPS
             if (HasSnapshot && value.Epoch == Snapshot.Epoch && (!value.MatchId.Equals(Snapshot.MatchId) || value.Sequence <= Snapshot.Sequence)) return;
             bool changed = !HasSnapshot || value.Epoch != Snapshot.Epoch || !value.MatchId.Equals(Snapshot.MatchId);
             Snapshot = value; ReceivedAt = now; HasSnapshot = true;
-            if (changed) { PendingRequest = 0; NextRequest = value.AcknowledgedRequest; Sense = default; ClearContacts(); LastFailure = ClashResult.Ok; }
+            if (changed)
+            {
+                PendingRequest = 0; NextRequest = value.AcknowledgedRequest; Sense = default;
+                m_IncomingContactSequence = m_BoostStoppedThrough = m_ViewStoppedThrough = 0;
+                m_ViewRequested = m_BoostRequested = false; ClearContacts(); LastFailure = ClashResult.Ok;
+            }
             if (value.Result != ClashResult.Ok) { LastFailure = value.Result; FailureAt = now; }
-            if (!value.IsCarrier || value.Life != ClashLife.Alive || value.Phase != ClashPhase.Active) ClearContacts();
+            if (!value.Connected || value.Life != ClashLife.Alive || value.Phase != ClashPhase.Active) StopView();
+            else if (!value.IsCarrier)
+            { StopBoost(); m_ViewStoppedThrough = System.Math.Max(m_ViewStoppedThrough, ObservedSenseSequence); Sense.Presence = false; }
+            else if (value.SenseRemaining <= 0) StopBoost();
             if (value.AcknowledgedRequest >= PendingRequest) PendingRequest = 0;
             Participants.Clear();
             foreach (var row in m_Incoming.Values)
@@ -67,33 +79,76 @@ namespace Unity.MP_FPS
         }
         public void Receive(ClashSenseRpc value, double now)
         {
-            if (!Approved || !HasSnapshot || !value.MatchId.Equals(Snapshot.MatchId) || value.Epoch != Snapshot.Epoch || value.Sequence < Sense.Sequence || value.Sequence < Snapshot.Sequence) return;
-            Sense = value; SenseReceivedAt = now;
-            System.Array.Clear(Contacts, 0, Contacts.Length);
-            if (!value.Active || value.ContactCount <= 0 || !Snapshot.IsCarrier || Snapshot.Life != ClashLife.Alive) { ClearContacts(); return; }
+            if (!Approved || !HasSnapshot || !value.MatchId.Equals(Snapshot.MatchId) || value.Epoch != Snapshot.Epoch ||
+                value.Sequence <= Sense.Sequence || value.Sequence < Snapshot.Sequence) return;
+            Sense = value; SenseReceivedAt = now; ClearVisibleContacts();
+            bool presenceAllowed = m_ViewRequested && CarrierAlive && value.Sequence > m_ViewStoppedThrough;
+            if (!presenceAllowed)
+            { Sense.Presence = false; m_ViewStoppedThrough = System.Math.Max(m_ViewStoppedThrough, value.Sequence); }
+            bool boostAllowed = presenceAllowed && m_BoostRequested && Snapshot.SenseRemaining > 0 && value.Active &&
+                value.Remaining > 0 && value.Sequence > m_BoostStoppedThrough && value.ContactCount >= 0 && value.ContactCount <= Contacts.Length;
+            if (!boostAllowed)
+            {
+                m_BoostStoppedThrough = System.Math.Max(m_BoostStoppedThrough, value.Sequence);
+                Sense.Active = false; Sense.SectorMask = 0; Sense.ContactCount = 0;
+                if (m_IncomingContactSequence <= value.Sequence) ClearIncomingContacts();
+                return;
+            }
             if (m_IncomingContactSequence == value.Sequence)
                 for (int i = 0; i < Contacts.Length; i++)
                     if (m_IncomingContacts[i].Count == value.ContactCount) { Contacts[i] = m_IncomingContacts[i]; m_ContactTimes[i] = m_IncomingContactTimes[i]; }
         }
         public void Receive(ClashSenseContactRpc value, double now)
         {
-            if (!Approved || !HasSnapshot || !Snapshot.IsCarrier || Snapshot.Life != ClashLife.Alive ||
-                value.Epoch != Snapshot.Epoch || !value.MatchId.Equals(Snapshot.MatchId) || value.Sequence < Snapshot.Sequence || value.Sequence < Sense.Sequence ||
+            if (!Approved || !HasSnapshot || value.Epoch != Snapshot.Epoch || !value.MatchId.Equals(Snapshot.MatchId) ||
+                value.Sequence < Snapshot.Sequence || value.Sequence < Sense.Sequence ||
                 value.Count < 1 || value.Count > Contacts.Length || value.Index < 0 || value.Index >= value.Count ||
                 !Unity.Mathematics.math.all(Unity.Mathematics.math.isfinite(value.Position)) || !float.IsFinite(value.UncertaintyRadius) ||
                 value.UncertaintyRadius <= 0 || !float.IsFinite(value.ValidFor) || value.ValidFor <= 0) return;
+            if (!m_ViewRequested || !m_BoostRequested || !CarrierAlive || Snapshot.SenseRemaining <= 0)
+            { m_BoostStoppedThrough = System.Math.Max(m_BoostStoppedThrough, value.Sequence); return; }
+            if (value.Sequence <= m_BoostStoppedThrough) return;
             if (value.Sequence > m_IncomingContactSequence)
-            { System.Array.Clear(m_IncomingContacts, 0, m_IncomingContacts.Length); m_IncomingContactSequence = value.Sequence; }
+            { ClearIncomingContacts(); m_IncomingContactSequence = value.Sequence; }
             if (value.Sequence != m_IncomingContactSequence) return;
             m_IncomingContacts[value.Index] = value; m_IncomingContactTimes[value.Index] = now;
             if (value.Sequence == Sense.Sequence && Sense.Active && Sense.ContactCount == value.Count)
             { Contacts[value.Index] = value; m_ContactTimes[value.Index] = now; }
         }
-        public void ClearContacts()
-        { System.Array.Clear(Contacts, 0, Contacts.Length); System.Array.Clear(m_IncomingContacts, 0, m_IncomingContacts.Length); m_IncomingContactSequence = 0; }
+        // Repeated held-input frames do not move stop barriers. Only a stop transition
+        // invalidates output; headers arriving while stopped advance their own barrier.
+        public void SetSenseInput(bool view, bool boost)
+        {
+            boost &= view;
+            if (!view)
+            { if (m_ViewRequested || m_BoostRequested) StopView(); return; }
+            m_ViewRequested = true;
+            if (!boost && m_BoostRequested) StopBoost();
+            m_BoostRequested = boost;
+        }
+        public void StopBoost()
+        {
+            m_BoostRequested = false;
+            m_BoostStoppedThrough = System.Math.Max(m_BoostStoppedThrough, ObservedSenseSequence);
+            Sense.Active = false; Sense.SectorMask = 0; Sense.ContactCount = 0; ClearContacts();
+            // Base-view Presence remains valid until its own header expires or view stops.
+        }
+        public void StopView()
+        {
+            StopBoost(); m_ViewRequested = false;
+            m_ViewStoppedThrough = System.Math.Max(m_ViewStoppedThrough, ObservedSenseSequence);
+            Sense.Presence = false;
+        }
+        private void ClearVisibleContacts()
+        { System.Array.Clear(Contacts, 0, Contacts.Length); System.Array.Clear(m_ContactTimes, 0, m_ContactTimes.Length); }
+        private void ClearIncomingContacts()
+        { System.Array.Clear(m_IncomingContacts, 0, m_IncomingContacts.Length); System.Array.Clear(m_IncomingContactTimes, 0, m_IncomingContactTimes.Length); }
+        // Packet-batch cleanup only. Never reset the sequence high-water mark here.
+        public void ClearContacts() { ClearVisibleContacts(); ClearIncomingContacts(); }
         public bool ContactVisible(int index, double now) => SenseVisible(now) && Contacts[index].Sequence == Sense.Sequence &&
             Contacts[index].Count == Sense.ContactCount && Contacts[index].ValidFor > 0 && now - m_ContactTimes[index] < Mathf.Min(.35f, Contacts[index].ValidFor);
-        public bool SenseVisible(double now) => Approved && Snapshot.IsCarrier && Snapshot.Life == ClashLife.Alive && Snapshot.Phase == ClashPhase.Active && Sense.Active && Sense.Remaining > 0 && now - SenseReceivedAt < .7;
+        public bool SenseVisible(double now) => m_ViewRequested && m_BoostRequested && CarrierAlive && Snapshot.SenseRemaining > 0 &&
+            Sense.Sequence > m_BoostStoppedThrough && Sense.Active && Sense.Remaining > 0 && now - SenseReceivedAt < .7;
         public float Remaining(double now) => Mathf.Max(0, Snapshot.Remaining - (float)(now - ReceivedAt));
         public bool ActionPending(double now) => PendingRequest != 0 && now - RequestedAt < 5;
     }

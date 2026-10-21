@@ -6,6 +6,8 @@
 
 Crytek 的[官方玩家指南](https://www.huntshowdown.com/player-guide/en_US)列出急救包、窒息弹、生命针等道具；[早期官方说明](https://www.huntshowdown.com/news/hunt-showdown-early-access-release-notes)确认炸药、破片、火与三类针剂；[官方现行怪物/状态指南](https://www.huntshowdown.com/player-guide/wiki)说明流血、解毒与窒息反制；[2.3 开发者说明](https://www.huntshowdown.com/news/developer-insight-update-23-changes-priorities)明确铁丝不能隔墙/天花板伤人；[库存改版说明](https://www.huntshowdown.com/news/inventory-slot-rework)包含警报绊雷、弹药箱等组合。
 
+[Crytek官方2.3公告](https://store.steampowered.com/news/posts/?appids=594650&enddate=1743089498&feed=steam_community_announcements)已将普通耐力针从10分钟调整为7分钟，本批据此使用420秒；旧版600秒资料不作为本轮耐力针规则。
+
 以上用于参考品类和玩法关系。以下价格、使用时长、伤害、半径、寿命全部是 Moonkov 自己的版本化适配，不宣称等同于 Hunt 当前平衡。原有 M-40 `medkit` / `med_gel` / `trauma_kit` 承担急救包功能，原 `energy_grenade` 保留；不注册换名字的重复系统。不复制 Hunt 美术或音频。
 
 ## 实际物品与效果
@@ -14,7 +16,7 @@ Crytek 的[官方玩家指南](https://www.huntshowdown.com/player-guide/en_US)�
 |---|---|---|---|
 | medkit | M-40 急救包（已有） | 沿用地图医疗耗时，默认3秒 | 现有分部位恢复40；毒状态阻止治疗 |
 | vitality_shot | 生命针 | 3秒 | 恢复全部可恢复的存活组织至当前合法上限；不复活、不修黑部位、不恢复赏金倒地损失上限；毒状态禁止 |
-| stamina_shot | 耐力针 | 3秒 | 600秒保持现有 Energy/Hydration 至少80，实际解除此两项资源不足造成的冲刺禁用；不补氧、不治伤腿 |
+| stamina_shot | 耐力针 | 3秒 | 420秒防止独立冲刺疲劳；不补饥饿/水分/氧气、不治伤腿 |
 | antidote_shot | 解毒针 | 3秒 | 清除当前毒状态，600秒免疫本组毒云；不是全面伤害无敌 |
 | dynamite_bundle | 炸药包 | 蓄势1秒、释放后4秒引信 | 8m最大650全身爆炸伤害随距衰减；视线保护；破坏可见的铁丝/已布陷阱；窒息区熄引信 |
 | frag_bomb | 破片雷 | 蓄势1秒、释放后4秒引信 | 8m最大320全身爆炸伤害，命中再流血8秒，每秒4；不清除铁丝 |
@@ -25,7 +27,7 @@ Crytek 的[官方玩家指南](https://www.huntshowdown.com/player-guide/en_US)�
 | poison_trip_mine | 毒绊雷 | 布设3秒、1秒启用 | 触发后毒区30秒，毒状态2秒刷新、每秒6且阻止医疗；解毒针免疫，窒息消云消毒 |
 | ammo_box | 电池补给箱 | 布设3秒；交互补给2秒 | 总计400能量、每次最多100；优先补真实现存partial cell，随后新增真实cells，口袋/胸挂容量不足不扣箱；120秒过期 |
 
-耐力针对 Energy/Hydration 的适配基于项目当前没有独立的 Hunt 近战/奔跑耐力池。重复针剂将对应buff刷新为600秒，不叠乘；相同燃烧/流血/毒状态只保留单一状态实例，不因多场重叠无限加倍伤害。毒云接触伤害与短暂中毒合并为 Moonkov 版本；不声称 Hunt 的中毒状态本身持续扣血。火只作用于可行动的活体，不燃烧倒地尸体、不扣永久生命块、不引入额外死亡结算。完整燃尸、赏金复活、猎人特质/近战工具、甲虫等不在本批。
+独立冲刺疲劳：容量100，实际水平奔跑且Sprinting时每秒消耗2（约50秒耗尽）；疲劳后仍能跑，Sprint约为原速度0.8且至少比Walk快5%，铁丝等更强限制优先。停步/不再奔跑1.5秒后每秒恢复20，达到25解除疲劳形成滞回。原地Shift、撞墙无水平位移不耗。以上为Moonkov适配常量，未实现独立近战/战斗耐力池。耐力针420秒防疲劳，解毒针600秒；重复针剂将对应buff刷新为各自时长，不叠乘；相同燃烧/流血/毒状态只保留单一状态实例，不因多场重叠无限加倍伤害。毒云接触伤害与短暂中毒合并为 Moonkov 版本；不声称 Hunt 的中毒状态本身持续扣血。火与其他战术伤害作用于Alive身体，断线但仍Alive的身体照常受伤；Downed/终死不继续燃烧伤害，不燃烧倒地尸体、不扣永久生命块、不引入额外死亡结算。完整燃尸、赏金复活、猎人特质/近战工具、甲虫等不在本批。
 
 ## 玩家流程与服务器约束
 
@@ -50,21 +52,26 @@ Crytek 的[官方玩家指南](https://www.huntshowdown.com/player-guide/en_US)�
 - `Client/TacticalItemsClientSystem.cs`：唯一RPC消费者与owner singleton。
 - `Gameplay/VisualEffects/TacticalItemsFeedback.cs`：程序生成可见投掷/绊线/电池箱/手持物；火/毒/窒息复用项目已有 Unity Particle Pack 的专属资源副本与URP材质，提示音为原创合成、客户端交互查找。Shared Ghost字段/health hooks由主组修改；HUD、输入和翻译由UI组修改。
 
+
+透明粒子由专属 `TacticalItemsTransparentRenderer` 在事件601合成到已有场景颜色，使用当前相机resolved深度硬遮挡及可选soft fade；战术shader只提供独立LightMode，移除普通forward和SilverPrint保护mask，避免重复绘制与背景残圈。全局SilverPrint599、暗视600；受伤/黏液屏幕警示在602，确保仍覆盖场景。没有活跃火/毒/窒息root、组件停用或subject-only相机时不enqueue，不额外请求intermediate/depth；不新建RT，不改全局调色或第三方源材质。该结构已静态审查，最终实景效果仍以下述验证结果为准。
+
 ## 验证记录
 
-- `dotnet run --project Tools/TacticalItemChecks/TacticalItemChecks.csproj`：1112项已通过，含1024份医疗/装备掉落保证项与全部新道具自然获取、11物品真实可持有/使用/单次消耗/重放拒绝、库存空间与partial cell电量守恒。
-- `Assets/Editor/TacticalItemsAuthorityChecks.cs` 已在隔离 ECS World + 本地PhysicsScene实际执行36项通过，覆盖真实RPC、耗时/中断、楼层/墙、抗毒/消火/清毒、铁丝限速、两玩家箱体竞争和实际扫掠投掷/爆炸。
-- 后续新增生命针全可恢复组织/600秒、连续开始取消自救不免伤、同tick外伤中断、真实客户端owner回执检查，45项脚本待新稳定assembly复跑，尚不列为已通过。
-- 主组阶段全项目Unity编译曾通过；之后多组持续写入出现新增跨组编译错误。道具组已经归还Editor，最终代码统一编译尚待执行。
+- `dotnet run --project Tools/TacticalItemChecks/TacticalItemChecks.csproj`：1125项已通过，含1024份医疗/装备掉落保证项与全部新道具自然获取、11物品真实可持有/使用/单次消耗/重放拒绝、库存空间与partial cell电量守恒；另13项独立冲刺疲劳/停止恢复/针前后/帧率独立规则。
+- `Assets/Editor/TacticalItemsAuthorityChecks.cs` 已于UTC 2026-10-21 11:19:50在单个隔离server ECS World + 本地PhysicsScene实际执行64项通过。覆盖真实RPC/耗时/移动受击中断、墙/楼层/投掷扫掠、反毒消火、陷阱、电池箱竞争、生命针全可恢复组织、420秒耐力/600秒解毒、真实移动耗尽/疲劳仍跑/停止恢复、自救开始取消不免伤/同tick外伤中断、固定伤害来源与ID复用/旧epoch/断线Alive身体受伤。Owner回执使用生产Apply的纯内存模型，没有client World。
+- 统一候选已实际编译并能运行Editor helper；当前Assembly-CSharp.dll文件UTC为2026-10-21 12:13:44.775071，Editor程序集为12:14:19.611314。此前Editor归还基线为单一干净WeaponGestureLab、play=false、World.All=0。记录保存在 `Library/BuildValidation/TacticalItems-20261021.json`，区分已观察的权威结果与新跑的纯规则输出；它不是最终全任务验收。
 - 首版引擎预览 `/tmp/moonkov-tactical-vfx-preview.png` 已经人工审查，不通过视觉质量验收；改进版粒子、实体外形和手持模型待实景复核，不能将首图当最终证据。
-- 专属粒子资源需要运行 `TacticalItemsPresentationSetup.CreateResources()` 一次生成到 `Resources/Moonkov`，所有prefab/material/meta必须随任务提交，第三方源资产不改。
-- 真实Transport两客户端、实际场景/UI操作与视觉质量尚未验收，不能将以上规则通过表述成已完成联网可玩验收。
+- 专属粒子资源已由主组运行 `TacticalItemsPresentationSetup.CreateResources()` 生成到 `Resources/Moonkov`，三个prefab的Resources.Load已检查存在；所有新增prefab/material/meta必须随任务提交，第三方源资产不改。UTC11:53的正式月面图仍因蓝色边缘/硬补丁未通过视觉验收；独立调色后透明合成代码已通过静态审查、统一编译与资源重生，并完成首轮小验，不能将weighted native mask或本轮图视为最终效果。
+- UTC12:23:03首轮后合成小验完成，原始5图/report/复现脚本保存于 `Library/BuildValidation/TacticalItems/Composite-20261021/`：火/毒蓝边与硬遮罩块消失；完整遮挡墙中心120000像素对照差异0；顺序独立UI相机非黑像素0；finally恢复单一干净WeaponGestureLab/play=false。CLI外层30秒超时但Unity继续完整执行，不能将外层超时误当根因失败，也未叠加重复运行。协调组已认可首两图可读性，但本轮fixture关闭后新增13条MissingReference（6291–6303），故本轮不能整体放行。根因是手动EditMode Awake未保证成对native OnDestroy；已完成owner销毁自动退订、predicate fake-null、幂等清理与fixture显式finally清理；UTC12:52:42修后复验通过：cleanupDisposed=True、OnDestroy双调幂等、墙差异0/UI颜色0，UI owner观察Console cursor6326后新增错误0（无DestroyedFeedback/ParticleVelocity）。证据保存于 `Library/BuildValidation/TacticalItems/Composite-Lifecycle-20261021/`；旧错误轮次保留，不用新结果覆盖历史。UTC13:39:12完整7图复验已完成（run_script compile322ms/execute18253ms），保存于 `Library/BuildValidation/BountyClash/TacticalMoon-v2/`；capturedComplete/cleanupDisposed均True，finally恢复clean单Lab/play=false；Console since79372→79402新增error0、groundTruth error0（仅1条package Account API超时warning）。协调组已亲读全部7图，火/毒/窒息无旧蓝边或纸片底，近远危险区、铁丝/陷阱/箱体功能可读性门禁通过。后三者仍为程序构型低模，此结论不表示原版精细美术或AAA复刻验收。
+- 用户因Mac内存限制已取消后续联机验收，不再创建多客户端World或额外Editor。实际场景/UI操作与视觉质量仍待单Editor验证；既有隔离规则/物理证据不表述为多端联网验收。
 
 
-最终复跑命令（Editor令牌内，需先统一compile成功）：
+权威检查复现命令（须持有Editor令牌且编译成功；本轮64项已实际通过）：
 
 ```sh
 unity command eval --project-path /Users/morrow/UnityProjects/Moonkov --caller plugin --skill unity-cli --timeout 20000 'TacticalItemsAuthorityChecks.Run(); return "completed";' --format json
 ```
 
-生命针/耐力针的手持物按本地选择可见；本地第三人称可绑定Humanoid右手，第一人称摄像机随使用进度抬举。远端玩家选择持物姿态尚未新增专门同步协议，不将本地持物美术表述为已经完成全远端手部动画验收。
+针剂/其他工具的手持物按本地选择可见；本地第三人称可绑定Humanoid右手，第一人称摄像机随使用进度抬举。远端玩家选择持物姿态尚未新增专门同步协议，不将本地持物美术表述为已经完成全远端手部动画验收。使用项目自有角色素材和原创提示音，没有Hunt原版双手动画/音频，也不声称原版精细美术复刻。
+
+暗视接入后的受影响顺序检查另见 `Library/BuildValidation/BountyClash/DarkSight-World-v2/` 两张叠加图：真实战术火与授权样本云叠加既有damage/mucus材质，世界保持冷黑白，火/橙云与602屏幕警示仍有各自颜色；这些是表现层注入，不是新的伤害或联网验收。

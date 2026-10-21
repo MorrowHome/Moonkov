@@ -1,10 +1,10 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
     <ui:Style src="BountyClash.uss" />
-    <ui:VisualElement name="bountyClashHud" class="clash-root" picking-mode="Ignore">
+    <ui:VisualElement name="bountyClashHud" class="clash-root archive-ui moonkov-controls" picking-mode="Ignore">
         <ui:VisualElement name="clashSenseLayer" class="clash-sense-layer clash-hidden" picking-mode="Ignore" />
         <ui:VisualElement name="clashTeamMarkers" class="clash-marker-layer" picking-mode="Ignore" />
         <ui:VisualElement name="clashBattle" class="clash-battle" picking-mode="Ignore">
-            <ui:VisualElement class="clash-header clash-panel" picking-mode="Ignore">
+            <ui:VisualElement name="clashHeader" class="clash-header" picking-mode="Ignore">
                 <ui:Label name="clashClock" class="clash-clock" picking-mode="Ignore" />
                 <ui:Label name="clashPhase" class="clash-phase" picking-mode="Ignore" />
                 <ui:Label name="clashObjective" class="clash-objective" picking-mode="Ignore" />
@@ -22,30 +22,30 @@
             <ui:Label name="clashAction" class="clash-action clash-panel clash-hidden" picking-mode="Ignore" />
         </ui:VisualElement>
         <ui:VisualElement name="clashLobby" class="clash-lobby clash-hidden">
-            <ui:VisualElement class="clash-lobby-window clash-panel">
+            <ui:VisualElement name="clashLobbyWindow" class="clash-lobby-window">
                 <ui:Label text="BOUNTY CLASH" class="clash-lobby-title" />
                 <ui:Label name="clashLobbyStatus" class="clash-copy" />
                 <ui:ScrollView class="clash-lobby-body" mode="Vertical">
-                    <ui:Label text="The server assigns teams. Share your invite code with your crew; never enter another team's ID." class="clash-copy" />
+                    <ui:Label text="Share the invite code with your teammates to join the same team." class="clash-copy" />
                     <ui:VisualElement class="clash-line">
                         <ui:DropdownField name="clashCapacity" label="TEAM SIZE" choices="1 / SOLO,2 / DUO,3 / TRIO" index="0" />
-                        <ui:Button name="clashCreate" text="CREATE TEAM" />
-                        <ui:Button name="clashResize" text="APPLY SIZE" />
+                        <ui:Button name="clashCreate" text="CREATE TEAM"  class="terminal-button" />
+                        <ui:Button name="clashResize" text="APPLY SIZE"  class="terminal-button" />
                     </ui:VisualElement>
-                    <ui:VisualElement class="clash-line"><ui:TextField name="clashInviteInput" label="INVITE CODE" max-length="10" /><ui:Button name="clashJoin" text="JOIN TEAM" /></ui:VisualElement>
-                    <ui:VisualElement class="clash-line"><ui:Label name="clashInvite" class="clash-copy" /><ui:Button name="clashCopy" text="COPY" /></ui:VisualElement>
+                    <ui:VisualElement class="clash-line"><ui:TextField name="clashInviteInput" label="INVITE CODE" max-length="10" /><ui:Button name="clashJoin" text="JOIN TEAM"  class="terminal-button" /></ui:VisualElement>
+                    <ui:VisualElement class="clash-line"><ui:Label name="clashInvite" class="clash-copy" /><ui:Button name="clashCopy" text="COPY"  class="terminal-button" /></ui:VisualElement>
                     <ui:Label name="clashRosterHeading" class="clash-heading" />
                     <ui:VisualElement name="clashLobbyRows" class="clash-roster" />
                     <ui:Label name="clashLobbyError" class="clash-error" />
-                    <ui:VisualElement class="clash-line"><ui:Button name="clashReady" text="READY" class="clash-ready" /><ui:Button name="clashLeave" text="LEAVE TEAM" /><ui:Button name="clashLobbyReturn" text="RETURN TO SHIP" /></ui:VisualElement>
                 </ui:ScrollView>
+                    <ui:VisualElement class="clash-line clash-lobby-actions"><ui:Button name="clashReady" text="READY" class="clash-ready terminal-primary" /><ui:Button name="clashLeave" text="LEAVE TEAM"  class="terminal-button" /><ui:Button name="clashLobbyReturn" text="RETURN TO SHIP"  class="terminal-button" /></ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
-        <ui:VisualElement name="clashFinished" class="clash-finished clash-panel clash-hidden">
+        <ui:VisualElement name="clashFinished" class="clash-finished clash-hidden">
             <ui:Label name="clashFinishTitle" class="clash-lobby-title" />
             <ui:Label name="clashFinishCopy" class="clash-copy" />
-            <ui:Button name="clashNextRound" text="PREPARE NEXT ROUND" />
-            <ui:Button name="clashFinishReturn" text="RETURN TO SHIP" />
+            <ui:Button name="clashNextRound" class="terminal-primary" text="PREPARE NEXT ROUND" />
+            <ui:Button name="clashFinishReturn" text="RETURN TO SHIP"  class="terminal-button" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

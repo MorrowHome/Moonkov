@@ -58,8 +58,8 @@ namespace Unity.MP_FPS
             internal TacticalPass()
             {
                 // SilverPrint is 599; URP post-process completes before this event.
-                // Tactical alpha draws at 600, followed by damage/mucus warnings at 601.
-                renderPassEvent = RenderPassEvent.AfterRenderingPostProcessing;
+                // Owner dark sight is 600; tactical alpha is 601; screen warnings are 602.
+                renderPassEvent = (RenderPassEvent)601;
                 requiresIntermediateTexture = true;
                 ConfigureInput(ScriptableRenderPassInput.Depth);
             }

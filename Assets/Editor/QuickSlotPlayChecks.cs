@@ -4,6 +4,8 @@ using System.IO;
 using System.Reflection;
 using Newtonsoft.Json;
 using Unity.Entities;
+using Unity.Collections;
+using Unity.NetCode;
 using Unity.MP_FPS;
 using Unity.MP_FPS.Client;
 using Unity.MP_FPS.DollSinger;
@@ -24,9 +26,15 @@ public static class QuickSlotPlayChecks
     private static RaidHUD s_Hud;
     private static QuickSlotBindings s_Previous;
     private static IQuickSlotStore s_PreviousValidationStore;
+    private static string s_PreviousValidationScope;
     private static bool s_MemoryInstalled;
     private static Keyboard s_Keyboard;
     private static Mouse s_Mouse;
+    private static DollSingerInput s_FixtureInput;
+    private static World s_IsolatedWorld;
+    private static Func<int, int> s_PreviousSelection;
+    private static Func<bool, bool> s_PreviousPrimary;
+    private static Func<bool> s_PreviousDarkSight;
     private static double s_ReleaseAt;
     private static int s_PressedFrame;
     private static string s_Evidence;
@@ -40,6 +48,7 @@ public static class QuickSlotPlayChecks
     {
         get
         {
+            if (s_FixtureInput) return s_FixtureInput;
             foreach (var view in Object.FindObjectsByType<DollSingerNetworkPresentation>(FindObjectsSortMode.None))
                 if (view.OwnedInput != null) return view.OwnedInput;
             throw new InvalidOperationException("No live owned DollSinger input. Use the actual Raid client.");
@@ -57,20 +66,46 @@ public static class QuickSlotPlayChecks
                 throw new InvalidOperationException("Profile slots already initialized. Restart the isolated Play fixture and install memory preferences before opening its profile.");
         }
         s_PreviousValidationStore = QuickSlotPreferenceStore.ValidationStore;
+        s_PreviousValidationScope = QuickSlotPreferenceStore.ValidationScope;
+        QuickSlotPreferenceStore.ValidationScope = "quickslot-validation/" + Guid.NewGuid().ToString("N");
         QuickSlotPreferenceStore.ValidationStore = new MemoryStore(); s_MemoryInstalled = true;
         EditorApplication.playModeStateChanged -= PlayChanged;
         EditorApplication.playModeStateChanged += PlayChanged;
     }
-    public static string Begin()
+    public static string Begin() => BeginCore(Object.FindAnyObjectByType<RaidHUD>(), null, null);
+    public static string BeginIsolated(RaidHUD hud, DollSingerInput input)
+    {
+        if (!hud || !input) throw new ArgumentNullException("The isolated HUD and real input component are required.");
+        var world = Read<World>(hud, "m_World");
+        RequireSingleDisconnectedWorld(world);
+        return BeginCore(hud, input, world);
+    }
+    private static void RequireSingleDisconnectedWorld(World world)
+    {
+        if (world == null || !world.IsCreated || !world.IsClient()) throw new InvalidOperationException("A single lightweight ClientWorld is required.");
+        int count = 0;
+        foreach (var candidate in World.All)
+            if (candidate.IsCreated && (candidate.IsClient() || candidate.IsServer())) count++;
+        using var connections = world.EntityManager.CreateEntityQuery(typeof(NetworkStreamConnection));
+        if (count != 1 || !connections.IsEmptyIgnoreFilter) throw new InvalidOperationException("Isolated UI checks require one ClientWorld, no server World and no transport connections.");
+    }
+    private static string BeginCore(RaidHUD hud, DollSingerInput fixtureInput, World isolatedWorld)
     {
         if (!EditorApplication.isPlaying) throw new InvalidOperationException("Enter a live temporary-profile Raid first.");
         if (!s_MemoryInstalled) throw new InvalidOperationException("Call InstallMemoryPreferences in the Play menu before loading the fixture profile/HUD.");
         if (s_Hud != null) throw new InvalidOperationException("An inspection is already running. End it before starting another.");
-        s_Hud = Object.FindAnyObjectByType<RaidHUD>();
-        if (!s_Hud || string.IsNullOrEmpty(PlayerProfileClient.LocalPreferenceScope)) throw new InvalidOperationException("Live RaidHUD and validated/temporary offline scope required.");
+        s_Hud = hud;
+        string scope = string.IsNullOrEmpty(QuickSlotPreferenceStore.ValidationScope) ? PlayerProfileClient.LocalPreferenceScope : QuickSlotPreferenceStore.ValidationScope;
+        if (!s_Hud || string.IsNullOrEmpty(scope)) throw new InvalidOperationException("The fixture HUD and in-memory validation scope are required.");
         s_Previous = Bindings;
+        s_FixtureInput = fixtureInput; s_IsolatedWorld = isolatedWorld;
+        if (s_FixtureInput)
+        {
+            s_PreviousSelection = s_FixtureInput.QuickSlotSelection; s_PreviousPrimary = s_FixtureInput.QuickSlotPrimaryUse;
+            s_PreviousDarkSight = s_FixtureInput.DarkSightMode; RaidQuickSlotInput.Bind(s_FixtureInput);
+        }
         Write(s_Hud, "m_QuickBindings", new QuickSlotBindings(new MemoryStore()));
-        Bindings.UseProfile(PlayerProfileClient.LocalPreferenceScope); Bindings.InitializeWeapons(Graph);
+        Bindings.UseProfile(scope); Bindings.InitializeWeapons(Graph);
         s_Keyboard = InputSystem.AddDevice<Keyboard>("QuickSlotCheckKeyboard");
         s_Mouse = InputSystem.AddDevice<Mouse>("QuickSlotCheckMouse");
         s_Evidence = Path.Combine(Path.GetTempPath(), "Moonkov-QuickSlots-" + Guid.NewGuid().ToString("N") + ".jsonl");
@@ -82,6 +117,12 @@ public static class QuickSlotPlayChecks
     private static void Ensure() { if (!s_Hud) throw new InvalidOperationException("Call QuickSlotPlayChecks.Begin first."); }
     private static void EnsurePrimaryIsIsolated()
     {
+        if (s_IsolatedWorld != null)
+        {
+            RequireSingleDisconnectedWorld(s_IsolatedWorld);
+            if (Read<World>(s_Hud, "m_World") != s_IsolatedWorld) throw new InvalidOperationException("The fixture World changed.");
+            return;
+        }
         if (!PlayerProfileClient.IsOffline) throw new InvalidOperationException("Primary-use tests require the isolated offline profile; no real accounts.");
         string file = Path.GetFullPath(PlayerProfileClient.OfflineStore.FilePath);
         string temporary = Path.GetFullPath(Path.GetTempPath()).TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar;
@@ -104,17 +145,20 @@ public static class QuickSlotPlayChecks
     {
         Ensure(); if (number < 1 || number > 9) throw new ArgumentOutOfRangeException(nameof(number));
         var tile = ItemTile(itemId);
-        using (var enter = PointerEnterEvent.GetPooled()) tile.SendEvent(enter);
-        using (var evt = KeyDownEvent.GetPooled('\0', KeyCode.Alpha1 + number - 1, EventModifiers.None)) tile.SendEvent(evt);
+        var hover = new Event { type = EventType.MouseMove, mousePosition = tile.worldBound.center };
+        using (var pointer = PointerMoveEvent.GetPooled(hover))
+        using (var enter = PointerEnterEvent.GetPooled((IPointerEvent)pointer))
+        { enter.target = tile; tile.SendEvent(enter); }
+        using (var evt = KeyDownEvent.GetPooled('\0', KeyCode.Alpha1 + number - 1, EventModifiers.None)) { evt.target = tile; tile.SendEvent(evt); }
         if (Bindings[number - 1] != itemId) throw new InvalidOperationException("Real inventory hover + key callback refused binding. Check life/busy/UI guards.");
         Record("bind-key-" + number);
     }
     private static void Pointer(VisualElement target, EventType type, Vector2 position, int button)
     {
         var evt = new Event { type = type, mousePosition = position, button = button, clickCount = 1 };
-        if (type == EventType.MouseDown) { using var down = PointerDownEvent.GetPooled(evt); target.SendEvent(down); }
-        else if (type == EventType.MouseUp) { using var up = PointerUpEvent.GetPooled(evt); target.SendEvent(up); }
-        else { using var move = PointerMoveEvent.GetPooled(evt); target.SendEvent(move); }
+        if (type == EventType.MouseDown) { using var down = PointerDownEvent.GetPooled(evt); down.target = target; target.SendEvent(down); }
+        else if (type == EventType.MouseUp) { using var up = PointerUpEvent.GetPooled(evt); up.target = target; target.SendEvent(up); }
+        else { using var move = PointerMoveEvent.GetPooled(evt); move.target = target; target.SendEvent(move); }
     }
     public static void BindViaDrag(string itemId, int number)
     {
@@ -130,6 +174,7 @@ public static class QuickSlotPlayChecks
     {
         Ensure(); var slot = Root.Q("quickSlot" + number);
         Pointer(slot, EventType.MouseDown, slot.worldBound.center, 1);
+        Pointer(slot, EventType.MouseUp, slot.worldBound.center, 1);
         if (Bindings[number - 1] != null) throw new InvalidOperationException("Real right-click clear callback refused.");
         Record("clear-right-" + number);
     }
@@ -185,6 +230,28 @@ public static class QuickSlotPlayChecks
         });
         File.AppendAllText(s_Evidence, json + Environment.NewLine); Debug.Log("QuickSlotPlayCheck " + json); return json;
     }
+    public static void ExpectUseIntent(string itemId, int expectedCount = 1)
+    {
+        Ensure(); RequireSingleDisconnectedWorld(s_IsolatedWorld);
+        var em = s_IsolatedWorld.EntityManager; int total = 0, matching = 0;
+        void Count<T>(Func<T, string> id, Func<T, bool> isUse = null) where T : unmanaged, IComponentData
+        {
+            using var query = em.CreateEntityQuery(typeof(T), typeof(SendRpcCommandRequest));
+            using var entities = query.ToEntityArray(Allocator.Temp);
+            foreach (var entity in entities)
+            {
+                var request = em.GetComponentData<T>(entity);
+                if (isUse != null && !isUse(request)) continue;
+                total++; if (id(request) == itemId) matching++;
+            }
+        }
+        Count<RaidTacticalItemActionRpc>(x => x.ItemId.ToString(), x => x.Action == TacticalItemAction.Use);
+        Count<RaidMedicalUseRpc>(x => x.ItemId.ToString());
+        Count<RaidConsumableUseRpc>(x => x.ItemId.ToString());
+        Count<RaidGrenadeThrowRpc>(x => x.ItemId.ToString());
+        if (total != expectedCount || matching != expectedCount) throw new InvalidOperationException("Unexpected item use intent count or identity: " + matching + "/" + total);
+        Record("queued-use-" + matching);
+    }
     public static void ExpectWeaponSuppressed()
     {
         Ensure(); var input = Input;
@@ -200,11 +267,19 @@ public static class QuickSlotPlayChecks
     {
         EditorApplication.update -= Update; EditorApplication.playModeStateChanged -= PlayChanged;
         if (s_Hud && s_Previous != null) { Write(s_Hud, "m_QuickBindings", s_Previous); Write(s_Hud, "m_QuickWasTool", false); }
+        if (s_FixtureInput)
+        {
+            RaidQuickSlotInput.Unbind(s_FixtureInput);
+            s_FixtureInput.QuickSlotSelection = s_PreviousSelection; s_FixtureInput.QuickSlotPrimaryUse = s_PreviousPrimary;
+            s_FixtureInput.DarkSightMode = s_PreviousDarkSight;
+        }
+        s_FixtureInput = null; s_IsolatedWorld = null; s_PreviousSelection = null; s_PreviousPrimary = null; s_PreviousDarkSight = null;
         if (s_Keyboard != null && s_Keyboard.added) InputSystem.RemoveDevice(s_Keyboard);
         if (s_Mouse != null && s_Mouse.added) InputSystem.RemoveDevice(s_Mouse);
         TacticalItemsFeedback.SetSelectedItem(null); TacticalItemsFeedback.SetPresentationBlocked(true);
-        if (s_MemoryInstalled) QuickSlotPreferenceStore.ValidationStore = s_PreviousValidationStore;
-        s_MemoryInstalled = false; s_PreviousValidationStore = null;
+        if (s_MemoryInstalled)
+        { QuickSlotPreferenceStore.ValidationStore = s_PreviousValidationStore; QuickSlotPreferenceStore.ValidationScope = s_PreviousValidationScope; }
+        s_MemoryInstalled = false; s_PreviousValidationStore = null; s_PreviousValidationScope = null;
         s_Hud = null; s_Previous = null; s_Keyboard = null; s_Mouse = null; s_ReleaseAt = 0;
     }
     private sealed class MemoryStore : IQuickSlotStore

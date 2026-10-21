@@ -9,6 +9,7 @@ using UnityEngine.UIElements;
 namespace Unity.MP_FPS
 {
     [RequireComponent(typeof(UIDocument))]
+    [DefaultExecutionOrder(150)]
     public sealed partial class RaidHUD : MonoBehaviour
     {
         private World m_World;
@@ -66,7 +67,7 @@ namespace Unity.MP_FPS
         private static RaidHUD s_Active;
         public static bool InventoryOpen => s_Active != null && (s_Active.m_InventoryVisible || s_Active.m_MissionDetailsVisible);
         public static bool PointerRequested => InventoryOpen || (s_Active != null && (s_Active.m_WasSettled || s_Active.m_ClashLobbyPointer));
-        public static bool TimedActionInputActive => s_Active != null && s_Active.TimedActionActive;
+        public static bool TimedActionInputActive => s_Active != null && (s_Active.TimedActionActive || s_Active.QuickTacticalActionPending);
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetPresentation() => s_Active = null;
         public static bool CloseInventory()

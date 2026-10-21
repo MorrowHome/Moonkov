@@ -3790,6 +3790,710 @@ MonoBehaviour:
       claim them before deploying again.
     m_Metadata:
       m_Items: []
+  - m_Id: 5104935975772160
+    m_Key: BOUNTY CLASH
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104935988355072
+    m_Key: CHOOSE GAME MODE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104935988355073
+    m_Key: MODE / BOUNTY CLASH
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104935988355074
+    m_Key: MODE / EXPEDITION
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104935988355075
+    m_Key: Choose the rules first, then host or join a server. The server confirms
+      the mode and team roster.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104935988355076
+    m_Key: Explore, recover supplies and return to your stash. Original expedition
+      rules.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104935988355077
+    m_Key: "15 minutes. One target. One bounty. Teams of 1\u20133; at least two teams
+      to begin."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104935988355078
+    m_Key: Bounty Clash needs online accounts and at least two teams. Single player
+      remains available in Expedition.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104935988355079
+    m_Key: A server with the same mode and rules version is required. Your team is
+      assigned by the server.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104935988355080
+    m_Key: Online mode selected. Choose Expedition for single player.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104935988355081
+    m_Key: Choose the game mode, then choose how to connect.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104935988355082
+    m_Key: Online Bounty Clash / waiting for server confirmation. At least two teams
+      must be ready.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104935988355083
+    m_Key: Original expedition rules. Connection method does not change the game
+      mode.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104935988355084
+    m_Key: Bounty Clash requires online accounts and at least two teams. Choose Expedition
+      for single player.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104935988355085
+    m_Key: The server assigns teams. Share your invite code with your crew; never
+      enter another team's ID.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104935988355086
+    m_Key: TEAM SIZE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104935988355087
+    m_Key: CREATE TEAM
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104935988355088
+    m_Key: APPLY SIZE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104935996743680
+    m_Key: INVITE CODE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104935996743681
+    m_Key: JOIN TEAM
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104935996743682
+    m_Key: COPY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104935996743683
+    m_Key: LEAVE TEAM
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104935996743684
+    m_Key: YOUR TEAM
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104935996743685
+    m_Key: PREPARE NEXT ROUND
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104935996743686
+    m_Key: Waiting for server mode and roster confirmation...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104935996743687
+    m_Key: Create a team or enter a crew invite code.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104935996743688
+    m_Key: TEAM {0} / INVITE {1}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104935996743689
+    m_Key: ALL TEAMS READY / STARTING IN {0}s
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104935996743690
+    m_Key: SERVER IS DEPLOYING THE LOCKED ROSTER...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000937984
+    m_Key: SERVER CONFIRMED / BOUNTY CLASH / RULES v{0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000937985
+    m_Key: SERVER ROSTER / {0}/12 PLAYERS / {1}/4 TEAMS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000937986
+    m_Key: '{0} / TEAM {1} / {2}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000937987
+    m_Key: NOT READY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000937988
+    m_Key: RECONNECT / {0:0}s
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000937989
+    m_Key: + {0} / DOWNED / {1:0} m
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000937990
+    m_Key: Waiting for server confirmation...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000937991
+    m_Key: BOUNTY EXTRACTED / FINAL COUNTDOWN
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000937992
+    m_Key: BOUNTY CLASH / SHARED MATCH TIMER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000937993
+    m_Key: DEAD TARGET / APPROACH AND BANISH
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000937994
+    m_Key: BANISHING / ALL TEAMS CAN CONTEST
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000937995
+    m_Key: ONE BOUNTY / RECOVER IT AND EXTRACT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000937996
+    m_Key: YOU CARRY THE UNIQUE BOUNTY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000937997
+    m_Key: YOUR TEAM CARRIES THE BOUNTY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000937998
+    m_Key: RIVAL CARRIER / APPROXIMATE AREA ON MAP
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000937999
+    m_Key: BOUNTY ON THE GROUND
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938000
+    m_Key: BOUNTY HAS LEFT THE ARENA
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938001
+    m_Key: BOUNTY NOT YET AVAILABLE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938002
+    m_Key: 'EXIT A / {0}
+
+      EXIT B / {1}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938003
+    m_Key: DOWNED / WAIT FOR A TEAMMATE / EQUIPMENT RETAINED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938004
+    m_Key: OUTSIDE ARENA / RETURN WITHIN {0:0}s
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938005
+    m_Key: '[V] DARK SIGHT / [RMB] BOOST
+
+      125 m CLOUDS / {0:0.0}s LEFT
+
+      75
+      m INSTINCT WHILE IN DARK SIGHT'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938006
+    m_Key: '[V] DARK SIGHT
+
+      CLAIM THE BOUNTY TO GAIN INSTINCT AND BOOST'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938007
+    m_Key: MATCH TIME EXPIRED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938008
+    m_Key: DEPLOYMENT ENDED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938009
+    m_Key: Saving the authoritative settlement...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938010
+    m_Key: Your deployment is over. The shared match is still running; no redeployment
+      into this roster.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938011
+    m_Key: The match has ended. Inventory and bounty rewards follow the server settlement.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938012
+    m_Key: TIMED OUT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938013
+    m_Key: TEAM OR SERVER IS FULL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938014
+    m_Key: REQUEST NOT PERMITTED / CHECK INVITE OR TEAM LEADER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938015
+    m_Key: ACTION ALREADY IN PROGRESS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938016
+    m_Key: GET CLOSER AND CLEAR THE LINE OF SIGHT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938017
+    m_Key: MATCH STATE CHANGED / WAIT FOR SERVER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938018
+    m_Key: REQUEST REJECTED / REFRESH SERVER STATE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938019
+    m_Key: PAUSED {0} / ENEMY TEAM
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938020
+    m_Key: PAUSED {0} / TEAMMATE DOWNED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938021
+    m_Key: ENTER ZONE / HOLD 30s
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938022
+    m_Key: '[F] HOLD TO REVIVE / {0:0}%'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938023
+    m_Key: '[F] HOLD TO REVIVE TEAMMATE'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938024
+    m_Key: '[F] BANISH DEAD TARGET'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938025
+    m_Key: '[F] PICK UP THE UNIQUE BOUNTY'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938026
+    m_Key: Equip weapons first. Keep usable supplies in your pockets or rig.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938027
+    m_Key: Binding saved.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938028
+    m_Key: Binding cleared.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938029
+    m_Key: Item unavailable. Equip it or bind another item.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938030
+    m_Key: Empty slot. Bind an item in your inventory.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938031
+    m_Key: Hover an item in your inventory and press this number, or drag it here.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938032
+    m_Key: Right click to clear binding.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938033
+    m_Key: WEAPON SELECTED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938034
+    m_Key: LEFT CLICK TO USE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938035
+    m_Key: "Hover an item + 1\u20139 / Drag to bind / Right click to clear"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938036
+    m_Key: "1\u20139 SELECT / LEFT CLICK USE SELECTED ITEM"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938037
+    m_Key: Item is cooling down.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938038
+    m_Key: Cancellation requested.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938039
+    m_Key: Use requested. Waiting for server.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938040
+    m_Key: Item use unavailable while inactive or downed.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938041
+    m_Key: Action in progress. X cancels timed actions.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938042
+    m_Key: Item action started. Keep still; X cancels.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938043
+    m_Key: Item action completed.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938044
+    m_Key: Item action cancelled. Nothing consumed.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938045
+    m_Key: Item action interrupted. Nothing consumed.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938046
+    m_Key: Aim at clear ground within reach.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938047
+    m_Key: Too many active objects. Remove a trap first.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938048
+    m_Key: No room for supplies.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938049
+    m_Key: No wound needs treatment.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938050
+    m_Key: No usable target within reach.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938051
+    m_Key: Inventory changed. Try again.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938052
+    m_Key: Poison exposure detected.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938053
+    m_Key: Item action rejected. Check access and placement.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938054
+    m_Key: "USING ITEM / {0:0.0}s \xB7 X CANCEL"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938055
+    m_Key: '[E] RESUPPLY FROM AMMO BOX'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938056
+    m_Key: '[E] DISARM TRAP'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938057
+    m_Key: '[E] STOP BURNING / BLEEDING'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938058
+    m_Key: Vitality shot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938059
+    m_Key: Stamina shot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938060
+    m_Key: Antidote shot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938061
+    m_Key: Dynamite bundle
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938062
+    m_Key: Frag bomb
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938063
+    m_Key: Fire bomb
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938064
+    m_Key: Choke bomb
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938065
+    m_Key: Alert trip mine
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938066
+    m_Key: Concertina trip mine
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938067
+    m_Key: Poison trip mine
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938068
+    m_Key: Ammo box
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938069
+    m_Key: Server mode or rules version does not match your selection.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938070
+    m_Key: Server did not confirm Bounty Clash rules. Check the server mode and version.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938071
+    m_Key: 1 / SOLO
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938072
+    m_Key: 2 / DUO
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938073
+    m_Key: 3 / TRIO
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936000938074
+    m_Key: 'CARRIED / {0} supplies
+
+      Dust {1}   Alloy {2}   Cells {3}
+
+      ENERGY
+      {4} / READY {5}
+
+      MEDICAL / {6}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936005132288
+    m_Key: Inject for 3 seconds to fill surviving body parts to their current recoverable
+      health limit. Does not revive destroyed parts or restore health lost to Bounty
+      Clash downs.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936005132289
+    m_Key: Inject for 3 seconds to clear poison and gain 600 seconds of immunity
+      to tactical poison clouds. Does not prevent other damage.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936005132290
+    m_Key: 'Select, then left click to throw after a 1-second action. Explodes after
+      a 4-second fuse: up to 650 damage within 8 metres. Cover blocks the blast.
+      Clears concertina wire; can kill teammates and the thrower.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936005132291
+    m_Key: Select, then left click to throw after a 1-second action. A 4-second fuse
+      triggers up to 320 damage within 8 metres and 8 seconds of bleeding. Cover
+      blocks the blast. Does not clear concertina wire.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936005132292
+    m_Key: Throw to create a 3-metre fire zone for 30 seconds. Deals 8 damage per
+      second while exposed. Fire affects enemies, teammates and the thrower.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936005132293
+    m_Key: Throw to create a 4-metre choke cloud for 20 seconds. Extinguishes fire,
+      clears tactical poison and causes coughing.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936005132294
+    m_Key: Place on nearby clear ground with a 3-second action. The trip line alerts
+      when any player crosses, including teammates and the owner. Aim at it and hold
+      the interaction to disarm.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936005132295
+    m_Key: Place on nearby clear ground with a 3-second action. Any player crossing
+      the line releases concertina wire, causing damage, bleeding and slowed movement.
+      Dynamite can clear wire.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936005132296
+    m_Key: Place on nearby clear ground with a 3-second action. Any player crossing
+      the line releases poison. Choke clouds clear tactical poison; antidote protects
+      against it.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936005132297
+    m_Key: Place with a 3-second action. Stores 400 energy; each 2-second resupply
+      transfers up to 100, subject to inventory space. Expires after 120 seconds.
+      Does not grant a free weapon reload.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936005132298
+    m_Key: RIVAL PLAYER / SERVER CONFIRMED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936005132299
+    m_Key: SERVER IS DEPLOYING THE LOCKED ROSTER / {0}s
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936005132300
+    m_Key: DEPLOYMENT CANCELLED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936005132301
+    m_Key: Deployment cancelled. Original loadouts returned by the server.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936005132302
+    m_Key: Deployment cancelled. Waiting for the server to return original loadouts.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936005132303
+    m_Key: Fragmentation bomb
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936005132304
+    m_Key: Energy supply box
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936005132305
+    m_Key: "SPRINT {0:0}% / 1\u20139 SELECT"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936005132306
+    m_Key: STAMINA BOOST {0:0}s
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936005132307
+    m_Key: ANTIDOTE {0:0}s
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936005132308
+    m_Key: DARK SIGHT / RELEASE V TO USE ITEMS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936005132309
+    m_Key: SPRINT {0:0}% / FATIGUED / REST TO RECOVER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5104936005132310
+    m_Key: Inject for 3 seconds to prevent sprint fatigue for 420 seconds. Does not
+      refill hunger, thirst or oxygen, or heal injured legs.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5113948029313024
+    m_Key: Cancellation processed. Check inventory.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5129193154142208
+    m_Key: '[V] DARK SIGHT / [RMB] BOOST / {0:0.0}s'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5129193187696640
+    m_Key: '[V] DARK SIGHT'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5129193187696641
+    m_Key: 125 m CLOUDS / 75 m INSTINCT WHILE IN DARK SIGHT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5134902088425472
+    m_Key: Choose a game mode, then create or join a room.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5134902096814080
+    m_Key: Invite your teammates to a room, then get ready together.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5134902096814081
+    m_Key: Share the invite code with your teammates to join the same team.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5134902096814082
+    m_Key: WAITING FOR TEAMS TO GET READY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5134902096814083
+    m_Key: PLAYERS / {0}/12 / TEAMS / {1}/4
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5134902096814084
+    m_Key: ENTERING MATCH / {0}s
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5134902096814085
+    m_Key: Saving results...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5134902096814086
+    m_Key: The match has ended. Check your inventory before preparing the next round.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5134902096814087
+    m_Key: Connecting to the match...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5134902096814088
+    m_Key: Waiting for confirmation...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5134902096814089
+    m_Key: RIVAL PLAYER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5134902096814090
+    m_Key: Deployment cancelled. Your original equipment has been returned.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5134902096814091
+    m_Key: Deployment cancelled. Returning your original equipment...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5136885956468736
+    m_Key: ALIVE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5136885960663040
+    m_Key: DOWNED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5136885960663041
+    m_Key: EXTRACTED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5136885960663042
+    m_Key: WAITING
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5136885960663043
+    m_Key: DEAD
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -1,9 +1,9 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
     <ui:Style src="BountyModePicker.uss" />
-    <ui:VisualElement name="bountyModePicker" class="bounty-mode-modal bounty-hidden">
-        <ui:VisualElement class="bounty-mode-window">
+    <ui:VisualElement name="bountyModePicker" class="bounty-mode-modal bounty-hidden archive-ui moonkov-controls">
+        <ui:VisualElement name="modeWindow" class="bounty-mode-window">
             <ui:Label text="CHOOSE GAME MODE" class="bounty-mode-title" />
-            <ui:Label text="Choose the rules first, then host or join a server. The server confirms the mode and team roster." class="bounty-mode-copy" />
+            <ui:Label text="Choose a game mode, then create or join a room." class="bounty-mode-copy" />
             <ui:Button name="modeExpedition" class="bounty-mode-card">
                 <ui:Label text="LUNAR EXPEDITION" class="bounty-mode-card-title" picking-mode="Ignore" />
                 <ui:Label text="Explore, recover supplies and return to your stash. Original expedition rules." class="bounty-mode-card-copy" picking-mode="Ignore" />
@@ -13,7 +13,7 @@
                 <ui:Label text="15 minutes. One target. One bounty. Teams of 1–3; at least two teams to begin." class="bounty-mode-card-copy" picking-mode="Ignore" />
             </ui:Button>
             <ui:Label name="modeAvailability" class="bounty-mode-message" />
-            <ui:Button name="modeClose" text="BACK" class="bounty-mode-close" />
+            <ui:Button name="modeClose" text="BACK" class="bounty-mode-close terminal-button" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
