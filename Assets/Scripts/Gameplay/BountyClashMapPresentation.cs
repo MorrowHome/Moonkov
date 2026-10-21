@@ -77,7 +77,8 @@ namespace Unity.MP_FPS
             skin.SetColor("_BaseColor",Color.white);skin.SetTexture("_BaseMap",m_Tissue);
             skin.SetFloat("_Smoothness",.16f);skin.SetFloat("_Metallic",0);
             PoseCollapsedLimbs(corpse,floor);
-            foreach(var renderer in corpse.GetComponentsInChildren<Renderer>())renderer.shadowCastingMode=ShadowCastingMode.Off;
+            foreach(var renderer in corpse.GetComponentsInChildren<Renderer>())
+            {renderer.shadowCastingMode=ShadowCastingMode.On;renderer.receiveShadows=true;}
             var lobes=new[]{new Vector3(-.32f,.27f,.06f),new Vector3(.22f,.22f,-.21f),new Vector3(.05f,.34f,.28f)};
             for(int i=0;i<lobes.Length;i++)
             {
@@ -99,7 +100,7 @@ namespace Unity.MP_FPS
             foreach(var filter in corpse.GetComponentsInChildren<MeshFilter>())
             {
                 if(filter.sharedMesh.name!="Branched creature surface") {Roughen(filter.gameObject,.035f);continue;}
-                var mesh=filter.sharedMesh;var vertices=mesh.vertices;var uv=new Vector2[vertices.Length];
+                var mesh=filter.sharedMesh;var vertices=mesh.vertices;var uv=new Vector2[vertices.Length];var normals=new Vector3[vertices.Length];
                 for(int arm=0;arm<6;arm++)
                 {
                     var radial=Quaternion.Euler(0,arm*60+turns[arm],0)*Vector3.forward;var side=Vector3.Cross(Vector3.up,radial);
@@ -115,11 +116,17 @@ namespace Unity.MP_FPS
                         {
                             float angle=s*Mathf.PI*2/12;int index=(arm*BranchCreatureRig.Samples+j)*13+s;
                             vertices[index]=filter.transform.InverseTransformPoint(p+(cross*Mathf.Cos(angle)+Vector3.up*Mathf.Sin(angle)*.72f)*radius);
+                            normals[index]=filter.transform.InverseTransformDirection((cross*Mathf.Cos(angle)+Vector3.up*Mathf.Sin(angle)/.72f).normalized);
                             uv[index]=new Vector2(s/12f,t*2.3f+arm*.31f);
                         }
                     }
                 }
-                mesh.vertices=vertices;mesh.uv=uv;mesh.RecalculateNormals();mesh.RecalculateBounds();
+                // Supply ellipse normals and orient this private collapsed mesh outward.
+                mesh.vertices=vertices;mesh.uv=uv;mesh.normals=normals;mesh.RecalculateBounds();
+                var triangles=mesh.triangles;
+                for(int i=0;i<triangles.Length;i+=3)
+                {int swap=triangles[i+1];triangles[i+1]=triangles[i+2];triangles[i+2]=swap;}
+                mesh.triangles=triangles;
             }
         }
         private void Roughen(GameObject go,float strength)
