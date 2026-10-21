@@ -1,0 +1,121 @@
+{
+  "package": "Moonkov R22 narrow display delta for completed R21 DOT00",
+  "package_date": "2026-10-21",
+  "status": "PREPARED_FOR_PARENT_REVIEW_NOT_SENT_TO_LOCAL",
+  "format": "Small standalone foot FBX + exact non-FBX ring material-delta contracts + read-only validation scripts",
+  "source_R22": {
+    "filename": "Moonkov_Rebuild_R22_Ground_Contact_And_Ring_Boundary_FULL_EDITABLE.blend",
+    "bytes": 312853197,
+    "sha256": "cb56105e5b32feb294cc41e36c4d6afb06df33c1558bbd7c64da490a3bc71a85",
+    "unchanged_after_preparation": true
+  },
+  "source_R21": {
+    "filename": "Moonkov_Rebuild_R21_Ring_Structural_Finish_FULL_EDITABLE.blend",
+    "sha256": "3d2184aa58c3f895b746d16a0d653d70ec7b10bf728847e2aad72eabde6818c2",
+    "unchanged_after_preparation": true
+  },
+  "foot": {
+    "file": "R22_FOOT0541_DISPLAY_ONLY.fbx",
+    "vertices": 14,
+    "triangles": 24,
+    "units": "meters; FBX UnitScaleFactor100cm",
+    "axis_forward": "-Z",
+    "axis_up": "Y",
+    "bake_space_transform": false,
+    "mesh_smoothing": "FACE; original all-flat flags retained",
+    "material_name_stub": "R8_Scanned_Mineral_Support",
+    "textures": 0,
+    "new_material_required": false,
+    "collider": false,
+    "default_apply_allowed": false,
+    "local_gate": "Original0541 exact geometry/UV/world mapping and complete actual displayed ground footprint compatibility. If unproven, import resource only. Cloud background16mLOD is context-only, not authoritative DEM."
+  },
+  "ring": {
+    "new_geometry": 0,
+    "full_ring_FBX_included": false,
+    "target_source_object": "R2_MODULE_RING_SECTOR_00",
+    "existing_faces_changed": 12,
+    "existing_triangles_changed": 24,
+    "components": [
+      "lower_chord",
+      "upper_chord"
+    ],
+    "material_policy": "Reuse existing local R21 private graphite material; no new material/slot assumption",
+    "protected_previous_R21_faces": 150,
+    "protected_previous_R21_triangles": 300,
+    "default_apply_allowed": false,
+    "gate": "DOT00 current receipt + actual scene renderer/clone refs; full bijective source geometry/winding/UV/material match; unique24tri plan; preserve original300 and all non-targets."
+  },
+  "local_prior_receipt": {
+    "path": "E:/UnityProjects/FPS_Template/Docs/AI/Moonkov_Rebuild_R21_RingFinish_Delivery.json",
+    "reported_commits": [
+      "fc975c6b",
+      "46169763"
+    ],
+    "actual_cloud_access_to_local_receipt_or_GUIDs": false
+  },
+  "checks": {
+    "FBX_binary_and_two_import_modes": "PASS_STATIC_FOOT_FBX_RAW_DATA_AND_BOTH_NORMAL_READBACKS",
+    "full_source_scene_reloaded": false,
+    "source_selected_object_reads": 1,
+    "full_blend_saves": 0,
+    "renders": 0,
+    "foot_FBX_exports": 2,
+    "export_history": "First OFF-smoothing prototype retained outside delivery, rejected after normal reimport discrepancy. Final FACE export carries original flat flags; exact binary normals + custom/flat readbacks pass. No R22 art change.",
+    "validator_self_tests_passed": 21,
+    "Unity_or_local_application": "NOT_RUN",
+    "full_scene_visual_or_physics_performance": "NOT_ACCEPTED",
+    "no_new_textures_library_payloads_or_tokens": true
+  },
+  "no_automatic_apply": true,
+  "files": {
+    "R22_FOOT0541_DISPLAY_ONLY.fbx": {
+      "bytes": 17372,
+      "sha256": "bbd02254f97f7df3c73d1788c1f6bd5983bf6879e7dd934d7d8afa468578d401"
+    },
+    "FOOT0541_GEOMETRY_AND_LOCAL_GATE.json": {
+      "bytes": 64963,
+      "sha256": "81e87e86211db38b4f914d0b294cbfb77bcaa51305fe5d1d3a699f8aadae0f08"
+    },
+    "RING_12_FACE_DELTA_CONTRACT.json": {
+      "bytes": 2426567,
+      "sha256": "428e595e642b479e8899644f957554cde38cec7acb5ba47ed0f0468fadc0868e"
+    },
+    "PROTECTED_R21_150_FACES_300_TRIS.json": {
+      "bytes": 164039,
+      "sha256": "68bdffc463f54ee5f2687b97cf7d2f2eae296ce1eff63ca0dd2e2f71ca4d5f5b"
+    },
+    "STATIC_EXPORT_READBACK.json": {
+      "bytes": 11663,
+      "sha256": "9867c103eec9d9e08ecefc8d50ed00543298b4511a5d4f49d1dfcf8387ab26a8"
+    },
+    "validate_local_ring_capture.py": {
+      "bytes": 31612,
+      "sha256": "d76534df96c879d3edd7934607374f6cf60ebfedb6170b5698607f94f6e949ad"
+    },
+    "test_validate_local_ring_capture.py": {
+      "bytes": 10945,
+      "sha256": "f848a34f864bff6d1b7d3839912e0f656b7e474269e231e8eed8cc606a62f15a"
+    },
+    "VALIDATOR_SELF_TEST_RESULTS.json": {
+      "bytes": 1327,
+      "sha256": "26e29ba238d0a0398de2c6441cecf7a5dd21768f3f5b04af1b2881fda35c3cd8"
+    },
+    "verify_fbx_static.py": {
+      "bytes": 7513,
+      "sha256": "098e9ff236b24968759de352cd8c11206012c125c9fd0eba715306d32050b779"
+    },
+    "LOCAL_CAPTURE_SCHEMA.txt": {
+      "bytes": 3944,
+      "sha256": "9f8cb13ac156e4a1f87112001a7f5b8a11e7bfa3c91dc301d08a79d40901ffa0"
+    },
+    "README_DOT00_交接说明.txt": {
+      "bytes": 6038,
+      "sha256": "45101e83e858c1adf1f10b25981b65968956dd87d5425f2f8bcc3aa43958cf81"
+    },
+    "ROLLBACK_仅本增量.txt": {
+      "bytes": 1445,
+      "sha256": "fa918376402f38d3af2dca5d23de0cea02d292560f73fefe8f2f505fff2cf9d6"
+    }
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "status": "BLOCKED_BEFORE_APPLICATION_CURRENT_UNITY_PLAY",
+  "capturedUTC": "2026-10-21T05:42:04.497867+00:00",
+  "repository": "E:\\UnityProjects\\FPS_Template",
+  "branch": "feat/aliens",
+  "baselineCommit": "461697637a6e8defa0d5eeb467ae82921f2cdb4a",
+  "duplicateCheck": {
+    "visibleTaskList": "No separate R22 task found in 30 recent entries",
+    "repository": "No R22 directory, delivery or commit before this checkpoint"
+  },
+  "source": {
+    "fileId": "1dz1_AhxT9T3O1C8a_0smr4Eh05dDa09u",
+    "bytes": 245475,
+    "sha256": "54db64e5bfea2305e153c80a7c492550acd5d4bad800a2f47cbda4adc4b5bf4b",
+    "zipCRCVerified": true,
+    "manifestFilesVerified": 12,
+    "sourceR22BlendSHA256RecordedOnly": "cb56105e5b32feb294cc41e36c4d6afb06df33c1558bbd7c64da490a3bc71a85",
+    "fullBlendDownloaded": false,
+    "privateAccessUsed": true,
+    "sharingChanged": false
+  },
+  "ring": {
+    "facesApplied": 0,
+    "trianglesApplied": 0,
+    "facesProposed": 12,
+    "trianglesProposed": 24,
+    "savedSourceFacesBijective": 1604,
+    "savedCloneTrianglesBijective": 2604,
+    "protectedR21FacesVerified": 150,
+    "protectedR21TrianglesVerified": 300,
+    "protectedR21RendererOwnersVerified": 5,
+    "existingCloneBytesEqualR21Commit": true,
+    "existingMaterialGUID": "7ad372d502361474a9c64b71df195b7f",
+    "newMaterials": 0,
+    "newTextures": 0,
+    "proposalOnly": true,
+    "liveCurrentOwnerVerificationCompleted": false
+  },
+  "foot": {
+    "sourceFBXArchived": true,
+    "triangles": 24,
+    "UnityResourceImported": false,
+    "instancesApplied": 0,
+    "collidersAdded": 0,
+    "reason": "Current Editor is in Play. Original0541 exact local ownership/world transform and complete actual displayed ground-footprint compatibility/path clearance have not been established. Cloud16m context is not authoritative DEM. Default asset import only; no placement."
+  },
+  "blocker": {
+    "action": "Reassign 24 existing triangles within the existing private R21 ring clone and import the foot resource through the existing Unity pipeline",
+    "target": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR21RingFinish/Meshes/R2_MODULE_RING_SECTOR_00.asset",
+    "reason": "Project Editor became available at port7801 in Play during the read-only analysis. Offline write guard aborted before backup or target write. No authority to end the current session was assumed.",
+    "state": "NOT_EXECUTED_TECHNICAL_SAFETY_GATE",
+    "approvalDeniedThisRound": false,
+    "resultUncertain": false,
+    "nextRequiredCondition": "User exits Play; then fresh live Renderer/MeshFilter/material/triangle/collider-reference checks and resource import may continue within original scope. No scene save/copy or dirty-flag clearing."
+  },
+  "preservation": {
+    "currentFileSHA256": {
+      "Assets/Localization/Fonts/NotoSansCJKsc.asset": "985f612959fc92e10d45605a519d241ea701a7fd635ff3d17605086bb77b8971",
+      "Assets/MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusGameScene.unity": "2d2769d7d812e02f703fea4540bd46a0a89fa767191b4998447ebac1825c1573",
+      "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR21RingFinish/Meshes/R2_MODULE_RING_SECTOR_00.asset": "88ff1bc767613dda1d3ec09431c5aa92c8bc4c76234feb0cc13fc77d09ae45f3"
+    },
+    "existingAssetsChanged": 0,
+    "sceneSavedOrCopied": false,
+    "sceneDirtyFlagChanged": false,
+    "PlayStartedOrStopped": false,
+    "HostStarted": false,
+    "DEMChanged": false,
+    "materialsChanged": false,
+    "collisionsChanged": false,
+    "light118Button135MappingChanged": false,
+    "batchingLODOrCullingChanged": false,
+    "R08CollisionsMerged": false,
+    "R16RodsTouched": false,
+    "R20OrUnpromotedCandidatesImported": false,
+    "charactersChanged": false,
+    "priorSceneMemoryCopyDenialRetried": false
+  },
+  "validation": {
+    "archiveSHAAndCRC": "PASS",
+    "manifestFiles": "PASS",
+    "savedGUIDFileIDMeshAndMaterialReferences": "PASS",
+    "completeRingGeometryWindingUVAndOldMaterialMatch": "PASS",
+    "protectedOriginal300Triangles": "PASS",
+    "UnityImport": "NOT_RUN",
+    "UnityVisualAcceptance": "NOT_RUN",
+    "PlayOrPerformanceValidation": "NOT_RUN"
+  },
+  "rollback": "This checkpoint changes only its new SourceData folder and this documentation file. Revert its narrow local commit after checking later dependencies. No scene, mesh, material, DEM or collision rollback is needed because none was changed.",
+  "resume": "SavedProposal is a review artifact only. Recapture immediately before a future apply; do not run the workspace offline mutation helper while an Editor is open. Keep the original R21 300 finish triangles and all non-target bytes."
+}

@@ -1,0 +1,56 @@
+Input and trust requirements (all evidence is prepared locally by DOT00):
+1. Contract: source_object, source_mesh, matrix_world_blender, tolerances,
+   baseline_source_faces (all 1604), target_faces (12). Each source face has
+   source_face_index, xyz, uv:{UVMap:[...]}, normal, material. Targets instead
+   include old_material/new_material and both legal triangulations. Baseline
+   materials MUST describe pre-R22 Unity state, including existing R21 finish.
+   xyz tolerance is Euclidean distance; UV tolerance is per component.
+   Only triangles/quads supported; unsupported baseline topology blocks.
+2. Capture schema r22-normalized-triangle-capture-v1: source_object/source_mesh,
+   owner, mesh_asset_sha256, scene_asset_sha256, vertex_streams_sha256,
+   collider_references_sha256 (canonical current collider-to-mesh refs),
+   vertex_count, submesh_count, material_slots, existing_finish_material,
+   normalization, protected_prior_r21, triangles (COMPLETE target clone).
+   Each triangle: triangle_id (unique within owner), submesh,
+   triangle_index_in_submesh (zero-based, contiguous), vertex_indices (original
+   Unity order), raw_xyz[3][3], raw_uv:{UVMap:[3][2]}, xyz[3][3],
+   uv:{UVMap:[3][2]}, material. Raw arrays follow original vertex_indices.
+   Normalized arrays use the reviewed affine and normalized_corner_order.
+3. Receipt schema r22-dot00-readonly-receipt-v1: verified_by:DOT00,
+   verification_mode:read_only, contract_sha256, capture_sha256, source_object,
+   source_mesh, owner, four hashes above, material_slots, normalization,
+   existing_finish_material:{name,asset_path,guid},
+   r21_delivery_receipt:{path,sha256}, verified_r21_commits:[fc975c6b,46169763],
+   existing_private_material_count:1, existing_private_mesh_clone_count:5,
+   protected_prior_r21 (same exact five records as capture).
+   Owner: scene_asset_path, scene_guid (32 lowercase hex),
+   renderer_global_object_id (Unity GlobalObjectId_V1-...), mesh_asset_path
+   (existing .asset), mesh_guid (32 lowercase hex), mesh_local_file_id (string).
+   No guessed or name-only owners. DOT00 must bind GUID/file IDs by reading the
+   R21 local receipt and the current scene's actual references before pinning.
+4. Normalization: units:meters, space:blender_source_local,
+   winding:source_polygon, verified_from_local_receipt_and_scene_refs:true,
+   source_matrix_world_blender (exact contract matrix),
+   mesh_local_to_blender_source_local (invertible affine 4x4),
+   mesh_uv_to_source_uv (invertible affine 3x3),
+   normalized_corner_order:[0,1,2] or [0,2,1]. It is a reviewed transform,
+   not nearest-neighbor fitting or a transform inferred solely from 12 faces.
+5. Each protected_prior_r21 record: source_object, owner, mesh_asset_sha256,
+   source_face_count, triangle_ids, protected_triangle_records_sha256.
+   Exactly five distinct owners, totaling 150 source quads / 300 triangles.
+   Hash canonical JSON of complete protected triangle records sorted by
+   triangle_id (json.dumps sort_keys=True, separators=(',',':'),
+   ensure_ascii=False, allow_nan=False, UTF-8). Target record is recomputed;
+   other four renderer records are independently pinned local evidence, NOT
+   revalidated from target-only geometry. IDs are qualified by owner.
+6. Pin receipt hash independently AFTER DOT00 reviews that every hash/owner/
+   protected-ID assertion came from current read-only local capture, source
+   receipt, and actual scene refs. A capture cannot authenticate itself.
+
+Output is proposal-only. Exactly 24 original triangle assignments are supplied
+for review/rollback. No new material/mesh is created. No Unity/Blender import,
+submesh change, save, automatic patch, runtime hook, or external contact occurs.
+The full hash-bound capture and original asset remain required for rollback.
+Re-run on a fresh capture immediately before any separately authorized change;
+verify untouched buffer/triangle hashes and 300 protected triangles afterward.
+
