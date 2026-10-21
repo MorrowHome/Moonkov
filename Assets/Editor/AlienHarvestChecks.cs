@@ -105,11 +105,16 @@ public static class AlienHarvestChecks
     private static void CheckSpeciesAndBranches()
     {
         var names=Enum.GetNames(typeof(AlienSpecies));
-        Check(names.Length==AlienBiology.Organs.Length,"one organ definition per species");
+        Check(AlienBiology.Organs.Select(o=>o.Species).Distinct().Count()==AlienBiology.Organs.Length &&
+            AlienBiology.Organs.Select(o=>o.Code).Distinct().Count()==AlienBiology.Organs.Length,"unique canonical organ definitions");
+        foreach(var definition in AlienBiology.Organs)
+            Check(names.Contains(definition.Species) && ReferenceEquals(AlienBiology.Species(definition.Species),definition),"canonical species coverage "+definition.Species);
         foreach(string species in names)
         {
             var organ=AlienBiology.Species(species);
             Check(organ!=null && InventoryCatalog.Get(organ.Code)!=null,"registered species "+species);
+            Check(organ.Species==species || species=="StiltWalker" && organ.Species=="Tentacle" &&
+                ReferenceEquals(organ,AlienBiology.Species("Tentacle")),"explicit species mapping "+species);
             foreach(bool boss in new[]{false,true})
             {
                 var cache=AlienHarvest.Create(boss,new System.Random(1),species);
@@ -132,7 +137,8 @@ public static class AlienHarvestChecks
             }
         }
         var graph=InventoryGraph.Create(starter:false);graph.HaloResearchLevel=1;
-        foreach(var research in AlienBiology.Research.Where(r=>r.Branch!=0))
+        Check(AlienBiology.Research.Where(r=>r.Branch!=0).All(r=>r.Branch==1 || r.Branch==2 || r.Branch==4 || r.Branch==8),"explicit research branch coverage");
+        foreach(var research in AlienBiology.Research.Where(r=>r.Branch==1 || r.Branch==2 || r.Branch==4))
         {
             for(int i=0;i<research.Materials.Length;i++)graph.AddSupply(research.Materials[i],research.Quantities[i],"stash");
             var command=new ShopCommand {RequestId=Guid.NewGuid().ToString("D"),ExpectedVersion=graph.Version,Operation=ShopOperation.Research,Code=research.Code,Quantity=1};
@@ -140,6 +146,23 @@ public static class AlienHarvestChecks
         }
         var decoded=RaidInventoryTransport.Decode(RaidInventoryTransport.Encode(graph));
         Check(decoded.HaloResearchBranches==7 && decoded.HaloResearchLevel==1 && decoded.ExtractLoadout().HaloResearchBranches==7,"old firepower and new branches survive save/deploy");
+        var mooncore=AlienBiology.MooncoreResearch;
+        for(int i=0;i<mooncore.Materials.Length;i++)
+            if(!MissionInventory.IsArtifact(mooncore.Materials[i]))
+                Check(graph.AddSupply(mooncore.Materials[i],mooncore.Quantities[i],"stash")==InventoryError.None,"mooncore material fixture "+mooncore.Materials[i]);
+        var fragment=new InventoryItem {Id=Guid.NewGuid().ToString("D"),Code="mooncore_fragment",Quantity=1,FoundInRaid=true,
+            MissionWorldId=Guid.NewGuid().ToString("D"),MissionOperationId=Guid.NewGuid().ToString("D"),MissionContentVersion=1};
+        Check(graph.FindSpace(fragment,"stash",out var region,out int x,out int y),"mooncore fixture storage space");
+        fragment.Parent="stash";fragment.Region=region;fragment.X=x;fragment.Y=y;graph.Items.Add(fragment);graph.Version++;
+        Check(graph.Validate()==InventoryError.None,"valid sourced mooncore fixture");
+        var mooncoreCommand=new ShopCommand {RequestId=Guid.NewGuid().ToString("D"),ExpectedVersion=graph.Version,
+            Operation=ShopOperation.Research,Code=mooncore.Code,Quantity=1};
+        Check(ShopRules.Apply(graph,mooncoreCommand,out _)=="research_materials" && graph.HaloResearchBranches==7,"unrecovered mooncore cannot fund research");
+        fragment.MissionRecovered=true;
+        Check(ShopRules.Apply(graph,mooncoreCommand,out var mooncoreUnlocked)==null && mooncore.Unlocked(mooncoreUnlocked) &&
+            mooncoreUnlocked.HaloResearchBranches==15 && graph.HaloResearchBranches==7,"recovered mooncore unlock preserves biological branches");
+        var mooncoreSaved=RaidInventoryTransport.Decode(RaidInventoryTransport.Encode(mooncoreUnlocked));
+        Check(mooncoreSaved.HaloResearchBranches==15 && mooncoreSaved.ExtractLoadout().HaloResearchBranches==15,"mooncore and biological branches survive save/deploy");
         var registry=ScriptableObject.CreateInstance<WeaponRegistry>();var weapon=ScriptableObject.CreateInstance<WeaponData>();
         weapon.MagazineSize=10;weapon.ReloadTime=4;weapon.SpreadDegrees=10;weapon.Damage=10;weapon.CooldownInMs=1;
         registry.Weapons=new List<WeaponData>{weapon,weapon,weapon,weapon,weapon,weapon};

@@ -166,9 +166,14 @@ namespace Unity.MP_FPS
                 if (hasSnapshot) m_CacheVisuals.SetEmpty(i, (takenMask & (1u << i)) != 0);
             }
         }
+        private readonly System.Collections.Generic.List<int> m_HiddenBags = new System.Collections.Generic.List<int>();
         public void ShowDeathBags(RaidDeathBagClientState state)
         {
             if(m_CorpseSettings==null || state==null)return;
+            m_HiddenBags.Clear();
+            foreach(var pair in m_DeathBags)
+                if(!state.Bags.ContainsKey(pair.Key)) {Destroy(pair.Value);m_HiddenBags.Add(pair.Key);}
+            foreach(int id in m_HiddenBags)m_DeathBags.Remove(id);
             foreach(var bag in state.Bags.Values)
             {
                 if(m_DeathBags.ContainsKey(bag.LootId))continue;

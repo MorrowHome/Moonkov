@@ -68,12 +68,10 @@ namespace Unity.MP_FPS
                             !inventory.ActionPending && !SystemAPI.HasComponent<NetworkStreamRequestDisconnect>(connection) &&
                             TryGetLivingPosition(ref state,player,out var position))
                         {
-                            // The server chooses a nearby grounded position; clients cannot supply one.
-                            if(UnityEngine.Physics.Raycast((UnityEngine.Vector3)position+UnityEngine.Vector3.up,UnityEngine.Vector3.down,
-                                out var ground,4,UnityEngine.LayerMask.GetMask("Default","Ground"),UnityEngine.QueryTriggerInteraction.Ignore))
-                                position=ground.point;
-                            inventory.Error=LootContainers(ref state).DropItem(inventory.Graph,r.ItemId.ToString(),r.ExpectedVersion,
-                                position,SystemAPI.Time.ElapsedTime,out _);
+                            if(TryFindDropGround(position,out var grounded))
+                                inventory.Error=LootContainers(ref state).DropItem(inventory.Graph,r.ItemId.ToString(),r.ExpectedVersion,
+                                    grounded,SystemAPI.Time.ElapsedTime,out _);
+                            else inventory.ActionFeedback="无法丢弃：脚下没有安全、可达的地面；物品仍在原容器。";
                         }
                         inventory.LastSentVersion=-1;RaidInventoryState.UpdateTotals(inventory.Graph,ref session.ValueRW);
                     }
@@ -131,6 +129,8 @@ namespace Unity.MP_FPS
                             var ghost = SystemAPI.GetComponentRW<PredictedPlayerGhost>(player);
                             inventory.Error = inventory.BeginMedical(ghost.ValueRO,r.ItemId.ToString(),r.ExpectedVersion,r.Part,
                                 medicalPosition,SystemAPI.Time.ElapsedTime,MoonRaidMap.Active.MedicalSeconds);
+                            if(inventory.Error==InventoryError.None)
+                                CancelManualMission(ref state,connection,"任务操作中断：开始治疗；维修或下载进度未完成。");
                         }
                         inventory.LastSentVersion = -1;
                     }
@@ -156,6 +156,30 @@ namespace Unity.MP_FPS
                 }
                 ecb.DestroyEntity(entity);
             }
+        }
+        public static bool TryFindDropGround(Unity.Mathematics.float3 origin,out Unity.Mathematics.float3 position)
+        {
+            position=default;
+            if(!Unity.Mathematics.math.all(Unity.Mathematics.math.isfinite(origin)))return false;
+            var source=(UnityEngine.Vector3)origin;
+            int mask=UnityEngine.LayerMask.GetMask("Default","Ground");
+            // Only the nearby surface directly under the player is eligible. A lower
+            // floor reached through a gap, or a long jump, must not consume inventory.
+            if(!UnityEngine.Physics.Raycast(source+UnityEngine.Vector3.up*.3f,UnityEngine.Vector3.down,out var ground,1.55f,
+                mask,UnityEngine.QueryTriggerInteraction.Ignore) || ground.normal.y<.65f ||
+                ground.point.y>source.y+.15f || ground.point.y<source.y-1.25f)return false;
+            var target=ground.point+UnityEngine.Vector3.up*.2f;
+            if(UnityEngine.Physics.Linecast(source+UnityEngine.Vector3.up*.3f,target,mask,UnityEngine.QueryTriggerInteraction.Ignore) ||
+                UnityEngine.Physics.CheckSphere(target,.12f,mask,UnityEngine.QueryTriggerInteraction.Ignore))return false;
+            for(int i=0;i<4;i++)
+            {
+                var offset=i==0 ? UnityEngine.Vector3.right : i==1 ? UnityEngine.Vector3.left :
+                    i==2 ? UnityEngine.Vector3.forward : UnityEngine.Vector3.back;
+                if(!UnityEngine.Physics.Raycast(ground.point+offset*.18f+UnityEngine.Vector3.up*.3f,UnityEngine.Vector3.down,
+                    out var support,.5f,mask,UnityEngine.QueryTriggerInteraction.Ignore) || support.normal.y<.65f ||
+                    UnityEngine.Mathf.Abs(support.point.y-ground.point.y)>.18f)return false;
+            }
+            position=ground.point;return true;
         }
         private void SendInventory(ref SystemState state, EntityCommandBuffer ecb, Entity connection, int raidId)
         {

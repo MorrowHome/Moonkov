@@ -40,6 +40,18 @@ namespace Unity.MP_FPS
 
     public partial struct ServerGameSystem
     {
+        private void CancelManualMission(ref SystemState state,Entity connection,string reason)
+        {
+            var context=state.EntityManager.GetComponentObject<RaidMissionWorld>(SystemAPI.GetSingletonEntity<RaidLootWorld>());
+            if(context.Operation==null || !context.Actors.TryGetValue(connection,out var actor) || actor.Node<0)return;
+            context.Operation.Cancel(actor.Key);actor.Node=-1;actor.Result=MissionActionResult.Invalid;
+            context.NextSend=0;
+            if(state.EntityManager.HasComponent<RaidInventoryState>(connection))
+            {
+                var inventory=GetRaidInventory(ref state,connection);
+                inventory.ActionFeedback=reason;inventory.LastSentVersion=-1;
+            }
+        }
         private void HandleMissions(ref SystemState state, EntityCommandBuffer ecb)
         {
             var site = RaidMissionSite.Active;
@@ -96,19 +108,41 @@ namespace Unity.MP_FPS
                         {
                             if (actor.Request == r.RequestId && actor.Node == r.Node) { operation.Cancel(actor.Key); actor.Node = -1; }
                         }
-                        else if (!accessible || (actor.Node >= 0 && (health < actor.Health || hitTick != actor.LastHitTick)))
-                        { operation.Cancel(actor.Key); actor.Node = -1; actor.Result = MissionActionResult.Invalid; }
+                        else if (!accessible)
+                        {
+                            // An invalid new target must not interrupt an existing legal action.
+                            if(r.Intent==MissionIntent.Renew && actor.Node==r.Node && actor.Request==r.RequestId)
+                            {operation.Cancel(actor.Key);actor.Node=-1;}
+                            actor.Result=MissionActionResult.Invalid;
+                        }
+                        else if (r.Intent==MissionIntent.Renew && actor.Node>=0 && (health<actor.Health || hitTick!=actor.LastHitTick))
+                        {operation.Cancel(actor.Key);actor.Node=-1;actor.Result=MissionActionResult.Invalid;}
                         else if (r.Intent == MissionIntent.Begin)
                         {
                             actor.AcknowledgedRequest = r.RequestId;
-                            actor.Result = operation.Begin(actor.Key, r.Epoch, r.Node, r.RequestId, now);
+                            var inventory=GetRaidInventory(ref state,connection);
+                            actor.Result = r.RequestId<=inventory.RequestId ? MissionActionResult.Stale :
+                                operation.Begin(actor.Key, r.Epoch, r.Node, r.RequestId, now);
                             if (actor.Result == MissionActionResult.Started || actor.Result == MissionActionResult.Running)
-                            { actor.Node = r.Node; actor.Request = r.RequestId; actor.Health = health; actor.LastHitTick = hitTick; context.Known.Add(connection); }
+                            {
+                                inventory.RequestId=r.RequestId;
+                                inventory.CancelActions(inventory.ActionPending ? "原操作已取消：开始任务设备操作；未消耗物品。" : null);
+                                inventory.Error=InventoryError.None;
+                                actor.Node = r.Node; actor.Request = r.RequestId; actor.Health = health; actor.LastHitTick = hitTick; context.Known.Add(connection);
+                            }
                         }
                         else if (r.Intent == MissionIntent.Configure)
                         {
-                            actor.Result = operation.Configure(actor.Key, r.Epoch, r.Node, r.RequestId, r.Choice, now);
-                            if (actor.Result == MissionActionResult.Completed) context.Known.Add(connection);
+                            var inventory=GetRaidInventory(ref state,connection);
+                            actor.Result = r.RequestId<=inventory.RequestId ? MissionActionResult.Stale :
+                                operation.Configure(actor.Key, r.Epoch, r.Node, r.RequestId, r.Choice, now);
+                            if (actor.Result == MissionActionResult.Completed)
+                            {
+                                inventory.RequestId=r.RequestId;
+                                inventory.CancelActions(inventory.ActionPending ? "原操作已取消：配置任务设备；未消耗物品。" : null);
+                                operation.Cancel(actor.Key);actor.Node=-1;
+                                context.Known.Add(connection);
+                            }
                         }
                         else if (r.Intent == MissionIntent.Renew && actor.Node == r.Node && actor.Request == r.RequestId)
                         {
@@ -131,7 +165,12 @@ namespace Unity.MP_FPS
                     if (valid) valid = MissionAccessible(ref state, SystemAPI.GetComponent<JoinedClient>(pair.Key).PlayerEntity,
                         site, operation, pair.Value.Node, out health) && health >= pair.Value.Health &&
                         SystemAPI.GetComponent<PredictedPlayerGhost>(SystemAPI.GetComponent<JoinedClient>(pair.Key).PlayerEntity).LastHitTick == pair.Value.LastHitTick;
-                    if (!valid) { operation.Cancel(pair.Value.Key); pair.Value.Node = -1; pair.Value.Result = MissionActionResult.Invalid; }
+                    if (!valid)
+                    {
+                        operation.Cancel(pair.Value.Key);pair.Value.Node=-1;pair.Value.Result=MissionActionResult.Invalid;
+                        if(SystemAPI.Exists(pair.Key) && state.EntityManager.HasComponent<RaidInventoryState>(pair.Key))
+                        {var inventory=GetRaidInventory(ref state,pair.Key);inventory.ActionFeedback="任务操作中断：受伤、转开视线、离开范围或战局结束。";inventory.LastSentVersion=-1;}
+                    }
                 }
                 if (operation.Phase == MissionPhase.OutputReady && !context.OutputProduced) CreateMissionOutput(ref state, context);
                 if (operation.Phase == MissionPhase.OutputReady && context.OutputProduced && !MissionArtifactsRemain(ref state, context, false)) operation.Resolve();

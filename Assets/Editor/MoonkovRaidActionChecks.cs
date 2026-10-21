@@ -9,6 +9,7 @@ using Unity.Mathematics;
 using Unity.MP_FPS;
 using Unity.MP_FPS.Client;
 using Unity.MP_FPS.Inventory;
+using Unity.MP_FPS.Missions;
 using Unity.NetCode;
 using Unity.Networking.Transport;
 using UnityEditor;
@@ -104,6 +105,7 @@ public static class MoonkovRaidActionChecks
         for(int i=0;i<chunks;i++)incoming.Receive(new RaidInventoryChunkV2Rpc {RaidId=7,Sequence=1,RequestId=4,Index=i,Count=chunks,
             Json=snapshot.Substring(i*400,Math.Min(400,snapshot.Length-i*400))},RaidInventoryTransport.Decode);
         Check(incoming.MedicalItemId=="medical-id" && incoming.MedicalRemaining==2.5f && incoming.ActionFeedback=="cancel reason","Snapshot loses medical progress/reason");
+        CheckGroundLifecycle();
         Shortcut();
         var go=new GameObject("Timed map defaults");go.SetActive(false);
         try {var map=go.AddComponent<MoonRaidMap>();Check(map.MedicalSeconds==3 && map.SearchSeconds==2,"New map defaults invalid");
@@ -140,9 +142,22 @@ public static class MoonkovRaidActionChecks
     {
         if(EditorApplication.isPlayingOrWillChangePlaymode || MoonRaidMap.Active!=null)throw new InvalidOperationException("Run in idle Edit Mode without an active raid map.");
         s_Count=0;var go=new GameObject("Raid action RPC fixture");go.SetActive(false);
-        var origin=new float3(20000,0,20000);GameObject wall=null;
+        var origin=new float3(20000,0,20000);GameObject wall=null,floor=null,missionObject=null;
         try
         {
+            floor=GameObject.CreatePrimitive(PrimitiveType.Cube);floor.name="Ground validation fixture";
+            floor.transform.position=(Vector3)origin-Vector3.up*.5f;floor.transform.localScale=new Vector3(10,1,10);
+            UnityEngine.Physics.SyncTransforms();
+            Check(ServerGameSystem.TryFindDropGround(origin,out var grounded) && math.distance(grounded,origin)<.01f,"Flat ground rejected");
+            Check(ServerGameSystem.TryFindDropGround(origin+new float3(0,.8f,0),out _),"Small airborne drop rejected");
+            Check(!ServerGameSystem.TryFindDropGround(origin+new float3(0,2,0),out _),"Long falling drop accepted");
+            Check(!ServerGameSystem.TryFindDropGround(origin+new float3(4.95f,0,0),out _),"Cliff edge lacks full support");
+            floor.transform.localScale=new Vector3(.2f,1,10);UnityEngine.Physics.SyncTransforms();
+            Check(!ServerGameSystem.TryFindDropGround(origin,out _),"Narrow gap support accepted");
+            floor.transform.localScale=new Vector3(10,1,10);
+            floor.transform.position=(Vector3)origin-Vector3.up*3.5f;UnityEngine.Physics.SyncTransforms();
+            Check(!ServerGameSystem.TryFindDropGround(origin,out _),"Another floor through a gap accepted");
+            floor.transform.position=(Vector3)origin-Vector3.up*.5f;UnityEngine.Physics.SyncTransforms();
             var map=go.AddComponent<MoonRaidMap>();var data=new SerializedObject(map);
             var positions=data.FindProperty("m_LootPositions");positions.arraySize=1;positions.GetArrayElementAtIndex(0).vector3Value=(Vector3)(origin+new float3(0,0,2));
             data.ApplyModifiedPropertiesWithoutUndo();go.SetActive(true);
@@ -162,6 +177,11 @@ public static class MoonkovRaidActionChecks
             }
             var a=Actor(out var inventory);var b=Actor(out var other);var player=em.GetComponentData<JoinedClient>(a).PlayerEntity;
             var item=inventory.Graph.Items.Single(i=>i.Code=="medkit");int initial=inventory.Graph.Version;
+            floor.SetActive(false);UnityEngine.Physics.SyncTransforms();
+            Request(world,a,new RaidInventoryDropRpc {RaidId=7,RequestId=1,ExpectedVersion=initial,ItemId=item.Id});
+            Process(world,handle,"HandleInventoryRequests");
+            Check(inventory.Graph.Find(item.Id)!=null && caches.DeathBags.Count==0 && inventory.Graph.Version==initial,"Missing ground removed inventory");
+            floor.SetActive(true);UnityEngine.Physics.SyncTransforms();inventory.RequestId=0;
             world.SetTime(new TimeData(10,.02f));
             Request(world,a,new RaidMedicalUseRpc {RaidId=7,RequestId=1,ExpectedVersion=initial,ItemId=item.Id,Part=BodyPart.Auto});
             Process(world,handle,"HandleInventoryRequests");float hp=em.GetComponentData<PredictedPlayerGhost>(player).CurrentHealth;
@@ -188,9 +208,17 @@ public static class MoonkovRaidActionChecks
             Request(world,a,new RaidInventoryDropRpc {RaidId=7,RequestId=8,ExpectedVersion=inventory.Graph.Version,ItemId=item.Id});Process(world,handle,"HandleInventoryRequests");
             int drop=caches.DeathBags.Keys.Single();Check(inventory.Graph.Find(item.Id)==null && math.distance(caches.DeathBags[drop].Position,origin)<=RaidRules.PickupRange,"Drop RPC failed or placed outside server range");
             Request(world,a,new RaidInventoryDropRpc {RaidId=7,RequestId=8,ExpectedVersion=initial,ItemId=item.Id});Process(world,handle,"HandleInventoryRequests");Check(caches.DeathBags.Count==1,"Drop replay spawned twice");
+            var markers=new RaidDeathBagClientState();SendBags(world,handle,a,markers);
+            Check(markers.Bags.ContainsKey(drop),"Nearby drop marker not sent");
             em.SetComponentData(player,LocalTransform.FromPosition(origin+new float3(100,0,0)));
+            var hidden=SendBags(world,handle,a,markers);
+            Check(!markers.Bags.ContainsKey(drop) && hidden.Any(u=>u.LootId==drop && u.Removed && !u.Deleted),"Interest exit did not hide marker");
             Request(world,a,new RaidLootOpenRpc {RaidId=7,RequestId=9,LootId=drop});Process(world,handle,"HandleLootRequests");Check(inventory.OpenedLootId<0 && !inventory.ActionPending,"Distant ground open accepted");
             em.SetComponentData(player,LocalTransform.FromPosition(origin));
+            SendBags(world,handle,a,markers);
+            Check(markers.Bags.ContainsKey(drop),"Interest re-entry did not reconstruct marker");
+            var lateJoin=new RaidDeathBagClientState();SendBags(world,handle,b,lateJoin);
+            Check(lateJoin.Bags.ContainsKey(drop),"Late join missed existing drop");
             Request(world,a,new RaidLootOpenRpc {RaidId=7,RequestId=10,LootId=drop});Process(world,handle,"HandleLootRequests");
             Check(inventory.DissectingLootId==drop && inventory.OpenedLootId<0,"First ground search bypassed");
             var take=new RaidLootMoveRpc {RaidId=7,RequestId=11,LootId=drop,ExpectedVersion=inventory.Graph.Version,ExpectedLootVersion=caches.Containers[drop].Version,ItemId=item.Id,Parent="pockets",Region="1"};
@@ -206,9 +234,126 @@ public static class MoonkovRaidActionChecks
             take.RequestId=14;Request(world,a,take);Process(world,handle,"HandleLootRequests");Check(inventory.Graph.Find(item.Id)!=null && caches.Containers[drop].Find(item.Id)==null,"Ground re-pickup lost item");
             take.RequestId=4;take.ExpectedVersion=other.Graph.Version;Request(world,b,take);Process(world,handle,"HandleLootRequests");
             Check(other.Error==InventoryError.Stale && other.Graph.Find(item.Id)==null,"Competing ground claimant duplicated item");
+            Request(world,a,new RaidLootOpenRpc {RaidId=7,RequestId=15,LootId=-1});
+            Request(world,b,new RaidLootOpenRpc {RaidId=7,RequestId=5,LootId=-1});Process(world,handle,"HandleLootRequests");
+            caches.RecycleEmptyDrops(25,new System.Collections.Generic.HashSet<int>());
+            caches.RecycleEmptyDrops(35,new System.Collections.Generic.HashSet<int>());
+            var deleted=SendBags(world,handle,a,markers);SendBags(world,handle,b,lateJoin);
+            Check(deleted.Any(u=>u.LootId==drop && u.Removed && u.Deleted) && !markers.Bags.ContainsKey(drop) &&
+                !lateJoin.Bags.ContainsKey(drop) && !inventory.SearchedLoot.Contains(drop),"Recycled drop retained ghost marker/search state");
+            CheckManualMissionRequests(world,handle,a,inventory,origin,out missionObject);
             Debug.Log($"Raid server request checks passed: {s_Count} assertions for actual handlers, server clock/cancel/replay, wrong raid/source/dead/disconnect/stale drops, server placement, range/wall/search gates, re-open and competing pickup.");
         }
-        finally {if(wall!=null)UnityEngine.Object.DestroyImmediate(wall);UnityEngine.Object.DestroyImmediate(go);}
+        finally
+        {
+            if(wall!=null)UnityEngine.Object.DestroyImmediate(wall);
+            if(missionObject!=null)
+            {
+                typeof(RaidMissionSite).GetMethod("OnDisable",BindingFlags.Instance|BindingFlags.NonPublic).Invoke(missionObject.GetComponent<RaidMissionSite>(),null);
+                UnityEngine.Object.DestroyImmediate(missionObject);
+            }
+            if(floor!=null)UnityEngine.Object.DestroyImmediate(floor);
+            UnityEngine.Object.DestroyImmediate(go);
+        }
+    }
+    private delegate void BagHandler(ref ServerGameSystem system,ref SystemState state,EntityCommandBuffer commands,Entity connection);
+    private static unsafe RaidGroundMarkerRpc[] SendBags(World world,SystemHandle handle,Entity connection,RaidDeathBagClientState client)
+    {
+        ref var system=ref world.Unmanaged.GetUnsafeSystemRef<ServerGameSystem>(handle);
+        ref var state=ref world.Unmanaged.ResolveSystemStateRef(handle);
+        using var ecb=new EntityCommandBuffer(Allocator.Temp);
+        ((BagHandler)typeof(ServerGameSystem).GetMethod("SendDeathBags",BindingFlags.Instance|BindingFlags.NonPublic).CreateDelegate(typeof(BagHandler)))(ref system,ref state,ecb,connection);
+        ecb.Playback(world.EntityManager);
+        using var query=world.EntityManager.CreateEntityQuery(typeof(RaidGroundMarkerRpc));
+        using var updates=query.ToComponentDataArray<RaidGroundMarkerRpc>(Allocator.Temp);
+        var result=updates.ToArray();foreach(var update in result)client.Receive(update);
+        world.EntityManager.DestroyEntity(query);return result;
+    }
+    private static void CheckGroundLifecycle()
+    {
+        var loot=new RaidLootContainers();loot.Initialize(1);
+        var owner=Inventory();var item=owner.Graph.Items.Single(i=>i.Code=="medkit");
+        Check(loot.DropItem(owner.Graph,item.Id,owner.Graph.Version,float3.zero,0,out int id)==InventoryError.None,"Lifecycle drop fixture");
+        var held=new System.Collections.Generic.HashSet<int>();
+        loot.RecycleEmptyDrops(10000,held);
+        Check(loot.DeathBags.ContainsKey(id),"Non-empty drop expired by age");
+        loot.Containers[id].Items.RemoveAll(i=>i.Parent==LootInventoryExchange.Root);loot.Containers[id].Version++;
+        held.Add(id);loot.RecycleEmptyDrops(10001,held);loot.RecycleEmptyDrops(10020,held);
+        Check(loot.DeathBags.ContainsKey(id),"Current viewer lost empty container");
+        held.Clear();loot.RecycleEmptyDrops(10021,held);loot.RecycleEmptyDrops(10030.99,held);
+        Check(loot.DeathBags.ContainsKey(id),"Empty drop expired before grace boundary");
+        loot.RecycleEmptyDrops(10031,held);
+        Check(!loot.DeathBags.ContainsKey(id) && !loot.Containers.ContainsKey(id),"Empty drop remains registered");
+        var update=new RaidGroundMarkerRpc {Sequence=1,LootId=id,Version=2,CharacterIndex=RaidLootContainers.DroppedItemCharacterIndex,Rotation=quaternion.identity};
+        var client=new RaidDeathBagClientState();client.Receive(RoundTrip(update));
+        Check(client.Bags.ContainsKey(id),"Ground marker protocol lost active bag");
+        update.Sequence=3;update.Removed=true;client.Receive(RoundTrip(update));
+        update.Sequence=2;update.Removed=false;client.Receive(update);
+        Check(!client.Bags.ContainsKey(id),"Out-of-order update resurrected removed marker");
+        update.Sequence=4;client.Receive(update);
+        Check(client.Bags.ContainsKey(id),"Interest re-entry rejected same graph version");
+        update.Sequence=5;update.Removed=true;client.Receive(update);
+        for(uint sequence=6;sequence<5006;sequence++)client.Receive(new RaidGroundMarkerRpc {Sequence=sequence,LootId=(int)sequence+100,Removed=true,Deleted=true});
+        update.Sequence=1;client.Receive(update);
+        var sequences=(System.Collections.IDictionary)typeof(RaidDeathBagClientState).GetField("m_Sequences",BindingFlags.NonPublic|BindingFlags.Instance).GetValue(client);
+        Check(sequences.Count<=4096 && !client.Bags.ContainsKey(id),"Client tombstones grow or old packet resurrects marker");
+        var position=new Vector3(25000,0,25000);var overlaps=new RaidDeathBagClientState();
+        var bagA=new RaidCorpseRpc {LootId=100,Version=1,CharacterIndex=RaidLootContainers.DroppedItemCharacterIndex,Position=position,Rotation=quaternion.identity};
+        var bagB=bagA;bagB.LootId=101;overlaps.Receive(bagA);overlaps.Receive(bagB);
+        var full=InventoryGraph.Create(false,false);
+        for(int region=1;region<=4;region++)full.Items.Add(new InventoryItem {Id=Guid.NewGuid().ToString("D"),Code="ration",Quantity=3,Parent="pockets",Region=region.ToString()});
+        var pickup=new InventoryItem {Id=Guid.NewGuid().ToString("D"),Code="medkit",Quantity=1};
+        Check(full.Validate()==InventoryError.None && full.QuickTransferContainers().All(container=>!full.FindSpace(pickup,container,out _,out _,out _)),"Full carried inventory fixture has pickup space");
+        Check(RaidHUD.SelectNearbyDrop(overlaps,position,100)==101 && RaidHUD.SelectNearbyDrop(overlaps,position,101)==100,"Overlapping nonempty bags cannot cycle when inventory is full");
+        bagB.Version++;bagB.Empty=true;overlaps.Receive(bagB);
+        Check(RaidHUD.SelectNearbyDrop(overlaps,position,100)<0,"Empty drop blocks switch candidate");
+        var actor=Inventory();var health=Injured();string medicine=actor.Graph.Items.Single(i=>i.Code=="medkit").Id;
+        actor.BeginDissection(0,0,float3.zero,1,2);
+        Check(actor.BeginMedical(health,"foreign",actor.Graph.Version,BodyPart.Auto,float3.zero,0)==InventoryError.Missing && actor.DissectingLootId==0,"Invalid medical interrupted search");
+        Check(actor.BeginMedical(health,medicine,actor.Graph.Version,BodyPart.Auto,float3.zero,0)==InventoryError.None && actor.DissectingLootId<0,"Medical did not replace search");
+        actor.BeginDissection(0,0,float3.zero,1,2);actor.RefreshMedical(ref health,true,float3.zero,10);
+        Check(actor.MedicalItemId==null && actor.Graph.Count("medkit")==2,"Search replacement consumed medical item");
+    }
+    private static void CheckManualMissionRequests(World world,SystemHandle handle,Entity connection,RaidInventoryState inventory,float3 origin,out GameObject siteObject)
+    {
+        siteObject=new GameObject("Manual action mission fixture");siteObject.SetActive(false);
+        var site=siteObject.AddComponent<RaidMissionSite>();
+        site.Author(new[] {"entry","sampler","archive","power_a","power_b"}.Select(id=>new RaidMissionAnchor {
+            Id=id,Position=(Vector3)origin+new Vector3(0,1.4f,2),Approach=origin}).ToArray(),Array.Empty<RaidMissionDevice>(),null,null);
+        siteObject.SetActive(true);
+        Check(site.Validate()==null,"Mission fixture anchors/definitions invalid: "+site.Validate());
+        typeof(RaidMissionSite).GetMethod("OnEnable",BindingFlags.Instance|BindingFlags.NonPublic).Invoke(site,null);
+        Check(RaidMissionSite.Active==site,"Mission fixture did not register active site");
+        var em=world.EntityManager;using var query=em.CreateEntityQuery(typeof(RaidLootWorld));
+        var context=em.GetComponentObject<RaidMissionWorld>(query.GetSingletonEntity());
+        context.Site=site;context.WorldId=Guid.NewGuid().ToString("D");context.Director=new MissionDirector(1,24);
+        context.Operation=new MissionOperation(context.WorldId,Guid.NewGuid().ToString("D"),1,MissionCatalog.Archive(),24);
+        context.DefinitionIndex=1;context.Epoch=1;
+        var player=em.GetComponentData<JoinedClient>(connection).PlayerEntity;em.SetComponentData(player,Injured());
+        var session=em.GetComponentData<RaidSession>(connection);session.SettlementId="manual-action-fixture";em.SetComponentData(connection,session);
+        RaidMissionActionRpc Mission(uint request,int node=0,MissionIntent intent=MissionIntent.Begin) => new RaidMissionActionRpc {
+            RaidId=7,RequestId=request,Node=node,Intent=intent,Epoch=1,OperationId=context.Operation.Id};
+        string medicine=inventory.Graph.Items.Single(i=>i.Code=="medkit").Id;
+        void Medical(uint request,string id) {Request(world,connection,new RaidMedicalUseRpc {RaidId=7,RequestId=request,
+            ExpectedVersion=inventory.Graph.Version,ItemId=id,Part=BodyPart.Auto});Process(world,handle,"HandleInventoryRequests");}
+        Request(world,connection,Mission(30));Process(world,handle,"HandleMissions");
+        Check(context.Actors[connection].Node==0 && !inventory.ActionPending,"Mission start fixture failed");
+        Medical(31,"foreign");Check(context.Actors[connection].Node==0,"Illegal medicine cancelled mission");
+        Medical(32,medicine);Check(context.Actors[connection].Node<0 && inventory.MedicalItemId==medicine,"Medical did not replace mission");
+        Request(world,connection,new RaidLootOpenRpc {RaidId=7,RequestId=33,LootId=999999});Process(world,handle,"HandleLootRequests");
+        Check(inventory.MedicalItemId==medicine,"Illegal loot target cancelled treatment");
+        Request(world,connection,Mission(33,99));Process(world,handle,"HandleMissions");
+        Check(inventory.MedicalItemId==medicine,"Illegal mission cancelled treatment");
+        Request(world,connection,Mission(34));Process(world,handle,"HandleMissions");
+        Check(context.Actors[connection].Node==0 && !inventory.ActionPending && inventory.Graph.Count("medkit")==1,"Mission did not replace medical without consumption");
+        // Both starts arrive in the same tick; the higher shared request wins in either handler order.
+        Medical(36,medicine);Request(world,connection,Mission(35));Process(world,handle,"HandleMissions");
+        Check(context.Actors[connection].Node<0 && inventory.MedicalItemId==medicine,"Delayed mission replaced newer medical");
+        Request(world,connection,Mission(38));Process(world,handle,"HandleMissions");Medical(37,medicine);
+        Check(context.Actors[connection].Node==0 && !inventory.ActionPending,"Delayed medical replaced newer mission");
+        var damaged=em.GetComponentData<PredictedPlayerGhost>(player);damaged.LastHitTick++;em.SetComponentData(player,damaged);
+        Request(world,connection,Mission(38,0,MissionIntent.Renew));Process(world,handle,"HandleMissions");
+        Check(context.Actors[connection].Node<0 && !context.Operation.Completed(0) && inventory.Graph.Count("medkit")==1,"Damage completed mission or consumed medicine");
     }
     private static T RoundTrip<T>(T value) where T:unmanaged,IRpcCommand
     {

@@ -208,7 +208,7 @@ namespace Unity.MP_FPS
                 {
                     OpenMissionConfiguration(objective, target); return true;
                 }
-                CancelMissionHold(); m_MissionRequest++; m_MissionHolding = target;
+                CancelMissionHold(); m_MissionRequest=NextManualActionRequest(); m_MissionHolding = target;
                 SendMission(MissionIntent.Begin, target); m_MissionNextRenew = Time.unscaledTime + .25f;
             }
             if (m_MissionHolding == target && held && Time.unscaledTime >= m_MissionNextRenew)
@@ -257,7 +257,7 @@ namespace Unity.MP_FPS
                 int choice = i + 1;
                 var button = new Button(() =>
                 {
-                    m_MissionRequest++;
+                    m_MissionRequest=NextManualActionRequest();
                     Send(new RaidMissionActionRpc { RaidId = m_MissionSnapshot.RaidId, Epoch = m_MissionSnapshot.Epoch,
                         OperationId = m_MissionSnapshot.OperationId, Node = node, RequestId = m_MissionRequest, Intent = MissionIntent.Configure, Choice = choice });
                     SetMissionDetails(false);

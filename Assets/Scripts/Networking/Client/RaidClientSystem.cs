@@ -27,6 +27,10 @@ namespace Unity.MP_FPS
                     EntityManager.SetComponentData(m_State,new RaidMissionClientState {Snapshot=mission.ValueRO});
                 ecb.DestroyEntity(entity);
             }
+            foreach(var (bag,received,entity) in SystemAPI.Query<RefRO<RaidGroundMarkerRpc>,RefRW<ReceiveRpcCommandRequest>>().WithEntityAccess())
+            {
+                received.ValueRW.Consume();EntityManager.GetComponentObject<RaidDeathBagClientState>(m_State).Receive(bag.ValueRO);ecb.DestroyEntity(entity);
+            }
             foreach(var (bag,received,entity) in SystemAPI.Query<RefRO<RaidCorpseRpc>,RefRW<ReceiveRpcCommandRequest>>().WithEntityAccess())
             {
                 received.ValueRW.Consume();EntityManager.GetComponentObject<RaidDeathBagClientState>(m_State).Receive(bag.ValueRO);ecb.DestroyEntity(entity);

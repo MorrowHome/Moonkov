@@ -42,6 +42,9 @@ namespace Unity.MP_FPS
         public double NextRefillCheck;
         public const int FirstDeathBagId=24;
         public const int DroppedItemCharacterIndex=-2;
+        public const double EmptyDropGraceSeconds=10;
+        public const float DropInterestRadius=80;
+        private readonly System.Collections.Generic.List<int> m_ExpiredDrops = new System.Collections.Generic.List<int>();
         public const int FirstMissionCacheId = 1000000000;
         private int m_NextDeathBagId=FirstDeathBagId;
         // A fresh alien bag starts at version 1. Dissection advances it before
@@ -76,6 +79,7 @@ namespace Unity.MP_FPS
         }
         private int RegisterDrop(InventoryGraph graph,Unity.Mathematics.float3 position,Unity.Mathematics.quaternion rotation,int characterIndex,double createdAt)
         {
+            if(m_NextDeathBagId>=FirstMissionCacheId)throw new ArgumentException("Ground loot ID space exhausted.");
             int id=m_NextDeathBagId++;
             Containers.Add(id,graph);
             try { DeathBags.Add(id,new RaidCorpseRecord {Position=position,
@@ -83,6 +87,20 @@ namespace Unity.MP_FPS
                 CharacterIndex=characterIndex,CreatedAt=createdAt}); }
             catch { Containers.Remove(id);throw; }
             return id;
+        }
+        public bool IsEmptyDrop(int id) => DeathBags.TryGetValue(id,out var bag) && bag.CharacterIndex==DroppedItemCharacterIndex &&
+            Containers.TryGetValue(id,out var graph) && !RaidLootRefillState.HasContents(graph);
+        public void RecycleEmptyDrops(double now,System.Collections.Generic.HashSet<int> protectedIds)
+        {
+            m_ExpiredDrops.Clear();
+            foreach(var pair in DeathBags)
+            {
+                if(pair.Value.CharacterIndex!=DroppedItemCharacterIndex)continue;
+                if(!IsEmptyDrop(pair.Key) || protectedIds.Contains(pair.Key)) {pair.Value.EmptySince=-1;continue;}
+                if(pair.Value.EmptySince<0)pair.Value.EmptySince=now;
+                if(now-pair.Value.EmptySince>=EmptyDropGraceSeconds)m_ExpiredDrops.Add(pair.Key);
+            }
+            foreach(int id in m_ExpiredDrops) {Containers.Remove(id);DeathBags.Remove(id);}
         }
         public void Initialize(int count, Func<int,RaidLootProfile> profileFor = null, object mapIdentity = null)
         {
@@ -127,6 +145,10 @@ namespace Unity.MP_FPS
         public Unity.Mathematics.float3 MedicalOrigin;
         public uint MedicalDamageTick,MedicalShotTick,MedicalGrenadeTick,MedicalReloadTick,MedicalWeapon;
         public bool NeedsSearch(RaidLootContainers caches,int id) => !SearchedLoot.Contains(id) || caches.RequiresDissection(id);
+        public uint DeathBagSequence;
+        public double NextDeathBagResync;
+        public readonly System.Collections.Generic.List<int> HiddenDeathBags = new System.Collections.Generic.List<int>();
+        public readonly System.Collections.Generic.List<int> RemovedSearches = new System.Collections.Generic.List<int>();
         public bool ActionPending => DissectingLootId>=0 || MedicalItemId!=null;
         public void CancelActions(string feedback=null)
         {
@@ -135,11 +157,10 @@ namespace Unity.MP_FPS
         public InventoryError BeginMedical(in PredictedPlayerGhost health,string id,int version,BodyPart part,
             Unity.Mathematics.float3 origin,double now,float seconds=3)
         {
-            if(ActionPending)return InventoryError.Inaccessible;
             // Validate on copies: neither item consumption nor healing occurs before the deadline.
             var probe=health;var error=RaidHealth.UseMedical(ref probe,Graph.Clone(),id,version,part);
             if(error!=InventoryError.None)return error;
-            ActionFeedback=null;MedicalItemId=id;MedicalVersion=version;MedicalPart=part==BodyPart.Auto ? RaidHealth.MostInjured(health) : part;
+            CancelActions(ActionPending ? "原操作已取消：开始治疗；未获取物品或消耗医疗物品。" : null);MedicalItemId=id;MedicalVersion=version;MedicalPart=part==BodyPart.Auto ? RaidHealth.MostInjured(health) : part;
             MedicalOrigin=origin;MedicalUntil=now+System.Math.Max(.1f,seconds);
             MedicalDamageTick=health.LastHitTick;MedicalShotTick=health.LastShotTick;
             MedicalGrenadeTick=health.LastGrenadeShotTick;MedicalReloadTick=health.LastReloadTick;MedicalWeapon=health.EquippedWeaponID;
@@ -166,7 +187,7 @@ namespace Unity.MP_FPS
         public uint DissectionDamageTick;
         public void BeginDissection(int id,double now,Unity.Mathematics.float3 origin,uint damageTick,float seconds=AlienHarvest.DissectionSeconds)
         {
-            ActionFeedback=null;DissectingLootId=id;DissectionUntil=now+System.Math.Max(.1f,seconds);
+            CancelActions(ActionPending ? "原操作已取消：开始搜索；未消耗医疗物品。" : ActionFeedback);DissectingLootId=id;DissectionUntil=now+System.Math.Max(.1f,seconds);
             DissectionOrigin=origin;DissectionDamageTick=damageTick;OpenedLootId=-1;LastSentVersion=-1;
         }
         public void RefreshDissection(RaidLootContainers caches,bool accessible,Unity.Mathematics.float3 position,uint damageTick,double now)
@@ -233,6 +254,7 @@ namespace Unity.MP_FPS
         public Unity.Mathematics.quaternion Rotation;
         public int CharacterIndex;
         public double CreatedAt;
+        public double EmptySince=-1;
     }
     // Separate identity from the earlier bag marker RPC: generated/Burst layouts
     // must never reuse the smaller component after adding corpse presentation data.
@@ -245,9 +267,43 @@ namespace Unity.MP_FPS
         public bool Empty;
         public bool RequiresDissection => CharacterIndex==-1 && Version==1;
     }
+    // Atomic visibility + metadata update, with a fresh generated serializer identity.
+    public struct RaidGroundMarkerRpc : IRpcCommand
+    {
+        public uint Sequence;
+        public int LootId, Version, CharacterIndex;
+        public Unity.Mathematics.float3 Position;
+        public Unity.Mathematics.quaternion Rotation;
+        public float Age;
+        public bool Empty, Removed, Deleted;
+    }
     public sealed class RaidDeathBagClientState : IComponentData
     {
         public readonly System.Collections.Generic.Dictionary<int,RaidCorpseRpc> Bags = new System.Collections.Generic.Dictionary<int,RaidCorpseRpc>();
+        private readonly System.Collections.Generic.Dictionary<int,uint> m_Sequences = new System.Collections.Generic.Dictionary<int,uint>();
+        // Keep at most a window of per-ID sequence records. Updates older than
+        // the window are rejected globally, including for already removed bags.
+        private const uint SequenceWindow=4096;
+        private uint m_HighestSequence;
+        private readonly System.Collections.Generic.List<int> m_ExpiredSequences = new System.Collections.Generic.List<int>();
+        public void Receive(RaidGroundMarkerRpc update)
+        {
+            uint floor=m_HighestSequence>SequenceWindow ? m_HighestSequence-SequenceWindow : 0;
+            if(update.Sequence<=floor)return;
+            if(update.LootId<RaidLootContainers.FirstDeathBagId || update.Sequence==0 ||
+                m_Sequences.TryGetValue(update.LootId,out uint sequence) && update.Sequence<=sequence)return;
+            m_HighestSequence=System.Math.Max(m_HighestSequence,update.Sequence);
+            m_Sequences[update.LootId]=update.Sequence;
+            if(m_Sequences.Count>SequenceWindow)
+            {
+                floor=m_HighestSequence-SequenceWindow;m_ExpiredSequences.Clear();
+                foreach(var pair in m_Sequences)if(pair.Value<=floor)m_ExpiredSequences.Add(pair.Key);
+                foreach(int id in m_ExpiredSequences)m_Sequences.Remove(id);
+            }
+            if(update.Removed) {Bags.Remove(update.LootId);return;}
+            Receive(new RaidCorpseRpc {LootId=update.LootId,Version=update.Version,CharacterIndex=update.CharacterIndex,
+                Position=update.Position,Rotation=update.Rotation,Age=update.Age,Empty=update.Empty});
+        }
         public void Receive(RaidCorpseRpc bag)
         {
             if(bag.LootId<RaidLootContainers.FirstDeathBagId || bag.Version<1 || bag.CharacterIndex<RaidLootContainers.DroppedItemCharacterIndex || bag.CharacterIndex>2 ||

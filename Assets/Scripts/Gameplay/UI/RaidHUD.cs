@@ -35,7 +35,7 @@ namespace Unity.MP_FPS
         private string m_ActionFeedback;
         private VisualElement m_ActionPanel;
         private ProgressBar m_ActionProgress;
-        private Button m_ActionCancel;
+        private Button m_ActionCancel, m_SwitchDrop;
         private int m_OpenedLootId=-1;
         private Label m_InventoryTitle;
         private Label m_Bag, m_Timer, m_Clock, m_Prompt, m_Exit, m_ResultText, m_SaveStatus;
@@ -134,7 +134,10 @@ namespace Unity.MP_FPS
             m_InventorySequence=0; m_InventoryRequestId=0;
             m_InventoryRequestPending=false;
             m_LootOpenPending=false;m_OpenedLootId=-1;m_DissectingLootId=-1;
-            m_Root.Q<Button>("raidPackClose").clicked += ClosePack;
+            var closePack=m_Root.Q<Button>("raidPackClose");closePack.clicked += ClosePack;
+            m_SwitchDrop=new Button(SwitchNearbyDrop) {name="raidSwitchDrop",text="SWITCH NEARBY BAG"};
+            m_SwitchDrop.style.display=DisplayStyle.None;
+            closePack.parent.Insert(closePack.parent.IndexOf(closePack),m_SwitchDrop);
             MoonkovLocalization.Bind(m_Root);
             InitializeMissions();
         }
@@ -237,12 +240,18 @@ namespace Unity.MP_FPS
             var bags=m_World.EntityManager.GetComponentObject<RaidDeathBagClientState>(m_StateQuery.GetSingletonEntity());
             return bags.Bags.TryGetValue(id,out var bag) && bag.CharacterIndex==RaidLootContainers.DroppedItemCharacterIndex;
         }
+        private uint NextManualActionRequest()
+        {
+            var inventory=m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
+            m_InventoryRequestId=System.Math.Max(System.Math.Max(m_InventoryRequestId,m_MissionRequest),inventory.RequestId)+1;
+            return m_InventoryRequestId;
+        }
         private bool TimedActionActive => m_MedicalActive || m_DissectingLootId>=0;
         private void CancelTimedAction()
         {
             if(!TimedActionActive || m_World==null || !m_World.IsCreated || m_InventoryQuery.IsEmptyIgnoreFilter)return;
             var inventory=m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
-            m_InventoryRequestId=System.Math.Max(m_InventoryRequestId,inventory.RequestId)+1;
+            m_InventoryRequestId=NextManualActionRequest();
             if(Send(new RaidActionCancelRpc {RaidId=m_Snapshot.RaidId,RequestId=m_InventoryRequestId}))
             {m_InventoryRequestedAt=Time.unscaledTime;m_InventoryRequestPending=true;}
         }
@@ -338,6 +347,11 @@ namespace Unity.MP_FPS
             MoonRaidMap.Active.ShowLoot(m_Snapshot.TakenMask, ready);
             var deathBags=m_World.EntityManager.GetComponentObject<RaidDeathBagClientState>(m_StateQuery.GetSingletonEntity());
             MoonRaidMap.Active.ShowDeathBags(deathBags);
+            int viewing=m_DissectingLootId>=0 ? m_DissectingLootId : m_OpenedLootId;
+            bool switchable=m_InventoryVisible && IsDroppedLoot(viewing) && m_PlayerQuery.HasSingleton<LocalTransform>() &&
+                SelectNearbyDrop(deathBags,m_PlayerQuery.GetSingleton<LocalTransform>().Position,viewing)>=0;
+            m_SwitchDrop.style.display=switchable ? DisplayStyle.Flex : DisplayStyle.None;
+            m_SwitchDrop.SetEnabled(!m_InventoryRequestPending || TimedActionActive);
             if (settled)
             {
                 // LateUpdate runs after character teardown, which can restore the previous cursor state.
@@ -396,10 +410,19 @@ namespace Unity.MP_FPS
                     float candidate = Vector3.Distance(position, map.LootPositions[i]);
                     if (candidate < distance) { nearest = i; distance = candidate; }
                 }
+                var camera=Camera.main;
+                float bestAim=-2;
                 foreach(var bag in deathBags.Bags.Values)
                 {
+                    if(bag.CharacterIndex==RaidLootContainers.DroppedItemCharacterIndex && bag.Empty)continue;
+                    var target=(Vector3)bag.Position+Vector3.up*.25f;
                     float candidate=Vector3.Distance(position,(Vector3)bag.Position);
-                    if(candidate<distance){nearest=bag.LootId;distance=candidate;}
+                    if(candidate>RaidRules.PickupRange || UnityEngine.Physics.Linecast(position+Vector3.up*1.4f,target,
+                        LayerMask.GetMask("Default","Ground"),QueryTriggerInteraction.Ignore))continue;
+                    float aim=camera ? Vector3.Dot(camera.transform.forward,(target-camera.transform.position).normalized) : 0;
+                    if(candidate<distance-.05f || Mathf.Abs(candidate-distance)<=.05f &&
+                        (aim>bestAim+.001f || Mathf.Abs(aim-bestAim)<=.001f && bag.LootId>nearest))
+                    {nearest=bag.LootId;distance=candidate;bestAim=aim;}
                 }
                 m_AirlockPrompt.RefreshSelection(Camera.main, position, !m_InventoryVisible && !m_InventoryRequestPending &&
                     UnityEngine.Cursor.lockState == CursorLockMode.Locked && !GameSettings.Instance.IsPauseMenuOpen, m_World);
@@ -412,22 +435,7 @@ namespace Unity.MP_FPS
                     m_AirlockPrompt.TryInteract(Camera.main, position, m_World);
                 if (nearest >= 0 && pressed && !controlPressed && !missionControl && !m_InventoryVisible && !m_InventoryRequestPending && UnityEngine.Cursor.lockState == CursorLockMode.Locked && !GameSettings.Instance.IsPauseMenuOpen)
                 {
-                    if(RequestLoot(nearest))
-                    {
-                        // Loot always opens the equipment page, even if Tab last
-                        // showed health. Selection does not discard an in-flight intent.
-                        m_HealthSelected = false;
-                        m_EquipmentHost.style.display = DisplayStyle.Flex; m_HealthHost.style.display = DisplayStyle.None;
-                        m_EquipmentTab.EnableInClassList("raid-tab-active", true); m_HealthTab.EnableInClassList("raid-tab-active", false);
-                        bool dissect=deathBags.Bags.TryGetValue(nearest,out var remains) && remains.RequiresDissection;
-                        m_DissectingLootId=nearest;
-                        m_ActionDuration=dissect ? Inventory.AlienHarvest.DissectionSeconds : MoonRaidMap.Active.SearchSeconds;
-                        m_DissectionEndsAt=Time.unscaledTime+m_ActionDuration;
-                        string opening=dissect ? "搜索中：保持静止；关闭或X取消，移动或受伤会中断。"
-                            : IsDroppedLoot(nearest) ? "搜索地面丢弃物…" : nearest>=RaidLootContainers.FirstDeathBagId ? "Searching fallen expedition…" : "Opening supply cache…";
-                        m_LootOpenPending=true;m_InventoryView.Present(null,opening,operationCompleted:false);
-                        m_InventoryView.SetReadOnly(opening);SetInventory(true);
-                    }
+                    OpenLootContainer(nearest);
                 }
             }
             // Input is sampled every frame; presentation text refreshes at 10 Hz.
@@ -496,7 +504,9 @@ namespace Unity.MP_FPS
             if (settled)
             {
                 MoonkovLocalization.Set(m_SaveStatus, m_Snapshot.SaveState == RaidSaveState.SessionOnly ? "Stash lasts for this connection only."
-                    : m_Snapshot.SaveState == RaidSaveState.Saved ? "Stash saved. You can reconnect later."
+                    : m_Snapshot.SaveState == RaidSaveState.Saved ? m_Snapshot.Phase == RaidPhase.Extracted
+                        ? "Extracted items are saved. If recovery items are pending, make room and claim them before deploying again."
+                        : "Stash saved. You can reconnect later."
                     : m_Snapshot.SaveState == RaidSaveState.Retrying ? "Waiting to save. Retrying..." : "Saving raid results...");
                 RenderResult();
             }
@@ -571,11 +581,48 @@ namespace Unity.MP_FPS
             text += $"+{amount}  {MoonkovLocalization.Text(item)}";
         }
 
+        public static int SelectNearbyDrop(RaidDeathBagClientState bags,Vector3 position,int current)
+        {
+            int next=int.MaxValue,first=int.MaxValue;
+            foreach(var bag in bags.Bags.Values)
+            {
+                if(bag.LootId==current || bag.CharacterIndex!=RaidLootContainers.DroppedItemCharacterIndex || bag.Empty ||
+                    Vector3.Distance(position,(Vector3)bag.Position)>RaidRules.PickupRange ||
+                    UnityEngine.Physics.Linecast(position+Vector3.up*1.4f,(Vector3)bag.Position+Vector3.up*.25f,
+                        LayerMask.GetMask("Default","Ground"),QueryTriggerInteraction.Ignore))continue;
+                first=System.Math.Min(first,bag.LootId);
+                if(bag.LootId>current)next=System.Math.Min(next,bag.LootId);
+            }
+            return next!=int.MaxValue ? next : first!=int.MaxValue ? first : -1;
+        }
+        private void SwitchNearbyDrop()
+        {
+            if(!m_InventoryVisible || m_InventoryRequestPending && !TimedActionActive || !m_PlayerQuery.HasSingleton<LocalTransform>())return;
+            var bags=m_World.EntityManager.GetComponentObject<RaidDeathBagClientState>(m_StateQuery.GetSingletonEntity());
+            int current=m_DissectingLootId>=0 ? m_DissectingLootId : m_OpenedLootId;
+            int next=SelectNearbyDrop(bags,m_PlayerQuery.GetSingleton<LocalTransform>().Position,current);
+            if(next>=0)OpenLootContainer(next);
+        }
+        private void OpenLootContainer(int id)
+        {
+            if(!RequestLoot(id))return;
+            var bags=m_World.EntityManager.GetComponentObject<RaidDeathBagClientState>(m_StateQuery.GetSingletonEntity());
+            m_HealthSelected=false;m_EquipmentHost.style.display=DisplayStyle.Flex;m_HealthHost.style.display=DisplayStyle.None;
+            m_EquipmentTab.EnableInClassList("raid-tab-active",true);m_HealthTab.EnableInClassList("raid-tab-active",false);
+            bool dissect=bags.Bags.TryGetValue(id,out var remains) && remains.RequiresDissection;
+            m_MedicalActive=false;m_DissectingLootId=id;
+            m_ActionDuration=dissect ? Inventory.AlienHarvest.DissectionSeconds : MoonRaidMap.Active.SearchSeconds;
+            m_DissectionEndsAt=Time.unscaledTime+m_ActionDuration;
+            string opening=dissect ? "搜索中：保持静止；关闭或X取消，移动或受伤会中断。" :
+                IsDroppedLoot(id) ? "搜索地面丢弃物…" : id>=RaidLootContainers.FirstDeathBagId ? "Searching fallen expedition…" : "Opening supply cache…";
+            m_LootOpenPending=true;m_InventoryView.Present(null,opening,operationCompleted:false);
+            m_InventoryView.SetReadOnly(opening);SetInventory(true);
+        }
         private bool RequestLoot(int lootId)
         {
             if(m_World==null || !m_World.IsCreated || m_InventoryQuery.IsEmptyIgnoreFilter)return false;
             var inventory=m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
-            m_InventoryRequestId=System.Math.Max(m_InventoryRequestId,inventory.RequestId)+1;
+            m_InventoryRequestId=NextManualActionRequest();
             if(!Send(new RaidLootOpenRpc {RaidId=m_Snapshot.RaidId,LootId=lootId,RequestId=m_InventoryRequestId}))return false;
             m_InventoryRequestedAt=Time.unscaledTime;m_InventoryRequestPending=true;return true;
         }
@@ -596,7 +643,7 @@ namespace Unity.MP_FPS
             if (inventory.Sequence!=m_InventorySequence)
             {
                 m_InventorySequence=inventory.Sequence;
-                if(inventory.MedicalItemId!=null && inventory.RequestId==m_InventoryRequestId)
+                if(inventory.MedicalItemId!=null)
                 {
                     m_MedicalActive=true;m_MedicalEndsAt=Time.unscaledTime+inventory.MedicalRemaining;
                     m_ActionDuration=Mathf.Max(m_ActionDuration,inventory.MedicalRemaining);
@@ -604,7 +651,7 @@ namespace Unity.MP_FPS
                     m_InventoryView.SetReadOnly("治疗中 · X取消");
                     return;
                 }
-                if(inventory.DissectingLootId>=0 && inventory.RequestId==m_InventoryRequestId)
+                if(inventory.DissectingLootId>=0)
                 {
                     m_DissectingLootId=inventory.DissectingLootId;
                     m_DissectionEndsAt=Time.unscaledTime+inventory.DissectionRemaining;
@@ -616,7 +663,7 @@ namespace Unity.MP_FPS
                 bool wasMedical=m_MedicalActive;
                 bool wasOpen=m_OpenedLootId>=0;
                 bool missionCache = m_OpenedLootId >= RaidLootContainers.FirstMissionCacheId || inventory.LootId >= RaidLootContainers.FirstMissionCacheId;
-                bool acknowledged = !m_InventoryRequestPending || inventory.RequestId == m_InventoryRequestId || wasOpen && inventory.LootId<0;
+                bool acknowledged = !m_InventoryRequestPending || inventory.RequestId >= m_InventoryRequestId || wasOpen && inventory.LootId<0;
                 if (acknowledged) m_InventoryRequestPending = false;
                 m_OpenedLootId=inventory.LootId;
                 if(acknowledged)
@@ -649,7 +696,7 @@ namespace Unity.MP_FPS
         {
             if(m_InventoryRequestPending || m_Snapshot.Phase!=RaidPhase.Active)return;
             var inventory=m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
-            m_InventoryRequestId=System.Math.Max(m_InventoryRequestId,inventory.RequestId)+1;
+            m_InventoryRequestId=NextManualActionRequest();
             if(Send(new RaidInventoryDropRpc {RaidId=m_Snapshot.RaidId,RequestId=m_InventoryRequestId,
                 ExpectedVersion=inventory.Graph.Version,ItemId=item.Id}))
             {m_InventoryRequestedAt=Time.unscaledTime;m_InventoryRequestPending=true;}
@@ -658,7 +705,7 @@ namespace Unity.MP_FPS
         private void SendInventoryMove(Inventory.InventoryCommand command)
         {
             var inventory=m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
-            m_InventoryRequestId=System.Math.Max(m_InventoryRequestId,inventory.RequestId)+1;
+            m_InventoryRequestId=NextManualActionRequest();
             bool sent=inventory.LootId>=0
                 ? Send(new RaidLootMoveRpc {RaidId=m_Snapshot.RaidId,LootId=inventory.LootId,ExpectedLootVersion=inventory.LootVersion,
                     RequestId=m_InventoryRequestId,ExpectedVersion=command.ExpectedVersion,Operation=command.Operation,
@@ -694,7 +741,7 @@ namespace Unity.MP_FPS
                     "Cannot consume: resource is full, stomach capacity is insufficient, or the player is inactive.";
                 m_InventoryView.Present(inventory.Graph, message); m_HealthView.Message(message); return;
             }
-            m_InventoryRequestId = System.Math.Max(m_InventoryRequestId, inventory.RequestId) + 1;
+            m_InventoryRequestId = NextManualActionRequest();
             if (Send(new RaidConsumableUseRpc { RaidId = m_Snapshot.RaidId, RequestId = m_InventoryRequestId,
                 ExpectedVersion = inventory.Graph.Version, ItemId = item.Id }))
             { m_InventoryRequestedAt = Time.unscaledTime; m_InventoryRequestPending = true; }
@@ -716,7 +763,7 @@ namespace Unity.MP_FPS
         {
             if (m_InventoryRequestPending || m_Snapshot.Phase != RaidPhase.Active) return;
             var inventory = m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
-            m_InventoryRequestId = System.Math.Max(m_InventoryRequestId, inventory.RequestId) + 1;
+            m_InventoryRequestId = NextManualActionRequest();
             if (Send(new RaidMedicalUseRpc { RaidId = m_Snapshot.RaidId, RequestId = m_InventoryRequestId,
                 ExpectedVersion = inventory.Graph.Version, ItemId = item.Id, Part = part }))
             {

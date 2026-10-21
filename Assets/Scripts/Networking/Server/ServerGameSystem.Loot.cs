@@ -23,7 +23,7 @@ namespace Unity.MP_FPS
                 if(!state.EntityManager.HasComponent<RaidInventoryState>(connection))continue;
                 var inventory=GetRaidInventory(ref state,connection);
                 inventory.OpenedLootId=-1;inventory.CancelActions();inventory.SearchedLoot.Clear();inventory.LastSentVersion=-1;inventory.LastSentLootVersion=-1;
-                inventory.SentDeathBags.Clear();
+                inventory.NextDeathBagResync=0;
             }
         }
         private void RefreshLootContainers(ref SystemState state)
@@ -34,6 +34,16 @@ namespace Unity.MP_FPS
             double now=SystemAPI.Time.ElapsedTime;
             if(now<caches.NextRefillCheck)return;
             caches.NextRefillCheck=now+1;
+            var protectedDrops=new System.Collections.Generic.HashSet<int>();
+            foreach(var (session,connection) in SystemAPI.Query<RefRO<RaidSession>>().WithEntityAccess())
+            {
+                if(session.ValueRO.Phase!=RaidPhase.Active || !state.EntityManager.HasComponent<RaidInventoryState>(connection) ||
+                    SystemAPI.HasComponent<NetworkStreamRequestDisconnect>(connection))continue;
+                var inventory=GetRaidInventory(ref state,connection);
+                if(inventory.OpenedLootId>=0)protectedDrops.Add(inventory.OpenedLootId);
+                if(inventory.DissectingLootId>=0)protectedDrops.Add(inventory.DissectingLootId);
+            }
+            caches.RecycleEmptyDrops(now,protectedDrops);
             bool hasActivePlayer=false;
             foreach(var (session,joined,connection) in SystemAPI.Query<RefRO<RaidSession>,RefRO<JoinedClient>>().WithEntityAccess())
             {
@@ -102,18 +112,48 @@ namespace Unity.MP_FPS
         private void SendDeathBags(ref SystemState state,EntityCommandBuffer ecb,Entity connection)
         {
             var loot=LootContainers(ref state);var inventory=GetRaidInventory(ref state,connection);
+            bool resync=SystemAPI.Time.ElapsedTime>=inventory.NextDeathBagResync;
+            if(resync)inventory.NextDeathBagResync=SystemAPI.Time.ElapsedTime+5;
+            float3 position=default;
+            bool living=SystemAPI.HasComponent<JoinedClient>(connection) &&
+                TryGetLivingPosition(ref state,SystemAPI.GetComponent<JoinedClient>(connection).PlayerEntity,out position);
+            inventory.HiddenDeathBags.Clear();
+            foreach(var sent in inventory.SentDeathBags)
+            {
+                if(!loot.DeathBags.TryGetValue(sent.Key,out var bag) || bag.CharacterIndex==RaidLootContainers.DroppedItemCharacterIndex &&
+                    (!living || math.distancesq(position,bag.Position)>RaidLootContainers.DropInterestRadius*RaidLootContainers.DropInterestRadius) &&
+                    inventory.OpenedLootId!=sent.Key && inventory.DissectingLootId!=sent.Key)
+                    inventory.HiddenDeathBags.Add(sent.Key);
+            }
+            foreach(int id in inventory.HiddenDeathBags)
+            {
+                var removed=ecb.CreateEntity();
+                ecb.AddComponent(removed,new RaidGroundMarkerRpc {LootId=id,Sequence=++inventory.DeathBagSequence,Removed=true,Deleted=!loot.DeathBags.ContainsKey(id)});
+                ecb.AddComponent(removed,new SendRpcCommandRequest {TargetConnection=connection});
+                inventory.SentDeathBags.Remove(id);
+                if(!loot.DeathBags.ContainsKey(id))inventory.SearchedLoot.Remove(id);
+            }
+            inventory.RemovedSearches.Clear();
+            foreach(int id in inventory.SearchedLoot)
+                if(id>=RaidLootContainers.FirstDeathBagId && id<RaidLootContainers.FirstMissionCacheId && !loot.DeathBags.ContainsKey(id))
+                    inventory.RemovedSearches.Add(id);
+            foreach(int id in inventory.RemovedSearches)inventory.SearchedLoot.Remove(id);
             foreach(var bag in loot.DeathBags)
             {
+                if(bag.Value.CharacterIndex==RaidLootContainers.DroppedItemCharacterIndex &&
+                    (!living || math.distancesq(position,bag.Value.Position)>RaidLootContainers.DropInterestRadius*RaidLootContainers.DropInterestRadius) &&
+                    inventory.OpenedLootId!=bag.Key && inventory.DissectingLootId!=bag.Key)continue;
                 var graph=loot.Containers[bag.Key];
-                if(inventory.SentDeathBags.TryGetValue(bag.Key,out var sent) && sent==graph.Version)continue;
+                if(!resync && inventory.SentDeathBags.TryGetValue(bag.Key,out var sent) && sent==graph.Version)continue;
                 inventory.SentDeathBags[bag.Key]=graph.Version;
                 var rpc=ecb.CreateEntity();
-                ecb.AddComponent(rpc,new RaidCorpseRpc {LootId=bag.Key,Version=graph.Version,Position=bag.Value.Position,
+                ecb.AddComponent(rpc,new RaidGroundMarkerRpc {Sequence=++inventory.DeathBagSequence,LootId=bag.Key,Version=graph.Version,Position=bag.Value.Position,
                     Rotation=bag.Value.Rotation,CharacterIndex=bag.Value.CharacterIndex,Age=(float)math.max(0,SystemAPI.Time.ElapsedTime-bag.Value.CreatedAt),
-                    Empty=!graph.Items.Exists(i=>i.Parent==LootInventoryExchange.Root)});
+                    Empty=!RaidLootRefillState.HasContents(graph)});
                 ecb.AddComponent(rpc,new SendRpcCommandRequest {TargetConnection=connection});
             }
         }
+
         private void HandleLootRequests(ref SystemState state,EntityCommandBuffer ecb)
         {
             var caches=LootContainers(ref state);
@@ -126,9 +166,15 @@ namespace Unity.MP_FPS
                     if(r.RequestId>inventory.RequestId)
                     {
                         inventory.RequestId=r.RequestId;
-                        bool accepted=r.RaidId==session.RaidId && inventory.RaidId==r.RaidId && (r.LootId==-1 || CanAccessLoot(ref state,connection,r.LootId,session));
-                        inventory.CancelActions();
-                        inventory.OpenedLootId=accepted ? r.LootId : -1;
+                        bool accepted=r.RaidId==session.RaidId && inventory.RaidId==r.RaidId && session.Phase==RaidPhase.Active &&
+                            !SystemAPI.HasComponent<NetworkStreamRequestDisconnect>(connection) && (r.LootId==-1 ||
+                            !caches.IsEmptyDrop(r.LootId) && CanAccessLoot(ref state,connection,r.LootId,session));
+                        if(accepted)
+                        {
+                            inventory.CancelActions(inventory.ActionPending ? "原操作已取消：切换搜刮目标；未消耗物品。" : null);
+                            CancelManualMission(ref state,connection,"任务操作中断：开始搜索或关闭搜刮。");
+                            inventory.OpenedLootId=r.LootId;
+                        }
                         if(accepted && r.LootId>=0 && inventory.NeedsSearch(caches,r.LootId))
                         {
                             var player=SystemAPI.GetComponent<JoinedClient>(connection).PlayerEntity;
