@@ -18,7 +18,7 @@ namespace Unity.MP_FPS
             if(!clash)HandleMissions(ref state, ecb);
             HandleLootRequests(ref state,ecb);
             HandleInventoryRequests(ref state, ecb);
-            if(!clash)RefreshLootContainers(ref state);
+            RefreshLootContainers(ref state);
             float dt = SystemAPI.Time.DeltaTime;
             var loot = SystemAPI.GetSingletonRW<RaidLootWorld>();
             // Shells remain in the world; the server refills only safe, completely empty caches.

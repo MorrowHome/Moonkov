@@ -33,7 +33,7 @@ Moonkov货币适配v1：每位实际与赏金携带者同次有效撤离者基�
 
 赏金撤离先在所有Profiles/Inventories仍存在时捕获整组不可变快照，原子写`.bounty`（含整组每人的完整Settlement），之后才发兑付/个人结算。个人`.json`也保留到确认；重启先重放组日志，再个人收据，再退款/丢失出战。即使崩溃时只有组日志，也能恢复所有队员；不是对尚未持久化整张战局的恢复承诺。模式日志不能交给旧版服务器处理，含新模式数据后不得盲目回滚服务器/后端。
 
-`RebindBountyOwner`仅供服务端认证后或已认证连接断线时调用；按PlayerId、同SettlementId和旧owner校验后，迁移Profiles/Inventories与pending Save.Connection，不改变或重发原Task/payload。Detached与重连接入由主组调用，真实ECS延迟ack回归另行验收。
+`RebindBountyOwner`仅供服务端认证后或已认证连接断线时调用；按PlayerId、同SettlementId和旧owner校验后，迁移Profiles/Inventories与pending Save.Connection，不改变或重发原Task/payload。Detached与重连接入由主组调用，真实ECS采用方案A：保留`PollPersistence`的同玩家pending receipt等待门禁；新UDP连接可发起认证，但旧ack释放并把holder更新为Saved、刷新账号后才完成Join。不能在扣住ack时等待完整重连，也不为模式增加绕过门禁的旁路。Context测试中ack前两次迁移仅验证helper契约，该方案的真实ECS延迟ack回归已由主组的同进程UDP用例实际验证，独立多进程/观察者仍未验。
 
 普通模式新增字段均省略默认值，保持旧离线收据JSON哈希兼容；未更改已有真实存档/PlayerPrefs。`PlayerProfileClient.LocalPreferenceScope`供快捷栏使用：在线由已验证PlayerId与服务URL哈希，离线由实际档案路径哈希；未验证/切换服务/登出为空，不用DisplayName或Token，也不是所有权凭证。
 
@@ -43,4 +43,7 @@ Moonkov货币适配v1：每位实际与赏金携带者同次有效撤离者基�
 - `dotnet run --project Backend/BountyClashContextChecks/BountyClashContextChecks.csproj`：43项，包括实际源文件的普通收据字节、旧Format1/2离线14项、故障留日志/只剩组日志整组重放、旧后端能力拒绝、未完成扣库关闭后退款、真实AccountClient/PlayerProfileClient账号/服务/离线scope隔离，以及结算HTTP延迟ack时旧连接→holder→重连的同任务/同payload迁移、错误身份/结算/目标账号拒绝、完成后优先最新认证仓库。最小Unity类型与**内存PlayerPrefs**桩仅用于.NET测试，不代表真实Unity/Transport；DTO反序列化字段会有CS0649警告，未抑制它们。
 - `dotnet run --project Backend/RecoveryChecks/RecoveryChecks.csproj`：原Recovery纯规则23项通过，普通上限/原首次奖励行为回归。
 
-本轮数据库使用第三方Zonky Maven `embedded-postgres-binaries-darwin-arm64v8:17.6.0`，临时目录、随机loopback端口、专属测试身份，不安装全局服务。另保留一套临时API/独立数据库给主组真实多人Transport验收；配置与密钥仅在0600临时文件，不入Git，验收结束后停止并删除。具体多人/界面验收由主组及协调记录，不能据本专项宣称完整玩法完成。
+- 主组保留报告`Library/BuildValidation/BountyClash/adapter-udp-result.txt`实际记录`PASS 73 same-process real UDP / temporary HTTP+PG adapter checks`。对应`adapter-udp.txt`第56–59项验证同一结算Task/payload跟随holder、认证等待旧回执、真实HTTP ack后Saved/fresh及`auth/me`仓库一致、solo80仅一次；第70–73项验证第二局个人RaidId递增、旧epoch攻击与旧RaidId库存RPC拒绝、第二局快照经Transport到达。另包含真实三人扣装、Team/Slot出生与断线重连保留原实体。这是同进程真实UDP与临时后端证据，不是独立MPPM或观察者验收。
+
+
+本轮数据库使用第三方Zonky Maven `embedded-postgres-binaries-darwin-arm64v8:17.6.0`，临时目录、随机loopback端口、专属测试身份，不安装全局服务。用户因Mac内存取消后续联机/MPPM验收时，取消前已发出的主组最后一轮工具自然返回上述73项实际通过。主组确认finally退出、World.All=0、测试连接释放，UI组确认未接入后，临时API已停止且监听关闭，专属PG已停止，两个允许清理的临时目录及全部测试数据库/账号、0600配置/密钥、outbox均已删除；生产数据库、真实账号、Prefs和配置未动。保留上述报告与版本化验证说明，不再开启新的联机验收。独立MPPM/observer从未运行，完整玩法与视觉结论仍以协调组明确证据和差异清单为准。

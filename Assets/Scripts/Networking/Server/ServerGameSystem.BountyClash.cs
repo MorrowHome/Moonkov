@@ -95,6 +95,24 @@ namespace Unity.MP_FPS
             var world=ClashWorld(ref state);var match=world.Match;
             return match!=null&&match.Phase==ClashPhase.Deploying&&world.Connections.Any(pair=>pair.Value==connection&&match.Players.TryGetValue(pair.Key,out var p)&&p.DeploymentId==deploymentId);
         }
+        // NetCode destroys the connection's LinkedEntityGroup at the end of
+        // NetworkReceiveSystemGroup. Retain the body before that ECB plays back.
+        public void ClashDisconnectBeforeCleanup(ref SystemState state)
+        {
+            if(!ClashEnabled(ref state))return;
+            var world=ClashWorld(ref state);
+            using var commands=new EntityCommandBuffer(Allocator.Temp);
+            // ConnectionEventsForTick is only published after NetCode cleanup.
+            // The public connection state is already updated by the receive job.
+            foreach(var pair in world.Connections.ToArray())
+            {
+                var connection=pair.Value;
+                if(SystemAPI.Exists(connection)&&SystemAPI.HasComponent<NetworkStreamConnection>(connection)&&SystemAPI.HasComponent<NetworkId>(connection)&&
+                    SystemAPI.GetComponent<NetworkStreamConnection>(connection).CurrentState==ConnectionState.State.Disconnected)
+                    DetachClashConnection(ref state,commands,connection,SystemAPI.GetComponent<NetworkId>(connection).Value);
+            }
+            commands.Playback(state.EntityManager);
+        }
         private bool DetachClashConnection(ref SystemState state,EntityCommandBuffer ecb,Entity connection,int networkId)
         {
             if(!ClashEnabled(ref state))return false;
@@ -128,6 +146,9 @@ namespace Unity.MP_FPS
                 if(SystemAPI.Exists(input))ecb.DestroyEntity(input);
                 ecb.SetComponent(joined.PlayerEntity,new PlayerClientCommandInputLookup{ClientCommandInputEntity=Entity.Null});
             }
+            if(SystemAPI.Exists(joined.PlayerEntity)&&SystemAPI.HasComponent<GhostOwner>(joined.PlayerEntity))
+                ecb.SetComponent(joined.PlayerEntity,new GhostOwner{NetworkId=0});
+            p.NetworkId=0;RemovePlayerFromLeaderboard(networkId);
             world.Connections[p.Id]=holder;SystemAPI.GetSingletonBuffer<ClientsMap>().ElementAt(networkId)=default;return true;
         }
         private void ConfigureClashSpawn(ref SystemState state,EntityCommandBuffer ecb,Entity connection,Entity player,ref PredictedPlayerGhost health)
@@ -236,6 +257,12 @@ namespace Unity.MP_FPS
                     h.ClashEnabled=true;h.ClashDarkSight=match.Active(p)&&p.Connected&&p.ViewLease>=now;h.ClashLife=p.Life;h.ClashCanAct=match.Active(p)&&p.Connected;h.ClashMaxHealthFraction=p.MaxFraction;
                     if((changed&&p.Life==ClashLife.Alive)||healed)RaidHealth.Initialize(ref h);
                     if(p.Life!=ClashLife.Alive)h.CurrentHealth=0;
+                    if(p.Life==ClashLife.Downed)
+                    {
+                        h.ControllerState.Stance=Unity.MP_FPS.DollSinger.DollSingerStance.Prone;h.AccumulatedMovement=float3.zero;
+                        if(state.EntityManager.HasComponent<PlayerControllerLink>(player))
+                            state.EntityManager.GetComponentObject<PlayerControllerLink>(player).Controller?.ApplyStanceCapsule(Unity.MP_FPS.DollSinger.DollSingerStance.Prone);
+                    }
                     SystemAPI.SetComponent(player,h);
                     if(SystemAPI.HasComponent<ClashPlayer>(player)){var tag=SystemAPI.GetComponent<ClashPlayer>(player);tag.CanAct=match.Active(p)&&p.Connected;SystemAPI.SetComponent(player,tag);}
                     world.AppliedLife[p.Id]=p.Life;
@@ -243,7 +270,8 @@ namespace Unity.MP_FPS
                 if(p.IsFinished&&!world.Settled.Contains(p.Id)&&world.Connections.TryGetValue(p.Id,out var connection)&&SystemAPI.Exists(connection)&&SystemAPI.HasComponent<RaidSession>(connection))
                 {
                     world.Settled.Add(p.Id);
-                    if(p.Life==ClashLife.Dead&&p.LastAttacker!=0&&p.LastAttacker!=p.NetworkId&&match.Players.Values.Any(enemy=>enemy.NetworkId==p.LastAttacker&&enemy.TeamId!=p.TeamId))LeaderboardManager.Instance?.AddKill(p.LastAttacker,p.NetworkId);
+                    if(p.Life==ClashLife.Dead&&p.LastAttacker!=0&&p.LastAttacker!=p.Id&&match.Players.TryGetValue(p.LastAttacker,out var killer)&&killer.TeamId!=p.TeamId&&killer.Connected&&p.Connected)
+                        LeaderboardManager.Instance?.AddKill(killer.NetworkId,p.NetworkId);
                     FinishRaid(ref state,ecb,connection,match.DeploymentAborted||p.Life==ClashLife.Extracted?RaidPhase.Extracted:p.Life==ClashLife.TimedOut?RaidPhase.TimedOut:RaidPhase.Dead);
                 }
             }

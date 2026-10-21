@@ -113,8 +113,14 @@ namespace Unity.MP_FPS
                 if (evt.State == ConnectionState.State.Disconnected)
                 {
                     var networkId = evt.Id.Value;
-                    if(DetachClashConnection(ref state,ecb,evt.ConnectionEntity,networkId))
-                    {clientsMap=SystemAPI.GetSingletonBuffer<ClientsMap>();_joinedClientLookup.Update(ref state);continue;}
+                    if(ClashEnabled(ref state))
+                    {
+                        // The receive-phase hook already retained the body before NetCode cleanup.
+                        DetachClashConnection(ref state,ecb,evt.ConnectionEntity,networkId);
+                        clientsMap=SystemAPI.GetSingletonBuffer<ClientsMap>();
+                        if(networkId<clientsMap.Length&&clientsMap[networkId].ConnectionEntity==evt.ConnectionEntity)clientsMap.ElementAt(networkId)=default;
+                        _joinedClientLookup.Update(ref state);continue;
+                    }
                     Debug.Log($"[Server] Client with NetworkId {networkId} has disconnected.");
                     if (SystemAPI.Exists(evt.ConnectionEntity) && SystemAPI.HasComponent<RaidSession>(evt.ConnectionEntity))
                     {

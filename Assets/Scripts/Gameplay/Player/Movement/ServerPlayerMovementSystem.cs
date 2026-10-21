@@ -19,6 +19,7 @@ namespace Unity.MP_FPS
         public float3 Position;
         public quaternion Rotation;
         public int OwnerNetworkId;
+        public ClashDamageSource DamageSource;
         public uint SpawnTick;
         public uint WeaponId;
         public uint FireTick;
@@ -403,7 +404,7 @@ namespace Unity.MP_FPS
 
                                                 var healthBeforeDamage = targetPredictedPlayer.ValueRO.CurrentHealth;
                                                 var hitPlayer = hitGhostObject.GetComponent<PlayerGhost>();
-                                                BountyClashDamage.Apply(World,hitGhostObject.LinkedEntity,shooterNetworkId,
+                                                BountyClashDamage.Apply(World,hitGhostObject.LinkedEntity,BountyClashDamage.Capture(World,entity),
                                                     RaidHealth.ResolveHit(hitPlayer, hit.collider, hit.point),weaponData.Damage,serverTick,RaidDamageKind.Bullet);
                                                 if (healthBeforeDamage > 0 && ((HaloModule)predictedPlayer.ValueRO.EquippedModules & HaloModule.HitMarker) != 0)
                                                     VisualEffectManager.ServerInstance?.Server_RequestHaloMark(shooterNetworkId, commandInput.Tick.TickIndexForValidTick, hit.point);
@@ -455,6 +456,7 @@ namespace Unity.MP_FPS
                                                 Position = shotOriginPosition,
                                                 Rotation = spawnRotation,
                                                 OwnerNetworkId = ghostOwnerLookup[entity].NetworkId,
+                                                DamageSource = BountyClashDamage.Capture(World,entity),
                                                 SpawnTick = commandInput.Tick.TickIndexForValidTick,
                                                 WeaponId = predictedPlayer.ValueRO.EquippedWeaponID,
                                                 FireTick = serverTick,
@@ -489,6 +491,7 @@ namespace Unity.MP_FPS
                         ecb2.SetComponent(spawnedEntity, new Projectile.ProjectileData
                         {
                             OwnerNetworkId = spawnData.OwnerNetworkId,
+                            DamageSource = spawnData.DamageSource,
                             SpawnTick = spawnData.SpawnTick,
                             WeaponID = spawnData.WeaponId,
                             FireTick = spawnData.FireTick,

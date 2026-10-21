@@ -28,10 +28,10 @@
 
 Moonkov原身体总量440，按100%归一；每倒地降低25个百分点最大可恢复生命，不改变原武器伤害尺度。`PredictedPlayerGhost`新增ClashEnabled/ClashCanAct/ClashLife/ClashTeam/ClashMaxHealthFraction/ClashDarkSight。`RaidHealth.Maximum(state,part)`、Set和医疗统一夹紧上限，不能用生命针绕过。
 
-Downed保留原实体与装备，健康0且禁止移动/开火/物品操作；同队5秒持续救援，每0.25秒RPC续租，0.6秒无续租、受伤、离开/遮挡中断。团灭或恢复比例耗尽才终死结算。身体实际姿态与武器表现由DollSinger现有表现路径适配，不生成第二个可复制装备的角色。
+Downed保留原实体与装备，健康0且禁止移动/开火/物品操作；服务端ControllerState、输入门禁和实际CharacterController胶囊统一为Prone，复活后由既有输入/净空姿态解算恢复；同队5秒持续救援，每0.25秒RPC续租，0.6秒无续租、受伤、离开/遮挡中断。团灭或恢复比例耗尽才终死结算。身体实际姿态与武器表现由DollSinger现有表现路径适配，不生成第二个可复制装备的角色。
 
 - 同队普通子弹伤害0.1、爆炸/火/毒等1.0，为明确的Moonkov v1适配。
-- `BountyClashDamage.Apply(World, victim, sourceNetworkId, BodyPart, amount, tick, RaidDamageKind)` 统一权威伤害；Auto按组织比例系统分配。已释放的投掷物不因投掷者后来倒地失效，按永久名单识别其队伍。
+- `BountyClashDamage.Capture(World, actorEntity)` 在发射时生成服务器专用 `ClashDamageSource{NetworkId,ParticipantId,Epoch}`；延迟攻击使用 `Apply(World,victim,source,BodyPart,amount,tick,kind)`，按永久参与者识别队伍，旧epoch拒绝。原int overload仅兼容即时伤害。Auto按组织比例系统分配；投掷者后来倒地/重连不改变已释放攻击归属。Projectile服务器ResolveShooter和self过滤同样按participant+epoch，避免NetCode复用NetworkId导致错认。
 - 原模式终死统一记一次击杀；Clash倒地不记，最终死亡由共享生命转换记，排除同队。
 - 两撤离各30秒；活敌或同撤离阻挡区内倒地队友暂停进度，解除后继续；全队离开该出口才重置。敌方倒地不阻挡是当前实现推断，终死尸体不阻挡。
 - 赏金随同一次实际撤离名单固定。带出后Deadline=min(oldDeadline,now+90)，不延长快到期的局，也不因只剩一队免费发奖。
@@ -52,7 +52,7 @@ Downed保留原实体与装备，健康0且禁止移动/开火/物品操作；�
 
 认证后先进Lobby，不自动扣装。名单锁定时先RegisterBountyMatchAsync，再每人BeginBountyDeploy；同区赏金提取时先BeginBountyRedemption固定整组名单，再逐人FinishRaid/BeginSave。持久化组的整组.bounty日志包含所有人的装备快照，防止已兑token却丢部分队员装备记录。月尘v1固定每合法同事件撤离者20+开局solo60/duo15/trio0=80/35/20；客户端/地图不能指定金额。
 
-断线90秒身体留场可攻击，不能断线无敌。主组把原Session/Inventory/Profile/JoinedClient转到服务器专用detached holder，保留身体、解绑旧输入，原账号重连后移回新连接，换GhostOwner与命令输入，不新生成装备或出战。连接迁移调用 `RaidPersistenceContext.RebindBountyOwner(old,new,authenticatedPlayerId,settlementId)`，只允许同玩家、同结算记录；重连认证仍保留旧回执等待门禁，先更新detached holder并重新获取已提交仓库，再完成Join。正在进行的HTTP Save.Task/Payload保留原引用，回执写入当前owner，已完成部署优先保留刚认证的fresh profile，不能用旧缓存覆盖仓库。GhostGameObject.Owner实时从有效ECS所有权读取，Role随GhostOwnerIsLocal变化，避免缓存旧owner。完整独立进程owner/observer仍须专门验证。
+断线90秒身体留场可攻击，不能断线无敌。`BountyClashDisconnectSystem` 在NetworkStreamReceiveSystem之后、NetworkGroupCommandBufferSystem之前完成接收job，读取公开NetworkStreamConnection.CurrentState，在NetCode销毁连接的LinkedEntityGroup前把Session/Inventory/Profile/JoinedClient转到服务器专用detached holder并移除身体关联。身体GhostOwner和参与者当前NetworkId置0，销毁旧输入，避免新陌生连接复用netid暂得身体。原账号重连后移回新连接，换GhostOwner与新命令输入，不新生成装备或出战。普通模式不进入该前置迁移。连接迁移调用 `RaidPersistenceContext.RebindBountyOwner(old,new,authenticatedPlayerId,settlementId)`，只允许同玩家、同结算记录；重连认证仍保留旧回执等待门禁，先更新detached holder并重新获取已提交仓库，再完成Join。正在进行的HTTP Save.Task/Payload保留原引用，回执写入当前owner，已完成部署优先保留刚认证的fresh profile，不能用旧缓存覆盖仓库。GhostGameObject.Owner实时从有效ECS所有权读取，Role随GhostOwnerIsLocal变化，避免缓存旧owner。完整独立进程owner/observer仍须专门验证。
 
 同连接下一共享局保留个人RaidSession，BeginNext递增RaidId/序列基线，旧局库存RPC不匹配。NextRound等待保存/部署/退款稳定，清掉模式临时物体，重新roll基础补给并提高版本、清refill及个人搜索/交互缓存，不迁移/封锁生产地图。
 
@@ -62,12 +62,14 @@ Downed保留原实体与装备，健康0且禁止移动/开火/物品操作；�
 dotnet run --project Tools/Validation/BountyClashChecks/BountyClashChecks.csproj
 # 仅允许专属临时loopback API配置，脚本自行创建临时账号与私有outbox，不读真实Prefs。
 # 需协调Editor独占后运行；不得把同进程World检查称为独立客户端。
-unity command eval 'BountyClashTransportChecks.Start("<temporary-server-config>"); return "scheduled";' --caller plugin --skill unity-build-validation --result-only
+unity command eval 'return BountyClashTransportChecks.RunAndRecord("<temporary-server-config>");' 120000 --caller plugin --skill unity-build-validation --timeout 150 --result-only
 ```
 
 - 纯规则已通过：人数/队伍准备、锁名单、epoch/request去重、共享截止、部署有界失败、账号重连、起手恢复、持续救援、近远倒地阻挡、唯一赏金、个人暗视预算、暂停/恢复/离开重置、越界/超时。
-- 一次集成编译边界已通过并加载真实新协议；此后新增的完整UDP脚本和规则边界仍待下一次编译/运行。
-- `BountyClashTransportChecks` 已保留：真实生成RPC、实际ServerGameSystem.OnUpdate、临时HTTP+PG、同进程Server+3客户端，包含延迟成功HTTP回执期间断线再重连、同任务和payload迁移、保存状态/单POST、二局RaidId及旧局RPC拒绝。待执行，不能预写通过；结果写入 `Library/BuildValidation/BountyClash/adapter-udp-result.txt`。
-- MPPM独立进程、实际UI/效果、复用原实体的新owner实际控制/射击及观察端呈现，尚待跨组完整验收。Windows生产后台/DB不连接、不部署。
+- 已通过新鲜全项目编译并加载真实协议。2026-10-21已实际运行同进程Server+3客户端生成RPC、真实ServerGameSystem、临时HTTP+PostgreSQL链路，73个检查节点通过（包含持续救援的重复续租节点，并非73个独立场景）。
+- 实测覆盖：认证/邀请/准备→三人独立扣装→队伍出生→倒地不结算→驱散起手恢复→持续救援→唯一赏金/获权暗视→断线同身体可伤→真实NetworkId复用防错认→原账号同实体/新输入/旧输入销毁→永久source友伤与自过滤→阻挡暂停/恢复撤离→不可变赏金名单→延迟成功HTTP回执期间断线/新认证等待→holder Saved/fresh仓库→重连与auth/me仓库相等、solo恰好80且仅一个个人settlement POST→90秒收尾→下一局RaidId递增/旧库存RPC及旧epoch伤害拒绝。
+- 结果为 `Library/BuildValidation/BountyClash/adapter-udp-result.txt`，逐节点记录为 `adapter-udp.txt`；最后一轮finally后实际确认World.All=0、原WeaponGestureLab单场景、dirty=false、Play=false，未写真实Prefs。
+- 最后一轮Console无error，fixture保留RPC数据曾产生3086条MaxRpcAgeFrames测试警告；脚本现仅对客户端移除ReceiveRpcCommandRequest以消费通知、保留payload断言，服务端动作不变。这项消噪只做新鲜编译，按用户要求未再UDP复跑；上述PASS73对应消噪前的运行。未清用户Console。
+- 用户因Mac内存明确取消后续UDP多客户端/MPPM验收；最后一轮已在运行中，自然通过后停止，不再重启。未进行独立进程owner/observer的真实移动射击与画面验证，不能将上述同进程适配检查称为完整联机验收。UI/效果交由后续单Editor检查。临时API/PG已释放给持久化组关闭，Windows生产后台/DB不连接、不部署。
 
 差异必须保留：Moonkov地图/身体/武器/物品与货币适配；驱散60秒的项目选值；原版赏金救援、燃烧尸体、全部特质、猎人招募/血脉XP尚未实现。未完成项不能用“完全复刻”概括为已完成。

@@ -16,6 +16,7 @@ namespace Unity.MP_FPS
         public struct ProjectileData : IComponentData
         {
             [GhostField] public int OwnerNetworkId;
+            public ClashDamageSource DamageSource; // Server-only release-time attribution.
             [GhostField] public uint SpawnTick;
             [GhostField] public uint WeaponID;
             [GhostField] public uint FireTick;
@@ -143,8 +144,12 @@ namespace Unity.MP_FPS
             var manager = server ? PlayerGhostManager.ServerInstance : PlayerGhostManager.ClientInstance;
             if (manager != null && manager.TryGetPlayersByRole(server ? MultiplayerRole.Server : MultiplayerRole.ClientAll, out var players))
                 foreach (var player in players)
-                    if (player.GhostGameObject.Owner == m_Data.OwnerNetworkId && player.GhostGameObject.World == GhostGameObject.World)
-                    { m_Shooter = player.transform; break; }
+                {
+                    if(player.GhostGameObject.World!=GhostGameObject.World)continue;
+                    bool captured=server&&m_Data.DamageSource.ParticipantId>0;
+                    bool same=captured ? BountyClashDamage.IsSelf(GhostGameObject.World,player.GhostGameObject.LinkedEntity,m_Data.DamageSource) : player.GhostGameObject.Owner==m_Data.OwnerNetworkId;
+                    if(same){m_Shooter=player.transform;break;}
+                }
         }
 
         public override void OnGhostLinked()
@@ -260,7 +265,7 @@ namespace Unity.MP_FPS
             {
                 ProjectileBlast.Apply(GhostGameObject.World, gameObject.scene.GetPhysicsScene(),
                     hit.point+hit.normal*.03f, m_Weapon.AoeRadius, m_Weapon.Damage,
-                    m_Data.OwnerNetworkId, GhostGameObject.GetCurrentTick(), out damageFlags);
+                    m_Data.DamageSource, GhostGameObject.GetCurrentTick(), out damageFlags);
             }
             else if (GhostGameObject.TryFindGhostGameObject(hit.collider.gameObject, out var target))
                 damageFlags = Damage(target, players, owners,
@@ -285,10 +290,10 @@ namespace Unity.MP_FPS
             if (target.World != GhostGameObject.World || !players.HasComponent(target.LinkedEntity)) return 0;
             bool hasOwner = owners.HasComponent(target.LinkedEntity);
             int owner = hasOwner ? owners[target.LinkedEntity].NetworkId : int.MinValue;
-            if (hasOwner && owner == m_Data.OwnerNetworkId) return 0;
+            if (BountyClashDamage.IsSelf(GhostGameObject.World,target.LinkedEntity,m_Data.DamageSource)) return 0;
             var player = players.GetRefRW(target.LinkedEntity);
             if (player.ValueRO.CurrentHealth <= 0 || m_Weapon.Damage <= 0) return 0;
-            BountyClashDamage.Apply(GhostGameObject.World,target.LinkedEntity,m_Data.OwnerNetworkId,part,m_Weapon.Damage,GhostGameObject.GetCurrentTick(),RaidDamageKind.Bullet);
+            BountyClashDamage.Apply(GhostGameObject.World,target.LinkedEntity,m_Data.DamageSource,part,m_Weapon.Damage,GhostGameObject.GetCurrentTick(),RaidDamageKind.Bullet);
             return (byte)(player.ValueRO.CurrentHealth <= 0 ? 3 : 1);
         }
     }

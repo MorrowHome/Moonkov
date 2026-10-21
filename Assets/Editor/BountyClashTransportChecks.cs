@@ -72,7 +72,7 @@ public static class BountyClashTransportChecks
     {
         var w=new World(name,server?WorldFlags.GameServer:WorldFlags.GameClient);
         var types=DefaultWorldInitialization.GetAllSystems(server?WorldSystemFilterFlags.ServerSimulation:WorldSystemFilterFlags.ClientSimulation)
-            .Where(t=>t.Assembly.GetName().Name.StartsWith("Unity.NetCode")||t.Assembly.GetName().Name.StartsWith("Unity.Entities")||t.Assembly.GetName().Name.StartsWith("Unity.Transforms")||t.Name.Contains("RpcCommandRequestSystem")||typeof(IGhostComponentSerializerRegistration).IsAssignableFrom(t))
+            .Where(t=>t.Assembly.GetName().Name.StartsWith("Unity.NetCode")||t.Assembly.GetName().Name.StartsWith("Unity.Entities")||t.Assembly.GetName().Name.StartsWith("Unity.Transforms")||t==typeof(BountyClashDisconnectSystem)||t.Name.Contains("RpcCommandRequestSystem")||typeof(IGhostComponentSerializerRegistration).IsAssignableFrom(t))
             .Where(t=>!t.Assembly.GetName().Name.Contains("Editor")&&!t.Name.Contains("Physics")).ToList();
         TypeManager.SortSystemTypesInCreationOrder(types);DefaultWorldInitialization.AddSystemsToRootLevelSystemGroups(w,types);
         var clock=w.GetExistingSystemManaged<UpdateWorldTimeSystem>();if(clock!=null)clock.Enabled=false;return w;
@@ -80,18 +80,19 @@ public static class BountyClashTransportChecks
     private static void Send<T>(World client,T rpc)where T:unmanaged,IRpcCommand
     {var e=client.EntityManager.CreateEntity();client.EntityManager.AddComponentData(e,rpc);client.EntityManager.AddComponentData(e,new SendRpcCommandRequest{TargetConnection=One<NetworkId>(client)});}
     public static bool Running {get;private set;}
-    public static void Start(string serverConfig)
+    public static string RunAndRecord(string serverConfig)
     {
         if(Running)throw new InvalidOperationException("Clash UDP check already running.");
         Running=true;
         Directory.CreateDirectory("Library/BuildValidation/BountyClash");
         File.WriteAllText("Library/BuildValidation/BountyClash/adapter-udp-result.txt","RUNNING");
-        EditorApplication.delayCall+=()=>
+        try
         {
-            try{File.WriteAllText("Library/BuildValidation/BountyClash/adapter-udp-result.txt",Run(serverConfig));}
-            catch(Exception error){File.WriteAllText("Library/BuildValidation/BountyClash/adapter-udp-result.txt",error.ToString());Debug.LogException(error);}
-            finally{Running=false;}
-        };
+            string result=Run(serverConfig);
+            File.WriteAllText("Library/BuildValidation/BountyClash/adapter-udp-result.txt",result);return result;
+        }
+        catch(Exception error){File.WriteAllText("Library/BuildValidation/BountyClash/adapter-udp-result.txt",error.ToString());throw;}
+        finally{Running=false;}
     }
     public static string Run(string serverConfig)
     {
@@ -110,7 +111,7 @@ public static class BountyClashTransportChecks
         var retiredField=typeof(Gameplay.Leaderboard.LeaderboardManager).GetField("s_RetiredRaidActors",BindingFlags.Static|BindingFlags.NonPublic);
         var retired=(HashSet<int>)retiredField.GetValue(null);var previousRetired=retired.ToArray();retired.Clear();
         var report=new List<string>();s_Time=0;
-        void Check(bool ok,string text){if(!ok)throw new InvalidOperationException(text);report.Add(text);}
+        void Check(bool ok,string text){if(!ok)throw new InvalidOperationException(text);report.Add(text);File.WriteAllLines("Library/BuildValidation/BountyClash/adapter-udp.txt",report);}
         try
         {
             typeof(MoonRaidMap).GetProperty("Active").SetValue(null,map);typeof(BountyClashArenaSettings).GetProperty("Active").SetValue(null,settings);
@@ -138,7 +139,12 @@ public static class BountyClashTransportChecks
             {
                 s_Time+=1.0/60;
                 foreach(var w in new[]{server}.Concat(clients).ToArray())
-                {w.SetTime(new TimeData(s_Time,1f/60));w.GetExistingSystemManaged<InitializationSystemGroup>()?.Update();w.GetExistingSystemManaged<SimulationSystemGroup>()?.Update();w.EntityManager.CompleteAllTrackedJobs();}
+                {
+                    w.SetTime(new TimeData(s_Time,1f/60));w.GetExistingSystemManaged<InitializationSystemGroup>()?.Update();w.GetExistingSystemManaged<SimulationSystemGroup>()?.Update();w.EntityManager.CompleteAllTrackedJobs();
+                    // Preserve payloads for assertions, but consume only client-side
+                    // notifications so this fixture does not spam stale-RPC warnings.
+                    if(w!=server){using var received=w.EntityManager.CreateEntityQuery(typeof(ReceiveRpcCommandRequest));w.EntityManager.RemoveComponent<ReceiveRpcCommandRequest>(received);}
+                }
                 if(core)Core();Thread.Sleep(2);
             }
             void Pump(Func<bool> done,int frames=1800)
@@ -149,11 +155,13 @@ public static class BountyClashTransportChecks
                 using var response=http.PostAsync(new Uri(address,"auth/register"),new StringContent(JsonConvert.SerializeObject(new{Username=name,Password=Guid.NewGuid().ToString("N")}),Encoding.UTF8,"application/json")).GetAwaiter().GetResult();
                 response.EnsureSuccessStatusCode();return (string)JObject.Parse(response.Content.ReadAsStringAsync().GetAwaiter().GetResult())["token"];
             }
-            World Connect(string name,string token)
+            World Open(string name)
             {
                 var w=Create(name,false);clients.Add(w);Tick();using(var q=w.EntityManager.CreateEntityQuery(typeof(NetworkStreamDriver)))q.GetSingletonRW<NetworkStreamDriver>().ValueRW.Connect(w.EntityManager,endpoint);
-                Pump(()=>All<NetworkId>(w).Length==1);Send(w,new ClientJoinRequestRpc{PlayerName=name,LoginToken=token,Mode=RaidGameMode.BountyClash,RulesVersion=1});return w;
+                Pump(()=>All<NetworkId>(w).Length==1);return w;
             }
+            World Connect(string name,string token)
+            {var w=Open(name);Send(w,new ClientJoinRequestRpc{PlayerName=name,LoginToken=token,Mode=RaidGameMode.BountyClash,RulesVersion=1});return w;}
             Pump(()=>persistence.ClashSupported);
             string tokenA=Register("a"),tokenC=Register("c"),tokenB=Register("b");
             var a=Connect("Clash UDP A",tokenA);var c=Connect("Clash UDP teammate",tokenC);var b=Connect("Clash UDP enemy",tokenB);
@@ -181,6 +189,8 @@ public static class BountyClashTransportChecks
             Move(pa,arena.Target);Move(pc,new ClashPoint(arena.Target.X+1,arena.Target.Y,arena.Target.Z));Move(pb,new ClashPoint(arena.Target.X+20,arena.Target.Y,arena.Target.Z));Tick();
             BountyClashDamage.Apply(server,Player(pc),pb.NetworkId,BodyPart.Chest,1000,10,RaidDamageKind.Bullet);Tick();
             Check(pc.Life==ClashLife.Downed&&em.Exists(Player(pc))&&persistence.Saves.Count==0,"down retains original entity/equipment without settlement");
+            var downedState=em.GetComponentData<PredictedPlayerGhost>(Player(pc));
+            Check(downedState.ControllerState.Stance==Unity.MP_FPS.DollSinger.DollSingerStance.Prone&&RaidHealth.RestrictInput(downedState,new PlayerInput()).Stance==Unity.MP_FPS.DollSinger.DollSingerStance.Prone,"server down state and input enforce the same prone stance");
             Action(a,ClashIntent.Banish);Check(pc.Downs==0&&pc.Life==ClashLife.Downed,"banish begin restores team cap without auto-revive");
             Action(a,ClashIntent.ReviveBegin,target:pc.Id);
             for(int i=0;i<22;i++){s_Time+=.24;Action(a,ClashIntent.ReviveRenew,target:pc.Id);}
@@ -188,14 +198,24 @@ public static class BountyClashTransportChecks
             s_Time+=61;Tick();Action(a,ClashIntent.Pickup);Action(a,ClashIntent.SenseHeld,3);
             Pump(()=>All<ClashSenseContactRpc>(a).Length>0);
             Check(All<ClashSenseContactRpc>(b).Length==0&&All<ClashSenseContactRpc>(c).Length==0,"boost contact payload delivered only to legal holder");
-            Entity body=Player(pa);int oldOwner=pa.NetworkId;
+            Entity body=Player(pa);int oldOwner=pa.NetworkId;Entity originalConnection=world.Connections[pa.Id];
+            Entity originalInput=em.GetComponentData<PlayerClientCommandInputLookup>(body).ClientCommandInputEntity;
+            var releasedSource=BountyClashDamage.Capture(server,body);
             a.EntityManager.AddComponentData(One<NetworkId>(a),new NetworkStreamRequestDisconnect());Pump(()=>!pa.Connected);
             float before=em.GetComponentData<PredictedPlayerGhost>(body).CurrentHealth;
             BountyClashDamage.Apply(server,body,pb.NetworkId,BodyPart.Chest,1,11,RaidDamageKind.Bullet);
             Check(em.GetComponentData<PredictedPlayerGhost>(body).CurrentHealth<before,"disconnected retained body remains damageable");
-            clients.Remove(a);a.Dispose();a=Connect("Clash UDP A reconnect",tokenA);Pump(()=>pa.Connected&&pa.NetworkId!=oldOwner);
-            Check(Player(pa)==body&&em.GetComponentData<GhostOwner>(body).NetworkId==pa.NetworkId,"reconnect rebinds original entity to new owner without redeployment");
-            Check(em.GetComponentData<PlayerClientCommandInputLookup>(body).ClientCommandInputEntity!=Entity.Null,"new connection receives fresh owned command input");
+            Tick();Check(em.GetComponentData<GhostOwner>(body).NetworkId==0&&pa.NetworkId==0,"detached body loses connection ownership before NetworkId can be reused");
+            clients.Remove(a);a.Dispose();var reused=Open("Clash UDP reused unauthenticated connection");
+            Check(reused.EntityManager.GetComponentData<NetworkId>(One<NetworkId>(reused)).Value==oldOwner&&em.GetComponentData<GhostOwner>(body).NetworkId==0,"real recycled NetworkId never owns the retained body");
+            float friendlyBefore=em.GetComponentData<PredictedPlayerGhost>(Player(pc)).CurrentHealth;
+            BountyClashDamage.Apply(server,Player(pc),releasedSource,BodyPart.Chest,10,13,RaidDamageKind.Bullet);
+            Check(Math.Abs(friendlyBefore-em.GetComponentData<PredictedPlayerGhost>(Player(pc)).CurrentHealth-1)<.01f,"released attack keeps original participant/team after connection id reuse");
+            a=Connect("Clash UDP A reconnect",tokenA);Pump(()=>pa.Connected&&world.Connections[pa.Id]!=originalConnection);Tick();
+            Check(Player(pa)==body&&em.GetComponentData<GhostOwner>(body).NetworkId==pa.NetworkId,"reconnect rebinds original entity to authenticated connection without redeployment");
+            var newInput=em.GetComponentData<PlayerClientCommandInputLookup>(body).ClientCommandInputEntity;
+            Check(newInput!=Entity.Null&&newInput!=originalInput&&!em.Exists(originalInput),"new connection receives fresh input and old command entity is destroyed");
+            Check(BountyClashDamage.IsSelf(server,body,releasedSource),"released projectile self-filter follows permanent participant across reconnect");
             // The enemy wins the token after downing its former carrier; its own first budget is full.
             BountyClashDamage.Apply(server,body,pb.NetworkId,BodyPart.Chest,1000,12,RaidDamageKind.Bullet);Tick();
             Move(pb,pa.Position);Tick();Action(b,ClashIntent.Pickup);Check(pb.SenseRemaining==5,"new enemy holder gets personal five-second budget");
@@ -206,13 +226,13 @@ public static class BountyClashTransportChecks
             delayedAck.Settlement=pb.DeploymentId;s_Time+=16;Tick();
             Pump(()=>pb.Life==ClashLife.Extracted&&delayedAck.Held);
             var pending=persistence.Saves[pb.DeploymentId];var pendingTask=pending.Task;var pendingPayload=pending.Payload;
-            Entity oldConnection=world.Connections[pb.Id];int oldEnemyOwner=pb.NetworkId;
+            Entity oldConnection=world.Connections[pb.Id];
             b.EntityManager.AddComponentData(One<NetworkId>(b),new NetworkStreamRequestDisconnect());Pump(()=>!pb.Connected);
             Check(pending.Connection==world.Connections[pb.Id]&&pending.Connection!=oldConnection,"in-flight settlement follows detached authenticated owner");
             clients.Remove(b);b.Dispose();b=Connect("Clash UDP enemy settlement reconnect",tokenB);
             Pump(()=>persistence.Joins.Count>0);for(int i=0;i<20;i++)Tick();
             Check(!pb.Connected&&pending.Connection==world.Connections[pb.Id]&&ReferenceEquals(pending.Task,pendingTask)&&ReferenceEquals(pending.Payload,pendingPayload),"authenticated reconnect waits for original receipt without replacing its Task/payload");
-            delayedAck.Release();Pump(()=>persistence.Saves.Count==0&&pb.Connected&&pb.NetworkId!=oldEnemyOwner);
+            delayedAck.Release();Pump(()=>persistence.Saves.Count==0&&pb.Connected&&world.Connections[pb.Id]!=oldConnection&&em.HasComponent<RaidSession>(world.Connections[pb.Id]));
             var savedSession=em.GetComponentData<RaidSession>(world.Connections[pb.Id]);
             Check(savedSession.SaveState==RaidSaveState.Saved&&persistence.Profiles[world.Connections[pb.Id]].DeploymentId==null&&delayedAck.Posts==1,"delayed real HTTP ack updates retained owner, then authenticated reconnect gets Saved/fresh stash with one settlement POST");
             using(var http=new HttpClient())
@@ -234,6 +254,8 @@ public static class BountyClashTransportChecks
             Action(a,ClashIntent.SetReady,1);Action(c,ClashIntent.SetReady,1);Action(b,ClashIntent.SetReady,1);Pump(()=>match.Phase==ClashPhase.Active);
             int secondRaid=em.GetComponentData<RaidSession>(world.Connections[pb.Id]).RaidId;
             Check(secondRaid==firstRaid+1,"second shared match increments personal RaidId");
+            float nextHealth=em.GetComponentData<PredictedPlayerGhost>(Player(pc)).CurrentHealth;
+            Check(BountyClashDamage.Apply(server,Player(pc),releasedSource,BodyPart.Chest,10,14,RaidDamageKind.Bullet)==0&&em.GetComponentData<PredictedPlayerGhost>(Player(pc)).CurrentHealth==nextHealth,"previous-epoch released attack cannot damage the next match");
             var inventory=em.GetComponentObject<RaidInventoryState>(world.Connections[pb.Id]);uint beforeRequest=inventory.RequestId;
             Send(b,new RaidActionCancelRpc{RaidId=firstRaid,RequestId=beforeRequest+1});for(int i=0;i<25;i++)Tick();
             Check(inventory.RequestId==beforeRequest,"previous-match inventory RPC rejected over UDP");

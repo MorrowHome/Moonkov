@@ -156,7 +156,8 @@ namespace Unity.MP_FPS
             if(state.ClashEnabled && !state.ClashCanAct)
             {
                 var blocked=new PlayerInput { LookYawPitchDegrees=input.LookYawPitchDegrees, AimPoint=input.AimPoint };
-                blocked.SetFlag(PlayerInput.InputFlag.ThirdPerson,input.ThirdPerson);return blocked;
+                blocked.SetFlag(PlayerInput.InputFlag.ThirdPerson,input.ThirdPerson);
+                blocked.SetStance(state.ClashLife==ClashLife.Downed ? Unity.MP_FPS.DollSinger.DollSingerStance.Prone : input.Stance);return blocked;
             }
             if(state.ClashEnabled && state.ClashDarkSight)
             {input.SetFlag(PlayerInput.InputFlag.Shoot,false);input.SetFlag(PlayerInput.InputFlag.Aim,false);}

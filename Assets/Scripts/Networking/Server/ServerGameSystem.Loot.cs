@@ -44,6 +44,7 @@ namespace Unity.MP_FPS
                 if(inventory.DissectingLootId>=0)protectedDrops.Add(inventory.DissectingLootId);
             }
             caches.RecycleEmptyDrops(now,protectedDrops);
+            if(ClashEnabled(ref state))return; // Keep empty-drop cleanup without replenishing Clash supplies.
             bool hasActivePlayer=false;
             foreach(var (session,joined,connection) in SystemAPI.Query<RefRO<RaidSession>,RefRO<JoinedClient>>().WithEntityAccess())
             {

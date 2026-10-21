@@ -17,6 +17,7 @@ namespace Unity.MP_FPS
         {
             public uint Id;
             public int Owner;
+            public ClashDamageSource Source;
             public Transform Shooter;
             public PhysicsScene Scene;
             public Vector3 Position, Velocity;
@@ -74,6 +75,7 @@ namespace Unity.MP_FPS
                                 if (inventory.Error == InventoryError.None)
                                 {
                                     var grenade = new Grenade { Id = ++m_NextId, Owner = EntityManager.GetComponentData<GhostOwner>(player).NetworkId,
+                                        Source = BountyClashDamage.Capture(World,player),
                                         Shooter = root.transform, Scene = root.gameObject.scene.GetPhysicsScene(), Position = position, Velocity = velocity };
                                     m_Active.Add(grenade);
                                     m_NextThrow[connection] = now + EnergyGrenadeRules.Cooldown;
@@ -146,7 +148,7 @@ namespace Unity.MP_FPS
                 float damage = EnergyGrenadeRules.DamageAt(Vector3.Distance(grenade.Position, point));
                 if (damage <= 0 || !EnergyGrenadePhysics.ClearSight(grenade.Scene, grenade.Position, point, root.transform)) continue;
                 float before = health.ValueRO.CurrentHealth;
-                if (!health.ValueRO.BodyHealthInitialized) BountyClashDamage.Apply(World,entity,grenade.Owner,BodyPart.Chest,damage,tick,RaidDamageKind.Explosion);
+                if (!health.ValueRO.BodyHealthInitialized) BountyClashDamage.Apply(World,entity,grenade.Source,BodyPart.Chest,damage,tick,RaidDamageKind.Explosion);
                 else
                 {
                     // Spread blast damage over living tissue instead of treating every blast as one chest bullet.
@@ -154,7 +156,7 @@ namespace Unity.MP_FPS
                     {
                         var part = (BodyPart)p;
                         float share = damage * RaidHealth.Get(health.ValueRO, part) / before;
-                        BountyClashDamage.Apply(World,entity,grenade.Owner,part,share,tick,RaidDamageKind.Explosion);
+                        BountyClashDamage.Apply(World,entity,grenade.Source,part,share,tick,RaidDamageKind.Explosion);
                     }
                 }
                 health.ValueRW.LastDamageAmount = before - health.ValueRO.CurrentHealth;
