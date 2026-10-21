@@ -41,8 +41,10 @@ namespace Unity.MP_FPS
             if (brain.IsPeeking) move *= .65f;
             if (brain.Action == PmcAction.Scavenge && brain.LootUntil > 0 || brain.ExtractionProgress > 0 ||
                 brain.HealUntil > 0 || searching && now < brain.SearchPauseUntil ||
-                HorizontalDistance(position, brain.TacticalGoal) <= TacticalArrivalDistance) move = Vector3.zero;
+                HorizontalDistance(position, brain.TacticalGoal) <= TacticalArrivalDistance &&
+                    Mathf.Abs(position.y - brain.TacticalGoal.y) < .6f) move = Vector3.zero;
 
+            brain.MovementRequested = move.sqrMagnitude > .01f;
             bool hasContact = brain.Target != Unity.Entities.Entity.Null;
             Vector3 aim = brain.LastSeen + brain.AimOffset;
             float distance = hasContact ? Vector3.Distance(eye, aim) : 50;

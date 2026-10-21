@@ -54,6 +54,9 @@ namespace Unity.MP_FPS
             {
                 byte phase = profile.Boss && health.CurrentHealth <= health.MaxHealth * profile.EnrageHealthFraction ? (byte)2 : (byte)1;
                 var next = AlienCombatPattern.For(profile, phase, m_Attacks + 1);
+                // A short-range sequence must not prevent an otherwise visible ranged response.
+                if (profile.Boss && remembered && m_Visible && !CanBeginSpeciesAttack(next))
+                    next = AlienCombatPattern.For(profile, phase, m_Attacks + 1, AlienAttackKind.MucusSpit);
                 if (remembered && m_Visible && m_Clock >= m_NextAttack && CanBeginSpeciesAttack(next))
                 {
                     m_Pattern = next; m_BossPhase = phase; m_Attacks++;
@@ -74,10 +77,10 @@ namespace Unity.MP_FPS
             float speed = 0;
             if (m_Action == AlienAction.Strike && m_Pattern.Speed > 0)
             { intent = Vector3.ProjectOnPlane(m_CombatDirection, m_Body.Motor.Current.Up).normalized; speed = m_Pattern.Speed; }
-            else if ((m_Action == AlienAction.Chase || m_Action == AlienAction.Search || m_Action == AlienAction.Roam) && profile.Species != AlienSpecies.Roots)
+            else if ((m_Action == AlienAction.Chase || m_Action == AlienAction.Search || m_Action == AlienAction.Roam) && (profile.Species != AlienSpecies.Roots || profile.Boss))
             {
                 bool pause = false;
-                Vector3 goal = remembered ? HuntGoal(m_LastSeen, out pause) : PatrolGoal();
+                Vector3 goal = remembered ? HuntGoal(m_Visible ? m_LastSeen : SearchGoal(), out pause) : PatrolGoal();
                 if (profile.IsUpright || profile.Boss) goal = UprightWaypoint(goal);
                 var graph = profile.IsUpright || profile.Boss ? null : AlienSurfaceNavigation.Find(m_Spawn);
                 if (graph && graph.Contains(goal))
@@ -90,7 +93,9 @@ namespace Unity.MP_FPS
                 if (profile.Boss && m_Action != AlienAction.Roam) speed = profile.BossPursuitSpeed * (m_BossPhase > 1 ? 1.15f : 1);
                 if (pause || Vector3.Distance(goal, transform.position) < .7f) speed = 0;
             }
-            Vector3 facingIntent = m_Action == AlienAction.Windup ? m_CombatDirection : intent;
+            Vector3 facingIntent = m_Action == AlienAction.Windup ? m_CombatDirection :
+                remembered && m_Visible && (profile.Boss || speed <= .1f) ?
+                    Vector3.ProjectOnPlane(m_LastSeen - transform.position, Vector3.up).normalized : intent;
             float yaw = facingIntent.sqrMagnitude > .01f ? Mathf.Clamp(Vector3.SignedAngle(m_Body.Motor.Current.Forward, facingIntent, m_Body.Motor.Current.Up) /
                 Mathf.Max(.001f, dt), -profile.TurnSpeed, profile.TurnSpeed) : 0;
             Vector3 previous = transform.position;
@@ -104,6 +109,8 @@ namespace Unity.MP_FPS
         {
             Vector3 target = ContactPoint(m_Target);
             if (Vector3.Distance(AimPoint, target) > next.Range) return false;
+            var root = GhostGameObject.EntityManager.GetComponentObject<GhostGameObjectLink>(m_Target).LinkedInstance;
+            if (!ClearSight(AimPoint, target, root.transform)) return false;
             // A heavy mantle cannot warn forward and then sweep behind itself.
             // Roots erupt remotely and do not require a forward-facing melee arc.
             return !profile.Boss || profile.Species == AlienSpecies.Roots ||
@@ -119,7 +126,7 @@ namespace Unity.MP_FPS
             if (m_Pattern.Kind == AlienAttackKind.MucusSpit) return;
             float age = m_Clock - m_ActionStarted;
             bool moving = m_Pattern.Kind == AlienAttackKind.Bite || m_Pattern.Kind == AlienAttackKind.Charge || m_Pattern.Kind == AlienAttackKind.FaceLeap;
-            if (!moving && (m_Pulse >= m_Pattern.Pulses || age < m_Pulse * m_Pattern.Active / m_Pattern.Pulses + .08f)) return;
+            if (!moving && (m_Pulse >= m_Pattern.Pulses || age < m_Pattern.PulseTime(m_Pulse))) return;
             if (!moving) { m_Pulse++; m_StrikeVictims.Clear(); }
             var manager = GhostGameObject.EntityManager;
             using var query = manager.CreateEntityQuery(typeof(PredictedPlayerGhost), typeof(LocalTransform), typeof(GhostGameObjectLink));
@@ -150,9 +157,9 @@ namespace Unity.MP_FPS
                         hit = DistanceToSegment(point, previous, transform.position) <= m_Pattern.Radius; break;
                     case AlienAttackKind.TentacleSweep:
                         Vector3 delta = Vector3.ProjectOnPlane(point - m_CombatOrigin, Vector3.up);
-                        // The second enraged sweep covers the opposite side, with a visible pause.
-                        Vector3 facing = m_Pulse == 2 ? -m_CombatDirection : m_CombatDirection;
-                        hit = delta.magnitude <= m_Pattern.Radius && Vector3.Angle(facing, delta) <= 65; break;
+                        // Every pulse uses the committed, visible sector, including enrage.
+                        hit = delta.magnitude <= m_Pattern.Radius && Vector3.Angle(m_CombatDirection, delta) <= 65 &&
+                            Mathf.Abs(point.y - m_CombatOrigin.y + m_Body.Motor.BodyHeight) < 2; break;
                     case AlienAttackKind.SlimePulse:
                         centre = m_CombatOrigin; sightOrigin = centre + Vector3.up * .25f;
                         hit = GroundDistance(point, centre) <= m_Pattern.Radius && Mathf.Abs(point.y - centre.y) < 2; break;
@@ -173,6 +180,8 @@ namespace Unity.MP_FPS
                 }
                 var root = manager.GetComponentObject<GhostGameObjectLink>(entity).LinkedInstance;
                 if (!hit || !ClearSight(sightOrigin, point, root.transform)) continue;
+                // Remote patches cannot damage a player behind a wall or on a hidden floor.
+                if (profile.Boss && !ClearSight(m_CombatOrigin, point, root.transform)) continue;
                 m_StrikeVictims.Add(entity);
                 if (m_Pattern.Kind == AlienAttackKind.FaceLeap)
                 { AttachFace(entity); break; }

@@ -11,6 +11,10 @@ namespace Unity.MP_FPS
         public AlienAttackKind Kind;
         public float Range, Radius, Windup, Active, Recovery, DamageScale, Speed;
         public int Pulses;
+        // One shared clock for authoritative damage, warning flashes and impact audio.
+        public float PulseTime(int pulse) => .08f + pulse * Active / Mathf.Max(1, Pulses);
+        public int PulseAt(float age) => age < PulseTime(0) ? -1 :
+            Mathf.Clamp(Mathf.FloorToInt((age - .08f) / Mathf.Max(.01f, Active / Mathf.Max(1, Pulses))), 0, Mathf.Max(0, Pulses - 1));
         public static AlienCombatPattern For(AlienCreatureProfile profile, byte phase, uint sequence, AlienAttackKind? committed = null)
         {
             float scale = Mathf.Clamp(profile.Scale, .1f, 4);
@@ -57,6 +61,12 @@ namespace Unity.MP_FPS
                     p.Range = Mathf.Max(p.Range, limbReach + 8);
                 p.Windup = Mathf.Max(p.Windup, p.Kind == AlienAttackKind.MucusSpit ? .85f : 1.15f);
                 p.Recovery = Mathf.Max(p.Recovery, phase > 1 ? .9f : 1.2f);
+                if (p.Kind == AlienAttackKind.MucusSpit)
+                {
+                    p.Range = Mathf.Max(p.Range, profile.SightRange);
+                    p.Active = Mathf.Max(p.Active, Mathf.Clamp(p.Range / Mathf.Max(3, profile.MucusSpeed), .2f, 4) + .2f);
+                }
+                if (p.Pulses > 1) p.Active = Mathf.Max(p.Active, p.Pulses * 1.25f);
             }
             return p;
         }

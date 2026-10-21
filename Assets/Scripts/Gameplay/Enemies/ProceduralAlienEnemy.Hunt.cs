@@ -7,6 +7,28 @@ namespace Unity.MP_FPS
         private bool m_BossIntroduced, m_EnrageDisplayed;
         private float m_StalkUntil, m_NextStalk, m_DirectUntil, m_ApproachBlocked;
 
+        private Vector3 m_SearchAnchor, m_SearchGoal;
+        private float m_SearchClueAt = -100, m_NextSearchPoint;
+        private int m_SearchStep;
+
+        private Vector3 SearchGoal()
+        {
+            if (m_SearchClueAt != m_LastSeenAt)
+            {
+                m_SearchClueAt = m_LastSeenAt; m_SearchAnchor = m_LastSeen;
+                m_SearchGoal = m_LastSeen; m_SearchStep = 0; m_NextSearchPoint = m_Clock + 3;
+            }
+            if (Vector3.ProjectOnPlane(m_SearchGoal - transform.position, Vector3.up).sqrMagnitude < 1 || m_Clock >= m_NextSearchPoint)
+            {
+                // Only remembered clues, never the target's hidden live transform.
+                float angle = (GhostGameObject.Owner * 137.5f + m_SearchStep++ * 110) * Mathf.Deg2Rad;
+                float radius = Mathf.Min(5, 1.5f + m_SearchStep * .6f);
+                m_SearchGoal = m_SearchAnchor + new Vector3(Mathf.Sin(angle), 0, Mathf.Cos(angle)) * radius;
+                m_NextSearchPoint = m_Clock + 2;
+            }
+            return m_SearchGoal;
+        }
+
         private bool TickBossDisplay(float dt, PredictedPlayerGhost health, bool remembered)
         {
             if (!profile.Boss) return false;
@@ -66,11 +88,13 @@ namespace Unity.MP_FPS
 
         private void ObserveHuntMovement(Vector3 before, float speed, float dt)
         {
-            if (m_Action != AlienAction.Chase || speed <= .1f) { m_ApproachBlocked = 0; return; }
+            if ((m_Action != AlienAction.Chase && m_Action != AlienAction.Search) || speed <= .1f) { m_ApproachBlocked = 0; return; }
             m_ApproachBlocked = Vector3.Distance(before, transform.position) < speed * dt * .15f ? m_ApproachBlocked + dt : 0;
             if (m_ApproachBlocked < 1.2f) return;
             // Bounded fallback prevents a flanking goal pinning the creature to a wall.
             m_DirectUntil = m_Clock + 2; m_ApproachBlocked = 0;
+            m_NextUprightPath = 0;
+            m_NextSearchPoint = 0;
         }
     }
 }

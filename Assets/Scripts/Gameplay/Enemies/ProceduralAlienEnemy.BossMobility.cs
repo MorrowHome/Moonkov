@@ -17,7 +17,10 @@ namespace Unity.MP_FPS
                 if (!remembered || m_Clock-m_ActionStarted >= profile.BossRepositionSeconds ||
                     Vector3.ProjectOnPlane(m_BossDestination-transform.position,Vector3.up).sqrMagnitude < .2f)
                 { ChangeAction(remembered ? AlienAction.Chase : AlienAction.Roam); return false; }
-                Vector3 intent=Vector3.ProjectOnPlane(m_BossDestination-transform.position,Vector3.up).normalized;
+                Vector3 waypoint = UprightWaypoint(m_BossDestination);
+                Vector3 intent=Vector3.ProjectOnPlane(waypoint-transform.position,Vector3.up).normalized;
+                if (intent.sqrMagnitude < .01f)
+                { ChangeAction(remembered ? AlienAction.Chase : AlienAction.Roam); return false; }
                 float yaw=Mathf.Clamp(Vector3.SignedAngle(transform.forward,intent,Vector3.up)/Mathf.Max(.001f,dt),-profile.TurnSpeed,profile.TurnSpeed);
                 UpdateCombatPresentation(health.CurrentHealth);
                 m_Body.Tick(intent,profile.BossRepositionSpeed*(m_BossPhase>1?1.15f:1),yaw,dt,0,false);
@@ -39,7 +42,7 @@ namespace Unity.MP_FPS
             float radius=profile.GroundBodyRadius(m_Body.Scale);
             if (!RaidSpawnSafety.TryGroundPosition(desired,radius,profile.GroundBodyHeight(m_Body.Scale),35,out var floor,out _))
             {m_NextBossMove=m_Clock+1;return false;}
-            m_BossDestination=floor+Vector3.up*m_Body.Motor.BodyHeight;
+            m_BossDestination=floor; m_NextUprightPath=0;
             m_BossMoveHealth=health.CurrentHealth;m_BossMoveAttack=m_Attacks;BossRepositions++;
             m_NextBossMove=m_Clock+profile.BossRepositionCooldown*(m_BossPhase>1?.75f:1);
             m_NextAttack=Mathf.Max(m_NextAttack,m_Clock+profile.BossRepositionSeconds+.1f);

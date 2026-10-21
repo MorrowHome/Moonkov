@@ -12,6 +12,9 @@ namespace Unity.MP_FPS
         private readonly AlienCreatureProfile m_Profile;
         private readonly AlienVoidStyle m_Style;
         private readonly LineRenderer[] m_Streams = new LineRenderer[4];
+        private readonly LineRenderer[] m_Warnings = new LineRenderer[4];
+        private Material m_WarningMaterial;
+        private uint m_WarningSequence;
         private Transform m_Globule;
         private TrailRenderer m_Wake;
         private ParticleSystem m_Droplets;
@@ -31,9 +34,9 @@ namespace Unity.MP_FPS
         {
             foreach (var impact in m_Impacts) if (impact) impact.gameObject.SetActive(false);
             if (m_Style && m_Profile && (m_Profile.VoidLiquid || pattern.Kind == AlienAttackKind.MucusSpit)) DrawLiquidAttack(state, pattern, socket);
-            // Windup is communicated by the creature's pose and sound. Never draw
-            // circles, sectors or charge lanes over the world to expose hit geometry.
-            if (state.Action != AlienAction.Strike || state.AttackSequence == 0) return;
+            DrawWarnings(state, pattern);
+            // Impact meshes start on the same pulse clock as damage and audio.
+            if (state.Action != AlienAction.Strike || state.AttackSequence == 0 || pattern.PulseAt(state.ActionTime) < 0) return;
             if (pattern.Kind != AlienAttackKind.RootSpikes && pattern.Kind != AlienAttackKind.AcidSpit &&
                 pattern.Kind != AlienAttackKind.SlimePulse && pattern.Kind != AlienAttackKind.TentacleSlam) return;
             Vector3 centre = state.AttackPoint;
@@ -44,8 +47,76 @@ namespace Unity.MP_FPS
             for (int patch = 0; patch < patches; patch++)
             {
                 Vector3 point = centre + right * (patch == 0 ? 0 : patch == 1 ? pattern.Radius * 2.7f : -pattern.Radius * 2.7f);
-                DrawImpact(patch, point, pattern, state.ActionTime);
+                DrawImpact(patch, point, pattern, state.ActionTime - pattern.PulseTime(pattern.PulseAt(state.ActionTime)));
             }
+        }
+        private void DrawWarnings(ProceduralAlienEnemy.State state, AlienCombatPattern pattern)
+        {
+            foreach (var line in m_Warnings) if (line) line.enabled = false;
+            if (!m_Profile || !m_Profile.Boss || state.AttackSequence == 0 ||
+                state.Action != AlienAction.Windup && state.Action != AlienAction.Strike) return;
+            if (!m_WarningMaterial)
+            {
+                m_WarningMaterial = new Material(Shader.Find("Universal Render Pipeline/Unlit")) { hideFlags = HideFlags.DontSave };
+            }
+            float elapsed = state.Action == AlienAction.Windup ? state.ActionTime / Mathf.Max(.01f, pattern.Windup) :
+                Mathf.Repeat(state.ActionTime - .08f, pattern.Active / Mathf.Max(1, pattern.Pulses)) / (pattern.Active / Mathf.Max(1, pattern.Pulses));
+            m_WarningMaterial.SetColor("_BaseColor", Color.Lerp(new Color(.7f, .17f, .025f), new Color(1, .7f, .18f), Mathf.Clamp01(elapsed)));
+            bool sweep = pattern.Kind == AlienAttackKind.TentacleSweep;
+            bool spit = pattern.Kind == AlienAttackKind.MucusSpit;
+            Vector3 centre = sweep || pattern.Kind == AlienAttackKind.SlimePulse ?
+                (Vector3)state.AttackOrigin - Vector3.up * (.56f * state.Scale) : (Vector3)state.AttackPoint;
+            Vector3 direction = state.AttackDirection;
+            if (direction.sqrMagnitude < .01f) direction = Vector3.forward;
+            Vector3 right = Vector3.Cross(Vector3.up, direction).normalized;
+            int patches = pattern.Kind == AlienAttackKind.RootSpikes ? 3 : 1;
+            if (m_WarningSequence == state.AttackSequence && m_Warnings[0])
+            {
+                for (int i = 0; i < patches; i++) m_Warnings[i].enabled = true;
+                if (spit && m_Warnings[3]) m_Warnings[3].enabled = true;
+                return;
+            }
+            m_WarningSequence = state.AttackSequence;
+            for (int patch = 0; patch < patches; patch++)
+            {
+                var line = Warning(patch);
+                const int segments = 40;
+                line.positionCount = sweep ? segments + 3 : segments + 1;
+                Vector3 point = centre + right * (patch == 0 ? 0 : patch == 1 ? pattern.Radius * 2.7f : -pattern.Radius * 2.7f);
+                if (sweep) line.SetPosition(0, WarningGround(point));
+                for (int i = 0; i <= segments; i++)
+                {
+                    float angle = sweep ? Mathf.Lerp(-65, 65, i / (float)segments) : i * 360f / segments;
+                    Vector3 vertex = point + Quaternion.AngleAxis(angle, Vector3.up) * direction * (spit ? .65f : pattern.Radius);
+                    line.SetPosition(i + (sweep ? 1 : 0), spit ? vertex : WarningGround(vertex));
+                }
+                if (sweep) line.SetPosition(segments + 2, WarningGround(point));
+            }
+            if (spit)
+            {
+                var path = Warning(3); path.positionCount = 25;
+                float duration = AlienMucusTrajectory.FlightTime(state.AttackOrigin, state.AttackPoint, m_Profile.MucusSpeed);
+                for (int i = 0; i < 25; i++) path.SetPosition(i,
+                    AlienMucusTrajectory.Point(state.AttackOrigin, state.AttackPoint, m_Profile.MucusSpeed, duration * i / 24));
+            }
+        }
+        private LineRenderer Warning(int index)
+        {
+            if (!m_Warnings[index])
+            {
+                var go = new GameObject("Boss committed attack warning"); go.transform.SetParent(m_Root.transform, false);
+                var line = go.AddComponent<LineRenderer>(); m_Warnings[index] = line;
+                line.sharedMaterial = m_WarningMaterial; line.useWorldSpace = true;
+                line.widthMultiplier = .1f; line.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                line.receiveShadows = false;
+            }
+            m_Warnings[index].enabled = true;
+            return m_Warnings[index];
+        }
+        private static Vector3 WarningGround(Vector3 point)
+        {
+            return UnityEngine.Physics.Raycast(point + Vector3.up * 1.5f, Vector3.down, out var hit, 3,
+                LayerMask.GetMask("Default", "Ground"), QueryTriggerInteraction.Ignore) ? hit.point + Vector3.up * .06f : point + Vector3.up * .06f;
         }
         private void DrawImpact(int index, Vector3 point, AlienCombatPattern pattern, float age)
         {
@@ -77,8 +148,8 @@ namespace Unity.MP_FPS
             var impact = m_Impacts[index]; impact.gameObject.SetActive(true); impact.position = point;
             if (roots)
             {
-                float pulse = Mathf.Sin(Mathf.Clamp01((age % (pattern.Active / pattern.Pulses)) / .4f) * Mathf.PI);
-                impact.localScale = new Vector3(pattern.Radius * .65f, .15f + pulse * 2, pattern.Radius * .65f);
+                float pulse = 1 - Mathf.Clamp01(age / .4f);
+                impact.localScale = new Vector3(pattern.Radius * 1.7f, .15f + pulse * 2, pattern.Radius * 1.7f);
             }
             else impact.localScale = new Vector3(pattern.Radius * 2, .04f, pattern.Radius * 2);
         }
@@ -125,20 +196,24 @@ namespace Unity.MP_FPS
             }
             if (strike && (pattern.Kind == AlienAttackKind.TentacleSweep || pattern.Kind == AlienAttackKind.StiltRake))
             {
-                float t = Mathf.Clamp01(state.ActionTime/Mathf.Max(.05f,pattern.Active));
+                float interval = pattern.Active / Mathf.Max(1, pattern.Pulses);
+                int motionPulse = Mathf.Clamp(Mathf.FloorToInt(state.ActionTime / interval), 0, Mathf.Max(0, pattern.Pulses - 1));
+                float pulseAge = state.ActionTime - motionPulse * interval;
+                float t = Mathf.Clamp01(pulseAge / .08f);
+                float strength = 1 - Mathf.Clamp01((pulseAge - .08f) / .16f);
                 float angle = Mathf.Lerp(-65,65,t);
                 for(int i=0;i<3;i++)
                 {
                     Vector3 a = socket + Vector3.up * (i-.7f)*.12f*scale;
-                    Vector3 tip = a + Quaternion.AngleAxis(angle,Vector3.up)*direction*Mathf.Min(pattern.Range,2.4f*scale);
-                    Stream(i,a,tip,.045f*scale*(1-t),state.ActionTime,false);
+                    Vector3 tip = a + Quaternion.AngleAxis(angle,Vector3.up)*direction*pattern.Range;
+                    Stream(i,a,tip,.045f*scale*strength,state.ActionTime,false);
                 }
             }
             if (strike && state.AttackSequence != 0)
             {
-                int pulse = Mathf.Min(pattern.Pulses-1,Mathf.FloorToInt(state.ActionTime/Mathf.Max(.01f,pattern.Active/pattern.Pulses)));
+                int pulse = pattern.PulseAt(state.ActionTime);
                 bool fresh = (!newSequence && m_Observed) || state.ActionTime < .12f;
-                if (pulse != m_LastPulse)
+                if (pulse >= 0 && pulse != m_LastPulse)
                 {
                     m_LastPulse = pulse;
                     Vector3 point = pattern.Kind == AlienAttackKind.AcidSpit || pattern.Kind == AlienAttackKind.RootSpikes || pattern.Kind == AlienAttackKind.TentacleSlam ?
@@ -229,7 +304,7 @@ namespace Unity.MP_FPS
             var mesh = new Mesh { name = "Irregular alien residue", hideFlags = HideFlags.DontSave };
             mesh.vertices = vertices; mesh.triangles = triangles; mesh.RecalculateNormals(); mesh.RecalculateBounds(); return mesh;
         }
-        public void Dispose() { Destroy(m_Root); Destroy(m_ImpactMaterial); Destroy(m_Spike); Destroy(m_Residue); }
+        public void Dispose() { Destroy(m_Root); Destroy(m_ImpactMaterial); Destroy(m_WarningMaterial); Destroy(m_Spike); Destroy(m_Residue); }
         private static void Destroy(Object value) { if (!value) return; if (Application.isPlaying) Object.Destroy(value); else Object.DestroyImmediate(value); }
     }
 }

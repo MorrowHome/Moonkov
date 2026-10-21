@@ -15,8 +15,7 @@ namespace Unity.MP_FPS
         {
             if (m_Disposed) return;
             m_StrikeDuration = Mathf.Max(.01f, pattern.Active);
-            int pulse = Mathf.Clamp(Mathf.FloorToInt(state.ActionTime /
-                Mathf.Max(.01f, pattern.Active / Mathf.Max(1, pattern.Pulses))), 0, Mathf.Max(0, pattern.Pulses - 1));
+            int pulse = pattern.PulseAt(state.ActionTime);
             if (!m_HasAttackSnapshot)
             {
                 m_HasAttackSnapshot = true; m_DetailSequence = state.AttackSequence; m_DetailAction = state.Action;

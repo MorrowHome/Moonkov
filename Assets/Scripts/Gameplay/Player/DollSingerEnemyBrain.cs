@@ -56,7 +56,7 @@ namespace Unity.MP_FPS
         public double HealUntil, NextHeal;
         public string HealItemId;
         public int HealInventoryVersion;
-        public bool Visible, HasCover, Leaving, Extracted, PathFailed, IsPeeking;
+        public bool MovementRequested, Visible, HasCover, Leaving, Extracted, PathFailed, IsPeeking;
         public PmcAction Action;
         public string Reason = "entering expedition";
         public Unity.Mathematics.Random Random;

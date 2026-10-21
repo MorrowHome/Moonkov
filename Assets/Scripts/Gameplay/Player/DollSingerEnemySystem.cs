@@ -302,12 +302,13 @@ namespace Unity.MP_FPS
         private void UpdatePath(DollSingerEnemyBrain brain, Vector3 position, Vector3 goal, double now)
         {
             if (now < brain.NextPath && HorizontalDistance(brain.Goal, goal) < 3) return;
-            brain.NextPath = now + .6 + brain.Seed * .03;
+            brain.NextPath = now + .6 + (brain.Seed % 7) * .03;
             brain.Goal = goal;
             brain.CornerCount = 0;
             brain.Corner = 1;
             if (!NavMesh.SamplePosition(position, out var start, 3, m_Filter) ||
                 !NavMesh.SamplePosition(goal, out var end, 3, m_Filter) ||
+                Mathf.Abs(start.position.y - position.y) > .75f || Mathf.Abs(end.position.y - goal.y) > 1.2f ||
                 !NavMesh.CalculatePath(start.position, end.position, m_Filter, brain.Path) ||
                 brain.Path.status != NavMeshPathStatus.PathComplete)
             { brain.PathFailed = true; return; }
@@ -316,7 +317,7 @@ namespace Unity.MP_FPS
             // A stalled controller repaths instead of teleporting through an obstruction.
             if (now >= brain.NextProgress)
             {
-                if (HorizontalDistance(position, brain.ProgressPosition) < .3f && HorizontalDistance(position, goal) > 2)
+                if (brain.MovementRequested && Vector3.Distance(position, brain.ProgressPosition) < .3f && Vector3.Distance(position, goal) > 2)
                 {
                     brain.PathFailed = true;
                     brain.NextCover = brain.NextDecision = 0;
@@ -330,7 +331,8 @@ namespace Unity.MP_FPS
 
         private static Vector3 FollowPath(DollSingerEnemyBrain brain, Vector3 position)
         {
-            while (brain.Corner < brain.CornerCount && HorizontalDistance(position, brain.Corners[brain.Corner]) < .7f)
+            while (brain.Corner < brain.CornerCount && HorizontalDistance(position, brain.Corners[brain.Corner]) < .7f &&
+                Mathf.Abs(position.y - brain.Corners[brain.Corner].y) < .6f)
                 brain.Corner++;
             if (brain.Corner >= brain.CornerCount) return Vector3.zero;
             Vector3 direction = brain.Corners[brain.Corner] - position;

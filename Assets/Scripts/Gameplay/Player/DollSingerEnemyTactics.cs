@@ -214,7 +214,7 @@ namespace Unity.MP_FPS
                 }
                 return ChooseSearchPoint(brain, position, now);
             }
-            if (HorizontalDistance(position, goal) < 1 || now >= brain.SearchUntil || brain.PathFailed)
+            if (Vector3.Distance(position, goal) < 1 || now >= brain.SearchUntil || brain.PathFailed)
             {
                 // Stop, check an exit, then advance. No constant spinning or blind
                 // three-second goal churn while still travelling to the first clue.

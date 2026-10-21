@@ -45,3 +45,7 @@ Boss 液体采用 0.085 模型单位采样间距，维持原解算与体积分�
 - 报告位于 `Library/BuildValidation/AlienIntegration/horror-*.txt`。检查入口为 `Tools → Moonkov → Aliens → Check horror tiers and giant bosses`，正式地图落点另有 `Check giant boss formal map placement`。
 
 这些证据不替代正式地图 Play、Host/第二客户端、完整路线、音频听感、目标设备帧率与玩家恐怖感验收。巨型 Boss 需要宽阔区域；现有 NavMesh 不按其体型重建，不保证通过狭窄建筑或任意路径。所有联机端应使用相同版本。
+
+## 2026-10-21 追击与预警修复
+
+Boss 地面寻路改从脚底采样，根系可连续追击；超近战距离使用锁点黏液应对，保留弹道躲避与墙体阻挡。狂暴攻击沿已锁定方向重复，段间至少1.25秒，客户端显示扇区/落点/弹道，伤害、特效与声音共用脉冲时钟。详细证据、检查结果与未验证边界见 [AI / Boss 攻击辨识修复](AlienCombatCounterplay.md)。正式地图及刷新槽位未迁移。
