@@ -1,0 +1,21 @@
+{
+  "existingProtectedFiles": 22752,
+  "changedExistingFilesOnlyFormalScene": [
+    "Assets/MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusGameScene.unity"
+  ],
+  "sceneRecordsAddedOrRemoved": 0,
+  "onlyChangedSceneRecord": "885272968",
+  "existingNonTargetPrefabOverridesUnchanged": true,
+  "privateMeshOverrides": 5,
+  "privateMaterialSlotAppends": 5,
+  "materialArraySizeUpdates": 5,
+  "paintedSourceFaces": 150,
+  "paintedTriangles": 300,
+  "privateVertexBuffersByteIdenticalToOriginals": true,
+  "originalMeshFilesByteIdentical": true,
+  "allOldMaterialsTexturesDEMPhysicsLightingLODCullingBatchAssetsByteIdentical": true,
+  "preexistingFontChangesPreserved": true,
+  "preexistingDefaultFieldExcludedFromCommit": true,
+  "sceneCommitCandidateSHA256": "3ade3fb4e2bb6e6afc42eb9f2d3a86e170b64fc6b7029d40c6f7a6b4377a7006",
+  "workingSceneSHA256": "2d2769d7d812e02f703fea4540bd46a0a89fa767191b4998447ebac1825c1573"
+}

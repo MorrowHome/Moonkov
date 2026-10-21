@@ -1,0 +1,23 @@
+{
+  "source": {
+    "archive": "Moonkov_R21_Minimal_Material_Display_Handoff_20261020.zip",
+    "bytes": 279151,
+    "sha256": "7fd314b155114f2ef578bdc2017d1f410f0d10504187705050796592f6a33502",
+    "manifestFilesVerified": 14,
+    "finalBlendSHA256RecordedInPackage": "3d2184aa58c3f895b746d16a0d653d70ec7b10bf728847e2aad72eabde6818c2",
+    "fullBlendDownloadedOrHashedLocally": false,
+    "FBXImportedOrInstantiated": false,
+    "texturesImported": 0
+  },
+  "privateMeshes": 5,
+  "privateMaterials": 1,
+  "sourceFaces": 150,
+  "triangles": 300,
+  "ownershipGatePassed": true,
+  "vertexBuffersUnchanged": true,
+  "newTextures": 0,
+  "newGameObjects": 0,
+  "newRuntimeComponents": 0,
+  "R20Applied": false,
+  "rollbackOrder": "Restore old mesh and material references together before removing private R21 assets."
+}

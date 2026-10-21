@@ -1,0 +1,7251 @@
+{
+  "formal": "Assets/MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusGameScene.unity",
+  "formalBeforeSHA256": "8ec8481856281fa2f3455fa3101e0a621ef156059a5bede24d30fa6d08f1b11a",
+  "output": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR21RingFinish",
+  "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/DenseRingConceptB/Prefabs/B_Dense_Ring_Display_Only.prefab",
+  "sourcePrefabGUID": "9f184d11c6572234fb50067a0b0d4439",
+  "sourceScenePrefabInstance": "885272968",
+  "objects": [
+    {
+      "source": "R2_MODULE_RING_SECTOR_00",
+      "effectiveMesh": "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/DenseRingConceptB/R8VisualSurfaces/Meshes/R8_DisplayMesh_1289.asset",
+      "effectiveMeshSHA256": "a4538ddbc3c5219e502a63b64fe02a7136aace7485c8ea984f3904f35ac69a19",
+      "vertexCount": 7812,
+      "submeshTriangleCounts": [
+        1212,
+        96,
+        72,
+        1224
+      ],
+      "selectedFaces": 126,
+      "uniqueGeometryQuads": 126,
+      "exactSourceUVFaces": 126,
+      "provisionalOnly": false,
+      "note": "Saved-file ownership proved by unique prefab instance/component IDs, effective Mesh GUID and SHA256, per-face unique quad pair, matching UV corners, original slot0, consistent winding/normals and non-batched renderer. Live Editor checks still required before mutation.",
+      "faces": [
+        {
+          "component": 0,
+          "sourceFace": 0,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 0,
+              "indices": [
+                0,
+                1,
+                2
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 1,
+              "indices": [
+                3,
+                4,
+                5
+              ]
+            }
+          ]
+        },
+        {
+          "component": 0,
+          "sourceFace": 1,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 2,
+              "indices": [
+                6,
+                7,
+                8
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 3,
+              "indices": [
+                9,
+                10,
+                11
+              ]
+            }
+          ]
+        },
+        {
+          "component": 0,
+          "sourceFace": 2,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 4,
+              "indices": [
+                12,
+                13,
+                14
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 5,
+              "indices": [
+                15,
+                16,
+                17
+              ]
+            }
+          ]
+        },
+        {
+          "component": 0,
+          "sourceFace": 3,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 6,
+              "indices": [
+                18,
+                19,
+                20
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 7,
+              "indices": [
+                21,
+                22,
+                23
+              ]
+            }
+          ]
+        },
+        {
+          "component": 0,
+          "sourceFace": 4,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 8,
+              "indices": [
+                24,
+                25,
+                26
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 9,
+              "indices": [
+                27,
+                28,
+                29
+              ]
+            }
+          ]
+        },
+        {
+          "component": 0,
+          "sourceFace": 5,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 10,
+              "indices": [
+                30,
+                31,
+                32
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 11,
+              "indices": [
+                33,
+                34,
+                35
+              ]
+            }
+          ]
+        },
+        {
+          "component": 1,
+          "sourceFace": 6,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 12,
+              "indices": [
+                36,
+                37,
+                38
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 13,
+              "indices": [
+                39,
+                40,
+                41
+              ]
+            }
+          ]
+        },
+        {
+          "component": 1,
+          "sourceFace": 7,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 14,
+              "indices": [
+                42,
+                43,
+                44
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 15,
+              "indices": [
+                45,
+                46,
+                47
+              ]
+            }
+          ]
+        },
+        {
+          "component": 1,
+          "sourceFace": 8,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 16,
+              "indices": [
+                48,
+                49,
+                50
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 17,
+              "indices": [
+                51,
+                52,
+                53
+              ]
+            }
+          ]
+        },
+        {
+          "component": 1,
+          "sourceFace": 9,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 18,
+              "indices": [
+                54,
+                55,
+                56
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 19,
+              "indices": [
+                57,
+                58,
+                59
+              ]
+            }
+          ]
+        },
+        {
+          "component": 1,
+          "sourceFace": 10,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 20,
+              "indices": [
+                60,
+                61,
+                62
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 21,
+              "indices": [
+                63,
+                64,
+                65
+              ]
+            }
+          ]
+        },
+        {
+          "component": 1,
+          "sourceFace": 11,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 22,
+              "indices": [
+                66,
+                67,
+                68
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 23,
+              "indices": [
+                69,
+                70,
+                71
+              ]
+            }
+          ]
+        },
+        {
+          "component": 2,
+          "sourceFace": 12,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 24,
+              "indices": [
+                72,
+                73,
+                74
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 25,
+              "indices": [
+                75,
+                76,
+                77
+              ]
+            }
+          ]
+        },
+        {
+          "component": 2,
+          "sourceFace": 13,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 26,
+              "indices": [
+                78,
+                79,
+                80
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 27,
+              "indices": [
+                81,
+                82,
+                83
+              ]
+            }
+          ]
+        },
+        {
+          "component": 2,
+          "sourceFace": 14,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 28,
+              "indices": [
+                84,
+                85,
+                86
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 29,
+              "indices": [
+                87,
+                88,
+                89
+              ]
+            }
+          ]
+        },
+        {
+          "component": 2,
+          "sourceFace": 15,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 30,
+              "indices": [
+                90,
+                91,
+                92
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 31,
+              "indices": [
+                93,
+                94,
+                95
+              ]
+            }
+          ]
+        },
+        {
+          "component": 2,
+          "sourceFace": 16,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 32,
+              "indices": [
+                96,
+                97,
+                98
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 33,
+              "indices": [
+                99,
+                100,
+                101
+              ]
+            }
+          ]
+        },
+        {
+          "component": 2,
+          "sourceFace": 17,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 34,
+              "indices": [
+                102,
+                103,
+                104
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 35,
+              "indices": [
+                105,
+                106,
+                107
+              ]
+            }
+          ]
+        },
+        {
+          "component": 3,
+          "sourceFace": 18,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 36,
+              "indices": [
+                108,
+                109,
+                110
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 37,
+              "indices": [
+                111,
+                112,
+                113
+              ]
+            }
+          ]
+        },
+        {
+          "component": 3,
+          "sourceFace": 19,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 38,
+              "indices": [
+                114,
+                115,
+                116
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 39,
+              "indices": [
+                117,
+                118,
+                119
+              ]
+            }
+          ]
+        },
+        {
+          "component": 3,
+          "sourceFace": 20,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 40,
+              "indices": [
+                120,
+                121,
+                122
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 41,
+              "indices": [
+                123,
+                124,
+                125
+              ]
+            }
+          ]
+        },
+        {
+          "component": 3,
+          "sourceFace": 21,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 42,
+              "indices": [
+                126,
+                127,
+                128
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 43,
+              "indices": [
+                129,
+                130,
+                131
+              ]
+            }
+          ]
+        },
+        {
+          "component": 3,
+          "sourceFace": 22,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 44,
+              "indices": [
+                132,
+                133,
+                134
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 45,
+              "indices": [
+                135,
+                136,
+                137
+              ]
+            }
+          ]
+        },
+        {
+          "component": 3,
+          "sourceFace": 23,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 46,
+              "indices": [
+                138,
+                139,
+                140
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 47,
+              "indices": [
+                141,
+                142,
+                143
+              ]
+            }
+          ]
+        },
+        {
+          "component": 41,
+          "sourceFace": 1040,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 216,
+              "indices": [
+                4428,
+                4429,
+                4430
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 217,
+              "indices": [
+                4431,
+                4432,
+                4433
+              ]
+            }
+          ]
+        },
+        {
+          "component": 41,
+          "sourceFace": 1041,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 218,
+              "indices": [
+                4434,
+                4435,
+                4436
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 219,
+              "indices": [
+                4437,
+                4438,
+                4439
+              ]
+            }
+          ]
+        },
+        {
+          "component": 41,
+          "sourceFace": 1042,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 220,
+              "indices": [
+                4440,
+                4441,
+                4442
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 221,
+              "indices": [
+                4443,
+                4444,
+                4445
+              ]
+            }
+          ]
+        },
+        {
+          "component": 41,
+          "sourceFace": 1043,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 222,
+              "indices": [
+                4446,
+                4447,
+                4448
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 223,
+              "indices": [
+                4449,
+                4450,
+                4451
+              ]
+            }
+          ]
+        },
+        {
+          "component": 41,
+          "sourceFace": 1044,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 224,
+              "indices": [
+                4452,
+                4453,
+                4454
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 225,
+              "indices": [
+                4455,
+                4456,
+                4457
+              ]
+            }
+          ]
+        },
+        {
+          "component": 41,
+          "sourceFace": 1045,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 226,
+              "indices": [
+                4458,
+                4459,
+                4460
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 227,
+              "indices": [
+                4461,
+                4462,
+                4463
+              ]
+            }
+          ]
+        },
+        {
+          "component": 42,
+          "sourceFace": 1046,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 228,
+              "indices": [
+                4464,
+                4465,
+                4466
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 229,
+              "indices": [
+                4467,
+                4468,
+                4469
+              ]
+            }
+          ]
+        },
+        {
+          "component": 42,
+          "sourceFace": 1047,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 230,
+              "indices": [
+                4470,
+                4471,
+                4472
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 231,
+              "indices": [
+                4473,
+                4474,
+                4475
+              ]
+            }
+          ]
+        },
+        {
+          "component": 42,
+          "sourceFace": 1048,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 232,
+              "indices": [
+                4476,
+                4477,
+                4478
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 233,
+              "indices": [
+                4479,
+                4480,
+                4481
+              ]
+            }
+          ]
+        },
+        {
+          "component": 42,
+          "sourceFace": 1049,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 234,
+              "indices": [
+                4482,
+                4483,
+                4484
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 235,
+              "indices": [
+                4485,
+                4486,
+                4487
+              ]
+            }
+          ]
+        },
+        {
+          "component": 42,
+          "sourceFace": 1050,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 236,
+              "indices": [
+                4488,
+                4489,
+                4490
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 237,
+              "indices": [
+                4491,
+                4492,
+                4493
+              ]
+            }
+          ]
+        },
+        {
+          "component": 42,
+          "sourceFace": 1051,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 238,
+              "indices": [
+                4494,
+                4495,
+                4496
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 239,
+              "indices": [
+                4497,
+                4498,
+                4499
+              ]
+            }
+          ]
+        },
+        {
+          "component": 43,
+          "sourceFace": 1052,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 240,
+              "indices": [
+                4500,
+                4501,
+                4502
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 241,
+              "indices": [
+                4503,
+                4504,
+                4505
+              ]
+            }
+          ]
+        },
+        {
+          "component": 43,
+          "sourceFace": 1053,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 242,
+              "indices": [
+                4506,
+                4507,
+                4508
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 243,
+              "indices": [
+                4509,
+                4510,
+                4511
+              ]
+            }
+          ]
+        },
+        {
+          "component": 43,
+          "sourceFace": 1054,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 244,
+              "indices": [
+                4512,
+                4513,
+                4514
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 245,
+              "indices": [
+                4515,
+                4516,
+                4517
+              ]
+            }
+          ]
+        },
+        {
+          "component": 43,
+          "sourceFace": 1055,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 246,
+              "indices": [
+                4518,
+                4519,
+                4520
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 247,
+              "indices": [
+                4521,
+                4522,
+                4523
+              ]
+            }
+          ]
+        },
+        {
+          "component": 43,
+          "sourceFace": 1056,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 248,
+              "indices": [
+                4524,
+                4525,
+                4526
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 249,
+              "indices": [
+                4527,
+                4528,
+                4529
+              ]
+            }
+          ]
+        },
+        {
+          "component": 43,
+          "sourceFace": 1057,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 250,
+              "indices": [
+                4530,
+                4531,
+                4532
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 251,
+              "indices": [
+                4533,
+                4534,
+                4535
+              ]
+            }
+          ]
+        },
+        {
+          "component": 44,
+          "sourceFace": 1058,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 252,
+              "indices": [
+                4536,
+                4537,
+                4538
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 253,
+              "indices": [
+                4539,
+                4540,
+                4541
+              ]
+            }
+          ]
+        },
+        {
+          "component": 44,
+          "sourceFace": 1059,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 254,
+              "indices": [
+                4542,
+                4543,
+                4544
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 255,
+              "indices": [
+                4545,
+                4546,
+                4547
+              ]
+            }
+          ]
+        },
+        {
+          "component": 44,
+          "sourceFace": 1060,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 256,
+              "indices": [
+                4548,
+                4549,
+                4550
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 257,
+              "indices": [
+                4551,
+                4552,
+                4553
+              ]
+            }
+          ]
+        },
+        {
+          "component": 44,
+          "sourceFace": 1061,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 258,
+              "indices": [
+                4554,
+                4555,
+                4556
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 259,
+              "indices": [
+                4557,
+                4558,
+                4559
+              ]
+            }
+          ]
+        },
+        {
+          "component": 44,
+          "sourceFace": 1062,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 260,
+              "indices": [
+                4560,
+                4561,
+                4562
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 261,
+              "indices": [
+                4563,
+                4564,
+                4565
+              ]
+            }
+          ]
+        },
+        {
+          "component": 44,
+          "sourceFace": 1063,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 262,
+              "indices": [
+                4566,
+                4567,
+                4568
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 263,
+              "indices": [
+                4569,
+                4570,
+                4571
+              ]
+            }
+          ]
+        },
+        {
+          "component": 45,
+          "sourceFace": 1064,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 264,
+              "indices": [
+                4572,
+                4573,
+                4574
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 265,
+              "indices": [
+                4575,
+                4576,
+                4577
+              ]
+            }
+          ]
+        },
+        {
+          "component": 45,
+          "sourceFace": 1065,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 266,
+              "indices": [
+                4578,
+                4579,
+                4580
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 267,
+              "indices": [
+                4581,
+                4582,
+                4583
+              ]
+            }
+          ]
+        },
+        {
+          "component": 45,
+          "sourceFace": 1066,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 268,
+              "indices": [
+                4584,
+                4585,
+                4586
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 269,
+              "indices": [
+                4587,
+                4588,
+                4589
+              ]
+            }
+          ]
+        },
+        {
+          "component": 45,
+          "sourceFace": 1067,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 270,
+              "indices": [
+                4590,
+                4591,
+                4592
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 271,
+              "indices": [
+                4593,
+                4594,
+                4595
+              ]
+            }
+          ]
+        },
+        {
+          "component": 45,
+          "sourceFace": 1068,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 272,
+              "indices": [
+                4596,
+                4597,
+                4598
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 273,
+              "indices": [
+                4599,
+                4600,
+                4601
+              ]
+            }
+          ]
+        },
+        {
+          "component": 45,
+          "sourceFace": 1069,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 274,
+              "indices": [
+                4602,
+                4603,
+                4604
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 275,
+              "indices": [
+                4605,
+                4606,
+                4607
+              ]
+            }
+          ]
+        },
+        {
+          "component": 46,
+          "sourceFace": 1070,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 276,
+              "indices": [
+                4608,
+                4609,
+                4610
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 277,
+              "indices": [
+                4611,
+                4612,
+                4613
+              ]
+            }
+          ]
+        },
+        {
+          "component": 46,
+          "sourceFace": 1071,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 278,
+              "indices": [
+                4614,
+                4615,
+                4616
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 279,
+              "indices": [
+                4617,
+                4618,
+                4619
+              ]
+            }
+          ]
+        },
+        {
+          "component": 46,
+          "sourceFace": 1072,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 280,
+              "indices": [
+                4620,
+                4621,
+                4622
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 281,
+              "indices": [
+                4623,
+                4624,
+                4625
+              ]
+            }
+          ]
+        },
+        {
+          "component": 46,
+          "sourceFace": 1073,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 282,
+              "indices": [
+                4626,
+                4627,
+                4628
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 283,
+              "indices": [
+                4629,
+                4630,
+                4631
+              ]
+            }
+          ]
+        },
+        {
+          "component": 46,
+          "sourceFace": 1074,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 284,
+              "indices": [
+                4632,
+                4633,
+                4634
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 285,
+              "indices": [
+                4635,
+                4636,
+                4637
+              ]
+            }
+          ]
+        },
+        {
+          "component": 46,
+          "sourceFace": 1075,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 286,
+              "indices": [
+                4638,
+                4639,
+                4640
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 287,
+              "indices": [
+                4641,
+                4642,
+                4643
+              ]
+            }
+          ]
+        },
+        {
+          "component": 47,
+          "sourceFace": 1076,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 288,
+              "indices": [
+                4644,
+                4645,
+                4646
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 289,
+              "indices": [
+                4647,
+                4648,
+                4649
+              ]
+            }
+          ]
+        },
+        {
+          "component": 47,
+          "sourceFace": 1077,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 290,
+              "indices": [
+                4650,
+                4651,
+                4652
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 291,
+              "indices": [
+                4653,
+                4654,
+                4655
+              ]
+            }
+          ]
+        },
+        {
+          "component": 47,
+          "sourceFace": 1078,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 292,
+              "indices": [
+                4656,
+                4657,
+                4658
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 293,
+              "indices": [
+                4659,
+                4660,
+                4661
+              ]
+            }
+          ]
+        },
+        {
+          "component": 47,
+          "sourceFace": 1079,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 294,
+              "indices": [
+                4662,
+                4663,
+                4664
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 295,
+              "indices": [
+                4665,
+                4666,
+                4667
+              ]
+            }
+          ]
+        },
+        {
+          "component": 47,
+          "sourceFace": 1080,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 296,
+              "indices": [
+                4668,
+                4669,
+                4670
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 297,
+              "indices": [
+                4671,
+                4672,
+                4673
+              ]
+            }
+          ]
+        },
+        {
+          "component": 47,
+          "sourceFace": 1081,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 298,
+              "indices": [
+                4674,
+                4675,
+                4676
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 299,
+              "indices": [
+                4677,
+                4678,
+                4679
+              ]
+            }
+          ]
+        },
+        {
+          "component": 48,
+          "sourceFace": 1082,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 300,
+              "indices": [
+                4680,
+                4681,
+                4682
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 301,
+              "indices": [
+                4683,
+                4684,
+                4685
+              ]
+            }
+          ]
+        },
+        {
+          "component": 48,
+          "sourceFace": 1083,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 302,
+              "indices": [
+                4686,
+                4687,
+                4688
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 303,
+              "indices": [
+                4689,
+                4690,
+                4691
+              ]
+            }
+          ]
+        },
+        {
+          "component": 48,
+          "sourceFace": 1084,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 304,
+              "indices": [
+                4692,
+                4693,
+                4694
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 305,
+              "indices": [
+                4695,
+                4696,
+                4697
+              ]
+            }
+          ]
+        },
+        {
+          "component": 48,
+          "sourceFace": 1085,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 306,
+              "indices": [
+                4698,
+                4699,
+                4700
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 307,
+              "indices": [
+                4701,
+                4702,
+                4703
+              ]
+            }
+          ]
+        },
+        {
+          "component": 48,
+          "sourceFace": 1086,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 308,
+              "indices": [
+                4704,
+                4705,
+                4706
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 309,
+              "indices": [
+                4707,
+                4708,
+                4709
+              ]
+            }
+          ]
+        },
+        {
+          "component": 48,
+          "sourceFace": 1087,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 310,
+              "indices": [
+                4710,
+                4711,
+                4712
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 311,
+              "indices": [
+                4713,
+                4714,
+                4715
+              ]
+            }
+          ]
+        },
+        {
+          "component": 49,
+          "sourceFace": 1088,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 312,
+              "indices": [
+                4716,
+                4717,
+                4718
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 313,
+              "indices": [
+                4719,
+                4720,
+                4721
+              ]
+            }
+          ]
+        },
+        {
+          "component": 49,
+          "sourceFace": 1089,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 314,
+              "indices": [
+                4722,
+                4723,
+                4724
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 315,
+              "indices": [
+                4725,
+                4726,
+                4727
+              ]
+            }
+          ]
+        },
+        {
+          "component": 49,
+          "sourceFace": 1090,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 316,
+              "indices": [
+                4728,
+                4729,
+                4730
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 317,
+              "indices": [
+                4731,
+                4732,
+                4733
+              ]
+            }
+          ]
+        },
+        {
+          "component": 49,
+          "sourceFace": 1091,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 318,
+              "indices": [
+                4734,
+                4735,
+                4736
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 319,
+              "indices": [
+                4737,
+                4738,
+                4739
+              ]
+            }
+          ]
+        },
+        {
+          "component": 49,
+          "sourceFace": 1092,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 320,
+              "indices": [
+                4740,
+                4741,
+                4742
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 321,
+              "indices": [
+                4743,
+                4744,
+                4745
+              ]
+            }
+          ]
+        },
+        {
+          "component": 49,
+          "sourceFace": 1093,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 322,
+              "indices": [
+                4746,
+                4747,
+                4748
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 323,
+              "indices": [
+                4749,
+                4750,
+                4751
+              ]
+            }
+          ]
+        },
+        {
+          "component": 64,
+          "sourceFace": 1178,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 468,
+              "indices": [
+                5256,
+                5257,
+                5258
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 469,
+              "indices": [
+                5259,
+                5260,
+                5261
+              ]
+            }
+          ]
+        },
+        {
+          "component": 64,
+          "sourceFace": 1179,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 470,
+              "indices": [
+                5262,
+                5263,
+                5264
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 471,
+              "indices": [
+                5265,
+                5266,
+                5267
+              ]
+            }
+          ]
+        },
+        {
+          "component": 64,
+          "sourceFace": 1180,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 472,
+              "indices": [
+                5268,
+                5269,
+                5270
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 473,
+              "indices": [
+                5271,
+                5272,
+                5273
+              ]
+            }
+          ]
+        },
+        {
+          "component": 64,
+          "sourceFace": 1181,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 474,
+              "indices": [
+                5274,
+                5275,
+                5276
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 475,
+              "indices": [
+                5277,
+                5278,
+                5279
+              ]
+            }
+          ]
+        },
+        {
+          "component": 64,
+          "sourceFace": 1182,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 476,
+              "indices": [
+                5280,
+                5281,
+                5282
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 477,
+              "indices": [
+                5283,
+                5284,
+                5285
+              ]
+            }
+          ]
+        },
+        {
+          "component": 64,
+          "sourceFace": 1183,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 478,
+              "indices": [
+                5286,
+                5287,
+                5288
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 479,
+              "indices": [
+                5289,
+                5290,
+                5291
+              ]
+            }
+          ]
+        },
+        {
+          "component": 65,
+          "sourceFace": 1184,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 480,
+              "indices": [
+                5292,
+                5293,
+                5294
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 481,
+              "indices": [
+                5295,
+                5296,
+                5297
+              ]
+            }
+          ]
+        },
+        {
+          "component": 65,
+          "sourceFace": 1185,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 482,
+              "indices": [
+                5298,
+                5299,
+                5300
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 483,
+              "indices": [
+                5301,
+                5302,
+                5303
+              ]
+            }
+          ]
+        },
+        {
+          "component": 65,
+          "sourceFace": 1186,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 484,
+              "indices": [
+                5304,
+                5305,
+                5306
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 485,
+              "indices": [
+                5307,
+                5308,
+                5309
+              ]
+            }
+          ]
+        },
+        {
+          "component": 65,
+          "sourceFace": 1187,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 486,
+              "indices": [
+                5310,
+                5311,
+                5312
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 487,
+              "indices": [
+                5313,
+                5314,
+                5315
+              ]
+            }
+          ]
+        },
+        {
+          "component": 65,
+          "sourceFace": 1188,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 488,
+              "indices": [
+                5316,
+                5317,
+                5318
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 489,
+              "indices": [
+                5319,
+                5320,
+                5321
+              ]
+            }
+          ]
+        },
+        {
+          "component": 65,
+          "sourceFace": 1189,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 490,
+              "indices": [
+                5322,
+                5323,
+                5324
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 491,
+              "indices": [
+                5325,
+                5326,
+                5327
+              ]
+            }
+          ]
+        },
+        {
+          "component": 66,
+          "sourceFace": 1190,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 492,
+              "indices": [
+                5328,
+                5329,
+                5330
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 493,
+              "indices": [
+                5331,
+                5332,
+                5333
+              ]
+            }
+          ]
+        },
+        {
+          "component": 66,
+          "sourceFace": 1191,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 494,
+              "indices": [
+                5334,
+                5335,
+                5336
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 495,
+              "indices": [
+                5337,
+                5338,
+                5339
+              ]
+            }
+          ]
+        },
+        {
+          "component": 66,
+          "sourceFace": 1192,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 496,
+              "indices": [
+                5340,
+                5341,
+                5342
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 497,
+              "indices": [
+                5343,
+                5344,
+                5345
+              ]
+            }
+          ]
+        },
+        {
+          "component": 66,
+          "sourceFace": 1193,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 498,
+              "indices": [
+                5346,
+                5347,
+                5348
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 499,
+              "indices": [
+                5349,
+                5350,
+                5351
+              ]
+            }
+          ]
+        },
+        {
+          "component": 66,
+          "sourceFace": 1194,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 500,
+              "indices": [
+                5352,
+                5353,
+                5354
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 501,
+              "indices": [
+                5355,
+                5356,
+                5357
+              ]
+            }
+          ]
+        },
+        {
+          "component": 66,
+          "sourceFace": 1195,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 502,
+              "indices": [
+                5358,
+                5359,
+                5360
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 503,
+              "indices": [
+                5361,
+                5362,
+                5363
+              ]
+            }
+          ]
+        },
+        {
+          "component": 67,
+          "sourceFace": 1196,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 504,
+              "indices": [
+                5364,
+                5365,
+                5366
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 505,
+              "indices": [
+                5367,
+                5368,
+                5369
+              ]
+            }
+          ]
+        },
+        {
+          "component": 67,
+          "sourceFace": 1197,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 506,
+              "indices": [
+                5370,
+                5371,
+                5372
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 507,
+              "indices": [
+                5373,
+                5374,
+                5375
+              ]
+            }
+          ]
+        },
+        {
+          "component": 67,
+          "sourceFace": 1198,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 508,
+              "indices": [
+                5376,
+                5377,
+                5378
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 509,
+              "indices": [
+                5379,
+                5380,
+                5381
+              ]
+            }
+          ]
+        },
+        {
+          "component": 67,
+          "sourceFace": 1199,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 510,
+              "indices": [
+                5382,
+                5383,
+                5384
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 511,
+              "indices": [
+                5385,
+                5386,
+                5387
+              ]
+            }
+          ]
+        },
+        {
+          "component": 67,
+          "sourceFace": 1200,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 512,
+              "indices": [
+                5388,
+                5389,
+                5390
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 513,
+              "indices": [
+                5391,
+                5392,
+                5393
+              ]
+            }
+          ]
+        },
+        {
+          "component": 67,
+          "sourceFace": 1201,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 514,
+              "indices": [
+                5394,
+                5395,
+                5396
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 515,
+              "indices": [
+                5397,
+                5398,
+                5399
+              ]
+            }
+          ]
+        },
+        {
+          "component": 68,
+          "sourceFace": 1202,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 516,
+              "indices": [
+                5400,
+                5401,
+                5402
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 517,
+              "indices": [
+                5403,
+                5404,
+                5405
+              ]
+            }
+          ]
+        },
+        {
+          "component": 68,
+          "sourceFace": 1203,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 518,
+              "indices": [
+                5406,
+                5407,
+                5408
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 519,
+              "indices": [
+                5409,
+                5410,
+                5411
+              ]
+            }
+          ]
+        },
+        {
+          "component": 68,
+          "sourceFace": 1204,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 520,
+              "indices": [
+                5412,
+                5413,
+                5414
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 521,
+              "indices": [
+                5415,
+                5416,
+                5417
+              ]
+            }
+          ]
+        },
+        {
+          "component": 68,
+          "sourceFace": 1205,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 522,
+              "indices": [
+                5418,
+                5419,
+                5420
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 523,
+              "indices": [
+                5421,
+                5422,
+                5423
+              ]
+            }
+          ]
+        },
+        {
+          "component": 68,
+          "sourceFace": 1206,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 524,
+              "indices": [
+                5424,
+                5425,
+                5426
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 525,
+              "indices": [
+                5427,
+                5428,
+                5429
+              ]
+            }
+          ]
+        },
+        {
+          "component": 68,
+          "sourceFace": 1207,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 526,
+              "indices": [
+                5430,
+                5431,
+                5432
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 527,
+              "indices": [
+                5433,
+                5434,
+                5435
+              ]
+            }
+          ]
+        },
+        {
+          "component": 69,
+          "sourceFace": 1208,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 528,
+              "indices": [
+                5436,
+                5437,
+                5438
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 529,
+              "indices": [
+                5439,
+                5440,
+                5441
+              ]
+            }
+          ]
+        },
+        {
+          "component": 69,
+          "sourceFace": 1209,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 530,
+              "indices": [
+                5442,
+                5443,
+                5444
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 531,
+              "indices": [
+                5445,
+                5446,
+                5447
+              ]
+            }
+          ]
+        },
+        {
+          "component": 69,
+          "sourceFace": 1210,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 532,
+              "indices": [
+                5448,
+                5449,
+                5450
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 533,
+              "indices": [
+                5451,
+                5452,
+                5453
+              ]
+            }
+          ]
+        },
+        {
+          "component": 69,
+          "sourceFace": 1211,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 534,
+              "indices": [
+                5454,
+                5455,
+                5456
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 535,
+              "indices": [
+                5457,
+                5458,
+                5459
+              ]
+            }
+          ]
+        },
+        {
+          "component": 69,
+          "sourceFace": 1212,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 536,
+              "indices": [
+                5460,
+                5461,
+                5462
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 537,
+              "indices": [
+                5463,
+                5464,
+                5465
+              ]
+            }
+          ]
+        },
+        {
+          "component": 69,
+          "sourceFace": 1213,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 538,
+              "indices": [
+                5466,
+                5467,
+                5468
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 539,
+              "indices": [
+                5469,
+                5470,
+                5471
+              ]
+            }
+          ]
+        },
+        {
+          "component": 70,
+          "sourceFace": 1214,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 540,
+              "indices": [
+                5472,
+                5473,
+                5474
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 541,
+              "indices": [
+                5475,
+                5476,
+                5477
+              ]
+            }
+          ]
+        },
+        {
+          "component": 70,
+          "sourceFace": 1215,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 542,
+              "indices": [
+                5478,
+                5479,
+                5480
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 543,
+              "indices": [
+                5481,
+                5482,
+                5483
+              ]
+            }
+          ]
+        },
+        {
+          "component": 70,
+          "sourceFace": 1216,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 544,
+              "indices": [
+                5484,
+                5485,
+                5486
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 545,
+              "indices": [
+                5487,
+                5488,
+                5489
+              ]
+            }
+          ]
+        },
+        {
+          "component": 70,
+          "sourceFace": 1217,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 546,
+              "indices": [
+                5490,
+                5491,
+                5492
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 547,
+              "indices": [
+                5493,
+                5494,
+                5495
+              ]
+            }
+          ]
+        },
+        {
+          "component": 70,
+          "sourceFace": 1218,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 548,
+              "indices": [
+                5496,
+                5497,
+                5498
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 549,
+              "indices": [
+                5499,
+                5500,
+                5501
+              ]
+            }
+          ]
+        },
+        {
+          "component": 70,
+          "sourceFace": 1219,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 550,
+              "indices": [
+                5502,
+                5503,
+                5504
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 551,
+              "indices": [
+                5505,
+                5506,
+                5507
+              ]
+            }
+          ]
+        },
+        {
+          "component": 71,
+          "sourceFace": 1220,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 552,
+              "indices": [
+                5508,
+                5509,
+                5510
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 553,
+              "indices": [
+                5511,
+                5512,
+                5513
+              ]
+            }
+          ]
+        },
+        {
+          "component": 71,
+          "sourceFace": 1221,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 554,
+              "indices": [
+                5514,
+                5515,
+                5516
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 555,
+              "indices": [
+                5517,
+                5518,
+                5519
+              ]
+            }
+          ]
+        },
+        {
+          "component": 71,
+          "sourceFace": 1222,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 556,
+              "indices": [
+                5520,
+                5521,
+                5522
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 557,
+              "indices": [
+                5523,
+                5524,
+                5525
+              ]
+            }
+          ]
+        },
+        {
+          "component": 71,
+          "sourceFace": 1223,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 558,
+              "indices": [
+                5526,
+                5527,
+                5528
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 559,
+              "indices": [
+                5529,
+                5530,
+                5531
+              ]
+            }
+          ]
+        },
+        {
+          "component": 71,
+          "sourceFace": 1224,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 560,
+              "indices": [
+                5532,
+                5533,
+                5534
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 561,
+              "indices": [
+                5535,
+                5536,
+                5537
+              ]
+            }
+          ]
+        },
+        {
+          "component": 71,
+          "sourceFace": 1225,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 562,
+              "indices": [
+                5538,
+                5539,
+                5540
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 563,
+              "indices": [
+                5541,
+                5542,
+                5543
+              ]
+            }
+          ]
+        }
+      ],
+      "ownerPrefab": "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/DenseRingConceptB/Prefabs/B_Dense_Ring_Display_Only.prefab",
+      "ownerPrefabGUID": "9f184d11c6572234fb50067a0b0d4439",
+      "scenePrefabInstance": "885272968",
+      "meshFilterPrefabFileID": "7690792061189328896",
+      "rendererPrefabFileID": "1889053285159085437",
+      "oldSubmeshCount": 4,
+      "newPrivateMaterialSlot": 4,
+      "selectedTriangles": [
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 0,
+          "indices": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 1,
+          "indices": [
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 2,
+          "indices": [
+            6,
+            7,
+            8
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 3,
+          "indices": [
+            9,
+            10,
+            11
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 4,
+          "indices": [
+            12,
+            13,
+            14
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 5,
+          "indices": [
+            15,
+            16,
+            17
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 6,
+          "indices": [
+            18,
+            19,
+            20
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 7,
+          "indices": [
+            21,
+            22,
+            23
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 8,
+          "indices": [
+            24,
+            25,
+            26
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 9,
+          "indices": [
+            27,
+            28,
+            29
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 10,
+          "indices": [
+            30,
+            31,
+            32
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 11,
+          "indices": [
+            33,
+            34,
+            35
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 12,
+          "indices": [
+            36,
+            37,
+            38
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 13,
+          "indices": [
+            39,
+            40,
+            41
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 14,
+          "indices": [
+            42,
+            43,
+            44
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 15,
+          "indices": [
+            45,
+            46,
+            47
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 16,
+          "indices": [
+            48,
+            49,
+            50
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 17,
+          "indices": [
+            51,
+            52,
+            53
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 18,
+          "indices": [
+            54,
+            55,
+            56
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 19,
+          "indices": [
+            57,
+            58,
+            59
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 20,
+          "indices": [
+            60,
+            61,
+            62
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 21,
+          "indices": [
+            63,
+            64,
+            65
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 22,
+          "indices": [
+            66,
+            67,
+            68
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 23,
+          "indices": [
+            69,
+            70,
+            71
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 24,
+          "indices": [
+            72,
+            73,
+            74
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 25,
+          "indices": [
+            75,
+            76,
+            77
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 26,
+          "indices": [
+            78,
+            79,
+            80
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 27,
+          "indices": [
+            81,
+            82,
+            83
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 28,
+          "indices": [
+            84,
+            85,
+            86
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 29,
+          "indices": [
+            87,
+            88,
+            89
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 30,
+          "indices": [
+            90,
+            91,
+            92
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 31,
+          "indices": [
+            93,
+            94,
+            95
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 32,
+          "indices": [
+            96,
+            97,
+            98
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 33,
+          "indices": [
+            99,
+            100,
+            101
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 34,
+          "indices": [
+            102,
+            103,
+            104
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 35,
+          "indices": [
+            105,
+            106,
+            107
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 36,
+          "indices": [
+            108,
+            109,
+            110
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 37,
+          "indices": [
+            111,
+            112,
+            113
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 38,
+          "indices": [
+            114,
+            115,
+            116
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 39,
+          "indices": [
+            117,
+            118,
+            119
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 40,
+          "indices": [
+            120,
+            121,
+            122
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 41,
+          "indices": [
+            123,
+            124,
+            125
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 42,
+          "indices": [
+            126,
+            127,
+            128
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 43,
+          "indices": [
+            129,
+            130,
+            131
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 44,
+          "indices": [
+            132,
+            133,
+            134
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 45,
+          "indices": [
+            135,
+            136,
+            137
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 46,
+          "indices": [
+            138,
+            139,
+            140
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 47,
+          "indices": [
+            141,
+            142,
+            143
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 216,
+          "indices": [
+            4428,
+            4429,
+            4430
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 217,
+          "indices": [
+            4431,
+            4432,
+            4433
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 218,
+          "indices": [
+            4434,
+            4435,
+            4436
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 219,
+          "indices": [
+            4437,
+            4438,
+            4439
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 220,
+          "indices": [
+            4440,
+            4441,
+            4442
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 221,
+          "indices": [
+            4443,
+            4444,
+            4445
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 222,
+          "indices": [
+            4446,
+            4447,
+            4448
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 223,
+          "indices": [
+            4449,
+            4450,
+            4451
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 224,
+          "indices": [
+            4452,
+            4453,
+            4454
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 225,
+          "indices": [
+            4455,
+            4456,
+            4457
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 226,
+          "indices": [
+            4458,
+            4459,
+            4460
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 227,
+          "indices": [
+            4461,
+            4462,
+            4463
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 228,
+          "indices": [
+            4464,
+            4465,
+            4466
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 229,
+          "indices": [
+            4467,
+            4468,
+            4469
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 230,
+          "indices": [
+            4470,
+            4471,
+            4472
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 231,
+          "indices": [
+            4473,
+            4474,
+            4475
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 232,
+          "indices": [
+            4476,
+            4477,
+            4478
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 233,
+          "indices": [
+            4479,
+            4480,
+            4481
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 234,
+          "indices": [
+            4482,
+            4483,
+            4484
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 235,
+          "indices": [
+            4485,
+            4486,
+            4487
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 236,
+          "indices": [
+            4488,
+            4489,
+            4490
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 237,
+          "indices": [
+            4491,
+            4492,
+            4493
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 238,
+          "indices": [
+            4494,
+            4495,
+            4496
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 239,
+          "indices": [
+            4497,
+            4498,
+            4499
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 240,
+          "indices": [
+            4500,
+            4501,
+            4502
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 241,
+          "indices": [
+            4503,
+            4504,
+            4505
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 242,
+          "indices": [
+            4506,
+            4507,
+            4508
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 243,
+          "indices": [
+            4509,
+            4510,
+            4511
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 244,
+          "indices": [
+            4512,
+            4513,
+            4514
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 245,
+          "indices": [
+            4515,
+            4516,
+            4517
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 246,
+          "indices": [
+            4518,
+            4519,
+            4520
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 247,
+          "indices": [
+            4521,
+            4522,
+            4523
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 248,
+          "indices": [
+            4524,
+            4525,
+            4526
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 249,
+          "indices": [
+            4527,
+            4528,
+            4529
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 250,
+          "indices": [
+            4530,
+            4531,
+            4532
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 251,
+          "indices": [
+            4533,
+            4534,
+            4535
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 252,
+          "indices": [
+            4536,
+            4537,
+            4538
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 253,
+          "indices": [
+            4539,
+            4540,
+            4541
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 254,
+          "indices": [
+            4542,
+            4543,
+            4544
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 255,
+          "indices": [
+            4545,
+            4546,
+            4547
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 256,
+          "indices": [
+            4548,
+            4549,
+            4550
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 257,
+          "indices": [
+            4551,
+            4552,
+            4553
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 258,
+          "indices": [
+            4554,
+            4555,
+            4556
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 259,
+          "indices": [
+            4557,
+            4558,
+            4559
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 260,
+          "indices": [
+            4560,
+            4561,
+            4562
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 261,
+          "indices": [
+            4563,
+            4564,
+            4565
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 262,
+          "indices": [
+            4566,
+            4567,
+            4568
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 263,
+          "indices": [
+            4569,
+            4570,
+            4571
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 264,
+          "indices": [
+            4572,
+            4573,
+            4574
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 265,
+          "indices": [
+            4575,
+            4576,
+            4577
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 266,
+          "indices": [
+            4578,
+            4579,
+            4580
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 267,
+          "indices": [
+            4581,
+            4582,
+            4583
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 268,
+          "indices": [
+            4584,
+            4585,
+            4586
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 269,
+          "indices": [
+            4587,
+            4588,
+            4589
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 270,
+          "indices": [
+            4590,
+            4591,
+            4592
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 271,
+          "indices": [
+            4593,
+            4594,
+            4595
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 272,
+          "indices": [
+            4596,
+            4597,
+            4598
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 273,
+          "indices": [
+            4599,
+            4600,
+            4601
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 274,
+          "indices": [
+            4602,
+            4603,
+            4604
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 275,
+          "indices": [
+            4605,
+            4606,
+            4607
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 276,
+          "indices": [
+            4608,
+            4609,
+            4610
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 277,
+          "indices": [
+            4611,
+            4612,
+            4613
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 278,
+          "indices": [
+            4614,
+            4615,
+            4616
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 279,
+          "indices": [
+            4617,
+            4618,
+            4619
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 280,
+          "indices": [
+            4620,
+            4621,
+            4622
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 281,
+          "indices": [
+            4623,
+            4624,
+            4625
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 282,
+          "indices": [
+            4626,
+            4627,
+            4628
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 283,
+          "indices": [
+            4629,
+            4630,
+            4631
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 284,
+          "indices": [
+            4632,
+            4633,
+            4634
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 285,
+          "indices": [
+            4635,
+            4636,
+            4637
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 286,
+          "indices": [
+            4638,
+            4639,
+            4640
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 287,
+          "indices": [
+            4641,
+            4642,
+            4643
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 288,
+          "indices": [
+            4644,
+            4645,
+            4646
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 289,
+          "indices": [
+            4647,
+            4648,
+            4649
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 290,
+          "indices": [
+            4650,
+            4651,
+            4652
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 291,
+          "indices": [
+            4653,
+            4654,
+            4655
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 292,
+          "indices": [
+            4656,
+            4657,
+            4658
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 293,
+          "indices": [
+            4659,
+            4660,
+            4661
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 294,
+          "indices": [
+            4662,
+            4663,
+            4664
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 295,
+          "indices": [
+            4665,
+            4666,
+            4667
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 296,
+          "indices": [
+            4668,
+            4669,
+            4670
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 297,
+          "indices": [
+            4671,
+            4672,
+            4673
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 298,
+          "indices": [
+            4674,
+            4675,
+            4676
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 299,
+          "indices": [
+            4677,
+            4678,
+            4679
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 300,
+          "indices": [
+            4680,
+            4681,
+            4682
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 301,
+          "indices": [
+            4683,
+            4684,
+            4685
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 302,
+          "indices": [
+            4686,
+            4687,
+            4688
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 303,
+          "indices": [
+            4689,
+            4690,
+            4691
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 304,
+          "indices": [
+            4692,
+            4693,
+            4694
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 305,
+          "indices": [
+            4695,
+            4696,
+            4697
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 306,
+          "indices": [
+            4698,
+            4699,
+            4700
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 307,
+          "indices": [
+            4701,
+            4702,
+            4703
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 308,
+          "indices": [
+            4704,
+            4705,
+            4706
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 309,
+          "indices": [
+            4707,
+            4708,
+            4709
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 310,
+          "indices": [
+            4710,
+            4711,
+            4712
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 311,
+          "indices": [
+            4713,
+            4714,
+            4715
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 312,
+          "indices": [
+            4716,
+            4717,
+            4718
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 313,
+          "indices": [
+            4719,
+            4720,
+            4721
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 314,
+          "indices": [
+            4722,
+            4723,
+            4724
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 315,
+          "indices": [
+            4725,
+            4726,
+            4727
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 316,
+          "indices": [
+            4728,
+            4729,
+            4730
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 317,
+          "indices": [
+            4731,
+            4732,
+            4733
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 318,
+          "indices": [
+            4734,
+            4735,
+            4736
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 319,
+          "indices": [
+            4737,
+            4738,
+            4739
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 320,
+          "indices": [
+            4740,
+            4741,
+            4742
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 321,
+          "indices": [
+            4743,
+            4744,
+            4745
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 322,
+          "indices": [
+            4746,
+            4747,
+            4748
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 323,
+          "indices": [
+            4749,
+            4750,
+            4751
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 468,
+          "indices": [
+            5256,
+            5257,
+            5258
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 469,
+          "indices": [
+            5259,
+            5260,
+            5261
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 470,
+          "indices": [
+            5262,
+            5263,
+            5264
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 471,
+          "indices": [
+            5265,
+            5266,
+            5267
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 472,
+          "indices": [
+            5268,
+            5269,
+            5270
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 473,
+          "indices": [
+            5271,
+            5272,
+            5273
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 474,
+          "indices": [
+            5274,
+            5275,
+            5276
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 475,
+          "indices": [
+            5277,
+            5278,
+            5279
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 476,
+          "indices": [
+            5280,
+            5281,
+            5282
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 477,
+          "indices": [
+            5283,
+            5284,
+            5285
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 478,
+          "indices": [
+            5286,
+            5287,
+            5288
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 479,
+          "indices": [
+            5289,
+            5290,
+            5291
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 480,
+          "indices": [
+            5292,
+            5293,
+            5294
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 481,
+          "indices": [
+            5295,
+            5296,
+            5297
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 482,
+          "indices": [
+            5298,
+            5299,
+            5300
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 483,
+          "indices": [
+            5301,
+            5302,
+            5303
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 484,
+          "indices": [
+            5304,
+            5305,
+            5306
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 485,
+          "indices": [
+            5307,
+            5308,
+            5309
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 486,
+          "indices": [
+            5310,
+            5311,
+            5312
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 487,
+          "indices": [
+            5313,
+            5314,
+            5315
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 488,
+          "indices": [
+            5316,
+            5317,
+            5318
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 489,
+          "indices": [
+            5319,
+            5320,
+            5321
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 490,
+          "indices": [
+            5322,
+            5323,
+            5324
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 491,
+          "indices": [
+            5325,
+            5326,
+            5327
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 492,
+          "indices": [
+            5328,
+            5329,
+            5330
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 493,
+          "indices": [
+            5331,
+            5332,
+            5333
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 494,
+          "indices": [
+            5334,
+            5335,
+            5336
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 495,
+          "indices": [
+            5337,
+            5338,
+            5339
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 496,
+          "indices": [
+            5340,
+            5341,
+            5342
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 497,
+          "indices": [
+            5343,
+            5344,
+            5345
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 498,
+          "indices": [
+            5346,
+            5347,
+            5348
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 499,
+          "indices": [
+            5349,
+            5350,
+            5351
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 500,
+          "indices": [
+            5352,
+            5353,
+            5354
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 501,
+          "indices": [
+            5355,
+            5356,
+            5357
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 502,
+          "indices": [
+            5358,
+            5359,
+            5360
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 503,
+          "indices": [
+            5361,
+            5362,
+            5363
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 504,
+          "indices": [
+            5364,
+            5365,
+            5366
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 505,
+          "indices": [
+            5367,
+            5368,
+            5369
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 506,
+          "indices": [
+            5370,
+            5371,
+            5372
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 507,
+          "indices": [
+            5373,
+            5374,
+            5375
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 508,
+          "indices": [
+            5376,
+            5377,
+            5378
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 509,
+          "indices": [
+            5379,
+            5380,
+            5381
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 510,
+          "indices": [
+            5382,
+            5383,
+            5384
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 511,
+          "indices": [
+            5385,
+            5386,
+            5387
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 512,
+          "indices": [
+            5388,
+            5389,
+            5390
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 513,
+          "indices": [
+            5391,
+            5392,
+            5393
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 514,
+          "indices": [
+            5394,
+            5395,
+            5396
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 515,
+          "indices": [
+            5397,
+            5398,
+            5399
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 516,
+          "indices": [
+            5400,
+            5401,
+            5402
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 517,
+          "indices": [
+            5403,
+            5404,
+            5405
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 518,
+          "indices": [
+            5406,
+            5407,
+            5408
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 519,
+          "indices": [
+            5409,
+            5410,
+            5411
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 520,
+          "indices": [
+            5412,
+            5413,
+            5414
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 521,
+          "indices": [
+            5415,
+            5416,
+            5417
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 522,
+          "indices": [
+            5418,
+            5419,
+            5420
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 523,
+          "indices": [
+            5421,
+            5422,
+            5423
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 524,
+          "indices": [
+            5424,
+            5425,
+            5426
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 525,
+          "indices": [
+            5427,
+            5428,
+            5429
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 526,
+          "indices": [
+            5430,
+            5431,
+            5432
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 527,
+          "indices": [
+            5433,
+            5434,
+            5435
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 528,
+          "indices": [
+            5436,
+            5437,
+            5438
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 529,
+          "indices": [
+            5439,
+            5440,
+            5441
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 530,
+          "indices": [
+            5442,
+            5443,
+            5444
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 531,
+          "indices": [
+            5445,
+            5446,
+            5447
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 532,
+          "indices": [
+            5448,
+            5449,
+            5450
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 533,
+          "indices": [
+            5451,
+            5452,
+            5453
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 534,
+          "indices": [
+            5454,
+            5455,
+            5456
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 535,
+          "indices": [
+            5457,
+            5458,
+            5459
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 536,
+          "indices": [
+            5460,
+            5461,
+            5462
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 537,
+          "indices": [
+            5463,
+            5464,
+            5465
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 538,
+          "indices": [
+            5466,
+            5467,
+            5468
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 539,
+          "indices": [
+            5469,
+            5470,
+            5471
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 540,
+          "indices": [
+            5472,
+            5473,
+            5474
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 541,
+          "indices": [
+            5475,
+            5476,
+            5477
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 542,
+          "indices": [
+            5478,
+            5479,
+            5480
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 543,
+          "indices": [
+            5481,
+            5482,
+            5483
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 544,
+          "indices": [
+            5484,
+            5485,
+            5486
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 545,
+          "indices": [
+            5487,
+            5488,
+            5489
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 546,
+          "indices": [
+            5490,
+            5491,
+            5492
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 547,
+          "indices": [
+            5493,
+            5494,
+            5495
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 548,
+          "indices": [
+            5496,
+            5497,
+            5498
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 549,
+          "indices": [
+            5499,
+            5500,
+            5501
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 550,
+          "indices": [
+            5502,
+            5503,
+            5504
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 551,
+          "indices": [
+            5505,
+            5506,
+            5507
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 552,
+          "indices": [
+            5508,
+            5509,
+            5510
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 553,
+          "indices": [
+            5511,
+            5512,
+            5513
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 554,
+          "indices": [
+            5514,
+            5515,
+            5516
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 555,
+          "indices": [
+            5517,
+            5518,
+            5519
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 556,
+          "indices": [
+            5520,
+            5521,
+            5522
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 557,
+          "indices": [
+            5523,
+            5524,
+            5525
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 558,
+          "indices": [
+            5526,
+            5527,
+            5528
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 559,
+          "indices": [
+            5529,
+            5530,
+            5531
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 560,
+          "indices": [
+            5532,
+            5533,
+            5534
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 561,
+          "indices": [
+            5535,
+            5536,
+            5537
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 562,
+          "indices": [
+            5538,
+            5539,
+            5540
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 563,
+          "indices": [
+            5541,
+            5542,
+            5543
+          ]
+        }
+      ],
+      "windingAndNormalMinDot": 0.9999999998106606,
+      "privateMeshPath": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR21RingFinish/Meshes/R2_MODULE_RING_SECTOR_00.asset"
+    },
+    {
+      "source": "B_Ring_Inner_Girder_00",
+      "effectiveMesh": "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/DenseRingConceptB/R8VisualSurfaces/Meshes/R8_DisplayMesh_0002.asset",
+      "effectiveMeshSHA256": "3bdc8d91c836597651b106a7647ac52aa3e4c9905ef74708474492fa9b960a12",
+      "vertexCount": 36,
+      "submeshTriangleCounts": [
+        12
+      ],
+      "selectedFaces": 6,
+      "uniqueGeometryQuads": 6,
+      "exactSourceUVFaces": 6,
+      "provisionalOnly": false,
+      "note": "Saved-file ownership proved by unique prefab instance/component IDs, effective Mesh GUID and SHA256, per-face unique quad pair, matching UV corners, original slot0, consistent winding/normals and non-batched renderer. Live Editor checks still required before mutation.",
+      "faces": [
+        {
+          "component": 0,
+          "sourceFace": 0,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 0,
+              "indices": [
+                0,
+                1,
+                2
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 1,
+              "indices": [
+                3,
+                4,
+                5
+              ]
+            }
+          ]
+        },
+        {
+          "component": 0,
+          "sourceFace": 1,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 2,
+              "indices": [
+                6,
+                7,
+                8
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 3,
+              "indices": [
+                9,
+                10,
+                11
+              ]
+            }
+          ]
+        },
+        {
+          "component": 0,
+          "sourceFace": 2,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 4,
+              "indices": [
+                12,
+                13,
+                14
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 5,
+              "indices": [
+                15,
+                16,
+                17
+              ]
+            }
+          ]
+        },
+        {
+          "component": 0,
+          "sourceFace": 3,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 6,
+              "indices": [
+                18,
+                19,
+                20
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 7,
+              "indices": [
+                21,
+                22,
+                23
+              ]
+            }
+          ]
+        },
+        {
+          "component": 0,
+          "sourceFace": 4,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 8,
+              "indices": [
+                24,
+                25,
+                26
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 9,
+              "indices": [
+                27,
+                28,
+                29
+              ]
+            }
+          ]
+        },
+        {
+          "component": 0,
+          "sourceFace": 5,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 10,
+              "indices": [
+                30,
+                31,
+                32
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 11,
+              "indices": [
+                33,
+                34,
+                35
+              ]
+            }
+          ]
+        }
+      ],
+      "ownerPrefab": "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/DenseRingConceptB/Prefabs/B_Dense_Ring_Display_Only.prefab",
+      "ownerPrefabGUID": "9f184d11c6572234fb50067a0b0d4439",
+      "scenePrefabInstance": "885272968",
+      "meshFilterPrefabFileID": "4248480930310870212",
+      "rendererPrefabFileID": "1768817278437706322",
+      "oldSubmeshCount": 1,
+      "newPrivateMaterialSlot": 1,
+      "selectedTriangles": [
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 0,
+          "indices": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 1,
+          "indices": [
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 2,
+          "indices": [
+            6,
+            7,
+            8
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 3,
+          "indices": [
+            9,
+            10,
+            11
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 4,
+          "indices": [
+            12,
+            13,
+            14
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 5,
+          "indices": [
+            15,
+            16,
+            17
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 6,
+          "indices": [
+            18,
+            19,
+            20
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 7,
+          "indices": [
+            21,
+            22,
+            23
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 8,
+          "indices": [
+            24,
+            25,
+            26
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 9,
+          "indices": [
+            27,
+            28,
+            29
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 10,
+          "indices": [
+            30,
+            31,
+            32
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 11,
+          "indices": [
+            33,
+            34,
+            35
+          ]
+        }
+      ],
+      "windingAndNormalMinDot": 0.9999999999923408,
+      "privateMeshPath": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR21RingFinish/Meshes/B_Ring_Inner_Girder_00.asset"
+    },
+    {
+      "source": "B_Ring_Diagonal_0001",
+      "effectiveMesh": "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/DenseRingConceptB/R8VisualSurfaces/Meshes/R8_DisplayMesh_0005.asset",
+      "effectiveMeshSHA256": "6691d336e3ad9174a6d1c2ae4c5149a068952d4ce72ec02d22d7820c4a775e72",
+      "vertexCount": 36,
+      "submeshTriangleCounts": [
+        12,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "selectedFaces": 6,
+      "uniqueGeometryQuads": 6,
+      "exactSourceUVFaces": 6,
+      "provisionalOnly": false,
+      "note": "Saved-file ownership proved by unique prefab instance/component IDs, effective Mesh GUID and SHA256, per-face unique quad pair, matching UV corners, original slot0, consistent winding/normals and non-batched renderer. Live Editor checks still required before mutation.",
+      "faces": [
+        {
+          "component": 0,
+          "sourceFace": 0,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 0,
+              "indices": [
+                0,
+                1,
+                2
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 1,
+              "indices": [
+                3,
+                4,
+                5
+              ]
+            }
+          ]
+        },
+        {
+          "component": 0,
+          "sourceFace": 1,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 2,
+              "indices": [
+                6,
+                7,
+                8
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 3,
+              "indices": [
+                9,
+                10,
+                11
+              ]
+            }
+          ]
+        },
+        {
+          "component": 0,
+          "sourceFace": 2,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 4,
+              "indices": [
+                12,
+                13,
+                14
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 5,
+              "indices": [
+                15,
+                16,
+                17
+              ]
+            }
+          ]
+        },
+        {
+          "component": 0,
+          "sourceFace": 3,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 6,
+              "indices": [
+                18,
+                19,
+                20
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 7,
+              "indices": [
+                21,
+                22,
+                23
+              ]
+            }
+          ]
+        },
+        {
+          "component": 0,
+          "sourceFace": 4,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 8,
+              "indices": [
+                24,
+                25,
+                26
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 9,
+              "indices": [
+                27,
+                28,
+                29
+              ]
+            }
+          ]
+        },
+        {
+          "component": 0,
+          "sourceFace": 5,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 10,
+              "indices": [
+                30,
+                31,
+                32
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 11,
+              "indices": [
+                33,
+                34,
+                35
+              ]
+            }
+          ]
+        }
+      ],
+      "ownerPrefab": "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/DenseRingConceptB/Prefabs/B_Dense_Ring_Display_Only.prefab",
+      "ownerPrefabGUID": "9f184d11c6572234fb50067a0b0d4439",
+      "scenePrefabInstance": "885272968",
+      "meshFilterPrefabFileID": "8555653871857693470",
+      "rendererPrefabFileID": "8726269081311620293",
+      "oldSubmeshCount": 6,
+      "newPrivateMaterialSlot": 6,
+      "selectedTriangles": [
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 0,
+          "indices": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 1,
+          "indices": [
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 2,
+          "indices": [
+            6,
+            7,
+            8
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 3,
+          "indices": [
+            9,
+            10,
+            11
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 4,
+          "indices": [
+            12,
+            13,
+            14
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 5,
+          "indices": [
+            15,
+            16,
+            17
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 6,
+          "indices": [
+            18,
+            19,
+            20
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 7,
+          "indices": [
+            21,
+            22,
+            23
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 8,
+          "indices": [
+            24,
+            25,
+            26
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 9,
+          "indices": [
+            27,
+            28,
+            29
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 10,
+          "indices": [
+            30,
+            31,
+            32
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 11,
+          "indices": [
+            33,
+            34,
+            35
+          ]
+        }
+      ],
+      "windingAndNormalMinDot": 0.9999999999785611,
+      "privateMeshPath": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR21RingFinish/Meshes/B_Ring_Diagonal_0001.asset"
+    },
+    {
+      "source": "B_Ring_Diagonal_0003",
+      "effectiveMesh": "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/DenseRingConceptB/R8VisualSurfaces/Meshes/R8_DisplayMesh_0010.asset",
+      "effectiveMeshSHA256": "b9e7d5ca5c94ab834044a4bb497d5bcccb05d7b94b56d82aa1523c15ab257258",
+      "vertexCount": 36,
+      "submeshTriangleCounts": [
+        12,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "selectedFaces": 6,
+      "uniqueGeometryQuads": 6,
+      "exactSourceUVFaces": 6,
+      "provisionalOnly": false,
+      "note": "Saved-file ownership proved by unique prefab instance/component IDs, effective Mesh GUID and SHA256, per-face unique quad pair, matching UV corners, original slot0, consistent winding/normals and non-batched renderer. Live Editor checks still required before mutation.",
+      "faces": [
+        {
+          "component": 0,
+          "sourceFace": 0,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 0,
+              "indices": [
+                0,
+                1,
+                2
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 1,
+              "indices": [
+                3,
+                4,
+                5
+              ]
+            }
+          ]
+        },
+        {
+          "component": 0,
+          "sourceFace": 1,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 2,
+              "indices": [
+                6,
+                7,
+                8
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 3,
+              "indices": [
+                9,
+                10,
+                11
+              ]
+            }
+          ]
+        },
+        {
+          "component": 0,
+          "sourceFace": 2,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 4,
+              "indices": [
+                12,
+                13,
+                14
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 5,
+              "indices": [
+                15,
+                16,
+                17
+              ]
+            }
+          ]
+        },
+        {
+          "component": 0,
+          "sourceFace": 3,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 6,
+              "indices": [
+                18,
+                19,
+                20
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 7,
+              "indices": [
+                21,
+                22,
+                23
+              ]
+            }
+          ]
+        },
+        {
+          "component": 0,
+          "sourceFace": 4,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 8,
+              "indices": [
+                24,
+                25,
+                26
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 9,
+              "indices": [
+                27,
+                28,
+                29
+              ]
+            }
+          ]
+        },
+        {
+          "component": 0,
+          "sourceFace": 5,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 10,
+              "indices": [
+                30,
+                31,
+                32
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 11,
+              "indices": [
+                33,
+                34,
+                35
+              ]
+            }
+          ]
+        }
+      ],
+      "ownerPrefab": "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/DenseRingConceptB/Prefabs/B_Dense_Ring_Display_Only.prefab",
+      "ownerPrefabGUID": "9f184d11c6572234fb50067a0b0d4439",
+      "scenePrefabInstance": "885272968",
+      "meshFilterPrefabFileID": "5544481584525529306",
+      "rendererPrefabFileID": "6442229257137161222",
+      "oldSubmeshCount": 6,
+      "newPrivateMaterialSlot": 6,
+      "selectedTriangles": [
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 0,
+          "indices": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 1,
+          "indices": [
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 2,
+          "indices": [
+            6,
+            7,
+            8
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 3,
+          "indices": [
+            9,
+            10,
+            11
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 4,
+          "indices": [
+            12,
+            13,
+            14
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 5,
+          "indices": [
+            15,
+            16,
+            17
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 6,
+          "indices": [
+            18,
+            19,
+            20
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 7,
+          "indices": [
+            21,
+            22,
+            23
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 8,
+          "indices": [
+            24,
+            25,
+            26
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 9,
+          "indices": [
+            27,
+            28,
+            29
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 10,
+          "indices": [
+            30,
+            31,
+            32
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 11,
+          "indices": [
+            33,
+            34,
+            35
+          ]
+        }
+      ],
+      "windingAndNormalMinDot": 0.9999999999725921,
+      "privateMeshPath": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR21RingFinish/Meshes/B_Ring_Diagonal_0003.asset"
+    },
+    {
+      "source": "B_Ring_Diagonal_0004",
+      "effectiveMesh": "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/DenseRingConceptB/R8VisualSurfaces/Meshes/R8_DisplayMesh_0014.asset",
+      "effectiveMeshSHA256": "64557ac793babea05b430e25e9ed75b890c0e9bf4648d4fee470caa1cc7f13a6",
+      "vertexCount": 36,
+      "submeshTriangleCounts": [
+        12,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "selectedFaces": 6,
+      "uniqueGeometryQuads": 6,
+      "exactSourceUVFaces": 6,
+      "provisionalOnly": false,
+      "note": "Saved-file ownership proved by unique prefab instance/component IDs, effective Mesh GUID and SHA256, per-face unique quad pair, matching UV corners, original slot0, consistent winding/normals and non-batched renderer. Live Editor checks still required before mutation.",
+      "faces": [
+        {
+          "component": 0,
+          "sourceFace": 0,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 0,
+              "indices": [
+                0,
+                1,
+                2
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 1,
+              "indices": [
+                3,
+                4,
+                5
+              ]
+            }
+          ]
+        },
+        {
+          "component": 0,
+          "sourceFace": 1,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 2,
+              "indices": [
+                6,
+                7,
+                8
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 3,
+              "indices": [
+                9,
+                10,
+                11
+              ]
+            }
+          ]
+        },
+        {
+          "component": 0,
+          "sourceFace": 2,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 4,
+              "indices": [
+                12,
+                13,
+                14
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 5,
+              "indices": [
+                15,
+                16,
+                17
+              ]
+            }
+          ]
+        },
+        {
+          "component": 0,
+          "sourceFace": 3,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 6,
+              "indices": [
+                18,
+                19,
+                20
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 7,
+              "indices": [
+                21,
+                22,
+                23
+              ]
+            }
+          ]
+        },
+        {
+          "component": 0,
+          "sourceFace": 4,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 8,
+              "indices": [
+                24,
+                25,
+                26
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 9,
+              "indices": [
+                27,
+                28,
+                29
+              ]
+            }
+          ]
+        },
+        {
+          "component": 0,
+          "sourceFace": 5,
+          "candidateTriangles": 2,
+          "uniqueQuadTriangulation": true,
+          "maxPositionErrorMetres": 0,
+          "maxSourceUVDifference": 0,
+          "sourceMaterial": "R8_Dark_Protective_Steel",
+          "triangleRefs": [
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 10,
+              "indices": [
+                30,
+                31,
+                32
+              ]
+            },
+            {
+              "submesh": 0,
+              "triangleInSubmesh": 11,
+              "indices": [
+                33,
+                34,
+                35
+              ]
+            }
+          ]
+        }
+      ],
+      "ownerPrefab": "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/DenseRingConceptB/Prefabs/B_Dense_Ring_Display_Only.prefab",
+      "ownerPrefabGUID": "9f184d11c6572234fb50067a0b0d4439",
+      "scenePrefabInstance": "885272968",
+      "meshFilterPrefabFileID": "7345948079874997539",
+      "rendererPrefabFileID": "8538319211103248901",
+      "oldSubmeshCount": 6,
+      "newPrivateMaterialSlot": 6,
+      "selectedTriangles": [
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 0,
+          "indices": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 1,
+          "indices": [
+            3,
+            4,
+            5
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 2,
+          "indices": [
+            6,
+            7,
+            8
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 3,
+          "indices": [
+            9,
+            10,
+            11
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 4,
+          "indices": [
+            12,
+            13,
+            14
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 5,
+          "indices": [
+            15,
+            16,
+            17
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 6,
+          "indices": [
+            18,
+            19,
+            20
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 7,
+          "indices": [
+            21,
+            22,
+            23
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 8,
+          "indices": [
+            24,
+            25,
+            26
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 9,
+          "indices": [
+            27,
+            28,
+            29
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 10,
+          "indices": [
+            30,
+            31,
+            32
+          ]
+        },
+        {
+          "submesh": 0,
+          "triangleInSubmesh": 11,
+          "indices": [
+            33,
+            34,
+            35
+          ]
+        }
+      ],
+      "windingAndNormalMinDot": 0.9999999999739464,
+      "privateMeshPath": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR21RingFinish/Meshes/B_Ring_Diagonal_0004.asset"
+    }
+  ],
+  "faces": 150,
+  "triangles": 300,
+  "recipe": {
+    "status": "RECIPE_ONLY_NOT_UNITY_VERIFIED",
+    "material": "R21_Ring_Satin_Graphite_Coated_Steel",
+    "shader": "Universal Render Pipeline/Lit",
+    "workflow": "Metallic",
+    "surface": "Opaque",
+    "base_color_linear_rgba": [
+      0.08,
+      0.092,
+      0.101,
+      1
+    ],
+    "base_color_srgb_UI_rgba": [
+      0.31330415714736104,
+      0.3353888342898874,
+      0.350869452238795,
+      1
+    ],
+    "metallic": 0,
+    "smoothness": 0.4,
+    "normal_texture": null,
+    "base_texture": null,
+    "metallic_gloss_texture": null,
+    "emission": "off",
+    "alpha_clip": false,
+    "clear_coat": 0,
+    "scope": "150 selected source faces only. All other existing materials MUST be reused unchanged.",
+    "limitations": [
+      "URP Lit dielectric response is not pixel-identical to Blender IOR 1.48.",
+      "Set color once using the correct linear/sRGB API convention. Do not apply both conversions. Verify project color space before use.",
+      "Neutral FBX materials are identity stubs, not appearance.",
+      "Do not override R8_Dark_Protective_Steel globally."
+    ]
+  },
+  "sourceFinalSHA256": "3d2184aa58c3f895b746d16a0d653d70ec7b10bf728847e2aad72eabde6818c2",
+  "gate": "Saved file proof complete. Must still verify live instance source IDs, effective mesh bytes, triangle indices, current materials, non-batched state and absence of unsaved scene changes before mutation."
+}

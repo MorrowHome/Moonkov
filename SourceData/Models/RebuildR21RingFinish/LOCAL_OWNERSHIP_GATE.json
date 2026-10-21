@@ -1,0 +1,87 @@
+{
+  "default_apply_allowed": false,
+  "reason": "Local optimized renderer and triangle ownership are not established.",
+  "source_contract_consistency": "PASS",
+  "objects": [
+    {
+      "source_object": "R2_MODULE_RING_SECTOR_00",
+      "selected_component_count": 21,
+      "selected_faces": 126,
+      "source_original_material_slots": [
+        "R8_Dark_Protective_Steel",
+        "R8_Scanned_Mineral_Support",
+        "R8_Restrained_Safety_Ochre",
+        "R8_GrayWhite_Panel_Cladding"
+      ],
+      "source_new_material_slot": 4,
+      "local_renderer": null,
+      "local_ownership_verified": false
+    },
+    {
+      "source_object": "B_Ring_Inner_Girder_00",
+      "selected_component_count": 1,
+      "selected_faces": 6,
+      "source_original_material_slots": [
+        "R8_Dark_Protective_Steel"
+      ],
+      "source_new_material_slot": 1,
+      "local_renderer": null,
+      "local_ownership_verified": false
+    },
+    {
+      "source_object": "B_Ring_Diagonal_0001",
+      "selected_component_count": 1,
+      "selected_faces": 6,
+      "source_original_material_slots": [
+        "R8_Dark_Protective_Steel",
+        "R8_Dark_Protective_Steel",
+        "R8_Dark_Protective_Steel",
+        "R8_Dark_Protective_Steel",
+        "R8_Dark_Protective_Steel",
+        "R8_Dark_Protective_Steel"
+      ],
+      "source_new_material_slot": 6,
+      "local_renderer": null,
+      "local_ownership_verified": false
+    },
+    {
+      "source_object": "B_Ring_Diagonal_0003",
+      "selected_component_count": 1,
+      "selected_faces": 6,
+      "source_original_material_slots": [
+        "R8_Dark_Protective_Steel",
+        "R8_Dark_Protective_Steel",
+        "R8_Dark_Protective_Steel",
+        "R8_Dark_Protective_Steel",
+        "R8_Dark_Protective_Steel",
+        "R8_Dark_Protective_Steel"
+      ],
+      "source_new_material_slot": 6,
+      "local_renderer": null,
+      "local_ownership_verified": false
+    },
+    {
+      "source_object": "B_Ring_Diagonal_0004",
+      "selected_component_count": 1,
+      "selected_faces": 6,
+      "source_original_material_slots": [
+        "R8_Dark_Protective_Steel",
+        "R8_Dark_Protective_Steel",
+        "R8_Dark_Protective_Steel",
+        "R8_Dark_Protective_Steel",
+        "R8_Dark_Protective_Steel",
+        "R8_Dark_Protective_Steel"
+      ],
+      "source_new_material_slot": 6,
+      "local_renderer": null,
+      "local_ownership_verified": false
+    }
+  ],
+  "protected": [
+    "all original colliders and their mesh references",
+    "all existing merged optimization",
+    "DEM",
+    "118 lights and 135 buttons stable mapping",
+    "all non-target face materials"
+  ]
+}

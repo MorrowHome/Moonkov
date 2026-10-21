@@ -1,0 +1,78 @@
+{
+  "purpose": "R21 private display replacement candidates, local ownership gate CLOSED",
+  "files": [
+    {
+      "file": "EXPORT_SOURCE_SNAPSHOT.json",
+      "bytes": 1445027,
+      "sha256": "6b821d6828756846e106ddd7633ca0e0c12606e60803bc62ef614821468934b0"
+    },
+    {
+      "file": "LOCAL_OWNERSHIP_GATE.json",
+      "bytes": 2643,
+      "sha256": "837380a9cc438b554de97ce10d6c624cc5aaad6086bce08db4ba933462f56e00"
+    },
+    {
+      "file": "OFFLINE_READBACK_REPORT.json",
+      "bytes": 2860,
+      "sha256": "e6a032142e71efa10b964342815402043d5d238592d6202845dcd4eeeefc9aba"
+    },
+    {
+      "file": "PRIVATE_URP_MATERIAL_RECIPE.json",
+      "bytes": 1032,
+      "sha256": "f9f782b3e4c0392cc48093dd38575bee834605df867821385d751e3d859e0dd5"
+    },
+    {
+      "file": "R21_FIVE_SOURCE_MESHES_REPLACEMENT_CANDIDATES_DO_NOT_INSTANTIATE.fbx",
+      "bytes": 184588,
+      "sha256": "a33a63b9a9c48335784400680faae0b6c22b0b885b54946a182ac023abd7aa9d"
+    },
+    {
+      "file": "README_IMPORT_ZH.txt",
+      "bytes": 3828,
+      "sha256": "2624d6ffb0ec035e7f8ae7dedb732a68d5e813bc8416fc767daa359c2e2d48d2"
+    },
+    {
+      "file": "SOURCE_TARGET_AMBIGUITY_CHECK.json",
+      "bytes": 758,
+      "sha256": "34e1da74abbe262f7a4b7152dcd163d1a4c8bff0577757c3dd9aa534205ca252"
+    },
+    {
+      "file": "export_and_readback.py",
+      "bytes": 4794,
+      "sha256": "4dd7b54203d95bbaecfb0a29e9795f33963ce9f299c0862d43cc1b5f3774009b"
+    },
+    {
+      "file": "export_readback.log",
+      "bytes": 1114,
+      "sha256": "84e851c542f3a3e368ca7dde97e7a1200bd6a43b47c3c8aa3ef90098a703c905"
+    },
+    {
+      "file": "prepare.py",
+      "bytes": 1343,
+      "sha256": "ff4c91ec50b486ab159eb273d5a5de5498c50fccb8a1dae50e42581e2b026678"
+    },
+    {
+      "file": "readback_existing.log",
+      "bytes": 171,
+      "sha256": "2dbfe9b53e283a8dba388440a0739f1a8a90b9ccbcd87a19dcc305772616c48f"
+    },
+    {
+      "file": "readback_existing_fbx.py",
+      "bytes": 3504,
+      "sha256": "611995f1e9578381b785ad1e17f375f3f30b36f12bcd1d6b164a3371dba78fd5"
+    },
+    {
+      "file": "source_contracts/ALLOWED_CHANGE_AND_ROLLBACK.json",
+      "bytes": 37909,
+      "sha256": "988b3ec03e5afe172f4bfd68dc5c1c63a2aa5511e10da20383caee8f01ddd3d3"
+    },
+    {
+      "file": "source_contracts/COMPONENT_OWNERSHIP_SIGNATURES.json",
+      "bytes": 214335,
+      "sha256": "dc22ef99664d227f99c290c966c11000c62b2d377f6e3a68bbfb0015464e0190"
+    }
+  ],
+  "no_source_blend_copy": true,
+  "no_textures": true,
+  "no_automatic_unity_apply": true
+}

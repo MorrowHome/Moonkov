@@ -1,0 +1,34 @@
+{
+  "status": "RECIPE_ONLY_NOT_UNITY_VERIFIED",
+  "material": "R21_Ring_Satin_Graphite_Coated_Steel",
+  "shader": "Universal Render Pipeline/Lit",
+  "workflow": "Metallic",
+  "surface": "Opaque",
+  "base_color_linear_rgba": [
+    0.08,
+    0.092,
+    0.101,
+    1
+  ],
+  "base_color_srgb_UI_rgba": [
+    0.31330415714736104,
+    0.3353888342898874,
+    0.350869452238795,
+    1
+  ],
+  "metallic": 0,
+  "smoothness": 0.4,
+  "normal_texture": null,
+  "base_texture": null,
+  "metallic_gloss_texture": null,
+  "emission": "off",
+  "alpha_clip": false,
+  "clear_coat": 0,
+  "scope": "150 selected source faces only. All other existing materials MUST be reused unchanged.",
+  "limitations": [
+    "URP Lit dielectric response is not pixel-identical to Blender IOR 1.48.",
+    "Set color once using the correct linear/sRGB API convention. Do not apply both conversions. Verify project color space before use.",
+    "Neutral FBX materials are identity stubs, not appearance.",
+    "Do not override R8_Dark_Protective_Steel globally."
+  ]
+}
