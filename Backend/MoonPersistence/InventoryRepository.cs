@@ -54,8 +54,10 @@ public sealed partial class InventoryRepository(NpgsqlDataSource db)
         await using var active = new NpgsqlCommand("SELECT id FROM raid_deployments WHERE player_id=$1 AND status='Open' LIMIT 1", connection, transaction);
         active.Parameters.AddWithValue(playerId);
         var activeId = await active.ExecuteScalarAsync(ct);
+        var recovery=await ReadRecoveryAsync(connection,transaction,playerId,ct);
+        if(recovery.Validate(graph)!=InventoryError.None)throw new DeploymentRejectedException("invalid_recovery");
         return new Profile(playerId, graph.Count("dust"), graph.Count("alloy"), graph.Count("cells"), name,
-            Items: items, InventoryJson: Encode(graph), ActiveDeploymentId: activeId is Guid id ? id : null);
+            Items: items, InventoryJson: Encode(graph), ActiveDeploymentId: activeId is Guid id ? id : null, RecoveryJson: System.Text.Json.JsonSerializer.Serialize(recovery,InventoryJsonOptions));
     }
 
     public async Task<Profile> DeployAsync(Deployment request, CancellationToken ct)
@@ -87,6 +89,9 @@ public sealed partial class InventoryRepository(NpgsqlDataSource db)
                 if (await active.ExecuteScalarAsync(ct) is true) throw new DeploymentRejectedException("deployment_already_open");
             }
             var graph = await ReadGraphAsync(connection, transaction, request.PlayerId, ct);
+            var recovery=await ReadRecoveryAsync(connection,transaction,request.PlayerId,ct);
+            if(recovery.Validate(graph)!=InventoryError.None)throw new DeploymentRejectedException("invalid_recovery");
+            if(recovery.ItemCount()>0)throw new DeploymentRejectedException("recovery_pending");
             PrepareCells(graph, request.Cells);
             var raid = graph.ExtractLoadout();
             if (raid.Validate() != InventoryError.None || raid.CarriedWeight > InventoryCatalog.CarryWeightLimit) throw new DeploymentRejectedException("invalid_loadout");

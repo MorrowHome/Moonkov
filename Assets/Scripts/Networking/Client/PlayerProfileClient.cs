@@ -13,6 +13,7 @@ namespace Unity.MP_FPS
     {
         private static OfflineProfileStore s_Offline;
         private static InventoryGraph s_Inventory;
+        private static RecoveryInbox s_Recovery;
         private static int s_Dust, s_Alloy, s_Cells, s_Carry;
         private static Action s_OfflineChanged;
         public static bool IsOffline => s_Offline != null;
@@ -20,6 +21,7 @@ namespace Unity.MP_FPS
         public static bool IsLoggedIn => IsOffline || AccountClient.IsLoggedIn;
         public static string Token => IsOffline ? "single-player" : AccountClient.Token;
         public static string DisplayName => IsOffline ? MoonkovLocalization.Text("Single-player Operator") : AccountClient.DisplayName;
+        public static RecoveryInbox Recovery => IsOffline ? s_Recovery : AccountClient.Recovery;
         public static InventoryGraph Inventory => IsOffline ? s_Inventory : AccountClient.Inventory;
         public static bool RaidActive => IsOffline ? s_Offline.RaidActive : AccountClient.RaidActive;
         public static int StashDust => IsOffline ? s_Dust : AccountClient.StashDust;
@@ -43,7 +45,7 @@ namespace Unity.MP_FPS
             remove { s_OfflineChanged -= value; AccountClient.InventoryChanged -= value; }
         }
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void Reset() { s_Offline?.Dispose(); s_Offline = null; s_Inventory = null; s_Dust = s_Alloy = s_Cells = s_Carry = 0; s_OfflineChanged = null; }
+        private static void Reset() { s_Offline?.Dispose(); s_Offline = null; s_Inventory = null;s_Recovery=null; s_Dust = s_Alloy = s_Cells = s_Carry = 0; s_OfflineChanged = null; }
 
         public static async Task EnterOfflineAsync(CancellationToken ct)
         {
@@ -64,13 +66,13 @@ namespace Unity.MP_FPS
                 await Task.Run(store.RecoverAbandonedRaid, ct); ct.ThrowIfCancellationRequested();
                 s_Offline = store; RefreshOffline();
             }
-            catch { if (s_Offline == store) { s_Offline = null; s_Inventory = null; } store.Dispose(); throw; }
+            catch { if (s_Offline == store) { s_Offline = null; s_Inventory = null;s_Recovery=null; } store.Dispose(); throw; }
         }
 
-        public static void LeaveOffline() { var store = s_Offline; s_Offline = null; s_Inventory = null; store?.Dispose(); s_OfflineChanged?.Invoke(); }
+        public static void LeaveOffline() { var store = s_Offline; s_Offline = null; s_Inventory = null;s_Recovery=null; store?.Dispose(); s_OfflineChanged?.Invoke(); }
         private static void RefreshOffline()
         {
-            var profile = s_Offline.Read(); s_Inventory = RaidInventoryTransport.Decode(profile.InventoryJson);
+            var profile = s_Offline.Read();s_Recovery=s_Offline.ReadRecovery(); s_Inventory = RaidInventoryTransport.Decode(profile.InventoryJson);
             s_Dust = profile.Dust; s_Alloy = profile.Alloy; s_Cells = profile.Cells;
             s_Carry = Mathf.Clamp(s_Inventory.Count("cells", true), 0, RaidRules.BagCapacity);
             GameSettings.Instance.PlayerName = DisplayName; s_OfflineChanged?.Invoke();
@@ -87,6 +89,8 @@ namespace Unity.MP_FPS
         { ct.ThrowIfCancellationRequested(); if (!IsOffline) return AccountClient.LogoutAsync(url, ct); LeaveOffline(); return Task.CompletedTask; }
         public static async Task MoveInventoryAsync(InventoryCommand command, CancellationToken ct)
         { if (!IsOffline) { await AccountClient.MoveInventoryAsync(command, ct); return; } var store = s_Offline; await Task.Run(() => store.Move(command), ct); ct.ThrowIfCancellationRequested(); if (store == s_Offline) RefreshOffline(); }
+        public static async Task ClaimRecoveryAsync(RecoveryClaim request,CancellationToken ct)
+        {if(!IsOffline) {await AccountClient.ClaimRecoveryAsync(request,ct);return;}var store=s_Offline;await Task.Run(()=>store.ClaimRecovery(request),ct);ct.ThrowIfCancellationRequested();if(store==s_Offline)RefreshOffline();}
         public static async Task TradeAsync(ShopCommand command, CancellationToken ct)
         { if (!IsOffline) { await AccountClient.TradeAsync(command, ct); return; } var store = s_Offline; await Task.Run(() => store.Trade(command), ct); ct.ThrowIfCancellationRequested(); if (store == s_Offline) RefreshOffline(); }
         public static Task<ShopOffer[]> GetShopOffersAsync(CancellationToken ct)

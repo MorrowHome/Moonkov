@@ -15,7 +15,7 @@ namespace Unity.MP_FPS
     public static class AccountClient
     {
         private sealed class LoginResult { public string Token, DisplayName; public DateTime ExpiresAt; }
-        private sealed class Profile { public string DisplayName, InventoryJson, ActiveDeploymentId; public int Dust, Alloy, Cells; }
+        private sealed class Profile { public string DisplayName, InventoryJson, ActiveDeploymentId, RecoveryJson; public int Dust, Alloy, Cells; }
         private sealed class Failure { public string Error; }
         private sealed class ShopSnapshot { public ShopOffer[] Offers; public Profile Profile; }
         public sealed class InventoryRequestException : InvalidOperationException
@@ -28,6 +28,7 @@ namespace Unity.MP_FPS
         private static DateTime s_Expires;
         private static string s_BaseUrl;
         internal static bool AllowLanHttp { get; set; }
+        public static RecoveryInbox Recovery {get;private set;} = new RecoveryInbox();
         public static InventoryGraph Inventory { get; private set; }
         public static bool RaidActive { get; private set; }
         private static long s_ProfileRequest, s_AppliedProfileRequest;
@@ -53,7 +54,7 @@ namespace Unity.MP_FPS
             s_Token = s_Name = s_PreferenceKey = null; s_Expires = default;
             StashDust = StashAlloy = StashCells = 0;
             CarryCells = 0;
-            Inventory = null; RaidActive = false; InventoryChanged = null; s_BaseUrl = null;
+            Inventory = null;Recovery=new RecoveryInbox(); RaidActive = false; InventoryChanged = null; s_BaseUrl = null;
             s_ProfileRequest = s_AppliedProfileRequest = 0;
             AllowLanHttp = false;
         }
@@ -96,7 +97,7 @@ namespace Unity.MP_FPS
                         throw new InvalidOperationException("Invalid login response.");
                     ct.ThrowIfCancellationRequested();
                     CarryCells = 0;
-                    Inventory = null; RaidActive = false;
+                    Inventory = null;Recovery=new RecoveryInbox(); RaidActive = false;
                     s_Token = result.Token; s_Name = result.DisplayName; s_Expires = result.ExpiresAt.ToUniversalTime();
                     PlayerPrefs.SetString(s_PreferenceKey, JsonConvert.SerializeObject(result)); PlayerPrefs.Save();
                     GameSettings.Instance.PlayerName = s_Name;
@@ -144,7 +145,7 @@ namespace Unity.MP_FPS
             s_Token = s_Name = ""; s_Expires = default;
             StashDust = StashAlloy = StashCells = 0;
             CarryCells = 0;
-            Inventory = null; RaidActive = false; InventoryChanged?.Invoke();
+            Inventory = null;Recovery=new RecoveryInbox(); RaidActive = false; InventoryChanged?.Invoke();
             PlayerPrefs.DeleteKey(s_PreferenceKey); PlayerPrefs.Save();
         }
 
@@ -155,10 +156,12 @@ namespace Unity.MP_FPS
             var graph = JsonConvert.DeserializeObject<InventoryGraph>(profile.InventoryJson);
             if (graph == null || graph.Validate() != InventoryError.None || graph.Find("stash") == null || graph.Find("loot")!=null)
                 throw new InvalidOperationException("Invalid account inventory snapshot. Existing inventory was preserved.");
+            var recovery=string.IsNullOrEmpty(profile.RecoveryJson) ? new RecoveryInbox() : JsonConvert.DeserializeObject<RecoveryInbox>(profile.RecoveryJson);
+            if(recovery==null || recovery.Validate(graph)!=InventoryError.None)throw new InvalidOperationException("Invalid recovery inbox. Existing inventory was preserved.");
             // A delayed background refresh cannot roll back a successful move or a newer raid state.
             if (Inventory != null && (graph.Version < Inventory.Version ||
                 graph.Version == Inventory.Version && requestId < s_AppliedProfileRequest)) return;
-            Inventory = graph; s_AppliedProfileRequest = requestId;
+            Inventory = graph;Recovery=recovery; s_AppliedProfileRequest = requestId;
             RaidActive = !string.IsNullOrEmpty(profile.ActiveDeploymentId);
             s_Name = profile.DisplayName;
             UpdateStash(profile.Dust, profile.Alloy, profile.Cells);
@@ -167,6 +170,7 @@ namespace Unity.MP_FPS
             InventoryChanged?.Invoke();
         }
         public static Task MoveInventoryAsync(InventoryCommand command, CancellationToken ct) => PostInventoryAsync("auth/inventory/move", command, ct);
+        public static Task ClaimRecoveryAsync(RecoveryClaim request,CancellationToken ct) => PostInventoryAsync("auth/inventory/recovery/claim",request,ct);
         public static Task TradeAsync(ShopCommand command, CancellationToken ct) => PostInventoryAsync("auth/shop/trade", command, ct);
         public static async Task<ShopOffer[]> GetShopOffersAsync(CancellationToken ct)
         {
@@ -214,6 +218,11 @@ namespace Unity.MP_FPS
         {
             switch (code)
             {
+                case "recovery_pending":return "Make room and claim pending recovery items before deploying again.";
+                case "recovery_Full":return "Storage space or item count is full. Make room or sell items, then claim again. Pending items remain saved.";
+                case "recovery_Stale":return "Storage or recovery changed and was refreshed. Claim again.";
+                case "recovery_Missing":return "The item was already claimed or is no longer pending. Refresh storage.";
+                case "recovery_request_conflict":return "Claim request ID conflict. Refresh and retry.";
                 case "raid_active": return "An unfinished raid owns the carried equipment. Finish/disconnect the raid, then refresh storage. [raid_active]";
                 case "inventory_Stale": return "Inventory changed during this move. Storage refreshed; retry the move. [inventory_Stale]";
                 case "inventory_Incompatible": return "This equipment type does not fit this slot. [inventory_Incompatible]";

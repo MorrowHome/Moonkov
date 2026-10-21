@@ -127,3 +127,11 @@ CREATE TABLE IF NOT EXISTS mission_artifact_receipts (
     created_at timestamptz NOT NULL DEFAULT now()
 );
 INSERT INTO schema_version VALUES (7) ON CONFLICT DO NOTHING;
+
+-- Version 8: bounded extraction overflow, committed with the settlement receipt.
+CREATE TABLE IF NOT EXISTS inventory_recovery (
+    player_id uuid PRIMARY KEY REFERENCES players(id),
+    revision integer NOT NULL,
+    inbox jsonb NOT NULL
+);
+INSERT INTO schema_version VALUES (8) ON CONFLICT DO NOTHING;

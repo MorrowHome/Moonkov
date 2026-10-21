@@ -130,8 +130,10 @@ public sealed partial class InventoryRepository
             if (await source.ExecuteNonQueryAsync(ct) != 1) throw new ReceiptConflictException();
         }
         var graph = await ReadGraphAsync(connection, transaction, request.PlayerId, ct);
-        var result = graph.ReturnLoadout(raid);
-        if (result != InventoryError.None) throw new DeploymentRejectedException("return_" + result);
-        await WriteGraphAsync(connection, transaction, request.PlayerId, graph, ct);
+        var inbox=await ReadRecoveryAsync(connection,transaction,request.PlayerId,ct);
+        var result=RecoveryInventory.Settle(graph,inbox,raid,out var stored,out var pending);
+        if(result!=InventoryError.None)throw new DeploymentRejectedException("return_"+result);
+        await WriteGraphAsync(connection,transaction,request.PlayerId,stored,ct);
+        await WriteRecoveryAsync(connection,transaction,request.PlayerId,pending,ct);
     }
 }

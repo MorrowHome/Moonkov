@@ -15,9 +15,10 @@ namespace Unity.MP_FPS
     {
         private sealed class SaveData
         {
-            public int Format = 1;
+            public int Format = 2;
             public string PlayerId = Guid.NewGuid().ToString("D");
             public InventoryGraph Inventory;
+            public RecoveryInbox Recovery = new RecoveryInbox();
             public string DeploymentId, RaidInventoryJson;
             public int CarriedCells;
             public Dictionary<string, string> Receipts = new Dictionary<string, string>();
@@ -60,9 +61,10 @@ namespace Unity.MP_FPS
 
         private static void Validate(SaveData save)
         {
-            if (save == null || save.Format != 1 || !Guid.TryParse(save.PlayerId, out _) ||
+            if(save!=null && save.Recovery==null)save.Recovery=new RecoveryInbox();
+            if (save == null || (save.Format != 1 && save.Format != 2) || !Guid.TryParse(save.PlayerId, out _) ||
                 save.Inventory?.Items == null || save.Inventory.Validate() != InventoryError.None || save.Inventory.Find("stash") == null ||
-                save.Inventory.Find("loot") != null || save.Receipts == null || save.MissionArtifacts == null ||
+                save.Inventory.Find("loot") != null || save.Recovery.Validate(save.Inventory)!=InventoryError.None || save.Receipts == null || save.MissionArtifacts == null ||
                 (save.DeploymentId != null && (!Guid.TryParse(save.DeploymentId, out _) ||
                     string.IsNullOrEmpty(save.RaidInventoryJson) || !RaidRules.ValidLoadout(save.CarriedCells))))
                 throw new InvalidDataException("Unsupported or damaged single-player save.");
@@ -73,6 +75,7 @@ namespace Unity.MP_FPS
         private void Commit(SaveData save)
         {
             if (m_Disposed) throw new ObjectDisposedException(nameof(OfflineProfileStore));
+            save.Format=2;
             Validate(save);
             Directory.CreateDirectory(Path.GetDirectoryName(FilePath));
             string temporary = FilePath + ".tmp";
@@ -98,6 +101,22 @@ namespace Unity.MP_FPS
             }
         }
 
+        public RecoveryInbox ReadRecovery()
+        {lock(m_Lock) {if(m_Disposed)throw new ObjectDisposedException(nameof(OfflineProfileStore));return m_Save.Recovery.Clone();}}
+        public void ClaimRecovery(RecoveryClaim request)
+        {
+            lock(m_Lock)
+            {
+                if(request==null || !Guid.TryParse(request.RequestId,out _))throw new AccountClient.InventoryRequestException("recovery_invalid");
+                string key="claim/"+request.RequestId,receipt=Receipt(request);
+                if(m_Save.Receipts.TryGetValue(key,out var previous))
+                {if(previous!=receipt)throw new AccountClient.InventoryRequestException("recovery_request_conflict");return;}
+                if(RaidActive)throw new AccountClient.InventoryRequestException("raid_active");
+                var next=Copy();var error=RecoveryInventory.Claim(next.Inventory,next.Recovery,request,out var stored,out var pending);
+                if(error!=InventoryError.None)throw new AccountClient.InventoryRequestException("recovery_"+error);
+                next.Inventory=stored;next.Recovery=pending;next.Receipts.Add(key,receipt);Commit(next);
+            }
+        }
         public void Move(InventoryCommand command)
         {
             lock (m_Lock)
@@ -147,6 +166,7 @@ namespace Unity.MP_FPS
                     throw new RaidPersistenceContext.LoadoutRejectedException(RaidLoadoutError.Rejected);
                 if (!RaidActive)
                 {
+                    if(m_Save.Recovery.ItemCount()>0)throw new RaidPersistenceContext.LoadoutRejectedException(RaidLoadoutError.Rejected,"recovery_pending");
                     var next = Copy(); PrepareCells(next.Inventory, payload.Cells);
                     var raid = next.Inventory.ExtractLoadout();
                     if (raid.Validate() != InventoryError.None || raid.CarriedWeight > InventoryCatalog.CarryWeightLimit)
@@ -218,10 +238,9 @@ namespace Unity.MP_FPS
                         throw new InvalidDataException("Invalid single-player extraction inventory.");
                     foreach (var artifact in raid.Items.Where(i => MissionInventory.IsArtifact(i.Code) && !i.MissionRecovered))
                         if (!next.MissionArtifacts.Add(artifact.Id)) throw new InvalidDataException("Mission artifact was already extracted.");
-                    InventoryError error;
-                    while ((error = next.Inventory.ReturnLoadout(raid)) == InventoryError.Full && next.Inventory.StashRows < 4096)
-                        next.Inventory.StashRows = Math.Min(4096, next.Inventory.StashRows * 2);
-                    if (error != InventoryError.None) throw new InvalidDataException("Unable to return single-player equipment: " + error);
+                    var error=RecoveryInventory.Settle(next.Inventory,next.Recovery,raid,out var stored,out var pending);
+                    if(error!=InventoryError.None)throw new InvalidDataException("Unable to return single-player equipment: "+error);
+                    next.Inventory=stored;next.Recovery=pending;
                 }
                 next.DeploymentId = next.RaidInventoryJson = null; next.CarriedCells = 0;
                 next.Receipts.Add(payload.SettlementId, receipt); Commit(next); return Read();

@@ -97,6 +97,13 @@ auth.MapPost("/shop/trade", async (HttpRequest request, ShopCommand command, Acc
     try { return Results.Ok(await inventory.TradeAsync(profile.PlayerId, command, ct)); }
     catch (DeploymentRejectedException ex) { return Results.Conflict(new { error = ex.Message }); }
 });
+auth.MapPost("/inventory/recovery/claim", async (HttpRequest request, RecoveryClaim command, AccountRepository accounts, InventoryRepository inventory, CancellationToken ct) =>
+{
+    var profile=await accounts.ResolveSessionAsync(BearerToken(request),ct);
+    if(profile is null)return Results.Unauthorized();
+    try {return Results.Ok(await inventory.ClaimRecoveryAsync(profile.PlayerId,command,ct));}
+    catch(DeploymentRejectedException ex) {return Results.Conflict(new {error=ex.Message});}
+});
 app.MapPost("/internal/sessions/resolve", async (SessionCredential request, AccountRepository accounts, CancellationToken ct) =>
 {
     var result = await accounts.ResolveSessionAsync(request.Token, ct);
@@ -106,7 +113,7 @@ app.MapGet("/internal/health", async (NpgsqlDataSource db, CancellationToken ct)
 {
     await using var command = db.CreateCommand("SELECT 1");
     await command.ExecuteScalarAsync(ct);
-    return Results.Ok(new { status = "ready", features = new[] { "alien-harvest-v1", "halo-research-v1", "species-harvest-v2", "missions-v1" },
+    return Results.Ok(new { status = "ready", features = new[] { "alien-harvest-v1", "halo-research-v1", "species-harvest-v2", "missions-v1", "recovery-inbox-v1" },
         build = typeof(InventoryRepository).Assembly.GetCustomAttributes(false)
             .OfType<System.Reflection.AssemblyInformationalVersionAttribute>().FirstOrDefault()?.InformationalVersion });
 });
@@ -160,6 +167,6 @@ public sealed record ResolveProfile(string GuestToken, string DisplayName);
 public sealed record Settlement(Guid PlayerId, Guid SettlementId, string Outcome, int Dust, int Alloy, int Cells, Guid? DeploymentId=null, string? InventoryJson=null);
 public sealed record Profile(Guid PlayerId, int Dust, int Alloy, int Cells, string DisplayName,
     Guid? DeploymentId=null, int CarriedCells=0, Guid? CellStackId=null, IReadOnlyList<InventoryStack>? Items=null,
-    string? InventoryJson=null, string? RaidInventoryJson=null, Guid? ActiveDeploymentId=null, int MissionSchemaVersion=1);
+    string? InventoryJson=null, string? RaidInventoryJson=null, Guid? ActiveDeploymentId=null, int MissionSchemaVersion=1, string? RecoveryJson=null);
 public sealed class ReceiptConflictException : Exception;
 public sealed class ProfileNotFoundException : Exception;

@@ -5,6 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../../Assets/Scripts/Networking/Shared/RecoveryInventory.cs" Link="Shared/RecoveryInventory.cs" />
     <Compile Include="../../Assets/Scripts/Networking/Shared/InventoryModel.cs" Link="Shared/InventoryModel.cs" />
     <Compile Include="../../Assets/Scripts/Networking/Shared/ConsumableCatalog.cs" Link="Shared/ConsumableCatalog.cs" />
     <Compile Include="../../Assets/Scripts/Networking/Shared/AlienBiology.cs" Link="Shared/AlienBiology.cs" />
