@@ -1,29 +1,20 @@
-# MoonPersistence 线上同步准备（2026-10-21）
+# MoonPersistence 代码同步与发布准备（2026-10-21）
 
-状态：**发布准备完成，尚未上线**。没有连接生产数据库、执行生产迁移、重启生产服务或使用真实玩家账户做写入测试。
+状态：**代码已同步，发布准备完成，实际PC尚未重建或迁移**。用户确认线上后端在自己的Windows PC，服务器与数据库当前都未开启；本次不再进行远程连接、认证或启动服务。
 
-## 已确认信息与当前登录阻碍
+## 已完成与验证
 
-- 用户已明确确认线上后端运行在自己的Windows PC，并授权备份、schema8增量迁移和服务重启，无需再次确认主机归属或发布权限。
-- 现有公开客户端配置指向`https://moon.morrowhome.site/`，游戏地址同域名、UDP7979。域名经过Cloudflare；无凭证GET `/auth/me`和`/internal/health`返回Cloudflare403，仅作为边缘响应记录，不用于判断源站鉴权或健康，也不阻碍通过PC管理连接部署。
-- 保存的Windows SSH连接使用当前默认路由时超时；只为该连接绑定校园网`en0`接口后，TCP连接成功、SSH严格主机密钥校验通过。没有关闭VPN或修改全局路由，不能仅凭此前超时认定VPN是唯一原因。
-- 当前阻碍已缩小为SSH认证：服务器拒绝本机现有公钥，SSH agent无可用身份，主机专属钥匙串条目未找到。没有猜测密码、修改Windows权限或远程写入。继续需要可用的既有SSH身份或已认证管理会话；不要在Git或聊天中提交密码/私钥。
-- 仓库记录的运行方案是Windows上的MoonPersistence/.NET10与PostgreSQL，经VPS反代/WireGuard暴露HTTPS。登录后读取实际服务目录、运行参数和受保护配置即可继续备份与发布；文档占位路径不作为实际部署路径。
-
-## 已完成的发布准备
-
-- 修改`Backend/Start-Backend.ps1`：已有健康进程的提前返回分支，以及新启动进程的就绪分支，都必须包含`species-harvest-v2`、`missions-v1`、`recovery-inbox-v1`。旧服务不能仅凭ready状态被报告为已同步。校验位于仅处理网络探测的catch之外，缺能力会明确报错。
-- .NET10 Release发布成功。使用`-p:UseAppHost=false --no-self-contained`输出可移植DLL，避免把Mac ARM64 apphost误部署到Windows/Linux；目标仍须已安装兼容的ASP.NET Core/.NET10运行时。
-- 准备包位于`/tmp/moonkov-backend-release-9105d91f-portable`，`release-manifest.json`记录来源提交、构建、要求能力和逐文件SHA256。不含生产`appsettings.local.json`、数据库配置或服务器密钥。
-- 应用构建：`1.0.0+9105d91fd60e329cbfe8ce43016462df9e412982`。这是本次部署准备提交之前的develop源码；之后新增的准备改动是启动门禁与文档，不代表该包已上传。真正发布前应从届时develop HEAD重建最终包并重新记录其构建号。
-- `MoonPersistence.dll`：177664字节，SHA256 `5672df4b82fb4b278db14dad87a1a07d743d957ceb7898c33348de6b5368c8dc`。
+- `Backend/Start-Backend.ps1`在已有健康进程的提前返回分支、新进程就绪分支都检查`species-harvest-v2`、`missions-v1`、`recovery-inbox-v1`。旧后端缺少能力时明确报错，不会只凭ready响应报告同步完成；能力检查位于网络探测catch之外。
+- .NET10 Release可移植发布成功：`dotnet publish Backend/MoonPersistence/MoonPersistence.csproj -c Release --no-self-contained -p:UseAppHost=false`。产物不包含Mac apphost、生产配置或密钥，Windows需已有兼容的ASP.NET Core/.NET10运行时。
+- 准备包：`/tmp/moonkov-backend-release-747d3be2-portable`。`release-manifest.json`记录来源提交、构建、schema8、要求能力及逐文件SHA256；临时目录不是长期发布仓库。
+- 来源提交：`747d3be255ba3d1850809258f3cd18f75af4d1c5`；应用构建：`1.0.0+747d3be255ba3d1850809258f3cd18f75af4d1c5`。本记录之后的修改仅为文档，不改变应用代码。
+- `MoonPersistence.dll`：177664字节，SHA256 `da327ff43444ebcc741ed049c0a41b6624a1f020eb20be4b8fef0b40a95fd471`。
 - `schema.sql`：6760字节，SHA256 `492844e68fbc80681efa0e3d13fa12c195ee54526e38537e881d6996bf55dcd8`，包含增量schema8。
-- 静态核对要求能力与应用health清单一致，检查两个就绪分支且错误不被探测catch吞掉；当前Mac没有PowerShell，未声称运行过Windows启动器。本次未启动任何本机替代后端或测试数据库，也未操作Unity。
+- 静态核对两个启动门禁与health能力列表一致，`git diff --check`通过。当前Mac没有PowerShell，未运行Windows启动器。没有连接生产数据库、执行生产迁移、重启服务、使用真实玩家账户写入或操作Unity。
 
-## 获得实际管理连接后的发布步骤
+## 后续在Windows PC启动
 
-1. 在用户确认的Windows PC上只读核对后端进程/服务和配置路径、数据库身份、已有构建与schema，按实际运行参数部署，不使用文档占位路径。
-2. 先在生产主机受保护目录保留旧程序、配置和运行参数，再对正确生产数据库做一致性备份；检查备份非空、校验值和`pg_restore --list`可读。备份、密码和服务器密钥不进入Git或发布包。
-3. 从当前develop构建最终Release包，暂存至新目录、保留生产配置；在维护或受控切换期间启动验证。应用启动通过既有事务和迁移锁执行仅新增待领取表的schema8，不删除或重置玩家表。
-4. 验证origin带服务器密钥的`/internal/health`为ready、构建号匹配、包含`recovery-inbox-v1`，并直接只读核对`schema_version`含8与`inventory_recovery`表存在。无凭证的受保护health与`/auth/me`、`POST /auth/inventory/recovery/claim`应拒绝访问；不要用真实玩家账号验证领取。
-5. 确认健康后恢复流量，记录结果。失败时优先恢复旧程序/运行参数并保留所有备份；若新版本已经写入Recovery数据，不得降级到忽略待领取区的旧后端或盲目恢复旧数据库快照，应保留新数据和部署门禁并修复服务。未完成这些检查不能把状态改为“线上同步完成”。
+1. 同步`develop`，保留已有`moon-server.local.json`、`Backend/MoonPersistence/appsettings.local.json`和数据库配置。在更新前备份正确生产数据库、旧程序、配置与运行参数；验证备份非空、校验值及`pg_restore --list`可读，备份与密钥不进入Git。
+2. 使用现有启动器：`powershell -NoProfile -ExecutionPolicy Bypass -File Backend/Start-Backend.ps1 -Background -Update`。原服务使用`-Lan`时仍需保留该参数。启动器启动数据库并重建后端；应用初始化通过既有事务和迁移锁执行schema8，新增待领取表，不删除或重置玩家数据。
+3. 启动后核对带服务器密钥的`/internal/health`为ready、构建号匹配且包含`recovery-inbox-v1`，只读确认schema8与`inventory_recovery`表存在；无凭证的受保护接口应拒绝访问，不使用真实玩家账号试领。
+4. 若启动失败，保留备份与新数据后排查。新版本一旦写入Recovery数据，不得降级到忽略待领取区的旧后端或盲目恢复旧数据库快照。实际PC完成启动与验证之前，不能标记为运行态上线完成。
