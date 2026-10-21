@@ -14,7 +14,7 @@ using UnityEngine;
 namespace Unity.MP_FPS
 {
     // Owned by the server World. Worker tasks contain data only; ECS access stays on the main thread.
-    public sealed class RaidPersistenceContext : IComponentData, IDisposable
+    public sealed partial class RaidPersistenceContext : IComponentData, IDisposable
     {
         [Serializable] private sealed class Config
         {
@@ -32,6 +32,7 @@ namespace Unity.MP_FPS
             public int CarriedCells;
             public string InventoryJson, RaidInventoryJson;
             public int MissionSchemaVersion;
+            public string Mode, MatchId; public int RulesVersion, TeamId;
         }
 
         public sealed class Settlement
@@ -39,6 +40,12 @@ namespace Unity.MP_FPS
             public string PlayerId, SettlementId, Outcome, DeploymentId;
             public int Dust, Alloy, Cells;
             public string InventoryJson;
+            [JsonProperty(NullValueHandling=NullValueHandling.Ignore)] public string Mode;
+            [JsonProperty(NullValueHandling=NullValueHandling.Ignore)] public string MatchId;
+            [JsonProperty(NullValueHandling=NullValueHandling.Ignore)] public string BountyEventId;
+            [JsonProperty(DefaultValueHandling=DefaultValueHandling.Ignore)] public int RulesVersion;
+            [JsonProperty(DefaultValueHandling=DefaultValueHandling.Ignore)] public int TeamId;
+            [JsonProperty(NullValueHandling=NullValueHandling.Ignore)] public BountyRedemption Redemption;
         }
 
         public sealed class Join
@@ -55,6 +62,11 @@ namespace Unity.MP_FPS
         {
             public string PlayerId, DeploymentId;
             public int Cells;
+            [JsonProperty(NullValueHandling=NullValueHandling.Ignore)] public string Mode;
+            [JsonProperty(NullValueHandling=NullValueHandling.Ignore)] public string MatchId;
+            [JsonProperty(DefaultValueHandling=DefaultValueHandling.Ignore)] public int RulesVersion;
+            [JsonProperty(DefaultValueHandling=DefaultValueHandling.Ignore)] public int TeamId;
+            [JsonProperty(DefaultValueHandling=DefaultValueHandling.Ignore)] public bool Refund;
         }
 
         public sealed class Deploy
@@ -138,20 +150,30 @@ namespace Unity.MP_FPS
             m_Http = handler == null ? new HttpClient() : new HttpClient(handler);
             m_Http.BaseAddress = url; m_Http.Timeout = TimeSpan.FromSeconds(10);
             m_Http.DefaultRequestHeaders.Add("X-Moon-Server-Key", config.ServerKey);
+            m_ClashCapability=CheckClashCapabilityAsync();
             ReplayOutbox();
         }
 
         private void ReplayOutbox()
         {
             // Replay receipts retained across a normal restart or a lost HTTP acknowledgement.
+            ReplayBountyFinalizations();
             foreach (string file in Directory.GetFiles(m_Outbox, "*.json"))
             {
+                if(Guid.TryParse(Path.GetFileNameWithoutExtension(file),out var receiptId) && Saves.ContainsKey(receiptId.ToString("D"))) continue;
                 var payload = JsonConvert.DeserializeObject<Settlement>(File.ReadAllText(file));
                 if (payload == null || !Guid.TryParse(payload.SettlementId, out _) || !Guid.TryParse(payload.PlayerId, out _))
                     throw new InvalidDataException("Invalid raid outbox file: " + Path.GetFileName(file));
+                if (Saves.ContainsKey(payload.SettlementId)) continue;
                 var save = new Save { Payload = payload };
                 save.Task = SaveAsync(payload);
                 Saves.Add(payload.SettlementId, save);
+            }
+            foreach (string file in Directory.GetFiles(m_Outbox,"*.refund"))
+            {
+                var payload=JsonConvert.DeserializeObject<Deployment>(File.ReadAllText(file));
+                if(payload==null || payload.Mode!="BountyClash" || !Guid.TryParse(payload.DeploymentId,out _)) throw new InvalidDataException("Invalid deployment refund journal.");
+                payload.Refund=true;Abandon(payload);
             }
             foreach (string file in Directory.GetFiles(m_Outbox, "*.deploy"))
             {
@@ -170,22 +192,25 @@ namespace Unity.MP_FPS
             Joins.Add(connection, new Join
             {
                 Name = name, CharacterIndex = characterIndex, Token = token, CarryCells = carryCells,
-                Task = PostAsync("internal/sessions/resolve", new { Token = token })
+                Task = ResolveJoinAsync(token)
             });
         }
 
         public void RefreshJoin(Join join)
         {
             join.NeedsRefresh = false;
-            join.Task = PostAsync("internal/sessions/resolve", new { Token = join.Token });
+            join.Task = ResolveJoinAsync(join.Token);
         }
 
         public void BeginSave(Entity connection, RaidSession session)
         {
+            if (Saves.TryGetValue(session.SettlementId.ToString(),out var pending))
+            { pending.Connection=connection;pending.RaidId=session.RaidId;return; }
             var profile = Profiles[connection];
             var payload = new Settlement
             {
                 PlayerId = profile.PlayerId, SettlementId = session.SettlementId.ToString(),
+                Mode=profile.Mode,MatchId=profile.MatchId,RulesVersion=profile.RulesVersion,TeamId=profile.TeamId,
                 Outcome = session.Phase.ToString(), Dust = session.Dust, Alloy = session.Alloy, Cells = session.Cells,
                 DeploymentId = session.PersistentDeployment ? session.SettlementId.ToString() : null,
                 InventoryJson = Inventories.TryGetValue(connection, out var inventory) ? JsonConvert.SerializeObject(inventory.Graph) : null
@@ -206,7 +231,12 @@ namespace Unity.MP_FPS
 
         private static void WriteJournal(string file, object payload)
         {
-            if (File.Exists(file)) return;
+            if (File.Exists(file))
+            {
+                if(!Newtonsoft.Json.Linq.JToken.DeepEquals(Newtonsoft.Json.Linq.JToken.Parse(File.ReadAllText(file)),Newtonsoft.Json.Linq.JToken.FromObject(payload)))
+                    throw new InvalidDataException("Outbox receipt conflicts with its immutable payload.");
+                return;
+            }
             string temporary = file + ".tmp";
             byte[] bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(payload));
             using (var stream = new FileStream(temporary, FileMode.Create, FileAccess.Write, FileShare.None))
@@ -219,9 +249,11 @@ namespace Unity.MP_FPS
 
         public Task<Profile> DeployAsync(Deployment payload) => Task.Run(async () =>
         {
+            await AwaitBountyRegistrationAsync(payload).ConfigureAwait(false);
             WriteJournal(DeploymentFile(payload), payload);
-            var profile = await PostAsync("internal/deployments", payload).ConfigureAwait(false);
-            if (profile.PlayerId != payload.PlayerId || profile.DeploymentId != payload.DeploymentId || profile.CarriedCells != payload.Cells ||
+            var profile = await PostAsync(ProfilePath("deployments",payload.Mode), payload).ConfigureAwait(false);
+            if (profile.Mode!=payload.Mode || profile.MatchId!=payload.MatchId || profile.RulesVersion!=payload.RulesVersion || profile.TeamId!=payload.TeamId ||
+                profile.PlayerId != payload.PlayerId || profile.DeploymentId != payload.DeploymentId || profile.CarriedCells != payload.Cells ||
                 (payload.Cells > 0 && !Guid.TryParse(profile.CellStackId, out _)))
                 throw new LoadoutRejectedException(RaidLoadoutError.Rejected, "Deployment response mismatch.");
             Inventory.InventoryGraph graph;
@@ -242,9 +274,10 @@ namespace Unity.MP_FPS
 
         public Task<Profile> RetrySave(Save save) => save.AbandonedDeployment == null ? SaveAsync(save.Payload) : Task.Run(async () =>
         {
-            var profile = await PostAsync("internal/deployments/abandon", save.AbandonedDeployment).ConfigureAwait(false);
+            var profile = await PostAsync(ProfilePath(save.AbandonedDeployment.Refund ? "deployments/refund" : "deployments/abandon",save.AbandonedDeployment.Mode), save.AbandonedDeployment).ConfigureAwait(false);
             if (profile.PlayerId != save.Payload.PlayerId) throw new InvalidDataException("Recovery profile mismatch.");
             File.Delete(DeploymentFile(save.AbandonedDeployment));
+            File.Delete(Path.ChangeExtension(DeploymentFile(save.AbandonedDeployment),".refund"));
             return profile;
         });
 
@@ -255,7 +288,8 @@ namespace Unity.MP_FPS
             {
                 string file = Path.Combine(m_Outbox, Guid.Parse(payload.SettlementId).ToString("N") + ".json");
                 WriteJournal(file, payload);
-                var profile = await PostAsync("internal/settlements", payload).ConfigureAwait(false);
+                await RedeemBeforeSaveAsync(payload).ConfigureAwait(false);
+                var profile = await PostAsync(ProfilePath("settlements",payload.Mode), payload).ConfigureAwait(false);
                 if (profile.PlayerId != payload.PlayerId) throw new InvalidDataException("Settlement profile mismatch.");
                 // Delete the open-raid journal first. A crash between deletes then replays the exact receipt.
                 File.Delete(Path.ChangeExtension(file, ".deploy"));
@@ -271,7 +305,7 @@ namespace Unity.MP_FPS
             using (var response = await m_Http.PostAsync(path, content, m_Stop.Token).ConfigureAwait(false))
             {
                 // Do not log request bodies: guest tokens and server keys are credentials.
-                if (path == "internal/deployments" && (response.StatusCode == HttpStatusCode.Conflict || response.StatusCode == HttpStatusCode.BadRequest || response.StatusCode == HttpStatusCode.NotFound))
+                if (path.EndsWith("/deployments",StringComparison.Ordinal) && (response.StatusCode == HttpStatusCode.Conflict || response.StatusCode == HttpStatusCode.BadRequest || response.StatusCode == HttpStatusCode.NotFound))
                 {
                     var body = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                     throw new LoadoutRejectedException(body.Contains("insufficient_cells") ? RaidLoadoutError.InsufficientCells : RaidLoadoutError.Rejected);
@@ -293,12 +327,13 @@ namespace Unity.MP_FPS
             // Capture data now; cleanup must not query ECS or await HTTP on the main thread.
             foreach (var profile in Profiles.Values)
                 if (!string.IsNullOrEmpty(profile.DeploymentId))
-                    Abandon(new Deployment { PlayerId=profile.PlayerId, DeploymentId=profile.DeploymentId, Cells=profile.CarriedCells }, startImmediately:false);
+                    Abandon(DeploymentOf(profile), startImmediately:false);
             var deploying = new List<Task<Profile>>();
             foreach (var deploy in Deployments.Values)
             {
                 if (deploy.Task != null) deploying.Add(deploy.Task);
-                Abandon(deploy.Payload, startImmediately:false);
+                if(deploy.Payload.Mode=="BountyClash") RefundBountyDeployment(deploy.Payload,deploy.Task);
+                else Abandon(deploy.Payload, startImmediately:false);
             }
             var saves = new List<Save>(Saves.Values);
             m_Stop.CancelAfter(TimeSpan.FromSeconds(20));
@@ -324,6 +359,7 @@ namespace Unity.MP_FPS
                         Debug.LogWarning("[Raid] Shutdown receipt remains in outbox for recovery: " + ex.GetType().Name);
                     }
                 }
+                CleanBountyJournals();
             }
             finally { m_Http?.Dispose(); m_Stop.Dispose(); }
         }

@@ -66,7 +66,7 @@ namespace Unity.MP_FPS
                         var player=SystemAPI.GetComponent<JoinedClient>(connection).PlayerEntity;
                         if(session.ValueRO.Phase==RaidPhase.Active && r.RaidId==session.ValueRO.RaidId && r.RaidId==inventory.RaidId &&
                             !inventory.ActionPending && !SystemAPI.HasComponent<NetworkStreamRequestDisconnect>(connection) &&
-                            TryGetLivingPosition(ref state,player,out var position))
+                            BountyClashRuntime.CanAct(state.EntityManager,player) && TryGetLivingPosition(ref state,player,out var position))
                         {
                             if(TryFindDropGround(position,out var grounded))
                                 inventory.Error=LootContainers(ref state).DropItem(inventory.Graph,r.ItemId.ToString(),r.ExpectedVersion,
@@ -93,7 +93,7 @@ namespace Unity.MP_FPS
                         inventory.RequestId = r.RequestId; inventory.ActionFeedback=null; inventory.Error = InventoryError.Inaccessible;
                         var player = SystemAPI.GetComponent<JoinedClient>(connection).PlayerEntity;
                         if (session.Phase == RaidPhase.Active && session.RaidId == r.RaidId && inventory.RaidId == r.RaidId && !inventory.ActionPending &&
-                            SystemAPI.Exists(player) && SystemAPI.HasComponent<PredictedPlayerGhost>(player))
+                            SystemAPI.Exists(player) && SystemAPI.HasComponent<PredictedPlayerGhost>(player) && BountyClashRuntime.CanAct(state.EntityManager,player))
                         {
                             var ghost = SystemAPI.GetComponentRW<PredictedPlayerGhost>(player);
                             string itemId = r.ItemId.ToString();
@@ -124,7 +124,7 @@ namespace Unity.MP_FPS
                         inventory.Error = InventoryError.Inaccessible;
                         var player = SystemAPI.GetComponent<JoinedClient>(connection).PlayerEntity;
                         if (session.Phase == RaidPhase.Active && session.RaidId == r.RaidId &&
-                            inventory.RaidId == r.RaidId && TryGetLivingPosition(ref state,player,out var medicalPosition))
+                            inventory.RaidId == r.RaidId && BountyClashRuntime.CanAct(state.EntityManager,player) && TryGetLivingPosition(ref state,player,out var medicalPosition))
                         {
                             var ghost = SystemAPI.GetComponentRW<PredictedPlayerGhost>(player);
                             inventory.Error = inventory.BeginMedical(ghost.ValueRO,r.ItemId.ToString(),r.ExpectedVersion,r.Part,
@@ -147,7 +147,9 @@ namespace Unity.MP_FPS
                     {
                         inventory.RequestId = r.RequestId;inventory.ActionFeedback=null;
                         inventory.Error = session.ValueRO.Phase != RaidPhase.Active || session.ValueRO.RaidId != r.RaidId || inventory.ActionPending ||
-                            SystemAPI.HasComponent<NetworkStreamRequestDisconnect>(connection) ? InventoryError.Inaccessible
+                            SystemAPI.HasComponent<NetworkStreamRequestDisconnect>(connection) ||
+                            (BountyClashRuntime.Enabled(state.EntityManager) && (!SystemAPI.HasComponent<JoinedClient>(connection) ||
+                                !BountyClashRuntime.CanAct(state.EntityManager,SystemAPI.GetComponent<JoinedClient>(connection).PlayerEntity))) ? InventoryError.Inaccessible
                             : inventory.Graph.TryApply(new InventoryCommand { ExpectedVersion=r.ExpectedVersion, Operation=r.Operation, ItemId=r.ItemId.ToString(),
                                 Parent=r.Parent.ToString(), Region=r.Region.ToString(), TargetId=r.TargetId.ToString(), X=r.X, Y=r.Y, Rotated=r.Rotated, Quantity=r.Quantity });
                         inventory.LastSentVersion = -1;

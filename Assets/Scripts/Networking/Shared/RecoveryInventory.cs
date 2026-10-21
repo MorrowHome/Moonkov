@@ -59,10 +59,10 @@ namespace Unity.MP_FPS.Inventory
         }
         // Returns fresh objects. Callers persist account/inbox/receipt/closed deployment together.
         public static InventoryError Settle(InventoryGraph account,RecoveryInbox inbox,InventoryGraph raid,
-            out InventoryGraph stored,out RecoveryInbox pending)
+            out InventoryGraph stored,out RecoveryInbox pending, bool missionRewards = true, int bonusDust = 0)
         {
             stored=null;pending=null;
-            if(inbox==null || inbox.Validate(account)!=InventoryError.None || inbox.ItemCount()!=0 || raid==null ||
+            if(bonusDust<0 || bonusDust>80 || inbox==null || inbox.Validate(account)!=InventoryError.None || inbox.ItemCount()!=0 || raid==null ||
                 raid.Validate()!=InventoryError.None || raid.Find("stash")!=null || raid.Find("loot")!=null)return InventoryError.Invalid;
             var next=account.Clone();var cargo=raid.Clone();
             var allIds=new HashSet<string>(next.Items.Select(i=>i.Id));
@@ -70,7 +70,7 @@ namespace Unity.MP_FPS.Inventory
             int facts=0;
             foreach(var item in cargo.Items)
             {
-                if(!cargo.Carried(item) || item.EmergencySupply || !item.FoundInRaid)continue;
+                if(!missionRewards || !cargo.Carried(item) || item.EmergencySupply || !item.FoundInRaid)continue;
                 if(!MissionInventory.IsArtifact(item.Code))facts|=MissionInventory.FirstRecovery;
                 else
                 {
@@ -81,7 +81,7 @@ namespace Unity.MP_FPS.Inventory
                 }
             }
             int added=facts & ~next.MissionFirsts;
-            int dust=((added & MissionInventory.FirstRecovery)!=0 ? 10 : 0)+((added & MissionInventory.FirstMooncore)!=0 ? 30 : 0)+((added & MissionInventory.FirstArchive)!=0 ? 20 : 0);
+            int dust=bonusDust+((added & MissionInventory.FirstRecovery)!=0 ? 10 : 0)+((added & MissionInventory.FirstMooncore)!=0 ? 30 : 0)+((added & MissionInventory.FirstArchive)!=0 ? 20 : 0);
             next.MissionFirsts|=facts;
             var result=new RecoveryInbox {Version=inbox.Version+1};
             foreach(var top in cargo.Items.Where(i=>i.Parent=="equipment" || i.Parent=="pockets").ToArray())Import(next,cargo,top);

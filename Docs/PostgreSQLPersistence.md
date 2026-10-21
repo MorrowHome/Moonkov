@@ -40,9 +40,11 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Backend/Start-Backend.ps1 -B
 powershell -NoProfile -ExecutionPolicy Bypass -File Backend/Start-Backend.ps1 -Background -Update
 ```
 
-`-Update` 仅停止项目 PID 文件记录、且命令行匹配本项目后端 DLL 的进程，保留账号数据库、服务器密钥和监听地址；使用 `-Lan` 开放的服务更新时仍带 `-Lan`。启动器等待数据库健康检查通过，并确认 `species-harvest-v2`、`missions-v1` 和 `recovery-inbox-v1` 能力后才报告就绪；已运行服务的提前返回也执行相同检查。受服务器密钥保护的 `/internal/health` 返回 `build` 和 `features`，可识别异形掉落及永久光环研究的新后端。
+`-Update` 仅停止项目 PID 文件记录、且命令行匹配本项目后端 DLL 的进程，保留账号数据库、服务器密钥和监听地址；使用 `-Lan` 开放的服务更新时仍带 `-Lan`。启动器等待数据库健康检查通过，并确认 `species-harvest-v2`、`missions-v1`、`recovery-inbox-v1` 和 `bounty-clash-v1` 能力后才报告就绪；已运行服务的提前返回也执行相同检查。受服务器密钥保护的 `/internal/health` 返回 `build` 和 `features`，可识别异形掉落及永久光环研究的新后端。
 
 2026-10-21的schema8/待领取区代码同步、发布准备与后续Windows启动步骤见[同步准备记录](Deployment/MoonPersistence-20261021.md)。用户确认服务与数据库当前未开启；代码和发布准备已完成，实际PC尚未重建或迁移。
+
+Bounty Clash新增schema9、独立模式端点与唯一赏金收据，详见[赏金速战持久化](BountyClashPersistence.md)。客户端、Unity服务器与Backend须同步更新；当前Windows服务与数据库仍关闭，本轮未执行生产迁移。
 
 ## 异形掉落与联机研究验证（2026-10-18）
 

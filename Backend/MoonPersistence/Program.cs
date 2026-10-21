@@ -19,6 +19,11 @@ builder.Services.AddSingleton(NpgsqlDataSource.Create(connectionString));
 builder.Services.AddSingleton<StashRepository>();
 builder.Services.AddSingleton<InventoryRepository>();
 builder.Services.AddSingleton<AccountRepository>();
+var clashEconomy = new BountyEconomy(builder.Configuration.GetValue("BountyClash:BaseDust",20),
+    builder.Configuration.GetValue("BountyClash:SoloBonusDust",60),builder.Configuration.GetValue("BountyClash:DuoBonusDust",15));
+clashEconomy.Validate();
+builder.Services.AddSingleton(clashEconomy);
+builder.Services.AddSingleton<BountyClashRepository>();
 builder.Services.ConfigureHttpJsonOptions(options => options.SerializerOptions.IncludeFields = true);
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
@@ -113,7 +118,7 @@ app.MapGet("/internal/health", async (NpgsqlDataSource db, CancellationToken ct)
 {
     await using var command = db.CreateCommand("SELECT 1");
     await command.ExecuteScalarAsync(ct);
-    return Results.Ok(new { status = "ready", features = new[] { "alien-harvest-v1", "halo-research-v1", "species-harvest-v2", "missions-v1", "recovery-inbox-v1" },
+    return Results.Ok(new { status = "ready", features = new[] { "alien-harvest-v1", "halo-research-v1", "species-harvest-v2", "missions-v1", "recovery-inbox-v1", "bounty-clash-v1" },
         build = typeof(InventoryRepository).Assembly.GetCustomAttributes(false)
             .OfType<System.Reflection.AssemblyInformationalVersionAttribute>().FirstOrDefault()?.InformationalVersion });
 });
@@ -153,6 +158,57 @@ app.MapPost("/internal/deployments/abandon", async (Deployment request, Inventor
     catch (ReceiptConflictException) { return Results.Conflict(new { error="deployment_conflict" }); }
     catch (ProfileNotFoundException) { return Results.NotFound(new { error="unknown_profile" }); }
 });
+// Separate routes ensure an older backend fails closed (404), rather than silently
+// ignoring new JSON fields and charging an Expedition loadout.
+var clash = app.MapGroup("/internal/bounty-clash");
+clash.MapPost("/matches", async (BountyMatchRegistration request, BountyClashRepository repository, CancellationToken ct) =>
+{
+    try { await repository.RegisterAsync(request,ct); return Results.Ok(new { status="registered" }); }
+    catch (DeploymentRejectedException ex) { return Results.Conflict(new { error=ex.Message }); }
+    catch (ReceiptConflictException) { return Results.Conflict(new { error="clash_match_conflict" }); }
+    catch (PostgresException ex) when (ex.SqlState is "23505" or "23503") { return Results.Conflict(new { error="clash_roster_conflict" }); }
+});
+clash.MapPost("/redemptions", async (BountyRedemption request, BountyClashRepository repository, CancellationToken ct) =>
+{
+    try { await repository.RedeemAsync(request,ct); return Results.Ok(new { status="redeemed" }); }
+    catch (DeploymentRejectedException ex) { return Results.Conflict(new { error=ex.Message }); }
+    catch (ReceiptConflictException) { return Results.Conflict(new { error="clash_redemption_conflict" }); }
+    catch (PostgresException ex) when (ex.SqlState=="23505") { return Results.Conflict(new { error="clash_redemption_conflict" }); }
+});
+clash.MapPost("/deployments", async (Deployment request, InventoryRepository inventory, CancellationToken ct) =>
+{
+    if (!ValidDeployment(request)) return Results.BadRequest(new { error="invalid_loadout" });
+    try { return Results.Ok(await inventory.DeployAsync(request,ct,clash:true)); }
+    catch (DeploymentRejectedException ex) { return Results.Conflict(new { error=ex.Message }); }
+    catch (ReceiptConflictException) { return Results.Conflict(new { error="deployment_conflict" }); }
+    catch (ProfileNotFoundException) { return Results.NotFound(new { error="unknown_profile" }); }
+});
+clash.MapPost("/deployments/abandon", async (Deployment request, InventoryRepository inventory, CancellationToken ct) =>
+{
+    if (!ValidDeployment(request)) return Results.BadRequest(new { error="invalid_loadout" });
+    try { return Results.Ok(await inventory.AbandonAsync(request,ct,clash:true)); }
+    catch (DeploymentRejectedException ex) { return Results.Conflict(new { error=ex.Message }); }
+    catch (ReceiptConflictException) { return Results.Conflict(new { error="deployment_conflict" }); }
+    catch (ProfileNotFoundException) { return Results.NotFound(new { error="unknown_profile" }); }
+});
+clash.MapPost("/deployments/refund", async (Deployment request, InventoryRepository inventory, StashRepository store, CancellationToken ct) =>
+{
+    if (!ValidDeployment(request)) return Results.BadRequest(new { error="invalid_loadout" });
+    try { return Results.Ok(await inventory.RefundBountyDeploymentAsync(request,store,ct)); }
+    catch (DeploymentRejectedException ex) { return Results.Conflict(new { error=ex.Message }); }
+    catch (ReceiptConflictException) { return Results.Conflict(new { error="deployment_conflict" }); }
+    catch (ProfileNotFoundException) { return Results.NotFound(new { error="unknown_profile" }); }
+});
+clash.MapPost("/settlements", async (Settlement request, StashRepository store, CancellationToken ct) =>
+{
+    if (request.PlayerId==Guid.Empty || request.SettlementId==Guid.Empty || request.Outcome is not ("Extracted" or "Dead" or "TimedOut") ||
+        request.Dust<0 || request.Alloy<0 || request.Cells<0 || request.InventoryJson==null || request.InventoryJson.Length>500000)
+        return Results.BadRequest(new { error="invalid_clash_settlement" });
+    try { return Results.Ok(await store.SettleAsync(request,ct,clash:true)); }
+    catch (ReceiptConflictException) { return Results.Conflict(new { error="settlement_conflict" }); }
+    catch (ProfileNotFoundException) { return Results.NotFound(new { error="unknown_profile" }); }
+    catch (DeploymentRejectedException ex) { return Results.Conflict(new { error=ex.Message }); }
+});
 await app.RunAsync();
 
 static bool ValidDeployment(Deployment request) => request.PlayerId != Guid.Empty && request.DeploymentId != Guid.Empty && request.Cells is >= 0 and <= 12;
@@ -164,9 +220,9 @@ static string? BearerToken(HttpRequest request)
 }
 
 public sealed record ResolveProfile(string GuestToken, string DisplayName);
-public sealed record Settlement(Guid PlayerId, Guid SettlementId, string Outcome, int Dust, int Alloy, int Cells, Guid? DeploymentId=null, string? InventoryJson=null);
+public sealed record Settlement(Guid PlayerId, Guid SettlementId, string Outcome, int Dust, int Alloy, int Cells, Guid? DeploymentId=null, string? InventoryJson=null, string? Mode=null, Guid? MatchId=null, int RulesVersion=0, int TeamId=0, Guid? BountyEventId=null);
 public sealed record Profile(Guid PlayerId, int Dust, int Alloy, int Cells, string DisplayName,
     Guid? DeploymentId=null, int CarriedCells=0, Guid? CellStackId=null, IReadOnlyList<InventoryStack>? Items=null,
-    string? InventoryJson=null, string? RaidInventoryJson=null, Guid? ActiveDeploymentId=null, int MissionSchemaVersion=1, string? RecoveryJson=null);
+    string? InventoryJson=null, string? RaidInventoryJson=null, Guid? ActiveDeploymentId=null, int MissionSchemaVersion=1, string? RecoveryJson=null, string? Mode=null, Guid? MatchId=null, int RulesVersion=0, int TeamId=0);
 public sealed class ReceiptConflictException : Exception;
 public sealed class ProfileNotFoundException : Exception;

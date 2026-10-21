@@ -15,7 +15,7 @@ namespace Unity.MP_FPS
     public static class AccountClient
     {
         private sealed class LoginResult { public string Token, DisplayName; public DateTime ExpiresAt; }
-        private sealed class Profile { public string DisplayName, InventoryJson, ActiveDeploymentId, RecoveryJson; public int Dust, Alloy, Cells; }
+        private sealed class Profile { public string PlayerId, DisplayName, InventoryJson, ActiveDeploymentId, RecoveryJson; public int Dust, Alloy, Cells; }
         private sealed class Failure { public string Error; }
         private sealed class ShopSnapshot { public ShopOffer[] Offers; public Profile Profile; }
         public sealed class InventoryRequestException : InvalidOperationException
@@ -31,6 +31,16 @@ namespace Unity.MP_FPS
         public static RecoveryInbox Recovery {get;private set;} = new RecoveryInbox();
         public static InventoryGraph Inventory { get; private set; }
         public static bool RaidActive { get; private set; }
+        private static string s_VerifiedPlayerId, s_VerifiedServiceUrl;
+        public static string LocalPreferenceScope
+        {
+            get
+            {
+                if(!IsLoggedIn || !Uri.TryCreate(s_BaseUrl,UriKind.Absolute,out var service) || !Guid.TryParse(s_VerifiedPlayerId,out var id) ||
+                    service.AbsoluteUri.TrimEnd('/')!=s_VerifiedServiceUrl)return "";
+                using(var hash=SHA256.Create())return "online/"+BitConverter.ToString(hash.ComputeHash(Encoding.UTF8.GetBytes(s_VerifiedServiceUrl+"/"+id.ToString("D")))).Replace("-","");
+            }
+        }
         private static long s_ProfileRequest, s_AppliedProfileRequest;
         public static event Action InventoryChanged;
         public static int StashDust { get; private set; }
@@ -54,7 +64,7 @@ namespace Unity.MP_FPS
             s_Token = s_Name = s_PreferenceKey = null; s_Expires = default;
             StashDust = StashAlloy = StashCells = 0;
             CarryCells = 0;
-            Inventory = null;Recovery=new RecoveryInbox(); RaidActive = false; InventoryChanged = null; s_BaseUrl = null;
+            s_VerifiedPlayerId=s_VerifiedServiceUrl=null;Inventory = null;Recovery=new RecoveryInbox(); RaidActive = false; InventoryChanged = null; s_BaseUrl = null;
             s_ProfileRequest = s_AppliedProfileRequest = 0;
             AllowLanHttp = false;
         }
@@ -97,7 +107,7 @@ namespace Unity.MP_FPS
                         throw new InvalidOperationException("Invalid login response.");
                     ct.ThrowIfCancellationRequested();
                     CarryCells = 0;
-                    Inventory = null;Recovery=new RecoveryInbox(); RaidActive = false;
+                    s_VerifiedPlayerId=s_VerifiedServiceUrl=null;Inventory = null;Recovery=new RecoveryInbox(); RaidActive = false;
                     s_Token = result.Token; s_Name = result.DisplayName; s_Expires = result.ExpiresAt.ToUniversalTime();
                     PlayerPrefs.SetString(s_PreferenceKey, JsonConvert.SerializeObject(result)); PlayerPrefs.Save();
                     GameSettings.Instance.PlayerName = s_Name;
@@ -145,7 +155,7 @@ namespace Unity.MP_FPS
             s_Token = s_Name = ""; s_Expires = default;
             StashDust = StashAlloy = StashCells = 0;
             CarryCells = 0;
-            Inventory = null;Recovery=new RecoveryInbox(); RaidActive = false; InventoryChanged?.Invoke();
+            s_VerifiedPlayerId=s_VerifiedServiceUrl=null;Inventory = null;Recovery=new RecoveryInbox(); RaidActive = false; InventoryChanged?.Invoke();
             PlayerPrefs.DeleteKey(s_PreferenceKey); PlayerPrefs.Save();
         }
 
@@ -161,6 +171,8 @@ namespace Unity.MP_FPS
             // A delayed background refresh cannot roll back a successful move or a newer raid state.
             if (Inventory != null && (graph.Version < Inventory.Version ||
                 graph.Version == Inventory.Version && requestId < s_AppliedProfileRequest)) return;
+            s_VerifiedPlayerId=Guid.TryParse(profile.PlayerId,out var verified) ? verified.ToString("D") : null;
+            s_VerifiedServiceUrl=Uri.TryCreate(s_BaseUrl,UriKind.Absolute,out var service) ? service.AbsoluteUri.TrimEnd('/') : null;
             Inventory = graph;Recovery=recovery; s_AppliedProfileRequest = requestId;
             RaidActive = !string.IsNullOrEmpty(profile.ActiveDeploymentId);
             s_Name = profile.DisplayName;

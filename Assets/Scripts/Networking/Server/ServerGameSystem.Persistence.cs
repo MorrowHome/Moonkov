@@ -61,7 +61,8 @@ namespace Unity.MP_FPS
                 // A copied guest credential cannot enter two simultaneous sessions in this World.
                 bool alreadyPlaying = false;
                 foreach (var existing in context.Profiles)
-                    if (existing.Key != connection && SystemAPI.Exists(existing.Key) && existing.Value.PlayerId == profile.PlayerId)
+                    if (existing.Key != connection && SystemAPI.Exists(existing.Key) && existing.Value.PlayerId == profile.PlayerId &&
+                        (!BountyClashRuntime.Enabled(state.EntityManager) || (SystemAPI.HasComponent<NetworkStreamConnection>(existing.Key) && !SystemAPI.HasComponent<NetworkStreamRequestDisconnect>(existing.Key))))
                         alreadyPlaying = true;
                 if (alreadyPlaying)
                 {
@@ -71,6 +72,8 @@ namespace Unity.MP_FPS
                 }
                 context.Profiles[connection] = profile;
                 join.Name.CopyFromTruncated(profile.DisplayName);
+                if (BountyClashRuntime.Enabled(state.EntityManager))
+                { CompleteClashJoin(ref state,ecb,connection,join);continue; }
                 if (MoonRaidMap.Active != null) context.BeginDeploy(connection, join.CarryCells, join);
                 else
                 {
@@ -87,8 +90,13 @@ namespace Unity.MP_FPS
                 Entity connection = pair.Key;
                 if (MoonRaidMap.Active == null || !SystemAPI.Exists(connection) || !SystemAPI.HasComponent<NetworkId>(connection) || SystemAPI.HasComponent<NetworkStreamRequestDisconnect>(connection))
                 {
-                    // Retain cleanup independently of the disappearing connection.
-                    context.Abandon(deploy.Payload);
+                    // Retain the debit result even when the connection disappeared.
+                    if (deploy.Payload.Mode=="BountyClash")
+                    {
+                        if(deploy.Task!=null && !deploy.Task.IsCompleted) continue;
+                        context.RefundBountyDeployment(deploy.Payload);
+                    }
+                    else context.Abandon(deploy.Payload);
                     removeDeploys.Add(connection);
                     continue;
                 }
@@ -100,9 +108,12 @@ namespace Unity.MP_FPS
                 if (!deploy.Task.IsCompleted) continue;
                 if (deploy.Task.IsFaulted || deploy.Task.IsCanceled)
                 {
+                    if(deploy.Payload.Mode=="BountyClash" && !ClashDeploymentAllowed(ref state,connection,deploy.Payload.DeploymentId))
+                    {context.RefundBountyDeployment(deploy.Payload);removeDeploys.Add(connection);continue;}
                     if (deploy.Task.Exception?.GetBaseException() is RaidPersistenceContext.LoadoutRejectedException rejected)
                     {
-                        context.Abandon(deploy.Payload);
+                        if(deploy.Payload.Mode=="BountyClash") context.RefundBountyDeployment(deploy.Payload);
+                        else context.Abandon(deploy.Payload);
                         removeDeploys.Add(connection);
                         if (deploy.Join != null)
                             ecb.AddComponent(connection, new NetworkStreamRequestDisconnect { Reason = NetworkStreamDisconnectReason.ConnectionClose });
@@ -120,7 +131,7 @@ namespace Unity.MP_FPS
                 var profile = deploy.Task.Result;
                 context.Profiles[connection] = profile;
                 RaidSession session = deploy.Join == null ? SystemAPI.GetComponent<RaidSession>(connection) : default;
-                RaidRules.BeginNext(ref session, MoonRaidMap.Active.RaidDuration);
+                RaidRules.BeginNext(ref session, deploy.Payload.Mode=="BountyClash" ? 0 : MoonRaidMap.Active.RaidDuration);
                 session.SettlementId = deploy.Payload.DeploymentId;
                 session.PersistentDeployment = true;
                 session.SaveState = RaidSaveState.Saved;
@@ -131,6 +142,11 @@ namespace Unity.MP_FPS
                 var graph = RaidInventoryTransport.Decode(profile.RaidInventoryJson);
                 SetRaidInventory(ref state, connection, graph, session.RaidId);
                 RaidInventoryState.UpdateTotals(graph, ref session);
+                if (deploy.Payload.Mode=="BountyClash" && !ClashDeploymentAllowed(ref state,connection,deploy.Payload.DeploymentId))
+                {
+                    session.Phase=RaidPhase.Extracted;session.SaveState=RaidSaveState.Saving;
+                    context.BeginSave(connection,session);removeDeploys.Add(connection);continue;
+                }
                 if (deploy.Join != null)
                 {
                     context.ReadyRaids[connection] = session;
@@ -192,6 +208,7 @@ namespace Unity.MP_FPS
                 removeSaves.Add(pair.Key);
             }
             foreach (var key in removeSaves) context.Saves.Remove(key);
+            if (removeSaves.Count>0) context.CleanBountyJournals();
             var disconnected = new List<Entity>();
             foreach (var connection in context.Profiles.Keys)
                 if (!SystemAPI.Exists(connection)) disconnected.Add(connection);
@@ -199,7 +216,7 @@ namespace Unity.MP_FPS
             {
                 var profile = context.Profiles[connection];
                 if (!string.IsNullOrEmpty(profile.DeploymentId))
-                    context.Abandon(new RaidPersistenceContext.Deployment { PlayerId=profile.PlayerId, DeploymentId=profile.DeploymentId, Cells=profile.CarriedCells });
+                    context.Abandon(RaidPersistenceContext.DeploymentOf(profile));
                 context.Profiles.Remove(connection);
                 context.Inventories.Remove(connection);
             }

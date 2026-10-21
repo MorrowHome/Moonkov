@@ -97,7 +97,8 @@ namespace Unity.MP_FPS
             if(map==null || session.Phase!=RaidPhase.Active || !TryGetLootPosition(ref state,lootId,out var target) ||
                 SystemAPI.HasComponent<NetworkStreamRequestDisconnect>(connection) || !SystemAPI.HasComponent<JoinedClient>(connection)) return false;
             var player=SystemAPI.GetComponent<JoinedClient>(connection).PlayerEntity;
-            if(!TryGetLivingPosition(ref state,player,out var position) || math.distancesq(position,target)>RaidRules.PickupRange*RaidRules.PickupRange) return false;
+            if(!BountyClashRuntime.CanAct(state.EntityManager,player) || !TryGetLivingPosition(ref state,player,out var position) ||
+                !BountyClashRuntime.InArena(state.EntityManager,position) || !BountyClashRuntime.InArena(state.EntityManager,target) || math.distancesq(position,target)>RaidRules.PickupRange*RaidRules.PickupRange) return false;
             return !UnityEngine.Physics.Linecast((Vector3)position+Vector3.up*1.4f,(Vector3)target,
                 LayerMask.GetMask("Default","Ground"),QueryTriggerInteraction.Ignore);
         }
@@ -218,7 +219,7 @@ namespace Unity.MP_FPS
             {
                 var player=SystemAPI.GetComponent<JoinedClient>(connection).PlayerEntity;
                 bool accessible=session.Phase==RaidPhase.Active && inventory.RaidId==session.RaidId &&
-                    TryGetLivingPosition(ref state,player,out _);
+                    BountyClashRuntime.CanAct(state.EntityManager,player) && TryGetLivingPosition(ref state,player,out _);
                 var health=accessible ? SystemAPI.GetComponent<PredictedPlayerGhost>(player) : default;
                 var position=accessible ? SystemAPI.GetComponent<LocalTransform>(player).Position : inventory.MedicalOrigin;
                 inventory.RefreshMedical(ref health,accessible,position,SystemAPI.Time.ElapsedTime);

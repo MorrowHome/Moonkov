@@ -18,3 +18,5 @@
 2. 使用现有启动器：`powershell -NoProfile -ExecutionPolicy Bypass -File Backend/Start-Backend.ps1 -Background -Update`。原服务使用`-Lan`时仍需保留该参数。启动器启动数据库并重建后端；应用初始化通过既有事务和迁移锁执行schema8，新增待领取表，不删除或重置玩家数据。
 3. 启动后核对带服务器密钥的`/internal/health`为ready、构建号匹配且包含`recovery-inbox-v1`，只读确认schema8与`inventory_recovery`表存在；无凭证的受保护接口应拒绝访问，不使用真实玩家账号试领。
 4. 若启动失败，保留备份与新数据后排查。新版本一旦写入Recovery数据，不得降级到忽略待领取区的旧后端或盲目恢复旧数据库快照。实际PC完成启动与验证之前，不能标记为运行态上线完成。
+
+后续赏金速战代码新增schema9及`bounty-clash-v1`能力；上文schema8发布包是当时准备记录，不是当前模式发布包。后续Windows更新需同步客户端/Unity服务器/Backend，并按[赏金速战持久化说明](../BountyClashPersistence.md)验证。Windows服务与数据库仍关闭，本轮未执行实际迁移。

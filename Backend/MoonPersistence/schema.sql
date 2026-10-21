@@ -135,3 +135,42 @@ CREATE TABLE IF NOT EXISTS inventory_recovery (
     inbox jsonb NOT NULL
 );
 INSERT INTO schema_version VALUES (8) ON CONFLICT DO NOTHING;
+
+
+-- Version 9: immutable Bounty Clash roster, one token redemption and per-player awards.
+CREATE TABLE IF NOT EXISTS bounty_clash_matches (
+    id uuid PRIMARY KEY, rules_version integer NOT NULL CHECK (rules_version=1),
+    token_id uuid NOT NULL UNIQUE, roster_hash text NOT NULL,
+    base_dust integer NOT NULL CHECK (base_dust>=0),
+    solo_bonus_dust integer NOT NULL CHECK (solo_bonus_dust>=0),
+    duo_bonus_dust integer NOT NULL CHECK (duo_bonus_dust>=0),
+    CHECK (base_dust + GREATEST(solo_bonus_dust,duo_bonus_dust)<=80),
+    created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS bounty_clash_participants (
+    deployment_id uuid PRIMARY KEY, match_id uuid NOT NULL REFERENCES bounty_clash_matches(id),
+    player_id uuid NOT NULL REFERENCES players(id), team_id integer NOT NULL CHECK (team_id BETWEEN 0 AND 3),
+    UNIQUE (match_id,player_id)
+);
+ALTER TABLE raid_deployments ADD COLUMN IF NOT EXISTS mode text NOT NULL DEFAULT 'Expedition';
+ALTER TABLE raid_deployments ADD COLUMN IF NOT EXISTS match_id uuid REFERENCES bounty_clash_matches(id);
+ALTER TABLE raid_deployments ADD COLUMN IF NOT EXISTS rules_version integer NOT NULL DEFAULT 0;
+ALTER TABLE raid_deployments ADD COLUMN IF NOT EXISTS team_id integer NOT NULL DEFAULT 0;
+ALTER TABLE raid_settlements ADD COLUMN IF NOT EXISTS mode text NOT NULL DEFAULT 'Expedition';
+ALTER TABLE raid_settlements ADD COLUMN IF NOT EXISTS match_id uuid REFERENCES bounty_clash_matches(id);
+ALTER TABLE raid_settlements ADD COLUMN IF NOT EXISTS rules_version integer NOT NULL DEFAULT 0;
+ALTER TABLE raid_settlements ADD COLUMN IF NOT EXISTS team_id integer NOT NULL DEFAULT 0;
+ALTER TABLE raid_settlements ADD COLUMN IF NOT EXISTS bounty_event_id uuid;
+CREATE TABLE IF NOT EXISTS bounty_clash_redemptions (
+    match_id uuid PRIMARY KEY REFERENCES bounty_clash_matches(id),
+    token_id uuid NOT NULL UNIQUE, event_id uuid NOT NULL UNIQUE,
+    carrier_deployment_id uuid NOT NULL REFERENCES bounty_clash_participants(deployment_id),
+    request_hash text NOT NULL, created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS bounty_clash_awards (
+    deployment_id uuid PRIMARY KEY REFERENCES bounty_clash_participants(deployment_id),
+    match_id uuid NOT NULL REFERENCES bounty_clash_redemptions(match_id),
+    event_id uuid NOT NULL, dust integer NOT NULL CHECK (dust BETWEEN 0 AND 80),
+    claimed boolean NOT NULL DEFAULT false
+);
+INSERT INTO schema_version VALUES (9) ON CONFLICT DO NOTHING;

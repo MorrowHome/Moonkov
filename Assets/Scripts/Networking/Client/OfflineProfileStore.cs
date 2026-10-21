@@ -160,6 +160,7 @@ namespace Unity.MP_FPS
             lock (m_Lock)
             {
                 CheckPlayer(payload.PlayerId);
+                if(payload.Mode!=null)throw new RaidPersistenceContext.LoadoutRejectedException(RaidLoadoutError.Rejected,"Bounty Clash requires multiplayer.");
                 if (!Guid.TryParse(payload.DeploymentId, out _) || !RaidRules.ValidLoadout(payload.Cells) ||
                     m_Save.Receipts.ContainsKey(payload.DeploymentId) ||
                     (RaidActive && (payload.DeploymentId != m_Save.DeploymentId || payload.Cells != m_Save.CarriedCells)))
@@ -220,7 +221,9 @@ namespace Unity.MP_FPS
         {
             lock (m_Lock)
             {
-                CheckPlayer(payload.PlayerId); string receipt = Receipt(payload);
+                CheckPlayer(payload.PlayerId);
+                if(payload.Mode!=null)throw new InvalidDataException("Bounty Clash is not an offline mode.");
+                string receipt = Receipt(payload);
                 if (m_Save.Receipts.TryGetValue(payload.SettlementId, out var previous))
                 {
                     if (receipt != previous) throw new InvalidDataException("Single-player settlement receipt conflict.");

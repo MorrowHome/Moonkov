@@ -17,6 +17,15 @@ namespace Unity.MP_FPS
         private static int s_Dust, s_Alloy, s_Cells, s_Carry;
         private static Action s_OfflineChanged;
         public static bool IsOffline => s_Offline != null;
+        public static string LocalPreferenceScope
+        {
+            get
+            {
+                if(!IsOffline)return AccountClient.LocalPreferenceScope;
+                using(var hash=System.Security.Cryptography.SHA256.Create())
+                    return "offline/"+BitConverter.ToString(hash.ComputeHash(System.Text.Encoding.UTF8.GetBytes(s_Offline.FilePath))).Replace("-","");
+            }
+        }
         public static OfflineProfileStore OfflineStore => s_Offline ?? throw new InvalidOperationException("No single-player profile is open.");
         public static bool IsLoggedIn => IsOffline || AccountClient.IsLoggedIn;
         public static string Token => IsOffline ? "single-player" : AccountClient.Token;

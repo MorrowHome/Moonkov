@@ -149,10 +149,11 @@ namespace Unity.MP_FPS
         public double NextDeathBagResync;
         public readonly System.Collections.Generic.List<int> HiddenDeathBags = new System.Collections.Generic.List<int>();
         public readonly System.Collections.Generic.List<int> RemovedSearches = new System.Collections.Generic.List<int>();
-        public bool ActionPending => DissectingLootId>=0 || MedicalItemId!=null;
+        public bool TacticalPending;
+        public bool ActionPending => TacticalPending || DissectingLootId>=0 || MedicalItemId!=null;
         public void CancelActions(string feedback=null)
         {
-            DissectingLootId=-1;MedicalItemId=null;ActionFeedback=feedback;LastSentVersion=-1;
+            TacticalPending=false;DissectingLootId=-1;MedicalItemId=null;ActionFeedback=feedback;LastSentVersion=-1;
         }
         public InventoryError BeginMedical(in PredictedPlayerGhost health,string id,int version,BodyPart part,
             Unity.Mathematics.float3 origin,double now,float seconds=3)
