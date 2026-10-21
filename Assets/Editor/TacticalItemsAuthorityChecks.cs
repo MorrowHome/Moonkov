@@ -40,10 +40,11 @@ public static class TacticalItemsAuthorityChecks
             em.SetComponentData(connection,new RaidSession {RaidId=4,Phase=RaidPhase.Active});
             em.SetComponentData(connection,new JoinedClient {PlayerEntity=player});
             var inventory=new RaidInventoryState {Graph=InventoryGraph.Create(false),RaidId=4};em.AddComponentObject(connection,inventory);
-            uint requestId=0;
+            uint requestId=0;bool sprintMotion=false;
             void Tick(float dt=.1f)
             {
                 now+=dt;tick++;world.SetTime(new TimeData(now,dt));em.SetComponentData(clockEntity,new NetworkTime {ServerTick=new NetworkTick(tick)});
+                var motion=em.GetComponentData<PredictedPlayerGhost>(player);if(sprintMotion && motion.ControllerState.Sprinting)root.transform.position+=Vector3.forward*((motion.TacticalSprintExhausted ? 3.2f : 4)*dt);motion.ControllerState.CurrentPosition=root.transform.position;em.SetComponentData(player,motion);
                 Physics.SyncTransforms();
                 ref var system=ref world.Unmanaged.GetUnsafeSystemRef<ServerGameSystem>(handle);
                 ref var state=ref world.Unmanaged.ResolveSystemStateRef(handle);
@@ -56,7 +57,7 @@ public static class TacticalItemsAuthorityChecks
             {
                 ref var system=ref world.Unmanaged.GetUnsafeSystemRef<ServerGameSystem>(handle);ref var state=ref world.Unmanaged.ResolveSystemStateRef(handle);
                 var ecb=new EntityCommandBuffer(Allocator.Temp);system.TacticalTestClear(ref state,ecb);ecb.Playback(em);ecb.Dispose();
-                root.transform.position=Vector3.zero;health=em.GetComponentData<PredictedPlayerGhost>(player);RaidHealth.Initialize(ref health);health.ControllerState.PitchDegrees=53.13f;em.SetComponentData(player,health);
+                root.transform.position=Vector3.zero;health=em.GetComponentData<PredictedPlayerGhost>(player);RaidHealth.Initialize(ref health);health.ControllerState.PitchDegrees=53.13f;health.ControllerState.Sprinting=false;health.ControllerState.MovementSpeed=0;em.SetComponentData(player,health);
             }
             string Add(string code,int quantity=1)
             {
@@ -81,9 +82,29 @@ public static class TacticalItemsAuthorityChecks
             Request(TacticalItemAction.Use,antidote);root.transform.position=Vector3.right;Tick();Check(!inventory.TacticalPending && inventory.Graph.Find(antidote).Quantity==initial,"Move interrupts atomically");root.transform.position=Vector3.zero;
             Request(TacticalItemAction.Use,antidote);health=em.GetComponentData<PredictedPlayerGhost>(player);health.LastHitTick++;em.SetComponentData(player,health);Tick();Check(!inventory.TacticalPending,"Damage interrupts");
             Request(TacticalItemAction.Use,antidote);Wait(3.2f);Check(inventory.Graph.Find(antidote).Quantity==initial-1 && Data().Statuses[player].Antidote>now,"Antidote completes once");
+            health=em.GetComponentData<PredictedPlayerGhost>(player);health.ControllerState.Sprinting=true;health.ControllerState.MovementSpeed=4;em.SetComponentData(player,health);
+            Tick(2);Check(em.GetComponentData<PredictedPlayerGhost>(player).TacticalSprintStamina==100,"Shift and blocked movement never consume sprint stamina");
+            sprintMotion=true;for(int i=0;i<200;i++)Tick(.25f);health=em.GetComponentData<PredictedPlayerGhost>(player);
+            var sprintInput=new PlayerInput();sprintInput.SetFlag(PlayerInput.InputFlag.Sprint,true);
+            Check(health.TacticalSprintExhausted && health.TacticalSprintStamina==0 && RaidHealth.RestrictInput(health,sprintInput).Sprint,"Ordinary server sprint fatigues after 50s while sprint input remains available");
+            var running=new FirstPersonController.ControllerConsts();running.Walk.Speed=4;running.Sprint.Speed=7;var tired=TacticalItemEffects.Movement(health,running);
+            Check(tired.Sprint.Speed>tired.Walk.Speed && Math.Abs(tired.Sprint.Speed-5.6f)<.001f,"Fatigue uses shared 0.8 sprint speed while still faster than walking");
+            health.ControllerState.Sprinting=false;health.ControllerState.MovementSpeed=0;em.SetComponentData(player,health);Tick(3);
+            health=em.GetComponentData<PredictedPlayerGhost>(player);Check(!health.TacticalSprintExhausted && health.TacticalSprintStamina>=25,"Stopping actually recovers sprint after delay");
             string stamina=Add("stamina_shot");Request(TacticalItemAction.Use,stamina);Wait(3.2f);
-            health=em.GetComponentData<PredictedPlayerGhost>(player);health.Energy=0;health.Hydration=0;em.SetComponentData(player,health);Tick();
-            health=em.GetComponentData<PredictedPlayerGhost>(player);Check(health.Energy>=80 && health.Hydration>=80 && RaidNutrition.CanSprint(health),"Stamina changes actual exhausted sprint eligibility");
+            Check(Data().Statuses[player].Stamina-now>419 && Data().Statuses[player].Stamina-now<=420,"Actual injection grants 420-second fatigue prevention");
+            health=em.GetComponentData<PredictedPlayerGhost>(player);health.Energy=42;health.Hydration=37;health.ControllerState.Sprinting=true;health.ControllerState.MovementSpeed=4;em.SetComponentData(player,health);Tick(55);
+            health=em.GetComponentData<PredictedPlayerGhost>(player);Check(health.TacticalSprintStamina==100 && !health.TacticalSprintExhausted,"Shot prevents real independent sprint exhaustion");
+            Check(health.Energy==42 && health.Hydration==37,"Stamina shot never fabricates hunger or hydration recovery");
+            Data().Statuses[player].Stamina=now+.01;Tick(.1f);Tick(50);health=em.GetComponentData<PredictedPlayerGhost>(player);
+            Check(health.TacticalSprintStamina==0 && health.TacticalSprintExhausted,"Expired shot permits normal fatigue again");
+            health.ClashEnabled=true;health.ClashLife=ClashLife.Alive;health.ClashMaxHealthFraction=1;health.ClashCanAct=false;em.SetComponentData(player,health);em.AddComponentData(player,new ClashPlayer {CanAct=false});
+            Data().Statuses[player].Sprint.Value=10;Data().Statuses[player].Sprint.Exhausted=true;Data().Statuses[player].Sprint.RestDelay=1.5f;Tick();health=em.GetComponentData<PredictedPlayerGhost>(player);
+            Check(health.TacticalSprintStamina==10 && health.TacticalSprintExhausted,"Disconnected alive body cannot instantly refill fatigue");Tick(3);health=em.GetComponentData<PredictedPlayerGhost>(player);
+            Check(health.TacticalSprintStamina>10 && health.TacticalSprintStamina<100,"Disconnected alive body recovers only through normal rest time");
+            health.ClashLife=ClashLife.Downed;em.SetComponentData(player,health);Tick();health=em.GetComponentData<PredictedPlayerGhost>(player);
+            Check(health.TacticalSprintStamina==100 && !health.TacticalSprintExhausted,"Downed player resets transient fatigue");
+            em.RemoveComponent<ClashPlayer>(player);sprintMotion=false;health.ClashEnabled=false;health.ControllerState.Sprinting=false;health.ControllerState.MovementSpeed=0;em.SetComponentData(player,health);
             var status=Data().Statuses[player];status.Fire=now+10;status.Bleed=now+10;Request(TacticalItemAction.Extinguish);Wait(3.2f);Check(status.Fire==0 && status.Bleed==0,"Manual treatment completes while own damage continues");
             Clear();status=new TacticalServerWorld.Status {Fire=now+30,Bleed=now+30};Data().Statuses[player]=status;
             float burnStart=em.GetComponentData<PredictedPlayerGhost>(player).CurrentHealth;for(int i=0;i<10;i++)Tick();
@@ -115,14 +136,14 @@ public static class TacticalItemsAuthorityChecks
             Clear();uint oldEpoch=data.Epoch;Check(data.Objects.Count==0 && data.Statuses.Count==0 && !inventory.TacticalPending,"Round clears all temporary state");
             Check(oldEpoch>1,"Round epoch advances");
             Clear();string vitality=Add("vitality_shot");health=em.GetComponentData<PredictedPlayerGhost>(player);
-            health.ClashEnabled=true;health.ClashMaxHealthFraction=.5f;
+            health.ClashEnabled=true;health.ClashLife=ClashLife.Alive;health.ClashCanAct=true;health.ClashMaxHealthFraction=.5f;
             for(int p=0;p<RaidHealth.PartCount;p++)RaidHealth.Set(ref health,(BodyPart)p,RaidHealth.Maximum(health,(BodyPart)p)*.5f);
             RaidHealth.Set(ref health,BodyPart.LeftArm,0);em.SetComponentData(player,health);
             Request(TacticalItemAction.Use,vitality);Wait(3.2f);health=em.GetComponentData<PredictedPlayerGhost>(player);
             Check(health.LeftArmHealth==0 && Math.Abs(health.HeadHealth-RaidHealth.Maximum(health,BodyPart.Head))<.01f && Math.Abs(health.ChestHealth-RaidHealth.Maximum(health,BodyPart.Chest))<.01f,"Vitality fills all recoverable tissue while preserving black arm and Clash cap");
             Check(health.ClashMaxHealthFraction==.5f && health.MaxHealth==220,"Vitality does not erase lost maximum");
             health.ClashEnabled=false;em.SetComponentData(player,health);Clear();
-            Check(TacticalItemRules.StaminaDuration==600 && TacticalItemRules.AntidoteDuration==600,"Normal shot durations 600 seconds");
+            Check(TacticalItemRules.StaminaDuration==420 && TacticalItemRules.AntidoteDuration==600,"Stamina 420s and antidote 600s durations");
             // Real deploy -> timed disarm; deployed tools do not return free fresh items.
             trap=inventory.Graph.Items.Find(i=>i.Code=="alert_trip_mine").Id;
             Request(TacticalItemAction.Use,trap);Wait(3.2f);deployed=Data().Objects[0];
@@ -172,29 +193,51 @@ public static class TacticalItemsAuthorityChecks
             Check(em.GetComponentData<PredictedPlayerGhost>(covered).CurrentHealth==440,"Real explosive respects cover");
             UnityEngine.Object.DestroyImmediate(wall);Clear();
             em.AddComponentData(player,new ClashPlayer {CanAct=false});int stock=inventory.Graph.Count("antidote_shot",true);Request(TacticalItemAction.Use,antidote);Check(!inventory.TacticalPending && inventory.Graph.Count("antidote_shot",true)==stock,"Downed action rejected without consumption");em.RemoveComponent<ClashPlayer>(player);
-            // Exercise the actual client RPC consumer without creating objects in the user's scene.
-            var previousOwner=TacticalItemsFeedback.LocalOwner;
-            using(var client=new World("Tactical owner RPC fixture",WorldFlags.GameClient))
-            {
-                var clientSystem=client.GetOrCreateSystemManaged<TacticalItemsClientSystem>();clientSystem.EditorSuppressPresentation=true;var cm=client.EntityManager;
-                void Owner(TacticalItemOwnerRpc snapshot)
-                {var rpc=cm.CreateEntity();cm.AddComponentData(rpc,snapshot);cm.AddComponentData(rpc,new ReceiveRpcCommandRequest());clientSystem.Update();}
-                Owner(new TacticalItemOwnerRpc {RaidId=4,RequestId=10,Remaining=3,Feedback=TacticalItemFeedback.Started});
-                using var query=cm.CreateEntityQuery(typeof(TacticalItemClientState));
-                Check(query.GetSingleton<TacticalItemClientState>().Owner.Remaining==3 && TacticalItemsFeedback.LocalOwner.Feedback==TacticalItemFeedback.Started,"Client owner RPC shows real pending acknowledgement");
-                Owner(new TacticalItemOwnerRpc {RaidId=4,RequestId=10,Remaining=0,Feedback=TacticalItemFeedback.Completed});
-                Check(TacticalItemsFeedback.LocalOwner.Remaining==0 && TacticalItemsFeedback.LocalOwner.Feedback==TacticalItemFeedback.Completed,"Same-request completion clears pending");
-                Owner(new TacticalItemOwnerRpc {RaidId=3,RequestId=999,Remaining=2});
-                Check(TacticalItemsFeedback.LocalOwner.RaidId==4 && TacticalItemsFeedback.LocalOwner.Remaining==0,"Old raid owner snapshot cannot resurrect pending");
-                using(var secondary=new World("Secondary tactical owner fixture",WorldFlags.GameClient))
-                {
-                    var secondarySystem=secondary.GetOrCreateSystemManaged<TacticalItemsClientSystem>();secondarySystem.EditorSuppressPresentation=true;
-                    var sm=secondary.EntityManager;var rpc=sm.CreateEntity();sm.AddComponentData(rpc,new TacticalItemOwnerRpc {RaidId=99,RequestId=999,Remaining=7});sm.AddComponentData(rpc,new ReceiveRpcCommandRequest());secondarySystem.Update();
-                    using var own=sm.CreateEntityQuery(typeof(TacticalItemClientState));
-                    Check(own.GetSingleton<TacticalItemClientState>().Owner.RaidId==99 && TacticalItemsFeedback.LocalOwner.RaidId==4 && TacticalItemsFeedback.LocalOwner.Remaining==0,"Second transport client keeps its own snapshot without overwriting viewed HUD");
-                }
-            }
-            TacticalItemsFeedback.SetOwner(previousOwner);
+            // Capture on release, never resolve a delayed hit from a newly reused NetworkId.
+            Clear();em.AddComponentData(player,new ClashPlayer {CanAct=true,ParticipantId=31,TeamId=0,Epoch=7});em.SetComponentData(player,new GhostOwner {NetworkId=7});
+            string frag=Add("frag_bomb");Request(TacticalItemAction.Use,frag);Wait(1.2f);var released=Data().Objects[0];
+            Check(released.Source.ParticipantId==31 && released.Source.Epoch==7 && released.Source.NetworkId==7,"Release captures immutable participant and epoch");
+            em.SetComponentData(player,new GhostOwner {NetworkId=0});em.SetComponentData(player,new ClashPlayer {CanAct=false,ParticipantId=31,TeamId=0,Epoch=7});
+            var stranger=em.CreateEntity(typeof(GhostOwner),typeof(ClashPlayer));em.SetComponentData(stranger,new GhostOwner {NetworkId=7});em.SetComponentData(stranger,new ClashPlayer {ParticipantId=42,TeamId=1,Epoch=7,CanAct=true});
+            Wait(3.4f);released.Velocity=Vector3.zero;released.Resting=true;
+            var(fragmentVictim,_)=Target("Fragment source victim",released.Position+Vector3.right*2-Vector3.up*.8f);Wait(.8f);
+            Check(Data().Statuses.TryGetValue(fragmentVictim,out var bleeding) && bleeding.BleedSource.ParticipantId==31 && bleeding.BleedSource.Epoch==7,"Disconnect and reused NetworkId cannot steal delayed fragment bleeding source");
+            var areaPoint=new Vector3(released.Position.x,.05f,released.Position.z);var(statusVictim,statusRoot)=Target("Status source victim",areaPoint);
+            foreach(var kind in new[]{TacticalItemKind.Fire,TacticalItemKind.PoisonTrap,TacticalItemKind.WireTrap})
+            {var def=kind==TacticalItemKind.Fire ? TacticalItemRules.Find("fire_bomb") : kind==TacticalItemKind.PoisonTrap ? TacticalItemRules.Find("poison_trip_mine") : TacticalItemRules.Find("concertina_trip_mine");Data().Objects.Add(new TacticalServerWorld.Object {Id=(uint)(100+(int)kind),Owner=7,Source=released.Source,Definition=def,Phase=kind==TacticalItemKind.Fire ? TacticalWorldPhase.Fire : kind==TacticalItemKind.PoisonTrap ? TacticalWorldPhase.Poison : TacticalWorldPhase.Wire,Scene=scene.GetPhysicsScene(),Position=areaPoint,Until=now+20,Created=now});}
+            Tick();var propagated=Data().Statuses[statusVictim];
+            Check(propagated.FireSource.ParticipantId==31 && propagated.PoisonSource.ParticipantId==31 && propagated.BleedSource.ParticipantId==31,"Disconnected fire poison and wire retain original captured participant");
+            // Verify the real unified policy against an active match with a reused transport id.
+            var arena=new ClashArenaDefinition {Center=new ClashPoint(0,0,0),Target=new ClashPoint(0,0,0),Radius=100,Spawns=new ClashPoint[12],Exits=new[]{new ClashPoint(-70,0,0),new ClashPoint(70,0,0)}};
+            var match=new BountyClashMatch(arena,8,0);var original=match.Join("tactical-source-original","Original",0);var opponent=match.Join("tactical-source-opponent","Opponent",0);var replacement=match.Join("tactical-source-replacement","Replacement",0);
+            match.CreateTeam(original,1);match.CreateTeam(opponent,1);match.CreateTeam(replacement,1);match.Ready(original,true,0);match.Ready(opponent,true,0);match.Ready(replacement,true,0);match.Tick(11);foreach(var participant in match.Players.Values)match.MarkDeployed(participant.Id);match.Tick(12);
+            using(var query=em.CreateEntityQuery(typeof(BountyClashWorld)))em.GetComponentObject<BountyClashWorld>(query.GetSingletonEntity()).Match=match;
+            original.NetworkId=7;opponent.NetworkId=8;replacement.NetworkId=9;em.SetComponentData(player,new GhostOwner {NetworkId=7});em.SetComponentData(player,new ClashPlayer {ParticipantId=original.Id,Epoch=8,TeamId=original.TeamId,CanAct=true});
+            var captured=BountyClashDamage.Capture(world,player);match.Disconnect(original,12.1);original.NetworkId=0;replacement.NetworkId=7;em.SetComponentData(player,new GhostOwner {NetworkId=0});
+            var policyVictim=em.CreateEntity(typeof(PredictedPlayerGhost),typeof(ClashPlayer));var ph=new PredictedPlayerGhost {ClashEnabled=true,ClashLife=ClashLife.Alive,ClashCanAct=true,ClashMaxHealthFraction=1,ClashTeam=opponent.TeamId};RaidHealth.Initialize(ref ph);em.SetComponentData(policyVictim,ph);em.SetComponentData(policyVictim,new ClashPlayer {ParticipantId=opponent.Id,Epoch=8,TeamId=opponent.TeamId,CanAct=true});
+            foreach(var kind in new[]{RaidDamageKind.Fire,RaidDamageKind.Poison,RaidDamageKind.Bleed})
+                Check(BountyClashDamage.Apply(world,policyVictim,captured,BodyPart.Auto,1,tick,kind)>0 && em.GetComponentData<ClashPlayer>(policyVictim).LastAttacker==original.Id,"Delayed "+kind+" credits original disconnected participant, not reused id");
+            var stale=captured;stale.Epoch=7;float beforeStale=em.GetComponentData<PredictedPlayerGhost>(policyVictim).CurrentHealth;
+            Check(BountyClashDamage.Apply(world,policyVictim,stale,BodyPart.Auto,100,tick,RaidDamageKind.Fire)==0 && em.GetComponentData<PredictedPlayerGhost>(policyVictim).CurrentHealth==beforeStale,"Previous epoch source cannot damage new match");
+            // Alive disconnected bodies still take field damage; Downed bodies do not burn.
+            health=em.GetComponentData<PredictedPlayerGhost>(player);health.ClashEnabled=true;health.ClashLife=ClashLife.Alive;health.ClashCanAct=false;health.ClashMaxHealthFraction=1;health.ClashTeam=original.TeamId;RaidHealth.Initialize(ref health);em.SetComponentData(player,health);
+            em.SetComponentData(player,new ClashPlayer {ParticipantId=original.Id,Epoch=8,TeamId=original.TeamId,CanAct=false});
+            var disconnectedStatus=new TacticalServerWorld.Status {Fire=now+20,FireSource=captured};Data().Statuses[player]=disconnectedStatus;float disconnectedBefore=health.CurrentHealth;Tick();
+            Check(em.GetComponentData<PredictedPlayerGhost>(player).CurrentHealth<disconnectedBefore && disconnectedStatus.Fire>now,"Alive disconnected body keeps burning and taking actual damage");
+            health=em.GetComponentData<PredictedPlayerGhost>(player);health.ClashLife=ClashLife.Downed;em.SetComponentData(player,health);disconnectedBefore=health.CurrentHealth;Tick();
+            Check(em.GetComponentData<PredictedPlayerGhost>(player).CurrentHealth==disconnectedBefore && disconnectedStatus.Fire==0,"Downed body does not burn or repeat death settlement");
+            health=em.GetComponentData<PredictedPlayerGhost>(player);health.ClashEnabled=false;em.SetComponentData(player,health);
+            em.RemoveComponent<ClashPlayer>(player);em.SetComponentData(player,new GhostOwner {NetworkId=7});em.DestroyEntity(stranger);Clear();
+            // User cancelled parallel clients for memory limits. Exercise the exact production
+            // owner-acceptance model without creating any second World or network login.
+            var ownerModel=new TacticalItemClientState();
+            ownerModel.Apply(new TacticalItemOwnerRpc {RaidId=4,RequestId=10,Remaining=3,Feedback=TacticalItemFeedback.Started});
+            Check(ownerModel.Owner.Remaining==3 && ownerModel.Owner.Feedback==TacticalItemFeedback.Started,"Owner model accepts pending acknowledgement");
+            ownerModel.Apply(new TacticalItemOwnerRpc {RaidId=4,RequestId=10,Remaining=0,Feedback=TacticalItemFeedback.Completed});
+            Check(ownerModel.Owner.Remaining==0 && ownerModel.Owner.Feedback==TacticalItemFeedback.Completed,"Same-request completion clears pending");
+            Check(!ownerModel.Apply(new TacticalItemOwnerRpc {RaidId=3,RequestId=999,Remaining=2}) && ownerModel.Owner.Remaining==0,"Old raid owner snapshot cannot resurrect pending");
+            var secondModel=new TacticalItemClientState();secondModel.Apply(new TacticalItemOwnerRpc {RaidId=99,RequestId=999,Remaining=7});
+            Check(secondModel.Owner.RaidId==99 && ownerModel.Owner.RaidId==4,"Owner models remain independent without parallel client Worlds");
             Debug.Log("Tactical authority and physics: "+checks+" checks passed.");
         }
         finally {typeof(MoonRaidMap).GetProperty("Active").SetValue(null,previous);EditorSceneManager.ClosePreviewScene(scene);}

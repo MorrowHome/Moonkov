@@ -17,7 +17,7 @@ namespace Unity.MP_FPS
     {
         public sealed class Object
         {
-            public uint Id; public int Owner; public Entity OwnerPlayer;
+            public uint Id; public int Owner; public Entity OwnerPlayer;public ClashDamageSource Source;
             public TacticalItemDefinition Definition; public TacticalWorldPhase Phase;
             public PhysicsScene Scene; public Transform Shooter;
             public Vector3 Position,Velocity; public bool Resting;
@@ -34,7 +34,9 @@ namespace Unity.MP_FPS
         public sealed class Status
         {
             public double Fire,Poison,Bleed,Stamina,Antidote,Wire,Cough;
+            public TacticalSprintState Sprint;public float3 SprintPosition;public bool SprintPositionKnown;
             public int FireOwner,PoisonOwner,BleedOwner;
+            public ClashDamageSource FireSource,PoisonSource,BleedSource;
         }
         public readonly List<Object> Objects=new();
         public readonly Dictionary<Entity,Use> Uses=new();
@@ -66,7 +68,7 @@ namespace Unity.MP_FPS
                 {var inventory=GetRaidInventory(ref state,pair.Key);inventory.TacticalPending=false;inventory.LastSentVersion=-1;}
             world.Uses.Clear();world.Feedbacks.Clear();world.Objects.Clear();world.Statuses.Clear();world.Epoch++;
             foreach(var health in SystemAPI.Query<RefRW<PredictedPlayerGhost>>())
-            {health.ValueRW.TacticalWireSeconds=0;health.ValueRW.TacticalCoughSeconds=0;health.ValueRW.TacticalPoisonSeconds=0;}
+            {health.ValueRW.TacticalWireSeconds=0;health.ValueRW.TacticalCoughSeconds=0;health.ValueRW.TacticalPoisonSeconds=0;health.ValueRW.TacticalSprintStamina=100;health.ValueRW.TacticalSprintExhausted=false;}
             TacticalBroadcast(ecb,world,null,true);
         }
         private void UpdateTacticalItems(ref SystemState state,EntityCommandBuffer ecb)
@@ -120,7 +122,7 @@ namespace Unity.MP_FPS
             }
             world.Victims.Clear();
             foreach(var (health,link,entity) in SystemAPI.Query<RefRO<PredictedPlayerGhost>,GhostGameObjectLink>().WithEntityAccess())
-                if(health.ValueRO.CurrentHealth>0 && BountyClashDamage.CanAct(state.EntityManager,entity) && link.LinkedInstance)world.Victims.Add(entity);
+                if(health.ValueRO.CurrentHealth>0 && (!health.ValueRO.ClashEnabled || health.ValueRO.ClashLife==ClashLife.Alive) && link.LinkedInstance)world.Victims.Add(entity);
             world.Scratch.Clear();foreach(var pair in world.Feedbacks)if(!state.EntityManager.Exists(pair.Key))world.Scratch.Add(pair.Key);foreach(var gone in world.Scratch)world.Feedbacks.Remove(gone);
             float dt=Mathf.Clamp(SystemAPI.Time.DeltaTime,0,.25f);
             uint tick=SystemAPI.TryGetSingleton<NetworkTime>(out var time) && time.ServerTick.IsValid ? time.ServerTick.TickIndexForValidTick : 0;
@@ -156,6 +158,7 @@ namespace Unity.MP_FPS
                 {obj.NextSnapshot=now+(obj.Phase==TacticalWorldPhase.Flying ? .2 : .75);TacticalBroadcast(ecb,world,obj,false);}
             }
             TacticalTickStatuses(ref state,world,now,dt,tick);
+            TacticalTickSprint(ref state,world,now,SystemAPI.Time.DeltaTime);
             if(now>=world.NextOwnerSnapshot)
             {
                 world.NextOwnerSnapshot=now+.2;
@@ -167,6 +170,7 @@ namespace Unity.MP_FPS
                     var rpc=ecb.CreateEntity();
                     ecb.AddComponent(rpc,new TacticalItemOwnerRpc {RaidId=inv.RaidId,RequestId=inv.RequestId,Error=inv.Error,
                         Feedback=world.Feedbacks.TryGetValue(connection,out var feedback) ? feedback : TacticalItemFeedback.None,
+                        SprintStamina=status?.Sprint.Value ?? 100,SprintExhausted=status?.Sprint.Exhausted ?? false,SprintTracked=status?.Sprint.Initialized ?? false,
                         ItemId=use?.ItemId ?? "",Remaining=use==null ? 0 : (float)Math.Max(0,use.Until-now),
                         FireSeconds=TacticalRemaining(status?.Fire ?? 0,now),PoisonSeconds=TacticalRemaining(status?.Poison ?? 0,now),
                         BleedSeconds=TacticalRemaining(status?.Bleed ?? 0,now),StaminaSeconds=TacticalRemaining(status?.Stamina ?? 0,now),
@@ -277,7 +281,7 @@ namespace Unity.MP_FPS
             else
             {
                 var obj=new TacticalServerWorld.Object {Id=++world.NextId,Owner=SystemAPI.HasComponent<GhostOwner>(use.Player) ? SystemAPI.GetComponent<GhostOwner>(use.Player).NetworkId : 0,
-                    OwnerPlayer=use.Player,Definition=definition,Phase=definition.Throwable ? TacticalWorldPhase.Flying : definition.Trap ? TacticalWorldPhase.Armed : TacticalWorldPhase.Supply,
+                    OwnerPlayer=use.Player,Source=BountyClashDamage.Capture(state.World,use.Player),Definition=definition,Phase=definition.Throwable ? TacticalWorldPhase.Flying : definition.Trap ? TacticalWorldPhase.Armed : TacticalWorldPhase.Supply,
                     Scene=root.gameObject.scene.GetPhysicsScene(),Shooter=root.transform,Position=position,Velocity=velocity,Created=now,ArmAt=now+1,
                     Until=now+(definition.Throwable ? definition.Fuse : definition.Lifetime),Energy=definition.Kind==TacticalItemKind.AmmoBox ? TacticalItemRules.SupplyEnergy : 0};
                 world.Objects.Add(obj);TacticalBroadcast(ecb,world,obj,false);
@@ -357,15 +361,15 @@ namespace Unity.MP_FPS
             if(obj.Definition.Kind!=TacticalItemKind.Dynamite && obj.Definition.Kind!=TacticalItemKind.Frag)return;
             foreach(var victim in world.Victims)
             {
-                if(!SystemAPI.Exists(victim)||!BountyClashDamage.CanAct(state.EntityManager,victim))continue;
+                if(!TacticalCanBeHurt(ref state,victim))continue;
                 var link=state.EntityManager.GetComponentObject<GhostGameObjectLink>(victim).LinkedInstance;
                 if(!link || link.gameObject.scene.GetPhysicsScene()!=obj.Scene)continue;
                 var point=link.transform.position+Vector3.up*.8f;
                 float damage=TacticalItemRules.BlastDamage(obj.Definition.Kind,Vector3.Distance(obj.Position,point));
                 if(damage<=0 || !EnergyGrenadePhysics.ClearSight(obj.Scene,obj.Position,point,link.transform))continue;
-                float actual=BountyClashDamage.Apply(state.World,victim,obj.Owner,BodyPart.Auto,damage,tick,RaidDamageKind.Explosion);
+                float actual=BountyClashDamage.Apply(state.World,victim,obj.Source,BodyPart.Auto,damage,tick,RaidDamageKind.Explosion);
                 if(actual>0 && obj.Definition.Kind==TacticalItemKind.Frag)
-                {var status=TacticalStatus(world,victim);status.Bleed=now+TacticalItemRules.BleedDuration;status.BleedOwner=obj.Owner;}
+                {var status=TacticalStatus(world,victim);status.Bleed=now+TacticalItemRules.BleedDuration;status.BleedOwner=obj.Owner;status.BleedSource=obj.Source;}
             }
             if(obj.Definition.Kind==TacticalItemKind.Dynamite)
                 foreach(var other in world.Objects)
@@ -380,7 +384,7 @@ namespace Unity.MP_FPS
                 obj.Phase!=TacticalWorldPhase.Wire && obj.Phase!=TacticalWorldPhase.Choke)return;
             foreach(var victim in world.Victims)
             {
-                if(!SystemAPI.Exists(victim)||!BountyClashDamage.CanAct(state.EntityManager,victim))continue;
+                if(!TacticalCanBeHurt(ref state,victim))continue;
                 var root=state.EntityManager.GetComponentObject<GhostGameObjectLink>(victim).LinkedInstance;
                 if(!root)continue;var pos=root.transform.position;
                 if(!TacticalWithin(obj,pos,0,root.gameObject.scene.GetPhysicsScene(),root.transform))continue;
@@ -394,11 +398,11 @@ namespace Unity.MP_FPS
                 var status=TacticalStatus(world,victim);
                 if(obj.Phase==TacticalWorldPhase.Choke){status.Fire=status.Poison=0;status.Cough=now+1;}
                 else if(obj.Phase==TacticalWorldPhase.Fire && !TacticalChoked(world,pos,obj.Scene,now))
-                {status.Fire=now+TacticalItemRules.BurningDuration;status.FireOwner=obj.Owner;}
+                {status.Fire=now+TacticalItemRules.BurningDuration;status.FireOwner=obj.Owner;status.FireSource=obj.Source;}
                 else if(obj.Phase==TacticalWorldPhase.Poison && status.Antidote<=now && !TacticalChoked(world,pos,obj.Scene,now))
-                {status.Poison=now+2;status.PoisonOwner=obj.Owner;}
+                {status.Poison=now+2;status.PoisonOwner=obj.Owner;status.PoisonSource=obj.Source;}
                 else if(obj.Phase==TacticalWorldPhase.Wire)
-                {status.Wire=now+.5;status.Bleed=now+TacticalItemRules.BleedDuration;status.BleedOwner=obj.Owner;}
+                {status.Wire=now+.5;status.Bleed=now+TacticalItemRules.BleedDuration;status.BleedOwner=obj.Owner;status.BleedSource=obj.Source;}
             }
         }
         private void TacticalTickStatuses(ref SystemState state,TacticalServerWorld world,double now,float dt,uint tick)
@@ -409,17 +413,16 @@ namespace Unity.MP_FPS
                 var victim=pair.Key;var status=pair.Value;
                 if(!SystemAPI.Exists(victim)||!SystemAPI.HasComponent<PredictedPlayerGhost>(victim)) {world.Scratch.Add(victim);continue;}
                 var health=SystemAPI.GetComponent<PredictedPlayerGhost>(victim);
-                bool canAct=health.CurrentHealth>0 && BountyClashDamage.CanAct(state.EntityManager,victim);
-                if(!canAct){status.Fire=status.Poison=status.Bleed=status.Wire=status.Cough=0;}
-                if(canAct && status.Stamina>now){health.Energy=Mathf.Max(80,health.Energy);health.Hydration=Mathf.Max(80,health.Hydration);}
+                bool canHurt=health.CurrentHealth>0 && (!health.ClashEnabled || health.ClashLife==ClashLife.Alive);
+                if(!canHurt){status.Fire=status.Poison=status.Bleed=status.Wire=status.Cough=0;}
                 health.TacticalWireSeconds=TacticalRemaining(status.Wire,now);health.TacticalCoughSeconds=TacticalRemaining(status.Cough,now);
                 health.TacticalPoisonSeconds=TacticalRemaining(status.Poison,now);SystemAPI.SetComponent(victim,health);
-                if(!canAct)continue;
+                if(!canHurt)continue;
                 bool treating=false;
                 foreach(var pending in world.Uses.Values)if(pending.Player==victim && pending.Action==TacticalItemAction.Extinguish){treating=true;break;}
-                if(status.Fire>now)BountyClashDamage.Apply(state.World,victim,status.FireOwner,BodyPart.Auto,8*dt,tick,RaidDamageKind.Fire);
-                if(status.Poison>now && status.Antidote<=now)BountyClashDamage.Apply(state.World,victim,status.PoisonOwner,BodyPart.Auto,6*dt,tick,RaidDamageKind.Poison);
-                if(status.Bleed>now)BountyClashDamage.Apply(state.World,victim,status.BleedOwner,BodyPart.Auto,4*dt,tick,RaidDamageKind.Bleed);
+                if(status.Fire>now)BountyClashDamage.Apply(state.World,victim,status.FireSource,BodyPart.Auto,8*dt,tick,RaidDamageKind.Fire);
+                if(status.Poison>now && status.Antidote<=now)BountyClashDamage.Apply(state.World,victim,status.PoisonSource,BodyPart.Auto,6*dt,tick,RaidDamageKind.Poison);
+                if(status.Bleed>now)BountyClashDamage.Apply(state.World,victim,status.BleedSource,BodyPart.Auto,4*dt,tick,RaidDamageKind.Bleed);
                 if(treating && status.Poison<=now)
                 {
                     // Damage still happens. Accept only this operation's known status damage as
@@ -430,9 +433,37 @@ namespace Unity.MP_FPS
                         if(pending.Player==victim && pending.Action==TacticalItemAction.Extinguish)
                         {pending.Hit=after.LastHitTick;pending.Health=after.CurrentHealth;pending.LastDamage=after.LastDamageAmount;pending.LastPart=after.LastHitPart;}
                 }
-                if(Math.Max(Math.Max(Math.Max(status.Fire,status.Poison),Math.Max(status.Bleed,status.Stamina)),Math.Max(status.Antidote,Math.Max(status.Wire,status.Cough)))<=now)world.Scratch.Add(victim);
+                if(!status.Sprint.Initialized && Math.Max(Math.Max(Math.Max(status.Fire,status.Poison),Math.Max(status.Bleed,status.Stamina)),Math.Max(status.Antidote,Math.Max(status.Wire,status.Cough)))<=now)world.Scratch.Add(victim);
             }
             foreach(var entity in world.Scratch)world.Statuses.Remove(entity);
+        }
+        private bool TacticalCanBeHurt(ref SystemState state,Entity victim)
+        {
+            if(!SystemAPI.Exists(victim)||!SystemAPI.HasComponent<PredictedPlayerGhost>(victim))return false;
+            var health=SystemAPI.GetComponent<PredictedPlayerGhost>(victim);
+            // An alive disconnected body cannot act but remains vulnerable. Downed bodies
+            // keep the first-version no-burning/no-execution policy.
+            return health.CurrentHealth>0 && (!health.ClashEnabled || health.ClashLife==ClashLife.Alive);
+        }
+        private void TacticalTickSprint(ref SystemState state,TacticalServerWorld world,double now,float dt)
+        {
+            if(!MoonRaidMap.Active)return;
+            foreach(var (session,joined) in SystemAPI.Query<RefRO<RaidSession>,RefRO<JoinedClient>>())
+            {
+                var player=joined.ValueRO.PlayerEntity;
+                if(!SystemAPI.Exists(player) || !SystemAPI.HasComponent<PredictedPlayerGhost>(player))continue;
+                var health=SystemAPI.GetComponent<PredictedPlayerGhost>(player);var status=TacticalStatus(world,player);
+                bool allowed=session.ValueRO.Phase==RaidPhase.Active && health.CurrentHealth>0 && (!health.ClashEnabled || health.ClashLife==ClashLife.Alive);
+                bool canRun=allowed && BountyClashDamage.CanAct(state.EntityManager,player);
+                float3 position=SystemAPI.HasComponent<LocalTransform>(player) ? SystemAPI.GetComponent<LocalTransform>(player).Position : health.ControllerState.CurrentPosition;
+                float3 travel=position-status.SprintPosition;float threshold=Mathf.Max(.005f,dt*.15f);
+                bool moved=status.SprintPositionKnown && travel.x*travel.x+travel.z*travel.z>threshold*threshold;
+                bool sprinting=canRun && health.ControllerState.Sprinting && health.ControllerState.MovementSpeed>.1f && moved;
+                status.SprintPosition=position;status.SprintPositionKnown=allowed;
+                TacticalSprintRules.Tick(ref status.Sprint,dt,sprinting,status.Stamina>now,allowed);
+                health.TacticalSprintStamina=status.Sprint.Value;health.TacticalSprintExhausted=status.Sprint.Exhausted;
+                SystemAPI.SetComponent(player,health);
+            }
         }
         private static void TacticalBroadcast(EntityCommandBuffer ecb,TacticalServerWorld world,TacticalServerWorld.Object obj,bool removed)
         {

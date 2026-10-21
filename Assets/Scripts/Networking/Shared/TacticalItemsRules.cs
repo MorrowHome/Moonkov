@@ -25,7 +25,7 @@ namespace Unity.MP_FPS
     {
         public const int RulesVersion=1, MaxWorldObjects=64, MaxOwnerTraps=8;
         public const float TrapVerticalTolerance=.65f, InteractionRange=2.2f;
-        public const float StaminaDuration=600, AntidoteDuration=600, BleedDuration=8, BurningDuration=4;
+        public const float StaminaDuration=420, AntidoteDuration=600, BleedDuration=8, BurningDuration=4;
         public const int SupplyEnergy=400, EnergyPerUse=100;
         public static readonly TacticalItemDefinition[] Definitions = {
             new("vitality_shot",TacticalItemKind.Vitality,3), new("stamina_shot",TacticalItemKind.Stamina,3),

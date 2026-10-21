@@ -9,9 +9,6 @@ namespace Unity.MP_FPS
     {
         private TacticalItemsFeedback m_Feedback;
         private bool m_OwnsPresentation;
-#if UNITY_EDITOR
-        public bool EditorSuppressPresentation;
-#endif
         protected override void OnCreate() => EntityManager.CreateSingleton<TacticalItemClientState>();
         private bool OwnsPresentation()
         {
@@ -24,18 +21,13 @@ namespace Unity.MP_FPS
         protected override void OnUpdate()
         {
             m_OwnsPresentation=OwnsPresentation();
-#if UNITY_EDITOR
-            if(m_OwnsPresentation && !EditorSuppressPresentation && !m_Feedback)m_Feedback=TacticalItemsFeedback.GetOrCreate();
-#else
             if(m_OwnsPresentation && !m_Feedback)m_Feedback=TacticalItemsFeedback.GetOrCreate();
-#endif
             var ecb=new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
             foreach(var (rpc,received,entity) in SystemAPI.Query<RefRO<TacticalItemOwnerRpc>,RefRO<ReceiveRpcCommandRequest>>().WithEntityAccess())
             {
                 var owner=rpc.ValueRO;
                 var current=SystemAPI.ManagedAPI.GetSingleton<TacticalItemClientState>();
-                if(owner.RaidId>=current.Owner.RaidId && (owner.RaidId!=current.Owner.RaidId || owner.RequestId>=current.Owner.RequestId))
-                {current.Owner=owner;if(m_OwnsPresentation)TacticalItemsFeedback.SetOwner(owner);}
+                if(current.Apply(owner) && m_OwnsPresentation)TacticalItemsFeedback.SetOwner(owner);
                 ecb.DestroyEntity(entity);
             }
             foreach(var (rpc,received,entity) in SystemAPI.Query<RefRO<TacticalWorldStateRpc>,RefRO<ReceiveRpcCommandRequest>>().WithEntityAccess())

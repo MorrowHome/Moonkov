@@ -2,6 +2,8 @@
 
 2026-10-21，用户明确选择 Bounty Clash，要求完整复刻其玩法流程。协调：副程序。本文件描述目标，不代表以下项目已经实现或验收。
 
+执行证据与交付状态以[BountyClash验收记录](BountyClash-Validation-20261021.md)为准。用户后续明确因Mac内存不足取消联机验收；此后不再启动多客户端、MPPM或额外Editor，本轮改为单Editor顺序功能、输入与画面检查。以下原始联机验收目标不再作为本轮门禁。
+
 ## 参考与边界
 
 - [Crytek 模式发布介绍](https://www.huntshowdown.com/news/bounty-clash-and-harvest-of-ghosts-are-live-now)：单据点、15分钟、开局已死亡的目标、驱散后唯一赏金。

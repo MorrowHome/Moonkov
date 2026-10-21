@@ -58,6 +58,8 @@ public struct PredictedPlayerGhost : IComponentData
     [GhostField] public int ClashTeam;
     [GhostField] public float ClashMaxHealthFraction;
     [GhostField] public float TacticalWireSeconds, TacticalCoughSeconds, TacticalPoisonSeconds;
+    [GhostField] public float TacticalSprintStamina;
+    [GhostField] public bool TacticalSprintExhausted;
     // Match-server authority. CurrentHealth/MaxHealth are derived compatibility
     // values for death, AI, animation and the compact HUD; never heal them directly.
     [GhostField] public bool BodyHealthInitialized;

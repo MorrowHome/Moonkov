@@ -43,4 +43,16 @@ for(int i=0;i<512;i++)
     foreach(var item in medical.Items.Concat(equipment.Items))if(TacticalItemRules.Find(item.Code)!=null)seen.Add(item.Code);
 }
 foreach(var def in TacticalItemRules.Definitions)Check(seen.Contains(def.Code),"natural cache obtains "+def.Code);
+var stamina=new TacticalSprintState();TacticalSprintRules.Tick(ref stamina,.1f,false,false);Check(stamina.Value==100 && !stamina.Exhausted,"initialized full");
+TacticalSprintRules.Tick(ref stamina,50,true,false);Check(stamina.Value==0 && stamina.Exhausted,"ordinary sprint exhausts after 50s");
+TacticalSprintRules.Tick(ref stamina,1,false,false);Check(stamina.Value==0,"no early recovery");TacticalSprintRules.Tick(ref stamina,.5f,false,false);Check(stamina.Value==0,"rest delay exact boundary");
+TacticalSprintRules.Tick(ref stamina,1.2f,false,false);Check(stamina.Value==24 && stamina.Exhausted,"hysteresis holds exhaustion");TacticalSprintRules.Tick(ref stamina,.05f,false,false);Check(stamina.Value>=25 && !stamina.Exhausted,"rest unlocks at 25");
+TacticalSprintRules.Tick(ref stamina,100,false,false);Check(stamina.Value==100,"recovery caps");
+TacticalSprintRules.Tick(ref stamina,420,true,true);Check(stamina.Value==100 && !stamina.Exhausted,"shot prevents fatigue throughout active duration");
+TacticalSprintRules.Tick(ref stamina,50,true,false);Check(stamina.Value==0 && stamina.Exhausted,"expired shot permits fatigue again");
+TacticalSprintRules.Tick(ref stamina,.1f,true,false,false);Check(stamina.Value==100 && !stamina.Exhausted,"downed/dead resets transient fatigue");
+var coarse=new TacticalSprintState();var fine=new TacticalSprintState();TacticalSprintRules.Tick(ref coarse,50,true,false);for(int i=0;i<500;i++)TacticalSprintRules.Tick(ref fine,.1f,true,false);Check(Math.Abs(coarse.Value-fine.Value)<.001f && coarse.Exhausted==fine.Exhausted,"frame independent drain");
+TacticalSprintRules.Tick(ref coarse,3,false,false);for(int i=0;i<30;i++)TacticalSprintRules.Tick(ref fine,.1f,false,false);Check(Math.Abs(coarse.Value-fine.Value)<.001f,"frame independent rest delay and recovery");
+float before=fine.Value;TacticalSprintRules.Tick(ref fine,float.NaN,true,false);Check(fine.Value==before,"nonfinite delta rejected");
+
 Console.WriteLine($"Tactical rules: {checks} checks passed.");

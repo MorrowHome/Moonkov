@@ -19,6 +19,8 @@ namespace Unity.MP_FPS
         public uint RequestId;
         public InventoryError Error;
         public TacticalItemFeedback Feedback;
+        public float SprintStamina;
+        public bool SprintExhausted,SprintTracked;
         public FixedString64Bytes ItemId;
         public float Remaining,FireSeconds,PoisonSeconds,BleedSeconds,StaminaSeconds,AntidoteSeconds,WireSeconds,CoughSeconds;
     }
@@ -35,5 +37,10 @@ namespace Unity.MP_FPS
     public sealed class TacticalItemClientState : IComponentData
     {
         public TacticalItemOwnerRpc Owner;
+        public bool Apply(in TacticalItemOwnerRpc snapshot)
+        {
+            if(snapshot.RaidId<Owner.RaidId || snapshot.RaidId==Owner.RaidId && snapshot.RequestId<Owner.RequestId)return false;
+            Owner=snapshot;return true;
+        }
     }
 }
