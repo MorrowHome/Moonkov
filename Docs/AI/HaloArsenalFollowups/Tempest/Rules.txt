@@ -1,0 +1,26 @@
+cicada: purchased at 30 dust; primary/secondary equip, exact magazine persistence, 2-round partial charge, insufficient energy and both production sprite bindings passed.
+trine: purchased at 42 dust; primary/secondary equip, exact magazine persistence, 2-round partial charge, insufficient energy and both production sprite bindings passed.
+aegis: purchased at 64 dust; primary/secondary equip, exact magazine persistence, 2-round partial charge, insufficient energy and both production sprite bindings passed.
+vesper: purchased at 58 dust; primary/secondary equip, exact magazine persistence, 2-round partial charge, insufficient energy and both production sprite bindings passed.
+thorn: purchased at 50 dust; primary/secondary equip, exact magazine persistence, 2-round partial charge, insufficient energy and both production sprite bindings passed.
+sundown: purchased at 72 dust; primary/secondary equip, exact magazine persistence, 2-round partial charge, insufficient energy and both production sprite bindings passed.
+rondo: purchased at 50 dust; primary/secondary equip, exact magazine persistence, 2-round partial charge, insufficient energy and both production sprite bindings passed.
+tempest: purchased at 62 dust; primary/secondary equip, exact magazine persistence, 2-round partial charge, insufficient energy and both production sprite bindings passed.
+trine: 3 actual shots per press; held trigger, 1/2 remaining rounds, sequences, interval, release/repress, short input buffer, equip gate, reload/death/switch/aim cancellation and deterministic restored-state prediction passed at 60 Hz.
+rondo: 2 actual shots per press; held trigger, 1/2 remaining rounds, sequences, interval, release/repress, short input buffer, equip gate, reload/death/switch/aim cancellation and deterministic restored-state prediction passed at 60 Hz.
+Shared tick-based spread: 40 ticks per weapon, deterministic rays within configured cone. Thorn = 5 directions, 1 magazine round, 10 energy per replacement round. Sundown at 1 s = 22 m forward, 0.81 m drop.
+Tempest: held fire produces 8 actual shared-rule shots in 2 seconds at 60 Hz, consumes remaining 6 then stops at zero; 1-second arc = 34 m forward / 1.62 m drop.
+Actual ECS health + isolated PhysicsScene AOE: unowned alien damaged once despite two colliders, initialized PMC takes exactly 96 total damage, shooter immune, other PMC is damageable, wall occlusion and cross-scene isolation respected, lethal flags and dead victim filtering passed. Actual swept-radius collision hits thin wall.
+cicada: real Projectile.Advance(server=true) swept collision -> Impact -> ECS damage = 8 from 1 projectile(s). Fixture supplies spawn data, not a network transport.
+trine: real Projectile.Advance(server=true) swept collision -> Impact -> ECS damage = 17 from 1 projectile(s). Fixture supplies spawn data, not a network transport.
+aegis: real Projectile.Advance(server=true) swept collision -> Impact -> ECS damage = 18 from 1 projectile(s). Fixture supplies spawn data, not a network transport.
+vesper: real Projectile.Advance(server=true) swept collision -> Impact -> ECS damage = 42 from 1 projectile(s). Fixture supplies spawn data, not a network transport.
+thorn: real Projectile.Advance(server=true) swept collision -> Impact -> ECS damage = 45 from 5 projectile(s). Fixture supplies spawn data, not a network transport.
+sundown: real Projectile.Advance(server=true) swept collision -> Impact -> ECS damage = 96 from 1 projectile(s). Fixture supplies spawn data, not a network transport.
+sundown: a separate victim outside the projectile ray received 96 actual splash damage inside radius 3.5 m.
+rondo: real Projectile.Advance(server=true) swept collision -> Impact -> ECS damage = 26 from 1 projectile(s). Fixture supplies spawn data, not a network transport.
+tempest: real Projectile.Advance(server=true) swept collision -> Impact -> ECS damage = 26 from 1 projectile(s). Fixture supplies spawn data, not a network transport.
+tempest: a separate victim outside the projectile ray received 26 actual splash damage inside radius 1.35 m.
+trine: standalone player held trigger fires exactly 3; slot switch preserves ammo and finite-battery reload restores capacity. Cosmetic character, not authoritative combat.
+rondo: standalone player held trigger fires exactly 2; slot switch preserves ammo and finite-battery reload restores capacity. Cosmetic character, not authoritative combat.
+Legacy halo module rules passed. No live Host/Client or standalone build is implied by these checks.

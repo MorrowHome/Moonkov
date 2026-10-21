@@ -1,0 +1,7 @@
+Final filled production icons. 640 x 640 RGBA; alpha coverage measured in the visible bounding rectangle; no rendered lighting or bloom.
+Cicada: 640x640 RGBA, 32.6% filled coverage; center alpha = 0; independent SVG/Shell/Sigil/Node/icon.
+Trine: 640x640 RGBA, 29.1% filled coverage; center alpha = 0; independent SVG/Shell/Sigil/Node/icon.
+Aegis: 640x640 RGBA, 36.9% filled coverage; center alpha = 0; independent SVG/Shell/Sigil/Node/icon.
+Vesper: 640x640 RGBA, 44.7% filled coverage; center alpha = 0; independent SVG/Shell/Sigil/Node/icon.
+Thorn: 640x640 RGBA, 26.9% filled coverage; center alpha = 0; independent SVG/Shell/Sigil/Node/icon.
+Sundown: 640x640 RGBA, 40.3% filled coverage; center alpha = 0; independent SVG/Shell/Sigil/Node/icon.

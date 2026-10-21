@@ -631,11 +631,24 @@ MonoBehaviour:
   zoomSmoothTime: 0.12
   firstPersonFieldOfView: 70
   firstPersonNearClip: 0.03
+  thirdPersonOrbitHeight: 1.25
+  cameraCollisionRecoverySeconds: 0.35
+  thirdPersonCameraRadius: 0.2
+  cameraObstacleLayers:
+    serializedVersion: 2
+    m_Bits: 4294967291
+  thirdPersonBackgroundBlur: 1
+  backgroundFocusPadding: 0.35
+  backgroundBlurFadeDistance: 5
+  backgroundBlurRadius: 1
   aimMagnification: 1.75
+  weaponZoomTransitionSeconds: 0.16
+  aimedLookSensitivity: 1
   fallbackEyeWorldOffset: {x: 0, y: 0.08, z: 0.05}
   lookTargetDistance: 12
   firstPersonEyeForward: 0.015
   lookDownBodyClearance: 0.075
+  gestureFieldOfView: 65
 --- !u!1 &3581373097316671528
 GameObject:
   m_ObjectHideFlags: 0
@@ -2449,6 +2462,15 @@ Transform:
   - {fileID: 787886902332232872}
   - {fileID: 6114679232393603438}
   - {fileID: 742348777643163519}
+  - {fileID: 1223284617273933281}
+  - {fileID: 8431144232615440136}
+  - {fileID: 5743022514425299920}
+  - {fileID: 207012613737006104}
+  - {fileID: 7009595480777082428}
+  - {fileID: 2555552121892540842}
+  - {fileID: 2334055842363331029}
+  - {fileID: 1797999947006078274}
+  - {fileID: 1168621856059441727}
   m_Father: {fileID: 2754690713623540616}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7845691824386914750
@@ -3270,6 +3292,160 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
+--- !u!1001 &168310336297545523
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 3666665834518509864}
+    m_Modifications:
+    - target: {fileID: 2387699753697427097, guid: 4cf9203f905704c42a05fc677afcb459, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2387699753697427097, guid: 4cf9203f905704c42a05fc677afcb459, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2387699753697427097, guid: 4cf9203f905704c42a05fc677afcb459, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2387699753697427097, guid: 4cf9203f905704c42a05fc677afcb459, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2387699753697427097, guid: 4cf9203f905704c42a05fc677afcb459, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2387699753697427097, guid: 4cf9203f905704c42a05fc677afcb459, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2387699753697427097, guid: 4cf9203f905704c42a05fc677afcb459, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2387699753697427097, guid: 4cf9203f905704c42a05fc677afcb459, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2387699753697427097, guid: 4cf9203f905704c42a05fc677afcb459, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2387699753697427097, guid: 4cf9203f905704c42a05fc677afcb459, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8348505759218116771, guid: 4cf9203f905704c42a05fc677afcb459, type: 3}
+      propertyPath: m_Name
+      value: SundownHalo
+      objectReference: {fileID: 0}
+    - target: {fileID: 8348505759218116771, guid: 4cf9203f905704c42a05fc677afcb459, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 4cf9203f905704c42a05fc677afcb459, type: 3}
+--- !u!4 &2555552121892540842 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2387699753697427097, guid: 4cf9203f905704c42a05fc677afcb459, type: 3}
+  m_PrefabInstance: {fileID: 168310336297545523}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &3314965984186391054 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3194436026460566845, guid: 4cf9203f905704c42a05fc677afcb459, type: 3}
+  m_PrefabInstance: {fileID: 168310336297545523}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25cbf88d8e1e64549b620a5ff3e613e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: DollSinger.Runtime::Unity.MP_FPS.DollSinger.ArsenalHaloVisual
+--- !u!1001 &865780048298289242
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 3666665834518509864}
+    m_Modifications:
+    - target: {fileID: 2625656790501400490, guid: ee83eea98ccb94814b77251bf46905ed, type: 3}
+      propertyPath: m_Name
+      value: ThornHalo
+      objectReference: {fileID: 0}
+    - target: {fileID: 2625656790501400490, guid: ee83eea98ccb94814b77251bf46905ed, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7873641998389243494, guid: ee83eea98ccb94814b77251bf46905ed, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7873641998389243494, guid: ee83eea98ccb94814b77251bf46905ed, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7873641998389243494, guid: ee83eea98ccb94814b77251bf46905ed, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7873641998389243494, guid: ee83eea98ccb94814b77251bf46905ed, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7873641998389243494, guid: ee83eea98ccb94814b77251bf46905ed, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7873641998389243494, guid: ee83eea98ccb94814b77251bf46905ed, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7873641998389243494, guid: ee83eea98ccb94814b77251bf46905ed, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7873641998389243494, guid: ee83eea98ccb94814b77251bf46905ed, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7873641998389243494, guid: ee83eea98ccb94814b77251bf46905ed, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7873641998389243494, guid: ee83eea98ccb94814b77251bf46905ed, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: ee83eea98ccb94814b77251bf46905ed, type: 3}
+--- !u!114 &5433556861035183779 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5144238257605957369, guid: ee83eea98ccb94814b77251bf46905ed, type: 3}
+  m_PrefabInstance: {fileID: 865780048298289242}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25cbf88d8e1e64549b620a5ff3e613e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: DollSinger.Runtime::Unity.MP_FPS.DollSinger.ArsenalHaloVisual
+--- !u!4 &7009595480777082428 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7873641998389243494, guid: ee83eea98ccb94814b77251bf46905ed, type: 3}
+  m_PrefabInstance: {fileID: 865780048298289242}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2232500603777849402
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3498,6 +3674,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 96a361d5f4dfed043a6d2498bb6df4bd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1202634575877374931}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 96a361d5f4dfed043a6d2498bb6df4bd, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5433573547946992388}
   m_SourcePrefab: {fileID: 100100000, guid: 96a361d5f4dfed043a6d2498bb6df4bd, type: 3}
 --- !u!4 &28234025865213006 stripped
 Transform:
@@ -3728,6 +3907,7 @@ MonoBehaviour:
   maxTipSpeed: 8
   rootInertia: 0.7
   stiffnessSpeedGain: 0.25
+  simulationDistance: 80
   airLagSpeed: 0.45
   hairAirFlutter: 5
   skirtAirFlutter: 3.5
@@ -3801,6 +3981,16 @@ MonoBehaviour:
   rifleVisual: {fileID: 496337019002686891}
   sniperVisual: {fileID: 8780180261574674823}
   shotgunVisual: {fileID: 2048020543978032076}
+  arsenalVisuals:
+  - {fileID: 347810033100693598}
+  - {fileID: 3989126116375843629}
+  - {fileID: 3403039306287695057}
+  - {fileID: 503485166598032652}
+  - {fileID: 5433556861035183779}
+  - {fileID: 3314965984186391054}
+  - {fileID: 6384866014640174692}
+  - {fileID: 7420462296619964149}
+  - {fileID: 2596016758911324512}
   haloStrokes:
   - {fileID: 4103868541034794848}
   - {fileID: 2002041894467822681}
@@ -3842,6 +4032,16 @@ MonoBehaviour:
   firstPersonThumbClearance: 0.035
   firstPersonThumbDepth: 0.02
   firstPersonSupportOffset: {x: -0.12, y: -0.08, z: -0.04}
+  firstPersonHaloViewportFraction: 0.54
+  revolverSupportOffset: {x: -0.19, y: -0.18, z: -0.1}
+  shotgunSupportOffset: {x: -0.09, y: 0.015, z: -0.025}
+  sniperSupportOffset: {x: -0.09, y: -0.085, z: -0.055}
+  thumbScreenGap: 0.065
+  gestureThumbClearance: 0.022
+  revolverFingerSlope: {x: 0.18, y: -0.12}
+  shotgunFingerSlope: {x: -0.12, y: -0.32}
+  sniperFingerSlope: {x: -0.1, y: -0.06}
+  gestureTransitionSeconds: 0.16
   boltLightIntensity: 12
   boltLightRange: 10
   idleHaloColor: {r: 1, g: 0.72, b: 0.9, a: 0.9}
@@ -3951,6 +4151,19 @@ MonoBehaviour:
   m_LeanMoveSpeedScale: 0.72
   input: {fileID: 5454841194306245068}
   view: {fileID: 4506668622313829390}
+--- !u!114 &5433573547946992388
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3274521787499112754}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d49e10a04251247fa8b8abd1863e5629, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Unity.MP_FPS.LocalHaloArsenalDriver
+  registry: {fileID: 11400000, guid: 137b66a812624a745ae73bf6e6506c77, type: 2}
 --- !u!4 &3631067928799000553 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -7794538063945473142, guid: 96a361d5f4dfed043a6d2498bb6df4bd, type: 3}
@@ -4176,12 +4389,243 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 384f93f8aea888444987e1ff008fefc3, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: DollSinger.Runtime::Unity.MP_FPS.DollSinger.RifleHaloVisual
 --- !u!4 &6114679232393603438 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8630533122932511836, guid: bc7ce456193eb3249b4ab9b5b52ca333, type: 3}
   m_PrefabInstance: {fileID: 2530570522167999794}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &3204945825006915344
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 3666665834518509864}
+    m_Modifications:
+    - target: {fileID: 6447800330679279640, guid: bad895be5dcaa47f5b7917939e64cde4, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6447800330679279640, guid: bad895be5dcaa47f5b7917939e64cde4, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6447800330679279640, guid: bad895be5dcaa47f5b7917939e64cde4, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6447800330679279640, guid: bad895be5dcaa47f5b7917939e64cde4, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6447800330679279640, guid: bad895be5dcaa47f5b7917939e64cde4, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6447800330679279640, guid: bad895be5dcaa47f5b7917939e64cde4, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6447800330679279640, guid: bad895be5dcaa47f5b7917939e64cde4, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6447800330679279640, guid: bad895be5dcaa47f5b7917939e64cde4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6447800330679279640, guid: bad895be5dcaa47f5b7917939e64cde4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6447800330679279640, guid: bad895be5dcaa47f5b7917939e64cde4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7618645134426421184, guid: bad895be5dcaa47f5b7917939e64cde4, type: 3}
+      propertyPath: m_Name
+      value: TrineHalo
+      objectReference: {fileID: 0}
+    - target: {fileID: 7618645134426421184, guid: bad895be5dcaa47f5b7917939e64cde4, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: bad895be5dcaa47f5b7917939e64cde4, type: 3}
+--- !u!114 &3989126116375843629 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1956383227190467645, guid: bad895be5dcaa47f5b7917939e64cde4, type: 3}
+  m_PrefabInstance: {fileID: 3204945825006915344}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25cbf88d8e1e64549b620a5ff3e613e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: DollSinger.Runtime::Unity.MP_FPS.DollSinger.ArsenalHaloVisual
+--- !u!4 &8431144232615440136 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6447800330679279640, guid: bad895be5dcaa47f5b7917939e64cde4, type: 3}
+  m_PrefabInstance: {fileID: 3204945825006915344}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &4063171919798511253
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 3666665834518509864}
+    m_Modifications:
+    - target: {fileID: 107525590975178207, guid: 6d592919af51e43eeb88324bffcf539b, type: 3}
+      propertyPath: m_Name
+      value: TempestHalo
+      objectReference: {fileID: 0}
+    - target: {fileID: 107525590975178207, guid: 6d592919af51e43eeb88324bffcf539b, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2346531784270367703, guid: 6d592919af51e43eeb88324bffcf539b, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2346531784270367703, guid: 6d592919af51e43eeb88324bffcf539b, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2346531784270367703, guid: 6d592919af51e43eeb88324bffcf539b, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2346531784270367703, guid: 6d592919af51e43eeb88324bffcf539b, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2346531784270367703, guid: 6d592919af51e43eeb88324bffcf539b, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2346531784270367703, guid: 6d592919af51e43eeb88324bffcf539b, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2346531784270367703, guid: 6d592919af51e43eeb88324bffcf539b, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2346531784270367703, guid: 6d592919af51e43eeb88324bffcf539b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2346531784270367703, guid: 6d592919af51e43eeb88324bffcf539b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2346531784270367703, guid: 6d592919af51e43eeb88324bffcf539b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 6d592919af51e43eeb88324bffcf539b, type: 3}
+--- !u!4 &1797999947006078274 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2346531784270367703, guid: 6d592919af51e43eeb88324bffcf539b, type: 3}
+  m_PrefabInstance: {fileID: 4063171919798511253}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7420462296619964149 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6816636130874159200, guid: 6d592919af51e43eeb88324bffcf539b, type: 3}
+  m_PrefabInstance: {fileID: 4063171919798511253}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25cbf88d8e1e64549b620a5ff3e613e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: DollSinger.Runtime::Unity.MP_FPS.DollSinger.ArsenalHaloVisual
+--- !u!1001 &4375178393955999782
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 3666665834518509864}
+    m_Modifications:
+    - target: {fileID: 3722135842123019857, guid: 688f11f9fda8442c98335fdbded313a0, type: 3}
+      propertyPath: m_Name
+      value: AegisHalo
+      objectReference: {fileID: 0}
+    - target: {fileID: 3722135842123019857, guid: 688f11f9fda8442c98335fdbded313a0, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8287908768508945398, guid: 688f11f9fda8442c98335fdbded313a0, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8287908768508945398, guid: 688f11f9fda8442c98335fdbded313a0, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8287908768508945398, guid: 688f11f9fda8442c98335fdbded313a0, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8287908768508945398, guid: 688f11f9fda8442c98335fdbded313a0, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8287908768508945398, guid: 688f11f9fda8442c98335fdbded313a0, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8287908768508945398, guid: 688f11f9fda8442c98335fdbded313a0, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8287908768508945398, guid: 688f11f9fda8442c98335fdbded313a0, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8287908768508945398, guid: 688f11f9fda8442c98335fdbded313a0, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8287908768508945398, guid: 688f11f9fda8442c98335fdbded313a0, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8287908768508945398, guid: 688f11f9fda8442c98335fdbded313a0, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 688f11f9fda8442c98335fdbded313a0, type: 3}
+--- !u!114 &3403039306287695057 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1409001789772948727, guid: 688f11f9fda8442c98335fdbded313a0, type: 3}
+  m_PrefabInstance: {fileID: 4375178393955999782}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25cbf88d8e1e64549b620a5ff3e613e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: DollSinger.Runtime::Unity.MP_FPS.DollSinger.ArsenalHaloVisual
+--- !u!4 &5743022514425299920 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8287908768508945398, guid: 688f11f9fda8442c98335fdbded313a0, type: 3}
+  m_PrefabInstance: {fileID: 4375178393955999782}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &4382827054243761783
 PrefabInstance:
@@ -4258,8 +4702,316 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 330d9ea0ffbeb924a96cbb63fdbaf0b9, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: DollSinger.Runtime::Unity.MP_FPS.DollSinger.SniperHaloVisual
+--- !u!1001 &5067088200036229845
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 3666665834518509864}
+    m_Modifications:
+    - target: {fileID: 6225714928457998570, guid: a36f41ae8a9d64289870299b61b16cb7, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6225714928457998570, guid: a36f41ae8a9d64289870299b61b16cb7, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6225714928457998570, guid: a36f41ae8a9d64289870299b61b16cb7, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6225714928457998570, guid: a36f41ae8a9d64289870299b61b16cb7, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6225714928457998570, guid: a36f41ae8a9d64289870299b61b16cb7, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6225714928457998570, guid: a36f41ae8a9d64289870299b61b16cb7, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6225714928457998570, guid: a36f41ae8a9d64289870299b61b16cb7, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6225714928457998570, guid: a36f41ae8a9d64289870299b61b16cb7, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6225714928457998570, guid: a36f41ae8a9d64289870299b61b16cb7, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6225714928457998570, guid: a36f41ae8a9d64289870299b61b16cb7, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7309067411610531972, guid: a36f41ae8a9d64289870299b61b16cb7, type: 3}
+      propertyPath: m_Name
+      value: NocturneHalo
+      objectReference: {fileID: 0}
+    - target: {fileID: 7309067411610531972, guid: a36f41ae8a9d64289870299b61b16cb7, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: a36f41ae8a9d64289870299b61b16cb7, type: 3}
+--- !u!4 &1168621856059441727 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6225714928457998570, guid: a36f41ae8a9d64289870299b61b16cb7, type: 3}
+  m_PrefabInstance: {fileID: 5067088200036229845}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2596016758911324512 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7086148636117398453, guid: a36f41ae8a9d64289870299b61b16cb7, type: 3}
+  m_PrefabInstance: {fileID: 5067088200036229845}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25cbf88d8e1e64549b620a5ff3e613e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: DollSinger.Runtime::Unity.MP_FPS.DollSinger.ArsenalHaloVisual
+--- !u!1001 &7023136539060107602
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 3666665834518509864}
+    m_Modifications:
+    - target: {fileID: 8182701427017221299, guid: 72a2f85916acc464eb01efbe2fb6b712, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8182701427017221299, guid: 72a2f85916acc464eb01efbe2fb6b712, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8182701427017221299, guid: 72a2f85916acc464eb01efbe2fb6b712, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8182701427017221299, guid: 72a2f85916acc464eb01efbe2fb6b712, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8182701427017221299, guid: 72a2f85916acc464eb01efbe2fb6b712, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8182701427017221299, guid: 72a2f85916acc464eb01efbe2fb6b712, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8182701427017221299, guid: 72a2f85916acc464eb01efbe2fb6b712, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8182701427017221299, guid: 72a2f85916acc464eb01efbe2fb6b712, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8182701427017221299, guid: 72a2f85916acc464eb01efbe2fb6b712, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8182701427017221299, guid: 72a2f85916acc464eb01efbe2fb6b712, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8313742342462067682, guid: 72a2f85916acc464eb01efbe2fb6b712, type: 3}
+      propertyPath: m_Name
+      value: CicadaHalo
+      objectReference: {fileID: 0}
+    - target: {fileID: 8313742342462067682, guid: 72a2f85916acc464eb01efbe2fb6b712, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 72a2f85916acc464eb01efbe2fb6b712, type: 3}
+--- !u!114 &347810033100693598 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7324148327182162188, guid: 72a2f85916acc464eb01efbe2fb6b712, type: 3}
+  m_PrefabInstance: {fileID: 7023136539060107602}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25cbf88d8e1e64549b620a5ff3e613e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: DollSinger.Runtime::Unity.MP_FPS.DollSinger.ArsenalHaloVisual
+--- !u!4 &1223284617273933281 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8182701427017221299, guid: 72a2f85916acc464eb01efbe2fb6b712, type: 3}
+  m_PrefabInstance: {fileID: 7023136539060107602}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &7023893851177459643
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 3666665834518509864}
+    m_Modifications:
+    - target: {fileID: 1714898822948193318, guid: 2cdb4fdf8c192465a93c5960066bf0ca, type: 3}
+      propertyPath: m_Name
+      value: RondoHalo
+      objectReference: {fileID: 0}
+    - target: {fileID: 1714898822948193318, guid: 2cdb4fdf8c192465a93c5960066bf0ca, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4692145334250786414, guid: 2cdb4fdf8c192465a93c5960066bf0ca, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4692145334250786414, guid: 2cdb4fdf8c192465a93c5960066bf0ca, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4692145334250786414, guid: 2cdb4fdf8c192465a93c5960066bf0ca, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4692145334250786414, guid: 2cdb4fdf8c192465a93c5960066bf0ca, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4692145334250786414, guid: 2cdb4fdf8c192465a93c5960066bf0ca, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4692145334250786414, guid: 2cdb4fdf8c192465a93c5960066bf0ca, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4692145334250786414, guid: 2cdb4fdf8c192465a93c5960066bf0ca, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4692145334250786414, guid: 2cdb4fdf8c192465a93c5960066bf0ca, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4692145334250786414, guid: 2cdb4fdf8c192465a93c5960066bf0ca, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4692145334250786414, guid: 2cdb4fdf8c192465a93c5960066bf0ca, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2cdb4fdf8c192465a93c5960066bf0ca, type: 3}
+--- !u!4 &2334055842363331029 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4692145334250786414, guid: 2cdb4fdf8c192465a93c5960066bf0ca, type: 3}
+  m_PrefabInstance: {fileID: 7023893851177459643}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6384866014640174692 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4171032482171120095, guid: 2cdb4fdf8c192465a93c5960066bf0ca, type: 3}
+  m_PrefabInstance: {fileID: 7023893851177459643}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25cbf88d8e1e64549b620a5ff3e613e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: DollSinger.Runtime::Unity.MP_FPS.DollSinger.ArsenalHaloVisual
+--- !u!1001 &7868703386926181018
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 3666665834518509864}
+    m_Modifications:
+    - target: {fileID: 1091617605262572289, guid: 9cedce0b495fc47aa9b262199fcbe99a, type: 3}
+      propertyPath: m_Name
+      value: VesperHalo
+      objectReference: {fileID: 0}
+    - target: {fileID: 1091617605262572289, guid: 9cedce0b495fc47aa9b262199fcbe99a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8064879213774384770, guid: 9cedce0b495fc47aa9b262199fcbe99a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8064879213774384770, guid: 9cedce0b495fc47aa9b262199fcbe99a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8064879213774384770, guid: 9cedce0b495fc47aa9b262199fcbe99a, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8064879213774384770, guid: 9cedce0b495fc47aa9b262199fcbe99a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8064879213774384770, guid: 9cedce0b495fc47aa9b262199fcbe99a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8064879213774384770, guid: 9cedce0b495fc47aa9b262199fcbe99a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8064879213774384770, guid: 9cedce0b495fc47aa9b262199fcbe99a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8064879213774384770, guid: 9cedce0b495fc47aa9b262199fcbe99a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8064879213774384770, guid: 9cedce0b495fc47aa9b262199fcbe99a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8064879213774384770, guid: 9cedce0b495fc47aa9b262199fcbe99a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 9cedce0b495fc47aa9b262199fcbe99a, type: 3}
+--- !u!4 &207012613737006104 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8064879213774384770, guid: 9cedce0b495fc47aa9b262199fcbe99a, type: 3}
+  m_PrefabInstance: {fileID: 7868703386926181018}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &503485166598032652 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7768706183843866518, guid: 9cedce0b495fc47aa9b262199fcbe99a, type: 3}
+  m_PrefabInstance: {fileID: 7868703386926181018}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25cbf88d8e1e64549b620a5ff3e613e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: DollSinger.Runtime::Unity.MP_FPS.DollSinger.ArsenalHaloVisual
 --- !u!1001 &8122980789621772659
 PrefabInstance:
   m_ObjectHideFlags: 0

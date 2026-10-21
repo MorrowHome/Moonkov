@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace Unity.MP_FPS
 {
@@ -31,6 +31,9 @@ namespace Unity.MP_FPS
 
         public float Damage = 15f;
         public bool Automatic = true;
+        [Range(1, 8)] public int BurstCount = 1;
+        [Min(.01f)] public float BurstInterval = .085f;
+        [Min(.01f)] public float BurstCooldown = .28f;
         public bool AutoReloadWhenEmpty;
 
         [Header("Hitscan Properties")] [Tooltip("Max range for raycast-based weapons.")]

@@ -95,7 +95,7 @@ public partial class ClientInputReaderSystem : SystemBase
                 var equipped = EntityManager.GetComponentData<PredictedPlayerGhost>(currentLocalPlayer);
                 var weapon = WeaponManager.Instance.WeaponRegistry.GetWeaponData(equipped.EquippedWeaponID);
                 playerInput.SetFlag(PlayerInput.InputFlag.Shoot, canRead && playerInput.Aim &&
-                    (weapon != null && !weapon.Automatic ? _dollSingerInput.FirePressed : _dollSingerInput.FireHeld));
+                    (weapon != null && !weapon.Automatic && weapon.BurstCount <= 1 ? _dollSingerInput.FirePressed : _dollSingerInput.FireHeld));
                 playerInput.SetFlag(PlayerInput.InputFlag.EquipHalo, canRead && _dollSingerInput.WeaponSlotPressed == 1);
                 playerInput.SetFlag(PlayerInput.InputFlag.EquipRevolver, canRead && _dollSingerInput.WeaponSlotPressed == 2);
                 playerInput.SetFlag(PlayerInput.InputFlag.EquipPistol, canRead && _dollSingerInput.WeaponSlotPressed == 3);

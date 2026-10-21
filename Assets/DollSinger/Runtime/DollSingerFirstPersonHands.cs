@@ -20,7 +20,7 @@ namespace Unity.MP_FPS.DollSinger
         private readonly Transform[] rightHandBones, leftHandBones;
         private readonly Transform leftIndexTip, rightIndexTip, leftThumbTip, rightThumbTip;
         private bool reframe = true, wasViewfinder;
-        private float lastAspect, lastFieldOfView, poseBlend;
+        private float lastAspect, lastFieldOfView, poseBlend, lastVerticalOffset;
         private Quaternion framedOwnerRotation;
         private Rect safeFrame = Rect.MinMaxRect(.07f, .04f, .93f, .34f);
 
@@ -109,22 +109,24 @@ namespace Unity.MP_FPS.DollSinger
             overlay.volumeLayerMask = 0;
         }
 
-        public void Present(bool active, float fieldOfView, Camera owner, bool viewfinder, float poseBlend)
+        public void Present(bool active, float fieldOfView, Camera owner, bool viewfinder, float poseBlend, float verticalOffset = 0)
         {
             if (!Camera) return;
             float presentationBlend = Mathf.SmoothStep(0f, 1f, poseBlend);
             if (!Mathf.Approximately(this.poseBlend, presentationBlend)) reframe = true;
             this.poseBlend = presentationBlend;
             if (active && (!Active || viewfinder != wasViewfinder ||
-                !Mathf.Approximately(lastAspect, owner.aspect) || !Mathf.Approximately(lastFieldOfView, fieldOfView)))
+                !Mathf.Approximately(lastAspect, owner.aspect) || !Mathf.Approximately(lastFieldOfView, fieldOfView) ||
+                !Mathf.Approximately(lastVerticalOffset, verticalOffset)))
             {
                 reframe = true;
                 Camera.ResetProjectionMatrix();
             }
             wasViewfinder = viewfinder;
             lastAspect = owner.aspect; lastFieldOfView = fieldOfView;
+            lastVerticalOffset = verticalOffset;
             Active = active;
-            safeFrame = Rect.MinMaxRect(.07f, viewfinder ? .08f : .04f, .93f, viewfinder ? .90f : .34f);
+            safeFrame = Rect.MinMaxRect(.07f, viewfinder ? .08f : .04f-verticalOffset, .93f, viewfinder ? .90f : .34f-verticalOffset);
             Camera.fieldOfView = fieldOfView;
             Camera.rect = owner.rect;
             Camera.aspect = owner.aspect;

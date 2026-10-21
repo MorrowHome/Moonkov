@@ -1,0 +1,31 @@
+Actual DollSingerNetworkPlayer in WeaponGestureLab; four simultaneous cameras. Blender exact-rig bake.
+Bake revision: 2cadb68e7cc9
+weapon 1: idle, fire, reload; all four cameras active; exact local rotations and owner projection passed
+weapon 2: idle, fire, reload; all four cameras active; exact local rotations and owner projection passed
+weapon 3: idle, fire, reload; all four cameras active; exact local rotations and owner projection passed
+sniper: index bend 0.028 deg, thumb/index right-angle error 0.000 deg, maximum contact gap 0.154 mm
+weapon 4: idle, fire, reload; all four cameras active; exact local rotations and owner projection passed
+weapon 5: idle, fire, reload; all four cameras active; exact local rotations and owner projection passed
+weapon 6: idle, fire, reload; all four cameras active; exact local rotations and owner projection passed
+weapon 7: idle, fire, reload; all four cameras active; exact local rotations and owner projection passed
+weapon 8: idle, fire, reload; all four cameras active; exact local rotations and owner projection passed
+weapon 9: idle, fire, reload; all four cameras active; exact local rotations and owner projection passed
+weapon 10: idle, fire, reload; all four cameras active; exact local rotations and owner projection passed
+revolver offhand stroke 67.4 mm; maximum Blender/runtime rotation difference 0.000 deg
+Continuous pitch sweep 0/-80/0/+80/0: visible fingers, clear arm geometry, pointing direction and projection continuity passed.
+Head forward/up track the owner camera within 0.15 degrees through pitch/aspect samples and continuous look-up; no extra Humanoid head roll.
+Revolver index converges on crosshair within 1 degree in idle/fire/reload and pitch/aspect checks. Normal weapons: finger joints below 42% viewport height; deformed arm triangles leave central 12% square clear through fire/reload, authored and interpolated pitch -80 through +80 and 16:9 / 4:3.
+sniper: index bend 0.000 deg, thumb/index right-angle error 0.000 deg, maximum contact gap 0.154 mm
+sniper: index bend 0.000 deg, thumb/index right-angle error 0.000 deg, maximum contact gap 0.154 mm
+sniper: index bend 0.028 deg, thumb/index right-angle error 0.000 deg, maximum contact gap 0.154 mm
+sniper: index bend 0.000 deg, thumb/index right-angle error 0.000 deg, maximum contact gap 0.155 mm
+FP/TP modes, pitch -65/0/+65, aim-out/in, pause/resume passed.
+sniper: index bend 0.000 deg, thumb/index right-angle error 0.000 deg, maximum contact gap 0.155 mm
+sniper: index bend 0.000 deg, thumb/index right-angle error 0.000 deg, maximum contact gap 0.155 mm
+sniper: index bend 0.000 deg, thumb/index right-angle error 0.000 deg, maximum contact gap 0.155 mm
+sniper: index bend 0.000 deg, thumb/index right-angle error 0.000 deg, maximum contact gap 0.155 mm
+sniper: index bend 0.000 deg, thumb/index right-angle error 0.000 deg, maximum contact gap 0.155 mm
+Sniper hands retain owner FOV, zero depth offset and proportional optical zoom at 1/2/4/6/12x. The halo shrinks with FOV to fit the scope; its world position is stable. Frame centre remains within 0.5 output pixels through actions, pitch and aspect changes. Skinned arms leave the central aiming area clear.
+Sniper aim-in/out/in: 532 actual rendered frames, pitch -65/0/+65, 16:9 and 4:3. Pose closed before zoom; lowering after unzoom; no resting-hand camera teleport; central arm geometry clear. Maximum camera offset 0.1843 m.
+24 interrupted aim toggles at 40/80/140/220 ms, 198 rendered frames: current pose and zoom synchronized; frame remains closed and central arm geometry clear while zoomed.
+9 ordinary weapon aim transitions: 4368 rendered frames, pitch -65/0/+65, 16:9 / 4:3; central skinned arm clearance throughout raising/lowering. 432 interrupted aim toggles at 40/80/140/220 ms across normal and simulated 15 Hz steps; pose before zoom and unzoom before lowering; visible settled hands and revolver pointing preserved.

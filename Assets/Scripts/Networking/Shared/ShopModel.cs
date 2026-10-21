@@ -27,6 +27,7 @@ namespace Unity.MP_FPS.Inventory
             new ShopOffer("alien_tissue", -1, 8), new ShopOffer("alien_core", -1, 65),
             new ShopOffer("rifle", 0, 20), new ShopOffer("pistol", 0, 7),
             new ShopOffer("shotgun", 0, 25), new ShopOffer("sniper", 0, 45), new ShopOffer("cells", 0, 2),
+            new ShopOffer("nocturne", 68, 22), new ShopOffer("tempest", 62, 20), new ShopOffer("rondo", 50, 16), new ShopOffer("cicada", 30, 10), new ShopOffer("trine", 42, 14), new ShopOffer("aegis", 64, 21), new ShopOffer("vesper", 58, 19), new ShopOffer("thorn", 50, 16), new ShopOffer("sundown", 72, 24),
             new ShopOffer("halo_capacitor", 18, 6), new ShopOffer("halo_charge_bridge", 18, 6),
             new ShopOffer("halo_mooncore_recycler", -1, 9),
             new ShopOffer("halo_focus_lens", 22, 7), new ShopOffer("halo_fan_array", 22, 7),

@@ -11,6 +11,7 @@ namespace Unity.MP_FPS.DollSinger
         {
             public float[] pose, fire, reload;
             public float pitch;
+            public FireVariant[] burstFires;
         }
         [Serializable] private sealed class Motion : Pose
         {
@@ -19,6 +20,7 @@ namespace Unity.MP_FPS.DollSinger
             public float fireSeconds;
             public Pose[] aimPoses;
         }
+        [Serializable] private sealed class FireVariant { public float[] values; }
         [Serializable] private sealed class Library
         {
             public int version, frameRate;
@@ -53,7 +55,7 @@ namespace Unity.MP_FPS.DollSinger
                 cachedAsset = asset;
             }
             library = cachedLibrary;
-            if (library.version != 1 || library.bones == null || library.motions.Length != 4)
+            if (library.version != 1 || library.bones == null || library.motions.Length < 4)
                 throw new InvalidOperationException("Unsupported Blender gesture bake.");
             var hierarchy = new Dictionary<string, Transform>();
             foreach (var bone in animator.GetComponentsInChildren<Transform>(true)) hierarchy[bone.name] = bone;
@@ -82,9 +84,9 @@ namespace Unity.MP_FPS.DollSinger
         }
 
         public void Apply(int weapon, float blend, float shotAge, bool reloading, float reloadProgress,
-            float transitionSeconds, Transform chest, Vector3 aimDirection, float deltaTime = -1f)
+            float transitionSeconds, Transform chest, Vector3 aimDirection, float deltaTime = -1f, int burstIndex = 0)
         {
-            if (blend <= .0001f || weapon < 1 || weapon > 4) { initialized = false; return; }
+            if (blend <= .0001f || weapon < 1 || weapon > library.motions.Length) { initialized = false; return; }
             Motion motion = library.motions[weapon - 1];
             Pose low = motion, high = motion;
             float authoredPitch = 0, pitchMix = 0;
@@ -110,7 +112,9 @@ namespace Unity.MP_FPS.DollSinger
             float frame = 0; int count = 1;
             if (reloading) { samples = low.reload; highSamples = high.reload; count = motion.reloadFrames; frame = Mathf.Clamp01(reloadProgress) * (count - 1); }
             else if (shotAge >= 0 && shotAge < motion.fireSeconds)
-            { samples = low.fire; highSamples = high.fire; count = motion.fireFrames; frame = shotAge / motion.fireSeconds * (count - 1); }
+            { samples = low.burstFires != null ? low.burstFires[Mathf.Clamp(burstIndex,0,low.burstFires.Length-1)].values : low.fire;
+              highSamples = high.burstFires != null ? high.burstFires[Mathf.Clamp(burstIndex,0,high.burstFires.Length-1)].values : high.fire;
+              count = motion.fireFrames; frame = shotAge / motion.fireSeconds * (count - 1); }
             int a = Mathf.FloorToInt(frame), b = Mathf.Min(a + 1, count - 1);
             for (int i = 0; i < bones.Length; i++)
             {
@@ -135,7 +139,7 @@ namespace Unity.MP_FPS.DollSinger
             // Interpolating complete arm chains can slightly change their combined
             // orientation between authored pitch poses. Align the pointing pair as
             // one unit; never turn the wrist or fingers independently.
-            if (weapon == 2 && aimDirection.sqrMagnitude > .001f)
+            if ((weapon == 2 || weapon == 5 || weapon == 8 || weapon == 11 || weapon == 13) && aimDirection.sqrMagnitude > .001f)
             {
                 Vector3 index = correction * (rightIndexTip.position - rightIndex.position);
                 correction = Quaternion.Slerp(Quaternion.identity, Quaternion.FromToRotation(index, aimDirection), blend) * correction;

@@ -180,10 +180,8 @@ namespace Unity.MP_FPS
                 owned && m_HasOwnedAimPoint ? m_OwnedAimPoint : (Vector3)ghost.AimPoint,
                 owned ? m_OwnedLightEnabled : state.HaloLightEnabled);
             var weapon = WeaponManager.Instance.WeaponRegistry.GetWeaponData(ghost.EquippedWeaponID, ghost.EquippedModules);
-            var haloWeapon = ghost.EquippedWeaponID == DollSingerWeapons.Halo ? DollSingerHaloAim.HaloWeapon.Rifle :
-                ghost.EquippedWeaponID == DollSingerWeapons.Revolver ? DollSingerHaloAim.HaloWeapon.Revolver :
-                ghost.EquippedWeaponID == DollSingerWeapons.Shotgun ? DollSingerHaloAim.HaloWeapon.Shotgun :
-                ghost.EquippedWeaponID == DollSingerWeapons.Sniper ? DollSingerHaloAim.HaloWeapon.Sniper : DollSingerHaloAim.HaloWeapon.None;
+            var haloWeapon = DollSingerWeapons.IsHalo(ghost.EquippedWeaponID)
+                ? (DollSingerHaloAim.HaloWeapon)(ghost.EquippedWeaponID - 1) : DollSingerHaloAim.HaloWeapon.None;
             m_Halo.SetNetworkWeapon(haloWeapon, ghost.CurrentAmmo,
                 state.IsReloadingState, weapon != null ? 1f - ghost.ReloadTimer / Mathf.Max(0.01f, weapon.ReloadTime * RaidHealth.HandlingMultiplier(ghost)) : 0f,
                 ghost.LastShotTick, ghost.LastReloadTick, ghost.ReloadTargetAmmo, ghost.EquippedModules, weapon?.MagazineSize ?? 4, ghost.BurstSequence);

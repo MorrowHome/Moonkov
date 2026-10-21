@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Unity.MP_FPS.DollSinger;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -31,6 +32,8 @@ namespace Unity.MP_FPS
         private bool m_PreviousCursor, m_Aiming = true, m_FirstPerson = true, m_Repeating, m_Paused, m_Reloading, m_Ready;
         private int m_Ammo, m_WeaponIndex, m_LastStatusFrame;
         private uint m_ShotTick, m_ReloadTick;
+        private PredictedPlayerGhost m_BurstState;
+        private static readonly string[] WeaponNames=new[]{"rifle","revolver","shotgun","sniper"}.Concat(HaloArsenal.Entries.Select(e=>e.Code)).ToArray();
         public GameObject Player { get; private set; }
         public DollSingerView PlayerView => m_View;
         public DollSingerHaloAim Halo => m_Halo;
@@ -45,8 +48,8 @@ namespace Unity.MP_FPS
 
         private void Start()
         {
-            if (!m_PlayerPrefab || !m_Document || m_Weapons == null || m_Weapons.Length != 4 || m_Observers.Length != 3)
-                throw new InvalidOperationException("Weapon Gesture Lab needs the production player, four weapon assets and three observer cameras.");
+            if (!m_PlayerPrefab || !m_Document || m_Weapons == null || m_Weapons.Length < 4 || m_Observers.Length != 3)
+                throw new InvalidOperationException("Weapon Gesture Lab needs the production player, registered weapon assets and three observer cameras.");
             m_PreviousTimeScale = Time.timeScale;
             m_PreviousLock = Cursor.lockState; m_PreviousCursor = Cursor.visible;
             // Configure the official prefab before its gameplay callbacks can run.
@@ -91,8 +94,8 @@ namespace Unity.MP_FPS
 
         private void BindControls()
         {
-            string[] weaponNames = { "rifle", "revolver", "shotgun", "sniper" };
-            for (int i = 0; i < 4; i++)
+            var weaponNames = WeaponNames;
+            for (int i = 0; i < m_Weapons.Length; i++)
             {
                 int index = i;
                 m_UI.Q<Button>(weaponNames[i]).clicked += () => SelectWeapon(index);
@@ -129,12 +132,13 @@ namespace Unity.MP_FPS
         public void SelectWeapon(int index)
         {
             if (m_Paused) return;
-            m_WeaponIndex = Mathf.Clamp(index, 0, 3); m_Ammo = Weapon.MagazineSize;
+            m_WeaponIndex = Mathf.Clamp(index, 0, m_Weapons.Length-1); m_Ammo = Weapon.MagazineSize;
             m_Reloading = false; m_ReloadElapsed = 0; m_NextShot = Time.time;
+            m_BurstState=new PredictedPlayerGhost{CurrentHealth=100,EquippedWeaponID=(uint)(m_WeaponIndex+2),CurrentAmmo=m_Ammo,WeaponCooldown=1};
             if (m_UI != null)
             {
-                string[] names = { "rifle", "revolver", "shotgun", "sniper" };
-                for (int i = 0; i < 4; i++) m_UI.Q<Button>(names[i]).EnableInClassList("selected", i == m_WeaponIndex);
+                var names=WeaponNames;
+                for (int i = 0; i < m_Weapons.Length; i++) m_UI.Q<Button>(names[i]).EnableInClassList("selected", i == m_WeaponIndex);
             }
             if (m_Ready) PresentState();
         }
@@ -143,6 +147,16 @@ namespace Unity.MP_FPS
         {
             if (!m_Ready || m_Paused || !m_Aiming || m_Reloading || Time.time < m_NextShot) return;
             if (m_Ammo <= 0) { Reload(); return; }
+            if(Weapon.BurstCount>1)
+            {
+                m_BurstState.CurrentAmmo=m_Ammo;m_BurstState.ControllerState.IsReloadingState=m_Reloading;
+                if(m_BurstState.BurstRemaining>0 || !HaloModuleFire.TryFire(ref m_BurstState,Weapon,true,m_Aiming,false))return;
+                HaloModuleFire.CommitShot(ref m_BurstState,Weapon,Time.deltaTime);
+            }
+            EmitShot();
+        }
+        private void EmitShot()
+        {
             m_Ammo--; m_ShotTick++; m_NextShot = Time.time + Mathf.Max(.02f, Weapon.CooldownInMs);
             PresentState();
             m_Halo.PlayNetworkShot(m_View.camera.transform.position + m_View.camera.transform.forward * 50, false, m_ShotTick);
@@ -159,7 +173,7 @@ namespace Unity.MP_FPS
         {
             m_Paused = paused; Time.timeScale = paused ? 0 : m_Speed;
             // Keep the sampled pose intact; observer cameras and layout stay interactive.
-            foreach (string name in new[] { "rifle", "revolver", "shotgun", "sniper", "aim", "fire", "reload", "repeatFire", "firstPerson", "pitch" })
+            foreach (string name in WeaponNames.Concat(new[] { "aim", "fire", "reload", "repeatFire", "firstPerson", "pitch" }))
                 m_UI.Q(name).SetEnabled(!paused);
         }
 
@@ -174,6 +188,12 @@ namespace Unity.MP_FPS
                 if (keyboard.digit2Key.wasPressedThisFrame) SelectWeapon(1);
                 if (keyboard.digit3Key.wasPressedThisFrame) SelectWeapon(2);
                 if (keyboard.digit4Key.wasPressedThisFrame) SelectWeapon(3);
+                if (keyboard.digit5Key.wasPressedThisFrame) SelectWeapon(4);
+                if (keyboard.digit6Key.wasPressedThisFrame) SelectWeapon(5);
+                if (keyboard.digit7Key.wasPressedThisFrame) SelectWeapon(6);
+                if (keyboard.digit8Key.wasPressedThisFrame) SelectWeapon(7);
+                if (keyboard.digit9Key.wasPressedThisFrame) SelectWeapon(8);
+                if (keyboard.digit0Key.wasPressedThisFrame) SelectWeapon(9);
                 if (keyboard.spaceKey.wasPressedThisFrame) Fire();
                 if (keyboard.rKey.wasPressedThisFrame) Reload();
                 if (keyboard.pKey.wasPressedThisFrame) m_UI.Q<Toggle>("pause").value = !m_Paused;
@@ -182,6 +202,13 @@ namespace Unity.MP_FPS
             {
                 m_ReloadElapsed += Time.deltaTime;
                 if (m_ReloadElapsed >= Weapon.ReloadTime) { m_Reloading = false; m_Ammo = Weapon.MagazineSize; }
+            }
+            if(Weapon.BurstCount>1 && !m_Paused)
+            {
+                HaloModuleFire.AdvanceTimers(ref m_BurstState,Time.deltaTime);
+                m_BurstState.CurrentAmmo=m_Ammo;m_BurstState.ControllerState.IsReloadingState=m_Reloading;
+                if(HaloModuleFire.TryFire(ref m_BurstState,Weapon,false,m_Aiming,false))
+                { HaloModuleFire.CommitShot(ref m_BurstState,Weapon,Time.deltaTime);EmitShot(); }
             }
             if (m_Repeating && !m_Paused) Fire();
             PresentState();
@@ -202,7 +229,7 @@ namespace Unity.MP_FPS
             m_Halo.SetNetworkPresentation(m_Aiming, look * Vector3.forward, m_Model.transform.position + Vector3.up * 1.2f + look * Vector3.forward * 50);
             m_Halo.SetNetworkWeapon((DollSingerHaloAim.HaloWeapon)(m_WeaponIndex + 1), m_Ammo,
                 m_Reloading, m_Reloading ? Mathf.Clamp01(m_ReloadElapsed / Mathf.Max(.01f, Weapon.ReloadTime)) : 0,
-                m_ShotTick, m_ReloadTick, Weapon.MagazineSize, 0, Weapon.MagazineSize);
+                m_ShotTick, m_ReloadTick, Weapon.MagazineSize, 0, Weapon.MagazineSize, m_BurstState.BurstSequence);
             m_View.SetNetworkLookRotation(look);
             m_View.SetAimBlend(m_Halo.AimBlend);
             m_View.SetWeaponAimMagnification(m_Halo.ScopeMagnification);
