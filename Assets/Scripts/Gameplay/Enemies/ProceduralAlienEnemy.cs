@@ -35,6 +35,11 @@ namespace Unity.MP_FPS
             [GhostField] public byte BossPhase;
             [GhostField] public Entity AttachedTarget;
             [GhostField] public bool MucusInFlight;
+            [GhostField] public bool MucusLowArc;
+            [GhostField] public uint ImpactSequence;
+            [GhostField(Quantization = 100)] public float3 ImpactPoint;
+            [GhostField(Quantization = 1000)] public float3 ImpactNormal;
+            [GhostField] public AlienImpactKind ImpactKind;
         }
         [SerializeField] private AlienCreatureProfile profile;
         [SerializeField, Min(0), Tooltip("Full-rate client rig distance at 45-degree FOV. Distant rigs update at 30/15 Hz; zero disables the budget. Server simulation is unchanged.")]
@@ -224,6 +229,8 @@ namespace Unity.MP_FPS
             WriteGhostComponentData(new State { Action = m_Action, Scale = m_Body.Scale, Phase = m_Body.Phase,
                 ActionTime = m_Clock - m_ActionStarted, Velocity = m_Body.Motor.Velocity, AttackSequence = m_Attacks,
                 Detached = m_Body.Motor.Detached, AmbushEnabled = m_AmbushEnabled, MucusInFlight = m_MucusInFlight && m_Action != AlienAction.Dead,
+                MucusLowArc = m_MucusLowArc, ImpactSequence = m_ImpactSequence, ImpactPoint = m_ImpactPoint,
+                ImpactNormal = m_ImpactNormal, ImpactKind = m_ImpactKind,
                 AttackKind = m_Pattern.Kind, AttackPoint = m_CombatPoint, AttackOrigin = m_CombatOrigin,
                 AttackDirection = m_CombatDirection, BossPhase = m_BossPhase, AttachedTarget = m_AttachedTarget });
         }

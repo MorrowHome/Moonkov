@@ -58,3 +58,29 @@ unity command eval 'DollSingerHumanlikeChecks.Run();' --caller plugin --skill un
 - 视觉截图确认地表不同明暗下的线条辨识与遮挡，实际音频听感及完整路线。
 - 不因狭窄地点限制任意挪动巨型 Boss；MC00 封闭楼层是备选设计，需要独立地图/体型验收。此修复不迁移、不封锁生产地图。
 - 本轮不宣称完成目标设备构建、性能负载或双端网络传输验收。
+
+## 2026-10-21 第二轮：攻击可行性、导航净空与实际撞击
+
+基线 `b5aed916`，延续原分支与工作区。仅敌人脚本、专用检查与本文变更，无场景/Profile/地图迁移，无跨组 Ghost/RPC 通用文件修改。
+
+- `AlienAttackEvents` 分别按攻击序号、接触序号去重。发射声在第一次观察到本次 Strike 时独立触发，不等待 0.08s 伤害脉冲；落地/后续脉冲仍按原共享时钟。首次快照建立基线，晚加入不补播旧攻击/撞击，乱序旧序号不回放。
+- 横扫起手与结算共用 `AlienCombatPattern.SweepContains`，包含同一水平范围/角度和脚底相对高度限制。近距离高台超出横扫高度时选择有预警的黏液，不修改伤害去扩大穿层范围。
+- 地面导航硬性每 0.75s 最多规划一次，目标漂移与受阻都不绕过该间隔。人形 NavMesh 仅提供候选路线；每次最多验证12m前缀、144次物理查询，按 Boss 实际胶囊验证地面、坡度、整段净空。三秒阻塞目标记忆避免重复尝试同一目标通道，并在预算内检查四个附近可到达的侧方停靠点。没有合法位置就停住，仍由原 motor 逐步碰撞运动。未建立独立大型导航框架，也不宣称能解开任意复杂迷宫。
+- 发射前用最多两组各25次查询（起点占用+24段保守球扫）验证实际弹道：先标准弧，再低弧；两者不合法则不发射，失败最多每0.5s重试。低弧标志进入同一攻击快照，服务端飞行、客户端预告与弹体共用 `AlienMucusTrajectory`，不改变伤害权威或穿越遮挡。
+- 服务端实际 SphereCast 接触同步 `ImpactSequence/Point/Normal/Kind`（墙体/身体/面部），与 `MucusInFlight` 无关。客户端按接触快照在真实点位沿法线播放飞溅及撞击声，重复快照不重复播放。新增 Ghost 状态字段要求联网双方使用相同版本。
+
+本轮验证（本机 Unity 6000.5.10f1，2026-10-21 北京时间15:54前完成）：
+
+```sh
+unity recompile --project-path /Users/morrow/UnityProjects/Moonkov --format json
+unity command eval 'AlienEnemyChecks.RunRefinementContract();' --caller plugin --skill unity-build-validation --result-only
+unity command eval 'AlienEnemyChecks.RunCounterplayContract(); AlienEnemyChecks.RunPressureContract();' --caller plugin --skill unity-build-validation --result-only
+```
+
+- 最终编译 `failed=false`、`compilationFailed=false`、`errors=[]`。
+- 新专项19条通过：连续快照0/.033/.067/.1s的单次launch、乱序/丢前摇/首包抑制；5/8/12m×高度0/2/3/8m的实际起手选择；40m目标在远端5m棚顶下选择低弧并命中面部/身体；出手后新增墙体得到真实墙接触且零伤害；直线可见但两种弧都碰顶的走廊拒绝发射；临时构建的人形 NavMesh 能通过2m门洞而巨型路线拒绝，并选择合法侧方停靠；高频大幅漂移目标无法绕过导航间隔/预算；客户端接触粒子在权威点位沿法线生成，重复快照不增发，首包不回放。
+- 必要回归：上一轮 `RunCounterplayContract` 18条、`RunPressureContract` 10条通过。不重跑地图落点与无关完整旧矩阵。
+- 首两次专项在窄门停靠断言失败，定位为视线终点恰在地面导致误撞地板；终点抬高0.5m后复编译并完整复跑通过。没有删除断言或放宽胶囊净空来获得通过。
+- 结束时确认 `WeaponGestureLab.unity`、dirty=false、Play=false、sceneCount=1，临时 NavMesh/附加场景均已清理。Console当前0错误、14条既有警告。检查报告：`Library/BuildValidation/AlienIntegration/refinement-contract.txt`。
+
+边界：序号gate与粒子行为检查证明触发/去重逻辑，未完成实机声音听感；未跑Host+第二客户端传输、正式地图完整路线与性能负载。144次物理查询/规划及硬限频已通过行为断言，但不据此声称帧率提升或目标设备达标。Boss仅从现有可达位置改变开火角度，不会瞬移或穿过窄门。

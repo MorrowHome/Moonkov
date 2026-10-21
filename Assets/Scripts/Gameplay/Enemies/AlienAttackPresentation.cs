@@ -18,6 +18,7 @@ namespace Unity.MP_FPS
         private Transform m_Globule;
         private TrailRenderer m_Wake;
         private ParticleSystem m_Droplets;
+        private AlienAttackEvents m_Events;
         private uint m_Sequence;
         private int m_LastPulse = -1;
         private bool m_Observed;
@@ -34,6 +35,12 @@ namespace Unity.MP_FPS
         {
             foreach (var impact in m_Impacts) if (impact) impact.gameObject.SetActive(false);
             if (m_Style && m_Profile && (m_Profile.VoidLiquid || pattern.Kind == AlienAttackKind.MucusSpit)) DrawLiquidAttack(state, pattern, socket);
+            if (m_Events.Impact(state) && m_Droplets)
+            {
+                m_Droplets.transform.SetPositionAndRotation(state.ImpactPoint,
+                    Quaternion.FromToRotation(Vector3.up, state.ImpactNormal));
+                m_Droplets.Play(); m_Droplets.Emit(state.ImpactKind == AlienImpactKind.World ? 24 : 36);
+            }
             DrawWarnings(state, pattern);
             // Impact meshes start on the same pulse clock as damage and audio.
             if (state.Action != AlienAction.Strike || state.AttackSequence == 0 || pattern.PulseAt(state.ActionTime) < 0) return;
@@ -97,7 +104,7 @@ namespace Unity.MP_FPS
                 var path = Warning(3); path.positionCount = 25;
                 float duration = AlienMucusTrajectory.FlightTime(state.AttackOrigin, state.AttackPoint, m_Profile.MucusSpeed);
                 for (int i = 0; i < 25; i++) path.SetPosition(i,
-                    AlienMucusTrajectory.Point(state.AttackOrigin, state.AttackPoint, m_Profile.MucusSpeed, duration * i / 24));
+                    AlienMucusTrajectory.Point(state.AttackOrigin, state.AttackPoint, m_Profile.MucusSpeed, duration * i / 24, state.MucusLowArc));
             }
         }
         private LineRenderer Warning(int index)
@@ -175,7 +182,7 @@ namespace Unity.MP_FPS
             {
                 float flight=AlienMucusTrajectory.FlightTime(state.AttackOrigin,state.AttackPoint,m_Profile.MucusSpeed);
                 m_Globule.gameObject.SetActive(windup || state.MucusInFlight && state.ActionTime<=flight+.12f);
-                m_Globule.position=windup ? socket : AlienMucusTrajectory.Point(state.AttackOrigin,state.AttackPoint,m_Profile.MucusSpeed,Mathf.Min(state.ActionTime,flight+.12f));
+                m_Globule.position=windup ? socket : AlienMucusTrajectory.Point(state.AttackOrigin,state.AttackPoint,m_Profile.MucusSpeed,Mathf.Min(state.ActionTime,flight+.12f),state.MucusLowArc);
                 m_Globule.localScale=Vector3.one*(windup?.12f+.1f*Mathf.Clamp01(state.ActionTime/pattern.Windup):.28f);
             }
             if (pattern.Kind == AlienAttackKind.AcidSpit && windup)

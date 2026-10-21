@@ -42,7 +42,7 @@ namespace Unity.MP_FPS
             float radius=profile.GroundBodyRadius(m_Body.Scale);
             if (!RaidSpawnSafety.TryGroundPosition(desired,radius,profile.GroundBodyHeight(m_Body.Scale),35,out var floor,out _))
             {m_NextBossMove=m_Clock+1;return false;}
-            m_BossDestination=floor; m_NextUprightPath=0;
+            m_BossDestination=floor;
             m_BossMoveHealth=health.CurrentHealth;m_BossMoveAttack=m_Attacks;BossRepositions++;
             m_NextBossMove=m_Clock+profile.BossRepositionCooldown*(m_BossPhase>1?.75f:1);
             m_NextAttack=Mathf.Max(m_NextAttack,m_Clock+profile.BossRepositionSeconds+.1f);

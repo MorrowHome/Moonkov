@@ -284,6 +284,209 @@ public static partial class AlienEnemyChecks
         }
     }
 
+    [MenuItem("Tools/Moonkov/Aliens/Check boss refinement boundaries")]
+    public static void RunRefinementContract()
+    {
+        if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("Exit Play first.");
+        var original = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+        var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
+        var passed = new List<string>();
+        try
+        {
+            CheckAttackEventGates(passed);
+            foreach (float distance in new[] { 5f, 8f, 12f })
+                foreach (float height in new[] { 0f, 2f, 3f, 8f }) CheckNearHeightChoice(distance, height, passed);
+            CheckArcAndImpact(false, passed); CheckArcAndImpact(true, passed); CheckArcAndImpact(false, passed, true);
+            CheckContactPresentation(passed);
+            CheckGiantRouteBudget(passed);
+            CheckBlockedBallisticCorridor(passed);
+            Directory.CreateDirectory("Library/BuildValidation/AlienIntegration");
+            File.WriteAllLines("Library/BuildValidation/AlienIntegration/refinement-contract.txt", passed);
+            Debug.Log("Boss refinement passed: " + string.Join("; ", passed));
+        }
+        finally
+        {
+            UnityEngine.SceneManagement.SceneManager.SetActiveScene(original); EditorSceneManager.CloseScene(scene, true);
+        }
+    }
+
+    private static void CheckAttackEventGates(List<string> passed)
+    {
+        var gate = new AlienAttackEvents();
+        var state = new ProceduralAlienEnemy.State { Action = AlienAction.Windup, AttackSequence = 1 };
+        Require(!gate.Launch(state) && !gate.Impact(state), "Initial snapshot replayed history.");
+        state.Action = AlienAction.Strike;
+        Require(gate.Launch(state), "Strike at time zero skipped the launch.");
+        foreach (float age in new[] { .033f, .067f, .1f, .4f })
+        { state.ActionTime = age; Require(!gate.Launch(state), "One attack replayed its launch."); }
+        state.ImpactSequence = 1; state.ImpactKind = AlienImpactKind.World;
+        Require(gate.Impact(state) && !gate.Impact(state), "Impact did not deduplicate.");
+        state.ImpactSequence = 2; state.ImpactKind = AlienImpactKind.Face;
+        Require(gate.Impact(state), "Later authoritative impact was lost.");
+        state.ImpactSequence = 1; Require(!gate.Impact(state), "Reordered impact replayed.");
+        var late = new AlienAttackEvents();
+        Require(!late.Launch(state) && !late.Impact(state), "Late join replayed active attack or old impact.");
+        state.AttackSequence = 2; state.ActionTime = .2f;
+        Require(late.Launch(state) && !late.Launch(state), "Skipped windup lost or duplicated the next launch.");
+        passed.Add("Audio/contact gates: time-zero launch, continuous/reordered snapshots, skipped windup, late join, once per sequence");
+    }
+
+    private static void CheckNearHeightChoice(float distance, float height, List<string> passed)
+    {
+        using var world = CounterplayWorld("near height");
+        var holder = new GameObject("Temporary near height fixture");
+        var p = Object.Instantiate(AssetDatabase.LoadAssetAtPath<AlienCreatureProfile>("Assets/AlienCreatures/Profiles/Tentacle.asset"));
+        p.Liquid = false; p.BossDisplaySeconds = .6f; p.BossRepositionSpeed = p.BossPursuitSpeed = 0;
+        p.AttackCooldown = 60; p.Damage = 1; p.PatrolRadius = 0;
+        Vector3 origin = new Vector3(-10050, 1000, -10050);
+        try
+        {
+            CounterplayBox(holder.transform, "Floor", origin - Vector3.up * .25f, new Vector3(70, .5f, 70));
+            var actor = Alien(holder.transform, world, p, origin + Vector3.up * .56f * p.Scale, MultiplayerRole.Server, -22000);
+            Humanoid(holder.transform, world, origin + Vector3.forward * distance + Vector3.up * height, false, 42);
+            for (int i = 0; i < 120 && actor.AttackCount == 0; i++) Step(actor, 1);
+            Require(actor.AttackCount == 1 && actor.AttackKind == (height == 0 ? AlienAttackKind.TentacleSweep : AlienAttackKind.MucusSpit),
+                "Near ledge chose an impossible sweep: distance=" + distance + " height=" + height + " kind=" + actor.AttackKind);
+            passed.Add("Near " + distance + "m / height " + height + "m selects " + actor.AttackKind);
+        }
+        finally { Object.DestroyImmediate(holder); Object.DestroyImmediate(p); }
+    }
+
+    private static void CheckArcAndImpact(bool blocked, List<string> passed, bool body = false)
+    {
+        using var world = CounterplayWorld("roof arc");
+        var manager = world.EntityManager;
+        var holder = new GameObject("Temporary roof arc fixture");
+        var p = Object.Instantiate(AssetDatabase.LoadAssetAtPath<AlienCreatureProfile>("Assets/AlienCreatures/Profiles/Tentacle.asset"));
+        p.Liquid = false; p.BossDisplaySeconds = .6f; p.BossPursuitSpeed = p.BossRepositionSpeed = 0;
+        p.AttackCooldown = 60; p.Damage = 1; p.PatrolRadius = 0;
+        Vector3 origin = new Vector3(-10150, 1000, -10150);
+        try
+        {
+            CounterplayBox(holder.transform, "Floor", origin - Vector3.up * .25f, new Vector3(100, .5f, 100));
+            CounterplayBox(holder.transform, "Remote canopy", origin + new Vector3(0, 5, 25), new Vector3(20, .3f, 35));
+            var actor = Alien(holder.transform, world, p, origin + Vector3.up * .56f * p.Scale, MultiplayerRole.Server, -22001);
+            var target = Humanoid(holder.transform, world, origin + Vector3.forward * 40, false, 42);
+            bool launched = false;
+            for (int i = 0; i < 240; i++)
+            {
+                Step(actor, 1);
+                var state = manager.GetComponentData<ProceduralAlienEnemy.State>(actor.GhostGameObject.LinkedEntity);
+                if (!launched && state.Action == AlienAction.Strike)
+                {
+                    launched = true; Require(state.MucusLowArc, "Ceiling response did not select the shared low arc.");
+                    if (body)
+                    {
+                        target.transform.position += Vector3.up * .9f;
+                        manager.SetComponentData(target.LinkedEntity, LocalTransform.FromPosition(target.transform.position));
+                    }
+                    if (blocked) CounterplayBox(holder.transform, "New wall after lock", origin + new Vector3(0, 2, 20), new Vector3(20, 4, .3f));
+                }
+            }
+            var impact = manager.GetComponentData<ProceduralAlienEnemy.State>(actor.GhostGameObject.LinkedEntity);
+            Require(launched && actor.LastArcQueries <= 50 && impact.ImpactSequence == 1 &&
+                impact.ImpactKind == (blocked ? AlienImpactKind.World : body ? AlienImpactKind.Body : AlienImpactKind.Face), "Authoritative contact or arc budget failed.");
+            Require(((Vector3)impact.ImpactNormal).sqrMagnitude > .8f &&
+                Mathf.Abs(impact.ImpactPoint.z - origin.z - (blocked ? 20 : 40)) < 1, "Contact position/normal did not come from the collider.");
+            Require(blocked ? actor.MucusHits == 0 : actor.MucusHits == 1, "Low arc crossed cover or missed the target.");
+            passed.Add(body ? "Low arc body contact: no false face classification" : blocked ? "Low arc: post-lock wall contact + no damage + shared impact snapshot" : "Low arc: canopy cleared + face hit + contact snapshot, <=50 preflight queries");
+        }
+        finally { Object.DestroyImmediate(holder); Object.DestroyImmediate(p); }
+    }
+
+    private static void CheckGiantRouteBudget(List<string> passed)
+    {
+        using var world = CounterplayWorld("giant navigation");
+        var holder = new GameObject("Temporary giant navigation budget");
+        var p = Object.Instantiate(AssetDatabase.LoadAssetAtPath<AlienCreatureProfile>("Assets/AlienCreatures/Profiles/Tentacle.asset"));
+        p.Liquid = false; p.BossRepositionSpeed = 0; p.PatrolRadius = 0;
+        Vector3 origin = new Vector3(-10250, 1000, -10250);
+        UnityEngine.AI.NavMeshData nav = null;
+        UnityEngine.AI.NavMeshDataInstance navInstance = default;
+        try
+        {
+            CounterplayBox(holder.transform, "Floor", origin - Vector3.up * .25f, new Vector3(100, .5f, 100));
+            CounterplayBox(holder.transform, "Human opening left", origin + new Vector3(-1.75f, 5, 5), new Vector3(1.5f, 10, .5f));
+            CounterplayBox(holder.transform, "Human opening right", origin + new Vector3(1.75f, 5, 5), new Vector3(1.5f, 10, .5f));
+            var sources = new List<UnityEngine.AI.NavMeshBuildSource>();
+            var bounds = new Bounds(origin, new Vector3(70, 30, 70));
+            UnityEngine.AI.NavMeshBuilder.CollectSources(bounds, LayerMask.GetMask("Default", "Ground"),
+                UnityEngine.AI.NavMeshCollectGeometry.PhysicsColliders, 0, new List<UnityEngine.AI.NavMeshBuildMarkup>(), sources);
+            var settings = UnityEngine.AI.NavMesh.GetSettingsByIndex(0);
+            settings.agentRadius = .35f; settings.agentHeight = 1.8f;
+            settings.overrideVoxelSize = true; settings.voxelSize = .2f;
+            nav = UnityEngine.AI.NavMeshBuilder.BuildNavMeshData(settings, sources, bounds, Vector3.zero, Quaternion.identity);
+            Require(nav, "Temporary human NavMesh failed to build."); navInstance = UnityEngine.AI.NavMesh.AddNavMeshData(nav);
+            var humanPath = new UnityEngine.AI.NavMeshPath();
+            Require(UnityEngine.AI.NavMesh.CalculatePath(origin, origin + Vector3.forward * 10, UnityEngine.AI.NavMesh.AllAreas, humanPath) &&
+                humanPath.status == UnityEngine.AI.NavMeshPathStatus.PathComplete, "Human-width route was not reachable in the fixture.");
+            var actor = Alien(holder.transform, world, p, origin + Vector3.up * .56f * p.Scale, MultiplayerRole.Server, -22002);
+            var flags = BindingFlags.Instance | BindingFlags.NonPublic;
+            var steer = typeof(ProceduralAlienEnemy).GetMethod("UprightWaypoint", flags);
+            var clock = typeof(ProceduralAlienEnemy).GetField("m_Clock", flags);
+            Vector3 first = (Vector3)steer.Invoke(actor, new object[] { origin + Vector3.forward * 10 });
+            Require(actor.LastNavigationQueries <= 144 && Mathf.Abs(first.x - origin.x) > 1, "Narrow route did not select a safe side position: waypoint=" + first + " queries=" + actor.LastNavigationQueries);
+            int plans = actor.NavigationPlans;
+            for (int i = 1; i < 20; i++)
+            {
+                clock.SetValue(actor, i * .03f);
+                steer.Invoke(actor, new object[] { origin + Vector3.forward * 10 + Vector3.right * i * 3 });
+            }
+            Require(actor.NavigationPlans == plans, "Moving target bypassed the hard navigation frequency limit.");
+            clock.SetValue(actor, .8f); steer.Invoke(actor, new object[] { origin + Vector3.forward * 10 });
+            Require(actor.NavigationPlans == plans + 1 && actor.LastNavigationQueries <= 144, "Navigation did not resume within budget.");
+            passed.Add("Giant route: rejects actual human NavMesh opening, safe side position, moving target cannot bypass .75s / 144-query budget");
+        }
+        finally { if (navInstance.valid) navInstance.Remove(); if (nav) Object.DestroyImmediate(nav); Object.DestroyImmediate(holder); Object.DestroyImmediate(p); }
+    }
+
+    private static void CheckBlockedBallisticCorridor(List<string> passed)
+    {
+        using var world = CounterplayWorld("blocked arcs");
+        var holder = new GameObject("Temporary blocked arc corridor");
+        var p = Object.Instantiate(AssetDatabase.LoadAssetAtPath<AlienCreatureProfile>("Assets/AlienCreatures/Profiles/Tentacle.asset"));
+        p.Liquid = false; Vector3 origin = new Vector3(-10350, 1000, -10350);
+        try
+        {
+            CounterplayBox(holder.transform, "Low remote roof", origin + new Vector3(0, 2.1f, 25), new Vector3(12, .1f, 30));
+            var actor = Alien(holder.transform, world, p, origin + Vector3.up * 2.24f, MultiplayerRole.Server, -22003);
+            var probe = typeof(ProceduralAlienEnemy).GetMethod("MucusArcClear", BindingFlags.Instance | BindingFlags.NonPublic);
+            Vector3 from = origin + Vector3.up * 1.8f, to = from + Vector3.forward * 40;
+            Require(!Physics.Linecast(from, to, LayerMask.GetMask("Default", "Ground")), "Arc fixture has no straight sightline.");
+            Require(!(bool)probe.Invoke(actor, new object[] { from, to, false }) &&
+                !(bool)probe.Invoke(actor, new object[] { from, to, true }) && actor.LastArcQueries <= 50,
+                "An impossible roof corridor was considered a valid launch.");
+            passed.Add("Both arcs rejected under low remote roof despite clear straight sightline, bounded preflight");
+        }
+        finally { Object.DestroyImmediate(holder); Object.DestroyImmediate(p); }
+    }
+
+    private static void CheckContactPresentation(List<string> passed)
+    {
+        var holder = new GameObject("Temporary contact presentation");
+        var p = AssetDatabase.LoadAssetAtPath<AlienCreatureProfile>("Assets/AlienCreatures/Profiles/Tentacle.asset");
+        try
+        {
+            var pattern = AlienCombatPattern.For(p, 1, 1, AlienAttackKind.MucusSpit);
+            var state = new ProceduralAlienEnemy.State { Action = AlienAction.Recover, AttackSequence = 1,
+                ImpactSequence = 1, ImpactKind = AlienImpactKind.World, ImpactNormal = Vector3.left, ImpactPoint = Vector3.right * 4 };
+            using (var presentation = new AlienAttackPresentation(holder.transform, p))
+            {
+                presentation.Observe(state, pattern);
+                var particles = holder.GetComponentInChildren<ParticleSystem>(true);
+                Require(particles && particles.particleCount == 0, "First snapshot replayed old contact particles.");
+                state.ImpactSequence = 2; presentation.Observe(state, pattern);
+                int count = particles.particleCount;
+                Require(count > 0 && Vector3.Distance(particles.transform.position, state.ImpactPoint) < .01f &&
+                    Vector3.Dot(particles.transform.up, state.ImpactNormal) > .99f, "Contact particles ignored server position/normal.");
+                presentation.Observe(state, pattern);
+                Require(particles.particleCount == count, "Repeated snapshot duplicated the contact burst.");
+            }
+            passed.Add("Client contact: actual point/normal burst, duplicate suppression, late first snapshot silent");
+        }
+        finally { Object.DestroyImmediate(holder); }
+    }
+
     private static World CounterplayWorld(string name)
     {
         var world = new World("Counterplay " + name, WorldFlags.GameServer);

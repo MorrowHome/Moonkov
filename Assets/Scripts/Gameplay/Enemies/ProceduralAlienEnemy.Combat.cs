@@ -55,13 +55,14 @@ namespace Unity.MP_FPS
                 byte phase = profile.Boss && health.CurrentHealth <= health.MaxHealth * profile.EnrageHealthFraction ? (byte)2 : (byte)1;
                 var next = AlienCombatPattern.For(profile, phase, m_Attacks + 1);
                 // A short-range sequence must not prevent an otherwise visible ranged response.
-                if (profile.Boss && remembered && m_Visible && !CanBeginSpeciesAttack(next))
+                if (profile.Boss && remembered && m_Visible && m_Clock >= m_NextAttack && !CanBeginSpeciesAttack(next))
                     next = AlienCombatPattern.For(profile, phase, m_Attacks + 1, AlienAttackKind.MucusSpit);
-                if (remembered && m_Visible && m_Clock >= m_NextAttack && CanBeginSpeciesAttack(next))
+                if (remembered && m_Visible && m_Clock >= m_NextAttack && CanBeginSpeciesAttack(next) &&
+                    (next.Kind != AlienAttackKind.MucusSpit || PrepareMucusArc()))
                 {
                     m_Pattern = next; m_BossPhase = phase; m_Attacks++;
                     bool headShot = m_Pattern.Kind == AlienAttackKind.FaceLeap || m_Pattern.Kind == AlienAttackKind.MucusSpit;
-                    m_CombatOrigin = m_Pattern.Kind == AlienAttackKind.MucusSpit ? m_Body.AttackSocket + transform.forward * .4f + Vector3.up * .12f : transform.position;
+                    m_CombatOrigin = m_Pattern.Kind == AlienAttackKind.MucusSpit ? MucusSocket() : transform.position;
                     m_CombatPoint = headShot ? TargetHead(m_Target).position : m_LastSeen - Vector3.up;
                     if (!headShot && UnityEngine.Physics.Raycast(m_CombatPoint + Vector3.up * 2, Vector3.down,
                         out var floor, 6, LayerMask.GetMask("Default", "Ground"), QueryTriggerInteraction.Ignore)) m_CombatPoint = floor.point + floor.normal * .04f;
@@ -111,6 +112,9 @@ namespace Unity.MP_FPS
             if (Vector3.Distance(AimPoint, target) > next.Range) return false;
             var root = GhostGameObject.EntityManager.GetComponentObject<GhostGameObjectLink>(m_Target).LinkedInstance;
             if (!ClearSight(AimPoint, target, root.transform)) return false;
+            if (next.Kind == AlienAttackKind.TentacleSweep && !AlienCombatPattern.SweepContains(target,
+                transform.position, Vector3.ProjectOnPlane(target - transform.position, Vector3.up).normalized,
+                next.Radius, m_Body.Motor.BodyHeight)) return false;
             // A heavy mantle cannot warn forward and then sweep behind itself.
             // Roots erupt remotely and do not require a forward-facing melee arc.
             return !profile.Boss || profile.Species == AlienSpecies.Roots ||
@@ -156,10 +160,8 @@ namespace Unity.MP_FPS
                         point = TargetHead(entity).position;
                         hit = DistanceToSegment(point, previous, transform.position) <= m_Pattern.Radius; break;
                     case AlienAttackKind.TentacleSweep:
-                        Vector3 delta = Vector3.ProjectOnPlane(point - m_CombatOrigin, Vector3.up);
-                        // Every pulse uses the committed, visible sector, including enrage.
-                        hit = delta.magnitude <= m_Pattern.Radius && Vector3.Angle(m_CombatDirection, delta) <= 65 &&
-                            Mathf.Abs(point.y - m_CombatOrigin.y + m_Body.Motor.BodyHeight) < 2; break;
+                        hit = AlienCombatPattern.SweepContains(point, m_CombatOrigin, m_CombatDirection,
+                            m_Pattern.Radius, m_Body.Motor.BodyHeight); break;
                     case AlienAttackKind.SlimePulse:
                         centre = m_CombatOrigin; sightOrigin = centre + Vector3.up * .25f;
                         hit = GroundDistance(point, centre) <= m_Pattern.Radius && Mathf.Abs(point.y - centre.y) < 2; break;

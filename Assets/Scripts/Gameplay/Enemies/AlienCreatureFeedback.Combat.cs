@@ -4,6 +4,7 @@ namespace Unity.MP_FPS
 {
     public sealed partial class AlienCreatureFeedback
     {
+        private AlienAttackEvents m_Events;
         private bool m_HasAttackSnapshot;
         private uint m_DetailSequence;
         private AlienAction m_DetailAction;
@@ -15,6 +16,8 @@ namespace Unity.MP_FPS
         {
             if (m_Disposed) return;
             m_StrikeDuration = Mathf.Max(.01f, pattern.Active);
+            bool launch = m_Events.Launch(state);
+            bool impact = m_Events.Impact(state);
             int pulse = pattern.PulseAt(state.ActionTime);
             if (!m_HasAttackSnapshot)
             {
@@ -28,15 +31,16 @@ namespace Unity.MP_FPS
             bool sequence = state.AttackSequence != m_DetailSequence;
             if (sequence) m_DetailPulse = -1;
             var library = MoonkovAudio.Library;
+            if (launch)
+            {
+                bool spit = pattern.Kind == AlienAttackKind.MucusSpit || pattern.Kind == AlienAttackKind.AcidSpit;
+                Play(Cue.AttackMotion, socket, spit ? .9f : .8f, spit ? library?.AlienSpit : library?.AlienSwing);
+            }
+            if (impact) Play(Cue.AttackImpact, state.ImpactPoint, .9f, library?.AlienImpact, true);
             if (state.Action == AlienAction.Strike && state.AttackSequence != 0 &&
                 state.ActionTime <= pattern.Active && pulse > m_DetailPulse)
             {
                 m_DetailPulse = pulse; // Only the current pulse; never catch up a burst of missed snapshots.
-                if (entry || sequence)
-                {
-                    bool spit = pattern.Kind == AlienAttackKind.MucusSpit || pattern.Kind == AlienAttackKind.AcidSpit;
-                    Play(Cue.AttackMotion, socket, spit ? .9f : .8f, spit ? library?.AlienSpit : library?.AlienSwing);
-                }
                 switch (pattern.Kind)
                 {
                     case AlienAttackKind.AcidSpit:
@@ -49,7 +53,7 @@ namespace Unity.MP_FPS
                         break;
                     case AlienAttackKind.TentacleSweep:
                     case AlienAttackKind.StiltRake:
-                        if (!entry && !sequence) Play(Cue.AttackMotion, socket, .65f, library?.AlienSwing);
+                        if (pulse > 0) Play(Cue.AttackMotion, socket, .65f, library?.AlienSwing);
                         break;
                     case AlienAttackKind.LeechDrain:
                         Play(Cue.Grip, socket, .6f, library?.AlienGrip);

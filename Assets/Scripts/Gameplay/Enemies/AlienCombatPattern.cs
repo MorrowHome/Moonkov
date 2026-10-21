@@ -15,6 +15,12 @@ namespace Unity.MP_FPS
         public float PulseTime(int pulse) => .08f + pulse * Active / Mathf.Max(1, Pulses);
         public int PulseAt(float age) => age < PulseTime(0) ? -1 :
             Mathf.Clamp(Mathf.FloorToInt((age - .08f) / Mathf.Max(.01f, Active / Mathf.Max(1, Pulses))), 0, Mathf.Max(0, Pulses - 1));
+        public static bool SweepContains(Vector3 point, Vector3 origin, Vector3 direction, float radius, float bodyHeight)
+        {
+            Vector3 delta = Vector3.ProjectOnPlane(point - origin, Vector3.up);
+            return delta.magnitude <= radius && Vector3.Angle(direction, delta) <= 65 &&
+                Mathf.Abs(point.y - origin.y + bodyHeight) < 2;
+        }
         public static AlienCombatPattern For(AlienCreatureProfile profile, byte phase, uint sequence, AlienAttackKind? committed = null)
         {
             float scale = Mathf.Clamp(profile.Scale, .1f, 4);
@@ -71,4 +77,29 @@ namespace Unity.MP_FPS
             return p;
         }
     }
+    public enum AlienImpactKind : byte { None, World, Body, Face }
+
+    // Each client owns its gates; the first snapshot establishes a baseline, including late join.
+    public struct AlienAttackEvents
+    {
+        private bool m_Observed;
+        private uint m_Attack, m_Launch, m_Impact;
+        public bool Launch(in ProceduralAlienEnemy.State state)
+        {
+            if (!m_Observed)
+            { m_Observed = true; m_Attack = state.AttackSequence; m_Launch = state.Action == AlienAction.Strike ? state.AttackSequence : 0; return false; }
+            if (unchecked((int)(state.AttackSequence - m_Attack)) < 0) return false;
+            m_Attack = state.AttackSequence;
+            if (state.Action != AlienAction.Strike || state.AttackSequence == 0 || m_Launch == state.AttackSequence) return false;
+            m_Launch = state.AttackSequence; return true;
+        }
+        private bool m_ImpactObserved;
+        public bool Impact(in ProceduralAlienEnemy.State state)
+        {
+            if (!m_ImpactObserved) { m_ImpactObserved = true; m_Impact = state.ImpactSequence; return false; }
+            if (state.ImpactSequence == 0 || unchecked((int)(state.ImpactSequence - m_Impact)) <= 0) return false;
+            m_Impact = state.ImpactSequence; return state.ImpactKind != AlienImpactKind.None;
+        }
+    }
+
 }

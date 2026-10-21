@@ -93,7 +93,7 @@ namespace Unity.MP_FPS
             if (m_ApproachBlocked < 1.2f) return;
             // Bounded fallback prevents a flanking goal pinning the creature to a wall.
             m_DirectUntil = m_Clock + 2; m_ApproachBlocked = 0;
-            m_NextUprightPath = 0;
+            m_BlockedGroundGoal = m_UprightGoal; m_BlockedGroundUntil = m_Clock + 3;
             m_NextSearchPoint = 0;
         }
     }
