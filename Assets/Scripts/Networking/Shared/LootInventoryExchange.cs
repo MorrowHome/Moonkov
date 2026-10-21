@@ -1,3 +1,4 @@
+#nullable disable
 using System;
 using System.Linq;
 
@@ -52,6 +53,30 @@ namespace Unity.MP_FPS.Inventory
             if(cache.Validate()!=InventoryError.None)throw new InvalidOperationException("Death bag lost an inventory hierarchy.");
             carried.Items.RemoveAll(i=>InventoryCatalog.Get(i.Code).Kind!=ItemKind.Root);carried.Version++;
             return cache;
+        }
+        // Prepare both owners without mutating either. Registration must succeed before commit.
+        public static InventoryError PrepareDrop(InventoryGraph carried, string itemId, int expectedVersion,
+            out InventoryGraph remaining, out InventoryGraph dropped)
+        {
+            remaining = null; dropped = null;
+            if (carried == null || carried.Validate() != InventoryError.None || carried.Find("stash") != null || carried.Find(Root) != null)
+                return InventoryError.Invalid;
+            if (carried.Version != expectedVersion) return InventoryError.Stale;
+            var item = carried.Find(itemId);
+            if (item == null) return InventoryError.Missing;
+            if (!carried.Carried(item) || InventoryCatalog.Get(item.Code).Kind == ItemKind.Root) return InventoryError.Inaccessible;
+            var ids = new System.Collections.Generic.HashSet<string> { itemId };
+            for (int depth = 0; depth < InventoryCatalog.MaxDepth; depth++)
+                foreach (var child in carried.Items) if (child.Parent != null && ids.Contains(child.Parent)) ids.Add(child.Id);
+            var cache = InventoryGraph.Create(false, false); cache.LootRows = 24;
+            cache.Items.Add(new InventoryItem { Id = Root, Code = Root });
+            var top = item.Clone(); top.Rotated = false;
+            if (!cache.FindSpace(top, Root, out var region, out var x, out var y)) return InventoryError.Full;
+            top.Parent = Root; top.Region = region; top.X = x; top.Y = y; cache.Items.Add(top);
+            cache.Items.AddRange(carried.Items.Where(i => i.Id != itemId && ids.Contains(i.Id)).Select(i => i.Clone()));
+            var next = carried.Clone(); next.Items.RemoveAll(i => ids.Contains(i.Id)); next.Version++;
+            if (cache.Validate() != InventoryError.None || next.Validate() != InventoryError.None) return InventoryError.Invalid;
+            remaining = next; dropped = cache; return InventoryError.None;
         }
         public static InventoryError TryApply(InventoryGraph carried,InventoryGraph cache,InventoryCommand command,int expectedCacheVersion)
         {

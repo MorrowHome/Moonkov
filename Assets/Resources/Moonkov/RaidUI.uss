@@ -89,3 +89,9 @@
 .raid-ui .raid-inventory-title { color: #2b3b32; font-size: 22px; letter-spacing: 2px; }
 .raid-ui .raid-inventory-header Button { color: #334b3d; background-color: #c4cbb7; height: 32px; margin-top: 0; }
 .raid-ui .raid-inventory-header Button:hover { color: #f1eee2; background-color: #884c43; }
+
+.raid-timed-action { padding: 10px; background-color: rgba(12, 22, 22, 0.94); border-width: 1px; border-color: #91a08c; }
+.raid-timed-action .unity-progress-bar__background { min-height: 48px; background-color: #17241e; border-width: 0; }
+.raid-timed-action .unity-progress-bar__progress { background-color: #485f51; border-width: 0; }
+.raid-ui .raid-timed-action .unity-progress-bar__title { white-space: normal; color: #f1eee2; font-size: 14px; -unity-text-align: middle-center; }
+.raid-ui .raid-timed-action Button { margin-top: 8px; min-height: 32px; font-size: 13px; }

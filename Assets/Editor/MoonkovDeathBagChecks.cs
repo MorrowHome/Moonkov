@@ -23,7 +23,7 @@ public static class MoonkovDeathBagChecks
         var nested=dead.Items.Single(i=>i.Code=="small_pack");
         Require(dead.AddSupply("dust",2,nested.Id,true)==InventoryError.None && dead.AddSupply("cells",2)==InventoryError.None,"Supplies fixture failed.");
         foreach(var slot in new[] {"Helmet","Primary","Secondary","Pistol"})
-            dead.Items.Add(new InventoryItem {Id=Guid.NewGuid().ToString("D"),Code=slot=="Helmet" ? "helmet" : slot=="Pistol" ? "pistol" : "rifle",Parent="equipment",Region=slot});
+            if(dead.Equipped(slot)==null)dead.Items.Add(new InventoryItem {Id=Guid.NewGuid().ToString("D"),Code=slot=="Helmet" ? "helmet" : slot=="Pistol" ? "pistol" : "rifle",Parent="equipment",Region=slot});
         Require(dead.Validate()==InventoryError.None,"Full loadout fixture invalid.");
         var before=dead.Clone();int version=dead.Version;
         var world=new RaidLootContainers();world.Initialize(24);

@@ -15,5 +15,7 @@ stack atomically. Full health, death, inaccessible storage and stale/replayed
 requests do not consume an item. Healing and inventory return through the existing
 ghost state and inventory snapshot channels. Account APIs never modify raid health.
 
+Medical use now takes three server-timed seconds with progress/cancellation at every player entry. Movement, damage, firing, switching/reloading, inventory changes and cancellation interrupt without consumption. See [timed actions and ground drops](RaidTimedActionsAndDrop.md) for the exact contract and checks.
+
 Targeted validation covers capped healing, full-health/death rejection, inaccessible
 storage and stale replay. Actual two-client use and visual feel need in-game acceptance.

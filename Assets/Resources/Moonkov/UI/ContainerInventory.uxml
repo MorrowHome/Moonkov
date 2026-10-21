@@ -8,7 +8,7 @@
                 <ui:Label text="DOLLSINGER" class="inventory-character-title" picking-mode="Ignore" />
                 <ui:Label text="EQUIPMENT / FIELD LOADOUT" class="inventory-caption" picking-mode="Ignore" />
                 <ui:VisualElement name="characterStage" class="inventory-character-stage">
-                    <ui:VisualElement name="slotLayer" class="inventory-slot-layer" />
+                    <ui:VisualElement name="slotLayer" picking-mode="Ignore" class="inventory-slot-layer" />
                 </ui:VisualElement>
                 <ui:Label name="inventoryWeight" class="inventory-weight" picking-mode="Ignore" />
             </ui:VisualElement>

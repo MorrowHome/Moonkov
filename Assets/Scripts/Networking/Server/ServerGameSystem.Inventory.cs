@@ -1,6 +1,7 @@
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
+using Unity.Transforms;
 using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS
@@ -13,6 +14,7 @@ namespace Unity.MP_FPS
             RaidInventoryState inventory;
             if (state.EntityManager.HasComponent<RaidInventoryState>(connection)) inventory = state.EntityManager.GetComponentObject<RaidInventoryState>(connection);
             else { inventory = new RaidInventoryState(); state.EntityManager.AddComponentObject(connection, inventory); }
+            inventory.CancelActions();inventory.SearchedLoot.Clear();
             inventory.Graph = graph; inventory.RaidId=raidId; inventory.LastSentVersion = -1; inventory.OpenedLootId=-1;inventory.LastSentLootVersion=-1;
             inventory.MissionFirstsBefore = inventory.MissionFirstsSaved = Persistence(ref state).Profiles.TryGetValue(connection, out var profile) &&
                 !string.IsNullOrEmpty(profile.InventoryJson) ? RaidInventoryTransport.Decode(profile.InventoryJson).MissionFirsts : 0;
@@ -40,6 +42,44 @@ namespace Unity.MP_FPS
         }
         private void HandleInventoryRequests(ref SystemState state, EntityCommandBuffer ecb)
         {
+            foreach(var (request,received,entity) in SystemAPI.Query<RefRO<RaidActionCancelRpc>,RefRO<ReceiveRpcCommandRequest>>().WithEntityAccess())
+            {
+                var connection=received.ValueRO.SourceConnection;var r=request.ValueRO;
+                if(SystemAPI.HasComponent<RaidSession>(connection) && state.EntityManager.HasComponent<RaidInventoryState>(connection))
+                {
+                    var inventory=GetRaidInventory(ref state,connection);
+                    if(r.RaidId==inventory.RaidId && r.RequestId>inventory.RequestId)
+                    {inventory.RequestId=r.RequestId;inventory.CancelActions("已取消操作；未消耗物品或获得收益。");inventory.Error=InventoryError.None;}
+                }
+                ecb.DestroyEntity(entity);
+            }
+            foreach(var (request,received,entity) in SystemAPI.Query<RefRO<RaidInventoryDropRpc>,RefRO<ReceiveRpcCommandRequest>>().WithEntityAccess())
+            {
+                var connection=received.ValueRO.SourceConnection;var r=request.ValueRO;
+                if(SystemAPI.HasComponent<RaidSession>(connection) && SystemAPI.HasComponent<JoinedClient>(connection) &&
+                    state.EntityManager.HasComponent<RaidInventoryState>(connection))
+                {
+                    var inventory=GetRaidInventory(ref state,connection);var session=SystemAPI.GetComponentRW<RaidSession>(connection);
+                    if(r.RequestId>inventory.RequestId)
+                    {
+                        inventory.RequestId=r.RequestId;inventory.ActionFeedback=null;inventory.Error=InventoryError.Inaccessible;
+                        var player=SystemAPI.GetComponent<JoinedClient>(connection).PlayerEntity;
+                        if(session.ValueRO.Phase==RaidPhase.Active && r.RaidId==session.ValueRO.RaidId && r.RaidId==inventory.RaidId &&
+                            !inventory.ActionPending && !SystemAPI.HasComponent<NetworkStreamRequestDisconnect>(connection) &&
+                            TryGetLivingPosition(ref state,player,out var position))
+                        {
+                            // The server chooses a nearby grounded position; clients cannot supply one.
+                            if(UnityEngine.Physics.Raycast((UnityEngine.Vector3)position+UnityEngine.Vector3.up,UnityEngine.Vector3.down,
+                                out var ground,4,UnityEngine.LayerMask.GetMask("Default","Ground"),UnityEngine.QueryTriggerInteraction.Ignore))
+                                position=ground.point;
+                            inventory.Error=LootContainers(ref state).DropItem(inventory.Graph,r.ItemId.ToString(),r.ExpectedVersion,
+                                position,SystemAPI.Time.ElapsedTime,out _);
+                        }
+                        inventory.LastSentVersion=-1;RaidInventoryState.UpdateTotals(inventory.Graph,ref session.ValueRW);
+                    }
+                }
+                ecb.DestroyEntity(entity);
+            }
             foreach (var (request, received, entity) in SystemAPI.Query<RefRO<RaidConsumableUseRpc>, RefRO<ReceiveRpcCommandRequest>>().WithEntityAccess())
             {
                 var connection = received.ValueRO.SourceConnection;
@@ -52,9 +92,9 @@ namespace Unity.MP_FPS
                     // same monotonic request stream as medical use and item moves.
                     if (r.RequestId > inventory.RequestId)
                     {
-                        inventory.RequestId = r.RequestId; inventory.Error = InventoryError.Inaccessible;
+                        inventory.RequestId = r.RequestId; inventory.ActionFeedback=null; inventory.Error = InventoryError.Inaccessible;
                         var player = SystemAPI.GetComponent<JoinedClient>(connection).PlayerEntity;
-                        if (session.Phase == RaidPhase.Active && session.RaidId == r.RaidId && inventory.RaidId == r.RaidId &&
+                        if (session.Phase == RaidPhase.Active && session.RaidId == r.RaidId && inventory.RaidId == r.RaidId && !inventory.ActionPending &&
                             SystemAPI.Exists(player) && SystemAPI.HasComponent<PredictedPlayerGhost>(player))
                         {
                             var ghost = SystemAPI.GetComponentRW<PredictedPlayerGhost>(player);
@@ -82,15 +122,15 @@ namespace Unity.MP_FPS
                     // intents cannot heal again, including after respawn/deployment.
                     if (r.RequestId > inventory.RequestId)
                     {
-                        inventory.RequestId = r.RequestId;
+                        inventory.RequestId = r.RequestId;inventory.ActionFeedback=null;
                         inventory.Error = InventoryError.Inaccessible;
                         var player = SystemAPI.GetComponent<JoinedClient>(connection).PlayerEntity;
                         if (session.Phase == RaidPhase.Active && session.RaidId == r.RaidId &&
-                            inventory.RaidId == r.RaidId && SystemAPI.Exists(player) && SystemAPI.HasComponent<PredictedPlayerGhost>(player))
+                            inventory.RaidId == r.RaidId && TryGetLivingPosition(ref state,player,out var medicalPosition))
                         {
                             var ghost = SystemAPI.GetComponentRW<PredictedPlayerGhost>(player);
-                            inventory.Error = RaidHealth.UseMedical(ref ghost.ValueRW, inventory.Graph,
-                                r.ItemId.ToString(), r.ExpectedVersion, r.Part);
+                            inventory.Error = inventory.BeginMedical(ghost.ValueRO,r.ItemId.ToString(),r.ExpectedVersion,r.Part,
+                                medicalPosition,SystemAPI.Time.ElapsedTime,MoonRaidMap.Active.MedicalSeconds);
                         }
                         inventory.LastSentVersion = -1;
                     }
@@ -105,8 +145,9 @@ namespace Unity.MP_FPS
                     var session = SystemAPI.GetComponentRW<RaidSession>(connection); var inventory = GetRaidInventory(ref state, connection); var r = request.ValueRO;
                     if (r.RequestId > inventory.RequestId)
                     {
-                        inventory.RequestId = r.RequestId;
-                        inventory.Error = session.ValueRO.Phase != RaidPhase.Active || session.ValueRO.RaidId != r.RaidId ? InventoryError.Inaccessible
+                        inventory.RequestId = r.RequestId;inventory.ActionFeedback=null;
+                        inventory.Error = session.ValueRO.Phase != RaidPhase.Active || session.ValueRO.RaidId != r.RaidId || inventory.ActionPending ||
+                            SystemAPI.HasComponent<NetworkStreamRequestDisconnect>(connection) ? InventoryError.Inaccessible
                             : inventory.Graph.TryApply(new InventoryCommand { ExpectedVersion=r.ExpectedVersion, Operation=r.Operation, ItemId=r.ItemId.ToString(),
                                 Parent=r.Parent.ToString(), Region=r.Region.ToString(), TargetId=r.TargetId.ToString(), X=r.X, Y=r.Y, Rotated=r.Rotated, Quantity=r.Quantity });
                         inventory.LastSentVersion = -1;
@@ -127,7 +168,8 @@ namespace Unity.MP_FPS
             inventory.LastSentLootVersion=lootVersion;
             var snapshot=cache==null ? inventory.Graph : LootInventoryExchange.Snapshot(inventory.Graph,cache);
             var json = RaidInventoryTransport.EncodeSnapshot(snapshot,cache==null ? -1 : inventory.OpenedLootId,lootVersion,
-                inventory.DissectingLootId,(float)System.Math.Max(0,inventory.DissectionUntil-SystemAPI.Time.ElapsedTime));
+                inventory.DissectingLootId,(float)System.Math.Max(0,inventory.DissectionUntil-SystemAPI.Time.ElapsedTime),
+                inventory.MedicalItemId,(float)System.Math.Max(0,inventory.MedicalUntil-SystemAPI.Time.ElapsedTime),inventory.ActionFeedback);
             const int fragmentSize = RaidInventoryTransport.ChunkCharacters;
             int count = (json.Length + fragmentSize - 1) / fragmentSize;
             for (int index = 0; index < count; index++)

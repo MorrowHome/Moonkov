@@ -33,6 +33,9 @@ namespace Unity.MP_FPS
         [SerializeField, Range(0, 24)] private float m_StartHour = 7;
         [SerializeField, Min(1)] private float m_DayLengthMinutes = 24;
         [SerializeField] private bool m_TimeRunning = true;
+        [Header("Timed actions (server authority)")]
+        [SerializeField, Min(.1f)] private float m_MedicalSeconds = 3;
+        [SerializeField, Min(.1f)] private float m_SearchSeconds = 2;
         [Header("Survival (server authority)")]
         [Tooltip("Optional shared oxygen profile. When empty, existing scene values below are retained.")]
         [SerializeField] private OxygenSettings m_OxygenSettings;
@@ -64,6 +67,8 @@ namespace Unity.MP_FPS
             index < m_LootGroundNormals.Length && m_LootGroundNormals[index].sqrMagnitude > .5f
             ? m_LootGroundNormals[index].normalized : Vector3.up;
         public Vector3 ExtractionPosition => m_ExtractionPosition;
+        public float MedicalSeconds => float.IsFinite(m_MedicalSeconds) && m_MedicalSeconds>0 ? Mathf.Max(.1f,m_MedicalSeconds) : 3;
+        public float SearchSeconds => float.IsFinite(m_SearchSeconds) && m_SearchSeconds>0 ? Mathf.Max(.1f,m_SearchSeconds) : 2;
         public float RaidDuration => m_RaidDuration;
         public float ExtractionSeconds => m_ExtractionSeconds;
         public float ExtractionRadius => m_ExtractionRadius;
@@ -167,6 +172,17 @@ namespace Unity.MP_FPS
             foreach(var bag in state.Bags.Values)
             {
                 if(m_DeathBags.ContainsKey(bag.LootId))continue;
+                if(bag.CharacterIndex == RaidLootContainers.DroppedItemCharacterIndex)
+                {
+                    var dropped = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    dropped.name = "Dropped supplies / " + bag.LootId;
+                    dropped.transform.SetParent(transform,false);
+                    dropped.transform.SetPositionAndRotation((Vector3)bag.Position+Vector3.up*.15f,bag.Rotation);
+                    dropped.transform.localScale = new Vector3(.4f,.3f,.3f);
+                    Destroy(dropped.GetComponent<Collider>());
+                    m_DeathBags.Add(bag.LootId,dropped);
+                    continue;
+                }
                 if(bag.CharacterIndex == -1)
                 {
                     m_DeathBags.Add(bag.LootId, AlienLootVisual.Create(transform, bag));

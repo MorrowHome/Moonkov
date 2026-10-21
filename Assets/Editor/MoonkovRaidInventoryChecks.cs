@@ -76,6 +76,8 @@ public static class MoonkovRaidInventoryChecks
         using var view = new ContainerInventoryView(root, false, _ => { });
         Require(root.Query<Label>(className: "inventory-section-title").ToList().Count == 3, "Loading inventory hides container headings.");
         Require(root.Q<Label>("item").text == "LOADING", "Unknown equipment is presented as empty.");
+        Require(root.Q("slotLayer").pickingMode==PickingMode.Ignore && root.Q("inventorySlotBackpack").pickingMode==PickingMode.Position,
+            "Full-screen slot layer blocks character preview input or disables equipment buttons.");
         view.Present(graph);
         var method = typeof(ContainerInventoryView).GetMethod("Command", BindingFlags.Instance | BindingFlags.NonPublic);
         var cell = graph.Items.Single(item => item.Code == "cells");

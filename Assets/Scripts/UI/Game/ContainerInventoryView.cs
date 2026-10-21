@@ -19,6 +19,7 @@ namespace Unity.MP_FPS.Client
         private readonly Label m_Weight, m_Message;
         private readonly Action<InventoryCommand> m_Send;
         private readonly Action<InventoryItem> m_UseMedical;
+        private readonly Action<InventoryItem> m_Drop;
         private readonly Action<InventoryItem> m_UseConsumable;
         private readonly TerminalWindows m_Windows;
         private readonly VisualTreeAsset m_ItemTemplate, m_ContainerTemplate, m_SlotTemplate;
@@ -34,6 +35,7 @@ namespace Unity.MP_FPS.Client
         private string m_ReadOnlyReason;
         private string m_SelectedItemId;
         private int m_LootId=-1;
+        private bool m_DroppedItem;
         private int m_RenderedVersion = int.MinValue;
         private int m_EscapeHandledFrame = -1;
         public VisualElement Element => m_Root;
@@ -45,10 +47,10 @@ namespace Unity.MP_FPS.Client
             MoonkovLocalization.Set(m_Message, reason ?? "Drag to move · R rotate · Double click containers · Ctrl click transfer");
         }
         public ContainerInventoryView(VisualElement parent, bool showStash, Action<InventoryCommand> send,
-            Action<InventoryItem> useMedical = null, Action<InventoryItem> useConsumable = null)
+            Action<InventoryItem> useMedical = null, Action<InventoryItem> useConsumable = null, Action<InventoryItem> drop = null)
         {
             m_Stash = showStash; m_Send = send; m_UseMedical = useMedical;
-            m_UseConsumable = useConsumable;
+            m_UseConsumable = useConsumable; m_Drop = drop;
             m_Root = TerminalLayout.Clone("ContainerInventory", "containerInventory");
             m_Root.EnableInClassList("inventory-with-stash", showStash);
             m_Root.RemoveFromClassList("moonkov-controls-light");
@@ -136,7 +138,7 @@ namespace Unity.MP_FPS.Client
                 case "halo_mooncore_recycler":return StashArtKind.HaloMooncoreRecycler;
                 case "rig":return StashArtKind.ChestRig; case "backpack":case "small_pack":return StashArtKind.Backpack; default:return StashArtKind.None; }
         }
-        public void Present(InventoryGraph graph, string message = null, bool operationCompleted = true, int lootId=-1)
+        public void Present(InventoryGraph graph, string message = null, bool operationCompleted = true, int lootId=-1, bool droppedItem=false)
         {
             if (m_Disposed) return;
             if (m_Busy && operationCompleted)
@@ -144,7 +146,7 @@ namespace Unity.MP_FPS.Client
                 if (message != null) MoonkovAudio.Error();
                 else MoonkovAudio.Play(MoonkovAudio.Library?.Equipment, Vector3.zero);
             }
-            bool changed = m_Graph != graph || m_RenderedVersion != (graph?.Version ?? -1) || m_LootId!=lootId; m_Graph = graph;m_LootId=lootId;
+            bool changed = m_Graph != graph || m_RenderedVersion != (graph?.Version ?? -1) || m_LootId!=lootId || m_DroppedItem!=droppedItem; m_Graph = graph;m_LootId=lootId;m_DroppedItem=droppedItem;
             if (operationCompleted) m_Busy = false;
             if (changed) { CancelDrag(); Render(); m_RenderedVersion=graph?.Version ?? -1; }
             if (message != null) MoonkovLocalization.Set(m_Message, message);
@@ -195,7 +197,7 @@ namespace Unity.MP_FPS.Client
             AddContainer(m_ContainerPane, m_Graph.Equipped("ChestRig"), "CHEST RIG");
             AddContainer(m_ContainerPane, m_Graph.Equipped("Backpack"), "BACKPACK");
             if(loot!=null)AddContainer(m_LootPane,loot,m_LootId>=RaidLootContainers.FirstMissionCacheId ? "任务输出槽 / 任务产物"
-                : m_LootId>=RaidLootContainers.FirstDeathBagId ? "FALLEN EXPEDITION / GEAR" : "SUPPLY CACHE / "+(m_LootId+1).ToString("00"));
+                : m_DroppedItem ? "地面丢弃物 / DROPPED SUPPLIES" : m_LootId>=RaidLootContainers.FirstDeathBagId ? "FALLEN EXPEDITION / GEAR" : "SUPPLY CACHE / "+(m_LootId+1).ToString("00"));
             if (m_Stash) AddContainer(m_StashPane, m_Graph.Find("stash"), "PERSONAL STORAGE");
             foreach (var id in new List<string>(m_Open)) { var item = m_Graph.Find(id); if (item == null) m_Open.Remove(id); else OpenContainer(item, false); }
         }
@@ -311,6 +313,12 @@ namespace Unity.MP_FPS.Client
                     m_Windows.Close(window); m_Busy = true; m_UseMedical(item);
                 });
             if (HaloModules.IsWeapon(item.Code) && m_Stash) MoonkovTerminal.ActionButton(window, "MODIFY HALO", () => { m_Windows.Close(window); OpenModification(item); });
+            if (m_Drop != null && !m_Stash && m_Graph.Carried(item))
+                MoonkovTerminal.ActionButton(window, "丢弃到地面 / DROP", () =>
+                {
+                    if(m_Busy || m_ReadOnlyReason!=null)return;
+                    m_Windows.Close(window);m_Busy=true;m_Drop(item);
+                });
             MoonkovTerminal.ActionButton(window, "INSPECT", ()=> { m_Windows.Close(window); OpenInspection(item); });
             if (InventoryCatalog.Get(item.Code).Container) MoonkovTerminal.ActionButton(window, "OPEN CONTAINER", ()=> { m_Windows.Close(window); OpenContainer(item); });
             MoonkovTerminal.ActionButton(window, "QUICK TRANSFER", ()=> { m_Windows.Close(window); QuickTransfer(item); });
@@ -355,9 +363,7 @@ namespace Unity.MP_FPS.Client
             if(m_Graph.Find(LootInventoryExchange.Root)!=null && m_Graph.Carried(item))
             {if(!AutoMove(item,LootInventoryExchange.Root))MoonkovLocalization.Set(m_Message, "No compatible free space in this cache.");return;}
             if (m_Stash && m_Graph.Carried(item)) { if (!AutoMove(item,"stash")) MoonkovLocalization.Set(m_Message, "No free space in storage."); return; }
-            if (!m_Graph.Carried(item)) foreach (var region in InventoryCatalog.Get("equipment").Regions)
-                if (region.SlotKind==InventoryCatalog.Get(item.Code).Kind && m_Graph.Equipped(region.Id)==null) { Command(new InventoryCommand { ItemId=item.Id, Parent="equipment", Region=region.Id }); return; }
-            foreach (string parent in m_Graph.CarryContainers()) if (parent!=item.Parent && parent!=item.Id && AutoMove(item,parent)) return;
+            foreach (string parent in m_Graph.QuickTransferContainers()) if (parent!=item.Parent && parent!=item.Id && AutoMove(item,parent)) return;
             MoonkovLocalization.Set(m_Message, "No compatible free space.");
         }
         private bool AutoMove(InventoryItem item, string parent)

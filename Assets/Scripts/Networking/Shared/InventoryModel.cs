@@ -329,6 +329,13 @@ namespace Unity.MP_FPS.Inventory
             }
             return InventoryError.None;
         }
+        // Shortcut transfer never searches nested bags. Manual placement still can.
+        public IEnumerable<string> QuickTransferContainers()
+        {
+            if (Find(InventoryCatalog.Pockets) != null) yield return InventoryCatalog.Pockets;
+            var rig = Equipped("ChestRig"); if (rig != null) yield return rig.Id;
+            var pack = Equipped("Backpack"); if (pack != null) yield return pack.Id;
+        }
         public IEnumerable<string> CarryContainers()
         {
             // Direct pockets/rig access first; backpacks (including nested bags) last.

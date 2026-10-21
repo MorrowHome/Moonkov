@@ -74,3 +74,36 @@ Check(!refill.TryRefill(cache, 1400, 300, 2, false, random) && !refill.TryRefill
 var disabled = new RaidLootRefillState(RaidLootProfile.Medical);
 Check(!disabled.TryRefill(cache, 0, 1, 0, false, random) && !disabled.TryRefill(cache, 100, 1, 0, false, random), "Zero must disable refills");
 Console.WriteLine($"Raid loot checks passed: {generated} valid themed caches, unique IDs, profile guarantees, varied weighted rolls, cooldown, occupancy block, deposit preservation, stale version rejection and refill cap.");
+
+
+// One item or complete nested container tree transfers to ground without changing IDs/provenance.
+var dropOwner=InventoryGraph.Create(false);
+var equippedPack=dropOwner.Equipped("Backpack");
+var inner=new InventoryItem {Id=Guid.NewGuid().ToString("D"),Code="small_pack",Parent=equippedPack.Id,Region="main"};
+dropOwner.Items.Add(inner);
+Check(dropOwner.AddSupply("cells",2,inner.Id,true,emergencySupply:true,cellCharge:18)==InventoryError.None,"Drop nested fixture");
+Check(dropOwner.Validate()==InventoryError.None,"Drop source fixture invalid");
+var original=dropOwner.Clone();int dropVersion=dropOwner.Version;
+Check(LootInventoryExchange.PrepareDrop(dropOwner,equippedPack.Id,dropVersion-1,out _,out _)==InventoryError.Stale,"Stale drop accepted");
+Check(LootInventoryExchange.PrepareDrop(dropOwner,"pockets",dropVersion,out _,out _)==InventoryError.Inaccessible,"Root drop accepted");
+Check(LootInventoryExchange.PrepareDrop(dropOwner,"other-player-item",dropVersion,out _,out _)==InventoryError.Missing,"Foreign item drop accepted");
+Check(dropOwner.Version==dropVersion && dropOwner.Items.Count==original.Items.Count,"Rejected drop changed source");
+Check(LootInventoryExchange.PrepareDrop(dropOwner,equippedPack.Id,dropVersion,out var remaining,out var ground)==InventoryError.None,"Container drop rejected");
+Check(dropOwner.Version==dropVersion && dropOwner.Find(inner.Id)!=null,"Preparing drop committed early");
+Check(remaining.Find(equippedPack.Id)==null && remaining.Find(inner.Id)==null && remaining.Version==dropVersion+1,"Drop left duplicate descendants");
+var originalCells=original.Items.Single(i=>i.Parent==inner.Id);var groundCells=ground.Find(originalCells.Id);
+Check(ground.Find(equippedPack.Id)?.Parent=="loot" && ground.Find(inner.Id)?.Parent==equippedPack.Id &&
+    groundCells.Quantity==originalCells.Quantity && groundCells.FoundInRaid && groundCells.EmergencySupply && groundCells.CellCharge==18,"Drop changed nested identity or charge/provenance");
+var pickup=new InventoryCommand {ExpectedVersion=remaining.Version,ItemId=equippedPack.Id,Parent="equipment",Region="Backpack"};
+Check(LootInventoryExchange.TryApply(remaining,ground,pickup,ground.Version)==InventoryError.None && remaining.Find(inner.Id)!=null,"Ground tree cannot be picked up again");
+Check(LootInventoryExchange.TryApply(owner,ground,new InventoryCommand {ExpectedVersion=owner.Version,ItemId=equippedPack.Id,Parent="equipment",Region="Backpack"},1)==InventoryError.Stale,"Competing pickup duplicated ground item");
+var direct=original.QuickTransferContainers().ToArray();
+Check(direct.Length==3 && direct.Contains(equippedPack.Id) && !direct.Contains(inner.Id) && original.CarryContainers().Contains(inner.Id),"Shortcut must exclude nested bags while manual carry containers remain available");
+var loose=InventoryGraph.Create(false,false);loose.AddSupply("cells",2,foundInRaid:true,emergencySupply:true,cellCharge:17);
+var looseItem=loose.Items.Single(i=>i.Code=="cells");
+Check(LootInventoryExchange.PrepareDrop(loose,looseItem.Id,loose.Version,out var looseRest,out var looseGround)==InventoryError.None &&
+    looseRest.Count("cells")==0 && looseGround.Find(looseItem.Id).Quantity==2 && looseGround.Find(looseItem.Id).CellCharge==17,"Loose stack drop lost quantity/energy");
+Console.WriteLine("Drop/shortcut checks passed: atomic preparation, stale/foreign/root rejection, nested IDs/quantity/provenance/energy, whole-tree pickup, competing claimant and direct-container-only shortcut.");
+
+var malformedDrop=original.Clone();malformedDrop.Items.Add(null);
+Check(LootInventoryExchange.PrepareDrop(malformedDrop,equippedPack.Id,malformedDrop.Version,out _,out _)==InventoryError.Invalid && malformedDrop.Items.Last()==null,"Malformed drop must fail before ownership lookup without mutating source");

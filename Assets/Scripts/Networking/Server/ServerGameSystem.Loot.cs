@@ -22,7 +22,7 @@ namespace Unity.MP_FPS
             {
                 if(!state.EntityManager.HasComponent<RaidInventoryState>(connection))continue;
                 var inventory=GetRaidInventory(ref state,connection);
-                inventory.OpenedLootId=-1;inventory.DissectingLootId=-1;inventory.LastSentVersion=-1;inventory.LastSentLootVersion=-1;
+                inventory.OpenedLootId=-1;inventory.CancelActions();inventory.SearchedLoot.Clear();inventory.LastSentVersion=-1;inventory.LastSentLootVersion=-1;
                 inventory.SentDeathBags.Clear();
             }
         }
@@ -126,14 +126,15 @@ namespace Unity.MP_FPS
                     if(r.RequestId>inventory.RequestId)
                     {
                         inventory.RequestId=r.RequestId;
-                        bool accepted=r.RaidId==session.RaidId && (r.LootId==-1 || CanAccessLoot(ref state,connection,r.LootId,session));
-                        inventory.DissectingLootId=-1;
+                        bool accepted=r.RaidId==session.RaidId && inventory.RaidId==r.RaidId && (r.LootId==-1 || CanAccessLoot(ref state,connection,r.LootId,session));
+                        inventory.CancelActions();
                         inventory.OpenedLootId=accepted ? r.LootId : -1;
-                        if(accepted && caches.RequiresDissection(r.LootId))
+                        if(accepted && r.LootId>=0 && inventory.NeedsSearch(caches,r.LootId))
                         {
                             var player=SystemAPI.GetComponent<JoinedClient>(connection).PlayerEntity;
                             inventory.BeginDissection(r.LootId,SystemAPI.Time.ElapsedTime,SystemAPI.GetComponent<LocalTransform>(player).Position,
-                                SystemAPI.GetComponent<PredictedPlayerGhost>(player).LastHitTick);
+                                SystemAPI.GetComponent<PredictedPlayerGhost>(player).LastHitTick,
+                                caches.RequiresDissection(r.LootId) ? AlienHarvest.DissectionSeconds : MoonRaidMap.Active.SearchSeconds);
                         }
                         inventory.Error=accepted ? InventoryError.None : InventoryError.Inaccessible;
                         inventory.LastSentVersion=-1;
@@ -149,8 +150,8 @@ namespace Unity.MP_FPS
                     var session=SystemAPI.GetComponentRW<RaidSession>(connection);var inventory=GetRaidInventory(ref state,connection);
                     if(r.RequestId>inventory.RequestId)
                     {
-                        inventory.RequestId=r.RequestId;
-                        inventory.Error=r.RaidId!=session.ValueRO.RaidId || inventory.OpenedLootId!=r.LootId ||
+                        inventory.RequestId=r.RequestId;inventory.ActionFeedback=null;
+                        inventory.Error=r.RaidId!=session.ValueRO.RaidId || inventory.RaidId!=r.RaidId || inventory.ActionPending || inventory.OpenedLootId!=r.LootId ||
                             !CanAccessLoot(ref state,connection,r.LootId,session.ValueRO) || caches.RequiresDissection(r.LootId) ||
                             !caches.Containers.TryGetValue(r.LootId,out var cache)
                             ? InventoryError.Inaccessible
@@ -167,6 +168,16 @@ namespace Unity.MP_FPS
         private void RefreshLootAccess(ref SystemState state,Entity connection,RaidSession session)
         {
             var inventory=GetRaidInventory(ref state,connection);
+            if(inventory.MedicalItemId!=null)
+            {
+                var player=SystemAPI.GetComponent<JoinedClient>(connection).PlayerEntity;
+                bool accessible=session.Phase==RaidPhase.Active && inventory.RaidId==session.RaidId &&
+                    TryGetLivingPosition(ref state,player,out _);
+                var health=accessible ? SystemAPI.GetComponent<PredictedPlayerGhost>(player) : default;
+                var position=accessible ? SystemAPI.GetComponent<LocalTransform>(player).Position : inventory.MedicalOrigin;
+                inventory.RefreshMedical(ref health,accessible,position,SystemAPI.Time.ElapsedTime);
+                if(accessible)SystemAPI.SetComponent(player,health);
+            }
             if(inventory.DissectingLootId>=0)
             {
                 int id=inventory.DissectingLootId;
