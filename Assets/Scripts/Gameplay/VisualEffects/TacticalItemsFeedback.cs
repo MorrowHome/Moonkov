@@ -15,6 +15,8 @@ namespace Unity.MP_FPS
             public Vector3 Position,Velocity; public float Received,Expire; public uint Sequence;
         }
         private static TacticalItemsFeedback s_Active;
+        private TacticalItemsTransparentRenderer m_TransparentRenderer;
+        private bool m_Destroyed;
         private TacticalItemDefinition m_Selected;
         private bool m_PresentationBlocked;
         private string m_SelectedCode;private GameObject m_Held;
@@ -33,6 +35,8 @@ namespace Unity.MP_FPS
         private readonly Dictionary<int,CoughEmitter> m_CoughEmitters=new();
         private readonly List<int> m_ExpiredCoughs=new();
         private AudioClip m_Alarm,m_Burst,m_Cough;
+        private UnityEngine.Audio.AudioMixer m_AudioMixer;
+        private UnityEngine.Audio.AudioMixerGroup m_SfxGroup;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetStatics(){s_Active=null;LocalOwner=default;}
@@ -43,15 +47,27 @@ namespace Unity.MP_FPS
         {if(s_Active)s_Active.m_PresentationBlocked=blocked;}
         public static void SetSelectedItem(string code)
         {
-            if(string.IsNullOrEmpty(code)){if(s_Active){s_Active.m_Selected=null;s_Active.m_SelectedCode=null;if(s_Active.m_Held)s_Active.m_Held.SetActive(false);}return;}
+            var definition=TacticalItemRules.Find(code);
+            // The HUD also selects guns and ordinary supplies. They have no tactical prop.
+            if(definition==null && code!="energy_grenade")
+            {
+                if(s_Active)
+                {
+                    s_Active.m_Selected=null;s_Active.m_SelectedCode=null;
+                    if(s_Active.m_Held){s_Active.m_Held.SetActive(false);Release(s_Active.m_Held);s_Active.m_Held=null;}
+                    if(s_Active.m_Preview)s_Active.m_Preview.SetActive(false);
+                }
+                return;
+            }
             var feedback=GetOrCreate();
             if(feedback.m_SelectedCode==code)return;
-            feedback.m_SelectedCode=code;feedback.m_Selected=TacticalItemRules.Find(code);
+            feedback.m_SelectedCode=code;feedback.m_Selected=definition;
             if(feedback.m_Held)Release(feedback.m_Held);feedback.m_Held=null;
         }
         private void Awake()
         {
             s_Active=this;
+            m_TransparentRenderer?.Dispose();m_TransparentRenderer=new TacticalItemsTransparentRenderer(this,HasDeferredParticles);
             m_Metal=Material(new Color(.3f,.4f,.44f),true);m_Amber=Material(new Color(1,.42f,.035f));
             m_Red=Material(new Color(.8f,.12f,.08f));m_Green=Material(new Color(.32f,.8f,.1f));
             m_Cyan=Material(new Color(.06f,.8f,.9f));m_White=Material(new Color(.7f,.85f,.9f));m_Dark=Material(new Color(.065f,.085f,.1f),true);
@@ -68,10 +84,20 @@ namespace Unity.MP_FPS
             m_Cough=Tone("Moonkov choke hiss",.35f,90,35,true);
             m_Preview.SetActive(false);Unity.MP_FPS.Moon.MoonSilverPrintSubject.Protect(m_Preview);
         }
+        private bool HasDeferredParticles()
+        {
+            if(!this || !isActiveAndEnabled)return false;
+            foreach(var visual in m_Visuals.Values)
+                if(visual.Root && visual.Root.activeInHierarchy &&
+                    (visual.State.Phase==TacticalWorldPhase.Fire || visual.State.Phase==TacticalWorldPhase.Choke || visual.State.Phase==TacticalWorldPhase.Poison))return true;
+            // Cough emitters are audio only; they do not need a transparent render pass.
+            return false;
+        }
         private Material Material(Color color,bool lit=false)
         {
-            var shader=Shader.Find(lit ? "Universal Render Pipeline/Lit" : "Universal Render Pipeline/Unlit") ?? Shader.Find("Unlit/Color");
-            var material=new Material(shader){name="Tactical item shared material"};
+            var template=Resources.Load<Material>(lit ? "Moonkov/TacticalMetal" : "Moonkov/TacticalIndicator");
+            var shader=template ? template.shader : Shader.Find(lit ? "Universal Render Pipeline/Lit" : "Universal Render Pipeline/Unlit") ?? Shader.Find("Unlit/Color");
+            var material=template ? new Material(template) : new Material(shader);material.name="Tactical item shared material";
             material.SetColor("_BaseColor",color);material.SetColor("_Color",color);if(lit){material.SetFloat("_Metallic",.6f);material.SetFloat("_Smoothness",.35f);}m_Materials.Add(material);return material;
         }
         private Material VolumeMaterial(Color color,bool flame)
@@ -252,7 +278,7 @@ namespace Unity.MP_FPS
             main.startSpeed=0;main.startSize=new ParticleSystem.MinMaxCurve(flame ? .45f : .9f,flame ? .85f : 1.7f);
             main.startColor=Color.white;main.simulationSpace=ParticleSystemSimulationSpace.Local;
             var shape=particles.shape;shape.shapeType=ParticleSystemShapeType.Circle;shape.rotation=new Vector3(90,0,0);shape.radius=radius*.85f;
-            var velocity=particles.velocityOverLifetime;velocity.enabled=true;velocity.space=ParticleSystemSimulationSpace.Local;velocity.y=flame ? .85f : .16f;
+            var velocity=particles.velocityOverLifetime;velocity.enabled=true;velocity.space=ParticleSystemSimulationSpace.Local;velocity.x=new ParticleSystem.MinMaxCurve(0);velocity.y=new ParticleSystem.MinMaxCurve(flame ? .85f : .16f);velocity.z=new ParticleSystem.MinMaxCurve(0);
             var emission=particles.emission;emission.rateOverTime=flame ? 70 : 24;
             var fade=particles.colorOverLifetime;fade.enabled=true;var gradient=new Gradient();gradient.SetKeys(new[]{new GradientColorKey(Color.white,0),new GradientColorKey(Color.white,1)},new[]{new GradientAlphaKey(0,0),new GradientAlphaKey(1,.15f),new GradientAlphaKey(.75f,.6f),new GradientAlphaKey(0,1)});fade.color=gradient;
             var renderer=particles.GetComponent<ParticleSystemRenderer>();renderer.sharedMaterial=material;renderer.renderMode=flame ? ParticleSystemRenderMode.VerticalBillboard : ParticleSystemRenderMode.Billboard;
@@ -261,12 +287,15 @@ namespace Unity.MP_FPS
         private void LateUpdate() => DrawHeld();
         private void DrawHeld()
         {
-            bool visible=!m_PresentationBlocked && !string.IsNullOrEmpty(m_SelectedCode) && Camera.main && Cursor.lockState==CursorLockMode.Locked;
+            bool visible=!m_PresentationBlocked && (m_Selected!=null || m_SelectedCode=="energy_grenade") && Camera.main && Cursor.lockState==CursorLockMode.Locked;
             if(!visible){if(m_Held)m_Held.SetActive(false);return;}
             if(!m_Held)
             {
                 m_Held=new GameObject("Held "+m_SelectedCode);m_Held.transform.SetParent(transform,false);
-                var kind=m_Selected?.Kind ?? (m_SelectedCode=="energy_grenade" ? TacticalItemKind.Frag : TacticalItemKind.Vitality);
+                TacticalItemKind kind;
+                if(m_Selected!=null)kind=m_Selected.Kind;
+                else if(m_SelectedCode=="energy_grenade")kind=TacticalItemKind.Frag;
+                else return;
                 BuildProp(m_Held.transform,kind,kind==TacticalItemKind.Stamina ? m_Amber : kind==TacticalItemKind.Antidote ? m_Green : kind==TacticalItemKind.Choke ? m_Cyan : m_Red);
                 Unity.MP_FPS.Moon.MoonSilverPrintSubject.Protect(m_Held);
             }
@@ -325,7 +354,8 @@ namespace Unity.MP_FPS
         {
             Primitive(root,PrimitiveType.Cube,new Vector3(.29f,.08f,.19f),Vector3.up*.04f,m_Dark);
             Primitive(root,PrimitiveType.Cube,new Vector3(.24f,.015f,.145f),Vector3.up*.09f,m_Metal);
-            Primitive(root,PrimitiveType.Cylinder,new Vector3(.065f,.035f,.065f),new Vector3(-.07f,.11f,0),accent);
+            Primitive(root,PrimitiveType.Cylinder,new Vector3(.048f,.012f,.048f),new Vector3(-.07f,.105f,0),m_Dark);
+            Primitive(root,PrimitiveType.Cylinder,new Vector3(.031f,.004f,.031f),new Vector3(-.07f,.12f,0),accent);
             for(int i=0;i<2;i++)Primitive(root,PrimitiveType.Cube,new Vector3(.025f,.025f,.04f),new Vector3(.05f+i*.05f,.11f,0),m_Metal);
             if(!wire)return;
             for(int i=0;i<2;i++)Primitive(root,PrimitiveType.Cylinder,new Vector3(.035f,.12f,.035f),new Vector3(i==0?-.6f:.6f,.1f,0),m_Metal);
@@ -364,9 +394,16 @@ namespace Unity.MP_FPS
              samples[i]=value*Mathf.Sin(Mathf.PI*t/length)*(noise ? .24f : .12f);}
             var clip=AudioClip.Create(name,samples.Length,1,rate,false);clip.SetData(samples,0);return clip;
         }
-        private static void Play(GameObject root,AudioClip clip,float range)
+        private void Play(GameObject root,AudioClip clip,float range)
         {
             var audio=root.GetComponent<AudioSource>();if(!audio)audio=root.AddComponent<AudioSource>();
+            var mixer=GameManager.Instance ? GameManager.Instance.AudioMixer : null;
+            if(mixer!=m_AudioMixer)
+            {
+                m_AudioMixer=mixer;m_SfxGroup=null;
+                if(mixer){var groups=mixer.FindMatchingGroups(nameof(SoundMixer.SoundMixerGroup.SFX));if(groups.Length>0)m_SfxGroup=groups[0];}
+            }
+            audio.outputAudioMixerGroup=m_SfxGroup;
             audio.spatialBlend=1;audio.minDistance=1;audio.maxDistance=range;audio.rolloffMode=AudioRolloffMode.Linear;audio.PlayOneShot(clip);
         }
         private void Remove(uint id)
@@ -375,6 +412,6 @@ namespace Unity.MP_FPS
         private static void Release(UnityEngine.Object value)
         {if(!value)return;if(Application.isPlaying)UnityEngine.Object.Destroy(value);else UnityEngine.Object.DestroyImmediate(value);}
         private void OnDestroy()
-        {Clear();foreach(var material in m_Materials)if(material)Release(material);if(m_Alarm)Release(m_Alarm);if(m_Burst)Release(m_Burst);if(m_Cough)Release(m_Cough);if(s_Active==this)s_Active=null;}
+        {if(m_Destroyed)return;m_Destroyed=true;m_TransparentRenderer?.Dispose();m_TransparentRenderer=null;Clear();foreach(var material in m_Materials)if(material)Release(material);if(m_Alarm)Release(m_Alarm);if(m_Burst)Release(m_Burst);if(m_Cough)Release(m_Cough);if(s_Active==this)s_Active=null;}
     }
 }

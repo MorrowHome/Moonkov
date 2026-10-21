@@ -38,7 +38,7 @@ namespace Unity.MP_FPS
             _runtimeDamageMaterial = new Material(screenDamageMaterial);
 
             // Create an instance of our custom render pass.
-            _damagePass = new FullScreenPassWrapper("_ScreenDamagePass", _runtimeDamageMaterial, 0, false, false);
+            _damagePass = new FullScreenPassWrapper("_ScreenDamagePass", _runtimeDamageMaterial, 0, false, false, injectionPoint:(UnityEngine.Rendering.Universal.RenderPassEvent)601);
 
             // Subscribe our injection method to the render pipeline manager.
             RenderPipelineManager.beginCameraRendering += InjectRenderPass;
@@ -92,7 +92,7 @@ namespace Unity.MP_FPS
                 var shader=Resources.Load<Shader>("Moonkov/AlienMucusScreen");
                 if(!shader)return;
                 m_MucusMaterial=new Material(shader){name="Local camera / alien mucus",hideFlags=HideFlags.DontSave};
-                m_MucusPass=new FullScreenPassWrapper("_AlienMucusPass",m_MucusMaterial,0,false,false);
+                m_MucusPass=new FullScreenPassWrapper("_AlienMucusPass",m_MucusMaterial,0,false,false,injectionPoint:(UnityEngine.Rendering.Universal.RenderPassEvent)601);
             }
             m_MucusElapsed+=Time.deltaTime;
             m_MucusMaterial.SetFloat("_Remaining",remaining);
