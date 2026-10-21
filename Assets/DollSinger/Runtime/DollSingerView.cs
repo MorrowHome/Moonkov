@@ -32,6 +32,7 @@ public class DollSingerView : MonoBehaviour
     [Min(0.1f)] public float scrollStep = 0.5f;
     [Min(0.01f)] public float viewBlendSeconds = 0.15f;
     [Min(0.01f)] public float zoomSmoothTime = 0.12f;
+    [Tooltip("Base world-camera FOV shared by both perspectives. The serialized name is retained for existing prefabs.")]
     [Range(40f, 100f)] public float firstPersonFieldOfView = 70f;
     [Range(0.01f, 0.5f)] public float firstPersonNearClip = 0.03f;
 
@@ -51,7 +52,7 @@ public class DollSingerView : MonoBehaviour
     [Range(0.5f, 1.5f)] public float backgroundBlurRadius = 1f;
 
     [Header("Aim zoom")]
-    [Tooltip("Target magnification when fully aiming, relative to the current first/third-person FOV.")]
+    [Tooltip("Target magnification when fully aiming, relative to the shared world-camera FOV.")]
     [Range(1f, 3f)] public float aimMagnification = 1.75f;
     [Tooltip("Smooths magnification when switching an already aimed weapon; the look direction stays unchanged.")]
     [Min(.01f)] public float weaponZoomTransitionSeconds = .16f;
@@ -59,7 +60,10 @@ public class DollSingerView : MonoBehaviour
     [Tooltip("Aim turn speed relative to projection-matched sensitivity. One preserves fine screen-space control.")]
     [SerializeField, Range(.1f, 2f)] private float aimedLookSensitivity = 1f;
     public float AimLookSensitivity => Mathf.Lerp(1f, aimedLookSensitivity,
-        Mathf.SmoothStep(0f, 1f, aimBlend)) / Mathf.Max(1f, CurrentAimMagnification);
+        Mathf.SmoothStep(0f, 1f, aimBlend)) * (camera && cameraDefaultsCaptured
+            ? Mathf.Tan(camera.fieldOfView * .5f * Mathf.Deg2Rad) /
+                Mathf.Tan(firstPersonFieldOfView * .5f * Mathf.Deg2Rad)
+            : 1f / Mathf.Max(1f, CurrentAimMagnification));
 
     [Header("First person head")]
     [Tooltip("Fallback eye position in front of the head bone, in character-local metres.")]
@@ -88,8 +92,7 @@ public class DollSingerView : MonoBehaviour
     // Finish raising the gesture before zooming. Reverse the same timeline
     // to unzoom before any weapon's arms lower past the lens.
     public static float AimPoseBlend(float aim) => Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0f, .45f, aim));
-    private float ZoomBlend => firstPerson
-        ? Mathf.InverseLerp(.55f, 1f, aimBlend) : aimBlend;
+    private float ZoomBlend => Mathf.InverseLerp(.55f, 1f, aimBlend);
 
     private DollSingerMovement movement;
     private Transform eyeAnchor;
@@ -126,7 +129,7 @@ public class DollSingerView : MonoBehaviour
     private float aimBlend;
     private float weaponAimMagnification;
     private float presentedWeaponMagnification = 1.75f;
-    public float TargetAimMagnification => firstPerson && weaponAimMagnification > 0
+    public float TargetAimMagnification => weaponAimMagnification > 0
         ? weaponAimMagnification : Mathf.Clamp(aimMagnification, 1f, 3f);
     public float CurrentAimMagnification => Mathf.Lerp(1f,
         presentedWeaponMagnification,
@@ -212,7 +215,7 @@ public class DollSingerView : MonoBehaviour
         if (!camera || !movement) return;
         camera.transform.localPosition = thirdPersonRestPosition;
         camera.transform.localRotation = thirdPersonRestRotation;
-        camera.fieldOfView = thirdPersonRestFov;
+        camera.fieldOfView = firstPersonFieldOfView;
         camera.nearClipPlane = thirdPersonRestNearClip;
         targetDistance = currentDistance = Mathf.Clamp(
             -thirdPersonRestPosition.z, minThirdPersonDistance, maxThirdPersonDistance);
@@ -258,7 +261,8 @@ public class DollSingerView : MonoBehaviour
     public Ray CaptureAimRay(Quaternion lookRotation, Quaternion bodyRotation, float lean)
     {
         SetNetworkLookRotation(lookRotation);
-        if (!firstPerson || !movement) return camera.ViewportPointToRay(new Vector3(0.5f, 0.5f));
+        if (!firstPerson || !movement)
+            return new Ray(camera.transform.position, lookRotation * Vector3.forward);
         // Input is sampled before LateUpdate: replace the previous rendered lean with the
         // current commanded displacement, so aiming uses this frame's sideways eye position.
         Vector3 offset = movement.GetLeanOffset(lean, bodyRotation);
@@ -347,10 +351,10 @@ public class DollSingerView : MonoBehaviour
 
         camera.transform.localPosition = Vector3.Lerp(Vector3.Lerp(rest, aiming, aimBlend),
             Vector3.zero, viewBlend);
-        camera.transform.localRotation = Quaternion.Slerp(
-            Quaternion.Slerp(thirdPersonRestRotation, Quaternion.identity, aimBlend),
-            Quaternion.identity, viewBlend);
-        float baseFov = Mathf.Lerp(thirdPersonRestFov, firstPersonFieldOfView, viewBlend);
+        // The orbit changes the eye position, never the commanded look direction.
+        // CaptureAimRay and the screen-centre ray must agree during ADS/view transitions too.
+        camera.transform.localRotation = Quaternion.identity;
+        float baseFov = firstPersonFieldOfView;
         float targetMagnification = TargetAimMagnification;
         presentedWeaponMagnification = Mathf.Lerp(presentedWeaponMagnification, targetMagnification,
             1f - Mathf.Exp(-Time.deltaTime * 3f / Mathf.Max(.01f, weaponZoomTransitionSeconds)));

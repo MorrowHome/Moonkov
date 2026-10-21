@@ -87,8 +87,7 @@ namespace Unity.MP_FPS
                 // Grow only on saturation and reuse the buffer for subsequent frames.
                 if (m_AimHits.Length >= 4096)
                 {
-                    m_HasOwnedAimPoint = true;
-                    return m_OwnedAimPoint = ray.GetPoint(.05f);
+                    return PresentOwnedAimPoint(ray.GetPoint(.05f));
                 }
                 System.Array.Resize(ref m_AimHits, m_AimHits.Length * 2);
             }
@@ -101,8 +100,18 @@ namespace Unity.MP_FPS
                 nearest = hit.distance;
                 target = hit.point;
             }
+            return PresentOwnedAimPoint(target);
+        }
+
+        private Vector3 PresentOwnedAimPoint(Vector3 target)
+        {
             m_HasOwnedAimPoint = true;
-            return m_OwnedAimPoint = target;
+            m_OwnedAimPoint = target;
+            // The ECS input pass follows MonoBehaviour.Update. Forward its freshly
+            // sampled target before Halo.LateUpdate, without waiting another frame.
+            m_Halo.SetNetworkPresentation(m_OwnedAiming,
+                m_OwnedViewRotation * Vector3.forward, target, m_OwnedLightEnabled);
+            return target;
         }
 
         public override void OnGhostLinked()

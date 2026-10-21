@@ -61,13 +61,24 @@ namespace Unity.MP_FPS.Client
         private double m_LastTime;
         private Vector2 m_EditorViewport;
         private bool m_Transition, m_Disposed, m_EditorScene, m_GestureActive;
+        private int m_DragPointer = -1;
+        private Vector2 m_DragPosition;
+        private float m_InspectionYaw, m_PoseTurn;
+        private bool m_Inspected;
+        public float InspectionYaw => m_InspectionYaw;
 
         public MenuCharacterView(bool idleOnly = false, Image element = null)
         {
             m_IdleOnly = idleOnly;
             Element = element ?? new Image();
-            Element.pickingMode = PickingMode.Ignore; Element.scaleMode = ScaleMode.ScaleToFit;
+            Element.pickingMode = PickingMode.Position; Element.scaleMode = ScaleMode.ScaleToFit;
             Element.AddToClassList("terminal-character-art");
+            Element.RegisterCallback<PointerDownEvent>(BeginInspect);
+            Element.RegisterCallback<PointerMoveEvent>(Inspect);
+            Element.RegisterCallback<PointerUpEvent>(EndInspect);
+            Element.RegisterCallback<PointerCancelEvent>(CancelInspect);
+            Element.RegisterCallback<PointerCaptureOutEvent>(CaptureLost);
+            Element.RegisterCallback<DetachFromPanelEvent>(Detached);
             m_Settings = Resources.Load<MenuCharacterSettings>("Moonkov/MenuCharacterSettings");
             if (m_Settings == null || m_Settings.VisualPrefab == null || m_Settings.Motions == null || m_Settings.Motions.Length == 0)
             {
@@ -80,6 +91,50 @@ namespace Unity.MP_FPS.Client
                 m_Timer = Element.schedule.Execute(Tick).Every(33);
             }
             catch { Dispose(); throw; }
+        }
+
+        private void BeginInspect(PointerDownEvent evt)
+        {
+            // Only a press on the portrait starts inspection. Buttons/items layered
+            // above it retain their own event target and pointer capture.
+            if (m_Disposed || m_DragPointer >= 0 || evt.target != Element ||
+                evt.pointerType != UnityEngine.UIElements.PointerType.mouse || evt.button != 0) return;
+            m_DragPointer = evt.pointerId;
+            m_DragPosition = Element.WorldToLocal(evt.position);
+            if (!m_Inspected) { m_InspectionYaw = m_PoseTurn; m_Inspected = true; }
+            Element.CapturePointer(evt.pointerId);
+            evt.StopPropagation();
+        }
+        private void Inspect(PointerMoveEvent evt)
+        {
+            if (evt.pointerId != m_DragPointer || !Element.HasPointerCapture(evt.pointerId)) return;
+            if ((evt.pressedButtons & 1) == 0) { StopInspect(); return; }
+            Vector2 position = Element.WorldToLocal(evt.position);
+            m_InspectionYaw = Mathf.Repeat(m_InspectionYaw +
+                (position.x - m_DragPosition.x) * 180f / Mathf.Max(1f, Element.contentRect.width) + 180f, 360f) - 180f;
+            m_DragPosition = position;
+            ApplyOrientation();
+            Render();
+            evt.StopPropagation();
+        }
+        private void EndInspect(PointerUpEvent evt)
+        {
+            if (evt.pointerId != m_DragPointer || evt.button != 0) return;
+            StopInspect(); evt.StopPropagation();
+        }
+        private void CancelInspect(PointerCancelEvent evt) { if (evt.pointerId == m_DragPointer) StopInspect(); }
+        private void CaptureLost(PointerCaptureOutEvent evt) { if (evt.pointerId == m_DragPointer) m_DragPointer = -1; }
+        private void Detached(DetachFromPanelEvent evt) => ReleaseStage();
+        private void StopInspect()
+        {
+            int pointer = m_DragPointer; m_DragPointer = -1;
+            if (pointer >= 0 && Element.HasPointerCapture(pointer)) Element.ReleasePointer(pointer);
+        }
+        private void ApplyOrientation()
+        {
+            if (m_Model != null)
+                m_Model.transform.localRotation = Quaternion.Euler(0, m_Settings.Yaw +
+                    (m_Inspected ? m_InspectionYaw : m_PoseTurn), 0);
         }
 
         private void CreateStage()
@@ -301,7 +356,8 @@ namespace Unity.MP_FPS.Client
             m_GestureActive = gestureActive;
             m_Graph.Evaluate(0);
             m_Model.transform.localPosition = Vector3.zero;
-            m_Model.transform.localRotation = Quaternion.Euler(0, m_Settings.Yaw + turn * m_Settings.TurnDegrees, 0);
+            m_PoseTurn = turn * m_Settings.TurnDegrees;
+            ApplyOrientation();
             DollSingerMovement.ApplyTiptoePresentation(m_Animator, tiptoe);
             ApplyWeaponGesture(dt);
             m_Spring?.SimulatePresentation(dt);
@@ -405,10 +461,17 @@ namespace Unity.MP_FPS.Client
         {
             if (m_Disposed) return;
             m_Disposed = true; m_Timer?.Pause();
+            Element.UnregisterCallback<PointerDownEvent>(BeginInspect);
+            Element.UnregisterCallback<PointerMoveEvent>(Inspect);
+            Element.UnregisterCallback<PointerUpEvent>(EndInspect);
+            Element.UnregisterCallback<PointerCancelEvent>(CancelInspect);
+            Element.UnregisterCallback<PointerCaptureOutEvent>(CaptureLost);
+            Element.UnregisterCallback<DetachFromPanelEvent>(Detached);
             ReleaseStage();
         }
         private void ReleaseStage()
         {
+            StopInspect(); m_InspectionYaw = m_PoseTurn = 0; m_Inspected = false;
             if (m_Graph.IsValid()) m_Graph.Destroy();
             if (m_FullBodyMask != null) { Destroy(m_FullBodyMask); m_FullBodyMask = null; }
             ReleaseTarget();
