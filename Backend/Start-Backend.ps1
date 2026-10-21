@@ -1,5 +1,6 @@
 param([switch]$Background, [switch]$Lan, [switch]$Update)
 $ErrorActionPreference = 'Stop'
+$requiredFeatures = @('species-harvest-v2', 'missions-v1', 'recovery-inbox-v1')
 & (Join-Path $PSScriptRoot 'Start-Database.ps1')
 $projectRoot = Split-Path $PSScriptRoot -Parent
 $serverConfig = Get-Content -LiteralPath (Join-Path $projectRoot 'moon-server.local.json') -Raw | ConvertFrom-Json
@@ -10,7 +11,11 @@ if ($health.status -eq 'ready') {
     $port = ([uri]$serverConfig.BackendUrl).Port
     $lanListener = Get-NetTCPConnection -State Listen -LocalPort $port -ErrorAction SilentlyContinue |
         Where-Object { $_.LocalAddress -in @('0.0.0.0', '::') }
-    if (!$Update -and (!$Lan -or $lanListener)) { Write-Host 'Persistence service is already running. Use -Update to rebuild and restart it.'; return }
+    if (!$Update -and (!$Lan -or $lanListener)) {
+        $missingFeatures = @($requiredFeatures | Where-Object { $health.features -notcontains $_ })
+        if ($missingFeatures.Count -gt 0) { throw ('The running backend is outdated (missing: ' + ($missingFeatures -join ', ') + '). Back up production and use -Update to rebuild/restart it.') }
+        Write-Host 'Persistence service is already running with the required recovery capabilities. Use -Update to rebuild and restart it.'; return
+    }
     # Only stop the project process recorded by our own background launcher.
     if (!(Test-Path -LiteralPath (Join-Path $projectRoot 'LocalData/backend.pid'))) {
         throw 'A service is running without a project PID. Refusing to stop an unowned process.'
@@ -42,8 +47,9 @@ try {
             Start-Sleep -Milliseconds 250
         }
         if (!$ready) { throw 'Persistence service did not become ready. Inspect LocalData/backend.stderr.log.' }
-        if ($health.features -notcontains 'species-harvest-v2') { throw 'The running service does not support species harvest and research branches.' }
-        Write-Host "Persistence service ready (PID $($serviceProcess.Id)); alien harvest and permanent halo research enabled."
+        $missingFeatures = @($requiredFeatures | Where-Object { $health.features -notcontains $_ })
+        if ($missingFeatures.Count -gt 0) { throw ('The running backend is missing required capabilities: ' + ($missingFeatures -join ', ')) }
+        Write-Host "Persistence service ready (PID $($serviceProcess.Id)); species harvest, missions and durable extraction recovery enabled."
     } else { & $dotnet run --project MoonPersistence.csproj --no-launch-profile -- @launchArguments }
 }
 finally { Pop-Location }

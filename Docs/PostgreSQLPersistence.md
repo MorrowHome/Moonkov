@@ -40,7 +40,9 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Backend/Start-Backend.ps1 -B
 powershell -NoProfile -ExecutionPolicy Bypass -File Backend/Start-Backend.ps1 -Background -Update
 ```
 
-`-Update` 仅停止项目 PID 文件记录、且命令行匹配本项目后端 DLL 的进程，保留账号数据库、服务器密钥和监听地址；使用 `-Lan` 开放的服务更新时仍带 `-Lan`。启动器等待数据库健康检查通过，并确认 `species-harvest-v2` 能力后才报告就绪。受服务器密钥保护的 `/internal/health` 返回 `build` 和 `features`，可识别异形掉落及永久光环研究的新后端。
+`-Update` 仅停止项目 PID 文件记录、且命令行匹配本项目后端 DLL 的进程，保留账号数据库、服务器密钥和监听地址；使用 `-Lan` 开放的服务更新时仍带 `-Lan`。启动器等待数据库健康检查通过，并确认 `species-harvest-v2`、`missions-v1` 和 `recovery-inbox-v1` 能力后才报告就绪；已运行服务的提前返回也执行相同检查。受服务器密钥保护的 `/internal/health` 返回 `build` 和 `features`，可识别异形掉落及永久光环研究的新后端。
+
+2026-10-21的schema8/待领取区发布准备与实际连接阻碍见[线上同步准备记录](Deployment/MoonPersistence-20261021.md)。发布包已构建不等于线上服务已替换；生产备份、迁移、构建号和鉴权验证必须在真实目标完成。
 
 ## 异形掉落与联机研究验证（2026-10-18）
 
