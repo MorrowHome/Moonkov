@@ -340,6 +340,7 @@ namespace Unity.MP_FPS.Client
         private void Settings()
         {
             TerminalLayout.Populate(m_Content, "Settings");
+            BindViewSettings();
             BindAudioSlider("audioMaster", "Master", MoonkovAudio.MasterVolume);
             BindAudioSlider("audioEffects", "Effects", MoonkovAudio.EffectsVolume);
             BindAudioSlider("audioInterface", "Interface", MoonkovAudio.InterfaceVolume);

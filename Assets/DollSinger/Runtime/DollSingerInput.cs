@@ -17,7 +17,26 @@ namespace Unity.MP_FPS.DollSinger
 
         // Assigned by the host game; the standalone character demo has no UI dependency.
         public System.Func<bool> GameplayInputBlocked { get; set; }
+        public System.Func<bool> TimedActionInputActive { get; set; }
         private bool IsGameplayBlocked => GameplayInputBlocked?.Invoke() == true;
+        private bool suppressTiptoeUntilRelease;
+        private int settingsRevision = -1;
+
+        public void ApplyViewSettings()
+        {
+            if (settingsRevision == DollSingerViewSettings.Revision) return;
+            mouseSensitivity = DollSingerViewSettings.MouseSensitivity;
+            settingsRevision = DollSingerViewSettings.Revision;
+        }
+
+        // Cancellation owns this press even after the server acknowledges it. Holding
+        // X must not turn into tiptoe halfway through the same physical key gesture.
+        public bool ReadTiptoe(bool pressed, bool held, bool timedActionActive)
+        {
+            if (!held) suppressTiptoeUntilRelease = false;
+            if (pressed && timedActionActive) suppressTiptoeUntilRelease = true;
+            return held && !suppressTiptoeUntilRelease;
+        }
 
         public bool CanReadPlayerInput => !IsGameplayBlocked && captured && Cursor.lockState == CursorLockMode.Locked;
         public Vector2 Move { get; private set; }
@@ -65,6 +84,7 @@ namespace Unity.MP_FPS.DollSinger
 
         private void OnEnable()
         {
+            ApplyViewSettings();
             LightingSettings = savedLightingSettings = HaloLighting.Sanitize((uint)PlayerPrefs.GetInt(LightingPreference, 0));
             lightPress.Cancel();
             previousLock = Cursor.lockState;
@@ -84,6 +104,10 @@ namespace Unity.MP_FPS.DollSinger
         private void Update()
         {
             ClearFrame();
+            ApplyViewSettings();
+            var keyboard = Keyboard.current;
+            bool tiptoe = ReadTiptoe(keyboard != null && keyboard.xKey.wasPressedThisFrame,
+                keyboard != null && keyboard.xKey.isPressed, TimedActionInputActive?.Invoke() == true);
             if (IsGameplayBlocked)
             {
                 CancelLightAdjustment();
@@ -97,7 +121,6 @@ namespace Unity.MP_FPS.DollSinger
                 SetCapture(captureOnEnable && Application.isFocused);
                 return; // Closing UI must not also aim, shoot or rotate the character.
             }
-            var keyboard = Keyboard.current;
             var mouse = Mouse.current;
             if (keyboard != null && keyboard.escapeKey.wasPressedThisFrame)
             {
@@ -144,7 +167,7 @@ namespace Unity.MP_FPS.DollSinger
                     toggledStance = toggledStance == DollSingerStance.Prone ? DollSingerStance.Standing : DollSingerStance.Prone;
                 if (JumpPressed) toggledStance = DollSingerStance.Standing;
                 Stance = keyboard.leftCtrlKey.isPressed ? DollSingerStance.Crouching :
-                    keyboard.xKey.isPressed && toggledStance == DollSingerStance.Standing ? DollSingerStance.Tiptoe : toggledStance;
+                    tiptoe && toggledStance == DollSingerStance.Standing ? DollSingerStance.Tiptoe : toggledStance;
                 ViewPressed = keyboard.vKey.wasPressedThisFrame;
                 LightPressed = toggleLight;
                 ReloadPressed = keyboard.rKey.wasPressedThisFrame;

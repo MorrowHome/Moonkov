@@ -7,6 +7,8 @@ namespace Unity.MP_FPS
     /// <summary>Owned-player look and lean rules, shared by gameplay and the offline map preview.</summary>
     public static class DollSingerLookController
     {
+        public static float2 ReturnFreeLook(float2 offset, float step) => new float2(
+            Mathf.MoveTowards(offset.x, 0f, step), Mathf.MoveTowards(offset.y, 0f, step));
         public static bool Update(ref float2 look, ref float2 freeLookOffset, ref float lean,
             out Quaternion viewRotation, DollSingerInput input, DollSingerMovement model,
             DollSingerView view, bool blocked, float deltaTime)
@@ -24,8 +26,7 @@ namespace Unity.MP_FPS
             {
                 if (!blocked) look += new float2(input.Look.x, -input.Look.y) * view.AimLookSensitivity;
                 float step = model.m_FreeLookReturnSpeed * deltaTime;
-                freeLookOffset.x = Mathf.MoveTowards(freeLookOffset.x, 0f, step);
-                freeLookOffset.y = Mathf.MoveTowards(freeLookOffset.y, 0f, step);
+                freeLookOffset = ReturnFreeLook(freeLookOffset, step);
             }
             if (thirdPerson) freeLookOffset = float2.zero;
             look.y = math.clamp(look.y, -80f, 80f);

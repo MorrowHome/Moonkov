@@ -3730,6 +3730,83 @@ MonoBehaviour:
       lost on death.'
     m_Metadata:
       m_Items: []
+  - m_Id: 5040101955461120
+    m_Localized: VIEW & AIM
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5040101980626944
+    m_Localized: MOUSE SENSITIVITY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5040101980626945
+    m_Localized: AIM SENSITIVITY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5040101980626946
+    m_Localized: WORLD FOV
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5040101980626947
+    m_Localized: Both perspectives share the world FOV. Scope sensitivity adjusts
+      automatically. Changes apply immediately.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5040101980626948
+    m_Localized: RESTORE VIEW DEFAULTS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5040101980626949
+    m_Localized: SWITCH NEARBY BAG
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5040101980626950
+    m_Localized: "RECOVERY / {0} items \xB7 Extracted items are saved. Make room
+      or sell stored items, then claim them before deploying again."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5040101980626951
+    m_Localized: CLAIM ALL THAT FITS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5040101980626952
+    m_Localized: CLAIM TO STORAGE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5040101980626953
+    m_Localized: ' (includes contents)'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5040101980626954
+    m_Localized: Items that fit were claimed. Remaining items are still saved; make
+      room and claim again.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5040101980626955
+    m_Localized: Make room and claim pending recovery items before deploying again.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5040101980626956
+    m_Localized: Storage space or item count is full. Make room or sell items, then
+      claim again. Pending items remain saved.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5040101980626957
+    m_Localized: Storage or recovery changed and was refreshed. Claim again.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5040101980626958
+    m_Localized: The item was already claimed or is no longer pending. Refresh storage.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5040101980626959
+    m_Localized: Claim request ID conflict. Refresh and retry.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5041287488069632
+    m_Localized: Extracted items are saved. If recovery items are pending, make room
+      and claim them before deploying again.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

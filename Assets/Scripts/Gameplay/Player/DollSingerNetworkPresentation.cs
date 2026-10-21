@@ -34,6 +34,12 @@ namespace Unity.MP_FPS
         private uint m_LastSoundWeapon;
         private bool m_AudioAiming;
         private float m_DryFireAt;
+        private PlayerGhost m_PlayerGhost;
+        private bool m_OwnedAlive;
+        private float2 m_OwnedLook;
+        private Client.HaloObstructionView m_ObstructionView;
+        public bool OwnedMuzzleObstructed { get; private set; }
+        private const int CoverMask = (1 << (int)LayerIndex.Default) | (1 << (int)LayerIndex.Ground);
 
         public DollSingerInput OwnedInput => m_Linked && Role == MultiplayerRole.ClientOwned ? m_Input : null;
         public bool IsThirdPerson => m_View != null && !m_View.IsFirstPerson;
@@ -59,19 +65,20 @@ namespace Unity.MP_FPS
         {
             if (m_Input.LightAdjusting)
             {
-                m_OwnedAiming = m_Input.LightPreviewAiming;
+                m_OwnedAiming = m_OwnedAlive && !blocked && m_Input.LightPreviewAiming;
                 freeLookOffset = m_FreeLookOffset;
                 return false;
             }
             bool freeLooking = DollSingerLookController.Update(ref look, ref m_FreeLookOffset,
                 ref m_OwnedLean, out m_OwnedViewRotation, m_Input, m_Model, m_View, blocked, Time.deltaTime);
-            m_OwnedAiming = !blocked && m_Input.AimHeld && !freeLooking;
+            m_OwnedAiming = m_OwnedAlive && !blocked && m_Input.AimHeld && !freeLooking;
             freeLookOffset = m_FreeLookOffset;
             return freeLooking;
         }
 
         public Vector3 CaptureAimPoint(float2 look, float range)
         {
+            m_OwnedLook = look;
             var viewLook = look + m_FreeLookOffset;
             var ray = m_View.CaptureAimRay(Quaternion.Euler(viewLook.y, viewLook.x, 0f),
                 Quaternion.Euler(0f, look.x, 0f), m_OwnedLean);
@@ -111,7 +118,44 @@ namespace Unity.MP_FPS
             // sampled target before Halo.LateUpdate, without waiting another frame.
             m_Halo.SetNetworkPresentation(m_OwnedAiming,
                 m_OwnedViewRotation * Vector3.forward, target, m_OwnedLightEnabled);
+            PresentMuzzleObstruction(target);
             return target;
+        }
+
+        public bool HasMuzzleObstruction(float2 look, Vector3 target, float lean, bool thirdPerson)
+        {
+            if (!m_PlayerGhost) m_PlayerGhost = GetComponent<PlayerGhost>();
+            if (!m_PlayerGhost) return false;
+            var command = new PlayerInput { LookYawPitchDegrees = look, AimPoint = target, Lean = lean };
+            command.SetFlag(PlayerInput.InputFlag.ThirdPerson, thirdPerson);
+            var ray = m_PlayerGhost.GetShotRay(command, 10000, out var requested);
+            float distance = Vector3.Distance(ray.origin, requested);
+            // A surface at the intended target is not an obstruction. Ignore player
+            // copies entirely here: this cue describes cover, never damage or a hit.
+            return distance > .1f && m_PlayerGhost.RaycastShot(ray, distance - .08f, CoverMask, out _);
+        }
+
+        private void PresentMuzzleObstruction(Vector3 target)
+        {
+            OwnedMuzzleObstructed = m_OwnedAiming && !m_Input.LightAdjusting &&
+                m_Halo.OwnsHandPose && m_Halo.AimBlend > .45f &&
+                HasMuzzleObstruction(m_OwnedLook, target, m_OwnedLean, IsThirdPerson);
+            if (OwnedMuzzleObstructed && m_ObstructionView == null)
+            {
+                var hud = FindAnyObjectByType<RaidHUD>();
+                if (hud) m_ObstructionView = new Client.HaloObstructionView(
+                    hud.GetComponent<UnityEngine.UIElements.UIDocument>().rootVisualElement);
+            }
+            m_ObstructionView?.Present(OwnedMuzzleObstructed);
+        }
+
+        public bool ReadOwnedAimIntent()
+        {
+            bool blocked = !m_OwnedAlive || GameSettings.Instance.IsPauseMenuOpen || RaidHUD.PointerRequested;
+            var returning = DollSingerLookController.ReturnFreeLook(m_FreeLookOffset, m_Model.m_FreeLookReturnSpeed * Time.deltaTime);
+            bool freeLooking = m_View.IsFirstPerson && (m_Input.AltHeld || math.lengthsq(returning) > .01f);
+            return m_OwnedAiming = !blocked && (m_Input.LightAdjusting ? m_Input.LightPreviewAiming :
+                m_Input.CanReadPlayerInput && m_Input.AimHeld && !freeLooking);
         }
 
         public override void OnGhostLinked()
@@ -125,6 +169,8 @@ namespace Unity.MP_FPS
             m_Audio?.Stop();
             m_Audio = Role == MultiplayerRole.Server ? null : new MoonkovPlayerAudio();
             m_Model.SetNetworkViewPresentation(false, Quaternion.identity, 0f);
+            m_ObstructionView?.Dispose(); m_ObstructionView = null;
+            OwnedMuzzleObstructed = false;
             m_Model.enabled = Role != MultiplayerRole.Server;
             m_Model.GetComponent<UnityEngine.CharacterController>().enabled = false;
             m_Model.gameObject.SetActive(Role != MultiplayerRole.Server);
@@ -142,6 +188,8 @@ namespace Unity.MP_FPS
             if (m_ViewActivated) return m_View.camera;
             m_ViewActivated = true;
             m_Input.GameplayInputBlocked = () => GameSettings.Instance.IsPauseMenuOpen || RaidHUD.PointerRequested;
+            m_Input.TimedActionInputActive = () => RaidHUD.TimedActionInputActive;
+            m_Halo.OwnedAimIntent = ReadOwnedAimIntent;
             m_Model.gameObject.SetActive(true);
             m_View.gameObject.SetActive(true);
             m_Input.enabled = true;
@@ -158,6 +206,7 @@ namespace Unity.MP_FPS
 
             var ghost = ReadGhostComponentData<PredictedPlayerGhost>();
             var state = ghost.ControllerState;
+            m_OwnedAlive = ghost.CurrentHealth > 0;
             if (Role == MultiplayerRole.ClientOwned)
             {
                 if (ghost.CurrentHealth <= 0) m_Input.CancelLightAdjustment();
@@ -268,8 +317,11 @@ namespace Unity.MP_FPS
             GameManager.Instance?.SoundSystem?.Stop(m_WeaponTailSound, .03f);
             m_RifleBodySound = m_RifleSnapSound = m_WeaponTailSound = null;
             m_Linked = false;
+            m_Halo.OwnedAimIntent = null;
+            m_ObstructionView?.Dispose(); m_ObstructionView = null;
             m_Input.enabled = false;
             m_Input.GameplayInputBlocked = null;
+            m_Input.TimedActionInputActive = null;
             m_View.gameObject.SetActive(false);
         }
     }

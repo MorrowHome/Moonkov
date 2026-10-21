@@ -59,11 +59,19 @@ public class DollSingerView : MonoBehaviour
 
     [Tooltip("Aim turn speed relative to projection-matched sensitivity. One preserves fine screen-space control.")]
     [SerializeField, Range(.1f, 2f)] private float aimedLookSensitivity = 1f;
-    public float AimLookSensitivity => Mathf.Lerp(1f, aimedLookSensitivity,
+    public float AimLookSensitivity { get { ApplyViewSettings(); return Mathf.Lerp(1f, aimedLookSensitivity,
         Mathf.SmoothStep(0f, 1f, aimBlend)) * (camera && cameraDefaultsCaptured
             ? Mathf.Tan(camera.fieldOfView * .5f * Mathf.Deg2Rad) /
                 Mathf.Tan(firstPersonFieldOfView * .5f * Mathf.Deg2Rad)
-            : 1f / Mathf.Max(1f, CurrentAimMagnification));
+            : 1f / Mathf.Max(1f, CurrentAimMagnification)); } }
+    private int settingsRevision = -1;
+    public void ApplyViewSettings()
+    {
+        if (settingsRevision == DollSingerViewSettings.Revision) return;
+        firstPersonFieldOfView = DollSingerViewSettings.WorldFieldOfView;
+        aimedLookSensitivity = DollSingerViewSettings.AimSensitivity;
+        settingsRevision = DollSingerViewSettings.Revision;
+    }
 
     [Header("First person head")]
     [Tooltip("Fallback eye position in front of the head bone, in character-local metres.")]
@@ -163,6 +171,7 @@ public class DollSingerView : MonoBehaviour
 
     private void Awake()
     {
+        ApplyViewSettings();
         CaptureCameraDefaults();
         if (player) { BindPlayer(player, true); if (movement) movement.BindCamera(this); }
     }
@@ -306,6 +315,7 @@ public class DollSingerView : MonoBehaviour
 
     private void LateUpdate()
     {
+        ApplyViewSettings();
         // Leave the full mesh available to Scene view and any camera that renders next.
         // Also recover if a camera render was interrupted before its post-render event.
         cameraMeshStates.Clear();

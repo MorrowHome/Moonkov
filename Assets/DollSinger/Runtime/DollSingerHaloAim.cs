@@ -215,6 +215,9 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
 
     public uint LightingSettings { get; set; }
     public float AimBlend => aimBlend;
+    // Only the locally owned network presentation installs this. Remote replicas
+    // continue to use synchronized state; the blend still advances once per Update.
+    public System.Func<bool> OwnedAimIntent { get; set; }
     public float ScopeMagnification => visualWeapon == HaloWeapon.Sniper && sniperVisual ? sniperVisual.scopeMagnification : ArsenalVisual ? ArsenalVisual.magnification : 0;
     private int LocalAmmo(HaloWeapon weapon) => (int)weapon >= 5 ? localArsenal?.Ammo(weapon) ?? 0 : weapon == HaloWeapon.Rifle ? localRifleAmmo : weapon == HaloWeapon.Shotgun ? localShotgunAmmo : weapon == HaloWeapon.Sniper ? localSniperAmmo : localRevolverAmmo;
     public int AimLayerIndex => aimLayerIndex;
@@ -305,6 +308,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     }
 
     private void Update() {
+        if (networkControlled && OwnedAimIntent != null) networkAiming = OwnedAimIntent();
         if (aimBlend > 0 || wantsAim) bakedGestures?.RestoreBeforeAnimation();
         if (discharge) discharge.Step(Time.deltaTime);
         if (!networkControlled && !input) return;

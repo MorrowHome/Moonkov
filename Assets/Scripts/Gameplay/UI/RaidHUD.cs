@@ -66,6 +66,7 @@ namespace Unity.MP_FPS
         private static RaidHUD s_Active;
         public static bool InventoryOpen => s_Active != null && (s_Active.m_InventoryVisible || s_Active.m_MissionDetailsVisible);
         public static bool PointerRequested => InventoryOpen || (s_Active != null && s_Active.m_WasSettled);
+        public static bool TimedActionInputActive => s_Active != null && s_Active.TimedActionActive;
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetPresentation() => s_Active = null;
         public static bool CloseInventory()

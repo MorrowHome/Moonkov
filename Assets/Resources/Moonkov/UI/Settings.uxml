@@ -1,11 +1,19 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="ViewSettings.uss" />
     <ui:VisualElement name="terminalPage">
     <ui:VisualElement class="archive-settings-page">
         <ui:VisualElement class="archive-settings-exhibit" picking-mode="Ignore" />
         <ui:VisualElement class="archive-settings-banner" picking-mode="Ignore"><ui:Label text="SETTINGS" /></ui:VisualElement>
+        <ui:ScrollView mode="Vertical" class="view-settings-scroll">
         <ui:VisualElement class="terminal-row">
             <ui:VisualElement class="terminal-panel terminal-wide archive-settings-main">
                 <ui:VisualElement class="archive-settings-row"><ui:DropdownField name="language" label="LANGUAGE" class="terminal-language" /></ui:VisualElement>
+                <ui:Label text="VIEW &amp; AIM" class="terminal-heading view-settings-heading" />
+                <ui:VisualElement class="archive-settings-row"><ui:Slider name="lookMouse" label="MOUSE SENSITIVITY" class="terminal-slider" low-value="0.02" high-value="0.6" /><ui:Label name="lookMouseValue" class="archive-audio-value view-settings-value" /></ui:VisualElement>
+                <ui:VisualElement class="archive-settings-row"><ui:Slider name="lookAim" label="AIM SENSITIVITY" class="terminal-slider" low-value="0.1" high-value="2" /><ui:Label name="lookAimValue" class="archive-audio-value view-settings-value" /></ui:VisualElement>
+                <ui:VisualElement class="archive-settings-row"><ui:Slider name="lookFov" label="WORLD FOV" class="terminal-slider" low-value="40" high-value="100" /><ui:Label name="lookFovValue" class="archive-audio-value view-settings-value" /></ui:VisualElement>
+                <ui:Label text="Both perspectives share the world FOV. Scope sensitivity adjusts automatically. Changes apply immediately." class="terminal-copy view-settings-help" />
+                <ui:Button name="lookReset" text="RESTORE VIEW DEFAULTS" class="view-settings-reset" />
                 <ui:VisualElement class="archive-settings-row"><ui:Slider name="audioMaster" label="MASTER AUDIO" class="terminal-slider" low-value="0" high-value="1" /><ui:Label name="audioMasterValue" class="archive-audio-value" /></ui:VisualElement>
                 <ui:VisualElement class="archive-settings-row"><ui:Slider name="audioEffects" label="GAMEPLAY EFFECTS" class="terminal-slider" low-value="0" high-value="1" /><ui:Label name="audioEffectsValue" class="archive-audio-value" /></ui:VisualElement>
                 <ui:VisualElement class="archive-settings-row"><ui:Slider name="audioInterface" label="INTERFACE AUDIO" class="terminal-slider" low-value="0" high-value="1" /><ui:Label name="audioInterfaceValue" class="archive-audio-value" /></ui:VisualElement>
@@ -23,6 +31,7 @@
                 <ui:VisualElement class="terminal-row terminal-stat"><ui:Label text="CLOSE TOP WINDOW" class="terminal-stat-name" /><ui:Label text="ESC" name="statValue6" class="terminal-stat-value" /></ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
+        </ui:ScrollView>
     </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

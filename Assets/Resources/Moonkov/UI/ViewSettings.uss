@@ -1,0 +1,7 @@
+.moonkov-terminal.archive-page-8 .view-settings-scroll { flex-grow: 1; min-height: 0; }
+.view-settings-scroll > .unity-scroll-view__content-viewport > .unity-scroll-view__content-container { padding-right: 12px; }
+.view-settings-scroll .terminal-row { flex-shrink: 0; }
+.moonkov-terminal.archive-page-8 .view-settings-heading { margin-top: 18px; margin-bottom: 12px; font-size: 16px; }
+.moonkov-terminal.archive-page-8 .view-settings-help { white-space: normal; margin: 4px 12px 14px; font-size: 13px; }
+.moonkov-terminal.archive-page-8 .view-settings-value { min-width: 58px; -unity-text-align: middle-right; }
+.moonkov-terminal.archive-page-8 .view-settings-reset { align-self: flex-start; margin: 0 12px 22px; padding: 10px 16px; min-height: 38px; }
