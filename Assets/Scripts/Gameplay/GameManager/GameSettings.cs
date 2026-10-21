@@ -42,6 +42,21 @@ namespace Unity.MP_FPS
         const string k_PlayerNameKey = "PlayerName";
         const string k_ConnectionModeKey = "ConnectionMode";
         const string k_SessionNameKey = "SessionName";
+        const string k_RaidModeKey = "Moonkov.RaidMode";
+        private RaidGameMode m_RequestedMode;
+        public RaidGameMode RequestedMode
+        {
+            get => m_RequestedMode;
+            set
+            {
+                if (value != RaidGameMode.Expedition && value != RaidGameMode.BountyClash) return;
+                if (m_RequestedMode == value) return;
+                m_RequestedMode = value;
+                PlayerPrefs.SetInt(k_RaidModeKey, (int)value);
+                Notify();
+            }
+        }
+        public int RequestedRulesVersion => RequestedMode == RaidGameMode.BountyClash ? BountyClashRules.Version : 0;
 
         GameSettings()
         {
@@ -51,6 +66,12 @@ namespace Unity.MP_FPS
             m_ConnectionMode = PlayerPrefs.GetInt(k_ConnectionModeKey,
                 ClientSettings.ConnectionMode >= 0 ? ClientSettings.ConnectionMode : 0);
             m_SessionName = PlayerPrefs.GetString(k_SessionNameKey, "default-session");
+            m_RequestedMode = GhostBridgeBootstrap.IsServerOnly ? RaidGameMode.Expedition :
+                PlayerPrefs.GetInt(k_RaidModeKey, 0) == 1 ? RaidGameMode.BountyClash : RaidGameMode.Expedition;
+            var args = Environment.GetCommandLineArgs();
+            for (int i = 0; i + 1 < args.Length; i++)
+                if (args[i] == "-raid-mode") m_RequestedMode = args[i + 1].Equals("bounty-clash", StringComparison.OrdinalIgnoreCase)
+                    ? RaidGameMode.BountyClash : RaidGameMode.Expedition;
         }
 
         public event EventHandler<BindablePropertyChangedEventArgs> propertyChanged;

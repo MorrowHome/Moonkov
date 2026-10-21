@@ -35,7 +35,7 @@ namespace Unity.MP_FPS
                     m_InventoryRequestPending && m_GrenadeRequest != 0 ? "THROW REQUESTED..." : "[G] ENERGY GRENADE / {0}", available);
                 m_NextGrenadeText = Time.unscaledTime + .1f;
             }
-            if (selected == null || m_InventoryVisible || m_InventoryRequestPending || GameSettings.Instance.IsPauseMenuOpen ||
+            if (selected == null || m_InventoryVisible || QuickBusy || DarkSightRequested || GameSettings.Instance.IsPauseMenuOpen ||
                 UnityEngine.Cursor.lockState != CursorLockMode.Locked || Time.unscaledTime < m_NextGrenadeThrow ||
                 Keyboard.current == null || !Keyboard.current.gKey.wasPressedThisFrame) return;
             m_InventoryRequestId = System.Math.Max(m_InventoryRequestId, inventory.RequestId) + 1;

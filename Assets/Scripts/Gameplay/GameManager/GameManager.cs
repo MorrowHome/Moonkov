@@ -17,6 +17,8 @@ namespace Unity.MP_FPS
         public static GameManager Instance { get; private set; }
 
         public const int MaxPlayer = 32;
+        public static int RequestedMaxPlayers => GameSettings.Instance.RequestedMode == RaidGameMode.BountyClash
+            ? BountyClashRules.MaxPlayers : MaxPlayer;
         public const string MainMenuSceneName = "MainMenu";
         public const string MenuPreviewSceneName = "GameScene";
         // Shared by offline/Host, remote clients and the dedicated server.
@@ -167,6 +169,11 @@ namespace Unity.MP_FPS
 
         async Task StartRequestedGameAsync(CreationType creationType)
         {
+            if (creationType == CreationType.Offline && GameSettings.Instance.RequestedMode == RaidGameMode.BountyClash)
+            {
+                ConnectionSettings.Instance.ConnectionError = "Bounty Clash requires online accounts and at least two teams. Choose Expedition for single player.";
+                return;
+            }
             if (!IsHeadless && !PlayerProfileClient.IsLoggedIn)
             {
                 Debug.LogWarning("Sign in before starting a raid.");
@@ -186,6 +193,7 @@ namespace Unity.MP_FPS
 
             Debug.Log($"[{nameof(StartGameAsync)}] Called with creation type '{creationType}'");
             ConnectionSettings.Instance.ConnectionError = null;
+            ConnectionSettings.Instance.ModeConfirmed = false;
 
             if (creationType == CreationType.Host)
             {
@@ -374,6 +382,38 @@ namespace Unity.MP_FPS
             if (client != null)
             {
                 await WaitForGhostReplicationAsync(client, cancellationToken);
+                if (GameSettings.Instance.RequestedMode == RaidGameMode.BountyClash)
+                    await WaitForModeApprovalAsync(client, cancellationToken);
+            }
+        }
+
+        public static void ConfigureRaidMode(World world)
+        {
+            if (world == null || !world.IsCreated) return;
+            using var query = world.EntityManager.CreateEntityQuery(typeof(RaidModeState));
+            if (!query.IsEmptyIgnoreFilter) return;
+            var entity = world.EntityManager.CreateEntity(typeof(RaidModeState));
+            world.EntityManager.SetComponentData(entity, new RaidModeState
+            { Mode = GameSettings.Instance.RequestedMode, RulesVersion = GameSettings.Instance.RequestedRulesVersion });
+        }
+
+        private static async Task WaitForModeApprovalAsync(World world, CancellationToken cancellationToken)
+        {
+            using var query = world.EntityManager.CreateEntityQuery(typeof(BountyClashClientState));
+            double started = Time.realtimeSinceStartupAsDouble;
+            while (true)
+            {
+                CheckLoadingConnection(started, "Server did not confirm Bounty Clash rules. Check the server mode and version.");
+                if (!query.IsEmptyIgnoreFilter)
+                {
+                    var state = world.EntityManager.GetComponentObject<BountyClashClientState>(query.GetSingletonEntity());
+                    if (state.ApprovalReceived)
+                    {
+                        if (!state.Approved) throw new InvalidOperationException(state.ApprovalReason);
+                        return;
+                    }
+                }
+                await Awaitable.NextFrameAsync(cancellationToken);
             }
         }
 
@@ -444,12 +484,14 @@ namespace Unity.MP_FPS
             if (session.IsHost)
             {
                 serverWorld = ClientServerBootstrap.CreateServerWorld("ServerWorld");
+                ConfigureRaidMode(serverWorld);
                 GhostGameObjectUpdateSystem.GatherWorldSystems(serverWorld);
             }
 
             if (!session.IsServer())
             {
                 clientWorld = ClientServerBootstrap.CreateClientWorld("ClientWorld");
+                ConfigureRaidMode(clientWorld);
                 GhostGameObjectUpdateSystem.GatherWorldSystems(clientWorld);
             }
         }
@@ -464,10 +506,12 @@ namespace Unity.MP_FPS
             if (isHost)
             {
                 serverWorld = ClientServerBootstrap.CreateServerWorld("ServerWorld");
+                ConfigureRaidMode(serverWorld);
                 GhostGameObjectUpdateSystem.GatherWorldSystems(serverWorld);
             }
 
             clientWorld = ClientServerBootstrap.CreateClientWorld("ClientWorld");
+            ConfigureRaidMode(clientWorld);
             GhostGameObjectUpdateSystem.GatherWorldSystems(clientWorld);
 #if UNITY_EDITOR
             Debug.Log($"[{nameof(CreateEntityWorlds)}] ThinClient number is {MultiplayerPlayModePreferences.RequestedNumThinClients}");

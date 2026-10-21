@@ -32,6 +32,7 @@ namespace Unity.MP_FPS
         private int m_NextId = -10000;
         private int m_AliveCount;
         private int m_AliveBossCount;
+        private bool m_ClashSuppressed;
         private int m_TotalSpawned;
         public int SpawnedCount => m_AliveCount;
         public int TotalSpawnedCount => m_TotalSpawned;
@@ -44,6 +45,12 @@ namespace Unity.MP_FPS
 
         protected override void OnUpdate()
         {
+            if(BountyClashRuntime.Enabled(EntityManager))
+            {
+                if(!m_ClashSuppressed){ResetEncounters();m_Settings=null;m_ClashSuppressed=true;}
+                return;
+            }
+            m_ClashSuppressed=false;
             var settings = AlienEncounterSettings.Active;
             double now = SystemAPI.Time.ElapsedTime;
             if (!ReferenceEquals(settings, m_Settings))
@@ -351,7 +358,7 @@ namespace Unity.MP_FPS
         private void RetireActors()
         {
             foreach (var state in m_Encounters) RetireActor(state);
-            m_AliveCount = 0;
+            m_AliveCount = m_AliveBossCount = 0;
         }
 
         private void ResetEncounters()

@@ -14,10 +14,11 @@ namespace Unity.MP_FPS
             if (map == null) return;
             var caches=LootContainers(ref state);
             InitializeLootContainers(ref state);
-            HandleMissions(ref state, ecb);
+            bool clash=ClashEnabled(ref state);
+            if(!clash)HandleMissions(ref state, ecb);
             HandleLootRequests(ref state,ecb);
             HandleInventoryRequests(ref state, ecb);
-            RefreshLootContainers(ref state);
+            if(!clash)RefreshLootContainers(ref state);
             float dt = SystemAPI.Time.DeltaTime;
             var loot = SystemAPI.GetSingletonRW<RaidLootWorld>();
             // Shells remain in the world; the server refills only safe, completely empty caches.
@@ -34,6 +35,7 @@ namespace Unity.MP_FPS
 
             foreach (var (request, received, entity) in SystemAPI.Query<RefRO<RaidDeployRpc>, RefRO<ReceiveRpcCommandRequest>>().WithEntityAccess())
             {
+                if(clash){ecb.DestroyEntity(entity);continue;}
                 Entity connection = received.ValueRO.SourceConnection;
                 if (SystemAPI.HasComponent<RaidSession>(connection) && SystemAPI.HasComponent<JoinedClient>(connection) &&
                     !SystemAPI.HasComponent<NetworkStreamRequestDisconnect>(connection))
@@ -72,7 +74,8 @@ namespace Unity.MP_FPS
                 if (SystemAPI.HasComponent<NetworkStreamRequestDisconnect>(connection)) continue;
                 RefreshLootAccess(ref state,connection,session.ValueRO);
                 SendInventory(ref state, ecb, connection, session.ValueRO.RaidId);
-                if (session.ValueRO.Phase == RaidPhase.Active && TryGetLivingPosition(ref state, joined.ValueRO.PlayerEntity, out var position))
+                if(clash){var match=ClashWorld(ref state).Match;session.ValueRW.TimeLeft=match!=null?(float)math.max(0,match.Deadline-SystemAPI.Time.ElapsedTime):0;session.ValueRW.ExtractionProgress=0;}
+                if (!clash && session.ValueRO.Phase == RaidPhase.Active && TryGetLivingPosition(ref state, joined.ValueRO.PlayerEntity, out var position))
                 {
                     session.ValueRW.TimeLeft = math.max(0, session.ValueRO.TimeLeft - dt);
                     Vector3 delta = (Vector3)position - map.ExtractionPosition;

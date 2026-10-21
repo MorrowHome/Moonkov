@@ -73,7 +73,7 @@ public partial class ClientInputReaderSystem : SystemBase
             input.ValueRW = new ClientInput();
             movementInput.ValueRW = new ClientMovementInput();
 
-            bool blocked = GameSettings.Instance.IsPauseMenuOpen || RaidHUD.InventoryOpen;
+            bool blocked = GameSettings.Instance.IsPauseMenuOpen || RaidHUD.GameplayActionsBlocked;
             if (blocked && _dollSingerInput == null) continue;
 
             if (_dollSingerInput != null)
@@ -90,7 +90,7 @@ public partial class ClientInputReaderSystem : SystemBase
                 playerInput.SetStance(_dollSingerInput.Stance);
                 playerInput.SetFlag(PlayerInput.InputFlag.Jump, canRead && _dollSingerInput.JumpPressed);
                 playerInput.SetFlag(PlayerInput.InputFlag.Sprint, canRead && _dollSingerInput.SprintHeld);
-                playerInput.SetFlag(PlayerInput.InputFlag.Aim, !blocked && (_dollSingerInput.LightAdjusting ? _dollSingerInput.LightPreviewAiming : canRead && _dollSingerInput.AimHeld) && !playerInput.FreeLooking);
+                playerInput.SetFlag(PlayerInput.InputFlag.Aim, !blocked && !RaidHUD.DarkSightRequested && !RaidHUD.QuickSlotToolSelected && (_dollSingerInput.LightAdjusting ? _dollSingerInput.LightPreviewAiming : canRead && _dollSingerInput.AimHeld) && !playerInput.FreeLooking);
                 playerInput.SetFlag(PlayerInput.InputFlag.ThirdPerson, _dollSingerPresentation.IsThirdPerson);
                 var equipped = EntityManager.GetComponentData<PredictedPlayerGhost>(currentLocalPlayer);
                 var weapon = WeaponManager.Instance.WeaponRegistry.GetWeaponData(equipped.EquippedWeaponID);

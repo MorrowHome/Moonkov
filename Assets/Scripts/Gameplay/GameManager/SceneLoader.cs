@@ -20,6 +20,8 @@ namespace Unity.MP_FPS
 
         public static async Task LoadGameplayAsync(World server, World client)
         {
+            GameManager.ConfigureRaidMode(server);
+            GameManager.ConfigureRaidMode(client);
             await LoadGameplayScenesAsync();
             if (server != null)
                 await WaitForAllSubScenesToLoadAsync(server, LoadingData.LoadingSteps.LoadServer);

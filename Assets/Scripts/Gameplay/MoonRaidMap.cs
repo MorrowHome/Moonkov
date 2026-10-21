@@ -53,6 +53,7 @@ namespace Unity.MP_FPS
         [SerializeField, Min(0)] private float m_DehydrationDamagePerSecond = 1;
         private GameObject[] m_Markers;
         private Material m_ExtractionMaterial;
+        private GameObject m_ExtractionVisuals;
         private RaidSupplyCacheVisuals m_CacheVisuals;
         private readonly System.Collections.Generic.Dictionary<int,GameObject> m_DeathBags = new System.Collections.Generic.Dictionary<int,GameObject>();
         private CorpsePresentationSettings m_CorpseSettings;
@@ -104,6 +105,7 @@ namespace Unity.MP_FPS
                 return;
             }
             Active = this;
+            if(Application.isPlaying)BountyClashArenaSettings.EnsureForMap(this);
         }
 
         private void OnDisable()
@@ -132,6 +134,8 @@ namespace Unity.MP_FPS
                 m_Markers[i].name += " / " + GetLootProfile(i);
                 m_Markers[i].SetActive(false); // Do not show stocked caches before the first server snapshot.
             }
+            m_ExtractionVisuals=new GameObject("Expedition extraction presentation");
+            m_ExtractionVisuals.transform.SetParent(transform,false);
             Marker("Extraction zone", PrimitiveType.Cylinder, m_ExtractionPosition + Vector3.up * 0.08f,
                 new Vector3(m_ExtractionRadius * 2, 0.06f, m_ExtractionRadius * 2), m_ExtractionMaterial);
             Marker("Extraction beacon", PrimitiveType.Cylinder, m_ExtractionPosition + Vector3.up * 4,
@@ -146,7 +150,7 @@ namespace Unity.MP_FPS
         {
             var marker = GameObject.CreatePrimitive(primitive);
             marker.name = label;
-            marker.transform.SetParent(transform, false);
+            marker.transform.SetParent(m_ExtractionVisuals.transform, false);
             marker.transform.position = position;
             marker.transform.localScale = scale;
             var collider = marker.GetComponent<UnityEngine.Collider>();
@@ -156,12 +160,20 @@ namespace Unity.MP_FPS
             return marker;
         }
 
+        private void LateUpdate()
+        {
+            if(m_ExtractionVisuals)
+                m_ExtractionVisuals.SetActive(!(BountyClashArenaSettings.Active && BountyClashArenaSettings.Active.ModeActive));
+        }
+
         public void ShowLoot(uint takenMask, bool hasSnapshot)
         {
             if (m_Markers == null) return;
             for (int i = 0; i < m_Markers.Length; i++)
             {
                 bool visible = hasSnapshot;
+                var arena=BountyClashArenaSettings.Active;
+                if(visible && arena && arena.ModeActive)visible=arena.Contains(m_LootPositions[i]);
                 if (m_Markers[i].activeSelf != visible) m_Markers[i].SetActive(visible);
                 if (hasSnapshot) m_CacheVisuals.SetEmpty(i, (takenMask & (1u << i)) != 0);
             }

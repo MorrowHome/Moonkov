@@ -38,6 +38,7 @@ namespace Unity.MP_FPS
             new Table(new[] { new Entry("medkit", 1, 2, 4) }, new[]
             {
                 new Entry("med_gel", 30, 2, 3), new Entry("trauma_kit", 18),
+                new Entry("vitality_shot", 5), new Entry("stamina_shot", 4), new Entry("antidote_shot", 4),
                 new Entry("electrolyte", 16, 1, 2), new Entry("oxygen_reserve", 12),
                 new Entry("water", 12, 1, 2), new Entry("oxygen_canister", 12, 1, 2),
                 new Entry("ration", 8, 1, 2), new Entry("cells", 8, 1, 2),
@@ -60,7 +61,9 @@ namespace Unity.MP_FPS
                 new Entry("halo_pulse_controller", 10), new Entry("halo_hit_marker", 8),
                 new Entry("scout_rig", 12), new Entry("field_rig", 8),
                 new Entry("sling_pack", 10), new Entry("cargo_pack", 4),
-                new Entry("energy_grenade", 18, 1, 2), new Entry("helmet", 8), new Entry("rig", 6), new Entry("compact", 3),
+                new Entry("energy_grenade", 18, 1, 2), new Entry("dynamite_bundle", 2), new Entry("frag_bomb", 2),
+                new Entry("fire_bomb", 2), new Entry("choke_bomb", 2), new Entry("alert_trip_mine", 2),
+                new Entry("concertina_trip_mine", 2), new Entry("poison_trip_mine", 2), new Entry("ammo_box", 2), new Entry("helmet", 8), new Entry("rig", 6), new Entry("compact", 3),
                 new Entry("pistol", 3), new Entry("shotgun", 2), new Entry("sniper", 1),
                 new Entry("optical_sensor", 8), new Entry("data_drive", 6),
                 new Entry("black_box", 3), new Entry("quantum_core", 1)

@@ -13,6 +13,8 @@ namespace Unity.MP_FPS
         public FixedString128Bytes LoginToken;
         public int CharacterIndex;
         public int CarryCells;
+        public RaidGameMode Mode;
+        public int RulesVersion;
     }
 
     /// <summary>

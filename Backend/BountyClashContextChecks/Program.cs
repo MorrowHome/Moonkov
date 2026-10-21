@@ -87,7 +87,33 @@ try
     await lateHandler.Started.Task.WaitAsync(TimeSpan.FromSeconds(5));late.Dispose();lateHandler.Release.TrySetResult();await late.ShutdownTask;
     Check(lateHandler.Refunds==1 && lateHandler.Abandons==0,"shutdown discarded late debit or posted death instead of refund");
     Check(Directory.GetFiles(outbox).Length==0,"late-debit refund left an unacknowledged journal");
-    Console.WriteLine($"PASS {checks} context/offline checks: legacy receipt bytes, old Format1/2 recovery, no offline PvP, failed delivery, complete group restart, one redemption and fail-closed old backend capability.");
+    // Disconnect and reconnect while the same settlement HTTP task waits for
+    // its acknowledgement. Rebinding must neither re-send nor alter its payload.
+    var ackHandler=new DelayedAckHandler();var moving=new Context(config,ackHandler);
+    var oldOwner=new Entity{Index=201};var holder=new Entity{Index=202};var reconnect=new Entity{Index=203};var stranger=new Entity{Index=204};
+    string ownerId=Guid.NewGuid().ToString("D"),receiptId=Guid.NewGuid().ToString("D");
+    moving.Profiles[oldOwner]=new Context.Profile{PlayerId=ownerId,DeploymentId=receiptId,Mode="BountyClash",MatchId=Guid.NewGuid().ToString("D"),RulesVersion=1};
+    var ownerInventory=new Unity.MP_FPS.RaidInventoryState{Graph=InventoryGraph.Create(false,false),RaidId=7};moving.Inventories[oldOwner]=ownerInventory;
+    moving.BeginSave(oldOwner,new Unity.MP_FPS.RaidSession{RaidId=7,SettlementId=receiptId,PersistentDeployment=true,Phase=Unity.MP_FPS.RaidPhase.Extracted});
+    await ackHandler.Started.Task.WaitAsync(TimeSpan.FromSeconds(5));var pending=moving.Saves[receiptId];var task=pending.Task;var receipt=pending.Payload;
+    Check(!moving.RebindBountyOwner(oldOwner,holder,Guid.NewGuid().ToString("D"),receiptId),"unverified account can steal pending owner");
+    Check(!moving.RebindBountyOwner(oldOwner,holder,ownerId,Guid.NewGuid().ToString("D")),"wrong settlement can move pending owner");
+    moving.Profiles[stranger]=new Context.Profile{PlayerId=Guid.NewGuid().ToString("D")};
+    Check(!moving.RebindBountyOwner(oldOwner,stranger,ownerId,receiptId),"new owner from another account accepted");moving.Profiles.Remove(stranger);
+    Check(moving.RebindBountyOwner(oldOwner,holder,ownerId,receiptId),"detach did not migrate pending ownership");
+    Check(!moving.Profiles.ContainsKey(oldOwner) && !moving.Inventories.ContainsKey(oldOwner) && pending.Connection.Equals(holder) && ReferenceEquals(moving.Inventories[holder],ownerInventory),"detach left old receipt or inventory owner");
+    var authenticated=new Context.Profile{PlayerId=ownerId,Dust=999};moving.Profiles[reconnect]=authenticated;
+    Check(moving.RebindBountyOwner(holder,reconnect,ownerId,receiptId),"authenticated reconnect could not migrate ownership");
+    Check(pending.Connection.Equals(reconnect)&&ReferenceEquals(pending.Task,task)&&ReferenceEquals(pending.Payload,receipt)&&ackHandler.SettlementPosts==1&&!task.IsCompleted,"reconnect restarted or replaced in-flight save");
+    Check(moving.Profiles[reconnect].DeploymentId==receiptId,"open deployment binding lost to account-only refresh");
+    ackHandler.Release.TrySetResult();var acknowledged=await task;
+    Check(ackHandler.SettlementPosts==1 && acknowledged.PlayerId==ownerId && acknowledged.Dust==123 && pending.Connection.Equals(reconnect),"old acknowledgement missed current owner or reward duplicated");
+    // Once a closed result is applied, a later authenticated account snapshot can
+    // include warehouse changes and must take precedence over the retained cache.
+    moving.Profiles[reconnect]=acknowledged;var newest=new Entity{Index=205};var fresh=new Context.Profile{PlayerId=ownerId,Dust=321};moving.Profiles[newest]=fresh;
+    Check(moving.RebindBountyOwner(reconnect,newest,ownerId,receiptId)&&ReferenceEquals(moving.Profiles[newest],fresh),"closed cached profile overwrote fresh authenticated warehouse");
+    moving.Dispose();await moving.ShutdownTask;
+    Console.WriteLine($"PASS {checks} context/offline checks: legacy receipt bytes, old Format1/2 recovery, no offline PvP, failed delivery, complete group restart, one redemption, delayed acknowledgement owner transfer without re-send, authenticated scope isolation and fail-closed old backend capability.");
 }
 finally{Directory.Delete(root,true);}
 
@@ -136,6 +162,25 @@ sealed class DelayedHandler:HttpMessageHandler
             else if(path.EndsWith("/refund")){Refunds++;reply=new Context.Profile{PlayerId=body.Value<string>("PlayerId")};}
             else if(path.EndsWith("/abandon")){Abandons++;reply=new Context.Profile{PlayerId=body.Value<string>("PlayerId")};}
             else reply=new{status="registered"};
+        }
+        return new HttpResponseMessage(HttpStatusCode.OK){Content=new StringContent(JsonConvert.SerializeObject(reply),Encoding.UTF8,"application/json")};
+    }
+}
+
+sealed class DelayedAckHandler:HttpMessageHandler
+{
+    public readonly TaskCompletionSource Started=new(TaskCreationOptions.RunContinuationsAsynchronously),Release=new(TaskCreationOptions.RunContinuationsAsynchronously);
+    public int SettlementPosts;
+    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,CancellationToken ct)
+    {
+        object reply;
+        if(request.Method==HttpMethod.Get)reply=new{features=new[]{"bounty-clash-v1"}};
+        else
+        {
+            var body=JObject.Parse(await request.Content!.ReadAsStringAsync(ct));
+            if(!request.RequestUri!.AbsolutePath.EndsWith("/settlements"))throw new Exception("Unexpected request while moving save owner");
+            SettlementPosts++;Started.TrySetResult();await Release.Task;
+            reply=new Context.Profile{PlayerId=body.Value<string>("PlayerId"),Dust=123};
         }
         return new HttpResponseMessage(HttpStatusCode.OK){Content=new StringContent(JsonConvert.SerializeObject(reply),Encoding.UTF8,"application/json")};
     }

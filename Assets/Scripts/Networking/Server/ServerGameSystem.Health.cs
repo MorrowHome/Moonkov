@@ -9,6 +9,7 @@ namespace Unity.MP_FPS
     {
         private void UpdateSurvival(ref SystemState state)
         {
+            if(ClashEnabled(ref state))return;
             var map = MoonRaidMap.Active;
             if (map == null) return;
             uint tick = SystemAPI.GetSingleton<NetworkTime>().ServerTick.TickIndexForValidTick;

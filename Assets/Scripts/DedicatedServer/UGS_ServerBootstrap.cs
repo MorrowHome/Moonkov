@@ -70,7 +70,7 @@ namespace Unity.MP_FPS
                 m_MultiplayManager = await MultiplayerServerService.Instance.StartMultiplaySessionManagerAsync(
                     new MultiplaySessionManagerOptions
                     {
-                        SessionOptions = new SessionOptions { MaxPlayers = GameManager.MaxPlayer }
+                        SessionOptions = new SessionOptions { MaxPlayers = GameManager.RequestedMaxPlayers }
                             .WithDirectNetwork()
                             .WithNetworkHandler(networkHandler)
                             .WithBackfillingConfiguration(
@@ -117,6 +117,7 @@ namespace Unity.MP_FPS
             LoadingData.Instance.UpdateLoading(LoadingData.LoadingSteps.CreateWorld);
             GameManager.DestroyLocalSimulationWorld();
             var serverWorld = GhostBridgeBootstrap.Instance.ServerWorld;
+            GameManager.ConfigureRaidMode(serverWorld);
             GhostGameObjectUpdateSystem.GatherWorldSystems(serverWorld);
 
             using var drvQuery = serverWorld.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());

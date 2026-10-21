@@ -1,0 +1,15 @@
+.bounty-mode-entry { min-height: 32px; padding: 6px 12px; margin-left: 12px; color: #e9edf1; background-color: #17202b; border-width: 1px; border-color: #586574; font-size: 12px; }
+.bounty-mode-modal { position: absolute; left: 0; right: 0; top: 0; bottom: 0; justify-content: center; align-items: center; background-color: rgba(3, 6, 10, .92); }
+.bounty-mode-window { width: 680px; max-width: 92%; padding: 26px; background-color: #10151c; border-width: 1px; border-color: #626e7b; border-top-width: 4px; border-top-color: #bda36a; }
+.bounty-mode-title { color: #f0f2ed; font-size: 25px; margin-bottom: 8px; }
+.bounty-mode-copy { color: #bac4ce; font-size: 14px; white-space: normal; margin-bottom: 18px; }
+.bounty-mode-card { min-height: 90px; padding: 14px 18px; margin-bottom: 12px; align-items: flex-start; background-color: #1b2531; border-width: 1px; border-color: #556272; }
+.bounty-mode-card:hover { background-color: #2b3a4b; }
+.bounty-mode-card:focus { border-color: #dbc38f; }
+.bounty-mode-card:disabled { opacity: .5; }
+.bounty-mode-card-title { color: #f0f2ed; font-size: 19px; margin-bottom: 6px; }
+.bounty-mode-card-copy { color: #bdc8d2; font-size: 13px; white-space: normal; }
+.bounty-mode-selected { border-left-width: 4px; border-left-color: #cfb476; }
+.bounty-mode-close { min-height: 34px; align-self: flex-end; padding: 6px 18px; }
+.bounty-mode-message { color: #e0bf80; font-size: 13px; white-space: normal; }
+.bounty-hidden { display: none; }

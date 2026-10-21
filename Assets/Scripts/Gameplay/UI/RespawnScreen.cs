@@ -15,6 +15,7 @@ namespace Unity.MP_FPS.UI
         private World m_ClientWorld;
         private EntityManager m_EntityManager;
         private EntityQuery m_LocalPlayerQuery;
+        private EntityQuery m_ClashQuery;
 
         private float m_RespawnCountdown;
         private const float RESPAWN_DURATION = 5.0f;
@@ -49,6 +50,7 @@ namespace Unity.MP_FPS.UI
                     ComponentType.ReadOnly<PredictedPlayerGhost>(),
                     ComponentType.ReadOnly<GhostOwnerIsLocal>()
                 );
+                m_ClashQuery = m_EntityManager.CreateEntityQuery(typeof(BountyClashClientState));
             }
         }
 
@@ -66,6 +68,26 @@ namespace Unity.MP_FPS.UI
             {
                 InitializeEcs();
                 if (m_ClientWorld == null) return;
+            }
+
+            if (BountyClashRuntime.Enabled(m_EntityManager))
+            {
+                m_RespawnScreen.style.display = DisplayStyle.None;
+                // Downed players retain their owned character and camera. Only a missing
+                // character uses this neutral spectator; never an individual respawn timer.
+                bool hasCharacter = m_LocalPlayerQuery.HasSingleton<PredictedPlayerGhost>();
+                RespawnCamera.gameObject.SetActive(!hasCharacter);
+                if (!hasCharacter && !m_ClashQuery.IsEmptyIgnoreFilter)
+                {
+                    var data = m_EntityManager.GetComponentObject<BountyClashClientState>(m_ClashQuery.GetSingletonEntity());
+                    if (data.Approved && data.HasSnapshot)
+                    {
+                        Vector3 target = data.Snapshot.TargetPosition;
+                        RespawnCamera.transform.position = target + new Vector3(0, 18, -22);
+                        RespawnCamera.transform.LookAt(target);
+                    }
+                }
+                return;
             }
 
             if (MoonRaidMap.Active != null)
@@ -113,6 +135,13 @@ namespace Unity.MP_FPS.UI
 
                 m_RespawnTimerLabel.text = $"RESPAWNING IN {Mathf.CeilToInt(m_RespawnCountdown).ToString()}";
             }
+        }
+        private void OnDisable()
+        {
+            if (m_ClientWorld != null && m_ClientWorld.IsCreated)
+            { m_LocalPlayerQuery.Dispose(); m_ClashQuery.Dispose(); }
+            m_ClientWorld = null;
+            if (RespawnCamera) RespawnCamera.gameObject.SetActive(false);
         }
     }
 }

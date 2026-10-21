@@ -321,6 +321,7 @@ namespace Unity.MP_FPS
             {
                 var ghostLink = SystemAPI.ManagedAPI.GetComponent<GhostGameObjectLink>(entity);
                 var playerGhost = ghostLink.LinkedInstance.GetComponent<PlayerGhost>();
+                if(inputLookup.ValueRO.ClientCommandInputEntity==Entity.Null || !predictedClientInputComponentLookup.HasComponent(inputLookup.ValueRO.ClientCommandInputEntity))continue;
                 var predictedClient = predictedClientInputComponentLookup[inputLookup.ValueRO.ClientCommandInputEntity];
                 if (predictedClient.InputCount > 0)
                 {
@@ -328,6 +329,7 @@ namespace Unity.MP_FPS
                     var commandInput = commands[predictedClient.BeginInputIndex + predictedClient.InputCount - 1];
                     if (commandInput.TryGetPlayerMovementInput(predictedPlayer.ValueRO.InputIndex, out var input))
                     {
+                        input=RaidHealth.RestrictInput(predictedPlayer.ValueRO,input);
                         playerGhost.ServerMovementInput = input;
                     }
 
@@ -401,18 +403,16 @@ namespace Unity.MP_FPS
 
                                                 var healthBeforeDamage = targetPredictedPlayer.ValueRO.CurrentHealth;
                                                 var hitPlayer = hitGhostObject.GetComponent<PlayerGhost>();
-                                                RaidHealth.Damage(ref targetPredictedPlayer.ValueRW,
-                                                    RaidHealth.ResolveHit(hitPlayer, hit.collider, hit.point), weaponData.Damage, serverTick);
+                                                BountyClashDamage.Apply(World,hitGhostObject.LinkedEntity,shooterNetworkId,
+                                                    RaidHealth.ResolveHit(hitPlayer, hit.collider, hit.point),weaponData.Damage,serverTick,RaidDamageKind.Bullet);
                                                 if (healthBeforeDamage > 0 && ((HaloModule)predictedPlayer.ValueRO.EquippedModules & HaloModule.HitMarker) != 0)
                                                     VisualEffectManager.ServerInstance?.Server_RequestHaloMark(shooterNetworkId, commandInput.Tick.TickIndexForValidTick, hit.point);
 
-                                                if (healthBeforeDamage > 0 &&
+                                                if (!targetPredictedPlayer.ValueRO.ClashEnabled && healthBeforeDamage > 0 &&
                                                     targetPredictedPlayer.ValueRO.CurrentHealth <= 0)
                                                 {
                                                     if (LeaderboardManager.Instance != null)
                                                     {
-                                                        LeaderboardManager.Instance.AddKill(shooterNetworkId,
-                                                            targetNetworkId);
                                                         Debug.Log(
                                                             $"[Server] Player {shooterNetworkId.ToString()} killed player {targetNetworkId.ToString()}.");
                                                     }
@@ -518,6 +518,7 @@ namespace Unity.MP_FPS
                          .WithAll<Simulate, PlayerControllerLink>()
                          .WithEntityAccess())
             {
+                if(inputLookup.ValueRO.ClientCommandInputEntity==Entity.Null || !predictedClientInputComponentLookup.HasComponent(inputLookup.ValueRO.ClientCommandInputEntity))continue;
                 var predictedClient = predictedClientInputComponentLookup[inputLookup.ValueRO.ClientCommandInputEntity];
                 if (predictedClient.InputCount > 0)
                 {

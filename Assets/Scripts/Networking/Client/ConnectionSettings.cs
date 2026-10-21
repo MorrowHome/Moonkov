@@ -67,6 +67,9 @@ namespace Unity.MP_FPS
 
          public NetworkEndpoint ConnectionEndpoint;
          public string ConnectionError { get; set; }
+         public bool ModeConfirmed { get; set; }
+         public RaidGameMode ApprovedMode { get; set; }
+         public int ApprovedRulesVersion { get; set; }
 
          ConnectionSettings()
          {

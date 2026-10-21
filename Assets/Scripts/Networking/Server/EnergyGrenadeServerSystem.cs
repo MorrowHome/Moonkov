@@ -146,7 +146,7 @@ namespace Unity.MP_FPS
                 float damage = EnergyGrenadeRules.DamageAt(Vector3.Distance(grenade.Position, point));
                 if (damage <= 0 || !EnergyGrenadePhysics.ClearSight(grenade.Scene, grenade.Position, point, root.transform)) continue;
                 float before = health.ValueRO.CurrentHealth;
-                if (!health.ValueRO.BodyHealthInitialized) RaidHealth.Damage(ref health.ValueRW, BodyPart.Chest, damage, tick);
+                if (!health.ValueRO.BodyHealthInitialized) BountyClashDamage.Apply(World,entity,grenade.Owner,BodyPart.Chest,damage,tick,RaidDamageKind.Explosion);
                 else
                 {
                     // Spread blast damage over living tissue instead of treating every blast as one chest bullet.
@@ -154,16 +154,11 @@ namespace Unity.MP_FPS
                     {
                         var part = (BodyPart)p;
                         float share = damage * RaidHealth.Get(health.ValueRO, part) / before;
-                        RaidHealth.Damage(ref health.ValueRW, part, share, tick);
+                        BountyClashDamage.Apply(World,entity,grenade.Owner,part,share,tick,RaidDamageKind.Explosion);
                     }
                 }
                 health.ValueRW.LastDamageAmount = before - health.ValueRO.CurrentHealth;
                 health.ValueRW.LastHitPart = BodyPart.Auto;
-                if (health.ValueRO.CurrentHealth <= 0 && EntityManager.HasComponent<GhostOwner>(entity))
-                {
-                    int victim = EntityManager.GetComponentData<GhostOwner>(entity).NetworkId;
-                    if (victim != grenade.Owner) LeaderboardManager.Instance?.AddKill(grenade.Owner, victim);
-                }
             }
         }
 

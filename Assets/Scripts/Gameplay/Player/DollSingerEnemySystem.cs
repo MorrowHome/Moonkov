@@ -112,6 +112,12 @@ namespace Unity.MP_FPS
 
         protected override void OnUpdate()
         {
+            if(BountyClashRuntime.Enabled(EntityManager))
+            {
+                if(m_Map!=null || m_NavData!=null)
+                {DestroyEnemies();ReleaseNavigation();ResetPopulation();m_Map=null;}
+                return;
+            }
             var map = MoonRaidMap.Active;
             double now = SystemAPI.Time.ElapsedTime;
             // Reference identity also detects an unloaded Unity object that now compares equal to null.

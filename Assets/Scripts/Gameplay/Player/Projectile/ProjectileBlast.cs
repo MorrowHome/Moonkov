@@ -33,15 +33,14 @@ namespace Unity.MP_FPS
                 Vector3 point = collider ? collider.bounds.center : root.transform.position + Vector3.up * .8f;
                 if (Vector3.Distance(origin, point) > radius || !EnergyGrenadePhysics.ClearSight(scene, origin, point, root.transform)) continue;
                 float before = health.CurrentHealth;
-                if (!health.BodyHealthInitialized) RaidHealth.Damage(ref health, BodyPart.Chest, damage, tick);
+                if (!health.BodyHealthInitialized) BountyClashDamage.Apply(world,entity,shooter,BodyPart.Chest,damage,tick,RaidDamageKind.Explosion);
                 else for (int p=0;p<RaidHealth.PartCount;p++)
-                { var part=(BodyPart)p; float share=damage*RaidHealth.Get(health,part)/before; RaidHealth.Damage(ref health,part,share,tick); }
+                { var part=(BodyPart)p; float share=damage*RaidHealth.Get(health,part)/before; BountyClashDamage.Apply(world,entity,shooter,part,share,tick,RaidDamageKind.Explosion); }
+                health=manager.GetComponentData<PredictedPlayerGhost>(entity);
                 health.LastDamageAmount = before-health.CurrentHealth; health.LastHitPart=BodyPart.Auto;
                 manager.SetComponentData(entity,health);
                 if (health.CurrentHealth>=before) continue;
                 victims++; flags |= (byte)(health.CurrentHealth<=0 ? 3 : 1);
-                if (health.CurrentHealth<=0 && owned && owner!=shooter && LeaderboardManager.Instance!=null)
-                    LeaderboardManager.Instance.AddKill(shooter,owner);
             }
             return victims;
         }

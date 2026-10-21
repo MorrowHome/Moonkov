@@ -130,7 +130,10 @@ namespace Unity.MP_FPS
                 }
                 var profile = deploy.Task.Result;
                 context.Profiles[connection] = profile;
-                RaidSession session = deploy.Join == null ? SystemAPI.GetComponent<RaidSession>(connection) : default;
+                // A new shared match must keep this connection's personal raid epoch
+                // and snapshot sequence, so old inventory RPCs cannot target the next kit.
+                bool continueClashSession = deploy.Payload.Mode=="BountyClash" && SystemAPI.HasComponent<RaidSession>(connection);
+                RaidSession session = continueClashSession || deploy.Join == null ? SystemAPI.GetComponent<RaidSession>(connection) : default;
                 RaidRules.BeginNext(ref session, deploy.Payload.Mode=="BountyClash" ? 0 : MoonRaidMap.Active.RaidDuration);
                 session.SettlementId = deploy.Payload.DeploymentId;
                 session.PersistentDeployment = true;

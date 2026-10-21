@@ -23,6 +23,8 @@ namespace Unity.MP_FPS
                 default: return 0f;
             }
         }
+        public static float Maximum(in PredictedPlayerGhost state, BodyPart part) => Maximum(part) *
+            (state.ClashEnabled ? Mathf.Clamp01(state.ClashMaxHealthFraction) : 1);
         public static float Get(in PredictedPlayerGhost state, BodyPart part)
         {
             switch (part)
@@ -39,7 +41,7 @@ namespace Unity.MP_FPS
         }
         public static void Set(ref PredictedPlayerGhost state, BodyPart part, float value)
         {
-            value = Mathf.Clamp(value, 0, Maximum(part));
+            value = Mathf.Clamp(value, 0, Maximum(state, part));
             switch (part)
             {
                 case BodyPart.Head: state.HeadHealth = value; break;
@@ -64,8 +66,18 @@ namespace Unity.MP_FPS
         }
         private static void Synchronize(ref PredictedPlayerGhost state)
         {
-            state.MaxHealth = 440f;
-            state.CurrentHealth = state.HeadHealth <= 0 || state.ChestHealth <= 0 ? 0f :
+            if (state.ClashEnabled)
+            {
+                state.HeadHealth=Mathf.Min(state.HeadHealth,Maximum(state,BodyPart.Head));
+                state.ChestHealth=Mathf.Min(state.ChestHealth,Maximum(state,BodyPart.Chest));
+                state.AbdomenHealth=Mathf.Min(state.AbdomenHealth,Maximum(state,BodyPart.Abdomen));
+                state.LeftArmHealth=Mathf.Min(state.LeftArmHealth,Maximum(state,BodyPart.LeftArm));
+                state.RightArmHealth=Mathf.Min(state.RightArmHealth,Maximum(state,BodyPart.RightArm));
+                state.LeftLegHealth=Mathf.Min(state.LeftLegHealth,Maximum(state,BodyPart.LeftLeg));
+                state.RightLegHealth=Mathf.Min(state.RightLegHealth,Maximum(state,BodyPart.RightLeg));
+            }
+            state.MaxHealth = 440f * (state.ClashEnabled ? Mathf.Clamp01(state.ClashMaxHealthFraction) : 1);
+            state.CurrentHealth = state.ClashEnabled && state.ClashLife != ClashLife.Alive || state.HeadHealth <= 0 || state.ChestHealth <= 0 ? 0f :
                 state.HeadHealth + state.ChestHealth + state.AbdomenHealth + state.LeftArmHealth +
                 state.RightArmHealth + state.LeftLegHealth + state.RightLegHealth;
         }
@@ -107,13 +119,14 @@ namespace Unity.MP_FPS
             return selected;
         }
         public static bool CanHeal(in PredictedPlayerGhost state, BodyPart part) => state.BodyHealthInitialized &&
-            state.CurrentHealth > 0 && Maximum(part) > 0 && Get(state, part) < Maximum(part);
+            state.CurrentHealth > 0 && Maximum(state,part) > 0 && Get(state, part) < Maximum(state,part);
         public static Inventory.InventoryError UseMedical(ref PredictedPlayerGhost state, Inventory.InventoryGraph inventory,
             string itemId, int expectedVersion, BodyPart part)
         {
+            if(state.TacticalPoisonSeconds>0)return Inventory.InventoryError.Inaccessible;
             if (part == BodyPart.Auto) part = MostInjured(state);
             if (!CanHeal(state, part)) return Inventory.InventoryError.Invalid;
-            var error = inventory.UseMedical(itemId, expectedVersion, Get(state, part), Maximum(part), out var healed, allowZeroHealth: true);
+            var error = inventory.UseMedical(itemId, expectedVersion, Get(state, part), Maximum(state,part), out var healed, allowZeroHealth: true);
             if (error == Inventory.InventoryError.None) Set(ref state, part, healed);
             return error;
         }
@@ -129,8 +142,8 @@ namespace Unity.MP_FPS
         }
         public static FirstPersonController.ControllerConsts Movement(in PredictedPlayerGhost state,
             FirstPersonController.ControllerConsts constants)
-            => RaidNutrition.Movement(state, constants);
-        public static float HandlingMultiplier(in PredictedPlayerGhost state) => RaidNutrition.HandlingMultiplier(state);
+            => TacticalItemEffects.Movement(state, RaidNutrition.Movement(state, constants));
+        public static float HandlingMultiplier(in PredictedPlayerGhost state) => RaidNutrition.HandlingMultiplier(state) * (state.TacticalCoughSeconds>0 ? 1.5f : 1);
         // A large remaining limb total must not hide a nearly fatal head/chest
         // injury from the compact HUD or the existing PMC retreat decision.
         public static float DangerFraction(in PredictedPlayerGhost state)
@@ -140,6 +153,13 @@ namespace Unity.MP_FPS
         }
         public static PlayerInput RestrictInput(in PredictedPlayerGhost state, PlayerInput input)
         {
+            if(state.ClashEnabled && !state.ClashCanAct)
+            {
+                var blocked=new PlayerInput { LookYawPitchDegrees=input.LookYawPitchDegrees, AimPoint=input.AimPoint };
+                blocked.SetFlag(PlayerInput.InputFlag.ThirdPerson,input.ThirdPerson);return blocked;
+            }
+            if(state.ClashEnabled && state.ClashDarkSight)
+            {input.SetFlag(PlayerInput.InputFlag.Shoot,false);input.SetFlag(PlayerInput.InputFlag.Aim,false);}
             if (!RaidNutrition.CanSprint(state))
                 input.SetFlag(PlayerInput.InputFlag.Sprint, false);
             return input;

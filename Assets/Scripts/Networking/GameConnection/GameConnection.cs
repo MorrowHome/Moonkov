@@ -45,7 +45,7 @@ namespace Unity.MP_FPS
             var options = new SessionOptions()
             {
                 Name = GameSettings.Instance.SessionName,
-                MaxPlayers = GameManager.MaxPlayer
+                MaxPlayers = GameManager.RequestedMaxPlayers
             }.WithRelayNetwork().WithNetworkHandler(networkHandler);
             gameConnection.Session = await MultiplayerService.Instance.CreateOrJoinSessionAsync(options.Name, options);
 

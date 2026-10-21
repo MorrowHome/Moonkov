@@ -51,6 +51,7 @@ namespace Unity.MP_FPS
             var lootEntity=state.EntityManager.CreateSingleton(new RaidLootWorld());
             state.EntityManager.AddComponentObject(lootEntity,new RaidLootContainers());
             state.EntityManager.AddComponentObject(lootEntity,new RaidMissionWorld());
+            state.EntityManager.AddComponentObject(lootEntity,new BountyClashWorld());
             m_PersistenceEntity = state.EntityManager.CreateEntity();
         }
 
@@ -85,6 +86,8 @@ namespace Unity.MP_FPS
             state.EntityManager.GetComponentObject<RaidMissionWorld>(SystemAPI.GetSingletonEntity<RaidLootWorld>()).BackendCompatible = persistence.MissionsSupported;
             if(MoonRaidMap.Active!=null)EnsureRaidInventories(ref state);
             UpdateSurvival(ref state);
+            UpdateTacticalItems(ref state,ecb);
+            HandleBountyClash(ref state,ecb);
             HandlePlayerDeathAndRespawn(ref state, ecb);
             HandleRaids(ref state, ecb);
         }
@@ -110,6 +113,8 @@ namespace Unity.MP_FPS
                 if (evt.State == ConnectionState.State.Disconnected)
                 {
                     var networkId = evt.Id.Value;
+                    if(DetachClashConnection(ref state,ecb,evt.ConnectionEntity,networkId))
+                    {clientsMap=SystemAPI.GetSingletonBuffer<ClientsMap>();_joinedClientLookup.Update(ref state);continue;}
                     Debug.Log($"[Server] Client with NetworkId {networkId} has disconnected.");
                     if (SystemAPI.Exists(evt.ConnectionEntity) && SystemAPI.HasComponent<RaidSession>(evt.ConnectionEntity))
                     {
@@ -207,7 +212,7 @@ namespace Unity.MP_FPS
         [BurstDiscard]
         private void RemovePlayerFromLeaderboard(int networkId)
         {
-            LeaderboardManager.Instance.RemovePlayer(networkId);
+            LeaderboardManager.Instance?.RemovePlayer(networkId);
         }
 
         private void SpawnPlayerCharacter(ref SystemState state, EntityCommandBuffer ecb, Entity connectionEntity, FixedString64Bytes playerName, int characterIndex)
@@ -240,7 +245,7 @@ namespace Unity.MP_FPS
 
             var weaponId = DollSingerWeapons.None;
             
-            var weaponData = WeaponManager.Instance.WeaponRegistry.GetWeaponData(weaponId);
+            var weaponData = WeaponManager.Instance?.WeaponRegistry?.GetWeaponData(weaponId);
             var magazineSize = weaponData != null ? weaponData.MagazineSize : 0;
 
             ecb.SetComponent(playerEntity, new GhostOwner { NetworkId = ownerNetworkId.Value });
@@ -256,11 +261,12 @@ namespace Unity.MP_FPS
                 PrimaryWeaponID = DollSingerWeapons.None, SecondaryWeaponID = DollSingerWeapons.None, PistolWeaponID = DollSingerWeapons.None
             };
             RaidHealth.Initialize(ref playerState);
+            ConfigureClashSpawn(ref state,ecb,connectionEntity,playerEntity,ref playerState);
             ecb.SetComponent(playerEntity, playerState);
             ecb.AddComponent(playerEntity, new PlayerCharacterInitialized());
             ecb.SetComponentEnabled<PlayerCharacterInitialized>(playerEntity, false);
 
-            if (FindSpawnPoint(ref state, out var spawnPoint))
+            if (!ClashEnabled(ref state) && FindSpawnPoint(ref state, out var spawnPoint))
             {
                 ecb.SetComponent(playerEntity, new LocalTransform { Position = spawnPoint.Position, Rotation = spawnPoint.Rotation, Scale = 1.0f });
             }
@@ -302,6 +308,15 @@ namespace Unity.MP_FPS
                 ecb.SetComponent(connectionEntity, joined);
             }
 
+            if(ClashEnabled(ref state))
+            {
+                var persistence=Persistence(ref state);
+                if(persistence.ReadyRaids.TryGetValue(connectionEntity,out var prepared))
+                {
+                    if(SystemAPI.HasComponent<RaidSession>(connectionEntity))ecb.SetComponent(connectionEntity,prepared);else ecb.AddComponent(connectionEntity,prepared);
+                    persistence.ReadyRaids.Remove(connectionEntity);
+                }
+            }
             ecb.AppendToBuffer(connectionEntity, new LinkedEntityGroup { Value = playerEntity });
             if (!SystemAPI.HasComponent<NetworkStreamInGame>(connectionEntity))
                 ecb.AddComponent(connectionEntity, new NetworkStreamInGame());
@@ -315,6 +330,7 @@ namespace Unity.MP_FPS
             foreach (var (playerGhost, ghostOwner, entity) in
                      SystemAPI.Query<RefRO<PredictedPlayerGhost>, RefRO<GhostOwner>>().WithNone<DollSingerEnemy, ProceduralAlienEnemy.State>().WithEntityAccess())
             {
+                if(playerGhost.ValueRO.ClashEnabled)continue;
                 if (playerGhost.ValueRO.CurrentHealth <= 0)
                 {
                     var networkId = ghostOwner.ValueRO.NetworkId;
@@ -380,9 +396,26 @@ namespace Unity.MP_FPS
 
         void HandleJoinRequests(ref SystemState state, Entity gameplayMapsEntity, PlayerEntityPrefabs playerEntityPrefabs, EntityCommandBuffer ecb)
         {
+            var handled = new System.Collections.Generic.HashSet<Entity>();
             foreach (var (request, rpcReceive, entity) in
                      SystemAPI.Query<RefRO<ClientJoinRequestRpc>, RefRW<ReceiveRpcCommandRequest>>().WithEntityAccess())
             {
+                Entity source=rpcReceive.ValueRO.SourceConnection;
+                if(!SystemAPI.Exists(source)||!handled.Add(source)||SystemAPI.HasComponent<NetworkStreamRequestDisconnect>(source)||
+                    SystemAPI.HasComponent<NetworkStreamInGame>(source)||Persistence(ref state).Joins.ContainsKey(source)||Persistence(ref state).Deployments.ContainsKey(source))
+                {ecb.DestroyEntity(entity);continue;}
+                bool clash=ClashEnabled(ref state);
+                if(request.ValueRO.Mode!=(clash?RaidGameMode.BountyClash:RaidGameMode.Expedition) ||
+                    request.ValueRO.RulesVersion!=(clash?BountyClashRules.Version:0))
+                {
+                    var reject=ecb.CreateEntity();ecb.AddComponent(reject,new ClashJoinAcceptedRpc{Mode=clash?RaidGameMode.BountyClash:RaidGameMode.Expedition,
+                        RulesVersion=clash?BountyClashRules.Version:0,Accepted=false,Reason="玩法或规则版本不匹配"});
+                    ecb.AddComponent(reject,new SendRpcCommandRequest{TargetConnection=rpcReceive.ValueRO.SourceConnection});
+                    ecb.AddComponent(rpcReceive.ValueRO.SourceConnection,new NetworkStreamRequestDisconnect{Reason=NetworkStreamDisconnectReason.ConnectionClose});
+                    ecb.DestroyEntity(entity);continue;
+                }
+                if(clash&&(!Persistence(ref state).Enabled||SystemAPI.HasSingleton<OfflineRaidMode>()))
+                {ClashAccepted(ecb,rpcReceive.ValueRO.SourceConnection,false,"赏金速战需要已启用的联网持久化服务");ecb.DestroyEntity(entity);continue;}
                 if (SystemAPI.HasComponent<NetworkId>(rpcReceive.ValueRW.SourceConnection) &&
                     !SystemAPI.HasComponent<NetworkStreamInGame>(rpcReceive.ValueRW.SourceConnection))
                 {

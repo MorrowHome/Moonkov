@@ -43,6 +43,7 @@ namespace Unity.MP_FPS
             GameManager.DestroyLocalSimulationWorld();
 
             var serverWorld = GhostBridgeBootstrap.Instance.ServerWorld;
+            GameManager.ConfigureRaidMode(serverWorld);
             GhostGameObjectUpdateSystem.GatherWorldSystems(serverWorld);
             Debug.Log($"FPS2 server -> ServerWorld is available.");
             

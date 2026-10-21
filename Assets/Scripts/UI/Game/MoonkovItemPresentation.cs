@@ -64,6 +64,17 @@ namespace Unity.MP_FPS.Client
             string description;
             switch (code)
             {
+                case "vitality_shot": description = "Inject for 3 seconds to fill surviving body parts to their current recoverable health limit. Does not revive destroyed parts or restore health lost to Bounty Clash downs."; break;
+                case "stamina_shot": description = "Inject for 3 seconds. Grants 600 seconds of stamina recovery support. Keep in pockets or an equipped rig."; break;
+                case "antidote_shot": description = "Inject for 3 seconds to clear poison and gain 600 seconds of immunity to tactical poison clouds. Does not prevent other damage."; break;
+                case "dynamite_bundle": description = "Select, then left click to throw after a 1-second action. Explodes after a 4-second fuse: up to 650 damage within 8 metres. Cover blocks the blast. Clears concertina wire; can kill teammates and the thrower."; break;
+                case "frag_bomb": description = "Select, then left click to throw after a 1-second action. A 4-second fuse triggers up to 320 damage within 8 metres and 8 seconds of bleeding. Cover blocks the blast. Does not clear concertina wire."; break;
+                case "fire_bomb": description = "Throw to create a 3-metre fire zone for 30 seconds. Deals 8 damage per second while exposed. Fire affects enemies, teammates and the thrower."; break;
+                case "choke_bomb": description = "Throw to create a 4-metre choke cloud for 20 seconds. Extinguishes fire, clears tactical poison and causes coughing."; break;
+                case "alert_trip_mine": description = "Place on nearby clear ground with a 3-second action. The trip line alerts when any player crosses, including teammates and the owner. Aim at it and hold the interaction to disarm."; break;
+                case "concertina_trip_mine": description = "Place on nearby clear ground with a 3-second action. Any player crossing the line releases concertina wire, causing damage, bleeding and slowed movement. Dynamite can clear wire."; break;
+                case "poison_trip_mine": description = "Place on nearby clear ground with a 3-second action. Any player crossing the line releases poison. Choke clouds clear tactical poison; antidote protects against it."; break;
+                case "ammo_box": description = "Place with a 3-second action. Stores 400 energy; each 2-second resupply transfers up to 100, subject to inventory space. Expires after 120 seconds. Does not grant a free weapon reload."; break;
                 case "energy_grenade": description = "[G] throws from pockets or an equipped rig. Bounces, then releases an energy blast after 3 seconds. Cover blocks the blast; nearby damage can kill the thrower. Move grenades out of backpacks before throwing."; break;
                 case "alien_raw_meat": description = "Dissect alien remains to harvest. Restores living tissue and energy, but causes severe thirst. Cannot revive destroyed body parts."; break;
                 case "alien_tissue": description = "Alien tissue harvested by dissection. Keep it as a biological specimen."; break;

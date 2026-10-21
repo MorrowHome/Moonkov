@@ -1,0 +1,44 @@
+using UnityEngine.UIElements;
+
+namespace Unity.MP_FPS.Client
+{
+    public partial class MainMenu
+    {
+        private BountyModeView m_ModePicker;
+        private Label m_ModeStatus;
+        private Label m_ModeHint;
+        private IVisualElementScheduledItem m_ModeRefresh;
+        private void InitializeBountyModeUI()
+        {
+            m_ModePicker = new BountyModeView(m_MainMenu.Q("Canvas"), clash =>
+            {
+                GameSettings.Instance.RequestedMode = clash ? RaidGameMode.BountyClash : RaidGameMode.Expedition;
+                ConnectionSettings.Instance.ConnectionError = null;
+                RefreshModePicker();
+            });
+            m_ModePicker.CreateEntry(m_MainMenu.Q(className: "stash-footer"));
+            m_ModeHint = m_MainMenu.Q<Label>(className: "stash-footer-hint");
+            m_ModePicker.CreateEntry(m_ConnectionPanel);
+            m_ModeStatus = new Label { pickingMode = PickingMode.Ignore }; m_ModeStatus.AddToClassList("bounty-mode-message");
+            m_ConnectionPanel.Add(m_ModeStatus);
+            m_ModeRefresh = m_MainMenu.schedule.Execute(RefreshModePicker).Every(250);
+            RefreshModePicker();
+        }
+        private void RefreshModePicker()
+        {
+            bool clash = GameSettings.Instance.RequestedMode == RaidGameMode.BountyClash;
+            m_ModePicker.Present(clash, PlayerProfileClient.IsOffline);
+            if (m_ModeHint != null) MoonkovLocalization.Set(m_ModeHint, clash && PlayerProfileClient.IsOffline
+                ? "Online mode selected. Choose Expedition for single player."
+                : "Choose the game mode, then choose how to connect.");
+            MoonkovLocalization.Set(m_ModeStatus, ConnectionSettings.Instance.ConnectionError ?? (clash
+                ? "Online Bounty Clash / waiting for server confirmation. At least two teams must be ready."
+                : "Original expedition rules. Connection method does not change the game mode."));
+        }
+        private void DisposeBountyModeUI()
+        {
+            m_ModeRefresh?.Pause(); m_ModePicker?.Dispose(); m_ModePicker = null;
+            m_ModeStatus?.RemoveFromHierarchy(); m_ModeStatus = null;
+        }
+    }
+}

@@ -80,6 +80,31 @@ namespace Unity.MP_FPS
                 return await RetrySave(save).ConfigureAwait(false);
             });
         }
+        // Called only after server-side authentication (or when detaching the
+        // already authenticated owner). Never changes the immutable receipt/task.
+        public bool RebindBountyOwner(Entity oldOwner, Entity newOwner, string authenticatedPlayerId, string settlementId)
+        {
+            if(oldOwner.Equals(newOwner) || !Guid.TryParse(authenticatedPlayerId,out var playerId) || playerId==Guid.Empty ||
+                !Guid.TryParse(settlementId,out var receiptId) || receiptId==Guid.Empty ||
+                !Profiles.TryGetValue(oldOwner,out var source) || !Guid.TryParse(source.PlayerId,out var sourceId) || sourceId!=playerId)
+                return false;
+            if(source.DeploymentId!=null && (!Guid.TryParse(source.DeploymentId,out var deploymentId) || deploymentId!=receiptId))return false;
+            Profiles.TryGetValue(newOwner,out var destination);
+            if(destination!=null && (!Guid.TryParse(destination.PlayerId,out var destinationId) || destinationId!=playerId))return false;
+            Saves.TryGetValue(receiptId.ToString("D"),out var save);
+            if(save!=null && (!save.Connection.Equals(oldOwner) || !Guid.TryParse(save.Payload.PlayerId,out var savePlayer) || savePlayer!=playerId ||
+                !Guid.TryParse(save.Payload.SettlementId,out var saveReceipt) || saveReceipt!=receiptId))return false;
+            if(Saves.Values.Any(pending=>pending.Connection.Equals(oldOwner) && !ReferenceEquals(pending,save)))return false;
+            Inventories.TryGetValue(oldOwner,out var inventory);
+            if(inventory!=null && Inventories.TryGetValue(newOwner,out var existing) && !ReferenceEquals(inventory,existing))return false;
+            // An open deployment needs its original raid binding. A completed one
+            // can use the freshly authenticated account graph instead of a cache.
+            Profiles[newOwner]=source.DeploymentId==null && destination!=null ? destination : source;
+            Profiles.Remove(oldOwner);
+            if(inventory!=null){Inventories[newOwner]=inventory;Inventories.Remove(oldOwner);}
+            if(save!=null)save.Connection=newOwner;
+            return true;
+        }
         internal static Deployment DeploymentOf(Profile profile) => new Deployment {PlayerId=profile.PlayerId,DeploymentId=profile.DeploymentId,
             Cells=profile.CarriedCells,Mode=profile.Mode,MatchId=profile.MatchId,RulesVersion=profile.RulesVersion,TeamId=profile.TeamId};
         private static string ProfilePath(string path, string mode) => mode=="BountyClash" ? "internal/bounty-clash/"+path : "internal/"+path;

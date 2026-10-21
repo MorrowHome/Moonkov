@@ -288,9 +288,7 @@ namespace Unity.MP_FPS
             if (hasOwner && owner == m_Data.OwnerNetworkId) return 0;
             var player = players.GetRefRW(target.LinkedEntity);
             if (player.ValueRO.CurrentHealth <= 0 || m_Weapon.Damage <= 0) return 0;
-            RaidHealth.Damage(ref player.ValueRW, part, m_Weapon.Damage, GhostGameObject.GetCurrentTick());
-            if (player.ValueRO.CurrentHealth <= 0 && hasOwner && LeaderboardManager.Instance != null)
-                LeaderboardManager.Instance.AddKill(m_Data.OwnerNetworkId, owner);
+            BountyClashDamage.Apply(GhostGameObject.World,target.LinkedEntity,m_Data.OwnerNetworkId,part,m_Weapon.Damage,GhostGameObject.GetCurrentTick(),RaidDamageKind.Bullet);
             return (byte)(player.ValueRO.CurrentHealth <= 0 ? 3 : 1);
         }
     }

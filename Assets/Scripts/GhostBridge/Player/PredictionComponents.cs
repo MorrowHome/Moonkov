@@ -53,6 +53,11 @@ public struct PredictedPlayerGhost : IComponentData
     [GhostField] public float3 AimPoint;
     [GhostField] public float CurrentHealth;
     [GhostField] public float MaxHealth;
+    [GhostField] public bool ClashEnabled, ClashCanAct, ClashDarkSight;
+    [GhostField] public Unity.MP_FPS.ClashLife ClashLife;
+    [GhostField] public int ClashTeam;
+    [GhostField] public float ClashMaxHealthFraction;
+    [GhostField] public float TacticalWireSeconds, TacticalCoughSeconds, TacticalPoisonSeconds;
     // Match-server authority. CurrentHealth/MaxHealth are derived compatibility
     // values for death, AI, animation and the compact HUD; never heal them directly.
     [GhostField] public bool BodyHealthInitialized;

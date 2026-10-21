@@ -65,7 +65,7 @@ namespace Unity.MP_FPS
         private int m_PreviousCount = -1;
         private static RaidHUD s_Active;
         public static bool InventoryOpen => s_Active != null && (s_Active.m_InventoryVisible || s_Active.m_MissionDetailsVisible);
-        public static bool PointerRequested => InventoryOpen || (s_Active != null && s_Active.m_WasSettled);
+        public static bool PointerRequested => InventoryOpen || (s_Active != null && (s_Active.m_WasSettled || s_Active.m_ClashLobbyPointer));
         public static bool TimedActionInputActive => s_Active != null && s_Active.TimedActionActive;
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetPresentation() => s_Active = null;
@@ -140,6 +140,8 @@ namespace Unity.MP_FPS
             closePack.parent.Insert(closePack.parent.IndexOf(closePack),m_SwitchDrop);
             MoonkovLocalization.Bind(m_Root);
             InitializeMissions();
+            InitializeQuickSlots();
+            InitializeBountyClash();
         }
 
         private void EquipmentTab() => SelectHealth(false);
@@ -308,6 +310,7 @@ namespace Unity.MP_FPS
 
         private void InitializeWorld()
         {
+            ResetBountyConnection();
             foreach (var world in World.All)
             {
                 if (!world.IsCreated || !world.IsClient() || world.IsThinClient()) continue;
@@ -325,15 +328,16 @@ namespace Unity.MP_FPS
         {
             bool inGame = GameSettings.Instance.GameState == GlobalGameState.InGame;
             m_Root.style.display = inGame ? DisplayStyle.Flex : DisplayStyle.None;
-            if (!inGame) { m_Minimap.Hide(); return; }
+            if (!inGame) { m_Minimap.Hide(); PresentQuickSlots(false); HideBountyClash(); return; }
             if (m_World == null || !m_World.IsCreated) InitializeWorld();
-            if (m_World == null || !m_World.IsCreated || m_StateQuery.IsEmptyIgnoreFilter) { m_Minimap.Hide(); return; }
+            if (m_World == null || !m_World.IsCreated || m_StateQuery.IsEmptyIgnoreFilter) { m_Minimap.Hide(); PresentQuickSlots(false); HideBountyClash(); return; }
             m_Snapshot = m_StateQuery.GetSingleton<RaidClientState>().Snapshot;
             UpdateInventoryView();
             PresentTimedAction();
+            bool clash = PresentBountyClash();
             bool ready = m_Snapshot.RaidId > 0;
             bool settled = ready && m_Snapshot.Phase != RaidPhase.Active;
-            if (Keyboard.current != null && Keyboard.current.tabKey.wasPressedThisFrame && ready && !settled && !GameSettings.Instance.IsPauseMenuOpen)
+            if (Keyboard.current != null && Keyboard.current.tabKey.wasPressedThisFrame && ready && !settled && !m_ClashActionsBlocked && !GameSettings.Instance.IsPauseMenuOpen)
                 {if(!m_InventoryRequestPending || TimedActionActive)SetInventory(!m_InventoryVisible);}
             if (settled && m_InventoryVisible) SetInventory(false);
             if (!settled && m_WasSettled) { m_ResultStep = 0; Utils.SetCursorVisible(false); }
@@ -376,13 +380,14 @@ namespace Unity.MP_FPS
                 if (!m_WasSettled && !saving) m_Deploy.Focus();
             }
             m_WasSettled = settled;
-            m_Result.style.display = settled ? DisplayStyle.Flex : DisplayStyle.None;
+            m_Result.style.display = settled && !clash ? DisplayStyle.Flex : DisplayStyle.None;
 
             int nearest = -1;
             float distance = RaidRules.PickupRange;
             Vector3 position = default;
-            bool alive = m_PlayerQuery.HasSingleton<PredictedPlayerGhost>() && m_PlayerQuery.GetSingleton<PredictedPlayerGhost>().CurrentHealth > 0;
-            if (alive && ready && !settled && !m_InventoryVisible && !GameSettings.Instance.IsPauseMenuOpen)
+            bool alive = m_PlayerQuery.HasSingleton<PredictedPlayerGhost>() && m_PlayerQuery.GetSingleton<PredictedPlayerGhost>().CurrentHealth > 0 && !m_ClashActionsBlocked;
+            PresentQuickSlots(alive && ready && !settled);
+            if (alive && ready && !settled && !clash && !m_InventoryVisible && !GameSettings.Instance.IsPauseMenuOpen)
             {
                 var local = m_PlayerQuery.GetSingleton<LocalTransform>();
                 var view = Camera.main;
@@ -390,17 +395,9 @@ namespace Unity.MP_FPS
                 m_Minimap.Present(MoonRaidMap.Active, local.Position, forward, m_Snapshot.TakenMask);
             }
             else m_Minimap.Hide();
-            UpdateGrenades(alive && ready && !settled);
-            bool missionControl = UpdateMissions(alive && ready && !settled);
-            if (alive && ready && !settled && !m_InventoryVisible && !m_InventoryRequestPending &&
-                !GameSettings.Instance.IsPauseMenuOpen && UnityEngine.Cursor.lockState == CursorLockMode.Locked &&
-                Keyboard.current != null && Keyboard.current.digit4Key.wasPressedThisFrame && !m_InventoryQuery.IsEmptyIgnoreFilter)
-            {
-                var inventory = m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
-                var player = m_PlayerQuery.GetSingleton<PredictedPlayerGhost>();
-                var medicine = inventory.Graph?.Items.Find(inventory.Graph.MedicalAccessible);
-                if (medicine != null && player.CurrentHealth > 0f && player.CurrentHealth < player.MaxHealth) UseMedical(medicine);
-            }
+            UpdateGrenades(alive && ready && !settled && !DarkSightRequested);
+            bool missionControl = UpdateMissions(alive && ready && !settled && !clash);
+            bool tacticalInteraction = TryQuickTacticalInteraction(alive && ready && !settled && !DarkSightRequested);
             if (alive && ready && !settled)
             {
                 position = m_PlayerQuery.GetSingleton<LocalTransform>().Position;
@@ -424,22 +421,22 @@ namespace Unity.MP_FPS
                         (aim>bestAim+.001f || Mathf.Abs(aim-bestAim)<=.001f && bag.LootId>nearest))
                     {nearest=bag.LootId;distance=candidate;bestAim=aim;}
                 }
-                m_AirlockPrompt.RefreshSelection(Camera.main, position, !m_InventoryVisible && !m_InventoryRequestPending &&
+                m_AirlockPrompt.RefreshSelection(Camera.main, position, !clash && !m_InventoryVisible && !m_InventoryRequestPending &&
                     UnityEngine.Cursor.lockState == CursorLockMode.Locked && !GameSettings.Instance.IsPauseMenuOpen, m_World);
                 bool pressed = (Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame) ||
                                (Gamepad.current != null && Gamepad.current.buttonWest.wasPressedThisFrame);
                 bool controlInput = (Keyboard.current != null && Keyboard.current.fKey.wasPressedThisFrame) ||
                     (Gamepad.current != null && Gamepad.current.buttonWest.wasPressedThisFrame);
-                bool controlPressed = !missionControl && controlInput && !m_InventoryVisible && !m_InventoryRequestPending &&
+                bool controlPressed = !tacticalInteraction && !clash && !missionControl && controlInput && !m_InventoryVisible && !m_InventoryRequestPending &&
                     UnityEngine.Cursor.lockState == CursorLockMode.Locked && !GameSettings.Instance.IsPauseMenuOpen &&
                     m_AirlockPrompt.TryInteract(Camera.main, position, m_World);
-                if (nearest >= 0 && pressed && !controlPressed && !missionControl && !m_InventoryVisible && !m_InventoryRequestPending && UnityEngine.Cursor.lockState == CursorLockMode.Locked && !GameSettings.Instance.IsPauseMenuOpen)
+                if (nearest >= 0 && pressed && !tacticalInteraction && !DarkSightRequested && !controlPressed && !missionControl && !m_InventoryVisible && !m_InventoryRequestPending && UnityEngine.Cursor.lockState == CursorLockMode.Locked && !GameSettings.Instance.IsPauseMenuOpen)
                 {
                     OpenLootContainer(nearest);
                 }
             }
             // Input is sampled every frame; presentation text refreshes at 10 Hz.
-            bool interactionVisible = alive && ready && !settled && !m_InventoryVisible &&
+            bool interactionVisible = alive && ready && !settled && !m_InventoryVisible && !DarkSightRequested &&
                 !m_InventoryRequestPending && !GameSettings.Instance.IsPauseMenuOpen &&
                 UnityEngine.Cursor.lockState == CursorLockMode.Locked;
             if (!interactionVisible)
@@ -451,6 +448,18 @@ namespace Unity.MP_FPS
             if (m_RefreshTimer > 0) return;
             m_RefreshTimer = 0.1f;
             RefreshHealth();
+            bool deathBag=nearest>=RaidLootContainers.FirstDeathBagId;
+            bool empty=deathBag ? deathBags.Bags[nearest].Empty : nearest>=0 && (m_Snapshot.TakenMask & (1u<<nearest))!=0;
+            bool alien=deathBag && deathBags.Bags[nearest].CharacterIndex==-1;
+            RefreshInteraction(nearest, distance, deathBag, empty, interactionVisible && !m_AirlockPrompt.HasSelection,alien,IsDroppedLoot(nearest));
+            if (clash)
+            {
+                m_Status.style.display = DisplayStyle.None;
+                m_ExtractionPanel.RemoveFromClassList("is-visible");
+                m_OxygenPanel.style.display = DisplayStyle.None; m_OxygenWarning.style.display = DisplayStyle.None;
+                m_Clock.text = ""; m_Exit.text = "";
+                return;
+            }
             int seconds = Mathf.CeilToInt(m_Snapshot.TimeLeft);
             MoonkovLocalization.Set(m_Timer, ready ? MoonkovLocalization.Format($"Raid {m_Snapshot.RaidId}   {seconds / 60:00}:{seconds % 60:00} remaining") : "Connecting...");
             var clock = ExpeditionClockPresentation.Active;
@@ -466,15 +475,11 @@ namespace Unity.MP_FPS
             {
                 var batteryGraph = m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity()).Graph;
                 if (batteryGraph != null) MoonkovLocalization.Set(m_Bag,
-                    "CARRIED / {0} supplies\nDust {1}   Alloy {2}   Cells {3}\nENERGY {4} / READY {5}\n[4] MEDICAL / {6}",
+                    "CARRIED / {0} supplies\nDust {1}   Alloy {2}   Cells {3}\nENERGY {4} / READY {5}\nMEDICAL / {6}",
                     count, m_Snapshot.Dust, m_Snapshot.Alloy, m_Snapshot.Cells,
                     batteryGraph.CellEnergy(carriedOnly: true), batteryGraph.CellEnergy(accessibleOnly: true),
                     batteryGraph.Count("medkit", true) + batteryGraph.Count("med_gel", true) + batteryGraph.Count("trauma_kit", true));
             }
-            bool deathBag=nearest>=RaidLootContainers.FirstDeathBagId;
-            bool empty=deathBag ? deathBags.Bags[nearest].Empty : nearest>=0 && (m_Snapshot.TakenMask & (1u<<nearest))!=0;
-            bool alien=deathBag && deathBags.Bags[nearest].CharacterIndex==-1;
-            RefreshInteraction(nearest, distance, deathBag, empty, interactionVisible && !m_AirlockPrompt.HasSelection,alien,IsDroppedLoot(nearest));
             bool extracting = alive && !settled && m_Snapshot.ExtractionRemaining >= 0;
             if (m_ExtractionSoundRaid != m_Snapshot.RaidId)
             { m_ExtractionSoundRaid = m_Snapshot.RaidId; m_AudioExtracting = false; m_ExtractionSoundAt = 0; }
@@ -782,6 +787,7 @@ namespace Unity.MP_FPS
 
         private void Deploy()
         {
+            if (m_ClashMode) return;
             if (m_Snapshot.RaidId <= 0 || m_Snapshot.Phase == RaidPhase.Active ||
                 m_Snapshot.DeployPending || m_DeployRequestedRaid == m_Snapshot.RaidId ||
                 m_Snapshot.SaveState == RaidSaveState.Saving || m_Snapshot.SaveState == RaidSaveState.Retrying) return;
@@ -808,6 +814,8 @@ namespace Unity.MP_FPS
 
         private void OnDisable()
         {
+            DisposeBountyClash();
+            DisposeQuickSlots();
             CancelMissionHold();
             RaidMissionSite.Active?.StopPresentation();
             m_Minimap?.Dispose(); m_Minimap = null;

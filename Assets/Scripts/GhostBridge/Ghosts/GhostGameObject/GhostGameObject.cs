@@ -92,7 +92,16 @@ public class GhostGameObject : MonoBehaviour
 #pragma warning restore UDR0002
 
     private MultiplayerRole m_Role = MultiplayerRole.ClientOwned;
-    public MultiplayerRole Role => m_Role;
+    public MultiplayerRole Role
+    {
+        get
+        {
+            if(m_Role==MultiplayerRole.Server || m_World==null || !m_World.IsCreated || !m_World.EntityManager.Exists(m_LinkedEntity))return m_Role;
+            if(m_World.EntityManager.HasComponent<GhostOwnerIsLocal>(m_LinkedEntity))
+                return m_World.EntityManager.IsComponentEnabled<GhostOwnerIsLocal>(m_LinkedEntity)?MultiplayerRole.ClientOwned:MultiplayerRole.ClientProxy;
+            return m_Role;
+        }
+    }
 
     private World m_World;
     public World World => m_World;
@@ -105,7 +114,15 @@ public class GhostGameObject : MonoBehaviour
     private int m_OwningNetworkId;
 
     private List<GhostMonoBehaviour> m_GhostMonoBehaviours = new();
-    public int Owner => m_OwningNetworkId;
+    public int Owner
+    {
+        get
+        {
+            if(m_World!=null && m_World.IsCreated && m_World.EntityManager.Exists(m_LinkedEntity) && m_World.EntityManager.HasComponent<GhostOwner>(m_LinkedEntity))
+                m_OwningNetworkId=m_World.EntityManager.GetComponentData<GhostOwner>(m_LinkedEntity).NetworkId;
+            return m_OwningNetworkId;
+        }
+    }
 
     private Dictionary<Type, IEnumerable> m_UpdateGhostMonoBehavioursByType = new();
 

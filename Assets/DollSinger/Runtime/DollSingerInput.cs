@@ -18,6 +18,11 @@ namespace Unity.MP_FPS.DollSinger
         // Assigned by the host game; the standalone character demo has no UI dependency.
         public System.Func<bool> GameplayInputBlocked { get; set; }
         public System.Func<bool> TimedActionInputActive { get; set; }
+        // Raid host maps 1–9 to real equipment. Unassigned in WeaponGestureLab.
+        public System.Func<int, int> QuickSlotSelection { get; set; }
+        public System.Func<bool> DarkSightMode { get; set; }
+        public System.Func<bool, bool> QuickSlotPrimaryUse { get; set; }
+        public void SuppressPrimaryUntilRelease() => suppressFireUntilRelease = true;
         private bool IsGameplayBlocked => GameplayInputBlocked?.Invoke() == true;
         private bool suppressTiptoeUntilRelease;
         private int settingsRevision = -1;
@@ -168,11 +173,15 @@ namespace Unity.MP_FPS.DollSinger
                 if (JumpPressed) toggledStance = DollSingerStance.Standing;
                 Stance = keyboard.leftCtrlKey.isPressed ? DollSingerStance.Crouching :
                     tiptoe && toggledStance == DollSingerStance.Standing ? DollSingerStance.Tiptoe : toggledStance;
-                ViewPressed = keyboard.vKey.wasPressedThisFrame;
+                ViewPressed = (DarkSightMode?.Invoke() == true ? keyboard.bKey : keyboard.vKey).wasPressedThisFrame;
                 LightPressed = toggleLight;
                 ReloadPressed = keyboard.rKey.wasPressedThisFrame;
-                WeaponSlotPressed = keyboard.digit1Key.wasPressedThisFrame ? 1 :
-                    keyboard.digit2Key.wasPressedThisFrame ? 2 : keyboard.digit3Key.wasPressedThisFrame ? 3 : 0;
+                int number = keyboard.digit1Key.wasPressedThisFrame ? 1 : keyboard.digit2Key.wasPressedThisFrame ? 2 :
+                    keyboard.digit3Key.wasPressedThisFrame ? 3 : keyboard.digit4Key.wasPressedThisFrame ? 4 :
+                    keyboard.digit5Key.wasPressedThisFrame ? 5 : keyboard.digit6Key.wasPressedThisFrame ? 6 :
+                    keyboard.digit7Key.wasPressedThisFrame ? 7 : keyboard.digit8Key.wasPressedThisFrame ? 8 :
+                    keyboard.digit9Key.wasPressedThisFrame ? 9 : 0;
+                WeaponSlotPressed = QuickSlotSelection != null ? QuickSlotSelection(number) : number <= 3 ? number : 0;
                 AltHeld = keyboard.leftAltKey.isPressed || keyboard.rightAltKey.isPressed;
                 if (leanEnabled && AltHeld && keyboard.qKey.wasPressedThisFrame)
                     lockedLean = lockedLean < 0f ? 0f : -1f;
@@ -218,6 +227,8 @@ namespace Unity.MP_FPS.DollSinger
                 FirePressed = FireHeld = false;
                 if (!held) suppressFireUntilRelease = false;
             }
+            if (QuickSlotPrimaryUse?.Invoke(FirePressed) == true)
+            { FirePressed = FireHeld = AimHeld = ReloadPressed = false; }
             Move = Vector2.ClampMagnitude(Move, 1f);
         }
 

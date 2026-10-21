@@ -35,6 +35,7 @@ namespace Unity.MP_FPS
 
         private void UpdatePopulation(MoonRaidMap map, double now)
         {
+            if(BountyClashRuntime.Enabled(EntityManager))return;
             if (now < m_NextPopulationCheck) return;
             m_NextPopulationCheck = now + 1;
             int alive = CollectSpawnObservers(out bool hasHuman);

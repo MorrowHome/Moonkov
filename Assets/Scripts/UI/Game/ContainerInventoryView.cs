@@ -40,6 +40,10 @@ namespace Unity.MP_FPS.Client
         private int m_EscapeHandledFrame = -1;
         public VisualElement Element => m_Root;
         public bool Busy => m_Busy;
+        private string m_HoveredItemId;
+        public InventoryItem QuickSlotCandidate => m_Graph?.Find(m_HoveredItemId) ?? m_Graph?.Find(m_SelectedItemId);
+        public Func<InventoryItem, Vector2, bool> QuickSlotDrop { get; set; }
+        public Action<InventoryItem, Vector2> QuickSlotDragPreview { get; set; }
         public void SetReadOnly(string reason)
         {
             if (m_ReadOnlyReason == reason) return;
@@ -162,12 +166,13 @@ namespace Unity.MP_FPS.Client
         }
         public void Suspend()
         {
-            CancelDrag(); m_Windows.CloseAll(); m_Open.Clear();
+            CancelDrag(); m_HoveredItemId = m_SelectedItemId = null; m_Windows.CloseAll(); m_Open.Clear();
             if (m_Character == null) return;
             m_Character.Element.RemoveFromHierarchy(); m_Character.Dispose(); m_Character = null;
         }
         private void Render()
         {
+            m_HoveredItemId = null;
             m_Grids.RemoveAll(g => !g.Definition.SlotKind.HasValue); m_Tiles.Clear(); m_ContainerPane.Clear(); m_StashPane.Clear();m_LootPane.Clear();
             var loot=m_Graph?.Find(LootInventoryExchange.Root);
             m_Root.EnableInClassList("inventory-with-loot",loot!=null);
@@ -418,9 +423,11 @@ namespace Unity.MP_FPS.Client
             public Drag(ContainerInventoryView view, Func<InventoryItem> source, Action click, Action doubleClick)
             { m_View=view; m_Source=source; m_Click=click; m_DoubleClick=doubleClick; }
             protected override void RegisterCallbacksOnTarget()
-            { target.RegisterCallback<PointerDownEvent>(Down,TrickleDown.TrickleDown); target.RegisterCallback<PointerMoveEvent>(Move,TrickleDown.TrickleDown); target.RegisterCallback<PointerUpEvent>(Up,TrickleDown.TrickleDown); target.RegisterCallback<PointerCaptureOutEvent>(Lost); }
+            { target.RegisterCallback<PointerEnterEvent>(Enter); target.RegisterCallback<PointerLeaveEvent>(Leave); target.RegisterCallback<PointerDownEvent>(Down,TrickleDown.TrickleDown); target.RegisterCallback<PointerMoveEvent>(Move,TrickleDown.TrickleDown); target.RegisterCallback<PointerUpEvent>(Up,TrickleDown.TrickleDown); target.RegisterCallback<PointerCaptureOutEvent>(Lost); }
             protected override void UnregisterCallbacksFromTarget()
-            { Cancel(); target.UnregisterCallback<PointerDownEvent>(Down,TrickleDown.TrickleDown); target.UnregisterCallback<PointerMoveEvent>(Move,TrickleDown.TrickleDown); target.UnregisterCallback<PointerUpEvent>(Up,TrickleDown.TrickleDown); target.UnregisterCallback<PointerCaptureOutEvent>(Lost); }
+            { Cancel(); target.UnregisterCallback<PointerEnterEvent>(Enter); target.UnregisterCallback<PointerLeaveEvent>(Leave); target.UnregisterCallback<PointerDownEvent>(Down,TrickleDown.TrickleDown); target.UnregisterCallback<PointerMoveEvent>(Move,TrickleDown.TrickleDown); target.UnregisterCallback<PointerUpEvent>(Up,TrickleDown.TrickleDown); target.UnregisterCallback<PointerCaptureOutEvent>(Lost); }
+            private void Enter(PointerEnterEvent evt) => m_View.m_HoveredItemId = m_Source()?.Id;
+            private void Leave(PointerLeaveEvent evt) { if (m_View.m_HoveredItemId == m_Source()?.Id) m_View.m_HoveredItemId = null; }
             private void Down(PointerDownEvent evt)
             {
                 if (m_View.m_Graph==null || m_View.m_Busy || m_View.m_Drag?.m_Active==true) { evt.StopImmediatePropagation(); return; }
@@ -449,6 +456,7 @@ namespace Unity.MP_FPS.Client
             }
             private void Preview()
             {
+                m_View.QuickSlotDragPreview?.Invoke(m_Item, m_Last);
                 var def=InventoryCatalog.Get(m_Item.Code); float cell=40;
                 var point=m_View.m_Root.WorldToLocal(m_Last); var ghost=m_View.m_Ghost;
                 m_View.m_Preview.style.display=DisplayStyle.None; m_Command=null;
@@ -505,12 +513,16 @@ namespace Unity.MP_FPS.Client
                     if (click) { if (m_ClickCount>1) m_DoubleClick?.Invoke(); else m_Click?.Invoke(); }
                     return;
                 }
-                m_Last=evt.position; Preview(); var command=m_Command; Cancel(); evt.StopImmediatePropagation();
+                m_Last=evt.position;
+                bool quickDrop = m_View.QuickSlotDrop?.Invoke(m_Item, m_Last) == true;
+                Preview(); var command=m_Command; Cancel(); evt.StopImmediatePropagation();
+                if (quickDrop) return;
                 if (command!=null) m_View.Command(command); else MoonkovLocalization.Set(m_View.m_Message, "Move cancelled. Item remains in its container.");
             }
             private void Lost(PointerCaptureOutEvent evt) { if (evt.target==target && evt.pointerId==m_Pointer) Cancel(); }
             public void Cancel()
             {
+                m_View.QuickSlotDragPreview?.Invoke(null, default);
                 m_Scroll?.Pause(); m_Scroll=null; int pointer=m_Pointer; m_Pointer=-1;
                 if (pointer>=0 && target.HasPointerCapture(pointer)) target.ReleasePointer(pointer); target.style.opacity=1;
                 m_Active=false; if (m_View.m_Drag==this) m_View.m_Drag=null;

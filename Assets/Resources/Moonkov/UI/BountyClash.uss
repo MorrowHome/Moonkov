@@ -1,0 +1,37 @@
+.clash-root { position: absolute; left: 0; right: 0; top: 0; bottom: 0; color: #f0f2ed; }
+.clash-battle { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
+.clash-hidden { display: none; }
+.clash-panel { background-color: rgba(8, 13, 20, .92); border-width: 1px; border-color: #687584; padding: 12px 16px; }
+.clash-heading { color: #d7bc80; font-size: 14px; margin-bottom: 8px; }
+.clash-copy { color: #bdc8d4; font-size: 13px; white-space: normal; margin-bottom: 10px; }
+.clash-lobby { position: absolute; left: 0; right: 0; top: 0; bottom: 0; align-items: center; justify-content: center; background-color: rgba(4, 7, 12, .93); }
+.clash-lobby-window { width: 700px; max-width: 90%; max-height: 90%; border-top-width: 4px; border-top-color: #cfb276; }
+.clash-lobby-title { font-size: 26px; margin-bottom: 8px; }
+.clash-lobby-body { min-height: 0; flex-shrink: 1; }
+.clash-line { flex-direction: row; align-items: center; margin-bottom: 10px; }
+.clash-line > Button { min-height: 34px; padding: 6px 12px; margin-right: 8px; }
+.clash-line > TextField { flex-grow: 1; margin-right: 8px; }
+.clash-line > DropdownField { flex-grow: 1; margin-right: 8px; }
+.clash-roster { margin-top: 10px; margin-bottom: 12px; }
+.clash-member { min-height: 26px; color: #cee1f0; font-size: 14px; white-space: normal; }
+.clash-ready { background-color: #344d43; border-width: 1px; border-color: #91b89b; color: #ecf2e9; }
+.clash-error { color: #e5b386; font-size: 13px; white-space: normal; min-height: 24px; }
+.clash-header { position: absolute; top: 16px; left: 28%; right: 28%; align-items: stretch; }
+.clash-clock { color: #f2ede0; font-size: 27px; -unity-text-align: middle-center; }
+.clash-phase { font-size: 13px; color: #d4bf95; -unity-text-align: middle-center; white-space: normal; }
+.clash-objective { color: #eff1ea; font-size: 14px; white-space: normal; margin-top: 8px; }
+.clash-progress { height: 18px; margin-top: 5px; }
+.clash-bounty { color: #d9c28b; font-size: 14px; white-space: normal; margin-top: 7px; }
+.clash-team { position: absolute; top: 116px; left: 20px; width: 225px; }
+.clash-warning { position: absolute; left: 30%; right: 30%; bottom: 170px; color: #f5ddbf; border-left-width: 4px; border-left-color: #cb7959; font-size: 16px; white-space: normal; -unity-text-align: middle-center; }
+.clash-action { position: absolute; left: 30%; right: 30%; bottom: 120px; padding: 10px 14px; color: #e9eef2; font-size: 14px; white-space: normal; -unity-text-align: middle-center; }
+.clash-sense { position: absolute; top: 20px; right: 20px; width: 220px; }
+.clash-exit { position: absolute; bottom: 215px; right: 20px; width: 235px; white-space: normal; font-size: 14px; }
+.clash-map { position: absolute; top: 105px; right: 20px; width: 205px; height: 205px; background-color: rgba(7, 13, 20, .86); border-width: 1px; border-color: #687584; }
+.clash-marker-layer { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
+.clash-friendly-marker { position: absolute; width: 170px; margin-left: -85px; color: #add7f3; font-size: 12px; -unity-text-align: middle-center; white-space: normal; }
+.clash-friendly-down { color: #f3c385; }
+.clash-sense-layer { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(9, 17, 23, .25); }
+.clash-sense-contact { position: absolute; width: 40px; height: 20px; margin-left: -20px; margin-top: -10px; background-color: rgba(222, 147, 73, .36); border-width: 1px; border-color: rgba(240, 176, 104, .75); border-radius: 12px; }
+.clash-finished { position: absolute; left: 25%; right: 25%; top: 25%; align-items: stretch; }
+.clash-finished Button { margin-top: 12px; min-height: 38px; }

@@ -33,12 +33,14 @@ Moonkov货币适配v1：每位实际与赏金携带者同次有效撤离者基�
 
 赏金撤离先在所有Profiles/Inventories仍存在时捕获整组不可变快照，原子写`.bounty`（含整组每人的完整Settlement），之后才发兑付/个人结算。个人`.json`也保留到确认；重启先重放组日志，再个人收据，再退款/丢失出战。即使崩溃时只有组日志，也能恢复所有队员；不是对尚未持久化整张战局的恢复承诺。模式日志不能交给旧版服务器处理，含新模式数据后不得盲目回滚服务器/后端。
 
+`RebindBountyOwner`仅供服务端认证后或已认证连接断线时调用；按PlayerId、同SettlementId和旧owner校验后，迁移Profiles/Inventories与pending Save.Connection，不改变或重发原Task/payload。Detached与重连接入由主组调用，真实ECS延迟ack回归另行验收。
+
 普通模式新增字段均省略默认值，保持旧离线收据JSON哈希兼容；未更改已有真实存档/PlayerPrefs。`PlayerProfileClient.LocalPreferenceScope`供快捷栏使用：在线由已验证PlayerId与服务URL哈希，离线由实际档案路径哈希；未验证/切换服务/登出为空，不用DisplayName或Token，也不是所有权凭证。
 
 ## 可复现验证
 
 - `dotnet run --project Backend/BountyClashPersistenceChecks/BountyClashPersistenceChecks.csproj -- "Host=127.0.0.1;Port=临时端口;Username=moon_clash_test;Database=moon_clash_check_唯一后缀"`：只接受显式loopback专属临时库，创建并保留它供检查，操作者负责销毁临时集群。57项：schema8→9保留库存、登记/模式剥除/跨账号/跨回合/跨队拒绝、并发唯一Token、solo/duo/trio开局人数、满仓80+cargo两批与Claim幂等、退款/迟到扣装拒绝。其中14项启动真实独立HTTP进程，覆盖注册→session→登记→扣装→兑付→提取/死亡→重试→账号刷新，以及所有新入口鉴权/health。HTTP进程在finally停止。
-- `dotnet run --project Backend/BountyClashContextChecks/BountyClashContextChecks.csproj`：33项，包括实际源文件的普通收据字节、旧Format1/2离线14项、故障留日志/只剩组日志整组重放、旧后端能力拒绝、未完成扣库关闭后退款、真实AccountClient/PlayerProfileClient账号/服务/离线scope隔离。最小Unity类型与**内存PlayerPrefs**桩仅用于.NET测试，不代表真实Unity/Transport；DTO反序列化字段会有CS0649警告，未抑制它们。
+- `dotnet run --project Backend/BountyClashContextChecks/BountyClashContextChecks.csproj`：43项，包括实际源文件的普通收据字节、旧Format1/2离线14项、故障留日志/只剩组日志整组重放、旧后端能力拒绝、未完成扣库关闭后退款、真实AccountClient/PlayerProfileClient账号/服务/离线scope隔离，以及结算HTTP延迟ack时旧连接→holder→重连的同任务/同payload迁移、错误身份/结算/目标账号拒绝、完成后优先最新认证仓库。最小Unity类型与**内存PlayerPrefs**桩仅用于.NET测试，不代表真实Unity/Transport；DTO反序列化字段会有CS0649警告，未抑制它们。
 - `dotnet run --project Backend/RecoveryChecks/RecoveryChecks.csproj`：原Recovery纯规则23项通过，普通上限/原首次奖励行为回归。
 
 本轮数据库使用第三方Zonky Maven `embedded-postgres-binaries-darwin-arm64v8:17.6.0`，临时目录、随机loopback端口、专属测试身份，不安装全局服务。另保留一套临时API/独立数据库给主组真实多人Transport验收；配置与密钥仅在0600临时文件，不入Git，验收结束后停止并删除。具体多人/界面验收由主组及协调记录，不能据本专项宣称完整玩法完成。
