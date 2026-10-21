@@ -11,7 +11,7 @@ namespace Unity.MP_FPS
 {
     // One isolated single-player profile. Every mutation commits a complete snapshot
     // before publishing it, and deployment/settlement receipts survive a restart.
-    public sealed class OfflineProfileStore : IDisposable
+    public sealed partial class OfflineProfileStore : IDisposable
     {
         private sealed class SaveData
         {
@@ -23,6 +23,7 @@ namespace Unity.MP_FPS
             public int CarriedCells;
             public Dictionary<string, string> Receipts = new Dictionary<string, string>();
             public HashSet<string> MissionArtifacts = new HashSet<string>();
+            public OfflineClashState Clash;
         }
 
         private readonly object m_Lock = new object();
@@ -62,12 +63,13 @@ namespace Unity.MP_FPS
         private static void Validate(SaveData save)
         {
             if(save!=null && save.Recovery==null)save.Recovery=new RecoveryInbox();
-            if (save == null || (save.Format != 1 && save.Format != 2) || !Guid.TryParse(save.PlayerId, out _) ||
+            if (save == null || (save.Format != 1 && save.Format != 2 && save.Format != 3) || !Guid.TryParse(save.PlayerId, out _) ||
                 save.Inventory?.Items == null || save.Inventory.Validate() != InventoryError.None || save.Inventory.Find("stash") == null ||
                 save.Inventory.Find("loot") != null || save.Recovery.Validate(save.Inventory)!=InventoryError.None || save.Receipts == null || save.MissionArtifacts == null ||
                 (save.DeploymentId != null && (!Guid.TryParse(save.DeploymentId, out _) ||
                     string.IsNullOrEmpty(save.RaidInventoryJson) || !RaidRules.ValidLoadout(save.CarriedCells))))
                 throw new InvalidDataException("Unsupported or damaged single-player save.");
+            ValidateClash(save);
         }
 
         private SaveData Copy() => JsonConvert.DeserializeObject<SaveData>(JsonConvert.SerializeObject(m_Save));
@@ -75,7 +77,7 @@ namespace Unity.MP_FPS
         private void Commit(SaveData save)
         {
             if (m_Disposed) throw new ObjectDisposedException(nameof(OfflineProfileStore));
-            save.Format=2;
+            save.Format=save.Clash==null ? 2 : 3;
             Validate(save);
             Directory.CreateDirectory(Path.GetDirectoryName(FilePath));
             string temporary = FilePath + ".tmp";
@@ -160,7 +162,9 @@ namespace Unity.MP_FPS
             lock (m_Lock)
             {
                 CheckPlayer(payload.PlayerId);
-                if(payload.Mode!=null)throw new RaidPersistenceContext.LoadoutRejectedException(RaidLoadoutError.Rejected,"Bounty Clash requires multiplayer.");
+                if(payload.Mode!=null || IsClashDeployment(m_Save,payload.DeploymentId))return DeployClash(payload);
+                if(payload.MatchId!=null || payload.RulesVersion!=0 || payload.TeamId!=0 || m_Save.Clash?.ActiveMatchId!=null)
+                    throw new RaidPersistenceContext.LoadoutRejectedException(RaidLoadoutError.Rejected,"Invalid single-player deployment binding.");
                 if (!Guid.TryParse(payload.DeploymentId, out _) || !RaidRules.ValidLoadout(payload.Cells) ||
                     m_Save.Receipts.ContainsKey(payload.DeploymentId) ||
                     (RaidActive && (payload.DeploymentId != m_Save.DeploymentId || payload.Cells != m_Save.CarriedCells)))
@@ -168,7 +172,7 @@ namespace Unity.MP_FPS
                 if (!RaidActive)
                 {
                     if(m_Save.Recovery.ItemCount()>0)throw new RaidPersistenceContext.LoadoutRejectedException(RaidLoadoutError.Rejected,"recovery_pending");
-                    var next = Copy(); PrepareCells(next.Inventory, payload.Cells);
+                    var next = Copy(); SupersedeClashRegistration(next); PrepareCells(next.Inventory, payload.Cells);
                     var raid = next.Inventory.ExtractLoadout();
                     if (raid.Validate() != InventoryError.None || raid.CarriedWeight > InventoryCatalog.CarryWeightLimit)
                         throw new RaidPersistenceContext.LoadoutRejectedException(RaidLoadoutError.Rejected);
@@ -222,7 +226,9 @@ namespace Unity.MP_FPS
             lock (m_Lock)
             {
                 CheckPlayer(payload.PlayerId);
-                if(payload.Mode!=null)throw new InvalidDataException("Bounty Clash is not an offline mode.");
+                if(payload.Mode!=null || IsClashDeployment(m_Save,payload.SettlementId))return SettleClash(payload);
+                if(payload.MatchId!=null || payload.RulesVersion!=0 || payload.TeamId!=0 || payload.BountyEventId!=null || payload.Redemption!=null || m_Save.Clash?.ActiveMatchId!=null)
+                    throw new InvalidDataException("Invalid single-player settlement binding.");
                 string receipt = Receipt(payload);
                 if (m_Save.Receipts.TryGetValue(payload.SettlementId, out var previous))
                 {
@@ -255,6 +261,9 @@ namespace Unity.MP_FPS
             lock (m_Lock)
             {
                 CheckPlayer(payload.PlayerId);
+                if(payload.Mode!=null || IsClashDeployment(m_Save,payload.DeploymentId))return AbandonClash(payload);
+                if(payload.MatchId!=null || payload.RulesVersion!=0 || payload.TeamId!=0 || m_Save.Clash?.ActiveMatchId!=null)
+                    throw new InvalidDataException("Invalid single-player abandonment binding.");
                 if (m_Save.Receipts.ContainsKey(payload.DeploymentId)) return Read();
                 if (RaidActive && m_Save.DeploymentId != payload.DeploymentId) throw new InvalidDataException("Single-player deployment mismatch.");
                 var next = Copy(); next.DeploymentId = next.RaidInventoryJson = null; next.CarriedCells = 0;
@@ -265,7 +274,7 @@ namespace Unity.MP_FPS
         public void RecoverAbandonedRaid()
         {
             lock (m_Lock)
-                if (RaidActive) Abandon(new RaidPersistenceContext.Deployment { PlayerId = m_Save.PlayerId, DeploymentId = m_Save.DeploymentId });
+                if (RaidActive) Abandon(CurrentDeployment());
         }
 
         public RaidPersistenceContext.Profile Request(string path, object payload)
@@ -276,6 +285,10 @@ namespace Unity.MP_FPS
                 case "internal/deployments": return Deploy((RaidPersistenceContext.Deployment)payload);
                 case "internal/deployments/abandon": return Abandon((RaidPersistenceContext.Deployment)payload);
                 case "internal/settlements": return Settle((RaidPersistenceContext.Settlement)payload);
+                case "internal/bounty-clash/deployments": return Deploy((RaidPersistenceContext.Deployment)payload);
+                case "internal/bounty-clash/deployments/abandon": return Abandon((RaidPersistenceContext.Deployment)payload);
+                case "internal/bounty-clash/deployments/refund": return RefundClash((RaidPersistenceContext.Deployment)payload);
+                case "internal/bounty-clash/settlements": return Settle((RaidPersistenceContext.Settlement)payload);
                 default: throw new InvalidOperationException("Unsupported single-player persistence operation.");
             }
         }

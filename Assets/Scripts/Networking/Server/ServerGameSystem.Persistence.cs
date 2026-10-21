@@ -18,7 +18,9 @@ namespace Unity.MP_FPS
                     ? new RaidPersistenceContext(PlayerProfileClient.OfflineStore) : new RaidPersistenceContext();
                 state.EntityManager.AddComponentObject(m_PersistenceEntity, context);
             }
-            return state.EntityManager.GetComponentObject<RaidPersistenceContext>(m_PersistenceEntity);
+            var persistence=state.EntityManager.GetComponentObject<RaidPersistenceContext>(m_PersistenceEntity);
+            persistence.SetClashSoloEnabled(ClashSoloRuntime.Enabled(state.EntityManager));
+            return persistence;
         }
 
         public void OnDestroy(ref SystemState state)

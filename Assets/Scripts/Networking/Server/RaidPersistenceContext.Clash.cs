@@ -19,7 +19,16 @@ namespace Unity.MP_FPS
         private sealed class Capability { public string[] Features { get; set; } }
         private readonly Task<bool> m_ClashCapability = Task.FromResult(false);
         private readonly System.Collections.Concurrent.ConcurrentDictionary<string, Task> m_ClashRegistrations = new System.Collections.Concurrent.ConcurrentDictionary<string, Task>();
-        public bool ClashSupported => m_Offline == null && m_ClashCapability.Status == TaskStatus.RanToCompletion && m_ClashCapability.Result;
+        private bool m_ClashSoloEnabled;
+        public bool ClashSupported => m_Offline!=null ? m_ClashSoloEnabled :
+            m_ClashCapability.Status==TaskStatus.RanToCompletion && m_ClashCapability.Result;
+        // The server World supplies the explicit OfflineRaidMode + ClashSoloMode
+        // + BountyClash gate. This is never deserialized from a client's request.
+        public void SetClashSoloEnabled(bool enabled)
+        {
+            if(enabled && m_Offline==null)throw new InvalidOperationException("Solo Clash requires an isolated offline profile.");
+            m_ClashSoloEnabled=enabled;
+        }
 
         private async Task<bool> CheckClashCapabilityAsync()
         {
@@ -38,7 +47,24 @@ namespace Unity.MP_FPS
         { await m_ClashCapability.ConfigureAwait(false); return await PostAsync("internal/sessions/resolve", new { Token=token }).ConfigureAwait(false); }
         private async Task PostClashAsync(string path, object payload)
         {
-            if (m_Offline != null || m_Http == null || !await m_ClashCapability.ConfigureAwait(false))
+            if(m_Offline!=null)
+            {
+                if(path=="matches")
+                {
+                    if(!m_ClashSoloEnabled)throw new LoadoutRejectedException(RaidLoadoutError.Rejected,"Offline Clash was not explicitly enabled by this server World.");
+                    var registration=(BountyRegistration)payload;
+                    await Task.Run(()=>m_Offline.RegisterBountyMatch(registration.MatchId,registration.RulesVersion,registration.TokenId,registration.Participants)).ConfigureAwait(false);
+                }
+                else if(path=="redemptions")
+                {
+                    // Recovery may run before a new mode is selected. The store
+                    // accepts only an already registered, owned deployment/event.
+                    await Task.Run(()=>m_Offline.RedeemBounty((BountyRedemption)payload)).ConfigureAwait(false);
+                }
+                else throw new InvalidOperationException("Unsupported local Clash operation.");
+                return;
+            }
+            if (m_Http == null || !await m_ClashCapability.ConfigureAwait(false))
                 throw new LoadoutRejectedException(RaidLoadoutError.Rejected,"Bounty Clash persistence is unavailable; update the backend.");
             using (var content = new System.Net.Http.StringContent(JsonConvert.SerializeObject(payload),System.Text.Encoding.UTF8,"application/json"))
             using (var response = await m_Http.PostAsync("internal/bounty-clash/"+path,content,m_Stop.Token).ConfigureAwait(false))
@@ -52,6 +78,7 @@ namespace Unity.MP_FPS
         }
         public void BeginBountyDeploy(Entity connection, Guid matchId, int rulesVersion, int teamId, Guid deploymentId, int cells, Join join=null)
         {
+            if(m_Offline!=null && !m_ClashSoloEnabled)throw new LoadoutRejectedException(RaidLoadoutError.Rejected,"Offline Clash requires its explicit local marker.");
             if (Deployments.ContainsKey(connection)) return;
             var payload = new Deployment {PlayerId=Profiles[connection].PlayerId,DeploymentId=deploymentId.ToString("D"),Cells=cells,
                 Mode="BountyClash",MatchId=matchId.ToString("D"),RulesVersion=rulesVersion,TeamId=teamId};
@@ -60,6 +87,7 @@ namespace Unity.MP_FPS
         private async Task AwaitBountyRegistrationAsync(Deployment payload)
         {
             if (payload.Mode==null) return;
+            if(m_Offline!=null && !m_ClashSoloEnabled)throw new LoadoutRejectedException(RaidLoadoutError.Rejected,"Offline Clash deployment is not enabled.");
             if (payload.Mode!="BountyClash" || !m_ClashRegistrations.TryGetValue(payload.MatchId,out var registration))
                 throw new LoadoutRejectedException(RaidLoadoutError.Rejected,"Bounty Clash roster has not been registered.");
             try { await registration.ConfigureAwait(false); }
@@ -114,6 +142,7 @@ namespace Unity.MP_FPS
         // later point can reconstruct every participant's immutable inventory receipt.
         public void BeginBountyRedemption(Guid matchId, Guid tokenId, Guid extractionEventId, Guid carrierDeploymentId, Guid[] extractedDeploymentIds)
         {
+            if(m_Offline!=null && !m_ClashSoloEnabled)throw new InvalidOperationException("New local Clash extraction requires its explicit server marker.");
             var redemption = new BountyRedemption {MatchId=matchId.ToString("D"),TokenId=tokenId.ToString("D"),ExtractionEventId=extractionEventId.ToString("D"),
                 CarrierDeploymentId=carrierDeploymentId.ToString("D"),ExtractedDeploymentIds=extractedDeploymentIds.Select(id=>id.ToString("D")).ToArray()};
             var snapshots = new List<Settlement>();

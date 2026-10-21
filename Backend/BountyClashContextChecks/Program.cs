@@ -7,6 +7,8 @@ using Unity.MP_FPS;
 using Unity.MP_FPS.Inventory;
 using Context=Unity.MP_FPS.RaidPersistenceContext;
 
+if(args.Contains("--offline-solo-only")){await OfflineSoloChecks.Run(Path.GetFullPath("Library/BuildValidation/OfflineClash"));return;}
+
 int checks=0;void Check(bool ok,string name){if(!ok)throw new Exception(name);checks++;}
 string root=Path.Combine(Path.GetTempPath(),"moon-clash-context-"+Guid.NewGuid().ToString("N"));Directory.CreateDirectory(Path.Combine(root,"Assets"));
 UnityEngine.Application.dataPath=Path.Combine(root,"Assets");
@@ -113,6 +115,7 @@ try
     moving.Profiles[reconnect]=acknowledged;var newest=new Entity{Index=205};var fresh=new Context.Profile{PlayerId=ownerId,Dust=321};moving.Profiles[newest]=fresh;
     Check(moving.RebindBountyOwner(reconnect,newest,ownerId,receiptId)&&ReferenceEquals(moving.Profiles[newest],fresh),"closed cached profile overwrote fresh authenticated warehouse");
     moving.Dispose();await moving.ShutdownTask;
+    await OfflineSoloChecks.Run(Path.GetFullPath("Library/BuildValidation/OfflineClash"));
     Console.WriteLine($"PASS {checks} context/offline checks: legacy receipt bytes, old Format1/2 recovery, no offline PvP, failed delivery, complete group restart, one redemption, delayed acknowledgement owner transfer without re-send, authenticated scope isolation and fail-closed old backend capability.");
 }
 finally{Directory.Delete(root,true);}

@@ -8,6 +8,7 @@
     <Compile Include="../../Assets/Scripts/Networking/Client/AccountClient.cs" Link="AccountClient.cs" />
     <Compile Include="../../Assets/Scripts/Networking/Client/PlayerProfileClient.cs" Link="PlayerProfileClient.cs" />
     <Compile Include="../../Assets/Scripts/Networking/Client/OfflineProfileStore.cs" Link="OfflineProfileStore.cs" />
+    <Compile Include="../../Assets/Scripts/Networking/Client/OfflineProfileStore.Clash.cs" Link="OfflineProfileStore.Clash.cs" />
     <Compile Include="../../Assets/Editor/RecoveryOfflineChecks.cs" Link="RecoveryOfflineChecks.cs" />
   </ItemGroup>
 </Project>
