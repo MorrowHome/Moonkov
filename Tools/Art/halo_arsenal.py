@@ -1,97 +1,101 @@
-"""Flat filled vector masters and transparent production sprites (CairoSVG, no bloom baked in)."""
+"""Original vector assemblies. ImageMagick rasterizes editable SVGs; no baked bloom.
+Nine silhouettes, restrained signal colors and open firing apertures.
+"""
 from pathlib import Path
-import math,cairosvg
-import xml.etree.ElementTree as ET
-ROOT=Path(__file__).resolve().parents[2];SRC=ROOT/'ArtSource/HaloArsenal';OUT=ROOT/'Assets/DollSinger/Art/HaloArsenal';ICONS=ROOT/'Assets/Resources/HaloIcons'
-for p in [SRC,OUT,ICONS]:p.mkdir(parents=True,exist_ok=True)
-G='#e6c779';W='#fff3d2';D='#ad8847';S='#e6e9ed'
-def pt(r,a):a=math.radians(a);return (320+r*math.cos(a),320+r*math.sin(a))
-def polygon(points,color=G):return '<polygon points="'+' '.join(f'{x:.3f},{y:.3f}' for x,y in points)+f'" fill="{color}"/>'
-def arcband(outer,inner,a,b,color=G,n=24):return polygon([pt(outer,a+(b-a)*i/n) for i in range(n+1)]+[pt(inner,b-(b-a)*i/n) for i in range(n+1)],color)
-def disc(x,y,r,color=G):return f'<circle cx="{x}" cy="{y}" r="{r}" fill="{color}"/>'
-def rect(x,y,w,h,color=G):return f'<rect x="{x}" y="{y}" width="{w}" height="{h}" fill="{color}"/>'
+import math, subprocess
+ROOT=Path(__file__).resolve().parents[2]
+SRC=ROOT/'ArtSource/HaloArsenal';OUT=ROOT/'Assets/DollSinger/Art/HaloArsenal';ICONS=ROOT/'Assets/Resources/HaloIcons'
+for directory in [SRC,OUT,ICONS]:directory.mkdir(parents=True,exist_ok=True)
+PALETTE={'cicada':'#72e6de','trine':'#b4a1ff','aegis':'#80b9ff','vesper':'#b8e9ff','thorn':'#f1a4d2','sundown':'#ff967e','rondo':'#90e5be','tempest':'#85cef4','nocturne':'#c6b9f2'}
+W,D,S='#eef4fa','#243448','#657d95'
+def pt(r,a):
+ a=math.radians(a);return 320+r*math.cos(a),320+r*math.sin(a)
+def polygon(points,color):return '<polygon points="'+' '.join(f'{x:.2f},{y:.2f}' for x,y in points)+f'" fill="{color}"/>'
+def band(outer,inner,start,end,color,n=32):
+ return polygon([pt(outer,start+(end-start)*i/n) for i in range(n+1)]+[pt(inner,end-(end-start)*i/n) for i in range(n+1)],color)
+def radial(points,angle,color):return polygon([pt(r,angle+a) for r,a in points],color)
+def line(points,color,width=3):return '<polyline points="'+' '.join(f'{x:.2f},{y:.2f}' for x,y in points)+f'" fill="none" stroke="{color}" stroke-width="{width}" stroke-linecap="round" stroke-linejoin="round"/>'
 def svg(body):return '<svg xmlns="http://www.w3.org/2000/svg" width="640" height="640" viewBox="0 0 640 640">'+body+'</svg>'
-def cut(body,hole):
- outer=ET.fromstring(body);inner=ET.fromstring(hole)
- points=inner.attrib.get('points')
- if points is None:
-  x=float(inner.attrib['cx']);y=float(inner.attrib['cy']);r=float(inner.attrib['r'])
-  points=' '.join(f'{x+r*math.cos(i*math.tau/96):.3f},{y+r*math.sin(i*math.tau/96):.3f}' for i in range(96))
- return f'<path d="M {outer.attrib["points"]} Z M {points} Z" fill="{outer.attrib["fill"]}" fill-rule="evenodd"/>'
-
-for code in ['cicada','trine','aegis','vesper','thorn','sundown','rondo','tempest','nocturne']:
- core='';accent=''
+for code,G in PALETTE.items():
+ shell=sigil=''
  if code=='cicada':
-  # Two broad, swept sabre wings; deliberately asymmetric tips and a fork crown.
-  core+=polygon([(62,364),(82,210),(174,88),(256,73),(185,166),(190,296),(205,388),(120,496),(104,414)],G)
-  core+=polygon([(578,276),(558,430),(466,552),(384,567),(455,474),(450,344),(435,252),(520,144),(536,226)],G)
-  core+=polygon([(270,60),(302,60),(302,192),(281,214),(270,179)],W)+polygon([(338,60),(370,60),(370,179),(359,214),(338,192)],W)
-  accent+=polygon([(93,314),(124,200),(185,126),(159,228),(150,290),(170,345),(148,380)],W)
-  accent+=polygon([(547,326),(516,440),(455,514),(481,412),(490,350),(470,295),(492,260)],W)
-  accent+=polygon([(279,445),(301,445),(301,563),(284,589)],D)+polygon([(339,445),(361,445),(356,589),(339,563)],D)
+  # An open tuning fork with two swept, layered wing vanes, rather than a ring.
+  for a in [0,180]:
+   shell+=radial([(285,-51),(296,-24),(218,12),(177,47),(145,43),(178,1),(245,-26)],a,D)
+   shell+=radial([(284,-50),(278,-30),(216,4),(166,42),(159,27),(197,-10)],a,W)
+   sigil+=radial([(272,-35),(247,-17),(206,7),(180,21),(203,-6),(253,-30)],a,G)
+   sigil+=line([pt(285,a-48),pt(252,a-31),pt(207,a-13)],G,4)
+  shell+=polygon([(285,55),(304,55),(304,154),(289,172)],W)+polygon([(336,55),(355,55),(351,172),(336,154)],W)
+  sigil+=polygon([(310,65),(330,65),(330,123),(320,137),(310,123)],G)
  elif code=='trine':
-  # Three independent interlocking plates around a triangular aperture.
-  outer=[pt(302,-90+i*120) for i in range(3)];inner=[pt(170,-90+i*120) for i in range(3)]
-  def mix(a,b,t):return (a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t)
-  for i in range(3):
-   n=(i+1)%3;p=(i-1)%3
-   core+=polygon([outer[i],mix(outer[i],outer[n],.44),mix(inner[i],inner[n],.44),inner[i],mix(inner[i],inner[p],.44),mix(outer[i],outer[p],.44)],G)
-   a=-90+i*120
-   accent+=polygon([pt(270,a),pt(205,a-15),pt(205,a+15)],W)
-   accent+=polygon([pt(204,a+24),pt(232,a+22),pt(249,a+12),pt(219,a+15)],D)
+  # Three interleaved porcelain keys, each with an indexed violet channel.
+  for a in [-90,30,150]:
+   shell+=radial([(297,0),(271,35),(180,38),(150,3),(189,-9)],a,D)
+   shell+=radial([(289,0),(265,30),(187,32),(161,4),(195,-4)],a,W)
+   sigil+=radial([(274,1),(254,23),(219,26),(236,8)],a,G)
+   sigil+=line([pt(211,a-1),pt(188,a+6),pt(204,a+22)],S,4)
+   for i in range(3):shell+=band(288,282,a+9+i*5,a+11+i*5,G,3)
  elif code=='aegis':
-  for i in range(8):
-   a=i*45
-   core+=arcband(276,157,a+4,a+40,W if i%2 else G,n=3)
-   accent+=arcband(258,223,a+11,a+32,D if i%2 else W,n=2)
-  for a in range(0,360,90):
-   core+=polygon([pt(264,a-5),pt(302,a-3),pt(302,a+3),pt(264,a+5)],G)
+  # Four massive corner bastions around an octagonal opening.
+  for a in [45,135,225,315]:
+   shell+=radial([(300,-18),(300,18),(265,28),(203,28),(164,14),(164,-14),(203,-28),(265,-28)],a,D)
+   shell+=radial([(289,-15),(289,15),(256,23),(209,23),(179,11),(179,-11),(209,-23),(256,-23)],a,W)
+   sigil+=radial([(276,-10),(276,10),(250,16),(233,16),(248,0),(233,-16),(250,-16)],a,G)
+   sigil+=line([pt(207,a-18),pt(190,a-8),pt(190,a+8),pt(207,a+18)],S,4)
  elif code=='vesper':
-  # A single-edged moon bow and two long filled blades around a broad empty diamond.
-  outer=polygon([(320,26),(533,320),(320,614),(107,320)],W)
-  hole=polygon([(320,174),(426,320),(320,466),(214,320)],'black')
-  core=cut(outer,hole)
-  core+=arcband(275,222,108,253,G,n=24)
-  accent+=polygon([(320,47),(485,320),(451,320),(320,123)],G)+polygon([(320,593),(155,320),(189,320),(320,517)],G)
-  accent+=polygon([(93,288),(143,320),(93,352),(65,320)],G)
+  # A horizontal lunar caliper, with a narrow split vane and asymmetric crescent.
+  shell+=band(285,234,110,250,D)+band(277,246,113,247,W)
+  sigil+=band(269,253,-56,56,G)
+  for a in [0,180]:
+   shell+=radial([(306,-3),(280,-11),(183,-6),(159,0),(183,6),(280,11),(306,3)],a,W)
+   sigil+=line([pt(288,a),pt(190,a)],G,5)
+  sigil+=band(227,223,137,223,G)
+  for a in [-90,90]:shell+=radial([(286,-2),(286,2),(257,2),(257,-2)],a,G)
  elif code=='thorn':
-  # Five separate broad knife petals, not a connected star-shaped ring.
-  for i in range(5):
-   a=-90+i*72
-   core+=polygon([pt(137,a),pt(175,a-23),pt(210,a-27),pt(300,a),pt(210,a+27),pt(175,a+23)],G)
-   accent+=polygon([pt(282,a),pt(211,a-14),pt(166,a),pt(211,a+14)],W)
-   accent+=polygon([pt(242,a+15),pt(217,a+20),pt(186,a+20),pt(204,a+14)],D)
- elif code=='nocturne':
-  wing=[(60,225),(175,42),(251,90),(205,175),(179,320),(210,474),(270,570),(176,598),(75,430),(101,320)]
-  inlay=[(86,228),(176,78),(219,96),(176,179),(147,323),(176,458),(226,552),(187,563),(111,422),(130,320)]
-  spine=[(320,22),(366,110),(345,170),(320,192),(295,170),(274,110)]
-  for mirror in [False,True]:
-   core+=polygon([(640-x if mirror else x,y) for x,y in wing],W)
-   accent+=polygon([(640-x if mirror else x,y) for x,y in inlay],G)
-   core+=polygon([(x,640-y if mirror else y) for x,y in spine],G)
-   accent+=polygon([(320,640-y if mirror else y) for y in [48,147]]+[(335,530 if mirror else 110)],W)
- elif code=='tempest':
-  for i in range(6):
-   a=-90+i*60;color=W if i%2 else G
-   core+=polygon([pt(146,a-4),pt(168,a+27),pt(245,a+31),pt(298,a+15),pt(248,a-10),pt(205,a-16)],color)
-   accent+=polygon([pt(173,a+3),pt(216,a+6),pt(270,a+18),pt(225,a+21)],G if color==W else W)
+  # Five detached crystalline petals: dark roots, pale edges, pink inner veins.
+  for a in [-90,-18,54,126,198]:
+   shell+=radial([(305,0),(242,18),(163,15),(179,-6),(245,-15)],a,D)
+   shell+=radial([(302,0),(240,11),(181,10),(203,-3),(256,-9)],a,W)
+   sigil+=radial([(289,0),(236,7),(205,6),(240,1)],a,G)
+   sigil+=line([pt(207,a-5),pt(241,a-9),pt(265,a-6)],G,3)
+ elif code=='sundown':
+  # A broken eclipse crucible and suspended ember; never an opaque central ball.
+  for a in [-132,-12,108]:
+   shell+=band(291,229,a,a+87,D,16)+band(281,246,a+2,a+81,W,16)
+   sigil+=band(263,253,a+8,a+48,G,12)
+   shell+=radial([(295,0),(307,3),(306,7),(286,8)],a+77,G)
+  shell+=polygon([(271,521),(291,506),(349,506),(369,521),(351,573),(320,599),(289,573)],D)
+  sigil+=polygon([(288,526),(305,516),(335,516),(352,526),(339,562),(320,579),(301,562)],G)
+  sigil+=polygon([(305,526),(320,521),(335,526),(320,554)],W)
  elif code=='rondo':
-  # Paired counter-rotating magatama seals; two broad comma bodies.
-  for a,color in [(190,W),(10,G)]:
-   core+=arcband(278,163,a,a+135,color,n=24)
-   core+=polygon([pt(278,a+124),pt(163,a+124),pt(296,a+158)],color)
-   x,y=pt(215,a+5);core+=disc(x,y,49,color)
-   accent+=disc(x,y,26,D if color==W else W)
-   accent+=arcband(245,211,a+36,a+87,G if color==W else W,n=12)
+  # Two mirrored jade teardrops, with an offset refrain channel.
+  for a in [12,192]:
+   shell+=band(281,179,a,a+127,D)+band(270,191,a+2,a+121,W)
+   shell+=radial([(281,124),(191,120),(190,153),(223,153)],a,D)
+   sigil+=band(257,231,a+12,a+78,G)
+   sigil+=radial([(243,80),(231,83),(203,117),(215,111)],a,G)
+   sigil+=line([pt(210,a+9),pt(200,a+26),pt(205,a+45)],S,4)
+ elif code=='tempest':
+  # Five swept turbine vanes and clear negative spaces; no full seal body.
+  for a in [-90,-18,54,126,198]:
+   shell+=radial([(302,6),(272,29),(190,36),(150,17),(176,1),(245,8)],a,D)
+   shell+=radial([(291,9),(263,24),(192,29),(164,17),(182,8),(244,14)],a,W)
+   sigil+=radial([(278,12),(254,20),(210,24),(235,19),(255,12)],a,G)
+   sigil+=line([pt(188,a+15),pt(199,a+21),pt(219,a+22)],G,3)
+  sigil+=band(150,145,0,315,G,42)
  else:
-  for a,b in [(-163,-67),(-53,39),(53,133)]:core+=arcband(278,160,a,b,G,n=8)
-  for a,b in [(-152,-119),(-41,-9),(65,96)]:accent+=arcband(257,201,a,b,W,n=4)
-  core+=disc(320,527,68,G)+polygon([(253,533),(272,586),(320,611),(368,586),(387,533)],G)
-  accent+=disc(304,510,41,W)+polygon([(363,531),(349,574),(321,589),(338,549)],D)
-  accent+=polygon([(61,280),(115,303),(115,337),(61,359)],W)
- node=polygon([(320,304),(334,320),(320,336),(306,320)],G)+polygon([(320,310),(328,320),(320,327),(312,320)],W)
- for kind,body in [('Shell',core),('Sigil',accent),('Node',node)]:
-  path=SRC/f'{code}-{kind}.svg';path.write_text(svg(body));cairosvg.svg2png(url=str(path),write_to=str(OUT/f'{code}-{kind}.png'))
- # Namespace masks so the icon and composed production layers render identically.
- path=SRC/f'{code}-Icon.svg';path.write_text(svg(core+accent));cairosvg.svg2png(url=str(path),write_to=str(ICONS/(code.title()+'.png')))
-print('Independent flat filled components and icons exported from vector masters.')
+  # An off-centre night crescent and two quiet pendants, with a delicate second orbit.
+  shell+=band(294,214,-164,35,D)+band(282,236,-158,29,W)
+  sigil+=band(270,255,-148,-42,G)
+  shell+=band(260,248,55,151,G)
+  for a in [58,122]:
+   shell+=radial([(295,0),(262,-6),(195,0),(262,6)],a,D)
+   sigil+=radial([(287,0),(260,-3),(216,0),(260,3)],a,G)
+  sigil+=line([pt(206,-155),pt(192,-148),pt(186,-130)],G,3)
+ node=polygon([(320,304),(333,320),(320,336),(307,320)],G)+polygon([(320,310),(327,320),(320,329),(313,320)],W)
+ for kind,body in [('Shell',shell),('Sigil',sigil),('Node',node)]:
+  path=SRC/f'{code}-{kind}.svg';path.write_text(svg(body),encoding='utf-8')
+  subprocess.run(['magick','-background','none',str(path),str(OUT/f'{code}-{kind}.png')],check=True)
+ path=SRC/f'{code}-Icon.svg';path.write_text(svg(shell+sigil),encoding='utf-8')
+ subprocess.run(['magick','-background','none',str(path),str(ICONS/(code.title()+'.png'))],check=True)
+print('Exported nine original silhouettes, 27 layers and nine matching inventory icons.')

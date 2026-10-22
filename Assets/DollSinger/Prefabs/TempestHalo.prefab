@@ -62,7 +62,7 @@ MonoBehaviour:
   - {fileID: 8899516461760835031}
   - {fileID: 3624483849764384833}
   - {fileID: 2172111123583441357}
-  lightColor: {r: 1, g: 0.88, b: 0.64, a: 1}
+  lightColor: {r: 0.52156866, g: 0.80784315, b: 0.95686275, a: 1}
   sequenceNodes: 0
   magnification: 0
   recoil: 0.018
