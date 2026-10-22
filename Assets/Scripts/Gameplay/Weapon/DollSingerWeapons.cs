@@ -10,7 +10,8 @@ namespace Unity.MP_FPS
         public static uint WeaponId(string code) => code == "rifle" || code == "compact" ? Halo :
             code == "pistol" ? Revolver : code == "shotgun" ? Shotgun : code == "sniper" ? Sniper :
             code == "cicada" ? Cicada : code == "trine" ? Trine : code == "aegis" ? Aegis : code == "vesper" ? Vesper : code == "thorn" ? Thorn : code == "sundown" ? Sundown : code == "rondo" ? Rondo : code == "tempest" ? Tempest : code == "nocturne" ? Nocturne : None;
-        private static string Slot(int slot) => slot == 1 ? "Primary" : slot == 2 ? "Secondary" : "Pistol";
+        private static string Slot(int slot) => slot == 1 ? "Primary" : slot == 2 ? "Secondary" :
+            slot == MeleeInventory.EquipmentIndex ? MeleeInventory.Slot : "Pistol";
         private static int Ammo(InventoryItem item, InventoryGraph graph, WeaponRegistry registry)
         {
             var weapon = registry.GetWeaponData(WeaponId(item?.Code), (ushort)HaloModules.Mask(graph, item));
@@ -27,7 +28,8 @@ namespace Unity.MP_FPS
         public static void SaveActiveAmmo(ref PredictedPlayerGhost state, InventoryGraph graph)
         {
             var item = graph?.Find(state.EquippedWeaponItem.ToString());
-            if (item != null && WeaponId(item.Code) == state.EquippedWeaponID) item.LoadedAmmo = state.CurrentAmmo;
+            if (item != null && MeleeInventory.Kind(item.Code) == DollSinger.MeleeWeaponKind.None &&
+                WeaponId(item.Code) == state.EquippedWeaponID) item.LoadedAmmo = state.CurrentAmmo;
             StoreAmmo(ref state);
         }
         // The authoritative item tree determines possession; backpack weapons cannot be selected.
@@ -50,9 +52,10 @@ namespace Unity.MP_FPS
             }
             int slot = state.EquippedWeaponSlot;
             var active = slot > 0 ? graph?.Equipped(Slot(slot)) : null;
-            if (WeaponId(active?.Code) == None)
+            if (slot != MeleeInventory.EquipmentIndex && WeaponId(active?.Code) == None)
             {
-                slot = primary != null ? 1 : secondary != null ? 2 : pistol != null ? 3 : 0;
+                slot = state.PrimaryWeaponID != None ? 1 : state.SecondaryWeaponID != None ? 2 :
+                    state.PistolWeaponID != None ? 3 : MeleeInventory.Equipped(graph) != null ? MeleeInventory.EquipmentIndex : 0;
                 active = slot == 0 ? null : graph?.Equipped(Slot(slot));
             }
             state.EquippedWeaponSlot = slot;
@@ -80,6 +83,19 @@ namespace Unity.MP_FPS
             state.EquippedModules = slot == 1 ? state.PrimaryModules : slot == 2 ? state.SecondaryModules : state.PistolModules;
             state.CurrentAmmo = slot == 1 ? state.PrimaryAmmo : slot == 2 ? state.SecondaryAmmo : state.PistolAmmo;
             HaloModuleFire.BeginEquip(ref state, registry.GetWeaponData(requested, state.EquippedModules));
+            return true;
+        }
+        public static bool EquipMelee(ref PredictedPlayerGhost state, InventoryGraph graph, WeaponRegistry registry, string itemId)
+        {
+            if (!state.InventoryWeapons || state.CurrentHealth <= 0 || state.ControllerState.IsReloadingState) return false;
+            var item = MeleeInventory.Equipped(graph);
+            // Empty hands are an equipment mode, never a fabricated inventory item.
+            if ((item?.Id ?? "") != (itemId ?? "")) return false;
+            SaveActiveAmmo(ref state, graph);
+            state.EquippedWeaponSlot = MeleeInventory.EquipmentIndex;
+            state.EquippedWeaponItem = default;
+            SyncEquipment(ref state, graph, registry);
+            state.WeaponEquipRemaining = Mathf.Max(state.WeaponEquipRemaining, .25f);
             return true;
         }
         public static void CompleteReload(ref PredictedPlayerGhost state, WeaponData weapon)

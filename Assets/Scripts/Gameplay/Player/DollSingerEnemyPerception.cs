@@ -27,7 +27,7 @@ namespace Unity.MP_FPS
             }
             foreach (var candidate in m_Targets)
             {
-                if (candidate.Root == null || candidate.Root == root || !EntityManager.Exists(candidate.Entity) ||
+                if (candidate.Root == null || candidate.Root == root || !CanObserveOpponent(brain, candidate.Entity) || !EntityManager.Exists(candidate.Entity) ||
                     !EntityManager.HasComponent<PredictedPlayerGhost>(candidate.Entity) ||
                     EntityManager.GetComponentData<PredictedPlayerGhost>(candidate.Entity).CurrentHealth <= 0) continue;
                 Vector3 offset = candidate.Position + candidate.AimOffset - eye;
@@ -43,9 +43,9 @@ namespace Unity.MP_FPS
                 }
                 else
                 {
-                    if (ClearSight(root, eye, candidate.Position + Vector3.up * 1.55f, candidate.Entity)) exposed++;
-                    if (ClearSight(root, eye, candidate.Position + Vector3.up * 1.15f, candidate.Entity)) exposed++;
-                    if (ClearSight(root, eye, candidate.Position + Vector3.up * .85f, candidate.Entity)) exposed++;
+                    if (ClearSight(root, eye, candidate.Position + candidate.HeadOffset, candidate.Entity)) exposed++;
+                    if (ClearSight(root, eye, candidate.Position + candidate.AimOffset, candidate.Entity)) exposed++;
+                    if (ClearSight(root, eye, candidate.Position + candidate.HipOffset, candidate.Entity)) exposed++;
                 }
                 if (exposed == 0) continue;
                 if (!brain.Contacts.TryGetValue(candidate.Entity, out var contact))
@@ -79,7 +79,7 @@ namespace Unity.MP_FPS
                 brain.SensorBatch = m_SensorBatch;
                 foreach (var sensor in m_Events)
                 {
-                    if (!EntityManager.Exists(sensor.Source) || !EntityManager.HasComponent<GhostGameObjectLink>(sensor.Source)) continue;
+                    if (!CanObserveOpponent(brain, sensor.Source) || !EntityManager.Exists(sensor.Source) || !EntityManager.HasComponent<GhostGameObjectLink>(sensor.Source)) continue;
                     var source = EntityManager.GetComponentObject<GhostGameObjectLink>(sensor.Source).LinkedInstance;
                     if (source == null || source.transform == root) continue;
                     float distance = Vector3.Distance(eye, sensor.Position);
@@ -127,9 +127,9 @@ namespace Unity.MP_FPS
             foreach (var pair in brain.Contacts)
             {
                 var c = pair.Value;
-                if (!EntityManager.Exists(pair.Key) || !EntityManager.HasComponent<PredictedPlayerGhost>(pair.Key) ||
+                if (!CanObserveOpponent(brain, pair.Key) || !EntityManager.Exists(pair.Key) || !EntityManager.HasComponent<PredictedPlayerGhost>(pair.Key) ||
                     EntityManager.GetComponentData<PredictedPlayerGhost>(pair.Key).CurrentHealth <= 0 ||
-                    now - System.Math.Max(c.LastSeen, c.LastHeard) > m_Tuning.MemorySeconds)
+                    now - System.Math.Max(c.LastReported, System.Math.Max(c.LastSeen, c.LastHeard)) > m_Tuning.MemorySeconds)
                 { brain.ExpiredContacts.Add(pair.Key); continue; }
                 float score = c.Confidence + (c.Visible ? 2 : 0) + (pair.Key == brain.Target ? .15f : 0);
                 score -= Mathf.Min(.4f, Vector3.Distance(eye, c.Position) / 150);
@@ -157,7 +157,7 @@ namespace Unity.MP_FPS
             brain.ObservedVelocity = memory.Velocity;
             brain.AimOffset = memory.AimOffset;
             brain.LastSeenTime = memory.LastSeen;
-            brain.LastHeardTime = memory.LastHeard;
+            brain.LastHeardTime = System.Math.Max(memory.LastHeard, memory.LastReported);
             brain.ContactUncertainty = memory.PositionUncertainty;
             if (wasVisible != brain.Visible) brain.NextDecision = 0;
         }

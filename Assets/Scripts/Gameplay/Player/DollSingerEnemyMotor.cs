@@ -40,7 +40,7 @@ namespace Unity.MP_FPS
             if (searching) move *= checkingCorner ? .45f : .7f;
             if (brain.IsPeeking) move *= .65f;
             if (brain.Action == PmcAction.Scavenge && brain.LootUntil > 0 || brain.ExtractionProgress > 0 ||
-                brain.HealUntil > 0 || searching && now < brain.SearchPauseUntil ||
+                brain.HealUntil > 0 || brain.Interacting || searching && now < brain.SearchPauseUntil ||
                 HorizontalDistance(position, brain.TacticalGoal) <= TacticalArrivalDistance &&
                     Mathf.Abs(position.y - brain.TacticalGoal.y) < .6f) move = Vector3.zero;
 
@@ -56,6 +56,8 @@ namespace Unity.MP_FPS
                 aim.y += .5f * weapon.ProjectileGravity * flight * flight;
             }
             Vector3 facing = hasContact ? aim - eye : move;
+            if (!hasContact && brain.IsClashBot && move.sqrMagnitude < .01f)
+                facing = brain.MissionLookPoint - eye;
             if (searching && brain.SearchFocusValid)
             {
                 Vector3 lookPoint = brain.SearchLookPoint;
@@ -90,15 +92,15 @@ namespace Unity.MP_FPS
                 // AimPoint must follow the imperfect, rate-limited look ray; exact target coordinates would bypass it.
                 AimPoint = eye + direction * Mathf.Max(1, distance) };
             input.SetFlag(PlayerInput.InputFlag.ThirdPerson, true);
-            bool fighting = brain.HealUntil <= 0 && (brain.Action == PmcAction.Engage ||
+            bool fighting = brain.HealUntil <= 0 && !brain.Interacting && (brain.Action == PmcAction.Engage ||
                 brain.Action == PmcAction.HoldAngle || brain.Action == PmcAction.Cover &&
                     brain.IsPeeking && brain.CoverPhase == PmcCoverPhase.Holding);
             input.SetFlag(PlayerInput.InputFlag.Aim, fighting && brain.Visible || checkingCorner);
             input.SetFlag(PlayerInput.InputFlag.Sprint, brain.HealUntil <= 0 && move.sqrMagnitude > .1f &&
                 (brain.Action == PmcAction.Retreat || brain.Action == PmcAction.Flank && !brain.Visible ||
-                    brain.Action == PmcAction.Extract && !hasContact || brain.Action == PmcAction.Cover &&
+                    (brain.Action == PmcAction.Extract || brain.IsClashBot && brain.Leaving) && !hasContact || brain.Action == PmcAction.Cover &&
                     (brain.CoverPhase == PmcCoverPhase.Approaching || brain.CoverPhase == PmcCoverPhase.Returning)));
-            if (brain.HealUntil <= 0 && ShouldReload(brain, health, position, now) && !health.ControllerState.IsReloadingState)
+            if (brain.HealUntil <= 0 && !brain.Interacting && ShouldReload(brain, health, position, now) && !health.ControllerState.IsReloadingState)
             {
                 bool cellReady = weapon != null && PrepareReloadCell(brain.Inventory, weapon.EnergyPerRound);
                 if (cellReady) input.SetFlag(PlayerInput.InputFlag.Reload, true);
@@ -111,7 +113,8 @@ namespace Unity.MP_FPS
             }
             bool firingSolution = fighting && brain.Visible && health.CurrentAmmo > 0 && !health.ControllerState.IsReloadingState &&
                 now - brain.VisibleSince >= m_Tuning.ReactionSeconds && distance < map.EnemySightRange &&
-                Vector3.Angle(direction, facing) < 7 && ClearSight(ghost.transform, eye, brain.LastSeen + brain.AimOffset, brain.Target);
+                Vector3.Angle(direction, facing) < 7 && ClearSight(ghost.transform, eye, brain.LastSeen + brain.AimOffset, brain.Target) &&
+                (!brain.IsClashBot || ClashShotLaneClear(brain, eye, direction, map.EnemySightRange));
             // Do not spend a short peek's entire burst while still reacting or
             // turning toward the contact. The burst starts when the shot is possible.
             if (now >= brain.NextBurst && firingSolution)

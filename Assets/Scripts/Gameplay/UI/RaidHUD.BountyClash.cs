@@ -83,8 +83,9 @@ namespace Unity.MP_FPS
             else BountyClashDarkSightRenderer.Publish(m_ClashCamera, worldView, worldBoost,
                 worldView && m_Clash.Sense.Presence, m_Clash, Time.realtimeSinceStartupAsDouble);
             m_ClashView.Present(m_Clash, position, hasLocal, m_ClashCamera, saving, GameManager.CanUseMainMenu, DarkSightRequested,
-                DarkSightRequested && Mouse.current != null && Mouse.current.rightButton.isPressed);
-            m_ClashView.SetMenuOpen(m_InventoryVisible || GameSettings.Instance.IsPauseMenuOpen);
+                DarkSightRequested && Mouse.current != null && Mouse.current.rightButton.isPressed,
+                hasLocal ? (Vector3)math.mul(m_PlayerQuery.GetSingleton<LocalTransform>().Rotation, math.forward()) : Vector3.forward);
+            m_ClashView.SetMenuOpen(m_InventoryVisible || m_MapOpen || m_MissionDetailsVisible || GameSettings.Instance.IsPauseMenuOpen);
             BountyClashArenaSettings.Active?.PresentObjective(snapshot.Bounty == ClashBountyState.Carried || snapshot.Bounty == ClashBountyState.Extracted ? 1 : snapshot.BanishProgress,
                 snapshot.Bounty == ClashBountyState.Ground, snapshot.BountyPosition);
             return true;
@@ -171,6 +172,7 @@ namespace Unity.MP_FPS
         }
         private void ResetBountyConnection()
         {
+            ResetRaidMap();
             BountyClashDarkSightRenderer.ClearImmediate();
             m_Clash?.StopView();
             if (m_ClashQueryCreated && m_World != null && m_World.IsCreated) m_ClashQuery.Dispose();

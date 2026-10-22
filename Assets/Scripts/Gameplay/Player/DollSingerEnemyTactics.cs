@@ -8,6 +8,7 @@ namespace Unity.MP_FPS
         private const float TacticalArrivalDistance = .75f;
         private void Decide(DollSingerEnemyBrain brain, Vector3 position, PredictedPlayerGhost health, MoonRaidMap map, double now)
         {
+            if (brain.IsClashBot) PlanClashMission(brain, position, health, now);
             bool contact = brain.Target != Unity.Entities.Entity.Null && brain.Confidence > .2f;
             EvaluateDecision(brain, position, health, map, now, out PmcAction best,
                 out float score, out string reason, out bool emergency);
@@ -34,6 +35,9 @@ namespace Unity.MP_FPS
             Vector3 goal = brain.TacticalGoal;
             switch (brain.Action)
             {
+                case PmcAction.ClashObjective:
+                    goal = brain.MissionGoal;
+                    break;
                 case PmcAction.Scavenge:
                     goal = SelectCache(brain, position, map);
                     break;
@@ -85,6 +89,9 @@ namespace Unity.MP_FPS
                     }
                     break;
             }
+            if (brain.IsClashBot && brain.Mission == ClashBotGoal.Escort && brain.Action == PmcAction.Engage &&
+                HorizontalDistance(position, brain.MissionGoal) > 9) goal = brain.MissionGoal;
+            if (brain.IsClashBot && !InsideClashArena(goal)) goal = RecoverClashRoute(brain, position, now);
             brain.TacticalGoal = goal;
         }
 
@@ -125,7 +132,7 @@ namespace Unity.MP_FPS
             {
                 case PmcCoverPhase.Approaching:
                 case PmcCoverPhase.Returning:
-                    if (toCover <= TacticalArrivalDistance)
+                    if (toCover <= TacticalArrivalDistance && Mathf.Abs(position.y - brain.CoverPosition.y) < .6f)
                     {
                         bool relocate = canFight && (brain.CoverPeeks >= 2 ||
                             brain.AvoidCoverUntil > now && HorizontalDistance(brain.CoverPosition, brain.AvoidCoverPosition) < 2);
@@ -159,7 +166,7 @@ namespace Unity.MP_FPS
                     }
                     break;
                 case PmcCoverPhase.Advancing:
-                    if (HorizontalDistance(position, brain.PeekPosition) <= TacticalArrivalDistance)
+                    if (HorizontalDistance(position, brain.PeekPosition) <= TacticalArrivalDistance && Mathf.Abs(position.y - brain.PeekPosition.y) < .6f)
                         SetCoverPhase(brain, PmcCoverPhase.Holding, now + brain.Random.NextFloat(.55f, 1.05f));
                     break;
                 case PmcCoverPhase.Holding:
@@ -263,7 +270,7 @@ namespace Unity.MP_FPS
             away /= distance;
             float best = float.MinValue;
             Vector3 goal = position;
-            int preferredSide = brain.Seed % 2 == 0 ? 1 : -1;
+            int preferredSide = (brain.IsClashBot ? brain.ClashSlot : brain.Seed) % 2 == 0 ? 1 : -1;
             for (int i = 0; i < 6; i++)
             {
                 int side = i % 2 == 0 ? preferredSide : -preferredSide;
@@ -341,7 +348,8 @@ namespace Unity.MP_FPS
                 brain.ProbePath.status != NavMeshPathStatus.PathComplete) return false;
             int count = brain.ProbePath.GetCornersNonAlloc(brain.ProbeCorners);
             for (int i = 1; i < count; i++) length += Vector3.Distance(brain.ProbeCorners[i - 1], brain.ProbeCorners[i]);
-            return count > 0 && count < brain.ProbeCorners.Length;
+            return count > 0 && count < brain.ProbeCorners.Length &&
+                (!brain.IsClashBot || InsideClashArena(goal) && SafeClashRoute(brain.ProbeCorners, count));
         }
 
         private void ChooseCover(DollSingerEnemyBrain brain, Vector3 position, Vector3 threat, double now)
@@ -355,6 +363,8 @@ namespace Unity.MP_FPS
             {
                 Vector3 offset = Quaternion.Euler(0, i * 137.5f + brain.Seed * 43, 0) * Vector3.forward * (3 + i % 4 * 3);
                 if (!NavMesh.SamplePosition(position + offset, out var sample, 2, m_Filter)) continue;
+                if (brain.IsClashBot && (Mathf.Abs(sample.position.y - position.y) > 1.2f ||
+                    brain.FailedGoalUntil > now && HorizontalDistance(sample.position, brain.FailedGoal) < 2)) continue;
                 Vector3 candidate = sample.position;
                 if (brain.AvoidCoverUntil > now && HorizontalDistance(candidate, brain.AvoidCoverPosition) < 3) continue;
                 if (!CoverOccludes(candidate, threat)) continue;

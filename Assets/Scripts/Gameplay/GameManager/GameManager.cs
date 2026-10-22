@@ -169,11 +169,6 @@ namespace Unity.MP_FPS
 
         async Task StartRequestedGameAsync(CreationType creationType)
         {
-            if (creationType == CreationType.Offline && GameSettings.Instance.RequestedMode == RaidGameMode.BountyClash)
-            {
-                ConnectionSettings.Instance.ConnectionError = "Bounty Clash requires online accounts and at least two teams. Choose Expedition for single player.";
-                return;
-            }
             if (!IsHeadless && !PlayerProfileClient.IsLoggedIn)
             {
                 Debug.LogWarning("Sign in before starting a raid.");
@@ -337,6 +332,11 @@ namespace Unity.MP_FPS
                 {
                     server.EntityManager.CreateEntity(typeof(OfflineRaidMode));
                     client.EntityManager.CreateEntity(typeof(OfflineRaidMode));
+                    if (GameSettings.Instance.RequestedMode == RaidGameMode.BountyClash)
+                    {
+                        server.EntityManager.CreateEntity(typeof(ClashSoloMode));
+                        client.EntityManager.CreateEntity(typeof(ClashSoloMode));
+                    }
                 }
             }
 

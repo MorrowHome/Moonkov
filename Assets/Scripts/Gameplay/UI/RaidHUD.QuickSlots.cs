@@ -19,11 +19,12 @@ namespace Unity.MP_FPS
             input.QuickSlotSelection = RaidHUD.RouteQuickSlotSelection;
             input.DarkSightMode = RaidHUD.UsesDarkSightViewKey;
             input.QuickSlotPrimaryUse = RaidHUD.RouteQuickSlotPrimary;
+            input.MeleeAttackInput = RaidHUD.RouteMeleeInput;
         }
         public static void Unbind(DollSingerInput input)
         {
             if (!input) return;
-            input.QuickSlotSelection = null; input.QuickSlotPrimaryUse = null; input.DarkSightMode = null;
+            input.QuickSlotSelection = null; input.QuickSlotPrimaryUse = null; input.DarkSightMode = null; input.MeleeAttackInput = null;
             if (s_Input == input) s_Input = null;
         }
         internal static void ReleasePrimary() { if (s_Input) s_Input.SuppressPrimaryUntilRelease(); }
@@ -63,7 +64,8 @@ namespace Unity.MP_FPS
         private TacticalItemOwnerRpc QuickOwner => TacticalItemsFeedback.LocalOwner.RaidId == m_Snapshot.RaidId ? TacticalItemsFeedback.LocalOwner : default;
         private bool QuickTacticalActionPending => QuickOwner.Remaining > 0 || m_QuickTacticalRequest != 0;
         private bool QuickTacticalCancelPending => m_QuickTacticalRequest != 0 && m_QuickRequestedAction == TacticalItemAction.Cancel;
-        private bool QuickBusy => m_InventoryRequestPending || TimedActionActive || QuickTacticalActionPending;
+        private bool QuickManualBusy => m_InventoryRequestPending || TimedActionActive || QuickTacticalActionPending;
+        private bool QuickBusy => QuickManualBusy || MeleeBusy;
         private RaidInventoryClientState QuickInventory => m_World != null && m_World.IsCreated && !m_InventoryQuery.IsEmptyIgnoreFilter
             ? m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity()) : null;
         private InventoryGraph QuickGraph => QuickInventory is { } inventory && inventory.RaidId == m_Snapshot.RaidId ? inventory.Graph : null;
@@ -127,16 +129,24 @@ namespace Unity.MP_FPS
             m_QuickBindings.Validate(QuickGraph);
             if (number == 0 || !QuickAlive || DarkSightRequested || PointerRequested || GameSettings.Instance.IsPauseMenuOpen ||
                 QuickTyping(m_Root.panel?.focusController.focusedElement as VisualElement)) return 0;
-            if (QuickBusy)
+            if (QuickManualBusy)
             {
                 if (QuickTacticalActionPending && !QuickTacticalCancelPending) SendQuickTactical(TacticalItemAction.Cancel);
                 return 0;
             }
+            CancelMeleeForSelection();
             m_QuickBindings.InitializeWeapons(QuickGraph);
             var item = m_QuickBindings.Select(number - 1, QuickGraph);
             if (item == null) { QuickNotice(m_QuickBindings.Reason); return 0; }
             RaidQuickSlotInput.ReleasePrimary();
-            return QuickSlotBindings.WeaponSlot(QuickGraph, item);
+            int slot = QuickSlotBindings.WeaponSlot(QuickGraph, item);
+            if (slot == MeleeInventory.EquipmentIndex)
+            {
+                if (!SelectMelee(item)) QuickNotice("Melee weapon unavailable. Check equipment.");
+                return 0;
+            }
+            if (slot > 0) SendMelee(MeleeAction.Equip, item.Id, slot);
+            return slot;
         }
         private bool UseQuickSlot(bool pressed)
         {
@@ -222,8 +232,10 @@ namespace Unity.MP_FPS
             TacticalItemsFeedback.SetPresentationBlocked(!m_QuickActive || menu || DarkSightRequested || QuickTyping(m_Root.panel?.focusController.focusedElement as VisualElement));
             m_QuickView.Element.style.display = m_Snapshot.RaidId > 0 ? DisplayStyle.Flex : DisplayStyle.None;
             string status = !m_QuickActive ? "Item use unavailable while inactive or downed." : DarkSightRequested ? "DARK SIGHT / RELEASE V TO USE ITEMS" : QuickTacticalCancelPending ? "Cancellation requested." : owner.Remaining > 0 ?
-                MoonkovLocalization.Format($"USING ITEM / {owner.Remaining:0.0}s · X CANCEL") : QuickBusy ? "Action in progress. X cancels timed actions." :
+                MoonkovLocalization.Format($"USING ITEM / {owner.Remaining:0.0}s · X CANCEL") : QuickManualBusy ? "Action in progress. X cancels timed actions." :
                 Time.unscaledTime < m_QuickStatusUntil ? m_QuickStatus : Time.unscaledTime < m_QuickInteractionHintUntil ? m_QuickInteractionHint : null;
+            string meleeStatus = MeleeCaption();
+            if (meleeStatus != null && m_QuickActive && !DarkSightRequested && !QuickManualBusy) status = meleeStatus;
             if (status == null && !m_InventoryVisible) status = QuickSprintCaption(owner);
             m_QuickView.Element.EnableInClassList("quick-slots-exhausted", m_QuickActive && owner.SprintTracked && owner.SprintExhausted && !m_InventoryVisible);
             m_QuickView.Present(m_QuickBindings, graph, !m_QuickActive || QuickBusy || DarkSightRequested, m_InventoryVisible, status);

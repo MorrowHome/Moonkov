@@ -208,7 +208,7 @@ namespace Unity.MP_FPS
             if (Vector3.Distance(AimPoint, point) > profile.AttackReach * m_Body.Scale + .5f ||
                 !ClearSight(AimPoint + m_Body.Motor.Current.Up * .12f, point, root.transform)) return;
             var health = manager.GetComponentData<PredictedPlayerGhost>(m_Target);
-            float damaged = RaidHealth.Damage(ref health, BodyPart.Chest, profile.Damage, GhostGameObject.GetCurrentTick());
+            float damaged = RaidHealth.CombatDamage(ref health, BodyPart.Chest, profile.Damage, GhostGameObject.GetCurrentTick(), RaidDamageKind.Melee, point);
             manager.SetComponentData(m_Target, health);
             if (damaged > 0) m_Hits++;
             if (health.CurrentHealth <= 0 && manager.HasComponent<GhostOwner>(m_Target))

@@ -272,7 +272,7 @@ namespace Unity.MP_FPS
                 var entity = enemy.ValueRO.InputEntity;
                 var predicted = EntityManager.GetComponentData<PredictedClientInput>(entity);
                 predicted.BeginInputIndex = commands.Length;
-                predicted.InputCount = health.ValueRO.CurrentHealth > 0 && predicted.LastProcessedServerTick != serverTick ? 1 : 0;
+                predicted.InputCount = health.ValueRO.CurrentHealth > 0 && (!health.ValueRO.ClashEnabled || health.ValueRO.ClashCanAct) && predicted.LastProcessedServerTick != serverTick ? 1 : 0;
                 if (predicted.InputCount != 0)
                     commands.Add(new ClientCommandInput { Tick = new NetworkTick(serverTick), PlayerInput = input.ValueRO.Input });
                 predicted.LastProcessedServerTick = serverTick;
@@ -396,7 +396,7 @@ namespace Unity.MP_FPS
                                                 var targetNetworkId = ghostOwnerLookup[hitGhostObject.LinkedEntity]
                                                     .NetworkId;
 
-                                                if (shooterNetworkId == targetNetworkId)
+                                                if (BountyClashDamage.IsSelf(World, hitGhostObject.LinkedEntity, BountyClashDamage.Capture(World, entity)))
                                                 {
                                                     //skip hitting self
                                                     continue;
@@ -405,7 +405,7 @@ namespace Unity.MP_FPS
                                                 var healthBeforeDamage = targetPredictedPlayer.ValueRO.CurrentHealth;
                                                 var hitPlayer = hitGhostObject.GetComponent<PlayerGhost>();
                                                 BountyClashDamage.Apply(World,hitGhostObject.LinkedEntity,BountyClashDamage.Capture(World,entity),
-                                                    RaidHealth.ResolveHit(hitPlayer, hit.collider, hit.point),weaponData.Damage,serverTick,RaidDamageKind.Bullet);
+                                                    RaidHealth.ResolveHit(hitPlayer, hit.collider, hit.point),weaponData.Damage,serverTick,RaidDamageKind.Bullet,(float3)hit.point);
                                                 if (healthBeforeDamage > 0 && ((HaloModule)predictedPlayer.ValueRO.EquippedModules & HaloModule.HitMarker) != 0)
                                                     VisualEffectManager.ServerInstance?.Server_RequestHaloMark(shooterNetworkId, commandInput.Tick.TickIndexForValidTick, hit.point);
 

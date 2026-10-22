@@ -6,7 +6,7 @@ using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS
 {
-    public enum PmcAction { Scavenge, Extract, Investigate, Search, Engage, Cover, Flank, Retreat, Reload, HoldAngle, Heal }
+    public enum PmcAction { Scavenge, Extract, Investigate, Search, Engage, Cover, Flank, Retreat, Reload, HoldAngle, Heal, ClashObjective }
     public enum PmcCoverPhase { Approaching, Settling, Advancing, Holding, Returning }
 
     // Observations are the only way world knowledge enters a brain. Decision code uses
@@ -22,6 +22,7 @@ namespace Unity.MP_FPS
         public float PositionUncertainty = 1;
         public double HearingBiasUntil = -100;
         public bool HadVisualSample;
+        public double LastReported = -100;
     }
 
     public sealed class DollSingerEnemyBrain : IComponentData
@@ -40,6 +41,15 @@ namespace Unity.MP_FPS
         public Vector3 AimOffset = Vector3.up * 1.15f;
         public float Yaw, Pitch, LastHealth = 100, Suppression, Confidence, Aggression, Caution, AimErrorX, AimErrorY;
         public float ExtractionProgress, ActionScore;
+        // A server-assigned identity, never a fabricated transport connection.
+        public int ClashParticipantId, ClashTeamId = -1, ClashEpoch, ClashSlot;
+        public bool IsClashBot => ClashParticipantId > 0;
+        public Vector3 MissionGoal, MissionLookPoint, FailedGoal;
+        public double FailedGoalUntil, NextMission, NextIntent, LastRadio = -100;
+        public int PathFailures, RecoveryAttempts, SelectedExit = -1, RescueTargetId = -1;
+        public uint IntentSequence;
+        public ClashBotGoal Mission;
+        public bool Interacting, MissionUrgent;
         public double NextSense, NextPath, LastSeenTime = -100, VisibleSince, NextProgress, NextDecision, CommitUntil;
         public double NextCover, NextAimError, BurstUntil, NextBurst, SearchUntil, LootUntil, SpawnTime, LastDamage = -100;
         public double LastHeardTime = -100;

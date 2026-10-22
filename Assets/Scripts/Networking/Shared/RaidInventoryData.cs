@@ -143,7 +143,7 @@ namespace Unity.MP_FPS
         public BodyPart MedicalPart;
         public double MedicalUntil;
         public Unity.Mathematics.float3 MedicalOrigin;
-        public uint MedicalDamageTick,MedicalShotTick,MedicalGrenadeTick,MedicalReloadTick,MedicalWeapon;
+        public uint MedicalDamageTick,MedicalShieldHitSequence,MedicalShotTick,MedicalGrenadeTick,MedicalReloadTick,MedicalWeapon;
         public bool NeedsSearch(RaidLootContainers caches,int id) => !SearchedLoot.Contains(id) || caches.RequiresDissection(id);
         public uint DeathBagSequence;
         public double NextDeathBagResync;
@@ -163,7 +163,7 @@ namespace Unity.MP_FPS
             if(error!=InventoryError.None)return error;
             CancelActions(ActionPending ? "原操作已取消：开始治疗；未获取物品或消耗医疗物品。" : null);MedicalItemId=id;MedicalVersion=version;MedicalPart=part==BodyPart.Auto ? RaidHealth.MostInjured(health) : part;
             MedicalOrigin=origin;MedicalUntil=now+System.Math.Max(.1f,seconds);
-            MedicalDamageTick=health.LastHitTick;MedicalShotTick=health.LastShotTick;
+            MedicalDamageTick=health.LastHitTick;MedicalShieldHitSequence=health.ShieldHitSequence;MedicalShotTick=health.LastShotTick;
             MedicalGrenadeTick=health.LastGrenadeShotTick;MedicalReloadTick=health.LastReloadTick;MedicalWeapon=health.EquippedWeaponID;
             LastSentVersion=-1;return InventoryError.None;
         }
@@ -172,7 +172,7 @@ namespace Unity.MP_FPS
             if(MedicalItemId==null)return;
             string reason=!accessible ? "治疗中断：玩家死亡、断线或战局已结束。" :
                 Unity.Mathematics.math.distancesq(position,MedicalOrigin)>.75f*.75f ? "治疗中断：移动超过允许范围。" :
-                health.LastHitTick!=MedicalDamageTick ? "治疗中断：受到伤害。" :
+                health.LastHitTick!=MedicalDamageTick || health.ShieldHitSequence!=MedicalShieldHitSequence ? "治疗中断：受到攻击。" :
                 health.LastShotTick!=MedicalShotTick || health.LastGrenadeShotTick!=MedicalGrenadeTick ? "治疗中断：开火或投掷。" :
                 health.LastReloadTick!=MedicalReloadTick || health.EquippedWeaponID!=MedicalWeapon ? "治疗中断：换弹或切换武器。" : null;
             if(Graph.Version!=MedicalVersion)reason="治疗中断：库存已变化，请重新选择物品。";

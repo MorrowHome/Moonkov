@@ -1,11 +1,21 @@
 # 赏金对决客户端与入口
 
-本文件记录 2026-10-21 本轮实现及验收边界。实际权威规则见 `Docs/Planning/BountyClash-20261021.md`、Shared 协议与服务端；本文不把编译或 UI 样例当作多人闭环证据。用户后续明确取消联机验收（Mac 内存限制）；多人验证不再作为本次交付门禁。
+本文件记录客户端实现及验收边界。2026-10-22 新增正式离线赏金速战；原 2026-10-21 验证记录保留为历史证据，不代表本次 AI/离线结算已经验收。实际权威规则见规划、Shared 协议与服务端；本文不把编译或 UI 样例当作多人闭环证据。用户已取消多客户端联机验收（Mac 内存限制）。
+
+## 2026-10-22 单人赏金速战接入
+
+- 在现有离线资料和模式卡中选择“单人赏金速战”，沿用 `ShowRaidPreparation → CreationType.Offline`、真实离线 profile/token 和独立离线仓库。1 名真人迎战三支双人 AI 小队；死亡掉装，撤离保留战利品，不是临时练习局。
+- 只有本机 Offline 创建流程且所选玩法为 BountyClash 时，才在 Server/Client World 同步创建 `ClashSoloMode`，与原 `OfflineRaidMode` 和 `RaidModeState` 一起供可信本地运行判定。原远征、在线账号入口与模式批准握手不变。
+- 单人 Lobby 读取服务端 `IsSolo` 隐藏建队、邀请码、容量与离队控件；自动单人队伍只需准备。`SoloNavigationReady` 为 false 时禁用准备，`SoloNavigationStatus` 显示玩家可读反馈；`IsBot` 名单行显示“AI 对手”，不把已脱敏的敌方行误报为断线。
+- 真人部署结束后，下一局服从服务端 `CanStartNext`（离线必须真实保存成功），不要求剩余 AI 先结束全局比赛；保存中/重试和请求未确认时仍禁用。离线仓库已存档、战利品保留或损失装备移除的提示只在该批准后出现。下一局沿用仓库中实际配置，缺装时需返回仓库整备。
+- 新增源码的 JSON/UXML 解析、唯一控件名、15 个新增中英键占位符一致及定向 `git diff --check` 已通过。服务端组统一首轮 Editor 编译通过；单人 UI 短窗口已执行 `ApplySoloLocalization.cs`，只精确保存 en/zh/SharedData 三张表并逐项核对 15 键。
+- UI 验证使用一个无 Transport、无持久化的既有 fixture ClientWorld。模式卡真实 `NavigationSubmit` 回调选中通过；旧 800 模式卡截图可读性失败：预览相机 1920 像素被误作 UI 视口，导致 660 宽窗口缩成约 273 像素。源码已改读 `Screen.width/height`，保持原 USS 和样式，等待仅重拍 800/1280 两张模式卡确认。导航等待快照使准备禁用，在线组队区/离队均隐藏。中文 800 准备页保持可滚动名单和固定底部按钮；注入 `Phase=Active, Life=Extracted, CanStartNext=true` 后下一局可用，撤去批准后禁用且显示保存中。该结果证明状态呈现与 UI gating，不证明真实 AI 导航、实战、死亡/撤离结算；实地图由后续统一窗口验证。
+- 截图位于 `Library/BuildValidation/BountyClash/UI/solo-mode-800.png`、`solo-mode-1280.png`、`solo-nav-1280.png`、`solo-ready-800.png`、`solo-finished-800.png`。英文保存中截图出现字体分段捕获伪影，未作为英文视觉通过证据。清理脚本首轮误用 GameView 自定义分辨率索引产生 3 条 `Invalid index` 工具错误，修正后只移除本次 3 个临时尺寸，Console 原记录保留。退出后 MainMenu 单场景 clean、非 Play、World/fixture/验证设备为 0，12 个偏好键差异为 0；两个字体文件 SHA 与用户开始时字节基线完全一致，不在本任务提交内。
 
 ## 入口和部署
 
 - 原月面远征与在线赏金对决通过仓库页和连接页的模式按钮选择。连接方式（单机、Host、Direct、Relay）与玩法分开。
-- 新偏好 `Moonkov.RaidMode` 只记录所选模式，默认远征；离线账号不能进入赏金模式。原存档、原玩法偏好不迁移。
+- 偏好 `Moonkov.RaidMode` 只记录所选模式，默认远征。原存档、原玩法偏好不迁移；离线资料现可通过上面的可信本机入口进入单人赏金速战。
 - Server World / Client World 在加载同一正式 `TheophilusGameScene` 前建立 `RaidModeState`。专用服可用 `-raid-mode bounty-clash`，不读取客户端上次选择作为服务器默认值；UGS 入口使用同一初始化。
 - Join RPC 携带模式与规则版本；客户端只有收到匹配的 Accepted 才完成赏金模式批准。地图表现读同一模式状态。Relay 赏金会话最多 12 人，远征保留原人数设置。
 - 原版个人重部署在赏金模式中停用；下一局只能由服务端 `CanStartNext` 批准。部署失败时单独显示取消/等待返还/已返还，不把未开始战斗误写成装备损失。
@@ -30,7 +40,7 @@
 
 倒地保留同一网络实体与装备，用原角色 Prone 动画/胶囊和收枪呈现；复活从权威姿态恢复。缺失角色时使用中性观战镜头，不显示个人自动复活倒计时。队友标记与示意地图只读取服务器标记的 OwnTeam 行；敌方持有者地图区域由服务端量化。A/B 出口位置和掉落赏金位置均来自快照，未硬编码地图坐标。
 
-## 当前验证边界
+## 2026-10-21 历史验证边界
 
 - JSON / UXML 解析、唯一控件名及 `git diff --check` 已通过。
 - `BountyClashClientChecks.Run()` 已落盘，覆盖真实客户端缓存的消息乱序、非持有者权限、云点过期/松键/epoch 清理、满名单换局、确认与失败反馈、原生 HUD 绑定/Dispose。已在现有 Editor 执行并通过 17 项；追加停止/迟到同序号、耗尽、死亡和 epoch 等 14 项后再次实际通过 31 项。

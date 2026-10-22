@@ -131,10 +131,11 @@ namespace Unity.MP_FPS.Client
             foreach (var pair in m_Slots)
             {
                 var bone = pair.Key == LoadoutSlot.Helmet ? HumanBodyBones.Head : pair.Key == LoadoutSlot.Pistol ? HumanBodyBones.RightUpperLeg
+                    : pair.Key == LoadoutSlot.Melee ? HumanBodyBones.RightLowerArm
                     : pair.Key == LoadoutSlot.Primary ? HumanBodyBones.RightUpperArm : pair.Key == LoadoutSlot.Secondary ? HumanBodyBones.LeftUpperArm : HumanBodyBones.Chest;
                 if (!view.TryGetBodyAnchor(bone, out var world)) continue;
                 Vector2 origin = this.WorldToLocal(world); var rect = pair.Value.worldBound;
-                bool left = pair.Key == LoadoutSlot.Helmet || pair.Key == LoadoutSlot.ChestRig || pair.Key == LoadoutSlot.Pistol;
+                bool left = rect.center.x < worldBound.center.x;
                 Vector2 end = this.WorldToLocal(new Vector2(left ? rect.xMax : rect.xMin, rect.center.y));
                 Vector2 bend = new Vector2(Mathf.Lerp(origin.x, end.x, .6f), origin.y);
                 painter.BeginPath(); painter.MoveTo(origin); painter.LineTo(bend); painter.LineTo(end); painter.Stroke();

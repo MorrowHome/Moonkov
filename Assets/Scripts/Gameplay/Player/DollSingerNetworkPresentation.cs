@@ -26,6 +26,11 @@ namespace Unity.MP_FPS
         private bool m_OwnedAiming, m_HasOwnedAimPoint;
         private Vector3 m_OwnedAimPoint;
         private MoonkovPlayerAudio m_Audio;
+        private DollSingerMeleePresentation m_Melee;
+        private EnergyShieldPresentation m_Protection;
+        private Animator m_PresentationAnimator;
+        public DollSingerMeleePresentation MeleePresentation => m_Melee;
+        public Animator PresentationAnimator => m_PresentationAnimator;
         private uint m_LastShotEffectTick;
         private SoundSystem.SoundInfo m_RifleBodySound, m_RifleSnapSound;
         private SoundSystem.SoundInfo m_WeaponTailSound;
@@ -66,13 +71,13 @@ namespace Unity.MP_FPS
         {
             if (m_Input.LightAdjusting)
             {
-                m_OwnedAiming = m_OwnedAlive && !blocked && !RaidHUD.DarkSightRequested && !RaidHUD.QuickSlotToolSelected && m_Input.LightPreviewAiming;
+                m_OwnedAiming = m_OwnedAlive && !blocked && !(m_Melee && m_Melee.WantsPresentation) && !RaidHUD.DarkSightRequested && !RaidHUD.QuickSlotToolSelected && m_Input.LightPreviewAiming;
                 freeLookOffset = m_FreeLookOffset;
                 return false;
             }
             bool freeLooking = DollSingerLookController.Update(ref look, ref m_FreeLookOffset,
                 ref m_OwnedLean, out m_OwnedViewRotation, m_Input, m_Model, m_View, blocked, Time.deltaTime);
-            m_OwnedAiming = m_OwnedAlive && !blocked && !RaidHUD.DarkSightRequested && !RaidHUD.QuickSlotToolSelected && m_Input.AimHeld && !freeLooking;
+            m_OwnedAiming = m_OwnedAlive && !blocked && !(m_Melee && m_Melee.WantsPresentation) && !RaidHUD.DarkSightRequested && !RaidHUD.QuickSlotToolSelected && m_Input.AimHeld && !freeLooking;
             freeLookOffset = m_FreeLookOffset;
             return freeLooking;
         }
@@ -152,7 +157,7 @@ namespace Unity.MP_FPS
 
         public bool ReadOwnedAimIntent()
         {
-            bool blocked = !m_OwnedAlive || GameSettings.Instance.IsPauseMenuOpen || RaidHUD.GameplayActionsBlocked || RaidHUD.DarkSightRequested || RaidHUD.QuickSlotToolSelected;
+            bool blocked = !m_OwnedAlive || m_Melee && m_Melee.WantsPresentation || GameSettings.Instance.IsPauseMenuOpen || RaidHUD.GameplayActionsBlocked || RaidHUD.DarkSightRequested || RaidHUD.QuickSlotToolSelected;
             var returning = DollSingerLookController.ReturnFreeLook(m_FreeLookOffset, m_Model.m_FreeLookReturnSpeed * Time.deltaTime);
             bool freeLooking = m_View.IsFirstPerson && (m_Input.AltHeld || math.lengthsq(returning) > .01f);
             return m_OwnedAiming = !blocked && (m_Input.LightAdjusting ? m_Input.LightPreviewAiming :
@@ -182,6 +187,23 @@ namespace Unity.MP_FPS
                 m_Input.enabled = false;
                 m_View.gameObject.SetActive(false);
             }
+            if (Role != MultiplayerRole.Server)
+            {
+                m_PresentationAnimator = m_Model.GetComponent<Animator>();
+                m_Melee = m_Model.GetComponent<DollSingerMeleePresentation>();
+                if (!m_Melee) m_Melee = m_Model.gameObject.AddComponent<DollSingerMeleePresentation>();
+                m_Melee.Configure(m_PresentationAnimator, m_View, m_Halo);
+                m_Melee.ResetPresentation();
+                m_Protection = m_Model.GetComponent<EnergyShieldPresentation>();
+                if (!m_Protection) m_Protection = m_Model.gameObject.AddComponent<EnergyShieldPresentation>();
+                m_Protection.ResetPresentation();
+            }
+        }
+
+        // Also available to the owning prediction adapter; confirmation uses the same sequence and timeline.
+        public void PresentMelee(in MeleeViewState state)
+        {
+            if (m_Linked && Role != MultiplayerRole.Server && m_Melee) m_Melee.SetPresentation(state);
         }
 
         public Camera ActivateOwnedView()
@@ -235,7 +257,21 @@ namespace Unity.MP_FPS
             var headLook = new float2(state.YawDegrees, state.PitchDegrees) + state.FreeLookOffset;
             var headRotation = Quaternion.Euler(headLook.y, headLook.x, 0f);
             bool owned = Role == MultiplayerRole.ClientOwned;
-            bool hideWeapon = downed || ghost.ClashDarkSight || owned && (RaidHUD.DarkSightRequested || RaidHUD.QuickSlotToolSelected);
+            if (m_Protection) m_Protection.Present(ghost, owned, owned && m_View.IsFirstPerson, owned ? m_View.camera : null);
+            PresentMelee(new MeleeViewState
+            {
+                Weapon = (MeleeWeaponKind)ghost.MeleeWeapon, AttackWeapon = (MeleeWeaponKind)ghost.MeleeAttackWeapon,
+                Attack = (MeleeAttackKind)ghost.MeleeAttack, Phase = (MeleePhase)ghost.MeleePhase,
+                AttackSequence = ghost.MeleeAttackSequence, CancelSequence = ghost.MeleeCancelSequence,
+                HitSequence = ghost.MeleeHitSequence, ComboIndex = ghost.MeleeCombo, Elapsed = ghost.MeleeElapsed,
+                Epoch = ghost.MeleeEpoch,
+                Alive = ghost.CurrentHealth > 0 && !downed, IsOwner = owned,
+                FirstPerson = owned && m_View.IsFirstPerson, AttackDirection = viewRotation * Vector3.forward,
+                Suppressed = ghost.ClashDarkSight || owned && (RaidHUD.DarkSightRequested || RaidHUD.QuickSlotToolSelected ||
+                    GameSettings.Instance.IsPauseMenuOpen || RaidHUD.GameplayActionsBlocked),
+                HitPoint = (Vector3)ghost.MeleeHitPoint, HitBlocked = ghost.MeleeHitBlocked, Interpolate = true
+            });
+            bool hideWeapon = downed || ghost.ClashDarkSight || m_Melee && m_Melee.OwnsHandPose || owned && (RaidHUD.DarkSightRequested || RaidHUD.QuickSlotToolSelected);
             m_Model.SetNetworkViewPresentation(owned ? m_View.IsFirstPerson : state.FirstPersonView,
                 owned ? m_OwnedViewRotation : headRotation, owned ? m_OwnedLean : state.Lean);
             m_Halo.SetNetworkPresentation(!hideWeapon && (owned ? m_OwnedAiming : state.Aiming),
@@ -323,6 +359,8 @@ namespace Unity.MP_FPS
             GameManager.Instance?.SoundSystem?.Stop(m_WeaponTailSound, .03f);
             m_RifleBodySound = m_RifleSnapSound = m_WeaponTailSound = null;
             m_Linked = false;
+            if (m_Melee) m_Melee.ResetPresentation();
+            if (m_Protection) m_Protection.DisposePresentation();
             m_Halo.OwnedAimIntent = null;
             RaidQuickSlotInput.Unbind(m_Input);
             m_ObstructionView?.Dispose(); m_ObstructionView = null;

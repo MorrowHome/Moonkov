@@ -19,7 +19,7 @@ namespace Unity.MP_FPS.DollSinger
         private readonly List<Camera> stack;
         private readonly Transform[] rightHandBones, leftHandBones;
         private readonly Transform leftIndexTip, rightIndexTip, leftThumbTip, rightThumbTip;
-        private bool reframe = true, wasViewfinder;
+        private bool reframe = true, wasViewfinder, meleeMode;
         private float lastAspect, lastFieldOfView, poseBlend, lastVerticalOffset;
         private Quaternion framedOwnerRotation;
         private Rect safeFrame = Rect.MinMaxRect(.07f, .04f, .93f, .34f);
@@ -112,6 +112,8 @@ namespace Unity.MP_FPS.DollSinger
         public void Present(bool active, float fieldOfView, Camera owner, bool viewfinder, float poseBlend, float verticalOffset = 0)
         {
             if (!Camera) return;
+            if (meleeMode) reframe = true;
+            meleeMode = false;
             float presentationBlend = Mathf.SmoothStep(0f, 1f, poseBlend);
             if (!Mathf.Approximately(this.poseBlend, presentationBlend)) reframe = true;
             this.poseBlend = presentationBlend;
@@ -141,6 +143,7 @@ namespace Unity.MP_FPS.DollSinger
         public void FrameHands(bool force = false)
         {
             if (!Active || !Camera) return;
+            if (meleeMode) return;
             if (wasViewfinder)
             {
                 // Pose first, then zoom with the world. Do not move backwards or
@@ -226,6 +229,16 @@ namespace Unity.MP_FPS.DollSinger
                 Camera.projectionMatrix = blendedProjection;
                 return;
             }
+        }
+
+        public void PresentMelee(bool active, Camera owner, float blend, Vector3 offset)
+        {
+            if (!Camera || !owner) return;
+            Present(active, 75, owner, false, blend);
+            meleeMode = true;
+            Camera.ResetProjectionMatrix();
+            Camera.transform.localRotation = Quaternion.identity;
+            Camera.transform.localPosition = offset * Mathf.SmoothStep(0, 1, blend);
         }
 
         private void CenterViewfinder()

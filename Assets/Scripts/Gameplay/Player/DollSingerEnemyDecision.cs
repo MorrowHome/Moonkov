@@ -19,13 +19,13 @@ namespace Unity.MP_FPS
             bool exhausted = health.CurrentAmmo == 0 && spareAmmo == 0 && !energy;
             bool underThreat = brain.Visible || now - brain.LastDamage < 3 || brain.Suppression > .45f;
             double seenAge = now - brain.LastSeenTime;
-            if (lowHealth || exhausted || brain.LootedCaches >= m_Tuning.DesiredCaches ||
+            if (!brain.IsClashBot && (lowHealth || exhausted || brain.LootedCaches >= m_Tuning.DesiredCaches ||
                 now - brain.SpawnTime > map.RaidDuration * (m_Tuning.DepartureFraction + (brain.Seed % 3 - 1) * .08f))
-                brain.Leaving = true;
+                ) brain.Leaving = true;
 
-            PmcAction choice = brain.Leaving ? PmcAction.Extract : PmcAction.Scavenge;
-            float utility = brain.Leaving ? 45 : 12;
-            string explanation = brain.Leaving ? "bank loot / leave before raid timeout" : "search supplies";
+            PmcAction choice = brain.IsClashBot ? PmcAction.ClashObjective : brain.Leaving ? PmcAction.Extract : PmcAction.Scavenge;
+            float utility = brain.IsClashBot && brain.Mission == ClashBotGoal.Rescue ? 99 : brain.Leaving ? 45 : 12;
+            string explanation = brain.IsClashBot ? "squad mission: " + brain.Mission : brain.Leaving ? "bank loot / leave before raid timeout" : "search supplies";
             void Consider(PmcAction action, float value, string why)
             {
                 if (brain.Action == action) value += 8;
@@ -38,10 +38,12 @@ namespace Unity.MP_FPS
                 if (brain.Visible)
                 {
                     Consider(PmcAction.Engage, 50 + brain.Aggression * 12, "confirmed opponent; deliberate bursts");
+                    if (brain.IsClashBot && !brain.Leaving && brain.Suppression < .3f && HasClashCoveringAlly(brain, now))
+                        Consider(PmcAction.Flank, 78, "partner has a firing window; take the other approach lane");
                     // Finish the chosen angle before reconsidering it; failed paths may abort it.
                     bool flanking = brain.Action == PmcAction.Flank && now - brain.ActionStarted < 6 &&
                         HorizontalDistance(position, brain.TacticalGoal) > 2 && !brain.PathFailed;
-                    if (!brain.Leaving && brain.Suppression < .4f && (flanking ||
+                    if (!brain.Leaving && brain.Suppression < .4f && (!brain.IsClashBot || flanking || HasClashCoveringAlly(brain, now)) && (flanking ||
                         brain.Action == PmcAction.Engage && now >= brain.NextFlank && now - brain.ActionStarted > 5))
                         Consider(PmcAction.Flank, 64 + brain.Aggression * 8, "change the firing angle after an inconclusive duel");
                 }
@@ -63,7 +65,7 @@ namespace Unity.MP_FPS
 
             // Withdrawal stops pursuing stale contacts. A wounded raider can actually leave
             // once sight is broken, instead of being stuck in Retreat until all memory expires.
-            if ((lowHealth || exhausted || brain.Leaving) && underThreat)
+            if ((lowHealth || exhausted || brain.Leaving && (!brain.IsClashBot || brain.Mission != ClashBotGoal.Escort)) && underThreat)
                 Consider(PmcAction.Retreat, 110, "break contact to survive and extract");
             if (health.ControllerState.IsReloadingState || energy && ShouldReload(brain, health, position, now))
                 Consider(PmcAction.Reload, health.CurrentAmmo == 0 ? 98 : 76, "replenish the magazine during a safe opening");
@@ -73,7 +75,7 @@ namespace Unity.MP_FPS
 
             // New confirmed danger must interrupt looting/search, regardless of their commitment.
             bool passive = brain.Action == PmcAction.Scavenge || brain.Action == PmcAction.Extract ||
-                brain.Action == PmcAction.Search || brain.Action == PmcAction.Investigate || brain.Action == PmcAction.Heal;
+                brain.Action == PmcAction.Search || brain.Action == PmcAction.Investigate || brain.Action == PmcAction.Heal || brain.Action == PmcAction.ClashObjective;
             emergency = health.CurrentAmmo == 0 || brain.Suppression > .7f || now - brain.LastDamage < 1 ||
                 brain.Visible && passive || brain.Action == PmcAction.Heal && !SafeToTreat(brain, position, now) ||
                 brain.Action == PmcAction.HoldAngle && seenAge >= m_Tuning.HoldAngleSeconds;
@@ -91,9 +93,26 @@ namespace Unity.MP_FPS
         }
 
         private static bool NeedsHealing(PredictedPlayerGhost health) => health.CurrentHealth > 0 &&
-            health.BodyHealthInitialized && (RaidHealth.DangerFraction(health) < .8f ||
+            health.BodyHealthInitialized && health.TacticalPoisonSeconds <= 0 && SelectTreatment(health) != BodyPart.Auto &&
+            (RaidHealth.DangerFraction(health) < .8f ||
             health.CurrentHealth < health.MaxHealth - 25 || health.LeftLegHealth <= 0 || health.RightLegHealth <= 0 ||
             health.LeftArmHealth <= 0 || health.RightArmHealth <= 0);
+
+        private static BodyPart SelectTreatment(PredictedPlayerGhost health)
+        {
+            if (RaidHealth.CanHeal(health, BodyPart.Head) && health.HeadHealth < RaidHealth.Maximum(health, BodyPart.Head) * .65f) return BodyPart.Head;
+            if (RaidHealth.CanHeal(health, BodyPart.Chest) && health.ChestHealth < RaidHealth.Maximum(health, BodyPart.Chest) * .65f) return BodyPart.Chest;
+            var selected = BodyPart.Auto;float fraction = float.MaxValue;
+            for (int i = 0; i < RaidHealth.PartCount; i++)
+            {
+                var part = (BodyPart)i;
+                if (!RaidHealth.CanHeal(health, part)) continue;
+                float value = RaidHealth.Get(health, part) / RaidHealth.Maximum(health, part);
+                if (value >= fraction) continue;
+                fraction = value;selected = part;
+            }
+            return selected;
+        }
 
         private static InventoryItem FindMedical(InventoryGraph inventory)
         {
@@ -145,8 +164,7 @@ namespace Unity.MP_FPS
             if (now < brain.HealUntil) return;
             // The shared server transaction checks body health, accessibility and inventory
             // version. Nothing is consumed before the treatment timer finishes.
-            BodyPart treatment = health.HeadHealth < RaidHealth.Maximum(BodyPart.Head) * .65f ? BodyPart.Head :
-                health.ChestHealth < RaidHealth.Maximum(BodyPart.Chest) * .65f ? BodyPart.Chest : RaidHealth.MostInjured(health);
+            BodyPart treatment = SelectTreatment(health);
             RaidHealth.UseMedical(ref health, brain.Inventory, brain.HealItemId, brain.HealInventoryVersion, treatment);
             brain.LastHealth = health.CurrentHealth;
             brain.HealUntil = 0;

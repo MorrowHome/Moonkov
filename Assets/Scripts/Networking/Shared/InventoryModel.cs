@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Unity.MP_FPS.Inventory
 {
-    public enum ItemKind { Root, Material, Cell, Helmet, LongGun, Pistol, Rig, Backpack, Medical, Food, Drink, StorageModule, ShapingModule, UtilityModule, Oxygen, Throwable }
+    public enum ItemKind { Root, Material, Cell, Helmet, LongGun, Pistol, Rig, Backpack, Medical, Food, Drink, StorageModule, ShapingModule, UtilityModule, Oxygen, Throwable, Shield, Melee }
     public enum InventoryError { None, Stale, Missing, Invalid, Incompatible, Bounds, Collision, Cycle, Full, Overweight, Inaccessible }
     public enum InventoryOperation { Move, Split, Merge }
 
@@ -40,7 +40,8 @@ namespace Unity.MP_FPS.Inventory
                 new ItemDefinition("equipment", "Equipment", ItemKind.Root, 0, 0, 1, 0,
                     new InventoryRegion("Helmet", 1, 1, ItemKind.Helmet), new InventoryRegion("Primary", 1, 1, ItemKind.LongGun),
                     new InventoryRegion("Secondary", 1, 1, ItemKind.LongGun), new InventoryRegion("Pistol", 1, 1, ItemKind.Pistol),
-                    new InventoryRegion("ChestRig", 1, 1, ItemKind.Rig), new InventoryRegion("Backpack", 1, 1, ItemKind.Backpack)),
+                    new InventoryRegion("ChestRig", 1, 1, ItemKind.Rig), new InventoryRegion("Backpack", 1, 1, ItemKind.Backpack),
+                    new InventoryRegion("Shield", 1, 1, ItemKind.Shield), new InventoryRegion("Melee", 1, 1, ItemKind.Melee)),
                 new ItemDefinition("pockets", "Pockets", ItemKind.Root, 0, 0, 1, 0,
                     new InventoryRegion("1", 1, 1), new InventoryRegion("2", 1, 1), new InventoryRegion("3", 1, 1), new InventoryRegion("4", 1, 1)),
                 new ItemDefinition("loot", "Supply cache", ItemKind.Root, 0, 0, 1, 0, new InventoryRegion("main", 6, 5)),
@@ -84,6 +85,10 @@ namespace Unity.MP_FPS.Inventory
                 new ItemDefinition("quantum_core", "Quantum processor", ItemKind.Material, 2, 1, 1, .4f),
                 new ItemDefinition("black_box", "Survey black box", ItemKind.Material, 2, 2, 1, 1.6f),
                 new ItemDefinition("helmet", "L-01 Flight helmet", ItemKind.Helmet, 2, 2, 1, 1.2f),
+                new ItemDefinition("energy_head_dome", "L-02 Energy seal dome", ItemKind.Helmet, 2, 2, 1, .45f),
+                new ItemDefinition("energy_shield_generator", "S-100 Energy shield generator", ItemKind.Shield, 2, 2, 1, 1.2f),
+                new ItemDefinition("energy_sword", "Energy sword", ItemKind.Melee, 1, 3, 1, 1.8f),
+                new ItemDefinition("dagger", "Dagger", ItemKind.Melee, 1, 2, 1, .35f),
                 new ItemDefinition("rifle", "Halo Rifle", ItemKind.LongGun, 2, 2, 1, 3.2f),
                 new ItemDefinition("compact", "Halo Rifle (Compact)", ItemKind.LongGun, 2, 2, 1, 2.4f),
                 new ItemDefinition("pistol", "Halo Revolver", ItemKind.Pistol, 1, 1, 1, .8f),
@@ -131,6 +136,9 @@ namespace Unity.MP_FPS.Inventory
         // Missing in old saves means full. One partial cell per stack; the rest are full.
         public int CellCharge = -1;
         public bool EmergencySupply;
+        // -1 denotes a new/legacy item, initialized once when first authoritatively bound.
+        // Live resources follow this item through move/drop/loot/reconnect and settlement.
+        public float ShieldCharge = -1, ShieldEnergy = -1, SuitOxygen = -1;
         // Assigned only by the authoritative facility output. Kept through loot/death/return.
         public string MissionWorldId, MissionOperationId;
         public int MissionContentVersion;
@@ -146,6 +154,7 @@ namespace Unity.MP_FPS.Inventory
     {
         public int Version = 1, StashRows = 80, LootRows = 5;
         public int WeaponKitVersion;
+        public int ProtectionKitVersion;
         public int HaloResearchLevel;
         // Bits 0..2: existing biology; bit 3: mooncore fabrication knowledge only.
         public int HaloResearchBranches;
@@ -154,7 +163,7 @@ namespace Unity.MP_FPS.Inventory
         public List<InventoryItem> Items = new List<InventoryItem>();
         public InventoryItem Find(string id) => Items.Find(i => i.Id == id);
         public InventoryGraph Clone() => new InventoryGraph { Version = Version, StashRows = StashRows, LootRows = LootRows, WeaponKitVersion = WeaponKitVersion,
-            HaloResearchLevel = HaloResearchLevel, HaloResearchBranches = HaloResearchBranches, MissionFirsts = MissionFirsts, Items = Items.ConvertAll(i => i.Clone()) };
+            HaloResearchLevel = HaloResearchLevel, HaloResearchBranches = HaloResearchBranches, MissionFirsts = MissionFirsts, ProtectionKitVersion = ProtectionKitVersion, Items = Items.ConvertAll(i => i.Clone()) };
         public int Rows(string parent, InventoryRegion region) => Find(parent)?.Code == "stash" ? StashRows : Find(parent)?.Code == "loot" ? LootRows : region.Height;
         public IEnumerable<InventoryItem> Children(string parent, string region = null) => Items.Where(i => i.Parent == parent && (region == null || i.Region == region));
         public string RootOf(string id)
@@ -309,12 +318,13 @@ namespace Unity.MP_FPS.Inventory
             }
             return InventoryError.None;
         }
+        private static bool ValidProtectionValue(float value) => value == -1 || float.IsFinite(value) && value >= 0 && value <= 100;
         public InventoryError Validate()
         {
             // A world-loot snapshot joins two owners; account/actor graphs keep the
             // original limit. The extra loot root must also fit a maximum-sized drop.
             int limit=Items!=null && Items.Any(i=>i?.Id=="loot") ? InventoryCatalog.MaxItems*2 : InventoryCatalog.MaxItems;
-            if (Version < 1 || HaloResearchLevel < 0 || HaloResearchLevel > 1 || HaloResearchBranches < 0 || HaloResearchBranches > 15 || MissionFirsts < 0 || MissionFirsts > 7 || Items == null || Items.Count > limit || StashRows < 1 || StashRows > 4096 || LootRows < 1 || LootRows > 24) return InventoryError.Invalid;
+            if (Version < 1 || ProtectionKitVersion < 0 || ProtectionKitVersion > 1 || HaloResearchLevel < 0 || HaloResearchLevel > 1 || HaloResearchBranches < 0 || HaloResearchBranches > 15 || MissionFirsts < 0 || MissionFirsts > 7 || Items == null || Items.Count > limit || StashRows < 1 || StashRows > 4096 || LootRows < 1 || LootRows > 24) return InventoryError.Invalid;
             var ids = new HashSet<string>();
             foreach (var item in Items)
             {
@@ -322,6 +332,9 @@ namespace Unity.MP_FPS.Inventory
                 var def = InventoryCatalog.Get(item.Code);
                 if (item.Id == null || !ids.Add(item.Id) || def == null || item.Quantity <= 0 || item.Quantity > def.MaxStack || item.LoadedAmmo < -1 || item.LoadedAmmo > 10000) return InventoryError.Invalid;
                 if (item.CellCharge != -1 && (!BatteryEnergy.IsCell(item) || item.CellCharge < 1 || item.CellCharge > BatteryEnergy.Capacity)) return InventoryError.Invalid;
+                if (!ValidProtectionValue(item.ShieldCharge) || !ValidProtectionValue(item.ShieldEnergy) || !ValidProtectionValue(item.SuitOxygen)) return InventoryError.Invalid;
+                if ((item.ShieldCharge != -1 || item.ShieldEnergy != -1) && item.Code != "energy_shield_generator") return InventoryError.Invalid;
+                if (item.SuitOxygen != -1 && item.Code != "energy_head_dome" && item.Code != "helmet") return InventoryError.Invalid;
                 if (!MissionInventory.ValidSource(item)) return InventoryError.Invalid;
                 if (def.Kind == ItemKind.Root)
                 { if (item.Id != item.Code || item.Parent != null || item.Quantity != 1) return InventoryError.Invalid; }

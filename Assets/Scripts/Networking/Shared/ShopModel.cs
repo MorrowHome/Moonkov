@@ -46,6 +46,8 @@ namespace Unity.MP_FPS.Inventory
             new ShopOffer("concertina_trip_mine", 20, 6),
             new ShopOffer("poison_trip_mine", 18, 6),
             new ShopOffer("ammo_box", 24, 8),
+            new ShopOffer("energy_shield_generator", 48, 16), new ShopOffer("energy_head_dome", 18, 6),
+            new ShopOffer("energy_sword", 72, 24), new ShopOffer("dagger", 8, 2),
             new ShopOffer("energy_gel", 4, 1), new ShopOffer("protein_bar", 6, 2),
             new ShopOffer("electrolyte", 5, 1), new ShopOffer("oxygen_reserve", 12, 4),
             new ShopOffer("scout_rig", 18, 6), new ShopOffer("field_rig", 48, 16),
@@ -59,8 +61,8 @@ namespace Unity.MP_FPS.Inventory
         public static ShopOffer Find(string code) => Offers.FirstOrDefault(o => o.Code == code);
         public static int SaleDust(InventoryItem item, int quantity, int fullPrice) => BatteryEnergy.IsCell(item)
             ? BatteryEnergy.PortionEnergy(item, quantity) * fullPrice / BatteryEnergy.Capacity : quantity * fullPrice;
-        public static bool IsWeapon(string code) => InventoryCatalog.Get(code)?.Kind == ItemKind.LongGun || InventoryCatalog.Get(code)?.Kind == ItemKind.Pistol;
-        public static bool CanClaim(InventoryGraph graph) => graph != null && graph.Find("stash") != null && !graph.Items.Any(i => IsWeapon(i.Code));
+        public static bool IsWeapon(string code) => InventoryCatalog.Get(code)?.Kind == ItemKind.LongGun || InventoryCatalog.Get(code)?.Kind == ItemKind.Pistol || InventoryCatalog.Get(code)?.Kind == ItemKind.Melee;
+        public static bool CanClaim(InventoryGraph graph) => graph != null && graph.Find("stash") != null && !graph.Items.Any(i => InventoryCatalog.Get(i.Code)?.Kind == ItemKind.LongGun || InventoryCatalog.Get(i.Code)?.Kind == ItemKind.Pistol);
     }
     // Prices and item mutations are shared for display/testing; only the backend commits trades.
     public static class ShopRules

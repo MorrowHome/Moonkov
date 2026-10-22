@@ -5,7 +5,7 @@ namespace Unity.MP_FPS.Client
 {
     public enum StashArtKind { None, Dust, Alloy, Cell, Halo, Outfit, Helmet, Rifle, Pistol, ChestRig, Backpack, HaloRifle, HaloRevolver, HaloShotgun, Medical, HaloSniper, Ration, Water, HaloCapacitor, HaloChargeBridge, HaloFocusLens, HaloFanArray, HaloPulseController, HaloHitMarker, OxygenCanister,
         MedicalGel, TraumaKit, EnergyGel, ProteinBar, Electrolyte, OxygenReserve, ScoutRig, FieldRig, SlingPack, CargoPack, CircuitBoard, CopperCoil, CeramicPlate, OpticalSensor, DataDrive, HeliumSample, QuantumCore, BlackBox, AlienMeat, AlienOrgan, AlienTissue,
-        AlienSpider, AlienSnake, AlienCaterpillar, AlienTentacle, AlienCentipede, AlienLeech, AlienSlime, AlienRoots, AlienFaceHugger, EnergyGrenade, MooncoreFragment, MissionArchive, HaloMooncoreRecycler, HaloCicada, HaloTrine, HaloAegis, HaloVesper, HaloThorn, HaloSundown, HaloRondo, HaloTempest, HaloNocturne }
+        AlienSpider, AlienSnake, AlienCaterpillar, AlienTentacle, AlienCentipede, AlienLeech, AlienSlime, AlienRoots, AlienFaceHugger, EnergyGrenade, MooncoreFragment, MissionArchive, HaloMooncoreRecycler, HaloCicada, HaloTrine, HaloAegis, HaloVesper, HaloThorn, HaloSundown, HaloRondo, HaloTempest, HaloNocturne, LifeSupportShroud, ShieldGenerator, EnergySword, CombatKnife }
 
     // Small original vector illustrations, kept sharp at the shared PanelSettings scale.
     [UxmlElement]
@@ -31,10 +31,10 @@ namespace Unity.MP_FPS.Client
             set
             {
                 m_Kind = value; Clear();
-                if (value >= StashArtKind.HaloCicada || value == StashArtKind.HaloRifle || value == StashArtKind.HaloRevolver || value == StashArtKind.HaloShotgun || value == StashArtKind.HaloSniper)
+                if ((value >= StashArtKind.HaloCicada && value <= StashArtKind.HaloNocturne) || value == StashArtKind.HaloRifle || value == StashArtKind.HaloRevolver || value == StashArtKind.HaloShotgun || value == StashArtKind.HaloSniper)
                 {
                     var icon = new Image { image = Resources.Load<Texture2D>("HaloIcons/" +
-                        (value >= StashArtKind.HaloCicada ? new[] { "Cicada", "Trine", "Aegis", "Vesper", "Thorn", "Sundown", "Rondo", "Tempest", "Nocturne" }[(int)value-(int)StashArtKind.HaloCicada] : value == StashArtKind.HaloRifle ? "Rifle" : value == StashArtKind.HaloRevolver ? "Revolver" : value == StashArtKind.HaloSniper ? "Sniper" : "Shotgun")), scaleMode = ScaleMode.ScaleToFit, pickingMode = PickingMode.Ignore };
+                        ((value >= StashArtKind.HaloCicada && value <= StashArtKind.HaloNocturne) ? new[] { "Cicada", "Trine", "Aegis", "Vesper", "Thorn", "Sundown", "Rondo", "Tempest", "Nocturne" }[(int)value-(int)StashArtKind.HaloCicada] : value == StashArtKind.HaloRifle ? "Rifle" : value == StashArtKind.HaloRevolver ? "Revolver" : value == StashArtKind.HaloSniper ? "Sniper" : "Shotgun")), scaleMode = ScaleMode.ScaleToFit, pickingMode = PickingMode.Ignore };
                     icon.style.position = Position.Absolute; icon.style.left = icon.style.right = icon.style.top = icon.style.bottom = 0;
                     Add(icon);
                 }
@@ -52,6 +52,10 @@ namespace Unity.MP_FPS.Client
             m_Origin = new Vector2((contentRect.width - width * m_Scale) * 0.5f, (contentRect.height - height * m_Scale) * 0.5f);
             switch (m_Kind)
             {
+                case StashArtKind.LifeSupportShroud: LifeSupportShroud(); break;
+                case StashArtKind.ShieldGenerator: ShieldGenerator(); break;
+                case StashArtKind.EnergySword: EnergySword(); break;
+                case StashArtKind.CombatKnife: CombatKnife(); break;
                 case StashArtKind.EnergyGrenade: EnergyGrenade(); break;
                 case StashArtKind.Dust: Dust(); break;
                 case StashArtKind.Alloy: Alloy(); break;

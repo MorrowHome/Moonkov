@@ -60,6 +60,20 @@ public struct PredictedPlayerGhost : IComponentData
     [GhostField] public float TacticalWireSeconds, TacticalCoughSeconds, TacticalPoisonSeconds;
     [GhostField] public float TacticalSprintStamina;
     [GhostField] public bool TacticalSprintExhausted;
+    [GhostField] public bool ShieldEquipped, HeadDomeEquipped, ShieldRegenerating;
+    [GhostField(Quantization = 100)] public float ShieldCharge, ShieldEnergy, ShieldRecoveryDelay;
+    [GhostField] public uint ShieldHitSequence, ShieldBreakSequence, ShieldRestoreSequence;
+    [GhostField] public float3 ShieldHitPoint;
+    [GhostField(Quantization = 100)] public float ShieldHitStrength;
+    // Server bindings are item identities, not a second inventory or client authority.
+    public bool ProtectionInitialized;
+    public Unity.Collections.FixedString64Bytes ShieldItem, HeadDomeItem;
+    [GhostField] public byte MeleeWeapon, MeleeAttackWeapon, MeleeAttack, MeleePhase, MeleeCombo, MeleeFeedback;
+    [GhostField] public uint MeleeAttackSequence, MeleeCancelSequence, MeleeHitSequence, MeleeRequestId, MeleeStartTick;
+    [GhostField] public float MeleeElapsed, MeleeRecoveryRemaining, MeleeStamina;
+    [GhostField] public int MeleeEpoch;
+    [GhostField] public float3 MeleeHitPoint;
+    [GhostField] public bool MeleeHitBlocked;
     // Match-server authority. CurrentHealth/MaxHealth are derived compatibility
     // values for death, AI, animation and the compact HUD; never heal them directly.
     [GhostField] public bool BodyHealthInitialized;

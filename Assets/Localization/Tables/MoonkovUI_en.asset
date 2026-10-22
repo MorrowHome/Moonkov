@@ -4516,6 +4516,322 @@ MonoBehaviour:
     m_Localized: DEAD
     m_Metadata:
       m_Items: []
+  - m_Id: 5200020847452160
+    m_Localized: MODE / SOLO BOUNTY CLASH
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5200020851646464
+    m_Localized: SOLO BOUNTY CLASH
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5200020851646465
+    m_Localized: You against three AI duos. One bounty. Death loses equipment; extraction
+      keeps loot in your offline stash.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5200020851646466
+    m_Localized: OFFLINE STASH / Equip your loadout before deploying. No online account
+      or teammates required.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5200020851646467
+    m_Localized: SOLO BOUNTY CLASH / Offline stash. Death loses equipment; extraction
+      keeps loot.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5200020851646468
+    m_Localized: SOLO BOUNTY CLASH / You against three AI duos. Prepare your offline
+      loadout, then deploy.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5200020851646469
+    m_Localized: Choose a game mode, then prepare your loadout.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5200020851646470
+    m_Localized: OFFLINE STASH / You against three AI duos. Death loses equipment;
+      extraction keeps loot. Equip your next loadout in the stash.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5200020851646471
+    m_Localized: Preparing AI opponents...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5200020851646472
+    m_Localized: AI opponents could not be prepared. Return to the stash and try
+      again.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5200020851646473
+    m_Localized: AI OPPONENTS READY / GET READY TO DEPLOY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5200020851646474
+    m_Localized: PARTICIPANTS / {0}/7 / TEAMS / {1}/4
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5200020851646475
+    m_Localized: AI OPPONENT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5200020851646476
+    m_Localized: Offline stash saved. Extracted loot has been retained. Return to
+      the stash to prepare your next loadout.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5200020851646477
+    m_Localized: Offline stash saved. Lost equipment has been removed. Return to
+      the stash to prepare your next loadout.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8447407847960297
+    m_Localized: "HEAD SHROUD"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8551059606794936
+    m_Localized: "SHIELD"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8688000780043220
+    m_Localized: "MELEE"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8718470749948662
+    m_Localized: "S-100 Energy shield generator"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8841075354075051
+    m_Localized: "L-02 Energy seal dome"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8362316013346203
+    m_Localized: "Energy sword"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8019729865799813
+    m_Localized: "Dagger"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8000369052514056
+    m_Localized: "RECHARGE SHIELD"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8244467082551215
+    m_Localized: "Requires an equipped shield with space for energy, and charged cells in pockets or an equipped rig."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8523717733576122
+    m_Localized: "Cannot recharge shield: equip a generator with space for energy and use charged cells from pockets or an equipped rig."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8137871310553760
+    m_Localized: "NEW GENERATOR / INITIAL CHARGE ON FIRST DEPLOYMENT"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8812654312310091
+    m_Localized: "NEW HEAD SHROUD / INITIAL OXYGEN ON FIRST DEPLOYMENT"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8180541670966180
+    m_Localized: "SHIELD {0:0}/100 / ENERGY {1:0}/100"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8715687344128331
+    m_Localized: "HEAD SHROUD O\u2082 / {0:0}%"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8753998678345497
+    m_Localized: "Equip in the shield slot. Absorbs combat damage before health; excess damage passes through. After 6 seconds without a hit, restores 8 shield per second and spends 0.5 energy per shield. Recharge using charged cells in pockets or an equipped rig. Does not block suffocation, hunger or thirst."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8417738011263120
+    m_Localized: "A sealed energy head shroud with a physical oxygen collar. Uses the existing oxygen reserve, canisters and pressurized air. Does not provide ballistic protection or combat shielding."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8515315481831250
+    m_Localized: "Equip in the melee slot and bind to a number key. Left click: light attack. Right click: heavy attack. Attacks use stamina; walls block hits. With no active weapon, fists are the fallback."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8615997764921137
+    m_Localized: "Stored battery energy powers weapon reloading and shield recharging. Move cells to pockets or an equipped rig before use. Recharging the shield consumes only the energy transferred."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8313731242923745
+    m_Localized: "SHIELD / {0:0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8255052589709790
+    m_Localized: "SHIELD / NOT EQUIPPED"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8507499303010004
+    m_Localized: "SHIELD ENERGY / {0:0}%"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8620674966703350
+    m_Localized: "SHIELD BROKEN"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8196068221494556
+    m_Localized: "ENERGY EMPTY / RECHARGE WITH A CELL"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8256239256775131
+    m_Localized: "SHIELD READY"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8033826021919793
+    m_Localized: "RECOVERY IN {0:0.0}s"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8077412363059556
+    m_Localized: "RECHARGING SHIELD"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8419876495620413
+    m_Localized: "SHIELD RECOVERY PAUSED"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8878075719392243
+    m_Localized: "HEAD SHROUD / O\u2082 {0:0}%"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8313137102480501
+    m_Localized: "HEAD SHROUD / NOT EQUIPPED"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8590080620644318
+    m_Localized: "NO HEAD SHROUD / SEEK PRESSURIZED AIR"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8018020561742780
+    m_Localized: "FISTS"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8001947958098664
+    m_Localized: "Melee unavailable. Waiting for connection."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8260918101210417
+    m_Localized: "Melee recovering. Wait before attacking."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8358673089159145
+    m_Localized: "Select the melee weapon again to equip it."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8194025986577612
+    m_Localized: "Melee cancellation requested."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8724721346541593
+    m_Localized: "Equipping melee weapon."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8023114604684020
+    m_Localized: "Melee attack requested."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8861124910979872
+    m_Localized: "HEAVY ATTACK / {0:0.0}s / X CANCEL"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8466595143416267
+    m_Localized: "LIGHT ATTACK / {0:0.0}s / X CANCEL"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8686587964892024
+    m_Localized: "MELEE RECOVERY / {0:0.0}s"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8574656050111539
+    m_Localized: "MELEE {0:0}% / LMB LIGHT / RMB HEAVY"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8035006428540954
+    m_Localized: "Melee interrupted. Recovery continues."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8147048977509897
+    m_Localized: "Not enough combat stamina. Rest before attacking."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8777561372313532
+    m_Localized: "Melee unavailable while inactive or downed."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8482831720200319
+    m_Localized: "Melee state changed. Select the weapon again."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8270073394119642
+    m_Localized: "Melee weapon unavailable. Check equipment."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8233263725820275
+    m_Localized: "REACH {0:0.##} m / LIGHT {1:0} / HEAVY {2:0} / STAMINA {3:0}/{4:0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8801607121311993
+    m_Localized: "[M] MAP"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8867875900740385
+    m_Localized: "TACTICAL MAP"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8343531254318126
+    m_Localized: "CENTER ON ME"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8667515462119955
+    m_Localized: "FULL MAP"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8226943093134031
+    m_Localized: "ZOOM OUT"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8108225914197216
+    m_Localized: "ZOOM IN"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8184416255822692
+    m_Localized: "CLOSE / M"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8578577400435988
+    m_Localized: "SCROLL ZOOM \u00b7 DRAG PAN \u00b7 M / ESC CLOSE"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8069541691968314
+    m_Localized: "ZOOM / {0:0.0}\u00d7"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8433574924465607
+    m_Localized: "EXPEDITION / SCHEMATIC SUPPLY AND EXIT MAP"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8350144503252086
+    m_Localized: "RIVAL BOUNTY / APPROXIMATE AREA ONLY"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8819473735413496
+    m_Localized: "BOUNTY / EXACT LOCATION"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8171746423545565
+    m_Localized: "TARGET / BOUNTY NOT YET AVAILABLE"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8131850705376204
+    m_Localized: "YOU \u00b7 BOUNTY \u00b7 TEAM \u00b7 TARGET \u00b7 A/B EXITS"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8012446143295953
+    m_Localized: "YOU \u00b7 SUPPLIES \u00b7 EXIT"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

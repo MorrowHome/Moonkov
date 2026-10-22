@@ -202,7 +202,7 @@ namespace Unity.MP_FPS
             var manager = GhostGameObject.EntityManager;
             if (!IsLivingHumanoid(manager, target)) return 0;
             var health = manager.GetComponentData<PredictedPlayerGhost>(target);
-            float damaged = RaidHealth.Damage(ref health, part, amount, GhostGameObject.GetCurrentTick());
+            float damaged = RaidHealth.CombatDamage(ref health, part, amount, GhostGameObject.GetCurrentTick(), RaidDamageKind.Melee);
             manager.SetComponentData(target, health);
             if (damaged > 0) m_Hits++;
             if (health.CurrentHealth <= 0 && manager.HasComponent<GhostOwner>(target))

@@ -7,6 +7,8 @@ using Unity.MP_FPS;
 using Unity.MP_FPS.Inventory;
 using Context=Unity.MP_FPS.RaidPersistenceContext;
 
+if(args.Contains("--protection-migration-only")){ProtectionMigrationChecks.Run();return;}
+
 if(args.Contains("--offline-solo-only")){await OfflineSoloChecks.Run(Path.GetFullPath("Library/BuildValidation/OfflineClash"));return;}
 
 int checks=0;void Check(bool ok,string name){if(!ok)throw new Exception(name);checks++;}

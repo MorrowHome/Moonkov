@@ -148,17 +148,8 @@ namespace Unity.MP_FPS
                 float damage = EnergyGrenadeRules.DamageAt(Vector3.Distance(grenade.Position, point));
                 if (damage <= 0 || !EnergyGrenadePhysics.ClearSight(grenade.Scene, grenade.Position, point, root.transform)) continue;
                 float before = health.ValueRO.CurrentHealth;
-                if (!health.ValueRO.BodyHealthInitialized) BountyClashDamage.Apply(World,entity,grenade.Source,BodyPart.Chest,damage,tick,RaidDamageKind.Explosion);
-                else
-                {
-                    // Spread blast damage over living tissue instead of treating every blast as one chest bullet.
-                    for (int p = 0; p < RaidHealth.PartCount; p++)
-                    {
-                        var part = (BodyPart)p;
-                        float share = damage * RaidHealth.Get(health.ValueRO, part) / before;
-                        BountyClashDamage.Apply(World,entity,grenade.Source,part,share,tick,RaidDamageKind.Explosion);
-                    }
-                }
+                // Resolve shielding once, then distribute the residual over living tissue.
+                BountyClashDamage.Apply(World, entity, grenade.Source, BodyPart.Auto, damage, tick, RaidDamageKind.Explosion, (Unity.Mathematics.float3)grenade.Position);
                 health.ValueRW.LastDamageAmount = before - health.ValueRO.CurrentHealth;
                 health.ValueRW.LastHitPart = BodyPart.Auto;
             }

@@ -45,6 +45,7 @@ namespace Unity.MP_FPS
     {
         public readonly int Id;
         public readonly string Account;
+        public readonly bool IsBot;
         public string Name, DeploymentId;
         public int TeamId=-1, Slot, NetworkId, Downs, StartingTeamSize, LastAttacker;
         public bool Ready, Connected=true, Deployed;
@@ -58,7 +59,7 @@ namespace Unity.MP_FPS
         public ClashResult Result;
         public float MaxFraction => Math.Max(0,1-Downs*.25f);
         public bool IsFinished => BountyClashRules.Ended(Life);
-        internal ClashParticipant(int id,string account,string name) { Id=id;Account=account;Name=name; }
+        internal ClashParticipant(int id,string account,string name,bool bot=false) { Id=id;Account=account;Name=name;IsBot=bot; }
     }
     public sealed class ClashTeam
     {
@@ -70,13 +71,15 @@ namespace Unity.MP_FPS
     {
         public readonly string MatchId, TokenId, EventId, CarrierDeploymentId;
         public readonly string[] DeploymentIds;
-        public ClashExtraction(string match,string token,string carrier,string[] deployments)
-        { MatchId=match;TokenId=token;CarrierDeploymentId=carrier;DeploymentIds=(string[])deployments.Clone();EventId=Guid.NewGuid().ToString("D"); }
+        public readonly int CarrierParticipantId;
+        public ClashExtraction(string match,string token,string carrier,string[] deployments,int carrierParticipantId=0)
+        { MatchId=match;TokenId=token;CarrierDeploymentId=carrier;DeploymentIds=(string[])deployments.Clone();EventId=Guid.NewGuid().ToString("D");CarrierParticipantId=carrierParticipantId; }
     }
     public sealed class BountyClashMatch
     {
         public readonly string MatchId=Guid.NewGuid().ToString("D"), TokenId=Guid.NewGuid().ToString("D");
         public readonly int Epoch;
+        public readonly bool IsSolo;
         public readonly ClashArenaDefinition Arena;
         public readonly Dictionary<int,ClashParticipant> Players=new Dictionary<int,ClashParticipant>();
         public readonly Dictionary<int,ClashTeam> Teams=new Dictionary<int,ClashTeam>();
@@ -101,10 +104,10 @@ namespace Unity.MP_FPS
         public bool BanishHealed {get;private set;}
         public int BanishTeam => m_BanishTeam;
         private sealed class Revive { public int Actor,Target; public double Started,Lease; public uint ActorDamage,TargetDamage; }
-        public BountyClashMatch(ClashArenaDefinition arena,int epoch,double now)
+        public BountyClashMatch(ClashArenaDefinition arena,int epoch,double now,bool solo=false)
         {
             if(arena==null || arena.Validate()!=null || epoch<1 || !TimeValid(now)) throw new ArgumentException("Invalid clash arena.");
-            Arena=arena;Epoch=epoch;m_LastTime=now;BountyPosition=arena.Target;
+            Arena=arena;Epoch=epoch;IsSolo=solo;m_LastTime=now;BountyPosition=arena.Target;
             for(int t=0;t<4;t++)for(int e=0;e<2;e++)m_ExitStarted[t,e]=-1;
         }
         private static bool TimeValid(double now)=>!double.IsNaN(now)&&!double.IsInfinity(now)&&now>=0;
@@ -118,8 +121,16 @@ namespace Unity.MP_FPS
                 if(old.Connected || (!old.IsFinished && now>old.DisconnectDeadline)) return null;
                 old.Connected=true;old.DisconnectDeadline=0;Revision++;return old;
             }
+            if(IsSolo&&Players.Values.Any(participant=>!participant.IsBot))return null;
             if(Phase!=ClashPhase.Lobby&&Phase!=ClashPhase.Preparing || Players.Count>=12 || Teams.Count>=4&&Teams.Values.All(t=>t.Members.Count>=t.Capacity))return null;
             var p=new ClashParticipant(m_NextPlayer++,account,name);Players.Add(p.Id,p);m_Accounts.Add(account,p.Id);Revision++;return p;
+        }
+        // Bots have no account identity and can never reconnect through the human account table.
+        public ClashParticipant JoinBot(string name)
+        {
+            if(!IsSolo || !Lobby() || Players.Count>=BountyClashRules.MaxPlayers)return null;
+            var p=new ClashParticipant(m_NextPlayer++,null,name,true);
+            Players.Add(p.Id,p);Revision++;return p;
         }
         public bool Request(ClashParticipant p,uint request,int epoch,string match)
         {
@@ -217,6 +228,14 @@ namespace Unity.MP_FPS
         }
         public void Kill(ClashParticipant p,ClashLife outcome=ClashLife.Dead)
         {if(p.IsFinished)return;p.Life=outcome;Drop(p);m_Revives.Remove(p.Id);Revision++;}
+        // A local solo user may leave a completed personal raid after its receipt saves.
+        // Remaining bots time out without awarding or dropping another kit.
+        public bool EndSoloRound()
+        {
+            if(!IsSolo || !Players.Values.Any(p=>!p.IsBot) || Players.Values.Any(p=>!p.IsBot&&!p.IsFinished))return false;
+            foreach(var p in Players.Values)if(!p.IsFinished)Kill(p,ClashLife.TimedOut);
+            Phase=ClashPhase.Finished;Revision++;return true;
+        }
         private void Drop(ClashParticipant p){if(CarrierId!=p.Id)return;CarrierId=-1;Bounty=ClashBountyState.Ground;BountyPosition=p.Position;}
         public float BanishProgress(double now)=>Bounty==ClashBountyState.Banishing?(float)Math.Min(1,(now-m_BanishAt)/Arena.BanishSeconds):Bounty>=ClashBountyState.Ground?1:0;
         public float BoundaryRemaining(ClashParticipant p,double now)=>p.OutsideSince<0?20:(float)Math.Max(0,20-(now-p.OutsideSince));
@@ -226,11 +245,11 @@ namespace Unity.MP_FPS
         {
             if(!TimeValid(now)||now<m_LastTime)return;double dt=now-m_LastTime;m_LastTime=now;
             if(Lobby()) foreach(var p in Players.Values.ToArray())
-                if(!p.Connected&&now>=p.DisconnectDeadline){LeaveTeam(p);Players.Remove(p.Id);m_Accounts.Remove(p.Account);}
+                if(!p.Connected&&now>=p.DisconnectDeadline){LeaveTeam(p);Players.Remove(p.Id);if(!p.IsBot)m_Accounts.Remove(p.Account);}
             if(Phase==ClashPhase.Preparing)
             {
                 if(!AllReady()){Phase=ClashPhase.Lobby;PrepareDeadline=0;return;}
-                if(now>=PrepareDeadline){Phase=ClashPhase.Deploying;DeploymentDeadline=now+120;foreach(var p in Players.Values){p.DeploymentId=Guid.NewGuid().ToString("D");p.StartingTeamSize=Teams[p.TeamId].Members.Count;}Revision++;}
+                if(now>=PrepareDeadline){Phase=ClashPhase.Deploying;DeploymentDeadline=now+120;foreach(var p in Players.Values){p.DeploymentId=p.IsBot?null:Guid.NewGuid().ToString("D");p.StartingTeamSize=Teams[p.TeamId].Members.Count;}Revision++;}
             }
             if(Phase==ClashPhase.Deploying && (now>=DeploymentDeadline || Players.Values.Any(p=>!p.Connected&&now>=p.DisconnectDeadline)))
             {DeploymentAborted=true;Phase=ClashPhase.Finished;foreach(var p in Players.Values)p.Life=ClashLife.TimedOut;Revision++;return;}
@@ -274,7 +293,7 @@ namespace Unity.MP_FPS
                     if(enemy||downed||m_ExitElapsed[team.Id,exit]<30)continue;
                     var carrier=escaping.FirstOrDefault(p=>p.Id==CarrierId);
                     if(carrier!=null)
-                    {Award=new ClashExtraction(MatchId,TokenId,carrier.DeploymentId,escaping.Select(p=>p.DeploymentId).ToArray());Bounty=ClashBountyState.Extracted;CarrierId=-1;Deadline=Math.Min(Deadline,now+90);}
+                    {Award=new ClashExtraction(MatchId,TokenId,carrier.DeploymentId,escaping.Where(p=>!p.IsBot).Select(p=>p.DeploymentId).ToArray(),carrier.Id);Bounty=ClashBountyState.Extracted;CarrierId=-1;Deadline=Math.Min(Deadline,now+90);}
                     foreach(var p in escaping){p.Life=ClashLife.Extracted;p.Exit=exit;Revision++;}m_ExitStarted[team.Id,exit]=-1;
                 }
             }

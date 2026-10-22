@@ -66,12 +66,14 @@ namespace Unity.MP_FPS
         private int m_PreviousCount = -1;
         private static RaidHUD s_Active;
         public static bool InventoryOpen => s_Active != null && (s_Active.m_InventoryVisible || s_Active.m_MissionDetailsVisible);
-        public static bool PointerRequested => InventoryOpen || (s_Active != null && (s_Active.m_WasSettled || s_Active.m_ClashLobbyPointer));
-        public static bool TimedActionInputActive => s_Active != null && (s_Active.TimedActionActive || s_Active.QuickTacticalActionPending);
+        public static bool PointerRequested => InventoryOpen || MapInputBlocked || (s_Active != null && (s_Active.m_WasSettled || s_Active.m_ClashLobbyPointer));
+        public static bool TimedActionInputActive => s_Active != null && (s_Active.TimedActionActive || s_Active.QuickTacticalActionPending || s_Active.MeleeTimedActionActive);
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetPresentation() => s_Active = null;
         public static bool CloseInventory()
         {
+            if (s_Active != null && (s_Active.m_MapOpen || s_Active.m_MapEscapeFrame == Time.frameCount))
+            { s_Active.CloseRaidMapFromUI(); return true; }
             if (s_Active != null && s_Active.m_MissionDetailsVisible) { s_Active.SetMissionDetails(false); return true; }
             if (!InventoryOpen) return false;
             if (!s_Active.m_HealthSelected && s_Active.m_InventoryView.Escape()) return true;
@@ -117,6 +119,7 @@ namespace Unity.MP_FPS
             m_InventoryTitle=m_Root.Q<Label>(className:"raid-inventory-title");
             m_EquipmentHost = m_Root.Q("raidInventoryHost"); m_HealthHost = m_Root.Q("raidHealthHost");
             m_InventoryView = new Client.ContainerInventoryView(m_EquipmentHost, false, SendInventoryMove, UseMedical, UseConsumable, DropItem);
+            m_InventoryView.ShieldRechargeAvailable = CanRechargeShieldCell;
             m_HealthView = new Client.RaidHealthView(m_HealthHost, TreatPart, ConsumeSupply);
             m_EquipmentTab = m_Root.Q<Button>("raidEquipmentTab"); m_EquipmentTab.clicked += EquipmentTab;
             m_HealthTab = m_Root.Q<Button>("raidHealthTab"); m_HealthTab.clicked += HealthTab;
@@ -142,7 +145,10 @@ namespace Unity.MP_FPS
             MoonkovLocalization.Bind(m_Root);
             InitializeMissions();
             InitializeQuickSlots();
+            InitializeMelee();
             InitializeBountyClash();
+            InitializeProtection();
+            InitializeRaidMap();
         }
 
         private void EquipmentTab() => SelectHealth(false);
@@ -272,6 +278,7 @@ namespace Unity.MP_FPS
         }
         private void SetInventory(bool visible)
         {
+            if (visible) SetRaidMapOpen(false);
             if (visible && m_MissionDetailsVisible) SetMissionDetails(false);
             if(m_InventoryRequestPending && m_Snapshot.Phase==RaidPhase.Active && !visible)
             {
@@ -283,7 +290,7 @@ namespace Unity.MP_FPS
             m_InventoryVisible = visible; m_Inventory.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
             if (visible) { UpdateInventoryView(); if(!m_LootOpenPending && !m_HealthSelected)m_InventoryView.Show(); RefreshHealth(); }
             else m_InventoryView.Suspend();
-            Utils.SetCursorVisible(visible || GameSettings.Instance.IsPauseMenuOpen || m_WasSettled);
+            Utils.SetCursorVisible(visible || m_MapOpen || m_MissionDetailsVisible || GameSettings.Instance.IsPauseMenuOpen || m_WasSettled);
         }
         private void ClosePack() => SetInventory(false);
         private void ResultBack() { m_ResultStep = Mathf.Max(0, m_ResultStep - 1); RenderResult(); }
@@ -329,13 +336,14 @@ namespace Unity.MP_FPS
         {
             bool inGame = GameSettings.Instance.GameState == GlobalGameState.InGame;
             m_Root.style.display = inGame ? DisplayStyle.Flex : DisplayStyle.None;
-            if (!inGame) { m_Minimap.Hide(); PresentQuickSlots(false); HideBountyClash(); return; }
+            if (!inGame) { m_Minimap.Hide(); ResetRaidMap(); PresentMelee(false); PresentQuickSlots(false); PresentProtection(false); HideBountyClash(); return; }
             if (m_World == null || !m_World.IsCreated) InitializeWorld();
-            if (m_World == null || !m_World.IsCreated || m_StateQuery.IsEmptyIgnoreFilter) { m_Minimap.Hide(); PresentQuickSlots(false); HideBountyClash(); return; }
+            if (m_World == null || !m_World.IsCreated || m_StateQuery.IsEmptyIgnoreFilter) { m_Minimap.Hide(); ResetRaidMap(); PresentMelee(false); PresentQuickSlots(false); PresentProtection(false); HideBountyClash(); return; }
             m_Snapshot = m_StateQuery.GetSingleton<RaidClientState>().Snapshot;
             UpdateInventoryView();
             PresentTimedAction();
             bool clash = PresentBountyClash();
+            UpdateRaidMap(clash);
             bool ready = m_Snapshot.RaidId > 0;
             bool settled = ready && m_Snapshot.Phase != RaidPhase.Active;
             if (Keyboard.current != null && Keyboard.current.tabKey.wasPressedThisFrame && ready && !settled && !m_ClashActionsBlocked && !GameSettings.Instance.IsPauseMenuOpen)
@@ -387,19 +395,14 @@ namespace Unity.MP_FPS
             float distance = RaidRules.PickupRange;
             Vector3 position = default;
             bool alive = m_PlayerQuery.HasSingleton<PredictedPlayerGhost>() && m_PlayerQuery.GetSingleton<PredictedPlayerGhost>().CurrentHealth > 0 && !m_ClashActionsBlocked;
+            PresentMelee(alive && ready && !settled);
             PresentQuickSlots(alive && ready && !settled);
-            if (alive && ready && !settled && !clash && !m_InventoryVisible && !GameSettings.Instance.IsPauseMenuOpen)
-            {
-                var local = m_PlayerQuery.GetSingleton<LocalTransform>();
-                var view = Camera.main;
-                Vector3 forward = view ? view.transform.forward : (Vector3)math.mul(local.Rotation, math.forward());
-                m_Minimap.Present(MoonRaidMap.Active, local.Position, forward, m_Snapshot.TakenMask);
-            }
-            else m_Minimap.Hide();
-            UpdateGrenades(alive && ready && !settled && !DarkSightRequested);
+            PresentProtection(alive && ready && !settled && !m_InventoryVisible && !m_MapOpen && !GameSettings.Instance.IsPauseMenuOpen);
+            m_Minimap.Hide(); // Legacy API retained; the M map uses one Painter2D view and no capture camera.
+            UpdateGrenades(alive && ready && !settled && !DarkSightRequested && !MapInputBlocked);
             bool missionControl = UpdateMissions(alive && ready && !settled && !clash);
             bool tacticalInteraction = TryQuickTacticalInteraction(alive && ready && !settled && !DarkSightRequested);
-            if (alive && ready && !settled)
+            if (alive && ready && !settled && !MapInputBlocked)
             {
                 position = m_PlayerQuery.GetSingleton<LocalTransform>().Position;
                 var map = MoonRaidMap.Active;
@@ -437,7 +440,7 @@ namespace Unity.MP_FPS
                 }
             }
             // Input is sampled every frame; presentation text refreshes at 10 Hz.
-            bool interactionVisible = alive && ready && !settled && !m_InventoryVisible && !DarkSightRequested &&
+            bool interactionVisible = alive && ready && !settled && !m_InventoryVisible && !MapInputBlocked && !DarkSightRequested &&
                 !m_InventoryRequestPending && !GameSettings.Instance.IsPauseMenuOpen &&
                 UnityEngine.Cursor.lockState == CursorLockMode.Locked;
             if (!interactionVisible)
@@ -740,10 +743,11 @@ namespace Unity.MP_FPS
             var inventory = m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
             var player = m_PlayerQuery.HasSingleton<PredictedPlayerGhost>() ? m_PlayerQuery.GetSingleton<PredictedPlayerGhost>() : default;
             var definition = Inventory.ConsumableCatalog.Get(item.Code);
+            bool shieldSupply = Inventory.BatteryEnergy.IsCell(item);
             bool oxygenSupply = definition != null && definition.Oxygen > 0;
-            if (!(oxygenSupply ? RaidOxygen.CanRefill(player) : RaidNutrition.CanConsume(player, definition)))
+            if (!(shieldSupply ? CanRechargeShieldCell(item) : oxygenSupply ? RaidOxygen.CanRefill(player) : RaidNutrition.CanConsume(player, definition)))
             {
-                string message = oxygenSupply ? "Cannot refill oxygen: reserve is full or the player is inactive." :
+                string message = shieldSupply ? "Cannot recharge shield: equip a generator with space for energy and use charged cells from pockets or an equipped rig." : oxygenSupply ? "Cannot refill oxygen: reserve is full or the player is inactive." :
                     "Cannot consume: resource is full, stomach capacity is insufficient, or the player is inactive.";
                 m_InventoryView.Present(inventory.Graph, message); m_HealthView.Message(message); return;
             }
@@ -815,7 +819,10 @@ namespace Unity.MP_FPS
 
         private void OnDisable()
         {
+            DisposeRaidMap();
+            DisposeProtection();
             DisposeBountyClash();
+            DisposeMelee();
             DisposeQuickSlots();
             CancelMissionHold();
             RaidMissionSite.Active?.StopPresentation();

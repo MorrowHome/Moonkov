@@ -67,3 +67,5 @@ Console.WriteLine("Bounty Clash pure rules passed: lobby/roster/epoch, shared ti
  m.Disconnect(b,79);Check(m.Join("b","B",79.1)==b&&b.SenseRemaining==left,"reconnect reset personal boost quota");
 }
 Console.WriteLine("Additional official-rule regressions passed: extraction pause/resume/leave reset, personal token quota, base/boost split, reconnect quota.");
+
+SoloRulesChecks.Run();

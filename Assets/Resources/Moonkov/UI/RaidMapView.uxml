@@ -1,0 +1,21 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="RaidMapView.uss" />
+    <ui:Label name="raidMapHint" text="[M] MAP" class="raid-map-hint" picking-mode="Ignore" />
+    <ui:VisualElement name="raidMapOverlay" class="raid-map-overlay archive-ui moonkov-controls">
+        <ui:VisualElement name="raidMapWindow" class="raid-map-window">
+            <ui:Label text="TACTICAL MAP" class="raid-map-title" picking-mode="Ignore" />
+            <ui:Label name="raidMapStatus" class="raid-map-copy" picking-mode="Ignore" />
+            <ui:VisualElement name="raidMapCanvasHost" class="raid-map-canvas-host" />
+            <ui:VisualElement class="raid-map-controls">
+                <ui:Button name="raidMapCenter" text="CENTER ON ME" class="terminal-button" />
+                <ui:Button name="raidMapFull" text="FULL MAP" class="terminal-button" />
+                <ui:Button name="raidMapZoomOut" text="−" tooltip="ZOOM OUT" class="terminal-button raid-map-zoom-button" />
+                <ui:Label name="raidMapZoom" class="raid-map-copy" picking-mode="Ignore" />
+                <ui:Button name="raidMapZoomIn" text="+" tooltip="ZOOM IN" class="terminal-button raid-map-zoom-button" />
+                <ui:Button name="raidMapClose" text="CLOSE / M" class="terminal-button" />
+            </ui:VisualElement>
+            <ui:Label name="raidMapLegend" class="raid-map-copy" picking-mode="Ignore" />
+            <ui:Label text="SCROLL ZOOM · DRAG PAN · M / ESC CLOSE" class="raid-map-copy" picking-mode="Ignore" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -72,11 +72,12 @@ namespace Unity.MP_FPS
         private void SetMissionDetails(bool visible)
         {
             if (m_MissionDetails == null) return;
+            if (visible) SetRaidMapOpen(false);
             CancelMissionHold();
             m_MissionDetailsVisible = visible;
             if (!visible) { m_Root.Q("missionControls")?.Clear(); m_MissionConfiguring = false; }
             m_MissionDetails.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
-            Utils.SetCursorVisible(visible || m_InventoryVisible || m_WasSettled || GameSettings.Instance.IsPauseMenuOpen);
+            Utils.SetCursorVisible(visible || m_MapOpen || m_InventoryVisible || m_WasSettled || GameSettings.Instance.IsPauseMenuOpen);
             if (visible) m_Root.Q<Button>("missionClose").Focus();
         }
 
@@ -128,7 +129,7 @@ namespace Unity.MP_FPS
             UpdateMissionMarker(live && m_MissionPinned && !m_InventoryVisible && !m_MissionDetailsVisible && !GameSettings.Instance.IsPauseMenuOpen);
             if (Keyboard.current != null && Keyboard.current.jKey.wasPressedThisFrame && live && !m_InventoryVisible && !GameSettings.Instance.IsPauseMenuOpen)
                 SetMissionDetails(!m_MissionDetailsVisible);
-            if (!live || m_InventoryVisible || m_MissionDetailsVisible || GameSettings.Instance.IsPauseMenuOpen || UnityEngine.Cursor.lockState != CursorLockMode.Locked)
+            if (!live || MapInputBlocked || m_InventoryVisible || m_MissionDetailsVisible || GameSettings.Instance.IsPauseMenuOpen || UnityEngine.Cursor.lockState != CursorLockMode.Locked)
             {
                 CancelMissionHold(); m_MissionInteraction.style.display = DisplayStyle.None;
                 if (!live && m_MissionDetailsVisible) SetMissionDetails(false);

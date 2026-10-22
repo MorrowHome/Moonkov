@@ -125,6 +125,7 @@ namespace Unity.MP_FPS
         {
             var session = SystemAPI.GetComponentRW<RaidSession>(connection);
             var persistence = Persistence(ref state);
+            UpdateInventoryProtection(ref state,connection);
             // Commit ownership transfer exactly once, while the dead entity still has a
             // transform. Keep loss totals in RaidSession for the result screen only.
             if(outcome==RaidPhase.Dead && session.ValueRO.Phase==RaidPhase.Active && MoonRaidMap.Active!=null)

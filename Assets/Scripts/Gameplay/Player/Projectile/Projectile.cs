@@ -269,7 +269,7 @@ namespace Unity.MP_FPS
             }
             else if (GhostGameObject.TryFindGhostGameObject(hit.collider.gameObject, out var target))
                 damageFlags = Damage(target, players, owners,
-                    RaidHealth.ResolveHit(target.GetComponent<PlayerGhost>(), hit.collider, hit.point));
+                    RaidHealth.ResolveHit(target.GetComponent<PlayerGhost>(), hit.collider, hit.point), hit.point);
             if (damageFlags != 0 && ((HaloModule)m_Data.ModuleMask & HaloModule.HitMarker) != 0)
                 VisualEffectManager.ServerInstance?.Server_RequestHaloMark(m_Data.OwnerNetworkId, m_Data.SpawnTick, hit.point);
             if (DollSingerWeapons.IsHalo(m_Data.WeaponID))
@@ -285,7 +285,7 @@ namespace Unity.MP_FPS
                     Quaternion.LookRotation(hit.normal.sqrMagnitude > .001f ? hit.normal : Vector3.up), GhostGameObject.GenerateRandomHash());
         }
 
-        private byte Damage(GhostGameObject target, ComponentLookup<PredictedPlayerGhost> players, ComponentLookup<GhostOwner> owners, BodyPart part)
+        private byte Damage(GhostGameObject target, ComponentLookup<PredictedPlayerGhost> players, ComponentLookup<GhostOwner> owners, BodyPart part, Vector3 impactPoint)
         {
             if (target.World != GhostGameObject.World || !players.HasComponent(target.LinkedEntity)) return 0;
             bool hasOwner = owners.HasComponent(target.LinkedEntity);
@@ -293,7 +293,7 @@ namespace Unity.MP_FPS
             if (BountyClashDamage.IsSelf(GhostGameObject.World,target.LinkedEntity,m_Data.DamageSource)) return 0;
             var player = players.GetRefRW(target.LinkedEntity);
             if (player.ValueRO.CurrentHealth <= 0 || m_Weapon.Damage <= 0) return 0;
-            BountyClashDamage.Apply(GhostGameObject.World,target.LinkedEntity,m_Data.DamageSource,part,m_Weapon.Damage,GhostGameObject.GetCurrentTick(),RaidDamageKind.Bullet);
+            BountyClashDamage.Apply(GhostGameObject.World,target.LinkedEntity,m_Data.DamageSource,part,m_Weapon.Damage,GhostGameObject.GetCurrentTick(),RaidDamageKind.Bullet,(Unity.Mathematics.float3)impactPoint);
             return (byte)(player.ValueRO.CurrentHealth <= 0 ? 3 : 1);
         }
     }

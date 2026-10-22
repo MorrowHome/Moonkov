@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.MP_FPS.DollSinger;
 using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS.Client
@@ -8,6 +9,8 @@ namespace Unity.MP_FPS.Client
         public static string Effect(string code)
         {
             if (code == EnergyGrenadeRules.Code) return MoonkovLocalization.Text("3s FUSE / 6m BLAST / UP TO 480 DAMAGE");
+            if (MeleeRules.TryDefinition(MeleeInventory.Kind(code), out var melee))
+                return MoonkovLocalization.Format($"REACH {melee.Reach:0.##} m / LIGHT {melee.LightDamage:0} / HEAVY {melee.HeavyDamage:0} / STAMINA {melee.LightCost:0}/{melee.HeavyCost:0}");
             float restore = ConsumableCatalog.MedicalRestore(code);
             if (restore > 0) return MoonkovLocalization.Format($"RESTORE UP TO {restore:0} HP");
             var supply = ConsumableCatalog.Get(code);
@@ -31,6 +34,20 @@ namespace Unity.MP_FPS.Client
             if (supply == null) return "";
             string action = supply.Oxygen > 0 ? "REFILL SUIT" : supply.Food ? "EAT" : "DRINK";
             return MoonkovLocalization.Text(action) + " / " + Effect(code);
+        }
+
+        public static string ItemState(InventoryItem item)
+        {
+            if (item == null) return "";
+            if (item.Code == "energy_shield_generator")
+            {
+                if (item.ShieldCharge < 0 || item.ShieldEnergy < 0) return MoonkovLocalization.Text("NEW GENERATOR / INITIAL CHARGE ON FIRST DEPLOYMENT");
+                return MoonkovLocalization.Format($"SHIELD {item.ShieldCharge:0}/100 / ENERGY {item.ShieldEnergy:0}/100");
+            }
+            if (item.Code == "energy_head_dome" || item.Code == "helmet")
+                return item.SuitOxygen < 0 ? MoonkovLocalization.Text("NEW HEAD SHROUD / INITIAL OXYGEN ON FIRST DEPLOYMENT")
+                    : MoonkovLocalization.Format($"HEAD SHROUD O₂ / {item.SuitOxygen:0}%");
+            return "";
         }
 
         public static string Details(string code)
@@ -64,6 +81,10 @@ namespace Unity.MP_FPS.Client
             string description;
             switch (code)
             {
+                case "energy_shield_generator": description = "Equip in the shield slot. Absorbs combat damage before health; excess damage passes through. After 6 seconds without a hit, restores 8 shield per second and spends 0.5 energy per shield. Recharge using charged cells in pockets or an equipped rig. Does not block suffocation, hunger or thirst."; break;
+                case "energy_head_dome": case "helmet": description = "A sealed energy head shroud with a physical oxygen collar. Uses the existing oxygen reserve, canisters and pressurized air. Does not provide ballistic protection or combat shielding."; break;
+                case "energy_sword": case "dagger": description = "Equip in the melee slot and bind to a number key. Left click: light attack. Right click: heavy attack. Attacks use stamina; walls block hits. With no active weapon, fists are the fallback."; break;
+                case "cells": description = "Stored battery energy powers weapon reloading and shield recharging. Move cells to pockets or an equipped rig before use. Recharging the shield consumes only the energy transferred."; break;
                 case "vitality_shot": description = "Inject for 3 seconds to fill surviving body parts to their current recoverable health limit. Does not revive destroyed parts or restore health lost to Bounty Clash downs."; break;
                 case "stamina_shot": description = "Inject for 3 seconds to prevent sprint fatigue for 420 seconds. Does not refill hunger, thirst or oxygen, or heal injured legs."; break;
                 case "antidote_shot": description = "Inject for 3 seconds to clear poison and gain 600 seconds of immunity to tactical poison clouds. Does not prevent other damage."; break;

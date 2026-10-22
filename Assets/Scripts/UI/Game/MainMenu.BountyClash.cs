@@ -27,12 +27,14 @@ namespace Unity.MP_FPS.Client
         private void RefreshModePicker()
         {
             bool clash = GameSettings.Instance.RequestedMode == RaidGameMode.BountyClash;
-            m_ModePicker.Present(clash, PlayerProfileClient.IsOffline);
-            if (m_ModeHint != null) MoonkovLocalization.Set(m_ModeHint, clash && PlayerProfileClient.IsOffline
-                ? "Online mode selected. Choose Expedition for single player."
+            bool offline = PlayerProfileClient.IsOffline;
+            m_ModePicker.Present(clash, offline);
+            if (m_ModeHint != null) MoonkovLocalization.Set(m_ModeHint, clash && offline
+                ? "SOLO BOUNTY CLASH / Offline stash. Death loses equipment; extraction keeps loot."
                 : "Choose the game mode, then choose how to connect.");
             MoonkovLocalization.Set(m_ModeStatus, ConnectionSettings.Instance.ConnectionError ?? (clash
-                ? "Online Bounty Clash / waiting for server confirmation. At least two teams must be ready."
+                ? offline ? "SOLO BOUNTY CLASH / You against three AI duos. Prepare your offline loadout, then deploy."
+                    : "Online Bounty Clash / waiting for server confirmation. At least two teams must be ready."
                 : "Original expedition rules. Connection method does not change the game mode."));
         }
         private void DisposeBountyModeUI()

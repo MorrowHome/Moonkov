@@ -132,7 +132,9 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     private Transform rightUpperArm;
     private Transform rightForearm;
     private Transform rightHand;
-    public bool OwnsHandPose => isActiveAndEnabled && visualWeapon != HaloWeapon.None && (wantsAim || aimBlend > .001f);
+    public bool ExternalHandPoseActive { get; set; }
+    public void PrepareExternalHandPose() => bakedGestures?.RestoreBeforeAnimation();
+    public bool OwnsHandPose => isActiveAndEnabled && (ExternalHandPoseActive || visualWeapon != HaloWeapon.None && (wantsAim || aimBlend > .001f));
     private int aimLayerIndex = -1;
     private float aimBlend;
     private HaloBoltPool boltPool;
@@ -308,6 +310,14 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     }
 
     private void Update() {
+        if (ExternalHandPoseActive)
+        {
+            wantsAim = false; aimBlend = 0;
+            if (aimLayerIndex >= 0) animator.SetLayerWeight(aimLayerIndex, 0);
+            if (hasAimBlendParameter) animator.SetFloat(AimBlendId, 0);
+            if (view) { view.SetAimBlend(0); view.SetWeaponAimMagnification(1); }
+            return;
+        }
         if (networkControlled && OwnedAimIntent != null) networkAiming = OwnedAimIntent();
         if (aimBlend > 0 || wantsAim) bakedGestures?.RestoreBeforeAnimation();
         if (discharge) discharge.Step(Time.deltaTime);
@@ -464,6 +474,10 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
     }
 
     private void LateUpdate() {
+        // A single complete-chain sampler owns the arms. Skirt IK also observes OwnsHandPose.
+        if (ExternalHandPoseActive)
+        { if (haloVisual) haloVisual.gameObject.SetActive(false); return; }
+        if (haloVisual && visualWeapon != HaloWeapon.None) haloVisual.gameObject.SetActive(true);
         if (!haloVisual || !head || visualWeapon == HaloWeapon.None)
         { if (view) view.SetGestureHandsActive(false); return; }
         ApplyBakedGestures();

@@ -43,6 +43,7 @@ namespace Unity.MP_FPS.Client
         private string m_HoveredItemId;
         public InventoryItem QuickSlotCandidate => m_Graph?.Find(m_HoveredItemId) ?? m_Graph?.Find(m_SelectedItemId);
         public Func<InventoryItem, Vector2, bool> QuickSlotDrop { get; set; }
+        public Func<InventoryItem, bool> ShieldRechargeAvailable { get; set; }
         public Action<InventoryItem, Vector2> QuickSlotDragPreview { get; set; }
         public void SetReadOnly(string reason)
         {
@@ -70,7 +71,7 @@ namespace Unity.MP_FPS.Client
             m_CharacterPane = m_Root.Q<VisualElement>("characterPane");
             m_CharacterStage = m_Root.Q<VisualElement>("characterStage");
             var guides = new StashEquipmentGuides(() => m_Character, m_Slots); m_CharacterStage.Insert(0, guides);
-            string[] slots = { "Helmet", "ChestRig", "Pistol", "Backpack", "Primary", "Secondary" };
+            string[] slots = { "Helmet", "Shield", "ChestRig", "Pistol", "Backpack", "Primary", "Secondary", "Melee" };
             for (int n = 0; n < slots.Length; n++)
             {
                 string slot = slots[n];
@@ -101,7 +102,7 @@ namespace Unity.MP_FPS.Client
         }
         private static Label Text(VisualElement parent, string text, string css)
         { var label = new Label { pickingMode=PickingMode.Ignore }; label.AddToClassList(css); parent.Add(label); MoonkovLocalization.Set(label, text); return label; }
-        private static string SlotLabel(string slot) => slot == "ChestRig" ? "CHEST RIG" : slot == "Primary" ? "PRIMARY" : slot == "Secondary" ? "SECONDARY" : slot.ToUpperInvariant();
+        private static string SlotLabel(string slot) => slot == "Helmet" ? "HEAD SHROUD" : slot == "Shield" ? "SHIELD" : slot == "Melee" ? "MELEE" : slot == "ChestRig" ? "CHEST RIG" : slot == "Primary" ? "PRIMARY" : slot == "Secondary" ? "SECONDARY" : slot.ToUpperInvariant();
         public static StashArtKind Art(string code)
         {
             int organ=System.Array.FindIndex(AlienBiology.Organs,o=>o.Code==code);
@@ -110,6 +111,10 @@ namespace Unity.MP_FPS.Client
                 case "alien_raw_meat":return StashArtKind.AlienMeat;
                 case "alien_neural_core":case "alien_core":return StashArtKind.AlienOrgan;
                 case "alien_tissue":return StashArtKind.AlienTissue;
+                case "energy_head_dome":return StashArtKind.LifeSupportShroud;
+                case "energy_shield_generator":return StashArtKind.ShieldGenerator;
+                case "energy_sword":return StashArtKind.EnergySword;
+                case "dagger":return StashArtKind.CombatKnife;
                 case "helmet":return StashArtKind.Helmet; case "rifle":case "compact":return StashArtKind.HaloRifle; case "pistol":return StashArtKind.HaloRevolver;
                 case "ration":return StashArtKind.Ration; case "water":return StashArtKind.Water;
                 case "energy_grenade":return StashArtKind.EnergyGrenade;
@@ -184,6 +189,7 @@ namespace Unity.MP_FPS.Client
                 var item = m_Graph?.Equipped(pair.Key.ToString()); var button = pair.Value; var art = button.Q<VisualElement>("art"); art.Clear();
                 MoonkovLocalization.Set(button.Q<Label>("item"), m_Graph == null ? "LOADING" : item == null ? "EMPTY" : InventoryCatalog.Get(item.Code).Name);
                 if (item != null) { var icon = new StashItemArt(Art(item.Code)); icon.AddToClassList("inventory-equipment-icon"); art.Add(icon); m_Tiles[item.Id] = button; }
+                button.tooltip = MoonkovLocalization.Text(SlotLabel(pair.Key.ToString())) + " / " + (item == null ? MoonkovLocalization.Text("EMPTY") : MoonkovLocalization.Text(InventoryCatalog.Get(item.Code).Name) + "\n" + MoonkovItemPresentation.ItemState(item));
                 button.EnableInClassList("inventory-equipped", item != null);
                 button.EnableInClassList("inventory-selected", item != null && item.Id == m_SelectedItemId);
             }
@@ -236,6 +242,8 @@ namespace Unity.MP_FPS.Client
                     tile.EnableInClassList("inventory-selected", entry.Id == m_SelectedItemId);
                     tile.tooltip=MoonkovLocalization.Text(itemDef.Name) + " / " + entry.Quantity + MoonkovLocalization.Text(entry.FoundInRaid ? " / FOUND IN RAID" : " / BROUGHT IN");
                     tile.tooltip += "\n" + MoonkovItemPresentation.Details(entry.Code);
+                    string state = MoonkovItemPresentation.ItemState(entry);
+                    if (!string.IsNullOrEmpty(state)) tile.tooltip += "\n" + state;
                     if (HaloModules.IsWeapon(entry.Code)) tile.tooltip += " / " + HaloModules.Summary(m_Graph, entry);
                     if (HaloModules.FromCode(entry.Code) != HaloModule.None) tile.tooltip += " / " + MoonkovLocalization.Text(HaloModules.Description(entry.Code));
                     if (BatteryEnergy.IsCell(entry)) tile.tooltip += MoonkovLocalization.Format($" / {BatteryEnergy.Stored(entry)}/{entry.Quantity * BatteryEnergy.Capacity} ENERGY");
@@ -303,6 +311,16 @@ namespace Unity.MP_FPS.Client
         private void Context(InventoryItem item, Vector2 position)
         {
             var window=m_Windows.Open(InventoryCatalog.Get(item.Code).Name, m_Root.WorldToLocal(position), true);
+            if (!m_Stash && m_UseConsumable != null && BatteryEnergy.IsCell(item))
+            {
+                var recharge = MoonkovTerminal.ActionButton(window, "RECHARGE SHIELD", () =>
+                {
+                    if (m_Busy || m_ReadOnlyReason != null || !(ShieldRechargeAvailable?.Invoke(item) ?? false)) return;
+                    m_Windows.Close(window); m_Busy = true; m_UseConsumable(item);
+                });
+                recharge.SetEnabled(!m_Busy && m_ReadOnlyReason == null && (ShieldRechargeAvailable?.Invoke(item) ?? false));
+                recharge.tooltip = MoonkovLocalization.Text("Requires an equipped shield with space for energy, and charged cells in pockets or an equipped rig.");
+            }
             if (m_UseConsumable != null && m_Graph.ConsumableAccessible(item))
                 MoonkovTerminal.ActionButton(window, MoonkovItemPresentation.UseAction(item.Code), () =>
                 {
@@ -344,7 +362,7 @@ namespace Unity.MP_FPS.Client
             MoonkovLocalization.Set(content.Q<Label>("inspectionTitle"), definition.Name);
             MoonkovLocalization.Set(content.Q<Label>("inspectionStats"), "{0} · ×{1} · {2:0.##} KG TOTAL · {3} · {4}",
                 definition.Name, item.Quantity, definition.Weight * item.Quantity, Path(item.Parent), definition.Width + " × " + definition.Height);
-            MoonkovLocalization.Set(content.Q<Label>("inspectionDetail"), MoonkovItemPresentation.Details(item.Code));
+            MoonkovLocalization.Set(content.Q<Label>("inspectionDetail"), MoonkovItemPresentation.Details(item.Code) + "\n" + MoonkovItemPresentation.ItemState(item));
             var actions = content.Q("inspectionActions");
             var transfer = MoonkovTerminal.ActionButton(actions, "QUICK TRANSFER", () => { m_Windows.Close(window); QuickTransfer(item); });
             transfer.SetEnabled(!m_Busy && m_ReadOnlyReason == null);

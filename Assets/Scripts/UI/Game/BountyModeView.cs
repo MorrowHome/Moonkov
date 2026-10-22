@@ -45,12 +45,16 @@ namespace Unity.MP_FPS.Client
         {
             RefreshViewport();
             m_ClashSelected = clash; m_Offline = offline;
-            foreach (var entry in m_Entries) MoonkovLocalization.Set(entry, clash ? "MODE / BOUNTY CLASH" : "MODE / EXPEDITION");
+            foreach (var entry in m_Entries) MoonkovLocalization.Set(entry, clash ? offline ? "MODE / SOLO BOUNTY CLASH" : "MODE / BOUNTY CLASH" : "MODE / EXPEDITION");
             m_Expedition.EnableInClassList("bounty-mode-selected", !clash);
             m_Clash.EnableInClassList("bounty-mode-selected", clash);
-            m_Clash.SetEnabled(!offline);
+            m_Clash.SetEnabled(!offline || PlayerProfileClient.SupportsSinglePlayer);
+            MoonkovLocalization.Set(m_Clash.Q<Label>(className: "bounty-mode-card-title"), offline ? "SOLO BOUNTY CLASH" : "BOUNTY CLASH");
+            MoonkovLocalization.Set(m_Clash.Q<Label>(className: "bounty-mode-card-copy"), offline
+                ? "You against three AI duos. One bounty. Death loses equipment; extraction keeps loot in your offline stash."
+                : "15 minutes. One target. One bounty. Teams of 1–3; at least two teams to begin.");
             MoonkovLocalization.Set(m_Availability, offline
-                ? "Bounty Clash needs online accounts and at least two teams. Single player remains available in Expedition."
+                ? "OFFLINE STASH / Equip your loadout before deploying. No online account or teammates required."
                 : "Invite your teammates to a room, then get ready together.");
         }
         private void Open()
@@ -58,13 +62,14 @@ namespace Unity.MP_FPS.Client
             RefreshViewport();
             foreach (var entry in m_Entries) if (entry.panel?.focusController.focusedElement == entry) m_Opener = entry;
             m_Root.RemoveFromClassList("bounty-hidden"); m_Container.BringToFront();
-            if (m_ClashSelected && !m_Offline) m_Clash.Focus(); else m_Expedition.Focus();
+            if (m_ClashSelected && m_Clash.enabledSelf) m_Clash.Focus(); else m_Expedition.Focus();
         }
         private void RefreshViewport()
         {
-            var parent = m_Container.parent; var camera = Camera.main;
-            float pixels = camera ? camera.pixelWidth : Screen.width;
-            float height = camera ? camera.pixelHeight : Screen.height;
+            // UI uses the display viewport; menu preview cameras may render to a larger texture.
+            var parent = m_Container.parent;
+            float pixels = Screen.width;
+            float height = Screen.height;
             if (parent == null || parent.contentRect.width < 1 || pixels < 1 || height < 1) return;
             float width = Mathf.Min(pixels, parent.contentRect.width), scale = parent.contentRect.width / width;
             m_Container.style.right = StyleKeyword.Auto; m_Container.style.bottom = StyleKeyword.Auto;
@@ -74,7 +79,7 @@ namespace Unity.MP_FPS.Client
         }
         private void Close() { m_Root.AddToClassList("bounty-hidden"); m_Opener?.Focus(); }
         private void Expedition() { m_Select(false); Close(); }
-        private void Clash() { if (!m_Offline) { m_Select(true); Close(); } }
+        private void Clash() { if (!m_Offline || PlayerProfileClient.SupportsSinglePlayer) { m_Select(true); Close(); } }
         private void Key(KeyDownEvent evt) { if (evt.keyCode == KeyCode.Escape) { Close(); evt.StopPropagation(); } }
         public void Dispose()
         {

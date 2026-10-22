@@ -44,7 +44,7 @@ namespace Unity.MP_FPS
             {
                 if (File.Exists(FilePath))
                 {
-                    try { m_Save = JsonConvert.DeserializeObject<SaveData>(File.ReadAllText(FilePath)); Validate(m_Save); }
+                    try { m_Save = JsonConvert.DeserializeObject<SaveData>(File.ReadAllText(FilePath)); Validate(m_Save); TryMigrateProtection(); }
                     catch (Exception ex) when (ex is JsonException || ex is InvalidDataException)
                     { throw new InvalidDataException("Single-player save is invalid. The original file was preserved.", ex); }
                 }
@@ -77,6 +77,7 @@ namespace Unity.MP_FPS
         private void Commit(SaveData save)
         {
             if (m_Disposed) throw new ObjectDisposedException(nameof(OfflineProfileStore));
+            ApplyProtectionMigration(save);
             save.Format=save.Clash==null ? 2 : 3;
             Validate(save);
             Directory.CreateDirectory(Path.GetDirectoryName(FilePath));
@@ -94,6 +95,7 @@ namespace Unity.MP_FPS
             lock (m_Lock)
             {
                 if (m_Disposed) throw new ObjectDisposedException(nameof(OfflineProfileStore));
+                TryMigrateProtection();
                 return new RaidPersistenceContext.Profile
                 {
                     PlayerId = m_Save.PlayerId, DisplayName = "Single-player Operator",

@@ -52,6 +52,7 @@ namespace Unity.MP_FPS
             state.EntityManager.AddComponentObject(lootEntity,new RaidLootContainers());
             state.EntityManager.AddComponentObject(lootEntity,new RaidMissionWorld());
             state.EntityManager.AddComponentObject(lootEntity,new BountyClashWorld());
+            state.EntityManager.AddComponentObject(lootEntity,new ClashBotRegistry());
             m_PersistenceEntity = state.EntityManager.CreateEntity();
         }
 
@@ -420,7 +421,7 @@ namespace Unity.MP_FPS
                     ecb.AddComponent(rpcReceive.ValueRO.SourceConnection,new NetworkStreamRequestDisconnect{Reason=NetworkStreamDisconnectReason.ConnectionClose});
                     ecb.DestroyEntity(entity);continue;
                 }
-                if(clash&&(!Persistence(ref state).Enabled||SystemAPI.HasSingleton<OfflineRaidMode>()))
+                if(clash&&(!Persistence(ref state).Enabled || SystemAPI.HasSingleton<OfflineRaidMode>()&&!ClashSoloRuntime.Enabled(state.EntityManager)))
                 {ClashAccepted(ecb,rpcReceive.ValueRO.SourceConnection,false,"赏金速战需要已启用的联网持久化服务");ecb.DestroyEntity(entity);continue;}
                 if (SystemAPI.HasComponent<NetworkId>(rpcReceive.ValueRW.SourceConnection) &&
                     !SystemAPI.HasComponent<NetworkStreamInGame>(rpcReceive.ValueRW.SourceConnection))

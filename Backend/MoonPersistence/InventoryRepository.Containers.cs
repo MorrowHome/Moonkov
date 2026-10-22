@@ -23,7 +23,7 @@ public sealed partial class InventoryRepository
                     existing.AddStarterWeapons(); existing.Version++;
                     await WriteGraphAsync(connection, transaction, playerId, existing, ct);
                 }
-                return existing;
+                return await MigrateProtectionAsync(connection,transaction,playerId,existing,ct);
             }
         }
         var graph = InventoryGraph.Create();
@@ -42,7 +42,7 @@ public sealed partial class InventoryRepository
             }
         }
         await WriteGraphAsync(connection, transaction, playerId, graph, ct);
-        return graph;
+        return await MigrateProtectionAsync(connection,transaction,playerId,graph,ct);
     }
     public static async Task WriteGraphAsync(NpgsqlConnection connection, NpgsqlTransaction transaction, Guid playerId, InventoryGraph graph, CancellationToken ct)
     {

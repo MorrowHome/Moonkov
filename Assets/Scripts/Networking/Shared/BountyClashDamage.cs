@@ -3,7 +3,7 @@ using Unity.NetCode;
 
 namespace Unity.MP_FPS
 {
-    public enum RaidDamageKind : byte { Bullet, Explosion, Fire, Poison, Bleed, Environment }
+    public enum RaidDamageKind : byte { Bullet, Explosion, Fire, Poison, Bleed, Environment, Melee }
     // Server-only attribution captured when an attack is released. NetworkIds
     // can be reused; participant+epoch identify the original combatant.
     public struct ClashDamageSource
@@ -41,9 +41,9 @@ namespace Unity.MP_FPS
             return source.NetworkId!=0&&manager.HasComponent<GhostOwner>(victim)&&manager.GetComponentData<GhostOwner>(victim).NetworkId==source.NetworkId;
         }
         // Compatibility for immediate damage. Delayed attacks must capture at release.
-        public static float Apply(World world,Entity victim,int sourceNetworkId,BodyPart part,float amount,uint tick,RaidDamageKind kind)
-            =>Apply(world,victim,Capture(world,sourceNetworkId),part,amount,tick,kind);
-        public static float Apply(World world,Entity victim,ClashDamageSource source,BodyPart part,float amount,uint tick,RaidDamageKind kind)
+        public static float Apply(World world,Entity victim,int sourceNetworkId,BodyPart part,float amount,uint tick,RaidDamageKind kind,Unity.Mathematics.float3 impactPoint=default)
+            =>Apply(world,victim,Capture(world,sourceNetworkId),part,amount,tick,kind,impactPoint);
+        public static float Apply(World world,Entity victim,ClashDamageSource source,BodyPart part,float amount,uint tick,RaidDamageKind kind,Unity.Mathematics.float3 impactPoint=default)
         {
             if(world==null||!world.IsCreated||!world.EntityManager.Exists(victim))return 0;
             var manager=world.EntityManager;
@@ -59,21 +59,12 @@ namespace Unity.MP_FPS
                 if(source.Epoch!=0&&source.Epoch!=match.Epoch)return 0;
                 ClashParticipant attacker=null;
                 if(source.ParticipantId>0&&!match.Players.TryGetValue(source.ParticipantId,out attacker))return 0;
-                if(attacker!=null&&attacker.TeamId==health.ClashTeam&&kind==RaidDamageKind.Bullet)amount*=.1f;
+                if(attacker!=null&&attacker.TeamId==health.ClashTeam&&(kind==RaidDamageKind.Bullet||kind==RaidDamageKind.Melee))amount*=.1f;
                 if(manager.HasComponent<ClashPlayer>(victim))
                 {var player=manager.GetComponentData<ClashPlayer>(victim);player.LastAttacker=attacker?.Id??0;manager.SetComponentData(victim,player);}
             }
             float healthBefore=health.CurrentHealth;
-            float damaged;
-            if(part==BodyPart.Auto)
-            {
-                float before=health.CurrentHealth;
-                if(!health.BodyHealthInitialized)RaidHealth.Damage(ref health,BodyPart.Chest,amount,tick);
-                else for(int i=0;i<RaidHealth.PartCount;i++)
-                {var bodyPart=(BodyPart)i;float share=amount*RaidHealth.Get(health,bodyPart)/System.Math.Max(.001f,before);RaidHealth.Damage(ref health,bodyPart,share,tick);}
-                damaged=before-health.CurrentHealth;health.LastDamageAmount=damaged;health.LastHitPart=BodyPart.Auto;
-            }
-            else damaged=RaidHealth.Damage(ref health,part,amount,tick);
+            float damaged=RaidHealth.CombatDamage(ref health,part,amount,tick,kind,impactPoint);
             manager.SetComponentData(victim,health);
             if(!health.ClashEnabled&&healthBefore>0&&health.CurrentHealth<=0&&manager.HasComponent<GhostOwner>(victim))
             {

@@ -64,7 +64,7 @@ public sealed class SkirtHandAvoidance : MonoBehaviour {
             spring.AirflowBlend > coverAirflowThreshold;
         m_CoverBlend = Mathf.MoveTowards(m_CoverBlend, falling ? 1f : 0f,
             Time.deltaTime * coverBlendSpeed);
-        m_HandCoverBlend = m_CoverBlend * (1f - (haloAim ? haloAim.AimBlend : 0f));
+        m_HandCoverBlend = m_CoverBlend * (haloAim && haloAim.ExternalHandPoseActive ? 0f : 1f - (haloAim ? haloAim.AimBlend : 0f));
         animator.SetLayerWeight(m_CoverLayerIndex, m_HandCoverBlend);
     }
 

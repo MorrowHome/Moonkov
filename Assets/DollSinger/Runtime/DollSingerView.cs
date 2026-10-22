@@ -87,6 +87,7 @@ public class DollSingerView : MonoBehaviour
     [Tooltip("Presentation FOV for ordinary weapon gestures. The sniper follows the player camera's zoom.")]
     [Range(50f, 80f)] public float gestureFieldOfView = 65f;
     private DollSingerFirstPersonHands gestureHands;
+    private bool meleeHandsActive;
     public Camera GestureCamera => gestureHands?.Camera;
     public void FrameGestureHands(bool force = false) => gestureHands?.FrameHands(force);
     public bool GestureHandsActive => gestureHands != null && gestureHands.Active;
@@ -95,6 +96,15 @@ public class DollSingerView : MonoBehaviour
         gestureHands?.Present(active && firstPerson && isActiveAndEnabled && camera && camera.isActiveAndEnabled,
             viewfinder && camera ? camera.fieldOfView : gestureFieldOfView, camera, viewfinder,
             AimPoseBlend(aimBlend), verticalOffset);
+    }
+    public void SetMeleeHandsActive(bool active, float poseBlend, MeleeWeaponKind weapon)
+    {
+        if (!active && !meleeHandsActive) return;
+        meleeHandsActive = active && firstPerson && isActiveAndEnabled && camera && camera.isActiveAndEnabled;
+        // Fixed viewmodel framing preserves the swing. Never chase each moving fist/blade.
+        Vector3 offset = weapon == MeleeWeaponKind.EnergySword ? new Vector3(0, .14f, -.38f) :
+            weapon == MeleeWeaponKind.Dagger ? new Vector3(0, .08f, -.28f) : new Vector3(0, .06f, -.16f);
+        gestureHands?.PresentMelee(meleeHandsActive, camera, poseBlend, offset);
     }
 
     // Finish raising the gesture before zooming. Reverse the same timeline

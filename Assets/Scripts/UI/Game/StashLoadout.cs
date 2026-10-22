@@ -3,8 +3,8 @@ using UnityEngine;
 
 namespace Unity.MP_FPS.Client
 {
-    public enum LoadoutSlot { None, Helmet, Primary, Secondary, Pistol, ChestRig, Backpack }
-    public enum EquipmentKind { None, Helmet, LongGun, Pistol, ChestRig, Backpack }
+    public enum LoadoutSlot { None, Helmet, Primary, Secondary, Pistol, ChestRig, Backpack, Shield, Melee }
+    public enum EquipmentKind { None, Helmet, LongGun, Pistol, ChestRig, Backpack, Shield, Melee }
 
     // Local presentation only. Item IDs and equipment writes must eventually come from the server.
     public sealed class StashLoadout
@@ -27,7 +27,9 @@ namespace Unity.MP_FPS.Client
                 || kind == EquipmentKind.LongGun && (slot == LoadoutSlot.Primary || slot == LoadoutSlot.Secondary)
                 || kind == EquipmentKind.Pistol && slot == LoadoutSlot.Pistol
                 || kind == EquipmentKind.ChestRig && slot == LoadoutSlot.ChestRig
-                || kind == EquipmentKind.Backpack && slot == LoadoutSlot.Backpack;
+                || kind == EquipmentKind.Backpack && slot == LoadoutSlot.Backpack
+                || kind == EquipmentKind.Shield && slot == LoadoutSlot.Shield
+                || kind == EquipmentKind.Melee && slot == LoadoutSlot.Melee;
         }
         public bool CanEquip(string id, LoadoutSlot slot)
         {

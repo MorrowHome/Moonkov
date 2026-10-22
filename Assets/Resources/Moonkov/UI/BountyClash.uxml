@@ -16,16 +16,18 @@
                 <ui:VisualElement name="clashTeamRows" class="clash-roster" picking-mode="Ignore" />
             </ui:VisualElement>
             <ui:VisualElement class="clash-sense clash-panel" picking-mode="Ignore"><ui:Label name="clashSense" class="clash-copy" picking-mode="Ignore" /></ui:VisualElement>
-            <ui:VisualElement name="clashMap" class="clash-map" picking-mode="Ignore" />
+            <ui:VisualElement name="clashMap" class="clash-map clash-hidden" picking-mode="Ignore" />
             <ui:Label name="clashExits" class="clash-exit clash-panel" picking-mode="Ignore" />
             <ui:Label name="clashWarning" class="clash-warning clash-panel clash-hidden" picking-mode="Ignore" />
             <ui:Label name="clashAction" class="clash-action clash-panel clash-hidden" picking-mode="Ignore" />
         </ui:VisualElement>
         <ui:VisualElement name="clashLobby" class="clash-lobby clash-hidden">
             <ui:VisualElement name="clashLobbyWindow" class="clash-lobby-window">
-                <ui:Label text="BOUNTY CLASH" class="clash-lobby-title" />
+                <ui:Label name="clashLobbyTitle" text="BOUNTY CLASH" class="clash-lobby-title" />
                 <ui:Label name="clashLobbyStatus" class="clash-copy" />
                 <ui:ScrollView class="clash-lobby-body" mode="Vertical">
+                    <ui:Label name="clashSoloInfo" class="clash-copy clash-hidden" />
+                    <ui:VisualElement name="clashOnlineSetup">
                     <ui:Label text="Share the invite code with your teammates to join the same team." class="clash-copy" />
                     <ui:VisualElement class="clash-line">
                         <ui:DropdownField name="clashCapacity" label="TEAM SIZE" choices="1 / SOLO,2 / DUO,3 / TRIO" index="0" />
@@ -34,6 +36,7 @@
                     </ui:VisualElement>
                     <ui:VisualElement class="clash-line"><ui:TextField name="clashInviteInput" label="INVITE CODE" max-length="10" /><ui:Button name="clashJoin" text="JOIN TEAM"  class="terminal-button" /></ui:VisualElement>
                     <ui:VisualElement class="clash-line"><ui:Label name="clashInvite" class="clash-copy" /><ui:Button name="clashCopy" text="COPY"  class="terminal-button" /></ui:VisualElement>
+                    </ui:VisualElement>
                     <ui:Label name="clashRosterHeading" class="clash-heading" />
                     <ui:VisualElement name="clashLobbyRows" class="clash-roster" />
                     <ui:Label name="clashLobbyError" class="clash-error" />

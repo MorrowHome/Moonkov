@@ -16,7 +16,7 @@ namespace Unity.MP_FPS
         }
 
         public static bool CanRefill(in PredictedPlayerGhost state) => state.BodyHealthInitialized &&
-            state.CurrentHealth > 0 && float.IsFinite(state.Oxygen) && state.Oxygen < Capacity;
+            state.CurrentHealth > 0 && (!state.ProtectionInitialized || state.HeadDomeEquipped) && float.IsFinite(state.Oxygen) && state.Oxygen < Capacity;
 
         public static float Refill(ref PredictedPlayerGhost state, float amount)
         {
@@ -38,7 +38,7 @@ namespace Unity.MP_FPS
         }
 
         public static void Tick(ref PredictedPlayerGhost state, in AtmosphereSample atmosphere,
-            in OxygenParameters settings, float dt, uint tick, float stationSupplyPerSecond = 0)
+            in OxygenParameters settings, float dt, uint tick, float stationSupplyPerSecond = 0, bool sealedReserve = true)
         {
             if (!state.BodyHealthInitialized || state.CurrentHealth <= 0 || !float.IsFinite(dt) || dt <= 0) return;
             // C# default(struct) bypasses constructors; make that public API case safe too.
@@ -52,9 +52,10 @@ namespace Unity.MP_FPS
             float exertion = moving ? (state.ControllerState.Sprinting ? parameters.SprintingMultiplier : parameters.WalkingMultiplier) : 1;
             state.OxygenDrainPerSecond = atmosphere.Breathable ? 0 : Capacity / parameters.OutdoorSeconds * exertion;
             if(state.AlienFoodEffectSeconds>0 && state.AlienFoodEffect==AlienFoodEffect.OxygenReserve)state.OxygenDrainPerSecond*=.75f;
-            float ambientRefill = atmosphere.Breathable && atmosphere.AllowsSuitRefill ? parameters.AirRefillPerSecond : 0;
+            float ambientRefill = sealedReserve && atmosphere.Breathable && atmosphere.AllowsSuitRefill ? parameters.AirRefillPerSecond : 0;
             // Overlapping sources do not multiply supply. A station can also supply a sealed suit in vacuum.
-            state.OxygenSupplyPerSecond = Mathf.Max(ambientRefill, FiniteNonnegative(stationSupplyPerSecond));
+            state.OxygenSupplyPerSecond = sealedReserve ? Mathf.Max(ambientRefill, FiniteNonnegative(stationSupplyPerSecond)) : 0;
+            if(!sealedReserve)state.Oxygen=0;
             float netDrain = state.OxygenDrainPerSecond - state.OxygenSupplyPerSecond;
             float exhaustedTime = netDrain > 0 ? Mathf.Max(0, dt - state.Oxygen / netDrain) : 0;
             state.Oxygen = Mathf.Clamp(state.Oxygen - netDrain * dt, 0, Capacity);

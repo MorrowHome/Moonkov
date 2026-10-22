@@ -28,7 +28,7 @@ namespace Unity.MP_FPS
             public Entity Player; public int RaidId,Version; public uint Request,Target;
             public string ItemId; public TacticalItemAction Action; public TacticalItemDefinition Definition;
             public Vector3 Origin,Placement; public double Until;
-            public uint Hit,Shot,Grenade,Reload,Weapon;
+            public uint Hit,ShieldHit,Shot,Grenade,Reload,Weapon;
             public float Health,LastDamage;public BodyPart LastPart;
         }
         public sealed class Status
@@ -110,7 +110,7 @@ namespace Unity.MP_FPS
                 bool actorValid=TacticalActor(ref state,connection,out var player,out var health,out var root);
                 bool valid=actorValid && inventory.TacticalPending && inventory.RaidId==use.RaidId && inventory.Graph.Version==use.Version;
                 valid=valid && player==use.Player && Vector3.Distance(root.transform.position,use.Origin)<=.55f &&
-                    health.LastHitTick==use.Hit && health.CurrentHealth>=use.Health-.001f &&
+                    health.LastHitTick==use.Hit && health.ShieldHitSequence==use.ShieldHit && health.CurrentHealth>=use.Health-.001f &&
                     (use.Action!=TacticalItemAction.Extinguish || health.LastHitPart==use.LastPart && Mathf.Abs(health.LastDamageAmount-use.LastDamage)<.001f) && health.LastShotTick==use.Shot && health.LastGrenadeShotTick==use.Grenade &&
                     health.LastReloadTick==use.Reload && health.EquippedWeaponID==use.Weapon;
                 if(valid && now<use.Until)continue;
@@ -226,7 +226,7 @@ namespace Unity.MP_FPS
             CancelManualMission(ref state,connection,"道具操作开始。");
             world.Uses[connection]=new TacticalServerWorld.Use {Player=player,RaidId=r.RaidId,Version=r.ExpectedVersion,Request=r.RequestId,
                 Target=r.TargetId,ItemId=r.ItemId.ToString(),Action=r.Action,Definition=definition,Origin=root.transform.position,Placement=placement,
-                Until=now+seconds,Hit=health.LastHitTick,Shot=health.LastShotTick,Grenade=health.LastGrenadeShotTick,
+                Until=now+seconds,Hit=health.LastHitTick,ShieldHit=health.ShieldHitSequence,Shot=health.LastShotTick,Grenade=health.LastGrenadeShotTick,
                 Reload=health.LastReloadTick,Weapon=health.EquippedWeaponID,Health=health.CurrentHealth,LastDamage=health.LastDamageAmount,LastPart=health.LastHitPart};
             inventory.Error=InventoryError.None;world.Feedbacks[connection]=TacticalItemFeedback.Started;
         }
@@ -426,12 +426,15 @@ namespace Unity.MP_FPS
                 if(treating && status.Poison<=now)
                 {
                     // Damage still happens. Accept only this operation's known status damage as
-                    // the new baseline; later external hits also change health/part/amount, even
-                    // when they share the same network tick. Start/cancel never pauses damage.
+                    // the new baseline, provided there was no external impact before this update.
+                    // Shield sequence detects fully absorbed hits within the same tick too.
+                    // Start/cancel never pauses damage.
                     var after=SystemAPI.GetComponent<PredictedPlayerGhost>(victim);
                     foreach(var pending in world.Uses.Values)
-                        if(pending.Player==victim && pending.Action==TacticalItemAction.Extinguish)
-                        {pending.Hit=after.LastHitTick;pending.Health=after.CurrentHealth;pending.LastDamage=after.LastDamageAmount;pending.LastPart=after.LastHitPart;}
+                        if(pending.Player==victim && pending.Action==TacticalItemAction.Extinguish &&
+                            pending.Hit==health.LastHitTick && pending.ShieldHit==health.ShieldHitSequence &&
+                            health.CurrentHealth>=pending.Health-.001f && pending.LastPart==health.LastHitPart && Mathf.Abs(pending.LastDamage-health.LastDamageAmount)<.001f)
+                        {pending.Hit=after.LastHitTick;pending.ShieldHit=after.ShieldHitSequence;pending.Health=after.CurrentHealth;pending.LastDamage=after.LastDamageAmount;pending.LastPart=after.LastHitPart;}
                 }
                 if(!status.Sprint.Initialized && Math.Max(Math.Max(Math.Max(status.Fire,status.Poison),Math.Max(status.Bleed,status.Stamina)),Math.Max(status.Antidote,Math.Max(status.Wire,status.Cough)))<=now)world.Scratch.Add(victim);
             }

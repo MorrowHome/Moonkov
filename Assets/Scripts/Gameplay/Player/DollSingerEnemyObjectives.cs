@@ -32,6 +32,7 @@ namespace Unity.MP_FPS
 
         private void AdvanceObjective(DollSingerEnemyBrain brain, Vector3 position, Vector3 eye, MoonRaidMap map, double now, float dt)
         {
+            if (brain.IsClashBot) { AdvanceClashObjective(brain, position, eye, now); return; }
             if (brain.Action == PmcAction.Scavenge && brain.Cache >= 0)
             {
                 Vector3 cachePosition = map.LootPositions[brain.Cache];

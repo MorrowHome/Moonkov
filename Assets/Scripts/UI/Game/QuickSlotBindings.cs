@@ -32,7 +32,7 @@ namespace Unity.MP_FPS.Client
         {
             if (m_Saved.Initialized || string.IsNullOrEmpty(m_Scope) || graph == null) return;
             m_Saved.Initialized = true;
-            var slots = new[] { "Primary", "Secondary", "Pistol" };
+            var slots = new[] { "Primary", "Secondary", "Pistol", MeleeInventory.Slot };
             for (int i = 0; i < slots.Length; i++)
             {
                 var item = graph.Equipped(slots[i]);
@@ -44,6 +44,7 @@ namespace Unity.MP_FPS.Client
         private void Save() { if (!string.IsNullOrEmpty(m_Scope)) m_Store.Save(m_Scope, m_Saved); }
         public static int WeaponSlot(InventoryGraph graph, InventoryItem item)
         {
+            if (MeleeInventory.CanEquip(graph, item)) return MeleeInventory.EquipmentIndex;
             if (graph == null || item == null || (InventoryCatalog.Get(item.Code)?.Kind != ItemKind.LongGun && InventoryCatalog.Get(item.Code)?.Kind != ItemKind.Pistol)) return 0;
             return graph.Equipped("Primary")?.Id == item.Id ? 1 : graph.Equipped("Secondary")?.Id == item.Id ? 2 : graph.Equipped("Pistol")?.Id == item.Id ? 3 : 0;
         }

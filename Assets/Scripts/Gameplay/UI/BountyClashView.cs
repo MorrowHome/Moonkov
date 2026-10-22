@@ -8,9 +8,11 @@ namespace Unity.MP_FPS
     public sealed class BountyClashView : IDisposable
     {
         public VisualElement Element { get; }
+        internal VisualElement EquipmentStatusHost => m_Sidebar;
+        internal BountyClashMapView Map => m_Map;
         private readonly Action<ClashIntent, int, string> m_Send;
         private readonly Action m_Return;
-        private readonly VisualElement m_Lobby, m_Battle, m_Finished, m_SenseLayer, m_MarkerLayer;
+        private readonly VisualElement m_Lobby, m_Battle, m_Finished, m_SenseLayer, m_MarkerLayer, m_Sidebar;
         private readonly DropdownField m_Capacity;
         private readonly TextField m_Code;
         private readonly Button m_Create, m_Join, m_Resize, m_Ready, m_Leave, m_Copy, m_Next, m_LobbyReturn, m_FinishReturn;
@@ -37,7 +39,7 @@ namespace Unity.MP_FPS
             BountyUIComposition.Window(Element.Q("clashLobbyWindow"));
             BountyUIComposition.Window(Element.Q("clashFinished"));
             m_Lobby = Element.Q("clashLobby"); m_Battle = Element.Q("clashBattle"); m_Finished = Element.Q("clashFinished");
-            var sidebar = new VisualElement { name = "clashSidebar", pickingMode = PickingMode.Ignore };
+            var sidebar = m_Sidebar = new VisualElement { name = "clashSidebar", pickingMode = PickingMode.Ignore };
             sidebar.AddToClassList("clash-sidebar"); m_Battle.Add(sidebar);
             sidebar.Add(Element.Q("clashMap")); sidebar.Add(Element.Q<Label>("clashSense").parent); sidebar.Add(Element.Q("clashExits"));
             m_SenseLayer = Element.Q("clashSenseLayer"); m_MarkerLayer = Element.Q("clashTeamMarkers");
@@ -53,7 +55,8 @@ namespace Unity.MP_FPS
             m_FinishReturn = Element.Q<Button>("clashFinishReturn"); m_FinishReturn.clicked += Return;
             for (int i = 0; i < m_LobbyRows.Length; i++) m_LobbyRows[i] = Row(Element.Q("clashLobbyRows"));
             for (int i = 0; i < 3; i++) { m_TeamRows[i] = Row(Element.Q("clashTeamRows")); m_Markers[i] = Row(m_MarkerLayer); m_Markers[i].AddToClassList("clash-friendly-marker"); }
-            m_Map = new BountyClashMapView(); m_Map.style.flexGrow = 1; Element.Q("clashMap").Add(m_Map);
+            m_Map = new BountyClashMapView(); Element.Q("clashMap").Add(m_Map);
+            Element.Q("clashMap").AddToClassList("clash-hidden"); // Legacy name retained; the canvas belongs to the central M map.
             MoonkovLocalization.Bind(Element); Show(false);
             m_Capacity.choices = new System.Collections.Generic.List<string> { MoonkovLocalization.Text("1 / SOLO"), MoonkovLocalization.Text("2 / DUO"), MoonkovLocalization.Text("3 / TRIO") };
             m_Capacity.index = 0;
@@ -64,12 +67,13 @@ namespace Unity.MP_FPS
         private static void Visible(VisualElement element, bool show) => element.EnableInClassList("clash-hidden", !show);
         private Label Label(string name) => Element.Q<Label>(name);
         private static string Clock(float seconds) { int whole = Mathf.CeilToInt(Mathf.Max(0, seconds)); return $"{whole / 60:00}:{whole % 60:00}"; }
-        public void Present(BountyClashClientState data, Vector3 local, bool hasLocal, Camera camera, bool saving, bool canReturn, bool darkSight = false, bool boost = false)
+        public void Present(BountyClashClientState data, Vector3 local, bool hasLocal, Camera camera, bool saving, bool canReturn, bool darkSight = false, bool boost = false, Vector3 localForward = default)
         {
-            RefreshViewport(camera);
+            RefreshViewport();
             Show(true); double now = Time.realtimeSinceStartupAsDouble;
             if (!data.Approved || !data.HasSnapshot)
             {
+                m_Map.ResetData();
                 Visible(m_SenseLayer, false); Visible(m_MarkerLayer, false);
                 Visible(m_Lobby, true); Visible(m_Battle, false); Visible(m_Finished, false);
                 MoonkovLocalization.Set(Label("clashLobbyStatus"), data.ApprovalReceived ? data.ApprovalReason : "Connecting to the match...");
@@ -77,30 +81,38 @@ namespace Unity.MP_FPS
                 return;
             }
             m_Last = data.Snapshot; var s = m_Last;
+            Visible(Element.Q("clashOnlineSetup"), !s.IsSolo);
+            Visible(Label("clashSoloInfo"), s.IsSolo); Visible(m_Leave, !s.IsSolo);
+            MoonkovLocalization.Set(Label("clashLobbyTitle"), s.IsSolo ? "SOLO BOUNTY CLASH" : "BOUNTY CLASH");
+            MoonkovLocalization.Set(Label("clashSoloInfo"), "OFFLINE STASH / You against three AI duos. Death loses equipment; extraction keeps loot. Equip your next loadout in the stash.");
             bool lobby = s.Phase == ClashPhase.Lobby || s.Phase == ClashPhase.Preparing || s.Phase == ClashPhase.Deploying;
             bool ended = BountyClashRules.Ended(s.Life) || s.Phase == ClashPhase.Finished, pending = data.ActionPending(now);
             Visible(m_MarkerLayer, !lobby);
             Visible(m_Lobby, lobby); Visible(m_Battle, !lobby); Visible(m_Finished, !lobby && ended);
             m_LobbyReturn.SetEnabled(!saving && canReturn); m_FinishReturn.SetEnabled(!saving && canReturn);
             bool editable = s.Phase == ClashPhase.Lobby || s.Phase == ClashPhase.Preparing;
-            m_Create.SetEnabled(editable && s.LocalTeamId < 0 && !pending);
-            m_Join.SetEnabled(editable && s.LocalTeamId < 0 && !pending);
-            m_Resize.SetEnabled(editable && s.IsLeader && !pending);
-            m_Leave.SetEnabled(editable && s.LocalTeamId >= 0 && !pending);
-            m_Copy.SetEnabled(s.LocalTeamId >= 0 && s.InviteCode.Length > 0);
+            m_Create.SetEnabled(!s.IsSolo && editable && s.LocalTeamId < 0 && !pending);
+            m_Join.SetEnabled(!s.IsSolo && editable && s.LocalTeamId < 0 && !pending);
+            m_Resize.SetEnabled(!s.IsSolo && editable && s.IsLeader && !pending);
+            m_Leave.SetEnabled(!s.IsSolo && editable && s.LocalTeamId >= 0 && !pending);
+            m_Copy.SetEnabled(!s.IsSolo && s.LocalTeamId >= 0 && s.InviteCode.Length > 0);
             if (m_LastTeam != s.LocalTeamId) { m_LastTeam = s.LocalTeamId; if (s.TeamCapacity > 0) m_Capacity.SetValueWithoutNotify(m_Capacity.choices[Mathf.Clamp(s.TeamCapacity - 1, 0, 2)]); }
             MoonkovLocalization.Set(Label("clashInvite"), s.LocalTeamId < 0 ? "Create a team or enter a crew invite code." : "TEAM {0} / INVITE {1}", s.LocalTeamId + 1, s.InviteCode.ToString());
-            MoonkovLocalization.Set(Label("clashLobbyStatus"), s.Phase == ClashPhase.Preparing ? "ALL TEAMS READY / STARTING IN {0}s" :
-                s.Phase == ClashPhase.Deploying ? "ENTERING MATCH / {0}s" : "WAITING FOR TEAMS TO GET READY",
+            MoonkovLocalization.Set(Label("clashLobbyStatus"), s.IsSolo && !s.SoloNavigationReady
+                ? s.SoloNavigationStatus.Length > 0 ? s.SoloNavigationStatus.ToString() : "Preparing AI opponents..."
+                : s.Phase == ClashPhase.Preparing ? "ALL TEAMS READY / STARTING IN {0}s" :
+                s.Phase == ClashPhase.Deploying ? "ENTERING MATCH / {0}s" : s.IsSolo ? "AI OPPONENTS READY / GET READY TO DEPLOY" : "WAITING FOR TEAMS TO GET READY",
                 s.Phase == ClashPhase.Preparing ? Mathf.CeilToInt(Mathf.Max(0, s.PrepareRemaining - (float)(now - data.ReceivedAt))) :
                 s.Phase == ClashPhase.Deploying ? Mathf.CeilToInt(Mathf.Max(0, s.DeploymentRemaining - (float)(now - data.ReceivedAt))) : s.RulesVersion);
-            MoonkovLocalization.Set(Label("clashRosterHeading"), "PLAYERS / {0}/12 / TEAMS / {1}/4", s.PlayerCount, s.TeamCount);
+            MoonkovLocalization.Set(Label("clashRosterHeading"), s.IsSolo ? "PARTICIPANTS / {0}/7 / TEAMS / {1}/4" : "PLAYERS / {0}/12 / TEAMS / {1}/4", s.PlayerCount, s.TeamCount);
             int rowIndex = 0, teamIndex = 0, markerIndex = 0; bool localRow = false; m_LocalReady = false;
             foreach (var row in data.Participants.Values)
             {
                 if (rowIndex < m_LobbyRows.Length)
                 {
-                    if (!row.IsLocal && !row.OwnTeam && row.Name.Length == 0)
+                    if (row.IsBot)
+                        MoonkovLocalization.Set(m_LobbyRows[rowIndex++], "AI OPPONENT");
+                    else if (!row.IsLocal && !row.OwnTeam && row.Name.Length == 0)
                         MoonkovLocalization.Set(m_LobbyRows[rowIndex++], "RIVAL PLAYER");
                     else MoonkovLocalization.Set(m_LobbyRows[rowIndex++], "{0} / TEAM {1} / {2}", row.Name.ToString(), row.TeamId >= 0 ? (row.TeamId + 1).ToString() : "—",
                             !row.Connected ? "DISCONNECTED" : row.Ready ? "READY" : "NOT READY");
@@ -120,11 +132,11 @@ namespace Unity.MP_FPS
             for (int i = 0; i < m_LobbyRows.Length; i++) Visible(m_LobbyRows[i], i < rowIndex);
             for (int i = 0; i < m_TeamRows.Length; i++) Visible(m_TeamRows[i], i < teamIndex);
             for (; markerIndex < 3; markerIndex++) Visible(m_Markers[markerIndex], false);
-            m_Ready.SetEnabled(editable && s.LocalTeamId >= 0 && localRow && !pending);
+            m_Ready.SetEnabled(editable && s.LocalTeamId >= 0 && localRow && !pending && (!s.IsSolo || s.SoloNavigationReady));
             MoonkovLocalization.Set(m_Ready, m_LocalReady ? "NOT READY" : "READY");
             MoonkovLocalization.Set(Label("clashLobbyError"), pending ? "Waiting for confirmation..." : now - data.FailureAt < 4 && data.LastFailure != ClashResult.Ok ? Result(data.LastFailure) : "");
             MoonkovLocalization.Set(Label("clashClock"), Clock(data.Remaining(now)));
-            MoonkovLocalization.Set(Label("clashPhase"), s.Closing ? "BOUNTY EXTRACTED / FINAL COUNTDOWN" : "BOUNTY CLASH");
+            MoonkovLocalization.Set(Label("clashPhase"), s.Closing ? "BOUNTY EXTRACTED / FINAL COUNTDOWN" : s.IsSolo ? "SOLO BOUNTY CLASH" : "BOUNTY CLASH");
             Visible(Label("clashObjective"), s.Bounty == ClashBountyState.Unbanished || s.Bounty == ClashBountyState.Banishing);
             MoonkovLocalization.Set(Label("clashObjective"), s.Bounty == ClashBountyState.Unbanished ? "DEAD TARGET / APPROACH AND BANISH" :
                 s.Bounty == ClashBountyState.Banishing ? "BANISHING / ALL TEAMS CAN CONTEST" : "ONE BOUNTY / RECOVER IT AND EXTRACT");
@@ -140,20 +152,24 @@ namespace Unity.MP_FPS
             Visible(m_SenseLayer, false);
             MoonkovLocalization.Set(Label("clashSense"), s.IsCarrier ? "[V] DARK SIGHT / [RMB] BOOST / {0:0.0}s" : "[V] DARK SIGHT", s.SenseRemaining);
             Label("clashSense").tooltip = MoonkovLocalization.Text("125 m CLOUDS / 75 m INSTINCT WHILE IN DARK SIGHT");
-            m_Map.Present(s, data.Participants.Values, local, hasLocal);
+            if (!lobby && !ended && s.Connected && hasLocal) m_Map.Present(s, data.Participants.Values, local, hasLocal, localForward);
+            else m_Map.ResetData();
             MoonkovLocalization.Set(Label("clashFinishTitle"), s.DeploymentAborted ? "DEPLOYMENT CANCELLED" : s.Life == ClashLife.Extracted ? "EXTRACTED" : s.Life == ClashLife.TimedOut ? "MATCH TIME EXPIRED" : "DEPLOYMENT ENDED");
             MoonkovLocalization.Set(Label("clashFinishCopy"), s.DeploymentAborted ? s.CanStartNext ? "Deployment cancelled. Your original equipment has been returned." : "Deployment cancelled. Returning your original equipment..."
-                : saving || s.Phase == ClashPhase.Finished && !s.CanStartNext ? "Saving results..." : s.Phase != ClashPhase.Finished
+                : saving || (s.IsSolo || s.Phase == ClashPhase.Finished) && !s.CanStartNext ? "Saving results..." : s.IsSolo
+                ? s.Life == ClashLife.Extracted ? "Offline stash saved. Extracted loot has been retained. Return to the stash to prepare your next loadout."
+                    : "Offline stash saved. Lost equipment has been removed. Return to the stash to prepare your next loadout."
+                : s.Phase != ClashPhase.Finished
                 ? "Your deployment is over. The shared match is still running; no redeployment into this roster."
                 : "The match has ended. Check your inventory before preparing the next round.");
-            m_Next.SetEnabled(s.Phase == ClashPhase.Finished && s.CanStartNext && !saving && !pending);
+            m_Next.SetEnabled((s.IsSolo && ended || s.Phase == ClashPhase.Finished) && s.CanStartNext && !saving && !pending);
         }
-        private void RefreshViewport(Camera camera)
+        private void RefreshViewport()
         {
             var parent = Element.parent;
             if (parent == null || parent.contentRect.width < 1) return;
-            float pixels = camera ? camera.pixelWidth : Screen.width;
-            float pixelHeight = camera ? camera.pixelHeight : Screen.height;
+            float pixels = Screen.width;
+            float pixelHeight = Screen.height;
             if (pixels < 1 || pixelHeight < 1) return;
             float width = Mathf.Min(pixels, parent.contentRect.width);
             Element.style.right = StyleKeyword.Auto; Element.style.bottom = StyleKeyword.Auto;

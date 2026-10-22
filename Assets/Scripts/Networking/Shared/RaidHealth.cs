@@ -60,7 +60,7 @@ namespace Unity.MP_FPS
             state.HeadHealth = 35; state.ChestHealth = 85; state.AbdomenHealth = 70;
             state.LeftArmHealth = state.RightArmHealth = 60;
             state.LeftLegHealth = state.RightLegHealth = 65;
-            RaidOxygen.Initialize(ref state);
+            if(!state.ProtectionInitialized)RaidOxygen.Initialize(ref state);
             RaidNutrition.Initialize(ref state);
             Synchronize(ref state);
         }
@@ -107,6 +107,25 @@ namespace Unity.MP_FPS
             state.LastHitPart = part; state.LastDamageAmount = amount;
             state.LastHitTick = tick; state.ControllerState.IsHit = true;
             return before - state.CurrentHealth;
+        }
+        // Combat calls once per physical impact, before anatomical distribution.
+        // Hypoxia, nutrition and other physiological damage keep using Damage/Set directly.
+        public static float CombatDamage(ref PredictedPlayerGhost state,BodyPart part,float amount,uint tick,
+            RaidDamageKind kind,Unity.Mathematics.float3 impactPoint=default)
+        {
+            if(!EnergyShieldRules.Alive(state) || !float.IsFinite(amount) || amount<=0 ||
+                part!=BodyPart.Auto && Maximum(part)<=0)return 0;
+            float remaining=EnergyShieldRules.Absorb(ref state,amount,tick,kind,impactPoint);
+            float before=state.CurrentHealth;
+            if(part==BodyPart.Auto)
+            {
+                if(!state.BodyHealthInitialized)Damage(ref state,BodyPart.Chest,remaining,tick);
+                else for(int i=0;i<PartCount;i++)
+                {var target=(BodyPart)i;float share=remaining*Get(state,target)/Mathf.Max(.001f,before);Damage(ref state,target,share,tick);}
+                state.LastDamageAmount=before-state.CurrentHealth;state.LastHitPart=BodyPart.Auto;
+            }
+            else Damage(ref state,part,remaining,tick);
+            return before-state.CurrentHealth;
         }
         public static BodyPart MostInjured(in PredictedPlayerGhost state)
         {

@@ -28,6 +28,7 @@ namespace Unity.MP_FPS
             public Transform Root;
             public Vector3 Velocity;
             public Vector3 AimOffset;
+            public Vector3 HeadOffset, HipOffset;
             public bool Alien;
         }
 
@@ -94,6 +95,8 @@ namespace Unity.MP_FPS
             m_CoverReservations.Clear();
             m_SpawnObservers.Clear();
             m_NextBuild = m_NextTargets = 0;
+            m_ClashRegistry = null;m_ClashArena = null;m_ClashAgents.Clear();m_ClashSquads.Clear();
+            m_ClashNavChecked = m_ClashNavReady = false;
             // All transports can disconnect while the map/world remain alive. Retain the
             // session budget and cutoff so reconnecting cannot manufacture another wave.
         }
@@ -114,10 +117,13 @@ namespace Unity.MP_FPS
         {
             if(BountyClashRuntime.Enabled(EntityManager))
             {
+                if (ClashSoloRuntime.TryGetRegistry(EntityManager, out var registry) && MoonRaidMap.Active != null)
+                { UpdateClashBots(MoonRaidMap.Active, registry, SystemAPI.Time.ElapsedTime); return; }
                 if(m_Map!=null || m_NavData!=null)
                 {DestroyEnemies();ReleaseNavigation();ResetPopulation();m_Map=null;}
                 return;
             }
+            m_ClashArena = null;m_ClashRegistry = null;m_ClashAgents.Clear();
             var map = MoonRaidMap.Active;
             double now = SystemAPI.Time.ElapsedTime;
             // Reference identity also detects an unloaded Unity object that now compares equal to null.
@@ -140,7 +146,7 @@ namespace Unity.MP_FPS
             using var deaths = new EntityCommandBuffer(Allocator.Temp);
             foreach (var (enemy, pose, health, input, entity) in SystemAPI.Query<RefRO<DollSingerEnemy>,
                          RefRO<LocalTransform>, RefRW<PredictedPlayerGhost>, RefRW<PlayerInputComponent>>()
-                         .WithAll<Simulate>().WithEntityAccess())
+                         .WithAll<Simulate>().WithNone<ClashBot>().WithEntityAccess())
             {
                 var brain = EntityManager.GetComponentObject<DollSingerEnemyBrain>(entity);
                 if (health.ValueRO.CurrentHealth <= 0)
@@ -176,6 +182,7 @@ namespace Unity.MP_FPS
             using var enemies = query.ToEntityArray(Allocator.Temp);
             foreach (var enemy in enemies)
             {
+                if (EntityManager.HasComponent<ClashBot>(enemy)) continue;
                 RetireEnemy(enemy, EntityManager.GetComponentObject<DollSingerEnemyBrain>(enemy));
                 var input = EntityManager.GetComponentData<DollSingerEnemy>(enemy).InputEntity;
                 if (EntityManager.Exists(input)) EntityManager.DestroyEntity(input);
@@ -207,6 +214,9 @@ namespace Unity.MP_FPS
             foreach (var point in map.EnemySpawnPositions) bounds.Encapsulate(point);
             bounds.Encapsulate(map.ExtractionPosition);
             bounds.Expand(new Vector3(100, 100, 100));
+            if (m_ClashArena != null)
+                bounds = new Bounds(BountyClashArenaSettings.Position(m_ClashArena.Center),
+                    new Vector3(m_ClashArena.Radius * 2 + 12, 100, m_ClashArena.Radius * 2 + 12));
             UnityEngine.Physics.SyncTransforms();
             m_Sources.Clear();
             NavMeshBuilder.CollectSources(bounds, s_WorldMask, NavMeshCollectGeometry.PhysicsColliders,
@@ -277,8 +287,14 @@ namespace Unity.MP_FPS
                     track.Reload = health.ValueRO.LastReloadTick;
                 }
                 var alien = link.LinkedInstance.GetComponent<ProceduralAlienEnemy>();
+                var player = link.LinkedInstance.GetComponent<PlayerGhost>();
+                var capsule = player != null && player.Controller != null ? player.Controller.CharacterController : null;
+                // Use the actual controller stance, not imaginary standing hit points over a prone body.
+                Vector3 center = capsule ? capsule.transform.TransformPoint(capsule.center) - position : Vector3.up * .9f;
+                float height = capsule ? capsule.height * capsule.transform.lossyScale.y : 1.8f;
                 m_Targets.Add(new Target { Entity = entity, Position = position, Velocity = velocity, Root = link.LinkedInstance.transform,
-                    Alien = alien != null, AimOffset = alien ? alien.AimPoint - position : Vector3.up * 1.15f });
+                    Alien = alien != null, AimOffset = alien ? alien.AimPoint - position : center + Vector3.up * (height * .14f),
+                    HeadOffset = center + Vector3.up * (height * .36f), HipOffset = center - Vector3.up * (height * .08f) });
             }
             m_ExpiredTracks.Clear();
             foreach (var pair in m_Tracks) if (now - pair.Value.SeenAt > 1) m_ExpiredTracks.Add(pair.Key);
@@ -317,22 +333,37 @@ namespace Unity.MP_FPS
                 Mathf.Abs(start.position.y - position.y) > .75f || Mathf.Abs(end.position.y - goal.y) > 1.2f ||
                 !NavMesh.CalculatePath(start.position, end.position, m_Filter, brain.Path) ||
                 brain.Path.status != NavMeshPathStatus.PathComplete)
-            { brain.PathFailed = true; return; }
+            { PathFailure(brain, goal, now); return; }
             brain.PathFailed = false;
             brain.CornerCount = brain.Path.GetCornersNonAlloc(brain.Corners);
+            if (brain.CornerCount == 0 || brain.CornerCount == brain.Corners.Length ||
+                brain.IsClashBot && !SafeClashRoute(brain.Corners, brain.CornerCount))
+            { brain.CornerCount = 0;PathFailure(brain, goal, now);return; }
             // A stalled controller repaths instead of teleporting through an obstruction.
             if (now >= brain.NextProgress)
             {
                 if (brain.MovementRequested && Vector3.Distance(position, brain.ProgressPosition) < .3f && Vector3.Distance(position, goal) > 2)
                 {
-                    brain.PathFailed = true;
+                    PathFailure(brain, goal, now);
                     brain.NextCover = brain.NextDecision = 0;
                     if (brain.Action == PmcAction.Scavenge && brain.Cache >= 0)
                     { brain.VisitedCaches.Add(brain.Cache); brain.Cache = -1; brain.LootUntil = 0; }
                 }
+                else if (Vector3.Distance(position, brain.ProgressPosition) >= .6f)
+                { brain.PathFailures = brain.RecoveryAttempts = 0; }
                 brain.ProgressPosition = position;
                 brain.NextProgress = now + 3;
             }
+        }
+
+        private static void PathFailure(DollSingerEnemyBrain brain, Vector3 goal, double now)
+        {
+            brain.PathFailed = true;
+            if (!brain.IsClashBot) return;
+            brain.PathFailures++;
+            brain.FailedGoal = goal;
+            brain.FailedGoalUntil = now + Mathf.Min(12, 2 + brain.PathFailures * 2);
+            brain.NextMission = brain.NextDecision = brain.NextCover = 0;
         }
 
         private static Vector3 FollowPath(DollSingerEnemyBrain brain, Vector3 position)

@@ -157,22 +157,29 @@ namespace Unity.MP_FPS
             return false;
         }
 
-        private void SpawnActor(MoonRaidMap map, Entity prefab, Vector3 position, double now)
+        private Entity SpawnActor(MoonRaidMap map, Entity prefab, Vector3 position, double now, ClashBotSpawnRequest? clash = null)
         {
             var player = EntityManager.Instantiate(prefab);
             var input = EntityManager.CreateEntity(typeof(PredictedClientInput));
-            int id = m_NextId--;
+            int id = clash.HasValue ? clash.Value.OwnerNetworkId : m_NextId--;
             int serial = ++m_SpawnSerial;
-            var name = new FixedString64Bytes("DollSinger " + serial.ToString("00"));
+            var name = new FixedString64Bytes(clash.HasValue ? clash.Value.Name : "DollSinger " + serial.ToString("00"));
             float yaw = m_SpawnRandom.NextFloat(0, 360);
             EntityManager.SetComponentData(player, new GhostOwner { NetworkId = id });
-            EntityManager.SetComponentData(player, LocalTransform.FromPositionRotation(position + Vector3.up * .1f,
+            EntityManager.SetComponentData(player, LocalTransform.FromPositionRotation(position + Vector3.up * (clash.HasValue ? 0 : .1f),
                 quaternion.RotateY(math.radians(yaw))));
             int ammo = WeaponManager.Instance.WeaponRegistry.GetWeaponData(2)?.MagazineSize ?? 30;
             var healthState = new PredictedPlayerGhost { MaxHealth = 100, CurrentHealth = 100,
                 EquippedWeaponID = DollSingerWeapons.None, CurrentAmmo = 0, InventoryWeapons = true,
                 PrimaryWeaponID = DollSingerWeapons.None, SecondaryWeaponID = DollSingerWeapons.None, PistolWeaponID = DollSingerWeapons.None };
+            if (clash.HasValue)
+            {
+                healthState.ClashEnabled = true;healthState.ClashTeam = clash.Value.TeamId;
+                healthState.ClashLife = ClashLife.Waiting;healthState.ClashCanAct = false;
+                healthState.ClashMaxHealthFraction = 1;
+            }
             RaidHealth.Initialize(ref healthState);
+            if (clash.HasValue) healthState.CurrentHealth = 0;
             EntityManager.SetComponentData(player, healthState);
             EntityManager.SetComponentData(player, new GhostGameObjectGuid { Guid = GhostGameObject.GenerateRandomHash() });
             EntityManager.SetComponentData(player, new PlayerGhost.PlayerData { Name = name });
@@ -185,12 +192,26 @@ namespace Unity.MP_FPS
             // A finite raid loadout; unused medicine remains in the normal death inventory.
             inventory.AddSupply("medkit", 2, parent: InventoryCatalog.Pockets, foundInRaid: true);
             if (map.EnemyCells > 0) inventory.AddSupply("cells", map.EnemyCells, foundInRaid: true);
-            EntityManager.AddComponentObject(player, new DollSingerEnemyBrain { Inventory = inventory,
+            var brain = new DollSingerEnemyBrain { Inventory = inventory,
                 Seed = serial, Yaw = yaw, Goal = position, ProgressPosition = position, SpawnTime = now,
                 NextSense = now + (serial % 3) * .033, NextDecision = now + (serial % 3) * .067,
                 Aggression = .4f + ((serial - 1) % 3) * .2f, Caution = .8f - ((serial - 1) % 3) * .2f,
-                Random = new Unity.Mathematics.Random(m_SpawnRandom.NextUInt(1, uint.MaxValue)) });
+                Random = new Unity.Mathematics.Random(m_SpawnRandom.NextUInt(1, uint.MaxValue)) };
+            if (clash.HasValue)
+            {
+                var request = clash.Value;
+                brain.ClashParticipantId = request.ParticipantId;brain.ClashTeamId = request.TeamId;
+                brain.ClashEpoch = request.Epoch;brain.ClashSlot = request.Slot;
+                brain.Action = PmcAction.ClashObjective;brain.Reason = "approach the public bounty objective with squad";
+                brain.Seed = request.ParticipantId;
+                EntityManager.AddComponentData(player, new ClashBot { ParticipantId = request.ParticipantId,
+                    TeamId = request.TeamId, Slot = request.Slot, Epoch = request.Epoch });
+                EntityManager.AddComponentData(player, new ClashPlayer { ParticipantId = request.ParticipantId,
+                    TeamId = request.TeamId, Epoch = request.Epoch, CanAct = false });
+            }
+            EntityManager.AddComponentObject(player, brain);
             LeaderboardManager.AddPlayer(id, name);
+            return player;
         }
     }
 }

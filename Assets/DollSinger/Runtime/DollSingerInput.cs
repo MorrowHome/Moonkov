@@ -22,6 +22,8 @@ namespace Unity.MP_FPS.DollSinger
         public System.Func<int, int> QuickSlotSelection { get; set; }
         public System.Func<bool> DarkSightMode { get; set; }
         public System.Func<bool, bool> QuickSlotPrimaryUse { get; set; }
+        // Separate melee intent; true consumes both attack buttons without generating gun input.
+        public System.Func<bool, bool, bool> MeleeAttackInput { get; set; }
         public void SuppressPrimaryUntilRelease() => suppressFireUntilRelease = true;
         private bool IsGameplayBlocked => GameplayInputBlocked?.Invoke() == true;
         private bool suppressTiptoeUntilRelease;
@@ -51,6 +53,7 @@ namespace Unity.MP_FPS.DollSinger
         public DollSingerStance Stance { get; private set; }
         private DollSingerStance toggledStance;
         public bool AimHeld { get; private set; }
+        public bool AimPressed { get; private set; }
         public bool FirePressed { get; private set; }
         public bool FireHeld { get; private set; }
         public bool ViewPressed { get; private set; }
@@ -195,6 +198,7 @@ namespace Unity.MP_FPS.DollSinger
             {
                 Look = mouse.delta.ReadValue() * mouseSensitivity;
                 AimHeld = mouse.rightButton.isPressed;
+                AimPressed = mouse.rightButton.wasPressedThisFrame;
                 FirePressed = mouse.leftButton.wasPressedThisFrame;
                 FireHeld = mouse.leftButton.isPressed;
                 ViewPressed |= mouse.middleButton.wasPressedThisFrame;
@@ -208,6 +212,7 @@ namespace Unity.MP_FPS.DollSinger
                 JumpPressed |= gamepad.buttonSouth.wasPressedThisFrame;
                 SprintHeld |= gamepad.leftStickButton.isPressed;
                 AimHeld |= gamepad.leftTrigger.isPressed;
+                AimPressed |= gamepad.leftTrigger.wasPressedThisFrame;
                 FirePressed |= gamepad.rightTrigger.wasPressedThisFrame;
                 FireHeld |= gamepad.rightTrigger.isPressed;
                 ViewPressed |= gamepad.rightStickButton.wasPressedThisFrame;
@@ -227,6 +232,8 @@ namespace Unity.MP_FPS.DollSinger
                 FirePressed = FireHeld = false;
                 if (!held) suppressFireUntilRelease = false;
             }
+            if (MeleeAttackInput?.Invoke(FirePressed, AimPressed) == true)
+            { FirePressed = FireHeld = AimHeld = ReloadPressed = false; }
             if (QuickSlotPrimaryUse?.Invoke(FirePressed) == true)
             { FirePressed = FireHeld = AimHeld = ReloadPressed = false; }
             Move = Vector2.ClampMagnitude(Move, 1f);
@@ -236,6 +243,7 @@ namespace Unity.MP_FPS.DollSinger
         {
             Move = Look = Vector2.zero;
             JumpPressed = SprintHeld = AimHeld = FirePressed = ViewPressed = LightPressed = ReloadPressed = false;
+            AimPressed = false;
             FireHeld = false;
             Stance = toggledStance;
             AltHeld = false;

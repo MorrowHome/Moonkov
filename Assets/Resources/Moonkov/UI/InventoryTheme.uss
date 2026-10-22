@@ -91,3 +91,15 @@
 .inventory-view.moonkov-controls-light .inventory-slot { background-color: #101318; border-color: #929ba5; }
 .inventory-view.moonkov-controls-light .inventory-slot-label { color: #b1bbcc; }
 .inventory-view.moonkov-controls-light .inventory-slot-item { color: #f1f2ed; }
+
+/* Eight real equipment slots keep the existing two rails around the character. */
+.inventory-view .inventory-slot { height: 23%; width: 26%; }
+.inventory-view .inventory-slot-0, .inventory-view .inventory-slot-4 { top: 0; }
+.inventory-view .inventory-slot-1, .inventory-view .inventory-slot-5 { top: 25.5%; }
+.inventory-view .inventory-slot-2, .inventory-view .inventory-slot-6 { top: 51%; }
+.inventory-view .inventory-slot-3, .inventory-view .inventory-slot-7 { top: 76.5%; }
+.inventory-view .inventory-slot-0, .inventory-view .inventory-slot-1,
+.inventory-view .inventory-slot-2, .inventory-view .inventory-slot-3 { left: 0; }
+.inventory-view .inventory-slot-4, .inventory-view .inventory-slot-5,
+.inventory-view .inventory-slot-6, .inventory-view .inventory-slot-7 { left: 74%; }
+.inventory-view .inventory-slot-label { font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

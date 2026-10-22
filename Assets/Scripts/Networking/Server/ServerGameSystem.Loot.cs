@@ -89,6 +89,7 @@ namespace Unity.MP_FPS
                 position=ground.point;
                 rotation=Quaternion.FromToRotation(Vector3.up,ground.normal)*(Quaternion)pose.Rotation;
             }
+            UpdateInventoryProtection(ref state,connection);
             LootContainers(ref state).Drop(inventory.Graph,position,rotation,SystemAPI.GetComponent<JoinedClient>(connection).CharacterIndex,SystemAPI.Time.ElapsedTime);
             inventory.OpenedLootId=-1;inventory.LastSentVersion=-1;
         }
@@ -199,6 +200,7 @@ namespace Unity.MP_FPS
                     if(r.RequestId>inventory.RequestId)
                     {
                         inventory.RequestId=r.RequestId;inventory.ActionFeedback=null;
+                        UpdateInventoryProtection(ref state,connection);
                         inventory.Error=r.RaidId!=session.ValueRO.RaidId || inventory.RaidId!=r.RaidId || inventory.ActionPending || inventory.OpenedLootId!=r.LootId ||
                             !CanAccessLoot(ref state,connection,r.LootId,session.ValueRO) || caches.RequiresDissection(r.LootId) ||
                             !caches.Containers.TryGetValue(r.LootId,out var cache)
@@ -206,6 +208,7 @@ namespace Unity.MP_FPS
                             : LootInventoryExchange.TryApply(inventory.Graph,cache,new InventoryCommand {ExpectedVersion=r.ExpectedVersion,Operation=r.Operation,
                                 ItemId=r.ItemId.ToString(),Parent=r.Parent.ToString(),Region=r.Region.ToString(),TargetId=r.TargetId.ToString(),
                                 X=r.X,Y=r.Y,Rotated=r.Rotated,Quantity=r.Quantity},r.ExpectedLootVersion);
+                        if(inventory.Error==InventoryError.None)UpdateInventoryProtection(ref state,connection,true);
                         inventory.LastSentVersion=-1;
                         if(session.ValueRO.Phase==RaidPhase.Active)RaidInventoryState.UpdateTotals(inventory.Graph,ref session.ValueRW);
                     }

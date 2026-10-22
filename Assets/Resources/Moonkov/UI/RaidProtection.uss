@@ -1,0 +1,12 @@
+@import url("ArchiveTheme.uss");
+.raid-protection { padding: 8px 10px; border-width: 1px; border-color: #687584; border-left-width: 3px; border-left-color: var(--archive-accent); background-color: rgba(8,9,12,.92); }
+.raid-protection Label { color: var(--archive-ink); margin: 0; white-space: normal; }
+.raid-protection-value { font-size: 16px; margin-bottom: 6px; }
+.raid-protection-track { height: 4px; margin: 6px 0; background-color: #404651; }
+.raid-protection-fill { height: 100%; background-color: #91b9da; }
+.raid-protection-copy { font-size: 12px; }
+.raid-protection-dome { font-size: 12px; padding-top: 6px; margin-top: 6px; border-top-width: 1px; border-top-color: #404651; }
+.raid-protection-clash { margin-top: 10px; }
+.raid-protection-low .raid-protection { border-left-color: #ad4236; }
+.raid-protection-low .raid-protection-value { color: #ffb1a4; }
+.raid-protection .raid-protection-head-danger { color: #ffb1a4; }

@@ -1,0 +1,12 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="RaidProtection.uss" />
+    <ui:VisualElement name="raidProtection" class="raid-protection archive-ui" picking-mode="Ignore">
+        <ui:Label name="raidShieldValue" class="raid-protection-value" picking-mode="Ignore" />
+        <ui:VisualElement name="raidShieldTrack" class="raid-protection-track" picking-mode="Ignore">
+            <ui:VisualElement name="raidShieldFill" class="raid-protection-fill" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <ui:Label name="raidShieldPower" class="raid-protection-copy" picking-mode="Ignore" />
+        <ui:Label name="raidShieldStatus" class="raid-protection-copy" picking-mode="Ignore" />
+        <ui:Label name="raidHeadDomeStatus" class="raid-protection-dome" picking-mode="Ignore" />
+    </ui:VisualElement>
+</ui:UXML>

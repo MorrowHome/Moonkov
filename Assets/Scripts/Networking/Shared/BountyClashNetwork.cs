@@ -34,6 +34,8 @@ namespace Unity.MP_FPS
         public ClashExitBlock ExitBlockA, ExitBlockB;
         public float3 TargetPosition, ExitPositionA, ExitPositionB, BountyPosition;
         public bool IsCarrier, TeamHasBounty, Connected, IsLeader, Closing, DeploymentAborted, CanStartNext;
+        public bool IsSolo, SoloNavigationReady;
+        public FixedString128Bytes SoloNavigationStatus;
         public float DeploymentRemaining;
         public float ReconnectRemaining, ArenaRadius;
         public float3 ArenaCenter;
@@ -44,7 +46,7 @@ namespace Unity.MP_FPS
         public int Epoch, ParticipantId, TeamId, NetworkId;
         public uint Sequence;
         public ClashLife Life;
-        public bool Ready, Connected, OwnTeam, IsLocal;
+        public bool Ready, Connected, OwnTeam, IsLocal, IsBot;
         public float3 Position; // Only own-team rows carry a position. Other rows are zeroed.
         public float Health, MaxHealthFraction, ReviveProgress, ReconnectRemaining;
     }
