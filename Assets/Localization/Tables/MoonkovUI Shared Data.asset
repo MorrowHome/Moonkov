@@ -627,11 +627,11 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2871799958
-    m_Key: B-08 Expedition pack
+    m_Key: B-08 Expedition subspace pack
     m_Metadata:
       m_Items: []
   - m_Id: 2871799959
-    m_Key: B-04 Scout pack
+    m_Key: B-04 Scout subspace pack
     m_Metadata:
       m_Items: []
   - m_Id: 2871799960
@@ -2655,11 +2655,11 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625888
-    m_Key: B-03 Sling pack
+    m_Key: B-03 Light subspace pack
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625889
-    m_Key: B-12 Cargo pack
+    m_Key: B-12 Cargo subspace pack
     m_Metadata:
       m_Items: []
   - m_Id: 2834712165625890
@@ -4811,6 +4811,26 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 5591439740213562
     m_Key: "A plain neck-fitted life-support collar. Projects a spherical helmet without cat ears and uses the existing oxygen reserve, canisters and pressurized air."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51176637495477051
+    m_Key: "A compact back-mounted subspace anchor with one capacity ring and a 3x4 storage grid. Carried weight still applies. Move supplies to pockets or a rig before use."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28642487360890836
+    m_Key: "A back-mounted subspace anchor with two capacity rings and a 5x6 storage grid. Carried weight still applies. Move supplies to pockets or a rig before use."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24539859515133516
+    m_Key: "A large back-mounted subspace anchor with three capacity rings and a 6x7 storage grid. Carried weight still applies. Move supplies to pockets or a rig before use."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356445718
+    m_Key: "A visible waist-mounted shield projector with charge indicators. Equip in the shield slot. Absorbs combat damage before health; excess damage passes through. After 6 seconds without a hit, restores 8 shield per second and spends 0.5 energy per shield. Recharge using charged cells in pockets or an equipped rig. Does not block suffocation, hunger or thirst."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33747919478639220
+    m_Key: "A back-mounted scout subspace anchor with one ring, paired stabilizer fins and a 4x4 storage grid. Carried weight still applies. Move supplies to pockets or a rig before use."
     m_Metadata:
       m_Items: []
   m_Metadata:

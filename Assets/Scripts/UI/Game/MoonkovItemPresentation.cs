@@ -81,7 +81,7 @@ namespace Unity.MP_FPS.Client
             string description;
             switch (code)
             {
-                case "energy_shield_generator": description = "Equip in the shield slot. Absorbs combat damage before health; excess damage passes through. After 6 seconds without a hit, restores 8 shield per second and spends 0.5 energy per shield. Recharge using charged cells in pockets or an equipped rig. Does not block suffocation, hunger or thirst."; break;
+                case "energy_shield_generator": description = "A visible waist-mounted shield projector with charge indicators. Equip in the shield slot. Absorbs combat damage before health; excess damage passes through. After 6 seconds without a hit, restores 8 shield per second and spends 0.5 energy per shield. Recharge using charged cells in pockets or an equipped rig. Does not block suffocation, hunger or thirst."; break;
                 case "energy_head_dome": description = "A neck-fitted life-support collar with a lilac bow and a gold cat bell. Follows the neck bones and uses the existing oxygen reserve, canisters and pressurized air. Does not provide ballistic protection or combat shielding."; break;
                 case "helmet": description = "A plain neck-fitted life-support collar. Projects a spherical helmet without cat ears and uses the existing oxygen reserve, canisters and pressurized air."; break;
                 case "energy_sword": case "dagger": description = "Equip in the melee slot and bind to a number key. Left click: light attack. Right click: heavy attack. Attacks use stamina; walls block hits. With no active weapon, fists are the fallback."; break;
@@ -110,8 +110,10 @@ namespace Unity.MP_FPS.Client
                 case "oxygen_reserve": description = "A large suit-air refill. Use from an equipped rig; excess oxygen is lost."; break;
                 case "scout_rig": description = "Light chest storage with three narrow compartments. Keeps medical supplies and cells accessible."; break;
                 case "field_rig": description = "Roomy chest storage with three broad compartments. Carries larger medical and oxygen supplies within reach."; break;
-                case "sling_pack": description = "A light backpack for short scavenging trips. Move medicine, oxygen and cells into the rig before use."; break;
-                case "cargo_pack": description = "A heavy pack with a large continuous grid for bulky loot. Total carried weight still applies."; break;
+                case "small_pack": description = "A back-mounted scout subspace anchor with one ring, paired stabilizer fins and a 4x4 storage grid. Carried weight still applies. Move supplies to pockets or a rig before use."; break;
+                case "backpack": description = "A back-mounted subspace anchor with two capacity rings and a 5x6 storage grid. Carried weight still applies. Move supplies to pockets or a rig before use."; break;
+                case "sling_pack": description = "A compact back-mounted subspace anchor with one capacity ring and a 3x4 storage grid. Carried weight still applies. Move supplies to pockets or a rig before use."; break;
+                case "cargo_pack": description = "A large back-mounted subspace anchor with three capacity rings and a 6x7 storage grid. Carried weight still applies. Move supplies to pockets or a rig before use."; break;
                 case "circuit_board": description = "Recovered control electronics. Trade goods for the lunar supplier."; break;
                 case "copper_coil": description = "A dense industrial induction coil. Its sale value comes with extra carried weight."; break;
                 case "ceramic_plate": description = "Industrial ceramic stock. A trade good, not wearable armor."; break;

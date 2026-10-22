@@ -5,8 +5,10 @@ namespace Unity.MP_FPS
     // Original low-cost meshes, shared by client avatars. No model imports or colliders.
     internal static class EnergyShieldGeometry
     {
-        private static Mesh s_Sphere,s_Collar,s_Box,s_NeckBand,s_BowLoop,s_BowTail,s_CatEar,s_Visor,s_EnergyEar;
+        private static Mesh s_Housing,s_Aperture,s_Sphere,s_Collar,s_Box,s_NeckBand,s_BowLoop,s_BowTail,s_CatEar,s_Visor,s_EnergyEar;
         private static int s_Users;
+        internal static Mesh Aperture => s_Aperture;
+        internal static Mesh Housing => s_Housing;
         internal static Mesh Sphere => s_Sphere;
         internal static Mesh Collar => s_Collar;
         internal static Mesh Box => s_Box;
@@ -19,7 +21,7 @@ namespace Unity.MP_FPS
         internal static void Retain()
         {
             if(s_Users++>0 && s_Sphere)return;
-            s_Sphere=SphereMesh(48,24);s_Collar=TorusMesh(48,8);s_Box=BoxMesh();
+            s_Housing=HousingMesh();s_Aperture=ApertureMesh();s_Sphere=SphereMesh(48,24);s_Collar=TorusMesh(48,8);s_Box=BoxMesh();
             s_NeckBand=NeckBandMesh();s_BowLoop=BowLoopMesh();s_BowTail=BowTailMesh();
             s_Visor=VisorMesh();s_EnergyEar=EnergyEarMesh();
             s_CatEar=RibbonMesh("Neko bell / cat ear",new[]{new Vector3(-.5f,0,0),new Vector3(.5f,0,0),new Vector3(0,1,.12f)},new Vector2[3],new[]{0,1,2});
@@ -27,7 +29,7 @@ namespace Unity.MP_FPS
         internal static void Release()
         {
             s_Users=Mathf.Max(0,s_Users-1);if(s_Users!=0)return;
-            Destroy(s_Sphere);Destroy(s_Collar);Destroy(s_Box);s_Sphere=s_Collar=s_Box=null;
+            Destroy(s_Housing);s_Housing=null;Destroy(s_Aperture);s_Aperture=null;Destroy(s_Sphere);Destroy(s_Collar);Destroy(s_Box);s_Sphere=s_Collar=s_Box=null;
             Destroy(s_NeckBand);Destroy(s_BowLoop);Destroy(s_BowTail);s_NeckBand=s_BowLoop=s_BowTail=null;
             Destroy(s_CatEar);s_CatEar=null;
             Destroy(s_Visor);s_Visor=null;
@@ -39,6 +41,31 @@ namespace Unity.MP_FPS
             float angle=u*Mathf.PI*2;
             float radius=Mathf.Lerp(.17f,HelmetProfile(v),Mathf.SmoothStep(0,1,v/.12f));
             return new Vector3(Mathf.Sin(angle)*radius,v,Mathf.Cos(angle)*radius);
+        }
+        private static Mesh ApertureMesh()
+        {
+            const int count=48;var vertices=new Vector3[count+1];var uv=new Vector2[count+1];var indices=new int[count*3];
+            uv[count]=Vector2.one*.5f;
+            for(int i=0;i<count;i++)
+            {
+                float a=i*Mathf.PI*2/count;vertices[i]=new Vector3(Mathf.Cos(a),Mathf.Sin(a),0);uv[i]=new Vector2(vertices[i].x,vertices[i].y)*.5f+Vector2.one*.5f;
+                indices[i*3]=count;indices[i*3+1]=i;indices[i*3+2]=(i+1)%count;
+            }
+            return RibbonMesh("Subspace storage / aperture",vertices,uv,indices);
+        }
+        private static Mesh HousingMesh()
+        {
+            var outline=new[]{new Vector2(-.34f,-.5f),new Vector2(.34f,-.5f),new Vector2(.5f,-.34f),new Vector2(.5f,.34f),
+                new Vector2(.34f,.5f),new Vector2(-.34f,.5f),new Vector2(-.5f,.34f),new Vector2(-.5f,-.34f)};
+            var vertices=new Vector3[48];var uv=new Vector2[48];var indices=new System.Collections.Generic.List<int>();
+            for(int i=0;i<8;i++)
+            {
+                var a=outline[i];var b=outline[(i+1)%8];vertices[i]=new Vector3(a.x,a.y,.5f);vertices[i+8]=new Vector3(a.x,a.y,-.5f);
+                int side=16+i*4;vertices[side]=vertices[i];vertices[side+1]=new Vector3(b.x,b.y,.5f);vertices[side+2]=new Vector3(b.x,b.y,-.5f);vertices[side+3]=vertices[i+8];
+                indices.AddRange(new[]{side,side+2,side+1,side,side+3,side+2});
+                if(i<6)indices.AddRange(new[]{0,i+1,i+2,8,i+10,i+9});
+            }
+            var mesh=new Mesh{name="Shield projector / chamfered housing",hideFlags=HideFlags.DontSave};mesh.vertices=vertices;mesh.uv=uv;mesh.triangles=indices.ToArray();mesh.RecalculateNormals();mesh.RecalculateBounds();return mesh;
         }
         private static Mesh VisorMesh()
         {

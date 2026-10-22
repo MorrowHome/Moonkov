@@ -145,7 +145,7 @@ namespace Unity.MP_FPS.Client
                 case "halo_focus_lens":return StashArtKind.HaloFocusLens; case "halo_fan_array":return StashArtKind.HaloFanArray;
                 case "halo_pulse_controller":return StashArtKind.HaloPulseController; case "halo_hit_marker":return StashArtKind.HaloHitMarker;
                 case "halo_mooncore_recycler":return StashArtKind.HaloMooncoreRecycler;
-                case "rig":return StashArtKind.ChestRig; case "backpack":case "small_pack":return StashArtKind.Backpack; default:return StashArtKind.None; }
+                case "rig":return StashArtKind.ChestRig; case "backpack":return StashArtKind.Backpack; case "small_pack":return StashArtKind.ScoutPack; default:return StashArtKind.None; }
         }
         public void Present(InventoryGraph graph, string message = null, bool operationCompleted = true, int lootId=-1, bool droppedItem=false)
         {

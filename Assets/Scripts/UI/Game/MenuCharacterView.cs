@@ -392,7 +392,7 @@ namespace Unity.MP_FPS.Client
         {
             m_ProtectionInventory=inventory;
             if(m_Model==null)return;
-            bool equipped=EnergyShieldEquipment.IsHeadDome(inventory?.Equipped("Helmet")?.Code)||inventory?.Equipped("Shield")!=null;
+            bool equipped=EnergyShieldEquipment.IsHeadDome(inventory?.Equipped("Helmet")?.Code)||inventory?.Equipped("Shield")!=null||EnergyShieldEquipment.BackpackStyle(inventory?.Equipped("Backpack")?.Code)!=0;
             if(!m_Protection&&!equipped)return;
             if(!m_Protection)m_Protection=m_Model.GetComponent<EnergyShieldPresentation>()??m_Model.AddComponent<EnergyShieldPresentation>();
             m_Protection.PresentInventory(inventory);
