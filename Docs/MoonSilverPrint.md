@@ -1,5 +1,7 @@
 # Theophilus 黑白银盐与钴蓝风格
 
+2026-10-22：开发局内增加 **Ctrl+L**，在保真照明与风格化银盐之间切换；每次进入 Play 默认保真，仅编辑器和 Development Build 可用，不保存场景。详见 [开发用环境风格对比](Development/EnvironmentStyleToggle.md)。当前环境范围与透明效果顺序沿用最新实现，下文早期制作记录中的旧遮罩/执行顺序不作为当前实现说明。
+
 2026-10-18，直接接入正式地图 `Assets/MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusGameScene.unity`。第二轮补齐光影与印刷质感，第三轮加强清晰线条、黑白交界并收束晕光。
 
 参考用户提供的视频截图，以及已认可的 `Assets/Resources/Moonkov/UI/ApprovedHome/HomeLightBackdrop.png`、`HomeDarkBackdrop.png`、`CardIndustrial.png` 和 `Docs/UI/Approved-CD-20261018` 图片。配色按最新要求限定为黑、白、纯钴蓝，不使用紫色。

@@ -18,6 +18,9 @@ namespace Unity.MP_FPS.DollSinger
         // Assigned by the host game; the standalone character demo has no UI dependency.
         public System.Func<bool> GameplayInputBlocked { get; set; }
         public System.Func<bool> TimedActionInputActive { get; set; }
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        public System.Action DevelopmentStyleToggle { get; set; }
+#endif
         // Raid host maps 1–9 to real equipment. Unassigned in WeaponGestureLab.
         public System.Func<int, int> QuickSlotSelection { get; set; }
         public System.Func<bool> DarkSightMode { get; set; }
@@ -109,6 +112,17 @@ namespace Unity.MP_FPS.DollSinger
             LeanTarget = 0f;
         }
 
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        private bool TryDevelopmentStyleToggle(Keyboard keyboard, bool canRead)
+        {
+            if (!canRead || keyboard == null || DevelopmentStyleToggle == null ||
+                !keyboard.lKey.wasPressedThisFrame ||
+                !(keyboard.leftCtrlKey.isPressed || keyboard.rightCtrlKey.isPressed)) return false;
+            DevelopmentStyleToggle();
+            return true;
+        }
+#endif
+
         private void Update()
         {
             ClearFrame();
@@ -137,6 +151,11 @@ namespace Unity.MP_FPS.DollSinger
                 return;
             }
             bool wasAdjusting = LightAdjusting;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            // Reserve the developer chord before L can start a halo-light gesture.
+            if (TryDevelopmentStyleToggle(keyboard,
+                !wasAdjusting && Application.isFocused && CanReadPlayerInput)) return;
+#endif
             bool toggleLight = lightPress.Step(keyboard != null && keyboard.lKey.wasPressedThisFrame,
                 keyboard != null && keyboard.lKey.isPressed, Time.unscaledTime,
                 Application.isFocused && (CanReadPlayerInput || wasAdjusting));
