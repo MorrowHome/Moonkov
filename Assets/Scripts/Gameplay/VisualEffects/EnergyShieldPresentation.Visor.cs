@@ -24,8 +24,8 @@ namespace Unity.MP_FPS
 
         private void FitHelmet(Quaternion frame)
         {
-            // Fit the physical head and hair. Floating DressDetail ornaments are
-            // energy jewellery, not part of the head envelope or its sphere center.
+            // Only skin and hair define the head envelope. Head clothing, jewels,
+            // glasses and floating ornaments may remain outside the projected shell.
             var points=new List<Vector3>(4096);var inverse=Quaternion.Inverse(frame);
             var minimum=new Vector3(float.PositiveInfinity,float.PositiveInfinity,float.PositiveInfinity);
             var maximum=-minimum;
@@ -40,7 +40,9 @@ namespace Unity.MP_FPS
                 var physical=new bool[vertices.Length];var materials=renderer.sharedMaterials;
                 for(int sub=0;sub<Mathf.Min(mesh.subMeshCount,materials.Length);sub++)
                 {
-                    if(!materials[sub]||materials[sub].name.StartsWith("DressDetail",System.StringComparison.Ordinal))continue;
+                    if(!materials[sub])continue;
+                    string name=materials[sub].name.Replace(" (Instance)","");
+                    if(name!="Face"&&name!="Body"&&name!="Hair")continue;
                     foreach(int index in mesh.GetTriangles(sub))physical[index]=true;
                 }
                 for(int i=0;i<vertices.Length;i++)
