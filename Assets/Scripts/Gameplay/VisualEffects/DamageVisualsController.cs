@@ -1,166 +1,111 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 namespace Unity.MP_FPS
 {
+    // Owning-camera presentation; independent of animation update and prediction replay.
     public class DamageVisualsController : MonoBehaviour
     {
-        [Header("References")] [Tooltip("The Material template used for the damage vignette effect.")] [SerializeField]
-        private Material screenDamageMaterial;
+        [Header("References"),Tooltip("Legacy damage material, retained as a fallback.")]
+        [SerializeField] private Material screenDamageMaterial;
+        [Header("Intensity Range")]
+        [SerializeField] private float minIntensity=.4f;
+        [SerializeField] private float maxIntensity=.8f;
+        [SerializeField] private float fadeSpeed=2f;
+        [Range(0,1),SerializeField] private float effectStrength=1;
 
-        [Header("Intensity Range")] [SerializeField]
-        private float minIntensity = 0.4f;
+        private readonly InjuryFeedbackState m_Injury=new InjuryFeedbackState();
+        private PlayerGhost m_Player;
+        private Material m_InjuryMaterial,m_MucusMaterial;
+        private FullScreenPassWrapper m_InjuryPass,m_MucusPass;
+        private bool m_VeinsRetained;
+        private float m_MucusRemaining,m_MucusElapsed;
+        private static readonly int Vitals=Shader.PropertyToID("_VitalState"),Wounds=Shader.PropertyToID("_WoundState"),
+            FeedbackTime=Shader.PropertyToID("_FeedbackTime"),Veins=Shader.PropertyToID("_VeinMask"),Intensity=Shader.PropertyToID("_Intensity");
 
-        [SerializeField] private float maxIntensity = 0.8f;
-
-        [Header("Effect Parameters")] [SerializeField]
-        private float fadeSpeed = 2f;
-
-        private FullScreenPassWrapper _damagePass;
-        private Material _runtimeDamageMaterial;
-        private PlayerGhost _playerGhost; // To get a reference to this player's camera
-
-        private float _currentIntensity = 0f;
-        private static readonly int IntensityID = Shader.PropertyToID("_Intensity");
-        private Material m_MucusMaterial;
-        private FullScreenPassWrapper m_MucusPass;
-        private float m_MucusRemaining, m_MucusElapsed;
-
-        void Awake()
+        private void Awake()=>m_Player=GetComponentInParent<PlayerGhost>();
+        private void OnEnable()
         {
-            Debug.Assert(screenDamageMaterial,
-                "[DamageVisualsController] Player has no screenDamageMaterial assigned.");
-
-            // Get the PlayerGhost component to identify this player's camera
-            _playerGhost = GetComponentInParent<PlayerGhost>();
-            Debug.Assert(_playerGhost, "[DamageVisualsController] Could not find PlayerGhost component in parent.");
-
-            _runtimeDamageMaterial = new Material(screenDamageMaterial);
-
-            // Create an instance of our custom render pass.
-            _damagePass = new FullScreenPassWrapper("_ScreenDamagePass", _runtimeDamageMaterial, 0, false, false, injectionPoint:(UnityEngine.Rendering.Universal.RenderPassEvent)602);
-
-            // Subscribe our injection method to the render pipeline manager.
-            RenderPipelineManager.beginCameraRendering += InjectRenderPass;
+            m_Player=GetComponentInParent<PlayerGhost>();m_Injury.Reset();
+            RenderPipelineManager.beginCameraRendering-=InjectRenderPass;
+            RenderPipelineManager.beginCameraRendering+=InjectRenderPass;
         }
-
-        // This is the core of the new solution.
-        private void InjectRenderPass(ScriptableRenderContext context, Camera camera)
+        private void Update()
         {
-            // Only proceed if the effect is active.
-            if (_currentIntensity <= 0 && m_MucusRemaining <= 0)
-            {
-                return;
-            }
-
-            if (_playerGhost != null && camera == _playerGhost.GetPlayerCamera())
-            {
-                // Setup and enqueue the pass for this camera's renderer.
-                if (_currentIntensity > 0) _damagePass.EnqueuePass(camera);
-                if (m_MucusRemaining > 0) m_MucusPass?.EnqueuePass(camera);
-            }
+            var ghost=m_Player?m_Player.GhostGameObject:null;
+            if(!ghost || ghost.Role!=MultiplayerRole.ClientOwned || !ghost.GhostEntityExists() || !ghost.GhostHasComponent<PredictedPlayerGhost>())
+            {m_Injury.Reset();m_MucusRemaining=0;return;}
+            var state=ghost.ReadGhostComponentData<PredictedPlayerGhost>();
+            m_Injury.Present(state,Time.unscaledDeltaTime,fadeSpeed);
+            if(state.CurrentHealth>0 || m_Injury.Active)EnsureInjuryMaterial();
+            UpdateInjuryMaterial();UpdateMucus(state);
         }
-
-        void Update()
+        private void EnsureInjuryMaterial()
         {
-            UpdateMucus();
-            // The update logic now only needs to manage the intensity value.
-            // The toggling of the feature is gone.
-            if (_currentIntensity > 0)
+            if(m_InjuryMaterial)return;
+            var shader=Resources.Load<Shader>("Moonkov/InjurySurvivalScreen");
+            if(shader)
             {
-                _currentIntensity -= fadeSpeed * Time.deltaTime;
-                _currentIntensity = Mathf.Max(0f, _currentIntensity);
-
-                UpdateVignetteMaterial();
+                m_InjuryMaterial=new Material(shader){name="Local camera / injury and survival",hideFlags=HideFlags.HideAndDontSave};
+                m_InjuryMaterial.SetTexture(Veins,InjuryVeinMask.Retain());m_VeinsRetained=true;
             }
+            else if(screenDamageMaterial)
+                m_InjuryMaterial=new Material(screenDamageMaterial){hideFlags=HideFlags.HideAndDontSave};
+            if(m_InjuryMaterial)m_InjuryPass=new FullScreenPassWrapper("_LocalInjurySurvival",m_InjuryMaterial,0,shader!=null,false,(RenderPassEvent)602);
         }
-
-        private void UpdateMucus()
+        private void UpdateInjuryMaterial()
         {
-            float remaining=0;
-            var ghost=_playerGhost ? _playerGhost.GhostGameObject : null;
-            if(ghost && ghost.Role==MultiplayerRole.ClientOwned && ghost.GhostEntityExists() && ghost.GhostHasComponent<PredictedPlayerGhost>())
-            {
-                var state=ghost.ReadGhostComponentData<PredictedPlayerGhost>();
-                if(state.CurrentHealth>0)remaining=state.MucusBlindSeconds;
-            }
+            if(!m_InjuryMaterial)return;
+            m_InjuryMaterial.SetVector(Vitals,new Vector4(m_Injury.Critical,m_Injury.Hunger,m_Injury.Thirst,m_Injury.Impact));
+            m_InjuryMaterial.SetVector(Wounds,new Vector4(m_Injury.Blood,m_Injury.Variation,m_Injury.Visibility,effectStrength));
+            m_InjuryMaterial.SetFloat(FeedbackTime,m_Injury.Time);
+            m_InjuryMaterial.SetFloat(Intensity,m_Injury.Impact*effectStrength);
+        }
+        private void UpdateMucus(in PredictedPlayerGhost state)
+        {
+            float remaining=state.CurrentHealth>0?state.MucusBlindSeconds:0;
             if(remaining>m_MucusRemaining+.15f)m_MucusElapsed=0;
-            m_MucusRemaining=remaining;
-            if(remaining<=0)return;
+            m_MucusRemaining=remaining;if(remaining<=0)return;
             if(!m_MucusMaterial)
             {
-                var shader=Resources.Load<Shader>("Moonkov/AlienMucusScreen");
-                if(!shader)return;
-                m_MucusMaterial=new Material(shader){name="Local camera / alien mucus",hideFlags=HideFlags.DontSave};
-                m_MucusPass=new FullScreenPassWrapper("_AlienMucusPass",m_MucusMaterial,0,false,false,injectionPoint:(UnityEngine.Rendering.Universal.RenderPassEvent)602);
+                var shader=Resources.Load<Shader>("Moonkov/AlienMucusScreen");if(!shader)return;
+                m_MucusMaterial=new Material(shader){name="Local camera / alien mucus",hideFlags=HideFlags.HideAndDontSave};
+                m_MucusPass=new FullScreenPassWrapper("_AlienMucusPass",m_MucusMaterial,0,false,false,(RenderPassEvent)602);
             }
-            m_MucusElapsed+=Time.deltaTime;
-            m_MucusMaterial.SetFloat("_Remaining",remaining);
-            m_MucusMaterial.SetFloat("_Elapsed",m_MucusElapsed);
+            m_MucusElapsed+=Time.unscaledDeltaTime;
+            m_MucusMaterial.SetFloat("_Remaining",remaining);m_MucusMaterial.SetFloat("_Elapsed",m_MucusElapsed);
         }
-        private void OnDisable(){m_MucusRemaining=0;}
-
-        /// <summary>
-        /// Triggers the damage effect with a default intensity.
-        /// </summary>
-        public void TriggerDamageEffect()
+        private void InjectRenderPass(ScriptableRenderContext context,Camera camera)
         {
-            var intensity = Mathf.Clamp01(minIntensity);
-            float visualIntensity = Mathf.Lerp(minIntensity, maxIntensity, intensity);
-            _currentIntensity = Mathf.Max(_currentIntensity, visualIntensity);
-
-            UpdateVignetteMaterial();
+            if(!isActiveAndEnabled || !m_Player)return;
+            var ghost=m_Player.GhostGameObject;
+            if(!ghost || ghost.Role!=MultiplayerRole.ClientOwned || camera!=m_Player.GetPlayerCamera())return;
+            if(camera.TryGetComponent<UniversalAdditionalCameraData>(out var data) && data.renderType==CameraRenderType.Overlay)return;
+            if(effectStrength>0 && m_Injury.Active)m_InjuryPass?.EnqueuePass(camera);
+            if(m_MucusRemaining>0)m_MucusPass?.EnqueuePass(camera);
         }
 
-        /// <summary>
-        /// Triggers the damage effect with a specified intensity (0 to 1).
-        /// </summary>
-        /// <param name="intensity"></param>
+        // Preserve the existing trigger API for explicit presentation callers.
+        public void TriggerDamageEffect()=>TriggerDamageEffect(minIntensity);
         public void TriggerDamageEffect(float intensity)
         {
-            if (screenDamageMaterial == null || intensity <= 0) return;
-
-            intensity = Mathf.Clamp01(intensity);
-            float visualIntensity = Mathf.Lerp(minIntensity, maxIntensity, intensity);
-            _currentIntensity = Mathf.Max(_currentIntensity, visualIntensity);
-
-            UpdateVignetteMaterial();
+            if(intensity<=0)return;
+            m_Injury.Trigger(Mathf.Lerp(minIntensity,maxIntensity,Mathf.Clamp01(intensity)));UpdateInjuryMaterial();
         }
+        public void TriggerDamageEffect(float damageAmount,float maxHealth)
+        {if(damageAmount>0 && maxHealth>0)TriggerDamageEffect(damageAmount/maxHealth);}
 
-        /// <summary>
-        /// Triggers the damage effect based on damage amount and max health.
-        /// </summary>
-        /// <param name="damageAmount"></param>
-        /// <param name="maxHealth"></param>
-        public void TriggerDamageEffect(float damageAmount, float maxHealth)
+        private void OnDisable()
         {
-            if (_runtimeDamageMaterial == null || maxHealth <= 0 || damageAmount <= 0) return;
-
-            float damagePercent = Mathf.Clamp01(damageAmount / maxHealth);
-            float visualIntensity = Mathf.Lerp(minIntensity, maxIntensity, damagePercent);
-
-            _currentIntensity = Mathf.Max(_currentIntensity, visualIntensity);
-
-            UpdateVignetteMaterial();
+            RenderPipelineManager.beginCameraRendering-=InjectRenderPass;
+            m_Injury.Reset();m_MucusRemaining=m_MucusElapsed=0;
+            DestroyPrivate(m_InjuryMaterial);DestroyPrivate(m_MucusMaterial);
+            m_InjuryMaterial=m_MucusMaterial=null;m_InjuryPass=m_MucusPass=null;
+            if(m_VeinsRetained){InjuryVeinMask.Release();m_VeinsRetained=false;}
         }
-
-        private void UpdateVignetteMaterial()
-        {
-            if (_runtimeDamageMaterial == null) return;
-            _runtimeDamageMaterial.SetFloat(IntensityID, _currentIntensity);
-        }
-
-        void OnDestroy()
-        {
-            if(m_MucusMaterial)Destroy(m_MucusMaterial);
-            if (_runtimeDamageMaterial != null)
-            {
-                Destroy(_runtimeDamageMaterial);
-                _runtimeDamageMaterial = null;
-            }
-
-            // Unsubscribe to prevent memory leaks.
-            RenderPipelineManager.beginCameraRendering -= InjectRenderPass;
-        }
+        private void OnDestroy()=>OnDisable();
+        private static void DestroyPrivate(Object item)
+        {if(!item)return;if(Application.isPlaying)Destroy(item);else DestroyImmediate(item);}
     }
 }
