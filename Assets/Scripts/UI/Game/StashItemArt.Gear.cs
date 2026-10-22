@@ -4,18 +4,30 @@ namespace Unity.MP_FPS.Client
 {
     public sealed partial class StashItemArt
     {
+        private void Disc(uint color,float x,float y,float radius)
+        {
+            m_Painter.fillColor=C(color);m_Painter.BeginPath();
+            m_Painter.Arc(P(x,y),radius*m_Scale,UnityEngine.UIElements.Angle.Degrees(0),UnityEngine.UIElements.Angle.Degrees(360));
+            m_Painter.Fill();
+        }
         private void LifeSupportShroud()
         {
-            // Open face, thin energy shell and a physical oxygen collar.
-            Ring(0x5479ad, 2, 50, 43, 30);
-            Line(0xbad8eb, 2, new Vector2(28, 36), new Vector2(31, 26), new Vector2(39, 19));
-            Shape(0x313d4d, new Vector2(24, 66), new Vector2(37, 60), new Vector2(63, 60), new Vector2(76, 66),
-                new Vector2(76, 81), new Vector2(65, 89), new Vector2(35, 89), new Vector2(24, 81));
-            Shape(0xa1adb6, new Vector2(24, 66), new Vector2(37, 60), new Vector2(63, 60), new Vector2(76, 66),
-                new Vector2(64, 74), new Vector2(36, 74));
-            Line(0x183f98, 4, new Vector2(28, 76), new Vector2(39, 82), new Vector2(61, 82), new Vector2(72, 76));
-            Box(0xd4dcd9, 43, 76, 14, 8); Box(0x476780, 46, 78, 8, 3);
-            Box(0x667687, 18, 65, 8, 15); Box(0x667687, 74, 65, 8, 15);
+            // Matches the fitted navy band, lilac bow and gold cat bell on the real character.
+            Shape(0x202740,new Vector2(12,33),new Vector2(29,24),new Vector2(71,24),new Vector2(88,33),
+                new Vector2(88,54),new Vector2(73,64),new Vector2(27,64),new Vector2(12,54));
+            Line(0xd4af70,2,new Vector2(14,34),new Vector2(30,27),new Vector2(70,27),new Vector2(86,34));
+            Line(0xd4af70,2,new Vector2(14,53),new Vector2(29,61),new Vector2(71,61),new Vector2(86,53));
+            Shape(0x9380c1,new Vector2(48,46),new Vector2(29,34),new Vector2(27,57),new Vector2(48,51));
+            Shape(0xa491d1,new Vector2(52,46),new Vector2(71,34),new Vector2(73,57),new Vector2(52,51));
+            Shape(0xb2a3df,new Vector2(44,49),new Vector2(34,69),new Vector2(42,66),new Vector2(47,71),new Vector2(50,50));
+            Shape(0xb2a3df,new Vector2(53,49),new Vector2(59,71),new Vector2(64,66),new Vector2(69,69),new Vector2(57,50));
+            Box(0xc8b9ec,46,43,8,12);Ring(0xc59b57,2,50,61,4);
+            Disc(0xdeb86d,50,76,12);Disc(0xf0d397,47,72,6);
+            Shape(0xdeb86d,new Vector2(39,70),new Vector2(38,60),new Vector2(47,66));
+            Shape(0xdeb86d,new Vector2(53,66),new Vector2(62,60),new Vector2(61,70));
+            Disc(0x30283d,46,75,1.4f);Disc(0x30283d,54,75,1.4f);
+            Line(0x554137,1.4f,new Vector2(42,80),new Vector2(58,80));
+            Line(0x554137,1.4f,new Vector2(50,80),new Vector2(50,86));
         }
         private void ShieldGenerator()
         {

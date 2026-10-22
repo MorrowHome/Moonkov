@@ -7,6 +7,7 @@ using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 using Unity.MP_FPS.DollSinger;
+using Unity.MP_FPS.Inventory;
 #if UNITY_EDITOR
 using UnityEditor.SceneManagement;
 #endif
@@ -18,6 +19,8 @@ namespace Unity.MP_FPS.Client
     {
         // The project's PC renderer only draws layers 0–7. UI is within that mask.
         private const int ViewLayer = 5;
+        private EnergyShieldPresentation m_Protection;
+        private InventoryGraph m_ProtectionInventory;
         public Image Element { get; }
         public RenderTexture Target => m_Target;
         public int MotionChanges { get; private set; }
@@ -199,6 +202,7 @@ namespace Unity.MP_FPS.Client
                 m_HaloStrokes = m_Halo.GetComponentsInChildren<LineRenderer>(true);
             }
             UpdateHalo();
+            SetProtectionInventory(m_ProtectionInventory);
 
             bool found = false;
             m_Renderers = m_Model.GetComponentsInChildren<SkinnedMeshRenderer>();
@@ -362,6 +366,7 @@ namespace Unity.MP_FPS.Client
             ApplyWeaponGesture(dt);
             m_Spring?.SimulatePresentation(dt);
             UpdateHalo();
+            if(m_Protection)m_Protection.SimulatePresentation();
             // Keep a stable standing frame, expanding it only when a new pose needs more room.
             foreach (var renderer in m_Renderers) m_Bounds.Encapsulate(renderer.bounds);
             if (m_Halo != null) m_Bounds.Encapsulate(m_Halo.position + m_Model.transform.up * .2f);
@@ -382,6 +387,17 @@ namespace Unity.MP_FPS.Client
                     m_Settings.CrossfadeSeconds, m_Chest, m_Model.transform.forward, dt);
                 return;
             }
+        }
+        public void SetProtectionInventory(InventoryGraph inventory)
+        {
+            m_ProtectionInventory=inventory;
+            if(m_Model==null)return;
+            bool equipped=EnergyShieldEquipment.IsHeadDome(inventory?.Equipped("Helmet")?.Code)||inventory?.Equipped("Shield")!=null;
+            if(!m_Protection&&!equipped)return;
+            if(!m_Protection)m_Protection=m_Model.GetComponent<EnergyShieldPresentation>()??m_Model.AddComponent<EnergyShieldPresentation>();
+            m_Protection.PresentInventory(inventory);
+            m_Protection.SimulatePresentation();
+            Render();
         }
         private void UpdateHalo()
         {
@@ -468,6 +484,7 @@ namespace Unity.MP_FPS.Client
             Element.UnregisterCallback<PointerCaptureOutEvent>(CaptureLost);
             Element.UnregisterCallback<DetachFromPanelEvent>(Detached);
             ReleaseStage();
+            m_ProtectionInventory=null;
         }
         private void ReleaseStage()
         {
@@ -477,6 +494,7 @@ namespace Unity.MP_FPS.Client
             ReleaseTarget();
             if (m_Stage != null) { m_Stage.SetActive(false); Destroy(m_Stage); }
             m_Stage = null; m_Camera = null; m_Model = null; m_Animator = null;
+            m_Protection=null;
             m_Halo = null; m_Head = null; m_Finger = null; m_HaloStrokes = null;
             m_Spring = null; m_HandAvoidance = null;
             m_Gestures = null; m_Chest = null; m_Renderers = null;

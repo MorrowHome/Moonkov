@@ -102,7 +102,7 @@ namespace Unity.MP_FPS.Client
         }
         private static Label Text(VisualElement parent, string text, string css)
         { var label = new Label { pickingMode=PickingMode.Ignore }; label.AddToClassList(css); parent.Add(label); MoonkovLocalization.Set(label, text); return label; }
-        private static string SlotLabel(string slot) => slot == "Helmet" ? "HEAD SHROUD" : slot == "Shield" ? "SHIELD" : slot == "Melee" ? "MELEE" : slot == "ChestRig" ? "CHEST RIG" : slot == "Primary" ? "PRIMARY" : slot == "Secondary" ? "SECONDARY" : slot.ToUpperInvariant();
+        private static string SlotLabel(string slot) => slot == "Helmet" ? "COLLAR" : slot == "Shield" ? "SHIELD" : slot == "Melee" ? "MELEE" : slot == "ChestRig" ? "CHEST RIG" : slot == "Primary" ? "PRIMARY" : slot == "Secondary" ? "SECONDARY" : slot.ToUpperInvariant();
         public static StashArtKind Art(string code)
         {
             int organ=System.Array.FindIndex(AlienBiology.Organs,o=>o.Code==code);
@@ -115,7 +115,7 @@ namespace Unity.MP_FPS.Client
                 case "energy_shield_generator":return StashArtKind.ShieldGenerator;
                 case "energy_sword":return StashArtKind.EnergySword;
                 case "dagger":return StashArtKind.CombatKnife;
-                case "helmet":return StashArtKind.Helmet; case "rifle":case "compact":return StashArtKind.HaloRifle; case "pistol":return StashArtKind.HaloRevolver;
+                case "helmet":return StashArtKind.LifeSupportShroud; case "rifle":case "compact":return StashArtKind.HaloRifle; case "pistol":return StashArtKind.HaloRevolver;
                 case "ration":return StashArtKind.Ration; case "water":return StashArtKind.Water;
                 case "energy_grenade":return StashArtKind.EnergyGrenade;
                 case "oxygen_canister":return StashArtKind.OxygenCanister;
@@ -158,6 +158,7 @@ namespace Unity.MP_FPS.Client
             bool changed = m_Graph != graph || m_RenderedVersion != (graph?.Version ?? -1) || m_LootId!=lootId || m_DroppedItem!=droppedItem; m_Graph = graph;m_LootId=lootId;m_DroppedItem=droppedItem;
             if (operationCompleted) m_Busy = false;
             if (changed) { CancelDrag(); Render(); m_RenderedVersion=graph?.Version ?? -1; }
+            if(changed)m_Character?.SetProtectionInventory(graph);
             if (message != null) MoonkovLocalization.Set(m_Message, message);
             else if (!m_Busy && graph != null) MoonkovLocalization.Set(m_Message, m_ReadOnlyReason ?? "Drag to move · R rotate · Double click containers · Ctrl click transfer");
         }
@@ -165,6 +166,7 @@ namespace Unity.MP_FPS.Client
         {
             if (m_Character != null || m_Disposed || m_Graph?.Find(LootInventoryExchange.Root)!=null) return;
             m_Character = new MenuCharacterView();
+            m_Character.SetProtectionInventory(m_Graph);
             m_Character.Element.RemoveFromClassList("terminal-character-art"); m_Character.Element.AddToClassList("stash-character-render");
             m_CharacterStage.Insert(0, m_Character.Element);
             m_Character.FrameRendered += m_CharacterStage.Q<StashEquipmentGuides>().MarkDirtyRepaint;

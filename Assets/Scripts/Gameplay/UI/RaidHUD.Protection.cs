@@ -72,8 +72,8 @@ namespace Unity.MP_FPS
             m_ProtectionRoot.EnableInClassList("raid-protection-low", player.ShieldEquipped && player.ShieldCharge <= 0);
             bool unsealed = !player.HeadDomeEquipped && !player.BreathableAir;
             m_HeadDomeStatus.EnableInClassList("raid-protection-head-danger", unsealed || !player.BreathableAir && player.Oxygen <= RaidOxygen.CriticalThreshold);
-            MoonkovLocalization.Set(m_HeadDomeStatus, unsealed ? "NO HEAD SHROUD / SEEK PRESSURIZED AIR" :
-                player.HeadDomeEquipped ? "HEAD SHROUD / O₂ {0:0}%" : "HEAD SHROUD / NOT EQUIPPED", player.Oxygen);
+            MoonkovLocalization.Set(m_HeadDomeStatus, unsealed ? "NO COLLAR / SEEK PRESSURIZED AIR" :
+                player.HeadDomeEquipped ? "COLLAR / O₂ {0:0}%" : "COLLAR / NOT EQUIPPED", player.Oxygen);
         }
 
         private void DisposeProtection()

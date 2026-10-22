@@ -8,35 +8,32 @@ namespace Unity.MP_FPS
 {
     /// <summary>Read-only client equipment appearance. Never changes health, inventory, oxygen or hitboxes.</summary>
     [DisallowMultipleComponent,DefaultExecutionOrder(180)]
-    public sealed class EnergyShieldPresentation : MonoBehaviour
+    public sealed partial class EnergyShieldPresentation : MonoBehaviour
     {
         private struct CameraState {public Camera Camera;public bool Hidden;}
         private readonly Stack<CameraState> m_Cameras=new Stack<CameraState>(4);
         private readonly List<Renderer> m_Hardware=new List<Renderer>(12);
-        private MaterialPropertyBlock m_DomeProperties,m_ShieldProperties;
+        private MaterialPropertyBlock m_ShieldProperties;
         private Transform m_Head,m_Neck,m_Hips,m_Chest,m_LeftFoot,m_RightFoot;
-        private Transform m_Dome,m_Shell,m_Collar,m_Device,m_Root;
-        private MeshRenderer m_DomeRenderer,m_ShellRenderer;
+        private Transform m_Shell,m_Collar,m_Device,m_Root;
+        private MeshRenderer m_ShellRenderer;
         private Material m_FieldMaterial;
-        private Vector3 m_DomeOffset,m_DomeRadii;
-        private Quaternion m_HeadFitRotation,m_FitFrame;
         private bool m_Ready,m_GeometryRetained,m_HasSequence,m_Owned,m_FirstPerson,m_HeadEquipped,m_ShieldEquipped,m_Regenerating,m_Hidden;
         private Camera m_OwnedCamera;
         private uint m_HitSequence,m_BreakSequence,m_RestoreSequence;
-        private float m_Deploy,m_HitAt=-100,m_BreakAt=-100,m_RestoreAt=-100,m_Strength,m_LastSound=-100;
+        private float m_HitAt=-100,m_BreakAt=-100,m_RestoreAt=-100,m_Strength,m_LastSound=-100;
         private Vector3 m_Impact;
         private AudioSource m_Audio;
         private AudioClip m_HitClip,m_BreakClip,m_RestoreClip;
         internal Material FieldMaterial => m_FieldMaterial;
         internal bool HasSurfaces => m_Ready && isActiveAndEnabled &&
-            (m_DomeRenderer && m_DomeRenderer.enabled && !m_DomeRenderer.forceRenderingOff || m_ShellRenderer && m_ShellRenderer.enabled && !m_ShellRenderer.forceRenderingOff);
+            m_ShellRenderer && m_ShellRenderer.enabled && !m_ShellRenderer.forceRenderingOff;
 
         public void Present(in PredictedPlayerGhost snapshot,bool owned,bool firstPerson,Camera ownedCamera)
         {
             if(!EnsureReady())return;
             m_Owned=owned;m_FirstPerson=owned&&firstPerson;m_OwnedCamera=ownedCamera;
             bool head=snapshot.HeadDomeEquipped;
-            if(head&&!m_HeadEquipped)m_Deploy=0;
             m_HeadEquipped=head;m_ShieldEquipped=snapshot.ShieldEquipped;
             m_Regenerating=snapshot.ShieldRegenerating && snapshot.CurrentHealth>0 && (!snapshot.ClashEnabled || snapshot.ClashLife==ClashLife.Alive);
             if(!m_HasSequence)
@@ -63,7 +60,6 @@ namespace Unity.MP_FPS
         {
             // Unity-owned property blocks are initialized on the presentation path,
             // including after Editor reload/creation where nonserialized fields can be empty.
-            m_DomeProperties ??= new MaterialPropertyBlock();
             m_ShieldProperties ??= new MaterialPropertyBlock();
             if(m_Ready){EnergyShieldRendering.Register(this);return true;}
             var animator=GetComponentInChildren<Animator>();if(!animator || !animator.isHuman)return false;
@@ -71,41 +67,23 @@ namespace Unity.MP_FPS
             m_Head=animator.GetBoneTransform(HumanBodyBones.Head);if(!m_Head)return false;
             m_Neck=animator.GetBoneTransform(HumanBodyBones.Neck);m_Hips=animator.GetBoneTransform(HumanBodyBones.Hips);m_Chest=animator.GetBoneTransform(HumanBodyBones.Chest);
             m_LeftFoot=animator.GetBoneTransform(HumanBodyBones.LeftFoot);m_RightFoot=animator.GetBoneTransform(HumanBodyBones.RightFoot);
-            FitHead(animator);
+            FitCollar(animator);
             EnergyShieldGeometry.Retain();m_GeometryRetained=true;
             m_FieldMaterial=new Material(shader){name="Energy protection / private surface",hideFlags=HideFlags.HideAndDontSave};
             m_Root=new GameObject("Energy protection / original runtime geometry"){hideFlags=HideFlags.DontSave}.transform;m_Root.SetParent(transform,false);
-            m_DomeRenderer=Surface("Energy head seal",out m_Dome);m_ShellRenderer=Surface("Transient combat field",out m_Shell);
-            m_Collar=new GameObject("Seal collar / solid hardware").transform;m_Collar.SetParent(m_Root,false);
+            m_ShellRenderer=Surface("Transient combat field",out m_Shell);
+            m_Collar=new GameObject("Neko life-support collar").transform;m_Collar.SetParent(m_Root,false);
             m_Device=new GameObject("Independent shield generator").transform;m_Device.SetParent(m_Root,false);
             var metal=Resources.Load<Material>("Moonkov/TacticalMetal");var indicator=Resources.Load<Material>("Moonkov/TacticalIndicator");
             if(!metal || !indicator){DisposePresentation();return false;}
             Color dark=new Color(.075f,.105f,.13f),silver=new Color(.38f,.44f,.49f),cyan=new Color(.08f,.6f,.8f);
-            Hardware(m_Collar,EnergyShieldGeometry.Collar,Vector3.zero,new Vector3(.155f,.09f,.145f),metal,dark);
-            Hardware(m_Collar,EnergyShieldGeometry.Collar,Vector3.up*.012f,new Vector3(.15f,.035f,.14f),metal,silver);
-            for(int i=0;i<4;i++){float a=(i*90+45)*Mathf.Deg2Rad;Hardware(m_Collar,EnergyShieldGeometry.Box,new Vector3(Mathf.Sin(a)*.15f,0,Mathf.Cos(a)*.14f),new Vector3(.026f,.018f,.026f),indicator,cyan);}
+            BuildCollar(metal,indicator);
             Hardware(m_Device,EnergyShieldGeometry.Box,Vector3.zero,new Vector3(.20f,.15f,.065f),metal,dark);
             Hardware(m_Device,EnergyShieldGeometry.Box,new Vector3(0,0,.038f),new Vector3(.16f,.11f,.018f),metal,silver);
             Hardware(m_Device,EnergyShieldGeometry.Collar,new Vector3(0,0,.054f),new Vector3(.045f,.018f,.045f),indicator,cyan).transform.localRotation=Quaternion.Euler(90,0,0);
             for(int i=0;i<3;i++)Hardware(m_Device,EnergyShieldGeometry.Box,new Vector3(-.046f+i*.046f,-.041f,.055f),new Vector3(.027f,.009f,.005f),indicator,cyan);
             Unity.MP_FPS.Moon.MoonSilverPrintSubject.Protect(m_Collar.gameObject);Unity.MP_FPS.Moon.MoonSilverPrintSubject.Protect(m_Device.gameObject);
             m_Ready=true;EnergyShieldRendering.Register(this);return true;
-        }
-        private void FitHead(Animator animator)
-        {
-            m_FitFrame=Quaternion.LookRotation(transform.forward,transform.up);m_HeadFitRotation=m_Head.rotation;
-            Quaternion inverse=Quaternion.Inverse(m_FitFrame);
-            var minimum=new Vector3(-.21f,-.10f,-.20f);var maximum=new Vector3(.21f,.35f,.23f);
-            // Fit the upper hair crown/adornments from existing bones; no full skinned-mesh copy.
-            foreach(var bone in animator.GetComponentsInChildren<Transform>(true))
-            {
-                string name=bone.name.ToLowerInvariant();
-                if(!(name.StartsWith("toufa")||name.StartsWith("liuhai")||name.StartsWith("cefa")||name.StartsWith("houfa")||name.StartsWith("toushi")||name.StartsWith("shuangmawei")))continue;
-                Vector3 p=inverse*(bone.position-m_Head.position);
-                if(p.y<-.12f || p.y>.58f || Mathf.Abs(p.x)>.55f || Mathf.Abs(p.z)>.5f)continue;
-                minimum=Vector3.Min(minimum,p);maximum=Vector3.Max(maximum,p);
-            }
-            m_DomeOffset=(minimum+maximum)*.5f;m_DomeRadii=(maximum-minimum)*.5f+Vector3.one*.045f;
         }
         private MeshRenderer Surface(string name,out Transform node)
         {
@@ -127,11 +105,7 @@ namespace Unity.MP_FPS
         private void LateUpdate()
         {
             if(!m_Ready || !m_Head)return;
-            m_Deploy=Mathf.MoveTowards(m_Deploy,m_HeadEquipped?1:0,Time.unscaledDeltaTime*2.5f);
-            var frame=m_Head.rotation*Quaternion.Inverse(m_HeadFitRotation)*m_FitFrame;
-            WorldPose(m_Dome,m_Head.position+frame*m_DomeOffset,frame,m_DomeRadii);
-            var collar=m_Neck?m_Neck.position:m_Head.position-transform.up*.13f;
-            WorldPose(m_Collar,collar,Quaternion.LookRotation(transform.forward,transform.up),Vector3.one);
+            UpdateCollarPose();
             Vector3 hip=m_Hips?m_Hips.position:transform.position+transform.up*.85f;
             WorldPose(m_Device,hip+transform.right*.18f+transform.forward*.12f,Quaternion.LookRotation(transform.forward,transform.up),Vector3.one);
             m_Collar.gameObject.SetActive(m_HeadEquipped);m_Device.gameObject.SetActive(m_ShieldEquipped);
@@ -140,13 +114,12 @@ namespace Unity.MP_FPS
             Vector3 forward=Vector3.Cross(transform.right,axis);if(forward.sqrMagnitude<.01f)forward=transform.forward;
             WorldPose(m_Shell,(feet+m_Head.position)*.5f,Quaternion.LookRotation(forward,axis),new Vector3(.43f,length*.57f,.34f));
             float now=Time.unscaledTime,hitAge=now-m_HitAt,breakAge=now-m_BreakAt,restoreAge=now-m_RestoreAt;
-            m_DomeRenderer.enabled=m_HeadEquipped;
             m_ShellRenderer.enabled=m_ShieldEquipped && (hitAge<.5f || breakAge<.65f || restoreAge<.6f || m_Regenerating);
-            m_DomeProperties.SetVector("_FieldState",new Vector4(0,m_Deploy*1.12f,100,100));m_DomeProperties.SetVector("_FieldFlow",Vector4.zero);m_DomeRenderer.SetPropertyBlock(m_DomeProperties);
             m_ShieldProperties.SetVector("_FieldState",new Vector4(1,1.12f,hitAge,breakAge));m_ShieldProperties.SetVector("_FieldFlow",new Vector4(m_Regenerating?1:0,restoreAge,m_Strength,0));m_ShieldProperties.SetVector("_EnergyHitPoint",m_Impact);m_ShellRenderer.SetPropertyBlock(m_ShieldProperties);
         }
-        internal bool OwnerVisor(Camera camera) => m_Ready && m_Owned && m_FirstPerson && m_HeadEquipped &&
-            camera && camera.cameraType == CameraType.Game && camera == m_OwnedCamera;
+        // The life-support item is worn at the neck; there is no visor in front of the eye.
+        internal bool OwnerVisor(Camera camera) => false;
+        internal void SimulatePresentation() => LateUpdate();
         internal float OwnerPulse(Camera camera)
         {
             if(!m_Ready || !m_Owned || !m_FirstPerson || camera!=m_OwnedCamera || !m_ShieldEquipped)return 0;
@@ -162,11 +135,11 @@ namespace Unity.MP_FPS
         internal void EndCamera(Camera camera)
         {if(m_Cameras.Count==0)return;var state=m_Cameras.Pop();SetHidden(state.Hidden);}
         private void SetHidden(bool hidden)
-        {m_Hidden=hidden;if(m_DomeRenderer)m_DomeRenderer.forceRenderingOff=hidden;if(m_ShellRenderer)m_ShellRenderer.forceRenderingOff=hidden;foreach(var renderer in m_Hardware)if(renderer)renderer.forceRenderingOff=hidden;}
+        {m_Hidden=hidden;if(m_ShellRenderer)m_ShellRenderer.forceRenderingOff=hidden;foreach(var renderer in m_Hardware)if(renderer)renderer.forceRenderingOff=hidden;}
         internal bool InView(Camera camera,Plane[] planes)
         {
             if(!HasSurfaces)return false;
-            return Visible(m_DomeRenderer) || Visible(m_ShellRenderer);
+            return Visible(m_ShellRenderer);
             bool Visible(Renderer renderer)=>renderer && renderer.enabled && !renderer.forceRenderingOff && (camera.cullingMask&(1<<renderer.gameObject.layer))!=0 && GeometryUtility.TestPlanesAABB(planes,renderer.bounds);
         }
         private void PlayCue(int cue)
@@ -189,15 +162,15 @@ namespace Unity.MP_FPS
         }
         public void ResetPresentation()
         {
-            m_HeadEquipped=m_ShieldEquipped=m_Regenerating=m_HasSequence=false;m_Deploy=0;m_HitAt=m_BreakAt=m_RestoreAt=-100;
-            if(m_Audio)m_Audio.Stop();if(m_DomeRenderer)m_DomeRenderer.enabled=false;if(m_ShellRenderer)m_ShellRenderer.enabled=false;
+            m_HeadEquipped=m_ShieldEquipped=m_Regenerating=m_HasSequence=false;m_HitAt=m_BreakAt=m_RestoreAt=-100;
+            if(m_Audio)m_Audio.Stop();if(m_ShellRenderer)m_ShellRenderer.enabled=false;
             if(m_Collar)m_Collar.gameObject.SetActive(false);if(m_Device)m_Device.gameObject.SetActive(false);
         }
         public void DisposePresentation()
         {
             EnergyShieldRendering.Unregister(this);SetHidden(false);m_Cameras.Clear();if(m_Audio)m_Audio.Stop();
             DestroyOwned(m_HitClip);DestroyOwned(m_BreakClip);DestroyOwned(m_RestoreClip);DestroyOwned(m_FieldMaterial);if(m_Root)DestroyOwned(m_Root.gameObject);
-            m_Hardware.Clear();m_Root=m_Dome=m_Shell=m_Collar=m_Device=null;m_DomeRenderer=m_ShellRenderer=null;m_FieldMaterial=null;m_Audio=null;
+            m_Hardware.Clear();m_Root=m_Shell=m_Collar=m_Device=null;m_ShellRenderer=null;m_FieldMaterial=null;m_Audio=null;
             if(m_GeometryRetained){EnergyShieldGeometry.Release();m_GeometryRetained=false;}m_Ready=false;ResetPresentation();
         }
         private void OnDisable()=>DisposePresentation();

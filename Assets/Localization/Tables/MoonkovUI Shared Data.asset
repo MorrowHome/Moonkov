@@ -603,7 +603,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2871799952
-    m_Key: L-01 Flight helmet
+    m_Key: "L-01 Neko life-support collar"
     m_Metadata:
       m_Items: []
   - m_Id: 2871799953
@@ -651,7 +651,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2871799964
-    m_Key: H-02 Survey helmet
+    m_Key: "H-02 Survey collar"
     m_Metadata:
       m_Items: []
   - m_Id: 2871799965
@@ -4562,7 +4562,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 8447407847960297
-    m_Key: "HEAD SHROUD"
+    m_Key: "COLLAR"
     m_Metadata:
       m_Items: []
   - m_Id: 8551059606794936
@@ -4578,7 +4578,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 8841075354075051
-    m_Key: "L-02 Energy seal dome"
+    m_Key: "L-02 Neko life-support collar"
     m_Metadata:
       m_Items: []
   - m_Id: 8362316013346203
@@ -4606,7 +4606,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 8812654312310091
-    m_Key: "NEW HEAD SHROUD / INITIAL OXYGEN ON FIRST DEPLOYMENT"
+    m_Key: "NEW COLLAR / INITIAL OXYGEN ON FIRST DEPLOYMENT"
     m_Metadata:
       m_Items: []
   - m_Id: 8180541670966180
@@ -4614,7 +4614,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 8715687344128331
-    m_Key: "HEAD SHROUD O\u2082 / {0:0}%"
+    m_Key: "COLLAR O\u2082 / {0:0}%"
     m_Metadata:
       m_Items: []
   - m_Id: 8753998678345497
@@ -4622,7 +4622,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 8417738011263120
-    m_Key: "A sealed energy head shroud with a physical oxygen collar. Uses the existing oxygen reserve, canisters and pressurized air. Does not provide ballistic protection or combat shielding."
+    m_Key: "A neck-fitted life-support collar with a lilac bow and a gold cat bell. Follows the neck bones and uses the existing oxygen reserve, canisters and pressurized air. Does not provide ballistic protection or combat shielding."
     m_Metadata:
       m_Items: []
   - m_Id: 8515315481831250
@@ -4670,15 +4670,15 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 8878075719392243
-    m_Key: "HEAD SHROUD / O\u2082 {0:0}%"
+    m_Key: "COLLAR / O\u2082 {0:0}%"
     m_Metadata:
       m_Items: []
   - m_Id: 8313137102480501
-    m_Key: "HEAD SHROUD / NOT EQUIPPED"
+    m_Key: "COLLAR / NOT EQUIPPED"
     m_Metadata:
       m_Items: []
   - m_Id: 8590080620644318
-    m_Key: "NO HEAD SHROUD / SEEK PRESSURIZED AIR"
+    m_Key: "NO COLLAR / SEEK PRESSURIZED AIR"
     m_Metadata:
       m_Items: []
   - m_Id: 8018020561742780
