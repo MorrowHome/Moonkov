@@ -17,7 +17,7 @@ MonoBehaviour:
   ReticleType: 0
   CooldownInMs: 1.05
   EquipTime: 0.42
-  Damage: 96
+  Damage: 320
   Automatic: 0
   BurstCount: 1
   BurstInterval: 0.085
