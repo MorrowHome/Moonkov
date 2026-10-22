@@ -1,0 +1,24 @@
+{
+  "passed": true,
+  "formal": "Assets/MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusGameScene.unity",
+  "beforeSHA256": "3ade3fb4e2bb6e6afc42eb9f2d3a86e170b64fc6b7029d40c6f7a6b4377a7006",
+  "afterSHA256": "0a5398fb3c94aeded6705698ff95349d817a62a996d9d9bd97ce2a660586ae49",
+  "newPrefabInstanceID": "1811984516",
+  "newPrefabGUID": "21373b300947d2e4c976bbf5565fa64e",
+  "newSceneRecords": 1,
+  "removedSceneRecords": 0,
+  "existingRecordsChanged": {
+    "9223372036854775807": "One appended R23 prefab instance root",
+    "145744447": "Unity serialized existing effective default maximumBosses=1",
+    "145744448": "Unity serialized existing effective defaults m_MedicalSeconds=3, m_SearchSeconds=2"
+  },
+  "threeDefaultFieldsRetained": true,
+  "defaultsCheckedAgainstCurrentSourceInitializers": true,
+  "allOtherExistingSavedSceneRecordsByteIdentical": true,
+  "oldProtectedRenderersMeshFiltersCollidersLightsAndButtonsHashUnchanged": true,
+  "sceneCopyCreated": false,
+  "sceneFileWrittenByThisAudit": false,
+  "dirtyFlagChangedByThisAudit": false,
+  "directFieldRemovalDeniedAndAbandoned": true,
+  "UnityPlayOrPerformanceValidation": false
+}

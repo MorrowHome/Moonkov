@@ -88361,6 +88361,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Unity.MP_FPS.AlienEncounterSettings
   enableAliens: 1
   maximumAliens: 12
+  maximumBosses: 1
   maximumTotalSpawns: 48
   spawnsPerEncounter: 4
   maximumSpawnsPerCheck: 2
@@ -88941,6 +88942,8 @@ MonoBehaviour:
   m_StartHour: 7
   m_DayLengthMinutes: 24
   m_TimeRunning: 1
+  m_MedicalSeconds: 3
+  m_SearchSeconds: 2
   m_OxygenSettings: {fileID: 0}
   m_OxygenWalkingMultiplier: 1.1
   m_OxygenSprintingMultiplier: 1.75
@@ -1196742,6 +1196745,63 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1811921126}
   m_Mesh: {fileID: 7427791929507480840, guid: f813da1b4296fdf439dabeab95450f8b, type: 3}
+--- !u!1001 &1811984516
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 5714955571738943454, guid: 21373b300947d2e4c976bbf5565fa64e, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1837.2777
+      objectReference: {fileID: 0}
+    - target: {fileID: 5714955571738943454, guid: 21373b300947d2e4c976bbf5565fa64e, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 223
+      objectReference: {fileID: 0}
+    - target: {fileID: 5714955571738943454, guid: 21373b300947d2e4c976bbf5565fa64e, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 1980.8733
+      objectReference: {fileID: 0}
+    - target: {fileID: 5714955571738943454, guid: 21373b300947d2e4c976bbf5565fa64e, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5714955571738943454, guid: 21373b300947d2e4c976bbf5565fa64e, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5714955571738943454, guid: 21373b300947d2e4c976bbf5565fa64e, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5714955571738943454, guid: 21373b300947d2e4c976bbf5565fa64e, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5714955571738943454, guid: 21373b300947d2e4c976bbf5565fa64e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5714955571738943454, guid: 21373b300947d2e4c976bbf5565fa64e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5714955571738943454, guid: 21373b300947d2e4c976bbf5565fa64e, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7125211690334903693, guid: 21373b300947d2e4c976bbf5565fa64e, type: 3}
+      propertyPath: m_Name
+      value: R23_Ring01_Joint_DisplayOnly
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 21373b300947d2e4c976bbf5565fa64e, type: 3}
 --- !u!1 &1811989292
 GameObject:
   m_ObjectHideFlags: 0
@@ -1388435,3 +1388495,4 @@ SceneRoots:
   - {fileID: 423528443}
   - {fileID: 1580245213}
   - {fileID: 1971575029}
+  - {fileID: 1811984516}

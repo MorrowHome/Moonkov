@@ -1,0 +1,203 @@
+{
+  "schema_version": 1,
+  "materials": {
+    "R23_Connection_Plate_Graphite_Coating": {
+      "base_color_scene_linear_RGBA": [
+        0.09399999678134918,
+        0.10400000214576721,
+        0.10999999940395355,
+        1.0
+      ],
+      "base_color_sRGB_display_RGBA": [
+        0.3389027919873468,
+        0.3558497446689142,
+        0.3655646289803085,
+        1.0
+      ],
+      "metallic": 0.0,
+      "roughness": 0.5699999928474426,
+      "smoothness_if_target_shader_defines_1_minus_roughness": 0.4300000071525574,
+      "alpha": 1.0,
+      "IOR": 1.5,
+      "emission_strength": 0.0,
+      "normal_map": null,
+      "textures": [],
+      "principled_node_inputs": {
+        "Base Color": [
+          0.09399999678134918,
+          0.10400000214576721,
+          0.10999999940395355,
+          1.0
+        ],
+        "Metallic": 0.0,
+        "Roughness": 0.5699999928474426,
+        "IOR": 1.5,
+        "Alpha": 1.0,
+        "Normal": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Weight": 0.0,
+        "Diffuse Roughness": 0.0,
+        "Subsurface Weight": 0.0,
+        "Subsurface Radius": [
+          1.0,
+          0.20000000298023224,
+          0.10000000149011612
+        ],
+        "Subsurface Scale": 0.05000000074505806,
+        "Subsurface IOR": 1.399999976158142,
+        "Subsurface Anisotropy": 0.0,
+        "Specular IOR Level": 0.5,
+        "Specular Tint": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "Anisotropic": 0.0,
+        "Anisotropic Rotation": 0.0,
+        "Tangent": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Transmission Weight": 0.0,
+        "Coat Weight": 0.0,
+        "Coat Roughness": 0.029999999329447746,
+        "Coat IOR": 1.5,
+        "Coat Tint": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "Coat Normal": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Sheen Weight": 0.0,
+        "Sheen Roughness": 0.5,
+        "Sheen Tint": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "Emission Color": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "Emission Strength": 0.0,
+        "Thin Film Thickness": 0.0,
+        "Thin Film IOR": 1.3300000429153442
+      },
+      "mapping_limit": "FBX Phong transfer is not an authoritative Unity PBR material. Create only two private constant display materials using verified project shader; bind explicitly. Color values above distinguish linear from sRGB. Inspect project color-space API to avoid double gamma. Smoothness conversion only if shader uses the stated definition. No Unity shading validation performed."
+    },
+    "R23_Fastener_Satin_Passivated_Steel": {
+      "base_color_scene_linear_RGBA": [
+        0.2199999988079071,
+        0.23499999940395355,
+        0.23999999463558197,
+        1.0
+      ],
+      "base_color_sRGB_display_RGBA": [
+        0.5063864280171495,
+        0.5220286831883203,
+        0.5271127874042686,
+        1.0
+      ],
+      "metallic": 0.8199999928474426,
+      "roughness": 0.3700000047683716,
+      "smoothness_if_target_shader_defines_1_minus_roughness": 0.6299999952316284,
+      "alpha": 1.0,
+      "IOR": 1.5,
+      "emission_strength": 0.0,
+      "normal_map": null,
+      "textures": [],
+      "principled_node_inputs": {
+        "Base Color": [
+          0.2199999988079071,
+          0.23499999940395355,
+          0.23999999463558197,
+          1.0
+        ],
+        "Metallic": 0.8199999928474426,
+        "Roughness": 0.3700000047683716,
+        "IOR": 1.5,
+        "Alpha": 1.0,
+        "Normal": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Weight": 0.0,
+        "Diffuse Roughness": 0.0,
+        "Subsurface Weight": 0.0,
+        "Subsurface Radius": [
+          1.0,
+          0.20000000298023224,
+          0.10000000149011612
+        ],
+        "Subsurface Scale": 0.05000000074505806,
+        "Subsurface IOR": 1.399999976158142,
+        "Subsurface Anisotropy": 0.0,
+        "Specular IOR Level": 0.5,
+        "Specular Tint": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "Anisotropic": 0.0,
+        "Anisotropic Rotation": 0.0,
+        "Tangent": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Transmission Weight": 0.0,
+        "Coat Weight": 0.0,
+        "Coat Roughness": 0.029999999329447746,
+        "Coat IOR": 1.5,
+        "Coat Tint": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "Coat Normal": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "Sheen Weight": 0.0,
+        "Sheen Roughness": 0.5,
+        "Sheen Tint": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "Emission Color": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "Emission Strength": 0.0,
+        "Thin Film Thickness": 0.0,
+        "Thin Film IOR": 1.3300000429153442
+      },
+      "mapping_limit": "FBX Phong transfer is not an authoritative Unity PBR material. Create only two private constant display materials using verified project shader; bind explicitly. Color values above distinguish linear from sRGB. Inspect project color-space API to avoid double gamma. Smoothness conversion only if shader uses the stated definition. No Unity shading validation performed."
+    }
+  },
+  "slot_policy": "One explicit private material per object. Names are identifiers, never permission to edit a shared or pre-existing material. Verify actual Renderer material reference and shader locally.",
+  "images_or_texture_dependencies": 0,
+  "source_materials_changed": false,
+  "unity_material_validation": "NOT_RUN"
+}
