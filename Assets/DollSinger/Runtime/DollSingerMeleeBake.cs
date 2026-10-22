@@ -115,7 +115,9 @@ namespace Unity.MP_FPS.DollSinger
                 bones[i].localPosition = Vector3.Lerp(bones[i].localPosition, bindPositions[i], blend);
             }
             // Rotate both complete authored chains together, preserving twist and finger axes.
-            Quaternion basis = chest.rotation * Quaternion.Inverse(library.chestBindRotation);
+            // The action now owns chest/shoulder wind-up. Using animated chest rotation
+            // here would subtract that motion from the arms after sampling it.
+            Quaternion basis = body.rotation;
             Quaternion desired = aim.sqrMagnitude > .001f
                 ? Quaternion.AngleAxis(lean, aim) * Quaternion.LookRotation(aim, body.up) : basis;
             Quaternion correction = Quaternion.Slerp(Quaternion.identity,

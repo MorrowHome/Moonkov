@@ -24,6 +24,8 @@ OUT=ROOT/'Assets/DollSinger/Animation/Melee/Resources/MoonkovMeleeGestures.json'
 # Each timeline is source time only; runtime retimes its three segments to the shared rules.
 TIMINGS={0:[(.14,.12,.24),(.12,.10,.22),(.20,.14,.30),(.36,.16,.48)],1:[(.15,.10,.20),(.13,.09,.18),(.21,.12,.26),(.35,.12,.40)],2:[(.22,.14,.30),(.20,.12,.28),(.28,.16,.36),(.52,.18,.60)]}
 KINDS=['Fists','Dagger','EnergySword']
+# Melee owns the chest as well as the complete arm chains. Firearm tracks stay untouched.
+tracks=['上半身','上半身2']+tracks
 def smooth(x):x=max(0,min(1,x));return x*x*(3-2*x)
 def vlerp(a,b,t):return Vector(a).lerp(Vector(b),t)
 def orient(f,x):return frame(f,x)
@@ -64,6 +66,29 @@ def controls(kind,action,time,timing):
  return blend(end,base,smooth((time-w-a)/r))
 def make_melee(kind,action,time,timing,pitch=0):
  wr,qr,wl,ql=controls(kind,action,time,timing)
+ yaw=roll=0
+ if action.startswith('light') or action=='heavy':
+  index=3 if action=='heavy' else int(action[-1]);w,a,r=timing
+  sign=-1 if index in [0,2] else 1
+  windup=9 if index<2 else 14
+  contact=14 if index<2 else 23
+  yaw=(-windup*smooth(time/w) if time<w else -windup+(windup+contact)*smooth((time-w)/a) if time<w+a else contact*(1-smooth((time-w-a)/r)))*sign
+  roll=-yaw*.13
+ turn_body=Quaternion(Vector((0,1,0)),math.radians(yaw))@Quaternion(Vector((0,0,1)),math.radians(roll))
+ pivot_body=Vector((0,1.04,.02))
+ wr=pivot_body+turn_body@(wr-pivot_body);wl=pivot_body+turn_body@(wl-pivot_body)
+ qr=turn_body@qr;ql=turn_body@ql
+ G={}
+ for n in order:
+  p=parents[n]
+  G[n]=G[p]@R[p].inverted()@R[n] if p in G else R[n]
+  if n in ['上半身','上半身2']:
+   amount=.45 if n=='上半身' else 1
+   G[n]=Quaternion().slerp(turn_body,amount)@R[n]
+ # Only shoulder ancestors are preseeded. Arm/finger helpers must inherit the
+ # final solved parent, rather than retaining a pre-solve torso orientation.
+ for n in list(G):
+  if childof(n,'腕.L') or childof(n,'腕.R'):del G[n]
  if kind==0:
   wr+=Vector((0,.035,.040));wl+=Vector((0,.035,.040))
  if pitch:
@@ -72,10 +97,9 @@ def make_melee(kind,action,time,timing,pitch=0):
   offset=Vector((0,.05*max(0,pitch)/70,.20*(max(0,pitch)/70)**2+.12*(max(0,-pitch)/70)**4))
   wr=pivot+turn@(wr-pivot)+offset;wl=pivot+turn@(wl-pivot)+offset;qr=turn@qr;ql=turn@ql
  for side,target in [('R',wr),('L',wl)]:
-  shoulder=P['腕.'+side];delta=target-shoulder
-  maximum=(P['ひじ.'+side]-shoulder).length+(P['手首.'+side]-P['ひじ.'+side]).length-.012
+  shoulder=position('腕.'+side,G);delta=target-shoulder
+  maximum=(P['ひじ.'+side]-P['腕.'+side]).length+(P['手首.'+side]-P['ひじ.'+side]).length-.012
   if delta.length>maximum:target[:]=shoulder+delta.normalized()*maximum
- G={}
  for side,q in [('R',qr),('L',ql)]:
   h='手首.'+side;m='中指１.'+side;i='人指１.'+side;l='小指１.'+side
   G[h]=q@frame(P[m]-P[h],P[i]-P[l]).inverted()@R[h]
@@ -88,7 +112,9 @@ def make_melee(kind,action,time,timing,pitch=0):
   elif side=='R':fingers(side,'grip',G,overrides={d:[58,80,52] for d in ['人指','中指','薬指','小指']})
   else:fingers(side,'open',G,overrides={d:[18,22,12] for d in ['人指','中指','薬指','小指']})
  # Targets use reachable sub-maximal extensions and a stable lateral elbow guide.
- arm('R',wr,(.31,1.07,.06),G,maxroll=85,headSurface=head_surface(pitch) if pitch< -35 else None);arm('L',wl,(-.31,1.05,.06),G,maxroll=85,headSurface=head_surface(pitch) if pitch< -35 else None)
+ guideR=pivot_body+turn_body@(Vector((.31,1.07,.06))-pivot_body)
+ guideL=pivot_body+turn_body@(Vector((-.31,1.05,.06))-pivot_body)
+ arm('R',wr,guideR,G,maxroll=85,headSurface=head_surface(pitch) if pitch< -35 else None);arm('L',wl,guideL,G,maxroll=85,headSurface=head_surface(pitch) if pitch< -35 else None)
  for n in order:
   if n not in G:
    p=parents[n];G[n]=G[p]@R[p].inverted()@R[n] if p in G else R[n]

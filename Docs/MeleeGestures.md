@@ -1,10 +1,12 @@
 # 近战动作与武器表现
 
-2026-10-22。状态：源码／独立资源已制作，等待总协调安排 Unity 编译和实际画面验收。本文件不将 Blender 预览或本地状态注入称为正式地图、权威命中或联机验收。
+2026-10-23 修复更新：已编译并完成定向 Edit-mode 检查，补充胸肩发力。正式地图的实际操作手感仍需游玩验收；Blender 预览不代表权威命中或联机验收。
 
 ## 资源与动作
 
-`ArtSource/DollSinger/MeleeGestures.blend` 为独立作者文件，沿用生产 FBX 的原骨架及 101 个双臂节点，包括有蒙皮权重的腕捩、手捩和手指。没有重生成、替换旧枪械 .blend 或 WeaponGestures.json。当前近战烘焙 revision 为 `ca75eab36800`。
+`ArtSource/DollSinger/MeleeGestures.blend` 为独立作者文件，沿用生产 FBX 的原骨架及 103 个节点：101 个双臂／捩骨／手指节点和两段上身骨骼。没有重生成、替换旧枪械作者源。当前近战烘焙 revision 为 `b0462fe01fc8`。
+
+轻击和重击加入与左右手对应的胸肩预摆、命中转动及恢复。运行时朝向修正使用角色根节点，不再减去刚采样的胸部动作。
 
 拳头、匕首、能量剑各含 idle、equip、light0、light1、light2、heavy、recover、holster 八个源 Action，分别有 0／±40／±70 度俯仰采样，60 fps。攻击中的恢复由完整攻击 Action 的最后一段播放；取消从当前完整双臂目标混合回警戒，避免忽然跳到另一攻击的收势。独立 recover／holster 源 Action 也保留供后续作者编辑。
 
