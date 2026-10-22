@@ -14,6 +14,7 @@ source_sha=hashlib.sha256(original_source.read_bytes()).hexdigest()
 prefix=(ROOT/'Tools/Blender/weapon_gestures.py').read_text().split('motions=[]')[0]
 # Additional fan spread is confined to new seals; the accepted library is untouched.
 prefix=prefix.replace('overrides=None,thumb_drop=0):','overrides=None,thumb_drop=0,fan=False):')
+prefix=prefix.replace('for degrees in range(-75,76,3):','for degrees in range(-36,37,3):')
 prefix=prefix.replace("if kind=='open':spread={'人指':-8,'中指':0,'薬指':7,'小指':13}[digit]","if kind=='open':spread=({'人指':-18,'中指':0,'薬指':18,'小指':36} if fan else {'人指':-8,'中指':0,'薬指':7,'小指':13})[digit]*( -1 if fan and side=='R' else 1)")
 if export_only or only:prefix=prefix.replace('/ArtSource/DollSinger/WeaponGestures.blend','/ArtSource/DollSinger/HaloExpansion.blend')
 if '--export-only' not in sys.argv:sys.argv.append('--export-only')
@@ -95,6 +96,32 @@ def make_pose(weapon,phase=0,mode='pose',fan_scale=1):
   wr=Vector((.070,1.19,.165))+Vector((.010,-.015,.050))*hit+Vector((-.012,.015,-.040))*gather
   wl=Vector((-.075,1.085,.185))+Vector((-.010,.015,.050))*hit+Vector((.012,-.015,-.040))*gather
   guideR=(.29,1.11,.07);guideL=(-.29,.97,.09)
+ # Keep the authored sign, but place both wrists in front of their own shoulders.
+ # Crossed wrists and rear-facing palm frames forced the old solver to trade a
+ # natural elbow for forearm roll, most visibly on Cicada and Sundown.
+ frames={
+  5:((0,0,1),(0,1,0),(0,0,1),(0,1,0)),
+  6:((0,1,-.10),(1,0,0),(0,.35,1),(0,1,-.35)),
+  7:((0,1,.12),(1,0,0),(0,.6,1),(0,1,-.6)),
+  8:((0,0,1),(0,1,0),(.12,.2,1),(0,1,-.2)),
+  9:((0,1,-.05),(1,0,0),(0,.4,1),(0,1,-.4)),
+  10:((0,1,.15),(1,0,0),(0,1,.15),(-1,0,0)),
+  11:((0,0,1),(0,1,0),(0,0,1),(0,1,0)),
+  12:((0,.7,.7),(1,0,0),(0,.6,1),(0,1,-.6)),
+  13:((0,0,1),(0,1,0),(0,.4,1),(0,1,-.4)),
+ }
+ oldR=G['手首.R'].copy();oldL=G['手首.L'].copy()
+ fr,xr,fl,xl=frames[weapon];hand('R',fr,xr,G);hand('L',fl,xl,G)
+ for side,old_hand in [('R',oldR),('L',oldL)]:
+  h='手首.'+side;delta=G[h]@old_hand.inverted()
+  for n in list(G):
+   if n!=h and childof(n,h):G[n]=delta@G[n]
+ baseR=Vector((.115,1.17,.245));baseL=Vector((-.115,1.13,.225))
+ if weapon==8:baseL=Vector((-.125,1.18,.20))
+ if weapon in [6,9,12]:baseL=Vector((-.10,1.135,.225))
+ wr=baseR+Vector((0,.008,-.012))*hit+Vector((-.018,-.016,-.018))*gather
+ wl=baseL+Vector((0,-.006,.008))*hit+Vector((.018,.016,-.012))*gather
+ guideR=(.29,1.01,.11);guideL=(-.29,1.01,.11)
  arm('R',wr,guideR,G);arm('L',wl,guideL,G)
  for n in order:
   if n not in G:
