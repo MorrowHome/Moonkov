@@ -11,14 +11,7 @@ namespace Unity.MP_FPS
         {
             Vector3 position = pose.Position;
             Vector3 eye = ghost.ShotOrigin.position;
-            if (health.CurrentHealth < brain.LastHealth)
-            {
-                brain.Suppression = Mathf.Clamp01(brain.Suppression + .5f);
-                brain.LastDamage = now;
-                brain.NextDecision = 0;
-            }
-            brain.LastHealth = health.CurrentHealth;
-            brain.Suppression = Mathf.Max(0, brain.Suppression - dt * .12f);
+            UpdateCombatPressure(brain, health, now, dt);
             if (now >= brain.NextSense)
             {
                 Sense(brain, ghost.transform, eye, map.EnemySightRange, now);
@@ -92,11 +85,9 @@ namespace Unity.MP_FPS
                 // AimPoint must follow the imperfect, rate-limited look ray; exact target coordinates would bypass it.
                 AimPoint = eye + direction * Mathf.Max(1, distance) };
             input.SetFlag(PlayerInput.InputFlag.ThirdPerson, true);
-            bool fighting = brain.HealUntil <= 0 && !brain.Interacting && (brain.Action == PmcAction.Engage ||
-                brain.Action == PmcAction.HoldAngle || brain.Action == PmcAction.Cover &&
-                    brain.IsPeeking && brain.CoverPhase == PmcCoverPhase.Holding);
+            bool fighting = CanReturnFire(brain) && health.CurrentAmmo > 0 && !health.ControllerState.IsReloadingState;
             input.SetFlag(PlayerInput.InputFlag.Aim, fighting && brain.Visible || checkingCorner);
-            input.SetFlag(PlayerInput.InputFlag.Sprint, brain.HealUntil <= 0 && move.sqrMagnitude > .1f &&
+            input.SetFlag(PlayerInput.InputFlag.Sprint, brain.HealUntil <= 0 && !(fighting && brain.Visible) && move.sqrMagnitude > .1f &&
                 (brain.Action == PmcAction.Retreat || brain.Action == PmcAction.Flank && !brain.Visible ||
                     (brain.Action == PmcAction.Extract || brain.IsClashBot && brain.Leaving) && !hasContact || brain.Action == PmcAction.Cover &&
                     (brain.CoverPhase == PmcCoverPhase.Approaching || brain.CoverPhase == PmcCoverPhase.Returning)));
@@ -124,6 +115,31 @@ namespace Unity.MP_FPS
             }
             input.SetFlag(PlayerInput.InputFlag.Shoot, firingSolution && now < brain.BurstUntil);
             return input;
+        }
+
+        private static bool CanReturnFire(DollSingerEnemyBrain brain) =>
+            brain.HealUntil <= 0 && !brain.Interacting &&
+            (brain.Action == PmcAction.Engage || brain.Action == PmcAction.HoldAngle ||
+             brain.Action == PmcAction.Cover && (!brain.HasCover || brain.IsPeeking || brain.CoverPhase == PmcCoverPhase.Returning) ||
+             brain.Action == PmcAction.Retreat || brain.Action == PmcAction.Flank);
+
+        private static void UpdateCombatPressure(DollSingerEnemyBrain brain, PredictedPlayerGhost health, double now, float dt)
+        {
+            float lost = Mathf.Max(0, brain.LastHealth - health.CurrentHealth);
+            bool shieldHit = health.ShieldHitSequence != brain.LastShieldHitSequence;
+            if (lost > 0 || shieldHit)
+            {
+                // Pressure scales with actual injury. Grazes and periodic tissue loss
+                // must not count like repeated half-strength panic impulses.
+                float pressure = Mathf.Clamp01(lost / RaidHealth.Maximum(BodyPart.Chest)) * .6f;
+                if (shieldHit) pressure += .08f + Mathf.Clamp01(health.ShieldHitStrength) * .12f;
+                brain.Suppression = Mathf.Clamp01(brain.Suppression + pressure);
+                brain.LastDamage = now;
+                brain.NextDecision = 0;
+            }
+            brain.LastHealth = health.CurrentHealth;
+            brain.LastShieldHitSequence = health.ShieldHitSequence;
+            brain.Suppression = Mathf.Max(0, brain.Suppression - Mathf.Max(0, dt) * .32f);
         }
     }
 }

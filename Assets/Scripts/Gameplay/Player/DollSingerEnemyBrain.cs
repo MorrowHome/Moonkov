@@ -48,6 +48,7 @@ namespace Unity.MP_FPS
         public double FailedGoalUntil, NextMission, NextIntent, LastRadio = -100;
         public int PathFailures, RecoveryAttempts, SelectedExit = -1, RescueTargetId = -1;
         public uint IntentSequence;
+        public uint LastShieldHitSequence;
         public ClashBotGoal Mission;
         public bool Interacting, MissionUrgent;
         public double NextSense, NextPath, LastSeenTime = -100, VisibleSince, NextProgress, NextDecision, CommitUntil;

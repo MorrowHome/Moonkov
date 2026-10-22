@@ -19,9 +19,12 @@ namespace Unity.MP_FPS
             bool exhausted = health.CurrentAmmo == 0 && spareAmmo == 0 && !energy;
             bool underThreat = brain.Visible || now - brain.LastDamage < 3 || brain.Suppression > .45f;
             double seenAge = now - brain.LastSeenTime;
-            if (!brain.IsClashBot && (lowHealth || exhausted || brain.LootedCaches >= m_Tuning.DesiredCaches ||
-                now - brain.SpawnTime > map.RaidDuration * (m_Tuning.DepartureFraction + (brain.Seed % 3 - 1) * .08f))
-                ) brain.Leaving = true;
+            // A treatable injury requests temporary Retreat below, not permanent raid departure.
+            // Keep deliberate departure (spent supplies, exhausted caches, timeout) latched.
+            if (!brain.IsClashBot && (exhausted || lowHealth && (!NeedsHealing(health) || FindMedical(brain.Inventory) == null) ||
+                brain.LootedCaches >= m_Tuning.DesiredCaches || now - brain.SpawnTime >
+                map.RaidDuration * (m_Tuning.DepartureFraction + (brain.Seed % 3 - 1) * .08f)))
+                brain.Leaving = true;
 
             PmcAction choice = brain.IsClashBot ? PmcAction.ClashObjective : brain.Leaving ? PmcAction.Extract : PmcAction.Scavenge;
             float utility = brain.IsClashBot && brain.Mission == ClashBotGoal.Rescue ? 99 : brain.Leaving ? 45 : 12;
