@@ -1,0 +1,97 @@
+{
+  "status": "R22_RING_APPLIED_FOOT_RESOURCE_ONLY",
+  "capturedUTC": "2026-10-22T04:11:49.987096+00:00",
+  "repository": "E:\\UnityProjects\\FPS_Template",
+  "branch": "develop",
+  "baselineCommit": "8002b4a65dae1efb00870f414038c0da2b7d7eca",
+  "ring": {
+    "applied": true,
+    "faces": 12,
+    "triangles": 24,
+    "protectedR21Faces": 150,
+    "protectedR21Triangles": 300,
+    "combinedFinishFaces": 162,
+    "combinedFinishTriangles": 324,
+    "path": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR21RingFinish/Meshes/R2_MODULE_RING_SECTOR_00.asset",
+    "beforeSHA256": "88ff1bc767613dda1d3ec09431c5aa92c8bc4c76234feb0cc13fc77d09ae45f3",
+    "afterSHA256": "0532702eb801725e6fd50656b52875cb13e272d6123a1e8bfa49073416c40b13",
+    "oldSubmeshTriangles": [
+      960,
+      96,
+      72,
+      1224,
+      252
+    ],
+    "newSubmeshTriangles": [
+      936,
+      96,
+      72,
+      1224,
+      276
+    ],
+    "allVertexAttributesUnchanged": true,
+    "globalBoundsUnchanged": true,
+    "privateMaterialUnchanged": true,
+    "sceneSavedOrCopied": false,
+    "sceneDirtyBefore": false,
+    "sceneDirtyAfter": false,
+    "footInstantiated": false,
+    "PlayStarted": false,
+    "HostStarted": false
+  },
+  "fileVerification": {
+    "passed": true,
+    "beforeSHA256": "88ff1bc767613dda1d3ec09431c5aa92c8bc4c76234feb0cc13fc77d09ae45f3",
+    "afterSHA256": "0532702eb801725e6fd50656b52875cb13e272d6123a1e8bfa49073416c40b13",
+    "allSerializedPropertiesOutsideIndicesAndSubmeshDescriptorsByteIdentical": true,
+    "allVertexNormalTangentColorUVSkinningAndWholeBoundsDataByteIdentical": true,
+    "allNonTargetTrianglesAndMaterialsPreserved": true,
+    "allProtectedR21TriangleOrderPreserved": true,
+    "otherFourR21ClonesUnchanged": true,
+    "sceneFileUnchanged": true,
+    "privateMaterialUnchanged": true,
+    "newSubmeshTriangles": [
+      936,
+      96,
+      72,
+      1224,
+      276
+    ],
+    "reassignedTriangles": 24,
+    "combinedFiveRendererFinishTriangles": 324,
+    "footSceneInstances": 0
+  },
+  "foot": {
+    "name": "R21_FOOT0541_Display_Only_Downslope_Bedding",
+    "kind": "R22FOOT",
+    "path": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR22FootResource/Meshes/R21_FOOT0541_Display_Only_Downslope_Bedding.asset",
+    "vertices": 72,
+    "triangles": 24,
+    "normalMode": "Imported FBX corner normals copied unchanged; no RecalculateNormals",
+    "uvChannels": 1,
+    "colliders": 0,
+    "instances": 0,
+    "materialToReuse": "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/DenseRingConceptB/R8VisualSurfaces/Materials/R8_Scanned_Mineral_Support.mat",
+    "placementGatePassed": false,
+    "reason": "Original0541 unique current geometry/world transform, complete current ground footprint compatibility and path clearance have not been proved. Imported resource only; do not use 16m cloud context as DEM."
+  },
+  "protection": {
+    "sceneFileUnchanged": true,
+    "oldSourceMeshesMaterialsDEMAndOptimizationAssetsChanged": false,
+    "oldColliderReferencesChanged": false,
+    "lights": 118,
+    "buttons": 135,
+    "R08CollisionMerged": false,
+    "R16RodsTouched": false,
+    "R20OrRejectedCandidatesImported": false,
+    "characterOrRuntimeCodeChanged": false,
+    "PlayOrHostStarted": false,
+    "priorSceneCopyDenialRetried": false
+  },
+  "limits": [
+    "Editor static mesh import, exact geometry/material reassignment and saved-byte verification only.",
+    "No Play, visual gameplay, physics/navigation, performance or full source-blend validation."
+  ],
+  "rollback": "Revert this narrow commit or restore only ring private clone from the hash-bound R21RingCloneBefore.asset.txt; remove only the new RebuildR22FootResource folder/meta. Preserve any later R23 work and user edits.",
+  "push": false
+}

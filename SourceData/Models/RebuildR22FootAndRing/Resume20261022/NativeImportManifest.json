@@ -1,0 +1,107 @@
+{
+  "pipeline": "Established R19 FBX custom-normal to native mesh pipeline",
+  "normalMode": "Import stored FBX corner normals; no RecalculateNormals/Smooth/Weld",
+  "objects": [
+    {
+      "object": "R23_Ring01_Paired_Connection_Plates",
+      "kind": "R23",
+      "bin": "R23_Ring01_Paired_Connection_Plates.bin",
+      "sha256": "5d0b9990e371923a936e1188e8cbf79451d59d33efbff2af48f857edce9ae27c",
+      "vertices": 1056,
+      "triangles": 352,
+      "UVChannels": 0,
+      "materials": [
+        "R23_Connection_Plate_Graphite_Coating"
+      ],
+      "position": [
+        1837.2777099609375,
+        223.0,
+        1980.873291015625
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "maxLocalPositionError": 0.0,
+      "maxWorldPositionError": 1.52587890625e-05,
+      "maxImportedNormalVectorError": 0.00011575385067618332,
+      "allImportedCornerNormalsCopied": true,
+      "normalsRecalculated": false
+    },
+    {
+      "object": "R23_Ring01_Five_Through_Fasteners_Per_Face",
+      "kind": "R23",
+      "bin": "R23_Ring01_Five_Through_Fasteners_Per_Face.bin",
+      "sha256": "60eacc71ec61cf9bbf584cc28628c0fb92af6b1bbbac3bf4f640a0510dd991ae",
+      "vertices": 6480,
+      "triangles": 2160,
+      "UVChannels": 0,
+      "materials": [
+        "R23_Fastener_Satin_Passivated_Steel"
+      ],
+      "position": [
+        1837.2777099609375,
+        223.0,
+        1980.873291015625
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "maxLocalPositionError": 0.0,
+      "maxWorldPositionError": 1.52587890625e-05,
+      "maxImportedNormalVectorError": 8.487678656135674e-05,
+      "allImportedCornerNormalsCopied": true,
+      "normalsRecalculated": false
+    },
+    {
+      "object": "R21_FOOT0541_Display_Only_Downslope_Bedding",
+      "kind": "R22FOOT",
+      "bin": "R21_FOOT0541_Display_Only_Downslope_Bedding.bin",
+      "sha256": "1a6c4316b8a6e8a3eddbb28b876a80b16e6583f62161d02b0cbbbddf7dbf4e1d",
+      "vertices": 72,
+      "triangles": 24,
+      "UVChannels": 1,
+      "materials": [
+        "R8_Scanned_Mineral_Support"
+      ],
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        8.146034247147327e-08,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "maxLocalPositionError": 0.0,
+      "maxWorldPositionError": 9.610960183499514e-07,
+      "maxImportedNormalVectorError": 8.429369702178807e-08,
+      "allImportedCornerNormalsCopied": true,
+      "normalsRecalculated": false
+    }
+  ],
+  "fullAuthorBlendLoadedOrSaved": false,
+  "UnityAcceptance": false
+}

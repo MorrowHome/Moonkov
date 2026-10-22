@@ -1,0 +1,22 @@
+{
+  "passed": true,
+  "beforeSHA256": "88ff1bc767613dda1d3ec09431c5aa92c8bc4c76234feb0cc13fc77d09ae45f3",
+  "afterSHA256": "0532702eb801725e6fd50656b52875cb13e272d6123a1e8bfa49073416c40b13",
+  "allSerializedPropertiesOutsideIndicesAndSubmeshDescriptorsByteIdentical": true,
+  "allVertexNormalTangentColorUVSkinningAndWholeBoundsDataByteIdentical": true,
+  "allNonTargetTrianglesAndMaterialsPreserved": true,
+  "allProtectedR21TriangleOrderPreserved": true,
+  "otherFourR21ClonesUnchanged": true,
+  "sceneFileUnchanged": true,
+  "privateMaterialUnchanged": true,
+  "newSubmeshTriangles": [
+    936,
+    96,
+    72,
+    1224,
+    276
+  ],
+  "reassignedTriangles": 24,
+  "combinedFiveRendererFinishTriangles": 324,
+  "footSceneInstances": 0
+}
