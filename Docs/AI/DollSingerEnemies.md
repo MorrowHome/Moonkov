@@ -85,8 +85,9 @@ it does not use deep learning or a runtime language model.
   the actor slows and looks into the next segment. These are navigation-based
   checks, not semantic understanding of rooms or doors.
 - Cover requires both head and torso occlusion. The actor reaches cover, settles,
-  advances to a reachable peek, briefly holds, and returns. Only the holding phase
-  permits cover fire. Damage interrupts exposure immediately. Repeated or punished
+  advances to a reachable peek, briefly holds, and returns. Visible opponents can
+  be engaged while advancing to a peek or returning to safety. Damage interrupts
+  exposure immediately. Repeated or punished
   peeks retire that cover temporarily. The approach route is scored before the
   peek path overwrites the reusable navigation probe. Flanking compares both sides
   using path distance and exposure to the remembered threat.
@@ -113,9 +114,11 @@ stateDiagram-v2
     Peek --> Cover: brief exposure or hit
     Cover --> Heal: safe and injured, medicine available
     Heal --> Cover: interrupted
-    Heal --> Extract: treatment complete, leaving
+    Heal --> Engage: recovered, opponent visible
+    Heal --> Extract: treatment complete, deliberate departure
     Engage --> Retreat: survival takes priority
-    Retreat --> Extract: contact broken
+    Retreat --> Heal: safe, treatable injury, medicine available
+    Retreat --> Extract: contact broken, deliberate departure
 ```
 
 `HoldAngleSeconds`, `TacticalReloadFraction`, `HealSeconds` and `HealSafetySeconds`
@@ -133,6 +136,37 @@ the navigation motor's stopping-radius boundary. The loaded tuning asset returns
 three-second angle holding and 3.5-second treatment defaults. Play Mode was not
 started or stopped for these checks. Live Host/client encounters, geometry-specific
 search/flanking quality, runtime cost and final tactical feel remain unverified.
+
+## Combat response correction (2026-10-22)
+
+Branch `feat/pmc-combat-response` starts from `feat/weapon-balance` at `410d5b45`.
+The focused regression reproduced a wounded PMC with carried medicine permanently
+latching `Leaving`. A treatable wound now selects temporary Retreat without setting
+permanent extraction intent; after actual medical recovery it can contest the
+opponent again. Exhausted supplies, no medicine for a critical wound, completed
+loot goals, exhausted caches and raid timeout retain their departure behavior.
+
+Pressure now scales with actual tissue loss instead of adding 0.5 for every health
+decrease. Recovery is 0.32 per second, so even maximum pressure falls below the
+0.4 peek threshold after about 1.9 quiet seconds. Shield impacts also trigger a
+bounded reaction, once per observed shield event. Pressure still disrupts aim and
+recent damage still interrupts unsafe peeks and treatment.
+
+The real motor can return short bursts while withdrawing, flanking or failing to
+find usable cover. Visible armed return fire uses walking instead of sprinting;
+empty or occluded withdrawal can still sprint. Original perception, reaction delay,
+aim error, turning, firing cadence, physical sightlines and squad shot-lane checks
+remain in force. Healing, interaction, reloading and empty magazines block fire.
+
+Unity compilation and `DollSingerHumanlikeChecks.Run()` passed. The expanded suite
+exercises the production decision, pressure, motor and physical raycast paths:
+treatable critical injury, real medical recovery, deliberate extraction, minor
+damage, pressure recovery, shield-event deduplication, walking backward while
+shooting, failed-cover fallback, unseen target, physical blocker, treatment and
+empty-magazine escape. It uses one isolated ECS World and temporary colliders;
+it does not start a server, client, Play session or another Editor. Formal-map
+navigation, complete raid encounters, multiplayer and final tactical feel remain
+unverified.
 
 ## Configuration and inspection
 
