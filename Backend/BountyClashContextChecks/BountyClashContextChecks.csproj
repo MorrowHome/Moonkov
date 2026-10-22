@@ -10,6 +10,12 @@
     <Compile Include="../../Assets/Scripts/Networking/Client/OfflineProfileStore.cs" Link="OfflineProfileStore.cs" />
     <Compile Include="../../Assets/Scripts/Networking/Client/OfflineProfileStore.Clash.cs" Link="OfflineProfileStore.Clash.cs" />
     <Compile Include="../../Assets/Scripts/Networking/Client/OfflineProfileStore.Protection.cs" Link="OfflineProfileStore.Protection.cs" />
+    <Compile Include="../../Assets/Scripts/Networking/Client/PlayerProfileClient.Lan.cs" Link="PlayerProfileClient.Lan.cs" />
+    <Compile Include="../../Assets/Scripts/Networking/Lan/LanProtocol.cs" Link="LanProtocol.cs" />
+    <Compile Include="../../Assets/Scripts/Networking/Lan/LanPersistence.cs" Link="LanPersistence.cs" />
+    <Compile Include="../../Assets/Scripts/Networking/Lan/LanRoomServer.cs" Link="LanRoomServer.cs" />
+    <Compile Include="../../Assets/Scripts/Networking/Shared/BountyClashRules.cs" Link="BountyClashRules.cs" />
+    <Compile Include="../../Assets/Editor/LanRoomChecks.cs" Link="LanRoomChecks.cs" />
     <Compile Include="../../Assets/Editor/RecoveryOfflineChecks.cs" Link="RecoveryOfflineChecks.cs" />
   </ItemGroup>
 </Project>

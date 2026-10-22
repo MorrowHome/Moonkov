@@ -51,6 +51,7 @@ namespace Unity.MP_FPS
             
             GameSettings.Instance.IsPauseMenuOpen = false;
             await DisconnectAndUnloadWorlds();
+            await LanRoomClient.ReturnedToMenuAsync();
             
             // Restart the main menu scene.
             Start();
@@ -67,6 +68,7 @@ namespace Unity.MP_FPS
         public async void QuitAsync()
         {
             await DisconnectAndUnloadWorlds();
+            await LanRoomClient.LeaveAsync(afterWorldShutdown:true);
 
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;

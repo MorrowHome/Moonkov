@@ -22,6 +22,7 @@ namespace Unity.MP_FPS
         {
             public string MatchId, TokenId, PlayerId, DeploymentId, RegistrationHash;
             public int RulesVersion, TeamId;
+            public RaidPersistenceContext.BountyParticipant[] Participants;
             public int? Cells;
             public string State = "Registered";
             public RaidPersistenceContext.BountyRedemption Redemption;
@@ -44,22 +45,32 @@ namespace Unity.MP_FPS
         private static string RegistrationHash(OfflineClashMatch match) => Receipt(new LocalRegistration
         {
             MatchId=match.MatchId,TokenId=match.TokenId,RulesVersion=match.RulesVersion,
-            Participants=new[]{new RaidPersistenceContext.BountyParticipant {PlayerId=match.PlayerId,DeploymentId=match.DeploymentId,TeamId=match.TeamId}}
+            Participants=match.Participants ?? new[]{new RaidPersistenceContext.BountyParticipant {PlayerId=match.PlayerId,DeploymentId=match.DeploymentId,TeamId=match.TeamId}}
         });
         private static RaidPersistenceContext.BountyRedemption CanonicalRedemption(RaidPersistenceContext.BountyRedemption request)
         {
-            if(request==null || request.ExtractedDeploymentIds==null || request.ExtractedDeploymentIds.Length!=1)
+            if(request==null || request.ExtractedDeploymentIds==null || request.ExtractedDeploymentIds.Length<1 || request.ExtractedDeploymentIds.Length>3)
                 throw new InvalidDataException("A local Clash award can contain only its human deployment.");
             return new RaidPersistenceContext.BountyRedemption {MatchId=Id(request.MatchId),TokenId=Id(request.TokenId),
                 ExtractionEventId=Id(request.ExtractionEventId),CarrierDeploymentId=Id(request.CarrierDeploymentId),
-                ExtractedDeploymentIds=new[]{Id(request.ExtractedDeploymentIds[0])}};
+                ExtractedDeploymentIds=request.ExtractedDeploymentIds.Select(Id).ToArray()};
         }
         private static void ValidateAward(OfflineClashMatch match,RaidPersistenceContext.BountyRedemption award)
         {
-            if(award.MatchId!=match.MatchId || award.TokenId!=match.TokenId || award.CarrierDeploymentId!=match.DeploymentId ||
-                award.ExtractedDeploymentIds.Length!=1 || award.ExtractedDeploymentIds[0]!=match.DeploymentId)
-                throw new InvalidDataException("Local Clash award does not belong to the registered human.");
+            if(award.MatchId!=match.MatchId || award.TokenId!=match.TokenId ||
+                !award.ExtractedDeploymentIds.Contains(match.DeploymentId) ||
+                award.ExtractedDeploymentIds.Distinct().Count()!=award.ExtractedDeploymentIds.Length)
+                throw new InvalidDataException("Clash award does not belong to the registered player.");
+            if(match.Participants==null)
+            {
+                if(award.CarrierDeploymentId!=match.DeploymentId || award.ExtractedDeploymentIds.Length!=1)
+                    throw new InvalidDataException("Solo Clash award has another participant.");
+            }
+            else if(!award.ExtractedDeploymentIds.Contains(award.CarrierDeploymentId) ||
+                award.ExtractedDeploymentIds.Any(id=>!match.Participants.Any(p=>p.DeploymentId==id && p.TeamId==match.TeamId)))
+                throw new InvalidDataException("LAN Clash award must belong to the carrier's team.");
         }
+
         private static void ValidateClash(SaveData save)
         {
             if(save.Clash==null)
@@ -80,6 +91,13 @@ namespace Unity.MP_FPS
                     !(match.State=="Registered" || match.State=="Open" || match.State=="Closed" || match.State=="Cancelled") ||
                     (match.Cells.HasValue && !RaidRules.ValidLoadout(match.Cells.Value)))
                     throw new InvalidDataException("Invalid local Clash match binding.");
+                if(match.Participants!=null && (match.Participants.Length<1 || match.Participants.Length>12 ||
+                    match.Participants.Any(p=>p==null || Id(p.PlayerId)!=p.PlayerId || Id(p.DeploymentId)!=p.DeploymentId || p.TeamId<0 || p.TeamId>3) ||
+                    match.Participants.Select(p=>p.PlayerId).Distinct().Count()!=match.Participants.Length ||
+                    match.Participants.Select(p=>p.DeploymentId).Distinct().Count()!=match.Participants.Length ||
+                    match.Participants.GroupBy(p=>p.TeamId).Any(g=>g.Count()>3) ||
+                    !match.Participants.Any(p=>p.PlayerId==match.PlayerId && p.DeploymentId==match.DeploymentId && p.TeamId==match.TeamId)))
+                    throw new InvalidDataException("Invalid LAN Clash roster.");
                 if(match.State=="Open")
                 {
                     if(ledger.ActiveMatchId!=match.MatchId || save.DeploymentId!=match.DeploymentId || match.Cells!=save.CarriedCells)
@@ -105,13 +123,15 @@ namespace Unity.MP_FPS
             if(save.Clash?.CurrentMatchId!=null && save.Clash.Matches.TryGetValue(save.Clash.CurrentMatchId,out var previous) && previous.State=="Registered")
                 previous.State="Cancelled";
         }
-        internal void RegisterBountyMatch(string matchId,int rulesVersion,string tokenId,RaidPersistenceContext.BountyParticipant[] participants)
+        internal void RegisterBountyMatch(string matchId,int rulesVersion,string tokenId,RaidPersistenceContext.BountyParticipant[] participants,bool lan=false)
         {
             lock(m_Lock)
             {
-                if(participants==null || participants.Length!=1 || participants[0]==null)throw new InvalidDataException("Local Clash must register exactly its human profile.");
-                var human=participants[0];CheckPlayer(human.PlayerId);
-                var match=new OfflineClashMatch {MatchId=Id(matchId),TokenId=Id(tokenId),PlayerId=human.PlayerId,DeploymentId=Id(human.DeploymentId),RulesVersion=rulesVersion,TeamId=human.TeamId};
+                if(participants==null || participants.Length<1 || participants.Any(p=>p==null) || (!lan && participants.Length!=1))throw new InvalidDataException("Local Clash must register exactly its human profile.");
+                var human=participants.FirstOrDefault(p=>p.PlayerId==m_Save.PlayerId);
+                if(human==null)throw new InvalidDataException("Clash roster does not contain the profile owner.");
+                CheckPlayer(human.PlayerId);
+                var match=new OfflineClashMatch {MatchId=Id(matchId),TokenId=Id(tokenId),PlayerId=human.PlayerId,DeploymentId=Id(human.DeploymentId),RulesVersion=rulesVersion,TeamId=human.TeamId,Participants=lan?participants:null};
                 if(rulesVersion!=ClashVersion || match.TeamId<0 || match.TeamId>3)throw new InvalidDataException("Unsupported local Clash rules.");
                 match.RegistrationHash=RegistrationHash(match);
                 if(m_Save.Clash!=null && m_Save.Clash.Matches.TryGetValue(match.MatchId,out var previous))
@@ -198,7 +218,7 @@ namespace Unity.MP_FPS
             {
                 if(payload.Outcome!="Extracted" || payload.BountyEventId!=match.Redemption.ExtractionEventId || match.AwardClaimed)
                     throw new InvalidDataException("Local Clash award requires its actual successful extraction event.");
-                bonus=SoloBountyDust;
+                bonus=match.Participants==null ? SoloBountyDust : BountyClashRules.Reward(match.Participants.Count(p=>p.TeamId==match.TeamId));
             }
             else if(payload.BountyEventId!=null || payload.Redemption!=null)throw new InvalidDataException("Unregistered local Clash award.");
             if(payload.Redemption!=null && Receipt(CanonicalRedemption(payload.Redemption))!=match.RedemptionHash)

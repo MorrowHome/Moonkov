@@ -1,0 +1,1 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements"><ui:VisualElement class="lan-member-row"><ui:Label name="memberIndex" class="lan-member-index" /><ui:Label name="memberName" class="lan-member-name" /><ui:Label name="memberState" class="lan-member-state" /></ui:VisualElement></ui:UXML>

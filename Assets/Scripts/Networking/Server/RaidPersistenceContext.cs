@@ -101,18 +101,19 @@ namespace Unity.MP_FPS
         public readonly Dictionary<Entity, Deploy> Deployments = new Dictionary<Entity, Deploy>();
         public readonly Dictionary<Entity, RaidSession> ReadyRaids = new Dictionary<Entity, RaidSession>();
         public readonly Dictionary<Entity, RaidInventoryState> Inventories = new Dictionary<Entity, RaidInventoryState>();
-        public bool Enabled => m_Http != null || m_Offline != null;
+        public bool Enabled => m_Http != null || m_Offline != null || m_Lan != null;
         public bool MissionsSupported
         {
             get
             {
-                if (m_Offline != null || !Enabled) return true;
+                if (m_Offline != null || m_Lan != null || !Enabled) return true;
                 if (Profiles.Count == 0) return false;
                 foreach (var profile in Profiles.Values) if (profile.MissionSchemaVersion < 1) return false;
                 return true;
             }
         }
         private readonly OfflineProfileStore m_Offline;
+        private readonly LanPersistence m_Lan;
         private readonly HttpClient m_Http;
         private readonly CancellationTokenSource m_Stop = new CancellationTokenSource();
         private readonly string m_Outbox;
@@ -126,6 +127,14 @@ namespace Unity.MP_FPS
             m_Offline = store ?? throw new ArgumentNullException(nameof(store));
             m_Outbox = store.OutboxDirectory;
             Directory.CreateDirectory(m_Outbox);
+            ReplayOutbox();
+        }
+
+        public RaidPersistenceContext(LanPersistence lan)
+        {
+            m_Lan = lan ?? throw new ArgumentNullException(nameof(lan));
+            m_Outbox = lan.OutboxDirectory;
+            m_ClashCapability = Task.FromResult(true);
             ReplayOutbox();
         }
 
@@ -301,6 +310,7 @@ namespace Unity.MP_FPS
         private async Task<Profile> PostAsync(string path, object payload)
         {
             if (m_Offline != null) return m_Offline.Request(path, payload);
+            if (m_Lan != null) return m_Lan.Request(path, payload);
             using (var content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json"))
             using (var response = await m_Http.PostAsync(path, content, m_Stop.Token).ConfigureAwait(false))
             {

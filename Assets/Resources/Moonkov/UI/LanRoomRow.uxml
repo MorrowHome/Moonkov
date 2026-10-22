@@ -1,0 +1,1 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements"><ui:Button name="roomJoin" class="lan-room-row"><ui:Label name="roomName" class="lan-row-title" picking-mode="Ignore" /><ui:Label name="roomDetail" class="lan-row-detail" picking-mode="Ignore" /></ui:Button></ui:UXML>

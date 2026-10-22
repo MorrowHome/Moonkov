@@ -51,7 +51,7 @@ namespace Unity.MP_FPS.Client
             m_MainMenu.Q<TextField>(UIElementNames.NameInputField).SetEnabled(false);
             m_MainMenu.Q<VisualElement>("InputPlayerName").style.display = DisplayStyle.None;
             m_ShowConnectionMenu = false;
-            m_AccountVerified = PlayerProfileClient.IsOffline;
+            m_AccountVerified = PlayerProfileClient.IsOffline || PlayerProfileClient.IsLan;
             m_BackToStash = new Button(ShowStash) { text = "BACK TO STASH" };
             m_ConnectionPanel.Insert(0, m_BackToStash);
             m_CarryCells = new IntegerField("ENERGY CELLS TO CARRY") { name = "carryCells", isDelayed = true };
@@ -79,8 +79,8 @@ namespace Unity.MP_FPS.Client
         {
             bool loggedIn = PlayerProfileClient.IsLoggedIn && m_AccountVerified;
             MoonkovLocalization.Set(m_ProfileModeButton, PlayerProfileClient.IsOffline ? "ONLINE ACCOUNTS" : "SINGLEPLAYER");
-            m_ProfileModeButton.SetEnabled((!m_AccountBusy || !PlayerProfileClient.IsOffline) && PlayerProfileClient.SupportsSinglePlayer);
-            MoonkovLocalization.Set(m_Logout, PlayerProfileClient.IsOffline ? "CLOSE SINGLEPLAYER" : "LOG OUT");
+            m_ProfileModeButton.SetEnabled(!PlayerProfileClient.IsLan && (!m_AccountBusy || !PlayerProfileClient.IsOffline) && PlayerProfileClient.SupportsSinglePlayer);
+            MoonkovLocalization.Set(m_Logout, PlayerProfileClient.IsLan ? "离开局域网房间" : PlayerProfileClient.IsOffline ? "CLOSE SINGLEPLAYER" : "LOG OUT");
             m_ProfileModeButton.tooltip = MoonkovLocalization.Text(PlayerProfileClient.SupportsSinglePlayer
                 ? "Open the independent local stash and single-player raids." : "Single player requires a Client+Server build.");
             bool showStash = loggedIn && !m_ShowConnectionMenu;
@@ -149,13 +149,14 @@ namespace Unity.MP_FPS.Client
 
         private void ShowRaidPreparation()
         {
-            if (PlayerProfileClient.IsOffline) GameManager.Instance.StartGameAsync(CreationType.Offline);
+            if (PlayerProfileClient.IsLan) m_LanRoom.Open();
+            else if (PlayerProfileClient.IsOffline) GameManager.Instance.StartGameAsync(CreationType.Offline);
             else { m_ShowConnectionMenu = true; UpdateAccountPanel(); }
         }
 
         private async void SwitchProfileMode()
         {
-            if (GameSettings.Instance.GameState != GlobalGameState.MainMenu) return;
+            if (GameSettings.Instance.GameState != GlobalGameState.MainMenu || PlayerProfileClient.IsLan) return;
             if (m_AccountBusy && !PlayerProfileClient.IsOffline)
             {
                 var previous = m_AccountStop; previous.Cancel(); previous.Dispose();
@@ -203,7 +204,7 @@ namespace Unity.MP_FPS.Client
 
         private async Task AccountAction(Func<CancellationToken, Task> action, bool allowOffline = false)
         {
-            if (m_AccountBusy || (!m_AccountConfigurationValid && !PlayerProfileClient.IsOffline && !allowOffline)) return;
+            if (m_AccountBusy || (!m_AccountConfigurationValid && !PlayerProfileClient.IsOffline && !PlayerProfileClient.IsLan && !allowOffline)) return;
             var lifetime = m_AccountStop;
             m_AccountError = null;
             m_AccountBusy = true;

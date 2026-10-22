@@ -1,0 +1,58 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="LanRoomPanel.uss" />
+    <ui:VisualElement class="lan-layer" picking-mode="Ignore">
+        <ui:Button name="lanEntry" text="局域网 / LAN" class="lan-entry" />
+        <ui:VisualElement name="lanModal" class="lan-modal lan-hidden">
+            <ui:VisualElement class="lan-window">
+                <ui:VisualElement class="lan-header">
+                    <ui:VisualElement class="lan-heading"><ui:Label text="MOONKOV / LOCAL NETWORK" class="lan-eyebrow" /><ui:Label name="lanTitle" text="局域网作战室" class="lan-title" /></ui:VisualElement>
+                    <ui:Button name="lanClose" text="收起 ×" class="lan-close" />
+                </ui:VisualElement>
+                <ui:Label text="同一网络 · 房主存档 · 无需在线账号" class="lan-subtitle" />
+                <ui:VisualElement name="lanBrowser" class="lan-columns">
+                    <ui:VisualElement class="lan-browse">
+                        <ui:VisualElement class="lan-section-heading"><ui:Label text="01 / 寻找房间" class="lan-section-title" /><ui:Button name="lanRefresh" text="刷新 ↻" /></ui:VisualElement>
+                        <ui:ScrollView name="lanRooms" class="lan-room-list" horizontal-scroller-visibility="Hidden" />
+                        <ui:Label name="lanEmpty" text="点击刷新，寻找附近的房间。" class="lan-muted" />
+                        <ui:VisualElement class="lan-direct">
+                            <ui:Label text="自动发现不可用时，可以直接输入房主的 IPv4。" class="lan-small" />
+                            <ui:TextField name="lanAddress" label="房主 IPv4" value="192.168.1.100" max-length="15" />
+                            <ui:IntegerField name="lanJoinPort" label="房间端口" value="7978" is-delayed="true" />
+                            <ui:Button name="lanJoin" text="直连加入 →" class="lan-dark-button" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:ScrollView class="lan-create" horizontal-scroller-visibility="Hidden">
+                        <ui:Label text="02 / 创建房间" class="lan-section-title" />
+                        <ui:TextField name="lanPlayerName" label="你的代号" value="Operator" max-length="20" />
+                        <ui:TextField name="lanRoomName" label="房间名" value="Moonkov 小队" max-length="20" />
+                        <ui:DropdownField name="lanMode" label="作战玩法" />
+                        <ui:IntegerField name="lanCapacity" label="人数上限" value="8" is-delayed="true" />
+                        <ui:IntegerField name="lanControlPort" label="房间端口 / TCP" value="7978" is-delayed="true" />
+                        <ui:IntegerField name="lanGamePort" label="游戏端口 / UDP" value="7979" is-delayed="true" />
+                        <ui:Label text="远征最多 32 人；极速赏金最多 12 人。&#10;房主需要 Client+Server 游戏版本。" class="lan-small" />
+                        <ui:Button name="lanCreate" text="创建房间 →" class="lan-primary" />
+                    </ui:ScrollView>
+                </ui:VisualElement>
+                <ui:VisualElement name="lanLobby" class="lan-columns lan-hidden">
+                    <ui:VisualElement class="lan-roster">
+                        <ui:Label name="lanRoomHeading" class="lan-section-title" />
+                        <ui:Label name="lanRoomMeta" class="lan-muted" />
+                        <ui:ScrollView name="lanMembers" class="lan-members" horizontal-scroller-visibility="Hidden" />
+                    </ui:VisualElement>
+                    <ui:ScrollView class="lan-briefing" horizontal-scroller-visibility="Hidden">
+                        <ui:Label text="出发前 / BRIEFING" class="lan-section-title" />
+                        <ui:Label name="lanBriefing" class="lan-body" />
+                        <ui:Label name="lanHostAddress" class="lan-address" />
+                        <ui:Button name="lanCopy" text="复制房主地址" />
+                        <ui:Label text="装备、仓库和撤离成果保存在房主电脑。&#10;请使用同一台客户端加入同一位房主，以继续进度。" class="lan-small" />
+                        <ui:Button name="lanEquipment" text="整理装备与补给 →" class="lan-dark-button" />
+                        <ui:Button name="lanReady" text="准备就绪" class="lan-primary" />
+                        <ui:Button name="lanStart" text="全员出发 →" class="lan-primary" />
+                        <ui:Button name="lanLeave" text="离开房间" class="lan-danger" />
+                    </ui:ScrollView>
+                </ui:VisualElement>
+                <ui:VisualElement class="lan-footer"><ui:Label name="lanStatus" text="准备建立本地通信。" class="lan-status" /><ui:Label text="TCP 7978 · UDP 7979 / 7980" class="lan-footer-code" /></ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
