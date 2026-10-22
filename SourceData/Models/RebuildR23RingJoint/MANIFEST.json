@@ -1,0 +1,116 @@
+{
+  "package": "Moonkov R23 sector01 one-node display-only delta for DOT00",
+  "date": "2026-10-21",
+  "status": "PREPARED_FOR_PARENT_REVIEW_NOT_UPLOADED_NOT_SENT_TO_LOCAL",
+  "default_application": "RESOURCE_ONLY_UNTIL_ALL_CURRENT_LOCAL_STATIC_GATES_PASS",
+  "source_files": {
+    "R23": {
+      "filename": "Moonkov_Rebuild_R23_Ring_Joint_Connection_FULL_EDITABLE.blend",
+      "bytes": 312940075,
+      "sha256": "7221dd6c4fe04311322e801fac7cc0e852cba4daaa505ab0aed3cf6a854e7ecd",
+      "unchanged_and_preserved_after_packaging_preflight": true,
+      "included_in_package": false
+    },
+    "R22": {
+      "filename": "Moonkov_Rebuild_R22_Ground_Contact_And_Ring_Boundary_FULL_EDITABLE.blend",
+      "bytes": 312853197,
+      "sha256": "cb56105e5b32feb294cc41e36c4d6afb06df33c1558bbd7c64da490a3bc71a85",
+      "unchanged_and_preserved_after_packaging_preflight": true,
+      "included_in_package": false
+    },
+    "R21": {
+      "filename": "Moonkov_Rebuild_R21_Ring_Structural_Finish_FULL_EDITABLE.blend",
+      "bytes": 312880398,
+      "sha256": "3d2184aa58c3f895b746d16a0d653d70ec7b10bf728847e2aad72eabde6818c2",
+      "unchanged_and_preserved_after_packaging_preflight": true,
+      "included_in_package": false
+    }
+  },
+  "FBX": {
+    "file": "R23_RING01_JOINT_DISPLAY_ONLY.fbx",
+    "bytes": 83228,
+    "sha256": "dc4fad9f5f6db07ae6ea970757cb61498997adfc66cff80b39732f6c533575f1",
+    "meshes": 2,
+    "vertices": 1308,
+    "triangles": 2512,
+    "private_constant_materials": 2,
+    "textures": 0,
+    "UV_layers": 0,
+    "collision_camera_light_animation_armature_objects": 0,
+    "axis_forward": "-Z",
+    "axis_up": "Y",
+    "unit_scale_cm": 100,
+    "normal_policy": "Import stored corner normals only; recalculation rejected. Original flat flags retained.",
+    "normal_binary_max_vector_error": 8.487678656135674e-05,
+    "normal_custom_import_max_vector_error": 0.00011575385067618332,
+    "normal_import_tolerance_vector": 0.000175,
+    "recomputed_plate_normals_max_angle_degrees": 17.510763965676997
+  },
+  "local_dependency": {
+    "reported_local_version": "R21; R22 not applied",
+    "R22_foot_or_12face_patch_required": false,
+    "cloud_proof": "Full original target-owner XYZ/UV match R21 source. Target components46/48 materials match R21 and lie in prior protected150 faces. R22 other12 material faces do not overlap. Direct R23 owner+parent evaluation equals recorded R21 matrix.",
+    "local_compatibility_confirmed": false,
+    "current_receipt_scene_asset_ownership_and_transform_gate_required": true
+  },
+  "checks": {
+    "FBX_binary_and_custom_normal_import": "PASS_WITH_REPORTED_NUMERIC_TOLERANCES",
+    "recomputed_normals": "REJECTED_DIAGNOSTIC_NOT_ACCEPTED",
+    "full_map_load_or_save": false,
+    "export_count": 1,
+    "render_count": 0,
+    "Unity_import_or_execution": "NOT_RUN",
+    "local_application_or_rollback": "NOT_RUN",
+    "source_hashes_R23_R22_R21": "VERIFIED_UNCHANGED",
+    "approved_visual_evidence": "Previously parent-approved V2 close/bay renders, unchanged; no new render in handoff preparation",
+    "forbidden_scope_touched": false,
+    "no_upload_or_local_contact": true
+  },
+  "source_visual_evidence_references_not_included": {
+    "R23_Ring_Joint_AFTER_V2_1100.png": "4f67c528f47e02975663ea5e6b2d948d149c5a445b32bd352bc0bbc27a508a7c",
+    "R23_Ring_Bay_AFTER_V2_1100.png": "4568d9462681d4545e8b85fef8232c3875363da86fbd5d0fb52b7975ecfac2cb"
+  },
+  "file_integrity_policy": "Manifest lists payload files except itself and SHA256SUMS to avoid cycles. SHA256SUMS covers manifest and payload, not itself. Archive verification separately hashes every actual entry.",
+  "files": {
+    "FBX_STATIC_READBACK.json": {
+      "bytes": 6756,
+      "sha256": "be9113cc1116f8b0a2c451aece351b522819b7763ae10a77bdbce672506b4e4d"
+    },
+    "LOCAL_MATCH_GATE_必须先通过.txt": {
+      "bytes": 6120,
+      "sha256": "ede13d0c1353cbc057d440024f6a38c7ff37773d884bd1ecdb4fdb49c50d3ca0"
+    },
+    "PREPARATION_SOURCE_CHECKS.json": {
+      "bytes": 3349,
+      "sha256": "5170bfe3d7e57e8e2c30a649a8f39e09f8ce92a74ee1373a1f82e4e97729b690"
+    },
+    "R23_CONSTANT_PBR_MATERIALS.json": {
+      "bytes": 5726,
+      "sha256": "5065e98e793a705f96c2f84a709ca425763eed051464439f8f8bac9cbbff9b48"
+    },
+    "R23_NEW_GEOMETRY_CONTRACT.json": {
+      "bytes": 2781802,
+      "sha256": "829d855c2c13b9fd6126e25c9d3a6b63058ae5b13eb84e18c12a95a958eb1af7"
+    },
+    "R23_RING01_JOINT_DISPLAY_ONLY.fbx": {
+      "bytes": 83228,
+      "sha256": "dc4fad9f5f6db07ae6ea970757cb61498997adfc66cff80b39732f6c533575f1"
+    },
+    "R23_TARGET_RING_STATIC_EVIDENCE.json": {
+      "bytes": 2438249,
+      "sha256": "3edbb7ba9b5423e99fbe4abcc795b5845a9eafd7c6b550dbff5e375a333a6700"
+    },
+    "README_DOT00_交接说明.txt": {
+      "bytes": 5732,
+      "sha256": "6b3025c723930c56408dda41e7da87efb41608ea8d3adac318e9b655a4383d4f"
+    },
+    "ROLLBACK_仅本增量.txt": {
+      "bytes": 1871,
+      "sha256": "1afd55af28aee2fb72afeff76a4b594222a4557927cff996ac8862b97ab5bb90"
+    },
+    "verify_fbx_static.py": {
+      "bytes": 9063,
+      "sha256": "f547a652d699db632303b808c56a783ee929921fef23e2176e487883e5d48126"
+    }
+  }
+}

@@ -1,0 +1,222 @@
+{
+  "status": "R22_PATCH_AND_RESOURCE_R23_TWO_OBJECT_DISPLAY_APPLIED_STATIC_VERIFIED",
+  "capturedUTC": "2026-10-22T04:22:36.288213+00:00",
+  "repository": "E:\\UnityProjects\\FPS_Template",
+  "branch": "develop",
+  "baselineBeforeR23Commit": "6a3c4634a4af98ba3b8655f42b682b8e806fe4e5",
+  "R22LocalCommit": "6a3c4634a4af98ba3b8655f42b682b8e806fe4e5",
+  "R23Package": {
+    "privateFileId": "1fgIuCdRwlGCxM6iZgiMnZDBF9pAJ-CXC",
+    "bytes": 442985,
+    "sha256": "e8d1ec682907197d253da1c964d6d2192eb6d2f9682dbec0f9b7458902574f90",
+    "CRCAndManifestFilesVerified": true,
+    "manifestPayloadsVerified": 10,
+    "fullBlendDownloadedOrRehashedLocally": false,
+    "fullSourceBlendSHA256RecordedOnly": "7221dd6c4fe04311322e801fac7cc0e852cba4daaa505ab0aed3cf6a854e7ecd",
+    "permissionOrSharingChanged": false
+  },
+  "R22": {
+    "appliedFaces": 12,
+    "appliedTriangles": 24,
+    "originalR21FacesPreserved": 150,
+    "originalR21TrianglesPreserved": 300,
+    "combinedFinishFaces": 162,
+    "combinedFinishTriangles": 324,
+    "footMeshResourceImported": true,
+    "footSceneInstances": 0,
+    "footPlacementNotAccepted": "Original0541 exact current geometry/world transform, full displayed-ground footprint compatibility and path clearance were not established. No DEM or foundation adjustment was attempted."
+  },
+  "R23": {
+    "applied": true,
+    "formal": "Assets/MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusGameScene.unity",
+    "formalBeforeSHA256": "3ade3fb4e2bb6e6afc42eb9f2d3a86e170b64fc6b7029d40c6f7a6b4377a7006",
+    "formalAfterUnitySaveSHA256": "0a5398fb3c94aeded6705698ff95349d817a62a996d9d9bd97ce2a660586ae49",
+    "prefabPath": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR23RingJoint/Prefabs/R23_Ring01_Joint_DisplayOnly.prefab",
+    "rootId": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-7125211690334903693-1811984516",
+    "rootTransformId": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-5714955571738943454-1811984516",
+    "rootPosition": [
+      1837.27771,
+      223.0,
+      1980.87329
+    ],
+    "objects": [
+      {
+        "name": "R23_Ring01_Paired_Connection_Plates",
+        "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR23RingJoint/Meshes/R23_Ring01_Paired_Connection_Plates.asset",
+        "material": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR23RingJoint/Materials/R23_Connection_Plate_Graphite_Coating.mat",
+        "vertices": 1056,
+        "triangles": 352
+      },
+      {
+        "name": "R23_Ring01_Five_Through_Fasteners_Per_Face",
+        "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR23RingJoint/Meshes/R23_Ring01_Five_Through_Fasteners_Per_Face.asset",
+        "material": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR23RingJoint/Materials/R23_Fastener_Satin_Passivated_Steel.mat",
+        "vertices": 6480,
+        "triangles": 2160
+      }
+    ],
+    "newObjects": 2,
+    "newMeshes": 2,
+    "newMaterials": 2,
+    "triangles": 2512,
+    "textures": 0,
+    "UVChannels": 0,
+    "newColliders": 0,
+    "maxWorldPositionErrorMetres": 0.000122070313,
+    "oldProtectedComponents": 67308,
+    "oldProtectedHashBefore": "987691C59D69FA613B865ECFB759559F501C82BD9B0C0C1A40FC2B2C67F16417",
+    "oldProtectedHashAfter": "987691C59D69FA613B865ECFB759559F501C82BD9B0C0C1A40FC2B2C67F16417",
+    "oldColliders": 15335,
+    "sceneDirty": false,
+    "sceneSavedAtOriginalPathOnly": true,
+    "sceneCopyCreated": false,
+    "PlayStarted": false,
+    "HostStarted": false
+  },
+  "StaticVerification": {
+    "passed": true,
+    "formal": "Assets/MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusGameScene.unity",
+    "sceneDirty": false,
+    "newDisplayObjects": 2,
+    "newDisplayTriangles": 2512,
+    "newPrivateMaterials": 2,
+    "newTextures": 0,
+    "newUVChannelsForR23": 0,
+    "newColliders": 0,
+    "footResourceImported": true,
+    "footInstances": 0,
+    "oldProtectedComponentsHashUnchanged": true,
+    "oldColliders": 15335,
+    "lights": 118,
+    "buttons": 135,
+    "R22FacesApplied": 12,
+    "R22TrianglesApplied": 24,
+    "originalR21TrianglesPreserved": 300,
+    "normalMode": "Import stored FBX normals via established native pipeline; never RecalculateNormals",
+    "resources": [
+      {
+        "name": "R23_Ring01_Paired_Connection_Plates",
+        "kind": "R23",
+        "vertices": 1056,
+        "triangles": 352,
+        "importedNormalsByteExactToNativePayload": true,
+        "UVChannels": 0
+      },
+      {
+        "name": "R23_Ring01_Five_Through_Fasteners_Per_Face",
+        "kind": "R23",
+        "vertices": 6480,
+        "triangles": 2160,
+        "importedNormalsByteExactToNativePayload": true,
+        "UVChannels": 0
+      },
+      {
+        "name": "R21_FOOT0541_Display_Only_Downslope_Bedding",
+        "kind": "R22FOOT",
+        "vertices": 72,
+        "triangles": 24,
+        "importedNormalsByteExactToNativePayload": true,
+        "UVChannels": 1
+      }
+    ],
+    "PlayStarted": false,
+    "HostStarted": false,
+    "runtimePhysicsPerformanceAccepted": false
+  },
+  "SavedSceneAudit": {
+    "passed": true,
+    "formal": "Assets/MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusGameScene.unity",
+    "beforeSHA256": "3ade3fb4e2bb6e6afc42eb9f2d3a86e170b64fc6b7029d40c6f7a6b4377a7006",
+    "afterSHA256": "0a5398fb3c94aeded6705698ff95349d817a62a996d9d9bd97ce2a660586ae49",
+    "newPrefabInstanceID": "1811984516",
+    "newPrefabGUID": "21373b300947d2e4c976bbf5565fa64e",
+    "newSceneRecords": 1,
+    "removedSceneRecords": 0,
+    "existingRecordsChanged": {
+      "9223372036854775807": "One appended R23 prefab instance root",
+      "145744447": "Unity serialized existing effective default maximumBosses=1",
+      "145744448": "Unity serialized existing effective defaults m_MedicalSeconds=3, m_SearchSeconds=2"
+    },
+    "threeDefaultFieldsRetained": true,
+    "defaultsCheckedAgainstCurrentSourceInitializers": true,
+    "allOtherExistingSavedSceneRecordsByteIdentical": true,
+    "oldProtectedRenderersMeshFiltersCollidersLightsAndButtonsHashUnchanged": true,
+    "sceneCopyCreated": false,
+    "sceneFileWrittenByThisAudit": false,
+    "dirtyFlagChangedByThisAudit": false,
+    "directFieldRemovalDeniedAndAbandoned": true,
+    "UnityPlayOrPerformanceValidation": false
+  },
+  "NearbyInterference": {
+    "neighboringRenderers": 4,
+    "foreignNeighborSurfaceIntersections": 0,
+    "foreignNeighborContainmentSamples": 0,
+    "allOriginalSourceContactsRestrictedToTargetFaces": true,
+    "sourceFacesContacted": [
+      1073,
+      1074,
+      1075,
+      1085,
+      1087
+    ],
+    "terrainHeightSamplesPerTerrain": 169,
+    "terrainMaximumWorldY": 178.037628,
+    "newNodeMinimumWorldY": 222.20549,
+    "scope": "Local static geometry/height evidence only, no physics or navigation simulation."
+  },
+  "preserved": {
+    "oldProtectedComponentsHashUnchanged": true,
+    "oldColliders": 15335,
+    "lights": 118,
+    "buttons": 135,
+    "originalCentralStructureReplaced": false,
+    "DEMOrLunarMaterialsChanged": false,
+    "oldBatchingLODVisibilityCullingOrPipelineAssetsChanged": false,
+    "oldSharedMaterialsChanged": false,
+    "userAGENTSChangesIncluded": false,
+    "R08CollisionMerged": false,
+    "R16RodsChanged": false,
+    "R20OrOtherRejectedCandidatesImported": false,
+    "runtimeOrCharacterCodeChanged": false,
+    "HostOrPlayStarted": false,
+    "extraEditorInstancesStarted": false,
+    "softwareInstalledOrAccountPermissionsExpanded": false,
+    "priorSceneMemoryCopyDenialRetried": false
+  },
+  "staticVisualReview": {
+    "SceneViewSnapshotsInspected": true,
+    "captures": [
+      "Review_Context.png",
+      "Review_Node.png"
+    ],
+    "observations": "Imported connection plate and five fastening positions are visible from one static near view; a wider scene context was also inspected. Hidden Editor capture framing initially lagged; retained captures are the inspected final outputs, not proof of every plate face. No mouse-control tool was used.",
+    "fullRearPlateAppearanceAccepted": false,
+    "actualGameplayLightingOrPerformanceAccepted": false
+  },
+  "serializationDefaultsRetained": {
+    "maximumBosses": 1,
+    "m_MedicalSeconds": 3,
+    "m_SearchSeconds": 2,
+    "note": "Unity added these three explicit defaults during the authorized scene save. Existing source initializers have the same values. Retained unchanged after automatic-review denial of direct field removal. No runtime script was edited."
+  },
+  "deniedAuxiliaryAction": {
+    "action": "Execute preserve_scene_records.py to directly rewrite formal scene and remove three default serialization fields",
+    "target": "Assets/MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusGameScene.unity",
+    "reason": "脚本会直接改写正式场景文件并移除现有序列化字段，可能覆盖用户的场景改动；该破坏性写入未获明确授权，且与保留用户修改的约束冲突。",
+    "state": "DENIED_BEFORE_EXECUTION",
+    "scriptExecuted": false,
+    "sceneFieldRemovalExecuted": false,
+    "retriedOrBypassed": false,
+    "safeResolution": "Abandoned removal. Retained Unity-saved fields and verified values equal existing source initializers (1,3,2). Read-only saved-scene audit only. No scene copy, alternate index blob, renamed removal script or dirty-flag clearing."
+  },
+  "remainingValidation": [
+    "Full front/back appearance and final art acceptance in the intended camera/lighting.",
+    "No Play, Host, physics/navigation, gameplay interaction, performance or multiplayer acceptance.",
+    "R22 foot placement remains gated; resource only."
+  ],
+  "rollback": {
+    "R23": "Disable/remove only prefab instance 1811984516 (prefab GUID 21373b300947d2e4c976bbf5565fa64e) or revert this R23 local commit after checking later dependencies. Its assets live only under RebuildR23RingJoint. Preserve user edits and R22/R21.",
+    "R22": "Revert local commit 6a3c4634a4af98ba3b8655f42b682b8e806fe4e5 separately, or restore the single private R21 ring clone from the hash-bound backup in SourceData/Models/RebuildR22FootAndRing/Resume20261022. Foot resource folder is independent and has no scene instance."
+  },
+  "push": false
+}

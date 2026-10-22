@@ -92,3 +92,6 @@ Assets/Prefabs/Survival/*.mat whitespace=-blank-at-eol
 Assets/Resources/Moonkov/Oxygen/*.asset whitespace=-blank-at-eol
 # Airlock SoundDefs use Unity's empty serialized string formatting as well.
 Assets/Audio/Moonkov/Airlock/SoundDefs/*.asset whitespace=-blank-at-eol
+
+# Preserve the exact hash-bound Unity mesh backup delivered with R22.
+SourceData/Models/RebuildR22FootAndRing/Resume20261022/R21RingCloneBefore.asset.txt whitespace=-blank-at-eol

@@ -1,0 +1,73 @@
+{
+  "status": "PASS_SELECTIVE_SOURCE_IDENTITY_AND_DETERMINISTIC_EXPORT",
+  "blender_version": "4.3.2",
+  "source_R23_bytes": 312940075,
+  "source_R23_sha256_before_and_after": "7221dd6c4fe04311322e801fac7cc0e852cba4daaa505ab0aed3cf6a854e7ecd",
+  "candidate_V2_bytes": 100759,
+  "candidate_V2_sha256_before_and_after": "e430bf52975aac46e0a5a1f86f6ffbe923607989faa8aea655273b78cbb98240",
+  "complete_R23_original_readback_report_status": "R23_FULL_EDITABLE_SAVED_FRESH_PROCESS_READBACK_AND_ROLLBACK_PASS",
+  "new_source_mesh_and_attribute_guards_match_merge_report": true,
+  "candidate_geometry_and_world_matrices_equal_merged_R23": true,
+  "original_target_owner_geometry_UV_equal_R21_snapshot": true,
+  "original_target_owner_guard_equal_R23_baseline": true,
+  "R22_changes_in_owner_only_other12_face_materials": true,
+  "target_components46_48_unchanged_since_R21": true,
+  "selected_reads": [
+    {
+      "file": "R23 full source",
+      "collection": "R23_RING01_LOWER_GUSSET_DISPLAY",
+      "objects": 2
+    },
+    {
+      "file": "V2 candidate",
+      "objects": 2
+    },
+    {
+      "file": "R23 full source",
+      "object": "R2_MODULE_RING_SECTOR_00",
+      "exported": false
+    }
+  ],
+  "full_scene_loaded": false,
+  "source_saved": false,
+  "new_blend_saved": false,
+  "new_render_count": 0,
+  "FBX_export_count": 1,
+  "FBX_file": "R23_RING01_JOINT_DISPLAY_ONLY.fbx",
+  "FBX_sha256": "dc4fad9f5f6db07ae6ea970757cb61498997adfc66cff80b39732f6c533575f1",
+  "FBX_bytes": 83228,
+  "textures_in_export": 0,
+  "Unity_validation": "NOT_RUN",
+  "actual_owner_parent_chain_world_transform_directly_verified": true,
+  "all_full_R23_R22_R21_source_hashes_verified_and_preserved": {
+    "R23": {
+      "filename": "Moonkov_Rebuild_R23_Ring_Joint_Connection_FULL_EDITABLE.blend",
+      "bytes": 312940075,
+      "sha256": "7221dd6c4fe04311322e801fac7cc0e852cba4daaa505ab0aed3cf6a854e7ecd",
+      "unchanged_and_preserved_after_packaging_preflight": true,
+      "included_in_package": false
+    },
+    "R22": {
+      "filename": "Moonkov_Rebuild_R22_Ground_Contact_And_Ring_Boundary_FULL_EDITABLE.blend",
+      "bytes": 312853197,
+      "sha256": "cb56105e5b32feb294cc41e36c4d6afb06df33c1558bbd7c64da490a3bc71a85",
+      "unchanged_and_preserved_after_packaging_preflight": true,
+      "included_in_package": false
+    },
+    "R21": {
+      "filename": "Moonkov_Rebuild_R21_Ring_Structural_Finish_FULL_EDITABLE.blend",
+      "bytes": 312880398,
+      "sha256": "3d2184aa58c3f895b746d16a0d653d70ec7b10bf728847e2aad72eabde6818c2",
+      "unchanged_and_preserved_after_packaging_preflight": true,
+      "included_in_package": false
+    }
+  },
+  "preparation_attempts_disclosed": "Initial selective inspection, then export+source-evidence preparation. FBX export completed once. First evidence pass stopped on an int/count schema assumption; corrected and reused the identical existing FBX without re-export. Two raw/custom-normal diagnostics preceded final bounded-precision readback. One additional selective original-owner+parent-chain evaluation verified actual world transform. No source save or render.",
+  "selective_read_history": {
+    "R23_collection_reads_two_new_meshes_each": 3,
+    "R23_owner_reads_for_evidence": 4,
+    "V2_candidate_two_mesh_reads": 2,
+    "final_owner_parent_chain_extra_objects_linked": 1,
+    "full_scene_reads": 0
+  }
+}

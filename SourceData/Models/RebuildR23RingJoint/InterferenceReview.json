@@ -1,0 +1,148 @@
+{
+  "scope": "Four neighboring renderers and 2512 new triangles only. Triangle SAT, complete convex-box containment for three foreign neighbors, and 169 height samples per terrain. This is static evidence, not physics/navigation/performance acceptance.",
+  "results": [
+    {
+      "name": "B_Ring_Diagonal_0001",
+      "id": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-8555653871857693470-885272968",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR21RingFinish/Meshes/B_Ring_Diagonal_0001.asset",
+      "triangleAABBCandidates": 7,
+      "surfaceIntersectionPairs": 0,
+      "sourceOwnerFaceIntersections": [],
+      "newCornerSamplesInsideForeignClosedBox": 0,
+      "firstPairs": []
+    },
+    {
+      "name": "B_Ring_Diagonal_0003",
+      "id": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-5544481584525529306-885272968",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR21RingFinish/Meshes/B_Ring_Diagonal_0003.asset",
+      "triangleAABBCandidates": 10,
+      "surfaceIntersectionPairs": 0,
+      "sourceOwnerFaceIntersections": [],
+      "newCornerSamplesInsideForeignClosedBox": 0,
+      "firstPairs": []
+    },
+    {
+      "name": "B_Ring_Outer_Fascia_00",
+      "id": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-7474743722586051824-885272968",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusShoulderReturn/DenseRingConceptB/R8VisualSurfaces/Meshes/R8_DisplayMesh_0001.asset",
+      "triangleAABBCandidates": 6,
+      "surfaceIntersectionPairs": 0,
+      "sourceOwnerFaceIntersections": [],
+      "newCornerSamplesInsideForeignClosedBox": 0,
+      "firstPairs": []
+    },
+    {
+      "name": "R2_MODULE_RING_SECTOR_00",
+      "id": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-7690792061189328896-885272968",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR21RingFinish/Meshes/R2_MODULE_RING_SECTOR_00.asset",
+      "triangleAABBCandidates": 34,
+      "surfaceIntersectionPairs": 232,
+      "sourceOwnerFaceIntersections": [
+        1073,
+        1074,
+        1075,
+        1085,
+        1087
+      ],
+      "newCornerSamplesInsideForeignClosedBox": 0,
+      "firstPairs": [
+        {
+          "oldSubmesh": 4,
+          "oldTriangle": 114,
+          "newObject": "R23_Ring01_Paired_Connection_Plates",
+          "newTriangle": 0
+        },
+        {
+          "oldSubmesh": 4,
+          "oldTriangle": 114,
+          "newObject": "R23_Ring01_Paired_Connection_Plates",
+          "newTriangle": 1
+        },
+        {
+          "oldSubmesh": 4,
+          "oldTriangle": 114,
+          "newObject": "R23_Ring01_Paired_Connection_Plates",
+          "newTriangle": 9
+        },
+        {
+          "oldSubmesh": 4,
+          "oldTriangle": 114,
+          "newObject": "R23_Ring01_Paired_Connection_Plates",
+          "newTriangle": 10
+        },
+        {
+          "oldSubmesh": 4,
+          "oldTriangle": 114,
+          "newObject": "R23_Ring01_Paired_Connection_Plates",
+          "newTriangle": 16
+        },
+        {
+          "oldSubmesh": 4,
+          "oldTriangle": 114,
+          "newObject": "R23_Ring01_Paired_Connection_Plates",
+          "newTriangle": 22
+        },
+        {
+          "oldSubmesh": 4,
+          "oldTriangle": 114,
+          "newObject": "R23_Ring01_Paired_Connection_Plates",
+          "newTriangle": 23
+        },
+        {
+          "oldSubmesh": 4,
+          "oldTriangle": 114,
+          "newObject": "R23_Ring01_Paired_Connection_Plates",
+          "newTriangle": 246
+        },
+        {
+          "oldSubmesh": 4,
+          "oldTriangle": 114,
+          "newObject": "R23_Ring01_Paired_Connection_Plates",
+          "newTriangle": 247
+        },
+        {
+          "oldSubmesh": 4,
+          "oldTriangle": 114,
+          "newObject": "R23_Ring01_Paired_Connection_Plates",
+          "newTriangle": 248
+        },
+        {
+          "oldSubmesh": 4,
+          "oldTriangle": 114,
+          "newObject": "R23_Ring01_Paired_Connection_Plates",
+          "newTriangle": 249
+        },
+        {
+          "oldSubmesh": 4,
+          "oldTriangle": 114,
+          "newObject": "R23_Ring01_Paired_Connection_Plates",
+          "newTriangle": 250
+        }
+      ]
+    }
+  ],
+  "extraNeighborSurfaceContactsRequireSourceDesignEvidence": [],
+  "unexpectedSourceOwnerFaces": [],
+  "terrainSamples": [
+    {
+      "name": "Near terrain / 25cm geometry",
+      "drawHeightmap": true,
+      "terrainData": "Assets/MoonEnvironment/Variants/TheophilusBase/Terrain/R21/R21_NearDisplay.asset",
+      "samples": 169,
+      "minWorldHeight": 176.220871,
+      "maxWorldHeight": 178.037628,
+      "newNodeMinY": 222.20549
+    },
+    {
+      "name": "Observed DEM / native 3m",
+      "drawHeightmap": true,
+      "terrainData": "Assets/MoonEnvironment/Variants/TheophilusBase/Terrain/R21/R21_FarDisplay.asset",
+      "samples": 169,
+      "minWorldHeight": 176.155548,
+      "maxWorldHeight": 177.996109,
+      "newNodeMinY": 222.20549
+    }
+  ],
+  "terrainSampleClearancePassed": true,
+  "instantiationAllowedByThisCheck": true
+}

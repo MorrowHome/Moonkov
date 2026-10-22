@@ -1,0 +1,39 @@
+{
+  "status": "SAVED_FULL_GEOMETRY_UV_NORMAL_WINDING_MATERIAL_BIJECTION_PASS",
+  "sourceFaces": 1604,
+  "triangles": 2604,
+  "oldNormalMaxVectorError": 1.4600096599955427e-07,
+  "maxPositionErrorMetres": 0.0,
+  "maxUVDifference": 0.0,
+  "targetFaces": [
+    1070,
+    1071,
+    1072,
+    1073,
+    1074,
+    1075,
+    1082,
+    1083,
+    1084,
+    1085,
+    1086,
+    1087
+  ],
+  "targetTriangles": 24,
+  "allTargetTrianglesInsideProtectedR21Set": true,
+  "R22TargetDisjoint": true,
+  "owner": {
+    "mesh_asset_path": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR21RingFinish/Meshes/R2_MODULE_RING_SECTOR_00.asset",
+    "mesh_guid": "aa8bcb8f3a7e2d549b050c05a168433b",
+    "mesh_local_file_id": "4300000",
+    "renderer_global_object_id": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-1889053285159085437-885272968",
+    "scene_asset_path": "Assets/MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusGameScene.unity",
+    "scene_guid": "4f0fda1a3aad7684f969edd35760df6f"
+  },
+  "currentMeshSHA256": "88ff1bc767613dda1d3ec09431c5aa92c8bc4c76234feb0cc13fc77d09ae45f3",
+  "currentSceneSHA256": "3ade3fb4e2bb6e6afc42eb9f2d3a86e170b64fc6b7029d40c6f7a6b4377a7006",
+  "R23SourceEvidenceSHA256": "3edbb7ba9b5423e99fbe4abcc795b5845a9eafd7c6b550dbff5e375a333a6700",
+  "R22CurrentCaptureSHA256": "f048b048fb9e7a90a1dc1c6f2ec261e97c2b61a45892c5ef09b9dcdf358bedaa",
+  "manifestFilesVerified": 10,
+  "liveOwnerAndWorldTransformRequiredBeforeApply": true
+}

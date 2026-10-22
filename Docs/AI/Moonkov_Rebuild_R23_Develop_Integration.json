@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-22",
+  "targetBranch": "develop",
+  "baseline": "93fa80e0c03e6ef40bf38d180f798e118fa4be25",
+  "sourceBranch": "map/R23",
+  "sourceCommit": "24323c6ef69121b3df130f64a5d7df984f25bf89",
+  "mergedCommits": [
+    "6a3c4634",
+    "24323c6e"
+  ],
+  "formalScene": "Assets/MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusGameScene.unity",
+  "formalSceneSHA256": "6c2acd3cf010cc3b440f0d200ae312fb4428291e8a2367e5a6e8909f9715c0f6",
+  "addedPrefabInstance": "1811984516",
+  "existingSceneRecordChanges": [
+    "append R23 root",
+    "serialize existing maximumBosses=1, m_MedicalSeconds=3, m_SearchSeconds=2 defaults"
+  ],
+  "allOtherExistingSceneRecordsUnchanged": true,
+  "nonSceneIntegratedFilesMatchSourceBranch": 71,
+  "missingLFSObjectsRecoveredBySHA256": [
+    "R23_RING01_JOINT_DISPLAY_ONLY.fbx",
+    "Review_Context.png",
+    "Review_Node.png"
+  ],
+  "editorValidation": "Existing Editor only; prefab references and 3 native mesh payloads verified. No runtime scripts/packages/settings changed.",
+  "R22FootPlaced": false,
+  "PlayOrMultiplayerAcceptance": false,
+  "finalVisualOrPerformanceAcceptance": false,
+  "preExistingConsoleErrors": [
+    "Package Manager path argument undefined",
+    "TacticalItemsClientSystem.OnUpdate NullReferenceException at line 30"
+  ]
+}
