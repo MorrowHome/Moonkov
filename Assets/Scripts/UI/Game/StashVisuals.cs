@@ -5,7 +5,7 @@ namespace Unity.MP_FPS.Client
 {
     public enum StashArtKind { None, Dust, Alloy, Cell, Halo, Outfit, Helmet, Rifle, Pistol, ChestRig, Backpack, HaloRifle, HaloRevolver, HaloShotgun, Medical, HaloSniper, Ration, Water, HaloCapacitor, HaloChargeBridge, HaloFocusLens, HaloFanArray, HaloPulseController, HaloHitMarker, OxygenCanister,
         MedicalGel, TraumaKit, EnergyGel, ProteinBar, Electrolyte, OxygenReserve, ScoutRig, FieldRig, SlingPack, CargoPack, CircuitBoard, CopperCoil, CeramicPlate, OpticalSensor, DataDrive, HeliumSample, QuantumCore, BlackBox, AlienMeat, AlienOrgan, AlienTissue,
-        AlienSpider, AlienSnake, AlienCaterpillar, AlienTentacle, AlienCentipede, AlienLeech, AlienSlime, AlienRoots, AlienFaceHugger, EnergyGrenade, MooncoreFragment, MissionArchive, HaloMooncoreRecycler, HaloCicada, HaloTrine, HaloAegis, HaloVesper, HaloThorn, HaloSundown, HaloRondo, HaloTempest, HaloNocturne, LifeSupportShroud, ShieldGenerator, EnergySword, CombatKnife }
+        AlienSpider, AlienSnake, AlienCaterpillar, AlienTentacle, AlienCentipede, AlienLeech, AlienSlime, AlienRoots, AlienFaceHugger, EnergyGrenade, MooncoreFragment, MissionArchive, HaloMooncoreRecycler, HaloCicada, HaloTrine, HaloAegis, HaloVesper, HaloThorn, HaloSundown, HaloRondo, HaloTempest, HaloNocturne, LifeSupportShroud, ShieldGenerator, EnergySword, CombatKnife, ScoutPack }
 
     // Small original vector illustrations, kept sharp at the shared PanelSettings scale.
     [UxmlElement]
@@ -72,8 +72,9 @@ namespace Unity.MP_FPS.Client
                 case StashArtKind.OxygenReserve: OxygenReserve(); break;
                 case StashArtKind.ScoutRig: ScoutRig(); break;
                 case StashArtKind.FieldRig: FieldRig(); break;
-                case StashArtKind.SlingPack: SlingPack(); break;
-                case StashArtKind.CargoPack: CargoPack(); break;
+                case StashArtKind.ScoutPack: SubspacePack(4); break;
+                case StashArtKind.SlingPack: SubspacePack(1); break;
+                case StashArtKind.CargoPack: SubspacePack(3); break;
                 case StashArtKind.CircuitBoard: CircuitBoard(); break;
                 case StashArtKind.CopperCoil: CopperCoil(); break;
                 case StashArtKind.CeramicPlate: CeramicPlate(); break;
@@ -97,7 +98,7 @@ namespace Unity.MP_FPS.Client
                 case StashArtKind.Rifle: Rifle(); break;
                 case StashArtKind.Pistol: Pistol(); break;
                 case StashArtKind.ChestRig: ChestRig(); break;
-                case StashArtKind.Backpack: Backpack(); break;
+                case StashArtKind.Backpack: SubspacePack(2); break;
                 case StashArtKind.HaloCapacitor: Module(HaloModule.Capacitor); break;
                 case StashArtKind.HaloChargeBridge: Module(HaloModule.ChargeBridge); break;
                 case StashArtKind.HaloFocusLens: Module(HaloModule.FocusLens); break;

@@ -9,6 +9,7 @@ namespace Unity.MP_FPS
         public const string ShieldCode="energy_shield_generator", HeadDomeCode="energy_head_dome";
         public const string StandardHeadDomeCode="helmet";
         public static bool IsHeadDome(string code) => code==HeadDomeCode || code=="helmet";
+        public static byte BackpackStyle(string code) => code=="sling_pack"?(byte)1:code=="backpack"?(byte)2:code=="cargo_pack"?(byte)3:code=="small_pack"?(byte)4:(byte)0;
         private static float Load(float value) => value==-1?100:EnergyShieldRules.Resource(value);
 
         // Like SaveActiveAmmo: server resource changes do not invalidate structural inventory actions.
@@ -25,6 +26,7 @@ namespace Unity.MP_FPS
         public static void Synchronize(ref PredictedPlayerGhost state,InventoryGraph graph)
         {
             Flush(ref state,graph);
+            state.SubspaceBackpack=BackpackStyle(graph?.Equipped("Backpack")?.Code);
             var shield=graph?.Equipped("Shield");if(shield?.Code!=ShieldCode)shield=null;
             var dome=graph?.Equipped("Helmet");if(!IsHeadDome(dome?.Code))dome=null;
             string shieldId=shield?.Id??"",domeId=dome?.Id??"";

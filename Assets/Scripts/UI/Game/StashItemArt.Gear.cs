@@ -52,6 +52,21 @@ namespace Unity.MP_FPS.Client
             Line(0x386ba3, 4, new Vector2(70, 68), new Vector2(62, 62));
             Box(0x263442, 42, 76, 16, 5); Box(0x7096bc, 45, 77, 10, 2);
         }
+        private void SubspacePack(int tier)
+        {
+            bool scout=tier==4;int rings=scout?1:tier;
+            if(scout){Box(0xa3adbf,13,32,8,36);Box(0xa3adbf,79,32,8,36);}
+            Disc(0x101526,50,50,25);
+            for(int i=rings-1;i>=0;i--)Ring(i==0?0xa3adbfU:0x39455bU,3,50,50,26+i*7);
+            Ring(0xbd73c4,1.6f,50,50,22);Ring(0x694f8d,1,50,50,14);Disc(0x090e1c,50,50,8);
+            for(int i=0;i<8;i++)
+            {
+                float angle=i*Mathf.PI/4,x=Mathf.Sin(angle),y=Mathf.Cos(angle);
+                Line(0x263248,7,new Vector2(50+x*24,50+y*24),new Vector2(50+x*32,50+y*32));
+                Line(0xe4a4dc,2,new Vector2(50+x*26,50+y*26),new Vector2(50+x*30,50+y*30));
+            }
+            for(int i=0;i<rings;i++)Box(0xc28bcf,43+i*7-tier*2,89,4,3);
+        }
         private void EnergySword()
         {
             Shape(0x17487e, new Vector2(84, 6), new Vector2(83, 28), new Vector2(45, 70), new Vector2(29, 55));

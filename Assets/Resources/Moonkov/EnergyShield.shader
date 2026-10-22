@@ -73,6 +73,18 @@ Shader "Moonkov/Energy Shield and Head Seal"
                 float rim=pow(saturate(1-abs(dot(normal,view))),3.6);
                 float deploy=1-smoothstep(_FieldState.y-.055,_FieldState.y+.055,input.height);
                 float t=_Time.y;
+                if(_FieldState.x>1.5)
+                {
+                    float2 p=input.uv*2-1;float r=length(p);clip(1-r);
+                    float angle=atan2(p.y,p.x);
+                    float spiral=pow(saturate(sin(angle*3+r*24-t*.7)),18)*smoothstep(.14,.6,r);
+                    float edge=exp(-abs(r-.96)*65);
+                    float glow=.7+.3*_SealTint.a;
+                    float2 bent=screen+p*(1-r)*.012;
+                    float3 refraction=SAMPLE_TEXTURE2D_X(_EnergySceneColor,sampler_LinearClamp,bent*_EnergyColorScaleBias.xy+_EnergyColorScaleBias.zw).rgb;
+                    float3 aperture=refraction*.006+float3(.002,.003,.009)+_SealTint.rgb*(spiral*.22+edge*.8)*glow;
+                    return half4(aperture,1);
+                }
                 float weave=pow(saturate(sin(input.uv.x*150.8+sin(input.uv.y*35+t*.5)*.3)),28)*.018;
                 float3 cyan=float3(.12,.64,.94);float alpha;float3 color;
                 if(_FieldState.x<.5)

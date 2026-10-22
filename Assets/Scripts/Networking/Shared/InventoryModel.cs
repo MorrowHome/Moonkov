@@ -113,14 +113,14 @@ namespace Unity.MP_FPS.Inventory
                 new ItemDefinition("halo_hit_marker", "Hit marker", ItemKind.UtilityModule, 1, 1, 1, .1f),
                 new ItemDefinition("rig", "R-04 Chest rig", ItemKind.Rig, 2, 3, 1, .9f,
                     new InventoryRegion("left", 1, 2), new InventoryRegion("center", 2, 2), new InventoryRegion("right", 1, 2)),
-                new ItemDefinition("backpack", "B-08 Expedition pack", ItemKind.Backpack, 3, 3, 1, 1.3f, new InventoryRegion("main", 5, 6)),
-                new ItemDefinition("small_pack", "B-04 Scout pack", ItemKind.Backpack, 2, 3, 1, .7f, new InventoryRegion("main", 4, 4)),
+                new ItemDefinition("backpack", "B-08 Expedition subspace pack", ItemKind.Backpack, 3, 3, 1, 1.3f, new InventoryRegion("main", 5, 6)),
+                new ItemDefinition("small_pack", "B-04 Scout subspace pack", ItemKind.Backpack, 2, 3, 1, .7f, new InventoryRegion("main", 4, 4)),
                 new ItemDefinition("scout_rig", "R-02 Scout rig", ItemKind.Rig, 2, 2, 1, .5f,
                     new InventoryRegion("left", 1, 2), new InventoryRegion("center", 1, 2), new InventoryRegion("right", 1, 2)),
                 new ItemDefinition("field_rig", "R-06 Field rig", ItemKind.Rig, 3, 3, 1, 1.4f,
                     new InventoryRegion("left", 2, 2), new InventoryRegion("center", 2, 2), new InventoryRegion("right", 2, 2)),
-                new ItemDefinition("sling_pack", "B-03 Sling pack", ItemKind.Backpack, 2, 2, 1, .45f, new InventoryRegion("main", 3, 4)),
-                new ItemDefinition("cargo_pack", "B-12 Cargo pack", ItemKind.Backpack, 4, 4, 1, 2.8f, new InventoryRegion("main", 6, 7))
+                new ItemDefinition("sling_pack", "B-03 Light subspace pack", ItemKind.Backpack, 2, 2, 1, .45f, new InventoryRegion("main", 3, 4)),
+                new ItemDefinition("cargo_pack", "B-12 Cargo subspace pack", ItemKind.Backpack, 4, 4, 1, 2.8f, new InventoryRegion("main", 6, 7))
             };
             var result = new Dictionary<string, ItemDefinition>(); foreach (var def in defs) result.Add(def.Code, def);
             foreach(var organ in AlienBiology.Organs)result.Add(organ.Code,new ItemDefinition(organ.Code,organ.Name,ItemKind.Food,1,1,3,.2f));
