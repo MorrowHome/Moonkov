@@ -115,7 +115,7 @@ namespace Unity.MP_FPS.Client
                 case "energy_shield_generator":return StashArtKind.ShieldGenerator;
                 case "energy_sword":return StashArtKind.EnergySword;
                 case "dagger":return StashArtKind.CombatKnife;
-                case "helmet":return StashArtKind.LifeSupportShroud; case "rifle":case "compact":return StashArtKind.HaloRifle; case "pistol":return StashArtKind.HaloRevolver;
+                case "helmet":return StashArtKind.Helmet; case "rifle":case "compact":return StashArtKind.HaloRifle; case "pistol":return StashArtKind.HaloRevolver;
                 case "ration":return StashArtKind.Ration; case "water":return StashArtKind.Water;
                 case "energy_grenade":return StashArtKind.EnergyGrenade;
                 case "oxygen_canister":return StashArtKind.OxygenCanister;

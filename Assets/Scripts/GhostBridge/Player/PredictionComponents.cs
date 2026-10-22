@@ -61,6 +61,7 @@ public struct PredictedPlayerGhost : IComponentData
     [GhostField] public float TacticalSprintStamina;
     [GhostField] public bool TacticalSprintExhausted;
     [GhostField] public bool ShieldEquipped, HeadDomeEquipped, ShieldRegenerating;
+    [GhostField] public bool HeadDomeStandard;
     [GhostField(Quantization = 100)] public float ShieldCharge, ShieldEnergy, ShieldRecoveryDelay;
     [GhostField] public uint ShieldHitSequence, ShieldBreakSequence, ShieldRestoreSequence;
     [GhostField] public float3 ShieldHitPoint;

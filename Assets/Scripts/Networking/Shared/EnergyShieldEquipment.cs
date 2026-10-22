@@ -7,6 +7,7 @@ namespace Unity.MP_FPS
     public static class EnergyShieldEquipment
     {
         public const string ShieldCode="energy_shield_generator", HeadDomeCode="energy_head_dome";
+        public const string StandardHeadDomeCode="helmet";
         public static bool IsHeadDome(string code) => code==HeadDomeCode || code=="helmet";
         private static float Load(float value) => value==-1?100:EnergyShieldRules.Resource(value);
 
@@ -40,7 +41,7 @@ namespace Unity.MP_FPS
                 state.Oxygen=dome==null?0:Load(dome.SuitOxygen);state.HeadDomeItem.CopyFromTruncated(domeId);
                 if(state.Oxygen>0){state.HypoxiaSeconds=0;state.OxygenGraceRemaining=0;}
             }
-            state.ShieldEquipped=shield!=null;state.HeadDomeEquipped=dome!=null;state.ProtectionInitialized=true;
+            state.ShieldEquipped=shield!=null;state.HeadDomeEquipped=dome!=null;state.HeadDomeStandard=dome?.Code==StandardHeadDomeCode;state.ProtectionInitialized=true;
             Flush(ref state,graph);
         }
         // AI and real players share this exact rule; caller owns alive/active/connected eligibility.

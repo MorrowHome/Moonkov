@@ -84,7 +84,7 @@ namespace Unity.MP_FPS.Inventory
                 new ItemDefinition("helium3_sample", "Helium-3 sample", ItemKind.Material, 1, 2, 1, .6f),
                 new ItemDefinition("quantum_core", "Quantum processor", ItemKind.Material, 2, 1, 1, .4f),
                 new ItemDefinition("black_box", "Survey black box", ItemKind.Material, 2, 2, 1, 1.6f),
-                new ItemDefinition("helmet", "L-01 Neko life-support collar", ItemKind.Helmet, 2, 2, 1, 1.2f),
+                new ItemDefinition("helmet", "L-01 Standard life-support collar", ItemKind.Helmet, 2, 2, 1, 1.2f),
                 new ItemDefinition("energy_head_dome", "L-02 Neko life-support collar", ItemKind.Helmet, 2, 2, 1, .45f),
                 new ItemDefinition("energy_shield_generator", "S-100 Energy shield generator", ItemKind.Shield, 2, 2, 1, 1.2f),
                 new ItemDefinition("energy_sword", "Energy sword", ItemKind.Melee, 1, 3, 1, 1.8f),

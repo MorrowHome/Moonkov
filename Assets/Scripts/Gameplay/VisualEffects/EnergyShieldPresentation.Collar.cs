@@ -9,6 +9,7 @@ namespace Unity.MP_FPS
         private Quaternion m_CollarLocalFrame;
         private Vector2 m_CollarRadii;
         private float m_CollarHeight;
+        private Transform m_CollarNekoDetails,m_CollarStandardDetails;
 
         private void FitCollar(Animator animator)
         {
@@ -84,6 +85,7 @@ namespace Unity.MP_FPS
             for(int side=-1;side<=1;side+=2)
                 CollarPiece("Champagne edge piping",EnergyShieldGeometry.NeckBand,Vector3.up*(side*(h*.5f-.0007f)),new Vector3(x*1.008f,.0013f,z*1.008f),material,gold,true);
             float front=z*1.085f+.002f;
+            int ornamentStart=m_Hardware.Count;
             for(int side=-1;side<=1;side+=2)
             {
                 var loop=CollarPiece("Lilac folded bow",EnergyShieldGeometry.BowLoop,new Vector3(side*.001f,-.004f,front+.002f),new Vector3(.016f,.014f,.018f),material,lavender);
@@ -104,6 +106,11 @@ namespace Unity.MP_FPS
             }
             CollarPiece("Bell sound slit",EnergyShieldGeometry.Box,bell+new Vector3(0,-.0024f,.0055f),new Vector3(.0074f,.00065f,.0005f),indicator,ink);
             CollarPiece("Bell lower slot",EnergyShieldGeometry.Box,bell+new Vector3(0,-.0036f,.0049f),new Vector3(.00065f,.0028f,.0005f),indicator,ink);
+            m_CollarNekoDetails=new GameObject("Neko bow and cat bell").transform;m_CollarNekoDetails.SetParent(m_Collar,false);
+            for(int i=ornamentStart;i<m_Hardware.Count;i++)m_Hardware[i].transform.SetParent(m_CollarNekoDetails,false);
+            m_CollarStandardDetails=new GameObject("Standard collar buckle").transform;m_CollarStandardDetails.SetParent(m_Collar,false);
+            var buckle=CollarPiece("Standard smooth buckle",EnergyShieldGeometry.Box,new Vector3(0,0,front),new Vector3(.012f,.009f,.003f),material,new Color(.55f,.61f,.67f),true);
+            buckle.transform.SetParent(m_CollarStandardDetails,false);
             var clasp=CollarPiece("Rear gold clasp",EnergyShieldGeometry.Collar,new Vector3(0,0,-z*1.085f-.001f),new Vector3(.006f,.0013f,.0055f),material,gold,true);
             clasp.transform.localRotation=Quaternion.Euler(90,0,0);
             CollarPiece("Rear oxygen module",EnergyShieldGeometry.Box,new Vector3(0,0,-z*1.085f-.002f),new Vector3(.006f,.008f,.003f),material,navy);

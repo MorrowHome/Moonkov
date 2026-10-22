@@ -46,7 +46,7 @@ namespace Unity.MP_FPS.Inventory
             new ShopOffer("concertina_trip_mine", 20, 6),
             new ShopOffer("poison_trip_mine", 18, 6),
             new ShopOffer("ammo_box", 24, 8),
-            new ShopOffer("energy_shield_generator", 48, 16), new ShopOffer("energy_head_dome", 18, 6),
+            new ShopOffer("energy_shield_generator", 48, 16), new ShopOffer("helmet", 18, 6), new ShopOffer("energy_head_dome", 18, 6),
             new ShopOffer("energy_sword", 72, 24), new ShopOffer("dagger", 8, 2),
             new ShopOffer("energy_gel", 4, 1), new ShopOffer("protein_bar", 6, 2),
             new ShopOffer("electrolyte", 5, 1), new ShopOffer("oxygen_reserve", 12, 4),

@@ -10,6 +10,15 @@ namespace Unity.MP_FPS.Client
             m_Painter.Arc(P(x,y),radius*m_Scale,UnityEngine.UIElements.Angle.Degrees(0),UnityEngine.UIElements.Angle.Degrees(360));
             m_Painter.Fill();
         }
+        private void StandardLifeSupportCollar()
+        {
+            Ring(0x6f9baf,1.7f,50,38,28);
+            Shape(0x293442,new Vector2(14,58),new Vector2(29,52),new Vector2(71,52),new Vector2(86,58),
+                new Vector2(86,74),new Vector2(71,82),new Vector2(29,82),new Vector2(14,74));
+            Line(0xb5bfc5,2,new Vector2(15,58),new Vector2(30,55),new Vector2(70,55),new Vector2(85,58));
+            Line(0xb5bfc5,2,new Vector2(16,73),new Vector2(30,78),new Vector2(70,78),new Vector2(84,73));
+            Box(0xaab7c2,43,59,14,16);Box(0x72c2ce,47,63,6,7);
+        }
         private void LifeSupportShroud()
         {
             // Matches the fitted navy band, lilac bow and gold cat bell on the real character.

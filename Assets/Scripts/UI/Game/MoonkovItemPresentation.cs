@@ -82,7 +82,8 @@ namespace Unity.MP_FPS.Client
             switch (code)
             {
                 case "energy_shield_generator": description = "Equip in the shield slot. Absorbs combat damage before health; excess damage passes through. After 6 seconds without a hit, restores 8 shield per second and spends 0.5 energy per shield. Recharge using charged cells in pockets or an equipped rig. Does not block suffocation, hunger or thirst."; break;
-                case "energy_head_dome": case "helmet": description = "A neck-fitted life-support collar with a lilac bow and a gold cat bell. Follows the neck bones and uses the existing oxygen reserve, canisters and pressurized air. Does not provide ballistic protection or combat shielding."; break;
+                case "energy_head_dome": description = "A neck-fitted life-support collar with a lilac bow and a gold cat bell. Follows the neck bones and uses the existing oxygen reserve, canisters and pressurized air. Does not provide ballistic protection or combat shielding."; break;
+                case "helmet": description = "A plain neck-fitted life-support collar. Projects a spherical helmet without cat ears and uses the existing oxygen reserve, canisters and pressurized air."; break;
                 case "energy_sword": case "dagger": description = "Equip in the melee slot and bind to a number key. Left click: light attack. Right click: heavy attack. Attacks use stamina; walls block hits. With no active weapon, fists are the fallback."; break;
                 case "cells": description = "Stored battery energy powers weapon reloading and shield recharging. Move cells to pockets or an equipped rig before use. Recharging the shield consumes only the energy transferred."; break;
                 case "vitality_shot": description = "Inject for 3 seconds to fill surviving body parts to their current recoverable health limit. Does not revive destroyed parts or restore health lost to Bounty Clash downs."; break;

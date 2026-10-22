@@ -138,7 +138,7 @@ namespace Unity.MP_FPS
             for(int i=0;i<2;i++)
             {
                 int side=i==0?-1:1;
-                var ear=m_EnergyEars[i];ear.enabled=m_HeadEquipped;ear.SetPropertyBlock(m_VisorProperties);
+                var ear=m_EnergyEars[i];ear.enabled=m_HeadEquipped&&!m_StandardCollar;ear.SetPropertyBlock(m_VisorProperties);
                 WorldPose(ear.transform,m_Visor.TransformPoint(new Vector3(side*.60f,.86f,.06f)),frame*Quaternion.Euler(-8,0,-side*18),
                     new Vector3(.086f,.105f,.058f)*Mathf.SmoothStep(0,1,Mathf.InverseLerp(.65f,1,blend)));
                 m_EmitterLenses[i].SetPropertyBlock(m_LampProperties);

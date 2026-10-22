@@ -93,7 +93,7 @@ namespace Unity.MP_FPS.Client
                     SpeciesOrgan((int)m_Kind-(int)StashArtKind.AlienSpider);break;
                 case StashArtKind.Halo: Halo(); break;
                 case StashArtKind.Outfit: Outfit(); break;
-                case StashArtKind.Helmet: LifeSupportShroud(); break;
+                case StashArtKind.Helmet: StandardLifeSupportCollar(); break;
                 case StashArtKind.Rifle: Rifle(); break;
                 case StashArtKind.Pistol: Pistol(); break;
                 case StashArtKind.ChestRig: ChestRig(); break;

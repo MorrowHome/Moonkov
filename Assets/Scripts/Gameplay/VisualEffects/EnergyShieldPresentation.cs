@@ -19,6 +19,7 @@ namespace Unity.MP_FPS
         private MeshRenderer m_ShellRenderer;
         private Material m_FieldMaterial;
         private bool m_Ready,m_GeometryRetained,m_HasSequence,m_Owned,m_FirstPerson,m_HeadEquipped,m_ShieldEquipped,m_Regenerating,m_Hidden;
+        private bool m_StandardCollar;
         private Camera m_OwnedCamera;
         private uint m_HitSequence,m_BreakSequence,m_RestoreSequence;
         private float m_HitAt=-100,m_BreakAt=-100,m_RestoreAt=-100,m_Strength,m_LastSound=-100;
@@ -37,6 +38,7 @@ namespace Unity.MP_FPS
             bool head=snapshot.HeadDomeEquipped;
             if(head&&!m_HeadEquipped)m_VisorEquippedAt=Time.unscaledTime;
             m_HeadEquipped=head;m_ShieldEquipped=snapshot.ShieldEquipped;
+            m_StandardCollar=snapshot.HeadDomeStandard;
             m_Regenerating=snapshot.ShieldRegenerating && snapshot.CurrentHealth>0 && (!snapshot.ClashEnabled || snapshot.ClashLife==ClashLife.Alive);
             if(!m_HasSequence)
             {m_HitSequence=snapshot.ShieldHitSequence;m_BreakSequence=snapshot.ShieldBreakSequence;m_RestoreSequence=snapshot.ShieldRestoreSequence;m_HasSequence=true;}
@@ -53,7 +55,7 @@ namespace Unity.MP_FPS
         public void PresentInventory(InventoryGraph graph)
         {
             var shield=graph?.Equipped("Shield");var head=graph?.Equipped("Helmet");
-            var snapshot=new PredictedPlayerGhost{CurrentHealth=1,ShieldEquipped=shield?.Code==EnergyShieldEquipment.ShieldCode,HeadDomeEquipped=EnergyShieldEquipment.IsHeadDome(head?.Code)};
+            var snapshot=new PredictedPlayerGhost{CurrentHealth=1,ShieldEquipped=shield?.Code==EnergyShieldEquipment.ShieldCode,HeadDomeEquipped=EnergyShieldEquipment.IsHeadDome(head?.Code),HeadDomeStandard=head?.Code==EnergyShieldEquipment.StandardHeadDomeCode};
             Present(snapshot,false,false,null);
         }
         private static bool NewSequence(uint current,ref uint previous)
@@ -112,6 +114,8 @@ namespace Unity.MP_FPS
             Vector3 hip=m_Hips?m_Hips.position:transform.position+transform.up*.85f;
             WorldPose(m_Device,hip+transform.right*.18f+transform.forward*.12f,Quaternion.LookRotation(transform.forward,transform.up),Vector3.one);
             m_Collar.gameObject.SetActive(m_HeadEquipped);m_Device.gameObject.SetActive(m_ShieldEquipped);
+            m_CollarNekoDetails.gameObject.SetActive(!m_StandardCollar);
+            m_CollarStandardDetails.gameObject.SetActive(m_StandardCollar);
             UpdateVisor();
             var feet=m_LeftFoot&&m_RightFoot?(m_LeftFoot.position+m_RightFoot.position)*.5f:transform.position;
             Vector3 axis=m_Head.position-feet;float length=Mathf.Max(.65f,axis.magnitude);axis=axis.sqrMagnitude>.001f?axis.normalized:transform.up;
@@ -179,6 +183,7 @@ namespace Unity.MP_FPS
             m_Hardware.Clear();m_Root=m_Shell=m_Collar=m_Device=null;m_ShellRenderer=null;m_FieldMaterial=null;m_Audio=null;
             m_Visor=null;m_VisorRenderer=null;m_VisorRails=null;
             m_EnergyEars=m_EmitterLenses=null;m_SealHalo=null;m_SealHaloStroke=null;
+            m_CollarNekoDetails=m_CollarStandardDetails=null;
             if(m_GeometryRetained){EnergyShieldGeometry.Release();m_GeometryRetained=false;}m_Ready=false;ResetPresentation();
         }
         private void OnDisable()=>DisposePresentation();

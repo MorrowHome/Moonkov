@@ -606,7 +606,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2871799952
-    m_Localized: "L-01 Neko life-support collar"
+    m_Localized: "L-01 Standard life-support collar"
     m_Metadata:
       m_Items: []
   - m_Id: 2871799953
@@ -4830,6 +4830,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 8012446143295953
     m_Localized: "YOU \u00b7 SUPPLIES \u00b7 EXIT"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5591439740213562
+    m_Localized: "A plain neck-fitted life-support collar. Projects a spherical helmet without cat ears and uses the existing oxygen reserve, canisters and pressurized air."
     m_Metadata:
       m_Items: []
   references:
