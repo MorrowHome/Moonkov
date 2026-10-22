@@ -59,6 +59,21 @@ namespace Unity.MP_FPS.Moon
 
         public float Intensity { get => intensity; set => intensity = Mathf.Clamp01(value); }
 
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        public static bool DevelopmentStyleEnabled { get; private set; }
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetDevelopmentStyle() => DevelopmentStyleEnabled = false;
+
+        public static void ToggleDevelopmentStyle()
+        {
+            DevelopmentStyleEnabled = !DevelopmentStyleEnabled;
+            Debug.Log(DevelopmentStyleEnabled
+                ? "[环境外观 / Ctrl+L] 风格化银盐：开启"
+                : "[环境外观 / Ctrl+L] 保真照明：开启");
+        }
+#endif
+
         private void OnEnable()
         {
             RenderPipelineManager.beginCameraRendering += BeginCamera;
@@ -86,7 +101,12 @@ namespace Unity.MP_FPS.Moon
                 runtimeMaterial = new Material(material) { name = "Silver print (runtime)", hideFlags = HideFlags.HideAndDontSave };
                 pass = new SilverPrintPass(runtimeMaterial);
             }
-            runtimeMaterial.SetFloat("_SilverFaithful", faithfulLighting ? 1 : 0);
+            bool useFaithfulLighting = faithfulLighting;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            // Session-only comparison: never change the authored scene or Inspector preset.
+            if (Application.isPlaying) useFaithfulLighting = !DevelopmentStyleEnabled;
+#endif
+            runtimeMaterial.SetFloat("_SilverFaithful", useFaithfulLighting ? 1 : 0);
             runtimeMaterial.SetVector(ToneId, new Vector4(exposure, blackPoint, whitePoint, contrast));
             runtimeMaterial.SetVector(TextureId, new Vector4(silverRelief, grain, intensity, 0));
             runtimeMaterial.SetVector(AccentId, new Vector4(accentStrength, accentThreshold, 0, 0));

@@ -213,6 +213,9 @@ namespace Unity.MP_FPS
             m_Input.GameplayInputBlocked = () => GameSettings.Instance.IsPauseMenuOpen || RaidHUD.GameplayActionsBlocked;
             RaidQuickSlotInput.Bind(m_Input);
             m_Input.TimedActionInputActive = () => RaidHUD.TimedActionInputActive;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            m_Input.DevelopmentStyleToggle = Moon.MoonSilverPrint.ToggleDevelopmentStyle;
+#endif
             m_Halo.OwnedAimIntent = ReadOwnedAimIntent;
             m_Model.gameObject.SetActive(true);
             m_View.gameObject.SetActive(true);
@@ -367,6 +370,9 @@ namespace Unity.MP_FPS
             m_Input.enabled = false;
             m_Input.GameplayInputBlocked = null;
             m_Input.TimedActionInputActive = null;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            m_Input.DevelopmentStyleToggle = null;
+#endif
             m_View.gameObject.SetActive(false);
         }
     }
