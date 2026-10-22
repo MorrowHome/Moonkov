@@ -1,0 +1,8 @@
+Controlled EditMode scope fixture. Not production lighting/gameplay.
+Native Terrain drawInstanced=True / centerHole=True
+terrain delta=188
+native environment mesh delta=0
+non-environment occluder delta=0
+visible hole bottom delta=0
+Stock Lit native scope pass=UniversalForward
+Native environment block lit top ROI x430:480 y310:330 max delta=188; front-center original probe was unlit black in both images.

@@ -38,6 +38,8 @@ Shader "MoonEnvironment/Industrial Dust"
             float _CoatStrength, _CoatSmoothness;
         CBUFFER_END
         ENDHLSL
+        // Explicit opaque environment material domain; stock/actor/VFX shaders never opt in.
+        UsePass "MoonEnvironment/EnvironmentScope/EnvironmentScope"
         Pass
         {
             Name "ForwardLit"

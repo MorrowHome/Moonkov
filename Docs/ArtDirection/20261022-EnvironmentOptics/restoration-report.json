@@ -1,0 +1,12 @@
+{
+  "ProjectSettings/EditorSettings.asset": "Unchanged",
+  "UserSettings/EditorUserSettings.asset": "Unchanged",
+  "Inter.asset": "Restored exact user bytes",
+  "NotoSansCJKsc.asset": "Restored exact user bytes",
+  "PlayerPrefs": {
+    "sha256": "a9840e67bb6160ed06d395511f9a68fe8c1c7468d6decf2c07e269c93ac9ce74",
+    "mtime": 1792609384.7401352,
+    "matchesPreserved": true,
+    "note": "Product is FPS_Template; identified late. Disk mtime03:03 precedes task start; no PlayerPrefs API was called by QA."
+  }
+}

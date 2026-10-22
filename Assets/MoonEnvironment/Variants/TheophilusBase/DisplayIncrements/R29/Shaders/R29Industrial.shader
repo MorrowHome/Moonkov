@@ -28,6 +28,8 @@ Shader "Moon/R29 Industrial Display"
             float _NormalStrength, _DetailFactor;
         CBUFFER_END
         ENDHLSL
+        // Explicit opaque environment material domain; stock/actor/VFX shaders never opt in.
+        UsePass "MoonEnvironment/EnvironmentScope/EnvironmentScope"
         Pass
         {
             Name "ForwardLit"

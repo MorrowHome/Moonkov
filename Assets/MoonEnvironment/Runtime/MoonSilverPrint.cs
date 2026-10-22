@@ -7,14 +7,17 @@ using System.Collections.Generic;
 
 namespace Unity.MP_FPS.Moon
 {
-    /// <summary>Scene-owned silver print grade, before damage overlays and screen-space UI.</summary>
+    /// <summary>Scene-owned, opt-in opaque environment treatment before transparent effects and tonemapping.</summary>
     [ExecuteAlways, DisallowMultipleComponent]
     public sealed class MoonSilverPrint : MonoBehaviour
     {
         [SerializeField] private Material material;
-        [Tooltip("Depth-tested actor/UI protection; required so the environment grade cannot recolor subjects.")]
+        [Tooltip("Legacy serialized reference. Environment scope now comes from native material passes, not subject exclusions.")]
         [SerializeField] private Material subjectMaskMaterial;
-        [Header("黑白银盐 / Silver print")]
+        [Header("环境外观 / Environment look")]
+        [Tooltip("Default: preserve material color, real light color and HDR highlights. Disable only for legacy silver-print references.")]
+        [SerializeField] private bool faithfulLighting = true;
+        [Header("开发参考：银盐参数 / Legacy print reference")]
         [SerializeField, Range(0, 1)] private float intensity = 1;
         [SerializeField, Range(-2, 2)] private float exposure = .3f;
         [SerializeField, Range(0, .45f)] private float blackPoint = .035f;
@@ -63,7 +66,7 @@ namespace Unity.MP_FPS.Moon
 
         private void BeginCamera(ScriptableRenderContext context, Camera camera)
         {
-            if (intensity <= 0 || !material || !subjectMaskMaterial || SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null)
+            if (intensity <= 0 || !material || SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null)
                 return;
             if (camera.cameraType != CameraType.Game &&
                 !(previewInSceneView && camera.cameraType == CameraType.SceneView)) return;
@@ -83,8 +86,7 @@ namespace Unity.MP_FPS.Moon
                 runtimeMaterial = new Material(material) { name = "Silver print (runtime)", hideFlags = HideFlags.HideAndDontSave };
                 pass = new SilverPrintPass(runtimeMaterial);
             }
-            pass.SubjectMaskMaterial = subjectMaskMaterial;
-            pass.SubjectLayers = subjectLayers;
+            runtimeMaterial.SetFloat("_SilverFaithful", faithfulLighting ? 1 : 0);
             runtimeMaterial.SetVector(ToneId, new Vector4(exposure, blackPoint, whitePoint, contrast));
             runtimeMaterial.SetVector(TextureId, new Vector4(silverRelief, grain, intensity, 0));
             runtimeMaterial.SetVector(AccentId, new Vector4(accentStrength, accentThreshold, 0, 0));
@@ -108,11 +110,6 @@ namespace Unity.MP_FPS.Moon
         {
             private readonly Material grade;
             private readonly MaterialPropertyBlock properties = new MaterialPropertyBlock();
-            private readonly List<Renderer> subjects = new List<Renderer>();
-            private readonly List<Material> subjectMaterials = new List<Material>();
-            private readonly Plane[] frustum = new Plane[6];
-            public Material SubjectMaskMaterial { private get; set; }
-            public int SubjectLayers { private get; set; }
             private static readonly int SourceId = Shader.PropertyToID("_BlitTexture");
             private static readonly int ScaleBiasId = Shader.PropertyToID("_BlitScaleBias");
             private static readonly int SourceTexelId = Shader.PropertyToID("_SilverSourceTexel");
@@ -123,23 +120,19 @@ namespace Unity.MP_FPS.Moon
             private static readonly int HasDepthId = Shader.PropertyToID("_SilverHasDepth");
             private static readonly int ProtectionId = Shader.PropertyToID("_SilverProtection");
             private static readonly int ProtectionScaleId = Shader.PropertyToID("_SilverProtectionScaleBias");
-            private static readonly int SubjectDepthId = Shader.PropertyToID("_MoonSubjectSceneDepth");
-            private static readonly int SubjectDepthScaleId = Shader.PropertyToID("_MoonSubjectDepthScaleBias");
-            private static readonly List<ShaderTagId> SubjectTags = new List<ShaderTagId>
+            private static readonly int EnvironmentDepthId = Shader.PropertyToID("_MoonEnvironmentSceneDepth");
+            private static readonly int EnvironmentDepthScaleId = Shader.PropertyToID("_MoonEnvironmentDepthScaleBias");
+            private static readonly List<ShaderTagId> EnvironmentTags = new List<ShaderTagId>
             {
-                new ShaderTagId("UniversalForward"), new ShaderTagId("UniversalForwardOnly"),
-                new ShaderTagId("SRPDefaultUnlit")
-            };
-            private static readonly List<ShaderTagId> SubjectCoverageTags = new List<ShaderTagId>
-            {
-                new ShaderTagId("MoonSilverPrintSubjectMask")
+                new ShaderTagId("MoonEnvironmentScope")
             };
 
             public SilverPrintPass(Material grade)
             {
                 this.grade = grade;
-                // Tonemapping is finished, but gameplay damage overlays at 600 retain their warning colors.
-                renderPassEvent = (RenderPassEvent)((int)RenderPassEvent.AfterRenderingPostProcessing - 1);
+                // Treat opaque environment HDR before transparent effects, bloom and tonemapping.
+                // Final-depth masks at599 cannot separate already-composited transparent colors.
+                renderPassEvent = (RenderPassEvent)((int)RenderPassEvent.BeforeRenderingTransparents - 1);
                 requiresIntermediateTexture = true;
                 ConfigureInput(ScriptableRenderPassInput.Depth);
             }
@@ -147,16 +140,22 @@ namespace Unity.MP_FPS.Moon
             public override void RecordRenderGraph(RenderGraph renderGraph, ContextContainer frameData)
             {
                 var resources = frameData.Get<UniversalResourceData>();
-                // Fail closed if the resolved scene depth is unavailable: never apply a
-                // whole-screen grade without being able to protect visible actors.
+                // Fail closed: no native environment coverage/depth means no treatment.
                 if (resources.isActiveTargetBackBuffer || !resources.cameraDepthTexture.IsValid()) return;
                 var source = resources.activeColorTexture;
-                var protection = ProtectSubjects(renderGraph, frameData, resources, source);
+                var protection = EnvironmentScope(renderGraph, frameData, resources, source);
                 var descriptor = renderGraph.GetTextureDesc(source);
                 descriptor.name = "Moon silver print";
                 descriptor.clearBuffer = false;
                 var destination = renderGraph.CreateTexture(descriptor);
-                // Graph-owned quarter-size buffers serve both the local tone meter and optical halo.
+                // Faithful lighting needs only its scoped color pass; no light-field blur chain.
+                if (grade.GetFloat("_SilverFaithful") > .5f)
+                {
+                    AddPass(renderGraph, source, destination, TextureHandle.nullHandle, 0, "Faithful environment lighting", resources.cameraDepthTexture, protection);
+                    resources.cameraColor = destination;
+                    return;
+                }
+                // Legacy reference: graph-owned quarter-size local meter and optical halo.
                 // Keep alpha: it holds the extracted highlights independently from mean scene color.
                 descriptor.width = Mathf.Max(1, descriptor.width / 4);
                 descriptor.height = Mathf.Max(1, descriptor.height / 4);
@@ -223,14 +222,12 @@ namespace Unity.MP_FPS.Moon
                 });
             }
 
-            private TextureHandle ProtectSubjects(RenderGraph graph, ContextContainer frameData,
+            private TextureHandle EnvironmentScope(RenderGraph graph, ContextContainer frameData,
                 UniversalResourceData resources, TextureHandle source)
             {
                 var cameraData = frameData.Get<UniversalCameraData>();
-                GeometryUtility.CalculateFrustumPlanes(cameraData.camera, frustum);
-                MoonSilverPrintSubject.Collect(cameraData.camera, frustum, subjects);
                 var descriptor = graph.GetTextureDesc(source);
-                descriptor.name = "Silver print protected subjects";
+                descriptor.name = "Explicit opaque environment material coverage";
                 descriptor.colorFormat = GraphicsFormat.R8_UNorm;
                 descriptor.depthBufferBits = DepthBits.None;
                 descriptor.msaaSamples = MSAASamples.None;
@@ -238,56 +235,26 @@ namespace Unity.MP_FPS.Moon
                 descriptor.clearColor = Color.black;
                 descriptor.filterMode = FilterMode.Point;
                 var mask = graph.CreateTexture(descriptor);
-                using var builder = graph.AddRasterRenderPass<SubjectPassData>("Silver print actor/UI protection", out var data);
+                using var builder = graph.AddRasterRenderPass<EnvironmentPassData>("Native environment material scope", out var data);
                 data.mask = mask;
                 data.depth = resources.cameraDepthTexture;
-                data.material = SubjectMaskMaterial;
-                data.renderers = subjects;
-                data.materials = subjectMaterials;
-                // Existing presentation layers cover world UI/legacy client meshes;
-                // registered ownership covers Default-layer skin, weapons and alien rigs.
-                var drawing = RenderingUtils.CreateDrawingSettings(SubjectTags, frameData.Get<UniversalRenderingData>(),
+                // Native shader passes preserve Terrain heightmap instancing, LOD and holes.
+                // Stock Lit, actors, weapons, pickups, particles and UI do not opt in.
+                // No override material, manual DrawRenderer or rendering/light-layer changes.
+                var drawing = RenderingUtils.CreateDrawingSettings(EnvironmentTags, frameData.Get<UniversalRenderingData>(),
                     cameraData, frameData.Get<UniversalLightData>(), SortingCriteria.CommonOpaque);
-                drawing.overrideMaterial = SubjectMaskMaterial;
-                drawing.overrideMaterialPassIndex = 0;
-                var filtering = new FilteringSettings(RenderQueueRange.opaque, SubjectLayers);
-                data.layerSubjects = graph.CreateRendererList(new RendererListParams(
-                    frameData.Get<UniversalRenderingData>().cullResults, drawing, filtering));
-                var coverageDrawing = RenderingUtils.CreateDrawingSettings(SubjectCoverageTags,
-                    frameData.Get<UniversalRenderingData>(), cameraData, frameData.Get<UniversalLightData>(), SortingCriteria.CommonOpaque);
-                // These actor shaders explicitly opt in to native coverage. Drawing
-                // through the cull results also preserves SpriteRenderer bindings.
-                var coverageFiltering = new FilteringSettings(RenderQueueRange.all);
-                data.coverageSubjects = graph.CreateRendererList(new RendererListParams(
-                    frameData.Get<UniversalRenderingData>().cullResults, coverageDrawing, coverageFiltering));
-                builder.UseRendererList(data.layerSubjects);
-                builder.UseRendererList(data.coverageSubjects);
+                data.environment = graph.CreateRendererList(new RendererListParams(
+                    frameData.Get<UniversalRenderingData>().cullResults, drawing, new FilteringSettings(RenderQueueRange.opaque)));
+                builder.UseRendererList(data.environment);
                 builder.UseTexture(data.depth, AccessFlags.Read);
                 builder.SetRenderAttachment(mask, 0, AccessFlags.Write);
+                // These names are consumed solely by native coverage shaders in this draw.
                 builder.AllowGlobalStateModification(true);
-                builder.SetRenderFunc(static (SubjectPassData passData, RasterGraphContext context) =>
+                builder.SetRenderFunc(static (EnvironmentPassData d, RasterGraphContext context) =>
                 {
-                    context.cmd.SetGlobalTexture(SubjectDepthId, passData.depth);
-                    context.cmd.SetGlobalVector(SubjectDepthScaleId, ScaleBias(context, passData.depth, passData.mask));
-                    context.cmd.DrawRendererList(passData.layerSubjects);
-                    context.cmd.DrawRendererList(passData.coverageSubjects);
-                    foreach (var renderer in passData.renderers)
-                    {
-                        if (!renderer) continue;
-                        renderer.GetSharedMaterials(passData.materials);
-                        for (int i = 0; i < passData.materials.Count; i++)
-                        {
-                            var sourceMaterial = passData.materials[i];
-                            if (!sourceMaterial) continue;
-                            int coveragePass = sourceMaterial.FindPass("SilverPrintSubjectMask");
-                            if (coveragePass >= 0) continue; // Drawn with its native renderer list above.
-                            if (sourceMaterial.renderQueue <= (int)RenderQueue.GeometryLast ||
-                                (sourceMaterial.HasProperty("_ZWrite") && sourceMaterial.GetFloat("_ZWrite") > .5f))
-                                context.cmd.DrawRenderer(renderer, passData.material, i, 0);
-                            // Unknown non-depth-writing shaders cannot safely use a solid
-                            // replacement mask. They must supply their actual coverage pass.
-                        }
-                    }
+                    context.cmd.SetGlobalTexture(EnvironmentDepthId, d.depth);
+                    context.cmd.SetGlobalVector(EnvironmentDepthScaleId, ScaleBias(context, d.depth, d.mask));
+                    context.cmd.DrawRendererList(d.environment);
                 });
                 return mask;
             }
@@ -309,13 +276,10 @@ namespace Unity.MP_FPS.Moon
                 public int shaderPass;
             }
 
-            private sealed class SubjectPassData
+            private sealed class EnvironmentPassData
             {
                 public TextureHandle mask, depth;
-                public RendererListHandle layerSubjects, coverageSubjects;
-                public Material material;
-                public List<Renderer> renderers;
-                public List<Material> materials;
+                public RendererListHandle environment;
             }
         }
     }

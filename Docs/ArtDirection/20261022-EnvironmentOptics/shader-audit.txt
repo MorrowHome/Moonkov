@@ -1,0 +1,14 @@
+Assets/MoonEnvironment/Shaders/SilverPrint.shader supported=True
+Assets/MoonEnvironment/Shaders/EnvironmentScope.shader supported=True
+Assets/MoonEnvironment/Shaders/SilverSandTerrain.shader supported=True
+Warning Assets/MoonEnvironment/Shaders/SilverSand.hlsl:39 use of potentially uninitialized variable (SilverSandLighting)
+Assets/MoonEnvironment/Shaders/Regolith.shader supported=True
+Warning Assets/MoonEnvironment/Shaders/MoonInput.hlsl:118 use of potentially uninitialized variable (MoonLocalBounce)
+Warning Assets/MoonEnvironment/Shaders/SilverSand.hlsl:39 use of potentially uninitialized variable (SilverSandLighting)
+Assets/MoonEnvironment/Shaders/LunarRock.shader supported=True
+Warning Assets/MoonEnvironment/Shaders/MoonInput.hlsl:118 use of potentially uninitialized variable (MoonLocalBounce)
+Assets/MoonEnvironment/Shaders/IndustrialDust.shader supported=True
+Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/R29/Shaders/R29Industrial.shader supported=True
+Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/R29/Shaders/R29LocalGround.shader supported=True
+Warning Assets/MoonEnvironment/Shaders/SilverSand.hlsl:39 use of potentially uninitialized variable (SilverSandLighting)
+Assets/Resources/Moonkov/EnergyShield.shader supported=True

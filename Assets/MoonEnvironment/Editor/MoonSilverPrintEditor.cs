@@ -14,15 +14,17 @@ namespace Unity.MP_FPS.Moon.Editor
         public override VisualElement CreateInspectorGUI()
         {
             var root = new VisualElement();
-            root.Add(new HelpBox("仅调整环境银盐效果；角色与 UI 受保护。总强度为 0 或取消组件勾选可关闭。灯光、材质反光和 Volume Bloom 独立控制。", HelpBoxMessageType.Info));
+            root.Add(new HelpBox("默认保留材质本色、真实灯色与 HDR 高光。只有带 MoonEnvironmentScope Pass 的不透明环境材质参与；原生 Terrain 使用自身实例化路径。透明效果在此之后绘制；角色、武器、UI 与独立预览不参与。", HelpBoxMessageType.Info));
             var presets = new VisualElement();
             presets.style.flexDirection = FlexDirection.Row;
+            presets.Add(new Button(() => ApplyFaithful(targets)) { text = "保真照明（默认）" });
             presets.Add(new Button(() => ApplyPreset(targets, false)) { text = "立体银盐" });
             presets.Add(new Button(() => ApplyPreset(targets, true)) { text = "强对比海报" });
             root.Add(presets);
+            Field(root, "faithfulLighting", "保留真实照明与材质颜色");
             Field(root, "intensity", "总强度 / 0 关闭");
             Field(root, "previewInSceneView", "在 Scene 视图预览");
-            var tone = Group(root, "明暗与体积");
+            var tone = Group(root, "开发参考：银盐明暗与体积");
             Field(tone, "shadingRetention", "明暗层次保留");
             Field(tone, "exposure", "滤镜曝光");
             Field(tone, "blackPoint", "黑位");
@@ -66,6 +68,7 @@ namespace Unity.MP_FPS.Moon.Editor
             Undo.RecordObjects(objects, graphic ? "Strong poster preset" : "Continuous silver preset");
             var so = new SerializedObject(objects);
             void Set(string name, float value) => so.FindProperty(name).floatValue = value;
+            so.FindProperty("faithfulLighting").boolValue = false;
             Set("intensity", 1);
             Set("exposure", graphic ? .3f : .1f);
             Set("blackPoint", graphic ? .035f : .018f);
@@ -83,6 +86,21 @@ namespace Unity.MP_FPS.Moon.Editor
             Set("halationThreshold", graphic ? .82f : .86f);
             Set("halationRadius", 1.5f);
             // Keep the art-directed swatch and subject protection unchanged.
+            so.ApplyModifiedProperties();
+            foreach (var obj in objects)
+            {
+                EditorUtility.SetDirty(obj);
+                PrefabUtility.RecordPrefabInstancePropertyModifications(obj);
+            }
+            SceneView.RepaintAll();
+        }
+
+        public static void ApplyFaithful(UnityEngine.Object[] objects)
+        {
+            Undo.RecordObjects(objects, "Faithful environment lighting");
+            var so = new SerializedObject(objects);
+            so.FindProperty("faithfulLighting").boolValue = true;
+            so.FindProperty("intensity").floatValue = 1;
             so.ApplyModifiedProperties();
             foreach (var obj in objects)
             {

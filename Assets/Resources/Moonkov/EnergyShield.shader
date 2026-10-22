@@ -102,5 +102,35 @@ Shader "Moonkov/Energy Shield and Head Seal"
             }
             ENDHLSL
         }
+        Pass
+        {
+            Name "Owner equipped visor"
+            Tags {"LightMode"="MoonkovEnergyShieldVisor"}
+            ZWrite Off ZTest Always Cull Off
+            Blend SrcAlpha OneMinusSrcAlpha
+            HLSLPROGRAM
+            #pragma target 3.5
+            #pragma vertex Vert
+            #pragma fragment VisorFragment
+            #include "Packages/com.unity.render-pipelines.core/Runtime/Utilities/Blit.hlsl"
+            half4 VisorFragment(Varyings input):SV_Target
+            {
+                UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+                float2 uv=input.texcoord;
+                float2 q=(uv-.5)*float2(1.25,1);
+                float radius=length(q);
+                // Exact clear central sight region. Only peripheral curved glass and seal edge.
+                float edge=smoothstep(.46,.76,radius);
+                float seal=exp(-abs(radius-.665)*115)*edge;
+                float2 refractUV=saturate(uv+normalize(q+float2(.00001,0))*.0018*edge);
+                refractUV=refractUV*_EnergyColorScaleBias.xy+_EnergyColorScaleBias.zw;
+                float3 scene=SAMPLE_TEXTURE2D_X(_EnergySceneColor,sampler_LinearClamp,refractUV).rgb;
+                float2 reflectionUV=float2(1-uv.x,uv.y)*_EnergyColorScaleBias.xy+_EnergyColorScaleBias.zw;
+                float3 reflection=min(SAMPLE_TEXTURE2D_X(_EnergySceneColor,sampler_LinearClamp,reflectionUV).rgb,1);
+                float3 glass=scene*.97+reflection*.035+float3(.18,.21,.23)*seal;
+                return half4(glass,min(.12,edge*.045+seal*.085));
+            }
+            ENDHLSL
+        }
     }
 }

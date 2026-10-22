@@ -56,6 +56,39 @@ Shader "Moon/Silver Sand Terrain"
     {
         Tags { "Queue" = "Geometry-100" "RenderType" = "Opaque" "RenderPipeline" = "UniversalPipeline" "UniversalMaterialType" = "Lit" "IgnoreProjector" = "False" "TerrainCompatible" = "True"}
 
+        // Native coverage uses Terrain's own heightmap, patch LOD, instancing and holes.
+        Pass
+        {
+            Name "EnvironmentScope"
+            Tags { "LightMode"="MoonEnvironmentScope" }
+            ZWrite Off ZTest Always Cull Back
+            HLSLPROGRAM
+            #pragma target 3.0
+            #pragma vertex TerrainScopeVertex
+            #pragma fragment TerrainScopeFragment
+            #pragma multi_compile_instancing
+            #pragma instancing_options assumeuniformscaling nomatrices nolightprobe nolightmap
+            #include "SilverSandTerrainInput.hlsl"
+            #include "SilverSandTerrainPasses.hlsl"
+            #include "EnvironmentScopeDepth.hlsl"
+            VaryingsLean TerrainScopeVertex(AttributesLean input)
+            {
+                VaryingsLean output=(VaryingsLean)0;
+                UNITY_SETUP_INSTANCE_ID(input);UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
+                TerrainInstancing(input.position,input.normalOS,input.texcoord);
+                output.clipPos=TransformObjectToHClip(input.position.xyz);output.texcoord=input.texcoord;return output;
+            }
+            half4 TerrainScopeFragment(VaryingsLean input):SV_Target
+            {
+                UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+                #ifdef _ALPHATEST_ON
+                    ClipHoles(input.texcoord);
+                #endif
+                MoonEnvironmentDepthTest(input.clipPos);return 1;
+            }
+            ENDHLSL
+        }
+
         Pass
         {
             Name "ForwardLit"

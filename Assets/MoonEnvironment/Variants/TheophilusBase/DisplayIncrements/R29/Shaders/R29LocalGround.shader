@@ -37,6 +37,8 @@ Shader "Moon/R29 Local Ground Display"
             float _NormalStrength, _AtlasUVChannel, _DetailUVChannel;
         CBUFFER_END
         ENDHLSL
+        // Explicit opaque environment material domain; stock/actor/VFX shaders never opt in.
+        UsePass "MoonEnvironment/EnvironmentScope/EnvironmentScope"
         Pass
         {
             Name "ForwardLit"

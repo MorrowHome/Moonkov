@@ -1,0 +1,28 @@
+{
+  "success": true,
+  "command": "command list_open_scenes",
+  "data": {
+    "command": "list_open_scenes",
+    "parameters": {},
+    "result": {
+      "count": 1,
+      "scenes": [
+        {
+          "name": "MainMenu",
+          "path": "Assets/Scenes/MainMenu.unity",
+          "isLoaded": true,
+          "isDirty": false,
+          "isActive": true,
+          "rootCount": 3
+        }
+      ]
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "/Users/morrow/UnityProjects/Moonkov"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

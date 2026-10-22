@@ -13,7 +13,7 @@ namespace Unity.MP_FPS
         private struct CameraState {public Camera Camera;public bool Hidden;}
         private readonly Stack<CameraState> m_Cameras=new Stack<CameraState>(4);
         private readonly List<Renderer> m_Hardware=new List<Renderer>(12);
-        private readonly MaterialPropertyBlock m_DomeProperties=new MaterialPropertyBlock(),m_ShieldProperties=new MaterialPropertyBlock();
+        private MaterialPropertyBlock m_DomeProperties,m_ShieldProperties;
         private Transform m_Head,m_Neck,m_Hips,m_Chest,m_LeftFoot,m_RightFoot;
         private Transform m_Dome,m_Shell,m_Collar,m_Device,m_Root;
         private MeshRenderer m_DomeRenderer,m_ShellRenderer;
@@ -61,6 +61,10 @@ namespace Unity.MP_FPS
         {if(current==0){previous=0;return false;}if(unchecked((int)(current-previous))<=0)return false;previous=current;return true;}
         private bool EnsureReady()
         {
+            // Unity-owned property blocks are initialized on the presentation path,
+            // including after Editor reload/creation where nonserialized fields can be empty.
+            m_DomeProperties ??= new MaterialPropertyBlock();
+            m_ShieldProperties ??= new MaterialPropertyBlock();
             if(m_Ready){EnergyShieldRendering.Register(this);return true;}
             var animator=GetComponentInChildren<Animator>();if(!animator || !animator.isHuman)return false;
             var shader=Resources.Load<Shader>("Moonkov/EnergyShield");if(!shader || !shader.isSupported)return false;
@@ -141,6 +145,8 @@ namespace Unity.MP_FPS
             m_DomeProperties.SetVector("_FieldState",new Vector4(0,m_Deploy*1.12f,100,100));m_DomeProperties.SetVector("_FieldFlow",Vector4.zero);m_DomeRenderer.SetPropertyBlock(m_DomeProperties);
             m_ShieldProperties.SetVector("_FieldState",new Vector4(1,1.12f,hitAge,breakAge));m_ShieldProperties.SetVector("_FieldFlow",new Vector4(m_Regenerating?1:0,restoreAge,m_Strength,0));m_ShieldProperties.SetVector("_EnergyHitPoint",m_Impact);m_ShellRenderer.SetPropertyBlock(m_ShieldProperties);
         }
+        internal bool OwnerVisor(Camera camera) => m_Ready && m_Owned && m_FirstPerson && m_HeadEquipped &&
+            camera && camera.cameraType == CameraType.Game && camera == m_OwnedCamera;
         internal float OwnerPulse(Camera camera)
         {
             if(!m_Ready || !m_Owned || !m_FirstPerson || camera!=m_OwnedCamera || !m_ShieldEquipped)return 0;

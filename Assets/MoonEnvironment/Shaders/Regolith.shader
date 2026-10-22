@@ -198,6 +198,8 @@ half4 MoonDepthNormals(MoonVaryings input) : SV_Target
     return half4(normal,0);
 }
         ENDHLSL
+        // Explicit opaque environment material domain; stock/actor/VFX shaders never opt in.
+        UsePass "MoonEnvironment/EnvironmentScope/EnvironmentScope"
         Pass
         {
             Name "Forward"

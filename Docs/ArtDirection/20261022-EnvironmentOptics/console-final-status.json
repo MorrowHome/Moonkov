@@ -1,0 +1,38 @@
+{
+  "success": true,
+  "command": "command console_status",
+  "data": {
+    "command": "console_status",
+    "parameters": {},
+    "result": {
+      "entries": [],
+      "cursor": 139,
+      "session": "c4453b930b49466f97bb2940287ae51a",
+      "returned": 0,
+      "dropped": false,
+      "reset": false,
+      "counts": {
+        "error": 4,
+        "warn": 131,
+        "log": 4
+      },
+      "groundTruth": {
+        "sampledUtc": "2026-10-22T06:42:04.876939Z",
+        "ageMs": 43,
+        "compilationFailed": false,
+        "compiling": false,
+        "consoleErrors": 0,
+        "consoleWarnings": 3,
+        "consoleLogs": 0,
+        "seeded": true
+      }
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "/Users/morrow/UnityProjects/Moonkov"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}

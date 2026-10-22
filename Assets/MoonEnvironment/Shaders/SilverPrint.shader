@@ -8,6 +8,7 @@ Shader "MoonEnvironment/SilverPrint"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.core/Runtime/Utilities/Blit.hlsl"
 
+            float _SilverFaithful;
             float4 _SilverTone; // exposure, black, white, contrast
             float4 _SilverTexture; // relief, grain, intensity
             float4 _SilverAccent; // strength, cool-chroma threshold
@@ -105,13 +106,17 @@ Shader "MoonEnvironment/SilverPrint"
                 float2 screenUV = (uv - _BlitScaleBias.zw) / _BlitScaleBias.xy;
                 float2 protectedUV = screenUV * _SilverProtectionScaleBias.xy + _SilverProtectionScaleBias.zw;
                 float2 protectedPixel = _SilverSourceTexel.xy * abs(_SilverProtectionScaleBias.xy / _BlitScaleBias.xy);
-                // One-pixel conservative edge guard also preserves post-AA silhouette colors.
-                float preserve = SAMPLE_TEXTURE2D_X(_SilverProtection, sampler_PointClamp, protectedUV).r;
-                preserve = max(preserve, SAMPLE_TEXTURE2D_X(_SilverProtection, sampler_PointClamp, protectedUV + float2(protectedPixel.x,0)).r);
-                preserve = max(preserve, SAMPLE_TEXTURE2D_X(_SilverProtection, sampler_PointClamp, protectedUV - float2(protectedPixel.x,0)).r);
-                preserve = max(preserve, SAMPLE_TEXTURE2D_X(_SilverProtection, sampler_PointClamp, protectedUV + float2(0,protectedPixel.y)).r);
-                preserve = max(preserve, SAMPLE_TEXTURE2D_X(_SilverProtection, sampler_PointClamp, protectedUV - float2(0,protectedPixel.y)).r);
-                if (preserve > .5) return original;
+                // Positive native coverage only. Never expand the mask across actor silhouettes.
+                float coverage = SAMPLE_TEXTURE2D_X(_SilverProtection, sampler_PointClamp, protectedUV).r;
+                if (coverage < .5) return original;
+                if (_SilverFaithful > .5)
+                {
+                    // Work on scene-linear HDR, before bloom/tonemapping. Preserve real hue,
+                    // specular energy, roughness gradients and warm/cool lighting; no grain/patina.
+                    float y = Luma(max(original.rgb, 0));
+                    float3 balanced = lerp(y.xxx, original.rgb, .97);
+                    return half4(lerp(original.rgb, balanced, _SilverTexture.z), original.a);
+                }
                 float3 c = original.rgb;
                 #ifndef UNITY_COLORSPACE_GAMMA
                     c = LinearToSRGB(max(c, 0));
