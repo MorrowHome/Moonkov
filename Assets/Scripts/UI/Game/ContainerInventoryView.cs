@@ -97,6 +97,7 @@ namespace Unity.MP_FPS.Client
             m_Ghost = m_Root.Q<VisualElement>("inventoryGhost");
             m_Preview = new VisualElement { pickingMode=PickingMode.Ignore }; m_Preview.AddToClassList("inventory-drop"); m_Preview.style.display=DisplayStyle.None;
             m_Root.RegisterCallback<KeyDownEvent>(Key, TrickleDown.TrickleDown);
+            Application.focusChanged += FocusChanged;
             m_Windows = new TerminalWindows(m_Root, () => { });
             Present(null);
         }
@@ -155,7 +156,12 @@ namespace Unity.MP_FPS.Client
                 if (message != null) MoonkovAudio.Error();
                 else MoonkovAudio.Play(MoonkovAudio.Library?.Equipment, Vector3.zero);
             }
-            bool changed = m_Graph != graph || m_RenderedVersion != (graph?.Version ?? -1) || m_LootId!=lootId || m_DroppedItem!=droppedItem; m_Graph = graph;m_LootId=lootId;m_DroppedItem=droppedItem;
+            bool changed = m_RenderedVersion != (graph?.Version ?? -1) || m_LootId!=lootId || m_DroppedItem!=droppedItem;
+            // An acknowledged snapshot can be a new object with identical contents. Rebuilding
+            // that tree destroys the pressed tile/capture halfway through a click or drag.
+            if (!changed && !ReferenceEquals(m_Graph, graph))
+                changed = RaidInventoryTransport.Encode(m_Graph) != RaidInventoryTransport.Encode(graph);
+            m_Graph = graph;m_LootId=lootId;m_DroppedItem=droppedItem;
             if (operationCompleted) m_Busy = false;
             if (changed) { CancelDrag(); Render(); m_RenderedVersion=graph?.Version ?? -1; }
             if(changed)m_Character?.SetProtectionInventory(graph);
@@ -411,6 +417,7 @@ namespace Unity.MP_FPS.Client
             m_Busy=true; MoonkovLocalization.Set(m_Message, "UPDATING INVENTORY…"); m_Send(command);
         }
         public void CancelDrag() => m_Drag?.Cancel();
+        private void FocusChanged(bool focused) { if (!focused) CancelDrag(); }
         public bool Escape()
         {
             if (Application.isPlaying && m_EscapeHandledFrame==Time.frameCount) return true;
@@ -427,7 +434,7 @@ namespace Unity.MP_FPS.Client
         private void Key(KeyDownEvent evt) => HandleKey(evt);
         public void Dispose()
         {
-            if (m_Disposed) return; Suspend(); m_Disposed=true; m_Root.UnregisterCallback<KeyDownEvent>(Key,TrickleDown.TrickleDown); m_Windows.Dispose(); m_Root.RemoveFromHierarchy();
+            if (m_Disposed) return; Suspend(); m_Disposed=true; Application.focusChanged -= FocusChanged; m_Root.UnregisterCallback<KeyDownEvent>(Key,TrickleDown.TrickleDown); m_Windows.Dispose(); m_Root.RemoveFromHierarchy();
         }
 
         private sealed class Drag : PointerManipulator
@@ -443,18 +450,19 @@ namespace Unity.MP_FPS.Client
             public Drag(ContainerInventoryView view, Func<InventoryItem> source, Action click, Action doubleClick)
             { m_View=view; m_Source=source; m_Click=click; m_DoubleClick=doubleClick; }
             protected override void RegisterCallbacksOnTarget()
-            { target.RegisterCallback<PointerEnterEvent>(Enter); target.RegisterCallback<PointerLeaveEvent>(Leave); target.RegisterCallback<PointerDownEvent>(Down,TrickleDown.TrickleDown); target.RegisterCallback<PointerMoveEvent>(Move,TrickleDown.TrickleDown); target.RegisterCallback<PointerUpEvent>(Up,TrickleDown.TrickleDown); target.RegisterCallback<PointerCaptureOutEvent>(Lost); }
+            { target.RegisterCallback<PointerEnterEvent>(Enter); target.RegisterCallback<PointerLeaveEvent>(Leave); target.RegisterCallback<PointerDownEvent>(Down,TrickleDown.TrickleDown); target.RegisterCallback<PointerMoveEvent>(Move,TrickleDown.TrickleDown); target.RegisterCallback<PointerUpEvent>(Up,TrickleDown.TrickleDown); target.RegisterCallback<PointerCaptureOutEvent>(Lost); target.RegisterCallback<PointerCancelEvent>(Cancelled); target.RegisterCallback<DetachFromPanelEvent>(Detached); }
             protected override void UnregisterCallbacksFromTarget()
-            { Cancel(); target.UnregisterCallback<PointerEnterEvent>(Enter); target.UnregisterCallback<PointerLeaveEvent>(Leave); target.UnregisterCallback<PointerDownEvent>(Down,TrickleDown.TrickleDown); target.UnregisterCallback<PointerMoveEvent>(Move,TrickleDown.TrickleDown); target.UnregisterCallback<PointerUpEvent>(Up,TrickleDown.TrickleDown); target.UnregisterCallback<PointerCaptureOutEvent>(Lost); }
+            { Cancel(); target.UnregisterCallback<PointerEnterEvent>(Enter); target.UnregisterCallback<PointerLeaveEvent>(Leave); target.UnregisterCallback<PointerDownEvent>(Down,TrickleDown.TrickleDown); target.UnregisterCallback<PointerMoveEvent>(Move,TrickleDown.TrickleDown); target.UnregisterCallback<PointerUpEvent>(Up,TrickleDown.TrickleDown); target.UnregisterCallback<PointerCaptureOutEvent>(Lost); target.UnregisterCallback<PointerCancelEvent>(Cancelled); target.UnregisterCallback<DetachFromPanelEvent>(Detached); }
             private void Enter(PointerEnterEvent evt) => m_View.m_HoveredItemId = m_Source()?.Id;
             private void Leave(PointerLeaveEvent evt) { if (m_View.m_HoveredItemId == m_Source()?.Id) m_View.m_HoveredItemId = null; }
             private void Down(PointerDownEvent evt)
             {
-                if (m_View.m_Graph==null || m_View.m_Busy || m_View.m_Drag?.m_Active==true) { evt.StopImmediatePropagation(); return; }
+                if (m_View.m_Graph==null || m_View.m_Busy) { evt.StopImmediatePropagation(); return; }
+                if (evt.button==1 && m_View.m_Drag!=null) { m_View.CancelDrag(); evt.StopImmediatePropagation(); return; }
                 m_Item=m_Source();
                 if (evt.button==1) { if (m_Item!=null) m_View.Context(m_Item,evt.position); evt.StopImmediatePropagation(); return; }
                 if (evt.button!=0) return;
-                if (evt.ctrlKey) { if (m_Item!=null) m_View.QuickTransfer(m_Item); evt.StopImmediatePropagation(); return; }
+                if (evt.ctrlKey || evt.shiftKey) { m_View.CancelDrag(); if (m_Item!=null) m_View.QuickTransfer(m_Item); evt.StopImmediatePropagation(); return; }
                 m_View.CancelDrag(); m_View.m_Drag=this; m_ClickCount=evt.clickCount; m_ValidatedCommand=null;
                 m_Pointer=evt.pointerId; m_Start=m_Last=evt.position; m_Rotated=m_Item?.Rotated ?? false;
                 var rect=target.worldBound; m_Grab=new Vector2(Mathf.Clamp01((m_Start.x-rect.x)/rect.width),Mathf.Clamp01((m_Start.y-rect.y)/rect.height)); target.CapturePointer(m_Pointer);
@@ -462,7 +470,11 @@ namespace Unity.MP_FPS.Client
             }
             private void Move(PointerMoveEvent evt)
             {
-                if (evt.pointerId!=m_Pointer) return; m_Last=evt.position;
+                if (m_Pointer<0 || evt.pointerId!=m_Pointer) return;
+                // Releasing outside the Game view can omit PointerUp; never keep a ghost
+                // press alive once the pointer reports that the primary button is up.
+                if ((evt.pressedButtons & 1)==0) { Cancel(); return; }
+                m_Last=evt.position;
                 evt.StopImmediatePropagation();
                 if (m_View.m_ReadOnlyReason != null) return;
                 if (m_Item==null || !m_Active && Vector2.Distance(m_Start,m_Last)<4) return;
@@ -525,7 +537,7 @@ namespace Unity.MP_FPS.Client
             public void Rotate() { if (m_Active) { m_Rotated=!m_Rotated; Preview(); } }
             private void Up(PointerUpEvent evt)
             {
-                if (evt.pointerId!=m_Pointer) return;
+                if (m_Pointer<0 || evt.pointerId!=m_Pointer || evt.button!=0) return;
                 if (!m_Active)
                 {
                     bool click=Vector2.Distance(m_Start,evt.position)<4 && target.worldBound.Contains(evt.position);
@@ -540,8 +552,11 @@ namespace Unity.MP_FPS.Client
                 if (command!=null) m_View.Command(command); else MoonkovLocalization.Set(m_View.m_Message, "Move cancelled. Item remains in its container.");
             }
             private void Lost(PointerCaptureOutEvent evt) { if (evt.target==target && evt.pointerId==m_Pointer) Cancel(); }
+            private void Cancelled(PointerCancelEvent evt) { if (evt.pointerId==m_Pointer) Cancel(); }
+            private void Detached(DetachFromPanelEvent evt) { if (m_View.m_Drag==this) Cancel(); }
             public void Cancel()
             {
+                if (m_View.m_Drag!=this) return;
                 m_View.QuickSlotDragPreview?.Invoke(null, default);
                 m_Scroll?.Pause(); m_Scroll=null; int pointer=m_Pointer; m_Pointer=-1;
                 if (pointer>=0 && target.HasPointerCapture(pointer)) target.ReleasePointer(pointer); target.style.opacity=1;
