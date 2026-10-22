@@ -5,7 +5,7 @@ namespace Unity.MP_FPS
     // Original low-cost meshes, shared by client avatars. No model imports or colliders.
     internal static class EnergyShieldGeometry
     {
-        private static Mesh s_Sphere,s_Collar,s_Box,s_NeckBand,s_BowLoop,s_BowTail,s_CatEar;
+        private static Mesh s_Sphere,s_Collar,s_Box,s_NeckBand,s_BowLoop,s_BowTail,s_CatEar,s_Visor;
         private static int s_Users;
         internal static Mesh Sphere => s_Sphere;
         internal static Mesh Collar => s_Collar;
@@ -14,11 +14,13 @@ namespace Unity.MP_FPS
         internal static Mesh BowLoop => s_BowLoop;
         internal static Mesh BowTail => s_BowTail;
         internal static Mesh CatEar => s_CatEar;
+        internal static Mesh Visor => s_Visor;
         internal static void Retain()
         {
             if(s_Users++>0 && s_Sphere)return;
             s_Sphere=SphereMesh(48,24);s_Collar=TorusMesh(48,8);s_Box=BoxMesh();
             s_NeckBand=NeckBandMesh();s_BowLoop=BowLoopMesh();s_BowTail=BowTailMesh();
+            s_Visor=VisorMesh();
             s_CatEar=RibbonMesh("Neko bell / cat ear",new[]{new Vector3(-.5f,0,0),new Vector3(.5f,0,0),new Vector3(0,1,.12f)},new Vector2[3],new[]{0,1,2});
         }
         internal static void Release()
@@ -27,6 +29,31 @@ namespace Unity.MP_FPS
             Destroy(s_Sphere);Destroy(s_Collar);Destroy(s_Box);s_Sphere=s_Collar=s_Box=null;
             Destroy(s_NeckBand);Destroy(s_BowLoop);Destroy(s_BowTail);s_NeckBand=s_BowLoop=s_BowTail=null;
             Destroy(s_CatEar);s_CatEar=null;
+            Destroy(s_Visor);s_Visor=null;
+        }
+        internal static Vector3 VisorPoint(float u,float v)
+        {
+            float angle=(u-.5f)*Mathf.PI*.61f;
+            float spread=Mathf.Sin(Mathf.Min(1,v*1.55f)*Mathf.PI*.5f);
+            return new Vector3(Mathf.Sin(angle)*Mathf.Lerp(.26f,1,spread),v,
+                .15f+Mathf.Cos(angle)*Mathf.Lerp(.32f,1,spread));
+        }
+        private static Mesh VisorMesh()
+        {
+            const int columns=48,rows=24;
+            var vertices=new Vector3[(columns+1)*(rows+1)];var uv=new Vector2[vertices.Length];
+            var triangles=new int[columns*rows*6];int k=0;
+            for(int y=0;y<=rows;y++)for(int x=0;x<=columns;x++)
+            {
+                int i=y*(columns+1)+x;float u=x/(float)columns,v=y/(float)rows;
+                vertices[i]=VisorPoint(u,v);uv[i]=new Vector2(u,v);
+                if(x==columns||y==rows)continue;
+                int b=i+1,c=i+columns+1;
+                triangles[k++]=i;triangles[k++]=b;triangles[k++]=c;
+                triangles[k++]=b;triangles[k++]=c+1;triangles[k++]=c;
+            }
+            var mesh=new Mesh{name="Collar / upward curved face seal",hideFlags=HideFlags.DontSave};
+            mesh.vertices=vertices;mesh.uv=uv;mesh.triangles=triangles;mesh.RecalculateNormals();mesh.RecalculateBounds();return mesh;
         }
         private static void Destroy(Object obj)
         {if(!obj)return;if(Application.isPlaying)Object.Destroy(obj);else Object.DestroyImmediate(obj);}

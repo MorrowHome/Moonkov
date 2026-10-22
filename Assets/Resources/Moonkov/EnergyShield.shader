@@ -38,7 +38,7 @@ Shader "Moonkov/Energy Shield and Head Seal"
             {
                 FieldVaryings output;UNITY_SETUP_INSTANCE_ID(input);UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
                 output.positionWS=TransformObjectToWorld(input.positionOS.xyz);output.positionCS=TransformWorldToHClip(output.positionWS);
-                output.normalWS=TransformObjectToWorldNormal(input.normalOS);output.uv=input.uv;output.height=input.positionOS.y*.5+.5;return output;
+                output.normalWS=TransformObjectToWorldNormal(input.normalOS);output.uv=input.uv;output.height=_FieldState.x<.5?input.uv.y:input.positionOS.y*.5+.5;return output;
             }
             half4 FieldFragment(FieldVaryings input):SV_Target
             {
@@ -58,12 +58,15 @@ Shader "Moonkov/Energy Shield and Head Seal"
                 float3 cyan=float3(.12,.64,.94);float alpha;float3 color;
                 if(_FieldState.x<.5)
                 {
-                    float scan=pow(saturate(1-abs(frac(input.height*.6-t*.065)-.5)*2),26)*.025;
-                    float2 distortion=float2(dot(normal,UNITY_MATRIX_V[0].xyz),dot(normal,UNITY_MATRIX_V[1].xyz))*.0018*(.5+rim*.5);
+                    float border=exp(-min(input.uv.x,1-input.uv.x)*210)+exp(-input.uv.y*190)+exp(-(1-input.uv.y)*190);
+                    float opening=exp(-abs(input.height-_FieldState.y)*110)*step(_FieldState.y,1.02);
+                    float coating=pow(saturate(dot(normal,normalize(float3(-.6,.8,.4)))),24)*.055;
+                    float2 distortion=float2(dot(normal,UNITY_MATRIX_V[0].xyz),dot(normal,UNITY_MATRIX_V[1].xyz))*.004*(.25+rim*.75);
                     float2 colorUV=(screen+distortion)*_EnergyColorScaleBias.xy+_EnergyColorScaleBias.zw;
                     float3 refracted=SAMPLE_TEXTURE2D_X(_EnergySceneColor,sampler_LinearClamp,colorUV).rgb;
-                    alpha=min(.28,.018+rim*.23+weave+scan)*deploy;
-                    color=lerp(refracted,cyan,saturate(rim*.65+scan*3));
+                    alpha=min(.72,.055+rim*.16+border*.6+opening*.5+coating)*deploy;
+                    color=lerp(refracted*.98+float3(.008,.01,.016),float3(.25,.76,.88),saturate(border*.82+opening*.75+rim*.3));
+                    color+=float3(.28,.19,.38)*coating;
                 }
                 else
                 {
@@ -119,16 +122,24 @@ Shader "Moonkov/Energy Shield and Head Seal"
                 float2 uv=input.texcoord;
                 float2 q=(uv-.5)*float2(1.25,1);
                 float radius=length(q);
-                // Exact clear central sight region. Only peripheral curved glass and seal edge.
-                float edge=smoothstep(.46,.76,radius);
-                float seal=exp(-abs(radius-.665)*115)*edge;
-                float2 refractUV=saturate(uv+normalize(q+float2(.00001,0))*.0018*edge);
-                refractUV=refractUV*_EnergyColorScaleBias.xy+_EnergyColorScaleBias.zw;
-                float3 scene=SAMPLE_TEXTURE2D_X(_EnergySceneColor,sampler_LinearClamp,refractUV).rgb;
-                float2 reflectionUV=float2(1-uv.x,uv.y)*_EnergyColorScaleBias.xy+_EnergyColorScaleBias.zw;
-                float3 reflection=min(SAMPLE_TEXTURE2D_X(_EnergySceneColor,sampler_LinearClamp,reflectionUV).rgb,1);
-                float3 glass=scene*.97+reflection*.035+float3(.18,.21,.23)*seal;
-                return half4(glass,min(.12,edge*.045+seal*.085));
+                // Stable curved optics, no animated wobble. Center samples the exact
+                // original scene; distortion, dispersion and coating grow at the periphery.
+                float edge=smoothstep(.30,.72,radius),curve=edge*edge;
+                float2 direction=normalize(q+float2(.00001,0));
+                float2 warped=uv+direction*.006*curve;
+                float2 dispersion=direction*.0009*curve;
+                float2 centerUV=saturate(warped)*_EnergyColorScaleBias.xy+_EnergyColorScaleBias.zw;
+                float3 scene=SAMPLE_TEXTURE2D_X(_EnergySceneColor,sampler_LinearClamp,centerUV).rgb;
+                scene.r=SAMPLE_TEXTURE2D_X(_EnergySceneColor,sampler_LinearClamp,saturate(warped+dispersion)*_EnergyColorScaleBias.xy+_EnergyColorScaleBias.zw).r;
+                scene.b=SAMPLE_TEXTURE2D_X(_EnergySceneColor,sampler_LinearClamp,saturate(warped-dispersion)*_EnergyColorScaleBias.xy+_EnergyColorScaleBias.zw).b;
+                float seal=exp(-abs(radius-.692)*145)*edge;
+                float coating=pow(saturate(dot(direction,normalize(float2(-.7,.9)))),12)*curve;
+                float sockets=exp(-length((uv-float2(.075,.08))*float2(1,1.6))*55)+exp(-length((uv-float2(.925,.08))*float2(1,1.6))*55);
+                float3 glass=scene*(1-edge*.012)+float3(.002,.004,.008)*edge;
+                glass+=float3(.012,.008,.024)*coating+float3(.018,.07,.085)*(seal*.55+sockets*.35);
+                // The full replacement preserves actual refraction amplitude. A small
+                // alpha overlay would dilute it into an almost invisible tinted double image.
+                return half4(glass,saturate(_OwnerPulse.y));
             }
             ENDHLSL
         }
