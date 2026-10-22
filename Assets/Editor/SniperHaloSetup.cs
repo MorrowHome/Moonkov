@@ -30,7 +30,7 @@ public static class SniperHaloSetup
         {
             weapon = UnityEngine.Object.Instantiate(registry.GetWeaponData(DollSingerWeapons.Halo));
             weapon.name = "SniperWeapon"; weapon.WeaponName = "Halo Sniper";
-            weapon.MagazineSize = SniperHaloVisual.Capacity; weapon.Damage = 110;
+            weapon.MagazineSize = SniperHaloVisual.Capacity; weapon.Damage = 190;
             weapon.CooldownInMs = 1.4f; weapon.Automatic = false; weapon.AutoReloadWhenEmpty = true;
             weapon.ReloadTime = 3; weapon.EnergyPerRound = 18; weapon.PelletCount = 1; weapon.SpreadDegrees = 0;
             weapon.ProjectileSpeed = 800; weapon.ProjectileLifetime = 4; weapon.ProjectileGravity = 1.62f;

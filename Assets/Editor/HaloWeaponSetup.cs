@@ -45,7 +45,7 @@ public static class HaloWeaponSetup
             shotgun.MagazineSize = 4; shotgun.CooldownInMs = .8f; shotgun.ReloadTime = 2f;
             shotgun.EnergyPerRound = 12;
             shotgun.Automatic = false; shotgun.AutoReloadWhenEmpty = true;
-            shotgun.Damage = 10; shotgun.PelletCount = 8; shotgun.SpreadDegrees = 5f;
+            shotgun.Damage = 18; shotgun.PelletCount = 8; shotgun.SpreadDegrees = 5f;
             shotgun.ProjectileSpeed = 240f; shotgun.ProjectileLifetime = 1f;
             var template = registry.GetWeaponData(1);
             shotgun.WeaponFireSfx = template.WeaponFireSfx; shotgun.WeaponReloadSfx = template.WeaponReloadSfx;
