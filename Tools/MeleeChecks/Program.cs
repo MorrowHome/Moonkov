@@ -80,4 +80,20 @@ MeleeRules.TryStart(ref invalid, MeleeAttackKind.Light, true, false, out _);
 float age = invalid.Elapsed;
 Check(!MeleeRules.Tick(ref invalid, float.NaN, false).Valid, "Invalid delta time cannot cause damage");
 Close(invalid.Elapsed, age, "Invalid delta time leaves time unchanged");
+// Authored action contract only; execution remains separate from real collider/animation validation.
+foreach (var item in new[]
+{
+    (MeleeWeaponKind.Fists, MeleeAttackKind.Light, 0, MeleeTrajectoryKind.ForwardThrust),
+    (MeleeWeaponKind.Fists, MeleeAttackKind.Light, 1, MeleeTrajectoryKind.ForwardThrust),
+    (MeleeWeaponKind.Fists, MeleeAttackKind.Light, 2, MeleeTrajectoryKind.LeftToRight),
+    (MeleeWeaponKind.Fists, MeleeAttackKind.Heavy, 0, MeleeTrajectoryKind.ForwardThrust),
+    (MeleeWeaponKind.Dagger, MeleeAttackKind.Light, 0, MeleeTrajectoryKind.RightToLeft),
+    (MeleeWeaponKind.Dagger, MeleeAttackKind.Light, 1, MeleeTrajectoryKind.LeftToRight),
+    (MeleeWeaponKind.Dagger, MeleeAttackKind.Light, 2, MeleeTrajectoryKind.ForwardThrust),
+    (MeleeWeaponKind.Dagger, MeleeAttackKind.Heavy, 0, MeleeTrajectoryKind.ForwardThrust),
+    (MeleeWeaponKind.EnergySword, MeleeAttackKind.Light, 0, MeleeTrajectoryKind.UpperRightToLowerLeft),
+    (MeleeWeaponKind.EnergySword, MeleeAttackKind.Light, 1, MeleeTrajectoryKind.UpperLeftToLowerRight),
+    (MeleeWeaponKind.EnergySword, MeleeAttackKind.Light, 2, MeleeTrajectoryKind.ForwardThrust),
+    (MeleeWeaponKind.EnergySword, MeleeAttackKind.Heavy, 0, MeleeTrajectoryKind.Downward)
+}) Check(MeleeRules.Trajectory(item.Item1, item.Item2, item.Item3) == item.Item4, "Authored melee action selects its own trajectory");
 Console.WriteLine($"Melee rules: {checks} checks passed.");

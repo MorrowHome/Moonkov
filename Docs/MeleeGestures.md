@@ -50,8 +50,14 @@ Capture 写入 `Library/MeleePreview`；Show 用固定时刻，PlayAttack 连续
 
 本组尚未调用 Unity 命令、编译或 Play；必要的下一步是三类轻／重完整轨迹、待机中央留白、握持／手指／小臂、转头与取消的实际四机位检查，并由核心组验证真实命中时机、遮挡及正式局链路。不要据当前源预览宣称这些已通过。
 
-## 攻击几何待核心对齐
+## 攻击几何源码对齐，实机待验收
 
 本组已在 DTO／网络桥加入 Epoch，换局与 Ghost 重用会 ResetPresentation 清除攻击、取消和命中缓存。
 
-当前作者轨迹：拳头 light0 左刺拳、light1 右直拳、light2 横勾拳、heavy 前冲直拳；匕首 light0／1 为相反方向划击，light2／heavy 前刺；能量剑 light0／1 为相反方向斜斩，light2 前刺，heavy 纵向下劈。核心不能将直刺和纵劈统一处理为水平扇扫。源角色单臂长度约 0.338 m，刀刃有效长度约 0.23／0.72 m；权威接触距离须结合攻击起点与目标碰撞半径校准，不能仅按常见成人角色的臂长套用。该项目前仍待核心几何与实际命中验收。
+当前作者轨迹与权威胶囊平面已按源码对应：拳头 light0 左刺拳、light1 右直拳、heavy 前冲直拳使用窄前向胶囊，light2 使用横勾扫；匕首 light0 右向左划、light1 左向右划，light2／heavy 前刺；能量剑 light0 右上到左下斜斩、light1 左上到右下斜斩，light2 前刺，heavy 自上向下纵劈。纯规则 `MeleeRules.Trajectory` 只选择轨迹类型，服务端在原 Active 窗内改变胶囊扫过的平面，仍保留原分段补扫、转向上限、距离／半径、遮挡、Epoch、友伤和每目标一次的限制，没有调整伤害、耐力或时长。
+
+近战将真实 `contact.Point` 传给现有 `BountyClashDamage.Apply`，护盾继续由该伤害入口单次结算；HP 没有减少时仍保留近战 HitSequence／HitBlocked 事件。
+
+制作组只完成源码与静态差异检查；协调方随后以单处理器、禁用共享编译进程的方式运行 `Tools/MeleeChecks/MeleeChecks.csproj --no-restore`，131 项通过（原 119 项与新增 12 个作者轨迹选择用例）。再用现有 Bee response files 和 Unity 自带 Roslyn 隔离复编：Runtime 退出码 0、无警告；主程序集退出码 0、两条旧警告；Editor 退出码 0、19 条旧警告。日志位于 `Library/BuildValidation/SourceOnly-20261022/`，未覆盖生产程序集，没有启动 Unity、Blender、游戏或联机验收，也没有执行 Unity 导入和 IL 后处理。
+
+源角色单臂长度约 0.338 m，刀刃有效长度约 0.23／0.72 m；权威接触距离仍须结合攻击起点与目标碰撞半径校准，不能仅按常见成人角色的臂长套用。定量距离、真实碰撞及动画拟合均未验收，源码平面对齐和纯规则检查不代表这些已通过。

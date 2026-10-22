@@ -6,6 +6,8 @@ namespace Unity.MP_FPS.DollSinger
     public enum MeleeAttackKind : byte { None, Light, Heavy }
     public enum MeleePhase : byte { Idle, Windup, Active, Recovery }
     public enum MeleeStartError : byte { None, Invalid, Inactive, Busy, Exhausted }
+    public enum MeleeTrajectoryKind : byte
+    { ForwardThrust, LeftToRight, RightToLeft, UpperRightToLowerLeft, UpperLeftToLowerRight, Downward }
 
     public readonly struct MeleeTiming
     {
@@ -78,6 +80,20 @@ namespace Unity.MP_FPS.DollSinger
             definition = weapon == MeleeWeaponKind.Fists ? Fists : weapon == MeleeWeaponKind.Dagger ? Dagger :
                 weapon == MeleeWeaponKind.EnergySword ? Sword : default;
             return definition.Weapon != MeleeWeaponKind.None;
+        }
+        // Match the authored actions without changing their reach, radius or active timing.
+        public static MeleeTrajectoryKind Trajectory(MeleeWeaponKind weapon, MeleeAttackKind attack, int combo)
+        {
+            if (weapon == MeleeWeaponKind.Fists)
+                return attack == MeleeAttackKind.Heavy || combo != 2 ? MeleeTrajectoryKind.ForwardThrust : MeleeTrajectoryKind.LeftToRight;
+            if (weapon == MeleeWeaponKind.Dagger)
+                return attack == MeleeAttackKind.Heavy || combo == 2 ? MeleeTrajectoryKind.ForwardThrust :
+                    combo == 1 ? MeleeTrajectoryKind.LeftToRight : MeleeTrajectoryKind.RightToLeft;
+            if (weapon == MeleeWeaponKind.EnergySword)
+                return attack == MeleeAttackKind.Heavy ? MeleeTrajectoryKind.Downward :
+                    combo == 2 ? MeleeTrajectoryKind.ForwardThrust : combo == 1 ?
+                    MeleeTrajectoryKind.UpperLeftToLowerRight : MeleeTrajectoryKind.UpperRightToLowerLeft;
+            return MeleeTrajectoryKind.ForwardThrust;
         }
         public static MeleeTiming Timing(in MeleeCombatState state) => TryDefinition(state.AttackWeapon, out var definition)
             ? definition.Timing(state.Attack, state.ComboIndex) : default;

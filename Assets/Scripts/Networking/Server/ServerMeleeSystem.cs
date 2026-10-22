@@ -263,11 +263,17 @@ namespace Unity.MP_FPS
             var look = Quaternion.Euler(context.Health.ControllerState.PitchDegrees, context.Health.ControllerState.YawDegrees, 0);
             var facing = Quaternion.RotateTowards(actor.Facing, look, MeleeRules.MaximumTurnDegrees);
             int steps = Mathf.Clamp(Mathf.CeilToInt((window.To - window.From) * definition.SweepDegrees / 6), 1, 32);
-            float sign = actor.State.ComboIndex == 1 ? -1 : 1;
+            var trajectory = MeleeRules.Trajectory(actor.State.AttackWeapon, actor.State.Attack, actor.State.ComboIndex);
+            var axis = trajectory == MeleeTrajectoryKind.Downward ? Vector3.right :
+                trajectory == MeleeTrajectoryKind.UpperRightToLowerLeft ? new Vector3(1, -1, 0).normalized :
+                trajectory == MeleeTrajectoryKind.UpperLeftToLowerRight ? new Vector3(1, 1, 0).normalized : Vector3.up;
+            float sign = trajectory == MeleeTrajectoryKind.RightToLeft ? -1 : 1;
             for (int step = 0; step <= steps; step++)
             {
                 float progress = Mathf.Lerp(window.From, window.To, step / (float)steps);
-                var direction = facing * (Quaternion.AngleAxis(Mathf.Lerp(-.5f, .5f, progress) * definition.SweepDegrees * sign, Vector3.up) * Vector3.forward);
+                var localDirection = trajectory == MeleeTrajectoryKind.ForwardThrust ? Vector3.forward :
+                    Quaternion.AngleAxis(Mathf.Lerp(-.5f, .5f, progress) * definition.SweepDegrees * sign, axis) * Vector3.forward;
+                var direction = facing * localDirection;
                 var end = eye + direction * definition.Reach;
                 int count;
                 while ((count = context.Scene.OverlapCapsule(eye, end, definition.SweepRadius, m_Overlaps, VictimMask, QueryTriggerInteraction.Ignore)) == m_Overlaps.Length)
@@ -300,7 +306,7 @@ namespace Unity.MP_FPS
                     var contact = pair.Value;
                     var victimRoot = contact.Collider.GetComponentInParent<PlayerGhost>();
                     float damage = BountyClashDamage.Apply(World, pair.Key, actor.Source,
-                        RaidHealth.ResolveHit(victimRoot, contact.Collider, contact.Point), definition.Damage(actor.State.Attack, actor.State.ComboIndex), tick, RaidDamageKind.Melee);
+                        RaidHealth.ResolveHit(victimRoot, contact.Collider, contact.Point), definition.Damage(actor.State.Attack, actor.State.ComboIndex), tick, RaidDamageKind.Melee, (float3)contact.Point);
                     actor.LastHit = contact.Point; actor.HitBlocked = damage <= 0;
                     unchecked { actor.HitSequence++; if (actor.HitSequence == 0) actor.HitSequence++; }
                 }
