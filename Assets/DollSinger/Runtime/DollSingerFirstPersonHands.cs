@@ -41,8 +41,10 @@ namespace Unity.MP_FPS.DollSinger
             for (int i = 0; i < armBones.Length; i++)
                 armBones[i] = source.bones[i] &&
                     ((left && source.bones[i].IsChildOf(left)) || (right && source.bones[i].IsChildOf(right)));
-            rightHandBones = rightHand.GetComponentsInChildren<Transform>(true);
-            leftHandBones = leftHand.GetComponentsInChildren<Transform>(true);
+            // Attached melee props and their inactive trail anchors are not hand joints.
+            // Fit only skinned joints so hidden props cannot alter the hand projection.
+            rightHandBones = Array.FindAll(source.bones, bone => bone && bone.IsChildOf(rightHand));
+            leftHandBones = Array.FindAll(source.bones, bone => bone && bone.IsChildOf(leftHand));
             foreach (var bone in rightHandBones)
             {
                 if (bone.name == "人指先.R") rightIndexTip = bone;
