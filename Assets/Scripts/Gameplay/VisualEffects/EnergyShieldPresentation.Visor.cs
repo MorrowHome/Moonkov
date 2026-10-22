@@ -13,6 +13,9 @@ namespace Unity.MP_FPS
         private MeshRenderer[] m_EnergyEars,m_EmitterLenses;
         private Quaternion m_VisorLocalFrame;
         private Vector3 m_VisorOffset,m_VisorSize;
+        private Vector3 m_SealOffset;
+        private Quaternion m_SealLocalFrame;
+        private float m_SealRadius;
         private float m_SealLatitude;
         private float m_VisorEquippedAt;
         private MaterialPropertyBlock m_VisorProperties,m_LampProperties;
@@ -27,8 +30,10 @@ namespace Unity.MP_FPS
             // Only skin and hair define the head envelope. Head clothing, jewels,
             // glasses and floating ornaments may remain outside the projected shell.
             var points=new List<Vector3>(4096);var inverse=Quaternion.Inverse(frame);
+            var facePoints=new List<Vector3>(2048);
             var minimum=new Vector3(float.PositiveInfinity,float.PositiveInfinity,float.PositiveInfinity);
             var maximum=-minimum;
+            var faceMinimum=minimum;var faceMaximum=maximum;
             foreach(var renderer in GetComponentsInChildren<SkinnedMeshRenderer>(true))
             {
                 var mesh=renderer.sharedMesh;if(!mesh||renderer.name.Contains("Runtime"))continue;
@@ -37,13 +42,13 @@ namespace Unity.MP_FPS
                 var related=new bool[bones.Length];var matrices=new Matrix4x4[bones.Length];
                 for(int b=0;b<bones.Length;b++)if(bones[b]){related[b]=bones[b]==m_Head||bones[b].IsChildOf(m_Head);matrices[b]=bones[b].localToWorldMatrix*bind[b];}
                 var vertices=mesh.vertices;
-                var physical=new bool[vertices.Length];var materials=renderer.sharedMaterials;
+                var physical=new bool[vertices.Length];var face=new bool[vertices.Length];var materials=renderer.sharedMaterials;
                 for(int sub=0;sub<Mathf.Min(mesh.subMeshCount,materials.Length);sub++)
                 {
                     if(!materials[sub])continue;
                     string name=materials[sub].name.Replace(" (Instance)","");
                     if(name!="Face"&&name!="Body"&&name!="Hair")continue;
-                    foreach(int index in mesh.GetTriangles(sub))physical[index]=true;
+                    foreach(int index in mesh.GetTriangles(sub)){physical[index]=true;if(name=="Face")face[index]=true;}
                 }
                 for(int i=0;i<vertices.Length;i++)
                 {
@@ -54,33 +59,32 @@ namespace Unity.MP_FPS
                         matrices[w.boneIndex2].MultiplyPoint3x4(v)*w.weight2+matrices[w.boneIndex3].MultiplyPoint3x4(v)*w.weight3;
                     Vector3 p=inverse*(world-m_Head.position);if(p.y<-.025f||p.y>.6f)continue;
                     minimum=Vector3.Min(minimum,p);maximum=Vector3.Max(maximum,p);points.Add(p);
+                    if(face[i]){faceMinimum=Vector3.Min(faceMinimum,p);faceMaximum=Vector3.Max(faceMaximum,p);facePoints.Add(p);}
                 }
             }
             if(points.Count<8){minimum=new Vector3(-.135f,-.02f,-.13f);maximum=new Vector3(.135f,.34f,.13f);}
             var anchor=m_Neck?m_Neck:m_Head;
-            float bottom=(inverse*(anchor.TransformPoint(m_CollarOffset)-m_Head.position)).y-m_CollarHeight*.5f;
+            // The decorative choker sits high below the jaw. It must not set the
+            // bottom of the helmet: doing so pushes the entire globe over the crown.
+            float bottom=(inverse*(anchor.position-m_Head.position)).y;
             Vector3 center=(minimum+maximum)*.5f;
-            // Minimize the enclosing sphere along the head's vertical axis. Unlike
-            // fitting X/Z radii independently, this cannot flatten the globe sideways.
-            float low=minimum.y,high=maximum.y;
-            for(int step=0;step<20;step++)
-            {
-                float left=Mathf.Lerp(low,high,1f/3),right=Mathf.Lerp(low,high,2f/3);
-                if(RadiusSquared(left)<RadiusSquared(right))high=right;else low=left;
-            }
-            center.y=(low+high)*.5f;
+            if(!float.IsInfinity(faceMinimum.y))center.y=(faceMinimum.y+faceMaximum.y)*.5f;
             float radius=Mathf.Max(.14f,Mathf.Sqrt(RadiusSquared(center.y))+.012f);
-            // A real helmet is an almost complete sphere with a small neck opening.
-            // Its lower pole sits at the collar, rather than cutting the sphere at
-            // jaw height and collapsing the entire lower hemisphere into the neck.
-            float opening=Mathf.Min(radius*.4f,Mathf.Max(m_CollarRadii.x,m_CollarRadii.y)*1.085f+.010f);
-            m_SealLatitude=Mathf.Sqrt(1-opening*opening/(radius*radius));
-            m_VisorOffset=new Vector3(center.x,bottom,center.z);
+            // Main skull plus a small scalp clearance. Low side locks and tied
+            // hair must not turn the head into the envelope of the whole hairstyle.
+            radius=Mathf.Max(radius,maximum.y-center.y+.010f);
+            // Locate the sphere by the face, then intersect it at the real neck root.
+            // A wider neck seat is preferable to moving the sphere up over ornaments.
+            m_SealLatitude=Mathf.Clamp((center.y-bottom)/radius,.70f,.98f);
+            m_VisorOffset=new Vector3(center.x,center.y-radius*m_SealLatitude,center.z);
             m_VisorSize=new Vector3(radius,radius*(1+m_SealLatitude),radius);
+            m_SealRadius=radius*Mathf.Sqrt(1-m_SealLatitude*m_SealLatitude);
+            m_SealOffset=anchor.InverseTransformPoint(m_Head.position+frame*m_VisorOffset);
+            m_SealLocalFrame=Quaternion.Inverse(anchor.rotation)*frame;
             float RadiusSquared(float y)
             {
                 float distance=0;var candidate=new Vector3(center.x,y,center.z);
-                foreach(var point in points)distance=Mathf.Max(distance,(point-candidate).sqrMagnitude);
+                foreach(var point in facePoints.Count>0?facePoints:points)distance=Mathf.Max(distance,(point-candidate).sqrMagnitude);
                 if(points.Count==0)distance=(maximum-candidate).sqrMagnitude;
                 return distance;
             }
@@ -121,9 +125,11 @@ namespace Unity.MP_FPS
             color.a=breath;SealColor=color;
             m_VisorRenderer.enabled=m_HeadEquipped;
             m_VisorProperties.SetColor("_SealTint",color);
-            m_VisorProperties.SetVector("_SealNeck",m_Collar.position-m_Collar.up*(m_CollarHeight*.5f));
-            m_VisorProperties.SetVector("_SealRight",m_Collar.right*(m_CollarRadii.x*1.085f));
-            m_VisorProperties.SetVector("_SealForward",m_Collar.forward*(m_CollarRadii.y*1.085f));
+            var anchor=m_Neck?m_Neck:m_Head;
+            var seal=anchor.TransformPoint(m_SealOffset);var sealFrame=anchor.rotation*m_SealLocalFrame;
+            m_VisorProperties.SetVector("_SealNeck",seal);
+            m_VisorProperties.SetVector("_SealRight",sealFrame*Vector3.right*m_SealRadius);
+            m_VisorProperties.SetVector("_SealForward",sealFrame*Vector3.forward*m_SealRadius);
             m_VisorProperties.SetVector("_SealShape",new Vector4(m_SealLatitude,0,0,0));
             m_VisorProperties.SetVector("_FieldState",new Vector4(0,Mathf.Lerp(-.06f,1.06f,blend),100,100));
             m_VisorRenderer.SetPropertyBlock(m_VisorProperties);
@@ -140,8 +146,7 @@ namespace Unity.MP_FPS
                 for(int p=0;p<rail.positionCount;p++)
                 {
                     float angle=(i*.5f+p/(float)(rail.positionCount-1)*.5f*blend)*Mathf.PI*2;
-                    rail.SetPosition(p,m_Collar.TransformPoint(new Vector3(Mathf.Sin(angle)*m_CollarRadii.x*1.10f,
-                        m_CollarHeight*.5f+.0005f,Mathf.Cos(angle)*m_CollarRadii.y*1.10f)));
+                    rail.SetPosition(p,seal+sealFrame*new Vector3(Mathf.Sin(angle)*m_SealRadius,.0005f,Mathf.Cos(angle)*m_SealRadius));
                 }
             }
         }
