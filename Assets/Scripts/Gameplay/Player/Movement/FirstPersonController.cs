@@ -644,11 +644,8 @@ public class FirstPersonController : MonoBehaviour
                     Debug.Log($"[ANIMATION] Firing 1P HIT trigger at Tick: {ghostState.LastHitTick.ToString()}");
                 }
 
-                // Handle the 1P visual-only damage vignette
-                if (m_DamageVisualsController != null)
-                {
-                    m_DamageVisualsController.TriggerDamageEffect();
-                }
+                // Owning-camera feedback observes replicated tissue loss independently
+                // of animation updates; shield/metabolic ticks must not replay gunshot blood.
             }
             else
             {
@@ -661,7 +658,7 @@ public class FirstPersonController : MonoBehaviour
                 animator.SetTrigger(AnimationParameters.IsHit);
             }
 
-            if (PlayerHitSFX != null)
+            if (PlayerHitSFX != null && ghostState.LastDamageAmount > 0 && !InjuryFeedbackState.Systemic(ghostState))
             {
                 GameManager.Instance.SoundSystem.CreateEmitter(PlayerHitSFX, transform.position);
             }
