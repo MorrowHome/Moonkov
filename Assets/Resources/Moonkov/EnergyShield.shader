@@ -7,6 +7,11 @@ Shader "Moonkov/Energy Shield and Head Seal"
         [HideInInspector] _FieldFlow("Regenerating / return age / impact strength",Vector)=(0,100,0,0)
         [HideInInspector] _EnergyHitPoint("Authoritative world impact",Vector)=(0,0,0,0)
         [HideInInspector] _OwnerPulse("Owner edge response",Vector)=(0,0,0,0)
+        [HideInInspector] _SealTint("Halo color / breathing light",Color)=(1,.28,.52,1)
+        [HideInInspector] _SealNeck("Neck seal world center",Vector)=(0,0,0,0)
+        [HideInInspector] _SealRight("Neck seal world right radius",Vector)=(0,0,0,0)
+        [HideInInspector] _SealForward("Neck seal world forward radius",Vector)=(0,0,0,0)
+        [HideInInspector] _SealShape("Spherical neck cut latitude",Vector)=(.55,0,0,0)
     }
     SubShader
     {
@@ -17,6 +22,7 @@ Shader "Moonkov/Energy Shield and Head Seal"
         float4 _EnergyColorScaleBias,_EnergyDepthScaleBias;
         CBUFFER_START(UnityPerMaterial)
         float4 _FieldState,_FieldFlow,_EnergyHitPoint,_OwnerPulse;
+        float4 _SealTint,_SealNeck,_SealRight,_SealForward,_SealShape;
         CBUFFER_END
         float FieldNoise(float3 p){return frac(sin(dot(floor(p),float3(17.13,97.47,53.71)))*43758.5453);}
         float FieldEye(float raw){return IsPerspectiveProjection()?LinearEyeDepth(raw,_ZBufferParams):LinearDepthToEyeDepth(raw);}
@@ -37,8 +43,21 @@ Shader "Moonkov/Energy Shield and Head Seal"
             FieldVaryings FieldVertex(FieldAttributes input)
             {
                 FieldVaryings output;UNITY_SETUP_INSTANCE_ID(input);UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
-                output.positionWS=TransformObjectToWorld(input.positionOS.xyz);output.positionCS=TransformWorldToHClip(output.positionWS);
-                output.normalWS=TransformObjectToWorldNormal(input.normalOS);output.uv=input.uv;output.height=input.positionOS.y*.5+.5;return output;
+                output.positionWS=TransformObjectToWorld(input.positionOS.xyz);
+                if(_FieldState.x>-.5&&_FieldState.x<.5)
+                {
+                    float angle=input.uv.x*TWO_PI;
+                    float latitude=lerp(-_SealShape.x,1,input.uv.y);
+                    float radius=sqrt(saturate(1-latitude*latitude));
+                    float3 sphere=float3(sin(angle)*radius,input.uv.y,cos(angle)*radius);
+                    output.positionWS=TransformObjectToWorld(sphere);
+                    float3 neck=_SealNeck.xyz+sin(angle)*_SealRight.xyz+cos(angle)*_SealForward.xyz;
+                    output.positionWS=lerp(neck,output.positionWS,smoothstep(0,.015,input.uv.y));
+                    output.normalWS=TransformObjectToWorldNormal(float3(sin(angle)*radius,latitude*(1+_SealShape.x),cos(angle)*radius));
+                }
+                else output.normalWS=TransformObjectToWorldNormal(input.normalOS);
+                output.positionCS=TransformWorldToHClip(output.positionWS);
+                output.uv=input.uv;output.height=_FieldState.x<.5?input.uv.y:input.positionOS.y*.5+.5;return output;
             }
             half4 FieldFragment(FieldVaryings input):SV_Target
             {
@@ -58,12 +77,25 @@ Shader "Moonkov/Energy Shield and Head Seal"
                 float3 cyan=float3(.12,.64,.94);float alpha;float3 color;
                 if(_FieldState.x<.5)
                 {
-                    float scan=pow(saturate(1-abs(frac(input.height*.6-t*.065)-.5)*2),26)*.025;
-                    float2 distortion=float2(dot(normal,UNITY_MATRIX_V[0].xyz),dot(normal,UNITY_MATRIX_V[1].xyz))*.0018*(.5+rim*.5);
+                    float border=exp(-input.uv.y*190);
+                    float opening=exp(-abs(input.height-_FieldState.y)*110)*step(_FieldState.y,1.02);
+                    float coating=pow(saturate(dot(normal,normalize(float3(-.6,.8,.4)))),24)*.055;
+                    float2 distortion=float2(dot(normal,UNITY_MATRIX_V[0].xyz),dot(normal,UNITY_MATRIX_V[1].xyz))*.004*(.25+rim*.75);
                     float2 colorUV=(screen+distortion)*_EnergyColorScaleBias.xy+_EnergyColorScaleBias.zw;
                     float3 refracted=SAMPLE_TEXTURE2D_X(_EnergySceneColor,sampler_LinearClamp,colorUV).rgb;
-                    alpha=min(.28,.018+rim*.23+weave+scan)*deploy;
-                    color=lerp(refracted,cyan,saturate(rim*.65+scan*3));
+                    float glow=.2+.8*_SealTint.a;
+                    float glassRim=rim*rim;
+                    float collarLink=1-smoothstep(.002,.02,input.uv.y);
+                    alpha=min(.6,.008+collarLink*.045+glassRim*.22+border*.48*glow+opening*.5+coating*.35)*deploy;
+                    color=lerp(refracted*.995+_SealTint.rgb*.003,_SealTint.rgb*(1.4+glow)+.12,saturate(collarLink*.2+border*.8+opening*.75+glassRim*.9));
+                    color+=_SealTint.rgb*coating*glow;
+                    if(_FieldState.x<-.5)
+                    {
+                        float outline=exp(-input.uv.y*35);
+                        float inner=smoothstep(.18,.32,input.uv.y)*(1-smoothstep(.76,.98,input.uv.y));
+                        color=lerp(_SealTint.rgb,1,outline*.12);
+                        alpha=.008+outline*(.10+.84*_SealTint.a)+inner*(.02+.23*_SealTint.a)+glassRim*.08*glow;
+                    }
                 }
                 else
                 {
@@ -77,7 +109,7 @@ Shader "Moonkov/Energy Shield and Head Seal"
                     color=lerp(cyan,float3(.5,.44,.96),broken*.45)+ripple*.18;
                     alpha=min(.48,alpha)*deploy;
                 }
-                return half4(min(color,1.15),saturate(alpha)*intersection);
+                return half4(min(color,_FieldState.x<.5?4:1.15),saturate(alpha)*intersection);
             }
             ENDHLSL
         }
@@ -119,16 +151,24 @@ Shader "Moonkov/Energy Shield and Head Seal"
                 float2 uv=input.texcoord;
                 float2 q=(uv-.5)*float2(1.25,1);
                 float radius=length(q);
-                // Exact clear central sight region. Only peripheral curved glass and seal edge.
-                float edge=smoothstep(.46,.76,radius);
-                float seal=exp(-abs(radius-.665)*115)*edge;
-                float2 refractUV=saturate(uv+normalize(q+float2(.00001,0))*.0018*edge);
-                refractUV=refractUV*_EnergyColorScaleBias.xy+_EnergyColorScaleBias.zw;
-                float3 scene=SAMPLE_TEXTURE2D_X(_EnergySceneColor,sampler_LinearClamp,refractUV).rgb;
-                float2 reflectionUV=float2(1-uv.x,uv.y)*_EnergyColorScaleBias.xy+_EnergyColorScaleBias.zw;
-                float3 reflection=min(SAMPLE_TEXTURE2D_X(_EnergySceneColor,sampler_LinearClamp,reflectionUV).rgb,1);
-                float3 glass=scene*.97+reflection*.035+float3(.18,.21,.23)*seal;
-                return half4(glass,min(.12,edge*.045+seal*.085));
+                // Stable curved optics, no animated wobble. Center samples the exact
+                // original scene; distortion, dispersion and coating grow at the periphery.
+                float edge=smoothstep(.30,.72,radius),curve=edge*edge;
+                float2 direction=normalize(q+float2(.00001,0));
+                float2 warped=uv+direction*.006*curve;
+                float2 dispersion=direction*.0009*curve;
+                float2 centerUV=saturate(warped)*_EnergyColorScaleBias.xy+_EnergyColorScaleBias.zw;
+                float3 scene=SAMPLE_TEXTURE2D_X(_EnergySceneColor,sampler_LinearClamp,centerUV).rgb;
+                scene.r=SAMPLE_TEXTURE2D_X(_EnergySceneColor,sampler_LinearClamp,saturate(warped+dispersion)*_EnergyColorScaleBias.xy+_EnergyColorScaleBias.zw).r;
+                scene.b=SAMPLE_TEXTURE2D_X(_EnergySceneColor,sampler_LinearClamp,saturate(warped-dispersion)*_EnergyColorScaleBias.xy+_EnergyColorScaleBias.zw).b;
+                float seal=exp(-abs(radius-.692)*145)*edge;
+                float coating=pow(saturate(dot(direction,normalize(float2(-.7,.9)))),12)*curve;
+                float sockets=exp(-length((uv-float2(.075,.08))*float2(1,1.6))*55)+exp(-length((uv-float2(.925,.08))*float2(1,1.6))*55);
+                float3 glass=scene*(1-edge*.012)+float3(.002,.004,.008)*edge;
+                glass+=_SealTint.rgb*(coating*.018+seal*.035+sockets*.025*_SealTint.a);
+                // The full replacement preserves actual refraction amplitude. A small
+                // alpha overlay would dilute it into an almost invisible tinted double image.
+                return half4(glass,saturate(_OwnerPulse.y));
             }
             ENDHLSL
         }

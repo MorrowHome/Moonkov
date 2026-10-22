@@ -14,14 +14,14 @@ namespace Unity.MP_FPS.Client
         private StashEquipmentGuides m_Guides;
         private LoadoutSlot m_HoverSlot;
         private static readonly LoadoutSlot[] s_SlotOrder = { LoadoutSlot.Helmet, LoadoutSlot.ChestRig, LoadoutSlot.Pistol, LoadoutSlot.Backpack, LoadoutSlot.Primary, LoadoutSlot.Secondary };
-        private static string SlotName(LoadoutSlot slot) => slot == LoadoutSlot.ChestRig ? "CHEST RIG" : slot == LoadoutSlot.Primary ? "PRIMARY WEAPON" : slot == LoadoutSlot.Secondary ? "SECONDARY WEAPON" : slot.ToString().ToUpperInvariant();
+        private static string SlotName(LoadoutSlot slot) => slot == LoadoutSlot.Helmet ? "COLLAR" : slot == LoadoutSlot.ChestRig ? "CHEST RIG" : slot == LoadoutSlot.Primary ? "PRIMARY WEAPON" : slot == LoadoutSlot.Secondary ? "SECONDARY WEAPON" : slot.ToString().ToUpperInvariant();
         private Stack FindStack(string id) { foreach (var item in m_Stacks) if (item.Name == id) return item; return null; }
         private Stack Equipped(LoadoutSlot slot) => FindStack(m_Loadout?.At(slot));
 
         private Stack[] PreviewEquipment() => new[]
         {
-            Sample("L-01 Flight helmet", "L-01", EquipmentKind.Helmet, StashArtKind.Helmet, 2, 2),
-            Sample("H-02 Survey helmet", "H-02", EquipmentKind.Helmet, StashArtKind.Helmet, 2, 2),
+            Sample("L-01 Neko life-support collar", "L-01", EquipmentKind.Helmet, StashArtKind.Helmet, 2, 2),
+            Sample("H-02 Survey collar", "H-02", EquipmentKind.Helmet, StashArtKind.Helmet, 2, 2),
             Sample("AR-7 Field rifle", "AR-7", EquipmentKind.LongGun, StashArtKind.Rifle, 4, 2),
             Sample("M-12 Compact rifle", "M-12", EquipmentKind.LongGun, StashArtKind.Rifle, 3, 2),
             Sample("P-03 Sidearm", "P-03", EquipmentKind.Pistol, StashArtKind.Pistol, 2, 1),
@@ -130,7 +130,7 @@ namespace Unity.MP_FPS.Client
             var painter = context.painter2D; painter.lineWidth = 1; painter.strokeColor = new Color(.25f, .27f, .27f, .4f);
             foreach (var pair in m_Slots)
             {
-                var bone = pair.Key == LoadoutSlot.Helmet ? HumanBodyBones.Head : pair.Key == LoadoutSlot.Pistol ? HumanBodyBones.RightUpperLeg
+                var bone = pair.Key == LoadoutSlot.Helmet ? HumanBodyBones.Neck : pair.Key == LoadoutSlot.Pistol ? HumanBodyBones.RightUpperLeg
                     : pair.Key == LoadoutSlot.Melee ? HumanBodyBones.RightLowerArm
                     : pair.Key == LoadoutSlot.Primary ? HumanBodyBones.RightUpperArm : pair.Key == LoadoutSlot.Secondary ? HumanBodyBones.LeftUpperArm : HumanBodyBones.Chest;
                 if (!view.TryGetBodyAnchor(bone, out var world)) continue;
