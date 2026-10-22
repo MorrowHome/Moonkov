@@ -56,7 +56,7 @@ namespace Unity.MP_FPS
             }
             if(points.Count<8){minimum=new Vector3(-.135f,-.02f,-.13f);maximum=new Vector3(.135f,.34f,.13f);}
             var anchor=m_Neck?m_Neck:m_Head;
-            float bottom=(inverse*(anchor.TransformPoint(m_CollarOffset)-m_Head.position)).y;
+            float bottom=(inverse*(anchor.TransformPoint(m_CollarOffset)-m_Head.position)).y-m_CollarHeight*.5f;
             Vector3 center=(minimum+maximum)*.5f;
             // Minimize the enclosing sphere along the head's vertical axis. Unlike
             // fitting X/Z radii independently, this cannot flatten the globe sideways.
@@ -68,8 +68,12 @@ namespace Unity.MP_FPS
             }
             center.y=(low+high)*.5f;
             float radius=Mathf.Max(.14f,Mathf.Sqrt(RadiusSquared(center.y))+.012f);
-            m_SealLatitude=Mathf.Clamp((center.y-bottom)/radius,.15f,.92f);
-            m_VisorOffset=new Vector3(center.x,center.y-radius*m_SealLatitude,center.z);
+            // A real helmet is an almost complete sphere with a small neck opening.
+            // Its lower pole sits at the collar, rather than cutting the sphere at
+            // jaw height and collapsing the entire lower hemisphere into the neck.
+            float opening=Mathf.Min(radius*.4f,Mathf.Max(m_CollarRadii.x,m_CollarRadii.y)*1.085f+.010f);
+            m_SealLatitude=Mathf.Sqrt(1-opening*opening/(radius*radius));
+            m_VisorOffset=new Vector3(center.x,bottom,center.z);
             m_VisorSize=new Vector3(radius,radius*(1+m_SealLatitude),radius);
             float RadiusSquared(float y)
             {
@@ -115,7 +119,7 @@ namespace Unity.MP_FPS
             color.a=breath;SealColor=color;
             m_VisorRenderer.enabled=m_HeadEquipped;
             m_VisorProperties.SetColor("_SealTint",color);
-            m_VisorProperties.SetVector("_SealNeck",m_Collar.position+m_Collar.up*(m_CollarHeight*.5f));
+            m_VisorProperties.SetVector("_SealNeck",m_Collar.position-m_Collar.up*(m_CollarHeight*.5f));
             m_VisorProperties.SetVector("_SealRight",m_Collar.right*(m_CollarRadii.x*1.085f));
             m_VisorProperties.SetVector("_SealForward",m_Collar.forward*(m_CollarRadii.y*1.085f));
             m_VisorProperties.SetVector("_SealShape",new Vector4(m_SealLatitude,0,0,0));

@@ -52,7 +52,7 @@ Shader "Moonkov/Energy Shield and Head Seal"
                     float3 sphere=float3(sin(angle)*radius,input.uv.y,cos(angle)*radius);
                     output.positionWS=TransformObjectToWorld(sphere);
                     float3 neck=_SealNeck.xyz+sin(angle)*_SealRight.xyz+cos(angle)*_SealForward.xyz;
-                    output.positionWS=lerp(neck,output.positionWS,smoothstep(0,.10,input.uv.y));
+                    output.positionWS=lerp(neck,output.positionWS,smoothstep(0,.015,input.uv.y));
                     output.normalWS=TransformObjectToWorldNormal(float3(sin(angle)*radius,latitude*(1+_SealShape.x),cos(angle)*radius));
                 }
                 else output.normalWS=TransformObjectToWorldNormal(input.normalOS);
@@ -85,7 +85,7 @@ Shader "Moonkov/Energy Shield and Head Seal"
                     float3 refracted=SAMPLE_TEXTURE2D_X(_EnergySceneColor,sampler_LinearClamp,colorUV).rgb;
                     float glow=.2+.8*_SealTint.a;
                     float glassRim=rim*rim;
-                    float collarLink=1-smoothstep(.015,.10,input.uv.y);
+                    float collarLink=1-smoothstep(.002,.02,input.uv.y);
                     alpha=min(.6,.008+collarLink*.045+glassRim*.22+border*.48*glow+opening*.5+coating*.35)*deploy;
                     color=lerp(refracted*.995+_SealTint.rgb*.003,_SealTint.rgb*(1.4+glow)+.12,saturate(collarLink*.2+border*.8+opening*.75+glassRim*.9));
                     color+=_SealTint.rgb*coating*glow;
