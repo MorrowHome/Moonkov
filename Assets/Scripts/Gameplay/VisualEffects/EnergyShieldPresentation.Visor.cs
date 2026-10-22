@@ -13,6 +13,7 @@ namespace Unity.MP_FPS
         private MeshRenderer[] m_EnergyEars,m_EmitterLenses;
         private Quaternion m_VisorLocalFrame;
         private Vector3 m_VisorOffset,m_VisorSize;
+        private float m_SealLatitude;
         private float m_VisorEquippedAt;
         private MaterialPropertyBlock m_VisorProperties,m_LampProperties;
         private DollSingerHaloAim m_SealHalo;
@@ -23,8 +24,8 @@ namespace Unity.MP_FPS
 
         private void FitHelmet(Quaternion frame)
         {
-            // Fit the actual head, crown and upper hair; long tails below the neck
-            // remain outside the neck seal. Never include procedural weapon/halo geometry.
+            // Fit the physical head and hair. Floating DressDetail ornaments are
+            // energy jewellery, not part of the head envelope or its sphere center.
             var points=new List<Vector3>(4096);var inverse=Quaternion.Inverse(frame);
             var minimum=new Vector3(float.PositiveInfinity,float.PositiveInfinity,float.PositiveInfinity);
             var maximum=-minimum;
@@ -36,8 +37,15 @@ namespace Unity.MP_FPS
                 var related=new bool[bones.Length];var matrices=new Matrix4x4[bones.Length];
                 for(int b=0;b<bones.Length;b++)if(bones[b]){related[b]=bones[b]==m_Head||bones[b].IsChildOf(m_Head);matrices[b]=bones[b].localToWorldMatrix*bind[b];}
                 var vertices=mesh.vertices;
+                var physical=new bool[vertices.Length];var materials=renderer.sharedMaterials;
+                for(int sub=0;sub<Mathf.Min(mesh.subMeshCount,materials.Length);sub++)
+                {
+                    if(!materials[sub]||materials[sub].name.StartsWith("DressDetail",System.StringComparison.Ordinal))continue;
+                    foreach(int index in mesh.GetTriangles(sub))physical[index]=true;
+                }
                 for(int i=0;i<vertices.Length;i++)
                 {
+                    if(!physical[i])continue;
                     var w=weights[i];float head=(related[w.boneIndex0]?w.weight0:0)+(related[w.boneIndex1]?w.weight1:0)+(related[w.boneIndex2]?w.weight2:0)+(related[w.boneIndex3]?w.weight3:0);
                     if(head<.65f)continue;
                     Vector3 v=vertices[i],world=matrices[w.boneIndex0].MultiplyPoint3x4(v)*w.weight0+matrices[w.boneIndex1].MultiplyPoint3x4(v)*w.weight1+
@@ -49,17 +57,27 @@ namespace Unity.MP_FPS
             if(points.Count<8){minimum=new Vector3(-.135f,-.02f,-.13f);maximum=new Vector3(.135f,.34f,.13f);}
             var anchor=m_Neck?m_Neck:m_Head;
             float bottom=(inverse*(anchor.TransformPoint(m_CollarOffset)-m_Head.position)).y;
-            m_VisorOffset=new Vector3((minimum.x+maximum.x)*.5f,bottom,(minimum.z+maximum.z)*.5f);
-            m_VisorSize=new Vector3(Mathf.Max(.10f,(maximum.x-minimum.x)*.5f+.016f),Mathf.Max(.25f,maximum.y+.028f-bottom),Mathf.Max(.105f,(maximum.z-minimum.z)*.5f+.022f));
-            float expansion=1;
-            foreach(var point in points)
+            Vector3 center=(minimum+maximum)*.5f;
+            // Minimize the enclosing sphere along the head's vertical axis. Unlike
+            // fitting X/Z radii independently, this cannot flatten the globe sideways.
+            float low=minimum.y,high=maximum.y;
+            for(int step=0;step<20;step++)
             {
-                var p=point-m_VisorOffset;float v=p.y/m_VisorSize.y;
-                if(v<.12f||v>=1)continue;
-                float ellipse=new Vector2(p.x/m_VisorSize.x,p.z/m_VisorSize.z).magnitude;
-                expansion=Mathf.Max(expansion,ellipse/Mathf.Max(.1f,EnergyShieldGeometry.HelmetProfile(v)));
+                float left=Mathf.Lerp(low,high,1f/3),right=Mathf.Lerp(low,high,2f/3);
+                if(RadiusSquared(left)<RadiusSquared(right))high=right;else low=left;
             }
-            m_VisorSize.x*=expansion*1.025f;m_VisorSize.z*=expansion*1.025f;
+            center.y=(low+high)*.5f;
+            float radius=Mathf.Max(.14f,Mathf.Sqrt(RadiusSquared(center.y))+.012f);
+            m_SealLatitude=Mathf.Clamp((center.y-bottom)/radius,.15f,.92f);
+            m_VisorOffset=new Vector3(center.x,center.y-radius*m_SealLatitude,center.z);
+            m_VisorSize=new Vector3(radius,radius*(1+m_SealLatitude),radius);
+            float RadiusSquared(float y)
+            {
+                float distance=0;var candidate=new Vector3(center.x,y,center.z);
+                foreach(var point in points)distance=Mathf.Max(distance,(point-candidate).sqrMagnitude);
+                if(points.Count==0)distance=(maximum-candidate).sqrMagnitude;
+                return distance;
+            }
         }
         private void BuildVisor(Material metal,Material indicator)
         {
@@ -77,9 +95,9 @@ namespace Unity.MP_FPS
                 int side=i==0?-1:1;Vector3 socket=VisorSocket(side);
                 CollarPiece("Visor projection socket",EnergyShieldGeometry.Sphere,socket,new Vector3(.003f,.0045f,.005f),metal,new Color(.83f,.65f,.32f),true);
                 m_EmitterLenses[i]=CollarPiece("Halo matched breathing emitter",EnergyShieldGeometry.Sphere,socket+Vector3.up*.0035f,new Vector3(.002f,.001f,.003f),indicator,Color.white);
-                var node=new GameObject("Collar to helmet / optical light guide"){layer=gameObject.layer};node.transform.SetParent(m_Root,false);
+                var node=new GameObject("Collar seal / breathing half rim"){layer=gameObject.layer};node.transform.SetParent(m_Root,false);
                 var rail=node.AddComponent<LineRenderer>();rail.sharedMaterial=indicator;
-                rail.useWorldSpace=true;rail.positionCount=9;rail.widthMultiplier=.00065f;rail.numCapVertices=3;
+                rail.useWorldSpace=true;rail.positionCount=25;rail.widthMultiplier=.00065f;rail.numCapVertices=3;
                 rail.shadowCastingMode=ShadowCastingMode.Off;rail.receiveShadows=false;rail.enabled=false;
                 m_VisorRails[i]=rail;m_Hardware.Add(rail);
                 m_EnergyEars[i]=Surface("Neko energy ear "+(side<0?"left":"right"),out var ear);
@@ -100,6 +118,7 @@ namespace Unity.MP_FPS
             m_VisorProperties.SetVector("_SealNeck",m_Collar.position+m_Collar.up*(m_CollarHeight*.5f));
             m_VisorProperties.SetVector("_SealRight",m_Collar.right*(m_CollarRadii.x*1.085f));
             m_VisorProperties.SetVector("_SealForward",m_Collar.forward*(m_CollarRadii.y*1.085f));
+            m_VisorProperties.SetVector("_SealShape",new Vector4(m_SealLatitude,0,0,0));
             m_VisorProperties.SetVector("_FieldState",new Vector4(0,Mathf.Lerp(-.06f,1.06f,blend),100,100));
             m_VisorRenderer.SetPropertyBlock(m_VisorProperties);
             m_VisorProperties.SetVector("_FieldState",new Vector4(-1,1.06f,100,100));
@@ -112,12 +131,11 @@ namespace Unity.MP_FPS
                     new Vector3(.086f,.105f,.058f)*Mathf.SmoothStep(0,1,Mathf.InverseLerp(.65f,1,blend)));
                 m_EmitterLenses[i].SetPropertyBlock(m_LampProperties);
                 var rail=m_VisorRails[i];rail.enabled=m_HeadEquipped;rail.SetPropertyBlock(m_LampProperties);
-                Vector3 origin=m_Collar.TransformPoint(VisorSocket(side)+Vector3.up*.0035f);
                 for(int p=0;p<rail.positionCount;p++)
                 {
-                    float t=p/(float)(rail.positionCount-1)*blend;
-                    Vector3 target=m_Visor.TransformPoint(EnergyShieldGeometry.VisorPoint(side<0?.88f:.12f,.24f));
-                    rail.SetPosition(p,Vector3.Lerp(origin,target,t)+m_Collar.forward*(Mathf.Sin(t*Mathf.PI)*.018f));
+                    float angle=(i*.5f+p/(float)(rail.positionCount-1)*.5f*blend)*Mathf.PI*2;
+                    rail.SetPosition(p,m_Collar.TransformPoint(new Vector3(Mathf.Sin(angle)*m_CollarRadii.x*1.10f,
+                        m_CollarHeight*.5f+.0005f,Mathf.Cos(angle)*m_CollarRadii.y*1.10f)));
                 }
             }
         }

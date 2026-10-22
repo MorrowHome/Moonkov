@@ -11,6 +11,7 @@ Shader "Moonkov/Energy Shield and Head Seal"
         [HideInInspector] _SealNeck("Neck seal world center",Vector)=(0,0,0,0)
         [HideInInspector] _SealRight("Neck seal world right radius",Vector)=(0,0,0,0)
         [HideInInspector] _SealForward("Neck seal world forward radius",Vector)=(0,0,0,0)
+        [HideInInspector] _SealShape("Spherical neck cut latitude",Vector)=(.55,0,0,0)
     }
     SubShader
     {
@@ -21,7 +22,7 @@ Shader "Moonkov/Energy Shield and Head Seal"
         float4 _EnergyColorScaleBias,_EnergyDepthScaleBias;
         CBUFFER_START(UnityPerMaterial)
         float4 _FieldState,_FieldFlow,_EnergyHitPoint,_OwnerPulse;
-        float4 _SealTint,_SealNeck,_SealRight,_SealForward;
+        float4 _SealTint,_SealNeck,_SealRight,_SealForward,_SealShape;
         CBUFFER_END
         float FieldNoise(float3 p){return frac(sin(dot(floor(p),float3(17.13,97.47,53.71)))*43758.5453);}
         float FieldEye(float raw){return IsPerspectiveProjection()?LinearEyeDepth(raw,_ZBufferParams):LinearDepthToEyeDepth(raw);}
@@ -46,11 +47,17 @@ Shader "Moonkov/Energy Shield and Head Seal"
                 if(_FieldState.x>-.5&&_FieldState.x<.5)
                 {
                     float angle=input.uv.x*TWO_PI;
+                    float latitude=lerp(-_SealShape.x,1,input.uv.y);
+                    float radius=sqrt(saturate(1-latitude*latitude));
+                    float3 sphere=float3(sin(angle)*radius,input.uv.y,cos(angle)*radius);
+                    output.positionWS=TransformObjectToWorld(sphere);
                     float3 neck=_SealNeck.xyz+sin(angle)*_SealRight.xyz+cos(angle)*_SealForward.xyz;
-                    output.positionWS=lerp(neck,output.positionWS,smoothstep(0,.18,input.uv.y));
+                    output.positionWS=lerp(neck,output.positionWS,smoothstep(0,.10,input.uv.y));
+                    output.normalWS=TransformObjectToWorldNormal(float3(sin(angle)*radius,latitude*(1+_SealShape.x),cos(angle)*radius));
                 }
+                else output.normalWS=TransformObjectToWorldNormal(input.normalOS);
                 output.positionCS=TransformWorldToHClip(output.positionWS);
-                output.normalWS=TransformObjectToWorldNormal(input.normalOS);output.uv=input.uv;output.height=_FieldState.x<.5?input.uv.y:input.positionOS.y*.5+.5;return output;
+                output.uv=input.uv;output.height=_FieldState.x<.5?input.uv.y:input.positionOS.y*.5+.5;return output;
             }
             half4 FieldFragment(FieldVaryings input):SV_Target
             {
@@ -78,8 +85,9 @@ Shader "Moonkov/Energy Shield and Head Seal"
                     float3 refracted=SAMPLE_TEXTURE2D_X(_EnergySceneColor,sampler_LinearClamp,colorUV).rgb;
                     float glow=.2+.8*_SealTint.a;
                     float glassRim=rim*rim;
-                    alpha=min(.6,.008+glassRim*.22+border*.48*glow+opening*.5+coating*.35)*deploy;
-                    color=lerp(refracted*.995+_SealTint.rgb*.003,_SealTint.rgb*(1.4+glow)+.12,saturate(border*.8+opening*.75+glassRim*.9));
+                    float collarLink=1-smoothstep(.015,.10,input.uv.y);
+                    alpha=min(.6,.008+collarLink*.045+glassRim*.22+border*.48*glow+opening*.5+coating*.35)*deploy;
+                    color=lerp(refracted*.995+_SealTint.rgb*.003,_SealTint.rgb*(1.4+glow)+.12,saturate(collarLink*.2+border*.8+opening*.75+glassRim*.9));
                     color+=_SealTint.rgb*coating*glow;
                     if(_FieldState.x<-.5)
                     {
