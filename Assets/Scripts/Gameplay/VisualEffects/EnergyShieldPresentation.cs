@@ -169,6 +169,7 @@ namespace Unity.MP_FPS
             if(m_Audio)m_Audio.Stop();if(m_ShellRenderer)m_ShellRenderer.enabled=false;
             if(m_VisorRenderer)m_VisorRenderer.enabled=false;
             if(m_VisorRails!=null)foreach(var rail in m_VisorRails)if(rail)rail.enabled=false;
+            if(m_EnergyEars!=null)foreach(var ear in m_EnergyEars)if(ear)ear.enabled=false;
             if(m_Collar)m_Collar.gameObject.SetActive(false);if(m_Device)m_Device.gameObject.SetActive(false);
         }
         public void DisposePresentation()
@@ -177,6 +178,7 @@ namespace Unity.MP_FPS
             DestroyOwned(m_HitClip);DestroyOwned(m_BreakClip);DestroyOwned(m_RestoreClip);DestroyOwned(m_FieldMaterial);if(m_Root)DestroyOwned(m_Root.gameObject);
             m_Hardware.Clear();m_Root=m_Shell=m_Collar=m_Device=null;m_ShellRenderer=null;m_FieldMaterial=null;m_Audio=null;
             m_Visor=null;m_VisorRenderer=null;m_VisorRails=null;
+            m_EnergyEars=m_EmitterLenses=null;m_SealHalo=null;m_SealHaloStroke=null;
             if(m_GeometryRetained){EnergyShieldGeometry.Release();m_GeometryRetained=false;}m_Ready=false;ResetPresentation();
         }
         private void OnDisable()=>DisposePresentation();

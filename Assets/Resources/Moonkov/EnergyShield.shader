@@ -7,6 +7,10 @@ Shader "Moonkov/Energy Shield and Head Seal"
         [HideInInspector] _FieldFlow("Regenerating / return age / impact strength",Vector)=(0,100,0,0)
         [HideInInspector] _EnergyHitPoint("Authoritative world impact",Vector)=(0,0,0,0)
         [HideInInspector] _OwnerPulse("Owner edge response",Vector)=(0,0,0,0)
+        [HideInInspector] _SealTint("Halo color / breathing light",Color)=(1,.28,.52,1)
+        [HideInInspector] _SealNeck("Neck seal world center",Vector)=(0,0,0,0)
+        [HideInInspector] _SealRight("Neck seal world right radius",Vector)=(0,0,0,0)
+        [HideInInspector] _SealForward("Neck seal world forward radius",Vector)=(0,0,0,0)
     }
     SubShader
     {
@@ -17,6 +21,7 @@ Shader "Moonkov/Energy Shield and Head Seal"
         float4 _EnergyColorScaleBias,_EnergyDepthScaleBias;
         CBUFFER_START(UnityPerMaterial)
         float4 _FieldState,_FieldFlow,_EnergyHitPoint,_OwnerPulse;
+        float4 _SealTint,_SealNeck,_SealRight,_SealForward;
         CBUFFER_END
         float FieldNoise(float3 p){return frac(sin(dot(floor(p),float3(17.13,97.47,53.71)))*43758.5453);}
         float FieldEye(float raw){return IsPerspectiveProjection()?LinearEyeDepth(raw,_ZBufferParams):LinearDepthToEyeDepth(raw);}
@@ -37,7 +42,14 @@ Shader "Moonkov/Energy Shield and Head Seal"
             FieldVaryings FieldVertex(FieldAttributes input)
             {
                 FieldVaryings output;UNITY_SETUP_INSTANCE_ID(input);UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
-                output.positionWS=TransformObjectToWorld(input.positionOS.xyz);output.positionCS=TransformWorldToHClip(output.positionWS);
+                output.positionWS=TransformObjectToWorld(input.positionOS.xyz);
+                if(_FieldState.x>-.5&&_FieldState.x<.5)
+                {
+                    float angle=input.uv.x*TWO_PI;
+                    float3 neck=_SealNeck.xyz+sin(angle)*_SealRight.xyz+cos(angle)*_SealForward.xyz;
+                    output.positionWS=lerp(neck,output.positionWS,smoothstep(0,.18,input.uv.y));
+                }
+                output.positionCS=TransformWorldToHClip(output.positionWS);
                 output.normalWS=TransformObjectToWorldNormal(input.normalOS);output.uv=input.uv;output.height=_FieldState.x<.5?input.uv.y:input.positionOS.y*.5+.5;return output;
             }
             half4 FieldFragment(FieldVaryings input):SV_Target
@@ -58,15 +70,24 @@ Shader "Moonkov/Energy Shield and Head Seal"
                 float3 cyan=float3(.12,.64,.94);float alpha;float3 color;
                 if(_FieldState.x<.5)
                 {
-                    float border=exp(-min(input.uv.x,1-input.uv.x)*210)+exp(-input.uv.y*190)+exp(-(1-input.uv.y)*190);
+                    float border=exp(-input.uv.y*190);
                     float opening=exp(-abs(input.height-_FieldState.y)*110)*step(_FieldState.y,1.02);
                     float coating=pow(saturate(dot(normal,normalize(float3(-.6,.8,.4)))),24)*.055;
                     float2 distortion=float2(dot(normal,UNITY_MATRIX_V[0].xyz),dot(normal,UNITY_MATRIX_V[1].xyz))*.004*(.25+rim*.75);
                     float2 colorUV=(screen+distortion)*_EnergyColorScaleBias.xy+_EnergyColorScaleBias.zw;
                     float3 refracted=SAMPLE_TEXTURE2D_X(_EnergySceneColor,sampler_LinearClamp,colorUV).rgb;
-                    alpha=min(.72,.055+rim*.16+border*.6+opening*.5+coating)*deploy;
-                    color=lerp(refracted*.98+float3(.008,.01,.016),float3(.25,.76,.88),saturate(border*.82+opening*.75+rim*.3));
-                    color+=float3(.28,.19,.38)*coating;
+                    float glow=.2+.8*_SealTint.a;
+                    float glassRim=rim*rim;
+                    alpha=min(.6,.008+glassRim*.22+border*.48*glow+opening*.5+coating*.35)*deploy;
+                    color=lerp(refracted*.995+_SealTint.rgb*.003,_SealTint.rgb*(1.4+glow)+.12,saturate(border*.8+opening*.75+glassRim*.9));
+                    color+=_SealTint.rgb*coating*glow;
+                    if(_FieldState.x<-.5)
+                    {
+                        float outline=exp(-input.uv.y*35);
+                        float inner=smoothstep(.18,.32,input.uv.y)*(1-smoothstep(.76,.98,input.uv.y));
+                        color=lerp(_SealTint.rgb,1,outline*.12);
+                        alpha=.008+outline*(.10+.84*_SealTint.a)+inner*(.02+.23*_SealTint.a)+glassRim*.08*glow;
+                    }
                 }
                 else
                 {
@@ -80,7 +101,7 @@ Shader "Moonkov/Energy Shield and Head Seal"
                     color=lerp(cyan,float3(.5,.44,.96),broken*.45)+ripple*.18;
                     alpha=min(.48,alpha)*deploy;
                 }
-                return half4(min(color,1.15),saturate(alpha)*intersection);
+                return half4(min(color,_FieldState.x<.5?4:1.15),saturate(alpha)*intersection);
             }
             ENDHLSL
         }
@@ -136,7 +157,7 @@ Shader "Moonkov/Energy Shield and Head Seal"
                 float coating=pow(saturate(dot(direction,normalize(float2(-.7,.9)))),12)*curve;
                 float sockets=exp(-length((uv-float2(.075,.08))*float2(1,1.6))*55)+exp(-length((uv-float2(.925,.08))*float2(1,1.6))*55);
                 float3 glass=scene*(1-edge*.012)+float3(.002,.004,.008)*edge;
-                glass+=float3(.012,.008,.024)*coating+float3(.018,.07,.085)*(seal*.55+sockets*.35);
+                glass+=_SealTint.rgb*(coating*.018+seal*.035+sockets*.025*_SealTint.a);
                 // The full replacement preserves actual refraction amplitude. A small
                 // alpha overlay would dilute it into an almost invisible tinted double image.
                 return half4(glass,saturate(_OwnerPulse.y));

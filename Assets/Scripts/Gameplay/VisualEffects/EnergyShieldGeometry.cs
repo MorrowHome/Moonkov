@@ -5,7 +5,7 @@ namespace Unity.MP_FPS
     // Original low-cost meshes, shared by client avatars. No model imports or colliders.
     internal static class EnergyShieldGeometry
     {
-        private static Mesh s_Sphere,s_Collar,s_Box,s_NeckBand,s_BowLoop,s_BowTail,s_CatEar,s_Visor;
+        private static Mesh s_Sphere,s_Collar,s_Box,s_NeckBand,s_BowLoop,s_BowTail,s_CatEar,s_Visor,s_EnergyEar;
         private static int s_Users;
         internal static Mesh Sphere => s_Sphere;
         internal static Mesh Collar => s_Collar;
@@ -15,12 +15,13 @@ namespace Unity.MP_FPS
         internal static Mesh BowTail => s_BowTail;
         internal static Mesh CatEar => s_CatEar;
         internal static Mesh Visor => s_Visor;
+        internal static Mesh EnergyEar => s_EnergyEar;
         internal static void Retain()
         {
             if(s_Users++>0 && s_Sphere)return;
             s_Sphere=SphereMesh(48,24);s_Collar=TorusMesh(48,8);s_Box=BoxMesh();
             s_NeckBand=NeckBandMesh();s_BowLoop=BowLoopMesh();s_BowTail=BowTailMesh();
-            s_Visor=VisorMesh();
+            s_Visor=VisorMesh();s_EnergyEar=EnergyEarMesh();
             s_CatEar=RibbonMesh("Neko bell / cat ear",new[]{new Vector3(-.5f,0,0),new Vector3(.5f,0,0),new Vector3(0,1,.12f)},new Vector2[3],new[]{0,1,2});
         }
         internal static void Release()
@@ -30,13 +31,14 @@ namespace Unity.MP_FPS
             Destroy(s_NeckBand);Destroy(s_BowLoop);Destroy(s_BowTail);s_NeckBand=s_BowLoop=s_BowTail=null;
             Destroy(s_CatEar);s_CatEar=null;
             Destroy(s_Visor);s_Visor=null;
+            Destroy(s_EnergyEar);s_EnergyEar=null;
         }
+        internal static float HelmetProfile(float v)=>Mathf.Sqrt(Mathf.Max(0,1-Mathf.Pow(v*2-1,2)));
         internal static Vector3 VisorPoint(float u,float v)
         {
-            float angle=(u-.5f)*Mathf.PI*.61f;
-            float spread=Mathf.Sin(Mathf.Min(1,v*1.55f)*Mathf.PI*.5f);
-            return new Vector3(Mathf.Sin(angle)*Mathf.Lerp(.26f,1,spread),v,
-                .15f+Mathf.Cos(angle)*Mathf.Lerp(.32f,1,spread));
+            float angle=u*Mathf.PI*2;
+            float radius=Mathf.Lerp(.17f,HelmetProfile(v),Mathf.SmoothStep(0,1,v/.12f));
+            return new Vector3(Mathf.Sin(angle)*radius,v,Mathf.Cos(angle)*radius);
         }
         private static Mesh VisorMesh()
         {
@@ -52,8 +54,34 @@ namespace Unity.MP_FPS
                 triangles[k++]=i;triangles[k++]=b;triangles[k++]=c;
                 triangles[k++]=b;triangles[k++]=c+1;triangles[k++]=c;
             }
-            var mesh=new Mesh{name="Collar / upward curved face seal",hideFlags=HideFlags.DontSave};
-            mesh.vertices=vertices;mesh.uv=uv;mesh.triangles=triangles;mesh.RecalculateNormals();mesh.RecalculateBounds();return mesh;
+            var mesh=new Mesh{name="Neko space seal / complete rounded canopy",hideFlags=HideFlags.DontSave};
+            mesh.vertices=vertices;mesh.uv=uv;mesh.triangles=triangles;mesh.RecalculateNormals();mesh.RecalculateBounds();
+            var bounds=mesh.bounds;bounds.Expand(.35f);mesh.bounds=bounds;return mesh;
+        }
+        private static Mesh EnergyEarMesh()
+        {
+            const int segments=36,rings=5;
+            var vertices=new Vector3[2*(segments*(rings+1)+1)];var uv=new Vector2[vertices.Length];
+            var triangles=new System.Collections.Generic.List<int>();
+            var corners=new[]{new Vector2(-.5f,0),new Vector2(.5f,0),new Vector2(.06f,1)};
+            for(int side=0;side<2;side++)
+            {
+                int offset=side*(segments*(rings+1)+1),center=offset+segments*(rings+1);
+                vertices[center]=new Vector3(.02f,.35f,side==0?.20f:-.14f);uv[center]=new Vector2(.5f,1);
+                for(int ring=0;ring<=rings;ring++)for(int s=0;s<segments;s++)
+                {
+                    int corner=s/12;float t=(s%12)/12f;
+                    Vector2 c=corners[corner],a=Vector2.Lerp(c,corners[(corner+2)%3],.14f),b=Vector2.Lerp(c,corners[(corner+1)%3],.14f);
+                    Vector2 outline=(1-t)*(1-t)*a+2*(1-t)*t*c+t*t*b;
+                    float radius=1-ring/(float)(rings+1);Vector2 p=Vector2.Lerp(new Vector2(.02f,.35f),outline,radius);
+                    int i=offset+ring*segments+s;vertices[i]=new Vector3(p.x,p.y,(side==0?.20f:-.14f)*(1-radius*radius));uv[i]=new Vector2(s/(float)segments,1-radius);
+                    int next=offset+ring*segments+(s+1)%segments;
+                    if(ring<rings){int inner=i+segments,innerNext=next+segments;Add(i,next,inner);Add(next,innerNext,inner);}
+                    else Add(i,next,center);
+                }
+                void Add(int a,int b,int c){if(side==0){triangles.Add(a);triangles.Add(b);triangles.Add(c);}else{triangles.Add(c);triangles.Add(b);triangles.Add(a);}}
+            }
+            var mesh=new Mesh{name="Neko space seal / rounded luminous ear",hideFlags=HideFlags.DontSave};mesh.vertices=vertices;mesh.uv=uv;mesh.triangles=triangles.ToArray();mesh.RecalculateNormals();mesh.RecalculateBounds();return mesh;
         }
         private static void Destroy(Object obj)
         {if(!obj)return;if(Application.isPlaying)Object.Destroy(obj);else Object.DestroyImmediate(obj);}

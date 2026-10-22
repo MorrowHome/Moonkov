@@ -118,6 +118,7 @@ namespace Unity.MP_FPS
                     if(d.pulseOwner && d.pulseOwner.isActiveAndEnabled && d.pulseOwner.FieldMaterial)
                     {
                         var block=d.pulseProperties;block.Clear();block.SetVector("_OwnerPulse",new Vector4(d.pulse,d.pulseOwner.VisorBlend,0,0));
+                        block.SetColor("_SealTint",d.pulseOwner.SealColor);
                         // Blit.Vert applies this uniform even when no source texture is sampled.
                         block.SetVector("_BlitScaleBias",new Vector4(1,1,0,0));
                         if(d.visor)context.cmd.DrawProcedural(Matrix4x4.identity,d.pulseOwner.FieldMaterial,2,MeshTopology.Triangles,3,1,block);
