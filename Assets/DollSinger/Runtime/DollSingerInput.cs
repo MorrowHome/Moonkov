@@ -116,8 +116,7 @@ namespace Unity.MP_FPS.DollSinger
         private bool TryDevelopmentStyleToggle(Keyboard keyboard, bool canRead)
         {
             if (!canRead || keyboard == null || DevelopmentStyleToggle == null ||
-                !keyboard.lKey.wasPressedThisFrame ||
-                !(keyboard.leftCtrlKey.isPressed || keyboard.rightCtrlKey.isPressed)) return false;
+                !keyboard.f1Key.wasPressedThisFrame) return false;
             DevelopmentStyleToggle();
             return true;
         }
@@ -152,9 +151,13 @@ namespace Unity.MP_FPS.DollSinger
             }
             bool wasAdjusting = LightAdjusting;
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            // Reserve the developer chord before L can start a halo-light gesture.
+            // F1 can reacquire gameplay and preview the style in the same press.
             if (TryDevelopmentStyleToggle(keyboard,
-                !wasAdjusting && Application.isFocused && CanReadPlayerInput)) return;
+                !wasAdjusting && Application.isFocused))
+            {
+                if (!CanReadPlayerInput) SetCapture(true);
+                return;
+            }
 #endif
             bool toggleLight = lightPress.Step(keyboard != null && keyboard.lKey.wasPressedThisFrame,
                 keyboard != null && keyboard.lKey.isPressed, Time.unscaledTime,

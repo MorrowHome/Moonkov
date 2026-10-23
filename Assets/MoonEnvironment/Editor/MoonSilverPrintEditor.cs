@@ -14,7 +14,7 @@ namespace Unity.MP_FPS.Moon.Editor
         public override VisualElement CreateInspectorGUI()
         {
             var root = new VisualElement();
-            root.Add(new HelpBox("正式地图采用原始 PBR 材质与写实照明，此历史滤镜默认停用。写实照明会跳过整条效果；如需研究旧实验，必须明确启用组件并选择实验预设。Ctrl+L 仅对已启用且强度大于 0 的效果进行临时对照，不会重新启用停用的组件。", HelpBoxMessageType.Info));
+            root.Add(new HelpBox("正式地图采用原始 PBR 材质与写实照明，此历史滤镜默认停用。开发局内按 F1 临时开启风格化，再按恢复：可预览停用或强度为 0 的组件，不改场景保存的强度与预设。编辑模式下仍可手动启用组件并选择实验预设。", HelpBoxMessageType.Info));
             var presets = new VisualElement();
             presets.style.flexDirection = FlexDirection.Row;
             presets.Add(new Button(() => ApplyFaithful(targets)) { text = "写实照明（默认）" });

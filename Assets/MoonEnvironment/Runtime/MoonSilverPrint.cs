@@ -15,7 +15,7 @@ namespace Unity.MP_FPS.Moon
         [Tooltip("Legacy serialized reference. Environment scope now comes from native material passes, not subject exclusions.")]
         [SerializeField] private Material subjectMaskMaterial;
         [Header("环境外观 / Environment look")]
-        [Tooltip("True keeps original PBR lighting and bypasses the entire legacy effect. Ctrl+L compares only enabled effects with nonzero intensity.")]
+        [Tooltip("True keeps original PBR lighting. In development gameplay F1 temporarily previews the style, including a disabled component or zero intensity, without changing these authored settings.")]
         [SerializeField] private bool faithfulLighting = true;
         [Header("历史风格实验 / Legacy graphic finish")]
         [SerializeField, Range(0, 1)] private float intensity = 1;
@@ -53,13 +53,23 @@ namespace Unity.MP_FPS.Moon
         private static readonly int GraphicId = Shader.PropertyToID("_SilverGraphic");
 
         public float Intensity { get => intensity; set => intensity = Mathf.Clamp01(value); }
+        private float EffectiveIntensity
+        {
+            get
+            {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                if (Application.isPlaying && DevelopmentComparisonEnabled && intensity <= 0) return 1;
+#endif
+                return intensity;
+            }
+        }
         public bool UsesFaithfulLighting
         {
             get
             {
                 bool faithful = faithfulLighting;
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-                if (Application.isPlaying && DevelopmentComparisonEnabled) faithful = !faithful;
+                if (Application.isPlaying && DevelopmentComparisonEnabled) faithful = false;
 #endif
                 return faithful;
             }
@@ -67,29 +77,54 @@ namespace Unity.MP_FPS.Moon
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         public static bool DevelopmentComparisonEnabled { get; private set; }
+        private static readonly List<MoonSilverPrint> DevelopmentEnabledEffects = new List<MoonSilverPrint>();
         /// <summary>Legacy alias for temporary comparison, not an instance's effective authored style.</summary>
         [System.Obsolete("Use DevelopmentComparisonEnabled; UsesFaithfulLighting reports the effective instance mode.")]
         public static bool DevelopmentStyleEnabled => DevelopmentComparisonEnabled;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetDevelopmentStyle() => DevelopmentComparisonEnabled = false;
+        private static void ResetDevelopmentStyle()
+        {
+            DevelopmentComparisonEnabled = false;
+            foreach (var effect in DevelopmentEnabledEffects)
+                if (effect) effect.enabled = false;
+            DevelopmentEnabledEffects.Clear();
+        }
 
         public static void ToggleDevelopmentStyle()
         {
-            // Disabled legacy effects must not leave a misleading style toggle in gameplay.
-            // The input still consumes Ctrl+L, so it cannot become a headlamp gesture.
-            bool available = false;
-            foreach (var effect in FindObjectsByType<MoonSilverPrint>(FindObjectsSortMode.None))
-                if (effect.isActiveAndEnabled && effect.intensity > 0 && effect.material)
+            if (!Application.isPlaying) return;
+            if (DevelopmentComparisonEnabled)
+            {
+                ResetDevelopmentStyle();
+                Debug.Log("[环境外观 / F1] 恢复场景外观设置");
+                return;
+            }
+
+            if (BeginDevelopmentPreview(FindObjectsByType<MoonSilverPrint>(FindObjectsSortMode.None)))
+                Debug.Log("[环境外观 / F1] 临时开启风格化预览，再按 F1 恢复");
+        }
+
+        private static bool BeginDevelopmentPreview(MoonSilverPrint[] effects)
+        {
+            // The formal map deliberately saves this experiment disabled at intensity 0.
+            // Temporarily subscribe it for this session; never change its authored intensity.
+            var available = new List<MoonSilverPrint>();
+            foreach (var effect in effects)
+                if (effect && effect.material) available.Add(effect);
+            if (available.Count == 0)
+            {
+                Debug.LogWarning("[环境外观 / F1] 当前地图没有配置风格化材质的 MoonSilverPrint 组件。");
+                return false;
+            }
+            DevelopmentComparisonEnabled = true;
+            foreach (var effect in available)
+                if (!effect.enabled)
                 {
-                    available = true;
-                    break;
+                    DevelopmentEnabledEffects.Add(effect);
+                    effect.enabled = true;
                 }
-            if (!available) return;
-            DevelopmentComparisonEnabled = !DevelopmentComparisonEnabled;
-            Debug.Log(DevelopmentComparisonEnabled
-                ? "[环境外观 / Ctrl+L] 临时对照：反转场景外观设置"
-                : "[环境外观 / Ctrl+L] 恢复场景外观设置");
+            return true;
         }
 #endif
 
@@ -100,7 +135,8 @@ namespace Unity.MP_FPS.Moon
 
         private void BeginCamera(ScriptableRenderContext context, Camera camera)
         {
-            if (UsesFaithfulLighting || intensity <= 0 || !material || SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null)
+            float effectiveIntensity = EffectiveIntensity;
+            if (UsesFaithfulLighting || effectiveIntensity <= 0 || !material || SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null)
                 return;
             if (camera.cameraType != CameraType.Game &&
                 !(previewInSceneView && camera.cameraType == CameraType.SceneView)) return;
@@ -122,7 +158,7 @@ namespace Unity.MP_FPS.Moon
             }
             runtimeMaterial.SetFloat("_SilverFaithful", 0);
             runtimeMaterial.SetVector(ToneId, new Vector4(exposure, blackPoint, whitePoint, contrast));
-            runtimeMaterial.SetVector(TextureId, new Vector4(silverRelief, 0, intensity, highlightRetention));
+            runtimeMaterial.SetVector(TextureId, new Vector4(silverRelief, 0, effectiveIntensity, highlightRetention));
             runtimeMaterial.SetVector(AccentId, new Vector4(accentStrength, accentThreshold, 0, 0));
             runtimeMaterial.SetVector(GraphicId, new Vector4(tonalSeparation, contourStrength, contourWidth, shadingRetention));
             // This authored swatch is sRGB; the HDR shader explicitly linearizes it.

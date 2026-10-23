@@ -13,9 +13,9 @@
 
 ## 开发对照
 
-Editor Play／Development Build 保留 Ctrl+L 输入绑定。没有已启用、强度大于0且材质有效的 `MoonSilverPrint` 时，组合键被消费但不切换画面、不打印旧风格切换提示，也不触发头灯手势。
+Editor Play／Development Build 使用 **F1** 临时开启风格化预览，再按恢复。即使正式场景保存为组件禁用、强度 0，也可以直接预览；仅在运行中临时启用配置了材质的组件、按需使用强度 1，不改写场景原配置。未配置有效材质时显示明确提示。
 
-只有显式启用实验组件并提供有效材质和强度后，Ctrl+L 才临时反转其保真／风格化选择；不会把实验设置保存回场景。详见 [开发用环境风格对比](Development/EnvironmentStyleToggle.md)。
+F1 在游戏窗口已获得焦点、鼠标未捕获时同时重新捕获并切换预览；暂停、背包等界面阻断输入时不响应。普通 L 的头灯手势保持原样。详见 [开发用环境风格对比](Development/EnvironmentStyleToggle.md)。
 
 ## 验证边界
 
