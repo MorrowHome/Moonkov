@@ -45,7 +45,7 @@ def arm_mesh():
  for target,original in zip(result.polygons,polys):target.material_index=original.material_index
  o=bpy.data.objects.new('OwnerArmPreview',result);scene.collection.objects.link(o);o.matrix_world=body.matrix_world.copy();ev.to_mesh_clear();return o
 
-for kind in ['Fists','Dagger','EnergySword']:
+for kind in [a.split('=',1)[1] for a in sys.argv if a.startswith('--weapon=')] or ['Fists','Dagger','EnergySword']:
  for action in ['idle','light0','heavy']:
   clip=next(c for c in data['clips'] if c['weapon']==kind and c['action']==action)
   rig.animation_data.action=bpy.data.actions['Melee_'+kind+'_'+action]
