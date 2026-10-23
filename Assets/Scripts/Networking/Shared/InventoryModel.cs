@@ -62,6 +62,7 @@ namespace Unity.MP_FPS.Inventory
                 new ItemDefinition("dynamite_bundle", "Dynamite bundle", ItemKind.Throwable, 1, 2, 2, 0.6f),
                 new ItemDefinition("frag_bomb", "Fragmentation bomb", ItemKind.Throwable, 1, 1, 2, 0.4f),
                 new ItemDefinition("fire_bomb", "Fire bomb", ItemKind.Throwable, 1, 2, 2, 0.5f),
+                new ItemDefinition("smoke_grenade", "Smoke grenade", ItemKind.Throwable, 1, 1, 3, 0.35f),
                 new ItemDefinition("choke_bomb", "Choke bomb", ItemKind.Throwable, 1, 1, 3, 0.3f),
                 new ItemDefinition("alert_trip_mine", "Alert trip mine", ItemKind.Throwable, 1, 1, 3, 0.25f),
                 new ItemDefinition("concertina_trip_mine", "Concertina trip mine", ItemKind.Throwable, 1, 2, 2, 0.5f),

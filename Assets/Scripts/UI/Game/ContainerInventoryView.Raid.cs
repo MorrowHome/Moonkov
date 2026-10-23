@@ -81,7 +81,7 @@ namespace Unity.MP_FPS.Client
             if (item == null) button.text = "空";
             else
             {
-                var art = new StashItemArt(Art(item.Code)); art.AddToClassList("field-container-art"); button.Add(art);
+                var art = new StashItemArt(item.Code); art.AddToClassList("field-container-art"); button.Add(art);
                 m_Tiles[item.Id] = button;
             }
             string title = slot == "ChestRig" ? "胸挂" : slot == "Backpack" ? "背包" : "保险箱";
@@ -120,7 +120,7 @@ namespace Unity.MP_FPS.Client
             if (item == null) button.tooltip = "拖入指南针或测距仪";
             else
             {
-                var art = new StashItemArt(Art(item.Code)); art.AddToClassList("inventory-equipment-icon"); button.Q("art").Add(art);
+                var art = new StashItemArt(item.Code); art.AddToClassList("inventory-equipment-icon"); button.Q("art").Add(art);
                 button.tooltip = MoonkovItemPresentation.Details(item.Code); m_Tiles[item.Id] = button;
             }
         }
@@ -167,7 +167,7 @@ namespace Unity.MP_FPS.Client
                 else
                 {
                     var captured = item;
-                    var art = new StashItemArt(Art(item.Code)); art.AddToClassList("inventory-equipment-icon"); card.Q("art").Add(art);
+                    var art = new StashItemArt(item.Code); art.AddToClassList("inventory-equipment-icon"); card.Q("art").Add(art);
                     card.RemoveManipulator(card.clickable);
                     card.AddManipulator(new Drag(this, () => m_Graph.Find(captured.Id), () => Describe(captured),
                         () => { if (InventoryCatalog.Get(captured.Code).Container) OpenContainer(captured); else Describe(captured); }));
@@ -196,7 +196,7 @@ namespace Unity.MP_FPS.Client
             if (item == null) { button.text = "空"; button.SetEnabled(false); }
             else
             {
-                var art = new StashItemArt(Art(item.Code)); art.AddToClassList("field-container-art"); button.Add(art);
+                var art = new StashItemArt(item.Code); art.AddToClassList("field-container-art"); button.Add(art);
                 button.tooltip = MoonkovItemPresentation.Details(item.Code); m_Tiles[item.Id] = button;
                 button.RemoveManipulator(button.clickable);
                 button.AddManipulator(new Drag(this, () => m_Graph.Find(item.Id), () => Describe(item), () => OpenContainer(item)));

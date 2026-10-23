@@ -249,7 +249,7 @@ namespace Unity.MP_FPS.Client
                 int index = i;
                 var button = nodes[i];
                 MoonkovLocalization.Set(button.Q<Label>(className: "halo-node-title"), global::Unity.MP_FPS.Inventory.InventoryCatalog.Get(codes[i]).Name);
-                var art = new StashItemArt(ContainerInventoryView.Art(codes[i]));
+                var art = new StashItemArt(codes[i]);
                 art.style.position = Position.Absolute; art.style.left = art.style.right = art.style.top = art.style.bottom = 0;
                 button.Q(className: "halo-node-art").Add(art);
                 button.clicked += () => DescribeNode(index);
@@ -275,7 +275,7 @@ namespace Unity.MP_FPS.Client
                 ? "Choose an owned halo to install, replace or remove compatible modules in storage."
                 : global::Unity.MP_FPS.Inventory.HaloModules.Description(code));
             var image = m_Content.Q("haloComponentArt"); image.Clear();
-            var art = new StashItemArt(ContainerInventoryView.Art(code)); art.style.flexGrow = 1; image.Add(art);
+            var art = new StashItemArt(code); art.style.flexGrow = 1; image.Add(art);
             var nodes = m_Content.Query<Button>(className: "terminal-node").ToList();
             for (int i = 0; i < nodes.Count; i++)
             {

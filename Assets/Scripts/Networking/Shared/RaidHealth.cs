@@ -125,6 +125,9 @@ namespace Unity.MP_FPS
                 state.LastDamageAmount=before-state.CurrentHealth;state.LastHitPart=BodyPart.Auto;
             }
             else Damage(ref state,part,remaining,tick);
+            if (state.CurrentHealth < before &&
+                (kind == RaidDamageKind.Bullet || kind == RaidDamageKind.Explosion || kind == RaidDamageKind.Melee))
+                state.LastImpactTick = tick;
             return before-state.CurrentHealth;
         }
         public static BodyPart MostInjured(in PredictedPlayerGhost state)

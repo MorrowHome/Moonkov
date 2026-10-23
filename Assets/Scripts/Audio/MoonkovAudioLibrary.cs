@@ -6,6 +6,9 @@ namespace Unity.MP_FPS
     public sealed class MoonkovAudioLibrary : ScriptableObject
     {
         public SoundDef Click, Hover, Confirm, Error, Notification;
+        public SoundDef ShieldImpact, ShieldBreak, ShieldRestore;
+        public SoundDef TacticalDeploy, TacticalAlarm, TacticalExplosion, TacticalGas, TacticalCough;
+        public SoundDef MeleeSwing, MeleeEnergySwing, MeleeImpact, MeleeBlocked;
         public SoundDef Equipment, Container, Jump, Land, Hit, Death;
         public SoundDef RegolithFootsteps, MetalFootsteps, Cloth;
         public SoundDef HardFootsteps;

@@ -22,6 +22,13 @@ namespace Unity.MP_FPS
         [Range(8f, 13f)] public float HitOuterRadius = 10f;
     }
 
+    [System.Serializable]
+    public sealed class WeaponFeedbackEntry
+    {
+        public uint WeaponId;
+        public HaloWeaponFeedbackProfile Profile;
+    }
+
     [CreateAssetMenu(menuName = "Moonkov/Rifle Feedback")]
     public sealed class RifleFeedbackLibrary : ScriptableObject
     {
@@ -30,7 +37,18 @@ namespace Unity.MP_FPS
         public SoundDef HitConfirm, KillConfirm;
         public HaloWeaponFeedbackProfile Rifle, Revolver, Shotgun, Sniper;
 
-        public HaloWeaponFeedbackProfile ForWeapon(uint weaponId) => weaponId switch
+        public WeaponFeedbackEntry[] WeaponProfiles;
+
+        public HaloWeaponFeedbackProfile ForWeapon(uint weaponId)
+        {
+            if (WeaponProfiles != null)
+                foreach (var entry in WeaponProfiles)
+                    if (entry != null && entry.WeaponId == weaponId && entry.Profile != null) return entry.Profile;
+            return BaseForWeapon(weaponId);
+        }
+
+        // Kept for older assets and for rebuilding visual/impact defaults in the installer.
+        public HaloWeaponFeedbackProfile BaseForWeapon(uint weaponId) => weaponId switch
         {
             DollSingerWeapons.Halo => Rifle,
             DollSingerWeapons.Revolver => Revolver,

@@ -7,7 +7,7 @@ using UnityEngine.Rendering.Universal;
 
 namespace Unity.MP_FPS
 {
-    // Owned by TacticalItemsFeedback. Only the dedicated TacticalVolume shader opts in.
+    // Owned by TacticalItemsFeedback. Only dedicated tactical particle and smoke volume shaders opt in.
     // No renderer asset, SilverPrint material, or third-party particle asset is modified.
     internal sealed class TacticalItemsTransparentRenderer : IDisposable
     {

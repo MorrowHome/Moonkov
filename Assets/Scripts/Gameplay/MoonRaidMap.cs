@@ -178,6 +178,7 @@ namespace Unity.MP_FPS
                 if (hasSnapshot) m_CacheVisuals.SetEmpty(i, (takenMask & (1u << i)) != 0);
             }
         }
+        private readonly System.Collections.Generic.Dictionary<int,string> m_DropVisualCodes = new System.Collections.Generic.Dictionary<int,string>();
         private readonly System.Collections.Generic.List<int> m_HiddenBags = new System.Collections.Generic.List<int>();
         public void ShowDeathBags(RaidDeathBagClientState state)
         {
@@ -185,19 +186,37 @@ namespace Unity.MP_FPS
             m_HiddenBags.Clear();
             foreach(var pair in m_DeathBags)
                 if(!state.Bags.ContainsKey(pair.Key)) {Destroy(pair.Value);m_HiddenBags.Add(pair.Key);}
-            foreach(int id in m_HiddenBags)m_DeathBags.Remove(id);
+            foreach(int id in m_HiddenBags){m_DeathBags.Remove(id);m_DropVisualCodes.Remove(id);}
             foreach(var bag in state.Bags.Values)
             {
-                if(m_DeathBags.ContainsKey(bag.LootId))continue;
+                if(m_DeathBags.TryGetValue(bag.LootId,out var existing))
+                {
+                    // Empty drops retain their authoritative grace-period record, but no visible item.
+                    if(bag.CharacterIndex!=RaidLootContainers.DroppedItemCharacterIndex)continue;
+                    existing.SetActive(!bag.Empty);
+                    state.ItemCodes.TryGetValue(bag.LootId,out string currentCode);
+                    m_DropVisualCodes.TryGetValue(bag.LootId,out string displayedCode);
+                    if(currentCode==displayedCode)continue;
+                    Destroy(existing);m_DeathBags.Remove(bag.LootId);
+                }
                 if(bag.CharacterIndex == RaidLootContainers.DroppedItemCharacterIndex)
                 {
-                    var dropped = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                    dropped.name = "Dropped supplies / " + bag.LootId;
-                    dropped.transform.SetParent(transform,false);
-                    dropped.transform.SetPositionAndRotation((Vector3)bag.Position+Vector3.up*.15f,bag.Rotation);
-                    dropped.transform.localScale = new Vector3(.4f,.3f,.3f);
-                    Destroy(dropped.GetComponent<Collider>());
+                    state.ItemCodes.TryGetValue(bag.LootId,out string code);
+                    var dropped = PhysicalItemVisuals.Create(code,transform);
+                    bool fallback=!dropped;
+                    if(!dropped)
+                    {
+                        // Halo art is intentionally outside this asset pass.
+                        dropped = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                        dropped.transform.SetParent(transform,false);
+                        dropped.transform.localScale = new Vector3(.4f,.3f,.3f);
+                        var collider=dropped.GetComponent<Collider>();collider.enabled=false;Destroy(collider);
+                    }
+                    dropped.name = "Dropped " + code + " / " + bag.LootId;
+                    dropped.transform.SetPositionAndRotation((Vector3)bag.Position+(fallback ? Vector3.up*.15f : Vector3.zero),bag.Rotation);
+                    dropped.SetActive(!bag.Empty);
                     m_DeathBags.Add(bag.LootId,dropped);
+                    m_DropVisualCodes[bag.LootId]=code;
                     continue;
                 }
                 if(bag.CharacterIndex == -1)

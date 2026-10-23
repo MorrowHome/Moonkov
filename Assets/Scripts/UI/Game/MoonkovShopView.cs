@@ -86,7 +86,7 @@ namespace Unity.MP_FPS.Client
         private VisualElement Product(string code, string name, string detail)
         {
             var row = TerminalLayout.Clone("Components/ShopProduct", "shopProduct"); m_List.Add(row);
-            var art = new StashItemArt(ContainerInventoryView.Art(code)); art.style.flexGrow = 1;
+            var art = new StashItemArt(code); art.style.flexGrow = 1;
             row.Q("productArt").Add(art);
             MoonkovLocalization.Set(row.Q<Label>("productTitle"), name);
             MoonkovLocalization.Set(row.Q<Label>("productDetail"), detail);
@@ -95,7 +95,7 @@ namespace Unity.MP_FPS.Client
                 m_SelectedRow?.RemoveFromClassList("archive-product-selected"); m_SelectedRow = row; m_SelectedCode = code;
                 row.AddToClassList("archive-product-selected");
                 MoonkovLocalization.Set(m_InspectTitle, name); MoonkovLocalization.Set(m_InspectDetail, detail);
-                m_InspectArt.Clear(); var preview = new StashItemArt(ContainerInventoryView.Art(code)); preview.style.flexGrow = 1; m_InspectArt.Add(preview);
+                m_InspectArt.Clear(); var preview = new StashItemArt(code); preview.style.flexGrow = 1; m_InspectArt.Add(preview);
             }
             row.focusable = true;
             row.RegisterCallback<PointerDownEvent>(evt => { if (evt.button == 0) Select(); });

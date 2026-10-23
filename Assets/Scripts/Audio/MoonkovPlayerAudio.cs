@@ -7,7 +7,8 @@ namespace Unity.MP_FPS
     public sealed class MoonkovPlayerAudio
     {
         private bool m_Initialized;
-        private uint m_ReloadTick, m_JumpTick, m_LandTick, m_HitTick, m_Weapon;
+        private readonly MoonkovMeleeAudio m_Melee = new MoonkovMeleeAudio();
+        private uint m_ReloadTick, m_JumpTick, m_LandTick, m_ImpactTick, m_Weapon;
         private float m_Stride, m_SurfaceTimer;
         private Vector3 m_Position;
         private SoundDef m_Surface;
@@ -21,6 +22,7 @@ namespace Unity.MP_FPS
         private int m_Ammo;
         private SoundSystem.SoundInfo m_BreathSound, m_HeartSound;
         private float m_FallSpeed;
+        private float m_HitAt;
         private readonly RaycastHit[] m_SurfaceHits = new RaycastHit[8];
 
         public static bool NewTick(uint tick, ref uint last)
@@ -35,11 +37,12 @@ namespace Unity.MP_FPS
             var library = MoonkovAudio.Library;
             if (library == null) return;
             Vector3 position = player.position;
+            m_Melee.Update(ghost, position, owned);
             if (!m_Initialized)
             {
                 m_Initialized = true;
                 m_ReloadTick = ghost.LastReloadTick; m_JumpTick = ghost.LastJumpTick;
-                m_LandTick = ghost.LastLandTick; m_HitTick = ghost.LastHitTick;
+                m_LandTick = ghost.LastLandTick; m_ImpactTick = ghost.LastImpactTick;
                 m_Weapon = ghost.EquippedWeaponID; m_Position = position;
                 Remember(ghost); m_BreathAt = Time.unscaledTime + .75f; m_HeartAt = Time.unscaledTime + 1;
                 m_WasSealed = !ghost.BreathableAir;
@@ -60,8 +63,11 @@ namespace Unity.MP_FPS
                 LocalOrWorld(library.Land, position, owned, Mathf.Lerp(.3f, .8f, Mathf.Clamp01(m_FallSpeed / 10)));
                 m_Stride = 0f; m_LastStepTime = Time.unscaledTime; m_FallSpeed = 0;
             }
-            if (NewTick(ghost.LastHitTick, ref m_HitTick))
+            if (NewTick(ghost.LastImpactTick, ref m_ImpactTick) && Time.unscaledTime >= m_HitAt)
+            {
                 LocalOrWorld(library.Hit, position, owned, owned ? 1f : .65f);
+                m_HitAt = Time.unscaledTime + .35f;
+            }
             if (owned && m_Weapon != ghost.EquippedWeaponID) MoonkovAudio.Play(library.Equipment, position);
             if (m_Weapon == ghost.EquippedWeaponID && m_Reloading && !ghost.ControllerState.IsReloadingState &&
                 ghost.CurrentAmmo > m_Ammo) LocalOrWorld(library.ReloadReady, position, owned, .7f);

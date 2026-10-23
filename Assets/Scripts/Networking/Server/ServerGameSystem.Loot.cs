@@ -131,7 +131,7 @@ namespace Unity.MP_FPS
             foreach(int id in inventory.HiddenDeathBags)
             {
                 var removed=ecb.CreateEntity();
-                ecb.AddComponent(removed,new RaidGroundMarkerRpc {LootId=id,Sequence=++inventory.DeathBagSequence,Removed=true,Deleted=!loot.DeathBags.ContainsKey(id)});
+                ecb.AddComponent(removed,new RaidGroundItemMarkerRpc {LootId=id,Sequence=++inventory.DeathBagSequence,Removed=true,Deleted=!loot.DeathBags.ContainsKey(id)});
                 ecb.AddComponent(removed,new SendRpcCommandRequest {TargetConnection=connection});
                 inventory.SentDeathBags.Remove(id);
                 if(!loot.DeathBags.ContainsKey(id))inventory.SearchedLoot.Remove(id);
@@ -150,9 +150,11 @@ namespace Unity.MP_FPS
                 if(!resync && inventory.SentDeathBags.TryGetValue(bag.Key,out var sent) && sent==graph.Version)continue;
                 inventory.SentDeathBags[bag.Key]=graph.Version;
                 var rpc=ecb.CreateEntity();
-                ecb.AddComponent(rpc,new RaidGroundMarkerRpc {Sequence=++inventory.DeathBagSequence,LootId=bag.Key,Version=graph.Version,Position=bag.Value.Position,
+                ecb.AddComponent(rpc,new RaidGroundItemMarkerRpc {Sequence=++inventory.DeathBagSequence,LootId=bag.Key,Version=graph.Version,Position=bag.Value.Position,
                     Rotation=bag.Value.Rotation,CharacterIndex=bag.Value.CharacterIndex,Age=(float)math.max(0,SystemAPI.Time.ElapsedTime-bag.Value.CreatedAt),
-                    Empty=!RaidLootRefillState.HasContents(graph)});
+                    Empty=!RaidLootRefillState.HasContents(graph),
+                    ItemCode=bag.Value.CharacterIndex==RaidLootContainers.DroppedItemCharacterIndex
+                        ? new FixedString64Bytes(graph.Items.Find(item=>item.Parent==LootInventoryExchange.Root)?.Code ?? "") : default});
                 ecb.AddComponent(rpc,new SendRpcCommandRequest {TargetConnection=connection});
             }
         }

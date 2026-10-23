@@ -110,3 +110,316 @@ MonoBehaviour:
     KillDuration: 0.32
     HitLineWidth: 2.2
     HitOuterRadius: 12
+  WeaponProfiles:
+  - WeaponId: 2
+    Profile:
+      FireBody: {fileID: 11400000, guid: 2878ed3c0b89641aba91a4ce3311ef72, type: 2}
+      FireSnap: {fileID: 0}
+      FireTail: {fileID: 11400000, guid: 23ffcc265805047c78d1acc012104207, type: 2}
+      RockImpact: {fileID: 11400000, guid: feb8872a28f759f4198cd4e4b6b3423f, type: 2}
+      MetalImpact: {fileID: 11400000, guid: ca500ef224483814ba6d73f7d36aed50, type: 2}
+      BodyImpact: {fileID: 11400000, guid: b5ae2b95eb2d45d45b3ca649d12882cf, type: 2}
+      HitConfirm: {fileID: 11400000, guid: c0cc816e17777c74b9dd6c80a14947b7, type: 2}
+      KillConfirm: {fileID: 11400000, guid: 6b4f6bc8ed0b97046b488fa7dc6c69f8, type: 2}
+      BodyCrossfade: 0.055
+      TailCrossfade: 0.075
+      SustainedBodyGain: 0.94
+      BurstPitchRise: 0
+      FragmentScale: 1
+      FragmentSpeed: 1
+      FragmentCount: 1
+      SurfaceSoundInterval: 0
+      ImpactFlash: 0
+      HitColor: {r: 1, g: 1, b: 1, a: 1}
+      HitDuration: 0.14
+      KillDuration: 0.26
+      HitLineWidth: 1.5
+      HitOuterRadius: 10
+  - WeaponId: 3
+    Profile:
+      FireBody: {fileID: 11400000, guid: 81d969fb4c8804504ab31f3bfd1cbd79, type: 2}
+      FireSnap: {fileID: 0}
+      FireTail: {fileID: 11400000, guid: f55ea36491f79453d9552e8b39f83ea0, type: 2}
+      RockImpact: {fileID: 11400000, guid: 63c91b562c83b4d4eb2b5fcaa99be77a, type: 2}
+      MetalImpact: {fileID: 11400000, guid: 0d5d5b8d65c71f44abd9b2495fa074d5, type: 2}
+      BodyImpact: {fileID: 11400000, guid: 81169803400932147a5ce463dddb123f, type: 2}
+      HitConfirm: {fileID: 11400000, guid: 008c7a0fd71a67249bbbe124d9c431ba, type: 2}
+      KillConfirm: {fileID: 11400000, guid: 68b26cc721bf9f948a1cfe64f57c7ac1, type: 2}
+      BodyCrossfade: 0.055
+      TailCrossfade: 0.075
+      SustainedBodyGain: 0.94
+      BurstPitchRise: 0
+      FragmentScale: 1.1
+      FragmentSpeed: 1.2
+      FragmentCount: 1
+      SurfaceSoundInterval: 0
+      ImpactFlash: 0
+      HitColor: {r: 1, g: 0.94, b: 0.8, a: 1}
+      HitDuration: 0.14
+      KillDuration: 0.26
+      HitLineWidth: 1.6
+      HitOuterRadius: 10
+  - WeaponId: 4
+    Profile:
+      FireBody: {fileID: 11400000, guid: 77f08719ee019419aa65b265c1df8625, type: 2}
+      FireSnap: {fileID: 0}
+      FireTail: {fileID: 11400000, guid: 3d35a201ff02340a5baea5d68b14a561, type: 2}
+      RockImpact: {fileID: 11400000, guid: c62c6109d2f1b4f4db48c2d809b02cf7, type: 2}
+      MetalImpact: {fileID: 11400000, guid: b8a1e3e206c07f64b92c647a4607d704, type: 2}
+      BodyImpact: {fileID: 11400000, guid: d8effa1a37a1a73418554e73836b7647, type: 2}
+      HitConfirm: {fileID: 11400000, guid: fe2399170a5ca324a9823b4630b3a9b5, type: 2}
+      KillConfirm: {fileID: 11400000, guid: 458f7d56ba3bfaf40a97965fe6845d28, type: 2}
+      BodyCrossfade: 0.055
+      TailCrossfade: 0.075
+      SustainedBodyGain: 0.94
+      BurstPitchRise: 0
+      FragmentScale: 0.75
+      FragmentSpeed: 1.1
+      FragmentCount: 0.45
+      SurfaceSoundInterval: 0.075
+      ImpactFlash: 0
+      HitColor: {r: 0.88, g: 1, b: 0.87, a: 1}
+      HitDuration: 0.16
+      KillDuration: 0.28
+      HitLineWidth: 1.8
+      HitOuterRadius: 11
+  - WeaponId: 5
+    Profile:
+      FireBody: {fileID: 11400000, guid: b6edde30900014c3da3d4de66774ea21, type: 2}
+      FireSnap: {fileID: 0}
+      FireTail: {fileID: 11400000, guid: b50e545632d8441f385944d169ade7a8, type: 2}
+      RockImpact: {fileID: 11400000, guid: 79e7e3b901b5bb44da3b96ade590726e, type: 2}
+      MetalImpact: {fileID: 11400000, guid: 4856867ba5dd24e4abdbd874678daf68, type: 2}
+      BodyImpact: {fileID: 11400000, guid: 7f90248d34a04054e93ee4e1d862a9ce, type: 2}
+      HitConfirm: {fileID: 11400000, guid: a43e4d1e6559da54babb0661ded3ef92, type: 2}
+      KillConfirm: {fileID: 11400000, guid: c94c99fcf1b376b489dda0abb696dbca, type: 2}
+      BodyCrossfade: 0.055
+      TailCrossfade: 0.075
+      SustainedBodyGain: 0.94
+      BurstPitchRise: 0
+      FragmentScale: 1.6
+      FragmentSpeed: 2.1
+      FragmentCount: 1.3
+      SurfaceSoundInterval: 0
+      ImpactFlash: 1
+      HitColor: {r: 0.72, g: 0.94, b: 1, a: 1}
+      HitDuration: 0.2
+      KillDuration: 0.32
+      HitLineWidth: 2.2
+      HitOuterRadius: 12
+  - WeaponId: 6
+    Profile:
+      FireBody: {fileID: 11400000, guid: 99a301b36391b4c49a1b75935551865f, type: 2}
+      FireSnap: {fileID: 0}
+      FireTail: {fileID: 11400000, guid: ae3a8836b12304893aa0cc2c1b6719e5, type: 2}
+      RockImpact: {fileID: 11400000, guid: feb8872a28f759f4198cd4e4b6b3423f, type: 2}
+      MetalImpact: {fileID: 11400000, guid: ca500ef224483814ba6d73f7d36aed50, type: 2}
+      BodyImpact: {fileID: 11400000, guid: b5ae2b95eb2d45d45b3ca649d12882cf, type: 2}
+      HitConfirm: {fileID: 11400000, guid: c0cc816e17777c74b9dd6c80a14947b7, type: 2}
+      KillConfirm: {fileID: 11400000, guid: 6b4f6bc8ed0b97046b488fa7dc6c69f8, type: 2}
+      BodyCrossfade: 0.018
+      TailCrossfade: 0.04
+      SustainedBodyGain: 0.9
+      BurstPitchRise: 0
+      FragmentScale: 1
+      FragmentSpeed: 1
+      FragmentCount: 1
+      SurfaceSoundInterval: 0
+      ImpactFlash: 0
+      HitColor: {r: 1, g: 1, b: 1, a: 1}
+      HitDuration: 0.14
+      KillDuration: 0.26
+      HitLineWidth: 1.5
+      HitOuterRadius: 10
+  - WeaponId: 7
+    Profile:
+      FireBody: {fileID: 11400000, guid: f757455846ed24854beb3eb7a485abdf, type: 2}
+      FireSnap: {fileID: 0}
+      FireTail: {fileID: 11400000, guid: de6e561cae6f042d0b890c58df2a1904, type: 2}
+      RockImpact: {fileID: 11400000, guid: feb8872a28f759f4198cd4e4b6b3423f, type: 2}
+      MetalImpact: {fileID: 11400000, guid: ca500ef224483814ba6d73f7d36aed50, type: 2}
+      BodyImpact: {fileID: 11400000, guid: b5ae2b95eb2d45d45b3ca649d12882cf, type: 2}
+      HitConfirm: {fileID: 11400000, guid: c0cc816e17777c74b9dd6c80a14947b7, type: 2}
+      KillConfirm: {fileID: 11400000, guid: 6b4f6bc8ed0b97046b488fa7dc6c69f8, type: 2}
+      BodyCrossfade: 0.018
+      TailCrossfade: 0.04
+      SustainedBodyGain: 0.94
+      BurstPitchRise: 0
+      FragmentScale: 1
+      FragmentSpeed: 1
+      FragmentCount: 1
+      SurfaceSoundInterval: 0
+      ImpactFlash: 0
+      HitColor: {r: 1, g: 1, b: 1, a: 1}
+      HitDuration: 0.14
+      KillDuration: 0.26
+      HitLineWidth: 1.5
+      HitOuterRadius: 10
+  - WeaponId: 8
+    Profile:
+      FireBody: {fileID: 11400000, guid: ea12bb2a3f66f481ab17d57d9494113d, type: 2}
+      FireSnap: {fileID: 0}
+      FireTail: {fileID: 11400000, guid: 47c9d194109c44d5fa2d27ebc261e711, type: 2}
+      RockImpact: {fileID: 11400000, guid: feb8872a28f759f4198cd4e4b6b3423f, type: 2}
+      MetalImpact: {fileID: 11400000, guid: ca500ef224483814ba6d73f7d36aed50, type: 2}
+      BodyImpact: {fileID: 11400000, guid: b5ae2b95eb2d45d45b3ca649d12882cf, type: 2}
+      HitConfirm: {fileID: 11400000, guid: c0cc816e17777c74b9dd6c80a14947b7, type: 2}
+      KillConfirm: {fileID: 11400000, guid: 6b4f6bc8ed0b97046b488fa7dc6c69f8, type: 2}
+      BodyCrossfade: 0.035
+      TailCrossfade: 0.075
+      SustainedBodyGain: 0.96
+      BurstPitchRise: 0
+      FragmentScale: 1
+      FragmentSpeed: 1
+      FragmentCount: 1
+      SurfaceSoundInterval: 0
+      ImpactFlash: 0
+      HitColor: {r: 1, g: 1, b: 1, a: 1}
+      HitDuration: 0.14
+      KillDuration: 0.26
+      HitLineWidth: 1.5
+      HitOuterRadius: 10
+  - WeaponId: 9
+    Profile:
+      FireBody: {fileID: 11400000, guid: 37f40166de9324921895f15d379c0b4f, type: 2}
+      FireSnap: {fileID: 0}
+      FireTail: {fileID: 11400000, guid: 638b72650ac3e41e5be62488b328a339, type: 2}
+      RockImpact: {fileID: 11400000, guid: 79e7e3b901b5bb44da3b96ade590726e, type: 2}
+      MetalImpact: {fileID: 11400000, guid: 4856867ba5dd24e4abdbd874678daf68, type: 2}
+      BodyImpact: {fileID: 11400000, guid: 7f90248d34a04054e93ee4e1d862a9ce, type: 2}
+      HitConfirm: {fileID: 11400000, guid: a43e4d1e6559da54babb0661ded3ef92, type: 2}
+      KillConfirm: {fileID: 11400000, guid: c94c99fcf1b376b489dda0abb696dbca, type: 2}
+      BodyCrossfade: 0.055
+      TailCrossfade: 0.075
+      SustainedBodyGain: 0.94
+      BurstPitchRise: 0
+      FragmentScale: 1.6
+      FragmentSpeed: 2.1
+      FragmentCount: 1.3
+      SurfaceSoundInterval: 0
+      ImpactFlash: 1
+      HitColor: {r: 0.72, g: 0.94, b: 1, a: 1}
+      HitDuration: 0.2
+      KillDuration: 0.32
+      HitLineWidth: 2.2
+      HitOuterRadius: 12
+  - WeaponId: 10
+    Profile:
+      FireBody: {fileID: 11400000, guid: 6d88cad92ef044eedbcdc2f15975c92e, type: 2}
+      FireSnap: {fileID: 0}
+      FireTail: {fileID: 11400000, guid: 4a7f9e15f19124fc1a293f887692c9ac, type: 2}
+      RockImpact: {fileID: 11400000, guid: c62c6109d2f1b4f4db48c2d809b02cf7, type: 2}
+      MetalImpact: {fileID: 11400000, guid: b8a1e3e206c07f64b92c647a4607d704, type: 2}
+      BodyImpact: {fileID: 11400000, guid: d8effa1a37a1a73418554e73836b7647, type: 2}
+      HitConfirm: {fileID: 11400000, guid: fe2399170a5ca324a9823b4630b3a9b5, type: 2}
+      KillConfirm: {fileID: 11400000, guid: 458f7d56ba3bfaf40a97965fe6845d28, type: 2}
+      BodyCrossfade: 0.055
+      TailCrossfade: 0.075
+      SustainedBodyGain: 0.94
+      BurstPitchRise: 0
+      FragmentScale: 0.75
+      FragmentSpeed: 1.1
+      FragmentCount: 0.45
+      SurfaceSoundInterval: 0.075
+      ImpactFlash: 0
+      HitColor: {r: 0.88, g: 1, b: 0.87, a: 1}
+      HitDuration: 0.16
+      KillDuration: 0.28
+      HitLineWidth: 1.8
+      HitOuterRadius: 11
+  - WeaponId: 11
+    Profile:
+      FireBody: {fileID: 11400000, guid: 1d6b7079db99f473b9f324394815b0b1, type: 2}
+      FireSnap: {fileID: 0}
+      FireTail: {fileID: 11400000, guid: 2d57f3b0c78274672aa5e20884cdb2e6, type: 2}
+      RockImpact: {fileID: 11400000, guid: c62c6109d2f1b4f4db48c2d809b02cf7, type: 2}
+      MetalImpact: {fileID: 11400000, guid: b8a1e3e206c07f64b92c647a4607d704, type: 2}
+      BodyImpact: {fileID: 11400000, guid: d8effa1a37a1a73418554e73836b7647, type: 2}
+      HitConfirm: {fileID: 11400000, guid: fe2399170a5ca324a9823b4630b3a9b5, type: 2}
+      KillConfirm: {fileID: 11400000, guid: 458f7d56ba3bfaf40a97965fe6845d28, type: 2}
+      BodyCrossfade: 0.055
+      TailCrossfade: 0.075
+      SustainedBodyGain: 0.94
+      BurstPitchRise: 0
+      FragmentScale: 0.75
+      FragmentSpeed: 1.1
+      FragmentCount: 0.45
+      SurfaceSoundInterval: 0.075
+      ImpactFlash: 0
+      HitColor: {r: 0.88, g: 1, b: 0.87, a: 1}
+      HitDuration: 0.16
+      KillDuration: 0.28
+      HitLineWidth: 1.8
+      HitOuterRadius: 11
+  - WeaponId: 12
+    Profile:
+      FireBody: {fileID: 11400000, guid: 7ef398f3fa6f84877b6695127ce95f0c, type: 2}
+      FireSnap: {fileID: 0}
+      FireTail: {fileID: 11400000, guid: 05cb83353fdfe4801a38bfc60b4986ee, type: 2}
+      RockImpact: {fileID: 11400000, guid: feb8872a28f759f4198cd4e4b6b3423f, type: 2}
+      MetalImpact: {fileID: 11400000, guid: ca500ef224483814ba6d73f7d36aed50, type: 2}
+      BodyImpact: {fileID: 11400000, guid: b5ae2b95eb2d45d45b3ca649d12882cf, type: 2}
+      HitConfirm: {fileID: 11400000, guid: c0cc816e17777c74b9dd6c80a14947b7, type: 2}
+      KillConfirm: {fileID: 11400000, guid: 6b4f6bc8ed0b97046b488fa7dc6c69f8, type: 2}
+      BodyCrossfade: 0.018
+      TailCrossfade: 0.075
+      SustainedBodyGain: 0.94
+      BurstPitchRise: 0
+      FragmentScale: 1
+      FragmentSpeed: 1
+      FragmentCount: 1
+      SurfaceSoundInterval: 0
+      ImpactFlash: 0
+      HitColor: {r: 1, g: 1, b: 1, a: 1}
+      HitDuration: 0.14
+      KillDuration: 0.26
+      HitLineWidth: 1.5
+      HitOuterRadius: 10
+  - WeaponId: 13
+    Profile:
+      FireBody: {fileID: 11400000, guid: 627a5ffcf78ae4f86a1ae922b335e827, type: 2}
+      FireSnap: {fileID: 0}
+      FireTail: {fileID: 11400000, guid: 4f4c640a15ce948e887a40747a4efc35, type: 2}
+      RockImpact: {fileID: 11400000, guid: c62c6109d2f1b4f4db48c2d809b02cf7, type: 2}
+      MetalImpact: {fileID: 11400000, guid: b8a1e3e206c07f64b92c647a4607d704, type: 2}
+      BodyImpact: {fileID: 11400000, guid: d8effa1a37a1a73418554e73836b7647, type: 2}
+      HitConfirm: {fileID: 11400000, guid: fe2399170a5ca324a9823b4630b3a9b5, type: 2}
+      KillConfirm: {fileID: 11400000, guid: 458f7d56ba3bfaf40a97965fe6845d28, type: 2}
+      BodyCrossfade: 0.055
+      TailCrossfade: 0.075
+      SustainedBodyGain: 0.94
+      BurstPitchRise: 0
+      FragmentScale: 0.75
+      FragmentSpeed: 1.1
+      FragmentCount: 0.45
+      SurfaceSoundInterval: 0.075
+      ImpactFlash: 0
+      HitColor: {r: 0.88, g: 1, b: 0.87, a: 1}
+      HitDuration: 0.16
+      KillDuration: 0.28
+      HitLineWidth: 1.8
+      HitOuterRadius: 11
+  - WeaponId: 14
+    Profile:
+      FireBody: {fileID: 11400000, guid: 3f8b0bf02384e47a8a1da765599d50ae, type: 2}
+      FireSnap: {fileID: 0}
+      FireTail: {fileID: 11400000, guid: 4d0f81c4dc2ae400488975761b708308, type: 2}
+      RockImpact: {fileID: 11400000, guid: 79e7e3b901b5bb44da3b96ade590726e, type: 2}
+      MetalImpact: {fileID: 11400000, guid: 4856867ba5dd24e4abdbd874678daf68, type: 2}
+      BodyImpact: {fileID: 11400000, guid: 7f90248d34a04054e93ee4e1d862a9ce, type: 2}
+      HitConfirm: {fileID: 11400000, guid: a43e4d1e6559da54babb0661ded3ef92, type: 2}
+      KillConfirm: {fileID: 11400000, guid: c94c99fcf1b376b489dda0abb696dbca, type: 2}
+      BodyCrossfade: 0.055
+      TailCrossfade: 0.075
+      SustainedBodyGain: 0.94
+      BurstPitchRise: 0
+      FragmentScale: 1.6
+      FragmentSpeed: 2.1
+      FragmentCount: 1.3
+      SurfaceSoundInterval: 0
+      ImpactFlash: 1
+      HitColor: {r: 0.72, g: 0.94, b: 1, a: 1}
+      HitDuration: 0.2
+      KillDuration: 0.32
+      HitLineWidth: 2.2
+      HitOuterRadius: 12

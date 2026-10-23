@@ -48,7 +48,7 @@ namespace Unity.MP_FPS.Client
             bool fabricate = mooncore && s_Fabricating;
             var recipe = fabricate ? AlienBiology.MooncoreFabrication : selected;
             Set("researchTitle", recipe.Name); Set("researchDescription", recipe.Description);
-            var art = Root.Q("researchArt"); art.Clear(); art.Add(new StashItemArt(ContainerInventoryView.Art(recipe.Icon)));
+            var art = Root.Q("researchArt"); art.Clear(); art.Add(new StashItemArt(recipe.Icon));
             Root.Q("researchStages").EnableInClassList("research-hidden", !mooncore);
             Root.Q("researchStage").EnableInClassList("is-selected", !fabricate);
             Root.Q("fabricationStage").EnableInClassList("is-selected", fabricate);
@@ -61,7 +61,7 @@ namespace Unity.MP_FPS.Client
             {
                 string code = recipe.Materials[i]; int have = recipe.Stored(graph, code), need = recipe.Quantities[i];
                 var row = TerminalLayout.Clone("Components/ResearchMaterial", "researchMaterial"); materials.Add(row);
-                row.Q("materialArt").Add(new StashItemArt(ContainerInventoryView.Art(code)));
+                row.Q("materialArt").Add(new StashItemArt(code));
                 MoonkovLocalization.Set(row.Q<Label>("materialName"), InventoryCatalog.Get(code).Name);
                 MoonkovLocalization.Set(row.Q<Label>("materialCount"), have >= need ? "READY / {0} OWNED / {1} REQUIRED" : "MISSING {2} / {0} OWNED / {1} REQUIRED", have, need, Math.Max(0, need - have));
                 row.EnableInClassList("is-missing", have < need);

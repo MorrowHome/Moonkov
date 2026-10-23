@@ -8,7 +8,7 @@ namespace Unity.MP_FPS
     // command path, so the camera and the following shot share the same direction.
     public struct HaloRecoilResponse
     {
-        private float pending, recoverable, age;
+        private float pending, recoverable, age, recoveryDelay;
         public float Remaining => pending + recoverable;
         public static float KickDegrees(uint weapon) => weapon switch
         {
@@ -23,10 +23,13 @@ namespace Unity.MP_FPS
             DollSingerWeapons.Halo => .34f,
             _ => 0f
         };
-        public void Kick(uint weapon, float magnification)
+        public void Kick(uint weapon, float magnification, float shotInterval = .35f)
         {
             float scale = 1f / Mathf.Clamp(magnification, 1f, 12f);
             pending += Mathf.Min(KickDegrees(weapon) * scale, Mathf.Max(0, 3f * scale - Remaining));
+            // Begin settling between automatic/burst shots. A fixed long hold lets
+            // fast weapons reach the travel limit and then lose every later kick.
+            recoveryDelay = Mathf.Min(.12f, Mathf.Max(0, shotInterval) * .35f);
             age = 0;
         }
         public void Apply(ref float pitch, float downwardInput, float deltaTime)
@@ -37,11 +40,11 @@ namespace Unity.MP_FPS
             pending = 0; pitch -= kick; recoverable += kick;
             recoverable = Mathf.Max(0, recoverable - Mathf.Max(0, downwardInput));
             float previous = age; age += deltaTime;
-            float recoveryTime = Mathf.Max(0, age - .12f) - Mathf.Max(0, previous - .12f);
+            float recoveryTime = Mathf.Max(0, age - recoveryDelay) - Mathf.Max(0, previous - recoveryDelay);
             float recovery = recoverable * (1f - Mathf.Exp(-12f * recoveryTime));
             recoverable -= recovery; pitch = Mathf.Min(80f, pitch + recovery);
         }
-        public void Reset() { pending = recoverable = age = 0; }
+        public void Reset() { pending = recoverable = age = recoveryDelay = 0; }
     }
 
     /// <summary>Owned-player look and lean rules, shared by gameplay and the offline map preview.</summary>

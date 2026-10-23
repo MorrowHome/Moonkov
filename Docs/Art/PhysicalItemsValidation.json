@@ -1,0 +1,8 @@
+{
+  "diagnostics": [],
+  "compileMs": 87,
+  "executeMs": 60,
+  "assemblyName": "PipelineRunScript_moonkov-final-validate_59108c88b6a344289e6145addd3ff4e7",
+  "success": true,
+  "result": "Physical items: 64 models/icons; 274730 triangles in complete catalog; URP materials and metre scale valid. Ground lifecycle/RPC passed; compilation clean."
+}

@@ -103,7 +103,7 @@ namespace Unity.MP_FPS.Client
                     m_Codes[i] = code; m_Icons[i].Clear();
                     if (!string.IsNullOrEmpty(code))
                     {
-                        VisualElement art = TacticalItemRules.Find(code) != null ? new TacticalItemIcon(code) : new StashItemArt(ContainerInventoryView.Art(code));
+                        VisualElement art = TacticalItemRules.Find(code) != null ? new TacticalItemIcon(code) : new StashItemArt(code);
                         art.AddToClassList("quick-slot-art"); m_Icons[i].Add(art);
                     }
                 }

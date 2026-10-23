@@ -1,0 +1,915 @@
+[
+  {
+    "code": "dust",
+    "triangles": 5125,
+    "size": [
+      0.11999999731779099,
+      0.03350000083446503,
+      0.14000000059604645
+    ],
+    "materials": [
+      "Item_ceramic.002",
+      "Item_steel.002",
+      "Item_dark.002",
+      "Item_amber.002"
+    ]
+  },
+  {
+    "code": "alien_tissue",
+    "triangles": 4724,
+    "size": [
+      0.1339999884366989,
+      0.10000000149011612,
+      0.03999999910593033
+    ],
+    "materials": [
+      "Item_tissue.002",
+      "Item_steel.002",
+      "Item_violet.002"
+    ]
+  },
+  {
+    "code": "alien_core",
+    "triangles": 8144,
+    "size": [
+      0.1262243390083313,
+      0.11003004759550095,
+      0.07000000029802322
+    ],
+    "materials": [
+      "Item_violet.002",
+      "Item_tissue.002"
+    ]
+  },
+  {
+    "code": "alien_raw_meat",
+    "triangles": 3248,
+    "size": [
+      0.10714733600616455,
+      0.08083699643611908,
+      0.03699001669883728
+    ],
+    "materials": [
+      "Item_tissue.002",
+      "Item_violet.002",
+      "Item_bone.002"
+    ]
+  },
+  {
+    "code": "alien_neural_core",
+    "triangles": 10224,
+    "size": [
+      0.1262243390083313,
+      0.11003004759550095,
+      0.04600000008940697
+    ],
+    "materials": [
+      "Item_violet.002",
+      "Item_tissue.002"
+    ]
+  },
+  {
+    "code": "alloy",
+    "triangles": 660,
+    "size": [
+      0.1599999964237213,
+      0.08150000870227814,
+      0.02800000086426735
+    ],
+    "materials": [
+      "Item_steel.002",
+      "Item_dark.002"
+    ]
+  },
+  {
+    "code": "cells",
+    "triangles": 2270,
+    "size": [
+      0.06999999284744263,
+      0.03150000050663948,
+      0.10899999737739563
+    ],
+    "materials": [
+      "Item_blue.002",
+      "Item_gold.002",
+      "Item_dark.002",
+      "Item_ceramic.002"
+    ]
+  },
+  {
+    "code": "energy_grenade",
+    "triangles": 4082,
+    "size": [
+      0.08900000154972076,
+      0.08100000023841858,
+      0.1589999943971634
+    ],
+    "materials": [
+      "Item_violet.002",
+      "Item_dark.002",
+      "Item_steel.002",
+      "Item_ceramic.002"
+    ]
+  },
+  {
+    "code": "vitality_shot",
+    "triangles": 4609,
+    "size": [
+      0.05000000074505806,
+      0.05000000074505806,
+      0.19349999725818634
+    ],
+    "materials": [
+      "Item_ceramic.002",
+      "Item_red.002",
+      "Item_dark.002",
+      "Item_steel.002"
+    ]
+  },
+  {
+    "code": "stamina_shot",
+    "triangles": 4647,
+    "size": [
+      0.05000000074505806,
+      0.05000000074505806,
+      0.19349999725818634
+    ],
+    "materials": [
+      "Item_ceramic.002",
+      "Item_amber.002",
+      "Item_dark.002",
+      "Item_steel.002"
+    ]
+  },
+  {
+    "code": "antidote_shot",
+    "triangles": 4651,
+    "size": [
+      0.05000000074505806,
+      0.05000000074505806,
+      0.19349999725818634
+    ],
+    "materials": [
+      "Item_ceramic.002",
+      "Item_green.002",
+      "Item_dark.002",
+      "Item_steel.002"
+    ]
+  },
+  {
+    "code": "dynamite_bundle",
+    "triangles": 3456,
+    "size": [
+      0.09600000083446503,
+      0.09300000220537186,
+      0.23749613761901855
+    ],
+    "materials": [
+      "Item_red.002",
+      "Item_dark.002",
+      "Item_amber.002"
+    ]
+  },
+  {
+    "code": "frag_bomb",
+    "triangles": 11962,
+    "size": [
+      0.09099999815225601,
+      0.0820000022649765,
+      0.1589999943971634
+    ],
+    "materials": [
+      "Item_green.002",
+      "Item_dark.002",
+      "Item_steel.002",
+      "Item_ceramic.002"
+    ]
+  },
+  {
+    "code": "fire_bomb",
+    "triangles": 2911,
+    "size": [
+      0.08900000154972076,
+      0.07800000160932541,
+      0.1589999943971634
+    ],
+    "materials": [
+      "Item_amber.002",
+      "Item_dark.002",
+      "Item_steel.002",
+      "Item_ceramic.002"
+    ]
+  },
+  {
+    "code": "smoke_grenade",
+    "triangles": 2946,
+    "size": [
+      0.08900000154972076,
+      0.07800000160932541,
+      0.1589999943971634
+    ],
+    "materials": [
+      "Item_ceramic.002",
+      "Item_dark.002",
+      "Item_steel.002"
+    ]
+  },
+  {
+    "code": "choke_bomb",
+    "triangles": 2937,
+    "size": [
+      0.08900000154972076,
+      0.07800000160932541,
+      0.1589999943971634
+    ],
+    "materials": [
+      "Item_blue.002",
+      "Item_dark.002",
+      "Item_steel.002",
+      "Item_ceramic.002"
+    ]
+  },
+  {
+    "code": "alert_trip_mine",
+    "triangles": 3349,
+    "size": [
+      0.15857771039009094,
+      0.07400000095367432,
+      0.1817888617515564
+    ],
+    "materials": [
+      "Item_green.002",
+      "Item_dark.002",
+      "Item_steel.002"
+    ]
+  },
+  {
+    "code": "concertina_trip_mine",
+    "triangles": 6635,
+    "size": [
+      0.15857771039009094,
+      0.1120000034570694,
+      0.1817888617515564
+    ],
+    "materials": [
+      "Item_green.002",
+      "Item_dark.002",
+      "Item_steel.002"
+    ]
+  },
+  {
+    "code": "poison_trip_mine",
+    "triangles": 3903,
+    "size": [
+      0.15857771039009094,
+      0.07400000095367432,
+      0.1817888617515564
+    ],
+    "materials": [
+      "Item_green.002",
+      "Item_dark.002",
+      "Item_steel.002",
+      "Item_violet.002"
+    ]
+  },
+  {
+    "code": "ammo_box",
+    "triangles": 3302,
+    "size": [
+      0.23999999463558197,
+      0.1419999897480011,
+      0.2206568568944931
+    ],
+    "materials": [
+      "Item_ceramic.002",
+      "Item_dark.002",
+      "Item_steel.002"
+    ]
+  },
+  {
+    "code": "medkit",
+    "triangles": 4554,
+    "size": [
+      0.05000000074505806,
+      0.05000000074505806,
+      0.19349999725818634
+    ],
+    "materials": [
+      "Item_ceramic.002",
+      "Item_red.002",
+      "Item_dark.002",
+      "Item_steel.002"
+    ]
+  },
+  {
+    "code": "ration",
+    "triangles": 5131,
+    "size": [
+      0.11999999731779099,
+      0.03350000083446503,
+      0.1899999976158142
+    ],
+    "materials": [
+      "Item_green.002",
+      "Item_steel.002",
+      "Item_dark.002",
+      "Item_amber.002"
+    ]
+  },
+  {
+    "code": "water",
+    "triangles": 3484,
+    "size": [
+      0.07400000095367432,
+      0.07400000095367432,
+      0.1907999962568283
+    ],
+    "materials": [
+      "Item_blue.002",
+      "Item_steel.002",
+      "Item_dark.002",
+      "Item_ceramic.002"
+    ]
+  },
+  {
+    "code": "oxygen_canister",
+    "triangles": 5301,
+    "size": [
+      0.07400000095367432,
+      0.07400000095367432,
+      0.1907999962568283
+    ],
+    "materials": [
+      "Item_ceramic.002",
+      "Item_steel.002",
+      "Item_dark.002",
+      "Item_amber.002"
+    ]
+  },
+  {
+    "code": "med_gel",
+    "triangles": 5132,
+    "size": [
+      0.11999999731779099,
+      0.03350000083446503,
+      0.14000000059604645
+    ],
+    "materials": [
+      "Item_ceramic.002",
+      "Item_steel.002",
+      "Item_dark.002",
+      "Item_amber.002"
+    ]
+  },
+  {
+    "code": "trauma_kit",
+    "triangles": 3658,
+    "size": [
+      0.1599999964237213,
+      0.1120000034570694,
+      0.26065686345100403
+    ],
+    "materials": [
+      "Item_ceramic.002",
+      "Item_dark.002",
+      "Item_steel.002",
+      "Item_red.002"
+    ]
+  },
+  {
+    "code": "energy_gel",
+    "triangles": 5185,
+    "size": [
+      0.11999999731779099,
+      0.03350000083446503,
+      0.14000000059604645
+    ],
+    "materials": [
+      "Item_amber.002",
+      "Item_steel.002",
+      "Item_dark.002"
+    ]
+  },
+  {
+    "code": "protein_bar",
+    "triangles": 5228,
+    "size": [
+      0.07999999821186066,
+      0.03350000083446503,
+      0.14000000059604645
+    ],
+    "materials": [
+      "Item_dark.002",
+      "Item_steel.002",
+      "Item_amber.002",
+      "Item_ceramic.002"
+    ]
+  },
+  {
+    "code": "electrolyte",
+    "triangles": 5185,
+    "size": [
+      0.11999999731779099,
+      0.03350000083446503,
+      0.14000000059604645
+    ],
+    "materials": [
+      "Item_blue.002",
+      "Item_steel.002",
+      "Item_dark.002",
+      "Item_amber.002"
+    ]
+  },
+  {
+    "code": "oxygen_reserve",
+    "triangles": 5306,
+    "size": [
+      0.10199999809265137,
+      0.10199999809265137,
+      0.29679998755455017
+    ],
+    "materials": [
+      "Item_ceramic.002",
+      "Item_steel.002",
+      "Item_dark.002",
+      "Item_amber.002"
+    ]
+  },
+  {
+    "code": "circuit_board",
+    "triangles": 5040,
+    "size": [
+      0.15000000596046448,
+      0.12399999797344208,
+      0.028999999165534973
+    ],
+    "materials": [
+      "Item_green.002",
+      "Item_gold.002",
+      "Item_dark.002",
+      "Item_steel.002"
+    ]
+  },
+  {
+    "code": "copper_coil",
+    "triangles": 9828,
+    "size": [
+      0.13199999928474426,
+      0.13199999928474426,
+      0.10999999940395355
+    ],
+    "materials": [
+      "Item_dark.002",
+      "Item_copper.002"
+    ]
+  },
+  {
+    "code": "ceramic_plate",
+    "triangles": 662,
+    "size": [
+      0.20000000298023224,
+      0.16099999845027924,
+      0.03799506276845932
+    ],
+    "materials": [
+      "Item_ceramic.002",
+      "Item_dark.002"
+    ]
+  },
+  {
+    "code": "optical_sensor",
+    "triangles": 4855,
+    "size": [
+      0.10999999940395355,
+      0.09650000184774399,
+      0.07500000298023224
+    ],
+    "materials": [
+      "Item_dark.002",
+      "Item_steel.002",
+      "Item_blue.002"
+    ]
+  },
+  {
+    "code": "data_drive",
+    "triangles": 4009,
+    "size": [
+      0.09000000357627869,
+      0.03400000184774399,
+      0.14249999821186066
+    ],
+    "materials": [
+      "Item_steel.002",
+      "Item_dark.002",
+      "Item_gold.002"
+    ]
+  },
+  {
+    "code": "mooncore_fragment",
+    "triangles": 20,
+    "size": [
+      0.08139266818761826,
+      0.09527168422937393,
+      0.19599999487400055
+    ],
+    "materials": [
+      "Item_violet.002"
+    ]
+  },
+  {
+    "code": "mc00_archive_drive",
+    "triangles": 4053,
+    "size": [
+      0.09000000357627869,
+      0.03400000184774399,
+      0.14249999821186066
+    ],
+    "materials": [
+      "Item_amber.002",
+      "Item_dark.002",
+      "Item_steel.002",
+      "Item_gold.002"
+    ]
+  },
+  {
+    "code": "helium3_sample",
+    "triangles": 3601,
+    "size": [
+      0.07400000095367432,
+      0.07400000095367432,
+      0.1907999962568283
+    ],
+    "materials": [
+      "Item_ceramic.002",
+      "Item_steel.002",
+      "Item_dark.002"
+    ]
+  },
+  {
+    "code": "quantum_core",
+    "triangles": 6732,
+    "size": [
+      0.15000000596046448,
+      0.12399999797344208,
+      0.04749999940395355
+    ],
+    "materials": [
+      "Item_green.002",
+      "Item_gold.002",
+      "Item_dark.002",
+      "Item_steel.002"
+    ]
+  },
+  {
+    "code": "black_box",
+    "triangles": 3325,
+    "size": [
+      0.23999999463558197,
+      0.1419999897480011,
+      0.2206568568944931
+    ],
+    "materials": [
+      "Item_amber.002",
+      "Item_dark.002",
+      "Item_steel.002"
+    ]
+  },
+  {
+    "code": "helmet",
+    "triangles": 1656,
+    "size": [
+      0.28999999165534973,
+      0.27799999713897705,
+      0.06499999761581421
+    ],
+    "materials": [
+      "Item_ceramic.002",
+      "Item_dark.002",
+      "Item_steel.002"
+    ]
+  },
+  {
+    "code": "energy_head_dome",
+    "triangles": 3256,
+    "size": [
+      0.28999999165534973,
+      0.2979999780654907,
+      0.08049999177455902
+    ],
+    "materials": [
+      "Item_ceramic.002",
+      "Item_dark.002",
+      "Item_steel.002",
+      "Item_violet.002",
+      "Item_gold.002"
+    ]
+  },
+  {
+    "code": "energy_shield_generator",
+    "triangles": 3977,
+    "size": [
+      0.18000000715255737,
+      0.0754999965429306,
+      0.1599999964237213
+    ],
+    "materials": [
+      "Item_ceramic.002",
+      "Item_dark.002",
+      "Item_steel.002",
+      "Item_blue.002"
+    ]
+  },
+  {
+    "code": "energy_sword",
+    "triangles": 4230,
+    "size": [
+      0.08500000089406967,
+      0.03999999910593033,
+      0.8050000071525574
+    ],
+    "materials": [
+      "Item_blue.002",
+      "Item_steel.002",
+      "Item_dark.002"
+    ]
+  },
+  {
+    "code": "dagger",
+    "triangles": 4230,
+    "size": [
+      0.08500000089406967,
+      0.03999999910593033,
+      0.35500001907348633
+    ],
+    "materials": [
+      "Item_steel.002",
+      "Item_dark.002"
+    ]
+  },
+  {
+    "code": "rig",
+    "triangles": 2037,
+    "size": [
+      0.4000000059604645,
+      0.2329031229019165,
+      0.46525901556015015
+    ],
+    "materials": [
+      "Item_dark.002",
+      "Item_green.002",
+      "Item_steel.002",
+      "Item_ceramic.002"
+    ]
+  },
+  {
+    "code": "backpack",
+    "triangles": 5892,
+    "size": [
+      0.38499999046325684,
+      0.2919999957084656,
+      0.3799999952316284
+    ],
+    "materials": [
+      "Item_ceramic.002",
+      "Item_dark.002",
+      "Item_steel.002",
+      "Item_blue.002"
+    ]
+  },
+  {
+    "code": "secure_case",
+    "triangles": 3373,
+    "size": [
+      0.23999999463558197,
+      0.1419999897480011,
+      0.2206568568944931
+    ],
+    "materials": [
+      "Item_ceramic.002",
+      "Item_dark.002",
+      "Item_steel.002"
+    ]
+  },
+  {
+    "code": "survey_compass",
+    "triangles": 3460,
+    "size": [
+      0.10000000149011612,
+      0.10000000149011612,
+      0.04000000283122063
+    ],
+    "materials": [
+      "Item_steel.002",
+      "Item_dark.002",
+      "Item_red.002",
+      "Item_ceramic.002"
+    ]
+  },
+  {
+    "code": "laser_rangefinder",
+    "triangles": 4882,
+    "size": [
+      0.10999999940395355,
+      0.09650000184774399,
+      0.07500000298023224
+    ],
+    "materials": [
+      "Item_dark.002",
+      "Item_steel.002",
+      "Item_blue.002"
+    ]
+  },
+  {
+    "code": "small_pack",
+    "triangles": 4590,
+    "size": [
+      0.38499999046325684,
+      0.2919999957084656,
+      0.3199999928474426
+    ],
+    "materials": [
+      "Item_ceramic.002",
+      "Item_dark.002",
+      "Item_steel.002",
+      "Item_blue.002"
+    ]
+  },
+  {
+    "code": "scout_rig",
+    "triangles": 2145,
+    "size": [
+      0.30000001192092896,
+      0.2329031229019165,
+      0.46525901556015015
+    ],
+    "materials": [
+      "Item_dark.002",
+      "Item_green.002",
+      "Item_steel.002",
+      "Item_ceramic.002"
+    ]
+  },
+  {
+    "code": "field_rig",
+    "triangles": 2081,
+    "size": [
+      0.4000000059604645,
+      0.23292332887649536,
+      0.5552040934562683
+    ],
+    "materials": [
+      "Item_dark.002",
+      "Item_green.002",
+      "Item_steel.002",
+      "Item_ceramic.002"
+    ]
+  },
+  {
+    "code": "sling_pack",
+    "triangles": 4590,
+    "size": [
+      0.38499999046325684,
+      0.2919999957084656,
+      0.3199999928474426
+    ],
+    "materials": [
+      "Item_ceramic.002",
+      "Item_dark.002",
+      "Item_steel.002",
+      "Item_blue.002"
+    ]
+  },
+  {
+    "code": "cargo_pack",
+    "triangles": 7185,
+    "size": [
+      0.38499999046325684,
+      0.2919999957084656,
+      0.4399999976158142
+    ],
+    "materials": [
+      "Item_ceramic.002",
+      "Item_dark.002",
+      "Item_steel.002",
+      "Item_blue.002"
+    ]
+  },
+  {
+    "code": "alien_silk_gland",
+    "triangles": 3184,
+    "size": [
+      0.08859912306070328,
+      0.07157810032367706,
+      0.08799999952316284
+    ],
+    "materials": [
+      "Item_bone.002",
+      "Item_tissue.002"
+    ]
+  },
+  {
+    "code": "alien_adrenal_gland",
+    "triangles": 2080,
+    "size": [
+      0.052904993295669556,
+      0.06150665506720543,
+      0.07999999821186066
+    ],
+    "materials": [
+      "Item_red.002",
+      "Item_tissue.002"
+    ]
+  },
+  {
+    "code": "alien_nutrient_sac",
+    "triangles": 1040,
+    "size": [
+      0.0899999737739563,
+      0.07378870248794556,
+      0.10400000214576721
+    ],
+    "materials": [
+      "Item_amber.002",
+      "Item_tissue.002"
+    ]
+  },
+  {
+    "code": "alien_contractile_heart",
+    "triangles": 4224,
+    "size": [
+      0.09565339982509613,
+      0.07148746401071548,
+      0.0794181078672409
+    ],
+    "materials": [
+      "Item_tissue.002",
+      "Item_violet.002"
+    ]
+  },
+  {
+    "code": "alien_venom_gland",
+    "triangles": 2144,
+    "size": [
+      0.06487639248371124,
+      0.07440973818302155,
+      0.0794181078672409
+    ],
+    "materials": [
+      "Item_green.002",
+      "Item_tissue.002"
+    ]
+  },
+  {
+    "code": "alien_regen_sac",
+    "triangles": 5200,
+    "size": [
+      0.0801931619644165,
+      0.07940852642059326,
+      0.04399999976158142
+    ],
+    "materials": [
+      "Item_tissue.002",
+      "Item_violet.002"
+    ]
+  },
+  {
+    "code": "alien_gel_bladder",
+    "triangles": 1040,
+    "size": [
+      0.0899999737739563,
+      0.07378870248794556,
+      0.05999999865889549
+    ],
+    "materials": [
+      "Item_blue.002",
+      "Item_tissue.002"
+    ]
+  },
+  {
+    "code": "alien_root_nodule",
+    "triangles": 5424,
+    "size": [
+      0.15659275650978088,
+      0.15745508670806885,
+      0.0658031553030014
+    ],
+    "materials": [
+      "Item_bone.002",
+      "Item_tissue.002",
+      "Item_green.002"
+    ]
+  },
+  {
+    "code": "alien_neural_ganglion",
+    "triangles": 9184,
+    "size": [
+      0.1262243390083313,
+      0.11003004014492035,
+      0.03200000151991844
+    ],
+    "materials": [
+      "Item_violet.002",
+      "Item_tissue.002"
+    ]
+  }
+]

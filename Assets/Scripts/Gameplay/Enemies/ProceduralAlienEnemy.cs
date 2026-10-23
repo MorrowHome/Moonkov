@@ -7,6 +7,7 @@ using Unity.MP_FPS.SpiderLab;
 using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Unity.MP_FPS
 {
@@ -160,6 +161,8 @@ namespace Unity.MP_FPS
             var manager = GhostGameObject.EntityManager; m_Visible = false;
             using var query = manager.CreateEntityQuery(typeof(PredictedPlayerGhost), typeof(LocalTransform), typeof(GhostGameObjectLink));
             using var entities = query.ToEntityArray(Allocator.Temp);
+            using var smokeQuery = manager.CreateEntityQuery(typeof(TacticalServerWorld));
+            var smokeWorld = smokeQuery.IsEmptyIgnoreFilter ? null : manager.GetComponentObject<TacticalServerWorld>(smokeQuery.GetSingletonEntity());
             float best = float.MaxValue;
             foreach (var entity in entities)
             {
@@ -170,7 +173,8 @@ namespace Unity.MP_FPS
                 uint shot = manager.GetComponentData<PredictedPlayerGhost>(entity).LastShotTick;
                 bool fired = m_ObservedShots.TryGetValue(entity, out uint previousShot) && previousShot != shot;
                 m_ObservedShots[entity] = shot;
-                bool visible = distance <= profile.SightRange && ClearSight(AimPoint + m_Body.Motor.Current.Up * .12f, point, root.transform);
+                bool visible = distance <= profile.SightRange &&
+                    !SmokeVisibility.Blocked(smokeWorld, gameObject.scene.GetPhysicsScene(), AimPoint, point) && ClearSight(AimPoint + m_Body.Motor.Current.Up * .12f, point, root.transform);
                 bool heard = fired && distance <= profile.HearingRange;
                 if (!visible && !heard) continue;
                 float score = distance - (entity == m_Target ? 2 : 0) + (visible ? 0 : profile.SightRange);

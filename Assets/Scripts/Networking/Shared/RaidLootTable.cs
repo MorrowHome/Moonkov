@@ -62,7 +62,7 @@ namespace Unity.MP_FPS
                 new Entry("scout_rig", 12), new Entry("field_rig", 8),
                 new Entry("sling_pack", 10), new Entry("cargo_pack", 4),
                 new Entry("energy_grenade", 18, 1, 2), new Entry("dynamite_bundle", 2), new Entry("frag_bomb", 2),
-                new Entry("fire_bomb", 2), new Entry("choke_bomb", 2), new Entry("alert_trip_mine", 2),
+                new Entry("fire_bomb", 2), new Entry("choke_bomb", 2), new Entry("smoke_grenade", 2), new Entry("alert_trip_mine", 2),
                 new Entry("concertina_trip_mine", 2), new Entry("poison_trip_mine", 2), new Entry("ammo_box", 2), new Entry("helmet", 8), new Entry("rig", 6), new Entry("compact", 3),
                 new Entry("pistol", 3), new Entry("shotgun", 2), new Entry("sniper", 1),
                 new Entry("optical_sensor", 8), new Entry("data_drive", 6),

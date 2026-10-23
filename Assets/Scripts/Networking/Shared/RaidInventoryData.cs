@@ -278,8 +278,9 @@ namespace Unity.MP_FPS
         public bool RequiresDissection => CharacterIndex==-1 && Version==1;
     }
     // Atomic visibility + metadata update, with a fresh generated serializer identity.
-    public struct RaidGroundMarkerRpc : IRpcCommand
+    public struct RaidGroundItemMarkerRpc : IRpcCommand
     {
+        public FixedString64Bytes ItemCode;
         public uint Sequence;
         public int LootId, Version, CharacterIndex;
         public Unity.Mathematics.float3 Position;
@@ -290,13 +291,14 @@ namespace Unity.MP_FPS
     public sealed class RaidDeathBagClientState : IComponentData
     {
         public readonly System.Collections.Generic.Dictionary<int,RaidCorpseRpc> Bags = new System.Collections.Generic.Dictionary<int,RaidCorpseRpc>();
+        public readonly System.Collections.Generic.Dictionary<int,string> ItemCodes = new System.Collections.Generic.Dictionary<int,string>();
         private readonly System.Collections.Generic.Dictionary<int,uint> m_Sequences = new System.Collections.Generic.Dictionary<int,uint>();
         // Keep at most a window of per-ID sequence records. Updates older than
         // the window are rejected globally, including for already removed bags.
         private const uint SequenceWindow=4096;
         private uint m_HighestSequence;
         private readonly System.Collections.Generic.List<int> m_ExpiredSequences = new System.Collections.Generic.List<int>();
-        public void Receive(RaidGroundMarkerRpc update)
+        public void Receive(RaidGroundItemMarkerRpc update)
         {
             uint floor=m_HighestSequence>SequenceWindow ? m_HighestSequence-SequenceWindow : 0;
             if(update.Sequence<=floor)return;
@@ -310,9 +312,11 @@ namespace Unity.MP_FPS
                 foreach(var pair in m_Sequences)if(pair.Value<=floor)m_ExpiredSequences.Add(pair.Key);
                 foreach(int id in m_ExpiredSequences)m_Sequences.Remove(id);
             }
-            if(update.Removed) {Bags.Remove(update.LootId);return;}
+            if(update.Removed) {Bags.Remove(update.LootId);ItemCodes.Remove(update.LootId);return;}
             Receive(new RaidCorpseRpc {LootId=update.LootId,Version=update.Version,CharacterIndex=update.CharacterIndex,
                 Position=update.Position,Rotation=update.Rotation,Age=update.Age,Empty=update.Empty});
+            if(Bags.TryGetValue(update.LootId,out var accepted) && accepted.Version==update.Version)
+                ItemCodes[update.LootId]=update.ItemCode.ToString();
         }
         public void Receive(RaidCorpseRpc bag)
         {

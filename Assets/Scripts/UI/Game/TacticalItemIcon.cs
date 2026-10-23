@@ -8,7 +8,16 @@ namespace Unity.MP_FPS.Client
     {
         private readonly string m_Code;
         public TacticalItemIcon(string code)
-        { m_Code = code; pickingMode = PickingMode.Ignore; generateVisualContent += Draw; }
+        {
+            m_Code = code; pickingMode = PickingMode.Ignore;
+            var texture=PhysicalItemVisuals.Icon(code);
+            if(texture)
+            {
+                var image=new Image {image=texture,scaleMode=ScaleMode.ScaleToFit,pickingMode=PickingMode.Ignore};
+                image.style.position=Position.Absolute;image.style.left=image.style.right=image.style.top=image.style.bottom=0;Add(image);
+            }
+            else generateVisualContent += Draw;
+        }
         private void Draw(MeshGenerationContext context)
         {
             float w = contentRect.width, h = contentRect.height; if (w < 2 || h < 2) return;

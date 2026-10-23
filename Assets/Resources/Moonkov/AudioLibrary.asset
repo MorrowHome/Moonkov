@@ -17,6 +17,18 @@ MonoBehaviour:
   Confirm: {fileID: 11400000, guid: 9654833cd35b13740ad8154e0c6b5d8c, type: 2}
   Error: {fileID: 11400000, guid: 46975e11edb870b48b911dcb228aa1ae, type: 2}
   Notification: {fileID: 11400000, guid: e4da94686cce2b84382d79e1a930e756, type: 2}
+  ShieldImpact: {fileID: 11400000, guid: a369643e2b9604cdb831a740c7c5ec78, type: 2}
+  ShieldBreak: {fileID: 11400000, guid: 92892d6ed57e243e394a7259fd31006b, type: 2}
+  ShieldRestore: {fileID: 11400000, guid: 1f4a8eae002854fc086b946404272a71, type: 2}
+  TacticalDeploy: {fileID: 11400000, guid: a9b60d4af04f1459d9717f09ca3cd00f, type: 2}
+  TacticalAlarm: {fileID: 11400000, guid: 59b205c9425e74d92aa8763ee2682a90, type: 2}
+  TacticalExplosion: {fileID: 11400000, guid: 0f617e8f33dc14edf91fb10f7ab96b63, type: 2}
+  TacticalGas: {fileID: 11400000, guid: 6243d888f3b4b446b88d24747c728cfe, type: 2}
+  TacticalCough: {fileID: 11400000, guid: 2601a160eaf2f4d0c845736a595e1067, type: 2}
+  MeleeSwing: {fileID: 11400000, guid: 9fcc28e1e35fa4d0ebf4b4c815359b33, type: 2}
+  MeleeEnergySwing: {fileID: 11400000, guid: 5b17d7ef7c1e7454799cfad1de9dc162, type: 2}
+  MeleeImpact: {fileID: 11400000, guid: 9ffa710eed8d1472ca20079eafef4d88, type: 2}
+  MeleeBlocked: {fileID: 11400000, guid: 26b61b63dc7454aef85fc8d372a076de, type: 2}
   Equipment: {fileID: 11400000, guid: a278b15de85ac924cb9107a0efd6d328, type: 2}
   Container: {fileID: 11400000, guid: 80a6b40023bcc7c4a90217620cb71fd8, type: 2}
   Jump: {fileID: 11400000, guid: 73b72b3778f6cf34abb78d33dd4d9a23, type: 2}

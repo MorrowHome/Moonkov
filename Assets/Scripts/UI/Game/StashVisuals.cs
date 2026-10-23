@@ -12,11 +12,42 @@ namespace Unity.MP_FPS.Client
     public sealed partial class StashItemArt : VisualElement
     {
         private StashArtKind m_Kind;
+        private bool m_HasPhysicalIcon;
+        private static System.Collections.Generic.Dictionary<StashArtKind,string> s_PhysicalCodes;
+        private static string PhysicalCode(StashArtKind kind)
+        {
+            if(kind==StashArtKind.None)return null;
+            if(s_PhysicalCodes==null)
+            {
+                s_PhysicalCodes=new System.Collections.Generic.Dictionary<StashArtKind,string>();
+                foreach(var definition in global::Unity.MP_FPS.Inventory.InventoryCatalog.Definitions.Values)
+                    if(PhysicalItemVisuals.IsPhysical(definition.Code))
+                    {
+                        var art=ContainerInventoryView.Art(definition.Code);
+                        if(art!=StashArtKind.None && !s_PhysicalCodes.ContainsKey(art))s_PhysicalCodes.Add(art,definition.Code);
+                    }
+            }
+            return s_PhysicalCodes.TryGetValue(kind,out var code) ? code : null;
+        }
         private Painter2D m_Painter;
         private Vector2 m_Origin;
         private float m_Scale;
 
         public StashItemArt() : this(StashArtKind.None) { }
+        public StashItemArt(string code) : this(ContainerInventoryView.Art(code))
+        {
+            SetPhysicalIcon(code);
+        }
+        private void SetPhysicalIcon(string code)
+        {
+            var texture=PhysicalItemVisuals.Icon(code);
+            if(!texture)return;
+            Clear();m_HasPhysicalIcon=true;
+            var image=new Image {image=texture,scaleMode=ScaleMode.ScaleToFit,pickingMode=PickingMode.Ignore};
+            image.style.position=Position.Absolute;
+            image.style.left=image.style.right=image.style.top=image.style.bottom=0;
+            Add(image);MarkDirtyRepaint();
+        }
         public StashItemArt(StashArtKind kind)
         {
             pickingMode = PickingMode.Ignore;
@@ -30,7 +61,7 @@ namespace Unity.MP_FPS.Client
             get => m_Kind;
             set
             {
-                m_Kind = value; Clear();
+                m_Kind = value; m_HasPhysicalIcon=false; Clear();
                 if ((value >= StashArtKind.HaloCicada && value <= StashArtKind.HaloNocturne) || value == StashArtKind.HaloRifle || value == StashArtKind.HaloRevolver || value == StashArtKind.HaloShotgun || value == StashArtKind.HaloSniper)
                 {
                     var icon = new Image { image = Resources.Load<Texture2D>("HaloIcons/" +
@@ -38,13 +69,14 @@ namespace Unity.MP_FPS.Client
                     icon.style.position = Position.Absolute; icon.style.left = icon.style.right = icon.style.top = icon.style.bottom = 0;
                     Add(icon);
                 }
+                SetPhysicalIcon(PhysicalCode(value));
                 MarkDirtyRepaint();
             }
         }
 
         private void Draw(MeshGenerationContext context)
         {
-            if (contentRect.width < 1 || contentRect.height < 1) return;
+            if (m_HasPhysicalIcon || contentRect.width < 1 || contentRect.height < 1) return;
             m_Painter = context.painter2D;
             float width = m_Kind == StashArtKind.Cell ? 60 : 100;
             float height = m_Kind == StashArtKind.Rifle ? 45 : m_Kind == StashArtKind.Alloy || m_Kind == StashArtKind.Pistol ? 60 : 100;
