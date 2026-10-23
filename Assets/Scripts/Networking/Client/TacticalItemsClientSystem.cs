@@ -9,7 +9,12 @@ namespace Unity.MP_FPS
     {
         private TacticalItemsFeedback m_Feedback;
         private bool m_OwnsPresentation;
-        protected override void OnCreate() => EntityManager.CreateSingleton<TacticalItemClientState>();
+        protected override void OnCreate()
+        {
+            // Managed components need an instance: the generic default singleton stores null.
+            var owner = EntityManager.CreateEntity();
+            EntityManager.AddComponentObject(owner, new TacticalItemClientState());
+        }
         private bool OwnsPresentation()
         {
             // Match RaidHUD's first full client World. Additional in-process transport
@@ -22,7 +27,7 @@ namespace Unity.MP_FPS
         {
             m_OwnsPresentation=OwnsPresentation();
             if(m_OwnsPresentation && !m_Feedback)m_Feedback=TacticalItemsFeedback.GetOrCreate();
-            var ecb=new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
+            using var ecb=new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
             foreach(var (rpc,received,entity) in SystemAPI.Query<RefRO<TacticalItemOwnerRpc>,RefRO<ReceiveRpcCommandRequest>>().WithEntityAccess())
             {
                 var owner=rpc.ValueRO;
@@ -40,7 +45,7 @@ namespace Unity.MP_FPS
                 foreach(var (health,link,entity) in SystemAPI.Query<RefRO<PredictedPlayerGhost>,GhostGameObjectLink>().WithEntityAccess())
                     if(health.ValueRO.TacticalCoughSeconds>0 && link.LinkedInstance)
                         m_Feedback.PresentCough(entity.Index,link.LinkedInstance.transform.position+Vector3.up);
-            ecb.Playback(EntityManager);ecb.Dispose();
+            ecb.Playback(EntityManager);
         }
         protected override void OnDestroy()
         {if(m_Feedback){if(Application.isPlaying)Object.Destroy(m_Feedback.gameObject);else Object.DestroyImmediate(m_Feedback.gameObject);}if(m_OwnsPresentation)TacticalItemsFeedback.SetOwner(default);}
