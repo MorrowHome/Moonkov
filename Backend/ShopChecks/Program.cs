@@ -11,9 +11,42 @@ int checks = 0;
 void Check(bool ok, string message) { if (!ok) throw new Exception(message); checks++; }
 ShopCommand Command(InventoryGraph graph, ShopOperation operation, string? code = null, int quantity = 0, string? item = null) =>
     new() { RequestId = Guid.NewGuid().ToString("D"), ExpectedVersion = graph.Version, Operation = operation, Code = code!, Quantity = quantity, ItemId = item! };
+await ClientCatalogChecks.Run(Check);
+foreach (string code in new[] { "rifle", "pistol", "shotgun", "sniper", "cells", "medkit", "ration", "water", "oxygen_canister" })
+{
+    Check(ShopCatalog.Find(code).BuyDust == 0, code + " remains intentionally free to buy");
+    var empty = InventoryGraph.Create(starter: false);
+    Check(ShopRules.Apply(empty, Command(empty, ShopOperation.Buy, code, 1), out var purchased) == null &&
+        purchased.Count("dust") == 0 && purchased.Count(code) == 1, code + " can be bought with no dust");
+    var item = purchased.Items.Single(i => i.Code == code);
+    Check(!item.EmergencySupply, code + " normal free purchase is not an emergency supply");
+    Check(ShopRules.Apply(purchased, Command(purchased, ShopOperation.Sell, code, 1, item.Id), out var sold) == null &&
+        sold.Find(item.Id) == null && sold.Count("dust") == ShopCatalog.Find(code).SellDust,
+        code + " normal free purchase retains its ordinary sale value");
+}
+var emptyAccount = InventoryGraph.Create(starter: false);
+Check(ShopRules.Apply(emptyAccount, Command(emptyAccount, ShopOperation.Buy, "nocturne", 1), out _) == "shop_insufficient_dust",
+    "priced weapons still require dust");
+Check(ShopRules.Apply(emptyAccount, Command(emptyAccount, ShopOperation.Buy, "cells", -1), out _) == "shop_invalid",
+    "free purchases still reject invalid quantities");
+Check(ShopRules.Apply(emptyAccount, Command(emptyAccount, ShopOperation.Buy, "alien_tissue", 1), out _) == "shop_invalid",
+    "sell-only loot cannot be purchased");
+Check(ShopRules.Apply(emptyAccount, Command(emptyAccount, ShopOperation.Emergency), out var emergency) == null &&
+    emergency.Equipped("Pistol") is { EmergencySupply: true, LoadedAmmo: 6 } && emergency.Count("cells", true) == 3,
+    "emergency kit remains distinct from normal free purchases");
+foreach (var item in emergency.Items.Where(i => i.Code == "pistol" || i.Code == "cells"))
+    Check(ShopRules.Apply(emergency, Command(emergency, ShopOperation.Sell, item.Code, 1, item.Id), out _) == "shop_emergency_supply",
+        "emergency " + item.Code + " cannot be sold");
 var full = InventoryGraph.Create(starter: false); full.WeaponKitVersion = 1; full.StashRows = 1;
 Check(full.AddSupply("dust", 200, "stash") == InventoryError.None, "full stash fixture");
-Check(ShopRules.Apply(full, Command(full, ShopOperation.Buy, "rifle", 1), out _) == "inventory_Full" && full.Count("dust") == 200, "failed purchase cannot debit resources");
+foreach (string code in new[] { "rifle", "nocturne" })
+    Check(ShopRules.Apply(full, Command(full, ShopOperation.Buy, code, 1), out _) == "inventory_Full" && full.Count("dust") == 200,
+        "failed free or paid purchase cannot debit resources: " + code);
+if (args is ["--rules-only"])
+{
+    Console.WriteLine($"Shop rules/client checks passed: {checks}. In-memory transport; no service or database started.");
+    return;
+}
 
 var root = Path.GetFullPath(args.Single());
 using var config = JsonDocument.Parse(File.ReadAllText(Path.Combine(root, "Backend/MoonPersistence/appsettings.local.json")));
@@ -60,7 +93,8 @@ try
         {
             Check(catalogue.IsSuccessStatusCode, "catalogue is available"); using var payload = JsonDocument.Parse(await catalogue.Content.ReadAsStringAsync());
             var offers = JsonSerializer.Deserialize<ShopOffer[]>(payload.RootElement.GetProperty("offers").GetRawText(), read)!;
-            Check(offers.Length == 4 && offers.Single(o => o.Code == "pistol").BuyDust == 15, "server supplies current prices");
+            Check(ShopCatalog.ValidOffers(offers) && offers.Select(o => (o.Code, o.BuyDust, o.SellDust)).SequenceEqual(
+                ShopCatalog.Offers.Select(o => (o.Code, o.BuyDust, o.SellDust))), "server supplies the complete current catalogue and prices");
             profile = JsonSerializer.Deserialize<Profile>(payload.RootElement.GetProperty("profile").GetRawText(), read)!;
         }
         var graph = InventoryRepository.Decode(profile.InventoryJson!); Guid player = profile.PlayerId;
@@ -76,13 +110,13 @@ try
         int dust = graph.Count("dust"), pistols = graph.Count("pistol"); var buy = Command(graph, ShopOperation.Buy, "pistol", 1);
         var twins = await Task.WhenAll(Post("auth/shop/trade", buy), Post("auth/shop/trade", buy));
         foreach (var response in twins) await ProfileOf(response);
-        graph = await Refresh(); Check(graph.Count("dust") == dust - 15 && graph.Count("pistol") == pistols + 1, "concurrent retry charges/gives exactly once");
+        graph = await Refresh(); Check(graph.Count("dust") == dust && graph.Count("pistol") == pistols + 1, "concurrent retry gives one normal free pistol without charging");
         buy.Quantity = 2; await Reject(await Post("auth/shop/trade", buy), "shop_request_conflict");
         dust = graph.Count("dust"); pistols = graph.Count("pistol");
         var race = await Task.WhenAll(Post("auth/shop/trade", Command(graph, ShopOperation.Buy, "pistol", 1)), Post("auth/shop/trade", Command(graph, ShopOperation.Buy, "pistol", 1)));
         Check(race.Count(r => r.IsSuccessStatusCode) == 1, "distinct same-version orders cannot both apply");
         foreach (var response in race) { if (response.IsSuccessStatusCode) await ProfileOf(response); else await Reject(response, "inventory_Stale"); }
-        graph = await Refresh(); Check(graph.Count("dust") == dust - 15 && graph.Count("pistol") == pistols + 1, "concurrent order conservation");
+        graph = await Refresh(); Check(graph.Count("dust") == dust && graph.Count("pistol") == pistols + 1, "concurrent free order conservation");
         var stored = graph.Items.Last(i => i.Code == "pistol"); stored.LoadedAmmo = 2; await Save(graph); graph = await Refresh();
         dust = graph.Count("dust");
         profile = await ProfileOf(await Post("auth/shop/trade", Command(graph, ShopOperation.Sell, "pistol", 1, stored.Id)));
@@ -90,9 +124,17 @@ try
 
         graph.Items.RemoveAll(i => ShopCatalog.IsWeapon(i.Code) || i.Code == "dust" || i.Code == "cells"); await Save(graph); graph = await Refresh();
         int version = graph.Version;
-        await Reject(await Post("auth/shop/trade", Command(graph, ShopOperation.Buy, "pistol", 1)), "shop_insufficient_dust");
+        await Reject(await Post("auth/shop/trade", Command(graph, ShopOperation.Buy, "nocturne", 1)), "shop_insufficient_dust");
         await Reject(await Post("auth/shop/trade", Command(graph, ShopOperation.Buy, "cells", -1)), "shop_invalid");
         graph = await Refresh(); Check(graph.Version == version && graph.Count("dust") == 0 && graph.Count("pistol") == 0, "rejected orders leave graph untouched");
+        profile = await ProfileOf(await Post("auth/shop/trade", Command(graph, ShopOperation.Buy, "pistol", 1)));
+        graph = InventoryRepository.Decode(profile.InventoryJson!);
+        var normalPistol = graph.Items.Single(i => i.Code == "pistol");
+        Check(graph.Count("dust") == 0 && !normalPistol.EmergencySupply, "normal free pistol purchase succeeds at zero dust");
+        profile = await ProfileOf(await Post("auth/shop/trade", Command(graph, ShopOperation.Sell, "pistol", 1, normalPistol.Id)));
+        graph = InventoryRepository.Decode(profile.InventoryJson!);
+        Check(graph.Count("pistol") == 0 && graph.Count("dust") == 7, "normal free pistol can be sold for its ordinary value");
+        graph.Items.RemoveAll(i => i.Code == "dust"); await Save(graph); graph = await Refresh();
         var claim = Command(graph, ShopOperation.Emergency);
         profile = await ProfileOf(await Post("auth/shop/trade", claim)); graph = InventoryRepository.Decode(profile.InventoryJson!);
         Check(graph.Equipped("Pistol") is { EmergencySupply: true, LoadedAmmo: 6 } && graph.Count("cells", true) == 3, "free kit equips pistol and provides carried cells");
@@ -103,14 +145,17 @@ try
         await Reject(await Post("auth/shop/trade", Command(graph, ShopOperation.Sell, "pistol", 1, pistol.Id)), "shop_emergency_supply");
         var freeCells = graph.Items.Single(i => i.Code == "cells");
         Check(graph.TryApply(new InventoryCommand { ExpectedVersion = graph.Version, ItemId = freeCells.Id, Parent = "stash", Region = "main", X = 8, Y = 8 }) == InventoryError.None, "store emergency cells");
-        Check(graph.AddSupply("cells", 2, "stash") == InventoryError.None, "paid cells remain separate");
+        await Save(graph); graph = await Refresh();
+        profile = await ProfileOf(await Post("auth/shop/trade", Command(graph, ShopOperation.Buy, "cells", 2)));
+        graph = InventoryRepository.Decode(profile.InventoryJson!);
         var normal = graph.Items.Single(i => i.Code == "cells" && !i.EmergencySupply);
+        Check(normal.Quantity == 2 && graph.Count("dust") == 0, "normal free cells remain separate from emergency supplies");
         Check(graph.TryApply(new InventoryCommand { ExpectedVersion = graph.Version, Operation = InventoryOperation.Merge, ItemId = freeCells.Id, TargetId = normal.Id }) == InventoryError.Invalid,
             "merging cannot launder free supplies");
         await Save(graph); graph = await Refresh();
         await Reject(await Post("auth/shop/trade", Command(graph, ShopOperation.Sell, "cells", 1, freeCells.Id)), "shop_emergency_supply");
         profile = await ProfileOf(await Post("auth/shop/trade", Command(graph, ShopOperation.Sell, "cells", 1, normal.Id)));
-        graph = InventoryRepository.Decode(profile.InventoryJson!); Check(graph.Count("dust") == 2 && graph.Items.Where(i => i.Code == "cells" && i.EmergencySupply).Sum(i => i.Quantity) == 3, "only paid cells can earn dust");
+        graph = InventoryRepository.Decode(profile.InventoryJson!); Check(graph.Count("dust") == 2 && graph.Items.Where(i => i.Code == "cells" && i.EmergencySupply).Sum(i => i.Quantity) == 3, "normal free cells retain sale value while emergency cells cannot be sold");
         var deployment = new Deployment(player, Guid.NewGuid(), 3);
         profile = await ProfileOf(await Post("internal/deployments", deployment));
         var raid = InventoryRepository.Decode(profile.RaidInventoryJson!);
