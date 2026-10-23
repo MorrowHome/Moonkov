@@ -44,10 +44,13 @@ namespace Unity.MP_FPS.DollSinger
             reloading = reload; progress = Mathf.Clamp01(chargeProgress); target = Mathf.Max(rounds, targetAmmo);
             if (lastShot != tick && tick != 0 && (lastShot == 0 || (int)(tick - lastShot) > 0))
             { if (initialized) flash = 1f; lastShot = tick; pulseIndex = Mathf.Clamp(burstIndex, 0, 2); }
-            initialized = true; Rebuild();
+            initialized = true;
+            // Runtime state and aim setters are batched before LateUpdate. Editor
+            // previews also read the mesh immediately, without a player loop.
+            if (!Application.isPlaying) Rebuild();
         }
         public void SetAimBlend(float value) => aim = Mathf.Clamp01(value);
-        private void Update() => Step(Time.deltaTime);
+        private void LateUpdate() => Step(Time.deltaTime);
         public void Step(float dt)
         { elapsed += Mathf.Max(0, dt); flash *= Mathf.Exp(-Mathf.Max(0, dt) * 11f); Rebuild(); }
         private static Vector3 Polar(float radius, float angle)
