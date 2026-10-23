@@ -127,10 +127,9 @@ namespace Unity.MP_FPS
 
         public static void SetCursorVisible(bool isVisible)
         {
-            Cursor.visible = isVisible;
-            Cursor.lockState = Cursor.visible
-                ? CursorLockMode.None
-                : CursorLockMode.Locked;            
+            var mode = isVisible ? CursorLockMode.None : CursorLockMode.Locked;
+            if (Cursor.lockState != mode) Cursor.lockState = mode;
+            if (Cursor.visible != isVisible) Cursor.visible = isVisible;
         }
     }
 }

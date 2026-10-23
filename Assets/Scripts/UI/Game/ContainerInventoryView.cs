@@ -457,8 +457,11 @@ namespace Unity.MP_FPS.Client
             private void Leave(PointerLeaveEvent evt) { if (m_View.m_HoveredItemId == m_Source()?.Id) m_View.m_HoveredItemId = null; }
             private void Down(PointerDownEvent evt)
             {
-                if (m_View.m_Graph==null || m_View.m_Busy) { evt.StopImmediatePropagation(); return; }
+                if (m_View.m_Graph==null) { evt.StopImmediatePropagation(); return; }
                 if (evt.button==1 && m_View.m_Drag!=null) { m_View.CancelDrag(); evt.StopImmediatePropagation(); return; }
+                // Repeated down notifications must not restart a held gesture.
+                if (evt.button==0 && m_View.m_Drag==this && m_Pointer==evt.pointerId)
+                { evt.StopImmediatePropagation(); return; }
                 m_Item=m_Source();
                 if (evt.button==1) { if (m_Item!=null) m_View.Context(m_Item,evt.position); evt.StopImmediatePropagation(); return; }
                 if (evt.button!=0) return;
@@ -476,7 +479,7 @@ namespace Unity.MP_FPS.Client
                 if ((evt.pressedButtons & 1)==0) { Cancel(); return; }
                 m_Last=evt.position;
                 evt.StopImmediatePropagation();
-                if (m_View.m_ReadOnlyReason != null) return;
+                if (m_View.m_ReadOnlyReason != null || m_View.m_Busy) return;
                 if (m_Item==null || !m_Active && Vector2.Distance(m_Start,m_Last)<4) return;
                 if (!m_Active)
                 {
