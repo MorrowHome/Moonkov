@@ -47,6 +47,17 @@ namespace Unity.MP_FPS
         { await m_ClashCapability.ConfigureAwait(false); return await PostAsync("internal/sessions/resolve", new { Token=token }).ConfigureAwait(false); }
         private async Task PostClashAsync(string path, object payload)
         {
+            if(m_Lan!=null)
+            {
+                if(path=="matches")
+                {
+                    var registration=(BountyRegistration)payload;
+                    await Task.Run(()=>m_Lan.RegisterBounty(registration.MatchId,registration.RulesVersion,registration.TokenId,registration.Participants)).ConfigureAwait(false);
+                }
+                else if(path=="redemptions") await Task.Run(()=>m_Lan.RedeemBounty((BountyRedemption)payload)).ConfigureAwait(false);
+                else throw new InvalidOperationException("Unsupported LAN Clash operation.");
+                return;
+            }
             if(m_Offline!=null)
             {
                 if(path=="matches")

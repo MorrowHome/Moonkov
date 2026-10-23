@@ -174,6 +174,12 @@ namespace Unity.MP_FPS
                 Debug.LogWarning("Sign in before starting a raid.");
                 return;
             }
+            bool lan = creationType == CreationType.LanHost || creationType == CreationType.LanJoin;
+            if (lan != PlayerProfileClient.IsLan || (lan && (!LanRoomClient.Active || string.IsNullOrEmpty(LanRoomClient.Ticket))))
+            {
+                Debug.LogWarning("Enter LAN raids through the room lobby.");
+                return;
+            }
             if ((creationType == CreationType.Offline) != PlayerProfileClient.IsOffline ||
                 (creationType == CreationType.Offline && !PlayerProfileClient.SupportsSinglePlayer))
             {
@@ -301,6 +307,7 @@ namespace Unity.MP_FPS
                         GameConnection = await GameConnection.CreateorJoinGameAsync();
                         break;
                     }
+                case CreationType.LanHost:
                 case (CreationType.Host): //Direct connection - host
                     {
                         GameConnection = await GameConnection.HostGameAsync();
@@ -309,6 +316,7 @@ namespace Unity.MP_FPS
                 case CreationType.Offline:
                     GameConnection = await GameConnection.OfflineGameAsync();
                     break;
+                case CreationType.LanJoin:
                 case (CreationType.ConnectAndJoin): //Direct connection - client
                     {
                         GameConnection = await GameConnection.ConnectGameAsync();
@@ -327,7 +335,9 @@ namespace Unity.MP_FPS
             }
             else
             {
-                CreateEntityWorlds(creationType == CreationType.Host || creationType == CreationType.Offline, out server, out client);
+                CreateEntityWorlds(creationType == CreationType.Host || creationType == CreationType.LanHost || creationType == CreationType.Offline, out server, out client);
+                if (creationType == CreationType.LanHost) server.EntityManager.CreateEntity(typeof(LanRaidMode));
+                if (creationType == CreationType.LanHost || creationType == CreationType.LanJoin) client.EntityManager.CreateEntity(typeof(LanRaidMode));
                 if (creationType == CreationType.Offline)
                 {
                     server.EntityManager.CreateEntity(typeof(OfflineRaidMode));
@@ -367,6 +377,7 @@ namespace Unity.MP_FPS
                     if (!matched) throw new InvalidOperationException("No matching local server transport.");
                 }
                 await ScenesLoader.LoadGameplayAsync(server, null);
+                if (creationType == CreationType.LanHost) await LanRoomClient.RequestAsync("listening", ct:cancellationToken);
             }
 
             //The the client world was created, connect to the server

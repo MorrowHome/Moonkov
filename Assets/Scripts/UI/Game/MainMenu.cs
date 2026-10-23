@@ -89,11 +89,13 @@ namespace Unity.MP_FPS.Client
             ToggleConnectionModeDisplay();
             InitializeAccountPanel();
             InitializeBountyModeUI();
+            InitializeLanUI();
             MoonkovLocalization.Bind(m_MainMenu);
         }
 
         void OnDisable()
         {
+            DisposeLanUI();
             DisposeBountyModeUI();
             DisposeAccountPanel();
             m_CreateGameButton.clicked -= OnCreateGamePressed;

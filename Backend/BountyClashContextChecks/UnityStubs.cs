@@ -36,3 +36,19 @@ namespace Unity.MP_FPS
     public static class RaidGuestIdentity{public static string GetToken(bool create)=>"";}
     public static class AccountServiceSettings{public static void ValidateAddress(string baseUrl,bool allowLan){}}
 }
+
+// UI transport is outside this source-only persistence harness.
+namespace Unity.MP_FPS
+{
+    public enum RaidGameMode : byte { Expedition, BountyClash }
+    public static class GameManager { public const int MaxPlayer=32; }
+    public static class LanRoomClient
+    {
+        public static LanRoomSnapshot Room;
+        public static LanProfileSnapshot Profile;
+        public static string Ticket;
+        public static bool Ready;
+        public static Task<LanReply> RequestAsync(string action,object payload=null,bool ready=false,CancellationToken ct=default)=>throw new NotSupportedException("No UI transport in persistence checks.");
+        public static Task LeaveAsync()=>throw new NotSupportedException("No UI transport in persistence checks.");
+    }
+}

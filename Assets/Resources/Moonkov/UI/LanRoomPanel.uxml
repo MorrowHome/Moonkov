@@ -1,0 +1,63 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="LanRoomPanel.uss" />
+    <ui:VisualElement class="lan-layer moonkov-style-font" picking-mode="Ignore">
+        <ui:Button name="lanEntry" text="局域网联机" class="lan-entry" />
+        <ui:VisualElement name="lanModal" class="lan-screen lan-hidden">
+            <ui:VisualElement class="lan-backdrop" picking-mode="Ignore" />
+            <ui:VisualElement class="lan-shell">
+                <ui:VisualElement class="lan-header">
+                    <ui:VisualElement class="lan-heading"><ui:Label text="局域网" class="lan-title" /><ui:Label text="与你身边的干员一起出发" class="lan-subtitle" /></ui:VisualElement>
+                    <ui:TextField name="lanPlayerName" label="干员代号" value="Operator" max-length="20" class="lan-identity" />
+                    <ui:Button name="lanClose" text="返回" class="lan-secondary lan-back" />
+                </ui:VisualElement>
+                <ui:VisualElement name="lanBrowser" class="lan-browser">
+                    <ui:VisualElement class="lan-navigation">
+                        <ui:Button name="lanBrowseTab" text="寻找房间" class="lan-tab lan-selected" />
+                        <ui:Button name="lanCreateTab" text="创建房间" class="lan-tab" />
+                        <ui:Button name="lanDirectTab" text="IP 直连" class="lan-tab" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="lan-workspace">
+                        <ui:VisualElement class="lan-primary-area">
+                            <ui:VisualElement name="lanBrowsePage" class="lan-page">
+                                <ui:VisualElement class="lan-list-heading"><ui:Label text="附近的房间" class="lan-section-title" /><ui:Label name="lanRoomCount" text="尚未搜索" class="lan-count" /><ui:Button name="lanRefresh" text="刷新房间" class="lan-secondary" /></ui:VisualElement>
+                                <ui:ScrollView name="lanRooms" class="lan-room-list lan-hidden" horizontal-scroller-visibility="Hidden" />
+                                <ui:VisualElement name="lanEmptyState" class="lan-empty-state"><ui:Label name="lanEmptyTitle" text="寻找身边的房间" class="lan-empty-title" /><ui:Label name="lanEmpty" text="房主创建房间后会出现在这里。&#10;也可以通过 IP 地址直接加入。" class="lan-copy" /><ui:Button name="lanEmptyDirect" text="使用 IP 加入" class="lan-secondary" /></ui:VisualElement>
+                            </ui:VisualElement>
+                            <ui:VisualElement name="lanCreatePage" class="lan-page lan-hidden">
+                                <ui:ScrollView class="lan-form-scroll" horizontal-scroller-visibility="Hidden">
+                                    <ui:Label text="创建你的房间" class="lan-section-title" />
+                                    <ui:TextField name="lanRoomName" label="房间名称" value="Moonkov 小队" max-length="20" class="lan-field" />
+                                    <ui:Label text="作战玩法" class="lan-field-label" />
+                                    <ui:VisualElement class="lan-mode-choices">
+                                        <ui:Button name="lanExpedition" class="lan-mode-choice lan-selected"><ui:Label text="远征" class="lan-mode-name" picking-mode="Ignore" /><ui:Label text="探索月面，搜寻物资并撤离" class="lan-mode-description" picking-mode="Ignore" /></ui:Button>
+                                        <ui:Button name="lanClash" class="lan-mode-choice"><ui:Label text="极速赏金" class="lan-mode-name" picking-mode="Ignore" /><ui:Label text="组建小队，争夺同一份赏金" class="lan-mode-description" picking-mode="Ignore" /></ui:Button>
+                                    </ui:VisualElement>
+                                    <ui:IntegerField name="lanCapacity" label="人数上限" value="8" is-delayed="true" class="lan-field" />
+                                    <ui:Label name="lanCapacityHint" text="远征最多 32 人，包含房主。" class="lan-muted" />
+                                    <ui:Foldout text="高级连接设置" class="lan-advanced" value="false"><ui:IntegerField name="lanControlPort" label="房间端口 / TCP" value="7978" is-delayed="true" class="lan-field" /><ui:IntegerField name="lanGamePort" label="游戏端口 / UDP" value="7979" is-delayed="true" class="lan-field" /></ui:Foldout>
+                                </ui:ScrollView>
+                                <ui:VisualElement class="lan-form-action"><ui:Label name="lanHostRequirement" text="开房需要包含服务器功能的游戏版本。" class="lan-muted" /><ui:Button name="lanCreate" text="创建房间" class="lan-primary" /></ui:VisualElement>
+                            </ui:VisualElement>
+                            <ui:VisualElement name="lanDirectPage" class="lan-page lan-hidden">
+                                <ui:ScrollView class="lan-form-scroll" horizontal-scroller-visibility="Hidden"><ui:Label text="通过 IP 加入" class="lan-section-title" /><ui:Label text="向房主获取同一网络下的 IPv4 地址。" class="lan-copy" /><ui:TextField name="lanAddress" label="房主 IPv4" value="192.168.1.100" max-length="15" class="lan-field lan-ip-field" /><ui:Foldout text="更改房间端口" class="lan-advanced" value="false"><ui:IntegerField name="lanJoinPort" label="房间端口 / TCP" value="7978" is-delayed="true" class="lan-field" /></ui:Foldout></ui:ScrollView>
+                                <ui:VisualElement class="lan-form-action"><ui:Label text="默认房间端口为 7978。" class="lan-muted" /><ui:Button name="lanJoin" text="加入房间" class="lan-primary" /></ui:VisualElement>
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement class="lan-companion">
+                            <ui:VisualElement class="lan-moon-art" picking-mode="Ignore" />
+                            <ui:VisualElement class="lan-companion-copy"><ui:Label text="并肩踏上月面" class="lan-feature-title" /><ui:Label text="加入房间后，仍可整理装备与补给。&#10;所有成员准备完成，由房主发起对局。" class="lan-copy" /><ui:VisualElement class="lan-note-rule" /><ui:Label text="无需在线账号" class="lan-note-title" /><ui:Label text="装备与撤离成果保存在房主电脑。&#10;回到同一位房主，可继续局域网进度。" class="lan-muted" /></ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement name="lanLobby" class="lan-lobby lan-hidden">
+                    <ui:VisualElement class="lan-lobby-content">
+                        <ui:VisualElement class="lan-roster"><ui:Label name="lanRoomHeading" class="lan-room-title" /><ui:VisualElement class="lan-roster-heading"><ui:Label name="lanRoomMeta" class="lan-copy" /><ui:Label name="lanReadyCount" class="lan-count" /></ui:VisualElement><ui:ScrollView name="lanMembers" class="lan-members" horizontal-scroller-visibility="Hidden" /></ui:VisualElement>
+                        <ui:ScrollView class="lan-briefing" horizontal-scroller-visibility="Hidden"><ui:VisualElement name="lanModeArt" class="lan-mode-art" picking-mode="Ignore" /><ui:Label name="lanModeTitle" class="lan-feature-title" /><ui:Label name="lanBriefing" class="lan-copy" /><ui:Foldout text="邀请与连接信息" class="lan-advanced lan-connection" value="false"><ui:Label name="lanHostAddress" class="lan-address" /><ui:Button name="lanCopy" text="复制 IPv4 地址" class="lan-secondary" /></ui:Foldout><ui:Label text="局域网进度由房主保存" class="lan-muted" /></ui:ScrollView>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="lan-launch-bar"><ui:VisualElement class="lan-launch-summary"><ui:Label name="lanLaunchTitle" text="等待成员准备" class="lan-launch-title" /><ui:Label name="lanLaunchHint" class="lan-muted" /></ui:VisualElement><ui:Button name="lanLeave" text="离开房间" class="lan-quiet" /><ui:Button name="lanEquipment" text="整理装备" class="lan-secondary" /><ui:Button name="lanReady" text="准备就绪" class="lan-primary" /><ui:Button name="lanStart" text="开始远征" class="lan-primary" /></ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="lan-footer"><ui:VisualElement name="lanStatusDot" class="lan-status-dot" /><ui:Label name="lanStatus" text="连接同一网络，即可加入房间。" class="lan-status" /><ui:Label text="同一网络 · 独立存档" class="lan-footer-note" /></ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

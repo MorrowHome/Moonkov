@@ -45,6 +45,15 @@ namespace Unity.MP_FPS
 
         private static void ApplyFont(TextElement element)
         {
+            // A surface can own its source-font rendering while keeping string bindings.
+            // In particular, LAN uses the source font to avoid shared SDF atlas edge artifacts.
+            for (VisualElement scope = element; scope != null; scope = scope.parent)
+                if (scope.ClassListContains("moonkov-style-font"))
+                {
+                    element.style.unityFontDefinition = StyleKeyword.Null;
+                    element.style.letterSpacing = StyleKeyword.Null;
+                    return;
+                }
             if (element.ClassListContains("terminal-home-title") || element.ClassListContains("stash-brand-title") || element.ClassListContains("archive-access-brand"))
             {
                 element.style.unityFontDefinition = StyleKeyword.Null;

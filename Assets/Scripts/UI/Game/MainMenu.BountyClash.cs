@@ -12,6 +12,7 @@ namespace Unity.MP_FPS.Client
         {
             m_ModePicker = new BountyModeView(m_MainMenu.Q("Canvas"), clash =>
             {
+                if (PlayerProfileClient.IsLan) return;
                 GameSettings.Instance.RequestedMode = clash ? RaidGameMode.BountyClash : RaidGameMode.Expedition;
                 ConnectionSettings.Instance.ConnectionError = null;
                 RefreshModePicker();

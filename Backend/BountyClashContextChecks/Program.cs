@@ -7,6 +7,8 @@ using Unity.MP_FPS;
 using Unity.MP_FPS.Inventory;
 using Context=Unity.MP_FPS.RaidPersistenceContext;
 
+if(args.Contains("--lan-only")){Console.WriteLine(await LanRoomChecks.Run(Path.GetFullPath("Library/BuildValidation/LanRooms")));return;}
+
 if(args.Contains("--protection-migration-only")){ProtectionMigrationChecks.Run();return;}
 
 if(args.Contains("--offline-solo-only")){await OfflineSoloChecks.Run(Path.GetFullPath("Library/BuildValidation/OfflineClash"));return;}

@@ -45,7 +45,7 @@ namespace Unity.MP_FPS.Client
         {
             RefreshViewport();
             m_ClashSelected = clash; m_Offline = offline;
-            foreach (var entry in m_Entries) MoonkovLocalization.Set(entry, clash ? offline ? "MODE / SOLO BOUNTY CLASH" : "MODE / BOUNTY CLASH" : "MODE / EXPEDITION");
+            foreach (var entry in m_Entries) { entry.SetEnabled(!PlayerProfileClient.IsLan); MoonkovLocalization.Set(entry, clash ? offline ? "MODE / SOLO BOUNTY CLASH" : "MODE / BOUNTY CLASH" : "MODE / EXPEDITION"); }
             m_Expedition.EnableInClassList("bounty-mode-selected", !clash);
             m_Clash.EnableInClassList("bounty-mode-selected", clash);
             m_Clash.SetEnabled(!offline || PlayerProfileClient.SupportsSinglePlayer);

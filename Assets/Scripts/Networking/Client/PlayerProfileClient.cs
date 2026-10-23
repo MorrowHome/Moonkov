@@ -9,7 +9,7 @@ namespace Unity.MP_FPS
 {
     // The UI and owned client read their selected profile here. Server Worlds choose
     // persistence independently from their own OfflineRaidMode marker.
-    public static class PlayerProfileClient
+    public static partial class PlayerProfileClient
     {
         private static OfflineProfileStore s_Offline;
         private static InventoryGraph s_Inventory;
@@ -21,22 +21,23 @@ namespace Unity.MP_FPS
         {
             get
             {
+                if(IsLan)return "lan/"+LanRoomClient.Room.HostId+"/"+LanRoomClient.Profile.Profile.PlayerId;
                 if(!IsOffline)return AccountClient.LocalPreferenceScope;
                 using(var hash=System.Security.Cryptography.SHA256.Create())
                     return "offline/"+BitConverter.ToString(hash.ComputeHash(System.Text.Encoding.UTF8.GetBytes(s_Offline.FilePath))).Replace("-","");
             }
         }
         public static OfflineProfileStore OfflineStore => s_Offline ?? throw new InvalidOperationException("No single-player profile is open.");
-        public static bool IsLoggedIn => IsOffline || AccountClient.IsLoggedIn;
-        public static string Token => IsOffline ? "single-player" : AccountClient.Token;
-        public static string DisplayName => IsOffline ? MoonkovLocalization.Text("Single-player Operator") : AccountClient.DisplayName;
-        public static RecoveryInbox Recovery => IsOffline ? s_Recovery : AccountClient.Recovery;
-        public static InventoryGraph Inventory => IsOffline ? s_Inventory : AccountClient.Inventory;
-        public static bool RaidActive => IsOffline ? s_Offline.RaidActive : AccountClient.RaidActive;
-        public static int StashDust => IsOffline ? s_Dust : AccountClient.StashDust;
-        public static int StashAlloy => IsOffline ? s_Alloy : AccountClient.StashAlloy;
-        public static int StashCells => IsOffline ? s_Cells : AccountClient.StashCells;
-        public static int CarryCells => IsOffline ? s_Carry : AccountClient.CarryCells;
+        public static bool IsLoggedIn => IsLan || IsOffline || AccountClient.IsLoggedIn;
+        public static string Token => IsLan ? LanRoomClient.Ticket : IsOffline ? "single-player" : AccountClient.Token;
+        public static string DisplayName => IsLan ? LanRoomClient.Profile.Profile.DisplayName : IsOffline ? MoonkovLocalization.Text("Single-player Operator") : AccountClient.DisplayName;
+        public static RecoveryInbox Recovery => IsLan ? LanRoomClient.Profile.Recovery : IsOffline ? s_Recovery : AccountClient.Recovery;
+        public static InventoryGraph Inventory => IsLan ? s_LanInventory : IsOffline ? s_Inventory : AccountClient.Inventory;
+        public static bool RaidActive => IsLan ? LanRoomClient.Profile.RaidActive : IsOffline ? s_Offline.RaidActive : AccountClient.RaidActive;
+        public static int StashDust => IsLan ? LanRoomClient.Profile.Profile.Dust : IsOffline ? s_Dust : AccountClient.StashDust;
+        public static int StashAlloy => IsLan ? LanRoomClient.Profile.Profile.Alloy : IsOffline ? s_Alloy : AccountClient.StashAlloy;
+        public static int StashCells => IsLan ? LanRoomClient.Profile.Profile.Cells : IsOffline ? s_Cells : AccountClient.StashCells;
+        public static int CarryCells => IsLan ? s_LanCarry : IsOffline ? s_Carry : AccountClient.CarryCells;
         public static bool SupportsSinglePlayer
         {
             get
@@ -54,7 +55,7 @@ namespace Unity.MP_FPS
             remove { s_OfflineChanged -= value; AccountClient.InventoryChanged -= value; }
         }
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void Reset() { s_Offline?.Dispose(); s_Offline = null; s_Inventory = null;s_Recovery=null; s_Dust = s_Alloy = s_Cells = s_Carry = 0; s_OfflineChanged = null; }
+        private static void Reset() { s_Offline?.Dispose(); s_Offline = null; s_Inventory = null;s_LanInventory=null;s_LanPlayerId=null;s_Recovery=null; s_Dust = s_Alloy = s_Cells = s_Carry = 0; s_OfflineChanged = null; }
 
         public static async Task EnterOfflineAsync(CancellationToken ct)
         {
@@ -87,22 +88,22 @@ namespace Unity.MP_FPS
             GameSettings.Instance.PlayerName = DisplayName; s_OfflineChanged?.Invoke();
         }
         public static void SelectCarryCells(int cells)
-        { if (IsOffline) s_Carry = Mathf.Clamp(cells, 0, Mathf.Min(s_Cells, RaidRules.BagCapacity)); else AccountClient.SelectCarryCells(cells); }
+        { if(IsLan) { if(!LanRoomClient.Ready && LanRoomClient.Room.Phase==LanRoomPhase.Lobby) s_LanCarry=Mathf.Clamp(cells,0,Mathf.Min(StashCells,RaidRules.BagCapacity)); return; } if (IsOffline) s_Carry = Mathf.Clamp(cells, 0, Mathf.Min(s_Cells, RaidRules.BagCapacity)); else AccountClient.SelectCarryCells(cells); }
         public static void UpdateStash(int dust, int alloy, int cells)
-        { if (IsOffline) { s_Dust = dust; s_Alloy = alloy; s_Cells = cells; } else AccountClient.UpdateStash(dust, alloy, cells); }
+        { if(IsLan)return; if (IsOffline) { s_Dust = dust; s_Alloy = alloy; s_Cells = cells; } else AccountClient.UpdateStash(dust, alloy, cells); }
         public static Task AuthenticateAsync(string url, string username, string password, bool register, CancellationToken ct)
-        { LeaveOffline(); return AccountClient.AuthenticateAsync(url, username, password, register, ct); }
+        { if(IsLan)throw new InvalidOperationException("请先退出局域网房间。"); LeaveOffline(); return AccountClient.AuthenticateAsync(url, username, password, register, ct); }
         public static Task ValidateAsync(string url, CancellationToken ct)
-        { ct.ThrowIfCancellationRequested(); if (!IsOffline) return AccountClient.ValidateAsync(url, ct); RefreshOffline(); return Task.CompletedTask; }
+        { ct.ThrowIfCancellationRequested(); if(IsLan)return RefreshLanAsync(ct); if (!IsOffline) return AccountClient.ValidateAsync(url, ct); RefreshOffline(); return Task.CompletedTask; }
         public static Task LogoutAsync(string url, CancellationToken ct)
-        { ct.ThrowIfCancellationRequested(); if (!IsOffline) return AccountClient.LogoutAsync(url, ct); LeaveOffline(); return Task.CompletedTask; }
+        { ct.ThrowIfCancellationRequested(); if(IsLan)return LanRoomClient.LeaveAsync(); if (!IsOffline) return AccountClient.LogoutAsync(url, ct); LeaveOffline(); return Task.CompletedTask; }
         public static async Task MoveInventoryAsync(InventoryCommand command, CancellationToken ct)
-        { if (!IsOffline) { await AccountClient.MoveInventoryAsync(command, ct); return; } var store = s_Offline; await Task.Run(() => store.Move(command), ct); ct.ThrowIfCancellationRequested(); if (store == s_Offline) RefreshOffline(); }
+        { if(IsLan) { await LanRoomClient.RequestAsync("move",command,ct:ct);return; } if (!IsOffline) { await AccountClient.MoveInventoryAsync(command, ct); return; } var store = s_Offline; await Task.Run(() => store.Move(command), ct); ct.ThrowIfCancellationRequested(); if (store == s_Offline) RefreshOffline(); }
         public static async Task ClaimRecoveryAsync(RecoveryClaim request,CancellationToken ct)
-        {if(!IsOffline) {await AccountClient.ClaimRecoveryAsync(request,ct);return;}var store=s_Offline;await Task.Run(()=>store.ClaimRecovery(request),ct);ct.ThrowIfCancellationRequested();if(store==s_Offline)RefreshOffline();}
+        {if(IsLan) {await LanRoomClient.RequestAsync("recovery",request,ct:ct);return;} if(!IsOffline) {await AccountClient.ClaimRecoveryAsync(request,ct);return;}var store=s_Offline;await Task.Run(()=>store.ClaimRecovery(request),ct);ct.ThrowIfCancellationRequested();if(store==s_Offline)RefreshOffline();}
         public static async Task TradeAsync(ShopCommand command, CancellationToken ct)
-        { if (!IsOffline) { await AccountClient.TradeAsync(command, ct); return; } var store = s_Offline; await Task.Run(() => store.Trade(command), ct); ct.ThrowIfCancellationRequested(); if (store == s_Offline) RefreshOffline(); }
+        { if(IsLan) { await LanRoomClient.RequestAsync("trade",command,ct:ct);return; } if (!IsOffline) { await AccountClient.TradeAsync(command, ct); return; } var store = s_Offline; await Task.Run(() => store.Trade(command), ct); ct.ThrowIfCancellationRequested(); if (store == s_Offline) RefreshOffline(); }
         public static Task<ShopOffer[]> GetShopOffersAsync(CancellationToken ct)
-        { ct.ThrowIfCancellationRequested(); if (!IsOffline) return AccountClient.GetShopOffersAsync(ct); RefreshOffline(); return Task.FromResult(ShopCatalog.Offers); }
+        { ct.ThrowIfCancellationRequested(); if(IsLan)return Task.FromResult(ShopCatalog.Offers); if (!IsOffline) return AccountClient.GetShopOffersAsync(ct); RefreshOffline(); return Task.FromResult(ShopCatalog.Offers); }
     }
 }

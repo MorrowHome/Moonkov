@@ -31,7 +31,9 @@ namespace Unity.MP_FPS
          CreateOrJoin = 0,
          Host = 1,
          ConnectAndJoin = 2,
-         Offline = 3
+         Offline = 3,
+         LanHost = 4,
+         LanJoin = 5
      }
 
      public class ConnectionSettings : INotifyBindablePropertyChanged
