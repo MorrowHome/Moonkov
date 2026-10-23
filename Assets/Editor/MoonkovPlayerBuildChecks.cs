@@ -29,15 +29,24 @@ public sealed class MoonkovPlayerBuildChecks : IPreprocessBuildWithReport
         if (graphics.FindProperty("m_LightmapStripping").intValue != 1 ||
             !graphics.FindProperty("m_LightmapKeepPlain").boolValue)
             errors.Add("Graphics: use Custom Lightmap Modes with Baked Non-Directional retained (BuildingBakedLighting).");
-        // RaidSupplyCacheVisuals creates instanced materials after scene loading.
-        if (graphics.FindProperty("m_InstancingStripping").intValue != 2)
-            errors.Add("Graphics: set Instancing Variants to Keep All for runtime supply-cache materials.");
+        // Resources retention materials preserve only the two runtime Lit instancing combinations.
+        if (graphics.FindProperty("m_InstancingStripping").intValue != 0)
+            errors.Add("Graphics: use Strip Unused instancing variants; runtime Lit variants have explicit retention materials.");
         var stripping = GraphicsSettings.GetRenderPipelineSettings<URPShaderStrippingSetting>();
-        if (stripping == null || stripping.stripUnusedVariants)
-            errors.Add("URP: disable Strip Unused Variants until player rendering has been verified with runtime pipeline switching.");
+        if (stripping == null || !stripping.stripUnusedVariants)
+            errors.Add("URP: enable Strip Unused Variants to avoid compiling unused rendering feature combinations.");
         var inclusion = GraphicsSettings.GetRenderPipelineSettings<IncludeAdditionalRPAssets>();
         if (inclusion == null || !inclusion.includeReferencedInScenes)
             errors.Add("Graphics: include render pipeline assets referenced by build scenes.");
+
+        foreach (bool emission in new[] { false, true })
+        {
+            string resource = "Moonkov/RuntimeLitInstanced" + (emission ? "Emission" : "");
+            var retained = Resources.Load<Material>(resource);
+            if (!retained || !retained.shader || retained.shader.name != "Universal Render Pipeline/Lit" ||
+                !retained.enableInstancing || retained.IsKeywordEnabled("_EMISSION") != emission)
+                errors.Add("Missing runtime Lit variant retention material: " + resource);
+        }
 
         var remains = Resources.Load<Material>("Moonkov/AlienRemains");
         if (!remains || !remains.shader || remains.shader.name != "Universal Render Pipeline/Lit" ||
