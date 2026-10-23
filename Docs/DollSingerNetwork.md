@@ -124,6 +124,10 @@ flowchart LR
 
 四项参数压缩为一个 uint，随现有 ClientCommandInput 连续状态传给服务端，并经 ControllerState/Ghost 快照发给观察者及晚加入客户端。服务端限定范围和强度，不使用逐帧 RPC。拥有者即时预览，本机 PlayerPrefs（Moonkov.HaloLighting）在关闭／取消时保存，跨重生和下次启动继续使用；颜色由已有武器状态推导。
 
+2026-10-23 修复：`RaidHealth.RestrictInput` 在倒地／等待等不可行动状态中继续保留经过校验的四项灯光参数和开关。此前服务端重建受限输入时丢弃这些字段，观察者收到默认灯光，而拥有者仍显示本地自定义值。移动、战斗和装备操作仍受限制。
+
+`HaloLightingChecks.RunReplicationContract()` 的 18 项定点检查通过，覆盖倒地／等待、默认／自定义／越界参数、灯光开关、受限动作、服务端控制器状态及生成的命令序列化／Ghost 快照映射。本轮未进行独立客户端联机验收；该修复针对已确认的不可行动状态丢参，不代表复现了正常行动时的所有灯光差异。
+
 正式对局使用 RaidHUD 的现有 UIDocument 和 PanelSettings，无需手工修改场景或预制体。面板及数值复用 Unity Localization 中英文字体和字符串表。
 
 

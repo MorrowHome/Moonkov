@@ -174,7 +174,11 @@ namespace Unity.MP_FPS
         {
             if(state.ClashEnabled && !state.ClashCanAct)
             {
-                var blocked=new PlayerInput { LookYawPitchDegrees=input.LookYawPitchDegrees, AimPoint=input.AimPoint };
+                // Suppress actions without resetting the player's continuous light
+                // settings in the authoritative snapshot seen by other clients.
+                var blocked=new PlayerInput { LookYawPitchDegrees=input.LookYawPitchDegrees, AimPoint=input.AimPoint,
+                    HaloLightingSettings=Unity.MP_FPS.DollSinger.HaloLighting.Sanitize(input.HaloLightingSettings) };
+                blocked.SetFlag(PlayerInput.InputFlag.HaloLightDisabled,!input.HaloLightEnabled);
                 blocked.SetFlag(PlayerInput.InputFlag.ThirdPerson,input.ThirdPerson);
                 blocked.SetStance(state.ClashLife==ClashLife.Downed ? Unity.MP_FPS.DollSinger.DollSingerStance.Prone : input.Stance);return blocked;
             }

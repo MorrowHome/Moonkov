@@ -55,11 +55,55 @@ public static class HaloLightingChecks
         FirstPersonController.ProcessInputs(ref state, command.Sanitized(), .02f);
         Require(state.HaloLightingSettings == settings, "server simulation applies lighting intent", passed);
         CheckSerialization(command, state, passed);
+        CheckRestrictedLighting(passed);
         CheckPresentation(settings, passed);
         string result = "Passed " + passed.Count + " halo lighting checks:\n" + string.Join("\n", passed);
         System.IO.Directory.CreateDirectory("Temp/HaloLightingValidation");
         System.IO.File.WriteAllText("Temp/HaloLightingValidation/checks.txt", result);
         return result;
+    }
+
+    // Small contract check: no windows, preview scenes, network worlds or clients.
+    public static string RunReplicationContract()
+    {
+        if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("Run in Edit mode.");
+        var passed = new List<string>();
+        CheckRestrictedLighting(passed);
+        return "Passed " + passed.Count + " restricted-light replication checks:\n" + string.Join("\n", passed);
+    }
+
+    private static void CheckRestrictedLighting(List<string> passed)
+    {
+        uint custom = HaloLighting.Pack(9.4f, 45, 165, 125);
+        foreach (var sample in new[] {
+            (Life: ClashLife.Downed, Settings: custom, Enabled: false),
+            (Life: ClashLife.Waiting, Settings: uint.MaxValue, Enabled: true),
+            (Life: ClashLife.Downed, Settings: 0u, Enabled: true) })
+        {
+            var ghost = new PredictedPlayerGhost { ClashEnabled = true, ClashCanAct = false, ClashLife = sample.Life };
+            var requested = new PlayerInput { HaloLightingSettings = sample.Settings,
+                MoveInput = new Unity.Mathematics.float2(1, 1), Lean = 1, FreeLooking = true,
+                InputFlags = (uint)(PlayerInput.InputFlag.Jump | PlayerInput.InputFlag.Shoot | PlayerInput.InputFlag.Sprint |
+                    PlayerInput.InputFlag.Reload | PlayerInput.InputFlag.Aim | PlayerInput.InputFlag.EquipHalo |
+                    PlayerInput.InputFlag.EquipRevolver | PlayerInput.InputFlag.EquipPistol | PlayerInput.InputFlag.ThirdPerson) };
+            requested.SetFlag(PlayerInput.InputFlag.HaloLightDisabled, !sample.Enabled);
+            var restricted = RaidHealth.RestrictInput(ghost, requested);
+            uint expected = HaloLighting.Sanitize(sample.Settings);
+            string label = sample.Life + "/" + sample.Settings + ": ";
+            Require(restricted.HaloLightingSettings == expected && restricted.HaloLightEnabled == sample.Enabled,
+                label + "incapacitation retains bounded light settings and switch state", passed);
+            Require(!restricted.Jump && !restricted.Shoot && !restricted.Sprint && !restricted.Reload && !restricted.Aim &&
+                !restricted.EquipHalo && !restricted.EquipRevolver && !restricted.EquipPistol &&
+                Unity.Mathematics.math.all(restricted.MoveInput == Unity.Mathematics.float2.zero) &&
+                restricted.Lean == 0 && !restricted.FreeLooking,
+                label + "movement, combat and equipment actions remain suppressed", passed);
+            Require(sample.Life != ClashLife.Downed || restricted.Stance == DollSingerStance.Prone,
+                label + "downed stance remains prone", passed);
+            FirstPersonController.ProcessInputs(ref ghost.ControllerState, restricted.Sanitized(), .02f);
+            Require(ghost.ControllerState.HaloLightingSettings == expected && ghost.ControllerState.HaloLightEnabled == sample.Enabled,
+                label + "authoritative controller retains the same light state", passed);
+            CheckSerialization(restricted, ghost.ControllerState, passed);
+        }
     }
 
     private static void CheckSerialization(PlayerInput input, FirstPersonController.ControllerState state, List<string> passed)
@@ -76,8 +120,9 @@ public static class HaloLightingChecks
             var reader = new DataStreamReader(writer.AsNativeArray());
             var received = new ClientCommandInput();
             serializer.Deserialize(ref reader, default, ref received);
-            Require(received.PlayerInput.HaloLightingSettings == input.HaloLightingSettings,
-                "generated command serializer round trip preserves owner intent", passed);
+            Require(received.PlayerInput.HaloLightingSettings == input.HaloLightingSettings &&
+                received.PlayerInput.HaloLightEnabled == input.HaloLightEnabled,
+                "generated command serializer round trip preserves light parameters and switch intent", passed);
         }
         finally { bytes.Dispose(); }
         var ghostType = assembly.GetType("Assembly_CSharp_Generated.Assembly_CSharp_Generated_PredictedPlayerGhostGhostComponentSerializer", true);
@@ -87,8 +132,9 @@ public static class HaloLightingChecks
         ghostType.GetMethod("CopyToSnapshotGenerated", BindingFlags.Static | BindingFlags.NonPublic).Invoke(null, to);
         object[] from = { default(GhostDeserializerState), new PredictedPlayerGhost(), 0f, 0f, to[1], to[1] };
         ghostType.GetMethod("CopyFromSnapshotGenerated", BindingFlags.Static | BindingFlags.NonPublic).Invoke(null, from);
-        Require(((PredictedPlayerGhost)from[1]).ControllerState.HaloLightingSettings == input.HaloLightingSettings,
-            "generated snapshot mapping preserves observer and late-join state", passed);
+        var observed = ((PredictedPlayerGhost)from[1]).ControllerState;
+        Require(observed.HaloLightingSettings == input.HaloLightingSettings && observed.HaloLightEnabled == input.HaloLightEnabled,
+            "generated snapshot mapping preserves observer and late-join light parameters and switch state", passed);
     }
 
     private static void CheckPresentation(uint settings, List<string> passed)
