@@ -9,7 +9,10 @@ Shader "SpiderLab/Umbra08 Liquid Filaments"
         _FilmVariation("Wet film variation", Float) = .045
         _CoatMask("Wet clear coat", Range(0, 1)) = .45
         _CoatSmoothness("Clear coat smoothness", Range(0, 1)) = .88
-        _VoidAmount("Gameplay black liquid", Range(0,1)) = 0
+        _SkinColor("Tissue skin", Color) = (.23,.28,.30,1)
+        _CarapaceColor("Worn carapace", Color) = (.56,.53,.44,1)
+        _TissueColor("Vascular membrane", Color) = (.31,.12,.10,1)
+        _VoidAmount("Gameplay tissue style", Range(0,1)) = 0
         _VoidCharge("Gameplay contraction", Range(0,2)) = 0
         [HideInInspector] _DensityTex("Particle density volume", 3D) = "white" {}
         [HideInInspector] _HalfVolume("Bounds half-size", Float) = 2.8
@@ -27,7 +30,7 @@ Shader "SpiderLab/Umbra08 Liquid Filaments"
         TEXTURE3D(_DensityTex); SAMPLER(sampler_DensityTex);
         CBUFFER_START(UnityPerMaterial)
         float3 _Gravity, _CarrierVelocity;
-        half4 _BaseColor; half _Smoothness;
+        half4 _BaseColor, _SkinColor, _CarapaceColor, _TissueColor; half _Smoothness;
         float _FilmVariation, _CoatMask, _CoatSmoothness;
         float _ThreadDensity, _RadiusMin, _RadiusMax, _RadiusVariation, _Necking, _RootPooling;
         float _Sag, _VelocityLag, _BreakLength, _BreakStretch;

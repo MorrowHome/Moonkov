@@ -2,7 +2,9 @@ Shader "Moonkov/Alien Void Skin"
 {
     Properties
     {
-        _BaseColor ("Obsidian tissue", Color) = (.012,.014,.019,1)
+        _BaseColor ("Tissue skin", Color) = (.012,.014,.019,1)
+        _CarapaceColor ("Worn carapace", Color) = (.56,.53,.44,1)
+        _TissueColor ("Vascular membrane", Color) = (.31,.12,.10,1)
         [HDR] _VoidTint ("Ash fissures", Color) = (.32,.34,.40,1)
         _VoidCharge ("Contraction / charge", Range(0,2)) = 0
         _Smoothness ("Wetness", Range(0,1)) = .78
@@ -16,7 +18,7 @@ Shader "Moonkov/Alien Void Skin"
         HLSLINCLUDE
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
         CBUFFER_START(UnityPerMaterial)
-            half4 _BaseColor, _VoidTint;
+            half4 _BaseColor, _VoidTint, _CarapaceColor, _TissueColor;
             float _VoidCharge, _Smoothness, _Metallic, _Cull;
         CBUFFER_END
         struct Attributes { float4 positionOS : POSITION; float3 normalOS : NORMAL; };
@@ -56,8 +58,10 @@ Shader "Moonkov/Alien Void Skin"
                 data.vertexLighting = VertexLighting(v.positionWS, data.normalWS);
                 data.normalizedScreenSpaceUV = GetNormalizedScreenSpaceUV(v.positionCS);
                 SurfaceData surface = (SurfaceData)0;
-                surface.albedo = _BaseColor.rgb; surface.metallic = _Metallic;
-                surface.smoothness = saturate(_Smoothness + .035 * sin(dot(v.local,float3(7,23,13))));
+                half wetness;
+                AlienTissueSurface(v.local, _BaseColor.rgb, _CarapaceColor.rgb, _TissueColor.rgb, surface.albedo, wetness);
+                surface.metallic = _Metallic;
+                surface.smoothness = saturate(lerp(_Smoothness, wetness, .7) + .035 * sin(dot(v.local,float3(7,23,13))));
                 surface.normalTS = half3(0,0,1); surface.occlusion = surface.alpha = 1;
                 surface.emission = AlienVoidRadiance(v.local, data.normalWS, data.viewDirectionWS, _VoidCharge, _VoidTint.rgb);
                 half4 color = UniversalFragmentPBR(data, surface);

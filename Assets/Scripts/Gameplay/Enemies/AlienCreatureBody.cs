@@ -90,7 +90,7 @@ namespace Unity.MP_FPS
             UpdateRig(Vector2.zero, 0, 0, .016f, false, 0);
             BuildHitboxes(hitLayer); UpdateHitboxes();
             if (render && profile.VoidLiquid)
-            { m_VoidAppearance = new AlienVoidAppearance(owner); m_VoidAppearance.Refresh(); }
+            { m_VoidAppearance = new AlienVoidAppearance(owner, profile.Species); m_VoidAppearance.Refresh(); }
             if (render) Moon.MoonSilverPrintSubject.Protect(owner.gameObject);
         }
 

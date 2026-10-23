@@ -5,9 +5,11 @@ void UmbraLiquidStyle(float3 local, out half3 albedo, out half smoothness,
                       out half coat, out half coatSmoothness)
 {
     float film = sin(dot(local, float3(17, 3, 11)) + sin(local.y * 9) * .7) * _FilmVariation;
-    albedo = lerp(_BaseColor.rgb, half3(.0012, .0015, .0021), _VoidAmount);
-    smoothness = saturate(_Smoothness + film);
-    coat = _CoatMask;
+    half3 tissueAlbedo; half wetness;
+    AlienTissueSurface(local, _SkinColor.rgb, _CarapaceColor.rgb, _TissueColor.rgb, tissueAlbedo, wetness);
+    albedo = lerp(_BaseColor.rgb, tissueAlbedo, _VoidAmount);
+    smoothness = saturate(lerp(_Smoothness, wetness, _VoidAmount) + film);
+    coat = _CoatMask * lerp(1, wetness, _VoidAmount);
     coatSmoothness = _CoatSmoothness;
 }
 
