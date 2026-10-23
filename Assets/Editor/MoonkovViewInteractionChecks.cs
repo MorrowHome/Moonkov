@@ -191,6 +191,7 @@ public sealed class MoonkovViewInteractionChecks : EditorWindow
         var camera = (Camera)typeof(MenuCharacterView).GetField("m_Camera", Private).GetValue(portrait);
         var settings = (MenuCharacterSettings)typeof(MenuCharacterView).GetField("m_Settings", Private).GetValue(portrait);
         var position = camera.transform.position;
+        float fov = camera.fieldOfView;
         for (int motion = 1; motion < settings.Motions.Length; motion++)
         {
             Set(portrait, "m_Motion", 0);
@@ -200,8 +201,10 @@ public sealed class MoonkovViewInteractionChecks : EditorWindow
             Set(portrait, "m_Remaining", 0f);
             for (int frame = 0; frame < 12; frame++) portrait.Advance(.1f);
             portrait.Render();
-            Require(Vector3.Distance(position, camera.transform.position) < .001f,
-                "Showcase animation changed the portrait scale or camera centre: " + motion);
+            Require(Mathf.Abs(camera.fieldOfView - fov) < .0001f &&
+                (portrait.Zoom <= 1 ? Vector3.Distance(position, camera.transform.position) : Mathf.Abs(position.z - camera.transform.position.z)) < .001f,
+                "Showcase animation changed the portrait scale or full-body camera centre: " + motion);
+            if (portrait.Zoom >= 2) CheckFaceFocus(camera);
         }
     }
     private void CheckZoom(Button button, Vector2 start)
@@ -229,10 +232,11 @@ public sealed class MoonkovViewInteractionChecks : EditorWindow
             for (int i = 0; i < 60; i++) portrait.Advance(1f / 30);
             portrait.Render(); Up(image, start);
             Require(portrait.Zoom == zoom && Mathf.Abs(camera.fieldOfView - fov) < .0001f &&
-                Vector3.Distance(position, camera.transform.position) < .001f,
+                Mathf.Abs(position.z - camera.transform.position.z) < .001f,
                 "Dragging or animation changed the selected zoom.");
             Wheel(image, start, 3); tick.Invoke(portrait, null);
-            Require(Mathf.Abs(portrait.Zoom - 1) < .0001f && Mathf.Abs(camera.fieldOfView - baselineFov) < .0001f,
+            Require(Mathf.Abs(portrait.Zoom - 1) < .0001f && Mathf.Abs(camera.fieldOfView - baselineFov) < .0001f &&
+                Vector3.Distance(position, camera.transform.position) < .001f,
                 "Opposite wheel travel did not restore the original scale.");
             for (int i = 0; i < 4; i++) Wheel(image, start, 40);
             tick.Invoke(portrait, null);
@@ -240,9 +244,22 @@ public sealed class MoonkovViewInteractionChecks : EditorWindow
             for (int i = 0; i < 4; i++) Wheel(image, start, -40);
             tick.Invoke(portrait, null);
             Require(Mathf.Abs(portrait.Zoom - 3) < .0001f && float.IsFinite(camera.fieldOfView), "Maximum zoom was not bounded.");
+            CheckFaceFocus(camera);
+            CheckAnimatedFraming();
+            Wheel(image, start, Mathf.Log(1.5f) / .08f); tick.Invoke(portrait, null);
+            Require(Mathf.Abs(portrait.Zoom - 2) < .0001f, "Intermediate head portrait zoom was not reached.");
+            CheckFaceFocus(camera);
+            CheckAnimatedFraming();
             Require(Mathf.Abs(Mathf.DeltaAngle(portrait.InspectionYaw, yaw + 45)) < .001f, "Wheel input changed portrait rotation.");
         }
         finally { rootVisualElement.UnregisterCallback(parentWheel); }
+    }
+    private void CheckFaceFocus(Camera camera)
+    {
+        var head = (Transform)typeof(MenuCharacterView).GetField("m_Head", Private).GetValue(portrait);
+        var point = camera.WorldToViewportPoint(head.position);
+        Require(point.z > 0 && Mathf.Abs(point.x - .5f) < .12f && point.y > .25f && point.y < .65f,
+            "Zoomed portrait did not centre the head and face: " + point);
     }
     private void OnDisable() { portrait?.Dispose(); portrait = null; }
     private static void Set(object target, string field, object value) => target.GetType().GetField(field, Private).SetValue(target, value);

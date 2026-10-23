@@ -71,7 +71,7 @@ namespace Unity.MP_FPS.Client
         private bool m_Transition, m_Disposed, m_EditorScene, m_GestureActive;
         private int m_DragPointer = -1;
         private Vector2 m_DragPosition;
-        private float m_InspectionYaw, m_PoseTurn;
+        private float m_InspectionYaw, m_PoseTurn, m_FaceHeightOffset;
         private bool m_Inspected, m_ViewDirty;
         public float InspectionYaw => m_InspectionYaw;
         public float Zoom { get; private set; } = 1;
@@ -230,6 +230,8 @@ namespace Unity.MP_FPS.Client
             foreach (var t in m_Model.GetComponentsInChildren<Transform>(true))
                 if (t.name == "HaloCrosshair") { m_Halo = t; break; }
             m_Head = animator.GetBoneTransform(HumanBodyBones.Head);
+            var neck = animator.GetBoneTransform(HumanBodyBones.Neck);
+            m_FaceHeightOffset = m_Head != null && neck != null ? Vector3.Distance(m_Head.position, neck.position) * 1.25f : 0;
             m_Finger = animator.GetBoneTransform(HumanBodyBones.RightIndexDistal);
             if (m_Finger != null) while (m_Finger.childCount > 0) m_Finger = m_Finger.GetChild(0);
             if (m_Halo != null)
@@ -513,8 +515,15 @@ namespace Unity.MP_FPS.Client
             float distance = Mathf.Max(m_Bounds.extents.y * 1.08f / verticalTangent + m_Bounds.extents.z,
                 m_Bounds.extents.x * 1.12f / Mathf.Sin(Mathf.Atan(verticalTangent * m_Camera.aspect)));
             m_Camera.fieldOfView = 2 * Mathf.Atan(verticalTangent / Zoom) * Mathf.Rad2Deg;
-            m_Camera.transform.position = m_Bounds.center + new Vector3(0, .035f, distance);
-            m_Camera.transform.LookAt(m_Bounds.center);
+            var focus = m_Bounds.center;
+            if (m_Head != null && Zoom > 1)
+            {
+                var face = m_Head.position + Vector3.up * m_FaceHeightOffset;
+                face.z = focus.z;
+                focus = Vector3.Lerp(focus, face, Mathf.SmoothStep(0, 1, Mathf.InverseLerp(1, 2, Zoom)));
+            }
+            m_Camera.transform.position = focus + new Vector3(0, .035f, distance);
+            m_Camera.transform.LookAt(focus);
             RenderPipeline.SubmitRenderRequest(m_Camera, new UniversalRenderPipeline.SingleCameraRequest { destination = m_Target });
             Element.MarkDirtyRepaint();
             FrameRendered?.Invoke();
