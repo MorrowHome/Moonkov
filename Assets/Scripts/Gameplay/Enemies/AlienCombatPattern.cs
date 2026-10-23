@@ -15,6 +15,8 @@ namespace Unity.MP_FPS
         public float PulseTime(int pulse) => .08f + pulse * Active / Mathf.Max(1, Pulses);
         public int PulseAt(float age) => age < PulseTime(0) ? -1 :
             Mathf.Clamp(Mathf.FloorToInt((age - .08f) / Mathf.Max(.01f, Active / Mathf.Max(1, Pulses))), 0, Mathf.Max(0, Pulses - 1));
+        public Vector3 PulsePoint(Vector3 point, Vector3 direction, int pulse)
+            => Kind == AlienAttackKind.RootSpikes ? point + direction * (Mathf.Clamp(pulse, 0, Mathf.Max(0, Pulses - 1)) * Radius * 1.6f) : point;
         public static bool SweepContains(Vector3 point, Vector3 origin, Vector3 direction, float radius, float bodyHeight)
         {
             Vector3 delta = Vector3.ProjectOnPlane(point - origin, Vector3.up);
@@ -42,6 +44,9 @@ namespace Unity.MP_FPS
                     p.Range = 6; p.Radius = p.Kind == AlienAttackKind.TentacleSlam ? 2 : 5;
                     p.Windup = 1.1f; p.Active = .75f; p.Recovery = 1.5f; p.Pulses = phase > 1 ? 2 : 1; break;
             }
+            if (profile.Boss && profile.Species == AlienSpecies.Roots && committed == AlienAttackKind.SlimePulse)
+                p = new AlienCombatPattern { Kind = AlienAttackKind.SlimePulse, Range = 3, Radius = 3,
+                    Windup = 1.35f, Active = .45f, Recovery = 1.4f, Pulses = 1, DamageScale = .7f };
             bool canSpit = profile.Species == AlienSpecies.Caterpillar || profile.Species == AlienSpecies.Slime ||
                 profile.Boss && (profile.Species == AlienSpecies.Tentacle || profile.Species == AlienSpecies.Roots);
             if (committed == AlienAttackKind.MucusSpit || !committed.HasValue && canSpit && profile.MucusEveryAttacks > 0 && sequence % (uint)profile.MucusEveryAttacks == 0)

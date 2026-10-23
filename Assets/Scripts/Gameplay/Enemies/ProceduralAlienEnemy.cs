@@ -183,6 +183,7 @@ namespace Unity.MP_FPS
                 m_LastSeen = visible ? point : point + new Vector3(Mathf.Sin(shot * 1.7f), 0, Mathf.Cos(shot * 2.3f)) * 1.3f;
                 m_LastSeenAt = m_Clock; m_Visible = visible;
             }
+            ObserveTargetMotion();
         }
         private bool ClearSight(Vector3 from, Vector3 to, Transform target)
         {

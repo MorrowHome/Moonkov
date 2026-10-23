@@ -53,25 +53,9 @@ namespace Unity.MP_FPS
             else if (m_Action != AlienAction.Windup && m_Action != AlienAction.Strike && m_Action != AlienAction.Recover)
             {
                 byte phase = profile.Boss && health.CurrentHealth <= health.MaxHealth * profile.EnrageHealthFraction ? (byte)2 : (byte)1;
-                var next = AlienCombatPattern.For(profile, phase, m_Attacks + 1);
-                // A short-range sequence must not prevent an otherwise visible ranged response.
-                if (profile.Boss && remembered && m_Visible && m_Clock >= m_NextAttack && !CanBeginSpeciesAttack(next))
-                    next = AlienCombatPattern.For(profile, phase, m_Attacks + 1, AlienAttackKind.MucusSpit);
-                if (remembered && m_Visible && m_Clock >= m_NextAttack && CanBeginSpeciesAttack(next) &&
-                    (next.Kind != AlienAttackKind.MucusSpit || PrepareMucusArc()))
-                {
-                    m_Pattern = next; m_BossPhase = phase; m_Attacks++;
-                    bool headShot = m_Pattern.Kind == AlienAttackKind.FaceLeap || m_Pattern.Kind == AlienAttackKind.MucusSpit;
-                    m_CombatOrigin = m_Pattern.Kind == AlienAttackKind.MucusSpit ? MucusSocket() : transform.position;
-                    m_CombatPoint = headShot ? TargetHead(m_Target).position : m_LastSeen - Vector3.up;
-                    if (!headShot && UnityEngine.Physics.Raycast(m_CombatPoint + Vector3.up * 2, Vector3.down,
-                        out var floor, 6, LayerMask.GetMask("Default", "Ground"), QueryTriggerInteraction.Ignore)) m_CombatPoint = floor.point + floor.normal * .04f;
-                    m_CombatDirection = Vector3.ProjectOnPlane(m_CombatPoint - transform.position, Vector3.up).normalized;
-                    if (m_CombatDirection.sqrMagnitude < .01f) m_CombatDirection = transform.forward;
-                    ChangeAction(AlienAction.Windup);
-                    m_NextAttack = m_Clock + Mathf.Max(profile.AttackCooldown, next.Windup + next.Active + next.Recovery + .3f);
-                }
-                else ChangeAction(remembered ? (m_Visible ? AlienAction.Chase : AlienAction.Search) : AlienAction.Roam);
+                bool committed = remembered && m_Visible && m_Clock >= m_NextAttack &&
+                    TryChooseAttack(phase, out var next) && CommitAttack(next, phase);
+                if (!committed) ChangeAction(remembered ? (m_Visible ? AlienAction.Chase : AlienAction.Search) : AlienAction.Roam);
             }
 
             Vector3 intent = Vector3.zero;
@@ -112,6 +96,8 @@ namespace Unity.MP_FPS
             if (Vector3.Distance(AimPoint, target) > next.Range) return false;
             var root = GhostGameObject.EntityManager.GetComponentObject<GhostGameObjectLink>(m_Target).LinkedInstance;
             if (!ClearSight(AimPoint, target, root.transform)) return false;
+            if (next.Kind == AlienAttackKind.SlimePulse && (GroundDistance(target, transform.position) > next.Radius ||
+                Mathf.Abs(target.y - transform.position.y) >= 2)) return false;
             if (next.Kind == AlienAttackKind.TentacleSweep && !AlienCombatPattern.SweepContains(target,
                 transform.position, Vector3.ProjectOnPlane(target - transform.position, Vector3.up).normalized,
                 next.Radius, m_Body.Motor.BodyHeight)) return false;
@@ -139,7 +125,7 @@ namespace Unity.MP_FPS
             foreach (var entity in entities)
             {
                 if (!IsLivingHumanoid(manager, entity) || m_StrikeVictims.Contains(entity)) continue;
-                Vector3 point = ContactPoint(entity), centre = m_CombatPoint;
+                Vector3 point = ContactPoint(entity), centre = m_Pattern.PulsePoint(m_CombatPoint, m_CombatDirection, Mathf.Max(0, m_Pulse - 1));
                 Vector3 sightOrigin = AimPoint;
                 bool hit = false;
                 switch (m_Pattern.Kind)
