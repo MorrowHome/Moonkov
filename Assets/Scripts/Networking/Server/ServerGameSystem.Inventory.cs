@@ -202,9 +202,12 @@ namespace Unity.MP_FPS
             inventory.LastSentVersion = inventory.Graph.Version; inventory.Sequence++;
             inventory.LastSentLootVersion=lootVersion;
             var snapshot=cache==null ? inventory.Graph : LootInventoryExchange.Snapshot(inventory.Graph,cache);
+            RaidCorpseRecord corpse = null;
+            if (cache != null) LootContainers(ref state).DeathBags.TryGetValue(inventory.OpenedLootId, out corpse);
             var json = RaidInventoryTransport.EncodeSnapshot(snapshot,cache==null ? -1 : inventory.OpenedLootId,lootVersion,
                 inventory.DissectingLootId,(float)System.Math.Max(0,inventory.DissectionUntil-SystemAPI.Time.ElapsedTime),
-                inventory.MedicalItemId,(float)System.Math.Max(0,inventory.MedicalUntil-SystemAPI.Time.ElapsedTime),inventory.ActionFeedback);
+                inventory.MedicalItemId,(float)System.Math.Max(0,inventory.MedicalUntil-SystemAPI.Time.ElapsedTime),inventory.ActionFeedback,
+                corpse?.CharacterIndex ?? -1, corpse?.EquipmentSlots);
             const int fragmentSize = RaidInventoryTransport.ChunkCharacters;
             int count = (json.Length + fragmentSize - 1) / fragmentSize;
             for (int index = 0; index < count; index++)

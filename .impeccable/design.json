@@ -1,0 +1,323 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-23T06:09:21.849Z",
+  "title": "Design System: Moonkov inventory surfaces",
+  "extensions": {
+    "colorMeta": {
+      "surface": {
+        "role": "neutral",
+        "displayName": "炭黑底",
+        "tonalRamp": [
+          "oklch(15% 0.0075 229.34)",
+          "oklch(26% 0.0075 229.34)",
+          "oklch(38% 0.0075 229.34)",
+          "oklch(49% 0.0075 229.34)",
+          "oklch(61% 0.0075 229.34)",
+          "oklch(72% 0.0075 229.34)",
+          "oklch(84% 0.0075 229.34)",
+          "oklch(95% 0.0075 229.34)"
+        ]
+      },
+      "panel": {
+        "role": "neutral",
+        "displayName": "灰绿面板",
+        "tonalRamp": [
+          "oklch(15% 0.0096 219.91)",
+          "oklch(26% 0.0096 219.91)",
+          "oklch(38% 0.0096 219.91)",
+          "oklch(49% 0.0096 219.91)",
+          "oklch(61% 0.0096 219.91)",
+          "oklch(72% 0.0096 219.91)",
+          "oklch(84% 0.0096 219.91)",
+          "oklch(95% 0.0096 219.91)"
+        ]
+      },
+      "equipment-pane": {
+        "role": "neutral",
+        "displayName": "装备工作面",
+        "tonalRamp": [
+          "oklch(15% 0.0084 223.86)",
+          "oklch(26% 0.0084 223.86)",
+          "oklch(38% 0.0084 223.86)",
+          "oklch(49% 0.0084 223.86)",
+          "oklch(61% 0.0084 223.86)",
+          "oklch(72% 0.0084 223.86)",
+          "oklch(84% 0.0084 223.86)",
+          "oklch(95% 0.0084 223.86)"
+        ]
+      },
+      "loot-pane": {
+        "role": "neutral",
+        "displayName": "搜刮工作面",
+        "tonalRamp": [
+          "oklch(15% 0.0089 208.75)",
+          "oklch(26% 0.0089 208.75)",
+          "oklch(38% 0.0089 208.75)",
+          "oklch(49% 0.0089 208.75)",
+          "oklch(61% 0.0089 208.75)",
+          "oklch(72% 0.0089 208.75)",
+          "oklch(84% 0.0089 208.75)",
+          "oklch(95% 0.0089 208.75)"
+        ]
+      },
+      "grid": {
+        "role": "neutral",
+        "displayName": "暗格底",
+        "tonalRamp": [
+          "oklch(15% 0.0107 207.05)",
+          "oklch(26% 0.0107 207.05)",
+          "oklch(38% 0.0107 207.05)",
+          "oklch(49% 0.0107 207.05)",
+          "oklch(61% 0.0107 207.05)",
+          "oklch(72% 0.0107 207.05)",
+          "oklch(84% 0.0107 207.05)",
+          "oklch(95% 0.0107 207.05)"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "分隔灰",
+        "tonalRamp": [
+          "oklch(15% 0.0139 217.73)",
+          "oklch(26% 0.0139 217.73)",
+          "oklch(38% 0.0139 217.73)",
+          "oklch(49% 0.0139 217.73)",
+          "oklch(61% 0.0139 217.73)",
+          "oklch(72% 0.0139 217.73)",
+          "oklch(84% 0.0139 217.73)",
+          "oklch(95% 0.0139 217.73)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "正文白",
+        "tonalRamp": [
+          "oklch(15% 0.0106 106.60)",
+          "oklch(26% 0.0106 106.60)",
+          "oklch(38% 0.0106 106.60)",
+          "oklch(49% 0.0106 106.60)",
+          "oklch(61% 0.0106 106.60)",
+          "oklch(72% 0.0106 106.60)",
+          "oklch(84% 0.0106 106.60)",
+          "oklch(95% 0.0106 106.60)"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "辅助灰绿",
+        "tonalRamp": [
+          "oklch(15% 0.0108 174.18)",
+          "oklch(26% 0.0108 174.18)",
+          "oklch(38% 0.0108 174.18)",
+          "oklch(49% 0.0108 174.18)",
+          "oklch(61% 0.0108 174.18)",
+          "oklch(72% 0.0108 174.18)",
+          "oklch(84% 0.0108 174.18)",
+          "oklch(95% 0.0108 174.18)"
+        ]
+      },
+      "accent": {
+        "role": "primary",
+        "displayName": "浅橄榄",
+        "tonalRamp": [
+          "oklch(15% 0.0504 116.20)",
+          "oklch(26% 0.0504 116.20)",
+          "oklch(38% 0.0504 116.20)",
+          "oklch(49% 0.0504 116.20)",
+          "oklch(61% 0.0504 116.20)",
+          "oklch(72% 0.0504 116.20)",
+          "oklch(84% 0.0504 116.20)",
+          "oklch(95% 0.0504 116.20)"
+        ]
+      },
+      "item": {
+        "role": "neutral",
+        "displayName": "物品面",
+        "tonalRamp": [
+          "oklch(15% 0.0125 196.46)",
+          "oklch(26% 0.0125 196.46)",
+          "oklch(38% 0.0125 196.46)",
+          "oklch(49% 0.0125 196.46)",
+          "oklch(61% 0.0125 196.46)",
+          "oklch(72% 0.0125 196.46)",
+          "oklch(84% 0.0125 196.46)",
+          "oklch(95% 0.0125 196.46)"
+        ]
+      },
+      "item-line": {
+        "role": "neutral",
+        "displayName": "物品边线",
+        "tonalRamp": [
+          "oklch(15% 0.0184 176.39)",
+          "oklch(26% 0.0184 176.39)",
+          "oklch(38% 0.0184 176.39)",
+          "oklch(49% 0.0184 176.39)",
+          "oklch(61% 0.0184 176.39)",
+          "oklch(72% 0.0184 176.39)",
+          "oklch(84% 0.0184 176.39)",
+          "oklch(95% 0.0184 176.39)"
+        ]
+      },
+      "hover": {
+        "role": "neutral",
+        "displayName": "悬停面",
+        "tonalRamp": [
+          "oklch(15% 0.0155 177.01)",
+          "oklch(26% 0.0155 177.01)",
+          "oklch(38% 0.0155 177.01)",
+          "oklch(49% 0.0155 177.01)",
+          "oklch(61% 0.0155 177.01)",
+          "oklch(72% 0.0155 177.01)",
+          "oklch(84% 0.0155 177.01)",
+          "oklch(95% 0.0155 177.01)"
+        ]
+      },
+      "selected": {
+        "role": "neutral",
+        "displayName": "选中面",
+        "tonalRamp": [
+          "oklch(15% 0.0208 156.03)",
+          "oklch(26% 0.0208 156.03)",
+          "oklch(38% 0.0208 156.03)",
+          "oklch(49% 0.0208 156.03)",
+          "oklch(61% 0.0208 156.03)",
+          "oklch(72% 0.0208 156.03)",
+          "oklch(84% 0.0208 156.03)",
+          "oklch(95% 0.0208 156.03)"
+        ]
+      },
+      "valid": {
+        "role": "primary",
+        "displayName": "可放置绿",
+        "tonalRamp": [
+          "oklch(15% 0.0810 145.30)",
+          "oklch(26% 0.0810 145.30)",
+          "oklch(38% 0.0810 145.30)",
+          "oklch(49% 0.0810 145.30)",
+          "oklch(61% 0.0810 145.30)",
+          "oklch(72% 0.0810 145.30)",
+          "oklch(84% 0.0810 145.30)",
+          "oklch(95% 0.0810 145.30)"
+        ]
+      },
+      "invalid": {
+        "role": "primary",
+        "displayName": "失败珊瑚",
+        "tonalRamp": [
+          "oklch(15% 0.0861 29.98)",
+          "oklch(26% 0.0861 29.98)",
+          "oklch(38% 0.0861 29.98)",
+          "oklch(49% 0.0861 29.98)",
+          "oklch(61% 0.0861 29.98)",
+          "oklch(72% 0.0861 29.98)",
+          "oklch(84% 0.0861 29.98)",
+          "oklch(95% 0.0861 29.98)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "pane-title": {
+        "displayName": "区域标题",
+        "purpose": "紧凑的装备、搜刮和仓库区域名称。"
+      },
+      "section-title": {
+        "displayName": "容器小标题",
+        "purpose": "随身容器的单行名称。"
+      },
+      "item-label": {
+        "displayName": "物品标签",
+        "purpose": "装备、物品短名和快捷栏身份。"
+      },
+      "quantity": {
+        "displayName": "数量与能量",
+        "purpose": "数量和实际能量读数。"
+      }
+    },
+    "shadows": [],
+    "motion": [],
+    "breakpoints": []
+  },
+  "components": [
+    {
+      "name": "Body equipment target",
+      "kind": "custom",
+      "description": "原生身体槽的文档译例；运行时由 UXML/USS 与画像锚点定位。",
+      "html": "<button class=\"ds-body\"><span>项圈</span><span>空</span></button>",
+      "css": ".ds-body{width:132px;height:78px;padding:6px;background:rgba(15,23,22,.84);border:1px solid #66706a;color:#eeeee6;border-radius:0;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;font:12px \"Noto Sans CJK SC\",sans-serif}.ds-body span:first-child{color:#b3bcb9}.ds-item:hover,.ds-body:hover,.ds-container:hover{background:#303b38;border-color:#c8cfaa}.ds-item:focus-visible,.ds-body:focus-visible,.ds-container:focus-visible{background:#354139;border:2px solid #c8cfaa}.ds-item:active,.ds-body:active,.ds-container:active{background:#354139}"
+    },
+    {
+      "name": "Container equipment entry",
+      "kind": "custom",
+      "refersTo": "container-equipment",
+      "description": "紧凑空入口；装备图标在运行时由项目 StashItemArt 绘制。",
+      "html": "<button class=\"ds-container\" aria-label=\"未装备背包\">空</button>",
+      "css": ".ds-container{width:52px;height:52px;padding:2px;background:#121819;border:1px solid #58625e;border-radius:0;color:#b3bcb9;font:12px \"Noto Sans CJK SC\",sans-serif}.ds-item:hover,.ds-body:hover,.ds-container:hover{background:#303b38;border-color:#c8cfaa}.ds-item:focus-visible,.ds-body:focus-visible,.ds-container:focus-visible{background:#354139;border:2px solid #c8cfaa}.ds-item:active,.ds-body:active,.ds-container:active{background:#354139}"
+    },
+    {
+      "name": "Storage grid",
+      "kind": "custom",
+      "description": "原生方格的文档译例；实际尺寸按容器真实行列和可用宽度计算。",
+      "html": "<div class=\"ds-grid\" aria-label=\"空储物网格\"></div>",
+      "css": ".ds-grid{width:192px;height:96px;background-color:#101718;background-image:linear-gradient(to right,rgba(107,115,128,.4) 1px,transparent 1px),linear-gradient(to bottom,rgba(107,115,128,.4) 1px,transparent 1px);background-size:48px 48px;border-right:1px solid rgba(107,115,128,.4);border-bottom:1px solid rgba(107,115,128,.4)}"
+    },
+    {
+      "name": "Special tool targets",
+      "kind": "custom",
+      "description": "三个固定 52×52 工具目标；文档展示空槽，实际工具图由原生绘图组件提供。",
+      "html": "<div class=\"ds-tools\"><button aria-label=\"空工具槽 1\"></button><button aria-label=\"空工具槽 2\"></button><button aria-label=\"空工具槽 3\"></button></div>",
+      "css": ".ds-tools{display:flex;gap:4px}.ds-tools button{width:52px;height:52px;padding:0;flex-shrink:0;background:#121819;border:1px solid #58625e;border-radius:0}.ds-tools button:focus-visible{outline:2px solid #c8cfaa;outline-offset:0}"
+    },
+    {
+      "name": "Inventory item",
+      "kind": "custom",
+      "refersTo": "inventory-item",
+      "description": "物品名条和数量的文档译例；项目物品图保留在原生运行时中。",
+      "html": "<button class=\"ds-item\"><span class=\"ds-item-name\">M-40</span><span class=\"ds-item-quantity\">2</span></button>",
+      "css": ".ds-item{position:relative;width:96px;height:96px;padding:0;background:#222b2b;border:1px solid #52605c;border-radius:0;color:#eeeee6;font:12px \"Noto Sans CJK SC\",sans-serif}.ds-item-name{position:absolute;top:3px;left:3px;right:3px;background:rgba(16,20,22,.88);text-align:left}.ds-item-quantity{position:absolute;bottom:3px;right:3px;background:#101416;font-size:13px}.ds-item:hover,.ds-body:hover,.ds-container:hover{background:#303b38;border-color:#c8cfaa}.ds-item:focus-visible,.ds-body:focus-visible,.ds-container:focus-visible{background:#354139;border:2px solid #c8cfaa}.ds-item:active,.ds-body:active,.ds-container:active{background:#354139}"
+    },
+    {
+      "name": "Raid quickbar dock",
+      "kind": "custom",
+      "refersTo": "quickbar-dock",
+      "description": "局内快捷栏的文档译例；数字目标与原生库存组件共享状态语言。",
+      "html": "<div class=\"ds-quickbar\"><button>1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>6</button><button>7</button><button>8</button><button>9</button></div>",
+      "css": ".ds-quickbar{display:flex;min-height:62px;padding-top:4px;max-width:660px;background:#101416}.ds-quickbar button{position:relative;flex:1;min-width:30px;height:56px;margin:0 2px;padding:1px 4px;background:#111318;border:1px solid #52605c;border-radius:0;color:#b3bcb9;text-align:left;align-content:start;font:12px \"Noto Sans CJK SC\",sans-serif}.ds-quickbar button:focus-visible{outline:2px solid #c8cfaa;outline-offset:0}.ds-quickbar button:active{background:#112044}"
+    },
+    {
+      "name": "Corpse body equipment target",
+      "kind": "custom",
+      "description": "原生尸体画像的装备覆盖槽文档译例；108×62，11px 标签，按死亡记录原始槽位显示，取走后保留空槽。全身画像由原生 CorpsePortrait.uxml 加载对应正式角色静态烘焙图；未知身份回退装备列表。",
+      "html": "<button class=\"ds-corpse-body\" disabled><span class=\"ds-corpse-body-label\">近战装备</span><span>空</span></button>",
+      "css": ".ds-corpse-body{width:108px;height:62px;margin:0;padding:4px;background:rgba(15,23,22,.84);border:1px solid #384244;border-radius:0;color:#eeeee6;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;font:11px \"Noto Sans CJK SC\",sans-serif}.ds-corpse-body-label{color:#b3bcb9}.ds-corpse-body:disabled{background:#151b1c;opacity:.5}.ds-corpse-body:enabled:hover{background:#303b38;border-color:#c8cfaa}.ds-corpse-body:focus-visible{outline:2px solid #c8cfaa;outline-offset:0}"
+    }
+  ],
+  "narrative": {
+    "northStar": "战地装备台",
+    "overview": "本系统记录已实现的局内背包、搜刮和共用仓库容器界面，采用用户指定的塔科夫式深色装备组织方式。主菜单、局域网房间及其他游戏界面继续遵循各自的设计。物品图、空槽、容量和所有权构成主要视觉信息；角色画像使用项目正式角色资产。\n\n界面保持紧凑、方正和低饱和，以明亮正文及浅橄榄描边表达选择。库存事务沿用现有 C# presenter 与权威数据回包；视觉状态不能代替交易结果。",
+    "keyCharacteristics": [
+      "原生 UXML／USS 固定结构，C# 驱动物品、事件与几何尺寸。",
+      "正式角色静态画像、可见空槽和现有物品图共同表达装备关系。",
+      "单行页头、紧凑容器入口与清楚的网格占位。",
+      "用描边、文字和色彩共同反馈选择、可放置与失败。"
+    ],
+    "rules": [
+      {
+        "name": "The State Pairing Rule",
+        "body": "有效与无效放置同时保留描边和上下文反馈，不能只改变颜色。",
+        "section": "colors"
+      }
+    ],
+    "dos": [
+      "Do 保留六身体装备槽、三容器装备入口和三工具槽的明确目标关系。",
+      "Do 让随身储物网格依据中栏实际宽度缩放，同时保留真实容量和占格比例；三个工具槽保持 52×52。",
+      "Do 使用项目中文字体、现有物品图和有来源记录的正式角色静态画像。",
+      "Do 以服务器回包确认库存结果，失败后保留原物品并给出短暂原因。"
+    ],
+    "donts": [
+      "Don't 恢复左侧八张装备卡的两列布局，或把胸挂、背包、保险箱移出中栏。",
+      "Don't 加回重复大标题、常驻操作说明、大容器卡片或快捷栏教程字幕。",
+      "Don't 为此库存界面新增运行时角色预览摄像机或外部生成画像。",
+      "Don't 把原生 Editor 面板截图和定向回调检查写成正式地图 Play、物理输入或联机验收。"
+    ]
+  }
+}

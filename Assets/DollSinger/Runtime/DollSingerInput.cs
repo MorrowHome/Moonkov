@@ -275,8 +275,9 @@ namespace Unity.MP_FPS.DollSinger
         {
             captured = value;
             if (!value) lockedLean = 0f;
-            Cursor.lockState = value ? CursorLockMode.Locked : CursorLockMode.None;
-            Cursor.visible = !value;
+            var mode = value ? CursorLockMode.Locked : CursorLockMode.None;
+            if (Cursor.lockState != mode) Cursor.lockState = mode;
+            if (Cursor.visible == value) Cursor.visible = !value;
             ClearFrame();
         }
 

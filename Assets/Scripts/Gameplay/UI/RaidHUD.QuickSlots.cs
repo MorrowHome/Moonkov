@@ -92,33 +92,34 @@ namespace Unity.MP_FPS
             {
                 if (!QuickCanBind) return;
                 m_QuickBindings.Clear(slot); QuickNotice(m_QuickBindings.Reason);
-            });
-            m_QuickView.Element.parent.Add(m_ActionPanel);
+            }, slot => BindQuickSlot(slot, m_InventoryView.QuickSlotCandidate));
+            m_QuickView.SetInventoryHost(m_InventoryView.Element.Q("inventoryQuickbarDock"));
             m_InventoryView.QuickSlotDrop = DropOnQuickSlot;
             m_InventoryView.QuickSlotDragPreview = (item, point) => m_QuickView?.PreviewDrop(item == null ? -1 : m_QuickView.Hit(point), QuickSlotBindings.CanBind(QuickGraph, item));
             m_Root.RegisterCallback<KeyDownEvent>(BindQuickKey, TrickleDown.TrickleDown);
         }
         private static bool QuickTyping(VisualElement element) => QuickSlotBindings.Typing(element);
-        private bool QuickCanBind => QuickAlive && m_InventoryVisible && !m_HealthSelected && !QuickBusy &&
+        private bool QuickCanBind => QuickAlive && m_InventoryVisible && !m_HealthSelected &&
             !GameSettings.Instance.IsPauseMenuOpen && !m_MissionDetailsVisible;
         private void BindQuickKey(KeyDownEvent evt)
         {
             if (!QuickCanBind || QuickTyping(evt.target as VisualElement) || evt.ctrlKey || evt.altKey || evt.commandKey) return;
             int slot = (int)evt.keyCode - (int)KeyCode.Alpha1;
             if (slot < 0 || slot >= QuickSlotBindings.Count) return;
+            BindQuickSlot(slot, m_InventoryView.QuickSlotCandidate); evt.StopImmediatePropagation();
+        }
+        private void BindQuickSlot(int slot, InventoryItem item)
+        {
+            if (!QuickCanBind) { QuickNotice("当前无法设置快捷栏，请关闭其他菜单后重试。"); return; }
             m_QuickBindings.UseProfile(QuickPreferenceScope);
-            m_QuickBindings.Bind(slot, m_InventoryView.QuickSlotCandidate, QuickGraph);
-            QuickNotice(m_QuickBindings.Reason); evt.StopImmediatePropagation();
+            m_QuickBindings.Bind(slot, item, QuickGraph);
+            QuickNotice(m_QuickBindings.Reason);
         }
         private bool DropOnQuickSlot(InventoryItem item, Vector2 point)
         {
             int slot = m_QuickView.Hit(point);
             if (slot < 0) return false;
-            if (QuickCanBind)
-            {
-                m_QuickBindings.UseProfile(QuickPreferenceScope);
-                m_QuickBindings.Bind(slot, item, QuickGraph); QuickNotice(m_QuickBindings.Reason);
-            }
+            BindQuickSlot(slot, item);
             return true; // A rejected hotbar drop must never become an inventory move.
         }
         private void QuickNotice(string message) { m_QuickStatus = message; m_QuickStatusUntil = Time.unscaledTime + 3; }

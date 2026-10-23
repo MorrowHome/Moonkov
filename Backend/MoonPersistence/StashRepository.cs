@@ -77,10 +77,10 @@ public sealed class StashRepository(NpgsqlDataSource db)
             else if (request.InventoryJson != null) throw new ReceiptConflictException();
         }
         int bountyDust = inserted && clash ? await BountyClashRepository.ClaimAwardAsync(connection,transaction,request,ct) : 0;
-        if (inserted && request.Outcome == "Extracted")
+        if (inserted)
         {
             if (request.InventoryJson != null) await InventoryRepository.ReturnInventoryAsync(connection, transaction, request, ct, clash, bountyDust);
-            else {
+            else if (request.Outcome == "Extracted") {
             await InventoryRepository.AddAsync(connection, transaction, request.PlayerId, "dust", request.Dust, ct);
             await InventoryRepository.AddAsync(connection, transaction, request.PlayerId, "alloy", request.Alloy, ct);
             await InventoryRepository.AddAsync(connection, transaction, request.PlayerId, "cells", request.Cells, ct);

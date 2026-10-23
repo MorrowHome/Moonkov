@@ -9,6 +9,8 @@ namespace Unity.MP_FPS.Client
     {
         public VisualElement Element { get; }
         private readonly VisualElement m_PixelRoot;
+        private readonly VisualElement m_HudHost;
+        private VisualElement m_InventoryHost;
         private Vector2 m_ViewportSize;
         private float m_ViewportScale = -1;
         private readonly Button[] m_Slots = new Button[QuickSlotBindings.Count];
@@ -17,8 +19,10 @@ namespace Unity.MP_FPS.Client
         private readonly VisualElement[] m_Icons = new VisualElement[QuickSlotBindings.Count];
         private readonly string[] m_Codes = new string[QuickSlotBindings.Count];
         private readonly Label m_Caption, m_Selected;
-        public QuickSlotView(VisualElement host, Action<int> clear)
+        private bool m_InventoryOpen;
+        public QuickSlotView(VisualElement host, Action<int> clear, Action<int> bind = null)
         {
+            m_HudHost = host;
             Element = new VisualElement { name = "raidQuickSlots", pickingMode = PickingMode.Ignore };
             Element.AddToClassList("quick-slots");
             m_PixelRoot = new VisualElement { name = "raidQuickSlotsPixelRoot", pickingMode = PickingMode.Ignore };
@@ -42,12 +46,14 @@ namespace Unity.MP_FPS.Client
                     if (evt.button == 1 && UnityEngine.Cursor.lockState != CursorLockMode.Locked)
                     { clear(slot); evt.StopImmediatePropagation(); }
                 });
+                button.clicked += () => { if (m_InventoryOpen) bind?.Invoke(slot); };
             }
             m_Selected = new Label { pickingMode = PickingMode.Ignore }; m_Selected.AddToClassList("quick-slot-detail"); Element.Add(m_Selected);
             m_Caption = new Label { pickingMode = PickingMode.Ignore }; m_Caption.AddToClassList("quick-slot-caption"); Element.Add(m_Caption);
         }
         public int Hit(Vector2 point)
         { for (int i = 0; i < m_Slots.Length; i++) if (m_Slots[i].panel != null && m_Slots[i].worldBound.Contains(point)) return i; return -1; }
+        public void SetInventoryHost(VisualElement host) => m_InventoryHost = host;
         public void PreviewDrop(int slot, bool valid)
         {
             for (int i = 0; i < m_Slots.Length; i++)
@@ -55,6 +61,12 @@ namespace Unity.MP_FPS.Client
         }
         private void RefreshViewport()
         {
+            if (m_InventoryOpen && m_InventoryHost != null)
+            {
+                m_PixelRoot.style.width = StyleKeyword.Auto; m_PixelRoot.style.height = StyleKeyword.Auto;
+                m_PixelRoot.style.scale = new Scale(Vector3.one); m_ViewportScale = -1;
+                return;
+            }
             var parent = m_PixelRoot.parent;
             if (parent == null || parent.contentRect.width < 1 || Screen.width < 1 || Screen.height < 1) return;
             // Cancel only the panel's downscaling. Preserve the existing large-screen
@@ -74,6 +86,10 @@ namespace Unity.MP_FPS.Client
         }
         public void Present(QuickSlotBindings bindings, InventoryGraph graph, bool busy, bool inventoryOpen, string status)
         {
+            m_InventoryOpen = inventoryOpen;
+            var parent = inventoryOpen && m_InventoryHost != null ? m_InventoryHost : m_HudHost;
+            if (m_PixelRoot.parent != parent) parent.Add(m_PixelRoot);
+            m_PixelRoot.EnableInClassList("quick-slots-docked", inventoryOpen && m_InventoryHost != null);
             RefreshViewport();
             Element.EnableInClassList("quick-slots-busy", busy);
             Element.EnableInClassList("quick-slots-inventory", inventoryOpen);
@@ -99,18 +115,16 @@ namespace Unity.MP_FPS.Client
                 m_Slots[i].EnableInClassList("inventory-selected", bindings.Selected == i && available);
                 m_Slots[i].EnableInClassList("quick-slot-empty", !bound);
                 m_Slots[i].EnableInClassList("quick-slot-unavailable", bound && !available);
-                m_Slots[i].tooltip = !bound ? MoonkovLocalization.Text("Hover an item in your inventory and press this number, or drag it here.") :
+                m_Slots[i].tooltip = !bound ? "拖入可用物品；或选中物品后点击此槽／按数字键。" :
                     m_Names[i].text + " / " + MoonkovLocalization.Text(available ? "Right click to clear binding." : "Item unavailable. Equip it or bind another item.");
             }
             var selected = bindings.SelectedItem(graph);
             string selectedText = selected == null ? "" : MoonkovLocalization.Text(InventoryCatalog.Get(selected.Code).Name) + " ×" + selected.Quantity;
             bool showStatus = !string.IsNullOrEmpty(status);
             MoonkovLocalization.Set(m_Selected, selectedText);
-            m_Selected.style.display = selected != null && (inventoryOpen || !showStatus) ? DisplayStyle.Flex : DisplayStyle.None;
-            MoonkovLocalization.Set(m_Caption, inventoryOpen
-                ? (showStatus ? MoonkovLocalization.Text(status) + " / " : "") + MoonkovLocalization.Text("Hover an item + 1–9 / Drag to bind / Right click to clear")
-                : status ?? "");
-            m_Caption.style.display = inventoryOpen || showStatus ? DisplayStyle.Flex : DisplayStyle.None;
+            m_Selected.style.display = selected != null && !inventoryOpen && !showStatus ? DisplayStyle.Flex : DisplayStyle.None;
+            MoonkovLocalization.Set(m_Caption, status ?? "");
+            m_Caption.style.display = showStatus ? DisplayStyle.Flex : DisplayStyle.None;
         }
         public void Dispose() => m_PixelRoot.RemoveFromHierarchy();
     }

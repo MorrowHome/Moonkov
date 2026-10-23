@@ -52,6 +52,8 @@ namespace Unity.MP_FPS.Inventory
             new ShopOffer("electrolyte", 5, 1), new ShopOffer("oxygen_reserve", 12, 4),
             new ShopOffer("scout_rig", 18, 6), new ShopOffer("field_rig", 48, 16),
             new ShopOffer("sling_pack", 24, 8), new ShopOffer("cargo_pack", 96, 32),
+            new ShopOffer("secure_case", 48, 16),
+            new ShopOffer("survey_compass", 12, 4), new ShopOffer("laser_rangefinder", 24, 8),
             new ShopOffer("circuit_board", -1, 8), new ShopOffer("copper_coil", -1, 6),
             new ShopOffer("ceramic_plate", -1, 7), new ShopOffer("optical_sensor", -1, 16),
             new ShopOffer("data_drive", -1, 28), new ShopOffer("helium3_sample", -1, 45),

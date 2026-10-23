@@ -235,6 +235,7 @@ namespace Unity.MP_FPS
                 if(result!=InventoryError.None)throw new InvalidDataException("Unable to return local Clash equipment: "+result);
                 next.Inventory=stored;next.Recovery=pending;
             }
+            else ReturnProtected(next, RaidInventoryTransport.Decode(payload.InventoryJson ?? next.RaidInventoryJson));
             var closed=next.Clash.Matches[match.MatchId];closed.State="Closed";closed.AwardClaimed=bonus>0;
             next.Clash.ActiveMatchId=null;next.DeploymentId=next.RaidInventoryJson=null;next.CarriedCells=0;
             next.Receipts.Add(payload.SettlementId,receipt);Commit(next);return Read();
@@ -246,7 +247,11 @@ namespace Unity.MP_FPS
             if(match.State=="Open" && (m_Save.Clash.ActiveMatchId!=match.MatchId || match.Cells!=payload.Cells))throw new InvalidDataException("Local Clash abandonment mismatch.");
             if(match.Redemption!=null && !match.AwardClaimed)throw new InvalidDataException("Local Clash extraction receipt recovery must complete before abandonment.");
             var next=Copy();next.Clash.Matches[match.MatchId].State=match.State=="Open" ? "Closed" : "Cancelled";
-            if(next.Clash.ActiveMatchId==match.MatchId){next.Clash.ActiveMatchId=null;next.DeploymentId=next.RaidInventoryJson=null;next.CarriedCells=0;}
+            if(next.Clash.ActiveMatchId==match.MatchId)
+            {
+                if (next.RaidInventoryJson != null) ReturnProtected(next, RaidInventoryTransport.Decode(next.RaidInventoryJson));
+                next.Clash.ActiveMatchId=null;next.DeploymentId=next.RaidInventoryJson=null;next.CarriedCells=0;
+            }
             next.Receipts.Add(payload.DeploymentId,"abandoned");Commit(next);return Read();
         }
         private RaidPersistenceContext.Profile RefundClash(RaidPersistenceContext.Deployment payload)

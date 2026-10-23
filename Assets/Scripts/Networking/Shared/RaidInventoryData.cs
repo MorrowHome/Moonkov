@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
@@ -15,15 +17,18 @@ namespace Unity.MP_FPS
         public static string Encode(InventoryGraph graph) => Newtonsoft.Json.JsonConvert.SerializeObject(graph,
             new Newtonsoft.Json.JsonSerializerSettings { StringEscapeHandling=Newtonsoft.Json.StringEscapeHandling.EscapeNonAscii });
         public static InventoryGraph Decode(string json) => Newtonsoft.Json.JsonConvert.DeserializeObject<InventoryGraph>(json);
-        public static string EncodeSnapshot(InventoryGraph graph,int lootId,int lootVersion,int dissectingLootId=-1,float dissectionRemaining=0,string medicalItemId=null,float medicalRemaining=0,string actionFeedback=null) => Newtonsoft.Json.JsonConvert.SerializeObject(
+        public static string EncodeSnapshot(InventoryGraph graph,int lootId,int lootVersion,int dissectingLootId=-1,float dissectionRemaining=0,string medicalItemId=null,float medicalRemaining=0,string actionFeedback=null,int corpseCharacterIndex=-1,Dictionary<string,string> corpseEquipmentSlots=null) => Newtonsoft.Json.JsonConvert.SerializeObject(
             new RaidInventorySnapshot {Graph=graph,LootId=lootId,LootVersion=lootVersion,
-                DissectingLootId=dissectingLootId,DissectionRemaining=dissectionRemaining,MedicalItemId=medicalItemId,MedicalRemaining=medicalRemaining,ActionFeedback=actionFeedback},
+                DissectingLootId=dissectingLootId,DissectionRemaining=dissectionRemaining,MedicalItemId=medicalItemId,MedicalRemaining=medicalRemaining,ActionFeedback=actionFeedback,
+                CorpseCharacterIndex=corpseCharacterIndex,CorpseEquipmentSlots=corpseEquipmentSlots},
             new Newtonsoft.Json.JsonSerializerSettings {StringEscapeHandling=Newtonsoft.Json.StringEscapeHandling.EscapeNonAscii});
     }
     public sealed class RaidInventorySnapshot
     {
         public InventoryGraph Graph;
         public int LootId=-1, LootVersion;
+        public int CorpseCharacterIndex=-1;
+        public Dictionary<string,string> CorpseEquipmentSlots;
         public int DissectingLootId=-1;
         public float DissectionRemaining;
         public string MedicalItemId;
@@ -53,8 +58,11 @@ namespace Unity.MP_FPS
             Containers.TryGetValue(id,out var graph) && graph.Version==1;
         public int Drop(InventoryGraph carried,Unity.Mathematics.float3 position,Unity.Mathematics.quaternion rotation=default,int characterIndex=2,double createdAt=0)
         {
+            var slots = carried.Children(InventoryCatalog.Equipment).ToDictionary(i => i.Region, i => i.Id);
             var graph=LootInventoryExchange.DropOnDeath(carried);
-            return RegisterDrop(graph,position,rotation,characterIndex,createdAt);
+            int id = RegisterDrop(graph,position,rotation,characterIndex,createdAt);
+            DeathBags[id].EquipmentSlots = slots.Where(p => graph.Find(p.Value) != null).ToDictionary(p => p.Key, p => p.Value);
+            return id;
         }
         public int DropHarvest(InventoryGraph cache,Unity.Mathematics.float3 position,Unity.Mathematics.quaternion rotation=default,double createdAt=0)
         {
@@ -254,6 +262,7 @@ namespace Unity.MP_FPS
         public Unity.Mathematics.float3 Position;
         public Unity.Mathematics.quaternion Rotation;
         public int CharacterIndex;
+        public Dictionary<string,string> EquipmentSlots;
         public double CreatedAt;
         public double EmptySince=-1;
     }
@@ -338,6 +347,8 @@ namespace Unity.MP_FPS
         public uint Sequence, RequestId;
         public InventoryError Error;
         public int LootId=-1, LootVersion;
+        public int CorpseCharacterIndex=-1;
+        public Dictionary<string,string> CorpseEquipmentSlots;
         public int DissectingLootId=-1;
         public float DissectionRemaining;
         public string MedicalItemId;
@@ -363,6 +374,7 @@ namespace Unity.MP_FPS
                 if (graph == null || graph.Find("stash") != null || graph.Validate() != InventoryError.None) return false;
                 if(snapshot?.Graph!=null && (snapshot.LootId>=0)!=(graph.Find(LootInventoryExchange.Root)!=null)) return false;
                 LootId=snapshot?.Graph!=null ? snapshot.LootId : -1; LootVersion=snapshot?.Graph!=null ? snapshot.LootVersion : 0;
+                CorpseCharacterIndex=snapshot?.CorpseCharacterIndex ?? -1; CorpseEquipmentSlots=snapshot?.CorpseEquipmentSlots;
                 DissectingLootId=snapshot?.DissectingLootId ?? -1;
                 DissectionRemaining=snapshot?.DissectionRemaining ?? 0;
                 MedicalItemId=snapshot?.MedicalItemId;MedicalRemaining=snapshot?.MedicalRemaining ?? 0;ActionFeedback=snapshot?.ActionFeedback;
