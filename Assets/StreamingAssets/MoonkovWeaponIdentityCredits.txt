@@ -1,0 +1,9 @@
+Moonkov weapon sound identities (2026-10-23)
+
+Rifle, revolver and sniper derivatives use The Free Firearm Sound Library (CC0-1.0), by Ben Jaszczak, Brian Nelson, Kevin Heras, Matthew Nanney / Still North Media.
+Source: https://opengameart.org/content/the-free-firearm-sound-library
+License: https://creativecommons.org/publicdomain/zero/1.0/
+
+Shotgun derivatives reuse existing Moonkov project shotgun recordings and retain their original project asset license. No new third-party download.
+Processing and source/output hashes: Assets/Audio/Moonkov/WeaponIdentitySources.json
+Rebuild: Tools/Audio/build_weapon_identity_audio.py

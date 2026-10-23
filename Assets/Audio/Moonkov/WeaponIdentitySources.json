@@ -1,0 +1,895 @@
+{
+  "version": 1,
+  "source_licenses": [
+    "Assets/Audio/Moonkov/Licenses/FreeFirearmSoundLibrary.md",
+    "Existing project shotgun recordings retain their original license; no external download."
+  ],
+  "weapons": [
+    {
+      "id": 2,
+      "name": "Halo",
+      "starts_seconds": 0.25,
+      "seconds": 1.47,
+      "peak": 0.4681203022834612
+    },
+    {
+      "id": 3,
+      "name": "Revolver",
+      "starts_seconds": 1.72,
+      "seconds": 1.96,
+      "peak": 0.41261710748100694
+    },
+    {
+      "id": 4,
+      "name": "Shotgun",
+      "starts_seconds": 3.68,
+      "seconds": 2.0499791666666667,
+      "peak": 0.4225363922516622
+    },
+    {
+      "id": 5,
+      "name": "Sniper",
+      "starts_seconds": 5.73,
+      "seconds": 2.93,
+      "peak": 0.43999202472430726
+    },
+    {
+      "id": 6,
+      "name": "Cicada",
+      "starts_seconds": 8.66,
+      "seconds": 1.335,
+      "peak": 0.42990537800778467
+    },
+    {
+      "id": 7,
+      "name": "Trine",
+      "starts_seconds": 9.995,
+      "seconds": 1.12,
+      "peak": 0.42730430125979524
+    },
+    {
+      "id": 8,
+      "name": "Aegis",
+      "starts_seconds": 11.115,
+      "seconds": 1.58,
+      "peak": 0.4614808970452787
+    },
+    {
+      "id": 9,
+      "name": "Vesper",
+      "starts_seconds": 12.695,
+      "seconds": 1.71,
+      "peak": 0.43026003633321497
+    },
+    {
+      "id": 10,
+      "name": "Thorn",
+      "starts_seconds": 14.405,
+      "seconds": 1.59,
+      "peak": 0.4308201256140466
+    },
+    {
+      "id": 11,
+      "name": "Sundown",
+      "starts_seconds": 15.995,
+      "seconds": 2.7,
+      "peak": 0.4351672532115266
+    },
+    {
+      "id": 12,
+      "name": "Rondo",
+      "starts_seconds": 18.695,
+      "seconds": 1.06,
+      "peak": 0.4167870849710126
+    },
+    {
+      "id": 13,
+      "name": "Tempest",
+      "starts_seconds": 19.755,
+      "seconds": 1.88,
+      "peak": 0.43006301095308236
+    },
+    {
+      "id": 14,
+      "name": "Nocturne",
+      "starts_seconds": 21.635,
+      "seconds": 1.95,
+      "peak": 0.44687619390430083
+    }
+  ],
+  "clips": [
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/HaloBody1.wav",
+      "source": "Assets/Audio/Moonkov/Clips/Weapons/RiflePunch1.wav",
+      "source_sha256": "6f0d8337f3f983d7fc722ad72390081d0cb5b5812d092723687be5776be10f6b",
+      "sha256": "306ca0744a9a08b19ba1afec51f9ceb90f19ef196b8f23f3842e260d2d44fc9c",
+      "seconds": 0.22,
+      "peak": 0.84,
+      "rms_dbfs": -18.68235327768813,
+      "recipe": {
+        "rate": 1.0,
+        "weight": 0.5,
+        "resonance": 135,
+        "variant": 1,
+        "processing": "onset; band-shaped recorded body; delayed low body; parallel soft saturation; envelope; -1.51 dBFS peak"
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/HaloBody2.wav",
+      "source": "Assets/Audio/Moonkov/Clips/Weapons/RiflePunch2.wav",
+      "source_sha256": "2358cb37989df2410bbea24297ca2bddfd668f5ed36e38077606454200c6fce5",
+      "sha256": "27b5d678c7a5f42b5fc3ede9cf6bd9a79a3d8294fd8a386d88a106899afad979",
+      "seconds": 0.22,
+      "peak": 0.84,
+      "rms_dbfs": -18.628713752686647,
+      "recipe": {
+        "rate": 1.0,
+        "weight": 0.5,
+        "resonance": 135,
+        "variant": 2,
+        "processing": "onset; band-shaped recorded body; delayed low body; parallel soft saturation; envelope; -1.51 dBFS peak"
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/HaloBody3.wav",
+      "source": "Assets/Audio/Moonkov/Clips/Weapons/RiflePunch3.wav",
+      "source_sha256": "e6248d22d201fa1be858b7e19ad7144b32846796da81792a5e191aa7f2750b5e",
+      "sha256": "4761f7442554427aa302f80a9cac64806e7792611ffdb61453edbe10edde32f1",
+      "seconds": 0.22,
+      "peak": 0.8400000000000001,
+      "rms_dbfs": -17.81938215036511,
+      "recipe": {
+        "rate": 1.0,
+        "weight": 0.5,
+        "resonance": 135,
+        "variant": 3,
+        "processing": "onset; band-shaped recorded body; delayed low body; parallel soft saturation; envelope; -1.51 dBFS peak"
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/HaloTail.wav",
+      "source": "Assets/Audio/Moonkov/Clips/Weapons/RiflePunch1.wav",
+      "source_sha256": "6f0d8337f3f983d7fc722ad72390081d0cb5b5812d092723687be5776be10f6b",
+      "sha256": "c888538c88664ad7ceb85014dcf6e30df5494a8389056633e78c9c5705a555bd",
+      "seconds": 0.22,
+      "peak": 0.62,
+      "rms_dbfs": -23.262293501563022,
+      "recipe": {
+        "processing": "recorded low-mid tail, two delayed reflections, exponential release",
+        "resonance": 135
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/RevolverBody1.wav",
+      "source": "Assets/Audio/Moonkov/Clips/Weapons/RevolverPunch1.wav",
+      "source_sha256": "0729ed8e18f5202fecc8bf4faea77ed3dfe498cafed3e94b2a6b744011057315",
+      "sha256": "13f6424e2c2577da4bef880ddacd275c121d5d130a92dc3971018448d74b0afb",
+      "seconds": 0.46,
+      "peak": 0.84,
+      "rms_dbfs": -22.095413717613454,
+      "recipe": {
+        "rate": 0.9,
+        "weight": 0.85,
+        "resonance": 96,
+        "variant": 1,
+        "processing": "onset; band-shaped recorded body; delayed low body; parallel soft saturation; envelope; -1.51 dBFS peak"
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/RevolverBody2.wav",
+      "source": "Assets/Audio/Moonkov/Clips/Weapons/RevolverPunch2.wav",
+      "source_sha256": "afcb3743d66d5ddac216efdfd074e68597da86d2f9ae262a3808c1a4ab43cb77",
+      "sha256": "37e815866e5f40b2edaa0cbf8e96b41fe1b3e42f1ff077c86a8551e0a7b84c7a",
+      "seconds": 0.46,
+      "peak": 0.84,
+      "rms_dbfs": -22.102436114722245,
+      "recipe": {
+        "rate": 0.9,
+        "weight": 0.85,
+        "resonance": 96,
+        "variant": 2,
+        "processing": "onset; band-shaped recorded body; delayed low body; parallel soft saturation; envelope; -1.51 dBFS peak"
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/RevolverBody3.wav",
+      "source": "Assets/Audio/Moonkov/Clips/Weapons/RevolverPunch3.wav",
+      "source_sha256": "186f64fdfe61123ed8cd7943da2b03a893c1d37bca86b8b95bd7c5727f79faa5",
+      "sha256": "2293563d438adec1100d167d9bb31f6393bd7edb54d270395e47b4d3778e291f",
+      "seconds": 0.46,
+      "peak": 0.84,
+      "rms_dbfs": -18.720413160687208,
+      "recipe": {
+        "rate": 0.9,
+        "weight": 0.85,
+        "resonance": 96,
+        "variant": 3,
+        "processing": "onset; band-shaped recorded body; delayed low body; parallel soft saturation; envelope; -1.51 dBFS peak"
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/RevolverTail.wav",
+      "source": "Assets/Audio/Moonkov/Clips/Weapons/RevolverPunch1.wav",
+      "source_sha256": "0729ed8e18f5202fecc8bf4faea77ed3dfe498cafed3e94b2a6b744011057315",
+      "sha256": "107c16689163dfed1ef278c361cb2a398470abf9c12b81c19f19e0411f8660db",
+      "seconds": 0.42,
+      "peak": 0.62,
+      "rms_dbfs": -26.071921174850054,
+      "recipe": {
+        "processing": "recorded low-mid tail, two delayed reflections, exponential release",
+        "resonance": 96
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/ShotgunBody1.wav",
+      "source": "Assets/Audio/Clips/Weapons/Shotgun/Shoot/Shotgun_Shoot-001.wav",
+      "source_sha256": "b565efd81f3d915b11c701c77a6320140086345c7ae615cce6c2ab1389a61e42",
+      "sha256": "5628f3e2aea8a701eb7351d44145385186bac477de647ebe454c0a8371926671",
+      "seconds": 0.5,
+      "peak": 0.8400000000000001,
+      "rms_dbfs": -13.692684946390726,
+      "recipe": {
+        "rate": 0.94,
+        "weight": 1.05,
+        "resonance": 82,
+        "variant": 1,
+        "processing": "onset; band-shaped recorded body; delayed low body; parallel soft saturation; envelope; -1.51 dBFS peak"
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/ShotgunBody2.wav",
+      "source": "Assets/Audio/Clips/Weapons/Shotgun/Shoot/Shotgun_Shoot-002.wav",
+      "source_sha256": "f0816694757a2214158f3e3669827fdcaffdf6896ac850e436598e8333b3d968",
+      "sha256": "b09d0cdb97ba8a68a08a4ad72f700eb4b70435b47c0d86573396b225ddefbfb5",
+      "seconds": 0.5,
+      "peak": 0.84,
+      "rms_dbfs": -15.535217117381281,
+      "recipe": {
+        "rate": 0.94,
+        "weight": 1.05,
+        "resonance": 82,
+        "variant": 2,
+        "processing": "onset; band-shaped recorded body; delayed low body; parallel soft saturation; envelope; -1.51 dBFS peak"
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/ShotgunBody3.wav",
+      "source": "Assets/Audio/Clips/Weapons/Shotgun/Shoot/Shotgun_Shoot-003.wav",
+      "source_sha256": "e62877a5c0b69b47dd228e995a1bddb4422e84bd2eb2a358e9df85508814fae3",
+      "sha256": "f72b2c46aaba2531ae804741501ae9176f3bb259026152bd07ea1c46bb9a9794",
+      "seconds": 0.5,
+      "peak": 0.84,
+      "rms_dbfs": -14.84899324935627,
+      "recipe": {
+        "rate": 0.94,
+        "weight": 1.05,
+        "resonance": 82,
+        "variant": 3,
+        "processing": "onset; band-shaped recorded body; delayed low body; parallel soft saturation; envelope; -1.51 dBFS peak"
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/ShotgunTail.wav",
+      "source": "Assets/Audio/Clips/Weapons/Shotgun/Shoot/Shotgun_Shoot-001.wav",
+      "source_sha256": "b565efd81f3d915b11c701c77a6320140086345c7ae615cce6c2ab1389a61e42",
+      "sha256": "b129c10c556327a1c15e95f5a7fea7f14e9e4eeedd04d39a2eb582aee6bff6c2",
+      "seconds": 0.48,
+      "peak": 0.62,
+      "rms_dbfs": -19.447901012724426,
+      "recipe": {
+        "processing": "recorded low-mid tail, two delayed reflections, exponential release",
+        "resonance": 82
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/SniperBody1.wav",
+      "source": "Assets/Audio/Moonkov/Clips/Weapons/SniperPunch1.wav",
+      "source_sha256": "c37d883689aad2e54359d510aeef404cfe91d0edf6b1729fc1b3afe8bb23f804",
+      "sha256": "de8bc58ebc897b6888d651b2b7b3bcf83114ee731ee6bbbf3e6dc0fd0368d116",
+      "seconds": 0.68,
+      "peak": 0.8399999999999999,
+      "rms_dbfs": -21.728464113489267,
+      "recipe": {
+        "rate": 0.88,
+        "weight": 1.0,
+        "resonance": 68,
+        "variant": 1,
+        "processing": "onset; band-shaped recorded body; delayed low body; parallel soft saturation; envelope; -1.51 dBFS peak"
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/SniperBody2.wav",
+      "source": "Assets/Audio/Moonkov/Clips/Weapons/SniperPunch2.wav",
+      "source_sha256": "7e8c485a5784fb32bb1dc541bca0cd2e84734f069a1cb7f94dfd2485bc83db96",
+      "sha256": "40208608c0263893f0880980077712b14d9b75168716651545557005df89ca32",
+      "seconds": 0.68,
+      "peak": 0.8399999999999999,
+      "rms_dbfs": -22.002864908928544,
+      "recipe": {
+        "rate": 0.88,
+        "weight": 1.0,
+        "resonance": 68,
+        "variant": 2,
+        "processing": "onset; band-shaped recorded body; delayed low body; parallel soft saturation; envelope; -1.51 dBFS peak"
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/SniperBody3.wav",
+      "source": "Assets/Audio/Moonkov/Clips/Weapons/SniperPunch3.wav",
+      "source_sha256": "b42c3ed7e97fc736d4930da19b388a3749a7a09d8d6120e2e30a42e205500b34",
+      "sha256": "302b4ca24c32e28628b340e8d8707a973d57456e605a6877b281f1f8f01124b8",
+      "seconds": 0.68,
+      "peak": 0.84,
+      "rms_dbfs": -22.40586544544478,
+      "recipe": {
+        "rate": 0.88,
+        "weight": 1.0,
+        "resonance": 68,
+        "variant": 3,
+        "processing": "onset; band-shaped recorded body; delayed low body; parallel soft saturation; envelope; -1.51 dBFS peak"
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/SniperTail.wav",
+      "source": "Assets/Audio/Moonkov/Clips/Weapons/SniperPunch1.wav",
+      "source_sha256": "c37d883689aad2e54359d510aeef404cfe91d0edf6b1729fc1b3afe8bb23f804",
+      "sha256": "06d405952099274cab7fac5f649edaa29979b18c276e99ad65d0124d94e47eeb",
+      "seconds": 0.78,
+      "peak": 0.62,
+      "rms_dbfs": -29.100215121878588,
+      "recipe": {
+        "processing": "recorded low-mid tail, two delayed reflections, exponential release",
+        "resonance": 68
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/CicadaBody1.wav",
+      "source": "Assets/Audio/Moonkov/Clips/Weapons/RiflePunch1.wav",
+      "source_sha256": "6f0d8337f3f983d7fc722ad72390081d0cb5b5812d092723687be5776be10f6b",
+      "sha256": "215190b4c83fbc65ce06b8753f310ee0e8f53875c84ea1b4a11f275873997527",
+      "seconds": 0.12,
+      "peak": 0.84,
+      "rms_dbfs": -19.023023206678367,
+      "recipe": {
+        "rate": 1.28,
+        "weight": 0.25,
+        "resonance": 210,
+        "variant": 1,
+        "processing": "onset; band-shaped recorded body; delayed low body; parallel soft saturation; envelope; -1.51 dBFS peak"
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/CicadaBody2.wav",
+      "source": "Assets/Audio/Moonkov/Clips/Weapons/RiflePunch2.wav",
+      "source_sha256": "2358cb37989df2410bbea24297ca2bddfd668f5ed36e38077606454200c6fce5",
+      "sha256": "d24802a762368a76c1e08e30a35a7289b109f946825444c6f2a52f0e0768488a",
+      "seconds": 0.12,
+      "peak": 0.84,
+      "rms_dbfs": -18.84153962310707,
+      "recipe": {
+        "rate": 1.28,
+        "weight": 0.25,
+        "resonance": 210,
+        "variant": 2,
+        "processing": "onset; band-shaped recorded body; delayed low body; parallel soft saturation; envelope; -1.51 dBFS peak"
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/CicadaBody3.wav",
+      "source": "Assets/Audio/Moonkov/Clips/Weapons/RiflePunch3.wav",
+      "source_sha256": "e6248d22d201fa1be858b7e19ad7144b32846796da81792a5e191aa7f2750b5e",
+      "sha256": "fbb319344500f079de5d534808a81dd9f40a7f616860ed7519fb5f7fa40054d8",
+      "seconds": 0.12,
+      "peak": 0.8400000000000001,
+      "rms_dbfs": -16.48130865932925,
+      "recipe": {
+        "rate": 1.28,
+        "weight": 0.25,
+        "resonance": 210,
+        "variant": 3,
+        "processing": "onset; band-shaped recorded body; delayed low body; parallel soft saturation; envelope; -1.51 dBFS peak"
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/CicadaTail.wav",
+      "source": "Assets/Audio/Moonkov/Clips/Weapons/RiflePunch1.wav",
+      "source_sha256": "6f0d8337f3f983d7fc722ad72390081d0cb5b5812d092723687be5776be10f6b",
+      "sha256": "b3a047c00b0e88728d587a4d3689c4a47e2e37fa763eaf3302e01d8fc3f8b66f",
+      "seconds": 0.13,
+      "peak": 0.62,
+      "rms_dbfs": -21.226592820007987,
+      "recipe": {
+        "processing": "recorded low-mid tail, two delayed reflections, exponential release",
+        "resonance": 210
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/TrineBody1.wav",
+      "source": "Assets/Audio/Moonkov/Clips/Weapons/RiflePunch1.wav",
+      "source_sha256": "6f0d8337f3f983d7fc722ad72390081d0cb5b5812d092723687be5776be10f6b",
+      "sha256": "2e11d7acde64c3583abdce2a11370bfe08ce9d595ec6446110ce57270f07d75f",
+      "seconds": 0.16,
+      "peak": 0.84,
+      "rms_dbfs": -18.731250047809215,
+      "recipe": {
+        "rate": 1.08,
+        "weight": 0.5,
+        "resonance": 172,
+        "variant": 1,
+        "processing": "onset; band-shaped recorded body; delayed low body; parallel soft saturation; envelope; -1.51 dBFS peak"
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/TrineBody2.wav",
+      "source": "Assets/Audio/Moonkov/Clips/Weapons/RiflePunch2.wav",
+      "source_sha256": "2358cb37989df2410bbea24297ca2bddfd668f5ed36e38077606454200c6fce5",
+      "sha256": "b8d3d0c8bd368e08a4a994855d466d905d2ab0f56a2872998b1d115855e95d22",
+      "seconds": 0.16,
+      "peak": 0.84,
+      "rms_dbfs": -18.532692869499602,
+      "recipe": {
+        "rate": 1.08,
+        "weight": 0.5,
+        "resonance": 172,
+        "variant": 2,
+        "processing": "onset; band-shaped recorded body; delayed low body; parallel soft saturation; envelope; -1.51 dBFS peak"
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/TrineBody3.wav",
+      "source": "Assets/Audio/Moonkov/Clips/Weapons/RiflePunch3.wav",
+      "source_sha256": "e6248d22d201fa1be858b7e19ad7144b32846796da81792a5e191aa7f2750b5e",
+      "sha256": "7cb2271c6204ed0935674949bc10122c2a96d79a570b25423e46e591073e68e8",
+      "seconds": 0.16,
+      "peak": 0.84,
+      "rms_dbfs": -16.826277269328646,
+      "recipe": {
+        "rate": 1.08,
+        "weight": 0.5,
+        "resonance": 172,
+        "variant": 3,
+        "processing": "onset; band-shaped recorded body; delayed low body; parallel soft saturation; envelope; -1.51 dBFS peak"
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/TrineTail.wav",
+      "source": "Assets/Audio/Moonkov/Clips/Weapons/RiflePunch1.wav",
+      "source_sha256": "6f0d8337f3f983d7fc722ad72390081d0cb5b5812d092723687be5776be10f6b",
+      "sha256": "e37302ba6a49cb14980c78a9dfc32efa6f1b1abc8b00b833ba7528d40b0875bd",
+      "seconds": 0.2,
+      "peak": 0.62,
+      "rms_dbfs": -22.8135339206373,
+      "recipe": {
+        "processing": "recorded low-mid tail, two delayed reflections, exponential release",
+        "resonance": 172
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/AegisBody1.wav",
+      "source": "Assets/Audio/Moonkov/Clips/Weapons/RiflePunch1.wav",
+      "source_sha256": "6f0d8337f3f983d7fc722ad72390081d0cb5b5812d092723687be5776be10f6b",
+      "sha256": "5d529af3672d5c6c617618c904d33ec654a76aeadbe338cd7017425cdbe1d355",
+      "seconds": 0.28,
+      "peak": 0.84,
+      "rms_dbfs": -18.497347337500884,
+      "recipe": {
+        "rate": 0.76,
+        "weight": 1.15,
+        "resonance": 91,
+        "variant": 1,
+        "processing": "onset; band-shaped recorded body; delayed low body; parallel soft saturation; envelope; -1.51 dBFS peak"
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/AegisBody2.wav",
+      "source": "Assets/Audio/Moonkov/Clips/Weapons/RiflePunch2.wav",
+      "source_sha256": "2358cb37989df2410bbea24297ca2bddfd668f5ed36e38077606454200c6fce5",
+      "sha256": "8d0e49f6c17c9a8d260f90a00530b09e43c9640a83e0114d0c0ca63822e3e36d",
+      "seconds": 0.28,
+      "peak": 0.84,
+      "rms_dbfs": -18.747112063692,
+      "recipe": {
+        "rate": 0.76,
+        "weight": 1.15,
+        "resonance": 91,
+        "variant": 2,
+        "processing": "onset; band-shaped recorded body; delayed low body; parallel soft saturation; envelope; -1.51 dBFS peak"
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/AegisBody3.wav",
+      "source": "Assets/Audio/Moonkov/Clips/Weapons/RiflePunch3.wav",
+      "source_sha256": "e6248d22d201fa1be858b7e19ad7144b32846796da81792a5e191aa7f2750b5e",
+      "sha256": "c555ff867c1d6a2e406b2dd7553915459b6f4ce86798abb8169aa608470e78f2",
+      "seconds": 0.28,
+      "peak": 0.84,
+      "rms_dbfs": -18.09850088418332,
+      "recipe": {
+        "rate": 0.76,
+        "weight": 1.15,
+        "resonance": 91,
+        "variant": 3,
+        "processing": "onset; band-shaped recorded body; delayed low body; parallel soft saturation; envelope; -1.51 dBFS peak"
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/AegisTail.wav",
+      "source": "Assets/Audio/Moonkov/Clips/Weapons/RiflePunch1.wav",
+      "source_sha256": "6f0d8337f3f983d7fc722ad72390081d0cb5b5812d092723687be5776be10f6b",
+      "sha256": "48edd28d40ce42a8e1ed7385c782934e0b55b2be183284df4a1e8db3ef4db67a",
+      "seconds": 0.25,
+      "peak": 0.62,
+      "rms_dbfs": -23.874805097443442,
+      "recipe": {
+        "processing": "recorded low-mid tail, two delayed reflections, exponential release",
+        "resonance": 91
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/VesperBody1.wav",
+      "source": "Assets/Audio/Moonkov/Clips/Weapons/SniperPunch1.wav",
+      "source_sha256": "c37d883689aad2e54359d510aeef404cfe91d0edf6b1729fc1b3afe8bb23f804",
+      "sha256": "8e4ac645fb2356b12a1ed3edd19a2044610cdb8deb77c40fee35837110670b32",
+      "seconds": 0.3,
+      "peak": 0.84,
+      "rms_dbfs": -19.63398267570577,
+      "recipe": {
+        "rate": 1.2,
+        "weight": 0.55,
+        "resonance": 145,
+        "variant": 1,
+        "processing": "onset; band-shaped recorded body; delayed low body; parallel soft saturation; envelope; -1.51 dBFS peak"
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/VesperBody2.wav",
+      "source": "Assets/Audio/Moonkov/Clips/Weapons/SniperPunch2.wav",
+      "source_sha256": "7e8c485a5784fb32bb1dc541bca0cd2e84734f069a1cb7f94dfd2485bc83db96",
+      "sha256": "4fb4cb9989a41660d01d4a79ffe4bf6a35bd27b01d1b1b63e5b806912da89b6d",
+      "seconds": 0.3,
+      "peak": 0.84,
+      "rms_dbfs": -19.861765845048843,
+      "recipe": {
+        "rate": 1.2,
+        "weight": 0.55,
+        "resonance": 145,
+        "variant": 2,
+        "processing": "onset; band-shaped recorded body; delayed low body; parallel soft saturation; envelope; -1.51 dBFS peak"
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/VesperBody3.wav",
+      "source": "Assets/Audio/Moonkov/Clips/Weapons/SniperPunch3.wav",
+      "source_sha256": "b42c3ed7e97fc736d4930da19b388a3749a7a09d8d6120e2e30a42e205500b34",
+      "sha256": "ea9ca2a8043deb64001fb6c8c4a79d0a89dbc0e4d1319249d7a5e83dfa1a4eaa",
+      "seconds": 0.3,
+      "peak": 0.84,
+      "rms_dbfs": -20.096660885547635,
+      "recipe": {
+        "rate": 1.2,
+        "weight": 0.55,
+        "resonance": 145,
+        "variant": 3,
+        "processing": "onset; band-shaped recorded body; delayed low body; parallel soft saturation; envelope; -1.51 dBFS peak"
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/VesperTail.wav",
+      "source": "Assets/Audio/Moonkov/Clips/Weapons/SniperPunch1.wav",
+      "source_sha256": "c37d883689aad2e54359d510aeef404cfe91d0edf6b1729fc1b3afe8bb23f804",
+      "sha256": "5bd59d14bd75acceacbafa0428f451903b3bacbba4f4fda6758ff5ced8f09ea4",
+      "seconds": 0.32,
+      "peak": 0.62,
+      "rms_dbfs": -26.292429327401813,
+      "recipe": {
+        "processing": "recorded low-mid tail, two delayed reflections, exponential release",
+        "resonance": 145
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/ThornBody1.wav",
+      "source": "Assets/Audio/Clips/Weapons/Shotgun/Shoot/Shotgun_Shoot-001.wav",
+      "source_sha256": "b565efd81f3d915b11c701c77a6320140086345c7ae615cce6c2ab1389a61e42",
+      "sha256": "77f7824c75cec6c180c1f151f9550924222e703604bcab6ccc711fc30a9e4d03",
+      "seconds": 0.2899791666666667,
+      "peak": 0.84,
+      "rms_dbfs": -13.183678066741503,
+      "recipe": {
+        "rate": 1.25,
+        "weight": 0.55,
+        "resonance": 190,
+        "variant": 1,
+        "processing": "onset; band-shaped recorded body; delayed low body; parallel soft saturation; envelope; -1.51 dBFS peak"
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/ThornBody2.wav",
+      "source": "Assets/Audio/Clips/Weapons/Shotgun/Shoot/Shotgun_Shoot-002.wav",
+      "source_sha256": "f0816694757a2214158f3e3669827fdcaffdf6896ac850e436598e8333b3d968",
+      "sha256": "75ae464cc4a5a41d1161a28fcbb993094b602de839302d6a087fbd0215f7e681",
+      "seconds": 0.2899791666666667,
+      "peak": 0.84,
+      "rms_dbfs": -13.76402268824487,
+      "recipe": {
+        "rate": 1.25,
+        "weight": 0.55,
+        "resonance": 190,
+        "variant": 2,
+        "processing": "onset; band-shaped recorded body; delayed low body; parallel soft saturation; envelope; -1.51 dBFS peak"
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/ThornBody3.wav",
+      "source": "Assets/Audio/Clips/Weapons/Shotgun/Shoot/Shotgun_Shoot-003.wav",
+      "source_sha256": "e62877a5c0b69b47dd228e995a1bddb4422e84bd2eb2a358e9df85508814fae3",
+      "sha256": "ea3e5d0a49b3b2895e8a56e9df78b0ad3597cf271e5b9738d2a8e0171c4c6ded",
+      "seconds": 0.2899791666666667,
+      "peak": 0.8400000000000001,
+      "rms_dbfs": -13.374093211437453,
+      "recipe": {
+        "rate": 1.25,
+        "weight": 0.55,
+        "resonance": 190,
+        "variant": 3,
+        "processing": "onset; band-shaped recorded body; delayed low body; parallel soft saturation; envelope; -1.51 dBFS peak"
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/ThornTail.wav",
+      "source": "Assets/Audio/Clips/Weapons/Shotgun/Shoot/Shotgun_Shoot-001.wav",
+      "source_sha256": "b565efd81f3d915b11c701c77a6320140086345c7ae615cce6c2ab1389a61e42",
+      "sha256": "40a60d0a2386e404797b7e3282156b58f20ae4cc5347468860e7c564d447e201",
+      "seconds": 0.2899791666666667,
+      "peak": 0.62,
+      "rms_dbfs": -17.97297779826945,
+      "recipe": {
+        "processing": "recorded low-mid tail, two delayed reflections, exponential release",
+        "resonance": 190
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/SundownBody1.wav",
+      "source": "Assets/Audio/Moonkov/Clips/Weapons/SniperPunch1.wav",
+      "source_sha256": "c37d883689aad2e54359d510aeef404cfe91d0edf6b1729fc1b3afe8bb23f804",
+      "sha256": "a88b76ec404862997f3c48af130a74ac2119ae406be6fa1924e4e83f92072ba2",
+      "seconds": 0.78,
+      "peak": 0.8399999999999999,
+      "rms_dbfs": -21.144208743508358,
+      "recipe": {
+        "rate": 0.63,
+        "weight": 1.6,
+        "resonance": 55,
+        "variant": 1,
+        "processing": "onset; band-shaped recorded body; delayed low body; parallel soft saturation; envelope; -1.51 dBFS peak"
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/SundownBody2.wav",
+      "source": "Assets/Audio/Moonkov/Clips/Weapons/SniperPunch2.wav",
+      "source_sha256": "7e8c485a5784fb32bb1dc541bca0cd2e84734f069a1cb7f94dfd2485bc83db96",
+      "sha256": "943e4e0e408106f75632b924be718c487bd3f7ee15d942e9d95960ed42930aa5",
+      "seconds": 0.78,
+      "peak": 0.8399999999999999,
+      "rms_dbfs": -20.92206710138249,
+      "recipe": {
+        "rate": 0.63,
+        "weight": 1.6,
+        "resonance": 55,
+        "variant": 2,
+        "processing": "onset; band-shaped recorded body; delayed low body; parallel soft saturation; envelope; -1.51 dBFS peak"
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/SundownBody3.wav",
+      "source": "Assets/Audio/Moonkov/Clips/Weapons/SniperPunch3.wav",
+      "source_sha256": "b42c3ed7e97fc736d4930da19b388a3749a7a09d8d6120e2e30a42e205500b34",
+      "sha256": "394d0f56b481a21768679eeda9864cce058fe32fbef4ad2641262c901c650f2b",
+      "seconds": 0.78,
+      "peak": 0.84,
+      "rms_dbfs": -21.003584238186228,
+      "recipe": {
+        "rate": 0.63,
+        "weight": 1.6,
+        "resonance": 55,
+        "variant": 3,
+        "processing": "onset; band-shaped recorded body; delayed low body; parallel soft saturation; envelope; -1.51 dBFS peak"
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/SundownTail.wav",
+      "source": "Assets/Audio/Moonkov/Clips/Weapons/SniperPunch1.wav",
+      "source_sha256": "c37d883689aad2e54359d510aeef404cfe91d0edf6b1729fc1b3afe8bb23f804",
+      "sha256": "7668767c633d6283cb24bec5e338f8975bcc8456d7e4eef308f4282c4b086802",
+      "seconds": 0.9,
+      "peak": 0.62,
+      "rms_dbfs": -29.508881168085452,
+      "recipe": {
+        "processing": "recorded low-mid tail, two delayed reflections, exponential release",
+        "resonance": 55
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/RondoBody1.wav",
+      "source": "Assets/Audio/Moonkov/Clips/Weapons/RevolverPunch1.wav",
+      "source_sha256": "0729ed8e18f5202fecc8bf4faea77ed3dfe498cafed3e94b2a6b744011057315",
+      "sha256": "e8a25b57facfc5f98356ab1b857138de101168a5d15eea7a4d5800be38758419",
+      "seconds": 0.22,
+      "peak": 0.84,
+      "rms_dbfs": -20.379945166550904,
+      "recipe": {
+        "rate": 1.17,
+        "weight": 0.6,
+        "resonance": 155,
+        "variant": 1,
+        "processing": "onset; band-shaped recorded body; delayed low body; parallel soft saturation; envelope; -1.51 dBFS peak"
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/RondoBody2.wav",
+      "source": "Assets/Audio/Moonkov/Clips/Weapons/RevolverPunch2.wav",
+      "source_sha256": "afcb3743d66d5ddac216efdfd074e68597da86d2f9ae262a3808c1a4ab43cb77",
+      "sha256": "98eae57ec9e59a5e9dc7dc6e3bb849daec18507bb49636408d4f08a5b39771c5",
+      "seconds": 0.22,
+      "peak": 0.84,
+      "rms_dbfs": -20.381077378625378,
+      "recipe": {
+        "rate": 1.17,
+        "weight": 0.6,
+        "resonance": 155,
+        "variant": 2,
+        "processing": "onset; band-shaped recorded body; delayed low body; parallel soft saturation; envelope; -1.51 dBFS peak"
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/RondoBody3.wav",
+      "source": "Assets/Audio/Moonkov/Clips/Weapons/RevolverPunch3.wav",
+      "source_sha256": "186f64fdfe61123ed8cd7943da2b03a893c1d37bca86b8b95bd7c5727f79faa5",
+      "sha256": "fa581d7a4b604de0d89cc88ca1b325e0d054614426b4786b6f8676871aec8088",
+      "seconds": 0.22,
+      "peak": 0.84,
+      "rms_dbfs": -18.346978801130266,
+      "recipe": {
+        "rate": 1.17,
+        "weight": 0.6,
+        "resonance": 155,
+        "variant": 3,
+        "processing": "onset; band-shaped recorded body; delayed low body; parallel soft saturation; envelope; -1.51 dBFS peak"
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/RondoTail.wav",
+      "source": "Assets/Audio/Moonkov/Clips/Weapons/RevolverPunch1.wav",
+      "source_sha256": "0729ed8e18f5202fecc8bf4faea77ed3dfe498cafed3e94b2a6b744011057315",
+      "sha256": "e73fd5a840ccd607d8d9df8443348a20513f89ed75fc776d8bca9a4e311617ac",
+      "seconds": 0.24,
+      "peak": 0.62,
+      "rms_dbfs": -24.182709324782866,
+      "recipe": {
+        "processing": "recorded low-mid tail, two delayed reflections, exponential release",
+        "resonance": 155
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/TempestBody1.wav",
+      "source": "Assets/Audio/Clips/Weapons/Shotgun/Shoot/Shotgun_Shoot-001.wav",
+      "source_sha256": "b565efd81f3d915b11c701c77a6320140086345c7ae615cce6c2ab1389a61e42",
+      "sha256": "b1226c560bcd8589f444d57e880145f269d90f1839c4454e3410e79ae83a3728",
+      "seconds": 0.35,
+      "peak": 0.8399999999999999,
+      "rms_dbfs": -12.640495376223157,
+      "recipe": {
+        "rate": 0.77,
+        "weight": 1.25,
+        "resonance": 75,
+        "variant": 1,
+        "processing": "onset; band-shaped recorded body; delayed low body; parallel soft saturation; envelope; -1.51 dBFS peak"
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/TempestBody2.wav",
+      "source": "Assets/Audio/Clips/Weapons/Shotgun/Shoot/Shotgun_Shoot-002.wav",
+      "source_sha256": "f0816694757a2214158f3e3669827fdcaffdf6896ac850e436598e8333b3d968",
+      "sha256": "a273d1115f7973aa43242cc2039b922f6d76063619a10b5b3e7f00fd5b89d1d0",
+      "seconds": 0.35,
+      "peak": 0.84,
+      "rms_dbfs": -14.211804071765258,
+      "recipe": {
+        "rate": 0.77,
+        "weight": 1.25,
+        "resonance": 75,
+        "variant": 2,
+        "processing": "onset; band-shaped recorded body; delayed low body; parallel soft saturation; envelope; -1.51 dBFS peak"
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/TempestBody3.wav",
+      "source": "Assets/Audio/Clips/Weapons/Shotgun/Shoot/Shotgun_Shoot-003.wav",
+      "source_sha256": "e62877a5c0b69b47dd228e995a1bddb4422e84bd2eb2a358e9df85508814fae3",
+      "sha256": "55e75bb7b9bdb4a10dce9622a13c40ab9c0b372b9e3a635b73163cff04a2b20e",
+      "seconds": 0.35,
+      "peak": 0.8399999999999999,
+      "rms_dbfs": -13.731152017900408,
+      "recipe": {
+        "rate": 0.77,
+        "weight": 1.25,
+        "resonance": 75,
+        "variant": 3,
+        "processing": "onset; band-shaped recorded body; delayed low body; parallel soft saturation; envelope; -1.51 dBFS peak"
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/TempestTail.wav",
+      "source": "Assets/Audio/Clips/Weapons/Shotgun/Shoot/Shotgun_Shoot-001.wav",
+      "source_sha256": "b565efd81f3d915b11c701c77a6320140086345c7ae615cce6c2ab1389a61e42",
+      "sha256": "655344e9511b9547d6cb3c45b7ed46462a8e31ff06f3518c6c0040a086fbd73f",
+      "seconds": 0.34,
+      "peak": 0.6199999999999999,
+      "rms_dbfs": -18.569614068926526,
+      "recipe": {
+        "processing": "recorded low-mid tail, two delayed reflections, exponential release",
+        "resonance": 75
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/NocturneBody1.wav",
+      "source": "Assets/Audio/Moonkov/Clips/Weapons/SniperPunch1.wav",
+      "source_sha256": "c37d883689aad2e54359d510aeef404cfe91d0edf6b1729fc1b3afe8bb23f804",
+      "sha256": "6da991961e1feb2f22e2c635e25929d4f49a91a22f858b834e860529af5a058f",
+      "seconds": 0.48,
+      "peak": 0.84,
+      "rms_dbfs": -20.80636992806899,
+      "recipe": {
+        "rate": 0.97,
+        "weight": 0.75,
+        "resonance": 112,
+        "variant": 1,
+        "processing": "onset; band-shaped recorded body; delayed low body; parallel soft saturation; envelope; -1.51 dBFS peak"
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/NocturneBody2.wav",
+      "source": "Assets/Audio/Moonkov/Clips/Weapons/SniperPunch2.wav",
+      "source_sha256": "7e8c485a5784fb32bb1dc541bca0cd2e84734f069a1cb7f94dfd2485bc83db96",
+      "sha256": "13a812558317857870d79491ed9972cef6aa287de92d84be383031027d83f0eb",
+      "seconds": 0.48,
+      "peak": 0.84,
+      "rms_dbfs": -20.98837956659078,
+      "recipe": {
+        "rate": 0.97,
+        "weight": 0.75,
+        "resonance": 112,
+        "variant": 2,
+        "processing": "onset; band-shaped recorded body; delayed low body; parallel soft saturation; envelope; -1.51 dBFS peak"
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/NocturneBody3.wav",
+      "source": "Assets/Audio/Moonkov/Clips/Weapons/SniperPunch3.wav",
+      "source_sha256": "b42c3ed7e97fc736d4930da19b388a3749a7a09d8d6120e2e30a42e205500b34",
+      "sha256": "0bbf8b035a258ceecf979d1c77f56a054af8c02b04f7eb6f35a00795b1a83e21",
+      "seconds": 0.48,
+      "peak": 0.8399999999999999,
+      "rms_dbfs": -21.492390907378972,
+      "recipe": {
+        "rate": 0.97,
+        "weight": 0.75,
+        "resonance": 112,
+        "variant": 3,
+        "processing": "onset; band-shaped recorded body; delayed low body; parallel soft saturation; envelope; -1.51 dBFS peak"
+      }
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/WeaponIdentity/NocturneTail.wav",
+      "source": "Assets/Audio/Moonkov/Clips/Weapons/SniperPunch1.wav",
+      "source_sha256": "c37d883689aad2e54359d510aeef404cfe91d0edf6b1729fc1b3afe8bb23f804",
+      "sha256": "1f1964a7103dad3ea944aa77fbc47a83b2ab3bbdb8e0c1957cd9552ce0402fcb",
+      "seconds": 0.5799791666666667,
+      "peak": 0.62,
+      "rms_dbfs": -28.481950121085617,
+      "recipe": {
+        "processing": "recorded low-mid tail, two delayed reflections, exponential release",
+        "resonance": 112
+      }
+    }
+  ]
+}

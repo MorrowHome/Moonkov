@@ -20,6 +20,7 @@ namespace Unity.MP_FPS
         private readonly Queue<ClientHaloMarkRpc> m_HaloMarkQueue = new();
         private readonly Dictionary<int, uint> m_LastMarkTicks = new();
         private HaloHitMarkerFeedback m_HaloMarks;
+        private RifleFeedbackLibrary m_WeaponAudio;
         public void Server_RequestHaloMark(int owner, uint tick, Vector3 position)
         {
             if (owner <= 0 || (m_LastMarkTicks.TryGetValue(owner, out var last) && (int)(tick-last) <= 0)) return;
@@ -132,8 +133,13 @@ namespace Unity.MP_FPS
                 }
                 if (weaponData != null)
                 {
-                    MoonkovAudio.Play(weaponData.WeaponFireSfx, player.transform.position);
-                    MoonkovAudio.Play(weaponData.WeaponFireLayerSfx, player.transform.position);
+                    if (!m_WeaponAudio) m_WeaponAudio = Resources.Load<RifleFeedbackLibrary>("Moonkov/RifleFeedback");
+                    var profile = m_WeaponAudio?.ForWeapon(weaponId);
+                    MoonkovAudio.PlayWeaponLayer(profile?.FireBody ?? weaponData.WeaponFireSfx,
+                        player.transform.position, 1, isFirstPerson ? .08f : 1);
+                    MoonkovAudio.PlayWeaponLayer(profile != null ? profile.FireSnap : weaponData.WeaponFireLayerSfx,
+                        player.transform.position, .85f, isFirstPerson ? 0 : 1);
+                    MoonkovAudio.PlayWeaponLayer(profile?.FireTail, player.transform.position, .85f, isFirstPerson ? .2f : 1);
                 }
                 if (weaponData == null)
                 {

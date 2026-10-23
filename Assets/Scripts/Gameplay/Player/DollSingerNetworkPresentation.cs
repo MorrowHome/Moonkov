@@ -332,19 +332,9 @@ namespace Unity.MP_FPS
                 }
                 if (!m_WeaponFeedback) m_WeaponFeedback = Resources.Load<RifleFeedbackLibrary>("Moonkov/RifleFeedback");
                 var profile = m_WeaponFeedback?.ForWeapon(weaponId);
-                if (weaponId == DollSingerWeapons.Shotgun && profile != null)
+                if (weaponId == DollSingerWeapons.Halo || profile != null)
                 {
-                    // Preserve the shotgun mix the player already likes.
-                    GameManager.Instance.SoundSystem?.Stop(m_RifleBodySound, .025f);
-                    GameManager.Instance.SoundSystem?.Stop(m_RifleSnapSound, .015f);
-                    GameManager.Instance.SoundSystem?.Stop(m_WeaponTailSound, .03f);
-                    m_RifleBodySound = MoonkovAudio.Play(profile.FireBody, transform.position);
-                    m_RifleSnapSound = MoonkovAudio.Play(profile.FireSnap, transform.position);
-                    m_WeaponTailSound = MoonkovAudio.Play(profile.FireTail, transform.position);
-                }
-                else if (weaponId == DollSingerWeapons.Halo || profile != null)
-                {
-                    bool sustained = m_LastSoundWeapon == weaponId && Time.unscaledTime - m_LastShotSoundTime < .22f;
+                    bool sustained = m_LastSoundWeapon == weaponId && Time.unscaledTime - m_LastShotSoundTime < Mathf.Max(.15f, (weapon?.CooldownInMs ?? .1f) * 1.5f);
                     m_ShotSoundPressure = sustained ? Mathf.Min(1, m_ShotSoundPressure + .18f) : 0;
                     m_LastSoundWeapon = weaponId; m_LastShotSoundTime = Time.unscaledTime;
                     // The new attack remains crisp; only the preceding body and resonance crossfade.
@@ -356,7 +346,7 @@ namespace Unity.MP_FPS
                     float bodyGain = Mathf.Lerp(1, profile?.SustainedBodyGain ?? .9f, m_ShotSoundPressure);
                     m_RifleBodySound = MoonkovAudio.PlayWeaponLayer(profile?.FireBody ?? weapon?.WeaponFireSfx,
                         origin, bodyGain, owned ? .08f : 1f);
-                    m_RifleSnapSound = MoonkovAudio.PlayWeaponLayer(profile?.FireSnap ?? weapon?.WeaponFireLayerSfx,
+                    m_RifleSnapSound = MoonkovAudio.PlayWeaponLayer(profile != null ? profile.FireSnap : weapon?.WeaponFireLayerSfx,
                         origin, .85f, owned ? 0f : 1f, m_ShotSoundPressure * (profile?.BurstPitchRise ?? 35f));
                     m_WeaponTailSound = MoonkovAudio.PlayWeaponLayer(profile?.FireTail, origin, .85f, owned ? .2f : 1f);
                 }
