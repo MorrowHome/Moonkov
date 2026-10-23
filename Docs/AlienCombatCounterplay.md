@@ -84,3 +84,9 @@ unity command eval 'AlienEnemyChecks.RunCounterplayContract(); AlienEnemyChecks.
 - 结束时确认 `WeaponGestureLab.unity`、dirty=false、Play=false、sceneCount=1，临时 NavMesh/附加场景均已清理。Console当前0错误、14条既有警告。检查报告：`Library/BuildValidation/AlienIntegration/refinement-contract.txt`。
 
 边界：序号gate与粒子行为检查证明触发/去重逻辑，未完成实机声音听感；未跑Host+第二客户端传输、正式地图完整路线与性能负载。144次物理查询/规划及硬限频已通过行为断言，但不据此声称帧率提升或目标设备达标。Boss仅从现有可达位置改变开火角度，不会瞬移或穿过窄门。
+
+## 2026-10-24 Boss 换位的缓存路径修正
+
+新增保持交战距离行为时，原“攻击后换位”检查抓到葬根计入一次换位但实际移动距离为零：`UprightWaypoint` 的 0.75 秒缓存仍指向前一目标，旧逻辑拿到当前位置后立即退出换位，冷却却已经消耗。现在换位等待自身目标的已验证路径刷新，等待最多额外 0.8 秒；实际移动开始后才计算完整移动时段，且只有真正发生位移才增加换位计数。侧移和后退仍面向已观察目标。保持原导航限频、144 次查询预算、地面与完整胶囊净空检查，不重置寻路计时器，不瞬移。
+
+原 `RunPressureContract` 的移动距离、墙体阻挡、攻击后换位及黏液命中／躲避／墙阻挡断言保留。新行为调试中最初在“Roots remained stationary”失败，确认实际 travel=0 后修正缓存等待逻辑；没有通过降低移动阈值来消除失败。
