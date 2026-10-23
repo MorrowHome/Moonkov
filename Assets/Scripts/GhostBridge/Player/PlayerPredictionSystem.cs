@@ -270,7 +270,8 @@ public partial class PlayerPredictionSystem : SingletonSystem<PlayerPredictionSy
                         FirstPersonController.AccumulateMovement(ref predictedPlayer.ValueRW.ControllerState,
                             ref predictedPlayer.ValueRW.AccumulatedMovement,
                             RaidHealth.RestrictInput(predictedPlayer.ValueRO, input),
-                            RaidHealth.Movement(predictedPlayer.ValueRO, controllerConsts.ValueRO.ControllerConsts), accumulateDT, controllerLink.Controller);
+                            RaidHealth.Movement(predictedPlayer.ValueRO, controllerConsts.ValueRO.ControllerConsts), accumulateDT, controllerLink.Controller,
+                            predictedPlayer.ValueRO.MeleeWeapon != 0 && predictedPlayer.ValueRO.CurrentHealth > 0 && !predictedPlayer.ValueRO.ClashDarkSight);
 
                         if (predictedPlayer.ValueRW.ControllerState.JumpTriggered)
                         {

@@ -748,7 +748,7 @@ public class FirstPersonController : MonoBehaviour
     }
 
     private static float3 CalculateMovementFromInput(ref ControllerState state, in ControllerConsts consts,
-        in ControllerConsts.StateConsts stateConsts, in PlayerInput input, bool updateRotation, float deltaTime)
+        in ControllerConsts.StateConsts stateConsts, in PlayerInput input, bool updateRotation, float deltaTime, bool faceView)
     {
         if (updateRotation)
         {
@@ -760,11 +760,11 @@ public class FirstPersonController : MonoBehaviour
                     state.CurrentRotation = quaternion.RotateY(math.radians(state.YawDegrees));
                 state.RotationVelocity = 0f;
             }
-            else if (input.Aim || state.MovementSpeed > 0f)
+            else if (faceView || input.Aim || state.MovementSpeed > 0f)
             {
                 // Third person walks towards camera-relative input; aiming keeps the body facing the view.
                 float targetYaw = state.YawDegrees;
-                if (!input.Aim)
+                if (!input.Aim && !faceView)
                     targetYaw += math.degrees(math.atan2(input.MoveInput.x, input.MoveInput.y));
                 float3 forward = math.forward(state.CurrentRotation);
                 float bodyYaw = math.degrees(math.atan2(forward.x, forward.z));
@@ -821,7 +821,7 @@ public class FirstPersonController : MonoBehaviour
 
     public static void AccumulateMovement(ref ControllerState state,
         ref float3 accumulatedMovement, in PlayerInput input, in ControllerConsts consts, float deltaTime,
-        FirstPersonController motor = null)
+        FirstPersonController motor = null, bool faceView = false)
     {
         if (motor != null)
             state.Stance = DollSingerStances.Resolve(motor.m_Controller, (Vector3)(state.CurrentPosition + accumulatedMovement),
@@ -864,7 +864,7 @@ public class FirstPersonController : MonoBehaviour
         {
             case MovementType.Standing:
                 {
-                    moveDelta = CalculateMovementFromInput(ref state, consts, stateConsts, input, true, deltaTime);
+                    moveDelta = CalculateMovementFromInput(ref state, consts, stateConsts, input, true, deltaTime, faceView);
                     AddMovementFromJumpFall(ref moveDelta, state);
                 }
                 break;
@@ -872,7 +872,7 @@ public class FirstPersonController : MonoBehaviour
             case MovementType.Jumping:
             case MovementType.Falling:
                 {
-                    moveDelta = CalculateMovementFromInput(ref state, consts, stateConsts, input, true, deltaTime);
+                    moveDelta = CalculateMovementFromInput(ref state, consts, stateConsts, input, true, deltaTime, faceView);
                     AddMovementFromJumpFall(ref moveDelta, state);
                 }
                 break;

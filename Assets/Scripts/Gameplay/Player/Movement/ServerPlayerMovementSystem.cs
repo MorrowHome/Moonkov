@@ -535,7 +535,8 @@ namespace Unity.MP_FPS
                                 ref predictedPlayer.ValueRW.AccumulatedMovement,
                                 RaidHealth.RestrictInput(predictedPlayer.ValueRO, input),
                                 RaidHealth.Movement(predictedPlayer.ValueRO, controllerConsts.ValueRO.ControllerConsts),
-                                movementDt, SystemAPI.ManagedAPI.GetComponent<PlayerControllerLink>(entity).Controller);
+                                movementDt, SystemAPI.ManagedAPI.GetComponent<PlayerControllerLink>(entity).Controller,
+                                predictedPlayer.ValueRO.MeleeWeapon != 0 && predictedPlayer.ValueRO.CurrentHealth > 0 && !predictedPlayer.ValueRO.ClashDarkSight);
                         }
                     }
 
