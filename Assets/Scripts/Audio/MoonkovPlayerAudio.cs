@@ -7,6 +7,7 @@ namespace Unity.MP_FPS
     public sealed class MoonkovPlayerAudio
     {
         private bool m_Initialized;
+        private readonly MoonkovMeleeAudio m_Melee = new MoonkovMeleeAudio();
         private uint m_ReloadTick, m_JumpTick, m_LandTick, m_ImpactTick, m_Weapon;
         private float m_Stride, m_SurfaceTimer;
         private Vector3 m_Position;
@@ -36,6 +37,7 @@ namespace Unity.MP_FPS
             var library = MoonkovAudio.Library;
             if (library == null) return;
             Vector3 position = player.position;
+            m_Melee.Update(ghost, position, owned);
             if (!m_Initialized)
             {
                 m_Initialized = true;

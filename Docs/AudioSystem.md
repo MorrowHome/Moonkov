@@ -1,5 +1,9 @@
 # Moonkov 音效系统
 
+## 2026-10-23 近战音效接入
+
+拳套／匕首挥击、能量剑挥击、身体命中、硬物格挡和近战装备切换接入现有声音池。四个独立 SoundDef 复用项目已有录音（AlienSwing、RevolverEnergy、RifleBodyImpact、RifleMetalImpact），不修改源库或新增授权。挥击观察服务端攻击序列并在有效出手窗口播放；命中仅由确认的命中序列触发，空间位置为命中点。首次接入、切换战局、取消、过期／重复事件静音。`MoonkovMeleeAudioChecks.Run()` 与原 Raid 音频资产检查通过。安装入口 `Moonkov/Audio/Install combat feedback`。
+
 ## 2026-10-23 持续伤害静音修复
 
 受击声音改为观察服务端复制的 `LastImpactTick`：仅子弹、爆炸、近战实际造成身体伤害时更新。`LastHitTick` 仍保留全部伤害的打断语义；缺氧、营养耗尽、火焰、中毒、流血不再每个模拟 tick 播放撞击声。独立事件不会被同帧持续伤害覆盖，护盾全吸收只走护盾反馈。玩家撞击声按角色间隔至少 0.35 秒，重复和过期快照不重放。呼吸和低生命心跳继续由原有节奏驱动。

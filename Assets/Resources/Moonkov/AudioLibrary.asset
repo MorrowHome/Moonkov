@@ -17,6 +17,10 @@ MonoBehaviour:
   Confirm: {fileID: 11400000, guid: 9654833cd35b13740ad8154e0c6b5d8c, type: 2}
   Error: {fileID: 11400000, guid: 46975e11edb870b48b911dcb228aa1ae, type: 2}
   Notification: {fileID: 11400000, guid: e4da94686cce2b84382d79e1a930e756, type: 2}
+  MeleeSwing: {fileID: 11400000, guid: 9fcc28e1e35fa4d0ebf4b4c815359b33, type: 2}
+  MeleeEnergySwing: {fileID: 11400000, guid: 5b17d7ef7c1e7454799cfad1de9dc162, type: 2}
+  MeleeImpact: {fileID: 11400000, guid: 9ffa710eed8d1472ca20079eafef4d88, type: 2}
+  MeleeBlocked: {fileID: 11400000, guid: 26b61b63dc7454aef85fc8d372a076de, type: 2}
   Equipment: {fileID: 11400000, guid: a278b15de85ac924cb9107a0efd6d328, type: 2}
   Container: {fileID: 11400000, guid: 80a6b40023bcc7c4a90217620cb71fd8, type: 2}
   Jump: {fileID: 11400000, guid: 73b72b3778f6cf34abb78d33dd4d9a23, type: 2}
