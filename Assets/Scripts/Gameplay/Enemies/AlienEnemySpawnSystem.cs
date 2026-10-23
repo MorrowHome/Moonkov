@@ -210,19 +210,26 @@ namespace Unity.MP_FPS
             position = default;
             rotation = Quaternion.identity;
             float scale = Mathf.Clamp(spawn.Profile.Scale, .1f, 4f);
-            if (spawn.Profile.Species == AlienSpecies.Spider)
-                return TryAmbushPosition(settings, spawn, scale, out position, out rotation);
             float mantleRadius = spawn.Profile.IsChain ? Mathf.Max(SurfaceMotor.BodyRadius, spawn.Profile.Chain.radius) :
                 (spawn.Profile.Species == AlienSpecies.Spider || spawn.Profile.Species == AlienSpecies.FaceHugger) ? SurfaceMotor.BodyRadius :
                 Mathf.Max(SurfaceMotor.BodyRadius, Mathf.Max(spawn.Profile.Branch.bodyRadii.x, spawn.Profile.Branch.bodyRadii.z) * .7f);
             float radius = spawn.Profile.IsUpright ? spawn.Profile.UprightRadius(scale) : mantleRadius * scale;
             float height = spawn.Profile.Boss || spawn.Profile.IsUpright ? spawn.Profile.GroundBodyHeight(scale) : Mathf.Max(radius * 2, (SurfaceMotor.Height + mantleRadius) * scale);
             int anchors = 1 + (spawn.CandidatePositions?.Length ?? 0);
-            for (int attempt = 0; attempt < settings.CandidateAttempts; attempt++)
+            int nearbyAttempts = 0;
+            // Scan distant anchors cheaply; only nearby physical checks consume the budget.
+            for (int attempt = 0; attempt < anchors + settings.CandidateAttempts && nearbyAttempts < settings.CandidateAttempts; attempt++)
             {
                 int cursor = state.CandidateCursor++;
                 int anchor = cursor % anchors;
                 Vector3 candidate = anchor == 0 ? spawn.Position : spawn.CandidatePositions[anchor - 1];
+                if (!HasNearbyPlayer(candidate, settings.ActivationDistance)) continue;
+                nearbyAttempts++;
+                if (spawn.Profile.Species == AlienSpecies.Spider)
+                {
+                    if (TryAmbushPosition(settings, spawn, scale, candidate, anchor > 0, out position, out rotation)) return true;
+                    continue;
+                }
                 // Rotate a bounded search over all authored anchors; a new raid randomizes
                 // its starting point without changing Unity's global random stream.
                 int ringPoint = (cursor / anchors) % 9;
@@ -266,13 +273,14 @@ namespace Unity.MP_FPS
         }
 
         private bool TryAmbushPosition(AlienEncounterSettings settings, AlienEncounterSettings.Spawn spawn,
-            float scale, out Vector3 position, out Quaternion rotation)
+            float scale, Vector3 anchor, bool groundCandidate, out Vector3 position, out Quaternion rotation)
         {
             position = default; rotation = Quaternion.identity;
-            Vector3 normal = spawn.SurfaceNormal.sqrMagnitude > .5f ? spawn.SurfaceNormal.normalized : Vector3.up;
+            Vector3 normal = groundCandidate ? Vector3.up : spawn.SurfaceNormal.sqrMagnitude > .5f ? spawn.SurfaceNormal.normalized : Vector3.up;
+            if (groundCandidate && !RaidSpawnSafety.TryGroundPosition(anchor, SurfaceMotor.BodyRadius * scale,
+                    SurfaceMotor.Height * scale * 2, settings.MaximumSpawnSlope, out anchor, out normal)) return false;
             int mask = LayerMask.GetMask("Default", "Ground");
-            Vector3 anchor = spawn.Position;
-            if (!spawn.Ambush)
+            if (!groundCandidate && !spawn.Ambush)
             {
                 if (!UnityEngine.Physics.Raycast(anchor + Vector3.up, Vector3.up, out var ceiling, 14, mask,
                     QueryTriggerInteraction.Ignore) || ceiling.normal.y > -.65f) return false;

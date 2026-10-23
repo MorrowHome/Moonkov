@@ -131,9 +131,19 @@ namespace Unity.MP_FPS
             float inner = Mathf.Max(0, m_Tuning.SpawnInnerRadius);
             float outer = Mathf.Max(inner, m_Tuning.SpawnOuterRadius);
             int attempts = Mathf.Clamp(m_Tuning.SpawnAttempts, 4, 48);
-            for (int attempt = 0; attempt < attempts; attempt++)
+            int nearbyAttempts = 0;
+            for (int attempt = 0; attempt < anchors.Length + attempts && nearbyAttempts < attempts; attempt++)
             {
                 var anchor = anchors[(start + attempt) % anchors.Length];
+                if (map.EnemyActivationDistance > 0)
+                {
+                    bool nearby = false;
+                    foreach (var observer in m_SpawnObservers)
+                        if (observer.CheckVisibility && HorizontalDistance(anchor, observer.Position) <= map.EnemyActivationDistance)
+                        { nearby = true; break; }
+                    if (!nearby) continue;
+                }
+                nearbyAttempts++;
                 float angle = m_SpawnRandom.NextFloat(0, Mathf.PI * 2);
                 float radius = Mathf.Sqrt(m_SpawnRandom.NextFloat(inner * inner, outer * outer));
                 // Try authored points themselves before searching their surrounding area.

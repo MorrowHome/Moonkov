@@ -214,7 +214,7 @@ namespace Unity.MP_FPS
             }
             if (now < m_NextBuild) return false;
             m_NextBuild = now + 1;
-            // Bound the bake to the expedition, rather than processing the entire lunar terrain.
+            // Authored entry points define the playable expedition, including full-map routes.
             var bounds = new Bounds(map.LootPositions[0], Vector3.one);
             foreach (var point in map.LootPositions) bounds.Encapsulate(point);
             foreach (var point in map.EnemySpawnPositions) bounds.Encapsulate(point);
@@ -246,7 +246,9 @@ namespace Unity.MP_FPS
             settings.agentClimb = .35f;
             settings.agentSlope = 45;
             settings.overrideVoxelSize = true;
-            settings.voxelSize = .2f;
+            // A four-kilometre expedition must not rasterize the entire DEM at 20 cm.
+            // Retain detailed navigation for compact routes and use bounded resolution for large maps.
+            settings.voxelSize = Mathf.Max(bounds.size.x, bounds.size.z) > 1000 ? .75f : .2f;
             m_Filter = new NavMeshQueryFilter { agentTypeID = settings.agentTypeID, areaMask = NavMesh.AllAreas };
             m_NavData = new NavMeshData(settings.agentTypeID) { name = "DollSinger server expedition navigation" };
             m_Build = NavMeshBuilder.UpdateNavMeshDataAsync(m_NavData, settings, m_Sources, bounds);

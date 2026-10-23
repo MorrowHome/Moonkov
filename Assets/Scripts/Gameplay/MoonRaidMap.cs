@@ -14,6 +14,8 @@ namespace Unity.MP_FPS
         [SerializeField] private Vector3[] m_LootGroundNormals = new Vector3[0];
         [Tooltip("Dedicated PMC entry points. Empty uses the supply route for older maps.")]
         [SerializeField] private Vector3[] m_EnemySpawnPositions = new Vector3[0];
+        [Tooltip("Only activate PMC entries this close to a living player. Zero keeps all entries eligible.")]
+        [SerializeField, Min(0)] private float m_EnemyActivationDistance;
         [SerializeField] private Vector3 m_ExtractionPosition;
         [SerializeField] private PanelSettings m_PanelSettings;
         [SerializeField, Min(30)] private float m_RaidDuration = 600;
@@ -61,6 +63,7 @@ namespace Unity.MP_FPS
         public Vector3[] LootPositions => m_LootPositions;
         public Vector3[] EnemySpawnPositions => m_EnemySpawnPositions != null && m_EnemySpawnPositions.Length > 0
             ? m_EnemySpawnPositions : m_LootPositions;
+        public float EnemyActivationDistance => Mathf.Max(0, m_EnemyActivationDistance);
         public RaidLootProfile GetLootProfile(int index) => m_LootProfiles != null && index >= 0 && index < m_LootProfiles.Length
             ? m_LootProfiles[index] : (RaidLootProfile)(Mathf.Abs(index) % 4);
         public float GetLootYaw(int index) => m_LootYaw != null && index >= 0 && index < m_LootYaw.Length ? m_LootYaw[index] : 0;
