@@ -16,6 +16,7 @@ Shader "MoonEnvironment/Industrial Dust"
         _DustAmount("Dust coverage", Range(0,1)) = 0.5
         _DustFloorY("Local floor world height", Float) = 211.64
         _DustTiling("Dust texture repeats per metre", Float) = 0.65
+        _SurfaceWear("White surface micro-etching", Range(0,1)) = 0
         _CoatStrength("Clean paint clear coat", Range(0,1)) = 0
         _CoatSmoothness("Clear coat smoothness", Range(0,1)) = 0.8
         [HideInInspector] _AtlasUVChannel("Base UV", Float) = 0
@@ -36,6 +37,7 @@ Shader "MoonEnvironment/Industrial Dust"
             float _Metallic, _Smoothness, _BumpScale, _OcclusionStrength;
             float _DustAmount, _DustFloorY, _DustTiling, _Cull, _Cutoff;
             float _CoatStrength, _CoatSmoothness;
+            float _SurfaceWear;
         CBUFFER_END
         ENDHLSL
         // Explicit opaque environment material domain; stock/actor/VFX shaders never opt in.
@@ -95,6 +97,16 @@ Shader "MoonEnvironment/Industrial Dust"
                 #endif
                 // One extra texture sample. World scale keeps dust grain consistent across UVs.
                 float2 dustUV = (input.positionWS.xz + input.positionWS.y * float2(.31,.17)) * _DustTiling;
+                if (_SurfaceWear > 0)
+                {
+                    // Face-aligned coordinates keep fine wall grain isotropic.
+                    // The old floor projection stretches it into diagonal stripes
+                    // on vertical walls. No additional texture sample is needed.
+                    float3 axis = abs(normalize(input.normalWS));
+                    float2 surfaceUV = axis.y > max(axis.x, axis.z) ? input.positionWS.xz
+                        : (axis.x > axis.z ? input.positionWS.zy : input.positionWS.xy);
+                    dustUV = surfaceUV * _DustTiling;
+                }
                 half3 mask = SAMPLE_TEXTURE2D(_DustMap, sampler_DustMap, dustUV).rgb;
                 half top = smoothstep(.15, .8, n.y);
                 half skirting = 1 - smoothstep(.05, .65, max(0, input.positionWS.y - _DustFloorY));
@@ -103,6 +115,24 @@ Shader "MoonEnvironment/Industrial Dust"
                 metallic *= 1 - dust;
                 smoothness = lerp(smoothness, .13, dust);
                 smoothness = saturate(smoothness + (mask.b - .5) * .10 * (1-dust));
+                // Optional surface finish only: reuse the already sampled fine B grain.
+                // The low-frequency dust R mask never supplies the white-surface finish.
+                // Uniform zero keeps all existing material calculations unchanged.
+                half surfaceEtching = 0;
+                if (_SurfaceWear > 0)
+                {
+                    // B is the authored periodic fine-grain field, independent of R's
+                    // broad dust coverage. A continuous quadratic response leaves
+                    // most of the white ground clean and gives lower grain values
+                    // enough range to remain visible after the lighting/print curve.
+                    half fineEtching = saturate((.68h - mask.b) * 2.5h);
+                    fineEtching *= fineEtching;
+                    surfaceEtching = saturate(_SurfaceWear) * fineEtching * (1-dust);
+                    // At wear .6, deepest grains attenuate albedo by at most 18%.
+                    // No tint or emission is added; the surface still needs light.
+                    albedo *= 1.0h - surfaceEtching * .30h;
+                    smoothness = saturate(smoothness - surfaceEtching * .16h);
+                }
                 half occlusion = 1;
                 #if defined(_OCCLUSIONMAP)
                     occlusion = lerp(1, SAMPLE_TEXTURE2D(_OcclusionMap,sampler_OcclusionMap,uv).g, _OcclusionStrength);
@@ -128,6 +158,13 @@ Shader "MoonEnvironment/Industrial Dust"
                     // Dust breaks the coating rather than turning lunar powder into a wet surface.
                     surface.clearCoatMask = _CoatStrength * (1-dust);
                     surface.clearCoatSmoothness = _CoatSmoothness;
+                    if (_SurfaceWear > 0)
+                    {
+                        // Clean grains retain their polish; etched grains have a
+                        // weaker, broader real-light reflection rather than flat ink.
+                        surface.clearCoatMask *= 1.0h - surfaceEtching * .55h;
+                        surface.clearCoatSmoothness = saturate(_CoatSmoothness - surfaceEtching * .12h);
+                    }
                 #endif
                 half4 color = UniversalFragmentPBR(lighting,surface);
                 color.rgb = MixFog(color.rgb,lighting.fogCoord);

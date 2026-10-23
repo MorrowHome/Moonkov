@@ -4,98 +4,52 @@ Shader "MoonEnvironment/SilverPrint"
     {
         Tags { "RenderPipeline" = "UniversalPipeline" }
         ZWrite Off ZTest Always Cull Off
-        HLSLINCLUDE
+        Pass
+        {
+            Name "Black white cobalt HDR finish"
+            HLSLPROGRAM
+            #pragma vertex Vert
+            #pragma fragment Frag
+            #pragma target 3.5
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.core/Runtime/Utilities/Blit.hlsl"
 
             float _SilverFaithful;
-            float4 _SilverTone; // exposure, black, white, contrast
-            float4 _SilverTexture; // relief, grain, intensity
-            float4 _SilverAccent; // strength, cool-chroma threshold
-            float4 _SilverAccentColor;
-            float4 _SilverOptics; // halation strength, threshold, radius, local adaptation
+            float4 _SilverTone; // EV, exposed-linear black/white reference, contrast (formal start: 1 / .025 / .26 / 1.15)
+            float4 _SilverTexture; // real source detail, unused, blend, HDR highlight retention
+            float4 _SilverAccent; // strength, saturation threshold
+            float4 _SilverAccentColor; // authored sRGB cobalt swatch
+            float4 _SilverGraphic; // block separation, contour strength/width, shading retention
             float4 _SilverSourceTexel;
-            float4 _SilverMeterScaleBias;
-            TEXTURE2D_X(_SilverMeter);
             float4 _SilverDepthScaleBias;
-            float4 _SilverSurface;
-            float4 _SilverGraphic; // tonal separation, contour strength, pixel width, continuous shading retention
             float _SilverHasDepth;
             TEXTURE2D_X_FLOAT(_SilverDepth);
             TEXTURE2D_X(_SilverProtection);
             float4 _SilverProtectionScaleBias;
 
-            float3 ReadDisplay(float2 uv)
+            float3 ReadLinear(float2 uv)
             {
-                float3 c = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, uv).rgb;
-                #ifndef UNITY_COLORSPACE_GAMMA
-                    c = LinearToSRGB(max(c, 0));
+                float3 c = max(SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, uv).rgb, 0);
+                #ifdef UNITY_COLORSPACE_GAMMA
+                    c = SRGBToLinear(c);
                 #endif
                 return c;
             }
-
             float Luma(float3 c) { return dot(c, float3(.2126, .7152, .0722)); }
 
-            float Hash(float3 p)
-            {
-                p = frac(p * .1031);
-                p += dot(p, p.yzx + 33.33);
-                return frac((p.x + p.y) * p.z);
-            }
-
-            float SurfaceNoise(float3 p)
-            {
-                float3 cell = floor(p), t = frac(p);
-                t = t * t * (3 - 2 * t);
-                return lerp(lerp(lerp(Hash(cell), Hash(cell + float3(1,0,0)), t.x),
-                    lerp(Hash(cell + float3(0,1,0)), Hash(cell + float3(1,1,0)), t.x), t.y),
-                    lerp(lerp(Hash(cell + float3(0,0,1)), Hash(cell + float3(1,0,1)), t.x),
-                    lerp(Hash(cell + float3(0,1,1)), Hash(cell + 1), t.x), t.y), t.z);
-            }
-
-            float Accent(float3 c)
+            float BlueAccent(float3 c)
             {
                 float peak = max(c.r, max(c.g, c.b));
-                float cool = saturate((max(c.b, c.g * .85) - c.r) / max(peak, .001));
-                float ochre = saturate((min(c.r, c.g * 1.35) - c.b) / max(peak, .001));
-                return smoothstep(_SilverAccent.y, _SilverAccent.y + .16, max(cool, ochre))
-                    * smoothstep(.06, .2, peak) * _SilverAccent.x;
-            }
-
-            float4 ExtractLight(Varyings input) : SV_Target
-            {
-                UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
-                float2 offset = _SilverSourceTexel.xy;
-                float3 a = ReadDisplay(input.texcoord + offset * float2(-1, -1));
-                float3 b = ReadDisplay(input.texcoord + offset * float2(1, -1));
-                float3 c = ReadDisplay(input.texcoord + offset * float2(-1, 1));
-                float3 d = ReadDisplay(input.texcoord + offset * float2(1, 1));
-                float4 brightness = float4(Luma(a), Luma(b), Luma(c), Luma(d));
-                float4 highlights = smoothstep(_SilverOptics.y, 1, brightness);
-                return float4((a + b + c + d) * .25, dot(highlights, .25));
-            }
-
-            float4 BlurLight(Varyings input, float2 axis)
-            {
-                float2 offset = axis * _SilverSourceTexel.xy * _SilverOptics.z;
-                float4 result = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, input.texcoord) * .227027;
-                result += SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, input.texcoord + offset * 1.384615) * .316216;
-                result += SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, input.texcoord - offset * 1.384615) * .316216;
-                result += SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, input.texcoord + offset * 3.230769) * .070270;
-                result += SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, input.texcoord - offset * 3.230769) * .070270;
-                return result;
-            }
-
-            float4 BlurHorizontal(Varyings input) : SV_Target
-            {
-                UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
-                return BlurLight(input, float2(1, 0));
-            }
-
-            float4 BlurVertical(Varyings input) : SV_Target
-            {
-                UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
-                return BlurLight(input, float2(0, 1));
+                float minimum = min(c.r, min(c.g, c.b));
+                float saturation = (peak - minimum) / max(peak, .001);
+                float blueLead = (c.b - max(c.r, c.g)) / max(peak, .001);
+                float threshold = clamp(_SilverAccent.y, .35, .82);
+                // Only saturated blue-dominant source surfaces qualify. Neutral
+                // cool whites, cyan, purple and yellow safety paint do not become blue.
+                return smoothstep(threshold, min(.98, threshold + .18), saturation)
+                    * smoothstep(.20, .42, blueLead)
+                    * (1 - smoothstep(.30, .52, c.r / max(peak, .001)))
+                    * smoothstep(.015, .06, peak) * saturate(_SilverAccent.x);
             }
 
             half4 Frag(Varyings input) : SV_Target
@@ -104,136 +58,88 @@ Shader "MoonEnvironment/SilverPrint"
                 float2 uv = input.texcoord;
                 float4 original = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, uv);
                 float2 screenUV = (uv - _BlitScaleBias.zw) / _BlitScaleBias.xy;
-                float2 protectedUV = screenUV * _SilverProtectionScaleBias.xy + _SilverProtectionScaleBias.zw;
-                float2 protectedPixel = _SilverSourceTexel.xy * abs(_SilverProtectionScaleBias.xy / _BlitScaleBias.xy);
-                // Positive native coverage only. Never expand the mask across actor silhouettes.
-                float coverage = SAMPLE_TEXTURE2D_X(_SilverProtection, sampler_PointClamp, protectedUV).r;
-                if (coverage < .5) return original;
-                if (_SilverFaithful > .5)
-                {
-                    // Work on scene-linear HDR, before bloom/tonemapping. Preserve real hue,
-                    // specular energy, roughness gradients and warm/cool lighting; no grain/patina.
-                    float y = Luma(max(original.rgb, 0));
-                    float3 balanced = lerp(y.xxx, original.rgb, .97);
-                    return half4(lerp(original.rgb, balanced, _SilverTexture.z), original.a);
-                }
-                float3 c = original.rgb;
-                #ifndef UNITY_COLORSPACE_GAMMA
-                    c = LinearToSRGB(max(c, 0));
-                #endif
-                float luminance = Luma(c);
-                float2 pixel = _SilverSourceTexel.xy;
-                float neighbours = (Luma(ReadDisplay(uv + float2(pixel.x, 0)))
-                    + Luma(ReadDisplay(uv - float2(pixel.x, 0)))
-                    + Luma(ReadDisplay(uv + float2(0, pixel.y)))
-                    + Luma(ReadDisplay(uv - float2(0, pixel.y)))) * .25;
+                float2 scopeUV = screenUV * _SilverProtectionScaleBias.xy + _SilverProtectionScaleBias.zw;
+                // Keep positive native material scope, with no expansion over actors.
+                if (_SilverFaithful > .5 || SAMPLE_TEXTURE2D_X(_SilverProtection, sampler_PointClamp, scopeUV).r < .5)
+                    return original;
 
-                float2 meterUV = screenUV * _SilverMeterScaleBias.xy + _SilverMeterScaleBias.zw;
-                float4 local = SAMPLE_TEXTURE2D_X(_SilverMeter, sampler_LinearClamp, meterUV);
-                float patina = 0;
-                float contour = 0;
+                float3 source = max(original.rgb, 0);
+                #ifdef UNITY_COLORSPACE_GAMMA
+                    source = SRGBToLinear(source);
+                #endif
+                float y = Luma(source);
+                float edge = 0;
+                float detailCoverage = 1;
                 if (_SilverHasDepth > .5)
                 {
                     float2 depthUV = screenUV * _SilverDepthScaleBias.xy + _SilverDepthScaleBias.zw;
-                    float depth = SAMPLE_TEXTURE2D_X(_SilverDepth, sampler_PointClamp, depthUV).r;
+                    float raw = SAMPLE_TEXTURE2D_X(_SilverDepth, sampler_PointClamp, depthUV).r;
                     #if UNITY_REVERSED_Z
-                        bool hasSurface = depth > .00001;
+                        bool hasSurface = raw > .00001;
                     #else
-                        bool hasSurface = depth < .99999;
-                        depth = lerp(UNITY_NEAR_CLIP_VALUE, 1, depth);
+                        bool hasSurface = raw < .99999;
                     #endif
-                    if (_SilverSurface.x > 0)
-                    {
-                        float3 world = ComputeWorldSpacePosition(screenUV, depth, UNITY_MATRIX_I_VP);
-                        float footprint = max(length(ddx(world)), length(ddy(world)));
-                        // Fade away subpixel texture instead of creating distance shimmer.
-                        float coarse = (SurfaceNoise(world * 3) - .5) * saturate(1 - footprint * 3);
-                        float fine = (SurfaceNoise(world * 14) - .5) * saturate(1 - footprint * 14);
-                        patina = hasSurface ? (coarse * .7 + fine * .3) * _SilverSurface.x : 0;
-                    }
-                    if (_SilverGraphic.y > 0)
-                    {
-                        // Use raw device depth for LinearEyeDepth, including on non-reversed-Z platforms.
-                        float rawDepth = SAMPLE_TEXTURE2D_X(_SilverDepth, sampler_PointClamp, depthUV).r;
-                        float eye = LinearEyeDepth(rawDepth, _ZBufferParams);
-                        float2 stepUV = _SilverSourceTexel.xy * _SilverGraphic.z * abs(_SilverDepthScaleBias.xy / _BlitScaleBias.xy);
-                        float right = LinearEyeDepth(SAMPLE_TEXTURE2D_X(_SilverDepth, sampler_PointClamp, depthUV + float2(stepUV.x, 0)).r, _ZBufferParams);
-                        float left = LinearEyeDepth(SAMPLE_TEXTURE2D_X(_SilverDepth, sampler_PointClamp, depthUV - float2(stepUV.x, 0)).r, _ZBufferParams);
-                        float up = LinearEyeDepth(SAMPLE_TEXTURE2D_X(_SilverDepth, sampler_PointClamp, depthUV + float2(0, stepUV.y)).r, _ZBufferParams);
-                        float down = LinearEyeDepth(SAMPLE_TEXTURE2D_X(_SilverDepth, sampler_PointClamp, depthUV - float2(0, stepUV.y)).r, _ZBufferParams);
-                        // Foreground side only: no thick black halo outside objects or around sky pixels.
-                        float jump = max(0, max(max(right, left), max(up, down)) - eye) / max(eye, .1);
-                        contour = hasSurface ? smoothstep(.015, .055, jump) * _SilverGraphic.y : 0;
-                    }
+                    float eye = LinearEyeDepth(raw, _ZBufferParams);
+                    float2 stepUV = _SilverSourceTexel.xy * max(.5, _SilverGraphic.z)
+                        * abs(_SilverDepthScaleBias.xy / _BlitScaleBias.xy);
+                    float right = LinearEyeDepth(SAMPLE_TEXTURE2D_X(_SilverDepth, sampler_PointClamp, depthUV + float2(stepUV.x, 0)).r, _ZBufferParams);
+                    float left = LinearEyeDepth(SAMPLE_TEXTURE2D_X(_SilverDepth, sampler_PointClamp, depthUV - float2(stepUV.x, 0)).r, _ZBufferParams);
+                    float up = LinearEyeDepth(SAMPLE_TEXTURE2D_X(_SilverDepth, sampler_PointClamp, depthUV + float2(0, stepUV.y)).r, _ZBufferParams);
+                    float down = LinearEyeDepth(SAMPLE_TEXTURE2D_X(_SilverDepth, sampler_PointClamp, depthUV - float2(0, stepUV.y)).r, _ZBufferParams);
+                    // Foreground side only. No thick outline on background or sky.
+                    float jump = max(0, max(max(right, left), max(up, down)) - eye) / max(eye, .1);
+                    edge = hasSurface ? smoothstep(.015, .055, jump) : 0;
+                    float discontinuity = max(max(abs(right - eye), abs(left - eye)),
+                        max(abs(up - eye), abs(down - eye))) / max(eye, .1);
+                    detailCoverage = 1 - smoothstep(.01, .04, discontinuity);
                 }
-                // Spatially bounded dodging opens shaded geometry without a frame-wide exposure jump.
-                float dodgeEV = clamp(log2(.32 / max(Luma(local.rgb), .04)) * _SilverOptics.w, -.2, .75);
-                float value = max(0, (luminance * exp2(_SilverTone.x + dodgeEV) - _SilverTone.y)
-                    / max(.01, _SilverTone.z - _SilverTone.y));
-                // Compress the bright shoulder before shaping contrast: silver surfaces retain texture.
-                value = saturate(value / (1 + max(0, value - .72) * .6));
-                float continuousShading = value;
-                value = lerp(value, smoothstep(0, 1, value), .55);
-                value = saturate((value - .5) * _SilverTone.w + .5);
-                value = lerp(value, smoothstep(.28, .72, value), _SilverGraphic.x);
-                // Recover lighting gradients before adding fine texture and thin contours.
-                // This is independent of global effect intensity and retains the cobalt palette.
-                value = lerp(value, continuousShading, _SilverGraphic.w);
-                value = saturate(value + patina * (4 * value * (1 - value)));
-                value = saturate(value + (luminance - neighbours) * _SilverTexture.x * 3);
-                // Stationary fine grain avoids animated noise/flicker during aiming.
-                float noise = frac(52.9829189 * frac(dot(floor(input.positionCS.xy), float2(.06711056, .00583715)))) - .5;
-                value = saturate(value + noise * _SilverTexture.y * (4 * value * (1 - value)));
-                value *= 1 - contour;
 
-                float peak = max(c.r, max(c.g, c.b));
-                float accent = Accent(c);
-                float3 cobalt = _SilverAccentColor.rgb * max(value, peak * .72);
-                float3 styled = lerp(value.xxx, cobalt, accent);
-                styled *= 1 - contour * accent;
-                // A restrained optical halo is composited AFTER the print curve so it survives ink blacks.
-                float3 haloColor = lerp(1.0.xxx, _SilverAccentColor.rgb, Accent(local.rgb));
-                styled = 1 - (1 - styled) * (1 - saturate(local.a * _SilverOptics.x) * haloColor * (1 - contour));
-                #ifndef UNITY_COLORSPACE_GAMMA
-                    styled = SRGBToLinear(styled);
+                float adjusted = y * exp2(_SilverTone.x);
+                float whiteReference = max(_SilverTone.z, _SilverTone.y + .04);
+                float coordinate = saturate((adjusted - _SilverTone.y) / (whiteReference - _SilverTone.y));
+                coordinate = saturate((coordinate - .5) * _SilverTone.w + .5);
+                float shoulder = adjusted / (adjusted + .35);
+                // Three connected tonal masses, each retaining a small continuous
+                // lighting response. Paper white never becomes a clipped flat plateau.
+                float ink = .004 + .018 * shoulder;
+                float darkLayer = .055 + .09 * shoulder;
+                float paper = .72 + .26 * shoulder;
+                float graphic = lerp(lerp(ink, darkLayer, smoothstep(.12, .38, coordinate)),
+                    paper, smoothstep(.42, .70, coordinate));
+                float body = lerp(shoulder, graphic, saturate(_SilverGraphic.x));
+                body = lerp(body, shoulder, saturate(_SilverGraphic.w));
+                body *= smoothstep(max(.0001, _SilverTone.y * .25), max(.001, _SilverTone.y), adjusted);
+
+                float2 pixel = _SilverSourceTexel.xy;
+                float mean = (2 * y + Luma(ReadLinear(uv + float2(pixel.x, 0)))
+                    + Luma(ReadLinear(uv - float2(pixel.x, 0)))
+                    + Luma(ReadLinear(uv + float2(0, pixel.y)))
+                    + Luma(ReadLinear(uv - float2(0, pixel.y)))) / 6;
+                // Retain the actual source texture and BRDF response. There is no
+                // generated cloud, marble interior, screen grain or new highlight.
+                float detailEV = clamp(log2(max(y, .003) / max(mean, .003)), -.35, .35);
+                body *= exp2(detailEV * saturate(_SilverTexture.x) * detailCoverage);
+                float residual = max(0, adjusted - whiteReference);
+                residual = residual * residual / (residual + .15);
+                float highlight = residual * max(0, _SilverTexture.w);
+
+                float accent = BlueAccent(source);
+                float3 cobalt = SRGBToLinear(max(_SilverAccentColor.rgb, 0));
+                float peak = max(source.r, max(source.g, source.b)) * exp2(_SilverTone.x);
+                float blueBody = max(body, .16 + .6 * peak / (peak + .35));
+                float blueResidual = max(0, peak - whiteReference);
+                blueResidual = blueResidual * blueResidual / (blueResidual + .15);
+                // Keep the real HDR bright-light residual above white so the
+                // existing bloom and final tonemapper still see its optical energy.
+                float3 styled = lerp(body.xxx + highlight.xxx,
+                    cobalt * (blueBody + blueResidual * max(0, _SilverTexture.w)), accent);
+                styled *= 1 - edge * saturate(_SilverGraphic.y);
+                styled = min(max(styled, 0), 65000.0);
+                #ifdef UNITY_COLORSPACE_GAMMA
+                    styled = LinearToSRGB(styled);
                 #endif
-                return half4(lerp(original.rgb, styled, _SilverTexture.z), original.a);
+                return half4(lerp(original.rgb, styled, saturate(_SilverTexture.z)), original.a);
             }
-        ENDHLSL
-        Pass
-        {
-            Name "Silver print"
-            HLSLPROGRAM
-            #pragma vertex Vert
-            #pragma fragment Frag
-            #pragma target 3.5
-            ENDHLSL
-        }
-        Pass
-        {
-            Name "Light extraction"
-            HLSLPROGRAM
-            #pragma vertex Vert
-            #pragma fragment ExtractLight
-            #pragma target 3.5
-            ENDHLSL
-        }
-        Pass
-        {
-            Name "Horizontal light blur"
-            HLSLPROGRAM
-            #pragma vertex Vert
-            #pragma fragment BlurHorizontal
-            #pragma target 3.5
-            ENDHLSL
-        }
-        Pass
-        {
-            Name "Vertical light blur"
-            HLSLPROGRAM
-            #pragma vertex Vert
-            #pragma fragment BlurVertical
-            #pragma target 3.5
             ENDHLSL
         }
     }

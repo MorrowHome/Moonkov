@@ -15,36 +15,33 @@ namespace Unity.MP_FPS.Moon
         [Tooltip("Legacy serialized reference. Environment scope now comes from native material passes, not subject exclusions.")]
         [SerializeField] private Material subjectMaskMaterial;
         [Header("环境外观 / Environment look")]
-        [Tooltip("Default: preserve material color, real light color and HDR highlights. Disable only for legacy silver-print references.")]
-        [SerializeField] private bool faithfulLighting = true;
-        [Header("开发参考：银盐参数 / Legacy print reference")]
+        [Tooltip("False selects the authored black/white/cobalt finish. True bypasses the entire effect. Ctrl+L temporarily inverts this choice without changing it.")]
+        [SerializeField] private bool faithfulLighting;
+        [Header("正式风格：黑白块面与白面层次 / Authored graphic finish")]
         [SerializeField, Range(0, 1)] private float intensity = 1;
-        [SerializeField, Range(-2, 2)] private float exposure = .3f;
-        [SerializeField, Range(0, .45f)] private float blackPoint = .035f;
-        [SerializeField, Range(.5f, 1)] private float whitePoint = .82f;
+        [SerializeField, Range(-2, 2)] private float exposure = 1f;
+        [SerializeField, Range(0, .45f)] private float blackPoint = .025f;
+        [Tooltip("Linear white reference after the effect exposure. Start near 0.26 for the formal map's dim white walls; this is not a display-space white threshold.")]
+        [SerializeField, Range(.05f, 2)] private float whitePoint = .26f;
         [SerializeField, Range(.5f, 2)] private float contrast = 1.15f;
         [Tooltip("Retain continuous illumination gradients before the print contrast curve, so rounded forms and surface highlights keep their shading.")]
-        [SerializeField, Range(0, 1)] private float shadingRetention;
-        [SerializeField, Range(0, 1)] private float silverRelief = .32f;
-        [SerializeField, Range(0, .1f)] private float grain = .022f;
+        [SerializeField, Range(0, 1)] private float shadingRetention = .35f;
+        [SerializeField, Range(0, 1)] private float silverRelief = .4f;
+        [Tooltip("Preserve the incoming HDR bright-light residual instead of clipping it to paper white. This does not invent a new reflection or internal marble texture.")]
+        [SerializeField, Range(0, 2)] private float highlightRetention = 1;
         [Header("清晰线条与黑白分界 / Graphic edges")]
         [Tooltip("Separate midtones into stronger black and white masses while retaining a smooth transition.")]
-        [SerializeField, Range(0, 1)] private float tonalSeparation = .5f;
+        [SerializeField, Range(0, 1)] private float tonalSeparation = .88f;
         [Tooltip("Thin foreground-side ink contour from relative depth discontinuities.")]
-        [SerializeField, Range(0, 1)] private float contourStrength = .65f;
-        [SerializeField, Range(.5f, 2)] private float contourWidth = 1;
+        [SerializeField, Range(0, 1)] private float contourStrength = .48f;
+        [SerializeField, Range(.5f, 2)] private float contourWidth = .85f;
         [Header("纯钴蓝点色 / Cobalt accents")]
         [SerializeField, ColorUsage(false)] private Color accentColor = new Color(0, .04f, 1);
         [SerializeField, Range(0, 1)] private float accentStrength = .92f;
-        [SerializeField, Range(0, 1)] private float accentThreshold = .22f;
-        [Header("光影与银盐晕光 / Light and halation")]
-        [Tooltip("Bounded local shadow lift. Real black stays black; no temporal exposure pumping.")]
-        [SerializeField, Range(0, 1)] private float localAdaptation = .45f;
-        [SerializeField, Range(0, .5f)] private float halation = .16f;
-        [SerializeField, Range(.5f, .98f)] private float halationThreshold = .78f;
-        [SerializeField, Range(.5f, 4)] private float halationRadius = 1.8f;
-        [Tooltip("World-anchored silver mottling; does not slide over stationary architecture when the camera moves.")]
-        [SerializeField, Range(0, .3f)] private float surfacePatina = .1f;
+        [SerializeField, Range(0, 1)] private float accentThreshold = .48f;
+        // Keep old serialized values readable, but they no longer generate cloud
+        // mottling, screen grain, local exposure lift or a second optical halo.
+        [SerializeField, HideInInspector] private float grain, localAdaptation, halation, halationThreshold, halationRadius, surfacePatina;
         [SerializeField] private bool previewInSceneView = true;
 
         private Material runtimeMaterial;
@@ -53,24 +50,36 @@ namespace Unity.MP_FPS.Moon
         private static readonly int TextureId = Shader.PropertyToID("_SilverTexture");
         private static readonly int AccentId = Shader.PropertyToID("_SilverAccent");
         private static readonly int AccentColorId = Shader.PropertyToID("_SilverAccentColor");
-        private static readonly int OpticsId = Shader.PropertyToID("_SilverOptics");
-        private static readonly int SurfaceId = Shader.PropertyToID("_SilverSurface");
         private static readonly int GraphicId = Shader.PropertyToID("_SilverGraphic");
 
         public float Intensity { get => intensity; set => intensity = Mathf.Clamp01(value); }
+        public bool UsesFaithfulLighting
+        {
+            get
+            {
+                bool faithful = faithfulLighting;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                if (Application.isPlaying && DevelopmentComparisonEnabled) faithful = !faithful;
+#endif
+                return faithful;
+            }
+        }
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-        public static bool DevelopmentStyleEnabled { get; private set; }
+        public static bool DevelopmentComparisonEnabled { get; private set; }
+        /// <summary>Legacy alias for temporary comparison, not an instance's effective authored style.</summary>
+        [System.Obsolete("Use DevelopmentComparisonEnabled; UsesFaithfulLighting reports the effective instance mode.")]
+        public static bool DevelopmentStyleEnabled => DevelopmentComparisonEnabled;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetDevelopmentStyle() => DevelopmentStyleEnabled = false;
+        private static void ResetDevelopmentStyle() => DevelopmentComparisonEnabled = false;
 
         public static void ToggleDevelopmentStyle()
         {
-            DevelopmentStyleEnabled = !DevelopmentStyleEnabled;
-            Debug.Log(DevelopmentStyleEnabled
-                ? "[环境外观 / Ctrl+L] 风格化银盐：开启"
-                : "[环境外观 / Ctrl+L] 保真照明：开启");
+            DevelopmentComparisonEnabled = !DevelopmentComparisonEnabled;
+            Debug.Log(DevelopmentComparisonEnabled
+                ? "[环境外观 / Ctrl+L] 临时对照：反转场景外观设置"
+                : "[环境外观 / Ctrl+L] 恢复场景外观设置");
         }
 #endif
 
@@ -81,7 +90,7 @@ namespace Unity.MP_FPS.Moon
 
         private void BeginCamera(ScriptableRenderContext context, Camera camera)
         {
-            if (intensity <= 0 || !material || SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null)
+            if (UsesFaithfulLighting || intensity <= 0 || !material || SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null)
                 return;
             if (camera.cameraType != CameraType.Game &&
                 !(previewInSceneView && camera.cameraType == CameraType.SceneView)) return;
@@ -101,19 +110,12 @@ namespace Unity.MP_FPS.Moon
                 runtimeMaterial = new Material(material) { name = "Silver print (runtime)", hideFlags = HideFlags.HideAndDontSave };
                 pass = new SilverPrintPass(runtimeMaterial);
             }
-            bool useFaithfulLighting = faithfulLighting;
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-            // Session-only comparison: never change the authored scene or Inspector preset.
-            if (Application.isPlaying) useFaithfulLighting = !DevelopmentStyleEnabled;
-#endif
-            runtimeMaterial.SetFloat("_SilverFaithful", useFaithfulLighting ? 1 : 0);
+            runtimeMaterial.SetFloat("_SilverFaithful", 0);
             runtimeMaterial.SetVector(ToneId, new Vector4(exposure, blackPoint, whitePoint, contrast));
-            runtimeMaterial.SetVector(TextureId, new Vector4(silverRelief, grain, intensity, 0));
+            runtimeMaterial.SetVector(TextureId, new Vector4(silverRelief, 0, intensity, highlightRetention));
             runtimeMaterial.SetVector(AccentId, new Vector4(accentStrength, accentThreshold, 0, 0));
-            runtimeMaterial.SetVector(OpticsId, new Vector4(halation, halationThreshold, halationRadius, localAdaptation));
-            runtimeMaterial.SetVector(SurfaceId, new Vector4(surfacePatina, 0, 0, 0));
             runtimeMaterial.SetVector(GraphicId, new Vector4(tonalSeparation, contourStrength, contourWidth, shadingRetention));
-            // Shader performs its art direction in display space; do not implicitly linearize this swatch.
+            // This authored swatch is sRGB; the HDR shader explicitly linearizes it.
             runtimeMaterial.SetVector(AccentColorId, new Vector4(accentColor.r, accentColor.g, accentColor.b, 1));
             renderer.EnqueuePass(pass);
         }
@@ -133,8 +135,6 @@ namespace Unity.MP_FPS.Moon
             private static readonly int SourceId = Shader.PropertyToID("_BlitTexture");
             private static readonly int ScaleBiasId = Shader.PropertyToID("_BlitScaleBias");
             private static readonly int SourceTexelId = Shader.PropertyToID("_SilverSourceTexel");
-            private static readonly int MeterId = Shader.PropertyToID("_SilverMeter");
-            private static readonly int MeterScaleId = Shader.PropertyToID("_SilverMeterScaleBias");
             private static readonly int DepthId = Shader.PropertyToID("_SilverDepth");
             private static readonly int DepthScaleId = Shader.PropertyToID("_SilverDepthScaleBias");
             private static readonly int HasDepthId = Shader.PropertyToID("_SilverHasDepth");
@@ -161,56 +161,32 @@ namespace Unity.MP_FPS.Moon
             {
                 var resources = frameData.Get<UniversalResourceData>();
                 // Fail closed: no native environment coverage/depth means no treatment.
-                if (resources.isActiveTargetBackBuffer || !resources.cameraDepthTexture.IsValid()) return;
+                if (grade.GetFloat("_SilverFaithful") > .5f || resources.isActiveTargetBackBuffer || !resources.cameraDepthTexture.IsValid()) return;
                 var source = resources.activeColorTexture;
                 var protection = EnvironmentScope(renderGraph, frameData, resources, source);
                 var descriptor = renderGraph.GetTextureDesc(source);
                 descriptor.name = "Moon silver print";
                 descriptor.clearBuffer = false;
                 var destination = renderGraph.CreateTexture(descriptor);
-                // Faithful lighting needs only its scoped color pass; no light-field blur chain.
-                if (grade.GetFloat("_SilverFaithful") > .5f)
-                {
-                    AddPass(renderGraph, source, destination, TextureHandle.nullHandle, 0, "Faithful environment lighting", resources.cameraDepthTexture, protection);
-                    resources.cameraColor = destination;
-                    return;
-                }
-                // Legacy reference: graph-owned quarter-size local meter and optical halo.
-                // Keep alpha: it holds the extracted highlights independently from mean scene color.
-                descriptor.width = Mathf.Max(1, descriptor.width / 4);
-                descriptor.height = Mathf.Max(1, descriptor.height / 4);
-                descriptor.msaaSamples = MSAASamples.None;
-                descriptor.colorFormat = GraphicsFormat.R16G16B16A16_SFloat;
-                descriptor.filterMode = FilterMode.Bilinear;
-                descriptor.name = "Silver light field";
-                var lightField = renderGraph.CreateTexture(descriptor);
-                descriptor.name = "Silver horizontal blur";
-                var horizontal = renderGraph.CreateTexture(descriptor);
-                descriptor.name = "Silver local light";
-                var localLight = renderGraph.CreateTexture(descriptor);
-                AddPass(renderGraph, source, lightField, TextureHandle.nullHandle, 1, "Silver light extraction");
-                AddPass(renderGraph, lightField, horizontal, TextureHandle.nullHandle, 2, "Silver horizontal blur");
-                AddPass(renderGraph, horizontal, localLight, TextureHandle.nullHandle, 3, "Silver vertical blur");
-                AddPass(renderGraph, source, destination, localLight, 0, "Moon silver print", resources.cameraDepthTexture, protection);
+                // One HDR composite after the positive scope mask; no local meter,
+                // blur chain, artificial cloud texture or secondary bloom.
+                AddPass(renderGraph, source, destination, resources.cameraDepthTexture, protection);
                 resources.cameraColor = destination;
             }
 
             private void AddPass(RenderGraph graph, TextureHandle source, TextureHandle destination,
-                TextureHandle meter, int shaderPass, string name, TextureHandle depth = default, TextureHandle protection = default)
+                TextureHandle depth, TextureHandle protection)
             {
-                using var builder = graph.AddRasterRenderPass<PassData>(name, out var data);
+                using var builder = graph.AddRasterRenderPass<PassData>("Black white cobalt HDR finish", out var data);
                 data.source = source;
                 data.destination = destination;
-                data.meter = meter;
                 data.depth = depth;
                 data.protection = protection;
                 data.material = grade;
                 data.properties = properties;
-                data.shaderPass = shaderPass;
                 var descriptor = graph.GetTextureDesc(source);
                 data.texel = new Vector4(1f / descriptor.width, 1f / descriptor.height, descriptor.width, descriptor.height);
                 builder.UseTexture(source, AccessFlags.Read);
-                if (meter.IsValid()) builder.UseTexture(meter, AccessFlags.Read);
                 if (depth.IsValid()) builder.UseTexture(depth, AccessFlags.Read);
                 if (protection.IsValid()) builder.UseTexture(protection, AccessFlags.Read);
                 builder.SetRenderAttachment(destination, 0, AccessFlags.Write);
@@ -227,17 +203,12 @@ namespace Unity.MP_FPS.Moon
                         block.SetTexture(DepthId, passData.depth);
                         block.SetVector(DepthScaleId, ScaleBias(context, passData.depth, passData.destination));
                     }
-                    if (passData.meter.IsValid())
-                    {
-                        block.SetTexture(MeterId, passData.meter);
-                        block.SetVector(MeterScaleId, ScaleBias(context, passData.meter, passData.destination));
-                    }
                     if (passData.protection.IsValid())
                     {
                         block.SetTexture(ProtectionId, passData.protection);
                         block.SetVector(ProtectionScaleId, ScaleBias(context, passData.protection, passData.destination));
                     }
-                    context.cmd.DrawProcedural(Matrix4x4.identity, passData.material, passData.shaderPass,
+                    context.cmd.DrawProcedural(Matrix4x4.identity, passData.material, 0,
                         MeshTopology.Triangles, 3, 1, block);
                 });
             }
@@ -289,11 +260,10 @@ namespace Unity.MP_FPS.Moon
 
             private sealed class PassData
             {
-                public TextureHandle source, destination, meter, depth, protection;
+                public TextureHandle source, destination, depth, protection;
                 public Material material;
                 public MaterialPropertyBlock properties;
                 public Vector4 texel;
-                public int shaderPass;
             }
 
             private sealed class EnvironmentPassData

@@ -14,41 +14,34 @@ namespace Unity.MP_FPS.Moon.Editor
         public override VisualElement CreateInspectorGUI()
         {
             var root = new VisualElement();
-            root.Add(new HelpBox("默认保留材质本色、真实灯色与 HDR 高光。只有带 MoonEnvironmentScope Pass 的不透明环境材质参与；原生 Terrain 使用自身实例化路径。透明效果在此之后绘制；角色、武器、UI 与独立预览不参与。", HelpBoxMessageType.Info));
+            root.Add(new HelpBox("正式方向：黑白强块面、克制钴蓝、保留白面原材质细节与真实 HDR 高光。没有内部云纹或屏幕颗粒。只有带 MoonEnvironmentScope Pass 的不透明环境材质参与；角色、武器、透明效果与 UI 不染色。原始照明直接跳过整条效果。开发版 Play 中 Ctrl+L 只临时反转当前场景配置，再按恢复；不改 Inspector 或存档。", HelpBoxMessageType.Info));
             var presets = new VisualElement();
             presets.style.flexDirection = FlexDirection.Row;
-            presets.Add(new Button(() => ApplyFaithful(targets)) { text = "保真照明（默认）" });
-            presets.Add(new Button(() => ApplyPreset(targets, false)) { text = "立体银盐" });
-            presets.Add(new Button(() => ApplyPreset(targets, true)) { text = "强对比海报" });
+            presets.Add(new Button(() => ApplyPreset(targets, false)) { text = "黑白钴蓝（正式）" });
+            presets.Add(new Button(() => ApplyPreset(targets, true)) { text = "更强块面" });
+            presets.Add(new Button(() => ApplyFaithful(targets)) { text = "原始照明（对照）" });
             root.Add(presets);
-            Field(root, "faithfulLighting", "保留真实照明与材质颜色");
+            Field(root, "faithfulLighting", "原始照明 / 跳过风格化");
             Field(root, "intensity", "总强度 / 0 关闭");
             Field(root, "previewInSceneView", "在 Scene 视图预览");
-            var tone = Group(root, "开发参考：银盐明暗与体积");
+            var tone = Group(root, "正式外观：黑白块面与光照层次");
             Field(tone, "shadingRetention", "明暗层次保留");
-            Field(tone, "exposure", "滤镜曝光");
-            Field(tone, "blackPoint", "黑位");
-            Field(tone, "whitePoint", "白位");
+            Field(tone, "exposure", "风格曝光 / EV");
+            Field(tone, "blackPoint", "线性黑位参考");
+            Field(tone, "whitePoint", "线性白面参考");
             Field(tone, "contrast", "对比度");
             Field(tone, "tonalSeparation", "黑白块面分离");
-            var ink = Group(root, "清晰轮廓与表面纹理");
+            var ink = Group(root, "白面纹理、光泽与薄轮廓");
             Field(ink, "contourStrength", "轮廓强度");
             Field(ink, "contourWidth", "轮廓宽度 / 像素");
-            Field(ink, "silverRelief", "细节增强");
-            Field(ink, "surfacePatina", "表面斑驳");
-            Field(ink, "grain", "印刷颗粒");
+            Field(ink, "silverRelief", "原材质细节保留");
+            Field(ink, "highlightRetention", "真实 HDR 高光保留");
             var accents = Group(root, "钴蓝点色");
             Field(accents, "accentColor", "点色颜色");
             Field(accents, "accentStrength", "点色强度");
-            Field(accents, "accentThreshold", "点色门槛");
-            var optics = Group(root, "局部影调与晕光");
-            Field(optics, "localAdaptation", "局部提亮");
-            Field(optics, "halation", "银盐晕光强度");
-            Field(optics, "halationThreshold", "晕光亮度门槛");
-            Field(optics, "halationRadius", "晕光扩散尺度");
+            Field(accents, "accentThreshold", "原蓝色饱和度门槛");
             var technical = new Foldout { text = "渲染资源", value = false };
             Field(technical, "material", "银盐材质");
-            Field(technical, "subjectMaskMaterial", "角色保护材质");
             root.Add(technical);
             return root;
         }
@@ -65,26 +58,25 @@ namespace Unity.MP_FPS.Moon.Editor
 
         public static void ApplyPreset(UnityEngine.Object[] objects, bool graphic)
         {
-            Undo.RecordObjects(objects, graphic ? "Strong poster preset" : "Continuous silver preset");
+            Undo.RecordObjects(objects, graphic ? "Stronger black white cobalt blocks" : "Authored black white cobalt finish");
             var so = new SerializedObject(objects);
             void Set(string name, float value) => so.FindProperty(name).floatValue = value;
             so.FindProperty("faithfulLighting").boolValue = false;
             Set("intensity", 1);
-            Set("exposure", graphic ? .3f : .1f);
-            Set("blackPoint", graphic ? .035f : .018f);
-            Set("whitePoint", graphic ? .86f : .97f);
-            Set("contrast", graphic ? 1.25f : 1.08f);
-            Set("shadingRetention", graphic ? 0 : .65f);
-            Set("tonalSeparation", graphic ? .5f : .22f);
-            Set("contourStrength", graphic ? .65f : .6f);
-            Set("contourWidth", 1);
-            Set("silverRelief", .32f);
-            Set("grain", graphic ? .012f : .006f);
-            Set("surfacePatina", graphic ? .07f : .035f);
-            Set("localAdaptation", graphic ? .3f : .15f);
-            Set("halation", graphic ? .1f : .12f);
-            Set("halationThreshold", graphic ? .82f : .86f);
-            Set("halationRadius", 1.5f);
+            Set("exposure", 1f);
+            Set("blackPoint", graphic ? .035f : .025f);
+            Set("whitePoint", .26f);
+            Set("contrast", graphic ? 1.65f : 1.15f);
+            Set("shadingRetention", graphic ? .08f : .35f);
+            Set("tonalSeparation", graphic ? .95f : .88f);
+            Set("contourStrength", graphic ? .58f : .48f);
+            Set("contourWidth", .85f);
+            Set("silverRelief", .4f);
+            Set("highlightRetention", 1);
+            Set("accentStrength", .92f);
+            Set("accentThreshold", .48f);
+            Set("grain", 0); Set("surfacePatina", 0);
+            Set("localAdaptation", 0); Set("halation", 0);
             // Keep the art-directed swatch and subject protection unchanged.
             so.ApplyModifiedProperties();
             foreach (var obj in objects)
