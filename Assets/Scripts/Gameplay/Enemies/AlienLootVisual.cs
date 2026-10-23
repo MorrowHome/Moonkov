@@ -9,12 +9,14 @@ namespace Unity.MP_FPS
         private Material m_Material;
         public static GameObject Create(Transform parent, RaidCorpseRpc bag)
         {
+            // A serialized Resources material keeps the exact keyword-free Lit variant in builds.
+            var template = Resources.Load<Material>("Moonkov/AlienRemains");
+            if (!template || !template.shader || !template.shader.isSupported)
+                throw new System.InvalidOperationException("Missing or unsupported Moonkov/AlienRemains material.");
             var root = new GameObject("Alien remains / " + bag.LootId);
             root.transform.SetParent(parent, false); root.transform.SetPositionAndRotation(bag.Position, bag.Rotation);
             var view = root.AddComponent<AlienLootVisual>();
-            view.m_Material = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-            view.m_Material.SetColor("_BaseColor", new Color(.14f, .06f, .18f));
-            view.m_Material.SetFloat("_Smoothness", .7f);
+            view.m_Material = new Material(template);
             for (int i = 0; i < 5; i++)
             {
                 var lobe = GameObject.CreatePrimitive(PrimitiveType.Sphere);
