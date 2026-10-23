@@ -43,6 +43,12 @@ MonoBehaviour:
   - m_enabled: 1
     m_path: Assets/MoonEnvironment/Variants/Apollo12Base/Scenes/Apollo12SpawnPointsSubScene.unity
     m_guid: 5c542ab3728c45141a554dc6caed8ff5
+  - m_enabled: 1
+    m_path: Assets/MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusGameScene.unity
+    m_guid: 4f0fda1a3aad7684f969edd35760df6f
+  - m_enabled: 1
+    m_path: Assets/MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusSpawnPointsSubScene.unity
+    m_guid: 23117ec2596943141aaee4da078521fc
   m_HasScriptingDefines: 0
   m_ScriptingDefines: []
   m_PlayerSettingsYaml:
