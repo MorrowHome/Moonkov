@@ -19,10 +19,10 @@ namespace Unity.MP_FPS
         private int m_MissionHolding = -1;
         private float m_MissionNextRenew;
         private string m_MissionOperation;
-        private bool m_MissionPinned = true, m_MissionDetailsVisible;
+        private bool m_MissionPinned = true, m_MissionDetailsVisible, m_MissionHasDestination;
         private bool m_MissionConfiguring;
         private string m_MissionNotice;
-        private float m_MissionNoticeUntil;
+        private float m_MissionNoticeUntil, m_MissionNextPresentation;
         private readonly System.Collections.Generic.List<Label> m_MissionNodeLabels = new System.Collections.Generic.List<Label>();
         private Client.StashItemArt m_MissionIcon;
         private Label m_MissionResult;
@@ -61,7 +61,7 @@ namespace Unity.MP_FPS
             };
             m_MissionSequence = m_MissionRequest = 0; m_MissionOperation = null; m_MissionHolding = -1;
             m_MissionDetailsVisible = false; m_MissionConfiguring = false; m_MissionPinned = true;
-            m_MissionNotice = null; m_MissionNoticeUntil = 0;
+            m_MissionNotice = null; m_MissionNoticeUntil = m_MissionNextPresentation = 0;
             m_MissionNodeLabels.Clear();
             m_MissionHud.Query<VisualElement>().ForEach(e => e.pickingMode = PickingMode.Ignore);
             m_MissionInteraction.Query<VisualElement>().ForEach(e => e.pickingMode = PickingMode.Ignore);
@@ -120,13 +120,14 @@ namespace Unity.MP_FPS
             }
             m_MissionSnapshot = snapshot;
             m_MissionRequest = System.Math.Max(m_MissionRequest, snapshot.RequestId);
-            if (snapshot.Sequence != m_MissionSequence)
+            if (snapshot.Sequence != m_MissionSequence || Time.unscaledTime >= m_MissionNextPresentation)
             {
                 m_MissionSequence = snapshot.Sequence;
+                m_MissionNextPresentation = Time.unscaledTime + .25f;
                 RenderMission(definition, snapshot, live);
             }
             m_MissionHud.style.display = live && m_MissionPinned && !m_InventoryVisible ? DisplayStyle.Flex : DisplayStyle.None;
-            UpdateMissionMarker(live && m_MissionPinned && !m_InventoryVisible && !m_MissionDetailsVisible && !GameSettings.Instance.IsPauseMenuOpen);
+            UpdateMissionMarker(m_MissionHasDestination && live && m_MissionPinned && !m_InventoryVisible && !m_MissionDetailsVisible && !GameSettings.Instance.IsPauseMenuOpen);
             if (Keyboard.current != null && Keyboard.current.jKey.wasPressedThisFrame && live && !m_InventoryVisible && !GameSettings.Instance.IsPauseMenuOpen)
                 SetMissionDetails(!m_MissionDetailsVisible);
             if (!live || MapInputBlocked || m_InventoryVisible || m_MissionDetailsVisible || GameSettings.Instance.IsPauseMenuOpen || UnityEngine.Cursor.lockState != CursorLockMode.Locked)
@@ -305,26 +306,26 @@ namespace Unity.MP_FPS
                 if (inventory.Graph != null && inventory.RaidId == m_Snapshot.RaidId)
                     foreach (var item in inventory.Graph.Items) if (MissionInventory.IsArtifact(item.Code) && item.MissionOperationId == snapshot.OperationId.ToString() && inventory.Graph.Carried(item)) carried++;
             }
-            m_MissionStep.text = Time.unscaledTime < m_MissionNoticeUntil ? m_MissionNotice : MissionStepCopy(definition, snapshot, carried);
+            bool ended = snapshot.Phase == MissionPhase.Expired || snapshot.Phase == MissionPhase.Resolved;
+            bool destination = MissionHasDestination(snapshot, carried);
+            m_MissionHasDestination = destination;
+            m_MissionStep.text = !ended && Time.unscaledTime < m_MissionNoticeUntil ? m_MissionNotice : MissionStepCopy(definition, snapshot, carried);
             float progress = next < 0 ? 1 : next < 4 ? snapshot.ProgressA[next] : snapshot.ProgressB[next - 4];
-            m_MissionFill.style.width = Length.Percent(progress * 100);
+            m_MissionFill.parent.style.display = destination && carried == 0 ? DisplayStyle.Flex : DisplayStyle.None;
+            m_MissionFill.style.width = Length.Percent(Mathf.Clamp01(progress) * 100);
+            m_MissionLocation.style.display = destination ? DisplayStyle.Flex : DisplayStyle.None;
             string layer = anchor.Position.y - position.y > 3 ? "楼上" : position.y - anchor.Position.y > 3 ? "楼下" : "当前层附近";
             m_MissionLocation.text = $"{anchor.Region} · {layer} · 直线 {Vector3.Distance(position, anchor.Position):0} 米";
             m_MissionTarget = anchor.Position; m_MissionTargetLabel = anchor.Region + " · " + (next >= 0 ? definition.Objectives[next].Name : "任务产物");
-            if (live && carried > 0 && MoonRaidMap.Active)
+            if (!ended && live && carried > 0 && MoonRaidMap.Active)
             { m_MissionTarget = MoonRaidMap.Active.ExtractionPosition + Vector3.up; m_MissionTargetLabel = "携带产物撤离";
                 m_MissionLocation.text = $"返回撤离点 · 直线 {Vector3.Distance(position, MoonRaidMap.Active.ExtractionPosition):0} 米"; }
             var direction = m_MissionTarget - position;
             int cardinal = (Mathf.RoundToInt(Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg / 45) + 8) % 8;
             m_MissionLocation.text += " · " + MissionCardinals[cardinal];
-            m_MissionRisk.text = snapshot.Phase == MissionPhase.Offered ? $"设施信号可用 · {snapshot.Remaining:0} 秒" :
-                snapshot.Phase == MissionPhase.OutputReady ? "物品尚未入库 · 可以争抢 · 死亡会掉落" : $"回收窗口 {snapshot.Remaining:0} 秒 · 可随时撤离";
-            if (snapshot.Phase == MissionPhase.Expired) m_MissionRisk.text = "回收窗口已关闭 · 本批未撤出产物失效 · 普通搜刮与撤离仍可继续";
-            else if (snapshot.Phase == MissionPhase.Resolved) m_MissionRisk.text = "本次设施行动结束 · 可继续普通搜刮或撤离";
-            if (live && carried > 0) m_MissionRisk.text = $"已携带 {carried} 件 · 尚未入库 · 窗口 {snapshot.Remaining:0} 秒";
-            else if (snapshot.Phase == MissionPhase.OutputReady && snapshot.OutputRemaining == 0) m_MissionRisk.text = "输出槽已空 · 可继续探索或提前撤离";
-            if (live && carried > 0 && snapshot.Remaining <= 60 && snapshot.Phase != MissionPhase.Expired)
-                m_MissionRisk.text = $"回收窗口将在 {snapshot.Remaining:0} 秒后关闭！未撤出的产物将失效，请立即返回。";
+            m_MissionRisk.text = MissionRiskCopy(snapshot, live ? carried : 0);
+            m_MissionRisk.EnableInClassList("mission-risk-urgent", !ended && snapshot.Remaining <= 60 && snapshot.Remaining > 0);
+            m_MissionHud.EnableInClassList("mission-ended", ended);
             if (!m_MissionConfiguring) m_Root.Q<Label>("missionClue").text = "路线提示：从 MC00 入口沿楼梯前往 L22。楼层与直线方向是定位参考，不是穿墙路线。\n" +
                 (definition.ArtifactCode == "mooncore_fragment" ?
                 "配电 A/B 顺序不限，两路完成后在取样机启动切割。夹具内结晶带有重复编号，可能来自另一批次。" :
@@ -337,6 +338,23 @@ namespace Unity.MP_FPS
 
         private void MissionNotice(string text)
         { m_MissionNotice = text; m_MissionNoticeUntil = Time.unscaledTime + 4; }
+
+        private static bool MissionHasDestination(RaidMissionSnapshotRpc snapshot, int carried) =>
+            snapshot.Phase != MissionPhase.Expired && snapshot.Phase != MissionPhase.Resolved &&
+            (carried > 0 || !(snapshot.Phase == MissionPhase.OutputReady && snapshot.OutputRemaining == 0));
+
+        private static string MissionRiskCopy(RaidMissionSnapshotRpc snapshot, int carried)
+        {
+            if (snapshot.Phase == MissionPhase.Expired) return "回收窗口已关闭 · 本批未撤出产物失效 · 普通搜刮与撤离仍可继续";
+            if (snapshot.Phase == MissionPhase.Resolved) return "本次设施行动结束 · 可继续普通搜刮或撤离";
+            if (carried > 0) return snapshot.Remaining <= 60 ?
+                $"回收窗口将在 {snapshot.Remaining:0} 秒后关闭！未撤出的产物将失效，请立即返回。" :
+                $"已携带 {carried} 件 · 尚未入库 · 窗口 {snapshot.Remaining:0} 秒";
+            if (snapshot.Phase == MissionPhase.OutputReady) return snapshot.OutputRemaining > 0 ?
+                "物品尚未入库 · 可以争抢 · 死亡会掉落" : "输出槽已空 · 可继续探索或提前撤离";
+            return snapshot.Phase == MissionPhase.Offered ? $"设施信号可用 · {snapshot.Remaining:0} 秒" :
+                $"回收窗口 {snapshot.Remaining:0} 秒 · 可随时撤离";
+        }
 
         private static string MissionStepCopy(MissionDefinition definition, RaidMissionSnapshotRpc snapshot, int carried)
         {
