@@ -1,0 +1,14 @@
+{
+  "removedOldSceneRecords": [],
+  "changedOldSceneRecords": [
+    "801699483"
+  ],
+  "changedReason": "MC00 standard frame children append exactly two private prefab instances",
+  "addedSceneRecords": [
+    "7377251489855201994",
+    "5962668579539364852",
+    "5962668579539364853",
+    "7377251489855201995"
+  ],
+  "clockPreserved": true
+}

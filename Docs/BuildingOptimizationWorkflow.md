@@ -70,8 +70,8 @@
 | LocalLightBudget | 默认关闭 `Limit Lights By Distance`：通电灯保持原亮度和阴影，由 URP 处理光照影响范围；增删灯后刷新列表。旧的距离限灯仅留作手动 A/B，不用于正常游玩 |
 | 玩法开关 | 调用 `SetPowered(light, on)` 或 `SetPoweredBatch`；预算管理 `Light.enabled/intensity`，不要竞争写入。[独立按钮试点](MC00LightSwitches.md)已接本地单灯/批量控制，尚未接正式地图或网络同步 |
 | Laptop 管线 | STP、75% Render Scale、4096 主阴影、350 m 阴影距离；室内 Low 软阴影档 256，附加灯阴影图集 4096；建筑菜单不会重新设定管线画质 |
-| GPU 绘制 | GPU Resident Drawer + GPU 遮挡剔除；小网格尺寸剔除为 0。新自定义 shader 或 MaterialPropertyBlock 等需检查兼容性 |
-| BRG 变体 | Graphics Settings 的 BatchRendererGroup Variants 为 Keep All；这是 GPU 绘制前提，会增加构建变体量 |
+| GPU 绘制 | 2026-10-23 当前所有 URP 资产的 GPU Resident Drawer 均已关闭；若重新启用，需要重新检查自定义 shader、MaterialPropertyBlock 与 BRG 变体设置 |
+| BRG 变体 | Graphics Settings 使用 Strip if Entities Graphics Package is not installed；当前没有 Entities Graphics，裁掉未使用的 DOTS 实例化变体。重新启用 GPU Resident Drawer 或自定义 BRG 时，须恢复 Keep All |
 
 ## 灯光优化的取舍
 

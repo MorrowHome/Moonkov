@@ -1,0 +1,3882 @@
+[
+  {
+    "name": "MC_L14 diagnostics workbench drawer suspension runner_05912",
+    "before": {
+      "name": "MC_L14 diagnostics workbench drawer suspension runner_05912",
+      "type": "MESH",
+      "parent": "ORG_ROOM_L14_b1cdce",
+      "data_name": "MC_L14 diagnostics workbench drawer suspension runner",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          69.55000305175781
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -83.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.474999904632568
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          11.550003051757812
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -5.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.474999904632568
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "LD2_Structure_GraphiteCoat"
+      ],
+      "props": "[('collision_solid', 'True'), ('floor_level', '1')]",
+      "author_bounds": [
+        [
+          69.52750396728516,
+          69.57250213623047
+        ],
+        [
+          -83.4625015258789,
+          -82.5374984741211
+        ],
+        [
+          7.400000095367432,
+          7.549999713897705
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "96aed45211c413a44a58aa345a6fd17d494d9b28add997102391f087f761c754",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "6cd1157aeb24cd91f05912a15496e17afbb2c5ca30f57198418e5cc995b82a98",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "a8c6c6b4c8c729cb9df9d58152063c40106cc778b11846e3c71d58e5bb745fd1"
+        }
+      ]
+    },
+    "after": {
+      "name": "MC_L14 diagnostics workbench drawer suspension runner_05912",
+      "type": "MESH",
+      "parent": "ORG_ROOM_L14_b1cdce",
+      "data_name": "MC_L14 diagnostics workbench drawer suspension runner",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          78.35000610351562
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -77.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.474999904632568
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          20.350006103515625
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.474999904632568
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "LD2_Structure_GraphiteCoat"
+      ],
+      "props": "[('collision_solid', 'True'), ('floor_level', '1')]",
+      "author_bounds": [
+        [
+          78.32750701904297,
+          78.37250518798828
+        ],
+        [
+          -77.4625015258789,
+          -76.5374984741211
+        ],
+        [
+          7.400000095367432,
+          7.549999713897705
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "96aed45211c413a44a58aa345a6fd17d494d9b28add997102391f087f761c754",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "6cd1157aeb24cd91f05912a15496e17afbb2c5ca30f57198418e5cc995b82a98",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "a8c6c6b4c8c729cb9df9d58152063c40106cc778b11846e3c71d58e5bb745fd1"
+        }
+      ]
+    },
+    "author_world_translation_delta": [
+      8.800003051757812,
+      6.0,
+      0.0
+    ],
+    "nominal_standard_unity_local_translation_delta": [
+      8.8,
+      0,
+      6.0
+    ],
+    "action": "Move existing piece exactly once; preserve desk assembly, moving-drawer roots/pivots/scripts and any attached colliders. Do not add a second copy. Parent motion must not also apply the same delta to children."
+  },
+  {
+    "name": "MC_L14 diagnostics workbench drawer suspension runner_05913",
+    "before": {
+      "name": "MC_L14 diagnostics workbench drawer suspension runner_05913",
+      "type": "MESH",
+      "parent": "ORG_ROOM_L14_b1cdce",
+      "data_name": "MC_L14 diagnostics workbench drawer suspension runner.001",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          70.75
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -83.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.474999904632568
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          12.75
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -5.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.474999904632568
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "LD2_Structure_GraphiteCoat"
+      ],
+      "props": "[('collision_solid', 'True'), ('floor_level', '1')]",
+      "author_bounds": [
+        [
+          70.72750091552734,
+          70.77249908447266
+        ],
+        [
+          -83.4625015258789,
+          -82.5374984741211
+        ],
+        [
+          7.400000095367432,
+          7.549999713897705
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "96aed45211c413a44a58aa345a6fd17d494d9b28add997102391f087f761c754",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "6cd1157aeb24cd91f05912a15496e17afbb2c5ca30f57198418e5cc995b82a98",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "a8c6c6b4c8c729cb9df9d58152063c40106cc778b11846e3c71d58e5bb745fd1"
+        }
+      ]
+    },
+    "after": {
+      "name": "MC_L14 diagnostics workbench drawer suspension runner_05913",
+      "type": "MESH",
+      "parent": "ORG_ROOM_L14_b1cdce",
+      "data_name": "MC_L14 diagnostics workbench drawer suspension runner.001",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          79.55000305175781
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -77.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.474999904632568
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          21.550003051757812
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.474999904632568
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "LD2_Structure_GraphiteCoat"
+      ],
+      "props": "[('collision_solid', 'True'), ('floor_level', '1')]",
+      "author_bounds": [
+        [
+          79.52750396728516,
+          79.57250213623047
+        ],
+        [
+          -77.4625015258789,
+          -76.5374984741211
+        ],
+        [
+          7.400000095367432,
+          7.549999713897705
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "96aed45211c413a44a58aa345a6fd17d494d9b28add997102391f087f761c754",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "6cd1157aeb24cd91f05912a15496e17afbb2c5ca30f57198418e5cc995b82a98",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "a8c6c6b4c8c729cb9df9d58152063c40106cc778b11846e3c71d58e5bb745fd1"
+        }
+      ]
+    },
+    "author_world_translation_delta": [
+      8.800003051757812,
+      6.0,
+      0.0
+    ],
+    "nominal_standard_unity_local_translation_delta": [
+      8.8,
+      0,
+      6.0
+    ],
+    "action": "Move existing piece exactly once; preserve desk assembly, moving-drawer roots/pivots/scripts and any attached colliders. Do not add a second copy. Parent motion must not also apply the same delta to children."
+  },
+  {
+    "name": "MC_L14 diagnostics workbench drawer suspension runner_05916",
+    "before": {
+      "name": "MC_L14 diagnostics workbench drawer suspension runner_05916",
+      "type": "MESH",
+      "parent": "ORG_ROOM_L14_b1cdce",
+      "data_name": "MC_L14 diagnostics workbench drawer suspension runner.002",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          72.05000305175781
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -83.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.474999904632568
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          14.050003051757812
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -5.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.474999904632568
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "LD2_Structure_GraphiteCoat"
+      ],
+      "props": "[('collision_solid', 'True'), ('floor_level', '1')]",
+      "author_bounds": [
+        [
+          72.02750396728516,
+          72.07250213623047
+        ],
+        [
+          -83.4625015258789,
+          -82.5374984741211
+        ],
+        [
+          7.400000095367432,
+          7.549999713897705
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "96aed45211c413a44a58aa345a6fd17d494d9b28add997102391f087f761c754",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "6cd1157aeb24cd91f05912a15496e17afbb2c5ca30f57198418e5cc995b82a98",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "a8c6c6b4c8c729cb9df9d58152063c40106cc778b11846e3c71d58e5bb745fd1"
+        }
+      ]
+    },
+    "after": {
+      "name": "MC_L14 diagnostics workbench drawer suspension runner_05916",
+      "type": "MESH",
+      "parent": "ORG_ROOM_L14_b1cdce",
+      "data_name": "MC_L14 diagnostics workbench drawer suspension runner.002",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          80.85000610351562
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -77.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.474999904632568
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          22.850006103515625
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.474999904632568
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "LD2_Structure_GraphiteCoat"
+      ],
+      "props": "[('collision_solid', 'True'), ('floor_level', '1')]",
+      "author_bounds": [
+        [
+          80.82750701904297,
+          80.87250518798828
+        ],
+        [
+          -77.4625015258789,
+          -76.5374984741211
+        ],
+        [
+          7.400000095367432,
+          7.549999713897705
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "96aed45211c413a44a58aa345a6fd17d494d9b28add997102391f087f761c754",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "6cd1157aeb24cd91f05912a15496e17afbb2c5ca30f57198418e5cc995b82a98",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "a8c6c6b4c8c729cb9df9d58152063c40106cc778b11846e3c71d58e5bb745fd1"
+        }
+      ]
+    },
+    "author_world_translation_delta": [
+      8.800003051757812,
+      6.0,
+      0.0
+    ],
+    "nominal_standard_unity_local_translation_delta": [
+      8.8,
+      0,
+      6.0
+    ],
+    "action": "Move existing piece exactly once; preserve desk assembly, moving-drawer roots/pivots/scripts and any attached colliders. Do not add a second copy. Parent motion must not also apply the same delta to children."
+  },
+  {
+    "name": "MC_L14 diagnostics workbench drawer suspension runner_05917",
+    "before": {
+      "name": "MC_L14 diagnostics workbench drawer suspension runner_05917",
+      "type": "MESH",
+      "parent": "ORG_ROOM_L14_b1cdce",
+      "data_name": "MC_L14 diagnostics workbench drawer suspension runner.003",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          73.25
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -83.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.474999904632568
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          15.25
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -5.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.474999904632568
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "LD2_Structure_GraphiteCoat"
+      ],
+      "props": "[('collision_solid', 'True'), ('floor_level', '1')]",
+      "author_bounds": [
+        [
+          73.22750091552734,
+          73.27249908447266
+        ],
+        [
+          -83.4625015258789,
+          -82.5374984741211
+        ],
+        [
+          7.400000095367432,
+          7.549999713897705
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "96aed45211c413a44a58aa345a6fd17d494d9b28add997102391f087f761c754",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "6cd1157aeb24cd91f05912a15496e17afbb2c5ca30f57198418e5cc995b82a98",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "a8c6c6b4c8c729cb9df9d58152063c40106cc778b11846e3c71d58e5bb745fd1"
+        }
+      ]
+    },
+    "after": {
+      "name": "MC_L14 diagnostics workbench drawer suspension runner_05917",
+      "type": "MESH",
+      "parent": "ORG_ROOM_L14_b1cdce",
+      "data_name": "MC_L14 diagnostics workbench drawer suspension runner.003",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          82.05000305175781
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -77.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.474999904632568
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          24.050003051757812
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.474999904632568
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "LD2_Structure_GraphiteCoat"
+      ],
+      "props": "[('collision_solid', 'True'), ('floor_level', '1')]",
+      "author_bounds": [
+        [
+          82.02750396728516,
+          82.07250213623047
+        ],
+        [
+          -77.4625015258789,
+          -76.5374984741211
+        ],
+        [
+          7.400000095367432,
+          7.549999713897705
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "96aed45211c413a44a58aa345a6fd17d494d9b28add997102391f087f761c754",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "6cd1157aeb24cd91f05912a15496e17afbb2c5ca30f57198418e5cc995b82a98",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "a8c6c6b4c8c729cb9df9d58152063c40106cc778b11846e3c71d58e5bb745fd1"
+        }
+      ]
+    },
+    "author_world_translation_delta": [
+      8.800003051757812,
+      6.0,
+      0.0
+    ],
+    "nominal_standard_unity_local_translation_delta": [
+      8.8,
+      0,
+      6.0
+    ],
+    "action": "Move existing piece exactly once; preserve desk assembly, moving-drawer roots/pivots/scripts and any attached colliders. Do not add a second copy. Parent motion must not also apply the same delta to children."
+  },
+  {
+    "name": "MC_L14 diagnostics workbench drawer_05911",
+    "before": {
+      "name": "MC_L14 diagnostics workbench drawer_05911",
+      "type": "MESH",
+      "parent": "ORG_ROOM_L14_b1cdce",
+      "data_name": "MC_L14 diagnostics workbench drawer",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          70.1500015258789
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -83.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.239999771118164
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          12.150001525878906
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -5.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.239999771118164
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "LD2_Painted_Metal_Grey"
+      ],
+      "props": "[('collision_solid', 'True'), ('floor_level', '1')]",
+      "author_bounds": [
+        [
+          69.2249984741211,
+          71.07500457763672
+        ],
+        [
+          -83.5,
+          -82.5
+        ],
+        [
+          7.049999713897705,
+          7.429999828338623
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "2e16ab481987a512f4ef359d43d0484c218d20d6cd28591b03c2d745e172fc75",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "d1f53d832f5ebcbe0fd4cb447cb9f5aa4a8335b957fc3b91fc4c121fddcd5ccd",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "a950c57408f4e9de3df847a7c686f39bf8ab40d33a463982e27f6b69eeab223f"
+        }
+      ]
+    },
+    "after": {
+      "name": "MC_L14 diagnostics workbench drawer_05911",
+      "type": "MESH",
+      "parent": "ORG_ROOM_L14_b1cdce",
+      "data_name": "MC_L14 diagnostics workbench drawer",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          78.95000457763672
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -77.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.239999771118164
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          20.95000457763672
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.239999771118164
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "LD2_Painted_Metal_Grey"
+      ],
+      "props": "[('collision_solid', 'True'), ('floor_level', '1')]",
+      "author_bounds": [
+        [
+          78.0250015258789,
+          79.87500762939453
+        ],
+        [
+          -77.5,
+          -76.5
+        ],
+        [
+          7.049999713897705,
+          7.429999828338623
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "2e16ab481987a512f4ef359d43d0484c218d20d6cd28591b03c2d745e172fc75",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "d1f53d832f5ebcbe0fd4cb447cb9f5aa4a8335b957fc3b91fc4c121fddcd5ccd",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "a950c57408f4e9de3df847a7c686f39bf8ab40d33a463982e27f6b69eeab223f"
+        }
+      ]
+    },
+    "author_world_translation_delta": [
+      8.800003051757812,
+      6.0,
+      0.0
+    ],
+    "nominal_standard_unity_local_translation_delta": [
+      8.8,
+      0,
+      6.0
+    ],
+    "action": "Move existing piece exactly once; preserve desk assembly, moving-drawer roots/pivots/scripts and any attached colliders. Do not add a second copy. Parent motion must not also apply the same delta to children."
+  },
+  {
+    "name": "MC_L14 diagnostics workbench drawer_05915",
+    "before": {
+      "name": "MC_L14 diagnostics workbench drawer_05915",
+      "type": "MESH",
+      "parent": "ORG_ROOM_L14_b1cdce",
+      "data_name": "MC_L14 diagnostics workbench drawer.001",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          72.6500015258789
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -83.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.239999771118164
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          14.650001525878906
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -5.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.239999771118164
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "LD2_Painted_Metal_Grey"
+      ],
+      "props": "[('collision_solid', 'True'), ('floor_level', '1')]",
+      "author_bounds": [
+        [
+          71.7249984741211,
+          73.57500457763672
+        ],
+        [
+          -83.5,
+          -82.5
+        ],
+        [
+          7.049999713897705,
+          7.429999828338623
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "2e16ab481987a512f4ef359d43d0484c218d20d6cd28591b03c2d745e172fc75",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "d1f53d832f5ebcbe0fd4cb447cb9f5aa4a8335b957fc3b91fc4c121fddcd5ccd",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "a950c57408f4e9de3df847a7c686f39bf8ab40d33a463982e27f6b69eeab223f"
+        }
+      ]
+    },
+    "after": {
+      "name": "MC_L14 diagnostics workbench drawer_05915",
+      "type": "MESH",
+      "parent": "ORG_ROOM_L14_b1cdce",
+      "data_name": "MC_L14 diagnostics workbench drawer.001",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          81.45000457763672
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -77.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.239999771118164
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          23.45000457763672
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.239999771118164
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "LD2_Painted_Metal_Grey"
+      ],
+      "props": "[('collision_solid', 'True'), ('floor_level', '1')]",
+      "author_bounds": [
+        [
+          80.5250015258789,
+          82.37500762939453
+        ],
+        [
+          -77.5,
+          -76.5
+        ],
+        [
+          7.049999713897705,
+          7.429999828338623
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "2e16ab481987a512f4ef359d43d0484c218d20d6cd28591b03c2d745e172fc75",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "d1f53d832f5ebcbe0fd4cb447cb9f5aa4a8335b957fc3b91fc4c121fddcd5ccd",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "a950c57408f4e9de3df847a7c686f39bf8ab40d33a463982e27f6b69eeab223f"
+        }
+      ]
+    },
+    "author_world_translation_delta": [
+      8.800003051757812,
+      6.0,
+      0.0
+    ],
+    "nominal_standard_unity_local_translation_delta": [
+      8.8,
+      0,
+      6.0
+    ],
+    "action": "Move existing piece exactly once; preserve desk assembly, moving-drawer roots/pivots/scripts and any attached colliders. Do not add a second copy. Parent motion must not also apply the same delta to children."
+  },
+  {
+    "name": "MC_L14 diagnostics workbench handle_05914",
+    "before": {
+      "name": "MC_L14 diagnostics workbench handle_05914",
+      "type": "MESH",
+      "parent": "ORG_ROOM_L14_b1cdce",
+      "data_name": "MC_L14 diagnostics workbench handle",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          70.1500015258789
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -83.51399993896484
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.340000152587891
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          12.150001525878906
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -5.513999938964844
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.340000152587891
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "LD2_Brushed_Aluminium"
+      ],
+      "props": "[('collision_solid', 'True'), ('floor_level', '1')]",
+      "author_bounds": [
+        [
+          70.01000213623047,
+          70.29000091552734
+        ],
+        [
+          -83.53150177001953,
+          -83.49649810791016
+        ],
+        [
+          7.327500343322754,
+          7.352499961853027
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "d2e6d6798e9b9e13c1fe2b16c7976ad9224cfa796be63f624275921b1404e51f",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "077e550373e756929b5b9d6c4640450344ee0b17753e61d4baf0cc6918cb78d2",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "4ce2bbe7cd32f9c086e40035e7bac93532b33302672a664ac42c462e313eb67a"
+        }
+      ]
+    },
+    "after": {
+      "name": "MC_L14 diagnostics workbench handle_05914",
+      "type": "MESH",
+      "parent": "ORG_ROOM_L14_b1cdce",
+      "data_name": "MC_L14 diagnostics workbench handle",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          78.95000457763672
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -77.51399993896484
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.340000152587891
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          20.95000457763672
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.48600006103515625
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.340000152587891
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "LD2_Brushed_Aluminium"
+      ],
+      "props": "[('collision_solid', 'True'), ('floor_level', '1')]",
+      "author_bounds": [
+        [
+          78.81000518798828,
+          79.09000396728516
+        ],
+        [
+          -77.53150177001953,
+          -77.49649810791016
+        ],
+        [
+          7.327500343322754,
+          7.352499961853027
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "d2e6d6798e9b9e13c1fe2b16c7976ad9224cfa796be63f624275921b1404e51f",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "077e550373e756929b5b9d6c4640450344ee0b17753e61d4baf0cc6918cb78d2",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "4ce2bbe7cd32f9c086e40035e7bac93532b33302672a664ac42c462e313eb67a"
+        }
+      ]
+    },
+    "author_world_translation_delta": [
+      8.800003051757812,
+      6.0,
+      0.0
+    ],
+    "nominal_standard_unity_local_translation_delta": [
+      8.8,
+      0,
+      6.0
+    ],
+    "action": "Move existing piece exactly once; preserve desk assembly, moving-drawer roots/pivots/scripts and any attached colliders. Do not add a second copy. Parent motion must not also apply the same delta to children."
+  },
+  {
+    "name": "MC_L14 diagnostics workbench handle_05918",
+    "before": {
+      "name": "MC_L14 diagnostics workbench handle_05918",
+      "type": "MESH",
+      "parent": "ORG_ROOM_L14_b1cdce",
+      "data_name": "MC_L14 diagnostics workbench handle.001",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          72.6500015258789
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -83.51399993896484
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.340000152587891
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          14.650001525878906
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -5.513999938964844
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.340000152587891
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "LD2_Brushed_Aluminium"
+      ],
+      "props": "[('collision_solid', 'True'), ('floor_level', '1')]",
+      "author_bounds": [
+        [
+          72.51000213623047,
+          72.79000091552734
+        ],
+        [
+          -83.53150177001953,
+          -83.49649810791016
+        ],
+        [
+          7.327500343322754,
+          7.352499961853027
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "d2e6d6798e9b9e13c1fe2b16c7976ad9224cfa796be63f624275921b1404e51f",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "077e550373e756929b5b9d6c4640450344ee0b17753e61d4baf0cc6918cb78d2",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "4ce2bbe7cd32f9c086e40035e7bac93532b33302672a664ac42c462e313eb67a"
+        }
+      ]
+    },
+    "after": {
+      "name": "MC_L14 diagnostics workbench handle_05918",
+      "type": "MESH",
+      "parent": "ORG_ROOM_L14_b1cdce",
+      "data_name": "MC_L14 diagnostics workbench handle.001",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          81.45000457763672
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -77.51399993896484
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.340000152587891
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          23.45000457763672
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.48600006103515625
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.340000152587891
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "LD2_Brushed_Aluminium"
+      ],
+      "props": "[('collision_solid', 'True'), ('floor_level', '1')]",
+      "author_bounds": [
+        [
+          81.31000518798828,
+          81.59000396728516
+        ],
+        [
+          -77.53150177001953,
+          -77.49649810791016
+        ],
+        [
+          7.327500343322754,
+          7.352499961853027
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "d2e6d6798e9b9e13c1fe2b16c7976ad9224cfa796be63f624275921b1404e51f",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "077e550373e756929b5b9d6c4640450344ee0b17753e61d4baf0cc6918cb78d2",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "4ce2bbe7cd32f9c086e40035e7bac93532b33302672a664ac42c462e313eb67a"
+        }
+      ]
+    },
+    "author_world_translation_delta": [
+      8.800003051757812,
+      6.0,
+      0.0
+    ],
+    "nominal_standard_unity_local_translation_delta": [
+      8.8,
+      0,
+      6.0
+    ],
+    "action": "Move existing piece exactly once; preserve desk assembly, moving-drawer roots/pivots/scripts and any attached colliders. Do not add a second copy. Parent motion must not also apply the same delta to children."
+  },
+  {
+    "name": "MC_L14 diagnostics workbench leg_05909",
+    "before": {
+      "name": "MC_L14 diagnostics workbench leg_05909",
+      "type": "MESH",
+      "parent": "ORG_ROOM_L14_b1cdce",
+      "data_name": "MC_L14 diagnostics workbench leg",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          69.02000427246094
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -83.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.054999828338623
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          11.020004272460938
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -5.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.054999828338623
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "LD2_Structure_GraphiteCoat"
+      ],
+      "props": "[('collision_solid', 'True'), ('floor_level', '1')]",
+      "author_bounds": [
+        [
+          68.99000549316406,
+          69.05000305175781
+        ],
+        [
+          -83.57499694824219,
+          -82.42500305175781
+        ],
+        [
+          6.599999904632568,
+          7.509999752044678
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "95c1114c4977828bd0e167b708444992ea7762acac51e47c54df62adf8b70374",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "6cd1157aeb24cd91f05912a15496e17afbb2c5ca30f57198418e5cc995b82a98",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "bf75cf92f00890a46212ffa17c9e08102e1813e2565a890c4d8ec5b257162b60"
+        }
+      ]
+    },
+    "after": {
+      "name": "MC_L14 diagnostics workbench leg_05909",
+      "type": "MESH",
+      "parent": "ORG_ROOM_L14_b1cdce",
+      "data_name": "MC_L14 diagnostics workbench leg",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          77.82000732421875
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -77.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.054999828338623
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          19.82000732421875
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.054999828338623
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "LD2_Structure_GraphiteCoat"
+      ],
+      "props": "[('collision_solid', 'True'), ('floor_level', '1')]",
+      "author_bounds": [
+        [
+          77.79000854492188,
+          77.85000610351562
+        ],
+        [
+          -77.57499694824219,
+          -76.42500305175781
+        ],
+        [
+          6.599999904632568,
+          7.509999752044678
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "95c1114c4977828bd0e167b708444992ea7762acac51e47c54df62adf8b70374",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "6cd1157aeb24cd91f05912a15496e17afbb2c5ca30f57198418e5cc995b82a98",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "bf75cf92f00890a46212ffa17c9e08102e1813e2565a890c4d8ec5b257162b60"
+        }
+      ]
+    },
+    "author_world_translation_delta": [
+      8.800003051757812,
+      6.0,
+      0.0
+    ],
+    "nominal_standard_unity_local_translation_delta": [
+      8.8,
+      0,
+      6.0
+    ],
+    "action": "Move existing piece exactly once; preserve desk assembly, moving-drawer roots/pivots/scripts and any attached colliders. Do not add a second copy. Parent motion must not also apply the same delta to children."
+  },
+  {
+    "name": "MC_L14 diagnostics workbench leg_05910",
+    "before": {
+      "name": "MC_L14 diagnostics workbench leg_05910",
+      "type": "MESH",
+      "parent": "ORG_ROOM_L14_b1cdce",
+      "data_name": "MC_L14 diagnostics workbench leg.001",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          73.77999877929688
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -83.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.054999828338623
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          15.779998779296875
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -5.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.054999828338623
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "LD2_Structure_GraphiteCoat"
+      ],
+      "props": "[('collision_solid', 'True'), ('floor_level', '1')]",
+      "author_bounds": [
+        [
+          73.75,
+          73.80999755859375
+        ],
+        [
+          -83.57499694824219,
+          -82.42500305175781
+        ],
+        [
+          6.599999904632568,
+          7.509999752044678
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "95c1114c4977828bd0e167b708444992ea7762acac51e47c54df62adf8b70374",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "6cd1157aeb24cd91f05912a15496e17afbb2c5ca30f57198418e5cc995b82a98",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "bf75cf92f00890a46212ffa17c9e08102e1813e2565a890c4d8ec5b257162b60"
+        }
+      ]
+    },
+    "after": {
+      "name": "MC_L14 diagnostics workbench leg_05910",
+      "type": "MESH",
+      "parent": "ORG_ROOM_L14_b1cdce",
+      "data_name": "MC_L14 diagnostics workbench leg.001",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          82.58000183105469
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -77.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.054999828338623
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          24.580001831054688
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.054999828338623
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "LD2_Structure_GraphiteCoat"
+      ],
+      "props": "[('collision_solid', 'True'), ('floor_level', '1')]",
+      "author_bounds": [
+        [
+          82.55000305175781,
+          82.61000061035156
+        ],
+        [
+          -77.57499694824219,
+          -76.42500305175781
+        ],
+        [
+          6.599999904632568,
+          7.509999752044678
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "95c1114c4977828bd0e167b708444992ea7762acac51e47c54df62adf8b70374",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "6cd1157aeb24cd91f05912a15496e17afbb2c5ca30f57198418e5cc995b82a98",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "bf75cf92f00890a46212ffa17c9e08102e1813e2565a890c4d8ec5b257162b60"
+        }
+      ]
+    },
+    "author_world_translation_delta": [
+      8.800003051757812,
+      6.0,
+      0.0
+    ],
+    "nominal_standard_unity_local_translation_delta": [
+      8.8,
+      0,
+      6.0
+    ],
+    "action": "Move existing piece exactly once; preserve desk assembly, moving-drawer roots/pivots/scripts and any attached colliders. Do not add a second copy. Parent motion must not also apply the same delta to children."
+  },
+  {
+    "name": "MC_L14 diagnostics workbench top_05908",
+    "before": {
+      "name": "MC_L14 diagnostics workbench top_05908",
+      "type": "MESH",
+      "parent": "ORG_ROOM_L14_b1cdce",
+      "data_name": "MC_L14 diagnostics workbench top",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          71.4000015258789
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -83.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.539999961853027
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          13.400001525878906
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -5.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.539999961853027
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "LD2_Brushed_Aluminium"
+      ],
+      "props": "[('collision_solid', 'True'), ('floor_level', '1'), ('support_surface', 'worktop')]",
+      "author_bounds": [
+        [
+          68.9000015258789,
+          73.9000015258789
+        ],
+        [
+          -83.625,
+          -82.375
+        ],
+        [
+          7.505000114440918,
+          7.574999809265137
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "72f3f7473b100b4fd7876bd88162821c7500df502a54ced7faa34c08a9600c0c",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "6cd1157aeb24cd91f05912a15496e17afbb2c5ca30f57198418e5cc995b82a98",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "1ec3e78fedc89b40e55975cf349853c776f41764c5f8de11f76315e61888046b"
+        }
+      ]
+    },
+    "after": {
+      "name": "MC_L14 diagnostics workbench top_05908",
+      "type": "MESH",
+      "parent": "ORG_ROOM_L14_b1cdce",
+      "data_name": "MC_L14 diagnostics workbench top",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          80.20000457763672
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -77.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.539999961853027
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          22.20000457763672
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.539999961853027
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "LD2_Brushed_Aluminium"
+      ],
+      "props": "[('collision_solid', 'True'), ('floor_level', '1'), ('support_surface', 'worktop')]",
+      "author_bounds": [
+        [
+          77.70000457763672,
+          82.70000457763672
+        ],
+        [
+          -77.625,
+          -76.375
+        ],
+        [
+          7.505000114440918,
+          7.574999809265137
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "72f3f7473b100b4fd7876bd88162821c7500df502a54ced7faa34c08a9600c0c",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "6cd1157aeb24cd91f05912a15496e17afbb2c5ca30f57198418e5cc995b82a98",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "1ec3e78fedc89b40e55975cf349853c776f41764c5f8de11f76315e61888046b"
+        }
+      ]
+    },
+    "author_world_translation_delta": [
+      8.800003051757812,
+      6.0,
+      0.0
+    ],
+    "nominal_standard_unity_local_translation_delta": [
+      8.8,
+      0,
+      6.0
+    ],
+    "action": "Move existing piece exactly once; preserve desk assembly, moving-drawer roots/pivots/scripts and any attached colliders. Do not add a second copy. Parent motion must not also apply the same delta to children."
+  },
+  {
+    "name": "MC_L14 diagnostics workbench tray_05919",
+    "before": {
+      "name": "MC_L14 diagnostics workbench tray_05919",
+      "type": "MESH",
+      "parent": "ORG_ROOM_L14_b1cdce",
+      "data_name": "MC_L14 diagnostics workbench tray",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          71.4000015258789
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -82.4375
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.650000095367432
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          13.400001525878906
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -4.4375
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.650000095367432
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "LD2_Structure_GraphiteCoat"
+      ],
+      "props": "[('collision_solid', 'True'), ('floor_level', '1')]",
+      "author_bounds": [
+        [
+          68.9000015258789,
+          73.9000015258789
+        ],
+        [
+          -82.48750305175781,
+          -82.38749694824219
+        ],
+        [
+          7.550000190734863,
+          7.75
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "16a11de4dac6f161ce258cf539fe27b93edb48038c8b1adf183ca288823812b3",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "6cd1157aeb24cd91f05912a15496e17afbb2c5ca30f57198418e5cc995b82a98",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "84d27247cf1f158739fbf7d57c7c34a9d8329d96646f1df2aafe7aeb0d437fa5"
+        }
+      ]
+    },
+    "after": {
+      "name": "MC_L14 diagnostics workbench tray_05919",
+      "type": "MESH",
+      "parent": "ORG_ROOM_L14_b1cdce",
+      "data_name": "MC_L14 diagnostics workbench tray",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          80.20000457763672
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -76.4375
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.650000095367432
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          22.20000457763672
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          1.5625
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.650000095367432
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "LD2_Structure_GraphiteCoat"
+      ],
+      "props": "[('collision_solid', 'True'), ('floor_level', '1')]",
+      "author_bounds": [
+        [
+          77.70000457763672,
+          82.70000457763672
+        ],
+        [
+          -76.48750305175781,
+          -76.38749694824219
+        ],
+        [
+          7.550000190734863,
+          7.75
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "16a11de4dac6f161ce258cf539fe27b93edb48038c8b1adf183ca288823812b3",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "6cd1157aeb24cd91f05912a15496e17afbb2c5ca30f57198418e5cc995b82a98",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "84d27247cf1f158739fbf7d57c7c34a9d8329d96646f1df2aafe7aeb0d437fa5"
+        }
+      ]
+    },
+    "author_world_translation_delta": [
+      8.800003051757812,
+      6.0,
+      0.0
+    ],
+    "nominal_standard_unity_local_translation_delta": [
+      8.8,
+      0,
+      6.0
+    ],
+    "action": "Move existing piece exactly once; preserve desk assembly, moving-drawer roots/pivots/scripts and any attached colliders. Do not add a second copy. Parent motion must not also apply the same delta to children."
+  },
+  {
+    "name": "MC_L14 instrument screen captured display pedestal_05927",
+    "before": {
+      "name": "MC_L14 instrument screen captured display pedestal_05927",
+      "type": "MESH",
+      "parent": "ORG_ROOM_L14_b1cdce",
+      "data_name": "RESOURCE_8b08e8555084fa42641f",
+      "matrix_world": [
+        [
+          -1.0,
+          1.5176030387920036e-07,
+          -5.428477223290429e-08,
+          71.4000015258789
+        ],
+        [
+          -1.5099580252808664e-07,
+          -0.7642916440963745,
+          0.6448706984519958,
+          -82.61499786376953
+        ],
+        [
+          5.63763791205929e-08,
+          0.6448706984519958,
+          0.7642916440963745,
+          7.772000312805176
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          -1.0,
+          1.5176030387920036e-07,
+          -5.428477223290429e-08,
+          13.400001525878906
+        ],
+        [
+          -1.5099580252808664e-07,
+          -0.7642916440963745,
+          0.6448706984519958,
+          -4.614997863769531
+        ],
+        [
+          5.63763791205929e-08,
+          0.6448706984519958,
+          0.7642916440963745,
+          7.772000312805176
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "LD2_Brushed_Aluminium"
+      ],
+      "props": "[('collision_solid', 'True'), ('floor_level', '1')]",
+      "author_bounds": [
+        [
+          71.36499786376953,
+          71.43500518798828
+        ],
+        [
+          -82.77543640136719,
+          -82.45455932617188
+        ],
+        [
+          7.590534210205078,
+          7.953466415405273
+        ]
+      ],
+      "vertices": 20,
+      "polygons": 12,
+      "vertex_hash": "e90c508f5892c43c9c36d2f799196e9b5b375f9a1c38cf2eac9e9b953094a738",
+      "topology_hash": "1094e0e78ecc0142b1f083b776cc4b0aa1c951a99dc27778fc07fd336e7a8152",
+      "normal_hash": "89255bd6375fc69953f0214093598633f0e23189a2d27780daba7d7c58f24cd7",
+      "smooth_hash": "9dd40adbba116bdd5394d5c57f86b96e53cb07fcc18efd5e0e450ccdf624c83d",
+      "material_indices_hash": "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "22463d02875bfa3699ecba97a395a0154dc6afb503d5adb6cd8d31b7eb2108e0"
+        }
+      ]
+    },
+    "after": {
+      "name": "MC_L14 instrument screen captured display pedestal_05927",
+      "type": "MESH",
+      "parent": "ORG_ROOM_L14_b1cdce",
+      "data_name": "RESOURCE_8b08e8555084fa42641f",
+      "matrix_world": [
+        [
+          -1.0,
+          1.5176028966834565e-07,
+          -5.4284779338331646e-08,
+          80.20000457763672
+        ],
+        [
+          -1.5099580252808664e-07,
+          -0.7642915844917297,
+          0.6448706388473511,
+          -76.61499786376953
+        ],
+        [
+          5.6376368462451865e-08,
+          0.6448706388473511,
+          0.7642915844917297,
+          7.772000312805176
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          -1.0,
+          1.5176028966834565e-07,
+          -5.4284779338331646e-08,
+          22.20000457763672
+        ],
+        [
+          -1.5099580252808664e-07,
+          -0.7642915844917297,
+          0.6448706388473511,
+          1.3850021362304688
+        ],
+        [
+          5.6376368462451865e-08,
+          0.6448706388473511,
+          0.7642915844917297,
+          7.772000312805176
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "LD2_Brushed_Aluminium"
+      ],
+      "props": "[('collision_solid', 'True'), ('floor_level', '1')]",
+      "author_bounds": [
+        [
+          80.16500091552734,
+          80.2350082397461
+        ],
+        [
+          -76.77543640136719,
+          -76.45455932617188
+        ],
+        [
+          7.590534687042236,
+          7.953465938568115
+        ]
+      ],
+      "vertices": 20,
+      "polygons": 12,
+      "vertex_hash": "e90c508f5892c43c9c36d2f799196e9b5b375f9a1c38cf2eac9e9b953094a738",
+      "topology_hash": "1094e0e78ecc0142b1f083b776cc4b0aa1c951a99dc27778fc07fd336e7a8152",
+      "normal_hash": "89255bd6375fc69953f0214093598633f0e23189a2d27780daba7d7c58f24cd7",
+      "smooth_hash": "9dd40adbba116bdd5394d5c57f86b96e53cb07fcc18efd5e0e450ccdf624c83d",
+      "material_indices_hash": "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "22463d02875bfa3699ecba97a395a0154dc6afb503d5adb6cd8d31b7eb2108e0"
+        }
+      ]
+    },
+    "author_world_translation_delta": [
+      8.800003051757812,
+      6.0,
+      0.0
+    ],
+    "nominal_standard_unity_local_translation_delta": [
+      8.8,
+      0,
+      6.0
+    ],
+    "action": "Move existing piece exactly once; preserve desk assembly, moving-drawer roots/pivots/scripts and any attached colliders. Do not add a second copy. Parent motion must not also apply the same delta to children."
+  },
+  {
+    "name": "MC_L14 instrument screen case_05920",
+    "before": {
+      "name": "MC_L14 instrument screen case_05920",
+      "type": "MESH",
+      "parent": "ORG_ROOM_L14_b1cdce",
+      "data_name": "MC_L14 instrument screen case",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          71.4000015258789
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -82.5
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          8.220000267028809
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          13.400001525878906
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -4.5
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          8.220000267028809
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "LD2_Structure_GraphiteCoat"
+      ],
+      "props": "[('collision_solid', 'True'), ('floor_level', '1')]",
+      "author_bounds": [
+        [
+          70.6500015258789,
+          72.1500015258789
+        ],
+        [
+          -82.53500366210938,
+          -82.46499633789062
+        ],
+        [
+          7.770000457763672,
+          8.670000076293945
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "2ca3c2aed3c5fd6c30fceca3bd163d900e7a7e1e28a9a8a2ecb80723aaa1bd5f",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "6cd1157aeb24cd91f05912a15496e17afbb2c5ca30f57198418e5cc995b82a98",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "55606ecf34ffc8c93815ddd5e9f9e06c97226be014323001c376740d21248094"
+        }
+      ]
+    },
+    "after": {
+      "name": "MC_L14 instrument screen case_05920",
+      "type": "MESH",
+      "parent": "ORG_ROOM_L14_b1cdce",
+      "data_name": "MC_L14 instrument screen case",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          80.20000457763672
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -76.5
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          8.220000267028809
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          22.20000457763672
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          1.5
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          8.220000267028809
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "LD2_Structure_GraphiteCoat"
+      ],
+      "props": "[('collision_solid', 'True'), ('floor_level', '1')]",
+      "author_bounds": [
+        [
+          79.45000457763672,
+          80.95000457763672
+        ],
+        [
+          -76.53500366210938,
+          -76.46499633789062
+        ],
+        [
+          7.770000457763672,
+          8.670000076293945
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "2ca3c2aed3c5fd6c30fceca3bd163d900e7a7e1e28a9a8a2ecb80723aaa1bd5f",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "6cd1157aeb24cd91f05912a15496e17afbb2c5ca30f57198418e5cc995b82a98",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "55606ecf34ffc8c93815ddd5e9f9e06c97226be014323001c376740d21248094"
+        }
+      ]
+    },
+    "author_world_translation_delta": [
+      8.800003051757812,
+      6.0,
+      0.0
+    ],
+    "nominal_standard_unity_local_translation_delta": [
+      8.8,
+      0,
+      6.0
+    ],
+    "action": "Move existing piece exactly once; preserve desk assembly, moving-drawer roots/pivots/scripts and any attached colliders. Do not add a second copy. Parent motion must not also apply the same delta to children."
+  },
+  {
+    "name": "MC_L14 instrument screen screen_05921",
+    "before": {
+      "name": "MC_L14 instrument screen screen_05921",
+      "type": "MESH",
+      "parent": "ORG_ROOM_L14_b1cdce",
+      "data_name": "MC_L14 instrument screen screen",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          71.4000015258789
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -82.53800201416016
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          8.220000267028809
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          13.400001525878906
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -4.538002014160156
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          8.220000267028809
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "MC_Display"
+      ],
+      "props": "[('collision_solid', 'False'), ('floor_level', '1')]",
+      "author_bounds": [
+        [
+          70.68000030517578,
+          72.12000274658203
+        ],
+        [
+          -82.54199981689453,
+          -82.53400421142578
+        ],
+        [
+          7.800000190734863,
+          8.640000343322754
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "a0102adc5e65ee21b9b68b38bfb8c97ee75d1771f013fe6ce349577ef423f8b3",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "6cd1157aeb24cd91f05912a15496e17afbb2c5ca30f57198418e5cc995b82a98",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "70f165265cf170a60f775bd40286d801aa805e2a9b15fa1b3d91427aede57c62"
+        }
+      ]
+    },
+    "after": {
+      "name": "MC_L14 instrument screen screen_05921",
+      "type": "MESH",
+      "parent": "ORG_ROOM_L14_b1cdce",
+      "data_name": "MC_L14 instrument screen screen",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          80.20000457763672
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -76.53800201416016
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          8.220000267028809
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          22.20000457763672
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          1.4619979858398438
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          8.220000267028809
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "MC_Display"
+      ],
+      "props": "[('collision_solid', 'False'), ('floor_level', '1')]",
+      "author_bounds": [
+        [
+          79.4800033569336,
+          80.92000579833984
+        ],
+        [
+          -76.54199981689453,
+          -76.53400421142578
+        ],
+        [
+          7.800000190734863,
+          8.640000343322754
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "a0102adc5e65ee21b9b68b38bfb8c97ee75d1771f013fe6ce349577ef423f8b3",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "6cd1157aeb24cd91f05912a15496e17afbb2c5ca30f57198418e5cc995b82a98",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "70f165265cf170a60f775bd40286d801aa805e2a9b15fa1b3d91427aede57c62"
+        }
+      ]
+    },
+    "author_world_translation_delta": [
+      8.800003051757812,
+      6.0,
+      0.0
+    ],
+    "nominal_standard_unity_local_translation_delta": [
+      8.8,
+      0,
+      6.0
+    ],
+    "action": "Move existing piece exactly once; preserve desk assembly, moving-drawer roots/pivots/scripts and any attached colliders. Do not add a second copy. Parent motion must not also apply the same delta to children."
+  },
+  {
+    "name": "MC_L14 instrument screen supported desktop foot_05926",
+    "before": {
+      "name": "MC_L14 instrument screen supported desktop foot_05926",
+      "type": "MESH",
+      "parent": "ORG_ROOM_L14_b1cdce",
+      "data_name": "MC_L14 instrument screen supported desktop foot",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          71.4000015258789
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -82.75
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.59499979019165
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          13.400001525878906
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -4.75
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.59499979019165
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "LD2_Structure_GraphiteCoat"
+      ],
+      "props": "[('collision_solid', 'True'), ('floor_level', '1')]",
+      "author_bounds": [
+        [
+          71.1500015258789,
+          71.6500015258789
+        ],
+        [
+          -82.91999816894531,
+          -82.58000183105469
+        ],
+        [
+          7.569999694824219,
+          7.619999885559082
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "2b009a78be97953c2ba51c4ac90c554835738bbb9a8d58354e478c2fe210cc5c",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "6cd1157aeb24cd91f05912a15496e17afbb2c5ca30f57198418e5cc995b82a98",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "a612991b825e747b88fa4cbe5cef6f275843df42167f2f9fdd707d8f8c1b7726"
+        }
+      ]
+    },
+    "after": {
+      "name": "MC_L14 instrument screen supported desktop foot_05926",
+      "type": "MESH",
+      "parent": "ORG_ROOM_L14_b1cdce",
+      "data_name": "MC_L14 instrument screen supported desktop foot",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          80.20000457763672
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -76.75
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.59499979019165
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          22.20000457763672
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          1.25
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          7.59499979019165
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "LD2_Structure_GraphiteCoat"
+      ],
+      "props": "[('collision_solid', 'True'), ('floor_level', '1')]",
+      "author_bounds": [
+        [
+          79.95000457763672,
+          80.45000457763672
+        ],
+        [
+          -76.91999816894531,
+          -76.58000183105469
+        ],
+        [
+          7.569999694824219,
+          7.619999885559082
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "2b009a78be97953c2ba51c4ac90c554835738bbb9a8d58354e478c2fe210cc5c",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "6cd1157aeb24cd91f05912a15496e17afbb2c5ca30f57198418e5cc995b82a98",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "a612991b825e747b88fa4cbe5cef6f275843df42167f2f9fdd707d8f8c1b7726"
+        }
+      ]
+    },
+    "author_world_translation_delta": [
+      8.800003051757812,
+      6.0,
+      0.0
+    ],
+    "nominal_standard_unity_local_translation_delta": [
+      8.8,
+      0,
+      6.0
+    ],
+    "action": "Move existing piece exactly once; preserve desk assembly, moving-drawer roots/pivots/scripts and any attached colliders. Do not add a second copy. Parent motion must not also apply the same delta to children."
+  },
+  {
+    "name": "MC_L14 instrument screen trace_05922",
+    "before": {
+      "name": "MC_L14 instrument screen trace_05922",
+      "type": "MESH",
+      "parent": "ORG_ROOM_L14_b1cdce",
+      "data_name": "RESOURCE_b0b968e2d0609bda1819",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          71.22000122070312
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -82.54399871826172
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          8.427000045776367
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          13.220001220703125
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -4.543998718261719
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          8.427000045776367
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "MC_Data"
+      ],
+      "props": "[('collision_solid', 'False'), ('floor_level', '1')]",
+      "author_bounds": [
+        [
+          70.81500244140625,
+          71.625
+        ],
+        [
+          -82.5459976196289,
+          -82.54199981689453
+        ],
+        [
+          8.420000076293945,
+          8.434000015258789
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "a58e6f235dd5147e7f679d36fe94ced402d1c4748c2ccb4371ef0ad508315ffe",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "1c34bbb83a9c198d3d9f4c16c32a8c2f8fe09dde895636a8f5e623e309f5a5b7",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "e4aecb9e4bd6f1775184f1f6cb3faf1e8f64fb44499dcdfe18fa87d283db78d9"
+        }
+      ]
+    },
+    "after": {
+      "name": "MC_L14 instrument screen trace_05922",
+      "type": "MESH",
+      "parent": "ORG_ROOM_L14_b1cdce",
+      "data_name": "RESOURCE_b0b968e2d0609bda1819",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          80.02000427246094
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -76.54399871826172
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          8.427000045776367
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          22.020004272460938
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          1.4560012817382812
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          8.427000045776367
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "MC_Data"
+      ],
+      "props": "[('collision_solid', 'False'), ('floor_level', '1')]",
+      "author_bounds": [
+        [
+          79.61500549316406,
+          80.42500305175781
+        ],
+        [
+          -76.5459976196289,
+          -76.54199981689453
+        ],
+        [
+          8.420000076293945,
+          8.434000015258789
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "a58e6f235dd5147e7f679d36fe94ced402d1c4748c2ccb4371ef0ad508315ffe",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "1c34bbb83a9c198d3d9f4c16c32a8c2f8fe09dde895636a8f5e623e309f5a5b7",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "e4aecb9e4bd6f1775184f1f6cb3faf1e8f64fb44499dcdfe18fa87d283db78d9"
+        }
+      ]
+    },
+    "author_world_translation_delta": [
+      8.800003051757812,
+      6.0,
+      0.0
+    ],
+    "nominal_standard_unity_local_translation_delta": [
+      8.8,
+      0,
+      6.0
+    ],
+    "action": "Move existing piece exactly once; preserve desk assembly, moving-drawer roots/pivots/scripts and any attached colliders. Do not add a second copy. Parent motion must not also apply the same delta to children."
+  },
+  {
+    "name": "MC_L14 instrument screen trace_05923",
+    "before": {
+      "name": "MC_L14 instrument screen trace_05923",
+      "type": "MESH",
+      "parent": "ORG_ROOM_L14_b1cdce",
+      "data_name": "RESOURCE_0e84f809a2cefaff3fea",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          71.22000122070312
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -82.54399871826172
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          8.300999641418457
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          13.220001220703125
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -4.543998718261719
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          8.300999641418457
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "MC_Data"
+      ],
+      "props": "[('collision_solid', 'False'), ('floor_level', '1')]",
+      "author_bounds": [
+        [
+          70.86750030517578,
+          71.57250213623047
+        ],
+        [
+          -82.5459976196289,
+          -82.54199981689453
+        ],
+        [
+          8.293999671936035,
+          8.307999610900879
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "2f47b0f2e7c967694df8ad8bb757b411bc9adb50774e3fa1b44c8f50d476bd14",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "1c34bbb83a9c198d3d9f4c16c32a8c2f8fe09dde895636a8f5e623e309f5a5b7",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "bd95cbafa8776db01f205d0793157d07914a1077d92ec19c43bd21eff1086174"
+        }
+      ]
+    },
+    "after": {
+      "name": "MC_L14 instrument screen trace_05923",
+      "type": "MESH",
+      "parent": "ORG_ROOM_L14_b1cdce",
+      "data_name": "RESOURCE_0e84f809a2cefaff3fea",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          80.02000427246094
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -76.54399871826172
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          8.300999641418457
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          22.020004272460938
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          1.4560012817382812
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          8.300999641418457
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "MC_Data"
+      ],
+      "props": "[('collision_solid', 'False'), ('floor_level', '1')]",
+      "author_bounds": [
+        [
+          79.6675033569336,
+          80.37250518798828
+        ],
+        [
+          -76.5459976196289,
+          -76.54199981689453
+        ],
+        [
+          8.293999671936035,
+          8.307999610900879
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "2f47b0f2e7c967694df8ad8bb757b411bc9adb50774e3fa1b44c8f50d476bd14",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "1c34bbb83a9c198d3d9f4c16c32a8c2f8fe09dde895636a8f5e623e309f5a5b7",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "bd95cbafa8776db01f205d0793157d07914a1077d92ec19c43bd21eff1086174"
+        }
+      ]
+    },
+    "author_world_translation_delta": [
+      8.800003051757812,
+      6.0,
+      0.0
+    ],
+    "nominal_standard_unity_local_translation_delta": [
+      8.8,
+      0,
+      6.0
+    ],
+    "action": "Move existing piece exactly once; preserve desk assembly, moving-drawer roots/pivots/scripts and any attached colliders. Do not add a second copy. Parent motion must not also apply the same delta to children."
+  },
+  {
+    "name": "MC_L14 instrument screen trace_05924",
+    "before": {
+      "name": "MC_L14 instrument screen trace_05924",
+      "type": "MESH",
+      "parent": "ORG_ROOM_L14_b1cdce",
+      "data_name": "RESOURCE_b0b968e2d0609bda1819",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          71.22000122070312
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -82.54399871826172
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          8.175000190734863
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          13.220001220703125
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -4.543998718261719
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          8.175000190734863
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "MC_Data"
+      ],
+      "props": "[('collision_solid', 'False'), ('floor_level', '1')]",
+      "author_bounds": [
+        [
+          70.81500244140625,
+          71.625
+        ],
+        [
+          -82.5459976196289,
+          -82.54199981689453
+        ],
+        [
+          8.168000221252441,
+          8.182000160217285
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "a58e6f235dd5147e7f679d36fe94ced402d1c4748c2ccb4371ef0ad508315ffe",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "1c34bbb83a9c198d3d9f4c16c32a8c2f8fe09dde895636a8f5e623e309f5a5b7",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "e4aecb9e4bd6f1775184f1f6cb3faf1e8f64fb44499dcdfe18fa87d283db78d9"
+        }
+      ]
+    },
+    "after": {
+      "name": "MC_L14 instrument screen trace_05924",
+      "type": "MESH",
+      "parent": "ORG_ROOM_L14_b1cdce",
+      "data_name": "RESOURCE_b0b968e2d0609bda1819",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          80.02000427246094
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -76.54399871826172
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          8.175000190734863
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          22.020004272460938
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          1.4560012817382812
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          8.175000190734863
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "MC_Data"
+      ],
+      "props": "[('collision_solid', 'False'), ('floor_level', '1')]",
+      "author_bounds": [
+        [
+          79.61500549316406,
+          80.42500305175781
+        ],
+        [
+          -76.5459976196289,
+          -76.54199981689453
+        ],
+        [
+          8.168000221252441,
+          8.182000160217285
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "a58e6f235dd5147e7f679d36fe94ced402d1c4748c2ccb4371ef0ad508315ffe",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "1c34bbb83a9c198d3d9f4c16c32a8c2f8fe09dde895636a8f5e623e309f5a5b7",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "e4aecb9e4bd6f1775184f1f6cb3faf1e8f64fb44499dcdfe18fa87d283db78d9"
+        }
+      ]
+    },
+    "author_world_translation_delta": [
+      8.800003051757812,
+      6.0,
+      0.0
+    ],
+    "nominal_standard_unity_local_translation_delta": [
+      8.8,
+      0,
+      6.0
+    ],
+    "action": "Move existing piece exactly once; preserve desk assembly, moving-drawer roots/pivots/scripts and any attached colliders. Do not add a second copy. Parent motion must not also apply the same delta to children."
+  },
+  {
+    "name": "MC_L14 instrument screen trace_05925",
+    "before": {
+      "name": "MC_L14 instrument screen trace_05925",
+      "type": "MESH",
+      "parent": "ORG_ROOM_L14_b1cdce",
+      "data_name": "RESOURCE_0e84f809a2cefaff3fea",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          71.22000122070312
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -82.54399871826172
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          8.048999786376953
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          13.220001220703125
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -4.543998718261719
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          8.048999786376953
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "MC_Data"
+      ],
+      "props": "[('collision_solid', 'False'), ('floor_level', '1')]",
+      "author_bounds": [
+        [
+          70.86750030517578,
+          71.57250213623047
+        ],
+        [
+          -82.5459976196289,
+          -82.54199981689453
+        ],
+        [
+          8.041999816894531,
+          8.055999755859375
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "2f47b0f2e7c967694df8ad8bb757b411bc9adb50774e3fa1b44c8f50d476bd14",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "1c34bbb83a9c198d3d9f4c16c32a8c2f8fe09dde895636a8f5e623e309f5a5b7",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "bd95cbafa8776db01f205d0793157d07914a1077d92ec19c43bd21eff1086174"
+        }
+      ]
+    },
+    "after": {
+      "name": "MC_L14 instrument screen trace_05925",
+      "type": "MESH",
+      "parent": "ORG_ROOM_L14_b1cdce",
+      "data_name": "RESOURCE_0e84f809a2cefaff3fea",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          80.02000427246094
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -76.54399871826172
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          8.048999786376953
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          22.020004272460938
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          1.4560012817382812
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          8.048999786376953
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "MC_Data"
+      ],
+      "props": "[('collision_solid', 'False'), ('floor_level', '1')]",
+      "author_bounds": [
+        [
+          79.6675033569336,
+          80.37250518798828
+        ],
+        [
+          -76.5459976196289,
+          -76.54199981689453
+        ],
+        [
+          8.041999816894531,
+          8.055999755859375
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "2f47b0f2e7c967694df8ad8bb757b411bc9adb50774e3fa1b44c8f50d476bd14",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "1c34bbb83a9c198d3d9f4c16c32a8c2f8fe09dde895636a8f5e623e309f5a5b7",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "bd95cbafa8776db01f205d0793157d07914a1077d92ec19c43bd21eff1086174"
+        }
+      ]
+    },
+    "author_world_translation_delta": [
+      8.800003051757812,
+      6.0,
+      0.0
+    ],
+    "nominal_standard_unity_local_translation_delta": [
+      8.8,
+      0,
+      6.0
+    ],
+    "action": "Move existing piece exactly once; preserve desk assembly, moving-drawer roots/pivots/scripts and any attached colliders. Do not add a second copy. Parent motion must not also apply the same delta to children."
+  }
+]

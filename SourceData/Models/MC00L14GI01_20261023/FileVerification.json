@@ -1,0 +1,23 @@
+{
+  "zipBytes": 19371724,
+  "zipSHA256": "7594c3beb9fa36fc5037858e9a6d50c0a38df4628a2b94316471fcaf72b8f5f3",
+  "zipCRC": "pass",
+  "parts": [
+    {
+      "filename": "exports/MC00_L14_ADDITIONS_ROOTREL.fbx",
+      "bytes": 6105964,
+      "sha256": "8586bc0ab216a58981a85b3285a6cd83153d68430b7473c48f9754564ac6acb8"
+    },
+    {
+      "filename": "exports/MC00_L14_REPLACEMENTS_ROOTREL.fbx",
+      "bytes": 1742460,
+      "sha256": "c72deb7979d76eca22bf9a12884b50dbfa27cbf0ad2569dfda6afbc6232bb958"
+    },
+    {
+      "filename": "exports/MC00_GI01_ADDITIONS_ROOTREL.fbx",
+      "bytes": 6142268,
+      "sha256": "df94a2904ccf12325ac79f073f41fa25c70fa8e0544351e3d294dfcdd7013143"
+    }
+  ],
+  "projectImported": false
+}

@@ -10,10 +10,12 @@ namespace Unity.MP_FPS.Client
     // Presents authoritative snapshots. Dragging sends an intent; it never edits account quantities.
     public sealed partial class ContainerInventoryView : IDisposable
     {
+        // One logical scale for every storage surface, independent of contents and layout passes.
+        private const float StorageCellSize = 48;
         private sealed class Grid
         {
             public string Parent, Region; public InventoryRegion Definition;
-            public VisualElement Element; public float Cell = 48;
+            public VisualElement Element; public float Cell = StorageCellSize;
             public bool AutoPlace;
         }
         private readonly VisualElement m_Root, m_Body, m_CharacterStage, m_CharacterPane, m_LootPane, m_ContainerPane, m_StashPane, m_Ghost, m_Preview;
@@ -263,7 +265,6 @@ namespace Unity.MP_FPS.Client
             var def = InventoryCatalog.Get(item.Code);
             caption.style.display = DisplayStyle.None;
             var regionRow = group.Q("containerRegions");
-            var fittedGrids = new List<Grid>();
             foreach (var region in def.Regions)
             {
                 if (region.SlotKind.HasValue) continue;
@@ -273,10 +274,9 @@ namespace Unity.MP_FPS.Client
                 var entries = m_Graph.Children(item.Id, region.Id).Where(e => hidden == null || !hidden.Contains(e.Id)).ToArray();
                 var displayed = compact ? CompactLoot(entries, region.Width) : entries.ToDictionary(e => e.Id, e => e);
                 int rows = compact ? Math.Max(1, displayed.Values.Select(e => e.Y + (e.Rotated ? InventoryCatalog.Get(e.Code).Width : InventoryCatalog.Get(e.Code).Height)).DefaultIfEmpty(1).Max()) : m_Graph.Rows(item.Id,region);
-                var visual = new StashGridVisual(region.Width, rows) { LineColor = m_Stash ? new Color(.28f, .30f, .36f, .6f) : new Color(.42f, .45f, .50f, .4f) }; visual.AddToClassList("inventory-grid"); visual.style.width=region.Width*48; visual.style.height=rows*48; gridParent.Add(visual);
+                var visual = new StashGridVisual(region.Width, rows) { LineColor = m_Stash ? new Color(.28f, .30f, .36f, .6f) : new Color(.42f, .45f, .50f, .4f) }; visual.AddToClassList("inventory-grid"); visual.style.width=region.Width*StorageCellSize; visual.style.height=rows*StorageCellSize; gridParent.Add(visual);
                 visual.name = "inventoryGrid" + item.Id + "-" + region.Id;
                 var grid = new Grid { Parent=item.Id, Region=region.Id, Definition=region, Element=visual, AutoPlace=compact }; m_Grids.Add(grid);
-                if (pane == m_ContainerPane) fittedGrids.Add(grid);
                 foreach (var entry in entries)
                 {
                     var captured = entry;
@@ -297,32 +297,7 @@ namespace Unity.MP_FPS.Client
                         () => { if (HaloModules.IsWeapon(captured.Code) && m_Stash) OpenModification(captured); else if (itemDef.Container) OpenContainer(captured); else Describe(captured); }));
                     visual.Add(tile); m_Tiles[entry.Id]=tile; Position(tile, displayed[entry.Id], grid.Cell);
                 }
-                if (item.Code == "stash" || pane == m_LootPane && region.Width >= 3)
-                {
-                    wrapper.style.flexGrow=1; wrapper.style.width=Length.Percent(100); wrapper.style.minWidth=0;
-                    wrapper.RegisterCallback<GeometryChangedEvent>(evt =>
-                    {
-                        float cell = Mathf.Clamp((evt.newRect.width-8)/region.Width, item.Code == "stash" ? 38 : 40, item.Code == "stash" ? 76 : 64);
-                        if (Mathf.Abs(grid.Cell-cell)<.1f) return; grid.Cell=cell; visual.style.width=region.Width*cell; visual.style.height=rows*cell;
-                        foreach (var entry in entries) if (m_Tiles.TryGetValue(entry.Id, out var tile)) Position(tile, displayed[entry.Id], cell);
-                    });
-                }
             }
-            if (fittedGrids.Count > 0)
-                regionRow.RegisterCallback<GeometryChangedEvent>(evt =>
-                {
-                    if (m_Disposed || regionRow.panel == null || m_Graph?.Find(item.Id) == null) return;
-                    int columns = fittedGrids.Sum(g => g.Definition.Width);
-                    float cell = Mathf.Max(32, (evt.newRect.width - fittedGrids.Count * 4) / columns);
-                    foreach (var grid in fittedGrids)
-                    {
-                        if (Mathf.Abs(grid.Cell - cell) < .1f) continue;
-                        grid.Cell = cell; grid.Element.style.width = grid.Definition.Width * cell;
-                        grid.Element.style.height = m_Graph.Rows(grid.Parent, grid.Definition) * cell;
-                        foreach (var entry in m_Graph.Children(grid.Parent, grid.Region))
-                            if (m_Tiles.TryGetValue(entry.Id, out var tile)) Position(tile, entry, cell);
-                    }
-                });
         }
         private static void Position(VisualElement tile, InventoryItem item, float cell)
         {

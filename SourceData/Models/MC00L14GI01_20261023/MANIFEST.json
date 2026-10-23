@@ -1,0 +1,190 @@
+{
+  "release": "MC00 frozen L14 v4 + separate GI01 portable geometry handoff",
+  "authoritative_sources": [
+    {
+      "label": "L14 v4",
+      "library_file_id": "libfile_feee1e5b006c8191a63a0a404d16ed82",
+      "library_version": 4,
+      "sha256": "3c0c568e0912e59aeed91f5132aad55932886e25e9eabbff6f129acb251a0e84"
+    },
+    {
+      "label": "GI01",
+      "library_file_id": "libfile_438bfaafc2108191b8a882ff4a9cc856",
+      "sha256": "d58dfc00041b11a55d55e19c54237632664bdf0e04026c4888d2d1eb7f866d0d"
+    },
+    {
+      "label": "v46 baseline",
+      "sha256": "4c4ac97001f2dd32078a556039f3dcd3b2535e6ebd9e2b7d6e51917cfd4dc614"
+    }
+  ],
+  "counts": {
+    "add_L14": 1055,
+    "replace_render_only": 348,
+    "move_existing": 20,
+    "disable_old_render": 11,
+    "add_GI01_separately": 614,
+    "original_mapped_lights_unchanged": 118,
+    "original_buttons_unchanged": 135,
+    "original_embedded_text_hashes_unchanged": 101,
+    "original_mesh_vertices_topology_UV_unchanged": true,
+    "roof_objects_with_normal_changes": 221
+  },
+  "source_coordinates": "Blender author XYZ metres. All FBX mesh object world transforms are shifted by (-58,+78,0), then exported using -Z forward/Y up, unit scale 1, bake_space_transform=false. No game root transform/yaw baked.",
+  "standard_unity_local_formula": "(Bx-58, Bz, By+78)",
+  "unity_saved_root_reference_only": {
+    "position": [
+      1614.5376,
+      211.03615,
+      2149.0093
+    ],
+    "yaw_degrees": -37,
+    "scale": [
+      1,
+      1,
+      1
+    ]
+  },
+  "placement_rules": [
+    "Do not subtract author origin a second time. Do not bake/apply root yaw again.",
+    "Validate FBX importer axis and scale via supplied numeric anchors before replacing or parenting. All values are metres.",
+    "Original source pivots are retained; some mesh vertices already encode author-world location, while others use parent pivots. Do not zero individual child transforms or center individual meshes.",
+    "Export copies are flattened to unparented evaluated meshes. They are display-data carriers, not replacement runtime hierarchies. Preserve existing local IDs/scripts/parents for 348 replacements and 20 moved pieces.",
+    "Do not import original full v46/L14 source asset as another building. Do not add FC48 or conceptual design A.",
+    "GI01 is separate, removable, and overlaps FC48; never append both blindly. Terrain reference mesh, cameras, inspection/art lights and original collision proxies are excluded."
+  ],
+  "parts": [
+    {
+      "group": "l14_additions",
+      "filename": "exports/MC00_L14_ADDITIONS_ROOTREL.fbx",
+      "bytes": 6105964,
+      "sha256": "8586bc0ab216a58981a85b3285a6cd83153d68430b7473c48f9754564ac6acb8",
+      "object_count": 1055,
+      "vertices": 97236,
+      "triangles": 175516,
+      "expected_standard_unity_local_bounds": [
+        [
+          9.150001525878906,
+          6.423492793961732,
+          -29.720001220703125
+        ],
+        [
+          33.63999938964844,
+          16.725461968247654,
+          3.0
+        ]
+      ],
+      "source_object_types_converted_to_evaluated_mesh": true,
+      "source_pivots_preserved_relative_to_MC00_root": true
+    },
+    {
+      "group": "l14_replacements",
+      "filename": "exports/MC00_L14_REPLACEMENTS_ROOTREL.fbx",
+      "bytes": 1742460,
+      "sha256": "c72deb7979d76eca22bf9a12884b50dbfa27cbf0ad2569dfda6afbc6232bb958",
+      "object_count": 348,
+      "vertices": 7174,
+      "triangles": 12604,
+      "expected_standard_unity_local_bounds": [
+        [
+          8.774999836392174,
+          6.28000020980835,
+          -29.72577667236328
+        ],
+        [
+          37.129737854003906,
+          18.200000762939453,
+          3.6300001632196177
+        ]
+      ],
+      "source_object_types_converted_to_evaluated_mesh": true,
+      "source_pivots_preserved_relative_to_MC00_root": true
+    },
+    {
+      "group": "gi01_additions",
+      "filename": "exports/MC00_GI01_ADDITIONS_ROOTREL.fbx",
+      "bytes": 6142268,
+      "sha256": "df94a2904ccf12325ac79f073f41fa25c70fa8e0544351e3d294dfcdd7013143",
+      "object_count": 614,
+      "vertices": 36836,
+      "triangles": 70096,
+      "expected_standard_unity_local_bounds": [
+        [
+          -63.12600374221802,
+          -1.4051721096038818,
+          -42.160003662109375
+        ],
+        [
+          22.160003662109375,
+          1.203776478767395,
+          -5.685218811035156
+        ]
+      ],
+      "source_object_types_converted_to_evaluated_mesh": true,
+      "source_pivots_preserved_relative_to_MC00_root": true
+    }
+  ],
+  "roundtrip": [
+    {
+      "group": "l14_additions",
+      "expected_objects": 1055,
+      "observed_objects": 1055,
+      "name_set_equal": true,
+      "missing": [],
+      "unexpected": [],
+      "all_geometry_uv_material_pass": true,
+      "all_normal_pass": false,
+      "max_world_coordinate_error_m": 1.754981638057984e-05,
+      "max_normal_vector_error": 0.01354136566519917
+    },
+    {
+      "group": "l14_replacements",
+      "expected_objects": 348,
+      "observed_objects": 348,
+      "name_set_equal": true,
+      "missing": [],
+      "unexpected": [],
+      "all_geometry_uv_material_pass": true,
+      "all_normal_pass": false,
+      "max_world_coordinate_error_m": 4.842943896576912e-06,
+      "max_normal_vector_error": 0.0004797276930097813
+    },
+    {
+      "group": "gi01_additions",
+      "expected_objects": 614,
+      "observed_objects": 614,
+      "name_set_equal": true,
+      "missing": [],
+      "unexpected": [],
+      "all_geometry_uv_material_pass": true,
+      "all_normal_pass": false,
+      "max_world_coordinate_error_m": 1.95765500994316e-05,
+      "max_normal_vector_error": 0.013949695854233887
+    }
+  ],
+  "raw_fbx": [
+    {
+      "group": "l14_additions",
+      "raw_normal_max_error": 3.5135752366389115e-16,
+      "all_raw_normals_preserved_1e_6": true,
+      "objects_without_uv": 866,
+      "objects_without_tangents": 866
+    },
+    {
+      "group": "l14_replacements",
+      "raw_normal_max_error": 1.5700924586837752e-16,
+      "all_raw_normals_preserved_1e_6": true,
+      "objects_without_uv": 0,
+      "objects_without_tangents": 8
+    },
+    {
+      "group": "gi01_additions",
+      "raw_normal_max_error": 0.0,
+      "all_raw_normals_preserved_1e_6": true,
+      "objects_without_uv": 0,
+      "objects_without_tangents": 175
+    }
+  ],
+  "normals_explanation": "FBX encoded loop normals preserve evaluated source directions within 1e-6. Fresh Blender reimport normal encoding is not bit-identical: max direction-vector delta ~0.01395 (<0.8 degrees), while geometry/UV/face material identities pass. The strict 0.0002 vector comparison is reported false, not hidden. Unity shading still requires local inspection with imported normals.",
+  "material_readiness": "NOT final Unity material equivalence. 20 new procedural materials require export-copy UV/bake or equivalent shader recreation; constants/glass may use explicit URP recipes. Existing 84 material recipes and 61 unique packed PNG bytes preserved; local remap required. Missing/generated tangents and UV limits detailed in QA/material dossier. No silent whitebox-final claim.",
+  "runtime_status": "Not tested in Unity. No gameplay, controller, collision, lighting, navigation or performance acceptance."
+}
