@@ -603,7 +603,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2871799952
-    m_Key: "L-01 Standard life-support collar"
+    m_Key: L-01 Standard life-support collar
     m_Metadata:
       m_Items: []
   - m_Id: 2871799953
@@ -651,7 +651,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2871799964
-    m_Key: "H-02 Survey collar"
+    m_Key: H-02 Survey collar
     m_Metadata:
       m_Items: []
   - m_Id: 2871799965
@@ -4562,55 +4562,57 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 8447407847960297
-    m_Key: "COLLAR"
+    m_Key: COLLAR
     m_Metadata:
       m_Items: []
   - m_Id: 8551059606794936
-    m_Key: "SHIELD"
+    m_Key: SHIELD
     m_Metadata:
       m_Items: []
   - m_Id: 8688000780043220
-    m_Key: "MELEE"
+    m_Key: MELEE
     m_Metadata:
       m_Items: []
   - m_Id: 8718470749948662
-    m_Key: "S-100 Energy shield generator"
+    m_Key: S-100 Energy shield generator
     m_Metadata:
       m_Items: []
   - m_Id: 8841075354075051
-    m_Key: "L-02 Neko life-support collar"
+    m_Key: L-02 Neko life-support collar
     m_Metadata:
       m_Items: []
   - m_Id: 8362316013346203
-    m_Key: "Energy sword"
+    m_Key: Energy sword
     m_Metadata:
       m_Items: []
   - m_Id: 8019729865799813
-    m_Key: "Dagger"
+    m_Key: Dagger
     m_Metadata:
       m_Items: []
   - m_Id: 8000369052514056
-    m_Key: "RECHARGE SHIELD"
+    m_Key: RECHARGE SHIELD
     m_Metadata:
       m_Items: []
   - m_Id: 8244467082551215
-    m_Key: "Requires an equipped shield with space for energy, and charged cells in pockets or an equipped rig."
+    m_Key: Requires an equipped shield with space for energy, and charged cells in
+      pockets or an equipped rig.
     m_Metadata:
       m_Items: []
   - m_Id: 8523717733576122
-    m_Key: "Cannot recharge shield: equip a generator with space for energy and use charged cells from pockets or an equipped rig."
+    m_Key: 'Cannot recharge shield: equip a generator with space for energy and use
+      charged cells from pockets or an equipped rig.'
     m_Metadata:
       m_Items: []
   - m_Id: 8137871310553760
-    m_Key: "NEW GENERATOR / INITIAL CHARGE ON FIRST DEPLOYMENT"
+    m_Key: NEW GENERATOR / INITIAL CHARGE ON FIRST DEPLOYMENT
     m_Metadata:
       m_Items: []
   - m_Id: 8812654312310091
-    m_Key: "NEW COLLAR / INITIAL OXYGEN ON FIRST DEPLOYMENT"
+    m_Key: NEW COLLAR / INITIAL OXYGEN ON FIRST DEPLOYMENT
     m_Metadata:
       m_Items: []
   - m_Id: 8180541670966180
-    m_Key: "SHIELD {0:0}/100 / ENERGY {1:0}/100"
+    m_Key: SHIELD {0:0}/100 / ENERGY {1:0}/100
     m_Metadata:
       m_Items: []
   - m_Id: 8715687344128331
@@ -4618,55 +4620,64 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 8753998678345497
-    m_Key: "Equip in the shield slot. Absorbs combat damage before health; excess damage passes through. After 6 seconds without a hit, restores 8 shield per second and spends 0.5 energy per shield. Recharge using charged cells in pockets or an equipped rig. Does not block suffocation, hunger or thirst."
+    m_Key: Equip in the shield slot. Absorbs combat damage before health; excess
+      damage passes through. After 6 seconds without a hit, restores 8 shield per
+      second and spends 0.5 energy per shield. Recharge using charged cells in pockets
+      or an equipped rig. Does not block suffocation, hunger or thirst.
     m_Metadata:
       m_Items: []
   - m_Id: 8417738011263120
-    m_Key: "A neck-fitted life-support collar with a lilac bow and a gold cat bell. Follows the neck bones and uses the existing oxygen reserve, canisters and pressurized air. Does not provide ballistic protection or combat shielding."
+    m_Key: A neck-fitted life-support collar with a lilac bow and a gold cat bell.
+      Follows the neck bones and uses the existing oxygen reserve, canisters and
+      pressurized air. Does not provide ballistic protection or combat shielding.
     m_Metadata:
       m_Items: []
   - m_Id: 8515315481831250
-    m_Key: "Equip in the melee slot and bind to a number key. Left click: light attack. Right click: heavy attack. Attacks use stamina; walls block hits. With no active weapon, fists are the fallback."
+    m_Key: 'Equip in the melee slot and bind to a number key. Left click: light attack.
+      Right click: heavy attack. Attacks use stamina; walls block hits. With no active
+      weapon, fists are the fallback.'
     m_Metadata:
       m_Items: []
   - m_Id: 8615997764921137
-    m_Key: "Stored battery energy powers weapon reloading and shield recharging. Move cells to pockets or an equipped rig before use. Recharging the shield consumes only the energy transferred."
+    m_Key: Stored battery energy powers weapon reloading and shield recharging. Move
+      cells to pockets or an equipped rig before use. Recharging the shield consumes
+      only the energy transferred.
     m_Metadata:
       m_Items: []
   - m_Id: 8313731242923745
-    m_Key: "SHIELD / {0:0}"
+    m_Key: SHIELD / {0:0}
     m_Metadata:
       m_Items: []
   - m_Id: 8255052589709790
-    m_Key: "SHIELD / NOT EQUIPPED"
+    m_Key: SHIELD / NOT EQUIPPED
     m_Metadata:
       m_Items: []
   - m_Id: 8507499303010004
-    m_Key: "SHIELD ENERGY / {0:0}%"
+    m_Key: SHIELD ENERGY / {0:0}%
     m_Metadata:
       m_Items: []
   - m_Id: 8620674966703350
-    m_Key: "SHIELD BROKEN"
+    m_Key: SHIELD BROKEN
     m_Metadata:
       m_Items: []
   - m_Id: 8196068221494556
-    m_Key: "ENERGY EMPTY / RECHARGE WITH A CELL"
+    m_Key: ENERGY EMPTY / RECHARGE WITH A CELL
     m_Metadata:
       m_Items: []
   - m_Id: 8256239256775131
-    m_Key: "SHIELD READY"
+    m_Key: SHIELD READY
     m_Metadata:
       m_Items: []
   - m_Id: 8033826021919793
-    m_Key: "RECOVERY IN {0:0.0}s"
+    m_Key: RECOVERY IN {0:0.0}s
     m_Metadata:
       m_Items: []
   - m_Id: 8077412363059556
-    m_Key: "RECHARGING SHIELD"
+    m_Key: RECHARGING SHIELD
     m_Metadata:
       m_Items: []
   - m_Id: 8419876495620413
-    m_Key: "SHIELD RECOVERY PAUSED"
+    m_Key: SHIELD RECOVERY PAUSED
     m_Metadata:
       m_Items: []
   - m_Id: 8878075719392243
@@ -4674,163 +4685,176 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 8313137102480501
-    m_Key: "COLLAR / NOT EQUIPPED"
+    m_Key: COLLAR / NOT EQUIPPED
     m_Metadata:
       m_Items: []
   - m_Id: 8590080620644318
-    m_Key: "NO COLLAR / SEEK PRESSURIZED AIR"
+    m_Key: NO COLLAR / SEEK PRESSURIZED AIR
     m_Metadata:
       m_Items: []
   - m_Id: 8018020561742780
-    m_Key: "FISTS"
+    m_Key: FISTS
     m_Metadata:
       m_Items: []
   - m_Id: 8001947958098664
-    m_Key: "Melee unavailable. Waiting for connection."
+    m_Key: Melee unavailable. Waiting for connection.
     m_Metadata:
       m_Items: []
   - m_Id: 8260918101210417
-    m_Key: "Melee recovering. Wait before attacking."
+    m_Key: Melee recovering. Wait before attacking.
     m_Metadata:
       m_Items: []
   - m_Id: 8358673089159145
-    m_Key: "Select the melee weapon again to equip it."
+    m_Key: Select the melee weapon again to equip it.
     m_Metadata:
       m_Items: []
   - m_Id: 8194025986577612
-    m_Key: "Melee cancellation requested."
+    m_Key: Melee cancellation requested.
     m_Metadata:
       m_Items: []
   - m_Id: 8724721346541593
-    m_Key: "Equipping melee weapon."
+    m_Key: Equipping melee weapon.
     m_Metadata:
       m_Items: []
   - m_Id: 8023114604684020
-    m_Key: "Melee attack requested."
+    m_Key: Melee attack requested.
     m_Metadata:
       m_Items: []
   - m_Id: 8861124910979872
-    m_Key: "HEAVY ATTACK / {0:0.0}s / X CANCEL"
+    m_Key: HEAVY ATTACK / {0:0.0}s / X CANCEL
     m_Metadata:
       m_Items: []
   - m_Id: 8466595143416267
-    m_Key: "LIGHT ATTACK / {0:0.0}s / X CANCEL"
+    m_Key: LIGHT ATTACK / {0:0.0}s / X CANCEL
     m_Metadata:
       m_Items: []
   - m_Id: 8686587964892024
-    m_Key: "MELEE RECOVERY / {0:0.0}s"
+    m_Key: MELEE RECOVERY / {0:0.0}s
     m_Metadata:
       m_Items: []
   - m_Id: 8574656050111539
-    m_Key: "MELEE {0:0}% / LMB LIGHT / RMB HEAVY"
+    m_Key: MELEE {0:0}% / LMB LIGHT / RMB HEAVY
     m_Metadata:
       m_Items: []
   - m_Id: 8035006428540954
-    m_Key: "Melee interrupted. Recovery continues."
+    m_Key: Melee interrupted. Recovery continues.
     m_Metadata:
       m_Items: []
   - m_Id: 8147048977509897
-    m_Key: "Not enough combat stamina. Rest before attacking."
+    m_Key: Not enough combat stamina. Rest before attacking.
     m_Metadata:
       m_Items: []
   - m_Id: 8777561372313532
-    m_Key: "Melee unavailable while inactive or downed."
+    m_Key: Melee unavailable while inactive or downed.
     m_Metadata:
       m_Items: []
   - m_Id: 8482831720200319
-    m_Key: "Melee state changed. Select the weapon again."
+    m_Key: Melee state changed. Select the weapon again.
     m_Metadata:
       m_Items: []
   - m_Id: 8270073394119642
-    m_Key: "Melee weapon unavailable. Check equipment."
+    m_Key: Melee weapon unavailable. Check equipment.
     m_Metadata:
       m_Items: []
   - m_Id: 8233263725820275
-    m_Key: "REACH {0:0.##} m / LIGHT {1:0} / HEAVY {2:0} / STAMINA {3:0}/{4:0}"
+    m_Key: REACH {0:0.##} m / LIGHT {1:0} / HEAVY {2:0} / STAMINA {3:0}/{4:0}
     m_Metadata:
       m_Items: []
   - m_Id: 8801607121311993
-    m_Key: "[M] MAP"
+    m_Key: '[M] MAP'
     m_Metadata:
       m_Items: []
   - m_Id: 8867875900740385
-    m_Key: "TACTICAL MAP"
+    m_Key: TACTICAL MAP
     m_Metadata:
       m_Items: []
   - m_Id: 8343531254318126
-    m_Key: "CENTER ON ME"
+    m_Key: CENTER ON ME
     m_Metadata:
       m_Items: []
   - m_Id: 8667515462119955
-    m_Key: "FULL MAP"
+    m_Key: FULL MAP
     m_Metadata:
       m_Items: []
   - m_Id: 8226943093134031
-    m_Key: "ZOOM OUT"
+    m_Key: ZOOM OUT
     m_Metadata:
       m_Items: []
   - m_Id: 8108225914197216
-    m_Key: "ZOOM IN"
+    m_Key: ZOOM IN
     m_Metadata:
       m_Items: []
   - m_Id: 8184416255822692
-    m_Key: "CLOSE / M"
+    m_Key: CLOSE / M
     m_Metadata:
       m_Items: []
   - m_Id: 8578577400435988
-    m_Key: "SCROLL ZOOM \u00b7 DRAG PAN \u00b7 M / ESC CLOSE"
+    m_Key: "SCROLL ZOOM \xB7 DRAG PAN \xB7 M / ESC CLOSE"
     m_Metadata:
       m_Items: []
   - m_Id: 8069541691968314
-    m_Key: "ZOOM / {0:0.0}\u00d7"
+    m_Key: "ZOOM / {0:0.0}\xD7"
     m_Metadata:
       m_Items: []
   - m_Id: 8433574924465607
-    m_Key: "EXPEDITION / SCHEMATIC SUPPLY AND EXIT MAP"
+    m_Key: EXPEDITION / SCHEMATIC SUPPLY AND EXIT MAP
     m_Metadata:
       m_Items: []
   - m_Id: 8350144503252086
-    m_Key: "RIVAL BOUNTY / APPROXIMATE AREA ONLY"
+    m_Key: RIVAL BOUNTY / APPROXIMATE AREA ONLY
     m_Metadata:
       m_Items: []
   - m_Id: 8819473735413496
-    m_Key: "BOUNTY / EXACT LOCATION"
+    m_Key: BOUNTY / EXACT LOCATION
     m_Metadata:
       m_Items: []
   - m_Id: 8171746423545565
-    m_Key: "TARGET / BOUNTY NOT YET AVAILABLE"
+    m_Key: TARGET / BOUNTY NOT YET AVAILABLE
     m_Metadata:
       m_Items: []
   - m_Id: 8131850705376204
-    m_Key: "YOU \u00b7 BOUNTY \u00b7 TEAM \u00b7 TARGET \u00b7 A/B EXITS"
+    m_Key: "YOU \xB7 BOUNTY \xB7 TEAM \xB7 TARGET \xB7 A/B EXITS"
     m_Metadata:
       m_Items: []
   - m_Id: 8012446143295953
-    m_Key: "YOU \u00b7 SUPPLIES \u00b7 EXIT"
+    m_Key: "YOU \xB7 SUPPLIES \xB7 EXIT"
     m_Metadata:
       m_Items: []
   - m_Id: 5591439740213562
-    m_Key: "A plain neck-fitted life-support collar. Projects a spherical helmet without cat ears and uses the existing oxygen reserve, canisters and pressurized air."
+    m_Key: A plain neck-fitted life-support collar. Projects a spherical helmet without
+      cat ears and uses the existing oxygen reserve, canisters and pressurized air.
     m_Metadata:
       m_Items: []
   - m_Id: 51176637495477051
-    m_Key: "A compact back-mounted subspace anchor with one capacity ring and a 3x4 storage grid. Carried weight still applies. Move supplies to pockets or a rig before use."
+    m_Key: A compact back-mounted subspace anchor with one capacity ring and a 3x4
+      storage grid. Carried weight still applies. Move supplies to pockets or a rig
+      before use.
     m_Metadata:
       m_Items: []
   - m_Id: 28642487360890836
-    m_Key: "A back-mounted subspace anchor with two capacity rings and a 5x6 storage grid. Carried weight still applies. Move supplies to pockets or a rig before use."
+    m_Key: A back-mounted subspace anchor with two capacity rings and a 5x6 storage
+      grid. Carried weight still applies. Move supplies to pockets or a rig before
+      use.
     m_Metadata:
       m_Items: []
   - m_Id: 24539859515133516
-    m_Key: "A large back-mounted subspace anchor with three capacity rings and a 6x7 storage grid. Carried weight still applies. Move supplies to pockets or a rig before use."
+    m_Key: A large back-mounted subspace anchor with three capacity rings and a 6x7
+      storage grid. Carried weight still applies. Move supplies to pockets or a rig
+      before use.
     m_Metadata:
       m_Items: []
   - m_Id: 57721484356445718
-    m_Key: "A visible waist-mounted shield projector with charge indicators. Equip in the shield slot. Absorbs combat damage before health; excess damage passes through. After 6 seconds without a hit, restores 8 shield per second and spends 0.5 energy per shield. Recharge using charged cells in pockets or an equipped rig. Does not block suffocation, hunger or thirst."
+    m_Key: A visible waist-mounted shield projector with charge indicators. Equip
+      in the shield slot. Absorbs combat damage before health; excess damage passes
+      through. After 6 seconds without a hit, restores 8 shield per second and spends
+      0.5 energy per shield. Recharge using charged cells in pockets or an equipped
+      rig. Does not block suffocation, hunger or thirst.
     m_Metadata:
       m_Items: []
   - m_Id: 33747919478639220
-    m_Key: "A back-mounted scout subspace anchor with one ring, paired stabilizer fins and a 4x4 storage grid. Carried weight still applies. Move supplies to pockets or a rig before use."
+    m_Key: A back-mounted scout subspace anchor with one ring, paired stabilizer
+      fins and a 4x4 storage grid. Carried weight still applies. Move supplies to
+      pockets or a rig before use.
     m_Metadata:
       m_Items: []
   m_Metadata:
