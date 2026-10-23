@@ -245,6 +245,7 @@ namespace Unity.MP_FPS.Client
             var def = InventoryCatalog.Get(item.Code);
             caption.style.display = DisplayStyle.None;
             var regionRow = group.Q("containerRegions");
+            var fittedGrids = new List<Grid>();
             foreach (var region in def.Regions)
             {
                 if (region.SlotKind.HasValue) continue;
@@ -257,6 +258,7 @@ namespace Unity.MP_FPS.Client
                 var visual = new StashGridVisual(region.Width, rows) { LineColor = m_Stash ? new Color(.28f, .30f, .36f, .6f) : new Color(.42f, .45f, .50f, .4f) }; visual.AddToClassList("inventory-grid"); visual.style.width=region.Width*48; visual.style.height=rows*48; gridParent.Add(visual);
                 visual.name = "inventoryGrid" + item.Id + "-" + region.Id;
                 var grid = new Grid { Parent=item.Id, Region=region.Id, Definition=region, Element=visual, AutoPlace=compact }; m_Grids.Add(grid);
+                if (pane == m_ContainerPane) fittedGrids.Add(grid);
                 foreach (var entry in entries)
                 {
                     var captured = entry;
@@ -288,6 +290,21 @@ namespace Unity.MP_FPS.Client
                     });
                 }
             }
+            if (fittedGrids.Count > 0)
+                regionRow.RegisterCallback<GeometryChangedEvent>(evt =>
+                {
+                    if (m_Disposed || regionRow.panel == null || m_Graph?.Find(item.Id) == null) return;
+                    int columns = fittedGrids.Sum(g => g.Definition.Width);
+                    float cell = Mathf.Max(32, (evt.newRect.width - fittedGrids.Count * 4) / columns);
+                    foreach (var grid in fittedGrids)
+                    {
+                        if (Mathf.Abs(grid.Cell - cell) < .1f) continue;
+                        grid.Cell = cell; grid.Element.style.width = grid.Definition.Width * cell;
+                        grid.Element.style.height = m_Graph.Rows(grid.Parent, grid.Definition) * cell;
+                        foreach (var entry in m_Graph.Children(grid.Parent, grid.Region))
+                            if (m_Tiles.TryGetValue(entry.Id, out var tile)) Position(tile, entry, cell);
+                    }
+                });
         }
         private static void Position(VisualElement tile, InventoryItem item, float cell)
         {

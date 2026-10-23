@@ -24,6 +24,7 @@
 .inventory-raid .inventory-region { margin-right: 4px; margin-bottom: 0; }
 .inventory-raid .field-container-body { flex-direction: row; align-items: flex-start; }
 .inventory-raid .field-container-body > .inventory-regions { flex-grow: 1; min-width: 0; flex-basis: 0; }
+.inventory-raid .field-carried .inventory-regions { flex-wrap: nowrap; }
 .inventory-view.inventory-raid .inventory-grid { background-color: #101718; }
 .inventory-view.inventory-raid .inventory-item { background-color: #222b2b; border-color: #52605c; }
 .inventory-view.inventory-raid .inventory-item:hover, .inventory-view.inventory-raid .inventory-slot:hover, .inventory-raid .inventory-empty-container:hover { background-color: #303b38; border-color: #c8cfaa; }

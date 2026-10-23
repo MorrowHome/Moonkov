@@ -122,11 +122,9 @@ namespace Unity.MP_FPS.Client
             string selectedText = selected == null ? "" : MoonkovLocalization.Text(InventoryCatalog.Get(selected.Code).Name) + " ×" + selected.Quantity;
             bool showStatus = !string.IsNullOrEmpty(status);
             MoonkovLocalization.Set(m_Selected, selectedText);
-            m_Selected.style.display = selected != null && (inventoryOpen || !showStatus) ? DisplayStyle.Flex : DisplayStyle.None;
-            MoonkovLocalization.Set(m_Caption, inventoryOpen
-                ? (showStatus ? MoonkovLocalization.Text(status) + " / " : "") + "拖入物品绑定 · 选中物品后点击槽位／按 1–9 · 右键清除"
-                : status ?? "");
-            m_Caption.style.display = inventoryOpen || showStatus ? DisplayStyle.Flex : DisplayStyle.None;
+            m_Selected.style.display = selected != null && !inventoryOpen && !showStatus ? DisplayStyle.Flex : DisplayStyle.None;
+            MoonkovLocalization.Set(m_Caption, status ?? "");
+            m_Caption.style.display = showStatus ? DisplayStyle.Flex : DisplayStyle.None;
         }
         public void Dispose() => m_PixelRoot.RemoveFromHierarchy();
     }
