@@ -25,7 +25,7 @@ public sealed class RaidInventoryLayoutReview : EditorWindow
     public static void Open(string mode, int width, int height, string folder)
     {
         if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("Run outside Play mode.");
-        if (mode != "corpse" && mode != "cache" && mode != "empty") throw new ArgumentException("Unknown inventory review case.");
+        if (mode != "corpse" && mode != "cache" && mode != "empty" && mode != "warehouse") throw new ArgumentException("Unknown inventory review case.");
         var window = CreateInstance<RaidInventoryLayoutReview>();
         window.m_Case = mode; window.m_Folder = Path.GetFullPath(folder);
         window.titleContent = new GUIContent("背包与搜刮 / 原生预览");
@@ -41,12 +41,27 @@ public sealed class RaidInventoryLayoutReview : EditorWindow
         foreach (var child in presentation.Children()) child.style.display = child.name == "raidInventory" ? DisplayStyle.Flex : DisplayStyle.None;
         root.Q("raidHealthHost").style.display = DisplayStyle.None;
         root.Q<Label>(className: "raid-inventory-title").text = "随身装备与搜刮 · 示例库存预览";
-        m_Carried = InventoryGraph.Create(false, m_Case != "empty");
+        bool warehouse = m_Case == "warehouse";
+        m_Carried = InventoryGraph.Create(warehouse, m_Case != "empty");
         if (m_Case != "empty")
         {
             m_Carried.AddSupply("medkit", 2); m_Carried.AddSupply("cells", 3);
             m_Carried.AddSupply("water", 1, m_Carried.Equipped("Backpack").Id);
             m_Carried.AddSupply("ration", 1, m_Carried.Equipped("ChestRig").Id);
+        }
+        if (warehouse)
+        {
+            foreach (var code in new[] { "dust", "alloy", "optical_sensor", "cells", "medkit", "water", "circuit_board", "oxygen_reserve", "field_rig", "small_pack", "halo_focus_lens", "energy_head_dome", "energy_shield_generator", "ration", "data_drive", "ceramic_plate", "quantum_core" })
+            {
+                if (!InventoryCatalog.Get(code).Container) Require(m_Carried.AddSupply(code, 1, "stash") == InventoryError.None, "Cannot stock warehouse fixture: " + code);
+                else
+                {
+                    var item = new InventoryItem { Id = Guid.NewGuid().ToString("D"), Code = code, Parent = "stash" };
+                    Require(m_Carried.FindSpace(item, "stash", out var region, out var x, out var y), "Cannot place fixture container.");
+                    item.Region = region; item.X = x; item.Y = y; m_Carried.Items.Add(item);
+                }
+            }
+            root.Q<Label>(className: "raid-inventory-title").text = "人物装备与仓库 · 示例库存预览";
         }
         m_LootId = -1;
         if (m_Case == "corpse")
@@ -59,12 +74,13 @@ public sealed class RaidInventoryLayoutReview : EditorWindow
         else if (m_Case == "cache") { m_Loot = LootInventoryExchange.CreateCache(0); m_LootId = 0; }
         m_Joined = m_Loot == null ? m_Carried : LootInventoryExchange.Snapshot(m_Carried, m_Loot);
         Require(m_Joined.Validate() == InventoryError.None, "Review fixture graph invalid.");
-        m_View = new ContainerInventoryView(root.Q("raidInventoryHost"), false, command =>
+        m_View = new ContainerInventoryView(root.Q("raidInventoryHost"), warehouse, command =>
         {
             var error = m_Loot == null ? m_Carried.TryApply(command) : LootInventoryExchange.TryApply(m_Carried, m_Loot, command, m_Loot.Version);
             Require(error == InventoryError.None, "Invalid real transaction: " + error); m_Commands++;
             Present();
         });
+        if (warehouse) { Present(); MoonkovLocalization.Bind(root); MoonkovAudio.BindUI(root); return; }
         m_Bindings = new QuickSlotBindings(new Memory()); m_Bindings.UseProfile("native-layout-review");
         m_Quick = new QuickSlotView(root, slot => { m_Bindings.Clear(slot); PresentQuick(); }, slot =>
         { m_Bindings.Bind(slot, m_View.QuickSlotCandidate, m_Joined); PresentQuick(); });
@@ -83,7 +99,7 @@ public sealed class RaidInventoryLayoutReview : EditorWindow
         m_View.Present(m_Joined, lootId: m_LootId); PresentQuick();
     }
     private void PresentQuick()
-    { m_Bindings.InitializeWeapons(m_Joined); m_Quick.Present(m_Bindings, m_Joined, false, true, null); }
+    { if (m_Quick == null) return; m_Bindings.InitializeWeapons(m_Joined); m_Quick.Present(m_Bindings, m_Joined, false, true, null); }
     private static void Require(bool value, string message) { if (!value) throw new InvalidOperationException(message); }
     private static void Pointer(VisualElement target, EventType type, Vector2 point)
     {
@@ -110,6 +126,17 @@ public sealed class RaidInventoryLayoutReview : EditorWindow
             Require(middle.width >= 260 && right.width >= 260, "Container columns too narrow.");
             foreach (var slot in new[] { "Helmet", "Shield", "Primary", "Secondary", "Pistol", "Melee", "ChestRig", "Backpack" })
                 Require(m_View.Element.Q<Button>("inventorySlot" + slot) != null, "Player equipment slot missing: " + slot);
+            if (m_Case == "warehouse")
+            {
+                Capture(Path.Combine(m_Folder, "warehouse-" + Mathf.RoundToInt(rootVisualElement.resolvedStyle.width) + ".png"));
+                var supply = m_Joined.Items.First(i => i.Code == "optical_sensor");
+                var tile = m_View.Element.Q<Button>("inventoryItem" + supply.Id);
+                var pocket = m_View.Element.Q("inventoryGridpockets-3");
+                Drag(tile, pocket.worldBound.center);
+                Require(m_Commands == 1 && m_Carried.Find(supply.Id).Parent == "pockets", "Warehouse-to-pockets move failed.");
+                Directory.CreateDirectory(m_Folder); File.WriteAllText(Path.Combine(m_Folder, "warehouse-checks.txt"), "PASS: native warehouse columns, static portrait, eight equipment targets, warehouse-to-pocket authoritative transaction.");
+                return;
+            }
             var quick = rootVisualElement.Q("quickSlot9");
             Require(quick.worldBound.yMax <= m_View.Element.worldBound.yMax + 1, "Quickbar leaves inventory bounds.");
             Require(quick.panel.Pick(quick.worldBound.center) == quick, "Quickbar is covered by another panel.");

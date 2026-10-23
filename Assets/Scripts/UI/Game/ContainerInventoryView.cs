@@ -58,14 +58,14 @@ namespace Unity.MP_FPS.Client
         {
             m_Stash = showStash; m_Send = send; m_UseMedical = useMedical;
             m_UseConsumable = useConsumable; m_Drop = drop;
-            m_Root = TerminalLayout.Clone(showStash ? "ContainerInventory" : "RaidContainerInventory", "containerInventory");
-            m_Root.EnableInClassList("inventory-with-stash", showStash);
+            m_Root = TerminalLayout.Clone("RaidContainerInventory", "containerInventory");
+            m_Root.EnableInClassList("inventory-warehouse", showStash);
             m_Root.RemoveFromClassList("moonkov-controls-light");
             m_Root.AddToClassList("archive-ui");
             m_Root.RemoveFromClassList("archive-light");
             m_Root.styleSheets.Add(Resources.Load<StyleSheet>("Moonkov/ContainerUI"));
             m_Root.styleSheets.Add(Resources.Load<StyleSheet>("Moonkov/UI/InventoryTheme")); parent.Add(m_Root);
-            if (!showStash) m_Root.styleSheets.Add(Resources.Load<StyleSheet>("Moonkov/UI/RaidInventory"));
+            m_Root.styleSheets.Add(Resources.Load<StyleSheet>("Moonkov/UI/RaidInventory"));
             m_ItemTemplate = Resources.Load<VisualTreeAsset>("Moonkov/UI/Components/InventoryItem");
             m_ContainerTemplate = Resources.Load<VisualTreeAsset>("Moonkov/UI/Components/InventoryContainer");
             m_SlotTemplate = Resources.Load<VisualTreeAsset>("Moonkov/UI/Components/EquipmentSlot");
@@ -73,12 +73,11 @@ namespace Unity.MP_FPS.Client
             m_LootPane = m_Root.Q<VisualElement>("lootPane");
             m_CharacterPane = m_Root.Q<VisualElement>("characterPane");
             m_CharacterStage = m_Root.Q<VisualElement>("characterStage");
-            if (showStash) m_CharacterStage.Insert(0, new StashEquipmentGuides(() => m_Character, m_Slots));
             string[] slots = { "Helmet", "Shield", "ChestRig", "Pistol", "Backpack", "Primary", "Secondary", "Melee" };
             for (int n = 0; n < slots.Length; n++)
             {
                 string slot = slots[n];
-                if (!showStash && (slot == "ChestRig" || slot == "Backpack")) continue;
+                if (slot == "ChestRig" || slot == "Backpack") continue;
                 var button = m_Root.Q<Button>("inventorySlot" + slot) ?? (Button)TerminalLayout.Clone(m_SlotTemplate, "equipmentSlot");
                 button.name = "inventorySlot" + slot;
                 button.AddToClassList("inventory-slot-" + n);
@@ -95,15 +94,22 @@ namespace Unity.MP_FPS.Client
             }
             m_Weight = m_Root.Q<Label>("inventoryWeight");
             m_ContainerPane = m_Root.Q<ScrollView>("containerPane");
-            m_StashPane = m_Root.Q<VisualElement>("stashPane");
-            if (!showStash) m_StashPane.RemoveFromHierarchy();
+            var stashPlaceholder = m_Root.Q<VisualElement>("stashPane");
+            m_StashPane = showStash ? m_LootPane : stashPlaceholder;
+            stashPlaceholder.RemoveFromHierarchy();
+            if (showStash)
+            {
+                MoonkovLocalization.Set(m_Root.Q<Label>("lootTitle"), "个人仓库");
+                MoonkovLocalization.Set(m_Root.Q<Label>("lootCaption"), "拖动整理 · 双击容器打开 · Ctrl／Shift 点击转移");
+                m_Root.Q("inventoryQuickbarDock").style.display = DisplayStyle.None;
+            }
             m_Message = m_Root.Q<Label>("inventoryHint");
             m_Ghost = m_Root.Q<VisualElement>("inventoryGhost");
             m_Preview = new VisualElement { pickingMode=PickingMode.Ignore }; m_Preview.AddToClassList("inventory-drop"); m_Preview.style.display=DisplayStyle.None;
             m_Root.RegisterCallback<KeyDownEvent>(Key, TrickleDown.TrickleDown);
             Application.focusChanged += FocusChanged;
             m_Windows = new TerminalWindows(m_Root, () => { });
-            if (!showStash) InitializeRaidPortrait();
+            InitializeRaidPortrait();
             Present(null);
         }
         private static Label Text(VisualElement parent, string text, string css)
@@ -174,12 +180,7 @@ namespace Unity.MP_FPS.Client
         }
         public void Show()
         {
-            if (!m_Stash || m_Character != null || m_Disposed || m_Graph?.Find(LootInventoryExchange.Root)!=null) return;
-            m_Character = new MenuCharacterView();
-            m_Character.SetProtectionInventory(m_Graph);
-            m_Character.Element.RemoveFromClassList("terminal-character-art"); m_Character.Element.AddToClassList("stash-character-render");
-            m_CharacterStage.Insert(0, m_Character.Element);
-            m_Character.FrameRendered += m_CharacterStage.Q<StashEquipmentGuides>().MarkDirtyRepaint;
+            // Both inventory surfaces use the same static production-character portrait.
         }
         public void Suspend()
         {
@@ -193,7 +194,7 @@ namespace Unity.MP_FPS.Client
             m_Grids.RemoveAll(g => !m_Slots.Values.Any(s => ReferenceEquals(s, g.Element))); m_Tiles.Clear(); m_ContainerPane.Clear(); m_StashPane.Clear();m_LootPane.Clear();
             var loot=m_Graph?.Find(LootInventoryExchange.Root);
             m_Root.EnableInClassList("inventory-with-loot",loot!=null);
-            m_LootPane.style.display=m_Stash && loot==null ? DisplayStyle.None : DisplayStyle.Flex;
+            m_LootPane.style.display=DisplayStyle.Flex;
             m_CharacterPane.style.display=DisplayStyle.Flex;
             m_Rebuilding=true; m_Windows.CloseAll(); m_Rebuilding=false;
             foreach (var pair in m_Slots)
@@ -230,7 +231,7 @@ namespace Unity.MP_FPS.Client
         {
             var group = TerminalLayout.Clone(m_ContainerTemplate, "inventoryContainer"); pane.Add(group);
             MoonkovLocalization.Set(group.Q<Label>("containerTitle"), title);
-            if (!m_Stash && pane == m_ContainerPane && (title == "CHEST RIG" || title == "BACKPACK"))
+            if (pane == m_ContainerPane && (title == "CHEST RIG" || title == "BACKPACK"))
                 AddContainerEquipmentSlot(group, item, title == "CHEST RIG" ? "ChestRig" : "Backpack");
             var caption = group.Q<Label>("containerCaption");
             if (item == null)
@@ -248,11 +249,11 @@ namespace Unity.MP_FPS.Client
                 var wrapper = new VisualElement(); wrapper.AddToClassList("inventory-region"); regionRow.Add(wrapper);
                 Text(wrapper, region.Id.ToUpperInvariant(), "inventory-region-title");
                 VisualElement gridParent = wrapper;
-                if (item.Code == "stash" || item.Code=="loot" && m_Stash) { var scroll = new ScrollView(ScrollViewMode.Vertical); scroll.AddToClassList("inventory-warehouse-scroll"); wrapper.Add(scroll); gridParent = scroll; }
                 var entries = m_Graph.Children(item.Id, region.Id).Where(e => hidden == null || !hidden.Contains(e.Id)).ToArray();
                 var displayed = compact ? CompactLoot(entries, region.Width) : entries.ToDictionary(e => e.Id, e => e);
                 int rows = compact ? Math.Max(1, displayed.Values.Select(e => e.Y + (e.Rotated ? InventoryCatalog.Get(e.Code).Width : InventoryCatalog.Get(e.Code).Height)).DefaultIfEmpty(1).Max()) : m_Graph.Rows(item.Id,region);
                 var visual = new StashGridVisual(region.Width, rows) { LineColor = m_Stash ? new Color(.28f, .30f, .36f, .6f) : new Color(.42f, .45f, .50f, .4f) }; visual.AddToClassList("inventory-grid"); visual.style.width=region.Width*48; visual.style.height=rows*48; gridParent.Add(visual);
+                visual.name = "inventoryGrid" + item.Id + "-" + region.Id;
                 var grid = new Grid { Parent=item.Id, Region=region.Id, Definition=region, Element=visual, AutoPlace=compact }; m_Grids.Add(grid);
                 foreach (var entry in entries)
                 {
@@ -277,10 +278,9 @@ namespace Unity.MP_FPS.Client
                 if (item.Code == "stash" || (!m_Stash || pane == m_ContainerPane) && region.Width >= 3)
                 {
                     wrapper.style.flexGrow=1; wrapper.style.width=Length.Percent(100); wrapper.style.minWidth=0;
-                    if (item.Code == "stash") { regionRow.style.flexGrow=1; group.style.flexGrow=1; }
                     wrapper.RegisterCallback<GeometryChangedEvent>(evt =>
                     {
-                        float cell = Mathf.Clamp((evt.newRect.width-16)/region.Width, 24, item.Code == "stash" ? 60 : 64);
+                        float cell = Mathf.Clamp((evt.newRect.width-8)/region.Width, item.Code == "stash" ? 38 : 40, item.Code == "stash" ? 76 : 64);
                         if (Mathf.Abs(grid.Cell-cell)<.1f) return; grid.Cell=cell; visual.style.width=region.Width*cell; visual.style.height=rows*cell;
                         foreach (var entry in entries) if (m_Tiles.TryGetValue(entry.Id, out var tile)) Position(tile, displayed[entry.Id], cell);
                     });

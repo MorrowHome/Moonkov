@@ -55,3 +55,8 @@
 .raid-ui .raid-inventory-tabs .raid-tab { height: 30px; min-width: 112px; font-size: 14px; letter-spacing: 0; background-color: #191f21; color: #b3bcb9; }
 .raid-ui .raid-inventory-tabs .raid-tab-active { background-color: #374236; color: #eeeee6; }
 .raid-ui .raid-inventory-header Button { height: 30px; min-width: 100px; margin: 0 0 0 8px; letter-spacing: 0; font-size: 13px; color: #eeeee6; background-color: #28312e; }
+.inventory-view.inventory-warehouse .inventory-character { width: 27%; max-width: 370px; }
+.inventory-warehouse .field-loot { flex-grow: 1.8; }
+.inventory-warehouse .inventory-slot-item { white-space: normal; }
+.inventory-warehouse .inventory-item-label { font-size: 12px; }
+.inventory-warehouse .inventory-item-art { left: 8%; right: 8%; top: 23%; bottom: 20%; }
