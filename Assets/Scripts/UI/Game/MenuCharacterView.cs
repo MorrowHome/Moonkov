@@ -396,7 +396,6 @@ namespace Unity.MP_FPS.Client
             m_Spring?.SimulatePresentation(dt);
             UpdateHalo();
             if(m_Protection)m_Protection.SimulatePresentation();
-            ExpandFramingBounds();
         }
 
         private void ExpandFramingBounds()

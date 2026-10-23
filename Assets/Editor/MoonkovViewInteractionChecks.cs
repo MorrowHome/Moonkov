@@ -95,7 +95,7 @@ public sealed class MoonkovViewInteractionChecks : EditorWindow
         var window = CreateInstance<MoonkovViewInteractionChecks>();
         window.titleContent = new GUIContent("Portrait regression check");
         window.position = new Rect(60, 60, 440, 560); window.Show();
-        window.portrait = new MenuCharacterView(idleOnly: true, characterIndex: characterIndex);
+        window.portrait = new MenuCharacterView(characterIndex: characterIndex);
         var image = window.portrait.Element;
         image.RemoveFromClassList("terminal-character-art"); image.style.width = 400; image.style.height = 500;
         window.rootVisualElement.Add(image);
@@ -144,6 +144,7 @@ public sealed class MoonkovViewInteractionChecks : EditorWindow
             Require(!image.HasPointerCapture(PointerId.mousePointerId) && portrait.InspectionYaw == yaw,
                 "A missed button release retained the portrait gesture.");
             CheckInspectionFraming(start);
+            CheckAnimatedFraming();
             image.RemoveFromHierarchy();
             Require(portrait.InspectionYaw == 0 && !scene.isLoaded, "Detached portrait retained orientation or preview scene.");
             rootVisualElement.Insert(0, image); portrait.Advance(0);
@@ -177,12 +178,30 @@ public sealed class MoonkovViewInteractionChecks : EditorWindow
             for (int i = 1; i <= 20; i++)
             {
                 Move(portrait.Element, start + Vector2.right * (portrait.Element.contentRect.width * (2 + i / 10f)));
-                portrait.Advance(0); portrait.Render();
+                portrait.Advance(1f / 30); portrait.Render();
                 Require(Vector3.Distance(position, camera.transform.position) < .001f, "Rotating the portrait changed its framing.");
             }
             Up(portrait.Element, start);
         }
         finally { portrait.FrameRendered -= rendered; }
+    }
+    private void CheckAnimatedFraming()
+    {
+        var camera = (Camera)typeof(MenuCharacterView).GetField("m_Camera", Private).GetValue(portrait);
+        var settings = (MenuCharacterSettings)typeof(MenuCharacterView).GetField("m_Settings", Private).GetValue(portrait);
+        var position = camera.transform.position;
+        for (int motion = 1; motion < settings.Motions.Length; motion++)
+        {
+            Set(portrait, "m_Motion", 0);
+            Set(portrait, "m_Transition", false);
+            Set(portrait, "m_ActionBag", new[] { motion });
+            Set(portrait, "m_BagRemaining", 1);
+            Set(portrait, "m_Remaining", 0f);
+            for (int frame = 0; frame < 12; frame++) portrait.Advance(.1f);
+            portrait.Render();
+            Require(Vector3.Distance(position, camera.transform.position) < .001f,
+                "Showcase animation changed the portrait scale or camera centre: " + motion);
+        }
     }
     private void OnDisable() { portrait?.Dispose(); portrait = null; }
     private static void Set(object target, string field, object value) => target.GetType().GetField(field, Private).SetValue(target, value);

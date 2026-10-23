@@ -60,3 +60,9 @@ MoonkovThirdPersonCameraChecks.Run();
 - 回归入口：`MoonkovViewInteractionChecks.CheckPortrait()` 检查 DollSinger；`CheckPortraitForCharacter(GameSettings.HatsuneMikuCharacterIndex)` 检查初音。均需读取异步 `LastPreviewResult`。覆盖站立显示比例、完整转圈取景、密集输入合并、静态预览刷新、释放、取消、失去捕获、漏收松键、按钮隔离、移除清理和重开复位。
 - 全程复用现有 Editor 和 MainMenu，未启动 Play 或联机客户端；不将这些检查称为完整游戏内主观手感验收。
 - 最终 Unity 6000.5.10f1 编译 completed、failed=false；DollSinger、初音专项检查分别读取为 passed，Console 当前 groundTruth 为 0 错误，既有警告保留。结束时 MainMenu 为唯一普通场景、dirty=false、Play=false；`git diff --check` 通过，原有字体资产修改未纳入修复。
+
+### 继续修复：动画导致的逐渐缩小
+
+- 用户反馈仍会缩小。此前完整转圈检查使用 `Advance(0)`，未覆盖动作推进；将测试改为真实时间推进并逐个切换展示动作后，旧代码在 DollSinger 第 1 个动作即触发镜头变化断言。
+- 删除每次动画推进后的取景包围盒扩张，只在创建舞台时计算初始取景。旋转、动画、头发和光环运动都不再改动镜头基准；页面重开或换角色重新初始化。较大动作可超出初始站立取景，后续由用户主动缩放查看。
+- 回归改为使用正常展示模式，并逐一进入全部配置动作，每个推进 1.2 秒后检查镜头位置。拖动转圈同样以非零时间步推进，避免再次只测静态姿态。
