@@ -231,6 +231,8 @@ namespace Unity.MP_FPS
                 }
             }
 
+            m_OfflineLoadingCheckpoint = creationType == CreationType.Offline
+                ? PlayerProfileClient.OfflineStore.BeginLoadingCheckpoint() : null;
             BeginEnteringGame();
 
             m_LoadingGameCancel = new CancellationTokenSource();
@@ -559,6 +561,8 @@ namespace Unity.MP_FPS
 
         void FinishLoadingGame()
         {
+            m_OfflineLoadingCheckpoint?.Complete();
+            m_OfflineLoadingCheckpoint = null;
             LoadingData.Instance.UpdateLoading(LoadingData.LoadingSteps.LoadingDone);
             GameSettings.Instance.GameState = GlobalGameState.InGame;
         }

@@ -10,6 +10,16 @@ namespace Unity.MP_FPS
     public partial class GameManager : MonoBehaviour
     {
         private bool m_ReturningToMainMenu;
+        private OfflineProfileStore.LoadingCheckpoint m_OfflineLoadingCheckpoint;
+
+        async Task RefundFailedOfflineLoadingAsync()
+        {
+            if (m_OfflineLoadingCheckpoint == null) return;
+            m_OfflineLoadingCheckpoint.Refund();
+            m_OfflineLoadingCheckpoint = null;
+            if (PlayerProfileClient.IsOffline) await PlayerProfileClient.ValidateAsync(null, default);
+            Debug.Log("[Raid] Failed single-player loading refunded the original equipment.");
+        }
         /// <summary>
         /// Safe return to main menu, can be called by the pause menu button.
         /// </summary>
@@ -51,6 +61,7 @@ namespace Unity.MP_FPS
             
             GameSettings.Instance.IsPauseMenuOpen = false;
             await DisconnectAndUnloadWorlds();
+            await RefundFailedOfflineLoadingAsync();
             await LanRoomClient.ReturnedToMenuAsync();
             
             // Restart the main menu scene.
@@ -68,6 +79,7 @@ namespace Unity.MP_FPS
         public async void QuitAsync()
         {
             await DisconnectAndUnloadWorlds();
+            await RefundFailedOfflineLoadingAsync();
             await LanRoomClient.LeaveAsync(afterWorldShutdown:true);
 
 #if UNITY_EDITOR

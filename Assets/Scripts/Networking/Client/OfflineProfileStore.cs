@@ -34,6 +34,52 @@ namespace Unity.MP_FPS
         public string OutboxDirectory => Path.Combine(Path.GetDirectoryName(FilePath), "raid-outbox");
         public bool RaidActive { get { lock (m_Lock) return m_Save.DeploymentId != null; } }
 
+        // A single-player loading attempt owns this checkpoint until the camera
+        // and replicated world are ready. Refund only after server shutdown has
+        // drained its settlement tasks, so a late abandon cannot erase the kit.
+        public sealed class LoadingCheckpoint
+        {
+            private readonly OfflineProfileStore m_Owner;
+            private string m_Snapshot;
+            internal LoadingCheckpoint(OfflineProfileStore owner, string snapshot)
+            { m_Owner = owner; m_Snapshot = snapshot; }
+
+            public void Complete() { lock (m_Owner.m_Lock) m_Snapshot = null; }
+
+            public void Refund()
+            {
+                lock (m_Owner.m_Lock)
+                {
+                    if (m_Snapshot == null) return;
+                    if (m_Owner.m_Disposed) throw new ObjectDisposedException(nameof(OfflineProfileStore));
+                    if (m_Owner.RaidActive) throw new InvalidOperationException("Wait for raid shutdown before refunding a failed load.");
+                    var next = JsonConvert.DeserializeObject<SaveData>(m_Snapshot);
+                    if (JsonConvert.SerializeObject(m_Owner.m_Save) != m_Snapshot)
+                    {
+                        // Keep terminal receipts so replaying an old journal cannot
+                        // debit or settle this refunded attempt a second time.
+                        foreach (var receipt in m_Owner.m_Save.Receipts)
+                            if (!next.Receipts.ContainsKey(receipt.Key)) next.Receipts.Add(receipt.Key, "loading_refunded");
+                        next.Inventory.Version = Math.Max(next.Inventory.Version, m_Owner.m_Save.Inventory.Version) + 1;
+                        next.Recovery.Version = Math.Max(next.Recovery.Version, m_Owner.m_Save.Recovery.Version) + 1;
+                        Validate(next);
+                        m_Owner.Commit(next);
+                    }
+                    m_Snapshot = null;
+                }
+            }
+        }
+
+        public LoadingCheckpoint BeginLoadingCheckpoint()
+        {
+            lock (m_Lock)
+            {
+                if (m_Disposed) throw new ObjectDisposedException(nameof(OfflineProfileStore));
+                if (RaidActive) throw new InvalidOperationException("The previous deployment must settle before loading another raid.");
+                return new LoadingCheckpoint(this, JsonConvert.SerializeObject(m_Save));
+            }
+        }
+
         public OfflineProfileStore(string path)
         {
             FilePath = Path.GetFullPath(path);

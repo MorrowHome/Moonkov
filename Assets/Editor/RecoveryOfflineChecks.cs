@@ -10,6 +10,46 @@ using UnityEngine;
 
 public static class RecoveryOfflineChecks
 {
+    [MenuItem("Tools/Moonkov/Check Failed Offline Loading Refund")]
+    public static void CheckLoadingRefund()
+    {
+        if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("Run in Edit Mode.");
+        string directory = Path.Combine(Path.GetTempPath(), "moonkov-loading-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(directory);
+        string path = Path.Combine(directory, "profile.json");
+        void Check(bool ok, string message) { if (!ok) throw new Exception(message); }
+        try
+        {
+            using (var store = new OfflineProfileStore(path))
+            {
+                var before = RaidInventoryTransport.Decode(store.Read().InventoryJson);
+                Check(before.Items.Any(i => before.Carried(i) && InventoryCatalog.Get(i.Code).Kind != ItemKind.Root), "Fixture has no equipment.");
+                var checkpoint = store.BeginLoadingCheckpoint();
+                var deploy = new RaidPersistenceContext.Deployment { PlayerId = store.Read().PlayerId, DeploymentId = Guid.NewGuid().ToString("D") };
+                store.Deploy(deploy);
+                bool refused = false;
+                try { checkpoint.Refund(); } catch (InvalidOperationException) { refused = true; }
+                Check(refused && store.RaidActive, "Refund raced the running server.");
+                store.Abandon(deploy);
+                checkpoint.Refund();
+                var restored = RaidInventoryTransport.Decode(store.Read().InventoryJson);
+                Check(JsonConvert.SerializeObject(before.Items) == JsonConvert.SerializeObject(restored.Items) &&
+                    before.MissionFirsts == restored.MissionFirsts && store.ReadRecovery().ItemCount() == 0, "Failed loading changed equipment or granted mission rewards.");
+                string once = File.ReadAllText(path);
+                checkpoint.Refund(); store.Abandon(deploy);
+                Check(File.ReadAllText(path) == once, "Refund or abandonment replay duplicated the kit.");
+                var completed = store.BeginLoadingCheckpoint();
+                deploy.DeploymentId = Guid.NewGuid().ToString("D");
+                store.Deploy(deploy); completed.Complete(); store.Abandon(deploy);
+                string loss = File.ReadAllText(path); completed.Refund();
+                Check(File.ReadAllText(path) == loss, "A completed load can refund normal gameplay losses.");
+            }
+            using (var reopened = new OfflineProfileStore(path)) Check(!reopened.RaidActive, "Refund left an active deployment after restart.");
+            Debug.Log("Offline loading refund passed: shutdown ordering, exact equipment restore, no rewards, idempotency, completed-game loss and reopen.");
+        }
+        finally { Directory.Delete(directory, true); }
+    }
+
     [MenuItem("Tools/Moonkov/Check Offline Recovery Inbox")]
     public static void Run()
     {
