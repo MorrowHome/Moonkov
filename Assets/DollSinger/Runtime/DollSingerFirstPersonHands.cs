@@ -111,6 +111,8 @@ namespace Unity.MP_FPS.DollSinger
             overlay.volumeLayerMask = 0;
         }
 
+        public bool StableFraming { get; set; }
+
         public void Present(bool active, float fieldOfView, Camera owner, bool viewfinder, float poseBlend, float verticalOffset = 0)
         {
             if (!Camera) return;
@@ -146,6 +148,16 @@ namespace Unity.MP_FPS.DollSinger
         {
             if (!Active || !Camera) return;
             if (meleeMode) return;
+            if (StableFraming)
+            {
+                // The expansion signs have hands at different depths. Re-fitting their
+                // animated bounds every frame changes perspective during a shot and makes
+                // fingers appear to stretch. Keep one ordinary perspective and fixed eye.
+                Camera.ResetProjectionMatrix();
+                Camera.transform.localPosition = new Vector3(0, -.03f, -.14f) * poseBlend;
+                reframe = false;
+                return;
+            }
             if (wasViewfinder)
             {
                 // Pose first, then zoom with the world. Do not move backwards or

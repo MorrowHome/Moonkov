@@ -483,7 +483,8 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         ApplyBakedGestures();
         bool centred = TryGetFirstPersonCamera(out var aimingCamera);
         if (view) view.SetGestureHandsActive(centred && aimBlend > .001f, visualWeapon == HaloWeapon.Sniper,
-            visualWeapon == HaloWeapon.Cicada ? .03f : visualWeapon == HaloWeapon.Tempest ? .025f : 0);
+            visualWeapon == HaloWeapon.Cicada ? .03f : visualWeapon == HaloWeapon.Tempest ? .025f : 0,
+            ArsenalVisual != null);
         Vector3 centredPosition = centred ? GetFirstPersonHaloPosition(aimingCamera) : Vector3.zero;
         float layoutBlend = DollSingerView.AimPoseBlend(aimBlend);
         float t = layoutBlend * layoutBlend * (3f - 2f * layoutBlend);

@@ -91,8 +91,9 @@ public class DollSingerView : MonoBehaviour
     public Camera GestureCamera => gestureHands?.Camera;
     public void FrameGestureHands(bool force = false) => gestureHands?.FrameHands(force);
     public bool GestureHandsActive => gestureHands != null && gestureHands.Active;
-    public void SetGestureHandsActive(bool active, bool viewfinder = false, float verticalOffset = 0)
+    public void SetGestureHandsActive(bool active, bool viewfinder = false, float verticalOffset = 0, bool stableFraming = false)
     {
+        if (gestureHands != null) gestureHands.StableFraming = stableFraming;
         gestureHands?.Present(active && firstPerson && isActiveAndEnabled && camera && camera.isActiveAndEnabled,
             viewfinder && camera ? camera.fieldOfView : gestureFieldOfView, camera, viewfinder,
             AimPoseBlend(aimBlend), verticalOffset);
