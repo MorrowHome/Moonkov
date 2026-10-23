@@ -14,6 +14,8 @@ namespace Unity.MP_FPS.Moon
         [SerializeField] private Color nightAmbient = Color.black;
         [Tooltip("Optional low ambient fill for maps without baked indirect lighting. Black preserves the vacuum-lighting preset.")]
         [SerializeField] private Color ambientFill = Color.black;
+        [Tooltip("Default environment reflection strength. Local room probes retain their own power-dependent intensity.")]
+        [SerializeField, Range(0, 1)] private float environmentReflectionIntensity;
         public enum ClockMode { GameplayDay, MeanLunarOrbit }
         [Header("Sky time (existing server clock is the only time source)")]
         [SerializeField] private ClockMode clockMode = ClockMode.MeanLunarOrbit;
@@ -96,7 +98,7 @@ namespace Unity.MP_FPS.Moon
             RenderSettings.ambientMode = AmbientMode.Flat;
             RenderSettings.ambientLight = ambientFill;
             RenderSettings.ambientIntensity = 1;
-            RenderSettings.reflectionIntensity = 0;
+            RenderSettings.reflectionIntensity = environmentReflectionIntensity;
             RenderSettings.sun = sun;
             RenderSettings.fog = false;
             applied = true;

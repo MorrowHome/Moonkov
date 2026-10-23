@@ -15,9 +15,9 @@ namespace Unity.MP_FPS.Moon
         [Tooltip("Legacy serialized reference. Environment scope now comes from native material passes, not subject exclusions.")]
         [SerializeField] private Material subjectMaskMaterial;
         [Header("环境外观 / Environment look")]
-        [Tooltip("False selects the authored black/white/cobalt finish. True bypasses the entire effect. Ctrl+L temporarily inverts this choice without changing it.")]
-        [SerializeField] private bool faithfulLighting;
-        [Header("正式风格：黑白块面与白面层次 / Authored graphic finish")]
+        [Tooltip("True keeps original PBR lighting and bypasses the entire legacy effect. Ctrl+L compares only enabled effects with nonzero intensity.")]
+        [SerializeField] private bool faithfulLighting = true;
+        [Header("历史风格实验 / Legacy graphic finish")]
         [SerializeField, Range(0, 1)] private float intensity = 1;
         [SerializeField, Range(-2, 2)] private float exposure = 1f;
         [SerializeField, Range(0, .45f)] private float blackPoint = .025f;
@@ -42,7 +42,7 @@ namespace Unity.MP_FPS.Moon
         // Keep old serialized values readable, but they no longer generate cloud
         // mottling, screen grain, local exposure lift or a second optical halo.
         [SerializeField, HideInInspector] private float grain, localAdaptation, halation, halationThreshold, halationRadius, surfacePatina;
-        [SerializeField] private bool previewInSceneView = true;
+        [SerializeField] private bool previewInSceneView;
 
         private Material runtimeMaterial;
         private SilverPrintPass pass;
@@ -76,6 +76,16 @@ namespace Unity.MP_FPS.Moon
 
         public static void ToggleDevelopmentStyle()
         {
+            // Disabled legacy effects must not leave a misleading style toggle in gameplay.
+            // The input still consumes Ctrl+L, so it cannot become a headlamp gesture.
+            bool available = false;
+            foreach (var effect in FindObjectsByType<MoonSilverPrint>(FindObjectsSortMode.None))
+                if (effect.isActiveAndEnabled && effect.intensity > 0 && effect.material)
+                {
+                    available = true;
+                    break;
+                }
+            if (!available) return;
             DevelopmentComparisonEnabled = !DevelopmentComparisonEnabled;
             Debug.Log(DevelopmentComparisonEnabled
                 ? "[环境外观 / Ctrl+L] 临时对照：反转场景外观设置"

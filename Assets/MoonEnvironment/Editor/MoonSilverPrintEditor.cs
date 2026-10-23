@@ -14,17 +14,17 @@ namespace Unity.MP_FPS.Moon.Editor
         public override VisualElement CreateInspectorGUI()
         {
             var root = new VisualElement();
-            root.Add(new HelpBox("正式方向：黑白强块面、克制钴蓝、保留白面原材质细节与真实 HDR 高光。没有内部云纹或屏幕颗粒。只有带 MoonEnvironmentScope Pass 的不透明环境材质参与；角色、武器、透明效果与 UI 不染色。原始照明直接跳过整条效果。开发版 Play 中 Ctrl+L 只临时反转当前场景配置，再按恢复；不改 Inspector 或存档。", HelpBoxMessageType.Info));
+            root.Add(new HelpBox("正式地图采用原始 PBR 材质与写实照明，此历史滤镜默认停用。写实照明会跳过整条效果；如需研究旧实验，必须明确启用组件并选择实验预设。Ctrl+L 仅对已启用且强度大于 0 的效果进行临时对照，不会重新启用停用的组件。", HelpBoxMessageType.Info));
             var presets = new VisualElement();
             presets.style.flexDirection = FlexDirection.Row;
-            presets.Add(new Button(() => ApplyPreset(targets, false)) { text = "黑白钴蓝（正式）" });
-            presets.Add(new Button(() => ApplyPreset(targets, true)) { text = "更强块面" });
-            presets.Add(new Button(() => ApplyFaithful(targets)) { text = "原始照明（对照）" });
+            presets.Add(new Button(() => ApplyFaithful(targets)) { text = "写实照明（默认）" });
+            presets.Add(new Button(() => ApplyPreset(targets, false)) { text = "旧黑白钴蓝实验" });
+            presets.Add(new Button(() => ApplyPreset(targets, true)) { text = "旧强块面实验" });
             root.Add(presets);
             Field(root, "faithfulLighting", "原始照明 / 跳过风格化");
             Field(root, "intensity", "总强度 / 0 关闭");
             Field(root, "previewInSceneView", "在 Scene 视图预览");
-            var tone = Group(root, "正式外观：黑白块面与光照层次");
+            var tone = Group(root, "历史实验参数：黑白块面与光照层次");
             Field(tone, "shadingRetention", "明暗层次保留");
             Field(tone, "exposure", "风格曝光 / EV");
             Field(tone, "blackPoint", "线性黑位参考");
@@ -92,7 +92,8 @@ namespace Unity.MP_FPS.Moon.Editor
             Undo.RecordObjects(objects, "Faithful environment lighting");
             var so = new SerializedObject(objects);
             so.FindProperty("faithfulLighting").boolValue = true;
-            so.FindProperty("intensity").floatValue = 1;
+            so.FindProperty("intensity").floatValue = 0;
+            so.FindProperty("previewInSceneView").boolValue = false;
             so.ApplyModifiedProperties();
             foreach (var obj in objects)
             {

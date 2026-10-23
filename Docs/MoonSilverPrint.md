@@ -1,32 +1,26 @@
-# Theophilus 黑白银白与钴蓝风格
+# Theophilus 写实环境基线
 
-正式地图使用黑白块面、少量钴蓝和有光泽的白色表面。大白墙保留已有贴图、法线、AO 与烘焙光照，并通过现有 `Industrial Dust` Shader 的真实清漆层产生高光；积尘着色关闭，不生成内部云纹，也不增加几何。
+正式地图使用原有材质、照明和烘焙资源呈现写实环境。黑白块面、钴蓝点色和白墙表面颗粒属于已停用的风格实验，不再作为正式默认效果。
 
-## 调整入口
+## 正式配置
 
-在正式 `TheophilusGameScene` 中选择 `Theophilus Silver Print`，或使用菜单 `Tools → Moon Environment → Theophilus → Select style controls`。
+- `TheophilusGameScene` 恢复风格实验前的10个原材质绑定，移除 `VisualPass01/Materials/WhiteFinish_*` 材质副本及 `IndustrialDust` 的 `_SurfaceWear` 实验。原有材质的贴图和受光输入继续生效。
+- 场景中的 `MoonSilverPrint` 组件禁用，保存 `faithfulLighting=true`、`intensity=0`、`previewInSceneView=false`。保留滤镜代码和编辑入口供实验使用；它们不代表正式写实基线。
+- `TheophilusLook` 保留 ACES 和 `postExposure=0.55`，设置 `contrast=0`、Bloom `intensity=0.15`。
+- 正式场景的默认环境反射强度为 `1`；房间局部反射探针仍由 `BuildingBakedLighting` 按供电状态切换强度，通电为 `1`、断电为 `0`。
 
-- **黑白钴蓝（正式）**：写入正式风格预设。必须保存场景，Player 才使用这些设置。
-- **更强块面**：进一步收紧黑白分界，保留白面细节和 HDR 亮部。
-- **原始照明（对照）**：跳过整个风格化处理链。它不撤销白墙材质的清漆层。
-- **Ctrl+L**：仅 Editor／Development Play 使用，临时反转当前场景的风格设置；再次按下恢复。每次进入 Play 从场景保存值开始，不再强制重置为保真。普通 Player 初始效果与场景保存值一致。
+本次不修改模型、贴图、烘焙资源、自动曝光，以及已有打包和联机修复。恢复材质与关闭滤镜不等于重新烘焙光照，也不自动消除已有烘焙基底中的环境填充。
 
-## 白色表面与影调
+## 开发对照
 
-新增的 `VisualPass01/Materials/WhiteFinish_*` 是正式地图专用材质副本，覆盖既有 Hull Ceramic Paint 与 Painted Metal Grey 白墙及相应 GreyWhiteShell／Dust 变体。源材质、模型、Transform、碰撞体、灯光及 lightmap 数据不变。
+Editor Play／Development Build 保留 Ctrl+L 输入绑定。没有已启用、强度大于0且材质有效的 `MoonSilverPrint` 时，组合键被消费但不切换画面、不打印旧风格切换提示，也不触发头灯手势。
 
-白墙使用 `_CoatStrength`、`_CoatSmoothness` 调整釉面高光；保留原来的 BaseMap、法线、金属／光滑度和 AO 通道。`_SurfaceWear` 复用已有表面纹理的 B 通道细粒，连续改变白底亮度与粗糙度，让细颗粒参与实际受光；默认0保持其他旧材质不变，白墙设为0.35、纹理重复率2。投射沿表面主轴展开，避免旧地面投射在竖墙上拉成斜条纹。它没有新增采样或 Shader 关键字，不使用 R 通道的大片云斑。没有原贴图的白材仍保留原有基础输入，不伪造大理石内部纹理。`_DustAmount=0` 禁止积尘着色。
+只有显式启用实验组件并提供有效材质和强度后，Ctrl+L 才临时反转其保真／风格化选择；不会把实验设置保存回场景。详见 [开发用环境风格对比](Development/EnvironmentStyleToggle.md)。
 
-后处理在场景线性 HDR 中塑造黑层、暗层和白面，保留原材质的局部细节及亮部残差，之后交给现有 Bloom／tonemapping。它不把 HDR 高光裁到 1，也不叠加屏幕颗粒、世界云斑、局部自动提亮或第二层晕光。原来的亮度提取与两次模糊已移除。
+## 验证边界
 
-钴蓝只从原本蓝色占主导且饱和度足够的表面选取。冷白、青色、紫色和黄褐安全漆不再统统转蓝；没有蓝色来源的表面不会凭空得到蓝色图案。
+2026-10-23：Unity 脚本编译通过；正式图不再引用 WhiteFinish，Industrial Dust 与 URP Lit 在当前编辑器中受支持且没有 Shader 错误；禁用效果后的比较方法不会切换状态。场景与实验前版本的差异仅为滤镜配置及默认反射强度，模型、碰撞、摆放与其他材质引用一致。
 
-## 范围与性能边界
+已检查正式地图室内外各一处 Edit Mode Game 相机预览，截图和验证记录位于本地 `Library/BuildValidation/Realism20261023/`。这仅确认原始材质和受光恢复：外墙细节仍偏平，不代表最终写实画质验收。本轮未进入 Play、重新打包或进行联机验收，方法检查也不能替代实际键盘交互。
 
-效果仍在透明物之前运行，只有声明 `MoonEnvironmentScope` 的不透明环境材质参与。角色、武器、拾取物、透明效果、HUD 和独立肖像预览不因白墙接入而扩大作用范围。遮罩按可见深度匹配，不覆盖前景人物轮廓。
-
-运行时只保留环境遮罩与一次 HDR 合成，原始照明模式直接跳过两者。所有临时纹理由 Render Graph 管理，没有常驻 RT 或逐帧材质创建。减少 Pass 不等于已测得 GPU 帧耗时提升，正式游戏中移动视角和目标硬件表现仍须按实际验证记录判断。
-
-此功能控制已有地图的材质和影调。参考图的建筑构图、轮廓与空间布局不会通过滤镜自动生成。
-
-旧实现与历史截图保留在 [2026-10-22 环境作用域记录](ArtDirection/20261022-EnvironmentOptics/README.md) 和 [2026-10-19 连续银盐记录](ArtDirection/20261019-ContinuousSilver/README.md)，其中旧默认值和旧执行链不再代表当前版本。
+历史效果可查阅 [2026-10-22 环境作用域记录](ArtDirection/20261022-EnvironmentOptics/README.md) 和 [2026-10-19 连续银盐记录](ArtDirection/20261019-ContinuousSilver/README.md)。其中截图、默认值和执行链仅代表当时的实验状态。
