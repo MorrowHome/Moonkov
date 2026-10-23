@@ -125,6 +125,12 @@ public static partial class AlienEnemyChecks
                     }
                     committed = true;
                 }
+                if (name == "Roots" && !hiddenFloor && state.Action == AlienAction.Strike)
+                {
+                    int pulse = Mathf.Max(0, pattern.PulseAt(state.ActionTime + 1f / 30));
+                    target.transform.position = pattern.PulsePoint(state.AttackPoint, state.AttackDirection, pulse) - Vector3.up * .04f;
+                    manager.SetComponentData(target.LinkedEntity, LocalTransform.FromPosition(target.transform.position));
+                }
                 if (state.Action == AlienAction.Strike)
                 {
                     enteredStrike = true;
@@ -162,7 +168,7 @@ public static partial class AlienEnemyChecks
                 int warnings = 0;
                 foreach (var line in holder.GetComponentsInChildren<LineRenderer>())
                     if (line.name == "Boss committed attack warning" && line.enabled) warnings++;
-                Require(warnings == (pattern.Kind == AlienAttackKind.RootSpikes ? 3 : 1), "Missing committed warning geometry.");
+                Require(warnings == (pattern.Kind == AlienAttackKind.RootSpikes ? pattern.Pulses * 3 : 1), "Missing committed warning geometry.");
                 Require(holder.GetComponentsInChildren<Collider>().Length == 0, "Client warning created damage colliders.");
                 if (pattern.Kind == AlienAttackKind.TentacleSweep && pattern.Pulses > 1)
                 {

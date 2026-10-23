@@ -11,10 +11,10 @@ namespace Unity.MP_FPS
         private AlienImpactKind m_ImpactKind;
         public int LastArcQueries { get; private set; }
 
-        private bool PrepareMucusArc()
+        private bool PrepareMucusArc(Vector3 target)
         {
             LastArcQueries = 0;
-            Vector3 origin = MucusSocket(), target = TargetHead(m_Target).position;
+            Vector3 origin = MucusSocket();
             m_MucusHits ??= new RaycastHit[64];
             for (int mode = 0; mode < 2; mode++)
             {

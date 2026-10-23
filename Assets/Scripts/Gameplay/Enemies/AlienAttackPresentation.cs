@@ -12,7 +12,7 @@ namespace Unity.MP_FPS
         private readonly AlienCreatureProfile m_Profile;
         private readonly AlienVoidStyle m_Style;
         private readonly LineRenderer[] m_Streams = new LineRenderer[4];
-        private readonly LineRenderer[] m_Warnings = new LineRenderer[4];
+        private readonly LineRenderer[] m_Warnings = new LineRenderer[10];
         private Material m_WarningMaterial;
         private uint m_WarningSequence;
         private Transform m_Globule;
@@ -23,6 +23,7 @@ namespace Unity.MP_FPS
         private int m_LastPulse = -1;
         private bool m_Observed;
         private readonly Transform[] m_Impacts = new Transform[3];
+        private readonly MeshFilter[] m_ImpactFilters = new MeshFilter[3];
         private Mesh m_Spike, m_Residue;
         private Material m_ImpactMaterial;
         public AlienAttackPresentation(Transform owner, AlienCreatureProfile profile = null)
@@ -46,8 +47,8 @@ namespace Unity.MP_FPS
             if (state.Action != AlienAction.Strike || state.AttackSequence == 0 || pattern.PulseAt(state.ActionTime) < 0) return;
             if (pattern.Kind != AlienAttackKind.RootSpikes && pattern.Kind != AlienAttackKind.AcidSpit &&
                 pattern.Kind != AlienAttackKind.SlimePulse && pattern.Kind != AlienAttackKind.TentacleSlam) return;
-            Vector3 centre = state.AttackPoint;
-            if (pattern.Kind == AlienAttackKind.SlimePulse) centre = state.AttackOrigin;
+            Vector3 centre = pattern.PulsePoint(state.AttackPoint, state.AttackDirection, pattern.PulseAt(state.ActionTime));
+            if (pattern.Kind == AlienAttackKind.SlimePulse) centre = (Vector3)state.AttackOrigin - Vector3.up * (.56f * state.Scale);
             centre.y += .07f;
             int patches = pattern.Kind == AlienAttackKind.RootSpikes ? 3 : 1;
             Vector3 right = Vector3.Cross(Vector3.up, state.AttackDirection).normalized;
@@ -77,19 +78,21 @@ namespace Unity.MP_FPS
             if (direction.sqrMagnitude < .01f) direction = Vector3.forward;
             Vector3 right = Vector3.Cross(Vector3.up, direction).normalized;
             int patches = pattern.Kind == AlienAttackKind.RootSpikes ? 3 : 1;
+            int rows = pattern.Kind == AlienAttackKind.RootSpikes ? pattern.Pulses : 1;
             if (m_WarningSequence == state.AttackSequence && m_Warnings[0])
             {
-                for (int i = 0; i < patches; i++) m_Warnings[i].enabled = true;
-                if (spit && m_Warnings[3]) m_Warnings[3].enabled = true;
+                for (int row = 0; row < rows; row++) for (int patch = 0; patch < patches; patch++)
+                    m_Warnings[row * patches + patch].enabled = state.Action == AlienAction.Windup || row >= pattern.PulseAt(state.ActionTime);
+                if (spit && m_Warnings[9]) m_Warnings[9].enabled = true;
                 return;
             }
             m_WarningSequence = state.AttackSequence;
-            for (int patch = 0; patch < patches; patch++)
+            for (int row = 0; row < rows; row++) for (int patch = 0; patch < patches; patch++)
             {
-                var line = Warning(patch);
-                const int segments = 40;
+                var line = Warning(row * patches + patch);
+                int segments = sweep ? 40 : 24;
                 line.positionCount = sweep ? segments + 3 : segments + 1;
-                Vector3 point = centre + right * (patch == 0 ? 0 : patch == 1 ? pattern.Radius * 2.7f : -pattern.Radius * 2.7f);
+                Vector3 point = pattern.PulsePoint(centre, direction, row) + right * (patch == 0 ? 0 : patch == 1 ? pattern.Radius * 2.7f : -pattern.Radius * 2.7f);
                 if (sweep) line.SetPosition(0, WarningGround(point));
                 for (int i = 0; i <= segments; i++)
                 {
@@ -98,10 +101,11 @@ namespace Unity.MP_FPS
                     line.SetPosition(i + (sweep ? 1 : 0), spit ? vertex : WarningGround(vertex));
                 }
                 if (sweep) line.SetPosition(segments + 2, WarningGround(point));
+                line.enabled = state.Action == AlienAction.Windup || row >= pattern.PulseAt(state.ActionTime);
             }
             if (spit)
             {
-                var path = Warning(3); path.positionCount = 25;
+                var path = Warning(9); path.positionCount = 25;
                 float duration = AlienMucusTrajectory.FlightTime(state.AttackOrigin, state.AttackPoint, m_Profile.MucusSpeed);
                 for (int i = 0; i < 25; i++) path.SetPosition(i,
                     AlienMucusTrajectory.Point(state.AttackOrigin, state.AttackPoint, m_Profile.MucusSpeed, duration * i / 24, state.MucusLowArc));
@@ -139,20 +143,17 @@ namespace Unity.MP_FPS
             if (!m_Impacts[index])
             {
                 var go = new GameObject(roots ? "Erupting root spike" : pattern.Kind == AlienAttackKind.TentacleSlam ? "Impact residue" : "Acid impact pool"); go.transform.SetParent(m_Root.transform, false);
-                var filter = go.AddComponent<MeshFilter>(); go.AddComponent<MeshRenderer>().sharedMaterial = m_ImpactMaterial;
-                if (roots)
-                {
-                    if (!m_Spike) m_Spike = BuildSpike();
-                    filter.sharedMesh = m_Spike;
-                }
-                else
-                {
-                    if (!m_Residue) m_Residue = BuildResidue();
-                    filter.sharedMesh = m_Residue;
-                }
+                m_ImpactFilters[index] = go.AddComponent<MeshFilter>(); go.AddComponent<MeshRenderer>().sharedMaterial = m_ImpactMaterial;
                 m_Impacts[index] = go.transform;
             }
-            var impact = m_Impacts[index]; impact.gameObject.SetActive(true); impact.position = point;
+            // Root bosses can now alternate spikes and a radial pulse. Refresh the
+            // pooled impact mesh instead of retaining the previous skill's shape.
+            if (roots && !m_Spike) m_Spike = BuildSpike();
+            if (!roots && !m_Residue) m_Residue = BuildResidue();
+            var impact = m_Impacts[index];
+            m_ImpactFilters[index].sharedMesh = roots ? m_Spike : m_Residue;
+            m_ImpactMaterial.SetFloat("_Smoothness", roots ? .45f : .85f);
+            impact.gameObject.SetActive(true); impact.position = point;
             if (roots)
             {
                 float pulse = 1 - Mathf.Clamp01(age / .4f);
@@ -224,7 +225,7 @@ namespace Unity.MP_FPS
                 {
                     m_LastPulse = pulse;
                     Vector3 point = pattern.Kind == AlienAttackKind.AcidSpit || pattern.Kind == AlienAttackKind.RootSpikes || pattern.Kind == AlienAttackKind.TentacleSlam ?
-                        (Vector3)state.AttackPoint + Vector3.up*.15f : socket;
+                        pattern.PulsePoint(state.AttackPoint, direction, pulse) + Vector3.up*.15f : socket;
                     if (fresh) { m_Droplets.transform.position=point; m_Droplets.Play(); m_Droplets.Emit(pattern.Kind==AlienAttackKind.TentacleSlam ? 32 : 16); }
                 }
             }

@@ -46,7 +46,7 @@ namespace Unity.MP_FPS
                     case AlienAttackKind.AcidSpit:
                     case AlienAttackKind.RootSpikes:
                     case AlienAttackKind.TentacleSlam:
-                        Play(Cue.AttackImpact, state.AttackPoint, m_Tier == AlienThreatTier.Boss ? 1.1f : .8f, library?.AlienImpact, true);
+                        Play(Cue.AttackImpact, pattern.PulsePoint(state.AttackPoint, state.AttackDirection, pulse), m_Tier == AlienThreatTier.Boss ? 1.1f : .8f, library?.AlienImpact, true);
                         break;
                     case AlienAttackKind.SlimePulse:
                         Play(Cue.AttackImpact, state.AttackOrigin, .75f, library?.AlienWetMove);

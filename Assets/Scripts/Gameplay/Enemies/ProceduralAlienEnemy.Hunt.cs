@@ -56,13 +56,21 @@ namespace Unity.MP_FPS
         private Vector3 HuntGoal(Vector3 target, out bool pause)
         {
             pause = false;
-            if (!m_Visible || profile.Boss || m_Clock < m_DirectUntil) return target;
+            if (!m_Visible || m_Clock < m_DirectUntil) return target;
             Vector3 offset = Vector3.ProjectOnPlane(target - transform.position, Vector3.up);
             float distance = offset.magnitude;
             if (distance < .01f) return target;
             Vector3 toward = offset / distance;
             float side = (GhostGameObject.Owner & 1) == 0 ? 1 : -1;
             Vector3 flank = Vector3.Cross(Vector3.up, toward) * side * profile.FlankDistance;
+            if (profile.Boss)
+            {
+                float preferred = Mathf.Max(profile.GroundBodyRadius(m_Body.Scale) + 2, profile.BossPreferredDistance * .8f);
+                if (distance < preferred * .65f) return transform.position - toward * (preferred - distance);
+                if (distance <= preferred * 1.15f && m_Clock < m_NextAttack)
+                { pause = true; return transform.position; }
+                return target - toward * preferred;
+            }
             if (profile.Approach == AlienApproach.KeepDistance)
             {
                 if (distance < profile.PreferredDistance * .7f)
