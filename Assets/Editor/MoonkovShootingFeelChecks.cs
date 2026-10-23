@@ -23,6 +23,7 @@ public static class MoonkovShootingFeelChecks
         CheckAimSensitivity();
         CheckReleaseContinuity();
         CheckRecoil();
+        CheckSustainedRecoil();
         Debug.Log("Shooting feel checks passed: buffered press/expiry/cancellation, reload handoff, burst rearm, " +
             "independent draw time, slot recovery, 30/60/144 Hz and jitter cadence, hitch cap, zoom sensitivity, micro-aim, recoil compensation/settling/aim alignment and release continuity.");
     }
@@ -51,6 +52,34 @@ public static class MoonkovShootingFeelChecks
         Require(pitch >= -3.001f && recoil.Remaining <= 3.001f, "Sustained recoil exceeded bounded travel.");
         recoil.Reset(); float rest = pitch; recoil.Apply(ref pitch, 0, 1);
         Require(pitch == rest && recoil.Remaining == 0, "Reset left a delayed kick.");
+    }
+
+    public static void CheckSustainedRecoil()
+    {
+        foreach (float interval in new[] { .05f, .075f, .1f, .16f })
+        foreach (float frame in new[] { 1f / 30, 1f / 60, 1f / 144 })
+        foreach (float zoom in new[] { 1f, 6f })
+        {
+            var recoil = new HaloRecoilResponse(); float pitch = 0;
+            for (int shot = 0; shot < 40; shot++)
+            {
+                float before = pitch;
+                recoil.Kick(DollSingerWeapons.Halo, zoom, interval);
+                float firstStep = Mathf.Min(frame, interval);
+                recoil.Apply(ref pitch, 0, firstStep);
+                Require(before - pitch > .02f / zoom,
+                    $"Sustained fire lost its kick: shot={shot}, interval={interval}, frame={frame}, zoom={zoom}.");
+                for (float remaining = interval - firstStep; remaining > .000001f;)
+                {
+                    float step = Mathf.Min(frame, remaining);
+                    recoil.Apply(ref pitch, 0, step); remaining -= step;
+                }
+                Require(pitch >= -3.001f / zoom && pitch <= 0,
+                    "Sustained settling escaped its bounded aim travel.");
+            }
+            for (int i = 0; i < Mathf.CeilToInt(.7f / frame); i++) recoil.Apply(ref pitch, 0, frame);
+            Require(Mathf.Abs(pitch) < .001f, "Long burst did not settle after trigger release.");
+        }
     }
 
     public static void CheckReleaseContinuity()

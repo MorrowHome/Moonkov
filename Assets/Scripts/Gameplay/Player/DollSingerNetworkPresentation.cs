@@ -319,12 +319,17 @@ namespace Unity.MP_FPS
             if (m_Linked && Role != MultiplayerRole.Server)
             {
                 // The shot RPC may precede the equipment snapshot on an observer.
-                if (ReadGhostComponentData<PredictedPlayerGhost>().EquippedWeaponID != weaponId) return;
+                var shotState = ReadGhostComponentData<PredictedPlayerGhost>();
+                if (shotState.EquippedWeaponID != weaponId) return;
                 if (shotTick != 0 && !MoonkovPlayerAudio.NewTick(shotTick, ref m_LastShotEffectTick)) return;
+                var weapon = WeaponManager.Instance.WeaponRegistry.GetWeaponData(weaponId);
                 if (Role == MultiplayerRole.ClientOwned && m_OwnedAlive && m_OwnedAiming &&
                     m_Input.CanReadPlayerInput && !m_Input.LightAdjusting)
-                    m_Recoil.Kick(weaponId, m_View.CurrentAimMagnification);
-                var weapon = WeaponManager.Instance.WeaponRegistry.GetWeaponData(weaponId);
+                {
+                    float interval = weapon == null ? .35f :
+                        (weapon.BurstCount > 1 ? weapon.BurstInterval : weapon.CooldownInMs) * RaidHealth.HandlingMultiplier(shotState);
+                    m_Recoil.Kick(weaponId, m_View.CurrentAimMagnification, interval);
+                }
                 if (!m_WeaponFeedback) m_WeaponFeedback = Resources.Load<RifleFeedbackLibrary>("Moonkov/RifleFeedback");
                 var profile = m_WeaponFeedback?.ForWeapon(weaponId);
                 if (weaponId == DollSingerWeapons.Shotgun && profile != null)
