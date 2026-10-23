@@ -125,7 +125,7 @@ namespace Unity.MP_FPS.Client
                     : global::Unity.MP_FPS.Inventory.InventoryCatalog.Get(item.Code).Name);
                 row.Q<Label>("equipmentState").text = item == null ? "—" : "✓";
                 if (item == null) continue;
-                var art = new StashItemArt(ContainerInventoryView.Art(item.Code));
+                var art = new StashItemArt(item.Code);
                 art.style.flexGrow = 1;
                 row.Q("equipmentArt").Add(art);
             }

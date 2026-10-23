@@ -74,7 +74,7 @@ namespace Unity.MP_FPS.Client
         private static VisualElement ModuleRow(VisualElement parent,string code,bool installed)
         {
             var row=TerminalLayout.Clone("Components/ModuleOption","moduleOption"); parent.Add(row);
-            row.Q("moduleArt").Add(new StashItemArt(Art(code)));
+            row.Q("moduleArt").Add(new StashItemArt(code));
             MoonkovLocalization.Set(row.Q<Label>("moduleName"),InventoryCatalog.Get(code).Name);
             MoonkovLocalization.Set(row.Q<Label>("moduleDescription"),HaloModules.Description(code));
             MoonkovLocalization.Set(row.Q<Label>("moduleState"),installed ? "INSTALLED" : "OWNED / NOT INSTALLED");

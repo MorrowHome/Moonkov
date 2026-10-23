@@ -257,15 +257,15 @@ public static class MoonkovRaidActionChecks
         }
     }
     private delegate void BagHandler(ref ServerGameSystem system,ref SystemState state,EntityCommandBuffer commands,Entity connection);
-    private static unsafe RaidGroundMarkerRpc[] SendBags(World world,SystemHandle handle,Entity connection,RaidDeathBagClientState client)
+    private static unsafe RaidGroundItemMarkerRpc[] SendBags(World world,SystemHandle handle,Entity connection,RaidDeathBagClientState client)
     {
         ref var system=ref world.Unmanaged.GetUnsafeSystemRef<ServerGameSystem>(handle);
         ref var state=ref world.Unmanaged.ResolveSystemStateRef(handle);
         using var ecb=new EntityCommandBuffer(Allocator.Temp);
         ((BagHandler)typeof(ServerGameSystem).GetMethod("SendDeathBags",BindingFlags.Instance|BindingFlags.NonPublic).CreateDelegate(typeof(BagHandler)))(ref system,ref state,ecb,connection);
         ecb.Playback(world.EntityManager);
-        using var query=world.EntityManager.CreateEntityQuery(typeof(RaidGroundMarkerRpc));
-        using var updates=query.ToComponentDataArray<RaidGroundMarkerRpc>(Allocator.Temp);
+        using var query=world.EntityManager.CreateEntityQuery(typeof(RaidGroundItemMarkerRpc));
+        using var updates=query.ToComponentDataArray<RaidGroundItemMarkerRpc>(Allocator.Temp);
         var result=updates.ToArray();foreach(var update in result)client.Receive(update);
         world.EntityManager.DestroyEntity(query);return result;
     }
@@ -284,16 +284,16 @@ public static class MoonkovRaidActionChecks
         Check(loot.DeathBags.ContainsKey(id),"Empty drop expired before grace boundary");
         loot.RecycleEmptyDrops(10031,held);
         Check(!loot.DeathBags.ContainsKey(id) && !loot.Containers.ContainsKey(id),"Empty drop remains registered");
-        var update=new RaidGroundMarkerRpc {Sequence=1,LootId=id,Version=2,CharacterIndex=RaidLootContainers.DroppedItemCharacterIndex,Rotation=quaternion.identity};
+        var update=new RaidGroundItemMarkerRpc {ItemCode=new FixedString64Bytes("oxygen_reserve"),Sequence=1,LootId=id,Version=2,CharacterIndex=RaidLootContainers.DroppedItemCharacterIndex,Rotation=quaternion.identity};
         var client=new RaidDeathBagClientState();client.Receive(RoundTrip(update));
-        Check(client.Bags.ContainsKey(id),"Ground marker protocol lost active bag");
+        Check(client.Bags.ContainsKey(id) && client.ItemCodes[id]=="oxygen_reserve","Ground marker protocol lost item model identity");
         update.Sequence=3;update.Removed=true;client.Receive(RoundTrip(update));
         update.Sequence=2;update.Removed=false;client.Receive(update);
-        Check(!client.Bags.ContainsKey(id),"Out-of-order update resurrected removed marker");
+        Check(!client.Bags.ContainsKey(id) && !client.ItemCodes.ContainsKey(id),"Out-of-order update resurrected removed marker or item identity");
         update.Sequence=4;client.Receive(update);
         Check(client.Bags.ContainsKey(id),"Interest re-entry rejected same graph version");
         update.Sequence=5;update.Removed=true;client.Receive(update);
-        for(uint sequence=6;sequence<5006;sequence++)client.Receive(new RaidGroundMarkerRpc {Sequence=sequence,LootId=(int)sequence+100,Removed=true,Deleted=true});
+        for(uint sequence=6;sequence<5006;sequence++)client.Receive(new RaidGroundItemMarkerRpc {Sequence=sequence,LootId=(int)sequence+100,Removed=true,Deleted=true});
         update.Sequence=1;client.Receive(update);
         var sequences=(System.Collections.IDictionary)typeof(RaidDeathBagClientState).GetField("m_Sequences",BindingFlags.NonPublic|BindingFlags.Instance).GetValue(client);
         Check(sequences.Count<=4096 && !client.Bags.ContainsKey(id),"Client tombstones grow or old packet resurrects marker");

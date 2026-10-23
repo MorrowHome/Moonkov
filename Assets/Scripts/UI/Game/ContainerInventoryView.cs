@@ -217,7 +217,7 @@ namespace Unity.MP_FPS.Client
             {
                 var item = m_Graph?.Equipped(pair.Key.ToString()); var button = pair.Value; var art = button.Q<VisualElement>("art"); art.Clear();
                 MoonkovLocalization.Set(button.Q<Label>("item"), m_Graph == null ? "LOADING" : item == null ? "EMPTY" : InventoryCatalog.Get(item.Code).Name);
-                if (item != null) { var icon = new StashItemArt(Art(item.Code)); icon.AddToClassList("inventory-equipment-icon"); art.Add(icon); m_Tiles[item.Id] = button; }
+                if (item != null) { var icon = new StashItemArt(item.Code); icon.AddToClassList("inventory-equipment-icon"); art.Add(icon); m_Tiles[item.Id] = button; }
                 button.tooltip = MoonkovLocalization.Text(SlotLabel(pair.Key.ToString())) + " / " + (item == null ? MoonkovLocalization.Text("EMPTY") : MoonkovLocalization.Text(InventoryCatalog.Get(item.Code).Name) + "\n" + MoonkovItemPresentation.ItemState(item));
                 button.EnableInClassList("inventory-equipped", item != null);
                 button.EnableInClassList("inventory-selected", item != null && item.Id == m_SelectedItemId);
@@ -281,7 +281,7 @@ namespace Unity.MP_FPS.Client
                 {
                     var captured = entry;
                     var tile = (Button)TerminalLayout.Clone(m_ItemTemplate, "inventoryItem"); tile.name="inventoryItem"+entry.Id;
-                    var icon = new StashItemArt(Art(entry.Code)); icon.AddToClassList("inventory-item-art"); tile.Insert(1, icon);
+                    var icon = new StashItemArt(entry.Code); icon.AddToClassList("inventory-item-art"); tile.Insert(1, icon);
                     var itemDef = InventoryCatalog.Get(entry.Code); MoonkovLocalization.Set(tile.Q<Label>("itemLabel"), MoonkovLocalization.Text(itemDef.Name).Split(' ')[0].ToUpperInvariant());
                     MoonkovLocalization.Set(tile.Q<Label>("quantity"), itemDef.Container ? "OPEN ↗" : BatteryEnergy.IsCell(entry) ? $"{BatteryEnergy.Stored(entry)}E" : entry.Quantity.ToString());
                     tile.EnableInClassList("inventory-selected", entry.Id == m_SelectedItemId);
@@ -416,7 +416,7 @@ namespace Unity.MP_FPS.Client
             window.AddToClassList("archive-inspection-window");
             var content = TerminalLayout.Clone("Components/ItemInspection", "itemInspection");
             window.Add(content);
-            var art = new StashItemArt(Art(item.Code)); art.style.flexGrow = 1;
+            var art = new StashItemArt(item.Code); art.style.flexGrow = 1;
             content.Q("inspectionArt").Add(art);
             MoonkovLocalization.Set(content.Q<Label>("inspectionTitle"), definition.Name);
             MoonkovLocalization.Set(content.Q<Label>("inspectionStats"), "{0} · ×{1} · {2:0.##} KG TOTAL · {3} · {4}",
@@ -538,7 +538,7 @@ namespace Unity.MP_FPS.Client
                 if (!m_Active)
                 {
                     m_Active=true; target.style.opacity=.4f; var ghost=m_View.m_Ghost; ghost.Clear();
-                    var art=new StashItemArt(Art(m_Item.Code)); art.AddToClassList("inventory-item-art"); ghost.Add(art); ghost.style.display=DisplayStyle.Flex; ghost.BringToFront();
+                    var art=new StashItemArt(m_Item.Code); art.AddToClassList("inventory-item-art"); ghost.Add(art); ghost.style.display=DisplayStyle.Flex; ghost.BringToFront();
                     m_Scroll=target.schedule.Execute(Scroll).Every(16);
                 }
                 Preview(); evt.StopImmediatePropagation();

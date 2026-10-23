@@ -1,0 +1,322 @@
+[
+  {
+    "code": "dust",
+    "name": "Moon dust",
+    "kind": "Material"
+  },
+  {
+    "code": "alien_tissue",
+    "name": "Sealed alien tissue",
+    "kind": "Material"
+  },
+  {
+    "code": "alien_core",
+    "name": "Alien boss nucleus",
+    "kind": "Material"
+  },
+  {
+    "code": "alien_raw_meat",
+    "name": "Raw alien meat",
+    "kind": "Food"
+  },
+  {
+    "code": "alien_neural_core",
+    "name": "Rare alien neural organ",
+    "kind": "Food"
+  },
+  {
+    "code": "alloy",
+    "name": "Lunar alloy",
+    "kind": "Material"
+  },
+  {
+    "code": "cells",
+    "name": "Energy cell",
+    "kind": "Cell"
+  },
+  {
+    "code": "energy_grenade",
+    "name": "E-01 Energy grenade",
+    "kind": "Throwable"
+  },
+  {
+    "code": "vitality_shot",
+    "name": "Vitality shot",
+    "kind": "Throwable"
+  },
+  {
+    "code": "stamina_shot",
+    "name": "Stamina shot",
+    "kind": "Throwable"
+  },
+  {
+    "code": "antidote_shot",
+    "name": "Antidote shot",
+    "kind": "Throwable"
+  },
+  {
+    "code": "dynamite_bundle",
+    "name": "Dynamite bundle",
+    "kind": "Throwable"
+  },
+  {
+    "code": "frag_bomb",
+    "name": "Fragmentation bomb",
+    "kind": "Throwable"
+  },
+  {
+    "code": "fire_bomb",
+    "name": "Fire bomb",
+    "kind": "Throwable"
+  },
+  {
+    "code": "smoke_grenade",
+    "name": "Smoke grenade",
+    "kind": "Throwable"
+  },
+  {
+    "code": "choke_bomb",
+    "name": "Choke bomb",
+    "kind": "Throwable"
+  },
+  {
+    "code": "alert_trip_mine",
+    "name": "Alert trip mine",
+    "kind": "Throwable"
+  },
+  {
+    "code": "concertina_trip_mine",
+    "name": "Concertina trip mine",
+    "kind": "Throwable"
+  },
+  {
+    "code": "poison_trip_mine",
+    "name": "Poison trip mine",
+    "kind": "Throwable"
+  },
+  {
+    "code": "ammo_box",
+    "name": "Energy supply box",
+    "kind": "Throwable"
+  },
+  {
+    "code": "medkit",
+    "name": "M-40 Medical injector",
+    "kind": "Medical"
+  },
+  {
+    "code": "ration",
+    "name": "Expedition ration",
+    "kind": "Food"
+  },
+  {
+    "code": "water",
+    "name": "Sealed drinking water",
+    "kind": "Drink"
+  },
+  {
+    "code": "oxygen_canister",
+    "name": "O-40 Emergency oxygen canister",
+    "kind": "Oxygen"
+  },
+  {
+    "code": "med_gel",
+    "name": "Sealed medical gel",
+    "kind": "Medical"
+  },
+  {
+    "code": "trauma_kit",
+    "name": "Field trauma kit",
+    "kind": "Medical"
+  },
+  {
+    "code": "energy_gel",
+    "name": "Energy gel",
+    "kind": "Food"
+  },
+  {
+    "code": "protein_bar",
+    "name": "Protein bar",
+    "kind": "Food"
+  },
+  {
+    "code": "electrolyte",
+    "name": "Electrolyte pouch",
+    "kind": "Drink"
+  },
+  {
+    "code": "oxygen_reserve",
+    "name": "O-80 Reserve oxygen cylinder",
+    "kind": "Oxygen"
+  },
+  {
+    "code": "circuit_board",
+    "name": "Control circuit board",
+    "kind": "Material"
+  },
+  {
+    "code": "copper_coil",
+    "name": "Copper induction coil",
+    "kind": "Material"
+  },
+  {
+    "code": "ceramic_plate",
+    "name": "Technical ceramic plate",
+    "kind": "Material"
+  },
+  {
+    "code": "optical_sensor",
+    "name": "Optical sensor",
+    "kind": "Material"
+  },
+  {
+    "code": "data_drive",
+    "name": "Encrypted data drive",
+    "kind": "Material"
+  },
+  {
+    "code": "mooncore_fragment",
+    "name": "Mooncore fragment",
+    "kind": "Material"
+  },
+  {
+    "code": "mc00_archive_drive",
+    "name": "MC00 \u4e8b\u6545\u6863\u6848\u76d8",
+    "kind": "Material"
+  },
+  {
+    "code": "helium3_sample",
+    "name": "Helium-3 sample",
+    "kind": "Material"
+  },
+  {
+    "code": "quantum_core",
+    "name": "Quantum processor",
+    "kind": "Material"
+  },
+  {
+    "code": "black_box",
+    "name": "Survey black box",
+    "kind": "Material"
+  },
+  {
+    "code": "helmet",
+    "name": "L-01 Standard life-support collar",
+    "kind": "Helmet"
+  },
+  {
+    "code": "energy_head_dome",
+    "name": "L-02 Neko life-support collar",
+    "kind": "Helmet"
+  },
+  {
+    "code": "energy_shield_generator",
+    "name": "S-100 Energy shield generator",
+    "kind": "Shield"
+  },
+  {
+    "code": "energy_sword",
+    "name": "Energy sword",
+    "kind": "Melee"
+  },
+  {
+    "code": "dagger",
+    "name": "Dagger",
+    "kind": "Melee"
+  },
+  {
+    "code": "rig",
+    "name": "R-04 Chest rig",
+    "kind": "Rig"
+  },
+  {
+    "code": "backpack",
+    "name": "B-08 Expedition subspace pack",
+    "kind": "Backpack"
+  },
+  {
+    "code": "secure_case",
+    "name": "S-04 \u4e2a\u4eba\u4fdd\u9669\u7bb1",
+    "kind": "SecureContainer"
+  },
+  {
+    "code": "survey_compass",
+    "name": "C-01 \u6708\u9762\u6307\u5357\u9488",
+    "kind": "SpecialEquipment"
+  },
+  {
+    "code": "laser_rangefinder",
+    "name": "R-500 \u6fc0\u5149\u6d4b\u8ddd\u4eea",
+    "kind": "SpecialEquipment"
+  },
+  {
+    "code": "small_pack",
+    "name": "B-04 Scout subspace pack",
+    "kind": "Backpack"
+  },
+  {
+    "code": "scout_rig",
+    "name": "R-02 Scout rig",
+    "kind": "Rig"
+  },
+  {
+    "code": "field_rig",
+    "name": "R-06 Field rig",
+    "kind": "Rig"
+  },
+  {
+    "code": "sling_pack",
+    "name": "B-03 Light subspace pack",
+    "kind": "Backpack"
+  },
+  {
+    "code": "cargo_pack",
+    "name": "B-12 Cargo subspace pack",
+    "kind": "Backpack"
+  },
+  {
+    "code": "alien_silk_gland",
+    "name": "Spider silk gland",
+    "kind": "Organic"
+  },
+  {
+    "code": "alien_adrenal_gland",
+    "name": "Snake adrenal gland",
+    "kind": "Organic"
+  },
+  {
+    "code": "alien_nutrient_sac",
+    "name": "Caterpillar nutrient sac",
+    "kind": "Organic"
+  },
+  {
+    "code": "alien_contractile_heart",
+    "name": "Tentacle contractile heart",
+    "kind": "Organic"
+  },
+  {
+    "code": "alien_venom_gland",
+    "name": "Centipede venom gland",
+    "kind": "Organic"
+  },
+  {
+    "code": "alien_regen_sac",
+    "name": "Leech regeneration sac",
+    "kind": "Organic"
+  },
+  {
+    "code": "alien_gel_bladder",
+    "name": "Slime gel bladder",
+    "kind": "Organic"
+  },
+  {
+    "code": "alien_root_nodule",
+    "name": "Root oxygen nodule",
+    "kind": "Organic"
+  },
+  {
+    "code": "alien_neural_ganglion",
+    "name": "Facehugger neural ganglion",
+    "kind": "Organic"
+  }
+]
