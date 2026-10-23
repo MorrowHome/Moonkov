@@ -14,6 +14,29 @@ using UnityEngine.UIElements;
 public static class MoonkovLootChecks
 {
     private static void Require(bool value,string name) {if(!value)throw new Exception(name);}
+    [MenuItem("Tools/Moonkov/Check Full Map Loot Capacity")]
+    public static void CheckFullMapCapacity()
+    {
+        if(EditorApplication.isPlayingOrWillChangePlaymode)throw new InvalidOperationException("Run in Edit mode.");
+        var containers=new RaidLootContainers();
+        containers.Initialize(64);
+        int bag=containers.Drop(InventoryGraph.Create(false),Unity.Mathematics.float3.zero);
+        Require(bag==64 && containers.Containers.Count==65 && containers.Containers[63].Validate()==InventoryError.None,
+            "Full-map caches overlap the first corpse or contain invalid inventory.");
+        var snapshot=new RaidSnapshotRpc {TakenMask=(1UL<<63)|(1UL<<32)|1UL};
+        var type=typeof(RaidSnapshotRpc).Assembly.GetTypes().Single(t=>t.IsValueType && typeof(IRpcCommandSerializer<RaidSnapshotRpc>).IsAssignableFrom(t));
+        var serializer=(IRpcCommandSerializer<RaidSnapshotRpc>)Activator.CreateInstance(type);
+        using var bytes=new NativeArray<byte>(1378,Allocator.Temp);
+        var writer=new DataStreamWriter(bytes);
+        serializer.Serialize(ref writer,new RpcSerializerState {CompressionModel=StreamCompressionModel.Default},snapshot);
+        var reader=new DataStreamReader(writer.AsNativeArray());
+        var decoded=default(RaidSnapshotRpc);
+        serializer.Deserialize(ref reader,new RpcDeserializerState {CompressionModel=StreamCompressionModel.Default},ref decoded);
+        Require(!writer.HasFailedWrites && decoded.TakenMask==snapshot.TakenMask,
+            "Generated raid snapshot RPC lost or aliased cache bits 0, 32 or 63.");
+        Debug.Log("Full-map loot capacity passed: 64 independent caches, first corpse ID 64, generated RPC preserves bits 0/32/63.");
+    }
+
     [MenuItem("Tools/Moonkov/Check Loot Containers")]
     public static void Run()
     {

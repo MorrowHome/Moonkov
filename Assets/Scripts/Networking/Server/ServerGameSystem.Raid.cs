@@ -25,7 +25,7 @@ namespace Unity.MP_FPS
             loot.ValueRW.TakenMask=0;
             foreach(var cache in caches.Containers)
                 if(cache.Key<RaidLootContainers.FirstDeathBagId && !cache.Value.Items.Exists(i=>i.Parent==Inventory.LootInventoryExchange.Root))
-                    loot.ValueRW.TakenMask|=1u<<cache.Key;
+                    loot.ValueRW.TakenMask|=1UL<<cache.Key;
 
             foreach (var (request, received, entity) in SystemAPI.Query<RefRO<RaidPickupRpc>, RefRO<ReceiveRpcCommandRequest>>().WithEntityAccess())
             {

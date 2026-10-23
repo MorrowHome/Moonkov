@@ -102,9 +102,9 @@ namespace Unity.MP_FPS
 
         private void OnEnable()
         {
-            if (m_LootPositions == null || m_LootPositions.Length == 0 || m_LootPositions.Length > 24)
+            if (m_LootPositions == null || m_LootPositions.Length == 0 || m_LootPositions.Length > RaidLootContainers.FirstDeathBagId)
             {
-                Debug.LogError("Moon raid needs between 1 and 24 authored loot points.", this);
+                Debug.LogError("Moon raid needs between 1 and 64 authored loot points.", this);
                 return;
             }
             Active = this;
@@ -169,7 +169,7 @@ namespace Unity.MP_FPS
                 m_ExtractionVisuals.SetActive(!(BountyClashArenaSettings.Active && BountyClashArenaSettings.Active.ModeActive));
         }
 
-        public void ShowLoot(uint takenMask, bool hasSnapshot)
+        public void ShowLoot(ulong takenMask, bool hasSnapshot)
         {
             if (m_Markers == null) return;
             for (int i = 0; i < m_Markers.Length; i++)
@@ -178,7 +178,7 @@ namespace Unity.MP_FPS
                 var arena=BountyClashArenaSettings.Active;
                 if(visible && arena && arena.ModeActive)visible=arena.Contains(m_LootPositions[i]);
                 if (m_Markers[i].activeSelf != visible) m_Markers[i].SetActive(visible);
-                if (hasSnapshot) m_CacheVisuals.SetEmpty(i, (takenMask & (1u << i)) != 0);
+                if (hasSnapshot) m_CacheVisuals.SetEmpty(i, (takenMask & (1UL << i)) != 0);
             }
         }
         private readonly System.Collections.Generic.Dictionary<int,string> m_DropVisualCodes = new System.Collections.Generic.Dictionary<int,string>();

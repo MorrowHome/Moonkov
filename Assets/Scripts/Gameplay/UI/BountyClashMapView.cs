@@ -21,7 +21,7 @@ namespace Unity.MP_FPS
         private Vector3[] m_Supplies;
         private Vector3 m_Exit;
         private Vector2 m_SupplyMin, m_SupplyMax;
-        private uint m_TakenMask;
+        private ulong m_TakenMask;
         private readonly List<ClashParticipantRpc> m_Friends = new List<ClashParticipantRpc>(3);
         private readonly Label m_ExitA, m_ExitB, m_You;
 
@@ -68,7 +68,7 @@ namespace Unity.MP_FPS
                 if (row.OwnTeam && row.TeamId == value.LocalTeamId && !row.IsLocal && (row.Life == ClashLife.Alive || row.Life == ClashLife.Downed)) m_Friends.Add(row);
             Changed();
         }
-        public void PresentExpedition(MoonRaidMap map, Vector3 local, Vector3 forward, uint takenMask)
+        public void PresentExpedition(MoonRaidMap map, Vector3 local, Vector3 forward, ulong takenMask)
         {
             bool reset = !m_Expedition || m_ExpeditionSource != map;
             m_Expedition = true; m_ExpeditionSource = map; m_Snapshot = default; m_Friends.Clear();
@@ -163,8 +163,8 @@ namespace Unity.MP_FPS
             p.strokeColor = new Color(.6f, .65f, .72f, .65f); p.BeginPath(); p.Arc(ProjectXZ(m_BoundsCenter), m_Radius * Scale, Angle.Degrees(0), Angle.Degrees(360)); p.Stroke();
             if (m_Expedition)
             {
-                for (int i = 0; i < m_Supplies.Length && i < 32; i++)
-                { var point = Project(m_Supplies[i]); if (Inside(point)) Diamond(p, point, 4, (m_TakenMask & (1u << i)) == 0 ? ink : new Color(.4f, .44f, .5f)); }
+                for (int i = 0; i < m_Supplies.Length && i < RaidLootContainers.FirstDeathBagId; i++)
+                { var point = Project(m_Supplies[i]); if (Inside(point)) Diamond(p, point, 4, (m_TakenMask & (1UL << i)) == 0 ? ink : new Color(.4f, .44f, .5f)); }
                 if (Inside(Project(m_Exit))) Dot(p, Project(m_Exit), 6, blue);
             }
             else

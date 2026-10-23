@@ -45,7 +45,7 @@ namespace Unity.MP_FPS
         public bool Initialized { get; private set; }
         public object MapIdentity { get; private set; }
         public double NextRefillCheck;
-        public const int FirstDeathBagId=24;
+        public const int FirstDeathBagId=64;
         public const int DroppedItemCharacterIndex=-2;
         public const double EmptyDropGraceSeconds=10;
         public const float DropInterestRadius=80;

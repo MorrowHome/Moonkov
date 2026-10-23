@@ -460,7 +460,7 @@ namespace Unity.MP_FPS
             m_RefreshTimer = 0.1f;
             RefreshHealth();
             bool deathBag=nearest>=RaidLootContainers.FirstDeathBagId;
-            bool empty=deathBag ? deathBags.Bags[nearest].Empty : nearest>=0 && (m_Snapshot.TakenMask & (1u<<nearest))!=0;
+            bool empty=deathBag ? deathBags.Bags[nearest].Empty : nearest>=0 && (m_Snapshot.TakenMask & (1UL<<nearest))!=0;
             bool alien=deathBag && deathBags.Bags[nearest].CharacterIndex==-1;
             RefreshInteraction(nearest, distance, deathBag, empty, interactionVisible && !m_AirlockPrompt.HasSelection,alien,IsDroppedLoot(nearest));
             if (clash)

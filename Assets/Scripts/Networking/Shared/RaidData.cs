@@ -28,8 +28,8 @@ namespace Unity.MP_FPS
 
     public struct RaidLootWorld : IComponentData
     {
-        public uint TakenMask;
-        public FixedList128Bytes<float> RespawnTimers;
+        public ulong TakenMask;
+        public FixedList512Bytes<float> RespawnTimers;
     }
 
     public struct RaidPickupRpc : IRpcCommand
@@ -54,7 +54,7 @@ namespace Unity.MP_FPS
         public RaidLoadoutError LoadoutError;
         public FixedString64Bytes CellStackId;
         public float TimeLeft, ExtractionRemaining;
-        public uint TakenMask;
+        public ulong TakenMask;
     }
 
     public struct RaidClientState : IComponentData { public RaidSnapshotRpc Snapshot; }

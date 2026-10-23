@@ -22,7 +22,7 @@ namespace Unity.MP_FPS
         private MoonRaidMap m_Map;
         private Vector3 m_Position, m_CapturePosition;
         private Vector2 m_Forward = Vector2.up;
-        private uint m_TakenMask;
+        private ulong m_TakenMask;
         private float m_NextCapture;
         private bool m_HasCapture, m_RenderUnavailable;
 
@@ -43,7 +43,7 @@ namespace Unity.MP_FPS
             m_NextCapture = 0;
         }
 
-        public void Present(MoonRaidMap map, Vector3 position, Vector3 forward, uint takenMask)
+        public void Present(MoonRaidMap map, Vector3 position, Vector3 forward, ulong takenMask)
         {
             if (!map || m_Panel.panel == null) { Hide(); return; }
             m_Panel.style.display = DisplayStyle.Flex;
@@ -138,11 +138,11 @@ namespace Unity.MP_FPS
                 Line(painter, new Vector2(size.x * i / 4, 0), new Vector2(size.x * i / 4, size.y));
                 Line(painter, new Vector2(0, size.y * i / 4), new Vector2(size.x, size.y * i / 4));
             }
-            for (int i = 0; i < m_Map.LootPositions.Length && i < 32; i++)
+            for (int i = 0; i < m_Map.LootPositions.Length && i < RaidLootContainers.FirstDeathBagId; i++)
             {
                 Vector2 point = Project(m_Map.LootPositions[i], origin, size);
                 if (!Inside(point, size, 8)) continue;
-                bool empty = (m_TakenMask & (1u << i)) != 0;
+                bool empty = (m_TakenMask & (1UL << i)) != 0;
                 painter.strokeColor = empty ? new Color(.56f, .6f, .63f, .65f) : SupplyColor;
                 painter.fillColor = new Color(.06f, .07f, .08f, .9f);
                 painter.lineWidth = 1.5f;
