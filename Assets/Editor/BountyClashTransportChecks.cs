@@ -260,7 +260,7 @@ public static class BountyClashTransportChecks
             Send(b,new RaidActionCancelRpc{RaidId=firstRaid,RequestId=beforeRequest+1});for(int i=0;i<25;i++)Tick();
             Check(inventory.RequestId==beforeRequest,"previous-match inventory RPC rejected over UDP");
             Send(b,new RaidActionCancelRpc{RaidId=secondRaid,RequestId=beforeRequest+2});Pump(()=>inventory.RequestId==beforeRequest+2);
-            Check(All<RaidSnapshotRpc>(b).Any(e=>b.EntityManager.GetComponentData<RaidSnapshotRpc>(e).RaidId==secondRaid),"second-match personal snapshot arrives through transport");
+            Check(All<RaidSnapshotV2Rpc>(b).Any(e=>b.EntityManager.GetComponentData<RaidSnapshotV2Rpc>(e).RaidId==secondRaid),"second-match personal snapshot arrives through transport");
             s_Time+=901;Tick();Pump(()=>match.Phase==ClashPhase.Finished&&persistence.Saves.Count==0);
             return "PASS "+report.Count+" same-process real UDP / temporary HTTP+PG adapter checks";
         }

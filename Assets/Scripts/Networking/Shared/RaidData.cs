@@ -41,7 +41,9 @@ namespace Unity.MP_FPS
     public struct RaidDeployRpc : IRpcCommand { public int SettledRaidId, CarryCells; public uint RequestId; }
 
     // Reliable, connection-targeted snapshots include shared loot for observers and late joiners.
-    public struct RaidSnapshotRpc : IRpcCommand
+    // V2 widens TakenMask from uint to ulong. A distinct RPC identity also
+    // invalidates cached Burst executors compiled against the 32-bit layout.
+    public struct RaidSnapshotV2Rpc : IRpcCommand
     {
         public int RaidId;
         public uint Sequence;
@@ -57,7 +59,7 @@ namespace Unity.MP_FPS
         public ulong TakenMask;
     }
 
-    public struct RaidClientState : IComponentData { public RaidSnapshotRpc Snapshot; }
+    public struct RaidClientState : IComponentData { public RaidSnapshotV2Rpc Snapshot; }
 
     public static class RaidRules
     {

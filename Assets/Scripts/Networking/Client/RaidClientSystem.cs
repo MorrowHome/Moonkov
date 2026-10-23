@@ -41,7 +41,7 @@ namespace Unity.MP_FPS
                 EntityManager.GetComponentObject<RaidInventoryClientState>(m_State).Receive(chunk.ValueRO, RaidInventoryTransport.Decode);
                 ecb.DestroyEntity(entity);
             }
-            foreach (var (rpc, received, entity) in SystemAPI.Query<RefRO<RaidSnapshotRpc>, RefRW<ReceiveRpcCommandRequest>>().WithEntityAccess())
+            foreach (var (rpc, received, entity) in SystemAPI.Query<RefRO<RaidSnapshotV2Rpc>, RefRW<ReceiveRpcCommandRequest>>().WithEntityAccess())
             {
                 received.ValueRW.Consume();
                 var current = EntityManager.GetComponentData<RaidClientState>(m_State).Snapshot;

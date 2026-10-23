@@ -54,7 +54,7 @@ namespace Unity.MP_FPS
         private Button m_Deploy;
         private bool m_WasSettled;
         private float m_RefreshTimer;
-        private RaidSnapshotRpc m_Snapshot;
+        private RaidSnapshotV2Rpc m_Snapshot;
         private int m_DeployRequestedRaid;
         private uint m_DeployRequestedSequence;
         private uint m_DeployRequestId;

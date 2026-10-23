@@ -95,7 +95,7 @@ namespace Unity.MP_FPS
                     session.ValueRW.SnapshotTimer = 0.25f;
                     session.ValueRW.SnapshotSequence++;
                     var rpc = ecb.CreateEntity();
-                    ecb.AddComponent(rpc, new RaidSnapshotRpc
+                    ecb.AddComponent(rpc, new RaidSnapshotV2Rpc
                     {
                         RaidId = session.ValueRO.RaidId, Sequence = session.ValueRO.SnapshotSequence, Phase = session.ValueRO.Phase,
                         LoadoutRequestId = session.ValueRO.LoadoutRequestId,

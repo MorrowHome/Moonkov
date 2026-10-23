@@ -106,7 +106,7 @@ public static class BountyClashUIFixture
         if(graph.Validate()!=InventoryError.None)throw new InvalidOperationException("Invalid real inventory graph");
         s_Inventory=new RaidInventoryClientState { Graph=graph,RaidId=901,Sequence=1 };
         s_StateEntity=em.CreateEntity(typeof(RaidClientState),typeof(RaidMissionClientState));
-        em.SetComponentData(s_StateEntity,new RaidClientState{Snapshot=new RaidSnapshotRpc{RaidId=901,Sequence=1,Phase=RaidPhase.Active,TimeLeft=900,ExtractionRemaining=-1,SaveState=RaidSaveState.Saved}});
+        em.SetComponentData(s_StateEntity,new RaidClientState{Snapshot=new RaidSnapshotV2Rpc{RaidId=901,Sequence=1,Phase=RaidPhase.Active,TimeLeft=900,ExtractionRemaining=-1,SaveState=RaidSaveState.Saved}});
         em.AddComponentObject(s_StateEntity,s_Inventory);em.AddComponentObject(s_StateEntity,new RaidDeathBagClientState());
         s_Clash=new BountyClashClientState {Approved=true,ApprovalReceived=true};var clashEntity=em.CreateEntity();em.AddComponentObject(clashEntity,s_Clash);
         s_Player=em.CreateEntity(typeof(PredictedPlayerGhost),typeof(LocalTransform),typeof(GhostOwner),typeof(GhostOwnerIsLocal),typeof(GhostGameObjectGuid));

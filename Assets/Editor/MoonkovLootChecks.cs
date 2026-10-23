@@ -23,17 +23,20 @@ public static class MoonkovLootChecks
         int bag=containers.Drop(InventoryGraph.Create(false),Unity.Mathematics.float3.zero);
         Require(bag==64 && containers.Containers.Count==65 && containers.Containers[63].Validate()==InventoryError.None,
             "Full-map caches overlap the first corpse or contain invalid inventory.");
-        var snapshot=new RaidSnapshotRpc {TakenMask=(1UL<<63)|(1UL<<32)|1UL};
-        var type=typeof(RaidSnapshotRpc).Assembly.GetTypes().Single(t=>t.IsValueType && typeof(IRpcCommandSerializer<RaidSnapshotRpc>).IsAssignableFrom(t));
-        var serializer=(IRpcCommandSerializer<RaidSnapshotRpc>)Activator.CreateInstance(type);
+        var snapshot=new RaidSnapshotV2Rpc {RaidId=7, Sequence=19, CellStackId="b28b64cd-6f45-438f-a1e0-270efd46ad45",
+            TimeLeft=1200, ExtractionRemaining=-1, TakenMask=(1UL<<63)|(1UL<<32)|1UL};
+        var type=typeof(RaidSnapshotV2Rpc).Assembly.GetTypes().Single(t=>t.IsValueType && typeof(IRpcCommandSerializer<RaidSnapshotV2Rpc>).IsAssignableFrom(t));
+        var serializer=(IRpcCommandSerializer<RaidSnapshotV2Rpc>)Activator.CreateInstance(type);
         using var bytes=new NativeArray<byte>(1378,Allocator.Temp);
         var writer=new DataStreamWriter(bytes);
         serializer.Serialize(ref writer,new RpcSerializerState {CompressionModel=StreamCompressionModel.Default},snapshot);
         var reader=new DataStreamReader(writer.AsNativeArray());
-        var decoded=default(RaidSnapshotRpc);
+        var decoded=default(RaidSnapshotV2Rpc);
         serializer.Deserialize(ref reader,new RpcDeserializerState {CompressionModel=StreamCompressionModel.Default},ref decoded);
-        Require(!writer.HasFailedWrites && decoded.TakenMask==snapshot.TakenMask,
-            "Generated raid snapshot RPC lost or aliased cache bits 0, 32 or 63.");
+        Require(!writer.HasFailedWrites && !reader.HasFailedReads && reader.GetBitsRead()==writer.LengthInBits &&
+            writer.Length==94 && decoded.TakenMask==snapshot.TakenMask && decoded.CellStackId==snapshot.CellStackId &&
+            decoded.RaidId==snapshot.RaidId && decoded.TimeLeft==snapshot.TimeLeft && decoded.ExtractionRemaining==-1,
+            "V2 raid snapshot must consume all 94 bytes and preserve cache bits 0/32/63.");
         Debug.Log("Full-map loot capacity passed: 64 independent caches, first corpse ID 64, generated RPC preserves bits 0/32/63.");
     }
 

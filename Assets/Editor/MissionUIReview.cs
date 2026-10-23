@@ -132,7 +132,7 @@ public static class MissionUIReview
         var definition = archive ? MissionCatalog.Archive() : MissionCatalog.Mooncore();
         var snapshot = new RaidMissionSnapshotRpc { RaidId = 1, Epoch = 1, OperationId = "ui-review", DefinitionIndex = archive ? 1 : 0,
             Sequence = 1, Phase = MissionPhase.Active, Remaining = 379, BackendSupported = true, CompletedMask = archive ? 3u : 1u };
-        Set("m_Snapshot", new RaidSnapshotRpc { RaidId = 1, Phase = RaidPhase.Active }); Set("m_MissionSnapshot", snapshot);
+        Set("m_Snapshot", new RaidSnapshotV2Rpc { RaidId = 1, Phase = RaidPhase.Active }); Set("m_MissionSnapshot", snapshot);
         Call("SetMissionDetails", false); Call("RenderMission", definition, snapshot, true);
         s_Root.Q("missionHud").style.display = DisplayStyle.Flex;
         if (s_Case == 1) { Call("OpenMissionConfiguration", definition.Objectives[0], 0); Call("RenderMission", definition, snapshot, true); }
@@ -141,7 +141,7 @@ public static class MissionUIReview
         {
             s_Root.Q("missionHud").style.display = DisplayStyle.None; s_Root.Q("raidResult").style.display = DisplayStyle.Flex;
             s_Root.Q<Label>("raidResultText").text = "已成功撤离 / 任务物品 2 件";
-            Set("m_Snapshot", new RaidSnapshotRpc { RaidId = 1, Phase = RaidPhase.Extracted, SaveState = RaidSaveState.Saved });
+            Set("m_Snapshot", new RaidSnapshotV2Rpc { RaidId = 1, Phase = RaidPhase.Extracted, SaveState = RaidSaveState.Saved });
             snapshot.RecoveredArtifacts = 2; snapshot.MissionFirstsSaved = 3; snapshot.SaveState = RaidSaveState.Saved;
             Call("RenderMissionResult", snapshot);
         }
