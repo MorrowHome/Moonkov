@@ -113,9 +113,11 @@ public sealed partial class InventoryRepository
     {
         if (request.InventoryJson == null) return;
         var raid = Decode(request.InventoryJson);
-        if (raid.Find("stash") != null || raid.Find("loot")!=null || raid.Count("dust", true) != request.Dust || raid.Count("alloy", true) != request.Alloy || raid.Count("cells", true) != request.Cells
+        bool extracted = request.Outcome == "Extracted";
+        if (raid.Find("stash") != null || raid.Find("loot")!=null || extracted && (raid.Count("dust", true) != request.Dust || raid.Count("alloy", true) != request.Alloy || raid.Count("cells", true) != request.Cells)
             || raid.Validate() != InventoryError.None) throw new ReceiptConflictException();
-        if (request.Outcome != "Extracted") return;
+        if (!extracted) raid = SecureInventory.FailureReturn(raid);
+        if (!extracted && raid.Items.Count == 2) return;
         if (clash && raid.Items.Any(i => MissionInventory.IsArtifact(i.Code) && !i.MissionRecovered)) throw new ReceiptConflictException();
         foreach (var artifact in raid.Items.Where(i => !clash && MissionInventory.IsArtifact(i.Code) && !i.MissionRecovered))
         {
@@ -132,7 +134,7 @@ public sealed partial class InventoryRepository
         }
         var graph = await ReadGraphAsync(connection, transaction, request.PlayerId, ct);
         var inbox=await ReadRecoveryAsync(connection,transaction,request.PlayerId,ct);
-        var result=RecoveryInventory.Settle(graph,inbox,raid,out var stored,out var pending, missionRewards: !clash, bonusDust: bountyDust);
+        var result=RecoveryInventory.Settle(graph,inbox,raid,out var stored,out var pending, missionRewards: extracted && !clash, bonusDust: extracted ? bountyDust : 0);
         if(result!=InventoryError.None)throw new DeploymentRejectedException("return_"+result);
         await WriteGraphAsync(connection,transaction,request.PlayerId,stored,ct);
         await WriteRecoveryAsync(connection,transaction,request.PlayerId,pending,ct);

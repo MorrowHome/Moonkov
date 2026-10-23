@@ -22,7 +22,7 @@
             </ui:VisualElement>
             <ui:VisualElement class="field-carried">
                 <ui:Label text="随身容器" class="field-pane-title" picking-mode="Ignore" />
-                <ui:Label text="衣兜 · 胸挂 · 背包" class="field-pane-note" picking-mode="Ignore" />
+                <ui:Label text="衣兜 · 胸挂 · 背包 · 保险箱" class="field-pane-note" picking-mode="Ignore" />
                 <ui:ScrollView name="containerPane" mode="Vertical" class="inventory-containers" />
             </ui:VisualElement>
             <ui:VisualElement class="field-loot">

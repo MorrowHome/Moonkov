@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Unity.MP_FPS.Inventory
 {
-    public enum ItemKind { Root, Material, Cell, Helmet, LongGun, Pistol, Rig, Backpack, Medical, Food, Drink, StorageModule, ShapingModule, UtilityModule, Oxygen, Throwable, Shield, Melee }
+    public enum ItemKind { Root, Material, Cell, Helmet, LongGun, Pistol, Rig, Backpack, Medical, Food, Drink, StorageModule, ShapingModule, UtilityModule, Oxygen, Throwable, Shield, Melee, SecureContainer }
     public enum InventoryError { None, Stale, Missing, Invalid, Incompatible, Bounds, Collision, Cycle, Full, Overweight, Inaccessible }
     public enum InventoryOperation { Move, Split, Merge }
 
@@ -41,7 +41,8 @@ namespace Unity.MP_FPS.Inventory
                     new InventoryRegion("Helmet", 1, 1, ItemKind.Helmet), new InventoryRegion("Primary", 1, 1, ItemKind.LongGun),
                     new InventoryRegion("Secondary", 1, 1, ItemKind.LongGun), new InventoryRegion("Pistol", 1, 1, ItemKind.Pistol),
                     new InventoryRegion("ChestRig", 1, 1, ItemKind.Rig), new InventoryRegion("Backpack", 1, 1, ItemKind.Backpack),
-                    new InventoryRegion("Shield", 1, 1, ItemKind.Shield), new InventoryRegion("Melee", 1, 1, ItemKind.Melee)),
+                    new InventoryRegion("Shield", 1, 1, ItemKind.Shield), new InventoryRegion("Melee", 1, 1, ItemKind.Melee),
+                    new InventoryRegion("SecureContainer", 1, 1, ItemKind.SecureContainer)),
                 new ItemDefinition("pockets", "Pockets", ItemKind.Root, 0, 0, 1, 0,
                     new InventoryRegion("1", 1, 1), new InventoryRegion("2", 1, 1), new InventoryRegion("3", 1, 1), new InventoryRegion("4", 1, 1)),
                 new ItemDefinition("loot", "Supply cache", ItemKind.Root, 0, 0, 1, 0, new InventoryRegion("main", 6, 5)),
@@ -114,6 +115,7 @@ namespace Unity.MP_FPS.Inventory
                 new ItemDefinition("rig", "R-04 Chest rig", ItemKind.Rig, 2, 3, 1, .9f,
                     new InventoryRegion("left", 1, 2), new InventoryRegion("center", 2, 2), new InventoryRegion("right", 1, 2)),
                 new ItemDefinition("backpack", "B-08 Expedition subspace pack", ItemKind.Backpack, 3, 3, 1, 1.3f, new InventoryRegion("main", 5, 6)),
+                new ItemDefinition("secure_case", "S-04 个人保险箱", ItemKind.SecureContainer, 2, 2, 1, .8f, new InventoryRegion("main", 2, 2)),
                 new ItemDefinition("small_pack", "B-04 Scout subspace pack", ItemKind.Backpack, 2, 3, 1, .7f, new InventoryRegion("main", 4, 4)),
                 new ItemDefinition("scout_rig", "R-02 Scout rig", ItemKind.Rig, 2, 2, 1, .5f,
                     new InventoryRegion("left", 1, 2), new InventoryRegion("center", 1, 2), new InventoryRegion("right", 1, 2)),
@@ -229,6 +231,7 @@ namespace Unity.MP_FPS.Inventory
             }
             if (HaloModules.IsWeapon(target.Code) && (!HaloModules.Compatible(target.Code, item.Code) ||
                 region != HaloModules.Slot(HaloModules.FromCode(item.Code)))) return InventoryError.Incompatible;
+            if (target.Code == "secure_case" && !SecureInventory.Allowed(item.Code)) return InventoryError.Incompatible;
             if (compartment.SlotKind.HasValue)
             {
                 if (definition.Kind != compartment.SlotKind.Value || item.Quantity != 1) return InventoryError.Incompatible;
@@ -504,6 +507,43 @@ namespace Unity.MP_FPS.Inventory
             if (missionError != InventoryError.None) return missionError;
             var error = copy.Validate(); if (error != InventoryError.None) return error;
             Items = copy.Items; MissionFirsts = copy.MissionFirsts; StashRows = copy.StashRows; Version++; return InventoryError.None;
+        }
+    }
+
+    // A case only protects its tree while equipped in the dedicated slot.
+    // Failure returns never grant extraction flags, mission facts or rewards.
+    public static class SecureInventory
+    {
+        public static bool Allowed(string code)
+        {
+            var def = InventoryCatalog.Get(code);
+            if (def == null || def.Container || MissionInventory.IsArtifact(code)) return false;
+            return def.Kind == ItemKind.Material || def.Kind == ItemKind.Cell || def.Kind == ItemKind.Medical ||
+                def.Kind == ItemKind.Food || def.Kind == ItemKind.Drink || def.Kind == ItemKind.Oxygen ||
+                def.Kind == ItemKind.StorageModule || def.Kind == ItemKind.ShapingModule || def.Kind == ItemKind.UtilityModule;
+        }
+        public static HashSet<string> ProtectedIds(InventoryGraph graph)
+        {
+            var ids = new HashSet<string>();
+            var equipped = graph.Equipped("SecureContainer");
+            if (equipped?.Code == "secure_case") ids.Add(equipped.Id);
+            for (int depth = 0; depth < InventoryCatalog.MaxDepth; depth++)
+            {
+                int before = ids.Count;
+                foreach (var item in graph.Items) if (item.Parent != null && ids.Contains(item.Parent)) ids.Add(item.Id);
+                if (ids.Count == before) break;
+            }
+            return ids;
+        }
+        public static InventoryGraph FailureReturn(InventoryGraph raid)
+        {
+            if (raid == null || raid.Validate() != InventoryError.None || raid.Find("stash") != null || raid.Find("loot") != null)
+                throw new InvalidOperationException("Invalid failed-raid inventory.");
+            var protectedIds = ProtectedIds(raid); var result = raid.Clone();
+            result.Items.RemoveAll(i => InventoryCatalog.Get(i.Code).Kind != ItemKind.Root && !protectedIds.Contains(i.Id));
+            foreach (var item in result.Items) item.FoundInRaid = false;
+            result.MissionFirsts = 0;
+            return result;
         }
     }
 

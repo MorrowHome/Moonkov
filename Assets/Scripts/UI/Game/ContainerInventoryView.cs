@@ -119,7 +119,7 @@ namespace Unity.MP_FPS.Client
         {
             int organ=System.Array.FindIndex(AlienBiology.Organs,o=>o.Code==code);
             if(organ>=0)return (StashArtKind)((int)StashArtKind.AlienSpider+organ);
-            switch (code) { case "dust":return StashArtKind.Dust; case "alloy":return StashArtKind.Alloy; case "cells":return StashArtKind.Cell; case "medkit":return StashArtKind.Medical;
+            switch (code) { case "secure_case":return StashArtKind.SecureCase; case "dust":return StashArtKind.Dust; case "alloy":return StashArtKind.Alloy; case "cells":return StashArtKind.Cell; case "medkit":return StashArtKind.Medical;
                 case "alien_raw_meat":return StashArtKind.AlienMeat;
                 case "alien_neural_core":case "alien_core":return StashArtKind.AlienOrgan;
                 case "alien_tissue":return StashArtKind.AlienTissue;
@@ -221,6 +221,7 @@ namespace Unity.MP_FPS.Client
             AddContainer(m_ContainerPane, m_Graph.Find("pockets"), "POCKETS");
             AddContainer(m_ContainerPane, m_Graph.Equipped("ChestRig"), "CHEST RIG");
             AddContainer(m_ContainerPane, m_Graph.Equipped("Backpack"), "BACKPACK");
+            AddContainer(m_ContainerPane, m_Graph.Equipped("SecureContainer"), "保险箱");
             if (!m_Stash) RenderRaidLoot(loot);
             else if(loot!=null)AddContainer(m_LootPane,loot,m_LootId>=RaidLootContainers.FirstMissionCacheId ? "任务输出槽 / 任务产物"
                 : m_DroppedItem ? "地面丢弃物 / DROPPED SUPPLIES" : m_LootId>=RaidLootContainers.FirstDeathBagId ? "FALLEN EXPEDITION / GEAR" : "SUPPLY CACHE / "+(m_LootId+1).ToString("00"));
@@ -231,8 +232,8 @@ namespace Unity.MP_FPS.Client
         {
             var group = TerminalLayout.Clone(m_ContainerTemplate, "inventoryContainer"); pane.Add(group);
             MoonkovLocalization.Set(group.Q<Label>("containerTitle"), title);
-            if (pane == m_ContainerPane && (title == "CHEST RIG" || title == "BACKPACK"))
-                AddContainerEquipmentSlot(group, item, title == "CHEST RIG" ? "ChestRig" : "Backpack");
+            if (pane == m_ContainerPane && (title == "CHEST RIG" || title == "BACKPACK" || title == "保险箱"))
+                AddContainerEquipmentSlot(group, item, title == "CHEST RIG" ? "ChestRig" : title == "BACKPACK" ? "Backpack" : "SecureContainer");
             var caption = group.Q<Label>("containerCaption");
             if (item == null)
             {

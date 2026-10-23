@@ -37,7 +37,7 @@ namespace Unity.MP_FPS.Client
         {
             var button = new Button { name = "inventorySlot" + slot };
             button.AddToClassList("inventory-empty-container");
-            if (item == null) button.text = slot == "ChestRig" ? "空胸挂槽 · 拖入胸挂以装备" : "空背包槽 · 拖入背包以装备";
+            if (item == null) button.text = slot == "ChestRig" ? "空胸挂槽 · 拖入胸挂以装备" : slot == "Backpack" ? "空背包槽 · 拖入背包以装备" : "空保险箱槽 · 拖入保险箱以装备";
             else
             {
                 var art = new StashItemArt(Art(item.Code)); art.AddToClassList("field-container-art"); button.Add(art);
@@ -45,6 +45,7 @@ namespace Unity.MP_FPS.Client
                 m_Tiles[item.Id] = button;
             }
             group.Insert(1, button); button.RemoveManipulator(button.clickable);
+            if (slot == "SecureContainer") Text(group, "装备后死亡保留箱内物品 · 不可放入武器、穿戴装备或任务产物", "inventory-caption");
             button.AddManipulator(new Drag(this, () => m_Graph?.Equipped(slot), () => ChooseSlot(slot), () => ChooseSlot(slot)));
             m_Grids.Add(new Grid { Parent = InventoryCatalog.Equipment, Region = slot, Element = button,
                 Definition = InventoryCatalog.Get(InventoryCatalog.Equipment).Regions.First(r => r.Id == slot) });

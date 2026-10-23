@@ -147,6 +147,13 @@ public sealed partial class InventoryRepository(NpgsqlDataSource db)
         }
         else if (status == "Open")
         {
+            // No live checkpoint survived: retain only protected pre-deployment kit.
+            await using (var snapshot = new NpgsqlCommand("SELECT inventory::text FROM raid_deployments WHERE id=$1", connection, transaction))
+            {
+                snapshot.Parameters.AddWithValue(request.DeploymentId);
+                if (await snapshot.ExecuteScalarAsync(ct) is string json)
+                    await ReturnInventoryAsync(connection, transaction, new Settlement(request.PlayerId, request.DeploymentId, "Dead", 0, 0, 0, request.DeploymentId, json), ct);
+            }
             await using var lost = new NpgsqlCommand("INSERT INTO raid_settlements (id,player_id,outcome,dust,alloy,cells,deployment_id,mode,match_id,rules_version,team_id) VALUES ($1,$2,'Dead',0,0,$3,$1,$4,$5,$6,$7)", connection, transaction);
             lost.Parameters.AddWithValue(request.DeploymentId); lost.Parameters.AddWithValue(request.PlayerId); lost.Parameters.AddWithValue(request.Cells); AddBindingParameters(lost,request);
             await lost.ExecuteNonQueryAsync(ct);

@@ -5,7 +5,7 @@ namespace Unity.MP_FPS.Client
 {
     public enum StashArtKind { None, Dust, Alloy, Cell, Halo, Outfit, Helmet, Rifle, Pistol, ChestRig, Backpack, HaloRifle, HaloRevolver, HaloShotgun, Medical, HaloSniper, Ration, Water, HaloCapacitor, HaloChargeBridge, HaloFocusLens, HaloFanArray, HaloPulseController, HaloHitMarker, OxygenCanister,
         MedicalGel, TraumaKit, EnergyGel, ProteinBar, Electrolyte, OxygenReserve, ScoutRig, FieldRig, SlingPack, CargoPack, CircuitBoard, CopperCoil, CeramicPlate, OpticalSensor, DataDrive, HeliumSample, QuantumCore, BlackBox, AlienMeat, AlienOrgan, AlienTissue,
-        AlienSpider, AlienSnake, AlienCaterpillar, AlienTentacle, AlienCentipede, AlienLeech, AlienSlime, AlienRoots, AlienFaceHugger, EnergyGrenade, MooncoreFragment, MissionArchive, HaloMooncoreRecycler, HaloCicada, HaloTrine, HaloAegis, HaloVesper, HaloThorn, HaloSundown, HaloRondo, HaloTempest, HaloNocturne, LifeSupportShroud, ShieldGenerator, EnergySword, CombatKnife, ScoutPack }
+        AlienSpider, AlienSnake, AlienCaterpillar, AlienTentacle, AlienCentipede, AlienLeech, AlienSlime, AlienRoots, AlienFaceHugger, EnergyGrenade, MooncoreFragment, MissionArchive, HaloMooncoreRecycler, HaloCicada, HaloTrine, HaloAegis, HaloVesper, HaloThorn, HaloSundown, HaloRondo, HaloTempest, HaloNocturne, LifeSupportShroud, ShieldGenerator, EnergySword, CombatKnife, ScoutPack, SecureCase }
 
     // Small original vector illustrations, kept sharp at the shared PanelSettings scale.
     [UxmlElement]
@@ -99,6 +99,7 @@ namespace Unity.MP_FPS.Client
                 case StashArtKind.Pistol: Pistol(); break;
                 case StashArtKind.ChestRig: ChestRig(); break;
                 case StashArtKind.Backpack: SubspacePack(2); break;
+                case StashArtKind.SecureCase: SecureCase(); break;
                 case StashArtKind.HaloCapacitor: Module(HaloModule.Capacitor); break;
                 case StashArtKind.HaloChargeBridge: Module(HaloModule.ChargeBridge); break;
                 case StashArtKind.HaloFocusLens: Module(HaloModule.FocusLens); break;
@@ -110,6 +111,13 @@ namespace Unity.MP_FPS.Client
         }
 
         private Vector2 P(float x, float y) => m_Origin + new Vector2(x, y) * m_Scale;
+        private void SecureCase()
+        {
+            Box(0x526660, 13, 23, 74, 57); Box(0xa9b6a0, 18, 28, 64, 47);
+            Box(0x283b37, 24, 35, 52, 33); Box(0x84968e, 32, 14, 36, 9);
+            Line(0xdbe0c7, 3, new Vector2(34, 53), new Vector2(45, 64), new Vector2(67, 41));
+            Box(0x263531, 11, 43, 8, 15); Box(0x263531, 81, 43, 8, 15);
+        }
         private void MooncoreFragment()
         {
             Shape(0x788fa3, new Vector2(50, 8), new Vector2(76, 33), new Vector2(68, 70), new Vector2(44, 88), new Vector2(27, 58), new Vector2(33, 24));

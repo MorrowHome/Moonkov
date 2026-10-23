@@ -253,6 +253,7 @@ namespace Unity.MP_FPS
                     if(error!=InventoryError.None)throw new InvalidDataException("Unable to return single-player equipment: "+error);
                     next.Inventory=stored;next.Recovery=pending;
                 }
+                else ReturnProtected(next, RaidInventoryTransport.Decode(payload.InventoryJson ?? next.RaidInventoryJson));
                 next.DeploymentId = next.RaidInventoryJson = null; next.CarriedCells = 0;
                 next.Receipts.Add(payload.SettlementId, receipt); Commit(next); return Read();
             }
@@ -268,7 +269,9 @@ namespace Unity.MP_FPS
                     throw new InvalidDataException("Invalid single-player abandonment binding.");
                 if (m_Save.Receipts.ContainsKey(payload.DeploymentId)) return Read();
                 if (RaidActive && m_Save.DeploymentId != payload.DeploymentId) throw new InvalidDataException("Single-player deployment mismatch.");
-                var next = Copy(); next.DeploymentId = next.RaidInventoryJson = null; next.CarriedCells = 0;
+                var next = Copy();
+                if (next.RaidInventoryJson != null) ReturnProtected(next, RaidInventoryTransport.Decode(next.RaidInventoryJson));
+                next.DeploymentId = next.RaidInventoryJson = null; next.CarriedCells = 0;
                 next.Receipts.Add(payload.DeploymentId, "abandoned"); Commit(next); return Read();
             }
         }
@@ -277,6 +280,15 @@ namespace Unity.MP_FPS
         {
             lock (m_Lock)
                 if (RaidActive) Abandon(CurrentDeployment());
+        }
+
+        private static void ReturnProtected(SaveData save, InventoryGraph raid)
+        {
+            var retained = SecureInventory.FailureReturn(raid);
+            if (retained.Items.Count == 2) return;
+            var error = RecoveryInventory.Settle(save.Inventory, save.Recovery, retained, out var stored, out var pending, missionRewards: false);
+            if (error != InventoryError.None) throw new InvalidDataException("Unable to return protected equipment: " + error);
+            save.Inventory = stored; save.Recovery = pending;
         }
 
         public RaidPersistenceContext.Profile Request(string path, object payload)
