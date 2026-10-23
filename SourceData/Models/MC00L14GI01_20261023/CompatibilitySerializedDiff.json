@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "changedGameObjects": 220,
+  "onlyChange": "m_IsActive: 1 -> 0",
+  "allOtherSerializedRecordsIdentical": true,
+  "formalSceneChanged": false,
+  "oldAggregateMeshesEdited": false
+}

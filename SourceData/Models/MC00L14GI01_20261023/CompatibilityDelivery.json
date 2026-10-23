@@ -1,0 +1,87 @@
+{
+  "date": "2026-10-23",
+  "outcome": "Partial integration compatibility guard saved; new stair and preparation island deliberately deferred, not complete usable L14.",
+  "baseHEAD": "aeeadbf5d185c5d6783329a19232c2bd221f8526",
+  "originDevelopObservedBeforeCommit": "aeeadbf5d185c5d6783329a19232c2bd221f8526",
+  "priorCollisionCommit": "2bcff63a",
+  "priorModelCommit": "cc03fae7",
+  "renderingFixByOtherTask": "aeeadbf5d; visual recovery awaits a new Player build, not validated here.",
+  "packageSHA256": "7594c3beb9fa36fc5037858e9a6d50c0a38df4628a2b94316471fcaf72b8f5f3",
+  "changedProjectAsset": "Assets/MoonEnvironment/Variants/MC00L14GI01/Prefabs/MC00_L14v4_ADDITIONS.prefab",
+  "newStairObjectsInactive": 214,
+  "newPrepObjectsInactive": 6,
+  "dependentNewStairCollidersInactive": 25,
+  "remainingActiveL14Renderers": 784,
+  "remainingActiveGI01Renderers": 614,
+  "remainingActiveL14Colliders": 5,
+  "remainingActiveGI01Colliders": 10,
+  "previousOuterCollidersPreserved": 112,
+  "oldDeskMovesApplied": 0,
+  "oldPrepRemovalsApplied": 0,
+  "newViewportObjectsStillDeferred": 51,
+  "oldRenderReplacementsStillDeferred": 348,
+  "oldS21RemovalsStillDeferred": 7,
+  "reason": "Desk rendered by a mixture of standalone and optimized aggregate owners; complete triangle/member mapping is not proved. Frozen PREP01 old geometry has no proven unique current renderer/triangle ownership. This is a conservative isolation, not proof that all old PREP01 components exist locally.",
+  "scopedEvidence": {
+    "regionsStandardUnityLocal": {
+      "desk": [
+        [
+          10.900001525878906,
+          6.599999904632568,
+          -5.625
+        ],
+        [
+          15.900001525878906,
+          8.670000076293945,
+          -4.375
+        ]
+      ],
+      "prep": [
+        [
+          18.44499969482422,
+          6.599999904632568,
+          -10.039993286132812
+        ],
+        [
+          21.954994201660156,
+          8.06126594543457,
+          -8.359992980957031
+        ]
+      ]
+    },
+    "exactDeskSourceObjectNamesFound": 20,
+    "activeStandaloneDeskRenderers": 6,
+    "activeRenderCandidatesInTwoRegions": 19,
+    "oldColliderCandidatesInTwoRegions": 20,
+    "prepSourcePointMatching": "No complete unique ownership proved; no global name-based removal or aggregate edit. This does not prove old PREP01 is absent."
+  },
+  "verification": {
+    "serializedDiff": {
+      "passed": true,
+      "changedGameObjects": 220,
+      "onlyChange": "m_IsActive: 1 -> 0",
+      "allOtherSerializedRecordsIdentical": true,
+      "formalSceneChanged": false,
+      "oldAggregateMeshesEdited": false
+    },
+    "formalSceneFileUnchanged": true,
+    "formalSceneDirty": false,
+    "protectedComponentsSerializationHashUnchanged": true,
+    "userSettingsAndQualityFileHashesUnchanged": true,
+    "compilationFailed": false,
+    "currentConsoleErrors": 0,
+    "currentConsoleWarnings": 33,
+    "PlayStartedByThisTask": false,
+    "HostStarted": false,
+    "buildStarted": false,
+    "playerWalkingTested": false,
+    "performanceTested": false,
+    "artAppearanceAccepted": false
+  },
+  "retained": "DEM, lunar materials, old collision, 118 lights / 135 button mapping, central layout, batching/LOD/culling and ExpeditionClockPresentation. No old mesh, material, collision member or formal scene serialized record edited.",
+  "rollback": "Revert this compatibility commit, or restore activeSelf=true only for the listed private prefab children after old desk/PREP01 ownership and clearance are resolved.",
+  "pushPerformedByThisTask": false,
+  "coordination": "Other rendering task separately pushed earlier commits; this task performs no push.",
+  "evidenceDirectory": "SourceData/Models/MC00L14GI01_20261023/",
+  "workspacePlan": "E:\\Code\\Codex\\2026-10-19\\task\\MC00Latest_20261023\\DriveHandoff\\CompatibilityIsolationPlan.json"
+}
