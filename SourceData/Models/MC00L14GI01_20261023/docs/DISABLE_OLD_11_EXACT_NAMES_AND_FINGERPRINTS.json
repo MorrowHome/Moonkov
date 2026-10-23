@@ -1,0 +1,1151 @@
+[
+  {
+    "name": "MC_E pressure panel L1 S21 joint backing_01079",
+    "type": "MESH",
+    "parent": "ORG_MC20_E_Shell_L1_0f65f1",
+    "data_name": "MC_E pressure panel L1 S21 joint backing",
+    "matrix_world": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        78.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        -107.5999984741211
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        9.4399995803833
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "matrix_local": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        20.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        -29.599998474121094
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        9.4399995803833
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "materials": [
+      "LD2_Seal_Elastomer"
+    ],
+    "props": "[('collision_solid', 'True'), ('component_role', 'pressure_wall'), ('floor_level', '1'), ('lobe', 'E'), ('wall_system', 'E pressure panel L1 S21')]",
+    "author_bounds": [
+      [
+        74.70066833496094,
+        81.29933166503906
+      ],
+      [
+        -107.61249542236328,
+        -107.5875015258789
+      ],
+      [
+        6.59999942779541,
+        12.279999732971191
+      ]
+    ],
+    "vertices": 8,
+    "polygons": 6,
+    "vertex_hash": "1f945dcd33d3cfe87a2639739efcaafd814fb13d84e4a7dbfa91d81bb730190c",
+    "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+    "normal_hash": "6cd1157aeb24cd91f05912a15496e17afbb2c5ca30f57198418e5cc995b82a98",
+    "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+    "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+    "uv": [
+      {
+        "name": "UVMap",
+        "active_render": true,
+        "hash": "329ea9d2b550986cff0033d73673ef1989a14f069bada8c09eef87b8cf09bcd0"
+      }
+    ],
+    "expected_old_unity_local_bounds": [
+      [
+        16.700668334960938,
+        6.59999942779541,
+        -29.61249542236328
+      ],
+      [
+        23.299331665039062,
+        12.279999732971191,
+        -29.587501525878906
+      ]
+    ],
+    "action": "Disable old renderer and any directly assigned collision ONLY after exact local identity/membership match. Do not assume local object exists."
+  },
+  {
+    "name": "MC_E pressure panel L1 S21 panel_01080",
+    "type": "MESH",
+    "parent": "ORG_MC20_E_Shell_L1_0f65f1",
+    "data_name": "MC_E pressure panel L1 S21 panel",
+    "matrix_world": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        75.80044555664062
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        -107.5999984741211
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        8.020000457763672
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "matrix_local": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        17.800445556640625
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        -29.599998474121094
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        8.020000457763672
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "materials": [
+      "LD2_Painted_Metal_Grey"
+    ],
+    "props": "[('collision_solid', 'True'), ('component_role', 'pressure_wall'), ('floor_level', '1'), ('lobe', 'E'), ('wall_system', 'E pressure panel L1 S21')]",
+    "author_bounds": [
+      [
+        74.70466613769531,
+        76.89622497558594
+      ],
+      [
+        -107.72999572753906,
+        -107.47000122070312
+      ],
+      [
+        6.604000568389893,
+        9.43600082397461
+      ]
+    ],
+    "vertices": 8,
+    "polygons": 6,
+    "vertex_hash": "614ca4f6739d4c0060c5d5b7d4df9237b7fee897af952f911c5ffdc6707ffe8b",
+    "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+    "normal_hash": "6cd1157aeb24cd91f05912a15496e17afbb2c5ca30f57198418e5cc995b82a98",
+    "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+    "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+    "uv": [
+      {
+        "name": "UVMap",
+        "active_render": true,
+        "hash": "33a7efa83b6303b0f79dc82d8a6a5d11286aa817215d50bca2c035dc433158b8"
+      }
+    ],
+    "expected_old_unity_local_bounds": [
+      [
+        16.704666137695312,
+        6.604000568389893,
+        -29.729995727539062
+      ],
+      [
+        18.896224975585938,
+        9.43600082397461,
+        -29.470001220703125
+      ]
+    ],
+    "action": "Disable old renderer and any directly assigned collision ONLY after exact local identity/membership match. Do not assume local object exists."
+  },
+  {
+    "name": "MC_E pressure panel L1 S21 panel_01081",
+    "type": "MESH",
+    "parent": "ORG_MC20_E_Shell_L1_0f65f1",
+    "data_name": "MC_E pressure panel L1 S21 panel.001",
+    "matrix_world": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        75.80044555664062
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        -107.5999984741211
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        10.859999656677246
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "matrix_local": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        17.800445556640625
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        -29.599998474121094
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        10.859999656677246
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "materials": [
+      "LD2_Painted_Metal_Grey"
+    ],
+    "props": "[('collision_solid', 'True'), ('component_role', 'pressure_wall'), ('floor_level', '1'), ('lobe', 'E'), ('wall_system', 'E pressure panel L1 S21')]",
+    "author_bounds": [
+      [
+        74.70466613769531,
+        76.89622497558594
+      ],
+      [
+        -107.72999572753906,
+        -107.47000122070312
+      ],
+      [
+        9.443999290466309,
+        12.276000022888184
+      ]
+    ],
+    "vertices": 8,
+    "polygons": 6,
+    "vertex_hash": "614ca4f6739d4c0060c5d5b7d4df9237b7fee897af952f911c5ffdc6707ffe8b",
+    "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+    "normal_hash": "6cd1157aeb24cd91f05912a15496e17afbb2c5ca30f57198418e5cc995b82a98",
+    "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+    "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+    "uv": [
+      {
+        "name": "UVMap",
+        "active_render": true,
+        "hash": "33a7efa83b6303b0f79dc82d8a6a5d11286aa817215d50bca2c035dc433158b8"
+      }
+    ],
+    "expected_old_unity_local_bounds": [
+      [
+        16.704666137695312,
+        9.443999290466309,
+        -29.729995727539062
+      ],
+      [
+        18.896224975585938,
+        12.276000022888184,
+        -29.470001220703125
+      ]
+    ],
+    "action": "Disable old renderer and any directly assigned collision ONLY after exact local identity/membership match. Do not assume local object exists."
+  },
+  {
+    "name": "MC_E pressure panel L1 S21 panel_01082",
+    "type": "MESH",
+    "parent": "ORG_MC20_E_Shell_L1_0f65f1",
+    "data_name": "MC_E pressure panel L1 S21 panel.002",
+    "matrix_world": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        78.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        -107.5999984741211
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        8.020000457763672
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "matrix_local": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        20.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        -29.599998474121094
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        8.020000457763672
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "materials": [
+      "LD2_Painted_Metal_Grey"
+    ],
+    "props": "[('collision_solid', 'True'), ('component_role', 'pressure_wall'), ('floor_level', '1'), ('lobe', 'E'), ('wall_system', 'E pressure panel L1 S21')]",
+    "author_bounds": [
+      [
+        76.90422058105469,
+        79.09577941894531
+      ],
+      [
+        -107.72999572753906,
+        -107.47000122070312
+      ],
+      [
+        6.604000568389893,
+        9.43600082397461
+      ]
+    ],
+    "vertices": 8,
+    "polygons": 6,
+    "vertex_hash": "614ca4f6739d4c0060c5d5b7d4df9237b7fee897af952f911c5ffdc6707ffe8b",
+    "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+    "normal_hash": "6cd1157aeb24cd91f05912a15496e17afbb2c5ca30f57198418e5cc995b82a98",
+    "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+    "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+    "uv": [
+      {
+        "name": "UVMap",
+        "active_render": true,
+        "hash": "33a7efa83b6303b0f79dc82d8a6a5d11286aa817215d50bca2c035dc433158b8"
+      }
+    ],
+    "expected_old_unity_local_bounds": [
+      [
+        18.904220581054688,
+        6.604000568389893,
+        -29.729995727539062
+      ],
+      [
+        21.095779418945312,
+        9.43600082397461,
+        -29.470001220703125
+      ]
+    ],
+    "action": "Disable old renderer and any directly assigned collision ONLY after exact local identity/membership match. Do not assume local object exists."
+  },
+  {
+    "name": "MC_E pressure panel L1 S21 panel_01083",
+    "type": "MESH",
+    "parent": "ORG_MC20_E_Shell_L1_0f65f1",
+    "data_name": "MC_E pressure panel L1 S21 panel.003",
+    "matrix_world": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        78.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        -107.5999984741211
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        10.859999656677246
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "matrix_local": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        20.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        -29.599998474121094
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        10.859999656677246
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "materials": [
+      "LD2_Painted_Metal_Grey"
+    ],
+    "props": "[('collision_solid', 'True'), ('component_role', 'pressure_wall'), ('floor_level', '1'), ('lobe', 'E'), ('wall_system', 'E pressure panel L1 S21')]",
+    "author_bounds": [
+      [
+        76.90422058105469,
+        79.09577941894531
+      ],
+      [
+        -107.72999572753906,
+        -107.47000122070312
+      ],
+      [
+        9.443999290466309,
+        12.276000022888184
+      ]
+    ],
+    "vertices": 8,
+    "polygons": 6,
+    "vertex_hash": "614ca4f6739d4c0060c5d5b7d4df9237b7fee897af952f911c5ffdc6707ffe8b",
+    "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+    "normal_hash": "6cd1157aeb24cd91f05912a15496e17afbb2c5ca30f57198418e5cc995b82a98",
+    "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+    "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+    "uv": [
+      {
+        "name": "UVMap",
+        "active_render": true,
+        "hash": "33a7efa83b6303b0f79dc82d8a6a5d11286aa817215d50bca2c035dc433158b8"
+      }
+    ],
+    "expected_old_unity_local_bounds": [
+      [
+        18.904220581054688,
+        9.443999290466309,
+        -29.729995727539062
+      ],
+      [
+        21.095779418945312,
+        12.276000022888184,
+        -29.470001220703125
+      ]
+    ],
+    "action": "Disable old renderer and any directly assigned collision ONLY after exact local identity/membership match. Do not assume local object exists."
+  },
+  {
+    "name": "MC_E pressure panel L1 S21 panel_01084",
+    "type": "MESH",
+    "parent": "ORG_MC20_E_Shell_L1_0f65f1",
+    "data_name": "MC_E pressure panel L1 S21 panel.004",
+    "matrix_world": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        80.19955444335938
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        -107.5999984741211
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        8.020000457763672
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "matrix_local": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        22.199554443359375
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        -29.599998474121094
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        8.020000457763672
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "materials": [
+      "LD2_Painted_Metal_Grey"
+    ],
+    "props": "[('collision_solid', 'True'), ('component_role', 'pressure_wall'), ('floor_level', '1'), ('lobe', 'E'), ('wall_system', 'E pressure panel L1 S21')]",
+    "author_bounds": [
+      [
+        79.10377502441406,
+        81.29533386230469
+      ],
+      [
+        -107.72999572753906,
+        -107.47000122070312
+      ],
+      [
+        6.604000568389893,
+        9.43600082397461
+      ]
+    ],
+    "vertices": 8,
+    "polygons": 6,
+    "vertex_hash": "614ca4f6739d4c0060c5d5b7d4df9237b7fee897af952f911c5ffdc6707ffe8b",
+    "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+    "normal_hash": "6cd1157aeb24cd91f05912a15496e17afbb2c5ca30f57198418e5cc995b82a98",
+    "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+    "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+    "uv": [
+      {
+        "name": "UVMap",
+        "active_render": true,
+        "hash": "33a7efa83b6303b0f79dc82d8a6a5d11286aa817215d50bca2c035dc433158b8"
+      }
+    ],
+    "expected_old_unity_local_bounds": [
+      [
+        21.103775024414062,
+        6.604000568389893,
+        -29.729995727539062
+      ],
+      [
+        23.295333862304688,
+        9.43600082397461,
+        -29.470001220703125
+      ]
+    ],
+    "action": "Disable old renderer and any directly assigned collision ONLY after exact local identity/membership match. Do not assume local object exists."
+  },
+  {
+    "name": "MC_E pressure panel L1 S21 panel_01085",
+    "type": "MESH",
+    "parent": "ORG_MC20_E_Shell_L1_0f65f1",
+    "data_name": "MC_E pressure panel L1 S21 panel.005",
+    "matrix_world": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        80.19955444335938
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        -107.5999984741211
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        10.859999656677246
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "matrix_local": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        22.199554443359375
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        -29.599998474121094
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        10.859999656677246
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "materials": [
+      "LD2_Painted_Metal_Grey"
+    ],
+    "props": "[('collision_solid', 'True'), ('component_role', 'pressure_wall'), ('floor_level', '1'), ('lobe', 'E'), ('wall_system', 'E pressure panel L1 S21')]",
+    "author_bounds": [
+      [
+        79.10377502441406,
+        81.29533386230469
+      ],
+      [
+        -107.72999572753906,
+        -107.47000122070312
+      ],
+      [
+        9.443999290466309,
+        12.276000022888184
+      ]
+    ],
+    "vertices": 8,
+    "polygons": 6,
+    "vertex_hash": "614ca4f6739d4c0060c5d5b7d4df9237b7fee897af952f911c5ffdc6707ffe8b",
+    "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+    "normal_hash": "6cd1157aeb24cd91f05912a15496e17afbb2c5ca30f57198418e5cc995b82a98",
+    "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+    "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+    "uv": [
+      {
+        "name": "UVMap",
+        "active_render": true,
+        "hash": "33a7efa83b6303b0f79dc82d8a6a5d11286aa817215d50bca2c035dc433158b8"
+      }
+    ],
+    "expected_old_unity_local_bounds": [
+      [
+        21.103775024414062,
+        9.443999290466309,
+        -29.729995727539062
+      ],
+      [
+        23.295333862304688,
+        12.276000022888184,
+        -29.470001220703125
+      ]
+    ],
+    "action": "Disable old renderer and any directly assigned collision ONLY after exact local identity/membership match. Do not assume local object exists."
+  },
+  {
+    "name": "WQ_L14_PREP01_Fixed_TwinRail_Cradle",
+    "type": "MESH",
+    "parent": "WQ_L14_PREP01_ROOT",
+    "data_name": "RB20_PREP01_Fixed_TwinRail_Cradle_Geometry",
+    "matrix_world": [
+      [
+        7.549790126404332e-08,
+        1.0,
+        0.0,
+        75.32499694824219
+      ],
+      [
+        -1.0,
+        7.549790126404332e-08,
+        0.0,
+        -80.04999542236328
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        5.980000019073486
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "matrix_local": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "materials": [
+      "MC107_Guide_Graphite_Coat",
+      "LD2_Brushed_Aluminium",
+      "LD2_Painted_Metal_Grey",
+      "LD2_Seal_Elastomer",
+      "LD2_Safety_MutedOchre"
+    ],
+    "props": "[('collision_status', 'New furniture not included in277 architectural proxies'), ('module_id', 'WQ_L14_PREP01'), ('reuse_source_object', 'RB20_PREP01_Fixed_TwinRail_Cradle'), ('static_art_only', 'True')]",
+    "author_bounds": [
+      [
+        76.44499969482422,
+        79.95499420166016
+      ],
+      [
+        -88.03999328613281,
+        -86.35999298095703
+      ],
+      [
+        6.599999904632568,
+        7.579999923706055
+      ]
+    ],
+    "vertices": 304,
+    "polygons": 208,
+    "vertex_hash": "553fd7e0d29cbf6ed0ddbe7e478f084d4c27a6ab2252d7150d37db764ad551c0",
+    "topology_hash": "c438640e2d6c7600168ad39990ccbfa531b15c8af3bab8be1fb6ec86ecb9a1d0",
+    "normal_hash": "7185c1754617302909b20adc75d148005bd8324cce690c45a2e38547e86ebf8f",
+    "smooth_hash": "46f531b7ea0428fbf2c3ca2b60e8dc33d6bbfa000e0fd1b489c5e39140a47006",
+    "material_indices_hash": "e525dcd8d3ad71f484bdac82dad6e0f5f5cb126b3cc9a9b0ce2f2fc419914c09",
+    "uv": [
+      {
+        "name": "UV_Metric_1m",
+        "active_render": true,
+        "hash": "2b6ffa6748df4ec9a6118c26be12bc467986285ed2ddadf88b1515c248479829"
+      }
+    ],
+    "expected_old_unity_local_bounds": [
+      [
+        18.44499969482422,
+        6.599999904632568,
+        -10.039993286132812
+      ],
+      [
+        21.954994201660156,
+        7.579999923706055,
+        -8.359992980957031
+      ]
+    ],
+    "action": "Disable old renderer and any directly assigned collision ONLY after exact local identity/membership match. Do not assume local object exists."
+  },
+  {
+    "name": "WQ_L14_PREP01_Inclined_Test_Article",
+    "type": "MESH",
+    "parent": "WQ_L14_PREP01_ROOT",
+    "data_name": "RB20_PREP01_Inclined_Thermal_Test_Article_Geometry",
+    "matrix_world": [
+      [
+        7.549790126404332e-08,
+        1.0,
+        0.0,
+        75.32499694824219
+      ],
+      [
+        -1.0,
+        7.549790126404332e-08,
+        0.0,
+        -80.04999542236328
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        5.980000019073486
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "matrix_local": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "materials": [
+      "MC107_Guide_Graphite_Coat",
+      "LD2_Brushed_Aluminium",
+      "LD2_Painted_Metal_Grey",
+      "LD2_Seal_Elastomer",
+      "LD2_Safety_MutedOchre"
+    ],
+    "props": "[('collision_status', 'New furniture not included in277 architectural proxies'), ('module_id', 'WQ_L14_PREP01'), ('reuse_source_object', 'RB20_PREP01_Inclined_Thermal_Test_Article'), ('static_art_only', 'True')]",
+    "author_bounds": [
+      [
+        76.9949951171875,
+        79.35499572753906
+      ],
+      [
+        -87.75550842285156,
+        -86.63249206542969
+      ],
+      [
+        7.5284037590026855,
+        8.06126594543457
+      ]
+    ],
+    "vertices": 152,
+    "polygons": 106,
+    "vertex_hash": "9b963b20bc36bb3cbf4ec12d580d06359b4900b586cfed87f346fcc7bced15c0",
+    "topology_hash": "e8784862fa752729b73e571068bc6a40901d262de0efc21503b249a7b756f425",
+    "normal_hash": "c4310ac3835c9bd0d81ef0de32b6c274f6d8b252245803554f59d4effa7f929a",
+    "smooth_hash": "34dbd6bf55d0d075d666181d9278b8387482a8b5804e44e1ddaafe6876dadc15",
+    "material_indices_hash": "67b737c629e0e2e1272d2db55cd05448278ff3228c601af7d5101f2bc15fb09b",
+    "uv": [
+      {
+        "name": "UV_Metric_1m",
+        "active_render": true,
+        "hash": "ebdaa5e765b7b3d0db32002942a7a8aac2fa1486e59e00ae902e69368121f743"
+      }
+    ],
+    "expected_old_unity_local_bounds": [
+      [
+        18.9949951171875,
+        7.5284037590026855,
+        -9.755508422851562
+      ],
+      [
+        21.354995727539062,
+        8.06126594543457,
+        -8.632492065429688
+      ]
+    ],
+    "action": "Disable old renderer and any directly assigned collision ONLY after exact local identity/membership match. Do not assume local object exists."
+  },
+  {
+    "name": "WQ_L14_PREP01_Parked_Capped_Lead",
+    "type": "MESH",
+    "parent": "WQ_L14_PREP01_ROOT",
+    "data_name": "RB20_PREP01_Parked_Capped_Service_Lead_Geometry",
+    "matrix_world": [
+      [
+        7.549790126404332e-08,
+        1.0,
+        0.0,
+        75.32499694824219
+      ],
+      [
+        -1.0,
+        7.549790126404332e-08,
+        0.0,
+        -80.04999542236328
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        5.980000019073486
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "matrix_local": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "materials": [
+      "MC107_Guide_Graphite_Coat",
+      "LD2_Brushed_Aluminium",
+      "LD2_Painted_Metal_Grey",
+      "LD2_Seal_Elastomer",
+      "LD2_Safety_MutedOchre"
+    ],
+    "props": "[('collision_status', 'New furniture not included in277 architectural proxies'), ('module_id', 'WQ_L14_PREP01'), ('reuse_source_object', 'RB20_PREP01_Parked_Capped_Service_Lead'), ('static_art_only', 'True')]",
+    "author_bounds": [
+      [
+        76.84500122070312,
+        77.43499755859375
+      ],
+      [
+        -86.86416625976562,
+        -86.52931213378906
+      ],
+      [
+        7.3979997634887695,
+        7.836746692657471
+      ]
+    ],
+    "vertices": 312,
+    "polygons": 452,
+    "vertex_hash": "1ff09c1682027c7bc4682c4201156797da024de6bebc8965d359bd7015f4d72b",
+    "topology_hash": "88abe8815bf640d720ffe97cf08599c7c00bd02735b576a40c6afb806aacd827",
+    "normal_hash": "43b1126976db6171174a90caf85f39e203c0e436af07ecc85a1ebdbca6de6dd5",
+    "smooth_hash": "89f3bda768dd22407bc38aa71eb80b084fa6ea9376c75c67cca0099ccdb3f792",
+    "material_indices_hash": "7f256c7d899adbb8185aa7184d61852dd0c57df9e1466ad77159116e0ee68e86",
+    "uv": [
+      {
+        "name": "UV_Metric_1m",
+        "active_render": true,
+        "hash": "f6c96f99bd1304fd14df93f4bc3bb96f331baaba543cde4fe95cd37ef3e34a33"
+      }
+    ],
+    "expected_old_unity_local_bounds": [
+      [
+        18.845001220703125,
+        7.3979997634887695,
+        -8.864166259765625
+      ],
+      [
+        19.43499755859375,
+        7.836746692657471,
+        -8.529312133789062
+      ]
+    ],
+    "action": "Disable old renderer and any directly assigned collision ONLY after exact local identity/membership match. Do not assume local object exists."
+  },
+  {
+    "name": "WQ_L14_PREP01_Removable_Open_Carrier",
+    "type": "MESH",
+    "parent": "WQ_L14_PREP01_ROOT",
+    "data_name": "RB20_PREP01_Removable_Open_Carrier_Geometry",
+    "matrix_world": [
+      [
+        7.549790126404332e-08,
+        1.0,
+        0.0,
+        75.32499694824219
+      ],
+      [
+        -1.0,
+        7.549790126404332e-08,
+        0.0,
+        -80.04999542236328
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        5.980000019073486
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "matrix_local": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "materials": [
+      "MC107_Guide_Graphite_Coat",
+      "LD2_Brushed_Aluminium",
+      "LD2_Painted_Metal_Grey",
+      "LD2_Seal_Elastomer",
+      "LD2_Safety_MutedOchre"
+    ],
+    "props": "[('collision_status', 'New furniture not included in277 architectural proxies'), ('module_id', 'WQ_L14_PREP01'), ('reuse_source_object', 'RB20_PREP01_Removable_Open_Carrier'), ('static_art_only', 'True')]",
+    "author_bounds": [
+      [
+        76.67499542236328,
+        79.7249984741211
+      ],
+      [
+        -87.92999267578125,
+        -86.4699935913086
+      ],
+      [
+        7.230000019073486,
+        8.046394348144531
+      ]
+    ],
+    "vertices": 144,
+    "polygons": 104,
+    "vertex_hash": "63350edd7a98b1234e0e008e4b9c7e336ad198523812aa1aa9611a8207c7b395",
+    "topology_hash": "19e2f9591e3e82d94dc91ab72e32905f0cd1a843b161b9f555e6eab1116b4f72",
+    "normal_hash": "242254d52a5f3b62e4d65d909287fa994abda1fffa191f6249ee80695feff960",
+    "smooth_hash": "39f37f8d1931b3bdf767e7510dd69509fbf23af1f7654933d0a4d291cbdd4418",
+    "material_indices_hash": "c2639ee1cd007fafbbb93d909b001d3fed2d1ddf9189b433f7a24e651a60f561",
+    "uv": [
+      {
+        "name": "UV_Metric_1m",
+        "active_render": true,
+        "hash": "884f4dd2739eccbff8480eae3d4e4cf95a1327bd23e822dc79da11e50fc75861"
+      }
+    ],
+    "expected_old_unity_local_bounds": [
+      [
+        18.67499542236328,
+        7.230000019073486,
+        -9.92999267578125
+      ],
+      [
+        21.724998474121094,
+        8.046394348144531,
+        -8.469993591308594
+      ]
+    ],
+    "action": "Disable old renderer and any directly assigned collision ONLY after exact local identity/membership match. Do not assume local object exists."
+  }
+]

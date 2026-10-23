@@ -1,0 +1,88 @@
+MC00 最新资产：材质与贴图交接审计
+2026-10-23｜只读资产审计；不等于 Unity 接入或视觉验收
+
+结论与接入门槛
+1. L14 LATEST 保留 v46 全部 84 个原材质配方，未发现原配方改动；新增 14 个 L14 材质，其中 12 个使用真正的程序表面链，另外两个是透射玻璃与常量发光扩散罩。
+2. GI01 有 9 个新程序材质。MC00_GI01_REFERENCE_REGOLITH 只用于 REFERENCE_ONLY_R23_EXACT_PATCHES_NOT_EXPORT 中的地形参考，不应进入游戏资产。实际新增导出范围是 8 个 GI01 程序材质。
+3. 合计 20 个新增导出程序材质没有烘焙贴图。普通 FBX 不会传递 Noise、ColorRamp、世界坐标高度遮罩、混色和 Bump 节点图。仅导出 FBX 或读 Principled 插口默认值，会丢失当前磨损、积尘、粗糙度和微表面变化，不能称为“最新版外观已经接上”。
+4. 这不是全场重烘焙需求。84 个旧材质与已有贴图保持；新增程序部分需要仅针对该增量的导出副本 UV/图集/切线准备及烘焙，或明确实现并验证等价的目标程序着色器。本次按要求没有执行昂贵烘焙，也没有产生假装完成的新纹理。
+
+冻结来源
+- v46 原始：MC00_Game_Quality_v46_EntryLightLabels.blend
+  SHA256 4c4ac97001f2dd32078a556039f3dcd3b2535e6ebd9e2b7d6e51917cfd4dc614
+- L14 当前：MC00_L14_INDUSTRIAL_LATEST.blend
+  SHA256 3c0c568e0912e59aeed91f5132aad55932886e25e9eabbff6f129acb251a0e84
+- GI01 当前：MC00_GI01_CARGO_EVA_GROUND_INTERFACE.blend
+  SHA256 d58dfc00041b11a55d55e19c54237632664bdf0e04026c4888d2d1eb7f866d0d
+读取前后均核验源文件哈希。没有保存或改写以上三个文件。配方对比仅排除 Blender 进程内 session_uid；它不是作者材质参数。
+
+保留的贴图
+L14 与 v46 的 62 个图片数据块完全保持：打包字节、尺寸、颜色空间、Alpha 模式一致。按原文件名提取为 61 个唯一 PNG，共 10,285,700 字节；全部解码及 SHA256 验证通过。所有历史外部路径当前均不存在，但所需原字节已经打包，不是贴图丢失。
+- 已分配材质槽引用 58 个图片数据块 / 57 个唯一文件。
+- 当前源几何实际使用的材质引用 55 个图片数据块 / 54 个唯一文件。
+- 为避免丢失原文件保留依赖，本目录保留全量 61 个文件，不把数量混称为当前实际绘制需求。
+- L14 新增 14 材质与 GI01 全部材质均不引用图片，没有新增烘焙结果。
+EXTRACTED_TEXTURES_MANIFEST.json 逐一对应来源、图片名、原文件名、提取路径、字节数和哈希；TEXTURE_PNG_VALIDATION.json 给出解码与通道极值证据。没有重命名替代、重新压缩或覆盖任何不同内容文件。
+
+必须保持的原材质规则
+- BaseColor 图片按 sRGB 采样，ORM 和 Normal 按 Non-Color/线性采样。
+- ORM：G=roughness，B=metallic。所有供给 ORM 图片的 R 均为 255，原表面链不使用它产生 AO；不得凭空加遮蔽。
+- 目标 shader 使用 smoothness 时取 1-roughness，再按该 shader 的已确认通道约定重新排列。不是把整张 ORM 当灰度输入。
+- 图片直接接 Base Color 时，未连接状态下的插口颜色不是额外乘色；新程序材质的链接插口默认值同样不是可信的外观替代。
+- 常量颜色与色带值是 scene-linear，不可当作 sRGB 面板数值直接抄入。
+- Normal 使用 Blender 作者切线空间/+Y 约定，保留对应 UV、强度和切线基。只在目标管线确认需要时翻转 G。
+- 原两件 MC105 软垫的 MC106_Portable_BakeUV 仍在唯一 UV0，不要覆盖。新增 lightmap UV 必须单独处理。
+- 原共享材质身份保持。不要按材质槽序号代替名称，也不要为一个按钮的运行态全局改共享材质。
+- 保留已调好的 Unity 灯光与阴影预算；材质 emission 不是灯实体或灯控逻辑。
+
+新增程序链的精确范围与必要输出
+L14 12 个程序材质均需保留 Base Color、Roughness、Normal 的变化；以下三个还具有动态 Metallic 链：
+- L14_CAND_Lower_Liner_Band
+- L14_CAND_Ochre_Safety_Paint
+- L14_CAND_Oxblood_Valve_Enamel
+其余 L14 金属度是各自精确常量。
+GI01 8 个实际导出材质只有 Base Color 与 Normal 为程序链；各自 metallic/roughness 是常量，可保留常量而非无意义烘焙。
+所有新增材质 Alpha=1；不存在需要烘焙的新透明覆盖图。Bump 是着色法线变化，不是新几何置换。
+
+L14_CAND_Laminated_Pressure_Glass：BaseColor=(0.8,0.91,0.92,1)，metallic=0，roughness=0.012，IOR=1.46，transmission=1，alpha=1。不要将 transmission 误写成 alpha；目标管线的折射、反射、透明排序与双面需求必须明确重建和校验。
+L14_CAND_Practical_Diffuser：BaseColor=(0.85,0.55,0.22,1)，metallic=0，roughness=0.5，Emission Color=(1,0.47,0.12,1)，Emission Strength=3。无需新烘焙，不代表自动生成三盏运行时灯。
+精确浮点值、所有 Noise 参数、Vector Math/Math 运算、ColorRamp 停靠点与插值、Map Range 及 Bump 距离/强度，见 NEW_MATERIAL_EXACT_RECIPES.json 与同名 .txt；上述小数为阅读方便简写。
+
+坐标与 UV 是这次的实际工作量
+L14 12 个程序材质被 1,404 个不同源对象实际使用：
+- 861 个 Mesh 没有 UV。
+- 354 个 Mesh 有 UV，但全部存在 0–1 之外的米制坐标，不是可直接使用的独立烘焙图集。
+- 182 个 Curve 和 7 个 Font 没有源 Mesh UV 层列表，需要在显式求值转换后准备并验证。
+GI01 8 个实际导出程序材质被 614 个源对象使用：613 个 Mesh 的 GI01_metric_UV0 都存在 0–1 之外坐标，另有 1 个 Font。参考地形不计入这些数字。
+这里仅检查 UV 存在性与范围，未声称通过重叠、拉伸、texel density、边距或 mipmap 检查。不能把已有米制 UV 当作“烘焙已就绪”。详见 PROCEDURAL_SOURCE_UV_RANGES.json。
+
+10 个 L14 程序配方以 Geometry Position，即作者世界米制坐标驱动。Graphite_Gaskets 和 Ivory_Stencil 使用 Texture Coordinate 的 Object 输出。GI01 程序链均使用 Geometry Position。
+尤其 L14 内衬/骨白搪瓷有已修正的世界高度归一化遮罩；必须保留该修正，不能重新套用早期误将米数塞入 0–1 ColorRamp 的版本。当前文档中保留了 L14_V2_HEIGHT_MASK_NORMAL_REPAIR.json 的原始证据。
+若以程序着色器接入 Unity，必须从实际场景变换反求作者坐标，正确处理轴换位、根平移、yaw 与单位；不能把 Unity 场景大坐标直接输入相同 Noise，也不能用不同实现的 Noise 节点假称逐像素等价。
+若烘焙，须在冻结作者坐标与确定的几何求值/法线状态下采样，只改独立导出副本。先定图集拆分、非重叠 UV、分辨率、边距和目标切线，再产生纯表面数据。不要将 ART 检查灯光、阴影或接触暗部烘进 BaseColor。仅烘焙静态姿态是快照保真，不自动证明运行时运动后的程序行为等价。
+
+FBX 传输边界
+本机 Blender 4.3.2 的实际导出器将材质写为 Phong，通过经验映射传 roughness/shininess、metallic/reflection 等标量；没有完整的 Principled transmission/IOR 或任意节点图编码。
+图片包装器只识别直接连向被检查插口的 Image Texture；Separate Color 之后的 ORM 链不能据此自动还原。命名 UVSet 的写入仍是 TODO。因此原 v33/v41 小样已证明的 ORM、玻璃和显式 UV 风险仍需要处理。
+FBX_MATERIAL_EXPORTER_EVIDENCE.json 记录本机实际导出代码路径、SHA256 与相关代码行，辅以原交接报告。此审计没有重新声称完成当前整场 FBX 材质回导测试或 Unity 视觉测试。
+
+现有嵌入说明的边界
+当前 L14 中 MC00_MATERIAL_TEXTURE_MANIFEST.json 仍是 v41 核心的 83 材质/58 图片说明，它不包含本次新增 14 个 L14 材质。请勿把内嵌旧表当作最新版的全部材料清单。此次 MC00_CURRENT_MATERIAL_RECIPES.json 以实际冻结源为准，含原材质、新增材质、当前使用者与图片引用。
+GI01 来源说明引用 L14 v3 哈希 3edc44c85b6cff74d5b94e6a6f315e14047daa29731fb50c7c0172f241a06786。现已核对 v4 reopen_validation.json：11,493 个既有对象的几何/变换/可见性/集合等签名保持，98 个材质除单个玻璃 roughness 外保持，candidate_sha256 与本次 LATEST 相符。因此该已记录变更不是新的坡道/放置改动；仍不等于当前 Unity 场景运行验收。证据副本见 L14_V3_V4_REOPEN_VALIDATION.json。
+
+建议验收顺序
+1. 保持原材质、原贴图、原 Unity 灯光，按本 manifest 映射现有材质，不全场重做。
+2. 为 20 个新增程序材质确定忠实烘焙或等价 shader 路径；在此之前只能明确标注“几何/碰撞接入，新增材质未完成视觉保真”，不将纯色降级称为最终美术。
+3. 用代表件检查内衬低位带、骨白设备、干燥积尘地板、旧钢构、阀门安全漆、GI01 接地承压脚及金属板；近景与常用游戏距离都检查。
+4. 单独检查玻璃、法线方向、UV 缝、mipmap、粗糙度/金属度和共享材质运行态。碰撞、导航、角色和性能由对应接入任务验证，不属于本材质审计。
+
+交付索引
+MC00_CURRENT_MATERIAL_RECIPES.json：全部当前配方与图片引用的机器可读总表。
+NEW_MATERIAL_EXACT_RECIPES.json / .txt：23 个新增源材质的完整配方，清楚标明 1 个禁止导出的参考材质。
+MATERIAL_AUDIT_SUMMARY.json：数量、不可变源哈希与审计边界。
+EXTRACTED_TEXTURES_MANIFEST.json / TEXTURE_PNG_VALIDATION.json / textures/：原始纹理字节与校验。
+PROCEDURAL_SOURCE_UV_RANGES.json：新材质 Mesh 的实际 UV 范围。
+FBX_MATERIAL_EXPORTER_EVIDENCE.json：本机导出器证据。
+embedded/：从冻结文件提取的原说明，保留其历史版本边界；不是新执行命令。
+
+后续方案：PROPOSED_URP_BAKE_PLAN_ZH.txt 给出精确导出范围面积、2×2K 有界小样、分级密度、计算/体积预算与全量停止条件。未执行任何烘焙。

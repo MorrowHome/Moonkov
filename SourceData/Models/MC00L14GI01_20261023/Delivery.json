@@ -1,0 +1,286 @@
+{
+  "delivered": true,
+  "formal": "Assets/MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusGameScene.unity",
+  "binding": "Two independent removable roots under existing MC00_ROOT_Standard_YUp_Frame",
+  "counts": [
+    {
+      "group": "l14_additions",
+      "prefab": "Assets/MoonEnvironment/Variants/MC00L14GI01/Prefabs/MC00_L14v4_ADDITIONS.prefab",
+      "renderers": 1004,
+      "staticMeshColliders": 30,
+      "sha256": "47c159f5157bc49d8b34ae220da3784557edab38f6e9cc1aa245432fbbdbe9d7"
+    },
+    {
+      "group": "gi01_additions",
+      "prefab": "Assets/MoonEnvironment/Variants/MC00L14GI01/Prefabs/MC00_GI01_ADDITIONS.prefab",
+      "renderers": 614,
+      "staticMeshColliders": 10,
+      "sha256": "1bebfeb8febe1100d9001a16e84ad0573c55bdda8e264a9c63f84bf081a45d19"
+    }
+  ],
+  "sourcePackageBytes": 19371724,
+  "sourcePackageSHA256": "7594c3beb9fa36fc5037858e9a6d50c0a38df4628a2b94316471fcaf72b8f5f3",
+  "privateMaterialAssets": 22,
+  "materialStatus": "Explicit constant/viewport recipe approximation authorized; author spatial noise/wear/bump and full glass optics not equivalent. Existing materials untouched.",
+  "replacementsApplied": 0,
+  "deferredNewObjects": [
+    {
+      "name": "L14_Viewport_Central_Mullion",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Clamp_Head",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Clamp_Head.001",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Clamp_Head.002",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Clamp_Head.003",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Clamp_Head.004",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Clamp_Head.005",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Clamp_Head.006",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Clamp_Head.007",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_East_Jamb",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Head",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Inner_Buttress",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Inner_Buttress.001",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Inner_Seal",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Inner_Seal.001",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Inner_Seal.002",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Inner_Seal.003",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Pressure_Glass",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Pressure_Glass.001",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Sill",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.001",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.002",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.003",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.004",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.005",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.006",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.007",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.008",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.009",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.010",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.011",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.012",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.013",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.014",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.015",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.016",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.017",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.018",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.019",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.020",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.021",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.022",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.023",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.024",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.025",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.026",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.027",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.028",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_Sill_Grille",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    },
+    {
+      "name": "L14_Viewport_West_Jamb",
+      "reason": "S21 old walls are represented by optimized render/collision aggregates; no unproven whole-aggregate removal"
+    }
+  ],
+  "replacementDeferrals": {
+    "No unique active standalone owner; optimized aggregate is preserved": 334,
+    "Current standalone geometry differs from frozen replacement; left intact": 14
+  },
+  "moves20Applied": 0,
+  "old11RemovalsApplied": 0,
+  "deferredReason": "Current optimized aggregate ownership could not be proved unique. No global name hiding, duplicate replacement FBX or old collision removal.",
+  "geometryImport": "All2017 source mesh object counts and per-object bounds matched supplied standard local coordinates; max0.021mm with one Unity FBX Y180 correction. Authored normals imported, never recalculated.",
+  "oldProtectedHashBefore": "1301D09943E70DDC6A75C6D9B0D7A4BD2B2F06F5A82BDC2A2D0C91F44D7DA557",
+  "oldProtectedHashAfter": "1301D09943E70DDC6A75C6D9B0D7A4BD2B2F06F5A82BDC2A2D0C91F44D7DA557",
+  "sourceSceneProof": {
+    "removedOldSceneRecords": [],
+    "changedOldSceneRecords": [
+      "801699483"
+    ],
+    "changedReason": "MC00 standard frame children append exactly two private prefab instances",
+    "addedSceneRecords": [
+      "7377251489855201994",
+      "5962668579539364852",
+      "5962668579539364853",
+      "7377251489855201995"
+    ],
+    "clockPreserved": true
+  },
+  "support": {
+    "groups": [
+      {
+        "kind": "L14",
+        "added": 0,
+        "total": 30,
+        "terrainConcerns": []
+      },
+      {
+        "kind": "GI01",
+        "added": 10,
+        "total": 10,
+        "terrainConcerns": []
+      }
+    ],
+    "sceneAfterSHA256": "176415f5e8a1af10171649824d454cafc4909880349a7091c813022155785df0",
+    "sceneDirty": false,
+    "oldTerrainChanged": false,
+    "walkTested": false
+  },
+  "terrain": "No DEM edit. Selected GI01 support-center checks did not report terrain above top by>0.25m; not whole-region equivalence.",
+  "rollback": "Revert this local model commit or remove the two new MC00 child prefab instances. Existing author assets and optimized building preserved.",
+  "checksNotRun": [
+    "Play or character walking",
+    "Full visual/material acceptance",
+    "Player rendering regression",
+    "Performance",
+    "Host/network/build"
+  ],
+  "outerRenderBug": "Still undiagnosed and not claimed fixed by this integration."
+}

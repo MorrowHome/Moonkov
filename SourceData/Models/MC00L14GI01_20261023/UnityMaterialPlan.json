@@ -1,0 +1,511 @@
+{
+  "materials": [
+    {
+      "name": "L14_CAND_Aged_Bone_Enamel",
+      "sourceRecipeSHA256": "77b416137f6c7551b5cfab0caddf8d5698e1e40159794b281a696d13b91e3a30",
+      "baseColorLinear": [
+        0.3149999976158142,
+        0.30300000309944153,
+        0.24699999392032623,
+        1.0
+      ],
+      "metallic": 0.04500000178813934,
+      "roughness": 0.4000000059604645,
+      "transmission": 0.0,
+      "ior": 1.5,
+      "emissionColorLinear": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "emissionStrength": 0.0,
+      "proceduralApproximation": true,
+      "approximationBasis": "Explicit viewport recipe color/constant channels; parent-provided Graphite and Ivory exceptions; authored spatial noise/wear/bump not reproduced"
+    },
+    {
+      "name": "L14_CAND_Dark_Parkerized_Structural_Steel",
+      "sourceRecipeSHA256": "6e8c7d2edb7cc82c01d36b48cf2adcb027642769093309693520823010041e4b",
+      "baseColorLinear": [
+        0.035999998450279236,
+        0.04500000178813934,
+        0.04399999976158142,
+        1.0
+      ],
+      "metallic": 0.8600000143051147,
+      "roughness": 0.4000000059604645,
+      "transmission": 0.0,
+      "ior": 1.5,
+      "emissionColorLinear": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "emissionStrength": 0.0,
+      "proceduralApproximation": true,
+      "approximationBasis": "Explicit viewport recipe color/constant channels; parent-provided Graphite and Ivory exceptions; authored spatial noise/wear/bump not reproduced"
+    },
+    {
+      "name": "L14_CAND_Graphite_Gaskets",
+      "sourceRecipeSHA256": "e327935b829bf02dcec03f22aac205617c77fcb85e66458e01bb82c1a2fdb6a7",
+      "baseColorLinear": [
+        0.012,
+        0.016,
+        0.016,
+        1
+      ],
+      "metallic": 0.05000000074505806,
+      "roughness": 0.4000000059604645,
+      "transmission": 0.0,
+      "ior": 1.5,
+      "emissionColorLinear": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "emissionStrength": 0.0,
+      "proceduralApproximation": true,
+      "approximationBasis": "Explicit viewport recipe color/constant channels; parent-provided Graphite and Ivory exceptions; authored spatial noise/wear/bump not reproduced"
+    },
+    {
+      "name": "L14_CAND_Heat_Stained_Pipe",
+      "sourceRecipeSHA256": "4b86f8ab2b2c27111467ab1e11461d1da3e8bd358ac872af6ec67b10a9b59953",
+      "baseColorLinear": [
+        0.13500000536441803,
+        0.16500000655651093,
+        0.1599999964237213,
+        1.0
+      ],
+      "metallic": 0.949999988079071,
+      "roughness": 0.4000000059604645,
+      "transmission": 0.0,
+      "ior": 1.5,
+      "emissionColorLinear": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "emissionStrength": 0.0,
+      "proceduralApproximation": true,
+      "approximationBasis": "Explicit viewport recipe color/constant channels; parent-provided Graphite and Ivory exceptions; authored spatial noise/wear/bump not reproduced"
+    },
+    {
+      "name": "L14_CAND_Ivory_Stencil",
+      "sourceRecipeSHA256": "1e6e3ef2f30ae75a51bdac6ea015b2f83c349853f8f267b0197404d118d50de0",
+      "baseColorLinear": [
+        0.75,
+        0.72,
+        0.6,
+        1
+      ],
+      "metallic": 0.10000000149011612,
+      "roughness": 0.4000000059604645,
+      "transmission": 0.0,
+      "ior": 1.5,
+      "emissionColorLinear": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "emissionStrength": 0.0,
+      "proceduralApproximation": true,
+      "approximationBasis": "Explicit viewport recipe color/constant channels; parent-provided Graphite and Ivory exceptions; authored spatial noise/wear/bump not reproduced"
+    },
+    {
+      "name": "L14_CAND_Laminated_Pressure_Glass",
+      "sourceRecipeSHA256": "c6dc01c1e09d087671b652188af47196bfdc988ba2a025fb4a6465aed1254be2",
+      "baseColorLinear": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929,
+        1.0
+      ],
+      "metallic": 0.0,
+      "roughness": 0.012000000104308128,
+      "transmission": 1.0,
+      "ior": 1.4600000381469727,
+      "emissionColorLinear": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "emissionStrength": 0.0,
+      "proceduralApproximation": false,
+      "approximationBasis": "Explicit viewport recipe color/constant channels; parent-provided Graphite and Ivory exceptions; authored spatial noise/wear/bump not reproduced"
+    },
+    {
+      "name": "L14_CAND_Lower_Liner_Band",
+      "sourceRecipeSHA256": "a0d0af7929c384c6a4cf700dfe240ff9106c22c1b5ab4c67e86c6603c2311fdd",
+      "baseColorLinear": [
+        0.03500000014901161,
+        0.05299999937415123,
+        0.04800000041723251,
+        1.0
+      ],
+      "metallic": 0.0,
+      "roughness": 0.4000000059604645,
+      "transmission": 0.0,
+      "ior": 1.5,
+      "emissionColorLinear": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "emissionStrength": 0.0,
+      "proceduralApproximation": true,
+      "approximationBasis": "Explicit viewport recipe color/constant channels; parent-provided Graphite and Ivory exceptions; authored spatial noise/wear/bump not reproduced"
+    },
+    {
+      "name": "L14_CAND_Mineral_Dust_Scuffed_Floor",
+      "sourceRecipeSHA256": "838b0ccaab6600e9ae8891c4c6b3bff03b366355cfc94aecbebc9c535707bf04",
+      "baseColorLinear": [
+        0.07400000095367432,
+        0.08699999749660492,
+        0.0820000022649765,
+        1.0
+      ],
+      "metallic": 0.05999999865889549,
+      "roughness": 0.4000000059604645,
+      "transmission": 0.0,
+      "ior": 1.5,
+      "emissionColorLinear": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "emissionStrength": 0.0,
+      "proceduralApproximation": true,
+      "approximationBasis": "Explicit viewport recipe color/constant channels; parent-provided Graphite and Ivory exceptions; authored spatial noise/wear/bump not reproduced"
+    },
+    {
+      "name": "L14_CAND_Ochre_Safety_Paint",
+      "sourceRecipeSHA256": "f96bae7bd5bf31fff81b501f3ae95f8b7220bede6a0e6e1b71813f360ebd8da6",
+      "baseColorLinear": [
+        0.3400000035762787,
+        0.20000000298023224,
+        0.03799999877810478,
+        1.0
+      ],
+      "metallic": 0.0,
+      "roughness": 0.4000000059604645,
+      "transmission": 0.0,
+      "ior": 1.5,
+      "emissionColorLinear": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "emissionStrength": 0.0,
+      "proceduralApproximation": true,
+      "approximationBasis": "Explicit viewport recipe color/constant channels; parent-provided Graphite and Ivory exceptions; authored spatial noise/wear/bump not reproduced"
+    },
+    {
+      "name": "L14_CAND_Oxblood_Valve_Enamel",
+      "sourceRecipeSHA256": "5b3c42539d3059999dcb6b1b42fc5a726037fa5e9f70126d7b7f254d5e78b891",
+      "baseColorLinear": [
+        0.1599999964237213,
+        0.026000000536441803,
+        0.01600000075995922,
+        1.0
+      ],
+      "metallic": 0.0,
+      "roughness": 0.4000000059604645,
+      "transmission": 0.0,
+      "ior": 1.5,
+      "emissionColorLinear": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "emissionStrength": 0.0,
+      "proceduralApproximation": true,
+      "approximationBasis": "Explicit viewport recipe color/constant channels; parent-provided Graphite and Ivory exceptions; authored spatial noise/wear/bump not reproduced"
+    },
+    {
+      "name": "L14_CAND_Practical_Diffuser",
+      "sourceRecipeSHA256": "b0d68b898bf6bc29c780f8a0a30fc0d3bd704b4b45855b4fda9485bab04b64c9",
+      "baseColorLinear": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929,
+        1.0
+      ],
+      "metallic": 0.0,
+      "roughness": 0.5,
+      "transmission": 0.0,
+      "ior": 1.5,
+      "emissionColorLinear": [
+        1.0,
+        0.4699999988079071,
+        0.11999999731779099,
+        1.0
+      ],
+      "emissionStrength": 3.0,
+      "proceduralApproximation": false,
+      "approximationBasis": "Explicit viewport recipe color/constant channels; parent-provided Graphite and Ivory exceptions; authored spatial noise/wear/bump not reproduced"
+    },
+    {
+      "name": "L14_CAND_Rolled_Traction_Steel",
+      "sourceRecipeSHA256": "7d2313a59a9b785ab2e7463fc88e1cfbadd99c6ef15e41a7427bd3b11593f4e5",
+      "baseColorLinear": [
+        0.057999998331069946,
+        0.0689999982714653,
+        0.06300000101327896,
+        1.0
+      ],
+      "metallic": 0.7200000286102295,
+      "roughness": 0.4000000059604645,
+      "transmission": 0.0,
+      "ior": 1.5,
+      "emissionColorLinear": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "emissionStrength": 0.0,
+      "proceduralApproximation": true,
+      "approximationBasis": "Explicit viewport recipe color/constant channels; parent-provided Graphite and Ivory exceptions; authored spatial noise/wear/bump not reproduced"
+    },
+    {
+      "name": "L14_CAND_Warm_Grey_Pressure_Liner",
+      "sourceRecipeSHA256": "e29fbc56b3afad14cff4164285b62c2c91fcc592ca59a1d27f5b098f55135939",
+      "baseColorLinear": [
+        0.16500000655651093,
+        0.1850000023841858,
+        0.17499999701976776,
+        1.0
+      ],
+      "metallic": 0.029999999329447746,
+      "roughness": 0.4000000059604645,
+      "transmission": 0.0,
+      "ior": 1.5,
+      "emissionColorLinear": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "emissionStrength": 0.0,
+      "proceduralApproximation": true,
+      "approximationBasis": "Explicit viewport recipe color/constant channels; parent-provided Graphite and Ivory exceptions; authored spatial noise/wear/bump not reproduced"
+    },
+    {
+      "name": "L14_CAND_Worn_Satin_Steel",
+      "sourceRecipeSHA256": "f07387882331875204378bf3c596859cd73b4be17eeda39022db3a6bb9ddc83a",
+      "baseColorLinear": [
+        0.23000000417232513,
+        0.2549999952316284,
+        0.25,
+        1.0
+      ],
+      "metallic": 0.9599999785423279,
+      "roughness": 0.4000000059604645,
+      "transmission": 0.0,
+      "ior": 1.5,
+      "emissionColorLinear": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "emissionStrength": 0.0,
+      "proceduralApproximation": true,
+      "approximationBasis": "Explicit viewport recipe color/constant channels; parent-provided Graphite and Ivory exceptions; authored spatial noise/wear/bump not reproduced"
+    },
+    {
+      "name": "MC00_GI01_ABRADED_ALLOY_EDGE",
+      "sourceRecipeSHA256": "43db46637c22efb07d2ac44165389929e8d39e61513002d35ce65fdebf2870e1",
+      "baseColorLinear": [
+        0.3400000035762787,
+        0.36000001430511475,
+        0.3199999928474426,
+        1.0
+      ],
+      "metallic": 0.7799999713897705,
+      "roughness": 0.5,
+      "transmission": 0.0,
+      "ior": 1.5,
+      "emissionColorLinear": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "emissionStrength": 0.0,
+      "proceduralApproximation": true,
+      "approximationBasis": "Explicit viewport recipe color/constant channels; parent-provided Graphite and Ivory exceptions; authored spatial noise/wear/bump not reproduced"
+    },
+    {
+      "name": "MC00_GI01_DUST_WORN_OLIVE_PLATE",
+      "sourceRecipeSHA256": "df3116ec1bd374439e280d6fd7d1ca10a4b8e97ed6e568dd4a32240b491849f8",
+      "baseColorLinear": [
+        0.2199999988079071,
+        0.24500000476837158,
+        0.20499999821186066,
+        1.0
+      ],
+      "metallic": 0.47999998927116394,
+      "roughness": 0.7599999904632568,
+      "transmission": 0.0,
+      "ior": 1.5,
+      "emissionColorLinear": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "emissionStrength": 0.0,
+      "proceduralApproximation": true,
+      "approximationBasis": "Explicit viewport recipe color/constant channels; parent-provided Graphite and Ivory exceptions; authored spatial noise/wear/bump not reproduced"
+    },
+    {
+      "name": "MC00_GI01_FADED_STENCIL",
+      "sourceRecipeSHA256": "a5ec259f9d8a8c0f657e03214557a2e00fbf51741946bccbaefb34b7e4fcdf59",
+      "baseColorLinear": [
+        0.6399999856948853,
+        0.6499999761581421,
+        0.5299999713897705,
+        1.0
+      ],
+      "metallic": 0.10000000149011612,
+      "roughness": 0.7900000214576721,
+      "transmission": 0.0,
+      "ior": 1.5,
+      "emissionColorLinear": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "emissionStrength": 0.0,
+      "proceduralApproximation": true,
+      "approximationBasis": "Explicit viewport recipe color/constant channels; parent-provided Graphite and Ivory exceptions; authored spatial noise/wear/bump not reproduced"
+    },
+    {
+      "name": "MC00_GI01_GRAPHITE_LOAD_STEEL",
+      "sourceRecipeSHA256": "70dd1d0d584914f653947eb5dfa65b450acda0c79fa23428e47f74787d0d35b4",
+      "baseColorLinear": [
+        0.06199999898672104,
+        0.07599999755620956,
+        0.0729999989271164,
+        1.0
+      ],
+      "metallic": 0.7300000190734863,
+      "roughness": 0.6100000143051147,
+      "transmission": 0.0,
+      "ior": 1.5,
+      "emissionColorLinear": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "emissionStrength": 0.0,
+      "proceduralApproximation": true,
+      "approximationBasis": "Explicit viewport recipe color/constant channels; parent-provided Graphite and Ivory exceptions; authored spatial noise/wear/bump not reproduced"
+    },
+    {
+      "name": "MC00_GI01_MUTED_OCHRE_RAIL",
+      "sourceRecipeSHA256": "8c96510e93c9267d3de22fb334bde3cfa3d12c08093ab4fb90f2d8152cfc2920",
+      "baseColorLinear": [
+        0.47999998927116394,
+        0.28999999165534973,
+        0.07500000298023224,
+        1.0
+      ],
+      "metallic": 0.30000001192092896,
+      "roughness": 0.6600000262260437,
+      "transmission": 0.0,
+      "ior": 1.5,
+      "emissionColorLinear": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "emissionStrength": 0.0,
+      "proceduralApproximation": true,
+      "approximationBasis": "Explicit viewport recipe color/constant channels; parent-provided Graphite and Ivory exceptions; authored spatial noise/wear/bump not reproduced"
+    },
+    {
+      "name": "MC00_GI01_RECESSED_JOINT",
+      "sourceRecipeSHA256": "ab5761c5c15ea097a802e00a6807ea833d7f4e6eb4ce8669f4370aa14c227900",
+      "baseColorLinear": [
+        0.03200000151991844,
+        0.03999999910593033,
+        0.03799999877810478,
+        1.0
+      ],
+      "metallic": 0.30000001192092896,
+      "roughness": 0.800000011920929,
+      "transmission": 0.0,
+      "ior": 1.5,
+      "emissionColorLinear": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "emissionStrength": 0.0,
+      "proceduralApproximation": true,
+      "approximationBasis": "Explicit viewport recipe color/constant channels; parent-provided Graphite and Ivory exceptions; authored spatial noise/wear/bump not reproduced"
+    },
+    {
+      "name": "MC00_GI01_REGOLITH_CONTACT_BEARING",
+      "sourceRecipeSHA256": "2fc9d9a784ffdffd02900da50b71da315c821a28d836abbb48f8e910820896b4",
+      "baseColorLinear": [
+        0.10999999940395355,
+        0.12800000607967377,
+        0.11599999666213989,
+        1.0
+      ],
+      "metallic": 0.6499999761581421,
+      "roughness": 0.800000011920929,
+      "transmission": 0.0,
+      "ior": 1.5,
+      "emissionColorLinear": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "emissionStrength": 0.0,
+      "proceduralApproximation": true,
+      "approximationBasis": "Explicit viewport recipe color/constant channels; parent-provided Graphite and Ivory exceptions; authored spatial noise/wear/bump not reproduced"
+    },
+    {
+      "name": "MC00_GI01_REPLACED_DARK_PLATE",
+      "sourceRecipeSHA256": "8833303ccaef5aaabd54fd672f03a66fcaefe520da49567eccda4b180d894528",
+      "baseColorLinear": [
+        0.1599999964237213,
+        0.1899999976158142,
+        0.1599999964237213,
+        1.0
+      ],
+      "metallic": 0.47999998927116394,
+      "roughness": 0.7599999904632568,
+      "transmission": 0.0,
+      "ior": 1.5,
+      "emissionColorLinear": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "emissionStrength": 0.0,
+      "proceduralApproximation": true,
+      "approximationBasis": "Explicit viewport recipe color/constant channels; parent-provided Graphite and Ivory exceptions; authored spatial noise/wear/bump not reproduced"
+    }
+  ],
+  "programmaticDetailEquivalent": false
+}
