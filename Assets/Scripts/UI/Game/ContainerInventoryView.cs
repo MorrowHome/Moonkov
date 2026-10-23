@@ -500,7 +500,6 @@ namespace Unity.MP_FPS.Client
                 for (int n=m_View.m_Grids.Count-1; n>=0; n--)
                 {
                     var grid=m_View.m_Grids[n]; if (grid.Element.panel==null || !grid.Element.worldBound.Contains(m_Last)) continue;
-                    if(grid.Definition.SlotKind.HasValue && m_View.m_Graph.Find(LootInventoryExchange.Root)!=null)continue;
                     var scroll=grid.Element.GetFirstAncestorOfType<ScrollView>(); if (scroll!=null && !scroll.contentViewport.worldBound.Contains(m_Last)) continue;
                     bool slot=grid.Definition.SlotKind.HasValue; var local=grid.Element.WorldToLocal(m_Last);
                     cell=grid.Cell;

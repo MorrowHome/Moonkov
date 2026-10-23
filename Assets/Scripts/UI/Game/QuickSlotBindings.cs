@@ -58,8 +58,12 @@ namespace Unity.MP_FPS.Client
         }
         public bool Bind(int slot, InventoryItem item, InventoryGraph graph)
         {
-            if (!ValidSlot(slot) || string.IsNullOrEmpty(m_Scope) || !CanBind(graph, item) || graph.Find(item.Id) != item)
+            // A snapshot may be replaced between pointer-down and drop. Resolve the
+            // current authoritative item by ID, rather than requiring object identity.
+            var current = graph?.Find(item?.Id);
+            if (!ValidSlot(slot) || string.IsNullOrEmpty(m_Scope) || current == null || current.Code != item.Code || !CanBind(graph, current))
             { Reason = "Equip weapons first. Keep usable supplies in your pockets or rig."; return false; }
+            item = current;
             for (int i = 0; i < Count; i++) if (m_Saved.Items[i] == item.Id) ClearEntry(i);
             ClearEntry(slot);
             m_Saved.Items[slot] = item.Id; m_Saved.Codes[slot] = item.Code;
