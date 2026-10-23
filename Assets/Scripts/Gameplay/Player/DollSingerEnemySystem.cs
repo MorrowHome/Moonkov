@@ -7,6 +7,7 @@ using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.SceneManagement;
 
 namespace Unity.MP_FPS
 {
@@ -52,6 +53,8 @@ namespace Unity.MP_FPS
         private readonly List<Entity> m_ExpiredTracks = new List<Entity>();
         private readonly List<SensorEvent> m_Events = new List<SensorEvent>();
         private readonly Dictionary<int, (Vector3 position, double expiry)> m_CoverReservations = new Dictionary<int, (Vector3, double)>();
+        private TacticalServerWorld m_TacticalWorld;
+        private EntityQuery m_TacticalQuery;
         private DollSingerAITuning m_Tuning;
         private DollSingerAITuning m_DefaultTuning;
         private readonly RaycastHit[] m_Hits = new RaycastHit[32];
@@ -69,6 +72,7 @@ namespace Unity.MP_FPS
 
         protected override void OnCreate()
         {
+            m_TacticalQuery = GetEntityQuery(typeof(TacticalServerWorld));
             m_Tuning = Resources.Load<DollSingerAITuning>("Moonkov/DollSingerAI");
             if (m_Tuning == null) m_Tuning = ScriptableObject.CreateInstance<DollSingerAITuning>();
             m_DefaultTuning = m_Tuning;
@@ -115,6 +119,8 @@ namespace Unity.MP_FPS
 
         protected override void OnUpdate()
         {
+            m_TacticalWorld = m_TacticalQuery.IsEmptyIgnoreFilter ? null :
+                EntityManager.GetComponentObject<TacticalServerWorld>(m_TacticalQuery.GetSingletonEntity());
             if(BountyClashRuntime.Enabled(EntityManager))
             {
                 if (ClashSoloRuntime.TryGetRegistry(EntityManager, out var registry) && MoonRaidMap.Active != null)
@@ -303,6 +309,7 @@ namespace Unity.MP_FPS
 
         private bool ClearSight(Transform root, Vector3 eye, Vector3 targetPoint, Entity target)
         {
+            if (SmokeVisibility.Blocked(m_TacticalWorld, root.gameObject.scene.GetPhysicsScene(), eye, targetPoint)) return false;
             Vector3 offset = targetPoint - eye;
             int count = UnityEngine.Physics.RaycastNonAlloc(eye, offset.normalized, m_Hits, offset.magnitude + .2f,
                 s_SightMask, QueryTriggerInteraction.Ignore);

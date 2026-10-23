@@ -4917,6 +4917,15 @@ MonoBehaviour:
       Storage items stay here; carried loot is secured after extraction and saving.
     m_Metadata:
       m_Items: []
+  - m_Id: 5853906956443648
+    m_Localized: Smoke grenade
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5853906960637952
+    m_Localized: 3-second fuse. Creates a 5-metre smoke screen for 20 seconds, blocking
+      vision but not sound or projectiles.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -43,6 +43,7 @@ namespace Unity.MP_FPS.Inventory
             new ShopOffer("frag_bomb", 28, 9),
             new ShopOffer("fire_bomb", 16, 5),
             new ShopOffer("choke_bomb", 12, 4),
+            new ShopOffer("smoke_grenade", 16, 5),
             new ShopOffer("alert_trip_mine", 12, 4),
             new ShopOffer("concertina_trip_mine", 20, 6),
             new ShopOffer("poison_trip_mine", 18, 6),

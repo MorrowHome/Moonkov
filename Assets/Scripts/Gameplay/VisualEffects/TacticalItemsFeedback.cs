@@ -12,6 +12,7 @@ namespace Unity.MP_FPS
         private sealed class Visual
         {
             public TacticalWorldStateRpc State; public GameObject Root; public Transform Core;
+            public Renderer Smoke; public MaterialPropertyBlock SmokeProperties;
             public Vector3 Position,Velocity; public float Received,Expire; public uint Sequence;
         }
         private static TacticalItemsFeedback s_Active;
@@ -30,6 +31,8 @@ namespace Unity.MP_FPS
         private readonly List<uint> m_Expired=new();
         private readonly List<Material> m_Materials=new();
         private Material m_Metal,m_Amber,m_Red,m_Green,m_Cyan,m_White,m_Dark,m_Flame,m_Smoke,m_Poison;
+        private Material m_SmokeVolume;
+        private static readonly int SmokeDensityId=Shader.PropertyToID("_Density");
         private uint m_Epoch,m_HighestSequence;
         private sealed class CoughEmitter {public GameObject Root;public float Next,Expires;}
         private readonly Dictionary<int,CoughEmitter> m_CoughEmitters=new();
@@ -74,6 +77,7 @@ namespace Unity.MP_FPS
             m_FirePrefab=Resources.Load<GameObject>("Moonkov/TacticalFire");m_PoisonPrefab=Resources.Load<GameObject>("Moonkov/TacticalPoison");m_ChokePrefab=Resources.Load<GameObject>("Moonkov/TacticalChoke");
             m_Flame=VolumeMaterial(new Color(1,.45f,.08f,.9f),true);
             m_Smoke=VolumeMaterial(new Color(.75f,.82f,.88f,.18f),false);
+            m_SmokeVolume=new Material(Resources.Load<Shader>("Moonkov/SmokeVolume"));m_Materials.Add(m_SmokeVolume);
             m_Poison=VolumeMaterial(new Color(.42f,.65f,.12f,.2f),false);
             m_Preview=new GameObject("Tactical aiming preview");m_Preview.transform.SetParent(transform,false);
             m_Trajectory=m_Preview.AddComponent<LineRenderer>();m_Trajectory.useWorldSpace=true;m_Trajectory.widthMultiplier=.018f;m_Trajectory.sharedMaterial=m_Cyan;
@@ -89,7 +93,7 @@ namespace Unity.MP_FPS
             if(!this || !isActiveAndEnabled)return false;
             foreach(var visual in m_Visuals.Values)
                 if(visual.Root && visual.Root.activeInHierarchy &&
-                    (visual.State.Phase==TacticalWorldPhase.Fire || visual.State.Phase==TacticalWorldPhase.Choke || visual.State.Phase==TacticalWorldPhase.Poison))return true;
+                    (visual.State.Phase==TacticalWorldPhase.Smoke || visual.State.Phase==TacticalWorldPhase.Fire || visual.State.Phase==TacticalWorldPhase.Choke || visual.State.Phase==TacticalWorldPhase.Poison))return true;
             // Cough emitters are audio only; they do not need a transparent render pass.
             return false;
         }
@@ -129,7 +133,7 @@ namespace Unity.MP_FPS
                 Unity.MP_FPS.Moon.MoonSilverPrintSubject.Protect(visual.Root);
                 if(state.Phase==TacticalWorldPhase.Alarm)Play(visual.Root,m_Alarm,55);
                 else if(state.Phase==TacticalWorldPhase.Explosion)Play(visual.Root,m_Burst,80);
-                else if(state.Phase==TacticalWorldPhase.Choke)Play(visual.Root,m_Cough,18);
+                else if(state.Phase==TacticalWorldPhase.Choke || state.Phase==TacticalWorldPhase.Smoke)Play(visual.Root,m_Cough,18);
             }
             visual.State=state;visual.Position=state.Position;visual.Velocity=state.Velocity;
             visual.Received=Time.time;visual.Expire=Time.time+Mathf.Max(.3f,state.Remaining+.5f);
@@ -163,6 +167,13 @@ namespace Unity.MP_FPS
                 float age=Mathf.Clamp(Time.time-v.Received,0,.3f);
                 v.Root.transform.position=v.State.Phase==TacticalWorldPhase.Flying && v.Velocity.sqrMagnitude>.001f ?
                     Ballistics.Position(v.Position,v.Velocity,EnergyGrenadeRules.Gravity,age) : v.Position;
+                if(v.Smoke && v.State.Phase==TacticalWorldPhase.Smoke)
+                {
+                    float remaining=Mathf.Max(0,v.State.Remaining-(Time.time-v.Received));
+                    v.Core.localScale=SmokeVisibility.Radii(v.State.Radius,remaining)*2;
+                    v.SmokeProperties.SetFloat(SmokeDensityId,SmokeVisibility.Density(remaining));
+                    v.Smoke.SetPropertyBlock(v.SmokeProperties);
+                }
                 if(v.Core && v.State.Phase==TacticalWorldPhase.Alarm)
                     v.Core.localScale=Vector3.one*(1+.1f*Mathf.Sin(Time.time*17));
             }
@@ -233,6 +244,16 @@ namespace Unity.MP_FPS
                 BuildSupply(root);return;
             }
             visual.Core=new GameObject("Active effect").transform;visual.Core.SetParent(root,false);var core=visual.Core;
+            if(phase==TacticalWorldPhase.Smoke)
+            {
+                core.localPosition=SmokeVisibility.Center(Vector3.zero);
+                core.localScale=SmokeVisibility.Radii(state.Radius,state.Remaining)*2;
+                Primitive(core,PrimitiveType.Cube,Vector3.one,Vector3.zero,m_SmokeVolume);
+                visual.Smoke=core.GetComponentInChildren<Renderer>();
+                visual.SmokeProperties=new MaterialPropertyBlock();
+                visual.SmokeProperties.SetFloat(SmokeDensityId,SmokeVisibility.Density(state.Remaining));
+                visual.Smoke.SetPropertyBlock(visual.SmokeProperties);return;
+            }
             if(phase==TacticalWorldPhase.Wire)
             {
                 var points=new Vector3[160];
@@ -336,6 +357,13 @@ namespace Unity.MP_FPS
                 Primitive(root,PrimitiveType.Cube,new Vector3(.105f,.018f,.095f),Vector3.up*.05f,m_Dark);
                 Primitive(root,PrimitiveType.Cube,new Vector3(.105f,.018f,.095f),Vector3.down*.05f,m_Dark);
                 Line(root,new[]{new Vector3(0,.1f,0),new Vector3(.015f,.15f,.015f),new Vector3(.045f,.17f,.02f)},.006f,m_Amber,false);return;
+            }
+            if(kind==TacticalItemKind.Smoke)
+            {
+                Primitive(root,PrimitiveType.Cylinder,new Vector3(.11f,.09f,.11f),Vector3.zero,m_Metal);
+                Primitive(root,PrimitiveType.Cylinder,new Vector3(.114f,.025f,.114f),Vector3.zero,m_White);
+                Primitive(root,PrimitiveType.Cylinder,new Vector3(.065f,.012f,.065f),Vector3.up*.1f,m_Dark);
+                Line(root,new[]{new Vector3(0,.12f,0),new Vector3(.065f,.12f,0),new Vector3(.065f,-.03f,0)},.012f,m_Metal,false);return;
             }
             if(kind==TacticalItemKind.Fire)
             {

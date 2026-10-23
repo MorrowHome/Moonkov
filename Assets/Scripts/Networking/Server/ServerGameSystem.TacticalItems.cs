@@ -139,7 +139,7 @@ namespace Unity.MP_FPS
                 if(!obj.Scene.IsValid() || now>=obj.Until)
                 {
                     if(obj.Scene.IsValid() && obj.Phase==TacticalWorldPhase.Flying &&
-                        !TacticalChoked(world,obj.Position,obj.Scene,now))TacticalDetonate(ref state,ecb,world,obj,now,tick);
+                        (obj.Definition.Kind==TacticalItemKind.Smoke || !TacticalChoked(world,obj.Position,obj.Scene,now)))TacticalDetonate(ref state,ecb,world,obj,now,tick);
                     if(obj.Phase==TacticalWorldPhase.Flying || now>=obj.Until || !obj.Scene.IsValid())
                     {TacticalBroadcast(ecb,world,obj,true);world.Objects.RemoveAt(i);continue;}
                 }
@@ -352,6 +352,11 @@ namespace Unity.MP_FPS
         {foreach(var area in world.Objects)if(area.Phase==TacticalWorldPhase.Choke && now<area.Until && TacticalWithin(area,point,0,scene,null))return true;return false;}
         private void TacticalDetonate(ref SystemState state,EntityCommandBuffer ecb,TacticalServerWorld world,TacticalServerWorld.Object obj,double now,uint tick)
         {
+            if(obj.Definition.Kind==TacticalItemKind.Smoke)
+            {
+                obj.Phase=TacticalWorldPhase.Smoke;obj.Velocity=Vector3.zero;
+                obj.Until=now+obj.Definition.Lifetime;obj.NextSnapshot=0;return;
+            }
             if(obj.Definition.Kind==TacticalItemKind.Fire || obj.Definition.Kind==TacticalItemKind.Choke)
             {
                 if(obj.Definition.Kind==TacticalItemKind.Fire && TacticalChoked(world,obj.Position,obj.Scene,now)){obj.Until=now;return;}

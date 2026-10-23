@@ -5,16 +5,16 @@ using Unity.MP_FPS.Inventory;
 namespace Unity.MP_FPS
 {
     public enum TacticalItemKind : byte
-    { Vitality, Stamina, Antidote, Dynamite, Frag, Fire, Choke, AlertTrap, WireTrap, PoisonTrap, AmmoBox }
+    { Vitality, Stamina, Antidote, Dynamite, Frag, Fire, Choke, AlertTrap, WireTrap, PoisonTrap, AmmoBox, Smoke }
     public enum TacticalItemAction : byte { Use, Cancel, Disarm, Resupply, Extinguish }
     public enum TacticalItemFeedback : byte { None, Started, Cancelled, Interrupted, Completed, NeedGround, Limit, Poisoned, NoWound, NoTarget, NoRoom, Stale, Unavailable }
-    public enum TacticalWorldPhase : byte { Flying, Armed, Fire, Choke, Wire, Poison, Alarm, Supply, Explosion, Removed }
+    public enum TacticalWorldPhase : byte { Flying, Armed, Fire, Choke, Wire, Poison, Alarm, Supply, Explosion, Removed, Smoke }
     public sealed class TacticalItemDefinition
     {
         public readonly string Code;
         public readonly TacticalItemKind Kind;
         public readonly float UseSeconds, Fuse, Radius, Lifetime;
-        public bool Throwable => Kind >= TacticalItemKind.Dynamite && Kind <= TacticalItemKind.Choke;
+        public bool Throwable => Kind >= TacticalItemKind.Dynamite && Kind <= TacticalItemKind.Choke || Kind == TacticalItemKind.Smoke;
         public bool Trap => Kind >= TacticalItemKind.AlertTrap && Kind <= TacticalItemKind.PoisonTrap;
         public bool Deployable => Trap || Kind == TacticalItemKind.AmmoBox;
         public TacticalItemDefinition(string code, TacticalItemKind kind, float use, float fuse=0, float radius=0, float lifetime=0)
@@ -35,7 +35,8 @@ namespace Unity.MP_FPS
             new("alert_trip_mine",TacticalItemKind.AlertTrap,3,0,1,180),
             new("concertina_trip_mine",TacticalItemKind.WireTrap,3,0,1,180),
             new("poison_trip_mine",TacticalItemKind.PoisonTrap,3,0,1,180),
-            new("ammo_box",TacticalItemKind.AmmoBox,3,0,0,120)
+            new("ammo_box",TacticalItemKind.AmmoBox,3,0,0,120),
+            new("smoke_grenade",TacticalItemKind.Smoke,1,3,5,20)
         };
         public static TacticalItemDefinition Find(string code)
         { foreach(var d in Definitions) if(d.Code==code)return d; return null; }
