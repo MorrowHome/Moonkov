@@ -145,12 +145,13 @@ public sealed class MoonkovViewInteractionChecks : EditorWindow
                 "A missed button release retained the portrait gesture.");
             CheckInspectionFraming(start);
             CheckAnimatedFraming();
+            CheckZoom(button, start);
             image.RemoveFromHierarchy();
-            Require(portrait.InspectionYaw == 0 && !scene.isLoaded, "Detached portrait retained orientation or preview scene.");
+            Require(portrait.InspectionYaw == 0 && portrait.Zoom == 1 && !scene.isLoaded, "Detached portrait retained orientation, zoom or preview scene.");
             rootVisualElement.Insert(0, image); portrait.Advance(0);
-            Require(portrait.InspectionYaw == 0, "Reopened portrait did not reset.");
+            Require(portrait.InspectionYaw == 0 && portrait.Zoom == 1, "Reopened portrait did not reset.");
             LastPreviewResult = "passed";
-            Debug.Log("Portrait checks passed: pointer rotation, stable full-turn framing, coalesced input rendering, release stop, cancellation, overlaid equipment isolation, detach cleanup and reopen reset.");
+            Debug.Log("Portrait checks passed: rotation, animated framing, wheel magnification and limits, input isolation, release/cancel/capture loss, cleanup and reopen reset.");
         }
         catch (Exception ex) { LastPreviewResult = "failed: " + ex.Message; throw; }
         finally { Close(); }
@@ -203,6 +204,46 @@ public sealed class MoonkovViewInteractionChecks : EditorWindow
                 "Showcase animation changed the portrait scale or camera centre: " + motion);
         }
     }
+    private void CheckZoom(Button button, Vector2 start)
+    {
+        var image = portrait.Element;
+        var camera = (Camera)typeof(MenuCharacterView).GetField("m_Camera", Private).GetValue(portrait);
+        float yaw = portrait.InspectionYaw, baselineFov = camera.fieldOfView;
+        var position = camera.transform.position;
+        var tick = typeof(MenuCharacterView).GetMethod("Tick", Private);
+        int parentWheels = 0;
+        EventCallback<WheelEvent> parentWheel = _ => parentWheels++;
+        rootVisualElement.RegisterCallback(parentWheel);
+        try
+        {
+            Wheel(button, button.worldBound.center, -3);
+            Require(portrait.Zoom == 1 && parentWheels == 1, "Equipment scrolling zoomed the portrait or was swallowed.");
+            Wheel(image, start, -3);
+            tick.Invoke(portrait, null);
+            Require(portrait.Zoom > 1 && camera.fieldOfView < baselineFov && parentWheels == 1,
+                "Portrait scroll did not zoom in or leaked into the parent scroll view.");
+            float magnification = Mathf.Tan(baselineFov * .5f * Mathf.Deg2Rad) / Mathf.Tan(camera.fieldOfView * .5f * Mathf.Deg2Rad);
+            Require(Mathf.Abs(magnification - portrait.Zoom) < .0001f, "Camera projection did not match the selected magnification.");
+            float zoom = portrait.Zoom, fov = camera.fieldOfView;
+            Down(image, start); Move(image, start + Vector2.right * 100);
+            for (int i = 0; i < 60; i++) portrait.Advance(1f / 30);
+            portrait.Render(); Up(image, start);
+            Require(portrait.Zoom == zoom && Mathf.Abs(camera.fieldOfView - fov) < .0001f &&
+                Vector3.Distance(position, camera.transform.position) < .001f,
+                "Dragging or animation changed the selected zoom.");
+            Wheel(image, start, 3); tick.Invoke(portrait, null);
+            Require(Mathf.Abs(portrait.Zoom - 1) < .0001f && Mathf.Abs(camera.fieldOfView - baselineFov) < .0001f,
+                "Opposite wheel travel did not restore the original scale.");
+            for (int i = 0; i < 4; i++) Wheel(image, start, 40);
+            tick.Invoke(portrait, null);
+            Require(Mathf.Abs(portrait.Zoom - .65f) < .0001f && float.IsFinite(camera.fieldOfView), "Minimum zoom was not bounded.");
+            for (int i = 0; i < 4; i++) Wheel(image, start, -40);
+            tick.Invoke(portrait, null);
+            Require(Mathf.Abs(portrait.Zoom - 3) < .0001f && float.IsFinite(camera.fieldOfView), "Maximum zoom was not bounded.");
+            Require(Mathf.Abs(Mathf.DeltaAngle(portrait.InspectionYaw, yaw + 45)) < .001f, "Wheel input changed portrait rotation.");
+        }
+        finally { rootVisualElement.UnregisterCallback(parentWheel); }
+    }
     private void OnDisable() { portrait?.Dispose(); portrait = null; }
     private static void Set(object target, string field, object value) => target.GetType().GetField(field, Private).SetValue(target, value);
     private static void Require(bool condition, string message) { if (!condition) throw new InvalidOperationException("View checks: " + message); }
@@ -212,4 +253,6 @@ public sealed class MoonkovViewInteractionChecks : EditorWindow
     { using (var evt = PointerMoveEvent.GetPooled(new Event { type = EventType.MouseDrag, button = 0, mousePosition = at })) target.SendEvent(evt); }
     private static void Up(VisualElement target, Vector2 at)
     { using (var evt = PointerUpEvent.GetPooled(new Event { type = EventType.MouseUp, button = 0, mousePosition = at })) target.SendEvent(evt); }
+    private static void Wheel(VisualElement target, Vector2 at, float delta)
+    { using (var evt = WheelEvent.GetPooled(new Event { type = EventType.ScrollWheel, mousePosition = at, delta = new Vector2(0, delta) })) target.SendEvent(evt); }
 }

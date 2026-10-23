@@ -19,6 +19,7 @@ namespace Unity.MP_FPS.Client
     {
         // The project's PC renderer only draws layers 0–7. UI is within that mask.
         private const int ViewLayer = 5;
+        private const float PortraitFieldOfView = 27;
         private EnergyShieldPresentation m_Protection;
         private InventoryGraph m_ProtectionInventory;
         public Image Element { get; }
@@ -71,8 +72,9 @@ namespace Unity.MP_FPS.Client
         private int m_DragPointer = -1;
         private Vector2 m_DragPosition;
         private float m_InspectionYaw, m_PoseTurn;
-        private bool m_Inspected, m_OrientationDirty;
+        private bool m_Inspected, m_ViewDirty;
         public float InspectionYaw => m_InspectionYaw;
+        public float Zoom { get; private set; } = 1;
 
         public MenuCharacterView(bool idleOnly = false, Image element = null, int? characterIndex = null)
         {
@@ -80,11 +82,13 @@ namespace Unity.MP_FPS.Client
             Element = element ?? new Image();
             Element.pickingMode = PickingMode.Position; Element.scaleMode = ScaleMode.ScaleToFit;
             Element.AddToClassList("terminal-character-art");
+            Element.tooltip = MoonkovLocalization.Text("左键拖动旋转 · 滚轮缩放");
             Element.RegisterCallback<PointerDownEvent>(BeginInspect);
             Element.RegisterCallback<PointerMoveEvent>(Inspect);
             Element.RegisterCallback<PointerUpEvent>(EndInspect);
             Element.RegisterCallback<PointerCancelEvent>(CancelInspect);
             Element.RegisterCallback<PointerCaptureOutEvent>(CaptureLost);
+            Element.RegisterCallback<WheelEvent>(ZoomInspect);
             Element.RegisterCallback<DetachFromPanelEvent>(Detached);
             m_GameSettings = characterIndex.HasValue ? null : GameSettings.Instance;
             SelectCharacter(characterIndex ?? m_GameSettings?.PlayerCharacter ?? GameSettings.DollSingerCharacterIndex);
@@ -137,8 +141,16 @@ namespace Unity.MP_FPS.Client
             m_InspectionYaw = Mathf.Repeat(m_InspectionYaw +
                 (position.x - m_DragPosition.x) * 180f / Mathf.Max(1f, Element.contentRect.width) + 180f, 360f) - 180f;
             m_DragPosition = position;
-            m_OrientationDirty = true;
+            m_ViewDirty = true;
             evt.StopPropagation();
+        }
+        private void ZoomInspect(WheelEvent evt)
+        {
+            if (m_Disposed || evt.target != Element || !float.IsFinite(evt.delta.y) || evt.delta.y == 0) return;
+            Zoom = Mathf.Clamp(Zoom * Mathf.Exp(-Mathf.Clamp(evt.delta.y, -40, 40) * .08f), .65f, 3f);
+            m_ViewDirty = true;
+            evt.StopPropagation();
+            evt.PreventDefault();
         }
         private void EndInspect(PointerUpEvent evt)
         {
@@ -243,7 +255,7 @@ namespace Unity.MP_FPS.Client
             m_Camera.clearFlags = CameraClearFlags.SolidColor;
             m_Camera.backgroundColor = Color.clear;
             m_Camera.orthographic = false;
-            m_Camera.fieldOfView = 27;
+            m_Camera.fieldOfView = PortraitFieldOfView;
             m_Camera.nearClipPlane = .05f; m_Camera.farClipPlane = 30;
             m_Camera.allowHDR = true; m_Camera.allowMSAA = true;
             var data = m_Camera.GetUniversalAdditionalCameraData();
@@ -335,9 +347,9 @@ namespace Unity.MP_FPS.Client
             if(!TerminalMotion.Animate(Element))
             {
                 var size=Element.contentRect.size;
-                if(m_Target==null || size!=m_EditorViewport || m_OrientationDirty)
+                if(m_Target==null || size!=m_EditorViewport || m_ViewDirty)
                 {
-                    if (m_OrientationDirty) Advance(0);
+                    if (m_ViewDirty) Advance(0);
                     Render(); m_EditorViewport=size;
                 }
                 return;
@@ -389,7 +401,7 @@ namespace Unity.MP_FPS.Client
             m_Model.transform.localPosition = Vector3.zero;
             m_PoseTurn = turn * m_Settings.TurnDegrees;
             ApplyOrientation();
-            m_OrientationDirty = false;
+            m_ViewDirty = false;
             DollSingerMovement.ApplyTiptoePresentation(m_Animator, tiptoe);
             m_TwistFollowers?.ApplyPresentation();
             ApplyWeaponGesture(dt);
@@ -497,9 +509,10 @@ namespace Unity.MP_FPS.Client
                 m_Target.Create(); Element.image = m_Target;
             }
             m_Camera.aspect = (float)w / h;
-            float verticalTangent = Mathf.Tan(m_Camera.fieldOfView * .5f * Mathf.Deg2Rad);
+            float verticalTangent = Mathf.Tan(PortraitFieldOfView * .5f * Mathf.Deg2Rad);
             float distance = Mathf.Max(m_Bounds.extents.y * 1.08f / verticalTangent + m_Bounds.extents.z,
                 m_Bounds.extents.x * 1.12f / Mathf.Sin(Mathf.Atan(verticalTangent * m_Camera.aspect)));
+            m_Camera.fieldOfView = 2 * Mathf.Atan(verticalTangent / Zoom) * Mathf.Rad2Deg;
             m_Camera.transform.position = m_Bounds.center + new Vector3(0, .035f, distance);
             m_Camera.transform.LookAt(m_Bounds.center);
             RenderPipeline.SubmitRenderRequest(m_Camera, new UniversalRenderPipeline.SingleCameraRequest { destination = m_Target });
@@ -537,13 +550,14 @@ namespace Unity.MP_FPS.Client
             Element.UnregisterCallback<PointerUpEvent>(EndInspect);
             Element.UnregisterCallback<PointerCancelEvent>(CancelInspect);
             Element.UnregisterCallback<PointerCaptureOutEvent>(CaptureLost);
+            Element.UnregisterCallback<WheelEvent>(ZoomInspect);
             Element.UnregisterCallback<DetachFromPanelEvent>(Detached);
             ReleaseStage();
             m_ProtectionInventory=null;
         }
         private void ReleaseStage()
         {
-            StopInspect(); m_InspectionYaw = m_PoseTurn = 0; m_Inspected = m_OrientationDirty = false;
+            StopInspect(); m_InspectionYaw = m_PoseTurn = 0; m_Inspected = m_ViewDirty = false; Zoom = 1;
             if (m_Graph.IsValid()) m_Graph.Destroy();
             if (m_FullBodyMask != null) { Destroy(m_FullBodyMask); m_FullBodyMask = null; }
             ReleaseTarget();
