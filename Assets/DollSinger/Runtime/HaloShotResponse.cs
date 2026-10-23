@@ -14,7 +14,11 @@ namespace Unity.MP_FPS.DollSinger
             // The snapshot and predicted/RPC effect may arrive in either order.
             if (tick != 0 && lastTick != 0 && (int)(tick - lastTick) <= 0) return false;
             if (tick != 0) lastTick = tick;
-            slow = fast = 1f;
+            // Add equal impulses so the current release stays continuous. Bound the
+            // stored energy during fast follow-up shots, as the rifle already does.
+            float impulse = Mathf.Min(1f, Mathf.Max(0f, 2f - slow));
+            slow += impulse;
+            fast += impulse;
             return true;
         }
 

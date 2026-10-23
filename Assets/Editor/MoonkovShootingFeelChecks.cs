@@ -21,8 +21,63 @@ public static class MoonkovShootingFeelChecks
         CheckEquip(registry, sniper);
         CheckCadence(rifle);
         CheckAimSensitivity();
+        CheckReleaseContinuity();
+        CheckRecoil();
         Debug.Log("Shooting feel checks passed: buffered press/expiry/cancellation, reload handoff, burst rearm, " +
-            "independent draw time, slot recovery, 30/60/144 Hz and jitter cadence, hitch cap, zoom sensitivity and micro-aim.");
+            "independent draw time, slot recovery, 30/60/144 Hz and jitter cadence, hitch cap, zoom sensitivity, micro-aim, recoil compensation/settling/aim alignment and release continuity.");
+    }
+
+    public static void CheckRecoil()
+    {
+        var recoil = new HaloRecoilResponse(); float pitch = 0;
+        recoil.Kick(DollSingerWeapons.Halo, 1); recoil.Apply(ref pitch, 0, 1f / 60);
+        Require(pitch < -.3f && pitch > -.4f, "Rifle recoil did not reach actual look input.");
+        recoil.Apply(ref pitch, .34f, 1f / 60); pitch += .34f;
+        for (int i = 0; i < 120; i++) recoil.Apply(ref pitch, 0, 1f / 60);
+        Require(Mathf.Abs(pitch) < .0001f, "Automatic recovery dragged a compensated aim downward.");
+        foreach (float dt in new[] { 1f / 30, 1f / 60, 1f / 144 })
+        {
+            recoil.Reset(); pitch = 0; recoil.Kick(DollSingerWeapons.Shotgun, 1);
+            for (int i = 0; i < Mathf.RoundToInt(.5f / dt); i++) recoil.Apply(ref pitch, 0, dt);
+            Require(Mathf.Abs(pitch) < .012f, "Recoil failed to settle at " + dt);
+        }
+        recoil.Reset(); pitch = -80; recoil.Kick(DollSingerWeapons.Sniper, 1);
+        for (int i = 0; i < 60; i++) recoil.Apply(ref pitch, 0, 1f / 60);
+        Require(pitch == -80, "Pitch clamp generated phantom recovery.");
+        recoil.Reset(); pitch = 0; recoil.Kick(DollSingerWeapons.Sniper, 6); recoil.Apply(ref pitch, 0, .01f);
+        Require(Mathf.Abs(pitch + .2f) < .0001f, "Scoped recoil ignored magnification.");
+        recoil.Reset(); pitch = 0;
+        for (int i = 0; i < 100; i++) { recoil.Kick(DollSingerWeapons.Halo, 1); recoil.Apply(ref pitch, 0, .05f); }
+        Require(pitch >= -3.001f && recoil.Remaining <= 3.001f, "Sustained recoil exceeded bounded travel.");
+        recoil.Reset(); float rest = pitch; recoil.Apply(ref pitch, 0, 1);
+        Require(pitch == rest && recoil.Remaining == 0, "Reset left a delayed kick.");
+    }
+
+    public static void CheckReleaseContinuity()
+    {
+        foreach (var rates in new[] { new Vector2(9, 50), new Vector2(14, 70), new Vector2(17, 75) })
+        {
+            var response = new HaloShotResponse(); response.Play(100);
+            response.Step(.1f, rates.x, rates.y);
+            float before = response.Release;
+            Require(response.Play(101) && Mathf.Abs(response.Release - before) < .00001f,
+                "Follow-up shot snapped the hand release back to rest.");
+            Require(!response.Play(101) && !response.Play(99) && Mathf.Abs(response.Release - before) < .00001f,
+                "Replayed shot changed the release.");
+            for (uint tick = 102; tick < 302; tick++)
+            {
+                response.Step(.01f, rates.x, rates.y); response.Play(tick);
+                Require(float.IsFinite(response.Release) && response.Release >= 0 && response.Release <= 1,
+                    "Sustained release escaped its cosmetic bounds.");
+            }
+            response.Step(2, rates.x, rates.y);
+            Require(response.Release < .0001f, "Release failed to settle after firing.");
+            response.Reset(); Require(response.Release == 0 && response.Play(1), "Equip reset retained old tick or motion.");
+            var coarse = new HaloShotResponse(); var fine = new HaloShotResponse(); coarse.Play(1); fine.Play(1);
+            coarse.Step(.1f, rates.x, rates.y);
+            for (int i = 0; i < 10; i++) fine.Step(.01f, rates.x, rates.y);
+            Require(Mathf.Abs(coarse.Release - fine.Release) < .00001f, "Release depends on rendering frame rate.");
+        }
     }
 
     private static PredictedPlayerGhost Ready(uint id) => new PredictedPlayerGhost
@@ -164,6 +219,20 @@ public static class MoonkovShootingFeelChecks
             var look = float2.zero; var free = float2.zero; float lean = 0;
             DollSingerLookController.Update(ref look, ref free, ref lean, out _, input, model, view, false, .016f);
             Require(math.distance(look, new float2(.001f, -.001f)) < .000001f, "Micro-aim input was lost or magnified.");
+            var cameraObject = new GameObject("Recoil command camera"); cameraObject.transform.SetParent(root.transform, false);
+            view.camera = cameraObject.AddComponent<Camera>();
+            foreach (bool firstPerson in new[] { false, true })
+            {
+                view.SetFirstPerson(firstPerson);
+                look = float2.zero; free = float2.zero;
+                typeof(DollSingerInput).GetField("<Look>k__BackingField", flags).SetValue(input, Vector2.zero);
+                var recoil = new HaloRecoilResponse(); recoil.Kick(DollSingerWeapons.Sniper, 6);
+                recoil.Apply(ref look.y, 0, 1f / 60);
+                DollSingerLookController.Update(ref look, ref free, ref lean, out var rotation, input, model, view, false, 1f / 60);
+                var ray = view.CaptureAimRay(rotation, Quaternion.Euler(0, look.x, 0), lean);
+                Require(Vector3.Angle(ray.direction, view.camera.transform.forward) < .001f && ray.direction.y > 0,
+                    "Recoil moved the camera away from the commanded shot direction.");
+            }
             model.m_CinemachineCameraTarget = root;
             typeof(DollSingerMovement).GetField("m_LookInput", flags).SetValue(model, new Vector2(.001f, .001f));
             typeof(DollSingerMovement).GetMethod("CameraRotation", flags).Invoke(model, null);

@@ -41,6 +41,8 @@ namespace Unity.MP_FPS
         private float m_DryFireAt;
         private PlayerGhost m_PlayerGhost;
         private bool m_OwnedAlive;
+        private HaloRecoilResponse m_Recoil;
+        private uint m_RecoilWeapon;
         private float2 m_OwnedLook;
         private Client.HaloObstructionView m_ObstructionView;
         public bool OwnedMuzzleObstructed { get; private set; }
@@ -69,6 +71,9 @@ namespace Unity.MP_FPS
 
         public bool UpdateOwnedLook(ref float2 look, out float2 freeLookOffset, bool blocked)
         {
+            if (blocked || !m_OwnedAlive || m_Input.LightAdjusting || !m_Input.AimHeld ||
+                (m_View.IsFirstPerson && m_Input.AltHeld)) m_Recoil.Reset();
+            else m_Recoil.Apply(ref look.y, -m_Input.Look.y * m_View.AimLookSensitivity, Time.deltaTime);
             if (m_Input.LightAdjusting)
             {
                 m_OwnedAiming = m_OwnedAlive && !blocked && !(m_Melee && m_Melee.WantsPresentation) && !RaidHUD.DarkSightRequested && !RaidHUD.QuickSlotToolSelected && m_Input.LightPreviewAiming;
@@ -169,6 +174,7 @@ namespace Unity.MP_FPS
             m_Linked = true;
             m_Motor = GetComponent<FirstPersonController>();
             m_OwnedAiming = m_HasOwnedAimPoint = false;
+            m_Recoil.Reset(); m_RecoilWeapon = 0;
             m_LightPanel?.Dispose(); m_LightPanel = null;
             m_OwnedLightEnabled = true;
             m_AudioAiming = false; m_DryFireAt = 0;
@@ -236,6 +242,8 @@ namespace Unity.MP_FPS
             bool downed = ghost.ClashEnabled && ghost.ClashLife == ClashLife.Downed;
             var presentedStance = downed ? DollSingerStance.Prone : state.Stance;
             m_OwnedAlive = ghost.CurrentHealth > 0;
+            if (!m_OwnedAlive || downed || m_RecoilWeapon != ghost.EquippedWeaponID) m_Recoil.Reset();
+            m_RecoilWeapon = ghost.EquippedWeaponID;
             if (Role == MultiplayerRole.ClientOwned)
             {
                 if (ghost.CurrentHealth <= 0) m_Input.CancelLightAdjustment();
@@ -313,6 +321,9 @@ namespace Unity.MP_FPS
                 // The shot RPC may precede the equipment snapshot on an observer.
                 if (ReadGhostComponentData<PredictedPlayerGhost>().EquippedWeaponID != weaponId) return;
                 if (shotTick != 0 && !MoonkovPlayerAudio.NewTick(shotTick, ref m_LastShotEffectTick)) return;
+                if (Role == MultiplayerRole.ClientOwned && m_OwnedAlive && m_OwnedAiming &&
+                    m_Input.CanReadPlayerInput && !m_Input.LightAdjusting)
+                    m_Recoil.Kick(weaponId, m_View.CurrentAimMagnification);
                 var weapon = WeaponManager.Instance.WeaponRegistry.GetWeaponData(weaponId);
                 if (!m_WeaponFeedback) m_WeaponFeedback = Resources.Load<RifleFeedbackLibrary>("Moonkov/RifleFeedback");
                 var profile = m_WeaponFeedback?.ForWeapon(weaponId);
@@ -362,6 +373,7 @@ namespace Unity.MP_FPS
             GameManager.Instance?.SoundSystem?.Stop(m_WeaponTailSound, .03f);
             m_RifleBodySound = m_RifleSnapSound = m_WeaponTailSound = null;
             m_Linked = false;
+            m_Recoil.Reset();
             if (m_Melee) m_Melee.ResetPresentation();
             if (m_Protection) m_Protection.DisposePresentation();
             m_Halo.OwnedAimIntent = null;
