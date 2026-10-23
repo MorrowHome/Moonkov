@@ -16,6 +16,7 @@ namespace Unity.MP_FPS
         private Label m_MissionTitle, m_MissionStep, m_MissionLocation, m_MissionRisk, m_MissionAction, m_MissionActionNote;
         private RaidMissionSnapshotRpc m_MissionSnapshot;
         private uint m_MissionSequence, m_MissionRequest;
+        private readonly MoonkovActionAudio m_MissionAudio = new MoonkovActionAudio();
         private int m_MissionHolding = -1;
         private float m_MissionNextRenew;
         private string m_MissionOperation;
@@ -59,7 +60,7 @@ namespace Unity.MP_FPS
                 m_Root.Q<Button>("missionPin").text = m_MissionPinned ? "取消追踪" : "固定追踪";
                 m_MissionHud.style.display = m_MissionPinned ? DisplayStyle.Flex : DisplayStyle.None;
             };
-            m_MissionSequence = m_MissionRequest = 0; m_MissionOperation = null; m_MissionHolding = -1;
+            m_MissionAudio.Reset(); m_MissionSequence = m_MissionRequest = 0; m_MissionOperation = null; m_MissionHolding = -1;
             m_MissionDetailsVisible = false; m_MissionConfiguring = false; m_MissionPinned = true;
             m_MissionNotice = null; m_MissionNoticeUntil = m_MissionNextPresentation = 0;
             m_MissionNodeLabels.Clear();
@@ -118,6 +119,14 @@ namespace Unity.MP_FPS
                 m_Root.Q<Button>("missionPin").text = "取消追踪";
                 if (live) MoonkovAudio.Play(MoonkovAudio.Library?.Notification, Vector3.zero, .65f);
             }
+            if (live)
+            {
+                bool active = snapshot.Result == MissionActionResult.Started || snapshot.Result == MissionActionResult.Running;
+                bool success = snapshot.Result == MissionActionResult.Completed || snapshot.Result == MissionActionResult.AlreadyCompleted;
+                MoonkovAudio.PlayWeaponLayer(m_MissionAudio.Observe(snapshot.RaidId, snapshot.RequestId,
+                    active, !active && !success, MoonkovAudio.Library?.Error), Vector3.zero, 1, 0);
+            }
+            else m_MissionAudio.Reset();
             m_MissionSnapshot = snapshot;
             m_MissionRequest = System.Math.Max(m_MissionRequest, snapshot.RequestId);
             if (snapshot.Sequence != m_MissionSequence || Time.unscaledTime >= m_MissionNextPresentation)
@@ -234,8 +243,12 @@ namespace Unity.MP_FPS
         private void SendMission(MissionIntent intent, int node)
         {
             if (m_World == null || !m_World.IsCreated || m_MissionSnapshot.OperationId.Length == 0) return;
-            Send(new RaidMissionActionRpc { RaidId = m_MissionSnapshot.RaidId, OperationId = m_MissionSnapshot.OperationId,
+            bool sent = Send(new RaidMissionActionRpc { RaidId = m_MissionSnapshot.RaidId, OperationId = m_MissionSnapshot.OperationId,
                 Epoch = m_MissionSnapshot.Epoch, Node = node, RequestId = m_MissionRequest, Intent = intent });
+            if (sent && intent == MissionIntent.Begin)
+                m_MissionAudio.Track(m_MissionSnapshot.RaidId, m_MissionRequest, MoonkovAudio.Library?.Confirm, MoonkovAudio.Library?.Equipment);
+            else if (intent == MissionIntent.Cancel) { m_MissionAudio.Reset(); MoonkovAudio.Play(MoonkovAudio.Library?.Equipment, Vector3.zero, .6f); }
+            else if (!sent && intent != MissionIntent.Renew) MoonkovAudio.Error();
         }
         private void OpenMissionOutput(int id)
         {
@@ -260,8 +273,10 @@ namespace Unity.MP_FPS
                 var button = new Button(() =>
                 {
                     m_MissionRequest=NextManualActionRequest();
-                    Send(new RaidMissionActionRpc { RaidId = m_MissionSnapshot.RaidId, Epoch = m_MissionSnapshot.Epoch,
+                    bool sent = Send(new RaidMissionActionRpc { RaidId = m_MissionSnapshot.RaidId, Epoch = m_MissionSnapshot.Epoch,
                         OperationId = m_MissionSnapshot.OperationId, Node = node, RequestId = m_MissionRequest, Intent = MissionIntent.Configure, Choice = choice });
+                    if (sent) m_MissionAudio.Track(m_MissionSnapshot.RaidId, m_MissionRequest, MoonkovAudio.Library?.Confirm);
+                    else MoonkovAudio.Error();
                     SetMissionDetails(false);
                 }) { text = objective.Choices[i] };
                 controls.Add(button);

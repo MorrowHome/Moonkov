@@ -216,8 +216,15 @@ namespace Unity.MP_FPS
             foreach (var (ack, received, entity) in SystemAPI.Query<RefRO<LightSwitchAckRpc>, RefRW<ReceiveRpcCommandRequest>>().WithEntityAccess())
             {
                 received.ValueRW.Consume(); var r = ack.ValueRO;
-                if (connection != Entity.Null && received.ValueRO.SourceConnection == connection && r.Session == state.Session && r.RequestId == state.PendingRequest)
-                { state.PendingRequest = 0; state.Feedback = r.Feedback; state.FeedbackUntil = UnityEngine.Time.unscaledTime + 1.5f; }
+                if (connection != Entity.Null && received.ValueRO.SourceConnection == connection && r.Session == state.Session && state.PendingRequest != 0 && r.RequestId == state.PendingRequest)
+                {
+                    if (!World.IsThinClient())
+                    {
+                        if (r.Feedback == LightSwitchFeedback.Accepted)
+                            MoonkovAudio.PlayWeaponLayer(MoonkovAudio.Library?.Light, UnityEngine.Vector3.zero, 1, 0);
+                        else MoonkovAudio.Error();
+                    }
+                    state.PendingRequest = 0; state.Feedback = r.Feedback; state.FeedbackUntil = UnityEngine.Time.unscaledTime + 1.5f; }
                 ecb.DestroyEntity(entity);
             }
             // Host shares the scene with its server World: never replay a toggle there.

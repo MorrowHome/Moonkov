@@ -61,7 +61,9 @@ public static class MoonkovAudioSetup
         // ---- interaction ----
         new Row { Name = "Equipment", Mixer = Mixer.SFX, Spatial = 0f, Db = -19f, PitchCents = 40f,
                   Clips = new[] { "Interaction/Equipment.wav" } },
-        new Row { Name = "Container", Mixer = Mixer.Menu, Spatial = 0f, Db = -21f, PitchCents = 30f,
+        new Row { Name = "Consume", Mixer = Mixer.SFX, Spatial = 0f, Db = -15f, SpreadDb = 2f, PitchCents = 80f,
+                  Clips = new[] { "Character/Cloth1.wav", "Character/Cloth2.wav" } },
+        new Row { Name = "Container", Mixer = Mixer.SFX, Spatial = 0f, Db = -21f, PitchCents = 30f,
                   Clips = new[] { "Interaction/Container.wav" } },
         // Deployment confirmation, layered: success gong body + android order acknowledgement.
         new Row { Name = "DeployConfirm", Mixer = Mixer.SFX, Spatial = 1f, Db = -13f, Range = 22f,
@@ -101,7 +103,7 @@ public static class MoonkovAudioSetup
                                   "Weapons/HaloFire3.wav", "Weapons/HaloFire4.wav" } },
         new Row { Name = "HaloSnap", Mixer = Mixer.SFX, Spatial = 1f, Db = -16f, Range = 40f,
                   PitchCents = 80f, Clips = new[] { "Weapons/HaloSnap.wav" } },
-        new Row { Name = "HaloRecharge", Mixer = Mixer.SFX, Spatial = 1f, Db = -20f, Range = 16f,
+        new Row { Name = "HaloRecharge", Mixer = Mixer.SFX, Spatial = 1f, Db = -14f, Range = 16f,
                   PitchCents = 35f, Clips = new[] { "Weapons/HaloRecharge.wav" } },
         new Row { Name = "HaloImpact", Mixer = Mixer.SFX, Spatial = 1f, Db = -18f, Range = 28f,
                   SpreadDb = 2f, PitchCents = 70f, Clips = new[] { "Weapons/HaloImpact.wav" } },
@@ -112,7 +114,7 @@ public static class MoonkovAudioSetup
                   Clips = new[] { "Weapons/RevolverFire1.wav", "Weapons/RevolverFire2.wav" } },
         new Row { Name = "RevolverEnergy", Mixer = Mixer.SFX, Spatial = 1f, Db = -26f, Range = 60f,
                   PitchCents = 60f, Clips = new[] { "Weapons/RevolverEnergy.wav" } },
-        new Row { Name = "RevolverRecharge", Mixer = Mixer.SFX, Spatial = 1f, Db = -19f, Range = 16f,
+        new Row { Name = "RevolverRecharge", Mixer = Mixer.SFX, Spatial = 1f, Db = -13f, Range = 16f,
                   PitchCents = 35f, Clips = new[] { "Weapons/RevolverRecharge.wav" } },
     };
 
@@ -165,6 +167,7 @@ public static class MoonkovAudioSetup
         library.Notification = byName["Notification"];
         library.Equipment = byName["Equipment"];
         library.Container = byName["Container"];
+        library.Consume = byName["Consume"];
         library.Jump = byName["Jump"];
         library.Land = byName["Land"];
         library.Hit = byName["Hit"];
@@ -267,6 +270,12 @@ public static class MoonkovAudioSetup
             AssetDatabase.CreateAsset(sound, path);
         }
 
+        if (row.Name == "Equipment" || row.Name == "Container" || row.Name == "Consume")
+        {
+            sound.Role = SoundDef.MixRole.Interaction; sound.Priority = 85;
+            sound.MaxVoices = row.Name == "Consume" ? 3 : 4;
+            sound.MinimumInterval = row.Name == "Consume" ? .15f : .05f; sound.Occlusion = false;
+        }
         sound.Clips = new List<AudioClip>();
         foreach (var file in row.Clips)
         {

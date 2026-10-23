@@ -52,6 +52,7 @@ namespace Unity.MP_FPS.Client
         private string m_HoveredItemId;
         public InventoryItem QuickSlotCandidate => m_Graph?.Find(m_HoveredItemId) ?? m_Graph?.Find(m_SelectedItemId);
         public Func<InventoryItem, Vector2, bool> QuickSlotDrop { get; set; }
+        public bool OperationAudioEnabled { get; set; } = true;
         public Func<InventoryItem, bool> ShieldRechargeAvailable { get; set; }
         public Action<InventoryItem, Vector2> QuickSlotDragPreview { get; set; }
         public void SetReadOnly(string reason)
@@ -172,7 +173,7 @@ namespace Unity.MP_FPS.Client
             int corpseCharacterIndex=-1, IReadOnlyDictionary<string,string> corpseEquipmentSlots=null)
         {
             if (m_Disposed) return;
-            if (m_Busy && operationCompleted)
+            if (OperationAudioEnabled && m_Busy && operationCompleted)
             {
                 if (message != null) MoonkovAudio.Error();
                 else MoonkovAudio.Play(MoonkovAudio.Library?.Equipment, Vector3.zero);
