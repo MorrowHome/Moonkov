@@ -1,0 +1,58 @@
+[
+  {
+    "name": "MC00Surface1211",
+    "meshPath": "Assets/MoonEnvironment/Variants/MC00BakedBuilding/Meshes/MC00Surface1211.asset",
+    "targetPaths": [
+      "MC00GameExport/MC00_Render/MC00_ROOT/ORG_FLOOR_L1_bdd3d3/ORG_ROOM_L14_b1cdce/MC_L14 diagnostics workbench handle_05914",
+      "MC00GameExport/MC00_Render/MC00_ROOT/ORG_FLOOR_L1_bdd3d3/ORG_ROOM_L14_b1cdce/MC_L14 diagnostics workbench handle_05918",
+      "MC00GameExport/MC00_Render/MC00_ROOT/ORG_FLOOR_L1_bdd3d3/ORG_ROOM_L14_b1cdce/MC_L14 instrument screen captured display pedestal_05927"
+    ],
+    "totalSourceMembers": 4
+  },
+  {
+    "name": "MC00Surface1213",
+    "meshPath": "Assets/MoonEnvironment/Variants/MC00BakedBuilding/Meshes/MC00Surface1213.asset",
+    "targetPaths": [
+      "MC00GameExport/MC00_Render/MC00_ROOT/ORG_FLOOR_L1_bdd3d3/ORG_ROOM_L14_b1cdce/MC_L14 diagnostics workbench leg_05909",
+      "MC00GameExport/MC00_Render/MC00_ROOT/ORG_FLOOR_L1_bdd3d3/ORG_ROOM_L14_b1cdce/MC_L14 diagnostics workbench tray_05919",
+      "MC00GameExport/MC00_Render/MC00_ROOT/ORG_FLOOR_L1_bdd3d3/ORG_ROOM_L14_b1cdce/MC_L14 instrument screen case_05920",
+      "MC00GameExport/MC00_Render/MC00_ROOT/ORG_FLOOR_L1_bdd3d3/ORG_ROOM_L14_b1cdce/MC_L14 instrument screen supported desktop foot_05926"
+    ],
+    "totalSourceMembers": 4
+  },
+  {
+    "name": "MC00Surface1214",
+    "meshPath": "Assets/MoonEnvironment/Variants/MC00BakedBuilding/Meshes/MC00Surface1214.asset",
+    "targetPaths": [
+      "MC00GameExport/MC00_Render/MC00_ROOT/ORG_FLOOR_L1_bdd3d3/ORG_ROOM_L14_b1cdce/MC_L14 diagnostics workbench leg_05910"
+    ],
+    "totalSourceMembers": 1
+  },
+  {
+    "name": "MC00Surface1216",
+    "meshPath": "Assets/MoonEnvironment/Variants/MC00BakedBuilding/Meshes/MC00Surface1216.asset",
+    "targetPaths": [
+      "MC00GameExport/MC00_Render/MC00_ROOT/ORG_FLOOR_L1_bdd3d3/ORG_ROOM_L14_b1cdce/MC_L14 diagnostics workbench top_05908"
+    ],
+    "totalSourceMembers": 1
+  },
+  {
+    "name": "MC00Surface1225",
+    "meshPath": "Assets/MoonEnvironment/Variants/MC00BakedBuilding/Meshes/MC00Surface1225.asset",
+    "targetPaths": [
+      "MC00GameExport/MC00_Render/MC00_ROOT/ORG_FLOOR_L1_bdd3d3/ORG_ROOM_L14_b1cdce/MC_L14 instrument screen screen_05921"
+    ],
+    "totalSourceMembers": 1
+  },
+  {
+    "name": "MC00Surface1227",
+    "meshPath": "Assets/MoonEnvironment/Variants/MC00BakedBuilding/Meshes/MC00Surface1227.asset",
+    "targetPaths": [
+      "MC00GameExport/MC00_Render/MC00_ROOT/ORG_FLOOR_L1_bdd3d3/ORG_ROOM_L14_b1cdce/MC_L14 instrument screen trace_05922",
+      "MC00GameExport/MC00_Render/MC00_ROOT/ORG_FLOOR_L1_bdd3d3/ORG_ROOM_L14_b1cdce/MC_L14 instrument screen trace_05923",
+      "MC00GameExport/MC00_Render/MC00_ROOT/ORG_FLOOR_L1_bdd3d3/ORG_ROOM_L14_b1cdce/MC_L14 instrument screen trace_05924",
+      "MC00GameExport/MC00_Render/MC00_ROOT/ORG_FLOOR_L1_bdd3d3/ORG_ROOM_L14_b1cdce/MC_L14 instrument screen trace_05925"
+    ],
+    "totalSourceMembers": 4
+  }
+]

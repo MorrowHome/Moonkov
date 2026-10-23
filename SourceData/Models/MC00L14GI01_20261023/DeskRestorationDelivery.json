@@ -1,0 +1,566 @@
+{
+  "outcome": "20 old diagnostic desk components moved with matching visible aggregate members and 15 existing Colliders; all 214 new stair components and 25 stair Colliders restored.",
+  "matchingFailureResolved": "Six original pieces render independently; fourteen original renderers are disabled because their geometry belongs to six named optimized chunks. Names alone were insufficient, but source-path provenance plus one-to-one spatial triangle matches proves ownership.",
+  "geometryProof": {
+    "sourceBoundsMaxErrorMeters": 0.000137944458,
+    "aggregateTriangleMaxVertexErrorMeters": 0.000186284728,
+    "aggregateTargetTriangles": 480,
+    "partialChunk": "MC00Surface1211",
+    "targetTrianglesSplit": 124,
+    "unrelatedTrianglesRetainedAtOriginalPosition": 44
+  },
+  "applied": {
+    "applied": true,
+    "sourceObjectsMoved": 20,
+    "sourceColliderObjectsMoved": 15,
+    "wholeDeskOnlyChunksMoved": 5,
+    "partialChunkOriginal": "MC00Surface1211",
+    "partialTargetTriangles": 124,
+    "unrelatedTrianglesRetained": 44,
+    "oldAggregateAssetsUnchanged": true,
+    "sourceOriginalTransforms": [
+      {
+        "name": "MC_L14 diagnostics workbench drawer suspension runner_05912",
+        "transformId": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-424192081-0",
+        "localPosition": [
+          -11.5500031,
+          -5.0,
+          7.475
+        ],
+        "worldPosition": [
+          1626.77087,
+          218.511154,
+          2151.967
+        ],
+        "colliders": [
+          {
+            "id": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-424192082-0",
+            "center": [
+              1626.77087,
+              218.511154,
+              2151.967
+            ]
+          }
+        ]
+      },
+      {
+        "name": "MC_L14 diagnostics workbench drawer suspension runner_05913",
+        "transformId": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-1255976059-0",
+        "localPosition": [
+          -12.75,
+          -5.0,
+          7.475
+        ],
+        "worldPosition": [
+          1627.72925,
+          218.511154,
+          2152.68921
+        ],
+        "colliders": [
+          {
+            "id": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-1255976060-0",
+            "center": [
+              1627.72925,
+              218.511154,
+              2152.68921
+            ]
+          }
+        ]
+      },
+      {
+        "name": "MC_L14 diagnostics workbench drawer suspension runner_05916",
+        "transformId": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-2124296195-0",
+        "localPosition": [
+          -14.0500031,
+          -5.0,
+          7.475
+        ],
+        "worldPosition": [
+          1628.76746,
+          218.511154,
+          2153.47168
+        ],
+        "colliders": [
+          {
+            "id": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-2124296196-0",
+            "center": [
+              1628.76746,
+              218.511154,
+              2153.47168
+            ]
+          }
+        ]
+      },
+      {
+        "name": "MC_L14 diagnostics workbench drawer suspension runner_05917",
+        "transformId": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-1805951725-0",
+        "localPosition": [
+          -15.25,
+          -5.0,
+          7.475
+        ],
+        "worldPosition": [
+          1629.72583,
+          218.511154,
+          2154.19385
+        ],
+        "colliders": [
+          {
+            "id": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-1805951726-0",
+            "center": [
+              1629.72583,
+              218.511154,
+              2154.19385
+            ]
+          }
+        ]
+      },
+      {
+        "name": "MC_L14 diagnostics workbench drawer_05911",
+        "transformId": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-1679749247-0",
+        "localPosition": [
+          -12.1500015,
+          -5.0,
+          7.24
+        ],
+        "worldPosition": [
+          1627.25012,
+          218.276154,
+          2152.32813
+        ],
+        "colliders": [
+          {
+            "id": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-1679749248-0",
+            "center": [
+              1627.25012,
+              218.276154,
+              2152.32813
+            ]
+          }
+        ]
+      },
+      {
+        "name": "MC_L14 diagnostics workbench drawer_05915",
+        "transformId": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-1479104953-0",
+        "localPosition": [
+          -14.6500015,
+          -5.0,
+          7.24
+        ],
+        "worldPosition": [
+          1629.2467,
+          218.276154,
+          2153.83276
+        ],
+        "colliders": [
+          {
+            "id": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-1479104954-0",
+            "center": [
+              1629.2467,
+              218.276154,
+              2153.83276
+            ]
+          }
+        ]
+      },
+      {
+        "name": "MC_L14 diagnostics workbench handle_05914",
+        "transformId": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-524581355-0",
+        "localPosition": [
+          -12.1500015,
+          -5.514,
+          7.34
+        ],
+        "worldPosition": [
+          1627.55945,
+          218.376144,
+          2151.91772
+        ],
+        "colliders": [
+          {
+            "id": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-524581356-0",
+            "center": [
+              1627.55945,
+              218.376144,
+              2151.91772
+            ]
+          }
+        ]
+      },
+      {
+        "name": "MC_L14 diagnostics workbench handle_05918",
+        "transformId": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-1530991093-0",
+        "localPosition": [
+          -14.6500015,
+          -5.514,
+          7.34
+        ],
+        "worldPosition": [
+          1629.556,
+          218.376144,
+          2153.422
+        ],
+        "colliders": [
+          {
+            "id": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-1530991094-0",
+            "center": [
+              1629.556,
+              218.376144,
+              2153.422
+            ]
+          }
+        ]
+      },
+      {
+        "name": "MC_L14 diagnostics workbench leg_05909",
+        "transformId": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-1557336645-0",
+        "localPosition": [
+          -11.0200043,
+          -5.0,
+          7.055
+        ],
+        "worldPosition": [
+          1626.34766,
+          218.091156,
+          2151.64819
+        ],
+        "colliders": [
+          {
+            "id": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-1557336646-0",
+            "center": [
+              1626.34766,
+              218.091156,
+              2151.64819
+            ]
+          }
+        ]
+      },
+      {
+        "name": "MC_L14 diagnostics workbench leg_05910",
+        "transformId": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-968702016-0",
+        "localPosition": [
+          -15.7799988,
+          -5.0,
+          7.055
+        ],
+        "worldPosition": [
+          1630.14917,
+          218.091156,
+          2154.5127
+        ],
+        "colliders": [
+          {
+            "id": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-968702017-0",
+            "center": [
+              1630.14917,
+              218.091156,
+              2154.5127
+            ]
+          }
+        ]
+      },
+      {
+        "name": "MC_L14 diagnostics workbench top_05908",
+        "transformId": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-37549803-0",
+        "localPosition": [
+          -13.4000015,
+          -5.0,
+          7.54
+        ],
+        "worldPosition": [
+          1628.24841,
+          218.576141,
+          2153.08032
+        ],
+        "colliders": [
+          {
+            "id": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-37549804-0",
+            "center": [
+              1628.24841,
+              218.576141,
+              2153.08032
+            ]
+          }
+        ]
+      },
+      {
+        "name": "MC_L14 diagnostics workbench tray_05919",
+        "transformId": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-1332896751-0",
+        "localPosition": [
+          -13.4000015,
+          -4.4375,
+          7.65
+        ],
+        "worldPosition": [
+          1627.90991,
+          218.686142,
+          2153.52954
+        ],
+        "colliders": [
+          {
+            "id": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-1332896752-0",
+            "center": [
+              1627.90991,
+              218.686142,
+              2153.52954
+            ]
+          }
+        ]
+      },
+      {
+        "name": "MC_L14 instrument screen captured display pedestal_05927",
+        "transformId": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-1095817418-0",
+        "localPosition": [
+          -13.4000015,
+          -4.614998,
+          7.77200031
+        ],
+        "worldPosition": [
+          1628.01672,
+          218.808151,
+          2153.388
+        ],
+        "colliders": [
+          {
+            "id": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-1095817419-0",
+            "center": [
+              1628.01672,
+              218.808151,
+              2153.388
+            ]
+          }
+        ]
+      },
+      {
+        "name": "MC_L14 instrument screen case_05920",
+        "transformId": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-1528315652-0",
+        "localPosition": [
+          -13.4000015,
+          -4.5,
+          8.22
+        ],
+        "worldPosition": [
+          1627.94751,
+          219.256149,
+          2153.47974
+        ],
+        "colliders": [
+          {
+            "id": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-1528315653-0",
+            "center": [
+              1627.94751,
+              219.256149,
+              2153.47974
+            ]
+          }
+        ]
+      },
+      {
+        "name": "MC_L14 instrument screen screen_05921",
+        "transformId": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-1295953706-0",
+        "localPosition": [
+          -13.4000015,
+          -4.538002,
+          8.22
+        ],
+        "worldPosition": [
+          1627.97034,
+          219.256149,
+          2153.44946
+        ],
+        "colliders": []
+      },
+      {
+        "name": "MC_L14 instrument screen supported desktop foot_05926",
+        "transformId": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-871349158-0",
+        "localPosition": [
+          -13.4000015,
+          -4.75,
+          7.595
+        ],
+        "worldPosition": [
+          1628.0979,
+          218.631149,
+          2153.28
+        ],
+        "colliders": [
+          {
+            "id": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-871349159-0",
+            "center": [
+              1628.0979,
+              218.631149,
+              2153.28
+            ]
+          }
+        ]
+      },
+      {
+        "name": "MC_L14 instrument screen trace_05922",
+        "transformId": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-1514361627-0",
+        "localPosition": [
+          -13.2200012,
+          -4.54399872,
+          8.427
+        ],
+        "worldPosition": [
+          1627.8302,
+          219.46315,
+          2153.33618
+        ],
+        "colliders": []
+      },
+      {
+        "name": "MC_L14 instrument screen trace_05923",
+        "transformId": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-1741371364-0",
+        "localPosition": [
+          -13.2200012,
+          -4.54399872,
+          8.301
+        ],
+        "worldPosition": [
+          1627.8302,
+          219.337143,
+          2153.33618
+        ],
+        "colliders": []
+      },
+      {
+        "name": "MC_L14 instrument screen trace_05924",
+        "transformId": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-978153109-0",
+        "localPosition": [
+          -13.2200012,
+          -4.54399872,
+          8.175
+        ],
+        "worldPosition": [
+          1627.8302,
+          219.211151,
+          2153.33618
+        ],
+        "colliders": []
+      },
+      {
+        "name": "MC_L14 instrument screen trace_05925",
+        "transformId": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-2031627402-0",
+        "localPosition": [
+          -13.2200012,
+          -4.54399872,
+          8.049
+        ],
+        "worldPosition": [
+          1627.8302,
+          219.085144,
+          2153.33618
+        ],
+        "colliders": []
+      }
+    ],
+    "wholeChunkOriginalState": [
+      {
+        "name": "MC00Surface1213",
+        "transformId": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-222515869-0",
+        "rendererId": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-222515870-0",
+        "localPosition": [
+          -2582.73315,
+          -211.036148,
+          -744.6223
+        ],
+        "lightmapIndex": -1,
+        "realtimeLightmapIndex": -1,
+        "receiveGI": "Lightmaps",
+        "lightProbeUsage": "BlendProbes"
+      },
+      {
+        "name": "MC00Surface1214",
+        "transformId": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-652924931-0",
+        "rendererId": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-652924932-0",
+        "localPosition": [
+          -2582.73315,
+          -211.036148,
+          -744.6223
+        ],
+        "lightmapIndex": -1,
+        "realtimeLightmapIndex": -1,
+        "receiveGI": "Lightmaps",
+        "lightProbeUsage": "BlendProbes"
+      },
+      {
+        "name": "MC00Surface1216",
+        "transformId": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-1081190320-0",
+        "rendererId": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-1081190321-0",
+        "localPosition": [
+          -2582.73315,
+          -211.036148,
+          -744.6223
+        ],
+        "lightmapIndex": -1,
+        "realtimeLightmapIndex": -1,
+        "receiveGI": "Lightmaps",
+        "lightProbeUsage": "BlendProbes"
+      },
+      {
+        "name": "MC00Surface1225",
+        "transformId": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-128091989-0",
+        "rendererId": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-128091990-0",
+        "localPosition": [
+          -2582.73315,
+          -211.036148,
+          -744.6223
+        ],
+        "lightmapIndex": -1,
+        "realtimeLightmapIndex": -1,
+        "receiveGI": "Lightmaps",
+        "lightProbeUsage": "BlendProbes"
+      },
+      {
+        "name": "MC00Surface1227",
+        "transformId": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-1511195853-0",
+        "rendererId": "GlobalObjectId_V1-2-4f0fda1a3aad7684f969edd35760df6f-1511195854-0",
+        "localPosition": [
+          -2582.73315,
+          -211.036148,
+          -744.6223
+        ],
+        "lightmapIndex": -1,
+        "realtimeLightmapIndex": -1,
+        "receiveGI": "Lightmaps",
+        "lightProbeUsage": "BlendProbes"
+      }
+    ],
+    "translationStandardUnityLocal": [
+      8.8,
+      0.0,
+      6.0
+    ],
+    "worldDelta": [
+      3.41710281,
+      0.0,
+      10.0877848
+    ],
+    "stairObjectsRestored": 214,
+    "stairCollidersRestored": 25,
+    "prepObjectsStillIsolated": 6,
+    "formal": "Assets/MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusGameScene.unity",
+    "sceneBeforeSHA256": "176415f5e8a1af10171649824d454cafc4909880349a7091c813022155785df0",
+    "sceneAfterSHA256": "fdebc29ce44a128c52ce404d67f2437420698192f0bec8f7cb8933a892c8bcdc",
+    "sceneDirty": false,
+    "protectedComponentHashBefore": "18A009672F0EB0921557A49A077C8DECE7A796D82CE61E81A1F510C77192565A",
+    "protectedComponentHashAfter": "18A009672F0EB0921557A49A077C8DECE7A796D82CE61E81A1F510C77192565A",
+    "privateMeshes": [
+      "Assets/MoonEnvironment/Variants/MC00L14GI01/ReplacementMeshes/Desk1211_Retained.asset",
+      "Assets/MoonEnvironment/Variants/MC00L14GI01/ReplacementMeshes/Desk1211_MovedMembers.asset"
+    ],
+    "lighting": "Moved furniture uses existing light probes instead of stale baked lightmap locations; untouched member retains its original renderer/lightmap/UV data",
+    "playerWalkingTested": false,
+    "appearanceTested": false,
+    "PlayStarted": false,
+    "HostStarted": false
+  },
+  "collisionSourceContract": "None of these 20 desk source names occurs in the frozen architectural proxy member ranges. All 15 actual desk Collider components move with their original owner transforms. Existing architectural proxies remain unchanged.",
+  "retainedOptimization": "Five desk-only optimized chunks remain combined. One shared chunk splits into two private mesh copies with unchanged vertex channels and triangle order; unrelated member keeps original renderer and baked mapping. Original aggregate .asset files and original FBXs remain unchanged.",
+  "remaining": "Six PREP_V3 objects still isolated pending separate local occupancy decision; 348 old render replacements and 51 new S21 Viewport pieces remain deferred.",
+  "verificationScope": "Exact geometry correspondence, Collider translation, protected component serialization and original asset hash equality, saved scene clean. No Play, Host, build, player walking, visual acceptance or performance test.",
+  "rollback": "Revert the desk restoration commit to restore original source transforms/chunk references, remove added private mesh references and re-isolate new stairs. Original source mesh assets remain available.",
+  "unrelatedUncommittedFiles": "Do not stage user URPGlobalSettings/ProjectSettings or the newly observed NotoSansCJKsc font dirty state; font origin not established.",
+  "pushPerformed": false
+}
