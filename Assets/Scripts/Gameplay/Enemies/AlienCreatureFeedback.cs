@@ -8,7 +8,7 @@ namespace Unity.MP_FPS
     /// no per-creature generated AudioClips and no gameplay authority.</summary>
     public sealed partial class AlienCreatureFeedback : IDisposable
     {
-        private enum Cue { Step, Warning, Strike, Hurt, Collapse, Idle, Motion, Wall, AttackMotion, AttackImpact, Grip, Count }
+        private enum Cue { Step, Warning, Strike, Hurt, Collapse, Idle, Motion, Wall, AttackMotion, AttackImpact, Grip, Proximity, Count }
         private readonly SoundSystem.SoundInfo[] m_Handles = new SoundSystem.SoundInfo[(int)Cue.Count];
         private readonly float m_Pitch;
         private readonly AlienSpecies m_Species;
@@ -19,7 +19,7 @@ namespace Unity.MP_FPS
         private readonly Transform m_Anchor;
         private readonly System.Random m_Random;
         private readonly MoonkovSurfaceFoley m_Wall = new MoonkovSurfaceFoley();
-        private float m_IdleIn, m_MotionIn, m_SurfaceTravel, m_ScrapeIn;
+        private float m_IdleIn, m_MotionIn, m_SurfaceTravel, m_ScrapeIn, m_ProximityIn;
         private ISoundSystem m_System;
         private AlienAction m_PreviousAction;
         private uint m_AttackSequence, m_PlayedStrikeSequence;
@@ -70,6 +70,7 @@ namespace Unity.MP_FPS
             {
                 Stop(Cue.Step); Stop(Cue.Strike, .06f); Stop(Cue.Hurt, .05f);
                 Stop(Cue.Idle, .1f); Stop(Cue.Motion, .1f); Stop(Cue.Wall, .08f);
+                Stop(Cue.Proximity, .06f);
                 Stop(Cue.AttackMotion, .06f); Stop(Cue.AttackImpact, .08f); Stop(Cue.Grip, .06f);
                 Play(Cue.Collapse, position, .9f);
             }
@@ -124,9 +125,21 @@ namespace Unity.MP_FPS
             Vector3 position = motor.Current.Position;
             if (m_Health <= 0 || action == AlienAction.Dead || action == AlienAction.Ambush || action == AlienAction.Attached ||
                 !MoonkovAudio.CanHearDetail(position, m_Tier == AlienThreatTier.Boss ? 65 : 28))
-            { m_Wall.Reset(); m_SurfaceTravel = 0; return; }
+            { Stop(Cue.Proximity, .08f); m_Wall.Reset(); m_SurfaceTravel = 0; return; }
             bool attacking = action == AlienAction.Windup || action == AlienAction.Strike || action == AlienAction.Dominance;
-            if (!attacking && !(m_Approach == AlienApproach.Stalk && action == AlienAction.Chase))
+            // Small grounded creatures must remain audible when they reach the listener
+            // and stop moving. Ambush/attached/dead states returned above remain silent.
+            bool close = m_Tier != AlienThreatTier.Boss && m_Approach != AlienApproach.Stalk &&
+                MoonkovAudio.CanHearDetail(position, 4);
+            m_ProximityIn = Mathf.Max(0, m_ProximityIn - dt);
+            if (close && !attacking && m_ProximityIn <= 0)
+            {
+                m_ProximityIn = Play(Cue.Proximity, position, 1.1f, MoonkovAudio.Library?.AlienIdleMotion)
+                    ? Range(1.8f, 2.8f) : .5f;
+            }
+            if (attacking) Stop(Cue.Proximity, .08f);
+            if (!close) { m_ProximityIn = 0; Stop(Cue.Proximity, .1f); }
+            if (!close && !attacking && !(m_Approach == AlienApproach.Stalk && action == AlienAction.Chase))
             {
                 m_IdleIn -= dt; m_MotionIn -= dt;
                 if (m_IdleIn <= 0)
