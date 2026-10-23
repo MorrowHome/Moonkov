@@ -28,8 +28,11 @@ namespace Unity.MP_FPS.Client
         public bool HaloVisible => m_Halo != null && m_Halo.gameObject.activeInHierarchy;
         public Scene DisplayScene => m_Scene;
         public int CurrentMotionIndex => m_Motion;
-        public string CurrentMotion => m_Settings.Motion(m_Motion).Name ?? m_Settings.Motions[m_Motion].name;
-        private readonly MenuCharacterSettings m_Settings;
+        public string CurrentMotion => m_Settings == null ? string.Empty :
+            m_Settings.Motion(m_Motion).Name ?? m_Settings.Motions[m_Motion].name;
+        public int CharacterIndex { get; private set; } = -1;
+        private MenuCharacterSettings m_Settings;
+        private readonly GameSettings m_GameSettings;
         private readonly bool m_IdleOnly;
         private Animator m_Animator;
         public event Action FrameRendered;
@@ -46,6 +49,7 @@ namespace Unity.MP_FPS.Client
         private AnimationLayerMixerPlayable m_Layers;
         private AnimationClipPlayable m_BaseIdle;
         private SecondaryBoneSpring m_Spring;
+        private HumanoidTwistFollowers m_TwistFollowers;
         private SkirtHandAvoidance m_HandAvoidance;
         private DollSingerBakedGestures m_Gestures;
         private AvatarMask m_FullBodyMask;
@@ -70,7 +74,7 @@ namespace Unity.MP_FPS.Client
         private bool m_Inspected;
         public float InspectionYaw => m_InspectionYaw;
 
-        public MenuCharacterView(bool idleOnly = false, Image element = null)
+        public MenuCharacterView(bool idleOnly = false, Image element = null, int? characterIndex = null)
         {
             m_IdleOnly = idleOnly;
             Element = element ?? new Image();
@@ -82,18 +86,34 @@ namespace Unity.MP_FPS.Client
             Element.RegisterCallback<PointerCancelEvent>(CancelInspect);
             Element.RegisterCallback<PointerCaptureOutEvent>(CaptureLost);
             Element.RegisterCallback<DetachFromPanelEvent>(Detached);
-            m_Settings = Resources.Load<MenuCharacterSettings>("Moonkov/MenuCharacterSettings");
-            if (m_Settings == null || m_Settings.VisualPrefab == null || m_Settings.Motions == null || m_Settings.Motions.Length == 0)
-            {
-                Debug.LogWarning("Moonkov menu character settings are missing.");
-                return;
-            }
+            m_GameSettings = characterIndex.HasValue ? null : GameSettings.Instance;
+            SelectCharacter(characterIndex ?? m_GameSettings?.PlayerCharacter ?? GameSettings.DollSingerCharacterIndex);
+            if (m_GameSettings != null) m_GameSettings.PlayerCharacterChanged += SelectCharacter;
             try
             {
                 m_LastTime = Time.realtimeSinceStartupAsDouble;
                 m_Timer = Element.schedule.Execute(Tick).Every(33);
             }
             catch { Dispose(); throw; }
+        }
+
+        private void SelectCharacter(int characterIndex)
+        {
+            characterIndex = GameSettings.NormalizeCharacterIndex(characterIndex);
+            if (m_Disposed || CharacterIndex == characterIndex) return;
+            ReleaseStage();
+            CharacterIndex = characterIndex;
+            m_Motion = m_LastAction = m_BagRemaining = 0;
+            m_ActionBag = null;
+            MotionChanges = 0; HaloAimWeight = 0;
+            string path = CharacterIndex == GameSettings.HatsuneMikuCharacterIndex
+                ? "Moonkov/HatsuneMikuMenuCharacterSettings" : "Moonkov/MenuCharacterSettings";
+            m_Settings = Resources.Load<MenuCharacterSettings>(path);
+            if (m_Settings == null || m_Settings.VisualPrefab == null || m_Settings.Motions == null || m_Settings.Motions.Length == 0)
+            {
+                m_Settings = null;
+                Debug.LogWarning("Moonkov menu character settings are missing: " + path);
+            }
         }
 
         private void BeginInspect(PointerDownEvent evt)
@@ -167,6 +187,8 @@ namespace Unity.MP_FPS.Client
             animator.fireEvents = false;
             m_Stage.SetActive(true);
             animator.Rebind();
+            m_TwistFollowers = m_Model.GetComponentInChildren<HumanoidTwistFollowers>(true);
+            m_TwistFollowers?.InitializePresentation();
             m_Spring = m_Model.GetComponentInChildren<SecondaryBoneSpring>(true);
             m_HandAvoidance = m_Model.GetComponentInChildren<SkirtHandAvoidance>(true);
             m_HandAvoidance?.PreparePresentation(0, 0);
@@ -190,6 +212,7 @@ namespace Unity.MP_FPS.Client
             SetClip(0, 0);
             m_Mixer.SetInputWeight(0, 1f);
             m_Graph.Play(); m_Graph.Evaluate(0);
+            m_TwistFollowers?.ApplyPresentation();
             m_Remaining = IdleDuration();
             foreach (var t in m_Model.GetComponentsInChildren<Transform>(true))
                 if (t.name == "HaloCrosshair") { m_Halo = t; break; }
@@ -304,7 +327,7 @@ namespace Unity.MP_FPS.Client
         {
             double now = Time.realtimeSinceStartupAsDouble;
             float dt = Mathf.Clamp((float)(now - m_LastTime), 0, .1f); m_LastTime = now;
-            if (m_Disposed) return;
+            if (m_Disposed || m_Settings == null) return;
             bool visible = Element.panel != null;
             for (VisualElement parent = Element; parent != null; parent = parent.parent)
                 if (parent.resolvedStyle.display == DisplayStyle.None) { visible = false; break; }
@@ -356,6 +379,7 @@ namespace Unity.MP_FPS.Client
                 if (options.Weapon > 0 && weight > .0001f) gestureActive = true;
             }
             m_HandAvoidance?.PreparePresentation(dt, preserveHands);
+            m_TwistFollowers?.RestoreBeforeAnimation();
             if (m_GestureActive || gestureActive) m_Gestures?.RestoreBeforeAnimation();
             m_GestureActive = gestureActive;
             m_Graph.Evaluate(0);
@@ -363,6 +387,7 @@ namespace Unity.MP_FPS.Client
             m_PoseTurn = turn * m_Settings.TurnDegrees;
             ApplyOrientation();
             DollSingerMovement.ApplyTiptoePresentation(m_Animator, tiptoe);
+            m_TwistFollowers?.ApplyPresentation();
             ApplyWeaponGesture(dt);
             m_Spring?.SimulatePresentation(dt);
             UpdateHalo();
@@ -477,6 +502,7 @@ namespace Unity.MP_FPS.Client
         {
             if (m_Disposed) return;
             m_Disposed = true; m_Timer?.Pause();
+            if (m_GameSettings != null) m_GameSettings.PlayerCharacterChanged -= SelectCharacter;
             Element.UnregisterCallback<PointerDownEvent>(BeginInspect);
             Element.UnregisterCallback<PointerMoveEvent>(Inspect);
             Element.UnregisterCallback<PointerUpEvent>(EndInspect);
@@ -497,6 +523,7 @@ namespace Unity.MP_FPS.Client
             m_Protection=null;
             m_Halo = null; m_Head = null; m_Finger = null; m_HaloStrokes = null;
             m_Spring = null; m_HandAvoidance = null;
+            m_TwistFollowers = null;
             m_Gestures = null; m_Chest = null; m_Renderers = null;
             if (!m_Scene.IsValid()) return;
 #if UNITY_EDITOR

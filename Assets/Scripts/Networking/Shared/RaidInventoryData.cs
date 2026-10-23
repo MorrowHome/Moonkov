@@ -316,7 +316,7 @@ namespace Unity.MP_FPS
         }
         public void Receive(RaidCorpseRpc bag)
         {
-            if(bag.LootId<RaidLootContainers.FirstDeathBagId || bag.Version<1 || bag.CharacterIndex<RaidLootContainers.DroppedItemCharacterIndex || bag.CharacterIndex>2 ||
+            if(bag.LootId<RaidLootContainers.FirstDeathBagId || bag.Version<1 || bag.CharacterIndex<RaidLootContainers.DroppedItemCharacterIndex || bag.CharacterIndex>GameSettings.HatsuneMikuCharacterIndex ||
                 !Unity.Mathematics.math.all(Unity.Mathematics.math.isfinite(bag.Position)) || !Unity.Mathematics.math.all(Unity.Mathematics.math.isfinite(bag.Rotation.value)) ||
                 Unity.Mathematics.math.abs(Unity.Mathematics.math.lengthsq(bag.Rotation.value)-1)>.01f || !float.IsFinite(bag.Age) || bag.Age<0)return;
             if(!Bags.TryGetValue(bag.LootId,out var old) || bag.Version>old.Version)Bags[bag.LootId]=bag;

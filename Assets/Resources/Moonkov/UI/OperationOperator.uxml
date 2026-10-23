@@ -9,12 +9,22 @@
                 <ui:Image name="operatorPortrait" class="op-character" picking-mode="Ignore" />
                 <ui:VisualElement class="op-operator-id">
                     <ui:Label text="OPERATOR" class="op-kicker" />
-                    <ui:Label text="DOLLSINGER" class="op-title" />
+                    <ui:Label name="operatorName" text="DOLLSINGER" class="op-title" />
                     <ui:Label text="HALO / FIELD LOADOUT" class="op-kicker" />
                 </ui:VisualElement>
                 <ui:VisualElement class="op-operator-check">
                     <ui:VisualElement class="op-confirmed">
-                        <ui:Label text="OPERATOR CONFIRMED" class="op-title" />
+                        <ui:Label text="SELECT OPERATOR" class="op-title" />
+                        <ui:VisualElement class="op-character-choices">
+                            <ui:Button name="chooseDollSinger" class="op-button op-character-choice">
+                                <ui:Label text="DOLLSINGER" class="op-button-label" />
+                                <ui:Label text="[ ]" class="op-choice-mark" />
+                            </ui:Button>
+                            <ui:Button name="chooseHatsuneMiku" class="op-button op-character-choice">
+                                <ui:Label text="HATSUNE MIKU" class="op-button-label" />
+                                <ui:Label text="[ ]" class="op-choice-mark" />
+                            </ui:Button>
+                        </ui:VisualElement>
                         <ui:Label text="Your equipment is taken from the character loadout. Check your halo weapons and carried supplies before deployment." class="op-copy" />
                     </ui:VisualElement>
                     <ui:VisualElement class="op-equipment">

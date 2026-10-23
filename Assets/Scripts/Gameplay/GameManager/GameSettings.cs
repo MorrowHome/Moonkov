@@ -31,6 +31,13 @@ namespace Unity.MP_FPS
     {
         // Keep the existing network identity so old snapshots and corpse visuals stay compatible.
         public const int DollSingerCharacterIndex = 2;
+        public const int HatsuneMikuCharacterIndex = 3;
+        public static bool IsPlayableCharacter(int characterIndex) =>
+            characterIndex == DollSingerCharacterIndex || characterIndex == HatsuneMikuCharacterIndex;
+        public static int NormalizeCharacterIndex(int characterIndex) =>
+            IsPlayableCharacter(characterIndex) ? characterIndex : DollSingerCharacterIndex;
+        public static string CharacterName(int characterIndex) =>
+            characterIndex == HatsuneMikuCharacterIndex ? "HATSUNE MIKU" : "DOLLSINGER";
         public static GameSettings Instance { get; private set; } = null!;
 
         /// <summary>
@@ -43,6 +50,7 @@ namespace Unity.MP_FPS
         const string k_ConnectionModeKey = "ConnectionMode";
         const string k_SessionNameKey = "SessionName";
         const string k_RaidModeKey = "Moonkov.RaidMode";
+        const string k_PlayerCharacterKey = "Moonkov.PlayerCharacter";
         private RaidGameMode m_RequestedMode;
         public RaidGameMode RequestedMode
         {
@@ -61,6 +69,7 @@ namespace Unity.MP_FPS
         GameSettings()
         {
             m_PlayerName = PlayerPrefs.GetString(k_PlayerNameKey, Environment.UserName);
+            m_PlayerCharacter = NormalizeCharacterIndex(PlayerPrefs.GetInt(k_PlayerCharacterKey, DollSingerCharacterIndex));
             // The shipped settings file decides which connection mode a fresh install opens in, so
             // players pointed at a dedicated server land straight on the host/join buttons.
             m_ConnectionMode = PlayerPrefs.GetInt(k_ConnectionModeKey,
@@ -218,8 +227,23 @@ namespace Unity.MP_FPS
             }
         }
 
+        private int m_PlayerCharacter;
+        public event Action<int> PlayerCharacterChanged;
         [CreateProperty]
-        public int PlayerCharacter => DollSingerCharacterIndex;
+        public int PlayerCharacter
+        {
+            get => m_PlayerCharacter;
+            set
+            {
+                int characterIndex = NormalizeCharacterIndex(value);
+                if (m_PlayerCharacter == characterIndex) return;
+                m_PlayerCharacter = characterIndex;
+                PlayerPrefs.SetInt(k_PlayerCharacterKey, characterIndex);
+                PlayerPrefs.Save();
+                Notify();
+                PlayerCharacterChanged?.Invoke(characterIndex);
+            }
+        }
         
         int m_ConnectionMode = 0;
         [CreateProperty]

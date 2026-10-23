@@ -13,7 +13,7 @@ public static class RaidOperatorPortraitBake
     public static void Bake()
     {
         if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("Bake outside Play mode.");
-        using var view = new MenuCharacterView(true);
+        using var view = new MenuCharacterView(idleOnly: true, characterIndex: Unity.MP_FPS.GameSettings.DollSingerCharacterIndex);
         view.Advance(.05f); view.Render(new Vector2(768, 1536));
         if (!view.Target) throw new InvalidOperationException("Character renderer did not produce a portrait.");
         var roots = view.DisplayScene.GetRootGameObjects();

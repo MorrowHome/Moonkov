@@ -10,7 +10,7 @@
                     <ui:Label text="01" class="op-check-number" />
                     <ui:VisualElement class="op-check-label">
                         <ui:Label text="OPERATOR" class="op-heading" />
-                        <ui:Label text="DOLLSINGER" class="op-copy" />
+                        <ui:Label name="readyOperatorName" text="DOLLSINGER" class="op-copy" />
                     </ui:VisualElement>
                     <ui:VisualElement class="op-check-value">
                         <ui:Label text="OPERATOR CONFIRMED" class="op-value" />

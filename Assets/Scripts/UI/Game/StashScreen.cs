@@ -31,6 +31,7 @@ namespace Unity.MP_FPS.Client
         private int m_Filter;
         private bool m_SortByQuantity;
         private float m_CellSize;
+        private readonly GameSettings m_GameSettings;
 
         public StashScreen(VisualElement host, Action prepare, Action logout, Action refresh, bool preview = false)
         {
@@ -86,6 +87,8 @@ namespace Unity.MP_FPS.Client
             MoonkovLocalization.Set(m_Sort, "SORT");
             Select(null);
             Filter(0);
+            m_GameSettings = GameSettings.Instance;
+            if (m_GameSettings != null) m_GameSettings.PlayerCharacterChanged += PresentCharacterName;
         }
 
         private Button Button(string name) => m_Root.Q<Button>(name);
@@ -96,7 +99,7 @@ namespace Unity.MP_FPS.Client
         {
             m_Host.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
             Label("stashAccountName").text = playerName;
-            Label("stashCharacterName").text = "DOLLSINGER";
+            PresentCharacterName(character);
             m_Stacks[0].Quantity = dust; m_Stacks[1].Quantity = alloy; m_Stacks[2].Quantity = cells;
             Label("stashDustCount").text = Number(dust); Label("stashAlloyCount").text = Number(alloy); Label("stashCellsCount").text = Number(cells);
             Label("stashSyncStatus").text = busy ? "UPDATING..." : error != null ? "UPDATE FAILED" : "UP TO DATE";
@@ -106,6 +109,9 @@ namespace Unity.MP_FPS.Client
             m_Terminal.Present(playerName, dust, alloy, cells, busy);
             PresentContainers();
         }
+
+        private void PresentCharacterName(int characterIndex) =>
+            MoonkovLocalization.Set(Label("stashCharacterName"), GameSettings.CharacterName(characterIndex));
 
         private void All() => Filter(0);
         private void Materials() => Filter(1);
@@ -192,6 +198,7 @@ namespace Unity.MP_FPS.Client
 
         public void Dispose()
         {
+            if (m_GameSettings != null) m_GameSettings.PlayerCharacterChanged -= PresentCharacterName;
             m_All.clicked -= All; m_Materials.clicked -= Materials; m_Energy.clicked -= Energy;
             m_Sort.clicked -= Sort; m_Refresh.clicked -= m_OnRefresh; m_Logout.clicked -= m_OnLogout;
             m_Deploy.clicked -= PrepareTerminal; m_MainMenu.clicked -= ShipTerminal;

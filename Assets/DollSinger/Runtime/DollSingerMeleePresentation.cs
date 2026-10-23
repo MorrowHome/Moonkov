@@ -21,6 +21,8 @@ namespace Unity.MP_FPS.DollSinger
     [DefaultExecutionOrder(110)]
     public sealed class DollSingerMeleePresentation : MonoBehaviour
     {
+        [Tooltip("Optional exact-rig animation library for this character. Empty retains the original DollSinger library.")]
+        public TextAsset gestureBake;
         [Serializable] private sealed class Part
         { public string name; public float[] vertices, normals, color; public int[] triangles; public float emission; }
         [Serializable] private sealed class WeaponArt { public string weapon; public Part[] parts; }
@@ -62,7 +64,7 @@ namespace Unity.MP_FPS.DollSinger
         public void Configure(Animator animator, DollSingerView playerView, DollSingerHaloAim playerHalo)
         {
             if (configured) return;
-            var data = Resources.Load<TextAsset>("MoonkovMeleeGestures");
+            var data = gestureBake ? gestureBake : Resources.Load<TextAsset>("MoonkovMeleeGestures");
             var art = Resources.Load<TextAsset>("MoonkovMeleeWeapons");
             var shader = Resources.Load<Shader>("MoonkovMelee");
             if (!data || !art || !shader) throw new InvalidOperationException("Independent melee bake/art/shader resources have not been imported.");
