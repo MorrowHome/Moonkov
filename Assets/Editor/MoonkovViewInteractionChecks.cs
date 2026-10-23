@@ -85,12 +85,17 @@ public sealed class MoonkovViewInteractionChecks : EditorWindow
     [MenuItem("Tools/Moonkov/Check Portrait Drag")]
     public static void CheckPortrait()
     {
+        CheckPortraitForCharacter(GameSettings.DollSingerCharacterIndex);
+    }
+
+    public static void CheckPortraitForCharacter(int characterIndex)
+    {
         if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("Run portrait checks outside Play mode.");
         LastPreviewResult = "running";
         var window = CreateInstance<MoonkovViewInteractionChecks>();
         window.titleContent = new GUIContent("Portrait regression check");
         window.position = new Rect(60, 60, 440, 560); window.Show();
-        window.portrait = new MenuCharacterView(idleOnly: true);
+        window.portrait = new MenuCharacterView(idleOnly: true, characterIndex: characterIndex);
         var image = window.portrait.Element;
         image.RemoveFromClassList("terminal-character-art"); image.style.width = 400; image.style.height = 500;
         window.rootVisualElement.Add(image);
@@ -108,6 +113,13 @@ public sealed class MoonkovViewInteractionChecks : EditorWindow
         {
             var image = portrait.Element;
             portrait.Advance(0); portrait.Render();
+            var camera = (Camera)typeof(MenuCharacterView).GetField("m_Camera", Private).GetValue(portrait);
+            var renderers = (SkinnedMeshRenderer[])typeof(MenuCharacterView).GetField("m_Renderers", Private).GetValue(portrait);
+            var visibleBounds = renderers[0].bounds;
+            foreach (var renderer in renderers) visibleBounds.Encapsulate(renderer.bounds);
+            float top = camera.WorldToViewportPoint(visibleBounds.center + Vector3.up * visibleBounds.extents.y).y;
+            float bottom = camera.WorldToViewportPoint(visibleBounds.center - Vector3.up * visibleBounds.extents.y).y;
+            Require(top - bottom > .5f, "Standing portrait was framed too small; check the skinned mesh bounds coordinate space.");
             var scene = portrait.DisplayScene;
             Require(image.panel.Pick(button.worldBound.center) == button, "Portrait blocked an overlaid equipment button.");
             Vector2 start = image.worldBound.center, end = start + Vector2.right * 80;
@@ -122,15 +134,55 @@ public sealed class MoonkovViewInteractionChecks : EditorWindow
             Down(image, start);
             using (var cancel = PointerCancelEvent.GetPooled()) { cancel.target = image; image.SendEvent(cancel); }
             Require(!image.HasPointerCapture(PointerId.mousePointerId), "Cancelled pointer retained capture.");
+            Down(image, start);
+            image.ReleasePointer(PointerId.mousePointerId);
+            Move(image, end);
+            Require(portrait.InspectionYaw == yaw, "Losing pointer capture continued rotating the portrait.");
+            Down(image, start);
+            using (var released = PointerUpEvent.GetPooled(new Event { type = EventType.MouseUp, button = 0, mousePosition = end }))
+            using (var move = PointerMoveEvent.GetPooled((IPointerEvent)released)) image.SendEvent(move);
+            Require(!image.HasPointerCapture(PointerId.mousePointerId) && portrait.InspectionYaw == yaw,
+                "A missed button release retained the portrait gesture.");
+            CheckInspectionFraming(start);
             image.RemoveFromHierarchy();
             Require(portrait.InspectionYaw == 0 && !scene.isLoaded, "Detached portrait retained orientation or preview scene.");
             rootVisualElement.Insert(0, image); portrait.Advance(0);
             Require(portrait.InspectionYaw == 0, "Reopened portrait did not reset.");
             LastPreviewResult = "passed";
-            Debug.Log("Portrait checks passed: pointer rotation, release stop, cancellation, overlaid equipment isolation, detach cleanup and reopen reset.");
+            Debug.Log("Portrait checks passed: pointer rotation, stable full-turn framing, coalesced input rendering, release stop, cancellation, overlaid equipment isolation, detach cleanup and reopen reset.");
         }
         catch (Exception ex) { LastPreviewResult = "failed: " + ex.Message; throw; }
         finally { Close(); }
+    }
+    private void CheckInspectionFraming(Vector2 start)
+    {
+        var camera = (Camera)typeof(MenuCharacterView).GetField("m_Camera", Private).GetValue(portrait);
+        portrait.Advance(0); portrait.Render();
+        var position = camera.transform.position;
+        float initialYaw = portrait.InspectionYaw;
+        int renders = 0;
+        Action rendered = () => renders++;
+        portrait.FrameRendered += rendered;
+        try
+        {
+            Down(portrait.Element, start);
+            for (int i = 1; i <= 40; i++)
+                Move(portrait.Element, start + Vector2.right * (portrait.Element.contentRect.width * i / 20));
+            Require(renders == 0, "A burst of pointer events synchronously rendered the portrait instead of waiting for the presentation tick.");
+            Require(Mathf.Abs(Mathf.DeltaAngle(portrait.InspectionYaw, initialYaw)) < .01f, "Full-turn dragging lost pointer travel.");
+            typeof(MenuCharacterView).GetMethod("Tick", Private).Invoke(portrait, null);
+            Require(renders == 1, "The presentation tick did not flush the pending drag in a static editor preview.");
+            // Sample every 18 degrees: returning to the same yaw must not leave a
+            // permanently wider frame, nor pan the camera around an off-centre mesh.
+            for (int i = 1; i <= 20; i++)
+            {
+                Move(portrait.Element, start + Vector2.right * (portrait.Element.contentRect.width * (2 + i / 10f)));
+                portrait.Advance(0); portrait.Render();
+                Require(Vector3.Distance(position, camera.transform.position) < .001f, "Rotating the portrait changed its framing.");
+            }
+            Up(portrait.Element, start);
+        }
+        finally { portrait.FrameRendered -= rendered; }
     }
     private void OnDisable() { portrait?.Dispose(); portrait = null; }
     private static void Set(object target, string field, object value) => target.GetType().GetField(field, Private).SetValue(target, value);

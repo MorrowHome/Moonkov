@@ -71,7 +71,7 @@ namespace Unity.MP_FPS.Client
         private int m_DragPointer = -1;
         private Vector2 m_DragPosition;
         private float m_InspectionYaw, m_PoseTurn;
-        private bool m_Inspected;
+        private bool m_Inspected, m_OrientationDirty;
         public float InspectionYaw => m_InspectionYaw;
 
         public MenuCharacterView(bool idleOnly = false, Image element = null, int? characterIndex = null)
@@ -126,6 +126,7 @@ namespace Unity.MP_FPS.Client
             m_DragPosition = Element.WorldToLocal(evt.position);
             if (!m_Inspected) { m_InspectionYaw = m_PoseTurn; m_Inspected = true; }
             Element.CapturePointer(evt.pointerId);
+            m_Timer?.Every(16);
             evt.StopPropagation();
         }
         private void Inspect(PointerMoveEvent evt)
@@ -136,8 +137,7 @@ namespace Unity.MP_FPS.Client
             m_InspectionYaw = Mathf.Repeat(m_InspectionYaw +
                 (position.x - m_DragPosition.x) * 180f / Mathf.Max(1f, Element.contentRect.width) + 180f, 360f) - 180f;
             m_DragPosition = position;
-            ApplyOrientation();
-            Render();
+            m_OrientationDirty = true;
             evt.StopPropagation();
         }
         private void EndInspect(PointerUpEvent evt)
@@ -146,12 +146,13 @@ namespace Unity.MP_FPS.Client
             StopInspect(); evt.StopPropagation();
         }
         private void CancelInspect(PointerCancelEvent evt) { if (evt.pointerId == m_DragPointer) StopInspect(); }
-        private void CaptureLost(PointerCaptureOutEvent evt) { if (evt.pointerId == m_DragPointer) m_DragPointer = -1; }
+        private void CaptureLost(PointerCaptureOutEvent evt) { if (evt.pointerId == m_DragPointer) StopInspect(); }
         private void Detached(DetachFromPanelEvent evt) => ReleaseStage();
         private void StopInspect()
         {
             int pointer = m_DragPointer; m_DragPointer = -1;
             if (pointer >= 0 && Element.HasPointerCapture(pointer)) Element.ReleasePointer(pointer);
+            if (pointer >= 0) m_Timer?.Every(33);
         }
         private void ApplyOrientation()
         {
@@ -227,17 +228,15 @@ namespace Unity.MP_FPS.Client
             UpdateHalo();
             SetProtectionInventory(m_ProtectionInventory);
 
-            bool found = false;
             m_Renderers = m_Model.GetComponentsInChildren<SkinnedMeshRenderer>();
             foreach (var renderer in m_Renderers)
             {
                 renderer.updateWhenOffscreen = true;
                 renderer.forceRenderingOff = false;
-                if (!found) { m_Bounds = renderer.bounds; found = true; }
-                else m_Bounds.Encapsulate(renderer.bounds);
             }
-            if (!found) throw new InvalidOperationException("The menu visual prefab has no character renderer.");
-            if (m_Head != null) m_Bounds.Encapsulate(m_Head.position + m_Model.transform.up * .4f);
+            if (m_Renderers.Length == 0) throw new InvalidOperationException("The menu visual prefab has no character renderer.");
+            m_Bounds = new Bounds(m_Stage.transform.position, Vector3.zero);
+            ExpandFramingBounds();
             m_Camera = Child("Menu portrait camera").AddComponent<Camera>();
             m_Camera.enabled = false;
             m_Camera.cullingMask = 1 << ViewLayer;
@@ -336,7 +335,11 @@ namespace Unity.MP_FPS.Client
             if(!TerminalMotion.Animate(Element))
             {
                 var size=Element.contentRect.size;
-                if(m_Target==null || size!=m_EditorViewport){Render();m_EditorViewport=size;}
+                if(m_Target==null || size!=m_EditorViewport || m_OrientationDirty)
+                {
+                    if (m_OrientationDirty) Advance(0);
+                    Render(); m_EditorViewport=size;
+                }
                 return;
             }
             Advance(dt);
@@ -386,15 +389,42 @@ namespace Unity.MP_FPS.Client
             m_Model.transform.localPosition = Vector3.zero;
             m_PoseTurn = turn * m_Settings.TurnDegrees;
             ApplyOrientation();
+            m_OrientationDirty = false;
             DollSingerMovement.ApplyTiptoePresentation(m_Animator, tiptoe);
             m_TwistFollowers?.ApplyPresentation();
             ApplyWeaponGesture(dt);
             m_Spring?.SimulatePresentation(dt);
             UpdateHalo();
             if(m_Protection)m_Protection.SimulatePresentation();
-            // Keep a stable standing frame, expanding it only when a new pose needs more room.
-            foreach (var renderer in m_Renderers) m_Bounds.Encapsulate(renderer.bounds);
-            if (m_Halo != null) m_Bounds.Encapsulate(m_Halo.position + m_Model.transform.up * .2f);
+            ExpandFramingBounds();
+        }
+
+        private void ExpandFramingBounds()
+        {
+            var root = m_Model.transform;
+            var toModel = root.worldToLocalMatrix;
+            var scale = root.lossyScale;
+            foreach (var renderer in m_Renderers)
+            {
+                var bounds = renderer.localBounds;
+                var boundsRoot = renderer.rootBone != null ? renderer.rootBone : renderer.transform;
+                var toRoot = toModel * boundsRoot.localToWorldMatrix;
+                for (int i = 0; i < 8; i++)
+                {
+                    var corner = bounds.center + Vector3.Scale(bounds.extents,
+                        new Vector3((i & 1) == 0 ? -1 : 1, (i & 2) == 0 ? -1 : 1, (i & 4) == 0 ? -1 : 1));
+                    ExpandFramingPoint(Vector3.Scale(toRoot.MultiplyPoint3x4(corner), scale));
+                }
+            }
+            if (m_Head != null) ExpandFramingPoint(Vector3.Scale(root.InverseTransformPoint(m_Head.position), scale) + Vector3.up * .4f);
+            if (m_Halo != null) ExpandFramingPoint(Vector3.Scale(root.InverseTransformPoint(m_Halo.position), scale) + Vector3.up * .2f);
+        }
+
+        private void ExpandFramingPoint(Vector3 point)
+        {
+            float radius = new Vector2(point.x, point.z).magnitude;
+            var center = m_Model.transform.position + Vector3.up * point.y;
+            m_Bounds.Encapsulate(new Bounds(center, new Vector3(radius * 2, 0, radius * 2)));
         }
 
         private void ApplyWeaponGesture(float dt)
@@ -468,9 +498,9 @@ namespace Unity.MP_FPS.Client
                 m_Target.Create(); Element.image = m_Target;
             }
             m_Camera.aspect = (float)w / h;
-            // Fit both dimensions so the full silhouette survives narrow window layouts.
-            float halfHeight = Mathf.Max(m_Bounds.extents.y * 1.08f, m_Bounds.extents.x / m_Camera.aspect * 1.12f);
-            float distance = halfHeight / Mathf.Tan(m_Camera.fieldOfView * .5f * Mathf.Deg2Rad) + m_Bounds.extents.z;
+            float verticalTangent = Mathf.Tan(m_Camera.fieldOfView * .5f * Mathf.Deg2Rad);
+            float distance = Mathf.Max(m_Bounds.extents.y * 1.08f / verticalTangent + m_Bounds.extents.z,
+                m_Bounds.extents.x * 1.12f / Mathf.Sin(Mathf.Atan(verticalTangent * m_Camera.aspect)));
             m_Camera.transform.position = m_Bounds.center + new Vector3(0, .035f, distance);
             m_Camera.transform.LookAt(m_Bounds.center);
             RenderPipeline.SubmitRenderRequest(m_Camera, new UniversalRenderPipeline.SingleCameraRequest { destination = m_Target });
@@ -514,7 +544,7 @@ namespace Unity.MP_FPS.Client
         }
         private void ReleaseStage()
         {
-            StopInspect(); m_InspectionYaw = m_PoseTurn = 0; m_Inspected = false;
+            StopInspect(); m_InspectionYaw = m_PoseTurn = 0; m_Inspected = m_OrientationDirty = false;
             if (m_Graph.IsValid()) m_Graph.Destroy();
             if (m_FullBodyMask != null) { Destroy(m_FullBodyMask); m_FullBodyMask = null; }
             ReleaseTarget();
