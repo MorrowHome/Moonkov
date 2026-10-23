@@ -1,5 +1,32 @@
 # Windows 玩家包渲染检查（2026-10-23）
 
+## 构建耗时优化：未使用的 BRG 变体
+
+2026-10-23 检查正在进行的构建，`Logs/Editor.log` 中已完成的一次
+URP/Lit ForwardLit 片元编译为 1918.95 秒，缓存命中 929、新编译 5215 个变体；
+后续另一组同名 Pass 裁剪后仍有 13824 个变体，尚未完成。这些记录不能当作
+一次完整构建的前后对照，也不能据此认定每次构建的缓存都失效。
+
+确认存在一项冗余：所有 20 份序列化 URP 资产的 `m_GPUResidentDrawerMode` 都为 0，
+manifest/lock 中没有 Entities Graphics，项目运行时代码也没有自定义 BRG 创建路径，
+但 Graphics 的 `m_BrgStripping: 2` 仍强制 Keep All。worker 0 的编译日志中已有
+243 条启用 `DOTS_INSTANCING_ON` 的编译请求，说明这类变体确实参与了编译。
+
+将 `m_BrgStripping` 改为 0（Strip if Entities Graphics Package is not installed）。
+这是 Unity 原生的条件裁剪，不修改 Shader 源码，也不改普通 GPU Instancing、
+运行时 Lit 保留材质、Lightmap Modes、画质或场景列表。
+若将来启用 GPU Resident Drawer 或自定义 BRG，必须恢复 Keep All；现有
+`MoonBaseApollo12Tools` 启用 GPU Resident Drawer 时已同时设置 Keep All。
+安装 Entities Graphics 后，条件模式会自动保留 BRG 变体。
+
+本次只做静态配置与依赖核对，未打断当前构建、调用繁忙 Editor 或另开实例。
+修改供下一次构建使用；当前构建已载入的配置不会因此获得提速。
+当前构建结束后，重新打开项目以确保 Graphics Settings 从磁盘重新载入，保留 Library。
+下一次正常构建对照日志中的 Lit 变体数、缓存命中数和完整耗时，并检查正式地图
+建筑与尸体显示。尚未实测节省时间，不保证该单项调整解决全部一小时耗时。
+
+参考：[Unity 6000.5 BRG 裁剪模式](https://docs.unity.com/en-us/engine/6000.5/script-reference/unityeditor/rendering/batchrenderergroupstrippingmode)。
+
 ## 问题与当前结论
 
 报告症状：正式地图除中央大楼外的建筑只剩阴影，怪物尸体不可见。
