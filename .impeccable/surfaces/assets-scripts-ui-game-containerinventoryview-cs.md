@@ -14,7 +14,7 @@ Scope: native Unity UI Toolkit raid inventory, looting and warehouse. Mode: Oper
 THESIS: Keep equipment, personal containers and searched ownership visually separate, and make empty drop targets discoverable.
 OWN-WORLD: Dark charcoal and muted olive, source CJK font, existing vector item art and a baked static production-character portrait.
 STORY: Players inspect their loadout, place equipment on visible body slots, organize carried storage, then transfer from the right-hand target with authoritative commands.
-FIRST VIEWPORT: Joined left portrait/equipment and middle personal storage align vertically; right scrollable loot or warehouse owns the remaining width. Six body targets overlay the static full-body production character. Personal storage is ordered chest rig, pockets, three special tool slots, backpack, secure case. Container equipment uses a compact icon entry beside the content grid. Storage grids proportionally fill the actual middle width; three tool targets remain compact 52×52 squares. Raid quickbar docks below.
+FIRST VIEWPORT: Joined left portrait/equipment and middle personal storage align vertically; right scrollable loot or warehouse owns the remaining width. Six body targets overlay the static full-body production character. Personal storage is ordered chest rig, pockets, three special tool slots, backpack, secure case. Container equipment uses a 96×96 slot beside the content grid. All storage cells remain 48×48 logical units; three tool targets remain 52×52 squares. Raid quickbar docks below.
 FORM: User-pinned Tarkov inventory canon, native UXML/USS/C#; no random concept or approved generated comp.
 FINISH: The finish reviewer returned ship for the corpse-portrait extension and overall regression using the three current native inventory fixtures below. The built system is recorded in token-bearing DESIGN.md and schemaVersion 2 .impeccable/design.json. FieldOperatorPortrait.png carries baked production-avatar provenance; no external ImageGen asset or runtime portrait camera is involved.
 
@@ -24,12 +24,14 @@ Validation uses native editor panel captures and real inventory command callback
 
 - One compact header row contains equipment/health tabs and close. Repeated headline, pane instructions, persistent tutorial captions and large container cards stay hidden.
 - Own equipment has twelve targets: six body slots, chest rig/backpack/secure case entries in personal storage, and three compact special slots. Empty container entries remain visible.
-- Own storage scales square cells to the width of each middle-column content row while preserving true capacity, item dimensions and rotation. Tool slots are a fixed-size exception following the user's final correction.
+- Own storage, loot, stash and opened containers share fixed 48×48 cells, preserving true capacity, item dimensions and rotation. Container equipment targets are 96×96, including empty and corpse targets. Special tool slots remain 52×52. Both scroll axes are available for narrow panes; geometry events and snapshot rebuilds never rescale cells.
 - Left and middle stay joined; the right target scrolls independently. The raid quickbar reserves a 62-unit dock. Warehouse uses more width for its right-hand stash and does not show the raid dock.
 - Corpse loot shows the opponent's actual-model static full-body portrait with six body equipment overlays in a 420-unit stage; each overlay is 108×62. Compact chest-rig/backpack icon entries and their contents follow below, then loose items. Identity comes from the death record. Original slot-to-item-ID snapshot metadata preserves primary/secondary ownership and leaves looted slots empty. Protected case and special tools are excluded from corpse loot. Model index 2 currently maps to the existing DollSinger bake; unknown/legacy identities safely retain the gear-list fallback. No runtime camera is created.
 - Interactions retain authoritative inventory commands, drag preview, R rotation, right-click/Esc cancellation and modifier-click transfer. Failed operations retain the original item and explain the reason; the UI does not simulate transaction success.
 
 ## Reviewed evidence and limits
+
+2026-10-23 sizing correction: static checks only so far. The existing Editor was busy building shaders and its bridge did not respond; the captures below predate fixed storage cells and enlarged equipment slots.
 
 The current reviewed files are native Editor panel fixtures using production UXML and presenters, not formal gameplay captures. All three were directly viewed:
 

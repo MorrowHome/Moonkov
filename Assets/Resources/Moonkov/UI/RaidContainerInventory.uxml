@@ -20,12 +20,12 @@
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement class="field-carried">
-                <ui:ScrollView name="containerPane" mode="Vertical" class="inventory-containers" />
+                <ui:ScrollView name="containerPane" mode="VerticalAndHorizontal" class="inventory-containers" />
             </ui:VisualElement>
             <ui:VisualElement class="field-loot">
                 <ui:Label name="lootTitle" text="搜刮目标" class="field-pane-title" picking-mode="Ignore" />
                 <ui:Label name="lootCaption" text="靠近容器或尸体，按 E 搜索" class="field-pane-note" picking-mode="Ignore" />
-                <ui:ScrollView name="lootPane" mode="Vertical" class="inventory-loot-pane" />
+                <ui:ScrollView name="lootPane" mode="VerticalAndHorizontal" class="inventory-loot-pane" />
             </ui:VisualElement>
             <ui:VisualElement name="stashPane" class="inventory-stash" />
         </ui:VisualElement>
