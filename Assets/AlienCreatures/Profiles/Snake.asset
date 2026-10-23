@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Snake
   m_EditorClassIdentifier: Assembly-CSharp::Unity.MP_FPS.AlienCreatureProfile
   Species: 1
-  Scale: 0.4
+  Scale: 1.25
   Health: 180
-  Speed: 12.999999
+  Speed: 2.96
   TurnSpeed: 300
   SightRange: 42
   HearingRange: 16
@@ -62,10 +62,10 @@ MonoBehaviour:
   MaximumLiquidEnemies: 2
   Chain:
     length: 4.6
-    radius: 0.14
+    radius: 0.25
     segments: 18
-    verticalScale: 0.78
-    headScale: {x: 0.32, y: 0.19, z: 0.43}
+    verticalScale: 1.15
+    headScale: {x: 0.38, y: 0.42, z: 0.44}
     headFeature: 0
     feelerLength: 0.48
     speed: 3.2
@@ -76,7 +76,7 @@ MonoBehaviour:
     waveFrequency: 1.1
     contraction: 0.28
     archHeight: 0.075
-    headLift: 0.045
+    headLift: 0.32
     bendSmoothing: 0.55
     segmentGrooveDepth: 0.24
     sprintHeadLift: 0.24

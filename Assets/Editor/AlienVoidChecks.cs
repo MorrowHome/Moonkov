@@ -88,7 +88,7 @@ public static class AlienVoidChecks
         finally{effect?.Dispose();Object.DestroyImmediate(root);}
     }
 
-    public static void Capture(string output)
+    public static void Capture(string output, float illumination = 1, bool liquid = true)
     {
         string[] names={"Spider","Snake","Caterpillar","Centipede","Leech","Slime","Tentacle","Roots","FaceHugger","StiltWalker","StiltWatcher"};
         var scene=EditorSceneManager.NewPreviewScene();
@@ -102,11 +102,11 @@ public static class AlienVoidChecks
         Vector3 origin=new Vector3(-12000,1500,-12000);
         try
         {
-            RenderSettings.ambientMode=UnityEngine.Rendering.AmbientMode.Flat;RenderSettings.ambientLight=new Color(.22f,.22f,.24f);RenderSettings.reflectionIntensity=.4f;
+            RenderSettings.ambientMode=UnityEngine.Rendering.AmbientMode.Flat;RenderSettings.ambientLight=new Color(.22f,.22f,.24f)*illumination;RenderSettings.reflectionIntensity=.4f;
             var lamp=new GameObject("Wet tissue key");SceneManager.MoveGameObjectToScene(lamp,scene);
-            var light=lamp.AddComponent<Light>();light.type=LightType.Directional;light.intensity=2.4f;lamp.transform.rotation=Quaternion.Euler(38,-40,0);
+            var light=lamp.AddComponent<Light>();light.type=LightType.Directional;light.intensity=2.4f*illumination;lamp.transform.rotation=Quaternion.Euler(38,-40,0);
             var rim=new GameObject("Wet tissue edge");SceneManager.MoveGameObjectToScene(rim,scene);
-            var edge=rim.AddComponent<Light>();edge.type=LightType.Directional;edge.intensity=1.4f;rim.transform.rotation=Quaternion.Euler(25,140,0);
+            var edge=rim.AddComponent<Light>();edge.type=LightType.Directional;edge.intensity=1.4f*illumination;rim.transform.rotation=Quaternion.Euler(25,140,0);
             var cam=new GameObject("Black liquid preview camera");SceneManager.MoveGameObjectToScene(cam,scene);
             camera=cam.AddComponent<Camera>();camera.scene=scene;camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=new Color(.12f,.13f,.15f);camera.fieldOfView=34;camera.targetTexture=target;
             var floor=GameObject.CreatePrimitive(PrimitiveType.Cube);SceneManager.MoveGameObjectToScene(floor,scene);
@@ -129,7 +129,7 @@ public static class AlienVoidChecks
                     for(int frameIndex=0;frameIndex<24;frameIndex++)
                     {
                         body.SetCombatPresentation(AlienAction.Windup,pattern.Windup*.75f,1,profile.Health,pattern.Windup,pattern.Recovery,pattern.Active);
-                        body.Tick(Vector3.zero,0,0,1f/60,.75f,true);
+                        body.Tick(Vector3.zero,0,0,1f/60,.75f,liquid);
                     }
                     Physics.SyncTransforms();
                     // Preview-scene Collider.bounds can lag or be empty. Frame the actual
@@ -148,7 +148,7 @@ public static class AlienVoidChecks
                     camera.nearClipPlane=.01f;camera.farClipPlane=distance+30;
                     camera.Render();RenderTexture.active=target;pixels.ReadPixels(new Rect(0,0,384,384),0,0);pixels.Apply();
                     sheet.SetPixels(cell%4*384,(2-cell/4)*384,384,384,pixels.GetPixels());
-                    Check(body.Fluid!=null && body.Fluid.ParticleCount<=16000,"Authored creature has bounded GPU liquid: "+names[cell]);
+                    Check(!liquid || body.Fluid!=null && body.Fluid.ParticleCount<=16000,"Authored creature has bounded GPU liquid: "+names[cell]);
                 }
                 finally{body?.Dispose();Object.DestroyImmediate(owner);}
             }

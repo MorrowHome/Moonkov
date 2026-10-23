@@ -28,7 +28,7 @@ RWStructuredBuffer<uint> _Accum;
 RWTexture3D<float> _WriteVolume;
 Texture3D<float> _ReadVolume;
 int _ParticleCount, _GridSide, _VolumeSide, _ObstacleCount, _GuideKind;
-float _HalfVolume, _CollisionRadius;
+float _HalfVolume, _CollisionRadius, _GuideDistanceLimit;
 float _Step, _FrameDt, _Attraction, _Predatory;
 float3 _Gravity, _InitialVelocity, _CarrierVelocity;
 float4 _Thickness;
@@ -214,6 +214,10 @@ float Kernel(float r2) { float w = max(0, 1 - r2 / (Support * Support)); return 
         Obstacle box = _Obstacles[collider];
         float3 q = mul(box.toBox, float4(p.position, 1)).xyz;
         float3 expanded = 1 + _CollisionRadius / box.halfSize.xyz;
+        // A mesh AABB can enclose empty rooms/stairs. It must never push tissue
+        // away from a guide that the authoritative motor placed inside that bound.
+        float3 guideInBox = mul(box.toBox, float4(target, 1)).xyz;
+        if (box.halfSize.w > .5 && all(abs(guideInBox) < expanded)) continue;
         if (all(abs(q) < expanded))
         {
             float3 gap = (expanded - abs(q)) * box.halfSize.xyz;
@@ -233,6 +237,20 @@ float Kernel(float r2) { float w = max(0, 1 - r2 / (Support * Support)); return 
             p.position = mul(box.fromBox, float4(q, 1)).xyz;
             normal = normalize(mul((float3x3)box.fromBox, normal));
             p.velocity -= normal * min(0, dot(normal, p.velocity)); p.velocity *= .88;
+        }
+    }
+    // Living gameplay tissue may sag and shed, but cannot leave its damage body.
+    // Bound after contacts as a conservative proxy may otherwise eject an entire mantle.
+    if (_Attraction > .5 && _GuideDistanceLimit > 0)
+    {
+        float3 drift = p.position - target;
+        float driftLength = length(drift);
+        if (driftLength > _GuideDistanceLimit)
+        {
+            float3 normal = drift / driftLength;
+            p.position = target + normal * _GuideDistanceLimit;
+            float outward = dot(p.velocity - targetVelocity, normal);
+            p.velocity -= normal * max(0, outward);
         }
     }
     float3 clamped = clamp(p.position, -_HalfVolume + .06, _HalfVolume - .06);

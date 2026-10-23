@@ -76,7 +76,9 @@ namespace Unity.MP_FPS
                 m_Species == AlienSpecies.Caterpillar || m_Species == AlienSpecies.Snake;
             var sound = m_Tier == AlienThreatTier.Boss || m_Species == AlienSpecies.StiltWalker ? library?.AlienHeavyStep :
                 wet ? library?.AlienWetMove : library?.AlienContact;
-            Play(Cue.Step, position, m_Tier == AlienThreatTier.Boss ? gain * 1.1f : gain, sound);
+            float closeGain = m_Tier != AlienThreatTier.Boss && m_Species != AlienSpecies.StiltWalker &&
+                MoonkovAudio.CanHearDetail(position, 4) ? 2 : 1;
+            Play(Cue.Step, position, (m_Tier == AlienThreatTier.Boss ? gain * 1.1f : gain) * closeGain, sound);
         }
     }
 }

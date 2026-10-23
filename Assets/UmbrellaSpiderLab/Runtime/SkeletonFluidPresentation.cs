@@ -50,6 +50,8 @@ namespace Unity.MP_FPS.SpiderLab
         public int ParticleCount { get; }
         public bool AttractionEnabled { get; set; } = true;
         public bool Predatory { get; set; } = true;
+        // Gameplay creatures limit cosmetic tissue drift in world metres. Zero retains free simulation.
+        public float GuideDistanceLimit { get; set; }
         public SpiderFluidSettings Settings { get; set; } = new SpiderFluidSettings();
         public LiquidReaction Reaction { get; set; }
         public ComputeBuffer Particles => m_Read;
@@ -210,6 +212,7 @@ namespace Unity.MP_FPS.SpiderLab
         private void DrawPrepared(Vector3 velocity, float dt)
         {
             ApplySettings();
+            m_Solver.SetFloat("_GuideDistanceLimit", GuideDistanceLimit / Mathf.Max(.001f, Mathf.Abs(m_Root.lossyScale.x)));
             Vector3 centre = m_Root.InverseTransformPoint(Reaction.Centre);
             Vector3 direction = m_Root.InverseTransformDirection(Reaction.Direction).normalized;
             m_Solver.SetVector("_ReactionCentre", new Vector4(centre.x, centre.y, centre.z, Mathf.Clamp01(Reaction.Strength)));
@@ -324,7 +327,7 @@ namespace Unity.MP_FPS.SpiderLab
                 {
                     toBox = boxToWorld.inverse * m_Root.localToWorldMatrix,
                     fromBox = m_Root.worldToLocalMatrix * boxToWorld,
-                    halfSize = new Vector4(half.x, half.y, half.z, 0)
+                    halfSize = new Vector4(half.x, half.y, half.z, collider is BoxCollider ? 0 : 1)
                 };
             }
             return written;

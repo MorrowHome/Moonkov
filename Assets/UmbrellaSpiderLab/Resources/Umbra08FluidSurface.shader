@@ -8,7 +8,10 @@ Shader "SpiderLab/Umbra08 Particle Fluid Surface"
         _HalfVolume("Fluid bounds half-size", Float) = 2.8
         _VolumeResolution("Volume resolution", Float) = 96
         _Predatory("Heavy viscous style", Range(0, 1)) = 1
-        _VoidAmount("Gameplay black liquid", Range(0,1)) = 0
+        _SkinColor("Tissue skin", Color) = (.23,.28,.30,1)
+        _CarapaceColor("Worn carapace", Color) = (.56,.53,.44,1)
+        _TissueColor("Vascular membrane", Color) = (.31,.12,.10,1)
+        _VoidAmount("Gameplay tissue style", Range(0,1)) = 0
         _VoidCharge("Gameplay contraction", Range(0,2)) = 0
         [HideInInspector] _DensityTex("Particle density volume", 3D) = "white" {}
     }
@@ -20,7 +23,7 @@ Shader "SpiderLab/Umbra08 Particle Fluid Surface"
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
         TEXTURE3D(_DensityTex); SAMPLER(sampler_DensityTex);
         CBUFFER_START(UnityPerMaterial)
-        half4 _BaseColor; float _Threshold; half _Smoothness; float _Predatory;
+        half4 _BaseColor, _SkinColor, _CarapaceColor, _TissueColor; float _Threshold; half _Smoothness; float _Predatory;
         float _FilmVariation, _CoatMask, _CoatSmoothness, _HalfVolume, _VolumeResolution;
         float _VoidAmount, _VoidCharge;
         CBUFFER_END

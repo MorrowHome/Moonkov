@@ -28,14 +28,17 @@ public static class AlienNavigationChecks
         {
             Check(graph, frame.TransformPoint(new Vector3(0, .8f, 12)), frame.TransformPoint(new Vector3(-9, .8f, 16.5f)), false, "Corridor through G02 doorway", report);
             Check(graph, frame.TransformPoint(new Vector3(-9, .8f, 16.5f)), frame.TransformPoint(new Vector3(-5, 5.2f, 16)), true, "G02 floor to ceiling perch", report);
+            float scale = AssetDatabase.LoadAssetAtPath<AlienCreatureProfile>("Assets/AlienCreatures/Profiles/Spider.asset").Scale;
+            Check(graph, frame.TransformPoint(new Vector3(0, .8f, 12)), frame.TransformPoint(new Vector3(-9, .8f, 16.5f)), false, "Current spider through G02 doorway", report, scale);
+            Check(graph, frame.TransformPoint(new Vector3(-9, .8f, 16.5f)), frame.TransformPoint(new Vector3(-5, 5.2f, 16)), true, "Current spider floor to ceiling", report, scale);
             foreach (var c in report.cases) if (!c.arrived) throw new InvalidOperationException(c.name + ": " + c.failure + ", remaining=" + c.distance);
             Debug.Log("MC00 doorway and roof routes passed against actual map collision.");
         }
         finally { Directory.CreateDirectory("Library/BuildValidation/AlienIntegration"); File.WriteAllText("Library/BuildValidation/AlienIntegration/navigation.json", JsonUtility.ToJson(report, true)); }
     }
-    private static void Check(AlienSurfaceNavigation graph, Vector3 from, Vector3 to, bool ceiling, string name, Report report)
+    private static void Check(AlienSurfaceNavigation graph, Vector3 from, Vector3 to, bool ceiling, string name, Report report, float scale = .45f)
     {
-        const float scale = .45f, dt = 1f / 30;
+        const float dt = 1f / 30;
         int mask = LayerMask.GetMask("Default", "Ground");
         var result = new Case { name = name }; report.cases.Add(result);
         if (!Physics.Raycast(from + Vector3.up * 1.2f, Vector3.down, out var start, 3, mask)) { result.failure = "No starting floor"; return; }
