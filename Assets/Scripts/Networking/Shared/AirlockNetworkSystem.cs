@@ -192,7 +192,7 @@ namespace Unity.MP_FPS
                 received.ValueRW.Consume(); var r = rpc.ValueRO;
                 if (connection != Entity.Null && received.ValueRO.SourceConnection == connection && r.ServerSession == state.Session &&
                     r.RequestId > state.LastAck && r.RequestId <= state.NextRequest)
-                { state.LastAck = r.RequestId; state.Feedback = r.Feedback; state.LastButton = r.ButtonId.ToString(); AirlockButton.Find(state.LastButton)?.ReceiveFeedback(r.Feedback); }
+                { state.LastAck = r.RequestId; state.Feedback = r.Feedback; state.LastButton = r.ButtonId.ToString(); if (!World.IsThinClient()) AirlockButton.Find(state.LastButton)?.ReceiveFeedback(r.Feedback); }
                 ecb.DestroyEntity(entity);
             }
             ecb.Playback(EntityManager);

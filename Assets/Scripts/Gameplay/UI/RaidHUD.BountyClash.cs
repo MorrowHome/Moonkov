@@ -16,6 +16,48 @@ namespace Unity.MP_FPS
         private BountyClashView m_ClashView;
         private BountyClashClientState m_Clash;
         private float m_NextSenseLease, m_NextReviveLease;
+        private bool m_ClashAudioInitialized;
+        private ClashSnapshotRpc m_ClashAudioSnapshot;
+        private uint m_ClashAudioRequest;
+        private bool m_ClashAudioPickup;
+        private bool m_ClashAudioReviving;
+        private void PresentClashAudio(ClashSnapshotRpc snapshot)
+        {
+            if (!m_Clash.HasSnapshot) return;
+            bool same = m_ClashAudioInitialized && snapshot.Epoch == m_ClashAudioSnapshot.Epoch &&
+                snapshot.MatchId.Equals(m_ClashAudioSnapshot.MatchId);
+            if (same)
+            {
+                if (snapshot.IsCarrier && !m_ClashAudioSnapshot.IsCarrier)
+                    MoonkovAudio.PlayWeaponLayer(MoonkovAudio.Library?.Pickup, Vector3.zero, 1, 0);
+                if (snapshot.Life == ClashLife.Alive && m_ClashAudioSnapshot.Life == ClashLife.Downed)
+                    MoonkovAudio.PlayWeaponLayer(MoonkovAudio.Library?.Medical, Vector3.zero, 1, 0);
+                if (snapshot.Bounty != m_ClashAudioSnapshot.Bounty && !snapshot.IsCarrier)
+                    MoonkovAudio.Play(MoonkovAudio.Library?.Notification, Vector3.zero, .65f);
+                if (m_ClashAudioRequest != 0 && snapshot.AcknowledgedRequest >= m_ClashAudioRequest)
+                {
+                    // A later lease acknowledgment cannot describe an earlier action's outcome.
+                    if (snapshot.AcknowledgedRequest == m_ClashAudioRequest)
+                    {
+                        if (snapshot.Result != ClashResult.Ok) MoonkovAudio.Error();
+                        else if (!m_ClashAudioPickup) MoonkovAudio.Confirm();
+                    }
+                    m_ClashAudioRequest = 0;
+                }
+                if (m_ReviveTarget >= 0 && m_Clash.Participants.TryGetValue(m_ReviveTarget, out var member))
+                {
+                    bool reviving = member.ReviveProgress > 0 && member.Life == ClashLife.Downed;
+                    if (reviving && !m_ClashAudioReviving)
+                        MoonkovAudio.PlayWeaponLayer(MoonkovAudio.Library?.Consume, Vector3.zero, .7f, 0);
+                    if (m_ClashAudioReviving && member.Life == ClashLife.Alive)
+                        MoonkovAudio.PlayWeaponLayer(MoonkovAudio.Library?.Medical, Vector3.zero, 1, 0);
+                    m_ClashAudioReviving = reviving;
+                }
+                else m_ClashAudioReviving = false;
+            }
+            else { m_ClashAudioRequest = 0; m_ClashAudioReviving = false; }
+            m_ClashAudioSnapshot = snapshot; m_ClashAudioInitialized = true;
+        }
         private int m_SenseFlags;
         private int m_ReviveTarget = -1;
         private Entity m_ClashCameraOwner;
@@ -51,6 +93,7 @@ namespace Unity.MP_FPS
             if (m_ClashQuery.IsEmptyIgnoreFilter) { BountyClashDarkSightRenderer.ClearImmediate(); m_ClashActionsBlocked = m_ClashLobbyPointer = true; return true; }
             m_Clash = m_World.EntityManager.GetComponentObject<BountyClashClientState>(m_ClashQuery.GetSingletonEntity());
             var snapshot = m_Clash.Snapshot;
+            PresentClashAudio(snapshot);
             bool previouslyPointer = m_ClashLobbyPointer;
             m_ClashLobbyPointer = !m_Clash.Approved || !m_Clash.HasSnapshot || BountyClashRules.Ended(snapshot.Life) || snapshot.Phase == ClashPhase.Finished || snapshot.Phase == ClashPhase.Lobby ||
                 snapshot.Phase == ClashPhase.Preparing || snapshot.Phase == ClashPhase.Deploying;
@@ -110,7 +153,7 @@ namespace Unity.MP_FPS
             };
             if (!string.IsNullOrEmpty(invite)) rpc.InviteCode.CopyFromTruncated(invite);
             if (!Send(rpc)) return false;
-            if (track) { m_Clash.PendingRequest = rpc.RequestId; m_Clash.RequestedAt = Time.realtimeSinceStartupAsDouble; }
+            if (track) { m_ClashAudioRequest = rpc.RequestId; m_ClashAudioPickup = intent == ClashIntent.Pickup; m_Clash.PendingRequest = rpc.RequestId; m_Clash.RequestedAt = Time.realtimeSinceStartupAsDouble; }
             return true;
         }
         private void ReadClashInput(Vector3 position, bool hasLocal)
@@ -123,6 +166,8 @@ namespace Unity.MP_FPS
             m_Clash.SetSenseInput(view, boost);
             if (flags != m_SenseFlags || flags != 0 && Time.unscaledTime >= m_NextSenseLease)
             {
+                if (flags != m_SenseFlags && (flags == 0 || m_SenseFlags == 0))
+                    MoonkovAudio.PlayWeaponLayer(MoonkovAudio.Library?.Aim, Vector3.zero, .65f, 0, flags == 0 ? -180 : 0);
                 SendClash(ClashIntent.SenseHeld, flags, track: false);
                 m_SenseFlags = flags; m_NextSenseLease = Time.unscaledTime + .25f;
             }
@@ -172,6 +217,7 @@ namespace Unity.MP_FPS
         }
         private void ResetBountyConnection()
         {
+            m_ClashAudioInitialized = false; m_ClashAudioRequest = 0; m_ClashAudioReviving = false;
             ResetRaidMap();
             BountyClashDarkSightRenderer.ClearImmediate();
             m_Clash?.StopView();

@@ -25,6 +25,9 @@ namespace Unity.MP_FPS
         private float m_NextOxygenAlert;
         private EntityQuery m_InventoryQuery;
         private uint m_InventorySequence, m_InventoryRequestId;
+        private readonly MoonkovActionAudio m_InventoryAudio = new MoonkovActionAudio();
+        private void TrackInventoryAudio(SoundDef success, SoundDef start = null)
+            => m_InventoryAudio.Track(m_Snapshot.RaidId, m_InventoryRequestId, success, start);
         private float m_InventoryRequestedAt;
         private bool m_InventoryRequestPending;
         private bool m_LootOpenPending;
@@ -119,6 +122,7 @@ namespace Unity.MP_FPS
             m_InventoryTitle=m_Root.Q<Label>(className:"raid-inventory-title");
             m_EquipmentHost = m_Root.Q("raidInventoryHost"); m_HealthHost = m_Root.Q("raidHealthHost");
             m_InventoryView = new Client.ContainerInventoryView(m_EquipmentHost, false, SendInventoryMove, UseMedical, UseConsumable, DropItem);
+            m_InventoryView.OperationAudioEnabled = false;
             m_InventoryView.ShieldRechargeAvailable = CanRechargeShieldCell;
             m_HealthView = new Client.RaidHealthView(m_HealthHost, TreatPart, ConsumeSupply);
             m_EquipmentTab = m_Root.Q<Button>("raidEquipmentTab"); m_EquipmentTab.clicked += EquipmentTab;
@@ -135,7 +139,7 @@ namespace Unity.MP_FPS
             m_ActionCancel=new Button(CancelTimedAction) {text="X / 取消操作（不消耗物品）"};m_ActionPanel.Add(m_ActionCancel);
             m_ActionPanel.style.display=DisplayStyle.None;m_Root.Add(m_ActionPanel);
             m_MedicalActive=false;m_ActionFeedbackUntil=0;m_ActionFeedback=null;
-            m_InventorySequence=0; m_InventoryRequestId=0;
+            m_InventorySequence=0; m_InventoryRequestId=0; m_InventoryAudio.Reset();
             m_InventoryRequestPending=false;
             m_LootOpenPending=false;m_OpenedLootId=-1;m_DissectingLootId=-1;
             var closePack=m_Root.Q<Button>("raidPackClose");closePack.clicked += ClosePack;
@@ -263,7 +267,7 @@ namespace Unity.MP_FPS
             var inventory=m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
             m_InventoryRequestId=NextManualActionRequest();
             if(Send(new RaidActionCancelRpc {RaidId=m_Snapshot.RaidId,RequestId=m_InventoryRequestId}))
-            {m_InventoryRequestedAt=Time.unscaledTime;m_InventoryRequestPending=true;}
+            {TrackInventoryAudio(MoonkovAudio.Library?.Equipment);m_InventoryRequestedAt=Time.unscaledTime;m_InventoryRequestPending=true;}
         }
         private void PresentTimedAction()
         {
@@ -286,7 +290,7 @@ namespace Unity.MP_FPS
                 if(!TimedActionActive)return;
                 CancelTimedAction();
             }
-            if (visible != m_InventoryVisible) MoonkovAudio.Play(MoonkovAudio.Library?.Container, Vector3.zero);
+            if (visible != m_InventoryVisible && (!visible || !m_LootOpenPending)) MoonkovAudio.Play(MoonkovAudio.Library?.Container, Vector3.zero);
             if(!visible && m_OpenedLootId>=0 && m_Snapshot.Phase==RaidPhase.Active)RequestLoot(-1);
             m_InventoryVisible = visible; m_Inventory.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
             if (visible) { UpdateInventoryView(); if(!m_LootOpenPending && !m_HealthSelected)m_InventoryView.Show(); RefreshHealth(); }
@@ -319,6 +323,7 @@ namespace Unity.MP_FPS
 
         private void InitializeWorld()
         {
+            m_InventoryAudio.Reset(); m_InventorySequence = 0;
             ResetBountyConnection();
             foreach (var world in World.All)
             {
@@ -564,7 +569,7 @@ namespace Unity.MP_FPS
                 m_PreviousSupplies = supplies;
                 if (math.any(gained > 0))
                 {
-                    MoonkovAudio.Play(MoonkovAudio.Library?.Pickup, Vector3.zero, .8f);
+                    // Pickup sound is emitted by the acknowledged transfer, for every item type.
                     if (Time.unscaledTime >= m_ReceiptUntil && !m_ReceiptQueued) m_ReceiptSupplies = default;
                     m_ReceiptSupplies += gained;
                     m_ReceiptUntil = Time.unscaledTime + 3.2f;
@@ -634,7 +639,9 @@ namespace Unity.MP_FPS
             if(m_World==null || !m_World.IsCreated || m_InventoryQuery.IsEmptyIgnoreFilter)return false;
             var inventory=m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
             m_InventoryRequestId=NextManualActionRequest();
-            if(!Send(new RaidLootOpenRpc {RaidId=m_Snapshot.RaidId,LootId=lootId,RequestId=m_InventoryRequestId}))return false;
+            if(!Send(new RaidLootOpenRpc {RaidId=m_Snapshot.RaidId,LootId=lootId,RequestId=m_InventoryRequestId}))
+            { MoonkovAudio.Error(); return false; }
+            TrackInventoryAudio(lootId >= 0 ? MoonkovAudio.Library?.Container : null, MoonkovAudio.Library?.Equipment);
             m_InventoryRequestedAt=Time.unscaledTime;m_InventoryRequestPending=true;return true;
         }
         private void UpdateInventoryView()
@@ -644,6 +651,7 @@ namespace Unity.MP_FPS
             if(m_InventoryRequestPending && Time.unscaledTime-m_InventoryRequestedAt>(TimedActionActive ? m_ActionDuration+5 : 5))
             {
                 m_DissectingLootId=-1;m_MedicalActive=false;
+                m_InventoryAudio.Reset(); MoonkovAudio.Error();
                 m_InventoryRequestPending=false;m_LootOpenPending=false;m_InventoryView.SetReadOnly(null);
                 m_InventoryView.Present(inventory.Graph,"Waiting for the server. Retry after the connection recovers.",lootId:inventory.LootId,droppedItem:IsDroppedLoot(inventory.LootId),corpseCharacterIndex:inventory.CorpseCharacterIndex,corpseEquipmentSlots:inventory.CorpseEquipmentSlots);
                 m_HealthView.Message("Waiting for the server. Retry after the connection recovers.");
@@ -654,6 +662,10 @@ namespace Unity.MP_FPS
             if (inventory.Sequence!=m_InventorySequence)
             {
                 m_InventorySequence=inventory.Sequence;
+                var cue = m_InventoryAudio.Observe(inventory.RaidId, inventory.RequestId,
+                    inventory.MedicalItemId != null || inventory.DissectingLootId >= 0,
+                    inventory.Error != Inventory.InventoryError.None, MoonkovAudio.Library?.Error);
+                MoonkovAudio.PlayWeaponLayer(cue, Vector3.zero, 1, 0);
                 if(inventory.MedicalItemId!=null)
                 {
                     m_MedicalActive=true;m_MedicalEndsAt=Time.unscaledTime+inventory.MedicalRemaining;
@@ -710,8 +722,8 @@ namespace Unity.MP_FPS
             m_InventoryRequestId=NextManualActionRequest();
             if(Send(new RaidInventoryDropRpc {RaidId=m_Snapshot.RaidId,RequestId=m_InventoryRequestId,
                 ExpectedVersion=inventory.Graph.Version,ItemId=item.Id}))
-            {m_InventoryRequestedAt=Time.unscaledTime;m_InventoryRequestPending=true;}
-            else m_InventoryView.Present(inventory.Graph,"未连接；物品仍在原容器内。",lootId:inventory.LootId,droppedItem:IsDroppedLoot(inventory.LootId),corpseCharacterIndex:inventory.CorpseCharacterIndex,corpseEquipmentSlots:inventory.CorpseEquipmentSlots);
+            {TrackInventoryAudio(MoonkovAudio.Library?.Equipment);m_InventoryRequestedAt=Time.unscaledTime;m_InventoryRequestPending=true;}
+            else { MoonkovAudio.Error(); m_InventoryView.Present(inventory.Graph,"未连接；物品仍在原容器内。",lootId:inventory.LootId,droppedItem:IsDroppedLoot(inventory.LootId),corpseCharacterIndex:inventory.CorpseCharacterIndex,corpseEquipmentSlots:inventory.CorpseEquipmentSlots); }
         }
         private void SendInventoryMove(Inventory.InventoryCommand command)
         {
@@ -726,8 +738,14 @@ namespace Unity.MP_FPS
                 Operation=command.Operation, ItemId=command.ItemId??"", Parent=command.Parent??"", Region=command.Region??"", TargetId=command.TargetId??"",
                 X=command.X,Y=command.Y,Quantity=command.Quantity,Rotated=command.Rotated });
             if(sent)
-            { m_InventoryRequestedAt=Time.unscaledTime; m_InventoryRequestPending=true; }
-            else m_InventoryView.Present(inventory.Graph,"Not connected. Item remains in its container.");
+            {
+                string target = command.Operation == Inventory.InventoryOperation.Merge ? command.TargetId : command.Parent;
+                bool pickup = inventory.Graph.RootOf(command.ItemId) == Inventory.LootInventoryExchange.Root &&
+                    inventory.Graph.RootOf(target) != Inventory.LootInventoryExchange.Root;
+                TrackInventoryAudio(pickup ? MoonkovAudio.Library?.Pickup : MoonkovAudio.Library?.Equipment);
+                m_InventoryRequestedAt=Time.unscaledTime; m_InventoryRequestPending=true;
+            }
+            else { MoonkovAudio.Error(); m_InventoryView.Present(inventory.Graph,"Not connected. Item remains in its container."); }
         }
 
         private void UseMedical(Inventory.InventoryItem item)
@@ -751,16 +769,20 @@ namespace Unity.MP_FPS
             {
                 string message = shieldSupply ? "Cannot recharge shield: equip a generator with space for energy and use charged cells from pockets or an equipped rig." : oxygenSupply ? "Cannot refill oxygen: reserve is full or the player is inactive." :
                     "Cannot consume: resource is full, stomach capacity is insufficient, or the player is inactive.";
-                m_InventoryView.Present(inventory.Graph, message); m_HealthView.Message(message); return;
+                MoonkovAudio.Error(); m_InventoryView.Present(inventory.Graph, message); m_HealthView.Message(message); return;
             }
             m_InventoryRequestId = NextManualActionRequest();
             if (Send(new RaidConsumableUseRpc { RaidId = m_Snapshot.RaidId, RequestId = m_InventoryRequestId,
                 ExpectedVersion = inventory.Graph.Version, ItemId = item.Id }))
-            { m_InventoryRequestedAt = Time.unscaledTime; m_InventoryRequestPending = true; }
+            {
+                TrackInventoryAudio(shieldSupply ? MoonkovAudio.Library?.Equipment :
+                    oxygenSupply ? MoonkovAudio.Library?.OxygenRefill : MoonkovAudio.Library?.Consume);
+                m_InventoryRequestedAt = Time.unscaledTime; m_InventoryRequestPending = true;
+            }
             else
             {
                 const string message = "Not connected. Consumable remains in its container.";
-                m_InventoryView.Present(inventory.Graph, message); m_HealthView.Message(message);
+                MoonkovAudio.Error(); m_InventoryView.Present(inventory.Graph, message); m_HealthView.Message(message);
             }
             RefreshHealth();
         }
@@ -779,10 +801,11 @@ namespace Unity.MP_FPS
             if (Send(new RaidMedicalUseRpc { RaidId = m_Snapshot.RaidId, RequestId = m_InventoryRequestId,
                 ExpectedVersion = inventory.Graph.Version, ItemId = item.Id, Part = part }))
             {
+                TrackInventoryAudio(MoonkovAudio.Library?.Medical, MoonkovAudio.Library?.Consume);
                 m_InventoryRequestedAt=Time.unscaledTime;m_InventoryRequestPending=true;m_MedicalActive=true;
                 m_ActionDuration=MoonRaidMap.Active.MedicalSeconds;m_MedicalEndsAt=Time.unscaledTime+m_ActionDuration;
             }
-            else m_InventoryView.Present(inventory.Graph, "Not connected. Medical item remains in its container.");
+            else { MoonkovAudio.Error(); m_InventoryView.Present(inventory.Graph, "Not connected. Medical item remains in its container."); }
             RefreshHealth();
         }
 

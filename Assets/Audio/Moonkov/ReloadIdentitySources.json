@@ -1,0 +1,1648 @@
+{
+  "version": 1,
+  "sample_rate": 48000,
+  "processing": "Recorded transient montage, rate/EQ, recorded charge bed, fades; peak <= 0.78",
+  "sources": [
+    {
+      "key": "energy",
+      "asset": "Assets/Audio/Moonkov/Clips/Weapons/HaloRecharge.wav",
+      "sha256": "69c8b63e4c7927dabda429bcba0640c1f9463c154f83080a3162545c2b6fbb9c"
+    },
+    {
+      "key": "cylinder",
+      "asset": "Assets/Audio/Moonkov/Clips/Weapons/RevolverRecharge.wav",
+      "sha256": "6f0a9d3ac275a1b88e9c9ee37de25937480ea795df69b937856670859f2ec44c"
+    },
+    {
+      "key": "rifle",
+      "asset": "Assets/Audio/Clips/Weapons/Rifle/Reload/rifle_reload.wav",
+      "sha256": "62e6f281b93d7a01efb77a7308d49f575c2c5bf9f0e9ec1594f46620e7598f9b"
+    },
+    {
+      "key": "shotgun",
+      "asset": "Assets/Audio/Clips/Weapons/Shotgun/Reload/Shotgun_reload 1.wav",
+      "sha256": "4a54577e2b6e90f0f56eeee9b7cc4db2e130632f0b0b1e7029a8512f3dd97210"
+    },
+    {
+      "key": "pistol",
+      "asset": "Assets/Audio/Clips/Weapons/Pistol/Reload/Pistol_Reload.wav",
+      "sha256": "986c572b64ba8335986af4d14d73f23458fca0e80c218216a06ba9b1030f8415"
+    },
+    {
+      "key": "lever",
+      "asset": "Assets/Audio/Moonkov/Clips/Interaction/Equipment.wav",
+      "sha256": "3e7648a945b3a154a35d7ac391fc0c517c4fa2b5a37680e2ed6ec7f6e83c90b5"
+    }
+  ],
+  "license": "Existing project recordings. Moonkov derived clips retain Sources.json/Edits.json Sonniss provenance; original FPS reload clips retain existing project licenses. No downloads.",
+  "clips": [
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/ReloadIdentity/HaloReload1.wav",
+      "sha256": "d0460460934bc987d74fed4bd62c581e1485dbf28f65c01b3d199b9f6c5d5343",
+      "seconds": 2.0,
+      "peak": 0.78,
+      "layers": [
+        {
+          "source": "rifle",
+          "gesture": 0,
+          "at_seconds": 0.06,
+          "rate": 0.975,
+          "gain": 0.72
+        },
+        {
+          "source": "rifle",
+          "gesture": 1,
+          "at_seconds": 0.552,
+          "rate": 0.975,
+          "gain": 0.48
+        },
+        {
+          "source": "rifle",
+          "gesture": 2,
+          "at_seconds": 1.1399791666666668,
+          "rate": 0.975,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 1.692,
+          "rate": 0.975,
+          "gain": 0.65
+        }
+      ],
+      "charge_gain": 0.28,
+      "cutoff": 6500
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/ReloadIdentity/HaloReload2.wav",
+      "sha256": "87e88f1ed920e2c522535a8c4c20418f7b60bb59050bf7288e199c5ac683c8bc",
+      "seconds": 2.0,
+      "peak": 0.78,
+      "layers": [
+        {
+          "source": "rifle",
+          "gesture": 1,
+          "at_seconds": 0.06,
+          "rate": 1.0,
+          "gain": 0.72
+        },
+        {
+          "source": "rifle",
+          "gesture": 2,
+          "at_seconds": 0.56,
+          "rate": 1.0,
+          "gain": 0.48
+        },
+        {
+          "source": "rifle",
+          "gesture": 3,
+          "at_seconds": 1.1399791666666668,
+          "rate": 1.0,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 1.7,
+          "rate": 1.0,
+          "gain": 0.65
+        }
+      ],
+      "charge_gain": 0.28,
+      "cutoff": 6500
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/ReloadIdentity/HaloReload3.wav",
+      "sha256": "b1d9ab28fe3a3c1372263b6837ded1d5c0fbbf1d6d75684a59fc566e1ae9fb56",
+      "seconds": 2.0,
+      "peak": 0.78,
+      "layers": [
+        {
+          "source": "rifle",
+          "gesture": 2,
+          "at_seconds": 0.06,
+          "rate": 1.025,
+          "gain": 0.72
+        },
+        {
+          "source": "rifle",
+          "gesture": 3,
+          "at_seconds": 0.568,
+          "rate": 1.025,
+          "gain": 0.48
+        },
+        {
+          "source": "rifle",
+          "gesture": 0,
+          "at_seconds": 1.1399791666666668,
+          "rate": 1.025,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 1.708,
+          "rate": 1.025,
+          "gain": 0.65
+        }
+      ],
+      "charge_gain": 0.28,
+      "cutoff": 6500
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/ReloadIdentity/RevolverReload1.wav",
+      "sha256": "22e3b3b4abb5f6ec5da6a376b136c0e88b6fd9854180121c75afb86b1dc2c2b6",
+      "seconds": 0.75,
+      "peak": 0.7799999999999999,
+      "layers": [
+        {
+          "source": "cylinder",
+          "gesture": 1,
+          "at_seconds": 0.015,
+          "rate": 1.053,
+          "gain": 0.72
+        },
+        {
+          "source": "cylinder",
+          "gesture": 2,
+          "at_seconds": 0.1945,
+          "rate": 1.053,
+          "gain": 0.48
+        },
+        {
+          "source": "cylinder",
+          "gesture": 3,
+          "at_seconds": 0.3675,
+          "rate": 1.053,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 0.607,
+          "rate": 1.053,
+          "gain": 0.65
+        }
+      ],
+      "charge_gain": 0.03,
+      "cutoff": 7600
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/ReloadIdentity/RevolverReload2.wav",
+      "sha256": "f887a5b1fbf6b83beaeecfca06bc977ea2cc330cc89e5478a6cd5dc355092811",
+      "seconds": 0.75,
+      "peak": 0.78,
+      "layers": [
+        {
+          "source": "cylinder",
+          "gesture": 2,
+          "at_seconds": 0.015,
+          "rate": 1.08,
+          "gain": 0.72
+        },
+        {
+          "source": "cylinder",
+          "gesture": 3,
+          "at_seconds": 0.2025,
+          "rate": 1.08,
+          "gain": 0.48
+        },
+        {
+          "source": "cylinder",
+          "gesture": 4,
+          "at_seconds": 0.3675,
+          "rate": 1.08,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 0.615,
+          "rate": 1.08,
+          "gain": 0.65
+        }
+      ],
+      "charge_gain": 0.03,
+      "cutoff": 7600
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/ReloadIdentity/RevolverReload3.wav",
+      "sha256": "aa24421d89fd45041fd52a5eb34b709e57e59cfd7b200a4cfa14d826137ded8b",
+      "seconds": 0.75,
+      "peak": 0.78,
+      "layers": [
+        {
+          "source": "cylinder",
+          "gesture": 3,
+          "at_seconds": 0.015,
+          "rate": 1.107,
+          "gain": 0.72
+        },
+        {
+          "source": "cylinder",
+          "gesture": 4,
+          "at_seconds": 0.2105,
+          "rate": 1.107,
+          "gain": 0.48
+        },
+        {
+          "source": "cylinder",
+          "gesture": 0,
+          "at_seconds": 0.3675,
+          "rate": 1.107,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 0.623,
+          "rate": 1.107,
+          "gain": 0.65
+        }
+      ],
+      "charge_gain": 0.03,
+      "cutoff": 7600
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/ReloadIdentity/ShotgunReload1.wav",
+      "sha256": "dab09516835d8df6e6b13d6b5cf362d1efddfbb73ac820efa7301da44d6367ef",
+      "seconds": 2.0,
+      "peak": 0.78,
+      "layers": [
+        {
+          "source": "shotgun",
+          "gesture": 2,
+          "at_seconds": 0.04,
+          "rate": 0.858,
+          "gain": 0.72
+        },
+        {
+          "source": "shotgun",
+          "gesture": 3,
+          "at_seconds": 0.652,
+          "rate": 0.858,
+          "gain": 0.48
+        },
+        {
+          "source": "shotgun",
+          "gesture": 4,
+          "at_seconds": 1.12,
+          "rate": 0.858,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 1.672,
+          "rate": 0.858,
+          "gain": 0.65
+        }
+      ],
+      "charge_gain": 0.08,
+      "cutoff": 4800
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/ReloadIdentity/ShotgunReload2.wav",
+      "sha256": "7f2c549fd2a97a9eace78c8cd98f5eba2c8789e6010e5d0350f2a1647a54deed",
+      "seconds": 2.0,
+      "peak": 0.78,
+      "layers": [
+        {
+          "source": "shotgun",
+          "gesture": 3,
+          "at_seconds": 0.04,
+          "rate": 0.88,
+          "gain": 0.72
+        },
+        {
+          "source": "shotgun",
+          "gesture": 4,
+          "at_seconds": 0.66,
+          "rate": 0.88,
+          "gain": 0.48
+        },
+        {
+          "source": "shotgun",
+          "gesture": 5,
+          "at_seconds": 1.12,
+          "rate": 0.88,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 1.68,
+          "rate": 0.88,
+          "gain": 0.65
+        }
+      ],
+      "charge_gain": 0.08,
+      "cutoff": 4800
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/ReloadIdentity/ShotgunReload3.wav",
+      "sha256": "3775cdc649562d45d447b2550d7ccae13ecb8d22bc99d93f2bb7160064c73d8b",
+      "seconds": 2.0,
+      "peak": 0.78,
+      "layers": [
+        {
+          "source": "shotgun",
+          "gesture": 4,
+          "at_seconds": 0.04,
+          "rate": 0.9019999999999999,
+          "gain": 0.72
+        },
+        {
+          "source": "shotgun",
+          "gesture": 5,
+          "at_seconds": 0.668,
+          "rate": 0.9019999999999999,
+          "gain": 0.48
+        },
+        {
+          "source": "shotgun",
+          "gesture": 6,
+          "at_seconds": 1.12,
+          "rate": 0.9019999999999999,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 1.688,
+          "rate": 0.9019999999999999,
+          "gain": 0.65
+        }
+      ],
+      "charge_gain": 0.08,
+      "cutoff": 4800
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/ReloadIdentity/SniperReload1.wav",
+      "sha256": "ee164c37e961f3c7184c06128222ee64b519550277bef92e40467e7f89ca008b",
+      "seconds": 3.0,
+      "peak": 0.78,
+      "layers": [
+        {
+          "source": "rifle",
+          "gesture": 3,
+          "at_seconds": 0.06,
+          "rate": 0.71175,
+          "gain": 0.72
+        },
+        {
+          "source": "rifle",
+          "gesture": 0,
+          "at_seconds": 0.562,
+          "rate": 0.71175,
+          "gain": 0.48
+        },
+        {
+          "source": "rifle",
+          "gesture": 1,
+          "at_seconds": 1.83,
+          "rate": 0.71175,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 2.602,
+          "rate": 0.71175,
+          "gain": 0.65
+        }
+      ],
+      "charge_gain": 0.15,
+      "cutoff": 4300
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/ReloadIdentity/SniperReload2.wav",
+      "sha256": "17ae4b5dce6ba6f697384f4a395d0a3ff9fe7c78ddd34fa8bfef26108ec0b44e",
+      "seconds": 3.0,
+      "peak": 0.78,
+      "layers": [
+        {
+          "source": "rifle",
+          "gesture": 0,
+          "at_seconds": 0.06,
+          "rate": 0.73,
+          "gain": 0.72
+        },
+        {
+          "source": "rifle",
+          "gesture": 1,
+          "at_seconds": 0.57,
+          "rate": 0.73,
+          "gain": 0.48
+        },
+        {
+          "source": "rifle",
+          "gesture": 2,
+          "at_seconds": 1.83,
+          "rate": 0.73,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 2.61,
+          "rate": 0.73,
+          "gain": 0.65
+        }
+      ],
+      "charge_gain": 0.15,
+      "cutoff": 4300
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/ReloadIdentity/SniperReload3.wav",
+      "sha256": "fcd55fec214d454bb4a037adb49eaf9c96d9131656102f4b0e49cade9d558bab",
+      "seconds": 3.0,
+      "peak": 0.78,
+      "layers": [
+        {
+          "source": "rifle",
+          "gesture": 1,
+          "at_seconds": 0.06,
+          "rate": 0.74825,
+          "gain": 0.72
+        },
+        {
+          "source": "rifle",
+          "gesture": 2,
+          "at_seconds": 0.578,
+          "rate": 0.74825,
+          "gain": 0.48
+        },
+        {
+          "source": "rifle",
+          "gesture": 3,
+          "at_seconds": 1.83,
+          "rate": 0.74825,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 2.618,
+          "rate": 0.74825,
+          "gain": 0.65
+        }
+      ],
+      "charge_gain": 0.15,
+      "cutoff": 4300
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/ReloadIdentity/CicadaReload1.wav",
+      "sha256": "a0d4a8ab5336c782d668ce68adcea17a9fdb82310513f7ee31a0e12a366ac968",
+      "seconds": 1.7,
+      "peak": 0.7800000000000001,
+      "layers": [
+        {
+          "source": "pistol",
+          "gesture": 1,
+          "at_seconds": 0.034,
+          "rate": 1.209,
+          "gain": 0.72
+        },
+        {
+          "source": "pistol",
+          "gesture": 2,
+          "at_seconds": 0.366,
+          "rate": 1.209,
+          "gain": 0.48
+        },
+        {
+          "source": "pistol",
+          "gesture": 0,
+          "at_seconds": 0.867,
+          "rate": 1.209,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 1.386,
+          "rate": 1.209,
+          "gain": 0.65
+        }
+      ],
+      "charge_gain": 0.25,
+      "cutoff": 10000
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/ReloadIdentity/CicadaReload2.wav",
+      "sha256": "7a7b7d5568dc194be43523a75503decbacb0ca3f108409214b516b1c46cd5e8e",
+      "seconds": 1.7,
+      "peak": 0.78,
+      "layers": [
+        {
+          "source": "pistol",
+          "gesture": 2,
+          "at_seconds": 0.034,
+          "rate": 1.24,
+          "gain": 0.72
+        },
+        {
+          "source": "pistol",
+          "gesture": 0,
+          "at_seconds": 0.374,
+          "rate": 1.24,
+          "gain": 0.48
+        },
+        {
+          "source": "pistol",
+          "gesture": 1,
+          "at_seconds": 0.867,
+          "rate": 1.24,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 1.394,
+          "rate": 1.24,
+          "gain": 0.65
+        }
+      ],
+      "charge_gain": 0.25,
+      "cutoff": 10000
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/ReloadIdentity/CicadaReload3.wav",
+      "sha256": "755f9e165086e94c59651c1c6f6266f5387e8bd570d10dc6b0d3c7ed084a1d79",
+      "seconds": 1.7,
+      "peak": 0.78,
+      "layers": [
+        {
+          "source": "pistol",
+          "gesture": 0,
+          "at_seconds": 0.034,
+          "rate": 1.271,
+          "gain": 0.72
+        },
+        {
+          "source": "pistol",
+          "gesture": 1,
+          "at_seconds": 0.382,
+          "rate": 1.271,
+          "gain": 0.48
+        },
+        {
+          "source": "pistol",
+          "gesture": 2,
+          "at_seconds": 0.867,
+          "rate": 1.271,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 1.402,
+          "rate": 1.271,
+          "gain": 0.65
+        }
+      ],
+      "charge_gain": 0.25,
+      "cutoff": 10000
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/ReloadIdentity/TrineReload1.wav",
+      "sha256": "891ae15ae8da2facd10ee5a91a6403fe89ebd05fe62fd9d50c53cb4e3add1f74",
+      "seconds": 2.2,
+      "peak": 0.78,
+      "layers": [
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 0.044,
+          "rate": 1.053,
+          "gain": 0.72
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 0.674,
+          "rate": 1.053,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 0.946,
+          "rate": 1.053,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 1.202,
+          "rate": 1.053,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 1.892,
+          "rate": 1.053,
+          "gain": 0.65
+        }
+      ],
+      "charge_gain": 0.34,
+      "cutoff": 7800
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/ReloadIdentity/TrineReload2.wav",
+      "sha256": "c3c5e54532e14cf423477752bb43fa1e822ca633b38d10c4db829de3fd149409",
+      "seconds": 2.2,
+      "peak": 0.78,
+      "layers": [
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 0.044,
+          "rate": 1.08,
+          "gain": 0.72
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 0.682,
+          "rate": 1.08,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 0.946,
+          "rate": 1.08,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 1.21,
+          "rate": 1.08,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 1.892,
+          "rate": 1.08,
+          "gain": 0.65
+        }
+      ],
+      "charge_gain": 0.34,
+      "cutoff": 7800
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/ReloadIdentity/TrineReload3.wav",
+      "sha256": "ae7269ad673fbe8cece92b14b968e1482194b702c3ee4136a4f9eb4f658ace0a",
+      "seconds": 2.2,
+      "peak": 0.7800000000000001,
+      "layers": [
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 0.044,
+          "rate": 1.107,
+          "gain": 0.72
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 0.69,
+          "rate": 1.107,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 0.946,
+          "rate": 1.107,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 1.218,
+          "rate": 1.107,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 1.892,
+          "rate": 1.107,
+          "gain": 0.65
+        }
+      ],
+      "charge_gain": 0.34,
+      "cutoff": 7800
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/ReloadIdentity/AegisReload1.wav",
+      "sha256": "b4ade1c8b3fc36b1c18f3a43afd1a5a65f17b9029c343a7294c57333c237dbaf",
+      "seconds": 4.2,
+      "peak": 0.7799999999999999,
+      "layers": [
+        {
+          "source": "rifle",
+          "gesture": 2,
+          "at_seconds": 0.084,
+          "rate": 0.624,
+          "gain": 0.72
+        },
+        {
+          "source": "rifle",
+          "gesture": 3,
+          "at_seconds": 0.748,
+          "rate": 0.624,
+          "gain": 0.48
+        },
+        {
+          "source": "rifle",
+          "gesture": 0,
+          "at_seconds": 1.638,
+          "rate": 0.624,
+          "gain": 0.48
+        },
+        {
+          "source": "rifle",
+          "gesture": 1,
+          "at_seconds": 2.764,
+          "rate": 0.624,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 3.696,
+          "rate": 0.624,
+          "gain": 0.65
+        }
+      ],
+      "charge_gain": 0.23,
+      "cutoff": 3200
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/ReloadIdentity/AegisReload2.wav",
+      "sha256": "0ce63f78bb0a072a234af75f131b379e469724452f3e8192a64c4d0555e3596e",
+      "seconds": 4.2,
+      "peak": 0.78,
+      "layers": [
+        {
+          "source": "rifle",
+          "gesture": 3,
+          "at_seconds": 0.084,
+          "rate": 0.64,
+          "gain": 0.72
+        },
+        {
+          "source": "rifle",
+          "gesture": 0,
+          "at_seconds": 0.756,
+          "rate": 0.64,
+          "gain": 0.48
+        },
+        {
+          "source": "rifle",
+          "gesture": 1,
+          "at_seconds": 1.638,
+          "rate": 0.64,
+          "gain": 0.48
+        },
+        {
+          "source": "rifle",
+          "gesture": 2,
+          "at_seconds": 2.772,
+          "rate": 0.64,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 3.696,
+          "rate": 0.64,
+          "gain": 0.65
+        }
+      ],
+      "charge_gain": 0.23,
+      "cutoff": 3200
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/ReloadIdentity/AegisReload3.wav",
+      "sha256": "ceaeb683d5961311e4cceaf75774d42a26189c7a0445793293ed3d7c64e471f4",
+      "seconds": 4.2,
+      "peak": 0.78,
+      "layers": [
+        {
+          "source": "rifle",
+          "gesture": 0,
+          "at_seconds": 0.084,
+          "rate": 0.6559999999999999,
+          "gain": 0.72
+        },
+        {
+          "source": "rifle",
+          "gesture": 1,
+          "at_seconds": 0.764,
+          "rate": 0.6559999999999999,
+          "gain": 0.48
+        },
+        {
+          "source": "rifle",
+          "gesture": 2,
+          "at_seconds": 1.638,
+          "rate": 0.6559999999999999,
+          "gain": 0.48
+        },
+        {
+          "source": "rifle",
+          "gesture": 3,
+          "at_seconds": 2.78,
+          "rate": 0.6559999999999999,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 3.696,
+          "rate": 0.6559999999999999,
+          "gain": 0.65
+        }
+      ],
+      "charge_gain": 0.23,
+      "cutoff": 3200
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/ReloadIdentity/VesperReload1.wav",
+      "sha256": "218003134a24041afddf246014925a6a75fc186cd6cd705eb1e8168b3b810ab6",
+      "seconds": 2.4,
+      "peak": 0.78,
+      "layers": [
+        {
+          "source": "pistol",
+          "gesture": 1,
+          "at_seconds": 0.048,
+          "rate": 0.9067500000000001,
+          "gain": 0.72
+        },
+        {
+          "source": "pistol",
+          "gesture": 2,
+          "at_seconds": 0.9039791666666667,
+          "rate": 0.9067500000000001,
+          "gain": 0.48
+        },
+        {
+          "source": "pistol",
+          "gesture": 0,
+          "at_seconds": 1.656,
+          "rate": 0.9067500000000001,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 2.08,
+          "rate": 0.9067500000000001,
+          "gain": 0.65
+        }
+      ],
+      "charge_gain": 0.17,
+      "cutoff": 6100
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/ReloadIdentity/VesperReload2.wav",
+      "sha256": "e7aff43e8b6c1f65829d3d4d099b9e7794cf617ea9d4834cd72664050c4d88fd",
+      "seconds": 2.4,
+      "peak": 0.7800000000000001,
+      "layers": [
+        {
+          "source": "pistol",
+          "gesture": 2,
+          "at_seconds": 0.048,
+          "rate": 0.93,
+          "gain": 0.72
+        },
+        {
+          "source": "pistol",
+          "gesture": 0,
+          "at_seconds": 0.9119791666666667,
+          "rate": 0.93,
+          "gain": 0.48
+        },
+        {
+          "source": "pistol",
+          "gesture": 1,
+          "at_seconds": 1.656,
+          "rate": 0.93,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 2.088,
+          "rate": 0.93,
+          "gain": 0.65
+        }
+      ],
+      "charge_gain": 0.17,
+      "cutoff": 6100
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/ReloadIdentity/VesperReload3.wav",
+      "sha256": "333e12ab44651dcfc151ee6f41671626e2c61ea619e18db146fe998463ec7a45",
+      "seconds": 2.4,
+      "peak": 0.78,
+      "layers": [
+        {
+          "source": "pistol",
+          "gesture": 0,
+          "at_seconds": 0.048,
+          "rate": 0.9532499999999999,
+          "gain": 0.72
+        },
+        {
+          "source": "pistol",
+          "gesture": 1,
+          "at_seconds": 0.92,
+          "rate": 0.9532499999999999,
+          "gain": 0.48
+        },
+        {
+          "source": "pistol",
+          "gesture": 2,
+          "at_seconds": 1.656,
+          "rate": 0.9532499999999999,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 2.096,
+          "rate": 0.9532499999999999,
+          "gain": 0.65
+        }
+      ],
+      "charge_gain": 0.17,
+      "cutoff": 6100
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/ReloadIdentity/ThornReload1.wav",
+      "sha256": "a7c38385b22f5548513f9ebac8af38f29e172cbee13c304d04d2c58e11e833bd",
+      "seconds": 2.5,
+      "peak": 0.78,
+      "layers": [
+        {
+          "source": "shotgun",
+          "gesture": 1,
+          "at_seconds": 0.05,
+          "rate": 1.1017499999999998,
+          "gain": 0.72
+        },
+        {
+          "source": "shotgun",
+          "gesture": 2,
+          "at_seconds": 0.592,
+          "rate": 1.1017499999999998,
+          "gain": 0.48
+        },
+        {
+          "source": "shotgun",
+          "gesture": 3,
+          "at_seconds": 0.8999791666666667,
+          "rate": 1.1017499999999998,
+          "gain": 0.48
+        },
+        {
+          "source": "shotgun",
+          "gesture": 4,
+          "at_seconds": 1.642,
+          "rate": 1.1017499999999998,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 2.125,
+          "rate": 1.1017499999999998,
+          "gain": 0.65
+        }
+      ],
+      "charge_gain": 0.2,
+      "cutoff": 8200
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/ReloadIdentity/ThornReload2.wav",
+      "sha256": "b3a0eee05b026a63012c6e53c9d6c933bd1566fa68f8aeeabd349d2ee8b574bf",
+      "seconds": 2.5,
+      "peak": 0.78,
+      "layers": [
+        {
+          "source": "shotgun",
+          "gesture": 2,
+          "at_seconds": 0.05,
+          "rate": 1.13,
+          "gain": 0.72
+        },
+        {
+          "source": "shotgun",
+          "gesture": 3,
+          "at_seconds": 0.6,
+          "rate": 1.13,
+          "gain": 0.48
+        },
+        {
+          "source": "shotgun",
+          "gesture": 4,
+          "at_seconds": 0.8999791666666667,
+          "rate": 1.13,
+          "gain": 0.48
+        },
+        {
+          "source": "shotgun",
+          "gesture": 5,
+          "at_seconds": 1.65,
+          "rate": 1.13,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 2.125,
+          "rate": 1.13,
+          "gain": 0.65
+        }
+      ],
+      "charge_gain": 0.2,
+      "cutoff": 8200
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/ReloadIdentity/ThornReload3.wav",
+      "sha256": "f96a758c49b3bcead515b9e31de955f40f8579ee92ae42bfa7c7fc57171f83f5",
+      "seconds": 2.5,
+      "peak": 0.78,
+      "layers": [
+        {
+          "source": "shotgun",
+          "gesture": 3,
+          "at_seconds": 0.05,
+          "rate": 1.1582499999999998,
+          "gain": 0.72
+        },
+        {
+          "source": "shotgun",
+          "gesture": 4,
+          "at_seconds": 0.608,
+          "rate": 1.1582499999999998,
+          "gain": 0.48
+        },
+        {
+          "source": "shotgun",
+          "gesture": 5,
+          "at_seconds": 0.8999791666666667,
+          "rate": 1.1582499999999998,
+          "gain": 0.48
+        },
+        {
+          "source": "shotgun",
+          "gesture": 6,
+          "at_seconds": 1.658,
+          "rate": 1.1582499999999998,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 2.125,
+          "rate": 1.1582499999999998,
+          "gain": 0.65
+        }
+      ],
+      "charge_gain": 0.2,
+      "cutoff": 8200
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/ReloadIdentity/SundownReload1.wav",
+      "sha256": "d55a45216f991affb12d2265d883e396e11eeb52ef3bb286f9d0a237893ea84c",
+      "seconds": 3.4,
+      "peak": 0.78,
+      "layers": [
+        {
+          "source": "shotgun",
+          "gesture": 2,
+          "at_seconds": 0.068,
+          "rate": 0.585,
+          "gain": 0.72
+        },
+        {
+          "source": "shotgun",
+          "gesture": 3,
+          "at_seconds": 0.706,
+          "rate": 0.585,
+          "gain": 0.48
+        },
+        {
+          "source": "shotgun",
+          "gesture": 4,
+          "at_seconds": 2.04,
+          "rate": 0.585,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 2.984,
+          "rate": 0.585,
+          "gain": 0.65
+        }
+      ],
+      "charge_gain": 0.46,
+      "cutoff": 2400
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/ReloadIdentity/SundownReload2.wav",
+      "sha256": "b07c84d1a7f31e657b7d5059ae6029580f1dd72529c1fde87e4a3de3eefb2a09",
+      "seconds": 3.4,
+      "peak": 0.78,
+      "layers": [
+        {
+          "source": "shotgun",
+          "gesture": 3,
+          "at_seconds": 0.068,
+          "rate": 0.6,
+          "gain": 0.72
+        },
+        {
+          "source": "shotgun",
+          "gesture": 4,
+          "at_seconds": 0.714,
+          "rate": 0.6,
+          "gain": 0.48
+        },
+        {
+          "source": "shotgun",
+          "gesture": 5,
+          "at_seconds": 2.04,
+          "rate": 0.6,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 2.992,
+          "rate": 0.6,
+          "gain": 0.65
+        }
+      ],
+      "charge_gain": 0.46,
+      "cutoff": 2400
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/ReloadIdentity/SundownReload3.wav",
+      "sha256": "3fe10f6e57d008c23eacb664ec9a9abf5562566eefac4a2a62ea8490c503f541",
+      "seconds": 3.4,
+      "peak": 0.78,
+      "layers": [
+        {
+          "source": "shotgun",
+          "gesture": 4,
+          "at_seconds": 0.068,
+          "rate": 0.6149999999999999,
+          "gain": 0.72
+        },
+        {
+          "source": "shotgun",
+          "gesture": 5,
+          "at_seconds": 0.722,
+          "rate": 0.6149999999999999,
+          "gain": 0.48
+        },
+        {
+          "source": "shotgun",
+          "gesture": 6,
+          "at_seconds": 2.04,
+          "rate": 0.6149999999999999,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 3.0,
+          "rate": 0.6149999999999999,
+          "gain": 0.65
+        }
+      ],
+      "charge_gain": 0.46,
+      "cutoff": 2400
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/ReloadIdentity/RondoReload1.wav",
+      "sha256": "0c963bba820ca14344f6394a203303a9b58ae2eb239ee751cefdd6fa4e64d302",
+      "seconds": 2.1,
+      "peak": 0.78,
+      "layers": [
+        {
+          "source": "cylinder",
+          "gesture": 0,
+          "at_seconds": 0.042,
+          "rate": 1.0725,
+          "gain": 0.72
+        },
+        {
+          "source": "cylinder",
+          "gesture": 1,
+          "at_seconds": 0.475,
+          "rate": 1.0725,
+          "gain": 0.48
+        },
+        {
+          "source": "cylinder",
+          "gesture": 2,
+          "at_seconds": 0.714,
+          "rate": 1.0725,
+          "gain": 0.48
+        },
+        {
+          "source": "cylinder",
+          "gesture": 3,
+          "at_seconds": 1.42,
+          "rate": 1.0725,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 1.659,
+          "rate": 1.0725,
+          "gain": 0.65
+        }
+      ],
+      "charge_gain": 0.18,
+      "cutoff": 6600
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/ReloadIdentity/RondoReload2.wav",
+      "sha256": "6317cd952e60eedc85a8daa8444959dedda07c413202089e2969e4e5fc14adfb",
+      "seconds": 2.1,
+      "peak": 0.7800000000000001,
+      "layers": [
+        {
+          "source": "cylinder",
+          "gesture": 1,
+          "at_seconds": 0.042,
+          "rate": 1.1,
+          "gain": 0.72
+        },
+        {
+          "source": "cylinder",
+          "gesture": 2,
+          "at_seconds": 0.483,
+          "rate": 1.1,
+          "gain": 0.48
+        },
+        {
+          "source": "cylinder",
+          "gesture": 3,
+          "at_seconds": 0.714,
+          "rate": 1.1,
+          "gain": 0.48
+        },
+        {
+          "source": "cylinder",
+          "gesture": 4,
+          "at_seconds": 1.428,
+          "rate": 1.1,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 1.659,
+          "rate": 1.1,
+          "gain": 0.65
+        }
+      ],
+      "charge_gain": 0.18,
+      "cutoff": 6600
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/ReloadIdentity/RondoReload3.wav",
+      "sha256": "f897a575d21708a373a647d20f0c9c0ddeadb0ab1691a5051d4bfd22ef5f4e59",
+      "seconds": 2.1,
+      "peak": 0.78,
+      "layers": [
+        {
+          "source": "cylinder",
+          "gesture": 2,
+          "at_seconds": 0.042,
+          "rate": 1.1275,
+          "gain": 0.72
+        },
+        {
+          "source": "cylinder",
+          "gesture": 3,
+          "at_seconds": 0.491,
+          "rate": 1.1275,
+          "gain": 0.48
+        },
+        {
+          "source": "cylinder",
+          "gesture": 4,
+          "at_seconds": 0.714,
+          "rate": 1.1275,
+          "gain": 0.48
+        },
+        {
+          "source": "cylinder",
+          "gesture": 0,
+          "at_seconds": 1.436,
+          "rate": 1.1275,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 1.659,
+          "rate": 1.1275,
+          "gain": 0.65
+        }
+      ],
+      "charge_gain": 0.18,
+      "cutoff": 6600
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/ReloadIdentity/TempestReload1.wav",
+      "sha256": "d37b9e6836671caff310c855697098cd2e1676ab1848fcc142cdc322f3efa716",
+      "seconds": 2.8,
+      "peak": 0.78,
+      "layers": [
+        {
+          "source": "shotgun",
+          "gesture": 4,
+          "at_seconds": 0.05597916666666667,
+          "rate": 0.75075,
+          "gain": 0.72
+        },
+        {
+          "source": "shotgun",
+          "gesture": 5,
+          "at_seconds": 0.5519791666666667,
+          "rate": 0.75075,
+          "gain": 0.48
+        },
+        {
+          "source": "shotgun",
+          "gesture": 6,
+          "at_seconds": 1.1199791666666667,
+          "rate": 0.75075,
+          "gain": 0.48
+        },
+        {
+          "source": "shotgun",
+          "gesture": 0,
+          "at_seconds": 1.672,
+          "rate": 0.75075,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 2.38,
+          "rate": 0.75075,
+          "gain": 0.65
+        }
+      ],
+      "charge_gain": 0.3,
+      "cutoff": 3900
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/ReloadIdentity/TempestReload2.wav",
+      "sha256": "2d4765159260928875d7651f6a0c830a958df0ed366830256f93d4f49b67dba0",
+      "seconds": 2.8,
+      "peak": 0.7800000000000001,
+      "layers": [
+        {
+          "source": "shotgun",
+          "gesture": 5,
+          "at_seconds": 0.05597916666666667,
+          "rate": 0.77,
+          "gain": 0.72
+        },
+        {
+          "source": "shotgun",
+          "gesture": 6,
+          "at_seconds": 0.5599791666666667,
+          "rate": 0.77,
+          "gain": 0.48
+        },
+        {
+          "source": "shotgun",
+          "gesture": 0,
+          "at_seconds": 1.1199791666666667,
+          "rate": 0.77,
+          "gain": 0.48
+        },
+        {
+          "source": "shotgun",
+          "gesture": 1,
+          "at_seconds": 1.68,
+          "rate": 0.77,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 2.38,
+          "rate": 0.77,
+          "gain": 0.65
+        }
+      ],
+      "charge_gain": 0.3,
+      "cutoff": 3900
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/ReloadIdentity/TempestReload3.wav",
+      "sha256": "c9d2cbf82f39cc9dea557821921554e751e4b0e602c35ac374bf964e88050d49",
+      "seconds": 2.8,
+      "peak": 0.78,
+      "layers": [
+        {
+          "source": "shotgun",
+          "gesture": 6,
+          "at_seconds": 0.05597916666666667,
+          "rate": 0.7892499999999999,
+          "gain": 0.72
+        },
+        {
+          "source": "shotgun",
+          "gesture": 0,
+          "at_seconds": 0.5679791666666667,
+          "rate": 0.7892499999999999,
+          "gain": 0.48
+        },
+        {
+          "source": "shotgun",
+          "gesture": 1,
+          "at_seconds": 1.1199791666666667,
+          "rate": 0.7892499999999999,
+          "gain": 0.48
+        },
+        {
+          "source": "shotgun",
+          "gesture": 2,
+          "at_seconds": 1.688,
+          "rate": 0.7892499999999999,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 2.38,
+          "rate": 0.7892499999999999,
+          "gain": 0.65
+        }
+      ],
+      "charge_gain": 0.3,
+      "cutoff": 3900
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/ReloadIdentity/NocturneReload1.wav",
+      "sha256": "d66caae7a25fddc8ec33754d8e5179897cbee1b650ef8ce2f4f49c28d1bc4b08",
+      "seconds": 2.6,
+      "peak": 0.78,
+      "layers": [
+        {
+          "source": "rifle",
+          "gesture": 0,
+          "at_seconds": 0.052,
+          "rate": 0.8385,
+          "gain": 0.72
+        },
+        {
+          "source": "rifle",
+          "gesture": 1,
+          "at_seconds": 0.642,
+          "rate": 0.8385,
+          "gain": 0.48
+        },
+        {
+          "source": "rifle",
+          "gesture": 2,
+          "at_seconds": 0.962,
+          "rate": 0.8385,
+          "gain": 0.48
+        },
+        {
+          "source": "rifle",
+          "gesture": 3,
+          "at_seconds": 1.734,
+          "rate": 0.8385,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 2.08,
+          "rate": 0.8385,
+          "gain": 0.65
+        }
+      ],
+      "charge_gain": 0.37,
+      "cutoff": 5000
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/ReloadIdentity/NocturneReload2.wav",
+      "sha256": "b3232caccefc59186984ff3f91cad6b8bdf92405f3b5677dd82614b80bd2032b",
+      "seconds": 2.6,
+      "peak": 0.78,
+      "layers": [
+        {
+          "source": "rifle",
+          "gesture": 1,
+          "at_seconds": 0.052,
+          "rate": 0.86,
+          "gain": 0.72
+        },
+        {
+          "source": "rifle",
+          "gesture": 2,
+          "at_seconds": 0.65,
+          "rate": 0.86,
+          "gain": 0.48
+        },
+        {
+          "source": "rifle",
+          "gesture": 3,
+          "at_seconds": 0.962,
+          "rate": 0.86,
+          "gain": 0.48
+        },
+        {
+          "source": "rifle",
+          "gesture": 0,
+          "at_seconds": 1.742,
+          "rate": 0.86,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 2.08,
+          "rate": 0.86,
+          "gain": 0.65
+        }
+      ],
+      "charge_gain": 0.37,
+      "cutoff": 5000
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/ReloadIdentity/NocturneReload3.wav",
+      "sha256": "7fc94ba030b48bab8d2aedeccb62439453d5c967f80237896a03288671560510",
+      "seconds": 2.6,
+      "peak": 0.7800000000000001,
+      "layers": [
+        {
+          "source": "rifle",
+          "gesture": 2,
+          "at_seconds": 0.052,
+          "rate": 0.8815,
+          "gain": 0.72
+        },
+        {
+          "source": "rifle",
+          "gesture": 3,
+          "at_seconds": 0.658,
+          "rate": 0.8815,
+          "gain": 0.48
+        },
+        {
+          "source": "rifle",
+          "gesture": 0,
+          "at_seconds": 0.962,
+          "rate": 0.8815,
+          "gain": 0.48
+        },
+        {
+          "source": "rifle",
+          "gesture": 1,
+          "at_seconds": 1.75,
+          "rate": 0.8815,
+          "gain": 0.48
+        },
+        {
+          "source": "lever",
+          "gesture": 0,
+          "at_seconds": 2.08,
+          "rate": 0.8815,
+          "gain": 0.65
+        }
+      ],
+      "charge_gain": 0.37,
+      "cutoff": 5000
+    }
+  ]
+}

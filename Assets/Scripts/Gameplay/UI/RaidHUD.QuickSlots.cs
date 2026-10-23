@@ -224,7 +224,7 @@ namespace Unity.MP_FPS
                 if (owner.Feedback != TacticalItemFeedback.None) QuickNotice(QuickFeedback(owner.Feedback));
             }
             if (m_QuickTacticalRequest != 0 && Time.unscaledTime - m_QuickTacticalRequestedAt > 8)
-            { m_QuickTacticalRequest = 0; QuickNotice("Waiting for the server. Retry after the connection recovers."); }
+            { m_QuickTacticalRequest = 0; MoonkovAudio.Error(); QuickNotice("Waiting for the server. Retry after the connection recovers."); }
             bool menu = PointerRequested || GameSettings.Instance.IsPauseMenuOpen;
             if (QuickTacticalActionPending && !QuickTacticalCancelPending && (menu || !m_QuickActive || Keyboard.current?.xKey.wasPressedThisFrame == true && !QuickTyping(m_Root.panel?.focusController.focusedElement as VisualElement)))
                 SendQuickTactical(TacticalItemAction.Cancel);

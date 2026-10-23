@@ -20,7 +20,26 @@ public static class AirlockAudioAssetTools
         sound.DistanceInfo.SpatialBlend = 1; sound.DistanceInfo.VolumeDistMin = 1; sound.DistanceInfo.VolumeDistMax = 14;
         sound.DistanceInfo.SpatialBlend_MaxDistance = 14;
         sound.LowPassFilter.EnableComponent = true; sound.LowPassFilter.CutoffMin = sound.LowPassFilter.CutoffMax = 22000;
-        AssetDatabase.CreateAsset(sound,path); return sound;
+        TuneDoor(sound,name); AssetDatabase.CreateAsset(sound,path); return sound;
+    }
+    [MenuItem("Tools/Moonkov/Airlock/Tune door audibility")]
+    public static void TuneDoors()
+    {
+        foreach (string name in new[] { "DoorMotor_Loop", "LatchLock", "LatchUnlock" })
+        {
+            var sound = AssetDatabase.LoadAssetAtPath<SoundDef>(Folder + "/SoundDefs/" + name + ".asset");
+            if (!sound) throw new System.InvalidOperationException("Missing airlock cue " + name);
+            TuneDoor(sound, name); EditorUtility.SetDirty(sound); AssetDatabase.SaveAssetIfDirty(sound);
+        }
+    }
+    private static void TuneDoor(SoundDef sound, string name)
+    {
+        if (name != "DoorMotor_Loop" && name != "LatchLock" && name != "LatchUnlock") return;
+        // Physical air/contact propagation remains owned by AirlockAudio.
+        sound.PitchAndVolumeInfo.VolumeMin = sound.PitchAndVolumeInfo.VolumeMax = name == "DoorMotor_Loop" ? -5 : -3;
+        sound.DistanceInfo.VolumeDistMin = 3.5f; sound.DistanceInfo.VolumeDistMax = name == "DoorMotor_Loop" ? 28 : 22;
+        sound.DistanceInfo.SpatialBlend_MaxDistance = sound.DistanceInfo.VolumeDistMax;
+        sound.Priority = 70; sound.MaxVoices = 8; sound.Role = SoundDef.MixRole.Interaction;
     }
     [MenuItem("Tools/Moonkov/Airlock/Bind replaceable CC0 audio candidates to prototype only")]
     public static string Bind()

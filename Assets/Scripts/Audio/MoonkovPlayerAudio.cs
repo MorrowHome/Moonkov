@@ -8,7 +8,8 @@ namespace Unity.MP_FPS
     {
         private bool m_Initialized;
         private readonly MoonkovMeleeAudio m_Melee = new MoonkovMeleeAudio();
-        private uint m_ReloadTick, m_JumpTick, m_LandTick, m_ImpactTick, m_Weapon;
+        private readonly MoonkovReloadAudio m_Reload = new MoonkovReloadAudio();
+        private uint m_JumpTick, m_LandTick, m_ImpactTick, m_Weapon;
         private float m_Stride, m_SurfaceTimer;
         private Vector3 m_Position;
         private SoundDef m_Surface;
@@ -16,10 +17,9 @@ namespace Unity.MP_FPS
         private float m_TurnTravel, m_Yaw, m_GearAt;
         private readonly MoonkovSurfaceFoley m_Wall = new MoonkovSurfaceFoley();
         private UnityEngine.CharacterController m_Capsule;
-        private SoundSystem.SoundInfo m_WallSound, m_MovementSound, m_StanceSound;
-        private float m_LastStepTime = -1, m_BreathAt, m_HeartAt, m_Health, m_Oxygen, m_Energy, m_Hydration;
-        private bool m_Reloading, m_WasSealed, m_BreathEffort;
-        private int m_Ammo;
+        private SoundSystem.SoundInfo m_WallSound, m_MovementSound, m_StanceSound, m_ReloadSound;
+        private float m_LastStepTime = -1, m_BreathAt, m_HeartAt;
+        private bool m_WasSealed, m_BreathEffort;
         private SoundSystem.SoundInfo m_BreathSound, m_HeartSound;
         private float m_FallSpeed;
         private float m_HitAt;
@@ -38,23 +38,32 @@ namespace Unity.MP_FPS
             if (library == null) return;
             Vector3 position = player.position;
             m_Melee.Update(ghost, position, owned);
+            var reload = m_Reload.Observe(ghost.LastReloadTick, ghost.EquippedWeaponID, ghost.CurrentAmmo,
+                ghost.ControllerState.IsReloadingState, ghost.CurrentHealth > 0);
             if (!m_Initialized)
             {
                 m_Initialized = true;
-                m_ReloadTick = ghost.LastReloadTick; m_JumpTick = ghost.LastJumpTick;
+                m_JumpTick = ghost.LastJumpTick;
                 m_LandTick = ghost.LastLandTick; m_ImpactTick = ghost.LastImpactTick;
                 m_Weapon = ghost.EquippedWeaponID; m_Position = position;
-                Remember(ghost); m_BreathAt = Time.unscaledTime + .75f; m_HeartAt = Time.unscaledTime + 1;
+                m_BreathAt = Time.unscaledTime + .75f; m_HeartAt = Time.unscaledTime + 1;
                 m_WasSealed = !ghost.BreathableAir;
                 m_Stance = ghost.ControllerState.Stance; m_Yaw = ((Quaternion)ghost.ControllerState.CurrentRotation).eulerAngles.y;
                 m_Capsule = player.GetComponent<UnityEngine.CharacterController>();
                 return; // A late join must not replay historical events.
             }
-            if (NewTick(ghost.LastReloadTick, ref m_ReloadTick))
+            if ((reload & ReloadAudioEvent.Stop) != 0)
+            {
+                GameManager.Instance?.SoundSystem?.Stop(m_ReloadSound, .08f);
+                m_ReloadSound = null;
+            }
+            if ((reload & ReloadAudioEvent.Start) != 0)
             {
                 var weapon = WeaponManager.Instance.WeaponRegistry.GetWeaponData(ghost.EquippedWeaponID);
-                LocalOrWorld(weapon?.WeaponReloadSfx, position, owned);
+                m_ReloadSound = MoonkovAudio.PlayWeaponLayer(weapon?.WeaponReloadSfx, position, 1, owned ? .08f : 1,
+                    MoonkovReloadAudio.PitchForDuration(weapon?.WeaponReloadSfx, ghost.ReloadTimer));
             }
+            if ((reload & ReloadAudioEvent.Ready) != 0) LocalOrWorld(library.ReloadReady, position, owned, .9f);
             if (NewTick(ghost.LastJumpTick, ref m_JumpTick)) LocalOrWorld(library.Jump, position, owned, .7f);
             if (NewTick(ghost.LastLandTick, ref m_LandTick))
             {
@@ -69,14 +78,9 @@ namespace Unity.MP_FPS
                 m_HitAt = Time.unscaledTime + .35f;
             }
             if (owned && m_Weapon != ghost.EquippedWeaponID) MoonkovAudio.Play(library.Equipment, position);
-            if (m_Weapon == ghost.EquippedWeaponID && m_Reloading && !ghost.ControllerState.IsReloadingState &&
-                ghost.CurrentAmmo > m_Ammo) LocalOrWorld(library.ReloadReady, position, owned, .7f);
+            // Item-use feedback comes from acknowledged inventory actions, never passive regeneration.
             if (owned && ghost.CurrentHealth > 0)
             {
-                if (m_Health > 0 && ghost.CurrentHealth > m_Health + 2) LocalOrWorld(library.Medical, position, true);
-                if (m_Health > 0 && ghost.Oxygen > m_Oxygen + 5) LocalOrWorld(library.OxygenRefill, position, true);
-                if (m_Health > 0 && (ghost.Energy > m_Energy + 2 || ghost.Hydration > m_Hydration + 2))
-                    LocalOrWorld(library.Cloth, position, true, .8f);
                 bool sealedSuit = !ghost.BreathableAir;
                 bool effort = ghost.ControllerState.Sprinting || ghost.CurrentHealth < ghost.MaxHealth * .35f ||
                     sealedSuit && ghost.Oxygen <= 10;
@@ -108,7 +112,6 @@ namespace Unity.MP_FPS
                 m_Stride = 0; m_TurnTravel = 0;
             }
             m_Stance = ghost.ControllerState.Stance;
-            Remember(ghost);
             m_Weapon = ghost.EquippedWeaponID;
             m_FallSpeed = Mathf.Max(m_FallSpeed, -ghost.ControllerState.JumpFallSpeed);
 
@@ -170,14 +173,10 @@ namespace Unity.MP_FPS
             LocalOrWorld(m_Surface ?? library.RegolithFootsteps, position, owned, volume);
             LocalOrWorld(library.Cloth, position, owned, .2f * volume);
         }
-        private void Remember(in PredictedPlayerGhost ghost)
-        {
-            m_Reloading = ghost.ControllerState.IsReloadingState; m_Ammo = ghost.CurrentAmmo;
-            m_Health = ghost.CurrentHealth; m_Oxygen = ghost.Oxygen; m_Energy = ghost.Energy; m_Hydration = ghost.Hydration;
-        }
         public void Stop()
         {
             var system = GameManager.Instance?.SoundSystem;
+            system?.Stop(m_ReloadSound, .08f); m_ReloadSound = null;
             system?.Stop(m_BreathSound, .12f); system?.Stop(m_HeartSound, .12f);
             system?.Stop(m_WallSound, .08f); system?.Stop(m_MovementSound, .08f); system?.Stop(m_StanceSound, .08f);
             m_BreathSound = m_HeartSound = m_WallSound = m_MovementSound = m_StanceSound = null;

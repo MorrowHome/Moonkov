@@ -67,7 +67,7 @@ MonoBehaviour:
         z: 0
         w: 0
   WeaponFireSfx: {fileID: 11400000, guid: d5dd017a887ec49f980bd7bb99605e05, type: 2}
-  WeaponReloadSfx: {fileID: 11400000, guid: 212c982f40d0c614d985d1a792331713, type: 2}
+  WeaponReloadSfx: {fileID: 11400000, guid: 408521a2a3dd642b99c33851ffd69fa9, type: 2}
   WeaponFireLayerSfx: {fileID: 11400000, guid: 841f84a55ccff4a67be78756f3b75367, type: 2}
   WeaponImpactSfx: {fileID: 11400000, guid: d700293aa398d3b4f89968f998438a9e, type: 2}
   Behavior: 0
