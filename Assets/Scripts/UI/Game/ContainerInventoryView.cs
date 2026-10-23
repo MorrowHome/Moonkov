@@ -37,6 +37,7 @@ namespace Unity.MP_FPS.Client
         private int m_LootId=-1;
         private bool m_DroppedItem;
         private int m_RenderedVersion = int.MinValue;
+        private string m_RenderedLayout;
         private int m_EscapeHandledFrame = -1;
         public VisualElement Element => m_Root;
         public bool Busy => m_Busy;
@@ -156,14 +157,13 @@ namespace Unity.MP_FPS.Client
                 if (message != null) MoonkovAudio.Error();
                 else MoonkovAudio.Play(MoonkovAudio.Library?.Equipment, Vector3.zero);
             }
-            bool changed = m_RenderedVersion != (graph?.Version ?? -1) || m_LootId!=lootId || m_DroppedItem!=droppedItem;
-            // An acknowledged snapshot can be a new object with identical contents. Rebuilding
-            // that tree destroys the pressed tile/capture halfway through a click or drag.
-            if (!changed && !ReferenceEquals(m_Graph, graph))
-                changed = RaidInventoryTransport.Encode(m_Graph) != RaidInventoryTransport.Encode(graph);
+            string layout = LayoutKey(graph);
+            bool changed = m_RenderedVersion == int.MinValue || m_RenderedLayout != layout || m_LootId!=lootId || m_DroppedItem!=droppedItem;
             m_Graph = graph;m_LootId=lootId;m_DroppedItem=droppedItem;
             if (operationCompleted) m_Busy = false;
-            if (changed) { CancelDrag(); Render(); m_RenderedVersion=graph?.Version ?? -1; }
+            if (changed) { CancelDrag(); Render(); m_RenderedLayout=layout; }
+            else RefreshSnapshotValues();
+            m_RenderedVersion=graph?.Version ?? -1;
             if(changed)m_Character?.SetProtectionInventory(graph);
             if (message != null) MoonkovLocalization.Set(m_Message, message);
             else if (!m_Busy && graph != null) MoonkovLocalization.Set(m_Message, m_ReadOnlyReason ?? "Drag to move · R rotate · Double click containers · Ctrl click transfer");
@@ -449,6 +449,7 @@ namespace Unity.MP_FPS.Client
             private IVisualElementScheduledItem m_Scroll;
             public Drag(ContainerInventoryView view, Func<InventoryItem> source, Action click, Action doubleClick)
             { m_View=view; m_Source=source; m_Click=click; m_DoubleClick=doubleClick; }
+            public void RefreshItem() { if (m_Item != null) m_Item = m_View.m_Graph.Find(m_Item.Id); }
             protected override void RegisterCallbacksOnTarget()
             { target.RegisterCallback<PointerEnterEvent>(Enter); target.RegisterCallback<PointerLeaveEvent>(Leave); target.RegisterCallback<PointerDownEvent>(Down,TrickleDown.TrickleDown); target.RegisterCallback<PointerMoveEvent>(Move,TrickleDown.TrickleDown); target.RegisterCallback<PointerUpEvent>(Up,TrickleDown.TrickleDown); target.RegisterCallback<PointerCaptureOutEvent>(Lost); target.RegisterCallback<PointerCancelEvent>(Cancelled); target.RegisterCallback<DetachFromPanelEvent>(Detached); }
             protected override void UnregisterCallbacksFromTarget()
