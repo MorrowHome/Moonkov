@@ -1,0 +1,4831 @@
+{
+  "old": [
+    {
+      "name": "MC_E pressure panel L1 S21 joint backing_01079",
+      "type": "MESH",
+      "parent": "ORG_MC20_E_Shell_L1_0f65f1",
+      "data_name": "MC_E pressure panel L1 S21 joint backing",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -107.5999984741211
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          9.4399995803833
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          20.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -29.599998474121094
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          9.4399995803833
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "LD2_Seal_Elastomer"
+      ],
+      "props": "[('collision_solid', 'True'), ('component_role', 'pressure_wall'), ('floor_level', '1'), ('lobe', 'E'), ('wall_system', 'E pressure panel L1 S21')]",
+      "author_bounds": [
+        [
+          74.70066833496094,
+          81.29933166503906
+        ],
+        [
+          -107.61249542236328,
+          -107.5875015258789
+        ],
+        [
+          6.59999942779541,
+          12.279999732971191
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "1f945dcd33d3cfe87a2639739efcaafd814fb13d84e4a7dbfa91d81bb730190c",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "6cd1157aeb24cd91f05912a15496e17afbb2c5ca30f57198418e5cc995b82a98",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "329ea9d2b550986cff0033d73673ef1989a14f069bada8c09eef87b8cf09bcd0"
+        }
+      ],
+      "expected_old_unity_local_bounds": [
+        [
+          16.700668334960938,
+          6.59999942779541,
+          -29.61249542236328
+        ],
+        [
+          23.299331665039062,
+          12.279999732971191,
+          -29.587501525878906
+        ]
+      ],
+      "action": "Disable old renderer and any directly assigned collision ONLY after exact local identity/membership match. Do not assume local object exists."
+    },
+    {
+      "name": "MC_E pressure panel L1 S21 panel_01080",
+      "type": "MESH",
+      "parent": "ORG_MC20_E_Shell_L1_0f65f1",
+      "data_name": "MC_E pressure panel L1 S21 panel",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          75.80044555664062
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -107.5999984741211
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          8.020000457763672
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          17.800445556640625
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -29.599998474121094
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          8.020000457763672
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "LD2_Painted_Metal_Grey"
+      ],
+      "props": "[('collision_solid', 'True'), ('component_role', 'pressure_wall'), ('floor_level', '1'), ('lobe', 'E'), ('wall_system', 'E pressure panel L1 S21')]",
+      "author_bounds": [
+        [
+          74.70466613769531,
+          76.89622497558594
+        ],
+        [
+          -107.72999572753906,
+          -107.47000122070312
+        ],
+        [
+          6.604000568389893,
+          9.43600082397461
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "614ca4f6739d4c0060c5d5b7d4df9237b7fee897af952f911c5ffdc6707ffe8b",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "6cd1157aeb24cd91f05912a15496e17afbb2c5ca30f57198418e5cc995b82a98",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "33a7efa83b6303b0f79dc82d8a6a5d11286aa817215d50bca2c035dc433158b8"
+        }
+      ],
+      "expected_old_unity_local_bounds": [
+        [
+          16.704666137695312,
+          6.604000568389893,
+          -29.729995727539062
+        ],
+        [
+          18.896224975585938,
+          9.43600082397461,
+          -29.470001220703125
+        ]
+      ],
+      "action": "Disable old renderer and any directly assigned collision ONLY after exact local identity/membership match. Do not assume local object exists."
+    },
+    {
+      "name": "MC_E pressure panel L1 S21 panel_01081",
+      "type": "MESH",
+      "parent": "ORG_MC20_E_Shell_L1_0f65f1",
+      "data_name": "MC_E pressure panel L1 S21 panel.001",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          75.80044555664062
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -107.5999984741211
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          10.859999656677246
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          17.800445556640625
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -29.599998474121094
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          10.859999656677246
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "LD2_Painted_Metal_Grey"
+      ],
+      "props": "[('collision_solid', 'True'), ('component_role', 'pressure_wall'), ('floor_level', '1'), ('lobe', 'E'), ('wall_system', 'E pressure panel L1 S21')]",
+      "author_bounds": [
+        [
+          74.70466613769531,
+          76.89622497558594
+        ],
+        [
+          -107.72999572753906,
+          -107.47000122070312
+        ],
+        [
+          9.443999290466309,
+          12.276000022888184
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "614ca4f6739d4c0060c5d5b7d4df9237b7fee897af952f911c5ffdc6707ffe8b",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "6cd1157aeb24cd91f05912a15496e17afbb2c5ca30f57198418e5cc995b82a98",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "33a7efa83b6303b0f79dc82d8a6a5d11286aa817215d50bca2c035dc433158b8"
+        }
+      ],
+      "expected_old_unity_local_bounds": [
+        [
+          16.704666137695312,
+          9.443999290466309,
+          -29.729995727539062
+        ],
+        [
+          18.896224975585938,
+          12.276000022888184,
+          -29.470001220703125
+        ]
+      ],
+      "action": "Disable old renderer and any directly assigned collision ONLY after exact local identity/membership match. Do not assume local object exists."
+    },
+    {
+      "name": "MC_E pressure panel L1 S21 panel_01082",
+      "type": "MESH",
+      "parent": "ORG_MC20_E_Shell_L1_0f65f1",
+      "data_name": "MC_E pressure panel L1 S21 panel.002",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -107.5999984741211
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          8.020000457763672
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          20.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -29.599998474121094
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          8.020000457763672
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "LD2_Painted_Metal_Grey"
+      ],
+      "props": "[('collision_solid', 'True'), ('component_role', 'pressure_wall'), ('floor_level', '1'), ('lobe', 'E'), ('wall_system', 'E pressure panel L1 S21')]",
+      "author_bounds": [
+        [
+          76.90422058105469,
+          79.09577941894531
+        ],
+        [
+          -107.72999572753906,
+          -107.47000122070312
+        ],
+        [
+          6.604000568389893,
+          9.43600082397461
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "614ca4f6739d4c0060c5d5b7d4df9237b7fee897af952f911c5ffdc6707ffe8b",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "6cd1157aeb24cd91f05912a15496e17afbb2c5ca30f57198418e5cc995b82a98",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "33a7efa83b6303b0f79dc82d8a6a5d11286aa817215d50bca2c035dc433158b8"
+        }
+      ],
+      "expected_old_unity_local_bounds": [
+        [
+          18.904220581054688,
+          6.604000568389893,
+          -29.729995727539062
+        ],
+        [
+          21.095779418945312,
+          9.43600082397461,
+          -29.470001220703125
+        ]
+      ],
+      "action": "Disable old renderer and any directly assigned collision ONLY after exact local identity/membership match. Do not assume local object exists."
+    },
+    {
+      "name": "MC_E pressure panel L1 S21 panel_01083",
+      "type": "MESH",
+      "parent": "ORG_MC20_E_Shell_L1_0f65f1",
+      "data_name": "MC_E pressure panel L1 S21 panel.003",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -107.5999984741211
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          10.859999656677246
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          20.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -29.599998474121094
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          10.859999656677246
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "LD2_Painted_Metal_Grey"
+      ],
+      "props": "[('collision_solid', 'True'), ('component_role', 'pressure_wall'), ('floor_level', '1'), ('lobe', 'E'), ('wall_system', 'E pressure panel L1 S21')]",
+      "author_bounds": [
+        [
+          76.90422058105469,
+          79.09577941894531
+        ],
+        [
+          -107.72999572753906,
+          -107.47000122070312
+        ],
+        [
+          9.443999290466309,
+          12.276000022888184
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "614ca4f6739d4c0060c5d5b7d4df9237b7fee897af952f911c5ffdc6707ffe8b",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "6cd1157aeb24cd91f05912a15496e17afbb2c5ca30f57198418e5cc995b82a98",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "33a7efa83b6303b0f79dc82d8a6a5d11286aa817215d50bca2c035dc433158b8"
+        }
+      ],
+      "expected_old_unity_local_bounds": [
+        [
+          18.904220581054688,
+          9.443999290466309,
+          -29.729995727539062
+        ],
+        [
+          21.095779418945312,
+          12.276000022888184,
+          -29.470001220703125
+        ]
+      ],
+      "action": "Disable old renderer and any directly assigned collision ONLY after exact local identity/membership match. Do not assume local object exists."
+    },
+    {
+      "name": "MC_E pressure panel L1 S21 panel_01084",
+      "type": "MESH",
+      "parent": "ORG_MC20_E_Shell_L1_0f65f1",
+      "data_name": "MC_E pressure panel L1 S21 panel.004",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          80.19955444335938
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -107.5999984741211
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          8.020000457763672
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          22.199554443359375
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -29.599998474121094
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          8.020000457763672
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "LD2_Painted_Metal_Grey"
+      ],
+      "props": "[('collision_solid', 'True'), ('component_role', 'pressure_wall'), ('floor_level', '1'), ('lobe', 'E'), ('wall_system', 'E pressure panel L1 S21')]",
+      "author_bounds": [
+        [
+          79.10377502441406,
+          81.29533386230469
+        ],
+        [
+          -107.72999572753906,
+          -107.47000122070312
+        ],
+        [
+          6.604000568389893,
+          9.43600082397461
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "614ca4f6739d4c0060c5d5b7d4df9237b7fee897af952f911c5ffdc6707ffe8b",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "6cd1157aeb24cd91f05912a15496e17afbb2c5ca30f57198418e5cc995b82a98",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "33a7efa83b6303b0f79dc82d8a6a5d11286aa817215d50bca2c035dc433158b8"
+        }
+      ],
+      "expected_old_unity_local_bounds": [
+        [
+          21.103775024414062,
+          6.604000568389893,
+          -29.729995727539062
+        ],
+        [
+          23.295333862304688,
+          9.43600082397461,
+          -29.470001220703125
+        ]
+      ],
+      "action": "Disable old renderer and any directly assigned collision ONLY after exact local identity/membership match. Do not assume local object exists."
+    },
+    {
+      "name": "MC_E pressure panel L1 S21 panel_01085",
+      "type": "MESH",
+      "parent": "ORG_MC20_E_Shell_L1_0f65f1",
+      "data_name": "MC_E pressure panel L1 S21 panel.005",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          80.19955444335938
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -107.5999984741211
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          10.859999656677246
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          22.199554443359375
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -29.599998474121094
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          10.859999656677246
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [
+        "LD2_Painted_Metal_Grey"
+      ],
+      "props": "[('collision_solid', 'True'), ('component_role', 'pressure_wall'), ('floor_level', '1'), ('lobe', 'E'), ('wall_system', 'E pressure panel L1 S21')]",
+      "author_bounds": [
+        [
+          79.10377502441406,
+          81.29533386230469
+        ],
+        [
+          -107.72999572753906,
+          -107.47000122070312
+        ],
+        [
+          9.443999290466309,
+          12.276000022888184
+        ]
+      ],
+      "vertices": 8,
+      "polygons": 6,
+      "vertex_hash": "614ca4f6739d4c0060c5d5b7d4df9237b7fee897af952f911c5ffdc6707ffe8b",
+      "topology_hash": "129f38a82ee7fd9873cf01c5303467e031b31c4b053568c4bbd9897a417d366f",
+      "normal_hash": "6cd1157aeb24cd91f05912a15496e17afbb2c5ca30f57198418e5cc995b82a98",
+      "smooth_hash": "b0f66adc83641586656866813fd9dd0b8ebb63796075661ba45d1aa8089e1d44",
+      "material_indices_hash": "9d908ecfb6b256def8b49a7c504e6c889c4b0e41fe6ce3e01863dd7b61a20aa0",
+      "uv": [
+        {
+          "name": "UVMap",
+          "active_render": true,
+          "hash": "33a7efa83b6303b0f79dc82d8a6a5d11286aa817215d50bca2c035dc433158b8"
+        }
+      ],
+      "expected_old_unity_local_bounds": [
+        [
+          21.103775024414062,
+          9.443999290466309,
+          -29.729995727539062
+        ],
+        [
+          23.295333862304688,
+          12.276000022888184,
+          -29.470001220703125
+        ]
+      ],
+      "action": "Disable old renderer and any directly assigned collision ONLY after exact local identity/membership match. Do not assume local object exists."
+    }
+  ],
+  "renderChunks": [
+    {
+      "name": "MC00Surface0836",
+      "meshPath": "Assets/MoonEnvironment/Variants/MC00BakedBuilding/Meshes/MC00Surface0836.asset",
+      "targetPaths": [
+        "MC00GameExport/MC00_Render/MC00_ROOT/ORG_FLOOR_L1_bdd3d3/ORG_SHARED_SHELL_2223a9/ORG_MC20_E_Shell_L1_0f65f1/MC_E pressure panel L1 S21 joint backing_01079"
+      ],
+      "allSourcePaths": [
+        "MC00GameExport/MC00_Render/MC00_ROOT/ORG_FLOOR_L0_e8ed5d/ORG_SHARED_BOUNDARIES_203004/ORG_EVA_DUST_HOLD_7e400f/MC_EVA internal dust-hold wall joint backing_05793",
+        "MC00GameExport/MC00_Render/MC00_ROOT/ORG_FLOOR_L0_e8ed5d/ORG_SHARED_SHELL_54318b/ORG_MC20_E_Shell_L0_0cd69a/MC_E pressure panel L0 S21 joint backing_00850",
+        "MC00GameExport/MC00_Render/MC00_ROOT/ORG_FLOOR_L1_bdd3d3/ORG_SHARED_SHELL_2223a9/ORG_MC20_E_Shell_L1_0f65f1/MC_E pressure panel L1 S21 joint backing_01079"
+      ]
+    },
+    {
+      "name": "MC00Surface0838",
+      "meshPath": "Assets/MoonEnvironment/Variants/MC00BakedBuilding/Meshes/MC00Surface0838.asset",
+      "targetPaths": [
+        "MC00GameExport/MC00_Render/MC00_ROOT/ORG_FLOOR_L1_bdd3d3/ORG_SHARED_SHELL_2223a9/ORG_MC20_E_Shell_L1_0f65f1/MC_E pressure panel L1 S21 panel_01080",
+        "MC00GameExport/MC00_Render/MC00_ROOT/ORG_FLOOR_L1_bdd3d3/ORG_SHARED_SHELL_2223a9/ORG_MC20_E_Shell_L1_0f65f1/MC_E pressure panel L1 S21 panel_01081",
+        "MC00GameExport/MC00_Render/MC00_ROOT/ORG_FLOOR_L1_bdd3d3/ORG_SHARED_SHELL_2223a9/ORG_MC20_E_Shell_L1_0f65f1/MC_E pressure panel L1 S21 panel_01082",
+        "MC00GameExport/MC00_Render/MC00_ROOT/ORG_FLOOR_L1_bdd3d3/ORG_SHARED_SHELL_2223a9/ORG_MC20_E_Shell_L1_0f65f1/MC_E pressure panel L1 S21 panel_01083"
+      ],
+      "allSourcePaths": [
+        "MC00GameExport/MC00_Render/MC00_ROOT/ORG_FLOOR_L0_e8ed5d/ORG_SHARED_BOUNDARIES_203004/ORG_EVA_DUST_HOLD_7e400f/MC_EVA internal dust-hold wall panel_05794",
+        "MC00GameExport/MC00_Render/MC00_ROOT/ORG_FLOOR_L0_e8ed5d/ORG_SHARED_BOUNDARIES_203004/ORG_EVA_DUST_HOLD_7e400f/MC_EVA internal dust-hold wall panel_05795",
+        "MC00GameExport/MC00_Render/MC00_ROOT/ORG_FLOOR_L0_e8ed5d/ORG_SHARED_SHELL_54318b/ORG_MC20_E_Shell_L0_0cd69a/MC_E pressure panel L0 S21 panel_00851",
+        "MC00GameExport/MC00_Render/MC00_ROOT/ORG_FLOOR_L0_e8ed5d/ORG_SHARED_SHELL_54318b/ORG_MC20_E_Shell_L0_0cd69a/MC_E pressure panel L0 S21 panel_00852",
+        "MC00GameExport/MC00_Render/MC00_ROOT/ORG_FLOOR_L1_bdd3d3/ORG_SHARED_SHELL_2223a9/ORG_MC20_E_Shell_L1_0f65f1/MC_E pressure panel L1 S21 panel_01080",
+        "MC00GameExport/MC00_Render/MC00_ROOT/ORG_FLOOR_L1_bdd3d3/ORG_SHARED_SHELL_2223a9/ORG_MC20_E_Shell_L1_0f65f1/MC_E pressure panel L1 S21 panel_01081",
+        "MC00GameExport/MC00_Render/MC00_ROOT/ORG_FLOOR_L1_bdd3d3/ORG_SHARED_SHELL_2223a9/ORG_MC20_E_Shell_L1_0f65f1/MC_E pressure panel L1 S21 panel_01082",
+        "MC00GameExport/MC00_Render/MC00_ROOT/ORG_FLOOR_L1_bdd3d3/ORG_SHARED_SHELL_2223a9/ORG_MC20_E_Shell_L1_0f65f1/MC_E pressure panel L1 S21 panel_01083"
+      ]
+    },
+    {
+      "name": "MC00Surface1272",
+      "meshPath": "Assets/MoonEnvironment/Variants/MC00BakedBuilding/Meshes/MC00Surface1272.asset",
+      "targetPaths": [
+        "MC00GameExport/MC00_Render/MC00_ROOT/ORG_FLOOR_L1_bdd3d3/ORG_SHARED_SHELL_2223a9/ORG_MC20_E_Shell_L1_0f65f1/MC_E pressure panel L1 S21 panel_01084",
+        "MC00GameExport/MC00_Render/MC00_ROOT/ORG_FLOOR_L1_bdd3d3/ORG_SHARED_SHELL_2223a9/ORG_MC20_E_Shell_L1_0f65f1/MC_E pressure panel L1 S21 panel_01085"
+      ],
+      "allSourcePaths": [
+        "MC00GameExport/MC00_Render/MC00_ROOT/ORG_FLOOR_L1_bdd3d3/ORG_SHARED_SHELL_2223a9/ORG_MC20_E_Shell_L1_0f65f1/MC_E pressure panel L1 S21 panel_01084",
+        "MC00GameExport/MC00_Render/MC00_ROOT/ORG_FLOOR_L1_bdd3d3/ORG_SHARED_SHELL_2223a9/ORG_MC20_E_Shell_L1_0f65f1/MC_E pressure panel L1 S21 panel_01085",
+        "MC00GameExport/MC00_Render/MC00_ROOT/ORG_FLOOR_L1_bdd3d3/ORG_SHARED_SHELL_2223a9/ORG_MC20_E_Shell_L1_0f65f1/STATIC_E_pressure_panel_L1_S22_LD2_Painted_Metal_Grey_64fc366e",
+        "MC00GameExport/MC00_Render/MC00_ROOT/ORG_FLOOR_L1_bdd3d3/ORG_SHARED_SHELL_2223a9/ORG_MC20_E_Shell_L1_0f65f1/STATIC_E_pressure_panel_L1_S23_LD2_Painted_Metal_Grey_f138e738",
+        "MC00GameExport/MC00_Render/MC00_ROOT/ORG_FLOOR_L1_bdd3d3/ORG_SHARED_SHELL_2223a9/ORG_MC20_E_Shell_L1_0f65f1/STATIC_E_pressure_panel_L1_S24_LD2_Painted_Metal_Grey_4668e9a9",
+        "MC00GameExport/MC00_Render/MC00_ROOT/ORG_FLOOR_L1_bdd3d3/ORG_SHARED_SHELL_2223a9/ORG_MC20_E_Shell_L1_0f65f1/STATIC_E_pressure_panel_L1_S25_LD2_Painted_Metal_Grey_683b38b1"
+      ]
+    }
+  ],
+  "collision": {
+    "scope": "Manifest only. User clarified missing collision concerns OTHER buildings. No new MC00 collision assets or Unity changes performed.",
+    "S21_proxy_name": "COL_Shell_E_L1_chunk_022_f5efaafb93",
+    "original_proxy_fingerprint": {
+      "name": "COL_Shell_E_L1_chunk_022_f5efaafb93",
+      "type": "MESH",
+      "parent": "MC00_ROOT",
+      "data_name": "COL_Shell_E_L1_chunk_022_f5efaafb93_MESH",
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "matrix_local": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "materials": [],
+      "props": "[('collision_group_id', 'ARCH_COMPACT_1741a8f5efaafb93'), ('collision_owner_path', 'MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1'), ('collision_scope', 'FIXED_ARCHITECTURE_277_APPROVED_SOURCE_SCOPE'), ('do_not_convex_hull_opening_geometry', 'True'), ('engine_collision_component_configured', 'False'), ('export_role', 'collision_proxy_geometry'), ('generation_method', 'Concatenated source raw closed solids; only BEVEL omitted; no hull, AABB, ramp or boolean union'), ('generic_importer_may_create_renderer', 'True'), ('physical_unit_json', '{\"kind\":\"adjacent_fixed_shell_segments\",\"physical_floor\":1,\"wing\":\"E\",\"wall_systems\":[\"E pressure panel L1 S20\",\"E pressure panel L1 S21\",\"E pressure panel L1 S22\",\"E pressure panel L1 S23\"]}'), ('source_author_sha256', '84d205455009145fa7de73e7b04fb06547dc03d122e23bf3db3aed944697e876'), ('source_ranges_json', '[{\"source_id\":\"SRC_0a69542354062968d777\",\"source_name\":\"MC_E pressure panel L1 S21 panel_01081\",\"source_geometry_sha256\":\"10eda9e3e93f74320475d8aed50eed8fd3ec4798d134d580d8ea0efb751fdd52\",\"source_owner_path\":\"MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1\",\"source_matrix_world\":[[1.0,0.0,0.0,75.80044555664062],[0.0,1.0,0.0,-107.5999984741211],[0.0,0.0,1.0,10.859999656677246],[0.0,0.0,0.0,1.0]],\"derivative_render_output_object\":\"MC_E pressure panel L1 S21 panel_01081\",\"derivative_output_owner_path\":\"MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1\",\"vertex_range\":[0,8],\"face_range\":[0,6],\"range_convention\":\"start inclusive, end exclusive\"},{\"source_id\":\"SRC_1ce5dc84d42b42ab50d8\",\"source_name\":\"MC_E pressure panel L1 S20 panel_01078\",\"source_geometry_sha256\":\"0522228c588f1d4d35ab1e1d4fec0b8315f790ffcf96189649027295667a0642\",\"source_owner_path\":\"MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1\",\"source_matrix_world\":[[0.9798257946968079,0.19985361397266388,0.0,74.69206237792969],[-0.19985361397266388,0.9798257946968079,0.0,-107.5982437133789],[0.0,0.0,1.0,10.859999656677246],[0.0,0.0,0.0,1.0]],\"derivative_render_output_object\":\"STATIC_E_pressure_panel_L1_S20_LD2_Painted_Metal_Grey_f0688ca0\",\"derivative_output_owner_path\":\"MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1\",\"vertex_range\":[8,16],\"face_range\":[6,12],\"range_convention\":\"start inclusive, end exclusive\"},{\"source_id\":\"SRC_2bfb04d62216b42e31cb\",\"source_name\":\"MC_E pressure panel L1 S22 panel_01087\",\"source_geometry_sha256\":\"0522228c588f1d4d35ab1e1d4fec0b8315f790ffcf96189649027295667a0642\",\"source_owner_path\":\"MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1\",\"source_matrix_world\":[[0.9798257946968079,-0.19985361397266388,0.0,81.30793762207031],[0.19985361397266388,0.9798257946968079,0.0,-107.5982437133789],[0.0,0.0,1.0,8.020000457763672],[0.0,0.0,0.0,1.0]],\"derivative_render_output_object\":\"STATIC_E_pressure_panel_L1_S22_LD2_Painted_Metal_Grey_64fc366e\",\"derivative_output_owner_path\":\"MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1\",\"vertex_range\":[16,24],\"face_range\":[12,18],\"range_convention\":\"start inclusive, end exclusive\"},{\"source_id\":\"SRC_2c5d222f77006d192d38\",\"source_name\":\"MC_E pressure panel L1 S22 panel_01088\",\"source_geometry_sha256\":\"0522228c588f1d4d35ab1e1d4fec0b8315f790ffcf96189649027295667a0642\",\"source_owner_path\":\"MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1\",\"source_matrix_world\":[[0.9798257946968079,-0.19985361397266388,0.0,81.30793762207031],[0.19985361397266388,0.9798257946968079,0.0,-107.5982437133789],[0.0,0.0,1.0,10.859999656677246],[0.0,0.0,0.0,1.0]],\"derivative_render_output_object\":\"STATIC_E_pressure_panel_L1_S22_LD2_Painted_Metal_Grey_64fc366e\",\"derivative_output_owner_path\":\"MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1\",\"vertex_range\":[24,32],\"face_range\":[18,24],\"range_convention\":\"start inclusive, end exclusive\"},{\"source_id\":\"SRC_34d2f456e61fc547d289\",\"source_name\":\"MC_E pressure panel L1 S21 panel_01084\",\"source_geometry_sha256\":\"10eda9e3e93f74320475d8aed50eed8fd3ec4798d134d580d8ea0efb751fdd52\",\"source_owner_path\":\"MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1\",\"source_matrix_world\":[[1.0,0.0,0.0,80.19955444335938],[0.0,1.0,0.0,-107.5999984741211],[0.0,0.0,1.0,8.020000457763672],[0.0,0.0,0.0,1.0]],\"derivative_render_output_object\":\"MC_E pressure panel L1 S21 panel_01084\",\"derivative_output_owner_path\":\"MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1\",\"vertex_range\":[32,40],\"face_range\":[24,30],\"range_convention\":\"start inclusive, end exclusive\"},{\"source_id\":\"SRC_3b94402c6aad1df22dec\",\"source_name\":\"MC_E pressure panel L1 S21 panel_01083\",\"source_geometry_sha256\":\"10eda9e3e93f74320475d8aed50eed8fd3ec4798d134d580d8ea0efb751fdd52\",\"source_owner_path\":\"MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1\",\"source_matrix_world\":[[1.0,0.0,0.0,78.0],[0.0,1.0,0.0,-107.5999984741211],[0.0,0.0,1.0,10.859999656677246],[0.0,0.0,0.0,1.0]],\"derivative_render_output_object\":\"MC_E pressure panel L1 S21 panel_01083\",\"derivative_output_owner_path\":\"MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1\",\"vertex_range\":[40,48],\"face_range\":[30,36],\"range_convention\":\"start inclusive, end exclusive\"},{\"source_id\":\"SRC_49ef1b9a603088184461\",\"source_name\":\"MC_E pressure panel L1 S22 joint backing_01086\",\"source_geometry_sha256\":\"a8dbee5c130911e4b4351d22dfa54d3e1a29df7fa71670daba204ace09c3ece9\",\"source_owner_path\":\"MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1\",\"source_matrix_world\":[[0.9798257946968079,-0.19985361397266388,0.0,81.30793762207031],[0.19985361397266388,0.9798257946968079,0.0,-107.5982437133789],[0.0,0.0,1.0,9.4399995803833],[0.0,0.0,0.0,1.0]],\"derivative_render_output_object\":\"MC_E pressure panel L1 S22 joint backing_01086\",\"derivative_output_owner_path\":\"MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1\",\"vertex_range\":[48,56],\"face_range\":[36,42],\"range_convention\":\"start inclusive, end exclusive\"},{\"source_id\":\"SRC_7440d916e2caac1f2ca1\",\"source_name\":\"MC_E pressure panel L1 S23 panel_01090\",\"source_geometry_sha256\":\"351526c67f67c6b0c7e14c4efedb9d00b9616dc15fc35582ab8148e028ffa667\",\"source_owner_path\":\"MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1\",\"source_matrix_world\":[[0.9609339833259583,-0.2767777144908905,0.0,81.85823059082031],[0.2767777144908905,0.9609339833259583,0.0,-107.44046783447266],[0.0,0.0,1.0,8.020000457763672],[0.0,0.0,0.0,1.0]],\"derivative_render_output_object\":\"STATIC_E_pressure_panel_L1_S23_LD2_Painted_Metal_Grey_f138e738\",\"derivative_output_owner_path\":\"MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1\",\"vertex_range\":[56,64],\"face_range\":[42,48],\"range_convention\":\"start inclusive, end exclusive\"},{\"source_id\":\"SRC_748dfd01bcbece2a57b3\",\"source_name\":\"MC_E pressure panel L1 S21 joint backing_01079\",\"source_geometry_sha256\":\"25d8622a676f6c118de85fff8305615e7fa9654c793a462f3b4114182be910b2\",\"source_owner_path\":\"MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1\",\"source_matrix_world\":[[1.0,0.0,0.0,78.0],[0.0,1.0,0.0,-107.5999984741211],[0.0,0.0,1.0,9.4399995803833],[0.0,0.0,0.0,1.0]],\"derivative_render_output_object\":\"MC_E pressure panel L1 S21 joint backing_01079\",\"derivative_output_owner_path\":\"MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1\",\"vertex_range\":[64,72],\"face_range\":[48,54],\"range_convention\":\"start inclusive, end exclusive\"},{\"source_id\":\"SRC_74e560135b9c9955375e\",\"source_name\":\"MC_E pressure panel L1 S21 panel_01080\",\"source_geometry_sha256\":\"10eda9e3e93f74320475d8aed50eed8fd3ec4798d134d580d8ea0efb751fdd52\",\"source_owner_path\":\"MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1\",\"source_matrix_world\":[[1.0,0.0,0.0,75.80044555664062],[0.0,1.0,0.0,-107.5999984741211],[0.0,0.0,1.0,8.020000457763672],[0.0,0.0,0.0,1.0]],\"derivative_render_output_object\":\"MC_E pressure panel L1 S21 panel_01080\",\"derivative_output_owner_path\":\"MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1\",\"vertex_range\":[72,80],\"face_range\":[54,60],\"range_convention\":\"start inclusive, end exclusive\"},{\"source_id\":\"SRC_758e2123f7e1d3824c5c\",\"source_name\":\"MC_E pressure panel L1 S23 joint backing_01089\",\"source_geometry_sha256\":\"4da3de88f183eb548b90c7da1288959b7e470a9072f6f53743416e20f1f36b06\",\"source_owner_path\":\"MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1\",\"source_matrix_world\":[[0.9609339833259583,-0.2767777144908905,0.0,81.85823059082031],[0.2767777144908905,0.9609339833259583,0.0,-107.44046783447266],[0.0,0.0,1.0,9.4399995803833],[0.0,0.0,0.0,1.0]],\"derivative_render_output_object\":\"MC_E pressure panel L1 S23 joint backing_01089\",\"derivative_output_owner_path\":\"MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1\",\"vertex_range\":[80,88],\"face_range\":[60,66],\"range_convention\":\"start inclusive, end exclusive\"},{\"source_id\":\"SRC_92a1f91734ed4e377e84\",\"source_name\":\"MC_E pressure panel L1 S23 panel_01091\",\"source_geometry_sha256\":\"351526c67f67c6b0c7e14c4efedb9d00b9616dc15fc35582ab8148e028ffa667\",\"source_owner_path\":\"MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1\",\"source_matrix_world\":[[0.9609339833259583,-0.2767777144908905,0.0,81.85823059082031],[0.2767777144908905,0.9609339833259583,0.0,-107.44046783447266],[0.0,0.0,1.0,10.859999656677246],[0.0,0.0,0.0,1.0]],\"derivative_render_output_object\":\"STATIC_E_pressure_panel_L1_S23_LD2_Painted_Metal_Grey_f138e738\",\"derivative_output_owner_path\":\"MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1\",\"vertex_range\":[88,96],\"face_range\":[66,72],\"range_convention\":\"start inclusive, end exclusive\"},{\"source_id\":\"SRC_98ac69c819867b979ff1\",\"source_name\":\"MC_E pressure panel L1 S20 panel_01077\",\"source_geometry_sha256\":\"0522228c588f1d4d35ab1e1d4fec0b8315f790ffcf96189649027295667a0642\",\"source_owner_path\":\"MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1\",\"source_matrix_world\":[[0.9798257946968079,0.19985361397266388,0.0,74.69206237792969],[-0.19985361397266388,0.9798257946968079,0.0,-107.5982437133789],[0.0,0.0,1.0,8.020000457763672],[0.0,0.0,0.0,1.0]],\"derivative_render_output_object\":\"STATIC_E_pressure_panel_L1_S20_LD2_Painted_Metal_Grey_f0688ca0\",\"derivative_output_owner_path\":\"MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1\",\"vertex_range\":[96,104],\"face_range\":[72,78],\"range_convention\":\"start inclusive, end exclusive\"},{\"source_id\":\"SRC_c32d90e1477e7bc6d819\",\"source_name\":\"MC_E pressure panel L1 S20 joint backing_01076\",\"source_geometry_sha256\":\"a8dbee5c130911e4b4351d22dfa54d3e1a29df7fa71670daba204ace09c3ece9\",\"source_owner_path\":\"MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1\",\"source_matrix_world\":[[0.9798257946968079,0.19985361397266388,0.0,74.69206237792969],[-0.19985361397266388,0.9798257946968079,0.0,-107.5982437133789],[0.0,0.0,1.0,9.4399995803833],[0.0,0.0,0.0,1.0]],\"derivative_render_output_object\":\"MC_E pressure panel L1 S20 joint backing_01076\",\"derivative_output_owner_path\":\"MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1\",\"vertex_range\":[104,112],\"face_range\":[78,84],\"range_convention\":\"start inclusive, end exclusive\"},{\"source_id\":\"SRC_d0fc69df27eca67fe74a\",\"source_name\":\"MC_E pressure panel L1 S21 panel_01085\",\"source_geometry_sha256\":\"10eda9e3e93f74320475d8aed50eed8fd3ec4798d134d580d8ea0efb751fdd52\",\"source_owner_path\":\"MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1\",\"source_matrix_world\":[[1.0,0.0,0.0,80.19955444335938],[0.0,1.0,0.0,-107.5999984741211],[0.0,0.0,1.0,10.859999656677246],[0.0,0.0,0.0,1.0]],\"derivative_render_output_object\":\"MC_E pressure panel L1 S21 panel_01085\",\"derivative_output_owner_path\":\"MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1\",\"vertex_range\":[112,120],\"face_range\":[84,90],\"range_convention\":\"start inclusive, end exclusive\"},{\"source_id\":\"SRC_ed57c5c081908fec2fa2\",\"source_name\":\"MC_E pressure panel L1 S21 panel_01082\",\"source_geometry_sha256\":\"10eda9e3e93f74320475d8aed50eed8fd3ec4798d134d580d8ea0efb751fdd52\",\"source_owner_path\":\"MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1\",\"source_matrix_world\":[[1.0,0.0,0.0,78.0],[0.0,1.0,0.0,-107.5999984741211],[0.0,0.0,1.0,8.020000457763672],[0.0,0.0,0.0,1.0]],\"derivative_render_output_object\":\"MC_E pressure panel L1 S21 panel_01082\",\"derivative_output_owner_path\":\"MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1\",\"vertex_range\":[120,128],\"face_range\":[90,96],\"range_convention\":\"start inclusive, end exclusive\"}]')]",
+      "author_bounds": [
+        [
+          74.6613998413086,
+          82.43206024169922
+        ],
+        [
+          -107.72999572753906,
+          -107.16062927246094
+        ],
+        [
+          6.59999942779541,
+          12.279999732971191
+        ]
+      ],
+      "vertices": 128,
+      "polygons": 96,
+      "vertex_hash": "46d85e75035bf4d56c43a27147a77ea5c003099484d16728f1b579dc403b426b",
+      "topology_hash": "0b4237df09be86233c53423d12f95d41af84da1a3c87de11dc0fd9916de05fe4",
+      "normal_hash": "d5beaad8eb90142b3de2a8a423f812140c469b8f899d6b2d8662786fd9813434",
+      "smooth_hash": "2ea9ab9198d1638007400cd2c3bef1cc745b864b76011a0e1bc52180ac6452d4",
+      "material_indices_hash": "a1a4f5721c1c4610af7f71078f3a68c330536d679803b0e0507ee8dc10c5dfca",
+      "uv": []
+    },
+    "removed_members": [
+      {
+        "source_id": "SRC_0a69542354062968d777",
+        "source_name": "MC_E pressure panel L1 S21 panel_01081",
+        "source_geometry_sha256": "10eda9e3e93f74320475d8aed50eed8fd3ec4798d134d580d8ea0efb751fdd52",
+        "source_owner_path": "MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1",
+        "source_matrix_world": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            75.80044555664062
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -107.5999984741211
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            10.859999656677246
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "derivative_render_output_object": "MC_E pressure panel L1 S21 panel_01081",
+        "derivative_output_owner_path": "MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1",
+        "vertex_range": [
+          0,
+          8
+        ],
+        "face_range": [
+          0,
+          6
+        ],
+        "range_convention": "start inclusive, end exclusive",
+        "proxy_name": "COL_Shell_E_L1_chunk_022_f5efaafb93",
+        "max_world_vertex_error_m": 0.0
+      },
+      {
+        "source_id": "SRC_34d2f456e61fc547d289",
+        "source_name": "MC_E pressure panel L1 S21 panel_01084",
+        "source_geometry_sha256": "10eda9e3e93f74320475d8aed50eed8fd3ec4798d134d580d8ea0efb751fdd52",
+        "source_owner_path": "MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1",
+        "source_matrix_world": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            80.19955444335938
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -107.5999984741211
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            8.020000457763672
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "derivative_render_output_object": "MC_E pressure panel L1 S21 panel_01084",
+        "derivative_output_owner_path": "MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1",
+        "vertex_range": [
+          32,
+          40
+        ],
+        "face_range": [
+          24,
+          30
+        ],
+        "range_convention": "start inclusive, end exclusive",
+        "proxy_name": "COL_Shell_E_L1_chunk_022_f5efaafb93",
+        "max_world_vertex_error_m": 0.0
+      },
+      {
+        "source_id": "SRC_3b94402c6aad1df22dec",
+        "source_name": "MC_E pressure panel L1 S21 panel_01083",
+        "source_geometry_sha256": "10eda9e3e93f74320475d8aed50eed8fd3ec4798d134d580d8ea0efb751fdd52",
+        "source_owner_path": "MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1",
+        "source_matrix_world": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            78.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -107.5999984741211
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            10.859999656677246
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "derivative_render_output_object": "MC_E pressure panel L1 S21 panel_01083",
+        "derivative_output_owner_path": "MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1",
+        "vertex_range": [
+          40,
+          48
+        ],
+        "face_range": [
+          30,
+          36
+        ],
+        "range_convention": "start inclusive, end exclusive",
+        "proxy_name": "COL_Shell_E_L1_chunk_022_f5efaafb93",
+        "max_world_vertex_error_m": 0.0
+      },
+      {
+        "source_id": "SRC_748dfd01bcbece2a57b3",
+        "source_name": "MC_E pressure panel L1 S21 joint backing_01079",
+        "source_geometry_sha256": "25d8622a676f6c118de85fff8305615e7fa9654c793a462f3b4114182be910b2",
+        "source_owner_path": "MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1",
+        "source_matrix_world": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            78.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -107.5999984741211
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            9.4399995803833
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "derivative_render_output_object": "MC_E pressure panel L1 S21 joint backing_01079",
+        "derivative_output_owner_path": "MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1",
+        "vertex_range": [
+          64,
+          72
+        ],
+        "face_range": [
+          48,
+          54
+        ],
+        "range_convention": "start inclusive, end exclusive",
+        "proxy_name": "COL_Shell_E_L1_chunk_022_f5efaafb93",
+        "max_world_vertex_error_m": 7.62939453125e-06
+      },
+      {
+        "source_id": "SRC_74e560135b9c9955375e",
+        "source_name": "MC_E pressure panel L1 S21 panel_01080",
+        "source_geometry_sha256": "10eda9e3e93f74320475d8aed50eed8fd3ec4798d134d580d8ea0efb751fdd52",
+        "source_owner_path": "MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1",
+        "source_matrix_world": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            75.80044555664062
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -107.5999984741211
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            8.020000457763672
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "derivative_render_output_object": "MC_E pressure panel L1 S21 panel_01080",
+        "derivative_output_owner_path": "MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1",
+        "vertex_range": [
+          72,
+          80
+        ],
+        "face_range": [
+          54,
+          60
+        ],
+        "range_convention": "start inclusive, end exclusive",
+        "proxy_name": "COL_Shell_E_L1_chunk_022_f5efaafb93",
+        "max_world_vertex_error_m": 0.0
+      },
+      {
+        "source_id": "SRC_d0fc69df27eca67fe74a",
+        "source_name": "MC_E pressure panel L1 S21 panel_01085",
+        "source_geometry_sha256": "10eda9e3e93f74320475d8aed50eed8fd3ec4798d134d580d8ea0efb751fdd52",
+        "source_owner_path": "MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1",
+        "source_matrix_world": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            80.19955444335938
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -107.5999984741211
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            10.859999656677246
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "derivative_render_output_object": "MC_E pressure panel L1 S21 panel_01085",
+        "derivative_output_owner_path": "MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1",
+        "vertex_range": [
+          112,
+          120
+        ],
+        "face_range": [
+          84,
+          90
+        ],
+        "range_convention": "start inclusive, end exclusive",
+        "proxy_name": "COL_Shell_E_L1_chunk_022_f5efaafb93",
+        "max_world_vertex_error_m": 0.0
+      },
+      {
+        "source_id": "SRC_ed57c5c081908fec2fa2",
+        "source_name": "MC_E pressure panel L1 S21 panel_01082",
+        "source_geometry_sha256": "10eda9e3e93f74320475d8aed50eed8fd3ec4798d134d580d8ea0efb751fdd52",
+        "source_owner_path": "MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1",
+        "source_matrix_world": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            78.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0,
+            -107.5999984741211
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            8.020000457763672
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "derivative_render_output_object": "MC_E pressure panel L1 S21 panel_01082",
+        "derivative_output_owner_path": "MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1",
+        "vertex_range": [
+          120,
+          128
+        ],
+        "face_range": [
+          90,
+          96
+        ],
+        "range_convention": "start inclusive, end exclusive",
+        "proxy_name": "COL_Shell_E_L1_chunk_022_f5efaafb93",
+        "max_world_vertex_error_m": 0.0
+      }
+    ],
+    "retained_members": [
+      {
+        "source_id": "SRC_1ce5dc84d42b42ab50d8",
+        "source_name": "MC_E pressure panel L1 S20 panel_01078",
+        "source_geometry_sha256": "0522228c588f1d4d35ab1e1d4fec0b8315f790ffcf96189649027295667a0642",
+        "source_owner_path": "MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1",
+        "source_matrix_world": [
+          [
+            0.9798257946968079,
+            0.19985361397266388,
+            0.0,
+            74.69206237792969
+          ],
+          [
+            -0.19985361397266388,
+            0.9798257946968079,
+            0.0,
+            -107.5982437133789
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            10.859999656677246
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "derivative_render_output_object": "STATIC_E_pressure_panel_L1_S20_LD2_Painted_Metal_Grey_f0688ca0",
+        "derivative_output_owner_path": "MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1",
+        "vertex_range": [
+          8,
+          16
+        ],
+        "face_range": [
+          6,
+          12
+        ],
+        "range_convention": "start inclusive, end exclusive",
+        "proxy_name": "COL_Shell_E_L1_chunk_022_f5efaafb93",
+        "max_world_vertex_error_m": 7.62939453125e-06
+      },
+      {
+        "source_id": "SRC_2bfb04d62216b42e31cb",
+        "source_name": "MC_E pressure panel L1 S22 panel_01087",
+        "source_geometry_sha256": "0522228c588f1d4d35ab1e1d4fec0b8315f790ffcf96189649027295667a0642",
+        "source_owner_path": "MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1",
+        "source_matrix_world": [
+          [
+            0.9798257946968079,
+            -0.19985361397266388,
+            0.0,
+            81.30793762207031
+          ],
+          [
+            0.19985361397266388,
+            0.9798257946968079,
+            0.0,
+            -107.5982437133789
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            8.020000457763672
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "derivative_render_output_object": "STATIC_E_pressure_panel_L1_S22_LD2_Painted_Metal_Grey_64fc366e",
+        "derivative_output_owner_path": "MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1",
+        "vertex_range": [
+          16,
+          24
+        ],
+        "face_range": [
+          12,
+          18
+        ],
+        "range_convention": "start inclusive, end exclusive",
+        "proxy_name": "COL_Shell_E_L1_chunk_022_f5efaafb93",
+        "max_world_vertex_error_m": 7.62939453125e-06
+      },
+      {
+        "source_id": "SRC_2c5d222f77006d192d38",
+        "source_name": "MC_E pressure panel L1 S22 panel_01088",
+        "source_geometry_sha256": "0522228c588f1d4d35ab1e1d4fec0b8315f790ffcf96189649027295667a0642",
+        "source_owner_path": "MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1",
+        "source_matrix_world": [
+          [
+            0.9798257946968079,
+            -0.19985361397266388,
+            0.0,
+            81.30793762207031
+          ],
+          [
+            0.19985361397266388,
+            0.9798257946968079,
+            0.0,
+            -107.5982437133789
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            10.859999656677246
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "derivative_render_output_object": "STATIC_E_pressure_panel_L1_S22_LD2_Painted_Metal_Grey_64fc366e",
+        "derivative_output_owner_path": "MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1",
+        "vertex_range": [
+          24,
+          32
+        ],
+        "face_range": [
+          18,
+          24
+        ],
+        "range_convention": "start inclusive, end exclusive",
+        "proxy_name": "COL_Shell_E_L1_chunk_022_f5efaafb93",
+        "max_world_vertex_error_m": 7.62939453125e-06
+      },
+      {
+        "source_id": "SRC_49ef1b9a603088184461",
+        "source_name": "MC_E pressure panel L1 S22 joint backing_01086",
+        "source_geometry_sha256": "a8dbee5c130911e4b4351d22dfa54d3e1a29df7fa71670daba204ace09c3ece9",
+        "source_owner_path": "MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1",
+        "source_matrix_world": [
+          [
+            0.9798257946968079,
+            -0.19985361397266388,
+            0.0,
+            81.30793762207031
+          ],
+          [
+            0.19985361397266388,
+            0.9798257946968079,
+            0.0,
+            -107.5982437133789
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            9.4399995803833
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "derivative_render_output_object": "MC_E pressure panel L1 S22 joint backing_01086",
+        "derivative_output_owner_path": "MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1",
+        "vertex_range": [
+          48,
+          56
+        ],
+        "face_range": [
+          36,
+          42
+        ],
+        "range_convention": "start inclusive, end exclusive",
+        "proxy_name": "COL_Shell_E_L1_chunk_022_f5efaafb93",
+        "max_world_vertex_error_m": 0.0
+      },
+      {
+        "source_id": "SRC_7440d916e2caac1f2ca1",
+        "source_name": "MC_E pressure panel L1 S23 panel_01090",
+        "source_geometry_sha256": "351526c67f67c6b0c7e14c4efedb9d00b9616dc15fc35582ab8148e028ffa667",
+        "source_owner_path": "MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1",
+        "source_matrix_world": [
+          [
+            0.9609339833259583,
+            -0.2767777144908905,
+            0.0,
+            81.85823059082031
+          ],
+          [
+            0.2767777144908905,
+            0.9609339833259583,
+            0.0,
+            -107.44046783447266
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            8.020000457763672
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "derivative_render_output_object": "STATIC_E_pressure_panel_L1_S23_LD2_Painted_Metal_Grey_f138e738",
+        "derivative_output_owner_path": "MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1",
+        "vertex_range": [
+          56,
+          64
+        ],
+        "face_range": [
+          42,
+          48
+        ],
+        "range_convention": "start inclusive, end exclusive",
+        "proxy_name": "COL_Shell_E_L1_chunk_022_f5efaafb93",
+        "max_world_vertex_error_m": 7.62939453125e-06
+      },
+      {
+        "source_id": "SRC_758e2123f7e1d3824c5c",
+        "source_name": "MC_E pressure panel L1 S23 joint backing_01089",
+        "source_geometry_sha256": "4da3de88f183eb548b90c7da1288959b7e470a9072f6f53743416e20f1f36b06",
+        "source_owner_path": "MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1",
+        "source_matrix_world": [
+          [
+            0.9609339833259583,
+            -0.2767777144908905,
+            0.0,
+            81.85823059082031
+          ],
+          [
+            0.2767777144908905,
+            0.9609339833259583,
+            0.0,
+            -107.44046783447266
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            9.4399995803833
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "derivative_render_output_object": "MC_E pressure panel L1 S23 joint backing_01089",
+        "derivative_output_owner_path": "MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1",
+        "vertex_range": [
+          80,
+          88
+        ],
+        "face_range": [
+          60,
+          66
+        ],
+        "range_convention": "start inclusive, end exclusive",
+        "proxy_name": "COL_Shell_E_L1_chunk_022_f5efaafb93",
+        "max_world_vertex_error_m": 7.62939453125e-06
+      },
+      {
+        "source_id": "SRC_92a1f91734ed4e377e84",
+        "source_name": "MC_E pressure panel L1 S23 panel_01091",
+        "source_geometry_sha256": "351526c67f67c6b0c7e14c4efedb9d00b9616dc15fc35582ab8148e028ffa667",
+        "source_owner_path": "MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1",
+        "source_matrix_world": [
+          [
+            0.9609339833259583,
+            -0.2767777144908905,
+            0.0,
+            81.85823059082031
+          ],
+          [
+            0.2767777144908905,
+            0.9609339833259583,
+            0.0,
+            -107.44046783447266
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            10.859999656677246
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "derivative_render_output_object": "STATIC_E_pressure_panel_L1_S23_LD2_Painted_Metal_Grey_f138e738",
+        "derivative_output_owner_path": "MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1",
+        "vertex_range": [
+          88,
+          96
+        ],
+        "face_range": [
+          66,
+          72
+        ],
+        "range_convention": "start inclusive, end exclusive",
+        "proxy_name": "COL_Shell_E_L1_chunk_022_f5efaafb93",
+        "max_world_vertex_error_m": 7.62939453125e-06
+      },
+      {
+        "source_id": "SRC_98ac69c819867b979ff1",
+        "source_name": "MC_E pressure panel L1 S20 panel_01077",
+        "source_geometry_sha256": "0522228c588f1d4d35ab1e1d4fec0b8315f790ffcf96189649027295667a0642",
+        "source_owner_path": "MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1",
+        "source_matrix_world": [
+          [
+            0.9798257946968079,
+            0.19985361397266388,
+            0.0,
+            74.69206237792969
+          ],
+          [
+            -0.19985361397266388,
+            0.9798257946968079,
+            0.0,
+            -107.5982437133789
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            8.020000457763672
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "derivative_render_output_object": "STATIC_E_pressure_panel_L1_S20_LD2_Painted_Metal_Grey_f0688ca0",
+        "derivative_output_owner_path": "MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1",
+        "vertex_range": [
+          96,
+          104
+        ],
+        "face_range": [
+          72,
+          78
+        ],
+        "range_convention": "start inclusive, end exclusive",
+        "proxy_name": "COL_Shell_E_L1_chunk_022_f5efaafb93",
+        "max_world_vertex_error_m": 7.62939453125e-06
+      },
+      {
+        "source_id": "SRC_c32d90e1477e7bc6d819",
+        "source_name": "MC_E pressure panel L1 S20 joint backing_01076",
+        "source_geometry_sha256": "a8dbee5c130911e4b4351d22dfa54d3e1a29df7fa71670daba204ace09c3ece9",
+        "source_owner_path": "MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1",
+        "source_matrix_world": [
+          [
+            0.9798257946968079,
+            0.19985361397266388,
+            0.0,
+            74.69206237792969
+          ],
+          [
+            -0.19985361397266388,
+            0.9798257946968079,
+            0.0,
+            -107.5982437133789
+          ],
+          [
+            0.0,
+            0.0,
+            1.0,
+            9.4399995803833
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "derivative_render_output_object": "MC_E pressure panel L1 S20 joint backing_01076",
+        "derivative_output_owner_path": "MC00_GAME_EXPORT/FLOOR_L1/SHARED_SHELL/MC20_E_Shell_L1",
+        "vertex_range": [
+          104,
+          112
+        ],
+        "face_range": [
+          78,
+          84
+        ],
+        "range_convention": "start inclusive, end exclusive",
+        "proxy_name": "COL_Shell_E_L1_chunk_022_f5efaafb93",
+        "max_world_vertex_error_m": 0.0
+      }
+    ],
+    "range_rule": "Ranges are zero-based, start inclusive/end exclusive in ORIGINAL Blender proxy mesh. Not Unity triangulated indices. Do not remove whole 16-member proxy: preserve 9 retained members while removing 7 hidden S21 sources. Verify local derivative before using ranges.",
+    "archived_PREP01": [
+      "WQ_L14_PREP01_Fixed_TwinRail_Cradle",
+      "WQ_L14_PREP01_Inclined_Test_Article",
+      "WQ_L14_PREP01_Parked_Capped_Lead",
+      "WQ_L14_PREP01_Removable_Open_Carrier"
+    ],
+    "PREP_collision_status": "Original PREP01 custom property explicitly says furniture not included in 277 architectural proxies. If local separately added furniture collision, match exact geometry before disabling. Local presence is not asserted.",
+    "moved_desk_members": [
+      "MC_L14 diagnostics workbench drawer suspension runner_05912",
+      "MC_L14 diagnostics workbench drawer suspension runner_05913",
+      "MC_L14 diagnostics workbench drawer suspension runner_05916",
+      "MC_L14 diagnostics workbench drawer suspension runner_05917",
+      "MC_L14 diagnostics workbench drawer_05911",
+      "MC_L14 diagnostics workbench drawer_05915",
+      "MC_L14 diagnostics workbench handle_05914",
+      "MC_L14 diagnostics workbench handle_05918",
+      "MC_L14 diagnostics workbench leg_05909",
+      "MC_L14 diagnostics workbench leg_05910",
+      "MC_L14 diagnostics workbench top_05908",
+      "MC_L14 diagnostics workbench tray_05919",
+      "MC_L14 instrument screen captured display pedestal_05927",
+      "MC_L14 instrument screen case_05920",
+      "MC_L14 instrument screen screen_05921",
+      "MC_L14 instrument screen supported desktop foot_05926",
+      "MC_L14 instrument screen trace_05922",
+      "MC_L14 instrument screen trace_05923",
+      "MC_L14 instrument screen trace_05924",
+      "MC_L14 instrument screen trace_05925"
+    ],
+    "walk_support_candidates_L14": [
+      "L14_Long_Service_Gallery_Continuous_Walk_Deck",
+      "L14_North_Arrival_Platform_Continuous_Walk_Deck",
+      "L14_South_Crossbridge_Continuous_Walk_Deck",
+      "L14_Stair_F1_Tread_01",
+      "L14_Stair_F1_Tread_02",
+      "L14_Stair_F1_Tread_03",
+      "L14_Stair_F1_Tread_04",
+      "L14_Stair_F1_Tread_05",
+      "L14_Stair_F1_Tread_06",
+      "L14_Stair_F1_Tread_07",
+      "L14_Stair_F1_Tread_08",
+      "L14_Stair_F1_Tread_09",
+      "L14_Stair_F1_Tread_10",
+      "L14_Stair_F1_Tread_11",
+      "L14_Stair_F1_Tread_12",
+      "L14_Stair_F2_Tread_01",
+      "L14_Stair_F2_Tread_02",
+      "L14_Stair_F2_Tread_03",
+      "L14_Stair_F2_Tread_04",
+      "L14_Stair_F2_Tread_05",
+      "L14_Stair_F2_Tread_06",
+      "L14_Stair_F2_Tread_07",
+      "L14_Stair_F2_Tread_08",
+      "L14_Stair_F2_Tread_09",
+      "L14_Stair_F2_Tread_10",
+      "L14_Stair_F2_Tread_11",
+      "L14_Stair_F2_Tread_12",
+      "L14_Stair_Intermediate_Landing_Continuous_Walk_Deck",
+      "L14_Valve_1_Operator_Bay_Continuous_Walk_Deck",
+      "L14_Valve_2_Operator_Bay_Continuous_Walk_Deck"
+    ],
+    "walk_support_candidates_GI01": [
+      "MC00_GI01_Cargo_contour_turn_continuous_plate",
+      "MC00_GI01_EVA_upper_turning_landing",
+      "MC00_GI01_EVA_tread_01",
+      "MC00_GI01_EVA_tread_02",
+      "MC00_GI01_EVA_tread_03",
+      "MC00_GI01_EVA_tread_04",
+      "MC00_GI01_EVA_tread_05",
+      "MC00_GI01_EVA_tread_06",
+      "MC00_GI01_EVA_lower_supported_landing",
+      "MC00_GI01_EVA_articulated_ground_shoe"
+    ],
+    "classification_guidance": [
+      "L14 treads and continuous decks: simple oriented boxes using the structural plate, not anti-slip strips, screw heads or cables. Step versus ramp treatment belongs to local controller tests.",
+      "GI01 curved cargo plate and terrain-following lower shoe: dedicated static non-convex support surface, not one convex hull over the curved route. Simple landing/tread boxes are suitable elsewhere.",
+      "Guard rail posts and rail segments: local capsule/box chain following actual segments; preserve platform/bay entrances. Do not use a giant bounding box sealing routes.",
+      "Pressure window: simple glass/frame boxes if required; preserve the 60 mm glass thickness. It is not a walk-through opening.",
+      "Do not blindly enable MeshCollider on every render mesh. Do not duplicate existing architectural proxy collision, and do not treat decorative grips, labels, bolts, pipes, light fixtures or buttons as solid collision by default.",
+      "No collider layers, controller movement, NavMesh or runtime pass is claimed."
+    ]
+  },
+  "new": [
+    {
+      "name": "L14_Viewport_Central_Mullion",
+      "vertices": 56,
+      "polygons": 54,
+      "triangles": 108,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Dark_Parkerized_Structural_Steel"
+      ],
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          19.910003662109375,
+          -29.62999725341797,
+          7.175000190734863
+        ],
+        [
+          20.089996337890625,
+          -29.330001831054688,
+          11.824999809265137
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          19.910003662109375,
+          7.175000190734863,
+          -29.62999725341797
+        ],
+        [
+          20.089996337890625,
+          11.824999809265137,
+          -29.330001831054688
+        ]
+      ],
+      "has_custom_normals": true,
+      "index": 987
+    },
+    {
+      "name": "L14_Viewport_Clamp_Head",
+      "vertices": 112,
+      "polygons": 106,
+      "triangles": 220,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Worn_Satin_Steel"
+      ],
+      "matrix_world": [
+        [
+          -1.0,
+          1.5099580252808664e-07,
+          -1.1399865765455465e-14,
+          16.910003662109375
+        ],
+        [
+          0.0,
+          7.549790126404332e-08,
+          1.0,
+          -28.839996337890625
+        ],
+        [
+          1.5099580252808664e-07,
+          1.0,
+          -7.549790126404332e-08,
+          7.099999904632568
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          16.856498133391142,
+          -28.859996341051186,
+          7.046494374907697
+        ],
+        [
+          16.963509190827608,
+          -28.819996334730064,
+          7.15350543435744
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          16.856498133391142,
+          7.046494374907697,
+          -28.859996341051186
+        ],
+        [
+          16.963509190827608,
+          7.15350543435744,
+          -28.819996334730064
+        ]
+      ],
+      "has_custom_normals": false,
+      "index": 988
+    },
+    {
+      "name": "L14_Viewport_Clamp_Head.001",
+      "vertices": 112,
+      "polygons": 106,
+      "triangles": 220,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Worn_Satin_Steel"
+      ],
+      "matrix_world": [
+        [
+          -1.0,
+          1.5099580252808664e-07,
+          -1.1399865765455465e-14,
+          16.910003662109375
+        ],
+        [
+          0.0,
+          7.549790126404332e-08,
+          1.0,
+          -28.839996337890625
+        ],
+        [
+          1.5099580252808664e-07,
+          1.0,
+          -7.549790126404332e-08,
+          8.600000381469727
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          16.856498133391142,
+          -28.859996341051186,
+          8.546494851744855
+        ],
+        [
+          16.963509190827608,
+          -28.819996334730064,
+          8.653505911194598
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          16.856498133391142,
+          8.546494851744855,
+          -28.859996341051186
+        ],
+        [
+          16.963509190827608,
+          8.653505911194598,
+          -28.819996334730064
+        ]
+      ],
+      "has_custom_normals": false,
+      "index": 989
+    },
+    {
+      "name": "L14_Viewport_Clamp_Head.002",
+      "vertices": 112,
+      "polygons": 106,
+      "triangles": 220,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Worn_Satin_Steel"
+      ],
+      "matrix_world": [
+        [
+          -1.0,
+          1.5099580252808664e-07,
+          -1.1399865765455465e-14,
+          16.910003662109375
+        ],
+        [
+          0.0,
+          7.549790126404332e-08,
+          1.0,
+          -28.839996337890625
+        ],
+        [
+          1.5099580252808664e-07,
+          1.0,
+          -7.549790126404332e-08,
+          10.100000381469727
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          16.856498133391142,
+          -28.859996341051186,
+          10.046494851744855
+        ],
+        [
+          16.963509190827608,
+          -28.819996334730064,
+          10.153505911194598
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          16.856498133391142,
+          10.046494851744855,
+          -28.859996341051186
+        ],
+        [
+          16.963509190827608,
+          10.153505911194598,
+          -28.819996334730064
+        ]
+      ],
+      "has_custom_normals": false,
+      "index": 990
+    },
+    {
+      "name": "L14_Viewport_Clamp_Head.003",
+      "vertices": 112,
+      "polygons": 106,
+      "triangles": 220,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Worn_Satin_Steel"
+      ],
+      "matrix_world": [
+        [
+          -1.0,
+          1.5099580252808664e-07,
+          -1.1399865765455465e-14,
+          16.910003662109375
+        ],
+        [
+          0.0,
+          7.549790126404332e-08,
+          1.0,
+          -28.839996337890625
+        ],
+        [
+          1.5099580252808664e-07,
+          1.0,
+          -7.549790126404332e-08,
+          11.699999809265137
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          16.856498133391142,
+          -28.859996341051186,
+          11.646494279540265
+        ],
+        [
+          16.963509190827608,
+          -28.819996334730064,
+          11.753505338990008
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          16.856498133391142,
+          11.646494279540265,
+          -28.859996341051186
+        ],
+        [
+          16.963509190827608,
+          11.753505338990008,
+          -28.819996334730064
+        ]
+      ],
+      "has_custom_normals": false,
+      "index": 991
+    },
+    {
+      "name": "L14_Viewport_Clamp_Head.004",
+      "vertices": 112,
+      "polygons": 106,
+      "triangles": 220,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Worn_Satin_Steel"
+      ],
+      "matrix_world": [
+        [
+          -1.0,
+          1.5099580252808664e-07,
+          -1.1399865765455465e-14,
+          23.089996337890625
+        ],
+        [
+          0.0,
+          7.549790126404332e-08,
+          1.0,
+          -28.839996337890625
+        ],
+        [
+          1.5099580252808664e-07,
+          1.0,
+          -7.549790126404332e-08,
+          7.099999904632568
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          23.036490809172392,
+          -28.859996341051186,
+          7.046494374907697
+        ],
+        [
+          23.143501866608858,
+          -28.819996334730064,
+          7.15350543435744
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          23.036490809172392,
+          7.046494374907697,
+          -28.859996341051186
+        ],
+        [
+          23.143501866608858,
+          7.15350543435744,
+          -28.819996334730064
+        ]
+      ],
+      "has_custom_normals": false,
+      "index": 992
+    },
+    {
+      "name": "L14_Viewport_Clamp_Head.005",
+      "vertices": 112,
+      "polygons": 106,
+      "triangles": 220,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Worn_Satin_Steel"
+      ],
+      "matrix_world": [
+        [
+          -1.0,
+          1.5099580252808664e-07,
+          -1.1399865765455465e-14,
+          23.089996337890625
+        ],
+        [
+          0.0,
+          7.549790126404332e-08,
+          1.0,
+          -28.839996337890625
+        ],
+        [
+          1.5099580252808664e-07,
+          1.0,
+          -7.549790126404332e-08,
+          8.600000381469727
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          23.036490809172392,
+          -28.859996341051186,
+          8.546494851744855
+        ],
+        [
+          23.143501866608858,
+          -28.819996334730064,
+          8.653505911194598
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          23.036490809172392,
+          8.546494851744855,
+          -28.859996341051186
+        ],
+        [
+          23.143501866608858,
+          8.653505911194598,
+          -28.819996334730064
+        ]
+      ],
+      "has_custom_normals": false,
+      "index": 993
+    },
+    {
+      "name": "L14_Viewport_Clamp_Head.006",
+      "vertices": 112,
+      "polygons": 106,
+      "triangles": 220,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Worn_Satin_Steel"
+      ],
+      "matrix_world": [
+        [
+          -1.0,
+          1.5099580252808664e-07,
+          -1.1399865765455465e-14,
+          23.089996337890625
+        ],
+        [
+          0.0,
+          7.549790126404332e-08,
+          1.0,
+          -28.839996337890625
+        ],
+        [
+          1.5099580252808664e-07,
+          1.0,
+          -7.549790126404332e-08,
+          10.100000381469727
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          23.036490809172392,
+          -28.859996341051186,
+          10.046494851744855
+        ],
+        [
+          23.143501866608858,
+          -28.819996334730064,
+          10.153505911194598
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          23.036490809172392,
+          10.046494851744855,
+          -28.859996341051186
+        ],
+        [
+          23.143501866608858,
+          10.153505911194598,
+          -28.819996334730064
+        ]
+      ],
+      "has_custom_normals": false,
+      "index": 994
+    },
+    {
+      "name": "L14_Viewport_Clamp_Head.007",
+      "vertices": 112,
+      "polygons": 106,
+      "triangles": 220,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Worn_Satin_Steel"
+      ],
+      "matrix_world": [
+        [
+          -1.0,
+          1.5099580252808664e-07,
+          -1.1399865765455465e-14,
+          23.089996337890625
+        ],
+        [
+          0.0,
+          7.549790126404332e-08,
+          1.0,
+          -28.839996337890625
+        ],
+        [
+          1.5099580252808664e-07,
+          1.0,
+          -7.549790126404332e-08,
+          11.699999809265137
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          23.036490809172392,
+          -28.859996341051186,
+          11.646494279540265
+        ],
+        [
+          23.143501866608858,
+          -28.819996334730064,
+          11.753505338990008
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          23.036490809172392,
+          11.646494279540265,
+          -28.859996341051186
+        ],
+        [
+          23.143501866608858,
+          11.753505338990008,
+          -28.819996334730064
+        ]
+      ],
+      "has_custom_normals": false,
+      "index": 995
+    },
+    {
+      "name": "L14_Viewport_East_Jamb",
+      "vertices": 56,
+      "polygons": 54,
+      "triangles": 108,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Aged_Bone_Enamel"
+      ],
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          22.880699157714844,
+          -29.720001220703125,
+          7.25
+        ],
+        [
+          23.299301147460938,
+          -29.37999725341797,
+          11.75
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          22.880699157714844,
+          7.25,
+          -29.720001220703125
+        ],
+        [
+          23.299301147460938,
+          11.75,
+          -29.37999725341797
+        ]
+      ],
+      "has_custom_normals": true,
+      "index": 996
+    },
+    {
+      "name": "L14_Viewport_Head",
+      "vertices": 56,
+      "polygons": 54,
+      "triangles": 108,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Aged_Bone_Enamel"
+      ],
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          16.700698852539062,
+          -29.720001220703125,
+          11.75
+        ],
+        [
+          23.299301147460938,
+          -29.37999725341797,
+          12.279999732971191
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          16.700698852539062,
+          11.75,
+          -29.720001220703125
+        ],
+        [
+          23.299301147460938,
+          12.279999732971191,
+          -29.37999725341797
+        ]
+      ],
+      "has_custom_normals": true,
+      "index": 997
+    },
+    {
+      "name": "L14_Viewport_Inner_Buttress",
+      "vertices": 56,
+      "polygons": 54,
+      "triangles": 108,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Dark_Parkerized_Structural_Steel"
+      ],
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          16.75,
+          -29.37000274658203,
+          6.71999979019165
+        ],
+        [
+          17.06999969482422,
+          -28.87000274658203,
+          12.220000267028809
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          16.75,
+          6.71999979019165,
+          -29.37000274658203
+        ],
+        [
+          17.06999969482422,
+          12.220000267028809,
+          -28.87000274658203
+        ]
+      ],
+      "has_custom_normals": true,
+      "index": 998
+    },
+    {
+      "name": "L14_Viewport_Inner_Buttress.001",
+      "vertices": 56,
+      "polygons": 54,
+      "triangles": 108,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Dark_Parkerized_Structural_Steel"
+      ],
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          22.93000030517578,
+          -29.37000274658203,
+          6.71999979019165
+        ],
+        [
+          23.25,
+          -28.87000274658203,
+          12.220000267028809
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          22.93000030517578,
+          6.71999979019165,
+          -29.37000274658203
+        ],
+        [
+          23.25,
+          12.220000267028809,
+          -28.87000274658203
+        ]
+      ],
+      "has_custom_normals": true,
+      "index": 999
+    },
+    {
+      "name": "L14_Viewport_Inner_Seal",
+      "vertices": 56,
+      "polygons": 54,
+      "triangles": 108,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Graphite_Gaskets"
+      ],
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          17.044998168945312,
+          -29.349998474121094,
+          7.199999809265137
+        ],
+        [
+          17.11499786376953,
+          -29.269996643066406,
+          11.800000190734863
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          17.044998168945312,
+          7.199999809265137,
+          -29.349998474121094
+        ],
+        [
+          17.11499786376953,
+          11.800000190734863,
+          -29.269996643066406
+        ]
+      ],
+      "has_custom_normals": true,
+      "index": 1000
+    },
+    {
+      "name": "L14_Viewport_Inner_Seal.001",
+      "vertices": 56,
+      "polygons": 54,
+      "triangles": 108,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Graphite_Gaskets"
+      ],
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          22.88500213623047,
+          -29.349998474121094,
+          7.199999809265137
+        ],
+        [
+          22.955001831054688,
+          -29.269996643066406,
+          11.800000190734863
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          22.88500213623047,
+          7.199999809265137,
+          -29.349998474121094
+        ],
+        [
+          22.955001831054688,
+          11.800000190734863,
+          -29.269996643066406
+        ]
+      ],
+      "has_custom_normals": true,
+      "index": 1001
+    },
+    {
+      "name": "L14_Viewport_Inner_Seal.002",
+      "vertices": 56,
+      "polygons": 54,
+      "triangles": 108,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Graphite_Gaskets"
+      ],
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          17.050003051757812,
+          -29.349998474121094,
+          7.204999923706055
+        ],
+        [
+          22.949996948242188,
+          -29.269996643066406,
+          7.275000095367432
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          17.050003051757812,
+          7.204999923706055,
+          -29.349998474121094
+        ],
+        [
+          22.949996948242188,
+          7.275000095367432,
+          -29.269996643066406
+        ]
+      ],
+      "has_custom_normals": true,
+      "index": 1002
+    },
+    {
+      "name": "L14_Viewport_Inner_Seal.003",
+      "vertices": 56,
+      "polygons": 54,
+      "triangles": 108,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Graphite_Gaskets"
+      ],
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          17.050003051757812,
+          -29.349998474121094,
+          11.725000381469727
+        ],
+        [
+          22.949996948242188,
+          -29.269996643066406,
+          11.795000076293945
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          17.050003051757812,
+          11.725000381469727,
+          -29.349998474121094
+        ],
+        [
+          22.949996948242188,
+          11.795000076293945,
+          -29.269996643066406
+        ]
+      ],
+      "has_custom_normals": true,
+      "index": 1003
+    },
+    {
+      "name": "L14_Viewport_Pressure_Glass",
+      "vertices": 56,
+      "polygons": 54,
+      "triangles": 108,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Laminated_Pressure_Glass"
+      ],
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          17.110000610351562,
+          -29.62000274658203,
+          7.239999771118164
+        ],
+        [
+          19.98999786376953,
+          -29.55999755859375,
+          11.760000228881836
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          17.110000610351562,
+          7.239999771118164,
+          -29.62000274658203
+        ],
+        [
+          19.98999786376953,
+          11.760000228881836,
+          -29.55999755859375
+        ]
+      ],
+      "has_custom_normals": true,
+      "index": 1004
+    },
+    {
+      "name": "L14_Viewport_Pressure_Glass.001",
+      "vertices": 56,
+      "polygons": 54,
+      "triangles": 108,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Laminated_Pressure_Glass"
+      ],
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          20.01000213623047,
+          -29.62000274658203,
+          7.239999771118164
+        ],
+        [
+          22.889999389648438,
+          -29.55999755859375,
+          11.760000228881836
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          20.01000213623047,
+          7.239999771118164,
+          -29.62000274658203
+        ],
+        [
+          22.889999389648438,
+          11.760000228881836,
+          -29.55999755859375
+        ]
+      ],
+      "has_custom_normals": true,
+      "index": 1005
+    },
+    {
+      "name": "L14_Viewport_Sill",
+      "vertices": 56,
+      "polygons": 54,
+      "triangles": 108,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Aged_Bone_Enamel"
+      ],
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          16.700698852539062,
+          -29.720001220703125,
+          6.599999904632568
+        ],
+        [
+          23.299301147460938,
+          -29.37999725341797,
+          7.25
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          16.700698852539062,
+          6.599999904632568,
+          -29.720001220703125
+        ],
+        [
+          23.299301147460938,
+          7.25,
+          -29.37999725341797
+        ]
+      ],
+      "has_custom_normals": true,
+      "index": 1006
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain",
+      "vertices": 56,
+      "polygons": 54,
+      "triangles": 108,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Worn_Satin_Steel"
+      ],
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          17.470001220703125,
+          -29.050003051757812,
+          6.681000232696533
+        ],
+        [
+          17.529998779296875,
+          -28.449996948242188,
+          6.692999839782715
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          17.470001220703125,
+          6.681000232696533,
+          -29.050003051757812
+        ],
+        [
+          17.529998779296875,
+          6.692999839782715,
+          -28.449996948242188
+        ]
+      ],
+      "has_custom_normals": true,
+      "index": 1007
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.001",
+      "vertices": 56,
+      "polygons": 54,
+      "triangles": 108,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Worn_Satin_Steel"
+      ],
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          17.650001525878906,
+          -29.050003051757812,
+          6.681000232696533
+        ],
+        [
+          17.709999084472656,
+          -28.449996948242188,
+          6.692999839782715
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          17.650001525878906,
+          6.681000232696533,
+          -29.050003051757812
+        ],
+        [
+          17.709999084472656,
+          6.692999839782715,
+          -28.449996948242188
+        ]
+      ],
+      "has_custom_normals": true,
+      "index": 1008
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.002",
+      "vertices": 56,
+      "polygons": 54,
+      "triangles": 108,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Worn_Satin_Steel"
+      ],
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          17.830001831054688,
+          -29.050003051757812,
+          6.681000232696533
+        ],
+        [
+          17.889999389648438,
+          -28.449996948242188,
+          6.692999839782715
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          17.830001831054688,
+          6.681000232696533,
+          -29.050003051757812
+        ],
+        [
+          17.889999389648438,
+          6.692999839782715,
+          -28.449996948242188
+        ]
+      ],
+      "has_custom_normals": true,
+      "index": 1009
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.003",
+      "vertices": 56,
+      "polygons": 54,
+      "triangles": 108,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Worn_Satin_Steel"
+      ],
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          18.01000213623047,
+          -29.050003051757812,
+          6.681000232696533
+        ],
+        [
+          18.06999969482422,
+          -28.449996948242188,
+          6.692999839782715
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          18.01000213623047,
+          6.681000232696533,
+          -29.050003051757812
+        ],
+        [
+          18.06999969482422,
+          6.692999839782715,
+          -28.449996948242188
+        ]
+      ],
+      "has_custom_normals": true,
+      "index": 1010
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.004",
+      "vertices": 56,
+      "polygons": 54,
+      "triangles": 108,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Worn_Satin_Steel"
+      ],
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          18.19000244140625,
+          -29.050003051757812,
+          6.681000232696533
+        ],
+        [
+          18.25,
+          -28.449996948242188,
+          6.692999839782715
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          18.19000244140625,
+          6.681000232696533,
+          -29.050003051757812
+        ],
+        [
+          18.25,
+          6.692999839782715,
+          -28.449996948242188
+        ]
+      ],
+      "has_custom_normals": true,
+      "index": 1011
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.005",
+      "vertices": 56,
+      "polygons": 54,
+      "triangles": 108,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Worn_Satin_Steel"
+      ],
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          18.37000274658203,
+          -29.050003051757812,
+          6.681000232696533
+        ],
+        [
+          18.43000030517578,
+          -28.449996948242188,
+          6.692999839782715
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          18.37000274658203,
+          6.681000232696533,
+          -29.050003051757812
+        ],
+        [
+          18.43000030517578,
+          6.692999839782715,
+          -28.449996948242188
+        ]
+      ],
+      "has_custom_normals": true,
+      "index": 1012
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.006",
+      "vertices": 56,
+      "polygons": 54,
+      "triangles": 108,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Worn_Satin_Steel"
+      ],
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          18.550003051757812,
+          -29.050003051757812,
+          6.681000232696533
+        ],
+        [
+          18.610000610351562,
+          -28.449996948242188,
+          6.692999839782715
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          18.550003051757812,
+          6.681000232696533,
+          -29.050003051757812
+        ],
+        [
+          18.610000610351562,
+          6.692999839782715,
+          -28.449996948242188
+        ]
+      ],
+      "has_custom_normals": true,
+      "index": 1013
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.007",
+      "vertices": 56,
+      "polygons": 54,
+      "triangles": 108,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Worn_Satin_Steel"
+      ],
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          18.730003356933594,
+          -29.050003051757812,
+          6.681000232696533
+        ],
+        [
+          18.790000915527344,
+          -28.449996948242188,
+          6.692999839782715
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          18.730003356933594,
+          6.681000232696533,
+          -29.050003051757812
+        ],
+        [
+          18.790000915527344,
+          6.692999839782715,
+          -28.449996948242188
+        ]
+      ],
+      "has_custom_normals": true,
+      "index": 1014
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.008",
+      "vertices": 56,
+      "polygons": 54,
+      "triangles": 108,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Worn_Satin_Steel"
+      ],
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          18.910003662109375,
+          -29.050003051757812,
+          6.681000232696533
+        ],
+        [
+          18.970001220703125,
+          -28.449996948242188,
+          6.692999839782715
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          18.910003662109375,
+          6.681000232696533,
+          -29.050003051757812
+        ],
+        [
+          18.970001220703125,
+          6.692999839782715,
+          -28.449996948242188
+        ]
+      ],
+      "has_custom_normals": true,
+      "index": 1015
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.009",
+      "vertices": 56,
+      "polygons": 54,
+      "triangles": 108,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Worn_Satin_Steel"
+      ],
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          19.089996337890625,
+          -29.050003051757812,
+          6.681000232696533
+        ],
+        [
+          19.150001525878906,
+          -28.449996948242188,
+          6.692999839782715
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          19.089996337890625,
+          6.681000232696533,
+          -29.050003051757812
+        ],
+        [
+          19.150001525878906,
+          6.692999839782715,
+          -28.449996948242188
+        ]
+      ],
+      "has_custom_normals": true,
+      "index": 1016
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.010",
+      "vertices": 56,
+      "polygons": 54,
+      "triangles": 108,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Worn_Satin_Steel"
+      ],
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          19.269996643066406,
+          -29.050003051757812,
+          6.681000232696533
+        ],
+        [
+          19.330001831054688,
+          -28.449996948242188,
+          6.692999839782715
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          19.269996643066406,
+          6.681000232696533,
+          -29.050003051757812
+        ],
+        [
+          19.330001831054688,
+          6.692999839782715,
+          -28.449996948242188
+        ]
+      ],
+      "has_custom_normals": true,
+      "index": 1017
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.011",
+      "vertices": 56,
+      "polygons": 54,
+      "triangles": 108,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Worn_Satin_Steel"
+      ],
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          19.449996948242188,
+          -29.050003051757812,
+          6.681000232696533
+        ],
+        [
+          19.51000213623047,
+          -28.449996948242188,
+          6.692999839782715
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          19.449996948242188,
+          6.681000232696533,
+          -29.050003051757812
+        ],
+        [
+          19.51000213623047,
+          6.692999839782715,
+          -28.449996948242188
+        ]
+      ],
+      "has_custom_normals": true,
+      "index": 1018
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.012",
+      "vertices": 56,
+      "polygons": 54,
+      "triangles": 108,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Worn_Satin_Steel"
+      ],
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          19.62999725341797,
+          -29.050003051757812,
+          6.681000232696533
+        ],
+        [
+          19.69000244140625,
+          -28.449996948242188,
+          6.692999839782715
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          19.62999725341797,
+          6.681000232696533,
+          -29.050003051757812
+        ],
+        [
+          19.69000244140625,
+          6.692999839782715,
+          -28.449996948242188
+        ]
+      ],
+      "has_custom_normals": true,
+      "index": 1019
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.013",
+      "vertices": 56,
+      "polygons": 54,
+      "triangles": 108,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Worn_Satin_Steel"
+      ],
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          19.80999755859375,
+          -29.050003051757812,
+          6.681000232696533
+        ],
+        [
+          19.87000274658203,
+          -28.449996948242188,
+          6.692999839782715
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          19.80999755859375,
+          6.681000232696533,
+          -29.050003051757812
+        ],
+        [
+          19.87000274658203,
+          6.692999839782715,
+          -28.449996948242188
+        ]
+      ],
+      "has_custom_normals": true,
+      "index": 1020
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.014",
+      "vertices": 56,
+      "polygons": 54,
+      "triangles": 108,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Worn_Satin_Steel"
+      ],
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          19.98999786376953,
+          -29.050003051757812,
+          6.681000232696533
+        ],
+        [
+          20.050003051757812,
+          -28.449996948242188,
+          6.692999839782715
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          19.98999786376953,
+          6.681000232696533,
+          -29.050003051757812
+        ],
+        [
+          20.050003051757812,
+          6.692999839782715,
+          -28.449996948242188
+        ]
+      ],
+      "has_custom_normals": true,
+      "index": 1021
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.015",
+      "vertices": 56,
+      "polygons": 54,
+      "triangles": 108,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Worn_Satin_Steel"
+      ],
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          20.169998168945312,
+          -29.050003051757812,
+          6.681000232696533
+        ],
+        [
+          20.230003356933594,
+          -28.449996948242188,
+          6.692999839782715
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          20.169998168945312,
+          6.681000232696533,
+          -29.050003051757812
+        ],
+        [
+          20.230003356933594,
+          6.692999839782715,
+          -28.449996948242188
+        ]
+      ],
+      "has_custom_normals": true,
+      "index": 1022
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.016",
+      "vertices": 56,
+      "polygons": 54,
+      "triangles": 108,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Worn_Satin_Steel"
+      ],
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          20.349998474121094,
+          -29.050003051757812,
+          6.681000232696533
+        ],
+        [
+          20.410003662109375,
+          -28.449996948242188,
+          6.692999839782715
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          20.349998474121094,
+          6.681000232696533,
+          -29.050003051757812
+        ],
+        [
+          20.410003662109375,
+          6.692999839782715,
+          -28.449996948242188
+        ]
+      ],
+      "has_custom_normals": true,
+      "index": 1023
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.017",
+      "vertices": 56,
+      "polygons": 54,
+      "triangles": 108,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Worn_Satin_Steel"
+      ],
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          20.529998779296875,
+          -29.050003051757812,
+          6.681000232696533
+        ],
+        [
+          20.589996337890625,
+          -28.449996948242188,
+          6.692999839782715
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          20.529998779296875,
+          6.681000232696533,
+          -29.050003051757812
+        ],
+        [
+          20.589996337890625,
+          6.692999839782715,
+          -28.449996948242188
+        ]
+      ],
+      "has_custom_normals": true,
+      "index": 1024
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.018",
+      "vertices": 56,
+      "polygons": 54,
+      "triangles": 108,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Worn_Satin_Steel"
+      ],
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          20.709999084472656,
+          -29.050003051757812,
+          6.681000232696533
+        ],
+        [
+          20.769996643066406,
+          -28.449996948242188,
+          6.692999839782715
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          20.709999084472656,
+          6.681000232696533,
+          -29.050003051757812
+        ],
+        [
+          20.769996643066406,
+          6.692999839782715,
+          -28.449996948242188
+        ]
+      ],
+      "has_custom_normals": true,
+      "index": 1025
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.019",
+      "vertices": 56,
+      "polygons": 54,
+      "triangles": 108,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Worn_Satin_Steel"
+      ],
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          20.889999389648438,
+          -29.050003051757812,
+          6.681000232696533
+        ],
+        [
+          20.949996948242188,
+          -28.449996948242188,
+          6.692999839782715
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          20.889999389648438,
+          6.681000232696533,
+          -29.050003051757812
+        ],
+        [
+          20.949996948242188,
+          6.692999839782715,
+          -28.449996948242188
+        ]
+      ],
+      "has_custom_normals": true,
+      "index": 1026
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.020",
+      "vertices": 56,
+      "polygons": 54,
+      "triangles": 108,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Worn_Satin_Steel"
+      ],
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          21.06999969482422,
+          -29.050003051757812,
+          6.681000232696533
+        ],
+        [
+          21.12999725341797,
+          -28.449996948242188,
+          6.692999839782715
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          21.06999969482422,
+          6.681000232696533,
+          -29.050003051757812
+        ],
+        [
+          21.12999725341797,
+          6.692999839782715,
+          -28.449996948242188
+        ]
+      ],
+      "has_custom_normals": true,
+      "index": 1027
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.021",
+      "vertices": 56,
+      "polygons": 54,
+      "triangles": 108,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Worn_Satin_Steel"
+      ],
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          21.25,
+          -29.050003051757812,
+          6.681000232696533
+        ],
+        [
+          21.30999755859375,
+          -28.449996948242188,
+          6.692999839782715
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          21.25,
+          6.681000232696533,
+          -29.050003051757812
+        ],
+        [
+          21.30999755859375,
+          6.692999839782715,
+          -28.449996948242188
+        ]
+      ],
+      "has_custom_normals": true,
+      "index": 1028
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.022",
+      "vertices": 56,
+      "polygons": 54,
+      "triangles": 108,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Worn_Satin_Steel"
+      ],
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          21.43000030517578,
+          -29.050003051757812,
+          6.681000232696533
+        ],
+        [
+          21.48999786376953,
+          -28.449996948242188,
+          6.692999839782715
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          21.43000030517578,
+          6.681000232696533,
+          -29.050003051757812
+        ],
+        [
+          21.48999786376953,
+          6.692999839782715,
+          -28.449996948242188
+        ]
+      ],
+      "has_custom_normals": true,
+      "index": 1029
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.023",
+      "vertices": 56,
+      "polygons": 54,
+      "triangles": 108,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Worn_Satin_Steel"
+      ],
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          21.610000610351562,
+          -29.050003051757812,
+          6.681000232696533
+        ],
+        [
+          21.669998168945312,
+          -28.449996948242188,
+          6.692999839782715
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          21.610000610351562,
+          6.681000232696533,
+          -29.050003051757812
+        ],
+        [
+          21.669998168945312,
+          6.692999839782715,
+          -28.449996948242188
+        ]
+      ],
+      "has_custom_normals": true,
+      "index": 1030
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.024",
+      "vertices": 56,
+      "polygons": 54,
+      "triangles": 108,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Worn_Satin_Steel"
+      ],
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          21.790000915527344,
+          -29.050003051757812,
+          6.681000232696533
+        ],
+        [
+          21.849998474121094,
+          -28.449996948242188,
+          6.692999839782715
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          21.790000915527344,
+          6.681000232696533,
+          -29.050003051757812
+        ],
+        [
+          21.849998474121094,
+          6.692999839782715,
+          -28.449996948242188
+        ]
+      ],
+      "has_custom_normals": true,
+      "index": 1031
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.025",
+      "vertices": 56,
+      "polygons": 54,
+      "triangles": 108,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Worn_Satin_Steel"
+      ],
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          21.970001220703125,
+          -29.050003051757812,
+          6.681000232696533
+        ],
+        [
+          22.029998779296875,
+          -28.449996948242188,
+          6.692999839782715
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          21.970001220703125,
+          6.681000232696533,
+          -29.050003051757812
+        ],
+        [
+          22.029998779296875,
+          6.692999839782715,
+          -28.449996948242188
+        ]
+      ],
+      "has_custom_normals": true,
+      "index": 1032
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.026",
+      "vertices": 56,
+      "polygons": 54,
+      "triangles": 108,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Worn_Satin_Steel"
+      ],
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          22.150001525878906,
+          -29.050003051757812,
+          6.681000232696533
+        ],
+        [
+          22.209999084472656,
+          -28.449996948242188,
+          6.692999839782715
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          22.150001525878906,
+          6.681000232696533,
+          -29.050003051757812
+        ],
+        [
+          22.209999084472656,
+          6.692999839782715,
+          -28.449996948242188
+        ]
+      ],
+      "has_custom_normals": true,
+      "index": 1033
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.027",
+      "vertices": 56,
+      "polygons": 54,
+      "triangles": 108,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Worn_Satin_Steel"
+      ],
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          22.330001831054688,
+          -29.050003051757812,
+          6.681000232696533
+        ],
+        [
+          22.389999389648438,
+          -28.449996948242188,
+          6.692999839782715
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          22.330001831054688,
+          6.681000232696533,
+          -29.050003051757812
+        ],
+        [
+          22.389999389648438,
+          6.692999839782715,
+          -28.449996948242188
+        ]
+      ],
+      "has_custom_normals": true,
+      "index": 1034
+    },
+    {
+      "name": "L14_Viewport_Sill_Drain.028",
+      "vertices": 56,
+      "polygons": 54,
+      "triangles": 108,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Worn_Satin_Steel"
+      ],
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          22.51000213623047,
+          -29.050003051757812,
+          6.681000232696533
+        ],
+        [
+          22.56999969482422,
+          -28.449996948242188,
+          6.692999839782715
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          22.51000213623047,
+          6.681000232696533,
+          -29.050003051757812
+        ],
+        [
+          22.56999969482422,
+          6.692999839782715,
+          -28.449996948242188
+        ]
+      ],
+      "has_custom_normals": true,
+      "index": 1035
+    },
+    {
+      "name": "L14_Viewport_Sill_Grille",
+      "vertices": 56,
+      "polygons": 54,
+      "triangles": 108,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Dark_Parkerized_Structural_Steel"
+      ],
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          17.25,
+          -29.099998474121094,
+          6.599999904632568
+        ],
+        [
+          22.75,
+          -28.400001525878906,
+          6.679999828338623
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          17.25,
+          6.599999904632568,
+          -29.099998474121094
+        ],
+        [
+          22.75,
+          6.679999828338623,
+          -28.400001525878906
+        ]
+      ],
+      "has_custom_normals": true,
+      "index": 1036
+    },
+    {
+      "name": "L14_Viewport_West_Jamb",
+      "vertices": 56,
+      "polygons": 54,
+      "triangles": 108,
+      "uvs": [],
+      "materials": [
+        "L14_CAND_Aged_Bone_Enamel"
+      ],
+      "matrix_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -58.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          78.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "root_relative_blender_bounds": [
+        [
+          16.700698852539062,
+          -29.720001220703125,
+          7.25
+        ],
+        [
+          17.119300842285156,
+          -29.37999725341797,
+          11.75
+        ]
+      ],
+      "expected_unity_local_bounds": [
+        [
+          16.700698852539062,
+          7.25,
+          -29.720001220703125
+        ],
+        [
+          17.119300842285156,
+          11.75,
+          -29.37999725341797
+        ]
+      ],
+      "has_custom_normals": true,
+      "index": 1037
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "allExistingPrivatePrefabRecordsUnchangedExceptRootChildList": true,
+  "newPrefabRecordCounts": {
+    "1": 51,
+    "4": 51,
+    "23": 51,
+    "33": 51,
+    "65": 10
+  },
+  "formalSceneChangedRecords": 4,
+  "formalSceneOnlyChanges": "Three display MeshFilter references and one MeshCollider reference",
+  "allOtherFormalRecordsIdentical": true
+}

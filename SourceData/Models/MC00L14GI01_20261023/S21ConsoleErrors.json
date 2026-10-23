@@ -1,0 +1,50 @@
+{
+  "source": "Official Pipeline console default tail read; filtered errors only",
+  "capturedTailErrors": 4,
+  "entries": [
+    {
+      "seq": 27893,
+      "timestampUtc": "2026-10-23T17:55:27.5684428Z",
+      "level": "error",
+      "logType": "Error",
+      "message": "Failed to handle /api/exec request: Unable to write data to the transport connection: \u6d63\u72b5\u6b91\u6d93\u7ed8\u6e80\u6d93\ue160\u6b91\u675e\ue219\u6b22\u6d93\ue15f\ue11b\u6d5c\u55d5\u7af4\u6d93\ue044\u51e1\u5be4\u8679\u73db\u9428\u52ee\u7e5b\u93ba\u30e3\u20ac\u4fd3r\n",
+      "stackTrace": "UnityEngine.Debug:LogError (object)\nUnity.Pipeline.BasePipelineServer/<HandleExecRequest>d__119:MoveNext () (at ./Library/PackageCache/com.unity.pipeline@62c08c808737/Runtime/Common/BasePipelineServer.cs:2257)\nSystem.Runtime.CompilerServices.AsyncTaskMethodBuilder:SetException (System.Exception)\nUnity.Pipeline.BasePipelineServer/<SendExecResponse>d__123:MoveNext () (at ./Library/PackageCache/com.unity.pipeline@62c08c808737/Runtime/Common/BasePipelineServer.cs:2348)\nSystem.Threading._ThreadPoolWaitCallback:PerformWaitCallback ()\n",
+      "seeded": false
+    },
+    {
+      "seq": 27894,
+      "timestampUtc": "2026-10-23T17:55:27.5709735Z",
+      "level": "error",
+      "logType": "Error",
+      "message": "Pipeline: unhandled error serving POST /api/exec: System.InvalidOperationException: Cannot be changed after headers are sent.\r\n  at System.Net.HttpListenerResponse.set_StatusCode (System.Int32 value) [0x00021] in <7e38e168ae034922bf1f11cf8630dfe2>:0 \r\n  at Unity.Pipeline.BasePipelineServer.SendExecResponse (System.Net.HttpListenerResponse response, System.Int32 statusCode, Unity.Pipeline.Models.BaseResponse body, System.String requestJson, System.Boolean verbose, System.Boolean omitNulls, Unity.Pipeline.Commands.CommandInfo executedCommand, System.Boolean executedSuccess, System.Int64 executedDurationMs, Newtonsoft.Json.Linq.JObject executedParameters) [0x00014] in .\\Library\\PackageCache\\com.unity.pipeline@62c08c808737\\Runtime\\Common\\BasePipelineServer.cs:2336 \r\n  at Unity.Pipeline.BasePipelineServer.HandleExecRequest (System.Net.HttpListenerRequest request, System.Net.HttpListenerResponse response) [0x014f1] in .\\Library\\PackageCache\\com.unity.pipeline@62c08c808737\\Runtime\\Common\\BasePipelineServer.cs:2258 \r\n  at Unity.Pipeline.BasePipelineServer.ProcessRequest (System.Net.HttpListenerContext context) [0x00678] in .\\Library\\PackageCache\\com.unity.pipeline@62c08c808737\\Runtime\\Common\\BasePipelineServer.cs:651 ",
+      "stackTrace": "UnityEngine.Debug:LogError (object)\nUnity.Pipeline.BasePipelineServer/<ProcessRequest>d__77:MoveNext () (at ./Library/PackageCache/com.unity.pipeline@62c08c808737/Runtime/Common/BasePipelineServer.cs:684)\nSystem.Runtime.CompilerServices.AsyncTaskMethodBuilder:SetException (System.Exception)\nUnity.Pipeline.BasePipelineServer/<HandleExecRequest>d__119:MoveNext () (at ./Library/PackageCache/com.unity.pipeline@62c08c808737/Runtime/Common/BasePipelineServer.cs:2258)\nSystem.Runtime.CompilerServices.AsyncTaskMethodBuilder:SetException (System.Exception)\nUnity.Pipeline.BasePipelineServer/<SendExecResponse>d__123:MoveNext () (at ./Library/PackageCache/com.unity.pipeline@62c08c808737/Runtime/Common/BasePipelineServer.cs:2348)\nSystem.Threading._ThreadPoolWaitCallback:PerformWaitCallback ()\n",
+      "seeded": false
+    },
+    {
+      "seq": 27918,
+      "timestampUtc": "2026-10-23T18:07:35.7023299Z",
+      "level": "error",
+      "logType": "Exception",
+      "message": "AssertionException: Assertion failure. Value was False\r\nExpected: True",
+      "stackTrace": "UnityEngine.Assertions.Assert.Fail (System.String message, System.String userMessage) (at <2f52b751ded44e96b74c2c8a24c6c65b>:0)\nUnityEngine.Assertions.Assert.IsTrue (System.Boolean condition, System.String message) (at <2f52b751ded44e96b74c2c8a24c6c65b>:0)\nUnityEngine.Assertions.Assert.IsTrue (System.Boolean condition) (at <2f52b751ded44e96b74c2c8a24c6c65b>:0)\nUnity.Scenes.SubScene.AddSceneEntities () (at ./Library/PackageCache/com.unity.entities@b6946e39a4db/Unity.Scenes/SubScene.cs:379)\nUnity.Scenes.SubScene.OnEnable () (at ./Library/PackageCache/com.unity.entities@b6946e39a4db/Unity.Scenes/SubScene.cs:359)\n",
+      "seeded": false
+    },
+    {
+      "seq": 27924,
+      "timestampUtc": "2026-10-23T18:10:10.8115537Z",
+      "level": "error",
+      "logType": "Exception",
+      "message": "AssertionException: Assertion failure. Value was False\r\nExpected: True",
+      "stackTrace": "UnityEngine.Assertions.Assert.Fail (System.String message, System.String userMessage) (at <2f52b751ded44e96b74c2c8a24c6c65b>:0)\nUnityEngine.Assertions.Assert.IsTrue (System.Boolean condition, System.String message) (at <2f52b751ded44e96b74c2c8a24c6c65b>:0)\nUnityEngine.Assertions.Assert.IsTrue (System.Boolean condition) (at <2f52b751ded44e96b74c2c8a24c6c65b>:0)\nUnity.Scenes.SubScene.AddSceneEntities () (at ./Library/PackageCache/com.unity.entities@b6946e39a4db/Unity.Scenes/SubScene.cs:379)\nUnity.Scenes.SubScene.OnEnable () (at ./Library/PackageCache/com.unity.entities@b6946e39a4db/Unity.Scenes/SubScene.cs:359)\n",
+      "seeded": false
+    }
+  ],
+  "compileFailureObserved": false,
+  "consoleGroundTruthAt180855UTC": {
+    "compilationFailed": false,
+    "compiling": false,
+    "consoleErrors": 3,
+    "consoleWarnings": 58
+  },
+  "limitation": "Pipeline timeout response errors and Unity.Scenes.SubScene.OnEnable assertions observed. Not cleared, not diagnosed or repaired under this art-only scope; no claim of clean Console or runtime acceptance."
+}

@@ -1,0 +1,116 @@
+{
+  "outcome": "S21 local window replacement saved in the formal map and existing private L14 prefab.",
+  "scope": "Only S21; no other 348 source render replacements or runtime investigation.",
+  "newComponents": 51,
+  "newSimpleBoxColliders": {
+    "total": 10,
+    "glass": 2,
+    "frameAndGrille": 8,
+    "layer": 0,
+    "enabled": true,
+    "isTrigger": false,
+    "rigidbodiesAdded": 0
+  },
+  "oldRemoval": {
+    "sourceNames": [
+      "MC_E pressure panel L1 S21 joint backing_01079",
+      "MC_E pressure panel L1 S21 panel_01080",
+      "MC_E pressure panel L1 S21 panel_01081",
+      "MC_E pressure panel L1 S21 panel_01082",
+      "MC_E pressure panel L1 S21 panel_01083",
+      "MC_E pressure panel L1 S21 panel_01084",
+      "MC_E pressure panel L1 S21 panel_01085"
+    ],
+    "displayTrianglesRemoved": 276,
+    "unrelatedDisplayTrianglesRetained": 552,
+    "displayChunks": [
+      {
+        "name": "MC00Surface0836",
+        "removeTriangles": 12,
+        "retainTriangles": 24,
+        "maxVertexErrorMeters": 9.07545254e-05
+      },
+      {
+        "name": "MC00Surface0838",
+        "removeTriangles": 176,
+        "retainTriangles": 176,
+        "maxVertexErrorMeters": 0.000172823711
+      },
+      {
+        "name": "MC00Surface1272",
+        "removeTriangles": 88,
+        "retainTriangles": 352,
+        "maxVertexErrorMeters": 0.000174697547
+      }
+    ],
+    "proxy": "COL_Shell_E_L1_chunk_022_f5efaafb93",
+    "collisionMembersRemoved": 7,
+    "collisionMembersRetained": 9,
+    "collisionTrianglesRemoved": 84,
+    "collisionTrianglesRetained": 108,
+    "matching": "Unique spatial source-triangle matching for display; welded connected cuboids matched to frozen source bounds for collision. No source face/vertex index applied blindly.",
+    "originalDirectPanelColliders": 0
+  },
+  "materials": {
+    "glass": {
+      "path": "Assets/MoonEnvironment/Variants/MC00L14GI01/Materials/L14_CAND_Laminated_Pressure_Glass.mat",
+      "shader": "Universal Render Pipeline/Lit",
+      "surface": 1.0,
+      "queue": 3000,
+      "alpha": 0.18
+    },
+    "existingPrivateRecipeMaterialsReused": true,
+    "materialsChanged": 0,
+    "newTextures": 0,
+    "proceduralSpatialEquivalence": false
+  },
+  "preserved": {
+    "allExistingPrefabRecordsExceptRootChildrenListIdentical": true,
+    "formalSceneOnlyFourMeshReferencesChanged": true,
+    "allOtherFormalSceneRecordsIdentical": true,
+    "oldDisplayVertexStreamsAndUVChannelsIdentical": true,
+    "originalFBXAndAggregateAssetsUntouched": true,
+    "protectedComponentSerializationHashEqual": true,
+    "DEMAndLunarMaterials": true,
+    "lightButtonMapping": "118 lights / 135 buttons unchanged",
+    "otherCollisionAndBatchingLODAndCulling": true,
+    "userSettingsAndRenderingConfiguration": true,
+    "clockComponent": true
+  },
+  "currentNewGroups": {
+    "L14Renderers": 1055,
+    "L14Colliders": 40,
+    "GI01RenderersUnchanged": 614,
+    "GI01CollidersUnchanged": 10,
+    "outerWalkCollidersUnchanged": 112
+  },
+  "verification": {
+    "newTransformMaxBoundsErrorMeters": 1.54953741e-05,
+    "savedSceneDirty": false,
+    "twoWindowCenterStaticCollisionRays": [
+      {
+        "glass": "L14_Viewport_Pressure_Glass",
+        "nearestDistance": 1.5599674,
+        "oldProxyStillBlocksCenter": false
+      },
+      {
+        "glass": "L14_Viewport_Pressure_Glass.001",
+        "nearestDistance": 1.5599674,
+        "oldProxyStillBlocksCenter": false
+      }
+    ],
+    "compilationFailed": false,
+    "knownConsoleErrors": "Pipeline timeout response errors and Unity.Scenes.SubScene.OnEnable assertions observed. Not cleared, not diagnosed or repaired under this art-only scope; no claim of clean Console or runtime acceptance.",
+    "PlayStarted": false,
+    "HostStarted": false,
+    "buildStarted": false,
+    "playerWalkingTested": false,
+    "visualAppearanceAccepted": false,
+    "performanceTested": false
+  },
+  "remaining": "348 other material/normal replacements and procedural material detail equivalence remain outside this S21 increment. Player appearance and collision walking not tested. Console assertions not investigated.",
+  "rollback": "Revert this S21 commit: restore the three original display mesh references and original shared collision reference, remove the 51 private prefab children / 10 BoxColliders and the four derivative mesh assets. Original author FBXs and aggregate mesh assets were never overwritten.",
+  "baseHEAD": "1332733dea5fca1854bd5131390a029cb03a528a",
+  "packageSHA256": "7594c3beb9fa36fc5037858e9a6d50c0a38df4628a2b94316471fcaf72b8f5f3",
+  "pushPerformed": false
+}
