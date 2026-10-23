@@ -41,7 +41,31 @@ manifest/lock 中没有 Entities Graphics，项目运行时代码也没有自定
 
 参考：[Unity 6000.5 BRG 裁剪模式](https://docs.unity.com/en-us/engine/6000.5/script-reference/unityeditor/rendering/batchrenderergroupstrippingmode)。
 
-## 问题与当前结论
+## 2026-10-24：运行时管线的原生变体预过滤
+
+直接解析 `Build/Moonkov20261023_1/FPS_Template_Data/resources.assets` 中
+pathID 262 的 URP/Lit：ForwardLit 的 9216 个片元子程序均带
+`PROBE_VOLUMES_L1`，没有 Legacy Light Probes 对应的关闭变体。
+正式地图的 MoonSceneLighting 却在运行时切到 `MC00BakedPipeline`，
+其 `m_LightProbeSystem` 为 0（Legacy）。旧包的外圈 3129 个 Renderer
+仍在场景中且启用；代表性外楼的网格法线、材质不透明设置和 ForwardLit Pass 正常。
+
+此前“构建 API 返回五份管线”只能证明 URP 后续裁剪收到这些资产，
+不能证明原生预过滤保留了所需变体。URP 17.5 的管线字段使用
+`ShaderKeywordFilter.SelectIf/RemoveIf`；Unity 原生预过滤依据 Quality Settings
+登记的资产，而原来那里仅有 APV 模式的 PC_RPAsset。
+参考：[Unity FilterAttribute](https://docs.unity.com/en-us/engine/6000.0/script-reference/unityeditor/shaderkeywordfilter/filterattribute)。
+
+修复在 Quality Settings 登记实际随场景使用的四份额外管线，保留 PC 为默认等级、
+保留各管线自身的光照行为及现有变体裁剪。构建检查新增依赖管线的 Standalone
+登记校验，避免未来新增运行时管线再次被提前过滤。
+验证：Unity 脚本编译、完整构建前检查通过；QualitySettings 原生平台 API
+返回五份管线，包含 Legacy 和 APV 两种配置；传入未登记管线的负例被正确拒绝。
+默认等级仍为 PC。未运行额外 Editor、客户端或重新构建。
+这修复了已确认的打包变体缺口；现有 EXE 不会被配置修改修复，仍需新包画面验收，
+不能仅据静态检查宣布建筑恢复可见。
+
+## 问题与此前结论
 
 报告症状：正式地图除中央大楼外的建筑只剩阴影，怪物尸体不可见。
 目前没有新包画面对照，原始症状的最终根因仍未确认。先前关闭 URP 的

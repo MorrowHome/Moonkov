@@ -86,6 +86,7 @@ public sealed class MoonkovPlayerBuildChecks : IPreprocessBuildWithReport, IProc
             if (!AssetDatabase.LoadAssetAtPath<SceneAsset>(scene)) errors.Add("Missing build scene: " + scene);
 
         var dependencies = AssetDatabase.GetDependencies(scenes, true);
+        ValidatePipelinePrefiltering(dependencies, errors);
         var shaders = new HashSet<Shader>();
         int materialCount = 0;
         foreach (var path in dependencies.Where(p => p.EndsWith(".mat", StringComparison.OrdinalIgnoreCase)))
@@ -103,6 +104,22 @@ public sealed class MoonkovPlayerBuildChecks : IPreprocessBuildWithReport, IProc
             throw new BuildFailedException("Moonkov player rendering preflight failed:\n" + string.Join("\n", errors));
         Debug.Log($"[Moonkov build] Rendering preflight passed: {scenes.Length} scenes, {materialCount} materials, {shaders.Count} shaders. " +
             "This checks configuration/dependencies; a new player build and visual acceptance are still required.");
+    }
+
+    // IncludeAdditionalRPAssets feeds URP's later stripper, but native keyword
+    // prefiltering reads QualitySettings. Scene-only pipelines are too late there.
+    public static void ValidatePipelinePrefiltering(string[] dependencies, List<string> errors)
+    {
+        QualitySettings.GetRenderPipelineAssetsForPlatform<UniversalRenderPipelineAsset>(
+            "Standalone", out var registered, out var allOverridden);
+        if (!allOverridden && GraphicsSettings.defaultRenderPipeline is UniversalRenderPipelineAsset fallback)
+            registered.Add(fallback);
+        foreach (var path in dependencies.Where(p => p.EndsWith(".asset", StringComparison.OrdinalIgnoreCase)))
+        {
+            var pipeline = AssetDatabase.LoadAssetAtPath<UniversalRenderPipelineAsset>(path);
+            if (pipeline && !registered.Contains(pipeline))
+                errors.Add("Quality Settings: register runtime pipeline for Standalone shader prefiltering: " + path);
+        }
     }
 
     private static string[] GetBuildScenes()
