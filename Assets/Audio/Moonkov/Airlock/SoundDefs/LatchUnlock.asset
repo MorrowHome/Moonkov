@@ -11,9 +11,14 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9e391dc00640197458a5ba0d2ba8c59b, type: 3}
   m_Name: LatchUnlock
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier:
   EditorVolume: 1
   UnityAudioMixer: {fileID: 24100000, guid: fddb343a82968524eb1e9a6f65433d7e, type: 2}
+  Role: 6
+  Priority: 70
+  MaxVoices: 8
+  MinimumInterval: 0
+  Occlusion: 0
   MixerGroup: 1
   BasePitchInCents: 0
   VolumeScale: 1
@@ -33,13 +38,13 @@ MonoBehaviour:
     StartOffsetPercentMax: 0
     StopDelay: 0
   PitchAndVolumeInfo:
-    VolumeMin: -12
-    VolumeMax: -12
+    VolumeMin: -3
+    VolumeMax: -3
     PitchMin: 0
     PitchMax: 0
   DistanceInfo:
-    VolumeDistMin: 1
-    VolumeDistMax: 14
+    VolumeDistMin: 3.5
+    VolumeDistMax: 22
     SpatialBlend: 1
     DopplerScale: 0
     VolumeRolloffMode: 1
@@ -50,7 +55,7 @@ MonoBehaviour:
     HPF_MinCutoff: 0
     HPF_MaxDistance: 0
     SpatialBlendCurveType: 0
-    SpatialBlend_MaxDistance: 14
+    SpatialBlend_MaxDistance: 22
     PanMin: 0
     PanMax: 0
   LowPassFilter:
