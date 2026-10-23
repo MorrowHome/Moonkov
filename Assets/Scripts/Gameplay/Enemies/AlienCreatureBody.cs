@@ -299,8 +299,8 @@ namespace Unity.MP_FPS
         private void BuildHitboxes(int layer)
         {
             Sphere(layer);
-            if (m_StiltRig != null) Sphere(layer);
-            int count = m_StiltRig != null ? StiltWalkerRig.Segments : m_FaceRig != null ? FaceHuggerRig.Fingers * 3 + FaceHuggerRig.TailPoints - 1 : m_Chain != null ? 12 : m_Branch != null ? m_Branch.Branches * 4 : 16;
+            if (m_StiltRig != null || m_Chain != null) Sphere(layer);
+            int count = m_StiltRig != null ? StiltWalkerRig.Segments : m_FaceRig != null ? FaceHuggerRig.Fingers * 3 + FaceHuggerRig.TailPoints - 1 : m_Chain != null ? (CreatureChain.Rings - 1) / 4 : m_Branch != null ? m_Branch.Branches * 4 : 16;
             for (int i = 0; i < count; i++)
             {
                 var go = new GameObject("Alien tissue segment " + i); go.layer = layer; go.transform.SetParent(m_HitRoot, false);
@@ -317,6 +317,13 @@ namespace Unity.MP_FPS
             if (m_Spheres.Count == 0) return;
             var body = m_Spheres[0]; body.transform.position = AimPoint;
             body.radius = m_StiltRig != null ? m_StiltRig.Thickness * 1.4f : m_FaceRig != null ? m_FaceRig.BodyRadius : (m_Chain != null ? m_ChainShape.radius : m_Branch != null ? m_BranchShape.bodyRadii.x * .7f : .23f * m_Scale);
+            if (m_Chain != null)
+            {
+                // The separate visible head never belonged to the old mid-body sphere.
+                var head = m_Spheres[1];
+                head.transform.position = m_Chain.Centres[0] + m_Chain.Tangents[0] * .06f;
+                head.radius = Mathf.Max(m_ChainShape.headScale.x, m_ChainShape.headScale.y, m_ChainShape.headScale.z) * .5f;
+            }
             if (m_StiltRig != null) { m_Spheres[1].transform.position = m_StiltRig.Head; m_Spheres[1].radius = .14f * m_Scale; }
             for (int i = 0; i < m_Capsules.Count; i++)
             {
@@ -335,8 +342,13 @@ namespace Unity.MP_FPS
                 }
                 else if (m_Chain != null)
                 {
-                    int first = i * 8, last = Mathf.Min(first + 8, CreatureChain.Rings - 1);
-                    a = m_Chain.Centres[first]; b = m_Chain.Centres[last]; radius = Mathf.Max(.015f, m_Chain.Radii[first] * m_ChainShape.verticalScale);
+                    int first = i * 4, last = Mathf.Min(first + 4, CreatureChain.Rings - 1);
+                    a = m_Chain.Centres[first]; b = m_Chain.Centres[last];
+                    // Cover the widest section in each curved span, including its horizontal
+                    // radius. Multiplying by verticalScale made broad flattened worms miss.
+                    radius = .015f;
+                    for (int ring = first; ring <= last; ring++)
+                        radius = Mathf.Max(radius, m_Chain.Radii[ring] * Mathf.Max(1, m_ChainShape.verticalScale));
                 }
                 else if (m_Branch != null)
                 {
