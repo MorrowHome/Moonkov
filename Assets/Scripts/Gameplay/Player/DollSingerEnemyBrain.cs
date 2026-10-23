@@ -38,6 +38,7 @@ namespace Unity.MP_FPS
         public readonly Vector3[] ProbeCorners = new Vector3[64];
         public int CornerCount, Corner, Seed, Cache = -1, SearchStep, LootedCaches;
         public Vector3 Goal, LastSeen, ObservedVelocity, ProgressPosition, CoverPosition, PeekPosition, TacticalGoal;
+        public Vector3 RaidExit;
         public Vector3 AimOffset = Vector3.up * 1.15f;
         public float Yaw, Pitch, LastHealth = 100, Suppression, Confidence, Aggression, Caution, AimErrorX, AimErrorY;
         public float ExtractionProgress, ActionScore;

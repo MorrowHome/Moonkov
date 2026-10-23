@@ -42,7 +42,7 @@ namespace Unity.MP_FPS
                     goal = SelectCache(brain, position, map);
                     break;
                 case PmcAction.Extract:
-                    goal = map.ExtractionPosition;
+                    goal = brain.RaidExit;
                     break;
                 case PmcAction.HoldAngle:
                     goal = position;

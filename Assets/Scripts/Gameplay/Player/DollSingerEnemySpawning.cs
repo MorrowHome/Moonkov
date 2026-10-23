@@ -126,7 +126,8 @@ namespace Unity.MP_FPS
         {
             position = default;
             var anchors = map.EnemySpawnPositions;
-            if (anchors.Length == 0 || !NavMesh.SamplePosition(map.ExtractionPosition, out var extraction, 3, m_Filter)) return false;
+            if (anchors.Length == 0) return false;
+            bool hasExtraction = NavMesh.SamplePosition(map.ExtractionPosition, out var extraction, 3, m_Filter);
             int start = m_SpawnRandom.NextInt(anchors.Length);
             float inner = Mathf.Max(0, m_Tuning.SpawnInnerRadius);
             float outer = Mathf.Max(inner, m_Tuning.SpawnOuterRadius);
@@ -158,13 +159,37 @@ namespace Unity.MP_FPS
                     Mathf.Max(1, m_Tuning.SpawnActorSpacing))) continue;
                 if (!RaidSpawnSafety.TryGroundPosition(point, .35f, 1.8f, 45, out var ground, out _) ||
                     Mathf.Abs(ground.y - point.y) > .6f) continue;
-                // Reject disconnected islands and upper floors with no route back to the raid exit.
-                if (!NavMesh.CalculatePath(point, extraction.position, m_Filter, m_SpawnPath) ||
-                    m_SpawnPath.status != NavMeshPathStatus.PathComplete) continue;
+                bool reachesExit = hasExtraction && NavMesh.CalculatePath(point, extraction.position, m_Filter, m_SpawnPath) &&
+                    m_SpawnPath.status == NavMeshPathStatus.PathComplete;
+                // Full-map entries can serve separate crater basins. Require local walking
+                // space and let these raiders leave through their own entry instead.
+                if (!reachesExit && (map.EnemyActivationDistance <= 0 || !HasLocalSpawnRoute(point))) continue;
                 position = point;
                 return true;
             }
             return false;
+        }
+
+        private bool HasLocalSpawnRoute(Vector3 position)
+        {
+            for (int side = 0; side < 4; side++)
+            {
+                float angle = side * Mathf.PI * .5f;
+                var candidate = position + new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * 8;
+                if (NavMesh.SamplePosition(candidate, out var nearby, 4, m_Filter) &&
+                    HorizontalDistance(position, nearby.position) >= 4 &&
+                    NavMesh.CalculatePath(position, nearby.position, m_Filter, m_SpawnPath) &&
+                    m_SpawnPath.status == NavMeshPathStatus.PathComplete) return true;
+            }
+            return false;
+        }
+
+        private Vector3 SelectRaidExit(MoonRaidMap map, Vector3 position)
+        {
+            if (NavMesh.SamplePosition(map.ExtractionPosition, out var exit, 3, m_Filter) &&
+                NavMesh.CalculatePath(position, exit.position, m_Filter, m_SpawnPath) &&
+                m_SpawnPath.status == NavMeshPathStatus.PathComplete) return map.ExtractionPosition;
+            return position;
         }
 
         private Entity SpawnActor(MoonRaidMap map, Entity prefab, Vector3 position, double now, ClashBotSpawnRequest? clash = null)
@@ -202,7 +227,7 @@ namespace Unity.MP_FPS
             // A finite raid loadout; unused medicine remains in the normal death inventory.
             inventory.AddSupply("medkit", 2, parent: InventoryCatalog.Pockets, foundInRaid: true);
             if (map.EnemyCells > 0) inventory.AddSupply("cells", map.EnemyCells, foundInRaid: true);
-            var brain = new DollSingerEnemyBrain { Inventory = inventory,
+            var brain = new DollSingerEnemyBrain { Inventory = inventory, RaidExit = SelectRaidExit(map, position),
                 Seed = serial, Yaw = yaw, Goal = position, ProgressPosition = position, SpawnTime = now,
                 NextSense = now + (serial % 3) * .033, NextDecision = now + (serial % 3) * .067,
                 Aggression = .4f + ((serial - 1) % 3) * .2f, Caution = .8f - ((serial - 1) % 3) * .2f,

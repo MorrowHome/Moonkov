@@ -27,7 +27,7 @@ namespace Unity.MP_FPS
             if (brain.Cache >= 0) return map.LootPositions[brain.Cache];
             brain.Leaving = true;
             brain.CommitUntil = 0;
-            return map.ExtractionPosition;
+            return brain.RaidExit;
         }
 
         private void AdvanceObjective(DollSingerEnemyBrain brain, Vector3 position, Vector3 eye, MoonRaidMap map, double now, float dt)
@@ -67,8 +67,8 @@ namespace Unity.MP_FPS
                 brain.NextDecision = brain.NextPath = 0;
             }
             bool extracting = brain.Action == PmcAction.Extract &&
-                HorizontalDistance(position, map.ExtractionPosition) <= map.ExtractionRadius &&
-                Mathf.Abs(position.y - map.ExtractionPosition.y) <= 3 && !brain.Visible &&
+                HorizontalDistance(position, brain.RaidExit) <= map.ExtractionRadius &&
+                Mathf.Abs(position.y - brain.RaidExit.y) <= 3 && !brain.Visible &&
                 now - brain.LastDamage > 5 && brain.Suppression < .25f;
             brain.ExtractionProgress = extracting ? brain.ExtractionProgress + dt : 0;
             if (brain.ExtractionProgress >= map.ExtractionSeconds)
