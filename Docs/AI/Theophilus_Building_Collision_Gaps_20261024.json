@@ -1,0 +1,57 @@
+{
+  "scene": "Assets/MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusGameScene.unity",
+  "prefab": "Assets/MoonEnvironment/Variants/TheophilusBase/CollisionIncrements/BuildingGaps20261024/BuildingGaps_StaticCollision.prefab",
+  "candidates": 3599,
+  "excludedDecorationOrSmall": 995,
+  "fullyCovered": 114,
+  "removedCoveredTriangles": 39844,
+  "addedSourceTriangles": 627417,
+  "cookedTriangles": 1254834,
+  "colliderChunks": 626,
+  "sourceMeshes": 3485,
+  "probeCount": 3475,
+  "scopeBySourceMesh": {
+    "R24_HERO_FINISH_DISPLAY_ROOT": 9,
+    "R29_FROM_R24_FINAL_DISPLAY_ROOT": 32,
+    "R35_FROM_R29_DISPLAY_ROOT": 6,
+    "R36R38_FROM_R35_DISPLAY_ROOT": 6,
+    "REBUILD_R08_DISPLAY_ROOT": 985,
+    "REBUILD_R09_R18_DISPLAY_ROOT": 1436,
+    "MC00_ROOT_Standard_YUp_Frame": 6,
+    "MC00_L14v4_ADDITIONS": 530,
+    "MC00_GI01_ADDITIONS": 475
+  },
+  "validation": {
+    "passed": true,
+    "scene": "Assets/MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusGameScene.unity",
+    "sceneDirty": false,
+    "colliders": 626,
+    "sourceProbeCount": 3475,
+    "rays": 6950,
+    "floorSamples": 1095,
+    "wallSamples": 2135,
+    "sweeps": 40,
+    "failures": [],
+    "playStarted": false,
+    "characterWalkTested": false,
+    "performanceTested": false,
+    "thinSurfaceRetries": 7,
+    "method": "Per-source formerly uncovered face, bidirectional 5mm rays; seven origins coincident with parallel 5mm cap/identifier surfaces retried at 2mm; 40 floor/wall sphere sweeps. Backface queries were disabled. Initial 30cm ray method intercepted adjacent faces in merged chunks; no collision cooking fault found."
+  },
+  "root": "BUILDING_GAPS_STATIC_COLLISION_20261024",
+  "cause": "New display-only prefab increments never acquired structural collision. Prior OuterWalkSurfaces patch covered selected floor support only.",
+  "geometry": "Only active meshes in R08/R09-R18, L14/GI01, R24/R29/R35/R36R38; excludes name-classified decoration and parts smaller than 0.4m. Each retained nondegenerate world-space triangle is copied exactly and reversed for two-sided static contact. Existing coverage sampled at centroid and three interior points; already covered faces omitted. Grouped into source family and 16m centroid cells; no bounding hulls spanning doorways.",
+  "preserved": "Original visual assets, collision components, interactive doors, lights, terrain, source prefabs and scripts unchanged. New root has only Transform and static nontrigger Layer0 nonconvex MeshColliders. No runtime rebuilding.",
+  "serialization": {
+    "floatOnlyReserializedRecordsRestored": 2,
+    "commitScene": "Only new prefab instance plus SceneRoots reference; all existing HEAD records preserved. Concurrent worktree changes excluded."
+  },
+  "limits": [
+    "No actual player traversal, Play, network, build or performance acceptance.",
+    "Coverage is limited to listed static increments. Legacy MC00 render meshes often use separate authored collision proxies; not every MeshRenderer needs its own Collider.",
+    "Four-point triangle coverage sampling is not an exhaustive proof of every edge or doorway clearance.",
+    "Static snapshot must be regenerated if source geometry or placement changes."
+  ],
+  "rollback": "Remove only BUILDING_GAPS_STATIC_COLLISION_20261024 scene instance or revert this collision commit. Preserve concurrent edits.",
+  "baselineConsole": "One pre-existing Unity.Scenes.SubScene.AddSceneEntities assertion; no Console clear performed."
+}
