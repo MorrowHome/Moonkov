@@ -57,6 +57,16 @@ public static class MissionUIReview
         return "PASS: 10 mission guidance cases; no profile writes or network worlds.";
     }
 
+    public static string CheckDeparture()
+    {
+        var flags = BindingFlags.Static | BindingFlags.NonPublic;
+        var departure = typeof(Unity.MP_FPS.Client.MoonkovTerminal).GetMethod("DepartureAction", flags);
+        Require((string)departure.Invoke(null, new object[] { true, false }) == "DEPLOY SOLO", "Offline button matches immediate deployment");
+        Require((string)departure.Invoke(null, new object[] { false, true }) == "OPEN LAN ROOM", "LAN button matches room navigation");
+        Require((string)departure.Invoke(null, new object[] { false, false }) == "OPEN CONNECTION TERMINAL", "Online button matches connection navigation");
+        return "PASS: 3 departure actions match their connection paths.";
+    }
+
     public static void Start()
     {
         if (EditorApplication.isPlayingOrWillChangePlaymode || RaidMissionAuthoring.HasLiveWorlds()) throw new InvalidOperationException("Requires idle Editor.");
