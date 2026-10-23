@@ -4865,6 +4865,34 @@ MonoBehaviour:
     m_Key: SELECT OPERATOR
     m_Metadata:
       m_Items: []
+  - m_Id: 5840255558082560
+    m_Key: OPEN LAN ROOM
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5840255562276864
+    m_Key: DEPLOY SOLO
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5840255562276865
+    m_Key: 'Deploy using your offline loadout. This is a real expedition: death or
+      timeout loses unprotected equipment.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5840255562276866
+    m_Key: Open your LAN room to choose a host or join a crew. Deployment starts
+      from the room.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5840255562276867
+    m_Key: Open connection setup to host a session or join a crew. Opening the terminal
+      does not deploy your equipment.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5840255562276868
+    m_Key: Check your equipped weapon and carried supplies before leaving. Storage
+      items stay here; carried loot is secured after extraction and saving.
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

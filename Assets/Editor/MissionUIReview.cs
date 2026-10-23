@@ -30,6 +30,43 @@ public static class MissionUIReview
     public static string Status { get; private set; } = "Not started";
     private static string Output => Path.GetFullPath("Library/BuildValidation/Missions/UI");
     static MissionUIReview() { EditorApplication.playModeStateChanged += State; }
+    // Deterministic guidance checks; no scene, account, input or network setup.
+    public static string CheckGuidance()
+    {
+        var flags = BindingFlags.Static | BindingFlags.NonPublic;
+        var hud = typeof(RaidHUD);
+        string Risk(RaidMissionSnapshotRpc state, int carried) => (string)hud.GetMethod("MissionRiskCopy", flags).Invoke(null, new object[] { state, carried });
+        bool Destination(RaidMissionSnapshotRpc state, int carried) => (bool)hud.GetMethod("MissionHasDestination", flags).Invoke(null, new object[] { state, carried });
+        string Step(RaidMissionSnapshotRpc state, int carried) => (string)hud.GetMethod("MissionStepCopy", flags).Invoke(null, new object[] { MissionCatalog.Mooncore(), state, carried });
+        var state = new RaidMissionSnapshotRpc { Phase = MissionPhase.Active, Remaining = 120 };
+        Require(Destination(state, 0), "Active objective has a destination");
+        Require(Risk(state, 2).Contains("已携带 2 件"), "Carried cargo gives recovery guidance");
+        state.Remaining = 30;
+        Require(Risk(state, 2).Contains("立即返回"), "Live cargo warns before expiry");
+        state.Phase = MissionPhase.Expired;
+        Require(!Destination(state, 2), "Expired carried cargo must not navigate to extraction");
+        Require(Risk(state, 2).Contains("失效") && !Risk(state, 2).Contains("立即返回"), "Expiry takes priority over carrying");
+        Require(Step(state, 2).Contains("失效"), "Expired step agrees with risk");
+        state.Phase = MissionPhase.Resolved;
+        Require(!Destination(state, 2) && Risk(state, 2).Contains("行动结束"), "Resolved operation stops navigation");
+        state.Phase = MissionPhase.OutputReady; state.OutputRemaining = 0;
+        Require(!Destination(state, 0) && Risk(state, 0).Contains("输出槽已空"), "Empty output stops sending player to machine");
+        Require(Destination(state, 2) && Step(state, 2).Contains("返回撤离点"), "Taking final output preserves cargo extraction guidance");
+        state.OutputRemaining = 2;
+        Require(Destination(state, 0) && Step(state, 0).Contains("打开输出槽"), "Available output has pickup guidance");
+        return "PASS: 10 mission guidance cases; no profile writes or network worlds.";
+    }
+
+    public static string CheckDeparture()
+    {
+        var flags = BindingFlags.Static | BindingFlags.NonPublic;
+        var departure = typeof(Unity.MP_FPS.Client.MoonkovTerminal).GetMethod("DepartureAction", flags);
+        Require((string)departure.Invoke(null, new object[] { true, false }) == "DEPLOY SOLO", "Offline button matches immediate deployment");
+        Require((string)departure.Invoke(null, new object[] { false, true }) == "OPEN LAN ROOM", "LAN button matches room navigation");
+        Require((string)departure.Invoke(null, new object[] { false, false }) == "OPEN CONNECTION TERMINAL", "Online button matches connection navigation");
+        return "PASS: 3 departure actions match their connection paths.";
+    }
+
     public static void Start()
     {
         if (EditorApplication.isPlayingOrWillChangePlaymode || RaidMissionAuthoring.HasLiveWorlds()) throw new InvalidOperationException("Requires idle Editor.");

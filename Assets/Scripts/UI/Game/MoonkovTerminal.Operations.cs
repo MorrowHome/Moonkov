@@ -56,11 +56,24 @@ namespace Unity.MP_FPS.Client
                     MoonkovLocalization.Set(m_Content.Q<Label>("readyCarry"), "{0} ENERGY CELLS", PlayerProfileClient.CarryCells);
                     var launch = m_Content.Q<Button>("launch");
                     launch.clicked += m_Prepare;
+                    bool offline = PlayerProfileClient.IsOffline, lan = PlayerProfileClient.IsLan;
+                    string departure = DepartureAction(offline, lan);
+                    MoonkovLocalization.Set(launch.Q<Label>(className: "op-button-label"), departure);
+                    MoonkovLocalization.Set(m_Content.Q<Label>("readyConnectionTitle"), departure);
+                    MoonkovLocalization.Set(m_Content.Q<Label>("readyConnectionNote"), offline
+                        ? "Deploy using your offline loadout. This is a real expedition: death or timeout loses unprotected equipment."
+                        : lan ? "Open your LAN room to choose a host or join a crew. Deployment starts from the room."
+                        : "Open connection setup to host a session or join a crew. Opening the terminal does not deploy your equipment.");
+                    MoonkovLocalization.Set(m_Content.Q<Label>("readyDepartureNote"),
+                        "Check your equipped weapon and carried supplies before leaving. Storage items stay here; carried loot is secured after extraction and saving.");
                     launch.SetEnabled(!m_Busy);
                     if (m_Busy) MoonkovLocalization.Set(launch.Q<Label>(className: "op-button-label"), "LINK BUSY  /  STAND BY");
                     break;
             }
         }
+
+        private static string DepartureAction(bool offline, bool lan) => lan ? "OPEN LAN ROOM" :
+            offline ? "DEPLOY SOLO" : "OPEN CONNECTION TERMINAL";
 
         private void BindOperationCharacters()
         {

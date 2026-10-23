@@ -40,8 +40,8 @@
                 <ui:VisualElement class="op-check-row">
                     <ui:Label text="04" class="op-check-number" />
                     <ui:VisualElement class="op-check-label">
-                        <ui:Label text="OPEN CONNECTION TERMINAL" class="op-heading" />
-                        <ui:Label text="Your session host determines the map and mission timing. Connection setup follows the readiness check." class="op-copy" />
+                        <ui:Label name="readyConnectionTitle" text="OPEN CONNECTION TERMINAL" class="op-heading" />
+                        <ui:Label name="readyConnectionNote" text="Your session host determines the map and mission timing. Connection setup follows the readiness check." class="op-copy" />
                     </ui:VisualElement>
                     <ui:VisualElement class="op-check-value">
                         <ui:VisualElement class="op-photo op-terminal-photo" />
@@ -51,7 +51,7 @@
                     <ui:Label text="05" class="op-check-number" />
                     <ui:VisualElement class="op-check-label">
                         <ui:Label text="READY FOR DEPLOYMENT" class="op-heading" />
-                        <ui:Label text="Host a session or join an existing crew in the connection terminal. Selected cells are taken from storage; unused cells return only after extraction." class="op-copy" />
+                        <ui:Label name="readyDepartureNote" text="Host a session or join an existing crew in the connection terminal. Selected cells are taken from storage; unused cells return only after extraction." class="op-copy" />
                     </ui:VisualElement>
                     <ui:VisualElement class="op-check-value">
                         <ui:Button name="launch" class="op-button op-launch">
