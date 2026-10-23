@@ -1,5 +1,17 @@
 # Moonkov 音效系统
 
+## 2026-10-24 十三把武器换弹差异化
+
+13 把武器分别绑定专用 `WeaponReloadSfx`，每库 3 条等长录音变体，RandomNotLast 禁止相邻重复。轻型 Cicada/Vesper 使用清脆小机构，Revolver/Rondo 使用转轮动作，Shotgun/Thorn/Tempest 使用不同装填节奏，Aegis/Sundown 强调低沉机械重量，Trine/Nocturne 使用多段/成对卡扣，Halo/Sniper 保持各自充能与拉栓节奏。不是仅对一条通用声音随机调音高：机械录音切片、动作间隔、滤波和充能底层分别编排。
+
+39 条 48 kHz 单声道 PCM WAV 共约 9.12 MB，使用项目已有换弹/卡扣录音，没有新下载或修改源录音。生成入口 `Tools/Audio/build_reload_identity_audio.py`（numpy/ffmpeg）；输入/输出 SHA256 与每层配方记在 `Assets/Audio/Moonkov/ReloadIdentitySources.json`。源素材沿用既有许可证与 Sources.json/Edits.json 溯源。Unity 安装入口 `Moonkov/Audio/Install reload identities`；旧通用音库重建不会把已绑定的专用换弹库覆盖回 HaloRecharge/RevolverRecharge。
+
+每条音频长度匹配对应武器基础 ReloadTime。播放时根据服务端剩余换弹时间调整速率，适配快速换弹、生物充能、扩容和受伤操作速度，速率限制 0.25–3 倍。继续使用现有 SFX 声音池、近场拥有者声音和远端 18 m 空间声；每库 6 并发，增益 -13 至 -12 dB。原切枪/死亡/取消停止与完成反馈保留，不改变弹药、伤害或换弹规则。
+
+验证：13 个独立绑定、39 个互不相同的文件哈希、PCM 峰值小于 0.8、音频时长、普通/0.6/0.45/1.35/1.8 倍时长及非法时长防护通过。复用单一 Editor 的 SmokeGrenadeTest 隔离池实际播放 78 次，无相邻重复、SFX 路由/普通和快装速率正确、音源全部归还；上一轮交互/换弹状态机检查通过，编译与控制台无错误。未进行联机或完整战斗主观试听。
+
+整组试听 `LocalData/AudioReview/ReloadIdentity-Audition.wav`（约 36 秒），顺序/时间点在同目录 `ReloadIdentity-Cues.json`。该文件以普通换弹速度串联每把的第一变体，不包含战斗混音。
+
 ## 2026-10-24 交互与换弹遗漏复查
 
 复用现有声音池和素材，新增请求级反馈观察器，不增加 RPC 或预测副作用。收到与本地提交的战局/请求编号匹配的结果才播放，进度快照和重复结果静音；切换世界或请求超时清理。关闭 Raid 背包视图原来根据“非空提示文本”猜失败的声音，仓库视图仍保留原反馈。

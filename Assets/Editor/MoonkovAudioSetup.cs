@@ -184,11 +184,13 @@ public static class MoonkovAudioSetup
         if (halo == null || revolver == null) throw new InvalidOperationException("DollSinger weapon assets missing.");
         halo.WeaponFireSfx = byName["HaloFire"];
         halo.WeaponFireLayerSfx = byName["HaloSnap"];
-        halo.WeaponReloadSfx = byName["HaloRecharge"];
+        if (!halo.WeaponReloadSfx || halo.WeaponReloadSfx == byName["HaloRecharge"])
+            halo.WeaponReloadSfx = byName["HaloRecharge"];
         halo.WeaponImpactSfx = byName["HaloImpact"];
         revolver.WeaponFireSfx = byName["RevolverFire"];
         revolver.WeaponFireLayerSfx = byName["RevolverEnergy"];
-        revolver.WeaponReloadSfx = byName["RevolverRecharge"];
+        if (!revolver.WeaponReloadSfx || revolver.WeaponReloadSfx == byName["RevolverRecharge"])
+            revolver.WeaponReloadSfx = byName["RevolverRecharge"];
         revolver.WeaponImpactSfx = byName["HaloImpact"];
         EditorUtility.SetDirty(halo);
         EditorUtility.SetDirty(revolver);

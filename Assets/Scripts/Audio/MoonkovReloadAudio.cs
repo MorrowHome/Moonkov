@@ -6,6 +6,14 @@ namespace Unity.MP_FPS
     // Rendering can skip a short reload entirely. Its tick and ammo gain still identify completion.
     public sealed class MoonkovReloadAudio
     {
+        // All variants in a bank have equal duration. Speed follows authoritative remaining time.
+        public static float PitchForDuration(SoundDef sound, float remaining)
+        {
+            if (!sound || sound.Clips == null || sound.Clips.Count == 0 || !sound.Clips[0] ||
+                !float.IsFinite(remaining) || remaining <= .05f) return 0;
+            float rate = UnityEngine.Mathf.Clamp(sound.Clips[0].length / remaining, .25f, 3f);
+            return 1200 * UnityEngine.Mathf.Log(rate, 2);
+        }
         private bool m_Initialized, m_Reloading;
         private uint m_Tick, m_Weapon;
         private int m_Ammo;

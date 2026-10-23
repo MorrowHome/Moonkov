@@ -60,7 +60,8 @@ namespace Unity.MP_FPS
             if ((reload & ReloadAudioEvent.Start) != 0)
             {
                 var weapon = WeaponManager.Instance.WeaponRegistry.GetWeaponData(ghost.EquippedWeaponID);
-                m_ReloadSound = LocalOrWorld(weapon?.WeaponReloadSfx, position, owned);
+                m_ReloadSound = MoonkovAudio.PlayWeaponLayer(weapon?.WeaponReloadSfx, position, 1, owned ? .08f : 1,
+                    MoonkovReloadAudio.PitchForDuration(weapon?.WeaponReloadSfx, ghost.ReloadTimer));
             }
             if ((reload & ReloadAudioEvent.Ready) != 0) LocalOrWorld(library.ReloadReady, position, owned, .9f);
             if (NewTick(ghost.LastJumpTick, ref m_JumpTick)) LocalOrWorld(library.Jump, position, owned, .7f);
