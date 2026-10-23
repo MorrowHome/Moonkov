@@ -37,13 +37,22 @@ namespace Unity.MP_FPS
         private sealed class CoughEmitter {public GameObject Root;public float Next,Expires;}
         private readonly Dictionary<int,CoughEmitter> m_CoughEmitters=new();
         private readonly List<int> m_ExpiredCoughs=new();
-        private AudioClip m_Alarm,m_Burst,m_Cough;
-        private UnityEngine.Audio.AudioMixer m_AudioMixer;
-        private UnityEngine.Audio.AudioMixerGroup m_SfxGroup;
+
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetStatics(){s_Active=null;LocalOwner=default;}
-        public static void SetOwner(TacticalItemOwnerRpc owner)=>LocalOwner=owner;
+        public static void SetOwner(TacticalItemOwnerRpc owner)
+        {
+            var previous = LocalOwner;
+            LocalOwner = owner;
+            if (owner.RequestId == 0 || previous.RaidId != owner.RaidId ||
+                owner.RequestId == previous.RequestId && owner.Feedback == previous.Feedback) return;
+            var library = MoonkovAudio.Library;
+            if (!library) return;
+            if (owner.Feedback == TacticalItemFeedback.Started) MoonkovAudio.Play(library.Equipment, Vector3.zero, .6f);
+            else if (owner.Feedback == TacticalItemFeedback.Completed) MoonkovAudio.Play(library.Pickup, Vector3.zero, .7f);
+            else if (owner.Feedback != TacticalItemFeedback.None) MoonkovAudio.Error();
+        }
         public static TacticalItemsFeedback GetOrCreate()
         {if(!s_Active)s_Active=new GameObject("Network tactical item feedback").AddComponent<TacticalItemsFeedback>();return s_Active;}
         public static void SetPresentationBlocked(bool blocked)
@@ -83,9 +92,6 @@ namespace Unity.MP_FPS
             m_Trajectory=m_Preview.AddComponent<LineRenderer>();m_Trajectory.useWorldSpace=true;m_Trajectory.widthMultiplier=.018f;m_Trajectory.sharedMaterial=m_Cyan;
             var ring=new GameObject("Deployment footprint");ring.transform.SetParent(m_Preview.transform,false);m_PreviewRing=ring.AddComponent<LineRenderer>();
             m_PreviewRing.positionCount=48;m_PreviewRing.loop=true;m_PreviewRing.useWorldSpace=true;m_PreviewRing.widthMultiplier=.022f;m_PreviewRing.sharedMaterial=m_Green;
-            m_Alarm=Tone("Moonkov trap alarm",1.5f,1100,650,false);
-            m_Burst=Tone("Moonkov tactical explosion",.5f,80,30,true);
-            m_Cough=Tone("Moonkov choke hiss",.35f,90,35,true);
             m_Preview.SetActive(false);Unity.MP_FPS.Moon.MoonSilverPrintSubject.Protect(m_Preview);
         }
         private bool HasDeferredParticles()
@@ -131,9 +137,18 @@ namespace Unity.MP_FPS
                 visual.Root=new GameObject("Tactical "+state.Kind+" / "+state.Phase);
                 visual.Root.transform.SetParent(transform,false);Build(visual,state);
                 Unity.MP_FPS.Moon.MoonSilverPrintSubject.Protect(visual.Root);
-                if(state.Phase==TacticalWorldPhase.Alarm)Play(visual.Root,m_Alarm,55);
-                else if(state.Phase==TacticalWorldPhase.Explosion)Play(visual.Root,m_Burst,80);
-                else if(state.Phase==TacticalWorldPhase.Choke || state.Phase==TacticalWorldPhase.Smoke)Play(visual.Root,m_Cough,18);
+                var library = MoonkovAudio.Library;
+                if (library)
+                {
+                    var cue = state.Phase == TacticalWorldPhase.Alarm ? library.TacticalAlarm :
+                        state.Phase == TacticalWorldPhase.Explosion ? library.TacticalExplosion :
+                        state.Phase == TacticalWorldPhase.Choke || state.Phase == TacticalWorldPhase.Smoke ||
+                        state.Phase == TacticalWorldPhase.Poison || state.Phase == TacticalWorldPhase.Fire ? library.TacticalGas :
+                        state.Phase == TacticalWorldPhase.Armed || state.Phase == TacticalWorldPhase.Supply ||
+                        state.Phase == TacticalWorldPhase.Wire || state.Phase == TacticalWorldPhase.Flying ? library.TacticalDeploy : null;
+                    // Use the received world position, before the visual root is positioned.
+                    MoonkovAudio.Play(cue, state.Position);
+                }
             }
             visual.State=state;visual.Position=state.Position;visual.Velocity=state.Velocity;
             visual.Received=Time.time;visual.Expire=Time.time+Mathf.Max(.3f,state.Remaining+.5f);
@@ -187,7 +202,7 @@ namespace Unity.MP_FPS
             if(!m_CoughEmitters.TryGetValue(id,out var emitter))
             {if(m_CoughEmitters.Count>=32)return;emitter=new CoughEmitter {Root=new GameObject("Replicated choke breathing")};emitter.Root.transform.SetParent(transform,false);m_CoughEmitters[id]=emitter;}
             emitter.Expires=Time.time+3;
-            if(Time.time<emitter.Next)return;emitter.Next=Time.time+1.2f;emitter.Root.transform.position=position;Play(emitter.Root,m_Cough,22);
+            if(Time.time<emitter.Next)return;emitter.Next=Time.time+3.2f;emitter.Root.transform.position=position;MoonkovAudio.Play(MoonkovAudio.Library?.TacticalCough,position,.65f);
         }
         private void DrawAimPreview()
         {
@@ -317,7 +332,8 @@ namespace Unity.MP_FPS
                 if(m_Selected!=null)kind=m_Selected.Kind;
                 else if(m_SelectedCode=="energy_grenade")kind=TacticalItemKind.Frag;
                 else return;
-                BuildProp(m_Held.transform,kind,kind==TacticalItemKind.Stamina ? m_Amber : kind==TacticalItemKind.Antidote ? m_Green : kind==TacticalItemKind.Choke ? m_Cyan : m_Red);
+                if(m_SelectedCode!="energy_grenade" || !PhysicalItemVisuals.Create("energy_grenade",m_Held.transform,true))
+                    BuildProp(m_Held.transform,kind,kind==TacticalItemKind.Stamina ? m_Amber : kind==TacticalItemKind.Antidote ? m_Green : kind==TacticalItemKind.Choke ? m_Cyan : m_Red);
                 Unity.MP_FPS.Moon.MoonSilverPrintSubject.Protect(m_Held);
             }
             m_Held.SetActive(true);
@@ -341,6 +357,8 @@ namespace Unity.MP_FPS
         }
         private void BuildProp(Transform root,TacticalItemKind kind,Material accent)
         {
+            foreach(var definition in TacticalItemRules.Definitions)
+                if(definition.Kind==kind && PhysicalItemVisuals.Create(definition.Code,root,true))return;
             if(kind==TacticalItemKind.AmmoBox){BuildSupply(root);return;}
             if(kind>=TacticalItemKind.AlertTrap && kind<=TacticalItemKind.PoisonTrap){BuildTrap(root,accent,false);return;}
             if(kind<=TacticalItemKind.Antidote)
@@ -391,6 +409,7 @@ namespace Unity.MP_FPS
         }
         private void BuildSupply(Transform root)
         {
+            if(PhysicalItemVisuals.Create("ammo_box",root))return;
             Primitive(root,PrimitiveType.Cube,new Vector3(.58f,.31f,.36f),Vector3.up*.155f,m_Dark);
             Primitive(root,PrimitiveType.Cube,new Vector3(.6f,.045f,.38f),Vector3.up*.335f,m_Metal);
             Primitive(root,PrimitiveType.Cube,new Vector3(.36f,.018f,.3f),new Vector3(0,.365f,.01f),m_Dark);
@@ -413,33 +432,12 @@ namespace Unity.MP_FPS
         }
         private static void Ring(Transform root,float radius,float width,Material material,float height=.04f)
         {var points=new Vector3[48];for(int i=0;i<48;i++){float a=i*Mathf.PI*2/48;points[i]=new Vector3(Mathf.Cos(a)*radius,height,Mathf.Sin(a)*radius);}Line(root,points,width,material,true);}
-        private static AudioClip Tone(string name,float length,float start,float end,bool noise)
-        {
-            const int rate=22050;var samples=new float[(int)(rate*length)];uint random=7253;
-            for(int i=0;i<samples.Length;i++)
-            {float t=i/(float)rate;random=random*1664525+1013904223;
-             float value=noise ? ((random>>8)/(float)0xFFFFFF*2-1) : Mathf.Sin(2*Mathf.PI*Mathf.Lerp(start,end,t/length)*t);
-             samples[i]=value*Mathf.Sin(Mathf.PI*t/length)*(noise ? .24f : .12f);}
-            var clip=AudioClip.Create(name,samples.Length,1,rate,false);clip.SetData(samples,0);return clip;
-        }
-        private void Play(GameObject root,AudioClip clip,float range)
-        {
-            var audio=root.GetComponent<AudioSource>();if(!audio)audio=root.AddComponent<AudioSource>();
-            var mixer=GameManager.Instance ? GameManager.Instance.AudioMixer : null;
-            if(mixer!=m_AudioMixer)
-            {
-                m_AudioMixer=mixer;m_SfxGroup=null;
-                if(mixer){var groups=mixer.FindMatchingGroups(nameof(SoundMixer.SoundMixerGroup.SFX));if(groups.Length>0)m_SfxGroup=groups[0];}
-            }
-            audio.outputAudioMixerGroup=m_SfxGroup;
-            audio.spatialBlend=1;audio.minDistance=1;audio.maxDistance=range;audio.rolloffMode=AudioRolloffMode.Linear;audio.PlayOneShot(clip);
-        }
         private void Remove(uint id)
         {if(m_Visuals.TryGetValue(id,out var v)){if(v.Root)Release(v.Root);m_Visuals.Remove(id);}}
         private void Clear(){foreach(var v in m_Visuals.Values)if(v.Root)Release(v.Root);m_Visuals.Clear();m_Sequences.Clear();m_HighestSequence=0;foreach(var emitter in m_CoughEmitters.Values)if(emitter.Root)Release(emitter.Root);m_CoughEmitters.Clear();}
         private static void Release(UnityEngine.Object value)
         {if(!value)return;if(Application.isPlaying)UnityEngine.Object.Destroy(value);else UnityEngine.Object.DestroyImmediate(value);}
         private void OnDestroy()
-        {if(m_Destroyed)return;m_Destroyed=true;m_TransparentRenderer?.Dispose();m_TransparentRenderer=null;Clear();foreach(var material in m_Materials)if(material)Release(material);if(m_Alarm)Release(m_Alarm);if(m_Burst)Release(m_Burst);if(m_Cough)Release(m_Cough);if(s_Active==this)s_Active=null;}
+        {if(m_Destroyed)return;m_Destroyed=true;m_TransparentRenderer?.Dispose();m_TransparentRenderer=null;Clear();foreach(var material in m_Materials)if(material)Release(material);if(s_Active==this)s_Active=null;}
     }
 }

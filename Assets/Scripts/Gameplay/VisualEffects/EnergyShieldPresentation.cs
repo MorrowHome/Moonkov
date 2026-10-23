@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Audio;
 using UnityEngine.Rendering;
 using Unity.MP_FPS.Inventory;
 
@@ -24,8 +23,7 @@ namespace Unity.MP_FPS
         private uint m_HitSequence,m_BreakSequence,m_RestoreSequence;
         private float m_HitAt=-100,m_BreakAt=-100,m_RestoreAt=-100,m_Strength,m_LastSound=-100;
         private Vector3 m_Impact;
-        private AudioSource m_Audio;
-        private AudioClip m_HitClip,m_BreakClip,m_RestoreClip;
+        private SoundSystem.SoundInfo m_Sound;
         internal Material FieldMaterial => m_FieldMaterial;
         internal bool HasSurfaces => m_Ready && isActiveAndEnabled &&
             ((m_ShellRenderer && m_ShellRenderer.enabled && !m_ShellRenderer.forceRenderingOff) ||
@@ -153,27 +151,20 @@ namespace Unity.MP_FPS
         }
         private void PlayCue(int cue)
         {
-            if(!Application.isPlaying || Time.unscaledTime-m_LastSound<.09f)return;
-            var game=GameManager.Instance;if(!game || !game.AudioMixer)return;
-            if(!m_Audio)
-            {
-                var groups=game.AudioMixer.FindMatchingGroups(nameof(SoundMixer.SoundMixerGroup.SFX));if(groups.Length==0)return;
-                m_Audio=m_Root.gameObject.AddComponent<AudioSource>();m_Audio.playOnAwake=false;m_Audio.outputAudioMixerGroup=groups[0];m_Audio.minDistance=1;m_Audio.maxDistance=24;
-                m_HitClip=Tone("Original shield impact",.15f,310,180);m_BreakClip=Tone("Original shield collapse",.35f,220,65);m_RestoreClip=Tone("Original shield return",.28f,130,390);
-            }
-            m_LastSound=Time.unscaledTime;m_Audio.spatialBlend=m_Owned?0:1;m_Audio.Stop();m_Audio.PlayOneShot(cue==1?m_BreakClip:cue==2?m_RestoreClip:m_HitClip,.45f);
-        }
-        private static AudioClip Tone(string name,float duration,float from,float to)
-        {
-            const int rate=16000;var samples=new float[(int)(rate*duration)];float phase=0;
-            for(int i=0;i<samples.Length;i++){float u=i/(float)samples.Length;phase+=Mathf.Lerp(from,to,u)*Mathf.PI*2/rate;samples[i]=(Mathf.Sin(phase)+Mathf.Sin(phase*2.03f)*.18f)*Mathf.Sin(Mathf.PI*u)*.12f;}
-            var clip=AudioClip.Create(name,samples.Length,1,rate,false);clip.SetData(samples,0);return clip;
+            if (!Application.isPlaying || cue == 0 && Time.unscaledTime - m_LastSound < .18f) return;
+            var library = MoonkovAudio.Library;
+            if (!library) return;
+            m_LastSound = Time.unscaledTime;
+            GameManager.Instance?.SoundSystem?.Stop(m_Sound, .025f);
+            m_Sound = MoonkovAudio.PlayWeaponLayer(cue == 1 ? library.ShieldBreak :
+                cue == 2 ? library.ShieldRestore : library.ShieldImpact,
+                cue == 0 ? m_Impact : transform.position, 1, m_Owned ? .05f : 1);
         }
         public void ResetPresentation()
         {
             m_HeadEquipped=m_ShieldEquipped=m_Regenerating=m_HasSequence=false;m_BackpackStyle=0;
             if(m_Subspace)m_Subspace.gameObject.SetActive(false);m_HitAt=m_BreakAt=m_RestoreAt=-100;
-            if(m_Audio)m_Audio.Stop();if(m_ShellRenderer)m_ShellRenderer.enabled=false;
+            GameManager.Instance?.SoundSystem?.Stop(m_Sound, .03f);m_Sound=null;if(m_ShellRenderer)m_ShellRenderer.enabled=false;
             if(m_VisorRenderer)m_VisorRenderer.enabled=false;
             if(m_VisorRails!=null)foreach(var rail in m_VisorRails)if(rail)rail.enabled=false;
             if(m_EnergyEars!=null)foreach(var ear in m_EnergyEars)if(ear)ear.enabled=false;
@@ -181,9 +172,9 @@ namespace Unity.MP_FPS
         }
         public void DisposePresentation()
         {
-            EnergyShieldRendering.Unregister(this);SetHidden(false);m_Cameras.Clear();if(m_Audio)m_Audio.Stop();
-            DestroyOwned(m_HitClip);DestroyOwned(m_BreakClip);DestroyOwned(m_RestoreClip);DestroyOwned(m_FieldMaterial);if(m_Root)DestroyOwned(m_Root.gameObject);
-            m_Hardware.Clear();m_Root=m_Shell=m_Collar=m_Device=null;m_ShellRenderer=null;m_FieldMaterial=null;m_Audio=null;
+            EnergyShieldRendering.Unregister(this);SetHidden(false);m_Cameras.Clear();GameManager.Instance?.SoundSystem?.Stop(m_Sound, .03f);m_Sound=null;
+            DestroyOwned(m_FieldMaterial);if(m_Root)DestroyOwned(m_Root.gameObject);
+            m_Hardware.Clear();m_Root=m_Shell=m_Collar=m_Device=null;m_ShellRenderer=null;m_FieldMaterial=null;m_Sound=null;
             m_Visor=null;m_VisorRenderer=null;m_VisorRails=null;
             m_EnergyEars=m_EmitterLenses=null;m_SealHalo=null;m_SealHaloStroke=null;
             m_CollarNekoDetails=m_CollarStandardDetails=null;

@@ -15,6 +15,15 @@ public static class MoonkovCombatAudioSetup
         lib.MeleeEnergySwing = Bank("MeleeEnergySwing", Load("RevolverEnergy"), -17, 24, 95, 6);
         lib.MeleeImpact = Bank("MeleeImpact", Load("RifleBodyImpact"), -12, 22, 85, 6);
         lib.MeleeBlocked = Bank("MeleeBlocked", Load("RifleMetalImpact"), -15, 26, 85, 6);
+        lib.ShieldImpact = Bank("ShieldImpact", Load("HaloSnap"), -15, 24, 65, 6);
+        lib.ShieldBreak = Bank("ShieldBreak", Load("RevolverEnergy"), -10, 30, 55, 4);
+        lib.ShieldRestore = Bank("ShieldRestore", lib.ReloadReady, -16, 16, 90, 4);
+        lib.TacticalDeploy = Bank("TacticalDeploy", lib.Equipment, -15, 16, 110, 6);
+        lib.TacticalAlarm = Bank("TacticalAlarm", lib.SuitWarning, -10, 55, 60, 4);
+        lib.TacticalExplosion = Bank("TacticalExplosion", AssetDatabase.LoadAssetAtPath<SoundDef>(
+            "Assets/Audio/Sounddefs/Weapons/Grenade Launcher/Explode/SoundDef_Explode_Grenade.asset"), -7, 80, 45, 6);
+        lib.TacticalGas = Bank("TacticalGas", lib.OxygenRefill, -16, 22, 120, 4);
+        lib.TacticalCough = Bank("TacticalCough", lib.SuitBreath, -17, 18, 120, 4);
         EditorUtility.SetDirty(lib); AssetDatabase.SaveAssetIfDirty(lib);
     }
     static SoundDef Load(string name) => AssetDatabase.LoadAssetAtPath<SoundDef>(Root + name + ".asset");
