@@ -1,5 +1,6 @@
 #nullable disable
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Unity.MP_FPS.Inventory
@@ -60,6 +61,18 @@ namespace Unity.MP_FPS.Inventory
             new ShopOffer("mooncore_fragment", -1, 50), new ShopOffer("mc00_archive_drive", -1, 35),
             new ShopOffer("quantum_core", -1, 80), new ShopOffer("black_box", -1, 60)
         }.Concat(AlienBiology.Organs.Select(o=>new ShopOffer(o.Code,-1,o.SellDust))).ToArray();
+        // A catalogue can contain at most one offer per known inventory code.
+        // Derive its bound from the shared definitions so new items cannot outgrow
+        // an unrelated client-only limit.
+        public static bool ValidOffers(ShopOffer[] offers)
+        {
+            if (offers == null || offers.Length > InventoryCatalog.Definitions.Count) return false;
+            var codes = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var offer in offers)
+                if (offer == null || InventoryCatalog.Get(offer.Code) == null ||
+                    offer.BuyDust < -1 || offer.SellDust < 0 || !codes.Add(offer.Code)) return false;
+            return true;
+        }
         public static ShopOffer Find(string code) => Offers.FirstOrDefault(o => o.Code == code);
         public static int SaleDust(InventoryItem item, int quantity, int fullPrice) => BatteryEnergy.IsCell(item)
             ? BatteryEnergy.PortionEnergy(item, quantity) * fullPrice / BatteryEnergy.Capacity : quantity * fullPrice;
