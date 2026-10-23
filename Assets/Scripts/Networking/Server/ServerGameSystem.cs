@@ -123,14 +123,10 @@ namespace Unity.MP_FPS
                         _joinedClientLookup.Update(ref state);continue;
                     }
                     Debug.Log($"[Server] Client with NetworkId {networkId} has disconnected.");
-                    if (SystemAPI.Exists(evt.ConnectionEntity) && SystemAPI.HasComponent<RaidSession>(evt.ConnectionEntity))
-                    {
-                        var raid = SystemAPI.GetComponentRW<RaidSession>(evt.ConnectionEntity);
-                        var persistence = Persistence(ref state);
-                        if(raid.ValueRO.Phase==RaidPhase.Active)DropDeathInventory(ref state,evt.ConnectionEntity);
-                        if (RaidRules.TrySettle(ref raid.ValueRW, RaidPhase.Dead, !persistence.Enabled) && persistence.Enabled)
-                            persistence.BeginSave(evt.ConnectionEntity, raid.ValueRO);
-                    }
+                    // Normally handled by RaidDisconnectSystem before NetCode
+                    // removes RaidSession and the linked character. Keep this
+                    // fallback idempotent for connections that still exist.
+                    SettleDisconnectedRaid(ref state, evt.ConnectionEntity);
 
                     // Find and destroy the player character entity by querying for its GhostOwner.
                     foreach (var (ghostOwner, entity) in SystemAPI.Query<RefRO<GhostOwner>>().WithAll<PredictedPlayerGhost>().WithEntityAccess())
