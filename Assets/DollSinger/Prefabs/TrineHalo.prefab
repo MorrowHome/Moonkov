@@ -424,7 +424,8 @@ MonoBehaviour:
   - {fileID: 3156361356967295866}
   - {fileID: 5767808770053172439}
   - {fileID: 2835813262765480496}
-  lightColor: {r: 1, g: 0.88, b: 0.64, a: 1}
+  lightColor: {r: 0.7058824, g: 0.6313726, b: 1, a: 1}
+  sequenceNodes: 0
   magnification: 0
   recoil: 0.018
 --- !u!1 &7776578154114018225

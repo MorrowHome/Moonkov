@@ -19,6 +19,18 @@ namespace Unity.MP_FPS.DollSinger
         public float ReloadProgress => progress;
         public int Ammo => ammo;
         public uint LastShot => lastShot;
+        public static Color SignalColor(DollSingerHaloAim.HaloWeapon kind)
+        {
+            string hex = kind switch
+            {
+                DollSingerHaloAim.HaloWeapon.Cicada => "#72e6de", DollSingerHaloAim.HaloWeapon.Trine => "#b4a1ff",
+                DollSingerHaloAim.HaloWeapon.Aegis => "#80b9ff", DollSingerHaloAim.HaloWeapon.Vesper => "#b8e9ff",
+                DollSingerHaloAim.HaloWeapon.Thorn => "#f1a4d2", DollSingerHaloAim.HaloWeapon.Sundown => "#ff967e",
+                DollSingerHaloAim.HaloWeapon.Rondo => "#90e5be", DollSingerHaloAim.HaloWeapon.Tempest => "#85cef4",
+                _ => "#c6b9f2"
+            };
+            ColorUtility.TryParseHtmlString(hex, out var color); return color;
+        }
         public void SetEquipped(bool value)
         {
             if (equipped == value) return;

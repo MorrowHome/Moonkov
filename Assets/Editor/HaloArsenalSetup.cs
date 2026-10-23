@@ -45,7 +45,7 @@ public static class HaloArsenalSetup
             {
                 var visual=root.AddComponent<ArsenalHaloVisual>();visual.weapon=entry.Gesture;visual.magnification=entry.Scope;
                 visual.recoil=entry.Id==DollSingerWeapons.Aegis?.035f:entry.Id==DollSingerWeapons.Sundown?.05f:.018f;
-                visual.lightColor=(entry.Id==DollSingerWeapons.Vesper||entry.Id==DollSingerWeapons.Nocturne)?new Color(.83f,.90f,1):new Color(1,.88f,.64f);
+                visual.lightColor=ArsenalHaloVisual.SignalColor(entry.Gesture);
                 visual.core=Layer(root.transform,"Shell",entry.Code,material);visual.accent=Layer(root.transform,"Sigil",entry.Code,material);
                 visual.sequenceNodes=entry.BurstCount>1;
                 int count=entry.BurstCount>1?entry.BurstCount:entry.Id==DollSingerWeapons.Thorn?5:6;

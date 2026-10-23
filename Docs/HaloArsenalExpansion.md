@@ -1,5 +1,7 @@
 # 六种光环武器接入
 
+> 2026-10-23 外观修复：九把新增武器重制为各自的轮廓和信号色，透明组件、库存图标、SVG 源稿与视觉 Prefab 同步更新。保留资源 GUID、装备 ID 与射击规则；手势和第一人称透视修复另见独立分支 `fix/halo-weapon-gestures`。原接入数值与历史画面见下文。
+
 > 当前伤害以 [武器伤害基线](WeaponBalance.md) 为准；下文数值与验证记录保留为初次接入时的历史证据。
 
 首批验收快照（提交 `582f8262`）；后续逐把新增见 [追加武器记录](HaloArsenalFollowups.md)。
@@ -29,7 +31,7 @@
 - 六种动作各有 pose／fire／reload 和 8 个额外俯仰采样，三律另有对应三个实际发射序号的 fire 变体。原 `WeaponGestures.blend` 不覆盖，旧四个 motion 与 `a37f5fdd` 基线逐项相同。
 - 原作者源 SHA256：`af4770c614c98f3a0fa64c2e764daf477c8bc821cc54e9ada0327c6cec36a33a`。旧四个 motion 规范 JSON SHA256：`7c7d2fb624c8d59b164edf9097cbf962af1c9826147920514c8ab6ce28675b02`。
 
-重新生成图片需 Python 的 CairoSVG，运行 `python Tools/Art/halo_arsenal.py`。动作可用 `blender --background --python Tools/Blender/halo_expansion_gestures.py` 重做；`-- --export-only` 从保存的作者 Action 导出；`-- --only=Thorn_FiveNeedles` 只重做指定新武器，其余动作保持原样。Unity 中执行 **Tools → Moonkov → Install Halo Arsenal Weapons** 更新绑定。
+重新生成当前图片需 Python 和 ImageMagick，运行 `python Tools/Art/halo_arsenal.py`。动作可用 `blender --background --python Tools/Blender/halo_expansion_gestures.py` 重做；`-- --export-only` 从保存的作者 Action 导出；`-- --only=Thorn_FiveNeedles` 只重做指定新武器，其余动作保持原样。Unity 中执行 **Tools → Moonkov → Install Halo Arsenal Weapons** 更新绑定。
 
 ## 权威规则与限制
 
