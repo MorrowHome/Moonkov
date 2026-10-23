@@ -11,6 +11,47 @@ namespace Unity.MP_FPS.Client
     {
         [Serializable] private sealed class PortraitAnchor { public string slot; public float x, y; }
         [Serializable] private sealed class PortraitLayout { public PortraitAnchor[] anchors; public float aspect; }
+        private void PortraitCharacterChanged(int characterIndex)
+        {
+            if (m_PortraitShowing && !m_Disposed) PresentOperatorPortrait();
+        }
+        private int OperatorPortraitCharacter()
+        {
+            if (!m_Stash && PlayerGhostManager.TryGetClientInstance(out var manager) && manager &&
+                manager.TryGetPlayersByRole(MultiplayerRole.ClientOwned, out var players))
+            {
+                foreach (var player in players)
+                {
+                    if (!player) continue;
+                    if (!m_MikuPortraitAvatar)
+                    {
+                        var settings = Resources.Load<MenuCharacterSettings>("Moonkov/HatsuneMikuMenuCharacterSettings");
+                        var model = settings && settings.VisualPrefab ? settings.VisualPrefab.GetComponentInChildren<Animator>(true) : null;
+                        if (model) m_MikuPortraitAvatar = model.avatar;
+                    }
+                    var animator = player.GetComponentInChildren<Animator>(true);
+                    return animator && m_MikuPortraitAvatar && animator.avatar == m_MikuPortraitAvatar
+                        ? GameSettings.HatsuneMikuCharacterIndex : GameSettings.DollSingerCharacterIndex;
+                }
+            }
+            return m_PortraitSettings?.PlayerCharacter ?? GameSettings.DollSingerCharacterIndex;
+        }
+        private void PresentOperatorPortrait()
+        {
+            int characterIndex = OperatorPortraitCharacter();
+            bool miku = characterIndex == GameSettings.HatsuneMikuCharacterIndex;
+            m_Root.EnableInClassList("inventory-miku-operator", miku);
+            if (!miku) { ReleaseOperatorPortrait(); return; }
+            if (m_Character != null && m_Character.CharacterIndex == characterIndex) return;
+            ReleaseOperatorPortrait();
+            m_Character = new MenuCharacterView(idleOnly: true, characterIndex: characterIndex);
+            m_Character.Element.name = "operatorLivePortrait";
+            m_Character.Element.RemoveFromClassList("terminal-character-art");
+            m_Character.Element.AddToClassList("field-operator-live");
+            m_Character.Element.pickingMode = PickingMode.Ignore;
+            m_CharacterStage.Insert(0, m_Character.Element);
+            m_Character.SetProtectionInventory(m_Graph);
+        }
         private void InitializeRaidPortrait()
         {
             var layout = JsonUtility.FromJson<PortraitLayout>(Resources.Load<TextAsset>("Moonkov/UI/FieldOperatorPortraitLayout").text);
@@ -100,6 +141,10 @@ namespace Unity.MP_FPS.Client
             MoonkovLocalization.Set(caption, "");
             if (!corpse) { AddContainer(m_LootPane, loot, "可搜刽物品"); return; }
             var tops = m_Graph.Children(loot.Id).ToArray(); var shown = new HashSet<string>();
+            if (GameSettings.IsPlayableCharacter(m_CorpseCharacterIndex))
+                Text(m_LootPane, GameSettings.CharacterName(m_CorpseCharacterIndex), "inventory-section-title");
+            // This portrait asset depicts DollSinger. Other operators use the shared
+            // equipment list until their own corpse portrait artwork is available.
             bool portraitKnown = m_CorpseCharacterIndex == GameSettings.DollSingerCharacterIndex;
             VisualElement equipment;
             if (portraitKnown)

@@ -20,6 +20,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 531b42a2f0b71495a9fff4296c295e0f
+    m_Address: Assets/HatsuneMiku/Prefabs/HatsuneMikuNetworkPlayer.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 60167978cf99f034a918f22acfb3fe7e
     m_Address: Assets/AlienCreatures/Prefabs/XenoCaterpillar.prefab
     m_ReadOnly: 0

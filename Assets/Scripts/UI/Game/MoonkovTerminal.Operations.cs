@@ -43,6 +43,7 @@ namespace Unity.MP_FPS.Client
                     m_Character = new MenuCharacterView(element: m_Content.Q<Image>("operatorPortrait"));
                     // MenuCharacterView adds the shared home class; this exhibit owns its framing.
                     m_Character.Element.RemoveFromClassList("terminal-character-art");
+                    BindOperationCharacters();
                     PopulateOperationEquipment();
                     m_Content.Q<Button>("reviewEquipment").clicked += () => Navigate(1);
                     break;
@@ -51,12 +52,46 @@ namespace Unity.MP_FPS.Client
                     break;
                 case 4:
                     AddOperationCellArt("readyCellArt");
+                    MoonkovLocalization.Set(m_Content.Q<Label>("readyOperatorName"), GameSettings.CharacterName(GameSettings.Instance?.PlayerCharacter ?? GameSettings.DollSingerCharacterIndex));
                     MoonkovLocalization.Set(m_Content.Q<Label>("readyCarry"), "{0} ENERGY CELLS", PlayerProfileClient.CarryCells);
                     var launch = m_Content.Q<Button>("launch");
                     launch.clicked += m_Prepare;
                     launch.SetEnabled(!m_Busy);
                     if (m_Busy) MoonkovLocalization.Set(launch.Q<Label>(className: "op-button-label"), "LINK BUSY  /  STAND BY");
                     break;
+            }
+        }
+
+        private void BindOperationCharacters()
+        {
+            var dollSinger = m_Content.Q<Button>("chooseDollSinger");
+            var miku = m_Content.Q<Button>("chooseHatsuneMiku");
+            dollSinger.clicked += () => ChooseOperationCharacter(GameSettings.DollSingerCharacterIndex);
+            miku.clicked += () => ChooseOperationCharacter(GameSettings.HatsuneMikuCharacterIndex);
+            dollSinger.SetEnabled(!m_Busy); miku.SetEnabled(!m_Busy);
+            PresentOperationCharacters();
+        }
+
+        private void ChooseOperationCharacter(int characterIndex)
+        {
+            if (m_Busy || GameSettings.Instance == null) return;
+            GameSettings.Instance.PlayerCharacter = characterIndex;
+            PresentOperationCharacters();
+        }
+
+        private void PresentOperationCharacters()
+        {
+            int selected = GameSettings.Instance?.PlayerCharacter ?? GameSettings.DollSingerCharacterIndex;
+            MoonkovLocalization.Set(m_Content.Q<Label>("operatorName"), GameSettings.CharacterName(selected));
+            SetChoice("chooseDollSinger", GameSettings.DollSingerCharacterIndex);
+            SetChoice("chooseHatsuneMiku", GameSettings.HatsuneMikuCharacterIndex);
+
+            void SetChoice(string name, int characterIndex)
+            {
+                var button = m_Content.Q<Button>(name);
+                bool active = selected == characterIndex;
+                button.EnableInClassList("terminal-tab-selected", active);
+                button.Q<Label>(className: "op-choice-mark").text = active ? "[x]" : "[ ]";
             }
         }
 

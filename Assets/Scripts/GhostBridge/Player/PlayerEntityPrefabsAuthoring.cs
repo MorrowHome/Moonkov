@@ -8,6 +8,7 @@ public class PlayerEntityPrefabsAuthoring : MonoBehaviour
     [field: SerializeField] public GhostAuthoringComponent PlayerRifleEntityPrefab { get; private set; }
     [field: SerializeField] public GhostAuthoringComponent PlayerShotgunEntityPrefab { get; private set; }
     [field: SerializeField] public GhostAuthoringComponent DollSingerEntityPrefab { get; private set; }
+    [field: SerializeField] public GhostAuthoringComponent HatsuneMikuEntityPrefab { get; private set; }
 }
 
 public struct PlayerEntityPrefabs : IComponentData
@@ -16,6 +17,7 @@ public struct PlayerEntityPrefabs : IComponentData
     public Entity PlayerRifleEntityPrefab;
     public Entity PlayerShotgunEntityPrefab;
     public Entity DollSingerEntityPrefab;
+    public Entity HatsuneMikuEntityPrefab;
 }
 
 public class PlayerEntityPrefabsBaker : Baker<PlayerEntityPrefabsAuthoring>
@@ -41,6 +43,9 @@ public class PlayerEntityPrefabsBaker : Baker<PlayerEntityPrefabsAuthoring>
                     : Entity.Null,
             DollSingerEntityPrefab = authoring.DollSingerEntityPrefab != null
                 ? GetEntity(authoring.DollSingerEntityPrefab.gameObject, TransformUsageFlags.None)
+                : Entity.Null,
+            HatsuneMikuEntityPrefab = authoring.HatsuneMikuEntityPrefab != null
+                ? GetEntity(authoring.HatsuneMikuEntityPrefab.gameObject, TransformUsageFlags.None)
                 : Entity.Null
         });
     }

@@ -11,6 +11,8 @@
 .inventory-raid .inventory-character-stage { flex-grow: 1; min-height: 240px; position: relative; }
 .inventory-raid .inventory-slot-layer, .inventory-raid .field-operator-portrait { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
 .inventory-raid .field-operator-portrait { background-image: url("FieldOperatorPortrait.png"); -unity-background-scale-mode: scale-to-fit; }
+.inventory-raid.inventory-miku-operator .field-operator-portrait { display: none; }
+.inventory-raid .field-operator-live { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
 .inventory-view.inventory-raid .inventory-slot { position: absolute; min-height: 0; margin: 0; padding: 6px; border-width: 1px; border-color: #66706a; background-color: rgba(15,23,22,0.84); }
 .inventory-view.inventory-raid .inventory-slot-label { font-size: 12px; top: 5px; color: #b3bcb9; }
 .inventory-view.inventory-raid .inventory-slot-item { font-size: 12px; bottom: 4px; color: #eeeee6; }

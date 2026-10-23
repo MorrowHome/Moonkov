@@ -30,6 +30,9 @@ namespace Unity.MP_FPS.Client
         private readonly Dictionary<string, VisualElement> m_Tiles = new Dictionary<string, VisualElement>();
         private readonly HashSet<string> m_Open = new HashSet<string>();
         private MenuCharacterView m_Character;
+        private readonly GameSettings m_PortraitSettings;
+        private Avatar m_MikuPortraitAvatar;
+        private bool m_PortraitShowing;
         private InventoryGraph m_Graph;
         private Drag m_Drag;
         private bool m_Busy, m_Disposed, m_Rebuilding;
@@ -113,6 +116,8 @@ namespace Unity.MP_FPS.Client
             m_Windows = new TerminalWindows(m_Root, () => { });
             InitializeRaidPortrait();
             Present(null);
+            m_PortraitSettings = GameSettings.Instance;
+            if (m_PortraitSettings != null) m_PortraitSettings.PlayerCharacterChanged += PortraitCharacterChanged;
         }
         private static Label Text(VisualElement parent, string text, string css)
         { var label = new Label { pickingMode=PickingMode.Ignore }; label.AddToClassList(css); parent.Add(label); MoonkovLocalization.Set(label, text); return label; }
@@ -184,11 +189,18 @@ namespace Unity.MP_FPS.Client
         }
         public void Show()
         {
-            // Both inventory surfaces use the same static production-character portrait.
+            if (m_Disposed) return;
+            m_PortraitShowing = true;
+            PresentOperatorPortrait();
         }
         public void Suspend()
         {
+            m_PortraitShowing = false;
             CancelDrag(); m_HoveredItemId = m_SelectedItemId = null; m_Windows.CloseAll(); m_Open.Clear();
+            ReleaseOperatorPortrait();
+        }
+        private void ReleaseOperatorPortrait()
+        {
             if (m_Character == null) return;
             m_Character.Element.RemoveFromHierarchy(); m_Character.Dispose(); m_Character = null;
         }
@@ -473,7 +485,9 @@ namespace Unity.MP_FPS.Client
         private void Key(KeyDownEvent evt) => HandleKey(evt);
         public void Dispose()
         {
-            if (m_Disposed) return; Suspend(); m_Disposed=true; Application.focusChanged -= FocusChanged; m_Root.UnregisterCallback<KeyDownEvent>(Key,TrickleDown.TrickleDown); m_Windows.Dispose(); m_Root.RemoveFromHierarchy();
+            if (m_Disposed) return;
+            if (m_PortraitSettings != null) m_PortraitSettings.PlayerCharacterChanged -= PortraitCharacterChanged;
+            Suspend(); m_Disposed=true; Application.focusChanged -= FocusChanged; m_Root.UnregisterCallback<KeyDownEvent>(Key,TrickleDown.TrickleDown); m_Windows.Dispose(); m_Root.RemoveFromHierarchy();
         }
 
         private sealed class Drag : PointerManipulator

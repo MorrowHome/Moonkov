@@ -45,12 +45,14 @@ namespace Unity.MP_FPS.DollSinger
             // Fit only skinned joints so hidden props cannot alter the hand projection.
             rightHandBones = Array.FindAll(source.bones, bone => bone && bone.IsChildOf(rightHand));
             leftHandBones = Array.FindAll(source.bones, bone => bone && bone.IsChildOf(leftHand));
-            foreach (var bone in rightHandBones)
+            // Unweighted endpoint helpers are omitted from the renderer's bone palette by FBX.
+            // They still define the real fingertips for the two-handed viewfinder.
+            foreach (var bone in rightHand.GetComponentsInChildren<Transform>(true))
             {
                 if (bone.name == "人指先.R") rightIndexTip = bone;
                 if (bone.name == "親指先.R") rightThumbTip = bone;
             }
-            foreach (var bone in leftHandBones)
+            foreach (var bone in leftHand.GetComponentsInChildren<Transform>(true))
             {
                 if (bone.name == "人指先.L") leftIndexTip = bone;
                 if (bone.name == "親指先.L") leftThumbTip = bone;

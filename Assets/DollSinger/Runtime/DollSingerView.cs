@@ -76,6 +76,8 @@ public class DollSingerView : MonoBehaviour
     [Header("First person head")]
     [Tooltip("Fallback eye position in front of the head bone, in character-local metres.")]
     public Vector3 fallbackEyeWorldOffset = new Vector3(0f, 0.08f, 0.05f);
+    [Tooltip("Additional head or fringe bone prefixes hidden only from the owning first-person camera. Leave empty for the original character.")]
+    public string[] firstPersonHiddenBonePrefixes = System.Array.Empty<string>();
     [Tooltip("Distance used to build the head look-at target along the camera forward.")]
     public float lookTargetDistance = 12f;
     [Tooltip("Moves the eye outside the neck opening as the view pitches down, in world metres.")]
@@ -558,7 +560,7 @@ public class DollSingerView : MonoBehaviour
     /// ShadowCaster (which projected the eye/eyelash planes without their alpha masks).
     /// Clone the source mesh to retain all skinning, UV channels and blendshape indices.
     /// </summary>
-    private static UnityEngine.Mesh BuildFirstPersonMesh(UnityEngine.Mesh source, Transform[] bones, Material[] materials)
+    private UnityEngine.Mesh BuildFirstPersonMesh(UnityEngine.Mesh source, Transform[] bones, Material[] materials)
     {
         if (!source || bones == null) return null;
 
@@ -570,6 +572,10 @@ public class DollSingerView : MonoBehaviour
             string boneName = boneIndex >= 0 && boneIndex < bones.Length && bones[boneIndex]
                 ? bones[boneIndex].name : string.Empty;
             drop[v] = IsHeadClutterBone(boneName);
+            if (!drop[v] && firstPersonHiddenBonePrefixes != null)
+                foreach (var prefix in firstPersonHiddenBonePrefixes)
+                    if (!string.IsNullOrEmpty(prefix) && boneName.StartsWith(prefix, System.StringComparison.Ordinal))
+                    { drop[v] = true; break; }
         }
 
         var copy = Instantiate(source);

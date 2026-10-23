@@ -48,6 +48,11 @@
 .moonkov-terminal.archive-page-4 .op-operator-id { position: absolute; top: 72%; left: 3%; width: 32%; padding: 14px; background-color: rgba(5,7,10,0.86); border-left-width: 3px; border-left-color: #164bff; }
 .moonkov-terminal.archive-page-4 .op-operator-check { position: absolute; left: 43%; right: 29%; top: 20%; bottom: 17%; }
 .moonkov-terminal.archive-page-4 .op-confirmed { padding: 22px; background-color: rgba(5,7,10,0.97); border-top-width: 3px; border-top-color: #164bff; border-bottom-width: 1px; border-bottom-color: #6c7585; }
+.moonkov-terminal.archive-page-4 .op-character-choices { flex-direction: row; flex-wrap: wrap; margin-bottom: 8px; }
+.moonkov-terminal.archive-page-4 .op-character-choice { flex-grow: 1; flex-basis: 0; min-width: 0; padding: 8px; margin-right: 4px; }
+.moonkov-terminal.archive-page-4 .op-character-choice .op-button-label { font-size: 13px; }
+.moonkov-terminal.archive-page-4 .op-character-choice .op-choice-mark { font-size: 12px; margin-left: 6px; white-space: nowrap; }
+.moonkov-terminal.archive-page-4 .op-character-choice.terminal-tab-selected { border-width: 2px; border-color: #91b8ff; background-color: #153981; }
 .moonkov-terminal.archive-page-4 .op-equipment { flex-grow: 1; min-height: 0; padding: 18px; background-color: rgba(5,7,10,0.97); }
 .moonkov-terminal.archive-page-4 .op-equipment-list { flex-grow: 1; min-height: 0; }
 .moonkov-terminal.archive-page-4 .op-equipment-row { flex-direction: row; flex-grow: 1; flex-basis: 0; min-height: 42px; border-width: 1px; border-color: #616d7d; margin-bottom: 8px; padding: 5px; background-color: #0b0e14; align-items: center; }

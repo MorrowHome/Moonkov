@@ -4857,6 +4857,14 @@ MonoBehaviour:
       pockets or a rig before use.
     m_Metadata:
       m_Items: []
+  - m_Id: 5797453671424000
+    m_Key: HATSUNE MIKU
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5797453675618304
+    m_Key: SELECT OPERATOR
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

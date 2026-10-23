@@ -19,6 +19,7 @@ namespace Unity.MP_FPS.Client
     {
         // The project's PC renderer only draws layers 0–7. UI is within that mask.
         private const int ViewLayer = 5;
+        private const float PortraitFieldOfView = 27;
         private EnergyShieldPresentation m_Protection;
         private InventoryGraph m_ProtectionInventory;
         public Image Element { get; }
@@ -28,8 +29,11 @@ namespace Unity.MP_FPS.Client
         public bool HaloVisible => m_Halo != null && m_Halo.gameObject.activeInHierarchy;
         public Scene DisplayScene => m_Scene;
         public int CurrentMotionIndex => m_Motion;
-        public string CurrentMotion => m_Settings.Motion(m_Motion).Name ?? m_Settings.Motions[m_Motion].name;
-        private readonly MenuCharacterSettings m_Settings;
+        public string CurrentMotion => m_Settings == null ? string.Empty :
+            m_Settings.Motion(m_Motion).Name ?? m_Settings.Motions[m_Motion].name;
+        public int CharacterIndex { get; private set; } = -1;
+        private MenuCharacterSettings m_Settings;
+        private readonly GameSettings m_GameSettings;
         private readonly bool m_IdleOnly;
         private Animator m_Animator;
         public event Action FrameRendered;
@@ -46,6 +50,7 @@ namespace Unity.MP_FPS.Client
         private AnimationLayerMixerPlayable m_Layers;
         private AnimationClipPlayable m_BaseIdle;
         private SecondaryBoneSpring m_Spring;
+        private HumanoidTwistFollowers m_TwistFollowers;
         private SkirtHandAvoidance m_HandAvoidance;
         private DollSingerBakedGestures m_Gestures;
         private AvatarMask m_FullBodyMask;
@@ -66,34 +71,53 @@ namespace Unity.MP_FPS.Client
         private bool m_Transition, m_Disposed, m_EditorScene, m_GestureActive;
         private int m_DragPointer = -1;
         private Vector2 m_DragPosition;
-        private float m_InspectionYaw, m_PoseTurn;
-        private bool m_Inspected;
+        private float m_InspectionYaw, m_PoseTurn, m_FaceHeightOffset;
+        private bool m_Inspected, m_ViewDirty;
         public float InspectionYaw => m_InspectionYaw;
+        public float Zoom { get; private set; } = 1;
 
-        public MenuCharacterView(bool idleOnly = false, Image element = null)
+        public MenuCharacterView(bool idleOnly = false, Image element = null, int? characterIndex = null)
         {
             m_IdleOnly = idleOnly;
             Element = element ?? new Image();
             Element.pickingMode = PickingMode.Position; Element.scaleMode = ScaleMode.ScaleToFit;
             Element.AddToClassList("terminal-character-art");
+            Element.tooltip = MoonkovLocalization.Text("左键拖动旋转 · 滚轮缩放");
             Element.RegisterCallback<PointerDownEvent>(BeginInspect);
             Element.RegisterCallback<PointerMoveEvent>(Inspect);
             Element.RegisterCallback<PointerUpEvent>(EndInspect);
             Element.RegisterCallback<PointerCancelEvent>(CancelInspect);
             Element.RegisterCallback<PointerCaptureOutEvent>(CaptureLost);
+            Element.RegisterCallback<WheelEvent>(ZoomInspect);
             Element.RegisterCallback<DetachFromPanelEvent>(Detached);
-            m_Settings = Resources.Load<MenuCharacterSettings>("Moonkov/MenuCharacterSettings");
-            if (m_Settings == null || m_Settings.VisualPrefab == null || m_Settings.Motions == null || m_Settings.Motions.Length == 0)
-            {
-                Debug.LogWarning("Moonkov menu character settings are missing.");
-                return;
-            }
+            m_GameSettings = characterIndex.HasValue ? null : GameSettings.Instance;
+            SelectCharacter(characterIndex ?? m_GameSettings?.PlayerCharacter ?? GameSettings.DollSingerCharacterIndex);
+            if (m_GameSettings != null) m_GameSettings.PlayerCharacterChanged += SelectCharacter;
             try
             {
                 m_LastTime = Time.realtimeSinceStartupAsDouble;
                 m_Timer = Element.schedule.Execute(Tick).Every(33);
             }
             catch { Dispose(); throw; }
+        }
+
+        private void SelectCharacter(int characterIndex)
+        {
+            characterIndex = GameSettings.NormalizeCharacterIndex(characterIndex);
+            if (m_Disposed || CharacterIndex == characterIndex) return;
+            ReleaseStage();
+            CharacterIndex = characterIndex;
+            m_Motion = m_LastAction = m_BagRemaining = 0;
+            m_ActionBag = null;
+            MotionChanges = 0; HaloAimWeight = 0;
+            string path = CharacterIndex == GameSettings.HatsuneMikuCharacterIndex
+                ? "Moonkov/HatsuneMikuMenuCharacterSettings" : "Moonkov/MenuCharacterSettings";
+            m_Settings = Resources.Load<MenuCharacterSettings>(path);
+            if (m_Settings == null || m_Settings.VisualPrefab == null || m_Settings.Motions == null || m_Settings.Motions.Length == 0)
+            {
+                m_Settings = null;
+                Debug.LogWarning("Moonkov menu character settings are missing: " + path);
+            }
         }
 
         private void BeginInspect(PointerDownEvent evt)
@@ -106,6 +130,7 @@ namespace Unity.MP_FPS.Client
             m_DragPosition = Element.WorldToLocal(evt.position);
             if (!m_Inspected) { m_InspectionYaw = m_PoseTurn; m_Inspected = true; }
             Element.CapturePointer(evt.pointerId);
+            m_Timer?.Every(16);
             evt.StopPropagation();
         }
         private void Inspect(PointerMoveEvent evt)
@@ -116,9 +141,16 @@ namespace Unity.MP_FPS.Client
             m_InspectionYaw = Mathf.Repeat(m_InspectionYaw +
                 (position.x - m_DragPosition.x) * 180f / Mathf.Max(1f, Element.contentRect.width) + 180f, 360f) - 180f;
             m_DragPosition = position;
-            ApplyOrientation();
-            Render();
+            m_ViewDirty = true;
             evt.StopPropagation();
+        }
+        private void ZoomInspect(WheelEvent evt)
+        {
+            if (m_Disposed || evt.target != Element || !float.IsFinite(evt.delta.y) || evt.delta.y == 0) return;
+            Zoom = Mathf.Clamp(Zoom * Mathf.Exp(-Mathf.Clamp(evt.delta.y, -40, 40) * .08f), .65f, 3f);
+            m_ViewDirty = true;
+            evt.StopPropagation();
+            evt.PreventDefault();
         }
         private void EndInspect(PointerUpEvent evt)
         {
@@ -126,12 +158,13 @@ namespace Unity.MP_FPS.Client
             StopInspect(); evt.StopPropagation();
         }
         private void CancelInspect(PointerCancelEvent evt) { if (evt.pointerId == m_DragPointer) StopInspect(); }
-        private void CaptureLost(PointerCaptureOutEvent evt) { if (evt.pointerId == m_DragPointer) m_DragPointer = -1; }
+        private void CaptureLost(PointerCaptureOutEvent evt) { if (evt.pointerId == m_DragPointer) StopInspect(); }
         private void Detached(DetachFromPanelEvent evt) => ReleaseStage();
         private void StopInspect()
         {
             int pointer = m_DragPointer; m_DragPointer = -1;
             if (pointer >= 0 && Element.HasPointerCapture(pointer)) Element.ReleasePointer(pointer);
+            if (pointer >= 0) m_Timer?.Every(33);
         }
         private void ApplyOrientation()
         {
@@ -167,6 +200,8 @@ namespace Unity.MP_FPS.Client
             animator.fireEvents = false;
             m_Stage.SetActive(true);
             animator.Rebind();
+            m_TwistFollowers = m_Model.GetComponentInChildren<HumanoidTwistFollowers>(true);
+            m_TwistFollowers?.InitializePresentation();
             m_Spring = m_Model.GetComponentInChildren<SecondaryBoneSpring>(true);
             m_HandAvoidance = m_Model.GetComponentInChildren<SkirtHandAvoidance>(true);
             m_HandAvoidance?.PreparePresentation(0, 0);
@@ -190,10 +225,13 @@ namespace Unity.MP_FPS.Client
             SetClip(0, 0);
             m_Mixer.SetInputWeight(0, 1f);
             m_Graph.Play(); m_Graph.Evaluate(0);
+            m_TwistFollowers?.ApplyPresentation();
             m_Remaining = IdleDuration();
             foreach (var t in m_Model.GetComponentsInChildren<Transform>(true))
                 if (t.name == "HaloCrosshair") { m_Halo = t; break; }
             m_Head = animator.GetBoneTransform(HumanBodyBones.Head);
+            var neck = animator.GetBoneTransform(HumanBodyBones.Neck);
+            m_FaceHeightOffset = m_Head != null && neck != null ? Vector3.Distance(m_Head.position, neck.position) * 1.25f : 0;
             m_Finger = animator.GetBoneTransform(HumanBodyBones.RightIndexDistal);
             if (m_Finger != null) while (m_Finger.childCount > 0) m_Finger = m_Finger.GetChild(0);
             if (m_Halo != null)
@@ -204,24 +242,22 @@ namespace Unity.MP_FPS.Client
             UpdateHalo();
             SetProtectionInventory(m_ProtectionInventory);
 
-            bool found = false;
             m_Renderers = m_Model.GetComponentsInChildren<SkinnedMeshRenderer>();
             foreach (var renderer in m_Renderers)
             {
                 renderer.updateWhenOffscreen = true;
                 renderer.forceRenderingOff = false;
-                if (!found) { m_Bounds = renderer.bounds; found = true; }
-                else m_Bounds.Encapsulate(renderer.bounds);
             }
-            if (!found) throw new InvalidOperationException("The menu visual prefab has no character renderer.");
-            if (m_Head != null) m_Bounds.Encapsulate(m_Head.position + m_Model.transform.up * .4f);
+            if (m_Renderers.Length == 0) throw new InvalidOperationException("The menu visual prefab has no character renderer.");
+            m_Bounds = new Bounds(m_Stage.transform.position, Vector3.zero);
+            ExpandFramingBounds();
             m_Camera = Child("Menu portrait camera").AddComponent<Camera>();
             m_Camera.enabled = false;
             m_Camera.cullingMask = 1 << ViewLayer;
             m_Camera.clearFlags = CameraClearFlags.SolidColor;
             m_Camera.backgroundColor = Color.clear;
             m_Camera.orthographic = false;
-            m_Camera.fieldOfView = 27;
+            m_Camera.fieldOfView = PortraitFieldOfView;
             m_Camera.nearClipPlane = .05f; m_Camera.farClipPlane = 30;
             m_Camera.allowHDR = true; m_Camera.allowMSAA = true;
             var data = m_Camera.GetUniversalAdditionalCameraData();
@@ -304,7 +340,7 @@ namespace Unity.MP_FPS.Client
         {
             double now = Time.realtimeSinceStartupAsDouble;
             float dt = Mathf.Clamp((float)(now - m_LastTime), 0, .1f); m_LastTime = now;
-            if (m_Disposed) return;
+            if (m_Disposed || m_Settings == null) return;
             bool visible = Element.panel != null;
             for (VisualElement parent = Element; parent != null; parent = parent.parent)
                 if (parent.resolvedStyle.display == DisplayStyle.None) { visible = false; break; }
@@ -313,7 +349,11 @@ namespace Unity.MP_FPS.Client
             if(!TerminalMotion.Animate(Element))
             {
                 var size=Element.contentRect.size;
-                if(m_Target==null || size!=m_EditorViewport){Render();m_EditorViewport=size;}
+                if(m_Target==null || size!=m_EditorViewport || m_ViewDirty)
+                {
+                    if (m_ViewDirty) Advance(0);
+                    Render(); m_EditorViewport=size;
+                }
                 return;
             }
             Advance(dt);
@@ -356,20 +396,48 @@ namespace Unity.MP_FPS.Client
                 if (options.Weapon > 0 && weight > .0001f) gestureActive = true;
             }
             m_HandAvoidance?.PreparePresentation(dt, preserveHands);
+            m_TwistFollowers?.RestoreBeforeAnimation();
             if (m_GestureActive || gestureActive) m_Gestures?.RestoreBeforeAnimation();
             m_GestureActive = gestureActive;
             m_Graph.Evaluate(0);
             m_Model.transform.localPosition = Vector3.zero;
             m_PoseTurn = turn * m_Settings.TurnDegrees;
             ApplyOrientation();
+            m_ViewDirty = false;
             DollSingerMovement.ApplyTiptoePresentation(m_Animator, tiptoe);
+            m_TwistFollowers?.ApplyPresentation();
             ApplyWeaponGesture(dt);
             m_Spring?.SimulatePresentation(dt);
             UpdateHalo();
             if(m_Protection)m_Protection.SimulatePresentation();
-            // Keep a stable standing frame, expanding it only when a new pose needs more room.
-            foreach (var renderer in m_Renderers) m_Bounds.Encapsulate(renderer.bounds);
-            if (m_Halo != null) m_Bounds.Encapsulate(m_Halo.position + m_Model.transform.up * .2f);
+        }
+
+        private void ExpandFramingBounds()
+        {
+            var root = m_Model.transform;
+            var toModel = root.worldToLocalMatrix;
+            var scale = root.lossyScale;
+            foreach (var renderer in m_Renderers)
+            {
+                var bounds = renderer.localBounds;
+                var boundsRoot = renderer.rootBone != null ? renderer.rootBone : renderer.transform;
+                var toRoot = toModel * boundsRoot.localToWorldMatrix;
+                for (int i = 0; i < 8; i++)
+                {
+                    var corner = bounds.center + Vector3.Scale(bounds.extents,
+                        new Vector3((i & 1) == 0 ? -1 : 1, (i & 2) == 0 ? -1 : 1, (i & 4) == 0 ? -1 : 1));
+                    ExpandFramingPoint(Vector3.Scale(toRoot.MultiplyPoint3x4(corner), scale));
+                }
+            }
+            if (m_Head != null) ExpandFramingPoint(Vector3.Scale(root.InverseTransformPoint(m_Head.position), scale) + Vector3.up * .4f);
+            if (m_Halo != null) ExpandFramingPoint(Vector3.Scale(root.InverseTransformPoint(m_Halo.position), scale) + Vector3.up * .2f);
+        }
+
+        private void ExpandFramingPoint(Vector3 point)
+        {
+            float radius = new Vector2(point.x, point.z).magnitude;
+            var center = m_Model.transform.position + Vector3.up * point.y;
+            m_Bounds.Encapsulate(new Bounds(center, new Vector3(radius * 2, 0, radius * 2)));
         }
 
         private void ApplyWeaponGesture(float dt)
@@ -443,11 +511,19 @@ namespace Unity.MP_FPS.Client
                 m_Target.Create(); Element.image = m_Target;
             }
             m_Camera.aspect = (float)w / h;
-            // Fit both dimensions so the full silhouette survives narrow window layouts.
-            float halfHeight = Mathf.Max(m_Bounds.extents.y * 1.08f, m_Bounds.extents.x / m_Camera.aspect * 1.12f);
-            float distance = halfHeight / Mathf.Tan(m_Camera.fieldOfView * .5f * Mathf.Deg2Rad) + m_Bounds.extents.z;
-            m_Camera.transform.position = m_Bounds.center + new Vector3(0, .035f, distance);
-            m_Camera.transform.LookAt(m_Bounds.center);
+            float verticalTangent = Mathf.Tan(PortraitFieldOfView * .5f * Mathf.Deg2Rad);
+            float distance = Mathf.Max(m_Bounds.extents.y * 1.08f / verticalTangent + m_Bounds.extents.z,
+                m_Bounds.extents.x * 1.12f / Mathf.Sin(Mathf.Atan(verticalTangent * m_Camera.aspect)));
+            m_Camera.fieldOfView = 2 * Mathf.Atan(verticalTangent / Zoom) * Mathf.Rad2Deg;
+            var focus = m_Bounds.center;
+            if (m_Head != null && Zoom > 1)
+            {
+                var face = m_Head.position + Vector3.up * m_FaceHeightOffset;
+                face.z = focus.z;
+                focus = Vector3.Lerp(focus, face, Mathf.SmoothStep(0, 1, Mathf.InverseLerp(1, 2, Zoom)));
+            }
+            m_Camera.transform.position = focus + new Vector3(0, .035f, distance);
+            m_Camera.transform.LookAt(focus);
             RenderPipeline.SubmitRenderRequest(m_Camera, new UniversalRenderPipeline.SingleCameraRequest { destination = m_Target });
             Element.MarkDirtyRepaint();
             FrameRendered?.Invoke();
@@ -477,18 +553,20 @@ namespace Unity.MP_FPS.Client
         {
             if (m_Disposed) return;
             m_Disposed = true; m_Timer?.Pause();
+            if (m_GameSettings != null) m_GameSettings.PlayerCharacterChanged -= SelectCharacter;
             Element.UnregisterCallback<PointerDownEvent>(BeginInspect);
             Element.UnregisterCallback<PointerMoveEvent>(Inspect);
             Element.UnregisterCallback<PointerUpEvent>(EndInspect);
             Element.UnregisterCallback<PointerCancelEvent>(CancelInspect);
             Element.UnregisterCallback<PointerCaptureOutEvent>(CaptureLost);
+            Element.UnregisterCallback<WheelEvent>(ZoomInspect);
             Element.UnregisterCallback<DetachFromPanelEvent>(Detached);
             ReleaseStage();
             m_ProtectionInventory=null;
         }
         private void ReleaseStage()
         {
-            StopInspect(); m_InspectionYaw = m_PoseTurn = 0; m_Inspected = false;
+            StopInspect(); m_InspectionYaw = m_PoseTurn = 0; m_Inspected = m_ViewDirty = false; Zoom = 1;
             if (m_Graph.IsValid()) m_Graph.Destroy();
             if (m_FullBodyMask != null) { Destroy(m_FullBodyMask); m_FullBodyMask = null; }
             ReleaseTarget();
@@ -497,6 +575,7 @@ namespace Unity.MP_FPS.Client
             m_Protection=null;
             m_Halo = null; m_Head = null; m_Finger = null; m_HaloStrokes = null;
             m_Spring = null; m_HandAvoidance = null;
+            m_TwistFollowers = null;
             m_Gestures = null; m_Chest = null; m_Renderers = null;
             if (!m_Scene.IsValid()) return;
 #if UNITY_EDITOR

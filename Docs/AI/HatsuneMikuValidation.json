@@ -1,0 +1,47 @@
+{
+  "editor": {
+    "unity": "6000.5.10f1",
+    "networkSessionStarted": false,
+    "vertices": 7672,
+    "blendShapes": 26,
+    "heightMetres": 1.64999986,
+    "humanoidTwistFollowers": {
+      "count": 12,
+      "poseCases": 24,
+      "maximumRotationErrorDegrees": 0.0,
+      "maximumRepeatErrorDegrees": 0.0,
+      "maximumSkinChangeMetres": 0.0395476632
+    },
+    "firstPersonTriangles": 5971,
+    "fullBodyTriangles": 9071,
+    "firearmPoseSamples": 273,
+    "sniperContactGapMm": 0.19087781,
+    "sniperIndexBendDegrees": 0.01978234,
+    "sniperRightAngleErrorDegrees": 0.0002593994,
+    "meleePoseSamples": 216,
+    "simulatedHairAndTieBones": 18,
+    "hairSettlingFrames": 600,
+    "maximumSettledTailHeightMetres": 0.387992859,
+    "springSimulationFrames": 240,
+    "maximumHairRootBendDegrees": 72.96297,
+    "humanoidClips": 36,
+    "passed": true
+  },
+  "playMode": {
+    "startFrame": 10825,
+    "endFrame": 11494,
+    "stanceChanges": 4,
+    "menuSwitches": 4,
+    "networkSessionStarted": false,
+    "firstPersonGestureArms": true,
+    "warehousePortraitLifecycle": true,
+    "passed": true,
+    "walkDistanceMetres": 2.5478076934814453,
+    "standingTailHeightMetres": 0.3864865303039551,
+    "landedTailHeightMetres": 0.3868846893310547,
+    "fallAirflow": 0.44183287024497986,
+    "fallCover": 0.4745286703109741,
+    "failure": ""
+  },
+  "networkValidation": "Not run; one Editor, no client/server worlds."
+}

@@ -85,12 +85,17 @@ public sealed class MoonkovViewInteractionChecks : EditorWindow
     [MenuItem("Tools/Moonkov/Check Portrait Drag")]
     public static void CheckPortrait()
     {
+        CheckPortraitForCharacter(GameSettings.DollSingerCharacterIndex);
+    }
+
+    public static void CheckPortraitForCharacter(int characterIndex)
+    {
         if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("Run portrait checks outside Play mode.");
         LastPreviewResult = "running";
         var window = CreateInstance<MoonkovViewInteractionChecks>();
         window.titleContent = new GUIContent("Portrait regression check");
         window.position = new Rect(60, 60, 440, 560); window.Show();
-        window.portrait = new MenuCharacterView(idleOnly: true);
+        window.portrait = new MenuCharacterView(characterIndex: characterIndex);
         var image = window.portrait.Element;
         image.RemoveFromClassList("terminal-character-art"); image.style.width = 400; image.style.height = 500;
         window.rootVisualElement.Add(image);
@@ -108,6 +113,13 @@ public sealed class MoonkovViewInteractionChecks : EditorWindow
         {
             var image = portrait.Element;
             portrait.Advance(0); portrait.Render();
+            var camera = (Camera)typeof(MenuCharacterView).GetField("m_Camera", Private).GetValue(portrait);
+            var renderers = (SkinnedMeshRenderer[])typeof(MenuCharacterView).GetField("m_Renderers", Private).GetValue(portrait);
+            var visibleBounds = renderers[0].bounds;
+            foreach (var renderer in renderers) visibleBounds.Encapsulate(renderer.bounds);
+            float top = camera.WorldToViewportPoint(visibleBounds.center + Vector3.up * visibleBounds.extents.y).y;
+            float bottom = camera.WorldToViewportPoint(visibleBounds.center - Vector3.up * visibleBounds.extents.y).y;
+            Require(top - bottom > .5f, "Standing portrait was framed too small; check the skinned mesh bounds coordinate space.");
             var scene = portrait.DisplayScene;
             Require(image.panel.Pick(button.worldBound.center) == button, "Portrait blocked an overlaid equipment button.");
             Vector2 start = image.worldBound.center, end = start + Vector2.right * 80;
@@ -122,15 +134,132 @@ public sealed class MoonkovViewInteractionChecks : EditorWindow
             Down(image, start);
             using (var cancel = PointerCancelEvent.GetPooled()) { cancel.target = image; image.SendEvent(cancel); }
             Require(!image.HasPointerCapture(PointerId.mousePointerId), "Cancelled pointer retained capture.");
+            Down(image, start);
+            image.ReleasePointer(PointerId.mousePointerId);
+            Move(image, end);
+            Require(portrait.InspectionYaw == yaw, "Losing pointer capture continued rotating the portrait.");
+            Down(image, start);
+            using (var released = PointerUpEvent.GetPooled(new Event { type = EventType.MouseUp, button = 0, mousePosition = end }))
+            using (var move = PointerMoveEvent.GetPooled((IPointerEvent)released)) image.SendEvent(move);
+            Require(!image.HasPointerCapture(PointerId.mousePointerId) && portrait.InspectionYaw == yaw,
+                "A missed button release retained the portrait gesture.");
+            CheckInspectionFraming(start);
+            CheckAnimatedFraming();
+            CheckZoom(button, start);
             image.RemoveFromHierarchy();
-            Require(portrait.InspectionYaw == 0 && !scene.isLoaded, "Detached portrait retained orientation or preview scene.");
+            Require(portrait.InspectionYaw == 0 && portrait.Zoom == 1 && !scene.isLoaded, "Detached portrait retained orientation, zoom or preview scene.");
             rootVisualElement.Insert(0, image); portrait.Advance(0);
-            Require(portrait.InspectionYaw == 0, "Reopened portrait did not reset.");
+            Require(portrait.InspectionYaw == 0 && portrait.Zoom == 1, "Reopened portrait did not reset.");
             LastPreviewResult = "passed";
-            Debug.Log("Portrait checks passed: pointer rotation, release stop, cancellation, overlaid equipment isolation, detach cleanup and reopen reset.");
+            Debug.Log("Portrait checks passed: rotation, animated framing, wheel magnification and limits, input isolation, release/cancel/capture loss, cleanup and reopen reset.");
         }
         catch (Exception ex) { LastPreviewResult = "failed: " + ex.Message; throw; }
         finally { Close(); }
+    }
+    private void CheckInspectionFraming(Vector2 start)
+    {
+        var camera = (Camera)typeof(MenuCharacterView).GetField("m_Camera", Private).GetValue(portrait);
+        portrait.Advance(0); portrait.Render();
+        var position = camera.transform.position;
+        float initialYaw = portrait.InspectionYaw;
+        int renders = 0;
+        Action rendered = () => renders++;
+        portrait.FrameRendered += rendered;
+        try
+        {
+            Down(portrait.Element, start);
+            for (int i = 1; i <= 40; i++)
+                Move(portrait.Element, start + Vector2.right * (portrait.Element.contentRect.width * i / 20));
+            Require(renders == 0, "A burst of pointer events synchronously rendered the portrait instead of waiting for the presentation tick.");
+            Require(Mathf.Abs(Mathf.DeltaAngle(portrait.InspectionYaw, initialYaw)) < .01f, "Full-turn dragging lost pointer travel.");
+            typeof(MenuCharacterView).GetMethod("Tick", Private).Invoke(portrait, null);
+            Require(renders == 1, "The presentation tick did not flush the pending drag in a static editor preview.");
+            // Sample every 18 degrees: returning to the same yaw must not leave a
+            // permanently wider frame, nor pan the camera around an off-centre mesh.
+            for (int i = 1; i <= 20; i++)
+            {
+                Move(portrait.Element, start + Vector2.right * (portrait.Element.contentRect.width * (2 + i / 10f)));
+                portrait.Advance(1f / 30); portrait.Render();
+                Require(Vector3.Distance(position, camera.transform.position) < .001f, "Rotating the portrait changed its framing.");
+            }
+            Up(portrait.Element, start);
+        }
+        finally { portrait.FrameRendered -= rendered; }
+    }
+    private void CheckAnimatedFraming()
+    {
+        var camera = (Camera)typeof(MenuCharacterView).GetField("m_Camera", Private).GetValue(portrait);
+        var settings = (MenuCharacterSettings)typeof(MenuCharacterView).GetField("m_Settings", Private).GetValue(portrait);
+        var position = camera.transform.position;
+        float fov = camera.fieldOfView;
+        for (int motion = 1; motion < settings.Motions.Length; motion++)
+        {
+            Set(portrait, "m_Motion", 0);
+            Set(portrait, "m_Transition", false);
+            Set(portrait, "m_ActionBag", new[] { motion });
+            Set(portrait, "m_BagRemaining", 1);
+            Set(portrait, "m_Remaining", 0f);
+            for (int frame = 0; frame < 12; frame++) portrait.Advance(.1f);
+            portrait.Render();
+            Require(Mathf.Abs(camera.fieldOfView - fov) < .0001f &&
+                (portrait.Zoom <= 1 ? Vector3.Distance(position, camera.transform.position) : Mathf.Abs(position.z - camera.transform.position.z)) < .001f,
+                "Showcase animation changed the portrait scale or full-body camera centre: " + motion);
+            if (portrait.Zoom >= 2) CheckFaceFocus(camera);
+        }
+    }
+    private void CheckZoom(Button button, Vector2 start)
+    {
+        var image = portrait.Element;
+        var camera = (Camera)typeof(MenuCharacterView).GetField("m_Camera", Private).GetValue(portrait);
+        float yaw = portrait.InspectionYaw, baselineFov = camera.fieldOfView;
+        var position = camera.transform.position;
+        var tick = typeof(MenuCharacterView).GetMethod("Tick", Private);
+        int parentWheels = 0;
+        EventCallback<WheelEvent> parentWheel = _ => parentWheels++;
+        rootVisualElement.RegisterCallback(parentWheel);
+        try
+        {
+            Wheel(button, button.worldBound.center, -3);
+            Require(portrait.Zoom == 1 && parentWheels == 1, "Equipment scrolling zoomed the portrait or was swallowed.");
+            Wheel(image, start, -3);
+            tick.Invoke(portrait, null);
+            Require(portrait.Zoom > 1 && camera.fieldOfView < baselineFov && parentWheels == 1,
+                "Portrait scroll did not zoom in or leaked into the parent scroll view.");
+            float magnification = Mathf.Tan(baselineFov * .5f * Mathf.Deg2Rad) / Mathf.Tan(camera.fieldOfView * .5f * Mathf.Deg2Rad);
+            Require(Mathf.Abs(magnification - portrait.Zoom) < .0001f, "Camera projection did not match the selected magnification.");
+            float zoom = portrait.Zoom, fov = camera.fieldOfView;
+            Down(image, start); Move(image, start + Vector2.right * 100);
+            for (int i = 0; i < 60; i++) portrait.Advance(1f / 30);
+            portrait.Render(); Up(image, start);
+            Require(portrait.Zoom == zoom && Mathf.Abs(camera.fieldOfView - fov) < .0001f &&
+                Mathf.Abs(position.z - camera.transform.position.z) < .001f,
+                "Dragging or animation changed the selected zoom.");
+            Wheel(image, start, 3); tick.Invoke(portrait, null);
+            Require(Mathf.Abs(portrait.Zoom - 1) < .0001f && Mathf.Abs(camera.fieldOfView - baselineFov) < .0001f &&
+                Vector3.Distance(position, camera.transform.position) < .001f,
+                "Opposite wheel travel did not restore the original scale.");
+            for (int i = 0; i < 4; i++) Wheel(image, start, 40);
+            tick.Invoke(portrait, null);
+            Require(Mathf.Abs(portrait.Zoom - .65f) < .0001f && float.IsFinite(camera.fieldOfView), "Minimum zoom was not bounded.");
+            for (int i = 0; i < 4; i++) Wheel(image, start, -40);
+            tick.Invoke(portrait, null);
+            Require(Mathf.Abs(portrait.Zoom - 3) < .0001f && float.IsFinite(camera.fieldOfView), "Maximum zoom was not bounded.");
+            CheckFaceFocus(camera);
+            CheckAnimatedFraming();
+            Wheel(image, start, Mathf.Log(1.5f) / .08f); tick.Invoke(portrait, null);
+            Require(Mathf.Abs(portrait.Zoom - 2) < .0001f, "Intermediate head portrait zoom was not reached.");
+            CheckFaceFocus(camera);
+            CheckAnimatedFraming();
+            Require(Mathf.Abs(Mathf.DeltaAngle(portrait.InspectionYaw, yaw + 45)) < .001f, "Wheel input changed portrait rotation.");
+        }
+        finally { rootVisualElement.UnregisterCallback(parentWheel); }
+    }
+    private void CheckFaceFocus(Camera camera)
+    {
+        var head = (Transform)typeof(MenuCharacterView).GetField("m_Head", Private).GetValue(portrait);
+        var point = camera.WorldToViewportPoint(head.position);
+        Require(point.z > 0 && Mathf.Abs(point.x - .5f) < .12f && point.y > .25f && point.y < .65f,
+            "Zoomed portrait did not centre the head and face: " + point);
     }
     private void OnDisable() { portrait?.Dispose(); portrait = null; }
     private static void Set(object target, string field, object value) => target.GetType().GetField(field, Private).SetValue(target, value);
@@ -141,4 +270,6 @@ public sealed class MoonkovViewInteractionChecks : EditorWindow
     { using (var evt = PointerMoveEvent.GetPooled(new Event { type = EventType.MouseDrag, button = 0, mousePosition = at })) target.SendEvent(evt); }
     private static void Up(VisualElement target, Vector2 at)
     { using (var evt = PointerUpEvent.GetPooled(new Event { type = EventType.MouseUp, button = 0, mousePosition = at })) target.SendEvent(evt); }
+    private static void Wheel(VisualElement target, Vector2 at, float delta)
+    { using (var evt = WheelEvent.GetPooled(new Event { type = EventType.ScrollWheel, mousePosition = at, delta = new Vector2(0, delta) })) target.SendEvent(evt); }
 }

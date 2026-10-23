@@ -27,6 +27,8 @@ public sealed class SecondaryBoneSpring : MonoBehaviour {
 
     public Transform[] hairRoots;
     public Transform[] skirtRoots;
+    [Tooltip("Rest-pose offset bones to traverse without simulating. Their single-child descendants still form the spring chain.")]
+    public Transform[] passiveChainBones;
     [Tooltip("Hand and finger spheres that keep the skirt bones outside the animated hands.")]
     public BoneSphere[] skirtColliders;
     [Tooltip("Extra hand clearance during the free-fall cover pose, accounting for cloth between skirt bones.")]
@@ -118,6 +120,7 @@ public sealed class SecondaryBoneSpring : MonoBehaviour {
     private readonly List<SpringJoint> m_Skirt = new();
     private readonly List<SpringJoint> m_Chest = new();
     private readonly HashSet<Transform> m_BoundBones = new();
+    private readonly HashSet<Transform> m_PassiveChainBones = new();
     private readonly HashSet<Transform> m_InnerSkirtBones = new();
     private readonly HashSet<Transform> m_FrontSkirtBones = new();
     private readonly HashSet<Transform> m_BodyCollisionExemptBones = new();
@@ -161,14 +164,18 @@ public sealed class SecondaryBoneSpring : MonoBehaviour {
         m_Skirt.Clear();
         m_Chest.Clear();
         m_BoundBones.Clear();
+        m_PassiveChainBones.Clear();
+        if (passiveChainBones != null)
+            foreach (var bone in passiveChainBones)
+                if (bone) m_PassiveChainBones.Add(bone);
         m_InnerSkirtBones.Clear();
         m_FrontSkirtBones.Clear();
         m_BodyCollisionExemptBones.Clear();
         if (bodyCollisionExemptBones != null)
             foreach (var bone in bodyCollisionExemptBones)
                 if (bone) m_BodyCollisionExemptBones.Add(bone);
-        AddChains(hairRoots, m_Hair, m_BoundBones);
-        AddChains(skirtRoots, m_Skirt, m_BoundBones);
+        AddChains(hairRoots, m_Hair, m_BoundBones, m_PassiveChainBones);
+        AddChains(skirtRoots, m_Skirt, m_BoundBones, m_PassiveChainBones);
         BindInnerSkirt();
         BindFrontSkirt();
         AddChestJoints(m_Chest, m_BoundBones);
@@ -306,7 +313,8 @@ public sealed class SecondaryBoneSpring : MonoBehaviour {
     // Roots may name every bone of one chain (the importer does for the skirt).
     // Walking on childCount==1 would then bind the same bone many times and the
     // copies would fight over one transform. Bind every bone at most once.
-    private static void AddChains(Transform[] roots, List<SpringJoint> joints, HashSet<Transform> bound) {
+    private static void AddChains(Transform[] roots, List<SpringJoint> joints, HashSet<Transform> bound,
+        HashSet<Transform> passive) {
         if (roots == null) return;
         foreach (var root in roots) {
             if (!root || bound.Contains(root)) continue;
@@ -315,12 +323,16 @@ public sealed class SecondaryBoneSpring : MonoBehaviour {
                 if (bound.Contains(bone)) break;
                 var child = bone.GetChild(0);
                 bound.Add(bone);
-                joints.Add(new SpringJoint {
-                    bone = bone,
-                    localTip = child.localPosition,
-                    restLocalRotation = bone.localRotation,
-                    airflowPhase = joints.Count * 0.67f
-                });
+                // MMD offset nodes carry static spacing, not another flexible
+                // joint. Keep traversing through them so the weighted EX bones
+                // below are bound once, without accumulating extra bend limits.
+                if (!passive.Contains(bone))
+                    joints.Add(new SpringJoint {
+                        bone = bone,
+                        localTip = child.localPosition,
+                        restLocalRotation = bone.localRotation,
+                        airflowPhase = joints.Count * 0.67f
+                    });
                 bone = child;
             }
         }

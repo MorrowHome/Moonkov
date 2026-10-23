@@ -221,10 +221,11 @@ namespace Unity.MP_FPS
         private void SpawnPlayerCharacter(ref SystemState state, EntityCommandBuffer ecb, Entity connectionEntity, FixedString64Bytes playerName, int characterIndex)
         {
             var playerEntityPrefabs = SystemAPI.GetSingleton<PlayerEntityPrefabs>();
-            // Moonkov has one operator. Ignore legacy client choices without renumbering its ghost identity.
-            characterIndex = GameSettings.DollSingerCharacterIndex;
+            characterIndex = GameSettings.NormalizeCharacterIndex(characterIndex);
             if (playerEntityPrefabs.DollSingerEntityPrefab == Entity.Null)
                 throw new InvalidOperationException("Moonkov requires a registered DollSinger player prefab.");
+            if (characterIndex == GameSettings.HatsuneMikuCharacterIndex && playerEntityPrefabs.HatsuneMikuEntityPrefab == Entity.Null)
+                characterIndex = GameSettings.DollSingerCharacterIndex;
             var ownerNetworkId = SystemAPI.GetComponent<NetworkId>(connectionEntity);
             
             // Instantiate the client input entity
@@ -235,7 +236,8 @@ namespace Unity.MP_FPS
             ecb.SetComponent(clientInputEntity, new PlayerCommandTarget { NetworkId = ownerNetworkId.Value });
 
             // Instantiate the player entity
-            var playerEntityPrefab = playerEntityPrefabs.DollSingerEntityPrefab;
+            var playerEntityPrefab = characterIndex == GameSettings.HatsuneMikuCharacterIndex
+                ? playerEntityPrefabs.HatsuneMikuEntityPrefab : playerEntityPrefabs.DollSingerEntityPrefab;
             var playerEntity = ecb.Instantiate(playerEntityPrefab);
 
             if (MoonRaidMap.Active == null && !state.EntityManager.HasComponent<RaidInventoryState>(connectionEntity))
@@ -308,6 +310,7 @@ namespace Unity.MP_FPS
             {
                 var joined = SystemAPI.GetComponent<JoinedClient>(connectionEntity);
                 joined.PlayerEntity = playerEntity;
+                joined.CharacterIndex = characterIndex;
                 ecb.SetComponent(connectionEntity, joined);
             }
 
