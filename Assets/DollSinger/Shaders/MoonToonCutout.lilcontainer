@@ -7,6 +7,11 @@ Shader "Moonkov/lilToonMoonCutout"
         _MoonShadowNear ("Near occlusion distance (m)", Float) = 0.12
         _MoonShadowFar ("Far occlusion distance (m)", Float) = 0.8
     }
+    HLSLINCLUDE
+        // Build optimization also injects UnityPerMaterial into lilToon's
+        // unnamed UV-retention pass. Its commented pipeline include defines no macros.
+        #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+    ENDHLSL
     lilPassShaderName "Hidden/Moonkov/lilToonMoonPassCutout"
     lilSubShaderTags {"RenderType" = "TransparentCutout" "Queue" = "AlphaTest"}
     lilSubShader URP "DefaultUsePass"
