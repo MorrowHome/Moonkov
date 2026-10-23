@@ -114,12 +114,12 @@ namespace Unity.MP_FPS.Client
         }
         private static Label Text(VisualElement parent, string text, string css)
         { var label = new Label { pickingMode=PickingMode.Ignore }; label.AddToClassList(css); parent.Add(label); MoonkovLocalization.Set(label, text); return label; }
-        private static string SlotLabel(string slot) => slot == "Helmet" ? "COLLAR" : slot == "Shield" ? "SHIELD" : slot == "Melee" ? "MELEE" : slot == "ChestRig" ? "CHEST RIG" : slot == "Primary" ? "PRIMARY" : slot == "Secondary" ? "SECONDARY" : slot.ToUpperInvariant();
+        private static string SlotLabel(string slot) => slot == "SecureContainer" ? "保险箱" : slot.StartsWith("Special", StringComparison.Ordinal) ? "特殊装备 " + slot.Substring(7) : slot == "Helmet" ? "COLLAR" : slot == "Shield" ? "SHIELD" : slot == "Melee" ? "MELEE" : slot == "ChestRig" ? "CHEST RIG" : slot == "Primary" ? "PRIMARY" : slot == "Secondary" ? "SECONDARY" : slot.ToUpperInvariant();
         public static StashArtKind Art(string code)
         {
             int organ=System.Array.FindIndex(AlienBiology.Organs,o=>o.Code==code);
             if(organ>=0)return (StashArtKind)((int)StashArtKind.AlienSpider+organ);
-            switch (code) { case "secure_case":return StashArtKind.SecureCase; case "dust":return StashArtKind.Dust; case "alloy":return StashArtKind.Alloy; case "cells":return StashArtKind.Cell; case "medkit":return StashArtKind.Medical;
+            switch (code) { case "survey_compass":return StashArtKind.SurveyCompass; case "laser_rangefinder":return StashArtKind.Rangefinder; case "secure_case":return StashArtKind.SecureCase; case "dust":return StashArtKind.Dust; case "alloy":return StashArtKind.Alloy; case "cells":return StashArtKind.Cell; case "medkit":return StashArtKind.Medical;
                 case "alien_raw_meat":return StashArtKind.AlienMeat;
                 case "alien_neural_core":case "alien_core":return StashArtKind.AlienOrgan;
                 case "alien_tissue":return StashArtKind.AlienTissue;
@@ -220,6 +220,7 @@ namespace Unity.MP_FPS.Client
             MoonkovLocalization.Set(m_Weight, "CARRIED {0:0.0} / {1:0} KG" , m_Graph.CarriedWeight, InventoryCatalog.CarryWeightLimit);
             AddContainer(m_ContainerPane, m_Graph.Equipped("ChestRig"), "CHEST RIG");
             AddContainer(m_ContainerPane, m_Graph.Find("pockets"), "POCKETS");
+            AddSpecialEquipment();
             AddContainer(m_ContainerPane, m_Graph.Equipped("Backpack"), "BACKPACK");
             AddContainer(m_ContainerPane, m_Graph.Equipped("SecureContainer"), "保险箱");
             if (!m_Stash) RenderRaidLoot(loot);

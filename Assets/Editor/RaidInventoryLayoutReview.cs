@@ -25,13 +25,21 @@ public sealed class RaidInventoryLayoutReview : EditorWindow
     public static void Open(string mode, int width, int height, string folder)
     {
         if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("Run outside Play mode.");
-        if (mode != "corpse" && mode != "cache" && mode != "empty" && mode != "warehouse") throw new ArgumentException("Unknown inventory review case.");
+        if (mode != "corpse" && mode != "cache" && mode != "empty" && mode != "warehouse" && mode != "secure") throw new ArgumentException("Unknown inventory review case.");
         var window = CreateInstance<RaidInventoryLayoutReview>();
         window.m_Case = mode; window.m_Folder = Path.GetFullPath(folder);
         window.titleContent = new GUIContent("背包与搜刮 / 原生预览");
         window.minSize = window.maxSize = new Vector2(width, height);
         window.position = new Rect(30, 30, width, height); window.ShowUtility(); window.Build();
-        window.rootVisualElement.schedule.Execute(window.Review).StartingIn(700);
+        window.rootVisualElement.schedule.Execute(() =>
+        {
+            if (mode != "secure") window.Review();
+            else
+            {
+                window.m_View.Element.Q<ScrollView>("containerPane").ScrollTo(window.m_View.Element.Q("inventorySlotSecureContainer").parent.parent);
+                window.rootVisualElement.schedule.Execute(window.Review).StartingIn(150);
+            }
+        }).StartingIn(700);
     }
     private void Build()
     {
@@ -48,6 +56,10 @@ public sealed class RaidInventoryLayoutReview : EditorWindow
             m_Carried.AddSupply("medkit", 2); m_Carried.AddSupply("cells", 3);
             m_Carried.AddSupply("water", 1, m_Carried.Equipped("Backpack").Id);
             m_Carried.AddSupply("ration", 1, m_Carried.Equipped("ChestRig").Id);
+            m_Carried.Items.Add(new InventoryItem { Id = Guid.NewGuid().ToString("D"), Code = "survey_compass", Parent = "equipment", Region = "Special1" });
+            m_Carried.Items.Add(new InventoryItem { Id = Guid.NewGuid().ToString("D"), Code = "laser_rangefinder", Parent = "equipment", Region = "Special2" });
+            var box = new InventoryItem { Id = Guid.NewGuid().ToString("D"), Code = "secure_case", Parent = "equipment", Region = "SecureContainer" };
+            m_Carried.Items.Add(box); Require(m_Carried.AddSupply("data_drive", 1, box.Id, true) == InventoryError.None, "Cannot stock secure case fixture.");
         }
         if (warehouse)
         {
@@ -124,7 +136,7 @@ public sealed class RaidInventoryLayoutReview : EditorWindow
             var right = m_View.Element.Q("lootPane").worldBound;
             Require(left.xMax <= middle.xMin && middle.xMax <= right.xMin, "Three-column order or clipping incorrect.");
             Require(middle.width >= 260 && right.width >= 260, "Container columns too narrow.");
-            foreach (var slot in new[] { "Helmet", "Shield", "Primary", "Secondary", "Pistol", "Melee", "ChestRig", "Backpack" })
+            foreach (var slot in new[] { "Helmet", "Shield", "Primary", "Secondary", "Pistol", "Melee", "ChestRig", "Backpack", "SecureContainer", "Special1", "Special2", "Special3" })
                 Require(m_View.Element.Q<Button>("inventorySlot" + slot) != null, "Player equipment slot missing: " + slot);
             if (m_Case == "warehouse")
             {
@@ -134,7 +146,7 @@ public sealed class RaidInventoryLayoutReview : EditorWindow
                 var pocket = m_View.Element.Q("inventoryGridpockets-3");
                 Drag(tile, pocket.worldBound.center);
                 Require(m_Commands == 1 && m_Carried.Find(supply.Id).Parent == "pockets", "Warehouse-to-pockets move failed.");
-                Directory.CreateDirectory(m_Folder); File.WriteAllText(Path.Combine(m_Folder, "warehouse-checks.txt"), "PASS: native warehouse columns, static portrait, eight equipment targets, warehouse-to-pocket authoritative transaction.");
+                Directory.CreateDirectory(m_Folder); File.WriteAllText(Path.Combine(m_Folder, "warehouse-checks.txt"), "PASS: native warehouse columns, static portrait, twelve equipment targets, warehouse-to-pocket authoritative transaction.");
                 return;
             }
             var quick = rootVisualElement.Q("quickSlot9");
@@ -142,6 +154,14 @@ public sealed class RaidInventoryLayoutReview : EditorWindow
             Require(quick.panel.Pick(quick.worldBound.center) == quick, "Quickbar is covered by another panel.");
             if (m_Case == "empty") Require(m_View.Element.Q("containerPane").Q("inventorySlotBackpack") != null && m_View.Element.Q("containerPane").Q("inventorySlotChestRig") != null, "Empty container drop slots missing.");
             Capture(Path.Combine(m_Folder, m_Case + "-" + Mathf.RoundToInt(rootVisualElement.resolvedStyle.width) + ".png"));
+            if (m_Case == "secure")
+            {
+                var box = m_Carried.Equipped("SecureContainer");
+                var grid = m_View.Element.Q("inventoryGrid" + box.Id + "-main");
+                var viewport = m_View.Element.Q<ScrollView>("containerPane").contentViewport.worldBound;
+                Require(grid != null && grid.worldBound.yMin >= viewport.yMin && grid.worldBound.yMax <= viewport.yMax + 1, "Secure-case contents not fully visible in review.");
+                File.WriteAllText(Path.Combine(m_Folder, "secure-checks.txt"), "PASS: dedicated secure-case target and actual content grid."); return;
+            }
             if (m_Case != "empty")
             {
                 var medicine = m_Joined.Items.First(i => i.Code == "medkit"); var tile = m_View.Element.Q<Button>("inventoryItem" + medicine.Id);
@@ -158,8 +178,14 @@ public sealed class RaidInventoryLayoutReview : EditorWindow
                 Drag(source, m_View.Element.Q("inventorySlotHelmet").worldBound.center);
                 Require(m_Commands == 1 && m_Carried.Equipped("Helmet")?.Id == helmet.Id, "Corpse-to-equipment transaction failed.");
             }
+            else if (m_Case == "cache")
+            {
+                string tool = m_Carried.Equipped("Special1").Id;
+                Drag(m_View.Element.Q<Button>("inventorySlotSpecial1"), m_View.Element.Q("inventorySlotSpecial3").worldBound.center);
+                Require(m_Commands == 1 && m_Carried.Equipped("Special3")?.Id == tool && m_Carried.Equipped("Special1") == null, "Special-tool slot transfer failed.");
+            }
             Directory.CreateDirectory(m_Folder);
-            File.WriteAllText(Path.Combine(m_Folder, m_Case + "-checks.txt"), "PASS: native column order, eight equipment slots, visible quickbar; " + (m_Case == "empty" ? "empty chest-rig/backpack targets." : "drag and click binding; " + (m_Case == "corpse" ? "corpse-to-equipment authoritative graph exchange." : "supply cache.")));
+            File.WriteAllText(Path.Combine(m_Folder, m_Case + "-checks.txt"), "PASS: native column order, twelve equipment slots, visible quickbar; " + (m_Case == "empty" ? "empty chest-rig/backpack/case/tool targets." : "drag and click binding; " + (m_Case == "corpse" ? "corpse-to-equipment authoritative graph exchange." : "supply cache and special-tool slot transfer.")));
         }
         catch (Exception error) { Directory.CreateDirectory(m_Folder); File.WriteAllText(Path.Combine(m_Folder, m_Case + "-checks.txt"), error.ToString()); Debug.LogException(error); }
         finally { Close(); }

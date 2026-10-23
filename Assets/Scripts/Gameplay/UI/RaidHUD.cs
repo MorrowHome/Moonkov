@@ -149,6 +149,7 @@ namespace Unity.MP_FPS
             InitializeBountyClash();
             InitializeProtection();
             InitializeRaidMap();
+            InitializeSpecialEquipment();
         }
 
         private void EquipmentTab() => SelectHealth(false);
@@ -343,6 +344,7 @@ namespace Unity.MP_FPS
             UpdateInventoryView();
             PresentTimedAction();
             bool clash = PresentBountyClash();
+            UpdateSpecialEquipment();
             UpdateRaidMap(clash);
             bool ready = m_Snapshot.RaidId > 0;
             bool settled = ready && m_Snapshot.Phase != RaidPhase.Active;

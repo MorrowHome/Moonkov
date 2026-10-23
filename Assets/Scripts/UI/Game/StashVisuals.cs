@@ -5,7 +5,7 @@ namespace Unity.MP_FPS.Client
 {
     public enum StashArtKind { None, Dust, Alloy, Cell, Halo, Outfit, Helmet, Rifle, Pistol, ChestRig, Backpack, HaloRifle, HaloRevolver, HaloShotgun, Medical, HaloSniper, Ration, Water, HaloCapacitor, HaloChargeBridge, HaloFocusLens, HaloFanArray, HaloPulseController, HaloHitMarker, OxygenCanister,
         MedicalGel, TraumaKit, EnergyGel, ProteinBar, Electrolyte, OxygenReserve, ScoutRig, FieldRig, SlingPack, CargoPack, CircuitBoard, CopperCoil, CeramicPlate, OpticalSensor, DataDrive, HeliumSample, QuantumCore, BlackBox, AlienMeat, AlienOrgan, AlienTissue,
-        AlienSpider, AlienSnake, AlienCaterpillar, AlienTentacle, AlienCentipede, AlienLeech, AlienSlime, AlienRoots, AlienFaceHugger, EnergyGrenade, MooncoreFragment, MissionArchive, HaloMooncoreRecycler, HaloCicada, HaloTrine, HaloAegis, HaloVesper, HaloThorn, HaloSundown, HaloRondo, HaloTempest, HaloNocturne, LifeSupportShroud, ShieldGenerator, EnergySword, CombatKnife, ScoutPack, SecureCase }
+        AlienSpider, AlienSnake, AlienCaterpillar, AlienTentacle, AlienCentipede, AlienLeech, AlienSlime, AlienRoots, AlienFaceHugger, EnergyGrenade, MooncoreFragment, MissionArchive, HaloMooncoreRecycler, HaloCicada, HaloTrine, HaloAegis, HaloVesper, HaloThorn, HaloSundown, HaloRondo, HaloTempest, HaloNocturne, LifeSupportShroud, ShieldGenerator, EnergySword, CombatKnife, ScoutPack, SecureCase, SurveyCompass, Rangefinder }
 
     // Small original vector illustrations, kept sharp at the shared PanelSettings scale.
     [UxmlElement]
@@ -100,6 +100,8 @@ namespace Unity.MP_FPS.Client
                 case StashArtKind.ChestRig: ChestRig(); break;
                 case StashArtKind.Backpack: SubspacePack(2); break;
                 case StashArtKind.SecureCase: SecureCase(); break;
+                case StashArtKind.SurveyCompass: SurveyCompass(); break;
+                case StashArtKind.Rangefinder: Rangefinder(); break;
                 case StashArtKind.HaloCapacitor: Module(HaloModule.Capacitor); break;
                 case StashArtKind.HaloChargeBridge: Module(HaloModule.ChargeBridge); break;
                 case StashArtKind.HaloFocusLens: Module(HaloModule.FocusLens); break;
@@ -111,6 +113,22 @@ namespace Unity.MP_FPS.Client
         }
 
         private Vector2 P(float x, float y) => m_Origin + new Vector2(x, y) * m_Scale;
+        private void SurveyCompass()
+        {
+            Ring(0x536760, 10, 50, 52, 31); Ring(0xc1cbb8, 2, 50, 52, 24);
+            Shape(0xc8b080, new Vector2(50, 27), new Vector2(60, 61), new Vector2(50, 54));
+            Shape(0x8ca6ac, new Vector2(50, 77), new Vector2(40, 43), new Vector2(50, 54));
+            Line(0xdce4d0, 2, new Vector2(50, 12), new Vector2(50, 21));
+            Line(0xdce4d0, 2, new Vector2(13, 52), new Vector2(22, 52));
+            Line(0xdce4d0, 2, new Vector2(78, 52), new Vector2(87, 52));
+        }
+        private void Rangefinder()
+        {
+            Shape(0x607b73, new Vector2(14, 29), new Vector2(70, 21), new Vector2(88, 33), new Vector2(84, 72), new Vector2(29, 81), new Vector2(12, 66));
+            Box(0x263e39, 21, 35, 48, 27); Box(0xb1c9b2, 27, 42, 28, 10);
+            Ring(0xc3d3c7, 5, 75, 47, 9); Ring(0x1d343b, 5, 75, 47, 5);
+            Line(0x91ac9f, 3, new Vector2(29, 71), new Vector2(62, 67));
+        }
         private void SecureCase()
         {
             Box(0x526660, 13, 23, 74, 57); Box(0xa9b6a0, 18, 28, 64, 47);

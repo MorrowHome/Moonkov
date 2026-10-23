@@ -57,6 +57,15 @@ public static class SecureContainerChecks
                     graph = Read(); var med = graph.Items.First(i => i.Code == "medkit");
                     store.Move(new InventoryCommand { ExpectedVersion = graph.Version, ItemId = med.Id, Operation = InventoryOperation.Split, Quantity = 2, Parent = caseId, Region = "main" });
                     medicineId = Read().Children(caseId).Single().Id;
+                    for (int n = 1; n <= 3; n++)
+                    {
+                        string code = n == 2 ? "laser_rangefinder" : "survey_compass";
+                        store.Trade(new ShopCommand { RequestId = Guid.NewGuid().ToString("D"), Operation = ShopOperation.Buy, Code = code, Quantity = 1, ExpectedVersion = Read().Version });
+                        graph = Read(); var tool = graph.Items.First(i => i.Code == code && i.Parent == "stash");
+                        store.Move(new InventoryCommand { ExpectedVersion = graph.Version, ItemId = tool.Id, Parent = "equipment", Region = "Special" + n });
+                    }
+                    graph = Read();
+                    Check(graph.CanPlace(new InventoryItem { Id = Guid.NewGuid().ToString("D"), Code = "dust" }, "equipment", "Special1", 0, 0, false) == InventoryError.Incompatible, "Special slot accepts ordinary loot.");
                     var deployment = new RaidPersistenceContext.Deployment { PlayerId = player, DeploymentId = Guid.NewGuid().ToString("D"), Cells = 0 };
                     if (clash)
                     {
@@ -79,6 +88,7 @@ public static class SecureContainerChecks
                     }
                     var result = Read();
                     Check(!store.RaidActive && result.Equipped("SecureContainer")?.Id == caseId && result.Find(medicineId)?.Quantity == 2, "Protected kit lost: " + clash + outcome);
+                    Check(result.Equipped("Special1")?.Code == "survey_compass" && result.Equipped("Special2")?.Code == "laser_rangefinder" && result.Equipped("Special3")?.Code == "survey_compass", "Protected special tools lost.");
                     Check(result.Count("data_drive") == (outcome == "Abandoned" ? 0 : 1), "Protected loot lost or invented.");
                     if (outcome != "Extracted") Check(result.MissionFirsts == 0 && !result.Items.Any(i => i.FoundInRaid), "Failure grants extraction facts.");
                     returnedCount = result.Items.Count;

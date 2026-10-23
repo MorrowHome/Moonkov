@@ -4,6 +4,7 @@
     <ui:Style src="UI/RaidMinimap.uss" />
     <ui:Style src="UI/RaidInventory.uss" />
     <ui:VisualElement name="raidPresentation" class="raid-ui archive-ui" picking-mode="Ignore">
+        <ui:Label name="raidSurveyReadout" class="raid-survey-readout moonkov-style-font" picking-mode="Ignore" />
         <ui:VisualElement name="raidMinimap" class="raid-minimap" picking-mode="Ignore">
             <ui:VisualElement class="raid-minimap-heading" picking-mode="Ignore">
                 <ui:Label name="raidMinimapSignal" text="SURFACE / LIVE" picking-mode="Ignore" />

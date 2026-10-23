@@ -58,3 +58,8 @@
 .inventory-warehouse .inventory-slot-item { white-space: normal; }
 .inventory-warehouse .inventory-item-label { font-size: 12px; }
 .inventory-warehouse .inventory-item-art { left: 8%; right: 8%; top: 23%; bottom: 20%; }
+.inventory-raid .field-special-row { flex-direction: row; }
+.inventory-view.inventory-raid .field-special-slot { position: relative; width: 52px; height: 52px; flex-shrink: 0; margin: 0 4px 0 0; border-width: 1px; border-color: #58625e; background-color: #121819; }
+.inventory-raid .field-special-slot .inventory-slot-label, .inventory-raid .field-special-slot .inventory-slot-item { display: none; }
+.inventory-raid .field-special-slot .inventory-slot-art { top: 4px; bottom: 4px; left: 4px; right: 4px; }
+.raid-survey-readout { position: absolute; top: 18px; left: 50%; margin-left: -160px; width: 320px; padding: 6px 10px; font-size: 14px; color: #eeeee6; background-color: rgba(16,20,22,0.85); -unity-text-align: middle-center; -unity-font-definition: url("/Assets/Localization/Fonts/NotoSansCJKsc-Regular.otf"); display: none; white-space: normal; }

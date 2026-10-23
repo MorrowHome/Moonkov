@@ -53,6 +53,36 @@ namespace Unity.MP_FPS.Client
             m_Grids.Add(new Grid { Parent = InventoryCatalog.Equipment, Region = slot, Element = button,
                 Definition = InventoryCatalog.Get(InventoryCatalog.Equipment).Regions.First(r => r.Id == slot) });
         }
+        private void AddSpecialEquipment()
+        {
+            var group = new VisualElement(); group.AddToClassList("inventory-container"); m_ContainerPane.Add(group);
+            Text(group, "特殊装备", "inventory-section-title");
+            var row = new VisualElement(); row.AddToClassList("field-special-row"); group.Add(row);
+            for (int n = 1; n <= 3; n++)
+            {
+                string slot = "Special" + n;
+                var button = (Button)TerminalLayout.Clone(m_SlotTemplate, "equipmentSlot");
+                button.name = "inventorySlot" + slot; button.RemoveFromClassList("inventory-slot"); button.AddToClassList("field-special-slot");
+                TextSpecialSlot(button, slot, n);
+                button.RemoveManipulator(button.clickable);
+                button.AddManipulator(new Drag(this, () => m_Graph?.Equipped(slot), () => ChooseSlot(slot), () => ChooseSlot(slot)));
+                row.Add(button);
+                m_Grids.Add(new Grid { Parent = InventoryCatalog.Equipment, Region = slot, Element = button,
+                    Definition = InventoryCatalog.Get(InventoryCatalog.Equipment).Regions.First(r => r.Id == slot) });
+            }
+        }
+        private void TextSpecialSlot(Button button, string slot, int n)
+        {
+            var item = m_Graph?.Equipped(slot);
+            MoonkovLocalization.Set(button.Q<Label>("slotLabel"), "工具 " + n);
+            MoonkovLocalization.Set(button.Q<Label>("item"), item == null ? "空工具槽" : InventoryCatalog.Get(item.Code).Name);
+            if (item == null) button.tooltip = "拖入指南针或测距仪";
+            else
+            {
+                var art = new StashItemArt(Art(item.Code)); art.AddToClassList("inventory-equipment-icon"); button.Q("art").Add(art);
+                button.tooltip = MoonkovItemPresentation.Details(item.Code); m_Tiles[item.Id] = button;
+            }
+        }
         private void RenderRaidLoot(InventoryItem loot)
         {
             var title = m_Root.Q<Label>("lootTitle"); var caption = m_Root.Q<Label>("lootCaption");
