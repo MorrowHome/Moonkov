@@ -1,0 +1,60 @@
+{
+  "outcome": "Requested desk/stair and preparation island compatibility cleanup completed. Temporary isolation from 1f7a081c is fully removed.",
+  "supersedesCurrentStateIn": [
+    "CompatibilityDelivery.json",
+    "CompatibilityIsolationApplication.json",
+    "DeskRestorationDelivery.json"
+  ],
+  "deskRestorationCommit": "8e413defa1003f60e927d0482298f52662f5a279",
+  "desk": {
+    "sourceObjectsMoved": 20,
+    "existingColliderOwnersMoved": 15,
+    "moveStandardUnityLocalMeters": [
+      8.8,
+      0,
+      6
+    ],
+    "optimizedChunksHandled": 6,
+    "partialSharedChunkTargetTriangles": 124,
+    "partialSharedChunkUnrelatedTrianglesPreserved": 44,
+    "maxMatchedVertexErrorMillimeters": 0.186285,
+    "sourceMeshesAndOriginalAggregateAssetsPreserved": true
+  },
+  "stairs": {
+    "newObjectsActive": 214,
+    "stairCollidersActive": 25,
+    "playerWalkingTested": false
+  },
+  "prep": {
+    "newObjectsRestored": 6,
+    "oldObjectsRemoved": 0,
+    "reason": "No old rendered/collision triangles occupy the original preparation-island interior above its supporting floor, and none of four old source names/aliases appears in current bake manifest. Deleting unmatched old assets is unnecessary.",
+    "interiorSATDisplayTriangleHits": 0,
+    "interiorSATCollisionTriangleHits": 0,
+    "floorContactMarginMeters": 0.03,
+    "newIslandFurnitureColliderCount": 0
+  },
+  "currentAdditions": {
+    "L14RenderersActive": 1004,
+    "L14CollidersActive": 30,
+    "GI01RenderersActive": 614,
+    "GI01CollidersActive": 10,
+    "outerWalkCollidersRetained": 112,
+    "additionalSplitDeskRenderer": 1,
+    "newViewportPiecesStillDeferred": 51,
+    "unrelatedOldRenderReplacementsStillDeferred": 348,
+    "oldS21WallRemovalsStillDeferred": 7
+  },
+  "materialStatus": "Existing 22 private constant recipe approximations retained; procedural spatial material details not equivalent.",
+  "retained": "DEM, lunar materials, 118 light / 135 button mapping, old architectural collision, unrelated aggregate triangles/UV/material/lightmap state, ExpeditionClockPresentation and rendering configuration.",
+  "verification": "Exact source/aggregate triangle ownership; matching old-source bounds; 15 collider world translations; protected component and original asset hashes; clean saved scene; final additions prefab byte-equivalent after newline normalization to cc03fae7. No Play, Host, build, visual acceptance, walking or performance test.",
+  "rollback": "Revert the preparation-island restoration commit, then 8e413def, to return to conservative isolation. Original source mesh assets were not overwritten.",
+  "outsideScopeDirtyFiles": [
+    "Assets/Localization/Fonts/NotoSansCJKsc.asset",
+    "Assets/Settings/UniversalRenderPipelineGlobalSettings.asset",
+    "ProjectSettings/ProjectSettings.asset"
+  ],
+  "fontNote": "Font dirty state first observed during this Editor session; origin not established. Preserved and excluded from commits.",
+  "renderingIssue": "aeeadbf5d belongs to the other task. No rendering configuration edit or new Player visual validation here.",
+  "pushPerformed": false
+}
