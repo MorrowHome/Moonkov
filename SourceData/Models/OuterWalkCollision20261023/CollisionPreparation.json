@@ -1,0 +1,4327 @@
+{
+  "scope": "Workspace-only draft. Not imported, instantiated, committed, or verified by Unity.",
+  "rows": [
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "507e761cf645",
+      "name": "R08_Existing_EB07_Entry_Toe_Transition",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/507e761cf645.asset",
+      "meshGUID": "816f2714855759a4b9e6ee59e33a695d",
+      "meshSHA256": "c2fc4809f53a57d3244900159eb57b35fc273ee6837ae92df7a6d6d7ee7e184a",
+      "meshFilterFileID": "608388030484099726",
+      "gameObjectFileID": "1507611346569539367",
+      "worldBoundsManifest": [
+        [
+          1878.753173828125,
+          240.53419494628906,
+          2430.50244140625
+        ],
+        [
+          1881.86376953125,
+          240.6129913330078,
+          2431.90966796875
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "3db9c1d43682",
+      "name": "R07_Offset_Cover_Bay_Deck",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/3db9c1d43682.asset",
+      "meshGUID": "9a2470d116092014393009f1b71befea",
+      "meshSHA256": "29cd17fa062bde1150761935bbc94e7c78e9953b6397d67b89662ac604ad5523",
+      "meshFilterFileID": "903186231771569187",
+      "gameObjectFileID": "6535967841536575621",
+      "worldBoundsManifest": [
+        [
+          1824.647705078125,
+          167.1990966796875,
+          2083.632080078125
+        ],
+        [
+          1832.4608154296875,
+          167.7446746826172,
+          2087.7587890625
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "3dec6cca49c9",
+      "name": "R07_West_Inner_Continuous_Bridge_Deck",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/3dec6cca49c9.asset",
+      "meshGUID": "65ae4b5e42800284381567861aded212",
+      "meshSHA256": "002c87221bc60e0c19841ed266873d99d8bc0b981bf29993c91f4a7010c920ea",
+      "meshFilterFileID": "8603150488899182665",
+      "gameObjectFileID": "5082456579867755230",
+      "worldBoundsManifest": [
+        [
+          1806.23486328125,
+          166.73406982421875,
+          2077.51416015625
+        ],
+        [
+          1844.26513671875,
+          168.65663146972656,
+          2086.48583984375
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "ba982035f594",
+      "name": "R07_Street_Fitted_Threshold_Apron",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/ba982035f594.asset",
+      "meshGUID": "17577f48a93cffa4f864b978c81fcbbb",
+      "meshSHA256": "c773738a38d81a6ea70ea8ba069993dff2da47474c76d43f2598361bb8bd39fe",
+      "meshFilterFileID": "3166494966666080696",
+      "gameObjectFileID": "3077816008823514733",
+      "worldBoundsManifest": [
+        [
+          1803.699951171875,
+          168.05796813964844,
+          2081.5
+        ],
+        [
+          1806.76513671875,
+          169.45388793945312,
+          2086.5
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "5bf01582c37d",
+      "name": "R07_M04_Service_Exit_Threshold_Ramp",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/5bf01582c37d.asset",
+      "meshGUID": "8bc1ff24f1dc00c40aee473ee73aeeb3",
+      "meshSHA256": "223b2bf356e7c924561ec8eb23f6d4555fb60a741cf20392aade27a0c2ed0afd",
+      "meshFilterFileID": "3283919311552659535",
+      "gameObjectFileID": "4256987931011776851",
+      "worldBoundsManifest": [
+        [
+          1853.9000244140625,
+          166.8340606689453,
+          2078.5
+        ],
+        [
+          1857.0799560546875,
+          167.390380859375,
+          2081.5
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "12faef14be84",
+      "name": "R06_Raker_1_Deck_Shoe",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/12faef14be84.asset",
+      "meshGUID": "d7e4891f2c867584083beaa08e3d3f86",
+      "meshSHA256": "4f1cf0f35c1f4ad2ad79b467e8b4f589327c11d9428610640d65fa48258f0414",
+      "meshFilterFileID": "7361157209240600345",
+      "gameObjectFileID": "5578863969926508296",
+      "worldBoundsManifest": [
+        [
+          1964.0999755859375,
+          234.989990234375,
+          2388.125
+        ],
+        [
+          1965.199951171875,
+          235.20999145507812,
+          2389.175048828125
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 1975, y: 235, z: 2368.3}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "0a4670519283",
+      "name": "R06_Raker_0_Deck_Shoe",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/0a4670519283.asset",
+      "meshGUID": "ce4a8568d986e7448819e66f0d234837",
+      "meshSHA256": "b2898d6eb934c4d826ad7d64162ff29422947f24b82b692a3f3e0988bb565f9d",
+      "meshFilterFileID": "2171767870948062633",
+      "gameObjectFileID": "8678678360834030903",
+      "worldBoundsManifest": [
+        [
+          1964.0999755859375,
+          234.99000549316406,
+          2378.925048828125
+        ],
+        [
+          1965.199951171875,
+          235.20999145507812,
+          2379.97509765625
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 1975, y: 235, z: 2368.3}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "09e51fd3e292",
+      "name": "R06_Entry_Spine_Column_1_Deck_Bearing",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/09e51fd3e292.asset",
+      "meshGUID": "ff57b102e22830340b18889ce0ed9a60",
+      "meshSHA256": "f7a5cbdc137625f0a901e02f4e1e50124e8c6f8f6652a09e383b3d2b3f6581b8",
+      "meshFilterFileID": "6937691667289989576",
+      "gameObjectFileID": "4232181786192184500",
+      "worldBoundsManifest": [
+        [
+          1966.199951171875,
+          234.99000549316406,
+          2370.68994140625
+        ],
+        [
+          1967.199951171875,
+          235.14999389648438,
+          2371.7900390625
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 1975, y: 235, z: 2368.3}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "ee756190bd46",
+      "name": "R06_Entry_Spine_Column_0_Deck_Bearing",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/ee756190bd46.asset",
+      "meshGUID": "edd3b0bb9ae43d342b027183c24a061a",
+      "meshSHA256": "45063d4ec7105fb98bf50850e37e2cf39612077f9ac00883a617d79c44ebf803",
+      "meshFilterFileID": "6778793653332745285",
+      "gameObjectFileID": "4608374686864807082",
+      "worldBoundsManifest": [
+        [
+          1966.199951171875,
+          234.99000549316406,
+          2368.070068359375
+        ],
+        [
+          1967.199951171875,
+          235.14999389648438,
+          2369.170166015625
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 1975, y: 235, z: 2368.3}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "3fd0d8fbb9fb",
+      "name": "R04_P11_Outer_Flank_Link_Deck",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/3fd0d8fbb9fb.asset",
+      "meshGUID": "e6167574328c8484894e1aa62d90cd16",
+      "meshSHA256": "fea81ee54c2adf608861460009aa2c1b9eb514c2e869be87e153035b1f5fc8e6",
+      "meshFilterFileID": "7144320744408330521",
+      "gameObjectFileID": "4690253930277341288",
+      "worldBoundsManifest": [
+        [
+          1932.799560546875,
+          234.6496124267578,
+          2376.361083984375
+        ],
+        [
+          1952.0,
+          234.99961853027344,
+          2387.0
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "9a5afa49ae65",
+      "name": "R04_P10_Main_Oblique_Link_Deck",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/9a5afa49ae65.asset",
+      "meshGUID": "f0257c0d9a5169745902c92a7b108904",
+      "meshSHA256": "e4484551eea85bd982dc2e6158b9eeab0c8c19cd8b54eacd5118300a7991eec7",
+      "meshFilterFileID": "1799752735457404226",
+      "gameObjectFileID": "527612994795646194",
+      "worldBoundsManifest": [
+        [
+          1944.0,
+          234.64959716796875,
+          2384.197998046875
+        ],
+        [
+          1952.0,
+          234.99961853027344,
+          2395.802001953125
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "0a9314187236",
+      "name": "R04_P02_Ring_To_Transit_Court_Deck",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/0a9314187236.asset",
+      "meshGUID": "ee5059efbe896184e86bc715e9a4e2a7",
+      "meshSHA256": "6f9138f9b9433a2951f95024ba8a7987c7df835b36cfbfee91ff5c0e102da812",
+      "meshFilterFileID": "5613630796997622831",
+      "gameObjectFileID": "2789334332938688299",
+      "worldBoundsManifest": [
+        [
+          1967.199951171875,
+          234.6496124267578,
+          2351.012451171875
+        ],
+        [
+          1972.800048828125,
+          234.99961853027344,
+          2362.0
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": {
+        "center": [
+          1970.0,
+          234.8249969482422,
+          2356.5062255859375
+        ],
+        "size": [
+          5.60009765625,
+          0.350006103515625,
+          10.987548828125
+        ],
+        "proof": "8 exact AABB corners; 12 nondegenerate triangles; 6 complete faces; closed edge incidence"
+      },
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "bd2cd08c370d",
+      "name": "R04_P01_Ring_Threshold_Explicit_Treads",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/bd2cd08c370d.asset",
+      "meshGUID": "cdabd313ffcc009479edf52e4baa9b3c",
+      "meshSHA256": "6d4b07d948bf378f67f19b343bc981b14fc2e840dcbec638ca1f95a8e4edac1b",
+      "meshFilterFileID": "5953134659471270324",
+      "gameObjectFileID": "6729729907122137257",
+      "worldBoundsManifest": [
+        [
+          1967.5999755859375,
+          232.9962921142578,
+          2345.987548828125
+        ],
+        [
+          1972.4000244140625,
+          234.99961853027344,
+          2351.012451171875
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "f4fb41b39242",
+      "name": "R04_N03_R08_Aerial_Landing_Deck",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/f4fb41b39242.asset",
+      "meshGUID": "629d0fe136ce6174f8f96dd43e1b79cd",
+      "meshSHA256": "6f129a6a7144663d3a606ca98c18c02de9d2210f710373d94eb91146becd5e9a",
+      "meshFilterFileID": "280288426911966953",
+      "gameObjectFileID": "5250158203242330936",
+      "worldBoundsManifest": [
+        [
+          1894.8216552734375,
+          240.18719482421875,
+          2413.6533203125
+        ],
+        [
+          1904.9735107421875,
+          240.53720092773438,
+          2425.48193359375
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "ceff7d0f3ed2",
+      "name": "R04_N02_Rim_Ascent_Top_Landing",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/ceff7d0f3ed2.asset",
+      "meshGUID": "20ae96f60162c954a80f9f08ec7b546a",
+      "meshSHA256": "13835d5dee1dbc9df3ac8ca4050262674558a2c2c84ff8a559e377190d8142ef",
+      "meshFilterFileID": "668088640855430887",
+      "gameObjectFileID": "4113829487897489722",
+      "worldBoundsManifest": [
+        [
+          1899.9912109375,
+          240.17721557617188,
+          2410.8310546875
+        ],
+        [
+          1906.8616943359375,
+          240.53720092773438,
+          2415.954345703125
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "5298ad428eb8",
+      "name": "R04_N01_Rim_Ascent_Explicit_Treads",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/5298ad428eb8.asset",
+      "meshGUID": "aa7a561da6f9b6f4eb6d7ceb0078bf32",
+      "meshSHA256": "9e5db7a80db47532897a484a30e24ab53f17031c211a623086a51008776943ed",
+      "meshFilterFileID": "7978172251002855026",
+      "gameObjectFileID": "2850588342519816827",
+      "worldBoundsManifest": [
+        [
+          1901.7760009765625,
+          235.00265502929688,
+          2394.07470703125
+        ],
+        [
+          1913.2239990234375,
+          240.53720092773438,
+          2412.92529296875
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "e3d8f68d357f",
+      "name": "R02_S05_Main_Switchback_Flight_4_Explicit_Treads",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/e3d8f68d357f.asset",
+      "meshGUID": "d1f10f36f09559949a8a768e12458ca2",
+      "meshSHA256": "07eb07fb09b53def60f38e0e3c31b6bd68235d4d4f6bd6ba0c503bef7491962d",
+      "meshFilterFileID": "7845507808960218449",
+      "gameObjectFileID": "4889472237823568005",
+      "worldBoundsManifest": [
+        [
+          1781.800048828125,
+          230.7016143798828,
+          2369.987548828125
+        ],
+        [
+          1786.199951171875,
+          234.99961853027344,
+          2381.012451171875
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "eee6bc6ae510",
+      "name": "R02_S05_Main_Switchback_Flight_3_Explicit_Treads",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/eee6bc6ae510.asset",
+      "meshGUID": "05ae9e17903c0634caab7199eee286fb",
+      "meshSHA256": "c8c6eaac0deb3d0a6b82c59fededbac4d8a6f1ef5f421dafe267a272e3bf9fc2",
+      "meshFilterFileID": "3862179588989217135",
+      "gameObjectFileID": "7764556421647040284",
+      "worldBoundsManifest": [
+        [
+          1774.800048828125,
+          226.401611328125,
+          2369.987548828125
+        ],
+        [
+          1779.199951171875,
+          230.69961547851562,
+          2381.012451171875
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "b37b70cef379",
+      "name": "R02_S05_Main_Switchback_Flight_2_Explicit_Treads",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/b37b70cef379.asset",
+      "meshGUID": "6b20e98680f2f4c42939dd500e861008",
+      "meshSHA256": "c9ac3d9b1fe515103d7c74b4f9c7ffba9b3c373054e6b8eca62bb81b3e3d0c6a",
+      "meshFilterFileID": "2811747808361228104",
+      "gameObjectFileID": "4494386070478603673",
+      "worldBoundsManifest": [
+        [
+          1781.800048828125,
+          222.10162353515625,
+          2369.987548828125
+        ],
+        [
+          1786.199951171875,
+          226.3996124267578,
+          2381.012451171875
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "dcb2d7a4d8c2",
+      "name": "R02_S05_Main_Switchback_Flight_1_Explicit_Treads",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/dcb2d7a4d8c2.asset",
+      "meshGUID": "37b8f046e65fff344ba455d99ab6c90e",
+      "meshSHA256": "7835bc0964591a262fd4ad302e0b44c306e948082bff2ab04a51d9502106c044",
+      "meshFilterFileID": "6851152334055301938",
+      "gameObjectFileID": "7221622299440170035",
+      "worldBoundsManifest": [
+        [
+          1774.800048828125,
+          217.80162048339844,
+          2369.987548828125
+        ],
+        [
+          1779.199951171875,
+          222.09962463378906,
+          2381.012451171875
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "909092b89ad2",
+      "name": "R02_S03_Middle_South_Landing",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/909092b89ad2.asset",
+      "meshGUID": "0ef5b83da79134d40b63aa8433c48c36",
+      "meshSHA256": "4ef208991d2973230fcaeecaa3fe79199d48228a2c18b0b3980ad90907983a44",
+      "meshFilterFileID": "2850155687813136505",
+      "gameObjectFileID": "3688786231862782119",
+      "worldBoundsManifest": [
+        [
+          1773.800048828125,
+          226.03961181640625,
+          2365.0
+        ],
+        [
+          1787.199951171875,
+          226.3996124267578,
+          2370.0
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": {
+        "center": [
+          1780.5,
+          226.2199935913086,
+          2367.5
+        ],
+        "size": [
+          13.39990234375,
+          0.3600006103515625,
+          5.0
+        ],
+        "proof": "8 exact AABB corners; 12 nondegenerate triangles; 6 complete faces; closed edge incidence"
+      },
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "afc74c3ad240",
+      "name": "R02_S02_North_Turning_Landing_3",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/afc74c3ad240.asset",
+      "meshGUID": "203a6369d55e0064d8fa82e561c3351d",
+      "meshSHA256": "ab88ae57b4f7edff1221d0491e0fa9cea51312be178702a59846dfb91e5ee417",
+      "meshFilterFileID": "365729271689333554",
+      "gameObjectFileID": "811046553785664502",
+      "worldBoundsManifest": [
+        [
+          1773.800048828125,
+          230.33961486816406,
+          2381.0
+        ],
+        [
+          1787.199951171875,
+          230.69961547851562,
+          2386.0
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": {
+        "center": [
+          1780.5,
+          230.5199966430664,
+          2383.5
+        ],
+        "size": [
+          13.39990234375,
+          0.3600006103515625,
+          5.0
+        ],
+        "proof": "8 exact AABB corners; 12 nondegenerate triangles; 6 complete faces; closed edge incidence"
+      },
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "e2b8c58a0af3",
+      "name": "R02_S02_North_Turning_Landing_1",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/e2b8c58a0af3.asset",
+      "meshGUID": "337b538f40cc0dc418755bf05a93644e",
+      "meshSHA256": "71d7e0af5468021586b92a77f75c68e95224c67b5d2cd54c62478e2487c19c56",
+      "meshFilterFileID": "864455057546286561",
+      "gameObjectFileID": "9200728846029427263",
+      "worldBoundsManifest": [
+        [
+          1773.800048828125,
+          221.7396240234375,
+          2381.0
+        ],
+        [
+          1787.199951171875,
+          222.09962463378906,
+          2386.0
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": {
+        "center": [
+          1780.5,
+          221.92000579833984,
+          2383.5
+        ],
+        "size": [
+          13.39990234375,
+          0.3600006103515625,
+          5.0
+        ],
+        "proof": "8 exact AABB corners; 12 nondegenerate triangles; 6 complete faces; closed edge incidence"
+      },
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "567277d7e7e0",
+      "name": "R02_P05a_East_Full_Width_Threshold",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/567277d7e7e0.asset",
+      "meshGUID": "fea6e4aef3e17c9469814b9a86a4d0ee",
+      "meshSHA256": "e54758d755d88f07896ac41d47de5e37b5a92c262cae91f25d8e6fb1f3ee3215",
+      "meshFilterFileID": "442782267102677937",
+      "gameObjectFileID": "4841972572478530809",
+      "worldBoundsManifest": [
+        [
+          1803.5,
+          213.41098022460938,
+          2364.10009765625
+        ],
+        [
+          1807.5,
+          214.35231018066406,
+          2367.89990234375
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "dd89a2657205",
+      "name": "R02_P05_East_Loading_Exit_Explicit_Treads",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/dd89a2657205.asset",
+      "meshGUID": "b55573281ef64184f9c45f07b6f2f60e",
+      "meshSHA256": "d168f37f89eb7f683fb68b239a59bd7e1a4c1da1bcec621a07951d4b4236aa9f",
+      "meshFilterFileID": "5478477959695947560",
+      "gameObjectFileID": "9113713682879160580",
+      "worldBoundsManifest": [
+        [
+          1795.987548828125,
+          214.35467529296875,
+          2364.199951171875
+        ],
+        [
+          1803.512451171875,
+          217.79962158203125,
+          2367.800048828125
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "5b34215c11aa",
+      "name": "R02_P03_North_Flank_Stair_Explicit_Treads",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/5b34215c11aa.asset",
+      "meshGUID": "dbdc527d76f68f141a16fe197f575eee",
+      "meshSHA256": "1b59e228d100310a55658ba274492a8dd52e42d9903b0df9b9857ac686613313",
+      "meshFilterFileID": "1527179602925968372",
+      "gameObjectFileID": "9187405169223982892",
+      "worldBoundsManifest": [
+        [
+          1766.316650390625,
+          221.9296112060547,
+          2382.359619140625
+        ],
+        [
+          1775.283447265625,
+          222.09962463378906,
+          2393.040283203125
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "1dc83c5f4c51",
+      "name": "R02_P01a_West_Full_Width_Threshold",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/1dc83c5f4c51.asset",
+      "meshGUID": "b424515704d08ed4092f13aabc4ab3bc",
+      "meshSHA256": "e3839134ffa18fe4638bb39dce9ab3965c2146864a3805a661df1c91c8b1d68c",
+      "meshFilterFileID": "8781859432577538537",
+      "gameObjectFileID": "4308271254299731508",
+      "worldBoundsManifest": [
+        [
+          1764.0,
+          216.24533081054688,
+          2363.699951171875
+        ],
+        [
+          1768.0,
+          216.83035278320312,
+          2368.300048828125
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "71540025fad4",
+      "name": "R02_P01_Main_West_Entrance_Explicit_Treads",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/71540025fad4.asset",
+      "meshGUID": "ce2f5f7eeec8bce468fbf4e4c73ad5ef",
+      "meshSHA256": "1a17004cc1da66d75e397a7e6602da415a9c2abb04a19486130c4a6d92d124b5",
+      "meshFilterFileID": "4238344433180145925",
+      "gameObjectFileID": "4794022265881680136",
+      "worldBoundsManifest": [
+        [
+          1767.9874267578125,
+          216.72671508789062,
+          2363.800048828125
+        ],
+        [
+          1772.012451171875,
+          217.79962158203125,
+          2368.199951171875
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "2ad43e9fd322",
+      "name": "R02_N03_Rim_Platform_Aerial_Link_Deck",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/2ad43e9fd322.asset",
+      "meshGUID": "2c48f9b755c8bdf4bb5c6c284f7c4346",
+      "meshSHA256": "b4f737e831b328bd79154c3e3aba3df72fd3c029328447dc92e0c41849564727",
+      "meshFilterFileID": "8131577936908051255",
+      "gameObjectFileID": "8010861758901158377",
+      "worldBoundsManifest": [
+        [
+          1829.2999267578125,
+          240.18719482421875,
+          2412.949951171875
+        ],
+        [
+          1834.0999755859375,
+          240.53720092773438,
+          2437.050048828125
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": {
+        "center": [
+          1831.699951171875,
+          240.3625946044922,
+          2425.0
+        ],
+        "size": [
+          4.800048828125,
+          0.350006103515625,
+          24.10009765625
+        ],
+        "proof": "8 exact AABB corners; 12 nondegenerate triangles; 6 complete faces; closed edge incidence"
+      },
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "d92afb67a999",
+      "name": "R02_N02_Bypass_Top_Landing",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/d92afb67a999.asset",
+      "meshGUID": "324bde379d19b854ab3a1cdfa749f07d",
+      "meshSHA256": "67b9512f7264882ae976de8d3e412d9823d84c10470c150af12ae6bf1536edcd",
+      "meshFilterFileID": "8324758354580598396",
+      "gameObjectFileID": "385369417577502646",
+      "worldBoundsManifest": [
+        [
+          1829.0,
+          240.1772003173828,
+          2412.699951171875
+        ],
+        [
+          1834.4000244140625,
+          240.53720092773438,
+          2415.699951171875
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": {
+        "center": [
+          1831.7000122070312,
+          240.35759735107422,
+          2414.199951171875
+        ],
+        "size": [
+          5.4000244140625,
+          0.3600006103515625,
+          3.0
+        ],
+        "proof": "8 exact AABB corners; 12 nondegenerate triangles; 6 complete faces; closed edge incidence"
+      },
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "1c7c307fe4b7",
+      "name": "R02_N01_Terminal_East_Bypass_Stair_Explicit_Treads",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/1c7c307fe4b7.asset",
+      "meshGUID": "d1e637add88b1d94da3fd858b2f37cc1",
+      "meshSHA256": "5e67674b3e1a371602f07c8c58413e813faf1c1f4e7acffad2697e179b4128cd",
+      "meshFilterFileID": "5845194884625811515",
+      "gameObjectFileID": "6846985326788190279",
+      "worldBoundsManifest": [
+        [
+          1829.5,
+          233.70054626464844,
+          2397.987548828125
+        ],
+        [
+          1833.89990234375,
+          240.53720092773438,
+          2413.012451171875
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "ed557dc9d114",
+      "name": "R02_B02_Existing_Deck_Threshold_Steps_Explicit_Treads",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/ed557dc9d114.asset",
+      "meshGUID": "b565f46cb8ad05b41aa5070efced933a",
+      "meshSHA256": "aec06ec8ba1dcd2a2351c746a0a1f7dac8cd9a9400d8471c119a1b1525436527",
+      "meshFilterFileID": "6209589445338334603",
+      "gameObjectFileID": "44068833143536630",
+      "worldBoundsManifest": [
+        [
+          1825.8367919921875,
+          233.69210815429688,
+          2386.58935546875
+        ],
+        [
+          1831.002197265625,
+          234.99961853027344,
+          2392.04345703125
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "68493cc37670",
+      "name": "R02_B01_Freight_To_North_Transfer_Deck",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/68493cc37670.asset",
+      "meshGUID": "06e05b1ac3b218f438aa32dc85e74625",
+      "meshSHA256": "7cddc44ae5f968e4f5c1ebdd341d7cb0d5dcce5d365118f3544e56955bb52fe7",
+      "meshFilterFileID": "7582175352236352865",
+      "gameObjectFileID": "5689893336591159158",
+      "worldBoundsManifest": [
+        [
+          1793.83056640625,
+          234.64959716796875,
+          2365.299560546875
+        ],
+        [
+          1828.578369140625,
+          234.99961853027344,
+          2390.598876953125
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "ba52ae6865fe",
+      "name": "R01_P09_R3_Lower_Landing_Threshold",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/ba52ae6865fe.asset",
+      "meshGUID": "75e1157a5c359764cab71cf38c6705b4",
+      "meshSHA256": "94f18555b4ec7060b0962678df8421a9954d1c93307a0c8495b1ebd00de6a4fc",
+      "meshFilterFileID": "723065254076172342",
+      "gameObjectFileID": "3478424295073491537",
+      "worldBoundsManifest": [
+        [
+          1807.5999755859375,
+          186.94784545898438,
+          2263.85009765625
+        ],
+        [
+          1811.219970703125,
+          188.4017791748047,
+          2266.14990234375
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "5a8d26c18805",
+      "name": "R01_P08_North_Court_Cross_Link",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/5a8d26c18805.asset",
+      "meshGUID": "5cbee7675a8b87a44b32ef199d448a94",
+      "meshSHA256": "a9d80132182550a76eec8bc34c830c9d20e73b98f96d2511d378140690406173",
+      "meshFilterFileID": "3226698388514641486",
+      "gameObjectFileID": "7459621859663802544",
+      "worldBoundsManifest": [
+        [
+          1764.75,
+          214.56033325195312,
+          2345.0
+        ],
+        [
+          1769.25,
+          216.36984252929688,
+          2365.0
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "90819b88b947",
+      "name": "R01_C02_Freight_Dispatch_Wing_South_Flank_Exit_Stair_Treads",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/90819b88b947.asset",
+      "meshGUID": "3807f2448c1559c44a447b633de59f80",
+      "meshSHA256": "df28c500d0873681dec4838b49d1bc267e78ca52f21cf824f2ba410400af743a",
+      "meshFilterFileID": "6243061196160552212",
+      "gameObjectFileID": "2487373101518042537",
+      "worldBoundsManifest": [
+        [
+          1698.25537109375,
+          219.3265838623047,
+          2337.913818359375
+        ],
+        [
+          1704.56591796875,
+          221.5231170654297,
+          2350.076171875
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "9c8db66819e3",
+      "name": "R01_C02_Freight_Dispatch_Wing_Floor",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/9c8db66819e3.asset",
+      "meshGUID": "eadf14bd45e950e419e6f02cb3882554",
+      "meshSHA256": "1d7cb91787a751b174d337890581be54a3fafabf914c87d27541517e3a117520",
+      "meshFilterFileID": "6653877191490210838",
+      "gameObjectFileID": "8402958513779324511",
+      "worldBoundsManifest": [
+        [
+          1696.376953125,
+          221.08311462402344,
+          2347.977294921875
+        ],
+        [
+          1715.623046875,
+          221.5231170654297,
+          2372.022705078125
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "547109f2020f",
+      "name": "R01_C02_Freight_Dispatch_Wing_East_Entry_Stair_Treads",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/547109f2020f.asset",
+      "meshGUID": "d4cbf4a7ed5a7504ea41d3210f49eb80",
+      "meshSHA256": "18687949ff1a0a41ecb9e93ca38f92c63911d20094433fb74917a5dafe46febd",
+      "meshFilterFileID": "8806131189348522373",
+      "gameObjectFileID": "976020739724644778",
+      "worldBoundsManifest": [
+        [
+          1712.4696044921875,
+          219.2592010498047,
+          2352.188232421875
+        ],
+        [
+          1726.7822265625,
+          221.5231170654297,
+          2359.99755859375
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "4c7b426e9b44",
+      "name": "R01_C02_Freight_Dispatch_Wing_East_Apron",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/4c7b426e9b44.asset",
+      "meshGUID": "8b7625457f0bbf84e87d544e1dd9127c",
+      "meshSHA256": "fd65dc9d949df60209b3e5128542a5ef62eb9c8995f06860a91a35cde9974725",
+      "meshFilterFileID": "6049674371167703535",
+      "gameObjectFileID": "7019826897115979382",
+      "worldBoundsManifest": [
+        [
+          1725.11279296875,
+          219.09085083007812,
+          2350.7060546875
+        ],
+        [
+          1730.7205810546875,
+          219.45693969726562,
+          2356.724853515625
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "e5b0ef498671",
+      "name": "R01_C01_Northwest_Freight_Hall_South_Flank_Exit_Stair_Treads",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/e5b0ef498671.asset",
+      "meshGUID": "ae0f111106416ef49b053f370f4cc40f",
+      "meshSHA256": "7587beb9c6d56f3b503e1155f4920875d8d084efcfbb7ba20cc8ba76dcbc7c03",
+      "meshFilterFileID": "8526376844863292194",
+      "gameObjectFileID": "6348268071599406244",
+      "worldBoundsManifest": [
+        [
+          1720.3612060546875,
+          213.02818298339844,
+          2288.820556640625
+        ],
+        [
+          1726.671630859375,
+          219.22398376464844,
+          2300.98291015625
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "7324be9a11e3",
+      "name": "R01_C01_Northwest_Freight_Hall_Floor",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/7324be9a11e3.asset",
+      "meshGUID": "ee9cbd98d3d59974993de274176bba97",
+      "meshSHA256": "62bcce71412f3db5fe79d9570d3ffcc77eb3530fccb31f7eec64ef7fa3c810e9",
+      "meshFilterFileID": "1884209215611284448",
+      "gameObjectFileID": "1779060170282524294",
+      "worldBoundsManifest": [
+        [
+          1712.7152099609375,
+          218.7839813232422,
+          2297.230224609375
+        ],
+        [
+          1749.2847900390625,
+          219.22398376464844,
+          2344.769775390625
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "7813e87499f2",
+      "name": "R01_C01_Northwest_Freight_Hall_East_Entry_Stair_Treads",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/7813e87499f2.asset",
+      "meshGUID": "8b372164a223e0949bd2db1e78d18d9f",
+      "meshSHA256": "d8740263069b62839fad2b926c44969b258cfec91b49b131bdf8b9259f6ae955",
+      "meshFilterFileID": "5333727827870812662",
+      "gameObjectFileID": "2185984739129970056",
+      "worldBoundsManifest": [
+        [
+          1743.2371826171875,
+          211.5664825439453,
+          2311.534423828125
+        ],
+        [
+          1757.5498046875,
+          219.22398376464844,
+          2319.34375
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "2205a64840c4",
+      "name": "R01_C01_Northwest_Freight_Hall_East_Apron",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/2205a64840c4.asset",
+      "meshGUID": "0e1323b9b95216d4495e67f32855fcae",
+      "meshSHA256": "7d104355dea7ba201f12dc9462483f89800f509e56d6de58462b471d3291ebf5",
+      "meshFilterFileID": "7067969013348842047",
+      "gameObjectFileID": "4861799890475341341",
+      "worldBoundsManifest": [
+        [
+          1755.88037109375,
+          210.38906860351562,
+          2310.05224609375
+        ],
+        [
+          1761.4881591796875,
+          211.91641235351562,
+          2316.071044921875
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "900aca7f9161",
+      "name": "R01_B03_Tall_Dispatch_Head_South_Flank_Exit_Stair_Treads",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/900aca7f9161.asset",
+      "meshGUID": "7a4172d2f9073784caee0a126d63723d",
+      "meshSHA256": "3a4be7f8ecb13575745882724fbb16b0be36032005ece301a381c4cf8d7320ba",
+      "meshFilterFileID": "4348302017457454090",
+      "gameObjectFileID": "1753159684639880898",
+      "worldBoundsManifest": [
+        [
+          1791.4810791015625,
+          186.4265594482422,
+          2231.065673828125
+        ],
+        [
+          1797.0509033203125,
+          190.87506103515625,
+          2243.209228515625
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "642792a9290d",
+      "name": "R01_B03_Tall_Dispatch_Head_Floor",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/642792a9290d.asset",
+      "meshGUID": "c6b23b160e491b7498cf86574d73cea7",
+      "meshSHA256": "3495b1bfb79ad9c0b180fd6859608a75c13bdf4431bf150656a242589d7c7eae",
+      "meshFilterFileID": "2138193067188342681",
+      "gameObjectFileID": "1074163695034129926",
+      "worldBoundsManifest": [
+        [
+          1789.67578125,
+          190.43505859375,
+          2241.905517578125
+        ],
+        [
+          1804.32421875,
+          190.87506103515625,
+          2258.094482421875
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "ca1e62707f08",
+      "name": "R01_B03_Tall_Dispatch_Head_East_Entry_Turning_Landings",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/ca1e62707f08.asset",
+      "meshGUID": "36bcec0feb3253d40888640fcd70a66d",
+      "meshSHA256": "30275dbbbb28470d73bd3f3278a0d749825aec4ec08dfc32c3426450eb119e88",
+      "meshFilterFileID": "2856131748027882255",
+      "gameObjectFileID": "6875197608768507327",
+      "worldBoundsManifest": [
+        [
+          1805.2894287109375,
+          183.09031677246094,
+          2238.802001953125
+        ],
+        [
+          1814.4847412109375,
+          187.71658325195312,
+          2255.719482421875
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "c7fb5e491fc2",
+      "name": "R01_B03_Tall_Dispatch_Head_East_Entry_Flight_03_Stair_Treads",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/c7fb5e491fc2.asset",
+      "meshGUID": "def87c3442090964397ce011ca3b8bd3",
+      "meshSHA256": "7501162b33e2d241b9220ef5466358784ba53b09d6ddc4c5d65561121d14c1e7",
+      "meshFilterFileID": "3666900365734954914",
+      "gameObjectFileID": "3631840343374492999",
+      "worldBoundsManifest": [
+        [
+          1809.907958984375,
+          180.21731567382812,
+          2244.622802734375
+        ],
+        [
+          1818.293212890625,
+          183.39031982421875,
+          2254.092041015625
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "62216490ec63",
+      "name": "R01_B03_Tall_Dispatch_Head_East_Entry_Flight_02_Stair_Treads",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/62216490ec63.asset",
+      "meshGUID": "d0323e1b058b4424e94a79020da78d85",
+      "meshSHA256": "41068fcded88b6b1ec63a212429e22fcaa4928cc015013fc62710b8f7c2507d2",
+      "meshFilterFileID": "2818242436312663389",
+      "gameObjectFileID": "7499102859935285470",
+      "worldBoundsManifest": [
+        [
+          1806.1260986328125,
+          183.3733673095703,
+          2241.006103515625
+        ],
+        [
+          1813.6480712890625,
+          187.71658325195312,
+          2253.515380859375
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "11a21d89ccfb",
+      "name": "R01_B03_Tall_Dispatch_Head_East_Entry_Flight_01_Stair_Treads",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/11a21d89ccfb.asset",
+      "meshGUID": "519c3868ea0cb24458de8c1712b86404",
+      "meshSHA256": "6c7c7a0fefbec5ad21a74b4410124903cc186c2d5933a0ba358d11fb3e2f6fa7",
+      "meshFilterFileID": "2486525873291409640",
+      "gameObjectFileID": "2616719248250078614",
+      "worldBoundsManifest": [
+        [
+          1801.4810791015625,
+          187.70205688476562,
+          2240.429443359375
+        ],
+        [
+          1809.8660888671875,
+          190.87506103515625,
+          2249.898681640625
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "8441f9650224",
+      "name": "R01_B03_Tall_Dispatch_Head_East_Apron",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/8441f9650224.asset",
+      "meshGUID": "a787f658d499e9d44af9d156026346c9",
+      "meshSHA256": "f23eea4f33a0a47247a201fc37c636c6d407746efeaddf08843fb78e6a4e1f7d",
+      "meshFilterFileID": "5053325405728042451",
+      "gameObjectFileID": "2447186561566617601",
+      "worldBoundsManifest": [
+        [
+          1815.6519775390625,
+          178.5596160888672,
+          2242.564697265625
+        ],
+        [
+          1820.995361328125,
+          180.7961883544922,
+          2248.370361328125
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "8d64e4b89597",
+      "name": "R01_B02_Exchange_Control_Block_South_Flank_Exit_Stair_Treads",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/8d64e4b89597.asset",
+      "meshGUID": "fcbbe08751c866a4cb24f946d0513f8e",
+      "meshSHA256": "550351d78af7c50111d6bca2550715006f89f94ebce551e9c8b9839d8a73c1c5",
+      "meshFilterFileID": "6088538562411532185",
+      "gameObjectFileID": "8491116477482498503",
+      "worldBoundsManifest": [
+        [
+          1774.817626953125,
+          187.96499633789062,
+          2185.240478515625
+        ],
+        [
+          1780.3876953125,
+          192.3647003173828,
+          2197.384033203125
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "71fb15036908",
+      "name": "R01_B02_Exchange_Control_Block_Floor",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/71fb15036908.asset",
+      "meshGUID": "b59f40b40b18b0f4baa04c40a6da0fae",
+      "meshSHA256": "90c4ed2fdf602cf9b637059421af354c64b91c225f02099f0bc8952791b4e29e",
+      "meshFilterFileID": "9138418345641860920",
+      "gameObjectFileID": "185629486605687457",
+      "worldBoundsManifest": [
+        [
+          1770.0780029296875,
+          191.9246826171875,
+          2195.45654296875
+        ],
+        [
+          1793.9219970703125,
+          192.3647003173828,
+          2228.54345703125
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "4fe789b74a8e",
+      "name": "R01_B02_Exchange_Control_Block_East_Entry_Turning_Landings",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/4fe789b74a8e.asset",
+      "meshGUID": "7b74a7b42cc8b264e9c0a052f53876a2",
+      "meshSHA256": "efde0dabe703c69d473804448de1de8e177b8894ade997bb6db3c4cff1cb5b8f",
+      "meshFilterFileID": "5870414203969154645",
+      "gameObjectFileID": "4333872705120470624",
+      "worldBoundsManifest": [
+        [
+          1793.19873046875,
+          184.4111328125,
+          2200.059814453125
+        ],
+        [
+          1802.4443359375,
+          189.15487670898438,
+          2217.214111328125
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "c7ab51e90d19",
+      "name": "R01_B02_Exchange_Control_Block_East_Entry_Flight_03_Stair_Tread",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/c7ab51e90d19.asset",
+      "meshGUID": "d3af53a5061016746a7a07638f81774b",
+      "meshSHA256": "148e785b5ed352f865c4d1633e275e508d3d31ffa7daee6e777e3c06d3b1fe33",
+      "meshFilterFileID": "9204204386967567655",
+      "gameObjectFileID": "8257798518585931704",
+      "worldBoundsManifest": [
+        [
+          1797.8555908203125,
+          181.48963928222656,
+          2206.0166015625
+        ],
+        [
+          1806.2396240234375,
+          184.7111358642578,
+          2215.569091796875
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "97345403b555",
+      "name": "R01_B02_Exchange_Control_Block_East_Entry_Flight_02_Stair_Tread",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/97345403b555.asset",
+      "meshGUID": "d8616698e8955ed4b9034785308fc6f8",
+      "meshSHA256": "fc62f233336313b69a327d5a218a6f832a13dde47a06b99bef4fe0f8e9c0a20c",
+      "meshFilterFileID": "304131628181016873",
+      "gameObjectFileID": "1853003542069761321",
+      "worldBoundsManifest": [
+        [
+          1794.0343017578125,
+          184.69888305664062,
+          2202.267822265625
+        ],
+        [
+          1801.6087646484375,
+          189.1548614501953,
+          2215.006103515625
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "5d9271335d69",
+      "name": "R01_B02_Exchange_Control_Block_East_Entry_Flight_01_Stair_Tread",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/5d9271335d69.asset",
+      "meshGUID": "48396e0c0f90abc4cbe86110997de7ce",
+      "meshSHA256": "4a5b64245574d5babcaf89fa50f09473f4bb67f6a5abe59744f2fe03421aa7c2",
+      "meshFilterFileID": "2823573826220956302",
+      "gameObjectFileID": "910098394760752890",
+      "worldBoundsManifest": [
+        [
+          1789.4034423828125,
+          189.1431884765625,
+          2201.70458984375
+        ],
+        [
+          1797.7874755859375,
+          192.36468505859375,
+          2211.257568359375
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "ba3f07015a3e",
+      "name": "R01_B02_Exchange_Control_Block_East_Apron",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/ba3f07015a3e.asset",
+      "meshGUID": "de31aa7c5f343b042b867ccbdbf19aa7",
+      "meshSHA256": "a3e4284ca54ccd7a1449a70bf4e121ea87d766c972884f26cf5f6263a79b1143",
+      "meshFilterFileID": "5980187901619035808",
+      "gameObjectFileID": "3295181176591497102",
+      "worldBoundsManifest": [
+        [
+          1803.5863037109375,
+          180.0079803466797,
+          2203.941162109375
+        ],
+        [
+          1808.9298095703125,
+          181.7534637451172,
+          2209.74658203125
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "4918d0eaf051",
+      "name": "R01_B01_Dispatch_Workshop_South_Flank_Exit_Turning_Landings",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/4918d0eaf051.asset",
+      "meshGUID": "0dd7b755c3b6f2f44a5605f71c4216f0",
+      "meshSHA256": "dbca46d5b574d743a294e729c28215bd9f6a95e3be35f818942d1035f1a43df1",
+      "meshFilterFileID": "6415073849936789231",
+      "gameObjectFileID": "6978364492084410755",
+      "worldBoundsManifest": [
+        [
+          1721.2994384765625,
+          197.58572387695312,
+          2150.607177734375
+        ],
+        [
+          1736.25634765625,
+          201.8649444580078,
+          2155.6875
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "2215723753bf",
+      "name": "R01_B01_Dispatch_Workshop_Floor",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/2215723753bf.asset",
+      "meshGUID": "4d09ecce4e23762479cd501d7b7ccbda",
+      "meshSHA256": "1eb9176f48a19676ea66294e4e32a6cd70273c88977a1236e2d96fac24a65159",
+      "meshFilterFileID": "2561982094104028921",
+      "gameObjectFileID": "6872751811376629150",
+      "worldBoundsManifest": [
+        [
+          1710.8258056640625,
+          204.2504425048828,
+          2157.422607421875
+        ],
+        [
+          1739.1741943359375,
+          204.69044494628906,
+          2196.577392578125
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "0ce036ad8e87",
+      "name": "R01_B01_Dispatch_Workshop_East_Entry_Turning_Landings",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/0ce036ad8e87.asset",
+      "meshGUID": "887fcef2234299d42b179f2fb67ab333",
+      "meshSHA256": "9e5f45f745f8386dcf8a106f4bbf242ddd29cf588b62fb800186db5258458f9e",
+      "meshFilterFileID": "8304808092529021141",
+      "gameObjectFileID": "5658805678406399566",
+      "worldBoundsManifest": [
+        [
+          1740.1561279296875,
+          195.41920471191406,
+          2170.256103515625
+        ],
+        [
+          1746.7340087890625,
+          201.08126831054688,
+          2189.586669921875
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "bb7e8d079295",
+      "name": "R01_B01_Dispatch_Workshop_East_Entry_Flight_03_Stair_Treads",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/bb7e8d079295.asset",
+      "meshGUID": "04bf4c09c430e4e468cc2f34166f05b7",
+      "meshSHA256": "f91f84de9871be6df3c99d4194b8df5e5c64bafac1da825b1bf77adc47b4325a",
+      "meshFilterFileID": "5536435486064458275",
+      "gameObjectFileID": "8268154366289823113",
+      "worldBoundsManifest": [
+        [
+          1741.5731201171875,
+          192.09190368652344,
+          2179.3408203125
+        ],
+        [
+          1751.514892578125,
+          195.71920776367188,
+          2188.489013671875
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "ad76fa910db0",
+      "name": "R01_B01_Dispatch_Workshop_East_Entry_Flight_02_Stair_Treads",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/ad76fa910db0.asset",
+      "meshGUID": "44b6a4c3db9b7ec49857f28aab8863a4",
+      "meshSHA256": "966cf75431f7c04ac8ed8bc9dff5945baf3cd494729123ebace277036aeca585",
+      "meshFilterFileID": "1269699691589970491",
+      "gameObjectFileID": "7304635710840693310",
+      "worldBoundsManifest": [
+        [
+          1740.8070068359375,
+          195.70794677734375,
+          2172.8203125
+        ],
+        [
+          1746.0831298828125,
+          201.08126831054688,
+          2187.0224609375
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "00dc43db155e",
+      "name": "R01_B01_Dispatch_Workshop_East_Entry_Flight_01_Stair_Treads",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/00dc43db155e.asset",
+      "meshGUID": "362e06d71c1a7c3459777e7ae841a49c",
+      "meshSHA256": "6e0b4ffa7dce03d167b8af340ec96128e594303c07dd33a622f86456c72c88b8",
+      "meshFilterFileID": "6993730769571223081",
+      "gameObjectFileID": "7830632919402356956",
+      "worldBoundsManifest": [
+        [
+          1735.375244140625,
+          201.06314086914062,
+          2171.353759765625
+        ],
+        [
+          1745.3170166015625,
+          204.69044494628906,
+          2180.501953125
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "d5631e34d939",
+      "name": "R01_B01_Dispatch_Workshop_East_Apron",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/d5631e34d939.asset",
+      "meshGUID": "9bde8ade1b1c18249997a31e6fde54ab",
+      "meshSHA256": "e37a1400251404c1d58a0747675b7743437e17c2b686599f2fdf89e42c1e5291",
+      "meshFilterFileID": "8942405391895959299",
+      "gameObjectFileID": "7618046137100314922",
+      "worldBoundsManifest": [
+        [
+          1749.3997802734375,
+          191.33685302734375,
+          2178.457275390625
+        ],
+        [
+          1754.528076171875,
+          192.56671142578125,
+          2184.083984375
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "b2309693c921",
+      "name": "R01_A02_Offset_Parts_Store_South_Flank_Exit_Stair_Treads",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/b2309693c921.asset",
+      "meshGUID": "a8db4ac71228edc4c906c150ed7aa028",
+      "meshSHA256": "27153dfb7af3bd1ae3e5ae25b589311a07bc8833b5e4eaa7abb63c748f9cec83",
+      "meshFilterFileID": "7230219470827220579",
+      "gameObjectFileID": "2849297753227613296",
+      "worldBoundsManifest": [
+        [
+          1772.48681640625,
+          180.80128479003906,
+          2056.5908203125
+        ],
+        [
+          1777.8671875,
+          184.66360473632812,
+          2068.720947265625
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "eb2026037327",
+      "name": "R01_A02_Offset_Parts_Store_Floor",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/eb2026037327.asset",
+      "meshGUID": "804453e3ceb135d4f9129271b4b546e4",
+      "meshSHA256": "590a1827d1f5366f5c43d9ad2f4a63b056d1a95856ba63f2b1b0f35927a938df",
+      "meshFilterFileID": "2302643787640513480",
+      "gameObjectFileID": "3494518846993909152",
+      "worldBoundsManifest": [
+        [
+          1762.1434326171875,
+          184.22360229492188,
+          2067.16650390625
+        ],
+        [
+          1781.8565673828125,
+          184.66360473632812,
+          2090.83349609375
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "6dc9005304d3",
+      "name": "R01_A02_Offset_Parts_Store_East_Entry_Turning_Landings",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/6dc9005304d3.asset",
+      "meshGUID": "414aff8f0394bc84dbb1d421772d41a0",
+      "meshSHA256": "5e2ab5ff673b3af51171334ad274487dc637b9dc6c9d9c953499d1d625c579e1",
+      "meshFilterFileID": "58119753105652642",
+      "gameObjectFileID": "6623580870527474659",
+      "worldBoundsManifest": [
+        [
+          1783.3861083984375,
+          176.03662109375,
+          2072.638671875
+        ],
+        [
+          1790.40625,
+          181.24952697753906,
+          2091.15234375
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "48583f0cd63a",
+      "name": "R01_A02_Offset_Parts_Store_East_Entry_Flight_03_Stair_Treads",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/48583f0cd63a.asset",
+      "meshGUID": "5b9f3566d9f2cd74e889d9f8e4f367ad",
+      "meshSHA256": "1bec9f8316d1eef219ef0a7461f62b79ae93ae9fbd7a41faecff972d79f77a5e",
+      "meshFilterFileID": "8023087525390628399",
+      "gameObjectFileID": "3777243046441010691",
+      "worldBoundsManifest": [
+        [
+          1784.987060546875,
+          172.9122314453125,
+          2081.46337890625
+        ],
+        [
+          1794.8087158203125,
+          176.3366241455078,
+          2090.072998046875
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "c71c2d7abcd2",
+      "name": "R01_A02_Offset_Parts_Store_East_Entry_Flight_02_Stair_Treads",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/c71c2d7abcd2.asset",
+      "meshGUID": "acf45847476a5f34a92d2a458927675e",
+      "meshSHA256": "4aa742135a973befec6daca19aeab553f176c3ce470ebc6fc6c9fbda91a7013c",
+      "meshFilterFileID": "7524209450317654344",
+      "gameObjectFileID": "3309333297665729536",
+      "worldBoundsManifest": [
+        [
+          1784.1102294921875,
+          176.32208251953125,
+          2075.209228515625
+        ],
+        [
+          1789.68212890625,
+          181.24952697753906,
+          2088.58154296875
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "97ef3d83f85b",
+      "name": "R01_A02_Offset_Parts_Store_East_Entry_Flight_01_Stair_Treads",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/97ef3d83f85b.asset",
+      "meshGUID": "eae84dae89b8a1a4aa1f81917d1b4970",
+      "meshSHA256": "ba899c7e04b8d219818ac973f6df921f02ad209e63354f28478195a74fb49f52",
+      "meshFilterFileID": "5304327199379915707",
+      "gameObjectFileID": "8108263663261087469",
+      "worldBoundsManifest": [
+        [
+          1778.983642578125,
+          181.2392120361328,
+          2073.718017578125
+        ],
+        [
+          1788.8052978515625,
+          184.66360473632812,
+          2082.32763671875
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "b80ed782079d",
+      "name": "R01_A02_Offset_Parts_Store_East_Apron",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/b80ed782079d.asset",
+      "meshGUID": "87473cbdd6169c045929175925e2445b",
+      "meshSHA256": "e3bc02248005a8346dce85ddd9a8f2ba0de9b38c541b95cbdf0d109ba8acbd44",
+      "meshFilterFileID": "783451145412241329",
+      "gameObjectFileID": "3692137339932763597",
+      "worldBoundsManifest": [
+        [
+          1792.7261962890625,
+          171.3719024658203,
+          2080.66748046875
+        ],
+        [
+          1797.999267578125,
+          173.2211456298828,
+          2086.4150390625
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "a2baf256bd04",
+      "name": "R01_A01_West_Repair_Hall_South_Flank_Exit_Stair_Treads",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/a2baf256bd04.asset",
+      "meshGUID": "07183edf274cd9348af450e9cb91563a",
+      "meshSHA256": "ef82bc59b0294231bb161b2e97050deffe92b839759530c2b209e640d0d5dd63",
+      "meshFilterFileID": "4039465422289138773",
+      "gameObjectFileID": "9105631307457124904",
+      "worldBoundsManifest": [
+        [
+          1712.3880615234375,
+          195.4227752685547,
+          2057.03369140625
+        ],
+        [
+          1716.994384765625,
+          199.43112182617188,
+          2069.0712890625
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "8a61cd6cfd90",
+      "name": "R01_A01_West_Repair_Hall_Floor",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/8a61cd6cfd90.asset",
+      "meshGUID": "13f692dbc0a93dd4cb13822650eab897",
+      "meshSHA256": "9afa5dc37b329aead65c9578136ccf05a39967c6d902e1947d612ae316895101",
+      "meshFilterFileID": "8549958307103241211",
+      "gameObjectFileID": "4327287102105316315",
+      "worldBoundsManifest": [
+        [
+          1705.01904296875,
+          198.99110412597656,
+          2067.876953125
+        ],
+        [
+          1730.98095703125,
+          199.43112182617188,
+          2112.123046875
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "80b950449cab",
+      "name": "R01_A01_West_Repair_Hall_East_Entry_Turning_Landings",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/80b950449cab.asset",
+      "meshGUID": "f9f0f72a20121644cb7a565b0711c685",
+      "meshSHA256": "a78c0fdf1cb3fa04c22f4942d4873ed1eb199b34029e6e7bfeb459bb0bbafccf",
+      "meshFilterFileID": "5946275742821438170",
+      "gameObjectFileID": "4263836192718379736",
+      "worldBoundsManifest": [
+        [
+          1731.6929931640625,
+          192.67550659179688,
+          2080.076904296875
+        ],
+        [
+          1739.3935546875,
+          196.60301208496094,
+          2095.614990234375
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "41a2de16b703",
+      "name": "R01_A01_West_Repair_Hall_East_Entry_Flight_03_Stair_Treads",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/41a2de16b703.asset",
+      "meshGUID": "428b74599a6885144acc9b4c3213caa8",
+      "meshSHA256": "411b378ef64f7b110759e1cf7ced002cffeb9996b68850eeecaa991ba4b1a744",
+      "meshFilterFileID": "1564455007799366647",
+      "gameObjectFileID": "6960277278640444846",
+      "worldBoundsManifest": [
+        [
+          1735.180419921875,
+          190.1341552734375,
+          2085.559326171875
+        ],
+        [
+          1743.85595703125,
+          192.9755096435547,
+          2094.39501953125
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "bf8e35889b47",
+      "name": "R01_A01_West_Repair_Hall_East_Entry_Flight_02_Stair_Treads",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/bf8e35889b47.asset",
+      "meshGUID": "110058b753160594d96a4bf8977ce1d6",
+      "meshSHA256": "b14ac840e58e3c397cb13568666c72f4b85b04d0a5abe8a2d9236214a3300b31",
+      "meshFilterFileID": "5453735548781573525",
+      "gameObjectFileID": "7611161945400121374",
+      "worldBoundsManifest": [
+        [
+          1732.3173828125,
+          192.958251953125,
+          2082.26220703125
+        ],
+        [
+          1738.7691650390625,
+          196.60301208496094,
+          2093.4296875
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "0c29e90396bb",
+      "name": "R01_A01_West_Repair_Hall_East_Entry_Flight_01_Stair_Treads",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/0c29e90396bb.asset",
+      "meshGUID": "38074df907b194f498da4ad0842739a3",
+      "meshSHA256": "851a9f333983454e66b0b50d66941c70c1c107b51a1cc5ea00bbe1d1f5815577",
+      "meshFilterFileID": "7569163583936667791",
+      "gameObjectFileID": "6638524854642569387",
+      "worldBoundsManifest": [
+        [
+          1727.2305908203125,
+          196.5897674560547,
+          2081.296875
+        ],
+        [
+          1735.9061279296875,
+          199.43112182617188,
+          2090.13232421875
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR08",
+      "key": "ab2b7b117cb0",
+      "name": "R01_A01_West_Repair_Hall_East_Apron",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/Meshes/ab2b7b117cb0.asset",
+      "meshGUID": "536bfddff22dc004aa689b2ddbc65e97",
+      "meshSHA256": "cb7729545344799871c1473e31b54709e3433f3c6ba10f8cdaf800f6d848dfd0",
+      "meshFilterFileID": "3683766529048480006",
+      "gameObjectFileID": "2416027112161217235",
+      "worldBoundsManifest": [
+        [
+          1741.61572265625,
+          189.15699768066406,
+          2084.045166015625
+        ],
+        [
+          1746.5926513671875,
+          190.30580139160156,
+          2089.54443359375
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "c4420d570270",
+      "name": "R09_Approach_Continuous_Union_Floor",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/c4420d570270.asset",
+      "meshGUID": "18cad68d2c862e84b8f92940a0388aa7",
+      "meshSHA256": "bbeb6a7b9d45f17f82a4b91978815d7dc09541cb5c239aab6de2d26fc33d3592",
+      "meshFilterFileID": "2675908514263557544",
+      "gameObjectFileID": "6749928188524837352",
+      "worldBoundsManifest": [
+        [
+          1758.0162353515625,
+          242.97869873046875,
+          1826.1083984375
+        ],
+        [
+          1837.11865234375,
+          242.98670959472656,
+          1865.482666015625
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "e07e2d09d3e3",
+      "name": "R09_Machine_Loading_Real_Ramp_Toe_Transition",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/e07e2d09d3e3.asset",
+      "meshGUID": "ca498034da086484faa953f908312f74",
+      "meshSHA256": "7316589b4482098b1c6a6cf3fd5bdf815ba1f53e7c37f92c7e092f6f31d39aca",
+      "meshFilterFileID": "1794139669175738841",
+      "gameObjectFileID": "6864737186166505038",
+      "worldBoundsManifest": [
+        [
+          1816.0313720703125,
+          242.97369384765625,
+          1834.129638671875
+        ],
+        [
+          1819.2606201171875,
+          243.05450439453125,
+          1836.8333740234375
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "9b3985cd05b9",
+      "name": "R09_Personnel_Ramp_To_Threshold_Infill",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/9b3985cd05b9.asset",
+      "meshGUID": "5d5553c99da77764da1cc08b90b267e9",
+      "meshSHA256": "defd5058117f053f475769f4b259204eaf79da2f84294c38b75b04314622d3fa",
+      "meshFilterFileID": "3747875480875613941",
+      "gameObjectFileID": "1215933840271511625",
+      "worldBoundsManifest": [
+        [
+          1820.35595703125,
+          243.37506103515625,
+          1842.0439453125
+        ],
+        [
+          1823.2410888671875,
+          243.45359802246094,
+          1844.2562255859375
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "ae10064d1294",
+      "name": "R09_Personnel_Real_Ramp_Toe_Transition",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/ae10064d1294.asset",
+      "meshGUID": "352f4550580122340a7fd1e33a3c601c",
+      "meshSHA256": "812d8f914a4086ba82b24903e97072e9f15e7d12eed537b142108c696fa088a4",
+      "meshFilterFileID": "5155208960156237185",
+      "gameObjectFileID": "1002683247467901767",
+      "worldBoundsManifest": [
+        [
+          1822.4207763671875,
+          242.97369384765625,
+          1838.603515625
+        ],
+        [
+          1825.6500244140625,
+          243.05450439453125,
+          1841.3072509765625
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "6709a8fdeef9",
+      "name": "R10_Bypass_Continuous_Deck",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/6709a8fdeef9.asset",
+      "meshGUID": "7b93f66bc84f8b844bbc9125468628ac",
+      "meshSHA256": "e47e3c0920bddf64ea5bf09bf36682b9f10c4663d43cf02553d8680739772e26",
+      "meshFilterFileID": "8710008049324004843",
+      "gameObjectFileID": "831240485041433209",
+      "worldBoundsManifest": [
+        [
+          1954.5047607421875,
+          182.97824096679688,
+          1974.5
+        ],
+        [
+          1968.800048828125,
+          185.94967651367188,
+          1996.569580078125
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "63a93cb9a97f",
+      "name": "R11_Walkover_Continuous_Floor",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/63a93cb9a97f.asset",
+      "meshGUID": "9bae0079edeaf524bbd65b90ba01c678",
+      "meshSHA256": "540588013bf4147eb6d01d6a3674aac360b2b45ddde7dade27ce1674e605d739",
+      "meshFilterFileID": "9054706309230653609",
+      "gameObjectFileID": "1277736232887873718",
+      "worldBoundsManifest": [
+        [
+          1958.398193359375,
+          184.58128356933594,
+          1925.060302734375
+        ],
+        [
+          1971.2999267578125,
+          189.4149169921875,
+          1951.5
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 1965, y: 185, z: 1935}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "280ab3b4a3c7",
+      "name": "R12_Floor_A_Court_Link",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/280ab3b4a3c7.asset",
+      "meshGUID": "1103f58be77e20747acf1be69724a95e",
+      "meshSHA256": "3f46862a487d9674776fd390df56f1e0f93a1c5c4b65ef7d9ae59b9fc77b93fa",
+      "meshFilterFileID": "1321645588562710844",
+      "gameObjectFileID": "319696094169418955",
+      "worldBoundsManifest": [
+        [
+          2103.0,
+          176.6267852783203,
+          2246.0
+        ],
+        [
+          2109.0,
+          177.0767822265625,
+          2252.0
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": {
+        "center": [
+          -24.0,
+          1.851782202720642,
+          9.0
+        ],
+        "size": [
+          6.0,
+          0.4500000476837158,
+          6.0
+        ],
+        "proof": "8 exact AABB corners; 12 nondegenerate triangles; 6 complete faces; closed edge incidence"
+      },
+      "sourcePosition": "{x: 2130, y: 175, z: 2240}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "85dad6d7b22d",
+      "name": "R12_Floor_A_Hall",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/85dad6d7b22d.asset",
+      "meshGUID": "72e9ace4526932d4ca99a1b1ed387f9c",
+      "meshSHA256": "e14bd7850f39e170dda0c1c096aab790e91df0038dd92f5b89ae6393a85090f4",
+      "meshFilterFileID": "4942063469271310064",
+      "gameObjectFileID": "1887369529997597981",
+      "worldBoundsManifest": [
+        [
+          2084.0,
+          176.62677001953125,
+          2252.0
+        ],
+        [
+          2118.0,
+          177.0767822265625,
+          2288.0
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": {
+        "center": [
+          -29.0,
+          1.851782202720642,
+          30.0
+        ],
+        "size": [
+          34.0,
+          0.4500000476837158,
+          36.0
+        ],
+        "proof": "8 exact AABB corners; 12 nondegenerate triangles; 6 complete faces; closed edge incidence"
+      },
+      "sourcePosition": "{x: 2130, y: 175, z: 2240}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "ce403f35a2d5",
+      "name": "R12_Floor_B_Court_Ramp",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/ce403f35a2d5.asset",
+      "meshGUID": "98a92b2515c82e9448ba4c4041bea7d7",
+      "meshSHA256": "ac9a3d88ee11402345a5d48c188a04ea35fb0ee8bf2dc5ecef174809daa1fffd",
+      "meshFilterFileID": "1547029490789354287",
+      "gameObjectFileID": "1125742284872651257",
+      "worldBoundsManifest": [
+        [
+          2134.0,
+          175.0500030517578,
+          2226.0
+        ],
+        [
+          2140.0,
+          176.5,
+          2238.0
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 2130, y: 175, z: 2240}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "cf3808cb5afd",
+      "name": "R12_Floor_B_Separator",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/cf3808cb5afd.asset",
+      "meshGUID": "f03e0d96625a62e47a975372bda3982d",
+      "meshSHA256": "56506db51953d00b92ee789997358a6c35642cc4c1537cccf767f5bceee77c8d",
+      "meshFilterFileID": "693479774941845253",
+      "gameObjectFileID": "2985826950926367547",
+      "worldBoundsManifest": [
+        [
+          2124.0,
+          176.0500030517578,
+          2238.0
+        ],
+        [
+          2146.0,
+          176.5,
+          2260.0
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": {
+        "center": [
+          5.0,
+          1.274999976158142,
+          9.0
+        ],
+        "size": [
+          22.0,
+          0.4500000476837158,
+          22.0
+        ],
+        "proof": "8 exact AABB corners; 12 nondegenerate triangles; 6 complete faces; closed edge incidence"
+      },
+      "sourcePosition": "{x: 2130, y: 175, z: 2240}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "40b9ef4f3188",
+      "name": "R12_Floor_C_Loading",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/40b9ef4f3188.asset",
+      "meshGUID": "c3dc17a28b05efd4392475e1304f86de",
+      "meshSHA256": "6196b7be04d2468f3eb69c79cda2e4b9c7cc1709235fdb533dcd216399ab976b",
+      "meshFilterFileID": "6050523033516817398",
+      "gameObjectFileID": "1049970759737895871",
+      "worldBoundsManifest": [
+        [
+          2152.0,
+          174.3107452392578,
+          2200.0
+        ],
+        [
+          2180.0,
+          174.7607421875,
+          2226.0
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": {
+        "center": [
+          36.0,
+          -0.4642578065395355,
+          -27.0
+        ],
+        "size": [
+          28.0,
+          0.44999998807907104,
+          26.0
+        ],
+        "proof": "8 exact AABB corners; 12 nondegenerate triangles; 6 complete faces; closed edge incidence"
+      },
+      "sourcePosition": "{x: 2130, y: 175, z: 2240}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "1710896e98bb",
+      "name": "R12_Floor_C_M02_Apron_Join",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/1710896e98bb.asset",
+      "meshGUID": "c44085efa3d4e9848902342fa5ed826b",
+      "meshSHA256": "72b5e15af73ce9d2f9840e9be0e3250ed1e9c5727e048c1063e73773d704c591",
+      "meshFilterFileID": "2470655693076999585",
+      "gameObjectFileID": "7829490265769193603",
+      "worldBoundsManifest": [
+        [
+          2167.0,
+          174.3107452392578,
+          2185.0
+        ],
+        [
+          2173.0,
+          174.76075744628906,
+          2200.0
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": {
+        "center": [
+          40.0,
+          -0.4642578065395355,
+          -47.5
+        ],
+        "size": [
+          6.0,
+          0.44999998807907104,
+          15.0
+        ],
+        "proof": "8 exact AABB corners; 12 nondegenerate triangles; 6 complete faces; closed edge incidence"
+      },
+      "sourcePosition": "{x: 2130, y: 175, z: 2240}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "31b5c1d6a8d5",
+      "name": "R12_Floor_Court_B_Threshold",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/31b5c1d6a8d5.asset",
+      "meshGUID": "2196536529316d84fbb9a6b8f92e8b84",
+      "meshSHA256": "981d59aff9a5a5611af92ced4e4ac134f015451533db8c8c4f9c1d6019167779",
+      "meshFilterFileID": "7100137712680273948",
+      "gameObjectFileID": "8287602646399421142",
+      "worldBoundsManifest": [
+        [
+          2120.0,
+          176.0500030517578,
+          2240.0
+        ],
+        [
+          2124.0,
+          177.0767822265625,
+          2246.0
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 2130, y: 175, z: 2240}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "b61a4877fcd9",
+      "name": "R12_Floor_Court_C_Threshold",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/b61a4877fcd9.asset",
+      "meshGUID": "b30021b59979d654ea6e04163705de1c",
+      "meshSHA256": "5fd5f55e81efa14d57b6c2ba59a9ec0791de4a22bcb4e334ece67561cc15d453",
+      "meshFilterFileID": "7009617962440846045",
+      "gameObjectFileID": "8167630010913443687",
+      "worldBoundsManifest": [
+        [
+          2146.0,
+          174.3107452392578,
+          2211.0
+        ],
+        [
+          2152.0,
+          175.5,
+          2217.0
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 2130, y: 175, z: 2240}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "262a04514b46",
+      "name": "R12_Floor_Court_One",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/262a04514b46.asset",
+      "meshGUID": "bf44f9b109cac914385d6115655dd482",
+      "meshSHA256": "865ebce19237bf2aeb7dcbd14dc14f6a8f50939bdd8393650e145644e8e10764",
+      "meshFilterFileID": "1124981647535674971",
+      "gameObjectFileID": "7705281768805014131",
+      "worldBoundsManifest": [
+        [
+          2102.0,
+          176.6267852783203,
+          2238.0
+        ],
+        [
+          2120.0,
+          177.0767822265625,
+          2246.0
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": {
+        "center": [
+          -19.0,
+          1.851782202720642,
+          2.0
+        ],
+        "size": [
+          18.0,
+          0.4500000476837158,
+          8.0
+        ],
+        "proof": "8 exact AABB corners; 12 nondegenerate triangles; 6 complete faces; closed edge incidence"
+      },
+      "sourcePosition": "{x: 2130, y: 175, z: 2240}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "1bbc368ede2b",
+      "name": "R12_Floor_Court_Two",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/1bbc368ede2b.asset",
+      "meshGUID": "8940f4f53d2dc3749a98ba720bab0832",
+      "meshSHA256": "b2428e81b482e2fe640cb2588990e9c86ea285518931aaccf03f67138c64c27b",
+      "meshFilterFileID": "1158377882378774335",
+      "gameObjectFileID": "5442726317688927707",
+      "worldBoundsManifest": [
+        [
+          2128.0,
+          175.0500030517578,
+          2209.0
+        ],
+        [
+          2146.0,
+          175.5,
+          2226.0
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": {
+        "center": [
+          7.0,
+          0.27500000037252903,
+          -22.5
+        ],
+        "size": [
+          18.0,
+          0.44999999925494194,
+          17.0
+        ],
+        "proof": "8 exact AABB corners; 12 nondegenerate triangles; 6 complete faces; closed edge incidence"
+      },
+      "sourcePosition": "{x: 2130, y: 175, z: 2240}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "4dc113698fdc",
+      "name": "R12_Floor_Exterior_Flank_North",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/4dc113698fdc.asset",
+      "meshGUID": "2a6f09d255939d74b96586c788ced07d",
+      "meshSHA256": "42e9783fcd1e642bed1898e7d6857bea2bec80755d2fddc4b11a71fcbbc86427",
+      "meshFilterFileID": "6471622970714735127",
+      "gameObjectFileID": "4784806488225757578",
+      "worldBoundsManifest": [
+        [
+          2114.0,
+          175.5500030517578,
+          2232.0
+        ],
+        [
+          2120.0,
+          177.0767822265625,
+          2238.0
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 2130, y: 175, z: 2240}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "dbb1171417fe",
+      "name": "R12_Floor_Exterior_Flank_Return",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/dbb1171417fe.asset",
+      "meshGUID": "81fca480a988dc542a61271487c396cc",
+      "meshSHA256": "4ab8de0ebdc7358e4f202a5a3384288087b2293bf2ccb97c762ea8a7a985697a",
+      "meshFilterFileID": "3791836540047358344",
+      "gameObjectFileID": "42306666684519119",
+      "worldBoundsManifest": [
+        [
+          2114.0,
+          175.0500030517578,
+          2226.0
+        ],
+        [
+          2134.0,
+          176.0,
+          2232.0
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 2130, y: 175, z: 2240}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "50d5569f1b10",
+      "name": "R12_Floor_M01_Apron_Join",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/50d5569f1b10.asset",
+      "meshGUID": "c8cdaeb9f61b08747b9983a23d5d8728",
+      "meshSHA256": "be960a2447d6dfb18ae06103d8db03455b9d7e56c3689ab7218df7537a86416a",
+      "meshFilterFileID": "8852878350088811647",
+      "gameObjectFileID": "5291685382074791245",
+      "worldBoundsManifest": [
+        [
+          2075.0,
+          176.62677001953125,
+          2277.0
+        ],
+        [
+          2084.0,
+          177.0767822265625,
+          2283.0
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": {
+        "center": [
+          -50.5,
+          1.851782202720642,
+          40.0
+        ],
+        "size": [
+          9.0,
+          0.4500000476837158,
+          6.0
+        ],
+        "proof": "8 exact AABB corners; 12 nondegenerate triangles; 6 complete faces; closed edge incidence"
+      },
+      "sourcePosition": "{x: 2130, y: 175, z: 2240}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "0c439e2f6281",
+      "name": "R12_B_Court_Ramp_Tier_Beam_0_0",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/0c439e2f6281.asset",
+      "meshGUID": "d85da1f9c7afea74194cfd64a02cf703",
+      "meshSHA256": "36f98a6c8b4e657c70059fa239761137c2e3a92fe0fa1a70a4f896ee39a4fb3b",
+      "meshFilterFileID": "2802001431823646389",
+      "gameObjectFileID": "4980309327794729758",
+      "worldBoundsManifest": [
+        [
+          2134.0,
+          156.72186279296875,
+          2228.02490234375
+        ],
+        [
+          2140.0,
+          157.57186889648438,
+          2228.97509765625
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": {
+        "center": [
+          7.0,
+          -17.853137016296387,
+          -11.5
+        ],
+        "size": [
+          6.0,
+          0.8500003814697266,
+          0.9500007629394531
+        ],
+        "proof": "8 exact AABB corners; 12 nondegenerate triangles; 6 complete faces; closed edge incidence"
+      },
+      "sourcePosition": "{x: 2130, y: 175, z: 2240}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "46a7b60fd3c1",
+      "name": "R12_B_Court_Ramp_Tier_Beam_0_1",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/46a7b60fd3c1.asset",
+      "meshGUID": "8dc28377a628f9242ba74107c5951b5b",
+      "meshSHA256": "b3fcc2122dd0c99adab7f2afff4ff3a7a31103009aa935fe1b8b184ac7c3e8a1",
+      "meshFilterFileID": "6510941589232729460",
+      "gameObjectFileID": "2903682161292459616",
+      "worldBoundsManifest": [
+        [
+          2134.0,
+          165.72186279296875,
+          2228.02490234375
+        ],
+        [
+          2140.0,
+          166.57186889648438,
+          2228.97509765625
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": {
+        "center": [
+          7.0,
+          -8.853137493133545,
+          -11.5
+        ],
+        "size": [
+          6.0,
+          0.8499994277954102,
+          0.9500007629394531
+        ],
+        "proof": "8 exact AABB corners; 12 nondegenerate triangles; 6 complete faces; closed edge incidence"
+      },
+      "sourcePosition": "{x: 2130, y: 175, z: 2240}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "293bdd379418",
+      "name": "R12_B_Court_Ramp_Tier_Beam_0_2",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/293bdd379418.asset",
+      "meshGUID": "9d25484dfcaacce41a64382e12fafc7c",
+      "meshSHA256": "4817e2f7411d8d927a56c6dc3804fb6f37ac97be629578e965f59284e4166625",
+      "meshFilterFileID": "6206332495957121649",
+      "gameObjectFileID": "1098568196486306426",
+      "worldBoundsManifest": [
+        [
+          2134.0,
+          174.36875915527344,
+          2228.02490234375
+        ],
+        [
+          2140.0,
+          175.29791259765625,
+          2228.97509765625
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 2130, y: 175, z: 2240}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "1be99abfdc49",
+      "name": "R12_B_Court_Ramp_Tier_Beam_1_0",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/1be99abfdc49.asset",
+      "meshGUID": "f0451ee5913167147861955988852386",
+      "meshSHA256": "890a93f49199c7bb1b1960bca8cef617eb9f97e0832a80752858ca54eaa6d38a",
+      "meshFilterFileID": "2477331933201680259",
+      "gameObjectFileID": "9071393617694618353",
+      "worldBoundsManifest": [
+        [
+          2134.0,
+          158.75843811035156,
+          2235.02490234375
+        ],
+        [
+          2140.0,
+          159.6084442138672,
+          2235.97509765625
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": {
+        "center": [
+          7.0,
+          -15.8165602684021,
+          -4.5
+        ],
+        "size": [
+          6.0,
+          0.8499994277954102,
+          0.9499998092651367
+        ],
+        "proof": "8 exact AABB corners; 12 nondegenerate triangles; 6 complete faces; closed edge incidence"
+      },
+      "sourcePosition": "{x: 2130, y: 175, z: 2240}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "7537ae82002b",
+      "name": "R12_B_Court_Ramp_Tier_Beam_1_1",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/7537ae82002b.asset",
+      "meshGUID": "5e60de04409cc734d87f26e7c4184dcf",
+      "meshSHA256": "ddb8c15e4bbad72b9ea81337d476d03c3733cd60a3c30e61e9774ae4a8f7c261",
+      "meshFilterFileID": "1259040816476893101",
+      "gameObjectFileID": "1313684194781815499",
+      "worldBoundsManifest": [
+        [
+          2134.0,
+          167.75843811035156,
+          2235.02490234375
+        ],
+        [
+          2140.0,
+          168.6084442138672,
+          2235.97509765625
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": {
+        "center": [
+          7.0,
+          -6.816560983657837,
+          -4.5
+        ],
+        "size": [
+          6.0,
+          0.8499999046325684,
+          0.9499998092651367
+        ],
+        "proof": "8 exact AABB corners; 12 nondegenerate triangles; 6 complete faces; closed edge incidence"
+      },
+      "sourcePosition": "{x: 2130, y: 175, z: 2240}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "755934634ec9",
+      "name": "R12_B_Court_Ramp_Tier_Beam_1_2",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/755934634ec9.asset",
+      "meshGUID": "f6423f43552cd8b4aba801868a0db961",
+      "meshSHA256": "2632706ebe67efaf7175cd787043741df505c6193e8bcaa6d46a30c5510d4cff",
+      "meshFilterFileID": "3933444929687512254",
+      "gameObjectFileID": "4407729360383904079",
+      "worldBoundsManifest": [
+        [
+          2134.0,
+          174.95208740234375,
+          2235.02490234375
+        ],
+        [
+          2140.0,
+          175.88125610351562,
+          2235.97509765625
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 2130, y: 175, z: 2240}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "96efd2c24272",
+      "name": "R12_C_M02_Apron_Join_Tier_Beam_0_0",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/96efd2c24272.asset",
+      "meshGUID": "9e2e863b3cc6ba24590668b45b1dcc53",
+      "meshSHA256": "1458004f89cd738643f93381e60633e3345d6d5d2ceffba39eb9567c49295fd8",
+      "meshFilterFileID": "7138259083968044101",
+      "gameObjectFileID": "1687353430682924013",
+      "worldBoundsManifest": [
+        [
+          2167.0,
+          161.453125,
+          2186.324951171875
+        ],
+        [
+          2173.0,
+          162.30313110351562,
+          2187.27490234375
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": {
+        "center": [
+          40.0,
+          -13.121882438659668,
+          -53.19999885559082
+        ],
+        "size": [
+          6.0,
+          0.8500003814697266,
+          0.9500007629394531
+        ],
+        "proof": "8 exact AABB corners; 12 nondegenerate triangles; 6 complete faces; closed edge incidence"
+      },
+      "sourcePosition": "{x: 2130, y: 175, z: 2240}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "f3f3c51d6804",
+      "name": "R12_C_M02_Apron_Join_Tier_Beam_0_1",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/f3f3c51d6804.asset",
+      "meshGUID": "8c16653cea22b464f8df292916b01d3b",
+      "meshSHA256": "192ea49da6e4eb475ecd4e5c682af62b144ff9cb1350d0744b2208566ca17605",
+      "meshFilterFileID": "2883758136577948074",
+      "gameObjectFileID": "3238805062187618596",
+      "worldBoundsManifest": [
+        [
+          2167.0,
+          173.46075439453125,
+          2186.324951171875
+        ],
+        [
+          2173.0,
+          174.3107452392578,
+          2187.27490234375
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": {
+        "center": [
+          40.0,
+          -1.1142577826976776,
+          -53.19999885559082
+        ],
+        "size": [
+          6.0,
+          0.8499999642372131,
+          0.9500007629394531
+        ],
+        "proof": "8 exact AABB corners; 12 nondegenerate triangles; 6 complete faces; closed edge incidence"
+      },
+      "sourcePosition": "{x: 2130, y: 175, z: 2240}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "35265a46f00a",
+      "name": "R12_C_M02_Apron_Join_Tier_Beam_1_0",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/35265a46f00a.asset",
+      "meshGUID": "835856964a2685345a98ee0e24b62982",
+      "meshSHA256": "01f7b36f5a2cb525ceeb83d7a4d1d2f0c280198d748ac750ee62267b6b5f258e",
+      "meshFilterFileID": "5798501159728664488",
+      "gameObjectFileID": "7582960540910920011",
+      "worldBoundsManifest": [
+        [
+          2167.0,
+          162.56607055664062,
+          2192.52490234375
+        ],
+        [
+          2173.0,
+          163.41607666015625,
+          2193.47509765625
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": {
+        "center": [
+          40.0,
+          -12.008934020996094,
+          -47.0
+        ],
+        "size": [
+          6.0,
+          0.8500003814697266,
+          0.9499969482421875
+        ],
+        "proof": "8 exact AABB corners; 12 nondegenerate triangles; 6 complete faces; closed edge incidence"
+      },
+      "sourcePosition": "{x: 2130, y: 175, z: 2240}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "50a2ed796c55",
+      "name": "R12_C_M02_Apron_Join_Tier_Beam_1_1",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/50a2ed796c55.asset",
+      "meshGUID": "d5625f36cfdd25f4bbeb1973694c10f1",
+      "meshSHA256": "f3313f149b58b279c8f243647b754d3d1314b2d217d166a58414a250761cc513",
+      "meshFilterFileID": "8453878514242140852",
+      "gameObjectFileID": "2503873426803305581",
+      "worldBoundsManifest": [
+        [
+          2167.0,
+          173.46075439453125,
+          2192.52490234375
+        ],
+        [
+          2173.0,
+          174.3107452392578,
+          2193.47509765625
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": {
+        "center": [
+          40.0,
+          -1.1142577826976776,
+          -47.0
+        ],
+        "size": [
+          6.0,
+          0.8499999642372131,
+          0.9499969482421875
+        ],
+        "proof": "8 exact AABB corners; 12 nondegenerate triangles; 6 complete faces; closed edge incidence"
+      },
+      "sourcePosition": "{x: 2130, y: 175, z: 2240}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "e30cc65cbaa0",
+      "name": "R12_C_M02_Apron_Join_Tier_Beam_2_0",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/e30cc65cbaa0.asset",
+      "meshGUID": "d98a32dcb8a1e094999204010e0f7a14",
+      "meshSHA256": "2d3e5f9805e0ed1e04f15d1eafee026ae83d9978536280cdf4ab5e1dd50ca7d9",
+      "meshFilterFileID": "6533222743672097176",
+      "gameObjectFileID": "5297972508444352115",
+      "worldBoundsManifest": [
+        [
+          2167.0,
+          163.5005645751953,
+          2197.72509765625
+        ],
+        [
+          2173.0,
+          164.35055541992188,
+          2198.675048828125
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": {
+        "center": [
+          40.0,
+          -11.07444953918457,
+          -41.80000114440918
+        ],
+        "size": [
+          6.0,
+          0.8500003814697266,
+          0.9500007629394531
+        ],
+        "proof": "8 exact AABB corners; 12 nondegenerate triangles; 6 complete faces; closed edge incidence"
+      },
+      "sourcePosition": "{x: 2130, y: 175, z: 2240}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "b4fc351aeb21",
+      "name": "R12_C_M02_Apron_Join_Tier_Beam_2_1",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/b4fc351aeb21.asset",
+      "meshGUID": "e18340c6a614fa54b8907f5135d8dacf",
+      "meshSHA256": "faa1103289eff83d976c2d2a83bba16c85ae54f7af496338c6704b72596273cd",
+      "meshFilterFileID": "6631230678183595860",
+      "gameObjectFileID": "1021254311350352374",
+      "worldBoundsManifest": [
+        [
+          2167.0,
+          173.46075439453125,
+          2197.72509765625
+        ],
+        [
+          2173.0,
+          174.3107452392578,
+          2198.675048828125
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": {
+        "center": [
+          40.0,
+          -1.1142577826976776,
+          -41.80000114440918
+        ],
+        "size": [
+          6.0,
+          0.8499999642372131,
+          0.9500007629394531
+        ],
+        "proof": "8 exact AABB corners; 12 nondegenerate triangles; 6 complete faces; closed edge incidence"
+      },
+      "sourcePosition": "{x: 2130, y: 175, z: 2240}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "8a8aa4ed9966",
+      "name": "R12_Court_B_Threshold_Tier_Beam_0_0",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/8a8aa4ed9966.asset",
+      "meshGUID": "9c771c7cb0419014da4351d3e3247a7e",
+      "meshSHA256": "e3a7695f116a4854a674f8684a723babd4cf1d453fa4f427d82b93c4d6eb5db2",
+      "meshFilterFileID": "6933312913961063902",
+      "gameObjectFileID": "8453291523966088441",
+      "worldBoundsManifest": [
+        [
+          2120.0,
+          154.50914001464844,
+          2242.52490234375
+        ],
+        [
+          2124.0,
+          155.35914611816406,
+          2243.47509765625
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": {
+        "center": [
+          -8.0,
+          -20.065857887268066,
+          3.0
+        ],
+        "size": [
+          4.0,
+          0.8500003814697266,
+          0.9499998092651367
+        ],
+        "proof": "8 exact AABB corners; 12 nondegenerate triangles; 6 complete faces; closed edge incidence"
+      },
+      "sourcePosition": "{x: 2130, y: 175, z: 2240}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "e19a7a9a1875",
+      "name": "R12_Court_B_Threshold_Tier_Beam_0_1",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/e19a7a9a1875.asset",
+      "meshGUID": "e6b8ac115844c664b9b1f863ce0a795e",
+      "meshSHA256": "c5dcdaa64aeac374b056c8b56136623f4bcaa5b4b489e2953b848b31ddfa6f50",
+      "meshFilterFileID": "4731551418282406204",
+      "gameObjectFileID": "2934504772440518054",
+      "worldBoundsManifest": [
+        [
+          2120.0,
+          163.50914001464844,
+          2242.52490234375
+        ],
+        [
+          2124.0,
+          164.35914611816406,
+          2243.47509765625
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": {
+        "center": [
+          -8.0,
+          -11.065857887268066,
+          3.0
+        ],
+        "size": [
+          4.0,
+          0.8500003814697266,
+          0.9499998092651367
+        ],
+        "proof": "8 exact AABB corners; 12 nondegenerate triangles; 6 complete faces; closed edge incidence"
+      },
+      "sourcePosition": "{x: 2130, y: 175, z: 2240}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "b9e85f4bd917",
+      "name": "R12_Court_B_Threshold_Tier_Beam_0_2",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/b9e85f4bd917.asset",
+      "meshGUID": "b14136887c0f4764281fa1580998b903",
+      "meshSHA256": "4494cd03ce333442dc621edb75c124f651d9cab5f5577f777ef7e0c7101417f0",
+      "meshFilterFileID": "1458503684619777033",
+      "gameObjectFileID": "3752085842351407006",
+      "worldBoundsManifest": [
+        [
+          2120.0,
+          175.1999969482422,
+          2242.52490234375
+        ],
+        [
+          2124.0,
+          176.6267852783203,
+          2243.47509765625
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 2130, y: 175, z: 2240}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "75de135c20b4",
+      "name": "R12_Court_C_Threshold_Tier_Beam_0_0",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/75de135c20b4.asset",
+      "meshGUID": "1348a98ffa5685448a292d4ab277000c",
+      "meshSHA256": "21d6d9a9fdf23e5814c497d43794ade109acd4790aacf35a3db5404040b0d25f",
+      "meshFilterFileID": "777498059477934259",
+      "gameObjectFileID": "6712875876211857184",
+      "worldBoundsManifest": [
+        [
+          2146.0,
+          157.64797973632812,
+          2213.52490234375
+        ],
+        [
+          2152.0,
+          158.49798583984375,
+          2214.47509765625
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": {
+        "center": [
+          19.0,
+          -16.92702007293701,
+          -26.0
+        ],
+        "size": [
+          6.0,
+          0.8500003814697266,
+          0.9500007629394531
+        ],
+        "proof": "8 exact AABB corners; 12 nondegenerate triangles; 6 complete faces; closed edge incidence"
+      },
+      "sourcePosition": "{x: 2130, y: 175, z: 2240}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "0b566a8f53f6",
+      "name": "R12_Court_C_Threshold_Tier_Beam_0_1",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/0b566a8f53f6.asset",
+      "meshGUID": "024f26512b38a8244b28d193ebfe8649",
+      "meshSHA256": "be73d32189338e3e8edf36c411933354d2ba5e62e2c15f5bfe9bddfa0ab163ed",
+      "meshFilterFileID": "4673285998801254538",
+      "gameObjectFileID": "4128563652145273894",
+      "worldBoundsManifest": [
+        [
+          2146.0,
+          166.64797973632812,
+          2213.52490234375
+        ],
+        [
+          2152.0,
+          167.49798583984375,
+          2214.47509765625
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": {
+        "center": [
+          19.0,
+          -7.927019357681274,
+          -26.0
+        ],
+        "size": [
+          6.0,
+          0.8499999046325684,
+          0.9500007629394531
+        ],
+        "proof": "8 exact AABB corners; 12 nondegenerate triangles; 6 complete faces; closed edge incidence"
+      },
+      "sourcePosition": "{x: 2130, y: 175, z: 2240}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "3deefbcab90a",
+      "name": "R12_Court_C_Threshold_Tier_Beam_0_2",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/3deefbcab90a.asset",
+      "meshGUID": "65d9a181e1632c7498458b743c559f25",
+      "meshSHA256": "142d1619bcd193b5e89745c76c5856b84c72ac567bc78f5ebe6b77e820bbc5ff",
+      "meshFilterFileID": "7238883050549165491",
+      "gameObjectFileID": "7014978211205816205",
+      "worldBoundsManifest": [
+        [
+          2146.0,
+          173.4607391357422,
+          2213.52490234375
+        ],
+        [
+          2152.0,
+          175.0500030517578,
+          2214.47509765625
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 2130, y: 175, z: 2240}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "8566d8ab2296",
+      "name": "R12_M01_Apron_Join_Tier_Beam_0_0",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/8566d8ab2296.asset",
+      "meshGUID": "d4817a627d0ba4a40bd783efec089f2f",
+      "meshSHA256": "81659a4289b3885689ca87c70c4278732c9e557f69d69b51792d5efa14d55abf",
+      "meshFilterFileID": "5160282422457083137",
+      "gameObjectFileID": "2954937001262791269",
+      "worldBoundsManifest": [
+        [
+          2075.0,
+          157.09397888183594,
+          2277.52490234375
+        ],
+        [
+          2084.0,
+          157.9439697265625,
+          2278.47509765625
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": {
+        "center": [
+          -50.5,
+          -17.481019020080566,
+          38.0
+        ],
+        "size": [
+          9.0,
+          0.8500003814697266,
+          0.9499969482421875
+        ],
+        "proof": "8 exact AABB corners; 12 nondegenerate triangles; 6 complete faces; closed edge incidence"
+      },
+      "sourcePosition": "{x: 2130, y: 175, z: 2240}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "2d616a903638",
+      "name": "R12_M01_Apron_Join_Tier_Beam_0_1",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/2d616a903638.asset",
+      "meshGUID": "268b6471d0859f641acf694d6a4bc6f7",
+      "meshSHA256": "7f0ea08f2e497c80385cc4c769ab8fa5b561af523fc8b75166b9388e5c5b643d",
+      "meshFilterFileID": "1427537662661454212",
+      "gameObjectFileID": "1313790343003422000",
+      "worldBoundsManifest": [
+        [
+          2075.0,
+          166.09397888183594,
+          2277.52490234375
+        ],
+        [
+          2084.0,
+          166.9439697265625,
+          2278.47509765625
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": {
+        "center": [
+          -50.5,
+          -8.481019496917725,
+          38.0
+        ],
+        "size": [
+          9.0,
+          0.8499994277954102,
+          0.9499969482421875
+        ],
+        "proof": "8 exact AABB corners; 12 nondegenerate triangles; 6 complete faces; closed edge incidence"
+      },
+      "sourcePosition": "{x: 2130, y: 175, z: 2240}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "0f2a5fb1aecb",
+      "name": "R12_M01_Apron_Join_Tier_Beam_0_2",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/0f2a5fb1aecb.asset",
+      "meshGUID": "3cdee513648466b48b9b5b1e1e9a10e6",
+      "meshSHA256": "f07da9215d88a5c536701a5529504fc5bb41b89d27222b13e45aa4765a976486",
+      "meshFilterFileID": "5210014877099291647",
+      "gameObjectFileID": "3669740024988039052",
+      "worldBoundsManifest": [
+        [
+          2075.050048828125,
+          175.7767791748047,
+          2277.52490234375
+        ],
+        [
+          2084.0,
+          176.62677001953125,
+          2278.47509765625
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": {
+        "center": [
+          -50.47500038146973,
+          1.2017821967601776,
+          38.0
+        ],
+        "size": [
+          8.950000762939453,
+          0.8499999642372131,
+          0.9499969482421875
+        ],
+        "proof": "8 exact AABB corners; 12 nondegenerate triangles; 6 complete faces; closed edge incidence"
+      },
+      "sourcePosition": "{x: 2130, y: 175, z: 2240}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "0d14989a4493",
+      "name": "R12_M01_Apron_Join_Tier_Beam_1_0",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/0d14989a4493.asset",
+      "meshGUID": "3c09a3a1355cb3645b8a8259020dddc7",
+      "meshSHA256": "5f0181a52c7a5b2eee7d37c04267da4fb40be3d19421edc0f2811fdedb7cb298",
+      "meshFilterFileID": "9181570036894515385",
+      "gameObjectFileID": "6522311278496806953",
+      "worldBoundsManifest": [
+        [
+          2075.0,
+          158.9654083251953,
+          2281.52490234375
+        ],
+        [
+          2084.0,
+          159.81539916992188,
+          2282.47509765625
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": {
+        "center": [
+          -50.5,
+          -15.609586238861084,
+          42.0
+        ],
+        "size": [
+          9.0,
+          0.8499994277954102,
+          0.9499969482421875
+        ],
+        "proof": "8 exact AABB corners; 12 nondegenerate triangles; 6 complete faces; closed edge incidence"
+      },
+      "sourcePosition": "{x: 2130, y: 175, z: 2240}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "4083f3831b64",
+      "name": "R12_M01_Apron_Join_Tier_Beam_1_1",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/4083f3831b64.asset",
+      "meshGUID": "235f967060451f64e9415fa9da9e1c59",
+      "meshSHA256": "e32d95bda1e3bfefbf0f57a61e513b77ef6b42c597d7f98e70a1ac58c7d63e17",
+      "meshFilterFileID": "4240071640365339856",
+      "gameObjectFileID": "9086378251133401490",
+      "worldBoundsManifest": [
+        [
+          2075.0,
+          167.9654083251953,
+          2281.52490234375
+        ],
+        [
+          2084.0,
+          168.81541442871094,
+          2282.47509765625
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": {
+        "center": [
+          -50.5,
+          -6.609586000442505,
+          42.0
+        ],
+        "size": [
+          9.0,
+          0.8499999046325684,
+          0.9499969482421875
+        ],
+        "proof": "8 exact AABB corners; 12 nondegenerate triangles; 6 complete faces; closed edge incidence"
+      },
+      "sourcePosition": "{x: 2130, y: 175, z: 2240}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "0b77462eb44b",
+      "name": "R12_M01_Apron_Join_Tier_Beam_1_2",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/0b77462eb44b.asset",
+      "meshGUID": "8de2011d0488c92439719c85ee86bf9a",
+      "meshSHA256": "7ccffd1656f503565d9128de0619e94f38ef6447939892f7a099be92c6c9e22f",
+      "meshFilterFileID": "1520646216169460616",
+      "gameObjectFileID": "7693926051170046182",
+      "worldBoundsManifest": [
+        [
+          2075.050048828125,
+          175.7767791748047,
+          2281.52490234375
+        ],
+        [
+          2084.0,
+          176.62677001953125,
+          2282.47509765625
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": {
+        "center": [
+          -50.47500038146973,
+          1.2017821967601776,
+          42.0
+        ],
+        "size": [
+          8.950000762939453,
+          0.8499999642372131,
+          0.9499969482421875
+        ],
+        "proof": "8 exact AABB corners; 12 nondegenerate triangles; 6 complete faces; closed edge incidence"
+      },
+      "sourcePosition": "{x: 2130, y: 175, z: 2240}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "6460b634b3de",
+      "name": "R15_Loading_East_Deck_Bearing_Toe",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/6460b634b3de.asset",
+      "meshGUID": "74ec622a50930b149b9f94e9d02aae09",
+      "meshSHA256": "bfef128245fcead3fdd0f2701509275c7d88b3ae808b094a1639880451ae0e13",
+      "meshFilterFileID": "5162249061705262687",
+      "gameObjectFileID": "871827456570724496",
+      "worldBoundsManifest": [
+        [
+          1817.705810546875,
+          242.97900390625,
+          1839.70703125
+        ],
+        [
+          1818.7930908203125,
+          243.2285919189453,
+          1840.6903076171875
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 1810, y: 242.979, z: 1860}",
+      "sourceRotation": "{x: -0.000000036001815, y: -0.30070585, z: -0.0000000113513305, w: 0.95371693}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "c71b6e074470",
+      "name": "R15_Loading_West_Deck_Bearing_Toe",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/c71b6e074470.asset",
+      "meshGUID": "d8a7941182dea7e4fa5c8d9dd347d762",
+      "meshSHA256": "f14e7556ef0d309269773455c5ad877df058e3c2bd29999719af4d37b78e5768",
+      "meshFilterFileID": "6808839222955670959",
+      "gameObjectFileID": "6768069893002527513",
+      "worldBoundsManifest": [
+        [
+          1812.4632568359375,
+          242.97900390625,
+          1836.0362548828125
+        ],
+        [
+          1813.550537109375,
+          243.2285919189453,
+          1837.0194091796875
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 1810, y: 242.979, z: 1860}",
+      "sourceRotation": "{x: -0.000000036001815, y: -0.30070585, z: -0.0000000113513305, w: 0.95371693}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "79adbeb25999",
+      "name": "R18_Floor_Lower_Room",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/79adbeb25999.asset",
+      "meshGUID": "72c73b581435c914bb0f1c05f6f46223",
+      "meshSHA256": "d4aa3f2d267fe8f5bab49ad0d189497ed899e7cbcd33ce5b0e0baa8a04c7fad4",
+      "meshFilterFileID": "2979047232340531644",
+      "gameObjectFileID": "1087177208153491883",
+      "worldBoundsManifest": [
+        [
+          1744.0999755859375,
+          204.15963745117188,
+          2253.39990234375
+        ],
+        [
+          1749.5,
+          204.39962768554688,
+          2259.89990234375
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "16e6f94990c1",
+      "name": "R18_Floor_Upper_North_Room",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/16e6f94990c1.asset",
+      "meshGUID": "af4383e416668ec4c9664df5163435ad",
+      "meshSHA256": "86b61443008f5c7338af0515b616ea86792af5898867921e2447e2dbc5e8adbf",
+      "meshFilterFileID": "6173882534053337479",
+      "gameObjectFileID": "167304898477228644",
+      "worldBoundsManifest": [
+        [
+          1744.0999755859375,
+          205.05963134765625,
+          2261.39990234375
+        ],
+        [
+          1749.5,
+          205.2996368408203,
+          2265.800048828125
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "3023cc0685b1",
+      "name": "R18_Floor_Upper_Stair_East_Cheek",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/3023cc0685b1.asset",
+      "meshGUID": "32af40d4c19caea41814278bb997a0a3",
+      "meshSHA256": "6872ec86b7da71e3bf76bf80ac7b566e0357f2e36815ba36a70430ce4693fc99",
+      "meshFilterFileID": "5853400071823268960",
+      "gameObjectFileID": "8299926351348390921",
+      "worldBoundsManifest": [
+        [
+          1747.800048828125,
+          205.05963134765625,
+          2259.89990234375
+        ],
+        [
+          1749.5,
+          205.2996368408203,
+          2261.39990234375
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "79a69e25ff24",
+      "name": "R18_Floor_Upper_Stair_West_Cheek",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/79a69e25ff24.asset",
+      "meshGUID": "1d666da3664330e4cb4224089ae76483",
+      "meshSHA256": "023405727c1c70c0aae8a28d14674e558e014da1db8a962de61e9823bf2d5659",
+      "meshFilterFileID": "3647445423447984277",
+      "gameObjectFileID": "2394129383149967654",
+      "worldBoundsManifest": [
+        [
+          1744.0999755859375,
+          205.05963134765625,
+          2259.89990234375
+        ],
+        [
+          1745.5999755859375,
+          205.2996368408203,
+          2261.39990234375
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "e2a17de0dd32",
+      "name": "R18_Entry_Lower_Threshold",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/e2a17de0dd32.asset",
+      "meshGUID": "25f92000455b3c642862071f7a5ee631",
+      "meshSHA256": "0df4655f6bdc8ef0dab2b2a918f3729b1062e0efea7c50a4b44360fe9de04a0f",
+      "meshFilterFileID": "3954474590293519932",
+      "gameObjectFileID": "3370694588555592089",
+      "worldBoundsManifest": [
+        [
+          1748.97998046875,
+          204.36463928222656,
+          2257.85009765625
+        ],
+        [
+          1749.800048828125,
+          204.40463256835938,
+          2259.64990234375
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "400ef1c3c926",
+      "name": "R18_Entry_Upper_Threshold",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/400ef1c3c926.asset",
+      "meshGUID": "b9d9c148b4c144a4794b50130e7d931b",
+      "meshSHA256": "922ce1ffa28719e3662055e2b89b485431298abb733aa9a2625d7b49c5960365",
+      "meshFilterFileID": "3034212150926547739",
+      "gameObjectFileID": "4921956284680268683",
+      "worldBoundsManifest": [
+        [
+          1748.97998046875,
+          205.26463317871094,
+          2263.199951171875
+        ],
+        [
+          1749.800048828125,
+          205.30462646484375,
+          2265.0
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "7c608f80602e",
+      "name": "R18_Roof_Lower_Closed_Deck",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/7c608f80602e.asset",
+      "meshGUID": "a653e1e656d67d24aa28836e519a5c69",
+      "meshSHA256": "3180ebeb11627d13990dee32fd4376db21cec6854125d9fc303f8b27eeab7ccf",
+      "meshFilterFileID": "8072865514172570515",
+      "gameObjectFileID": "8796995110713455560",
+      "worldBoundsManifest": [
+        [
+          1744.02001953125,
+          208.2803955078125,
+          2253.300048828125
+        ],
+        [
+          1749.6199951171875,
+          208.7188720703125,
+          2259.9599609375
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "4555624c050e",
+      "name": "R18_Roof_Upper_Closed_Deck",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/4555624c050e.asset",
+      "meshGUID": "0a9fa86149bae1d4693ee8eba8664637",
+      "meshSHA256": "66ae55bdb9fdf01750b2bb4097dfe458c20e4c017309fb74175b7f0a06064b97",
+      "meshFilterFileID": "1630340647731481287",
+      "gameObjectFileID": "4232395447493790969",
+      "worldBoundsManifest": [
+        [
+          1744.02001953125,
+          209.9002685546875,
+          2259.85009765625
+        ],
+        [
+          1749.6199951171875,
+          210.2989959716797,
+          2265.89990234375
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": null,
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "77c0ca1743ac",
+      "name": "R18_Entry_Lower_Room_Landing",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/77c0ca1743ac.asset",
+      "meshGUID": "b315b680ad6bc0741affe198ea1d6542",
+      "meshSHA256": "b79844196369fd9c2c72e159c347525cae30796acf686ffc34ae39c86b32c066",
+      "meshFilterFileID": "2693065470442023831",
+      "gameObjectFileID": "6507750208099510012",
+      "worldBoundsManifest": [
+        [
+          1749.5,
+          201.8419647216797,
+          2257.800048828125
+        ],
+        [
+          1752.0,
+          204.39962768554688,
+          2259.800048828125
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": {
+        "center": [
+          1750.75,
+          203.12116241455078,
+          2258.800048828125
+        ],
+        "size": [
+          2.5,
+          2.5576629638671875,
+          2.0
+        ],
+        "proof": "8 exact AABB corners; 12 nondegenerate triangles; 6 complete faces; closed edge incidence"
+      },
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    },
+    {
+      "sourceVersion": "RebuildR09R18",
+      "key": "15acba6fca6c",
+      "name": "R18_Entry_Lower_Turning_Landing",
+      "sourcePrefab": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab",
+      "mesh": "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/Meshes/15acba6fca6c.asset",
+      "meshGUID": "a7e39110b58aba1419c16aee9f445251",
+      "meshSHA256": "490431cbfe8ccfe1a6cdd3ab5fb4446e9ab8cdcfa093ccf01dd0996a23cef131",
+      "meshFilterFileID": "2029910682403577462",
+      "gameObjectFileID": "8201408986104664635",
+      "worldBoundsManifest": [
+        [
+          1749.699951171875,
+          200.99668884277344,
+          2251.0
+        ],
+        [
+          1752.0,
+          202.1996307373047,
+          2253.199951171875
+        ]
+      ],
+      "ownColliderCount": 0,
+      "otherProxyCoverage": "UNVERIFIED: no connected Editor Pipeline; no raycast/scene query run",
+      "simpleBox": {
+        "center": [
+          1750.8499755859375,
+          201.59852600097656,
+          2252.0999755859375
+        ],
+        "size": [
+          2.300048828125,
+          1.20294189453125,
+          2.199951171875
+        ],
+        "proof": "8 exact AABB corners; 12 nondegenerate triangles; 6 complete faces; closed edge incidence"
+      },
+      "sourcePosition": "{x: 0, y: 0, z: 0}",
+      "sourceRotation": "{x: 0.00000008146034, y: 0, z: 0, w: 1}",
+      "sourceScale": "{x: 1, y: 1, z: 1}"
+    }
+  ],
+  "draftBoxCount": 14,
+  "draftKeys": [
+    "0a9314187236",
+    "909092b89ad2",
+    "afc74c3ad240",
+    "e2b8c58a0af3",
+    "2ad43e9fd322",
+    "d92afb67a999",
+    "280ab3b4a3c7",
+    "85dad6d7b22d",
+    "cf3808cb5afd",
+    "40b9ef4f3188",
+    "1710896e98bb",
+    "262a04514b46",
+    "1bbc368ede2b",
+    "50d5569f1b10"
+  ],
+  "protectedFileHashes": {
+    "Assets/MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusGameScene.unity": "096b175d419cba124f7ea40e01ea5cb7ccdbccc88ee1fa3a832fb63c4b911b0e",
+    "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR08/RebuildR08_Display.prefab": "1d328809b05ee67a4c6915cda1fea7ea9bb36491ec877ddb62de3bbc8a5ee300",
+    "Assets/MoonEnvironment/Variants/TheophilusBase/DisplayIncrements/RebuildR09R18/RebuildR09R18_Display.prefab": "ba769eefea03fd6779073a01c0fbd39e7ec404f9017cec0f624d2f78baff1a20"
+  },
+  "applicationGates": [
+    "Current formal prefab parent chains and final world matrices match manifests.",
+    "Editor connected, not Play/compiling/building and no concurrent scene writer.",
+    "Query all current proxies at candidate surface samples; omit already covered surfaces.",
+    "Validate Layer0 with actual controller layers and check source collision material.",
+    "Complex aperture/stair surfaces need separate reduced proxies; no enclosing boxes.",
+    "Preserve ExpeditionClockPresentation and existing protected settings."
+  ],
+  "editorBlocker": "No Pipeline instance found for project: E:/UnityProjects/FPS_Template",
+  "actualSceneChanges": 0,
+  "runtimeChecks": 0
+}
