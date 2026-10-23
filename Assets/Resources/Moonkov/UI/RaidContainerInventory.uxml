@@ -5,7 +5,7 @@
     <ui:VisualElement name="containerInventory" class="inventory-view inventory-raid moonkov-controls moonkov-style-font" focusable="true">
         <ui:VisualElement name="inventoryBody" class="inventory-body">
             <ui:VisualElement name="characterPane" class="inventory-character field-equipment">
-                <ui:Label text="穿戴装备" class="field-pane-title" picking-mode="Ignore" />
+                <ui:Label text="装备" class="field-pane-title" picking-mode="Ignore" />
                 <ui:Label name="inventoryWeight" class="inventory-weight" picking-mode="Ignore" />
                 <ui:VisualElement name="characterStage" class="inventory-character-stage">
                     <ui:VisualElement name="operatorPortrait" class="field-operator-portrait" picking-mode="Ignore" />
@@ -18,11 +18,8 @@
                         <ui:Button name="inventorySlotMelee" class="inventory-slot"><ui:Label name="slotLabel" class="inventory-slot-label" picking-mode="Ignore" /><ui:VisualElement name="art" class="inventory-slot-art" picking-mode="Ignore" /><ui:Label name="item" class="inventory-slot-item" picking-mode="Ignore" /></ui:Button>
                     </ui:VisualElement>
                 </ui:VisualElement>
-                <ui:Label text="拖入兼容装备即可穿戴" class="field-pane-note" picking-mode="Ignore" />
             </ui:VisualElement>
             <ui:VisualElement class="field-carried">
-                <ui:Label text="随身容器" class="field-pane-title" picking-mode="Ignore" />
-                <ui:Label text="衣兜 · 胸挂 · 背包 · 保险箱" class="field-pane-note" picking-mode="Ignore" />
                 <ui:ScrollView name="containerPane" mode="Vertical" class="inventory-containers" />
             </ui:VisualElement>
             <ui:VisualElement class="field-loot">
@@ -32,7 +29,7 @@
             </ui:VisualElement>
             <ui:VisualElement name="stashPane" class="inventory-stash" />
         </ui:VisualElement>
-        <ui:Label name="inventoryHint" text="拖动放置 · R 旋转 · 右键／Esc 取消 · Ctrl／Shift 点击转移" class="inventory-hint" picking-mode="Ignore" />
+        <ui:Label name="inventoryHint" class="inventory-hint" picking-mode="Ignore" />
         <ui:VisualElement name="inventoryQuickbarDock" class="field-quickbar-dock" picking-mode="Ignore" />
         <ui:VisualElement name="inventoryGhost" class="inventory-ghost" picking-mode="Ignore" />
     </ui:VisualElement>

@@ -37,15 +37,18 @@ namespace Unity.MP_FPS.Client
         {
             var button = new Button { name = "inventorySlot" + slot };
             button.AddToClassList("inventory-empty-container");
-            if (item == null) button.text = slot == "ChestRig" ? "空胸挂槽 · 拖入胸挂以装备" : slot == "Backpack" ? "空背包槽 · 拖入背包以装备" : "空保险箱槽 · 拖入保险箱以装备";
+            if (item == null) button.text = "空";
             else
             {
                 var art = new StashItemArt(Art(item.Code)); art.AddToClassList("field-container-art"); button.Add(art);
-                Text(button, MoonkovLocalization.Text(InventoryCatalog.Get(item.Code).Name) + " · 拖动可取下", "field-container-name");
                 m_Tiles[item.Id] = button;
             }
-            group.Insert(1, button); button.RemoveManipulator(button.clickable);
-            if (slot == "SecureContainer") Text(group, "装备后死亡保留箱内物品 · 不可放入武器、穿戴装备或任务产物", "inventory-caption");
+            string title = slot == "ChestRig" ? "胸挂" : slot == "Backpack" ? "背包" : "保险箱";
+            button.tooltip = item == null ? title + "：拖入兼容装备" : MoonkovItemPresentation.Details(item.Code);
+            var body = new VisualElement(); body.AddToClassList("field-container-body");
+            var regions = group.Q("containerRegions"); regions.RemoveFromHierarchy();
+            body.Add(button); body.Add(regions); group.Add(body);
+            button.RemoveManipulator(button.clickable);
             button.AddManipulator(new Drag(this, () => m_Graph?.Equipped(slot), () => ChooseSlot(slot), () => ChooseSlot(slot)));
             m_Grids.Add(new Grid { Parent = InventoryCatalog.Equipment, Region = slot, Element = button,
                 Definition = InventoryCatalog.Get(InventoryCatalog.Equipment).Regions.First(r => r.Id == slot) });
@@ -64,10 +67,9 @@ namespace Unity.MP_FPS.Client
             }
             bool corpse = !m_DroppedItem && m_LootId >= RaidLootContainers.FirstDeathBagId && m_LootId < RaidLootContainers.FirstMissionCacheId;
             MoonkovLocalization.Set(title, corpse ? "尸体搜刮" : m_DroppedItem ? "地面物品" : m_LootId >= RaidLootContainers.FirstMissionCacheId ? "任务输出槽" : "物资容器");
-            MoonkovLocalization.Set(caption, corpse ? "遗留装备与容器内容 · Ctrl／Shift 点击取走" : "拖到自己的容器，或 Ctrl／Shift 点击转移");
+            MoonkovLocalization.Set(caption, "");
             if (!corpse) { AddContainer(m_LootPane, loot, "可搜刽物品"); return; }
             var tops = m_Graph.Children(loot.Id).ToArray(); var shown = new HashSet<string>();
-            Text(m_LootPane, "遗留装备", "inventory-section-title");
             var equipment = new VisualElement(); equipment.AddToClassList("field-corpse-equipment"); m_LootPane.Add(equipment);
             foreach (string slot in new[] { "Helmet", "Shield", "Primary", "Secondary", "Pistol", "Melee", "ChestRig", "Backpack" })
             {
@@ -94,7 +96,6 @@ namespace Unity.MP_FPS.Client
             foreach (var item in tops.Where(i => InventoryCatalog.Get(i.Code).Kind == ItemKind.Rig || InventoryCatalog.Get(i.Code).Kind == ItemKind.Backpack))
                 AddContainer(m_LootPane, item, InventoryCatalog.Get(item.Code).Kind == ItemKind.Rig ? "胸挂内容" : "背包内容");
             AddContainer(m_LootPane, loot, "随身散装物品", shown, true);
-            Text(m_LootPane, "拖入散装区域可放回尸体，系统自动寻找空位。", "field-pane-note");
         }
         // Death caches pack gear as loot. Compact only loose-item drawing; drop
         // intents still use real IDs and authoritative free positions.

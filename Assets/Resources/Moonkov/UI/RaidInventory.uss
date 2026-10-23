@@ -1,60 +1,57 @@
-.inventory-view.inventory-raid {
-    --mk-surface: #101416; --mk-panel: #191f21; --mk-line: #414b4e;
-    --mk-ink: #eeeee6; --mk-muted: #b3bcb9; --mk-accent: #c8cfaa;
-    background-color: #101416; padding: 0; min-height: 0; -unity-font-definition: url("/Assets/Localization/Fonts/NotoSansCJKsc-Regular.otf");
-}
+.inventory-view.inventory-raid { --mk-surface: #101416; --mk-panel: #191f21; --mk-line: #414b4e; --mk-ink: #eeeee6; --mk-muted: #b3bcb9; --mk-accent: #c8cfaa; background-color: #101416; padding: 0; min-height: 0; -unity-font-definition: url("/Assets/Localization/Fonts/NotoSansCJKsc-Regular.otf"); }
 .inventory-raid Label, .inventory-raid Button, .raid-inventory-window Label, .raid-inventory-window Button { -unity-font-definition: url("/Assets/Localization/Fonts/NotoSansCJKsc-Regular.otf"); letter-spacing: 0; }
 .inventory-raid .inventory-body { min-height: 0; }
-.inventory-raid .inventory-character { width: 32%; max-width: 410px; flex-shrink: 0; margin-right: 0; padding: 12px; background-color: #171c1e; }
-.inventory-raid .field-carried, .inventory-raid .field-loot { flex-grow: 1; flex-basis: 0; min-width: 0; min-height: 0; padding: 12px; background-color: #171c1e; }
-.inventory-raid .field-carried { margin-right: 14px; border-left-width: 1px; border-left-color: #414b4e; }
+.inventory-raid .inventory-character { width: 32%; max-width: 410px; flex-shrink: 0; margin-right: 0; padding: 8px; background-color: #171c1e; }
+.inventory-raid .field-carried, .inventory-raid .field-loot { flex-grow: 1; flex-basis: 0; min-width: 0; min-height: 0; padding: 8px; background-color: #171c1e; }
+.inventory-raid .field-carried { margin-right: 10px; border-left-width: 1px; border-left-color: #414b4e; }
 .inventory-raid .field-loot { background-color: #1c2223; }
-.inventory-raid .field-pane-title { font-size: 18px; -unity-font-style: bold; color: #eeeee6; margin-bottom: 6px; flex-shrink: 0; }
-.inventory-raid .field-pane-note, .inventory-raid .inventory-weight { font-size: 13px; color: #b3bcb9; margin-top: 0; margin-bottom: 12px; flex-shrink: 0; white-space: normal; }
-.inventory-raid .inventory-character-stage { flex-grow: 1; min-height: 300px; position: relative; }
+.inventory-raid .field-pane-title { font-size: 15px; -unity-font-style: bold; color: #eeeee6; margin-bottom: 6px; flex-shrink: 0; }
+.inventory-raid .field-pane-note, .inventory-raid .inventory-caption { display: none; }
+.inventory-raid .inventory-weight { font-size: 12px; color: #b3bcb9; margin: 0; flex-shrink: 0; }
+.inventory-raid .inventory-character-stage { flex-grow: 1; min-height: 240px; position: relative; }
 .inventory-raid .inventory-slot-layer, .inventory-raid .field-operator-portrait { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
 .inventory-raid .field-operator-portrait { background-image: url("FieldOperatorPortrait.png"); -unity-background-scale-mode: scale-to-fit; }
-.inventory-view.inventory-raid .inventory-slot { position: absolute; min-height: 0; margin: 0; padding: 8px; border-width: 1px; border-color: #66706a; background-color: rgba(15,23,22,0.84); }
-.inventory-view.inventory-raid .inventory-slot-label { font-size: 12px; top: 7px; color: #b3bcb9; }
-.inventory-view.inventory-raid .inventory-slot-item { font-size: 12px; bottom: 5px; color: #eeeee6; }
-.inventory-raid .inventory-slot-art { top: 26px; bottom: 25px; }
+.inventory-view.inventory-raid .inventory-slot { position: absolute; min-height: 0; margin: 0; padding: 6px; border-width: 1px; border-color: #66706a; background-color: rgba(15,23,22,0.84); }
+.inventory-view.inventory-raid .inventory-slot-label { font-size: 12px; top: 5px; color: #b3bcb9; }
+.inventory-view.inventory-raid .inventory-slot-item { font-size: 12px; bottom: 4px; color: #eeeee6; }
+.inventory-raid .inventory-slot-art { top: 22px; bottom: 22px; }
 .inventory-view.inventory-raid .inventory-equipped { border-left-width: 1px; border-color: #687775; }
 .inventory-raid .inventory-containers, .inventory-raid .inventory-loot-pane { flex-grow: 1; min-height: 0; width: auto; margin: 0; padding: 0; border-width: 0; background-color: transparent; display: flex; }
-.inventory-raid .inventory-container { flex-grow: 0; flex-shrink: 0; padding: 0 0 12px 0; margin-bottom: 14px; border-bottom-width: 1px; border-bottom-color: #384244; }
-.inventory-raid .inventory-section-title { font-size: 15px; -unity-font-style: bold; letter-spacing: 0; border-left-width: 0; padding-left: 0; margin-bottom: 5px; }
-.inventory-raid .inventory-caption { font-size: 13px; margin-bottom: 8px; color: #b3bcb9; white-space: normal; }
-.inventory-raid .inventory-region-title { color: #a3b8ad; font-size: 12px; }
+.inventory-raid .inventory-container { flex-grow: 0; flex-shrink: 0; padding: 0; margin-bottom: 8px; border-width: 0; }
+.inventory-raid .inventory-section-title { font-size: 13px; -unity-font-style: bold; letter-spacing: 0; border-left-width: 0; padding-left: 0; margin-bottom: 3px; }
+.inventory-raid .inventory-region-title { display: none; }
 .inventory-raid .inventory-regions, .inventory-raid .inventory-region { flex-grow: 0; }
+.inventory-raid .inventory-region { margin-right: 4px; margin-bottom: 0; }
+.inventory-raid .field-container-body { flex-direction: row; align-items: flex-start; }
+.inventory-raid .field-container-body > .inventory-regions { flex-grow: 1; min-width: 0; flex-basis: 0; }
 .inventory-view.inventory-raid .inventory-grid { background-color: #101718; }
 .inventory-view.inventory-raid .inventory-item { background-color: #222b2b; border-color: #52605c; }
-.inventory-view.inventory-raid .inventory-item:hover, .inventory-view.inventory-raid .inventory-slot:hover { background-color: #303b38; border-color: #c8cfaa; }
-.inventory-view.inventory-raid .inventory-item:focus, .inventory-view.inventory-raid .inventory-selected { background-color: #354139; border-width: 2px; border-color: #c8cfaa; }
+.inventory-view.inventory-raid .inventory-item:hover, .inventory-view.inventory-raid .inventory-slot:hover, .inventory-raid .inventory-empty-container:hover { background-color: #303b38; border-color: #c8cfaa; }
+.inventory-view.inventory-raid .inventory-item:focus, .inventory-view.inventory-raid .inventory-selected, .inventory-raid .inventory-empty-container:focus { background-color: #354139; border-width: 2px; border-color: #c8cfaa; }
 .inventory-view.inventory-raid .inventory-item-label { font-size: 12px; background-color: rgba(16,20,22,0.88); color: #eeeee6; }
 .inventory-view.inventory-raid .inventory-item-quantity { color: #eeeee6; background-color: #101416; font-size: 13px; }
-.inventory-raid .inventory-empty-container { height: 76px; min-height: 76px; width: auto; padding: 14px; background-color: #121819; border-width: 1px; border-color: #58625e; border-radius: 0; color: #b3bcb9; white-space: normal; font-size: 14px; -unity-text-align: middle-center; }
-.inventory-raid .inventory-empty-container { flex-direction: row; align-items: center; justify-content: flex-start; margin-bottom: 8px; }
-.inventory-raid .field-container-art { width: 56px; height: 52px; flex-shrink: 0; margin-right: 10px; }
-.inventory-raid .field-container-name { flex-grow: 1; font-size: 14px; white-space: normal; }
-.inventory-raid .field-empty { padding: 24px 12px; min-height: 150px; border-width: 1px; border-color: #414b4e; background-color: #151b1c; justify-content: center; }
-.inventory-raid .field-empty-title { font-size: 16px; margin-bottom: 10px; color: #eeeee6; white-space: normal; }
-.inventory-raid .field-empty-copy { font-size: 14px; color: #b3bcb9; white-space: normal; }
-.inventory-raid .field-corpse-equipment { flex-direction: row; flex-wrap: wrap; margin-bottom: 14px; }
-.inventory-view.inventory-raid .field-corpse-slot { position: relative; width: 48%; height: 92px; margin: 0 2% 8px 0; border-width: 1px; border-color: #52605c; background-color: #222b2b; }
-.inventory-raid .field-corpse-slot .inventory-slot-art { top: 24px; bottom: 24px; }
+.inventory-raid .inventory-empty-container { width: 52px; height: 52px; min-height: 52px; flex-shrink: 0; padding: 2px; margin-right: 8px; background-color: #121819; border-width: 1px; border-color: #58625e; border-radius: 0; color: #b3bcb9; font-size: 12px; -unity-text-align: middle-center; }
+.inventory-raid .field-container-art { flex-grow: 1; width: 46px; height: 46px; }
+.inventory-raid .field-empty { padding: 12px; min-height: 70px; justify-content: center; }
+.inventory-raid .field-empty-title { font-size: 14px; color: #b3bcb9; white-space: normal; }
+.inventory-raid .field-empty-copy { display: none; }
+.inventory-raid .field-corpse-equipment { flex-direction: row; flex-wrap: wrap; margin-bottom: 8px; }
+.inventory-view.inventory-raid .field-corpse-slot { position: relative; width: 48%; height: 74px; margin: 0 2% 4px 0; border-width: 1px; border-color: #52605c; background-color: #222b2b; }
+.inventory-raid .field-corpse-slot .inventory-slot-art { top: 22px; bottom: 22px; }
 .inventory-raid .field-corpse-slot .inventory-slot-label, .inventory-raid .field-corpse-slot .inventory-slot-item { font-size: 12px; }
 .inventory-view.inventory-raid .field-corpse-empty { background-color: #151b1c; border-color: #384244; }
-.inventory-raid .field-loot-drop { min-height: 44px; padding: 10px; margin-top: 4px; font-size: 13px; color: #b3bcb9; border-width: 1px; border-color: #52605c; white-space: normal; }
-.inventory-raid .inventory-hint { min-height: 34px; margin-top: 8px; padding: 5px 10px; font-size: 13px; color: #d1d8ce; border-width: 0; background-color: #101416; }
+.inventory-raid .inventory-hint { position: absolute; left: 4px; right: 4px; bottom: 62px; height: 20px; min-height: 0; margin: 0; padding: 0; font-size: 12px; color: #e49e92; border-width: 0; background-color: transparent; }
+.inventory-warehouse .inventory-hint { bottom: 0; }
 .inventory-view.inventory-raid .inventory-drop-valid { background-color: rgba(124,170,131,0.25); border-color: #9dcc9e; }
 .inventory-view.inventory-raid .inventory-drop-invalid { background-color: rgba(206,129,119,0.20); border-color: #e49e92; }
-.inventory-raid .field-quickbar-dock { min-height: 108px; flex-shrink: 0; border-top-width: 1px; border-top-color: #414b4e; padding-top: 8px; }
-.raid-ui .raid-inventory-window { width: 96%; max-width: 1800px; height: 94%; padding: 16px; background-color: #101416; border-color: #414b4e; border-top-color: #c8cfaa; border-top-width: 1px; }
-.raid-ui .raid-inventory-window > .raid-inventory-header { height: 38px; margin-bottom: 8px; padding: 0; background-image: none; border-bottom-color: #414b4e; }
-.raid-ui .raid-inventory-window .raid-inventory-title { font-size: 21px; letter-spacing: 0; background-color: transparent; padding: 0; color: #eeeee6; }
-.raid-ui .raid-inventory-tabs { margin-bottom: 8px; }
-.raid-ui .raid-inventory-tabs .raid-tab { height: 30px; min-width: 112px; font-size: 14px; letter-spacing: 0; background-color: #191f21; color: #b3bcb9; }
-.raid-ui .raid-inventory-tabs .raid-tab-active { background-color: #374236; color: #eeeee6; }
-.raid-ui .raid-inventory-header Button { height: 30px; min-width: 100px; margin: 0 0 0 8px; letter-spacing: 0; font-size: 13px; color: #eeeee6; background-color: #28312e; }
+.inventory-raid .field-quickbar-dock { min-height: 62px; flex-shrink: 0; padding-top: 4px; }
+.raid-ui .raid-inventory-window { width: 98%; max-width: 1800px; height: 97%; padding: 8px; background-color: #101416; border-color: #414b4e; border-top-width: 1px; }
+.raid-ui .raid-inventory-window > .raid-inventory-header { height: 28px; margin-bottom: 6px; padding: 0; background-image: none; border-bottom-width: 0; }
+.raid-ui .raid-inventory-window .raid-inventory-title { display: none; }
+.raid-ui .raid-inventory-tabs { margin-bottom: 6px; }
+.raid-ui .raid-inventory-tabs .raid-tab { height: 26px; min-width: 80px; font-size: 13px; letter-spacing: 0; background-color: #191f21; color: #b3bcb9; }
+.raid-ui .raid-inventory-tabs .raid-tab-active { background-color: #374236; color: #eeeee6; border-bottom-color: #c8cfaa; }
+.raid-ui .raid-inventory-header Button { height: 26px; min-width: 80px; margin: 0 4px 0 0; letter-spacing: 0; font-size: 13px; color: #eeeee6; background-color: #28312e; }
 .inventory-view.inventory-warehouse .inventory-character { width: 27%; max-width: 370px; }
 .inventory-warehouse .field-loot { flex-grow: 1.8; }
 .inventory-warehouse .inventory-slot-item { white-space: normal; }

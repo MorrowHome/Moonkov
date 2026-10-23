@@ -51,7 +51,7 @@ namespace Unity.MP_FPS.Client
         {
             if (m_ReadOnlyReason == reason) return;
             CancelDrag(); m_ReadOnlyReason = reason;
-            MoonkovLocalization.Set(m_Message, reason ?? "Drag to move · R rotate · Double click containers · Ctrl click transfer");
+            MoonkovLocalization.Set(m_Message, reason ?? "");
         }
         public ContainerInventoryView(VisualElement parent, bool showStash, Action<InventoryCommand> send,
             Action<InventoryItem> useMedical = null, Action<InventoryItem> useConsumable = null, Action<InventoryItem> drop = null)
@@ -176,7 +176,7 @@ namespace Unity.MP_FPS.Client
             m_RenderedVersion=graph?.Version ?? -1;
             if(changed)m_Character?.SetProtectionInventory(graph);
             if (message != null) MoonkovLocalization.Set(m_Message, message);
-            else if (!m_Busy && graph != null) MoonkovLocalization.Set(m_Message, m_ReadOnlyReason ?? "Drag to move · R rotate · Double click containers · Ctrl click transfer");
+            else if (!m_Busy && graph != null) MoonkovLocalization.Set(m_Message, m_ReadOnlyReason ?? "");
         }
         public void Show()
         {
@@ -218,8 +218,8 @@ namespace Unity.MP_FPS.Client
                 return;
             }
             MoonkovLocalization.Set(m_Weight, "CARRIED {0:0.0} / {1:0} KG" , m_Graph.CarriedWeight, InventoryCatalog.CarryWeightLimit);
-            AddContainer(m_ContainerPane, m_Graph.Find("pockets"), "POCKETS");
             AddContainer(m_ContainerPane, m_Graph.Equipped("ChestRig"), "CHEST RIG");
+            AddContainer(m_ContainerPane, m_Graph.Find("pockets"), "POCKETS");
             AddContainer(m_ContainerPane, m_Graph.Equipped("Backpack"), "BACKPACK");
             AddContainer(m_ContainerPane, m_Graph.Equipped("SecureContainer"), "保险箱");
             if (!m_Stash) RenderRaidLoot(loot);
@@ -232,6 +232,8 @@ namespace Unity.MP_FPS.Client
         {
             var group = TerminalLayout.Clone(m_ContainerTemplate, "inventoryContainer"); pane.Add(group);
             MoonkovLocalization.Set(group.Q<Label>("containerTitle"), title);
+            if (item?.Code == "stash" || item?.Code == "loot" && !compact)
+                group.Q("containerTitle").style.display = DisplayStyle.None;
             if (pane == m_ContainerPane && (title == "CHEST RIG" || title == "BACKPACK" || title == "保险箱"))
                 AddContainerEquipmentSlot(group, item, title == "CHEST RIG" ? "ChestRig" : title == "BACKPACK" ? "Backpack" : "SecureContainer");
             var caption = group.Q<Label>("containerCaption");
@@ -241,8 +243,7 @@ namespace Unity.MP_FPS.Client
                 return;
             }
             var def = InventoryCatalog.Get(item.Code);
-            if (def.Kind != ItemKind.Root) MoonkovLocalization.Set(caption, def.Name);
-            else caption.style.display = DisplayStyle.None;
+            caption.style.display = DisplayStyle.None;
             var regionRow = group.Q("containerRegions");
             foreach (var region in def.Regions)
             {
@@ -276,7 +277,7 @@ namespace Unity.MP_FPS.Client
                         () => { if (HaloModules.IsWeapon(captured.Code) && m_Stash) OpenModification(captured); else if (itemDef.Container) OpenContainer(captured); else Describe(captured); }));
                     visual.Add(tile); m_Tiles[entry.Id]=tile; Position(tile, displayed[entry.Id], grid.Cell);
                 }
-                if (item.Code == "stash" || (!m_Stash || pane == m_ContainerPane) && region.Width >= 3)
+                if (item.Code == "stash" || pane == m_LootPane && region.Width >= 3)
                 {
                     wrapper.style.flexGrow=1; wrapper.style.width=Length.Percent(100); wrapper.style.minWidth=0;
                     wrapper.RegisterCallback<GeometryChangedEvent>(evt =>
