@@ -100,14 +100,22 @@ namespace Unity.MP_FPS.Client
             MoonkovLocalization.Set(caption, "");
             if (!corpse) { AddContainer(m_LootPane, loot, "可搜刽物品"); return; }
             var tops = m_Graph.Children(loot.Id).ToArray(); var shown = new HashSet<string>();
-            var equipment = new VisualElement(); equipment.AddToClassList("field-corpse-equipment"); m_LootPane.Add(equipment);
-            foreach (string slot in new[] { "Helmet", "Shield", "Primary", "Secondary", "Pistol", "Melee", "ChestRig", "Backpack" })
+            bool portraitKnown = m_CorpseCharacterIndex == GameSettings.DollSingerCharacterIndex;
+            VisualElement equipment;
+            if (portraitKnown)
             {
-                var kind = InventoryCatalog.Get(InventoryCatalog.Equipment).Regions.First(r => r.Id == slot).SlotKind;
-                var item = tops.FirstOrDefault(i => !shown.Contains(i.Id) && InventoryCatalog.Get(i.Code).Kind == kind);
+                var stage = TerminalLayout.Clone("Components/CorpsePortrait", "corpsePortrait"); m_LootPane.Add(stage);
+                equipment = stage.Q("corpseEquipmentSlots");
+                BindCorpsePortrait(stage, equipment);
+            }
+            else { equipment = new VisualElement(); equipment.AddToClassList("field-corpse-equipment"); m_LootPane.Add(equipment); }
+            foreach (string slot in new[] { "Helmet", "Shield", "Primary", "Secondary", "Pistol", "Melee" })
+            {
+                var item = CorpseEquipment(tops, slot, shown);
                 if (item != null) shown.Add(item.Id);
                 var card = (Button)TerminalLayout.Clone(m_SlotTemplate, "equipmentSlot");
                 card.name = "corpseSlot" + slot; card.RemoveFromClassList("inventory-slot"); card.AddToClassList("field-corpse-slot");
+                if (portraitKnown) card.AddToClassList("field-corpse-body-slot");
                 MoonkovLocalization.Set(card.Q<Label>("slotLabel"), SlotLabel(slot));
                 MoonkovLocalization.Set(card.Q<Label>("item"), item == null ? "EMPTY" : InventoryCatalog.Get(item.Code).Name);
                 if (item == null) { card.AddToClassList("field-corpse-empty"); card.SetEnabled(false); }
@@ -123,9 +131,52 @@ namespace Unity.MP_FPS.Client
                 }
                 equipment.Add(card);
             }
-            foreach (var item in tops.Where(i => InventoryCatalog.Get(i.Code).Kind == ItemKind.Rig || InventoryCatalog.Get(i.Code).Kind == ItemKind.Backpack))
-                AddContainer(m_LootPane, item, InventoryCatalog.Get(item.Code).Kind == ItemKind.Rig ? "胸挂内容" : "背包内容");
+            foreach (string slot in new[] { "ChestRig", "Backpack" })
+            {
+                var item = CorpseEquipment(tops, slot, shown); if (item != null) shown.Add(item.Id);
+                AddContainer(m_LootPane, item, slot == "ChestRig" ? "胸挂" : "背包", corpseSlot: slot);
+            }
             AddContainer(m_LootPane, loot, "随身散装物品", shown, true);
+        }
+        private InventoryItem CorpseEquipment(InventoryItem[] tops, string slot, HashSet<string> shown)
+        {
+            var kind = InventoryCatalog.Get(InventoryCatalog.Equipment).Regions.First(r => r.Id == slot).SlotKind;
+            if (m_CorpseEquipmentSlots != null)
+                return m_CorpseEquipmentSlots.TryGetValue(slot, out var id) ? tops.FirstOrDefault(i => i.Id == id && InventoryCatalog.Get(i.Code).Kind == kind) : null;
+            return tops.FirstOrDefault(i => !shown.Contains(i.Id) && InventoryCatalog.Get(i.Code).Kind == kind);
+        }
+        private void AddCorpseContainerSlot(VisualElement group, InventoryItem item, string slot)
+        {
+            var button = new Button { name = "corpseSlot" + slot }; button.AddToClassList("inventory-empty-container");
+            if (item == null) { button.text = "空"; button.SetEnabled(false); }
+            else
+            {
+                var art = new StashItemArt(Art(item.Code)); art.AddToClassList("field-container-art"); button.Add(art);
+                button.tooltip = MoonkovItemPresentation.Details(item.Code); m_Tiles[item.Id] = button;
+                button.RemoveManipulator(button.clickable);
+                button.AddManipulator(new Drag(this, () => m_Graph.Find(item.Id), () => Describe(item), () => OpenContainer(item)));
+            }
+            var body = new VisualElement(); body.AddToClassList("field-container-body");
+            var regions = group.Q("containerRegions"); regions.RemoveFromHierarchy(); body.Add(button); body.Add(regions); group.Add(body);
+        }
+        private static void BindCorpsePortrait(VisualElement stage, VisualElement equipment)
+        {
+            var layout = JsonUtility.FromJson<PortraitLayout>(Resources.Load<TextAsset>("Moonkov/UI/FieldOperatorPortraitLayout").text);
+            stage.RegisterCallback<GeometryChangedEvent>(_ =>
+            {
+                float width = stage.contentRect.width, height = stage.contentRect.height;
+                float imageWidth = Mathf.Min(width, height * layout.aspect), imageHeight = imageWidth / layout.aspect;
+                var origin = new Vector2((width - imageWidth) * .5f, (height - imageHeight) * .5f);
+                const float cardWidth = 108, cardHeight = 62; float[] lastBottom = { -4, -4 };
+                foreach (var anchor in layout.anchors)
+                {
+                    var button = equipment.Q<Button>("corpseSlot" + anchor.slot); if (button == null) continue;
+                    int lane = anchor.x < .5f ? 0 : 1;
+                    float top = Mathf.Max(Mathf.Clamp(origin.y + anchor.y * imageHeight - cardHeight * .5f, 0, height - cardHeight), lastBottom[lane] + 4);
+                    button.style.left = Mathf.Clamp(origin.x + anchor.x * imageWidth - cardWidth * .5f, 0, width - cardWidth);
+                    button.style.top = top; button.style.width = cardWidth; button.style.height = cardHeight; lastBottom[lane] = top + cardHeight;
+                }
+            });
         }
         // Death caches pack gear as loot. Compact only loose-item drawing; drop
         // intents still use real IDs and authoritative free positions.

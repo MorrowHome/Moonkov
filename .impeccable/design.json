@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-23T05:57:18.690Z",
+  "generatedAt": "2026-10-23T06:09:21.849Z",
   "title": "Design System: Moonkov inventory surfaces",
   "extensions": {
     "colorMeta": {
@@ -282,6 +282,13 @@
       "description": "局内快捷栏的文档译例；数字目标与原生库存组件共享状态语言。",
       "html": "<div class=\"ds-quickbar\"><button>1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>6</button><button>7</button><button>8</button><button>9</button></div>",
       "css": ".ds-quickbar{display:flex;min-height:62px;padding-top:4px;max-width:660px;background:#101416}.ds-quickbar button{position:relative;flex:1;min-width:30px;height:56px;margin:0 2px;padding:1px 4px;background:#111318;border:1px solid #52605c;border-radius:0;color:#b3bcb9;text-align:left;align-content:start;font:12px \"Noto Sans CJK SC\",sans-serif}.ds-quickbar button:focus-visible{outline:2px solid #c8cfaa;outline-offset:0}.ds-quickbar button:active{background:#112044}"
+    },
+    {
+      "name": "Corpse body equipment target",
+      "kind": "custom",
+      "description": "原生尸体画像的装备覆盖槽文档译例；108×62，11px 标签，按死亡记录原始槽位显示，取走后保留空槽。全身画像由原生 CorpsePortrait.uxml 加载对应正式角色静态烘焙图；未知身份回退装备列表。",
+      "html": "<button class=\"ds-corpse-body\" disabled><span class=\"ds-corpse-body-label\">近战装备</span><span>空</span></button>",
+      "css": ".ds-corpse-body{width:108px;height:62px;margin:0;padding:4px;background:rgba(15,23,22,.84);border:1px solid #384244;border-radius:0;color:#eeeee6;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;font:11px \"Noto Sans CJK SC\",sans-serif}.ds-corpse-body-label{color:#b3bcb9}.ds-corpse-body:disabled{background:#151b1c;opacity:.5}.ds-corpse-body:enabled:hover{background:#303b38;border-color:#c8cfaa}.ds-corpse-body:focus-visible{outline:2px solid #c8cfaa;outline-offset:0}"
     }
   ],
   "narrative": {

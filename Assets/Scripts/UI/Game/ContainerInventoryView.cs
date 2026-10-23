@@ -37,6 +37,8 @@ namespace Unity.MP_FPS.Client
         private string m_SelectedItemId;
         private int m_LootId=-1;
         private bool m_DroppedItem;
+        private int m_CorpseCharacterIndex = -1;
+        private IReadOnlyDictionary<string,string> m_CorpseEquipmentSlots;
         private int m_RenderedVersion = int.MinValue;
         private string m_RenderedLayout;
         private int m_EscapeHandledFrame = -1;
@@ -159,7 +161,8 @@ namespace Unity.MP_FPS.Client
                 case "halo_mooncore_recycler":return StashArtKind.HaloMooncoreRecycler;
                 case "rig":return StashArtKind.ChestRig; case "backpack":return StashArtKind.Backpack; case "small_pack":return StashArtKind.ScoutPack; default:return StashArtKind.None; }
         }
-        public void Present(InventoryGraph graph, string message = null, bool operationCompleted = true, int lootId=-1, bool droppedItem=false)
+        public void Present(InventoryGraph graph, string message = null, bool operationCompleted = true, int lootId=-1, bool droppedItem=false,
+            int corpseCharacterIndex=-1, IReadOnlyDictionary<string,string> corpseEquipmentSlots=null)
         {
             if (m_Disposed) return;
             if (m_Busy && operationCompleted)
@@ -168,8 +171,9 @@ namespace Unity.MP_FPS.Client
                 else MoonkovAudio.Play(MoonkovAudio.Library?.Equipment, Vector3.zero);
             }
             string layout = LayoutKey(graph);
-            bool changed = m_RenderedVersion == int.MinValue || m_RenderedLayout != layout || m_LootId!=lootId || m_DroppedItem!=droppedItem;
+            bool changed = m_RenderedVersion == int.MinValue || m_RenderedLayout != layout || m_LootId!=lootId || m_DroppedItem!=droppedItem || m_CorpseCharacterIndex!=corpseCharacterIndex;
             m_Graph = graph;m_LootId=lootId;m_DroppedItem=droppedItem;
+            m_CorpseCharacterIndex = corpseCharacterIndex; m_CorpseEquipmentSlots = corpseEquipmentSlots;
             if (operationCompleted) m_Busy = false;
             if (changed) { CancelDrag(); Render(); m_RenderedLayout=layout; }
             else RefreshSnapshotValues();
@@ -229,7 +233,7 @@ namespace Unity.MP_FPS.Client
             if (m_Stash) AddContainer(m_StashPane, m_Graph.Find("stash"), "PERSONAL STORAGE");
             foreach (var id in new List<string>(m_Open)) { var item = m_Graph.Find(id); if (item == null) m_Open.Remove(id); else OpenContainer(item, false); }
         }
-        private void AddContainer(VisualElement pane, InventoryItem item, string title, HashSet<string> hidden = null, bool compact = false)
+        private void AddContainer(VisualElement pane, InventoryItem item, string title, HashSet<string> hidden = null, bool compact = false, string corpseSlot = null)
         {
             var group = TerminalLayout.Clone(m_ContainerTemplate, "inventoryContainer"); pane.Add(group);
             MoonkovLocalization.Set(group.Q<Label>("containerTitle"), title);
@@ -237,6 +241,7 @@ namespace Unity.MP_FPS.Client
                 group.Q("containerTitle").style.display = DisplayStyle.None;
             if (pane == m_ContainerPane && (title == "CHEST RIG" || title == "BACKPACK" || title == "保险箱"))
                 AddContainerEquipmentSlot(group, item, title == "CHEST RIG" ? "ChestRig" : title == "BACKPACK" ? "Backpack" : "SecureContainer");
+            if (corpseSlot != null) AddCorpseContainerSlot(group, item, corpseSlot);
             var caption = group.Q<Label>("containerCaption");
             if (item == null)
             {

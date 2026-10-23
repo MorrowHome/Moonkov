@@ -645,7 +645,7 @@ namespace Unity.MP_FPS
             {
                 m_DissectingLootId=-1;m_MedicalActive=false;
                 m_InventoryRequestPending=false;m_LootOpenPending=false;m_InventoryView.SetReadOnly(null);
-                m_InventoryView.Present(inventory.Graph,"Waiting for the server. Retry after the connection recovers.",lootId:inventory.LootId,droppedItem:IsDroppedLoot(inventory.LootId));
+                m_InventoryView.Present(inventory.Graph,"Waiting for the server. Retry after the connection recovers.",lootId:inventory.LootId,droppedItem:IsDroppedLoot(inventory.LootId),corpseCharacterIndex:inventory.CorpseCharacterIndex,corpseEquipmentSlots:inventory.CorpseEquipmentSlots);
                 m_HealthView.Message("Waiting for the server. Retry after the connection recovers.");
             }
             if (inventory.Graph==null || inventory.RaidId!=m_Snapshot.RaidId) return;
@@ -658,7 +658,7 @@ namespace Unity.MP_FPS
                 {
                     m_MedicalActive=true;m_MedicalEndsAt=Time.unscaledTime+inventory.MedicalRemaining;
                     m_ActionDuration=Mathf.Max(m_ActionDuration,inventory.MedicalRemaining);
-                    m_InventoryView.Present(inventory.Graph,"治疗中：保持静止；移动、开火、换武器、换弹或受伤会中断。X取消。",operationCompleted:false,lootId:inventory.LootId,droppedItem:IsDroppedLoot(inventory.LootId));
+                    m_InventoryView.Present(inventory.Graph,"治疗中：保持静止；移动、开火、换武器、换弹或受伤会中断。X取消。",operationCompleted:false,lootId:inventory.LootId,droppedItem:IsDroppedLoot(inventory.LootId),corpseCharacterIndex:inventory.CorpseCharacterIndex,corpseEquipmentSlots:inventory.CorpseEquipmentSlots);
                     m_InventoryView.SetReadOnly("治疗中 · X取消");
                     return;
                 }
@@ -688,11 +688,11 @@ namespace Unity.MP_FPS
                 string inventoryMessage = acknowledged && inventory.Error != Inventory.InventoryError.None ?
                     missionCache ? MissionInventoryFailure(inventory.Error) : m_DissectionInterrupted || wasMedical ? "操作已中断：移动、受伤、开火、切换或库存变化；未消耗物品。" : MoonkovLocalization.Format($"Inventory: {inventory.Error.ToString()}") : null;
                 m_InventoryView.Present(inventory.Graph,inventoryMessage,
-                    operationCompleted: acknowledged,lootId:inventory.LootId,droppedItem:IsDroppedLoot(inventory.LootId));
+                    operationCompleted: acknowledged,lootId:inventory.LootId,droppedItem:IsDroppedLoot(inventory.LootId),corpseCharacterIndex:inventory.CorpseCharacterIndex,corpseEquipmentSlots:inventory.CorpseEquipmentSlots);
                 if(acknowledged && !string.IsNullOrEmpty(inventory.ActionFeedback))
                 {
                     inventoryMessage=inventory.ActionFeedback;m_ActionFeedback=inventoryMessage;m_ActionFeedbackUntil=Time.unscaledTime+3;
-                    m_InventoryView.Present(inventory.Graph,inventoryMessage,lootId:inventory.LootId,droppedItem:IsDroppedLoot(inventory.LootId));
+                    m_InventoryView.Present(inventory.Graph,inventoryMessage,lootId:inventory.LootId,droppedItem:IsDroppedLoot(inventory.LootId),corpseCharacterIndex:inventory.CorpseCharacterIndex,corpseEquipmentSlots:inventory.CorpseEquipmentSlots);
                 }
                 if (acknowledged) m_HealthView.Message(inventoryMessage ?? "");
                 if (missionCache && acknowledged && inventory.Error == Inventory.InventoryError.Inaccessible)
@@ -711,7 +711,7 @@ namespace Unity.MP_FPS
             if(Send(new RaidInventoryDropRpc {RaidId=m_Snapshot.RaidId,RequestId=m_InventoryRequestId,
                 ExpectedVersion=inventory.Graph.Version,ItemId=item.Id}))
             {m_InventoryRequestedAt=Time.unscaledTime;m_InventoryRequestPending=true;}
-            else m_InventoryView.Present(inventory.Graph,"未连接；物品仍在原容器内。",lootId:inventory.LootId,droppedItem:IsDroppedLoot(inventory.LootId));
+            else m_InventoryView.Present(inventory.Graph,"未连接；物品仍在原容器内。",lootId:inventory.LootId,droppedItem:IsDroppedLoot(inventory.LootId),corpseCharacterIndex:inventory.CorpseCharacterIndex,corpseEquipmentSlots:inventory.CorpseEquipmentSlots);
         }
         private void SendInventoryMove(Inventory.InventoryCommand command)
         {

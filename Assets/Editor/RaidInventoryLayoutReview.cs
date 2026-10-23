@@ -19,6 +19,8 @@ public sealed class RaidInventoryLayoutReview : EditorWindow
     private InventoryGraph m_Carried, m_Loot, m_Joined;
     private string m_Case, m_Folder;
     private int m_LootId, m_Commands;
+    private int m_CorpseCharacterIndex = -1;
+    private Dictionary<string,string> m_CorpseSlots;
     private sealed class Memory : IQuickSlotStore
     { public QuickSlotSave Load(string scope) => null; public void Save(string scope, QuickSlotSave value) { } }
 
@@ -81,7 +83,11 @@ public sealed class RaidInventoryLayoutReview : EditorWindow
             var dead = InventoryGraph.Create(false); dead.AddSupply("helmet", 1, "equipment"); dead.AddSupply("energy_shield_generator", 1, "equipment");
             dead.AddSupply("med_gel", 2, dead.Equipped("ChestRig").Id);
             dead.AddSupply("water", 1, dead.Equipped("Backpack").Id); dead.AddSupply("dust", 3, dead.Equipped("Backpack").Id);
-            dead.AddSupply("cells", 2); m_Loot = LootInventoryExchange.DropOnDeath(dead); m_LootId = RaidLootContainers.FirstDeathBagId;
+            dead.AddSupply("cells", 2);
+            var corpses = new RaidLootContainers();
+            m_LootId = corpses.Drop(dead, default, Unity.Mathematics.quaternion.identity, GameSettings.DollSingerCharacterIndex);
+            m_Loot = corpses.Containers[m_LootId]; m_CorpseCharacterIndex = corpses.DeathBags[m_LootId].CharacterIndex;
+            m_CorpseSlots = corpses.DeathBags[m_LootId].EquipmentSlots;
         }
         else if (m_Case == "cache") { m_Loot = LootInventoryExchange.CreateCache(0); m_LootId = 0; }
         m_Joined = m_Loot == null ? m_Carried : LootInventoryExchange.Snapshot(m_Carried, m_Loot);
@@ -108,7 +114,7 @@ public sealed class RaidInventoryLayoutReview : EditorWindow
     private void Present()
     {
         m_Joined = m_Loot == null ? m_Carried : LootInventoryExchange.Snapshot(m_Carried, m_Loot);
-        m_View.Present(m_Joined, lootId: m_LootId); PresentQuick();
+        m_View.Present(m_Joined, lootId: m_LootId, corpseCharacterIndex: m_CorpseCharacterIndex, corpseEquipmentSlots: m_CorpseSlots); PresentQuick();
     }
     private void PresentQuick()
     { if (m_Quick == null) return; m_Bindings.InitializeWeapons(m_Joined); m_Quick.Present(m_Bindings, m_Joined, false, true, null); }
@@ -174,6 +180,8 @@ public sealed class RaidInventoryLayoutReview : EditorWindow
             }
             if (m_Case == "corpse")
             {
+                Require(m_View.Element.Q("corpseOperatorPortrait") != null, "Opponent static portrait missing.");
+                Require(m_View.Element.Q("corpsePortrait").worldBound.height >= 400, "Opponent portrait collapsed.");
                 var source = m_View.Element.Q<Button>("corpseSlotHelmet"); var helmet = m_Loot.Children("loot").First(i => InventoryCatalog.Get(i.Code).Kind == ItemKind.Helmet);
                 Drag(source, m_View.Element.Q("inventorySlotHelmet").worldBound.center);
                 Require(m_Commands == 1 && m_Carried.Equipped("Helmet")?.Id == helmet.Id, "Corpse-to-equipment transaction failed.");
@@ -185,7 +193,7 @@ public sealed class RaidInventoryLayoutReview : EditorWindow
                 Require(m_Commands == 1 && m_Carried.Equipped("Special3")?.Id == tool && m_Carried.Equipped("Special1") == null, "Special-tool slot transfer failed.");
             }
             Directory.CreateDirectory(m_Folder);
-            File.WriteAllText(Path.Combine(m_Folder, m_Case + "-checks.txt"), "PASS: native column order, twelve equipment slots, visible quickbar; " + (m_Case == "empty" ? "empty chest-rig/backpack/case/tool targets." : "drag and click binding; " + (m_Case == "corpse" ? "corpse-to-equipment authoritative graph exchange." : "supply cache and special-tool slot transfer.")));
+            File.WriteAllText(Path.Combine(m_Folder, m_Case + "-checks.txt"), "PASS: native column order, twelve equipment slots, visible quickbar; " + (m_Case == "empty" ? "empty chest-rig/backpack/case/tool targets." : "drag and click binding; " + (m_Case == "corpse" ? "opponent static portrait and corpse-to-equipment authoritative graph exchange." : "supply cache and special-tool slot transfer.")));
         }
         catch (Exception error) { Directory.CreateDirectory(m_Folder); File.WriteAllText(Path.Combine(m_Folder, m_Case + "-checks.txt"), error.ToString()); Debug.LogException(error); }
         finally { Close(); }

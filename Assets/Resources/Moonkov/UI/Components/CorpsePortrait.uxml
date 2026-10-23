@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="corpsePortrait" class="field-corpse-portrait">
+        <ui:VisualElement name="corpseOperatorPortrait" class="field-corpse-model" picking-mode="Ignore" />
+        <ui:VisualElement name="corpseEquipmentSlots" class="field-corpse-slot-layer" />
+    </ui:VisualElement>
+</ui:UXML>

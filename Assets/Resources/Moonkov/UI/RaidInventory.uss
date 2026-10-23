@@ -63,3 +63,8 @@
 .inventory-raid .field-special-slot .inventory-slot-label, .inventory-raid .field-special-slot .inventory-slot-item { display: none; }
 .inventory-raid .field-special-slot .inventory-slot-art { top: 4px; bottom: 4px; left: 4px; right: 4px; }
 .raid-survey-readout { position: absolute; top: 18px; left: 50%; margin-left: -160px; width: 320px; padding: 6px 10px; font-size: 14px; color: #eeeee6; background-color: rgba(16,20,22,0.85); -unity-text-align: middle-center; -unity-font-definition: url("/Assets/Localization/Fonts/NotoSansCJKsc-Regular.otf"); display: none; white-space: normal; }
+.inventory-raid .field-corpse-portrait { position: relative; height: 420px; min-height: 420px; flex-shrink: 0; margin-bottom: 8px; }
+.inventory-raid .field-corpse-model, .inventory-raid .field-corpse-slot-layer { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
+.inventory-raid .field-corpse-model { background-image: url("FieldOperatorPortrait.png"); -unity-background-scale-mode: scale-to-fit; }
+.inventory-view.inventory-raid .field-corpse-body-slot { position: absolute; margin: 0; padding: 4px; background-color: rgba(15,23,22,0.84); }
+.inventory-raid .field-corpse-body-slot .inventory-slot-label, .inventory-raid .field-corpse-body-slot .inventory-slot-item { font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
