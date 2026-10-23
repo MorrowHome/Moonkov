@@ -23,21 +23,27 @@ namespace Unity.MP_FPS
         private VisualElement m_Reticle;
         private static InGameHUD s_Active;
         private VisualElement m_RifleHit;
-        private float m_RifleHitUntil;
+        private float m_RifleHitUntil, m_RifleHitStarted;
         private bool m_RifleKill;
         private HaloWeaponFeedbackProfile m_HitProfile;
 
         public static void ConfirmRifleHit(bool killed, HaloWeaponFeedbackProfile profile = null)
         {
             if (!s_Active) return;
-            // A following body hit must not erase a still-visible lethal confirmation.
-            bool keepKill = s_Active.m_RifleKill && Time.unscaledTime < s_Active.m_RifleHitUntil;
-            s_Active.m_RifleKill = killed || keepKill;
-            if (killed || !keepKill) s_Active.m_HitProfile = profile;
-            float duration = s_Active.m_RifleKill ? s_Active.m_HitProfile?.KillDuration ?? .22f :
-                s_Active.m_HitProfile?.HitDuration ?? .12f;
-            s_Active.m_RifleHitUntil = Mathf.Max(s_Active.m_RifleHitUntil, Time.unscaledTime + duration);
-            s_Active.m_RifleHit?.MarkDirtyRepaint();
+            s_Active.PresentRifleHit(killed, profile, Time.unscaledTime);
+        }
+
+        private void PresentRifleHit(bool killed, HaloWeaponFeedbackProfile profile, float now)
+        {
+            // Keep the kill readable, but never let subsequent body hits prolong a
+            // gold marker indefinitely and imply further kills.
+            if (!killed && m_RifleKill && now < m_RifleHitUntil) return;
+            m_RifleKill = killed;
+            m_HitProfile = profile;
+            float duration = killed ? profile?.KillDuration ?? .22f : profile?.HitDuration ?? .12f;
+            m_RifleHitStarted = now;
+            m_RifleHitUntil = now + duration;
+            m_RifleHit?.MarkDirtyRepaint();
         }
 
         // UI-side timer to ensure shot feedback is visible for a minimum duration.
@@ -100,14 +106,25 @@ namespace Unity.MP_FPS
         {
             var painter = context.painter2D;
             painter.strokeColor = m_RifleKill ? new Color(1f, .8f, .35f) : m_HitProfile?.HitColor ?? new Color(.9f, 1f, 1f);
-            painter.lineWidth = m_HitProfile?.HitLineWidth ?? 1.5f;
-            float outer = m_HitProfile?.HitOuterRadius ?? 10f;
+            float pulse = Mathf.Exp(-Mathf.Max(0, Time.unscaledTime - m_RifleHitStarted) * 35f);
+            painter.lineWidth = (m_HitProfile?.HitLineWidth ?? 1.5f) + (m_RifleKill ? .4f : .25f) * pulse;
+            float inner = 6f + 1.25f * pulse;
+            float outer = Mathf.Clamp((m_HitProfile?.HitOuterRadius ?? 10f) + pulse, 9f, 12f);
             for (int i = 0; i < 4; i++)
             {
                 float x = i % 2 == 0 ? -1 : 1, y = i < 2 ? -1 : 1;
                 painter.BeginPath();
-                painter.MoveTo(new Vector2(14 + x * 6, 14 + y * 6));
+                painter.MoveTo(new Vector2(14 + x * inner, 14 + y * inner));
                 painter.LineTo(new Vector2(14 + x * outer, 14 + y * outer)); painter.Stroke();
+                if (m_RifleKill)
+                {
+                    // Forked ends distinguish a kill by shape as well as color.
+                    painter.BeginPath();
+                    painter.MoveTo(new Vector2(14 + x * (outer - 2.5f), 14 + y * outer));
+                    painter.LineTo(new Vector2(14 + x * outer, 14 + y * outer));
+                    painter.LineTo(new Vector2(14 + x * outer, 14 + y * (outer - 2.5f)));
+                    painter.Stroke();
+                }
             }
         }
 
@@ -148,6 +165,7 @@ namespace Unity.MP_FPS
                 m_RifleHit.style.display = hitVisible ? DisplayStyle.Flex : DisplayStyle.None;
                 if (hitVisible)
                 {
+                    m_RifleHit.MarkDirtyRepaint();
                     m_RifleHit.style.opacity = Mathf.Clamp01((m_RifleHitUntil - Time.unscaledTime) / .06f);
                     m_RifleHit.style.rotate = new Rotate(new Angle(GetOwnedReticleRoll(), AngleUnit.Degree));
                 }

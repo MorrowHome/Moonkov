@@ -4,6 +4,46 @@ using UnityEngine;
 
 namespace Unity.MP_FPS
 {
+    // Owned input response. The resulting look angle is sent through the existing
+    // command path, so the camera and the following shot share the same direction.
+    public struct HaloRecoilResponse
+    {
+        private float pending, recoverable, age;
+        public float Remaining => pending + recoverable;
+        public static float KickDegrees(uint weapon) => weapon switch
+        {
+            DollSingerWeapons.Cicada => .18f,
+            DollSingerWeapons.Trine or DollSingerWeapons.Rondo => .28f,
+            DollSingerWeapons.Aegis => .42f,
+            DollSingerWeapons.Revolver => .72f,
+            DollSingerWeapons.Shotgun or DollSingerWeapons.Sundown => 1.05f,
+            DollSingerWeapons.Tempest => .48f,
+            DollSingerWeapons.Thorn or DollSingerWeapons.Vesper => .8f,
+            DollSingerWeapons.Sniper or DollSingerWeapons.Nocturne => 1.2f,
+            DollSingerWeapons.Halo => .34f,
+            _ => 0f
+        };
+        public void Kick(uint weapon, float magnification)
+        {
+            float scale = 1f / Mathf.Clamp(magnification, 1f, 12f);
+            pending += Mathf.Min(KickDegrees(weapon) * scale, Mathf.Max(0, 3f * scale - Remaining));
+            age = 0;
+        }
+        public void Apply(ref float pitch, float downwardInput, float deltaTime)
+        {
+            if (deltaTime <= 0) return;
+            // Only retain recovery for movement that actually passed the pitch limit.
+            float kick = Mathf.Min(pending, Mathf.Max(0, pitch + 80f));
+            pending = 0; pitch -= kick; recoverable += kick;
+            recoverable = Mathf.Max(0, recoverable - Mathf.Max(0, downwardInput));
+            float previous = age; age += deltaTime;
+            float recoveryTime = Mathf.Max(0, age - .12f) - Mathf.Max(0, previous - .12f);
+            float recovery = recoverable * (1f - Mathf.Exp(-12f * recoveryTime));
+            recoverable -= recovery; pitch = Mathf.Min(80f, pitch + recovery);
+        }
+        public void Reset() { pending = recoverable = age = 0; }
+    }
+
     /// <summary>Owned-player look and lean rules, shared by gameplay and the offline map preview.</summary>
     public static class DollSingerLookController
     {

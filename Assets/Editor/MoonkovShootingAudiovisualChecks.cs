@@ -21,11 +21,40 @@ public static class MoonkovShootingAudiovisualChecks
         emitter.CopyOverrideDataFromSoundDef(sound);
         Require(emitter.SoundDefOverrideInfo.SpatialBlend == null && sound.DistanceInfo.SpatialBlend == originalSpatial,
             "Owner spatial override leaked to the next emitter use or mutated the shared asset.");
-        CheckRelease(); CheckImpactBudget(library); CheckTrails();
+        CheckRelease(); CheckImpactBudget(library); CheckTrails(); CheckHitCadence();
         Require(HaloProjectileVisual.TrailLengthLimit(false, true, false) < HaloProjectileVisual.TrailLengthLimit(false, false, false) &&
             HaloProjectileVisual.TrailLengthLimit(false, false, true) <= 6.5f, "Weapon trail hierarchy changed.");
         Debug.Log("Shooting audiovisual checks passed: CC0 report variants/PCM/headroom, preserved shotgun references, " +
             "pooled audio override reset, release deduplication/expiry/sight clearance, impact pool/contact reuse and trail budgets.");
+    }
+
+    public static void CheckHitCadence()
+    {
+        var root = new GameObject("Inactive hit cadence fixture"); root.SetActive(false);
+        try
+        {
+            var hud = root.AddComponent<InGameHUD>();
+            const System.Reflection.BindingFlags flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+            var type = typeof(InGameHUD); var present = type.GetMethod("PresentRifleHit", flags);
+            float Value(string name) => (float)type.GetField(name, flags).GetValue(hud);
+            bool Killed() => (bool)type.GetField("m_RifleKill", flags).GetValue(hud);
+            var profile = new HaloWeaponFeedbackProfile { HitDuration = .14f, KillDuration = .26f };
+            void Hit(bool killed, float now) => present.Invoke(hud, new object[] { killed, profile, now });
+            Hit(false, 1);
+            Require(!Killed() && Mathf.Abs(Value("m_RifleHitUntil") - 1.14f) < .0001f, "Ordinary hit timing changed.");
+            Hit(false, 1.08f);
+            Require(Mathf.Abs(Value("m_RifleHitStarted") - 1.08f) < .0001f, "Continuous hits do not retrigger their pulse.");
+            Hit(true, 1.1f);
+            Require(Killed() && Mathf.Abs(Value("m_RifleHitUntil") - 1.36f) < .0001f, "Lethal hit did not upgrade feedback.");
+            Hit(false, 1.3f);
+            Require(Killed() && Mathf.Abs(Value("m_RifleHitUntil") - 1.36f) < .0001f &&
+                Mathf.Abs(Value("m_RifleHitStarted") - 1.1f) < .0001f, "Body hit prolonged or restarted the kill marker.");
+            Hit(false, 1.4f);
+            Require(!Killed() && Mathf.Abs(Value("m_RifleHitUntil") - 1.54f) < .0001f, "Kill color leaked into the next target.");
+            Hit(true, 2); Hit(true, 2.1f);
+            Require(Killed() && Mathf.Abs(Value("m_RifleHitStarted") - 2.1f) < .0001f, "A new confirmed kill failed to retrigger.");
+        }
+        finally { UnityEngine.Object.DestroyImmediate(root); }
     }
 
     private static void CheckReports(HaloWeaponFeedbackProfile profile, string prefix)
