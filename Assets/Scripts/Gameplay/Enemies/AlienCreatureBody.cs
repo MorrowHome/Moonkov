@@ -158,7 +158,11 @@ namespace Unity.MP_FPS
             m_Clock += dt;
             m_LiquidReaction = AlienLiquidMotion.Evaluate(m_Profile, m_CombatAction, m_ActionTime,
                 m_WindupDuration, m_StrikeDuration, m_RecoveryDuration, AttackSocket, Motor.Current.Forward);
-            if (Fluid != null) Fluid.Reaction = m_LiquidReaction;
+            if (Fluid != null)
+            {
+                Fluid.Reaction = m_LiquidReaction;
+                Fluid.GuideDistanceLimit = m_CombatAction == AlienAction.Dead ? .3f : .12f;
+            }
             if (m_StiltRig != null)
             {
                 m_StiltRig.SetVisible(m_Render && !liquid);
