@@ -129,6 +129,8 @@ public struct PredictedPlayerGhost : IComponentData
     [GhostField] public int PistolAmmo;
     [GhostField] public float LastDamageAmount;
     [GhostField] public uint LastHitTick;
+    // Tissue impact presentation; physiological/status ticks must not retrigger impact audio.
+    [GhostField] public uint LastImpactTick;
     [GhostField] public uint LastShotTick;
     [GhostField] public uint LastJumpTick;
     [GhostField] public uint LastLandTick;
