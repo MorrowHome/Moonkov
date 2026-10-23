@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Leech
   m_EditorClassIdentifier: Assembly-CSharp::Unity.MP_FPS.AlienCreatureProfile
   Species: 5
-  Scale: 0.22
+  Scale: 0.8
   Health: 110
-  Speed: 14.090909
+  Speed: 2.6249998
   TurnSpeed: 300
   SightRange: 42
   HearingRange: 16
@@ -62,10 +62,10 @@ MonoBehaviour:
   MaximumLiquidEnemies: 2
   Chain:
     length: 2.8
-    radius: 0.24
+    radius: 0.34
     segments: 12
-    verticalScale: 0.64
-    headScale: {x: 0.34, y: 0.19, z: 0.3}
+    verticalScale: 1
+    headScale: {x: 0.48, y: 0.45, z: 0.48}
     headFeature: 2
     feelerLength: 0.48
     speed: 2.7
@@ -76,7 +76,7 @@ MonoBehaviour:
     waveFrequency: 0.95
     contraction: 0.42
     archHeight: 0.24
-    headLift: 0.03
+    headLift: 0.18
     bendSmoothing: 0.55
     segmentGrooveDepth: 0.04
     sprintHeadLift: 0.24

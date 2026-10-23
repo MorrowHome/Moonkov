@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Caterpillar
   m_EditorClassIdentifier: Assembly-CSharp::Unity.MP_FPS.AlienCreatureProfile
   Species: 2
-  Scale: 0.55
+  Scale: 1.25
   Health: 220
-  Speed: 5.2727275
+  Speed: 1.9200001
   TurnSpeed: 300
   SightRange: 42
   HearingRange: 16
@@ -62,10 +62,10 @@ MonoBehaviour:
   MaximumLiquidEnemies: 2
   Chain:
     length: 2.9
-    radius: 0.23
+    radius: 0.32
     segments: 18
-    verticalScale: 0.78
-    headScale: {x: 0.37, y: 0.3, z: 0.34}
+    verticalScale: 1.05
+    headScale: {x: 0.45, y: 0.48, z: 0.42}
     headFeature: 0
     feelerLength: 0.48
     speed: 1.35

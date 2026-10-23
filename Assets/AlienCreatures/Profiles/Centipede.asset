@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Centipede
   m_EditorClassIdentifier: Assembly-CSharp::Unity.MP_FPS.AlienCreatureProfile
   Species: 4
-  Scale: 1.05
+  Scale: 1.35
   Health: 620
-  Speed: 5.3333335
+  Speed: 3.2592592
   TurnSpeed: 135
   SightRange: 42
   HearingRange: 16
@@ -62,9 +62,9 @@ MonoBehaviour:
   MaximumLiquidEnemies: 2
   Chain:
     length: 4.4
-    radius: 0.16
+    radius: 0.25
     segments: 22
-    verticalScale: 0.64
+    verticalScale: 1.1
     headScale: {x: 0.36, y: 0.2, z: 0.45}
     headFeature: 1
     feelerLength: 0.48

@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Slime
   m_EditorClassIdentifier: Assembly-CSharp::Unity.MP_FPS.AlienCreatureProfile
   Species: 6
-  Scale: 1.05
+  Scale: 1.25
   Health: 520
-  Speed: 2.5714288
+  Speed: 1.9200001
   TurnSpeed: 300
   SightRange: 42
   HearingRange: 16
@@ -97,7 +97,7 @@ MonoBehaviour:
     smoothness: 0.48
     metallic: 0.08
   Branch:
-    bodyRadii: {x: 0.58, y: 0.19, z: 0.67}
+    bodyRadii: {x: 0.58, y: 0.48, z: 0.67}
     arms: 6
     reach: 1.25
     rootRadius: 0.2
