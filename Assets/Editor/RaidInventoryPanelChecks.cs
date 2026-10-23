@@ -25,6 +25,7 @@ public sealed class RaidInventoryPanelChecks : EditorWindow
         window.m_View?.Dispose(); window.rootVisualElement.Clear(); window.m_Commands = 0;
         window.m_Graph = InventoryGraph.Create(false);
         window.m_Graph.AddSupply("medkit", 1);
+        window.m_Graph.AddSupply("helmet", 1, InventoryCatalog.Equipment);
         window.m_View = new ContainerInventoryView(window.rootVisualElement, false, command =>
         {
             var error = window.m_Graph.TryApply(command);
@@ -59,6 +60,19 @@ public sealed class RaidInventoryPanelChecks : EditorWindow
                 Require(typeof(ContainerInventoryView).GetField("m_Drag", Private).GetValue(m_View) == null, "Released click left a gesture active.");
             }
             Require(m_Commands == 0, "Click unexpectedly moved inventory.");
+            Pointer(tile, EventType.MouseDown, tile.worldBound.center);
+            var held = typeof(ContainerInventoryView).GetField("m_Drag", Private).GetValue(m_View);
+            for (int tick = 0; tick < 4; tick++)
+            {
+                m_Graph = m_Graph.Clone(); m_Graph.Equipped("Helmet").SuitOxygen = 100 - tick;
+                m_Graph.Find(item.Id).Quantity = tick + 1;
+                if (tick > 0) m_Graph.Version++;
+                m_View.Present(m_Graph);
+                Require(ReferenceEquals(tile, m_View.Element.Q<Button>("inventoryItem" + item.Id)), "Protection/quantity snapshot destroyed the pressed tile.");
+                Require(ReferenceEquals(held, typeof(ContainerInventoryView).GetField("m_Drag", Private).GetValue(m_View)), "Live resource snapshot cancelled held input.");
+            }
+            Require(tile.Q<Label>("quantity").text == "4", "Snapshot quantities did not refresh in place.");
+            m_View.CancelDrag();
             // A pending server reply blocks mutation, not selection and inspection.
             typeof(ContainerInventoryView).GetField("m_Busy", Private).SetValue(m_View, true);
             typeof(ContainerInventoryView).GetField("m_SelectedItemId", Private).SetValue(m_View, null);
