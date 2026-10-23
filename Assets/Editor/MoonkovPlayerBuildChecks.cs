@@ -9,9 +9,31 @@ using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
 /// <summary>Fail early for known player-rendering packaging hazards, before shader compilation.</summary>
-public sealed class MoonkovPlayerBuildChecks : IPreprocessBuildWithReport
+public sealed class MoonkovPlayerBuildChecks : IPreprocessBuildWithReport, IProcessSceneWithReport
 {
     public int callbackOrder => -1000;
+
+    public void OnProcessScene(UnityEngine.SceneManagement.Scene scene, BuildReport report)
+    {
+        if (report != null && report.summary.platform == BuildTarget.StandaloneWindows64 &&
+            EditorUserBuildSettings.standaloneBuildSubtarget != StandaloneBuildSubtarget.Server)
+            ValidateSceneClock(scene);
+    }
+
+    public static void ValidateSceneClock(UnityEngine.SceneManagement.Scene scene)
+    {
+        if (scene.path != "Assets/MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusGameScene.unity") return;
+        var lighting = scene.GetRootGameObjects()
+            .SelectMany(root => root.GetComponentsInChildren<Unity.MP_FPS.Moon.MoonSceneLighting>())
+            .Where(component => component.isActiveAndEnabled).ToArray();
+        if (lighting.Length != 1)
+            throw new BuildFailedException("Theophilus must have exactly one active MoonSceneLighting.");
+        var clock = lighting[0].GetComponent<Unity.MP_FPS.ExpeditionClockPresentation>();
+        var sun = new SerializedObject(lighting[0]).FindProperty("sun").objectReferenceValue as Light;
+        if (!clock || !clock.enabled || !sun || sun.type != LightType.Directional ||
+            sun.lightmapBakeType != LightmapBakeType.Realtime)
+            throw new BuildFailedException("Theophilus requires an enabled ExpeditionClockPresentation on its MoonSceneLighting and a realtime directional sun.");
+    }
 
     public void OnPreprocessBuild(BuildReport report)
     {

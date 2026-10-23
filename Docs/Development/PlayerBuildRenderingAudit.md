@@ -1,5 +1,19 @@
 # Windows 玩家包渲染检查（2026-10-23）
 
+## 静止太阳：正式地图漏接时钟表现组件
+
+最新玩家包的阴影不动，源场景检查确认 `Theophilus Scene Lighting` 只有
+`MoonSceneLighting`，缺少唯一调用其 `ApplyTimeOfDay` 的 `ExpeditionClockPresentation`。
+服务器时间设置仍为启用、24 分钟对应 24 游戏小时；太阳引用有效且为 Realtime。
+JSON 导出的场景对象 `instanceID: 0` 不能用于判定引用丢失，已用 SerializedObject
+与实际 Light 引用核实。
+
+已在正式地图补上时钟组件，并在 Windows 玩家包的场景处理阶段检查该连接和实时太阳。
+Unity 编译通过；隔离预览场景检查通过；在预览里临时禁用时钟时，检查器按预期拒绝，
+随后恢复并关闭预览，没有保存临时状态。没有运行 Play、客户端或重新构建。
+保持 MeanLunarOrbit 和 astronomicalTimeScale=1；这仍是缓慢的月球太阳周期，
+不会擅自换成快速地球昼夜。玩家包中的实际转动和外圈建筑可见性尚未验收。
+
 ## 构建耗时优化：未使用的 BRG 变体
 
 2026-10-23 检查正在进行的构建，`Logs/Editor.log` 中已完成的一次
