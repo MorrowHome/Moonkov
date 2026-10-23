@@ -2,6 +2,7 @@
     <ui:Style src="RaidUI.uss" />
     <ui:Style src="UI/FieldTheme.uss" />
     <ui:Style src="UI/RaidMinimap.uss" />
+    <ui:Style src="UI/RaidInventory.uss" />
     <ui:VisualElement name="raidPresentation" class="raid-ui archive-ui" picking-mode="Ignore">
         <ui:VisualElement name="raidMinimap" class="raid-minimap" picking-mode="Ignore">
             <ui:VisualElement class="raid-minimap-heading" picking-mode="Ignore">
@@ -61,7 +62,7 @@
             <ui:Label text="CARGO" class="raid-receipt-caption" picking-mode="Ignore" />
             <ui:Label name="raidReceiptText" class="raid-receipt-copy" picking-mode="Ignore" />
         </ui:VisualElement>
-        <ui:VisualElement name="raidInventory" class="raid-overlay">
+        <ui:VisualElement name="raidInventory" class="raid-overlay moonkov-style-font">
             <ui:VisualElement class="raid-inventory-window">
                 <ui:VisualElement class="raid-inventory-header">
                     <ui:Label text="CHARACTER / CARRIED INVENTORY" class="raid-inventory-title" />

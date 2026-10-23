@@ -9,6 +9,8 @@ namespace Unity.MP_FPS.Client
     {
         public VisualElement Element { get; }
         private readonly VisualElement m_PixelRoot;
+        private readonly VisualElement m_HudHost;
+        private VisualElement m_InventoryHost;
         private Vector2 m_ViewportSize;
         private float m_ViewportScale = -1;
         private readonly Button[] m_Slots = new Button[QuickSlotBindings.Count];
@@ -20,6 +22,7 @@ namespace Unity.MP_FPS.Client
         private bool m_InventoryOpen;
         public QuickSlotView(VisualElement host, Action<int> clear, Action<int> bind = null)
         {
+            m_HudHost = host;
             Element = new VisualElement { name = "raidQuickSlots", pickingMode = PickingMode.Ignore };
             Element.AddToClassList("quick-slots");
             m_PixelRoot = new VisualElement { name = "raidQuickSlotsPixelRoot", pickingMode = PickingMode.Ignore };
@@ -50,6 +53,7 @@ namespace Unity.MP_FPS.Client
         }
         public int Hit(Vector2 point)
         { for (int i = 0; i < m_Slots.Length; i++) if (m_Slots[i].panel != null && m_Slots[i].worldBound.Contains(point)) return i; return -1; }
+        public void SetInventoryHost(VisualElement host) => m_InventoryHost = host;
         public void PreviewDrop(int slot, bool valid)
         {
             for (int i = 0; i < m_Slots.Length; i++)
@@ -57,6 +61,12 @@ namespace Unity.MP_FPS.Client
         }
         private void RefreshViewport()
         {
+            if (m_InventoryOpen && m_InventoryHost != null)
+            {
+                m_PixelRoot.style.width = StyleKeyword.Auto; m_PixelRoot.style.height = StyleKeyword.Auto;
+                m_PixelRoot.style.scale = new Scale(Vector3.one); m_ViewportScale = -1;
+                return;
+            }
             var parent = m_PixelRoot.parent;
             if (parent == null || parent.contentRect.width < 1 || Screen.width < 1 || Screen.height < 1) return;
             // Cancel only the panel's downscaling. Preserve the existing large-screen
@@ -77,6 +87,9 @@ namespace Unity.MP_FPS.Client
         public void Present(QuickSlotBindings bindings, InventoryGraph graph, bool busy, bool inventoryOpen, string status)
         {
             m_InventoryOpen = inventoryOpen;
+            var parent = inventoryOpen && m_InventoryHost != null ? m_InventoryHost : m_HudHost;
+            if (m_PixelRoot.parent != parent) parent.Add(m_PixelRoot);
+            m_PixelRoot.EnableInClassList("quick-slots-docked", inventoryOpen && m_InventoryHost != null);
             RefreshViewport();
             Element.EnableInClassList("quick-slots-busy", busy);
             Element.EnableInClassList("quick-slots-inventory", inventoryOpen);

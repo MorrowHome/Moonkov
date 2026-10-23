@@ -93,7 +93,7 @@ namespace Unity.MP_FPS
                 if (!QuickCanBind) return;
                 m_QuickBindings.Clear(slot); QuickNotice(m_QuickBindings.Reason);
             }, slot => BindQuickSlot(slot, m_InventoryView.QuickSlotCandidate));
-            m_QuickView.Element.parent.Add(m_ActionPanel);
+            m_QuickView.SetInventoryHost(m_InventoryView.Element.Q("inventoryQuickbarDock"));
             m_InventoryView.QuickSlotDrop = DropOnQuickSlot;
             m_InventoryView.QuickSlotDragPreview = (item, point) => m_QuickView?.PreviewDrop(item == null ? -1 : m_QuickView.Hit(point), QuickSlotBindings.CanBind(QuickGraph, item));
             m_Root.RegisterCallback<KeyDownEvent>(BindQuickKey, TrickleDown.TrickleDown);

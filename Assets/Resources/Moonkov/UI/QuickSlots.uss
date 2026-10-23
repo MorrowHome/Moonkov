@@ -1,4 +1,10 @@
 /* Same item component and state classes as the inventory; only hotbar sizing lives here. */
+.quick-slots-pixel-root.quick-slots-docked { position: relative; left: auto; top: auto; flex-grow: 1; min-height: 100px; }
+.quick-slots-docked .quick-slots.quick-slots-inventory { position: relative; left: auto; right: auto; bottom: auto; }
+.quick-slots-docked .quick-slots-row.inventory-view { max-width: 660px; }
+.quick-slots-docked .quick-slots-row .quick-slot { height: 68px; }
+.quick-slots-docked .quick-slots-row .quick-slot-name { font-size: 12px; }
+.quick-slots-docked .quick-slot-caption { font-size: 13px; color: #b3bcb9; }
 .quick-slots-pixel-root { position: absolute; left: 0; top: 0; transform-origin: 0% 0%; --mk-surface: #08090c; --mk-panel: #111318; }
 .quick-slots { position: absolute; bottom: 28px; left: 5%; right: 5%; align-items: center; }
 .quick-slots-narrow .quick-slots { bottom: 100px; }
