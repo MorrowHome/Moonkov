@@ -18,6 +18,9 @@
 /Assets/AddressableAssetsData/Windows.meta
 /Assets/AddressableAssetsData/OSX/
 /Assets/AddressableAssetsData/OSX.meta
+# Addressables regenerates this linker description during player builds.
+/Assets/AddressableAssetsData/link.xml
+/Assets/AddressableAssetsData/link.xml.meta
 /Assets/SceneDependencyCache/
 /Assets/SceneDependencyCache.meta
 
@@ -41,6 +44,11 @@
 # OS generated files
 .DS_Store
 Thumbs.db
+
+# Python bytecode caches from local tooling.
+__pycache__/
+*.pyc
+*.pyo
 
 # Standalone persistence service sources; Unity-generated project files stay ignored.
 !Backend/**/*.csproj
