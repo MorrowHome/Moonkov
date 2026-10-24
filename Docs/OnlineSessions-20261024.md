@@ -44,6 +44,8 @@ VPS 仍需 HTTPS 反代账号接口，以及 UDP 7979 到实际游戏服务器�
 
 Unity 6000.5.10f1 需要 Windows Dedicated Server Build Support。本轮已通过 Unity CLI 补装；CLI 安装在 `D:/Tools/UnityCLI`，未另开 Editor。
 
+本机构建器通过 `PlayerSettings` 的 Server 目标配置及 `BuildPlayerOptions.extraScriptingDefines` 同时指定 `MOON_LOCAL_SERVER`。这是必要的：Addressables/SBP 独立编译不继承 Player 的额外宏。模板遗留的 `UGS_SERVER` 不再让本机构建编译旧云启动脚本；正式 ServerScene 使用原 `ServerBootstrap`。
+
 从现有 Editor 的 **Tools → Moonkov → Build Local Windows Server** 构建到 `Build/MoonServer/MoonServer.exe`。工具等待编译/导入空闲，使用正式地图和共享网络资源；若正式场景有未保存改动，先用 `SaveAsCopy` 保存构建副本到被忽略的 `Assets/OnlineServerBuildSnapshot/`，保留当前内容。Unity 正式构建仍可能弹出原场景保存对话框；场景含并行修改时，由用户决定是否保存，工具不自动确认。构建状态在 `Library/BuildValidation/OnlineServer/build-report.json`。
 
 ```powershell
