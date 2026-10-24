@@ -351,6 +351,7 @@ namespace Unity.MP_FPS
             if (m_World == null || !m_World.IsCreated) InitializeWorld();
             if (m_World == null || !m_World.IsCreated || m_StateQuery.IsEmptyIgnoreFilter) { ResetRaidCinematics(); m_Minimap.Hide(); ResetRaidMap(); PresentMelee(false); PresentQuickSlots(false); PresentProtection(false); HideBountyClash(); return; }
             m_Snapshot = m_StateQuery.GetSingleton<RaidClientState>().Snapshot;
+            PresentOnlineSquad();
             UpdateInventoryView();
             PresentTimedAction();
             bool clash = PresentBountyClash();
@@ -389,6 +390,7 @@ namespace Unity.MP_FPS
                     m_DeployRequestedRaid = 0;
                 bool deploying = m_Snapshot.DeployPending || m_DeployRequestedRaid == m_Snapshot.RaidId;
                 m_Deploy.SetEnabled(!saving && !deploying);
+                if (OnlineLobbyClient.InInstance) MoonkovLocalization.Set(m_Deploy, "返回小队 · 下一局使用全新地图");
                 m_Return.SetEnabled(!saving && !deploying && GameManager.CanUseMainMenu);
                 m_CarryCells.SetEnabled(!saving && !deploying);
                 // Do not replace text while the player is editing it.
@@ -829,6 +831,8 @@ namespace Unity.MP_FPS
 
         private void Deploy()
         {
+            // A managed raid always returns to its party; another deploy must get a fresh map.
+            if (OnlineLobbyClient.InInstance) { ReturnToShip(); return; }
             if (m_ClashMode) return;
             if (m_Snapshot.RaidId <= 0 || m_Snapshot.Phase == RaidPhase.Active ||
                 m_Snapshot.DeployPending || m_DeployRequestedRaid == m_Snapshot.RaidId ||

@@ -229,7 +229,7 @@ namespace Unity.MP_FPS
                     GameSettings.Instance.MainMenuState = MainMenuState.MainMenuScreen;
                 }
             }
-            else if (creationType == CreationType.ConnectAndJoin && !ConnectionSettings.Instance.ResumeOnly)
+            else if (creationType == CreationType.ConnectAndJoin && !ConnectionSettings.Instance.ResumeOnly && !OnlineLobbyClient.InInstance)
             {
                 GameSettings.Instance.CancellableUserInputPopUp = new AwaitableCompletionSource();
                 GameSettings.Instance.MainMenuState = MainMenuState.DirectConnectPopUp;

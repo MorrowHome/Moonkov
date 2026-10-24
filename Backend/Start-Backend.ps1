@@ -1,6 +1,6 @@
 param([switch]$Background, [switch]$Lan, [switch]$Update)
 $ErrorActionPreference = 'Stop'
-$requiredFeatures = @('species-harvest-v2', 'missions-v1', 'recovery-inbox-v1', 'bounty-clash-v1', 'game-join-tickets-v1')
+$requiredFeatures = @('species-harvest-v2', 'missions-v1', 'recovery-inbox-v1', 'bounty-clash-v1', 'game-join-tickets-v1', 'online-lobbies-v1')
 & (Join-Path $PSScriptRoot 'Start-Database.ps1')
 $projectRoot = Split-Path $PSScriptRoot -Parent
 $serverConfig = Get-Content -LiteralPath (Join-Path $projectRoot 'moon-server.local.json') -Raw | ConvertFrom-Json

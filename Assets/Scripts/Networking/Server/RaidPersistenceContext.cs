@@ -25,6 +25,8 @@ namespace Unity.MP_FPS
 
         public sealed class Profile
         {
+            public string OnlineInstanceId;
+            public int OnlineTeam;
             public string PlayerId;
             public string DisplayName;
             public int Dust, Alloy, Cells;
@@ -208,15 +210,17 @@ namespace Unity.MP_FPS
         public void RefreshJoin(Join join)
         {
             join.NeedsRefresh = false;
-            join.Task = m_Http == null ? ResolveJoinAsync(join.Token) : RefreshAuthenticatedJoinAsync(join.Task.Result.PlayerId);
+            join.Task = m_Http == null ? ResolveJoinAsync(join.Token) : RefreshAuthenticatedJoinAsync(join.Task.Result);
         }
 
-        private async Task<Profile> RefreshAuthenticatedJoinAsync(string playerId)
+        private async Task<Profile> RefreshAuthenticatedJoinAsync(Profile original)
         {
-            using (var response = await m_Http.GetAsync("internal/accounts/" + Guid.Parse(playerId).ToString("D"), m_Stop.Token).ConfigureAwait(false))
+            using (var response = await m_Http.GetAsync("internal/accounts/" + Guid.Parse(original.PlayerId).ToString("D"), m_Stop.Token).ConfigureAwait(false))
             {
                 response.EnsureSuccessStatusCode();
-                return JsonConvert.DeserializeObject<Profile>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+                var profile = JsonConvert.DeserializeObject<Profile>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+                profile.OnlineInstanceId = original.OnlineInstanceId; profile.OnlineTeam = original.OnlineTeam;
+                return profile;
             }
         }
 

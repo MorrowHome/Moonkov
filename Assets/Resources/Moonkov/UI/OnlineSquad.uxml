@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="OnlineSquad.uss" />
+    <ui:VisualElement name="onlineSquad" class="online-squad" picking-mode="Ignore">
+        <ui:Label name="onlineSquadTitle" class="online-squad-title" />
+        <ui:Label name="onlineSquadRoster" class="online-squad-roster" />
+        <ui:Label text="同队免伤 · 结算后返回小队" class="online-squad-note" />
+    </ui:VisualElement>
+</ui:UXML>

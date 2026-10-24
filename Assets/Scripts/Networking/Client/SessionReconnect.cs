@@ -30,6 +30,7 @@ namespace Unity.MP_FPS
         }
         public static void Offer()
         { if (s_CanResume && s_Deadline == default) s_Deadline = DateTime.UtcNow.AddSeconds(90); }
+        public static void Dismiss() { s_CanResume = false; s_Deadline = default; }
         public static CreationType Restore()
         {
             if (!Available) throw new InvalidOperationException("重连时限已过，请等待原战局结算后重新出击。");

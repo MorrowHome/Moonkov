@@ -45,6 +45,8 @@ namespace Unity.MP_FPS
         async void Start()
         {
             Debug.Log($"FPS2 server -> Starting.");
+            // Managed Coop/Versus allocations use expedition rules; teams are server-assigned.
+            if (OnlineInstanceServer.Managed) GameSettings.Instance.RequestedMode = RaidGameMode.Expedition;
             GameSettings.Instance.GameState = GlobalGameState.Loading;
             
             LoadingData.Instance.UpdateLoading(LoadingData.LoadingSteps.InitializeConnection);
@@ -74,6 +76,7 @@ namespace Unity.MP_FPS
             
             LoadingData.Instance.UpdateLoading(LoadingData.LoadingSteps.LoadingDone);
             GameSettings.Instance.GameState = GlobalGameState.InGame;
+            await OnlineInstanceServer.AnnounceReadyAsync();
         }
         
         ushort GetPortFromArgument()

@@ -42,7 +42,7 @@ namespace Unity.MP_FPS
                 {
                     var session = SystemAPI.GetComponentRW<RaidSession>(connection);
                     int cells = request.ValueRO.CarryCells;
-                    if (RaidRules.CanDeploy(session.ValueRO, request.ValueRO.SettledRaidId))
+                    if (!OnlineInstanceServer.Managed && RaidRules.CanDeploy(session.ValueRO, request.ValueRO.SettledRaidId))
                     {
                         session.ValueRW.LoadoutRequestId = request.ValueRO.RequestId;
                         if (!RaidRules.ValidLoadout(cells))

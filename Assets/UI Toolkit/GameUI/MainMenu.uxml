@@ -23,6 +23,8 @@
                         <ui:Label text="Field operator" />
                         <ui:Label name="FieldOperator" text="DOLLSINGER" />
                     </ui:VisualElement>
+                    <ui:VisualElement name="OnlineLobbyHost" />
+                    <ui:Foldout text="高级连接 / 旧版直连与中继" name="AdvancedConnection" value="false">
                     <ui:RadioButtonGroup label="Session route" choices="Relay,Direct" value="-1" name="ConnetionModeOption" />
                     <ui:VisualElement name="InputSessionName" class="section-separator">
                         <ui:Label text="Crew session" name="SessionName" />
@@ -38,6 +40,7 @@
                     <ui:Button text="HOST EXPEDITION" name="StartHost" />
                     <ui:Button text="JOIN EXPEDITION" name="ConnectToServer" />
                     <ui:Button text="Matchmake" name="QuickJoin" class="hidden" />
+                    </ui:Foldout>
                     <ui:Button text="QUIT" name="QuitButton" />
                 </ui:VisualElement>
             </ui:ScrollView>

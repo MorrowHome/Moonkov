@@ -1,0 +1,29 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="OnlineLobby.uss" />
+    <ui:VisualElement name="onlineLobby" class="online-lobby">
+        <ui:Label text="远征小队 / 1–4 人" class="online-title" />
+        <ui:Label text="默认合作进图：只有 AI 敌人。无需匹配，单人也能开局。" class="online-help" />
+        <ui:Label name="onlineStatus" class="online-help" />
+        <ui:VisualElement name="onlineEntry">
+            <ui:Button name="onlineCreate" text="创建小队" />
+            <ui:TextField name="onlineInvite" label="好友队伍码" max-length="8" />
+            <ui:Button name="onlineJoin" text="加入好友小队" />
+        </ui:VisualElement>
+        <ui:VisualElement name="onlineParty">
+            <ui:Button name="onlineCopy" text="复制队伍码" />
+            <ui:Label name="onlineMembers" class="online-roster" />
+            <ui:VisualElement name="onlineSettings">
+                <ui:RadioButtonGroup name="onlineMode" label="本局玩法" choices="合作 · AI 敌人,对抗 · 有真人敌人" value="0" />
+                <ui:Toggle name="onlinePublic" label="寻找其他队伍（可选）" />
+                <ui:Label text="关闭寻找队伍：合作可 1–4 人直接出发；好友对抗至少 2 人，分为 A、B 两队。开启寻找队伍：对抗需等另一支队伍，总计最多 4 人。" class="online-help" />
+            </ui:VisualElement>
+            <ui:RadioButtonGroup name="onlineTeam" label="好友对抗分队" choices="A 队,B 队" value="0" />
+            <ui:Button name="onlineReady" text="准备" />
+            <ui:Button name="onlineStart" text="全员准备后出发" class="online-primary" />
+            <ui:Button name="onlineCancel" text="取消等待" />
+            <ui:Button name="onlineRetry" text="重试加入本局" />
+            <ui:Button name="onlineReturn" text="结算完成，返回队伍" />
+            <ui:Button name="onlineLeave" text="离开小队" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

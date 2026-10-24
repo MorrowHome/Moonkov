@@ -1,0 +1,4 @@
+.online-squad { margin-top: 8px; padding: 10px; background-color: rgba(17, 25, 30, 0.88); border-left-width: 2px; border-left-color: #84bba9; }
+.online-squad-title { font-size: 14px; color: #a0d4bf; -unity-font-style: bold; }
+.online-squad-roster { font-size: 13px; color: #e4eced; white-space: normal; margin-top: 5px; }
+.online-squad-note { font-size: 11px; color: #b4c2c4; white-space: normal; margin-top: 4px; }

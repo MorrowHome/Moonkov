@@ -1,0 +1,8 @@
+.online-lobby { margin-top: 12px; margin-bottom: 16px; padding: 14px; border-top-width: 2px; border-top-color: #b59c62; background-color: rgba(28, 30, 32, 0.94); color: #f0e9dc; flex-shrink: 0; }
+.online-lobby .online-title { font-size: 20px; -unity-font-style: bold; margin-bottom: 8px; }
+.online-lobby .online-help { white-space: normal; font-size: 13px; color: #d2cabd; margin-top: 5px; margin-bottom: 8px; }
+.online-lobby .online-roster { white-space: normal; font-size: 15px; margin-top: 10px; margin-bottom: 10px; }
+.online-lobby Button { min-height: 34px; margin-top: 6px; white-space: normal; }
+.online-lobby .online-primary { background-color: #b59c62; color: #191b1d; -unity-font-style: bold; }
+.online-lobby .unity-radio-button-group { margin-top: 8px; margin-bottom: 8px; }
+.online-lobby .unity-toggle { margin-top: 8px; margin-bottom: 8px; }

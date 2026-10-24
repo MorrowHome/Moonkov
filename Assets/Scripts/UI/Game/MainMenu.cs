@@ -111,6 +111,7 @@ namespace Unity.MP_FPS.Client
             InitializeAccountPanel();
             InitializeBountyModeUI();
             InitializeLanUI();
+            InitializeOnlineLobby();
             m_ResumeRaid = m_MainMenu.Q<Button>("ResumeRaid");
             m_ResumeStatus = m_MainMenu.Q<Label>("ResumeStatus");
             m_ResumeRaid.clicked += ResumeRaid;
@@ -124,6 +125,7 @@ namespace Unity.MP_FPS.Client
             m_ResumeRefresh?.Pause();
             if (m_ResumeRaid != null) m_ResumeRaid.clicked -= ResumeRaid;
             DisposeLanUI();
+            DisposeOnlineLobby();
             DisposeBountyModeUI();
             DisposeAccountPanel();
             m_CreateGameButton.clicked -= OnCreateGamePressed;

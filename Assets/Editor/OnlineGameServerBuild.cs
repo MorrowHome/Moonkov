@@ -87,6 +87,7 @@ public static class OnlineGameServerBuild
                 return;
             }
             if (report.summary.result != BuildResult.Succeeded) throw new InvalidOperationException("Server build failed; inspect the build report and Editor log.");
+            File.WriteAllText("Build/MoonServer/online-instance-protocol.txt", "1");
             Debug.Log("[Online Server] Dedicated Windows server built: " + Path.GetFullPath(result.Output));
         }
         catch (Exception ex) { result.Status = "Failed"; result.Message = ex.Message; throw; }

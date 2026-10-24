@@ -35,7 +35,7 @@ if ((Test-Path -LiteralPath $openssl) -and (Test-Path -LiteralPath $certificate)
 if (!$ConfigurationOnly) {
     try {
         $health = Invoke-RestMethod -Uri ($server.BackendUrl.TrimEnd('/') + '/internal/health') -Headers @{ 'X-Moon-Server-Key'=$server.ServerKey } -TimeoutSec 5
-        $required = @('species-harvest-v2','missions-v1','recovery-inbox-v1','bounty-clash-v1','game-join-tickets-v1')
+        $required = @('species-harvest-v2','missions-v1','recovery-inbox-v1','bounty-clash-v1','game-join-tickets-v1','online-lobbies-v1')
         $missing = @($required | Where-Object { $health.features -notcontains $_ })
         Record 'Authenticated backend health' ($health.status -eq 'ready' -and $missing.Count -eq 0) 'Backend must be running with all current capabilities.'
     } catch { Record 'Authenticated backend health' $false 'Backend unavailable or rejected the configured server identity.' }
@@ -45,7 +45,19 @@ if (!$ConfigurationOnly) {
     Record 'Public HTTPS account route' ($status -eq 401) ("Unauthenticated /auth/me must return 401; observed " + $status + '. Does not test UDP.')
     $port = if ($client.ServerPort) { [int]$client.ServerPort } else { 7979 }
     $listeners = @(Get-NetUDPEndpoint -LocalPort $port -ErrorAction SilentlyContinue)
-    Record 'Local game UDP listener' ($listeners.Count -gt 0) 'A listener does not prove public forwarding or gameplay.'
+    if ($health.features -contains 'online-lobbies-v1') {
+        $marker = Join-Path $projectRoot 'Build/MoonServer/online-instance-protocol.txt'
+        $validBuild = (Test-Path -LiteralPath $marker) -and (Get-Content -LiteralPath $marker -Raw).Trim() -eq '1'
+        $leaseFile = Join-Path $projectRoot 'LocalData/online-instance-process.json'
+        $owned = $false
+        if (Test-Path -LiteralPath $leaseFile) {
+            $lease = Get-Content -LiteralPath $leaseFile -Raw | ConvertFrom-Json
+            $owned = @($listeners | Where-Object { $_.OwningProcess -eq $lease.Pid }).Count -gt 0
+        }
+        Record 'On-demand game slot' ($validBuild -and ($listeners.Count -eq 0 -or $owned)) 'Idle: no UDP listener is expected. Running: listener must belong to the managed instance. Does not prove public forwarding or gameplay.'
+    } else {
+        Record 'Local game UDP listener' ($listeners.Count -gt 0) 'A listener does not prove public forwarding or gameplay.'
+    }
 }
 $report = [pscustomobject]@{
     TimeUtc=[DateTime]::UtcNow.ToString('o'); ConfigurationOnly=[bool]$ConfigurationOnly

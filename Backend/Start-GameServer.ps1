@@ -1,4 +1,4 @@
-param([string]$Executable = 'Build/MoonServer/MoonServer.exe', [ValidateRange(1,65535)][int]$Port = 7979)
+param([string]$Executable = 'Build/MoonServer/MoonServer.exe', [ValidateRange(1,65535)][int]$Port = 7979, [switch]$LegacyPersistent)
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path $PSScriptRoot -Parent
 $serverExe = [IO.Path]::GetFullPath([IO.Path]::Combine($projectRoot, $Executable))
@@ -7,6 +7,7 @@ $configPath = Join-Path $projectRoot 'moon-server.local.json'
 $config = Get-Content -LiteralPath $configPath -Raw | ConvertFrom-Json
 $health = Invoke-RestMethod -Uri ($config.BackendUrl.TrimEnd('/') + '/internal/health') -Headers @{ 'X-Moon-Server-Key'=$config.ServerKey } -TimeoutSec 5
 if ($health.status -ne 'ready' -or $health.features -notcontains 'game-join-tickets-v1') { throw 'Update/start the account backend before the game server.' }
+if (!$LegacyPersistent -and $health.features -contains 'online-lobbies-v1') { throw 'Party instances are enabled. Do not start a persistent map: create a squad in the game and deploy. Use -LegacyPersistent only for the advanced legacy route.' }
 $pidFile = Join-Path $projectRoot 'LocalData/game-server.pid.json'
 if (Test-Path -LiteralPath $pidFile) {
     $record = Get-Content -LiteralPath $pidFile -Raw | ConvertFrom-Json

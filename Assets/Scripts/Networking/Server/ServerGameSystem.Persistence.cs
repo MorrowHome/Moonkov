@@ -54,6 +54,12 @@ namespace Unity.MP_FPS
                     continue;
                 }
                 var profile = join.Task.Result;
+                if (OnlineInstanceServer.Managed && profile.OnlineInstanceId != OnlineInstanceServer.InstanceId)
+                {
+                    removeJoins.Add(connection);
+                    ecb.AddComponent(connection, new NetworkStreamRequestDisconnect { Reason = NetworkStreamDisconnectReason.ConnectionClose });
+                    continue;
+                }
                 // A reconnect must wait for an earlier outbox receipt, then reload the committed stash.
                 bool pendingReceipt = false;
                 foreach (var save in context.Saves.Values)
@@ -81,6 +87,11 @@ namespace Unity.MP_FPS
                     ecb.AddComponent(rejected, new ClashJoinAcceptedRpc { Mode = RaidGameMode.Expedition, Accepted = false,
                         Reason = "无法恢复原战局：角色已死亡、服务器已重启或重连窗口已过。不会自动开始新战局。" });
                     ecb.AddComponent(rejected, new SendRpcCommandRequest { TargetConnection = connection });
+                    ecb.AddComponent(connection, new NetworkStreamRequestDisconnect { Reason = NetworkStreamDisconnectReason.ConnectionClose });
+                    continue;
+                }
+                if (OnlineInstanceServer.Managed && !state.EntityManager.GetComponentObject<OnlineRaidWorld>(SystemAPI.GetSingletonEntity<RaidLootWorld>()).DeployedAccounts.Add(profile.PlayerId))
+                {
                     ecb.AddComponent(connection, new NetworkStreamRequestDisconnect { Reason = NetworkStreamDisconnectReason.ConnectionClose });
                     continue;
                 }
@@ -143,6 +154,8 @@ namespace Unity.MP_FPS
                     continue;
                 }
                 var profile = deploy.Task.Result;
+                if (context.Profiles.TryGetValue(connection, out var admission))
+                { profile.OnlineInstanceId = admission.OnlineInstanceId; profile.OnlineTeam = admission.OnlineTeam; }
                 context.Profiles[connection] = profile;
                 // A new shared match must keep this connection's personal raid epoch
                 // and snapshot sequence, so old inventory RPCs cannot target the next kit.

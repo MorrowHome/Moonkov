@@ -52,6 +52,7 @@ namespace Unity.MP_FPS
             state.EntityManager.AddComponentObject(lootEntity,new RaidLootContainers());
             state.EntityManager.AddComponentObject(lootEntity,new RaidMissionWorld());
             state.EntityManager.AddComponentObject(lootEntity,new BountyClashWorld());
+            state.EntityManager.AddComponentObject(lootEntity,new OnlineRaidWorld());
             state.EntityManager.AddComponentObject(lootEntity,new ClashBotRegistry());
             m_PersistenceEntity = state.EntityManager.CreateEntity();
         }
@@ -256,6 +257,8 @@ namespace Unity.MP_FPS
             var magazineSize = weaponData != null ? weaponData.MagazineSize : 0;
 
             ecb.SetComponent(playerEntity, new GhostOwner { NetworkId = ownerNetworkId.Value });
+            if (Persistence(ref state).Profiles.TryGetValue(connectionEntity, out var onlineProfile) && !string.IsNullOrEmpty(onlineProfile.OnlineInstanceId))
+                ecb.AddComponent(playerEntity, new OnlineRaidMember { Team = onlineProfile.OnlineTeam });
             ecb.AddComponent(playerEntity, new PlayerClientCommandInputLookup { ClientCommandInputEntity = clientInputEntity });
             var playerState = new PredictedPlayerGhost
             {
@@ -268,6 +271,8 @@ namespace Unity.MP_FPS
                 PrimaryWeaponID = DollSingerWeapons.None, SecondaryWeaponID = DollSingerWeapons.None, PistolWeaponID = DollSingerWeapons.None
             };
             RaidHealth.Initialize(ref playerState);
+            playerState.OnlineHuman = !string.IsNullOrEmpty(onlineProfile?.OnlineInstanceId);
+            playerState.OnlineTeam = onlineProfile?.OnlineTeam ?? 0;
             ConfigureClashSpawn(ref state,ecb,connectionEntity,playerEntity,ref playerState);
             ecb.SetComponent(playerEntity, playerState);
             ecb.AddComponent(playerEntity, new PlayerCharacterInitialized());
@@ -275,7 +280,10 @@ namespace Unity.MP_FPS
 
             if (!ClashEnabled(ref state) && FindSpawnPoint(ref state, out var spawnPoint))
             {
-                ecb.SetComponent(playerEntity, new LocalTransform { Position = spawnPoint.Position, Rotation = spawnPoint.Rotation, Scale = 1.0f });
+                var spawn = new LocalTransform { Position = spawnPoint.Position, Rotation = spawnPoint.Rotation, Scale = 1.0f };
+                if (!string.IsNullOrEmpty(onlineProfile?.OnlineInstanceId))
+                    spawn = state.EntityManager.GetComponentObject<OnlineRaidWorld>(SystemAPI.GetSingletonEntity<RaidLootWorld>()).Spawn(onlineProfile.OnlineTeam, spawn);
+                ecb.SetComponent(playerEntity, spawn);
             }
 
             ecb.SetComponent(playerEntity, new GhostGameObjectGuid { Guid = GhostGameObject.GenerateRandomHash() });

@@ -8,6 +8,7 @@ namespace Unity.MP_FPS.Client
         private Label m_ModeStatus;
         private Label m_ModeHint;
         private IVisualElementScheduledItem m_ModeRefresh;
+        private Button m_StashModeEntry;
         private void InitializeBountyModeUI()
         {
             m_ModePicker = new BountyModeView(m_MainMenu.Q("Canvas"), clash =>
@@ -17,11 +18,11 @@ namespace Unity.MP_FPS.Client
                 ConnectionSettings.Instance.ConnectionError = null;
                 RefreshModePicker();
             });
-            m_ModePicker.CreateEntry(m_MainMenu.Q(className: "stash-footer"));
+            m_StashModeEntry = m_ModePicker.CreateEntry(m_MainMenu.Q(className: "stash-footer"));
             m_ModeHint = m_MainMenu.Q<Label>(className: "stash-footer-hint");
-            m_ModePicker.CreateEntry(m_ConnectionPanel);
+            m_ModePicker.CreateEntry(m_MainMenu.Q("AdvancedConnection"));
             m_ModeStatus = new Label { pickingMode = PickingMode.Ignore }; m_ModeStatus.AddToClassList("bounty-mode-message");
-            m_ConnectionPanel.Add(m_ModeStatus);
+            m_MainMenu.Q("AdvancedConnection").Add(m_ModeStatus);
             m_ModeRefresh = m_MainMenu.schedule.Execute(RefreshModePicker).Every(250);
             RefreshModePicker();
         }
@@ -29,8 +30,10 @@ namespace Unity.MP_FPS.Client
         {
             bool clash = GameSettings.Instance.RequestedMode == RaidGameMode.BountyClash;
             bool offline = PlayerProfileClient.IsOffline;
+            bool online = !offline && !PlayerProfileClient.IsLan;
+            m_StashModeEntry.style.display = online ? DisplayStyle.None : DisplayStyle.Flex;
             m_ModePicker.Present(clash, offline);
-            if (m_ModeHint != null) MoonkovLocalization.Set(m_ModeHint, clash && offline
+            if (m_ModeHint != null) MoonkovLocalization.Set(m_ModeHint, online ? "在线小队：1–4 人合作直接进图，或选择好友对抗；无需凑满人数。" : clash && offline
                 ? "SOLO BOUNTY CLASH / Offline stash. Death loses equipment; extraction keeps loot."
                 : "Choose the game mode, then choose how to connect.");
             MoonkovLocalization.Set(m_ModeStatus, ConnectionSettings.Instance.ConnectionError ?? (clash

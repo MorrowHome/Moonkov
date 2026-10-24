@@ -36,7 +36,7 @@ namespace Unity.MP_FPS
             string ca = Path.Combine(root, "moon-game-ca.pem");
             if (!File.Exists(ca)) throw new InvalidOperationException("Missing moon-game-ca.pem. Install the server's public game certificate beside the client.");
             settings.WithSecureClientParameters(caCertificate: File.ReadAllText(ca),
-                serverName: ClientSettings.GameServerName ?? ConnectionSettings.Instance.IPAddress);
+                serverName: (OnlineLobbyClient.InInstance ? OnlineLobbyClient.ServerName : null) ?? ClientSettings.GameServerName ?? ConnectionSettings.Instance.IPAddress);
         }
 
         public static void ConfigureServer(ref NetworkSettings settings)

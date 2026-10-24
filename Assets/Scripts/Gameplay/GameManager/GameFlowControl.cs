@@ -63,6 +63,7 @@ namespace Unity.MP_FPS
             await DisconnectAndUnloadWorlds();
             await RefundFailedOfflineLoadingAsync();
             await LanRoomClient.ReturnedToMenuAsync();
+            await OnlineLobbyClient.ReturnedAsync();
             
             // Restart the main menu scene.
             Start();

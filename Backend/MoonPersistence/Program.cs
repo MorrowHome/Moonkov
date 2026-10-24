@@ -6,6 +6,7 @@ using Npgsql;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.RateLimiting;
 using Unity.MP_FPS.Inventory;
+using Unity.MP_FPS.Online;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddJsonFile("appsettings.local.json", optional: true).AddEnvironmentVariables().AddCommandLine(args);
@@ -20,6 +21,12 @@ builder.Services.AddSingleton<StashRepository>();
 builder.Services.AddSingleton<InventoryRepository>();
 builder.Services.AddSingleton<AccountRepository>();
 builder.Services.AddSingleton<GameJoinTickets>();
+var instanceOptions = new OnlineInstanceOptions();
+builder.Configuration.GetSection("OnlineInstances").Bind(instanceOptions);
+if (string.IsNullOrWhiteSpace(instanceOptions.ProjectRoot)) instanceOptions.ProjectRoot = Path.GetFullPath(Path.Combine(builder.Environment.ContentRootPath, "../.."));
+builder.Services.AddSingleton(instanceOptions);
+builder.Services.AddSingleton(new OnlineLobbies(Path.Combine(instanceOptions.ProjectRoot, "LocalData/online-lobbies.json")));
+builder.Services.AddHostedService<OnlineInstanceWorker>();
 var clashEconomy = new BountyEconomy(builder.Configuration.GetValue("BountyClash:BaseDust",20),
     builder.Configuration.GetValue("BountyClash:SoloBonusDust",60),builder.Configuration.GetValue("BountyClash:DuoBonusDust",15));
 clashEconomy.Validate();
@@ -115,10 +122,57 @@ auth.MapPost("/game-ticket", async (HttpRequest request, AccountRepository accou
     var profile = await accounts.ResolveSessionAsync(request.Headers.Authorization.ToString().Replace("Bearer ", ""), ct);
     return profile is null ? Results.Unauthorized() : Results.Ok(new { Ticket = tickets.Issue(profile.PlayerId, DateTime.UtcNow) });
 }).RequireRateLimiting("auth");
-app.MapPost("/internal/game-tickets/consume", async (SessionCredential request, AccountRepository accounts, GameJoinTickets tickets, CancellationToken ct) =>
+auth.MapGet("/lobby", async (HttpRequest request, AccountRepository accounts, OnlineLobbies lobbies, CancellationToken ct) =>
 {
-    var player = tickets.Consume(request.Token, DateTime.UtcNow);
-    return player is null ? Results.Unauthorized() : Results.Ok(await accounts.ReadProfileAsync(player.Value, ct));
+    var profile = await accounts.ResolveSessionAsync(BearerToken(request), ct);
+    if (profile == null) return Results.Unauthorized();
+    return Results.Ok(lobbies.Snapshot(profile.PlayerId, DateTime.UtcNow, instanceOptions.Address, instanceOptions.ServerName, instanceOptions.Port));
+});
+auth.MapPost("/lobby/action", async (HttpRequest request, LobbyAction action, AccountRepository accounts, OnlineLobbies lobbies, CancellationToken ct) =>
+{
+    var profile = await accounts.ResolveSessionAsync(BearerToken(request), ct);
+    if (profile == null) return Results.Unauthorized();
+    try
+    {
+        lobbies.Act(profile.PlayerId, profile.DisplayName, profile.ActiveDeploymentId != null, action, DateTime.UtcNow);
+        return Results.Ok(lobbies.Snapshot(profile.PlayerId, DateTime.UtcNow, instanceOptions.Address, instanceOptions.ServerName, instanceOptions.Port));
+    }
+    catch (InvalidOperationException ex) { return Results.Conflict(new { error = ex.Message }); }
+});
+auth.MapPost("/lobby/game-ticket", async (HttpRequest request, InstanceCredential credential, AccountRepository accounts, OnlineLobbies lobbies, GameJoinTickets tickets, CancellationToken ct) =>
+{
+    var profile = await accounts.ResolveSessionAsync(BearerToken(request), ct);
+    if (profile == null) return Results.Unauthorized();
+    try
+    {
+        lobbies.Admission(profile.PlayerId, credential.InstanceId, DateTime.UtcNow);
+        return Results.Ok(new { Ticket = tickets.Issue(profile.PlayerId, DateTime.UtcNow, credential.InstanceId) });
+    }
+    catch (InvalidOperationException ex) { return Results.Conflict(new { error = ex.Message }); }
+});
+app.MapPost("/internal/instances/event", (InstanceEvent update, OnlineLobbies lobbies) =>
+{
+    try
+    {
+        if (update.Kind != "ready") return Results.BadRequest();
+        lobbies.Ready(update.InstanceId, DateTime.UtcNow, update.Protocol); return Results.NoContent();
+    }
+    catch (InvalidOperationException ex) { return Results.Conflict(new { error = ex.Message }); }
+});
+app.MapPost("/internal/game-tickets/consume", async (SessionCredential request, AccountRepository accounts, GameJoinTickets tickets, OnlineLobbies lobbies, CancellationToken ct) =>
+{
+    var player = tickets.Consume(request.Token, DateTime.UtcNow, request.InstanceId);
+    if (player == null) return Results.Unauthorized();
+    var profile = await accounts.ReadProfileAsync(player.Value, ct);
+    if (string.IsNullOrEmpty(request.InstanceId)) return Results.Ok(profile);
+    try
+    {
+        var admission = lobbies.Admission(player.Value, request.InstanceId, DateTime.UtcNow, consume: true);
+        var json = System.Text.Json.JsonSerializer.SerializeToNode(profile)!.AsObject();
+        json["OnlineInstanceId"] = admission.Instance; json["OnlineTeam"] = admission.Team;
+        return Results.Ok(json);
+    }
+    catch (InvalidOperationException) { return Results.Unauthorized(); }
 });
 app.MapGet("/internal/accounts/{playerId:guid}", async (Guid playerId, AccountRepository accounts, CancellationToken ct) =>
 {
@@ -130,12 +184,12 @@ app.MapPost("/internal/sessions/resolve", async (SessionCredential request, Acco
     var profile = await accounts.ResolveSessionAsync(request.Token, ct);
     return profile is null ? Results.Unauthorized() : Results.Ok(profile);
 });
-app.MapGet("/internal/health", async (NpgsqlDataSource db, CancellationToken ct) =>
+app.MapGet("/internal/health", async (NpgsqlDataSource db, OnlineLobbies lobbies, CancellationToken ct) =>
 {
     await using var command = db.CreateCommand("SELECT 1");
     await command.ExecuteScalarAsync(ct);
-    return Results.Ok(new { status = "ready", features = new[] { "alien-harvest-v1", "halo-research-v1", "species-harvest-v2", "missions-v1", "recovery-inbox-v1", "bounty-clash-v1", "game-join-tickets-v1" },
-        build = typeof(InventoryRepository).Assembly.GetCustomAttributes(false)
+    return Results.Ok(new { status = "ready", features = new[] { "alien-harvest-v1", "halo-research-v1", "species-harvest-v2", "missions-v1", "recovery-inbox-v1", "bounty-clash-v1", "game-join-tickets-v1", "online-lobbies-v1" },
+        onlineInstances = true, instancePhase = lobbies.Current()?.Phase ?? "Idle", build = typeof(InventoryRepository).Assembly.GetCustomAttributes(false)
             .OfType<System.Reflection.AssemblyInformationalVersionAttribute>().FirstOrDefault()?.InformationalVersion });
 });
 app.MapPost("/internal/profiles/resolve", async (ResolveProfile request, StashRepository store, CancellationToken ct) =>
@@ -146,7 +200,7 @@ app.MapPost("/internal/profiles/resolve", async (ResolveProfile request, StashRe
         return Results.BadRequest(new { error = "Invalid guest credential or display name." });
     return Results.Ok(await store.ResolveAsync(request, ct));
 });
-app.MapPost("/internal/settlements", async (Settlement request, StashRepository store, CancellationToken ct) =>
+app.MapPost("/internal/settlements", async (Settlement request, StashRepository store, OnlineLobbies lobbies, CancellationToken ct) =>
 {
     if (request.PlayerId == Guid.Empty || request.SettlementId == Guid.Empty
         || request.Outcome is not ("Extracted" or "Dead" or "TimedOut")
@@ -154,7 +208,12 @@ app.MapPost("/internal/settlements", async (Settlement request, StashRepository 
         || (request.InventoryJson == null && (long)request.Dust + request.Alloy + request.Cells > 12)
         || request.InventoryJson?.Length > 500000)
         return Results.BadRequest(new { error = "Invalid settlement." });
-    try { return Results.Ok(await store.SettleAsync(request, ct)); }
+    try
+    {
+        var profile = await store.SettleAsync(request, ct);
+        if (profile.ActiveDeploymentId == null) lobbies.Settled(request.PlayerId);
+        return Results.Ok(profile);
+    }
     catch (ReceiptConflictException) { return Results.Conflict(new { error = "Settlement ID already has another payload." }); }
     catch (ProfileNotFoundException) { return Results.NotFound(new { error = "Unknown profile." }); }
     catch (DeploymentRejectedException ex) { return Results.Conflict(new { error=ex.Message }); }

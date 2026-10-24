@@ -130,4 +130,4 @@ public sealed class AccountRepository(NpgsqlDataSource db)
 
 public sealed record Credentials(string Username, string Password, string? GuestToken = null);
 public sealed record LoginResult(string Token, DateTime ExpiresAt, string DisplayName);
-public sealed record SessionCredential(string Token);
+public sealed record SessionCredential(string Token, string? InstanceId = null);

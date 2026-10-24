@@ -151,7 +151,7 @@ namespace Unity.MP_FPS.Client
         {
             if (PlayerProfileClient.IsLan) m_LanRoom.Open();
             else if (PlayerProfileClient.IsOffline) GameManager.Instance.StartGameAsync(CreationType.Offline);
-            else { m_ShowConnectionMenu = true; UpdateAccountPanel(); }
+            else { m_LobbyOpen = true; m_ShowConnectionMenu = true; UpdateAccountPanel(); PollLobby(); }
         }
 
         private async void SwitchProfileMode()
@@ -189,7 +189,7 @@ namespace Unity.MP_FPS.Client
             bool returnedToMenu = m_LastStashGameState != GlobalGameState.MainMenu && gameState == GlobalGameState.MainMenu;
             m_LastStashGameState = gameState;
             if (!returnedToMenu) return;
-            m_ShowConnectionMenu = false;
+            m_ShowConnectionMenu = OnlineLobbyClient.Snapshot?.Code != null;
             if (PlayerProfileClient.IsLoggedIn) RefreshStash();
             else UpdateAccountPanel();
         }

@@ -12,7 +12,7 @@ using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS
 {
-    public static class AccountClient
+    public static partial class AccountClient
     {
         private sealed class LoginResult { public string Token, DisplayName; public DateTime ExpiresAt; }
         private sealed class Profile { public string PlayerId, DisplayName, InventoryJson, ActiveDeploymentId, RecoveryJson; public int Dust, Alloy, Cells; }
@@ -189,11 +189,15 @@ namespace Unity.MP_FPS
         {
             string token = Token;
             if (string.IsNullOrEmpty(token)) throw new InvalidOperationException("Sign in before starting a raid.");
-            using var request = new HttpRequestMessage(HttpMethod.Post, Address(s_BaseUrl, "auth/game-ticket"));
+            bool allocated = OnlineLobbyClient.InInstance;
+            using var request = new HttpRequestMessage(HttpMethod.Post, Address(s_BaseUrl, allocated ? "auth/lobby/game-ticket" : "auth/game-ticket"));
+            if (allocated) request.Content = new StringContent(JsonConvert.SerializeObject(new Online.InstanceCredential { InstanceId = OnlineLobbyClient.InstanceId }), Encoding.UTF8, "application/json");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             using var response = await Http().SendAsync(request, ct);
-            response.EnsureSuccessStatusCode();
-            var ticket = JsonConvert.DeserializeObject<GameTicket>(await response.Content.ReadAsStringAsync());
+            string body = await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode)
+                throw new InvalidOperationException(JsonConvert.DeserializeObject<Failure>(body)?.Error ?? "服务器拒绝入场，请刷新队伍状态后重试。");
+            var ticket = JsonConvert.DeserializeObject<GameTicket>(body);
             ct.ThrowIfCancellationRequested();
             if (token != Token) throw new OperationCanceledException("Account changed while joining.");
             if (ticket?.Ticket?.Length != 64) throw new InvalidOperationException("Invalid game join ticket. Update the account service.");
