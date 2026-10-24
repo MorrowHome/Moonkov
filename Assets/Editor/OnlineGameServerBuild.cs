@@ -72,6 +72,11 @@ public static class OnlineGameServerBuild
                 subtarget = (int)StandaloneBuildSubtarget.Server, options = BuildOptions.None
             });
             result.Status = report.summary.result.ToString(); result.Errors = report.summary.totalErrors; result.Bytes = report.summary.totalSize;
+            if (report.summary.result == BuildResult.Cancelled)
+            {
+                result.Message = "Build cancelled; save modified scenes only after their owner confirms.";
+                return;
+            }
             if (report.summary.result != BuildResult.Succeeded) throw new InvalidOperationException("Server build failed; inspect the build report and Editor log.");
             Debug.Log("[Online Server] Dedicated Windows server built: " + Path.GetFullPath(result.Output));
         }

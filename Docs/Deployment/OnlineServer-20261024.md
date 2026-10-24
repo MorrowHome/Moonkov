@@ -9,6 +9,6 @@
 - 本机 DTLS 身份已生成在 `LocalData/game-tls/`，公开信任文件为根目录 `moon-game-ca.pem`；信任链、域名、有效期和私钥匹配检查通过。私钥未进入 Git，也不复制给玩家。
 - Unity 6000.5.10f1 Windows Dedicated Server 模块已安装。Unity CLI 位于 `D:/Tools/UnityCLI/bin/unity.exe`。只复用原有 Editor。
 - 游戏服务器构建与启动状态以 `Library/BuildValidation/OnlineServer/build-report.json`、`LocalData/game-server.pid.json` 和最后的 `LocalData/online-preflight.json` 为准；账号接口正常不代表游戏 UDP 或联机对局已验收。
-- 当前构建已进入 Unity 原生 `Scene(s) Have Been Modified` 保存确认。正式场景含并行任务未保存修改；已保存构建副本，但 Unity 仍要求决定是否保存原场景。在用户确认之前没有自动保存原场景，游戏服务器尚未启动。
+- 构建遇到 Unity 原生 `Scene(s) Have Been Modified`，后续又出现 `Unsaved Scenes / Save and Continue`。正式场景含并行任务未保存修改；即使有构建副本，仍要求决定是否保存原场景。已明确取消构建，释放 Editor；确认原场景仍打开且 `isDirty=true`、`isBuildingPlayer=false`、构建队列关闭。等待用户允许保存后才能继续，游戏服务器尚未启动。此次旧构建报告的 Failed/Errors=0 来自取消保存，不能当作构建成功或源代码编译失败。
 
 代码检查已覆盖 7 项单次票据、10 项无网络驱动的 ECS 角色恢复、44 项持久化上下文检查及其既有离线恢复检查。未进行 Play、独立游戏客户端、跨设备公网联机、Relay 云房间实测或丢包验收。客户端和游戏服务器必须重新构建为同一版本。
