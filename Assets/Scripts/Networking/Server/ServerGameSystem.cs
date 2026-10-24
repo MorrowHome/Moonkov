@@ -426,7 +426,7 @@ namespace Unity.MP_FPS
                     !SystemAPI.HasComponent<NetworkStreamInGame>(rpcReceive.ValueRW.SourceConnection))
                 {
                     var persistence = Persistence(ref state);
-                    if ((SystemAPI.HasSingleton<OfflineRaidMode>() &&
+                    if (!persistence.Enabled || (SystemAPI.HasSingleton<OfflineRaidMode>() &&
                             (persistence.Joins.Count != 0 || persistence.Profiles.Count != 0 || persistence.Deployments.Count != 0)) ||
                         !RaidRules.ValidLoadout(request.ValueRO.CarryCells) || (!persistence.Enabled && request.ValueRO.CarryCells != 0))
                         ecb.AddComponent(rpcReceive.ValueRW.SourceConnection, new NetworkStreamRequestDisconnect { Reason=NetworkStreamDisconnectReason.ConnectionClose });

@@ -146,8 +146,7 @@ namespace Unity.MP_FPS
             if (string.IsNullOrEmpty(configPath)) configPath = Path.Combine(root, "moon-server.local.json");
             if (!File.Exists(configPath))
             {
-                Debug.Log("[Raid] No server persistence configuration: stash is session-only.");
-                return;
+                throw new InvalidOperationException("Online server requires moon-server.local.json (or MOON_SERVER_CONFIG). Use the explicit single-player or LAN room entry for local play.");
             }
             var config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(configPath));
             if (config == null || string.IsNullOrEmpty(config.ServerKey) || config.ServerKey.Length < 32 ||
