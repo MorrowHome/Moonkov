@@ -458,7 +458,11 @@ public class DollSingerView : MonoBehaviour
             // chest. A 20 cm forward push made the downward view skip the torso entirely.
             float minimum = Mathf.Max(0.04f, firstPersonNearClip + 0.01f);
             float desired = Mathf.Clamp(forwardDistance, minimum, Mathf.Max(minimum, lookDownBodyClearance));
+            // At full downward pitch, look from above the upper chest instead of
+            // ahead of it. A little height leaves room for the neckline above it.
+            desired = Mathf.Lerp(desired, minimum, clearanceBlend);
             eye += horizontalLook * ((desired - forwardDistance) * clearanceBlend);
+            eye += up * (0.04f * clearanceBlend);
         }
         // Head rotation and landing/sprint animation can put even the real eye inside
         // the neckline. Enforce clearance at every pitch, after look-down framing.
