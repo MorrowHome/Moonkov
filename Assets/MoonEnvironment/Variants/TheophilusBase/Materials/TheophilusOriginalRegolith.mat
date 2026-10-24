@@ -71,38 +71,39 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _BedrockStrength: 0.7
+    - _BedrockStrength: 0.25
     - _BounceAlbedo: 0.12
     - _CoherentAmplitude: 0.08
     - _CoherentWidth: 3
     - _DetailStrength: 1
-    - _DistantVariation: 0.12
-    - _EjectaBrightness: 0.35
-    - _FaciesStrength: 0.85
-    - _FineNormalStrength: 0.24
-    - _GeologyStrength: 0.9
-    - _GrainNormalStrength: 0.8
+    - _DistantVariation: 0.2
+    - _EjectaBrightness: 0.06
+    - _FaciesStrength: 0.55
+    - _FineNormalStrength: 0.3
+    - _GeologyStrength: 0.4
+    - _GrainNormalStrength: 0.45
     - _ImpactReady: 0
     - _IndirectStrength: 0
     - _LocalBounceStrength: 1
     - _LocalTerrainReady: 0
     - _LunarLighting: 1
     - _LunarWeight: 0.55
-    - _MacroContrast: 0.8
+    - _MacroContrast: 0.35
     - _MaterialFadeEnd: 180
     - _MaterialFadeStart: 35
     - _OverlayNormalMetres: 3.7
-    - _OverlayNormalStrength: 0.25
+    - _OverlayNormalStrength: 0.12
     - _ParallaxMetres: 0.012
     - _PhaseEnabled: 1
     - _PhaseSlope: 0.12
-    - _ReflectanceScale: 1
+    - _PhotographicSurface: 0.85
+    - _ReflectanceScale: 1.1
     - _ShadowHidingAmplitude: 0.25
     - _ShadowHidingWidth: 12
     m_Colors:
-    - _BasaltTint: {r: 0.64, g: 0.67, b: 0.71, a: 1}
-    - _Color: {r: 0.65, g: 0.65, b: 0.65, a: 1}
-    - _DustTint: {r: 1.06, g: 1.03, b: 0.98, a: 1}
+    - _BasaltTint: {r: 0.8, g: 0.8, b: 0.8, a: 1}
+    - _Color: {r: 0.78, g: 0.78, b: 0.78, a: 1}
+    - _DustTint: {r: 1.03, g: 1.03, b: 1.03, a: 1}
     - _GeologyRect: {r: 1792, g: 1792, b: 512, a: 512}
     - _LocalTerrainRect: {r: 0, g: 0, b: 1, a: 1}
     - _SilverSand: {r: 8, g: 8, b: 0.48, a: 45}

@@ -15,10 +15,12 @@ float _LocalTerrainReady, _LocalBounceStrength, _BounceAlbedo, _ReflectanceScale
 float _GrainNormalStrength, _FineNormalStrength, _ParallaxMetres, _FragmentMode;
 float _MacroContrast, _FaciesStrength, _BedrockStrength, _ImpactReady, _ProceduralRock;
 float _MaterialFadeStart, _MaterialFadeEnd, _DistantVariation;
+float _PhotographicSurface, _GroundReflectanceScale, _SurfaceMatch;
 float4 _DustTint, _BasaltTint;
 // Optional detail-only additions. Zero defaults keep the original lunar surface.
 float _OverlayNormalStrength, _OverlayNormalMetres;
 float4 _SilverSand, _SilverSheen;
+float4 _FragmentFadeRange;
 CBUFFER_END
 // Keep UnityPerMaterial identical for terrain and non-instanced rendering.
 // Grounding overrides live in an instance buffer only for instanced rocks.
@@ -153,7 +155,8 @@ void MoonFragmentFade(float3 position)
 {
     UNITY_BRANCH if (_FragmentMode>.5)
     {
-        float visibility=1-smoothstep(42,56,distance(position,_WorldSpaceCameraPos));
+        float2 fadeRange=_FragmentFadeRange.y>_FragmentFadeRange.x ? _FragmentFadeRange.xy : float2(42,56);
+        float visibility=1-smoothstep(fadeRange.x,fadeRange.y,distance(position,_WorldSpaceCameraPos));
         // World-anchored dither works in colour, depth and shadow passes.
         clip(visibility-frac(sin(dot(floor(position*300),float3(12.9898,78.233,39.425)))*43758.5453)-.001);
     }

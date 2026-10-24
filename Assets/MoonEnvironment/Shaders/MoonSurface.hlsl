@@ -10,6 +10,31 @@ float MoonNoise(float2 p)
     float2 i=floor(p),f=frac(p); f=f*f*(3-2*f);
     return lerp(lerp(MoonHash(i).x,MoonHash(i+float2(1,0)).x,f.x),lerp(MoonHash(i+float2(0,1)).x,MoonHash(i+1).x,f.x),f.y);
 }
+// Value and analytic derivatives share the same four samples. Filtering each
+// octave by its projected footprint prevents distant grit from sparkling.
+float3 MoonNoiseGradient(float2 p)
+{
+    float2 i=floor(p), f=frac(p), u=f*f*(3-2*f), du=6*f*(1-f);
+    float a=MoonHash(i).x, b=MoonHash(i+float2(1,0)).x;
+    float c=MoonHash(i+float2(0,1)).x, d=MoonHash(i+1).x;
+    return float3(lerp(lerp(a,b,u.x),lerp(c,d,u.x),u.y),
+        lerp(b-a,d-c,u.y)*du.x, lerp(c-a,d-b,u.x)*du.y);
+}
+float3 MoonPowderRelief(float2 worldXZ, float distanceToCamera)
+{
+    float footprint=max(length(ddx(worldXZ)),length(ddy(worldXZ)));
+    float3 relief=0;
+    const float4 wavelengths=float4(.035,.13,.53,2.1);
+    const float4 heights=float4(.0012,.0038,.008,.055);
+    [unroll] for(int octave=0;octave<4;octave++)
+    {
+        float wavelength=wavelengths[octave];
+        float resolved=1-smoothstep(wavelength*.2,wavelength*.7,footprint);
+        float3 grain=MoonNoiseGradient(worldXZ/wavelength+float2(17.37,41.19)*octave);
+        relief+=float3((grain.x-.5)*.055,grain.yz*heights[octave]/wavelength)*resolved;
+    }
+    return relief*(1-smoothstep(80,180,distanceToCamera));
+}
 float2 MoonRotate(float2 p,float2 cs) { return float2(cs.x*p.x-cs.y*p.y,cs.y*p.x+cs.x*p.y); }
 void MoonLattice(float2 uv,out float2 a,out float2 b,out float2 c,out float3 w)
 {

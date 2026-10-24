@@ -16,6 +16,7 @@ namespace Unity.MP_FPS.Moon
         [Header("Runtime near-field geology")]
         [SerializeField] private MoonSurfaceDetailSettings surfaceDetail = new();
         private MoonSurfaceDetail surface;
+        private MoonRegolithDebris debris;
 
         private TerrainData sourceTerrainData;
         private TerrainData runtimeTerrainData;
@@ -58,6 +59,26 @@ namespace Unity.MP_FPS.Moon
 
             CloneMaterial(regolith);
             foreach (Material material in rockMaterials) CloneMaterial(material);
+            if (regolith.HasProperty("_PhotographicSurface") && regolith.GetFloat("_PhotographicSurface") > 0)
+                foreach (Material source in rockMaterials)
+                    if (source && runtimeMaterials.TryGetValue(source, out var target))
+                    {
+                        // Contact dust must match the terrain, independently of a
+                        // darker rock's own reflectance. Do not edit shared assets.
+                        target.SetColor("_GroundColor", regolith.GetColor("_Color"));
+                        target.SetFloat("_GroundReflectanceScale", regolith.GetFloat("_ReflectanceScale"));
+                        target.SetFloat("_GeologyStrength", regolith.GetFloat("_GeologyStrength"));
+                        target.SetFloat("_EjectaBrightness", regolith.GetFloat("_EjectaBrightness"));
+                        target.SetTexture("_GroundTex", regolith.GetTexture("_MainTex"));
+                        target.SetTexture("_GeologyMap", regolith.GetTexture("_GeologyMap"));
+                        target.SetVector("_GeologyRect", regolith.GetVector("_GeologyRect"));
+                        target.SetColor("_DustTint", regolith.GetColor("_DustTint"));
+                        target.SetColor("_BasaltTint", regolith.GetColor("_BasaltTint"));
+                        foreach (string property in new[] { "_MacroContrast", "_DistantVariation", "_FaciesStrength",
+                                     "_MaterialFadeStart", "_MaterialFadeEnd" })
+                            target.SetFloat(property, regolith.GetFloat(property));
+                        target.SetFloat("_SurfaceMatch", 1);
+                    }
             terrains = GetComponentsInChildren<Terrain>(true);
             foreach (Terrain terrain in terrains)
             {
@@ -96,12 +117,20 @@ namespace Unity.MP_FPS.Moon
                         surface.BindGeometry(runtimeMaterials.Values);
                 }
             }
+            // The formal map intentionally keeps runtime crater/collider edits off.
+            // Its photographic material can still request a cosmetic near field.
+            if (surface == null && SystemInfo.graphicsDeviceType != GraphicsDeviceType.Null &&
+                regolith.HasProperty("_PhotographicSurface") && regolith.GetFloat("_PhotographicSurface") > 0 &&
+                rockMaterials.Length > 0 && rockMaterials[0])
+                debris = new MoonRegolithDebris(detailRoot.transform, terrains,
+                    runtimeMaterials[rockMaterials[0]], runtimeMaterials[regolith]);
             initialized = true;
         }
 
         private void LateUpdate()
         {
             if (initialized && Detailed) surface?.Tick();
+            if (initialized && Detailed) debris?.Tick();
         }
 
         private void CloneMaterial(Material source)
@@ -147,6 +176,8 @@ namespace Unity.MP_FPS.Moon
         {
             if (!initialized) return;
             surface?.Dispose();
+            debris?.Dispose();
+            debris = null;
             surface = null;
             if (surroundingTerrain)
             {

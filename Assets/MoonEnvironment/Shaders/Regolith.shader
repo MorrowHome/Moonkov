@@ -14,6 +14,7 @@ Shader "MoonEnvironment/Regolith"
         _LunarWeight("Lommel-Seeliger weight", Range(0,1)) = 0.55
         _IndirectStrength("Indirect light contribution", Range(0,1)) = 0
         _ReflectanceScale("Reflectance calibration (exposure independent)", Range(0.1,1.5)) = 0.8
+        _PhotographicSurface("Filtered powder microrelief", Range(0,1)) = 0
         _LocalBounceStrength("Local terrain bounce", Range(0,2)) = 1
         _BounceAlbedo("Average source terrain reflectance", Range(0,0.3)) = 0.12
         _GrainNormalStrength("Grain normal strength", Range(0,1.5)) = 0.55
@@ -119,6 +120,12 @@ Shader "MoonEnvironment/Regolith"
             normal.xy+=microNormal.xy*_FineNormalStrength*fineFade;
             normal.xy=lerp(normal.xy,bedNormal.xy*1.2,bedWeight);
             normal.xy*=1-geology.b*0.18;
+            UNITY_BRANCH if (_PhotographicSurface>0 && distanceToCamera<180)
+            {
+                float3 powder=MoonPowderRelief(IN.worldPos.xz,distanceToCamera)*_PhotographicSurface;
+                normal.xy-=powder.yz;
+                o.Albedo*=1+powder.x;
+            }
             UNITY_BRANCH if (_OverlayNormalStrength>0)
             {
                 float3 overlay=UnpackNormal(tex2D(_OverlayNormalMap,IN.worldPos.xz/max(_OverlayNormalMetres,.01)));

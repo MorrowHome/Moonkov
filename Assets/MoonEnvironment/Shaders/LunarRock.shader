@@ -26,6 +26,7 @@ Shader "MoonEnvironment/LunarRock"
         [HideInInspector] _LocalTerrainRect("Runtime terrain bounds", Vector) = (0,0,1,1)
         [HideInInspector] _LocalTerrainReady("Runtime terrain ready", Float) = 0
         [HideInInspector] _FragmentMode("Small fragment distance fade", Float) = 0
+        [HideInInspector] _FragmentFadeRange("Small fragment fade start / end", Vector) = (42,56,0,0)
         [Toggle] _PhaseEnabled("Phase / opposition reflectance", Float) = 1
         _PhaseSlope("Broad phase falloff per radian", Range(0,1)) = 0.12
         _ShadowHidingAmplitude("Shadow hiding peak amplitude", Range(0,1)) = 0.15
@@ -37,6 +38,8 @@ Shader "MoonEnvironment/LunarRock"
         _WeatheredRockTint("Weathered rock tint", Color) = (1,0.97,0.94,1)
         _GroundTex("Ground grain",2D)="white"{}
         _GroundColor("Ground reflectance",Color)=(0.65,0.65,0.65,1)
+        _GroundReflectanceScale("Ground reflectance calibration (0 = rock calibration)",Range(0,1.5))=0
+        _SurfaceMatch("Match weathered rock to local regolith",Range(0,1))=0
         _GeologyMap("Ground geology",2D)="black"{}
         _GeologyRect("Mask world XZ origin / size",Vector)=(1792,1792,512,512)
         _GeologyStrength("Geological variation",Range(0,1))=0.65
@@ -77,12 +80,17 @@ Shader "MoonEnvironment/LunarRock"
             }
             float2 uv=IN.worldPos.xz/3.1,dx=ddx(uv),dy=ddy(uv);
             float3 ground=0;
-            UNITY_BRANCH if(dust>0.001)
+            UNITY_BRANCH if(dust>0.001 || _SurfaceMatch>0)
             {
                 float2 a,b,c;float3 w;MoonLattice(uv,a,b,c,w);
                 float groundGray=dot(float3(MoonGrainGray(_GroundTex,uv,dx,dy,a),MoonGrainGray(_GroundTex,uv,dx,dy,b),MoonGrainGray(_GroundTex,uv,dx,dy,c)),w);
                 float groundTint=MoonMacro(IN.worldPos)*MoonGeologyTint(MoonGeology(IN.worldPos.xz),MoonMaterialNearWeight(IN.worldPos));
                 ground=_GroundColor.rgb*lerp(0.38,groundGray,0.65)*groundTint;
+                if (_SurfaceMatch>0)
+                {
+                    float exposed;
+                    ground*=MoonFacies(IN.worldPos,1-saturate(plane.y),MoonGeology(IN.worldPos.xz),exposed);
+                }
             }
             // A thin dust coat joins the surface without hiding the rock silhouette.
             float3 scan=lerp(gray.xxx,diffuse,_ScanColorWeight);
@@ -91,13 +99,26 @@ Shader "MoonEnvironment/LunarRock"
             // share one shade. Changes follow world position and surface exposure.
             tint*=lerp(.72,1.12,MoonNoise(IN.worldPos.xz/2.7));
             tint*=lerp(float3(.83,.86,.91),float3(1.02,1,.96),saturate(IN.worldNormal.y));
-            o.Albedo=lerp(scan*_Color.rgb*tint*variation,ground,dust*0.85);
+            float groundCalibration=_GroundReflectanceScale>0 ? _GroundReflectanceScale : _ReflectanceScale;
+            float3 stone=scan*_Color.rgb*tint*variation*_ReflectanceScale;
+            if (_SurfaceMatch>0)
+            {
+                // Keep scanned detail, but avoid multiplying its dark average by
+                // another dark tint after the terrain has been calibrated brighter.
+                float scanLuminance=MoonGray(scan);
+                float3 chroma=clamp(scan/max(scanLuminance,.04),.8,1.2);
+                float stoneTone=lerp(.8,1.04,smoothstep(.03,.55,scanLuminance));
+                float3 matched=ground*groundCalibration*stoneTone*lerp(1,chroma,.12)
+                    *clamp(variation,.92,1.06);
+                stone=lerp(stone,matched,_SurfaceMatch);
+            }
+            o.Albedo=lerp(stone,
+                ground*groundCalibration,dust*0.85);
             o.Albedo*=1-0.10*(1-smoothstep(0,0.018,height));
-            o.Albedo*=_ReflectanceScale;
             float3 normal=UnpackNormal(tex2D(_BumpMap,IN.uv_MainTex));
-            normal.xy*=1-dust*0.3;o.Normal=normalize(normal);
+            normal.xy*=(1-dust*0.3)*lerp(1,.75,_SurfaceMatch);o.Normal=normalize(normal);
             o.Metallic=0;
-            o.Smoothness=(1-tex2D(_Roughness,IN.uv_MainTex).r)*0.3*(1-dust*0.65);
+            o.Smoothness=(1-tex2D(_Roughness,IN.uv_MainTex).r)*0.3*(1-dust*0.65)*lerp(1,.65,_SurfaceMatch);
         }
 
 SurfaceOutputStandard MoonSurface(MoonVaryings input, out half3 normalWS, out half3 viewWS)

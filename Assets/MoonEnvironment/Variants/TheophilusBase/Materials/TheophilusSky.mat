@@ -44,7 +44,7 @@ Material:
     - _StarPeakRadiance: 4
     - _StarPointBoost: 3
     - _StarRotation: 0
-    - _StarsDayVisibility: 0.5
+    - _StarsDayVisibility: 0
     - _SunDiameter: 0.533
     - _SunVisible: 1
     m_Colors:
