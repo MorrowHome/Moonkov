@@ -7,12 +7,28 @@ if ((Test-Path -LiteralPath $tlsDirectory) -or (Test-Path -LiteralPath $publicCe
     throw 'Game certificates already exist. Refusing to replace the server identity or client trust. Inspect/rotate them explicitly.'
 }
 $opensslCommand = Get-Command openssl -ErrorAction SilentlyContinue
-$opensslPath = if ($opensslCommand) { $opensslCommand.Source } else { Join-Path $env:ProgramFiles 'Git/usr/bin/openssl.exe' }
+$gitCommand = Get-Command git -ErrorAction SilentlyContinue
+$opensslPath = if ($opensslCommand) { $opensslCommand.Source } elseif ($gitCommand) {
+    Join-Path (Split-Path (Split-Path $gitCommand.Source -Parent) -Parent) 'usr/bin/openssl.exe'
+} else { Join-Path $env:ProgramFiles 'Git/usr/bin/openssl.exe' }
 if (!(Test-Path -LiteralPath $opensslPath)) { throw 'OpenSSL was not found. Install Git for Windows or add OpenSSL to PATH.' }
 New-Item -ItemType Directory -Path $tlsDirectory -Force | Out-Null
-function Invoke-OpenSsl([string[]]$Arguments) {
-    & $opensslPath @Arguments 2>&1 | Out-Null
-    if ($LASTEXITCODE -ne 0) { throw 'OpenSSL failed. Retain the partial directory for diagnosis; do not distribute it.' }
+$privateAcl = Get-Acl -LiteralPath $tlsDirectory
+$privateAcl.SetAccessRuleProtection($true, $false)
+foreach ($identity in @([System.Security.Principal.WindowsIdentity]::GetCurrent().User.Value, 'S-1-5-18', 'S-1-5-32-544')) {
+    $rule = New-Object System.Security.AccessControl.FileSystemAccessRule(
+        (New-Object System.Security.Principal.SecurityIdentifier($identity)), 'FullControl', 'ContainerInherit,ObjectInherit', 'None', 'Allow')
+    $privateAcl.AddAccessRule($rule)
+}
+Set-Acl -LiteralPath $tlsDirectory -AclObject $privateAcl
+function Invoke-OpenSsl {
+    param([Parameter(ValueFromRemainingArguments=$true)][string[]]$Arguments)
+    $previousPreference = $ErrorActionPreference
+    try {
+        $ErrorActionPreference = 'Continue'
+        & $opensslPath @Arguments 2>$null | Out-Null
+        if ($LASTEXITCODE -ne 0) { throw 'OpenSSL failed. Retain the partial directory for diagnosis; do not distribute it.' }
+    } finally { $ErrorActionPreference = $previousPreference }
 }
 Invoke-OpenSsl @('req','-x509','-newkey','rsa:2048','-nodes','-days','3650','-sha256','-subj','/CN=Moonkov Game CA',
     '-addext','basicConstraints=critical,CA:TRUE','-addext','keyUsage=critical,keyCertSign,cRLSign',

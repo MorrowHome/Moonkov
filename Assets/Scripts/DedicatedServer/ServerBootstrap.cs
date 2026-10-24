@@ -11,6 +11,19 @@ namespace Unity.MP_FPS
 {
     public class ServerBootstrap : MonoBehaviour
     {
+        private float m_NextShutdownCheck;
+        private bool m_Stopping;
+        private void Update()
+        {
+            if (m_Stopping || Time.unscaledTime < m_NextShutdownCheck) return;
+            m_NextShutdownCheck = Time.unscaledTime + 1;
+            string signal = Environment.GetEnvironmentVariable("MOON_SERVER_SHUTDOWN_FILE");
+            if (string.IsNullOrEmpty(signal) || !System.IO.File.Exists(signal)) return;
+            m_Stopping = true;
+            System.IO.File.Delete(signal);
+            Debug.Log("[Server] Graceful shutdown requested; flushing pending raid receipts.");
+            if (GameManager.Instance != null) GameManager.Instance.QuitAsync(); else Application.Quit();
+        }
         private void Awake()
         {
             if (!GhostBridgeBootstrap.IsServerOnly)
