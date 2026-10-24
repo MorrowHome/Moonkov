@@ -16,3 +16,14 @@
 .raid-ui .raid-oxygen-panel { left: 28px; right: auto; top: 184px; }
 .raid-ui .raid-oxygen-warning { left: 28px; right: auto; top: 310px; max-width: 280px; }
 .raid-ui .raid-extraction-panel { top: 370px; max-width: 280px; }
+/* One flow owns the right edge. Hidden or translated panels still reserve their
+   own row, so extraction and mission text cannot paint over the surface map. */
+.raid-ui .raid-right-rail { position: absolute; top: 24px; right: 24px; bottom: 140px; width: 280px; }
+.raid-ui .raid-right-rail .raid-minimap, .raid-ui .raid-right-rail .raid-extraction-panel, .raid-ui .raid-right-rail .mission-hud, .raid-ui .raid-right-rail .raid-cargo-instrument { position: relative; top: auto; right: auto; left: auto; bottom: auto; width: 100%; min-width: 0; max-width: none; margin: 0 0 12px 0; flex-shrink: 0; }
+.raid-ui .raid-right-rail .raid-minimap { width: 224px; align-self: flex-end; }
+.raid-ui .raid-right-rail .raid-minimap-viewport { height: 202px; }
+.raid-ui .raid-right-rail .mission-title { font-size: 16px; padding-right: 40px; }
+.raid-ui .raid-right-rail .mission-step { font-size: 13px; }
+.raid-ui .raid-right-rail .mission-eyebrow, .raid-ui .raid-right-rail .mission-hint { display: none; }
+.raid-ui .raid-right-rail .raid-copy { margin: 0; }
+.raid-ui .raid-receipt { right: 324px; }

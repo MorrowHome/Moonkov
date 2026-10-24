@@ -38,6 +38,8 @@ namespace Unity.MP_FPS
             if (!layout) return;
             layout.CloneTree(m_Root);
             m_MissionHud = m_Root.Q("missionHud"); m_MissionDetails = m_Root.Q("missionDetails");
+            var rightRail = m_Root.Q<ScrollView>("raidRightRail");
+            if (rightRail != null) rightRail.Add(m_MissionHud);
             m_MissionInteraction = m_Root.Q("missionInteraction"); m_MissionNodes = m_Root.Q("missionNodes");
             m_MissionFill = m_Root.Q("missionFill"); m_MissionTitle = m_Root.Q<Label>("missionTitle");
             m_MissionStep = m_Root.Q<Label>("missionStep"); m_MissionLocation = m_Root.Q<Label>("missionLocation");

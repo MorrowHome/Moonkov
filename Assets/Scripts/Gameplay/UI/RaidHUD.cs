@@ -94,6 +94,10 @@ namespace Unity.MP_FPS
             MoonkovAudio.BindUI(m_Root);
             m_Root.pickingMode = PickingMode.Ignore;
             Resources.Load<VisualTreeAsset>("Moonkov/RaidUI").CloneTree(m_Root);
+            var rightRail = m_Root.Q<ScrollView>("raidRightRail");
+            rightRail.Add(m_Root.Q("raidMinimap"));
+            rightRail.Add(m_Root.Q("raidExtractionPanel"));
+            rightRail.Add(m_Root.Q(className: "raid-cargo-instrument"));
             m_Minimap = new RaidMinimapView(m_Root);
             m_AirlockPrompt = GetComponent<AirlockInteractionPrompt>();
             if (!m_AirlockPrompt) m_AirlockPrompt = gameObject.AddComponent<AirlockInteractionPrompt>();
