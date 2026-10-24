@@ -72,6 +72,9 @@ namespace Unity.MP_FPS.DollSinger
             rightIndex = hierarchy["人指１.R"]; rightIndexTip = hierarchy["人指先.R"];
         }
 
+        public bool IsFiring(int weapon, float shotAge) => weapon >= 1 && weapon <= library.motions.Length &&
+            shotAge >= 0 && shotAge < library.motions[weapon - 1].fireSeconds;
+
         // Extra MMD bones are not necessarily written by the Humanoid Animator.
         // Restore before animation evaluation so aim-out, pitch and re-enable cannot accumulate a previous bake.
         public void RestoreBeforeAnimation()

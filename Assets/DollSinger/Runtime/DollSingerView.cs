@@ -91,7 +91,7 @@ public class DollSingerView : MonoBehaviour
     private DollSingerFirstPersonHands gestureHands;
     private bool meleeHandsActive;
     public Camera GestureCamera => gestureHands?.Camera;
-    public void FrameGestureHands(bool force = false) => gestureHands?.FrameHands(force);
+    public void FrameGestureHands(bool force = false, bool firing = false) => gestureHands?.FrameHands(force, firing);
     public bool GestureHandsActive => gestureHands != null && gestureHands.Active;
     public void SetGestureHandsActive(bool active, bool viewfinder = false, float verticalOffset = 0, bool stableFraming = false)
     {

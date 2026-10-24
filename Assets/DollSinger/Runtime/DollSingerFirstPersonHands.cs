@@ -146,7 +146,7 @@ namespace Unity.MP_FPS.DollSinger
                 for (int i = 0; i < armMesh.blendShapeCount; i++) renderer.SetBlendShapeWeight(i, source.GetBlendShapeWeight(i));
         }
 
-        public void FrameHands(bool force = false)
+        public void FrameHands(bool force = false, bool firing = false)
         {
             if (!Active || !Camera) return;
             if (meleeMode) return;
@@ -169,6 +169,9 @@ namespace Unity.MP_FPS.DollSinger
                 CenterViewfinder();
                 return;
             }
+            // Recoil must move inside the existing view, never resize that view.
+            // Still permit explicit equip/aim and viewport changes to establish a fit.
+            if (firing && !reframe && !force) return;
             // Head pitch moves the real eye as well as rotating it. Reusing a fit
             // from another viewing angle makes the hands drift, then snap at the
             // viewport boundary. Track looking, while leaving shot recoil intact.

@@ -490,7 +490,8 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
         float t = layoutBlend * layoutBlend * (3f - 2f * layoutBlend);
         if (centred && view.GestureHandsActive)
         {
-            view.FrameGestureHands(visualWeapon != HaloWeapon.Sniper && Time.time <= gestureReframeUntil);
+            view.FrameGestureHands(visualWeapon != HaloWeapon.Sniper && Time.time <= gestureReframeUntil,
+                bakedGestures != null && bakedGestures.IsFiring((int)visualWeapon, Time.time - gestureShotTime));
         }
         Vector3 headPosition = head.position + transform.up * 0.27f +
                                transform.right * Mathf.Sin(Time.time * 1.8f) * 0.008f + transform.up * hhh;
