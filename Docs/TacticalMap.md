@@ -13,7 +13,9 @@
 没有启动 Unity、Play、独立游戏客户端、测试、Blender 或构建；M/Esc/滚轮/拖动、光标恢复、800×600/1280×720 的实际布局和帧行为仍待实机验收，不以静态检查或旧 fixture 图代替。
 
 
-## 2026-10-24 卫星底图与地图信息
+## 2026-10-24 卫星底图与地图信息（早期方案，已被替代）
+
+以下保留当时实现与验证记录。用户随后认为该界面「太 AI」，选择 Google/高德卫星地图方向，并明确要求复用真实项目的前端源码；灰绿工具栏、常驻侧栏和灰度处理不再是当前方案。当前契约见本文末尾。
 
 M 地图改为低饱和卫星地图：主体是正式 Theophilus 场景的真实正交俯视缩略图，紧凑灰绿工具栏与项目深色装备界面相衔接。这是既有设计系统的局部扩展，不替换全局设计文件。桌面侧栏使用普通 VisualElement（不是 ScrollView），承载撤离、附近补给、物资分类统计、自身坐标与朝向；小于 1000 逻辑像素时侧栏默认收起，可通过「地图详情」展开。首次开图以 2 倍缩放居中自身，仍可查看全图。
 
@@ -28,3 +30,27 @@ M 地图改为低饱和卫星地图：主体是正式 Theophilus 场景的真实
 用户明确选择真实场景缩略图、低饱和卫星观感和紧凑灰绿控件，并拒绝此前没有图像的网格方案。已参考 [LROC QuickMap 文章](https://www.lroc.im-ldi.com/news/1167)及其 [Theophilus WAC 图像](https://lroc.sese.asu.edu/news/uploads/LROCiotw/Theophilus_WAC.png)；这些仅为审美参考，没有作为游戏底图导入。
 
 验证边界：正式场景底图已在现有 Editor 烘焙并直接查看，场景未保存或切换。最终标签边缘修正后的两个地图脚本已用 Unity 自带 Roslyn 和现有项目引用完成定向编译（Library/BuildValidation/TacticalMapInfo/MapCompileCheck.dll，退出码 0，无 C# 源文件诊断；仅编译器配置警告 CS2023）。烘焙工具此前也完成隔离编译。1280×720 原生预览 `.impeccable/review/tactical-map-1280.png` 使用真实场景底图和补给配置加示例玩家位置，已直接查看并经独立复核，地形与建筑可辨识、方向符合所选方案；该截图早于最终标签边缘修正。共享 Editor 持续重编译其他并行改动，800×600 截图尚未取得；整工程仍有无关编译错误（最近一次为 `DollSingerView.TransitionCamera` 缺失）。因此尚不宣称紧凑视口视觉、修正后截图、整工程编译、正式 Play、物理输入、联机或性能验收通过。
+
+## 2026-10-24 当前方案：自然卫星底图与 MapLibre 控件源码移植
+
+当前界面按用户选择的 Google/高德卫星地图方向实现：自然场景图像、少量地名、小型深灰色浮动控件。地图铺满窗口，左上为地点/详情控件，右上关闭，右下为全图、回到自身和缩放图标，左下为补给图层开关。移除主侧栏、横向标题栏与底部工具栏；详情在所有宽度下默认关闭。首次开图以 3 倍缩放居中自身。
+
+- 直接复用 [MapLibre GL JS 固定版本 `3ea36bb61fd93ed9f67e38091bdd8f12948b6cf1`](https://github.com/maplibre/maplibre-gl-js/tree/3ea36bb61fd93ed9f67e38091bdd8f12948b6cf1) 的前端控件源码：将 `src/css/maplibre-gl.css` 的控件尺寸、表面、分隔线与交互状态适配到 Unity USS，并复制 zoom-in、zoom-out、geolocate、fullscreen 四个 SVG 至 `Assets/Resources/Moonkov/UI/MapControls`。geolocate 移除了禁用态描边路径以匹配启用态，四个 SVG 保留上游路径几何，统一设置浅色 fill 适配用户随后指定的深色主题。
+- 上游完整 CSS、BSD-3-Clause 许可证与来源/修改说明保存在 `ThirdPartyNotices/MapLibre`，完整许可证同时随包保存在 `Assets/StreamingAssets/ThirdPartyNotices/MapLibre.txt`。这是原生 UI Toolkit 的控件源码移植，没有引入网页地图引擎、WebView、Google/高德地图数据或外部卫星图像。SVG 内边距补偿 Unity 原生裁剪，根节点限定使用源字体以消除旧 SDF 伪影。
+- Theophilus 底图已改为自然场景 RGB，移除旧百分位灰度直方图处理；通过 `BakeScene` / `OpenPreviewScene` 重建时，活动场景保持 MainMenu。底图仍来自实际正式场景，运行时加载静态贴图，保持 +Z 朝北和与标记一致的 XZ 投影。
+- 自身为蓝色定位点与朝向锥，个人导航点为红色；默认只显示稀疏地点与撤离名称。补给标记默认关闭，「补给图层」实际控制地图标记显隐。详情仍可查看坐标、撤离、补给统计与最近箱等已有信息；敌方赏金携带者仍限服务端授权粗区域。
+
+验证证据：当前四个 C# 源文件已在现有 Editor 编译并加载，Unity CLI 原生 fixture 截图成功且 diagnostics 为空；此前隔离 Roslyn 编译也已通过。当时的临时预览工具读取保存的正式场景 YAML；该工具现已因下述崩溃风险移出 Assets。已直接检查 `.impeccable/review/maplibre-800-map.png`（800×450 逻辑尺寸、1600×900 图像）与 `.impeccable/review/maplibre-600-details.png`（600×450 逻辑尺寸、1200×900 图像，详情与补给开启）；独立复核结论为 SHIP，没有阻塞性的裁剪、文字或控件重叠。详情面板开启时可能遮挡部分比例尺线，作为非阻塞的可选优化保留；按最小充分原则不继续扩大验证或修改。
+
+验证边界：已通过原生按钮回调切换详情与补给图层；这不等同于物理输入验收，也不代表 Play、联机或性能验收。当前截图未覆盖 1280×720/800×600，不将历史截图或局部编译结果延伸为这些布局或全工程验证通过。本次仅扩展地图局部界面，不替换全局 `DESIGN.md`、`PRODUCT.md` 或 `.impeccable/design.json`。
+
+用户随后明确指定深色主题：当前采用深灰 #202124 浮动控件、浅色 #e8eaed 字体与 SVG、蓝色焦点；底图保留自然 RGB。
+
+
+## 2026-10-24 截图工具安全处置
+
+当天 13:58、14:07、14:25 的 Editor 崩溃记录均包含 D3D12 fence/command-list 错误及不可恢复的 GPU device error。反射调用 UI Toolkit 私有 Panel.Repaint/Render 的截图路径曾导致调度回调递归，且后续截图与场景加载发生在崩溃之前，因此停止使用该路径；现有证据不能唯一归因全部原生崩溃。
+
+- 新增临时工具 RaidMapVisualReview.cs 及 meta 已移出 Assets，旧 LanRoomPreview.CaptureOpen 保留签名但立即抛出 NotSupportedException，不再创建 RenderTexture 或重入面板渲染。普通 LAN 预览窗口保留。
+- 原始工具副本留在本机忽略目录 Library/BuildValidation/MapUiCrashEvidence；崩溃日志仍在本机 Unity Editor Crashes 目录。
+- 上文截图与视觉复核只证明当时画面结果，不构成 Editor 稳定性通过。处置后只做文件级检查，没有再次截图、烘焙、重启或复现；D3D12 根因及稳定性仍未验证。

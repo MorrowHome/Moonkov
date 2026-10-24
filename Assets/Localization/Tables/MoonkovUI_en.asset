@@ -5086,6 +5086,26 @@ MonoBehaviour:
     m_Localized: "SCALE / {0:0.#} m \u00b7 NORTH UP"
     m_Metadata:
       m_Items: []
+  - m_Id: 57721484356448756
+    m_Localized: "THEOPHILUS"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356448757
+    m_Localized: "SATELLITE"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356448758
+    m_Localized: "MAP INFO"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356448759
+    m_Localized: "SUPPLY LAYER"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356448760
+    m_Localized: "{0:0.#} m"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

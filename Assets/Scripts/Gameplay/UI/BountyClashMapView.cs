@@ -28,6 +28,8 @@ namespace Unity.MP_FPS
         private Vector2 m_Pin;
         private int m_Nearest = -1;
         public bool HasPin { get; private set; }
+        public bool ShowSupplies { get; private set; }
+        public void ToggleSupplies() { ShowSupplies = !ShowSupplies; m_CacheLabel.style.display = DisplayStyle.None; Changed(); }
         private static readonly Color[] SupplyColors = { new Color(.94f, .95f, .93f), new Color(.45f, .85f, .65f), new Color(1, .72f, .35f), new Color(.48f, .67f, 1) };
         private static readonly string[] SupplyNames = { "SUPPLIES", "MEDICAL", "INDUSTRIAL", "EQUIPMENT" };
         private readonly int[] m_AvailableByType = new int[4];
@@ -67,7 +69,7 @@ namespace Unity.MP_FPS
         {
             pickingMode = PickingMode.Position; focusable = true;
             AddToClassList("raid-map-canvas"); generateVisualContent += Draw;
-            var north = MapLabel("N"); north.style.left = 10; north.style.top = 8; Add(north);
+            var north = MapLabel("N"); north.style.right = 18; north.style.top = 54; Add(north);
             m_ExitA = MapLabel("A"); m_ExitB = MapLabel("B"); m_You = MapLabel("YOU");
             Add(m_ExitA); Add(m_ExitB); Add(m_You);
             m_NearestLabel = MapLabel(""); m_PinLabel = MapLabel("PIN");
@@ -142,7 +144,7 @@ namespace Unity.MP_FPS
         public void ResetData()
         {
             CancelDrag(); m_Snapshot = default; m_Friends.Clear(); m_Supplies = null; m_ExpeditionSource = null;
-            HasPin = false; m_Nearest = -1;
+            HasPin = ShowSupplies = false; m_Nearest = -1;
             m_Surface = null; m_SurfaceData = null; m_SurfaceScene = null;
             foreach (var label in m_Landmarks) label.RemoveFromHierarchy();
             m_Landmarks.Clear();
@@ -193,7 +195,7 @@ namespace Unity.MP_FPS
         private void InspectCache(Vector2 pointer)
         {
             int selected = -1; float best = 14 * 14;
-            if (m_Expedition && m_Supplies != null)
+            if (m_Expedition && ShowSupplies && m_Supplies != null)
                 for (int i = 0; i < m_Supplies.Length && i < RaidLootContainers.FirstDeathBagId; i++)
                 {
                     Vector2 point = Project(m_Supplies[i]); float distance = (point - pointer).sqrMagnitude;
@@ -293,14 +295,15 @@ namespace Unity.MP_FPS
             Relocalize();
             Place(m_ExitA, m_Expedition ? m_Exit : (Vector3)m_Snapshot.ExitPositionA, true);
             Place(m_ExitB, m_Snapshot.ExitPositionB, !m_Expedition);
-            Place(m_You, m_Local, m_HasLocal); MarkDirtyRepaint();
+            Place(m_You, m_Local, false); MarkDirtyRepaint();
             m_ExitA.style.top = Project(m_Expedition ? m_Exit : (Vector3)m_Snapshot.ExitPositionA).y - 40;
             m_ExitB.style.top = Project(m_Snapshot.ExitPositionB).y - 40;
-            MoonkovLocalization.Set(m_ExitA, m_Expedition ? "EXIT / {0:0} m" : "A / {0:0} m", Distance(m_Expedition ? m_Exit : (Vector3)m_Snapshot.ExitPositionA));
+            if (m_Expedition) MoonkovLocalization.Set(m_ExitA, "EXTRACTION");
+            else MoonkovLocalization.Set(m_ExitA, "A / {0:0} m", Distance(m_Snapshot.ExitPositionA));
             MoonkovLocalization.Set(m_ExitB, "B / {0:0} m", Distance(m_Snapshot.ExitPositionB));
             MoonkovLocalization.Set(m_PinLabel, "PIN / {0:0} m", Vector2.Distance(XZ(m_Local), m_Pin));
             Place(m_PinLabel, new Vector3(m_Pin.x, 0, m_Pin.y), HasPin);
-            Place(m_NearestLabel, m_Nearest >= 0 && m_Supplies != null ? m_Supplies[m_Nearest] : default, m_Expedition && m_Nearest >= 0 && Zoom >= 2);
+            Place(m_NearestLabel, default, false);
             if (m_Expedition && m_Nearest >= 0 && m_Supplies != null && Vector2.Distance(Project(m_Local), Project(m_Supplies[m_Nearest])) < 90)
                 m_NearestLabel.style.top = Project(m_Supplies[m_Nearest]).y + 14;
             if (HasPin && Vector2.Distance(Project(m_Local), ProjectXZ(m_Pin)) < 90) m_PinLabel.style.top = ProjectXZ(m_Pin).y - 30;
@@ -308,11 +311,11 @@ namespace Unity.MP_FPS
             {
                 var landmark = m_SurfaceData.landmarks[i];
                 Place(m_Landmarks[i], new Vector3(landmark.x, 0, landmark.z), true);
-                m_Landmarks[i].style.top = ProjectXZ(new Vector2(landmark.x, landmark.z)).y - 28;
+                m_Landmarks[i].style.top = ProjectXZ(new Vector2(landmark.x, landmark.z)).y + 20;
                 ClampLabel(m_Landmarks[i]);
             }
             ClampLabel(m_ExitA); ClampLabel(m_ExitB); ClampLabel(m_You); ClampLabel(m_NearestLabel); ClampLabel(m_PinLabel);
-            if (HasSurface) MoonkovLocalization.Set(m_Scale, "SCALE / {0:0.#} m · NORTH UP", ScaleMeters);
+            if (HasSurface) MoonkovLocalization.Set(m_Scale, "{0:0.#} m", ScaleMeters);
             else MoonkovLocalization.Set(m_Scale, "SCALE / {0:0.#} m · GRID / {1:0} m · NORTH UP", ScaleMeters, GridStep);
         }
         private void ClampLabel(Label label)
@@ -337,7 +340,7 @@ namespace Unity.MP_FPS
         {
             if (!m_HasBounds || contentRect.width < 2 || contentRect.height < 2) return;
             DrawSurface(context);
-            var p = context.painter2D; var blue = new Color(.59f, .83f, .69f); var ink = new Color(.94f, .95f, .93f);
+            var p = context.painter2D; var blue = new Color(.13f, .48f, .91f); var ink = new Color(.94f, .95f, .93f);
             var min = Unproject(new Vector2(0, contentRect.height)); var max = Unproject(new Vector2(contentRect.width, 0));
             float step = GridStep;
             if (!HasSurface)
@@ -354,10 +357,10 @@ namespace Unity.MP_FPS
             { p.strokeColor = new Color(.75f, .65f, .48f, .65f); p.BeginPath(); p.Arc(ProjectXZ(m_BoundsCenter), m_Radius * Scale, Angle.Degrees(0), Angle.Degrees(360)); p.Stroke(); }
             if (m_Expedition)
             {
-                for (int i = 0; i < m_Supplies.Length && i < RaidLootContainers.FirstDeathBagId; i++)
+                for (int i = 0; ShowSupplies && i < m_Supplies.Length && i < RaidLootContainers.FirstDeathBagId; i++)
                 {
                     var point = Project(m_Supplies[i]); if (!Inside(point)) continue;
-                    if (Available(i)) Diamond(p, point, i == m_Nearest ? 7 : 4, SupplyColors[SupplyType(i)]);
+                    if (Available(i)) { Dot(p, point, i == m_Nearest ? 6 : 4, Color.white); Dot(p, point, i == m_Nearest ? 4 : 2.5f, SupplyColors[SupplyType(i)]); }
                     else
                     {
                         p.lineWidth = 1; p.strokeColor = new Color(.4f, .44f, .5f);
@@ -365,7 +368,7 @@ namespace Unity.MP_FPS
                         Line(p, point + new Vector2(-3, 3), point + new Vector2(3, -3));
                     }
                 }
-                if (Inside(Project(m_Exit))) Dot(p, Project(m_Exit), 6, blue);
+                if (Inside(Project(m_Exit))) { Dot(p, Project(m_Exit), 7, Color.white); Dot(p, Project(m_Exit), 5, new Color(.16f, .57f, .32f)); }
             }
             else
             {
@@ -390,18 +393,24 @@ namespace Unity.MP_FPS
             }
             if (HasPin)
             {
-                var pin = ProjectXZ(m_Pin); var gold = new Color(1, .8f, .35f);
-                p.lineWidth = 1; p.strokeColor = new Color(1, .8f, .35f, .5f);
+                var pin = ProjectXZ(m_Pin); var red = new Color(.85f, .21f, .18f);
+                p.lineWidth = 2; p.strokeColor = new Color(.13f, .48f, .91f, .7f);
                 if (m_HasLocal) Line(p, Project(m_Local), pin);
-                if (Inside(pin)) Diamond(p, pin, 8, gold);
+                if (Inside(pin))
+                {
+                    p.fillColor = red; p.BeginPath(); p.MoveTo(pin + Vector2.up * 2);
+                    p.LineTo(pin + new Vector2(-6, -8)); p.LineTo(pin + new Vector2(6, -8)); p.ClosePath(); p.Fill();
+                    Dot(p, pin - Vector2.up * 10, 8, red); Dot(p, pin - Vector2.up * 10, 2.5f, Color.white);
+                }
             }
             if (m_HasLocal)
             {
                 var at = Project(m_Local); if (!Inside(at)) return;
                 var forward = new Vector2(m_Forward.x, -m_Forward.y); var right = new Vector2(-forward.y, forward.x);
-                p.fillColor = ink; p.strokeColor = new Color(.04f, .05f, .07f); p.lineWidth = 2;
-                p.BeginPath(); p.MoveTo(at + forward * 10); p.LineTo(at - forward * 7 + right * 6);
-                p.LineTo(at - forward * 3); p.LineTo(at - forward * 7 - right * 6); p.ClosePath(); p.Fill(); p.Stroke();
+                p.fillColor = new Color(blue.r, blue.g, blue.b, .22f);
+                p.BeginPath(); p.MoveTo(at); p.LineTo(at + forward * 30 + right * 17);
+                p.LineTo(at + forward * 30 - right * 17); p.ClosePath(); p.Fill();
+                Dot(p, at, 8, Color.white); Dot(p, at, 5.5f, blue);
             }
         }
 
@@ -412,7 +421,7 @@ namespace Unity.MP_FPS
             var topLeft = ProjectXZ(new Vector2(m_SurfaceData.centerX - half, m_SurfaceData.centerZ + half));
             var bottomRight = ProjectXZ(new Vector2(m_SurfaceData.centerX + half, m_SurfaceData.centerZ - half));
             var mesh = context.Allocate(4, 6, m_Surface);
-            Color32 tint = new Color(.92f, .96f, .93f);
+            Color32 tint = Color.white;
             mesh.SetNextVertex(new Vertex { position = new Vector3(topLeft.x, topLeft.y, Vertex.nearZ), tint = tint, uv = new Vector2(0, 1) });
             mesh.SetNextVertex(new Vertex { position = new Vector3(bottomRight.x, topLeft.y, Vertex.nearZ), tint = tint, uv = new Vector2(1, 1) });
             mesh.SetNextVertex(new Vertex { position = new Vector3(bottomRight.x, bottomRight.y, Vertex.nearZ), tint = tint, uv = new Vector2(1, 0) });

@@ -1,4 +1,9 @@
 {
+  "THEOPHILUS": "忒奥菲勒斯",
+  "SATELLITE": "卫星图",
+  "MAP INFO": "详情",
+  "SUPPLY LAYER": "补给",
+  "{0:0.#} m": "{0:0.#} 米",
   "SCALE / {0:0.#} m · NORTH UP": "比例尺 / {0:0.#} 米 · 上北",
   "MC00 BASE": "MC00 基地",
   "THEOPHILUS / SATELLITE SURVEY": "忒奥菲勒斯 / 卫星地图",

@@ -47,7 +47,7 @@ namespace Unity.MP_FPS
                 if (!m_MapOpenedInContext)
                 {
                     m_ClashView.Map.FullMap();
-                    if (m_ClashView.Map.HasSurface) { m_ClashView.Map.ZoomBy(2); m_ClashView.Map.CenterOnPlayer(); }
+                    if (m_ClashView.Map.HasSurface) { m_ClashView.Map.ZoomBy(3); m_ClashView.Map.CenterOnPlayer(); }
                     m_MapOpenedInContext = true;
                 }
                 m_MapOpen = true; m_MapInputGuardFrame = Time.frameCount;
