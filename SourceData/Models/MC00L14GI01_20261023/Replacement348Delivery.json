@@ -1,0 +1,149 @@
+{
+  "date": "2026-10-24",
+  "outcome": "326 of the 348 frozen L14 v4 display replacement items applied to existing aggregate renderers. 221 authored-normal changes applied; no normal-only items pending among the 326.",
+  "packageSHA256": "7594c3beb9fa36fc5037858e9a6d50c0a38df4628a2b94316471fcaf72b8f5f3",
+  "aggregateMembersLocated": 328,
+  "sourceItemsApplied": 326,
+  "authoredNormalItemsApplied": 221,
+  "aggregateRenderersUpdated": 64,
+  "aggregateRendererCountUnchanged": true,
+  "sourceItemsRemaining": 22,
+  "remaining": {
+    "aggregateSourcesUnapplied": [
+      {
+        "name": "MC_L14 instrument calibration enclosure enclosure side_05891",
+        "reason": "Ambiguous coincident replacement triangles inside owning aggregate",
+        "owningChunks": [
+          "MC00Surface1221"
+        ],
+        "standardLocalBounds": [
+          [
+            30.509994506835938,
+            6.599999904632568,
+            -17.5
+          ],
+          [
+            30.75,
+            10.300000190734863,
+            -12.5
+          ]
+        ],
+        "minimumMissingEvidence": "Current optimized triangle/corner ownership for the coincident faces of these two source objects (source ID plus source face/corner or UV/material provenance); geometry coordinates alone are ambiguous."
+      },
+      {
+        "name": "MC_L14 instrument calibration enclosure rear service enclosure_",
+        "reason": "Ambiguous coincident replacement triangles inside owning aggregate",
+        "owningChunks": [
+          "MC00Surface1221"
+        ],
+        "standardLocalBounds": [
+          [
+            25.25,
+            6.599999904632568,
+            -12.860000610351562
+          ],
+          [
+            30.75,
+            10.300000190734863,
+            -12.5
+          ]
+        ],
+        "minimumMissingEvidence": "Current optimized triangle/corner ownership for the coincident faces of these two source objects (source ID plus source face/corner or UV/material provenance); geometry coordinates alone are ambiguous."
+      }
+    ],
+    "outsideAggregateObjectsNotTouched": [
+      "MC_E pressure panel L1 S11 individual leaf carriage_01012",
+      "MC_E pressure panel L1 S11 individual leaf carriage_01014",
+      "MC_E pressure panel L1 S11 individual leaf carriage_01016",
+      "MC_E pressure panel L1 S11 individual leaf carriage_01022",
+      "MC_E pressure panel L1 S11 individual leaf carriage_01024",
+      "MC_E pressure panel L1 S11 individual leaf carriage_01026",
+      "MC_E pressure panel L1 S11 stow channel removable front_01017",
+      "MC_E pressure panel L1 S11 stow channel removable front_01027",
+      "MC_E pressure panel L1 S11 stowed telescopic door panel_01011",
+      "MC_E pressure panel L1 S11 stowed telescopic door panel_01013",
+      "MC_E pressure panel L1 S11 stowed telescopic door panel_01015",
+      "MC_E pressure panel L1 S11 stowed telescopic door panel_01021",
+      "MC_E pressure panel L1 S11 stowed telescopic door panel_01023",
+      "MC_E pressure panel L1 S11 stowed telescopic door panel_01025",
+      "WQ_L14_SKIN_01_West_Closed_Cover_A",
+      "WQ_L14_SKIN_02_West_Closed_Cover_B",
+      "WQ_L14_SKIN_03_Rear_Closed_Cover_A",
+      "WQ_L14_SKIN_04_Rear_Closed_Cover_B",
+      "WQ_L14_SKIN_05_Seated_Carrier_And_Lower_Band",
+      "WQ_L14_SKIN_06_Sparse_Captive_Release_Heads"
+    ]
+  },
+  "meshChange": {
+    "trianglesBeforeAndAfter": 11348,
+    "verticesBefore": 24390,
+    "verticesAfter": 25834,
+    "extraNormalBoundaryVertices": 1444,
+    "materialSlotsBefore": 64,
+    "materialSlotsAfter": 128,
+    "importedTangentCorners": 7920,
+    "tangentsAdaptedToPreservedLocalUVCorners": 516,
+    "note": "Existing triangle vertex positions and winding retained. Only required normal/tangent variants add duplicate attribute vertices. UV0 through UV7, including lightmap UVs, are copied unchanged. Unchanged local material choices retained; new slots reuse already imported private URP recipes.",
+    "performance": "64 additional material slots; actual rendering cost not measured. Aggregate/LOD/culling/renderer configuration was not replaced."
+  },
+  "protected": {
+    "newGameObjects": 0,
+    "newRenderers": 0,
+    "newColliders": 0,
+    "allCollisionReferencesAndSerializationUnchangedDuringApplication": true,
+    "originalMeshAssetsAndMaterialAssetsNotOverwritten": true,
+    "protectedComponentsHashEqualDuringApplication": true,
+    "stableMapping": "118 lights / 135 buttons preserved",
+    "DEMAndLunarMaterials": true,
+    "S21DeskStairPrepAndGI01Preserved": true,
+    "shaderQualityURPSettingsUnchanged": true
+  },
+  "files": {
+    "privateDisplayMeshes": 64,
+    "formalScene": "Assets/MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusGameScene.unity",
+    "sceneCommitScope": "Only 64 MeshFilter references and 64 renderer material arrays; selective index patch excludes other tasks modifications.",
+    "evidenceDirectory": "SourceData/Models/MC00L14GI01_20261023/"
+  },
+  "saveCheck": {
+    "passed": true,
+    "baseHEAD": "a59fd77ff3e4adc7af734d4a3b8e7a93cee4cbdd",
+    "selectiveIndexPatch": true,
+    "meshFilterReferences": 64,
+    "rendererMaterialArrays": 64,
+    "onlyThese128FieldsSelected": true,
+    "otherHEADSceneDataNotEditedByPatch": true,
+    "userWorkingSceneNotRewritten": true,
+    "otherUncommittedSceneChangesExcluded": true,
+    "colliderFieldsExcluded": true,
+    "protectedComponentsEqualDuringApplication": true,
+    "strictPatchCheckPassed": true,
+    "componentGroups": 64
+  },
+  "compilation": {
+    "statusAtObservation": {
+      "sampledUtc": "2026-10-24T04:25:13.2654737Z",
+      "ageMs": 98,
+      "compilationFailed": true,
+      "compiling": false,
+      "consoleErrors": 1,
+      "consoleWarnings": 19,
+      "consoleLogs": 0,
+      "seeded": true
+    },
+    "passed": false,
+    "blocker": "Assets\\Editor\\QuaterniusMeleeSetup.cs(33,18): error CS1061: 'ModelImporter' does not contain a definition for 'importMaterials' and no accessible extension method 'importMaterials' accepting a first argument of type 'ModelImporter' could be found (are you missing a using directive or an assembly reference?)",
+    "outsideThisChange": true,
+    "action": "Recorded only; no edits to the unrelated editor tool or runtime systems."
+  },
+  "notValidated": [
+    "Unity Play",
+    "Player build",
+    "visual appearance",
+    "character walking",
+    "performance",
+    "full procedural material equivalence"
+  ],
+  "rollback": "Revert this rendering replacement commit. It restores the previous MeshFilter references and renderer material arrays while removing the derivative R348_*.asset files; original meshes and collisions remain available. Preserve unrelated uncommitted work when reverting.",
+  "scopeExclusions": "20 objects outside the aggregate manifest are intentionally untouched; two coincident calibration-enclosure sources in MC00Surface1221 remain unchanged until source-triangle/corner attribution is supplied. No western NEXT/v4, B01, character, Host, build, account, deployment or SubScene investigation.",
+  "pushPerformed": false
+}

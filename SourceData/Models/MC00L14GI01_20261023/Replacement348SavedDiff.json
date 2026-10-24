@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "baseHEAD": "a59fd77ff3e4adc7af734d4a3b8e7a93cee4cbdd",
+  "selectiveIndexPatch": true,
+  "meshFilterReferences": 64,
+  "rendererMaterialArrays": 64,
+  "onlyThese128FieldsSelected": true,
+  "otherHEADSceneDataNotEditedByPatch": true,
+  "userWorkingSceneNotRewritten": true,
+  "otherUncommittedSceneChangesExcluded": true,
+  "colliderFieldsExcluded": true,
+  "protectedComponentsEqualDuringApplication": true,
+  "strictPatchCheckPassed": true,
+  "componentGroups": 64
+}

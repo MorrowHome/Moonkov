@@ -1,0 +1,20 @@
+{
+  "readSuccess": true,
+  "compilerErrors": [
+    {
+      "seq": 197,
+      "timestampUtc": "2026-10-24T04:23:53.4090966Z",
+      "message": "Assets\\Editor\\QuaterniusMeleeSetup.cs(33,18): error CS1061: 'ModelImporter' does not contain a definition for 'importMaterials' and no accessible extension method 'importMaterials' accepting a first argument of type 'ModelImporter' could be found (are you missing a using directive or an assembly reference?)"
+    },
+    {
+      "seq": 215,
+      "timestampUtc": "2026-10-24T04:24:30.308166Z",
+      "message": "Assets\\Editor\\QuaterniusMeleeSetup.cs(33,18): error CS1061: 'ModelImporter' does not contain a definition for 'importMaterials' and no accessible extension method 'importMaterials' accepting a first argument of type 'ModelImporter' could be found (are you missing a using directive or an assembly reference?)"
+    },
+    {
+      "seq": 238,
+      "timestampUtc": "2026-10-24T04:24:41.551634Z",
+      "message": "Assets\\Editor\\QuaterniusMeleeSetup.cs(33,18): error CS1061: 'ModelImporter' does not contain a definition for 'importMaterials' and no accessible extension method 'importMaterials' accepting a first argument of type 'ModelImporter' could be found (are you missing a using directive or an assembly reference?)"
+    }
+  ]
+}

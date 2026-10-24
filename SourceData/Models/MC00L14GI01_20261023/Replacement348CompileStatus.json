@@ -1,0 +1,38 @@
+{
+  "success": true,
+  "command": "command console_status",
+  "data": {
+    "command": "console_status",
+    "parameters": {},
+    "result": {
+      "entries": [],
+      "cursor": 249,
+      "session": "37d80115100c480f884f26843ed44399",
+      "returned": 0,
+      "dropped": false,
+      "reset": false,
+      "counts": {
+        "error": 19,
+        "warn": 228,
+        "log": 2
+      },
+      "groundTruth": {
+        "sampledUtc": "2026-10-24T04:25:13.2654737Z",
+        "ageMs": 98,
+        "compilationFailed": true,
+        "compiling": false,
+        "consoleErrors": 1,
+        "consoleWarnings": 19,
+        "consoleLogs": 0,
+        "seeded": true
+      }
+    },
+    "target": {
+      "host": "127.0.0.1",
+      "port": 7800,
+      "projectPath": "E:\\UnityProjects\\FPS_Template"
+    }
+  },
+  "errors": [],
+  "warnings": []
+}
