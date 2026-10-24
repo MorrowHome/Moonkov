@@ -28,6 +28,8 @@ namespace Unity.MP_FPS.Client
         Button m_StartHostButton;
         Button m_ConnectToServerButton;
         Button m_QuitButton;
+        Button m_JoinRelayButton;
+        VisualElement m_RelayJoinControls;
 
         void OnEnable()
         {
@@ -68,6 +70,21 @@ namespace Unity.MP_FPS.Client
 
             m_CreateGameButton = m_MainMenu.Q<Button>(UIElementNames.CreateGame);
             m_CreateGameButton.clicked += OnCreateGamePressed;
+            m_RelayJoinControls = m_MainMenu.Q("RelayJoinControls");
+            m_MainMenu.Q<TextField>("RelayCodeField").SetBinding("value", new DataBinding
+            {
+                dataSource = ConnectionSettings.Instance,
+                dataSourcePath = new PropertyPath(nameof(ConnectionSettings.SessionCode)),
+                bindingMode = BindingMode.TwoWay,
+            });
+            m_JoinRelayButton = m_MainMenu.Q<Button>("JoinRelayByCode");
+            m_JoinRelayButton.clicked += OnJoinRelayPressed;
+            m_JoinRelayButton.SetBinding("enabledSelf", new DataBinding
+            {
+                dataSource = ConnectionSettings.Instance,
+                dataSourcePath = new PropertyPath(nameof(ConnectionSettings.IsSessionCodeFormatValid)),
+                bindingMode = BindingMode.ToTarget,
+            });
 
             m_StartHostButton = m_MainMenu.Q<Button>(UIElementNames.StartHost);
             m_StartHostButton.clicked += OnStartHostPressed;
@@ -99,6 +116,7 @@ namespace Unity.MP_FPS.Client
             DisposeBountyModeUI();
             DisposeAccountPanel();
             m_CreateGameButton.clicked -= OnCreateGamePressed;
+            m_JoinRelayButton.clicked -= OnJoinRelayPressed;
             m_ConnectionModeGroup.UnregisterValueChangedCallback(OnConnectionModeChanged);
             m_ConnectToServerButton.clicked -= OnConnectToServerPressed;
             m_StartHostButton.clicked -= OnStartHostPressed;
@@ -113,6 +131,7 @@ namespace Unity.MP_FPS.Client
 
         void ToggleConnectionModeDisplay()
         {
+            m_RelayJoinControls.style.display = GameSettings.Instance.ConnectionMode == 0 ? DisplayStyle.Flex : DisplayStyle.None;
             if (GameSettings.Instance.ConnectionMode == 0)
             {
                 m_SessionNameLabel.style.display = m_SessionNameField.style.display = DisplayStyle.Flex;
@@ -133,6 +152,7 @@ namespace Unity.MP_FPS.Client
         }
 
         static void OnCreateGamePressed() => GameManager.Instance.StartGameAsync(CreationType.CreateOrJoin);
+        static void OnJoinRelayPressed() => GameManager.Instance.StartGameAsync(CreationType.JoinRelay);
 
         static void OnStartHostPressed() => GameManager.Instance.StartGameAsync(CreationType.Host);
 

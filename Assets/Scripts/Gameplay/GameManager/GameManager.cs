@@ -195,6 +195,16 @@ namespace Unity.MP_FPS
             Debug.Log($"[{nameof(StartGameAsync)}] Called with creation type '{creationType}'");
             ConnectionSettings.Instance.ConnectionError = null;
             ConnectionSettings.Instance.ModeConfirmed = false;
+            if (creationType == CreationType.JoinRelay && !ConnectionSettings.Instance.IsSessionCodeFormatValid)
+            {
+                ConnectionSettings.Instance.ConnectionError = "请输入六位英文字母或数字房间码。";
+                return;
+            }
+            if ((creationType == CreationType.CreateOrJoin || creationType == CreationType.Host) && !PlayerProfileClient.SupportsSinglePlayer)
+            {
+                ConnectionSettings.Instance.ConnectionError = "此客户端不能创建房间，请使用房间码或服务器地址加入。";
+                return;
+            }
 
             if (creationType == CreationType.Host)
             {
@@ -306,9 +316,12 @@ namespace Unity.MP_FPS
             {
                 case (CreationType.CreateOrJoin): //Relay
                     {
-                        GameConnection = await GameConnection.CreateorJoinGameAsync();
+                        GameConnection = await GameConnection.CreateorJoinGameAsync(cancellationToken);
                         break;
                     }
+                case CreationType.JoinRelay:
+                    GameConnection = await GameConnection.JoinGameAsync(cancellationToken);
+                    break;
                 case CreationType.LanHost:
                 case (CreationType.Host): //Direct connection - host
                     {

@@ -28,7 +28,13 @@
                         <ui:Label text="Crew session" name="SessionName" />
                         <ui:TextField name="SessionNameField" value="_" />
                     </ui:VisualElement>
-                    <ui:Button text="CREATE / JOIN CREW" name="CreateJoinGame" />
+                    <ui:Button text="创建中继房间" name="CreateJoinGame" />
+                    <ui:VisualElement name="RelayJoinControls" class="section-separator">
+                        <ui:Label text="加入好友房间 · 六位房间码" />
+                        <ui:TextField name="RelayCodeField" max-length="6" />
+                        <ui:Button text="通过房间码加入" name="JoinRelayByCode" />
+                        <ui:Label text="房主进入后，可点击屏幕上的房间码复制并分享。房主退出后房间关闭。" class="relay-help" />
+                    </ui:VisualElement>
                     <ui:Button text="HOST EXPEDITION" name="StartHost" />
                     <ui:Button text="JOIN EXPEDITION" name="ConnectToServer" />
                     <ui:Button text="Matchmake" name="QuickJoin" class="hidden" />

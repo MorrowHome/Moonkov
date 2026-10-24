@@ -33,7 +33,8 @@ namespace Unity.MP_FPS
          ConnectAndJoin = 2,
          Offline = 3,
          LanHost = 4,
-         LanJoin = 5
+         LanJoin = 5,
+         JoinRelay = 6
      }
 
      public class ConnectionSettings : INotifyBindablePropertyChanged
@@ -192,7 +193,7 @@ namespace Unity.MP_FPS
                  if(m_SessionCode == value)
                      return;
 
-                 m_SessionCode = value;
+                 m_SessionCode = value?.Trim().ToUpperInvariant();
                  IsSessionCodeFormatValid = CheckIsSessionCodeFormatValid(m_SessionCode);
                  Notify();
              }
@@ -204,7 +205,7 @@ namespace Unity.MP_FPS
 
              foreach (var c in str)
              {
-                 if (!char.IsLetter(c) && !char.IsNumber(c))
+                 if (!(c >= 'A' && c <= 'Z') && !(c >= '0' && c <= '9'))
                      return false;
              }
              return true;

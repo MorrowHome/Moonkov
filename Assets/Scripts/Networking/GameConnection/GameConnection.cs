@@ -1,3 +1,5 @@
+using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Unity.Networking.Transport;
 using Unity.Services.Authentication;
@@ -36,40 +38,76 @@ namespace Unity.MP_FPS
         public NetworkEndpoint ConnectEndpoint { get; private set; }
         public NetworkType SessionConnectionType { get; private set; }
 
-        public static async Task<GameConnection> CreateorJoinGameAsync()
+        public static Task<GameConnection> CreateorJoinGameAsync(CancellationToken ct = default) => OpenRelayAsync(false, ct);
+        public static Task<GameConnection> JoinGameAsync(CancellationToken ct = default) => OpenRelayAsync(true, ct);
+
+        static async Task<GameConnection> OpenRelayAsync(bool joinByCode, CancellationToken ct)
         {
-            var gameConnection = new GameConnection();
-            await StartServicesAsync();
-
-            var networkHandler = new EntityNetworkHandler();
-            var options = new SessionOptions()
+            using var timeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            timeout.CancelAfter(TimeSpan.FromSeconds(SessionConnectionPolicy.TimeoutSeconds));
+            var handler = new EntityNetworkHandler();
+            Task<ISession> pending = null;
+            try
             {
-                Name = GameSettings.Instance.SessionName,
-                MaxPlayers = GameManager.RequestedMaxPlayers
-            }.WithRelayNetwork().WithNetworkHandler(networkHandler);
-            gameConnection.Session = await MultiplayerService.Instance.CreateOrJoinSessionAsync(options.Name, options);
-
-            gameConnection.ConnectEndpoint = await networkHandler.ConnectEndpoint;
-            gameConnection.ListenEndpoint = await networkHandler.ListenEndpoint;
-            gameConnection.SessionConnectionType = await networkHandler.SessionConnectionType;
-            return gameConnection;
+                await BoundedAsync(StartServicesAsync(), timeout.Token);
+                if (joinByCode)
+                    pending = MultiplayerService.Instance.JoinSessionByCodeAsync(ConnectionSettings.Instance.SessionCode,
+                        new JoinSessionOptions().WithNetworkHandler(handler));
+                else
+                {
+                    string name = GameSettings.Instance.SessionName?.Trim();
+                    if (string.IsNullOrEmpty(name) || name.Length > 64) throw new InvalidOperationException("房间名称须为 1–64 个字符。 ");
+                    pending = AsSessionAsync(MultiplayerService.Instance.CreateSessionAsync(new SessionOptions
+                    {
+                        Name = name, MaxPlayers = GameManager.RequestedMaxPlayers
+                    }.WithRelayNetwork().WithNetworkOptions(new NetworkOptions { RelayProtocol = RelayProtocol.DTLS }).WithNetworkHandler(handler)));
+                }
+                var session = await BoundedAsync(pending, timeout.Token);
+                return new GameConnection
+                {
+                    Session = session,
+                    ConnectEndpoint = await BoundedAsync(handler.ConnectEndpoint, timeout.Token),
+                    ListenEndpoint = await BoundedAsync(handler.ListenEndpoint, timeout.Token),
+                    SessionConnectionType = await BoundedAsync(handler.SessionConnectionType, timeout.Token)
+                };
+            }
+            catch (Exception ex)
+            {
+                await handler.StopAsync();
+                if (pending != null) _ = CleanupLateSessionAsync(pending);
+                if (ex is OperationCanceledException && !ct.IsCancellationRequested)
+                    throw new TimeoutException("中继服务连接超时，请检查网络后重试。", ex);
+                throw;
+            }
         }
 
-        public static async Task<GameConnection> JoinGameAsync()
+        // The SDK does not expose cancellation for every operation. Bound our wait,
+        // observe late failures, and remove late-created sessions rather than leaking rooms.
+        static async Task BoundedAsync(Task operation, CancellationToken ct)
         {
-            var gameConnection = new GameConnection();
-            await StartServicesAsync();
-
-            var networkHandler = new EntityNetworkHandler();
-            JoinSessionOptions options = new JoinSessionOptions();
-
-
-            options.WithNetworkHandler(networkHandler);
-            gameConnection.Session = await MultiplayerService.Instance.JoinSessionByCodeAsync(ConnectionSettings.Instance.SessionCode, options);
-            gameConnection.ConnectEndpoint = await networkHandler.ConnectEndpoint;
-            gameConnection.ListenEndpoint = await networkHandler.ListenEndpoint;
-            gameConnection.SessionConnectionType = await networkHandler.SessionConnectionType;
-            return gameConnection;
+            using var deadline = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            Task delay = Task.Delay(Timeout.Infinite, deadline.Token);
+            if (await Task.WhenAny(operation, delay) != operation)
+            {
+                _ = ObserveAsync(operation);
+                ct.ThrowIfCancellationRequested();
+            }
+            deadline.Cancel();
+            await operation;
+            ct.ThrowIfCancellationRequested();
+        }
+        static async Task<T> BoundedAsync<T>(Task<T> operation, CancellationToken ct)
+        { await BoundedAsync((Task)operation, ct); return await operation; }
+        static async Task<ISession> AsSessionAsync(Task<IHostSession> task) => await task;
+        static async Task ObserveAsync(Task task) { try { await task; } catch (Exception) { } }
+        static async Task CleanupLateSessionAsync(Task<ISession> pending)
+        {
+            try
+            {
+                var session = await pending;
+                if (session.IsHost) await session.AsHost().DeleteAsync(); else await session.LeaveAsync();
+            }
+            catch (Exception ex) { UnityEngine.Debug.LogWarning("[Session] Late session cleanup: " + ex.GetType().Name); }
         }
         
         public static GameConnection GetServerConnectionSettings(ushort port)

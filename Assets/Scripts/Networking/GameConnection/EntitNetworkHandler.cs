@@ -25,9 +25,11 @@ namespace Unity.MP_FPS
         readonly TaskCompletionSource<NetworkEndpoint> m_ConnectEndpoint = new();
         readonly TaskCompletionSource<NetworkEndpoint> m_ListenEndpoint = new();
         readonly TaskCompletionSource<NetworkType> m_SessionConnectionType = new();
+        bool m_Stopped;
 
         public Task StartAsync(NetworkConfiguration configuration)
         {
+            if (m_Stopped) throw new System.OperationCanceledException("Session initialization was cancelled.");
             NetworkStreamReceiveSystem.DriverConstructor = new EntityDriverConstructor(configuration);
             m_ConnectEndpoint.SetResult(GetConnectEndpoint(configuration));
             m_ListenEndpoint.SetResult(GetListenEndpoint(configuration));
@@ -67,6 +69,7 @@ namespace Unity.MP_FPS
 
         public Task StopAsync()
         {
+            m_Stopped = true;
             return Task.CompletedTask;
         }
     }
