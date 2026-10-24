@@ -440,17 +440,17 @@ namespace Unity.MP_FPS
                         (aim>bestAim+.001f || Mathf.Abs(aim-bestAim)<=.001f && bag.LootId>nearest))
                     {nearest=bag.LootId;distance=candidate;bestAim=aim;}
                 }
+                if (!clash && RaidFurnitureLoot.Active)
+                {
+                    int drawer = RaidFurnitureLoot.Active.Select(camera, position, out float drawerDistance);
+                    if (drawer >= 0) { nearest = drawer; distance = drawerDistance; }
+                }
                 m_AirlockPrompt.RefreshSelection(Camera.main, position, !clash && !m_InventoryVisible && !m_InventoryRequestPending &&
                     UnityEngine.Cursor.lockState == CursorLockMode.Locked && !GameSettings.Instance.IsPauseMenuOpen, m_World);
                 bool pressed = (Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame) ||
                                (Gamepad.current != null && Gamepad.current.buttonWest.wasPressedThisFrame);
                 bool controlInput = (Keyboard.current != null && Keyboard.current.fKey.wasPressedThisFrame) ||
                     (Gamepad.current != null && Gamepad.current.buttonWest.wasPressedThisFrame);
-                if (!clash && RaidFurnitureLoot.Active)
-                {
-                    int drawer = RaidFurnitureLoot.Active.Select(camera, position, out float drawerDistance);
-                    if (drawer >= 0) { nearest = drawer; distance = drawerDistance; }
-                }
                 bool controlPressed = !tacticalInteraction && !clash && !missionControl && controlInput && !m_InventoryVisible && !m_InventoryRequestPending &&
                     UnityEngine.Cursor.lockState == CursorLockMode.Locked && !GameSettings.Instance.IsPauseMenuOpen &&
                     m_AirlockPrompt.TryInteract(Camera.main, position, m_World);
