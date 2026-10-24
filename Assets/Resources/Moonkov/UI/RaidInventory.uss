@@ -1,9 +1,9 @@
 .inventory-view.inventory-raid { --mk-surface: #101416; --mk-panel: #191f21; --mk-line: #414b4e; --mk-ink: #eeeee6; --mk-muted: #b3bcb9; --mk-accent: #c8cfaa; background-color: #101416; padding: 0; min-height: 0; -unity-font-definition: url("/Assets/Localization/Fonts/NotoSansCJKsc-Regular.otf"); }
 .inventory-raid Label, .inventory-raid Button, .raid-inventory-window Label, .raid-inventory-window Button { -unity-font-definition: url("/Assets/Localization/Fonts/NotoSansCJKsc-Regular.otf"); letter-spacing: 0; }
 .inventory-raid .inventory-body { min-height: 0; }
-.inventory-raid .inventory-character { width: 32%; max-width: 410px; flex-shrink: 0; margin-right: 0; padding: 8px; background-color: #171c1e; }
+.inventory-raid .inventory-character { width: 26%; max-width: 360px; flex-shrink: 0; margin-right: 0; padding: 8px; background-color: #171c1e; }
 .inventory-raid .field-carried, .inventory-raid .field-loot { flex-grow: 1; flex-basis: 0; min-width: 0; min-height: 0; padding: 8px; background-color: #171c1e; }
-.inventory-raid .field-carried { margin-right: 10px; border-left-width: 1px; border-left-color: #414b4e; }
+.inventory-raid .field-carried { flex-grow: 1.25; margin-right: 10px; border-left-width: 1px; border-left-color: #414b4e; }
 .inventory-raid .field-loot { background-color: #1c2223; }
 .inventory-raid .field-pane-title { font-size: 15px; -unity-font-style: bold; color: #eeeee6; margin-bottom: 6px; flex-shrink: 0; }
 .inventory-raid .field-pane-note, .inventory-raid .inventory-caption { display: none; }
@@ -33,7 +33,7 @@
 .inventory-view.inventory-raid .inventory-item:focus, .inventory-view.inventory-raid .inventory-selected, .inventory-raid .inventory-empty-container:focus { background-color: #354139; border-width: 2px; border-color: #c8cfaa; }
 .inventory-view.inventory-raid .inventory-item-label { font-size: 12px; background-color: rgba(16,20,22,0.88); color: #eeeee6; }
 .inventory-view.inventory-raid .inventory-item-quantity { color: #eeeee6; background-color: #101416; font-size: 13px; }
-.inventory-raid .inventory-empty-container { width: 96px; height: 96px; min-height: 96px; flex-shrink: 0; padding: 4px; margin: 0 8px 0 0; background-color: #121819; border-width: 1px; border-color: #58625e; border-radius: 0; color: #b3bcb9; font-size: 12px; -unity-text-align: middle-center; }
+.inventory-view.inventory-raid .inventory-empty-container { width: 112px; height: 112px; min-height: 112px; flex-shrink: 0; padding: 4px; margin: 0 8px 0 0; background-color: #121819; border-width: 1px; border-color: #58625e; border-radius: 0; color: #b3bcb9; font-size: 12px; -unity-text-align: middle-center; }
 .inventory-raid .field-container-art { flex-grow: 1; width: 100%; min-height: 0; }
 .inventory-raid .field-empty { padding: 12px; min-height: 70px; justify-content: center; }
 .inventory-raid .field-empty-title { font-size: 14px; color: #b3bcb9; white-space: normal; }
@@ -55,8 +55,8 @@
 .raid-ui .raid-inventory-tabs .raid-tab { height: 26px; min-width: 80px; font-size: 13px; letter-spacing: 0; background-color: #191f21; color: #b3bcb9; }
 .raid-ui .raid-inventory-tabs .raid-tab-active { background-color: #374236; color: #eeeee6; border-bottom-color: #c8cfaa; }
 .raid-ui .raid-inventory-header Button { height: 26px; min-width: 80px; margin: 0 4px 0 0; letter-spacing: 0; font-size: 13px; color: #eeeee6; background-color: #28312e; }
-.inventory-view.inventory-warehouse .inventory-character { width: 27%; max-width: 370px; }
-.inventory-warehouse .field-loot { flex-grow: 1.8; }
+.inventory-view.inventory-warehouse .inventory-character { width: 26%; max-width: 360px; }
+.inventory-warehouse .field-loot { flex-grow: 1.2; }
 .inventory-warehouse .inventory-slot-item { white-space: normal; }
 .inventory-warehouse .inventory-item-label { font-size: 12px; }
 .inventory-warehouse .inventory-item-art { left: 8%; right: 8%; top: 23%; bottom: 20%; }

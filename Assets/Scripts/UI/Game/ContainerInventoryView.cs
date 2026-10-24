@@ -11,7 +11,7 @@ namespace Unity.MP_FPS.Client
     public sealed partial class ContainerInventoryView : IDisposable
     {
         // One logical scale for every storage surface, independent of contents and layout passes.
-        private const float StorageCellSize = 48;
+        private const float StorageCellSize = 64;
         private sealed class Grid
         {
             public string Parent, Region; public InventoryRegion Definition;

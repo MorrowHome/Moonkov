@@ -142,6 +142,11 @@ public sealed class RaidInventoryLayoutReview : EditorWindow
             var right = m_View.Element.Q("lootPane").worldBound;
             Require(left.xMax <= middle.xMin && middle.xMax <= right.xMin, "Three-column order or clipping incorrect.");
             Require(middle.width >= 260 && right.width >= 260, "Container columns too narrow.");
+            foreach (string slot in new[] { "ChestRig", "Backpack", "SecureContainer" })
+            {
+                var entry = m_View.Element.Q<Button>("inventorySlot" + slot).worldBound;
+                Require(entry.width >= 111.5f && entry.height >= 111.5f, "Container equipment target collapsed: " + slot + " / " + entry);
+            }
             foreach (var slot in new[] { "Helmet", "Shield", "Primary", "Secondary", "Pistol", "Melee", "ChestRig", "Backpack", "SecureContainer", "Special1", "Special2", "Special3" })
                 Require(m_View.Element.Q<Button>("inventorySlot" + slot) != null, "Player equipment slot missing: " + slot);
             if (m_Case == "warehouse")
