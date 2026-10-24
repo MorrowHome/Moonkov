@@ -69,7 +69,7 @@ namespace Unity.MP_FPS
         private int m_PreviousCount = -1;
         private static RaidHUD s_Active;
         public static bool InventoryOpen => s_Active != null && (s_Active.m_InventoryVisible || s_Active.m_MissionDetailsVisible);
-        public static bool PointerRequested => InventoryOpen || MapInputBlocked || (s_Active != null && (s_Active.m_WasSettled || s_Active.m_ClashLobbyPointer));
+        public static bool PointerRequested => (s_Active != null && s_Active.CinematicInputBlocked) || InventoryOpen || MapInputBlocked || (s_Active != null && (s_Active.m_WasSettled || s_Active.m_ClashLobbyPointer));
         public static bool TimedActionInputActive => s_Active != null && (s_Active.TimedActionActive || s_Active.QuickTacticalActionPending || s_Active.MeleeTimedActionActive);
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetPresentation() => s_Active = null;
@@ -343,18 +343,19 @@ namespace Unity.MP_FPS
         {
             bool inGame = GameSettings.Instance.GameState == GlobalGameState.InGame;
             m_Root.style.display = inGame ? DisplayStyle.Flex : DisplayStyle.None;
-            if (!inGame) { m_Minimap.Hide(); ResetRaidMap(); PresentMelee(false); PresentQuickSlots(false); PresentProtection(false); HideBountyClash(); return; }
+            if (!inGame) { ResetRaidCinematics(); m_Minimap.Hide(); ResetRaidMap(); PresentMelee(false); PresentQuickSlots(false); PresentProtection(false); HideBountyClash(); return; }
             if (m_World == null || !m_World.IsCreated) InitializeWorld();
-            if (m_World == null || !m_World.IsCreated || m_StateQuery.IsEmptyIgnoreFilter) { m_Minimap.Hide(); ResetRaidMap(); PresentMelee(false); PresentQuickSlots(false); PresentProtection(false); HideBountyClash(); return; }
+            if (m_World == null || !m_World.IsCreated || m_StateQuery.IsEmptyIgnoreFilter) { ResetRaidCinematics(); m_Minimap.Hide(); ResetRaidMap(); PresentMelee(false); PresentQuickSlots(false); PresentProtection(false); HideBountyClash(); return; }
             m_Snapshot = m_StateQuery.GetSingleton<RaidClientState>().Snapshot;
             UpdateInventoryView();
             PresentTimedAction();
             bool clash = PresentBountyClash();
+            UpdateRaidCinematics(clash);
             UpdateSpecialEquipment();
-            UpdateRaidMap(clash);
+            if (CinematicInputBlocked) ResetRaidMap(); else UpdateRaidMap(clash);
             bool ready = m_Snapshot.RaidId > 0;
             bool settled = ready && m_Snapshot.Phase != RaidPhase.Active;
-            if (Keyboard.current != null && Keyboard.current.tabKey.wasPressedThisFrame && ready && !settled && !m_ClashActionsBlocked && !GameSettings.Instance.IsPauseMenuOpen)
+            if (Keyboard.current != null && Keyboard.current.tabKey.wasPressedThisFrame && ready && !settled && !m_ClashActionsBlocked && !CinematicInputBlocked && !GameSettings.Instance.IsPauseMenuOpen)
                 {if(!m_InventoryRequestPending || TimedActionActive)SetInventory(!m_InventoryVisible);}
             if (settled && m_InventoryVisible) SetInventory(false);
             if (!settled && m_WasSettled) { m_ResultStep = 0; Utils.SetCursorVisible(false); }
@@ -402,7 +403,7 @@ namespace Unity.MP_FPS
             int nearest = -1;
             float distance = RaidRules.PickupRange;
             Vector3 position = default;
-            bool alive = m_PlayerQuery.HasSingleton<PredictedPlayerGhost>() && m_PlayerQuery.GetSingleton<PredictedPlayerGhost>().CurrentHealth > 0 && !m_ClashActionsBlocked;
+            bool alive = m_PlayerQuery.HasSingleton<PredictedPlayerGhost>() && m_PlayerQuery.GetSingleton<PredictedPlayerGhost>().CurrentHealth > 0 && !m_ClashActionsBlocked && !CinematicInputBlocked;
             PresentMelee(alive && ready && !settled);
             PresentQuickSlots(alive && ready && !settled);
             PresentProtection(alive && ready && !settled && !m_InventoryVisible && !m_MapOpen && !GameSettings.Instance.IsPauseMenuOpen);
@@ -851,6 +852,7 @@ namespace Unity.MP_FPS
 
         private void OnDisable()
         {
+            ResetRaidCinematics();
             DisposeRaidMap();
             DisposeProtection();
             DisposeBountyClash();

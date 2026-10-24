@@ -51,6 +51,10 @@ namespace Unity.MP_FPS
         public DollSingerInput OwnedInput => m_Linked && Role == MultiplayerRole.ClientOwned ? m_Input : null;
         public Camera OwnedCamera => m_Linked && m_ViewActivated && Role == MultiplayerRole.ClientOwned ? m_View.camera : null;
         public bool IsThirdPerson => m_View != null && !m_View.IsFirstPerson;
+        public void PrepareDeploymentView()
+        {
+            if (Role == MultiplayerRole.ClientOwned && m_View) m_View.SetFirstPerson(true);
+        }
         public float OwnedLeanAmount => m_OwnedLean;
         public float OwnedReticleScreenRoll => m_View ? -m_View.SightLeanRoll : 0f;
 
