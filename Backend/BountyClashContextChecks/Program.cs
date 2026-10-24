@@ -18,6 +18,10 @@ string root=Path.Combine(Path.GetTempPath(),"moon-clash-context-"+Guid.NewGuid()
 UnityEngine.Application.dataPath=Path.Combine(root,"Assets");
 try
 {
+    bool rejectedMissingConfig = false;
+    try { using var missing = new Context(Path.Combine(root, "missing-online-server.json")); }
+    catch (InvalidOperationException) { rejectedMissingConfig = true; }
+    Check(rejectedMissingConfig, "online server silently accepted missing persistence configuration");
     var payload=new Context.Settlement{PlayerId=Guid.NewGuid().ToString("D"),SettlementId=Guid.NewGuid().ToString("D"),Outcome="Dead",DeploymentId=null,InventoryJson=null};
     var old=new{payload.PlayerId,payload.SettlementId,payload.Outcome,payload.DeploymentId,payload.Dust,payload.Alloy,payload.Cells,payload.InventoryJson};
     Check(JsonConvert.SerializeObject(payload)==JsonConvert.SerializeObject(old),"legacy settlement hash changed due to optional metadata");
