@@ -119,6 +119,7 @@ public class DollSingerView : MonoBehaviour
     private Transform eyeAnchor;
     private Transform chestAnchor;
     private Vector3 eyeLocalOffset;
+    private DollSingerTorsoClearance torsoClearance;
     private SkinnedMeshRenderer bodyRenderer;
     private Material[] thirdPersonMaterials;
     private UnityEngine.Mesh thirdPersonMesh;
@@ -459,7 +460,10 @@ public class DollSingerView : MonoBehaviour
             float desired = Mathf.Clamp(forwardDistance, minimum, Mathf.Max(minimum, lookDownBodyClearance));
             eye += horizontalLook * ((desired - forwardDistance) * clearanceBlend);
         }
-        return eye;
+        // Head rotation and landing/sprint animation can put even the real eye inside
+        // the neckline. Enforce clearance at every pitch, after look-down framing.
+        return torsoClearance != null ? torsoClearance.KeepAboveTorso(eye, up,
+            firstPersonNearClip, firstPersonFieldOfView, camera ? camera.aspect : 16f / 9f) : eye;
     }
 
     /// <summary>
@@ -527,6 +531,9 @@ public class DollSingerView : MonoBehaviour
 
         thirdPersonMaterials = bodyRenderer.sharedMaterials;
         thirdPersonMesh = bodyRenderer.sharedMesh;
+        var animator = character.GetComponentInChildren<Animator>();
+        if (animator && animator.isHuman)
+            torsoClearance = new DollSingerTorsoClearance(bodyRenderer, animator);
         thirdPersonShadowMode = bodyRenderer.shadowCastingMode;
         thirdPersonForceRenderingOff = bodyRenderer.forceRenderingOff;
         firstPersonMesh = BuildFirstPersonMesh(thirdPersonMesh, bodyRenderer.bones, thirdPersonMaterials);
@@ -733,6 +740,7 @@ public class DollSingerView : MonoBehaviour
         if (firstPersonMesh) DestroyRuntime(firstPersonMesh);
 
         bodyRenderer = null;
+        torsoClearance = null;
         thirdPersonMaterials = null;
         thirdPersonMesh = null;
         firstPersonMesh = null;
