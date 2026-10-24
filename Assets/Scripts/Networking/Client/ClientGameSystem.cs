@@ -60,7 +60,8 @@ namespace Unity.MP_FPS
             var clientJoinRequestRpc = new ClientJoinRequestRpc();
             clientJoinRequestRpc.PlayerName.CopyFromTruncated(playerName);
             clientJoinRequestRpc.CharacterIndex = GameSettings.Instance.PlayerCharacter;
-            clientJoinRequestRpc.LoginToken = PlayerProfileClient.Token;
+            clientJoinRequestRpc.LoginToken = PlayerProfileClient.IsOffline || PlayerProfileClient.IsLan
+                ? PlayerProfileClient.Token : ConnectionSettings.Instance.GameJoinTicket;
             clientJoinRequestRpc.CarryCells = state.WorldUnmanaged.IsThinClient() ? 0 : PlayerProfileClient.CarryCells;
             clientJoinRequestRpc.Mode = GameSettings.Instance.RequestedMode;
             clientJoinRequestRpc.RulesVersion = GameSettings.Instance.RequestedRulesVersion;

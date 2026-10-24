@@ -44,7 +44,7 @@ namespace Unity.MP_FPS
             catch (Exception) { return false; }
         }
         private async Task<Profile> ResolveJoinAsync(string token)
-        { await m_ClashCapability.ConfigureAwait(false); return await PostAsync("internal/sessions/resolve", new { Token=token }).ConfigureAwait(false); }
+        { await m_ClashCapability.ConfigureAwait(false); return await PostAsync(m_Http == null ? "internal/sessions/resolve" : "internal/game-tickets/consume", new { Token=token }).ConfigureAwait(false); }
         private async Task PostClashAsync(string path, object payload)
         {
             if(m_Lan!=null)

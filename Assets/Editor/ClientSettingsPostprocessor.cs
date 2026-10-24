@@ -46,6 +46,8 @@ public sealed class ClientSettingsPostprocessor : IPostprocessBuildWithReport
 
         string target = Path.Combine(destination, ClientSettings.FileName);
         File.Copy(source, target, overwrite: true);
+        string publicCertificate = Path.Combine(Path.GetDirectoryName(Application.dataPath), "moon-game-ca.pem");
+        if (File.Exists(publicCertificate)) File.Copy(publicCertificate, Path.Combine(destination, "moon-game-ca.pem"), overwrite: true);
         Debug.Log($"[Moonkov] copied {ClientSettings.FileName} to {target}");
     }
 }

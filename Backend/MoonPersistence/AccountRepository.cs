@@ -117,6 +117,15 @@ public sealed class AccountRepository(NpgsqlDataSource db)
         command.Parameters.AddWithValue(HashToken(token));
         await command.ExecuteNonQueryAsync(ct);
     }
+
+    public async Task<Profile> ReadProfileAsync(Guid playerId, CancellationToken ct)
+    {
+        await using var connection = await db.OpenConnectionAsync(ct);
+        await using var transaction = await connection.BeginTransactionAsync(ct);
+        var profile = await InventoryRepository.ReadAsync(connection, transaction, playerId, ct);
+        await transaction.CommitAsync(ct);
+        return profile;
+    }
 }
 
 public sealed record Credentials(string Username, string Password, string? GuestToken = null);

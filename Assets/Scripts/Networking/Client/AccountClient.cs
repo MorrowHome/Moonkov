@@ -184,6 +184,21 @@ namespace Unity.MP_FPS
         public static Task MoveInventoryAsync(InventoryCommand command, CancellationToken ct) => PostInventoryAsync("auth/inventory/move", command, ct);
         public static Task ClaimRecoveryAsync(RecoveryClaim request,CancellationToken ct) => PostInventoryAsync("auth/inventory/recovery/claim",request,ct);
         public static Task TradeAsync(ShopCommand command, CancellationToken ct) => PostInventoryAsync("auth/shop/trade", command, ct);
+        private sealed class GameTicket { public string Ticket; }
+        public static async Task<string> CreateGameTicketAsync(CancellationToken ct)
+        {
+            string token = Token;
+            if (string.IsNullOrEmpty(token)) throw new InvalidOperationException("Sign in before starting a raid.");
+            using var request = new HttpRequestMessage(HttpMethod.Post, Address(s_BaseUrl, "auth/game-ticket"));
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            using var response = await Http().SendAsync(request, ct);
+            response.EnsureSuccessStatusCode();
+            var ticket = JsonConvert.DeserializeObject<GameTicket>(await response.Content.ReadAsStringAsync());
+            ct.ThrowIfCancellationRequested();
+            if (token != Token) throw new OperationCanceledException("Account changed while joining.");
+            if (ticket?.Ticket?.Length != 64) throw new InvalidOperationException("Invalid game join ticket. Update the account service.");
+            return ticket.Ticket;
+        }
         public static async Task<ShopOffer[]> GetShopOffersAsync(CancellationToken ct)
         {
             if (!IsLoggedIn) throw new InventoryRequestException("login_expired");

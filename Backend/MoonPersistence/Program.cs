@@ -19,6 +19,7 @@ builder.Services.AddSingleton(NpgsqlDataSource.Create(connectionString));
 builder.Services.AddSingleton<StashRepository>();
 builder.Services.AddSingleton<InventoryRepository>();
 builder.Services.AddSingleton<AccountRepository>();
+builder.Services.AddSingleton<GameJoinTickets>();
 var clashEconomy = new BountyEconomy(builder.Configuration.GetValue("BountyClash:BaseDust",20),
     builder.Configuration.GetValue("BountyClash:SoloBonusDust",60),builder.Configuration.GetValue("BountyClash:DuoBonusDust",15));
 clashEconomy.Validate();
@@ -109,16 +110,31 @@ auth.MapPost("/inventory/recovery/claim", async (HttpRequest request, RecoveryCl
     try {return Results.Ok(await inventory.ClaimRecoveryAsync(profile.PlayerId,command,ct));}
     catch(DeploymentRejectedException ex) {return Results.Conflict(new {error=ex.Message});}
 });
+auth.MapPost("/game-ticket", async (HttpRequest request, AccountRepository accounts, GameJoinTickets tickets, CancellationToken ct) =>
+{
+    var profile = await accounts.ResolveSessionAsync(request.Headers.Authorization.ToString().Replace("Bearer ", ""), ct);
+    return profile is null ? Results.Unauthorized() : Results.Ok(new { Ticket = tickets.Issue(profile.PlayerId, DateTime.UtcNow) });
+}).RequireRateLimiting("auth");
+app.MapPost("/internal/game-tickets/consume", async (SessionCredential request, AccountRepository accounts, GameJoinTickets tickets, CancellationToken ct) =>
+{
+    var player = tickets.Consume(request.Token, DateTime.UtcNow);
+    return player is null ? Results.Unauthorized() : Results.Ok(await accounts.ReadProfileAsync(player.Value, ct));
+});
+app.MapGet("/internal/accounts/{playerId:guid}", async (Guid playerId, AccountRepository accounts, CancellationToken ct) =>
+{
+    return Results.Ok(await accounts.ReadProfileAsync(playerId, ct));
+});
+// Trusted administration only; the game join path consumes single-use tickets.
 app.MapPost("/internal/sessions/resolve", async (SessionCredential request, AccountRepository accounts, CancellationToken ct) =>
 {
-    var result = await accounts.ResolveSessionAsync(request.Token, ct);
-    return result is null ? Results.Unauthorized() : Results.Ok(result);
+    var profile = await accounts.ResolveSessionAsync(request.Token, ct);
+    return profile is null ? Results.Unauthorized() : Results.Ok(profile);
 });
 app.MapGet("/internal/health", async (NpgsqlDataSource db, CancellationToken ct) =>
 {
     await using var command = db.CreateCommand("SELECT 1");
     await command.ExecuteScalarAsync(ct);
-    return Results.Ok(new { status = "ready", features = new[] { "alien-harvest-v1", "halo-research-v1", "species-harvest-v2", "missions-v1", "recovery-inbox-v1", "bounty-clash-v1" },
+    return Results.Ok(new { status = "ready", features = new[] { "alien-harvest-v1", "halo-research-v1", "species-harvest-v2", "missions-v1", "recovery-inbox-v1", "bounty-clash-v1", "game-join-tickets-v1" },
         build = typeof(InventoryRepository).Assembly.GetCustomAttributes(false)
             .OfType<System.Reflection.AssemblyInformationalVersionAttribute>().FirstOrDefault()?.InformationalVersion });
 });

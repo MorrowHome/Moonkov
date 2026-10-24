@@ -1,0 +1,20 @@
+var store = new GameJoinTickets();
+int checks = 0;
+void Check(bool ok, string message) { if (!ok) throw new Exception(message); checks++; }
+var now = DateTime.UtcNow;
+var account = Guid.NewGuid();
+var first = store.Issue(account, now);
+Check(store.Consume(first, now) == account, "Ticket failed to authenticate its account");
+Check(store.Consume(first, now) == null, "Ticket replay accepted");
+var expired = store.Issue(account, now);
+Check(store.Consume(expired, now.AddSeconds(60)) == null, "Expired ticket accepted");
+var replaced = store.Issue(account, now);
+var replacement = store.Issue(account, now);
+Check(store.Consume(replaced, now) == null, "Old account ticket survived replacement");
+Check(store.Consume(replacement, now) == account, "New account ticket was invalidated");
+var concurrent = store.Issue(account, now);
+int successes = 0;
+Parallel.For(0, 24, _ => { if (store.Consume(concurrent, now) == account) Interlocked.Increment(ref successes); });
+Check(successes == 1, "Concurrent ticket redemption did not have exactly one winner");
+Check(store.Consume(new string('x', 64), now) == null, "Malformed ticket accepted");
+Console.WriteLine($"Online session security: {checks} checks passed.");

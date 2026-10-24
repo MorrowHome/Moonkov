@@ -385,6 +385,8 @@ namespace Unity.MP_FPS
             //The the client world was created, connect to the server
             if (client != null)
             {
+                ConnectionSettings.Instance.GameJoinTicket = PlayerProfileClient.IsOffline || PlayerProfileClient.IsLan
+                    ? null : await AccountClient.CreateGameTicketAsync(cancellationToken);
                 ConnectionSettings.Instance.ConnectionEndpoint = GameConnection.ConnectEndpoint;
                 await WaitForPlayerConnectionAsync(cancellationToken);
                 await ScenesLoader.LoadGameplayAsync(null, client);
@@ -511,6 +513,8 @@ namespace Unity.MP_FPS
 
         static void CreateEntityWorlds(bool isHost, out World serverWorld, out World clientWorld)
         {
+            NetworkStreamReceiveSystem.DriverConstructor = new EntityDriverConstructor(
+                isHost ? NetworkRole.Host : NetworkRole.Client, !PlayerProfileClient.IsOffline && !PlayerProfileClient.IsLan);
             LoadingData.Instance.UpdateLoading(LoadingData.LoadingSteps.CreateWorld);
             DestroyLocalSimulationWorld();
 

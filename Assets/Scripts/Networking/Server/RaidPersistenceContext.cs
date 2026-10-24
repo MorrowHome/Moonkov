@@ -207,7 +207,16 @@ namespace Unity.MP_FPS
         public void RefreshJoin(Join join)
         {
             join.NeedsRefresh = false;
-            join.Task = ResolveJoinAsync(join.Token);
+            join.Task = m_Http == null ? ResolveJoinAsync(join.Token) : RefreshAuthenticatedJoinAsync(join.Task.Result.PlayerId);
+        }
+
+        private async Task<Profile> RefreshAuthenticatedJoinAsync(string playerId)
+        {
+            using (var response = await m_Http.GetAsync("internal/accounts/" + Guid.Parse(playerId).ToString("D"), m_Stop.Token).ConfigureAwait(false))
+            {
+                response.EnsureSuccessStatusCode();
+                return JsonConvert.DeserializeObject<Profile>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            }
         }
 
         public void BeginSave(Entity connection, RaidSession session)

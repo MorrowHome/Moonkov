@@ -105,6 +105,7 @@ public class GhostBridgeBootstrap : ClientServerBootstrap
 
         if (IsServerOnly)
         {
+            NetworkStreamReceiveSystem.DriverConstructor = new Unity.MP_FPS.EntityDriverConstructor(Unity.Services.Multiplayer.NetworkRole.Server);
             CreateServerWorld();
         }
 

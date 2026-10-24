@@ -23,6 +23,7 @@ namespace Unity.MP_FPS
 
         sealed class Values
         {
+            public string GameServerName;
             public string AccountServiceUrl;
             public bool? AllowLanHttp;
             public string ServerAddress;
@@ -68,6 +69,7 @@ namespace Unity.MP_FPS
                         {
                             if (overrides.AccountServiceUrl != null) s_Values.AccountServiceUrl = overrides.AccountServiceUrl;
                             if (overrides.ServerAddress != null) s_Values.ServerAddress = overrides.ServerAddress;
+                            if (overrides.GameServerName != null) s_Values.GameServerName = overrides.GameServerName;
                             if (overrides.ServerPort != 0) s_Values.ServerPort = overrides.ServerPort;
                             if (overrides.ConnectionMode != -1) s_Values.ConnectionMode = overrides.ConnectionMode;
                             s_Values.AllowLanHttp = overrides.AllowLanHttp ?? s_Values.AllowLanHttp;
@@ -88,6 +90,7 @@ namespace Unity.MP_FPS
         static void Reset() => s_Values = null;
 
         public static string AccountServiceUrl => Configuration.AccountServiceUrl?.Trim();
+        public static string GameServerName => string.IsNullOrWhiteSpace(Configuration.GameServerName) ? null : Configuration.GameServerName.Trim();
         public static bool AllowLanHttp => Configuration.AllowLanHttp ?? false;
 
         /// <summary>The game server a fresh install should point at, or null for the built-in default.</summary>

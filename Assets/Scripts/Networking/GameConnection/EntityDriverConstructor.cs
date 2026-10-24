@@ -29,9 +29,11 @@ namespace Unity.MP_FPS
     class EntityDriverConstructor : INetworkStreamDriverConstructor
     {
         EntityNetworkConfiguration m_Configuration;
+        readonly bool m_SecureDirect;
 
         public EntityDriverConstructor(NetworkConfiguration configuration)
         {
+            m_SecureDirect = true;
             m_Configuration = new EntityNetworkConfiguration
             {
                 Role = configuration.Role,
@@ -41,8 +43,9 @@ namespace Unity.MP_FPS
             };
         }
 
-        public EntityDriverConstructor(NetworkRole role)
+        public EntityDriverConstructor(NetworkRole role, bool secureDirect = true)
         {
+            m_SecureDirect = secureDirect;
             m_Configuration = new EntityNetworkConfiguration
             {
                 Role = role,
@@ -69,6 +72,7 @@ namespace Unity.MP_FPS
             }
             else
             {
+                if (m_SecureDirect) OnlineTransportSecurity.ConfigureClient(ref networkSettings);
                 DefaultDriverBuilder.RegisterClientDriver(world, ref driverStore, netDebug, networkSettings);
             }
         }
@@ -91,6 +95,7 @@ namespace Unity.MP_FPS
             {
                 networkSettings.WithRelayParameters(ref m_Configuration.RelayServerData);
             }
+            else if (m_SecureDirect) OnlineTransportSecurity.ConfigureServer(ref networkSettings);
             DefaultDriverBuilder.RegisterServerUdpDriver(world, ref driverStore, netDebug, networkSettings);
 #else
             throw new NotSupportedException(

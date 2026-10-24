@@ -50,6 +50,7 @@ Backend/**/obj/
 moon-server.local.json
 moon-client.local.json
 moon-client.editor.local.json
+moon-game-ca.pem
 LocalData/
 
 # Local audition copies of candidate source audio. Nothing in the project references
