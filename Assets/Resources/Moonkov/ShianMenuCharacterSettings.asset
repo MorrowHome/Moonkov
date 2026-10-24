@@ -1,0 +1,469 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd3bd063c6f2ea143890be97270c5e38, type: 3}
+  m_Name: ShianMenuCharacterSettings
+  m_EditorClassIdentifier: Assembly-CSharp::Unity.MP_FPS.Client.MenuCharacterSettings
+  VisualPrefab: {fileID: 4102103062521060591, guid: 9505f14da487f44d1b336ff6c24cdf95, type: 3}
+  Motions:
+  - {fileID: 7400000, guid: 82589cafe9239604fa763d2e84ef34c8, type: 2}
+  - {fileID: 7400000, guid: 28f662c33c0a430449c8e437ceb54ceb, type: 2}
+  - {fileID: 7400000, guid: 08c604041df9f094d90c18c7dd3cc946, type: 2}
+  - {fileID: 7400000, guid: 68171a5ac30a0bd428902ac6a6dd8a0a, type: 2}
+  - {fileID: 7400000, guid: 8de6eb48111d248d9959e3e23fa84310, type: 2}
+  - {fileID: 7400000, guid: 0d4b8bf43eee14442a8dc7d7af1e0389, type: 2}
+  - {fileID: 7400000, guid: 5bf6e5f7bcf5ab14589a0b9223b1d319, type: 2}
+  - {fileID: 7400000, guid: 1474e03566fd5c744a518f5e975c2311, type: 2}
+  - {fileID: 7400000, guid: 2d3e2b8bb7df04f92a400e0f17f1f910, type: 2}
+  - {fileID: 7400000, guid: 94162c488acd6fc4699e4a0d36a9412d, type: 2}
+  - {fileID: 7400000, guid: e9490a76d8d8a614fa0b30ff38b5355d, type: 2}
+  - {fileID: 7400000, guid: acb98f31f750ec84dbcaaf5c85c1aca4, type: 2}
+  - {fileID: 7400008, guid: 0d9d26e2162aa4d11ab075b34c029673, type: 3}
+  - {fileID: -2702400367771620057, guid: 063aa479676c4084ebf187660ca0a7b8, type: 3}
+  - {fileID: -9098803823909532060, guid: 98f277b0c8055e143b2fcf058d3c27dc, type: 3}
+  - {fileID: 7478122292733868173, guid: 98f277b0c8055e143b2fcf058d3c27dc, type: 3}
+  - {fileID: 7400000, guid: eba680b5a076190419121e97a3981892, type: 2}
+  - {fileID: 7400000, guid: 61dd5c13601fd1f4fa1550b587ea0dce, type: 2}
+  - {fileID: 7400000, guid: bd3a1e96f0c2e3b45b6401321dac873b, type: 2}
+  - {fileID: 7400000, guid: f6779d71de664594bae4f26f196c4658, type: 2}
+  - {fileID: 7400000, guid: 231e446fd0b3d104b91c8c70db88e730, type: 2}
+  - {fileID: 7400000, guid: ced395dabac4db84ead479fe5ff523d8, type: 2}
+  - {fileID: 7400000, guid: 86632626883d2c246be2de62ed4ff76b, type: 2}
+  - {fileID: 7400000, guid: 511898f774965488290aa26e148ca82e, type: 2}
+  - {fileID: 7400000, guid: 6da5b6b2e77a04957a28d42d93da6901, type: 2}
+  - {fileID: -2817517482862745934, guid: 3c033631149b9c541bcf155cd94cccba, type: 3}
+  - {fileID: 7400000, guid: 1e99d4eaf267d4fd89be3527062b5c23, type: 2}
+  - {fileID: 7400000, guid: b178470bb2b204ddbb900a26f1a981a1, type: 2}
+  - {fileID: 7400000, guid: 16736f32d83800141af60a4380225f70, type: 2}
+  - {fileID: 7400000, guid: 859601b270c2dfb4f9057f5ebb3ad555, type: 2}
+  - {fileID: 7400000, guid: 05f0b7f58bf0c6a4cbd124b020f1b8a0, type: 2}
+  - {fileID: 7400000, guid: 9f96372a9b30c474e9034297f745e06a, type: 2}
+  - {fileID: 7400000, guid: 59a86e3ae670d49458765aeb7f80db61, type: 2}
+  - {fileID: 7400000, guid: 558fb3cd123f15747acd6059529cb72b, type: 2}
+  - {fileID: 1657602633327794031, guid: 8269a9f8cf495034c817722ac21f309f, type: 3}
+  - {fileID: 3062299877480904481, guid: 325a26d62b61fa94cb3c97c435efebc5, type: 3}
+  - {fileID: 7400000, guid: 82589cafe9239604fa763d2e84ef34c8, type: 2}
+  - {fileID: 7400000, guid: 82589cafe9239604fa763d2e84ef34c8, type: 2}
+  - {fileID: 7400000, guid: 82589cafe9239604fa763d2e84ef34c8, type: 2}
+  - {fileID: 7400000, guid: 82589cafe9239604fa763d2e84ef34c8, type: 2}
+  - {fileID: 7400000, guid: 82589cafe9239604fa763d2e84ef34c8, type: 2}
+  - {fileID: 7400000, guid: 82589cafe9239604fa763d2e84ef34c8, type: 2}
+  - {fileID: 7400000, guid: 82589cafe9239604fa763d2e84ef34c8, type: 2}
+  - {fileID: 7400000, guid: 82589cafe9239604fa763d2e84ef34c8, type: 2}
+  HaloAimMask: {fileID: 31900000, guid: 239d5f712175104498630ee47475fe09, type: 2}
+  MotionMasks:
+  - {fileID: 0}
+  - {fileID: 31900000, guid: 239d5f712175104498630ee47475fe09, type: 2}
+  - {fileID: 31900000, guid: 4bea029a2157bc645a55774295ba0bd8, type: 2}
+  - {fileID: 31900000, guid: 4bea029a2157bc645a55774295ba0bd8, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 31900000, guid: 239d5f712175104498630ee47475fe09, type: 2}
+  - {fileID: 31900000, guid: 239d5f712175104498630ee47475fe09, type: 2}
+  - {fileID: 31900000, guid: 239d5f712175104498630ee47475fe09, type: 2}
+  - {fileID: 0}
+  - {fileID: 31900000, guid: 239d5f712175104498630ee47475fe09, type: 2}
+  - {fileID: 31900000, guid: 239d5f712175104498630ee47475fe09, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  MotionOptions:
+  - Name: Unarmed_Idle
+    Loop: 1
+    PreserveHands: 0
+    Tiptoe: 0
+    HoldSeconds: 0
+    Turn: 0
+    Weapon: 0
+    WeaponAction: 0
+  - Name: DollSinger_FingerGunAim
+    Loop: 0
+    PreserveHands: 1
+    Tiptoe: 0
+    HoldSeconds: 3.5
+    Turn: 0
+    Weapon: 0
+    WeaponAction: 0
+  - Name: Turn_Left
+    Loop: 0
+    PreserveHands: 0
+    Tiptoe: 0
+    HoldSeconds: 0
+    Turn: -1
+    Weapon: 0
+    WeaponAction: 0
+  - Name: Turn_Right
+    Loop: 0
+    PreserveHands: 0
+    Tiptoe: 0
+    HoldSeconds: 0
+    Turn: 1
+    Weapon: 0
+    WeaponAction: 0
+  - Name: Crouch_Idle
+    Loop: 1
+    PreserveHands: 1
+    Tiptoe: 0
+    HoldSeconds: 0
+    Turn: 0
+    Weapon: 0
+    WeaponAction: 0
+  - Name: Crouch_Move
+    Loop: 1
+    PreserveHands: 1
+    Tiptoe: 0
+    HoldSeconds: 0
+    Turn: 0
+    Weapon: 0
+    WeaponAction: 0
+  - Name: DollSinger_FreeFallCover
+    Loop: 0
+    PreserveHands: 1
+    Tiptoe: 0
+    HoldSeconds: 3.5
+    Turn: 0
+    Weapon: 0
+    WeaponAction: 0
+  - Name: DollSinger_RevolverGesture
+    Loop: 0
+    PreserveHands: 1
+    Tiptoe: 0
+    HoldSeconds: 3.5
+    Turn: 0
+    Weapon: 2
+    WeaponAction: 0
+  - Name: DollSinger_RifleGesture
+    Loop: 0
+    PreserveHands: 1
+    Tiptoe: 0
+    HoldSeconds: 3.5
+    Turn: 0
+    Weapon: 1
+    WeaponAction: 0
+  - Name: DollSinger_Run_N_RelaxedFingers
+    Loop: 1
+    PreserveHands: 0
+    Tiptoe: 0
+    HoldSeconds: 0
+    Turn: 0
+    Weapon: 0
+    WeaponAction: 0
+  - Name: DollSinger_ShotgunGesture
+    Loop: 0
+    PreserveHands: 1
+    Tiptoe: 0
+    HoldSeconds: 3.5
+    Turn: 0
+    Weapon: 3
+    WeaponAction: 0
+  - Name: DollSinger_SniperGesture
+    Loop: 0
+    PreserveHands: 1
+    Tiptoe: 0
+    HoldSeconds: 3.5
+    Turn: 0
+    Weapon: 4
+    WeaponAction: 0
+  - Name: HumanoidMidAir
+    Loop: 1
+    PreserveHands: 0
+    Tiptoe: 0
+    HoldSeconds: 0
+    Turn: 0
+    Weapon: 0
+    WeaponAction: 0
+  - Name: InAir
+    Loop: 1
+    PreserveHands: 0
+    Tiptoe: 0
+    HoldSeconds: 0
+    Turn: 0
+    Weapon: 0
+    WeaponAction: 0
+  - Name: JumpLand
+    Loop: 0
+    PreserveHands: 0
+    Tiptoe: 0
+    HoldSeconds: 0
+    Turn: 0
+    Weapon: 0
+    WeaponAction: 0
+  - Name: JumpStart
+    Loop: 0
+    PreserveHands: 0
+    Tiptoe: 0
+    HoldSeconds: 0
+    Turn: 0
+    Weapon: 0
+    WeaponAction: 0
+  - Name: Pistol_Idle
+    Loop: 1
+    PreserveHands: 0
+    Tiptoe: 0
+    HoldSeconds: 0
+    Turn: 0
+    Weapon: 0
+    WeaponAction: 0
+  - Name: Pistol_Run_Back
+    Loop: 1
+    PreserveHands: 0
+    Tiptoe: 0
+    HoldSeconds: 0
+    Turn: 0
+    Weapon: 0
+    WeaponAction: 0
+  - Name: Pistol_Run_Forward
+    Loop: 1
+    PreserveHands: 0
+    Tiptoe: 0
+    HoldSeconds: 0
+    Turn: 0
+    Weapon: 0
+    WeaponAction: 0
+  - Name: Pistol_Strafe_Left
+    Loop: 1
+    PreserveHands: 0
+    Tiptoe: 0
+    HoldSeconds: 0
+    Turn: 0
+    Weapon: 0
+    WeaponAction: 0
+  - Name: Pistol_Strafe_Right
+    Loop: 1
+    PreserveHands: 0
+    Tiptoe: 0
+    HoldSeconds: 0
+    Turn: 0
+    Weapon: 0
+    WeaponAction: 0
+  - Name: Pistol_Walk_Back
+    Loop: 1
+    PreserveHands: 0
+    Tiptoe: 0
+    HoldSeconds: 0
+    Turn: 0
+    Weapon: 0
+    WeaponAction: 0
+  - Name: Pistol_Walk_Forward
+    Loop: 1
+    PreserveHands: 0
+    Tiptoe: 0
+    HoldSeconds: 0
+    Turn: 0
+    Weapon: 0
+    WeaponAction: 0
+  - Name: Prone_Crawl
+    Loop: 1
+    PreserveHands: 1
+    Tiptoe: 0
+    HoldSeconds: 0
+    Turn: 0
+    Weapon: 0
+    WeaponAction: 0
+  - Name: Prone_Idle
+    Loop: 1
+    PreserveHands: 1
+    Tiptoe: 0
+    HoldSeconds: 0
+    Turn: 0
+    Weapon: 0
+    WeaponAction: 0
+  - Name: Run_N_Land
+    Loop: 0
+    PreserveHands: 0
+    Tiptoe: 0
+    HoldSeconds: 0
+    Turn: 0
+    Weapon: 0
+    WeaponAction: 0
+  - Name: Tiptoe_Idle
+    Loop: 1
+    PreserveHands: 0
+    Tiptoe: 1
+    HoldSeconds: 0
+    Turn: 0
+    Weapon: 0
+    WeaponAction: 0
+  - Name: Tiptoe_Move
+    Loop: 1
+    PreserveHands: 0
+    Tiptoe: 1
+    HoldSeconds: 0
+    Turn: 0
+    Weapon: 0
+    WeaponAction: 0
+  - Name: Unarmed_Run_Back
+    Loop: 1
+    PreserveHands: 0
+    Tiptoe: 0
+    HoldSeconds: 0
+    Turn: 0
+    Weapon: 0
+    WeaponAction: 0
+  - Name: Unarmed_Run_Left
+    Loop: 1
+    PreserveHands: 0
+    Tiptoe: 0
+    HoldSeconds: 0
+    Turn: 0
+    Weapon: 0
+    WeaponAction: 0
+  - Name: Unarmed_Run_Right
+    Loop: 1
+    PreserveHands: 0
+    Tiptoe: 0
+    HoldSeconds: 0
+    Turn: 0
+    Weapon: 0
+    WeaponAction: 0
+  - Name: Unarmed_Walk_Back
+    Loop: 1
+    PreserveHands: 0
+    Tiptoe: 0
+    HoldSeconds: 0
+    Turn: 0
+    Weapon: 0
+    WeaponAction: 0
+  - Name: Unarmed_Walk_Left
+    Loop: 1
+    PreserveHands: 0
+    Tiptoe: 0
+    HoldSeconds: 0
+    Turn: 0
+    Weapon: 0
+    WeaponAction: 0
+  - Name: Unarmed_Walk_Right
+    Loop: 1
+    PreserveHands: 0
+    Tiptoe: 0
+    HoldSeconds: 0
+    Turn: 0
+    Weapon: 0
+    WeaponAction: 0
+  - Name: Walk_N
+    Loop: 1
+    PreserveHands: 0
+    Tiptoe: 0
+    HoldSeconds: 0
+    Turn: 0
+    Weapon: 0
+    WeaponAction: 0
+  - Name: Walk_N_Land
+    Loop: 0
+    PreserveHands: 0
+    Tiptoe: 0
+    HoldSeconds: 0
+    Turn: 0
+    Weapon: 0
+    WeaponAction: 0
+  - Name: DollSinger_RifleGesture_Fire
+    Loop: 1
+    PreserveHands: 1
+    Tiptoe: 0
+    HoldSeconds: 1.5
+    Turn: 0
+    Weapon: 1
+    WeaponAction: 1
+  - Name: DollSinger_RifleGesture_Reload
+    Loop: 1
+    PreserveHands: 1
+    Tiptoe: 0
+    HoldSeconds: 2
+    Turn: 0
+    Weapon: 1
+    WeaponAction: 2
+  - Name: DollSinger_RevolverGesture_Fire
+    Loop: 1
+    PreserveHands: 1
+    Tiptoe: 0
+    HoldSeconds: 1.5
+    Turn: 0
+    Weapon: 2
+    WeaponAction: 1
+  - Name: DollSinger_RevolverGesture_Reload
+    Loop: 1
+    PreserveHands: 1
+    Tiptoe: 0
+    HoldSeconds: 1
+    Turn: 0
+    Weapon: 2
+    WeaponAction: 2
+  - Name: DollSinger_ShotgunGesture_Fire
+    Loop: 1
+    PreserveHands: 1
+    Tiptoe: 0
+    HoldSeconds: 1.5
+    Turn: 0
+    Weapon: 3
+    WeaponAction: 1
+  - Name: DollSinger_ShotgunGesture_Reload
+    Loop: 1
+    PreserveHands: 1
+    Tiptoe: 0
+    HoldSeconds: 1
+    Turn: 0
+    Weapon: 3
+    WeaponAction: 2
+  - Name: DollSinger_SniperGesture_Fire
+    Loop: 1
+    PreserveHands: 1
+    Tiptoe: 0
+    HoldSeconds: 1.5
+    Turn: 0
+    Weapon: 4
+    WeaponAction: 1
+  - Name: DollSinger_SniperGesture_Reload
+    Loop: 1
+    PreserveHands: 1
+    Tiptoe: 0
+    HoldSeconds: 3
+    Turn: 0
+    Weapon: 4
+    WeaponAction: 2
+  GestureBake: {fileID: 4900000, guid: 4738140bf76ad42c7b05c4ae76b6b31c, type: 3}
+  LoopInterval: {x: 3, y: 5}
+  TurnDegrees: 18
+  IdleHaloColor: {r: 1, g: 0.28, b: 0.52, a: 1}
+  AimedHaloColor: {r: 1, g: 0.08, b: 0.25, a: 1}
+  Yaw: -12
+  ResolutionScale: 2
+  MaximumResolution: 2048
+  CrossfadeSeconds: 0.65
+  IdleInterval: {x: 6, y: 11}

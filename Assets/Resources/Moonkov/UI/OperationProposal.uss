@@ -49,7 +49,7 @@
 .moonkov-terminal.archive-page-4 .op-operator-check { position: absolute; left: 43%; right: 29%; top: 20%; bottom: 17%; }
 .moonkov-terminal.archive-page-4 .op-confirmed { padding: 22px; background-color: rgba(5,7,10,0.97); border-top-width: 3px; border-top-color: #164bff; border-bottom-width: 1px; border-bottom-color: #6c7585; }
 .moonkov-terminal.archive-page-4 .op-character-choices { flex-direction: row; flex-wrap: wrap; margin-bottom: 8px; }
-.moonkov-terminal.archive-page-4 .op-character-choice { flex-grow: 1; flex-basis: 0; min-width: 0; padding: 8px; margin-right: 4px; }
+.moonkov-terminal.archive-page-4 .op-character-choice { flex-grow: 1; flex-basis: 148px; min-width: 148px; padding: 8px; margin-right: 4px; }
 .moonkov-terminal.archive-page-4 .op-character-choice .op-button-label { font-size: 13px; }
 .moonkov-terminal.archive-page-4 .op-character-choice .op-choice-mark { font-size: 12px; margin-left: 6px; white-space: nowrap; }
 .moonkov-terminal.archive-page-4 .op-character-choice.terminal-tab-selected { border-width: 2px; border-color: #91b8ff; background-color: #153981; }
@@ -191,6 +191,7 @@
 .moonkov-terminal.archive-page-4.archive-compact .op-review .op-button-label { font-size: 14px; }
 .moonkov-terminal.archive-page-4.archive-compact .op-mission-rules { margin-top: 8px; padding-top: 8px; }
 .moonkov-terminal.archive-page-4.archive-compact .op-button-label { font-size: 20px; }
+.moonkov-terminal.archive-page-4.archive-compact .op-character-choice .op-button-label { font-size: 13px; }
 .moonkov-terminal.archive-page-4.archive-compact .op-back { height: 50px; }
 .moonkov-terminal.archive-page-4.archive-compact .op-continue { height: 60px; }
 .moonkov-terminal.archive-page-4.archive-compact.operation-step-1 .op-brand-title,

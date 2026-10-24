@@ -17,4 +17,5 @@ MonoBehaviour:
   - {fileID: 4714531572423036641, guid: d1a9df7498e9320409f241d8feab3e4d, type: 3}
   - {fileID: 8630589399470641778, guid: ad9212a932ad5524c89ab4785fa3d29c, type: 3}
   - {fileID: 5003206397375148636, guid: c3df22976fced4fc88b69ec6cef2cc21, type: 3}
+  - {fileID: 7740231792614310568, guid: 46872ec90cf574c3eb022e9537f7d360, type: 3}
   Death: {fileID: 7400000, guid: 32638223a8f200c47890d785b52cf357, type: 2}

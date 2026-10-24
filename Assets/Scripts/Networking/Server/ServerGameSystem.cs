@@ -227,8 +227,17 @@ namespace Unity.MP_FPS
             characterIndex = GameSettings.NormalizeCharacterIndex(characterIndex);
             if (playerEntityPrefabs.DollSingerEntityPrefab == Entity.Null)
                 throw new InvalidOperationException("Moonkov requires a registered DollSinger player prefab.");
-            if (characterIndex == GameSettings.HatsuneMikuCharacterIndex && playerEntityPrefabs.HatsuneMikuEntityPrefab == Entity.Null)
+            var playerEntityPrefab = characterIndex switch
+            {
+                GameSettings.HatsuneMikuCharacterIndex => playerEntityPrefabs.HatsuneMikuEntityPrefab,
+                GameSettings.ShianCharacterIndex => playerEntityPrefabs.ShianEntityPrefab,
+                _ => playerEntityPrefabs.DollSingerEntityPrefab
+            };
+            if (playerEntityPrefab == Entity.Null)
+            {
                 characterIndex = GameSettings.DollSingerCharacterIndex;
+                playerEntityPrefab = playerEntityPrefabs.DollSingerEntityPrefab;
+            }
             var ownerNetworkId = SystemAPI.GetComponent<NetworkId>(connectionEntity);
             
             // Instantiate the client input entity
@@ -239,8 +248,6 @@ namespace Unity.MP_FPS
             ecb.SetComponent(clientInputEntity, new PlayerCommandTarget { NetworkId = ownerNetworkId.Value });
 
             // Instantiate the player entity
-            var playerEntityPrefab = characterIndex == GameSettings.HatsuneMikuCharacterIndex
-                ? playerEntityPrefabs.HatsuneMikuEntityPrefab : playerEntityPrefabs.DollSingerEntityPrefab;
             var playerEntity = ecb.Instantiate(playerEntityPrefab);
 
             if (MoonRaidMap.Active == null && !state.EntityManager.HasComponent<RaidInventoryState>(connectionEntity))

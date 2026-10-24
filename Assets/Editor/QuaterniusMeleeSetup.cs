@@ -76,7 +76,15 @@ public static class QuaterniusMeleeSetup
         if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("Bake outside Play mode.");
         Bake("Assets/DollSinger/Prefabs/DollSingerNetworkPlayer.prefab", "Assets/DollSinger/Animation/Melee/Resources/MoonkovMeleeGestures.json");
         Bake("Assets/HatsuneMiku/Prefabs/HatsuneMikuNetworkPlayer.prefab", "Assets/HatsuneMiku/Animation/MeleeGestures.json");
+        Bake("Assets/Shian/Prefabs/ShianNetworkPlayer.prefab", "Assets/Shian/Animation/MeleeGestures.json");
         AssetDatabase.Refresh();
+    }
+
+    public static void BakeShian()
+    {
+        if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("Bake outside Play mode.");
+        Bake("Assets/Shian/Prefabs/ShianNetworkPlayer.prefab", "Assets/Shian/Animation/MeleeGestures.json");
+        AssetDatabase.ImportAsset("Assets/Shian/Animation/MeleeGestures.json", ImportAssetOptions.ForceSynchronousImport);
     }
 
     public static void CaptureMelee(string path)
@@ -146,6 +154,11 @@ public static class QuaterniusMeleeSetup
             var bones = library.bones.Select(n => hierarchy[n]).ToArray();
             var bind = bones.Select(b => b.localRotation).ToArray();
             var positions = bones.Select(b => b.localPosition).ToArray();
+            // The Humanoid graph does not evaluate MMD sibling grant helpers.
+            // Include their evaluated twist in the exact-rig sample; playback
+            // owns all these tracks and would otherwise restore them to bind.
+            var twistFollowers = root.GetComponentInChildren<HumanoidTwistFollowers>(true);
+            if (twistFollowers) twistFollowers.InitializePresentation();
             var left = hierarchy["肩P.L"]; var right = hierarchy["肩P.R"];
             var output = AnimationPlayableOutput.Create(graph, "Retarget", animator);
             AnimationClipPlayable playable = default;
@@ -180,8 +193,10 @@ public static class QuaterniusMeleeSetup
                     for (int f = 0; f < frames; f++)
                     {
                         for (int b = 0; b < bones.Length; b++) { bones[b].localRotation = bind[b]; bones[b].localPosition = positions[b]; }
+                        if (twistFollowers) twistFollowers.RestoreBeforeAnimation();
                         playable.SetTime(Mathf.Lerp(from, to, frames == 1 ? 0 : (float)f / (frames - 1)));
                         graph.Evaluate(0);
+                        if (twistFollowers) twistFollowers.ApplyPresentation();
                         if (pitch == 0)
                         {
                             travel[f] = hierarchy["手首.R"].position;

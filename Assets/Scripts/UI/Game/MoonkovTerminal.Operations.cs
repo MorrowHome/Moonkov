@@ -79,9 +79,11 @@ namespace Unity.MP_FPS.Client
         {
             var dollSinger = m_Content.Q<Button>("chooseDollSinger");
             var miku = m_Content.Q<Button>("chooseHatsuneMiku");
+            var shian = m_Content.Q<Button>("chooseShian");
             dollSinger.clicked += () => ChooseOperationCharacter(GameSettings.DollSingerCharacterIndex);
             miku.clicked += () => ChooseOperationCharacter(GameSettings.HatsuneMikuCharacterIndex);
-            dollSinger.SetEnabled(!m_Busy); miku.SetEnabled(!m_Busy);
+            shian.clicked += () => ChooseOperationCharacter(GameSettings.ShianCharacterIndex);
+            dollSinger.SetEnabled(!m_Busy); miku.SetEnabled(!m_Busy); shian.SetEnabled(!m_Busy);
             PresentOperationCharacters();
         }
 
@@ -98,6 +100,7 @@ namespace Unity.MP_FPS.Client
             MoonkovLocalization.Set(m_Content.Q<Label>("operatorName"), GameSettings.CharacterName(selected));
             SetChoice("chooseDollSinger", GameSettings.DollSingerCharacterIndex);
             SetChoice("chooseHatsuneMiku", GameSettings.HatsuneMikuCharacterIndex);
+            SetChoice("chooseShian", GameSettings.ShianCharacterIndex);
 
             void SetChoice(string name, int characterIndex)
             {

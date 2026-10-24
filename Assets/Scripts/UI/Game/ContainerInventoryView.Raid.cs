@@ -23,25 +23,32 @@ namespace Unity.MP_FPS.Client
                 foreach (var player in players)
                 {
                     if (!player) continue;
-                    if (!m_MikuPortraitAvatar)
+                    if (m_PortraitAvatars == null)
                     {
-                        var settings = Resources.Load<MenuCharacterSettings>("Moonkov/HatsuneMikuMenuCharacterSettings");
-                        var model = settings && settings.VisualPrefab ? settings.VisualPrefab.GetComponentInChildren<Animator>(true) : null;
-                        if (model) m_MikuPortraitAvatar = model.avatar;
+                        m_PortraitAvatars = new Dictionary<Avatar, int>();
+                        CacheAvatar(GameSettings.HatsuneMikuCharacterIndex);
+                        CacheAvatar(GameSettings.ShianCharacterIndex);
                     }
                     var animator = player.GetComponentInChildren<Animator>(true);
-                    return animator && m_MikuPortraitAvatar && animator.avatar == m_MikuPortraitAvatar
-                        ? GameSettings.HatsuneMikuCharacterIndex : GameSettings.DollSingerCharacterIndex;
+                    return animator && animator.avatar && m_PortraitAvatars.TryGetValue(animator.avatar, out int characterIndex)
+                        ? characterIndex : GameSettings.DollSingerCharacterIndex;
                 }
             }
             return m_PortraitSettings?.PlayerCharacter ?? GameSettings.DollSingerCharacterIndex;
+
+            void CacheAvatar(int characterIndex)
+            {
+                var settings = Resources.Load<MenuCharacterSettings>(GameSettings.MenuCharacterSettingsPath(characterIndex));
+                var model = settings && settings.VisualPrefab ? settings.VisualPrefab.GetComponentInChildren<Animator>(true) : null;
+                if (model && model.avatar) m_PortraitAvatars[model.avatar] = characterIndex;
+            }
         }
         private void PresentOperatorPortrait()
         {
             int characterIndex = OperatorPortraitCharacter();
-            bool miku = characterIndex == GameSettings.HatsuneMikuCharacterIndex;
-            m_Root.EnableInClassList("inventory-miku-operator", miku);
-            if (!miku) { ReleaseOperatorPortrait(); return; }
+            bool livePortrait = GameSettings.IsPlayableCharacter(characterIndex) && characterIndex != GameSettings.DollSingerCharacterIndex;
+            m_Root.EnableInClassList("inventory-live-operator", livePortrait);
+            if (!livePortrait) { ReleaseOperatorPortrait(); return; }
             if (m_Character != null && m_Character.CharacterIndex == characterIndex) return;
             ReleaseOperatorPortrait();
             m_Character = new MenuCharacterView(idleOnly: true, characterIndex: characterIndex);

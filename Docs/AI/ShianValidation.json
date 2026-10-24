@@ -1,0 +1,90 @@
+{
+  "editor": {
+    "unity": "6000.5.10f1",
+    "networkSessionStarted": false,
+    "vertices": 96458,
+    "blendShapes": 170,
+    "sourceDegenerateTrianglesRemovedByUnity": 22,
+    "heightMetres": 1.64999938,
+    "humanoidTwistFollowers": {
+      "count": 12,
+      "poseCases": 24,
+      "maximumRotationErrorDegrees": 0.0,
+      "maximumRepeatErrorDegrees": 0.0,
+      "maximumSkinChangeMetres": 0.0272602383
+    },
+    "firstPersonTriangles": 42336,
+    "fullBodyTriangles": 145664,
+    "alternateBurstSamples": 105,
+    "firearmPoseSamples": 273,
+    "sniperContactGapMm": 0.180279911,
+    "sniperIndexBendDegrees": 0.0279764552,
+    "sniperRightAngleErrorDegrees": 0.000457763672,
+    "meleePoseSamples": 216,
+    "simulatedHairAndTieBones": 55,
+    "hairSettlingFrames": 600,
+    "maximumSettledTailHeightMetres": 1.463154,
+    "springSimulationFrames": 240,
+    "maximumHairRootBendDegrees": 76.0004,
+    "humanoidClips": 36,
+    "passed": true
+  },
+  "playMode": {
+    "startFrame": 3368,
+    "endFrame": 4199,
+    "stanceChanges": 4,
+    "menuSwitches": 5,
+    "networkSessionStarted": false,
+    "firstPersonGestureArms": true,
+    "warehousePortraitLifecycle": true,
+    "equipmentPresentation": true,
+    "passed": true,
+    "helmetSizeMetres": {
+      "x": 0.18199707567691803,
+      "y": 0.33830809593200684,
+      "z": 0.18199707567691803
+    },
+    "walkDistanceMetres": 2.545001983642578,
+    "standingTailHeightMetres": 1.4312713146209717,
+    "landedTailHeightMetres": 1.4326555728912354,
+    "fallAirflow": 0.39591309428215027,
+    "fallCover": 0.4316301643848419,
+    "failure": ""
+  },
+  "menuLayout": [
+    "PASS 1280px compact=False chooseDollSinger: button=154.0px, text=87.0px",
+    "PASS 1280px compact=False chooseHatsuneMiku: button=153.0px, text=105.0px",
+    "PASS 1280px compact=False chooseShian: button=311.0px, text=44.0px",
+    "PASS 1280px compact=True chooseDollSinger: button=162.0px, text=87.0px",
+    "PASS 1280px compact=True chooseHatsuneMiku: button=161.0px, text=105.0px",
+    "PASS 1280px compact=True chooseShian: button=327.0px, text=44.0px",
+    "PASS 1600px compact=False chooseDollSinger: button=198.0px, text=87.0px",
+    "PASS 1600px compact=False chooseHatsuneMiku: button=198.0px, text=105.0px",
+    "PASS 1600px compact=False chooseShian: button=400.0px, text=44.0px",
+    "PASS 1600px compact=True chooseDollSinger: button=206.0px, text=87.0px",
+    "PASS 1600px compact=True chooseHatsuneMiku: button=206.0px, text=105.0px",
+    "PASS 1600px compact=True chooseShian: button=416.0px, text=44.0px",
+    "PASS 1920px compact=False chooseDollSinger: button=160.0px, text=87.0px",
+    "PASS 1920px compact=False chooseHatsuneMiku: button=161.0px, text=105.0px",
+    "PASS 1920px compact=False chooseShian: button=160.0px, text=44.0px",
+    "PASS 1920px compact=True chooseDollSinger: button=165.0px, text=87.0px",
+    "PASS 1920px compact=True chooseHatsuneMiku: button=166.0px, text=105.0px",
+    "PASS 1920px compact=True chooseShian: button=166.0px, text=44.0px"
+  ],
+  "networkValidation": "Not run; one Editor, no client/server worlds.",
+  "sourceGeometryQA": "Original source findings retained in ArtSource/Shian/QA/GeometryQA.json; see Docs/Shian.md for classification.",
+  "faceTextureValidation": {
+    "diagnosis": "Mirrored UV island boundary polluted by compression/mips; no centre mesh crack.",
+    "finalSize": 2048,
+    "compression": "Uncompressed",
+    "mipmaps": false,
+    "seamAbsentInReviewedPreview": true
+  },
+  "finalEditorState": {
+    "scene": "Assets/Scenes/SmokeGrenadeTest.unity",
+    "sceneDirty": false,
+    "playing": false,
+    "compiling": false,
+    "playModeStartScene": null
+  }
+}

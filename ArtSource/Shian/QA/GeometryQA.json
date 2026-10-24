@@ -1,0 +1,113 @@
+{
+  "ok": true,
+  "pass": false,
+  "errors": [
+    "Shian_Body: 15 zero-area UV faces",
+    "Shian_Body: 3 edges with inconsistent face winding",
+    "Shian_Body: degenerate faces=22 zero-len edges=22",
+    "z-fighting: Shian_Body (4145 overlapping coplanar tri pairs)",
+    "floating/detached part in Shian_Body (109 verts at [0.06, -0.043, 1.427])",
+    "floating/detached part in Shian_Body (109 verts at [-0.06, -0.043, 1.427])"
+  ],
+  "warnings": [
+    "Shian_Body: ~77.57% UV overlap (ok only if mirrored/stacked on purpose; bakes break)",
+    "Shian_Body: non-manifold edges=2 wire=0",
+    "Shian_Body: duplicate verts=12785 loose verts=0",
+    "hidden back-to-back faces: Shian_Body (391 pairs) - delete to save tris",
+    "3 parts fully enclosed, not touching (eyes/internals?): ['Shian_Body', 'Shian_Body', 'Shian_Body']",
+    "asset lowest point z=0.0066 (not resting on ground plane z=0)"
+  ],
+  "ground_z": 0.0066,
+  "zfighting": [
+    {
+      "where": "Shian_Body",
+      "tri_pairs": 4145
+    }
+  ],
+  "floating": [
+    {
+      "object": "Shian_Body",
+      "island_verts": 109,
+      "center": [
+        0.06,
+        -0.043,
+        1.427
+      ]
+    },
+    {
+      "object": "Shian_Body",
+      "island_verts": 109,
+      "center": [
+        -0.06,
+        -0.043,
+        1.427
+      ]
+    }
+  ],
+  "back_to_back": [
+    {
+      "where": "Shian_Body",
+      "tri_pairs": 391
+    }
+  ],
+  "enclosed": [
+    {
+      "object": "Shian_Body",
+      "island_verts": 12,
+      "center": [
+        -0.015,
+        -0.086,
+        1.502
+      ]
+    },
+    {
+      "object": "Shian_Body",
+      "island_verts": 12,
+      "center": [
+        0.015,
+        -0.086,
+        1.502
+      ]
+    },
+    {
+      "object": "Shian_Body",
+      "island_verts": 6,
+      "center": [
+        -0.057,
+        -0.05,
+        1.393
+      ]
+    }
+  ],
+  "objects": {
+    "Shian_Body": {
+      "verts": 91363,
+      "faces": 145686,
+      "tris": 145686,
+      "ngons": 0,
+      "boundary_edges": 35300,
+      "nonmanifold_edges": 2,
+      "wire_edges": 0,
+      "loose_verts": 0,
+      "degenerate_faces": 22,
+      "zero_length_edges": 22,
+      "inconsistent_normals_edges": 3,
+      "duplicate_verts": 12785,
+      "islands": 930,
+      "inside_out_islands": 0,
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "materials": 42,
+      "unweighted_verts": 0,
+      "verts_over_4_influences": 0,
+      "uv_maps": 1,
+      "uv_oob_pct": 0.0,
+      "uv_zero_area_faces": 15,
+      "uv_overlap_pct": 77.57,
+      "uv_coverage_pct": 85.9
+    }
+  }
+}
