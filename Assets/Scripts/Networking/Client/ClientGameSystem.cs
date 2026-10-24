@@ -65,6 +65,7 @@ namespace Unity.MP_FPS
             clientJoinRequestRpc.CarryCells = state.WorldUnmanaged.IsThinClient() ? 0 : PlayerProfileClient.CarryCells;
             clientJoinRequestRpc.Mode = GameSettings.Instance.RequestedMode;
             clientJoinRequestRpc.RulesVersion = GameSettings.Instance.RequestedRulesVersion;
+            clientJoinRequestRpc.ResumeOnly = ConnectionSettings.Instance.ResumeOnly;
             state.EntityManager.SetComponentData(joinRequestEntity, clientJoinRequestRpc);
             state.EntityManager.AddComponentData(clientEntity, new NetworkStreamInGame());
         }

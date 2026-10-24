@@ -97,5 +97,9 @@
             <ui:Label text="Choose your connection in raid preparation." class="stash-footer-hint" />
             <ui:Button name="stashDeploy" text="PREPARE RAID" class="stash-deploy-button" />
         </ui:VisualElement>
+        <ui:VisualElement name="ReconnectPanel" class="reconnect-panel hidden">
+            <ui:Label name="ResumeStatus" class="relay-help" />
+            <ui:Button name="ResumeRaid" text="重连原战局" class="stash-deploy-button" />
+        </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

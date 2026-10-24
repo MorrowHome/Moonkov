@@ -83,6 +83,8 @@ namespace Unity.MP_FPS
             }
 
             PollPersistence(ref state, ecb);
+            PollRetainedRaids(ref state, ecb);
+            _joinedClientLookup.Update(ref state);
             HandleJoinRequests(ref state, gameplayMapsEntity, playerEntityPrefabs, ecb);
             state.EntityManager.GetComponentObject<RaidMissionWorld>(SystemAPI.GetSingletonEntity<RaidLootWorld>()).BackendCompatible = persistence.MissionsSupported;
             if(MoonRaidMap.Active!=null)EnsureRaidInventories(ref state);
@@ -433,7 +435,7 @@ namespace Unity.MP_FPS
                     else if (persistence.Enabled)
                     {
                         persistence.BeginJoin(rpcReceive.ValueRW.SourceConnection, request.ValueRO.PlayerName,
-                            request.ValueRO.CharacterIndex, request.ValueRO.LoginToken.ToString(), request.ValueRO.CarryCells);
+                            request.ValueRO.CharacterIndex, request.ValueRO.LoginToken.ToString(), request.ValueRO.CarryCells, request.ValueRO.ResumeOnly);
                     }
                     else
                     {

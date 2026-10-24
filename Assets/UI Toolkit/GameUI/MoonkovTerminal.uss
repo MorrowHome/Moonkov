@@ -355,3 +355,5 @@
 .terminal-shop-quantity .terminal-copy { margin: 0; min-width: 36px; -unity-text-align: middle-center; }
 .terminal-shop-status { white-space: normal; margin-top: 12px; min-height: 32px; }
 .relay-help { white-space: normal; font-size: 12px; margin-top: 8px; }
+.reconnect-panel { flex-direction: row; align-items: center; padding: 8px 20px; background-color: rgb(39, 44, 46); color: rgb(245, 235, 214); }
+.reconnect-panel .relay-help { flex-grow: 1; margin-right: 16px; }

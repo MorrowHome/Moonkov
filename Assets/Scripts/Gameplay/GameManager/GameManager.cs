@@ -159,10 +159,16 @@ namespace Unity.MP_FPS
         /// <remarks>
         /// It is an asynchronous method because it is waiting on several API like <see cref="GameConnection"/> and <see cref="ScenesLoader"/>.
         /// </remarks>
-        public async void StartGameAsync(CreationType creationType)
+        public void StartGameAsync(CreationType creationType) => RequestGameAsync(creationType, false);
+        public void ReconnectLastGameAsync()
+        {
+            if (SessionReconnect.Available) RequestGameAsync(SessionReconnect.Restore(), true);
+        }
+        async void RequestGameAsync(CreationType creationType, bool resume)
         {
             if (m_StartGameRequested || m_ReturningToMainMenu) return;
             m_StartGameRequested = true;
+            ConnectionSettings.Instance.ResumeOnly = resume;
             try { await StartRequestedGameAsync(creationType); }
             finally { m_StartGameRequested = false; }
         }
@@ -223,7 +229,7 @@ namespace Unity.MP_FPS
                     GameSettings.Instance.MainMenuState = MainMenuState.MainMenuScreen;
                 }
             }
-            else if (creationType == CreationType.ConnectAndJoin)
+            else if (creationType == CreationType.ConnectAndJoin && !ConnectionSettings.Instance.ResumeOnly)
             {
                 GameSettings.Instance.CancellableUserInputPopUp = new AwaitableCompletionSource();
                 GameSettings.Instance.MainMenuState = MainMenuState.DirectConnectPopUp;
@@ -274,6 +280,7 @@ namespace Unity.MP_FPS
                 m_LoadingGameCancel = null;
             }
 
+            SessionReconnect.Remember(creationType);
             FinishLoadingGame();
         }
 
@@ -285,6 +292,8 @@ namespace Unity.MP_FPS
 
         async Task StartGameAsync(CreationType creationType, CancellationToken cancellationToken)
         {
+            if (creationType == CreationType.CreateOrJoin || creationType == CreationType.Host)
+                OnlineTransportSecurity.RequireTrustedOnlineHost();
             if (m_LoadingMainMenuCancel != null || GameSettings.Instance.MainMenuSceneLoaded)
             {
                 // Unload already created MainMenu world 

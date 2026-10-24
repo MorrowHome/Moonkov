@@ -54,11 +54,14 @@ namespace Unity.MP_FPS
 
         private static void Fail(string message)
         {
-            ConnectionSettings.Instance.ConnectionError = message;
+            ConnectionSettings.Instance.ConnectionError ??= message;
             ConnectionSettings.Instance.GameConnectionState = ConnectionState.State.Disconnected;
             // Loading waits propagate failure to their owner; gameplay has no loading task.
             if (GameSettings.Instance.GameState == GlobalGameState.InGame && GameManager.Instance != null)
+            {
+                SessionReconnect.Offer();
                 GameManager.Instance.ReturnToMainMenuAsync();
+            }
         }
     }
 }

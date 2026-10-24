@@ -66,6 +66,8 @@ namespace Unity.MP_FPS
             if(!context.ClashSupported || match==null){ClashAccepted(ecb,connection,false,"赏金速战后端或地图未就绪");return;}
             var profile=context.Profiles[connection];
             var previous=match.Account(profile.PlayerId);double retainedDeadline=previous?.DisconnectDeadline??0;
+            if (join.ResumeOnly && (previous == null || previous.Connected || retainedDeadline <= SystemAPI.Time.ElapsedTime))
+            { ClashAccepted(ecb, connection, false, "原战局已关闭或重连窗口已过，不会自动开始新战局"); return; }
             var p=match.Join(profile.PlayerId,join.Name.ToString(),SystemAPI.Time.ElapsedTime);
             if(p==null){ClashAccepted(ecb,connection,false,"回合已锁定、身份在线或房间已满");return;}
             int oldOwner=p.NetworkId;int newOwner=SystemAPI.GetComponent<NetworkId>(connection).Value;

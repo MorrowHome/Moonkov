@@ -159,7 +159,9 @@ namespace Unity.MP_FPS
             joined.ValueRW.PlayerEntity = Entity.Null;
             ecb.SetComponent(connection, new CommandTarget { targetEntity = Entity.Null });
             int networkId = SystemAPI.GetComponent<NetworkId>(connection).Value;
-            SystemAPI.GetSingletonBuffer<ClientsMap>().ElementAt(networkId).PlayerEntity = Entity.Null;
+            var clients = SystemAPI.GetSingletonBuffer<ClientsMap>();
+            if (networkId < clients.Length && clients[networkId].ConnectionEntity == connection)
+                clients.ElementAt(networkId).PlayerEntity = Entity.Null;
         }
     }
 }

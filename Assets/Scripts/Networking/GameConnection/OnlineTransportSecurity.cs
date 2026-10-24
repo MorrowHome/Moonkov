@@ -12,8 +12,21 @@ namespace Unity.MP_FPS
     {
         private sealed class ServerOptions
         {
+            public string BackendUrl, ServerKey;
             public string GameCertificateFile = "LocalData/game-tls/server.pem";
             public string GamePrivateKeyFile = "LocalData/game-tls/server-key.pem";
+        }
+
+        public static void RequireTrustedOnlineHost()
+        {
+            string config = Environment.GetEnvironmentVariable("MOON_SERVER_CONFIG");
+            if (string.IsNullOrEmpty(config)) config = Path.Combine(Path.GetDirectoryName(Application.dataPath), "moon-server.local.json");
+            if (!File.Exists(config)) throw new InvalidOperationException("创建在线房间需要本机受信服务器配置。普通客户端请通过房间码或服务器地址加入；自建本地房间请使用 LAN。");
+            var options = JsonConvert.DeserializeObject<ServerOptions>(File.ReadAllText(config));
+            if (options?.ServerKey?.Length < 32 || options?.ServerKey == null ||
+                !Uri.TryCreate(options.BackendUrl, UriKind.Absolute, out var backend) ||
+                (backend.Scheme != "https" && !(backend.Scheme == "http" && backend.IsLoopback)))
+                throw new InvalidOperationException("在线房主的后端地址或服务器身份配置无效。");
         }
 
         public static void ConfigureClient(ref NetworkSettings settings)

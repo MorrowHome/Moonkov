@@ -15,6 +15,7 @@ namespace Unity.MP_FPS
         public int CarryCells;
         public RaidGameMode Mode;
         public int RulesVersion;
+        public bool ResumeOnly;
     }
 
     /// <summary>

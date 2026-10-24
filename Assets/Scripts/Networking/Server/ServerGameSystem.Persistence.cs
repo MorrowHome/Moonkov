@@ -65,11 +65,22 @@ namespace Unity.MP_FPS
                 bool alreadyPlaying = false;
                 foreach (var existing in context.Profiles)
                     if (existing.Key != connection && SystemAPI.Exists(existing.Key) && existing.Value.PlayerId == profile.PlayerId &&
+                        !SystemAPI.HasComponent<RaidDetached>(existing.Key) &&
                         (!BountyClashRuntime.Enabled(state.EntityManager) || (SystemAPI.HasComponent<NetworkStreamConnection>(existing.Key) && !SystemAPI.HasComponent<NetworkStreamRequestDisconnect>(existing.Key))))
                         alreadyPlaying = true;
                 if (alreadyPlaying)
                 {
                     Debug.LogWarning("[Raid] This profile is already connected to this server.");
+                    ecb.AddComponent(connection, new NetworkStreamRequestDisconnect { Reason = NetworkStreamDisconnectReason.ConnectionClose });
+                    continue;
+                }
+                if (!BountyClashRuntime.Enabled(state.EntityManager) && TryResumeRetainedRaid(ref state, ecb, connection, profile, join)) continue;
+                if (join.ResumeOnly && !BountyClashRuntime.Enabled(state.EntityManager))
+                {
+                    var rejected = ecb.CreateEntity();
+                    ecb.AddComponent(rejected, new ClashJoinAcceptedRpc { Mode = RaidGameMode.Expedition, Accepted = false,
+                        Reason = "无法恢复原战局：角色已死亡、服务器已重启或重连窗口已过。不会自动开始新战局。" });
+                    ecb.AddComponent(rejected, new SendRpcCommandRequest { TargetConnection = connection });
                     ecb.AddComponent(connection, new NetworkStreamRequestDisconnect { Reason = NetworkStreamDisconnectReason.ConnectionClose });
                     continue;
                 }

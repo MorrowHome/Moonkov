@@ -70,6 +70,7 @@ namespace Unity.MP_FPS
 
          public NetworkEndpoint ConnectionEndpoint;
          public string GameJoinTicket { get; set; }
+         public bool ResumeOnly { get; set; }
          public string ConnectionError { get; set; }
          public bool ModeConfirmed { get; set; }
          public RaidGameMode ApprovedMode { get; set; }

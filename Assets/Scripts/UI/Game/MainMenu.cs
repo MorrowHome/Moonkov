@@ -30,6 +30,9 @@ namespace Unity.MP_FPS.Client
         Button m_QuitButton;
         Button m_JoinRelayButton;
         VisualElement m_RelayJoinControls;
+        Button m_ResumeRaid;
+        Label m_ResumeStatus;
+        IVisualElementScheduledItem m_ResumeRefresh;
 
         void OnEnable()
         {
@@ -88,6 +91,7 @@ namespace Unity.MP_FPS.Client
 
             m_StartHostButton = m_MainMenu.Q<Button>(UIElementNames.StartHost);
             m_StartHostButton.clicked += OnStartHostPressed;
+            m_StartHostButton.tooltip = m_CreateGameButton.tooltip = "在线房主需要受信服务器的后端配置；普通客户端使用房间码或服务器地址加入。";
 
             m_ConnectToServerButton = m_MainMenu.Q<Button>(UIElementNames.ConnectToServer);
             m_ConnectToServerButton.clicked += OnConnectToServerPressed;
@@ -107,11 +111,18 @@ namespace Unity.MP_FPS.Client
             InitializeAccountPanel();
             InitializeBountyModeUI();
             InitializeLanUI();
+            m_ResumeRaid = m_MainMenu.Q<Button>("ResumeRaid");
+            m_ResumeStatus = m_MainMenu.Q<Label>("ResumeStatus");
+            m_ResumeRaid.clicked += ResumeRaid;
+            m_ResumeRefresh = m_MainMenu.schedule.Execute(RefreshReconnect).Every(1000);
+            RefreshReconnect();
             MoonkovLocalization.Bind(m_MainMenu);
         }
 
         void OnDisable()
         {
+            m_ResumeRefresh?.Pause();
+            if (m_ResumeRaid != null) m_ResumeRaid.clicked -= ResumeRaid;
             DisposeLanUI();
             DisposeBountyModeUI();
             DisposeAccountPanel();
@@ -159,5 +170,13 @@ namespace Unity.MP_FPS.Client
         static void OnConnectToServerPressed() => GameManager.Instance.StartGameAsync(CreationType.ConnectAndJoin);
 
         static void OnQuitPressed() => GameManager.Instance.QuitAsync();
+        static void ResumeRaid() => GameManager.Instance.ReconnectLastGameAsync();
+        void RefreshReconnect()
+        {
+            bool available = SessionReconnect.Available && PlayerProfileClient.IsLoggedIn;
+            m_MainMenu.Q("ReconnectPanel").style.display = available ? DisplayStyle.Flex : DisplayStyle.None;
+            m_ResumeRaid.SetEnabled(available && !m_AccountBusy && GameSettings.Instance.GameState == GlobalGameState.MainMenu);
+            m_ResumeStatus.text = $"原战局仍保留，重连窗口约剩 {SessionReconnect.SecondsRemaining} 秒。角色仍可受伤；服务器确认是否可恢复。";
+        }
     }
 }
