@@ -35,7 +35,7 @@ RenderSettings:
   m_DefaultReflectionMode: 0
   m_DefaultReflectionResolution: 128
   m_ReflectionBounces: 1
-  m_ReflectionIntensity: 1
+  m_ReflectionIntensity: 0
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
   m_UseRadianceAmbientProbe: 0
@@ -1276375,7 +1276375,7 @@ MonoBehaviour:
   spaceSkybox: {fileID: 2100000, guid: bdfedfaefe1e20f438681e126c325f04, type: 2}
   nightAmbient: {r: 0, g: 0, b: 0, a: 1}
   ambientFill: {r: 0.015, g: 0.015, b: 0.015, a: 1}
-  environmentReflectionIntensity: 1
+  environmentReflectionIntensity: 0
   clockMode: 1
   epochUtc: 2026-10-18T00:00:00Z
   latitude: -13.7855

@@ -49,3 +49,11 @@ RTX 4070 SUPER、1440×900、每机位预热 4 次、采样 12 次：参数/清�
 最小验证：Edit Mode 临时加载正式地图，在 `(1800,182,2168)` 看向 `(2048,195,2048)`，60° FOV、1280×720、正式地图管线与后处理开启。每组预热两帧，使用同一相机分别输出原参数与候选参数，读取线性 HDR 后转 sRGB 保存；受光面变亮，建筑边缘和月面纹理仍可辨，投影仍深暗。对照位于 `Library/BuildValidation/LunarBrightness/before-srgb.png` 与 `candidate-srgb.png`，不提交。早先未预热的截图不作为对照依据。
 
 仅保存两份独立资源；Shader 错误检查为 false。临时相机与渲染目标已释放，临时加载的正式地图已关闭，恢复原 MainMenu 和管线；没有保存正式场景，也没有进入 Play、联机或进行性能验收。实机观感仍需用户确认。
+
+## 2026-10-24：中央建筑蓝色反射
+
+单变量对照确认，正式地图在黑色太空背景下仍以强度 1 使用 `Default-Skybox-Cubemap` 默认天空反射。将 `RenderSettings.reflectionIntensity` 临时设为 0 后，中央金属建筑的明显蓝色反射消失；太阳与补光均为白色，材质的轻微冷灰底色不是主要原因。
+
+正式场景的 `m_ReflectionIntensity` 与 `MoonSceneLighting.environmentReflectionIntensity` 同时设为 0，覆盖编辑器与运行时的默认环境反射。房间 ReflectionProbe 的贴图、强度与供电回路不改。没有用全局去饱和压掉角色、警示色或灯光颜色，也没有禁用材质的局部探针采样。
+
+固定机位与上一节一致，单变量对照位于 `Library/BuildValidation/LunarCast/baseline.png` 和 `no-environment-reflection.png`；预热两帧、线性 HDR 转 sRGB 输出。正式场景仅精确修改这两个标量，未通过 Editor 重存；已有场景差异保留并排除于提交。未进入 Play 或联机验收。
