@@ -42,19 +42,26 @@ namespace Unity.MP_FPS
                 var related=new bool[bones.Length];var matrices=new Matrix4x4[bones.Length];
                 for(int b=0;b<bones.Length;b++)if(bones[b]){related[b]=bones[b]==m_Head||bones[b].IsChildOf(m_Head);matrices[b]=bones[b].localToWorldMatrix*bind[b];}
                 var vertices=mesh.vertices;
-                var physical=new bool[vertices.Length];var face=new bool[vertices.Length];var materials=renderer.sharedMaterials;
+                var physical=new bool[vertices.Length];var face=new bool[vertices.Length];var compactHead=new bool[vertices.Length];var materials=renderer.sharedMaterials;
+                int skull=System.Array.IndexOf(bones,m_Head);
                 for(int sub=0;sub<Mathf.Min(mesh.subMeshCount,materials.Length);sub++)
                 {
                     if(!materials[sub])continue;
                     string name=materials[sub].name.Replace(" (Instance)","");
-                    if(name!="Face"&&name!="Body"&&name!="Hair")continue;
-                    foreach(int index in mesh.GetTriangles(sub)){physical[index]=true;if(name=="Face")face[index]=true;}
+                    bool isFace=name.Equals("Face",System.StringComparison.OrdinalIgnoreCase)||name.Equals("head",System.StringComparison.OrdinalIgnoreCase);
+                    if(!isFace&&!name.Equals("Body",System.StringComparison.OrdinalIgnoreCase)&&!name.Equals("Hair",System.StringComparison.OrdinalIgnoreCase))continue;
+                    foreach(int index in mesh.GetTriangles(sub))
+                    {physical[index]=true;if(isFace)face[index]=true;if(name.Equals("head",System.StringComparison.OrdinalIgnoreCase))compactHead[index]=true;}
                 }
                 for(int i=0;i<vertices.Length;i++)
                 {
                     if(!physical[i])continue;
                     var w=weights[i];float head=(related[w.boneIndex0]?w.weight0:0)+(related[w.boneIndex1]?w.weight1:0)+(related[w.boneIndex2]?w.weight2:0)+(related[w.boneIndex3]?w.weight3:0);
                     if(head<.65f)continue;
+                    // Miku packs the face, scalp and long twin tails into one material.
+                    // Descendant hair bones must not enlarge the skull's pressure dome.
+                    float skullWeight=(w.boneIndex0==skull?w.weight0:0)+(w.boneIndex1==skull?w.weight1:0)+(w.boneIndex2==skull?w.weight2:0)+(w.boneIndex3==skull?w.weight3:0);
+                    if(compactHead[i]&&skullWeight<.65f)continue;
                     Vector3 v=vertices[i],world=matrices[w.boneIndex0].MultiplyPoint3x4(v)*w.weight0+matrices[w.boneIndex1].MultiplyPoint3x4(v)*w.weight1+
                         matrices[w.boneIndex2].MultiplyPoint3x4(v)*w.weight2+matrices[w.boneIndex3].MultiplyPoint3x4(v)*w.weight3;
                     Vector3 p=inverse*(world-m_Head.position);if(p.y<-.025f||p.y>.6f)continue;
@@ -69,7 +76,7 @@ namespace Unity.MP_FPS
             float bottom=(inverse*(anchor.position-m_Head.position)).y;
             Vector3 center=(minimum+maximum)*.5f;
             if(!float.IsInfinity(faceMinimum.y))center.y=(faceMinimum.y+faceMaximum.y)*.5f;
-            float radius=Mathf.Max(.14f,Mathf.Sqrt(RadiusSquared(center.y))+.012f);
+            float radius=Mathf.Max(.10f,Mathf.Sqrt(RadiusSquared(center.y))+.012f);
             // Main skull plus a small scalp clearance. Low side locks and tied
             // hair must not turn the head into the envelope of the whole hairstyle.
             radius=Mathf.Max(radius,maximum.y-center.y+.010f);
@@ -78,6 +85,9 @@ namespace Unity.MP_FPS
             m_SealLatitude=Mathf.Clamp((center.y-bottom)/radius,.70f,.98f);
             m_VisorOffset=new Vector3(center.x,center.y-radius*m_SealLatitude,center.z);
             m_VisorSize=new Vector3(radius,radius*(1+m_SealLatitude),radius);
+            // A wide hairstyle needs lateral clearance, not the same radius above
+            // the crown. Keep the neck seat and fit the vertical axis to the scalp.
+            m_VisorSize.y=Mathf.Min(m_VisorSize.y,maximum.y+.012f-m_VisorOffset.y);
             m_SealRadius=radius*Mathf.Sqrt(1-m_SealLatitude*m_SealLatitude);
             m_SealOffset=anchor.InverseTransformPoint(m_Head.position+frame*m_VisorOffset);
             m_SealLocalFrame=Quaternion.Inverse(anchor.rotation)*frame;
