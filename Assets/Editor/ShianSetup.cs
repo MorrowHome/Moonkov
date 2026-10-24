@@ -70,8 +70,7 @@ public static class ShianSetup
         {
             human = mapping.Select(pair => new HumanBone { humanName = pair.Key, boneName = pair.Value,
                 limit = new HumanLimit { useDefaultValues = true } }).ToArray(),
-            skeleton = transforms.Select(t => new SkeletonBone { name = t.name, position = t.localPosition,
-                rotation = t.localRotation, scale = t.localScale }).ToArray(),
+            skeleton = CreateAvatarReferencePose(model, mapping),
             upperArmTwist = .5f, lowerArmTwist = .5f, upperLegTwist = .5f, lowerLegTwist = .5f,
             armStretch = .05f, legStretch = .05f, feetSpacing = 0, hasTranslationDoF = false
         };
@@ -99,6 +98,32 @@ public static class ShianSetup
             Directory.CreateDirectory("Tools/Blender");
             File.WriteAllText("Tools/Blender/ShianBind.json", JsonUtility.ToJson(bind, true));
             Debug.Log("Shian Humanoid imported; exported " + bones.Length + " bind transforms without evaluating the Animator.");
+        }
+        finally { EditorSceneManager.ClosePreviewScene(scene); }
+    }
+
+    private static SkeletonBone[] CreateAvatarReferencePose(GameObject model, Dictionary<string, string> mapping)
+    {
+        // The mesh is bound in an A-pose. Humanoid needs a separate T-pose
+        // reference; using the mesh bind here pulls idle arms behind the body.
+        // Pose only a temporary instance so the FBX bind and exact-rig gestures stay intact.
+        var scene = EditorSceneManager.NewPreviewScene();
+        try
+        {
+            var instance = (GameObject)PrefabUtility.InstantiatePrefab(model, scene);
+            var transforms = instance.GetComponentsInChildren<Transform>(true);
+            var bones = transforms.ToDictionary(t => t.name);
+            foreach (var side in new[] { ("Left", Vector3.left), ("Right", Vector3.right) })
+            {
+                var upper = bones[mapping[side.Item1 + "UpperArm"]];
+                var lower = bones[mapping[side.Item1 + "LowerArm"]];
+                var hand = bones[mapping[side.Item1 + "Hand"]];
+                Vector3 direction = instance.transform.TransformDirection(side.Item2);
+                upper.rotation = Quaternion.FromToRotation(lower.position - upper.position, direction) * upper.rotation;
+                lower.rotation = Quaternion.FromToRotation(hand.position - lower.position, direction) * lower.rotation;
+            }
+            return transforms.Select(t => new SkeletonBone { name = t.name, position = t.localPosition,
+                rotation = t.localRotation, scale = t.localScale }).ToArray();
         }
         finally { EditorSceneManager.ClosePreviewScene(scene); }
     }

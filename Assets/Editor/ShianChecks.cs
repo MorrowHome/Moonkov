@@ -69,6 +69,7 @@ public static class ShianChecks
                     Require(bones.ContainsKey(digit + "先." + side), "Missing fingertip " + digit + side);
             Require(bones["腕.L"].position.x < bones["腕.R"].position.x, "Character's left/right bones are mirrored.");
             Require(bones["足先EX.L"].position.z > bones["足首.L"].position.z, "Character is not facing +Z.");
+            ValidateIdleArmPlacement(animator, Restore, report);
             var renderer = root.GetComponentsInChildren<SkinnedMeshRenderer>(true).Single();
             Require(renderer.sharedMesh.isReadable, "First-person mesh needs Read/Write enabled.");
             Require(renderer.sharedMesh.subMeshCount == 42 && renderer.sharedMaterials.Length == 42, "Material slots changed during import.");
@@ -282,6 +283,62 @@ public static class ShianChecks
             Object.DestroyImmediate(surface);
             EditorSceneManager.ClosePreviewScene(scene);
         }
+    }
+
+    private static void ValidateIdleArmPlacement(Animator animator, Action restore, JObject report)
+    {
+        // Observe the retargeted idle itself, before skirt IK, twist followers,
+        // weapon bakes or springs can conceal an invalid Avatar reference pose.
+        const float minimumOutward = .005f, maximumBehind = .035f;
+        var clip = AssetDatabase.LoadAssetAtPath<AnimationClip>("Assets/DollSinger/Animation/Locomotion/Unarmed_Idle.anim");
+        Require(clip, "The shared Unarmed_Idle clip is missing.");
+        Require(animator.GetComponentsInChildren<MonoBehaviour>(true).All(b => !b.enabled),
+            "Raw idle placement must be checked with every MonoBehaviour disabled.");
+        var samples = new JArray();
+        var result = new JObject { ["clip"] = clip.name, ["playableIK"] = false,
+            ["minimumOutwardMetres"] = minimumOutward, ["maximumBehindMetres"] = maximumBehind,
+            ["samples"] = samples, ["passed"] = false };
+        report["rawIdleArmPlacement"] = result;
+        var failures = new List<string>();
+        var graph = PlayableGraph.Create("Shian raw idle arm placement");
+        graph.SetTimeUpdateMode(DirectorUpdateMode.Manual);
+        try
+        {
+            var playable = AnimationClipPlayable.Create(graph, clip);
+            playable.SetSpeed(0);
+            playable.SetApplyFootIK(false);
+            playable.SetApplyPlayableIK(false);
+            AnimationPlayableOutput.Create(graph, "Raw idle", animator).SetSourcePlayable(playable);
+            graph.Play();
+            foreach (float time in new[] { 0f, 1f, 4f })
+            {
+                restore();
+                playable.SetTime(time);
+                graph.Evaluate(0);
+                foreach (bool left in new[] { true, false })
+                {
+                    var shoulder = animator.GetBoneTransform(left ? HumanBodyBones.LeftUpperArm : HumanBodyBones.RightUpperArm);
+                    var wrist = animator.GetBoneTransform(left ? HumanBodyBones.LeftHand : HumanBodyBones.RightHand);
+                    Vector3 delta = wrist.position - shoulder.position;
+                    float outward = Vector3.Dot(delta, animator.transform.right) * (left ? -1f : 1f);
+                    float forward = Vector3.Dot(delta, animator.transform.forward);
+                    bool passed = Finite(delta) && outward >= minimumOutward && forward >= -maximumBehind;
+                    var wristLocal = animator.transform.InverseTransformPoint(wrist.position);
+                    var shoulderLocal = animator.transform.InverseTransformPoint(shoulder.position);
+                    string side = left ? "left" : "right";
+                    samples.Add(new JObject { ["seconds"] = time, ["side"] = side,
+                        ["wrist"] = new JObject { ["x"] = wristLocal.x, ["y"] = wristLocal.y, ["z"] = wristLocal.z },
+                        ["upperArm"] = new JObject { ["x"] = shoulderLocal.x, ["y"] = shoulderLocal.y, ["z"] = shoulderLocal.z },
+                        ["outwardMetres"] = outward, ["forwardMetres"] = forward, ["passed"] = passed });
+                    if (!passed) failures.Add(side + " at " + time + "s: outward=" + outward.ToString("F4") +
+                        " m, forward=" + forward.ToString("F4") + " m");
+                }
+            }
+            result["passed"] = failures.Count == 0;
+            Require(failures.Count == 0, "Raw Unarmed_Idle wrists must remain outside their upper arms and no more than 35 mm behind: " +
+                string.Join("; ", failures));
+        }
+        finally { graph.Destroy(); restore(); }
     }
 
     private static JObject ValidateTwistFollowers(GameObject root, Dictionary<string, Transform> bones,
