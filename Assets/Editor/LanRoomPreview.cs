@@ -1,6 +1,4 @@
 using System;
-using System.IO;
-using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -56,38 +54,11 @@ public sealed class LanRoomPreview : EditorWindow
         window.Show(); window.Repaint();
     }
 
-    // Call after one Editor update so ScrollView layout and font uploads have settled.
+    // Manual panel replay can re-enter the UI scheduler and bypass normal GPU submission.
+    // Keep the public entry point so existing callers fail before touching rendering state.
     public static string CaptureOpen(string path)
     {
-        var windows=Resources.FindObjectsOfTypeAll<LanRoomPreview>();
-        if(windows.Length!=1)throw new InvalidOperationException("Open exactly one LAN UI preview before capture.");
-        var window=windows[0]; var root=window.rootVisualElement;
-        int width=(int)root.resolvedStyle.width,height=(int)root.resolvedStyle.height;
-        var panel=root.panel;
-        const BindingFlags flags=BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic;
-        float dpi=EditorGUIUtility.pixelsPerPoint;
-        int pixelWidth=Mathf.RoundToInt(width*dpi), pixelHeight=Mathf.RoundToInt(height*dpi);
-        var target=new RenderTexture(pixelWidth,pixelHeight,24,RenderTextureFormat.ARGB32,RenderTextureReadWrite.Linear); target.Create();
-        var previous=RenderTexture.active; bool previousSrgb=GL.sRGBWrite; Texture2D image=null;
-        try
-        {
-            RenderTexture.active=target; GL.sRGBWrite=false; GL.Clear(true,true,Color.black); GL.PushMatrix();
-            try
-            {
-                GL.LoadPixelMatrix(0,width,height,0);
-                panel.GetType().GetMethod("Repaint",flags,null,new[]{typeof(Event)},null).Invoke(panel,new object[]{new Event{type=EventType.Repaint}});
-                panel.GetType().GetMethod("Render",flags).Invoke(panel,null);
-            }
-            finally {GL.PopMatrix();}
-            image=new Texture2D(pixelWidth,pixelHeight,TextureFormat.RGBA32,false);
-            image.ReadPixels(new Rect(0,0,pixelWidth,pixelHeight),0,0);image.Apply();
-            Directory.CreateDirectory(Path.GetDirectoryName(path));File.WriteAllBytes(path,image.EncodeToPNG());
-            return $"Native UXML capture {width}x{height} at {dpi}x DPI; primary bounds: {root.Q<Button>("lanCreate").worldBound}; start bounds: {root.Q<Button>("lanStart").worldBound}";
-        }
-        finally
-        {
-            RenderTexture.active=previous;GL.sRGBWrite=previousSrgb;if(image!=null)DestroyImmediate(image);
-            target.Release();DestroyImmediate(target);window.Close();
-        }
+        throw new NotSupportedException(
+            "Offscreen UI panel replay is disabled after Editor crashes. Use normal Editor rendering.");
     }
 }
