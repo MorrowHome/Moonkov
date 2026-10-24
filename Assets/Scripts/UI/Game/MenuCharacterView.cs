@@ -110,8 +110,7 @@ namespace Unity.MP_FPS.Client
             m_Motion = m_LastAction = m_BagRemaining = 0;
             m_ActionBag = null;
             MotionChanges = 0; HaloAimWeight = 0;
-            string path = CharacterIndex == GameSettings.HatsuneMikuCharacterIndex
-                ? "Moonkov/HatsuneMikuMenuCharacterSettings" : "Moonkov/MenuCharacterSettings";
+            string path = GameSettings.MenuCharacterSettingsPath(CharacterIndex);
             m_Settings = Resources.Load<MenuCharacterSettings>(path);
             if (m_Settings == null || m_Settings.VisualPrefab == null || m_Settings.Motions == null || m_Settings.Motions.Length == 0)
             {

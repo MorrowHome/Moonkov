@@ -32,12 +32,19 @@ namespace Unity.MP_FPS
         // Keep the existing network identity so old snapshots and corpse visuals stay compatible.
         public const int DollSingerCharacterIndex = 2;
         public const int HatsuneMikuCharacterIndex = 3;
+        public const int ShianCharacterIndex = 4;
         public static bool IsPlayableCharacter(int characterIndex) =>
-            characterIndex == DollSingerCharacterIndex || characterIndex == HatsuneMikuCharacterIndex;
+            characterIndex == DollSingerCharacterIndex || characterIndex == HatsuneMikuCharacterIndex || characterIndex == ShianCharacterIndex;
         public static int NormalizeCharacterIndex(int characterIndex) =>
             IsPlayableCharacter(characterIndex) ? characterIndex : DollSingerCharacterIndex;
         public static string CharacterName(int characterIndex) =>
-            characterIndex == HatsuneMikuCharacterIndex ? "HATSUNE MIKU" : "DOLLSINGER";
+            characterIndex == ShianCharacterIndex ? "SHIAN" : characterIndex == HatsuneMikuCharacterIndex ? "HATSUNE MIKU" : "DOLLSINGER";
+        public static string MenuCharacterSettingsPath(int characterIndex) => characterIndex switch
+        {
+            HatsuneMikuCharacterIndex => "Moonkov/HatsuneMikuMenuCharacterSettings",
+            ShianCharacterIndex => "Moonkov/ShianMenuCharacterSettings",
+            _ => "Moonkov/MenuCharacterSettings"
+        };
         public static GameSettings Instance { get; private set; } = null!;
 
         /// <summary>

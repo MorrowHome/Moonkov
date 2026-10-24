@@ -1,0 +1,6111 @@
+{
+  "version": 1,
+  "source": "/Users/morrow/Downloads/诗岸/诗岸.pmx",
+  "sourceSha256": "79e934965a0b2b498c6a3c6b02d3363ad485099a58b6c3045ec37dfdf569129c",
+  "originalSignature": "PMX@",
+  "normalizedHeaderOnlyInTemporaryCopy": true,
+  "targetHeight": 1.65,
+  "scale": 0.09538691499041367,
+  "sourceBlend": "ArtSource/Shian/Shian.blend",
+  "fbx": "Assets/Shian/Art/Model/Shian.fbx",
+  "addon": {
+    "repository": "https://github.com/MMD-Blender/blender_mmd_tools",
+    "revision": "e321bd02dd0288a3dc9f1974c06597803c060e11",
+    "version": "4.5.14"
+  },
+  "blenderVersion": "5.2.2 LTS",
+  "boundsUnity": {
+    "min": [
+      -0.6980727671107662,
+      0.006562957550963749,
+      -0.1945824803379008
+    ],
+    "max": [
+      0.6980727671107662,
+      1.6565629575509637,
+      0.20241230516107395
+    ]
+  },
+  "coordinateConversion": "Blender=(PMX.x,PMX.z,PMX.y)*scale; Unity=(-PMX.x,PMX.y,-PMX.z)*scale",
+  "grantPolicy": "Source retains complete MMD setup. Runtime contains bind transforms, skin and vertex morphs only.",
+  "legPolicy": "Weighted D legs promoted to canonical legs with their original bind unchanged; coincident ordinary thigh weights merged into D thigh and normalized.",
+  "weightRemap": [
+    {
+      "source": "左足",
+      "target": "足.L"
+    },
+    {
+      "source": "右足",
+      "target": "足.R"
+    }
+  ],
+  "vertexCount": 91363,
+  "triangleCount": 145686,
+  "boneCount": 285,
+  "vertexMorphs": [
+    {
+      "name": "と",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 3583
+    },
+    {
+      "name": "heart",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 50
+    },
+    {
+      "name": "星星",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 128
+    },
+    {
+      "name": "LightUp",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "LightOff",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "LightBlink",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "LightBS",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "びっくりR",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "びっくりL",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "じと目R",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "じと目L",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "はちゅ目縦潰れ",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "はちゅ目横潰れ",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "瞳小R",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "瞳小L",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "がーん",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "真面目R",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "真面目L",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "困るR",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "困るL",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "にこりR",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "にこりL",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "怒りR",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "怒りL",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "上R",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "上L",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "下R",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "下L",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "LightUp.001",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "LightOff.001",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "LightBlink.001",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "LightBS.001",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "△",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 1926
+    },
+    {
+      "name": "デフォ",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "デフォ2",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "大きめの口",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "ぷく",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 3025
+    },
+    {
+      "name": "口角上げ左",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 616
+    },
+    {
+      "name": "口角上げ右",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 74
+    },
+    {
+      "name": "口角下げ左",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 571
+    },
+    {
+      "name": "口角下げ右",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 53
+    },
+    {
+      "name": "口角広げ",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 3425
+    },
+    {
+      "name": "口角広げ左",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 2398
+    },
+    {
+      "name": "口角広げ右",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 1363
+    },
+    {
+      "name": "猫口",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 534
+    },
+    {
+      "name": "猫口オープン",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 1708
+    },
+    {
+      "name": "舌べ-",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 3486
+    },
+    {
+      "name": "栗みたいな口",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 3191
+    },
+    {
+      "name": "やや驚く",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 3472
+    },
+    {
+      "name": "おむすび口",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "あひる口",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 341
+    },
+    {
+      "name": "ひし形口",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 3167
+    },
+    {
+      "name": "ぐにゃぐにゃ口",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 294
+    },
+    {
+      "name": "口右へ",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "口下へ",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 3683
+    },
+    {
+      "name": "口上へ",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 3591
+    },
+    {
+      "name": "ウィンク2",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "ウィンク2右",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "○○",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "○○横長",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "ギャッ",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 3616
+    },
+    {
+      "name": "キラキラ",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "瞳六芒星",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "左六芒星",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "右六芒星",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "グルグル",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "のんびり",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "ハート",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "ハイライト除去",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "驚く",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 1686
+    },
+    {
+      "name": "驚く左",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "驚く右",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "瞳小左",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "瞳小右",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "目奥",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 670
+    },
+    {
+      "name": "垂れ目",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 2575
+    },
+    {
+      "name": "垂れ目左",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "垂れ目右",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "目頭下げる",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 1247
+    },
+    {
+      "name": "目頭下げ左",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "目頭下げ右",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "目尻上げる",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 2431
+    },
+    {
+      "name": "目尻上げ左",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "目尻上げ右",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "下瞼上げ",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 1549
+    },
+    {
+      "name": "下瞼上げ左",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "下瞼上げ右",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "下瞼上げ2",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 2327
+    },
+    {
+      "name": "下瞼上げ2左",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "下瞼上げ2右",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "つり目",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 3246
+    },
+    {
+      "name": "白目",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "にっこり左",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "にっこり右",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "下がる",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 290
+    },
+    {
+      "name": "下がる左",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "下がる右",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "近い",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 290
+    },
+    {
+      "name": "後退",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 290
+    },
+    {
+      "name": "困る左",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "困る右",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "上がる",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 290
+    },
+    {
+      "name": "上がる左",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "上がる右",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "真面目左",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "真面目右",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "前進",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 290
+    },
+    {
+      "name": "短い",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 290
+    },
+    {
+      "name": "怒る",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "怒る左",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "怒る右",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "平行",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "平行左",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "平行右",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "離れる",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "鼻ちょん削除",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "たくらむ",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "口左へ",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "まばたき",
+      "englishName": "",
+      "panel": 2,
+      "type": 1,
+      "count": 3876
+    },
+    {
+      "name": "笑い",
+      "englishName": "",
+      "panel": 2,
+      "type": 1,
+      "count": 4199
+    },
+    {
+      "name": "ウィンク",
+      "englishName": "",
+      "panel": 2,
+      "type": 1,
+      "count": 2121
+    },
+    {
+      "name": "ウィンク右",
+      "englishName": "",
+      "panel": 2,
+      "type": 1,
+      "count": 2078
+    },
+    {
+      "name": "ウィンク２",
+      "englishName": "",
+      "panel": 2,
+      "type": 1,
+      "count": 1982
+    },
+    {
+      "name": "ｳｨﾝｸ２右",
+      "englishName": "",
+      "panel": 2,
+      "type": 1,
+      "count": 1894
+    },
+    {
+      "name": "なごみ",
+      "englishName": "",
+      "panel": 2,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "びっくり",
+      "englishName": "",
+      "panel": 2,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "じと目",
+      "englishName": "",
+      "panel": 2,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "ｷﾘｯ",
+      "englishName": "",
+      "panel": 2,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "はちゅ目",
+      "englishName": "",
+      "panel": 2,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "あ",
+      "englishName": "",
+      "panel": 3,
+      "type": 1,
+      "count": 2150
+    },
+    {
+      "name": "い",
+      "englishName": "",
+      "panel": 3,
+      "type": 1,
+      "count": 3447
+    },
+    {
+      "name": "う",
+      "englishName": "",
+      "panel": 3,
+      "type": 1,
+      "count": 2197
+    },
+    {
+      "name": "え",
+      "englishName": "",
+      "panel": 3,
+      "type": 1,
+      "count": 3449
+    },
+    {
+      "name": "お",
+      "englishName": "",
+      "panel": 3,
+      "type": 1,
+      "count": 3506
+    },
+    {
+      "name": "あ２",
+      "englishName": "",
+      "panel": 3,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "ん",
+      "englishName": "",
+      "panel": 3,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "▲",
+      "englishName": "",
+      "panel": 3,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "∧",
+      "englishName": "",
+      "panel": 3,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "□",
+      "englishName": "",
+      "panel": 3,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "ワ",
+      "englishName": "",
+      "panel": 3,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "ω",
+      "englishName": "",
+      "panel": 3,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "ω□",
+      "englishName": "",
+      "panel": 3,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "にやり",
+      "englishName": "",
+      "panel": 3,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "にやり２",
+      "englishName": "",
+      "panel": 3,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "にっこり",
+      "englishName": "",
+      "panel": 3,
+      "type": 1,
+      "count": 290
+    },
+    {
+      "name": "ぺろっ",
+      "englishName": "",
+      "panel": 3,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "てへぺろ",
+      "englishName": "",
+      "panel": 3,
+      "type": 1,
+      "count": 1078
+    },
+    {
+      "name": "てへぺろ２",
+      "englishName": "",
+      "panel": 3,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "口角上げ",
+      "englishName": "",
+      "panel": 3,
+      "type": 1,
+      "count": 673
+    },
+    {
+      "name": "口角下げ",
+      "englishName": "",
+      "panel": 3,
+      "type": 1,
+      "count": 614
+    },
+    {
+      "name": "口横広げ",
+      "englishName": "",
+      "panel": 3,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "歯無し上",
+      "englishName": "",
+      "panel": 3,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "歯無し下",
+      "englishName": "",
+      "panel": 3,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "涙",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 218
+    },
+    {
+      "name": "輪郭",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "星目",
+      "englishName": "",
+      "panel": 2,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "はぁと",
+      "englishName": "",
+      "panel": 2,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "瞳小",
+      "englishName": "",
+      "panel": 2,
+      "type": 1,
+      "count": 336
+    },
+    {
+      "name": "瞳縦潰れ",
+      "englishName": "",
+      "panel": 2,
+      "type": 1,
+      "count": 338
+    },
+    {
+      "name": "恐ろしい子！",
+      "englishName": "",
+      "panel": 2,
+      "type": 1,
+      "count": 338
+    },
+    {
+      "name": "照れ",
+      "englishName": "",
+      "panel": 4,
+      "type": 1,
+      "count": 60
+    },
+    {
+      "name": "真面目",
+      "englishName": "",
+      "panel": 1,
+      "type": 1,
+      "count": 314
+    },
+    {
+      "name": "困る",
+      "englishName": "",
+      "panel": 1,
+      "type": 1,
+      "count": 314
+    },
+    {
+      "name": "にこり",
+      "englishName": "",
+      "panel": 1,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "怒り",
+      "englishName": "",
+      "panel": 1,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "上",
+      "englishName": "",
+      "panel": 1,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "下",
+      "englishName": "",
+      "panel": 1,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "前",
+      "englishName": "",
+      "panel": 1,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "眉頭左",
+      "englishName": "",
+      "panel": 1,
+      "type": 1,
+      "count": 0
+    },
+    {
+      "name": "眉頭右",
+      "englishName": "",
+      "panel": 1,
+      "type": 1,
+      "count": 0
+    }
+  ],
+  "materials": [
+    {
+      "name": "Shian_00_手臂花_Baked",
+      "englishName": "",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "flags": 15,
+      "textureIndex": 0,
+      "sphereIndex": -1,
+      "sphereMode": 0,
+      "memo": "",
+      "triangleCount": 880,
+      "sourceName": "手臂花_Baked",
+      "slot": 0,
+      "semanticName": "Skin00",
+      "assetName": "Shian_00_手臂花_Baked",
+      "role": "Skin",
+      "hasAlpha": true,
+      "alphaMin": 0.0,
+      "alphaMax": 1.0,
+      "doubleSided": true
+    },
+    {
+      "name": "Shian_01_111.001_Baked",
+      "englishName": "",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "flags": 15,
+      "textureIndex": 2,
+      "sphereIndex": -1,
+      "sphereMode": 2,
+      "memo": "",
+      "triangleCount": 9320,
+      "sourceName": "111.001_Baked",
+      "slot": 1,
+      "semanticName": "Dress01",
+      "assetName": "Shian_01_111.001_Baked",
+      "role": "Dress",
+      "hasAlpha": true,
+      "alphaMin": 0.0,
+      "alphaMax": 1.0,
+      "doubleSided": true
+    },
+    {
+      "name": "Shian_02_物理裙子1",
+      "englishName": "",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "flags": 15,
+      "textureIndex": 3,
+      "sphereIndex": -1,
+      "sphereMode": 0,
+      "memo": "",
+      "triangleCount": 2304,
+      "sourceName": "物理裙子1",
+      "slot": 2,
+      "semanticName": "Dress02",
+      "assetName": "Shian_02_物理裙子1",
+      "role": "Dress",
+      "hasAlpha": true,
+      "alphaMin": 0.0,
+      "alphaMax": 1.0,
+      "doubleSided": true
+    },
+    {
+      "name": "Shian_03_face_Baked",
+      "englishName": "",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "flags": 15,
+      "textureIndex": 4,
+      "sphereIndex": -1,
+      "sphereMode": 0,
+      "memo": "",
+      "triangleCount": 9228,
+      "sourceName": "face_Baked",
+      "slot": 3,
+      "semanticName": "Face",
+      "assetName": "Shian_03_face_Baked",
+      "role": "Face",
+      "hasAlpha": true,
+      "alphaMin": 0.0,
+      "alphaMax": 1.0,
+      "doubleSided": true
+    },
+    {
+      "name": "Shian_04_EYE",
+      "englishName": "",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "flags": 15,
+      "textureIndex": 5,
+      "sphereIndex": -1,
+      "sphereMode": 0,
+      "memo": "",
+      "triangleCount": 376,
+      "sourceName": "EYE",
+      "slot": 4,
+      "semanticName": "Face04",
+      "assetName": "Shian_04_EYE",
+      "role": "Face",
+      "hasAlpha": true,
+      "alphaMin": 0.0,
+      "alphaMax": 1.0,
+      "doubleSided": true
+    },
+    {
+      "name": "Shian_05_ya_Baked",
+      "englishName": "",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "flags": 15,
+      "textureIndex": 6,
+      "sphereIndex": -1,
+      "sphereMode": 0,
+      "memo": "",
+      "triangleCount": 611,
+      "sourceName": "ya_Baked",
+      "slot": 5,
+      "semanticName": "Skin05",
+      "assetName": "Shian_05_ya_Baked",
+      "role": "Skin",
+      "hasAlpha": true,
+      "alphaMin": 0.0,
+      "alphaMax": 1.0,
+      "doubleSided": true
+    },
+    {
+      "name": "Shian_06_ya_Baked",
+      "englishName": "",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "flags": 15,
+      "textureIndex": 6,
+      "sphereIndex": -1,
+      "sphereMode": 0,
+      "memo": "",
+      "triangleCount": 850,
+      "sourceName": "ya_Baked",
+      "slot": 6,
+      "semanticName": "Skin06",
+      "assetName": "Shian_06_ya_Baked",
+      "role": "Skin",
+      "hasAlpha": true,
+      "alphaMin": 0.0,
+      "alphaMax": 1.0,
+      "doubleSided": true
+    },
+    {
+      "name": "Shian_07_ya_Baked",
+      "englishName": "",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "flags": 15,
+      "textureIndex": 6,
+      "sphereIndex": -1,
+      "sphereMode": 0,
+      "memo": "",
+      "triangleCount": 850,
+      "sourceName": "ya_Baked",
+      "slot": 7,
+      "semanticName": "Skin07",
+      "assetName": "Shian_07_ya_Baked",
+      "role": "Skin",
+      "hasAlpha": true,
+      "alphaMin": 0.0,
+      "alphaMax": 1.0,
+      "doubleSided": true
+    },
+    {
+      "name": "Shian_08_cheek",
+      "englishName": "cheek",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "flags": 1,
+      "textureIndex": 7,
+      "sphereIndex": -1,
+      "sphereMode": 0,
+      "memo": "",
+      "triangleCount": 82,
+      "sourceName": "cheek",
+      "slot": 8,
+      "semanticName": "Face08",
+      "assetName": "Shian_08_cheek",
+      "role": "Face",
+      "hasAlpha": true,
+      "alphaMin": 0.0,
+      "alphaMax": 0.501960813999176,
+      "doubleSided": true
+    },
+    {
+      "name": "Shian_09_hair_1.006",
+      "englishName": "",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "flags": 31,
+      "textureIndex": 8,
+      "sphereIndex": -1,
+      "sphereMode": 0,
+      "memo": "",
+      "triangleCount": 6,
+      "sourceName": "hair_1.006",
+      "slot": 9,
+      "semanticName": "Hair",
+      "assetName": "Shian_09_hair_1.006",
+      "role": "Hair",
+      "hasAlpha": false,
+      "alphaMin": 1.0,
+      "alphaMax": 1.0,
+      "doubleSided": true
+    },
+    {
+      "name": "Shian_10_ya_Baked",
+      "englishName": "",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "flags": 15,
+      "textureIndex": 9,
+      "sphereIndex": -1,
+      "sphereMode": 0,
+      "memo": "",
+      "triangleCount": 4880,
+      "sourceName": "ya_Baked",
+      "slot": 10,
+      "semanticName": "Dress10",
+      "assetName": "Shian_10_ya_Baked",
+      "role": "Dress",
+      "hasAlpha": false,
+      "alphaMin": 1.0,
+      "alphaMax": 1.0,
+      "doubleSided": true
+    },
+    {
+      "name": "Shian_11_ya_Baked",
+      "englishName": "",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "flags": 15,
+      "textureIndex": 6,
+      "sphereIndex": -1,
+      "sphereMode": 0,
+      "memo": "",
+      "triangleCount": 160,
+      "sourceName": "ya_Baked",
+      "slot": 11,
+      "semanticName": "Skin11",
+      "assetName": "Shian_11_ya_Baked",
+      "role": "Skin",
+      "hasAlpha": true,
+      "alphaMin": 0.0,
+      "alphaMax": 1.0,
+      "doubleSided": true
+    },
+    {
+      "name": "Shian_12_ya_Baked",
+      "englishName": "",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "flags": 15,
+      "textureIndex": 6,
+      "sphereIndex": -1,
+      "sphereMode": 0,
+      "memo": "",
+      "triangleCount": 656,
+      "sourceName": "ya_Baked",
+      "slot": 12,
+      "semanticName": "Skin12",
+      "assetName": "Shian_12_ya_Baked",
+      "role": "Skin",
+      "hasAlpha": true,
+      "alphaMin": 0.0,
+      "alphaMax": 1.0,
+      "doubleSided": true
+    },
+    {
+      "name": "Shian_13_ya_Baked",
+      "englishName": "",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "flags": 15,
+      "textureIndex": 6,
+      "sphereIndex": -1,
+      "sphereMode": 0,
+      "memo": "",
+      "triangleCount": 384,
+      "sourceName": "ya_Baked",
+      "slot": 13,
+      "semanticName": "Skin13",
+      "assetName": "Shian_13_ya_Baked",
+      "role": "Skin",
+      "hasAlpha": true,
+      "alphaMin": 0.0,
+      "alphaMax": 1.0,
+      "doubleSided": true
+    },
+    {
+      "name": "Shian_14_ya_Baked",
+      "englishName": "",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "flags": 15,
+      "textureIndex": 6,
+      "sphereIndex": -1,
+      "sphereMode": 0,
+      "memo": "",
+      "triangleCount": 613,
+      "sourceName": "ya_Baked",
+      "slot": 14,
+      "semanticName": "Skin14",
+      "assetName": "Shian_14_ya_Baked",
+      "role": "Skin",
+      "hasAlpha": true,
+      "alphaMin": 0.0,
+      "alphaMax": 1.0,
+      "doubleSided": true
+    },
+    {
+      "name": "Shian_15_ya_Baked",
+      "englishName": "",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "flags": 15,
+      "textureIndex": 6,
+      "sphereIndex": -1,
+      "sphereMode": 0,
+      "memo": "",
+      "triangleCount": 10,
+      "sourceName": "ya_Baked",
+      "slot": 15,
+      "semanticName": "Skin15",
+      "assetName": "Shian_15_ya_Baked",
+      "role": "Skin",
+      "hasAlpha": true,
+      "alphaMin": 0.0,
+      "alphaMax": 1.0,
+      "doubleSided": true
+    },
+    {
+      "name": "Shian_16_ya_Baked",
+      "englishName": "",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "flags": 15,
+      "textureIndex": 6,
+      "sphereIndex": -1,
+      "sphereMode": 0,
+      "memo": "",
+      "triangleCount": 10,
+      "sourceName": "ya_Baked",
+      "slot": 16,
+      "semanticName": "Skin16",
+      "assetName": "Shian_16_ya_Baked",
+      "role": "Skin",
+      "hasAlpha": true,
+      "alphaMin": 0.0,
+      "alphaMax": 1.0,
+      "doubleSided": true
+    },
+    {
+      "name": "Shian_17_ya_Baked",
+      "englishName": "",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "flags": 15,
+      "textureIndex": 6,
+      "sphereIndex": -1,
+      "sphereMode": 0,
+      "memo": "",
+      "triangleCount": 260,
+      "sourceName": "ya_Baked",
+      "slot": 17,
+      "semanticName": "Skin17",
+      "assetName": "Shian_17_ya_Baked",
+      "role": "Skin",
+      "hasAlpha": true,
+      "alphaMin": 0.0,
+      "alphaMax": 1.0,
+      "doubleSided": true
+    },
+    {
+      "name": "Shian_18_ya_Baked",
+      "englishName": "",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "flags": 15,
+      "textureIndex": 6,
+      "sphereIndex": -1,
+      "sphereMode": 0,
+      "memo": "",
+      "triangleCount": 260,
+      "sourceName": "ya_Baked",
+      "slot": 18,
+      "semanticName": "Skin18",
+      "assetName": "Shian_18_ya_Baked",
+      "role": "Skin",
+      "hasAlpha": true,
+      "alphaMin": 0.0,
+      "alphaMax": 1.0,
+      "doubleSided": true
+    },
+    {
+      "name": "Shian_19_ya_Baked",
+      "englishName": "",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "flags": 15,
+      "textureIndex": 6,
+      "sphereIndex": -1,
+      "sphereMode": 0,
+      "memo": "",
+      "triangleCount": 36,
+      "sourceName": "ya_Baked",
+      "slot": 19,
+      "semanticName": "Skin19",
+      "assetName": "Shian_19_ya_Baked",
+      "role": "Skin",
+      "hasAlpha": true,
+      "alphaMin": 0.0,
+      "alphaMax": 1.0,
+      "doubleSided": true
+    },
+    {
+      "name": "Shian_20_ya_Baked",
+      "englishName": "",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "flags": 15,
+      "textureIndex": 6,
+      "sphereIndex": -1,
+      "sphereMode": 0,
+      "memo": "",
+      "triangleCount": 36,
+      "sourceName": "ya_Baked",
+      "slot": 20,
+      "semanticName": "Skin20",
+      "assetName": "Shian_20_ya_Baked",
+      "role": "Skin",
+      "hasAlpha": true,
+      "alphaMin": 0.0,
+      "alphaMax": 1.0,
+      "doubleSided": true
+    },
+    {
+      "name": "Shian_21_EYE111heart",
+      "englishName": "",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "flags": 15,
+      "textureIndex": 10,
+      "sphereIndex": -1,
+      "sphereMode": 0,
+      "memo": "",
+      "triangleCount": 128,
+      "sourceName": "EYE111heart",
+      "slot": 21,
+      "semanticName": "Face21",
+      "assetName": "Shian_21_EYE111heart",
+      "role": "Face",
+      "hasAlpha": true,
+      "alphaMin": 0.0,
+      "alphaMax": 0.999969482421875,
+      "doubleSided": true
+    },
+    {
+      "name": "Shian_22_Material.001",
+      "englishName": "",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "flags": 15,
+      "textureIndex": 5,
+      "sphereIndex": -1,
+      "sphereMode": 0,
+      "memo": "",
+      "triangleCount": 600,
+      "sourceName": "Material.001",
+      "slot": 22,
+      "semanticName": "Face22",
+      "assetName": "Shian_22_Material.001",
+      "role": "Face",
+      "hasAlpha": true,
+      "alphaMin": 0.0,
+      "alphaMax": 1.0,
+      "doubleSided": true
+    },
+    {
+      "name": "Shian_23_body.002_Baked",
+      "englishName": "",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "flags": 15,
+      "textureIndex": 11,
+      "sphereIndex": -1,
+      "sphereMode": 0,
+      "memo": "",
+      "triangleCount": 6208,
+      "sourceName": "body.002_Baked",
+      "slot": 23,
+      "semanticName": "Body",
+      "assetName": "Shian_23_body.002_Baked",
+      "role": "Skin",
+      "hasAlpha": true,
+      "alphaMin": 0.0,
+      "alphaMax": 1.0,
+      "doubleSided": true
+    },
+    {
+      "name": "Shian_24_body.003_Baked",
+      "englishName": "",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "flags": 15,
+      "textureIndex": 12,
+      "sphereIndex": -1,
+      "sphereMode": 0,
+      "memo": "",
+      "triangleCount": 1536,
+      "sourceName": "body.003_Baked",
+      "slot": 24,
+      "semanticName": "Dress24",
+      "assetName": "Shian_24_body.003_Baked",
+      "role": "Dress",
+      "hasAlpha": true,
+      "alphaMin": 0.0,
+      "alphaMax": 1.0,
+      "doubleSided": true
+    },
+    {
+      "name": "Shian_25_物理上衣",
+      "englishName": "",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "flags": 15,
+      "textureIndex": 12,
+      "sphereIndex": -1,
+      "sphereMode": 0,
+      "memo": "",
+      "triangleCount": 648,
+      "sourceName": "物理上衣",
+      "slot": 25,
+      "semanticName": "Dress25",
+      "assetName": "Shian_25_物理上衣",
+      "role": "Dress",
+      "hasAlpha": true,
+      "alphaMin": 0.0,
+      "alphaMax": 1.0,
+      "doubleSided": true
+    },
+    {
+      "name": "Shian_26_物理裙子2",
+      "englishName": "",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "flags": 15,
+      "textureIndex": 13,
+      "sphereIndex": -1,
+      "sphereMode": 0,
+      "memo": "",
+      "triangleCount": 2156,
+      "sourceName": "物理裙子2",
+      "slot": 26,
+      "semanticName": "Dress26",
+      "assetName": "Shian_26_物理裙子2",
+      "role": "Dress",
+      "hasAlpha": true,
+      "alphaMin": 0.0,
+      "alphaMax": 1.0,
+      "doubleSided": true
+    },
+    {
+      "name": "Shian_27_body.008_Baked",
+      "englishName": "",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "flags": 15,
+      "textureIndex": 14,
+      "sphereIndex": -1,
+      "sphereMode": 0,
+      "memo": "",
+      "triangleCount": 11366,
+      "sourceName": "body.008_Baked",
+      "slot": 27,
+      "semanticName": "Dress27",
+      "assetName": "Shian_27_body.008_Baked",
+      "role": "Dress",
+      "hasAlpha": true,
+      "alphaMin": 0.0,
+      "alphaMax": 1.0,
+      "doubleSided": true
+    },
+    {
+      "name": "Shian_28_hudiejie_Baked",
+      "englishName": "",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "flags": 15,
+      "textureIndex": 15,
+      "sphereIndex": -1,
+      "sphereMode": 0,
+      "memo": "",
+      "triangleCount": 892,
+      "sourceName": "hudiejie_Baked",
+      "slot": 28,
+      "semanticName": "Dress28",
+      "assetName": "Shian_28_hudiejie_Baked",
+      "role": "Dress",
+      "hasAlpha": true,
+      "alphaMin": 0.0,
+      "alphaMax": 1.0,
+      "doubleSided": true
+    },
+    {
+      "name": "Shian_29_hudiejie_Baked.001",
+      "englishName": "",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "flags": 15,
+      "textureIndex": 15,
+      "sphereIndex": -1,
+      "sphereMode": 0,
+      "memo": "",
+      "triangleCount": 16500,
+      "sourceName": "hudiejie_Baked.001",
+      "slot": 29,
+      "semanticName": "Dress29",
+      "assetName": "Shian_29_hudiejie_Baked.001",
+      "role": "Dress",
+      "hasAlpha": true,
+      "alphaMin": 0.0,
+      "alphaMax": 1.0,
+      "doubleSided": true
+    },
+    {
+      "name": "Shian_30_hair_1",
+      "englishName": "",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "flags": 31,
+      "textureIndex": 8,
+      "sphereIndex": -1,
+      "sphereMode": 0,
+      "memo": "",
+      "triangleCount": 1184,
+      "sourceName": "hair_1",
+      "slot": 30,
+      "semanticName": "Hair",
+      "assetName": "Shian_30_hair_1",
+      "role": "Hair",
+      "hasAlpha": false,
+      "alphaMin": 1.0,
+      "alphaMax": 1.0,
+      "doubleSided": true
+    },
+    {
+      "name": "Shian_31_hair_1.001",
+      "englishName": "",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "flags": 31,
+      "textureIndex": 8,
+      "sphereIndex": -1,
+      "sphereMode": 0,
+      "memo": "",
+      "triangleCount": 1180,
+      "sourceName": "hair_1.001",
+      "slot": 31,
+      "semanticName": "Hair",
+      "assetName": "Shian_31_hair_1.001",
+      "role": "Hair",
+      "hasAlpha": false,
+      "alphaMin": 1.0,
+      "alphaMax": 1.0,
+      "doubleSided": true
+    },
+    {
+      "name": "Shian_32_hair_1.002",
+      "englishName": "",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "flags": 31,
+      "textureIndex": 8,
+      "sphereIndex": -1,
+      "sphereMode": 0,
+      "memo": "",
+      "triangleCount": 856,
+      "sourceName": "hair_1.002",
+      "slot": 32,
+      "semanticName": "Hair",
+      "assetName": "Shian_32_hair_1.002",
+      "role": "Hair",
+      "hasAlpha": false,
+      "alphaMin": 1.0,
+      "alphaMax": 1.0,
+      "doubleSided": true
+    },
+    {
+      "name": "Shian_33_hair_1.003",
+      "englishName": "",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "flags": 31,
+      "textureIndex": 8,
+      "sphereIndex": -1,
+      "sphereMode": 0,
+      "memo": "",
+      "triangleCount": 340,
+      "sourceName": "hair_1.003",
+      "slot": 33,
+      "semanticName": "Hair",
+      "assetName": "Shian_33_hair_1.003",
+      "role": "Hair",
+      "hasAlpha": false,
+      "alphaMin": 1.0,
+      "alphaMax": 1.0,
+      "doubleSided": true
+    },
+    {
+      "name": "Shian_34_hair_1.004",
+      "englishName": "",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "flags": 31,
+      "textureIndex": 8,
+      "sphereIndex": -1,
+      "sphereMode": 0,
+      "memo": "",
+      "triangleCount": 388,
+      "sourceName": "hair_1.004",
+      "slot": 34,
+      "semanticName": "Hair",
+      "assetName": "Shian_34_hair_1.004",
+      "role": "Hair",
+      "hasAlpha": false,
+      "alphaMin": 1.0,
+      "alphaMax": 1.0,
+      "doubleSided": true
+    },
+    {
+      "name": "Shian_35_hair_1.005",
+      "englishName": "",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "flags": 31,
+      "textureIndex": 8,
+      "sphereIndex": -1,
+      "sphereMode": 0,
+      "memo": "",
+      "triangleCount": 578,
+      "sourceName": "hair_1.005",
+      "slot": 35,
+      "semanticName": "Hair",
+      "assetName": "Shian_35_hair_1.005",
+      "role": "Hair",
+      "hasAlpha": false,
+      "alphaMin": 1.0,
+      "alphaMax": 1.0,
+      "doubleSided": true
+    },
+    {
+      "name": "Shian_36_hair_1.007",
+      "englishName": "",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "flags": 31,
+      "textureIndex": 8,
+      "sphereIndex": -1,
+      "sphereMode": 0,
+      "memo": "",
+      "triangleCount": 10130,
+      "sourceName": "hair_1.007",
+      "slot": 36,
+      "semanticName": "Hair",
+      "assetName": "Shian_36_hair_1.007",
+      "role": "Hair",
+      "hasAlpha": false,
+      "alphaMin": 1.0,
+      "alphaMax": 1.0,
+      "doubleSided": true
+    },
+    {
+      "name": "Shian_37_hair_1.008",
+      "englishName": "",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "flags": 31,
+      "textureIndex": 8,
+      "sphereIndex": -1,
+      "sphereMode": 0,
+      "memo": "",
+      "triangleCount": 2084,
+      "sourceName": "hair_1.008",
+      "slot": 37,
+      "semanticName": "Hair",
+      "assetName": "Shian_37_hair_1.008",
+      "role": "Hair",
+      "hasAlpha": false,
+      "alphaMin": 1.0,
+      "alphaMax": 1.0,
+      "doubleSided": true
+    },
+    {
+      "name": "Shian_38_hair_1.009",
+      "englishName": "",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "flags": 31,
+      "textureIndex": 8,
+      "sphereIndex": -1,
+      "sphereMode": 0,
+      "memo": "",
+      "triangleCount": 1866,
+      "sourceName": "hair_1.009",
+      "slot": 38,
+      "semanticName": "Hair",
+      "assetName": "Shian_38_hair_1.009",
+      "role": "Hair",
+      "hasAlpha": false,
+      "alphaMin": 1.0,
+      "alphaMax": 1.0,
+      "doubleSided": true
+    },
+    {
+      "name": "Shian_39_hair.003",
+      "englishName": "",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "flags": 31,
+      "textureIndex": 8,
+      "sphereIndex": -1,
+      "sphereMode": 0,
+      "memo": "",
+      "triangleCount": 13168,
+      "sourceName": "hair.003",
+      "slot": 39,
+      "semanticName": "Hair39",
+      "assetName": "Shian_39_hair.003",
+      "role": "Hair",
+      "hasAlpha": false,
+      "alphaMin": 1.0,
+      "alphaMax": 1.0,
+      "doubleSided": true
+    },
+    {
+      "name": "Shian_40_Tails.001",
+      "englishName": "",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "flags": 29,
+      "textureIndex": 8,
+      "sphereIndex": -1,
+      "sphereMode": 0,
+      "memo": "",
+      "triangleCount": 41904,
+      "sourceName": "Tails.001",
+      "slot": 40,
+      "semanticName": "Hair40",
+      "assetName": "Shian_40_Tails.001",
+      "role": "Hair",
+      "hasAlpha": false,
+      "alphaMin": 1.0,
+      "alphaMax": 1.0,
+      "doubleSided": true
+    },
+    {
+      "name": "Shian_41_ya_Baked.001",
+      "englishName": "",
+      "diffuse": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "flags": 15,
+      "textureIndex": 6,
+      "sphereIndex": -1,
+      "sphereMode": 0,
+      "memo": "",
+      "triangleCount": 162,
+      "sourceName": "ya_Baked.001",
+      "slot": 41,
+      "semanticName": "Skin41",
+      "assetName": "Shian_41_ya_Baked.001",
+      "role": "Skin",
+      "hasAlpha": true,
+      "alphaMin": 0.0,
+      "alphaMax": 1.0,
+      "doubleSided": true
+    }
+  ],
+  "textures": [
+    {
+      "source": "textures\\手臂花_t_PBR_Diffuse.png",
+      "asset": "Assets/Shian/Art/Textures/手臂花_t_PBR_Diffuse.png",
+      "sha256": "4b63f0245cc27a420fe6149df15517eb0dabebc7277295ab7daec9e55dc9e513",
+      "width": 2048,
+      "height": 2048,
+      "hasAlpha": true,
+      "alphaMin": 0.0,
+      "alphaMax": 1.0
+    },
+    {
+      "source": "textures\\toon3.png",
+      "asset": "Assets/Shian/Art/Textures/toon3.png",
+      "sha256": "8d12bd90087202ecfeaafaba9f85fe5658d660d0b3bc445b8d0863d3518e95e2",
+      "width": 800,
+      "height": 800,
+      "hasAlpha": false,
+      "alphaMin": 1.0,
+      "alphaMax": 1.0
+    },
+    {
+      "source": "textures\\111.001_t_PBR_Diffuse.png",
+      "asset": "Assets/Shian/Art/Textures/111.001_t_PBR_Diffuse.png",
+      "sha256": "25de527ebaef098dd9f4e24f78d2c1f015f8088a50f6c528913ed9b0d018ce1c",
+      "width": 2048,
+      "height": 2048,
+      "hasAlpha": true,
+      "alphaMin": 0.0,
+      "alphaMax": 1.0
+    },
+    {
+      "source": "textures\\Circle.001_t_PBR_Diffuse.png",
+      "asset": "Assets/Shian/Art/Textures/Circle.001_t_PBR_Diffuse.png",
+      "sha256": "a98e848e2792a7a2a21dc32ef24b3714791c2ca49327b9d24d2d38f1783f70cd",
+      "width": 2048,
+      "height": 2048,
+      "hasAlpha": true,
+      "alphaMin": 0.0,
+      "alphaMax": 1.0
+    },
+    {
+      "source": "textures\\face_t_PBR_Diffuse.png",
+      "asset": "Assets/Shian/Art/Textures/face_t_PBR_Diffuse.png",
+      "sha256": "a318a1ed985c411946f58f5e2e1f02ba2c30aed55eb973133f9f1b2ccb66af90",
+      "width": 4096,
+      "height": 4096,
+      "hasAlpha": true,
+      "alphaMin": 0.0,
+      "alphaMax": 1.0
+    },
+    {
+      "source": "textures\\EYE_t_PBR_Diffuse.png",
+      "asset": "Assets/Shian/Art/Textures/EYE_t_PBR_Diffuse.png",
+      "sha256": "715fb9c5c33ac7edd1926ffa6faa294ce186a6b50f079006de7b674677a44683",
+      "width": 2048,
+      "height": 2048,
+      "hasAlpha": true,
+      "alphaMin": 0.0,
+      "alphaMax": 1.0
+    },
+    {
+      "source": "textures\\ya_t_PBR_Diffuse.png",
+      "asset": "Assets/Shian/Art/Textures/ya_t_PBR_Diffuse.png",
+      "sha256": "81a574fac776f0941a18f89b471de67298bc31cd7dbb1c749a3c1967b600c12d",
+      "width": 4096,
+      "height": 4096,
+      "hasAlpha": true,
+      "alphaMin": 0.0,
+      "alphaMax": 1.0
+    },
+    {
+      "source": "textures\\saihong.png",
+      "asset": "Assets/Shian/Art/Textures/saihong.png",
+      "sha256": "1da31a9a42c8114486fbdff164fd753d71056b12c61ef71b4954b074c38cba07",
+      "width": 1024,
+      "height": 1024,
+      "hasAlpha": true,
+      "alphaMin": 0.0,
+      "alphaMax": 0.501960813999176
+    },
+    {
+      "source": "textures\\hair1.png",
+      "asset": "Assets/Shian/Art/Textures/hair1.png",
+      "sha256": "dac008de8b8d13b6a005da69ad03156830fc312ab96bbfad3d2c6b57e78ae3b7",
+      "width": 2048,
+      "height": 2048,
+      "hasAlpha": false,
+      "alphaMin": 1.0,
+      "alphaMax": 1.0
+    },
+    {
+      "source": "textures\\1757603862268.jpg",
+      "asset": "Assets/Shian/Art/Textures/1757603862268.jpg",
+      "sha256": "6bf394434a292e064cd362d4546359c21c3a183ead79b298736b485dad06fc99",
+      "width": 4096,
+      "height": 4096,
+      "hasAlpha": false,
+      "alphaMin": 1.0,
+      "alphaMax": 1.0
+    },
+    {
+      "source": "textures\\EYE.png",
+      "asset": "Assets/Shian/Art/Textures/EYE.png",
+      "sha256": "a34ac90d91a3411efbeec630176436e52ed710bf4a80f57820c020f3a167b534",
+      "width": 2048,
+      "height": 2048,
+      "hasAlpha": true,
+      "alphaMin": 0.0,
+      "alphaMax": 0.999969482421875
+    },
+    {
+      "source": "textures\\body.002_t_PBR_Diffuse.png",
+      "asset": "Assets/Shian/Art/Textures/body.002_t_PBR_Diffuse.png",
+      "sha256": "92628a9922db73cf285cdcb66bb55457b929b35e5cccb2440af3e1ef0fff4c3f",
+      "width": 4096,
+      "height": 4096,
+      "hasAlpha": true,
+      "alphaMin": 0.0,
+      "alphaMax": 1.0
+    },
+    {
+      "source": "textures\\body.003_t_PBR_Diffuse.png",
+      "asset": "Assets/Shian/Art/Textures/body.003_t_PBR_Diffuse.png",
+      "sha256": "c26d5bffff276a31e06dd0e0c56e1f590300aecf5256ce4f386c3795f6b40ac0",
+      "width": 4096,
+      "height": 4096,
+      "hasAlpha": true,
+      "alphaMin": 0.0,
+      "alphaMax": 1.0
+    },
+    {
+      "source": "textures\\111.003_t_PBR_Diffuse.png",
+      "asset": "Assets/Shian/Art/Textures/111.003_t_PBR_Diffuse.png",
+      "sha256": "393d5e6adfd92ebf7881d8974d2875f8c09cf28731d578321a6f1e71a01fc90a",
+      "width": 4096,
+      "height": 4096,
+      "hasAlpha": true,
+      "alphaMin": 0.0,
+      "alphaMax": 1.0
+    },
+    {
+      "source": "textures\\body.008_t_PBR_Diffuse.png",
+      "asset": "Assets/Shian/Art/Textures/body.008_t_PBR_Diffuse.png",
+      "sha256": "52e8dcc8da9b66e83e4ae94f0d5a62e306a1518d30a3e546b65f43b1a4bb94fe",
+      "width": 2048,
+      "height": 2048,
+      "hasAlpha": true,
+      "alphaMin": 0.0,
+      "alphaMax": 1.0
+    },
+    {
+      "source": "textures\\hudiejie_t_PBR_Diffuse.png",
+      "asset": "Assets/Shian/Art/Textures/hudiejie_t_PBR_Diffuse.png",
+      "sha256": "e84b741ca6907f112005bc56fe50827cd2825b5a16deb3e96e93d3fde1640c57",
+      "width": 2048,
+      "height": 2048,
+      "hasAlpha": true,
+      "alphaMin": 0.0,
+      "alphaMax": 1.0
+    },
+    {
+      "source": "孫齷쎀ㄸ엦죩➘塺靸꤁합�矰嶠觑",
+      "asset": "",
+      "unusedMissing": true
+    },
+    {
+      "source": "孫齷쎀ㄸ엦죩➘塺靸꤁합�矰嶠觑",
+      "asset": "",
+      "unusedMissing": true
+    }
+  ],
+  "bones": [
+    {
+      "source": "全ての親",
+      "canonical": "全ての親",
+      "parent": "",
+      "positionUnity": [
+        -0.0,
+        0.013534742579395492,
+        -0.015052173530373157
+      ],
+      "weightedVertexCount": 0,
+      "originalGrant": null
+    },
+    {
+      "source": "センター",
+      "canonical": "センター",
+      "parent": "全ての親",
+      "positionUnity": [
+        -0.0,
+        0.700992113801776,
+        -0.015052173530373157
+      ],
+      "weightedVertexCount": 0,
+      "originalGrant": {
+        "target": 3,
+        "weight": 1.0
+      }
+    },
+    {
+      "source": "グルーブ",
+      "canonical": "グルーブ",
+      "parent": "センター",
+      "positionUnity": [
+        -0.0,
+        0.7162311271805407,
+        -0.015052173530373157
+      ],
+      "weightedVertexCount": 0,
+      "originalGrant": {
+        "target": 4,
+        "weight": 1.0
+      }
+    },
+    {
+      "source": "腰",
+      "canonical": "腰",
+      "parent": "グルーブ",
+      "positionUnity": [
+        -0.0,
+        0.9995583993008664,
+        -0.05470397288201741
+      ],
+      "weightedVertexCount": 0,
+      "originalGrant": null
+    },
+    {
+      "source": "上半身",
+      "canonical": "上半身",
+      "parent": "腰",
+      "positionUnity": [
+        -0.0,
+        1.067321501100282,
+        0.01622999231964757
+      ],
+      "weightedVertexCount": 1288,
+      "originalGrant": {
+        "target": 9,
+        "weight": 1.0
+      }
+    },
+    {
+      "source": "上半身2",
+      "canonical": "上半身2",
+      "parent": "上半身",
+      "positionUnity": [
+        2.81649093837367e-22,
+        1.1503691457879617,
+        0.012575706216777406
+      ],
+      "weightedVertexCount": 9956,
+      "originalGrant": {
+        "target": 10,
+        "weight": 1.0
+      }
+    },
+    {
+      "source": "下半身",
+      "canonical": "下半身",
+      "parent": "腰",
+      "positionUnity": [
+        2.2185457052592506e-23,
+        1.062855879479265,
+        0.016229251782857827
+      ],
+      "weightedVertexCount": 2583,
+      "originalGrant": {
+        "target": 11,
+        "weight": 1.0
+      }
+    },
+    {
+      "source": "右胸上2",
+      "canonical": "胸上2.R",
+      "parent": "上半身2",
+      "positionUnity": [
+        0.03582209273352804,
+        1.223182884744038,
+        0.06919924284724105
+      ],
+      "weightedVertexCount": 245,
+      "originalGrant": null
+    },
+    {
+      "source": "左胸上2",
+      "canonical": "胸上2.L",
+      "parent": "上半身2",
+      "positionUnity": [
+        -0.03582209273352804,
+        1.223182884744038,
+        0.06919924284724105
+      ],
+      "weightedVertexCount": 239,
+      "originalGrant": null
+    },
+    {
+      "source": "首",
+      "canonical": "首",
+      "parent": "上半身2",
+      "positionUnity": [
+        6.900557240993001e-18,
+        1.3272622518427482,
+        -0.023338375115519786
+      ],
+      "weightedVertexCount": 9262,
+      "originalGrant": {
+        "target": 12,
+        "weight": 1.0
+      }
+    },
+    {
+      "source": "頭",
+      "canonical": "頭",
+      "parent": "首",
+      "positionUnity": [
+        3.45013785895962e-18,
+        1.3907895173178404,
+        -0.017612511965566787
+      ],
+      "weightedVertexCount": 49636,
+      "originalGrant": {
+        "target": 13,
+        "weight": 1.0
+      }
+    },
+    {
+      "source": "右目",
+      "canonical": "目.R",
+      "parent": "頭",
+      "positionUnity": [
+        0.0445226210990976,
+        1.4555092829728047,
+        0.02730551313798086
+      ],
+      "weightedVertexCount": 169,
+      "originalGrant": {
+        "target": 48,
+        "weight": 1.0
+      }
+    },
+    {
+      "source": "左目",
+      "canonical": "目.L",
+      "parent": "頭",
+      "positionUnity": [
+        -0.043881361723203754,
+        1.455859055128698,
+        0.02730551313798086
+      ],
+      "weightedVertexCount": 169,
+      "originalGrant": {
+        "target": 48,
+        "weight": 1.0
+      }
+    },
+    {
+      "source": "右肩P",
+      "canonical": "肩P.R",
+      "parent": "上半身2",
+      "positionUnity": [
+        0.05041568210531647,
+        1.2922779407454281,
+        -0.024989927086613295
+      ],
+      "weightedVertexCount": 0,
+      "originalGrant": null
+    },
+    {
+      "source": "右肩",
+      "canonical": "肩.R",
+      "parent": "肩P.R",
+      "positionUnity": [
+        0.05041568210531647,
+        1.2922779407454281,
+        -0.024989927086613295
+      ],
+      "weightedVertexCount": 140,
+      "originalGrant": {
+        "target": 14,
+        "weight": 1.0
+      }
+    },
+    {
+      "source": "右肩C",
+      "canonical": "肩C.R",
+      "parent": "肩.R",
+      "positionUnity": [
+        0.11350181507384804,
+        1.2761278368523978,
+        -0.025886212550587102
+      ],
+      "weightedVertexCount": 0,
+      "originalGrant": {
+        "target": 50,
+        "weight": -1.0
+      }
+    },
+    {
+      "source": "右腕",
+      "canonical": "腕.R",
+      "parent": "肩C.R",
+      "positionUnity": [
+        0.11350181507384804,
+        1.2761278368523978,
+        -0.025886212550587102
+      ],
+      "weightedVertexCount": 362,
+      "originalGrant": {
+        "target": 15,
+        "weight": 1.0
+      }
+    },
+    {
+      "source": "右腕捩",
+      "canonical": "腕捩.R",
+      "parent": "腕.R",
+      "positionUnity": [
+        0.20951261169967297,
+        1.202662311811282,
+        -0.028891191447806153
+      ],
+      "weightedVertexCount": 80,
+      "originalGrant": {
+        "target": 16,
+        "weight": 1.0
+      }
+    },
+    {
+      "source": "右腕捩1",
+      "canonical": "腕捩1.R",
+      "parent": "腕.R",
+      "positionUnity": [
+        0.1667753210402179,
+        1.235364325478378,
+        -0.027553588698418105
+      ],
+      "weightedVertexCount": 54,
+      "originalGrant": {
+        "target": 54,
+        "weight": 0.25
+      }
+    },
+    {
+      "source": "右腕捩2",
+      "canonical": "腕捩2.R",
+      "parent": "腕.R",
+      "positionUnity": [
+        0.2008466085521896,
+        1.2092933369170553,
+        -0.028619961675651156
+      ],
+      "weightedVertexCount": 39,
+      "originalGrant": {
+        "target": 54,
+        "weight": 0.5
+      }
+    },
+    {
+      "source": "右腕捩3",
+      "canonical": "腕捩3.R",
+      "parent": "腕.R",
+      "positionUnity": [
+        0.23491803251623777,
+        1.1832224393237833,
+        -0.029686331810132614
+      ],
+      "weightedVertexCount": 26,
+      "originalGrant": {
+        "target": 54,
+        "weight": 0.75
+      }
+    },
+    {
+      "source": "右ひじ",
+      "canonical": "ひじ.R",
+      "parent": "腕捩.R",
+      "positionUnity": [
+        0.2735198473535775,
+        1.1536853860852558,
+        -0.028314274911448167
+      ],
+      "weightedVertexCount": 60,
+      "originalGrant": {
+        "target": 17,
+        "weight": 1.0
+      }
+    },
+    {
+      "source": "右手捩",
+      "canonical": "手捩.R",
+      "parent": "ひじ.R",
+      "positionUnity": [
+        0.3581541795278976,
+        1.0916014197064978,
+        -0.0263840181528882
+      ],
+      "weightedVertexCount": 80,
+      "originalGrant": {
+        "target": 18,
+        "weight": 1.0
+      }
+    },
+    {
+      "source": "右手捩1",
+      "canonical": "手捩1.R",
+      "parent": "ひじ.R",
+      "positionUnity": [
+        0.31611465930323596,
+        1.1224396799457796,
+        -0.027342818567124144
+      ],
+      "weightedVertexCount": 44,
+      "originalGrant": {
+        "target": 59,
+        "weight": 0.25
+      }
+    },
+    {
+      "source": "右手捩2",
+      "canonical": "手捩2.R",
+      "parent": "ひじ.R",
+      "positionUnity": [
+        0.3451739028541614,
+        1.1011231365672323,
+        -0.026680065146442337
+      ],
+      "weightedVertexCount": 41,
+      "originalGrant": {
+        "target": 59,
+        "weight": 0.5
+      }
+    },
+    {
+      "source": "右手捩3",
+      "canonical": "手捩3.R",
+      "parent": "ひじ.R",
+      "positionUnity": [
+        0.374233214631125,
+        1.079806502220634,
+        -0.026017314568512123
+      ],
+      "weightedVertexCount": 26,
+      "originalGrant": {
+        "target": 59,
+        "weight": 0.75
+      }
+    },
+    {
+      "source": "右手首",
+      "canonical": "手首.R",
+      "parent": "手捩.R",
+      "positionUnity": [
+        0.414577067644111,
+        1.0502119571739077,
+        -0.02509719547519005
+      ],
+      "weightedVertexCount": 222,
+      "originalGrant": {
+        "target": 19,
+        "weight": 1.0
+      }
+    },
+    {
+      "source": "右親指０",
+      "canonical": "親指０.R",
+      "parent": "手首.R",
+      "positionUnity": [
+        0.4239999022334655,
+        1.0315086529949316,
+        -0.003346423212323418
+      ],
+      "weightedVertexCount": 39,
+      "originalGrant": null
+    },
+    {
+      "source": "右親指１",
+      "canonical": "親指１.R",
+      "parent": "親指０.R",
+      "positionUnity": [
+        0.4362756313526127,
+        1.0094881988381519,
+        0.014112396809791629
+      ],
+      "weightedVertexCount": 42,
+      "originalGrant": null
+    },
+    {
+      "source": "右親指２",
+      "canonical": "親指２.R",
+      "parent": "親指１.R",
+      "positionUnity": [
+        0.4516358141752396,
+        0.9928501423198387,
+        0.023835681814916472
+      ],
+      "weightedVertexCount": 81,
+      "originalGrant": null
+    },
+    {
+      "source": "右親指先",
+      "canonical": "親指先.R",
+      "parent": "親指２.R",
+      "positionUnity": [
+        0.4634800363447169,
+        0.980748025725925,
+        0.028171216280326723
+      ],
+      "weightedVertexCount": 0,
+      "originalGrant": null
+    },
+    {
+      "source": "右小指１",
+      "canonical": "小指１.R",
+      "parent": "手首.R",
+      "positionUnity": [
+        0.4644282873077945,
+        1.0053811732739704,
+        -0.04717953064862687
+      ],
+      "weightedVertexCount": 54,
+      "originalGrant": null
+    },
+    {
+      "source": "右小指２",
+      "canonical": "小指２.R",
+      "parent": "小指１.R",
+      "positionUnity": [
+        0.4814884355825044,
+        0.9896243242651864,
+        -0.046522576441192974
+      ],
+      "weightedVertexCount": 48,
+      "originalGrant": null
+    },
+    {
+      "source": "右小指３",
+      "canonical": "小指３.R",
+      "parent": "小指２.R",
+      "positionUnity": [
+        0.49146035332737853,
+        0.9805791890233663,
+        -0.04544181629815224
+      ],
+      "weightedVertexCount": 87,
+      "originalGrant": null
+    },
+    {
+      "source": "右小指先",
+      "canonical": "小指先.R",
+      "parent": "小指３.R",
+      "positionUnity": [
+        0.503679272898709,
+        0.9711389795362808,
+        -0.04479276209739282
+      ],
+      "weightedVertexCount": 0,
+      "originalGrant": null
+    },
+    {
+      "source": "右薬指１",
+      "canonical": "薬指１.R",
+      "parent": "手首.R",
+      "positionUnity": [
+        0.47313238332661217,
+        1.0020226328329855,
+        -0.03331500187840626
+      ],
+      "weightedVertexCount": 52,
+      "originalGrant": null
+    },
+    {
+      "source": "右薬指２",
+      "canonical": "薬指２.R",
+      "parent": "薬指１.R",
+      "positionUnity": [
+        0.49470886791074226,
+        0.9828545728817182,
+        -0.03181608150442063
+      ],
+      "weightedVertexCount": 51,
+      "originalGrant": null
+    },
+    {
+      "source": "右薬指３",
+      "canonical": "薬指３.R",
+      "parent": "薬指２.R",
+      "positionUnity": [
+        0.5076553954375769,
+        0.9712946258714521,
+        -0.031063559673963112
+      ],
+      "weightedVertexCount": 92,
+      "originalGrant": null
+    },
+    {
+      "source": "右薬指先",
+      "canonical": "薬指先.R",
+      "parent": "薬指３.R",
+      "positionUnity": [
+        0.5188899497296035,
+        0.9603569003296675,
+        -0.03093945651045787
+      ],
+      "weightedVertexCount": 0,
+      "originalGrant": null
+    },
+    {
+      "source": "右中指１",
+      "canonical": "中指１.R",
+      "parent": "手首.R",
+      "positionUnity": [
+        0.4734574121726479,
+        0.9998486783514401,
+        -0.01718956169818918
+      ],
+      "weightedVertexCount": 53,
+      "originalGrant": null
+    },
+    {
+      "source": "右中指２",
+      "canonical": "中指２.R",
+      "parent": "中指１.R",
+      "positionUnity": [
+        0.4981966284680981,
+        0.9814575765233161,
+        -0.016759180478149793
+      ],
+      "weightedVertexCount": 42,
+      "originalGrant": null
+    },
+    {
+      "source": "右中指３",
+      "canonical": "中指３.R",
+      "parent": "中指２.R",
+      "positionUnity": [
+        0.511625195696904,
+        0.9698510538709648,
+        -0.016760692821996794
+      ],
+      "weightedVertexCount": 86,
+      "originalGrant": null
+    },
+    {
+      "source": "右中指先",
+      "canonical": "中指先.R",
+      "parent": "中指３.R",
+      "positionUnity": [
+        0.5274389452215555,
+        0.9575921083572175,
+        -0.01634153336386727
+      ],
+      "weightedVertexCount": 0,
+      "originalGrant": null
+    },
+    {
+      "source": "右人指１",
+      "canonical": "人指１.R",
+      "parent": "手首.R",
+      "positionUnity": [
+        0.4763118986433321,
+        0.9990608040621831,
+        0.0012635757212097077
+      ],
+      "weightedVertexCount": 53,
+      "originalGrant": null
+    },
+    {
+      "source": "右人指２",
+      "canonical": "人指２.R",
+      "parent": "人指１.R",
+      "positionUnity": [
+        0.4942966461878733,
+        0.9824913374542845,
+        0.0010835987193414415
+      ],
+      "weightedVertexCount": 44,
+      "originalGrant": null
+    },
+    {
+      "source": "右人指３",
+      "canonical": "人指３.R",
+      "parent": "人指２.R",
+      "positionUnity": [
+        0.5049679717924579,
+        0.9719547810171787,
+        0.0008995172283541018
+      ],
+      "weightedVertexCount": 71,
+      "originalGrant": null
+    },
+    {
+      "source": "右人指先",
+      "canonical": "人指先.R",
+      "parent": "人指３.R",
+      "positionUnity": [
+        0.5179096325285668,
+        0.9595136264973834,
+        0.0006862620435707063
+      ],
+      "weightedVertexCount": 0,
+      "originalGrant": null
+    },
+    {
+      "source": "左肩P",
+      "canonical": "肩P.L",
+      "parent": "上半身2",
+      "positionUnity": [
+        -0.0321558699167226,
+        1.3003159686952077,
+        -0.02554051690047673
+      ],
+      "weightedVertexCount": 0,
+      "originalGrant": null
+    },
+    {
+      "source": "左肩",
+      "canonical": "肩.L",
+      "parent": "肩P.L",
+      "positionUnity": [
+        -0.0321558699167226,
+        1.3003159686952077,
+        -0.02554051690047673
+      ],
+      "weightedVertexCount": 140,
+      "originalGrant": {
+        "target": 20,
+        "weight": 1.0
+      }
+    },
+    {
+      "source": "左肩C",
+      "canonical": "肩C.L",
+      "parent": "肩.L",
+      "positionUnity": [
+        -0.0979156107576355,
+        1.2834811482826949,
+        -0.02647479005397593
+      ],
+      "weightedVertexCount": 0,
+      "originalGrant": {
+        "target": 86,
+        "weight": -1.0
+      }
+    },
+    {
+      "source": "左腕",
+      "canonical": "腕.L",
+      "parent": "肩C.L",
+      "positionUnity": [
+        -0.0979156107576355,
+        1.2834811482826949,
+        -0.02647479005397593
+      ],
+      "weightedVertexCount": 362,
+      "originalGrant": {
+        "target": 21,
+        "weight": 1.0
+      }
+    },
+    {
+      "source": "左腕捩",
+      "canonical": "腕捩.L",
+      "parent": "腕.L",
+      "positionUnity": [
+        -0.19799544241536496,
+        1.2069024236339998,
+        -0.029607124222521597
+      ],
+      "weightedVertexCount": 80,
+      "originalGrant": {
+        "target": 22,
+        "weight": 1.0
+      }
+    },
+    {
+      "source": "左腕捩1",
+      "canonical": "腕捩1.L",
+      "parent": "腕.L",
+      "positionUnity": [
+        -0.15344692100651164,
+        1.2409901536211805,
+        -0.02821283132088365
+      ],
+      "weightedVertexCount": 54,
+      "originalGrant": {
+        "target": 90,
+        "weight": 0.25
+      }
+    },
+    {
+      "source": "左腕捩2",
+      "canonical": "腕捩2.L",
+      "parent": "腕.L",
+      "positionUnity": [
+        -0.18896221261721258,
+        1.2138144490491503,
+        -0.0293243983629281
+      ],
+      "weightedVertexCount": 39,
+      "originalGrant": {
+        "target": 90,
+        "weight": 0.5
+      }
+    },
+    {
+      "source": "左腕捩3",
+      "canonical": "腕捩3.L",
+      "parent": "腕.L",
+      "positionUnity": [
+        -0.2244775838249581,
+        1.186638653509069,
+        -0.030435965404972547
+      ],
+      "weightedVertexCount": 26,
+      "originalGrant": {
+        "target": 90,
+        "weight": 0.75
+      }
+    },
+    {
+      "source": "左ひじ",
+      "canonical": "ひじ.L",
+      "parent": "腕捩.L",
+      "positionUnity": [
+        -0.2647153908325519,
+        1.1558496069853497,
+        -0.029005754336968267
+      ],
+      "weightedVertexCount": 60,
+      "originalGrant": {
+        "target": 23,
+        "weight": 1.0
+      }
+    },
+    {
+      "source": "左手捩",
+      "canonical": "手捩.L",
+      "parent": "ひじ.L",
+      "positionUnity": [
+        -0.3529365705137225,
+        1.091134480700984,
+        -0.026993697401345277
+      ],
+      "weightedVertexCount": 80,
+      "originalGrant": {
+        "target": 24,
+        "weight": 1.0
+      }
+    },
+    {
+      "source": "左手捩1",
+      "canonical": "手捩1.L",
+      "parent": "ひじ.L",
+      "positionUnity": [
+        -0.3091153727852142,
+        1.1232796789282298,
+        -0.027993129264087275
+      ],
+      "weightedVertexCount": 44,
+      "originalGrant": {
+        "target": 95,
+        "weight": 0.25
+      }
+    },
+    {
+      "source": "左手捩2",
+      "canonical": "手捩2.L",
+      "parent": "ひじ.L",
+      "positionUnity": [
+        -0.3394061645518808,
+        1.101059822803773,
+        -0.027302289457675405
+      ],
+      "weightedVertexCount": 41,
+      "originalGrant": {
+        "target": 95,
+        "weight": 0.5
+      }
+    },
+    {
+      "source": "左手捩3",
+      "canonical": "手捩3.L",
+      "parent": "ひじ.L",
+      "positionUnity": [
+        -0.369697070028611,
+        1.078839784743214,
+        -0.02661144680851194
+      ],
+      "weightedVertexCount": 26,
+      "originalGrant": {
+        "target": 95,
+        "weight": 0.75
+      }
+    },
+    {
+      "source": "左手首",
+      "canonical": "手首.L",
+      "parent": "手捩.L",
+      "positionUnity": [
+        -0.41175073578519505,
+        1.0479908812419714,
+        -0.025652333691600866
+      ],
+      "weightedVertexCount": 222,
+      "originalGrant": {
+        "target": 25,
+        "weight": 1.0
+      }
+    },
+    {
+      "source": "左親指０",
+      "canonical": "親指０.L",
+      "parent": "手首.L",
+      "positionUnity": [
+        -0.4215742846389737,
+        1.0297047565446409,
+        -0.004055604452007597
+      ],
+      "weightedVertexCount": 39,
+      "originalGrant": null
+    },
+    {
+      "source": "左親指１",
+      "canonical": "親指１.L",
+      "parent": "親指０.L",
+      "positionUnity": [
+        -0.43520439158465396,
+        1.0099095628501409,
+        0.014482699317683322
+      ],
+      "weightedVertexCount": 42,
+      "originalGrant": null
+    },
+    {
+      "source": "左親指２",
+      "canonical": "親指２.L",
+      "parent": "親指１.L",
+      "positionUnity": [
+        -0.45239080351407907,
+        0.9918523137689946,
+        0.024401952246561994
+      ],
+      "weightedVertexCount": 81,
+      "originalGrant": null
+    },
+    {
+      "source": "左親指先",
+      "canonical": "親指先.L",
+      "parent": "親指２.L",
+      "positionUnity": [
+        -0.4646277347594971,
+        0.9791785539429263,
+        0.029052113929932427
+      ],
+      "weightedVertexCount": 0,
+      "originalGrant": null
+    },
+    {
+      "source": "左小指１",
+      "canonical": "小指１.L",
+      "parent": "手首.L",
+      "positionUnity": [
+        -0.46386510410437803,
+        1.0038920262799582,
+        -0.048573152660889074
+      ],
+      "weightedVertexCount": 54,
+      "originalGrant": null
+    },
+    {
+      "source": "左小指２",
+      "canonical": "小指２.L",
+      "parent": "小指１.L",
+      "positionUnity": [
+        -0.48192280802577914,
+        0.988639322209526,
+        -0.047519057527782356
+      ],
+      "weightedVertexCount": 48,
+      "originalGrant": null
+    },
+    {
+      "source": "左小指３",
+      "canonical": "小指３.L",
+      "parent": "小指２.L",
+      "positionUnity": [
+        -0.4924725093462468,
+        0.9799115744974619,
+        -0.04619839189238011
+      ],
+      "weightedVertexCount": 87,
+      "originalGrant": null
+    },
+    {
+      "source": "左小指先",
+      "canonical": "小指先.L",
+      "parent": "小指３.L",
+      "positionUnity": [
+        -0.5053247484882744,
+        0.9708691682971702,
+        -0.04531526836827778
+      ],
+      "weightedVertexCount": 0,
+      "originalGrant": null
+    },
+    {
+      "source": "左薬指１",
+      "canonical": "薬指１.L",
+      "parent": "手首.L",
+      "positionUnity": [
+        -0.4731997451683389,
+        1.0031451785816787,
+        -0.03348707078952521
+      ],
+      "weightedVertexCount": 52,
+      "originalGrant": null
+    },
+    {
+      "source": "左薬指２",
+      "canonical": "薬指２.L",
+      "parent": "薬指１.L",
+      "positionUnity": [
+        -0.4949717655779807,
+        0.9841266701061692,
+        -0.03259673804738528
+      ],
+      "weightedVertexCount": 51,
+      "originalGrant": null
+    },
+    {
+      "source": "左薬指３",
+      "canonical": "薬指３.L",
+      "parent": "薬指２.L",
+      "positionUnity": [
+        -0.5080342318857481,
+        0.9726590556676149,
+        -0.032210436533533185
+      ],
+      "weightedVertexCount": 92,
+      "originalGrant": null
+    },
+    {
+      "source": "左薬指先",
+      "canonical": "薬指先.L",
+      "parent": "薬指３.L",
+      "positionUnity": [
+        -0.5193697607143265,
+        0.9618095691352494,
+        -0.032419515227629835
+      ],
+      "weightedVertexCount": 0,
+      "originalGrant": null
+    },
+    {
+      "source": "左中指１",
+      "canonical": "中指１.L",
+      "parent": "手首.L",
+      "positionUnity": [
+        -0.47445246619793807,
+        1.0012028287578458,
+        -0.016892498420940864
+      ],
+      "weightedVertexCount": 53,
+      "originalGrant": null
+    },
+    {
+      "source": "左中指２",
+      "canonical": "中指２.L",
+      "parent": "中指１.L",
+      "positionUnity": [
+        -0.4988428655020297,
+        0.9814500261750875,
+        -0.016454305319526352
+      ],
+      "weightedVertexCount": 42,
+      "originalGrant": null
+    },
+    {
+      "source": "左中指３",
+      "canonical": "中指３.L",
+      "parent": "中指２.L",
+      "positionUnity": [
+        -0.5120137657265266,
+        0.9690762789810443,
+        -0.016455848933640868
+      ],
+      "weightedVertexCount": 86,
+      "originalGrant": null
+    },
+    {
+      "source": "左中指先",
+      "canonical": "中指先.L",
+      "parent": "中指３.L",
+      "positionUnity": [
+        -0.5275834024864603,
+        0.9559382182229395,
+        -0.016029080850875056
+      ],
+      "weightedVertexCount": 0,
+      "originalGrant": null
+    },
+    {
+      "source": "左人指１",
+      "canonical": "人指１.L",
+      "parent": "手首.L",
+      "positionUnity": [
+        -0.47466619563363943,
+        0.9977736061412747,
+        9.434656127432329e-05
+      ],
+      "weightedVertexCount": 53,
+      "originalGrant": null
+    },
+    {
+      "source": "左人指２",
+      "canonical": "人指２.L",
+      "parent": "人指１.L",
+      "positionUnity": [
+        -0.4941256262520918,
+        0.9822418120905353,
+        -8.889765053315218e-05
+      ],
+      "weightedVertexCount": 44,
+      "originalGrant": null
+    },
+    {
+      "source": "左人指３",
+      "canonical": "人指３.L",
+      "parent": "人指２.L",
+      "positionUnity": [
+        -0.5064602571842275,
+        0.9710203571978451,
+        -0.0004278227436064868
+      ],
+      "weightedVertexCount": 71,
+      "originalGrant": null
+    },
+    {
+      "source": "左人指先",
+      "canonical": "人指先.L",
+      "parent": "人指３.L",
+      "positionUnity": [
+        -0.5205004481035795,
+        0.9593176813156422,
+        -0.0006449490009524471
+      ],
+      "weightedVertexCount": 0,
+      "originalGrant": null
+    },
+    {
+      "source": "腰キャンセル右",
+      "canonical": "腰キャンセル右",
+      "parent": "下半身",
+      "positionUnity": [
+        0.07605489649831973,
+        0.9242906152343769,
+        0.0029498734013097805
+      ],
+      "weightedVertexCount": 0,
+      "originalGrant": {
+        "target": 28,
+        "weight": -1.0
+      }
+    },
+    {
+      "source": "腰キャンセル左",
+      "canonical": "腰キャンセル左",
+      "parent": "下半身",
+      "positionUnity": [
+        -0.07605489649831973,
+        0.9242906152343769,
+        0.0029498734013097805
+      ],
+      "weightedVertexCount": 0,
+      "originalGrant": {
+        "target": 28,
+        "weight": -1.0
+      }
+    },
+    {
+      "source": "右足D",
+      "canonical": "足.R",
+      "parent": "腰キャンセル右",
+      "positionUnity": [
+        0.07605489649831973,
+        0.9242906152343769,
+        0.0029498734013097805
+      ],
+      "weightedVertexCount": 867,
+      "originalGrant": {
+        "target": 124,
+        "weight": 1.0
+      }
+    },
+    {
+      "source": "右ひざD",
+      "canonical": "ひざ.R",
+      "parent": "足.R",
+      "positionUnity": [
+        0.06900212076634082,
+        0.5221405110941135,
+        0.0014494721314166363
+      ],
+      "weightedVertexCount": 498,
+      "originalGrant": {
+        "target": 128,
+        "weight": 1.0
+      }
+    },
+    {
+      "source": "右足首D",
+      "canonical": "足首.R",
+      "parent": "ひざ.R",
+      "positionUnity": [
+        0.07205796501779753,
+        0.11437330037293227,
+        -0.07878698545645399
+      ],
+      "weightedVertexCount": 2997,
+      "originalGrant": {
+        "target": 129,
+        "weight": 1.0
+      }
+    },
+    {
+      "source": "右足先EX",
+      "canonical": "足先EX.R",
+      "parent": "足首.R",
+      "positionUnity": [
+        0.07192550416461148,
+        0.029169161383986047,
+        0.030499074490317434
+      ],
+      "weightedVertexCount": 1524,
+      "originalGrant": null
+    },
+    {
+      "source": "左足D",
+      "canonical": "足.L",
+      "parent": "腰キャンセル左",
+      "positionUnity": [
+        -0.07605489649831973,
+        0.9242906152343769,
+        0.0029498734013097805
+      ],
+      "weightedVertexCount": 867,
+      "originalGrant": {
+        "target": 132,
+        "weight": 1.0
+      }
+    },
+    {
+      "source": "左ひざD",
+      "canonical": "ひざ.L",
+      "parent": "足.L",
+      "positionUnity": [
+        -0.07357827994026539,
+        0.5221405110941135,
+        0.0014494699105169551
+      ],
+      "weightedVertexCount": 498,
+      "originalGrant": {
+        "target": 136,
+        "weight": 1.0
+      }
+    },
+    {
+      "source": "左足首D",
+      "canonical": "足首.L",
+      "parent": "ひざ.L",
+      "positionUnity": [
+        -0.07663423790178579,
+        0.11437325488890679,
+        -0.07878698545645399
+      ],
+      "weightedVertexCount": 2997,
+      "originalGrant": {
+        "target": 137,
+        "weight": 1.0
+      }
+    },
+    {
+      "source": "左足先EX",
+      "canonical": "足先EX.L",
+      "parent": "足首.L",
+      "positionUnity": [
+        -0.07650166333853606,
+        0.029169161383986047,
+        0.030499074490317434
+      ],
+      "weightedVertexCount": 1524,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.001",
+      "canonical": "hair.001",
+      "parent": "頭",
+      "positionUnity": [
+        -0.005387726020982106,
+        1.5452477187757299,
+        0.11018822422103772
+      ],
+      "weightedVertexCount": 221,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.002",
+      "canonical": "hair.002",
+      "parent": "hair.001",
+      "positionUnity": [
+        -0.0048540498684038385,
+        1.5075083492874115,
+        0.1098850731912549
+      ],
+      "weightedVertexCount": 179,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.003",
+      "canonical": "hair.003",
+      "parent": "hair.002",
+      "positionUnity": [
+        -0.005581615182634206,
+        1.4844686890878152,
+        0.1098850731912549
+      ],
+      "weightedVertexCount": 125,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.004",
+      "canonical": "hair.004",
+      "parent": "頭",
+      "positionUnity": [
+        0.030441062458577205,
+        1.5441954003623684,
+        0.10232071588275951
+      ],
+      "weightedVertexCount": 129,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.005",
+      "canonical": "hair.005",
+      "parent": "hair.004",
+      "positionUnity": [
+        0.03484149978558697,
+        1.5098222126313143,
+        0.09926687292842365
+      ],
+      "weightedVertexCount": 99,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.006",
+      "canonical": "hair.006",
+      "parent": "hair.005",
+      "positionUnity": [
+        0.03656481559924755,
+        1.4887146228657935,
+        0.09757254749549943
+      ],
+      "weightedVertexCount": 50,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.007",
+      "canonical": "hair.007",
+      "parent": "頭",
+      "positionUnity": [
+        0.0753142346275045,
+        1.5411315964064536,
+        0.06954637692965703
+      ],
+      "weightedVertexCount": 139,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.008",
+      "canonical": "hair.008",
+      "parent": "hair.007",
+      "positionUnity": [
+        0.07997004770104006,
+        1.5046590479956312,
+        0.06786940365245106
+      ],
+      "weightedVertexCount": 108,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.009",
+      "canonical": "hair.009",
+      "parent": "hair.008",
+      "positionUnity": [
+        0.08179337151571114,
+        1.4822703551686158,
+        0.06703090564284171
+      ],
+      "weightedVertexCount": 82,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.010",
+      "canonical": "hair.010",
+      "parent": "頭",
+      "positionUnity": [
+        0.11160449443523429,
+        1.4525919375789156,
+        -0.010404512757715886
+      ],
+      "weightedVertexCount": 673,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.011",
+      "canonical": "hair.011",
+      "parent": "hair.010",
+      "positionUnity": [
+        0.10234812000810747,
+        1.4100727428216073,
+        -0.01646589663914319
+      ],
+      "weightedVertexCount": 545,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.012",
+      "canonical": "hair.012",
+      "parent": "hair.011",
+      "positionUnity": [
+        0.09169366329147043,
+        1.3781172129805872,
+        -0.014524904229195612
+      ],
+      "weightedVertexCount": 336,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.013",
+      "canonical": "hair.013",
+      "parent": "hair.012",
+      "positionUnity": [
+        0.07326052853830549,
+        1.3488630703805067,
+        -0.007694522639770806
+      ],
+      "weightedVertexCount": 136,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.014",
+      "canonical": "hair.014",
+      "parent": "頭",
+      "positionUnity": [
+        -0.1196822526812651,
+        1.4508898343776353,
+        -0.005065938977793243
+      ],
+      "weightedVertexCount": 637,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.015",
+      "canonical": "hair.015",
+      "parent": "hair.014",
+      "positionUnity": [
+        -0.11051022837937943,
+        1.4070885359102718,
+        -0.0049845261256346455
+      ],
+      "weightedVertexCount": 515,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.016",
+      "canonical": "hair.016",
+      "parent": "hair.015",
+      "positionUnity": [
+        -0.09536781169971467,
+        1.3752069630946722,
+        -0.0009439900337849871
+      ],
+      "weightedVertexCount": 402,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.017",
+      "canonical": "hair.017",
+      "parent": "hair.016",
+      "positionUnity": [
+        -0.07823046566276941,
+        1.3486397438154303,
+        0.007816648669543734
+      ],
+      "weightedVertexCount": 330,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.018",
+      "canonical": "hair.018",
+      "parent": "頭",
+      "positionUnity": [
+        -0.1062713787383685,
+        1.4885960914954088,
+        0.03915252973227321
+      ],
+      "weightedVertexCount": 325,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.019",
+      "canonical": "hair.019",
+      "parent": "hair.018",
+      "positionUnity": [
+        -0.10158821839451683,
+        1.4487513574359596,
+        0.03607721263241054
+      ],
+      "weightedVertexCount": 252,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.020",
+      "canonical": "hair.020",
+      "parent": "hair.019",
+      "positionUnity": [
+        -0.09059786214975583,
+        1.418787209198233,
+        0.03735355124223698
+      ],
+      "weightedVertexCount": 186,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.021",
+      "canonical": "hair.021",
+      "parent": "頭",
+      "positionUnity": [
+        0.10394125485535888,
+        1.4884071508535908,
+        0.03350351326473398
+      ],
+      "weightedVertexCount": 420,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.022",
+      "canonical": "hair.022",
+      "parent": "hair.021",
+      "positionUnity": [
+        0.1008049607338454,
+        1.451770223174706,
+        0.0351306985905557
+      ],
+      "weightedVertexCount": 308,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.023",
+      "canonical": "hair.023",
+      "parent": "hair.022",
+      "positionUnity": [
+        0.09787201431921887,
+        1.4295157082228382,
+        0.03631966807295018
+      ],
+      "weightedVertexCount": 265,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.024.L",
+      "canonical": "hair.024.L",
+      "parent": "頭",
+      "positionUnity": [
+        -0.1524973510066953,
+        1.4830256628956335,
+        -0.09278548458095606
+      ],
+      "weightedVertexCount": 2638,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.025.L",
+      "canonical": "hair.025.L",
+      "parent": "hair.024.L",
+      "positionUnity": [
+        -0.19114623043939402,
+        1.465685605928158,
+        -0.10721711670903869
+      ],
+      "weightedVertexCount": 1654,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.026.L",
+      "canonical": "hair.026.L",
+      "parent": "hair.025.L",
+      "positionUnity": [
+        -0.21659874996433692,
+        1.4443520515240835,
+        -0.11983048512028419
+      ],
+      "weightedVertexCount": 1295,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.030.L",
+      "canonical": "hair.030.L",
+      "parent": "頭",
+      "positionUnity": [
+        -0.14516500771214172,
+        1.4372777391060427,
+        -0.10731067734943828
+      ],
+      "weightedVertexCount": 3184,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.031.L",
+      "canonical": "hair.031.L",
+      "parent": "hair.030.L",
+      "positionUnity": [
+        -0.16631601197997717,
+        1.3650901332446386,
+        -0.11112419449723741
+      ],
+      "weightedVertexCount": 2787,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.032.L",
+      "canonical": "hair.032.L",
+      "parent": "hair.031.L",
+      "positionUnity": [
+        -0.1922332076801667,
+        1.3089063546503408,
+        -0.11486256066394747
+      ],
+      "weightedVertexCount": 2706,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.033.L",
+      "canonical": "hair.033.L",
+      "parent": "hair.032.L",
+      "positionUnity": [
+        -0.21623230791310732,
+        1.2448102659526732,
+        -0.11246601873273974
+      ],
+      "weightedVertexCount": 2478,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.034.L",
+      "canonical": "hair.034.L",
+      "parent": "hair.033.L",
+      "positionUnity": [
+        -0.25326931308005945,
+        1.1726354865864526,
+        -0.11246601873273974
+      ],
+      "weightedVertexCount": 2463,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.035.L",
+      "canonical": "hair.035.L",
+      "parent": "hair.034.L",
+      "positionUnity": [
+        -0.3007526798616028,
+        1.0995111827044413,
+        -0.11246601873273974
+      ],
+      "weightedVertexCount": 3230,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.036.L",
+      "canonical": "hair.036.L",
+      "parent": "hair.035.L",
+      "positionUnity": [
+        -0.34728634019125343,
+        1.039682132372572,
+        -0.11246601873273974
+      ],
+      "weightedVertexCount": 4373,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.037.L",
+      "canonical": "hair.037.L",
+      "parent": "hair.036.L",
+      "positionUnity": [
+        -0.3966690061665187,
+        0.9855509568798555,
+        -0.11246601873273974
+      ],
+      "weightedVertexCount": 2120,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.038.L",
+      "canonical": "hair.038.L",
+      "parent": "hair.037.L",
+      "positionUnity": [
+        -0.46314572875748455,
+        0.9523126865524235,
+        -0.11246601873273974
+      ],
+      "weightedVertexCount": 2038,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.039.L",
+      "canonical": "hair.039.L",
+      "parent": "hair.038.L",
+      "positionUnity": [
+        -0.550514992641531,
+        0.9371179291304448,
+        -0.11246601873273974
+      ],
+      "weightedVertexCount": 1269,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.040.L",
+      "canonical": "hair.040.L",
+      "parent": "hair.039.L",
+      "positionUnity": [
+        -0.6312367662025828,
+        0.9570610368757855,
+        -0.11246601873273974
+      ],
+      "weightedVertexCount": 1813,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.041.L",
+      "canonical": "hair.041.L",
+      "parent": "hair.040.L",
+      "positionUnity": [
+        -0.6787200875001007,
+        1.0273364943062715,
+        -0.11246601873273974
+      ],
+      "weightedVertexCount": 2051,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.042.L",
+      "canonical": "hair.042.L",
+      "parent": "hair.041.L",
+      "positionUnity": [
+        -0.6388340994295467,
+        1.0900144820577171,
+        -0.11246601873273974
+      ],
+      "weightedVertexCount": 2247,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.024.R",
+      "canonical": "hair.024.R",
+      "parent": "頭",
+      "positionUnity": [
+        0.1524973510066953,
+        1.4830256628956335,
+        -0.09278548458095606
+      ],
+      "weightedVertexCount": 2638,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.025.R",
+      "canonical": "hair.025.R",
+      "parent": "hair.024.R",
+      "positionUnity": [
+        0.19114623043939402,
+        1.465685605928158,
+        -0.10721711670903869
+      ],
+      "weightedVertexCount": 1654,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.026.R",
+      "canonical": "hair.026.R",
+      "parent": "hair.025.R",
+      "positionUnity": [
+        0.21659874996433692,
+        1.4443520515240835,
+        -0.11983048512028419
+      ],
+      "weightedVertexCount": 1295,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.030.R",
+      "canonical": "hair.030.R",
+      "parent": "頭",
+      "positionUnity": [
+        0.14516500771214172,
+        1.4372777391060427,
+        -0.10731067734943828
+      ],
+      "weightedVertexCount": 3184,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.031.R",
+      "canonical": "hair.031.R",
+      "parent": "hair.030.R",
+      "positionUnity": [
+        0.16631601197997717,
+        1.3650901332446386,
+        -0.11112419449723741
+      ],
+      "weightedVertexCount": 2787,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.032.R",
+      "canonical": "hair.032.R",
+      "parent": "hair.031.R",
+      "positionUnity": [
+        0.1922332076801667,
+        1.3089063546503408,
+        -0.11486256066394747
+      ],
+      "weightedVertexCount": 2706,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.033.R",
+      "canonical": "hair.033.R",
+      "parent": "hair.032.R",
+      "positionUnity": [
+        0.21623230791310732,
+        1.2448102659526732,
+        -0.11246601873273974
+      ],
+      "weightedVertexCount": 2478,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.034.R",
+      "canonical": "hair.034.R",
+      "parent": "hair.033.R",
+      "positionUnity": [
+        0.25326931308005945,
+        1.1726354865864526,
+        -0.11246601873273974
+      ],
+      "weightedVertexCount": 2463,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.035.R",
+      "canonical": "hair.035.R",
+      "parent": "hair.034.R",
+      "positionUnity": [
+        0.3007526798616028,
+        1.0995111827044413,
+        -0.11246601873273974
+      ],
+      "weightedVertexCount": 3230,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.036.R",
+      "canonical": "hair.036.R",
+      "parent": "hair.035.R",
+      "positionUnity": [
+        0.34728634019125343,
+        1.039682132372572,
+        -0.11246601873273974
+      ],
+      "weightedVertexCount": 4373,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.037.R",
+      "canonical": "hair.037.R",
+      "parent": "hair.036.R",
+      "positionUnity": [
+        0.3966690061665187,
+        0.9855509568798555,
+        -0.11246601873273974
+      ],
+      "weightedVertexCount": 2120,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.038.R",
+      "canonical": "hair.038.R",
+      "parent": "hair.037.R",
+      "positionUnity": [
+        0.46314572875748455,
+        0.9523126865524235,
+        -0.11246601873273974
+      ],
+      "weightedVertexCount": 2038,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.039.R",
+      "canonical": "hair.039.R",
+      "parent": "hair.038.R",
+      "positionUnity": [
+        0.550514992641531,
+        0.9371179291304448,
+        -0.11246601873273974
+      ],
+      "weightedVertexCount": 1269,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.040.R",
+      "canonical": "hair.040.R",
+      "parent": "hair.039.R",
+      "positionUnity": [
+        0.6312367662025828,
+        0.9570610368757855,
+        -0.11246601873273974
+      ],
+      "weightedVertexCount": 1813,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.041.R",
+      "canonical": "hair.041.R",
+      "parent": "hair.040.R",
+      "positionUnity": [
+        0.6787200875001007,
+        1.0273364943062715,
+        -0.11246601873273974
+      ],
+      "weightedVertexCount": 2051,
+      "originalGrant": null
+    },
+    {
+      "source": "hair.042.R",
+      "canonical": "hair.042.R",
+      "parent": "hair.041.R",
+      "positionUnity": [
+        0.6388340994295467,
+        1.0900144820577171,
+        -0.11246601873273974
+      ],
+      "weightedVertexCount": 2247,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_0_0",
+      "canonical": "スカート_0_0",
+      "parent": "下半身",
+      "positionUnity": [
+        -1.5417105632900636e-09,
+        1.0415383354521575,
+        0.10753473165892218
+      ],
+      "weightedVertexCount": 23,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_0_1",
+      "canonical": "スカート_0_1",
+      "parent": "下半身",
+      "positionUnity": [
+        -0.049475299878645816,
+        1.0415383354521575,
+        0.09934914215949937
+      ],
+      "weightedVertexCount": 37,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_0_2",
+      "canonical": "スカート_0_2",
+      "parent": "下半身",
+      "positionUnity": [
+        -0.09141843376782532,
+        1.0415383354521575,
+        0.07603853930565872
+      ],
+      "weightedVertexCount": 44,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_0_3",
+      "canonical": "スカート_0_3",
+      "parent": "下半身",
+      "positionUnity": [
+        -0.11944393912979516,
+        1.0415383354521575,
+        0.0411517601727126
+      ],
+      "weightedVertexCount": 40,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_0_4",
+      "canonical": "スカート_0_4",
+      "parent": "下半身",
+      "positionUnity": [
+        -0.12928519264048946,
+        1.0415383354521575,
+        -4.323911326352068e-09
+      ],
+      "weightedVertexCount": 35,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_0_5",
+      "canonical": "スカート_0_5",
+      "parent": "下半身",
+      "positionUnity": [
+        -0.11944393912979516,
+        1.0415383354521575,
+        -0.041151765858215776
+      ],
+      "weightedVertexCount": 42,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_0_6",
+      "canonical": "スカート_0_6",
+      "parent": "下半身",
+      "positionUnity": [
+        -0.09141843376782532,
+        1.0415383354521575,
+        -0.0760385506766651
+      ],
+      "weightedVertexCount": 93,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_0_7",
+      "canonical": "スカート_0_7",
+      "parent": "下半身",
+      "positionUnity": [
+        -0.04947529419314264,
+        1.0415383354521575,
+        -0.09934914215949937
+      ],
+      "weightedVertexCount": 64,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_0_8",
+      "canonical": "スカート_0_8",
+      "parent": "下半身",
+      "positionUnity": [
+        5.6512350572897054e-09,
+        1.0415383354521575,
+        -0.10753473165892218
+      ],
+      "weightedVertexCount": 60,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_0_9",
+      "canonical": "スカート_0_9",
+      "parent": "下半身",
+      "positionUnity": [
+        0.049475305564149,
+        1.0415383354521575,
+        -0.09934914215949937
+      ],
+      "weightedVertexCount": 71,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_0_10",
+      "canonical": "スカート_0_10",
+      "parent": "下半身",
+      "positionUnity": [
+        0.0914184394533285,
+        1.0415383354521575,
+        -0.07603853362015554
+      ],
+      "weightedVertexCount": 96,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_0_11",
+      "canonical": "スカート_0_11",
+      "parent": "下半身",
+      "positionUnity": [
+        0.11944393912979516,
+        1.0415383354521575,
+        -0.04115175164445782
+      ],
+      "weightedVertexCount": 42,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_0_12",
+      "canonical": "スカート_0_12",
+      "parent": "下半身",
+      "positionUnity": [
+        0.12928519264048946,
+        1.0415383354521575,
+        1.5694918033682443e-08
+      ],
+      "weightedVertexCount": 38,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_0_13",
+      "canonical": "スカート_0_13",
+      "parent": "下半身",
+      "positionUnity": [
+        0.11944393912979516,
+        1.0415383354521575,
+        0.04115177438647055
+      ],
+      "weightedVertexCount": 42,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_0_14",
+      "canonical": "スカート_0_14",
+      "parent": "下半身",
+      "positionUnity": [
+        0.09141843376782532,
+        1.0415383354521575,
+        0.0760385506766651
+      ],
+      "weightedVertexCount": 45,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_0_15",
+      "canonical": "スカート_0_15",
+      "parent": "下半身",
+      "positionUnity": [
+        0.04947529419314264,
+        1.0415383354521575,
+        0.09934914215949937
+      ],
+      "weightedVertexCount": 33,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_1_0",
+      "canonical": "スカート_1_0",
+      "parent": "スカート_0_0",
+      "positionUnity": [
+        -2.0246193354923123e-09,
+        0.9944902962784237,
+        0.12246023502110241
+      ],
+      "weightedVertexCount": 26,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_1_1",
+      "canonical": "スカート_1_1",
+      "parent": "スカート_0_1",
+      "positionUnity": [
+        -0.06497241804546475,
+        0.9944902962784237,
+        0.11313605528300054
+      ],
+      "weightedVertexCount": 22,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_1_2",
+      "canonical": "スカート_1_2",
+      "parent": "スカート_0_2",
+      "positionUnity": [
+        -0.12005335684510576,
+        0.9944902962784237,
+        0.08658299859219058
+      ],
+      "weightedVertexCount": 17,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_1_3",
+      "canonical": "スカート_1_3",
+      "parent": "スカート_0_3",
+      "positionUnity": [
+        -0.15685727912351743,
+        0.9944902962784237,
+        0.04684355720896152
+      ],
+      "weightedVertexCount": 22,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_1_4",
+      "canonical": "スカート_1_4",
+      "parent": "スカート_0_4",
+      "positionUnity": [
+        -0.16978109875063432,
+        0.9944902962784237,
+        -3.230230571452647e-05
+      ],
+      "weightedVertexCount": 36,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_1_5",
+      "canonical": "スカート_1_5",
+      "parent": "スカート_0_5",
+      "positionUnity": [
+        -0.15685727912351743,
+        0.9944902962784237,
+        -0.04690816726714704
+      ],
+      "weightedVertexCount": 41,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_1_6",
+      "canonical": "スカート_1_6",
+      "parent": "スカート_0_6",
+      "positionUnity": [
+        -0.12005335684510576,
+        0.9944902962784237,
+        -0.0866476086503761
+      ],
+      "weightedVertexCount": 57,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_1_7",
+      "canonical": "スカート_1_7",
+      "parent": "スカート_0_7",
+      "positionUnity": [
+        -0.06497240667445839,
+        0.9944902962784237,
+        -0.1132006539701797
+      ],
+      "weightedVertexCount": 58,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_1_8",
+      "canonical": "スカート_1_8",
+      "parent": "スカート_0_8",
+      "positionUnity": [
+        7.4213679451962865e-09,
+        0.9944902962784237,
+        -0.12252484507928793
+      ],
+      "weightedVertexCount": 42,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_1_9",
+      "canonical": "スカート_1_9",
+      "parent": "スカート_0_9",
+      "positionUnity": [
+        0.06497241804546475,
+        0.9944902962784237,
+        -0.1132006539701797
+      ],
+      "weightedVertexCount": 58,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_1_10",
+      "canonical": "スカート_1_10",
+      "parent": "スカート_0_10",
+      "positionUnity": [
+        0.12005337958711851,
+        0.9944902962784237,
+        -0.08664759159386655
+      ],
+      "weightedVertexCount": 56,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_1_11",
+      "canonical": "スカート_1_11",
+      "parent": "スカート_0_11",
+      "positionUnity": [
+        0.15685727912351743,
+        0.9944902962784237,
+        -0.046908155896140676
+      ],
+      "weightedVertexCount": 41,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_1_12",
+      "canonical": "スカート_1_12",
+      "parent": "スカート_0_12",
+      "positionUnity": [
+        0.16978109875063432,
+        0.9944902962784237,
+        -3.228713696970294e-05
+      ],
+      "weightedVertexCount": 39,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_1_13",
+      "canonical": "スカート_1_13",
+      "parent": "スカート_0_13",
+      "positionUnity": [
+        0.15685727912351743,
+        0.9944902962784237,
+        0.04684357142271948
+      ],
+      "weightedVertexCount": 23,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_1_14",
+      "canonical": "スカート_1_14",
+      "parent": "スカート_0_14",
+      "positionUnity": [
+        0.12005335684510576,
+        0.9944902962784237,
+        0.08658301564870013
+      ],
+      "weightedVertexCount": 19,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_1_15",
+      "canonical": "スカート_1_15",
+      "parent": "スカート_0_15",
+      "positionUnity": [
+        0.06497241235996157,
+        0.9944902962784237,
+        0.11313605528300054
+      ],
+      "weightedVertexCount": 27,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_2_0",
+      "canonical": "スカート_2_0",
+      "parent": "スカート_1_0",
+      "positionUnity": [
+        -2.487933419137973e-09,
+        0.9474422571046899,
+        0.13529944298983165
+      ],
+      "weightedVertexCount": 34,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_2_1",
+      "canonical": "スカート_2_1",
+      "parent": "スカート_1_1",
+      "positionUnity": [
+        -0.07984070250359897,
+        0.9474422571046899,
+        0.12498072092172623
+      ],
+      "weightedVertexCount": 35,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_2_2",
+      "canonical": "スカート_2_2",
+      "parent": "スカート_1_2",
+      "positionUnity": [
+        -0.1475263904916582,
+        0.9474422571046899,
+        0.09559545924721101
+      ],
+      "weightedVertexCount": 37,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_2_3",
+      "canonical": "スカート_2_3",
+      "parent": "スカート_1_3",
+      "positionUnity": [
+        -0.19275252154101372,
+        0.9474422571046899,
+        0.05161733025981176
+      ],
+      "weightedVertexCount": 56,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_2_4",
+      "canonical": "スカート_2_4",
+      "parent": "スカート_1_4",
+      "positionUnity": [
+        -0.20863383758550658,
+        0.9474422571046899,
+        -0.0002584031215084105
+      ],
+      "weightedVertexCount": 93,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_2_5",
+      "canonical": "スカート_2_5",
+      "parent": "スカート_1_5",
+      "positionUnity": [
+        -0.19275252154101372,
+        0.9474422571046899,
+        -0.05213414249925772
+      ],
+      "weightedVertexCount": 77,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_2_6",
+      "canonical": "スカート_2_6",
+      "parent": "スカート_1_6",
+      "positionUnity": [
+        -0.1475263904916582,
+        0.9474422571046899,
+        -0.09611227148665696
+      ],
+      "weightedVertexCount": 44,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_2_7",
+      "canonical": "スカート_2_7",
+      "parent": "スカート_1_7",
+      "positionUnity": [
+        -0.07984070250359897,
+        0.9474422571046899,
+        -0.12549751041915944
+      ],
+      "weightedVertexCount": 46,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_2_8",
+      "canonical": "スカート_2_8",
+      "parent": "スカート_1_8",
+      "positionUnity": [
+        9.119675047800164e-09,
+        0.9474422571046899,
+        -0.13581625522927762
+      ],
+      "weightedVertexCount": 57,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_2_9",
+      "canonical": "スカート_2_9",
+      "parent": "スカート_1_9",
+      "positionUnity": [
+        0.07984071956010852,
+        0.9474422571046899,
+        -0.12549751041915944
+      ],
+      "weightedVertexCount": 47,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_2_10",
+      "canonical": "スカート_2_10",
+      "parent": "スカート_1_10",
+      "positionUnity": [
+        0.14752640186266455,
+        0.9474422571046899,
+        -0.0961122601156506
+      ],
+      "weightedVertexCount": 51,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_2_11",
+      "canonical": "スカート_2_11",
+      "parent": "スカート_1_11",
+      "positionUnity": [
+        0.19275252154101372,
+        0.9474422571046899,
+        -0.052134136813754534
+      ],
+      "weightedVertexCount": 82,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_2_12",
+      "canonical": "スカート_2_12",
+      "parent": "スカート_1_12",
+      "positionUnity": [
+        0.20863383758550658,
+        0.9474422571046899,
+        -0.00025839203921900063
+      ],
+      "weightedVertexCount": 93,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_2_13",
+      "canonical": "スカート_2_13",
+      "parent": "スカート_1_13",
+      "positionUnity": [
+        0.19275252154101372,
+        0.9474422571046899,
+        0.0516173530018245
+      ],
+      "weightedVertexCount": 53,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_2_14",
+      "canonical": "スカート_2_14",
+      "parent": "スカート_1_14",
+      "positionUnity": [
+        0.1475263904916582,
+        0.9474422571046899,
+        0.09559548198922374
+      ],
+      "weightedVertexCount": 39,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_2_15",
+      "canonical": "スカート_2_15",
+      "parent": "スカート_1_15",
+      "positionUnity": [
+        0.07984069681809577,
+        0.9474422571046899,
+        0.12498072092172623
+      ],
+      "weightedVertexCount": 39,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_3_0",
+      "canonical": "スカート_3_0",
+      "parent": "スカート_2_0",
+      "positionUnity": [
+        -2.916001700132085e-09,
+        0.9003939450268034,
+        0.1463936449502525
+      ],
+      "weightedVertexCount": 41,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_3_1",
+      "canonical": "スカート_3_1",
+      "parent": "スカート_2_1",
+      "positionUnity": [
+        -0.09357791295826365,
+        0.9003939450268034,
+        0.13518369751600723
+      ],
+      "weightedVertexCount": 56,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_3_2",
+      "canonical": "スカート_3_2",
+      "parent": "スカート_2_2",
+      "positionUnity": [
+        -0.1729094217966835,
+        0.9003939450268034,
+        0.103260506817099
+      ],
+      "weightedVertexCount": 73,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_3_3",
+      "canonical": "スカート_3_3",
+      "parent": "スカート_2_3",
+      "positionUnity": [
+        -0.22591706226315267,
+        0.9003939450268034,
+        0.055484058031912045
+      ],
+      "weightedVertexCount": 85,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_3_4",
+      "canonical": "スカート_3_4",
+      "parent": "スカート_2_4",
+      "positionUnity": [
+        -0.24453085387999632,
+        0.9003939450268034,
+        -0.000872109194222703
+      ],
+      "weightedVertexCount": 96,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_3_5",
+      "canonical": "スカート_3_5",
+      "parent": "スカート_2_5",
+      "positionUnity": [
+        -0.22591706226315267,
+        0.9003939450268034,
+        -0.0572282851262842
+      ],
+      "weightedVertexCount": 120,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_3_6",
+      "canonical": "スカート_3_6",
+      "parent": "スカート_2_6",
+      "positionUnity": [
+        -0.1729094217966835,
+        0.9003939450268034,
+        -0.10500473959697434
+      ],
+      "weightedVertexCount": 98,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_3_7",
+      "canonical": "スカート_3_7",
+      "parent": "スカート_2_7",
+      "positionUnity": [
+        -0.09357790158725728,
+        0.9003939450268034,
+        -0.13692795303789532
+      ],
+      "weightedVertexCount": 59,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_3_8",
+      "canonical": "スカート_3_8",
+      "parent": "スカート_2_8",
+      "positionUnity": [
+        1.0688783914059047e-08,
+        0.9003939450268034,
+        -0.14813787773012785
+      ],
+      "weightedVertexCount": 43,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_3_9",
+      "canonical": "スカート_3_9",
+      "parent": "スカート_2_9",
+      "positionUnity": [
+        0.09357791864376684,
+        0.9003939450268034,
+        -0.13692793029588257
+      ],
+      "weightedVertexCount": 57,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_3_10",
+      "canonical": "スカート_3_10",
+      "parent": "スカート_2_10",
+      "positionUnity": [
+        0.1729094217966835,
+        0.9003939450268034,
+        -0.10500472822596797
+      ],
+      "weightedVertexCount": 96,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_3_11",
+      "canonical": "スカート_3_11",
+      "parent": "スカート_2_11",
+      "positionUnity": [
+        0.22591706226315267,
+        0.9003939450268034,
+        -0.057228273755277836
+      ],
+      "weightedVertexCount": 126,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_3_12",
+      "canonical": "スカート_3_12",
+      "parent": "スカート_2_12",
+      "positionUnity": [
+        0.24453085387999632,
+        0.9003939450268034,
+        -0.0008721012878198374
+      ],
+      "weightedVertexCount": 105,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_3_13",
+      "canonical": "スカート_3_13",
+      "parent": "スカート_2_13",
+      "positionUnity": [
+        0.22591706226315267,
+        0.9003939450268034,
+        0.05548406371741523
+      ],
+      "weightedVertexCount": 80,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_3_14",
+      "canonical": "スカート_3_14",
+      "parent": "スカート_2_14",
+      "positionUnity": [
+        0.1729094217966835,
+        0.9003939450268034,
+        0.10326051818810537
+      ],
+      "weightedVertexCount": 74,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_3_15",
+      "canonical": "スカート_3_15",
+      "parent": "スカート_2_15",
+      "positionUnity": [
+        0.09357790158725728,
+        0.9003939450268034,
+        0.13518373162902633
+      ],
+      "weightedVertexCount": 55,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_4_0",
+      "canonical": "スカート_4_0",
+      "parent": "スカート_3_0",
+      "positionUnity": [
+        -3.2931737421444838e-09,
+        0.8533459058530696,
+        0.15608430085260308
+      ],
+      "weightedVertexCount": 122,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_4_1",
+      "canonical": "スカート_4_1",
+      "parent": "スカート_3_1",
+      "positionUnity": [
+        -0.1056818148001772,
+        0.8533459058530696,
+        0.1440457140712699
+      ],
+      "weightedVertexCount": 106,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_4_2",
+      "canonical": "スカート_4_2",
+      "parent": "スカート_3_2",
+      "positionUnity": [
+        -0.19527454252749726,
+        0.8533459058530696,
+        0.10976277801776224
+      ],
+      "weightedVertexCount": 94,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_4_3",
+      "canonical": "スカート_4_3",
+      "parent": "スカート_3_3",
+      "positionUnity": [
+        -0.2551385018489177,
+        0.8533459058530696,
+        0.058454739131172266
+      ],
+      "weightedVertexCount": 70,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_4_4",
+      "canonical": "スカート_4_4",
+      "parent": "スカート_3_4",
+      "positionUnity": [
+        -0.2761599221281783,
+        0.8533459058530696,
+        -0.002067223550691488
+      ],
+      "weightedVertexCount": 51,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_4_5",
+      "canonical": "スカート_4_5",
+      "parent": "スカート_3_5",
+      "positionUnity": [
+        -0.2551385018489177,
+        0.8533459058530696,
+        -0.06258919724821767
+      ],
+      "weightedVertexCount": 60,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_4_6",
+      "canonical": "スカート_4_6",
+      "parent": "スカート_3_6",
+      "positionUnity": [
+        -0.19527454252749726,
+        0.8533459058530696,
+        -0.11389724182031082
+      ],
+      "weightedVertexCount": 94,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_4_7",
+      "canonical": "スカート_4_7",
+      "parent": "スカート_3_7",
+      "positionUnity": [
+        -0.1056818148001772,
+        0.8533459058530696,
+        -0.14818017787381849
+      ],
+      "weightedVertexCount": 123,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_4_8",
+      "canonical": "スカート_4_8",
+      "parent": "スカート_3_8",
+      "positionUnity": [
+        1.2071332598284973e-08,
+        0.8533459058530696,
+        -0.16021874191313892
+      ],
+      "weightedVertexCount": 140,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_4_9",
+      "canonical": "スカート_4_9",
+      "parent": "スカート_3_9",
+      "positionUnity": [
+        0.10568182617118357,
+        0.8533459058530696,
+        -0.14818015513180574
+      ],
+      "weightedVertexCount": 130,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_4_10",
+      "canonical": "スカート_4_10",
+      "parent": "スカート_3_10",
+      "positionUnity": [
+        0.19527454252749726,
+        0.8533459058530696,
+        -0.11389723044930446
+      ],
+      "weightedVertexCount": 102,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_4_11",
+      "canonical": "スカート_4_11",
+      "parent": "スカート_3_11",
+      "positionUnity": [
+        0.2551384563648922,
+        0.8533459058530696,
+        -0.06258917450620492
+      ],
+      "weightedVertexCount": 84,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_4_12",
+      "canonical": "スカート_4_12",
+      "parent": "スカート_3_12",
+      "positionUnity": [
+        0.2761598766441528,
+        0.8533459058530696,
+        -0.0020672173321723804
+      ],
+      "weightedVertexCount": 79,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_4_13",
+      "canonical": "スカート_4_13",
+      "parent": "スカート_3_13",
+      "positionUnity": [
+        0.2551384563648922,
+        0.8533459058530696,
+        0.05845475618768182
+      ],
+      "weightedVertexCount": 63,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_4_14",
+      "canonical": "スカート_4_14",
+      "parent": "スカート_3_14",
+      "positionUnity": [
+        0.19527454252749726,
+        0.8533459058530696,
+        0.10976278938876861
+      ],
+      "weightedVertexCount": 69,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_4_15",
+      "canonical": "スカート_4_15",
+      "parent": "スカート_3_15",
+      "positionUnity": [
+        0.1056818148001772,
+        0.8533459058530696,
+        0.14404572544227626
+      ],
+      "weightedVertexCount": 112,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_5_0",
+      "canonical": "スカート_5_0",
+      "parent": "スカート_4_0",
+      "positionUnity": [
+        -3.603799447727402e-09,
+        0.8062978666793359,
+        0.16471263185598778
+      ],
+      "weightedVertexCount": 81,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_5_1",
+      "canonical": "スカート_5_1",
+      "parent": "スカート_4_1",
+      "positionUnity": [
+        -0.11565016204905165,
+        0.8062978666793359,
+        0.1518672721728132
+      ],
+      "weightedVertexCount": 88,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_5_2",
+      "canonical": "スカート_5_2",
+      "parent": "スカート_4_2",
+      "positionUnity": [
+        -0.2136936170312876,
+        0.8062978666793359,
+        0.11528683565356701
+      ],
+      "weightedVertexCount": 63,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_5_3",
+      "canonical": "スカート_5_3",
+      "parent": "スカート_4_3",
+      "positionUnity": [
+        -0.2792041906951519,
+        0.8062978666793359,
+        0.06054034089323478
+      ],
+      "weightedVertexCount": 24,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_5_4",
+      "canonical": "スカート_5_4",
+      "parent": "スカート_4_4",
+      "positionUnity": [
+        -0.30220841883890426,
+        0.8062978666793359,
+        -0.0040375480045824
+      ],
+      "weightedVertexCount": 5,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_5_5",
+      "canonical": "スカート_5_5",
+      "parent": "スカート_4_5",
+      "positionUnity": [
+        -0.2792041906951519,
+        0.8062978666793359,
+        -0.06861545538028493
+      ],
+      "weightedVertexCount": 12,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_5_6",
+      "canonical": "スカート_5_6",
+      "parent": "スカート_4_6",
+      "positionUnity": [
+        -0.2136936170312876,
+        0.8062978666793359,
+        -0.12336195582612033
+      ],
+      "weightedVertexCount": 51,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_5_7",
+      "canonical": "スカート_5_7",
+      "parent": "スカート_4_7",
+      "positionUnity": [
+        -0.11565013930703892,
+        0.8062978666793359,
+        -0.15994239234536653
+      ],
+      "weightedVertexCount": 84,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_5_8",
+      "canonical": "スカート_5_8",
+      "parent": "スカート_4_8",
+      "positionUnity": [
+        1.3209950343847638e-08,
+        0.8062978666793359,
+        -0.17278774065753474
+      ],
+      "weightedVertexCount": 78,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_5_9",
+      "canonical": "スカート_5_9",
+      "parent": "スカート_4_9",
+      "positionUnity": [
+        0.11565016204905165,
+        0.8062978666793359,
+        -0.1599423696033538
+      ],
+      "weightedVertexCount": 60,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_5_10",
+      "canonical": "スカート_5_10",
+      "parent": "スカート_4_10",
+      "positionUnity": [
+        0.2136936170312876,
+        0.8062978666793359,
+        -0.1233619330841076
+      ],
+      "weightedVertexCount": 38,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_5_11",
+      "canonical": "スカート_5_11",
+      "parent": "スカート_4_11",
+      "positionUnity": [
+        0.2792041452111264,
+        0.8062978666793359,
+        -0.06861543832377538
+      ],
+      "weightedVertexCount": 7,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_5_12",
+      "canonical": "スカート_5_12",
+      "parent": "スカート_4_12",
+      "positionUnity": [
+        0.3022083733548788,
+        0.8062978666793359,
+        -0.004037542319079216
+      ],
+      "weightedVertexCount": 10,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_5_13",
+      "canonical": "スカート_5_13",
+      "parent": "スカート_4_13",
+      "positionUnity": [
+        0.2792041452111264,
+        0.8062978666793359,
+        0.060540357949744335
+      ],
+      "weightedVertexCount": 28,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_5_14",
+      "canonical": "スカート_5_14",
+      "parent": "スカート_4_14",
+      "positionUnity": [
+        0.2136936170312876,
+        0.8062978666793359,
+        0.11528683565356701
+      ],
+      "weightedVertexCount": 53,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_5_15",
+      "canonical": "スカート_5_15",
+      "parent": "スカート_4_15",
+      "positionUnity": [
+        0.11565013930703892,
+        0.8062978666793359,
+        0.15186728354381956
+      ],
+      "weightedVertexCount": 73,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_6_0",
+      "canonical": "スカート_6_0",
+      "parent": "スカート_5_0",
+      "positionUnity": [
+        -3.832226516697488e-09,
+        0.7592496910535257,
+        0.17261999557158741
+      ],
+      "weightedVertexCount": 74,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_6_1",
+      "canonical": "スカート_6_1",
+      "parent": "スカート_5_1",
+      "positionUnity": [
+        -0.12298066324057354,
+        0.7592496910535257,
+        0.15894898711599983
+      ],
+      "weightedVertexCount": 41,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_6_2",
+      "canonical": "スカート_6_2",
+      "parent": "スカート_5_2",
+      "positionUnity": [
+        -0.22723864610731917,
+        0.7592496910535257,
+        0.12001728801290505
+      ],
+      "weightedVertexCount": 14,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_6_3",
+      "canonical": "スカート_6_3",
+      "parent": "スカート_5_3",
+      "positionUnity": [
+        -0.2969015701667496,
+        0.7592496910535257,
+        0.061751864766761075
+      ],
+      "weightedVertexCount": 0,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_6_4",
+      "canonical": "スカート_6_4",
+      "parent": "スカート_5_4",
+      "positionUnity": [
+        -0.32136397068316624,
+        0.7592496910535257,
+        -0.006976884924787992
+      ],
+      "weightedVertexCount": 0,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_6_5",
+      "canonical": "スカート_6_5",
+      "parent": "スカート_5_5",
+      "positionUnity": [
+        -0.2969015701667496,
+        0.7592496910535257,
+        -0.07570564740871923
+      ],
+      "weightedVertexCount": 0,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_6_6",
+      "canonical": "スカート_6_6",
+      "parent": "スカート_5_6",
+      "positionUnity": [
+        -0.22723864610731917,
+        0.7592496910535257,
+        -0.13397108202586958
+      ],
+      "weightedVertexCount": 3,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_6_7",
+      "canonical": "スカート_6_7",
+      "parent": "スカート_5_7",
+      "positionUnity": [
+        -0.12298065186956718,
+        0.7592496910535257,
+        -0.1729027924999707
+      ],
+      "weightedVertexCount": 39,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_6_8",
+      "canonical": "スカート_6_8",
+      "parent": "スカート_5_8",
+      "positionUnity": [
+        1.4047263683057559e-08,
+        0.7592496910535257,
+        -0.18657378958455192
+      ],
+      "weightedVertexCount": 68,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_6_9",
+      "canonical": "スカート_6_9",
+      "parent": "スカート_5_9",
+      "positionUnity": [
+        0.12298066324057354,
+        0.7592496910535257,
+        -0.1729027583869516
+      ],
+      "weightedVertexCount": 47,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_6_10",
+      "canonical": "スカート_6_10",
+      "parent": "スカート_5_10",
+      "positionUnity": [
+        0.22723864610731917,
+        0.7592496910535257,
+        -0.13397105928385683
+      ],
+      "weightedVertexCount": 14,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_6_11",
+      "canonical": "スカート_6_11",
+      "parent": "スカート_5_11",
+      "positionUnity": [
+        0.2969015701667496,
+        0.7592496910535257,
+        -0.07570563035220967
+      ],
+      "weightedVertexCount": 0,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_6_12",
+      "canonical": "スカート_6_12",
+      "parent": "スカート_5_12",
+      "positionUnity": [
+        0.3213639251991408,
+        0.7592496910535257,
+        -0.00697687852859691
+      ],
+      "weightedVertexCount": 0,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_6_13",
+      "canonical": "スカート_6_13",
+      "parent": "スカート_5_13",
+      "positionUnity": [
+        0.2969015701667496,
+        0.7592496910535257,
+        0.06175187613776744
+      ],
+      "weightedVertexCount": 0,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_6_14",
+      "canonical": "スカート_6_14",
+      "parent": "スカート_5_14",
+      "positionUnity": [
+        0.22723860062329368,
+        0.7592496910535257,
+        0.12001728801290505
+      ],
+      "weightedVertexCount": 17,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_6_15",
+      "canonical": "スカート_6_15",
+      "parent": "スカート_5_15",
+      "positionUnity": [
+        0.1229806404985608,
+        0.7592496910535257,
+        0.15894898711599983
+      ],
+      "weightedVertexCount": 64,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_7_0",
+      "canonical": "スカート_7_0",
+      "parent": "スカート_6_0",
+      "positionUnity": [
+        -3.962806037695365e-09,
+        0.712201651879792,
+        0.18014776098158913
+      ],
+      "weightedVertexCount": 0,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_7_1",
+      "canonical": "スカート_7_1",
+      "parent": "スカート_6_1",
+      "positionUnity": [
+        -0.12717110650747399,
+        0.712201651879792,
+        0.16559147419619238
+      ],
+      "weightedVertexCount": 0,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_7_2",
+      "canonical": "スカート_7_2",
+      "parent": "スカート_6_2",
+      "positionUnity": [
+        -0.23498157369982467,
+        0.712201651879792,
+        0.12413872064215539
+      ],
+      "weightedVertexCount": 0,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_7_3",
+      "canonical": "スカート_7_3",
+      "parent": "スカート_6_3",
+      "positionUnity": [
+        -0.30701819533866864,
+        0.712201651879792,
+        0.06210028377289669
+      ],
+      "weightedVertexCount": 0,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_7_4",
+      "canonical": "スカート_7_4",
+      "parent": "スカート_6_4",
+      "positionUnity": [
+        -0.332314136105918,
+        0.712201651879792,
+        -0.011079038012740627
+      ],
+      "weightedVertexCount": 0,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_7_5",
+      "canonical": "スカート_7_5",
+      "parent": "スカート_6_5",
+      "positionUnity": [
+        -0.30701819533866864,
+        0.712201651879792,
+        -0.0842583725907601
+      ],
+      "weightedVertexCount": 0,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_7_6",
+      "canonical": "スカート_7_6",
+      "parent": "スカート_6_6",
+      "positionUnity": [
+        -0.23498157369982467,
+        0.712201651879792,
+        -0.1462968208310252
+      ],
+      "weightedVertexCount": 0,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_7_7",
+      "canonical": "スカート_7_7",
+      "parent": "スカート_6_7",
+      "positionUnity": [
+        -0.12717109513646763,
+        0.712201651879792,
+        -0.18774958575606854
+      ],
+      "weightedVertexCount": 0,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_7_8",
+      "canonical": "スカート_7_8",
+      "parent": "スカート_6_8",
+      "positionUnity": [
+        1.4525910670226772e-08,
+        0.712201651879792,
+        -0.20230584979945254
+      ],
+      "weightedVertexCount": 0,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_7_9",
+      "canonical": "スカート_7_9",
+      "parent": "スカート_6_9",
+      "positionUnity": [
+        0.12717110650747399,
+        0.712201651879792,
+        -0.18774956301405582
+      ],
+      "weightedVertexCount": 0,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_7_10",
+      "canonical": "スカート_7_10",
+      "parent": "スカート_6_10",
+      "positionUnity": [
+        0.23498157369982467,
+        0.712201651879792,
+        -0.14629678671800608
+      ],
+      "weightedVertexCount": 0,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_7_11",
+      "canonical": "スカート_7_11",
+      "parent": "スカート_6_11",
+      "positionUnity": [
+        0.30701817259665587,
+        0.712201651879792,
+        -0.08425835553425055
+      ],
+      "weightedVertexCount": 0,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_7_12",
+      "canonical": "スカート_7_12",
+      "parent": "スカート_6_12",
+      "positionUnity": [
+        0.33231406787987977,
+        0.712201651879792,
+        -0.011079028063110055
+      ],
+      "weightedVertexCount": 0,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_7_13",
+      "canonical": "スカート_7_13",
+      "parent": "スカート_6_13",
+      "positionUnity": [
+        0.30701817259665587,
+        0.712201651879792,
+        0.06210030082940624
+      ],
+      "weightedVertexCount": 0,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_7_14",
+      "canonical": "スカート_7_14",
+      "parent": "スカート_6_14",
+      "positionUnity": [
+        0.23498155095781192,
+        0.712201651879792,
+        0.12413873201316175
+      ],
+      "weightedVertexCount": 0,
+      "originalGrant": null
+    },
+    {
+      "source": "スカート_7_15",
+      "canonical": "スカート_7_15",
+      "parent": "スカート_6_15",
+      "positionUnity": [
+        0.12717108376546124,
+        0.712201651879792,
+        0.16559148556719877
+      ],
+      "weightedVertexCount": 0,
+      "originalGrant": null
+    }
+  ],
+  "removedBones": [
+    "操作中心",
+    "調整ボーン親",
+    "センター調整",
+    "グルーブ調整",
+    "右足ＩＫ調整",
+    "右つま先ＩＫ調整",
+    "左足ＩＫ調整",
+    "左つま先ＩＫ調整",
+    "上半身調整",
+    "上半身2調整",
+    "下半身調整",
+    "首調整",
+    "頭調整",
+    "右肩調整",
+    "右腕調整",
+    "右腕捩調整",
+    "右ひじ調整",
+    "右手捩調整",
+    "右手首調整",
+    "左肩調整",
+    "左腕調整",
+    "左腕捩調整",
+    "左ひじ調整",
+    "左手捩調整",
+    "左手首調整",
+    "右足IK親",
+    "右足ＩＫ",
+    "右つま先ＩＫ",
+    "左足IK親",
+    "左足ＩＫ",
+    "左つま先ＩＫ",
+    "右胸変形",
+    "左胸変形",
+    "右目戻",
+    "左目戻",
+    "両目",
+    "両目先",
+    "右ダミー",
+    "右手先",
+    "左ダミー",
+    "左手先",
+    "右臀物理",
+    "右足",
+    "右胯修复",
+    "右臀修复",
+    "右腿物理",
+    "右ひざ",
+    "右足首",
+    "左臀物理",
+    "左足",
+    "左胯修复",
+    "左臀修复",
+    "左腿物理",
+    "左ひざ",
+    "左足首",
+    "右つま先",
+    "左つま先",
+    "胸亲",
+    "B",
+    "Mei_BY_Shoulderstra"
+  ],
+  "tipBones": [
+    {
+      "name": "hair.003_tip",
+      "parent": "hair.003",
+      "positionBlender": [
+        0.00655170064419508,
+        -0.109885074198246,
+        1.4565787315368652
+      ]
+    },
+    {
+      "name": "hair.006_tip",
+      "parent": "hair.006",
+      "positionBlender": [
+        -0.038569096475839615,
+        -0.09552153944969177,
+        1.4631539583206177
+      ]
+    },
+    {
+      "name": "hair.009_tip",
+      "parent": "hair.009",
+      "positionBlender": [
+        -0.08391396701335907,
+        -0.0660163164138794,
+        1.4551583528518677
+      ]
+    },
+    {
+      "name": "hair.013_tip",
+      "parent": "hair.013",
+      "positionBlender": [
+        -0.04071345552802086,
+        -0.008504663594067097,
+        1.3214812278747559
+      ]
+    },
+    {
+      "name": "hair.017_tip",
+      "parent": "hair.017",
+      "positionBlender": [
+        0.04786498844623566,
+        -0.020954087376594543,
+        1.3238805532455444
+      ]
+    },
+    {
+      "name": "hair.020_tip",
+      "parent": "hair.020",
+      "positionBlender": [
+        0.07739270478487015,
+        -0.043222878128290176,
+        1.3930728435516357
+      ]
+    },
+    {
+      "name": "hair.023_tip",
+      "parent": "hair.023",
+      "positionBlender": [
+        -0.08946386724710464,
+        -0.037760283797979355,
+        1.3980942964553833
+      ]
+    },
+    {
+      "name": "hair.026.L_tip",
+      "parent": "hair.026.L",
+      "positionBlender": [
+        0.2363787293434143,
+        0.12896232306957245,
+        1.419824242591858
+      ]
+    },
+    {
+      "name": "hair.042.L_tip",
+      "parent": "hair.042.L",
+      "positionBlender": [
+        0.5514647960662842,
+        0.11246601492166519,
+        1.1052089929580688
+      ]
+    },
+    {
+      "name": "hair.026.R_tip",
+      "parent": "hair.026.R",
+      "positionBlender": [
+        -0.2363787293434143,
+        0.12896232306957245,
+        1.419824242591858
+      ]
+    },
+    {
+      "name": "hair.042.R_tip",
+      "parent": "hair.042.R",
+      "positionBlender": [
+        -0.5514647960662842,
+        0.11246601492166519,
+        1.1052089929580688
+      ]
+    }
+  ],
+  "hairRoots": [
+    "hair.001",
+    "hair.004",
+    "hair.007",
+    "hair.010",
+    "hair.014",
+    "hair.018",
+    "hair.021",
+    "hair.024.L",
+    "hair.030.L",
+    "hair.024.R",
+    "hair.030.R"
+  ],
+  "skirtRoots": [
+    "スカート_0_0",
+    "スカート_0_1",
+    "スカート_0_2",
+    "スカート_0_3",
+    "スカート_0_4",
+    "スカート_0_5",
+    "スカート_0_6",
+    "スカート_0_7",
+    "スカート_0_8",
+    "スカート_0_9",
+    "スカート_0_10",
+    "スカート_0_11",
+    "スカート_0_12",
+    "スカート_0_13",
+    "スカート_0_14",
+    "スカート_0_15"
+  ],
+  "accessoryRoots": [],
+  "tieRoots": [],
+  "chestRoots": [
+    "胸上2.L",
+    "胸上2.R"
+  ],
+  "passiveChainBones": [],
+  "firstPersonHiddenBonePrefixes": [
+    "頭",
+    "目.",
+    "hair."
+  ],
+  "originalRigidBodyCount": 204,
+  "originalJointCount": 301,
+  "fbxRoundTrip": {
+    "passed": true,
+    "vertexCount": 91363,
+    "triangleCount": 145686,
+    "boneCount": 285,
+    "materialCount": 42,
+    "vertexMorphCount": 170,
+    "maxWeightError": 2.977218072075516e-08,
+    "maxVertexErrorMetres": 2.9095447346220367e-07,
+    "maxShapeErrorMetres": 2.9095447346220367e-07,
+    "maxBoneErrorMetres": 4.147649033216359e-07
+  },
+  "qa": {
+    "report": "ArtSource/Shian/QA/GeometryQA.json",
+    "sourcePreservingImport": true,
+    "sourceTopologyWasNotRepaired": true,
+    "sourceWarnings": "Original UV seams, layered facial surfaces and decorative islands are preserved. Geometry audit remains pass=false; FBX fidelity and skin influence checks pass.",
+    "contactSheets": [
+      "ArtSource/Shian/QA/Textures.png",
+      "ArtSource/Shian/QA/Solid.png",
+      "ArtSource/Shian/QA/Wire.png"
+    ]
+  }
+}

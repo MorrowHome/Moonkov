@@ -30,7 +30,11 @@ public static class MoonkovCorpseBuilder
         var existing=AssetDatabase.LoadAssetAtPath<AnimationClip>(clipPath);
         if(existing!=null){EditorUtility.CopySerialized(clip,existing);UnityEngine.Object.DestroyImmediate(clip);clip=existing;}
         else AssetDatabase.CreateAsset(clip,clipPath);
-        var visuals=new GameObject[3];
+        const string settingsPath=folder+"/CorpsePresentation.asset";
+        var settings=AssetDatabase.LoadAssetAtPath<CorpsePresentationSettings>(settingsPath);
+        // Rebuild the original visuals without removing additional registered operators.
+        var visuals=settings && settings.CharacterVisuals!=null ? (GameObject[])settings.CharacterVisuals.Clone() : Array.Empty<GameObject>();
+        if(visuals.Length<3)Array.Resize(ref visuals,3);
         string[] sources={"Assets/Prefabs/PlayerGhosts/ArmaturePlayer_Rifle.prefab","Assets/Prefabs/PlayerGhosts/ArmaturePlayer_Shotgun.prefab","Assets/Resources/Moonkov/MenuCharacterVisual.prefab"};
         var scene=EditorSceneManager.NewPreviewScene();
         try
@@ -87,10 +91,8 @@ public static class MoonkovCorpseBuilder
             }
         }
         finally {EditorSceneManager.ClosePreviewScene(scene);}
-        const string settingsPath=folder+"/CorpsePresentation.asset";
-        var settings=AssetDatabase.LoadAssetAtPath<CorpsePresentationSettings>(settingsPath);
         if(settings==null){settings=ScriptableObject.CreateInstance<CorpsePresentationSettings>();AssetDatabase.CreateAsset(settings,settingsPath);}
         settings.CharacterVisuals=visuals;settings.Death=clip;EditorUtility.SetDirty(settings);AssetDatabase.SaveAssets();
-        Debug.Log("Corpse assets built: three character visuals and non-looping Mixamo front death.");
+        Debug.Log("Corpse assets rebuilt: three base visuals, additional operators preserved, and non-looping Mixamo front death.");
     }
 }

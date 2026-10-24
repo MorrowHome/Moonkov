@@ -33,7 +33,7 @@ namespace Unity.MP_FPS.Client
         private readonly HashSet<string> m_Open = new HashSet<string>();
         private MenuCharacterView m_Character;
         private readonly GameSettings m_PortraitSettings;
-        private Avatar m_MikuPortraitAvatar;
+        private Dictionary<Avatar, int> m_PortraitAvatars;
         private bool m_PortraitShowing;
         private InventoryGraph m_Graph;
         private Drag m_Drag;

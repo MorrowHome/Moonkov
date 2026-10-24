@@ -169,6 +169,7 @@ MonoBehaviour:
   <PlayerShotgunEntityPrefab>k__BackingField: {fileID: 5939953900665156735, guid: f4bc4302cb16c4e29aaa203772f1461c, type: 3}
   <DollSingerEntityPrefab>k__BackingField: {fileID: 5939953900665156735, guid: b17d50091f5130d4a9e69d055e13b4d5, type: 3}
   <HatsuneMikuEntityPrefab>k__BackingField: {fileID: 7745651825535698654, guid: 531b42a2f0b71495a9fff4296c295e0f, type: 3}
+  <ShianEntityPrefab>k__BackingField: {fileID: 4139456334215313982, guid: ade9f1af6bddf4dffaec949eb4b2dc68, type: 3}
 --- !u!114 &1105370251
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -293,6 +294,11 @@ MonoBehaviour:
     m_SubObjectGUID: 
     m_EditorAssetChanged: 0
   - m_AssetGUID: 531b42a2f0b71495a9fff4296c295e0f
+    m_SubObjectName:
+    m_SubObjectType:
+    m_SubObjectGUID:
+    m_EditorAssetChanged: 0
+  - m_AssetGUID: ade9f1af6bddf4dffaec949eb4b2dc68
     m_SubObjectName:
     m_SubObjectType:
     m_SubObjectGUID:

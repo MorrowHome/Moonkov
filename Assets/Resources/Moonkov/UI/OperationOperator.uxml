@@ -24,6 +24,10 @@
                                 <ui:Label text="HATSUNE MIKU" class="op-button-label" />
                                 <ui:Label text="[ ]" class="op-choice-mark" />
                             </ui:Button>
+                            <ui:Button name="chooseShian" class="op-button op-character-choice">
+                                <ui:Label text="SHIAN" class="op-button-label" />
+                                <ui:Label text="[ ]" class="op-choice-mark" />
+                            </ui:Button>
                         </ui:VisualElement>
                         <ui:Label text="Your equipment is taken from the character loadout. Check your halo weapons and carried supplies before deployment." class="op-copy" />
                     </ui:VisualElement>

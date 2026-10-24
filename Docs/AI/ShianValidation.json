@@ -1,0 +1,231 @@
+{
+  "editor": {
+    "unity": "6000.5.10f1",
+    "networkSessionStarted": false,
+    "rawIdleArmPlacement": {
+      "clip": "Unarmed_Idle",
+      "playableIK": false,
+      "minimumOutwardMetres": 0.005,
+      "maximumBehindMetres": 0.035,
+      "samples": [
+        {
+          "seconds": 0.0,
+          "side": "left",
+          "wrist": {
+            "x": -0.136345282,
+            "y": 0.8703609,
+            "z": 0.00480407476
+          },
+          "upperArm": {
+            "x": -0.0880936161,
+            "y": 1.25940657,
+            "z": -0.0122361183
+          },
+          "outwardMetres": 0.0482516661,
+          "forwardMetres": 0.0170401931,
+          "passed": true
+        },
+        {
+          "seconds": 0.0,
+          "side": "right",
+          "wrist": {
+            "x": 0.150995567,
+            "y": 0.8698254,
+            "z": 0.0160402656
+          },
+          "upperArm": {
+            "x": 0.107672006,
+            "y": 1.24222565,
+            "z": -0.01027596
+          },
+          "outwardMetres": 0.04332356,
+          "forwardMetres": 0.0263162255,
+          "passed": true
+        },
+        {
+          "seconds": 1.0,
+          "side": "left",
+          "wrist": {
+            "x": -0.135875508,
+            "y": 0.8701512,
+            "z": 0.00532561541
+          },
+          "upperArm": {
+            "x": -0.088248,
+            "y": 1.25933492,
+            "z": -0.0103081465
+          },
+          "outwardMetres": 0.04762751,
+          "forwardMetres": 0.0156337619,
+          "passed": true
+        },
+        {
+          "seconds": 1.0,
+          "side": "right",
+          "wrist": {
+            "x": 0.150761619,
+            "y": 0.8696681,
+            "z": 0.0132225752
+          },
+          "upperArm": {
+            "x": 0.1075736,
+            "y": 1.24239588,
+            "z": -0.00823199749
+          },
+          "outwardMetres": 0.04318802,
+          "forwardMetres": 0.0214545727,
+          "passed": true
+        },
+        {
+          "seconds": 4.0,
+          "side": "left",
+          "wrist": {
+            "x": -0.13737,
+            "y": 0.873342454,
+            "z": 0.006975651
+          },
+          "upperArm": {
+            "x": -0.08543302,
+            "y": 1.26167762,
+            "z": -0.0147689581
+          },
+          "outwardMetres": 0.0519369841,
+          "forwardMetres": 0.0217446089,
+          "passed": true
+        },
+        {
+          "seconds": 4.0,
+          "side": "right",
+          "wrist": {
+            "x": 0.150982827,
+            "y": 0.8683352,
+            "z": 0.0225759149
+          },
+          "upperArm": {
+            "x": 0.110702112,
+            "y": 1.24042606,
+            "z": -0.0117357969
+          },
+          "outwardMetres": 0.0402807146,
+          "forwardMetres": 0.03431171,
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    "vertices": 96458,
+    "blendShapes": 170,
+    "sourceDegenerateTrianglesRemovedByUnity": 22,
+    "heightMetres": 1.64999938,
+    "humanoidTwistFollowers": {
+      "count": 12,
+      "poseCases": 24,
+      "maximumRotationErrorDegrees": 0.0,
+      "maximumRepeatErrorDegrees": 0.0,
+      "maximumSkinChangeMetres": 0.0272602383
+    },
+    "firstPersonTriangles": 42336,
+    "fullBodyTriangles": 145664,
+    "alternateBurstSamples": 105,
+    "firearmPoseSamples": 273,
+    "sniperContactGapMm": 0.180279911,
+    "sniperIndexBendDegrees": 0.0279764552,
+    "sniperRightAngleErrorDegrees": 0.000457763672,
+    "meleePoseSamples": 216,
+    "simulatedHairAndTieBones": 55,
+    "hairSettlingFrames": 600,
+    "maximumSettledTailHeightMetres": 1.463154,
+    "springSimulationFrames": 240,
+    "maximumHairRootBendDegrees": 76.00038,
+    "humanoidClips": 36,
+    "passed": true
+  },
+  "playMode": {
+    "startFrame": 191,
+    "endFrame": 1022,
+    "stanceChanges": 4,
+    "menuSwitches": 5,
+    "networkSessionStarted": false,
+    "firstPersonGestureArms": true,
+    "warehousePortraitLifecycle": true,
+    "equipmentPresentation": true,
+    "passed": true,
+    "helmetSizeMetres": {
+      "x": 0.18199707567691803,
+      "y": 0.33830809593200684,
+      "z": 0.18199707567691803
+    },
+    "walkDistanceMetres": 2.545001983642578,
+    "standingTailHeightMetres": 1.4423551559448242,
+    "landedTailHeightMetres": 1.4446868896484375,
+    "fallAirflow": 0.3803657591342926,
+    "fallCover": 0.30348849296569824,
+    "failure": ""
+  },
+  "menuLayout": [
+    "PASS 1280px compact=False chooseDollSinger: button=154.0px, text=87.0px",
+    "PASS 1280px compact=False chooseHatsuneMiku: button=153.0px, text=105.0px",
+    "PASS 1280px compact=False chooseShian: button=311.0px, text=44.0px",
+    "PASS 1280px compact=True chooseDollSinger: button=162.0px, text=87.0px",
+    "PASS 1280px compact=True chooseHatsuneMiku: button=161.0px, text=105.0px",
+    "PASS 1280px compact=True chooseShian: button=327.0px, text=44.0px",
+    "PASS 1600px compact=False chooseDollSinger: button=198.0px, text=87.0px",
+    "PASS 1600px compact=False chooseHatsuneMiku: button=198.0px, text=105.0px",
+    "PASS 1600px compact=False chooseShian: button=400.0px, text=44.0px",
+    "PASS 1600px compact=True chooseDollSinger: button=206.0px, text=87.0px",
+    "PASS 1600px compact=True chooseHatsuneMiku: button=206.0px, text=105.0px",
+    "PASS 1600px compact=True chooseShian: button=416.0px, text=44.0px",
+    "PASS 1920px compact=False chooseDollSinger: button=160.0px, text=87.0px",
+    "PASS 1920px compact=False chooseHatsuneMiku: button=161.0px, text=105.0px",
+    "PASS 1920px compact=False chooseShian: button=160.0px, text=44.0px",
+    "PASS 1920px compact=True chooseDollSinger: button=165.0px, text=87.0px",
+    "PASS 1920px compact=True chooseHatsuneMiku: button=166.0px, text=105.0px",
+    "PASS 1920px compact=True chooseShian: button=166.0px, text=44.0px"
+  ],
+  "networkValidation": "Not run; one Editor, no client/server worlds.",
+  "sourceGeometryQA": "Original source findings retained in ArtSource/Shian/QA/GeometryQA.json; see Docs/Shian.md for classification.",
+  "faceTextureValidation": {
+    "diagnosis": "Mirrored UV island boundary polluted by compression/mips; no centre mesh crack.",
+    "finalSize": 2048,
+    "compression": "Uncompressed",
+    "mipmaps": false,
+    "seamAbsentInReviewedPreview": true
+  },
+  "finalEditorState": {
+    "scene": "Assets/Shian/Scenes/ShianDemo.unity",
+    "sceneDirty": false,
+    "playing": false,
+    "compiling": false,
+    "compilationFailed": false,
+    "playModeStartScene": null
+  },
+  "avatarReferencePoseCorrection": {
+    "cause": "The mesh A-pose was incorrectly used as the Humanoid T-pose reference.",
+    "changedReferenceBones": [
+      "腕.L",
+      "ひじ.L",
+      "腕.R",
+      "ひじ.R"
+    ],
+    "rawIdleBefore": {
+      "passed": false,
+      "samples": 6,
+      "minimumOutwardMetres": -0.0806601346,
+      "maximumBehindMetres": 0.07934892
+    },
+    "rawIdleAfter": {
+      "passed": true,
+      "samples": 6,
+      "minimumOutwardMetres": 0.0402807146,
+      "maximumBehindMetres": 0
+    },
+    "meleeRebaked": true,
+    "frontAndSideReviewed": true,
+    "unchangedAssetsSha256": {
+      "Assets/Shian/Art/Model/Shian.fbx": "be37ece3bb99c24d1740a0976deec707afa8f8ab529c13f59195cfde6ae5b251",
+      "Tools/Blender/ShianBind.json": "3f24c6df73cdce915d644b4b35a096054d03af4d5871eaf6a18854b35bfaad89",
+      "Assets/Shian/Animation/WeaponGestures.json": "49cd7e7d1bd84f1da5a75e6dd0544b3d7471a60bc5df336eb08f13b7425a24f0"
+    },
+    "repeatedImportUnchanged": true
+  }
+}
