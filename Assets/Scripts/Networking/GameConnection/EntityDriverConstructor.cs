@@ -73,7 +73,10 @@ namespace Unity.MP_FPS
             else
             {
                 if (m_SecureDirect) OnlineTransportSecurity.ConfigureClient(ref networkSettings);
-                DefaultDriverBuilder.RegisterClientDriver(world, ref driverStore, netDebug, networkSettings);
+                // A secure direct connection always targets a separate server process.
+                // Do not accidentally select IPC because an Editor World is present.
+                if (m_SecureDirect) DefaultDriverBuilder.RegisterClientUdpDriver(world, ref driverStore, netDebug, networkSettings);
+                else DefaultDriverBuilder.RegisterClientDriver(world, ref driverStore, netDebug, networkSettings);
             }
         }
 
@@ -109,9 +112,9 @@ namespace Unity.MP_FPS
             var networkSettings = new NetworkSettings(Allocator.Temp);
             networkSettings.WithNetworkConfigParameters(
                 connectTimeoutMS: 500,
-                maxConnectAttempts: 8, // Don't spend 30s trying to connect, spend 4s.
-                disconnectTimeoutMS: 3_500, // Timeouts should be relatively fast too, as it's pretty obvious when you've lost connection.
-                reconnectionTimeoutMS: 1_500, // For mobile, reconnect timeouts should be aggressively low.
+                maxConnectAttempts: 30, // Allow DTLS/WAN handshakes fifteen seconds.
+                disconnectTimeoutMS: 15_000,
+                reconnectionTimeoutMS: 3_000,
                 sendQueueCapacity: sendQueueCapacity,
                 receiveQueueCapacity: receiveQueueCapacity
             );

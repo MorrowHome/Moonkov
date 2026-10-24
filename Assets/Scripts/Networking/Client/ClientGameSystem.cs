@@ -42,6 +42,7 @@ namespace Unity.MP_FPS
 
         void HandleSendJoinRequest(ref SystemState state)
         {
+            if (!PlayerProfileClient.IsOffline && !PlayerProfileClient.IsLan && string.IsNullOrEmpty(ConnectionSettings.Instance.GameJoinTicket)) return;
             if (!SystemAPI.TryGetSingletonEntity<NetworkId>(out var clientEntity)
                 || SystemAPI.HasComponent<NetworkStreamInGame>(clientEntity))
             {

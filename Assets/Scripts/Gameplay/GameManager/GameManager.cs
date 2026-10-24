@@ -407,11 +407,14 @@ namespace Unity.MP_FPS
             //The the client world was created, connect to the server
             if (client != null)
             {
-                ConnectionSettings.Instance.GameJoinTicket = PlayerProfileClient.IsOffline || PlayerProfileClient.IsLan
-                    ? null : await AccountClient.CreateGameTicketAsync(cancellationToken);
+                ConnectionSettings.Instance.GameJoinTicket = null;
                 ConnectionSettings.Instance.ConnectionEndpoint = GameConnection.ConnectEndpoint;
                 await WaitForPlayerConnectionAsync(cancellationToken);
                 await ScenesLoader.LoadGameplayAsync(null, client);
+                // Large maps can take longer than the ticket's 60-second lifetime.
+                // Issue only after local scene loading, just before the join RPC.
+                if (!PlayerProfileClient.IsOffline && !PlayerProfileClient.IsLan)
+                    ConnectionSettings.Instance.GameJoinTicket = await AccountClient.CreateGameTicketAsync(cancellationToken);
             }
 
             cancellationToken.ThrowIfCancellationRequested();
@@ -568,7 +571,7 @@ namespace Unity.MP_FPS
                 if (Time.realtimeSinceStartupAsDouble - started >= SessionConnectionPolicy.TimeoutSeconds)
                 {
                     ConnectionSettings.Instance.GameConnectionState = ConnectionState.State.Disconnected;
-                    throw new TimeoutException("Server connection timed out. Check the address and try again.");
+                    throw new TimeoutException($"连接 {ConnectionSettings.Instance.IPAddress}:{ConnectionSettings.Instance.Port} 超时。请在队伍中重试；外网连接还需确认 UDP 转发及防火墙，账号登录成功不代表游戏端口可达。");
                 }
                 await Awaitable.NextFrameAsync(cancellationToken);
             }
