@@ -12,7 +12,8 @@ namespace Unity.MP_FPS
         private float m_NextSquadRefresh;
         private void PresentOnlineSquad()
         {
-            if (!OnlineLobbyClient.InInstance || m_PlayerQuery.IsEmptyIgnoreFilter)
+            // GhostOwnerIsLocal is enableable; the unfiltered query also counts remote players.
+            if (!OnlineLobbyClient.InInstance || !m_PlayerQuery.HasSingleton<PredictedPlayerGhost>())
             { if (m_OnlineSquad != null) m_OnlineSquad.style.display = DisplayStyle.None; return; }
             if (Time.unscaledTime < m_NextSquadRefresh) return;
             m_NextSquadRefresh = Time.unscaledTime + .5f;
