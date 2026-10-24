@@ -44,7 +44,12 @@ namespace Unity.MP_FPS
                 if (m_InventoryVisible) SetInventory(false);
                 if (m_InventoryVisible) return;
                 if (m_MissionDetailsVisible) SetMissionDetails(false);
-                if (!m_MapOpenedInContext) { m_ClashView.Map.FullMap(); m_MapOpenedInContext = true; }
+                if (!m_MapOpenedInContext)
+                {
+                    m_ClashView.Map.FullMap();
+                    if (m_ClashView.Map.HasSurface) { m_ClashView.Map.ZoomBy(2); m_ClashView.Map.CenterOnPlayer(); }
+                    m_MapOpenedInContext = true;
+                }
                 m_MapOpen = true; m_MapInputGuardFrame = Time.frameCount;
                 m_Clash?.StopView(); CancelClashRevive(); BountyClashDarkSightRenderer.ClearImmediate();
                 RaidQuickSlotInput.ReleasePrimary(); m_RaidMap.Open(); Utils.SetCursorVisible(true);

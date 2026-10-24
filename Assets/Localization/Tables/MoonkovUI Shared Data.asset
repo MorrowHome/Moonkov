@@ -4902,6 +4902,166 @@ MonoBehaviour:
       vision but not sound or projectiles.
     m_Metadata:
       m_Items: []
+  - m_Id: 57721484356446718
+    m_Key: "CLEAR PIN"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356446719
+    m_Key: "SCROLL ZOOM \u00b7 DRAG PAN \u00b7 RIGHT CLICK PIN \u00b7 M / ESC CLOSE"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356446720
+    m_Key: "CACHE TYPES / WHITE SUPPLIES \u00b7 GREEN MEDICAL \u00b7 AMBER INDUSTRIAL \u00b7 BLUE EQUIPMENT \u00b7 CROSS EMPTY"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356446721
+    m_Key: "POSITION UNAVAILABLE"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356446722
+    m_Key: "POSITION / X {0:0} \u00b7 Z {1:0} \u00b7 ALT {2:0} m\nHEADING / {3:000}\u00b0 (000\u00b0 NORTH)"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356446723
+    m_Key: "EXIT / {0:0} m \u00b7 {1:000}\u00b0\nENTER {2:0} m ZONE / HOLD {3:0.#} s"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356446724
+    m_Key: "CACHES / {0}/{1} AVAILABLE\nSUP {2} \u00b7 MED {3} \u00b7 IND {4} \u00b7 EQP {5}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356446725
+    m_Key: "NEAREST / #{0:00} {1}\n{2:0} m \u00b7 {3:000}\u00b0"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356446726
+    m_Key: "#{0:00} {1}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356446727
+    m_Key: "NO AVAILABLE CACHES"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356446728
+    m_Key: "EXIT A / {0:0} m \u00b7 {1}\nEXIT B / {2:0} m \u00b7 {3}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356446729
+    m_Key: "TEAM / {0} TEAMMATES\nDOWNED / {1}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356446730
+    m_Key: "{0} / {1:0} m \u00b7 {2:000}\u00b0"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356446731
+    m_Key: "PIN / X {0:0} \u00b7 Z {1:0} / {2:0} m \u00b7 {3:000}\u00b0 / STRAIGHT LINE ONLY"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356446732
+    m_Key: "RIGHT CLICK TO SET A PERSONAL PIN / DISTANCES ARE HORIZONTAL, NOT WALKABLE ROUTES"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356446733
+    m_Key: "ENEMY TEAM"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356446734
+    m_Key: "TEAMMATE DOWNED"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356446735
+    m_Key: "NOT ACTIVE"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356446736
+    m_Key: "HOLD / {0} s"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356446737
+    m_Key: "A / {0:0} m"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356446738
+    m_Key: "B / {0:0} m"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356446739
+    m_Key: "PIN"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356446740
+    m_Key: "SCALE / {0:0.#} m \u00b7 GRID / {1:0} m \u00b7 NORTH UP"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356446741
+    m_Key: "SUPPLIES"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356446742
+    m_Key: "MEDICAL"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356446743
+    m_Key: "INDUSTRIAL"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356446744
+    m_Key: "BOUNTY"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356446745
+    m_Key: "TARGET"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356446746
+    m_Key: "#{0:00} {1} / {2}\n{3:0} m \u00b7 {4:000}\u00b0"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356446747
+    m_Key: "AVAILABLE"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356447747
+    m_Key: "THEOPHILUS / SATELLITE SURVEY"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356447748
+    m_Key: "CACHE LEGEND"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356447749
+    m_Key: "FIELD INTELLIGENCE"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356447750
+    m_Key: "YOUR POSITION"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356447751
+    m_Key: "CROSS / EMPTY CACHE"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356447752
+    m_Key: "DRAG PAN \u00b7 RIGHT CLICK PIN"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356447753
+    m_Key: "MAP DETAILS"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356447754
+    m_Key: "PIN / {0:0} m"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356447755
+    m_Key: "MC00 BASE"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57721484356447756
+    m_Key: "SCALE / {0:0.#} m \u00b7 NORTH UP"
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -97,25 +97,26 @@ namespace Unity.MP_FPS.Client
             {
                 bool available = bindings.Available(i, graph);
                 var item = graph?.Find(bindings[i]); string code = bindings.Code(i);
-                bool bound = !string.IsNullOrEmpty(bindings[i]);
+                bool fists = bindings.Fists(i);
+                bool bound = fists || !string.IsNullOrEmpty(bindings[i]);
                 if (code != m_Codes[i])
                 {
                     m_Codes[i] = code; m_Icons[i].Clear();
                     if (!string.IsNullOrEmpty(code))
                     {
-                        VisualElement art = TacticalItemRules.Find(code) != null ? new TacticalItemIcon(code) : new StashItemArt(code);
+                        VisualElement art = fists ? new StashItemArt(StashArtKind.Fists) : TacticalItemRules.Find(code) != null ? new TacticalItemIcon(code) : new StashItemArt(code);
                         art.AddToClassList("quick-slot-art"); m_Icons[i].Add(art);
                     }
                 }
                 m_Slots[i].pickingMode = inventoryOpen ? PickingMode.Position : PickingMode.Ignore;
                 var itemDisplay = bound && !string.IsNullOrEmpty(code) ? DisplayStyle.Flex : DisplayStyle.None;
                 m_Icons[i].style.display = m_Names[i].style.display = m_Counts[i].style.display = itemDisplay;
-                m_Counts[i].text = available ? item.Quantity.ToString() : bound ? "×" : "";
-                MoonkovLocalization.Set(m_Names[i], string.IsNullOrEmpty(code) ? "" : InventoryCatalog.Get(code)?.Name ?? code);
+                m_Counts[i].text = fists ? "" : available ? item.Quantity.ToString() : bound ? "×" : "";
+                MoonkovLocalization.Set(m_Names[i], fists ? "拳头" : string.IsNullOrEmpty(code) ? "" : InventoryCatalog.Get(code)?.Name ?? code);
                 m_Slots[i].EnableInClassList("inventory-selected", bindings.Selected == i && available);
                 m_Slots[i].EnableInClassList("quick-slot-empty", !bound);
                 m_Slots[i].EnableInClassList("quick-slot-unavailable", bound && !available);
-                m_Slots[i].tooltip = !bound ? "拖入可用物品；或选中物品后点击此槽／按数字键。" :
+                m_Slots[i].tooltip = i < QuickSlotBindings.EquipmentSlots ? new[] { "1 / 主武器", "2 / 副武器", "3 / 手枪", "4 / 近战；未装备时使用拳头" }[i] : !bound ? "拖入可用物品；或选中物品后点击此槽／按数字键。" :
                     m_Names[i].text + " / " + MoonkovLocalization.Text(available ? "Right click to clear binding." : "Item unavailable. Equip it or bind another item.");
             }
             var selected = bindings.SelectedItem(graph);

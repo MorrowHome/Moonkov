@@ -1,0 +1,15 @@
+{
+  "scene": "TheophilusGameScene",
+  "centerX": 2048,
+  "centerZ": 2048,
+  "span": 4096,
+  "source": "Assets/MoonEnvironment/Variants/TheophilusBase/Scenes/TheophilusGameScene.unity",
+  "projection": "orthographic, +Z north at image top; static scene geometry only",
+  "landmarks": [
+    {
+      "name": "MC00 BASE",
+      "x": 1614.54,
+      "z": 2149.01
+    }
+  ]
+}

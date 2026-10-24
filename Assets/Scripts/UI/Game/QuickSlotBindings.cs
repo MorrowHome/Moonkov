@@ -8,20 +8,23 @@ namespace Unity.MP_FPS.Client
     public sealed partial class QuickSlotBindings
     {
         public const int Count = 9;
+        public const int EquipmentSlots = 4;
+        private bool m_Fists;
+        public bool Fists(int slot) => slot == 3 && m_Fists;
         private readonly IQuickSlotStore m_Store;
         private QuickSlotSave m_Saved = new QuickSlotSave();
         private string m_Scope;
         public int Selected { get; private set; } = -1;
         public string Reason { get; private set; }
         public string this[int slot] => ValidSlot(slot) ? m_Saved.Items[slot] : null;
-        public string Code(int slot) => ValidSlot(slot) ? m_Saved.Codes[slot] : null;
+        public string Code(int slot) => Fists(slot) ? "fists" : ValidSlot(slot) ? m_Saved.Codes[slot] : null;
         private static bool ValidSlot(int slot) => slot >= 0 && slot < Count;
         public QuickSlotBindings(IQuickSlotStore store) => m_Store = store ?? throw new ArgumentNullException(nameof(store));
         public void UseProfile(string scope)
         {
             scope ??= "";
             if (scope == m_Scope) return;
-            m_Scope = scope; Selected = -1; Reason = null;
+            m_Scope = scope; Selected = -1; Reason = null; m_Fists = false;
             m_Saved = scope.Length == 0 ? new QuickSlotSave() : m_Store.Load(scope) ?? new QuickSlotSave();
             if (m_Saved.Items?.Length != Count || m_Saved.Codes?.Length != Count) m_Saved = new QuickSlotSave();
             for (int i = 0; i < Count; i++)
@@ -30,16 +33,23 @@ namespace Unity.MP_FPS.Client
         }
         public void InitializeWeapons(InventoryGraph graph)
         {
-            if (m_Saved.Initialized || string.IsNullOrEmpty(m_Scope) || graph == null) return;
+            if (string.IsNullOrEmpty(m_Scope) || graph == null) return;
+            bool changed = !m_Saved.Initialized;
             m_Saved.Initialized = true;
             var slots = new[] { "Primary", "Secondary", "Pistol", MeleeInventory.Slot };
             for (int i = 0; i < slots.Length; i++)
             {
                 var item = graph.Equipped(slots[i]);
-                if (!CanBind(graph, item)) continue;
-                m_Saved.Items[i] = item.Id; m_Saved.Codes[i] = item.Code;
+                if (!CanBind(graph, item)) item = null;
+                if (m_Saved.Items[i] != item?.Id || m_Saved.Codes[i] != item?.Code)
+                {
+                    changed = true;
+                    if (Selected == i) Selected = -1;
+                    m_Saved.Items[i] = item?.Id; m_Saved.Codes[i] = item?.Code;
+                }
             }
-            Save();
+            m_Fists = MeleeInventory.Equipped(graph) == null;
+            if (changed) Save();
         }
         private void Save() { if (!string.IsNullOrEmpty(m_Scope)) m_Store.Save(m_Scope, m_Saved); }
         public static int WeaponSlot(InventoryGraph graph, InventoryItem item)
@@ -53,18 +63,21 @@ namespace Unity.MP_FPS.Client
              EnergyGrenadeRules.Accessible(graph, item) || TacticalItemRules.Accessible(graph, item));
         public bool Available(int slot, InventoryGraph graph)
         {
+            if (Fists(slot)) return graph != null;
             var item = graph?.Find(this[slot]);
             return item != null && item.Code == Code(slot) && CanBind(graph, item);
         }
         public bool Bind(int slot, InventoryItem item, InventoryGraph graph)
         {
+            if (slot >= 0 && slot < EquipmentSlots)
+            { Reason = "1–4 跟随主武器、副武器、手枪和近战装备；物品请绑定到 5–9。"; return false; }
             // A snapshot may be replaced between pointer-down and drop. Resolve the
             // current authoritative item by ID, rather than requiring object identity.
             var current = graph?.Find(item?.Id);
             if (!ValidSlot(slot) || string.IsNullOrEmpty(m_Scope) || current == null || current.Code != item.Code || !CanBind(graph, current))
             { Reason = "Equip weapons first. Keep usable supplies in your pockets or rig."; return false; }
             item = current;
-            for (int i = 0; i < Count; i++) if (m_Saved.Items[i] == item.Id) ClearEntry(i);
+            for (int i = EquipmentSlots; i < Count; i++) if (m_Saved.Items[i] == item.Id) ClearEntry(i);
             ClearEntry(slot);
             m_Saved.Items[slot] = item.Id; m_Saved.Codes[slot] = item.Code;
             m_Saved.Initialized = true; Reason = "Binding saved."; Save(); return true;
@@ -72,7 +85,7 @@ namespace Unity.MP_FPS.Client
         private void ClearEntry(int slot)
         { m_Saved.Items[slot] = m_Saved.Codes[slot] = null; if (Selected == slot) Selected = -1; }
         public void Clear(int slot)
-        { if (!ValidSlot(slot)) return; ClearEntry(slot); m_Saved.Initialized = true; Reason = "Binding cleared."; Save(); }
+        { if (!ValidSlot(slot)) return; if (slot < EquipmentSlots) { Reason = "1–4 自动跟随装备。"; return; } ClearEntry(slot); m_Saved.Initialized = true; Reason = "Binding cleared."; Save(); }
         public void Deselect() => Selected = -1;
         public void Validate(InventoryGraph graph)
         {

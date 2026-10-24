@@ -11,3 +11,20 @@
 本轮验证为源文件静态检查：资源引用、UXML 名称/无内联样式、回调和门禁链、授权数据来源、JSON 占位符，以及 47 条护具/近战键 + 15 条地图键的 JSON/en/zh/shared ID 对应关系。字符串表按已有 Unity YAML 定向追加稳定唯一 ID，不全量重序列化；Fonts 不变。首次新增警告已修正为 ResetData 并移除过时 PreventDefault；协调方随后使用现有 Bee response files 和 Unity 自带 Roslyn 最终隔离复编，主程序集退出码 0（6.16 秒、仅两条旧警告），Editor 程序集退出码 0（2.36 秒、19 条旧警告），本轮新增警告为零。证据位于 `Library/BuildValidation/SourceOnly-20261022/`，未覆盖实际 Bee/ScriptAssemblies DLL，不包含 Unity 导入、IL 后处理或渲染。
 
 没有启动 Unity、Play、独立游戏客户端、测试、Blender 或构建；M/Esc/滚轮/拖动、光标恢复、800×600/1280×720 的实际布局和帧行为仍待实机验收，不以静态检查或旧 fixture 图代替。
+
+
+## 2026-10-24 卫星底图与地图信息
+
+M 地图改为低饱和卫星地图：主体是正式 Theophilus 场景的真实正交俯视缩略图，紧凑灰绿工具栏与项目深色装备界面相衔接。这是既有设计系统的局部扩展，不替换全局设计文件。桌面侧栏使用普通 VisualElement（不是 ScrollView），承载撤离、附近补给、物资分类统计、自身坐标与朝向；小于 1000 逻辑像素时侧栏默认收起，可通过「地图详情」展开。首次开图以 2 倍缩放居中自身，仍可查看全图。
+
+- 底图：`Assets/Resources/Moonkov/Maps/TheophilusSatellite.png`，4096×4096 像素，对应世界 X/Z 的 0–4096 米，北为 +Z。来自正式场景当前实际地形与静态建筑渲染，经过 0.5–99.5 百分位灰度拉伸，图内嵌来源元数据；没有使用生成图片代替地形。边界与来源在同目录 `TheophilusSatelliteBounds.json`，其中 MC00 静态地标坐标取自真实场景根节点变换。
+- `Tools/Moonkov/Bake Current Scene Satellite Map` 重新烘焙当前正式场景底图；编辑期创建临时摄像机并清理，不保存场景。以后移动建筑或修改地形后应重新烘焙；底图不表示动态门状态、敌人或实时光照。
+- 运行时只读取静态压缩贴图，底图与标记共用 XZ 投影，拖动和缩放一起变化，不增加地图摄像机或 RenderTexture。没有底图的其他场景继续使用示意图，不套用错误地形。
+- 玩家位置、高度与朝向，撤离的水平距离、方位、范围及停留秒数，以及补给编号、类别、可搜索数量和最近可用箱，来自既有 owned pose、MoonRaidMap 和 TakenMask。空箱使用叉号，悬停查看补给类型与距离。
+- 右键设置单个个人导航点，金色标记与连线随缩放平移；可清除，换局/断线等原有 ResetData 路径清空。距离为水平直线距离，不承诺道路通行或自动寻路。
+- 赏金模式侧栏显示本队名单统计、授权目标与撤离阻挡/停留状态；敌队携标仍只显示服务端粗区域，不输出精确目标距离或朝向。补给读数仅开图时每 0.2 秒刷新。
+- 地标、撤离、自身、最近补给与个人导航点标签在应用位置偏移后，按最终标签矩形约束到地图边界内；这项边缘修正尚无后续截图验收。
+
+用户明确选择真实场景缩略图、低饱和卫星观感和紧凑灰绿控件，并拒绝此前没有图像的网格方案。已参考 [LROC QuickMap 文章](https://www.lroc.im-ldi.com/news/1167)及其 [Theophilus WAC 图像](https://lroc.sese.asu.edu/news/uploads/LROCiotw/Theophilus_WAC.png)；这些仅为审美参考，没有作为游戏底图导入。
+
+验证边界：正式场景底图已在现有 Editor 烘焙并直接查看，场景未保存或切换。最终标签边缘修正后的两个地图脚本已用 Unity 自带 Roslyn 和现有项目引用完成定向编译（Library/BuildValidation/TacticalMapInfo/MapCompileCheck.dll，退出码 0，无 C# 源文件诊断；仅编译器配置警告 CS2023）。烘焙工具此前也完成隔离编译。1280×720 原生预览 `.impeccable/review/tactical-map-1280.png` 使用真实场景底图和补给配置加示例玩家位置，已直接查看并经独立复核，地形与建筑可辨识、方向符合所选方案；该截图早于最终标签边缘修正。共享 Editor 持续重编译其他并行改动，800×600 截图尚未取得；整工程仍有无关编译错误（最近一次为 `DollSingerView.TransitionCamera` 缺失）。因此尚不宣称紧凑视口视觉、修正后截图、整工程编译、正式 Play、物理输入、联机或性能验收通过。

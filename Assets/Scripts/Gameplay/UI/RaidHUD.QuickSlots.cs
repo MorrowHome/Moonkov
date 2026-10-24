@@ -138,6 +138,12 @@ namespace Unity.MP_FPS
             CancelMeleeForSelection();
             m_QuickBindings.InitializeWeapons(QuickGraph);
             var item = m_QuickBindings.Select(number - 1, QuickGraph);
+            if (m_QuickBindings.Fists(number - 1) && m_QuickBindings.Selected == number - 1)
+            {
+                RaidQuickSlotInput.ReleasePrimary();
+                SendMelee(MeleeAction.Equip, equipmentSlot: MeleeInventory.EquipmentIndex);
+                return 0;
+            }
             if (item == null) { QuickNotice(m_QuickBindings.Reason); return 0; }
             RaidQuickSlotInput.ReleasePrimary();
             int slot = QuickSlotBindings.WeaponSlot(QuickGraph, item);

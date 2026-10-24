@@ -8,14 +8,15 @@ var store=new MemoryStore();var bindings=new QuickSlotBindings(store);
 var graph=InventoryGraph.Create(false);var rig=graph.Equipped("ChestRig")!;
 var primary=graph.Equipped("Primary")!;var secondary=graph.Equipped("Secondary")!;var pistol=graph.Equipped("Pistol")!;
 bindings.UseProfile("account-a");
+bindings.InitializeWeapons(graph);
 foreach(var pair in new[]{(primary,1),(secondary,2),(pistol,3)})
 {
-    Check(bindings.Bind(pair.Item2-1,pair.Item1,graph),"actual weapon binds");
+    Check(!bindings.Bind(pair.Item2-1,pair.Item1,graph),"equipment keys reject manual replacement");
     int version=graph.Version;
     Check(QuickSlotBindings.WeaponSlot(graph,bindings.Select(pair.Item2-1,graph))==pair.Item2,"weapon maps to its equipped slot");
     Check(graph.Version==version,"select weapon never mutates inventory");
 }
-int slot=3;
+int slot=4;
 foreach(var code in new[]{"medkit","med_gel","trauma_kit","ration","water","oxygen_canister","energy_grenade"}.Concat(TacticalItemRules.Definitions.Select(d=>d.Code)))
 {
     var g=InventoryGraph.Create(false);var r=g.Equipped("ChestRig")!;
@@ -32,10 +33,10 @@ foreach(var code in new[]{"medkit","med_gel","trauma_kit","ration","water","oxyg
     g.Items.Remove(item);g.AddSupply(code,1,r.Id);
     Check(bindings.Select(slot,g)==null && bindings.Selected==-1,"same code new identity never substitutes "+code);
     Check(bindings.Code(slot)==code,"unavailable silhouette retained "+code);
-    slot=slot==8?3:slot+1;
+    slot=slot==8?4:slot+1;
 }
 Check(!bindings.Bind(0,new InventoryItem{Id=primary.Id,Code=primary.Code,Parent=primary.Parent,Region=primary.Region},graph),"forged candidate object rejected");
-Check(bindings.Bind(8,primary,graph) && bindings[0]==null && bindings.Selected==-1,"duplicate binding moved and selection reset");
+Check(bindings.Bind(8,primary,graph) && bindings[0]==primary.Id && bindings.Selected==-1,"extra binding preserves automatic equipment key");
 bindings.Select(8,graph);bindings.Clear(8);Check(bindings.Selected==-1 && bindings[8]==null,"clear selected");
 bindings.Bind(8,primary,graph);bindings.UseProfile("account-b");Check(bindings[8]==null && bindings.Selected==-1,"account isolation");
 bindings.UseProfile("account-a");Check(bindings[8]==primary.Id && bindings.Selected==-1,"account reload exact identity");
@@ -49,8 +50,12 @@ Check(bindings.Select(-1,graph)==null && bindings.Select(9,graph)==null,"invalid
 var defaults=new QuickSlotBindings(store);defaults.UseProfile("defaults");
 var start=InventoryGraph.Create(false);defaults.InitializeWeapons(start);
 Check(defaults[0]==start.Equipped("Primary")!.Id && defaults[1]==start.Equipped("Secondary")!.Id && defaults[2]==start.Equipped("Pistol")!.Id,"first profile seeds only actual equipped weapons");
-defaults.Clear(0);defaults.InitializeWeapons(start);Check(defaults[0]==null,"intentional clear stays cleared");
-string previous=defaults[1];defaults.InitializeWeapons(InventoryGraph.Create(false));Check(defaults[1]==previous,"new raid never reseeds same-code identities");
+defaults.Clear(0);defaults.InitializeWeapons(start);Check(defaults[0]==start.Equipped("Primary")!.Id,"automatic weapon key cannot be cleared manually");
+var nextRaid=InventoryGraph.Create(false);defaults.InitializeWeapons(nextRaid);Check(defaults[1]==nextRaid.Equipped("Secondary")!.Id,"automatic equipment keys follow actual new raid identities");
+nextRaid.Items.Remove(nextRaid.Equipped("Primary")!);defaults.InitializeWeapons(nextRaid);
+Check(defaults[0]==null && defaults.Code(0)==null && !defaults.Available(0,nextRaid),"missing firearm is a clean empty slot");
+Check(defaults.Fists(3) && defaults.Code(3)=="fists" && defaults.Available(3,nextRaid),"no equipped melee displays fists");
+Check(defaults.Select(3,nextRaid)==null && defaults.Selected==3,"fists selection needs no synthetic inventory item");
 // Real shared shop/placement/drop rules, never debug-only creation as the acquisition path.
 foreach (string code in new[] { MeleeInventory.DaggerCode, MeleeInventory.SwordCode })
 {

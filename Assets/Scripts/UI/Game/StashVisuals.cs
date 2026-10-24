@@ -5,7 +5,7 @@ namespace Unity.MP_FPS.Client
 {
     public enum StashArtKind { None, Dust, Alloy, Cell, Halo, Outfit, Helmet, Rifle, Pistol, ChestRig, Backpack, HaloRifle, HaloRevolver, HaloShotgun, Medical, HaloSniper, Ration, Water, HaloCapacitor, HaloChargeBridge, HaloFocusLens, HaloFanArray, HaloPulseController, HaloHitMarker, OxygenCanister,
         MedicalGel, TraumaKit, EnergyGel, ProteinBar, Electrolyte, OxygenReserve, ScoutRig, FieldRig, SlingPack, CargoPack, CircuitBoard, CopperCoil, CeramicPlate, OpticalSensor, DataDrive, HeliumSample, QuantumCore, BlackBox, AlienMeat, AlienOrgan, AlienTissue,
-        AlienSpider, AlienSnake, AlienCaterpillar, AlienTentacle, AlienCentipede, AlienLeech, AlienSlime, AlienRoots, AlienFaceHugger, EnergyGrenade, MooncoreFragment, MissionArchive, HaloMooncoreRecycler, HaloCicada, HaloTrine, HaloAegis, HaloVesper, HaloThorn, HaloSundown, HaloRondo, HaloTempest, HaloNocturne, LifeSupportShroud, ShieldGenerator, EnergySword, CombatKnife, ScoutPack, SecureCase, SurveyCompass, Rangefinder }
+        AlienSpider, AlienSnake, AlienCaterpillar, AlienTentacle, AlienCentipede, AlienLeech, AlienSlime, AlienRoots, AlienFaceHugger, EnergyGrenade, MooncoreFragment, MissionArchive, HaloMooncoreRecycler, HaloCicada, HaloTrine, HaloAegis, HaloVesper, HaloThorn, HaloSundown, HaloRondo, HaloTempest, HaloNocturne, LifeSupportShroud, ShieldGenerator, EnergySword, CombatKnife, ScoutPack, SecureCase, SurveyCompass, Rangefinder, Fists }
 
     // Small original vector illustrations, kept sharp at the shared PanelSettings scale.
     [UxmlElement]
@@ -84,6 +84,7 @@ namespace Unity.MP_FPS.Client
             m_Origin = new Vector2((contentRect.width - width * m_Scale) * 0.5f, (contentRect.height - height * m_Scale) * 0.5f);
             switch (m_Kind)
             {
+                case StashArtKind.Fists: Fists(); break;
                 case StashArtKind.LifeSupportShroud: LifeSupportShroud(); break;
                 case StashArtKind.ShieldGenerator: ShieldGenerator(); break;
                 case StashArtKind.EnergySword: EnergySword(); break;
@@ -145,6 +146,15 @@ namespace Unity.MP_FPS.Client
         }
 
         private Vector2 P(float x, float y) => m_Origin + new Vector2(x, y) * m_Scale;
+        private void Fists()
+        {
+            Box(0x82958b, 26, 42, 48, 35);
+            Box(0x52685e, 31, 76, 36, 12);
+            for (int finger = 0; finger < 4; finger++)
+                Box(0xc8cfaa, 25 + finger * 13, 28 + Mathf.Abs(finger - 1) * 2, 11, 24);
+            Shape(0xaab6a3, new Vector2(25, 45), new Vector2(48, 56), new Vector2(43, 68), new Vector2(20, 57));
+            Line(0x35463e, 2, new Vector2(29, 72), new Vector2(68, 72));
+        }
         private void SurveyCompass()
         {
             Ring(0x536760, 10, 50, 52, 31); Ring(0xc1cbb8, 2, 50, 52, 24);

@@ -1,18 +1,43 @@
 @import url("ArchiveTheme.uss");
-@import url("Components/MoonkovControls.uss");
-.raid-map-hint { position: absolute; left: 50%; top: 16px; margin-left: -80px; width: 160px; padding: 5px 10px; color: var(--archive-ink); background-color: rgba(8,9,12,.86); font-size: 13px; -unity-text-align: middle-center; }
-.raid-map-overlay { display: none; position: absolute; left: 0; right: 0; top: 0; bottom: 0; align-items: center; justify-content: center; background-color: rgba(8,9,12,.90); }
-.raid-map-window { width: 1100px; max-width: 94%; height: 92%; max-height: 92%; min-height: 0; }
-.raid-map-window .bounty-archive-window { position: relative; width: 100%; height: 100%; min-height: 0; padding: 14px 16px; }
-.raid-map-window .terminal-window-header { border-bottom-width: 1px; border-bottom-color: var(--archive-rule); padding-bottom: 8px; margin-bottom: 8px; flex-shrink: 0; }
-.raid-map-title { font-size: 22px; color: var(--archive-ink); }
-.raid-map-copy { font-size: 13px; color: var(--archive-muted); white-space: normal; margin: 3px 0; flex-shrink: 0; }
-.raid-map-canvas-host { flex-grow: 1; min-height: 100px; border-width: 1px; border-color: var(--archive-rule); background-color: #080b10; margin: 8px 0; overflow: hidden; }
+.raid-map-hint { position: absolute; left: 50%; top: 16px; margin-left: -80px; width: 160px; padding: 5px 10px; color: #eeeee6; background-color: rgba(16,20,22,.9); font-size: 13px; -unity-text-align: middle-center; }
+.raid-map-overlay { display: none; position: absolute; left: 0; right: 0; top: 0; bottom: 0; align-items: center; justify-content: center; background-color: rgba(8,11,11,.94); }
+.raid-map-window { width: 97%; height: 95%; min-height: 0; background-color: #141a1b; border-width: 1px; border-color: #414b4e; padding: 0 14px; }
+.raid-map-header { flex-direction: row; align-items: center; min-height: 52px; flex-shrink: 0; }
+.raid-map-title { font-size: 17px; margin-right: 18px; }
+.raid-map-window .raid-map-status { flex-grow: 1; min-width: 0; font-size: 12px; color: #b3bcb9; white-space: normal; }
+.raid-map-body { flex-direction: row; flex-grow: 1; min-height: 0; }
+.raid-map-canvas-host { flex-grow: 1; min-width: 0; min-height: 0; background-color: #0c1011; overflow: hidden; }
 .raid-map-canvas { flex-grow: 1; min-height: 0; overflow: hidden; }
-.raid-map-canvas:focus { border-width: 1px; border-color: var(--archive-accent); }
-.raid-map-marker-label { position: absolute; font-size: 12px; color: var(--archive-ink); padding: 1px 3px; background-color: rgba(8,9,12,.82); }
-.raid-map-controls { flex-direction: row; flex-wrap: wrap; align-items: center; flex-shrink: 0; }
-.raid-map-controls > Button { min-height: 34px; min-width: 0; margin: 2px 6px 2px 0; padding: 6px 10px; font-size: 13px; }
-.raid-map-controls > .raid-map-zoom-button { min-width: 34px; }
-.raid-map-controls > Label { margin-right: 8px; }
-.raid-map-controls > Button:hover, .raid-map-controls > Button:focus { border-color: var(--archive-accent); }
+.raid-map-canvas:focus { border-width: 1px; border-color: #87947e; }
+.raid-map-sidebar { display: none; width: 252px; flex-shrink: 0; margin-left: 14px; padding-left: 14px; border-left-width: 1px; border-left-color: #414b4e; }
+.raid-map-details-open .raid-map-sidebar { display: flex; }
+.raid-map-window .raid-map-section-title { font-size: 12px; color: #b3bcb9; margin: 12px 0 4px; -unity-font-style: bold; }
+.raid-map-window .raid-map-readout { font-size: 12px; color: #eeeee6; white-space: normal; margin: 0 0 10px; }
+.raid-map-window .raid-map-extraction { color: #a9d7b9; font-size: 14px; }
+.raid-map-window .raid-map-navigation { color: #dec68f; margin-top: 16px; }
+.raid-map-marker-label { position: absolute; font-size: 12px; color: #eeeee6; padding: 2px 5px; background-color: rgba(12,16,17,.9); white-space: normal; max-width: 210px; }
+.raid-map-scale { position: absolute; left: 10px; bottom: 8px; font-size: 11px; color: #eeeee6; padding: 3px 6px; background-color: rgba(12,16,17,.9); }
+.raid-map-window .raid-map-copy { font-size: 12px; color: #b3bcb9; white-space: normal; }
+.raid-map-controls { flex-direction: row; align-items: center; min-height: 50px; flex-shrink: 0; }
+.raid-map-button { min-height: 30px; padding: 4px 10px; margin: 0 6px 0 0; border-width: 1px; border-color: #414b4e; background-color: #222b2b; color: #eeeee6; font-size: 12px; }
+.raid-map-button:hover { background-color: #303b38; border-color: #87947e; }
+.raid-map-button:focus { border-color: #c8cfaa; }
+.raid-map-button:active, .raid-map-button.is-active { background-color: #354139; border-color: #a5b091; }
+.raid-map-button:disabled { opacity: .4; }
+.raid-map-zoom-button { width: 30px; }
+.raid-map-zoom { margin: 0 8px; }
+.raid-map-controls-hint { flex-grow: 1; -unity-text-align: middle-right; margin-right: 12px; }
+.raid-map-key { flex-direction: row; flex-wrap: wrap; }
+.raid-map-key > Label { font-size: 12px; padding: 3px 8px 3px 0; }
+.raid-map-window .raid-map-key-supply { color: #eeeee6; }
+.raid-map-window .raid-map-key-medical { color: #83cda4; }
+.raid-map-window .raid-map-key-industrial { color: #dfbb7b; }
+.raid-map-window .raid-map-key-equipment { color: #9ab8d4; }
+.raid-map-window .raid-map-key-empty { color: #b3bcb9; }
+.raid-map-compact .raid-map-header { min-height: 44px; }
+.raid-map-compact .raid-map-title { font-size: 16px; margin-right: 10px; }
+.raid-map-compact .raid-map-controls-hint { display: none; }
+.raid-map-compact .raid-map-controls { justify-content: space-between; }
+.raid-map-compact .raid-map-sidebar { position: absolute; right: 0; top: 0; bottom: 0; width: 250px; padding: 8px 12px; margin: 0; background-color: #141a1b; }
+
+.raid-map-window .raid-map-landmark { color: #deded5; font-size: 12px; padding: 2px 6px; background-color: rgba(12,16,17,.72); }

@@ -1,21 +1,44 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
     <ui:Style src="RaidMapView.uss" />
     <ui:Label name="raidMapHint" text="[M] MAP" class="raid-map-hint" picking-mode="Ignore" />
-    <ui:VisualElement name="raidMapOverlay" class="raid-map-overlay archive-ui moonkov-controls">
+    <ui:VisualElement name="raidMapOverlay" class="raid-map-overlay archive-ui">
         <ui:VisualElement name="raidMapWindow" class="raid-map-window">
-            <ui:Label text="TACTICAL MAP" class="raid-map-title" picking-mode="Ignore" />
-            <ui:Label name="raidMapStatus" class="raid-map-copy" picking-mode="Ignore" />
-            <ui:VisualElement name="raidMapCanvasHost" class="raid-map-canvas-host" />
-            <ui:VisualElement class="raid-map-controls">
-                <ui:Button name="raidMapCenter" text="CENTER ON ME" class="terminal-button" />
-                <ui:Button name="raidMapFull" text="FULL MAP" class="terminal-button" />
-                <ui:Button name="raidMapZoomOut" text="−" tooltip="ZOOM OUT" class="terminal-button raid-map-zoom-button" />
-                <ui:Label name="raidMapZoom" class="raid-map-copy" picking-mode="Ignore" />
-                <ui:Button name="raidMapZoomIn" text="+" tooltip="ZOOM IN" class="terminal-button raid-map-zoom-button" />
-                <ui:Button name="raidMapClose" text="CLOSE / M" class="terminal-button" />
+            <ui:VisualElement class="raid-map-header">
+                <ui:Label text="TACTICAL MAP" class="raid-map-title" picking-mode="Ignore" />
+                <ui:Label name="raidMapStatus" class="raid-map-status" picking-mode="Ignore" />
+                <ui:Button name="raidMapClose" text="CLOSE / M" class="raid-map-button" />
             </ui:VisualElement>
-            <ui:Label name="raidMapLegend" class="raid-map-copy" picking-mode="Ignore" />
-            <ui:Label text="SCROLL ZOOM · DRAG PAN · M / ESC CLOSE" class="raid-map-copy" picking-mode="Ignore" />
+            <ui:VisualElement class="raid-map-body">
+                <ui:VisualElement name="raidMapCanvasHost" class="raid-map-canvas-host" />
+                <ui:VisualElement name="raidMapSidebar" class="raid-map-sidebar">
+                    <ui:Label text="EXTRACTION" class="raid-map-section-title" />
+                    <ui:Label name="raidMapExtraction" class="raid-map-readout raid-map-extraction" />
+                    <ui:Label text="FIELD INTELLIGENCE" class="raid-map-section-title" />
+                    <ui:Label name="raidMapObjective" class="raid-map-readout" />
+                    <ui:Label name="raidMapSupplies" class="raid-map-readout" />
+                    <ui:Label text="YOUR POSITION" class="raid-map-section-title" />
+                    <ui:Label name="raidMapPosition" class="raid-map-readout" />
+                    <ui:Label name="raidMapLegend" class="raid-map-section-title" />
+                    <ui:VisualElement name="raidMapSupplyKey" class="raid-map-key">
+                        <ui:Label text="SUPPLIES" class="raid-map-key-supply" />
+                        <ui:Label text="MEDICAL" class="raid-map-key-medical" />
+                        <ui:Label text="INDUSTRIAL" class="raid-map-key-industrial" />
+                        <ui:Label text="EQUIPMENT" class="raid-map-key-equipment" />
+                        <ui:Label text="CROSS / EMPTY CACHE" class="raid-map-key-empty" />
+                    </ui:VisualElement>
+                    <ui:Label name="raidMapNavigation" class="raid-map-readout raid-map-navigation" />
+                    <ui:Button name="raidMapClearPin" text="CLEAR PIN" class="raid-map-button" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement class="raid-map-controls">
+                <ui:Button name="raidMapCenter" text="CENTER ON ME" class="raid-map-button" />
+                <ui:Button name="raidMapFull" text="FULL MAP" class="raid-map-button" />
+                <ui:Button name="raidMapZoomOut" text="−" tooltip="ZOOM OUT" class="raid-map-button raid-map-zoom-button" />
+                <ui:Label name="raidMapZoom" class="raid-map-copy raid-map-zoom" picking-mode="Ignore" />
+                <ui:Button name="raidMapZoomIn" text="+" tooltip="ZOOM IN" class="raid-map-button raid-map-zoom-button" />
+                <ui:Label text="DRAG PAN · RIGHT CLICK PIN" class="raid-map-copy raid-map-controls-hint" picking-mode="Ignore" />
+                <ui:Button name="raidMapDetails" text="MAP DETAILS" class="raid-map-button" />
+            </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
