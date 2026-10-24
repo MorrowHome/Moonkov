@@ -60,8 +60,8 @@ namespace Unity.MP_FPS
         public static void SetSelectedItem(string code)
         {
             var definition=TacticalItemRules.Find(code);
-            // The HUD also selects guns and ordinary supplies. They have no tactical prop.
-            if(definition==null && code!="energy_grenade")
+            bool medical=Unity.MP_FPS.Inventory.ConsumableCatalog.MedicalRestore(code)>0;
+            if(definition==null && code!="energy_grenade" && !medical)
             {
                 if(s_Active)
                 {
@@ -323,17 +323,20 @@ namespace Unity.MP_FPS
         private void LateUpdate() => DrawHeld();
         private void DrawHeld()
         {
-            bool visible=!m_PresentationBlocked && (m_Selected!=null || m_SelectedCode=="energy_grenade") && Camera.main && Cursor.lockState==CursorLockMode.Locked;
+            bool visible=!m_PresentationBlocked && (m_Selected!=null || m_SelectedCode=="energy_grenade" || Unity.MP_FPS.Inventory.ConsumableCatalog.MedicalRestore(m_SelectedCode)>0) && Camera.main && Cursor.lockState==CursorLockMode.Locked;
             if(!visible){if(m_Held)m_Held.SetActive(false);return;}
             if(!m_Held)
             {
                 m_Held=new GameObject("Held "+m_SelectedCode);m_Held.transform.SetParent(transform,false);
-                TacticalItemKind kind;
-                if(m_Selected!=null)kind=m_Selected.Kind;
-                else if(m_SelectedCode=="energy_grenade")kind=TacticalItemKind.Frag;
-                else return;
-                if(m_SelectedCode!="energy_grenade" || !PhysicalItemVisuals.Create("energy_grenade",m_Held.transform,true))
+                // Medical supplies use the same authored models as loot and inventory.
+                // Selecting only draws the model; LMB still sends the authoritative use request.
+                if(!PhysicalItemVisuals.Create(m_SelectedCode,m_Held.transform,true))
+                {
+                    if(m_Selected==null && m_SelectedCode!="energy_grenade")
+                    { Release(m_Held);m_Held=null;return; }
+                    var kind=m_Selected!=null ? m_Selected.Kind : TacticalItemKind.Frag;
                     BuildProp(m_Held.transform,kind,kind==TacticalItemKind.Stamina ? m_Amber : kind==TacticalItemKind.Antidote ? m_Green : kind==TacticalItemKind.Choke ? m_Cyan : m_Red);
+                }
                 Unity.MP_FPS.Moon.MoonSilverPrintSubject.Protect(m_Held);
             }
             m_Held.SetActive(true);
