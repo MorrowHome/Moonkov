@@ -20,6 +20,7 @@ public static class OnlineGameServerBuild
     [MenuItem("Tools/Moonkov/Build Local Windows Server")]
     public static void Build()
     {
+        s_IdleSince = -1;
         SessionState.SetBool(QueueKey, true);
         // SBP/Addressables compiles separately and does not inherit the player's
         // extraScriptingDefines. Select the same local entry for the Server target.
@@ -49,6 +50,7 @@ public static class OnlineGameServerBuild
         if (EditorApplication.isPlayingOrWillChangePlaymode || EditorApplication.isCompiling || BuildPipeline.isBuildingPlayer)
             throw new InvalidOperationException("Wait for the current Editor operation to finish.");
         var result = new Result { Status = "Building", Output = "Build/MoonServer/MoonServer.exe" };
+        var previousSubtarget = EditorUserBuildSettings.standaloneBuildSubtarget;
         Directory.CreateDirectory(Path.GetDirectoryName(Report));
         File.WriteAllText(Report, JsonUtility.ToJson(result, true));
         try
@@ -88,6 +90,11 @@ public static class OnlineGameServerBuild
             Debug.Log("[Online Server] Dedicated Windows server built: " + Path.GetFullPath(result.Output));
         }
         catch (Exception ex) { result.Status = "Failed"; result.Message = ex.Message; throw; }
-        finally { File.WriteAllText(Report, JsonUtility.ToJson(result, true)); }
+        finally
+        {
+            File.WriteAllText(Report, JsonUtility.ToJson(result, true));
+            if (EditorUserBuildSettings.standaloneBuildSubtarget != previousSubtarget)
+                EditorUserBuildSettings.standaloneBuildSubtarget = previousSubtarget;
+        }
     }
 }

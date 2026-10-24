@@ -20,10 +20,10 @@ public class GhostBridgeBootstrap : ClientServerBootstrap
     {
         get
         {
-#if UNITY_SERVER
-            return true;
-#elif UNITY_EDITOR
+#if UNITY_EDITOR
             return RequestedPlayType == PlayType.Server;
+#elif UNITY_SERVER
+            return true;
 #else
             return false;
 #endif

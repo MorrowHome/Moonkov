@@ -46,6 +46,8 @@ Unity 6000.5.10f1 需要 Windows Dedicated Server Build Support。本轮已通�
 
 本机构建器通过 `PlayerSettings` 的 Server 目标配置及 `BuildPlayerOptions.extraScriptingDefines` 同时指定 `MOON_LOCAL_SERVER`。这是必要的：Addressables/SBP 独立编译不继承 Player 的额外宏。模板遗留的 `UGS_SERVER` 不再让本机构建编译旧云启动脚本；正式 ServerScene 使用原 `ServerBootstrap`。
 
+构建器在成功、取消或异常退出后恢复构建前的 Standalone 子目标。Editor 的 `GhostBridgeBootstrap.IsServerOnly` 优先遵循 NetCode Play 模式，不能因上次专用服务器构建留下的 `UNITY_SERVER` 编译符号而把正常 MainMenu 判为无界面服务器。独立游戏服已监听 7979 时，Editor 使用连接服务器入口；另开 Host 使用同一端口仍会冲突。
+
 从现有 Editor 的 **Tools → Moonkov → Build Local Windows Server** 构建到 `Build/MoonServer/MoonServer.exe`。工具等待编译/导入空闲，使用正式地图和共享网络资源；若正式场景有未保存改动，先用 `SaveAsCopy` 保存构建副本到被忽略的 `Assets/OnlineServerBuildSnapshot/`，保留当前内容。Unity 正式构建仍可能弹出原场景保存对话框；场景含并行修改时，由用户决定是否保存，工具不自动确认。构建状态在 `Library/BuildValidation/OnlineServer/build-report.json`。
 
 ```powershell
