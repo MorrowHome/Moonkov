@@ -1,5 +1,7 @@
 # Network session behavior
 
+Updated 2026-10-24: authenticated online raids now support bounded restoration of the original character, inventory and deployment for up to 90 seconds. Direct transport requires DTLS; game joins use short-lived single-use tickets. Relay has separate create and join-by-code actions. See [current online setup and validation boundaries](OnlineSessions-20261024.md).
+
 The game keeps Netcode for Entities prediction, authoritative server movement,
 inventory mutations and damage. A client world makes one transport connection
 request immediately; Unity Transport owns retransmission and handshake retries.
@@ -18,11 +20,11 @@ request immediately; Unity Transport owns retransmission and handshake retries.
 - Command sending compares NetworkTick values with wrap-aware ordering, retains
   a single-shot press between ticks and restores pruned current-tick commands.
 
-A dropped raid returns to the ship. It does not silently create a new connection
-in the old client world: the server must settle the previous raid and release its
-equipment before a new join reloads the persisted profile. Seamless reconnect
-would require an explicit server-side grace period and authenticated resumption
-of the same raid, rather than repeating the join request.
+A dropped raid returns to the ship and offers an explicit reconnect action. The
+online server retains the original body for up to 90 seconds, still vulnerable,
+then settles it on expiry or death. Fresh authentication can transfer the same
+deployment to a new connection. Resume-only requests never create a new raid.
+Server restart and a lost host process cannot restore the in-memory world.
 
 Validation covers compilation, progress/reason branches, invalid numeric input
 and an isolated ECS run of the real sender across tick wrap, buffered fire,
