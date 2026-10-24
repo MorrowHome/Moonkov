@@ -137,8 +137,8 @@ namespace Unity.MP_FPS.Client
                 return;
             }
             bool corpse = !m_DroppedItem && m_LootId >= RaidLootContainers.FirstDeathBagId && m_LootId < RaidLootContainers.FirstMissionCacheId;
-            MoonkovLocalization.Set(title, corpse ? "尸体搜刮" : m_DroppedItem ? "地面物品" : m_LootId >= RaidLootContainers.FirstMissionCacheId ? "任务输出槽" : "物资容器");
-            MoonkovLocalization.Set(caption, "");
+            MoonkovLocalization.Set(title, RaidFurnitureLoot.IsFurniture(m_LootId) ? "抽屉搜刮" : corpse ? "尸体搜刮" : m_DroppedItem ? "地面物品" : m_LootId >= RaidLootContainers.FirstMissionCacheId ? "任务输出槽" : "物资容器");
+            MoonkovLocalization.Set(caption, RaidFurnitureLoot.IsFurniture(m_LootId) ? RaidFurnitureLoot.NameFor(m_LootId) : "");
             if (!corpse) { AddContainer(m_LootPane, loot, "可搜刽物品"); return; }
             var tops = m_Graph.Children(loot.Id).ToArray(); var shown = new HashSet<string>();
             if (GameSettings.IsPlayableCharacter(m_CorpseCharacterIndex))

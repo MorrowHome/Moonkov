@@ -88344,6 +88344,7 @@ GameObject:
   - component: {fileID: 145744448}
   - component: {fileID: 145744447}
   - component: {fileID: 145744450}
+  - component: {fileID: 145744451}
   m_Layer: 0
   m_Name: Moon Raid
   m_TagString: Untagged
@@ -1394679,6 +1394680,139 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a512c69de5f719d4e84f22c465f2a589, type: 3}
+--- !u!114 &145744451
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 145744446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b170ce352ec3054a8337aa37ee5c606, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Unity.MP_FPS.RaidFurnitureLoot
+  m_Drawers:
+  - Target: {fileID: 612788761}
+    LocalPoint: {x: -1.1202621, y: -0.53946495, z: 0.027473211}
+    Label: "G02 \xB7 \u751F\u6D3B\u7269\u8D44\u62BD\u5C49 01"
+    Profile: 0
+  - Target: {fileID: 1574956860}
+    LocalPoint: {x: -1.1202202, y: -0.53946495, z: 0.027457952}
+    Label: "G02 \xB7 \u751F\u6D3B\u7269\u8D44\u62BD\u5C49 02"
+    Profile: 0
+  - Target: {fileID: 1251108589}
+    LocalPoint: {x: -0.058273315, y: -0.05624199, z: 1.4499397}
+    Label: "G03 \xB7 \u5DE5\u5177\u8D44\u6599\u62BD\u5C49 03"
+    Profile: 2
+  - Target: {fileID: 1205089291}
+    LocalPoint: {x: -0.5927353, y: -0.53856087, z: 0.9461403}
+    Label: "G03 \xB7 \u5DE5\u5177\u8D44\u6599\u62BD\u5C49 04"
+    Profile: 2
+  - Target: {fileID: 1109356328}
+    LocalPoint: {x: -1.1199417, y: -0.5197525, z: 0.02756238}
+    Label: "G04 \xB7 \u5DE5\u5177\u8D44\u6599\u62BD\u5C49 05"
+    Profile: 2
+  - Target: {fileID: 71754068}
+    LocalPoint: {x: -1.1199951, y: -0.51982117, z: 0.027669191}
+    Label: "G04 \xB7 \u5DE5\u5177\u8D44\u6599\u62BD\u5C49 06"
+    Profile: 2
+  - Target: {fileID: 1166463350}
+    LocalPoint: {x: -1.0457878, y: -0.4598236, z: 0.02743721}
+    Label: "L11 \xB7 \u533B\u7597\u62BD\u5C49 07"
+    Profile: 1
+  - Target: {fileID: 1370189517}
+    LocalPoint: {x: -1.0456467, y: -0.4600525, z: 0.027772903}
+    Label: "L11 \xB7 \u533B\u7597\u62BD\u5C49 08"
+    Profile: 1
+  - Target: {fileID: 1207598130}
+    LocalPoint: {x: -1.0102501, y: -0.4984455, z: 0.028081894}
+    Label: "L12 \xB7 \u5DE5\u5177\u8D44\u6599\u62BD\u5C49 09"
+    Profile: 2
+  - Target: {fileID: 2052099052}
+    LocalPoint: {x: -1.010212, y: -0.49859428, z: 0.027837753}
+    Label: "L12 \xB7 \u5DE5\u5177\u8D44\u6599\u62BD\u5C49 10"
+    Profile: 2
+  - Target: {fileID: 60274099}
+    LocalPoint: {x: -1.0103722, y: -0.49832726, z: 0.027685165}
+    Label: "L12 \xB7 \u5DE5\u5177\u8D44\u6599\u62BD\u5C49 11"
+    Profile: 2
+  - Target: {fileID: 81861663}
+    LocalPoint: {x: -1.0102348, y: -0.49839973, z: 0.027425766}
+    Label: "L12 \xB7 \u5DE5\u5177\u8D44\u6599\u62BD\u5C49 12"
+    Profile: 2
+  - Target: {fileID: 2067153410}
+    LocalPoint: {x: -1.2950096, y: 0.9844208, z: 0.0241642}
+    Label: "L13 \xB7 \u5DE5\u5177\u8D44\u6599\u62BD\u5C49 13"
+    Profile: 2
+  - Target: {fileID: 1101171856}
+    LocalPoint: {x: -1.2950668, y: 0.98358154, z: 0.023340225}
+    Label: "L13 \xB7 \u5DE5\u5177\u8D44\u6599\u62BD\u5C49 14"
+    Profile: 2
+  - Target: {fileID: 1679749247}
+    LocalPoint: {x: -0.9379883, y: -0.51667786, z: 0.027984142}
+    Label: "L14 \xB7 \u5DE5\u5177\u8D44\u6599\u62BD\u5C49 15"
+    Profile: 2
+  - Target: {fileID: 1479104953}
+    LocalPoint: {x: -0.9379883, y: -0.51667786, z: 0.027984142}
+    Label: "L14 \xB7 \u5DE5\u5177\u8D44\u6599\u62BD\u5C49 16"
+    Profile: 2
+  - Target: {fileID: 187971484}
+    LocalPoint: {x: -0.93764496, y: -0.5169077, z: 0.028141022}
+    Label: "L14 \xB7 \u5DE5\u5177\u8D44\u6599\u62BD\u5C49 17"
+    Profile: 2
+  - Target: {fileID: 1843181643}
+    LocalPoint: {x: -0.937706, y: -0.51681614, z: 0.028247833}
+    Label: "L14 \xB7 \u5DE5\u5177\u8D44\u6599\u62BD\u5C49 18"
+    Profile: 2
+  - Target: {fileID: 1263356321}
+    LocalPoint: {x: 0.5435509, y: -0.4240558, z: 0.05989806}
+    Label: "L21 \xB7 \u5DE5\u5177\u8D44\u6599\u62BD\u5C49 19"
+    Profile: 2
+  - Target: {fileID: 1626549482}
+    LocalPoint: {x: 0.4601524, y: -0.43390593, z: 0.062668376}
+    Label: "L21 \xB7 \u5DE5\u5177\u8D44\u6599\u62BD\u5C49 20"
+    Profile: 2
+  - Target: {fileID: 37201630}
+    LocalPoint: {x: 0.5432312, y: -0.4239713, z: 0.060510106}
+    Label: "L21 \xB7 \u5DE5\u5177\u8D44\u6599\u62BD\u5C49 21"
+    Profile: 2
+  - Target: {fileID: 2058107463}
+    LocalPoint: {x: 0.46038234, y: -0.43354914, z: 0.061766416}
+    Label: "L21 \xB7 \u5DE5\u5177\u8D44\u6599\u62BD\u5C49 22"
+    Profile: 2
+  - Target: {fileID: 1501468112}
+    LocalPoint: {x: -0.52838135, y: 1.1508541, z: 0.025345802}
+    Label: "L21 \xB7 \u5DE5\u5177\u8D44\u6599\u62BD\u5C49 23"
+    Profile: 2
+  - Target: {fileID: 2079669542}
+    LocalPoint: {x: -0.5290222, y: 1.1509457, z: 0.025483131}
+    Label: "L21 \xB7 \u5DE5\u5177\u8D44\u6599\u62BD\u5C49 24"
+    Profile: 2
+  - Target: {fileID: 1087091859}
+    LocalPoint: {x: 0.8263391, y: -0.58616763, z: 0.06068124}
+    Label: "L22 \xB7 \u5DE5\u5177\u8D44\u6599\u62BD\u5C49 25"
+    Profile: 2
+  - Target: {fileID: 160305775}
+    LocalPoint: {x: 1.0420605, y: -0.5749109, z: 0.063065}
+    Label: "L22 \xB7 \u5DE5\u5177\u8D44\u6599\u62BD\u5C49 26"
+    Profile: 2
+  - Target: {fileID: 212093320}
+    LocalPoint: {x: 0.82692343, y: -0.5861042, z: 0.061164435}
+    Label: "L22 \xB7 \u5DE5\u5177\u8D44\u6599\u62BD\u5C49 27"
+    Profile: 2
+  - Target: {fileID: 1455207819}
+    LocalPoint: {x: 0.82464963, y: -0.58620566, z: 0.0605846}
+    Label: "L22 \xB7 \u5DE5\u5177\u8D44\u6599\u62BD\u5C49 28"
+    Profile: 2
+  - Target: {fileID: 687024287}
+    LocalPoint: {x: 0.98423934, y: -0.8673072, z: 0.06174427}
+    Label: "L24 \xB7 \u751F\u6D3B\u7269\u8D44\u62BD\u5C49 29"
+    Profile: 0
+  - Target: {fileID: 1863451878}
+    LocalPoint: {x: 0.9859638, y: -0.8673072, z: 0.061486565}
+    Label: "L24 \xB7 \u751F\u6D3B\u7269\u8D44\u62BD\u5C49 30"
+    Profile: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

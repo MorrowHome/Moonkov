@@ -41,6 +41,7 @@ namespace Unity.MP_FPS
         public readonly System.Collections.Generic.Dictionary<int,RaidCorpseRecord> DeathBags = new System.Collections.Generic.Dictionary<int,RaidCorpseRecord>();
         public readonly System.Collections.Generic.Dictionary<int,RaidLootRefillState> RefillStates = new System.Collections.Generic.Dictionary<int,RaidLootRefillState>();
         public readonly System.Collections.Generic.Dictionary<int,Unity.Mathematics.float3> MissionCaches = new System.Collections.Generic.Dictionary<int,Unity.Mathematics.float3>();
+        public readonly System.Collections.Generic.Dictionary<int,Unity.Mathematics.float3> FurnitureCaches = new System.Collections.Generic.Dictionary<int,Unity.Mathematics.float3>();
         public readonly Random LootRandom = new Random(Guid.NewGuid().GetHashCode());
         public bool Initialized { get; private set; }
         public object MapIdentity { get; private set; }
@@ -119,7 +120,7 @@ namespace Unity.MP_FPS
             {
                 // Queued transfer requests from the previous map must never match its replacement.
                 foreach(var cache in Containers.Values)version=Math.Max(version,checked(cache.Version+1));
-                Containers.Clear();DeathBags.Clear();RefillStates.Clear();MissionCaches.Clear();
+                Containers.Clear();DeathBags.Clear();RefillStates.Clear();MissionCaches.Clear();FurnitureCaches.Clear();
             }
             for(int index=0;index<count;index++)
             {

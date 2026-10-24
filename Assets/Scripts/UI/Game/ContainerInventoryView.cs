@@ -243,7 +243,7 @@ namespace Unity.MP_FPS.Client
             AddContainer(m_ContainerPane, m_Graph.Equipped("Backpack"), "BACKPACK");
             AddContainer(m_ContainerPane, m_Graph.Equipped("SecureContainer"), "保险箱");
             if (!m_Stash) RenderRaidLoot(loot);
-            else if(loot!=null)AddContainer(m_LootPane,loot,m_LootId>=RaidLootContainers.FirstMissionCacheId ? "任务输出槽 / 任务产物"
+            else if(loot!=null)AddContainer(m_LootPane,loot,RaidFurnitureLoot.IsFurniture(m_LootId) ? RaidFurnitureLoot.NameFor(m_LootId) : m_LootId>=RaidLootContainers.FirstMissionCacheId ? "任务输出槽 / 任务产物"
                 : m_DroppedItem ? "地面丢弃物 / DROPPED SUPPLIES" : m_LootId>=RaidLootContainers.FirstDeathBagId ? "FALLEN EXPEDITION / GEAR" : "SUPPLY CACHE / "+(m_LootId+1).ToString("00"));
             if (m_Stash) AddContainer(m_StashPane, m_Graph.Find("stash"), "PERSONAL STORAGE");
             foreach (var id in new List<string>(m_Open)) { var item = m_Graph.Find(id); if (item == null) m_Open.Remove(id); else OpenContainer(item, false); }

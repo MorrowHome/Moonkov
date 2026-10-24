@@ -171,6 +171,7 @@ namespace Unity.MP_FPS
                 IsDroppedLoot(m_OpenedLootId) ? "地面丢弃物 / 随身装备" : m_OpenedLootId >= RaidLootContainers.FirstDeathBagId ? "REMAINS / CARRIED INVENTORY" :
                 m_OpenedLootId >= 0 ? "SUPPLY CACHE / CARRIED INVENTORY" : "CHARACTER / CARRIED INVENTORY");
             if (health) m_InventoryView.Suspend();
+                RaidFurnitureLoot.IsFurniture(m_OpenedLootId) ? "抽屉搜刮 / 随身装备" :
             else if (m_InventoryVisible) m_InventoryView.Show();
             RefreshHealth();
         }
@@ -437,6 +438,11 @@ namespace Unity.MP_FPS
                 bool pressed = (Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame) ||
                                (Gamepad.current != null && Gamepad.current.buttonWest.wasPressedThisFrame);
                 bool controlInput = (Keyboard.current != null && Keyboard.current.fKey.wasPressedThisFrame) ||
+                if (!clash && RaidFurnitureLoot.Active)
+                {
+                    int drawer = RaidFurnitureLoot.Active.Select(camera, position, out float drawerDistance);
+                    if (drawer >= 0) { nearest = drawer; distance = drawerDistance; }
+                }
                     (Gamepad.current != null && Gamepad.current.buttonWest.wasPressedThisFrame);
                 bool controlPressed = !tacticalInteraction && !clash && !missionControl && controlInput && !m_InventoryVisible && !m_InventoryRequestPending &&
                     UnityEngine.Cursor.lockState == CursorLockMode.Locked && !GameSettings.Instance.IsPauseMenuOpen &&
@@ -459,8 +465,8 @@ namespace Unity.MP_FPS
             if (m_RefreshTimer > 0) return;
             m_RefreshTimer = 0.1f;
             RefreshHealth();
-            bool deathBag=nearest>=RaidLootContainers.FirstDeathBagId;
-            bool empty=deathBag ? deathBags.Bags[nearest].Empty : nearest>=0 && (m_Snapshot.TakenMask & (1UL<<nearest))!=0;
+            bool deathBag=nearest>=RaidLootContainers.FirstDeathBagId && nearest<RaidLootContainers.FirstMissionCacheId;
+            bool empty=deathBag ? deathBags.Bags[nearest].Empty : nearest>=0 && nearest<RaidLootContainers.FirstDeathBagId && (m_Snapshot.TakenMask & (1UL<<nearest))!=0;
             bool alien=deathBag && deathBags.Bags[nearest].CharacterIndex==-1;
             RefreshInteraction(nearest, distance, deathBag, empty, interactionVisible && !m_AirlockPrompt.HasSelection,alien,IsDroppedLoot(nearest));
             if (clash)
@@ -545,11 +551,11 @@ namespace Unity.MP_FPS
                 return;
             }
             // Reuse the localized action wording; the physical key now has its own visual.
-            string prompt = dropped ? "搜索地面丢弃物" : alien ? MoonkovLocalization.Text("[E]  DISSECT / SEARCH ALIEN REMAINS") : deathBag ? MoonkovLocalization.Text("[E]  SEARCH FALLEN EXPEDITION")
+            string prompt = RaidFurnitureLoot.IsFurniture(nearest) ? "搜索 · " + RaidFurnitureLoot.NameFor(nearest) : dropped ? "搜索地面丢弃物" : alien ? MoonkovLocalization.Text("[E]  DISSECT / SEARCH ALIEN REMAINS") : deathBag ? MoonkovLocalization.Text("[E]  SEARCH FALLEN EXPEDITION")
                 : MoonkovLocalization.Format($"[E]  OPEN SUPPLY CACHE / {nearest + 1:00}");
             if (prompt.StartsWith("[E]", System.StringComparison.Ordinal)) prompt = prompt.Substring(3).TrimStart();
             MoonkovLocalization.Set(m_Prompt, prompt);
-            MoonkovLocalization.Set(m_InteractionState, empty ? "EMPTY" : "CONTENTS");
+            MoonkovLocalization.Set(m_InteractionState, RaidFurnitureLoot.IsFurniture(nearest) ? "小型容器" : empty ? "EMPTY" : "CONTENTS");
             MoonkovLocalization.Set(m_InteractionRange, $"{distance:0.0} m");
         }
 
@@ -630,7 +636,7 @@ namespace Unity.MP_FPS
             m_ActionDuration=dissect ? Inventory.AlienHarvest.DissectionSeconds : MoonRaidMap.Active.SearchSeconds;
             m_DissectionEndsAt=Time.unscaledTime+m_ActionDuration;
             string opening=dissect ? "搜索中：保持静止；关闭或X取消，移动或受伤会中断。" :
-                IsDroppedLoot(id) ? "搜索地面丢弃物…" : id>=RaidLootContainers.FirstDeathBagId ? "Searching fallen expedition…" : "Opening supply cache…";
+                RaidFurnitureLoot.IsFurniture(id) ? "正在搜索抽屉…" : IsDroppedLoot(id) ? "搜索地面丢弃物…" : id>=RaidLootContainers.FirstDeathBagId ? "Searching fallen expedition…" : "Opening supply cache…";
             m_LootOpenPending=true;m_InventoryView.Present(null,opening,operationCompleted:false);
             m_InventoryView.SetReadOnly(opening);SetInventory(true);
         }
@@ -685,7 +691,8 @@ namespace Unity.MP_FPS
                 }
                 bool wasMedical=m_MedicalActive;
                 bool wasOpen=m_OpenedLootId>=0;
-                bool missionCache = m_OpenedLootId >= RaidLootContainers.FirstMissionCacheId || inventory.LootId >= RaidLootContainers.FirstMissionCacheId;
+                bool missionCache = m_OpenedLootId >= RaidLootContainers.FirstMissionCacheId && !RaidFurnitureLoot.IsFurniture(m_OpenedLootId) ||
+                    inventory.LootId >= RaidLootContainers.FirstMissionCacheId && !RaidFurnitureLoot.IsFurniture(inventory.LootId);
                 bool acknowledged = !m_InventoryRequestPending || inventory.RequestId >= m_InventoryRequestId || wasOpen && inventory.LootId<0;
                 if (acknowledged) m_InventoryRequestPending = false;
                 m_OpenedLootId=inventory.LootId;
@@ -694,7 +701,7 @@ namespace Unity.MP_FPS
                     m_DissectionInterrupted=m_DissectingLootId>=0 && inventory.Error==Inventory.InventoryError.Inaccessible;
                     m_DissectingLootId=-1;m_MedicalActive=false;m_LootOpenPending=false;m_InventoryView.SetReadOnly(null);
                 }
-                MoonkovLocalization.Set(m_InventoryTitle, inventory.LootId>=RaidLootContainers.FirstMissionCacheId ? "任务输出槽 / 随身装备"
+                MoonkovLocalization.Set(m_InventoryTitle, RaidFurnitureLoot.IsFurniture(inventory.LootId) ? "抽屉搜刮 / 随身装备" : inventory.LootId>=RaidLootContainers.FirstMissionCacheId ? "任务输出槽 / 随身装备"
                     : IsDroppedLoot(inventory.LootId) ? "地面丢弃物 / 随身装备" : inventory.LootId>=RaidLootContainers.FirstDeathBagId ? "REMAINS / CARRIED INVENTORY"
                     : inventory.LootId>=0 ? "SUPPLY CACHE / CARRIED INVENTORY" : "CHARACTER / CARRIED INVENTORY");
                 string inventoryMessage = acknowledged && inventory.Error != Inventory.InventoryError.None ?

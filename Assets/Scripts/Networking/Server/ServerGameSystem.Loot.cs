@@ -18,6 +18,8 @@ namespace Unity.MP_FPS
             var caches=LootContainers(ref state);
             if(caches.Initialized && ReferenceEquals(caches.MapIdentity,map))return;
             caches.Initialize(map.LootPositions.Length,map.GetLootProfile,map);
+            if (RaidFurnitureLoot.Active && RaidFurnitureLoot.Active.gameObject.scene == map.gameObject.scene)
+                RaidFurnitureLoot.Active.Initialize(caches);
             foreach(var (session,connection) in SystemAPI.Query<RefRO<RaidSession>>().WithEntityAccess())
             {
                 if(!state.EntityManager.HasComponent<RaidInventoryState>(connection))continue;
@@ -108,6 +110,7 @@ namespace Unity.MP_FPS
         {
             position=default;var map=MoonRaidMap.Active;
             if(map!=null && id>=0 && id<map.LootPositions.Length){position=map.LootPositions[id];return true;}
+            if(LootContainers(ref state).Containers.ContainsKey(id) && LootContainers(ref state).FurnitureCaches.TryGetValue(id,out position))return true;
             if(LootContainers(ref state).MissionCaches.TryGetValue(id,out position))return true;
             if(!LootContainers(ref state).DeathBags.TryGetValue(id,out var corpse))return false;
             position=corpse.Position+new float3(0,.25f,0);return true;

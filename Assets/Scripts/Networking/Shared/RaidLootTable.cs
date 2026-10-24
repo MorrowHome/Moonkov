@@ -70,6 +70,48 @@ namespace Unity.MP_FPS
             }, 2, 4)
         };
 
+        private static readonly Entry[][] DrawerPools =
+        {
+            new[] { new Entry("ration", 12), new Entry("water", 12), new Entry("protein_bar", 18),
+                new Entry("energy_gel", 14), new Entry("dust", 12, 1, 2), new Entry("cells", 8) },
+            new[] { new Entry("med_gel", 25), new Entry("medkit", 12), new Entry("electrolyte", 18),
+                new Entry("trauma_kit", 5), new Entry("water", 10) },
+            new[] { new Entry("copper_coil", 22), new Entry("circuit_board", 18), new Entry("alloy", 18, 1, 2),
+                new Entry("dust", 16, 1, 2), new Entry("ceramic_plate", 12), new Entry("optical_sensor", 8),
+                new Entry("data_drive", 4), new Entry("cells", 8) }
+        };
+
+        public static InventoryGraph CreateDrawer(RaidLootProfile profile, Random random)
+        {
+            if (random == null) throw new ArgumentNullException(nameof(random));
+            var graph = InventoryGraph.Create(false, false);
+            graph.Items.Add(new InventoryItem { Id = LootInventoryExchange.Root, Code = LootInventoryExchange.Root });
+            int index = profile == RaidLootProfile.Medical ? 1 : profile == RaidLootProfile.Supplies ? 0 : 2;
+            var pool = DrawerPools[index];
+            int rolls = random.Next(5) == 0 ? 0 : random.Next(1, 3);
+            var used = new bool[pool.Length];
+            for (int roll = 0; roll < rolls; roll++)
+            {
+                int total = 0;
+                for (int i = 0; i < pool.Length; i++)
+                    if (!used[i] && InventoryCatalog.Get(pool[i].Code) != null) total += pool[i].Weight;
+                if (total == 0) break;
+                int ticket = random.Next(total);
+                for (int i = 0; i < pool.Length; i++)
+                {
+                    if (used[i] || InventoryCatalog.Get(pool[i].Code) == null) continue;
+                    ticket -= pool[i].Weight;
+                    if (ticket >= 0) continue;
+                    used[i] = true;
+                    if (!TryAdd(graph, pool[i], random)) throw new InvalidOperationException("Drawer item does not fit.");
+                    break;
+                }
+            }
+            if (graph.Validate() != InventoryError.None) throw new InvalidOperationException("Invalid drawer contents.");
+            graph.Version = 1;
+            return graph;
+        }
+
         public static InventoryGraph Create(RaidLootProfile profile, Random random)
         {
             if (random == null) throw new ArgumentNullException(nameof(random));
