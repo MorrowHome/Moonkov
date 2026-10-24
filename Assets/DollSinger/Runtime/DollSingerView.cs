@@ -90,6 +90,8 @@ public class DollSingerView : MonoBehaviour
     [Range(50f, 80f)] public float gestureFieldOfView = 65f;
     private DollSingerFirstPersonHands gestureHands;
     private bool meleeHandsActive;
+    // Temporary deployment camera shares the owner mesh cutout near the eye.
+    public Camera TransitionCamera { get; set; }
     public Camera GestureCamera => gestureHands?.Camera;
     public void FrameGestureHands(bool force = false, bool firing = false) => gestureHands?.FrameHands(force, firing);
     public bool GestureHandsActive => gestureHands != null && gestureHands.Active;
@@ -681,9 +683,10 @@ public class DollSingerView : MonoBehaviour
             forceRenderingOff = bodyRenderer.forceRenderingOff });
         // The separate full shadow renderer and observer cameras keep the complete
         // body. During owner aiming, the skirt/torso cannot cross the zoomed sight.
-        bodyRenderer.forceRenderingOff |= firstPersonPresentationActive && renderingCamera == camera &&
+        bool ownerCamera = renderingCamera == camera || renderingCamera == TransitionCamera;
+        bodyRenderer.forceRenderingOff |= firstPersonPresentationActive && ownerCamera &&
             gestureHands != null && gestureHands.HideOwnerBody;
-        SetCameraMesh(firstPersonPresentationActive && renderingCamera == camera);
+        SetCameraMesh(firstPersonPresentationActive && ownerCamera);
     }
 
     private void AfterCameraRender(Camera renderingCamera)

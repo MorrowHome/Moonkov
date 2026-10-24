@@ -402,7 +402,7 @@ namespace Unity.MP_FPS
                 if (!m_WasSettled && !saving) m_Deploy.Focus();
             }
             m_WasSettled = settled;
-            m_Result.style.display = settled && !clash ? DisplayStyle.Flex : DisplayStyle.None;
+            m_Result.style.display = settled && !clash && !(m_Cinematic?.HidesHUD ?? false) ? DisplayStyle.Flex : DisplayStyle.None;
 
             int nearest = -1;
             float distance = RaidRules.PickupRange;

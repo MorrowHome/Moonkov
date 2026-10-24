@@ -6,7 +6,7 @@ using Unity.NetCode;
 namespace Unity.MP_FPS
 {
     [RequireComponent(typeof(UIDocument))]
-    [DefaultExecutionOrder(150)]
+    [DefaultExecutionOrder(160)]
     public class InGameHUD : MonoBehaviour
     {
         [Header("Reticle Configuration")] [SerializeField]
@@ -157,7 +157,7 @@ namespace Unity.MP_FPS
         {
             // Toggle HUD visibility based on the overall game state
             bool isInGame = ClientServerBootstrap.HasClientWorlds &&
-                            GameSettings.Instance.GameState == GlobalGameState.InGame;
+                            GameSettings.Instance.GameState == GlobalGameState.InGame && !RaidHUD.CinematicViewActive;
             bool hitVisible = isInGame && Time.unscaledTime < m_RifleHitUntil;
             if (!isInGame) m_RifleHitUntil = 0;
             if (m_RifleHit != null)
