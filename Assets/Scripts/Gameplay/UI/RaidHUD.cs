@@ -171,11 +171,11 @@ namespace Unity.MP_FPS
             m_EquipmentTab.EnableInClassList("raid-tab-active", !health);
             m_HealthTab.EnableInClassList("raid-tab-active", health);
             MoonkovLocalization.Set(m_InventoryTitle, health ? "HEALTH / SUIT STATUS" :
+                RaidFurnitureLoot.IsFurniture(m_OpenedLootId) ? "抽屉搜刮 / 随身装备" :
                 m_OpenedLootId >= RaidLootContainers.FirstMissionCacheId ? "任务输出槽 / 随身装备" :
                 IsDroppedLoot(m_OpenedLootId) ? "地面丢弃物 / 随身装备" : m_OpenedLootId >= RaidLootContainers.FirstDeathBagId ? "REMAINS / CARRIED INVENTORY" :
                 m_OpenedLootId >= 0 ? "SUPPLY CACHE / CARRIED INVENTORY" : "CHARACTER / CARRIED INVENTORY");
             if (health) m_InventoryView.Suspend();
-                RaidFurnitureLoot.IsFurniture(m_OpenedLootId) ? "抽屉搜刮 / 随身装备" :
             else if (m_InventoryVisible) m_InventoryView.Show();
             RefreshHealth();
         }
@@ -443,12 +443,12 @@ namespace Unity.MP_FPS
                 bool pressed = (Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame) ||
                                (Gamepad.current != null && Gamepad.current.buttonWest.wasPressedThisFrame);
                 bool controlInput = (Keyboard.current != null && Keyboard.current.fKey.wasPressedThisFrame) ||
+                    (Gamepad.current != null && Gamepad.current.buttonWest.wasPressedThisFrame);
                 if (!clash && RaidFurnitureLoot.Active)
                 {
                     int drawer = RaidFurnitureLoot.Active.Select(camera, position, out float drawerDistance);
                     if (drawer >= 0) { nearest = drawer; distance = drawerDistance; }
                 }
-                    (Gamepad.current != null && Gamepad.current.buttonWest.wasPressedThisFrame);
                 bool controlPressed = !tacticalInteraction && !clash && !missionControl && controlInput && !m_InventoryVisible && !m_InventoryRequestPending &&
                     UnityEngine.Cursor.lockState == CursorLockMode.Locked && !GameSettings.Instance.IsPauseMenuOpen &&
                     m_AirlockPrompt.TryInteract(Camera.main, position, m_World);
