@@ -150,6 +150,14 @@ public partial class GhostGameObjectLifetimeSystem : ClientServerSingletonSystem
                      .WithNone<GhostGameObjectLink>()
                      .WithEntityAccess())
         {
+            // A client ghost can exist before its replicated identity is available.
+            // Wait before creating or registering anything: a zero-key collision would abort
+            // ECB playback and leave earlier registrations without their cleanup links.
+            if (!ghostGuid.ValueRO.Guid.IsValid)
+            {
+                continue;
+            }
+
             var ghostPrefabGuid = ghostPrefabReference.ValueRO.PrefabGuid;
             var ghostRootPrefabGuid = ghostPrefabReference.ValueRO.PrefabRootGuid;
 
