@@ -1,4 +1,4 @@
-#if UNITY_SERVER && UGS_SERVER
+#if UNITY_SERVER && UGS_SERVER && !UNITY_EDITOR && !MOON_LOCAL_SERVER
 using System;
 using System.Threading.Tasks;
 using Unity.Entities;

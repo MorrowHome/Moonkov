@@ -21,6 +21,12 @@ public static class OnlineGameServerBuild
     public static void Build()
     {
         SessionState.SetBool(QueueKey, true);
+        // SBP/Addressables compiles separately and does not inherit the player's
+        // extraScriptingDefines. Select the same local entry for the Server target.
+        var serverTarget = UnityEditor.Build.NamedBuildTarget.Server;
+        string defines = PlayerSettings.GetScriptingDefineSymbols(serverTarget);
+        if (Array.IndexOf(defines.Split(';'), "MOON_LOCAL_SERVER") < 0)
+            PlayerSettings.SetScriptingDefineSymbols(serverTarget, defines + ";MOON_LOCAL_SERVER");
         Directory.CreateDirectory(Path.GetDirectoryName(Report));
         File.WriteAllText(Report, JsonUtility.ToJson(new Result { Status = "WaitingForEditor", Output = "Build/MoonServer/MoonServer.exe" }, true));
         EditorApplication.update -= WhenIdle;
@@ -69,7 +75,8 @@ public static class OnlineGameServerBuild
                 scenes = scenes,
                 locationPathName = result.Output,
                 target = BuildTarget.StandaloneWindows64, targetGroup = BuildTargetGroup.Standalone,
-                subtarget = (int)StandaloneBuildSubtarget.Server, options = BuildOptions.None
+                subtarget = (int)StandaloneBuildSubtarget.Server, options = BuildOptions.None,
+                extraScriptingDefines = new[] { "MOON_LOCAL_SERVER" }
             });
             result.Status = report.summary.result.ToString(); result.Errors = report.summary.totalErrors; result.Bytes = report.summary.totalSize;
             if (report.summary.result == BuildResult.Cancelled)
