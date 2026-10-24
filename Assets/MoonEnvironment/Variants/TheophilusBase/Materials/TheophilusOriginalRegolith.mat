@@ -96,7 +96,7 @@ Material:
     - _ParallaxMetres: 0.012
     - _PhaseEnabled: 1
     - _PhaseSlope: 0.12
-    - _ReflectanceScale: 0.8
+    - _ReflectanceScale: 1
     - _ShadowHidingAmplitude: 0.25
     - _ShadowHidingWidth: 12
     m_Colors:
