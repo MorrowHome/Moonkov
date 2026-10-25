@@ -44,3 +44,13 @@
 后续按改动范围使用 `HaloModuleChecks.cs`、`MoonkovUIRuntimeReview.cs` 的 `halo` / `halo-compact` / `workshop` 用例，以及 `Backend/HaloWeaponChecks`。数据库检查只用隔离测试数据。遵守项目单 Editor 和不做联机验收的约定。
 
 月核中文研究布局与回流光环效果仍有历史视觉待验收记录。既有编译、截图或数据库检查不能替代当前版本的实际验收。
+
+## UI 模块与层级交接
+
+2026-10-25。中英文策划案位于 `Docs/UI/ArtBrief-20261025/`。两份 Word 共用 `brief-content.json`，由 `build_brief.py` 生成。
+
+- 本案只交代功能模块、子项和共享关系。主界面计划重做。风格、构图、布局和页面组合由美术决定，不要求沿用旧导航、三栏库存或五步出发。
+- M01 至 M50 为玩家功能，M51 为开发工具范围说明。编号用于核对覆盖，不要求每项单独成页。基地、通讯和出发保险要保留未开放边界。
+- 文档按 `develop@11c245a3` 静态核对。旧六槽、常驻小地图和改装无后端描述不能作为需求。当前是十二个装备目标、七种实体模块；旧模板排行榜不列为正式玩家模块。
+- 本次未修改游戏代码或运行 Unity。中英文模块记录逐项对应，Word 已逐页渲染检查。
+- 本机打包 LibreOffice 不一定能读取系统中文字体。中文渲染需用临时 `FONTCONFIG_FILE` 指向项目 `Assets/Localization/Fonts` 和运行时字体目录，使用 `Noto Sans CJK SC`。不需要安装字体或修改系统配置。

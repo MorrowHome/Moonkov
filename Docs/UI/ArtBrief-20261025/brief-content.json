@@ -1,0 +1,1375 @@
+{
+  "version": "1.0",
+  "date": "2026-10-25",
+  "revision": "11c245a3",
+  "languages": [
+    "zh",
+    "en"
+  ],
+  "module_count": 51,
+  "pages": [
+    {
+      "title": {
+        "zh": "Moonkov UI 模块与层级策划案",
+        "en": "Moonkov UI Modules and Hierarchy Brief"
+      },
+      "blocks": [
+        {
+          "type": "p",
+          "text": {
+            "zh": "中文交付版  2026年10月25日  v1.0",
+            "en": "English edition  25 October 2026  v1.0"
+          }
+        },
+        {
+          "type": "p",
+          "text": {
+            "zh": "供 UI 美术了解项目功能范围。本案重点说明有哪些模块、模块下面有什么，以及模块之间的关系。Moonkov 是月球题材的二次元角色第一人称射击撤离游戏，包含远征与赏金玩法。",
+            "en": "This brief gives the UI artist the functional scope of Moonkov: which modules exist, what each contains, and how they relate. Moonkov is an anime character first-person extraction shooter set on the Moon, with expedition and bounty modes."
+          }
+        },
+        {
+          "type": "p",
+          "text": {
+            "zh": "主界面计划重做。美术自主决定风格、构图、布局和页面组合。下列层级是功能分类，不是规定菜单必须怎样排列。一个页面可以承载多个模块，一个模块也可以拆成多个页面。",
+            "en": "The main menu is planned for redesign. The artist owns visual direction, composition, layout and screen grouping. The hierarchy below classifies functions; it does not prescribe menu structure. One screen may contain several modules, and one module may span several screens."
+          }
+        },
+        {
+          "type": "h",
+          "text": {
+            "zh": "一级与二级模块总览",
+            "en": "Top level modules and their children"
+          }
+        },
+        {
+          "type": "table",
+          "headers": [
+            {
+              "zh": "一级模块",
+              "en": "Top level module"
+            },
+            {
+              "zh": "二级模块",
+              "en": "Child modules"
+            }
+          ],
+          "rows": [
+            [
+              {
+                "zh": "入口与会话",
+                "en": "Entry and sessions"
+              },
+              {
+                "zh": "主界面、账号、全局导航、在线小队、LAN、连接与加载。",
+                "en": "Main menu, account, global navigation, online squad, LAN, connection and loading."
+              }
+            ],
+            [
+              {
+                "zh": "基地管理与成长",
+                "en": "Base management and progression"
+              },
+              {
+                "zh": "装备与物品、仓库、光环、供应商、交易、应急补给、研究、制造、任务与成长；基地和通讯占位。",
+                "en": "Equipment and items, stash, Halos, suppliers, trade, emergency supplies, research, fabrication, events and progression; base and comms placeholders."
+              }
+            ],
+            [
+              {
+                "zh": "出发准备",
+                "en": "Deployment preparation"
+              },
+              {
+                "zh": "角色与装备检查、地点、简报与携带、风险与回收、最终确认。",
+                "en": "Character and equipment check, destination, briefing and carry, risk and recovery, final confirmation."
+              }
+            ],
+            [
+              {
+                "zh": "战局内通用模块",
+                "en": "Shared in-session modules"
+              },
+              {
+                "zh": "战斗 HUD、健康与生存、随身管理、搜刮、快捷栏、世界交互、工具、地图、局内事件、撤离。",
+                "en": "Combat HUD, health and survival, carried inventory, loot, quick slots, interactions, tools, map, events and extraction."
+              }
+            ],
+            [
+              {
+                "zh": "赏金专用模块",
+                "en": "Bounty-specific modules"
+              },
+              {
+                "zh": "模式与准备、阶段与目标、放逐与赏金、暗视、小队与救援、赏金结算。",
+                "en": "Mode and staging, phases and objectives, banishment and bounty, dark sight, squad and rescue, bounty settlement."
+              }
+            ],
+            [
+              {
+                "zh": "结算与返回",
+                "en": "Settlement and return"
+              },
+              {
+                "zh": "行动结果、物资明细、保存与入库、待领取、再出发。",
+                "en": "Session result, cargo, saving and storage, recovery inbox and next deployment."
+              }
+            ],
+            [
+              {
+                "zh": "系统辅助",
+                "en": "System support"
+              },
+              {
+                "zh": "设置、局内菜单、死亡呈现、战斗提示与行动播报。",
+                "en": "Settings, in-session menu, death presentation, combat feedback and action feed."
+              }
+            ]
+          ],
+          "widths": [
+            1.65,
+            5.25
+          ]
+        },
+        {
+          "type": "p",
+          "text": {
+            "zh": "后文使用 M01 至 M50 标记玩家功能，M51 标记开发工具范围。编号用于防止遗漏，不要求每项单独做一张页面。",
+            "en": "M01–M50 identify player functions; M51 records development-only scope. IDs prevent omissions and do not require a separate screen for every item."
+          }
+        },
+        {
+          "type": "p",
+          "text": {
+            "zh": "范围依据：develop 11c245a3 的代码与项目文档。当前有实现不代表已经完成当前版本的实机或视觉验收。",
+            "en": "Basis: code and repository documents at develop 11c245a3. Existing implementation does not imply current gameplay or visual acceptance."
+          }
+        }
+      ]
+    },
+    {
+      "title": {
+        "zh": "入口会话与出发准备",
+        "en": "Entry sessions and deployment preparation"
+      },
+      "blocks": [
+        {
+          "type": "h",
+          "text": {
+            "zh": "入口与会话",
+            "en": "Entry and sessions"
+          }
+        },
+        {
+          "type": "table",
+          "headers": [
+            {
+              "zh": "编号",
+              "en": "ID"
+            },
+            {
+              "zh": "模块",
+              "en": "Module"
+            },
+            {
+              "zh": "包含内容",
+              "en": "Included functions and information"
+            }
+          ],
+          "rows": [
+            [
+              {
+                "zh": "M01",
+                "en": "M01"
+              },
+              {
+                "zh": "主界面 重做",
+                "en": "Main menu Redesign"
+              },
+              {
+                "zh": "承接主要玩法和管理模块的入口。现有排列不作为设计限制。",
+                "en": "Access to the main play flows and management modules. Existing arrangement is not a design constraint."
+              }
+            ],
+            [
+              {
+                "zh": "M02",
+                "en": "M02"
+              },
+              {
+                "zh": "账号与身份",
+                "en": "Account and identity"
+              },
+              {
+                "zh": "登录、注册、退出；在线账号与离线身份、提交和错误反馈。",
+                "en": "Sign in, register, sign out; online account and offline identity, pending and error feedback."
+              }
+            ],
+            [
+              {
+                "zh": "M03",
+                "en": "M03"
+              },
+              {
+                "zh": "全局导航与资源",
+                "en": "Global navigation and resources"
+              },
+              {
+                "zh": "模块切换、当前角色、月尘等资源、会话和连接状态。",
+                "en": "Module access, selected character, resources such as Moon Dust, session and connection status."
+              }
+            ],
+            [
+              {
+                "zh": "M04",
+                "en": "M04"
+              },
+              {
+                "zh": "在线小队",
+                "en": "Online squad"
+              },
+              {
+                "zh": "创建或加入、队伍码、1–4 人名单、队长、准备、合作或好友对抗；可选公共匹配。",
+                "en": "Create or join, squad code, 1–4 members, leader, readiness, co-op or friend versus; optional public matchmaking."
+              }
+            ],
+            [
+              {
+                "zh": "M05",
+                "en": "M05"
+              },
+              {
+                "zh": "LAN 作战室",
+                "en": "LAN room"
+              },
+              {
+                "zh": "浏览、创建、直连、房间与成员名单、房主权限、准备和出发。",
+                "en": "Browse, create, direct join, rooms and members, host permissions, readiness and deployment."
+              }
+            ],
+            [
+              {
+                "zh": "M06",
+                "en": "M06"
+              },
+              {
+                "zh": "连接与加载",
+                "en": "Connection and loading"
+              },
+              {
+                "zh": "高级连接设置、等待地图空位、加载、连接、错误重试、原战局重连。",
+                "en": "Advanced connection settings, instance availability, loading, connection, retry and reconnect to the original session."
+              }
+            ]
+          ],
+          "widths": [
+            0.48,
+            1.35,
+            5.07
+          ]
+        },
+        {
+          "type": "h",
+          "text": {
+            "zh": "出发准备的五类信息",
+            "en": "Five preparation information groups"
+          }
+        },
+        {
+          "type": "p",
+          "text": {
+            "zh": "以下是当前流程包含的信息。新设计可以合并或拆分页面，不必沿用五步布局。",
+            "en": "These are the information groups in the current flow. The new design may merge or split screens and need not retain a five-step layout."
+          }
+        },
+        {
+          "type": "table",
+          "headers": [
+            {
+              "zh": "编号",
+              "en": "ID"
+            },
+            {
+              "zh": "模块",
+              "en": "Module"
+            },
+            {
+              "zh": "包含内容",
+              "en": "Included functions and information"
+            }
+          ],
+          "rows": [
+            [
+              {
+                "zh": "M22",
+                "en": "M22"
+              },
+              {
+                "zh": "角色与装备检查",
+                "en": "Character and equipment check"
+              },
+              {
+                "zh": "DollSinger、Hatsune Miku、Shian 三角色；真实装备、空槽与缺失数据。",
+                "en": "DollSinger, Hatsune Miku and Shian; actual equipment, empty slots and missing data."
+              }
+            ],
+            [
+              {
+                "zh": "M23",
+                "en": "M23"
+              },
+              {
+                "zh": "地点",
+                "en": "Destination"
+              },
+              {
+                "zh": "当前可用地点、区域与任务背景；未开放地点的状态。",
+                "en": "Available destination, area and mission context; unavailable destinations."
+              }
+            ],
+            [
+              {
+                "zh": "M24",
+                "en": "M24"
+              },
+              {
+                "zh": "简报与携带",
+                "en": "Briefing and carry"
+              },
+              {
+                "zh": "搜集、生存、撤离目标；实际携带电池数量和上限。",
+                "en": "Loot, survival and extraction goals; actual carried battery count and limit."
+              }
+            ],
+            [
+              {
+                "zh": "M25",
+                "en": "M25"
+              },
+              {
+                "zh": "风险与回收",
+                "en": "Risk and recovery"
+              },
+              {
+                "zh": "死亡损失说明；出发保险目前未开放。与保险箱和待领取区是不同机制。",
+                "en": "Loss on death; pre-deployment insurance is unavailable. Separate from the secure container and recovery inbox."
+              }
+            ],
+            [
+              {
+                "zh": "M26",
+                "en": "M26"
+              },
+              {
+                "zh": "最终确认",
+                "en": "Final confirmation"
+              },
+              {
+                "zh": "角色、地点、模式、装备、携带量汇总；提交、等待、返回修改。",
+                "en": "Character, destination, mode, gear and carry summary; submit, wait and return to edit."
+              }
+            ]
+          ],
+          "widths": [
+            0.48,
+            1.35,
+            5.07
+          ]
+        },
+        {
+          "type": "p",
+          "text": {
+            "zh": "关系：主界面可进入管理或出发准备。准备过程可返回装备。在线合作可单人开始；好友对抗需满足分队条件。LAN 人数由模式配置决定，不套用在线小队的四人上限。",
+            "en": "Relationships: the main menu leads to management or preparation. Preparation can return to equipment. Online co-op can start solo; friend versus needs valid opposing teams. LAN capacity is mode-specific, rather than the online squad limit."
+          }
+        }
+      ]
+    },
+    {
+      "title": {
+        "zh": "装备物品与光环层级",
+        "en": "Equipment items and Halo hierarchy"
+      },
+      "blocks": [
+        {
+          "type": "h",
+          "text": {
+            "zh": "装备与存储",
+            "en": "Equipment and storage"
+          }
+        },
+        {
+          "type": "table",
+          "headers": [
+            {
+              "zh": "编号",
+              "en": "ID"
+            },
+            {
+              "zh": "模块",
+              "en": "Module"
+            },
+            {
+              "zh": "包含内容",
+              "en": "Included functions and information"
+            }
+          ],
+          "rows": [
+            [
+              {
+                "zh": "M07",
+                "en": "M07"
+              },
+              {
+                "zh": "身体装备",
+                "en": "Body equipment"
+              },
+              {
+                "zh": "项圈、护盾、主武器、副武器、手枪、近战六槽；角色身份和装备状态。",
+                "en": "Six slots: collar, shield, primary, secondary, pistol and melee; character identity and equipment state."
+              }
+            ],
+            [
+              {
+                "zh": "M08",
+                "en": "M08"
+              },
+              {
+                "zh": "随身容器",
+                "en": "Carried storage"
+              },
+              {
+                "zh": "衣兜、胸挂、背包；容器入口、实际内容和未装备状态。",
+                "en": "Pockets, rig and backpack; container access, contents and unequipped state."
+              }
+            ],
+            [
+              {
+                "zh": "M09",
+                "en": "M09"
+              },
+              {
+                "zh": "个人仓库",
+                "en": "Personal stash"
+              },
+              {
+                "zh": "仓库物品、容量、负重、滚动、满仓、加载和战局锁定。",
+                "en": "Stored items, capacity, weight, scrolling, full storage, loading and session lock."
+              }
+            ],
+            [
+              {
+                "zh": "M11",
+                "en": "M11"
+              },
+              {
+                "zh": "物品与容器操作",
+                "en": "Item and container operations"
+              },
+              {
+                "zh": "物品检查、右键菜单、拆分、拖放、旋转、快捷转移和容器窗口。",
+                "en": "Inspect, context menu, split stack, drag, rotate, quick transfer and container windows."
+              }
+            ],
+            [
+              {
+                "zh": "M12",
+                "en": "M12"
+              },
+              {
+                "zh": "个人保险箱",
+                "en": "Secure\ncontainer"
+              },
+              {
+                "zh": "专用槽与 2×2 内部空间；放入限制、满格和保护规则。",
+                "en": "Dedicated slot and 2×2 interior; restrictions, full state and protection rules."
+              }
+            ],
+            [
+              {
+                "zh": "M13",
+                "en": "M13"
+              },
+              {
+                "zh": "特殊工具",
+                "en": "Special tools"
+              },
+              {
+                "zh": "三个专用槽、指南针和测距仪；局内方位或距离读数及无效读数。",
+                "en": "Three dedicated slots, compass and rangefinder; in-session heading or distance, including invalid readings."
+              }
+            ]
+          ],
+          "widths": [
+            0.48,
+            1.35,
+            5.07
+          ]
+        },
+        {
+          "type": "p",
+          "text": {
+            "zh": "装备层级：六个身体槽，加胸挂与背包两槽，再加保险箱一槽和工具三槽，共十二个装备目标。衣兜是固定存储，不计为装备槽。物品可以包含子容器，不能只按一层列表理解。",
+            "en": "Equipment hierarchy: six body slots, rig and backpack, one secure container and three tool slots make twelve equipment destinations. Pockets are fixed storage, not an equipment slot. Items can contain nested storage; this is more than a flat list."
+          }
+        },
+        {
+          "type": "p",
+          "text": {
+            "zh": "保险箱只有装备在专用槽中才保护箱体和内容。专用槽中的工具也有失败保留规则。保护返还不等于成功撤离，也不授予任务首次成果。",
+            "en": "Secure-container protection applies only in its dedicated slot. Tools in dedicated slots also have retention rules on failure. Protected returns are not successful extraction and do not grant first-recovery achievements."
+          }
+        },
+        {
+          "type": "h",
+          "text": {
+            "zh": "光环武器与模块",
+            "en": "Halo weapons and modules"
+          }
+        },
+        {
+          "type": "table",
+          "headers": [
+            {
+              "zh": "编号",
+              "en": "ID"
+            },
+            {
+              "zh": "模块",
+              "en": "Module"
+            },
+            {
+              "zh": "包含内容",
+              "en": "Included functions and information"
+            }
+          ],
+          "rows": [
+            [
+              {
+                "zh": "M14",
+                "en": "M14"
+              },
+              {
+                "zh": "光环总览",
+                "en": "Halo overview"
+              },
+              {
+                "zh": "武器身份、结构与模块说明。当前说明图不代表玩家实时构筑。",
+                "en": "Weapon identity, structure and module guide. The current guide is not the player's live build."
+              }
+            ],
+            [
+              {
+                "zh": "M15",
+                "en": "M15"
+              },
+              {
+                "zh": "光环实体改装",
+                "en": "Physical Halo modification"
+              },
+              {
+                "zh": "选真实武器；储能、整形、功能三槽；兼容、安装、替换、拆卸与参数比较。",
+                "en": "Select an owned weapon; storage, shaping and function slots; compatibility, install, replace, remove and compare."
+              }
+            ]
+          ],
+          "widths": [
+            0.48,
+            1.35,
+            5.07
+          ]
+        },
+        {
+          "type": "p",
+          "text": {
+            "zh": "当前有十三种独立光环外观、十四个库存代码；compact 共用 rifle 外观。原六种模块加月核回流器，共七种。实体改装兼容步枪、紧凑步枪和霰弹光环；基地可拆装，局内只读。",
+            "en": "There are thirteen distinct Halo appearances across fourteen inventory codes; compact shares rifle art. Six original modules plus the Mooncore recycler make seven modules. Physical modification supports rifle, compact rifle and shotgun Halos; editing is available at base and read-only in-session."
+          }
+        },
+        {
+          "type": "p",
+          "text": {
+            "zh": "同一套装备与物品能力会被仓库、出发检查、局内背包和搜刮复用。角色画像需对应真实身份；未知尸体不能使用自己的角色画像。",
+            "en": "Equipment and item functions are shared by stash, deployment checks, in-session inventory and looting. Portraits must match character identity; an unknown corpse must not use the local player's portrait."
+          }
+        }
+      ]
+    },
+    {
+      "title": {
+        "zh": "交易成长与基地辅助",
+        "en": "Trade progression and base support"
+      },
+      "blocks": [
+        {
+          "type": "h",
+          "text": {
+            "zh": "经济与成长",
+            "en": "Economy and progression"
+          }
+        },
+        {
+          "type": "table",
+          "headers": [
+            {
+              "zh": "编号",
+              "en": "ID"
+            },
+            {
+              "zh": "模块",
+              "en": "Module"
+            },
+            {
+              "zh": "包含内容",
+              "en": "Included functions and information"
+            }
+          ],
+          "rows": [
+            [
+              {
+                "zh": "M16",
+                "en": "M16"
+              },
+              {
+                "zh": "供应商目录",
+                "en": "Supplier directory"
+              },
+              {
+                "zh": "供应商身份、经营内容，以及交易、研究和制造入口。",
+                "en": "Supplier identity, offerings, and access to trade, research and fabrication."
+              }
+            ],
+            [
+              {
+                "zh": "M17",
+                "en": "M17"
+              },
+              {
+                "zh": "购买与出售",
+                "en": "Buying and selling"
+              },
+              {
+                "zh": "商品、用途、数量、价格、余额、容量、可售条件和交易结果。",
+                "en": "Item, purpose, quantity, price, balance, capacity, sale eligibility and result."
+              }
+            ],
+            [
+              {
+                "zh": "M18",
+                "en": "M18"
+              },
+              {
+                "zh": "应急补给",
+                "en": "Emergency supplies"
+              },
+              {
+                "zh": "补给内容、领取条件和结果。无剩余光环武器时可按当前规则再次领取。",
+                "en": "Bundle contents, eligibility and result. Current rules allow repeat claims when no Halo weapon remains."
+              }
+            ],
+            [
+              {
+                "zh": "M19",
+                "en": "M19"
+              },
+              {
+                "zh": "研究",
+                "en": "Research"
+              },
+              {
+                "zh": "月核与生物研究分区；选项、作用、材料已有或缺口、永久解锁。",
+                "en": "Mooncore and biology branches; projects, effects, owned or missing materials, permanent unlock."
+              }
+            ],
+            [
+              {
+                "zh": "M20",
+                "en": "M20"
+              },
+              {
+                "zh": "模块制造",
+                "en": "Module fabrication"
+              },
+              {
+                "zh": "配方、消耗、产物、可制造条件、空间不足、已持有和已安装数量。",
+                "en": "Recipe, cost, output, eligibility, insufficient space, owned and installed counts."
+              }
+            ],
+            [
+              {
+                "zh": "M21",
+                "en": "M21"
+              },
+              {
+                "zh": "任务与成长记录",
+                "en": "Events and progression records"
+              },
+              {
+                "zh": "任务说明、追踪、调查成果和成长入口；无事件、未带回与已保存。",
+                "en": "Event information, tracking, investigation findings and progression; no event, not recovered and saved."
+              }
+            ]
+          ],
+          "widths": [
+            0.48,
+            1.35,
+            5.07
+          ]
+        },
+        {
+          "type": "p",
+          "text": {
+            "zh": "成长关系：局内产物成功带回并保存后，可用于研究或交易。月核研究永久解锁知识；制造消耗材料生成实体模块；安装是单独操作。研究、制造、安装不能合成一个虚构的免费升级机制。",
+            "en": "Progression relationship: successfully recovered and saved outputs can support research or trade. Mooncore research permanently unlocks knowledge; fabrication consumes materials and creates a physical module; installation is a separate operation. They are distinct functions, not a free automatic upgrade."
+          }
+        },
+        {
+          "type": "p",
+          "text": {
+            "zh": "任务在局内随机出现，无需先接取。追踪只改变显示。带在身上不等于已经保存；首次带回成果要等成功撤离和保存确认。",
+            "en": "Events appear randomly in-session without prior acceptance. Tracking affects display only. Carrying an output is not the same as saving it; first-recovery achievements wait for successful extraction and saving."
+          }
+        },
+        {
+          "type": "h",
+          "text": {
+            "zh": "基地辅助模块",
+            "en": "Base support modules"
+          }
+        },
+        {
+          "type": "table",
+          "headers": [
+            {
+              "zh": "编号",
+              "en": "ID"
+            },
+            {
+              "zh": "模块",
+              "en": "Module"
+            },
+            {
+              "zh": "包含内容",
+              "en": "Included functions and information"
+            }
+          ],
+          "rows": [
+            [
+              {
+                "zh": "M48",
+                "en": "M48"
+              },
+              {
+                "zh": "基地",
+                "en": "Base"
+              },
+              {
+                "zh": "已有资源与仓库入口；建设、工坊、医疗舱、反应堆升级目前未开放。",
+                "en": "Existing resources and stash access; construction, workshop, medical bay and reactor upgrades are unavailable."
+              }
+            ],
+            [
+              {
+                "zh": "M49",
+                "en": "M49"
+              },
+              {
+                "zh": "通讯",
+                "en": "Communications"
+              },
+              {
+                "zh": "联系人、频道和无消息内容；当前没有正式聊天或邮件服务。",
+                "en": "Contacts, channels and empty messages; no active chat or mail service."
+              }
+            ]
+          ],
+          "widths": [
+            0.48,
+            1.35,
+            5.07
+          ]
+        },
+        {
+          "type": "p",
+          "text": {
+            "zh": "未开放模块需要在整体层级中有对应。它们可以被收进次级入口，但不能被描述为已经能建设、聊天、收邮件或购买保险。",
+            "en": "Unavailable modules still need a place in the overall hierarchy. They may use secondary access, but must not imply active construction, chat, mail or insurance purchases."
+          }
+        }
+      ]
+    },
+    {
+      "title": {
+        "zh": "战局内通用模块",
+        "en": "Shared in-session modules"
+      },
+      "blocks": [
+        {
+          "type": "p",
+          "text": {
+            "zh": "以下能力由远征与适用的赏金流程复用。不同玩法可以显示不同信息，但共用模块不用重复发明一套规则。",
+            "en": "These functions are shared by expedition and applicable bounty flows. Modes may expose different information without inventing separate rules for the same function."
+          }
+        },
+        {
+          "type": "table",
+          "headers": [
+            {
+              "zh": "编号",
+              "en": "ID"
+            },
+            {
+              "zh": "模块",
+              "en": "Module"
+            },
+            {
+              "zh": "包含内容",
+              "en": "Included functions and information"
+            }
+          ],
+          "rows": [
+            [
+              {
+                "zh": "M10",
+                "en": "M10"
+              },
+              {
+                "zh": "搜刮与尸体",
+                "en": "Loot and corpses"
+              },
+              {
+                "zh": "物资箱、尸体、地面包、任务输出；搜索、空内容、对方装备、容器与物品被他人取走后的状态。",
+                "en": "Crates, corpses, dropped bags and event outputs; search, empty content, other characters' gear, containers and items taken by others."
+              }
+            ],
+            [
+              {
+                "zh": "M27",
+                "en": "M27"
+              },
+              {
+                "zh": "基础战斗 HUD",
+                "en": "Core combat HUD"
+              },
+              {
+                "zh": "生命、弹药或充能、当前武器、时间与必要战斗信息。",
+                "en": "Health, ammunition or charge, current weapon, time and essential combat information."
+              }
+            ],
+            [
+              {
+                "zh": "M28",
+                "en": "M28"
+              },
+              {
+                "zh": "七部位健康",
+                "en": "Seven-part health"
+              },
+              {
+                "zh": "头、胸、腹、双臂、双腿；部位伤情、选中部位、医疗和治疗过程。",
+                "en": "Head, thorax, abdomen, both arms and both legs; injury, selected part, supplies and treatment."
+              }
+            ],
+            [
+              {
+                "zh": "M29",
+                "en": "M29"
+              },
+              {
+                "zh": "生存与护盾",
+                "en": "Survival and shield"
+              },
+              {
+                "zh": "氧气和剩余时间、营养能量、饮水、胃容量；护盾量、供能、恢复、破盾与异常状态。",
+                "en": "Oxygen and remaining time, nutritional energy, hydration, stomach fullness; shield charge, energy, regeneration, break and conditions."
+              }
+            ],
+            [
+              {
+                "zh": "M30",
+                "en": "M30"
+              },
+              {
+                "zh": "快捷栏与耗时动作",
+                "en": "Quick slots and timed actions"
+              },
+              {
+                "zh": "1–9 绑定、选中、左键使用；可用性、数量、进度、取消、中断和等待确认。",
+                "en": "Bind 1–9, select, use with primary click; availability, count, progress, cancel, interruption and acknowledgement."
+              }
+            ],
+            [
+              {
+                "zh": "M31",
+                "en": "M31"
+              },
+              {
+                "zh": "世界交互",
+                "en": "World interactions"
+              },
+              {
+                "zh": "拾取、搜索、气闸、开关、设备；目标、按键、操作进度与不能操作的原因。",
+                "en": "Pickup, search, airlocks, switches and devices; target, key, progress and rejection reason."
+              }
+            ],
+            [
+              {
+                "zh": "M32",
+                "en": "M32"
+              },
+              {
+                "zh": "光环灯光",
+                "en": "Halo lighting"
+              },
+              {
+                "zh": "灯光开关与参数调节。与武器实体模块改装是不同功能。",
+                "en": "Lighting toggle and parameter adjustment; separate from physical weapon modification."
+              }
+            ],
+            [
+              {
+                "zh": "M33",
+                "en": "M33"
+              },
+              {
+                "zh": "M 战术地图",
+                "en": "Tactical map on M"
+              },
+              {
+                "zh": "真实卫星底图、位置朝向、导航点、撤离、地名、补给图层、详情、缩放和平移。",
+                "en": "Actual satellite map, position and heading, waypoint, exits, names, supply layer, details, zoom and pan."
+              }
+            ],
+            [
+              {
+                "zh": "M34",
+                "en": "M34"
+              },
+              {
+                "zh": "局内事件与 J 详情",
+                "en": "Events and J details"
+              },
+              {
+                "zh": "追踪、步骤、区域或楼层、距离、设备节点、前置条件、占用、产物与进度。",
+                "en": "Tracking, steps, area or floor, distance, device nodes, prerequisites, contested use, outputs and progress."
+              }
+            ],
+            [
+              {
+                "zh": "M35",
+                "en": "M35"
+              },
+              {
+                "zh": "撤离过程",
+                "en": "Extraction"
+              },
+              {
+                "zh": "撤离条件、区域、倒计时、受阻、离开和中断；按当前玩法判定。",
+                "en": "Eligibility, zone, countdown, blocked, leaving and interrupted states under the active mode's rules."
+              }
+            ]
+          ],
+          "widths": [
+            0.48,
+            1.35,
+            5.07
+          ]
+        },
+        {
+          "type": "p",
+          "text": {
+            "zh": "相关层级：随身管理复用 M07 至 M13。特殊工具的 HUD 读数归 M13；地图归 M33，不再把旧常驻小地图作为独立新模块。任务详情归 M34，任务带回后的成长归 M21。",
+            "en": "Related hierarchy: carried inventory reuses M07–M13. Special-tool readings belong to M13. The map belongs to M33; the retired persistent minimap is not another new module. Event detail belongs to M34, while recovered progression belongs to M21."
+          }
+        },
+        {
+          "type": "p",
+          "text": {
+            "zh": "关键关系：数字键只选中，左键才使用。动作进度结束不等于服务器已确认成功。地图不提供精确敌方雷达，赏金敌情仅显示授权粗区域。",
+            "en": "Key relationships: number keys select; primary click uses. A finished progress timer is not confirmed server success. The map provides no exact enemy radar; enemy bounty information is limited to authorized coarse regions."
+          }
+        }
+      ]
+    },
+    {
+      "title": {
+        "zh": "赏金专用与结算返回",
+        "en": "Bounty-specific modules and settlement"
+      },
+      "blocks": [
+        {
+          "type": "h",
+          "text": {
+            "zh": "赏金专用模块",
+            "en": "Bounty-specific modules"
+          }
+        },
+        {
+          "type": "table",
+          "headers": [
+            {
+              "zh": "编号",
+              "en": "ID"
+            },
+            {
+              "zh": "模块",
+              "en": "Module"
+            },
+            {
+              "zh": "包含内容",
+              "en": "Included functions and information"
+            }
+          ],
+          "rows": [
+            [
+              {
+                "zh": "M40",
+                "en": "M40"
+              },
+              {
+                "zh": "模式与准备",
+                "en": "Mode and staging"
+              },
+              {
+                "zh": "单人或联机入口、集结、队伍和准备。单人不需要邀请码或离队操作。",
+                "en": "Solo or online entry, staging, team and readiness. Solo needs no invite code or leave-squad action."
+              }
+            ],
+            [
+              {
+                "zh": "M41",
+                "en": "M41"
+              },
+              {
+                "zh": "赏金战局",
+                "en": "Bounty session"
+              },
+              {
+                "zh": "阶段、目标、放逐进度、赏金地面或携带归属、出口和越界。",
+                "en": "Phases, target, banishment, dropped or carried bounty ownership, exits and boundaries."
+              }
+            ],
+            [
+              {
+                "zh": "M42",
+                "en": "M42"
+              },
+              {
+                "zh": "暗视",
+                "en": "Dark sight"
+              },
+              {
+                "zh": "预算、使用中、耗尽和授权模糊存在感；不提供精确敌方轮廓。",
+                "en": "Budget, active, exhausted and authorized vague presence; no exact enemy outline."
+              }
+            ],
+            [
+              {
+                "zh": "M43",
+                "en": "M43"
+              },
+              {
+                "zh": "小队与救援",
+                "en": "Squad and rescue"
+              },
+              {
+                "zh": "队友状态、倒地、救援进度、取消、受阻和本人状态。",
+                "en": "Teammate status, downed, revive progress, cancel, blocked and local player state."
+              }
+            ],
+            [
+              {
+                "zh": "M44",
+                "en": "M44"
+              },
+              {
+                "zh": "赏金结算与下一局",
+                "en": "Bounty settlement and next round"
+              },
+              {
+                "zh": "玩法结果、保存、返回准备区和下一局资格。共用下方结算能力。",
+                "en": "Mode outcome, saving, return to staging and next-round eligibility; reuses settlement below."
+              }
+            ]
+          ],
+          "widths": [
+            0.48,
+            1.35,
+            5.07
+          ]
+        },
+        {
+          "type": "h",
+          "text": {
+            "zh": "各玩法共用的结算层级",
+            "en": "Shared settlement hierarchy"
+          }
+        },
+        {
+          "type": "table",
+          "headers": [
+            {
+              "zh": "编号",
+              "en": "ID"
+            },
+            {
+              "zh": "模块",
+              "en": "Module"
+            },
+            {
+              "zh": "包含内容",
+              "en": "Included functions and information"
+            }
+          ],
+          "rows": [
+            [
+              {
+                "zh": "M36",
+                "en": "M36"
+              },
+              {
+                "zh": "行动结果",
+                "en": "Session result"
+              },
+              {
+                "zh": "成功撤离、死亡或超时；原因、收益摘要和后续入口。",
+                "en": "Extraction, death or timeout; cause, reward summary and next destination."
+              }
+            ],
+            [
+              {
+                "zh": "M37",
+                "en": "M37"
+              },
+              {
+                "zh": "物资明细",
+                "en": "Cargo details"
+              },
+              {
+                "zh": "带出物、完整容器树和失败后的保护返还。",
+                "en": "Recovered items, full container trees and protected returns after failure."
+              }
+            ],
+            [
+              {
+                "zh": "M38",
+                "en": "M38"
+              },
+              {
+                "zh": "保存入库与再出发",
+                "en": "Save storage and next deployment"
+              },
+              {
+                "zh": "保存中、失败重试、确认完成、入库结果和再次出发资格。",
+                "en": "Saving, retry, confirmed completion, storage result and next-deployment eligibility."
+              }
+            ],
+            [
+              {
+                "zh": "M39",
+                "en": "M39"
+              },
+              {
+                "zh": "待领取区",
+                "en": "Recovery inbox"
+              },
+              {
+                "zh": "未能入库的物品、单项或全部可领取、空间不足、部分成功和出发限制。",
+                "en": "Items that could not be stored, claim one or all that fit, insufficient space, partial success and deployment restrictions."
+              }
+            ]
+          ],
+          "widths": [
+            0.48,
+            1.35,
+            5.07
+          ]
+        },
+        {
+          "type": "p",
+          "text": {
+            "zh": "功能关系：撤离或失败后先有行动结果，再确认物资去向与保存。页面可以合并，但这几个信息层不能丢。保存确认前不得表示可以安全再出发。",
+            "en": "Functional relationship: extraction or failure produces an outcome, followed by cargo destination and save confirmation. Screens may be merged without losing these information layers. Do not imply that the next deployment is safe before saving is confirmed."
+          }
+        },
+        {
+          "type": "p",
+          "text": {
+            "zh": "待领取区从仓库等管理入口访问。个人保险箱 M12、出发保险 M25 和待领取 M39 三者不同。死亡保护不代表成功撤离，也不授予赏金或任务首次成果。",
+            "en": "The inbox is accessible through stash management. Secure container M12, pre-deployment insurance M25 and recovery inbox M39 are separate. Death protection does not mean successful extraction and grants no bounty or first-recovery achievement."
+          }
+        }
+      ]
+    },
+    {
+      "title": {
+        "zh": "系统边界与模块核对",
+        "en": "System scope and module mapping"
+      },
+      "blocks": [
+        {
+          "type": "h",
+          "text": {
+            "zh": "系统辅助模块",
+            "en": "System support modules"
+          }
+        },
+        {
+          "type": "table",
+          "headers": [
+            {
+              "zh": "编号",
+              "en": "ID"
+            },
+            {
+              "zh": "模块",
+              "en": "Module"
+            },
+            {
+              "zh": "包含内容",
+              "en": "Included functions and information"
+            }
+          ],
+          "rows": [
+            [
+              {
+                "zh": "M45",
+                "en": "M45"
+              },
+              {
+                "zh": "设置",
+                "en": "Settings"
+              },
+              {
+                "zh": "音量、显示、语言与已有 HUD 设置；当前值、应用和返回。",
+                "en": "Audio, display, language and existing HUD settings; current values, apply and return."
+              }
+            ],
+            [
+              {
+                "zh": "M46",
+                "en": "M46"
+              },
+              {
+                "zh": "局内菜单",
+                "en": "In-session menu"
+              },
+              {
+                "zh": "继续、返回主界面和退出等实际操作。打开菜单不表示在线战局暂停。",
+                "en": "Resume, main menu and actual exit actions. Opening the menu does not pause an online session."
+              }
+            ],
+            [
+              {
+                "zh": "M47",
+                "en": "M47"
+              },
+              {
+                "zh": "死亡呈现",
+                "en": "Death presentation"
+              },
+              {
+                "zh": "真实可用的死因或状态，以及结算入口。不增加无规则支持的复活选项。",
+                "en": "Actual available cause or death state and access to settlement; no unsupported respawn option."
+              }
+            ],
+            [
+              {
+                "zh": "M50",
+                "en": "M50"
+              },
+              {
+                "zh": "战斗提示与行动播报",
+                "en": "Combat feedback and action feed"
+              },
+              {
+                "zh": "命中或击杀确认、加入或击杀等行动信息。属于 HUD 或共用提示层，不要求独立页面。",
+                "en": "Hit or kill confirmation and join or kill events; part of HUD or shared feedback, not a required standalone page."
+              }
+            ],
+            [
+              {
+                "zh": "M51",
+                "en": "M51"
+              },
+              {
+                "zh": "开发工具 范围外",
+                "en": "Development tools Excluded"
+              },
+              {
+                "zh": "诊断、LOCAL REVIEW、旧模板排行榜、UI 预览和动作实验室，不计为正式玩家模块。",
+                "en": "Diagnostics, LOCAL REVIEW, legacy template leaderboards, UI previews and gesture labs are excluded from player scope."
+              }
+            ]
+          ],
+          "widths": [
+            0.48,
+            1.35,
+            5.07
+          ]
+        },
+        {
+          "type": "h",
+          "text": {
+            "zh": "如何核对新方案是否完整",
+            "en": "How to check coverage"
+          }
+        },
+        {
+          "type": "p",
+          "text": {
+            "zh": "每张设计稿标出它承载的 M 编号；另留一份“模块编号 → 设计稿或页面区域”的对照。M01 至 M50 每项都应能找到对应。共享模块只需一个明确实现，不必为了凑数量重复做页面。",
+            "en": "Label each design with the M IDs it covers and keep a module-to-frame or region mapping. Every item from M01 to M50 needs a destination. A shared module needs one clear treatment, not duplicate screens for the sake of counting."
+          }
+        },
+        {
+          "type": "p",
+          "text": {
+            "zh": "核对重点是功能是否能找到、子模块是否齐全、共享关系是否清楚。风格、构图、布局、动效和页面数量交由美术方案决定。本案不要求保留现有导航、三栏库存或五步出发。",
+            "en": "Check access, child-module completeness and shared relationships. Visual direction, composition, layout, motion and screen count belong to the artist's proposal. This brief does not require the existing navigation, three-column inventory or five-step preparation."
+          }
+        },
+        {
+          "type": "p",
+          "text": {
+            "zh": "未开放的基地、通讯和出发保险仍有对应模块。它们应表达当前边界，不能被当成已经有完整业务的新系统。其他模块的“有代码实现”也不等于已经完成当前实机验收。",
+            "en": "Unavailable base, comms and insurance functions retain module mappings. Their current boundaries must remain clear rather than implying implemented services. Code implementation elsewhere also does not establish current gameplay acceptance."
+          }
+        },
+        {
+          "type": "h",
+          "text": {
+            "zh": "资料依据",
+            "en": "Sources"
+          }
+        },
+        {
+          "type": "p",
+          "text": {
+            "zh": "本案按截至 2026年10月25日 的 develop 11c245a3 和项目交接资料整理。历史截图只作背景参考；功能描述冲突时以当前实现为准。",
+            "en": "This brief uses develop 11c245a3 and project handoff records as of 25 October 2026. Historical screenshots are context only; current implementation takes precedence where descriptions conflict."
+          }
+        }
+      ]
+    }
+  ],
+  "source_files": [
+    "HANDOFF.md",
+    "Docs/UI/Integration-20261019.md",
+    "Docs/AI/WarehouseInventoryLayout-20261023.md",
+    "Docs/AI/RaidLootLayout-20261023.md",
+    "Docs/AI/InventorySpaceDensity-20261023.md",
+    "Docs/AI/SpecialEquipmentSlots-20261023.md",
+    "Docs/AI/SecureContainer-20261023.md",
+    "Docs/AI/CorpsePortrait-20261023.md",
+    "Docs/TacticalMap.md",
+    "Docs/OnlinePartyRaids-20261024.md",
+    "Docs/QuickSlots.md",
+    "Docs/Planning/Missions/Mooncore-Progression-Status.md",
+    "Docs/RecoveryInbox.md",
+    "Assets/Scripts/UI/Game/MainMenu.cs",
+    "Assets/Scripts/UI/Game/MoonkovTerminal.cs",
+    "Assets/Scripts/UI/Game/ContainerInventoryView.cs",
+    "Assets/Scripts/Gameplay/UI/RaidHUD.cs"
+  ]
+}
