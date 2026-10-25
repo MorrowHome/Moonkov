@@ -107,6 +107,7 @@ namespace Unity.MP_FPS
 
         private void ReleaseNavigation()
         {
+            ReleaseMissionNavigation();
             if (m_NavData != null)
             {
                 if (m_Build != null && !m_Build.isDone) NavMeshBuilder.Cancel(m_NavData);
@@ -204,13 +205,13 @@ namespace Unity.MP_FPS
 
         private bool NavigationReady(MoonRaidMap map, double now)
         {
-            if (m_NavInstance.valid) return true;
+            if (m_NavInstance.valid) return MissionNavigationReady();
             if (m_Build != null)
             {
                 if (!m_Build.isDone) return false;
                 m_NavInstance = NavMesh.AddNavMeshData(m_NavData);
                 Debug.Log("[DollSinger AI] Server navigation ready.");
-                return m_NavInstance.valid;
+                return m_NavInstance.valid && MissionNavigationReady();
             }
             if (now < m_NextBuild) return false;
             m_NextBuild = now + 1;
