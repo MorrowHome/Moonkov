@@ -9,7 +9,8 @@ namespace Unity.MP_FPS
         private bool m_Initialized;
         private readonly MoonkovMeleeAudio m_Melee = new MoonkovMeleeAudio();
         private readonly MoonkovPainAudio m_Pain = new MoonkovPainAudio();
-        private SoundSystem.SoundInfo m_PainSound;
+        private SoundSystem.SoundInfo m_PainSound, m_GroanSound;
+        private readonly MoonkovDistressAudio m_Distress = new MoonkovDistressAudio();
         private readonly MoonkovReloadAudio m_Reload = new MoonkovReloadAudio();
         private uint m_JumpTick, m_LandTick, m_ImpactTick, m_Weapon;
         private float m_Stride, m_SurfaceTimer;
@@ -80,7 +81,19 @@ namespace Unity.MP_FPS
                 LocalOrWorld(library.Hit, position, owned, owned ? 1f : .65f);
                 m_HitAt = Time.unscaledTime + .35f;
             }
+            bool groan = m_Distress.Observe(ghost.CurrentHealth / Mathf.Max(1, ghost.MaxHealth),
+                ghost.CurrentHealth > 0, MoonkovDistressAudio.PainfulStatus(ghost), cry, Time.unscaledTime);
+            if (!m_Distress.Active || cry)
+            {
+                GameManager.Instance?.SoundSystem?.Stop(m_GroanSound, .12f); m_GroanSound = null;
+            }
             if (cry) m_PainSound = LocalOrWorld(library.PlayerPain, position, owned, owned ? 1 : .85f);
+            else if (groan) m_GroanSound = LocalOrWorld(library.PlayerGroan, position, owned, owned ? 1 : .7f);
+            if (owned && (cry || groan))
+            {
+                GameManager.Instance?.SoundSystem?.Stop(m_BreathSound, .12f); m_BreathSound = null;
+                m_BreathAt = Time.unscaledTime + 1.2f;
+            }
             if (owned && m_Weapon != ghost.EquippedWeaponID) MoonkovAudio.Play(library.Equipment, position);
             // Item-use feedback comes from acknowledged inventory actions, never passive regeneration.
             if (owned && ghost.CurrentHealth > 0)
@@ -180,6 +193,7 @@ namespace Unity.MP_FPS
         public void Stop()
         {
             var system = GameManager.Instance?.SoundSystem;
+            system?.Stop(m_GroanSound, .12f); m_GroanSound = null;
             system?.Stop(m_PainSound, .08f); m_PainSound = null;
             system?.Stop(m_ReloadSound, .08f); m_ReloadSound = null;
             system?.Stop(m_BreathSound, .12f); system?.Stop(m_HeartSound, .12f);

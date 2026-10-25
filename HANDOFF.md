@@ -91,7 +91,9 @@
 ## 受伤人声
 
 - `Hit` 是护甲撞击录音，不是人的叫声。受伤人声使用独立的 `AudioLibrary.PlayerPain`，保留原撞击声。
-- 人声只观察 `LastImpactTick`。不要改回观察血量下降或 `LastHitTick`，否则缺氧、流血和中毒会连续惨叫。护盾完全吸收不叫，穿盾伤害仍会叫。
+- 挨打短叫只观察 `LastImpactTick`。不要改回观察血量下降或 `LastHitTick`，否则缺氧、流血和中毒会连续惨叫。护盾完全吸收不叫，穿盾伤害仍会叫。
 - `MoonkovPainAudio` 按角色限制为至少 1.1 秒一次。冷却中收到的事件直接消耗，不排队补叫。首次快照和死亡角色静音。声音池上限不是每人冷却的替代。
 - 三条短叫来自 Cici Fyre 的 CC0 Female RPG Voice Starter Pack（Type 1）。保留原声线，不整体升调。旧第四条保留文件，但不再引用。来源、裁剪和哈希在 `Assets/Audio/Moonkov/PlayerPainSources.json`；原文件在 `SourceData/Audio/PlayerPain`。重建脚本是 `Tools/Audio/build_player_pain_audio.py`，绑定入口是 `MoonkovPainAudioSetup.Install()`。
+- 持续呻吟使用 `AudioLibrary.PlayerGroan`，复用同角色三条短人声，音量比挨打低 5–6 dB。`MoonkovDistressAudio` 在血量不高于 28% 或缺氧、饥渴伤害、肢体失能、中毒、铁丝网状态时计时。首次等 3.5 秒，后续每 9 秒一次。挨打叫声优先，并把呻吟推迟 9 秒。血量恢复超过 35% 且无上述状态，或角色死亡时停止。普通饥饿、口渴、低氧警告不触发。
+- `MoonkovDistressAudioSetup.Install()` 绑定呻吟资源；`MoonkovDistressAudioChecks.Run()` 检查持续状态、冷却、恢复和死亡。
 - 回归入口为 `MoonkovPainAudioChecks.Run()` 和 `MoonkovDamageAudioChecks.Run()`；隔离播放检查为 `MoonkovPainAudioChecks.CheckPlayback()`。
