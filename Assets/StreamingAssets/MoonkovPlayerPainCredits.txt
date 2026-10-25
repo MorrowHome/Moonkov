@@ -1,0 +1,7 @@
+Player pain voice: AuraVoice / Nocturnal_Vanguard
+Original: Female Hurt Grunts & Groans
+https://opengameart.org/content/female-hurt-grunts-groans
+License: CC0 1.0 Universal
+https://creativecommons.org/publicdomain/zero/1.0/
+Downloaded 2026-10-25. Four recorded takes trimmed, faded and level-adjusted.
+Source and output hashes: Assets/Audio/Moonkov/PlayerPainSources.json

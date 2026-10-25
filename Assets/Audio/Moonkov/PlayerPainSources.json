@@ -1,0 +1,41 @@
+{
+  "author": "AuraVoice / Nocturnal_Vanguard",
+  "title": "Female Hurt Grunts & Groans",
+  "license": "CC0-1.0",
+  "source_page": "https://opengameart.org/content/female-hurt-grunts-groans",
+  "download_url": "https://opengameart.org/sites/default/files/female_hurt_grunts_groans_1.ogg",
+  "download_date": "2026-10-25",
+  "source": "SourceData/Audio/PlayerPain/female_hurt_grunts_groans_1.ogg",
+  "source_sha256": "80a9fb09203bb8feb065ba15197609b118cbe167c9a2264670a31ee22c384adb",
+  "processing": "48 kHz mono PCM16; separate recorded takes; DC removal; 8 ms edge fades; peak 0.72; no pitch transformation",
+  "clips": [
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/PlayerPain/PlayerPain1.wav",
+      "start": 0.425,
+      "end": 1.15,
+      "seconds": 0.725,
+      "sha256": "98289c7235f68293f26347273644c22b011e918649e3b55e80490347c30e3806"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/PlayerPain/PlayerPain2.wav",
+      "start": 2.09,
+      "end": 2.73,
+      "seconds": 0.64,
+      "sha256": "190a1ecc3e7bef4a3760ef79f647487a437f8c37e1e48a4d750a1b049b106eef"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/PlayerPain/PlayerPain3.wav",
+      "start": 3.71,
+      "end": 4.15,
+      "seconds": 0.44,
+      "sha256": "2d26979da19293ad93a20b1dbe8c1218e6257277aac4d7fa620b085cb982d490"
+    },
+    {
+      "asset": "Assets/Audio/Moonkov/Clips/PlayerPain/PlayerPain4.wav",
+      "start": 7.33,
+      "end": 8.12,
+      "seconds": 0.79,
+      "sha256": "0a293d53f043925b2fd72948cf49aabaa741183b0418bb1c1f283e4bb675f953"
+    }
+  ]
+}

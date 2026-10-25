@@ -8,6 +8,8 @@ namespace Unity.MP_FPS
     {
         private bool m_Initialized;
         private readonly MoonkovMeleeAudio m_Melee = new MoonkovMeleeAudio();
+        private readonly MoonkovPainAudio m_Pain = new MoonkovPainAudio();
+        private SoundSystem.SoundInfo m_PainSound;
         private readonly MoonkovReloadAudio m_Reload = new MoonkovReloadAudio();
         private uint m_JumpTick, m_LandTick, m_ImpactTick, m_Weapon;
         private float m_Stride, m_SurfaceTimer;
@@ -38,6 +40,7 @@ namespace Unity.MP_FPS
             if (library == null) return;
             Vector3 position = player.position;
             m_Melee.Update(ghost, position, owned);
+            bool cry = m_Pain.Observe(ghost.LastImpactTick, ghost.CurrentHealth > 0, Time.unscaledTime);
             var reload = m_Reload.Observe(ghost.LastReloadTick, ghost.EquippedWeaponID, ghost.CurrentAmmo,
                 ghost.ControllerState.IsReloadingState, ghost.CurrentHealth > 0);
             if (!m_Initialized)
@@ -77,6 +80,7 @@ namespace Unity.MP_FPS
                 LocalOrWorld(library.Hit, position, owned, owned ? 1f : .65f);
                 m_HitAt = Time.unscaledTime + .35f;
             }
+            if (cry) m_PainSound = LocalOrWorld(library.PlayerPain, position, owned, owned ? 1 : .85f);
             if (owned && m_Weapon != ghost.EquippedWeaponID) MoonkovAudio.Play(library.Equipment, position);
             // Item-use feedback comes from acknowledged inventory actions, never passive regeneration.
             if (owned && ghost.CurrentHealth > 0)
@@ -176,6 +180,7 @@ namespace Unity.MP_FPS
         public void Stop()
         {
             var system = GameManager.Instance?.SoundSystem;
+            system?.Stop(m_PainSound, .08f); m_PainSound = null;
             system?.Stop(m_ReloadSound, .08f); m_ReloadSound = null;
             system?.Stop(m_BreathSound, .12f); system?.Stop(m_HeartSound, .12f);
             system?.Stop(m_WallSound, .08f); system?.Stop(m_MovementSound, .08f); system?.Stop(m_StanceSound, .08f);
