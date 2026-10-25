@@ -32,8 +32,8 @@ public static class MoonkovShootingFeelChecks
     {
         var recoil = new HaloRecoilResponse(); float pitch = 0;
         recoil.Kick(DollSingerWeapons.Halo, 1); recoil.Apply(ref pitch, 0, 1f / 60);
-        Require(pitch < -.3f && pitch > -.4f, "Rifle recoil did not reach actual look input.");
-        recoil.Apply(ref pitch, .34f, 1f / 60); pitch += .34f;
+        Require(pitch < -.4f && pitch > -.5f, "Rifle recoil did not reach actual look input.");
+        recoil.Apply(ref pitch, .44f, 1f / 60); pitch += .44f;
         for (int i = 0; i < 120; i++) recoil.Apply(ref pitch, 0, 1f / 60);
         Require(Mathf.Abs(pitch) < .0001f, "Automatic recovery dragged a compensated aim downward.");
         foreach (float dt in new[] { 1f / 30, 1f / 60, 1f / 144 })

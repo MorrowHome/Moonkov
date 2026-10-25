@@ -15,12 +15,12 @@ namespace Unity.MP_FPS
             DollSingerWeapons.Cicada => .18f,
             DollSingerWeapons.Trine or DollSingerWeapons.Rondo => .28f,
             DollSingerWeapons.Aegis => .42f,
-            DollSingerWeapons.Revolver => .72f,
-            DollSingerWeapons.Shotgun or DollSingerWeapons.Sundown => 1.05f,
+            DollSingerWeapons.Revolver => .9f,
+            DollSingerWeapons.Shotgun or DollSingerWeapons.Sundown => 1.25f,
             DollSingerWeapons.Tempest => .48f,
             DollSingerWeapons.Thorn or DollSingerWeapons.Vesper => .8f,
             DollSingerWeapons.Sniper or DollSingerWeapons.Nocturne => 1.2f,
-            DollSingerWeapons.Halo => .34f,
+            DollSingerWeapons.Halo => .44f,
             _ => 0f
         };
         public void Kick(uint weapon, float magnification, float shotInterval = .35f)
@@ -41,7 +41,7 @@ namespace Unity.MP_FPS
             recoverable = Mathf.Max(0, recoverable - Mathf.Max(0, downwardInput));
             float previous = age; age += deltaTime;
             float recoveryTime = Mathf.Max(0, age - recoveryDelay) - Mathf.Max(0, previous - recoveryDelay);
-            float recovery = recoverable * (1f - Mathf.Exp(-12f * recoveryTime));
+            float recovery = recoverable * (1f - Mathf.Exp(-13f * recoveryTime));
             recoverable -= recovery; pitch = Mathf.Min(80f, pitch + recovery);
         }
         public void Reset() { pending = recoverable = age = recoveryDelay = 0; }
