@@ -40,8 +40,19 @@ def set_font(run, lang, size=None, bold=None):
     rpr.append(lng)
 
 
-def add_text(doc, text, lang, style=None, size=None, bold=False):
+def add_text(doc, text, lang, style=None, size=None, bold=None):
     para = doc.add_paragraph(style=style)
+    fmt = para.paragraph_format
+    fmt.line_spacing = Pt(17)
+    fmt.space_after = Pt(6)
+    if style in ("Title", "Heading 1", "Heading 2"):
+        fmt.line_spacing = Pt(28 if style == "Title" else 24 if style == "Heading 1" else 20)
+        fmt.space_before = Pt(0 if style in ("Title", "Heading 1") else 12)
+        fmt.space_after = Pt(8 if style in ("Title", "Heading 1") else 5)
+        fmt.keep_with_next = True
+    snap = OxmlElement("w:snapToGrid")
+    snap.set(qn("w:val"), "0")
+    para._p.get_or_add_pPr().append(snap)
     set_font(para.add_run(text), lang, size, bold)
     return para
 
@@ -123,14 +134,14 @@ def build(lang):
         style._element.get_or_add_rPr().get_or_add_rFonts().set(qn("w:eastAsia"), "Noto Sans CJK SC")
         style.paragraph_format.widow_control = True
     # python-docx's default template contains a blue title border. Remove it.
-    for element in doc.styles.element.iter():
+    for element in list(doc.styles.element.iter()):
         if element.tag == qn("w:pBdr"):
             element.getparent().remove(element)
     normal = doc.styles["Normal"]
-    normal.font.size = Pt(11)
+    normal.font.size = Pt(11.5)
     normal.paragraph_format.line_spacing = 1.18
-    normal.paragraph_format.space_after = Pt(7)
-    for name, size, before, after in (("Title", 23, 0, 10), ("Heading 1", 18, 0, 10), ("Heading 2", 12.5, 10, 6)):
+    normal.paragraph_format.space_after = Pt(6)
+    for name, size, before, after in (("Title", 22, 0, 10), ("Heading 1", 18, 0, 10), ("Heading 2", 13, 10, 5)):
         style = doc.styles[name]
         style.font.size = Pt(size)
         style.font.bold = True
@@ -161,6 +172,23 @@ def build(lang):
             elif block["type"] == "bullets":
                 for item in block["items"]:
                     add_text(doc, item[lang], lang, "List Bullet")
+            elif block["type"] == "outline":
+                for group in block["groups"]:
+                    add_text(doc, group["title"][lang], lang, "Heading 2")
+                    for item in group["items"]:
+                        para = add_text(doc, item[lang], lang)
+                        para.paragraph_format.left_indent = Inches(0.2)
+            elif block["type"] == "nine_slice":
+                labels = block["labels"][lang]
+                block_table = {
+                    "headers": [{lang: labels[i]} for i in range(3)],
+                    "rows": [
+                        [{lang: labels[i]} for i in range(3, 6)],
+                        [{lang: labels[i]} for i in range(6, 9)],
+                    ],
+                    "widths": [1.4, 4.1, 1.4],
+                }
+                add_table(doc, block_table, lang)
 
     doc.core_properties.title = DATA["pages"][0]["title"][lang]
     doc.core_properties.subject = "Functional modules and hierarchy for UI art planning"
