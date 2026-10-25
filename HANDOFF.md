@@ -93,5 +93,5 @@
 - `Hit` 是护甲撞击录音，不是人的叫声。受伤人声使用独立的 `AudioLibrary.PlayerPain`，保留原撞击声。
 - 人声只观察 `LastImpactTick`。不要改回观察血量下降或 `LastHitTick`，否则缺氧、流血和中毒会连续惨叫。护盾完全吸收不叫，穿盾伤害仍会叫。
 - `MoonkovPainAudio` 按角色限制为至少 1.1 秒一次。冷却中收到的事件直接消耗，不排队补叫。首次快照和死亡角色静音。声音池上限不是每人冷却的替代。
-- 四条短叫来自 AuraVoice / Nocturnal_Vanguard 的 CC0 真人录音。来源、裁剪和哈希在 `Assets/Audio/Moonkov/PlayerPainSources.json`；原文件在 `SourceData/Audio/PlayerPain`。重建脚本是 `Tools/Audio/build_player_pain_audio.py`，绑定入口是 `MoonkovPainAudioSetup.Install()`。
+- 三条短叫来自 Cici Fyre 的 CC0 Female RPG Voice Starter Pack（Type 1）。保留原声线，不整体升调。旧第四条保留文件，但不再引用。来源、裁剪和哈希在 `Assets/Audio/Moonkov/PlayerPainSources.json`；原文件在 `SourceData/Audio/PlayerPain`。重建脚本是 `Tools/Audio/build_player_pain_audio.py`，绑定入口是 `MoonkovPainAudioSetup.Install()`。
 - 回归入口为 `MoonkovPainAudioChecks.Run()` 和 `MoonkovDamageAudioChecks.Run()`；隔离播放检查为 `MoonkovPainAudioChecks.CheckPlayback()`。

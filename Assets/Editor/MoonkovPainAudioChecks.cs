@@ -36,7 +36,7 @@ public static class MoonkovPainAudioChecks
         var second = new MoonkovPainAudio(); second.Observe(0, true, 0);
         Require(second.Observe(10, true, 5), "Other character was globally suppressed");
         var bank = Resources.Load<MoonkovAudioLibrary>("Moonkov/AudioLibrary").PlayerPain;
-        Require(bank && bank.Clips.Count == 4 && bank.PlaybackType == SoundDef.PlaybackTypes.RandomNotLast, "Missing voice variants");
+        Require(bank && bank.Clips.Count == 3 && bank.PlaybackType == SoundDef.PlaybackTypes.RandomNotLast, "Missing voice variants");
         Require(bank.MinimumInterval == 0 && bank.MaxVoices > 0 && bank.MixerGroup == SoundMixer.SoundMixerGroup.SFX, "Invalid voice policy");
         foreach (var clip in bank.Clips)
         {
@@ -46,7 +46,7 @@ public static class MoonkovPainAudioChecks
             float peak = 0; foreach (float value in samples) { Require(float.IsFinite(value), "Invalid PCM"); peak = Mathf.Max(peak, Mathf.Abs(value)); }
             Require(peak > .5f && peak < .8f, "Silent/clipped pain clip");
         }
-        Debug.Log("Player pain: direct injury/overflow, 120 hypoxia ticks, repeats, cooldown, no delayed cries, late join, death and independent characters passed; four voice assets valid.");
+        Debug.Log("Player pain: direct injury/overflow, 120 hypoxia ticks, repeats, cooldown, no delayed cries, late join, death and independent characters passed; three voice assets valid.");
     }
     public static string CheckPlayback()
     {

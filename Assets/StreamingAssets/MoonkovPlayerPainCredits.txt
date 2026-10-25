@@ -1,7 +1,9 @@
-Player pain voice: AuraVoice / Nocturnal_Vanguard
-Original: Female Hurt Grunts & Groans
-https://opengameart.org/content/female-hurt-grunts-groans
+Player pain voice: Cici Fyre / cicifyre
+Original: Female RPG Voice Starter Pack, Type 1 damaged1/2/3
+https://opengameart.org/content/female-rpg-voice-starter-pack
 License: CC0 1.0 Universal
 https://creativecommons.org/publicdomain/zero/1.0/
-Downloaded 2026-10-25. Four recorded takes trimmed, faded and level-adjusted.
+Downloaded 2026-10-25. Original pitch; edge fades and level adjustment.
 Source and output hashes: Assets/Audio/Moonkov/PlayerPainSources.json
+Retired, unreferenced older takes: AuraVoice / Nocturnal_Vanguard, CC0
+https://opengameart.org/content/female-hurt-grunts-groans

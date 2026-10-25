@@ -1,41 +1,46 @@
 {
-  "author": "AuraVoice / Nocturnal_Vanguard",
-  "title": "Female Hurt Grunts & Groans",
+  "author": "Cici Fyre / cicifyre",
+  "title": "Female RPG Voice Starter Pack, Type 1 damaged takes",
   "license": "CC0-1.0",
-  "source_page": "https://opengameart.org/content/female-hurt-grunts-groans",
-  "download_url": "https://opengameart.org/sites/default/files/female_hurt_grunts_groans_1.ogg",
+  "source_page": "https://opengameart.org/content/female-rpg-voice-starter-pack",
+  "download_url": "https://opengameart.org/sites/default/files/RPG%20Voice%20Starter%20Pack.zip",
   "download_date": "2026-10-25",
-  "source": "SourceData/Audio/PlayerPain/female_hurt_grunts_groans_1.ogg",
-  "source_sha256": "80a9fb09203bb8feb065ba15197609b118cbe167c9a2264670a31ee22c384adb",
-  "processing": "48 kHz mono PCM16; separate recorded takes; DC removal; 8 ms edge fades; peak 0.72; no pitch transformation",
+  "sources": [
+    {
+      "asset": "SourceData/Audio/PlayerPain/CiciFyre/damaged1.wav",
+      "archive_entry": "RPG Voice Starter Pack/Type 1/damaged1.wav",
+      "sha256": "b3e564ac29084630da9483747bc75baba8bd1fdf9bc9f594d67416ac147475d2"
+    },
+    {
+      "asset": "SourceData/Audio/PlayerPain/CiciFyre/damaged2.wav",
+      "archive_entry": "RPG Voice Starter Pack/Type 1/damaged2.wav",
+      "sha256": "8bea91683584bdf496062be02dc847630b5bf1a77d124c618a442484eb8edbd9"
+    },
+    {
+      "asset": "SourceData/Audio/PlayerPain/CiciFyre/damaged3.wav",
+      "archive_entry": "RPG Voice Starter Pack/Type 1/damaged3.wav",
+      "sha256": "a51edde4798a5e472127a683981277723704db90079d2296f6451c594d2efd3b"
+    }
+  ],
+  "processing": "48 kHz mono PCM16; original performance and pitch; DC removal; 4 ms edge fades; peak 0.72. Previous fourth take is retained on disk but no longer referenced.",
   "clips": [
     {
       "asset": "Assets/Audio/Moonkov/Clips/PlayerPain/PlayerPain1.wav",
-      "start": 0.425,
-      "end": 1.15,
-      "seconds": 0.725,
-      "sha256": "98289c7235f68293f26347273644c22b011e918649e3b55e80490347c30e3806"
+      "source": "SourceData/Audio/PlayerPain/CiciFyre/damaged1.wav",
+      "seconds": 0.28660416666666666,
+      "sha256": "c27485e80e563c55e280dca85635dab8fe29eb500c546bb03963f17991d09e76"
     },
     {
       "asset": "Assets/Audio/Moonkov/Clips/PlayerPain/PlayerPain2.wav",
-      "start": 2.09,
-      "end": 2.73,
-      "seconds": 0.64,
-      "sha256": "190a1ecc3e7bef4a3760ef79f647487a437f8c37e1e48a4d750a1b049b106eef"
+      "source": "SourceData/Audio/PlayerPain/CiciFyre/damaged2.wav",
+      "seconds": 0.3844375,
+      "sha256": "c6e4fd03a71c065c2b9ee51ab053462a95efb17c66f4aaa3619895401b572ad5"
     },
     {
       "asset": "Assets/Audio/Moonkov/Clips/PlayerPain/PlayerPain3.wav",
-      "start": 3.71,
-      "end": 4.15,
-      "seconds": 0.44,
-      "sha256": "2d26979da19293ad93a20b1dbe8c1218e6257277aac4d7fa620b085cb982d490"
-    },
-    {
-      "asset": "Assets/Audio/Moonkov/Clips/PlayerPain/PlayerPain4.wav",
-      "start": 7.33,
-      "end": 8.12,
-      "seconds": 0.79,
-      "sha256": "0a293d53f043925b2fd72948cf49aabaa741183b0418bb1c1f283e4bb675f953"
+      "source": "SourceData/Audio/PlayerPain/CiciFyre/damaged3.wav",
+      "seconds": 0.3224166666666667,
+      "sha256": "53a7c378e8fe7bd36bcc752dd151473afc637ded6b2eed20c14b9aa8717d548a"
     }
   ]
 }

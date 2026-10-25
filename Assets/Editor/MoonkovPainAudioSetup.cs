@@ -14,7 +14,7 @@ public static class MoonkovPainAudioSetup
         var sound = AssetDatabase.LoadAssetAtPath<SoundDef>(path); bool create = !sound;
         if (create) sound = UnityEngine.Object.Instantiate(lib.Hit);
         sound.name = "PlayerPain"; sound.Clips.Clear();
-        for (int i = 1; i <= 4; i++)
+        for (int i = 1; i <= 3; i++)
         {
             string clipPath = "Assets/Audio/Moonkov/Clips/PlayerPain/PlayerPain" + i + ".wav";
             var importer = AssetImporter.GetAtPath(clipPath) as AudioImporter;
