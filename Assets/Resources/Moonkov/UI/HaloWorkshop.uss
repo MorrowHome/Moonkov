@@ -1,0 +1,128 @@
+/* Radix Slate dark surfaces and Cyan interaction states. */
+.halo-workshop-host { flex-grow: 1; min-width: 0; min-height: 0; }
+.halo-workshop {
+    --workshop-ground: #111113;
+    --workshop-panel: #18191b;
+    --workshop-surface: #212225;
+    --workshop-hover: #272a2d;
+    --workshop-border: #363a3f;
+    --workshop-muted: #b0b4ba;
+    --workshop-text: #edeef0;
+    --workshop-selected: #082c36;
+    --workshop-cyan: #4ccce6;
+    flex-grow: 1;
+    min-width: 0;
+    min-height: 0;
+    position: relative;
+    background-color: var(--workshop-ground);
+    color: var(--workshop-text);
+    font-size: 14px;
+}
+.halo-workshop Label { margin: 0; padding: 0; white-space: normal; letter-spacing: 0; }
+.halo-workshop Button {
+    margin: 0;
+    padding: 10px 12px;
+    min-height: 40px;
+    color: var(--workshop-text);
+    background-color: var(--workshop-surface);
+    border-width: 1px;
+    border-color: var(--workshop-border);
+    border-radius: 6px;
+    white-space: normal;
+    font-size: 14px;
+    letter-spacing: 0;
+    transition-duration: 0.15s;
+}
+.halo-workshop Button:hover { background-color: var(--workshop-hover); border-color: #545b63; }
+.halo-workshop Button:focus { border-color: var(--workshop-cyan); }
+.halo-workshop Button:active { background-color: #2e3135; }
+.halo-workshop Button:disabled { color: #696e77; background-color: #18191b; border-color: #272a2d; }
+.halo-workshop .workshop-body { flex-grow: 1; flex-direction: row; min-height: 0; }
+.halo-workshop .workshop-pane { min-width: 0; min-height: 0; flex-basis: 0; padding: 18px; }
+.halo-workshop .workshop-weapon-pane { flex-grow: 30; background-color: var(--workshop-panel); }
+.halo-workshop .workshop-modules-pane { flex-grow: 32; border-left-width: 1px; border-left-color: var(--workshop-border); }
+.halo-workshop .workshop-detail-pane { flex-grow: 38; border-left-width: 1px; border-left-color: var(--workshop-border); background-color: var(--workshop-panel); }
+.halo-workshop .workshop-section { color: var(--workshop-muted); font-size: 12px; -unity-font-style: bold; margin-bottom: 8px; flex-shrink: 0; }
+.halo-workshop .workshop-heading { font-size: 22px; -unity-font-style: bold; margin-bottom: 8px; flex-shrink: 0; }
+.halo-workshop .workshop-caption { color: var(--workshop-muted); font-size: 12px; }
+.halo-workshop .workshop-weapon-select { margin: 0; min-height: 40px; flex-shrink: 0; }
+.halo-workshop .workshop-weapon-select .unity-base-field__input { background-color: var(--workshop-surface); color: var(--workshop-text); border-width: 1px; border-color: var(--workshop-border); border-radius: 6px; padding: 8px 10px; font-size: 14px; }
+.halo-workshop .workshop-weapon-select .unity-base-popup-field__text { font-size: 14px; white-space: nowrap; }
+.halo-workshop .workshop-weapon-state { margin-top: 8px; flex-shrink: 0; }
+.halo-workshop .workshop-weapon-art { flex-grow: 1; flex-shrink: 1; min-height: 72px; max-height: 200px; margin: 12px 22px; }
+.halo-workshop .workshop-weapon-art > *, .halo-workshop .workshop-detail-art > *, .halo-workshop .workshop-slot-art > *, .halo-workshop .workshop-module-art > * { flex-grow: 1; }
+.halo-workshop .workshop-slots { flex-shrink: 0; }
+.halo-workshop .workshop-slot { flex-direction: row; align-items: center; min-height: 62px; margin-top: 6px; -unity-text-align: middle-left; }
+.halo-workshop .workshop-slot-art { width: 32px; height: 32px; margin-right: 10px; flex-shrink: 0; }
+.halo-workshop .workshop-slot-label { font-size: 12px; color: var(--workshop-muted); min-width: 44px; margin-right: 8px; }
+.halo-workshop .workshop-slot-value { font-size: 14px; flex-grow: 1; flex-shrink: 1; -unity-text-align: middle-left; }
+.halo-workshop .workshop-module-list { flex-grow: 1; min-height: 0; margin-top: 8px; }
+.halo-workshop .workshop-module { flex-direction: row; align-items: center; min-height: 104px; margin-bottom: 8px; }
+.halo-workshop .workshop-module-art { width: 46px; height: 46px; flex-shrink: 0; margin-right: 12px; }
+.halo-workshop .workshop-module-copy { min-width: 0; flex-grow: 1; flex-shrink: 1; align-items: flex-start; }
+.halo-workshop .workshop-module-name { font-size: 14px; -unity-font-style: bold; margin-bottom: 5px; }
+.halo-workshop .workshop-module-purpose { font-size: 12px; color: var(--workshop-muted); margin-bottom: 6px; }
+.halo-workshop .workshop-module-stock { font-size: 12px; color: var(--workshop-cyan); }
+.halo-workshop .workshop-selected, .halo-workshop .workshop-selected:hover, .halo-workshop .workshop-selected:focus { background-color: var(--workshop-selected); border-color: var(--workshop-cyan); }
+.halo-workshop .workshop-installed .workshop-module-stock { color: #b1f1cb; }
+.halo-workshop .workshop-detail-scroll { flex-grow: 1; min-height: 0; }
+.halo-workshop .workshop-detail-header { flex-direction: row; align-items: center; margin-bottom: 18px; flex-shrink: 0; }
+.halo-workshop .workshop-detail-art { width: 58px; height: 58px; margin-right: 14px; flex-shrink: 0; }
+.halo-workshop .workshop-detail-copy { flex-grow: 1; flex-shrink: 1; min-width: 0; }
+.halo-workshop .workshop-benefit { color: #b1f1cb; font-size: 14px; margin-bottom: 8px; }
+.halo-workshop .workshop-tradeoff { color: #ffca16; font-size: 14px; margin-bottom: 12px; }
+.halo-workshop .workshop-ownership { margin-bottom: 18px; }
+.halo-workshop .workshop-comparison-heading { margin-bottom: 4px; }
+.halo-workshop .workshop-stat-row { flex-direction: row; align-items: center; min-height: 32px; border-bottom-width: 1px; border-bottom-color: #272a2d; }
+.halo-workshop .workshop-stat-label { flex-grow: 1; flex-shrink: 1; min-width: 0; font-size: 12px; color: var(--workshop-muted); padding-right: 6px; }
+.halo-workshop .workshop-stat-before, .halo-workshop .workshop-stat-after { width: 76px; flex-shrink: 0; -unity-text-align: middle-right; font-size: 14px; }
+.halo-workshop .workshop-stat-before { color: var(--workshop-muted); }
+.halo-workshop .workshop-stat-header { min-height: 24px; }
+.halo-workshop .workshop-stat-header Label { font-size: 12px; color: var(--workshop-muted); }
+.halo-workshop .workshop-stat-better { color: #b1f1cb; }
+.halo-workshop .workshop-stat-worse { color: #ffca16; }
+.halo-workshop .workshop-actions { flex-shrink: 0; padding-top: 10px; }
+.halo-workshop .workshop-status { font-size: 12px; color: var(--workshop-muted); margin-bottom: 8px; }
+.halo-workshop .workshop-status-error { color: #ffb5b5; }
+.halo-workshop .workshop-status-saving { color: var(--workshop-cyan); }
+.halo-workshop .workshop-primary { min-height: 44px; background-color: #00a2c7; color: #001f27; border-color: #00a2c7; -unity-font-style: bold; }
+.halo-workshop .workshop-primary:hover { background-color: #23afd0; border-color: var(--workshop-cyan); }
+.halo-workshop .workshop-primary:focus { border-color: #b6ecf7; }
+.halo-workshop .workshop-primary:active { background-color: #0091b5; }
+.halo-workshop .workshop-secondary-actions { flex-direction: row; margin-top: 8px; }
+.halo-workshop .workshop-secondary { flex-grow: 1; flex-basis: 0; font-size: 12px; }
+.halo-workshop #workshopAcquire { margin-left: 8px; }
+.halo-workshop .workshop-empty { display: none; flex-direction: row; align-items: center; flex-shrink: 0; background-color: var(--workshop-selected); border-bottom-width: 1px; border-bottom-color: var(--workshop-border); padding: 10px 18px; }
+.halo-workshop .workshop-empty-message { font-size: 12px; color: var(--workshop-text); flex-grow: 1; flex-shrink: 1; margin-right: 16px; }
+.halo-workshop .workshop-empty .workshop-secondary { flex-grow: 0; flex-basis: auto; min-height: 34px; font-size: 12px; }
+.halo-workshop .unity-scroll-view__content-viewport { min-width: 0; min-height: 0; }
+.halo-workshop .unity-scroll-view__content-container { min-width: 0; }
+.halo-workshop .unity-scroller--vertical { width: 10px; margin-left: 6px; }
+
+/* The terminal chrome leaves less room than the independent review window. */
+.halo-workshop.workshop-compact .workshop-pane { padding: 12px; }
+.halo-workshop.workshop-compact .workshop-heading { margin-bottom: 6px; }
+.halo-workshop.workshop-compact .workshop-section { margin-bottom: 6px; }
+.halo-workshop.workshop-compact .workshop-weapon-art { min-height: 48px; max-height: 120px; margin: 8px 16px; }
+.halo-workshop.workshop-compact .workshop-slot { min-height: 54px; margin-top: 5px; padding: 8px 10px; }
+.halo-workshop.workshop-compact .workshop-slot-art { width: 28px; height: 28px; margin-right: 8px; }
+.halo-workshop.workshop-compact .workshop-slot-label { margin-right: 6px; }
+.halo-workshop.workshop-compact .workshop-module-list { margin-top: 6px; }
+.halo-workshop.workshop-compact .workshop-module { min-height: 86px; padding: 9px 10px; margin-bottom: 6px; }
+.halo-workshop.workshop-compact .workshop-module-art { width: 40px; height: 40px; margin-right: 10px; }
+.halo-workshop.workshop-compact .workshop-module-name { margin-bottom: 4px; }
+.halo-workshop.workshop-compact .workshop-module-purpose { margin-bottom: 4px; }
+.halo-workshop.workshop-compact .workshop-detail-header { margin-bottom: 10px; }
+.halo-workshop.workshop-compact .workshop-detail-art { width: 44px; height: 44px; margin-right: 10px; }
+.halo-workshop.workshop-compact #workshopPurpose { display: none; }
+.halo-workshop.workshop-compact .workshop-benefit { margin-bottom: 6px; }
+.halo-workshop.workshop-compact .workshop-tradeoff { margin-bottom: 8px; }
+.halo-workshop.workshop-compact .workshop-ownership { margin-bottom: 10px; }
+.halo-workshop.workshop-compact .workshop-stat-row { min-height: 28px; }
+.halo-workshop.workshop-compact .workshop-stat-header { min-height: 22px; }
+.halo-workshop.workshop-compact .workshop-actions { padding-top: 8px; }
+.halo-workshop.workshop-compact .workshop-status { margin-bottom: 6px; }
+.halo-workshop.workshop-compact .workshop-primary { min-height: 40px; padding: 8px 10px; }
+.halo-workshop.workshop-compact .workshop-secondary-actions { margin-top: 6px; }
+.halo-workshop.workshop-compact .workshop-secondary { min-height: 34px; padding: 6px 8px; }
+.halo-workshop.workshop-compact .workshop-empty { padding: 8px 12px; }

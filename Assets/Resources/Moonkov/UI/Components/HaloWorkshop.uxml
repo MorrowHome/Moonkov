@@ -1,0 +1,53 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="project://database/Assets/Resources/Moonkov/UI/HaloWorkshop.uss" />
+    <ui:VisualElement name="haloWorkshop" class="halo-workshop">
+        <ui:VisualElement name="workshopEmpty" class="workshop-empty">
+            <ui:Label name="workshopEmptyMessage" class="workshop-empty-message" />
+            <ui:Button name="workshopEmptySupply" class="workshop-secondary" text="OPEN SUPPLIERS" />
+        </ui:VisualElement>
+        <ui:VisualElement class="workshop-body">
+            <ui:VisualElement class="workshop-pane workshop-weapon-pane">
+                <ui:Label class="workshop-section" text="YOUR HALO" />
+                <ui:DropdownField name="workshopWeapon" class="workshop-weapon-select" />
+                <ui:Label name="workshopWeaponState" class="workshop-caption workshop-weapon-state" />
+                <ui:VisualElement name="workshopWeaponArt" class="workshop-weapon-art" picking-mode="Ignore" />
+                <ui:VisualElement name="workshopSlots" class="workshop-slots" />
+            </ui:VisualElement>
+            <ui:VisualElement class="workshop-pane workshop-modules-pane">
+                <ui:Label name="workshopSlotTitle" class="workshop-heading" text="CHOOSE A MODULE" />
+                <ui:ScrollView name="workshopModules" mode="Vertical" horizontal-scroller-visibility="Hidden" class="workshop-module-list" />
+            </ui:VisualElement>
+            <ui:VisualElement class="workshop-pane workshop-detail-pane">
+                <ui:ScrollView mode="Vertical" horizontal-scroller-visibility="Hidden" class="workshop-detail-scroll">
+                    <ui:VisualElement name="workshopDetail">
+                        <ui:VisualElement class="workshop-detail-header">
+                            <ui:VisualElement name="workshopModuleArt" class="workshop-detail-art" picking-mode="Ignore" />
+                            <ui:VisualElement class="workshop-detail-copy">
+                                <ui:Label name="workshopModuleName" class="workshop-heading" />
+                                <ui:Label name="workshopPurpose" class="workshop-caption" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:Label name="workshopBenefit" class="workshop-benefit" />
+                        <ui:Label name="workshopTradeoff" class="workshop-tradeoff" />
+                        <ui:Label name="workshopOwnership" class="workshop-caption workshop-ownership" />
+                        <ui:Label name="workshopComparisonHeading" class="workshop-section workshop-comparison-heading" text="ATTRIBUTE COMPARISON" />
+                        <ui:VisualElement class="workshop-stat-row workshop-stat-header">
+                            <ui:Label class="workshop-stat-label" />
+                            <ui:Label class="workshop-stat-before" text="CURRENT" />
+                            <ui:Label class="workshop-stat-after" text="PREVIEW" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="workshopStats" class="workshop-stats" />
+                    </ui:VisualElement>
+                </ui:ScrollView>
+                <ui:VisualElement class="workshop-actions">
+                    <ui:Label name="workshopStatus" class="workshop-status" />
+                    <ui:Button name="workshopApply" class="workshop-primary" text="INSTALL MODULE" />
+                    <ui:VisualElement class="workshop-secondary-actions">
+                        <ui:Button name="workshopRemove" class="workshop-secondary" text="REMOVE MODULE" />
+                        <ui:Button name="workshopAcquire" class="workshop-secondary" text="GET MODULE" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

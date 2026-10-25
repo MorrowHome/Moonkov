@@ -1,84 +1,11 @@
-<ui:UXML xmlns:moon="Unity.MP_FPS.Client" xmlns:ui="UnityEngine.UIElements">
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
     <ui:Style src="project://database/Assets/UI Toolkit/GameUI/StashScreen.uss" />
     <ui:Style src="project://database/Assets/UI Toolkit/GameUI/MoonkovTerminal.uss" />
-    <ui:Style src="project://database/Assets/Resources/Moonkov/UI/TerminalLayout.uss" />
+    <ui:Style src="project://database/Assets/Resources/Moonkov/UI/HaloWorkshop.uss" />
     <ui:VisualElement name="layoutPreview" class="stash-root moonkov-terminal terminal-layout-preview">
         <ui:VisualElement name="terminalPage" class="terminal-content terminal-content-page">
-            <ui:Label class="terminal-page-index" picking-mode="Ignore" text="03" />
-            <ui:VisualElement class="terminal-row halo-composition">
-                <ui:VisualElement class="terminal-panel terminal-wide terminal-halo-panel">
-                    <ui:VisualElement class="halo-schematic terminal-halo-schematic" picking-mode="Ignore">
-                        <moon:ArchiveOrbitGuides class="halo-orbit-guides" />
-                        <ui:Label text="STORAGE SLOT" class="halo-group-caption halo-storage-caption" picking-mode="Ignore" />
-                        <ui:Label text="SHAPING SLOT" class="halo-group-caption halo-shaping-caption" picking-mode="Ignore" />
-                        <ui:Label text="UTILITY SLOT" class="halo-group-caption halo-utility-caption" picking-mode="Ignore" />
-                        <ui:Button class="terminal-node" name="haloNode0"><moon:ArchiveCardFrame class="archive-card-frame" /><ui:VisualElement class="halo-node-art" picking-mode="Ignore" /><ui:Label text="Expansion capacitor" class="halo-node-title" picking-mode="Ignore" />
-                            <ui:Label class="terminal-node-index" picking-mode="Ignore" text="N1" />
-                        </ui:Button>
-                        <ui:Button class="terminal-node" name="haloNode1"><moon:ArchiveCardFrame class="archive-card-frame" /><ui:VisualElement class="halo-node-art" picking-mode="Ignore" /><ui:Label text="Rapid charge bridge" class="halo-node-title" picking-mode="Ignore" />
-                            <ui:Label class="terminal-node-index" picking-mode="Ignore" text="N2" />
-                        </ui:Button>
-                        <ui:Button class="terminal-node" name="haloNode2"><moon:ArchiveCardFrame class="archive-card-frame" /><ui:VisualElement class="halo-node-art" picking-mode="Ignore" /><ui:Label text="Focus lens" class="halo-node-title" picking-mode="Ignore" />
-                            <ui:Label class="terminal-node-index" picking-mode="Ignore" text="N3" />
-                        </ui:Button>
-                        <ui:Button class="terminal-node" name="haloNode3"><moon:ArchiveCardFrame class="archive-card-frame" /><ui:VisualElement class="halo-node-art" picking-mode="Ignore" /><ui:Label text="Fan array" class="halo-node-title" picking-mode="Ignore" />
-                            <ui:Label class="terminal-node-index" picking-mode="Ignore" text="N4" />
-                        </ui:Button>
-                        <ui:Button class="terminal-node" name="haloNode4"><moon:ArchiveCardFrame class="archive-card-frame" orbital="true" /><ui:VisualElement class="halo-node-art" picking-mode="Ignore" /><ui:Label text="Halo Rifle" class="halo-node-title" picking-mode="Ignore" />
-                            <ui:Label class="terminal-node-index" picking-mode="Ignore" text="N5" />
-                        </ui:Button>
-                        <ui:Button class="terminal-node" name="haloNode5"><moon:ArchiveCardFrame class="archive-card-frame" /><ui:VisualElement class="halo-node-art" picking-mode="Ignore" /><ui:Label text="Pulse controller" class="halo-node-title" picking-mode="Ignore" />
-                            <ui:Label class="terminal-node-index" picking-mode="Ignore" text="N6" />
-                        </ui:Button>
-                        <ui:Button class="terminal-node" name="haloNode6"><moon:ArchiveCardFrame class="archive-card-frame" /><ui:VisualElement class="halo-node-art" picking-mode="Ignore" /><ui:Label text="Hit marker" class="halo-node-title" picking-mode="Ignore" />
-                            <ui:Label class="terminal-node-index" picking-mode="Ignore" text="N7" />
-                        </ui:Button>
-                    </ui:VisualElement>
-                    <ui:Label class="terminal-eyebrow" text="STANDARD HALO / COMPONENT SCHEMATIC" />
-                    <ui:Label class="terminal-title" text="HALO BUILD" />
-                    <ui:Label class="terminal-eyebrow halo-inspection-help" text="SELECT A NODE TO INSPECT ITS ROLE" />
-                </ui:VisualElement>
-                <ui:VisualElement class="terminal-panel terminal-side">
-                    <ui:VisualElement class="halo-inspector-hero">
-                        <ui:Label class="terminal-eyebrow" text="LOADOUT INFORMATION" /><ui:Label name="haloComponentTitle" text="Halo Rifle" class="terminal-title" /><ui:VisualElement name="haloComponentArt" class="halo-component-art" picking-mode="Ignore" />
-                    </ui:VisualElement>
-                    <ui:VisualElement class="terminal-row terminal-meters">
-                        <moon:ArcMeter class="arc-meter" picking-mode="Ignore" value="0.0" meter-color="#164BFFFF">
-                            <ui:Label class="terminal-meter-value" text="—" />
-                            <ui:Label class="terminal-meter-name" text="DMG" />
-                        </moon:ArcMeter>
-                        <moon:ArcMeter class="arc-meter" picking-mode="Ignore" value="0.0" meter-color="#737D8AFF">
-                            <ui:Label class="terminal-meter-value" text="—" />
-                            <ui:Label class="terminal-meter-name" text="CAP" />
-                        </moon:ArcMeter>
-                        <moon:ArcMeter class="arc-meter" picking-mode="Ignore" value="0.0" meter-color="#ECECE6FF">
-                            <ui:Label class="terminal-meter-value" text="—" />
-                            <ui:Label class="terminal-meter-name" text="RNG" />
-                        </moon:ArcMeter>
-                    </ui:VisualElement>
-                    <ui:VisualElement class="terminal-row terminal-stat">
-                        <ui:Label class="terminal-stat-name" text="STATUS" />
-                        <ui:Label class="terminal-stat-value" text="STANDARD ISSUE" name="statValue0" />
-                    </ui:VisualElement>
-                    <ui:VisualElement class="terminal-row terminal-stat">
-                        <ui:Label class="terminal-stat-name" text="DAMAGE" />
-                        <ui:Label class="terminal-stat-value" text="—" name="statValue1" />
-                    </ui:VisualElement>
-                    <ui:VisualElement class="terminal-row terminal-stat">
-                        <ui:Label class="terminal-stat-name" text="ENERGY CAPACITY" />
-                        <ui:Label class="terminal-stat-value" text="—" name="statValue2" />
-                    </ui:VisualElement>
-                    <ui:VisualElement class="terminal-row terminal-stat">
-                        <ui:Label class="terminal-stat-name" text="RANGE" />
-                        <ui:Label class="terminal-stat-value" text="—" name="statValue3" />
-                    </ui:VisualElement>
-                    <ui:Label name="haloComponentDescription" class="terminal-copy" text="Choose an owned halo to install, replace or remove compatible modules in storage." />
-                    <ui:Button name="modifyHalo" class="terminal-primary" text="MODIFY HALO" />
-                    <ui:VisualElement class="halo-unavailable-actions">
-                        <ui:Button class="terminal-button" enabled="false" tooltip="No modular loadout service is available." text="SAVE HALO PRESET" />
-                        <ui:Button class="terminal-button" enabled="false" tooltip="No modular loadout service is available." text="ASSEMBLE LOADOUT" />
-                    </ui:VisualElement>
-                </ui:VisualElement>
+            <ui:VisualElement name="haloWorkshopHost" class="halo-workshop-host">
+                <ui:Button name="modifyHalo" class="terminal-primary" text="HALO WORKSHOP" />
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>

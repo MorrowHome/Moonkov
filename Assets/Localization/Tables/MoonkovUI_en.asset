@@ -5110,6 +5110,266 @@ MonoBehaviour:
     m_Localized: SHIAN
     m_Metadata:
       m_Items: []
+  - m_Id: 6439128286617600
+    m_Localized: POWER SLOT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006208
+    m_Localized: FIRING SLOT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006209
+    m_Localized: SUPPORT SLOT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006210
+    m_Localized: Fire longer before recharging
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006211
+    m_Localized: Get back to firing sooner
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006212
+    m_Localized: Make your battery last longer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006213
+    m_Localized: Keep shotgun pellets together
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006214
+    m_Localized: Cover a wider area with pellets
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006215
+    m_Localized: Fire controlled three-round bursts
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006216
+    m_Localized: Show your team where a hit landed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006217
+    m_Localized: Capacity +50%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006218
+    m_Localized: Charge time -40%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006219
+    m_Localized: Energy per round reduced by one third
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006220
+    m_Localized: Pellet spread -55%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006221
+    m_Localized: Wider spread with 12 pellets; total damage unchanged
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006222
+    m_Localized: Three rounds per trigger press
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006223
+    m_Localized: Last hit position marked for 3 seconds
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006224
+    m_Localized: Charge time +35%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006225
+    m_Localized: Energy per round +50%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006226
+    m_Localized: Charge time +20%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006227
+    m_Localized: Capacity -1 round
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006228
+    m_Localized: Less damage per pellet; spread +60%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006229
+    m_Localized: Press again for the next burst; at least 0.42s between bursts
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006230
+    m_Localized: Energy per round +25%
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006231
+    m_Localized: NOT OWNED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006232
+    m_Localized: "Loading your inventory\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006233
+    m_Localized: No compatible halo owned. Browse rifle and shotgun modules here.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006234
+    m_Localized: CATALOG PREVIEW / NOT OWNED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006235
+    m_Localized: INSTALLED MODULES STAY WITH THIS HALO
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006236
+    m_Localized: CARRIED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006237
+    m_Localized: OWNED {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006238
+    m_Localized: ENERGY PER ROUND
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006239
+    m_Localized: CHARGE TIME
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006240
+    m_Localized: DAMAGE PER ROUND (ALL PELLETS)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006241
+    m_Localized: PELLETS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006242
+    m_Localized: PELLET SPREAD
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006243
+    m_Localized: FIRING MODE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006244
+    m_Localized: 3-ROUND BURST
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006245
+    m_Localized: AUTOMATIC
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006246
+    m_Localized: Weapon data is unavailable.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006247
+    m_Localized: "SAVING\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006248
+    m_Localized: RESEARCH / FABRICATE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006249
+    m_Localized: GET MODULE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006250
+    m_Localized: "Saving inventory\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006251
+    m_Localized: Acquire a compatible halo to install modules.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006252
+    m_Localized: Free a storage cell before removing this module.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006253
+    m_Localized: The replaced module returns to the incoming module's cell.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006254
+    m_Localized: Research and fabricate this module at Suppliers.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006255
+    m_Localized: Buy this module at Suppliers or recover it from a supply cache.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006256
+    m_Localized: OPEN SUPPLIERS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006257
+    m_Localized: YOUR HALO
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006258
+    m_Localized: CHOOSE A MODULE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006259
+    m_Localized: ATTRIBUTE COMPARISON
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006260
+    m_Localized: CURRENT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006261
+    m_Localized: PREVIEW
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006262
+    m_Localized: REMOVE MODULE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006263
+    m_Localized: '{0} / {1} {2}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006264
+    m_Localized: '{0} / {1}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006265
+    m_Localized: '{0} E'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006266
+    m_Localized: '{0:0.##} s'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006267
+    m_Localized: "{0:0.##}\xB0"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006268
+    m_Localized: '{0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006269
+    m_Localized: '{0:0.##}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006270
+    m_Localized: INSTALLED ON ANOTHER HALO
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6439128295006271
+    m_Localized: Remove this module from its other halo to use it here.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

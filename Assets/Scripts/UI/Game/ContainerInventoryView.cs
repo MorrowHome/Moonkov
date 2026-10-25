@@ -60,6 +60,7 @@ namespace Unity.MP_FPS.Client
             if (m_ReadOnlyReason == reason) return;
             CancelDrag(); m_ReadOnlyReason = reason;
             MoonkovLocalization.Set(m_Message, reason ?? "");
+            RefreshWorkshop();
         }
         public ContainerInventoryView(VisualElement parent, bool showStash, Action<InventoryCommand> send,
             Action<InventoryItem> useMedical = null, Action<InventoryItem> useConsumable = null, Action<InventoryItem> drop = null)
@@ -107,6 +108,10 @@ namespace Unity.MP_FPS.Client
             stashPlaceholder.RemoveFromHierarchy();
             if (showStash)
             {
+                var workshop = new Button(OpenWorkshop) { name = "inventoryHaloWorkshop" };
+                workshop.AddToClassList("inventory-halo-workshop");
+                MoonkovLocalization.Set(workshop, "HALO MODIFICATION");
+                m_CharacterPane.Insert(1, workshop);
                 MoonkovLocalization.Set(m_Root.Q<Label>("lootTitle"), "个人仓库");
                 MoonkovLocalization.Set(m_Root.Q<Label>("lootCaption"), "拖动整理 · 双击容器打开 · Ctrl／Shift 点击转移");
                 m_Root.Q("inventoryQuickbarDock").style.display = DisplayStyle.None;
@@ -180,6 +185,7 @@ namespace Unity.MP_FPS.Client
             }
             string layout = LayoutKey(graph);
             bool changed = m_RenderedVersion == int.MinValue || m_RenderedLayout != layout || m_LootId!=lootId || m_DroppedItem!=droppedItem || m_CorpseCharacterIndex!=corpseCharacterIndex;
+            bool workshopChanged = changed || m_RenderedVersion != (graph?.Version ?? -1) || operationCompleted && m_Busy || message != null;
             m_Graph = graph;m_LootId=lootId;m_DroppedItem=droppedItem;
             m_CorpseCharacterIndex = corpseCharacterIndex; m_CorpseEquipmentSlots = corpseEquipmentSlots;
             if (operationCompleted) m_Busy = false;
@@ -189,6 +195,8 @@ namespace Unity.MP_FPS.Client
             if(changed)m_Character?.SetProtectionInventory(graph);
             if (message != null) MoonkovLocalization.Set(m_Message, message);
             else if (!m_Busy && graph != null) MoonkovLocalization.Set(m_Message, m_ReadOnlyReason ?? "");
+            if (operationCompleted) m_WorkshopMessage = message;
+            if (workshopChanged) RefreshWorkshop();
         }
         public void Show()
         {
@@ -199,6 +207,7 @@ namespace Unity.MP_FPS.Client
         public void Suspend()
         {
             m_PortraitShowing = false;
+            ReleaseWorkshop();
             CancelDrag(); m_HoveredItemId = m_SelectedItemId = null; m_Windows.CloseAll(); m_Open.Clear();
             ReleaseOperatorPortrait();
         }
@@ -441,7 +450,7 @@ namespace Unity.MP_FPS.Client
             command.ExpectedVersion=m_Graph.Version;
             var error=m_Graph.Clone().TryApply(command);
             if (error!=InventoryError.None) { MoonkovAudio.Error(); MoonkovLocalization.Set(m_Message, "Move blocked: {0}", error.ToString()); return; }
-            m_Busy=true; MoonkovLocalization.Set(m_Message, "UPDATING INVENTORY…"); m_Send(command);
+            m_Busy=true; MoonkovLocalization.Set(m_Message, "UPDATING INVENTORY…"); RefreshWorkshop(); m_Send(command);
         }
         public void CancelDrag() => m_Drag?.Cancel();
         private void FocusChanged(bool focused) { if (!focused) CancelDrag(); }

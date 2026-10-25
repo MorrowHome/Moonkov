@@ -24,6 +24,8 @@
 .inventory-slot-item { position: absolute; left: 7px; right: 5px; bottom: 6px; font-size: 9px; }
 .inventory-view .inventory-slot-item { color: rgba(236, 236, 230, 0.75); }
 .inventory-weight { font-size: 11px; margin-top: 10px; margin-bottom: 8px; -unity-font-definition: url("../../UI Toolkit/RobotoMono-Medium.ttf"); }
+.inventory-warehouse .inventory-halo-workshop { min-height: 36px; margin: 6px 0; padding: 6px 12px; border-width: 1px; border-color: #3d9db0; border-radius: 6px; background-color: #082c36; color: #4ccce6; font-size: 14px; letter-spacing: 0; }
+.inventory-warehouse .inventory-halo-workshop:hover, .inventory-warehouse .inventory-halo-workshop:focus { background-color: #093844; border-color: #4ccce6; }
 .inventory-containers { flex-grow: 1; min-width: 0; min-height: 0; }
 .inventory-with-stash .inventory-containers { width: 25%; flex-grow: 0; margin-right: 2%; }
 .inventory-stash { flex-grow: 1; min-width: 0; min-height: 0; background-color: rgba(255, 255, 255, 0.025); border-width: 1px; border-color: rgba(255, 255, 255, 0.08); border-top-width: 2px; border-top-color: #FFE11A; padding: 14px; }

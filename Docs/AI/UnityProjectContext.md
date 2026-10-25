@@ -19,7 +19,7 @@
 - DollSinger 地面动画使用 MoveX / MoveZ 的身体坐标方向树，AimBlend 混合 Locomotion Pack 与 Pistol 包；非瞄准前向 Walk / Run、Halo Aim 手势层、空中护裙保持原资源。网络方向复用 ControllerState.AnimatorMotion，无新增 Ghost 字段。原地副本及重建工具见 `Docs/DollSingerLocomotion.md`。
 - DollSinger 原地转身使用腿部 Turn In Place 层；本地身体 yaw／已有网络 CurrentRotation 驱动左右挪步和播放速度。镜头独立旋转不触发，移动和空中关闭；Root 与上身不参与此层，未添加脚部 IK。最终观感由用户 Play 确认。
 - Unity Test Framework 已安装；本次迁移使用针对性编译、资产引用与 Play Mode 冒烟验证，没有引入通用测试架构。
-- 官方 AI Assistant 和 Pipeline 包已存在。2026-10-25 本聊天未暴露 Unity MCP 工具，未连接 Editor；CLI 连接状态未验证。后续连接必须核对实际项目路径，不能沿用旧 `FPS_Template` 名称。
+- 官方 AI Assistant 和 Pipeline 包已存在。本聊天未暴露 Unity MCP 工具；2026-10-25 已用本机 6000.5.10f1 的单 Editor 批处理检查改装台。CLI 路径为 `/Users/morrow/.unity/bin/unity`。后续连接必须核对实际项目路径，不能沿用旧 `FPS_Template` 名称。
 - 原有格式以 C# 标准花括号和私有 `m_` 字段为主；月球新代码使用明确序列化私有字段与 `Unity.MP_FPS.Moon` 命名空间。
 
 约束：Markdown 图使用 Mermaid；Unity 验证遵循最小充分原则。不要把月球环境迁移扩大成联机玩法重构，不修改源 MMORPG。
@@ -34,4 +34,4 @@
 
 2026-10-17：DollSinger 姿态扩展使用 Quaternius／KayKit 的 CC0 Humanoid 资源，新增下蹲、趴下、踮脚；输入标志位和现有 ControllerState.StateFlags 传递姿态，本地、预测、服务端共用高度／限速／顶上空间规则。控制器新增 Stances 层，踮脚以脚尖锚定和既有腿部 IK 适配。当前实际项目路径为 `/Users/morrow/UnityProjects/Moonkov`，Unity 6000.5.10f1 可通过已有 Pipeline／CLI 连接。详见 `Docs/DollSingerStances.md`。
 
-2026-10-25：基于 `28373b62` 接手光环改装系统，包括 UI。本次只读复核，未改运行资产或重跑验证。负责范围、主要入口、库存约束与已知 UI 落差见根目录 [HANDOFF.md](../../HANDOFF.md)。
+2026-10-25：本聊天接手光环改装系统，包括 UI。光环页已接入直接操作的原生改装台，全部七种模块可按兼容关系预览，并通过原库存事务安装、替换和拆卸。负责范围、主要入口和库存约束见根目录 [HANDOFF.md](../../HANDOFF.md)。

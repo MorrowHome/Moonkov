@@ -417,14 +417,13 @@ public static class MoonkovUIRuntimeReview
             if (Cases[s_Index] == "item" && s_Root.Q("itemInspection") == null) throw new Exception("Native item inspection window missing");
             if (Cases[s_Index] == "halo")
             {
-                Submit(s_Root.Q<Button>("haloNode0"));
-                if (!s_Root.Q("haloNode0").ClassListContains("terminal-node-selected") ||
-                    s_Root.Q<Label>("haloComponentTitle").text != MoonkovLocalization.Text(InventoryCatalog.Get("halo_capacitor").Name))
-                    throw new Exception("Construction node selection did not update the native inspector");
-                Submit(s_Root.Q<Button>("haloNode4"));
-                if (s_Root.Q("haloComponentArt").Q<Image>().image != Resources.Load<Texture2D>("HaloIcons/Rifle"))
-                    throw new Exception("Construction must retain the real project halo appearance");
-                Evidence.Add("halo: native node submit updates inspector; center selection restores original HaloIcons/Rifle; no inventory transaction");
+                Submit(s_Root.Q<Button>("workshopModulehalo_capacitor"));
+                if (!s_Root.Q("workshopModulehalo_capacitor").ClassListContains("workshop-selected") ||
+                    s_Root.Q<Label>("workshopModuleName").text != MoonkovLocalization.Text(InventoryCatalog.Get("halo_capacitor").Name))
+                    throw new Exception("Module selection did not update the native workshop");
+                if (s_Root.Q("workshopWeaponArt").Q<Image>()?.image != Resources.Load<Texture2D>("HaloIcons/Rifle"))
+                    throw new Exception("Workshop must retain the real project halo appearance");
+                Evidence.Add("halo: native module submit updates workshop; owned halo uses original HaloIcons/Rifle; no inventory transaction");
             }
             Evidence.Add(Cases[s_Index] + ": native runtime panel " + (compact ? "1280x720" : "1600x900") + "; local fixtures; not a gameplay/network acceptance.");
             if (++s_Index < Cases.Length) Build(); else Finish(true);

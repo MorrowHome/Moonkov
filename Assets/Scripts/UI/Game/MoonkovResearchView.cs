@@ -28,6 +28,11 @@ namespace Unity.MP_FPS.Client
             Root.Q<Button>("researchConfirm").clicked += Confirm;
         }
         private void Stage(bool fabricate) { s_Fabricating = fabricate; Present(m_Graph, m_Ready, m_Busy, m_Pending); }
+        public void SelectMooncore(InventoryGraph graph)
+        {
+            s_Selected = AlienBiology.MooncoreResearch.Code;
+            s_Fabricating = graph != null && AlienBiology.MooncoreResearch.Unlocked(graph);
+        }
         public void Present(InventoryGraph graph, bool ready, bool busy, bool pending)
         {
             m_Graph = graph; m_Ready = ready; m_Busy = busy; m_Pending = pending;

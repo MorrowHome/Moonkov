@@ -31,6 +31,7 @@ namespace Unity.MP_FPS.Client
         public event Action Navigating;
         public event Action LoadoutShowing;
         public event Action HaloModificationRequested;
+        public event Action<VisualElement> HaloWorkshopShowing;
 
         public MoonkovTerminal(VisualElement root, Action prepare)
         {
@@ -240,48 +241,16 @@ namespace Unity.MP_FPS.Client
         private void Halo()
         {
             TerminalLayout.Populate(m_Content, "Halo");
-            m_Content.Q<Button>("modifyHalo").clicked += () => HaloModificationRequested?.Invoke();
-            var schematic = m_Content.Q<VisualElement>(className: "terminal-halo-schematic");
-            var nodes = schematic.Query<Button>(className: "terminal-node").ToList();
-            string[] codes = { "halo_capacitor", "halo_charge_bridge", "halo_focus_lens", "halo_fan_array", "rifle", "halo_pulse_controller", "halo_hit_marker" };
-            for (int i = 0; i < nodes.Count; i++)
-            {
-                int index = i;
-                var button = nodes[i];
-                MoonkovLocalization.Set(button.Q<Label>(className: "halo-node-title"), global::Unity.MP_FPS.Inventory.InventoryCatalog.Get(codes[i]).Name);
-                var art = new StashItemArt(codes[i]);
-                art.style.position = Position.Absolute; art.style.left = art.style.right = art.style.top = art.style.bottom = 0;
-                button.Q(className: "halo-node-art").Add(art);
-                button.clicked += () => DescribeNode(index);
-                button.RegisterCallback<FocusInEvent>(_ => DescribeNode(index));
-                TerminalMotion.Fade(button, .45f + i * .08f, .4f);
-            }
-            var weapon = WeaponManager.Instance != null && WeaponManager.Instance.WeaponRegistry != null ? WeaponManager.Instance.WeaponRegistry.GetWeaponData(2) : null;
-            var meters = m_Content.Query<ArcMeter>().ToList();
-            float[] values = { weapon != null ? weapon.Damage / 100f : 0, weapon != null ? weapon.MagazineSize / 60f : 0, weapon != null ? weapon.HitscanRange / 300f : 0 };
-            string[] display = { weapon != null ? weapon.Damage.ToString() : "—", weapon != null ? weapon.MagazineSize.ToString() : "—", weapon != null ? weapon.HitscanRange.ToString("0") : "—" };
-            for (int i = 0; i < meters.Count; i++) { meters[i].Value = values[i]; meters[i].Q<Label>(className: "terminal-meter-value").text = display[i]; }
-            m_Content.Q<Label>("statValue1").text = display[0];
-            m_Content.Q<Label>("statValue2").text = display[1];
-            m_Content.Q<Label>("statValue3").text = weapon != null ? display[2] + " m" : "—";
-            DescribeNode(4);
+            var host = m_Content.Q("haloWorkshopHost");
+            host.styleSheets.Add(Resources.Load<StyleSheet>("Moonkov/UI/HaloWorkshop"));
+            if (HaloWorkshopShowing != null) HaloWorkshopShowing(host);
+            else m_Content.Q<Button>("modifyHalo").clicked += () => HaloModificationRequested?.Invoke();
         }
-        private void DescribeNode(int index)
+
+        public void OpenWorkshopSupply(bool research, string moduleCode = null)
         {
-            string[] codes = { "halo_capacitor", "halo_charge_bridge", "halo_focus_lens", "halo_fan_array", "rifle", "halo_pulse_controller", "halo_hit_marker" };
-            string code = codes[index];
-            MoonkovLocalization.Set(m_Content.Q<Label>("haloComponentTitle"), global::Unity.MP_FPS.Inventory.InventoryCatalog.Get(code).Name);
-            MoonkovLocalization.Set(m_Content.Q<Label>("haloComponentDescription"), index == 4
-                ? "Choose an owned halo to install, replace or remove compatible modules in storage."
-                : global::Unity.MP_FPS.Inventory.HaloModules.Description(code));
-            var image = m_Content.Q("haloComponentArt"); image.Clear();
-            var art = new StashItemArt(code); art.style.flexGrow = 1; image.Add(art);
-            var nodes = m_Content.Query<Button>(className: "terminal-node").ToList();
-            for (int i = 0; i < nodes.Count; i++)
-            {
-                nodes[i].EnableInClassList("terminal-node-selected", i == index);
-                nodes[i].Q<ArchiveCardFrame>()?.MarkDirtyRepaint();
-            }
+            Navigate(3);
+            OpenShop(research ? "HALO RESEARCH" : "THE SALVAGE ENGINEER", research: research, initialProduct: moduleCode);
         }
 
         private void Suppliers()
@@ -299,11 +268,11 @@ namespace Unity.MP_FPS.Client
         {
             OpenShop(name);
         }
-        private void OpenShop(string name, bool recovery = false, bool research = false)
+        private void OpenShop(string name, bool recovery = false, bool research = false, string initialProduct = null)
         {
             var window = m_Windows.Open(name);
             new MoonkovShopView(window, () => { m_Windows.Close(window); Navigate(1); }, recovery,
-                () => { m_Windows.Close(window); HaloModificationRequested?.Invoke(); }, research);
+                () => { m_Windows.Close(window); HaloModificationRequested?.Invoke(); }, research, initialProduct);
         }
 
         private void Tasks()

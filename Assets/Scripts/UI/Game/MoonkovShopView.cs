@@ -18,23 +18,27 @@ namespace Unity.MP_FPS.Client
         private readonly Label m_InspectTitle, m_InspectDetail;
         private VisualElement m_SelectedRow;
         private string m_SelectedCode;
+        private readonly string m_InitialProduct;
         private readonly CancellationTokenSource m_Stop = new CancellationTokenSource();
         private ShopOffer[] m_Offers;
         private ShopCommand m_Pending;
         private bool m_Busy, m_Disposed;
         private int m_Tab;
 
-        public MoonkovShopView(VisualElement window, Action openStorage, bool recovery = false, Action openWorkshop = null, bool research = false)
+        public MoonkovShopView(VisualElement window, Action openStorage, bool recovery = false, Action openWorkshop = null, bool research = false, string initialProduct = null)
         {
             m_Window = window; m_Tab = research ? 3 : recovery ? 2 : 0; window.AddToClassList("terminal-shop-window");
+            m_InitialProduct = initialProduct;
             window.styleSheets.Add(UnityEngine.Resources.Load<StyleSheet>("Moonkov/UI/Research"));
             var catalog = TerminalLayout.Clone("Components/ShopCatalog", "shopCatalog"); window.Add(catalog);
             m_Research = new MoonkovResearchView((operation, code) => Order(operation, code, null, 1), openWorkshop);
+            if (initialProduct == "halo_mooncore_recycler") m_Research.SelectMooncore(PlayerProfileClient.Inventory);
             catalog.Insert(3, m_Research.Root);
             m_InspectArt = catalog.Q("inspectArt"); m_InspectTitle = catalog.Q<Label>("inspectTitle"); m_InspectDetail = catalog.Q<Label>("inspectDetail");
             var head = catalog.Q("shopHead");
             m_Balance = MoonkovTerminal.Text(head, "MOON DUST / —", "terminal-heading");
             MoonkovTerminal.ActionButton(head, "OPEN STORAGE", openStorage);
+            if (initialProduct != null && openWorkshop != null) MoonkovTerminal.ActionButton(head, "GO TO HALO MODIFICATION", openWorkshop);
             var tabs = catalog.Q("shopTabs");
             string[] names = { "BUY", "SELL", "EMERGENCY SUPPLY", "HALO RESEARCH" }; m_Tabs = new Button[4];
             for (int i = 0; i < names.Length; i++)
@@ -74,7 +78,7 @@ namespace Unity.MP_FPS.Client
                 MoonkovTerminal.Text(m_List, "Finish or leave your active raid before trading or requesting emergency supplies.", "terminal-copy");
             if (m_Offers == null)
             { MoonkovTerminal.Text(m_List, m_Busy ? "Connecting to supplier…" : "Sign in and reopen this supplier to load current stock.", "terminal-copy"); return; }
-            if (m_Tab == 0) foreach (var offer in m_Offers) { if (offer.BuyDust >= 0) BuyRow(offer); }
+            if (m_Tab == 0) foreach (var offer in m_Offers.OrderByDescending(offer => offer.Code == m_InitialProduct)) { if (offer.BuyDust >= 0) BuyRow(offer); }
             else if (m_Tab == 1) SellRows();
             else if(m_Tab==2) Recovery();
             else Research();

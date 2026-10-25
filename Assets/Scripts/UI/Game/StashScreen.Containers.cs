@@ -46,6 +46,9 @@ namespace Unity.MP_FPS.Client
             m_RecoveryPanel.Add(m_RecoveryList);m_Containers.Element.Insert(0,m_RecoveryPanel);MoonkovLocalization.Bind(m_RecoveryPanel);
             m_Terminal.LoadoutShowing += ShowContainers; m_Terminal.Navigating += m_Containers.Suspend;
             m_Terminal.HaloModificationRequested += OpenHaloWorkshop;
+            m_Terminal.HaloWorkshopShowing += ShowHaloWorkshop;
+            m_Containers.WorkshopRequested += OpenHaloWorkshopForItem;
+            m_Containers.WorkshopSupplyRequested += OpenWorkshopSupply;
             if (m_Preview)
             {
                 m_PreviewInventory=InventoryGraph.Create();
@@ -60,7 +63,18 @@ namespace Unity.MP_FPS.Client
             PresentContainers();
         }
         private void ShowContainers() { PresentContainers(); m_Containers.Show(); }
-        private void OpenHaloWorkshop() { m_Terminal.Navigate(1); m_Containers.OpenWorkshop(); }
+        private void OpenHaloWorkshop() { m_Terminal.Navigate(2); }
+        private void OpenHaloWorkshopForItem(string itemId)
+        {
+            if (itemId != null) m_Containers.SelectWorkshopWeapon(itemId);
+            OpenHaloWorkshop();
+        }
+        private void ShowHaloWorkshop(VisualElement host)
+        {
+            PresentContainers();
+            m_Containers.AttachWorkshop(host);
+        }
+        private void OpenWorkshopSupply(bool research) => m_Terminal.OpenWorkshopSupply(research, m_Containers.WorkshopSupplyCode);
         private void PresentContainers()
         {
             if (m_Containers == null) return;
@@ -116,6 +130,9 @@ namespace Unity.MP_FPS.Client
             PlayerProfileClient.InventoryChanged -= PresentContainers;
             m_Terminal.LoadoutShowing -= ShowContainers;
             m_Terminal.HaloModificationRequested -= OpenHaloWorkshop;
+            m_Terminal.HaloWorkshopShowing -= ShowHaloWorkshop;
+            m_Containers.WorkshopRequested -= OpenHaloWorkshopForItem;
+            m_Containers.WorkshopSupplyRequested -= OpenWorkshopSupply;
             m_Terminal.Navigating -= m_Containers.Suspend; m_Containers.Dispose();
         }
     }
