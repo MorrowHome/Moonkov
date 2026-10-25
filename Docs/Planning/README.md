@@ -1,10 +1,15 @@
 # Moonkov 项目策划阅读入口 / Project planning index
 
-这里保存完整的双语策划，不是摘要。两份文件具有相同需求ID、内容范围、阶段计划和验收边界。
+这里保存长期规划和专项策划。两份双语长期规划具有相同需求ID、内容范围、阶段计划和验收边界。
 
+- [单人战役完整策划](Campaign/README.md)：2026-10-25 新增。八章故事、24 个主线、8 个可选支线、持久追踪与任务系统规格。结局为携证乘船返回地球。本轮为待评审策划，确认后实装。
 - [中文完整策划](Moonkov_Project_Plan.zh-CN.md)
 - [Complete English plan](Moonkov_Project_Plan.en.md)
 - [随机局内任务系统](Missions/README.md)：无需接取的随机任务、MC00 具体流程、界面追踪与后端结算；分阶段实现与验证范围见其中的实施状态。
+
+单人战役的新方向以 Campaign 为阅读入口。历史长期规划中的“任务后加”和随机事件设计，不能当成已完成这条战役。现有随机事件仍是可复用基础。
+
+The new [solo campaign proposal](Campaign/README.md) contains eight chapters, 24 main missions, eight optional missions, and the tracking and persistence specification. The ending brings the protagonist and the evidence back to Earth by spacecraft. It is a design deliverable awaiting review, not an implemented campaign.
 
 ## 中文阅读顺序
 
