@@ -13,6 +13,7 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.table import WD_TABLE_ALIGNMENT, WD_CELL_VERTICAL_ALIGNMENT
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
+from PIL import Image
 
 
 ROOT = Path(__file__).resolve().parent
@@ -118,6 +119,55 @@ def add_table(doc, block, lang):
     gap.add_run().font.size = Pt(2)
 
 
+def add_screenshot(doc, block, lang):
+    """Keep a UI name, implementation image and short caption on one page."""
+    image_path = ROOT / block["image"]
+    if not image_path.is_file():
+        raise FileNotFoundError(f"Screenshot not found: {image_path}")
+
+    title = add_text(doc, block["title"][lang], lang, size=12.5, bold=True)
+    title.paragraph_format.line_spacing = Pt(17)
+    title.paragraph_format.space_before = Pt(0)
+    title.paragraph_format.space_after = Pt(3)
+    title.paragraph_format.keep_with_next = True
+    title.paragraph_format.keep_together = True
+
+    text = block.get("text", {}).get(lang, "")
+    if text:
+        description = add_text(doc, text, lang, size=10)
+        description.paragraph_format.line_spacing = Pt(13)
+        description.paragraph_format.space_after = Pt(3)
+        description.paragraph_format.keep_with_next = True
+        description.paragraph_format.keep_together = True
+
+    with Image.open(image_path) as source:
+        pixel_width, pixel_height = source.size
+    if pixel_width <= 0 or pixel_height <= 0:
+        raise ValueError(f"Screenshot has invalid dimensions: {image_path}")
+    width = min(6.9, 3.75 * pixel_width / pixel_height)
+    height = width * pixel_height / pixel_width
+
+    picture = doc.add_paragraph()
+    picture.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    picture.paragraph_format.line_spacing = 1
+    picture.paragraph_format.space_before = Pt(0)
+    picture.paragraph_format.space_after = Pt(2)
+    picture.paragraph_format.keep_with_next = True
+    picture.paragraph_format.keep_together = True
+    snap = OxmlElement("w:snapToGrid")
+    snap.set(qn("w:val"), "0")
+    picture._p.get_or_add_pPr().append(snap)
+    shape = picture.add_run().add_picture(str(image_path), width=Inches(width), height=Inches(height))
+    shape._inline.docPr.set("descr", block["title"][lang])
+
+    note = add_text(doc, block.get("note", {}).get(lang, ""), lang, size=9.5)
+    note.paragraph_format.line_spacing = Pt(12)
+    note.paragraph_format.space_before = Pt(0)
+    note.paragraph_format.space_after = Pt(8)
+    note.paragraph_format.keep_with_next = False
+    note.paragraph_format.keep_together = True
+
+
 def build(lang):
     doc = Document()
     sec = doc.sections[0]
@@ -164,7 +214,8 @@ def build(lang):
     for page_index, page in enumerate(DATA["pages"]):
         if page_index:
             doc.add_page_break()
-        add_text(doc, page["title"][lang], lang, "Title" if page_index == 0 else "Heading 1")
+        if page.get("title"):
+            add_text(doc, page["title"][lang], lang, "Title" if page_index == 0 else "Heading 1")
         for block in page["blocks"]:
             if block["type"] == "p":
                 add_text(doc, block["text"][lang], lang)
@@ -172,6 +223,8 @@ def build(lang):
                 add_text(doc, block["text"][lang], lang, "Heading 2")
             elif block["type"] == "table":
                 add_table(doc, block, lang)
+            elif block["type"] == "screenshot":
+                add_screenshot(doc, block, lang)
             elif block["type"] == "bullets":
                 for item in block["items"]:
                     add_text(doc, item[lang], lang, "List Bullet")
@@ -193,7 +246,10 @@ def build(lang):
                 }
                 add_table(doc, block_table, lang)
 
-    doc.core_properties.title = DATA["pages"][0]["title"][lang]
+    document_title = DATA.get("title") or DATA["pages"][0].get("title") or {
+        "zh": "Moonkov UI 图册", "en": "Moonkov UI Screenshots"
+    }
+    doc.core_properties.title = document_title[lang]
     doc.core_properties.subject = "Functional modules and hierarchy for UI art planning"
     doc.core_properties.author = "Moonkov"
     doc.core_properties.keywords = "Moonkov UI modules hierarchy art brief"

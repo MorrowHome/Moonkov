@@ -1,539 +1,1253 @@
 {
-  "version": "3.0",
+  "version": "4.0",
   "date": "2026-10-25",
   "languages": [
     "zh",
     "en"
   ],
+  "title": {
+    "zh": "Moonkov UI 名称与当前实现",
+    "en": "Moonkov UI Names and Current Implementation"
+  },
+  "entry_count": 44,
   "pages": [
     {
-      "title": {
-        "zh": "Moonkov 现有 UI 清单",
-        "en": "Moonkov Current UI"
-      },
       "blocks": [
         {
-          "type": "p",
+          "type": "screenshot",
+          "title": {
+            "zh": "01  主界面",
+            "en": "01  Main menu"
+          },
+          "image": "images/01-home-dark.jpg",
           "text": {
-            "zh": "2026年10月25日",
-            "en": "25 October 2026"
+            "zh": "月面背景、角色预览、出击/仓库/光环入口、次级导航和资源显示。",
+            "en": "Lunar background, character preview, deployment/stash/Halo cards, secondary navigation and resources."
+          },
+          "note": {
+            "zh": "2026-10-19，历史原生截图，样例状态。",
+            "en": "2026-10-19. Historical native screenshot, sample state."
           }
         },
         {
-          "type": "table",
-          "headers": [
-            {
-              "zh": "UI 名称",
-              "en": "UI name"
-            },
-            {
-              "zh": "当前实现",
-              "en": "Current implementation"
-            }
-          ],
-          "rows": [
-            [
-              {
-                "zh": "主界面",
-                "en": "Main menu"
-              },
-              {
-                "zh": "月面背景、角色预览、出击/仓库/光环入口、次级导航和资源显示。",
-                "en": "Lunar background, character preview, deployment/stash/Halo cards, secondary navigation and resources."
-              }
-            ],
-            [
-              {
-                "zh": "登录与注册",
-                "en": "Sign-in and registration"
-              },
-              {
-                "zh": "账号密码输入、登录、注册、退出账号和错误提示。",
-                "en": "Account and password fields, sign-in, registration, sign-out and error messages."
-              }
-            ],
-            [
-              {
-                "zh": "仓库与装备",
-                "en": "Stash and equipment"
-              },
-              {
-                "zh": "左侧角色与身体装备，中间胸挂、衣兜、工具、背包、保险箱，右侧个人仓库。",
-                "en": "Character and body gear on the left; carried containers and tools in the middle; personal stash on the right."
-              }
-            ],
-            [
-              {
-                "zh": "物品检查与容器窗口",
-                "en": "Item inspection and container windows"
-              },
-              {
-                "zh": "右键查看详情、拆分和操作；容器可单独打开，物品支持拖放和旋转。",
-                "en": "Context-menu inspection, splitting and actions; separate container windows, dragging and rotation."
-              }
-            ],
-            [
-              {
-                "zh": "光环改装台",
-                "en": "Halo workshop"
-              },
-              {
-                "zh": "光环与槽位、兼容模块列表、参数比较；安装、替换、拆卸及改装前后外观预览。",
-                "en": "Halo and slots, compatible module list, stat comparison, install/replace/remove and before/after visual preview."
-              }
-            ],
-            [
-              {
-                "zh": "补给商目录",
-                "en": "Supplier directory"
-              },
-              {
-                "zh": "三个补给商入口，另有应急补给和月核研究入口。",
-                "en": "Three supplier entries, plus emergency supplies and Mooncore research."
-              }
-            ],
-            [
-              {
-                "zh": "商品购买与出售",
-                "en": "Shop"
-              },
-              {
-                "zh": "商品列表、图标、价格、数量、物品说明，以及购买和出售。",
-                "en": "Product list, icons, prices, quantities, descriptions, buying and selling."
-              }
-            ],
-            [
-              {
-                "zh": "应急补给",
-                "en": "Emergency supplies"
-              },
-              {
-                "zh": "显示补给包内容和领取条件；符合条件时可领取。",
-                "en": "Shows bundle contents and eligibility, with a claim action when eligible."
-              }
-            ],
-            [
-              {
-                "zh": "研究与制造",
-                "en": "Research and crafting"
-              },
-              {
-                "zh": "月核与生物研究分区，材料数量与缺口，研究解锁和实体模块制造。",
-                "en": "Mooncore and biology branches, owned/missing materials, research unlocks and physical module crafting."
-              }
-            ],
-            [
-              {
-                "zh": "任务与调查记录",
-                "en": "Tasks and investigation records"
-              },
-              {
-                "zh": "显示三项首次带回记录、调查文字和研究入口；完整战役未接入。",
-                "en": "Three first-recovery records, investigation text and research access; the full campaign is not implemented."
-              }
-            ],
-            [
-              {
-                "zh": "待领取物品",
-                "en": "Recovery inbox"
-              },
-              {
-                "zh": "仓库显示未入库物品，支持单项或全部可入库领取，并提示空间不足。",
-                "en": "Unstored items shown from the stash, with single/all-that-fit claims and insufficient-space feedback."
-              }
-            ],
-            [
-              {
-                "zh": "基地",
-                "en": "Base"
-              },
-              {
-                "zh": "资源显示与仓库入口；建设、工坊和升级未开放。",
-                "en": "Resources and stash access; construction, workshops and upgrades are unavailable."
-              }
-            ],
-            [
-              {
-                "zh": "通讯",
-                "en": "Communications"
-              },
-              {
-                "zh": "联系人、频道和无消息占位；聊天与邮件未接入。",
-                "en": "Contacts, channels and an empty-message placeholder; chat and mail are not implemented."
-              }
-            ],
-            [
-              {
-                "zh": "设置",
-                "en": "Settings"
-              },
-              {
-                "zh": "声音、显示、语言和战斗画面设置。",
-                "en": "Audio, display, language and combat-display settings."
-              }
-            ]
-          ],
-          "widths": [
-            1.8,
-            5.1
-          ]
+          "type": "screenshot",
+          "title": {
+            "zh": "02  登录与注册",
+            "en": "02  Sign-in and registration"
+          },
+          "image": "images/02-account.jpg",
+          "text": {
+            "zh": "账号密码输入、登录、注册、退出账号和错误提示。",
+            "en": "Account and password fields, sign-in, registration, sign-out and error messages."
+          },
+          "note": {
+            "zh": "2026-10-19，历史原生截图，样例状态。账号字段为本地样例。",
+            "en": "2026-10-19. Historical native screenshot, sample state. Account fields contain local sample data."
+          }
         }
       ]
     },
     {
-      "title": {
-        "zh": "出发与连接界面",
-        "en": "Deployment and connection UI"
-      },
       "blocks": [
         {
-          "type": "table",
-          "headers": [
-            {
-              "zh": "UI 名称",
-              "en": "UI name"
-            },
-            {
-              "zh": "当前实现",
-              "en": "Current implementation"
-            }
-          ],
-          "rows": [
-            [
-              {
-                "zh": "出发准备 角色",
-                "en": "Deployment Character"
-              },
-              {
-                "zh": "三角色选择、当前角色展示和已装备物品检查。",
-                "en": "Three character choices, current character preview and equipped-item check."
-              }
-            ],
-            [
-              {
-                "zh": "出发准备 地点",
-                "en": "Deployment Destination"
-              },
-              {
-                "zh": "地点主视觉、区域与信标信息、步骤导航。",
-                "en": "Destination artwork, area/beacon information and step navigation."
-              }
-            ],
-            [
-              {
-                "zh": "出发准备 简报",
-                "en": "Deployment Briefing"
-              },
-              {
-                "zh": "搜集、生存、撤离说明，以及携带电池数量调整。",
-                "en": "Loot, survival and extraction briefing, with carried-battery quantity controls."
-              }
-            ],
-            [
-              {
-                "zh": "出发准备 回收",
-                "en": "Deployment Recovery"
-              },
-              {
-                "zh": "死亡损失和无保障提示；保险合约入口禁用。",
-                "en": "Loss-on-death and uninsured notices; insurance contract action is disabled."
-              }
-            ],
-            [
-              {
-                "zh": "出发准备 确认",
-                "en": "Deployment Confirmation"
-              },
-              {
-                "zh": "角色、地点、装备和携带量汇总，最终出发按钮。",
-                "en": "Character, destination, equipment and carry summary, with final deployment action."
-              }
-            ],
-            [
-              {
-                "zh": "玩法选择",
-                "en": "Mode selection"
-              },
-              {
-                "zh": "远征与赏金玩法入口，支持单人或在线选择。",
-                "en": "Expedition and bounty entries, with solo or online selection."
-              }
-            ],
-            [
-              {
-                "zh": "在线小队",
-                "en": "Online squad"
-              },
-              {
-                "zh": "1–4 人创建/加入、队伍码、名单、准备、合作/对抗、可选匹配和出发。",
-                "en": "Create/join for 1–4 players, squad code, roster, ready, co-op/versus, optional matchmaking and deployment."
-              }
-            ],
-            [
-              {
-                "zh": "LAN 作战室",
-                "en": "LAN room"
-              },
-              {
-                "zh": "房间浏览、创建、直连、成员名单、准备和房主出发。",
-                "en": "Browse/create/direct-join rooms, member list, readiness and host deployment."
-              }
-            ],
-            [
-              {
-                "zh": "高级连接设置",
-                "en": "Advanced connection"
-              },
-              {
-                "zh": "高级连接入口与 Direct/Relay 选择。",
-                "en": "Advanced connection access and Direct/Relay selection."
-              }
-            ],
-            [
-              {
-                "zh": "创建主机弹窗",
-                "en": "Host creation dialog"
-              },
-              {
-                "zh": "主机创建参数与确认、取消操作。",
-                "en": "Host creation fields with confirm and cancel."
-              }
-            ],
-            [
-              {
-                "zh": "地址直连弹窗",
-                "en": "Direct-connect dialog"
-              },
-              {
-                "zh": "地址、端口输入和连接操作。",
-                "en": "Address and port inputs with connection action."
-              }
-            ],
-            [
-              {
-                "zh": "连接状态与加载",
-                "en": "Connection and loading"
-              },
-              {
-                "zh": "等待、加载、错误、重试和原战局重连提示。",
-                "en": "Waiting, loading, errors, retry and reconnect-to-session feedback."
-              }
-            ],
-            [
-              {
-                "zh": "赏金准备",
-                "en": "Bounty staging"
-              },
-              {
-                "zh": "组队、邀请码、名单和准备；单人模式隐藏联机组队控件。",
-                "en": "Team setup, invite code, roster and readiness; solo hides online team controls."
-              }
-            ]
-          ],
-          "widths": [
-            1.8,
-            5.1
-          ]
+          "type": "screenshot",
+          "title": {
+            "zh": "03  仓库与装备",
+            "en": "03  Stash and equipment"
+          },
+          "image": "images/03-warehouse.jpg",
+          "text": {
+            "zh": "左侧角色与身体装备，中间胸挂、衣兜、工具、背包、保险箱，右侧个人仓库。",
+            "en": "Character and body gear on the left; carried containers and tools in the middle; personal stash on the right."
+          },
+          "note": {
+            "zh": "2026-10-25，当前原生预览，样例状态。",
+            "en": "2026-10-25. Current native preview, sample state."
+          }
+        },
+        {
+          "type": "screenshot",
+          "title": {
+            "zh": "04  物品检查与容器窗口",
+            "en": "04  Item inspection and container windows"
+          },
+          "image": "images/04-item.jpg",
+          "text": {
+            "zh": "右键查看详情、拆分和操作；容器可单独打开，物品支持拖放和旋转。",
+            "en": "Context-menu inspection, splitting and actions; separate container windows, dragging and rotation."
+          },
+          "note": {
+            "zh": "2026-10-19，历史原生截图，样例状态。历史物品检查样例。",
+            "en": "2026-10-19. Historical native screenshot, sample state. Historical item-inspection sample."
+          }
         }
       ]
     },
     {
-      "title": {
-        "zh": "局内与结算界面",
-        "en": "In-session and result UI"
-      },
       "blocks": [
         {
-          "type": "table",
-          "headers": [
-            {
-              "zh": "UI 名称",
-              "en": "UI name"
-            },
-            {
-              "zh": "当前实现",
-              "en": "Current implementation"
-            }
-          ],
-          "rows": [
-            [
-              {
-                "zh": "战斗 HUD",
-                "en": "Combat HUD"
-              },
-              {
-                "zh": "生命、武器、弹药/充能、时间、氧气、饥渴、护盾与供能，以及战斗提示。",
-                "en": "Health, weapon, ammo/charge, time, oxygen, nutrition, shield/energy and combat feedback."
-              }
-            ],
-            [
-              {
-                "zh": "局内背包",
-                "en": "In-session inventory"
-              },
-              {
-                "zh": "角色装备、随身容器、保险箱、三个工具槽，底部停靠九格快捷栏。",
-                "en": "Gear, carried containers, secure container, three tool slots and a docked nine-slot bar."
-              }
-            ],
-            [
-              {
-                "zh": "搜刮界面",
-                "en": "Looting"
-              },
-              {
-                "zh": "自己的装备与箱子/尸体/地面包同时显示；支持搜索、拿取和拖放。",
-                "en": "Own inventory alongside a crate/corpse/dropped bag, with search, take and drag."
-              }
-            ],
-            [
-              {
-                "zh": "健康与治疗",
-                "en": "Health and treatment"
-              },
-              {
-                "zh": "七部位人体图、部位血量、医疗选择、治疗进度和中断提示。",
-                "en": "Seven-part body diagram, part health, medical choices, treatment progress and interruption feedback."
-              }
-            ],
-            [
-              {
-                "zh": "快捷栏",
-                "en": "Quick slots"
-              },
-              {
-                "zh": "1–9 九格绑定，数字键选中、左键使用；显示图标、数量和不可用状态。",
-                "en": "Nine bindable slots; number selects, primary click uses; icons, counts and unavailable states."
-              }
-            ],
-            [
-              {
-                "zh": "局内任务提示与详情",
-                "en": "Objective display and details"
-              },
-              {
-                "zh": "任务步骤、区域/楼层、距离、节点和设备进度；J 打开详情。",
-                "en": "Objective steps, area/floor, distance, device nodes and progress; J opens details."
-              }
-            ],
-            [
-              {
-                "zh": "战术地图与工具读数",
-                "en": "Tactical map and tool readouts"
-              },
-              {
-                "zh": "M 打开卫星地图；位置、导航点、撤离和补给图层。另有指南针和测距仪读数。",
-                "en": "M opens the satellite map with position, waypoint, exits and supply layer; separate compass/rangefinder readouts."
-              }
-            ],
-            [
-              {
-                "zh": "光环灯光面板",
-                "en": "Halo lighting panel"
-              },
-              {
-                "zh": "灯光开关、参数调节和当前状态。",
-                "en": "Lighting toggle, parameter controls and current state."
-              }
-            ],
-            [
-              {
-                "zh": "世界交互提示",
-                "en": "World interaction prompts"
-              },
-              {
-                "zh": "拾取、搜索、气闸、灯光、开关和设备的名称、按键与操作进度。",
-                "en": "Names, keys and progress for pickup, search, airlocks, lights, switches and devices."
-              }
-            ],
-            [
-              {
-                "zh": "撤离提示",
-                "en": "Extraction display"
-              },
-              {
-                "zh": "撤离条件、范围内状态、倒计时，以及受阻或中断提示。",
-                "en": "Eligibility, in-zone state, countdown and blocked/interrupted feedback."
-              }
-            ],
-            [
-              {
-                "zh": "行动结果",
-                "en": "Session result"
-              },
-              {
-                "zh": "撤离成功、死亡或超时，以及本局结果摘要。",
-                "en": "Extraction, death or timeout, with the session summary."
-              }
-            ],
-            [
-              {
-                "zh": "结算物资",
-                "en": "Cargo result"
-              },
-              {
-                "zh": "结算第二页，显示本局物品与带回情况。",
-                "en": "Second result page, listing session items and recovered cargo."
-              }
-            ],
-            [
-              {
-                "zh": "入库与返回",
-                "en": "Storage result"
-              },
-              {
-                "zh": "结算第三页，显示保存、入库、失败重试与返回。",
-                "en": "Third result page: saving, storage, retry and return."
-              }
-            ],
-            [
-              {
-                "zh": "暂停菜单",
-                "en": "Pause menu"
-              },
-              {
-                "zh": "在游戏画面上显示继续、返回主界面和退出。",
-                "en": "Overlay on the game view with resume, main menu and exit."
-              }
-            ],
-            [
-              {
-                "zh": "死亡提示",
-                "en": "Death display"
-              },
-              {
-                "zh": "显示可取得的死亡信息，并转入结算。",
-                "en": "Shows available death information and proceeds to settlement."
-              }
-            ],
-            [
-              {
-                "zh": "赏金战斗界面",
-                "en": "Bounty combat display"
-              },
-              {
-                "zh": "阶段、目标、放逐、赏金归属、队友状态、暗视、救援和出口提示。",
-                "en": "Phase, target, banishment, bounty ownership, teammates, dark sight, revival and exit feedback."
-              }
-            ],
-            [
-              {
-                "zh": "赏金结束界面",
-                "en": "Bounty result"
-              },
-              {
-                "zh": "结果与保存状态，返回飞船或准备下一局。",
-                "en": "Outcome and save status, with return to ship or prepare next round."
-              }
-            ]
-          ],
-          "widths": [
-            1.8,
-            5.1
-          ]
+          "type": "screenshot",
+          "title": {
+            "zh": "05  光环改装台",
+            "en": "05  Halo workshop"
+          },
+          "image": "images/05-workshop-terminal-template-zh-native.jpg",
+          "text": {
+            "zh": "光环与槽位、兼容模块列表、参数比较；安装、替换、拆卸及改装前后外观预览。",
+            "en": "Halo and slots, compatible module list, stat comparison, install/replace/remove and before/after visual preview."
+          },
+          "note": {
+            "zh": "2026-10-25，当前原生预览，样例状态。改装台原生预览样例。",
+            "en": "2026-10-25. Current native preview, sample state. Native workshop preview sample."
+          }
+        },
+        {
+          "type": "screenshot",
+          "title": {
+            "zh": "06  补给商目录",
+            "en": "06  Supplier directory"
+          },
+          "image": "images/06-suppliers.jpg",
+          "text": {
+            "zh": "三个补给商入口，另有应急补给和月核研究入口。",
+            "en": "Three supplier entries, plus emergency supplies and Mooncore research."
+          },
+          "note": {
+            "zh": "2026-10-19，历史原生截图，样例状态。",
+            "en": "2026-10-19. Historical native screenshot, sample state."
+          }
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "screenshot",
+          "title": {
+            "zh": "07  商品购买与出售",
+            "en": "07  Shop"
+          },
+          "image": "images/07-shop.jpg",
+          "text": {
+            "zh": "商品列表、图标、价格、数量、物品说明，以及购买和出售。",
+            "en": "Product list, icons, prices, quantities, descriptions, buying and selling."
+          },
+          "note": {
+            "zh": "2026-10-19，历史原生截图，样例状态。",
+            "en": "2026-10-19. Historical native screenshot, sample state."
+          }
+        },
+        {
+          "type": "screenshot",
+          "title": {
+            "zh": "08  应急补给",
+            "en": "08  Emergency supplies"
+          },
+          "image": "images/08-emergency.jpg",
+          "text": {
+            "zh": "显示补给包内容和领取条件；符合条件时可领取。",
+            "en": "Shows bundle contents and eligibility, with a claim action when eligible."
+          },
+          "note": {
+            "zh": "2026-10-19，历史原生截图，样例状态。",
+            "en": "2026-10-19. Historical native screenshot, sample state."
+          }
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "screenshot",
+          "title": {
+            "zh": "09  研究与制造",
+            "en": "09  Research and crafting"
+          },
+          "image": "images/09-research.jpg",
+          "text": {
+            "zh": "月核与生物研究分区，材料数量与缺口，研究解锁和实体模块制造。",
+            "en": "Mooncore and biology branches, owned/missing materials, research unlocks and physical module crafting."
+          },
+          "note": {
+            "zh": "2026-10-25，当前原生预览，样例状态。",
+            "en": "2026-10-25. Current native preview, sample state."
+          }
+        },
+        {
+          "type": "screenshot",
+          "title": {
+            "zh": "10  任务与调查记录",
+            "en": "10  Tasks and investigation records"
+          },
+          "image": "images/10-tasks.jpg",
+          "text": {
+            "zh": "显示三项首次带回记录、调查文字和研究入口；完整战役未接入。",
+            "en": "Three first-recovery records, investigation text and research access; the full campaign is not implemented."
+          },
+          "note": {
+            "zh": "2026-10-19，历史原生截图，样例状态。",
+            "en": "2026-10-19. Historical native screenshot, sample state."
+          }
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "screenshot",
+          "title": {
+            "zh": "11  待领取物品",
+            "en": "11  Recovery inbox"
+          },
+          "image": "images/11-recovery-inbox.jpg",
+          "text": {
+            "zh": "仓库显示未入库物品，支持单项或全部可入库领取，并提示空间不足。",
+            "en": "Pending items can be claimed one at a time or together when space permits; shows insufficient-space feedback."
+          },
+          "note": {
+            "zh": "2026-10-25，当前原生预览，样例状态。 截图局部放大。",
+            "en": "2026-10-25. Current native preview, sample state. Enlarged screenshot detail."
+          }
+        },
+        {
+          "type": "screenshot",
+          "title": {
+            "zh": "12  基地",
+            "en": "12  Base"
+          },
+          "image": "images/12-base.jpg",
+          "text": {
+            "zh": "资源显示与仓库入口；建设、工坊和升级未开放。",
+            "en": "Resources and stash access; construction, workshops and upgrades are unavailable."
+          },
+          "note": {
+            "zh": "2026-10-19，历史原生截图，样例状态。",
+            "en": "2026-10-19. Historical native screenshot, sample state."
+          }
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "screenshot",
+          "title": {
+            "zh": "13  通讯",
+            "en": "13  Communications"
+          },
+          "image": "images/13-comms.jpg",
+          "text": {
+            "zh": "联系人、频道和无消息占位；聊天与邮件未接入。",
+            "en": "Contacts, channels and an empty-message placeholder; chat and mail are not implemented."
+          },
+          "note": {
+            "zh": "2026-10-19，历史原生截图，样例状态。",
+            "en": "2026-10-19. Historical native screenshot, sample state."
+          }
+        },
+        {
+          "type": "screenshot",
+          "title": {
+            "zh": "14  设置",
+            "en": "14  Settings"
+          },
+          "image": "images/14-settings.jpg",
+          "text": {
+            "zh": "声音、显示、语言和战斗画面设置。",
+            "en": "Audio, display, language and combat-display settings."
+          },
+          "note": {
+            "zh": "2026-10-19，历史原生截图，样例状态。",
+            "en": "2026-10-19. Historical native screenshot, sample state."
+          }
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "screenshot",
+          "title": {
+            "zh": "15  出发准备 角色",
+            "en": "15  Deployment Character"
+          },
+          "image": "images/15-operator.jpg",
+          "text": {
+            "zh": "三角色选择、当前角色展示和已装备物品检查。",
+            "en": "Three character choices, current character preview and equipped-item check."
+          },
+          "note": {
+            "zh": "2026-10-19，历史原生截图，样例状态。历史角色页。",
+            "en": "2026-10-19. Historical native screenshot, sample state. Historical character page."
+          }
+        },
+        {
+          "type": "screenshot",
+          "title": {
+            "zh": "16  出发准备 地点",
+            "en": "16  Deployment Destination"
+          },
+          "image": "images/16-location.jpg",
+          "text": {
+            "zh": "地点主视觉、区域与信标信息、步骤导航。",
+            "en": "Destination artwork, area/beacon information and step navigation."
+          },
+          "note": {
+            "zh": "2026-10-19，历史原生截图，样例状态。",
+            "en": "2026-10-19. Historical native screenshot, sample state."
+          }
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "screenshot",
+          "title": {
+            "zh": "17  出发准备 简报",
+            "en": "17  Deployment Briefing"
+          },
+          "image": "images/17-briefing.jpg",
+          "text": {
+            "zh": "搜集、生存、撤离说明，以及携带电池数量调整。",
+            "en": "Loot, survival and extraction briefing, with carried-battery quantity controls."
+          },
+          "note": {
+            "zh": "2026-10-19，历史原生截图，样例状态。",
+            "en": "2026-10-19. Historical native screenshot, sample state."
+          }
+        },
+        {
+          "type": "screenshot",
+          "title": {
+            "zh": "18  出发准备 回收",
+            "en": "18  Deployment Recovery"
+          },
+          "image": "images/18-recovery.jpg",
+          "text": {
+            "zh": "死亡损失和无保障提示；保险合约入口禁用。",
+            "en": "Loss-on-death and uninsured notices; insurance contract action is disabled."
+          },
+          "note": {
+            "zh": "2026-10-19，历史原生截图，样例状态。",
+            "en": "2026-10-19. Historical native screenshot, sample state."
+          }
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "screenshot",
+          "title": {
+            "zh": "19  出发准备 确认",
+            "en": "19  Deployment Confirmation"
+          },
+          "image": "images/19-ready.jpg",
+          "text": {
+            "zh": "角色、地点、装备和携带量汇总，最终出发按钮。",
+            "en": "Character, destination, equipment and carry summary, with final deployment action."
+          },
+          "note": {
+            "zh": "2026-10-19，历史原生截图，样例状态。",
+            "en": "2026-10-19. Historical native screenshot, sample state."
+          }
+        },
+        {
+          "type": "screenshot",
+          "title": {
+            "zh": "20  玩法选择",
+            "en": "20  Mode selection"
+          },
+          "image": "images/20-mode.jpg",
+          "text": {
+            "zh": "远征与赏金玩法入口，支持单人或在线选择。",
+            "en": "Expedition and bounty entries, with solo or online selection."
+          },
+          "note": {
+            "zh": "2026-10-25，当前原生预览，样例状态。",
+            "en": "2026-10-25. Current native preview, sample state."
+          }
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "screenshot",
+          "title": {
+            "zh": "21  在线小队",
+            "en": "21  Online squad"
+          },
+          "image": "images/21-online-squad.jpg",
+          "text": {
+            "zh": "1–4 人创建/加入、队伍码、名单、准备、合作/对抗、可选匹配和出发。",
+            "en": "Create/join for 1–4 players, squad code, roster, ready, co-op/versus, optional matchmaking and deployment."
+          },
+          "note": {
+            "zh": "2026-10-25，当前原生预览，样例状态。",
+            "en": "2026-10-25. Current native preview, sample state."
+          }
+        },
+        {
+          "type": "screenshot",
+          "title": {
+            "zh": "22  LAN 作战室",
+            "en": "22  LAN room"
+          },
+          "image": "images/22-lan-browse.jpg",
+          "text": {
+            "zh": "房间浏览、创建、直连、成员名单、准备和房主出发。",
+            "en": "Browse/create/direct-join rooms, member list, readiness and host deployment."
+          },
+          "note": {
+            "zh": "2026-10-25，当前原生预览，样例状态。房间浏览样例。",
+            "en": "2026-10-25. Current native preview, sample state. Room-browser sample."
+          }
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "screenshot",
+          "title": {
+            "zh": "23  高级连接设置（图中连接方式选择）",
+            "en": "23  Advanced connection (connection-route selection)"
+          },
+          "image": "images/23-session.jpg",
+          "text": {
+            "zh": "高级连接入口与 Direct/Relay 选择。",
+            "en": "Advanced connection access and Direct/Relay selection."
+          },
+          "note": {
+            "zh": "2026-10-19，历史原生截图，样例状态。见图中连接方式选择区。",
+            "en": "2026-10-19. Historical native screenshot, sample state. See the connection-route selection area."
+          }
+        },
+        {
+          "type": "screenshot",
+          "title": {
+            "zh": "24  创建主机弹窗",
+            "en": "24  Host creation dialog"
+          },
+          "image": "images/24-host.jpg",
+          "text": {
+            "zh": "主机创建参数与确认、取消操作。",
+            "en": "Host creation fields with confirm and cancel."
+          },
+          "note": {
+            "zh": "2026-10-19，历史原生截图，样例状态。 截图局部放大。",
+            "en": "2026-10-19. Historical native screenshot, sample state. Enlarged screenshot detail."
+          }
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "screenshot",
+          "title": {
+            "zh": "25  地址直连弹窗",
+            "en": "25  Direct-connect dialog"
+          },
+          "image": "images/25-direct.jpg",
+          "text": {
+            "zh": "地址、端口输入和连接操作。",
+            "en": "Address and port inputs with connection action."
+          },
+          "note": {
+            "zh": "2026-10-19，历史原生截图，样例状态。地址为本地样例。 截图局部放大。",
+            "en": "2026-10-19. Historical native screenshot, sample state. Address is a local sample. Enlarged screenshot detail."
+          }
+        },
+        {
+          "type": "screenshot",
+          "title": {
+            "zh": "26  连接状态与加载（图中连接状态）",
+            "en": "26  Connection and loading (connection-state variant)"
+          },
+          "image": "images/26-connecting.jpg",
+          "text": {
+            "zh": "等待、加载、错误、重试和原战局重连提示。",
+            "en": "Waiting, loading, errors, retry and reconnect-to-session feedback."
+          },
+          "note": {
+            "zh": "2026-10-19，历史原生截图，样例状态。图中展示连接状态。 截图局部放大。",
+            "en": "2026-10-19. Historical native screenshot, sample state. Connection-state variant shown. Enlarged screenshot detail."
+          }
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "screenshot",
+          "title": {
+            "zh": "27  赏金准备",
+            "en": "27  Bounty staging"
+          },
+          "image": "images/27-solo-ready-800.jpg",
+          "text": {
+            "zh": "组队、邀请码、名单和准备；单人模式隐藏联机组队控件。",
+            "en": "Team setup, invite code, roster and readiness; solo hides online team controls."
+          },
+          "note": {
+            "zh": "2026-10-22，历史原生截图，样例状态。验证样例状态。",
+            "en": "2026-10-22. Historical native screenshot, sample state. Validation sample state."
+          }
+        },
+        {
+          "type": "screenshot",
+          "title": {
+            "zh": "28  战斗 HUD",
+            "en": "28  Combat HUD"
+          },
+          "image": "images/28-hud.jpg",
+          "text": {
+            "zh": "生命、武器、弹药/充能、时间、氧气、饥渴、护盾与供能，以及战斗提示。",
+            "en": "Health, weapon, ammo/charge, time, oxygen, nutrition, shield/energy and combat feedback."
+          },
+          "note": {
+            "zh": "2026-10-25，当前原生预览，样例状态。基础 HUD 样例，黑底代替游戏场景。",
+            "en": "2026-10-25. Current native preview, sample state. Base HUD sample on a black background in place of gameplay."
+          }
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "screenshot",
+          "title": {
+            "zh": "29  局内背包",
+            "en": "29  In-session inventory"
+          },
+          "image": "images/29-inventory.jpg",
+          "text": {
+            "zh": "角色装备、随身容器、保险箱、三个工具槽，底部停靠九格快捷栏。",
+            "en": "Gear, carried containers, secure container, three tool slots and a docked nine-slot bar."
+          },
+          "note": {
+            "zh": "2026-10-25，当前原生预览，样例状态。",
+            "en": "2026-10-25. Current native preview, sample state."
+          }
+        },
+        {
+          "type": "screenshot",
+          "title": {
+            "zh": "30  搜刮界面（图中右侧尸体搜刮）",
+            "en": "30  Looting (corpse looting on the right)"
+          },
+          "image": "images/30-corpse.jpg",
+          "text": {
+            "zh": "自己的装备与箱子/尸体/地面包同时显示；支持搜索、拿取和拖放。",
+            "en": "Own inventory alongside a crate/corpse/dropped bag, with search, take and drag."
+          },
+          "note": {
+            "zh": "2026-10-25，当前原生预览，样例状态。右侧为尸体搜刮，内容为预览样例。",
+            "en": "2026-10-25. Current native preview, sample state. Right side shows corpse looting with preview sample contents."
+          }
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "screenshot",
+          "title": {
+            "zh": "31  健康与治疗",
+            "en": "31  Health and treatment"
+          },
+          "image": "images/31-health.jpg",
+          "text": {
+            "zh": "七部位人体图、部位血量、医疗选择、治疗进度和中断提示。",
+            "en": "Seven-part body diagram, part health, medical choices, treatment progress and interruption feedback."
+          },
+          "note": {
+            "zh": "2026-10-25，当前原生预览，样例状态。",
+            "en": "2026-10-25. Current native preview, sample state."
+          }
+        },
+        {
+          "type": "screenshot",
+          "title": {
+            "zh": "32  快捷栏（图中底部九格）",
+            "en": "32  Quick slots (nine slots at the bottom)"
+          },
+          "image": "images/30-corpse.jpg",
+          "text": {
+            "zh": "1–9 九格绑定，数字键选中、左键使用；显示图标、数量和不可用状态。",
+            "en": "Nine bindable slots; number selects, primary click uses; icons, counts and unavailable states."
+          },
+          "note": {
+            "zh": "2026-10-25，当前原生预览，样例状态。见图中底部 1–9 槽位。",
+            "en": "2026-10-25. Current native preview, sample state. See slots 1–9 at the bottom."
+          }
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "screenshot",
+          "title": {
+            "zh": "33  局内任务提示与详情",
+            "en": "33  Objective display and details"
+          },
+          "image": "images/33-objectives.jpg",
+          "text": {
+            "zh": "任务步骤、区域/楼层、距离、节点和设备进度；J 打开详情。",
+            "en": "Objective steps, area/floor, distance, device nodes and progress; J opens details."
+          },
+          "note": {
+            "zh": "2026-10-25，当前原生预览，样例状态。任务详情样例。",
+            "en": "2026-10-25. Current native preview, sample state. Objective-details sample."
+          }
+        },
+        {
+          "type": "screenshot",
+          "title": {
+            "zh": "34  战术地图与工具读数",
+            "en": "34  Tactical map and tool readouts"
+          },
+          "image": "images/34-map.jpg",
+          "text": {
+            "zh": "M 打开卫星地图；位置、导航点、撤离和补给图层。另有指南针和测距仪读数。",
+            "en": "M opens the satellite map with position, waypoint, exits and supply layer; separate compass/rangefinder readouts."
+          },
+          "note": {
+            "zh": "2026-10-25，当前原生预览，样例状态。卫星地图；工具读数见战斗 HUD 图顶部。",
+            "en": "2026-10-25. Current native preview, sample state. Satellite map; see tool readouts at the top of the combat HUD image."
+          }
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "screenshot",
+          "title": {
+            "zh": "35  光环灯光面板",
+            "en": "35  Halo lighting panel"
+          },
+          "image": "images/35-halo-light.jpg",
+          "text": {
+            "zh": "灯光开关、参数调节和当前状态。",
+            "en": "Lighting toggle, parameter controls and current state."
+          },
+          "note": {
+            "zh": "2026-10-19，历史原生截图，样例状态。",
+            "en": "2026-10-19. Historical native screenshot, sample state."
+          }
+        },
+        {
+          "type": "screenshot",
+          "title": {
+            "zh": "36  世界交互提示",
+            "en": "36  World interaction prompts"
+          },
+          "image": "images/36-interaction.jpg",
+          "text": {
+            "zh": "拾取、搜索、气闸、灯光、开关和设备的名称、按键与操作进度。",
+            "en": "Names, keys and progress for pickup, search, airlocks, lights, switches and devices."
+          },
+          "note": {
+            "zh": "2026-10-19，历史原生截图，样例状态。 截图局部放大。",
+            "en": "2026-10-19. Historical native screenshot, sample state. Enlarged screenshot detail."
+          }
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "screenshot",
+          "title": {
+            "zh": "37  撤离提示",
+            "en": "37  Extraction display"
+          },
+          "image": "images/37-extraction.jpg",
+          "text": {
+            "zh": "撤离条件、范围内状态、倒计时，以及受阻或中断提示。",
+            "en": "Eligibility, in-zone state, countdown and blocked/interrupted feedback."
+          },
+          "note": {
+            "zh": "2026-10-19，历史原生截图，样例状态。 截图局部放大。",
+            "en": "2026-10-19. Historical native screenshot, sample state. Enlarged screenshot detail."
+          }
+        },
+        {
+          "type": "screenshot",
+          "title": {
+            "zh": "38  行动结果",
+            "en": "38  Session result"
+          },
+          "image": "images/38-result.jpg",
+          "text": {
+            "zh": "撤离成功、死亡或超时，以及本局结果摘要。",
+            "en": "Extraction, death or timeout, with the session summary."
+          },
+          "note": {
+            "zh": "2026-10-19，历史原生截图，样例状态。",
+            "en": "2026-10-19. Historical native screenshot, sample state."
+          }
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "screenshot",
+          "title": {
+            "zh": "39  结算物资",
+            "en": "39  Cargo result"
+          },
+          "image": "images/39-cargo.jpg",
+          "text": {
+            "zh": "结算第二页，显示本局物品与带回情况。",
+            "en": "Second result page, listing session items and recovered cargo."
+          },
+          "note": {
+            "zh": "2026-10-19，历史原生截图，样例状态。",
+            "en": "2026-10-19. Historical native screenshot, sample state."
+          }
+        },
+        {
+          "type": "screenshot",
+          "title": {
+            "zh": "40  入库与返回",
+            "en": "40  Storage result"
+          },
+          "image": "images/40-storage.jpg",
+          "text": {
+            "zh": "结算第三页，显示保存、入库、失败重试与返回。",
+            "en": "Third result page: saving, storage, retry and return."
+          },
+          "note": {
+            "zh": "2026-10-19，历史原生截图，样例状态。",
+            "en": "2026-10-19. Historical native screenshot, sample state."
+          }
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "screenshot",
+          "title": {
+            "zh": "41  暂停菜单",
+            "en": "41  Pause menu"
+          },
+          "image": "images/41-pause.jpg",
+          "text": {
+            "zh": "在游戏画面上显示继续、返回主界面和退出。",
+            "en": "Overlay on the game view with resume, main menu and exit."
+          },
+          "note": {
+            "zh": "2026-10-19，历史原生截图，样例状态。 截图局部放大。",
+            "en": "2026-10-19. Historical native screenshot, sample state. Enlarged screenshot detail."
+          }
+        },
+        {
+          "type": "screenshot",
+          "title": {
+            "zh": "42  死亡提示",
+            "en": "42  Death display"
+          },
+          "image": "images/42-death.jpg",
+          "text": {
+            "zh": "显示可取得的死亡信息，并转入结算。",
+            "en": "Shows available death information and proceeds to settlement."
+          },
+          "note": {
+            "zh": "2026-10-19，历史原生截图，样例状态。 截图局部放大。",
+            "en": "2026-10-19. Historical native screenshot, sample state. Enlarged screenshot detail."
+          }
+        }
+      ]
+    },
+    {
+      "blocks": [
+        {
+          "type": "screenshot",
+          "title": {
+            "zh": "43  赏金战斗界面",
+            "en": "43  Bounty combat display"
+          },
+          "image": "images/43-final-active-800.jpg",
+          "text": {
+            "zh": "阶段、目标、放逐、赏金归属、队友状态、暗视、救援和出口提示。",
+            "en": "Phase, target, banishment, bounty ownership, teammates, dark sight, revival and exit feedback."
+          },
+          "note": {
+            "zh": "2026-10-21，历史原生截图，样例状态。旧图中的圆形小地图已停用，现用 M 地图。",
+            "en": "2026-10-21. Historical native screenshot, sample state. The old circular minimap has been retired; M now opens the map."
+          }
+        },
+        {
+          "type": "screenshot",
+          "title": {
+            "zh": "44  赏金结束界面",
+            "en": "44  Bounty result"
+          },
+          "image": "images/44-solo-finished-800.jpg",
+          "text": {
+            "zh": "结果与保存状态，返回飞船或准备下一局。",
+            "en": "Outcome and save status, with return to ship or prepare next round."
+          },
+          "note": {
+            "zh": "2026-10-22，历史原生截图，样例状态。验证样例状态。 旧图中的圆形小地图已停用。",
+            "en": "2026-10-22. Historical native screenshot, sample state. Validation sample state. The old circular minimap has been retired."
+          }
         }
       ]
     }
   ],
-  "entry_count": 44
+  "screenshot_sources": [
+    {
+      "ui": {
+        "zh": "主界面",
+        "en": "Main menu"
+      },
+      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/home-dark.png",
+      "date": "2026-10-19",
+      "image": "images/01-home-dark.jpg"
+    },
+    {
+      "ui": {
+        "zh": "登录与注册",
+        "en": "Sign-in and registration"
+      },
+      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/account.png",
+      "date": "2026-10-19",
+      "image": "images/02-account.jpg"
+    },
+    {
+      "ui": {
+        "zh": "仓库与装备",
+        "en": "Stash and equipment"
+      },
+      "source": "/private/tmp/moonkov-ui-brief-20261025/captures/warehouse.png",
+      "date": "2026-10-25",
+      "image": "images/03-warehouse.jpg"
+    },
+    {
+      "ui": {
+        "zh": "物品检查与容器窗口",
+        "en": "Item inspection and container windows"
+      },
+      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/item.png",
+      "date": "2026-10-19",
+      "image": "images/04-item.jpg"
+    },
+    {
+      "ui": {
+        "zh": "光环改装台",
+        "en": "Halo workshop"
+      },
+      "source": "/Users/morrow/UnityProjects/Moonkov/LocalData/HaloWorkshopReview/workshop-terminal-template-zh-native.png",
+      "date": "2026-10-25",
+      "image": "images/05-workshop-terminal-template-zh-native.jpg"
+    },
+    {
+      "ui": {
+        "zh": "补给商目录",
+        "en": "Supplier directory"
+      },
+      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/suppliers.png",
+      "date": "2026-10-19",
+      "image": "images/06-suppliers.jpg"
+    },
+    {
+      "ui": {
+        "zh": "商品购买与出售",
+        "en": "Shop"
+      },
+      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/shop.png",
+      "date": "2026-10-19",
+      "image": "images/07-shop.jpg"
+    },
+    {
+      "ui": {
+        "zh": "应急补给",
+        "en": "Emergency supplies"
+      },
+      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/emergency.png",
+      "date": "2026-10-19",
+      "image": "images/08-emergency.jpg"
+    },
+    {
+      "ui": {
+        "zh": "研究与制造",
+        "en": "Research and crafting"
+      },
+      "source": "/private/tmp/moonkov-ui-brief-20261025/captures/research.png",
+      "date": "2026-10-25",
+      "image": "images/09-research.jpg"
+    },
+    {
+      "ui": {
+        "zh": "任务与调查记录",
+        "en": "Tasks and investigation records"
+      },
+      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/tasks.png",
+      "date": "2026-10-19",
+      "image": "images/10-tasks.jpg"
+    },
+    {
+      "ui": {
+        "zh": "待领取物品",
+        "en": "Recovery inbox"
+      },
+      "source": "/private/tmp/moonkov-ui-brief-20261025/captures/recovery-inbox.png",
+      "date": "2026-10-25",
+      "image": "images/11-recovery-inbox.jpg",
+      "crop": [
+        45,
+        335,
+        2190,
+        755
+      ]
+    },
+    {
+      "ui": {
+        "zh": "基地",
+        "en": "Base"
+      },
+      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/base.png",
+      "date": "2026-10-19",
+      "image": "images/12-base.jpg"
+    },
+    {
+      "ui": {
+        "zh": "通讯",
+        "en": "Communications"
+      },
+      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/comms.png",
+      "date": "2026-10-19",
+      "image": "images/13-comms.jpg"
+    },
+    {
+      "ui": {
+        "zh": "设置",
+        "en": "Settings"
+      },
+      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/settings.png",
+      "date": "2026-10-19",
+      "image": "images/14-settings.jpg"
+    },
+    {
+      "ui": {
+        "zh": "出发准备 角色",
+        "en": "Deployment Character"
+      },
+      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/operator.png",
+      "date": "2026-10-19",
+      "image": "images/15-operator.jpg"
+    },
+    {
+      "ui": {
+        "zh": "出发准备 地点",
+        "en": "Deployment Destination"
+      },
+      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/location.png",
+      "date": "2026-10-19",
+      "image": "images/16-location.jpg"
+    },
+    {
+      "ui": {
+        "zh": "出发准备 简报",
+        "en": "Deployment Briefing"
+      },
+      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/briefing.png",
+      "date": "2026-10-19",
+      "image": "images/17-briefing.jpg"
+    },
+    {
+      "ui": {
+        "zh": "出发准备 回收",
+        "en": "Deployment Recovery"
+      },
+      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/recovery.png",
+      "date": "2026-10-19",
+      "image": "images/18-recovery.jpg"
+    },
+    {
+      "ui": {
+        "zh": "出发准备 确认",
+        "en": "Deployment Confirmation"
+      },
+      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/ready.png",
+      "date": "2026-10-19",
+      "image": "images/19-ready.jpg"
+    },
+    {
+      "ui": {
+        "zh": "玩法选择",
+        "en": "Mode selection"
+      },
+      "source": "/private/tmp/moonkov-ui-brief-20261025/captures/mode.png",
+      "date": "2026-10-25",
+      "image": "images/20-mode.jpg"
+    },
+    {
+      "ui": {
+        "zh": "在线小队",
+        "en": "Online squad"
+      },
+      "source": "/private/tmp/moonkov-ui-brief-20261025/captures/online-squad.png",
+      "date": "2026-10-25",
+      "image": "images/21-online-squad.jpg"
+    },
+    {
+      "ui": {
+        "zh": "LAN 作战室",
+        "en": "LAN room"
+      },
+      "source": "/private/tmp/moonkov-ui-brief-20261025/captures/lan-browse.png",
+      "date": "2026-10-25",
+      "image": "images/22-lan-browse.jpg"
+    },
+    {
+      "ui": {
+        "zh": "高级连接设置",
+        "en": "Advanced connection"
+      },
+      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/session.png",
+      "date": "2026-10-19",
+      "image": "images/23-session.jpg"
+    },
+    {
+      "ui": {
+        "zh": "创建主机弹窗",
+        "en": "Host creation dialog"
+      },
+      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/host.png",
+      "date": "2026-10-19",
+      "image": "images/24-host.jpg",
+      "crop": [
+        530,
+        240,
+        1070,
+        660
+      ]
+    },
+    {
+      "ui": {
+        "zh": "地址直连弹窗",
+        "en": "Direct-connect dialog"
+      },
+      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/direct.png",
+      "date": "2026-10-19",
+      "image": "images/25-direct.jpg",
+      "crop": [
+        530,
+        190,
+        1070,
+        710
+      ]
+    },
+    {
+      "ui": {
+        "zh": "连接状态与加载",
+        "en": "Connection and loading"
+      },
+      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/connecting.png",
+      "date": "2026-10-19",
+      "image": "images/26-connecting.jpg",
+      "crop": [
+        1020,
+        645,
+        1570,
+        870
+      ]
+    },
+    {
+      "ui": {
+        "zh": "赏金准备",
+        "en": "Bounty staging"
+      },
+      "source": "/Users/morrow/UnityProjects/Moonkov/Library/BuildValidation/BountyClash/UI/solo-ready-800.png",
+      "date": "2026-10-22",
+      "image": "images/27-solo-ready-800.jpg"
+    },
+    {
+      "ui": {
+        "zh": "战斗 HUD",
+        "en": "Combat HUD"
+      },
+      "source": "/private/tmp/moonkov-ui-brief-20261025/captures/hud.png",
+      "date": "2026-10-25",
+      "image": "images/28-hud.jpg"
+    },
+    {
+      "ui": {
+        "zh": "局内背包",
+        "en": "In-session inventory"
+      },
+      "source": "/private/tmp/moonkov-ui-brief-20261025/captures/inventory.png",
+      "date": "2026-10-25",
+      "image": "images/29-inventory.jpg"
+    },
+    {
+      "ui": {
+        "zh": "搜刮界面",
+        "en": "Looting"
+      },
+      "source": "/private/tmp/moonkov-ui-brief-20261025/captures/corpse.png",
+      "date": "2026-10-25",
+      "image": "images/30-corpse.jpg"
+    },
+    {
+      "ui": {
+        "zh": "健康与治疗",
+        "en": "Health and treatment"
+      },
+      "source": "/private/tmp/moonkov-ui-brief-20261025/captures/health.png",
+      "date": "2026-10-25",
+      "image": "images/31-health.jpg"
+    },
+    {
+      "ui": {
+        "zh": "快捷栏",
+        "en": "Quick slots"
+      },
+      "source": "/private/tmp/moonkov-ui-brief-20261025/captures/corpse.png",
+      "date": "2026-10-25",
+      "image": "images/30-corpse.jpg"
+    },
+    {
+      "ui": {
+        "zh": "局内任务提示与详情",
+        "en": "Objective display and details"
+      },
+      "source": "/private/tmp/moonkov-ui-brief-20261025/captures/objectives.png",
+      "date": "2026-10-25",
+      "image": "images/33-objectives.jpg"
+    },
+    {
+      "ui": {
+        "zh": "战术地图与工具读数",
+        "en": "Tactical map and tool readouts"
+      },
+      "source": "/private/tmp/moonkov-ui-brief-20261025/captures/map.png",
+      "date": "2026-10-25",
+      "image": "images/34-map.jpg"
+    },
+    {
+      "ui": {
+        "zh": "光环灯光面板",
+        "en": "Halo lighting panel"
+      },
+      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/halo-light.png",
+      "date": "2026-10-19",
+      "image": "images/35-halo-light.jpg"
+    },
+    {
+      "ui": {
+        "zh": "世界交互提示",
+        "en": "World interaction prompts"
+      },
+      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/interaction.png",
+      "date": "2026-10-19",
+      "image": "images/36-interaction.jpg",
+      "crop": [
+        655,
+        480,
+        945,
+        650
+      ]
+    },
+    {
+      "ui": {
+        "zh": "撤离提示",
+        "en": "Extraction display"
+      },
+      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/extraction.png",
+      "date": "2026-10-19",
+      "image": "images/37-extraction.jpg",
+      "crop": [
+        1305,
+        152,
+        1590,
+        290
+      ]
+    },
+    {
+      "ui": {
+        "zh": "行动结果",
+        "en": "Session result"
+      },
+      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/result.png",
+      "date": "2026-10-19",
+      "image": "images/38-result.jpg"
+    },
+    {
+      "ui": {
+        "zh": "结算物资",
+        "en": "Cargo result"
+      },
+      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/cargo.png",
+      "date": "2026-10-19",
+      "image": "images/39-cargo.jpg"
+    },
+    {
+      "ui": {
+        "zh": "入库与返回",
+        "en": "Storage result"
+      },
+      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/storage.png",
+      "date": "2026-10-19",
+      "image": "images/40-storage.jpg"
+    },
+    {
+      "ui": {
+        "zh": "暂停菜单",
+        "en": "Pause menu"
+      },
+      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/pause.png",
+      "date": "2026-10-19",
+      "image": "images/41-pause.jpg",
+      "crop": [
+        560,
+        255,
+        1040,
+        650
+      ]
+    },
+    {
+      "ui": {
+        "zh": "死亡提示",
+        "en": "Death display"
+      },
+      "source": "/Users/morrow/UnityProjects/Moonkov/Docs/UI/Native-20261018/death.png",
+      "date": "2026-10-19",
+      "image": "images/42-death.jpg",
+      "crop": [
+        560,
+        360,
+        1040,
+        540
+      ]
+    },
+    {
+      "ui": {
+        "zh": "赏金战斗界面",
+        "en": "Bounty combat display"
+      },
+      "source": "/Users/morrow/UnityProjects/Moonkov/Library/BuildValidation/BountyClash/UI/final-active-800.png",
+      "date": "2026-10-21",
+      "image": "images/43-final-active-800.jpg"
+    },
+    {
+      "ui": {
+        "zh": "赏金结束界面",
+        "en": "Bounty result"
+      },
+      "source": "/Users/morrow/UnityProjects/Moonkov/Library/BuildValidation/BountyClash/UI/solo-finished-800.png",
+      "date": "2026-10-22",
+      "image": "images/44-solo-finished-800.jpg"
+    }
+  ]
 }
