@@ -1,5 +1,5 @@
 {
-  "version": "1.0",
+  "version": "1.1",
   "date": "2026-10-25",
   "revision": "11c245a3",
   "languages": [
@@ -17,8 +17,8 @@
         {
           "type": "p",
           "text": {
-            "zh": "中文交付版  2026年10月25日  v1.0",
-            "en": "English edition  25 October 2026  v1.0"
+            "zh": "中文交付版  2026年10月25日  v1.1",
+            "en": "English edition  25 October 2026  v1.1"
           }
         },
         {
@@ -1351,6 +1351,125 @@
           }
         }
       ]
+    },
+    {
+      "title": {
+        "zh": "给美术的最低交付要求",
+        "en": "Minimum handoff requirements for the artist"
+      },
+      "blocks": [
+        {
+          "type": "p",
+          "text": {
+            "zh": "本页只保证设计能被程序还原，不限制创意。不要求使用专业 UI 软件，也不要求美术制作图集、写代码或配置 Unity。先用一个按钮、一个窗口和一个物品格试交接，确认可用后再批量制作。",
+            "en": "This page helps implementation match the design without limiting creativity. No specialist UI software, atlas packing, code or Unity setup is required from the artist. Test the handoff with one button, one window and one item tile before producing the full set."
+          }
+        },
+        {
+          "type": "table",
+          "headers": [
+            {
+              "zh": "交付物",
+              "en": "Deliverable"
+            },
+            {
+              "zh": "最低要求",
+              "en": "Minimum requirement"
+            }
+          ],
+          "widths": [
+            1.25,
+            5.65
+          ],
+          "rows": [
+            [
+              {
+                "zh": "完整效果图",
+                "en": "Complete mockup"
+              },
+              {
+                "zh": "标出设计尺寸与 M 编号。能看清界面内容、操作与图片裁切即可。",
+                "en": "State the design dimensions and M IDs. Show the content, actions and image crop clearly."
+              }
+            ],
+            [
+              {
+                "zh": "可编辑源稿",
+                "en": "Editable source"
+              },
+              {
+                "zh": "用熟悉的软件。背景、插画、边框和文字分层；注明使用的字体。",
+                "en": "Use familiar software. Separate backgrounds, illustrations, borders and text; identify the fonts."
+              }
+            ],
+            [
+              {
+                "zh": "通用组件",
+                "en": "Shared components"
+              },
+              {
+                "zh": "按钮、窗口、页签、物品格、进度条等共用样式只交一份。纯色框、线条和简单圆形可由程序绘制，不必切图。",
+                "en": "Supply each shared button, window, tab, item tile or progress style once. Code can draw flat boxes, lines and simple circles without image exports."
+              }
+            ],
+            [
+              {
+                "zh": "独立素材",
+                "en": "Separate artwork"
+              },
+              {
+                "zh": "需要贴图的图标、插画、复杂底板分别导出 PNG；镂空处透明。文字、数量和价格不要烘进通用底图。",
+                "en": "Export required icons, illustrations and textured surfaces as separate PNGs, with transparency where needed. Keep labels, counts and prices out of shared backgrounds."
+              }
+            ],
+            [
+              {
+                "zh": "状态与素材表",
+                "en": "States and asset list"
+              },
+              {
+                "zh": "说明普通、悬停或焦点、按下、选中、禁用；适用时补等待和错误。表中写名称、用途、尺寸、切片四边和内容边距；不适用的留空。",
+                "en": "Describe default, hover or focus, pressed, selected and disabled, plus pending or error where relevant. List name, use, dimensions, slice borders and content padding; leave irrelevant fields blank."
+              }
+            ]
+          ]
+        },
+        {
+          "type": "h",
+          "text": {
+            "zh": "九宫格只用于需要拉伸的框",
+            "en": "Use nine slicing for resizable frames"
+          }
+        },
+        {
+          "type": "p",
+          "text": {
+            "zh": "按钮底板、弹窗边框需要变宽或变高，且边角不能变形时，才需要九宫格。通常交一张完整 PNG，不是九张图。标出左、上、右、下固定区域的像素值，并说明最小可用尺寸。图标、人物和插画通常保持比例，不做九宫格。",
+            "en": "Use nine slicing when a button surface or window frame must resize while preserving its corners. Usually deliver one complete PNG, not nine files. Mark fixed left, top, right and bottom regions in exported-image pixels, plus the minimum usable size. Icons, characters and illustrations normally preserve aspect ratio instead."
+          }
+        },
+        {
+          "type": "p",
+          "text": {
+            "zh": "例如一张 128×64 PNG，四边各保留 12px；这只是标注示例，不是统一标准。文字离框多远要另外标，不能把它和切片边距当成同一个数。若状态需要多张图，保持画布尺寸与位置一致。只改颜色时，用说明即可。",
+            "en": "For example, a 128×64 PNG may preserve 12 px on each side. This illustrates notation, not a mandatory size. Specify text padding separately from slice borders. State images should share canvas size and alignment; color-only changes can use annotations."
+          }
+        },
+        {
+          "type": "h",
+          "text": {
+            "zh": "程序负责接入和验证",
+            "en": "Implementation and verification belong to the developer"
+          }
+        },
+        {
+          "type": "p",
+          "text": {
+            "zh": "程序负责导入、九宫格参数、动态文字、双语、交互、真实数据与适配。拉宽、缩小后检查边角、边框和文字；有问题再一起调整素材或边距。",
+            "en": "The developer handles importing, slice settings, dynamic text, localization, interaction, real data and adaptation. Check corners, borders and text at wider and smaller sizes, then adjust artwork or padding together."
+          }
+        }
+      ]
     }
   ],
   "source_files": [
@@ -1371,5 +1490,11 @@
     "Assets/Scripts/UI/Game/MoonkovTerminal.cs",
     "Assets/Scripts/UI/Game/ContainerInventoryView.cs",
     "Assets/Scripts/Gameplay/UI/RaidHUD.cs"
+  ],
+  "external_sources": [
+    {
+      "title": "Unity 6000.5 UI Toolkit Set background images and 9 slicing",
+      "url": "https://docs.unity.com/en-us/engine/6000.5/manual/uitoolkits/uielements/uie-uss/properties/uib-styling-ui-backgrounds"
+    }
   ]
 }
