@@ -1,7 +1,6 @@
 {
-  "version": "2.0",
+  "version": "3.0",
   "date": "2026-10-25",
-  "revision": "75430abb",
   "languages": [
     "zh",
     "en"
@@ -9,781 +8,532 @@
   "pages": [
     {
       "title": {
-        "zh": "Moonkov 游戏界面需求",
-        "en": "Moonkov Game UI Brief"
+        "zh": "Moonkov 现有 UI 清单",
+        "en": "Moonkov Current UI"
       },
       "blocks": [
         {
           "type": "p",
           "text": {
-            "zh": "给 UI 美术同事  2026年10月25日  第二版",
-            "en": "For the UI artist  25 October 2026  Second edition"
+            "zh": "2026年10月25日",
+            "en": "25 October 2026"
           }
         },
         {
-          "type": "p",
-          "text": {
-            "zh": "Moonkov 是一款在月球上战斗、搜刮物资并设法撤离的游戏。玩家出发前准备装备，带回的东西可以存起来、出售，或用于改装和研究。",
-            "en": "Moonkov is a game about fighting, looting and escaping on the Moon. Players prepare their equipment before leaving. Recovered items can be stored, sold or used for modification and research."
-          }
-        },
-        {
-          "type": "p",
-          "text": {
-            "zh": "主界面要重做。下面列出游戏需要哪些界面，以及每个界面里要有什么。风格、构图和排列由美术决定；可以合并页面，只要功能都能找到。",
-            "en": "The main menu needs a redesign. This brief lists the required screens and their contents. Visual style, composition and arrangement are up to the artist. Screens may be combined as long as players can find every function."
-          }
-        },
-        {
-          "type": "h",
-          "text": {
-            "zh": "先看整体结构",
-            "en": "The overall structure"
-          }
-        },
-        {
-          "type": "outline",
-          "groups": [
+          "type": "table",
+          "headers": [
             {
-              "title": {
-                "zh": "打开游戏",
-                "en": "Opening the game"
-              },
-              "items": [
-                {
-                  "zh": "主界面、登录与账号。",
-                  "en": "Main menu; sign-in and account."
-                }
-              ]
+              "zh": "UI 名称",
+              "en": "UI name"
             },
             {
-              "title": {
-                "zh": "出发之前",
-                "en": "Before deployment"
-              },
-              "items": [
-                {
-                  "zh": "出发准备、联机队伍与房间。",
-                  "en": "Deployment preparation; online squads and LAN rooms."
-                },
-                {
-                  "zh": "仓库与装备、光环改装、商店与补给、研究与制造、任务与调查记录。",
-                  "en": "Stash and equipment; Halo modification; shops and supplies; research and crafting; objectives and investigation records."
-                }
-              ]
-            },
-            {
-              "title": {
-                "zh": "游戏进行中",
-                "en": "During a session"
-              },
-              "items": [
-                {
-                  "zh": "战斗画面、背包与搜刮、健康与治疗、地图与工具。",
-                  "en": "Combat display; inventory and looting; health and treatment; map and tools."
-                },
-                {
-                  "zh": "赏金玩法另加目标争夺、暗视和队友救援。",
-                  "en": "Bounty mode adds objectives, bounty tokens, dark sight and teammate revival."
-                }
-              ]
-            },
-            {
-              "title": {
-                "zh": "一局结束后",
-                "en": "After a session"
-              },
-              "items": [
-                {
-                  "zh": "撤离或死亡、查看结果和物品、入库或领取、回到出发前。",
-                  "en": "Extract or die; review the result and items; store or claim them; prepare again."
-                }
-              ]
-            },
-            {
-              "title": {
-                "zh": "各处共用",
-                "en": "Shared throughout the game"
-              },
-              "items": [
-                {
-                  "zh": "设置、暂停菜单、确认窗口、提示和进度条。",
-                  "en": "Settings, pause menu, confirmation dialogs, messages and progress bars."
-                }
-              ]
+              "zh": "当前实现",
+              "en": "Current implementation"
             }
-          ]
-        },
-        {
-          "type": "p",
-          "text": {
-            "zh": "阅读顺序：第 2 页看主界面和出发，第 3 页看装备与成长，第 4 页看战斗，第 5 页看结算，第 6 页看素材怎么交。",
-            "en": "Reading guide: page 2 covers the main menu and deployment; page 3 equipment and progression; page 4 combat; page 5 results; page 6 asset handoff."
-          }
-        }
-      ]
-    },
-    {
-      "title": {
-        "zh": "主界面和出发",
-        "en": "Main menu and deployment"
-      },
-      "blocks": [
-        {
-          "type": "h",
-          "text": {
-            "zh": "主界面",
-            "en": "Main menu"
-          }
-        },
-        {
-          "type": "p",
-          "text": {
-            "zh": "玩家在这里决定接下来做什么。需要能进入出发、仓库、光环改装、商店、研究、任务和设置，并看见当前角色、账号和资源。主次和摆放由美术重新设计。",
-            "en": "Players decide what to do next here. They need access to deployment, stash, Halo modification, shops, research, objectives and settings, with the selected character, account and resources visible. The artist can redesign the hierarchy and arrangement."
-          }
-        },
-        {
-          "type": "h",
-          "text": {
-            "zh": "登录与账号",
-            "en": "Sign-in and account"
-          }
-        },
-        {
-          "type": "p",
-          "text": {
-            "zh": "包括登录、注册和退出账号，也要能识别离线游玩。输入账号后，需要告诉玩家正在登录、登录成功，还是哪里出了问题。",
-            "en": "Include sign-in, registration and sign-out, and make offline play identifiable. After entering account details, players need to know whether sign-in is in progress, succeeded or failed."
-          }
-        },
-        {
-          "type": "h",
-          "text": {
-            "zh": "出发准备",
-            "en": "Deployment preparation"
-          }
-        },
-        {
-          "type": "p",
-          "text": {
-            "zh": "玩家确认这一局带谁、去哪、带什么。需要有：",
-            "en": "Players confirm who they play, where they go and what they take. Include:"
-          }
-        },
-        {
-          "type": "bullets",
-          "items": [
-            {
-              "zh": "角色选择：人偶歌者、初音未来、诗岸。",
-              "en": "Character choice: DollSinger, Hatsune Miku or Shian."
-            },
-            {
-              "zh": "地点和玩法：本局去哪、玩远征还是赏金。",
-              "en": "Destination and mode: where the session takes place, expedition or bounty."
-            },
-            {
-              "zh": "装备检查：身上穿什么、用什么武器、带多少电池。",
-              "en": "Equipment check: worn gear, weapons and batteries to take."
-            },
-            {
-              "zh": "目标和风险：这局要做什么，死亡会失去什么。",
-              "en": "Objectives and risk: what to do and what can be lost on death."
-            },
-            {
-              "zh": "确认出发，以及返回修改装备。",
-              "en": "Deploy, or return to change equipment."
-            }
-          ]
-        },
-        {
-          "type": "p",
-          "text": {
-            "zh": "这些内容可以在一页里完成，也可以拆成几步，不必沿用现在的五步页面。",
-            "en": "This may be one screen or several steps. The existing five-step arrangement is not required."
-          }
-        },
-        {
-          "type": "h",
-          "text": {
-            "zh": "联机队伍与房间",
-            "en": "Online squads and LAN rooms"
-          }
-        },
-        {
-          "type": "p",
-          "text": {
-            "zh": "在线组队需要创建或加入队伍、队伍码、成员名单、队长、准备状态和出发按钮。合作支持 1–4 人，也可以自己开局；好友对抗还需要选择队伍。也可以选择寻找其他队伍，并能取消匹配；暂时没有可用地图时，要显示正在等待。",
-            "en": "Online play needs create or join, squad code, member list, leader, readiness and deployment. Co-op supports 1–4 people and can start solo. Friend-versus play also needs team selection. Players can optionally search for other squads and cancel matchmaking. If no map instance is available, show that they are waiting."
-          }
-        },
-        {
-          "type": "p",
-          "text": {
-            "zh": "局域网需要找房间、建房间和输入地址加入。连接和加载时显示进度或当前情况；失败后可以重试，掉线后可以返回原来的战局。复杂连接设置放在需要时才打开的地方。",
-            "en": "LAN play needs room browsing, room creation and joining by address. Show progress or current status while connecting and loading, with retry on failure and return to the original session after a disconnect. Advanced connection settings can remain secondary."
-          }
-        }
-      ]
-    },
-    {
-      "title": {
-        "zh": "装备补给和成长",
-        "en": "Equipment supplies and progression"
-      },
-      "blocks": [
-        {
-          "type": "h",
-          "text": {
-            "zh": "仓库与装备",
-            "en": "Stash and equipment"
-          }
-        },
-        {
-          "type": "p",
-          "text": {
-            "zh": "玩家在这里整理战利品，决定下一局带什么。需要三类内容：",
-            "en": "Players organize recovered items and choose what to bring next. There are three groups:"
-          }
-        },
-        {
-          "type": "bullets",
-          "items": [
-            {
-              "zh": "角色身上的装备：项圈、护盾、主武器、副武器、手枪、近战。",
-              "en": "Worn equipment: collar, shield, primary weapon, secondary weapon, pistol and melee."
-            },
-            {
-              "zh": "随身物品：衣兜、胸挂、背包、保险箱，以及三个特殊工具槽。",
-              "en": "Carried items: pockets, rig, backpack, secure container and three special tool slots."
-            },
-            {
-              "zh": "留在基地的物品：个人仓库。",
-              "en": "Items left at base: the personal stash."
-            }
-          ]
-        },
-        {
-          "type": "p",
-          "text": {
-            "zh": "要能查看物品详情、打开容器、换装备、移动和旋转物品、拆分数量。容器里的东西也要看得到。保险箱有保护物品的作用，要和普通背包区分。",
-            "en": "Players can inspect items, open containers, equip gear, move and rotate items, and split stacks. Container contents must be accessible. Distinguish the secure container's protection from an ordinary backpack."
-          }
-        },
-        {
-          "type": "h",
-          "text": {
-            "zh": "光环改装",
-            "en": "Halo modification"
-          }
-        },
-        {
-          "type": "p",
-          "text": {
-            "zh": "光环是游戏里的武器。玩家选择一件光环，查看已装模块，再比较其他模块的用途、好处和代价。需要安装、替换、拆下，以及更换前后的属性对比。",
-            "en": "Halos are the game's weapons. Players select a Halo, inspect its installed modules and compare alternatives, including benefits and drawbacks. Include install, replace, remove and before-and-after stats."
-          }
-        },
-        {
-          "type": "h",
-          "text": {
-            "zh": "商店与补给",
-            "en": "Shops and supplies"
-          }
-        },
-        {
-          "type": "p",
-          "text": {
-            "zh": "玩家选择补给商、浏览商品、看用途和价格、选择数量、购买或出售。还要有应急补给的领取入口。钱不够、仓库放不下或物品不能卖时，要说明原因。",
-            "en": "Players choose a supplier, browse items, see their use and price, choose a quantity, and buy or sell. Include emergency supply claims. Explain insufficient funds, lack of storage space and items that cannot be sold."
-          }
-        },
-        {
-          "type": "h",
-          "text": {
-            "zh": "研究与制造",
-            "en": "Research and crafting"
-          }
-        },
-        {
-          "type": "p",
-          "text": {
-            "zh": "玩家看有哪些研究、能获得什么、需要什么材料、还缺多少。研究解锁后，可以消耗材料制造模块，再去安装。研究、制造、安装是分开的事情。",
-            "en": "Players see available research, its benefit, required materials and shortages. After unlocking research, they can spend materials to craft a module, then install it. Research, crafting and installation are separate actions."
-          }
-        },
-        {
-          "type": "h",
-          "text": {
-            "zh": "任务与调查记录",
-            "en": "Objectives and investigation records"
-          }
-        },
-        {
-          "type": "p",
-          "text": {
-            "zh": "玩家查看目标、当前进度和已经找到的调查资料，并选择在游戏里显示哪个目标。局内还需要任务步骤、地点、距离和设备操作详情。追踪只是显示目标，不是接取任务。",
-            "en": "Players view objectives, progress and recovered investigation records, and choose which objective to show during play. In-session details include steps, location, distance and device instructions. Tracking displays an objective; it does not accept a quest."
-          }
-        },
-        {
-          "type": "p",
-          "text": {
-            "zh": "完整剧情战役另有策划，本案不要求美术根据旧随机任务自行编出整套战役内容。",
-            "en": "The full story campaign has a separate plan. The artist is not expected to invent campaign content from the existing random events."
-          }
-        }
-      ]
-    },
-    {
-      "title": {
-        "zh": "游戏进行中的界面",
-        "en": "Screens during play"
-      },
-      "blocks": [
-        {
-          "type": "h",
-          "text": {
-            "zh": "战斗画面",
-            "en": "Combat display"
-          }
-        },
-        {
-          "type": "p",
-          "text": {
-            "zh": "这是玩家移动和射击时一直看到的画面。需要的信息分三类：",
-            "en": "This is the view players see while moving and shooting. It contains three kinds of information:"
-          }
-        },
-        {
-          "type": "bullets",
-          "items": [
-            {
-              "zh": "战斗：生命、当前武器、弹药或充能、护盾、剩余时间。",
-              "en": "Combat: health, current weapon, ammunition or charge, shield and remaining time."
-            },
-            {
-              "zh": "生存：氧气、饮水、饥饿、胃容量，以及受伤、中毒、疲劳等状态。",
-              "en": "Survival: oxygen, hydration, hunger, stomach fullness, and conditions such as injury, poison or fatigue."
-            },
-            {
-              "zh": "操作：九格快捷栏、当前拿着什么、互动按键、操作进度、命中和击杀提示、当前任务。",
-              "en": "Actions: nine quick slots, held item, interaction key, action progress, hit and kill feedback, and current objective."
-            }
-          ]
-        },
-        {
-          "type": "p",
-          "text": {
-            "zh": "这些是同一个画面里的信息，不是每项都要单独做一页。护盾还剩多少、护盾电量还剩多少，要分别显示。数字键选中物品，左键才使用。",
-            "en": "These are parts of one view, not separate screens for every readout. Show shield strength and its remaining energy separately. Number keys select an item; primary click uses it."
-          }
-        },
-        {
-          "type": "h",
-          "text": {
-            "zh": "背包与搜刮",
-            "en": "Inventory and looting"
-          }
-        },
-        {
-          "type": "p",
-          "text": {
-            "zh": "打开后能看自己的装备和物品，也能看正在搜索的箱子、尸体或地面包。玩家要能搜索、拿取、拖放和整理；箱子空了、空间不够、物品被别人拿走，也要有对应变化。尸体显示对方的角色和装备。",
-            "en": "Players inspect their own gear and items alongside the crate, corpse or dropped bag being searched. Include search, take, drag and organize, plus empty containers, insufficient space and items taken by someone else. A corpse's portrait and gear must belong to that character."
-          }
-        },
-        {
-          "type": "h",
-          "text": {
-            "zh": "健康与治疗",
-            "en": "Health and treatment"
-          }
-        },
-        {
-          "type": "p",
-          "text": {
-            "zh": "用人体图显示头、胸、腹、双臂和双腿的伤势。玩家选择受伤部位，查看能用的医疗物品并治疗；显示治疗进度，以及被打断或缺少药品的情况。",
-            "en": "A body diagram shows injuries to the head, thorax, abdomen, both arms and both legs. Players select a part, view available medical items and treat it. Show progress, interruption and missing supplies."
-          }
-        },
-        {
-          "type": "h",
-          "text": {
-            "zh": "地图与工具",
-            "en": "Map and tools"
-          }
-        },
-        {
-          "type": "p",
-          "text": {
-            "zh": "地图需要自己位置和朝向、地点名称、撤离点、个人标记、补给信息，以及缩放和拖动。另有指南针、测距仪读数和光环灯光调节。任务步骤和设备操作详情也要能在局内查看。地图不能显示精确敌方雷达。",
-            "en": "The map needs position and heading, place names, exits, a personal waypoint, supply information, zoom and pan. Tools include compass, rangefinder readings and Halo lighting controls. Event details remain accessible during play; the map must not reveal exact enemy positions."
-          }
-        },
-        {
-          "type": "h",
-          "text": {
-            "zh": "赏金玩法增加的内容",
-            "en": "Additional bounty mode content"
-          }
-        },
-        {
-          "type": "p",
-          "text": {
-            "zh": "普通战斗、背包、健康和地图继续共用。额外需要：赏金准备界面、当前目标、放逐进度、谁拿着赏金、暗视剩余量、队友倒地与救援、出口情况，以及结束后进入下一局。",
-            "en": "Reuse combat, inventory, health and map functions. Add bounty staging, the current target, banishment progress, token ownership, remaining dark-sight time, downed teammates and revival, exit status, and the route to the next round."
-          }
-        }
-      ]
-    },
-    {
-      "title": {
-        "zh": "一局结束和共用界面",
-        "en": "Session results and shared screens"
-      },
-      "blocks": [
-        {
-          "type": "h",
-          "text": {
-            "zh": "撤离与死亡",
-            "en": "Extraction and death"
-          }
-        },
-        {
-          "type": "p",
-          "text": {
-            "zh": "准备撤离时，玩家需要知道能不能走、还要等多久、为什么被阻止。撤离成功、死亡和时间耗尽后，都要有清楚的结果。死亡时显示游戏实际能提供的死因信息。",
-            "en": "At extraction, players need to know whether they can leave, how long to wait and what is blocking them. Give a clear result after extraction, death or timeout. Death presentation uses the cause information the game can actually provide."
-          }
-        },
-        {
-          "type": "h",
-          "text": {
-            "zh": "结算和返回仓库",
-            "en": "Results and return to stash"
-          }
-        },
-        {
-          "type": "p",
-          "text": {
-            "zh": "结算按玩家关心的三个问题组织：",
-            "en": "Organize the result around three player questions:"
-          }
-        },
-        {
-          "type": "bullets",
-          "items": [
-            {
-              "zh": "这一局怎么样：是否撤离、为什么失败、获得了什么。",
-              "en": "How did it go: extraction or failure, the reason, and what was gained."
-            },
-            {
-              "zh": "东西去了哪里：带回物品、死亡后仍保住的物品、已经放进仓库的物品。",
-              "en": "Where are the items: recovered loot, protected items retained after death, and items stored in the stash."
-            },
-            {
-              "zh": "接下来能做什么：领取仓库放不下的物品、返回仓库、再次准备。",
-              "en": "What can I do next: claim items that did not fit, return to the stash, and prepare again."
-            }
-          ]
-        },
-        {
-          "type": "p",
-          "text": {
-            "zh": "还需要“正在保存”“保存失败，可重试”“已保存”这些提示。保险箱保住的东西不算成功撤离成果。放不进仓库的物品进入待领取列表，不能让玩家以为东西丢了。保存还没完成时，不能再次出发。",
-            "en": "Include saving, save failed with retry, and saved messages. Protected items retained after death are not extraction achievements. Items that do not fit go to a claim list so players do not think they disappeared. Players cannot deploy again until saving is complete."
-          }
-        },
-        {
-          "type": "h",
-          "text": {
-            "zh": "设置与暂停",
-            "en": "Settings and pause"
-          }
-        },
-        {
-          "type": "p",
-          "text": {
-            "zh": "设置包含声音、画面、语言和已有的战斗画面设置。局内菜单包含继续、返回主界面和退出。在线游戏打开菜单时，战局仍在继续。",
-            "en": "Settings cover audio, graphics, language and existing combat-display options. The in-session menu includes resume, main menu and exit. An online session continues while the menu is open."
-          }
-        },
-        {
-          "type": "h",
-          "text": {
-            "zh": "各界面共用的小部件",
-            "en": "Small elements shared by screens"
-          }
-        },
-        {
-          "type": "p",
-          "text": {
-            "zh": "按钮、页签、物品格、进度条、提示和确认窗口应能重复使用。需要说明正常、鼠标移上去或键盘选中、按下、不可点，以及等待和出错时的区别。只换文字或颜色的地方，不用重新画整张页面。",
-            "en": "Buttons, tabs, item tiles, progress bars, messages and confirmation dialogs should be reusable. Explain normal, hover or keyboard focus, selected, pressed, unavailable, waiting and error appearances. Text or color changes do not require redrawing a whole screen."
-          }
-        },
-        {
-          "type": "h",
-          "text": {
-            "zh": "暂时只留入口的内容",
-            "en": "Functions that only need a placeholder for now"
-          }
-        },
-        {
-          "type": "p",
-          "text": {
-            "zh": "基地建设、通讯和出发前保险尚未开放。这次保留位置和“暂未开放”的表达，不要求画完整建设、聊天、邮件或保险购买流程。",
-            "en": "Base construction, communications and pre-deployment insurance are not available yet. Retain a place and an unavailable message; full building, chat, mail and insurance-purchase flows are not required."
-          }
-        }
-      ]
-    },
-    {
-      "title": {
-        "zh": "美术最后交什么",
-        "en": "What the artist hands over"
-      },
-      "blocks": [
-        {
-          "type": "p",
-          "text": {
-            "zh": "不用学 Unity，也不限定用什么软件。先交一个按钮、一个窗口和一个物品格，让程序试着放进游戏；确认没问题后，再做其余素材。",
-            "en": "There is no need to learn Unity or use a particular design tool. First hand over one button, one window and one item tile for an integration trial. Once they work, produce the rest."
-          }
-        },
-        {
-          "type": "h",
-          "text": {
-            "zh": "一份能修改的原稿",
-            "en": "An editable source file"
-          }
-        },
-        {
-          "type": "p",
-          "text": {
-            "zh": "文字、图标、底板和插画尽量分层。写清设计稿尺寸和字体名称。另导出完整效果图，让程序知道做完应该是什么样。",
-            "en": "Keep text, icons, surfaces and illustrations on separate layers where possible. Note the canvas size and fonts. Export a complete mockup so the developer can see the intended result."
-          }
-        },
-        {
-          "type": "h",
-          "text": {
-            "zh": "游戏里要用的单独图片",
-            "en": "Separate images for the game"
-          }
-        },
-        {
-          "type": "p",
-          "text": {
-            "zh": "图标、插画和复杂边框分开导出 PNG，需要镂空的地方透明。按钮底图不要带文字，物品图不要带数量和价格。同一种按钮或窗口可以反复用，只交一份。纯色框和简单线条可以由程序画。",
-            "en": "Export icons, illustrations and detailed frames as separate PNGs with transparency where needed. Button backgrounds have no text; item icons have no quantity or price. Shared buttons and windows need one reusable asset. The developer can draw flat boxes and simple lines."
-          }
-        },
-        {
-          "type": "h",
-          "text": {
-            "zh": "会变宽变高的框才做九宫格",
-            "en": "Nine slicing is for frames that resize"
-          }
-        },
-        {
-          "type": "p",
-          "text": {
-            "zh": "例如，同一种按钮既要放“返回”，又要放“确认出发”。按钮宽度不同，但四个角不能被拉扁。做法是交一张完整底图，在上面标出四条切分线：四角保留，边和中间允许拉长。不是交九张图片。",
-            "en": "For example, one button style may hold both Back and Confirm deployment. The widths differ, but the corners must keep their shape. Supply one complete background with four slice lines: preserve the corners and allow the edges and center to stretch. Do not export nine separate images."
-          }
-        },
-        {
-          "type": "nine_slice",
-          "labels": {
-            "zh": [
-              "角不变",
-              "横向拉伸",
-              "角不变",
-              "纵向拉伸",
-              "中间扩展",
-              "纵向拉伸",
-              "角不变",
-              "横向拉伸",
-              "角不变"
+          ],
+          "rows": [
+            [
+              {
+                "zh": "主界面",
+                "en": "Main menu"
+              },
+              {
+                "zh": "月面背景、角色预览、出击/仓库/光环入口、次级导航和资源显示。",
+                "en": "Lunar background, character preview, deployment/stash/Halo cards, secondary navigation and resources."
+              }
             ],
-            "en": [
-              "Fixed corner",
-              "Stretch across",
-              "Fixed corner",
-              "Stretch down",
-              "Stretch center",
-              "Stretch down",
-              "Fixed corner",
-              "Stretch across",
-              "Fixed corner"
+            [
+              {
+                "zh": "登录与注册",
+                "en": "Sign-in and registration"
+              },
+              {
+                "zh": "账号密码输入、登录、注册、退出账号和错误提示。",
+                "en": "Account and password fields, sign-in, registration, sign-out and error messages."
+              }
+            ],
+            [
+              {
+                "zh": "仓库与装备",
+                "en": "Stash and equipment"
+              },
+              {
+                "zh": "左侧角色与身体装备，中间胸挂、衣兜、工具、背包、保险箱，右侧个人仓库。",
+                "en": "Character and body gear on the left; carried containers and tools in the middle; personal stash on the right."
+              }
+            ],
+            [
+              {
+                "zh": "物品检查与容器窗口",
+                "en": "Item inspection and container windows"
+              },
+              {
+                "zh": "右键查看详情、拆分和操作；容器可单独打开，物品支持拖放和旋转。",
+                "en": "Context-menu inspection, splitting and actions; separate container windows, dragging and rotation."
+              }
+            ],
+            [
+              {
+                "zh": "光环改装台",
+                "en": "Halo workshop"
+              },
+              {
+                "zh": "光环与槽位、兼容模块列表、参数比较；安装、替换、拆卸及改装前后外观预览。",
+                "en": "Halo and slots, compatible module list, stat comparison, install/replace/remove and before/after visual preview."
+              }
+            ],
+            [
+              {
+                "zh": "补给商目录",
+                "en": "Supplier directory"
+              },
+              {
+                "zh": "三个补给商入口，另有应急补给和月核研究入口。",
+                "en": "Three supplier entries, plus emergency supplies and Mooncore research."
+              }
+            ],
+            [
+              {
+                "zh": "商品购买与出售",
+                "en": "Shop"
+              },
+              {
+                "zh": "商品列表、图标、价格、数量、物品说明，以及购买和出售。",
+                "en": "Product list, icons, prices, quantities, descriptions, buying and selling."
+              }
+            ],
+            [
+              {
+                "zh": "应急补给",
+                "en": "Emergency supplies"
+              },
+              {
+                "zh": "显示补给包内容和领取条件；符合条件时可领取。",
+                "en": "Shows bundle contents and eligibility, with a claim action when eligible."
+              }
+            ],
+            [
+              {
+                "zh": "研究与制造",
+                "en": "Research and crafting"
+              },
+              {
+                "zh": "月核与生物研究分区，材料数量与缺口，研究解锁和实体模块制造。",
+                "en": "Mooncore and biology branches, owned/missing materials, research unlocks and physical module crafting."
+              }
+            ],
+            [
+              {
+                "zh": "任务与调查记录",
+                "en": "Tasks and investigation records"
+              },
+              {
+                "zh": "显示三项首次带回记录、调查文字和研究入口；完整战役未接入。",
+                "en": "Three first-recovery records, investigation text and research access; the full campaign is not implemented."
+              }
+            ],
+            [
+              {
+                "zh": "待领取物品",
+                "en": "Recovery inbox"
+              },
+              {
+                "zh": "仓库显示未入库物品，支持单项或全部可入库领取，并提示空间不足。",
+                "en": "Unstored items shown from the stash, with single/all-that-fit claims and insufficient-space feedback."
+              }
+            ],
+            [
+              {
+                "zh": "基地",
+                "en": "Base"
+              },
+              {
+                "zh": "资源显示与仓库入口；建设、工坊和升级未开放。",
+                "en": "Resources and stash access; construction, workshops and upgrades are unavailable."
+              }
+            ],
+            [
+              {
+                "zh": "通讯",
+                "en": "Communications"
+              },
+              {
+                "zh": "联系人、频道和无消息占位；聊天与邮件未接入。",
+                "en": "Contacts, channels and an empty-message placeholder; chat and mail are not implemented."
+              }
+            ],
+            [
+              {
+                "zh": "设置",
+                "en": "Settings"
+              },
+              {
+                "zh": "声音、显示、语言和战斗画面设置。",
+                "en": "Audio, display, language and combat-display settings."
+              }
             ]
-          }
-        },
+          ],
+          "widths": [
+            1.8,
+            5.1
+          ]
+        }
+      ]
+    },
+    {
+      "title": {
+        "zh": "出发与连接界面",
+        "en": "Deployment and connection UI"
+      },
+      "blocks": [
         {
-          "type": "p",
-          "text": {
-            "zh": "在图片旁写：左、上、右、下各保留多少像素。文字离边框多远也另外标。图标、人物和插画不按这种方式拉伸。",
-            "en": "Write the fixed left, top, right and bottom sizes in pixels beside the image. Mark text padding separately. Icons, characters and illustrations do not stretch this way."
-          }
-        },
+          "type": "table",
+          "headers": [
+            {
+              "zh": "UI 名称",
+              "en": "UI name"
+            },
+            {
+              "zh": "当前实现",
+              "en": "Current implementation"
+            }
+          ],
+          "rows": [
+            [
+              {
+                "zh": "出发准备 角色",
+                "en": "Deployment Character"
+              },
+              {
+                "zh": "三角色选择、当前角色展示和已装备物品检查。",
+                "en": "Three character choices, current character preview and equipped-item check."
+              }
+            ],
+            [
+              {
+                "zh": "出发准备 地点",
+                "en": "Deployment Destination"
+              },
+              {
+                "zh": "地点主视觉、区域与信标信息、步骤导航。",
+                "en": "Destination artwork, area/beacon information and step navigation."
+              }
+            ],
+            [
+              {
+                "zh": "出发准备 简报",
+                "en": "Deployment Briefing"
+              },
+              {
+                "zh": "搜集、生存、撤离说明，以及携带电池数量调整。",
+                "en": "Loot, survival and extraction briefing, with carried-battery quantity controls."
+              }
+            ],
+            [
+              {
+                "zh": "出发准备 回收",
+                "en": "Deployment Recovery"
+              },
+              {
+                "zh": "死亡损失和无保障提示；保险合约入口禁用。",
+                "en": "Loss-on-death and uninsured notices; insurance contract action is disabled."
+              }
+            ],
+            [
+              {
+                "zh": "出发准备 确认",
+                "en": "Deployment Confirmation"
+              },
+              {
+                "zh": "角色、地点、装备和携带量汇总，最终出发按钮。",
+                "en": "Character, destination, equipment and carry summary, with final deployment action."
+              }
+            ],
+            [
+              {
+                "zh": "玩法选择",
+                "en": "Mode selection"
+              },
+              {
+                "zh": "远征与赏金玩法入口，支持单人或在线选择。",
+                "en": "Expedition and bounty entries, with solo or online selection."
+              }
+            ],
+            [
+              {
+                "zh": "在线小队",
+                "en": "Online squad"
+              },
+              {
+                "zh": "1–4 人创建/加入、队伍码、名单、准备、合作/对抗、可选匹配和出发。",
+                "en": "Create/join for 1–4 players, squad code, roster, ready, co-op/versus, optional matchmaking and deployment."
+              }
+            ],
+            [
+              {
+                "zh": "LAN 作战室",
+                "en": "LAN room"
+              },
+              {
+                "zh": "房间浏览、创建、直连、成员名单、准备和房主出发。",
+                "en": "Browse/create/direct-join rooms, member list, readiness and host deployment."
+              }
+            ],
+            [
+              {
+                "zh": "高级连接设置",
+                "en": "Advanced connection"
+              },
+              {
+                "zh": "高级连接入口与 Direct/Relay 选择。",
+                "en": "Advanced connection access and Direct/Relay selection."
+              }
+            ],
+            [
+              {
+                "zh": "创建主机弹窗",
+                "en": "Host creation dialog"
+              },
+              {
+                "zh": "主机创建参数与确认、取消操作。",
+                "en": "Host creation fields with confirm and cancel."
+              }
+            ],
+            [
+              {
+                "zh": "地址直连弹窗",
+                "en": "Direct-connect dialog"
+              },
+              {
+                "zh": "地址、端口输入和连接操作。",
+                "en": "Address and port inputs with connection action."
+              }
+            ],
+            [
+              {
+                "zh": "连接状态与加载",
+                "en": "Connection and loading"
+              },
+              {
+                "zh": "等待、加载、错误、重试和原战局重连提示。",
+                "en": "Waiting, loading, errors, retry and reconnect-to-session feedback."
+              }
+            ],
+            [
+              {
+                "zh": "赏金准备",
+                "en": "Bounty staging"
+              },
+              {
+                "zh": "组队、邀请码、名单和准备；单人模式隐藏联机组队控件。",
+                "en": "Team setup, invite code, roster and readiness; solo hides online team controls."
+              }
+            ]
+          ],
+          "widths": [
+            1.8,
+            5.1
+          ]
+        }
+      ]
+    },
+    {
+      "title": {
+        "zh": "局内与结算界面",
+        "en": "In-session and result UI"
+      },
+      "blocks": [
         {
-          "type": "h",
-          "text": {
-            "zh": "附一张简单说明",
-            "en": "A short handoff note"
-          }
-        },
-        {
-          "type": "p",
-          "text": {
-            "zh": "说明每张图是什么、用在哪里，以及按钮选中、按下和不能点时是什么样。如果只是颜色变化，写说明就行。程序负责把素材接进 Unity，处理文字、双语、点击和不同尺寸。",
-            "en": "Say what each asset is, where it is used, and how a button looks when selected, pressed or unavailable. Describe color-only changes in words. The developer handles Unity integration, text, localization, interaction and different screen sizes."
-          }
+          "type": "table",
+          "headers": [
+            {
+              "zh": "UI 名称",
+              "en": "UI name"
+            },
+            {
+              "zh": "当前实现",
+              "en": "Current implementation"
+            }
+          ],
+          "rows": [
+            [
+              {
+                "zh": "战斗 HUD",
+                "en": "Combat HUD"
+              },
+              {
+                "zh": "生命、武器、弹药/充能、时间、氧气、饥渴、护盾与供能，以及战斗提示。",
+                "en": "Health, weapon, ammo/charge, time, oxygen, nutrition, shield/energy and combat feedback."
+              }
+            ],
+            [
+              {
+                "zh": "局内背包",
+                "en": "In-session inventory"
+              },
+              {
+                "zh": "角色装备、随身容器、保险箱、三个工具槽，底部停靠九格快捷栏。",
+                "en": "Gear, carried containers, secure container, three tool slots and a docked nine-slot bar."
+              }
+            ],
+            [
+              {
+                "zh": "搜刮界面",
+                "en": "Looting"
+              },
+              {
+                "zh": "自己的装备与箱子/尸体/地面包同时显示；支持搜索、拿取和拖放。",
+                "en": "Own inventory alongside a crate/corpse/dropped bag, with search, take and drag."
+              }
+            ],
+            [
+              {
+                "zh": "健康与治疗",
+                "en": "Health and treatment"
+              },
+              {
+                "zh": "七部位人体图、部位血量、医疗选择、治疗进度和中断提示。",
+                "en": "Seven-part body diagram, part health, medical choices, treatment progress and interruption feedback."
+              }
+            ],
+            [
+              {
+                "zh": "快捷栏",
+                "en": "Quick slots"
+              },
+              {
+                "zh": "1–9 九格绑定，数字键选中、左键使用；显示图标、数量和不可用状态。",
+                "en": "Nine bindable slots; number selects, primary click uses; icons, counts and unavailable states."
+              }
+            ],
+            [
+              {
+                "zh": "局内任务提示与详情",
+                "en": "Objective display and details"
+              },
+              {
+                "zh": "任务步骤、区域/楼层、距离、节点和设备进度；J 打开详情。",
+                "en": "Objective steps, area/floor, distance, device nodes and progress; J opens details."
+              }
+            ],
+            [
+              {
+                "zh": "战术地图与工具读数",
+                "en": "Tactical map and tool readouts"
+              },
+              {
+                "zh": "M 打开卫星地图；位置、导航点、撤离和补给图层。另有指南针和测距仪读数。",
+                "en": "M opens the satellite map with position, waypoint, exits and supply layer; separate compass/rangefinder readouts."
+              }
+            ],
+            [
+              {
+                "zh": "光环灯光面板",
+                "en": "Halo lighting panel"
+              },
+              {
+                "zh": "灯光开关、参数调节和当前状态。",
+                "en": "Lighting toggle, parameter controls and current state."
+              }
+            ],
+            [
+              {
+                "zh": "世界交互提示",
+                "en": "World interaction prompts"
+              },
+              {
+                "zh": "拾取、搜索、气闸、灯光、开关和设备的名称、按键与操作进度。",
+                "en": "Names, keys and progress for pickup, search, airlocks, lights, switches and devices."
+              }
+            ],
+            [
+              {
+                "zh": "撤离提示",
+                "en": "Extraction display"
+              },
+              {
+                "zh": "撤离条件、范围内状态、倒计时，以及受阻或中断提示。",
+                "en": "Eligibility, in-zone state, countdown and blocked/interrupted feedback."
+              }
+            ],
+            [
+              {
+                "zh": "行动结果",
+                "en": "Session result"
+              },
+              {
+                "zh": "撤离成功、死亡或超时，以及本局结果摘要。",
+                "en": "Extraction, death or timeout, with the session summary."
+              }
+            ],
+            [
+              {
+                "zh": "结算物资",
+                "en": "Cargo result"
+              },
+              {
+                "zh": "结算第二页，显示本局物品与带回情况。",
+                "en": "Second result page, listing session items and recovered cargo."
+              }
+            ],
+            [
+              {
+                "zh": "入库与返回",
+                "en": "Storage result"
+              },
+              {
+                "zh": "结算第三页，显示保存、入库、失败重试与返回。",
+                "en": "Third result page: saving, storage, retry and return."
+              }
+            ],
+            [
+              {
+                "zh": "暂停菜单",
+                "en": "Pause menu"
+              },
+              {
+                "zh": "在游戏画面上显示继续、返回主界面和退出。",
+                "en": "Overlay on the game view with resume, main menu and exit."
+              }
+            ],
+            [
+              {
+                "zh": "死亡提示",
+                "en": "Death display"
+              },
+              {
+                "zh": "显示可取得的死亡信息，并转入结算。",
+                "en": "Shows available death information and proceeds to settlement."
+              }
+            ],
+            [
+              {
+                "zh": "赏金战斗界面",
+                "en": "Bounty combat display"
+              },
+              {
+                "zh": "阶段、目标、放逐、赏金归属、队友状态、暗视、救援和出口提示。",
+                "en": "Phase, target, banishment, bounty ownership, teammates, dark sight, revival and exit feedback."
+              }
+            ],
+            [
+              {
+                "zh": "赏金结束界面",
+                "en": "Bounty result"
+              },
+              {
+                "zh": "结果与保存状态，返回飞船或准备下一局。",
+                "en": "Outcome and save status, with return to ship or prepare next round."
+              }
+            ]
+          ],
+          "widths": [
+            1.8,
+            5.1
+          ]
         }
       ]
     }
   ],
-  "internal_coverage": [
-    {
-      "name": "Main menu",
-      "old": [
-        "M01",
-        "M03"
-      ]
-    },
-    {
-      "name": "Account and connection",
-      "old": [
-        "M02",
-        "M06"
-      ]
-    },
-    {
-      "name": "Deployment",
-      "old": [
-        "M22",
-        "M23",
-        "M24",
-        "M25",
-        "M26"
-      ]
-    },
-    {
-      "name": "Squads and rooms",
-      "old": [
-        "M04",
-        "M05"
-      ]
-    },
-    {
-      "name": "Stash",
-      "old": [
-        "M07",
-        "M08",
-        "M09",
-        "M11",
-        "M12",
-        "M13"
-      ]
-    },
-    {
-      "name": "Halo modification",
-      "old": [
-        "M14",
-        "M15"
-      ]
-    },
-    {
-      "name": "Shop",
-      "old": [
-        "M16",
-        "M17",
-        "M18"
-      ]
-    },
-    {
-      "name": "Research",
-      "old": [
-        "M19",
-        "M20"
-      ]
-    },
-    {
-      "name": "Objectives",
-      "old": [
-        "M21",
-        "M34"
-      ]
-    },
-    {
-      "name": "Combat",
-      "old": [
-        "M27",
-        "M29",
-        "M30",
-        "M31",
-        "M50"
-      ]
-    },
-    {
-      "name": "Loot",
-      "old": [
-        "M10"
-      ]
-    },
-    {
-      "name": "Health",
-      "old": [
-        "M28"
-      ]
-    },
-    {
-      "name": "Map and tools",
-      "old": [
-        "M32",
-        "M33"
-      ]
-    },
-    {
-      "name": "Bounty",
-      "old": [
-        "M40",
-        "M41",
-        "M42",
-        "M43",
-        "M44"
-      ]
-    },
-    {
-      "name": "Results",
-      "old": [
-        "M35",
-        "M36",
-        "M37",
-        "M38",
-        "M39",
-        "M47"
-      ]
-    },
-    {
-      "name": "Settings",
-      "old": [
-        "M45",
-        "M46"
-      ]
-    },
-    {
-      "name": "Reserved",
-      "old": [
-        "M48",
-        "M49"
-      ]
-    }
-  ],
-  "excluded": [
-    "M51"
-  ],
-  "source_note": "Prior source files retained in Git history. Current handoff and Halo modification update checked. This edition groups functions by player activity; internal IDs are not shown to the artist."
+  "entry_count": 44
 }

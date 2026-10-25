@@ -97,7 +97,10 @@ def add_table(doc, block, lang):
             para = cell.paragraphs[0]
             para.paragraph_format.space_before = Pt(0)
             para.paragraph_format.space_after = Pt(0)
-            para.paragraph_format.line_spacing = 1.12
+            para.paragraph_format.line_spacing = Pt(15.5)
+            snap = OxmlElement("w:snapToGrid")
+            snap.set(qn("w:val"), "0")
+            para._p.get_or_add_pPr().append(snap)
             if ci == 0 and len(values) == 3:
                 para.alignment = WD_ALIGN_PARAGRAPH.CENTER
             set_font(para.add_run(value[lang]), lang, 10.5, ri == 0)
