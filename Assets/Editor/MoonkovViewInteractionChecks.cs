@@ -38,7 +38,7 @@ public sealed class MoonkovViewInteractionChecks : EditorWindow
             view.BindPlayer(player, true); view.thirdPersonBackgroundBlur = false;
             var rotation = Quaternion.Euler(-17, 43, 0);
             float hipProjection = 0;
-            foreach (float magnification in new[] { 1f, 1.75f, 6f, 8f })
+            foreach (float magnification in new[] { 1f, 1.35f, 1.75f, 6f, 8f })
             {
                 float firstFov = 0, firstProjection = 0;
                 foreach (bool first in new[] { true, false })
@@ -76,7 +76,7 @@ public sealed class MoonkovViewInteractionChecks : EditorWindow
             view.SetAimBlend(0);
             Require(Mathf.Abs(view.AimLookSensitivity - .125f) < .00001f,
                 "Input scaling ran ahead of the currently rendered 8x image.");
-            Debug.Log("View checks passed: shared 70 degree world FOV, actual 1.75x/6x/8x projection in both perspectives, " +
+            Debug.Log("View checks passed: shared configured world FOV, actual 1.35x/1.75x/6x/8x projection in both perspectives, " +
                 "command/centre ray agreement, rendered-zoom sensitivity and sub-degree input scaled once.");
         }
         finally { if (view) view.BindPlayer(null, true); DestroyImmediate(holder); }

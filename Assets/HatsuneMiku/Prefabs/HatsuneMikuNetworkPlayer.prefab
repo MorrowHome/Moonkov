@@ -3723,7 +3723,7 @@ MonoBehaviour:
   scrollStep: 0.5
   viewBlendSeconds: 0.15
   zoomSmoothTime: 0.12
-  firstPersonFieldOfView: 70
+  firstPersonFieldOfView: 75
   firstPersonNearClip: 0.03
   thirdPersonOrbitHeight: 1.22
   cameraCollisionRecoverySeconds: 0.35
@@ -3735,7 +3735,7 @@ MonoBehaviour:
   backgroundFocusPadding: 0.35
   backgroundBlurFadeDistance: 5
   backgroundBlurRadius: 1
-  aimMagnification: 1.75
+  aimMagnification: 1.35
   weaponZoomTransitionSeconds: 0.16
   aimedLookSensitivity: 1
   fallbackEyeWorldOffset: {x: 0, y: 0.06, z: 0.075}

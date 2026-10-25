@@ -33,7 +33,7 @@ public class DollSingerView : MonoBehaviour
     [Min(0.01f)] public float viewBlendSeconds = 0.15f;
     [Min(0.01f)] public float zoomSmoothTime = 0.12f;
     [Tooltip("Base world-camera FOV shared by both perspectives. The serialized name is retained for existing prefabs.")]
-    [Range(40f, 100f)] public float firstPersonFieldOfView = 70f;
+    [Range(40f, 100f)] public float firstPersonFieldOfView = DollSingerViewSettings.DefaultFov;
     [Range(0.01f, 0.5f)] public float firstPersonNearClip = 0.03f;
 
     [Header("Third person orbit (Cinemachine)")]
@@ -53,7 +53,7 @@ public class DollSingerView : MonoBehaviour
 
     [Header("Aim zoom")]
     [Tooltip("Target magnification when fully aiming, relative to the shared world-camera FOV.")]
-    [Range(1f, 3f)] public float aimMagnification = 1.75f;
+    [Range(1f, 3f)] public float aimMagnification = 1.35f;
     [Tooltip("Smooths magnification when switching an already aimed weapon; the look direction stays unchanged.")]
     [Min(.01f)] public float weaponZoomTransitionSeconds = .16f;
 

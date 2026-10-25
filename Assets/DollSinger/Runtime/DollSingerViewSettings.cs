@@ -5,7 +5,7 @@ namespace Unity.MP_FPS.DollSinger
     /// <summary>Local player preferences shared by every deployment and perspective.</summary>
     public static class DollSingerViewSettings
     {
-        public const float DefaultMouse = .15f, DefaultAim = 1f, DefaultFov = 70f;
+        public const float DefaultMouse = .15f, DefaultAim = 1f, DefaultFov = 75f;
         public const string MouseKey = "Moonkov.Look.Mouse", AimKey = "Moonkov.Look.Aim", FovKey = "Moonkov.Look.Fov";
         private static bool loaded;
         private static float mouse, aim, fov;

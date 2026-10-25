@@ -60,7 +60,7 @@ public static class MoonkovAimInputChecks
                 Require(math.distance(look, new float2(.008f, -.008f) * (.75f / zoom)) < .000001f, "Micro aim preference was lost/scaled twice.");
             }
             DollSingerViewSettings.RestoreDefaults(); view.ApplyViewSettings(); input.ApplyViewSettings();
-            Require(Near(view.firstPersonFieldOfView, 70) && Near((float)Get(input, "mouseSensitivity"), .15f) &&
+            Require(Near(view.firstPersonFieldOfView, DollSingerViewSettings.DefaultFov) && Near((float)Get(input, "mouseSensitivity"), .15f) &&
                 Near(DollSingerViewSettings.AimSensitivity, 1), "Restore view defaults affected the wrong values.");
         }
         finally
