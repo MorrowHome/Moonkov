@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
+using Unity.MP_FPS.Campaign;
 
 namespace Unity.MP_FPS
 {
@@ -34,6 +35,8 @@ namespace Unity.MP_FPS
             public int CarriedCells;
             public string InventoryJson, RaidInventoryJson;
             public int MissionSchemaVersion;
+            public int CampaignSchemaVersion;
+            public string CampaignJson;
             public string Mode, MatchId; public int RulesVersion, TeamId;
         }
 
@@ -48,6 +51,7 @@ namespace Unity.MP_FPS
             [JsonProperty(DefaultValueHandling=DefaultValueHandling.Ignore)] public int RulesVersion;
             [JsonProperty(DefaultValueHandling=DefaultValueHandling.Ignore)] public int TeamId;
             [JsonProperty(NullValueHandling=NullValueHandling.Ignore)] public BountyRedemption Redemption;
+            [JsonProperty(NullValueHandling=NullValueHandling.Ignore)] public CampaignProgress CampaignProgress;
         }
 
         public sealed class Join
@@ -104,6 +108,8 @@ namespace Unity.MP_FPS
         public readonly Dictionary<Entity, Deploy> Deployments = new Dictionary<Entity, Deploy>();
         public readonly Dictionary<Entity, RaidSession> ReadyRaids = new Dictionary<Entity, RaidSession>();
         public readonly Dictionary<Entity, RaidInventoryState> Inventories = new Dictionary<Entity, RaidInventoryState>();
+        // Only the local authoritative server writes transient chapter facts.
+        public readonly Dictionary<Entity, CampaignProgress> CampaignRuns = new Dictionary<Entity, CampaignProgress>();
         public bool Enabled => m_Http != null || m_Offline != null || m_Lan != null;
         public bool MissionsSupported
         {
@@ -235,7 +241,9 @@ namespace Unity.MP_FPS
                 Mode=profile.Mode,MatchId=profile.MatchId,RulesVersion=profile.RulesVersion,TeamId=profile.TeamId,
                 Outcome = session.Phase.ToString(), Dust = session.Dust, Alloy = session.Alloy, Cells = session.Cells,
                 DeploymentId = session.PersistentDeployment ? session.SettlementId.ToString() : null,
-                InventoryJson = Inventories.TryGetValue(connection, out var inventory) ? JsonConvert.SerializeObject(inventory.Graph) : null
+                InventoryJson = Inventories.TryGetValue(connection, out var inventory) ? JsonConvert.SerializeObject(inventory.Graph) : null,
+                CampaignProgress = m_Offline != null && profile.Mode == null && CampaignRuns.TryGetValue(connection, out var campaign)
+                    ? CampaignRules.Clone(campaign) : null
             };
             Saves.Add(payload.SettlementId, new Save
             {

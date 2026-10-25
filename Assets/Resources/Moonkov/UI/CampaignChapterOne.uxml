@@ -1,0 +1,23 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="CampaignChapterOne.uss" />
+    <ui:VisualElement name="campaignChapterView" class="campaign-chapter-view">
+        <ui:VisualElement class="campaign-chapter-heading">
+            <ui:Label text="第一章 静默着陆" class="campaign-heading" />
+            <ui:Label name="campaignChapterSaved" class="campaign-muted" />
+        </ui:VisualElement>
+        <ui:VisualElement name="campaignChapterTasks" class="campaign-task-list" />
+        <ui:ScrollView class="campaign-detail-scroll">
+            <ui:Label name="campaignSelectedTitle" class="campaign-title" />
+            <ui:Label name="campaignSelectedStatus" class="campaign-muted" />
+            <ui:Label name="campaignSelectedBriefing" class="campaign-copy" />
+            <ui:VisualElement name="campaignSelectedNodes" class="campaign-node-list" />
+            <ui:Label text="通讯记录" class="campaign-section-label" />
+            <ui:Label name="campaignSelectedCommunications" class="campaign-copy campaign-communication" />
+        </ui:ScrollView>
+        <ui:Label name="campaignTrackingStatus" class="campaign-feedback" />
+        <ui:VisualElement class="campaign-actions">
+            <ui:Button name="campaignTrack" text="追踪目标" class="campaign-button" />
+            <ui:Button name="campaignContinue" text="准备出战" class="campaign-button campaign-primary" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

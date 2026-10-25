@@ -68,7 +68,7 @@ namespace Unity.MP_FPS
         private float m_LootErrorUntil;
         private int m_PreviousCount = -1;
         private static RaidHUD s_Active;
-        public static bool InventoryOpen => s_Active != null && (s_Active.m_InventoryVisible || s_Active.m_MissionDetailsVisible);
+        public static bool InventoryOpen => s_Active != null && (s_Active.m_InventoryVisible || s_Active.m_MissionDetailsVisible || s_Active.m_CampaignJournalVisible);
         public static bool PointerRequested => (s_Active != null && s_Active.CinematicInputBlocked) || InventoryOpen || MapInputBlocked || (s_Active != null && (s_Active.m_WasSettled || s_Active.m_ClashLobbyPointer));
         public static bool TimedActionInputActive => s_Active != null && (s_Active.TimedActionActive || s_Active.QuickTacticalActionPending || s_Active.MeleeTimedActionActive);
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -77,6 +77,7 @@ namespace Unity.MP_FPS
         {
             if (s_Active != null && (s_Active.m_MapOpen || s_Active.m_MapEscapeFrame == Time.frameCount))
             { s_Active.CloseRaidMapFromUI(); return true; }
+            if (s_Active != null && s_Active.m_CampaignJournalVisible) { s_Active.SetCampaignJournal(false); return true; }
             if (s_Active != null && s_Active.m_MissionDetailsVisible) { s_Active.SetMissionDetails(false); return true; }
             if (!InventoryOpen) return false;
             if (!s_Active.m_HealthSelected && s_Active.m_InventoryView.Escape()) return true;
@@ -152,6 +153,7 @@ namespace Unity.MP_FPS
             closePack.parent.Insert(closePack.parent.IndexOf(closePack),m_SwitchDrop);
             MoonkovLocalization.Bind(m_Root);
             InitializeMissions();
+            InitializeCampaignHUD();
             InitializeQuickSlots();
             InitializeMelee();
             InitializeBountyClash();
@@ -289,6 +291,7 @@ namespace Unity.MP_FPS
         private void SetInventory(bool visible)
         {
             if (visible) SetRaidMapOpen(false);
+            if (visible && m_CampaignJournalVisible) SetCampaignJournal(false);
             if (visible && m_MissionDetailsVisible) SetMissionDetails(false);
             if(m_InventoryRequestPending && m_Snapshot.Phase==RaidPhase.Active && !visible)
             {
@@ -416,6 +419,7 @@ namespace Unity.MP_FPS
             m_Minimap.Hide(); // Legacy API retained; the M map uses one Painter2D view and no capture camera.
             UpdateGrenades(alive && ready && !settled && !DarkSightRequested && !MapInputBlocked);
             bool missionControl = UpdateMissions(alive && ready && !settled && !clash);
+            UpdateCampaignHUD(alive && ready && !settled && !clash);
             bool tacticalInteraction = TryQuickTacticalInteraction(alive && ready && !settled && !DarkSightRequested);
             if (alive && ready && !settled && !MapInputBlocked)
             {
@@ -860,6 +864,7 @@ namespace Unity.MP_FPS
 
         private void OnDisable()
         {
+            DisposeCampaignHUD();
             ResetRaidCinematics();
             DisposeRaidMap();
             DisposeProtection();

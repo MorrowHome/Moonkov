@@ -125,6 +125,8 @@ namespace Unity.MP_FPS
         {
             var session = SystemAPI.GetComponentRW<RaidSession>(connection);
             var persistence = Persistence(ref state);
+            if (!ClashEnabled(ref state) && SystemAPI.HasSingleton<RaidLootWorld>())
+                ObserveFirstChapter(ref state, state.EntityManager.GetComponentObject<RaidMissionWorld>(SystemAPI.GetSingletonEntity<RaidLootWorld>()));
             UpdateInventoryProtection(ref state,connection);
             // Commit ownership transfer exactly once, while the dead entity still has a
             // transform. Keep loss totals in RaidSession for the result screen only.

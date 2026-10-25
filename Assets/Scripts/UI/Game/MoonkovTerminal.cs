@@ -285,6 +285,7 @@ namespace Unity.MP_FPS.Client
 
         private void Tasks()
         {
+            if (TryPresentCampaignTasks()) return;
             TerminalLayout.Populate(m_Content, "Tasks");
             var graph = PlayerProfileClient.Inventory;
             int facts = graph?.MissionFirsts ?? 0, count = 0;
@@ -396,6 +397,7 @@ namespace Unity.MP_FPS.Client
         }
         public void Dispose()
         {
+            m_CampaignTasks?.Dispose();
             DisposeCharacter();
             m_Windows.Dispose(); m_Content.Clear(); m_ClockTimer.Pause();
             m_IndicatorTimer?.Pause();

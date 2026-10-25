@@ -1,0 +1,17 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="CampaignChapterOne.uss" />
+    <ui:VisualElement name="campaignOverlay" class="campaign-overlay" picking-mode="Ignore">
+        <ui:VisualElement name="campaignHud" class="campaign-hud campaign-hidden" picking-mode="Ignore">
+            <ui:Label text="第一章 静默着陆" class="campaign-muted" />
+            <ui:Label name="campaignHudTitle" class="campaign-hud-title" />
+            <ui:Label name="campaignHudAction" class="campaign-hud-action" />
+            <ui:Label name="campaignHudLocation" class="campaign-hud-location" />
+            <ui:Label name="campaignHudHint" class="campaign-hud-hint" />
+            <ui:Label text="J  任务与通讯" class="campaign-hud-hint" />
+        </ui:VisualElement>
+        <ui:Label name="campaignMarker" class="campaign-marker campaign-hidden" picking-mode="Ignore" />
+        <ui:VisualElement name="campaignJournalModal" class="campaign-journal-modal campaign-hidden" picking-mode="Position">
+            <ui:VisualElement name="campaignJournalHost" class="campaign-journal-sheet" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

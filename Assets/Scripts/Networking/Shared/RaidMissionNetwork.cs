@@ -28,6 +28,9 @@ namespace Unity.MP_FPS
         public bool BackendSupported;
         public float Remaining;
         public float4 ProgressA, ProgressB;
+        public bool CampaignEnabled;
+        public byte CampaignNodes01, CampaignNodes02, CampaignNodes03, CampaignCompletedMask;
+        public FixedString64Bytes CampaignSampleId;
     }
     public struct RaidMissionClientState : IComponentData
     {

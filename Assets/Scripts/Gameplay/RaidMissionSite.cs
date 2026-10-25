@@ -27,9 +27,26 @@ namespace Unity.MP_FPS
         private ISoundSystem m_SoundSystem;
         private SoundDef m_CurrentSound;
         private float m_NextSoundTry;
+        private MissionDefinition[] m_FirstChapterDefinitions;
+        private bool m_FirstChapter;
         public static RaidMissionSite Active { get; private set; }
         public RaidMissionAnchor[] Anchors => m_Anchors;
-        public MissionDefinition[] Definitions => m_Definitions;
+        public MissionDefinition[] Definitions => m_FirstChapter ? m_FirstChapterDefinitions : m_Definitions;
+        public bool FirstChapter => m_FirstChapter;
+        public void SetFirstChapter(bool enabled)
+        {
+            if (enabled && m_FirstChapterDefinitions == null)
+            {
+                m_FirstChapterDefinitions = Array.ConvertAll(m_Definitions, d => d.Copy());
+                var definition = Array.Find(m_FirstChapterDefinitions, d => d.Id == "mc00_mooncore");
+                if (definition == null || Anchor("entry") == null) throw new InvalidOperationException("第一章缺少月核模板或入口锚点。");
+                var nodes = new System.Collections.Generic.List<MissionObjectiveDefinition>(definition.Objectives);
+                nodes.Add(new MissionObjectiveDefinition { Id = "report", Anchor = "entry", Name = "登记清理队身份", Kind = MissionObjectiveKind.Interact, Seconds = 2 });
+                definition.Objectives = nodes.ToArray(); definition.OfferSeconds = 600; definition.ActiveSeconds = 600;
+                if (definition.Validate() != null || definition.Objectives.Length > 8) throw new InvalidOperationException("第一章设施模板无效。");
+            }
+            m_FirstChapter = enabled;
+        }
         public uint Seed => (uint)m_Seed;
         public float DiscoveryRadius => m_DiscoveryRadius;
         public Vector3 Center => Anchor("sampler")?.Approach ?? transform.position;
@@ -37,8 +54,8 @@ namespace Unity.MP_FPS
 
         public void Present(RaidMissionSnapshotRpc snapshot, bool playerActive)
         {
-            bool known = snapshot.OperationId.Length > 0 && snapshot.DefinitionIndex >= 0 && snapshot.DefinitionIndex < m_Definitions.Length;
-            var definition = known ? m_Definitions[snapshot.DefinitionIndex] : null;
+            bool known = snapshot.OperationId.Length > 0 && snapshot.DefinitionIndex >= 0 && snapshot.DefinitionIndex < Definitions.Length;
+            var definition = known ? Definitions[snapshot.DefinitionIndex] : null;
             bool machineRunning = false; string machineAnchor = null;
             if (m_Devices != null) foreach (var device in m_Devices)
             {
@@ -103,7 +120,7 @@ namespace Unity.MP_FPS
             if (Active && Active != this) { Debug.LogError("Only one authored mission region is supported in this scene.", this); return; }
             Active = this;
         }
-        private void OnDisable() { StopPresentation(); if (Active == this) Active = null; }
+        private void OnDisable() { StopPresentation(); m_FirstChapter = false; if (Active == this) Active = null; }
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetSite() => Active = null;
     }

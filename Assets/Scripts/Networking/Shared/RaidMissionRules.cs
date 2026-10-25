@@ -118,6 +118,7 @@ namespace Unity.MP_FPS.Missions
         private readonly MissionDefinition m_Definition;
         private readonly uint m_All;
         private double m_LastTime;
+        private bool m_Restored;
         public readonly string WorldSessionId, Id;
         public readonly int Epoch;
         public MissionPhase Phase { get; private set; } = MissionPhase.Offered;
@@ -226,6 +227,18 @@ namespace Unity.MP_FPS.Missions
         {
             if (Phase != MissionPhase.OutputReady) return false;
             Phase = MissionPhase.Resolved; Revision++; return true;
+        }
+        // Only the local chapter adapter restores already committed facility work.
+        // A restore is accepted once, before any live action, and cannot skip prerequisites.
+        public bool RestoreCompleted(uint mask, double now)
+        {
+            if (m_Restored || Phase != MissionPhase.Offered || CompletedMask != 0 || !ValidTime(now) || now < m_LastTime || (mask & ~m_All) != 0) return false;
+            for (int i = 0; i < ObjectiveCount; i++)
+                if ((mask & (1u << i)) != 0 && (mask & m_Definition.Objectives[i].Prerequisites) != m_Definition.Objectives[i].Prerequisites) return false;
+            m_Restored = true; CompletedMask = mask; m_LastTime = now; Revision++;
+            if (mask != 0) { Phase = mask == m_All ? MissionPhase.OutputReady : MissionPhase.Active; Deadline = now + m_Definition.ActiveSeconds; }
+            StartProcesses(now);
+            return true;
         }
         private void Complete(int node)
         {

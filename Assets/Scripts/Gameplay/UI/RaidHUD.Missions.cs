@@ -78,6 +78,7 @@ namespace Unity.MP_FPS
             if (visible) SetRaidMapOpen(false);
             CancelMissionHold();
             m_MissionDetailsVisible = visible;
+            m_Root.Q<Button>("missionPin")?.EnableInClassList("campaign-hidden", CampaignJournalAvailable);
             if (!visible) { m_Root.Q("missionControls")?.Clear(); m_MissionConfiguring = false; }
             m_MissionDetails.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
             Utils.SetCursorVisible(visible || m_MapOpen || m_InventoryVisible || m_WasSettled || GameSettings.Instance.IsPauseMenuOpen);
@@ -102,7 +103,7 @@ namespace Unity.MP_FPS
                 m_MissionMarker.style.display = DisplayStyle.None;
                 if (m_MissionOperation != null)
                 { SetMissionDetails(false); m_MissionOperation = null; m_MissionSequence = 0; }
-                if (live && Keyboard.current != null && Keyboard.current.jKey.wasPressedThisFrame && !m_InventoryVisible && !GameSettings.Instance.IsPauseMenuOpen)
+                if (live && !CampaignJournalAvailable && Keyboard.current != null && Keyboard.current.jKey.wasPressedThisFrame && !m_InventoryVisible && !GameSettings.Instance.IsPauseMenuOpen)
                 {
                     m_Root.Q<Label>("missionDetailTitle").text = "设施记录";
                     m_MissionNodes.Clear(); m_MissionNodeLabels.Clear();
@@ -117,7 +118,8 @@ namespace Unity.MP_FPS
             if (m_MissionOperation != snapshot.OperationId.ToString())
             {
                 SetMissionDetails(false); m_MissionOperation = snapshot.OperationId.ToString(); m_MissionPinned = true;
-                MissionNotice("发现 MC00 设施信号 · 无需接取，直接操作有效。去向与流程可按 J 查看。");
+                if (!snapshot.CampaignEnabled)
+                    MissionNotice("发现 MC00 设施信号 · 无需接取，直接操作有效。去向与流程可按 J 查看。");
                 m_Root.Q<Button>("missionPin").text = "取消追踪";
                 if (live) MoonkovAudio.Play(MoonkovAudio.Library?.Notification, Vector3.zero, .65f);
             }
@@ -139,9 +141,9 @@ namespace Unity.MP_FPS
             }
             m_MissionHud.style.display = live && m_MissionPinned && !m_InventoryVisible ? DisplayStyle.Flex : DisplayStyle.None;
             UpdateMissionMarker(m_MissionHasDestination && live && m_MissionPinned && !m_InventoryVisible && !m_MissionDetailsVisible && !GameSettings.Instance.IsPauseMenuOpen);
-            if (Keyboard.current != null && Keyboard.current.jKey.wasPressedThisFrame && live && !m_InventoryVisible && !GameSettings.Instance.IsPauseMenuOpen)
+            if (!CampaignJournalAvailable && Keyboard.current != null && Keyboard.current.jKey.wasPressedThisFrame && live && !m_InventoryVisible && !GameSettings.Instance.IsPauseMenuOpen)
                 SetMissionDetails(!m_MissionDetailsVisible);
-            if (!live || MapInputBlocked || m_InventoryVisible || m_MissionDetailsVisible || GameSettings.Instance.IsPauseMenuOpen || UnityEngine.Cursor.lockState != CursorLockMode.Locked)
+            if (!live || MapInputBlocked || m_InventoryVisible || m_MissionDetailsVisible || m_CampaignJournalVisible || GameSettings.Instance.IsPauseMenuOpen || UnityEngine.Cursor.lockState != CursorLockMode.Locked)
             {
                 CancelMissionHold(); m_MissionInteraction.style.display = DisplayStyle.None;
                 if (!live && m_MissionDetailsVisible) SetMissionDetails(false);

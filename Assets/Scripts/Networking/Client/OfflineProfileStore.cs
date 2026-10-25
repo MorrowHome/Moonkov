@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Newtonsoft.Json;
 using Unity.MP_FPS.Inventory;
+using Unity.MP_FPS.Campaign;
 
 namespace Unity.MP_FPS
 {
@@ -15,7 +16,7 @@ namespace Unity.MP_FPS
     {
         private sealed class SaveData
         {
-            public int Format = 2;
+            public int Format = 4;
             public string PlayerId = Guid.NewGuid().ToString("D");
             public InventoryGraph Inventory;
             public RecoveryInbox Recovery = new RecoveryInbox();
@@ -24,12 +25,15 @@ namespace Unity.MP_FPS
             public Dictionary<string, string> Receipts = new Dictionary<string, string>();
             public HashSet<string> MissionArtifacts = new HashSet<string>();
             public OfflineClashState Clash;
+            public CampaignProgress Campaign;
+            public int ActiveCampaignVersion;
         }
 
         private readonly object m_Lock = new object();
         private SaveData m_Save;
         private readonly FileStream m_Lease;
         private bool m_Disposed;
+        private int m_LoadingCheckpoints;
         public string FilePath { get; }
         public string OutboxDirectory => Path.Combine(Path.GetDirectoryName(FilePath), "raid-outbox");
         public bool RaidActive { get { lock (m_Lock) return m_Save.DeploymentId != null; } }
@@ -44,7 +48,14 @@ namespace Unity.MP_FPS
             internal LoadingCheckpoint(OfflineProfileStore owner, string snapshot)
             { m_Owner = owner; m_Snapshot = snapshot; }
 
-            public void Complete() { lock (m_Owner.m_Lock) m_Snapshot = null; }
+            public void Complete()
+            {
+                lock (m_Owner.m_Lock)
+                {
+                    if (m_Snapshot == null) return;
+                    m_Snapshot = null; m_Owner.m_LoadingCheckpoints--;
+                }
+            }
 
             public void Refund()
             {
@@ -60,12 +71,16 @@ namespace Unity.MP_FPS
                         // debit or settle this refunded attempt a second time.
                         foreach (var receipt in m_Owner.m_Save.Receipts)
                             if (!next.Receipts.ContainsKey(receipt.Key)) next.Receipts.Add(receipt.Key, "loading_refunded");
+                        // Tracking may change while the loading screen is open.
+                        // Campaign facts cannot commit before loading completes.
+                        CopyCampaignTracking(m_Owner.m_Save.Campaign, next.Campaign);
                         next.Inventory.Version = Math.Max(next.Inventory.Version, m_Owner.m_Save.Inventory.Version) + 1;
                         next.Recovery.Version = Math.Max(next.Recovery.Version, m_Owner.m_Save.Recovery.Version) + 1;
                         Validate(next);
                         m_Owner.Commit(next);
                     }
                     m_Snapshot = null;
+                    m_Owner.m_LoadingCheckpoints--;
                 }
             }
         }
@@ -76,6 +91,7 @@ namespace Unity.MP_FPS
             {
                 if (m_Disposed) throw new ObjectDisposedException(nameof(OfflineProfileStore));
                 if (RaidActive) throw new InvalidOperationException("The previous deployment must settle before loading another raid.");
+                m_LoadingCheckpoints++;
                 return new LoadingCheckpoint(this, JsonConvert.SerializeObject(m_Save));
             }
         }
@@ -90,13 +106,20 @@ namespace Unity.MP_FPS
             {
                 if (File.Exists(FilePath))
                 {
-                    try { m_Save = JsonConvert.DeserializeObject<SaveData>(File.ReadAllText(FilePath)); Validate(m_Save); TryMigrateProtection(); }
+                    try
+                    {
+                        string json = File.ReadAllText(FilePath);
+                        ValidateCampaignJson(json);
+                        m_Save = JsonConvert.DeserializeObject<SaveData>(json);
+                        Validate(m_Save); TryMigrateProtection();
+                        if (m_Save.Format < 4) Commit(Copy());
+                    }
                     catch (Exception ex) when (ex is JsonException || ex is InvalidDataException)
                     { throw new InvalidDataException("Single-player save is invalid. The original file was preserved.", ex); }
                 }
                 else
                 {
-                    m_Save = new SaveData { Inventory = InventoryGraph.Create() };
+                    m_Save = new SaveData { Inventory = InventoryGraph.Create(), Campaign = CampaignRules.Create() };
                     m_Save.Inventory.AddSupply("dust", 100, "stash");
                     m_Save.Inventory.AddSupply("cells", 12, "stash");
                     m_Save.Inventory.AddSupply("medkit", 4, "stash");
@@ -109,13 +132,14 @@ namespace Unity.MP_FPS
         private static void Validate(SaveData save)
         {
             if(save!=null && save.Recovery==null)save.Recovery=new RecoveryInbox();
-            if (save == null || (save.Format != 1 && save.Format != 2 && save.Format != 3) || !Guid.TryParse(save.PlayerId, out _) ||
+            if (save == null || (save.Format != 1 && save.Format != 2 && save.Format != 3 && save.Format != 4) || !Guid.TryParse(save.PlayerId, out _) ||
                 save.Inventory?.Items == null || save.Inventory.Validate() != InventoryError.None || save.Inventory.Find("stash") == null ||
                 save.Inventory.Find("loot") != null || save.Recovery.Validate(save.Inventory)!=InventoryError.None || save.Receipts == null || save.MissionArtifacts == null ||
                 (save.DeploymentId != null && (!Guid.TryParse(save.DeploymentId, out _) ||
                     string.IsNullOrEmpty(save.RaidInventoryJson) || !RaidRules.ValidLoadout(save.CarriedCells))))
                 throw new InvalidDataException("Unsupported or damaged single-player save.");
             ValidateClash(save);
+            ValidateCampaign(save);
         }
 
         private SaveData Copy() => JsonConvert.DeserializeObject<SaveData>(JsonConvert.SerializeObject(m_Save));
@@ -124,7 +148,7 @@ namespace Unity.MP_FPS
         {
             if (m_Disposed) throw new ObjectDisposedException(nameof(OfflineProfileStore));
             ApplyProtectionMigration(save);
-            save.Format=save.Clash==null ? 2 : 3;
+            save.Format=4;
             Validate(save);
             Directory.CreateDirectory(Path.GetDirectoryName(FilePath));
             string temporary = FilePath + ".tmp";
@@ -146,7 +170,8 @@ namespace Unity.MP_FPS
                 {
                     PlayerId = m_Save.PlayerId, DisplayName = "Single-player Operator",
                     Dust = m_Save.Inventory.Count("dust"), Alloy = m_Save.Inventory.Count("alloy"),
-                    Cells = m_Save.Inventory.Count("cells"), InventoryJson = RaidInventoryTransport.Encode(m_Save.Inventory), MissionSchemaVersion = 1
+                    Cells = m_Save.Inventory.Count("cells"), InventoryJson = RaidInventoryTransport.Encode(m_Save.Inventory), MissionSchemaVersion = 1,
+                    CampaignSchemaVersion = 1, CampaignJson = JsonConvert.SerializeObject(m_Save.Campaign)
                 };
             }
         }
@@ -225,6 +250,7 @@ namespace Unity.MP_FPS
                     if (raid.Validate() != InventoryError.None || raid.CarriedWeight > InventoryCatalog.CarryWeightLimit)
                         throw new RaidPersistenceContext.LoadoutRejectedException(RaidLoadoutError.Rejected);
                     next.DeploymentId = payload.DeploymentId; next.CarriedCells = payload.Cells;
+                    next.ActiveCampaignVersion = next.Campaign.ContentVersion;
                     next.RaidInventoryJson = RaidInventoryTransport.Encode(raid); Commit(next);
                 }
                 var profile = Read(); profile.DeploymentId = m_Save.DeploymentId;
@@ -298,9 +324,10 @@ namespace Unity.MP_FPS
                     var error=RecoveryInventory.Settle(next.Inventory,next.Recovery,raid,out var stored,out var pending);
                     if(error!=InventoryError.None)throw new InvalidDataException("Unable to return single-player equipment: "+error);
                     next.Inventory=stored;next.Recovery=pending;
+                    ApplyCampaignExtraction(next, payload, raid);
                 }
                 else ReturnProtected(next, RaidInventoryTransport.Decode(payload.InventoryJson ?? next.RaidInventoryJson));
-                next.DeploymentId = next.RaidInventoryJson = null; next.CarriedCells = 0;
+                next.DeploymentId = next.RaidInventoryJson = null; next.CarriedCells = 0; next.ActiveCampaignVersion = 0;
                 next.Receipts.Add(payload.SettlementId, receipt); Commit(next); return Read();
             }
         }
@@ -317,7 +344,7 @@ namespace Unity.MP_FPS
                 if (RaidActive && m_Save.DeploymentId != payload.DeploymentId) throw new InvalidDataException("Single-player deployment mismatch.");
                 var next = Copy();
                 if (next.RaidInventoryJson != null) ReturnProtected(next, RaidInventoryTransport.Decode(next.RaidInventoryJson));
-                next.DeploymentId = next.RaidInventoryJson = null; next.CarriedCells = 0;
+                next.DeploymentId = next.RaidInventoryJson = null; next.CarriedCells = 0; next.ActiveCampaignVersion = 0;
                 next.Receipts.Add(payload.DeploymentId, "abandoned"); Commit(next); return Read();
             }
         }

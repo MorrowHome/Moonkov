@@ -44,6 +44,7 @@ namespace Unity.MP_FPS
                 if (m_InventoryVisible) SetInventory(false);
                 if (m_InventoryVisible) return;
                 if (m_MissionDetailsVisible) SetMissionDetails(false);
+                if (m_CampaignJournalVisible) SetCampaignJournal(false);
                 if (!m_MapOpenedInContext)
                 {
                     m_ClashView.Map.FullMap();

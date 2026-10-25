@@ -76,7 +76,7 @@ namespace Unity.MP_FPS
             if(save.Clash==null)
             {if(save.Format==3)throw new InvalidDataException("Missing local Clash ledger.");return;}
             var ledger=save.Clash;
-            if(save.Format!=3 || ledger.Version!=1 || ledger.Matches==null ||
+            if((save.Format!=3 && save.Format!=4) || ledger.Version!=1 || ledger.Matches==null ||
                 (ledger.CurrentMatchId!=null && !ledger.Matches.ContainsKey(ledger.CurrentMatchId)) ||
                 (ledger.ActiveMatchId!=null && ledger.ActiveMatchId!=ledger.CurrentMatchId))
                 throw new InvalidDataException("Unsupported local Clash ledger.");
