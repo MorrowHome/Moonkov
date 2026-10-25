@@ -15,6 +15,9 @@ namespace Unity.MP_FPS.Client
         private static readonly string[] WorkshopCodes = { "halo_capacitor", "halo_charge_bridge", "halo_mooncore_recycler",
             "halo_focus_lens", "halo_fan_array", "halo_pulse_controller", "halo_hit_marker" };
         private VisualElement m_Workshop;
+        private HaloWorkshopPreview m_WorkshopVisual;
+        private bool m_WorkshopShowCurrent;
+        private WeaponData m_WorkshopVisualData;
         private string m_WorkshopWeaponId, m_WorkshopModule, m_WorkshopMessage;
         private string m_WorkshopSlot = "Storage", m_WorkshopPreviewCode = "rifle";
         private List<string> m_WorkshopWeaponIds;
@@ -28,6 +31,7 @@ namespace Unity.MP_FPS.Client
             m_WorkshopWeaponId = itemId;
             m_WorkshopModule = null;
             m_WorkshopMessage = null;
+            m_WorkshopShowCurrent = false;
             RefreshWorkshop();
         }
 
@@ -39,6 +43,15 @@ namespace Unity.MP_FPS.Client
             m_Workshop = TerminalLayout.Clone("Components/HaloWorkshop", "haloWorkshop");
             m_Workshop.styleSheets.Add(Resources.Load<StyleSheet>("Moonkov/UI/HaloWorkshop"));
             host.Add(m_Workshop);
+            m_WorkshopVisual = new HaloWorkshopPreview();
+            m_WorkshopVisual.AvailabilityChanged += RefreshWorkshopPreviewControls;
+            m_WorkshopVisual.Element.name = "workshopHaloPreview";
+            m_WorkshopVisual.Element.AddToClassList("workshop-render-preview");
+            m_Workshop.Q("workshopWeaponArt").Add(m_WorkshopVisual.Element);
+            m_Workshop.Q<Button>("workshopPreviewCurrent").clicked += () => { m_WorkshopShowCurrent = true; RefreshWorkshop(); };
+            m_Workshop.Q<Button>("workshopPreviewAfter").clicked += () => { m_WorkshopShowCurrent = false; RefreshWorkshop(); };
+            m_Workshop.Q<Button>("workshopPreviewCharge").clicked += () => m_WorkshopVisual?.PlayCharge(m_WorkshopVisualData?.ReloadTime ?? 2f);
+            m_Workshop.Q<Button>("workshopPreviewShot").clicked += () => m_WorkshopVisual?.PlayShot(m_WorkshopVisualData?.CooldownInMs ?? .1f);
             m_Workshop.RegisterCallback<GeometryChangedEvent>(evt =>
                 m_Workshop?.EnableInClassList("workshop-compact", evt.newRect.height < 500 || evt.newRect.width < 1100));
             LocalizationSettings.SelectedLocaleChanged += WorkshopLocaleChanged;
@@ -51,7 +64,7 @@ namespace Unity.MP_FPS.Client
                 if (id.StartsWith("catalog:", StringComparison.Ordinal))
                 { m_WorkshopWeaponId = null; m_WorkshopPreviewCode = id.Substring(8); }
                 else m_WorkshopWeaponId = id;
-                m_WorkshopModule = m_WorkshopMessage = null;
+                m_WorkshopModule = m_WorkshopMessage = null; m_WorkshopShowCurrent = false;
                 RefreshWorkshop();
             });
             m_Workshop.Q<Button>("workshopApply").clicked += ApplyWorkshopModule;
@@ -64,6 +77,12 @@ namespace Unity.MP_FPS.Client
         private void ReleaseWorkshop()
         {
             LocalizationSettings.SelectedLocaleChanged -= WorkshopLocaleChanged;
+            if (m_WorkshopVisual != null)
+            {
+                m_WorkshopVisual.AvailabilityChanged -= RefreshWorkshopPreviewControls;
+                m_WorkshopVisual.Dispose();
+            }
+            m_WorkshopVisual = null; m_WorkshopVisualData = null;
             m_Workshop?.RemoveFromHierarchy();
             m_Workshop = null;
         }
@@ -166,7 +185,6 @@ namespace Unity.MP_FPS.Client
             var weaponState = m_Workshop.Q<Label>("workshopWeaponState");
             MoonkovLocalization.Set(weaponState, weapon == null ? "CATALOG PREVIEW / NOT OWNED" : "");
             weaponState.style.display = weapon == null ? DisplayStyle.Flex : DisplayStyle.None;
-            var art = m_Workshop.Q("workshopWeaponArt"); art.Clear(); art.Add(new StashItemArt(weaponCode));
             RenderWorkshopSlots(weapon);
             string[] codes = WorkshopCodes.Where(code => HaloModules.Compatible(weaponCode, code) && HaloModules.Slot(HaloModules.FromCode(code)) == m_WorkshopSlot).ToArray();
             if (!codes.Contains(m_WorkshopModule)) m_WorkshopModule = WorkshopInstalled?.Code ?? codes[0];
@@ -175,7 +193,7 @@ namespace Unity.MP_FPS.Client
             foreach (string code in codes)
             {
                 string captured = code;
-                var button = new Button(() => { m_WorkshopModule = captured; m_WorkshopMessage = null; RefreshWorkshop(); }) { name = "workshopModule" + code };
+                var button = new Button(() => { m_WorkshopModule = captured; m_WorkshopMessage = null; m_WorkshopShowCurrent = false; RefreshWorkshop(); }) { name = "workshopModule" + code };
                 button.AddToClassList("workshop-module");
                 button.EnableInClassList("workshop-selected", code == m_WorkshopModule);
                 button.EnableInClassList("workshop-installed", WorkshopInstalled?.Code == code);
@@ -203,7 +221,7 @@ namespace Unity.MP_FPS.Client
             {
                 string id = slot.Id;
                 var installed = weapon == null ? null : m_Graph.Children(weapon.Id, id).FirstOrDefault();
-                var button = new Button(() => { m_WorkshopSlot = id; m_WorkshopModule = m_WorkshopMessage = null; RefreshWorkshop(); }) { name = "workshopSlot" + id };
+                var button = new Button(() => { m_WorkshopSlot = id; m_WorkshopModule = m_WorkshopMessage = null; m_WorkshopShowCurrent = false; RefreshWorkshop(); }) { name = "workshopSlot" + id };
                 button.AddToClassList("workshop-slot"); button.EnableInClassList("workshop-selected", id == m_WorkshopSlot);
                 var icon = new VisualElement { pickingMode = PickingMode.Ignore }; icon.AddToClassList("workshop-slot-art");
                 if (installed != null) icon.Add(new StashItemArt(installed.Code));
@@ -231,6 +249,14 @@ namespace Unity.MP_FPS.Client
             afterMask |= HaloModules.FromCode(code);
             var before = registry?.GetWeaponData(DollSingerWeapons.WeaponId(weaponCode), (ushort)mask);
             var after = registry?.GetWeaponData(DollSingerWeapons.WeaponId(weaponCode), (ushort)afterMask);
+            m_WorkshopVisualData = m_WorkshopShowCurrent ? before : after;
+            int rounds = weapon?.LoadedAmmo ?? -1;
+            if (rounds < 0) rounds = before?.MagazineSize ?? 4;
+            if (m_WorkshopVisualData != null)
+                m_WorkshopVisual?.Present(weaponCode, (ushort)(m_WorkshopShowCurrent ? mask : afterMask), m_WorkshopVisualData.MagazineSize, rounds);
+            RefreshWorkshopPreviewControls();
+            m_Workshop.Q<Button>("workshopPreviewCurrent").EnableInClassList("workshop-selected", m_WorkshopShowCurrent);
+            m_Workshop.Q<Button>("workshopPreviewAfter").EnableInClassList("workshop-selected", !m_WorkshopShowCurrent);
             var stats = m_Workshop.Q("workshopStats"); stats.Clear();
             if (before != null && after != null)
             {
@@ -278,6 +304,20 @@ namespace Unity.MP_FPS.Client
             statusLabel.EnableInClassList("workshop-status-saving", m_Busy);
             statusLabel.EnableInClassList("workshop-status-error", !m_Busy && (m_ReadOnlyReason != null || error != InventoryError.None || installed && !space || m_WorkshopMessage != null && m_WorkshopMessage != "Inventory updated."));
             MoonkovLocalization.Set(statusLabel, status ?? "");
+        }
+
+        private void RefreshWorkshopPreviewControls()
+        {
+            if (m_Workshop == null) return;
+            bool available = m_WorkshopVisualData != null && m_WorkshopVisual?.Available == true;
+            bool ready = available && m_WorkshopVisual.Target != null;
+            m_Workshop.Q<Button>("workshopPreviewCurrent").SetEnabled(available);
+            m_Workshop.Q<Button>("workshopPreviewAfter").SetEnabled(available);
+            m_Workshop.Q<Button>("workshopPreviewCharge").SetEnabled(ready);
+            m_Workshop.Q<Button>("workshopPreviewShot").SetEnabled(ready && m_WorkshopVisual.CanPlayShot);
+            var state = m_Workshop.Q<Label>("workshopPreviewState");
+            state.style.display = available ? DisplayStyle.None : DisplayStyle.Flex;
+            MoonkovLocalization.Set(state, available ? "" : "Appearance preview unavailable.");
         }
 
         private static void WorkshopStat(VisualElement parent, string id, string label, float before, float after, string format, int preferredDirection)

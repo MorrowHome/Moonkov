@@ -790,7 +790,7 @@
   "Shotgun spread -55%; capacity -1. Four inward focusing arcs.": "霰弹散射减少55%，容量减少1发。四组弧段向内聚束。",
   "Shotgun spread +60%; 12 pellets share the original total damage. Six open fan blades.": "霰弹散射增加60%，12枚弹丸分摊原有总伤害。六组扇形结构向外展开。",
   "Rifle fires three rounds per trigger press; 0.42s between bursts. Three sequential nodes.": "步枪每次扣扳机三连发，组间间隔0.42秒。三个节点依次闪亮。",
-  "Energy per round +25%; confirmed hits mark the last impact position for allies for 3s.": "每发耗电增加25%。命中后为队友标记最后命中位置3秒，不追踪目标。",
+  "Energy per round +25%; confirmed hits mark the last impact position for allies for 3s.": "每发耗能 +25%，确认命中后为队友标记最后命中位置 3 秒。",
   "shop_remove_modules_first": "出售前请先取出容器内物品或拆下已安装的模块。",
   "Sealed medical gel": "密封医用凝胶",
   "Field trauma kit": "野战创伤包",
@@ -1269,5 +1269,17 @@
   "{0}": "{0}",
   "{0:0.##}": "{0:0.##}",
   "INSTALLED ON ANOTHER HALO": "已装在其他光环",
-  "Remove this module from its other halo to use it here.": "先从其他光环拆下，即可用于此处。"
+  "Remove this module from its other halo to use it here.": "先从其他光环拆下，即可用于此处。",
+  "SCROLL TO ZOOM": "滚轮放大查看，双击复位",
+  "BEFORE": "改装前",
+  "AFTER": "改装后",
+  "CHARGE": "充能",
+  "FIRE": "开火",
+  "Appearance preview unavailable.": "暂时无法预览外观。",
+  "Capacity +50%; charge time +35%.": "容量 +50%，充能时间 +35%。",
+  "Charge time -40%; energy per round +50%.": "充能时间 -40%，每发耗能 +50%。",
+  "Energy per round reduced by one third (rounded up); charge time +20%.": "每发耗能减少三分之一，向上取整；充能时间 +20%。",
+  "Shotgun spread -55%; capacity -1.": "霰弹散布 -55%，容量减少 1 发。",
+  "Shotgun spread +60%; 12 pellets share the original total damage.": "霰弹散布 +60%，12 粒弹丸分摊原有总伤害。",
+  "Rifle fires three rounds per trigger press; 0.42s between bursts.": "步枪每次按下发射三发，组间至少 0.42 秒。"
 }

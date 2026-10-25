@@ -421,9 +421,9 @@ public static class MoonkovUIRuntimeReview
                 if (!s_Root.Q("workshopModulehalo_capacitor").ClassListContains("workshop-selected") ||
                     s_Root.Q<Label>("workshopModuleName").text != MoonkovLocalization.Text(InventoryCatalog.Get("halo_capacitor").Name))
                     throw new Exception("Module selection did not update the native workshop");
-                if (s_Root.Q("workshopWeaponArt").Q<Image>()?.image != Resources.Load<Texture2D>("HaloIcons/Rifle"))
-                    throw new Exception("Workshop must retain the real project halo appearance");
-                Evidence.Add("halo: native module submit updates workshop; owned halo uses original HaloIcons/Rifle; no inventory transaction");
+                if (!(s_Root.Q<Image>("workshopHaloPreview")?.image is RenderTexture))
+                    throw new Exception("Workshop must render the actual halo and selected module");
+                Evidence.Add("halo: native module submit updates workshop; actual halo prefab renders into a private texture; no inventory transaction");
             }
             Evidence.Add(Cases[s_Index] + ": native runtime panel " + (compact ? "1280x720" : "1600x900") + "; local fixtures; not a gameplay/network acceptance.");
             if (++s_Index < Cases.Length) Build(); else Finish(true);

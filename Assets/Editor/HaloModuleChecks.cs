@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using Newtonsoft.Json.Linq;
 using UnityEditor;
 using UnityEditor.Localization;
@@ -47,12 +48,36 @@ public static class HaloModuleChecks
         {
             var visual=root.AddComponent<HaloModuleVisual>();visual.Configure(false);visual.SetAimBlend(1);
             visual.SetState((byte)(HaloModule.Capacitor|HaloModule.FocusLens|HaloModule.HitMarker),4,5,false,0,5,1);
+            var sprites=root.GetComponentsInChildren<SpriteRenderer>(true).Where(renderer=>renderer.gameObject.activeSelf).ToArray();
+            Check(sprites.Length==6 && sprites.GroupBy(renderer=>renderer.sprite).All(pair=>pair.Count()==2),"three module slots produce three complete Sprite pairs");
+            foreach(var pair in sprites.GroupBy(renderer=>renderer.sprite))
+            {
+                var halves=pair.ToArray();
+                Check(pair.Key && halves[0].sharedMaterial && halves[0].sharedMaterial==halves[1].sharedMaterial &&
+                    halves[0].sharedMaterial.shader.name=="DollSinger/RifleHaloInk","shared flat ink Sprite artwork");
+                var expected=HaloModuleVisual.ArtworkColor(HaloModules.FromCode(pair.Key.name));var tint=halves[0].color;
+                float brightness=Mathf.Max(tint.r,tint.g,tint.b)/Mathf.Max(expected.r,expected.g,expected.b);
+                Check(tint==halves[1].color && Mathf.Approximately(tint.a,1f) && brightness>0 &&
+                    Mathf.Abs(tint.r-expected.r*brightness)<.002f && Mathf.Abs(tint.g-expected.g*brightness)<.002f &&
+                    Mathf.Abs(tint.b-expected.b*brightness)<.002f,"paired artwork uses its slot color and preserves parent alpha");
+                foreach(var vertex in pair.Key.vertices)
+                {
+                    Vector3 Point(SpriteRenderer renderer)=>root.transform.InverseTransformPoint(renderer.transform.TransformPoint(
+                        new Vector3(renderer.flipX?-vertex.x:vertex.x,renderer.flipY?-vertex.y:vertex.y,0)));
+                    var a=Point(halves[0]);var b=Point(halves[1]);
+                    Check(Vector3.Distance(new Vector3(-a.x,a.y,a.z),b)<.0001f,"complete module drawings are mirrored");
+                    Check(a.x*a.x+a.y*a.y>.01f,"module leaves the central sight clear");
+                }
+            }
             var mesh=root.GetComponent<MeshFilter>().sharedMesh;
-            Check(mesh.vertexCount>0 && root.GetComponents<MeshRenderer>().Length==1,"one module mesh renderer");
-            foreach(var vertex in mesh.vertices) Check(vertex.sqrMagnitude>.01f && Mathf.Abs(vertex.z+.003f)<.00001f,"flat geometry leaves central sight clear");
+            Check(mesh.vertexCount==0 && !root.GetComponent<MeshRenderer>().enabled,"entity modules do not create an extra ring or procedural outline");
+            visual.SetState((ushort)HaloModule.BiologicalCapacity,4,5,false,0,5,1);visual.Step(0);
+            Check(mesh.vertexCount>0 && root.GetComponent<MeshRenderer>().enabled,"biology still has its separate geometry");
+            foreach(var vertex in mesh.vertices) Check(vertex.sqrMagnitude>.01f && Mathf.Abs(vertex.z+.003f)<.00001f,"flat biology geometry leaves central sight clear");
+            Check(root.GetComponentsInChildren<SpriteRenderer>(true).All(renderer=>!renderer.gameObject.activeSelf),"biology does not leave entity modules visible");
         }
         finally {UnityEngine.Object.DestroyImmediate(root);}
-        Debug.Log("Halo module checks passed: stats, energy composition, damage budget, deterministic spread, burst lifecycle, flat geometry and sight clearance.");
+        Debug.Log("Halo module checks passed: stats, energy composition, damage budget, deterministic spread, burst lifecycle, paired flat artwork, biology geometry and sight clearance.");
     }
     [MenuItem("Tools/Doll Singer/Update Module Translations")]
     public static void UpdateTranslations()

@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="512" viewBox="0 0 1024 512">
+  <!-- White masks. The live halo supplies their only color. Each cell is one
+       ornament cluster; the runtime creates its mirrored partner. -->
+  <g fill="#fff">
+    <g id="halo_capacitor">
+      <path d="M71 71H97V185H71Z M115 71H141V185H115Z M159 71H185V185H159Z"/>
+    </g>
+    <g id="halo_charge_bridge" transform="translate(256 35.84) scale(1 .72)">
+      <path d="M66 82H90V116H114V96H142V116H166V82H190V174H166V140H142V120H114V140H90V174H66Z"/>
+    </g>
+    <g id="halo_mooncore_recycler" transform="translate(512 57.6) scale(1 .55)">
+      <path d="M72 87H146V67L184 104L146 141V119H72Z M184 169H110V189L72 152L110 115V137H184Z"/>
+    </g>
+    <g id="halo_focus_lens" transform="translate(768 25.6) scale(1 .8)">
+      <path d="M62 82H88L118 128L88 174H62L92 128Z M194 82H168L138 128L168 174H194L164 128Z"/>
+    </g>
+    <g id="halo_fan_array" transform="translate(0 288) scale(1 .75)">
+      <path d="M61 92L83 76L117 158L99 168Z M116 64H140V158H116Z M195 92L173 76L139 158L157 168Z"/>
+    </g>
+    <g id="halo_pulse_controller" transform="translate(256 291.84) scale(1 .72)">
+      <path d="M128 60L156 88L128 116L100 88Z M91 116L119 144L91 172L63 144Z M165 116L193 144L165 172L137 144Z"/>
+    </g>
+    <g id="halo_hit_marker" transform="translate(512 307.2) scale(1 .6)">
+      <path d="M128 68L147 87L137 97L155 115L165 105L188 128L128 188L68 128Z"/>
+    </g>
+  </g>
+  <!-- Eighth 256x256 cell intentionally empty. No backdrop, stroke or effect. -->
+</svg>

@@ -50,12 +50,12 @@ namespace Unity.MP_FPS.Inventory
         {
             switch (FromCode(code))
             {
-                case HaloModule.Capacitor: return "Capacity +50%; charge time +35%. Segmented outer energy ring.";
-                case HaloModule.ChargeBridge: return "Charge time -40%; energy per round +50%. Pulsing radial bridges.";
-                case HaloModule.MooncoreRecycler: return "Energy per round reduced by one third (rounded up); charge time +20%. Capacity and base damage unchanged. Cold-silver return arcs pulse during charging and firing.";
-                case HaloModule.FocusLens: return "Shotgun spread -55%; capacity -1. Four inward focusing arcs.";
-                case HaloModule.FanArray: return "Shotgun spread +60%; 12 pellets share the original total damage. Six open fan blades.";
-                case HaloModule.PulseController: return "Rifle fires three rounds per trigger press; 0.42s between bursts. Three sequential nodes.";
+                case HaloModule.Capacitor: return "Capacity +50%; charge time +35%.";
+                case HaloModule.ChargeBridge: return "Charge time -40%; energy per round +50%.";
+                case HaloModule.MooncoreRecycler: return "Energy per round reduced by one third (rounded up); charge time +20%.";
+                case HaloModule.FocusLens: return "Shotgun spread -55%; capacity -1.";
+                case HaloModule.FanArray: return "Shotgun spread +60%; 12 pellets share the original total damage.";
+                case HaloModule.PulseController: return "Rifle fires three rounds per trigger press; 0.42s between bursts.";
                 case HaloModule.HitMarker: return "Energy per round +25%; confirmed hits mark the last impact position for allies for 3s.";
                 default: return "";
             }

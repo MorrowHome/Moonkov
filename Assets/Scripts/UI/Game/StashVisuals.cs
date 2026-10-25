@@ -36,7 +36,7 @@ namespace Unity.MP_FPS.Client
         public StashItemArt() : this(StashArtKind.None) { }
         public StashItemArt(string code) : this(ContainerInventoryView.Art(code))
         {
-            SetPhysicalIcon(code);
+            if (global::Unity.MP_FPS.Inventory.HaloModules.FromCode(code) == HaloModule.None) SetPhysicalIcon(code);
         }
         private void SetPhysicalIcon(string code)
         {
@@ -62,6 +62,7 @@ namespace Unity.MP_FPS.Client
             set
             {
                 m_Kind = value; m_HasPhysicalIcon=false; Clear();
+                if (SetModuleArtwork(value)) { MarkDirtyRepaint(); return; }
                 if ((value >= StashArtKind.HaloCicada && value <= StashArtKind.HaloNocturne) || value == StashArtKind.HaloRifle || value == StashArtKind.HaloRevolver || value == StashArtKind.HaloShotgun || value == StashArtKind.HaloSniper)
                 {
                     var icon = new Image { image = Resources.Load<Texture2D>("HaloIcons/" +
@@ -135,13 +136,6 @@ namespace Unity.MP_FPS.Client
                 case StashArtKind.SecureCase: SecureCase(); break;
                 case StashArtKind.SurveyCompass: SurveyCompass(); break;
                 case StashArtKind.Rangefinder: Rangefinder(); break;
-                case StashArtKind.HaloCapacitor: Module(HaloModule.Capacitor); break;
-                case StashArtKind.HaloChargeBridge: Module(HaloModule.ChargeBridge); break;
-                case StashArtKind.HaloFocusLens: Module(HaloModule.FocusLens); break;
-                case StashArtKind.HaloFanArray: Module(HaloModule.FanArray); break;
-                case StashArtKind.HaloPulseController: Module(HaloModule.PulseController); break;
-                case StashArtKind.HaloHitMarker: Module(HaloModule.HitMarker); break;
-                case StashArtKind.HaloMooncoreRecycler: Module(HaloModule.MooncoreRecycler); break;
             }
         }
 

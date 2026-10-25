@@ -186,6 +186,8 @@ public sealed partial class MoonkovUIPreview : EditorWindow
             if (settings == null) { settings = CreateInstance<MenuCharacterSettings>(); AssetDatabase.CreateAsset(settings, settingsPath); }
             settings.VisualPrefab = visual;
             MenuCharacterAppearanceSetup.Bind(settings, Unity.MP_FPS.GameSettings.DollSingerCharacterIndex);
+            settings.RifleHaloPreviewPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/DollSinger/Prefabs/RifleHalo.prefab");
+            settings.ShotgunHaloPreviewPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/DollSinger/Prefabs/ShotgunHalo.prefab");
             ConfigureMenuMotions(settings);
             EditorUtility.SetDirty(settings); AssetDatabase.SaveAssets();
             var window = GetWindow<MoonkovUIPreview>(); window.CreateGUI(); window.Repaint();

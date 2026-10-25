@@ -49,7 +49,11 @@
 .halo-workshop .workshop-weapon-select .unity-base-field__input { background-color: var(--workshop-surface); color: var(--workshop-text); border-width: 1px; border-color: var(--workshop-border); border-radius: 6px; padding: 8px 10px; font-size: 14px; }
 .halo-workshop .workshop-weapon-select .unity-base-popup-field__text { font-size: 14px; white-space: nowrap; }
 .halo-workshop .workshop-weapon-state { margin-top: 8px; flex-shrink: 0; }
-.halo-workshop .workshop-weapon-art { flex-grow: 1; flex-shrink: 1; min-height: 72px; max-height: 200px; margin: 12px 22px; }
+.halo-workshop .workshop-weapon-art { flex-grow: 1; flex-shrink: 1; min-height: 96px; max-height: 260px; margin: 8px 12px; }
+.halo-workshop .workshop-render-preview { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
+.halo-workshop .workshop-preview-controls { flex-direction: row; flex-shrink: 0; margin: 0 -2px 4px; }
+.halo-workshop .workshop-preview-controls Button { flex-grow: 1; flex-basis: 0; min-width: 0; min-height: 30px; margin: 0 2px; padding: 5px; font-size: 12px; }
+.halo-workshop .workshop-preview-state { margin-bottom: 4px; }
 .halo-workshop .workshop-weapon-art > *, .halo-workshop .workshop-detail-art > *, .halo-workshop .workshop-slot-art > *, .halo-workshop .workshop-module-art > * { flex-grow: 1; }
 .halo-workshop .workshop-slots { flex-shrink: 0; }
 .halo-workshop .workshop-slot { flex-direction: row; align-items: center; min-height: 62px; margin-top: 6px; -unity-text-align: middle-left; }
@@ -103,8 +107,8 @@
 .halo-workshop.workshop-compact .workshop-pane { padding: 12px; }
 .halo-workshop.workshop-compact .workshop-heading { margin-bottom: 6px; }
 .halo-workshop.workshop-compact .workshop-section { margin-bottom: 6px; }
-.halo-workshop.workshop-compact .workshop-weapon-art { min-height: 48px; max-height: 120px; margin: 8px 16px; }
-.halo-workshop.workshop-compact .workshop-slot { min-height: 54px; margin-top: 5px; padding: 8px 10px; }
+.halo-workshop.workshop-compact .workshop-weapon-art { min-height: 80px; max-height: 160px; margin: 8px 12px; }
+.halo-workshop.workshop-compact .workshop-slot { min-height: 46px; margin-top: 5px; padding: 6px 10px; }
 .halo-workshop.workshop-compact .workshop-slot-art { width: 28px; height: 28px; margin-right: 8px; }
 .halo-workshop.workshop-compact .workshop-slot-label { margin-right: 6px; }
 .halo-workshop.workshop-compact .workshop-module-list { margin-top: 6px; }

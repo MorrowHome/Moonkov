@@ -11,6 +11,13 @@
                 <ui:DropdownField name="workshopWeapon" class="workshop-weapon-select" />
                 <ui:Label name="workshopWeaponState" class="workshop-caption workshop-weapon-state" />
                 <ui:VisualElement name="workshopWeaponArt" class="workshop-weapon-art" picking-mode="Ignore" />
+                <ui:VisualElement class="workshop-preview-controls">
+                    <ui:Button name="workshopPreviewCurrent" text="BEFORE" />
+                    <ui:Button name="workshopPreviewAfter" text="AFTER" />
+                    <ui:Button name="workshopPreviewCharge" text="CHARGE" />
+                    <ui:Button name="workshopPreviewShot" text="FIRE" />
+                </ui:VisualElement>
+                <ui:Label name="workshopPreviewState" class="workshop-caption workshop-preview-state" />
                 <ui:VisualElement name="workshopSlots" class="workshop-slots" />
             </ui:VisualElement>
             <ui:VisualElement class="workshop-pane workshop-modules-pane">

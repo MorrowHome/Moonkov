@@ -10,6 +10,9 @@ namespace Unity.MP_FPS.Client
         [Header("Gameplay equipment appearance")]
         public DollSingerHaloAim HaloSource;
         public WeaponRegistry WeaponRegistry;
+        [Header("Halo workshop preview sources")]
+        public GameObject RifleHaloPreviewPrefab;
+        public GameObject ShotgunHaloPreviewPrefab;
         public AnimationClip[] Motions;
         public AvatarMask HaloAimMask;
         public AvatarMask[] MotionMasks;
