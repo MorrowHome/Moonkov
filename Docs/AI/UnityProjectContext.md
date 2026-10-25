@@ -1,8 +1,8 @@
 # Unity 项目上下文
 
-分析日期：2026-10-02。基于实际项目配置、代表代码和已连接 Editor。
+首次分析：2026-10-02。2026-10-25 仅复核项目配置与光环改装链路；其他系统说明保留历史记录。
 
-- 项目根：`E:/UnityProjects/FPS_Template`。
+- 项目根：`/Users/morrow/UnityProjects/Moonkov`。
 - Unity 6000.5.10f1，URP 17.5.0；GraphicsSettings 指向现有 URP Pipeline。
 - Input System 1.20.0，activeInputHandler=1；保留已存在的 Starter Assets。
 - 模板使用 Entities／NetCode 与 `GhostBridgeBootstrap`、GhostBridge 连接游戏对象和网络实体；原有脚本主要为 MonoBehaviour 加 ECS 系统。
@@ -19,7 +19,7 @@
 - DollSinger 地面动画使用 MoveX / MoveZ 的身体坐标方向树，AimBlend 混合 Locomotion Pack 与 Pistol 包；非瞄准前向 Walk / Run、Halo Aim 手势层、空中护裙保持原资源。网络方向复用 ControllerState.AnimatorMotion，无新增 Ghost 字段。原地副本及重建工具见 `Docs/DollSingerLocomotion.md`。
 - DollSinger 原地转身使用腿部 Turn In Place 层；本地身体 yaw／已有网络 CurrentRotation 驱动左右挪步和播放速度。镜头独立旋转不触发，移动和空中关闭；Root 与上身不参与此层，未添加脚部 IK。最终观感由用户 Play 确认。
 - Unity Test Framework 已安装；本次迁移使用针对性编译、资产引用与 Play Mode 冒烟验证，没有引入通用测试架构。
-- 官方 AI Assistant 和 Pipeline 包已存在。当前可通过 Unity CLI 的本地 Pipeline 连接 Editor；操作必须显式指定 FPS_Template。
+- 官方 AI Assistant 和 Pipeline 包已存在。2026-10-25 本聊天未暴露 Unity MCP 工具，未连接 Editor；CLI 连接状态未验证。后续连接必须核对实际项目路径，不能沿用旧 `FPS_Template` 名称。
 - 原有格式以 C# 标准花括号和私有 `m_` 字段为主；月球新代码使用明确序列化私有字段与 `Unity.MP_FPS.Moon` 命名空间。
 
 约束：Markdown 图使用 Mermaid；Unity 验证遵循最小充分原则。不要把月球环境迁移扩大成联机玩法重构，不修改源 MMORPG。
@@ -33,3 +33,5 @@
 未覆盖：模板完整联机端到端测试、构建平台差异、正式月球网络地图的出生点和 Ghost 资源配置、性能测量。
 
 2026-10-17：DollSinger 姿态扩展使用 Quaternius／KayKit 的 CC0 Humanoid 资源，新增下蹲、趴下、踮脚；输入标志位和现有 ControllerState.StateFlags 传递姿态，本地、预测、服务端共用高度／限速／顶上空间规则。控制器新增 Stances 层，踮脚以脚尖锚定和既有腿部 IK 适配。当前实际项目路径为 `/Users/morrow/UnityProjects/Moonkov`，Unity 6000.5.10f1 可通过已有 Pipeline／CLI 连接。详见 `Docs/DollSingerStances.md`。
+
+2026-10-25：基于 `28373b62` 接手光环改装系统，包括 UI。本次只读复核，未改运行资产或重跑验证。负责范围、主要入口、库存约束与已知 UI 落差见根目录 [HANDOFF.md](../../HANDOFF.md)。
