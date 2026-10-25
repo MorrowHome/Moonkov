@@ -34,6 +34,7 @@ namespace Unity.MP_FPS
         private ArticulatedAlienFluid m_ArticulatedFluid;
         private SpiderPresentation m_SpiderView;
         private AlienCreatureFeedback m_Feedback;
+        private AlienHitReaction m_HitReaction;
         private AlienVoidAppearance m_VoidAppearance;
         private AlienBossSilhouette m_BossSilhouette;
         private LiquidReaction m_LiquidReaction;
@@ -92,6 +93,7 @@ namespace Unity.MP_FPS
             if (render && profile.VoidLiquid)
             { m_VoidAppearance = new AlienVoidAppearance(owner, profile.Species); m_VoidAppearance.Refresh(); }
             if (render) Moon.MoonSilverPrintSubject.Protect(owner.gameObject);
+            if (render) m_HitReaction = new AlienHitReaction(owner);
         }
 
         private static void ScaleChain(CreatureChainSettings s, float scale)
@@ -110,6 +112,8 @@ namespace Unity.MP_FPS
             m_WindupDuration = windupDuration > 0 ? windupDuration : m_Profile.Windup;
             m_RecoveryDuration = recoveryDuration > 0 ? recoveryDuration : m_Profile.Recovery;
             m_StrikeDuration = strikeDuration > 0 ? strikeDuration : .24f;
+            m_HitReaction?.Observe(health, m_Profile.Health,
+                action == AlienAction.Dead || action == AlienAction.Attached || action == AlienAction.Ambush);
             m_Feedback?.Observe(action, m_ActionTime, attackSequence, health, AimPoint);
         }
         // Called once per rendered snapshot, independently of the visual rig LOD.
@@ -118,6 +122,7 @@ namespace Unity.MP_FPS
 
         public void Tick(Vector3 intent, float speed, float yaw, float dt, float action, bool liquid)
         {
+            m_HitReaction?.Restore();
             if (m_CombatAction == AlienAction.Attached && m_Profile.Species == AlienSpecies.FaceHugger)
             {
                 m_Owner.SetPositionAndRotation(Motor.Current.Position, Motor.Current.Rotation);
@@ -143,13 +148,16 @@ namespace Unity.MP_FPS
             m_Owner.SetPositionAndRotation(Motor.Current.Position, Motor.Current.Rotation);
             UpdateRig(input, speed, yaw, dt, liquid, action); UpdateHitboxes();
             UpdateVoidAppearance(liquid);
+            m_HitReaction?.Present(dt, AimPoint, Motor.Current.Up, Motor.Current.Forward, m_Scale, m_Profile.Boss);
         }
         public void Observe(SurfaceMotor.Pose pose, Vector3 velocity, bool detached, float phase, float dt, float action, bool liquid)
         {
+            m_HitReaction?.Restore();
             Motor.Observe(pose, velocity, detached); m_Phase = phase;
             Vector2 input = new Vector2(Vector3.Dot(velocity.normalized, pose.Right), Vector3.Dot(velocity.normalized, pose.Forward));
             UpdateRig(input, velocity.magnitude, 0, dt, liquid, action); UpdateHitboxes();
             UpdateVoidAppearance(liquid);
+            m_HitReaction?.Present(dt, AimPoint, pose.Up, pose.Forward, m_Scale, m_Profile.Boss);
         }
         public float Phase => m_Phase;
         public void SetAttachedPose(Vector3 position, Quaternion rotation) => Motor.SetAttachedPose(position, rotation);
@@ -233,7 +241,7 @@ namespace Unity.MP_FPS
         {
             if (!m_Render) return;
             if (m_LastLiquid != liquid || m_LastFluid != Fluid)
-            { m_VoidAppearance?.Refresh(); m_LastLiquid = liquid; m_LastFluid = Fluid; }
+            { m_VoidAppearance?.Refresh(); m_HitReaction?.Refresh(); m_LastLiquid = liquid; m_LastFluid = Fluid; }
             m_VoidAppearance?.Update(m_LiquidReaction);
         }
 
@@ -376,6 +384,7 @@ namespace Unity.MP_FPS
         }
         public void Dispose()
         {
+            m_HitReaction?.Restore();
             m_BossSilhouette?.Dispose();
             m_VoidAppearance?.Dispose();
             m_Feedback?.Dispose();
