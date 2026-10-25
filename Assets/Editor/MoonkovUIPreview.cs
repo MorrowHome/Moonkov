@@ -185,6 +185,7 @@ public sealed partial class MoonkovUIPreview : EditorWindow
             var settings = AssetDatabase.LoadAssetAtPath<MenuCharacterSettings>(settingsPath);
             if (settings == null) { settings = CreateInstance<MenuCharacterSettings>(); AssetDatabase.CreateAsset(settings, settingsPath); }
             settings.VisualPrefab = visual;
+            MenuCharacterAppearanceSetup.Bind(settings, Unity.MP_FPS.GameSettings.DollSingerCharacterIndex);
             ConfigureMenuMotions(settings);
             EditorUtility.SetDirty(settings); AssetDatabase.SaveAssets();
             var window = GetWindow<MoonkovUIPreview>(); window.CreateGUI(); window.Repaint();
@@ -252,15 +253,21 @@ public sealed partial class MoonkovUIPreview : EditorWindow
     [MenuItem("Tools/Moonkov/Validate Menu Character")]
     public static void ValidateMenuCharacter()
     {
-        var view = new MenuCharacterView();
+        var view = new MenuCharacterView(characterIndex: Unity.MP_FPS.GameSettings.DollSingerCharacterIndex);
         try
         {
+            var inventory = Unity.MP_FPS.Inventory.InventoryGraph.Create(false, false);
+            inventory.Items.Add(new Unity.MP_FPS.Inventory.InventoryItem { Id = System.Guid.NewGuid().ToString("D"),
+                Code = "rifle", Parent = "equipment", Region = "Primary" });
+            view.SetEquipmentInventory(inventory);
             var settings = Resources.Load<MenuCharacterSettings>("Moonkov/MenuCharacterSettings");
             if (settings.MotionOptions.Length != settings.Motions.Length || settings.MotionMasks.Length != settings.Motions.Length || settings.GestureBake == null)
                 throw new System.Exception("The menu motion catalog is incomplete.");
             var controller = AssetDatabase.LoadAssetAtPath<AnimatorController>("Assets/DollSinger/Animation/DollSingerThirdPersonHalo.controller");
             if (controller.animationClips.Any(clip => !settings.Motions.Contains(clip))) throw new System.Exception("A character motion was omitted.");
             var seen = new HashSet<int>();
+            var expected = Enumerable.Range(1, settings.Motions.Length - 1)
+                .Where(i => settings.Motion(i).Weapon == 0 || settings.Motion(i).Weapon == 1).ToHashSet();
             float maximumAim = 0;
             int previousMotion = 0, lastAction = 0;
             bool complete = false;
@@ -270,7 +277,7 @@ public sealed partial class MoonkovUIPreview : EditorWindow
                 int current = view.CurrentMotionIndex;
                 if (current != 0 && current != previousMotion)
                 {
-                    if (seen.Count == settings.Motions.Length - 1)
+                    if (seen.SetEquals(expected))
                     {
                         if (lastAction == current) throw new System.Exception("Motion repeated across shuffle cycles.");
                         complete = true; break;
@@ -298,7 +305,7 @@ public sealed partial class MoonkovUIPreview : EditorWindow
                 if (visible < image.width * image.height / 50) throw new System.Exception("Character render is empty.");
                 Directory.CreateDirectory("LocalData/MenuMotions");
                 File.WriteAllBytes("LocalData/MenuMotions/ValidatedCharacter.png", image.EncodeToPNG());
-                Debug.Log($"Menu character check passed: {seen.Count}/{settings.Motions.Length - 1} actions without repetition, {view.Target.width}x{view.Target.height}, {view.MotionChanges} transitions, visible halo, full aim weight, finite bones, nonempty render.");
+                Debug.Log($"Menu character check passed: {seen.Count}/{expected.Count} equipped-weapon actions without repetition, {view.Target.width}x{view.Target.height}, {view.MotionChanges} transitions, visible halo, full aim weight, finite bones, nonempty render.");
             }
             finally { RenderTexture.active = previous; DestroyImmediate(image); }
         }

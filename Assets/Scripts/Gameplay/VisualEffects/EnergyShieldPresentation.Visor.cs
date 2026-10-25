@@ -129,8 +129,8 @@ namespace Unity.MP_FPS
             Quaternion frame=m_Head.rotation*m_VisorLocalFrame;
             WorldPose(m_Visor,m_Head.position+frame*m_VisorOffset,frame,m_VisorSize);
             float blend=VisorBlend;
-            Color color=m_SealHalo&&m_SealHalo.isActiveAndEnabled&&m_SealHalo.haloLight?m_SealHalo.haloLight.color:
-                m_SealHaloStroke?m_SealHaloStroke.startColor:m_SealHalo?m_SealHalo.idleHaloColor:Color.white;
+            Color color=m_PreviewHaloColor??(m_SealHalo&&m_SealHalo.isActiveAndEnabled&&m_SealHalo.haloLight?m_SealHalo.haloLight.color:
+                m_SealHaloStroke?m_SealHaloStroke.startColor:m_SealHalo?m_SealHalo.idleHaloColor:Color.white);
             float breath=Mathf.Lerp(.08f,1,Mathf.SmoothStep(0,1,(Mathf.Sin(Time.realtimeSinceStartup*Mathf.PI*2/3.6f)+1)*.5f));
             color.a=breath;SealColor=color;
             m_VisorRenderer.enabled=m_HeadEquipped;

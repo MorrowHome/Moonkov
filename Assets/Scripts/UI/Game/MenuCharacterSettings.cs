@@ -1,4 +1,5 @@
 using UnityEngine;
+using Unity.MP_FPS.DollSinger;
 
 namespace Unity.MP_FPS.Client
 {
@@ -6,6 +7,9 @@ namespace Unity.MP_FPS.Client
     public sealed class MenuCharacterSettings : ScriptableObject
     {
         public GameObject VisualPrefab;
+        [Header("Gameplay equipment appearance")]
+        public DollSingerHaloAim HaloSource;
+        public WeaponRegistry WeaponRegistry;
         public AnimationClip[] Motions;
         public AvatarMask HaloAimMask;
         public AvatarMask[] MotionMasks;

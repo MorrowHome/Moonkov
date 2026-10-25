@@ -8,6 +8,7 @@ namespace Unity.MP_FPS.DollSinger
 /// </summary>
 [DefaultExecutionOrder(100)]
 public sealed class DollSingerHaloAim : MonoBehaviour {
+    public const float IdleHeadHeight = .27f;
     public enum HaloWeapon { None, Rifle, Revolver, Shotgun, Sniper, Cicada, Trine, Aegis, Vesper, Thorn, Sundown, Rondo, Tempest, Nocturne }
     [Header("Standalone demo equipment (network equipment comes from inventory)")]
     public HaloWeapon localPrimary = HaloWeapon.Rifle;
@@ -493,7 +494,7 @@ public sealed class DollSingerHaloAim : MonoBehaviour {
             view.FrameGestureHands(visualWeapon != HaloWeapon.Sniper && Time.time <= gestureReframeUntil,
                 bakedGestures != null && bakedGestures.IsFiring((int)visualWeapon, Time.time - gestureShotTime));
         }
-        Vector3 headPosition = head.position + transform.up * 0.27f +
+        Vector3 headPosition = head.position + transform.up * IdleHeadHeight +
                                transform.right * Mathf.Sin(Time.time * 1.8f) * 0.008f + transform.up * hhh;
         Vector3 aimDirection = networkControlled ? networkDirection :
             playerCamera ? playerCamera.transform.forward : transform.forward;

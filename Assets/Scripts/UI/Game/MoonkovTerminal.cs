@@ -16,6 +16,7 @@ namespace Unity.MP_FPS.Client
         private readonly string[] m_Pages = { "SHIP", "LOADOUT / STORAGE", "HALO BUILD", "SUPPLIERS", "OPERATIONS", "TASKS", "BASE", "COMMS", "SETTINGS" };
         private readonly TerminalWindows m_Windows;
         private MenuCharacterView m_Character;
+        private Inventory.InventoryGraph m_EquipmentInventory;
         private int m_Page;
         private bool m_Busy, m_Ready;
         private string m_Player;
@@ -28,6 +29,11 @@ namespace Unity.MP_FPS.Client
         private const string k_Ticker = "MOONKOV ORBITAL TERMINAL  //  SELENE RELAY 07 NOMINAL  //  SURFACE -173 C / NIGHT CYCLE  //  EXTRACTION BEACON: GREEN  //  CARGO IS LOST ON DEATH  //  RECOVER. SURVIVE. EXTRACT.  //  ";
         public TerminalWindows Windows => m_Windows;
         public MenuCharacterView Character => m_Character;
+        public void PresentEquipment(Inventory.InventoryGraph inventory)
+        {
+            m_EquipmentInventory = inventory;
+            m_Character?.SetEquipmentInventory(inventory);
+        }
         public event Action Navigating;
         public event Action LoadoutShowing;
         public event Action HaloModificationRequested;
@@ -117,6 +123,7 @@ namespace Unity.MP_FPS.Client
                 TerminalMotion.Fade(m_Gear, .1f, .45f);
                 if (LoadoutShowing != null) { LoadoutShowing(); return; }
                 m_Character = new MenuCharacterView();
+                m_Character.SetEquipmentInventory(m_EquipmentInventory);
                 m_Character.Element.RemoveFromClassList("terminal-character-art");
                 m_Character.Element.AddToClassList("stash-character-render");
                 var stage = m_Root.Q<VisualElement>("stashCharacterStage"); stage.Insert(0, m_Character.Element);
@@ -178,6 +185,7 @@ namespace Unity.MP_FPS.Client
             theme.style.display = DisplayStyle.None;
             m_Content.Q<Button>("homeObserve").clicked += m_Shade.OpenObserver;
             m_Character = new MenuCharacterView(element: m_Content.Q<Image>("characterView"));
+            m_Character.SetEquipmentInventory(m_EquipmentInventory);
             TerminalMotion.Reveal(m_Character.Element, .05f, -60, 0, 1.1f);
             var hero = m_Content.Q<VisualElement>(className: "terminal-home-hero");
             TerminalMotion.Cascade(hero, .25f, .09f, -40, 0);

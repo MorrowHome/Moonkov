@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.Playables;
@@ -15,7 +16,7 @@ using UnityEditor.SceneManagement;
 namespace Unity.MP_FPS.Client
 {
     // A private rendering stage: no player input, networking, or gameplay controller.
-    public sealed class MenuCharacterView : IDisposable
+    public sealed partial class MenuCharacterView : IDisposable
     {
         // The project's PC renderer only draws layers 0–7. UI is within that mask.
         private const int ViewLayer = 5;
@@ -57,7 +58,6 @@ namespace Unity.MP_FPS.Client
         private Transform m_Chest;
         private SkinnedMeshRenderer[] m_Renderers;
         private Transform m_Halo, m_Head, m_Finger;
-        private LineRenderer[] m_HaloStrokes;
         private double m_BaseTime;
         private RenderTexture m_Target;
         private IVisualElementScheduledItem m_Timer;
@@ -226,20 +226,17 @@ namespace Unity.MP_FPS.Client
             m_Graph.Play(); m_Graph.Evaluate(0);
             m_TwistFollowers?.ApplyPresentation();
             m_Remaining = IdleDuration();
-            foreach (var t in m_Model.GetComponentsInChildren<Transform>(true))
-                if (t.name == "HaloCrosshair") { m_Halo = t; break; }
             m_Head = animator.GetBoneTransform(HumanBodyBones.Head);
             var neck = animator.GetBoneTransform(HumanBodyBones.Neck);
             m_FaceHeightOffset = m_Head != null && neck != null ? Vector3.Distance(m_Head.position, neck.position) * 1.25f : 0;
             m_Finger = animator.GetBoneTransform(HumanBodyBones.RightIndexDistal);
             if (m_Finger != null) while (m_Finger.childCount > 0) m_Finger = m_Finger.GetChild(0);
-            if (m_Halo != null)
-            {
-                m_Halo.gameObject.SetActive(true);
-                m_HaloStrokes = m_Halo.GetComponentsInChildren<LineRenderer>(true);
-            }
+            InitializeEquipmentVisuals();
+            PresentMeleeEquipment();
             UpdateHalo();
-            SetProtectionInventory(m_ProtectionInventory);
+            SampleEquipmentVisuals(0);
+            ApplyProtectionInventory(m_ProtectionInventory);
+            ApplyEquipmentProtectionSnapshot();
 
             m_Renderers = m_Model.GetComponentsInChildren<SkinnedMeshRenderer>();
             foreach (var renderer in m_Renderers)
@@ -318,11 +315,17 @@ namespace Unity.MP_FPS.Client
 
         private int TakeAction()
         {
-            int count = m_Settings.Motions.Length - 1;
-            if (m_ActionBag == null || m_ActionBag.Length != count) { m_ActionBag = new int[count]; m_BagRemaining = 0; }
+            if (m_ActionBag == null)
+            {
+                var actions = new List<int>();
+                for (int i = 1; i < m_Settings.Motions.Length; i++)
+                    if (EquipmentMotionAllowed(i)) actions.Add(i);
+                m_ActionBag = actions.ToArray(); m_BagRemaining = 0;
+            }
+            int count = m_ActionBag.Length;
+            if (count == 0) return 0;
             if (m_BagRemaining == 0)
             {
-                for (int i = 0; i < count; i++) m_ActionBag[i] = i + 1;
                 for (int i = count - 1; i > 0; i--)
                 {
                     int other = m_Random.Next(i + 1);
@@ -395,6 +398,7 @@ namespace Unity.MP_FPS.Client
                 if (options.Weapon > 0 && weight > .0001f) gestureActive = true;
             }
             m_HandAvoidance?.PreparePresentation(dt, preserveHands);
+            m_EquipmentMelee?.PreparePresentation(dt);
             m_TwistFollowers?.RestoreBeforeAnimation();
             if (m_GestureActive || gestureActive) m_Gestures?.RestoreBeforeAnimation();
             m_GestureActive = gestureActive;
@@ -406,8 +410,11 @@ namespace Unity.MP_FPS.Client
             DollSingerMovement.ApplyTiptoePresentation(m_Animator, tiptoe);
             m_TwistFollowers?.ApplyPresentation();
             ApplyWeaponGesture(dt);
+            m_EquipmentMelee?.SamplePreviewIdle();
             m_Spring?.SimulatePresentation(dt);
             UpdateHalo();
+            SampleEquipmentVisuals(dt);
+            if (m_Protection) m_Protection.SetPreviewHaloColor(PreviewHaloColor);
             if(m_Protection)m_Protection.SimulatePresentation();
         }
 
@@ -446,25 +453,29 @@ namespace Unity.MP_FPS.Client
             {
                 if (!m_Clips[i].IsValid()) continue;
                 var options = m_Settings.Motion(m_Indices[i]);
-                if (options.Weapon == 0 || m_Mixer.GetInputWeight(i) <= 0) continue;
+                int gestureWeapon = EquipmentGestureWeapon(m_Indices[i]);
+                if (gestureWeapon == 0 || m_Mixer.GetInputWeight(i) <= 0) continue;
                 float age = (float)m_Times[i] - m_Settings.CrossfadeSeconds;
-                m_Gestures.Apply(options.Weapon, m_Mixer.GetInputWeight(i),
+                m_Gestures.Apply(gestureWeapon, m_Mixer.GetInputWeight(i),
                     options.WeaponAction == MenuWeaponAction.Fire ? age : float.PositiveInfinity,
                     options.WeaponAction == MenuWeaponAction.Reload, age / Mathf.Max(.01f, options.HoldSeconds),
                     m_Settings.CrossfadeSeconds, m_Chest, m_Model.transform.forward, dt);
                 return;
             }
         }
-        public void SetProtectionInventory(InventoryGraph inventory)
+        public void SetProtectionInventory(InventoryGraph inventory) => SetEquipmentInventory(inventory);
+
+        private void ApplyProtectionInventory(InventoryGraph inventory)
         {
             m_ProtectionInventory=inventory;
             if(m_Model==null)return;
             bool equipped=EnergyShieldEquipment.IsHeadDome(inventory?.Equipped("Helmet")?.Code)||inventory?.Equipped("Shield")!=null||EnergyShieldEquipment.BackpackStyle(inventory?.Equipped("Backpack")?.Code)!=0;
             if(!m_Protection&&!equipped)return;
             if(!m_Protection)m_Protection=m_Model.GetComponent<EnergyShieldPresentation>()??m_Model.AddComponent<EnergyShieldPresentation>();
+            m_Protection.PresentationAudioEnabled = false;
             m_Protection.PresentInventory(inventory);
+            m_Protection.SetPreviewHaloColor(PreviewHaloColor);
             m_Protection.SimulatePresentation();
-            Render();
         }
         private void UpdateHalo()
         {
@@ -472,24 +483,6 @@ namespace Unity.MP_FPS.Client
             for (int i = 0; i < 2; i++)
                 if (m_Clips[i].IsValid() && (m_Settings.Motion(m_Indices[i]).Weapon > 0 || m_Indices[i] == 1))
                     HaloAimWeight += m_Mixer.GetInputWeight(i);
-            if (m_Halo == null || m_Head == null || m_Finger == null) return;
-            // Same head-to-fingertip path and ring orientation as DollSingerHaloAim.LateUpdate.
-            var root = m_Model.transform;
-            float t = HaloAimWeight * HaloAimWeight * (3f - 2f * HaloAimWeight);
-            var head = m_Head.position + root.up * .27f + root.right * Mathf.Sin((float)m_BaseTime * 1.8f) * .008f;
-            var finger = m_Finger.position + root.forward * .075f;
-            var control = head + root.up * .17f + root.right * .16f;
-            m_Halo.position = (1 - t) * (1 - t) * head + 2 * (1 - t) * t * control + t * t * finger;
-            m_Halo.rotation = Quaternion.Slerp(Quaternion.LookRotation(root.up, root.forward), Quaternion.LookRotation(root.forward, root.up), t);
-            float size = Mathf.Lerp(.83f, .45f, t);
-            var scale = root.lossyScale;
-            m_Halo.localScale = new Vector3(size / Mathf.Max(.001f, scale.x), size / Mathf.Max(.001f, scale.y), size / Mathf.Max(.001f, scale.z));
-            Color color = Color.Lerp(m_Settings.IdleHaloColor, m_Settings.AimedHaloColor, t);
-            foreach (var stroke in m_HaloStrokes)
-            {
-                var tint = color; if (stroke.name.EndsWith("_Glow", StringComparison.Ordinal)) tint.a = .6f;
-                stroke.startColor = tint; stroke.endColor = tint;
-            }
         }
         public void Render() => Render(Element.contentRect.size);
 
@@ -565,6 +558,7 @@ namespace Unity.MP_FPS.Client
         }
         private void ReleaseStage()
         {
+            ReleaseEquipmentVisuals();
             StopInspect(); m_InspectionYaw = m_PoseTurn = 0; m_Inspected = m_ViewDirty = false; Zoom = 1;
             if (m_Graph.IsValid()) m_Graph.Destroy();
             if (m_FullBodyMask != null) { Destroy(m_FullBodyMask); m_FullBodyMask = null; }
@@ -572,7 +566,8 @@ namespace Unity.MP_FPS.Client
             if (m_Stage != null) { m_Stage.SetActive(false); Destroy(m_Stage); }
             m_Stage = null; m_Camera = null; m_Model = null; m_Animator = null;
             m_Protection=null;
-            m_Halo = null; m_Head = null; m_Finger = null; m_HaloStrokes = null;
+            m_EquipmentMelee=null;
+            m_Halo = null; m_Head = null; m_Finger = null;
             m_Spring = null; m_HandAvoidance = null;
             m_TwistFollowers = null;
             m_Gestures = null; m_Chest = null; m_Renderers = null;

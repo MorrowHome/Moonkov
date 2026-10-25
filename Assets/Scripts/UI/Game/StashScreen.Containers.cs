@@ -78,6 +78,7 @@ namespace Unity.MP_FPS.Client
         private void PresentContainers()
         {
             if (m_Containers == null) return;
+            m_Terminal.PresentEquipment(m_Preview ? m_PreviewInventory : PlayerProfileClient.Inventory);
             PresentRecovery(m_Preview ? null : PlayerProfileClient.Recovery,PlayerProfileClient.RaidActive);
             m_Containers.SetReadOnly(!m_Preview && PlayerProfileClient.RaidActive ? AccountClient.InventoryFailureMessage("raid_active") : null);
             m_Containers.Present(m_Preview ? m_PreviewInventory : PlayerProfileClient.Inventory,

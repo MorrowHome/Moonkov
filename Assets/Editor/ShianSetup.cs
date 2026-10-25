@@ -429,6 +429,7 @@ public static class ShianSetup
             if (!settings) { settings = Object.Instantiate(source); AssetDatabase.CreateAsset(settings, MenuSettingsPath); }
             else EditorUtility.CopySerialized(source, settings);
             settings.name = "ShianMenuCharacterSettings"; settings.VisualPrefab = menuPrefab;
+            MenuCharacterAppearanceSetup.Bind(settings, GameSettings.ShianCharacterIndex);
             settings.GestureBake = Require<TextAsset>(Root + "/Animation/WeaponGestures.json");
             EditorUtility.SetDirty(settings); AssetDatabase.SaveAssetIfDirty(settings);
             var corpse = Instantiate(menuPrefab, holder.transform); corpse.name = "ShianCorpseVisual";

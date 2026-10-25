@@ -41,6 +41,7 @@ namespace Unity.MP_FPS.Client
             {
                 case 0:
                     m_Character = new MenuCharacterView(element: m_Content.Q<Image>("operatorPortrait"));
+                    m_Character.SetEquipmentInventory(m_EquipmentInventory);
                     // MenuCharacterView adds the shared home class; this exhibit owns its framing.
                     m_Character.Element.RemoveFromClassList("terminal-character-art");
                     BindOperationCharacters();

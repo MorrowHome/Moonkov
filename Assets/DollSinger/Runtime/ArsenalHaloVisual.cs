@@ -52,9 +52,11 @@ namespace Unity.MP_FPS.DollSinger
             shotAge = 0;
             lastShot = tick;
         }
-        private void Update()
+        private void Update() => Step(Time.deltaTime);
+        public void Step(float deltaTime)
         {
-            shotAge += Time.deltaTime; phase += Time.deltaTime;
+            float dt = Mathf.Max(0, deltaTime);
+            shotAge += dt; phase += dt;
             float pulse = Mathf.Exp(-shotAge * (weapon == DollSingerHaloAim.HaloWeapon.Cicada ? 36 : 16));
             float loaded = reloading ? progress : (float)ammo / capacity;
             var tint = Color.white * (ammo == 0 && !reloading ? .28f : 1f + pulse * .18f); tint.a = 1;

@@ -365,6 +365,7 @@ public static class HatsuneMikuSetup
             if (!settings) { settings = Object.Instantiate(source); AssetDatabase.CreateAsset(settings, MenuSettingsPath); }
             else EditorUtility.CopySerialized(source, settings);
             settings.name = "HatsuneMikuMenuCharacterSettings"; settings.VisualPrefab = menuPrefab;
+            MenuCharacterAppearanceSetup.Bind(settings, GameSettings.HatsuneMikuCharacterIndex);
             settings.GestureBake = Require<TextAsset>(Root + "/Animation/WeaponGestures.json");
             EditorUtility.SetDirty(settings); AssetDatabase.SaveAssetIfDirty(settings);
             var corpse = Instantiate(menuPrefab, holder.transform); corpse.name = "HatsuneMikuCorpseVisual";

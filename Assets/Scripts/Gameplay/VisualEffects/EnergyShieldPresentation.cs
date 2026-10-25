@@ -19,6 +19,9 @@ namespace Unity.MP_FPS
         private Material m_FieldMaterial;
         private bool m_Ready,m_GeometryRetained,m_HasSequence,m_Owned,m_FirstPerson,m_HeadEquipped,m_ShieldEquipped,m_Regenerating,m_Hidden;
         private bool m_StandardCollar;
+        private Color? m_PreviewHaloColor;
+        public void SetPreviewHaloColor(Color color) => m_PreviewHaloColor = color;
+        public bool PresentationAudioEnabled { get; set; } = true;
         private Camera m_OwnedCamera;
         private uint m_HitSequence,m_BreakSequence,m_RestoreSequence;
         private float m_HitAt=-100,m_BreakAt=-100,m_RestoreAt=-100,m_Strength,m_LastSound=-100;
@@ -151,7 +154,7 @@ namespace Unity.MP_FPS
         }
         private void PlayCue(int cue)
         {
-            if (!Application.isPlaying || cue == 0 && Time.unscaledTime - m_LastSound < .18f) return;
+            if (!PresentationAudioEnabled || !Application.isPlaying || cue == 0 && Time.unscaledTime - m_LastSound < .18f) return;
             var library = MoonkovAudio.Library;
             if (!library) return;
             m_LastSound = Time.unscaledTime;

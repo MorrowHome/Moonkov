@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: HatsuneMikuMenuCharacterSettings
   m_EditorClassIdentifier: Assembly-CSharp::Unity.MP_FPS.Client.MenuCharacterSettings
   VisualPrefab: {fileID: 68786146308172280, guid: 11ec0d9501f9741e9add81074c4dd9a0, type: 3}
+  HaloSource: {fileID: 5661608982826460366, guid: 531b42a2f0b71495a9fff4296c295e0f, type: 3}
+  WeaponRegistry: {fileID: 11400000, guid: 137b66a812624a745ae73bf6e6506c77, type: 2}
   Motions:
   - {fileID: 7400000, guid: 82589cafe9239604fa763d2e84ef34c8, type: 2}
   - {fileID: 7400000, guid: 28f662c33c0a430449c8e437ceb54ceb, type: 2}

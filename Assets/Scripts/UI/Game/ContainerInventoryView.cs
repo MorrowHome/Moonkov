@@ -31,7 +31,10 @@ namespace Unity.MP_FPS.Client
         private readonly Dictionary<LoadoutSlot, Button> m_Slots = new Dictionary<LoadoutSlot, Button>();
         private readonly Dictionary<string, VisualElement> m_Tiles = new Dictionary<string, VisualElement>();
         private readonly HashSet<string> m_Open = new HashSet<string>();
-        private MenuCharacterView m_Character;
+        private MenuCharacterView m_Character, m_CorpseCharacter;
+        private VisualElement m_CorpseStage;
+        private IVisualElementScheduledItem m_PortraitTimer;
+        private string m_PortraitWeaponItem;
         private readonly GameSettings m_PortraitSettings;
         private Dictionary<Avatar, int> m_PortraitAvatars;
         private bool m_PortraitShowing;
@@ -184,15 +187,21 @@ namespace Unity.MP_FPS.Client
                 else MoonkovAudio.Play(MoonkovAudio.Library?.Equipment, Vector3.zero);
             }
             string layout = LayoutKey(graph);
-            bool changed = m_RenderedVersion == int.MinValue || m_RenderedLayout != layout || m_LootId!=lootId || m_DroppedItem!=droppedItem || m_CorpseCharacterIndex!=corpseCharacterIndex;
+            bool corpseSlotsChanged = !SameCorpseSlots(m_CorpseEquipmentSlots, corpseEquipmentSlots);
+            bool changed = m_RenderedVersion == int.MinValue || m_RenderedLayout != layout || m_LootId!=lootId || m_DroppedItem!=droppedItem || m_CorpseCharacterIndex!=corpseCharacterIndex || corpseSlotsChanged;
             bool workshopChanged = changed || m_RenderedVersion != (graph?.Version ?? -1) || operationCompleted && m_Busy || message != null;
             m_Graph = graph;m_LootId=lootId;m_DroppedItem=droppedItem;
-            m_CorpseCharacterIndex = corpseCharacterIndex; m_CorpseEquipmentSlots = corpseEquipmentSlots;
+            m_CorpseCharacterIndex = corpseCharacterIndex;
+            m_CorpseEquipmentSlots = corpseEquipmentSlots == null ? null : corpseEquipmentSlots.ToDictionary(pair => pair.Key, pair => pair.Value);
             if (operationCompleted) m_Busy = false;
             if (changed) { CancelDrag(); Render(); m_RenderedLayout=layout; }
             else RefreshSnapshotValues();
             m_RenderedVersion=graph?.Version ?? -1;
-            if(changed)m_Character?.SetProtectionInventory(graph);
+            if (m_PortraitShowing)
+            {
+                PresentOperatorPortrait();
+                PresentCorpsePortrait();
+            }
             if (message != null) MoonkovLocalization.Set(m_Message, message);
             else if (!m_Busy && graph != null) MoonkovLocalization.Set(m_Message, m_ReadOnlyReason ?? "");
             if (operationCompleted) m_WorkshopMessage = message;
@@ -203,21 +212,27 @@ namespace Unity.MP_FPS.Client
             if (m_Disposed) return;
             m_PortraitShowing = true;
             PresentOperatorPortrait();
+            PresentCorpsePortrait();
+            m_PortraitTimer?.Resume();
         }
         public void Suspend()
         {
             m_PortraitShowing = false;
+            m_PortraitTimer?.Pause();
             ReleaseWorkshop();
             CancelDrag(); m_HoveredItemId = m_SelectedItemId = null; m_Windows.CloseAll(); m_Open.Clear();
             ReleaseOperatorPortrait();
+            ReleaseCorpsePortrait();
         }
         private void ReleaseOperatorPortrait()
         {
             if (m_Character == null) return;
             m_Character.Element.RemoveFromHierarchy(); m_Character.Dispose(); m_Character = null;
+            m_PortraitWeaponItem = null;
         }
         private void Render()
         {
+            ReleaseCorpsePortrait(); m_CorpseStage = null;
             m_HoveredItemId = null;
             m_Grids.RemoveAll(g => !m_Slots.Values.Any(s => ReferenceEquals(s, g.Element))); m_Tiles.Clear(); m_ContainerPane.Clear(); m_StashPane.Clear();m_LootPane.Clear();
             var loot=m_Graph?.Find(LootInventoryExchange.Root);

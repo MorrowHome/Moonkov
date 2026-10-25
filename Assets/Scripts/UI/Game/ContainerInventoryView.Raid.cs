@@ -11,28 +11,63 @@ namespace Unity.MP_FPS.Client
     {
         [Serializable] private sealed class PortraitAnchor { public string slot; public float x, y; }
         [Serializable] private sealed class PortraitLayout { public PortraitAnchor[] anchors; public float aspect; }
+        private static bool SameCorpseSlots(IReadOnlyDictionary<string, string> before, IReadOnlyDictionary<string, string> after)
+        {
+            if (ReferenceEquals(before, after)) return true;
+            if (before == null || after == null || before.Count != after.Count) return false;
+            foreach (var pair in before)
+                if (!after.TryGetValue(pair.Key, out var value) || pair.Value != value) return false;
+            return true;
+        }
+        private PlayerGhost PortraitPlayer()
+        {
+            if (m_Stash || !PlayerGhostManager.TryGetClientInstance(out var manager) || !manager ||
+                !manager.TryGetPlayersByRole(MultiplayerRole.ClientOwned, out var players)) return null;
+            foreach (var player in players) if (player) return player;
+            return null;
+        }
+        private bool TryOperatorPortraitSnapshot(out PredictedPlayerGhost snapshot)
+        {
+            snapshot = default;
+            var player = PortraitPlayer();
+            var ghost = player ? player.GhostGameObject : null;
+            if (!ghost || ghost.World == null || !ghost.World.IsCreated ||
+                !ghost.EntityManager.Exists(ghost.LinkedEntity) || !ghost.GhostHasComponent<PredictedPlayerGhost>()) return false;
+            snapshot = ghost.ReadGhostComponentData<PredictedPlayerGhost>();
+            return true;
+        }
+        private void RefreshPortraitWeapon()
+        {
+            if (!m_PortraitShowing || m_Disposed || m_Root.panel == null || m_Root.resolvedStyle.display == DisplayStyle.None) return;
+            int characterIndex = OperatorPortraitCharacter();
+            if (m_Character == null || m_Character.CharacterIndex != characterIndex) { PresentOperatorPortrait(); return; }
+            bool hasSnapshot = TryOperatorPortraitSnapshot(out var snapshot);
+            string item = hasSnapshot ? snapshot.EquippedWeaponItem.ToString() : null;
+            if (item != m_PortraitWeaponItem)
+            {
+                m_PortraitWeaponItem = item;
+                m_Character.SetEquipmentInventory(m_Graph, item);
+            }
+            if (hasSnapshot) m_Character.SetEquipmentSnapshot(in snapshot);
+        }
         private void PortraitCharacterChanged(int characterIndex)
         {
             if (m_PortraitShowing && !m_Disposed) PresentOperatorPortrait();
         }
         private int OperatorPortraitCharacter()
         {
-            if (!m_Stash && PlayerGhostManager.TryGetClientInstance(out var manager) && manager &&
-                manager.TryGetPlayersByRole(MultiplayerRole.ClientOwned, out var players))
+            var player = PortraitPlayer();
+            if (player)
             {
-                foreach (var player in players)
+                if (m_PortraitAvatars == null)
                 {
-                    if (!player) continue;
-                    if (m_PortraitAvatars == null)
-                    {
-                        m_PortraitAvatars = new Dictionary<Avatar, int>();
-                        CacheAvatar(GameSettings.HatsuneMikuCharacterIndex);
-                        CacheAvatar(GameSettings.ShianCharacterIndex);
-                    }
-                    var animator = player.GetComponentInChildren<Animator>(true);
-                    return animator && animator.avatar && m_PortraitAvatars.TryGetValue(animator.avatar, out int characterIndex)
-                        ? characterIndex : GameSettings.DollSingerCharacterIndex;
+                    m_PortraitAvatars = new Dictionary<Avatar, int>();
+                    CacheAvatar(GameSettings.HatsuneMikuCharacterIndex);
+                    CacheAvatar(GameSettings.ShianCharacterIndex);
                 }
+                var animator = player.GetComponentInChildren<Animator>(true);
+                return animator && animator.avatar && m_PortraitAvatars.TryGetValue(animator.avatar, out int characterIndex)
+                    ? characterIndex : GameSettings.DollSingerCharacterIndex;
             }
             return m_PortraitSettings?.PlayerCharacter ?? GameSettings.DollSingerCharacterIndex;
 
@@ -46,21 +81,32 @@ namespace Unity.MP_FPS.Client
         private void PresentOperatorPortrait()
         {
             int characterIndex = OperatorPortraitCharacter();
-            bool livePortrait = GameSettings.IsPlayableCharacter(characterIndex) && characterIndex != GameSettings.DollSingerCharacterIndex;
+            bool livePortrait = GameSettings.IsPlayableCharacter(characterIndex);
             m_Root.EnableInClassList("inventory-live-operator", livePortrait);
             if (!livePortrait) { ReleaseOperatorPortrait(); return; }
-            if (m_Character != null && m_Character.CharacterIndex == characterIndex) return;
-            ReleaseOperatorPortrait();
-            m_Character = new MenuCharacterView(idleOnly: true, characterIndex: characterIndex);
-            m_Character.Element.name = "operatorLivePortrait";
-            m_Character.Element.RemoveFromClassList("terminal-character-art");
-            m_Character.Element.AddToClassList("field-operator-live");
-            m_Character.Element.pickingMode = PickingMode.Ignore;
-            m_CharacterStage.Insert(0, m_Character.Element);
-            m_Character.SetProtectionInventory(m_Graph);
+            if (m_Character == null || m_Character.CharacterIndex != characterIndex)
+            {
+                ReleaseOperatorPortrait();
+                m_Character = new MenuCharacterView(idleOnly: true, characterIndex: characterIndex);
+                m_Character.Element.name = "operatorLivePortrait";
+                m_Character.Element.RemoveFromClassList("terminal-character-art");
+                m_Character.Element.AddToClassList("field-operator-live");
+                m_CharacterStage.Insert(0, m_Character.Element);
+            }
+            bool hasSnapshot = TryOperatorPortraitSnapshot(out var snapshot);
+            // An empty ID is empty hands; null means the deployment slot priority.
+            m_PortraitWeaponItem = hasSnapshot ? snapshot.EquippedWeaponItem.ToString() : null;
+            m_Character.SetEquipmentInventory(m_Graph, m_PortraitWeaponItem);
+            if (hasSnapshot) m_Character.SetEquipmentSnapshot(in snapshot);
         }
         private void InitializeRaidPortrait()
         {
+            m_Root.Q("slotLayer").pickingMode = PickingMode.Ignore;
+            if (!m_Stash)
+            {
+                m_PortraitTimer = m_Root.schedule.Execute(RefreshPortraitWeapon).Every(150);
+                m_PortraitTimer.Pause();
+            }
             var layout = JsonUtility.FromJson<PortraitLayout>(Resources.Load<TextAsset>("Moonkov/UI/FieldOperatorPortraitLayout").text);
             m_CharacterStage.RegisterCallback<GeometryChangedEvent>(_ =>
             {
@@ -150,14 +196,15 @@ namespace Unity.MP_FPS.Client
             var tops = m_Graph.Children(loot.Id).ToArray(); var shown = new HashSet<string>();
             if (GameSettings.IsPlayableCharacter(m_CorpseCharacterIndex))
                 Text(m_LootPane, GameSettings.CharacterName(m_CorpseCharacterIndex), "inventory-section-title");
-            // This portrait asset depicts DollSinger. Other operators use the shared
-            // equipment list until their own corpse portrait artwork is available.
-            bool portraitKnown = m_CorpseCharacterIndex == GameSettings.DollSingerCharacterIndex;
+            bool portraitKnown = GameSettings.IsPlayableCharacter(m_CorpseCharacterIndex);
             VisualElement equipment;
             if (portraitKnown)
             {
                 var stage = TerminalLayout.Clone("Components/CorpsePortrait", "corpsePortrait"); m_LootPane.Add(stage);
+                stage.Q("corpseOperatorPortrait").style.display = DisplayStyle.None;
+                m_CorpseStage = stage;
                 equipment = stage.Q("corpseEquipmentSlots");
+                equipment.pickingMode = PickingMode.Ignore;
                 BindCorpsePortrait(stage, equipment);
             }
             else { equipment = new VisualElement(); equipment.AddToClassList("field-corpse-equipment"); m_LootPane.Add(equipment); }
@@ -189,6 +236,50 @@ namespace Unity.MP_FPS.Client
                 AddContainer(m_LootPane, item, slot == "ChestRig" ? "胸挂" : "背包", corpseSlot: slot);
             }
             AddContainer(m_LootPane, loot, "随身散装物品", shown, true);
+        }
+        private void PresentCorpsePortrait()
+        {
+            if (m_CorpseStage == null || !GameSettings.IsPlayableCharacter(m_CorpseCharacterIndex)) return;
+            if (m_CorpseCharacter == null)
+            {
+                m_CorpseCharacter = new MenuCharacterView(idleOnly: true, characterIndex: m_CorpseCharacterIndex);
+                m_CorpseCharacter.Element.name = "corpseLivePortrait";
+                m_CorpseCharacter.Element.RemoveFromClassList("terminal-character-art");
+                m_CorpseCharacter.Element.AddToClassList("field-operator-live");
+                m_CorpseStage.Insert(0, m_CorpseCharacter.Element);
+            }
+            m_CorpseCharacter.SetEquipmentInventory(CorpsePortraitInventory());
+        }
+        private InventoryGraph CorpsePortraitInventory()
+        {
+            var graph = InventoryGraph.Create(false, false);
+            if (m_Graph == null) return graph;
+            graph.Version = m_Graph.Version;
+            var tops = m_Graph.Children(LootInventoryExchange.Root).ToArray();
+            var selected = new HashSet<string>();
+            foreach (var slot in InventoryCatalog.Get(InventoryCatalog.Equipment).Regions)
+            {
+                var item = CorpseEquipment(tops, slot.Id, selected);
+                if (item == null) continue;
+                selected.Add(item.Id);
+                var copy = item.Clone(); copy.Parent = InventoryCatalog.Equipment; copy.Region = slot.Id;
+                copy.X = copy.Y = 0; copy.Rotated = false;
+                graph.Items.Add(copy);
+            }
+            for (int depth = 0; depth < InventoryCatalog.MaxDepth; depth++)
+            {
+                bool added = false;
+                foreach (var item in m_Graph.Items)
+                    if (item.Parent != null && selected.Contains(item.Parent) && selected.Add(item.Id))
+                    { graph.Items.Add(item.Clone()); added = true; }
+                if (!added) break;
+            }
+            return graph;
+        }
+        private void ReleaseCorpsePortrait()
+        {
+            if (m_CorpseCharacter == null) return;
+            m_CorpseCharacter.Element.RemoveFromHierarchy(); m_CorpseCharacter.Dispose(); m_CorpseCharacter = null;
         }
         private InventoryItem CorpseEquipment(InventoryItem[] tops, string slot, HashSet<string> shown)
         {

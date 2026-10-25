@@ -127,12 +127,22 @@ namespace Unity.MP_FPS.DollSinger
             if (halo) halo.ExternalHandPoseActive = false;
             if (view) view.SetMeleeHandsActive(false, 0, selected);
         }
-        private void Update()
+        private void Update() => PreparePresentation(Time.deltaTime);
+        public void PreparePresentation(float deltaTime)
         {
             if (!configured) return;
             if (wasActive || OwnsHandPose) bake.RestoreBeforeAnimation();
-            blend = Mathf.MoveTowards(blend, WantsPresentation ? 1 : 0, Time.deltaTime / .12f);
+            blend = Mathf.MoveTowards(blend, WantsPresentation ? 1 : 0, Mathf.Max(0, deltaTime) / .12f);
             if (halo) halo.ExternalHandPoseActive = OwnsHandPose;
+        }
+        public void SamplePreviewIdle()
+        {
+            if (!configured) return;
+            blend = WantsPresentation ? 1 : 0;
+            equipStarted = float.NegativeInfinity;
+            previousAction = "idle";
+            bake.BeginTransition(0);
+            LateUpdate();
         }
         private void LateUpdate()
         {
@@ -285,10 +295,12 @@ namespace Unity.MP_FPS.DollSinger
         }
         private void OnDestroy()
         {
-            foreach (var value in props.Values) if (value.Root) Destroy(value.Root);
-            foreach (var mesh in ownedMeshes) if (mesh) Destroy(mesh);
-            foreach (var material in ownedMaterials) if (material) Destroy(material);
-            if (impact) Destroy(impact.gameObject);
+            foreach (var value in props.Values) if (value.Root) DestroyOwned(value.Root);
+            foreach (var mesh in ownedMeshes) if (mesh) DestroyOwned(mesh);
+            foreach (var material in ownedMaterials) if (material) DestroyOwned(material);
+            if (impact) DestroyOwned(impact.gameObject);
         }
+        private static void DestroyOwned(UnityEngine.Object value)
+        { if (Application.isPlaying) Destroy(value); else DestroyImmediate(value); }
     }
 }

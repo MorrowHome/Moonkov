@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: ShianMenuCharacterSettings
   m_EditorClassIdentifier: Assembly-CSharp::Unity.MP_FPS.Client.MenuCharacterSettings
   VisualPrefab: {fileID: 4102103062521060591, guid: 9505f14da487f44d1b336ff6c24cdf95, type: 3}
+  HaloSource: {fileID: 7215238394147471963, guid: ade9f1af6bddf4dffaec949eb4b2dc68, type: 3}
+  WeaponRegistry: {fileID: 11400000, guid: 137b66a812624a745ae73bf6e6506c77, type: 2}
   Motions:
   - {fileID: 7400000, guid: 82589cafe9239604fa763d2e84ef34c8, type: 2}
   - {fileID: 7400000, guid: 28f662c33c0a430449c8e437ceb54ceb, type: 2}
