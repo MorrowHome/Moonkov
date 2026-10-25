@@ -365,6 +365,11 @@ namespace Unity.MP_FPS
                 if (creationType == CreationType.Offline)
                 {
                     server.EntityManager.CreateEntity(typeof(OfflineRaidMode));
+                    if (PlayerProfileClient.Tutorial?.Status == Campaign.TutorialStatus.Active && GameSettings.Instance.RequestedMode != RaidGameMode.BountyClash)
+                    {
+                        server.EntityManager.CreateEntity(typeof(TutorialRaidMode));
+                        client.EntityManager.CreateEntity(typeof(TutorialRaidMode));
+                    }
                     client.EntityManager.CreateEntity(typeof(OfflineRaidMode));
                     if (GameSettings.Instance.RequestedMode == RaidGameMode.BountyClash)
                     {

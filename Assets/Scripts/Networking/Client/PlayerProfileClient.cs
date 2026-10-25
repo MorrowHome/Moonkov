@@ -55,7 +55,7 @@ namespace Unity.MP_FPS
             remove { s_OfflineChanged -= value; AccountClient.InventoryChanged -= value; }
         }
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void Reset() { s_Offline?.Dispose(); s_Offline = null; s_Inventory = null;s_LanInventory=null;s_LanPlayerId=null;s_Recovery=null;s_Campaign=null; s_Dust = s_Alloy = s_Cells = s_Carry = 0; s_OfflineChanged = null; }
+        private static void Reset() { s_Offline?.Dispose(); s_TutorialReturnStore?.Dispose(); s_TutorialReturnStore = null; s_Tutorial = null; s_Offline = null; s_Inventory = null;s_LanInventory=null;s_LanPlayerId=null;s_Recovery=null;s_Campaign=null; s_Dust = s_Alloy = s_Cells = s_Carry = 0; s_OfflineChanged = null; }
 
         public static async Task EnterOfflineAsync(CancellationToken ct)
         {
@@ -79,11 +79,11 @@ namespace Unity.MP_FPS
             catch { if (s_Offline == store) { s_Offline = null; s_Inventory = null;s_Recovery=null; } store.Dispose(); throw; }
         }
 
-        public static void LeaveOffline() { var store = s_Offline; s_Offline = null; s_Inventory = null;s_Recovery=null;s_Campaign=null; store?.Dispose(); s_OfflineChanged?.Invoke(); }
+        public static void LeaveOffline() { var store = s_Offline; s_TutorialReturnStore?.Dispose(); s_TutorialReturnStore = null; s_Tutorial = null; s_Offline = null; s_Inventory = null;s_Recovery=null;s_Campaign=null; store?.Dispose(); s_OfflineChanged?.Invoke(); }
         private static void RefreshOffline()
         {
             var profile = s_Offline.Read();s_Recovery=s_Offline.ReadRecovery(); s_Inventory = RaidInventoryTransport.Decode(profile.InventoryJson);
-            RefreshCampaign(profile);
+            RefreshCampaign(profile); s_Tutorial = s_Offline.ReadTutorial();
             s_Dust = profile.Dust; s_Alloy = profile.Alloy; s_Cells = profile.Cells;
             s_Carry = Mathf.Clamp(s_Inventory.Count("cells", true), 0, RaidRules.BagCapacity);
             GameSettings.Instance.PlayerName = DisplayName; s_OfflineChanged?.Invoke();

@@ -36,6 +36,14 @@ namespace Unity.MP_FPS.Client
             wide.Clear();
             m_CampaignTasks?.Dispose();
             m_CampaignTasks = new CampaignChapterView(wide, () => CampaignScene.ReadProgress(), Prepare, "准备出战");
+            var replay = new Button(async () =>
+            {
+                if (m_Busy || PlayerProfileClient.IsTutorialPractice || PlayerProfileClient.RaidActive) return;
+                try { await PlayerProfileClient.BeginTutorialPracticeAsync(); Navigate(0); }
+                catch (System.Exception e) { m_Content.Q<Label>("archiveKnowledge").text = e.Message; }
+            }) { text = "重玩新手教学" };
+            replay.SetEnabled(!PlayerProfileClient.IsTutorialPractice && !PlayerProfileClient.RaidActive);
+            side.Add(replay);
             MoonkovLocalization.Bind(side);
             return true;
         }

@@ -24,6 +24,7 @@ namespace Unity.MP_FPS
         }
 
         private AlienEncounterSettings m_Settings;
+        private EntityQuery m_TutorialModeQuery;
         private readonly List<EncounterState> m_Encounters = new List<EncounterState>();
         private readonly List<RaidSpawnObserver> m_Observers = new List<RaidSpawnObserver>();
         private System.Random m_Random;
@@ -39,6 +40,7 @@ namespace Unity.MP_FPS
 
         protected override void OnCreate()
         {
+            m_TutorialModeQuery = GetEntityQuery(typeof(TutorialRaidMode));
             RequireForUpdate<NetworkStreamInGame>();
             RequireForUpdate<RaidLootWorld>();
         }
@@ -51,6 +53,7 @@ namespace Unity.MP_FPS
                 return;
             }
             m_ClashSuppressed=false;
+            if (!m_TutorialModeQuery.IsEmptyIgnoreFilter) return;
             var settings = AlienEncounterSettings.Active;
             double now = SystemAPI.Time.ElapsedTime;
             if (!ReferenceEquals(settings, m_Settings))

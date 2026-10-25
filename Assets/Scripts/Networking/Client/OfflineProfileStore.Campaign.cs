@@ -12,6 +12,14 @@ namespace Unity.MP_FPS
         private static void ValidateCampaignJson(string json)
         {
             var document = JObject.Parse(json);
+            var tutorial = document.GetValue("Tutorial", StringComparison.OrdinalIgnoreCase);
+            if (tutorial != null && tutorial.Type != JTokenType.Null)
+            {
+                if (!(tutorial is JObject block)) throw new InvalidDataException("Invalid tutorial block.");
+                foreach (string field in new[] { "Version", "Status", "IntroPage", "CompletedSteps", "SupplyCycle" })
+                    if (block.GetValue(field, StringComparison.OrdinalIgnoreCase)?.Type != JTokenType.Integer)
+                        throw new InvalidDataException("Tutorial field is missing or invalid: " + field);
+            }
             // Match SaveData's default when Format itself is absent. Otherwise a
             // missing version marker could bypass the format 4 shape guard.
             var formatToken = document.GetValue("Format", StringComparison.OrdinalIgnoreCase);

@@ -7,7 +7,7 @@
             <ui:Label name="campaignHudAction" class="campaign-hud-action" />
             <ui:Label name="campaignHudLocation" class="campaign-hud-location" />
             <ui:Label name="campaignHudHint" class="campaign-hud-hint" />
-            <ui:Label text="J  任务与通讯" class="campaign-hud-hint" />
+            <ui:Label name="campaignJournalShortcut" text="J  任务与通讯" class="campaign-hud-hint" />
         </ui:VisualElement>
         <ui:Label name="campaignMarker" class="campaign-marker campaign-hidden" picking-mode="Ignore" />
         <ui:VisualElement name="campaignJournalModal" class="campaign-journal-modal campaign-hidden" picking-mode="Position">

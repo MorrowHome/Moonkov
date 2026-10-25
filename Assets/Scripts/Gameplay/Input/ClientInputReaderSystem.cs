@@ -102,6 +102,7 @@ public partial class ClientInputReaderSystem : SystemBase
                 playerInput.SetFlag(PlayerInput.InputFlag.Reload, canRead && _dollSingerInput.ReloadPressed);
                 playerInput.LookYawPitchDegrees = _accumulatedLook;
                 playerInput.AimPoint = _dollSingerPresentation.CaptureAimPoint(_accumulatedLook, weapon != null ? weapon.HitscanRange : 100f);
+                TutorialRuntime.Observe(playerInput);
                 input.ValueRW.SetInput(0, playerInput);
                 movementInput.ValueRW.SetInput(0, playerInput);
                 continue;
@@ -136,6 +137,7 @@ public partial class ClientInputReaderSystem : SystemBase
                 // Assign the full, accumulated angle to the input struct
                 playerInput.LookYawPitchDegrees = _accumulatedLook;
 
+                TutorialRuntime.Observe(playerInput);
                 input.ValueRW.SetInput(0, playerInput);
                 movementInput.ValueRW.SetInput(0, playerInput);
             }

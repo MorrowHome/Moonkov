@@ -233,6 +233,7 @@ namespace Unity.MP_FPS.DollSinger
                 Look += gamepad.rightStick.ReadValue() * (gamepadLookSpeed * Time.deltaTime);
                 JumpPressed |= gamepad.buttonSouth.wasPressedThisFrame;
                 SprintHeld |= gamepad.leftStickButton.isPressed;
+                ReloadPressed |= gamepad.buttonNorth.wasPressedThisFrame;
                 AimHeld |= gamepad.leftTrigger.isPressed;
                 AimPressed |= gamepad.leftTrigger.wasPressedThisFrame;
                 FirePressed |= gamepad.rightTrigger.wasPressedThisFrame;

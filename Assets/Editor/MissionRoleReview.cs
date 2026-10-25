@@ -34,6 +34,7 @@ public static class MissionRoleReview
     private static bool s_WaitMenu, s_HadName;
     private static string s_Name, s_File;
     private static uint s_Seed;
+    private static double s_FireUntil;
     public static string Status { get; private set; } = "Not started";
     private const BindingFlags StaticPrivate = BindingFlags.Static | BindingFlags.NonPublic;
     private static string Output => Path.GetFullPath("Library/BuildValidation/Missions/Role");
@@ -50,6 +51,16 @@ public static class MissionRoleReview
         EditorApplication.update += Tick; s_WaitMenu = true; s_Started = Time.realtimeSinceStartupAsDouble;
         Status = "Waiting for normal menu startup"; Record(Status);
     }
+    public static void AttachCurrent()
+    {
+        if (!EditorApplication.isPlaying || !PlayerProfileClient.IsOffline || s_Keyboard != null) throw new InvalidOperationException("Use an open isolated profile.");
+        Directory.CreateDirectory(Output); s_Started = Time.realtimeSinceStartupAsDouble;
+        s_HadName = PlayerPrefs.HasKey("PlayerName"); s_Name = PlayerPrefs.GetString("PlayerName");
+        s_Keyboard = InputSystem.AddDevice<Keyboard>("Mission review keyboard"); s_Mouse = InputSystem.AddDevice<Mouse>("Mission review mouse");
+        s_Keyboard.MakeCurrent(); s_Mouse.MakeCurrent(); InputSystem.onBeforeUpdate += Input;
+        Status = "Attached to actual profile controls";
+    }
+    public static void Fire(float seconds) { s_FireUntil = Time.realtimeSinceStartupAsDouble + seconds; }
     private static void Loaded(Scene scene, LoadSceneMode mode)
     {
         if (scene.name != GameManager.GameSceneName) return;
@@ -85,7 +96,7 @@ public static class MissionRoleReview
     }
     public static void Aim(string anchor) { s_Path = null; s_Aim = RaidMissionSite.Active.Anchor(anchor).Position; Status = "Aiming " + anchor; Hold(Key.F1, .15f); }
     public static void Hold(Key key, float seconds) { s_Hold = key; s_Until = Time.realtimeSinceStartupAsDouble + seconds; }
-    public static void Stop() { s_Path = null; s_Aim = null; s_Until = 0; Status = "Input stopped"; }
+    public static void Stop() { s_Path = null; s_Aim = null; s_Until = s_FireUntil = 0; Status = "Input stopped"; }
     private static void Input()
     {
         if (s_Keyboard == null) return;
@@ -117,7 +128,7 @@ public static class MissionRoleReview
         bool holding = now < s_Until;
         var keys = forward ? holding ? new[] { Key.W, s_Hold } : new[] { Key.W } : holding ? new[] { s_Hold } : Array.Empty<Key>();
         InputSystem.QueueStateEvent(s_Keyboard, new KeyboardState(keys));
-        InputSystem.QueueStateEvent(s_Mouse, new MouseState { delta = delta });
+        InputSystem.QueueStateEvent(s_Mouse, new MouseState { delta = delta, buttons = (ushort)(now < s_FireUntil ? 3 : 0) });
     }
     public static string Inspect()
     {

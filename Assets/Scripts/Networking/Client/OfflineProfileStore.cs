@@ -26,6 +26,7 @@ namespace Unity.MP_FPS
             public HashSet<string> MissionArtifacts = new HashSet<string>();
             public OfflineClashState Clash;
             public CampaignProgress Campaign;
+            public TutorialProgress Tutorial;
             public int ActiveCampaignVersion;
         }
 
@@ -74,6 +75,8 @@ namespace Unity.MP_FPS
                         // Tracking may change while the loading screen is open.
                         // Campaign facts cannot commit before loading completes.
                         CopyCampaignTracking(m_Owner.m_Save.Campaign, next.Campaign);
+                        next.Tutorial.Status = m_Owner.m_Save.Tutorial.Status;
+                        next.Tutorial.IntroPage = m_Owner.m_Save.Tutorial.IntroPage;
                         next.Inventory.Version = Math.Max(next.Inventory.Version, m_Owner.m_Save.Inventory.Version) + 1;
                         next.Recovery.Version = Math.Max(next.Recovery.Version, m_Owner.m_Save.Recovery.Version) + 1;
                         Validate(next);
@@ -119,7 +122,9 @@ namespace Unity.MP_FPS
                 }
                 else
                 {
-                    m_Save = new SaveData { Inventory = InventoryGraph.Create(), Campaign = CampaignRules.Create() };
+                    m_Save = new SaveData { Inventory = InventoryGraph.Create(), Campaign = CampaignRules.Create(),
+                        Tutorial = new TutorialProgress { Status = TutorialStatus.Active } };
+                    m_Save.Receipts.Add("tutorial/schema-v1", "1");
                     m_Save.Inventory.AddSupply("dust", 100, "stash");
                     m_Save.Inventory.AddSupply("cells", 12, "stash");
                     m_Save.Inventory.AddSupply("medkit", 4, "stash");
@@ -140,6 +145,7 @@ namespace Unity.MP_FPS
                 throw new InvalidDataException("Unsupported or damaged single-player save.");
             ValidateClash(save);
             ValidateCampaign(save);
+            ValidateTutorial(save);
         }
 
         private SaveData Copy() => JsonConvert.DeserializeObject<SaveData>(JsonConvert.SerializeObject(m_Save));
@@ -328,6 +334,7 @@ namespace Unity.MP_FPS
                 }
                 else ReturnProtected(next, RaidInventoryTransport.Decode(payload.InventoryJson ?? next.RaidInventoryJson));
                 next.DeploymentId = next.RaidInventoryJson = null; next.CarriedCells = 0; next.ActiveCampaignVersion = 0;
+                FinishTutorialAttempt(next, payload.Outcome == "Extracted");
                 next.Receipts.Add(payload.SettlementId, receipt); Commit(next); return Read();
             }
         }
@@ -345,6 +352,7 @@ namespace Unity.MP_FPS
                 var next = Copy();
                 if (next.RaidInventoryJson != null) ReturnProtected(next, RaidInventoryTransport.Decode(next.RaidInventoryJson));
                 next.DeploymentId = next.RaidInventoryJson = null; next.CarriedCells = 0; next.ActiveCampaignVersion = 0;
+                FinishTutorialAttempt(next, false);
                 next.Receipts.Add(payload.DeploymentId, "abandoned"); Commit(next); return Read();
             }
         }

@@ -12,6 +12,7 @@ namespace Unity.MP_FPS.Client
         private readonly VisualElement m_Root, m_Gear, m_Content, m_Nav, m_NavTabs, m_Indicator, m_Chrome, m_FooterTicker;
         private readonly LunarBackdrop m_Shade;
         private readonly Action m_Prepare;
+        private TutorialMenuView m_Tutorial;
         private readonly List<Button> m_Tabs = new List<Button>();
         private readonly string[] m_Pages = { "SHIP", "LOADOUT / STORAGE", "HALO BUILD", "SUPPLIERS", "OPERATIONS", "TASKS", "BASE", "COMMS", "SETTINGS" };
         private readonly TerminalWindows m_Windows;
@@ -83,6 +84,7 @@ namespace Unity.MP_FPS.Client
             m_Shade = new LunarBackdrop(BackdropMode.Ship, root); m_Shade.AddToClassList("terminal-scene-shade"); root.Insert(0, m_Shade);
             m_Windows = new TerminalWindows(root, () => Navigate(0));
             Navigate(0); m_Ready = true;
+            m_Tutorial = new TutorialMenuView(root, Navigate);
         }
         public void Present(string player, int dust, int alloy, int cells, bool busy)
         {
@@ -397,6 +399,7 @@ namespace Unity.MP_FPS.Client
         }
         public void Dispose()
         {
+            m_Tutorial?.Dispose();
             m_CampaignTasks?.Dispose();
             DisposeCharacter();
             m_Windows.Dispose(); m_Content.Clear(); m_ClockTimer.Pause();

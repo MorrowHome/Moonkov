@@ -478,6 +478,21 @@ namespace Unity.MP_FPS
                 return false;
             }
 
+            if (SystemAPI.HasSingleton<TutorialRaidMode>() && RaidMissionSite.Active)
+            {
+                var entry = RaidMissionSite.Active.Anchor("entry");
+                if (entry != null)
+                {
+                    int closest = 0; float best = float.MaxValue;
+                    for (int i = 0; i < spawnPoints.Length; i++)
+                    {
+                        float d = ((Vector3)spawnPoints[i].Position - entry.Approach).sqrMagnitude;
+                        if (d < best) { best = d; closest = i; }
+                    }
+                    spawnPoint = spawnPoints[closest]; spawnPoints.Dispose(); return true;
+                }
+            }
+
             // Shuffle the list to ensure that if multiple points have the same low number
             // of players, the choice among them is still random.
             for (int i = spawnPoints.Length - 1; i > 0; i--)

@@ -129,6 +129,7 @@ namespace Unity.MP_FPS.Client
         private static string Communications(CampaignProgress progress, TaskDefinition task)
         {
             var text = new StringBuilder();
+            if (task.Id == "CM01") text.Append(string.Join("\n\n", TutorialRules.Introduction)).Append("\n\n");
             var current = CampaignRules.CurrentNode(progress, task.Id);
             for (int i = 0; i < task.Nodes.Length; i++)
             {

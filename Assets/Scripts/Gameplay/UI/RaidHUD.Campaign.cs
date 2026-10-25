@@ -18,6 +18,7 @@ namespace Unity.MP_FPS
         private bool m_CampaignJournalVisible, m_CampaignHasDestination;
         private float m_CampaignNextPresentation, m_CampaignNextRead;
         private CampaignProgress m_CampaignProgress;
+        private int m_CampaignRadioRaid;
         private Vector3 m_CampaignDestination;
         private string m_CampaignDestinationName;
         private readonly HashSet<string> m_CampaignCommunicationsShown = new HashSet<string>(StringComparer.Ordinal);
@@ -53,6 +54,7 @@ namespace Unity.MP_FPS
             m_CampaignResult = new Label(); m_CampaignResult.AddToClassList("campaign-copy"); m_CampaignResult.AddToClassList("campaign-hidden");
             m_ResultText.parent.Insert(m_ResultText.parent.IndexOf(m_ResultText) + 1, m_CampaignResult);
             m_CampaignJournalVisible = m_CampaignHasDestination = false; m_CampaignNextPresentation = m_CampaignNextRead = 0; m_CampaignProgress = null;
+            InitializeTutorialHUD();
             MoonkovLocalization.Bind(m_CampaignOverlay); MoonkovLocalization.Bind(m_CampaignResult);
         }
 
@@ -89,8 +91,14 @@ namespace Unity.MP_FPS
                 return;
             }
             m_CampaignResult.AddToClassList("campaign-hidden");
+            if (m_CampaignRadioRaid != m_Snapshot.RaidId)
+            {
+                m_CampaignRadioRaid = m_Snapshot.RaidId; m_CampaignCommunicationsShown.Clear();
+                m_ChapterRadioQueue.Clear(); m_ChapterRadioCurrent = null;
+            }
             PresentCampaignCommunication(progress);
-            if (Keyboard.current != null && Keyboard.current.jKey.wasPressedThisFrame && !m_InventoryVisible &&
+            if (((Keyboard.current != null && Keyboard.current.jKey.wasPressedThisFrame) ||
+                (Gamepad.current != null && Gamepad.current.dpad.up.wasPressedThisFrame)) && !m_InventoryVisible &&
                 !MapInputBlocked && !GameSettings.Instance.IsPauseMenuOpen)
                 SetCampaignJournal(!m_CampaignJournalVisible);
             bool tracked = !progress.TrackingSuppressed && progress.PrimaryTracked != null;
@@ -136,7 +144,7 @@ namespace Unity.MP_FPS
             string current = CampaignRules.CurrentMain(progress);
             var node = current == null ? null : CampaignRules.CurrentNode(progress, current);
             if (node == null || string.IsNullOrEmpty(node.Briefing) || !m_CampaignCommunicationsShown.Add(current + "/" + node.Id)) return;
-            MissionNotice(node.Briefing);
+            m_ChapterRadioQueue.Enqueue(node.Briefing);
             m_CampaignNextPresentation = 0;
         }
 
@@ -173,7 +181,7 @@ namespace Unity.MP_FPS
             }
             if (node.Kind == CampaignObjectiveKind.Process) return "设备自动运行，可以移动观察，也可以提前撤离。";
             if (node.Kind == CampaignObjectiveKind.Configure) return "看向近处面板，核对故障说明后选择线路。";
-            return "靠近设备并看向面板，按交互提示完成操作。";
+            return TutorialRuntime.InteractHint;
         }
 
         private void PresentCampaignResult(CampaignProgress progress)
@@ -205,6 +213,7 @@ namespace Unity.MP_FPS
             if (m_CampaignJournalVisible) Utils.SetCursorVisible(GameSettings.Instance.IsPauseMenuOpen);
             m_CampaignJournalVisible = m_CampaignHasDestination = false;
             m_CampaignProgress = null;
+            m_ChapterRadioQueue.Clear(); m_ChapterRadioCurrent = null;
         }
     }
 }

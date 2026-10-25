@@ -57,3 +57,12 @@
 .campaign-review-toolbar > Toggle { color: #b0b4ba; font-size: 12px; margin-left: 10px; }
 .campaign-review-note { flex-shrink: 0; color: #b0b4ba; font-size: 12px; margin-bottom: 12px; }
 .campaign-review-host { flex-grow: 1; min-height: 0; padding: 20px; background-color: #18191b; border-top-width: 3px; border-top-color: #164bff; }
+
+.campaign-tutorial .campaign-hud { width: 390px; align-self: flex-end; }
+.campaign-tutorial .campaign-hud-title { font-size: 24px; }
+.campaign-tutorial .campaign-hud-action { font-size: 20px; }
+.campaign-tutorial .campaign-hud-location, .campaign-tutorial .campaign-hud-hint, .campaign-tutorial .campaign-hud .campaign-muted { font-size: 18px; }
+.campaign-tutorial .raid-ui .raid-right-rail { width: 390px; }
+.campaign-tutorial .raid-ui .campaign-hud { width: 100%; }
+#campaignJournalHost > Button { font-size: 18px; min-height: 42px; margin-top: 6px; }
+.campaign-tutorial .campaign-marker { font-size: 18px; max-width: 280px; }

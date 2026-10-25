@@ -38,17 +38,20 @@ namespace Unity.MP_FPS
             if(BountyClashRuntime.Enabled(EntityManager))return;
             if (now < m_NextPopulationCheck) return;
             m_NextPopulationCheck = now + 1;
+            bool tutorial = TutorialRuntime.Enabled(EntityManager);
+            if (tutorial && (!RaidMissionSite.Active || !RaidMissionSite.Active.FirstChapter ||
+                !TutorialReported())) return;
             int alive = CollectSpawnObservers(out bool hasHuman);
             // AI actors never keep the population spawning after the humans have left.
             if (!hasHuman) return;
 
-            int maxAlive = Mathf.Clamp(m_Tuning.MaxAlive > 0 ? m_Tuning.MaxAlive : map.EnemyCount, 1, 12);
+            int maxAlive = tutorial ? 1 : Mathf.Clamp(m_Tuning.MaxAlive > 0 ? m_Tuning.MaxAlive : map.EnemyCount, 1, 12);
             if (!m_PopulationStarted)
             {
                 m_PopulationStarted = true;
                 m_PopulationStartedAt = now;
-                m_InitialRemaining = Mathf.Min(Mathf.Max(0, map.EnemyCount), maxAlive);
-                m_ReinforcementsRemaining = Mathf.Clamp(m_Tuning.ReinforcementBudget, 0, 24);
+                m_InitialRemaining = tutorial ? 1 : Mathf.Min(Mathf.Max(0, map.EnemyCount), maxAlive);
+                m_ReinforcementsRemaining = tutorial ? 0 : Mathf.Clamp(m_Tuning.ReinforcementBudget, 0, 24);
                 m_NextInitialAttempt = now + Mathf.Max(0, m_Tuning.InitialSpawnDelay);
                 uint seed = unchecked((uint)System.Guid.NewGuid().GetHashCode());
                 m_SpawnRandom = new Unity.Mathematics.Random(seed == 0 ? 1u : seed);
@@ -77,6 +80,16 @@ namespace Unity.MP_FPS
             // Failed placement consumes neither a life nor a reinforcement. Retry only at the configured cadence.
             m_ReinforcementsRemaining -= added;
             m_NextReinforcement = now + (added > 0 ? Mathf.Max(5, m_Tuning.ReinforcementDelay) : Mathf.Max(1, m_Tuning.SpawnRetrySeconds));
+        }
+
+        private bool TutorialReported()
+        {
+            using var query = EntityManager.CreateEntityQuery(typeof(RaidPersistenceContext));
+            if (query.IsEmptyIgnoreFilter) return false;
+            var context = EntityManager.GetComponentObject<RaidPersistenceContext>(query.GetSingletonEntity());
+            foreach (var run in context.CampaignRuns.Values)
+                if (Campaign.CampaignRules.NodeCompleted(run, "CM01", 1)) return true;
+            return false;
         }
 
         private int CollectSpawnObservers(out bool hasHuman)
@@ -126,6 +139,11 @@ namespace Unity.MP_FPS
         {
             position = default;
             var anchors = map.EnemySpawnPositions;
+            if (TutorialRuntime.Enabled(EntityManager) && RaidMissionSite.Active)
+            {
+                var anchor = RaidMissionSite.Active.Anchor("power_a");
+                if (anchor != null) anchors = new[] { anchor.Approach };
+            }
             if (anchors.Length == 0) return false;
             bool hasExtraction = NavMesh.SamplePosition(map.ExtractionPosition, out var extraction, 3, m_Filter);
             int start = m_SpawnRandom.NextInt(anchors.Length);

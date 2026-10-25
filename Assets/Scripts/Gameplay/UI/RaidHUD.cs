@@ -363,7 +363,7 @@ namespace Unity.MP_FPS
             if (CinematicInputBlocked) ResetRaidMap(); else UpdateRaidMap(clash);
             bool ready = m_Snapshot.RaidId > 0;
             bool settled = ready && m_Snapshot.Phase != RaidPhase.Active;
-            if (Keyboard.current != null && Keyboard.current.tabKey.wasPressedThisFrame && ready && !settled && !m_ClashActionsBlocked && !CinematicInputBlocked && !GameSettings.Instance.IsPauseMenuOpen)
+            if (((Keyboard.current != null && Keyboard.current.tabKey.wasPressedThisFrame) || (Gamepad.current != null && Gamepad.current.selectButton.wasPressedThisFrame)) && ready && !settled && !m_ClashActionsBlocked && !CinematicInputBlocked && !GameSettings.Instance.IsPauseMenuOpen)
                 {if(!m_InventoryRequestPending || TimedActionActive)SetInventory(!m_InventoryVisible);}
             if (settled && m_InventoryVisible) SetInventory(false);
             if (!settled && m_WasSettled) { m_ResultStep = 0; Utils.SetCursorVisible(false); }
@@ -404,7 +404,7 @@ namespace Unity.MP_FPS
                     : m_Snapshot.LoadoutError == RaidLoadoutError.InvalidCount ? "Choose 0-12 energy cells."
                     : m_Snapshot.LoadoutError == RaidLoadoutError.Rejected ? "Loadout rejected. You can retry or return to the ship."
                     : MoonkovLocalization.Format($"Storage: {m_Snapshot.StashCells} cells / Carry limit: {RaidRules.BagCapacity}. [R] spends energy per round. Unspent energy returns on extraction."));
-                if (!m_WasSettled && !saving) m_Deploy.Focus();
+                if (!m_WasSettled && !saving) (m_TutorialConfigured ? m_Return : m_Deploy).Focus();
             }
             m_WasSettled = settled;
             m_Result.style.display = settled && !clash && !(m_Cinematic?.HidesHUD ?? false) ? DisplayStyle.Flex : DisplayStyle.None;
@@ -420,6 +420,7 @@ namespace Unity.MP_FPS
             UpdateGrenades(alive && ready && !settled && !DarkSightRequested && !MapInputBlocked);
             bool missionControl = UpdateMissions(alive && ready && !settled && !clash);
             UpdateCampaignHUD(alive && ready && !settled && !clash);
+            UpdateTutorialHUD(alive && ready && !settled && !clash);
             bool tacticalInteraction = TryQuickTacticalInteraction(alive && ready && !settled && !DarkSightRequested);
             if (alive && ready && !settled && !MapInputBlocked)
             {
