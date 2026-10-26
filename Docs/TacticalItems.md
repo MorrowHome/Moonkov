@@ -43,6 +43,7 @@ Crytek 的[官方玩家指南](https://www.huntshowdown.com/player-guide/en_US)�
 - 自救 Extinguish 需3秒，自身火/流血继续按原节奏扣血但不打断该动作；服务器只推进这些已知持续伤害的操作基线，外部命中/移动/开火仍中断。反复开始取消不能免伤，完成后才清除状态，不消耗物品。
 - `RaidInventoryState.TacticalPending` 与既有库存操作互斥。请求共享 `RequestId` 单调序列；同时绑定 `RaidId`、`ExpectedVersion`、真实 `ItemId`，旧请求不能跨局/重复扣物。
 - 所有爆炸/火/毒/流血调用统一 `BountyClashDamage.Apply`，遵循其友伤、Downed、终死与击杀归属规则；道具组不直接调用Leaderboard或重复扣装备。
+- 在线队伍的保护同时阻止友军火、毒和铁丝造成燃烧、中毒、流血或减速。投掷者仍受自己的效果影响。友军接触仍可触发陷阱；窒息弹仍对所有进入者灭火、解毒并造成咳嗽。来源记录投掷时的服务器角色和队伍，连接编号复用不改变保护对象。
 - 服务端每World最多64对象、每玩家最多8个未触发陷阱；尸体、场景可见物件及状态不跨回合累积。回合终局/再开/地图变化清空对象、pending与状态，并发epoch reset。
 - 选中投掷物有客户端瞄准轨迹，选中布设物有地面预览；预览只辅助操作，服务器仍重建真实释放/落点并拒绝非法位置。
 - 客户端可靠低频RPC持续同步活动物件，晚加入者下一周期收到现状；移除消息、epoch与sequence拒绝旧状态复活。客户端只生成无碰撞表现，不能产生伤害。服务器物理推进有细分sweep，重用能量手雷的重力/弹跳。咳嗽通过既有同步ghost状态在25m内观察者生成有限3D噪声，不新增全局敌人坐标广播。
@@ -61,6 +62,7 @@ Crytek 的[官方玩家指南](https://www.huntshowdown.com/player-guide/en_US)�
 
 ## 验证记录
 
+- 队伍状态效果的 16 项生产规则检查和游戏、编辑器程序集隔离编译通过。实际状态、友军触发陷阱和窒息弹的单服务器夹具已补充，尚未在编辑器运行；未做联机验收。
 - `dotnet run --project Tools/TacticalItemChecks/TacticalItemChecks.csproj`：1125项已通过，含1024份医疗/装备掉落保证项与全部新道具自然获取、11物品真实可持有/使用/单次消耗/重放拒绝、库存空间与partial cell电量守恒；另13项独立冲刺疲劳/停止恢复/针前后/帧率独立规则。
 - `Assets/Editor/TacticalItemsAuthorityChecks.cs` 已于UTC 2026-10-21 11:19:50在单个隔离server ECS World + 本地PhysicsScene实际执行64项通过。覆盖真实RPC/耗时/移动受击中断、墙/楼层/投掷扫掠、反毒消火、陷阱、电池箱竞争、生命针全可恢复组织、420秒耐力/600秒解毒、真实移动耗尽/疲劳仍跑/停止恢复、自救开始取消不免伤/同tick外伤中断、固定伤害来源与ID复用/旧epoch/断线Alive身体受伤。Owner回执使用生产Apply的纯内存模型，没有client World。
 - 统一候选已实际编译并能运行Editor helper；当前Assembly-CSharp.dll文件UTC为2026-10-21 12:13:44.775071，Editor程序集为12:14:19.611314。此前Editor归还基线为单一干净WeaponGestureLab、play=false、World.All=0。记录保存在 `Library/BuildValidation/TacticalItems-20261021.json`，区分已观察的权威结果与新跑的纯规则输出；它不是最终全任务验收。

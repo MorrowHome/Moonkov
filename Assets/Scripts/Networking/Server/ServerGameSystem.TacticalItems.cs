@@ -375,6 +375,8 @@ namespace Unity.MP_FPS
         }
         private static bool TacticalChoked(TacticalServerWorld world,Vector3 point,PhysicsScene scene,double now)
         {foreach(var area in world.Objects)if(area.Phase==TacticalWorldPhase.Choke && now<area.Until && TacticalWithin(area,point,0,scene,null))return true;return false;}
+        public static bool TacticalAreaBlockedByTeam(TacticalWorldPhase phase,bool protectedByTeam) => protectedByTeam &&
+            (phase==TacticalWorldPhase.Fire || phase==TacticalWorldPhase.Poison || phase==TacticalWorldPhase.Wire);
         private void TacticalDetonate(ref SystemState state,EntityCommandBuffer ecb,TacticalServerWorld world,TacticalServerWorld.Object obj,double now,uint tick)
         {
             if(obj.Definition.Kind==TacticalItemKind.Smoke)
@@ -425,6 +427,9 @@ namespace Unity.MP_FPS
                         obj.Definition.Kind==TacticalItemKind.WireTrap ? TacticalWorldPhase.Wire : TacticalWorldPhase.Poison;
                     obj.Until=now+(obj.Phase==TacticalWorldPhase.Alarm ? 8 : obj.Phase==TacticalWorldPhase.Wire ? 45 : 30);obj.NextSnapshot=0;
                 }
+                // Traps can still be triggered by everyone. Team protection only
+                // stops the harmful status, preserving choke's shared utility/cough.
+                if(TacticalAreaBlockedByTeam(obj.Phase,BountyClashDamage.TeamProtected(state.EntityManager,victim,obj.Source)))continue;
                 var status=TacticalStatus(world,victim);
                 if(obj.Phase==TacticalWorldPhase.Choke){status.Fire=status.Poison=0;status.Cough=now+1;}
                 else if(obj.Phase==TacticalWorldPhase.Fire && !TacticalChoked(world,pos,obj.Scene,now))

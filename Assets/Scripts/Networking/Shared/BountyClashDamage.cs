@@ -54,6 +54,9 @@ namespace Unity.MP_FPS
         }
         public static bool TeamProtected(ClashDamageSource source, Entity victim, int victimTeam) =>
             source.OnlineHuman && source.OnlineTeam == victimTeam && source.OnlineActor != victim;
+        public static bool TeamProtected(EntityManager manager, Entity victim, ClashDamageSource source) =>
+            source.OnlineHuman && manager.HasComponent<OnlineRaidMember>(victim) &&
+            TeamProtected(source,victim,manager.GetComponentData<OnlineRaidMember>(victim).Team);
         // Compatibility for immediate damage. Delayed attacks must capture at release.
         public static float Apply(World world,Entity victim,int sourceNetworkId,BodyPart part,float amount,uint tick,RaidDamageKind kind,Unity.Mathematics.float3 impactPoint=default)
             =>Apply(world,victim,Capture(world,sourceNetworkId),part,amount,tick,kind,impactPoint);
@@ -62,8 +65,7 @@ namespace Unity.MP_FPS
             if(world==null||!world.IsCreated||!world.EntityManager.Exists(victim))return 0;
             var manager=world.EntityManager;
             if(!manager.HasComponent<PredictedPlayerGhost>(victim))return 0;
-            if (manager.HasComponent<OnlineRaidMember>(victim) &&
-                TeamProtected(source,victim,manager.GetComponentData<OnlineRaidMember>(victim).Team)) return 0;
+            if (TeamProtected(manager,victim,source)) return 0;
             var health=manager.GetComponentData<PredictedPlayerGhost>(victim);
             if(health.ClashEnabled)
             {

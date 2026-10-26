@@ -253,6 +253,36 @@ public static class TacticalItemsAuthorityChecks
             Check(em.GetComponentData<PredictedPlayerGhost>(open).CurrentHealth<440,"Real fused explosive applies unified damage");
             Check(em.GetComponentData<PredictedPlayerGhost>(covered).CurrentHealth==440,"Real explosive respects cover");
             UnityEngine.Object.DestroyImmediate(wall);Clear();
+            // A friendly trap still triggers, but its harmful fields must obey the
+            // same release-time team rule as direct damage.
+            em.AddComponentData(player,new OnlineRaidMember {Team=4});
+            var(ally,allyRoot)=Target("Friendly tactical target",Vector3.zero);
+            em.AddComponentData(ally,new OnlineRaidMember {Team=4});
+            var onlineSource=BountyClashDamage.Capture(world,player);
+            foreach(var phase in new[]{TacticalWorldPhase.Fire,TacticalWorldPhase.Poison,TacticalWorldPhase.Wire})
+            {
+                Clear();
+                var code=phase==TacticalWorldPhase.Fire ? "fire_bomb" : phase==TacticalWorldPhase.Poison ? "poison_trip_mine" : "concertina_trip_mine";
+                Data().Objects.Add(new TacticalServerWorld.Object {Id=80,Owner=7,Source=onlineSource,Definition=TacticalItemRules.Find(code),
+                    Phase=phase,Scene=scene.GetPhysicsScene(),Position=Vector3.zero,Until=now+20,Created=now});
+                Tick();
+                var own=Data().Statuses[player];Data().Statuses.TryGetValue(ally,out var friendly);
+                double ownEffect=phase==TacticalWorldPhase.Fire ? own.Fire : phase==TacticalWorldPhase.Poison ? own.Poison : own.Wire;
+                double friendEffect=friendly==null ? 0 : phase==TacticalWorldPhase.Fire ? friendly.Fire : phase==TacticalWorldPhase.Poison ? friendly.Poison : friendly.Wire;
+                Check(ownEffect>now && friendEffect<=now,"Owner affected while friendly is protected: "+phase);
+            }
+            Clear();root.transform.position=Vector3.right*8;
+            var armed=new TacticalServerWorld.Object {Id=81,Owner=7,Source=onlineSource,Definition=TacticalItemRules.Find("concertina_trip_mine"),
+                Phase=TacticalWorldPhase.Armed,Scene=scene.GetPhysicsScene(),Position=Vector3.zero,Until=now+20,ArmAt=now-1,Created=now};
+            Data().Objects.Add(armed);Tick();Data().Statuses.TryGetValue(ally,out var triggeredAlly);
+            Check(armed.Phase==TacticalWorldPhase.Wire && (triggeredAlly==null || triggeredAlly.Wire<=now),
+                "Friendly contact must trigger a trap without applying its harmful field");
+            Clear();Data().Statuses[ally]=new TacticalServerWorld.Status {Fire=now+5,Poison=now+5};
+            Data().Objects.Add(new TacticalServerWorld.Object {Id=82,Owner=7,Source=onlineSource,Definition=TacticalItemRules.Find("choke_bomb"),
+                Phase=TacticalWorldPhase.Choke,Scene=scene.GetPhysicsScene(),Position=Vector3.zero,Until=now+20,Created=now});
+            Tick();var cleaned=Data().Statuses[ally];
+            Check(cleaned.Fire==0 && cleaned.Poison==0 && cleaned.Cough>now,"Friendly choke must still clear hazards and cause cough");
+            em.RemoveComponent<OnlineRaidMember>(player);em.DestroyEntity(ally);UnityEngine.Object.DestroyImmediate(allyRoot.gameObject);Clear();
             em.AddComponentData(player,new ClashPlayer {CanAct=false});int stock=inventory.Graph.Count("antidote_shot",true);Request(TacticalItemAction.Use,antidote);Check(!inventory.TacticalPending && inventory.Graph.Count("antidote_shot",true)==stock,"Downed action rejected without consumption");em.RemoveComponent<ClashPlayer>(player);
             // Capture on release, never resolve a delayed hit from a newly reused NetworkId.
             Clear();em.AddComponentData(player,new ClashPlayer {CanAct=true,ParticipantId=31,TeamId=0,Epoch=7});em.SetComponentData(player,new GhostOwner {NetworkId=7});
