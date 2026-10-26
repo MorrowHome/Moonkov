@@ -14,8 +14,10 @@ namespace Unity.MP_FPS
             bool lowHealth = RaidHealth.DangerFraction(health) < m_Tuning.RetreatHealthFraction;
             int spareAmmo = (health.EquippedWeaponSlot != 1 ? health.PrimaryAmmo : 0) +
                 (health.EquippedWeaponSlot != 2 ? health.SecondaryAmmo : 0) + (health.EquippedWeaponSlot != 3 ? health.PistolAmmo : 0);
-            var weapon = WeaponManager.Instance?.WeaponRegistry.GetWeaponData(health.EquippedWeaponID);
-            bool energy = brain.Inventory.CellEnergy(carriedOnly: true) >= (weapon?.EnergyPerRound ?? 1);
+            var weapon = WeaponManager.Instance?.WeaponRegistry?.GetWeaponData(health.EquippedWeaponID,health.EquippedModules);
+            int cost=weapon?.EnergyPerRound ?? 1;
+            bool energy = weapon != null && !brain.ReloadFailure.Matches(brain.Inventory.Version,health.EquippedWeaponID,cost) &&
+                brain.Inventory.CellEnergy(carriedOnly: true) >= cost;
             bool exhausted = health.CurrentAmmo == 0 && spareAmmo == 0 && !energy;
             bool underThreat = brain.Visible || now - brain.LastDamage < 3 || brain.Suppression > .45f;
             double seenAge = now - brain.LastSeenTime;
@@ -94,7 +96,7 @@ namespace Unity.MP_FPS
         {
             if (brain.Action == PmcAction.Heal || health.ControllerState.IsReloadingState) return false;
             if (health.CurrentAmmo <= 0) return true;
-            var weapon = WeaponManager.Instance?.WeaponRegistry.GetWeaponData(health.EquippedWeaponID);
+            var weapon = WeaponManager.Instance?.WeaponRegistry?.GetWeaponData(health.EquippedWeaponID,health.EquippedModules);
             return weapon != null && health.CurrentAmmo < weapon.MagazineSize &&
                 health.CurrentAmmo <= Mathf.Max(1, Mathf.FloorToInt(weapon.MagazineSize * m_Tuning.TacticalReloadFraction)) &&
                 SafeToTreat(brain, position, now);

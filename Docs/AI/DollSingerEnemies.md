@@ -63,6 +63,10 @@ received damage increase pressure. Sound does not simulate propagation through i
 
 2026-10-27：月核取样机切割时，附近人形敌人可以调查机器位置。声音不指认玩家，不直接允许开火。真实战斗、治疗和撤离保持优先。范围与遮挡规则见 [月核行动](../Planning/Missions/MC00-Mooncore.md)。
 
+人形敌人充能前会把背包电池移动到口袋或胸挂。如果这些位置已满，敌人记住本次失败，不会每帧重复尝试。当前枪无弹时会使用有弹的备用武器；没有备用弹药时会脱离战斗并尝试撤离。库存、武器或单发耗能变化后重新检查。充能判断使用实际模块后的容量与耗能。
+
+实际库存与电池转移规则的 10 项检查通过，游戏与编辑器程序集隔离编译通过。包含正式武器配置的人形决策夹具已补充，但尚未在编辑器运行；不能当成正式地图交火验收。
+
 Decisions run at 5 Hz, with staggered perception at 10 Hz and action commitment to
 avoid frame-by-frame oscillation. Aggression/caution differ between actors. Sustained
 duels can trigger a flank; lost targets trigger search. Pressure favors cover, low HP

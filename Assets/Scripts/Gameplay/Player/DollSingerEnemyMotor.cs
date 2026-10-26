@@ -46,7 +46,7 @@ namespace Unity.MP_FPS
             bool hasContact = brain.Target != Unity.Entities.Entity.Null;
             Vector3 aim = brain.LastSeen + brain.AimOffset;
             float distance = hasContact ? Vector3.Distance(eye, aim) : 50;
-            var weapon = WeaponManager.Instance?.WeaponRegistry.GetWeaponData(health.EquippedWeaponID);
+            var weapon = WeaponManager.Instance?.WeaponRegistry?.GetWeaponData(health.EquippedWeaponID,health.EquippedModules);
             if (brain.Visible && weapon != null && weapon.Type == WeaponType.Projectile)
             {
                 float flight = Mathf.Min(.6f, distance / Mathf.Max(1, weapon.ProjectileSpeed));
@@ -98,13 +98,19 @@ namespace Unity.MP_FPS
                     (brain.CoverPhase == PmcCoverPhase.Approaching || brain.CoverPhase == PmcCoverPhase.Returning)));
             if (brain.HealUntil <= 0 && !brain.Interacting && ShouldReload(brain, health, position, now) && !health.ControllerState.IsReloadingState)
             {
-                bool cellReady = weapon != null && PrepareReloadCell(brain.Inventory, weapon.EnergyPerRound);
-                if (cellReady) input.SetFlag(PlayerInput.InputFlag.Reload, true);
-                else if (health.CurrentAmmo == 0)
+                bool blocked=weapon != null && brain.ReloadFailure.Matches(brain.Inventory.Version,health.EquippedWeaponID,weapon.EnergyPerRound);
+                bool cellReady = weapon != null && !blocked && PmcReloadInventory.Prepare(brain.Inventory, weapon.EnergyPerRound);
+                if (cellReady) {brain.ReloadFailure.Clear();input.SetFlag(PlayerInput.InputFlag.Reload, true);}
+                else
                 {
-                    if (health.EquippedWeaponSlot != 3 && health.PistolAmmo > 0) input.SetFlag(PlayerInput.InputFlag.EquipPistol, true);
-                    else if (health.EquippedWeaponSlot != 1 && health.PrimaryAmmo > 0) input.SetFlag(PlayerInput.InputFlag.EquipHalo, true);
-                    else if (health.EquippedWeaponSlot != 2 && health.SecondaryAmmo > 0) input.SetFlag(PlayerInput.InputFlag.EquipRevolver, true);
+                    if(weapon != null && !blocked)
+                    {brain.ReloadFailure.Record(brain.Inventory.Version,health.EquippedWeaponID,weapon.EnergyPerRound);brain.NextDecision=0;}
+                    if(health.CurrentAmmo==0)
+                    {
+                        if (health.EquippedWeaponSlot != 3 && health.PistolAmmo > 0) input.SetFlag(PlayerInput.InputFlag.EquipPistol, true);
+                        else if (health.EquippedWeaponSlot != 1 && health.PrimaryAmmo > 0) input.SetFlag(PlayerInput.InputFlag.EquipHalo, true);
+                        else if (health.EquippedWeaponSlot != 2 && health.SecondaryAmmo > 0) input.SetFlag(PlayerInput.InputFlag.EquipRevolver, true);
+                    }
                 }
             }
             bool firingSolution = fighting && brain.Visible && health.CurrentAmmo > 0 && !health.ControllerState.IsReloadingState &&

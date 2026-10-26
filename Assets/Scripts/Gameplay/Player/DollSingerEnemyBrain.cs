@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Entities;
 using UnityEngine;
 using UnityEngine.AI;
@@ -8,6 +9,39 @@ namespace Unity.MP_FPS
 {
     public enum PmcAction { Scavenge, Extract, Investigate, Search, Engage, Cover, Flank, Retreat, Reload, HoldAngle, Heal, ClashObjective }
     public enum PmcCoverPhase { Approaching, Settling, Advancing, Holding, Returning }
+
+    // An inaccessible backpack cell cannot be re-attempted every frame while
+    // the physical inventory and weapon's energy cost remain unchanged.
+    public struct PmcReloadFailure
+    {
+        private bool m_Failed;
+        private int m_Version,m_Cost;
+        private uint m_Weapon;
+        public bool Matches(int version,uint weapon,int cost) => m_Failed && m_Version==version && m_Weapon==weapon && m_Cost==cost;
+        public void Record(int version,uint weapon,int cost) {m_Failed=true;m_Version=version;m_Weapon=weapon;m_Cost=cost;}
+        public void Clear() {m_Failed=false;}
+    }
+
+    public static class PmcReloadInventory
+    {
+        public static bool Prepare(InventoryGraph inventory,int energyPerRound)
+        {
+            string rig=inventory.Equipped("ChestRig")?.Id;
+            if(inventory.CellEnergy(accessibleOnly:true)>=energyPerRound)return true;
+            // Stored cells must be moved to pockets or the equipped rig first.
+            foreach(var source in inventory.Items.Where(i=>i.Code=="cells" && inventory.Carried(i) &&
+                i.Parent!=InventoryCatalog.Pockets && i.Parent!=rig).ToArray())
+            {
+                var item=inventory.Find(source.Id);
+                foreach(string parent in new[] {InventoryCatalog.Pockets,rig})
+                    if(parent!=null && inventory.FindSpace(item,parent,out var region,out int x,out int y) &&
+                        inventory.TryApply(new InventoryCommand {Operation=InventoryOperation.Move,ExpectedVersion=inventory.Version,
+                            ItemId=item.Id,Parent=parent,Region=region,X=x,Y=y})==InventoryError.None)
+                    {if(inventory.CellEnergy(accessibleOnly:true)>=energyPerRound)return true;break;}
+            }
+            return false;
+        }
+    }
 
     // Observations are the only way world knowledge enters a brain. Decision code uses
     // this snapshot, never a hidden opponent's current transform or inventory.
@@ -74,6 +108,7 @@ namespace Unity.MP_FPS
         public double HealUntil, NextHeal;
         public string HealItemId;
         public int HealInventoryVersion;
+        public PmcReloadFailure ReloadFailure;
         public bool MovementRequested, Visible, HasCover, Leaving, Extracted, PathFailed, IsPeeking;
         public PmcAction Action;
         public string Reason = "entering expedition";

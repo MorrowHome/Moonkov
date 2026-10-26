@@ -92,21 +92,5 @@ namespace Unity.MP_FPS
             if (backpack != null) yield return backpack.Id;
         }
 
-        private static bool PrepareReloadCell(InventoryGraph inventory, int energyPerRound)
-        {
-            string rig = inventory.Equipped("ChestRig")?.Id;
-            if (inventory.CellEnergy(accessibleOnly: true) >= energyPerRound) return true;
-            // A cell stored in the backpack must be moved into an accessible slot before reloading.
-            foreach (var source in inventory.Items.Where(i => i.Code == "cells" && inventory.Carried(i) && i.Parent != InventoryCatalog.Pockets && i.Parent != rig).ToArray())
-            {
-                var item = inventory.Find(source.Id);
-                foreach (string parent in new[] { InventoryCatalog.Pockets, rig })
-                    if (parent != null && inventory.FindSpace(item, parent, out var region, out int x, out int y) &&
-                        inventory.TryApply(new InventoryCommand { Operation = InventoryOperation.Move, ExpectedVersion = inventory.Version,
-                            ItemId = item.Id, Parent = parent, Region = region, X = x, Y = y }) == InventoryError.None)
-                    { if (inventory.CellEnergy(accessibleOnly: true) >= energyPerRound) return true; break; }
-            }
-            return false;
-        }
     }
 }

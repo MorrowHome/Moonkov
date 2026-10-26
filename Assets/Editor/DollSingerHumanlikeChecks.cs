@@ -38,6 +38,7 @@ public static class DollSingerHumanlikeChecks
             CheckCombatPressure(system);
             CheckBleedTreatment(system, map);
             CheckReturnFire(system, map, world);
+            CheckReloadAvailability(system, map);
         }
         finally
         {
@@ -57,6 +58,40 @@ public static class DollSingerHumanlikeChecks
         ActionStarted = 10,
         TacticalGoal = Vector3.zero
     };
+
+    private static void CheckReloadAvailability(DollSingerEnemySystem system,MoonRaidMap map)
+    {
+        var property=typeof(WeaponManager).GetProperty("Instance",BindingFlags.Public|BindingFlags.Static);
+        var old=property.GetValue(null);
+        var root=new GameObject("Temporary PMC reload registry") {hideFlags=HideFlags.HideAndDontSave};root.SetActive(false);
+        try
+        {
+            var manager=root.AddComponent<WeaponManager>();
+            manager.WeaponRegistry=AssetDatabase.LoadAssetAtPath<WeaponRegistry>("Assets/Data/Weapons/WeaponRegistry.asset");
+            Require(manager.WeaponRegistry!=null,"Weapon registry missing from PMC reload check.");
+            property.SetValue(null,manager);
+            var health=Health();health.CurrentAmmo=health.PrimaryAmmo=health.SecondaryAmmo=health.PistolAmmo=0;
+            var brain=Brain();brain.Inventory=InventoryGraph.Create(false);
+            string pack=brain.Inventory.Equipped("Backpack").Id;
+            Require(brain.Inventory.AddSupply("cells",1,pack)==InventoryError.None,"PMC reload fixture battery.");
+            int cost=manager.WeaponRegistry.GetWeaponData(health.EquippedWeaponID,health.EquippedModules).EnergyPerRound;
+            brain.ReloadFailure.Record(brain.Inventory.Version,health.EquippedWeaponID,cost);
+            var decision=Decide(system,brain,health,map,10);
+            Require(brain.Leaving && decision.action==PmcAction.Extract,"PMC kept attempting a known inaccessible reload instead of leaving.");
+            brain=Brain();brain.Inventory=InventoryGraph.Create(false);
+            Require(brain.Inventory.AddSupply("cells",1,InventoryCatalog.Pockets)==InventoryError.None,"Accessible PMC battery fixture.");
+            decision=Decide(system,brain,health,map,10);
+            Require(!brain.Leaving && decision.action==PmcAction.Reload,"Accessible battery failed to request a reload.");
+            brain=Brain();brain.Inventory=InventoryGraph.Create(false);
+            Require(brain.Inventory.AddSupply("cells",1,InventoryCatalog.Pockets,cellCharge:4)==InventoryError.None,"Modified PMC battery fixture.");
+            health.EquippedModules=(ushort)HaloModule.ChargeBridge;
+            Require(manager.WeaponRegistry.GetWeaponData(health.EquippedWeaponID,health.EquippedModules).EnergyPerRound>4,
+                "Modified weapon must cost more than the fixture's remaining energy.");
+            decision=Decide(system,brain,health,map,10);
+            Require(brain.Leaving && decision.action==PmcAction.Extract,"PMC ignored the actual module's reload cost.");
+        }
+        finally {property.SetValue(null,old);Object.DestroyImmediate(root);}
+    }
 
     private static PredictedPlayerGhost Health()
     {
