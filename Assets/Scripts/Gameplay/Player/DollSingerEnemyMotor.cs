@@ -30,7 +30,10 @@ namespace Unity.MP_FPS
             AdvanceCover(brain, position, now);
             AdvanceHealing(brain, ref health, position, now);
             AdvanceObjective(brain, ref health, position, eye, map, now, dt);
-            UpdatePath(brain, position, brain.TacticalGoal, now);
+            // A timed search is stationary; re-pathing to the actor's own position
+            // can fail and cancel an otherwise reachable corpse or drawer.
+            if (brain.Action != PmcAction.Scavenge || brain.LootUntil <= 0)
+                UpdatePath(brain, position, brain.TacticalGoal, now);
             Vector3 move = FollowPath(brain, position);
             bool searching = (brain.Action == PmcAction.Search || brain.Action == PmcAction.Investigate) && !brain.Visible;
             bool checkingCorner = searching && brain.Corner < brain.CornerCount - 1 &&
@@ -96,7 +99,8 @@ namespace Unity.MP_FPS
                 (brain.Action == PmcAction.Retreat || brain.Action == PmcAction.Flank && !brain.Visible ||
                     (brain.Action == PmcAction.Extract || brain.IsClashBot && brain.Leaving) && !hasContact || brain.Action == PmcAction.Cover &&
                     (brain.CoverPhase == PmcCoverPhase.Approaching || brain.CoverPhase == PmcCoverPhase.Returning)));
-            if (brain.HealUntil <= 0 && !brain.Interacting && ShouldReload(brain, health, position, now) && !health.ControllerState.IsReloadingState)
+            if (brain.LootUntil <= 0 && brain.HealUntil <= 0 && !brain.Interacting &&
+                ShouldReload(brain, health, position, now) && !health.ControllerState.IsReloadingState)
             {
                 bool blocked=weapon != null && brain.ReloadFailure.Matches(brain.Inventory.Version,health.EquippedWeaponID,weapon.EnergyPerRound);
                 bool cellReady = weapon != null && !blocked && PmcReloadInventory.Prepare(brain.Inventory, weapon.EnergyPerRound);

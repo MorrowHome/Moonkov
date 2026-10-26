@@ -10,11 +10,19 @@ namespace Unity.MP_FPS
 {
     public static class PmcLootRules
     {
+        public static bool CanSearch(in PredictedPlayerGhost health, double lastDamage, double now) =>
+            !RaidHealth.HandsBusy(health) && now - lastDamage >= 1;
+
+        public static bool IsHumanCorpse(RaidLootContainers caches, int id) => caches != null &&
+            caches.DeathBags.TryGetValue(id, out var corpse) && corpse.CharacterIndex >= 0 && caches.Containers.ContainsKey(id);
+
         public static bool TryPosition(Vector3[] fixedPositions, RaidLootContainers caches, int id, out Vector3 position)
         {
             position = default;
             if (id >= 0 && fixedPositions != null && id < fixedPositions.Length)
             { position = fixedPositions[id]; return true; }
+            if (IsHumanCorpse(caches, id))
+            { position = (Vector3)caches.DeathBags[id].Position + Vector3.up * .25f; return true; }
             if (!RaidFurnitureLoot.IsFurniture(id) || caches == null || !caches.Containers.ContainsKey(id) ||
                 !caches.FurnitureCaches.TryGetValue(id, out var drawer)) return false;
             position = drawer;
@@ -30,6 +38,16 @@ namespace Unity.MP_FPS
                     ((Vector3)pair.Value - position).sqrMagnitude <= 20 * 20)
                 .OrderBy(pair => ((Vector3)pair.Value - position).sqrMagnitude).ThenBy(pair => pair.Key)
                 .Take(12).Select(pair => pair.Key).ToArray();
+        }
+
+        public static int[] NearbyHumanCorpses(RaidLootContainers caches, Vector3 position, HashSet<int> visited)
+        {
+            if (caches == null) return Array.Empty<int>();
+            return caches.DeathBags.Where(pair => pair.Value.CharacterIndex >= 0 && caches.Containers.ContainsKey(pair.Key) &&
+                    (visited == null || !visited.Contains(pair.Key)) &&
+                    (((Vector3)pair.Value.Position + Vector3.up * .25f) - position).sqrMagnitude <= RaidRules.PickupRange * RaidRules.PickupRange)
+                .OrderBy(pair => (((Vector3)pair.Value.Position + Vector3.up * .25f) - position).sqrMagnitude)
+                .ThenBy(pair => pair.Key).Take(4).Select(pair => pair.Key).ToArray();
         }
 
         private static float Value(InventoryItem item, bool needCells, bool needMedicine)
@@ -62,20 +80,32 @@ namespace Unity.MP_FPS
 
         // All moves use the same versioned transaction as a player. The candidate list
         // holds IDs because a successful transaction replaces both inventory trees.
-        public static int TakeAvailable(InventoryGraph inventory, InventoryGraph cache)
+        public static int TakeAvailable(InventoryGraph inventory, InventoryGraph cache, bool includeNested = false)
         {
             if (inventory == null || cache == null || cache.Find(LootInventoryExchange.Root) == null) return 0;
             bool needCells = inventory.CellEnergy(accessibleOnly: true) < BatteryEnergy.Capacity * 2;
             bool needMedicine = inventory.Items.Where(inventory.MedicalAccessible).Sum(i => i.Quantity) < 2;
             var occupiedContainers = new HashSet<string>(cache.Items.Select(i => i.Parent));
-            var candidates = cache.Items.Where(i => i.Parent == LootInventoryExchange.Root && !occupiedContainers.Contains(i.Id))
+            var byId = includeNested ? cache.Items.ToDictionary(i => i.Id) : null;
+            bool InLootTree(InventoryItem item)
+            {
+                string parent = item.Parent;
+                for (int depth = 0; parent != null && depth <= InventoryCatalog.MaxDepth; depth++)
+                {
+                    if (parent == LootInventoryExchange.Root) return true;
+                    if (!includeNested || !byId.TryGetValue(parent, out var ancestor) || HaloModules.IsWeapon(ancestor.Code)) return false;
+                    parent = ancestor.Parent;
+                }
+                return false;
+            }
+            var candidates = cache.Items.Where(i => InLootTree(i) && !occupiedContainers.Contains(i.Id))
                 .Select(i => (item: i, value: Value(i, needCells, needMedicine))).Where(candidate => candidate.value > 0)
                 .OrderByDescending(candidate => candidate.value).Select(candidate => candidate.item.Id).ToArray();
             int transfers = 0;
             foreach (string id in candidates)
             {
                 var source = cache.Find(id);
-                if (source == null || source.Parent != LootInventoryExchange.Root) continue;
+                if (source == null || cache.RootOf(source.Id) != LootInventoryExchange.Root) continue;
                 var def = InventoryCatalog.Get(source.Code);
                 bool usable = def.Kind == ItemKind.Cell || def.Kind == ItemKind.Medical;
                 var destinations = Destinations(inventory, usable).ToArray();
@@ -183,20 +213,36 @@ namespace Unity.MP_FPS
         private void AdvanceObjective(DollSingerEnemyBrain brain, ref PredictedPlayerGhost health, Vector3 position, Vector3 eye, MoonRaidMap map, double now, float dt)
         {
             if (brain.IsClashBot) { AdvanceClashObjective(brain, position, eye, now); return; }
+            if (brain.Action == PmcAction.Scavenge && !PmcLootRules.CanSearch(health, brain.LastDamage, now))
+            { brain.LootUntil = 0; brain.CacheObstructedSince = -1; return; }
+            var loot = brain.Action == PmcAction.Scavenge ? PmcLootContainers() : null;
+            if (brain.Action == PmcAction.Scavenge && brain.LootUntil <= 0 && now >= brain.NextCorpseScan &&
+                !PmcLootRules.IsHumanCorpse(loot, brain.Cache))
+            {
+                brain.NextCorpseScan = now + 1;
+                foreach (int id in PmcLootRules.NearbyHumanCorpses(loot, position, brain.VisitedCaches))
+                {
+                    if (!PmcLootRules.TryPosition(map.LootPositions, loot, id, out var body) || WorldBlocked(eye, body)) continue;
+                    brain.Cache = id; brain.CacheApproach = position; brain.CacheApproachKnown = true;
+                    brain.CacheObstructedSince = -1; brain.TacticalGoal = position; brain.NextPath = 0;
+                    break;
+                }
+            }
             if (brain.Action == PmcAction.Scavenge && brain.Cache >= 0)
             {
-                var loot = PmcLootContainers();
                 if (!PmcLootRules.TryPosition(map.LootPositions, loot, brain.Cache, out var cachePosition))
                 { brain.Cache = -1; brain.CacheApproachKnown = false; brain.CacheObstructedSince = -1;
                     brain.LootUntil = 0; brain.NextDecision = brain.NextPath = 0; return; }
                 bool drawer = RaidFurnitureLoot.IsFurniture(brain.Cache);
-                bool reachable = drawer ? Vector3.Distance(position, cachePosition) <= RaidRules.PickupRange && !WorldBlocked(eye, cachePosition) :
+                bool corpse = PmcLootRules.IsHumanCorpse(loot, brain.Cache);
+                bool localTarget = drawer || corpse;
+                bool reachable = localTarget ? Vector3.Distance(position, cachePosition) <= RaidRules.PickupRange && !WorldBlocked(eye, cachePosition) :
                     HorizontalDistance(position, cachePosition) <= RaidRules.PickupRange && Mathf.Abs(position.y - cachePosition.y) <= 3 &&
                     !WorldBlocked(eye, cachePosition + Vector3.up * .3f);
                 if (!reachable)
                 {
                     brain.LootUntil = 0;
-                    if (drawer && brain.CacheApproachKnown && Vector3.Distance(position, brain.CacheApproach) <= 1.5f)
+                    if (localTarget && brain.CacheApproachKnown && Vector3.Distance(position, brain.CacheApproach) <= 1.5f)
                     {
                         if (brain.CacheObstructedSince < 0) brain.CacheObstructedSince = now;
                         if (now - brain.CacheObstructedSince >= 2)
@@ -213,7 +259,7 @@ namespace Unity.MP_FPS
                 }
                 if (now < brain.LootUntil) return;
                 if (loot != null && loot.Containers.TryGetValue(brain.Cache, out var cache))
-                    PmcLootRules.TakeAvailable(brain.Inventory, cache);
+                    PmcLootRules.TakeAvailable(brain.Inventory, cache, includeNested: corpse);
                 if (!drawer || ++brain.DrawersSearched % 3 == 0) brain.LootedCaches++;
                 brain.VisitedCaches.Add(brain.Cache);
                 brain.Cache = -1;

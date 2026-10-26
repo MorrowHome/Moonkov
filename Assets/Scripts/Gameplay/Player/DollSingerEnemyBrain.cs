@@ -75,6 +75,7 @@ namespace Unity.MP_FPS
         public Vector3 CacheApproach;
         public bool CacheApproachKnown;
         public double CacheObstructedSince = -1;
+        public double NextCorpseScan;
         public Vector3 Goal, LastSeen, ObservedVelocity, ProgressPosition, CoverPosition, PeekPosition, TacticalGoal;
         public Vector3 RaidExit;
         public Vector3 AimOffset = Vector3.up * 1.15f;

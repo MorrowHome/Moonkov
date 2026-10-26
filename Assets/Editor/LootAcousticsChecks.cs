@@ -229,6 +229,49 @@ public static partial class AlienEnemyChecks
                 Check(lostPath.Cache == -1 && lostPath.VisitedCaches.Contains(RaidFurnitureLoot.FirstId + 4) &&
                     lostPath.LootUntil == 0 && lostPath.NextDecision == 0,
                     "A lost navigation path left the PMC stuck on its old loot objective.");
+
+                var casualty = InventoryGraph.Create(false);
+                string casualtyPack = casualty.Equipped("Backpack").Id;
+                Check(casualty.AddSupply("data_drive", 1, casualtyPack, true) == InventoryError.None, "Corpse fixture could not carry a valuable.");
+                string corpseItemId = casualty.Items.Find(item => item.Code == "data_drive").Id;
+                int corpseId = containers.Drop(casualty, (Unity.Mathematics.float3)(pmcOrigin + Vector3.forward), characterIndex: 2);
+                var corpseInventory = containers.Containers[corpseId];
+                scavenge.Cache = 0; scavenge.LootUntil = 0; scavenge.NextCorpseScan = 0;
+                args[5] = 85d; objective.Invoke(ai, args);
+                Check(scavenge.Cache == corpseId && scavenge.LootUntil > 85 && corpseInventory.Find(corpseItemId) != null,
+                    "A nearby visible human corpse did not start a timed PMC search.");
+                args[5] = scavenge.LootUntil; objective.Invoke(ai, args);
+                Check(scavenge.VisitedCaches.Contains(corpseId) && corpseInventory.Find(corpseItemId) == null &&
+                    scavenge.Inventory.Find(corpseItemId) != null,
+                    "The completed corpse search did not transfer the nested valuable item.");
+
+                var hiddenCasualty = InventoryGraph.Create(false, false);
+                int hiddenCorpse = containers.Drop(hiddenCasualty, (Unity.Mathematics.float3)(pmcOrigin + Vector3.forward), characterIndex: 1);
+                var bodyWall = GameObject.CreatePrimitive(PrimitiveType.Cube); bodyWall.transform.SetParent(holder.transform);
+                bodyWall.transform.position = pmcOrigin + Vector3.forward * .5f + Vector3.up * .8f;
+                bodyWall.transform.localScale = new Vector3(1, 2, .2f); Physics.SyncTransforms();
+                scavenge.Cache = -1; scavenge.LootUntil = 0; scavenge.NextCorpseScan = 0;
+                args[5] = 95d; objective.Invoke(ai, args);
+                Check(scavenge.Cache == -1 && !scavenge.VisitedCaches.Contains(hiddenCorpse),
+                    "A PMC detected and searched a corpse through a wall.");
+                Object.DestroyImmediate(bodyWall); Physics.SyncTransforms();
+                args[5] = 95.5d; objective.Invoke(ai, args);
+                Check(scavenge.Cache == -1, "PMC corpse scanning ignored its interval.");
+                args[5] = 96d; objective.Invoke(ai, args);
+                Check(scavenge.Cache == hiddenCorpse && scavenge.LootUntil > 96,
+                    "A visible nearby corpse was not found after the scan interval.");
+                scavenge.LastDamage = 96.1;
+                args[5] = 96.1d; objective.Invoke(ai, args);
+                Check(scavenge.LootUntil == 0 && !scavenge.VisitedCaches.Contains(hiddenCorpse),
+                    "New damage failed to interrupt a PMC corpse search.");
+                args[5] = 96.5d; objective.Invoke(ai, args);
+                Check(scavenge.LootUntil == 0, "PMC immediately restarted searching while recently hurt.");
+                args[5] = 97.2d; objective.Invoke(ai, args);
+                Check(scavenge.LootUntil > 97.2, "PMC did not restart searching after the danger interval.");
+                var reloading = (PredictedPlayerGhost)args[1]; reloading.ControllerState.IsReloadingState = true; args[1] = reloading;
+                args[5] = 98d; objective.Invoke(ai, args);
+                Check(scavenge.LootUntil == 0 && !scavenge.VisitedCaches.Contains(hiddenCorpse),
+                    "PMC kept searching while charging a weapon.");
             }
             finally { Object.DestroyImmediate(tuning); }
             return $"PASS {checks} loot acoustics checks: world audio, server sequence, real PMC scavenging and alien/PMC hearing.";

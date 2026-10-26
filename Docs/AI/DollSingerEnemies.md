@@ -39,6 +39,10 @@ reloading. A loaded secondary weapon remains an option when cells run out.
 
 抽屉目标的 9 项生产规则检查和游戏、编辑器程序集隔离编译通过。已补充真实敌人的计时搜索、空抽屉、遮挡退出和失效目标夹具，尚未在编辑器执行；正式建筑导航与实战节奏尚未试玩。
 
+人形敌人在搜刮状态下会留意身边可见的人形尸体。尸体必须在交互范围内且无遮挡，搜索需要原有的计时；战斗会中断搜索。敌人可从尸体的背包和胸挂内取走普通物资，仍使用共享库存与版本校验。任务关键物品保留在原处。异形遗骸和地面丢弃物不作为人形尸体搜索。每秒最多检查一次附近尸体，并最多检查四个候选的视线。
+
+尸体目标和真实库存的 19 项检查通过，覆盖敌人拿取、旧版本竞争、任务物品保护、击杀后取回原物，以及受伤、充能和切枪时停止搜索。游戏与编辑器程序集隔离编译通过；敌人的现场计时和墙体遮挡夹具尚未在编辑器执行，正式战场行为仍需试玩。
+
 Three searched caches, critical health, exhausted ammunition or the departure time
 make a PMC plan to leave. Extraction requires the existing radius, height tolerance
 and eight-second dwell; a visible threat, recent damage or pressure interrupts it.
