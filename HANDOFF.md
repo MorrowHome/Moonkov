@@ -1,5 +1,11 @@
 # 项目交接
 
+## 编辑器场景恢复待处理
+
+- 本轮单人验证时，编辑器主线程等待异步操作而卡住。我终止了该编辑器。重开时 Unity 检测到未保存的场景备份，但 Mac 已锁屏，无法处理恢复窗口。
+- 原文件 `Temp/__Backupscenes/0.backup` 保持原样。副本在 `Library/BuildValidation/SceneRecovery-20261027/0.backup`，SHA-256 为 `559ddf2286563a940515d4223152fc254c48f87da3d0979815b5e751964e3fc2`。不要删除备份或自动选择丢弃。
+- 解锁后重新打开项目，检查恢复窗口和场景内容，再决定是否恢复。Unity 主线程不要对需要回到主线程的异步方法调用 `GetAwaiter().GetResult()`。
+
 ## 单人战局的数据闭环检查
 
 - `Tools / Moonkov / Check Offline Raid Data Cycle` 使用独立测试档案，检查出装、搜索计时、转移物资、治疗、撤离、死亡掉落、保险箱、重复结算和重新读档。测试档案保留在 `Library/BuildValidation/OfflineCycle`，不使用玩家档案。
