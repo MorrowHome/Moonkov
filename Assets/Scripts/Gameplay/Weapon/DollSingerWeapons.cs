@@ -32,6 +32,16 @@ namespace Unity.MP_FPS
                 WeaponId(item.Code) == state.EquippedWeaponID) item.LoadedAmmo = state.CurrentAmmo;
             StoreAmmo(ref state);
         }
+        // Food activity and surge change damage/spread/cadence, not the physical
+        // weapon or paid magazine. Their expiry must not restart a charge/equip.
+        public static bool RefreshTemporaryModules(ref PredictedPlayerGhost state,string itemId,uint weaponId,ushort modules)
+        {
+            const ushort temporary=(ushort)(HaloModule.AlienSurge | HaloModule.FoodEffectMask);
+            if(state.EquippedWeaponItem.ToString()!=(itemId ?? "") || state.EquippedWeaponID!=weaponId ||
+                ((state.EquippedModules ^ modules) & ~temporary)!=0) return false;
+            state.EquippedModules=modules;
+            return true;
+        }
         // The authoritative item tree determines possession; backpack weapons cannot be selected.
         public static void SyncEquipment(ref PredictedPlayerGhost state, InventoryGraph graph, WeaponRegistry registry)
         {
@@ -63,7 +73,7 @@ namespace Unity.MP_FPS
             ushort modules = (ushort)HaloModules.Mask(graph, active);
             modules|=activity;
             if(state.AlienSurgeSeconds>0)modules |= (ushort)HaloModule.AlienSurge;
-            if (state.EquippedWeaponItem.ToString() != id || state.EquippedWeaponID != WeaponId(active?.Code) || state.EquippedModules != modules)
+            if (!RefreshTemporaryModules(ref state,id,WeaponId(active?.Code),modules))
             {
                 state.EquippedWeaponItem = id; state.EquippedWeaponID = WeaponId(active?.Code);
                 state.CurrentAmmo = Ammo(active, graph, registry); state.EquippedModules = modules; state.ReloadTimer = 0f; state.ReloadTargetAmmo = 0;

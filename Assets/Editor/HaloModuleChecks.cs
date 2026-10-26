@@ -43,6 +43,7 @@ public static class HaloModuleChecks
         Check(!HaloModuleFire.TryFire(ref state,rifle,false,false,false) && state.BurstRemaining==0,"aim loss cancels");
         state.BurstRemaining=2;state.ControllerState.IsReloadingState=true;
         Check(!HaloModuleFire.TryFire(ref state,rifle,false,true,false) && state.BurstRemaining==0,"charge cancels");
+        CheckPrepaidChargeSurvivesTemporaryEffects(registry);
         var root=new GameObject("Module geometry check");
         try
         {
@@ -78,6 +79,33 @@ public static class HaloModuleChecks
         }
         finally {UnityEngine.Object.DestroyImmediate(root);}
         Debug.Log("Halo module checks passed: stats, energy composition, damage budget, deterministic spread, burst lifecycle, paired flat artwork, biology geometry and sight clearance.");
+    }
+    private static void CheckPrepaidChargeSurvivesTemporaryEffects(WeaponRegistry registry)
+    {
+        var graph=InventoryGraph.Create(false);
+        Check(graph.AddSupply("cells",1,InventoryCatalog.Pockets,cellCharge:100)==InventoryError.None,"charge fixture battery");
+        var state=new PredictedPlayerGhost {CurrentHealth=100,EquippedWeaponSlot=1,EquippedWeaponID=DollSingerWeapons.None,AlienSurgeSeconds=5};
+        DollSingerWeapons.SyncEquipment(ref state,graph,registry);
+        state.CurrentAmmo=5;DollSingerWeapons.SaveActiveAmmo(ref state,graph);
+        var weapon=registry.GetWeaponData(state.EquippedWeaponID,state.EquippedModules);
+        int before=graph.CellEnergy(accessibleOnly:true);
+        int target=0;
+        Check(weapon!=null && graph.TryRecharge(state.CurrentAmmo,weapon.MagazineSize,weapon.EnergyPerRound,out target),"reserve real weapon charge");
+        // The reservation already spent energy. Synchronizing transient effects
+        // must keep its target until the existing charge finishes.
+        int paid=graph.CellEnergy(accessibleOnly:true);
+        Check(paid<before,"energy was reserved");
+        state.ControllerState.IsReloadingState=true;state.ReloadTimer=1.5f;
+        state.ReloadTargetAmmo=target;
+        int expected=state.ReloadTargetAmmo;
+        state.AlienSurgeSeconds=0;state.AlienFoodEffect=AlienFoodEffect.NeuralOverdrive;state.AlienFoodEffectSeconds=5;
+        DollSingerWeapons.SyncEquipment(ref state,graph,registry);
+        Check(state.ControllerState.IsReloadingState && state.ReloadTimer==1.5f && state.ReloadTargetAmmo==expected,"surge expiry and food activation keep the charge");
+        state.AlienFoodEffectSeconds=0;
+        DollSingerWeapons.SyncEquipment(ref state,graph,registry);
+        Check(state.ControllerState.IsReloadingState && state.ReloadTargetAmmo==expected,"food expiry keeps the charge");
+        DollSingerWeapons.CompleteReload(ref state,registry.GetWeaponData(state.EquippedWeaponID,state.EquippedModules));
+        Check(state.CurrentAmmo==expected && graph.CellEnergy(accessibleOnly:true)==paid,"charge completes once without another energy deduction");
     }
     [MenuItem("Tools/Doll Singer/Update Module Translations")]
     public static void UpdateTranslations()
