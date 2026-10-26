@@ -20,9 +20,22 @@ namespace Unity.MP_FPS
             public string Key;
             public uint Request;
             public uint AcknowledgedRequest;
-            public uint LastHitTick;
+            public uint LastHitTick, ShieldHitSequence, LastShotTick, LastGrenadeTick, LastReloadTick, Weapon;
             public float Health;
+            public float3 Origin;
             public MissionActionResult Result;
+
+            public void Capture(in PredictedPlayerGhost health, float3 position)
+            {
+                Origin=position;
+                Health=health.CurrentHealth;LastHitTick=health.LastHitTick;ShieldHitSequence=health.ShieldHitSequence;
+                LastShotTick=health.LastShotTick;LastGrenadeTick=health.LastGrenadeShotTick;
+                LastReloadTick=health.LastReloadTick;Weapon=health.EquippedWeaponID;
+            }
+            public bool Interrupted(in PredictedPlayerGhost health, float3 position) => math.distancesq(position,Origin)>.75f*.75f || health.CurrentHealth<Health ||
+                health.LastHitTick!=LastHitTick || health.ShieldHitSequence!=ShieldHitSequence ||
+                health.LastShotTick!=LastShotTick || health.LastGrenadeShotTick!=LastGrenadeTick ||
+                health.LastReloadTick!=LastReloadTick || health.EquippedWeaponID!=Weapon || RaidHealth.HandsBusy(health);
         }
         public readonly Dictionary<Entity, Actor> Actors = new Dictionary<Entity, Actor>();
         public readonly HashSet<Entity> Known = new HashSet<Entity>();
@@ -121,8 +134,9 @@ namespace Unity.MP_FPS
                             context.Actors[connection] = actor;
                         }
                         var player = SystemAPI.GetComponent<JoinedClient>(connection).PlayerEntity;
-                        bool accessible = MissionAccessible(ref state, player, site, operation, r.Node, out float health);
-                        uint hitTick = accessible ? SystemAPI.GetComponent<PredictedPlayerGhost>(player).LastHitTick : 0;
+                        bool accessible = MissionAccessible(ref state, player, site, operation, r.Node);
+                        var ghost = accessible ? SystemAPI.GetComponent<PredictedPlayerGhost>(player) : default;
+                        var position = accessible ? SystemAPI.GetComponent<LocalTransform>(player).Position : default;
                         if (r.Intent == MissionIntent.Begin || r.Intent == MissionIntent.Configure) actor.AcknowledgedRequest = r.RequestId;
                         if (r.Intent == MissionIntent.Cancel)
                         {
@@ -135,7 +149,7 @@ namespace Unity.MP_FPS
                             {operation.Cancel(actor.Key);actor.Node=-1;}
                             actor.Result=MissionActionResult.Invalid;
                         }
-                        else if (r.Intent==MissionIntent.Renew && actor.Node>=0 && (health<actor.Health || hitTick!=actor.LastHitTick))
+                        else if (r.Intent==MissionIntent.Renew && actor.Node>=0 && actor.Interrupted(ghost,position))
                         {operation.Cancel(actor.Key);actor.Node=-1;actor.Result=MissionActionResult.Invalid;}
                         else if (r.Intent == MissionIntent.Begin)
                         {
@@ -148,7 +162,7 @@ namespace Unity.MP_FPS
                                 inventory.RequestId=r.RequestId;
                                 inventory.CancelActions(inventory.ActionPending ? "原操作已取消：开始任务设备操作；未消耗物品。" : null);
                                 inventory.Error=InventoryError.None;
-                                actor.Node = r.Node; actor.Request = r.RequestId; actor.Health = health; actor.LastHitTick = hitTick; context.Known.Add(connection);
+                                actor.Node = r.Node; actor.Request = r.RequestId; actor.Capture(ghost,position); context.Known.Add(connection);
                             }
                         }
                         else if (r.Intent == MissionIntent.Configure)
@@ -181,15 +195,15 @@ namespace Unity.MP_FPS
                     bool valid = SystemAPI.Exists(pair.Key) && SystemAPI.HasComponent<JoinedClient>(pair.Key) &&
                         SystemAPI.HasComponent<RaidSession>(pair.Key) && !SystemAPI.HasComponent<NetworkStreamRequestDisconnect>(pair.Key) &&
                         SystemAPI.GetComponent<RaidSession>(pair.Key).Phase == RaidPhase.Active;
-                    float health = 0;
                     if (valid) valid = MissionAccessible(ref state, SystemAPI.GetComponent<JoinedClient>(pair.Key).PlayerEntity,
-                        site, operation, pair.Value.Node, out health) && health >= pair.Value.Health &&
-                        SystemAPI.GetComponent<PredictedPlayerGhost>(SystemAPI.GetComponent<JoinedClient>(pair.Key).PlayerEntity).LastHitTick == pair.Value.LastHitTick;
+                        site, operation, pair.Value.Node) &&
+                        !pair.Value.Interrupted(SystemAPI.GetComponent<PredictedPlayerGhost>(SystemAPI.GetComponent<JoinedClient>(pair.Key).PlayerEntity),
+                            SystemAPI.GetComponent<LocalTransform>(SystemAPI.GetComponent<JoinedClient>(pair.Key).PlayerEntity).Position);
                     if (!valid)
                     {
                         operation.Cancel(pair.Value.Key);pair.Value.Node=-1;pair.Value.Result=MissionActionResult.Invalid;
                         if(SystemAPI.Exists(pair.Key) && state.EntityManager.HasComponent<RaidInventoryState>(pair.Key))
-                        {var inventory=GetRaidInventory(ref state,pair.Key);inventory.ActionFeedback="任务操作中断：受伤、转开视线、离开范围或战局结束。";inventory.LastSentVersion=-1;}
+                        {var inventory=GetRaidInventory(ref state,pair.Key);inventory.ActionFeedback="任务操作中断：受击、使用武器、转开视线、离开范围或战局结束。";inventory.LastSentVersion=-1;}
                     }
                 }
                 if (operation.Phase == MissionPhase.OutputReady && !context.OutputProduced) CreateMissionOutput(ref state, context);
@@ -292,16 +306,14 @@ namespace Unity.MP_FPS
                     math.distancesq(p, center) < radius * radius) return true;
             return false;
         }
-        private bool MissionAccessible(ref SystemState state, Entity player, RaidMissionSite site, MissionOperation operation, int node, out float health)
+        private bool MissionAccessible(ref SystemState state, Entity player, RaidMissionSite site, MissionOperation operation, int node)
         {
-            health = 0;
             var definition = operation.Objective(node); if (definition == null || definition.Kind == MissionObjectiveKind.Process) return false;
             var anchor = site.Anchor(definition.Anchor); if (anchor == null || !TryGetLivingPosition(ref state, player, out var position)) return false;
             var ghost = SystemAPI.GetComponent<PredictedPlayerGhost>(player);
-            health = ghost.CurrentHealth;
             var eye = (Vector3)position + Vector3.up * 1.4f;
             var facing = Quaternion.Euler(ghost.ControllerState.PitchDegrees, ghost.ControllerState.YawDegrees, 0) * Vector3.forward;
-            return math.distancesq(position, anchor.Position) <= 3 * 3 &&
+            return !RaidHealth.HandsBusy(ghost) && math.distancesq(position, anchor.Position) <= 3 * 3 &&
                 Vector3.Dot(facing, (anchor.Position - eye).normalized) >= .65f &&
                 !UnityEngine.Physics.Linecast(eye, anchor.Position,
                     LayerMask.GetMask("Default", "Ground"), QueryTriggerInteraction.Ignore);

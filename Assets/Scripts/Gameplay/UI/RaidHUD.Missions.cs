@@ -197,7 +197,7 @@ namespace Unity.MP_FPS
             if (snapshot.RequestId == m_MissionRequest && snapshot.Result != MissionActionResult.Started && snapshot.Result != MissionActionResult.Running)
             {
                 if (m_MissionHolding >= 0 && snapshot.Result == MissionActionResult.Invalid)
-                    MissionNotice("操作未完成 · 请检查站位与视线；受伤会中断长按，已完成步骤不丢失。");
+                    MissionNotice("操作已中断，请检查站位、视线和行动状态。已完成步骤保留。");
                 else if (m_MissionHolding >= 0 && snapshot.Result == MissionActionResult.Busy)
                     MissionNotice("其他人正在操作这台设备 · 可以稍后重试，或先完成其他步骤。");
                 m_MissionHolding = -1;
@@ -210,7 +210,7 @@ namespace Unity.MP_FPS
             float progress = target < 4 ? snapshot.ProgressA[target] : snapshot.ProgressB[target - 4];
             m_MissionAction.text = done ? "已完成 · " + objective.Name : process ? objective.Name : configuration ? "F  检查配电线路" : "按住 F  " + objective.Name;
             m_MissionActionNote.text = !prerequisite ? "前置步骤尚未完成 · 按 J 查看设施流程" : done ? "设施状态已同步" :
-                process ? $"设备自动运行 · {progress * 100:0}%" : configuration ? "故障牌：烧损支路需隔离，备用母线仍有电" : $"{best:0.0} 米 · {objective.Seconds:0.#} 秒 · 移动、转开视线或受伤会中断";
+                process ? $"设备自动运行 · {progress * 100:0}%" : configuration ? "故障牌：烧损支路需隔离，备用母线仍有电" : $"{best:0.0} 米  {objective.Seconds:0.#} 秒  移动、转向、受击或使用武器会中断";
             if (snapshot.RequestId == m_MissionRequest && snapshot.Result == MissionActionResult.Busy) m_MissionActionNote.text = "设备正由其他人操作，稍后重试";
             if (configuration && !done && snapshot.RequestId == m_MissionRequest && snapshot.Result == MissionActionResult.Invalid)
                 m_MissionActionNote.text = "线路未接通 · 按 F 根据故障牌重新配置";

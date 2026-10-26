@@ -439,6 +439,42 @@ public static class MoonkovRaidActionChecks
         var damaged=em.GetComponentData<PredictedPlayerGhost>(player);damaged.LastHitTick++;em.SetComponentData(player,damaged);
         Request(world,connection,Mission(38,0,MissionIntent.Renew));Process(world,handle,"HandleMissions");
         Check(context.Actors[connection].Node<0 && !context.Operation.Completed(0) && inventory.Graph.Count("medkit")==1,"Damage completed mission or consumed medicine");
+
+        var busy=em.GetComponentData<PredictedPlayerGhost>(player);busy.ControllerState.IsReloadingState=true;em.SetComponentData(player,busy);
+        Request(world,connection,Mission(39));Process(world,handle,"HandleMissions");
+        Check(context.Actors[connection].Node<0 && !context.Operation.Completed(0),"Mission began while reloading");
+        busy.ControllerState.IsReloadingState=false;em.SetComponentData(player,busy);
+        double now=world.Time.ElapsedTime;
+        for(int kind=0;kind<8;kind++)
+        {
+            uint request=(uint)(40+kind);
+            Request(world,connection,Mission(request));Process(world,handle,"HandleMissions");
+            Check(context.Actors[connection].Node==0,"Combat interruption mission did not begin: "+kind);
+            now+=1.5;world.SetTime(new TimeData(now,.02f));
+            Request(world,connection,Mission(request,0,MissionIntent.Renew));Process(world,handle,"HandleMissions");
+            Check(context.Actors[connection].Node==0,"Mission failed before combat event: "+kind);
+            var changed=em.GetComponentData<PredictedPlayerGhost>(player);
+            switch(kind)
+            {
+                case 0:changed.LastShotTick++;break;
+                case 1:changed.LastGrenadeShotTick++;break;
+                case 2:changed.ShieldHitSequence++;break;
+                case 3:changed.LastReloadTick++;break;
+                case 4:changed.EquippedWeaponID++;break;
+                case 5:changed.ControllerState.IsReloadingState=true;break;
+                case 6:changed.WeaponEquipRemaining=.2f;break;
+                case 7:em.SetComponentData(player,LocalTransform.FromPosition(origin+new float3(.76f,0,0)));break;
+            }
+            em.SetComponentData(player,changed);now+=1.6;world.SetTime(new TimeData(now,.02f));
+            Request(world,connection,Mission(request,0,MissionIntent.Renew));Process(world,handle,"HandleMissions");
+            Check(context.Actors[connection].Node<0 && !context.Operation.Completed(0),"Combat event completed mission at deadline: "+kind);
+            changed.ControllerState.IsReloadingState=false;changed.WeaponEquipRemaining=0;em.SetComponentData(player,changed);
+            em.SetComponentData(player,LocalTransform.FromPosition(origin));
+        }
+        Request(world,connection,Mission(50));Process(world,handle,"HandleMissions");
+        now+=1.5;world.SetTime(new TimeData(now,.02f));Request(world,connection,Mission(50,0,MissionIntent.Renew));Process(world,handle,"HandleMissions");
+        now+=1.6;world.SetTime(new TimeData(now,.02f));Request(world,connection,Mission(50,0,MissionIntent.Renew));Process(world,handle,"HandleMissions");
+        Check(context.Operation.Completed(0),"Uninterrupted mission no longer completes");
     }
     private static T RoundTrip<T>(T value) where T:unmanaged,IRpcCommand
     {
