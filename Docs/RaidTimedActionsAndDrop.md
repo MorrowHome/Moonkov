@@ -70,6 +70,6 @@ Unity 6000.5.10f1 重编译通过，2026-10-21 16:12（Asia/Shanghai）同一轮
 
 本轮实测：Unity6000.5.10f1重编译完成，0编译错误；58项动作/物品/UI结构断言及20项实际服务端处理器断言通过。库存/健康/搜刮回归通过。死亡包旧夹具与`InventoryGraph.Create(false)`的自带武器重复初始化，改为只补缺少的槽位，保留原满装备/完整树断言后通过；最大嵌套树检查耗时约7秒，Pipeline在5秒发出工具超时，但07:15:40 UTC Console明确记录死亡包与搜刮回归成功。最终Editor回到原WeaponGestureLab，dirty=false、sceneCount=1、Play=false、activeMap=false，Console groundTruth为0 errors/13项原有编译warnings。
 
-`AlienHarvestChecks.Run()`的前半6秒解剖/禁止提前获取/中断/共享版本及快照隐藏检查通过，后续`CheckSpeciesAndBranches`的`one organ definition per species`断言失败：现有10种AlienSpecies与9份AlienBiology.Organs不一致。相关枚举、器官定义与断言文件相对起始提交`8ef39963`均无改动，本次没有扩展物种/器官内容。后端RaidLootChecks通过（128箱及丢弃/快捷逻辑），ContainerChecks构建0警告/0错误；数据库流程未执行（直接运行缺少必需项目路径参数，在进入数据库前退出）。
+`AlienHarvestChecks.Run()` 当时的前半段检查通过，后半段的物种数量断言失败。长脚异形现在明确复用触手心脏，物种覆盖检查已识别这条映射。2026-10-27 的 68 项隔离检查覆盖十种异形的普通及首领掉落、食用和效果时限；旧胶质防护检查也已改为使用战斗伤害入口。完整编辑器解剖夹具仍未重跑。后端 RaidLootChecks 曾通过；数据库流程没有执行。
 
 上述检查不代表真实Host/Client网络端到端、最终画面或手柄体验已经验收；手动验收应覆盖两个客户端竞争同一地面物、治疗进度时移动/射击/切武器/取消、首开/重开箱子、满直接容器时Ctrl无法自动塞进嵌套包。

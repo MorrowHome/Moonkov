@@ -135,7 +135,7 @@ public static class AlienHarvestChecks
                 RaidNutrition.Tick(ref health,2,100,100,100,10000,0,0,1);
                 if(species=="Leech")Check(Mathf.Abs(health.CurrentHealth-hp-2)<.01f,"regeneration heals living tissue");
                 if(species=="Centipede")Check(Mathf.Abs(health.CurrentHealth-hp+1.2f)<.02f,"venom damage is authoritative");
-                if(species=="Slime")Check(Mathf.Abs(RaidHealth.Damage(ref health,BodyPart.LeftArm,20,2)-15)<.01f,"gel combat reduction");
+                if(species=="Slime")Check(Mathf.Abs(RaidHealth.CombatDamage(ref health,BodyPart.LeftArm,20,2,RaidDamageKind.Bullet)-15)<.01f,"gel combat reduction");
                 RaidNutrition.Tick(ref health,100,10000,10000,10000,10000,0,0,3);
                 Check(health.AlienFoodEffectSeconds==0 && health.AlienFoodEffect==AlienFoodEffect.None,"species activity expires "+species);
             }
