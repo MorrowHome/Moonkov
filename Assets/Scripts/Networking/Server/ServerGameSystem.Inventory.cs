@@ -102,11 +102,16 @@ namespace Unity.MP_FPS
                             var ghost = SystemAPI.GetComponentRW<PredictedPlayerGhost>(player);
                             string itemId = r.ItemId.ToString();
                             var item = inventory.Graph.Find(itemId);
-                            inventory.Error = item?.Code=="cells"
-                                ? EnergyShieldInventory.Recharge(ref ghost.ValueRW,inventory.Graph,itemId,r.ExpectedVersion)
-                                : ConsumableCatalog.Get(item?.Code)?.Oxygen > 0
-                                    ? RaidOxygenConsumables.Consume(ref ghost.ValueRW, inventory.Graph, itemId, r.ExpectedVersion)
-                                    : RaidNutrition.Consume(ref ghost.ValueRW, inventory.Graph, itemId, r.ExpectedVersion);
+                            if(item?.Code=="cells")
+                                inventory.Error=EnergyShieldInventory.Recharge(ref ghost.ValueRW,inventory.Graph,itemId,r.ExpectedVersion);
+                            else if(ConsumableCatalog.Get(item?.Code)?.Oxygen>0)
+                                inventory.Error=RaidOxygenConsumables.Consume(ref ghost.ValueRW,inventory.Graph,itemId,r.ExpectedVersion);
+                            else if(TryGetLivingPosition(ref state,player,out var usePosition))
+                            {
+                                inventory.Error=inventory.BeginConsumable(ghost.ValueRO,itemId,r.ExpectedVersion,usePosition,SystemAPI.Time.ElapsedTime);
+                                if(inventory.Error==InventoryError.None)
+                                    CancelManualMission(ref state,connection,"任务操作中断：开始使用补给；维修或下载进度未完成。");
+                            }
                             EnergyShieldEquipment.Flush(ref ghost.ValueRW,inventory.Graph);
                         }
                         inventory.LastSentVersion = -1;
@@ -207,7 +212,7 @@ namespace Unity.MP_FPS
             var json = RaidInventoryTransport.EncodeSnapshot(snapshot,cache==null ? -1 : inventory.OpenedLootId,lootVersion,
                 inventory.DissectingLootId,(float)System.Math.Max(0,inventory.DissectionUntil-SystemAPI.Time.ElapsedTime),
                 inventory.MedicalItemId,(float)System.Math.Max(0,inventory.MedicalUntil-SystemAPI.Time.ElapsedTime),inventory.ActionFeedback,
-                corpse?.CharacterIndex ?? -1, corpse?.EquipmentSlots,inventory.Result);
+                corpse?.CharacterIndex ?? -1, corpse?.EquipmentSlots,inventory.Result,inventory.MedicalIsConsumable);
             const int fragmentSize = RaidInventoryTransport.ChunkCharacters;
             int count = (json.Length + fragmentSize - 1) / fragmentSize;
             for (int index = 0; index < count; index++)

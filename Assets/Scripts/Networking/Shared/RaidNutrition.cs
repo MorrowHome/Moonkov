@@ -15,6 +15,7 @@ namespace Unity.MP_FPS
     public static class RaidNutrition
     {
         public const float Capacity = 100, LowThreshold = 25, FullThreshold = 85;
+        public const float FoodUseSeconds = 3, DrinkUseSeconds = 2;
         public static void Initialize(ref PredictedPlayerGhost state)
         {
             state.Energy = state.Hydration = Capacity; state.Satiety = 25;

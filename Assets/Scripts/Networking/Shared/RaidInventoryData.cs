@@ -17,9 +17,9 @@ namespace Unity.MP_FPS
         public static string Encode(InventoryGraph graph) => Newtonsoft.Json.JsonConvert.SerializeObject(graph,
             new Newtonsoft.Json.JsonSerializerSettings { StringEscapeHandling=Newtonsoft.Json.StringEscapeHandling.EscapeNonAscii });
         public static InventoryGraph Decode(string json) => Newtonsoft.Json.JsonConvert.DeserializeObject<InventoryGraph>(json);
-        public static string EncodeSnapshot(InventoryGraph graph,int lootId,int lootVersion,int dissectingLootId=-1,float dissectionRemaining=0,string medicalItemId=null,float medicalRemaining=0,string actionFeedback=null,int corpseCharacterIndex=-1,Dictionary<string,string> corpseEquipmentSlots=null,RaidResultManifest result=null) => Newtonsoft.Json.JsonConvert.SerializeObject(
+        public static string EncodeSnapshot(InventoryGraph graph,int lootId,int lootVersion,int dissectingLootId=-1,float dissectionRemaining=0,string medicalItemId=null,float medicalRemaining=0,string actionFeedback=null,int corpseCharacterIndex=-1,Dictionary<string,string> corpseEquipmentSlots=null,RaidResultManifest result=null,bool medicalIsConsumable=false) => Newtonsoft.Json.JsonConvert.SerializeObject(
             new RaidInventorySnapshot {Graph=graph,LootId=lootId,LootVersion=lootVersion,
-                DissectingLootId=dissectingLootId,DissectionRemaining=dissectionRemaining,MedicalItemId=medicalItemId,MedicalRemaining=medicalRemaining,ActionFeedback=actionFeedback,
+                DissectingLootId=dissectingLootId,DissectionRemaining=dissectionRemaining,MedicalItemId=medicalItemId,MedicalRemaining=medicalRemaining,MedicalIsConsumable=medicalIsConsumable,ActionFeedback=actionFeedback,
                 CorpseCharacterIndex=corpseCharacterIndex,CorpseEquipmentSlots=corpseEquipmentSlots,Result=result},
             new Newtonsoft.Json.JsonSerializerSettings {StringEscapeHandling=Newtonsoft.Json.StringEscapeHandling.EscapeNonAscii});
     }
@@ -34,6 +34,7 @@ namespace Unity.MP_FPS
         public float DissectionRemaining;
         public string MedicalItemId;
         public float MedicalRemaining;
+        public bool MedicalIsConsumable;
         public string ActionFeedback;
     }
     public sealed class RaidLootContainers : IComponentData
@@ -150,6 +151,7 @@ namespace Unity.MP_FPS
         public double NextLootNoiseAt;
         public readonly System.Collections.Generic.HashSet<int> SearchedLoot = new System.Collections.Generic.HashSet<int>();
         public string MedicalItemId;
+        public bool MedicalIsConsumable;
         public string ActionFeedback;
         public int MedicalVersion;
         public BodyPart MedicalPart;
@@ -165,7 +167,7 @@ namespace Unity.MP_FPS
         public bool ActionPending => TacticalPending || DissectingLootId>=0 || MedicalItemId!=null;
         public void CancelActions(string feedback=null)
         {
-            TacticalPending=false;DissectingLootId=-1;MedicalItemId=null;ActionFeedback=feedback;LastSentVersion=-1;
+            TacticalPending=false;DissectingLootId=-1;MedicalItemId=null;MedicalIsConsumable=false;ActionFeedback=feedback;LastSentVersion=-1;
         }
         public InventoryError BeginMedical(in PredictedPlayerGhost health,string id,int version,BodyPart part,
             Unity.Mathematics.float3 origin,double now,float seconds=3)
@@ -173,11 +175,32 @@ namespace Unity.MP_FPS
             // Validate on copies: neither item consumption nor healing occurs before the deadline.
             var probe=health;var error=RaidHealth.UseMedical(ref probe,Graph.Clone(),id,version,part);
             if(error!=InventoryError.None)return error;
-            CancelActions(ActionPending ? "原操作已取消：开始治疗；未获取物品或消耗医疗物品。" : null);MedicalItemId=id;MedicalVersion=version;MedicalPart=part==BodyPart.Auto ? RaidHealth.MostInjured(health) : part;
+            CancelActions(ActionPending ? "原操作已取消：开始治疗；未获取物品或消耗医疗物品。" : null);
+            MedicalPart=part==BodyPart.Auto ? RaidHealth.MostInjured(health) : part;
+            StartItemAction(health,id,version,origin,now,seconds,false);
+            return InventoryError.None;
+        }
+        public InventoryError BeginConsumable(in PredictedPlayerGhost health,string id,int version,
+            Unity.Mathematics.float3 origin,double now)
+        {
+            if(ActionPending)return InventoryError.Inaccessible;
+            // Validate without granting resources or consuming a stack before the deadline.
+            var probe=health;var error=RaidNutrition.Consume(ref probe,Graph.Clone(),id,version);
+            if(error!=InventoryError.None)return error;
+            var definition=ConsumableCatalog.Get(Graph.Find(id).Code);
+            CancelActions();
+            StartItemAction(health,id,version,origin,now,
+                definition.Food ? RaidNutrition.FoodUseSeconds : RaidNutrition.DrinkUseSeconds,true);
+            return InventoryError.None;
+        }
+        private void StartItemAction(in PredictedPlayerGhost health,string id,int version,Unity.Mathematics.float3 origin,
+            double now,float seconds,bool consumable)
+        {
+            MedicalItemId=id;MedicalVersion=version;MedicalIsConsumable=consumable;
             MedicalOrigin=origin;MedicalUntil=now+System.Math.Max(.1f,seconds);
             MedicalDamageTick=health.LastHitTick;MedicalShieldHitSequence=health.ShieldHitSequence;MedicalShotTick=health.LastShotTick;
             MedicalGrenadeTick=health.LastGrenadeShotTick;MedicalReloadTick=health.LastReloadTick;MedicalWeapon=health.EquippedWeaponID;
-            LastSentVersion=-1;return InventoryError.None;
+            LastSentVersion=-1;
         }
         public void RefreshMedical(ref PredictedPlayerGhost health,bool accessible,Unity.Mathematics.float3 position,double now)
         {
@@ -189,10 +212,13 @@ namespace Unity.MP_FPS
                 health.LastReloadTick!=MedicalReloadTick || health.EquippedWeaponID!=MedicalWeapon ? "治疗中断：换弹或切换武器。" : null;
             if(Graph.Version!=MedicalVersion)reason="治疗中断：库存已变化，请重新选择物品。";
             if(reason==null && now<MedicalUntil)return;
-            var id=MedicalItemId;MedicalItemId=null;LastSentVersion=-1;
-            Error=reason==null ? RaidHealth.UseMedical(ref health,Graph,id,MedicalVersion,MedicalPart) :
+            var id=MedicalItemId;bool consumable=MedicalIsConsumable;MedicalItemId=null;MedicalIsConsumable=false;LastSentVersion=-1;
+            Error=reason==null ? consumable ? RaidNutrition.Consume(ref health,Graph,id,MedicalVersion) : RaidHealth.UseMedical(ref health,Graph,id,MedicalVersion,MedicalPart) :
                 Graph.Version!=MedicalVersion ? InventoryError.Stale : InventoryError.Inaccessible;
-            ActionFeedback=reason!=null ? reason+" 未消耗医疗物品。" :
+            if(consumable)
+                ActionFeedback=reason!=null ? reason.Replace("治疗中断", "使用中断")+" 未消耗物品。" :
+                    Error==InventoryError.None ? "补给使用完成。" : "使用失败：状态或物品已变化，未消耗物品。";
+            else ActionFeedback=reason!=null ? reason+" 未消耗医疗物品。" :
                 Error==InventoryError.None ? "治疗完成。" : "治疗失败：目标或物品状态已变化，未消耗物品。";
         }
         public double DissectionUntil;
@@ -363,6 +389,7 @@ namespace Unity.MP_FPS
         public float DissectionRemaining;
         public string MedicalItemId;
         public float MedicalRemaining;
+        public bool MedicalIsConsumable;
         public string ActionFeedback;
         private uint m_IncomingSequence;
         private int m_IncomingRaid, m_Received;
@@ -387,7 +414,7 @@ namespace Unity.MP_FPS
                 CorpseCharacterIndex=snapshot?.CorpseCharacterIndex ?? -1; CorpseEquipmentSlots=snapshot?.CorpseEquipmentSlots;
                 DissectingLootId=snapshot?.DissectingLootId ?? -1;
                 DissectionRemaining=snapshot?.DissectionRemaining ?? 0;
-                MedicalItemId=snapshot?.MedicalItemId;MedicalRemaining=snapshot?.MedicalRemaining ?? 0;ActionFeedback=snapshot?.ActionFeedback;
+                MedicalItemId=snapshot?.MedicalItemId;MedicalRemaining=snapshot?.MedicalRemaining ?? 0;MedicalIsConsumable=snapshot?.MedicalIsConsumable ?? false;ActionFeedback=snapshot?.ActionFeedback;
                 Result = snapshot?.Result != null && snapshot.Result.Valid(chunk.RaidId) ? snapshot.Result : null;
                 Graph = graph; RaidId = chunk.RaidId; Sequence = chunk.Sequence; RequestId = chunk.RequestId; Error = chunk.Error; return true;
             }

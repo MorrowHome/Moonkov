@@ -51,10 +51,10 @@ namespace Unity.MP_FPS.Client
             RegisterCallback<AttachToPanelEvent>(_=>MoonkovLocalization.Bind(this));
         }
         public void Present(bool active,bool accepted,bool cancelling,bool medical,float remaining,float duration,
-            string receipt,bool failed,bool visible,bool showCancel=true)
+            string receipt,bool failed,bool visible,bool showCancel=true,string activeTitle=null)
         {
             var state=new RaidActionReadout(accepted,cancelling,remaining,duration);
-            PresentProgress(active ? medical ? "TREATING" : "SEARCHING" : receipt,
+            PresentProgress(active ? activeTitle ?? (medical ? "TREATING" : "SEARCHING") : receipt,
                 Mathf.Min(state.Progress,.97f),state.Remaining,active,
                 active && state.Stage==RaidActionStage.Running,active && showCancel,cancelling,failed,visible);
         }

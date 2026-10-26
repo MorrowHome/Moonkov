@@ -176,6 +176,8 @@ public static class MoonkovRaidActionChecks
                 inventory=Inventory();em.AddComponentObject(connection,inventory);return connection;
             }
             var a=Actor(out var inventory);var b=Actor(out var other);var player=em.GetComponentData<JoinedClient>(a).PlayerEntity;
+            var eater=Actor(out var eatingInventory);
+            CheckNutritionRequests(world,handle,eater,eatingInventory);
             var item=inventory.Graph.Items.Single(i=>i.Code=="medkit");int initial=inventory.Graph.Version;
             floor.SetActive(false);UnityEngine.Physics.SyncTransforms();
             Request(world,a,new RaidInventoryDropRpc {RaidId=7,RequestId=1,ExpectedVersion=initial,ItemId=item.Id});
@@ -265,6 +267,36 @@ public static class MoonkovRaidActionChecks
             if(floor!=null)UnityEngine.Object.DestroyImmediate(floor);
             UnityEngine.Object.DestroyImmediate(go);
         }
+    }
+    private static void CheckNutritionRequests(World world,SystemHandle handle,Entity connection,RaidInventoryState inventory)
+    {
+        var em=world.EntityManager;var player=em.GetComponentData<JoinedClient>(connection).PlayerEntity;
+        Check(inventory.Graph.AddSupply("ration",2,InventoryCatalog.Pockets)==InventoryError.None,"Nutrition fixture supply");
+        var food=inventory.Graph.Items.Single(item=>item.Code=="ration");var health=em.GetComponentData<PredictedPlayerGhost>(player);
+        health.Energy=40;em.SetComponentData(player,health);int version=inventory.Graph.Version;
+        world.SetTime(new TimeData(1,.02f));
+        Request(world,connection,new RaidConsumableUseRpc {RaidId=6,RequestId=1,ExpectedVersion=version,ItemId=food.Id});
+        Process(world,handle,"HandleInventoryRequests");
+        Check(!inventory.ActionPending && inventory.Graph.Count("ration",true)==2,"Wrong raid started food action");
+        var use=new RaidConsumableUseRpc {RaidId=7,RequestId=2,ExpectedVersion=version,ItemId=food.Id};
+        Request(world,connection,use);Process(world,handle,"HandleInventoryRequests");
+        Check(inventory.ActionPending && inventory.MedicalIsConsumable && inventory.Graph.Count("ration",true)==2,"Food RPC committed early");
+        Request(world,connection,use);Process(world,handle,"HandleInventoryRequests");
+        Refresh(world,handle,connection,3.99);
+        Check(inventory.ActionPending && em.GetComponentData<PredictedPlayerGhost>(player).Energy==40,"Food bypassed server time or replayed");
+        Refresh(world,handle,connection,4);
+        Check(!inventory.ActionPending && inventory.Graph.Count("ration",true)==1 && em.GetComponentData<PredictedPlayerGhost>(player).Energy==85,"Food did not commit exactly once");
+        Request(world,connection,use);Process(world,handle,"HandleInventoryRequests");
+        Check(inventory.Graph.Count("ration",true)==1 && !inventory.ActionPending,"Food replay started another use");
+        use.RequestId=3;use.ExpectedVersion=inventory.Graph.Version;
+        Request(world,connection,use);Process(world,handle,"HandleInventoryRequests");
+        Request(world,connection,new RaidActionCancelRpc {RaidId=7,RequestId=4});Process(world,handle,"HandleInventoryRequests");
+        Refresh(world,handle,connection,8);
+        Check(!inventory.ActionPending && inventory.Graph.Count("ration",true)==1 && em.GetComponentData<PredictedPlayerGhost>(player).Energy==85,"Cancelled food granted resources");
+        use.RequestId=5;Request(world,connection,use);Process(world,handle,"HandleInventoryRequests");
+        health=em.GetComponentData<PredictedPlayerGhost>(player);health.ShieldHitSequence++;em.SetComponentData(player,health);
+        Refresh(world,handle,connection,8.1);
+        Check(!inventory.ActionPending && inventory.Error==InventoryError.Inaccessible && inventory.Graph.Count("ration",true)==1,"Shield impact did not interrupt food");
     }
     private delegate void BagHandler(ref ServerGameSystem system,ref SystemState state,EntityCommandBuffer commands,Entity connection);
     private static unsafe RaidGroundItemMarkerRpc[] SendBags(World world,SystemHandle handle,Entity connection,RaidDeathBagClientState client)
