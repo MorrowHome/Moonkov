@@ -359,6 +359,43 @@ public static class DollSingerHumanlikeChecks
             Require(!Input(PmcAction.Heal, heal: true).Shoot, "Treatment/interaction allowed simultaneous fire.");
             var empty = Input(PmcAction.Retreat, ammo: 0);
             Require(!empty.Shoot && empty.Sprint, "An empty withdrawing PMC could not sprint to safety.");
+
+            var property = typeof(WeaponManager).GetProperty("Instance", BindingFlags.Public | BindingFlags.Static);
+            var previous = property.GetValue(null);
+            var managerObject = new GameObject("Temporary PMC tactical weapon registry") { hideFlags = HideFlags.HideAndDontSave };
+            managerObject.SetActive(false);
+            try
+            {
+                var manager = managerObject.AddComponent<WeaponManager>();
+                manager.WeaponRegistry = AssetDatabase.LoadAssetAtPath<WeaponRegistry>("Assets/Data/Weapons/WeaponRegistry.asset");
+                Require(manager.WeaponRegistry != null, "Tactical weapon registry is missing.");
+                property.SetValue(null, manager);
+                target.transform.position = origin + Vector3.forward * 8; UnityEngine.Physics.SyncTransforms();
+                var brain = Brain(); var health = Health(); health.InventoryWeapons = true;
+                health.PrimaryWeaponID = DollSingerWeapons.Halo; health.PrimaryAmmo = health.CurrentAmmo = 30;
+                health.SecondaryWeaponID = DollSingerWeapons.Shotgun; health.SecondaryAmmo = 4;
+                brain.Action = PmcAction.Engage; brain.Target = entity; brain.Visible = true; brain.Confidence = 1;
+                brain.LastSeen = target.transform.position; brain.VisibleSince = 8; brain.LastSeenTime = 10;
+                brain.LastHealth = health.CurrentHealth; brain.NextDecision = brain.NextSense = brain.NextPath = brain.NextAimError = 100;
+                brain.Goal = brain.TacticalGoal = origin;
+                PlayerInput Think(double now) => (PlayerInput)Call(system, "Think", new object[] { brain, actor,
+                    Unity.Transforms.LocalTransform.FromPosition(origin), health, map, now, 1f / 60 });
+                var close = Think(10);
+                Require(close.EquipRevolver && !close.Shoot && !close.Reload && brain.NextTacticalSwitch == 13 &&
+                    DollSingerWeapons.TryEquip(ref health, close, manager.WeaponRegistry) &&
+                    health.EquippedWeaponSlot == 2 && health.EquippedWeaponID == DollSingerWeapons.Shotgun && health.CurrentAmmo == 4,
+                    "Close combat did not request a real loaded shotgun switch without shooting or charging.");
+                health.WeaponEquipRemaining = 0; // The first switch completed before the next observation.
+                target.transform.position = origin + Vector3.forward * 25; brain.LastSeen = target.transform.position;
+                UnityEngine.Physics.SyncTransforms();
+                Require(!Think(11).EquipHalo, "A distance change bypassed the tactical switch interval.");
+                var distant = Think(13.1);
+                Require(distant.EquipHalo && !distant.Shoot && !distant.Reload &&
+                    DollSingerWeapons.TryEquip(ref health, distant, manager.WeaponRegistry) &&
+                    health.EquippedWeaponSlot == 1 && health.EquippedWeaponID == DollSingerWeapons.Halo && health.CurrentAmmo == 30,
+                    "Distant combat did not return to the real loaded rifle after the interval.");
+            }
+            finally { property.SetValue(null, previous); Object.DestroyImmediate(managerObject); }
         }
         finally
         {

@@ -99,7 +99,17 @@ namespace Unity.MP_FPS
                 (brain.Action == PmcAction.Retreat || brain.Action == PmcAction.Flank && !brain.Visible ||
                     (brain.Action == PmcAction.Extract || brain.IsClashBot && brain.Leaving) && !hasContact || brain.Action == PmcAction.Cover &&
                     (brain.CoverPhase == PmcCoverPhase.Approaching || brain.CoverPhase == PmcCoverPhase.Returning)));
-            if (brain.LootUntil <= 0 && brain.HealUntil <= 0 && !brain.Interacting &&
+            int preferred = !brain.IsClashBot && brain.Visible && CanReturnFire(brain) && brain.LootUntil <= 0 && now >= brain.NextTacticalSwitch
+                ? PmcWeaponTactics.PreferredSlot(health, distance) : 0;
+            uint preferredWeapon = preferred == 1 ? health.PrimaryWeaponID : preferred == 2 ? health.SecondaryWeaponID : health.PistolWeaponID;
+            bool switching = preferred != 0 && WeaponManager.Instance?.WeaponRegistry?.GetWeaponData(preferredWeapon) != null;
+            if (switching)
+            {
+                input.SetFlag(preferred == 1 ? PlayerInput.InputFlag.EquipHalo : preferred == 2 ?
+                    PlayerInput.InputFlag.EquipRevolver : PlayerInput.InputFlag.EquipPistol, true);
+                brain.NextTacticalSwitch = now + 3;
+            }
+            if (!switching && brain.LootUntil <= 0 && brain.HealUntil <= 0 && !brain.Interacting &&
                 ShouldReload(brain, health, position, now) && !health.ControllerState.IsReloadingState)
             {
                 bool blocked=weapon != null && brain.ReloadFailure.Matches(brain.Inventory.Version,health.EquippedWeaponID,weapon.EnergyPerRound);
@@ -117,7 +127,7 @@ namespace Unity.MP_FPS
                     }
                 }
             }
-            bool firingSolution = fighting && brain.Visible && health.CurrentAmmo > 0 && !health.ControllerState.IsReloadingState &&
+            bool firingSolution = !switching && fighting && brain.Visible && health.CurrentAmmo > 0 && !health.ControllerState.IsReloadingState &&
                 now - brain.VisibleSince >= m_Tuning.ReactionSeconds && distance < map.EnemySightRange &&
                 Vector3.Angle(direction, facing) < 7 && ClearSight(ghost.transform, eye, brain.LastSeen + brain.AimOffset, brain.Target) &&
                 (!brain.IsClashBot || ClashShotLaneClear(brain, eye, direction, map.EnemySightRange));

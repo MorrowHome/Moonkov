@@ -43,6 +43,22 @@ namespace Unity.MP_FPS
         }
     }
 
+    public static class PmcWeaponTactics
+    {
+        // Separate thresholds keep a target near the boundary from causing a weapon swap loop.
+        public static int PreferredSlot(in PredictedPlayerGhost health, float distance)
+        {
+            if (!health.InventoryWeapons || health.CurrentHealth <= 0 || RaidHealth.HandsBusy(health) ||
+                !float.IsFinite(distance) || distance < 0) return 0;
+            uint desired = distance <= 11 ? DollSingerWeapons.Shotgun : distance >= 18 ? DollSingerWeapons.Halo : DollSingerWeapons.None;
+            if (desired == DollSingerWeapons.None || health.EquippedWeaponID == desired) return 0;
+            if (health.PrimaryWeaponID == desired && health.PrimaryAmmo > 0 && health.EquippedWeaponSlot != 1) return 1;
+            if (health.SecondaryWeaponID == desired && health.SecondaryAmmo > 0 && health.EquippedWeaponSlot != 2) return 2;
+            if (health.PistolWeaponID == desired && health.PistolAmmo > 0 && health.EquippedWeaponSlot != 3) return 3;
+            return 0;
+        }
+    }
+
     // Observations are the only way world knowledge enters a brain. Decision code uses
     // this snapshot, never a hidden opponent's current transform or inventory.
     public sealed class PmcContact
@@ -76,6 +92,7 @@ namespace Unity.MP_FPS
         public bool CacheApproachKnown;
         public double CacheObstructedSince = -1;
         public double NextCorpseScan;
+        public double NextTacticalSwitch;
         public Vector3 Goal, LastSeen, ObservedVelocity, ProgressPosition, CoverPosition, PeekPosition, TacticalGoal;
         public Vector3 RaidExit;
         public Vector3 AimOffset = Vector3.up * 1.15f;

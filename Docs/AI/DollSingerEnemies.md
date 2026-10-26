@@ -51,6 +51,10 @@ loot out of this raid; it is not credited to any human account or an NPC databas
 A killed PMC drops its real remaining inventory. Permanent actor removal retires
 its leaderboard entry after queued kill-feed messages have resolved their names.
 
+普通搜打撤的人形敌人会根据已看见的目标距离选择武器：11 米内优先使用有弹霰弹枪，18 米外优先使用有弹步枪。中间距离保持当前武器；两次战术切换至少间隔 3 秒。切换时不同时开火或充能，换弹、切枪、治疗和搜索期间不会启动这次切换。赏金模式不使用这套规则。
+
+武器选择的 14 项生产规则检查通过，覆盖距离边界、空弹、切枪/充能、死亡和武器槽位置。游戏与编辑器程序集隔离编译通过。真实武器配置和敌人输入夹具已补充，尚未在编辑器运行；近距离伤害、动作和敌人难度仍需实战校准。
+
 ## Perception and combat
 
 Sight uses three physical rays (head, torso, hips), range, view angle, movement and
