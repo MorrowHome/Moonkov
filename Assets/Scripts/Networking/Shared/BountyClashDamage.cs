@@ -50,8 +50,12 @@ namespace Unity.MP_FPS
             var manager=world.EntityManager;
             if(source.ParticipantId>0&&manager.HasComponent<ClashPlayer>(victim))
             {var p=manager.GetComponentData<ClashPlayer>(victim);return p.ParticipantId==source.ParticipantId&&p.Epoch==source.Epoch;}
+            if(HasCapturedOnlineActor(source))return CapturedOnlineActorIsSelf(source,victim);
             return source.NetworkId!=0&&manager.HasComponent<GhostOwner>(victim)&&manager.GetComponentData<GhostOwner>(victim).NetworkId==source.NetworkId;
         }
+        public static bool HasCapturedOnlineActor(ClashDamageSource source) => source.OnlineHuman && source.OnlineActor!=Entity.Null;
+        public static bool CapturedOnlineActorIsSelf(ClashDamageSource source,Entity victim) =>
+            HasCapturedOnlineActor(source) && source.OnlineActor==victim;
         public static bool TeamProtected(ClashDamageSource source, Entity victim, int victimTeam) =>
             source.OnlineHuman && source.OnlineTeam == victimTeam && source.OnlineActor != victim;
         public static bool TeamProtected(EntityManager manager, Entity victim, ClashDamageSource source) =>

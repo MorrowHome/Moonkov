@@ -157,7 +157,7 @@ namespace Unity.MP_FPS
                 foreach (var player in players)
                 {
                     if(player.GhostGameObject.World!=GhostGameObject.World)continue;
-                    bool captured=server&&m_Data.DamageSource.ParticipantId>0;
+                    bool captured=server&&(m_Data.DamageSource.ParticipantId>0 || BountyClashDamage.HasCapturedOnlineActor(m_Data.DamageSource));
                     bool same=captured ? BountyClashDamage.IsSelf(GhostGameObject.World,player.GhostGameObject.LinkedEntity,m_Data.DamageSource) : player.GhostGameObject.Owner==m_Data.OwnerNetworkId;
                     if(same){m_Shooter=player.transform;m_ShooterEntity=player.GhostGameObject.LinkedEntity;break;}
                 }

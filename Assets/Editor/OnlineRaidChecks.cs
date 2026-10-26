@@ -24,6 +24,8 @@ public static class OnlineRaidChecks
         }
         var actor = Player(1, 0); var ally = Player(2, 0); var enemy = Player(3, 1);
         var source = BountyClashDamage.Capture(world, actor);
+        Check(BountyClashDamage.IsSelf(world,actor,source) && !BountyClashDamage.IsSelf(world,ally,source),
+            "Captured online actor self-filter is incorrect");
         float allyHealth = em.GetComponentData<PredictedPlayerGhost>(ally).CurrentHealth;
         foreach (var kind in new[] { RaidDamageKind.Bullet, RaidDamageKind.Explosion, RaidDamageKind.Melee, RaidDamageKind.Fire, RaidDamageKind.Poison })
             Check(BountyClashDamage.Apply(world, ally, source, BodyPart.Chest, 10, 1, kind) == 0, "Friendly damage leaked: " + kind);
@@ -41,6 +43,10 @@ public static class OnlineRaidChecks
         var reused = Player(1,0);
         Check(reused!=actor && BountyClashDamage.Apply(world,reused,source,BodyPart.Chest,10,5,RaidDamageKind.Explosion)==0,
             "Reused network ID caused a teammate to take another player's self-damage");
+        Check(!BountyClashDamage.IsSelf(world,reused,source),"Reused network ID became the delayed projectile's shooter");
+        em.SetComponentData(reused,new OnlineRaidMember {Team=1});
+        Check(!BountyClashDamage.IsSelf(world,reused,source) && BountyClashDamage.Apply(world,reused,source,BodyPart.Chest,10,6,RaidDamageKind.Bullet)>0,
+            "A new enemy with the old network ID became immune");
         Check(BountyClashDamage.Capture(world,1).OnlineActor==reused,"Network-ID lookup did not capture the current actor");
         var spawns = new OnlineRaidWorld();
         var origin = LocalTransform.FromPosition(new Unity.Mathematics.float3(10, 0, 10));
