@@ -55,6 +55,9 @@ namespace Unity.MP_FPS
         public double NextSense, NextPath, LastSeenTime = -100, VisibleSince, NextProgress, NextDecision, CommitUntil;
         public double NextCover, NextAimError, BurstUntil, NextBurst, SearchUntil, LootUntil, SpawnTime, LastDamage = -100;
         public double LastHeardTime = -100;
+        public string MissionAlarmId;
+        public Vector3 MissionAlarmPosition;
+        public double MissionAlarmHeardAt = -100, MissionAlarmUntil;
         public double SensorBatch = -1;
         public double ActionStarted;
         public double NextFlank;

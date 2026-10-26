@@ -54,6 +54,8 @@ a lunar vacuum. Distance and obstruction affect their range. Nearby gunfire and
 received damage increase pressure; this version does not detect every near-miss
 projectile or simulate sound propagation through individual rooms.
 
+2026-10-27：月核取样机切割时，附近人形敌人可以调查机器位置。声音不指认玩家，不直接允许开火。真实战斗、治疗和撤离保持优先。范围与遮挡规则见 [月核行动](../Planning/Missions/MC00-Mooncore.md)。
+
 Decisions run at 5 Hz, with staggered perception at 10 Hz and action commitment to
 avoid frame-by-frame oscillation. Aggression/caution differ between actors. Sustained
 duels can trigger a flank; lost targets trigger search. Pressure favors cover, low HP

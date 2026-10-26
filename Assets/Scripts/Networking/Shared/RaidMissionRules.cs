@@ -126,9 +126,17 @@ namespace Unity.MP_FPS.Missions
         public uint Revision { get; private set; } = 1;
         public double OfferedAt { get; }
         public double Deadline { get; private set; }
+        public string DefinitionId => m_Definition.Id;
         public MissionDefinition Definition => m_Definition.Copy();
         public int ObjectiveCount => m_Definition.Objectives.Length;
         public MissionObjectiveDefinition Objective(int index) => index >= 0 && index < ObjectiveCount ? m_Definition.Objectives[index].Copy() : null;
+        public bool IsProcessing(string objectiveId)
+        {
+            if (Phase != MissionPhase.Active || string.IsNullOrEmpty(objectiveId)) return false;
+            foreach (var process in m_Processes)
+                if (m_Definition.Objectives[process.Key].Id == objectiveId) return true;
+            return false;
+        }
 
         public MissionOperation(string worldSessionId, string id, int epoch, MissionDefinition definition, double now)
         {

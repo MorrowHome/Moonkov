@@ -49,6 +49,8 @@ namespace Unity.MP_FPS
         private Entity m_Target;
         private Vector3 m_Spawn, m_LastSeen, m_RoamGoal;
         private float m_Clock, m_NextSense, m_LastSeenAt = -100, m_ActionStarted, m_NextAttack, m_NextPatrol, m_Stuck;
+        private string m_MissionAlarmId;
+        private float m_MissionAlarmUntil;
         private AlienAction m_Action;
         private bool m_Visible;
         private uint m_Attacks, m_Hits;
@@ -72,6 +74,7 @@ namespace Unity.MP_FPS
         public override void OnGhostLinked()
         {
             if (!profile) { Debug.LogError("Alien profile is missing.", this); return; }
+            m_MissionAlarmId = null; m_MissionAlarmUntil = 0;
             var state = ReadGhostComponentData<State>();
             m_Spawn = transform.position; m_RoamGoal = m_Spawn;
             m_AmbushEnabled = profile.Species == AlienSpecies.Spider && (state.AmbushEnabled || Role == MultiplayerRole.Server);
@@ -87,6 +90,19 @@ namespace Unity.MP_FPS
                 // creature on the same frame after a snapshot/spawn batch.
                 m_NextPresentation = Time.unscaledTime + (unchecked((uint)GhostGameObject.Owner) % 16) * .004f;
             }
+        }
+        // An operating sampler attracts nearby creatures without revealing the player.
+        public bool HearMissionAlarm(string operationId, Vector3 position)
+        {
+            if (Role != MultiplayerRole.Server || m_Body == null || !profile || m_AmbushEnabled ||
+                profile.Species == AlienSpecies.Roots && !profile.Boss || string.IsNullOrEmpty(operationId) ||
+                m_MissionAlarmId == operationId || m_Visible ||
+                m_Target != Entity.Null && m_Clock - m_LastSeenAt <= profile.MemorySeconds) return false;
+            m_MissionAlarmId = operationId;
+            m_MissionAlarmUntil = m_Clock + 30;
+            m_Target = Entity.Null;
+            m_LastSeen = position; m_LastSeenAt = m_Clock; m_Visible = false;
+            return true;
         }
         public static bool IsLivingHumanoid(EntityManager manager, Entity entity)
         {
@@ -180,6 +196,7 @@ namespace Unity.MP_FPS
                 float score = distance - (entity == m_Target ? 2 : 0) + (visible ? 0 : profile.SightRange);
                 if (score >= best) continue;
                 best = score; m_Target = entity;
+                m_MissionAlarmUntil = 0;
                 m_LastSeen = visible ? point : point + new Vector3(Mathf.Sin(shot * 1.7f), 0, Mathf.Cos(shot * 2.3f)) * 1.3f;
                 m_LastSeenAt = m_Clock; m_Visible = visible;
             }

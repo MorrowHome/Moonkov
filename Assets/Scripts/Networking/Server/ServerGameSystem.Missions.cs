@@ -37,8 +37,23 @@ namespace Unity.MP_FPS
         public bool OutputProduced;
         public bool BackendCompatible = true;
         public bool FirstChapter;
-        public double CampaignNextCheck;
+        public double CampaignNextCheck, NextCutterAlarm;
         public readonly Dictionary<Entity, int> CampaignRaidIds = new Dictionary<Entity, int>();
+    }
+
+    // Gameplay hearing is deliberately local and attenuated by world geometry.
+    public static class MissionAlarm
+    {
+        public const float HearingRange = 40;
+        private const float ObstructedRange = HearingRange * .55f;
+        private static readonly int s_WorldMask = LayerMask.GetMask("Default", "Ground");
+        public static bool Audible(Vector3 source, Vector3 listener)
+        {
+            float squared = (listener - source).sqrMagnitude;
+            if (squared > HearingRange * HearingRange) return false;
+            return squared <= ObstructedRange * ObstructedRange ||
+                !UnityEngine.Physics.Linecast(source, listener, s_WorldMask, QueryTriggerInteraction.Ignore);
+        }
     }
 
     public partial struct ServerGameSystem
@@ -189,6 +204,7 @@ namespace Unity.MP_FPS
                     context.Operation = null; context.OutputLootId = -1; context.Known.Clear(); context.Actors.Clear();
                 }
             }
+            EmitCutterAlarm(ref state, context, now);
             ObserveFirstChapter(ref state, context);
             if (now < context.NextSend) return;
             context.NextSend = now + .25; context.Sequence++;
@@ -221,6 +237,36 @@ namespace Unity.MP_FPS
                 }
                 var entity = ecb.CreateEntity(); ecb.AddComponent(entity, snapshot);
                 ecb.AddComponent(entity, new SendRpcCommandRequest { TargetConnection = connection });
+            }
+        }
+
+        private void EmitCutterAlarm(ref SystemState state, RaidMissionWorld context, double now)
+        {
+            var operation = context.Operation;
+            if (operation == null || operation.DefinitionId != "mc00_mooncore" || !operation.IsProcessing("cutting"))
+            { context.NextCutterAlarm = 0; return; }
+            if (now < context.NextCutterAlarm) return;
+            context.NextCutterAlarm = now + 2;
+            var anchor = context.Site ? context.Site.Anchor("sampler") : null;
+            if (anchor == null) return;
+            Vector3 position = anchor.Approach, source = position + Vector3.up;
+            foreach (var (pose, health, entity) in SystemAPI.Query<RefRO<LocalTransform>, RefRO<PredictedPlayerGhost>>()
+                         .WithAll<DollSingerEnemy, Simulate>().WithNone<ClashBot>().WithEntityAccess())
+            {
+                if (health.ValueRO.CurrentHealth <= 0 || !state.EntityManager.HasComponent<DollSingerEnemyBrain>(entity)) continue;
+                var brain = state.EntityManager.GetComponentObject<DollSingerEnemyBrain>(entity);
+                if (brain.MissionAlarmId == operation.Id || brain.Target != Entity.Null || brain.Leaving) continue;
+                if (MissionAlarm.Audible(source, (Vector3)pose.ValueRO.Position + Vector3.up * 1.2f))
+                    DollSingerEnemySystem.HearMissionAlarm(brain, operation.Id, position, now);
+            }
+            foreach (var (pose, health, entity) in SystemAPI.Query<RefRO<LocalTransform>, RefRO<PredictedPlayerGhost>>()
+                         .WithAll<ProceduralAlienEnemy.State, GhostGameObjectLink, Simulate>().WithEntityAccess())
+            {
+                if (health.ValueRO.CurrentHealth <= 0 ||
+                    ((Vector3)pose.ValueRO.Position - source).sqrMagnitude > MissionAlarm.HearingRange * MissionAlarm.HearingRange) continue;
+                var link = state.EntityManager.GetComponentObject<GhostGameObjectLink>(entity);
+                var alien = link.LinkedInstance ? link.LinkedInstance.GetComponent<ProceduralAlienEnemy>() : null;
+                if (alien && MissionAlarm.Audible(source, alien.AimPoint)) alien.HearMissionAlarm(operation.Id, position);
             }
         }
 

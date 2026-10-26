@@ -50,7 +50,7 @@ namespace Unity.MP_FPS.Campaign
                 new TaskDefinition
                 {
                     Id = "CM03", Title = "第一份样本", Chapter = 1, ChapterTitle = "静默着陆", PrerequisiteTask = "CM02",
-                    Briefing = "两路备用供电已就绪。启动取样机后，切割会自动运行 45 秒。留意附近动静，保住返回路线。输出槽里的月核碎片要真实装入背包，成功撤离才算回收；背包不足时可以先整理，样本不会凭提示自动入库。",
+                    Briefing = "两路备用供电已就绪。启动取样机后，切割会自动运行 45 秒。设备声可能引来附近敌人，留意返回路线。输出槽里的月核碎片要真实装入背包，成功撤离才算回收；背包不足时可以先整理，样本不会凭提示自动入库。",
                     CompletionText = "顾衡：样本保持封存，等待后续分析。沈禾：接收结果显示，实验场信号仍在维持。事故已经过去，为什么它还在运行？第一章调查记录已保存。",
                     Nodes = new[] {
                         Node("start", "sampler", "启动月核切割", "MC00 取样机", CampaignObjectiveKind.Interact, 3, "start"),
@@ -64,7 +64,7 @@ namespace Unity.MP_FPS.Campaign
             tasks[0].Nodes[1].Briefing = "顾衡：先恢复本地终端。清理权限只覆盖设施检查和样本回收，人员情况也请一并核实。";
             tasks[1].Nodes[0].Briefing = "烧损支路不能直接合上。核对线路说明，保留备用母线。";
             tasks[1].Nodes[1].Briefing = "供电后的导引灯可以帮助辨认回程。恢复设备不要求清空整栋建筑。";
-            tasks[2].Nodes[0].Briefing = "顾衡：优先检查取样装置，样本保持屏蔽封存。";
+            tasks[2].Nodes[0].Briefing = "顾衡：启动切割后，设备声可能引来附近敌人。样本保持屏蔽封存。";
             tasks[2].Nodes[1].Briefing = "机器继续运行时可以移动、观察或撤退。不要为了守在设备旁耗尽医疗和电池。";
             tasks[2].Nodes[2].RequiredItemCode = "mooncore_fragment";
             tasks[2].Nodes[2].OutputItemCode = "mooncore_fragment";

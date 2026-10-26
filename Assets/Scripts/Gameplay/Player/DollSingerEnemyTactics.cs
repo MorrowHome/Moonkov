@@ -48,6 +48,15 @@ namespace Unity.MP_FPS
                     goal = position;
                     break;
                 case PmcAction.Investigate:
+                    if (brain.Target == Unity.Entities.Entity.Null && now < brain.MissionAlarmUntil)
+                    {
+                        brain.LastSeen = brain.MissionAlarmPosition;
+                        brain.LastHeardTime = brain.MissionAlarmHeardAt;
+                        brain.ContactUncertainty = 2;
+                        brain.ObservedVelocity = Vector3.zero;
+                    }
+                    goal = UpdateSearch(brain, position, now);
+                    break;
                 case PmcAction.Search:
                     goal = UpdateSearch(brain, position, now);
                     break;
@@ -212,6 +221,7 @@ namespace Unity.MP_FPS
                     // Exhaust the remembered hypothesis instead of orbiting it forever.
                     if (brain.Contacts.TryGetValue(brain.Target, out var memory))
                     { memory.Confidence = 0; memory.Suspicion = 0; }
+                    if (brain.Target == Unity.Entities.Entity.Null) brain.MissionAlarmUntil = 0;
                     brain.Target = Unity.Entities.Entity.Null;
                     brain.Confidence = 0;
                     brain.SearchFocusValid = false;
@@ -248,7 +258,8 @@ namespace Unity.MP_FPS
                 if (!NavMesh.SamplePosition(candidate, out var sample, 2, m_Filter) ||
                     HorizontalDistance(position, sample.position) < 1.2f ||
                     !CompletePath(brain, position, sample.position, out float length)) continue;
-                if (length > 30) continue;
+                bool machineClue = brain.Action == PmcAction.Investigate && brain.Target == Unity.Entities.Entity.Null && now < brain.MissionAlarmUntil;
+                if (length > (machineClue ? 55 : 30)) continue;
                 float value = 15 - i * 1.5f - length * .35f;
                 // Search exits with a useful view of the clue, and prefer a sheltered approach.
                 if (!WorldBlocked(sample.position + Vector3.up * 1.4f, brain.SearchAnchor + Vector3.up * 1.15f)) value += 5;
@@ -256,7 +267,8 @@ namespace Unity.MP_FPS
                 if (value <= bestScore) continue;
                 bestScore = value; bestPoint = sample.position; travel = length;
             }
-            brain.SearchUntil = now + Mathf.Clamp(travel / 2 + 2, 3, 14);
+            bool investigatingMachine = brain.Action == PmcAction.Investigate && brain.Target == Unity.Entities.Entity.Null && now < brain.MissionAlarmUntil;
+            brain.SearchUntil = now + Mathf.Clamp(travel / 2 + 2, 3, investigatingMachine ? 26 : 14);
             brain.SearchLookPoint = brain.SearchAnchor + brain.SearchHeading * radius + Vector3.up * 1.15f;
             brain.NextPath = 0;
             return bestPoint;

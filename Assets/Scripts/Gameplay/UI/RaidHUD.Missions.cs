@@ -348,7 +348,7 @@ namespace Unity.MP_FPS
             m_MissionHud.EnableInClassList("mission-ended", ended);
             if (!m_MissionConfiguring) m_Root.Q<Label>("missionClue").text = "路线提示：从 MC00 入口沿楼梯前往 L22。楼层与直线方向是定位参考，不是穿墙路线。\n" +
                 (definition.ArtifactCode == "mooncore_fragment" ?
-                "配电 A/B 顺序不限，两路完成后在取样机启动切割。夹具内结晶带有重复编号，可能来自另一批次。" :
+                "配电 A/B 顺序不限。启动切割后，设备声可能引来附近敌人。夹具内结晶带有重复编号，可能来自另一批次。" :
                 "自检和标签读取可以穿插进行，提前扫描会保留；两处校验齐全后返回终端确认下载。事故设备曾在烧损前持续上传。");
             m_Root.Q<Label>("missionOutcome").text = (definition.ArtifactCode == "mooncore_fragment" ? "首次有效带回月核 +30 月尘" : "首次有效带回档案 +20 月尘") +
                 MoonkovLocalization.Text(definition.ArtifactCode == "mooncore_fragment" ?
@@ -398,7 +398,7 @@ namespace Unity.MP_FPS
             if (definition.ArtifactCode == "mooncore_fragment")
             {
                 if (Done("start")) return Running("cutting", "正在切割");
-                if (Done("power_a") && Done("power_b")) return "两路供电已恢复 · 前往取样机启动切割";
+                if (Done("power_a") && Done("power_b")) return "前往取样机启动切割。设备声可能引来附近敌人";
                 if (Done("power_a")) return "A 路已隔离 · 继续恢复维修配电 B";
                 if (Done("power_b")) return "B 路已恢复 · 继续隔离烧损的 A 支路";
                 return "前往 MC00 · L22，恢复两处供电，A/B 顺序不限";

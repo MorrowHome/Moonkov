@@ -31,6 +31,7 @@ namespace Unity.MP_FPS
             bool living = IsLivingHumanoid(manager, m_Target);
             if (!living) { m_Target = Entity.Null; m_Visible = false; }
             bool remembered = living && m_Clock - m_LastSeenAt <= profile.MemorySeconds;
+            bool investigating = !remembered && m_Clock < m_MissionAlarmUntil;
             if (TickBossDisplay(dt, health, remembered)) return;
             if (TickBossMobility(dt, health, remembered)) return;
             float age = m_Clock - m_ActionStarted;
@@ -49,13 +50,14 @@ namespace Unity.MP_FPS
             else if (m_Action == AlienAction.Strike && age >= m_Pattern.Active)
                 ChangeAction(AlienAction.Recover);
             else if (m_Action == AlienAction.Recover && age >= m_Pattern.Recovery && !m_Body.Motor.Detached)
-                ChangeAction(remembered ? AlienAction.Chase : AlienAction.Roam);
+                ChangeAction(remembered ? AlienAction.Chase : investigating ? AlienAction.Search : AlienAction.Roam);
             else if (m_Action != AlienAction.Windup && m_Action != AlienAction.Strike && m_Action != AlienAction.Recover)
             {
                 byte phase = profile.Boss && health.CurrentHealth <= health.MaxHealth * profile.EnrageHealthFraction ? (byte)2 : (byte)1;
                 bool committed = remembered && m_Visible && m_Clock >= m_NextAttack &&
                     TryChooseAttack(phase, out var next) && CommitAttack(next, phase);
-                if (!committed) ChangeAction(remembered ? (m_Visible ? AlienAction.Chase : AlienAction.Search) : AlienAction.Roam);
+                if (!committed) ChangeAction(remembered ? (m_Visible ? AlienAction.Chase : AlienAction.Search) :
+                    investigating ? AlienAction.Search : AlienAction.Roam);
             }
 
             Vector3 intent = Vector3.zero;
@@ -65,7 +67,7 @@ namespace Unity.MP_FPS
             else if ((m_Action == AlienAction.Chase || m_Action == AlienAction.Search || m_Action == AlienAction.Roam) && (profile.Species != AlienSpecies.Roots || profile.Boss))
             {
                 bool pause = false;
-                Vector3 goal = remembered ? HuntGoal(m_Visible ? m_LastSeen : SearchGoal(), out pause) : PatrolGoal();
+                Vector3 goal = remembered || investigating ? HuntGoal(m_Visible ? m_LastSeen : SearchGoal(), out pause) : PatrolGoal();
                 if (profile.IsUpright || profile.Boss) goal = UprightWaypoint(goal);
                 var graph = profile.IsUpright || profile.Boss ? null : AlienSurfaceNavigation.Find(m_Spawn);
                 if (graph && graph.Contains(goal))

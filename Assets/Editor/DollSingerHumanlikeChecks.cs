@@ -4,6 +4,7 @@ using Unity.Entities;
 using Unity.MP_FPS;
 using Unity.MP_FPS.Inventory;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using BodyPart = Unity.MP_FPS.BodyPart;
@@ -240,9 +241,12 @@ public static class DollSingerHumanlikeChecks
 
     private static void CheckReturnFire(DollSingerEnemySystem system, MoonRaidMap map, World world)
     {
-        var source = new GameObject("Temporary PMC return-fire source") { hideFlags = HideFlags.HideAndDontSave };
-        var target = new GameObject("Temporary PMC sight target") { hideFlags = HideFlags.HideAndDontSave };
-        var wall = new GameObject("Temporary PMC sight blocker") { hideFlags = HideFlags.HideAndDontSave };
+        var original = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+        var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
+        UnityEngine.SceneManagement.SceneManager.SetActiveScene(scene);
+        var source = new GameObject("Temporary PMC return-fire source") { hideFlags = HideFlags.HideInHierarchy };
+        var target = new GameObject("Temporary PMC sight target") { hideFlags = HideFlags.HideInHierarchy };
+        var wall = new GameObject("Temporary PMC sight blocker") { hideFlags = HideFlags.HideInHierarchy };
         try
         {
             // No player prefab, nav bake or connection: exercise the real motor and sight query.
@@ -290,6 +294,8 @@ public static class DollSingerHumanlikeChecks
         {
             Object.DestroyImmediate(source); Object.DestroyImmediate(target); Object.DestroyImmediate(wall);
             UnityEngine.Physics.SyncTransforms();
+            UnityEngine.SceneManagement.SceneManager.SetActiveScene(original);
+            EditorSceneManager.CloseScene(scene, true);
         }
     }
 
