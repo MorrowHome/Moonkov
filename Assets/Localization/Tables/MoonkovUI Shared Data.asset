@@ -5401,6 +5401,38 @@ MonoBehaviour:
     m_Key: Rifle fires three rounds per trigger press; 0.42s between bursts.
     m_Metadata:
       m_Items: []
+  - m_Id: 6824264798822400
+    m_Key: CHAT ALL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6824264807211008
+    m_Key: Join a team to use team chat.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6824264807211009
+    m_Key: Enter a message.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6824264807211010
+    m_Key: Messages can contain up to 120 characters.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6824264807211011
+    m_Key: This message contains invalid text.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6824264807211012
+    m_Key: Sending too fast. Try again shortly.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6824264807211013
+    m_Key: Message not confirmed. Your draft was kept.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6824264807211014
+    m_Key: Chat is unavailable.
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -99,7 +99,7 @@ namespace Unity.MP_FPS
             PresentCampaignCommunication(progress);
             if (((Keyboard.current != null && Keyboard.current.jKey.wasPressedThisFrame) ||
                 (Gamepad.current != null && Gamepad.current.dpad.up.wasPressedThisFrame)) && !m_InventoryVisible &&
-                !MapInputBlocked && !GameSettings.Instance.IsPauseMenuOpen)
+                !ChatInputBlocked && !MapInputBlocked && !GameSettings.Instance.IsPauseMenuOpen)
                 SetCampaignJournal(!m_CampaignJournalVisible);
             bool tracked = !progress.TrackingSuppressed && progress.PrimaryTracked != null;
             string id = tracked ? EffectiveCampaignTask(progress) : null;

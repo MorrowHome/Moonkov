@@ -69,12 +69,13 @@ namespace Unity.MP_FPS
         private int m_PreviousCount = -1;
         private static RaidHUD s_Active;
         public static bool InventoryOpen => s_Active != null && (s_Active.m_InventoryVisible || s_Active.m_MissionDetailsVisible || s_Active.m_CampaignJournalVisible);
-        public static bool PointerRequested => (s_Active != null && s_Active.CinematicInputBlocked) || InventoryOpen || MapInputBlocked || (s_Active != null && (s_Active.m_WasSettled || s_Active.m_ClashLobbyPointer));
+        public static bool PointerRequested => ChatInputBlocked || (s_Active != null && s_Active.CinematicInputBlocked) || InventoryOpen || MapInputBlocked || (s_Active != null && (s_Active.m_WasSettled || s_Active.m_ClashLobbyPointer));
         public static bool TimedActionInputActive => s_Active != null && (s_Active.TimedActionActive || s_Active.QuickTacticalActionPending || s_Active.MeleeTimedActionActive);
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetPresentation() => s_Active = null;
         public static bool CloseInventory()
         {
+            if (s_Active != null && s_Active.CloseChatForEscape()) return true;
             if (s_Active != null && (s_Active.m_MapOpen || s_Active.m_MapEscapeFrame == Time.frameCount))
             { s_Active.CloseRaidMapFromUI(); return true; }
             if (s_Active != null && s_Active.m_CampaignJournalVisible) { s_Active.SetCampaignJournal(false); return true; }
@@ -160,6 +161,7 @@ namespace Unity.MP_FPS
             InitializeProtection();
             InitializeRaidMap();
             InitializeSpecialEquipment();
+            InitializeChat();
         }
 
         private void EquipmentTab() => SelectHealth(false);
@@ -286,7 +288,7 @@ namespace Unity.MP_FPS
             float remaining=Mathf.Max(0,(m_MedicalActive ? m_MedicalEndsAt : m_DissectionEndsAt)-Time.unscaledTime);
             m_ActionProgress.value=100*(1-Mathf.Clamp01(remaining/Mathf.Max(.1f,m_ActionDuration)));
             m_ActionProgress.title=(m_MedicalActive ? "治疗中" : "搜索中")+$" / {remaining:0.0}s · 保持静止，X取消";
-            if(Keyboard.current!=null && Keyboard.current.xKey.wasPressedThisFrame)CancelTimedAction();
+            if(!ChatInputBlocked && Keyboard.current!=null && Keyboard.current.xKey.wasPressedThisFrame)CancelTimedAction();
         }
         private void SetInventory(bool visible)
         {
@@ -350,20 +352,21 @@ namespace Unity.MP_FPS
         {
             bool inGame = GameSettings.Instance.GameState == GlobalGameState.InGame;
             m_Root.style.display = inGame ? DisplayStyle.Flex : DisplayStyle.None;
-            if (!inGame) { ResetRaidCinematics(); m_Minimap.Hide(); ResetRaidMap(); PresentMelee(false); PresentQuickSlots(false); PresentProtection(false); HideBountyClash(); return; }
+            if (!inGame) { ResetChat(); ResetRaidCinematics(); m_Minimap.Hide(); ResetRaidMap(); PresentMelee(false); PresentQuickSlots(false); PresentProtection(false); HideBountyClash(); return; }
             if (m_World == null || !m_World.IsCreated) InitializeWorld();
-            if (m_World == null || !m_World.IsCreated || m_StateQuery.IsEmptyIgnoreFilter) { ResetRaidCinematics(); m_Minimap.Hide(); ResetRaidMap(); PresentMelee(false); PresentQuickSlots(false); PresentProtection(false); HideBountyClash(); return; }
+            if (m_World == null || !m_World.IsCreated || m_StateQuery.IsEmptyIgnoreFilter) { UpdateChat(); ResetRaidCinematics(); m_Minimap.Hide(); ResetRaidMap(); PresentMelee(false); PresentQuickSlots(false); PresentProtection(false); HideBountyClash(); return; }
             m_Snapshot = m_StateQuery.GetSingleton<RaidClientState>().Snapshot;
             PresentOnlineSquad();
             UpdateInventoryView();
             PresentTimedAction();
             bool clash = PresentBountyClash();
             UpdateRaidCinematics(clash);
+            UpdateChat();
             UpdateSpecialEquipment();
             if (CinematicInputBlocked) ResetRaidMap(); else UpdateRaidMap(clash);
             bool ready = m_Snapshot.RaidId > 0;
             bool settled = ready && m_Snapshot.Phase != RaidPhase.Active;
-            if (((Keyboard.current != null && Keyboard.current.tabKey.wasPressedThisFrame) || (Gamepad.current != null && Gamepad.current.selectButton.wasPressedThisFrame)) && ready && !settled && !m_ClashActionsBlocked && !CinematicInputBlocked && !GameSettings.Instance.IsPauseMenuOpen)
+            if (((Keyboard.current != null && Keyboard.current.tabKey.wasPressedThisFrame) || (Gamepad.current != null && Gamepad.current.selectButton.wasPressedThisFrame)) && !ChatInputBlocked && ready && !settled && !m_ClashActionsBlocked && !CinematicInputBlocked && !GameSettings.Instance.IsPauseMenuOpen)
                 {if(!m_InventoryRequestPending || TimedActionActive)SetInventory(!m_InventoryVisible);}
             if (settled && m_InventoryVisible) SetInventory(false);
             if (!settled && m_WasSettled) { m_ResultStep = 0; Utils.SetCursorVisible(false); }
@@ -865,6 +868,7 @@ namespace Unity.MP_FPS
 
         private void OnDisable()
         {
+            DisposeChat();
             DisposeCampaignHUD();
             ResetRaidCinematics();
             DisposeRaidMap();

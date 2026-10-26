@@ -1,3 +1,4 @@
+using Unity.MP_FPS;
 using Unity.Entities;
 using Unity.NetCode;
 
@@ -20,7 +21,7 @@ public partial class ClientInputSenderSystem : SystemBase
         if (tick.IsValid)
         {
             var previousTick = m_PreviouslySentTick;
-            var inProgressCommandInput = m_InProgressCommandInput;
+            var inProgressCommandInput = RaidHUD.ChatInputBlocked ? default : m_InProgressCommandInput;
             var bufferLookup = SystemAPI.GetBufferLookup<ClientCommandInput>();
 
             foreach (var (input, entity)
@@ -56,7 +57,8 @@ public partial class ClientInputSenderSystem : SystemBase
                     if (buffer.GetDataAtTick(tick, out var existingCommandData)
                         && existingCommandData.Tick == tick)
                     {
-                        existingCommandData.UpdateFrom(in input.ValueRO);
+                        if (RaidHUD.ChatInputBlocked) existingCommandData.SetFrom(in input.ValueRO);
+                        else existingCommandData.UpdateFrom(in input.ValueRO);
                         buffer.AddCommandData(existingCommandData);
                     }
                     else

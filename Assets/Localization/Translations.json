@@ -1,4 +1,12 @@
 {
+  "CHAT ALL": "全局",
+  "Join a team to use team chat.": "加入队伍后可使用队伍聊天。",
+  "Enter a message.": "请输入消息。",
+  "Messages can contain up to 120 characters.": "消息最多 120 个字符。",
+  "This message contains invalid text.": "消息包含无效字符。",
+  "Sending too fast. Try again shortly.": "发送过快，请稍后再试。",
+  "Message not confirmed. Your draft was kept.": "未确认发送结果，草稿已保留。",
+  "Chat is unavailable.": "聊天暂不可用。",
   "THEOPHILUS": "忒奥菲勒斯",
   "SATELLITE": "卫星图",
   "MAP INFO": "详情",

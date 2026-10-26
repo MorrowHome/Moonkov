@@ -5427,6 +5427,38 @@ MonoBehaviour:
     m_Localized: SCROLL TO ZOOM
     m_Metadata:
       m_Items: []
+  - m_Id: 6824264798822400
+    m_Localized: ALL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6824264807211008
+    m_Localized: Join a team to use team chat.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6824264807211009
+    m_Localized: Enter a message.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6824264807211010
+    m_Localized: Messages can contain up to 120 characters.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6824264807211011
+    m_Localized: This message contains invalid text.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6824264807211012
+    m_Localized: Sending too fast. Try again shortly.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6824264807211013
+    m_Localized: Message not confirmed. Your draft was kept.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6824264807211014
+    m_Localized: Chat is unavailable.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

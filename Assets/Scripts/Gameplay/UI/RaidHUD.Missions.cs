@@ -103,7 +103,7 @@ namespace Unity.MP_FPS
                 m_MissionMarker.style.display = DisplayStyle.None;
                 if (m_MissionOperation != null)
                 { SetMissionDetails(false); m_MissionOperation = null; m_MissionSequence = 0; }
-                if (live && !CampaignJournalAvailable && Keyboard.current != null && Keyboard.current.jKey.wasPressedThisFrame && !m_InventoryVisible && !GameSettings.Instance.IsPauseMenuOpen)
+                if (!ChatInputBlocked && live && !CampaignJournalAvailable && Keyboard.current != null && Keyboard.current.jKey.wasPressedThisFrame && !m_InventoryVisible && !GameSettings.Instance.IsPauseMenuOpen)
                 {
                     m_Root.Q<Label>("missionDetailTitle").text = "设施记录";
                     m_MissionNodes.Clear(); m_MissionNodeLabels.Clear();
@@ -141,9 +141,9 @@ namespace Unity.MP_FPS
             }
             m_MissionHud.style.display = live && m_MissionPinned && !m_InventoryVisible ? DisplayStyle.Flex : DisplayStyle.None;
             UpdateMissionMarker(m_MissionHasDestination && live && m_MissionPinned && !m_InventoryVisible && !m_MissionDetailsVisible && !GameSettings.Instance.IsPauseMenuOpen);
-            if (!CampaignJournalAvailable && Keyboard.current != null && Keyboard.current.jKey.wasPressedThisFrame && live && !m_InventoryVisible && !GameSettings.Instance.IsPauseMenuOpen)
+            if (!ChatInputBlocked && !CampaignJournalAvailable && Keyboard.current != null && Keyboard.current.jKey.wasPressedThisFrame && live && !m_InventoryVisible && !GameSettings.Instance.IsPauseMenuOpen)
                 SetMissionDetails(!m_MissionDetailsVisible);
-            if (!live || MapInputBlocked || m_InventoryVisible || m_MissionDetailsVisible || m_CampaignJournalVisible || GameSettings.Instance.IsPauseMenuOpen || UnityEngine.Cursor.lockState != CursorLockMode.Locked)
+            if (!live || ChatInputBlocked || MapInputBlocked || m_InventoryVisible || m_MissionDetailsVisible || m_CampaignJournalVisible || GameSettings.Instance.IsPauseMenuOpen || UnityEngine.Cursor.lockState != CursorLockMode.Locked)
             {
                 CancelMissionHold(); m_MissionInteraction.style.display = DisplayStyle.None;
                 if (!live && m_MissionDetailsVisible) SetMissionDetails(false);

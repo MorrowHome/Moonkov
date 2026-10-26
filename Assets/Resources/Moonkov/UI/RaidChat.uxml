@@ -1,0 +1,11 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="RaidChat.uss" />
+    <ui:VisualElement name="raidChat" class="raid-chat moonkov-style-font" picking-mode="Ignore">
+        <ui:ScrollView name="chatHistory" class="chat-history" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" picking-mode="Ignore" />
+        <ui:VisualElement name="chatComposer" class="chat-composer">
+            <ui:Button name="chatChannel" text="TEAM" />
+            <ui:TextField name="chatInput" class="chat-input" max-length="480" />
+        </ui:VisualElement>
+        <ui:Label name="chatFeedback" class="chat-feedback" picking-mode="Ignore" />
+    </ui:VisualElement>
+</ui:UXML>

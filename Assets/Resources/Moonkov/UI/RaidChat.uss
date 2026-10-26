@@ -1,0 +1,17 @@
+.raid-chat { position: absolute; left: 28px; bottom: 172px; width: 380px; max-width: 42%; color: #edeef0; font-size: 14px; letter-spacing: 0; -unity-font-definition: url("../../../Localization/Fonts/NotoSansCJKsc-Regular.otf"); opacity: 1; transition-property: opacity; transition-duration: 0.25s; transition-timing-function: ease-out; }
+.raid-chat.chat-hidden { opacity: 0; transition-duration: 0.2s; transition-timing-function: ease-in; }
+.raid-chat.chat-open { background-color: rgba(17, 17, 19, 0.96); border-width: 1px; border-color: #46484f; padding: 10px; }
+.raid-chat .chat-history { max-height: 170px; }
+.raid-chat.chat-open .chat-history { height: 230px; max-height: 230px; margin-bottom: 8px; }
+.raid-chat .chat-row { white-space: normal; margin-bottom: 4px; padding: 4px 6px; background-color: rgba(17, 17, 19, 0.86); font-size: 14px; letter-spacing: 0; color: #edeef0; flex-shrink: 0; }
+.raid-chat .chat-team { border-left-width: 2px; border-left-color: #70b8ff; }
+.raid-chat .chat-global { border-left-width: 2px; border-left-color: #b0b4ba; }
+.raid-chat .chat-composer { flex-direction: row; align-items: center; }
+.raid-chat #chatChannel { min-width: 56px; width: 56px; height: 32px; margin: 0 6px 0 0; padding: 0; font-size: 12px; letter-spacing: 0; color: #70b8ff; background-color: #23262d; border-width: 1px; border-color: #46484f; }
+.raid-chat #chatChannel.chat-global { color: #edeef0; }
+.raid-chat #chatChannel:hover { background-color: #2e3138; }
+.raid-chat #chatChannel:disabled { opacity: 0.5; }
+.raid-chat .chat-input { flex-grow: 1; min-width: 0; height: 32px; margin: 0; }
+.raid-chat .chat-input > .unity-text-field__input { background-color: #191b20; color: #edeef0; border-width: 1px; border-color: #6c6e79; padding: 5px 8px; font-size: 14px; letter-spacing: 0; }
+.raid-chat .chat-input > .unity-text-field__input:focus { border-color: #70b8ff; }
+.raid-chat .chat-feedback { font-size: 12px; letter-spacing: 0; color: #ffca89; white-space: normal; margin-top: 6px; background-color: rgba(17, 17, 19, 0.92); }
