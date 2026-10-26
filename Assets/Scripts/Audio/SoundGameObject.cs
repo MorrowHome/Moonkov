@@ -164,7 +164,10 @@ public class SoundGameObject
         if (m_Emitter == emitter)
         {
             StopAudioSource();
-            if (m_PositionType == PositionType.ParentTransform)
+            // Scene/Play teardown can destroy the shared pool or the attached
+            // source before its owner releases the emitter. Unity objects then
+            // compare equal to null even though their managed wrappers remain.
+            if (m_PositionType == PositionType.ParentTransform && m_AudioSource && m_SoundGameObjectPool)
             {
                 m_AudioSource.transform.parent = m_SoundGameObjectPool.transform;
             }
