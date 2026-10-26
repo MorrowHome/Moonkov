@@ -30,6 +30,43 @@ Check(TacticalItemRules.PrepareResupply(source,sourceVersion,12,out var partial,
 var full=InventoryGraph.Create(false,false);full.AddSupply("cells",48);
 int fullEnergy=full.CellEnergy(true), fullVersion=full.Version;
 Check(TacticalItemRules.PrepareResupply(full,full.Version,100,out _,out supplied)==InventoryError.Full && supplied==0 && full.CellEnergy(true)==fullEnergy && full.Version==fullVersion,"no room leaves box and inventory untouched");
+var nearLimit=InventoryGraph.Create(true,false);
+var limitPack=new InventoryItem {Id=Guid.NewGuid().ToString("D"),Code="backpack",Parent=InventoryCatalog.Equipment,Region="Backpack"};
+nearLimit.Items.Add(limitPack);
+Check(nearLimit.AddSupply("alloy",72,limitPack.Id)==InventoryError.None && nearLimit.AddSupply("dust",3,InventoryCatalog.Pockets)==InventoryError.None &&
+    nearLimit.CarriedWeight>44.9f && nearLimit.CarriedWeight<45,"near-limit supply fixture");
+int limitVersion=nearLimit.Version;
+Check(TacticalItemRules.PrepareResupply(nearLimit,limitVersion,100,out var rejected,out supplied)==InventoryError.Overweight &&
+    rejected==null && supplied==0 && nearLimit.Count("cells",true)==0 && nearLimit.Version==limitVersion,"resupply must not exceed weight limit or spend energy");
+Check(nearLimit.AddSupply("dust",1,limitPack.Id)==InventoryError.Overweight && nearLimit.Version==limitVersion,
+    "explicit backpack supply cannot bypass weight limit");
+var chargeAtLimit=nearLimit.Clone();chargeAtLimit.Items.RemoveAll(i=>i.Code=="dust");chargeAtLimit.Version++;
+Check(chargeAtLimit.AddSupply("cells",1,InventoryCatalog.Pockets,cellCharge:10)==InventoryError.None &&
+    chargeAtLimit.AddSupply("dust",2,InventoryCatalog.Pockets)==InventoryError.None,"partial cell weight fixture");
+Check(TacticalItemRules.PrepareResupply(chargeAtLimit,chargeAtLimit.Version,100,out var chargedAtLimit,out supplied)==InventoryError.None &&
+    supplied==90 && chargedAtLimit.CellEnergy(true)==100 && Math.Abs(chargedAtLimit.CarriedWeight-chargeAtLimit.CarriedWeight)<.001f,
+    "existing cell can recharge without adding weight");
+var chargeLegacy=chargeAtLimit.Clone();chargeLegacy.Items.Find(i=>i.Code=="dust")!.Quantity=20;
+Check(chargeLegacy.CarriedWeight>45 && TacticalItemRules.PrepareResupply(chargeLegacy,chargeLegacy.Version,100,out var chargedLegacy,out supplied)==InventoryError.None &&
+    supplied==90 && chargedLegacy.CarriedWeight==chargeLegacy.CarriedWeight,"legacy overweight kit may recharge its existing cell");
+var legacy=nearLimit.Clone();legacy.Items.Find(i=>i.Code=="dust")!.Quantity=20;
+float oldWeight=legacy.CarriedWeight;
+Check(oldWeight>45 && legacy.Validate()==InventoryError.None && legacy.AddSupply("dust",1,InventoryCatalog.Stash)==InventoryError.None &&
+    legacy.CarriedWeight==oldWeight,"legacy overweight kit can still receive stash items");
+var worldLoot=legacy.Clone();worldLoot.Items.RemoveAll(i=>i.Id==InventoryCatalog.Stash || i.Parent==InventoryCatalog.Stash);
+worldLoot.Items.Add(new InventoryItem {Id=LootInventoryExchange.Root,Code=LootInventoryExchange.Root});
+Check(worldLoot.AddSupply("dust",1,LootInventoryExchange.Root)==InventoryError.None && worldLoot.CarriedWeight==oldWeight,
+    "world loot is not charged to the player");
+var rigLimit=InventoryGraph.Create(false,false);
+var rigPack=new InventoryItem {Id=Guid.NewGuid().ToString("D"),Code="backpack",Parent=InventoryCatalog.Equipment,Region="Backpack"};
+var fullRig=new InventoryItem {Id=Guid.NewGuid().ToString("D"),Code="rig",Parent=InventoryCatalog.Equipment,Region="ChestRig"};
+rigLimit.Items.Add(rigPack);rigLimit.Items.Add(fullRig);
+foreach(var cell in new[]{("left",0,0),("left",0,1),("center",0,0),("center",1,0),("center",0,1),("center",1,1),("right",0,0),("right",0,1)})
+    rigLimit.Items.Add(new InventoryItem {Id=Guid.NewGuid().ToString("D"),Code="halo_hit_marker",Parent=fullRig.Id,Region=cell.Item1,X=cell.Item2,Y=cell.Item3});
+Check(rigLimit.AddSupply("alloy",70,rigPack.Id)==InventoryError.None && rigLimit.Validate()==InventoryError.None && rigLimit.CarriedWeight>44.9f,
+    "full rig near-limit fixture");
+Check(TacticalItemRules.PrepareResupply(rigLimit,rigLimit.Version,100,out _,out supplied)==InventoryError.Overweight && supplied==0,
+    "full rig must not hide an overweight rejection from free pockets");
 Check(TacticalItemRules.BlastDamage(TacticalItemKind.Dynamite,0)==650,"dynamite inner damage");
 Check(TacticalItemRules.BlastDamage(TacticalItemKind.Frag,0)==320,"frag inner damage");
 Check(TacticalItemRules.BlastDamage(TacticalItemKind.Frag,8)==0 && TacticalItemRules.BlastDamage(TacticalItemKind.Frag,float.NaN)==0,"blast boundary rejects nonfinite");

@@ -84,7 +84,11 @@ namespace Unity.MP_FPS
                 // AddSupply enforces real grid capacity/weight; grant only whole lawful cells.
                 if(budget<BatteryEnergy.Capacity)return InventoryError.Full;
                 var error=copy.AddSupply("cells",1,InventoryCatalog.Pockets);
-                if(error!=InventoryError.None && copy.Equipped("ChestRig")!=null)error=copy.AddSupply("cells",1,copy.Equipped("ChestRig").Id);
+                if(error!=InventoryError.None && copy.Equipped("ChestRig")!=null)
+                {
+                    var rigError=copy.AddSupply("cells",1,copy.Equipped("ChestRig").Id);
+                    if(error!=InventoryError.Overweight || rigError==InventoryError.None)error=rigError;
+                }
                 if(error!=InventoryError.None)return error;
                 supplied=BatteryEnergy.Capacity;
             }

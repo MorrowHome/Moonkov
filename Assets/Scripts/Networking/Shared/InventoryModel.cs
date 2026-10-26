@@ -400,7 +400,10 @@ namespace Unity.MP_FPS.Inventory
                 }
             }
             if (supply.Quantity > 0) return InventoryError.Full;
-            if (parent == null && copy.CarriedWeight > InventoryCatalog.CarryWeightLimit) return InventoryError.Overweight;
+            // Explicit pockets/rig/backpack destinations must obey the same limit.
+            // Existing overweight saves may still receive items in storage or world loot.
+            if (copy.CarriedWeight > InventoryCatalog.CarryWeightLimit && copy.CarriedWeight > CarriedWeight + .001f)
+                return InventoryError.Overweight;
             var validation = copy.Validate(); if (validation != InventoryError.None) return validation;
             Items = copy.Items; Version++; return InventoryError.None;
         }
