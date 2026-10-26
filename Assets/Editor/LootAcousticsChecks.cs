@@ -174,6 +174,61 @@ public static partial class AlienEnemyChecks
                 Check(sharedCache.Find(valuableId) == null && scavenge.Inventory.Find(valuableId) != null &&
                     scavenge.VisitedCaches.Contains(0) && scavenge.LootedCaches == 1,
                     "A completed PMC search did not transfer the real valuable item and finish the objective.");
+
+                for (int i = 0; i < 3; i++)
+                {
+                    int drawerId = RaidFurnitureLoot.FirstId + i;
+                    var drawerCache = InventoryGraph.Create(false, false);
+                    drawerCache.Items.Add(new InventoryItem { Id = LootInventoryExchange.Root, Code = LootInventoryExchange.Root });
+                    if (i == 0) Check(drawerCache.AddSupply("electrolyte", 1, LootInventoryExchange.Root, true) == InventoryError.None,
+                        "PMC drawer fixture could not create a real supply.");
+                    containers.Containers.Add(drawerId, drawerCache);
+                    containers.FurnitureCaches.Add(drawerId, (Unity.Mathematics.float3)(pmcOrigin + Vector3.forward));
+                    scavenge.Cache = drawerId; scavenge.LootUntil = 0; scavenge.CacheApproachKnown = false;
+                    args[5] = 30d + i * 10; objective.Invoke(ai, args);
+                    double drawerFinished = scavenge.LootUntil;
+                    args[5] = drawerFinished - .01; objective.Invoke(ai, args);
+                    if (i == 0) Check(drawerCache.Count("electrolyte") == 1 && scavenge.Inventory.Count("electrolyte", true) == 0,
+                        "PMC took drawer contents before its search finished.");
+                    args[5] = drawerFinished; objective.Invoke(ai, args);
+                    Check(scavenge.VisitedCaches.Contains(drawerId) && scavenge.Cache == -1,
+                        "Completed drawer search did not release the objective.");
+                    if (i == 0) Check(drawerCache.Count("electrolyte") == 0 && scavenge.Inventory.Count("electrolyte", true) == 1 &&
+                        scavenge.LootedCaches == 1, "Drawer contents or its fractional departure count differ.");
+                }
+                Check(scavenge.DrawersSearched == 3 && scavenge.LootedCaches == 2,
+                    "Three searched drawers should count as one ordinary cache for departure.");
+                int blockedId = RaidFurnitureLoot.FirstId + 3;
+                var blockedCache = InventoryGraph.Create(false, false);
+                blockedCache.Items.Add(new InventoryItem { Id = LootInventoryExchange.Root, Code = LootInventoryExchange.Root });
+                Check(blockedCache.AddSupply("med_gel", 1, LootInventoryExchange.Root, true) == InventoryError.None, "Blocked drawer fixture");
+                containers.Containers.Add(blockedId, blockedCache);
+                containers.FurnitureCaches.Add(blockedId, (Unity.Mathematics.float3)(pmcOrigin + Vector3.forward));
+                var obstruction = GameObject.CreatePrimitive(PrimitiveType.Cube); obstruction.transform.SetParent(holder.transform);
+                obstruction.transform.position = pmcOrigin + Vector3.forward * .5f + Vector3.up * .7f;
+                obstruction.transform.localScale = new Vector3(1, 2, .2f); Physics.SyncTransforms();
+                scavenge.Cache = blockedId; scavenge.CacheApproach = pmcOrigin; scavenge.CacheApproachKnown = true;
+                scavenge.CacheObstructedSince = -1; scavenge.LootUntil = 0;
+                args[5] = 70d; objective.Invoke(ai, args);
+                Check(scavenge.Cache == blockedId && blockedCache.Count("med_gel") == 1,
+                    "A blocked drawer was searched or abandoned immediately.");
+                args[5] = 72d; objective.Invoke(ai, args);
+                Check(scavenge.Cache == -1 && scavenge.VisitedCaches.Contains(blockedId) && blockedCache.Count("med_gel") == 1,
+                    "PMC failed to abandon an unreachable drawer without taking its contents.");
+                Object.DestroyImmediate(obstruction); Physics.SyncTransforms();
+
+                scavenge.Cache = blockedId; scavenge.LootUntil = 90; containers.Containers.Remove(blockedId);
+                args[5] = 73d; objective.Invoke(ai, args);
+                Check(scavenge.Cache == -1 && scavenge.LootUntil == 0 && scavenge.NextDecision == 0,
+                    "A removed drawer left stale target or search progress.");
+                var lostPath = Brain(); lostPath.Action = PmcAction.Scavenge; lostPath.Cache = RaidFurnitureLoot.FirstId + 4;
+                lostPath.LootUntil = 95; lostPath.CacheApproachKnown = true; lostPath.NextDecision = 100;
+                typeof(DollSingerEnemySystem).GetMethod("UpdatePath", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .Invoke(ai, new object[] { lostPath, new Vector3(900000, 900000, 900000),
+                        new Vector3(900010, 900000, 900000), 80d });
+                Check(lostPath.Cache == -1 && lostPath.VisitedCaches.Contains(RaidFurnitureLoot.FirstId + 4) &&
+                    lostPath.LootUntil == 0 && lostPath.NextDecision == 0,
+                    "A lost navigation path left the PMC stuck on its old loot objective.");
             }
             finally { Object.DestroyImmediate(tuning); }
             return $"PASS {checks} loot acoustics checks: world audio, server sequence, real PMC scavenging and alien/PMC hearing.";

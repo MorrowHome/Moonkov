@@ -71,6 +71,10 @@ namespace Unity.MP_FPS
         public readonly Vector3[] Corners = new Vector3[64];
         public readonly Vector3[] ProbeCorners = new Vector3[64];
         public int CornerCount, Corner, Seed, Cache = -1, SearchStep, LootedCaches;
+        public int DrawersSearched;
+        public Vector3 CacheApproach;
+        public bool CacheApproachKnown;
+        public double CacheObstructedSince = -1;
         public Vector3 Goal, LastSeen, ObservedVelocity, ProgressPosition, CoverPosition, PeekPosition, TacticalGoal;
         public Vector3 RaidExit;
         public Vector3 AimOffset = Vector3.up * 1.15f;

@@ -10,6 +10,28 @@ namespace Unity.MP_FPS
 {
     public static class PmcLootRules
     {
+        public static bool TryPosition(Vector3[] fixedPositions, RaidLootContainers caches, int id, out Vector3 position)
+        {
+            position = default;
+            if (id >= 0 && fixedPositions != null && id < fixedPositions.Length)
+            { position = fixedPositions[id]; return true; }
+            if (!RaidFurnitureLoot.IsFurniture(id) || caches == null || !caches.Containers.ContainsKey(id) ||
+                !caches.FurnitureCaches.TryGetValue(id, out var drawer)) return false;
+            position = drawer;
+            return true;
+        }
+
+        // Only nearby, registered furniture is considered. Contents remain unknown until searched.
+        public static int[] NearbyDrawers(RaidLootContainers caches, Vector3 position, HashSet<int> visited)
+        {
+            if (caches == null) return Array.Empty<int>();
+            return caches.FurnitureCaches.Where(pair => RaidFurnitureLoot.IsFurniture(pair.Key) &&
+                    caches.Containers.ContainsKey(pair.Key) && (visited == null || !visited.Contains(pair.Key)) &&
+                    ((Vector3)pair.Value - position).sqrMagnitude <= 20 * 20)
+                .OrderBy(pair => ((Vector3)pair.Value - position).sqrMagnitude).ThenBy(pair => pair.Key)
+                .Take(12).Select(pair => pair.Key).ToArray();
+        }
+
         private static float Value(InventoryItem item, bool needCells, bool needMedicine)
         {
             var def = InventoryCatalog.Get(item?.Code);
@@ -99,9 +121,31 @@ namespace Unity.MP_FPS
 
     public partial class DollSingerEnemySystem
     {
+        private static void AbandonCache(DollSingerEnemyBrain brain)
+        {
+            if (brain.Cache < 0) return;
+            brain.VisitedCaches.Add(brain.Cache); brain.Cache = -1; brain.LootUntil = 0;
+            brain.CacheApproachKnown = false; brain.CacheObstructedSince = -1;
+            brain.NextDecision = brain.NextPath = 0;
+        }
+
+        private RaidLootContainers PmcLootContainers()
+        {
+            if (!SystemAPI.HasSingleton<RaidLootWorld>()) return null;
+            var entity = SystemAPI.GetSingletonEntity<RaidLootWorld>();
+            return EntityManager.HasComponent<RaidLootContainers>(entity) ? EntityManager.GetComponentObject<RaidLootContainers>(entity) : null;
+        }
+
         private Vector3 SelectCache(DollSingerEnemyBrain brain, Vector3 position, MoonRaidMap map)
         {
-            if (brain.Cache >= 0) return map.LootPositions[brain.Cache];
+            var loot = PmcLootContainers();
+            if (brain.Cache >= 0)
+            {
+                if (PmcLootRules.TryPosition(map.LootPositions, loot, brain.Cache, out var current))
+                    return brain.CacheApproachKnown ? brain.CacheApproach : current;
+                brain.Cache = -1; brain.CacheApproachKnown = false; brain.CacheObstructedSince = -1;
+                brain.LootUntil = 0; brain.NextPath = 0;
+            }
             float best = float.MaxValue;
             for (int i = 0; i < map.LootPositions.Length; i++)
             {
@@ -113,9 +157,24 @@ namespace Unity.MP_FPS
                 float value = length + (i * 7 + brain.Seed * 11) % 13;
                 if (brain.Target != Unity.Entities.Entity.Null && HorizontalDistance(sample.position, brain.LastSeen) < 12) value += 25;
                 if (value >= best) continue;
-                best = value; brain.Cache = i;
+                best = value; brain.Cache = i; brain.CacheApproachKnown = false;
             }
-            if (brain.Cache >= 0) return map.LootPositions[brain.Cache];
+            foreach (int id in PmcLootRules.NearbyDrawers(loot, position, brain.VisitedCaches))
+            {
+                if (!PmcLootRules.TryPosition(map.LootPositions, loot, id, out var target) ||
+                    !NavMesh.SamplePosition(target, out var sample, 3, m_Filter) ||
+                    Vector3.Distance(sample.position, target) > RaidRules.PickupRange - .9f ||
+                    WorldBlocked(sample.position + Vector3.up * 1.4f, target) ||
+                    !CompletePath(brain, position, sample.position, out float length))
+                { brain.VisitedCaches.Add(id); continue; }
+                float value = length + (float)(((long)id * 7 + (long)brain.Seed * 11) % 13);
+                if (brain.Target != Entity.Null && HorizontalDistance(sample.position, brain.LastSeen) < 12) value += 25;
+                if (value >= best) continue;
+                best = value; brain.Cache = id; brain.CacheApproach = sample.position; brain.CacheApproachKnown = true;
+            }
+            brain.CacheObstructedSince = -1;
+            if (brain.Cache >= 0)
+                return brain.CacheApproachKnown ? brain.CacheApproach : map.LootPositions[brain.Cache];
             brain.Leaving = true;
             brain.CommitUntil = 0;
             return brain.RaidExit;
@@ -126,22 +185,39 @@ namespace Unity.MP_FPS
             if (brain.IsClashBot) { AdvanceClashObjective(brain, position, eye, now); return; }
             if (brain.Action == PmcAction.Scavenge && brain.Cache >= 0)
             {
-                Vector3 cachePosition = map.LootPositions[brain.Cache];
-                if (HorizontalDistance(position, cachePosition) > RaidRules.PickupRange ||
-                    Mathf.Abs(position.y - cachePosition.y) > 3 || WorldBlocked(eye, cachePosition + Vector3.up * .3f))
-                { brain.LootUntil = 0; return; }
+                var loot = PmcLootContainers();
+                if (!PmcLootRules.TryPosition(map.LootPositions, loot, brain.Cache, out var cachePosition))
+                { brain.Cache = -1; brain.CacheApproachKnown = false; brain.CacheObstructedSince = -1;
+                    brain.LootUntil = 0; brain.NextDecision = brain.NextPath = 0; return; }
+                bool drawer = RaidFurnitureLoot.IsFurniture(brain.Cache);
+                bool reachable = drawer ? Vector3.Distance(position, cachePosition) <= RaidRules.PickupRange && !WorldBlocked(eye, cachePosition) :
+                    HorizontalDistance(position, cachePosition) <= RaidRules.PickupRange && Mathf.Abs(position.y - cachePosition.y) <= 3 &&
+                    !WorldBlocked(eye, cachePosition + Vector3.up * .3f);
+                if (!reachable)
+                {
+                    brain.LootUntil = 0;
+                    if (drawer && brain.CacheApproachKnown && Vector3.Distance(position, brain.CacheApproach) <= 1.5f)
+                    {
+                        if (brain.CacheObstructedSince < 0) brain.CacheObstructedSince = now;
+                        if (now - brain.CacheObstructedSince >= 2)
+                            AbandonCache(brain);
+                    }
+                    else brain.CacheObstructedSince = -1;
+                    return;
+                }
+                brain.CacheObstructedSince = -1;
                 if (brain.LootUntil == 0)
                 {
                     brain.LootUntil = now + m_Tuning.LootSearchSeconds;
                     RaidLootAcoustics.Mark(ref health);
                 }
                 if (now < brain.LootUntil) return;
-                var loot = EntityManager.GetComponentObject<RaidLootContainers>(SystemAPI.GetSingletonEntity<RaidLootWorld>());
-                if (loot.Containers.TryGetValue(brain.Cache, out var cache))
+                if (loot != null && loot.Containers.TryGetValue(brain.Cache, out var cache))
                     PmcLootRules.TakeAvailable(brain.Inventory, cache);
-                brain.LootedCaches++;
+                if (!drawer || ++brain.DrawersSearched % 3 == 0) brain.LootedCaches++;
                 brain.VisitedCaches.Add(brain.Cache);
                 brain.Cache = -1;
+                brain.CacheApproachKnown = false;
                 brain.LootUntil = 0;
                 brain.NextDecision = brain.NextPath = 0;
             }

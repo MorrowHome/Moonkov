@@ -360,12 +360,20 @@ namespace Unity.MP_FPS
                 Mathf.Abs(start.position.y - position.y) > .75f || Mathf.Abs(end.position.y - goal.y) > 1.2f ||
                 !NavMesh.CalculatePath(start.position, end.position, m_Filter, brain.Path) ||
                 brain.Path.status != NavMeshPathStatus.PathComplete)
-            { PathFailure(brain, goal, now); return; }
+            {
+                PathFailure(brain, goal, now);
+                if (brain.Action == PmcAction.Scavenge) AbandonCache(brain);
+                return;
+            }
             brain.PathFailed = false;
             brain.CornerCount = brain.Path.GetCornersNonAlloc(brain.Corners);
             if (brain.CornerCount == 0 || brain.CornerCount == brain.Corners.Length ||
                 brain.IsClashBot && !SafeClashRoute(brain.Corners, brain.CornerCount))
-            { brain.CornerCount = 0;PathFailure(brain, goal, now);return; }
+            {
+                brain.CornerCount = 0; PathFailure(brain, goal, now);
+                if (brain.Action == PmcAction.Scavenge) AbandonCache(brain);
+                return;
+            }
             // A stalled controller repaths instead of teleporting through an obstruction.
             if (now >= brain.NextProgress)
             {
@@ -374,7 +382,7 @@ namespace Unity.MP_FPS
                     PathFailure(brain, goal, now);
                     brain.NextCover = brain.NextDecision = 0;
                     if (brain.Action == PmcAction.Scavenge && brain.Cache >= 0)
-                    { brain.VisitedCaches.Add(brain.Cache); brain.Cache = -1; brain.LootUntil = 0; }
+                        AbandonCache(brain);
                 }
                 else if (Vector3.Distance(position, brain.ProgressPosition) >= .6f)
                 { brain.PathFailures = brain.RecoveryAttempts = 0; }

@@ -35,6 +35,10 @@ reloading. A loaded secondary weapon remains an option when cells run out.
 
 27 项生产规则检查覆盖价值排序、限重、旋转、电池余量、旧版本竞争、尸体取回和任务物品保护。游戏与编辑器程序集隔离编译通过。真实敌人计时搜箱的编辑器检查已补充，但尚未执行；正式地图上的路线、遭遇密度和物资平衡仍需试玩。
 
+人形敌人也可选择附近已注册的建筑抽屉。目标选择最多检查 20 米内最近的 12 个抽屉，不提前读取内容。选定前检查导航、接近距离和视线；抵达后仍被阻挡时会放弃，继续寻找其他目标。完成搜索使用同一份共享抽屉库存。每搜索三个小抽屉，才按一个普通箱子计算撤离目标。未修改地图几何或交互点。
+
+抽屉目标的 9 项生产规则检查和游戏、编辑器程序集隔离编译通过。已补充真实敌人的计时搜索、空抽屉、遮挡退出和失效目标夹具，尚未在编辑器执行；正式建筑导航与实战节奏尚未试玩。
+
 Three searched caches, critical health, exhausted ammunition or the departure time
 make a PMC plan to leave. Extraction requires the existing radius, height tolerance
 and eight-second dwell; a visible threat, recent damage or pressure interrupts it.

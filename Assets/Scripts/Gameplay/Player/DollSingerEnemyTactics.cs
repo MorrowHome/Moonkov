@@ -25,6 +25,7 @@ namespace Unity.MP_FPS
                 brain.NextCover = 0;
                 brain.NextPath = 0;
                 brain.LootUntil = 0;
+                brain.CacheObstructedSince = -1;
                 if (best == PmcAction.Flank) brain.NextFlank = now + 12;
                 if (best != PmcAction.Cover && best != PmcAction.Reload && best != PmcAction.Retreat && best != PmcAction.Heal)
                 { brain.HasCover = false; m_CoverReservations.Remove(brain.Seed); }
