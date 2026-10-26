@@ -8,8 +8,56 @@ using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS
 {
-    public enum PmcAction { Scavenge, Extract, Investigate, Search, Engage, Cover, Flank, Retreat, Reload, HoldAngle, Heal, ClashObjective }
+    public enum PmcAction { Scavenge, Extract, Investigate, Search, Engage, Cover, Flank, Retreat, Reload, HoldAngle, Heal, ClashObjective, EvadeGrenade }
     public enum PmcCoverPhase { Approaching, Settling, Advancing, Holding, Returning }
+
+    // The observer only remembers positions it could actually see. Turning away
+    // does not erase the clue before detonation or track it through walls.
+    public struct PmcGrenadeAwareness
+    {
+        private uint m_ObservedId, m_DangerId;
+        private double m_ObservedSince, m_LastObservation, m_RecognizedAt;
+        public Vector3 Position;
+        public float Radius;
+        public double Until;
+        public bool Active(double now) => double.IsFinite(now) && now >= m_RecognizedAt && now < Until;
+        public void Miss() { m_ObservedId = 0; }
+        public bool Observe(uint id, Vector3 position, float radius, double fuseUntil, double now)
+        {
+            if (id == 0 || !PmcGrenadeRules.Finite(position) || !float.IsFinite(radius) || radius <= 0 ||
+                !double.IsFinite(fuseUntil) || !double.IsFinite(now) || fuseUntil <= now)
+            { Miss(); return false; }
+            if (m_ObservedId != id || now < m_LastObservation || now - m_LastObservation > .25)
+            { m_ObservedId = id; m_ObservedSince = m_LastObservation = now; return false; }
+            m_LastObservation = now;
+            if (now - m_ObservedSince < .25) return false;
+            bool changed = !Active(now) || m_DangerId != id || (position - Position).sqrMagnitude > 1;
+            m_DangerId = id; m_RecognizedAt = now; Position = position; Radius = radius;
+            Until = System.Math.Min(fuseUntil, now + 4);
+            return changed;
+        }
+    }
+    public static class PmcGrenadeRules
+    {
+        public static bool Finite(Vector3 point) => float.IsFinite(point.x) && float.IsFinite(point.y) && float.IsFinite(point.z);
+        public static bool Candidate(bool clash, TacticalItemKind kind, TacticalWorldPhase phase,
+            float distance, float radius, float angle, float cone) => !clash && phase == TacticalWorldPhase.Flying &&
+            (kind == TacticalItemKind.Frag || kind == TacticalItemKind.Dynamite) &&
+            float.IsFinite(distance) && distance >= 0 && float.IsFinite(radius) && radius > 0 &&
+            distance <= radius + 2 && float.IsFinite(angle) && float.IsFinite(cone) && angle >= 0 && angle <= cone;
+
+        // Reject a route that first approaches the last observed grenade. This
+        // also prevents a failed escape from reversing into the blast.
+        public static bool SegmentSafe(Vector3 from, Vector3 to, Vector3 grenade, float minimum)
+        {
+            if (!Finite(from) || !Finite(to) || !Finite(grenade) || !float.IsFinite(minimum) || minimum < 0) return false;
+            double ax = from.x, az = from.z, dx = (double)to.x - ax, dz = (double)to.z - az;
+            double length = dx * dx + dz * dz;
+            double t = length > 0 ? System.Math.Max(0, System.Math.Min(1, (((double)grenade.x - ax) * dx + ((double)grenade.z - az) * dz) / length)) : 0;
+            double x = ax + t * dx - grenade.x, z = az + t * dz - grenade.z;
+            return x * x + z * z >= (double)minimum * minimum;
+        }
+    }
 
     // An inaccessible backpack cell cannot be re-attempted every frame while
     // the physical inventory and weapon's energy cost remain unchanged.
@@ -163,6 +211,9 @@ namespace Unity.MP_FPS
         public double NextCorpseScan;
         public double NextTacticalSwitch;
         public double NextUnknownEvasion;
+        public PmcGrenadeAwareness Grenade;
+        public Vector3 GrenadePlanPosition;
+        public double NextGrenadePath;
         public PmcMedicalFailure MedicalFailure;
         public Vector3 Goal, LastSeen, ObservedVelocity, ProgressPosition, CoverPosition, PeekPosition, TacticalGoal;
         public Vector3 RaidExit;

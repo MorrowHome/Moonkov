@@ -23,8 +23,9 @@ namespace Unity.MP_FPS
             double seenAge = now - brain.LastSeenTime;
             bool needsHealing = NeedsHealing(health);
             var medical = needsHealing ? FindMedical(brain.Inventory) : null;
+            bool grenadeDanger = !brain.IsClashBot && brain.Grenade.Active(now);
             bool handsBusy = brain.IsClashBot ? health.ControllerState.IsReloadingState : RaidHealth.HandsBusy(health);
-            bool canPrepareMedical = needsHealing && now >= brain.NextHeal && !handsBusy &&
+            bool canPrepareMedical = !grenadeDanger && needsHealing && now >= brain.NextHeal && !handsBusy &&
                 SafeToTreat(brain, position, now);
             if (!brain.IsClashBot && canPrepareMedical && medical == null && !brain.MedicalFailure.Matches(brain.Inventory.Version))
             {
@@ -96,10 +97,13 @@ namespace Unity.MP_FPS
             if (bleeding && now >= brain.NextHeal && !health.ControllerState.IsReloadingState && SafeToTreat(brain, position, now))
                 Consider(PmcAction.Heal, 110, "stop bleeding during a safe opening");
 
+            if (grenadeDanger) Consider(PmcAction.EvadeGrenade, 200, "move away from a visible explosive");
+
             // New confirmed danger must interrupt looting/search, regardless of their commitment.
             bool passive = brain.Action == PmcAction.Scavenge || brain.Action == PmcAction.Extract ||
                 brain.Action == PmcAction.Search || brain.Action == PmcAction.Investigate || brain.Action == PmcAction.Heal || brain.Action == PmcAction.ClashObjective;
-            emergency = health.CurrentAmmo == 0 || brain.Suppression > .7f || now - brain.LastDamage < 1 ||
+            emergency = grenadeDanger || brain.Action == PmcAction.EvadeGrenade && !grenadeDanger ||
+                health.CurrentAmmo == 0 || brain.Suppression > .7f || now - brain.LastDamage < 1 ||
                 brain.Visible && passive || brain.Action == PmcAction.Heal && !SafeToTreat(brain, position, now) ||
                 brain.Action == PmcAction.HoldAngle && seenAge >= m_Tuning.HoldAngleSeconds;
             best = choice; score = utility; reason = explanation;
@@ -107,7 +111,7 @@ namespace Unity.MP_FPS
 
         private bool ShouldReload(DollSingerEnemyBrain brain, PredictedPlayerGhost health, Vector3 position, double now)
         {
-            if (brain.Action == PmcAction.Heal || health.ControllerState.IsReloadingState) return false;
+            if (brain.Action == PmcAction.Heal || brain.Action == PmcAction.EvadeGrenade || health.ControllerState.IsReloadingState) return false;
             if (health.CurrentAmmo <= 0) return true;
             var weapon = WeaponManager.Instance?.WeaponRegistry?.GetWeaponData(health.EquippedWeaponID,health.EquippedModules);
             return weapon != null && health.CurrentAmmo < weapon.MagazineSize &&

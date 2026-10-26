@@ -61,6 +61,16 @@ namespace Unity.MP_FPS
                 case PmcAction.Search:
                     goal = UpdateSearch(brain, position, now);
                     break;
+                case PmcAction.EvadeGrenade:
+                    if (changed || now >= brain.NextGrenadePath && (brain.PathFailed ||
+                        HorizontalDistance(brain.Grenade.Position, brain.GrenadePlanPosition) > 1 ||
+                        HorizontalDistance(position, goal) < 1 && HorizontalDistance(position, brain.Grenade.Position) < brain.Grenade.Radius + 2))
+                    {
+                        goal = ChooseGrenadeEscape(brain, position);
+                        brain.GrenadePlanPosition = brain.Grenade.Position;
+                        brain.NextGrenadePath = now + .6;
+                    }
+                    break;
                 case PmcAction.Cover:
                 case PmcAction.Reload:
                 case PmcAction.Retreat:
@@ -346,6 +356,35 @@ namespace Unity.MP_FPS
             if (NavMesh.SamplePosition(position - offset * .5f, out end, 3, m_Filter) &&
                 CompletePath(brain, position, end.position, out _)) return end.position;
             return position;
+        }
+
+        private Vector3 ChooseGrenadeEscape(DollSingerEnemyBrain brain, Vector3 position)
+        {
+            Vector3 grenade = brain.Grenade.Position;
+            Vector3 away = position - grenade; away.y = 0;
+            float current = away.magnitude;
+            if (current >= brain.Grenade.Radius + 2) return position;
+            if (current < .1f) away = -(Quaternion.Euler(0, brain.Yaw, 0) * Vector3.forward);
+            else away /= current;
+            float step = Mathf.Clamp(brain.Grenade.Radius + 5 - current, 4, 12);
+            float best = float.MinValue; Vector3 goal = position;
+            for (int i = 0; i < 5; i++)
+            {
+                float angle = i == 0 ? 0 : (i % 2 == 0 ? 1 : -1) * ((i + 1) / 2) * 40;
+                Vector3 desired = position + Quaternion.Euler(0, angle, 0) * away * step;
+                if (!NavMesh.SamplePosition(desired, out var sample, 2, m_Filter) ||
+                    Mathf.Abs(sample.position.y - position.y) > 1.2f ||
+                    HorizontalDistance(sample.position, grenade) <= current + .25f ||
+                    !CompletePath(brain, position, sample.position, out float length) || length > 22) continue;
+                int corners = brain.ProbePath.GetCornersNonAlloc(brain.ProbeCorners);
+                bool safe = corners > 0 && corners < brain.ProbeCorners.Length;
+                for (int n = 1; safe && n < corners; n++)
+                    safe = PmcGrenadeRules.SegmentSafe(brain.ProbeCorners[n - 1], brain.ProbeCorners[n], grenade, Mathf.Max(0, current - .35f));
+                if (!safe) continue;
+                float score = HorizontalDistance(sample.position, grenade) - length * .3f;
+                if (score > best) { best = score; goal = sample.position; }
+            }
+            return goal;
         }
 
         private Vector3 ChooseWithdrawal(DollSingerEnemyBrain brain, Vector3 position)

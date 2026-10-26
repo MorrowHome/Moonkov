@@ -24,6 +24,10 @@ flowchart LR
 
 ## Raid decisions
 
+普通搜打撤中，人形敌人连续看到附近的破片雷或炸药约 0.25 秒后，会中断搜索、治疗或撤离，尝试沿导航路线远离爆炸范围。墙体、视角和烟雾会挡住观察。转身或失去视线后，敌人只记住最后看到的位置，最长记到爆炸或 4 秒，不会隔墙追踪手雷。路径会避免先靠近手雷；找不到安全路线时原地停留。赏金模式不使用此规则。
+
+手雷识别与路径规则的 26 项检查通过，游戏与编辑器程序集隔离编译通过。墙体、烟雾、实际敌人决策和移动输入的编辑器夹具已补充，尚未在编辑器执行；导航效果和战斗难度仍需实战验证。
+
 PMCs choose reachable caches with different route preferences, spend 2.5 seconds
 searching within pickup range and line of sight, then transfer actual shared items
 through `LootInventoryExchange.TryApply`. Quantities and versions follow the normal

@@ -7,6 +7,7 @@ using Unity.MP_FPS.Inventory;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 using BodyPart = Unity.MP_FPS.BodyPart;
 
@@ -35,6 +36,8 @@ public static class DollSingerHumanlikeChecks
             CheckCoverLifecycle(system);
             CheckMedicalLifecycle(system);
             CheckDecisions(system, map, tuning);
+            CheckGrenadeDecisions(system, map);
+            CheckGrenadeVisibility(system);
             CheckCombatRecovery(system, map);
             CheckCombatPressure(system, map);
             CheckUnknownAttack(system, map);
@@ -250,6 +253,87 @@ public static class DollSingerHumanlikeChecks
     private static void Cover(DollSingerEnemySystem system, DollSingerEnemyBrain brain, Vector3 position, double now)
         => Call(system, "AdvanceCover", new object[] { brain, position, now });
 
+    private static void CheckGrenadeDecisions(DollSingerEnemySystem system, MoonRaidMap map)
+    {
+        var brain = Brain(); var health = Health();
+        brain.Action = PmcAction.Scavenge; brain.CommitUntil = 40;
+        var point = Vector3.forward * 4;
+        brain.Grenade.Observe(1, point, 8, 14, 10);
+        brain.Grenade.Observe(1, point, 8, 14, 10.1);
+        brain.Grenade.Observe(1, point, 8, 14, 10.2);
+        Require(Decide(system, brain, health, map, 10.2).action != PmcAction.EvadeGrenade,
+            "A first glimpse instantly interrupted the PMC.");
+        brain.Grenade.Observe(1, point, 8, 14, 10.3);
+        var decision = Decide(system, brain, health, map, 10.3);
+        Require(decision.action == PmcAction.EvadeGrenade && decision.emergency && brain.CommitUntil > 10.3,
+            "A recognized explosive failed to interrupt a committed search.");
+        brain.Action = PmcAction.EvadeGrenade; brain.HealUntil = 15; brain.HealItemId = "test";
+        Heal(system, brain, ref health, 10.3);
+        Require(brain.HealUntil == 0 && brain.HealItemId == null, "Treatment continued while escaping an explosive.");
+        health.CurrentAmmo = 0;
+        Require(!(bool)Call(system, "ShouldReload", new object[] { brain, health, Vector3.zero, 10.3d }),
+            "The PMC started a reload while escaping an explosive.");
+        decision = Decide(system, brain, health, map, 14);
+        Require(decision.action != PmcAction.EvadeGrenade && decision.emergency,
+            "The PMC stayed in explosive evasion after the threat expired.");
+        brain.Action = PmcAction.Scavenge; brain.ClashParticipantId = 1;
+        Require(Decide(system, brain, health, map, 10.4).action != PmcAction.EvadeGrenade,
+            "The raid-only explosive rule changed the other mode.");
+    }
+
+    private static void CheckGrenadeVisibility(DollSingerEnemySystem system)
+    {
+        var original = SceneManager.GetActiveScene();
+        var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
+        SceneManager.SetActiveScene(scene);
+        var actor = new GameObject("Temporary PMC grenade observer");
+        var wall = new GameObject("Temporary grenade sight blocker");
+        var field = typeof(DollSingerEnemySystem).GetField("m_TacticalWorld", PrivateInstance);
+        object previous = field.GetValue(system);
+        try
+        {
+            Vector3 origin = new Vector3(9000, 9000, 9000);
+            actor.transform.position = origin;
+            wall.transform.position = origin + Vector3.forward * 2 + Vector3.up;
+            var blocker = wall.AddComponent<BoxCollider>(); blocker.size = new Vector3(2, 3, .3f); blocker.enabled = false;
+            var tactical = new TacticalServerWorld { Now = 1 };
+            var explosive = new TacticalServerWorld.Object { Id = 1, Definition = TacticalItemRules.Find("frag_bomb"),
+                Phase = TacticalWorldPhase.Flying, Scene = scene.GetPhysicsScene(), Position = origin + Vector3.forward * 4, Until = 10 };
+            tactical.Objects.Add(explosive); field.SetValue(system, tactical);
+            Vector3 eye = origin + Vector3.up * 1.15f;
+            void Sight(DollSingerEnemyBrain brain, double now) => Call(system, "ObserveGrenades", new object[] { brain, actor.transform, eye, now });
+            void Watch(DollSingerEnemyBrain brain)
+            { Sight(brain, 1); Sight(brain, 1.1); Sight(brain, 1.2); Sight(brain, 1.3); }
+            Physics.SyncTransforms();
+            var seen = Brain(); Watch(seen);
+            Require(seen.Grenade.Active(1.3), "A visible explosive was not recognized.");
+            blocker.enabled = true; Physics.SyncTransforms();
+            var hidden = Brain(); Watch(hidden);
+            Require(!hidden.Grenade.Active(1.3), "The PMC saw an explosive through a wall.");
+            Vector3 lastSeen = seen.Grenade.Position;
+            explosive.Position += Vector3.right;
+            Sight(seen, 1.4);
+            Require(seen.Grenade.Active(1.4) && seen.Grenade.Position == lastSeen,
+                "The PMC tracked an explosive after it moved behind a wall.");
+            blocker.enabled = false; Physics.SyncTransforms();
+            explosive.Position = origin - Vector3.forward * 4;
+            var behind = Brain(); Watch(behind);
+            Require(!behind.Grenade.Active(1.3), "The PMC saw an explosive behind its field of view.");
+            explosive.Position = origin + Vector3.forward * 4;
+            tactical.Objects.Add(new TacticalServerWorld.Object { Id = 2, Definition = TacticalItemRules.Find("smoke_grenade"),
+                Phase = TacticalWorldPhase.Smoke, Scene = scene.GetPhysicsScene(), Position = origin + Vector3.forward * 2, Until = 20 });
+            var smoke = Brain(); Watch(smoke);
+            Require(!smoke.Grenade.Active(1.3), "The PMC saw an explosive through dense smoke.");
+        }
+        finally
+        {
+            field.SetValue(system, previous);
+            Object.DestroyImmediate(actor); Object.DestroyImmediate(wall); Physics.SyncTransforms();
+            SceneManager.SetActiveScene(original);
+            EditorSceneManager.CloseScene(scene, true);
+        }
+    }
+
     private static void CheckCombatRecovery(DollSingerEnemySystem system, MoonRaidMap map)
     {
         var brain = Brain();
@@ -440,6 +524,8 @@ public static class DollSingerHumanlikeChecks
             Require(!Input(PmcAction.Heal, heal: true).Shoot, "Treatment/interaction allowed simultaneous fire.");
             var empty = Input(PmcAction.Retreat, ammo: 0);
             Require(!empty.Shoot && empty.Sprint, "An empty withdrawing PMC could not sprint to safety.");
+            var grenade = Input(PmcAction.EvadeGrenade);
+            Require(!grenade.Shoot && grenade.Sprint, "Explosive evasion did not sprint without firing.");
 
             var looting = Brain(); var lootingHealth = Health();
             looting.Action = PmcAction.Scavenge; looting.Cache = -1; looting.LootUntil = 15;

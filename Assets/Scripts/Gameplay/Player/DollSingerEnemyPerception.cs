@@ -1,6 +1,7 @@
 using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Unity.MP_FPS
 {
@@ -26,6 +27,7 @@ namespace Unity.MP_FPS
             // A server hitch must age memory, but must not count as uninterrupted visual exposure.
             float observationStep = Mathf.Min(.2f, elapsed);
             brain.LastSenseTime = now;
+            ObserveGrenades(brain, root, eye, now);
             float light = 1;
             if (SystemAPI.TryGetSingleton<ExpeditionClockState>(out var clock) && clock.Ready)
             {
@@ -174,6 +176,32 @@ namespace Unity.MP_FPS
             brain.LastHeardTime = System.Math.Max(memory.LastHeard, memory.LastReported);
             brain.ContactUncertainty = memory.PositionUncertainty;
             if (wasVisible != brain.Visible) brain.NextDecision = 0;
+        }
+
+        private void ObserveGrenades(DollSingerEnemyBrain brain, Transform root, Vector3 eye, double now)
+        {
+            if (brain.IsClashBot || m_TacticalWorld == null || !root)
+            { brain.Grenade.Miss(); return; }
+            var scene = root.gameObject.scene.GetPhysicsScene();
+            if (!scene.IsValid()) { brain.Grenade.Miss(); return; }
+            TacticalServerWorld.Object selected = null; float closest = float.MaxValue;
+            Vector3 facing = Quaternion.Euler(0, brain.Yaw, 0) * Vector3.forward;
+            foreach (var item in m_TacticalWorld.Objects)
+            {
+                if (item == null || item.Definition == null || item.Scene != scene || item.Until <= now || !PmcGrenadeRules.Finite(item.Position)) continue;
+                float distance = Vector3.Distance(root.position, item.Position);
+                Vector3 target = item.Position + Vector3.up * .15f;
+                Vector3 ray = target - eye;
+                float angle = Vector3.Angle(facing, ray);
+                if (distance >= closest || !PmcGrenadeRules.Candidate(false, item.Definition.Kind, item.Phase,
+                    distance, item.Definition.Radius, angle, m_Tuning.HalfViewAngle) ||
+                    SmokeVisibility.Blocked(m_TacticalWorld, scene, eye, target) ||
+                    (ray.sqrMagnitude > .0001f && scene.Raycast(eye, ray.normalized, out _, ray.magnitude, s_WorldMask, QueryTriggerInteraction.Ignore))) continue;
+                selected = item; closest = distance;
+            }
+            if (selected == null) { brain.Grenade.Miss(); return; }
+            if (brain.Grenade.Observe(selected.Id, selected.Position, selected.Definition.Radius, selected.Until, now))
+                brain.NextDecision = 0;
         }
 
         private void ResetContactTactics(DollSingerEnemyBrain brain, double now)
