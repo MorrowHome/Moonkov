@@ -54,6 +54,8 @@ a lunar vacuum. Distance and obstruction affect their range. Nearby gunfire and
 received damage increase pressure; this version does not detect every near-miss
 projectile or simulate sound propagation through individual rooms.
 
+2026-10-27：人形敌人和异形都会调查真实位移形成的脚步声与落地声。人形敌人按配置的脚步听觉距离计算：轻装时冲刺为 1.3 倍，普通行走为 0.65 倍，蹲行为 0.45 倍，匍匐为 0.3 倍，踮脚为 0.25 倍。异形的移动声基础距离是自身枪声听距的 60%。遮挡将听距乘以 0.55。普通搜打撤中，负重越高，移动声听距与音量越大，最多增加 25%；赏金模式不受负重影响。空中位移和位置突变不制造脚步，落地仍会发出声音。声音只提供有误差的搜索线索，不提供视线或直接开火条件。
+
 2026-10-27：月核取样机切割时，附近人形敌人可以调查机器位置。声音不指认玩家，不直接允许开火。真实战斗、治疗和撤离保持优先。范围与遮挡规则见 [月核行动](../Planning/Missions/MC00-Mooncore.md)。
 
 Decisions run at 5 Hz, with staggered perception at 10 Hz and action commitment to

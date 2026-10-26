@@ -37,7 +37,7 @@ namespace Unity.MP_FPS
         {
             public Vector3 Position;
             public float StepDistance;
-            public uint Shot, Reload;
+            public uint Shot, Reload, Land;
             public double SeenAt;
         }
         private struct SensorEvent
@@ -268,34 +268,47 @@ namespace Unity.MP_FPS
                 if (health.ValueRO.CurrentHealth <= 0 || owner.ValueRO.NetworkId == 0) continue;
                 var link = EntityManager.GetComponentObject<GhostGameObjectLink>(entity);
                 if (link.LinkedInstance == null) continue;
+                var alien = link.LinkedInstance.GetComponent<ProceduralAlienEnemy>();
                 Vector3 position = pose.ValueRO.Position;
                 Vector3 velocity = Vector3.zero;
                 if (!m_Tracks.TryGetValue(entity, out var track))
                 {
                     track = new SensorTrack { Position = position, SeenAt = now,
-                        Shot = health.ValueRO.LastShotTick, Reload = health.ValueRO.LastReloadTick };
+                        Shot = health.ValueRO.LastShotTick, Reload = health.ValueRO.LastReloadTick, Land = health.ValueRO.LastLandTick };
                     m_Tracks.Add(entity, track);
                 }
                 else
                 {
-                    velocity = Vector3.ClampMagnitude((position - track.Position) / Mathf.Max(.05f, (float)(now - track.SeenAt)), 8);
-                    track.StepDistance += HorizontalDistance(position, track.Position);
+                    float elapsed = Mathf.Max(.05f, (float)(now - track.SeenAt));
+                    velocity = Vector3.ClampMagnitude((position - track.Position) / elapsed, 8);
+                    float movement = HorizontalDistance(position, track.Position);
+                    if (health.ValueRO.ControllerState.MovementType != FirstPersonController.MovementType.Standing || elapsed > 1 ||
+                        movement > Mathf.Max(2, elapsed * 12)) track.StepDistance = 0;
+                    else track.StepDistance += movement;
                     if (track.Shot != health.ValueRO.LastShotTick)
                         m_Events.Add(new SensorEvent { Source = entity, Position = position, Range = m_Tuning.ShotSensorRange, Shot = true });
                     if (track.Reload != health.ValueRO.LastReloadTick)
                         m_Events.Add(new SensorEvent { Source = entity, Position = position, Range = 7 });
-                    if (track.StepDistance >= 2.2f)
+                    if (track.Land != health.ValueRO.LastLandTick)
                     {
                         m_Events.Add(new SensorEvent { Source = entity, Position = position,
-                            Range = m_Tuning.FootstepSensorRange * (velocity.magnitude > 4 ? 1.3f : .65f) });
+                            Range = RaidFootsteps.LandingRange(m_Tuning.FootstepSensorRange, health.ValueRO.CarriedWeight, health.ValueRO.ClashEnabled) });
+                        track.StepDistance = 0;
+                    }
+                    else if (track.StepDistance >= RaidFootsteps.StepDistance)
+                    {
+                        m_Events.Add(new SensorEvent { Source = entity, Position = position,
+                            Range = RaidFootsteps.HearingRange(m_Tuning.FootstepSensorRange, health.ValueRO.ControllerState.Stance,
+                                health.ValueRO.ControllerState.Sprinting || alien && velocity.magnitude > 4,
+                                health.ValueRO.CarriedWeight, health.ValueRO.ClashEnabled) });
                         track.StepDistance = 0;
                     }
                     track.Position = position;
                     track.SeenAt = now;
                     track.Shot = health.ValueRO.LastShotTick;
                     track.Reload = health.ValueRO.LastReloadTick;
+                    track.Land = health.ValueRO.LastLandTick;
                 }
-                var alien = link.LinkedInstance.GetComponent<ProceduralAlienEnemy>();
                 var player = link.LinkedInstance.GetComponent<PlayerGhost>();
                 var capsule = player != null && player.Controller != null ? player.Controller.CharacterController : null;
                 // Use the actual controller stance, not imaginary standing hit points over a prone body.

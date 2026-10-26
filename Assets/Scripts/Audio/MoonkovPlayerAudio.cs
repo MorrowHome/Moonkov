@@ -72,8 +72,9 @@ namespace Unity.MP_FPS
             if (NewTick(ghost.LastLandTick, ref m_LandTick))
             {
                 SampleSurface(player, library);
-                LocalOrWorld(m_Surface, position, owned, Mathf.Lerp(.65f, 1.2f, Mathf.Clamp01(m_FallSpeed / 10)));
-                LocalOrWorld(library.Land, position, owned, Mathf.Lerp(.3f, .8f, Mathf.Clamp01(m_FallSpeed / 10)));
+                float landingLoad = RaidFootsteps.LoadMultiplier(ghost.CarriedWeight, ghost.ClashEnabled);
+                LocalOrWorld(m_Surface, position, owned, Mathf.Lerp(.65f, 1.2f, Mathf.Clamp01(m_FallSpeed / 10)) * landingLoad);
+                LocalOrWorld(library.Land, position, owned, Mathf.Lerp(.3f, .8f, Mathf.Clamp01(m_FallSpeed / 10)) * landingLoad);
                 m_Stride = 0f; m_LastStepTime = Time.unscaledTime; m_FallSpeed = 0;
             }
             if (NewTick(ghost.LastImpactTick, ref m_ImpactTick) && Time.unscaledTime >= m_HitAt)
@@ -180,13 +181,15 @@ namespace Unity.MP_FPS
             if (m_Stride < stride || Time.unscaledTime - m_LastStepTime < .18f) return;
             m_Stride %= stride; // At most one step after a stalled frame or reconciliation.
             m_LastStepTime = Time.unscaledTime;
+            float loadVolume = RaidFootsteps.LoadMultiplier(ghost.CarriedWeight, ghost.ClashEnabled);
             if (m_Stance == DollSingerStance.Prone)
             {
-                m_MovementSound = LocalOrWorld(library.Crawl, position, owned, .65f);
+                m_MovementSound = LocalOrWorld(library.Crawl, position, owned, .65f * loadVolume);
                 return;
             }
             float volume = m_Stance == DollSingerStance.Tiptoe ? .2f :
                 m_Stance == DollSingerStance.Crouching ? .38f : ghost.ControllerState.Sprinting ? 1f : .72f;
+            volume *= loadVolume;
             LocalOrWorld(m_Surface ?? library.RegolithFootsteps, position, owned, volume);
             LocalOrWorld(library.Cloth, position, owned, .2f * volume);
         }

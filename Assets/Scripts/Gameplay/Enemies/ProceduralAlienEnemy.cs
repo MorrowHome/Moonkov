@@ -56,6 +56,15 @@ namespace Unity.MP_FPS
         private uint m_Attacks, m_Hits;
         private readonly RaycastHit[] m_HitsBuffer = new RaycastHit[32];
         private readonly Dictionary<Entity, uint> m_ObservedShots = new Dictionary<Entity, uint>();
+        private struct FootstepTrack
+        {
+            public Vector3 Position;
+            public float Distance, SampledAt;
+            public uint LandTick;
+        }
+        private readonly Dictionary<Entity, FootstepTrack> m_Footsteps = new Dictionary<Entity, FootstepTrack>();
+        private readonly List<Entity> m_ExpiredFootsteps = new List<Entity>();
+        private int m_FootstepWorldMask;
         public override bool AllowAutoRegisterForUpdates() => Application.isPlaying;
         private static readonly List<ProceduralAlienEnemy> s_ClientAliens = new List<ProceduralAlienEnemy>();
         private float m_NextLod;
@@ -74,7 +83,9 @@ namespace Unity.MP_FPS
         public override void OnGhostLinked()
         {
             if (!profile) { Debug.LogError("Alien profile is missing.", this); return; }
+            m_FootstepWorldMask = LayerMask.GetMask("Default", "Ground");
             m_MissionAlarmId = null; m_MissionAlarmUntil = 0;
+            m_ObservedShots.Clear(); m_Footsteps.Clear();
             var state = ReadGhostComponentData<State>();
             m_Spawn = transform.position; m_RoamGoal = m_Spawn;
             m_AmbushEnabled = profile.Species == AlienSpecies.Spider && (state.AmbushEnabled || Role == MultiplayerRole.Server);
@@ -186,21 +197,70 @@ namespace Unity.MP_FPS
                 var root = manager.GetComponentObject<GhostGameObjectLink>(entity).LinkedInstance;
                 Vector3 point = (Vector3)manager.GetComponentData<LocalTransform>(entity).Position + Vector3.up * 1.0f;
                 float distance = Vector3.Distance(AimPoint, point);
-                uint shot = manager.GetComponentData<PredictedPlayerGhost>(entity).LastShotTick;
+                var health = manager.GetComponentData<PredictedPlayerGhost>(entity);
+                uint shot = health.LastShotTick;
                 bool fired = m_ObservedShots.TryGetValue(entity, out uint previousShot) && previousShot != shot;
                 m_ObservedShots[entity] = shot;
+                bool stepped = Footstep(entity, point, health, out bool landed);
                 bool visible = distance <= profile.SightRange &&
                     !SmokeVisibility.Blocked(smokeWorld, gameObject.scene.GetPhysicsScene(), AimPoint, point) && ClearSight(AimPoint + m_Body.Motor.Current.Up * .12f, point, root.transform);
-                bool heard = fired && distance <= profile.HearingRange;
-                if (!visible && !heard) continue;
+                bool heardShot = fired && distance <= profile.HearingRange;
+                float movementHearing = profile.HearingRange * RaidFootsteps.AlienMovementRangeScale;
+                float stepRange = landed ? RaidFootsteps.LandingRange(movementHearing, health.CarriedWeight, health.ClashEnabled) :
+                    RaidFootsteps.HearingRange(movementHearing, health.ControllerState.Stance,
+                        health.ControllerState.Sprinting, health.CarriedWeight, health.ClashEnabled);
+                bool blocked = false;
+                bool heardStep = !visible && !heardShot && stepped && distance <= stepRange;
+                if (heardStep)
+                {
+                    blocked = UnityEngine.Physics.Linecast(AimPoint, point, m_FootstepWorldMask, QueryTriggerInteraction.Ignore);
+                    heardStep = RaidFootsteps.Audible(distance, stepRange, blocked);
+                }
+                if (!visible && !heardShot && !heardStep) continue;
                 float score = distance - (entity == m_Target ? 2 : 0) + (visible ? 0 : profile.SightRange);
                 if (score >= best) continue;
                 best = score; m_Target = entity;
                 m_MissionAlarmUntil = 0;
-                m_LastSeen = visible ? point : point + new Vector3(Mathf.Sin(shot * 1.7f), 0, Mathf.Cos(shot * 2.3f)) * 1.3f;
+                if (visible) m_LastSeen = point;
+                else if (heardShot) m_LastSeen = point + new Vector3(Mathf.Sin(shot * 1.7f), 0, Mathf.Cos(shot * 2.3f)) * 1.3f;
+                else
+                {
+                    // Keep one stable bearing per listener/target, so repeated steps
+                    // cannot be averaged into the hidden player's exact position.
+                    float angle = (GhostGameObject.Owner * 137.5f + entity.Index * 67f) * Mathf.Deg2Rad;
+                    float error = Mathf.Lerp(1.5f, 4, distance / Mathf.Max(.1f, stepRange)) + (blocked ? 2 : 0);
+                    m_LastSeen = point + new Vector3(Mathf.Sin(angle), 0, Mathf.Cos(angle)) * error;
+                }
                 m_LastSeenAt = m_Clock; m_Visible = visible;
             }
+            m_ExpiredFootsteps.Clear();
+            foreach (var pair in m_Footsteps)
+                if (m_Clock - pair.Value.SampledAt > 3) m_ExpiredFootsteps.Add(pair.Key);
+            foreach (var expired in m_ExpiredFootsteps) { m_Footsteps.Remove(expired); m_ObservedShots.Remove(expired); }
             ObserveTargetMotion();
+        }
+        private bool Footstep(Entity entity, Vector3 position, in PredictedPlayerGhost health, out bool landed)
+        {
+            landed = false;
+            if (!m_Footsteps.TryGetValue(entity, out var track))
+            {
+                m_Footsteps[entity] = new FootstepTrack { Position = position, SampledAt = m_Clock, LandTick = health.LastLandTick };
+                return false;
+            }
+            landed = track.LandTick != health.LastLandTick;
+            track.LandTick = health.LastLandTick;
+            float elapsed = m_Clock - track.SampledAt;
+            Vector3 delta = position - track.Position; delta.y = 0;
+            float distance = delta.magnitude;
+            // A teleport, stalled sample or airborne motion is not a footstep.
+            if (landed || health.ControllerState.MovementType != FirstPersonController.MovementType.Standing ||
+                elapsed <= 0 || elapsed > 1 || distance > Mathf.Max(2, elapsed * 12)) track.Distance = 0;
+            else track.Distance += distance;
+            track.Position = position; track.SampledAt = m_Clock;
+            bool stepped = landed || track.Distance >= RaidFootsteps.StepDistance;
+            if (stepped) track.Distance %= RaidFootsteps.StepDistance;
+            m_Footsteps[entity] = track;
+            return stepped;
         }
         private bool ClearSight(Vector3 from, Vector3 to, Transform target)
         {
