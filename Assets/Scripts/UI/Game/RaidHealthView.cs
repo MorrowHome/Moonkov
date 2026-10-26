@@ -17,7 +17,7 @@ namespace Unity.MP_FPS.Client
         private BodyPart m_Selected = BodyPart.Chest;
         private bool m_Ready, m_Busy;
         private int m_Medicines, m_Food, m_Water, m_OxygenCanisters;
-        private string m_FoodCode, m_WaterCode, m_OxygenCode, m_Feedback;
+        private string m_FoodCode, m_WaterCode, m_OxygenCode, m_Feedback, m_BusyMessage;
 
         public RaidHealthView(VisualElement parent, Action<BodyPart> heal, Action<string> consume = null)
         {
@@ -50,8 +50,9 @@ namespace Unity.MP_FPS.Client
         public void Message(string source) { m_Feedback = source; RenderActions(); }
 
         public void Present(in PredictedPlayerGhost state, int medicines, bool busy, int food = 0, int water = 0, int oxygenCanisters = 0,
-            string foodCode = "ration", string waterCode = "water", string oxygenCode = "oxygen_canister", float medicalRestore = 40)
+            string foodCode = "ration", string waterCode = "water", string oxygenCode = "oxygen_canister", float medicalRestore = 40, string busyMessage = null)
         {
+            m_BusyMessage = busyMessage;
             m_State = state; m_Ready = state.BodyHealthInitialized; m_Busy = busy; m_Medicines = medicines;
             m_Food = food; m_Water = water; m_OxygenCanisters = oxygenCanisters;
             m_FoodCode = foodCode; m_WaterCode = waterCode; m_OxygenCode = oxygenCode;
@@ -77,7 +78,7 @@ namespace Unity.MP_FPS.Client
             m_Drink.SetEnabled(m_Ready && !m_Busy && m_Consume != null && m_Water > 0 && RaidNutrition.CanConsume(m_State, ConsumableCatalog.Get(m_WaterCode)));
             m_RefillOxygen.SetEnabled(m_Ready && !m_Busy && m_Consume != null && m_OxygenCanisters > 0 &&
                 RaidOxygenConsumables.CanConsume(m_State, ConsumableCatalog.Get(m_OxygenCode)));
-            string message = m_Busy ? "Waiting for server confirmation…" : !string.IsNullOrEmpty(m_Feedback) ? m_Feedback :
+            string message = m_Busy ? m_BusyMessage ?? "USING ITEM" : !string.IsNullOrEmpty(m_Feedback) ? m_Feedback :
                 !m_Ready ? "Waiting for health snapshot" : m_Medicines == 0 ? "Medical supplies must be in pockets or the chest rig." : "";
             var status = m_Root.Q<Label>("healthMedicalStatus"); status.style.display = string.IsNullOrEmpty(message) ? DisplayStyle.None : DisplayStyle.Flex;
             MoonkovLocalization.Set(status, message);

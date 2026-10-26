@@ -90,10 +90,16 @@
 .raid-ui .raid-inventory-header Button { color: #334b3d; background-color: #c4cbb7; height: 32px; margin-top: 0; }
 .raid-ui .raid-inventory-header Button:hover { color: #f1eee2; background-color: #884c43; }
 
-.raid-timed-action { padding: 10px; background-color: rgba(12, 22, 22, 0.94); border-width: 1px; border-color: #91a08c; }
-.raid-timed-action .unity-progress-bar__background { min-height: 48px; background-color: #17241e; border-width: 0; }
-.raid-timed-action .unity-progress-bar__progress { background-color: #485f51; border-width: 0; }
-.raid-ui .raid-timed-action .unity-progress-bar__title { white-space: normal; color: #f1eee2; font-size: 14px; -unity-text-align: middle-center; }
-.raid-ui .raid-timed-action Button { margin-top: 8px; min-height: 32px; font-size: 13px; }
+.raid-timed-action { position: absolute; bottom: 145px; left: 50%; margin-left: -180px; width: 360px; padding: 0; }
+.raid-action-row { flex-direction: row; align-items: center; min-height: 32px; }
+.raid-action-title { flex-grow: 1; flex-shrink: 1; min-width: 0; margin: 0; font-size: 14px; color: #c4e1ff; white-space: normal; -unity-text-outline-width: 0.35px; -unity-text-outline-color: #10243e; }
+.raid-action-time { width: 58px; margin: 0; font-size: 14px; color: #c4e1ff; -unity-text-align: middle-right; -unity-text-outline-width: 0.35px; -unity-text-outline-color: #10243e; }
+.raid-ui .raid-timed-action Button { flex-shrink: 0; margin: 0 0 0 12px; padding: 4px 8px; width: 80px; min-width: 80px; height: 28px; min-height: 28px; max-height: 28px; font-size: 12px; color: #c4e1ff; background-color: #10243e; border-width: 1px; border-color: #205d9e; border-radius: 3px; }
+.raid-ui .raid-timed-action Button:hover { background-color: #205d9e; }
+.raid-ui .raid-timed-action Button:focus { border-color: #c4e1ff; }
+.raid-ui .raid-timed-action Button:disabled { opacity: 0.5; }
+.raid-action-track { height: 4px; margin-top: 6px; background-color: rgba(32, 93, 158, 0.35); }
+.raid-action-fill { height: 4px; background-color: #c4e1ff; }
+.raid-timed-action.is-error .raid-action-title { color: #ffb2a6; }
 /* Oxygen and nutrition are now consolidated in the transparent vital monitor. */
 #raidOxygenPanel, #raidOxygenWarning { display: none; }

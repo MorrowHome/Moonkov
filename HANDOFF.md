@@ -1,5 +1,13 @@
 # 项目交接
 
+## 治疗与搜索反馈
+
+- `RaidTimedActionView` 复用原医疗和搜刮流程。界面只显示治疗中、搜索中、剩余时间、细进度条和取消按钮。不要显示“服务器确认”“等待回执”等实现细节。起手与收尾沿用动作名称，不弹出额外状态说明。
+- 本地计时结束不能直接宣布成功。收尾隐藏倒计时，亮条最多到 97%，保持动作状态；实际回执到达后才显示完成或中断。取消请求发出后禁用重复取消。中断和取消不显示满进度条。只对当前动作生成短回执，后续库存更新不重播旧回执。
+- `RaidHUD` 在新战局与切换 World 时清理动作展示。暂停、过场和结算隐藏。健康页忙碌状态使用真实动作名称。没有新增 RPC、存档字段或治疗收益。倒计时文字最多每秒刷新十次。
+- `RaidTimedActionReview.Check()` 的 19 项展示和交互检查通过。原 `MoonkovRaidActionChecks.Run()` 75 项及 `RunServerRequests()` 43 项通过。Unity 编译通过，收尾 Console 当前错误为 0。使用单 Editor、隔离场景和实际服务端处理器；没有进入真实战局或联机验收。
+- 原生预览入口为 `Tools/Moonkov/Review Timed Actions`。样例图在忽略目录 `LocalData/TimedActions/immersive-feedback.jpg`。Editor 预览加载 `RaidUI.uss` 时使用明确资产路径；同名 UXML 会让 `Resources.Load<StyleSheet>` 取到内联子资源。
+
 ## 生命体征监测
 
 最终参考为 `Docs/Planning/UI/HealthHUD/approved-reference.png`，即用户附件中的竖向医疗扫描仪。旧七块矩形格子人形和旧 SVG 草稿已废弃。以实际图片为准，不按此前的方案字母推断。

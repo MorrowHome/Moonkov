@@ -1327,5 +1327,20 @@
   "HUNGRY": "饥饿",
   "POISONED": "中毒",
   "BODY ENERGY": "能量",
-  "COLLAR / EQUIPPED": "生命维持头罩 / 已装备"
+  "COLLAR / EQUIPPED": "生命维持头罩 / 已装备",
+  "X / CANCEL": "X / 取消",
+  "TREATING": "治疗中",
+  "SEARCHING": "搜索中",
+  "TREATMENT COMPLETE": "治疗完成",
+  "SEARCH COMPLETE": "搜索完成",
+  "CONTAINER OPENED": "容器已打开",
+  "ACTION CANCELLED": "操作已取消",
+  "INTERRUPTED / MOVED": "移动中断",
+  "INTERRUPTED / HIT": "受击中断",
+  "INTERRUPTED / FIRED": "开火中断",
+  "INTERRUPTED / WEAPON CHANGED": "换武器或换弹中断",
+  "INTERRUPTED / INVENTORY CHANGED": "库存变化中断",
+  "ACTION INTERRUPTED": "操作已中断",
+  "{0:0.0}s": "{0:0.0} 秒",
+  "USING ITEM": "使用中"
 }
