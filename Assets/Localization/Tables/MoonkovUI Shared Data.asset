@@ -5657,6 +5657,22 @@ MonoBehaviour:
     m_Key: USING ITEM
     m_Metadata:
       m_Items: []
+  - m_Id: 7022599744774144
+    m_Key: OPERATING
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7022599744774145
+    m_Key: CHARGING
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7022599744774146
+    m_Key: SHUTTLE BEACON
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7023458725650432
+    m_Key: TARGET {0}/{1}
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

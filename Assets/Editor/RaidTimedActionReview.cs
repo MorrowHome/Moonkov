@@ -22,29 +22,22 @@ public sealed class RaidTimedActionReview : EditorWindow
         LocalizationSettings.SelectedLocale=LocalizationSettings.AvailableLocales.GetLocale("zh-Hans");
         var root=rootVisualElement;root.Clear();root.AddToClassList("raid-ui");
         root.styleSheets.Add(AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Resources/Moonkov/RaidUI.uss"));
-        root.style.flexDirection=FlexDirection.Row;root.style.backgroundColor=(Color)new Color32(16,21,25,255);
-        var dark=Column(new Color32(16,21,25,255));var light=Column(new Color32(112,122,129,255));
-        Card(dark,"治疗进行中",true,true,false,true,1.6f,3,null,false);
-        Card(dark,"搜索进行中",true,true,false,false,4.3f,6,null,false);
-        Card(dark,"治疗完成",false,true,false,true,0,3,"TREATMENT COMPLETE",false);
-        Card(light,"治疗起手",true,false,false,true,3,3,null,false);
-        Card(light,"搜索收尾",true,true,false,false,0,2,null,false);
-        Card(light,"受击中断",false,true,false,true,0,3,"INTERRUPTED / HIT",true);
+        root.style.flexDirection=FlexDirection.Row;
+        float[] fractions={.25f,.5f,.75f};
+        for(int i=0;i<fractions.Length;i++)
+        {
+            var panel=new VisualElement();panel.style.width=Length.Percent(100f/3);panel.style.height=Length.Percent(100);
+            panel.style.backgroundColor=(Color)(i==1 ? new Color32(105,112,120,255) : new Color32(23,28,35,255));root.Add(panel);
+            var caption=new Label((fractions[i]*100)+"%");caption.style.color=Color.white;caption.style.fontSize=12;
+            caption.style.marginLeft=20;caption.style.marginTop=20;panel.Add(caption);
+            var cross=new Image {image=AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/AddressableAssetsData/Art/Textures/reticle_cross.png")};
+            cross.style.position=Position.Absolute;cross.style.left=Length.Percent(50);cross.style.top=Length.Percent(50);
+            cross.style.marginLeft=-40;cross.style.marginTop=-40;cross.style.width=cross.style.height=80;panel.Add(cross);
+            var view=new RaidTimedActionView(()=>{});panel.Add(view);
+            view.PresentProgress("TREATING",fractions[i],3*(1-fractions[i]),true,true,false,false,false,true);
+        }
         var font=AssetDatabase.LoadAssetAtPath<Font>("Assets/Localization/Fonts/NotoSansCJKsc-Regular.otf");
         if(font)root.Query<TextElement>().ForEach(t=>t.style.unityFontDefinition=FontDefinition.FromFont(font));
-    }
-    private VisualElement Column(Color color)
-    {
-        var e=new VisualElement();e.style.width=Length.Percent(50);e.style.paddingLeft=36;e.style.paddingRight=36;
-        e.style.backgroundColor=color;rootVisualElement.Add(e);return e;
-    }
-    private static void Card(VisualElement parent,string caption,bool active,bool accepted,bool cancel,bool medical,float left,float duration,string receipt,bool failed)
-    {
-        var c=new Label(caption);c.style.color=(Color)new Color32(196,225,255,255);c.style.fontSize=12;c.style.marginTop=36;parent.Add(c);
-        var view=new RaidTimedActionView(()=>{});view.style.position=Position.Relative;view.style.left=0;view.style.bottom=0;
-        view.style.marginLeft=0;view.style.marginTop=14;view.style.width=Length.Percent(100);parent.Add(view);
-        view.Present(active,accepted,cancel,medical,left,duration,receipt,failed,true);
-        c.style.marginBottom=0;
     }
     private void OnDisable()
     { rootVisualElement.Clear();if(m_Previous!=null)LocalizationSettings.SelectedLocale=m_Previous; }
@@ -69,6 +62,13 @@ public sealed class RaidTimedActionReview : EditorWindow
         Assert(RaidActionReadout.Receipt("已取消操作；未消耗物品或获得收益。",false)=="ACTION CANCELLED","Cancellation is distinct from success");
         Assert(RaidActionReadout.Receipt("治疗中断：受到攻击。 未消耗医疗物品。",true)=="INTERRUPTED / HIT","Keep specific interruption reason");
         Assert(RaidActionReadout.Receipt(null,false)=="ACTION INTERRUPTED","Missing receipt cannot fabricate completion");
+        var artwork=Resources.Load<HaloProgressArtwork>("Moonkov/UI/HaloProgressArtwork");
+        Assert(artwork.Petal==AssetDatabase.LoadAssetAtPath<Sprite>("Assets/DollSinger/Art/Rifle/Petal.png") &&
+            artwork.InnerArc==AssetDatabase.LoadAssetAtPath<Sprite>("Assets/DollSinger/Art/Rifle/InnerArc.png"),"Use actual head halo artwork, not redrawn approximations");
+        var ring=new HaloProgressRing();ring.SetProgress(.25f);Assert(ring.Progress==.25f,"Ring uses continuous progress");
+        ring.SetProgress(1);Assert(ring.Progress==1,"Full ring is exact");
+        ring.SetProgress(float.NaN);Assert(ring.Progress==0,"Invalid progress cannot appear complete");
+        ring.SetProgress(-1);Assert(ring.Progress==0,"Negative progress clamps empty");
         int cancels=0;var view=new RaidTimedActionView(()=>cancels++);
         var window=CreateInstance<RaidTimedActionReview>();window.ShowUtility();window.rootVisualElement.Add(view);
         try
@@ -82,7 +82,7 @@ public sealed class RaidTimedActionReview : EditorWindow
         view.Present(true,true,true,true,1,3,null,false,true);
         Assert(!button.enabledSelf,"Pending cancellation disables repeat submit");
         view.Present(false,true,false,true,0,3,"ACTION CANCELLED",false,true);
-        Assert(button.style.display==DisplayStyle.None && view.Q(className:"raid-action-track").style.display==DisplayStyle.None,"Receipt has no cancel control or false full progress bar");
+        Assert(button.style.display==DisplayStyle.None && view.Q<HaloProgressRing>().style.display==DisplayStyle.None,"Receipt has no cancel control or false full progress bar");
         view.Present(true,true,false,true,1,3,null,false,false);
         Assert(view.style.display==DisplayStyle.None,"Pause or inactive raid hides action controls");
         view.Present(false,false,false,false,0,0,null,false,true);

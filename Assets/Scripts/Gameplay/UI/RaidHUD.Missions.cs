@@ -228,6 +228,7 @@ namespace Unity.MP_FPS
             }
             if (m_MissionHolding == target && held && Time.unscaledTime >= m_MissionNextRenew)
             { SendMission(MissionIntent.Renew, target); m_MissionNextRenew = Time.unscaledTime + .25f; }
+            if(m_MissionHolding==target)m_MissionInteraction.style.display=DisplayStyle.None;
             return true;
         }
 

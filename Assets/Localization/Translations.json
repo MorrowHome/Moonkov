@@ -1342,5 +1342,9 @@
   "INTERRUPTED / INVENTORY CHANGED": "库存变化中断",
   "ACTION INTERRUPTED": "操作已中断",
   "{0:0.0}s": "{0:0.0} 秒",
-  "USING ITEM": "使用中"
+  "USING ITEM": "使用中",
+  "OPERATING": "操作中",
+  "CHARGING": "充能中",
+  "SHUTTLE BEACON": "接驳信标",
+  "TARGET {0}/{1}": "充能至 {0}/{1}"
 }

@@ -143,7 +143,7 @@ namespace Unity.MP_FPS
             m_OxygenPanel = m_Root.Q("raidOxygenPanel"); m_OxygenFill = m_Root.Q("raidOxygenFill");
             m_OxygenReserve = m_Root.Q<Label>("raidOxygenReserve"); m_OxygenTime = m_Root.Q<Label>("raidOxygenTime");
             m_OxygenAir = m_Root.Q<Label>("raidOxygenAir");
-            m_ActionView = new Client.RaidTimedActionView(CancelTimedAction); m_Root.Add(m_ActionView);
+            m_ActionView = new Client.RaidTimedActionView(CancelProgressAction); m_Root.Add(m_ActionView);
             ResetTimedAction();
             m_InventorySequence=0; m_InventoryRequestId=0; m_InventoryAudio.Reset();
             m_InventoryRequestPending=false;
@@ -283,6 +283,7 @@ namespace Unity.MP_FPS
         {
             m_MedicalActive=false; m_DissectingLootId=-1; m_ActionFeedbackUntil=0; m_ActionFeedback=null;
             m_ActionAccepted=m_ActionCancelPending=m_ActionFailed=false; m_ActionRequestId=0;
+            m_ProgressTacticalRequest=0;m_ProgressTacticalDuration=0;
         }
         private void BeginTimedAction()
         {
@@ -295,10 +296,12 @@ namespace Unity.MP_FPS
         {
             if(m_ActionView==null)return;
             bool active=TimedActionActive && m_Snapshot.Phase==RaidPhase.Active;
-            bool visible=m_Snapshot.Phase==RaidPhase.Active && !GameSettings.Instance.IsPauseMenuOpen && !CinematicInputBlocked;
+            bool visible=m_Snapshot.Phase==RaidPhase.Active && !GameSettings.Instance.IsPauseMenuOpen && !CinematicInputBlocked && !m_MapOpen &&
+                !m_MissionDetailsVisible && !m_CampaignJournalVisible && !m_ClashActionsBlocked && !DarkSightRequested;
+            if(!active && PresentOtherProgress(visible))return;
             float remaining=(m_MedicalActive ? m_MedicalEndsAt : m_DissectionEndsAt)-Time.unscaledTime;
             m_ActionView.Present(active,m_ActionAccepted,m_ActionCancelPending,m_MedicalActive,remaining,m_ActionDuration,
-                Time.unscaledTime<m_ActionFeedbackUntil ? m_ActionFeedback : null,m_ActionFailed,visible);
+                Time.unscaledTime<m_ActionFeedbackUntil ? m_ActionFeedback : null,m_ActionFailed,visible,m_InventoryVisible);
             if(active && visible && !ChatInputBlocked && Keyboard.current!=null && Keyboard.current.xKey.wasPressedThisFrame)CancelTimedAction();
         }
         private void SetInventory(bool visible)
@@ -384,7 +387,6 @@ namespace Unity.MP_FPS
             PresentOnlineSquad();
             if(m_ActionRaidId!=m_Snapshot.RaidId) {ResetTimedAction();m_ActionRaidId=m_Snapshot.RaidId;}
             UpdateInventoryView();
-            PresentTimedAction();
             bool clash = PresentBountyClash();
             UpdateRaidCinematics(clash);
             UpdateChat();
@@ -448,6 +450,7 @@ namespace Unity.MP_FPS
             m_Minimap.Hide(); // Legacy API retained; the M map uses one Painter2D view and no capture camera.
             UpdateGrenades(alive && ready && !settled && !DarkSightRequested && !MapInputBlocked);
             bool missionControl = UpdateMissions(alive && ready && !settled && !clash);
+            PresentTimedAction();
             UpdateCampaignHUD(alive && ready && !settled && !clash);
             UpdateTutorialHUD(alive && ready && !settled && !clash);
             bool tacticalInteraction = TryQuickTacticalInteraction(alive && ready && !settled && !DarkSightRequested);
@@ -562,7 +565,7 @@ namespace Unity.MP_FPS
             }
             bool returnBeacon = showReturn && m_ReturnGuidance.ShowBeacon;
             m_ExtractionPanel.EnableInClassList("is-visible", alive && !settled && (extracting || check || returnBeacon));
-            m_ExtractionTrack.style.display = extracting ? DisplayStyle.Flex : DisplayStyle.None;
+            m_ExtractionTrack.style.display = DisplayStyle.None;
             if (extracting)
                 m_ExtractionFill.style.width = Length.Percent(100 * Mathf.Clamp01(1 - m_Snapshot.ExtractionRemaining / MoonRaidMap.Active.ExtractionSeconds));
             else m_ExtractionFill.style.width = Length.Percent(0);
@@ -571,7 +574,7 @@ namespace Unity.MP_FPS
                 Vector3 delta = MoonRaidMap.Active.ExtractionPosition - position;
                 string heading = Mathf.Abs(delta.x) > Mathf.Abs(delta.z) ? delta.x > 0 ? "E" : "W" : delta.z > 0 ? "N" : "S";
                 if (extracting)
-                    MoonkovLocalization.Set(m_Exit, MoonkovLocalization.Format($"EXTRACTION\nSHUTTLE BEACON / {m_Snapshot.ExtractionRemaining:00.0}s"));
+                    MoonkovLocalization.Set(m_Exit, "SHUTTLE BEACON");
                 else if (returnBeacon)
                     MoonkovLocalization.Set(m_Exit, m_ReturnGuidance.BeaconText, delta.magnitude, MoonkovLocalization.Text(heading));
                 else

@@ -238,8 +238,8 @@ namespace Unity.MP_FPS
             TacticalItemsFeedback.SetSelectedItem(m_QuickActive ? selected?.Code : null);
             TacticalItemsFeedback.SetPresentationBlocked(!m_QuickActive || menu || DarkSightRequested || QuickTyping(m_Root.panel?.focusController.focusedElement as VisualElement));
             m_QuickView.Element.style.display = m_Snapshot.RaidId > 0 ? DisplayStyle.Flex : DisplayStyle.None;
-            string status = !m_QuickActive ? "Item use unavailable while inactive or downed." : DarkSightRequested ? "DARK SIGHT / RELEASE V TO USE ITEMS" : QuickTacticalCancelPending ? "Cancellation requested." : owner.Remaining > 0 ?
-                MoonkovLocalization.Format($"USING ITEM / {owner.Remaining:0.0}s · X CANCEL") : QuickManualBusy ? "Action in progress. X cancels timed actions." :
+            string status = !m_QuickActive ? "Item use unavailable while inactive or downed." : DarkSightRequested ? "DARK SIGHT / RELEASE V TO USE ITEMS" : QuickTacticalCancelPending ? null : owner.Remaining > 0 ?
+                null : QuickManualBusy ? null :
                 Time.unscaledTime < m_QuickStatusUntil ? m_QuickStatus : Time.unscaledTime < m_QuickInteractionHintUntil ? m_QuickInteractionHint : null;
             string meleeStatus = MeleeCaption();
             if (meleeStatus != null && m_QuickActive && !DarkSightRequested && !QuickManualBusy) status = meleeStatus;

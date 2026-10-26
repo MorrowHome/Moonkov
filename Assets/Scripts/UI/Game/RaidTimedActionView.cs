@@ -35,39 +35,42 @@ namespace Unity.MP_FPS.Client
     public sealed class RaidTimedActionView : VisualElement
     {
         private readonly Label m_Title, m_Time;
-        private readonly VisualElement m_Track, m_Fill;
+        private readonly HaloProgressRing m_Ring;
         private readonly Button m_Cancel;
         private string m_LastTitle;
         private int m_LastTenth = -1;
         public RaidTimedActionView(Action cancel)
         {
-            name = "raidTimedAction"; AddToClassList("raid-timed-action"); pickingMode = PickingMode.Ignore;
-            var row = new VisualElement { pickingMode = PickingMode.Ignore }; row.AddToClassList("raid-action-row"); Add(row);
-            m_Title = new Label { name = "raidActionTitle", pickingMode = PickingMode.Ignore }; m_Title.AddToClassList("raid-action-title"); row.Add(m_Title);
-            m_Time = new Label { name = "raidActionTime", pickingMode = PickingMode.Ignore }; m_Time.AddToClassList("raid-action-time"); row.Add(m_Time);
-            m_Cancel = new Button(cancel) { name = "raidActionCancel", text = "X / CANCEL" }; row.Add(m_Cancel);
-            m_Track = new VisualElement { pickingMode = PickingMode.Ignore }; m_Track.AddToClassList("raid-action-track"); Add(m_Track);
-            m_Fill = new VisualElement { pickingMode = PickingMode.Ignore }; m_Fill.AddToClassList("raid-action-fill"); m_Track.Add(m_Fill);
-            style.display = DisplayStyle.None;
-            RegisterCallback<AttachToPanelEvent>(_ => MoonkovLocalization.Bind(this));
+            name="raidTimedAction";AddToClassList("raid-timed-action");pickingMode=PickingMode.Ignore;
+            m_Ring=new HaloProgressRing();m_Ring.AddToClassList("raid-action-ring");Add(m_Ring);
+            m_Title=new Label {name="raidActionTitle",pickingMode=PickingMode.Ignore};m_Title.AddToClassList("raid-action-title");Add(m_Title);
+            var row=new VisualElement {pickingMode=PickingMode.Ignore};row.AddToClassList("raid-action-row");Add(row);
+            m_Time=new Label {name="raidActionTime",pickingMode=PickingMode.Ignore};m_Time.AddToClassList("raid-action-time");row.Add(m_Time);
+            m_Cancel=new Button(cancel) {name="raidActionCancel",text="X"};row.Add(m_Cancel);
+            style.display=DisplayStyle.None;
+            RegisterCallback<AttachToPanelEvent>(_=>MoonkovLocalization.Bind(this));
         }
-        public void Present(bool active, bool accepted, bool cancelling, bool medical, float remaining, float duration,
-            string receipt, bool failed, bool visible)
+        public void Present(bool active,bool accepted,bool cancelling,bool medical,float remaining,float duration,
+            string receipt,bool failed,bool visible,bool showCancel=true)
         {
-            style.display = visible && (active || !string.IsNullOrEmpty(receipt)) ? DisplayStyle.Flex : DisplayStyle.None;
-            if (!visible) return;
-            var state = new RaidActionReadout(accepted,cancelling,remaining,duration);
-            bool running = active && state.Stage == RaidActionStage.Running;
-            string title = !active ? receipt : medical ? "TREATING" : "SEARCHING";
-            if (m_LastTitle != title) { m_LastTitle=title; MoonkovLocalization.Set(m_Title,title ?? ""); }
-            m_Time.style.display = running ? DisplayStyle.Flex : DisplayStyle.None;
-            int tenth=running ? Mathf.CeilToInt(state.Remaining*10) : -1;
-            if (running && tenth!=m_LastTenth) MoonkovLocalization.Set(m_Time,"{0:0.0}s",tenth*.1f);
+            var state=new RaidActionReadout(accepted,cancelling,remaining,duration);
+            PresentProgress(active ? medical ? "TREATING" : "SEARCHING" : receipt,
+                Mathf.Min(state.Progress,.97f),state.Remaining,active,
+                active && state.Stage==RaidActionStage.Running,active && showCancel,cancelling,failed,visible);
+        }
+        public void PresentProgress(string title,float progress,float remaining,bool active,bool showTime,
+            bool cancellable,bool cancelling,bool failed,bool visible)
+        {
+            style.display=visible && (active || !string.IsNullOrEmpty(title)) ? DisplayStyle.Flex : DisplayStyle.None;
+            if(!visible)return;
+            if(m_LastTitle!=title) {m_LastTitle=title;MoonkovLocalization.Set(m_Title,title ?? "");}
+            m_Ring.style.display=active ? DisplayStyle.Flex : DisplayStyle.None;m_Ring.SetProgress(progress);
+            m_Time.style.display=active && showTime ? DisplayStyle.Flex : DisplayStyle.None;
+            int tenth=active && showTime && float.IsFinite(remaining) ? Mathf.CeilToInt(Mathf.Max(0,remaining)*10) : -1;
+            if(tenth>=0 && tenth!=m_LastTenth)MoonkovLocalization.Set(m_Time,"{0:0.0}s",tenth*.1f);
             m_LastTenth=tenth;
-            m_Cancel.style.display = active ? DisplayStyle.Flex : DisplayStyle.None;
-            m_Cancel.SetEnabled(active && !cancelling);
-            m_Track.style.display = active && accepted ? DisplayStyle.Flex : DisplayStyle.None;
-            m_Fill.style.width = Length.Percent(Mathf.Min(state.Progress,.97f)*100);
+            m_Cancel.style.display=active && cancellable ? DisplayStyle.Flex : DisplayStyle.None;
+            m_Cancel.SetEnabled(active && cancellable && !cancelling);
             EnableInClassList("is-error",!active && failed);
         }
     }

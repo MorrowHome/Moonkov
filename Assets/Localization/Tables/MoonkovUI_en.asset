@@ -5683,6 +5683,22 @@ MonoBehaviour:
     m_Localized: '{0:0.0}s'
     m_Metadata:
       m_Items: []
+  - m_Id: 7022599744774144
+    m_Localized: OPERATING
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7022599744774145
+    m_Localized: CHARGING
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7022599744774146
+    m_Localized: SHUTTLE BEACON
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7023458725650432
+    m_Localized: TARGET {0}/{1}
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

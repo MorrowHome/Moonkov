@@ -49,6 +49,7 @@ namespace Unity.MP_FPS
             if (status.Notice != m_LastChargeNotice || Time.unscaledTime >= m_NextChargeText)
             {
                 PresentChargeStatus(m_RootElement, status);
+                if(status.Notice==HaloChargeNotice.Charging)MoonkovLocalization.Set(m_ReloadingLabel,"TARGET {0}/{1}",status.Ammo,status.Capacity);
                 m_LastChargeNotice = status.Notice; m_NextChargeText = Time.unscaledTime + .1f;
             }
             // Keep the existing ammo auto-hide from hiding a brief charge notice between text refreshes.
@@ -56,7 +57,7 @@ namespace Unity.MP_FPS
             if (m_AmmoBar != null)
             {
                 bool charging = status.Notice == HaloChargeNotice.Charging;
-                m_AmmoBar.style.display = charging ? DisplayStyle.Flex : DisplayStyle.None;
+                m_AmmoBar.style.display = DisplayStyle.None; // The common halo ring owns action progress.
                 if (charging) { m_AmmoBar.highValue = 1; m_AmmoBar.value = status.Progress; }
             }
         }

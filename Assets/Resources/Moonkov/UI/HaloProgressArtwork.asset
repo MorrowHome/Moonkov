@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0611fd130f4b4f1d83a09b20c0c2ae8c, type: 3}
+  m_Name: HaloProgressArtwork
+  m_EditorClassIdentifier: Assembly-CSharp::Unity.MP_FPS.Client.HaloProgressArtwork
+  Petal: {fileID: 21300000, guid: ef1beb938683d174fa77880495f73dfd, type: 3}
+  OuterArc: {fileID: 21300000, guid: 1b95156bde862884e8d7b8c5ea47ea23, type: 3}
+  InnerArc: {fileID: 21300000, guid: 00a549516e3c767408220840f9f19959, type: 3}
+  Cell: {fileID: 21300000, guid: 9729f37773e119043bbffd5c5e4e04fb, type: 3}
+  Color: {r: 1, g: 0.18, b: 0.42, a: 1}
