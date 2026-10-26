@@ -159,6 +159,9 @@ namespace Unity.MP_FPS
                 var brain = EntityManager.GetComponentObject<DollSingerEnemyBrain>(entity);
                 if (health.ValueRO.CurrentHealth <= 0)
                 {
+                    // Lethal damage may arrive after the last protection update.
+                    // The actual remaining charge must follow the item into the corpse.
+                    EnergyShieldEquipment.Flush(ref health.ValueRW, brain.Inventory);
                     DropCorpse(brain, pose.ValueRO, now);
                     RetireEnemy(entity, brain);
                     deaths.DestroyEntity(enemy.ValueRO.InputEntity);

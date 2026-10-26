@@ -271,6 +271,12 @@ namespace Unity.MP_FPS
             // A finite raid loadout; unused medicine remains in the normal death inventory.
             inventory.AddSupply("medkit", 2, parent: InventoryCatalog.Pockets, foundInRaid: true);
             if (map.EnemyCells > 0) inventory.AddSupply("cells", map.EnemyCells, foundInRaid: true);
+            if (!clash.HasValue && PmcProtectionLoadout.TryEquip(inventory, false,
+                    TutorialRuntime.Enabled(EntityManager), m_SpawnRandom.NextFloat()))
+            {
+                PmcProtectionLoadout.Initialize(ref healthState, inventory);
+                EntityManager.SetComponentData(player, healthState);
+            }
             var brain = new DollSingerEnemyBrain { Inventory = inventory, RaidExit = SelectRaidExit(map, position),
                 Seed = serial, Yaw = yaw, Goal = position, ProgressPosition = position, SpawnTime = now,
                 NextSense = now + (serial % 3) * .033, NextDecision = now + (serial % 3) * .067,

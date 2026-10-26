@@ -32,6 +32,10 @@ flowchart LR
 
 18 项人形冲刺规则检查通过，游戏与编辑器程序集隔离编译通过。真实服务端敌人状态与移动输入夹具已补充，尚未在编辑器执行；战斗节奏和性能仍需实战确认。
 
+普通局每个人形敌人有三分之一概率携带能量护盾发生器。它是真实装备，使用现有的受击、延迟恢复与有限供能规则。敌人死亡时先写回最后的护盾和能源，再进入尸体库存；玩家拿到的是原物品和剩余资源。教学和赏金敌人不使用此配装。人形敌人暂不消耗氧气，装备护盾不会改变这一现状。
+
+16 项检查覆盖配装、伤害、恢复、死亡瞬间写回、尸体转移和库存序列化。游戏与编辑器程序集隔离编译通过。真实服务器更新夹具已补充，但尚未在编辑器执行；盾牌表现、遭遇频率和交火难度需要正式地图试玩。
+
 PMCs choose reachable caches with different route preferences, spend 2.5 seconds
 searching within pickup range and line of sight, then transfer actual shared items
 through `LootInventoryExchange.TryApply`. Quantities and versions follow the normal

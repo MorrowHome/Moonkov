@@ -83,6 +83,39 @@ namespace Unity.MP_FPS
         }
     }
 
+    // A minority of ordinary raid actors carry the same physical shield item as
+    // players. Tutorial and bounty encounters retain their existing loadouts.
+    public static class PmcProtectionLoadout
+    {
+        public const float ShieldChance = 1f / 3f;
+        public static bool ShouldEquip(bool clash, bool tutorial, float roll) =>
+            !clash && !tutorial && float.IsFinite(roll) && roll >= 0 && roll < ShieldChance;
+
+        public static bool TryEquip(InventoryGraph inventory, bool clash, bool tutorial, float roll)
+        {
+            if (!ShouldEquip(clash, tutorial, roll) || inventory == null) return false;
+            var shield = new InventoryItem { Id = System.Guid.NewGuid().ToString("D"),
+                Code = EnergyShieldEquipment.ShieldCode, Parent = InventoryCatalog.Equipment,
+                Region = "Shield", FoundInRaid = true };
+            if (!float.IsFinite(inventory.CarriedWeight) ||
+                inventory.CarriedWeight + InventoryCatalog.Get(shield.Code).Weight > InventoryCatalog.CarryWeightLimit) return false;
+            if (inventory.CanPlace(shield, InventoryCatalog.Equipment, "Shield", 0, 0, false) != InventoryError.None)
+                return false;
+            inventory.Items.Add(shield);
+            inventory.Version++;
+            return true;
+        }
+
+        public static void Initialize(ref PredictedPlayerGhost health, InventoryGraph inventory)
+        {
+            // Ordinary PMCs do not simulate oxygen. Preserve their existing reserve
+            // when the shared equipment binding sees no life-support collar.
+            float oxygen = health.Oxygen;
+            EnergyShieldEquipment.Synchronize(ref health, inventory);
+            if (!health.HeadDomeEquipped) health.Oxygen = oxygen;
+        }
+    }
+
     // An inaccessible backpack cell cannot be re-attempted every frame while
     // the physical inventory and weapon's energy cost remain unchanged.
     public struct PmcReloadFailure

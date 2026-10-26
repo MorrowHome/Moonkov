@@ -23,6 +23,15 @@ namespace Unity.MP_FPS
                 EnergyShieldEquipment.Tick(ref health.ValueRW,inventory.Graph,SystemAPI.Time.DeltaTime,recover);
                 if(send && (health.ValueRO.ShieldEquipped || health.ValueRO.HeadDomeEquipped))inventory.LastSentVersion=-1;
             }
+            // Ordinary PMCs have no connection/RaidSession. Only equipped shields
+            // need ticking; their finite item energy pays for the same recovery.
+            foreach (var (health, entity) in SystemAPI.Query<RefRW<PredictedPlayerGhost>>()
+                         .WithAll<DollSingerEnemy, Simulate>().WithNone<ClashBot>().WithEntityAccess())
+            {
+                if (!health.ValueRO.ShieldEquipped || !state.EntityManager.HasComponent<DollSingerEnemyBrain>(entity)) continue;
+                var brain = state.EntityManager.GetComponentObject<DollSingerEnemyBrain>(entity);
+                EnergyShieldEquipment.Tick(ref health.ValueRW, brain.Inventory, SystemAPI.Time.DeltaTime);
+            }
         }
         private void UpdateSurvival(ref SystemState state)
         {
