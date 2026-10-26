@@ -355,6 +355,24 @@ public static class MoonkovRaidActionChecks
         Check(inventory.DissectingLootId==id && inventory.OpenedLootId<0,"Refilled cache reopened without searching");
         Refresh(world,handle,connection,13);
         Check(inventory.OpenedLootId==id && !inventory.NeedsSearch(caches,id),"Refilled cache search did not complete");
+        inventory.OpenedLootId=-1;inventory.ClearSearchRecords();
+        health=em.GetComponentData<PredictedPlayerGhost>(player);health.Energy=0;health.ShieldEquipped=false;em.SetComponentData(player,health);
+        world.SetTime(new TimeData(14,.02f));open.RequestId=7;Request(world,connection,open);Process(world,handle,"HandleLootRequests");
+        float hp=health.CurrentHealth;
+        for(uint tick=1;tick<=4;tick++)
+        {
+            health=em.GetComponentData<PredictedPlayerGhost>(player);RaidNutrition.Tick(ref health,.5f,1000,1000,300,0,2,0,tick);
+            em.SetComponentData(player,health);Refresh(world,handle,connection,14+tick*.5);
+        }
+        Check(inventory.OpenedLootId==id && em.GetComponentData<PredictedPlayerGhost>(player).CurrentHealth<hp,
+            "Starvation damage interrupted search RPC");
+        inventory.OpenedLootId=-1;inventory.ClearSearchRecords();
+        world.SetTime(new TimeData(17,.02f));open.RequestId=8;Request(world,connection,open);Process(world,handle,"HandleLootRequests");
+        health=em.GetComponentData<PredictedPlayerGhost>(player);
+        RaidHealth.CombatDamage(ref health,BodyPart.RightArm,5,70,RaidDamageKind.Bullet);
+        RaidNutrition.Tick(ref health,.5f,1000,1000,300,0,2,0,70);em.SetComponentData(player,health);
+        Refresh(world,handle,connection,17.5);
+        Check(inventory.OpenedLootId<0 && inventory.Error==InventoryError.Inaccessible,"Same-tick starvation concealed search interruption");
         caches.Containers.Remove(id);caches.MissionCaches.Remove(id);caches.RefillStates.Remove(id);inventory.OpenedLootId=-1;
     }
     private static void CheckReloadInventoryRequests(World world,SystemHandle handle,Entity connection,RaidInventoryState inventory,

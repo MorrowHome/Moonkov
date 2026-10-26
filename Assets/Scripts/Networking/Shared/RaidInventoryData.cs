@@ -231,12 +231,12 @@ namespace Unity.MP_FPS
         public double DissectionUntil;
         public Unity.Mathematics.float3 DissectionOrigin;
         public int DissectionGeneration;
-        public uint DissectionDamageTick,DissectionShieldHitSequence,DissectionShotTick,DissectionGrenadeTick,DissectionReloadTick,DissectionWeapon;
+        public uint DissectionDamageSequence,DissectionShieldHitSequence,DissectionShotTick,DissectionGrenadeTick,DissectionReloadTick,DissectionWeapon;
         public bool BeginDissection(int id,double now,Unity.Mathematics.float3 origin,in PredictedPlayerGhost health,float seconds=AlienHarvest.DissectionSeconds,int refillGeneration=0)
         {
             if(RaidHealth.HandsBusy(health))return false;
             CancelActions(ActionPending ? "原操作已取消：开始搜索；未消耗物品。" : ActionFeedback);DissectingLootId=id;DissectionUntil=now+System.Math.Max(.1f,seconds);
-            DissectionOrigin=origin;DissectionGeneration=refillGeneration;DissectionDamageTick=health.LastHitTick;DissectionShieldHitSequence=health.ShieldHitSequence;
+            DissectionOrigin=origin;DissectionGeneration=refillGeneration;DissectionDamageSequence=health.NonMetabolicDamageSequence;DissectionShieldHitSequence=health.ShieldHitSequence;
             DissectionShotTick=health.LastShotTick;DissectionGrenadeTick=health.LastGrenadeShotTick;
             DissectionReloadTick=health.LastReloadTick;DissectionWeapon=health.EquippedWeaponID;OpenedLootId=-1;LastSentVersion=-1;
             return true;
@@ -248,7 +248,7 @@ namespace Unity.MP_FPS
             string reason=!accessible ? "搜索中断：离开范围、死亡或战局结束。" :
                 contentsChanged ? "搜索中断：容器内容已刷新。" :
                 Unity.Mathematics.math.distancesq(position,DissectionOrigin)>.75f*.75f ? "搜索中断：移动超过允许范围。" :
-                health.LastHitTick!=DissectionDamageTick || health.ShieldHitSequence!=DissectionShieldHitSequence ? "搜索中断：受到攻击。" :
+                health.NonMetabolicDamageSequence!=DissectionDamageSequence || health.ShieldHitSequence!=DissectionShieldHitSequence ? "搜索中断：受到攻击。" :
                 health.LastShotTick!=DissectionShotTick || health.LastGrenadeShotTick!=DissectionGrenadeTick ? "搜索中断：开火或投掷。" :
                 health.LastReloadTick!=DissectionReloadTick || health.EquippedWeaponID!=DissectionWeapon || RaidHealth.HandsBusy(health) ? "搜索中断：换弹或切换武器。" : null;
             if(reason==null && now<DissectionUntil)return;

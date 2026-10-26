@@ -29,6 +29,7 @@ public static class AlienHarvestChecks
         Check(loot.RequiresDissection(id),"sealed remains");
         var first=new RaidInventoryState();var second=new RaidInventoryState();
         var searchHealth=default(PredictedPlayerGhost);
+        RaidHealth.Initialize(ref searchHealth);
         first.BeginDissection(id,0,default,searchHealth);second.BeginDissection(id,0,default,searchHealth);
         first.RefreshDissection(loot,true,default,searchHealth,5.99);
         Check(first.OpenedLootId==-1 && first.DissectingLootId==id && loot.RequiresDissection(id),"no early access");
@@ -41,7 +42,7 @@ public static class AlienHarvestChecks
             int fresh=loot.DropHarvest(AlienHarvest.Create(false,new System.Random(5)),default);
             searchHealth.LastHitTick=1;
             first.BeginDissection(fresh,10,default,searchHealth);
-            if(interruption==2)searchHealth.LastHitTick=2;
+            if(interruption==2)RaidHealth.Damage(ref searchHealth,BodyPart.RightArm,1,2);
             first.RefreshDissection(loot,interruption!=0,interruption==1 ? new Unity.Mathematics.float3(1,0,0) : default,
                 searchHealth,16);
             Check(first.OpenedLootId==-1 && first.DissectingLootId==-1 && loot.RequiresDissection(fresh),"interrupted harvest "+interruption);
