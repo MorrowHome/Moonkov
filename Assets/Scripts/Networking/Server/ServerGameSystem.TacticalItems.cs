@@ -504,6 +504,19 @@ namespace Unity.MP_FPS
                 health.TacticalSprintStamina=status.Sprint.Value;health.TacticalSprintExhausted=status.Sprint.Exhausted;
                 SystemAPI.SetComponent(player,health);
             }
+            // PMC actors have no connection/RaidSession, but use the same actual
+            // movement, burden and recovery rules as a human raider.
+            foreach (var (pose, health, entity) in SystemAPI.Query<RefRO<LocalTransform>, RefRW<PredictedPlayerGhost>>()
+                         .WithAll<DollSingerEnemy, Simulate>().WithNone<ClashBot>().WithEntityAccess())
+            {
+                var status = TacticalStatus(world, entity);
+                bool alive = health.ValueRO.CurrentHealth > 0;
+                PmcSprintRules.Tick(ref status.Sprint, ref status.SprintPosition, ref status.SprintPositionKnown,
+                    pose.ValueRO.Position, dt, alive, health.ValueRO.ControllerState.Sprinting,
+                    health.ValueRO.ControllerState.MovementSpeed, health.ValueRO.CarriedWeight, status.Stamina > now);
+                health.ValueRW.TacticalSprintStamina = status.Sprint.Value;
+                health.ValueRW.TacticalSprintExhausted = status.Sprint.Exhausted;
+            }
         }
         private static void TacticalBroadcast(EntityCommandBuffer ecb,TacticalServerWorld world,TacticalServerWorld.Object obj,bool removed)
         {

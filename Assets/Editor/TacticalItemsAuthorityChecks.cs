@@ -6,6 +6,7 @@ using Unity.Entities;
 using Unity.MP_FPS;
 using Unity.MP_FPS.Inventory;
 using Unity.NetCode;
+using Unity.Transforms;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -72,6 +73,18 @@ public static class TacticalItemsAuthorityChecks
                 em.AddComponentData(entity,new ReceiveRpcCommandRequest {SourceConnection=connection});Tick();
             }
             Tick();
+            var npc=em.CreateEntity(typeof(DollSingerEnemy),typeof(Simulate),typeof(LocalTransform),typeof(PredictedPlayerGhost));
+            var npcHealth=new PredictedPlayerGhost();RaidHealth.Initialize(ref npcHealth);
+            npcHealth.ControllerState.Sprinting=true;npcHealth.ControllerState.MovementSpeed=5;npcHealth.CarriedWeight=45;
+            em.SetComponentData(npc,npcHealth);em.SetComponentData(npc,LocalTransform.FromPosition(new Unity.Mathematics.float3(0,0,0)));
+            var clashNpc=em.CreateEntity(typeof(DollSingerEnemy),typeof(ClashBot),typeof(Simulate),typeof(LocalTransform),typeof(PredictedPlayerGhost));
+            var clashHealth=npcHealth;clashHealth.TacticalSprintStamina=55;em.SetComponentData(clashNpc,clashHealth);
+            Tick(1);em.SetComponentData(npc,LocalTransform.FromPosition(new Unity.Mathematics.float3(1,0,0)));Tick(1);
+            Check(Math.Abs(em.GetComponentData<PredictedPlayerGhost>(npc).TacticalSprintStamina-96.5f)<.001f,
+                "A moving heavy PMC did not consume authoritative sprint stamina");
+            Check(Math.Abs(em.GetComponentData<PredictedPlayerGhost>(clashNpc).TacticalSprintStamina-55)<.001f,
+                "Raid PMC stamina changed a bounty bot");
+            em.DestroyEntity(npc);em.DestroyEntity(clashNpc);
             // Real damage enters the same server status and self-treatment path as existing traps.
             Clear();
             BountyClashDamage.Apply(world,player,8,BodyPart.LeftArm,12,tick,RaidDamageKind.Bullet);Tick();

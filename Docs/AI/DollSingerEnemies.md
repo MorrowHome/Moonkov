@@ -28,6 +28,10 @@ flowchart LR
 
 手雷识别与路径规则的 30 项检查通过，游戏与编辑器程序集隔离编译通过。已补充能量手雷、墙体、烟雾、实际敌人决策和移动输入的编辑器夹具，尚未在编辑器执行；导航效果和战斗难度仍需实战验证。
 
+普通搜打撤的人形敌人按实际水平位移消耗冲刺体力。负重越高，消耗越快，恢复越慢。体力耗尽后会改为步行恢复；看到手雷时仍会尝试冲刺逃生，但沿用耗尽时的速度惩罚。顶墙、垂直位移和位置突变不算冲刺。赏金模式保持原规则。
+
+18 项人形冲刺规则检查通过，游戏与编辑器程序集隔离编译通过。真实服务端敌人状态与移动输入夹具已补充，尚未在编辑器执行；战斗节奏和性能仍需实战确认。
+
 PMCs choose reachable caches with different route preferences, spend 2.5 seconds
 searching within pickup range and line of sight, then transfer actual shared items
 through `LootInventoryExchange.TryApply`. Quantities and versions follow the normal

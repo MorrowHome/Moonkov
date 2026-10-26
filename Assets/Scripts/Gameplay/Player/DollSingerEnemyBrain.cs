@@ -62,6 +62,27 @@ namespace Unity.MP_FPS
         }
     }
 
+    public static class PmcSprintRules
+    {
+        // An exhausted raider walks to recover, but may still attempt to flee an explosive.
+        public static bool Allows(bool clash, PmcAction action, bool exhausted) =>
+            clash || !exhausted || action == PmcAction.EvadeGrenade;
+
+        public static void Tick(ref TacticalSprintState stamina, ref float3 previous, ref bool known,
+            float3 position, float dt, bool alive, bool sprinting, float speed, float weight, bool stimulated)
+        {
+            bool valid = math.all(math.isfinite(position));
+            float3 travel = valid && known ? position - previous : float3.zero;
+            float threshold = math.max(.005f, float.IsFinite(dt) ? dt * .15f : 0);
+            float maximum = math.max(2, float.IsFinite(dt) ? dt * 12 : 0);
+            float distance = travel.x * travel.x + travel.z * travel.z;
+            bool moved = valid && known && distance > threshold * threshold && distance <= maximum * maximum;
+            if (valid) previous = position;
+            known = alive && valid && float.IsFinite(dt) && dt > 0;
+            TacticalSprintRules.Tick(ref stamina, dt, alive && sprinting && speed > .1f && moved, stimulated, alive, weight);
+        }
+    }
+
     // An inaccessible backpack cell cannot be re-attempted every frame while
     // the physical inventory and weapon's energy cost remain unchanged.
     public struct PmcReloadFailure

@@ -526,9 +526,10 @@ public static class DollSingerHumanlikeChecks
             var blocker = wall.AddComponent<BoxCollider>(); blocker.size = new Vector3(2, 3, .3f); blocker.enabled = false;
             UnityEngine.Physics.SyncTransforms();
 
-            PlayerInput Input(PmcAction action, bool visible = true, bool heal = false, int ammo = 15)
+            PlayerInput Input(PmcAction action, bool visible = true, bool heal = false, int ammo = 15, bool exhausted = false)
             {
                 var brain = Brain(); var health = Health(); health.CurrentAmmo = ammo;
+                health.TacticalSprintExhausted = exhausted;
                 brain.Action = action; brain.Target = entity; brain.Visible = visible; brain.Confidence = 1;
                 brain.LastSeen = target.transform.position; brain.VisibleSince = 8; brain.LastSeenTime = 10;
                 brain.LastHealth = health.CurrentHealth;
@@ -553,6 +554,10 @@ public static class DollSingerHumanlikeChecks
             Require(!empty.Shoot && empty.Sprint, "An empty withdrawing PMC could not sprint to safety.");
             var grenade = Input(PmcAction.EvadeGrenade);
             Require(!grenade.Shoot && grenade.Sprint, "Explosive evasion did not sprint without firing.");
+            Require(!Input(PmcAction.Retreat, visible: false, exhausted: true).Sprint,
+                "An exhausted PMC kept sprinting during an ordinary retreat.");
+            Require(Input(PmcAction.EvadeGrenade, exhausted: true).Sprint,
+                "An exhausted PMC could not attempt to escape a grenade.");
 
             var looting = Brain(); var lootingHealth = Health();
             looting.Action = PmcAction.Scavenge; looting.Cache = -1; looting.LootUntil = 15;
