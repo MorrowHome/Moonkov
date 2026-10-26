@@ -195,7 +195,7 @@ namespace Unity.MP_FPS
                         {
                             var player=SystemAPI.GetComponent<JoinedClient>(connection).PlayerEntity;
                             inventory.BeginDissection(r.LootId,SystemAPI.Time.ElapsedTime,SystemAPI.GetComponent<LocalTransform>(player).Position,
-                                SystemAPI.GetComponent<PredictedPlayerGhost>(player).LastHitTick,
+                                SystemAPI.GetComponent<PredictedPlayerGhost>(player),
                                 caches.RequiresDissection(r.LootId) ? AlienHarvest.DissectionSeconds : MoonRaidMap.Active.SearchSeconds);
                         }
                         inventory.Error=accepted ? InventoryError.None : InventoryError.Inaccessible;
@@ -246,14 +246,14 @@ namespace Unity.MP_FPS
             {
                 int id=inventory.DissectingLootId;
                 bool accessible=CanAccessLoot(ref state,connection,id,session) && inventory.RaidId==session.RaidId;
-                var position=inventory.DissectionOrigin;uint damageTick=inventory.DissectionDamageTick;
+                var position=inventory.DissectionOrigin;var health=default(PredictedPlayerGhost);
                 if(accessible)
                 {
                     var player=SystemAPI.GetComponent<JoinedClient>(connection).PlayerEntity;
                     position=SystemAPI.GetComponent<LocalTransform>(player).Position;
-                    damageTick=SystemAPI.GetComponent<PredictedPlayerGhost>(player).LastHitTick;
+                    health=SystemAPI.GetComponent<PredictedPlayerGhost>(player);
                 }
-                inventory.RefreshDissection(LootContainers(ref state),accessible,position,damageTick,SystemAPI.Time.ElapsedTime);
+                inventory.RefreshDissection(LootContainers(ref state),accessible,position,health,SystemAPI.Time.ElapsedTime);
             }
             if(inventory.OpenedLootId<0 || session.Phase==RaidPhase.Active && session.SnapshotTimer>0) return;
             if(CanAccessLoot(ref state,connection,inventory.OpenedLootId,session)) return;

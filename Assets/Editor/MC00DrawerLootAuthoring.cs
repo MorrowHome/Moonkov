@@ -134,11 +134,12 @@ public static class MC00DrawerLootAuthoring
                 throw new Exception("Drawer loot exceeds its small-container budget.");
         }
         var inventory = new RaidInventoryState();
-        inventory.BeginDissection(RaidFurnitureLoot.FirstId, 0, default, 0, 2);
-        inventory.RefreshDissection(caches, true, new Unity.Mathematics.float3(2, 0, 0), 0, 3);
+        var searchHealth = default(PredictedPlayerGhost);
+        inventory.BeginDissection(RaidFurnitureLoot.FirstId, 0, default, searchHealth, 2);
+        inventory.RefreshDissection(caches, true, new Unity.Mathematics.float3(2, 0, 0), searchHealth, 3);
         if (inventory.OpenedLootId >= 0 || inventory.SearchedLoot.Count != 0) throw new Exception("Moving failed to interrupt drawer search.");
-        inventory.BeginDissection(RaidFurnitureLoot.FirstId, 4, default, 0, 2);
-        inventory.RefreshDissection(caches, true, default, 0, 7);
+        inventory.BeginDissection(RaidFurnitureLoot.FirstId, 4, default, searchHealth, 2);
+        inventory.RefreshDissection(caches, true, default, searchHealth, 7);
         if (inventory.OpenedLootId != RaidFurnitureLoot.FirstId) throw new Exception("Drawer search did not reveal its existing shared inventory.");
         GameObject cameraObject = null, wall = null;
         try

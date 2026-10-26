@@ -67,16 +67,16 @@ public static class MoonkovRaidActionChecks
             Check(!string.IsNullOrEmpty(actor.ActionFeedback),"Cancellation reason absent: "+interruption);
         }
         var caches=new RaidLootContainers();caches.Initialize(2);actor=Inventory();
-        actor.BeginDissection(0,10,float3.zero,1,2);
-        actor.RefreshDissection(caches,true,float3.zero,1,11.99);
+        actor.BeginDissection(0,10,float3.zero,health,2);
+        actor.RefreshDissection(caches,true,float3.zero,health,11.99);
         Check(actor.OpenedLootId<0 && !actor.SearchedLoot.Contains(0),"Search exposes items before deadline");
-        actor.CancelActions();actor.RefreshDissection(caches,true,float3.zero,1,15);
+        actor.CancelActions();actor.RefreshDissection(caches,true,float3.zero,health,15);
         Check(actor.OpenedLootId<0 && !actor.SearchedLoot.Contains(0),"Cancelled search completed");
-        actor.BeginDissection(0,20,float3.zero,1,2);actor.RefreshDissection(caches,true,float3.zero,1,22);
+        actor.BeginDissection(0,20,float3.zero,health,2);actor.RefreshDissection(caches,true,float3.zero,health,22);
         Check(actor.OpenedLootId==0 && actor.SearchedLoot.Contains(0) && !actor.SearchedLoot.Contains(1),"First-search state is not keyed by real loot ID");
         actor.OpenedLootId=-1;
         Check(!actor.NeedsSearch(caches,0) && actor.NeedsSearch(caches,1),"Closing cache lost completed search or searched different box");
-        actor.BeginDissection(1,30,float3.zero,1,2);actor.RefreshDissection(caches,true,new float3(1,0,0),1,31);
+        actor.BeginDissection(1,30,float3.zero,health,2);actor.RefreshDissection(caches,true,new float3(1,0,0),health,31);
         Check(actor.OpenedLootId<0 && !actor.SearchedLoot.Contains(1),"Moving search gained access");
         var dropOwner=InventoryGraph.Create(false);var pack=dropOwner.Equipped("Backpack");
         dropOwner.AddSupply("cells",2,pack.Id,true,emergencySupply:true,cellCharge:19);
@@ -178,6 +178,8 @@ public static class MoonkovRaidActionChecks
             var a=Actor(out var inventory);var b=Actor(out var other);var player=em.GetComponentData<JoinedClient>(a).PlayerEntity;
             var eater=Actor(out var eatingInventory);
             CheckNutritionRequests(world,handle,eater,eatingInventory);
+            var searcher=Actor(out var searchingInventory);
+            CheckSearchCombatRequests(world,handle,searcher,searchingInventory,caches,origin);
             var item=inventory.Graph.Items.Single(i=>i.Code=="medkit");int initial=inventory.Graph.Version;
             floor.SetActive(false);UnityEngine.Physics.SyncTransforms();
             Request(world,a,new RaidInventoryDropRpc {RaidId=7,RequestId=1,ExpectedVersion=initial,ItemId=item.Id});
@@ -298,6 +300,31 @@ public static class MoonkovRaidActionChecks
         Refresh(world,handle,connection,8.1);
         Check(!inventory.ActionPending && inventory.Error==InventoryError.Inaccessible && inventory.Graph.Count("ration",true)==1,"Shield impact did not interrupt food");
     }
+    private static void CheckSearchCombatRequests(World world,SystemHandle handle,Entity connection,RaidInventoryState inventory,
+        RaidLootContainers caches,float3 origin)
+    {
+        var em=world.EntityManager;var player=em.GetComponentData<JoinedClient>(connection).PlayerEntity;
+        int id=RaidLootContainers.FirstMissionCacheId+1;
+        caches.Containers.Add(id,LootInventoryExchange.CreateCache(0));caches.MissionCaches.Add(id,origin+new float3(0,.25f,2));
+        var health=em.GetComponentData<PredictedPlayerGhost>(player);
+        health.ShieldEquipped=true;health.ShieldCharge=100;health.LastHitTick=42;em.SetComponentData(player,health);
+        world.SetTime(new TimeData(4,.02f));
+        var open=new RaidLootOpenRpc {RaidId=7,RequestId=1,LootId=id};
+        Request(world,connection,open);Process(world,handle,"HandleLootRequests");
+        Check(inventory.DissectingLootId==id && inventory.OpenedLootId<0,"Search RPC did not start");
+        health=em.GetComponentData<PredictedPlayerGhost>(player);
+        Check(EnergyShieldRules.Absorb(ref health,25,42,RaidDamageKind.Bullet,new float3(1,1,1))==0 && health.LastHitTick==42,
+            "Shield fixture did not preserve the same tick");
+        em.SetComponentData(player,health);Refresh(world,handle,connection,6);
+        Check(inventory.OpenedLootId<0 && !inventory.SearchedLoot.Contains(id),"Same-tick shield hit revealed loot");
+        open.RequestId=2;Request(world,connection,open);Process(world,handle,"HandleLootRequests");
+        health=em.GetComponentData<PredictedPlayerGhost>(player);health.LastShotTick++;em.SetComponentData(player,health);
+        Refresh(world,handle,connection,8);
+        Check(inventory.OpenedLootId<0 && !inventory.SearchedLoot.Contains(id),"Shooting during search revealed loot");
+        open.RequestId=3;Request(world,connection,open);Process(world,handle,"HandleLootRequests");Refresh(world,handle,connection,10);
+        Check(inventory.OpenedLootId==id && inventory.SearchedLoot.Contains(id),"Safe search did not recover after interruptions");
+        caches.Containers.Remove(id);caches.MissionCaches.Remove(id);inventory.OpenedLootId=-1;
+    }
     private delegate void BagHandler(ref ServerGameSystem system,ref SystemState state,EntityCommandBuffer commands,Entity connection);
     private static unsafe RaidGroundItemMarkerRpc[] SendBags(World world,SystemHandle handle,Entity connection,RaidDeathBagClientState client)
     {
@@ -350,10 +377,10 @@ public static class MoonkovRaidActionChecks
         bagB.Version++;bagB.Empty=true;overlaps.Receive(bagB);
         Check(RaidHUD.SelectNearbyDrop(overlaps,position,100)<0,"Empty drop blocks switch candidate");
         var actor=Inventory();var health=Injured();string medicine=actor.Graph.Items.Single(i=>i.Code=="medkit").Id;
-        actor.BeginDissection(0,0,float3.zero,1,2);
+        actor.BeginDissection(0,0,float3.zero,health,2);
         Check(actor.BeginMedical(health,"foreign",actor.Graph.Version,BodyPart.Auto,float3.zero,0)==InventoryError.Missing && actor.DissectingLootId==0,"Invalid medical interrupted search");
         Check(actor.BeginMedical(health,medicine,actor.Graph.Version,BodyPart.Auto,float3.zero,0)==InventoryError.None && actor.DissectingLootId<0,"Medical did not replace search");
-        actor.BeginDissection(0,0,float3.zero,1,2);actor.RefreshMedical(ref health,true,float3.zero,10);
+        actor.BeginDissection(0,0,float3.zero,health,2);actor.RefreshMedical(ref health,true,float3.zero,10);
         Check(actor.MedicalItemId==null && actor.Graph.Count("medkit")==2,"Search replacement consumed medical item");
     }
     private static void CheckManualMissionRequests(World world,SystemHandle handle,Entity connection,RaidInventoryState inventory,float3 origin,out GameObject siteObject)

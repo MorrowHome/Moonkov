@@ -223,21 +223,27 @@ namespace Unity.MP_FPS
         }
         public double DissectionUntil;
         public Unity.Mathematics.float3 DissectionOrigin;
-        public uint DissectionDamageTick;
-        public void BeginDissection(int id,double now,Unity.Mathematics.float3 origin,uint damageTick,float seconds=AlienHarvest.DissectionSeconds)
+        public uint DissectionDamageTick,DissectionShieldHitSequence,DissectionShotTick,DissectionGrenadeTick,DissectionReloadTick,DissectionWeapon;
+        public void BeginDissection(int id,double now,Unity.Mathematics.float3 origin,in PredictedPlayerGhost health,float seconds=AlienHarvest.DissectionSeconds)
         {
-            CancelActions(ActionPending ? "原操作已取消：开始搜索；未消耗医疗物品。" : ActionFeedback);DissectingLootId=id;DissectionUntil=now+System.Math.Max(.1f,seconds);
-            DissectionOrigin=origin;DissectionDamageTick=damageTick;OpenedLootId=-1;LastSentVersion=-1;
+            CancelActions(ActionPending ? "原操作已取消：开始搜索；未消耗物品。" : ActionFeedback);DissectingLootId=id;DissectionUntil=now+System.Math.Max(.1f,seconds);
+            DissectionOrigin=origin;DissectionDamageTick=health.LastHitTick;DissectionShieldHitSequence=health.ShieldHitSequence;
+            DissectionShotTick=health.LastShotTick;DissectionGrenadeTick=health.LastGrenadeShotTick;
+            DissectionReloadTick=health.LastReloadTick;DissectionWeapon=health.EquippedWeaponID;OpenedLootId=-1;LastSentVersion=-1;
         }
-        public void RefreshDissection(RaidLootContainers caches,bool accessible,Unity.Mathematics.float3 position,uint damageTick,double now)
+        public void RefreshDissection(RaidLootContainers caches,bool accessible,Unity.Mathematics.float3 position,in PredictedPlayerGhost health,double now)
         {
             if(DissectingLootId<0)return;
-            accessible=accessible && Unity.Mathematics.math.distancesq(position,DissectionOrigin)<=.75f*.75f && damageTick==DissectionDamageTick;
-            if(accessible && now<DissectionUntil)return;
+            string reason=!accessible ? "搜索中断：离开范围、死亡或战局结束。" :
+                Unity.Mathematics.math.distancesq(position,DissectionOrigin)>.75f*.75f ? "搜索中断：移动超过允许范围。" :
+                health.LastHitTick!=DissectionDamageTick || health.ShieldHitSequence!=DissectionShieldHitSequence ? "搜索中断：受到攻击。" :
+                health.LastShotTick!=DissectionShotTick || health.LastGrenadeShotTick!=DissectionGrenadeTick ? "搜索中断：开火或投掷。" :
+                health.LastReloadTick!=DissectionReloadTick || health.EquippedWeaponID!=DissectionWeapon ? "搜索中断：换弹或切换武器。" : null;
+            if(reason==null && now<DissectionUntil)return;
             int id=DissectingLootId;DissectingLootId=-1;LastSentVersion=-1;
-            Error=accessible ? InventoryError.None : InventoryError.Inaccessible;
-            ActionFeedback=accessible ? "搜索完成。" : "搜索中断：移动、受伤、离开范围或战局结束；未获取物品。";
-            if(accessible)
+            Error=reason==null ? InventoryError.None : InventoryError.Inaccessible;
+            ActionFeedback=reason==null ? "搜索完成。" : reason+" 未获取物品。";
+            if(reason==null)
             {
                 if(caches.RequiresDissection(id))caches.Containers[id].Version++;
                 SearchedLoot.Add(id);OpenedLootId=id;

@@ -28,19 +28,22 @@ public static class AlienHarvestChecks
         int id=loot.DropHarvest(boss,default);
         Check(loot.RequiresDissection(id),"sealed remains");
         var first=new RaidInventoryState();var second=new RaidInventoryState();
-        first.BeginDissection(id,0,default,0);second.BeginDissection(id,0,default,0);
-        first.RefreshDissection(loot,true,default,0,5.99);
+        var searchHealth=default(PredictedPlayerGhost);
+        first.BeginDissection(id,0,default,searchHealth);second.BeginDissection(id,0,default,searchHealth);
+        first.RefreshDissection(loot,true,default,searchHealth,5.99);
         Check(first.OpenedLootId==-1 && first.DissectingLootId==id && loot.RequiresDissection(id),"no early access");
-        first.RefreshDissection(loot,true,default,0,6);
+        first.RefreshDissection(loot,true,default,searchHealth,6);
         int version=loot.Containers[id].Version;
-        second.RefreshDissection(loot,true,default,0,6);
+        second.RefreshDissection(loot,true,default,searchHealth,6);
         Check(first.OpenedLootId==id && second.OpenedLootId==id && version==2 && loot.Containers[id].Version==version,"one shared harvest");
         foreach(int interruption in new[]{0,1,2})
         {
             int fresh=loot.DropHarvest(AlienHarvest.Create(false,new System.Random(5)),default);
-            first.BeginDissection(fresh,10,default,1);
+            searchHealth.LastHitTick=1;
+            first.BeginDissection(fresh,10,default,searchHealth);
+            if(interruption==2)searchHealth.LastHitTick=2;
             first.RefreshDissection(loot,interruption!=0,interruption==1 ? new Unity.Mathematics.float3(1,0,0) : default,
-                interruption==2 ? 2u : 1u,16);
+                searchHealth,16);
             Check(first.OpenedLootId==-1 && first.DissectingLootId==-1 && loot.RequiresDissection(fresh),"interrupted harvest "+interruption);
         }
         var transport=new RaidInventoryClientState();
