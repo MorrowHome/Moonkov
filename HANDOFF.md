@@ -19,8 +19,8 @@
 
 ## 单人战局的数据闭环检查
 
-- `Tools / Moonkov / Check Offline Raid Data Cycle` 使用独立测试档案，检查出装、搜索计时、转移物资、治疗、撤离、死亡掉落、保险箱、重复结算和重新读档。测试档案保留在 `Library/BuildValidation/OfflineCycle`，不使用玩家档案。
-- 24 项检查已在独立运行时通过，包含免费购买后的部署、撤离、重开档案与出售限制。编辑器程序集隔离编译通过。它不运行 Unity 场景，不能代替局内搜刮、交火和撤离试玩。
+- `Tools / Moonkov / Check Offline Raid Data Cycle` 使用独立测试档案，检查出装、搜索、敌人争夺物资、尸体取回、治疗、撤离、死亡掉落、保险箱、重复结算和重新读档。测试档案保留在 `Library/BuildValidation/OfflineCycle`，不使用玩家档案。
+- 37 项检查已在独立运行时通过，包含免费商品和敌人战利品的保存。敌人死亡由测试直接触发；编辑器程序集隔离编译通过。它不运行 Unity 场景，不能代替局内搜刮、交火和撤离试玩。
 
 ## 人形敌人与建筑
 

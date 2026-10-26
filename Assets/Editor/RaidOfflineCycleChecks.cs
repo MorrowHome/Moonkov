@@ -118,7 +118,73 @@ public static class RaidOfflineCycleChecks
                 "reopened free purchase was sold after extraction");
         }
         CheckDeathAndSecureContainer(projectPath);
-        return "PASS " + checks + " offline raid data-cycle checks: free purchase, loadout, real loot search and transfer, timed healing, extraction, death, secure return, replay and save reload. No Unity scene or multiplayer executed.";
+        CheckEnemyLootRecovery(projectPath);
+        return "PASS " + checks + " offline raid data-cycle checks: free purchase, loadout, competing enemy loot and corpse recovery, timed healing, extraction, death, secure return, replay and save reload. No Unity scene or multiplayer executed.";
+    }
+
+    private static void CheckEnemyLootRecovery(string projectPath)
+    {
+        string path = Path.GetFullPath(Path.Combine(projectPath, "Library", "BuildValidation", "OfflineCycle", Guid.NewGuid().ToString("N") + ".json"));
+        string lootId, playerId;
+        using (var store = new OfflineProfileStore(path))
+        {
+            playerId = store.Read().PlayerId;
+            var deployment = new RaidPersistenceContext.Deployment { PlayerId = playerId,
+                DeploymentId = Guid.NewGuid().ToString("D"), Cells = 0 };
+            var inventory = new RaidInventoryState { Graph = RaidInventoryTransport.Decode(store.Deploy(deployment).RaidInventoryJson), RaidId = 1 };
+            var health = new PredictedPlayerGhost(); RaidHealth.Initialize(ref health);
+            var caches = new RaidLootContainers(); caches.Initialize(1);
+            InventoryGraph cache = null;
+            for (int seed = 0; seed < 256; seed++)
+            {
+                var candidate = RaidLootTable.Create(RaidLootProfile.Industrial, new System.Random(seed));
+                if (candidate.Items.Any(i => i.Code == "data_drive" && i.Quantity == 1)) { cache = candidate; break; }
+            }
+            Check(cache != null, "industrial cache fixture did not contain a data drive");
+            caches.Containers[0] = cache;
+            lootId = cache.Items.Single(i => i.Code == "data_drive").Id;
+            Check(inventory.BeginDissection(0, 10, float3.zero, health, 2), "player could not search shared cache");
+            inventory.RefreshDissection(caches, true, float3.zero, health, 12);
+            int oldCacheVersion = cache.Version;
+            Check(inventory.OpenedLootId == 0 && inventory.SearchedLoot.Contains(0), "shared cache did not open after search");
+            var enemy = InventoryGraph.Create(stash: false);
+            Check(PmcLootRules.TakeAvailable(enemy, cache) > 0 && enemy.Find(lootId)?.FoundInRaid == true && cache.Find(lootId) == null,
+                "enemy did not take the unique data drive from the shared cache");
+            var pack = inventory.Graph.Equipped("Backpack");
+            var taken = enemy.Find(lootId);
+            Check(pack != null, "player backpack missing");
+            Check(inventory.Graph.FindSpace(taken, pack.Id, out var region, out int x, out int y), "player backpack could not receive the data drive");
+            var stale = new InventoryCommand { Operation = InventoryOperation.Move, ItemId = lootId, Parent = pack.Id,
+                Region = region, X = x, Y = y, ExpectedVersion = inventory.Graph.Version };
+            Check(LootInventoryExchange.TryApply(inventory.Graph, cache, stale, oldCacheVersion) == InventoryError.Stale &&
+                inventory.Graph.Find(lootId) == null && enemy.Find(lootId) != null,
+                "a stale player request duplicated the enemy's loot");
+            int corpseId = caches.Drop(enemy, float3.zero);
+            var corpse = caches.Containers[corpseId];
+            Check(PmcLootRules.IsHumanCorpse(caches, corpseId) && corpse.Find(lootId) != null && enemy.Find(lootId) == null,
+                "enemy death did not leave the original loot in a human corpse");
+            Check(inventory.BeginDissection(corpseId, 20, float3.zero, health, 2), "player could not begin searching corpse");
+            inventory.RefreshDissection(caches, true, float3.zero, health, 22);
+            Check(inventory.OpenedLootId == corpseId && inventory.SearchedLoot.Contains(corpseId), "corpse search did not finish");
+            var recover = new InventoryCommand { Operation = InventoryOperation.Move, ItemId = lootId, Parent = pack.Id,
+                Region = region, X = x, Y = y, ExpectedVersion = inventory.Graph.Version };
+            Check(LootInventoryExchange.TryApply(inventory.Graph, corpse, recover, corpse.Version) == InventoryError.None &&
+                inventory.Graph.Find(lootId)?.FoundInRaid == true && corpse.Find(lootId) == null,
+                "player did not recover the same found-in-raid item from the corpse");
+            var receipt = new RaidPersistenceContext.Settlement { PlayerId = playerId, DeploymentId = deployment.DeploymentId,
+                SettlementId = deployment.DeploymentId, Outcome = "Extracted", InventoryJson = RaidInventoryTransport.Encode(inventory.Graph),
+                Dust = inventory.Graph.Count("dust", true), Alloy = inventory.Graph.Count("alloy", true), Cells = inventory.Graph.Count("cells", true) };
+            store.Settle(receipt);
+            var saved = RaidInventoryTransport.Decode(store.Read().InventoryJson);
+            Check(saved.Find(lootId)?.FoundInRaid == true && (saved.MissionFirsts & MissionInventory.FirstRecovery) != 0 &&
+                saved.Count("dust") == 110 && !store.RaidActive, "corpse loot or first recovery reward was not settled");
+        }
+        using (var reopened = new OfflineProfileStore(path))
+        {
+            var saved = RaidInventoryTransport.Decode(reopened.Read().InventoryJson);
+            Check(reopened.Read().PlayerId == playerId && saved.Find(lootId)?.FoundInRaid == true &&
+                saved.Count("dust") == 110 && !reopened.RaidActive, "enemy loot did not survive reopening the profile");
+        }
     }
 
     private static void CheckDeathAndSecureContainer(string projectPath)
