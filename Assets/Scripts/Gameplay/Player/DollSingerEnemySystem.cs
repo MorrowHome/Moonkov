@@ -54,6 +54,7 @@ namespace Unity.MP_FPS
         private readonly List<SensorEvent> m_Events = new List<SensorEvent>();
         private readonly Dictionary<int, (Vector3 position, double expiry)> m_CoverReservations = new Dictionary<int, (Vector3, double)>();
         private TacticalServerWorld m_TacticalWorld;
+        private EnergyGrenadeServerSystem m_EnergyGrenades;
         private EntityQuery m_TacticalQuery;
         private DollSingerAITuning m_Tuning;
         private DollSingerAITuning m_DefaultTuning;

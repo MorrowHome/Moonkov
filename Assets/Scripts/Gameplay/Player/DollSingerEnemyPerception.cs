@@ -180,27 +180,40 @@ namespace Unity.MP_FPS
 
         private void ObserveGrenades(DollSingerEnemyBrain brain, Transform root, Vector3 eye, double now)
         {
-            if (brain.IsClashBot || m_TacticalWorld == null || !root)
+            if (brain.IsClashBot || !root)
             { brain.Grenade.Miss(); return; }
             var scene = root.gameObject.scene.GetPhysicsScene();
             if (!scene.IsValid()) { brain.Grenade.Miss(); return; }
-            TacticalServerWorld.Object selected = null; float closest = float.MaxValue;
+            ulong selectedId = 0; float closest = float.MaxValue, selectedRadius = 0;
+            Vector3 selectedPosition = default; double selectedUntil = 0;
             Vector3 facing = Quaternion.Euler(0, brain.Yaw, 0) * Vector3.forward;
-            foreach (var item in m_TacticalWorld.Objects)
+            void Consider(ulong id, PhysicsScene sourceScene, Vector3 position, float radius, double until,
+                bool tactical, TacticalItemKind kind = default, TacticalWorldPhase phase = default)
             {
-                if (item == null || item.Definition == null || item.Scene != scene || item.Until <= now || !PmcGrenadeRules.Finite(item.Position)) continue;
-                float distance = Vector3.Distance(root.position, item.Position);
-                Vector3 target = item.Position + Vector3.up * .15f;
+                if (id == 0 || sourceScene != scene || !double.IsFinite(until) || until <= now || !PmcGrenadeRules.Finite(position)) return;
+                float distance = Vector3.Distance(root.position, position);
+                Vector3 target = position + Vector3.up * .15f;
                 Vector3 ray = target - eye;
                 float angle = Vector3.Angle(facing, ray);
-                if (distance >= closest || !PmcGrenadeRules.Candidate(false, item.Definition.Kind, item.Phase,
-                    distance, item.Definition.Radius, angle, m_Tuning.HalfViewAngle) ||
+                bool candidate = tactical ? PmcGrenadeRules.Candidate(false, kind, phase, distance, radius, angle, m_Tuning.HalfViewAngle) :
+                    PmcGrenadeRules.VisibleDanger(false, distance, radius, angle, m_Tuning.HalfViewAngle);
+                if (distance >= closest || !candidate ||
                     SmokeVisibility.Blocked(m_TacticalWorld, scene, eye, target) ||
-                    (ray.sqrMagnitude > .0001f && scene.Raycast(eye, ray.normalized, out _, ray.magnitude, s_WorldMask, QueryTriggerInteraction.Ignore))) continue;
-                selected = item; closest = distance;
+                    (ray.sqrMagnitude > .0001f && scene.Raycast(eye, ray.normalized, out _, ray.magnitude, s_WorldMask, QueryTriggerInteraction.Ignore))) return;
+                selectedId = id; selectedPosition = position; selectedRadius = radius; selectedUntil = until; closest = distance;
             }
-            if (selected == null) { brain.Grenade.Miss(); return; }
-            if (brain.Grenade.Observe(selected.Id, selected.Position, selected.Definition.Radius, selected.Until, now))
+            if (m_TacticalWorld != null) foreach (var item in m_TacticalWorld.Objects)
+            {
+                if (item == null || item.Definition == null || item.Phase != TacticalWorldPhase.Flying ||
+                    item.Definition.Kind != TacticalItemKind.Frag && item.Definition.Kind != TacticalItemKind.Dynamite) continue;
+                Consider(item.Id, item.Scene, item.Position, item.Definition.Radius, item.Until, true, item.Definition.Kind, item.Phase);
+            }
+            if (m_EnergyGrenades == null) m_EnergyGrenades = World.GetExistingSystemManaged<EnergyGrenadeServerSystem>();
+            if (m_EnergyGrenades != null) for (int i = 0; i < m_EnergyGrenades.ActiveThreatCount; i++)
+                if (m_EnergyGrenades.TryGetLiveThreat(i, out uint id, out var sourceScene, out var position, out float remaining))
+                    Consider(PmcGrenadeRules.EnergyId(id), sourceScene, position, EnergyGrenadeRules.Radius, now + remaining, false);
+            if (selectedId == 0) { brain.Grenade.Miss(); return; }
+            if (brain.Grenade.Observe(selectedId, selectedPosition, selectedRadius, selectedUntil, now))
                 brain.NextDecision = 0;
         }
 

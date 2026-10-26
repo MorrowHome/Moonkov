@@ -34,6 +34,21 @@ namespace Unity.MP_FPS
 
         protected override void OnCreate() => RequireForUpdate<NetworkTime>();
 
+        // Read-only server perception. No trajectory or owner is exposed to NPCs.
+        public int ActiveThreatCount => m_Active.Count;
+        public bool TryGetLiveThreat(int index, out uint id, out PhysicsScene scene, out Vector3 position, out float remaining)
+        {
+            id = 0; scene = default; position = default; remaining = 0;
+            if (index < 0 || index >= m_Active.Count) return false;
+            var grenade = m_Active[index];
+            if (grenade == null || grenade.Id == 0 || !grenade.Scene.IsValid() || !float.IsFinite(grenade.Age) ||
+                grenade.Age < 0 || grenade.Age >= EnergyGrenadeRules.Fuse ||
+                !float.IsFinite(grenade.Position.x) || !float.IsFinite(grenade.Position.y) || !float.IsFinite(grenade.Position.z)) return false;
+            id = grenade.Id; scene = grenade.Scene; position = grenade.Position;
+            remaining = EnergyGrenadeRules.Fuse - grenade.Age;
+            return true;
+        }
+
         // Call only after validating the throw pose and capacity. Failed requests
         // neither consume a grenade nor interrupt another hand action.
         public static InventoryError CommitThrow(RaidInventoryState inventory, ref PredictedPlayerGhost health,

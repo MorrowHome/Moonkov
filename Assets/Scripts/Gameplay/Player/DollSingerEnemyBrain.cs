@@ -15,14 +15,14 @@ namespace Unity.MP_FPS
     // does not erase the clue before detonation or track it through walls.
     public struct PmcGrenadeAwareness
     {
-        private uint m_ObservedId, m_DangerId;
+        private ulong m_ObservedId, m_DangerId;
         private double m_ObservedSince, m_LastObservation, m_RecognizedAt;
         public Vector3 Position;
         public float Radius;
         public double Until;
         public bool Active(double now) => double.IsFinite(now) && now >= m_RecognizedAt && now < Until;
         public void Miss() { m_ObservedId = 0; }
-        public bool Observe(uint id, Vector3 position, float radius, double fuseUntil, double now)
+        public bool Observe(ulong id, Vector3 position, float radius, double fuseUntil, double now)
         {
             if (id == 0 || !PmcGrenadeRules.Finite(position) || !float.IsFinite(radius) || radius <= 0 ||
                 !double.IsFinite(fuseUntil) || !double.IsFinite(now) || fuseUntil <= now)
@@ -40,9 +40,12 @@ namespace Unity.MP_FPS
     public static class PmcGrenadeRules
     {
         public static bool Finite(Vector3 point) => float.IsFinite(point.x) && float.IsFinite(point.y) && float.IsFinite(point.z);
+        public static ulong EnergyId(uint id) => id == 0 ? 0 : (1UL << 32) | id;
         public static bool Candidate(bool clash, TacticalItemKind kind, TacticalWorldPhase phase,
-            float distance, float radius, float angle, float cone) => !clash && phase == TacticalWorldPhase.Flying &&
+            float distance, float radius, float angle, float cone) => phase == TacticalWorldPhase.Flying &&
             (kind == TacticalItemKind.Frag || kind == TacticalItemKind.Dynamite) &&
+            VisibleDanger(clash, distance, radius, angle, cone);
+        public static bool VisibleDanger(bool clash, float distance, float radius, float angle, float cone) => !clash &&
             float.IsFinite(distance) && distance >= 0 && float.IsFinite(radius) && radius > 0 &&
             distance <= radius + 2 && float.IsFinite(angle) && float.IsFinite(cone) && angle >= 0 && angle <= cone;
 

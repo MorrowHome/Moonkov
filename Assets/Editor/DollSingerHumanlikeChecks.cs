@@ -37,7 +37,7 @@ public static class DollSingerHumanlikeChecks
             CheckMedicalLifecycle(system);
             CheckDecisions(system, map, tuning);
             CheckGrenadeDecisions(system, map);
-            CheckGrenadeVisibility(system);
+            CheckGrenadeVisibility(system, world);
             CheckCombatRecovery(system, map);
             CheckCombatPressure(system, map);
             CheckUnknownAttack(system, map);
@@ -281,7 +281,7 @@ public static class DollSingerHumanlikeChecks
             "The raid-only explosive rule changed the other mode.");
     }
 
-    private static void CheckGrenadeVisibility(DollSingerEnemySystem system)
+    private static void CheckGrenadeVisibility(DollSingerEnemySystem system, World world)
     {
         var original = SceneManager.GetActiveScene();
         var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
@@ -324,6 +324,33 @@ public static class DollSingerHumanlikeChecks
                 Phase = TacticalWorldPhase.Smoke, Scene = scene.GetPhysicsScene(), Position = origin + Vector3.forward * 2, Until = 20 });
             var smoke = Brain(); Watch(smoke);
             Require(!smoke.Grenade.Active(1.3), "The PMC saw an explosive through dense smoke.");
+
+            tactical.Objects.Clear();
+            var energy = world.GetOrCreateSystemManaged<EnergyGrenadeServerSystem>();
+            var grenadeType = typeof(EnergyGrenadeServerSystem).GetNestedType("Grenade", BindingFlags.NonPublic);
+            var energyObject = Activator.CreateInstance(grenadeType, true);
+            void SetGrenade(string name, object value) => grenadeType.GetField(name).SetValue(energyObject, value);
+            SetGrenade("Id", 1u); SetGrenade("Scene", scene.GetPhysicsScene());
+            SetGrenade("Position", origin + Vector3.forward * 3); SetGrenade("Age", 0f);
+            var energyObjects = (System.Collections.IList)typeof(EnergyGrenadeServerSystem).GetField("m_Active", PrivateInstance).GetValue(energy);
+            energyObjects.Add(energyObject);
+            Require(!energy.TryGetLiveThreat(-1, out _, out _, out _, out _) &&
+                energy.TryGetLiveThreat(0, out uint energyId, out _, out _, out float remaining) && energyId == 1 && remaining == EnergyGrenadeRules.Fuse,
+                "Live energy grenade exposure is not bounded or accurate.");
+            var energySeen = Brain(); Watch(energySeen);
+            Require(energySeen.Grenade.Active(1.3) && energySeen.Grenade.Radius == EnergyGrenadeRules.Radius,
+                "The PMC ignored a visible energy grenade.");
+            blocker.enabled = true; Physics.SyncTransforms();
+            var energyHidden = Brain(); Watch(energyHidden);
+            Require(!energyHidden.Grenade.Active(1.3), "The PMC saw an energy grenade through a wall.");
+            blocker.enabled = false; Physics.SyncTransforms();
+            var energyClash = Brain(); energyClash.ClashParticipantId = 1; Watch(energyClash);
+            Require(!energyClash.Grenade.Active(1.3), "Energy grenade evasion changed bounty mode.");
+            SetGrenade("Age", EnergyGrenadeRules.Fuse);
+            var expired = Brain(); Watch(expired);
+            Require(!expired.Grenade.Active(1.3) && !energy.TryGetLiveThreat(0, out _, out _, out _, out _),
+                "A detonated energy grenade remained an active threat.");
+            energyObjects.Clear();
         }
         finally
         {

@@ -34,6 +34,13 @@ public static class PmcGrenadeAwarenessChecks
             !Candidate(TacticalItemKind.Frag, radius: float.PositiveInfinity) &&
             !Candidate(TacticalItemKind.Frag, angle: float.NaN) &&
             !Candidate(TacticalItemKind.Frag, cone: float.NaN), "invalid inputs cannot create a threat");
+        Check(PmcGrenadeRules.VisibleDanger(false, 8, EnergyGrenadeRules.Radius, 70, 70) &&
+            !PmcGrenadeRules.VisibleDanger(false, 8.01f, EnergyGrenadeRules.Radius, 0, 70) &&
+            !PmcGrenadeRules.VisibleDanger(true, 1, EnergyGrenadeRules.Radius, 0, 70),
+            "energy grenades use their own range and remain excluded from bounty mode");
+        Check(PmcGrenadeRules.EnergyId(0) == 0 && PmcGrenadeRules.EnergyId(1) != 1 &&
+            PmcGrenadeRules.EnergyId(uint.MaxValue) != uint.MaxValue,
+            "energy and tactical server IDs cannot collide");
 
         var memory = new PmcGrenadeAwareness();
         var first = new Vector3(1, 0, 3);
@@ -57,6 +64,17 @@ public static class PmcGrenadeAwarenessChecks
             !memory.Observe(2, first, 8, double.NaN, 15) && !memory.Observe(2, first, 8, 14, 15) &&
             !memory.Observe(2, new Vector3(float.NaN, 0, 0), 8, 20, 15), "invalid observations are rejected");
         Check(!memory.Active(double.NaN) && !memory.Active(14), "invalid and earlier times cannot revive memory");
+
+        var mixed = new PmcGrenadeAwareness();
+        mixed.Observe(1, first, 8, 9, 1); mixed.Observe(1, first, 8, 9, 1.1);
+        mixed.Observe(1, first, 8, 9, 1.2); mixed.Observe(1, first, 8, 9, 1.3);
+        ulong energyId = PmcGrenadeRules.EnergyId(1);
+        var energyPosition = new Vector3(2, 0, 2);
+        Check(!mixed.Observe(energyId, energyPosition, 6, 4, 1.4) && mixed.Position.Equals(first),
+            "a different grenade with the same numeric ID needs its own recognition");
+        mixed.Observe(energyId, energyPosition, 6, 4, 1.5); mixed.Observe(energyId, energyPosition, 6, 4, 1.6);
+        Check(mixed.Observe(energyId, energyPosition, 6, 4, 1.7) && mixed.Position.Equals(energyPosition) && mixed.Radius == 6,
+            "energy grenade replaces the old clue only after it is seen");
 
         var bounded = new PmcGrenadeAwareness();
         bounded.Observe(7, first, 8, 100, 1);
