@@ -50,7 +50,7 @@ namespace Unity.MP_FPS
         public double NextSend, EndedAt;
         public bool OutputProduced;
         public bool BackendCompatible = true;
-        public bool FirstChapter;
+        public int CampaignChapter;
         public double CampaignNextCheck, NextCutterAlarm;
         public readonly Dictionary<Entity, int> CampaignRaidIds = new Dictionary<Entity, int>();
     }
@@ -97,14 +97,14 @@ namespace Unity.MP_FPS
                 context.Director = new MissionDirector(context.Seed, now); context.Operation = null;
                 Debug.Log("[Missions] Director seed " + context.Seed + ". Fixed author seed is available for reproduction.");
                 context.Known.Clear(); context.Actors.Clear(); context.Epoch = 0; context.Sequence = 0;
-                context.FirstChapter = false; context.CampaignRaidIds.Clear();
+                context.CampaignChapter = 0; context.CampaignRaidIds.Clear();
             }
-            PrepareFirstChapter(ref state, context, site, now);
+            PrepareCampaign(ref state, context, site, now);
             float audience = 0;
             foreach (var (session, joined) in SystemAPI.Query<RefRO<RaidSession>, RefRO<JoinedClient>>())
                 if (session.ValueRO.Phase == RaidPhase.Active && TryGetLivingPosition(ref state, joined.ValueRO.PlayerEntity, out var p) &&
                     math.distancesq(p, site.Center) <= 300 * 300) audience = math.max(audience, session.ValueRO.TimeLeft);
-            if (context.Operation == null && context.BackendCompatible && !context.FirstChapter)
+            if (context.Operation == null && context.BackendCompatible && context.CampaignChapter == 0)
             {
                 var chosen = context.Director.TryOffer(site.Definitions, now, audience, false, d => MissionAnchorsReady(site, d));
                 if (chosen != null)
@@ -220,7 +220,7 @@ namespace Unity.MP_FPS
                 }
             }
             EmitCutterAlarm(ref state, context, now);
-            ObserveFirstChapter(ref state, context);
+            ObserveCampaign(ref state, context);
             if (now < context.NextSend) return;
             context.NextSend = now + .25; context.Sequence++;
             foreach (var (session, joined, connection) in SystemAPI.Query<RefRO<RaidSession>, RefRO<JoinedClient>>().WithEntityAccess())
@@ -230,7 +230,7 @@ namespace Unity.MP_FPS
                     math.distancesq(p, site.Center) <= site.DiscoveryRadius * site.DiscoveryRadius) context.Known.Add(connection);
                 var snapshot = new RaidMissionSnapshotRpc { RaidId = session.ValueRO.RaidId, Sequence = context.Sequence,
                     WorldId = context.WorldId, OutputLootId = -1, DefinitionIndex = -1, SaveState = session.ValueRO.SaveState, BackendSupported = context.BackendCompatible };
-                AddFirstChapterSnapshot(ref state, context, connection, session.ValueRO, ref snapshot);
+                AddCampaignSnapshot(ref state, context, connection, session.ValueRO, ref snapshot);
                 if (state.EntityManager.HasComponent<RaidInventoryState>(connection))
                 {
                     var inventory = GetRaidInventory(ref state, connection);

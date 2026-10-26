@@ -53,6 +53,11 @@ namespace Unity.MP_FPS
                 save.DeploymentId == null && save.ActiveCampaignVersion != 0 ||
                 save.Clash?.ActiveMatchId != null && save.ActiveCampaignVersion != 0)
                 throw new InvalidDataException("Unsupported or damaged single-player chapter state: " + error);
+            // Older completed first-chapter saves have no next task to track.
+            // Preserve an explicit untrack choice while following newly available story.
+            if (!save.Campaign.TrackingSuppressed && save.Campaign.PrimaryTracked == null &&
+                save.Campaign.CompletedTasks.Contains("CM03") && !save.Campaign.CompletedTasks.Contains("CM04"))
+            { save.Campaign.PrimaryTracked = "CM04"; save.Campaign.PreferenceRevision++; }
         }
 
         public CampaignProgress ReadCampaign()
@@ -120,25 +125,24 @@ namespace Unity.MP_FPS
             if (next.ActiveCampaignVersion != run.ContentVersion || CampaignRules.Validate(run) != null)
                 throw new InvalidDataException("Chapter settlement does not match its deployment content.");
 
-            // The server may have observed the fragment and subsequently lost it.
-            // Only an actual, newly recovered source item in this frozen return
-            // inventory can satisfy the final tutorial task.
-            var definition = CampaignCatalog.Find("CM03");
-            int recover = Array.FindIndex(definition.Nodes, node => node.Id == "recover");
-            int mask = run.NodeMasks.TryGetValue("CM03", out var value) ? value : 0;
-            if (!next.Campaign.CompletedTasks.Contains("CM03") && (mask & (1 << recover)) != 0)
+            // A once-observed sample or archive is not a successful return.
+            // Recheck its real identity and provenance in the frozen inventory.
+            foreach (string taskId in new[] { "CM03", "CM04" })
             {
-                run.NodeItemIds.TryGetValue("CM03/recover", out var itemId);
+                var definition = CampaignCatalog.Find(taskId);
+                int recover = Array.FindIndex(definition.Nodes, node => node.Id == "recover");
+                int mask = run.NodeMasks.TryGetValue(taskId, out var value) ? value : 0;
+                if (next.Campaign.CompletedTasks.Contains(taskId) || (mask & (1 << recover)) == 0) continue;
+                run.NodeItemIds.TryGetValue(taskId + "/recover", out var itemId);
                 var item = raid.Find(itemId);
-                if (item == null || item.Code != "mooncore_fragment" || !raid.Carried(item) || item.MissionRecovered ||
+                if (item == null || item.Code != definition.Nodes[recover].RequiredItemCode || !raid.Carried(item) || item.MissionRecovered ||
                     !MissionInventory.ValidSource(item))
                 {
-                    // A successful ordinary return is still valid after dropping
-                    // the sample. Save the other chapter steps, not a fake sample
-                    // recovery, rather than trapping the entire stash in retry.
+                    // Preserve the ordinary return instead of claiming the lost
+                    // item or trapping the entire stash in a save retry.
                     int extract = Array.FindIndex(definition.Nodes, node => node.Kind == CampaignObjectiveKind.Extract);
-                    run.NodeMasks["CM03"] = mask & ~(1 << recover) & ~(1 << extract);
-                    run.CompletedTasks.Remove("CM03"); run.NodeItemIds.Remove("CM03/recover");
+                    run.NodeMasks[taskId] = mask & ~(1 << recover) & ~(1 << extract);
+                    run.CompletedTasks.Remove(taskId); run.NodeItemIds.Remove(taskId + "/recover");
                 }
             }
             next.Campaign = CampaignRules.MergeExtracted(next.Campaign, run);

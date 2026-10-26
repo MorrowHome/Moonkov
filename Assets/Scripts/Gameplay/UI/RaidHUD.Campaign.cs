@@ -13,7 +13,7 @@ namespace Unity.MP_FPS
     public sealed partial class RaidHUD
     {
         private VisualElement m_CampaignOverlay, m_CampaignHud, m_CampaignJournalModal;
-        private Label m_CampaignTitle, m_CampaignAction, m_CampaignLocation, m_CampaignHint, m_CampaignMarker, m_CampaignResult;
+        private Label m_CampaignChapter, m_CampaignTitle, m_CampaignAction, m_CampaignLocation, m_CampaignHint, m_CampaignMarker, m_CampaignResult;
         private Client.CampaignChapterView m_CampaignJournal;
         private bool m_CampaignJournalVisible, m_CampaignHasDestination;
         private float m_CampaignNextPresentation, m_CampaignNextRead;
@@ -40,7 +40,7 @@ namespace Unity.MP_FPS
             if (!tree) return;
             tree.CloneTree(m_Root);
             m_CampaignOverlay = m_Root.Q("campaignOverlay"); m_CampaignHud = m_Root.Q("campaignHud");
-            m_CampaignTitle = m_Root.Q<Label>("campaignHudTitle"); m_CampaignAction = m_Root.Q<Label>("campaignHudAction");
+            m_CampaignChapter = m_Root.Q<Label>("campaignHudChapter"); m_CampaignTitle = m_Root.Q<Label>("campaignHudTitle"); m_CampaignAction = m_Root.Q<Label>("campaignHudAction");
             m_CampaignLocation = m_Root.Q<Label>("campaignHudLocation"); m_CampaignHint = m_Root.Q<Label>("campaignHudHint");
             m_CampaignMarker = m_Root.Q<Label>("campaignMarker"); m_CampaignJournalModal = m_Root.Q("campaignJournalModal");
             var rail = m_Root.Q<ScrollView>("raidRightRail"); if (rail != null) rail.Add(m_CampaignHud);
@@ -113,6 +113,7 @@ namespace Unity.MP_FPS
             {
                 m_CampaignNextPresentation = Time.unscaledTime + .25f;
                 var task = CampaignCatalog.Find(id); var node = CampaignRules.CurrentNode(progress, id);
+                m_CampaignChapter.text = "第" + (task.Chapter == 1 ? "一" : "二") + "章 " + task.ChapterTitle;
                 m_CampaignTitle.text = task.Title;
                 m_CampaignAction.text = CampaignActionText(node);
                 m_CampaignHint.text = Time.unscaledTime < m_MissionNoticeUntil ? m_MissionNotice : CampaignTeachingHint(node);
@@ -151,7 +152,7 @@ namespace Unity.MP_FPS
 
         private string CampaignActionText(NodeDefinition node)
         {
-            if (node == null) return "第一章调查记录已保存";
+            if (node == null) return "调查记录已保存";
             if (node.Kind != CampaignObjectiveKind.Process || node.Seconds <= 0 || string.IsNullOrEmpty(node.ExistingObjectiveId)) return node.Action;
             var site = RaidMissionSite.Active;
             int index = m_MissionSnapshot.DefinitionIndex;
@@ -162,7 +163,8 @@ namespace Unity.MP_FPS
                     if (objectives[i].Id == node.ExistingObjectiveId)
                     {
                         float fraction = i < 4 ? m_MissionSnapshot.ProgressA[i] : m_MissionSnapshot.ProgressB[i - 4];
-                        return "切割进行中 " + (Mathf.Clamp01(fraction) * node.Seconds).ToString("0") + "/" + node.Seconds.ToString("0") + " 秒";
+                        return (node.ExistingObjectiveId == "download" ? "下载进行中 " : "切割进行中 ") +
+                            (Mathf.Clamp01(fraction) * node.Seconds).ToString("0") + "/" + node.Seconds.ToString("0") + " 秒";
                     }
             }
             return node.Action;
@@ -170,9 +172,9 @@ namespace Unity.MP_FPS
 
         private string CampaignTeachingHint(NodeDefinition node)
         {
-            if (node == null) return "沈禾：实验场信号仍在维持。";
+            if (node == null) return "调查记录已保存。";
             if (node.Kind == CampaignObjectiveKind.Extract) return "携带物尚未入库，成功撤离后保存调查记录。";
-            if (node.Kind == CampaignObjectiveKind.RecoverItem) return "打开输出槽取走碎片，预留至少 1×1 空位。";
+            if (node.Kind == CampaignObjectiveKind.RecoverItem) return "打开输出槽取走物品，预留至少 1×1 空位。";
             if (node.Kind == CampaignObjectiveKind.ReachArea) return "移动并观察 MC00 入口，留意来时路线。";
             if (!m_InventoryQuery.IsEmptyIgnoreFilter)
             {
@@ -187,10 +189,13 @@ namespace Unity.MP_FPS
 
         private void PresentCampaignResult(CampaignProgress progress)
         {
-            bool complete = m_ResultStep == 0 && progress != null && progress.CompletedTasks.Contains("CM03") &&
+            bool archive = m_MissionSnapshot.CampaignChapter == 2 && progress != null && progress.CompletedTasks.Contains("CM04");
+            bool first = m_MissionSnapshot.CampaignChapter == 1 && progress != null && progress.CompletedTasks.Contains("CM03");
+            bool complete = m_ResultStep == 0 && (first || archive) && m_MissionSnapshot.RaidId == m_Snapshot.RaidId &&
                 m_Snapshot.Phase == RaidPhase.Extracted && m_Snapshot.SaveState == RaidSaveState.Saved;
             m_CampaignResult.EnableInClassList("campaign-hidden", !complete);
-            if (complete) m_CampaignResult.text = "第一章 静默着陆 已完成\n沈禾：样本接收结果显示，实验场信号仍在维持。事故已经过去，为什么它还在运行？";
+            if (complete) m_CampaignResult.text = archive ? "事故档案已带回\n沈禾：两台设备的时间不同，还需要门禁和求救记录。" :
+                "第一章 静默着陆 已完成\n沈禾：样本接收结果显示，实验场信号仍在维持。事故已经过去，为什么它还在运行？";
         }
 
         private void UpdateCampaignMarker(bool visible)

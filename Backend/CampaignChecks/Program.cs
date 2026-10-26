@@ -60,15 +60,24 @@ void Record(CampaignProgress p, string task, string node, string item = null) {
 void Arrive(CampaignProgress p) { Record(p,"CM01","arrive"); Record(p,"CM01","report"); }
 void Power(CampaignProgress p) { Record(p,"CM02","power_a"); Record(p,"CM02","power_b"); }
 void Sample(CampaignProgress p) { Record(p,"CM03","start"); Record(p,"CM03","cutting"); Record(p,"CM03","recover","mooncore_fragment"); }
+void Archive(CampaignProgress p) { Record(p,"CM04","self_check"); Record(p,"CM04","tag_a"); Record(p,"CM04","tag_b"); Record(p,"CM04","download_start"); Record(p,"CM04","download"); Record(p,"CM04","recover","mc00_archive_drive"); }
 
-Check(CampaignCatalog.Validate() == null, "chapter one content is valid");
-Check(CampaignCatalog.Tasks.Select(t => t.Id).SequenceEqual(new[] { "CM01", "CM02", "CM03" }), "only approved first chapter");
-Check(CampaignCatalog.Tasks.All(t => t.Nodes.Length <= 8 && t.Chapter == 1), "bounded first chapter nodes");
-Check(CampaignCatalog.Find("CM04") == null && CampaignCatalog.Find("CS01") == null, "later content unavailable");
+Check(CampaignCatalog.Validate() == null, "campaign content is valid");
+Check(CampaignCatalog.Tasks.Select(t => t.Id).SequenceEqual(new[] { "CM01", "CM02", "CM03", "CM04" }), "first chapter and the archive investigation are present");
+Check(CampaignCatalog.Tasks.All(t => t.Nodes.Length <= 8 && t.Chapter <= 2), "bounded chapter nodes");
+Check(CampaignCatalog.Find("CM05") == null && CampaignCatalog.Find("CS01") == null, "unimplemented follow-up content stays unavailable");
 Check(CampaignCatalog.Find("CM01").Nodes[1].ExistingObjectiveId == "report", "registration reuses live mission objective");
 Check(CampaignCatalog.Find("CM02").Nodes.Take(2).Select(n => n.ExistingObjectiveId).SequenceEqual(new[] { "power_a", "power_b" }), "power observes existing rules");
 Check(CampaignCatalog.Find("CM03").Nodes.Take(2).Select(n => n.ExistingObjectiveId).SequenceEqual(new[] { "start", "cutting" }), "cutting observes existing rules");
+Check(CampaignCatalog.Find("CM04").Nodes.Take(5).Select(n => n.ExistingObjectiveId).SequenceEqual(MissionCatalog.Archive().Objectives.Select(n => n.Id)), "investigation observes the existing archive facility");
 Check(CampaignCatalog.Tasks.SelectMany(t=>t.Nodes).All(n=>n.AnchorId != null && n.SourceId.StartsWith("campaign.")), "semantic source bindings");
+var firstAdapter = CampaignRules.Create(); Record(firstAdapter,"CM01","arrive");
+var firstFacility = MissionCatalog.Mooncore();
+firstFacility.Objectives = firstFacility.Objectives.Append(new MissionObjectiveDefinition { Id = "report", Anchor = "entry",
+    Name = "登记清理队身份", Kind = MissionObjectiveKind.Interact, Seconds = 2 }).ToArray();
+CampaignMissionAdapter.RecordCompleted(firstAdapter, 1, firstFacility, 19, "first-operation", 1);
+Check(CampaignRules.Mask(firstAdapter,"CM01") == 3 && CampaignRules.Mask(firstAdapter,"CM02") == 3 &&
+    CampaignRules.CurrentMain(firstAdapter) == "CM03", "first chapter registration and power still advance together");
 
 var saved = CampaignRules.Create();
 Check(CampaignRules.Validate(saved) == null && saved.PrimaryTracked == "CM01", "empty old profile default");
@@ -89,6 +98,7 @@ Check(CampaignRules.Status(run,"CM01") == CampaignTaskStatus.AwaitingExtraction,
 Power(run);
 Check(CampaignRules.Available(run,"CM03") && CampaignRules.CurrentMain(run) == "CM03", "power opens sample in same run");
 Sample(run);
+Check(!CampaignRules.Available(run,"CM04"), "the archive opens only after the first chapter is actually saved");
 Check(run.CompletedTasks.Count == 0 && saved.NodeMasks.Count == 0, "unsaved run never mutates profile");
 Check(CampaignRules.Status(run,"CM03") == CampaignTaskStatus.AwaitingExtraction, "held artifact still awaits return");
 Check(run.PrimaryTracked == null, "facts do not override manual tracking cancellation");
@@ -98,11 +108,65 @@ Check(!CampaignRules.TryRecord(run,illegalExtract,out _), "cannot finalize later
 var merged = CampaignRules.MergeExtracted(saved,run);
 Check(CampaignRules.Validate(merged) == null, "merged chapter profile valid");
 Check(merged.CompletedTasks.SetEquals(new[] {"CM01","CM02","CM03"}), "one extraction commits complete chapter");
+Check(!merged.NodeMasks.ContainsKey("CM04"), "an unstarted later investigation does not alter the saved story shape");
 Check(merged.NodeItemIds["CM03/recover"] == run.NodeItemIds["CM03/recover"], "physical item identity preserved");
-Check(CampaignRules.CurrentMain(merged) == null && merged.PrimaryTracked == null, "no fabricated later chapter");
+Check(CampaignRules.CurrentMain(merged) == "CM04" && merged.PrimaryTracked == "CM04", "saved sample opens and tracks the next investigation");
 Check(saved.CompletedTasks.Count == 0 && run.CompletedTasks.Count == 0, "merge has no input mutation");
 var repeated = CampaignRules.MergeExtracted(merged,run);
 Check(repeated.CompletedTasks.Count == 3 && repeated.NodeItemIds.Count == merged.NodeItemIds.Count, "settlement replay cannot duplicate facts or items");
+
+var archiveRun = CampaignRules.Clone(merged);
+Check(CampaignRules.Available(archiveRun,"CM04") && CampaignRules.CurrentNode(archiveRun,"CM04").Id == "self_check", "saved chapter opens the investigation");
+Check(!CampaignRules.TryRecord(archiveRun,Fact("CM04","recover","mc00_archive_drive"),out _), "a drive cannot skip the facility process");
+var adapted = CampaignRules.Clone(merged); var archiveDefinition = MissionCatalog.Archive();
+CampaignMissionAdapter.RecordCompleted(adapted, 2, MissionCatalog.Mooncore(), 31, "test-deployment", 1);
+Check(CampaignRules.Mask(adapted,"CM04") == 0, "a different facility cannot advance the archive");
+CampaignMissionAdapter.RecordCompleted(adapted, 2, archiveDefinition, 4, "test-deployment", 1);
+Check(CampaignRules.Mask(adapted,"CM04") == 0, "an early B scan waits for the story prerequisites");
+CampaignMissionAdapter.RecordCompleted(adapted, 2, archiveDefinition, 5, "test-deployment", 1);
+Check(CampaignRules.Mask(adapted,"CM04") == 1, "self-check records even while an early B scan waits");
+CampaignMissionAdapter.RecordCompleted(adapted, 2, archiveDefinition, 7, "test-deployment", 1);
+Check(CampaignRules.Mask(adapted,"CM04") == 7, "both scans are retained once A is recorded");
+CampaignMissionAdapter.RecordCompleted(adapted, 2, archiveDefinition, 31, "test-deployment", 1);
+Check(CampaignRules.Mask(adapted,"CM04") == 31 && CampaignRules.CurrentNode(adapted,"CM04").Id == "recover", "completed download still requires taking the actual drive");
+var liveStory = CampaignRules.Clone(merged);
+var liveArchive = new MissionOperation(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), 1, archiveDefinition, 10);
+double time = 10; uint request = 0;
+void ArchiveInteraction(int node, int seconds)
+{
+    request++;
+    Check(liveArchive.Begin("player", 1, node, request, time) == MissionActionResult.Started, "archive interaction starts");
+    for (int second = 1; second <= seconds; second++)
+    {
+        var result = liveArchive.Renew("player", request, time + second);
+        Check(result == (second == seconds ? MissionActionResult.Completed : MissionActionResult.Running), "archive interaction keeps its real duration");
+    }
+    time += seconds + .1;
+    CampaignMissionAdapter.RecordCompleted(liveStory, 2, archiveDefinition, liveArchive.CompletedMask, "live-deployment", 1);
+}
+ArchiveInteraction(2, 4);
+Check(CampaignRules.Mask(liveStory,"CM04") == 0, "a real early B scan is held for later");
+ArchiveInteraction(0, 3);
+ArchiveInteraction(1, 4);
+Check(CampaignRules.Mask(liveStory,"CM04") == 7, "real early scanning is carried into the story");
+ArchiveInteraction(3, 1);
+liveArchive.Tick(time + 18);
+CampaignMissionAdapter.RecordCompleted(liveStory, 2, archiveDefinition, liveArchive.CompletedMask, "live-deployment", 1);
+Check(CampaignRules.CurrentNode(liveStory,"CM04").Id == "download", "download does not complete early");
+liveArchive.Tick(time + 20);
+CampaignMissionAdapter.RecordCompleted(liveStory, 2, archiveDefinition, liveArchive.CompletedMask, "live-deployment", 1);
+Check(liveArchive.Phase == MissionPhase.OutputReady && CampaignRules.CurrentNode(liveStory,"CM04").Id == "recover", "completed download exposes the physical pickup step");
+Archive(archiveRun);
+Check(CampaignRules.Status(archiveRun,"CM04") == CampaignTaskStatus.AwaitingExtraction && !merged.CompletedTasks.Contains("CM04"), "a held drive remains unsaved");
+string archiveId = archiveRun.NodeItemIds["CM04/recover"];
+var lostArchive = CampaignRules.Clone(archiveRun);
+Check(CampaignRules.ForgetUncommittedItem(lostArchive,"CM04","recover",archiveId), "dropping the drive revokes possession");
+var earlyReturn = CampaignRules.MergeExtracted(merged,lostArchive);
+Check(!earlyReturn.CompletedTasks.Contains("CM04") && CampaignRules.CurrentNode(earlyReturn,"CM04").Id == "self_check", "returning without the drive permits a fresh investigation");
+Record(lostArchive,"CM04","recover","mc00_archive_drive");
+var archiveSaved = CampaignRules.MergeExtracted(merged,lostArchive);
+Check(archiveSaved.CompletedTasks.Contains("CM04") && archiveSaved.NodeItemIds["CM04/recover"] == lostArchive.NodeItemIds["CM04/recover"], "extraction commits the physical archive identity");
+Check(CampaignRules.Validate(archiveSaved) == null && CampaignRules.CurrentMain(archiveSaved) == null, "the next story task is not fabricated");
 
 var cancelled = CampaignRules.Clone(saved);
 CampaignRules.Untrack(cancelled,"CM01");
@@ -171,4 +235,4 @@ for(int i=0;i<CampaignRules.MaxProcessedEvents;i++) bounded.ProcessedEvents.Add(
 Check(CampaignRules.TryRecord(bounded,Fact("CM01","arrive"),out _) && bounded.ProcessedEvents.Count == CampaignRules.MaxProcessedEvents, "receipt memory stays bounded");
 Check(CampaignRules.Validate(bounded) == null, "bounded receipt profile remains valid");
 
-Console.WriteLine($"Campaign chapter one: {checks} checks passed.");
+Console.WriteLine($"Campaign story: {checks} checks passed.");

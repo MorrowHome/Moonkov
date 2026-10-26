@@ -286,7 +286,8 @@ namespace Unity.MP_FPS.Campaign
                     string key = task.Id + "/" + node.Id;
                     if (run.NodeItemIds.TryGetValue(key, out string item)) next.NodeItemIds[key] = item;
                 }
-                next.NodeMasks[task.Id] = merged;
+                // Do not write empty future tasks into an otherwise older save.
+                if (merged != 0 || next.NodeMasks.ContainsKey(task.Id)) next.NodeMasks[task.Id] = merged;
                 if (FieldComplete(next, task) && Available(next, task.Id))
                 {
                     int index = Array.FindIndex(task.Nodes, n => n.Kind == CampaignObjectiveKind.Extract);

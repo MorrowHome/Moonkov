@@ -112,12 +112,13 @@ public static class CampaignOfflineChecks
         return "PASS " + checks + " isolated chapter schema checks. Fixtures: " + root;
     }
 
-    public static string Run()
+    public static string Run() => RunAt(Path.GetFullPath(Path.Combine(Application.dataPath,
+        "../Library/BuildValidation/Campaign/Offline-" + Guid.NewGuid().ToString("N"))));
+
+    public static string RunAt(string root)
     {
         int checks = 0;
         void Check(bool value, string name) { if (!value) throw new InvalidOperationException(name); checks++; }
-        string root = Path.GetFullPath(Path.Combine(Application.dataPath,
-            "../Library/BuildValidation/Campaign/Offline-" + Guid.NewGuid().ToString("N")));
         Directory.CreateDirectory(root);
 
         string migrated = Path.Combine(root, "migration.json");
@@ -225,6 +226,71 @@ public static class CampaignOfflineChecks
                 "failed-load refund restores loadout without duplicating it");
             Check(store.ReadCampaign().CompletedTasks.Count == 0, "failed-load refund cannot create story progress");
         }
+
+        void CompleteFirstChapter(OfflineProfileStore store)
+        {
+            var first = Deploy(store); var inventory = RaidInventoryTransport.Decode(first.RaidInventoryJson);
+            var sample = Fragment(); PutInCarry(inventory, sample);
+            store.Settle(Settlement(first, inventory, FieldChapter(store.ReadCampaign(), sample)));
+            Check(store.ReadCampaign().CompletedTasks.Contains("CM03") &&
+                CampaignRules.CurrentMain(store.ReadCampaign()) == "CM04", "saved sample opens the archive investigation");
+        }
+
+        string oldChapter = Path.Combine(root, "old-completed-chapter.json");
+        using (var store = new OfflineProfileStore(oldChapter)) CompleteFirstChapter(store);
+        var oldDocument = JObject.Parse(File.ReadAllText(oldChapter));
+        oldDocument["Campaign"]["PrimaryTracked"] = JValue.CreateNull();
+        oldDocument["Campaign"]["TrackingSuppressed"] = false;
+        ((JObject)oldDocument["Campaign"]["NodeMasks"]).Remove("CM04");
+        File.WriteAllText(oldChapter, oldDocument.ToString());
+        using (var reopened = new OfflineProfileStore(oldChapter))
+        {
+            Check(reopened.ReadCampaign().PrimaryTracked == "CM04", "old first-chapter save automatically follows the new investigation");
+            reopened.SetCampaignTracking("CM04", remove: true);
+        }
+        using (var reopened = new OfflineProfileStore(oldChapter))
+            Check(reopened.ReadCampaign().PrimaryTracked == null && reopened.ReadCampaign().TrackingSuppressed,
+                "explicitly cancelling the new tracking choice survives reopening");
+
+        string archivePath = Path.Combine(root, "archive-success.json");
+        string archiveId;
+        RaidPersistenceContext.Settlement archiveReceipt;
+        using (var store = new OfflineProfileStore(archivePath))
+        {
+            CompleteFirstChapter(store);
+            var deployment = Deploy(store); var raid = RaidInventoryTransport.Decode(deployment.RaidInventoryJson);
+            var drive = Artifact("mc00_archive_drive"); archiveId = drive.Id; PutInCarry(raid, drive);
+            var run = FieldArchive(store.ReadCampaign(), drive);
+            Check(!store.ReadCampaign().CompletedTasks.Contains("CM04"), "observing the archive is not a saved return");
+            archiveReceipt = Settlement(deployment, raid, run);
+            var result = store.Settle(archiveReceipt);
+            var graph = RaidInventoryTransport.Decode(result.InventoryJson);
+            Check(store.ReadCampaign().CompletedTasks.Contains("CM04") &&
+                store.ReadCampaign().NodeItemIds["CM04/recover"] == archiveId, "real archive identity and investigation save together");
+            Check(graph.Find(archiveId)?.MissionRecovered == true, "returned archive is marked recovered in the real inventory");
+            Check(store.Settle(archiveReceipt).Dust == result.Dust, "archive settlement retry is idempotent");
+        }
+        using (var reopened = new OfflineProfileStore(archivePath))
+            Check(reopened.ReadCampaign().CompletedTasks.Contains("CM04") &&
+                RaidInventoryTransport.Decode(reopened.Read().InventoryJson).Find(archiveId)?.MissionRecovered == true,
+                "saved archive and investigation survive reopening the profile");
+
+        foreach (string mode in new[] { "dropped", "old", "dead" })
+        {
+            using var store = new OfflineProfileStore(Path.Combine(root, "archive-" + mode + ".json"));
+            CompleteFirstChapter(store);
+            var deployment = Deploy(store); var raid = RaidInventoryTransport.Decode(deployment.RaidInventoryJson);
+            var drive = Artifact("mc00_archive_drive");
+            if (mode == "old") drive.MissionRecovered = true;
+            if (mode != "dropped") PutInCarry(raid, drive);
+            var payload = Settlement(deployment, raid, FieldArchive(store.ReadCampaign(), drive));
+            if (mode == "dead") payload.Outcome = "Dead";
+            store.Settle(payload);
+            Check(!store.ReadCampaign().CompletedTasks.Contains("CM04") &&
+                !store.ReadCampaign().NodeItemIds.ContainsKey("CM04/recover") &&
+                store.ReadCampaign().CompletedTasks.Contains("CM03") && !store.RaidActive,
+                "archive " + mode + " cannot fake success or undo the saved first chapter");
+        }
         return "PASS " + checks + " isolated chapter persistence checks. Fixtures: " + root;
     }
 
@@ -235,9 +301,10 @@ public static class CampaignOfflineChecks
             DeploymentId = Guid.NewGuid().ToString("D"), Cells = 0 });
     }
 
-    private static InventoryItem Fragment() => new InventoryItem
+    private static InventoryItem Fragment() => Artifact("mooncore_fragment");
+    private static InventoryItem Artifact(string code) => new InventoryItem
     {
-        Id = Guid.NewGuid().ToString("D"), Code = "mooncore_fragment", FoundInRaid = true,
+        Id = Guid.NewGuid().ToString("D"), Code = code, FoundInRaid = true,
         MissionWorldId = Guid.NewGuid().ToString("D"), MissionOperationId = Guid.NewGuid().ToString("D"), MissionContentVersion = 1
     };
 
@@ -254,13 +321,26 @@ public static class CampaignOfflineChecks
     private static CampaignProgress FieldChapter(CampaignProgress saved, InventoryItem sample)
     {
         var run = CampaignRules.Clone(saved);
-        foreach (var task in CampaignCatalog.Tasks)
+        foreach (var task in CampaignCatalog.Tasks.Where(t => t.Chapter == 1))
             foreach (var node in task.Nodes.Where(n => n.Kind != CampaignObjectiveKind.Extract))
                 if (!CampaignRules.TryRecord(run, new CampaignFact { TaskId = task.Id, NodeId = node.Id,
                     SourceId = node.SourceId, Kind = node.Kind, EventId = Guid.NewGuid().ToString("D"),
                     ItemId = node.Kind == CampaignObjectiveKind.RecoverItem ? sample.Id : null,
                     ItemCode = node.Kind == CampaignObjectiveKind.RecoverItem ? sample.Code : null }, out var error))
                     throw new InvalidOperationException("field fixture: " + error);
+        return run;
+    }
+
+    private static CampaignProgress FieldArchive(CampaignProgress saved, InventoryItem archive)
+    {
+        var run = CampaignRules.Clone(saved);
+        var task = CampaignCatalog.Find("CM04");
+        foreach (var node in task.Nodes.Where(n => n.Kind != CampaignObjectiveKind.Extract))
+            if (!CampaignRules.TryRecord(run, new CampaignFact { TaskId = task.Id, NodeId = node.Id,
+                SourceId = node.SourceId, Kind = node.Kind, EventId = Guid.NewGuid().ToString("D"),
+                ItemId = node.Kind == CampaignObjectiveKind.RecoverItem ? archive.Id : null,
+                ItemCode = node.Kind == CampaignObjectiveKind.RecoverItem ? archive.Code : null }, out var error))
+                throw new InvalidOperationException("archive fixture: " + error);
         return run;
     }
 

@@ -2,7 +2,7 @@
     <ui:Style src="CampaignChapterOne.uss" />
     <ui:VisualElement name="campaignChapterView" class="campaign-chapter-view">
         <ui:VisualElement class="campaign-chapter-heading">
-            <ui:Label text="第一章 静默着陆" class="campaign-heading" />
+            <ui:Label name="campaignChapterHeading" class="campaign-heading" />
             <ui:Label name="campaignChapterSaved" class="campaign-muted" />
         </ui:VisualElement>
         <ui:VisualElement name="campaignChapterTasks" class="campaign-task-list" />

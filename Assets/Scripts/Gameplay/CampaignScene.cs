@@ -14,8 +14,11 @@ namespace Unity.MP_FPS
             progress.NodeMasks["CM01"] = snapshot.CampaignNodes01;
             progress.NodeMasks["CM02"] = snapshot.CampaignNodes02;
             progress.NodeMasks["CM03"] = snapshot.CampaignNodes03;
+            progress.NodeMasks["CM04"] = snapshot.CampaignNodes04;
             if (snapshot.CampaignSampleId.Length > 0) progress.NodeItemIds["CM03/recover"] = snapshot.CampaignSampleId.ToString();
             else progress.NodeItemIds.Remove("CM03/recover");
+            if (snapshot.CampaignArchiveId.Length > 0) progress.NodeItemIds["CM04/recover"] = snapshot.CampaignArchiveId.ToString();
+            else progress.NodeItemIds.Remove("CM04/recover");
             for (int i = 0; i < CampaignCatalog.Tasks.Length; i++)
                 if ((snapshot.CampaignCompletedMask & (1 << i)) != 0) progress.CompletedTasks.Add(CampaignCatalog.Tasks[i].Id);
             if (!progress.TrackingSuppressed && progress.PrimaryTracked != null &&

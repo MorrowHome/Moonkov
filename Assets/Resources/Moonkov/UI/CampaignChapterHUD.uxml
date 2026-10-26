@@ -2,7 +2,7 @@
     <ui:Style src="CampaignChapterOne.uss" />
     <ui:VisualElement name="campaignOverlay" class="campaign-overlay" picking-mode="Ignore">
         <ui:VisualElement name="campaignHud" class="campaign-hud campaign-hidden" picking-mode="Ignore">
-            <ui:Label text="第一章 静默着陆" class="campaign-muted" />
+            <ui:Label name="campaignHudChapter" class="campaign-muted" />
             <ui:Label name="campaignHudTitle" class="campaign-hud-title" />
             <ui:Label name="campaignHudAction" class="campaign-hud-action" />
             <ui:Label name="campaignHudLocation" class="campaign-hud-location" />

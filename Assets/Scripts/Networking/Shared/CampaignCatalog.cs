@@ -1,14 +1,16 @@
 #nullable disable
 using System;
 using System.Collections.Generic;
+using Unity.MP_FPS.Missions;
 
 namespace Unity.MP_FPS.Campaign
 {
     // Semantic anchors survive a building replacement. The scene owns the coordinates.
-    // ExistingObjectiveId observes MissionCatalog.Mooncore; this does not duplicate its device rules.
+    // ExistingObjectiveId observes the authored facility; this does not duplicate its device rules.
     public static class CampaignCatalog
     {
         public const int Version = 1;
+        public const int PlannedMainTaskCount = 24;
         public static readonly TaskDefinition[] Tasks = Build();
 
         public static TaskDefinition Find(string id) => Array.Find(Tasks, t => t.Id == id);
@@ -58,6 +60,22 @@ namespace Unity.MP_FPS.Campaign
                         Node("recover", "sampler", "从输出槽取得月核碎片", "MC00 取样机输出槽", CampaignObjectiveKind.RecoverItem, save: CampaignSavePolicy.OnExtraction),
                         Extract()
                     }
+                },
+                new TaskDefinition
+                {
+                    Id = "CM04", Title = "事故之前", Chapter = 2, ChapterTitle = "错开的五分钟",
+                    PrerequisiteTask = "CM03", RequireSavedPrerequisite = true,
+                    Briefing = "样本已经带回。MC00 的配电记录相差五分钟，先恢复档案终端，读取两处校验标签，再下载原始事故记录。标签可以提前读取。取得档案盘后，带回作业船保存；眼下的记录只能说明设备时间有差异，还不足以判断事故责任。",
+                    CompletionText = "沈禾：档案已经复制到船上。18:42 与 18:47 记录的是两台设备的状态，不能直接证明人员通道何时关闭。还需要门禁和求救记录。",
+                    Nodes = new[] {
+                        Node("self_check", "archive", "运行档案设备自检", "MC00 档案终端", CampaignObjectiveKind.Interact, 3, "self_check"),
+                        Node("tag_a", "power_a", "读取 18:42 校验标签", "MC00 配电 A", CampaignObjectiveKind.Interact, 4, "tag_a"),
+                        Node("tag_b", "power_b", "读取 18:47 校验标签", "MC00 配电 B", CampaignObjectiveKind.Interact, 4, "tag_b"),
+                        Node("download_start", "archive", "确认下载事故记录", "MC00 档案终端", CampaignObjectiveKind.Interact, 1, "download_start"),
+                        Node("download", "archive", "等待事故记录下载", "MC00 档案终端", CampaignObjectiveKind.Process, 20, "download"),
+                        Node("recover", "archive", "从输出槽取得事故档案盘", "MC00 档案终端输出槽", CampaignObjectiveKind.RecoverItem, save: CampaignSavePolicy.OnExtraction),
+                        Extract()
+                    }
                 }
             };
             tasks[0].Nodes[0].Briefing = "沈禾：船这边正常。我守着回程通道，你先确认里面能不能走。";
@@ -70,6 +88,11 @@ namespace Unity.MP_FPS.Campaign
             tasks[2].Nodes[2].OutputItemCode = "mooncore_fragment";
             tasks[2].Nodes[2].OutputQuantity = 2;
             tasks[2].Nodes[2].Briefing = "至少携带 1 枚合法来源的月核碎片撤离。取样完成、取得物品与成功入库是不同的结果。";
+            tasks[3].Nodes[0].Briefing = "沈禾：先恢复档案设备。两处配电柜的标签也可以提前读取。";
+            tasks[3].Nodes[3].Briefing = "两处设备时间已经记录。下载原始资料后再判断它们的关系。";
+            tasks[3].Nodes[5].RequiredItemCode = "mc00_archive_drive";
+            tasks[3].Nodes[5].OutputItemCode = "mc00_archive_drive";
+            tasks[3].Nodes[5].Briefing = "档案盘必须装入随身库存并成功撤离。丢失后可以再次导出。";
             foreach (var task in tasks)
             {
                 for (int i = 0; i < task.Nodes.Length; i++)
@@ -84,11 +107,11 @@ namespace Unity.MP_FPS.Campaign
 
         public static string Validate()
         {
-            if (Tasks == null || Tasks.Length != 3) return "campaign_catalog";
+            if (Tasks == null || Tasks.Length != 4) return "campaign_catalog";
             var ids = new HashSet<string>(StringComparer.Ordinal);
             foreach (var task in Tasks)
             {
-                if (task == null || !ids.Add(task.Id) || task.Chapter != 1 || task.Optional || string.IsNullOrWhiteSpace(task.Title) ||
+                if (task == null || !ids.Add(task.Id) || task.Chapter < 1 || task.Chapter > 2 || task.Optional || string.IsNullOrWhiteSpace(task.Title) ||
                     string.IsNullOrWhiteSpace(task.Briefing) || task.Nodes == null || task.Nodes.Length < 1 || task.Nodes.Length > 8 ||
                     task.PrerequisiteTask != null && !ids.Contains(task.PrerequisiteTask)) return "campaign_task";
                 var nodes = new HashSet<string>(StringComparer.Ordinal);
@@ -104,6 +127,37 @@ namespace Unity.MP_FPS.Campaign
                 if (task.Nodes[task.Nodes.Length - 1].Kind != CampaignObjectiveKind.Extract) return "campaign_return";
             }
             return null;
+        }
+    }
+
+    // Bridge only completed objectives from the currently selected live facility.
+    // Early scans remain in the facility mask until preceding story nodes are ready.
+    public static class CampaignMissionAdapter
+    {
+        public static void RecordCompleted(CampaignProgress run, int chapter, MissionDefinition definition,
+            uint completed, string operationId, int inventoryVersion)
+        {
+            if (run == null || definition?.Objectives == null || string.IsNullOrEmpty(operationId) ||
+                chapter == 1 && definition.Id != "mc00_mooncore" ||
+                chapter == 2 && definition.Id != "mc00_archive" || chapter < 1 || chapter > 2) return;
+            foreach (var task in CampaignCatalog.Tasks)
+            {
+                if (task.Chapter != chapter || !CampaignRules.Available(run, task.Id) || run.CompletedTasks.Contains(task.Id)) continue;
+                for (int nodeIndex = 0; nodeIndex < task.Nodes.Length; nodeIndex++)
+                {
+                    var node = task.Nodes[nodeIndex];
+                    int mask = CampaignRules.Mask(run, task.Id);
+                    if (node.ExistingObjectiveId == null || (mask & (1 << nodeIndex)) != 0 ||
+                        (mask & node.Prerequisites) != node.Prerequisites) continue;
+                    int index = 0;
+                    while (index < definition.Objectives.Length && index < 32 &&
+                        definition.Objectives[index].Id != node.ExistingObjectiveId) index++;
+                    if (index >= definition.Objectives.Length || index >= 32 || (completed & (1u << index)) == 0) continue;
+                    CampaignRules.TryRecord(run, new CampaignFact { TaskId = task.Id, NodeId = node.Id,
+                        Kind = node.Kind, SourceId = node.SourceId,
+                        EventId = operationId + "/" + task.Id + "/" + node.Id + "/" + inventoryVersion }, out _);
+                }
+            }
         }
     }
 }

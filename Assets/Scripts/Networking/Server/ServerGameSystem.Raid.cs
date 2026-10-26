@@ -124,7 +124,7 @@ namespace Unity.MP_FPS
             var session = SystemAPI.GetComponentRW<RaidSession>(connection);
             var persistence = Persistence(ref state);
             if (!ClashEnabled(ref state) && SystemAPI.HasSingleton<RaidLootWorld>())
-                ObserveFirstChapter(ref state, state.EntityManager.GetComponentObject<RaidMissionWorld>(SystemAPI.GetSingletonEntity<RaidLootWorld>()));
+                ObserveCampaign(ref state, state.EntityManager.GetComponentObject<RaidMissionWorld>(SystemAPI.GetSingletonEntity<RaidLootWorld>()));
             UpdateInventoryProtection(ref state,connection);
             if (!ClashEnabled(ref state) && session.ValueRO.Phase == RaidPhase.Active &&
                 (outcome == RaidPhase.Extracted || outcome == RaidPhase.Dead || outcome == RaidPhase.TimedOut) &&

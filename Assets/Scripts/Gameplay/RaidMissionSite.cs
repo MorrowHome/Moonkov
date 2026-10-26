@@ -28,14 +28,17 @@ namespace Unity.MP_FPS
         private SoundDef m_CurrentSound;
         private float m_NextSoundTry;
         private MissionDefinition[] m_FirstChapterDefinitions;
-        private bool m_FirstChapter;
+        private MissionDefinition[] m_SecondChapterDefinitions;
+        private int m_CampaignChapter;
         public static RaidMissionSite Active { get; private set; }
         public RaidMissionAnchor[] Anchors => m_Anchors;
-        public MissionDefinition[] Definitions => m_FirstChapter ? m_FirstChapterDefinitions : m_Definitions;
-        public bool FirstChapter => m_FirstChapter;
-        public void SetFirstChapter(bool enabled)
+        public MissionDefinition[] Definitions => m_CampaignChapter == 1 ? m_FirstChapterDefinitions :
+            m_CampaignChapter == 2 ? m_SecondChapterDefinitions : m_Definitions;
+        public bool FirstChapter => m_CampaignChapter == 1;
+        public void SetCampaignChapter(int chapter)
         {
-            if (enabled && m_FirstChapterDefinitions == null)
+            if (chapter < 0 || chapter > 2) throw new ArgumentOutOfRangeException(nameof(chapter));
+            if (chapter == 1 && m_FirstChapterDefinitions == null)
             {
                 m_FirstChapterDefinitions = Array.ConvertAll(m_Definitions, d => d.Copy());
                 var definition = Array.Find(m_FirstChapterDefinitions, d => d.Id == "mc00_mooncore");
@@ -45,7 +48,16 @@ namespace Unity.MP_FPS
                 definition.Objectives = nodes.ToArray(); definition.OfferSeconds = 600; definition.ActiveSeconds = 600;
                 if (definition.Validate() != null || definition.Objectives.Length > 8) throw new InvalidOperationException("第一章设施模板无效。");
             }
-            m_FirstChapter = enabled;
+            if (chapter == 2 && m_SecondChapterDefinitions == null)
+            {
+                m_SecondChapterDefinitions = Array.ConvertAll(m_Definitions, d => d.Copy());
+                var definition = Array.Find(m_SecondChapterDefinitions, d => d.Id == "mc00_archive");
+                if (definition == null) throw new InvalidOperationException("第二章缺少档案模板。");
+                definition.OfferSeconds = 600; definition.ActiveSeconds = 600;
+                if (definition.Validate() != null || definition.Objectives.Length > 8)
+                    throw new InvalidOperationException("第二章设施模板无效。");
+            }
+            m_CampaignChapter = chapter;
         }
         public uint Seed => (uint)m_Seed;
         public float DiscoveryRadius => m_DiscoveryRadius;
@@ -120,7 +132,7 @@ namespace Unity.MP_FPS
             if (Active && Active != this) { Debug.LogError("Only one authored mission region is supported in this scene.", this); return; }
             Active = this;
         }
-        private void OnDisable() { StopPresentation(); m_FirstChapter = false; if (Active == this) Active = null; }
+        private void OnDisable() { StopPresentation(); m_CampaignChapter = 0; if (Active == this) Active = null; }
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetSite() => Active = null;
     }

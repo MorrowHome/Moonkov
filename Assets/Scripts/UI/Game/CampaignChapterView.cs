@@ -11,7 +11,7 @@ namespace Unity.MP_FPS.Client
     internal sealed class CampaignChapterView : IDisposable
     {
         private readonly Func<CampaignProgress> m_Read;
-        private readonly Label m_Saved, m_Title, m_Status, m_Briefing, m_Communications, m_Feedback;
+        private readonly Label m_ChapterTitle, m_Saved, m_Title, m_Status, m_Briefing, m_Communications, m_Feedback;
         private readonly VisualElement m_Nodes;
         private readonly Button m_Track;
         private readonly Dictionary<string, Button> m_Rows = new Dictionary<string, Button>();
@@ -38,7 +38,7 @@ namespace Unity.MP_FPS.Client
             Element.RemoveFromHierarchy(); host.Add(Element);
             var stylesheet = Resources.Load<StyleSheet>("Moonkov/UI/CampaignChapterOne");
             if (stylesheet != null) Element.styleSheets.Add(stylesheet);
-            m_Saved = Element.Q<Label>("campaignChapterSaved");
+            m_ChapterTitle = Element.Q<Label>("campaignChapterHeading"); m_Saved = Element.Q<Label>("campaignChapterSaved");
             m_Title = Element.Q<Label>("campaignSelectedTitle"); m_Status = Element.Q<Label>("campaignSelectedStatus");
             m_Briefing = Element.Q<Label>("campaignSelectedBriefing"); m_Nodes = Element.Q("campaignSelectedNodes");
             m_Communications = Element.Q<Label>("campaignSelectedCommunications"); m_Feedback = Element.Q<Label>("campaignTrackingStatus");
@@ -77,7 +77,8 @@ namespace Unity.MP_FPS.Client
             var progress = m_Read();
             if (progress == null) { m_Feedback.text = "单人档案尚未载入"; m_Track.SetEnabled(false); return; }
             if (m_Selected == null)
-                m_Selected = CampaignRules.Available(progress, progress.PrimaryTracked) ? progress.PrimaryTracked : CampaignRules.CurrentMain(progress) ?? "CM03";
+                m_Selected = CampaignRules.Available(progress, progress.PrimaryTracked) ? progress.PrimaryTracked :
+                    CampaignRules.CurrentMain(progress) ?? CampaignCatalog.Tasks[CampaignCatalog.Tasks.Length - 1].Id;
             string signature = progress.Revision + "/" + progress.PreferenceRevision + "/" + m_Selected + "/" + m_Busy + "/" + m_Error;
             foreach (var task in CampaignCatalog.Tasks) signature += "/" + CampaignRules.Mask(progress, task.Id) + "/" + progress.CompletedTasks.Contains(task.Id);
             if (signature == m_Signature) return;
@@ -89,12 +90,14 @@ namespace Unity.MP_FPS.Client
                 bool completed = state == CampaignTaskStatus.Completed;
                 if (completed) complete++;
                 m_States[task.Id].text = StateText(state);
+                m_Rows[task.Id].Q<Label>(className: "campaign-task-name").text = state == CampaignTaskStatus.Locked && task.Chapter > 1 ? "后续调查" : task.Title;
                 m_Rows[task.Id].SetEnabled(state != CampaignTaskStatus.Locked);
                 m_Rows[task.Id].EnableInClassList("campaign-selected", task.Id == m_Selected);
                 m_Rows[task.Id].EnableInClassList("campaign-complete", completed);
             }
-            m_Saved.text = complete == 3 ? "第一章已完成" : "已保存 " + complete + "/3";
+            m_Saved.text = "已保存 " + complete + " 项";
             var selected = CampaignCatalog.Find(m_Selected);
+            m_ChapterTitle.text = "第" + (selected.Chapter == 1 ? "一" : "二") + "章 " + selected.ChapterTitle;
             var selectedStatus = CampaignRules.Status(progress, selected.Id);
             m_Title.text = selected.Title; m_Status.text = StateText(selectedStatus); m_Briefing.text = selected.Briefing;
             m_Nodes.Clear();
