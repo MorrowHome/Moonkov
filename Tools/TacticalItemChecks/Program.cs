@@ -54,5 +54,11 @@ TacticalSprintRules.Tick(ref stamina,.1f,true,false,false);Check(stamina.Value==
 var coarse=new TacticalSprintState();var fine=new TacticalSprintState();TacticalSprintRules.Tick(ref coarse,50,true,false);for(int i=0;i<500;i++)TacticalSprintRules.Tick(ref fine,.1f,true,false);Check(Math.Abs(coarse.Value-fine.Value)<.001f && coarse.Exhausted==fine.Exhausted,"frame independent drain");
 TacticalSprintRules.Tick(ref coarse,3,false,false);for(int i=0;i<30;i++)TacticalSprintRules.Tick(ref fine,.1f,false,false);Check(Math.Abs(coarse.Value-fine.Value)<.001f,"frame independent rest delay and recovery");
 float before=fine.Value;TacticalSprintRules.Tick(ref fine,float.NaN,true,false);Check(fine.Value==before,"nonfinite delta rejected");
+var light=new TacticalSprintState();var heavy=new TacticalSprintState();
+TacticalSprintRules.Tick(ref light,20,true,false,true,0);TacticalSprintRules.Tick(ref heavy,20,true,false,true,InventoryCatalog.CarryWeightLimit);
+Check(heavy.Value<light.Value,"heavy equipment drains sprint faster");
+float lightBefore=light.Value,heavyBefore=heavy.Value;
+TacticalSprintRules.Tick(ref light,2,false,false,true,0);TacticalSprintRules.Tick(ref heavy,2,false,false,true,InventoryCatalog.CarryWeightLimit);
+Check(heavy.Value-heavyBefore<light.Value-lightBefore,"heavy equipment slows sprint recovery");
 
 Console.WriteLine($"Tactical rules: {checks} checks passed.");
