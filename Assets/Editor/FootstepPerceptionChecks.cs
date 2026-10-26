@@ -103,6 +103,44 @@ public static partial class AlienEnemyChecks
             AlienCase(DollSingerStance.Standing, true, false, 5, 0, true, false, false);
             AlienCase(DollSingerStance.Standing, true, false, 5, 0, false, true, false);
 
+            void GunshotCase(float distance, bool wall, bool expected)
+            {
+                Vector3 origin = new Vector3(-15000 + index++ * 100, 1000, -15000);
+                CounterplayBox(holder.transform, "Floor", origin - Vector3.up * .25f, new Vector3(50, .5f, 50));
+                var alien = Alien(holder.transform, world, profile, origin + Vector3.up * (.56f * profile.Scale), MultiplayerRole.Server, -49000 - index);
+                Step(alien, 7);
+                Vector3 listener = alien.AimPoint;
+                Vector3 targetOrigin = new Vector3(listener.x, origin.y, listener.z);
+                if (wall) CounterplayBox(holder.transform, "Gunshot wall", targetOrigin + new Vector3(0, 2, distance / 2), new Vector3(15, 4, .5f));
+                var human = Humanoid(holder.transform, world, targetOrigin + new Vector3(0, 0, distance), false, 200 + index);
+                var health = manager.GetComponentData<PredictedPlayerGhost>(human.LinkedEntity);
+                health.LastShotTick = 7; manager.SetComponentData(human.LinkedEntity, health);
+                Step(alien, 7);
+                Check(alien.Target == Entity.Null, "An old gunshot replayed when an alien began observing.");
+                health.LastShotTick = 8; manager.SetComponentData(human.LinkedEntity, health);
+                Step(alien, 7);
+                Check((alien.Target == human.LinkedEntity) == expected,
+                    $"Alien gunshot hearing mismatch: distance={distance}, wall={wall}, expected={expected}.");
+                if (!expected) return;
+                var lastSeen = typeof(ProceduralAlienEnemy).GetField("m_LastSeen", BindingFlags.Instance | BindingFlags.NonPublic);
+                var lastHeardAt = typeof(ProceduralAlienEnemy).GetField("m_LastSeenAt", BindingFlags.Instance | BindingFlags.NonPublic);
+                var first = (Vector3)lastSeen.GetValue(alien);
+                float heardAt = (float)lastHeardAt.GetValue(alien);
+                Check(alien.Action == AlienAction.Search && alien.AttackCount == 0 &&
+                    Vector3.Distance(first, human.transform.position + Vector3.up) > 1,
+                    "An unseen shot became exact sight or an immediate attack.");
+                Step(alien, 7);
+                Check(Mathf.Approximately((float)lastHeardAt.GetValue(alien), heardAt), "An unchanged shot tick replayed a clue.");
+                health.LastShotTick = 9; manager.SetComponentData(human.LinkedEntity, health);
+                Step(alien, 7);
+                Check(Vector3.Distance((Vector3)lastSeen.GetValue(alien), first) < .01f,
+                    "Consecutive shots at the same location gave changing bearings.");
+            }
+            GunshotCase(12, false, true);
+            GunshotCase(12, true, false);
+            GunshotCase(6, true, true);
+            GunshotCase(18, false, false);
+
             Vector3 pmcOrigin = new Vector3(-8000, 1000, -9000);
             var humanTarget = Humanoid(holder.transform, world, pmcOrigin + new Vector3(-1.25f, 0, 6), false, 100);
             manager.AddComponent<Simulate>(humanTarget.LinkedEntity);

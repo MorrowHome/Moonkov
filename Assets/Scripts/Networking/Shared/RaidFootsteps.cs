@@ -26,6 +26,19 @@ namespace Unity.MP_FPS
             float.IsFinite(baseRange) && baseRange > 0 ? baseRange * LoadMultiplier(weight, clash) : 0;
 
         public static bool Audible(float distance, float range, bool blocked) =>
-            float.IsFinite(distance) && distance >= 0 && distance <= range * (blocked ? ObstructionMultiplier : 1);
+            float.IsFinite(distance) && float.IsFinite(range) && distance >= 0 && range > 0 &&
+            distance <= range * (blocked ? ObstructionMultiplier : 1);
+    }
+
+    // Alien hearing produces a search clue, not sight. A stable bearing keeps a
+    // burst of shots from averaging into the exact position of a hidden actor.
+    public static class RaidAlienHearing
+    {
+        public static Vector3 Estimate(Vector3 source, float distance, float range, bool blocked, int listener, int target)
+        {
+            float angle = (listener * 137.5f + target * 67f) * Mathf.Deg2Rad;
+            float error = Mathf.Lerp(1.5f, 4, distance / Mathf.Max(.1f, range)) + (blocked ? 2 : 0);
+            return source + new Vector3(Mathf.Sin(angle), 0, Mathf.Cos(angle)) * error;
+        }
     }
 }

@@ -204,33 +204,26 @@ namespace Unity.MP_FPS
                 bool stepped = Footstep(entity, point, health, out bool landed, out bool looting);
                 bool visible = distance <= profile.SightRange &&
                     !SmokeVisibility.Blocked(smokeWorld, gameObject.scene.GetPhysicsScene(), AimPoint, point) && ClearSight(AimPoint + m_Body.Motor.Current.Up * .12f, point, root.transform);
-                bool heardShot = fired && distance <= profile.HearingRange;
                 float movementHearing = profile.HearingRange * RaidFootsteps.AlienMovementRangeScale;
                 float stepRange = landed ? RaidFootsteps.LandingRange(movementHearing, health.CarriedWeight, health.ClashEnabled) :
                     RaidFootsteps.HearingRange(movementHearing, health.ControllerState.Stance,
                         health.ControllerState.Sprinting, health.CarriedWeight, health.ClashEnabled);
                 if (looting) stepRange = Mathf.Max(stepped ? stepRange : 0, Mathf.Min(RaidLootAcoustics.HearingRange, profile.HearingRange));
                 bool blocked = false;
-                bool heardStep = !visible && !heardShot && (stepped || looting) && distance <= stepRange;
-                if (heardStep)
-                {
+                if (!visible && (fired && distance <= profile.HearingRange || (stepped || looting) && distance <= stepRange))
                     blocked = UnityEngine.Physics.Linecast(AimPoint, point, m_FootstepWorldMask, QueryTriggerInteraction.Ignore);
-                    heardStep = RaidFootsteps.Audible(distance, stepRange, blocked);
-                }
+                bool heardShot = !visible && fired && RaidFootsteps.Audible(distance, profile.HearingRange, blocked);
+                bool heardStep = !visible && !heardShot && (stepped || looting) && RaidFootsteps.Audible(distance, stepRange, blocked);
                 if (!visible && !heardShot && !heardStep) continue;
                 float score = distance - (entity == m_Target ? 2 : 0) + (visible ? 0 : profile.SightRange);
                 if (score >= best) continue;
                 best = score; m_Target = entity;
                 m_MissionAlarmUntil = 0;
                 if (visible) m_LastSeen = point;
-                else if (heardShot) m_LastSeen = point + new Vector3(Mathf.Sin(shot * 1.7f), 0, Mathf.Cos(shot * 2.3f)) * 1.3f;
                 else
                 {
-                    // Keep one stable bearing per listener/target, so repeated steps
-                    // cannot be averaged into the hidden player's exact position.
-                    float angle = (GhostGameObject.Owner * 137.5f + entity.Index * 67f) * Mathf.Deg2Rad;
-                    float error = Mathf.Lerp(1.5f, 4, distance / Mathf.Max(.1f, stepRange)) + (blocked ? 2 : 0);
-                    m_LastSeen = point + new Vector3(Mathf.Sin(angle), 0, Mathf.Cos(angle)) * error;
+                    float soundRange = heardShot ? profile.HearingRange : stepRange;
+                    m_LastSeen = RaidAlienHearing.Estimate(point, distance, soundRange, blocked, GhostGameObject.Owner, entity.Index);
                 }
                 m_LastSeenAt = m_Clock; m_Visible = visible;
             }
