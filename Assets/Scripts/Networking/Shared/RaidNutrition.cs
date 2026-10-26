@@ -1,9 +1,28 @@
 using System;
+using Unity.Mathematics;
 using UnityEngine;
 using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS
 {
+    // A server snapshot of actual horizontal travel, separate from the
+    // controller's requested animation speed. Discontinuities are not exertion.
+    public struct RaidSurvivalMotion
+    {
+        private float3 m_Position;
+        private bool m_Known;
+        public bool Observe(float3 position,float dt)
+        {
+            if(!math.all(math.isfinite(position)) || !float.IsFinite(dt) || dt<=0)
+            {m_Known=false;return false;}
+            float3 travel=position-m_Position;bool known=m_Known;
+            m_Position=position;m_Known=true;
+            float distanceSq=travel.x*travel.x+travel.z*travel.z;
+            float minimum=Mathf.Max(.005f,dt*.15f),maximum=Mathf.Max(2,dt*12);
+            return known && distanceSq>minimum*minimum && distanceSq<=maximum*maximum;
+        }
+    }
+
     [Flags]
     public enum SurvivalEffects : ushort
     {
@@ -85,7 +104,7 @@ namespace Unity.MP_FPS
             }
         }
         public static void Tick(ref PredictedPlayerGhost state, float dt, float energySeconds, float hydrationSeconds,
-            float digestionSeconds, float graceSeconds, float starvationDamage, float dehydrationDamage, uint tick)
+            float digestionSeconds, float graceSeconds, float starvationDamage, float dehydrationDamage, uint tick,bool? movingOverride=null)
         {
             if (dt <= 0 || !float.IsFinite(dt)) return;
             state.MucusBlindSeconds = state.CurrentHealth > 0 ? Mathf.Max(0,state.MucusBlindSeconds-dt) : 0;
@@ -99,7 +118,7 @@ namespace Unity.MP_FPS
                 else if(state.AlienFoodEffect==AlienFoodEffect.VenomPower)DamageSystemic(ref state,activeTime*.6f,tick);
             }
             if(state.CurrentHealth<=0)return;
-            bool moving = state.ControllerState.MovementSpeed > .1f;
+            bool moving = movingOverride ?? (state.ControllerState.MovementSpeed > .1f);
             bool sprinting = moving && state.ControllerState.Sprinting;
             float abdomen = state.AbdomenHealth <= 0 ? 2 : 1;
             float energyRate = Capacity / Mathf.Max(1, energySeconds) * abdomen * (sprinting ? 1.75f : moving ? 1.1f : 1);

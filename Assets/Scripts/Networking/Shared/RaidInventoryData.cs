@@ -140,6 +140,7 @@ namespace Unity.MP_FPS
     }
     public sealed class RaidInventoryState : IComponentData
     {
+        public RaidSurvivalMotion SurvivalMotion;
         public RaidResultManifest Result;
         public InventoryGraph Graph;
         public int RaidId;

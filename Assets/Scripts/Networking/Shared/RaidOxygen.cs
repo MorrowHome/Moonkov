@@ -38,7 +38,7 @@ namespace Unity.MP_FPS
         }
 
         public static void Tick(ref PredictedPlayerGhost state, in AtmosphereSample atmosphere,
-            in OxygenParameters settings, float dt, uint tick, float stationSupplyPerSecond = 0, bool sealedReserve = true)
+            in OxygenParameters settings, float dt, uint tick, float stationSupplyPerSecond = 0, bool sealedReserve = true,bool? movingOverride=null)
         {
             if (!state.BodyHealthInitialized || state.CurrentHealth <= 0 || !float.IsFinite(dt) || dt <= 0) return;
             // C# default(struct) bypasses constructors; make that public API case safe too.
@@ -48,7 +48,7 @@ namespace Unity.MP_FPS
             state.BreathableAir = atmosphere.Breathable;
             state.AmbientPressureKPa = FiniteNonnegative(atmosphere.PressureKPa);
             state.AmbientOxygenPartialPressureKPa = FiniteNonnegative(atmosphere.PressureKPa * atmosphere.OxygenFraction);
-            bool moving = state.ControllerState.MovementSpeed > .1f;
+            bool moving = movingOverride ?? (state.ControllerState.MovementSpeed > .1f);
             float exertion = moving ? (state.ControllerState.Sprinting ? parameters.SprintingMultiplier : parameters.WalkingMultiplier) : 1;
             state.OxygenDrainPerSecond = atmosphere.Breathable ? 0 : Capacity / parameters.OutdoorSeconds * exertion;
             if(state.AlienFoodEffectSeconds>0 && state.AlienFoodEffect==AlienFoodEffect.OxygenReserve)state.OxygenDrainPerSecond*=.75f;

@@ -41,17 +41,23 @@ namespace Unity.MP_FPS
                 var health = SystemAPI.GetComponentRW<PredictedPlayerGhost>(player);
                 if (health.ValueRO.CurrentHealth <= 0) continue;
                 var position = (Vector3)SystemAPI.GetComponent<LocalTransform>(player).Position;
+                RaidInventoryState inventory=null;bool? moving=null;
+                if(state.EntityManager.HasComponent<RaidInventoryState>(connection))
+                {
+                    inventory=GetRaidInventory(ref state,connection);
+                    bool actualMove=inventory.SurvivalMotion.Observe(position,SystemAPI.Time.DeltaTime);
+                    moving=health.ValueRO.ControllerState.MovementSpeed>.1f && actualMove;
+                }
                 // Check torso rather than the feet to avoid treating a doorway's
                 // floor contact as breathable before the character has entered.
                 var samplePosition = position + Vector3.up;
                 BreathableZone.TrySample(samplePosition, out var atmosphere);
                 RaidOxygen.Tick(ref health.ValueRW, atmosphere, map.OxygenParameters, SystemAPI.Time.DeltaTime,
-                    tick, OxygenRefillZone.SampleSupply(samplePosition, atmosphere.Breathable),health.ValueRO.HeadDomeEquipped);
+                    tick, OxygenRefillZone.SampleSupply(samplePosition, atmosphere.Breathable),health.ValueRO.HeadDomeEquipped,moving);
                 RaidNutrition.Tick(ref health.ValueRW, SystemAPI.Time.DeltaTime,
                     map.EnergyReserveSeconds, map.HydrationReserveSeconds, map.DigestionSeconds,
-                    map.NutritionGraceSeconds, map.StarvationDamagePerSecond, map.DehydrationDamagePerSecond, tick);
-                if(state.EntityManager.HasComponent<RaidInventoryState>(connection))
-                    EnergyShieldEquipment.Flush(ref health.ValueRW,GetRaidInventory(ref state,connection).Graph);
+                    map.NutritionGraceSeconds, map.StarvationDamagePerSecond, map.DehydrationDamagePerSecond, tick,moving);
+                if(inventory!=null)EnergyShieldEquipment.Flush(ref health.ValueRW,inventory.Graph);
             }
         }
     }

@@ -9,7 +9,7 @@ flowchart TD
     Airlock[AirlockController 气闸状态] --> Room
     Station[OxygenRefillZone 供氧站] --> Sample
     Sample --> Tick
-    Motion[ControllerState 行走与冲刺] --> Tick
+    Motion[服务器实际位移与冲刺状态] --> Tick
     Item[口袋或胸挂的氧气罐使用请求] --> Transaction[服务器检查版本与可访问性]
     Transaction --> Refill[RaidOxygenConsumables 原子补给与扣除]
     Refill --> State[PredictedPlayerGhost 氧气状态]
@@ -36,6 +36,8 @@ flowchart TD
 `OxygenSettings` 是可选共享配置。在 `MoonRaidMap` 的 **Oxygen Settings** 字段指定资产后使用其数值；不指定时继续使用该地图已有的序列化数值，不会隐式加载 Resources 配置、覆盖旧地图调参。现有地图的 `BreathableZone` 保留 `AllowsSuitRefill = true` 的兼容行为。新建房间模板默认关闭它，适合「室内能呼吸，但补满储气要去补氧站」的玩法。
 
 服务器只更新处于活动 Raid 的存活玩家；结算与死亡后不再耗氧。缺氧伤害经过现有身体伤害与死亡路径。非有限配置使用安全默认值或禁用异常输入；消耗、补给和缺氧宽限由同一权威 Tick 决定。
+
+行走和冲刺倍率依据服务器相邻更新的水平位移及角色动作状态。顶墙按冲刺但没有前进时，按静止消耗；位置抖动、垂直位移和突然传送不算跑动。新部署重新记录起点。
 
 缺氧扣血期间仍可搜索容器、吃喝和止血，便于寻找并使用氧气罐。胸部仍持续受伤，死亡会终止操作；新的攻击或护盾命中仍会打断。普通部位治疗和任务设备继续使用原有受伤打断规则。
 
