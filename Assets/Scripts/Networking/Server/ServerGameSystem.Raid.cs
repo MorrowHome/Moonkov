@@ -133,6 +133,16 @@ namespace Unity.MP_FPS
                 state.EntityManager.HasComponent<RaidInventoryState>(connection))
             {
                 var inventory = GetRaidInventory(ref state, connection);
+                if(outcome==RaidPhase.Extracted && SystemAPI.HasComponent<JoinedClient>(connection))
+                {
+                    var extractingPlayer=SystemAPI.GetComponent<JoinedClient>(connection).PlayerEntity;
+                    if(SystemAPI.Exists(extractingPlayer) && SystemAPI.HasComponent<PredictedPlayerGhost>(extractingPlayer))
+                    {
+                        var ghost=SystemAPI.GetComponentRW<PredictedPlayerGhost>(extractingPlayer);
+                        var weapon=WeaponManager.Instance?.WeaponRegistry?.GetWeaponData(ghost.ValueRO.EquippedWeaponID,ghost.ValueRO.EquippedModules);
+                        if(weapon!=null)DollSingerWeapons.CompleteExtractedCharge(ref ghost.ValueRW,inventory.Graph,weapon.MagazineSize);
+                    }
+                }
                 inventory.Result = RaidResultManifest.Capture(inventory.Graph, session.ValueRO.RaidId, outcome);
                 inventory.LastSentVersion = -1;
             }

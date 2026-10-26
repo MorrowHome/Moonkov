@@ -106,6 +106,14 @@ public static class HaloModuleChecks
         Check(state.ControllerState.IsReloadingState && state.ReloadTargetAmmo==expected,"food expiry keeps the charge");
         DollSingerWeapons.CompleteReload(ref state,registry.GetWeaponData(state.EquippedWeaponID,state.EquippedModules));
         Check(state.CurrentAmmo==expected && graph.CellEnergy(accessibleOnly:true)==paid,"charge completes once without another energy deduction");
+        state.CurrentAmmo=4;DollSingerWeapons.SaveActiveAmmo(ref state,graph);
+        weapon=registry.GetWeaponData(state.EquippedWeaponID,state.EquippedModules);
+        Check(graph.TryRecharge(state.CurrentAmmo,weapon.MagazineSize,weapon.EnergyPerRound,out target),"reserve extraction charge");
+        paid=graph.CellEnergy(accessibleOnly:true);
+        state.ControllerState.IsReloadingState=true;state.ReloadTimer=1;state.ReloadTargetAmmo=target;
+        Check(DollSingerWeapons.CompleteExtractedCharge(ref state,graph,weapon.MagazineSize) && state.CurrentAmmo==target &&
+            graph.Find(state.EquippedWeaponItem.ToString()).LoadedAmmo==target && graph.CellEnergy(accessibleOnly:true)==paid,
+            "extraction settles real weapon charge into the carried item");
     }
     [MenuItem("Tools/Doll Singer/Update Module Translations")]
     public static void UpdateTranslations()

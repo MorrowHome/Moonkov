@@ -119,12 +119,28 @@ namespace Unity.MP_FPS
             state.WeaponEquipRemaining = Mathf.Max(state.WeaponEquipRemaining, .25f);
             return true;
         }
-        public static void CompleteReload(ref PredictedPlayerGhost state, WeaponData weapon)
+        private static void CompleteReload(ref PredictedPlayerGhost state,int magazineSize)
         {
             state.ControllerState.IsReloadingState = false;
             state.ReloadTimer = 0f;
-            if (weapon != null) state.CurrentAmmo = Mathf.Max(state.CurrentAmmo, Mathf.Min(state.ReloadTargetAmmo, weapon.MagazineSize));
+            if (magazineSize>0) state.CurrentAmmo = Mathf.Max(state.CurrentAmmo, Mathf.Min(state.ReloadTargetAmmo, magazineSize));
             state.ReloadTargetAmmo = 0;
+        }
+        public static void CompleteReload(ref PredictedPlayerGhost state, WeaponData weapon) =>
+            CompleteReload(ref state,weapon != null ? weapon.MagazineSize : 0);
+
+        // Successful extraction ends the playable raid immediately. Settle rounds
+        // already paid for before destroying the player and saving their loadout.
+        public static bool CompleteExtractedCharge(ref PredictedPlayerGhost state,InventoryGraph graph,int magazineSize)
+        {
+            if(!state.InventoryWeapons || !state.ControllerState.IsReloadingState || state.CurrentHealth<=0 ||
+                !IsHalo(state.EquippedWeaponID) || state.EquippedWeaponSlot<1 || state.EquippedWeaponSlot>3 ||
+                state.ReloadTargetAmmo<=state.CurrentAmmo || magazineSize<=0) return false;
+            var active=graph?.Equipped(Slot(state.EquippedWeaponSlot));
+            if(active==null || active.Id!=state.EquippedWeaponItem.ToString() || WeaponId(active.Code)!=state.EquippedWeaponID) return false;
+            CompleteReload(ref state,magazineSize);
+            SaveActiveAmmo(ref state,graph);
+            return true;
         }
     }
 }
