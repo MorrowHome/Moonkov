@@ -38,6 +38,8 @@ namespace Unity.MP_FPS
             if (ChatInputBlocked || selected == null || m_InventoryVisible || QuickBusy || DarkSightRequested || GameSettings.Instance.IsPauseMenuOpen ||
                 UnityEngine.Cursor.lockState != CursorLockMode.Locked || Time.unscaledTime < m_NextGrenadeThrow ||
                 Keyboard.current == null || !Keyboard.current.gKey.wasPressedThisFrame) return;
+            if (m_PlayerQuery.HasSingleton<PredictedPlayerGhost>() && RaidHealth.HandsBusy(m_PlayerQuery.GetSingleton<PredictedPlayerGhost>()))
+            { QuickNotice("INTERRUPTED / WEAPON CHANGED"); MoonkovAudio.Error(); return; }
             m_InventoryRequestId = System.Math.Max(m_InventoryRequestId, inventory.RequestId) + 1;
             if (!Send(new RaidGrenadeThrowRpc { RaidId = m_Snapshot.RaidId, ExpectedVersion = graph.Version,
                 ItemId = selected.Id, RequestId = m_InventoryRequestId })) return;

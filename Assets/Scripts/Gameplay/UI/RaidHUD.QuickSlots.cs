@@ -173,6 +173,8 @@ namespace Unity.MP_FPS
             else if (EnergyGrenadeRules.Accessible(graph, item))
             {
                 if (Time.unscaledTime < m_NextGrenadeThrow) { QuickNotice("Item is cooling down."); return true; }
+                if (m_PlayerQuery.HasSingleton<PredictedPlayerGhost>() && RaidHealth.HandsBusy(m_PlayerQuery.GetSingleton<PredictedPlayerGhost>()))
+                { QuickNotice("INTERRUPTED / WEAPON CHANGED"); MoonkovAudio.Error(); return true; }
                 m_InventoryRequestId = NextManualActionRequest();
                 if (Send(new RaidGrenadeThrowRpc { RaidId = m_Snapshot.RaidId, ExpectedVersion = graph.Version, ItemId = item.Id, RequestId = m_InventoryRequestId }))
                 {

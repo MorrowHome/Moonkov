@@ -34,6 +34,20 @@ namespace Unity.MP_FPS
 
         protected override void OnCreate() => RequireForUpdate<NetworkTime>();
 
+        // Call only after validating the throw pose and capacity. Failed requests
+        // neither consume a grenade nor interrupt another hand action.
+        public static InventoryError CommitThrow(RaidInventoryState inventory, ref PredictedPlayerGhost health,
+            bool canAct, string itemId, int version, uint tick)
+        {
+            if (inventory?.Graph == null) return InventoryError.Invalid;
+            if (!canAct || !(health.CurrentHealth > 0) || !float.IsFinite(health.CurrentHealth) ||
+                health.ClashDarkSight || RaidHealth.HandsBusy(health))
+                return InventoryError.Inaccessible;
+            var error = EnergyGrenadeRules.Take(inventory.Graph, itemId, version);
+            if (error == InventoryError.None) health.LastGrenadeShotTick = tick;
+            return error;
+        }
+
         protected override void OnUpdate()
         {
             var map = MoonRaidMap.Active;
@@ -65,19 +79,23 @@ namespace Unity.MP_FPS
                         var player = EntityManager.GetComponentData<JoinedClient>(connection).PlayerEntity;
                         if (map && session.Phase == RaidPhase.Active && session.RaidId == r.RaidId && inventory.RaidId == r.RaidId &&
                             m_Active.Count < 64 && (!m_NextThrow.TryGetValue(connection, out var next) || now >= next) &&
-                            EntityManager.HasComponent<PredictedPlayerGhost>(player) && EntityManager.HasComponent<GhostGameObjectLink>(player))
+                            EntityManager.HasComponent<PredictedPlayerGhost>(player) && EntityManager.HasComponent<GhostGameObjectLink>(player) &&
+                            EntityManager.HasComponent<GhostOwner>(player))
                         {
                             var health = EntityManager.GetComponentData<PredictedPlayerGhost>(player);
                             var root = EntityManager.GetComponentObject<GhostGameObjectLink>(player).LinkedInstance;
-                            if (health.CurrentHealth > 0 && root && TryPose(root, health, out var position, out var velocity))
+                            bool canAct = BountyClashRuntime.CanAct(EntityManager, player);
+                            if (health.CurrentHealth > 0 && canAct && !health.ClashDarkSight &&
+                                !RaidHealth.HandsBusy(health) && root && TryPose(root, health, out var position, out var velocity))
                             {
-                                inventory.Error = EnergyGrenadeRules.Take(inventory.Graph, r.ItemId.ToString(), r.ExpectedVersion);
+                                inventory.Error = CommitThrow(inventory, ref health, canAct, r.ItemId.ToString(), r.ExpectedVersion, tick);
                                 if (inventory.Error == InventoryError.None)
                                 {
                                     var grenade = new Grenade { Id = ++m_NextId, Owner = EntityManager.GetComponentData<GhostOwner>(player).NetworkId,
                                         Source = BountyClashDamage.Capture(World,player),
                                         Shooter = root.transform, Scene = root.gameObject.scene.GetPhysicsScene(), Position = position, Velocity = velocity };
                                     m_Active.Add(grenade);
+                                    EntityManager.SetComponentData(player, health);
                                     m_NextThrow[connection] = now + EnergyGrenadeRules.Cooldown;
                                     Broadcast(ecb, grenade, tick, false);
                                 }

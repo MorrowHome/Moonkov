@@ -73,6 +73,8 @@ public static class EnergyGrenadeServerChecks
             int initialVersion = graph.Version;
             Request(initialVersion);
             Check(inventory.Error == InventoryError.None && item.Quantity == 2 && graph.Version == initialVersion + 1, "Server accepts throw and spends one");
+            uint throwTick = em.GetComponentData<PredictedPlayerGhost>(shooter).LastGrenadeShotTick;
+            Check(throwTick == frame, "Accepted throw records the authoritative action tick");
             Request(initialVersion);
             Check(item.Quantity == 2, "Repeated request ID cannot throw twice");
             requestId++; Request(graph.Version);
@@ -82,7 +84,23 @@ public static class EnergyGrenadeServerChecks
             while (clock < 1) Tick();
             requestId++; Request(initialVersion);
             Check(inventory.Error == InventoryError.Stale && item.Quantity == 2, "Server rejects stale inventory version");
-            var health = em.GetComponentData<PredictedPlayerGhost>(shooter); health.CurrentHealth = 0;
+            var health = em.GetComponentData<PredictedPlayerGhost>(shooter);
+            health.ControllerState.IsReloadingState = true; em.SetComponentData(shooter, health);
+            requestId++; Request(graph.Version);
+            Check(inventory.Error == InventoryError.Inaccessible && item.Quantity == 2 &&
+                em.GetComponentData<PredictedPlayerGhost>(shooter).LastGrenadeShotTick == throwTick, "Reload rejects throw without spending or marking");
+            health.ControllerState.IsReloadingState = false; health.WeaponEquipRemaining = .2f; em.SetComponentData(shooter, health);
+            requestId++; Request(graph.Version);
+            Check(inventory.Error == InventoryError.Inaccessible && item.Quantity == 2, "Weapon switch rejects throw");
+            health.WeaponEquipRemaining = 0; health.ClashDarkSight = true; em.SetComponentData(shooter, health);
+            requestId++; Request(graph.Version);
+            Check(inventory.Error == InventoryError.Inaccessible && item.Quantity == 2, "Dark sight rejects throw");
+            health.ClashDarkSight = false; em.SetComponentData(shooter, health);
+            em.AddComponentData(shooter, new ClashPlayer { CanAct = false });
+            requestId++; Request(graph.Version);
+            Check(inventory.Error == InventoryError.Inaccessible && item.Quantity == 2, "Downed player rejects throw");
+            em.RemoveComponent<ClashPlayer>(shooter);
+            health.CurrentHealth = 0;
             em.SetComponentData(shooter, health); requestId++; Request(graph.Version);
             Check(inventory.Error != InventoryError.None && item.Quantity == 2, "Dead player cannot throw");
             health.CurrentHealth = 1000; em.SetComponentData(shooter, health);
