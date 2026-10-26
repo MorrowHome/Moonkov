@@ -68,7 +68,8 @@ namespace Unity.MP_FPS
                 {var inventory=GetRaidInventory(ref state,pair.Key);inventory.TacticalPending=false;inventory.LastSentVersion=-1;}
             world.Uses.Clear();world.Feedbacks.Clear();world.Objects.Clear();world.Statuses.Clear();world.Epoch++;
             foreach(var health in SystemAPI.Query<RefRW<PredictedPlayerGhost>>())
-            {health.ValueRW.TacticalWireSeconds=0;health.ValueRW.TacticalCoughSeconds=0;health.ValueRW.TacticalPoisonSeconds=0;health.ValueRW.TacticalSprintStamina=100;health.ValueRW.TacticalSprintExhausted=false;}
+            {health.ValueRW.TacticalWireSeconds=0;health.ValueRW.TacticalCoughSeconds=0;health.ValueRW.TacticalPoisonSeconds=0;health.ValueRW.TacticalSprintStamina=100;health.ValueRW.TacticalSprintExhausted=false;
+                health.ValueRW.PendingBulletWound=0;health.ValueRW.PendingBulletWoundSource=default;}
             TacticalBroadcast(ecb,world,null,true);
         }
         private void UpdateTacticalItems(ref SystemState state,EntityCommandBuffer ecb)
@@ -77,6 +78,7 @@ namespace Unity.MP_FPS
             if(!ReferenceEquals(world.Map,map))
             {ClearTacticalItems(ref state,ecb);world.Map=map;}
             double now=SystemAPI.Time.ElapsedTime;world.Now=now;
+            TacticalConsumeBulletWounds(ref state,world,now);
             foreach(var (request,received,entity) in SystemAPI.Query<RefRO<RaidTacticalItemActionRpc>,RefRO<ReceiveRpcCommandRequest>>().WithEntityAccess())
             {
                 var connection=received.ValueRO.SourceConnection;var r=request.ValueRO;
@@ -180,6 +182,19 @@ namespace Unity.MP_FPS
                 }
             }
         }
+        private void TacticalConsumeBulletWounds(ref SystemState state,TacticalServerWorld world,double now)
+        {
+            foreach(var (health,entity) in SystemAPI.Query<RefRW<PredictedPlayerGhost>>().WithEntityAccess())
+            {
+                float wound=health.ValueRO.PendingBulletWound;
+                if(wound<=0)continue;
+                var source=health.ValueRO.PendingBulletWoundSource;
+                health.ValueRW.PendingBulletWound=0;health.ValueRW.PendingBulletWoundSource=default;
+                if(wound<TacticalItemRules.BulletWoundThreshold || health.ValueRO.CurrentHealth<=0 || health.ValueRO.ClashEnabled)continue;
+                var status=TacticalStatus(world,entity);
+                TacticalRefreshBleed(status,now+TacticalItemRules.BulletWoundDuration,source.NetworkId,source);
+            }
+        }
         private static float TacticalRemaining(double until,double now)=>(float)Math.Max(0,until-now);
         private bool TacticalActor(ref SystemState state,Entity connection,out Entity player,out PredictedPlayerGhost health,out GhostGameObject root)
         {
@@ -219,6 +234,7 @@ namespace Unity.MP_FPS
             {
                 if(!world.Statuses.TryGetValue(player,out var status) || status.Fire<=now && status.Bleed<=now)
                 {inventory.Error=InventoryError.Invalid;return;}
+                seconds=TacticalItemRules.StopBleedSeconds;
             }
             else {inventory.Error=InventoryError.Invalid;return;}
             // Cancels mission/search/medical via their existing shared cancel contract.
@@ -302,6 +318,12 @@ namespace Unity.MP_FPS
         }
         private static TacticalServerWorld.Status TacticalStatus(TacticalServerWorld world,Entity entity)
         {if(!world.Statuses.TryGetValue(entity,out var status))world.Statuses[entity]=status=new TacticalServerWorld.Status();return status;}
+        private static void TacticalRefreshBleed(TacticalServerWorld.Status status,double until,int owner,ClashDamageSource source)
+        {
+            // A shorter wound cannot shorten an existing one or steal its attribution.
+            if(until<=status.Bleed)return;
+            status.Bleed=until;status.BleedOwner=owner;status.BleedSource=source;
+        }
         private static Vector3 TacticalEye(GhostGameObject root)
         {var controller=root.GetComponent<PlayerGhost>()?.Controller?.CharacterController;return root.transform.position+Vector3.up*Mathf.Max(.3f,(controller ? controller.height : 1.8f)-.2f);}
         private static Vector3 TacticalDirection(in PredictedPlayerGhost health)=>Quaternion.Euler(health.ControllerState.PitchDegrees,health.ControllerState.YawDegrees,0)*Vector3.forward;
@@ -374,7 +396,7 @@ namespace Unity.MP_FPS
                 if(damage<=0 || !EnergyGrenadePhysics.ClearSight(obj.Scene,obj.Position,point,link.transform))continue;
                 float actual=BountyClashDamage.Apply(state.World,victim,obj.Source,BodyPart.Auto,damage,tick,RaidDamageKind.Explosion);
                 if(actual>0 && obj.Definition.Kind==TacticalItemKind.Frag)
-                {var status=TacticalStatus(world,victim);status.Bleed=now+TacticalItemRules.BleedDuration;status.BleedOwner=obj.Owner;status.BleedSource=obj.Source;}
+                    TacticalRefreshBleed(TacticalStatus(world,victim),now+TacticalItemRules.BleedDuration,obj.Owner,obj.Source);
             }
             if(obj.Definition.Kind==TacticalItemKind.Dynamite)
                 foreach(var other in world.Objects)
@@ -407,7 +429,7 @@ namespace Unity.MP_FPS
                 else if(obj.Phase==TacticalWorldPhase.Poison && status.Antidote<=now && !TacticalChoked(world,pos,obj.Scene,now))
                 {status.Poison=now+2;status.PoisonOwner=obj.Owner;status.PoisonSource=obj.Source;}
                 else if(obj.Phase==TacticalWorldPhase.Wire)
-                {status.Wire=now+.5;status.Bleed=now+TacticalItemRules.BleedDuration;status.BleedOwner=obj.Owner;status.BleedSource=obj.Source;}
+                {status.Wire=now+.5;TacticalRefreshBleed(status,now+TacticalItemRules.BleedDuration,obj.Owner,obj.Source);}
             }
         }
         private void TacticalTickStatuses(ref SystemState state,TacticalServerWorld world,double now,float dt,uint tick)

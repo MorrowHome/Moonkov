@@ -103,6 +103,9 @@ public struct PredictedPlayerGhost : IComponentData
     [GhostField] public float Satiety;
     // Server exposure timers; snapshots carry the resulting resources/effects.
     public float StarvationSeconds, DehydrationSeconds;
+    // Server-only, accumulated between tactical updates; never client-authored.
+    public float PendingBulletWound;
+    public ClashDamageSource PendingBulletWoundSource;
     
     [GhostField] public uint EquippedWeaponID;
     [GhostField] public float WeaponCooldown;   // Elapsed firing time, including fractional tick remainder.

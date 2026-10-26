@@ -11,6 +11,11 @@ namespace Unity.MP_FPS
         {
             Vector3 position = pose.Position;
             Vector3 eye = ghost.ShotOrigin.position;
+            brain.SelfStatus = null;
+            if (m_TacticalWorld != null && m_TacticalWorld.Statuses.TryGetValue(ghost.GhostGameObject.LinkedEntity, out var status))
+                brain.SelfStatus = status;
+            brain.BleedOnlyDamage = brain.SelfStatus != null && brain.SelfStatus.Bleed > now && brain.SelfStatus.Fire <= now &&
+                (brain.SelfStatus.Poison <= now || brain.SelfStatus.Antidote > now);
             UpdateCombatPressure(brain, health, now, dt);
             if (now >= brain.NextSense)
             {
@@ -127,7 +132,8 @@ namespace Unity.MP_FPS
         {
             float lost = Mathf.Max(0, brain.LastHealth - health.CurrentHealth);
             bool shieldHit = health.ShieldHitSequence != brain.LastShieldHitSequence;
-            if (lost > 0 || shieldHit)
+            bool impact = health.LastImpactTick != brain.LastImpactTick;
+            if (lost > 0 && (!brain.BleedOnlyDamage || impact) || shieldHit)
             {
                 // Pressure scales with actual injury. Grazes and periodic tissue loss
                 // must not count like repeated half-strength panic impulses.
@@ -139,6 +145,7 @@ namespace Unity.MP_FPS
             }
             brain.LastHealth = health.CurrentHealth;
             brain.LastShieldHitSequence = health.ShieldHitSequence;
+            brain.LastImpactTick = health.LastImpactTick;
             brain.Suppression = Mathf.Max(0, brain.Suppression - Mathf.Max(0, dt) * .32f);
         }
     }

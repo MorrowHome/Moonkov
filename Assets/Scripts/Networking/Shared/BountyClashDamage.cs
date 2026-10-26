@@ -76,6 +76,14 @@ namespace Unity.MP_FPS
             }
             float healthBefore=health.CurrentHealth;
             float damaged=RaidHealth.CombatDamage(ref health,part,amount,tick,kind,impactPoint);
+            // Several pellets can strike during one server update. Count only real
+            // tissue damage; a shielded or lethal hit cannot create a new wound.
+            if(kind==RaidDamageKind.Bullet && damaged>0 && health.CurrentHealth>0 &&
+                health.BodyHealthInitialized && !health.ClashEnabled)
+            {
+                health.PendingBulletWound=System.Math.Min(1000,health.PendingBulletWound+damaged);
+                health.PendingBulletWoundSource=source;
+            }
             manager.SetComponentData(victim,health);
             if(!health.ClashEnabled&&healthBefore>0&&health.CurrentHealth<=0&&manager.HasComponent<GhostOwner>(victim))
             {

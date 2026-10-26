@@ -72,6 +72,46 @@ public static class TacticalItemsAuthorityChecks
                 em.AddComponentData(entity,new ReceiveRpcCommandRequest {SourceConnection=connection});Tick();
             }
             Tick();
+            // Real damage enters the same server status and self-treatment path as existing traps.
+            Clear();
+            BountyClashDamage.Apply(world,player,8,BodyPart.LeftArm,12,tick,RaidDamageKind.Bullet);Tick();
+            Check(!Data().Statuses.TryGetValue(player,out var lightWound) || lightWound.Bleed<=now,
+                "A light flesh hit caused bleeding");
+            Clear();
+            var source=new ClashDamageSource {NetworkId=8,ParticipantId=13,Epoch=3};
+            BountyClashDamage.Apply(world,player,source,BodyPart.LeftArm,12,tick,RaidDamageKind.Bullet);
+            BountyClashDamage.Apply(world,player,source,BodyPart.LeftArm,10,tick,RaidDamageKind.Bullet);Tick();
+            Check(Data().Statuses.TryGetValue(player,out var bulletWound) && bulletWound.Bleed-now>29.8 &&
+                bulletWound.BleedSource.NetworkId==8 && bulletWound.BleedSource.ParticipantId==13 && bulletWound.BleedSource.Epoch==3,
+                "Actual pellet wounds did not combine or lost attacker attribution");
+            float woundedHealth=em.GetComponentData<PredictedPlayerGhost>(player).CurrentHealth;
+            Request(TacticalItemAction.Extinguish);Wait(3.2f);
+            Check(bulletWound.Bleed==0 && !inventory.TacticalPending && em.GetComponentData<PredictedPlayerGhost>(player).CurrentHealth<woundedHealth,
+                "Real self-treatment did not stop the wound while damage continued");
+            Clear();health=em.GetComponentData<PredictedPlayerGhost>(player);health.ShieldEquipped=true;health.ShieldCharge=100;em.SetComponentData(player,health);
+            BountyClashDamage.Apply(world,player,8,BodyPart.LeftArm,30,tick,RaidDamageKind.Bullet);Tick();
+            health=em.GetComponentData<PredictedPlayerGhost>(player);
+            Check(health.CurrentHealth==440 && health.ShieldCharge==70 &&
+                (!Data().Statuses.TryGetValue(player,out var shieldWound) || shieldWound.Bleed<=now),
+                "A fully absorbed shield hit caused bleeding");
+            Clear();health=em.GetComponentData<PredictedPlayerGhost>(player);health.ShieldEquipped=true;health.ShieldCharge=10;em.SetComponentData(player,health);
+            BountyClashDamage.Apply(world,player,8,BodyPart.LeftArm,30,tick,RaidDamageKind.Bullet);Tick();
+            Check(Data().Statuses.TryGetValue(player,out var penetrated) && penetrated.Bleed>now,
+                "A penetrating shield hit failed to produce a wound");
+            double oldBleed=penetrated.Bleed;Wait(1);
+            BountyClashDamage.Apply(world,player,8,BodyPart.RightArm,25,tick,RaidDamageKind.Bullet);Tick();
+            Check(penetrated.Bleed>oldBleed && penetrated.Bleed-now<=TacticalItemRules.BulletWoundDuration,
+                "A new wound did not refresh the single bleed timer");
+            Clear();health=em.GetComponentData<PredictedPlayerGhost>(player);health.ShieldEquipped=false;em.SetComponentData(player,health);
+            BountyClashDamage.Apply(world,player,8,BodyPart.LeftArm,30,tick,RaidDamageKind.Explosion);Tick();
+            Check(!Data().Statuses.TryGetValue(player,out var explosionWound) || explosionWound.Bleed<=now,
+                "Non-bullet damage incorrectly created a bullet wound");
+            Clear();health=em.GetComponentData<PredictedPlayerGhost>(player);health.ShieldEquipped=false;em.SetComponentData(player,health);
+            BountyClashDamage.Apply(world,player,8,BodyPart.Head,50,tick,RaidDamageKind.Bullet);Tick();
+            Check(em.GetComponentData<PredictedPlayerGhost>(player).CurrentHealth==0 &&
+                (!Data().Statuses.TryGetValue(player,out var fatalWound) || fatalWound.Bleed<=now),
+                "A fatal shot created a persistent wound on a dead body");
+            Clear();health=em.GetComponentData<PredictedPlayerGhost>(player);health.ShieldEquipped=false;em.SetComponentData(player,health);
             string antidote=Add("antidote_shot",3);int initial=inventory.Graph.Find(antidote).Quantity;
             Request(TacticalItemAction.Use,antidote);Check(inventory.TacticalPending,"Use starts timed operation");
             Check(inventory.Graph.Find(antidote).Quantity==initial,"No early spend");
@@ -213,13 +253,22 @@ public static class TacticalItemsAuthorityChecks
             em.SetComponentData(player,new GhostOwner {NetworkId=0});em.SetComponentData(player,new ClashPlayer {CanAct=false,ParticipantId=31,TeamId=0,Epoch=7});
             var stranger=em.CreateEntity(typeof(GhostOwner),typeof(ClashPlayer));em.SetComponentData(stranger,new GhostOwner {NetworkId=7});em.SetComponentData(stranger,new ClashPlayer {ParticipantId=42,TeamId=1,Epoch=7,CanAct=true});
             Wait(3.4f);released.Velocity=Vector3.zero;released.Resting=true;
-            var(fragmentVictim,_)=Target("Fragment source victim",released.Position+Vector3.right*2-Vector3.up*.8f);Wait(.8f);
+            var(fragmentVictim,_)=Target("Fragment source victim",released.Position+Vector3.right*2-Vector3.up*.8f);
+            var(longFragmentVictim,_)=Target("Long wound fragment victim",released.Position+Vector3.forward*3-Vector3.up*.8f);
+            var longSource=new ClashDamageSource {NetworkId=20,ParticipantId=70,Epoch=7};
+            var longWound=new TacticalServerWorld.Status {Bleed=now+30,BleedSource=longSource};Data().Statuses[longFragmentVictim]=longWound;
+            Wait(.8f);
             Check(Data().Statuses.TryGetValue(fragmentVictim,out var bleeding) && bleeding.BleedSource.ParticipantId==31 && bleeding.BleedSource.Epoch==7,"Disconnect and reused NetworkId cannot steal delayed fragment bleeding source");
+            Check(longWound.Bleed>now+28 && longWound.BleedSource.ParticipantId==70,
+                "A shorter fragment wound shortened or stole an existing gunshot wound");
             var areaPoint=new Vector3(released.Position.x,.05f,released.Position.z);var(statusVictim,statusRoot)=Target("Status source victim",areaPoint);
             foreach(var kind in new[]{TacticalItemKind.Fire,TacticalItemKind.PoisonTrap,TacticalItemKind.WireTrap})
             {var def=kind==TacticalItemKind.Fire ? TacticalItemRules.Find("fire_bomb") : kind==TacticalItemKind.PoisonTrap ? TacticalItemRules.Find("poison_trip_mine") : TacticalItemRules.Find("concertina_trip_mine");Data().Objects.Add(new TacticalServerWorld.Object {Id=(uint)(100+(int)kind),Owner=7,Source=released.Source,Definition=def,Phase=kind==TacticalItemKind.Fire ? TacticalWorldPhase.Fire : kind==TacticalItemKind.PoisonTrap ? TacticalWorldPhase.Poison : TacticalWorldPhase.Wire,Scene=scene.GetPhysicsScene(),Position=areaPoint,Until=now+20,Created=now});}
             Tick();var propagated=Data().Statuses[statusVictim];
             Check(propagated.FireSource.ParticipantId==31 && propagated.PoisonSource.ParticipantId==31 && propagated.BleedSource.ParticipantId==31,"Disconnected fire poison and wire retain original captured participant");
+            propagated.Bleed=now+30;propagated.BleedSource=longSource;Tick();
+            Check(propagated.Wire>now && propagated.Bleed>now+29 && propagated.BleedSource.ParticipantId==70,
+                "Wire shortened or stole an existing gunshot wound");
             // Verify the real unified policy against an active match with a reused transport id.
             var arena=new ClashArenaDefinition {Center=new ClashPoint(0,0,0),Target=new ClashPoint(0,0,0),Radius=100,Spawns=new ClashPoint[12],Exits=new[]{new ClashPoint(-70,0,0),new ClashPoint(70,0,0)}};
             var match=new BountyClashMatch(arena,8,0);var original=match.Join("tactical-source-original","Original",0);var opponent=match.Join("tactical-source-opponent","Opponent",0);var replacement=match.Join("tactical-source-replacement","Replacement",0);
@@ -230,6 +279,9 @@ public static class TacticalItemsAuthorityChecks
             var policyVictim=em.CreateEntity(typeof(PredictedPlayerGhost),typeof(ClashPlayer));var ph=new PredictedPlayerGhost {ClashEnabled=true,ClashLife=ClashLife.Alive,ClashCanAct=true,ClashMaxHealthFraction=1,ClashTeam=opponent.TeamId};RaidHealth.Initialize(ref ph);em.SetComponentData(policyVictim,ph);em.SetComponentData(policyVictim,new ClashPlayer {ParticipantId=opponent.Id,Epoch=8,TeamId=opponent.TeamId,CanAct=true});
             foreach(var kind in new[]{RaidDamageKind.Fire,RaidDamageKind.Poison,RaidDamageKind.Bleed})
                 Check(BountyClashDamage.Apply(world,policyVictim,captured,BodyPart.Auto,1,tick,kind)>0 && em.GetComponentData<ClashPlayer>(policyVictim).LastAttacker==original.Id,"Delayed "+kind+" credits original disconnected participant, not reused id");
+            Check(BountyClashDamage.Apply(world,policyVictim,captured,BodyPart.LeftArm,25,tick,RaidDamageKind.Bullet)>0 &&
+                em.GetComponentData<PredictedPlayerGhost>(policyVictim).PendingBulletWound==0,
+                "Bullet wounds must not change bounty-clash damage rules");
             var stale=captured;stale.Epoch=7;float beforeStale=em.GetComponentData<PredictedPlayerGhost>(policyVictim).CurrentHealth;
             Check(BountyClashDamage.Apply(world,policyVictim,stale,BodyPart.Auto,100,tick,RaidDamageKind.Fire)==0 && em.GetComponentData<PredictedPlayerGhost>(policyVictim).CurrentHealth==beforeStale,"Previous epoch source cannot damage new match");
             // Alive disconnected bodies still take field damage; Downed bodies do not burn.

@@ -56,6 +56,7 @@ namespace Unity.MP_FPS
         }
         public static void Initialize(ref PredictedPlayerGhost state)
         {
+            state.PendingBulletWound = 0; state.PendingBulletWoundSource = default;
             state.BodyHealthInitialized = true;
             state.HeadHealth = 35; state.ChestHealth = 85; state.AbdomenHealth = 70;
             state.LeftArmHealth = state.RightArmHealth = 60;
