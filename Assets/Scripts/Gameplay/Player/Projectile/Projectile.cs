@@ -40,6 +40,7 @@ namespace Unity.MP_FPS
         private static void ResetStaticState()
         {
             PredictedProjectiles.Clear();
+            s_NearMissHits = null;
             if (s_BulletMaterial != null) Destroy(s_BulletMaterial);
             s_BulletMaterial = null;
         }
@@ -51,8 +52,13 @@ namespace Unity.MP_FPS
         private bool m_Initialized;
         private bool m_Stopped;
         private RaycastHit[] m_Hits = new RaycastHit[16];
+        // Ghost physics callbacks are serial on Unity's main thread. Share bounded scratch
+        // storage so a burst does not allocate an array for every projectile.
+        private static Collider[] s_NearMissHits;
         private int m_HitMask;
+        private int m_NearMissPlayerMask, m_NearMissWorldMask;
         private Transform m_Shooter;
+        private Entity m_ShooterEntity;
         private MeshRenderer m_Body;
         private HaloProjectileVisual m_HaloVisual;
         private float m_HaloTrailSeconds;
@@ -76,6 +82,11 @@ namespace Unity.MP_FPS
         {
             m_Weapon = WeaponManager.Instance.WeaponRegistry.GetWeaponData(m_Data.WeaponID, m_Data.ModuleMask);
             m_HitMask = LayerMask.GetMask(server ? "ServerPlayer" : "ClientPlayer", "Ground", "Default");
+            if (server)
+            {
+                m_NearMissPlayerMask = LayerMask.GetMask("ServerPlayer");
+                m_NearMissWorldMask = LayerMask.GetMask("Ground", "Default");
+            }
             m_Initialized = m_Weapon != null;
             if (!server && m_Initialized && m_Weapon.ShowProjectileBody && m_Body == null)
             {
@@ -148,7 +159,7 @@ namespace Unity.MP_FPS
                     if(player.GhostGameObject.World!=GhostGameObject.World)continue;
                     bool captured=server&&m_Data.DamageSource.ParticipantId>0;
                     bool same=captured ? BountyClashDamage.IsSelf(GhostGameObject.World,player.GhostGameObject.LinkedEntity,m_Data.DamageSource) : player.GhostGameObject.Owner==m_Data.OwnerNetworkId;
-                    if(same){m_Shooter=player.transform;break;}
+                    if(same){m_Shooter=player.transform;m_ShooterEntity=player.GhostGameObject.LinkedEntity;break;}
                 }
         }
 
@@ -216,6 +227,8 @@ namespace Unity.MP_FPS
         {
             if (m_Stopped || targetAge <= m_Age) return;
             var scene = gameObject.scene.GetPhysicsScene();
+            Vector3 threatFrom = Ballistics.Position(m_Data.Origin, m_Data.InitialVelocity, m_Weapon.ProjectileGravity, m_Age);
+            float threatAge = m_Age;
             // Sweep the entire travelled arc, including a stalled frame's path.
             while (m_Age < targetAge)
             {
@@ -224,6 +237,7 @@ namespace Unity.MP_FPS
                 Vector3 to = Ballistics.Position(m_Data.Origin, m_Data.InitialVelocity, m_Weapon.ProjectileGravity, nextAge);
                 if (Ballistics.Sweep(scene, from, to, m_Weapon.ProjectileRadius, m_HitMask, m_Shooter, ref m_Hits, out var hit))
                 {
+                    if (server) ObserveNearMiss(scene, threatFrom, hit.point, hit.collider);
                     transform.position = hit.point;
                     Stop();
                     if (server) Impact(hit);
@@ -242,10 +256,25 @@ namespace Unity.MP_FPS
                 }
                 m_Age = nextAge;
                 transform.position = to;
+                if (server && m_Age - threatAge >= .1f)
+                {
+                    ObserveNearMiss(scene, threatFrom, to, null);
+                    threatFrom = to; threatAge = m_Age;
+                }
                 var velocity = Ballistics.Velocity(m_Data.InitialVelocity, m_Weapon.ProjectileGravity, m_Age);
                 if (velocity.sqrMagnitude > .00001f) transform.rotation = Quaternion.LookRotation(velocity);
             }
+            if (server && m_Age > threatAge) ObserveNearMiss(scene, threatFrom, transform.position, null);
             if (!server && m_Age >= m_Weapon.ProjectileLifetime) Stop();
+        }
+
+        private void ObserveNearMiss(PhysicsScene scene, Vector3 from, Vector3 to, Collider impact)
+        {
+            if (m_ShooterEntity == Entity.Null) ResolveShooter(true);
+            if (m_Weapon.Behavior != ProjectileBehavior.DirectDamage || m_ShooterEntity == Entity.Null ||
+                GhostGameObject == null || !GhostGameObject.IsGhostLinked()) return;
+            ProjectileThreat.Observe(scene, GhostGameObject.World, m_ShooterEntity, m_Data.DamageSource,
+                from, to, impact, GhostGameObject.World.Time.ElapsedTime, m_NearMissPlayerMask, m_NearMissWorldMask, ref s_NearMissHits);
         }
 
         private void Stop()

@@ -51,8 +51,11 @@ Partial head exposure never changes torso aim into an automatic headshot.
 Authoritative shot/reload ticks and distance travelled produce gameplay sensor events.
 These are stylized suit/acoustic cues for Moonkov, not physical sound simulation in
 a lunar vacuum. Distance and obstruction affect their range. Nearby gunfire and
-received damage increase pressure; this version does not detect every near-miss
-projectile or simulate sound propagation through individual rooms.
+received damage increase pressure. Sound does not simulate propagation through individual rooms.
+
+2026-10-27：普通搜打撤中，真实直击弹体从人形敌人身体旁 1.4 米内经过时会增加压制。墙体会阻挡判定；直接命中沿用受伤压力，不重复算近失弹。连续射击会让敌人更倾向于寻找掩体。敌人只得到不确定的来弹方向，不获得射手精确位置或开火视线。赏金模式、范围弹体和射线武器保持原规则。
+
+`AlienEnemyChecks.RunProjectileThreatContract()` 的 21 项检查覆盖真实弹道推进、墙体、距离、直接命中、自身射击、限频、未知目标与掩体决策。单人临时档案通过正常输入开火，临时服务器目标未受伤但记录了压制与不确定线索。此目标是测试夹具，尚不能代表正式敌人实战、多人或目标设备性能验收。
 
 2026-10-27：人形敌人和异形都会调查真实位移形成的脚步声与落地声。人形敌人按配置的脚步听觉距离计算：轻装时冲刺为 1.3 倍，普通行走为 0.65 倍，蹲行为 0.45 倍，匍匐为 0.3 倍，踮脚为 0.25 倍。异形的移动声基础距离是自身枪声听距的 60%。遮挡将听距乘以 0.55。普通搜打撤中，负重越高，移动声听距与音量越大，最多增加 25%；赏金模式不受负重影响。空中位移和位置突变不制造脚步，落地仍会发出声音。声音只提供有误差的搜索线索，不提供视线或直接开火条件。
 

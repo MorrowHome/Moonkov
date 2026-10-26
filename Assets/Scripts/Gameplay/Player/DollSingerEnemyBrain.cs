@@ -56,6 +56,7 @@ namespace Unity.MP_FPS
         public bool Interacting, MissionUrgent;
         public double NextSense, NextPath, LastSeenTime = -100, VisibleSince, NextProgress, NextDecision, CommitUntil;
         public double NextCover, NextAimError, BurstUntil, NextBurst, SearchUntil, LootUntil, SpawnTime, LastDamage = -100;
+        public double NextNearMiss;
         public double LastHeardTime = -100;
         public string MissionAlarmId;
         public Vector3 MissionAlarmPosition;
