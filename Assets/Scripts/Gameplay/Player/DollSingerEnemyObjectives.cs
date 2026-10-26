@@ -255,6 +255,7 @@ namespace Unity.MP_FPS
                 if (brain.LootUntil == 0)
                 {
                     brain.LootUntil = now + m_Tuning.LootSearchSeconds;
+                    brain.LootLookPoint = cachePosition;
                     RaidLootAcoustics.Mark(ref health);
                 }
                 if (now < brain.LootUntil) return;

@@ -360,6 +360,17 @@ public static class DollSingerHumanlikeChecks
             var empty = Input(PmcAction.Retreat, ammo: 0);
             Require(!empty.Shoot && empty.Sprint, "An empty withdrawing PMC could not sprint to safety.");
 
+            var looting = Brain(); var lootingHealth = Health();
+            looting.Action = PmcAction.Scavenge; looting.Cache = -1; looting.LootUntil = 15;
+            looting.LootLookPoint = origin + Vector3.right * 3; looting.LastHealth = lootingHealth.CurrentHealth;
+            looting.NextDecision = looting.NextSense = looting.NextPath = looting.NextAimError = looting.NextCorpseScan = 100;
+            looting.Goal = looting.TacticalGoal = origin;
+            var lootInput = (PlayerInput)Call(system, "Think", new object[] { looting, actor,
+                Unity.Transforms.LocalTransform.FromPosition(origin), lootingHealth, map, 10d, 1f / 60 });
+            Require(lootInput.LookYawPitchDegrees.x > 0 && lootInput.LookYawPitchDegrees.y > 0 &&
+                lootInput.MoveInput.x == 0 && lootInput.MoveInput.y == 0 && !lootInput.Shoot,
+                "A searching PMC failed to look toward its loot while remaining stationary.");
+
             var property = typeof(WeaponManager).GetProperty("Instance", BindingFlags.Public | BindingFlags.Static);
             var previous = property.GetValue(null);
             var managerObject = new GameObject("Temporary PMC tactical weapon registry") { hideFlags = HideFlags.HideAndDontSave };

@@ -89,6 +89,7 @@ namespace Unity.MP_FPS
         public int CornerCount, Corner, Seed, Cache = -1, SearchStep, LootedCaches;
         public int DrawersSearched;
         public Vector3 CacheApproach;
+        public Vector3 LootLookPoint;
         public bool CacheApproachKnown;
         public double CacheObstructedSince = -1;
         public double NextCorpseScan;

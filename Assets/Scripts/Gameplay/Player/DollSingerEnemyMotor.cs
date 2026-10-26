@@ -57,6 +57,8 @@ namespace Unity.MP_FPS
                 aim.y += .5f * weapon.ProjectileGravity * flight * flight;
             }
             Vector3 facing = hasContact ? aim - eye : move;
+            bool looting = brain.Action == PmcAction.Scavenge && brain.LootUntil > 0;
+            if (looting) facing = brain.LootLookPoint - eye;
             if (!hasContact && brain.IsClashBot && move.sqrMagnitude < .01f)
                 facing = brain.MissionLookPoint - eye;
             if (searching && brain.SearchFocusValid)
@@ -73,7 +75,7 @@ namespace Unity.MP_FPS
             if (facing.sqrMagnitude > .001f)
             {
                 float yaw = Mathf.Atan2(facing.x, facing.z) * Mathf.Rad2Deg;
-                float pitch = hasContact ? -Mathf.Atan2(facing.y, new Vector2(facing.x, facing.z).magnitude) * Mathf.Rad2Deg : 0;
+                float pitch = hasContact || looting ? -Mathf.Atan2(facing.y, new Vector2(facing.x, facing.z).magnitude) * Mathf.Rad2Deg : 0;
                 brain.Yaw = Mathf.MoveTowardsAngle(brain.Yaw, yaw, m_Tuning.TurnSpeed * dt);
                 brain.Pitch = Mathf.MoveTowardsAngle(brain.Pitch, pitch, m_Tuning.TurnSpeed * .7f * dt);
             }

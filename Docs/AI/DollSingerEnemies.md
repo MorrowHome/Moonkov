@@ -43,6 +43,8 @@ reloading. A loaded secondary weapon remains an option when cells run out.
 
 尸体目标和真实库存的 19 项检查通过，覆盖敌人拿取、旧版本竞争、任务物品保护、击杀后取回原物，以及受伤、充能和切枪时停止搜索。游戏与编辑器程序集隔离编译通过；敌人的现场计时和墙体遮挡夹具尚未在编辑器执行，正式战场行为仍需试玩。
 
+敌人执行限时搜索时，会转向并低头看向当前箱子、抽屉或尸体；完成或中断后恢复其他目标方向。游戏与编辑器程序集隔离编译通过。实际敌人输入夹具已补充，尚未在编辑器运行；人物动作和观察角度仍需试玩。
+
 Three searched caches, critical health, exhausted ammunition or the departure time
 make a PMC plan to leave. Extraction requires the existing radius, height tolerance
 and eight-second dwell; a visible threat, recent damage or pressure interrupts it.
