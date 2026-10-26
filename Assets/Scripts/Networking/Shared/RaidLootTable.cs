@@ -73,12 +73,15 @@ namespace Unity.MP_FPS
         private static readonly Entry[][] DrawerPools =
         {
             new[] { new Entry("ration", 12), new Entry("water", 12), new Entry("protein_bar", 18),
-                new Entry("energy_gel", 14), new Entry("dust", 12, 1, 2), new Entry("cells", 8) },
+                new Entry("energy_gel", 14), new Entry("electrolyte", 5), new Entry("oxygen_canister", 6),
+                new Entry("dust", 12, 1, 2), new Entry("cells", 8) },
             new[] { new Entry("med_gel", 25), new Entry("medkit", 12), new Entry("electrolyte", 18),
-                new Entry("trauma_kit", 5), new Entry("water", 10) },
+                new Entry("trauma_kit", 5), new Entry("vitality_shot", 3), new Entry("antidote_shot", 3),
+                new Entry("oxygen_canister", 5), new Entry("water", 10) },
             new[] { new Entry("copper_coil", 22), new Entry("circuit_board", 18), new Entry("alloy", 18, 1, 2),
                 new Entry("dust", 16, 1, 2), new Entry("ceramic_plate", 12), new Entry("optical_sensor", 8),
-                new Entry("data_drive", 4), new Entry("cells", 8) }
+                new Entry("data_drive", 4), new Entry("halo_capacitor", 3), new Entry("halo_charge_bridge", 3),
+                new Entry("helium3_sample", 2), new Entry("quantum_core", 1), new Entry("cells", 8) }
         };
 
         public static InventoryGraph CreateDrawer(RaidLootProfile profile, Random random)
