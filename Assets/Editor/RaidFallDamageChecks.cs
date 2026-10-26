@@ -66,6 +66,19 @@ public static class RaidFallDamageChecks
         Check(RaidHealth.ApplyLandingDamage(ref injured, false, gravity, 22) > 0 && injured.CurrentHealth < before &&
               injured.LeftLegHealth == 0 && injured.RightLegHealth < 65, "An already injured leg does not discard impact");
 
+        var gel=Fresh(6);gel.AlienFoodEffect=AlienFoodEffect.GelArmor;gel.AlienFoodEffectSeconds=10;
+        Check(Near(RaidHealth.ApplyLandingDamage(ref gel,false,gravity,22),18) && Near(gel.LeftLegHealth,56) && Near(gel.RightLegHealth,56),
+            "Combat gel armor does not reduce fall damage");
+        gel=Fresh(0);gel.AlienFoodEffect=AlienFoodEffect.GelArmor;gel.AlienFoodEffectSeconds=10;
+        Check(Near(RaidHealth.CombatDamage(ref gel,BodyPart.RightArm,20,23,RaidDamageKind.Bullet),15) && Near(gel.RightArmHealth,45),
+            "Combat gel armor still reduces incoming tissue damage");
+        gel=Fresh(0);gel.AlienFoodEffect=AlienFoodEffect.GelArmor;gel.AlienFoodEffectSeconds=10;gel.ShieldEquipped=true;gel.ShieldCharge=10;
+        Check(Near(RaidHealth.CombatDamage(ref gel,BodyPart.RightArm,20,23,RaidDamageKind.Bullet),7.5f) && gel.ShieldCharge==0,
+            "Gel armor preserves shield-first damage ordering");
+        gel=Fresh(0);gel.AlienFoodEffect=AlienFoodEffect.GelArmor;gel.AlienFoodEffectSeconds=10;gel.Oxygen=0;
+        RaidHealth.TickOxygen(ref gel,false,1,600,0,0,3,24);
+        Check(Near(gel.ChestHealth,82),"Combat gel armor does not reduce hypoxia damage");
+
         var graph = InventoryGraph.Create(false);
         Check(graph.AddSupply("medkit", 1, InventoryCatalog.Pockets) == InventoryError.None, "Create carried medicine");
         var medicine = graph.Items.Find(item => item.Code == "medkit");

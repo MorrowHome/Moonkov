@@ -89,7 +89,6 @@ namespace Unity.MP_FPS
         public static float Damage(ref PredictedPlayerGhost state, BodyPart part, float amount, uint tick, bool physiological=false)
         {
             if (state.CurrentHealth <= 0 || amount <= 0 || float.IsNaN(amount) || float.IsInfinity(amount) || Maximum(part) <= 0) return 0;
-            if(state.AlienFoodEffectSeconds>0 && state.AlienFoodEffect==AlienFoodEffect.GelArmor)amount*=.75f;
             float before = state.CurrentHealth;
             if (!state.BodyHealthInitialized) state.CurrentHealth = Mathf.Max(0, before - amount);
             else
@@ -148,6 +147,9 @@ namespace Unity.MP_FPS
             if(!EnergyShieldRules.Alive(state) || !float.IsFinite(amount) || amount<=0 ||
                 part!=BodyPart.Auto && Maximum(part)<=0)return 0;
             float remaining=EnergyShieldRules.Absorb(ref state,amount,tick,kind,impactPoint);
+            // Gel armor modifies combat damage reaching tissue. It does not
+            // reduce oxygen deprivation or the physical impact of a fall.
+            if(state.AlienFoodEffectSeconds>0 && state.AlienFoodEffect==AlienFoodEffect.GelArmor)remaining*=.75f;
             float before=state.CurrentHealth;
             if(part==BodyPart.Auto)
             {
