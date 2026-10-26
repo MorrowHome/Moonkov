@@ -88,6 +88,26 @@ public static class TacticalItemsAuthorityChecks
             Request(TacticalItemAction.Extinguish);Wait(3.2f);
             Check(bulletWound.Bleed==0 && !inventory.TacticalPending && em.GetComponentData<PredictedPlayerGhost>(player).CurrentHealth<woundedHealth,
                 "Real self-treatment did not stop the wound while damage continued");
+            Clear();
+            BountyClashDamage.Apply(world,player,8,BodyPart.LeftArm,25,tick,RaidDamageKind.Bullet);Tick();
+            Check(Data().Statuses.TryGetValue(player,out var starvingWound) && starvingWound.Bleed>now,"Starving wound fixture");
+            health=em.GetComponentData<PredictedPlayerGhost>(player);health.Energy=0;health.Hydration=0;em.SetComponentData(player,health);
+            Request(TacticalItemAction.Extinguish);float starvingHp=em.GetComponentData<PredictedPlayerGhost>(player).CurrentHealth;
+            for(int i=0;i<33;i++)
+            {
+                health=em.GetComponentData<PredictedPlayerGhost>(player);
+                RaidNutrition.Tick(ref health,.1f,1000,1000,300,0,2,2,tick);
+                em.SetComponentData(player,health);Tick();
+            }
+            Check(starvingWound.Bleed==0 && !inventory.TacticalPending && em.GetComponentData<PredictedPlayerGhost>(player).CurrentHealth<starvingHp,
+                "Starvation and dehydration interrupted real self-treatment");
+            Clear();
+            BountyClashDamage.Apply(world,player,8,BodyPart.LeftArm,25,tick,RaidDamageKind.Bullet);Tick();
+            health=em.GetComponentData<PredictedPlayerGhost>(player);health.Energy=0;em.SetComponentData(player,health);
+            Request(TacticalItemAction.Extinguish);
+            health=em.GetComponentData<PredictedPlayerGhost>(player);RaidNutrition.Tick(ref health,.1f,1000,1000,300,0,2,0,tick);em.SetComponentData(player,health);
+            BountyClashDamage.Apply(world,player,8,BodyPart.RightArm,5,tick,RaidDamageKind.Bullet);Tick();
+            Check(!inventory.TacticalPending,"Same-tick metabolic damage hid an external injury during self-treatment");
             Clear();health=em.GetComponentData<PredictedPlayerGhost>(player);health.ShieldEquipped=true;health.ShieldCharge=100;em.SetComponentData(player,health);
             BountyClashDamage.Apply(world,player,8,BodyPart.LeftArm,30,tick,RaidDamageKind.Bullet);Tick();
             health=em.GetComponentData<PredictedPlayerGhost>(player);

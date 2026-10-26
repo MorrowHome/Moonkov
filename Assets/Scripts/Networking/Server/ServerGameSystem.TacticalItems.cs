@@ -28,8 +28,8 @@ namespace Unity.MP_FPS
             public Entity Player; public int RaidId,Version; public uint Request,Target;
             public string ItemId; public TacticalItemAction Action; public TacticalItemDefinition Definition;
             public Vector3 Origin,Placement; public double Until;
-            public uint Hit,ShieldHit,Shot,Grenade,Reload,Weapon;
-            public float Health,LastDamage;public BodyPart LastPart;
+            public uint Hit,DamageSequence,ShieldHit,Shot,Grenade,Reload,Weapon;
+            public float Health;
         }
         public sealed class Status
         {
@@ -113,8 +113,9 @@ namespace Unity.MP_FPS
                 bool valid=actorValid && inventory.TacticalPending && inventory.RaidId==use.RaidId && inventory.Graph.Version==use.Version;
                 valid=valid && player==use.Player && Vector3.Distance(root.transform.position,use.Origin)<=.55f &&
                     !RaidHealth.HandsBusy(health) &&
-                    health.LastHitTick==use.Hit && health.ShieldHitSequence==use.ShieldHit && health.CurrentHealth>=use.Health-.001f &&
-                    (use.Action!=TacticalItemAction.Extinguish || health.LastHitPart==use.LastPart && Mathf.Abs(health.LastDamageAmount-use.LastDamage)<.001f) && health.LastShotTick==use.Shot && health.LastGrenadeShotTick==use.Grenade &&
+                    (use.Action==TacticalItemAction.Extinguish ? RaidHealth.SelfTreatmentDamageUnchanged(health,use.DamageSequence,use.ShieldHit) :
+                        health.LastHitTick==use.Hit && health.ShieldHitSequence==use.ShieldHit && health.CurrentHealth>=use.Health-.001f) &&
+                    health.LastShotTick==use.Shot && health.LastGrenadeShotTick==use.Grenade &&
                     health.LastReloadTick==use.Reload && health.EquippedWeaponID==use.Weapon;
                 if(valid && now<use.Until)continue;
                 inventory.TacticalPending=false;world.Uses.Remove(connection);
@@ -245,8 +246,8 @@ namespace Unity.MP_FPS
             CancelManualMission(ref state,connection,"道具操作开始。");
             world.Uses[connection]=new TacticalServerWorld.Use {Player=player,RaidId=r.RaidId,Version=r.ExpectedVersion,Request=r.RequestId,
                 Target=r.TargetId,ItemId=r.ItemId.ToString(),Action=r.Action,Definition=definition,Origin=root.transform.position,Placement=placement,
-                Until=now+seconds,Hit=health.LastHitTick,ShieldHit=health.ShieldHitSequence,Shot=health.LastShotTick,Grenade=health.LastGrenadeShotTick,
-                Reload=health.LastReloadTick,Weapon=health.EquippedWeaponID,Health=health.CurrentHealth,LastDamage=health.LastDamageAmount,LastPart=health.LastHitPart};
+                Until=now+seconds,Hit=health.LastHitTick,DamageSequence=health.NonMetabolicDamageSequence,ShieldHit=health.ShieldHitSequence,Shot=health.LastShotTick,Grenade=health.LastGrenadeShotTick,
+                Reload=health.LastReloadTick,Weapon=health.EquippedWeaponID,Health=health.CurrentHealth};
             inventory.Error=InventoryError.None;world.Feedbacks[connection]=TacticalItemFeedback.Started;
         }
         private static bool TacticalCapacity(TacticalServerWorld world,TacticalItemDefinition definition,Entity player,Vector3 position)
@@ -467,9 +468,9 @@ namespace Unity.MP_FPS
                     var after=SystemAPI.GetComponent<PredictedPlayerGhost>(victim);
                     foreach(var pending in world.Uses.Values)
                         if(pending.Player==victim && pending.Action==TacticalItemAction.Extinguish &&
-                            pending.Hit==health.LastHitTick && pending.ShieldHit==health.ShieldHitSequence &&
-                            health.CurrentHealth>=pending.Health-.001f && pending.LastPart==health.LastHitPart && Mathf.Abs(pending.LastDamage-health.LastDamageAmount)<.001f)
-                        {pending.Hit=after.LastHitTick;pending.ShieldHit=after.ShieldHitSequence;pending.Health=after.CurrentHealth;pending.LastDamage=after.LastDamageAmount;pending.LastPart=after.LastHitPart;}
+                            RaidHealth.SelfTreatmentDamageUnchanged(health,pending.DamageSequence,pending.ShieldHit))
+                        {pending.Hit=after.LastHitTick;pending.DamageSequence=after.NonMetabolicDamageSequence;
+                            pending.ShieldHit=after.ShieldHitSequence;pending.Health=after.CurrentHealth;}
                 }
                 if(!status.Sprint.Initialized && Math.Max(Math.Max(Math.Max(status.Fire,status.Poison),Math.Max(status.Bleed,status.Stamina)),Math.Max(status.Antidote,Math.Max(status.Wire,status.Cough)))<=now)world.Scratch.Add(victim);
             }

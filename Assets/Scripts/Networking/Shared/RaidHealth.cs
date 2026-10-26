@@ -208,6 +208,10 @@ namespace Unity.MP_FPS
             => TacticalItemEffects.Movement(state, RaidNutrition.Movement(state, RaidEncumbrance.Movement(state, constants)));
         public static float HandlingMultiplier(in PredictedPlayerGhost state) => RaidNutrition.HandlingMultiplier(state) * (state.TacticalCoughSeconds>0 ? 1.5f : 1);
         public static bool HandsBusy(in PredictedPlayerGhost state) => state.ControllerState.IsReloadingState || state.WeaponEquipRemaining > 0;
+        // Self-treatment can continue through metabolic damage, but not a new
+        // external injury or a hit fully absorbed by the shield.
+        public static bool SelfTreatmentDamageUnchanged(in PredictedPlayerGhost state,uint damageSequence,uint shieldSequence) =>
+            state.NonMetabolicDamageSequence==damageSequence && state.ShieldHitSequence==shieldSequence;
         // A large remaining limb total must not hide a nearly fatal head/chest
         // injury from the compact HUD or the existing PMC retreat decision.
         public static float DangerFraction(in PredictedPlayerGhost state)
