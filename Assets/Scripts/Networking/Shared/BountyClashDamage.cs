@@ -11,6 +11,9 @@ namespace Unity.MP_FPS
         public int NetworkId, ParticipantId, Epoch;
         public bool OnlineHuman;
         public int OnlineTeam;
+        // Server-world identity captured at release; unlike NetworkId it is not
+        // reassigned to a different entity after a disconnect.
+        public Entity OnlineActor;
     }
     public static class BountyClashDamage
     {
@@ -21,7 +24,7 @@ namespace Unity.MP_FPS
             var manager=world.EntityManager;
             var source=new ClashDamageSource{NetworkId=manager.HasComponent<GhostOwner>(actor)?manager.GetComponentData<GhostOwner>(actor).NetworkId:0};
             if (manager.HasComponent<OnlineRaidMember>(actor))
-            { source.OnlineHuman = true; source.OnlineTeam = manager.GetComponentData<OnlineRaidMember>(actor).Team; }
+            { source.OnlineHuman = true; source.OnlineTeam = manager.GetComponentData<OnlineRaidMember>(actor).Team; source.OnlineActor = actor; }
             if(manager.HasComponent<ClashPlayer>(actor))
             {var player=manager.GetComponentData<ClashPlayer>(actor);source.ParticipantId=player.ParticipantId;source.Epoch=player.Epoch;}
             return source;
@@ -34,7 +37,7 @@ namespace Unity.MP_FPS
             using (var entities = humans.ToEntityArray(Unity.Collections.Allocator.Temp))
                 foreach (var entity in entities)
                     if (world.EntityManager.GetComponentData<GhostOwner>(entity).NetworkId == networkId)
-                    { source.OnlineHuman = true; source.OnlineTeam = world.EntityManager.GetComponentData<OnlineRaidMember>(entity).Team; break; }
+                    { source.OnlineHuman = true; source.OnlineTeam = world.EntityManager.GetComponentData<OnlineRaidMember>(entity).Team; source.OnlineActor = entity; break; }
             using var query=world.EntityManager.CreateEntityQuery(typeof(BountyClashWorld));
             if(query.CalculateEntityCount()!=1)return source;
             var match=world.EntityManager.GetComponentObject<BountyClashWorld>(query.GetSingletonEntity()).Match;
@@ -49,6 +52,8 @@ namespace Unity.MP_FPS
             {var p=manager.GetComponentData<ClashPlayer>(victim);return p.ParticipantId==source.ParticipantId&&p.Epoch==source.Epoch;}
             return source.NetworkId!=0&&manager.HasComponent<GhostOwner>(victim)&&manager.GetComponentData<GhostOwner>(victim).NetworkId==source.NetworkId;
         }
+        public static bool TeamProtected(ClashDamageSource source, Entity victim, int victimTeam) =>
+            source.OnlineHuman && source.OnlineTeam == victimTeam && source.OnlineActor != victim;
         // Compatibility for immediate damage. Delayed attacks must capture at release.
         public static float Apply(World world,Entity victim,int sourceNetworkId,BodyPart part,float amount,uint tick,RaidDamageKind kind,Unity.Mathematics.float3 impactPoint=default)
             =>Apply(world,victim,Capture(world,sourceNetworkId),part,amount,tick,kind,impactPoint);
@@ -57,8 +62,8 @@ namespace Unity.MP_FPS
             if(world==null||!world.IsCreated||!world.EntityManager.Exists(victim))return 0;
             var manager=world.EntityManager;
             if(!manager.HasComponent<PredictedPlayerGhost>(victim))return 0;
-            if (source.OnlineHuman && manager.HasComponent<OnlineRaidMember>(victim) &&
-                manager.GetComponentData<OnlineRaidMember>(victim).Team == source.OnlineTeam) return 0;
+            if (manager.HasComponent<OnlineRaidMember>(victim) &&
+                TeamProtected(source,victim,manager.GetComponentData<OnlineRaidMember>(victim).Team)) return 0;
             var health=manager.GetComponentData<PredictedPlayerGhost>(victim);
             if(health.ClashEnabled)
             {

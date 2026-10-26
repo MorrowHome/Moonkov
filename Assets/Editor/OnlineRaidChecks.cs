@@ -30,8 +30,18 @@ public static class OnlineRaidChecks
         Check(em.GetComponentData<PredictedPlayerGhost>(ally).CurrentHealth == allyHealth, "Ally lost health");
         Check(BountyClashDamage.Apply(world, enemy, source, BodyPart.Chest, 10, 2, RaidDamageKind.Bullet) > 0, "Versus enemy immune");
         Check(BountyClashDamage.Apply(world, ally, default(ClashDamageSource), BodyPart.Chest, 10, 3, RaidDamageKind.Melee) > 0, "AI damage blocked by cooperation");
+        Check(source.OnlineActor==actor && BountyClashDamage.Apply(world,actor,source,BodyPart.Chest,10,3,RaidDamageKind.Explosion)>0,
+            "An online player's own grenade cannot hurt them");
+        em.SetComponentData(actor,new GhostOwner {NetworkId=0});
+        Check(BountyClashDamage.Apply(world,actor,source,BodyPart.Chest,10,3,RaidDamageKind.Fire)>0,
+            "Self-damage lost its release-time identity after disconnect");
+        em.SetComponentData(actor,new GhostOwner {NetworkId=1});
         em.DestroyEntity(actor);
         Check(BountyClashDamage.Apply(world, ally, source, BodyPart.Chest, 10, 4, RaidDamageKind.Explosion) == 0, "Delayed attack lost its release-time team");
+        var reused = Player(1,0);
+        Check(reused!=actor && BountyClashDamage.Apply(world,reused,source,BodyPart.Chest,10,5,RaidDamageKind.Explosion)==0,
+            "Reused network ID caused a teammate to take another player's self-damage");
+        Check(BountyClashDamage.Capture(world,1).OnlineActor==reused,"Network-ID lookup did not capture the current actor");
         var spawns = new OnlineRaidWorld();
         var origin = LocalTransform.FromPosition(new Unity.Mathematics.float3(10, 0, 10));
         var p0 = spawns.Spawn(0, origin); var p1 = spawns.Spawn(0, LocalTransform.FromPosition(100, 0, 100));
