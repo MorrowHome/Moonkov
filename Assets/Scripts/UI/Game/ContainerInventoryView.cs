@@ -450,13 +450,9 @@ namespace Unity.MP_FPS.Client
         }
         private bool AutoMove(InventoryItem item, string parent)
         {
-            var definition=InventoryCatalog.Get(item.Code);
-            if(!definition.Container && definition.MaxStack>1)
-                foreach(var stack in m_Graph.Children(parent))
-                    if(stack.Id!=item.Id && stack.Code==item.Code && stack.FoundInRaid==item.FoundInRaid && stack.Quantity+item.Quantity<=definition.MaxStack)
-                    {Command(new InventoryCommand {Operation=InventoryOperation.Merge,ItemId=item.Id,TargetId=stack.Id});return true;}
-            if (!m_Graph.FindSpace(item,parent,out var region,out var x,out var y)) return false;
-            Command(new InventoryCommand { ItemId=item.Id, Parent=parent, Region=region, X=x, Y=y, Rotated=item.Rotated }); return true;
+            var command = m_Graph.PlanQuickMove(item.Id, parent);
+            if (command == null) return false;
+            Command(command); return true;
         }
         private void Command(InventoryCommand command)
         {

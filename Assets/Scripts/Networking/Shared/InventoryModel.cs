@@ -296,9 +296,7 @@ namespace Unity.MP_FPS.Inventory
             if (r.Operation == InventoryOperation.Merge)
             {
                 var target = Find(r.TargetId); int count = r.Quantity == 0 ? item.Quantity : r.Quantity;
-                if (target == null || target.Id == item.Id || target.Code != item.Code || def.Container || count <= 0 || count > item.Quantity
-                    || (long)target.Quantity + count > def.MaxStack || target.FoundInRaid != item.FoundInRaid || target.EmergencySupply != item.EmergencySupply) return InventoryError.Invalid;
-                if (!BatteryEnergy.CanMerge(item, target, count)) return InventoryError.Invalid;
+                if (!CanMergeStacks(item, target, count)) return InventoryError.Invalid;
                 BatteryEnergy.Merge(item, target, count); if (item.Quantity == 0) Items.Remove(item); return InventoryError.None;
             }
             if (r.Operation == InventoryOperation.Split)
@@ -360,6 +358,28 @@ namespace Unity.MP_FPS.Inventory
                 }
             }
             return InventoryError.None;
+        }
+        // Use the same provenance, capacity and partial-cell rules for previews
+        // and authoritative merges. A rejected candidate must not hide free space.
+        public static bool CanMergeStacks(InventoryItem source, InventoryItem target, int count)
+        {
+            var definition = InventoryCatalog.Get(source?.Code);
+            return source != null && target != null && definition != null && !definition.Container &&
+                source.Id != target.Id && source.Code == target.Code && count > 0 && count <= source.Quantity &&
+                (long)target.Quantity + count <= definition.MaxStack && source.FoundInRaid == target.FoundInRaid &&
+                source.EmergencySupply == target.EmergencySupply && BatteryEnergy.CanMerge(source, target, count);
+        }
+        public InventoryCommand PlanQuickMove(string itemId, string parent)
+        {
+            var item = Find(itemId); var definition = InventoryCatalog.Get(item?.Code);
+            if (item == null || definition == null || definition.Kind == ItemKind.Root) return null;
+            if (!definition.Container && definition.MaxStack > 1)
+                foreach (var stack in Children(parent))
+                    if (CanMergeStacks(item, stack, item.Quantity))
+                        return new InventoryCommand { Operation = InventoryOperation.Merge, ItemId = item.Id, TargetId = stack.Id };
+            return FindSpace(item, parent, out var region, out var x, out var y)
+                ? new InventoryCommand { ItemId = item.Id, Parent = parent, Region = region, X = x, Y = y, Rotated = item.Rotated }
+                : null;
         }
         // Shortcut transfer never searches nested bags. Manual placement still can.
         public IEnumerable<string> QuickTransferContainers()

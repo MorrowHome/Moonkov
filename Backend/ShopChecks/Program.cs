@@ -12,6 +12,7 @@ void Check(bool ok, string message) { if (!ok) throw new Exception(message); che
 ShopCommand Command(InventoryGraph graph, ShopOperation operation, string? code = null, int quantity = 0, string? item = null) =>
     new() { RequestId = Guid.NewGuid().ToString("D"), ExpectedVersion = graph.Version, Operation = operation, Code = code!, Quantity = quantity, ItemId = item! };
 await ClientCatalogChecks.Run(Check);
+QuickMoveChecks.Run(Check);
 foreach (string code in new[] { "rifle", "pistol", "shotgun", "sniper", "cells", "medkit", "ration", "water", "oxygen_canister" })
 {
     Check(ShopCatalog.Find(code).BuyDust == 0 && ShopCatalog.Find(code).FreeSupplyRestricted, code + " remains free with an advertised sale restriction");
