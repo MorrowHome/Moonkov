@@ -65,6 +65,8 @@ its leaderboard entry after queued kill-feed messages have resolved their names.
 
 未知攻击的 12 项生产规则检查通过，覆盖危险时限、模式隔离、目标记忆和有限方向。游戏与编辑器程序集隔离编译通过；真实敌人决策和导航夹具已补充，尚未在编辑器运行，正式战场反应仍需试玩。
 
+身体命中与回血同时发生时，人形敌人根据真实命中记录中断当前行动，即使最终血量没有下降。只有持续流血时不会反复将失血当作新攻击；护盾吸收的命中仍会触发反应。11 项生产伤害与压力检查通过，游戏与编辑器程序集隔离编译通过。完整敌人决策夹具尚未在编辑器运行。
+
 ## Perception and combat
 
 Sight uses three physical rays (head, torso, hips), range, view angle, movement and

@@ -36,7 +36,7 @@ public static class DollSingerHumanlikeChecks
             CheckMedicalLifecycle(system);
             CheckDecisions(system, map, tuning);
             CheckCombatRecovery(system, map);
-            CheckCombatPressure(system);
+            CheckCombatPressure(system, map);
             CheckUnknownAttack(system, map);
             CheckBleedTreatment(system, map);
             CheckReturnFire(system, map, world);
@@ -284,7 +284,7 @@ public static class DollSingerHumanlikeChecks
         Require(brain.Leaving, "A critically wounded PMC without medicine abandoned its extraction plan.");
     }
 
-    private static void CheckCombatPressure(DollSingerEnemySystem system)
+    private static void CheckCombatPressure(DollSingerEnemySystem system, MoonRaidMap map)
     {
         var brain = Brain(); var health = Health(); brain.LastHealth = health.CurrentHealth;
         for (int i = 0; i < 2; i++)
@@ -305,6 +305,19 @@ public static class DollSingerHumanlikeChecks
             "A real shield impact failed to interrupt passive behavior.");
         Call(system, "UpdateCombatPressure", new object[] { brain, health, 13d, 0f });
         Require(brain.Suppression == pressure, "An unchanged shield event repeatedly added pressure.");
+
+        brain = Brain(); health = Health();
+        RaidHealth.Damage(ref health, BodyPart.LeftArm, 20, 1);
+        brain.LastHealth = health.CurrentHealth; brain.NextDecision = 100; brain.BleedOnlyDamage = true;
+        RaidHealth.CombatDamage(ref health, BodyPart.LeftArm, 1, 2, RaidDamageKind.Bullet);
+        RaidHealth.Set(ref health, BodyPart.LeftArm, health.LeftArmHealth + 5);
+        Call(system, "UpdateCombatPressure", new object[] { brain, health, 15d, 0f });
+        Require(brain.LastDamage == 15 && brain.NextDecision == 0,
+            "Healing concealed a new bullet impact from the PMC's decision.");
+        brain.Action = PmcAction.Scavenge; brain.LootUntil = 30;
+        var decision = Decide(system, brain, health, map, 15.1);
+        Require(decision.action == PmcAction.Retreat && decision.emergency,
+            "A masked impact failed to trigger unseen-attack evasion.");
     }
 
     private static void CheckUnknownAttack(DollSingerEnemySystem system, MoonRaidMap map)

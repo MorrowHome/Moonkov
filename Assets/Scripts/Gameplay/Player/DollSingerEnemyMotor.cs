@@ -150,12 +150,20 @@ namespace Unity.MP_FPS
              brain.Action == PmcAction.Cover && (!brain.HasCover || brain.IsPeeking || brain.CoverPhase == PmcCoverPhase.Returning) ||
              brain.Action == PmcAction.Retreat || brain.Action == PmcAction.Flank);
 
-        private static void UpdateCombatPressure(DollSingerEnemyBrain brain, PredictedPlayerGhost health, double now, float dt)
+        private static void UpdateCombatPressure(DollSingerEnemyBrain brain, PredictedPlayerGhost health, double now, float dt) =>
+            PmcCombatPressure.Update(brain, health, now, dt);
+    }
+
+    public static class PmcCombatPressure
+    {
+        public static void Update(DollSingerEnemyBrain brain, in PredictedPlayerGhost health, double now, float dt)
         {
             float lost = Mathf.Max(0, brain.LastHealth - health.CurrentHealth);
             bool shieldHit = health.ShieldHitSequence != brain.LastShieldHitSequence;
             bool impact = health.LastImpactTick != brain.LastImpactTick;
-            if (lost > 0 && (!brain.BleedOnlyDamage || impact) || shieldHit)
+            // The impact event is authoritative even when healing in the same
+            // update makes the net health change zero or positive.
+            if (impact || shieldHit || lost > 0 && !brain.BleedOnlyDamage)
             {
                 // Pressure scales with actual injury. Grazes and periodic tissue loss
                 // must not count like repeated half-strength panic impulses.
