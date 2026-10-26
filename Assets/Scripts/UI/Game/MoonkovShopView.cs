@@ -121,6 +121,7 @@ namespace Unity.MP_FPS.Client
         {
             var definition = InventoryCatalog.Get(offer.Code);
             var row = Product(offer.Code, offer.Name, MoonkovLocalization.Format($"{definition.Width * definition.Height} GRID CELL(S)  /  {offer.BuyDust} DUST EACH"));
+            if (offer.FreeSupplyRestricted) MoonkovTerminal.Text(row.Q(className: "terminal-shop-description"), "EMERGENCY SUPPLY / CANNOT BE SOLD", "terminal-copy");
             if (offer.Code == "cells") MoonkovTerminal.Text(row.Q(className: "terminal-shop-description"), MoonkovLocalization.Format($"{BatteryEnergy.Capacity} ENERGY / FULL CELL"), "terminal-copy");
             MoonkovTerminal.Text(row.Q(className: "terminal-shop-description"), MoonkovItemPresentation.Details(offer.Code), "terminal-copy");
             var order = new VisualElement(); order.AddToClassList("terminal-shop-order"); row.Add(order);

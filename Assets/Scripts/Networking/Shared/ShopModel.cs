@@ -17,9 +17,11 @@ namespace Unity.MP_FPS.Inventory
         public string Code, Name;
         // -1 means sell-only loot; zero remains a free purchase for starter supplies.
         public int BuyDust, SellDust;
+        // An older server omits this field; its free purchases may still be sellable.
+        public bool FreeSupplyRestricted;
         public ShopOffer() { }
         public ShopOffer(string code, int buy, int sell)
-        { Code = code; Name = InventoryCatalog.Get(code).Name; BuyDust = buy; SellDust = sell; }
+        { Code = code; Name = InventoryCatalog.Get(code).Name; BuyDust = buy; SellDust = sell; FreeSupplyRestricted = buy == 0; }
     }
     public static class ShopCatalog
     {
@@ -133,6 +135,10 @@ namespace Unity.MP_FPS.Inventory
                 if (command.Operation == ShopOperation.Buy)
                 {
                     if (!string.IsNullOrEmpty(command.ItemId) || offer.BuyDust < 0) return "shop_invalid";
+                    // Free test supplies must not become an unlimited source of dust.
+                    // Reuse the persisted emergency provenance so splitting, looting,
+                    // deployment and settlement preserve the sale restriction.
+                    bool freeSupply = offer.BuyDust == 0;
                     int cost = offer.BuyDust * command.Quantity;
                     if (copy.Count("dust") < cost) return "shop_insufficient_dust";
                     foreach (var stack in copy.Items.Where(i => i.Code == "dust").ToArray())
@@ -141,13 +147,13 @@ namespace Unity.MP_FPS.Inventory
                     {
                         for (int i = 0; i < command.Quantity; i++)
                         {
-                            var purchased = new InventoryItem { Id = Guid.NewGuid().ToString("D"), Code = offer.Code };
+                            var purchased = new InventoryItem { Id = Guid.NewGuid().ToString("D"), Code = offer.Code, EmergencySupply = freeSupply };
                             if (!copy.FindSpace(purchased, "stash", out var region, out var x, out var y)) return "inventory_Full";
                             purchased.Parent = "stash"; purchased.Region = region; purchased.X = x; purchased.Y = y;
                             copy.Items.Add(purchased);
                         }
                     }
-                    else if (copy.AddSupply(offer.Code, command.Quantity, "stash") != InventoryError.None) return "inventory_Full";
+                    else if (copy.AddSupply(offer.Code, command.Quantity, "stash", emergencySupply: freeSupply) != InventoryError.None) return "inventory_Full";
                 }
                 else if (command.Operation == ShopOperation.Sell)
                 {

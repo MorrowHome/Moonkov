@@ -21,11 +21,20 @@ public static class RaidOfflineCycleChecks
     {
         checks = 0;
         string path = Path.GetFullPath(Path.Combine(projectPath, "Library", "BuildValidation", "OfflineCycle", Guid.NewGuid().ToString("N") + ".json"));
-        string foundId, rifleId, medId, playerId;
+        string foundId, rifleId, medId, freePistolId, playerId;
         using (var store = new OfflineProfileStore(path))
         {
             var account = RaidInventoryTransport.Decode(store.Read().InventoryJson);
             playerId = store.Read().PlayerId;
+            store.Trade(new ShopCommand { RequestId = Guid.NewGuid().ToString("D"), ExpectedVersion = account.Version,
+                Operation = ShopOperation.Buy, Code = "pistol", Quantity = 1 });
+            account = RaidInventoryTransport.Decode(store.Read().InventoryJson);
+            var freePistol = account.Items.Single(i => i.Code == "pistol" && i.EmergencySupply); freePistolId = freePistol.Id;
+            store.Move(new InventoryCommand { ExpectedVersion = account.Version, ItemId = freePistolId,
+                Parent = InventoryCatalog.Equipment, Region = "Pistol" });
+            account = RaidInventoryTransport.Decode(store.Read().InventoryJson);
+            Check(account.Equipped("Pistol")?.EmergencySupply == true && account.Count("dust") == 100,
+                "free purchase was not restricted or changed the account balance");
             var rifle = account.Items.Single(i => i.Code == "rifle"); rifleId = rifle.Id;
             store.Move(new InventoryCommand { ExpectedVersion = account.Version, ItemId = rifleId,
                 Parent = InventoryCatalog.Equipment, Region = "Primary" });
@@ -40,7 +49,8 @@ public static class RaidOfflineCycleChecks
             var live = store.Deploy(deployment);
             var inventory = new RaidInventoryState { Graph = RaidInventoryTransport.Decode(live.RaidInventoryJson), RaidId = 1 };
             Check(inventory.Graph.Validate() == InventoryError.None && inventory.Graph.Count("cells", true) == 3 &&
-                inventory.Graph.Find(rifleId) != null && store.RaidActive, "deployment lost its real loadout");
+                inventory.Graph.Find(rifleId) != null && inventory.Graph.Find(freePistolId)?.EmergencySupply == true && store.RaidActive,
+                "deployment lost its real loadout or free-supply restriction");
 
             var health = new PredictedPlayerGhost(); RaidHealth.Initialize(ref health);
             var caches = new RaidLootContainers(); caches.Initialize(1);
@@ -83,16 +93,32 @@ public static class RaidOfflineCycleChecks
             store.Settle(receipt);
             var returned = RaidInventoryTransport.Decode(store.Read().InventoryJson);
             Check(store.Read().InventoryJson == once && returned.Find(foundId) != null && returned.Find(rifleId) != null &&
-                returned.Find(medId).Quantity == medicines - 1 && !store.RaidActive, "settlement lost, duplicated, or failed to persist items");
+                returned.Find(medId).Quantity == medicines - 1 && returned.Find(freePistolId)?.EmergencySupply == true && !store.RaidActive,
+                "settlement lost, duplicated, or failed to persist items");
         }
         using (var reopened = new OfflineProfileStore(path))
         {
             var saved = RaidInventoryTransport.Decode(reopened.Read().InventoryJson);
             Check(reopened.Read().PlayerId == playerId && saved.Find(foundId) != null && saved.Find(rifleId) != null &&
-                saved.Find(medId) != null && !reopened.RaidActive, "reopening the isolated save lost the extracted items");
+                saved.Find(medId) != null && saved.Find(freePistolId)?.EmergencySupply == true && !reopened.RaidActive,
+                "reopening the isolated save lost the extracted items or restriction");
+            var freePistol = saved.Find(freePistolId);
+            Check(saved.FindSpace(freePistol, "stash", out var region, out int x, out int y), "free pistol could not return to storage");
+            reopened.Move(new InventoryCommand { ExpectedVersion = saved.Version, ItemId = freePistolId,
+                Parent = "stash", Region = region, X = x, Y = y });
+            saved = RaidInventoryTransport.Decode(reopened.Read().InventoryJson);
+            bool restricted = false;
+            try
+            {
+                reopened.Trade(new ShopCommand { RequestId = Guid.NewGuid().ToString("D"), ExpectedVersion = saved.Version,
+                    Operation = ShopOperation.Sell, Code = "pistol", ItemId = freePistolId, Quantity = 1 });
+            }
+            catch (AccountClient.InventoryRequestException e) when (e.ErrorCode == "shop_emergency_supply") { restricted = true; }
+            Check(restricted && RaidInventoryTransport.Decode(reopened.Read().InventoryJson).Find(freePistolId) != null,
+                "reopened free purchase was sold after extraction");
         }
         CheckDeathAndSecureContainer(projectPath);
-        return "PASS " + checks + " offline raid data-cycle checks: loadout, real loot search and transfer, timed healing, extraction, death, secure return, replay and save reload. No Unity scene or multiplayer executed.";
+        return "PASS " + checks + " offline raid data-cycle checks: free purchase, loadout, real loot search and transfer, timed healing, extraction, death, secure return, replay and save reload. No Unity scene or multiplayer executed.";
     }
 
     private static void CheckDeathAndSecureContainer(string projectPath)

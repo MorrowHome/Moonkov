@@ -37,10 +37,15 @@ internal static class ClientCatalogChecks
             var offers = await AccountClient.GetShopOffersAsync(default);
             check(offers.Length == ShopCatalog.Offers.Length && offers.Length > 64,
                 "actual client accepts the complete catalogue beyond the old 64-offer limit");
-            check(offers.Select(o => (o.Code, o.BuyDust, o.SellDust)).SequenceEqual(
-                ShopCatalog.Offers.Select(o => (o.Code, o.BuyDust, o.SellDust))), "client preserves all server offers and prices");
+            check(offers.Select(o => (o.Code, o.BuyDust, o.SellDust, o.FreeSupplyRestricted)).SequenceEqual(
+                ShopCatalog.Offers.Select(o => (o.Code, o.BuyDust, o.SellDust, o.FreeSupplyRestricted))), "client preserves all server offers and restrictions");
             check(updates == beforeCatalogue + 1 && AccountClient.Inventory?.Validate() == InventoryError.None,
                 "valid catalogue applies its account profile");
+
+            snapshot = JsonSerializer.Serialize(new { offers = ShopCatalog.Offers.Select(o => new { o.Code, o.Name, o.BuyDust, o.SellDust }), profile }, wire);
+            var olderOffers = await AccountClient.GetShopOffersAsync(default);
+            check(!olderOffers.Single(o => o.Code == "pistol").FreeSupplyRestricted,
+                "an older server's omitted restriction does not falsely promise unsellable purchases");
 
             async Task Reject(ShopOffer[]? invalid, string reason, bool missingProfile = false)
             {
