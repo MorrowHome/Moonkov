@@ -1289,5 +1289,8 @@
   "Energy per round reduced by one third (rounded up); charge time +20%.": "每发耗能减少三分之一，向上取整；充能时间 +20%。",
   "Shotgun spread -55%; capacity -1.": "霰弹散布 -55%，容量减少 1 发。",
   "Shotgun spread +60%; 12 pellets share the original total damage.": "霰弹散布 +60%，12 粒弹丸分摊原有总伤害。",
-  "Rifle fires three rounds per trigger press; 0.42s between bursts.": "步枪每次按下发射三发，组间至少 0.42 秒。"
+  "Rifle fires three rounds per trigger press; 0.42s between bursts.": "步枪每次按下发射三发，组间至少 0.42 秒。",
+  "PREPARE TO RETURN\nGREEN BEACON / {0:F0}m {1}": "准备返程\n撤离信标 / {0:F0} 米 {1}",
+  "RETURN TO EXTRACTION\nGREEN BEACON / {0:F0}m {1}": "请返回撤离点\n撤离信标 / {0:F0} 米 {1}",
+  "FINAL MINUTE\nGREEN BEACON / {0:F0}m {1}": "最后一分钟，立即撤离\n撤离信标 / {0:F0} 米 {1}"
 }

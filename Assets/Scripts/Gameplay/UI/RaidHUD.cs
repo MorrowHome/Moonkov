@@ -87,6 +87,7 @@ namespace Unity.MP_FPS
 
         private void OnEnable()
         {
+            m_ReturnGuidance.Reset();
             m_DeployRequestedRaid = 0;
             m_DeployRequestedSequence = 0;
             m_DeployRequestId = 0;
@@ -256,6 +257,7 @@ namespace Unity.MP_FPS
         private bool m_AudioExtracting;
         private float m_ExtractionSoundAt;
         private int m_ExtractionSoundRaid;
+        private readonly RaidReturnGuidance m_ReturnGuidance = new RaidReturnGuidance();
 
         private bool IsDroppedLoot(int id)
         {
@@ -333,6 +335,7 @@ namespace Unity.MP_FPS
 
         private void InitializeWorld()
         {
+            m_ReturnGuidance.Reset();
             m_InventoryAudio.Reset(); m_InventorySequence = 0;
             ResetBountyConnection();
             foreach (var world in World.All)
@@ -484,6 +487,15 @@ namespace Unity.MP_FPS
             bool empty=deathBag ? deathBags.Bags[nearest].Empty : nearest>=0 && nearest<RaidLootContainers.FirstDeathBagId && (m_Snapshot.TakenMask & (1UL<<nearest))!=0;
             bool alien=deathBag && deathBags.Bags[nearest].CharacterIndex==-1;
             RefreshInteraction(nearest, distance, deathBag, empty, interactionVisible && !m_AirlockPrompt.HasSelection,alien,IsDroppedLoot(nearest));
+            bool extracting = alive && !settled && m_Snapshot.ExtractionRemaining >= 0;
+            bool showReturn = !m_InventoryVisible && !MapInputBlocked && !m_MissionDetailsVisible &&
+                !m_CampaignJournalVisible && !GameSettings.Instance.IsPauseMenuOpen && !CinematicInputBlocked;
+            if (m_ReturnGuidance.Update(m_Snapshot.RaidId, m_Snapshot.TimeLeft, ready && alive && !settled && !clash,
+                extracting, showReturn, Time.unscaledTime))
+            {
+                m_RevealUntil = Time.unscaledTime + 8;
+                MoonkovAudio.Play(MoonkovAudio.Library?.Notification, Vector3.zero);
+            }
             if (clash)
             {
                 m_Status.style.display = DisplayStyle.None;
@@ -512,7 +524,6 @@ namespace Unity.MP_FPS
                     batteryGraph.CellEnergy(carriedOnly: true), batteryGraph.CellEnergy(accessibleOnly: true),
                     batteryGraph.Count("medkit", true) + batteryGraph.Count("med_gel", true) + batteryGraph.Count("trauma_kit", true));
             }
-            bool extracting = alive && !settled && m_Snapshot.ExtractionRemaining >= 0;
             if (m_ExtractionSoundRaid != m_Snapshot.RaidId)
             { m_ExtractionSoundRaid = m_Snapshot.RaidId; m_AudioExtracting = false; m_ExtractionSoundAt = 0; }
             if (extracting != m_AudioExtracting)
@@ -526,7 +537,8 @@ namespace Unity.MP_FPS
                 MoonkovAudio.Play(MoonkovAudio.Library?.ExtractTick, Vector3.zero, .65f);
                 m_ExtractionSoundAt = Time.unscaledTime + 1;
             }
-            m_ExtractionPanel.EnableInClassList("is-visible", alive && !settled && (extracting || check));
+            bool returnBeacon = showReturn && m_ReturnGuidance.ShowBeacon;
+            m_ExtractionPanel.EnableInClassList("is-visible", alive && !settled && (extracting || check || returnBeacon));
             m_ExtractionTrack.style.display = extracting ? DisplayStyle.Flex : DisplayStyle.None;
             if (extracting)
                 m_ExtractionFill.style.width = Length.Percent(100 * Mathf.Clamp01(1 - m_Snapshot.ExtractionRemaining / MoonRaidMap.Active.ExtractionSeconds));
@@ -535,7 +547,12 @@ namespace Unity.MP_FPS
             {
                 Vector3 delta = MoonRaidMap.Active.ExtractionPosition - position;
                 string heading = Mathf.Abs(delta.x) > Mathf.Abs(delta.z) ? delta.x > 0 ? "E" : "W" : delta.z > 0 ? "N" : "S";
-                MoonkovLocalization.Set(m_Exit, m_Snapshot.ExtractionRemaining >= 0 ? MoonkovLocalization.Format($"EXTRACTION\nSHUTTLE BEACON / {m_Snapshot.ExtractionRemaining:00.0}s") : check ? MoonkovLocalization.Format($"GREEN BEACON / {delta.magnitude:F0}m {heading}") : "");
+                if (extracting)
+                    MoonkovLocalization.Set(m_Exit, MoonkovLocalization.Format($"EXTRACTION\nSHUTTLE BEACON / {m_Snapshot.ExtractionRemaining:00.0}s"));
+                else if (returnBeacon)
+                    MoonkovLocalization.Set(m_Exit, m_ReturnGuidance.BeaconText, delta.magnitude, MoonkovLocalization.Text(heading));
+                else
+                    MoonkovLocalization.Set(m_Exit, check ? MoonkovLocalization.Format($"GREEN BEACON / {delta.magnitude:F0}m {heading}") : "");
             }
             else MoonkovLocalization.Set(m_Exit, "");
             if (settled)

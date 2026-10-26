@@ -5459,6 +5459,24 @@ MonoBehaviour:
     m_Localized: Chat is unavailable.
     m_Metadata:
       m_Items: []
+  - m_Id: 6898899724787712
+    m_Localized: 'PREPARE TO RETURN
+
+      GREEN BEACON / {0:F0}m {1}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6898899728982016
+    m_Localized: 'RETURN TO EXTRACTION
+
+      GREEN BEACON / {0:F0}m {1}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6898899728982017
+    m_Localized: 'FINAL MINUTE
+
+      GREEN BEACON / {0:F0}m {1}'
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
