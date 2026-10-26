@@ -305,6 +305,20 @@ public static class MoonkovRaidActionChecks
         health=em.GetComponentData<PredictedPlayerGhost>(player);health.ShieldHitSequence++;em.SetComponentData(player,health);
         Refresh(world,handle,connection,8.1);
         Check(!inventory.ActionPending && inventory.Error==InventoryError.Inaccessible && inventory.Graph.Count("ration",true)==1,"Shield impact did not interrupt food");
+        health=em.GetComponentData<PredictedPlayerGhost>(player);health.Energy=0;health.StarvationSeconds=1;em.SetComponentData(player,health);
+        world.SetTime(new TimeData(9,.02f));use.RequestId=7;use.ExpectedVersion=inventory.Graph.Version;
+        Request(world,connection,use);Process(world,handle,"HandleInventoryRequests");
+        Check(inventory.ActionPending,"Starving player could not start food RPC");
+        float hp=health.CurrentHealth;
+        for(uint tick=1;tick<=6;tick++)
+        {
+            health=em.GetComponentData<PredictedPlayerGhost>(player);
+            RaidNutrition.Tick(ref health,.5f,1000,1000,300,0,2,0,tick);
+            em.SetComponentData(player,health);Refresh(world,handle,connection,9+tick*.5);
+        }
+        health=em.GetComponentData<PredictedPlayerGhost>(player);
+        Check(!inventory.ActionPending && inventory.Error==InventoryError.None && inventory.Graph.Count("ration",true)==0 &&
+            health.Energy>0 && health.CurrentHealth<hp,"Starvation damage prevented food RPC from completing");
     }
     private static void CheckSearchCombatRequests(World world,SystemHandle handle,Entity connection,RaidInventoryState inventory,
         RaidLootContainers caches,float3 origin)

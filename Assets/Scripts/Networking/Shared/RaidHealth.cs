@@ -111,6 +111,7 @@ namespace Unity.MP_FPS
             }
             state.LastHitPart = part; state.LastDamageAmount = amount;
             state.LastHitTick = tick; state.ControllerState.IsHit = true;
+            if(state.CurrentHealth<before)state.NonMetabolicDamageSequence++;
             return before - state.CurrentHealth;
         }
 

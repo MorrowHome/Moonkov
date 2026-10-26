@@ -45,6 +45,38 @@ public static class RaidNutritionActionChecks
         actor.RefreshMedical(ref health, true, origin, 32);
         Check(health.Hydration == 90 && actor.Graph.Count("water", true) == 1, "Drink completes once");
 
+        foreach(string supply in new[] {"ration","water"})
+        {
+            actor=Actor(supply,out health,out id);
+            health.Energy=supply=="ration" ? 0 : 100;health.Hydration=supply=="water" ? 0 : 100;
+            float initialHealth=health.CurrentHealth;
+            Check(actor.BeginConsumable(health,id,actor.Graph.Version,origin,0)==InventoryError.None,"Critical nutrition action starts: "+supply);
+            int steps=supply=="ration" ? 6 : 4;
+            for(uint tick=1;tick<=steps;tick++)
+            {
+                RaidNutrition.Tick(ref health,.5f,1000,1000,300,0,2,2,tick);
+                actor.RefreshMedical(ref health,true,origin,tick*.5);
+                if(tick<steps)Check(actor.ActionPending,"Metabolic damage interrupted lifesaving supply: "+supply);
+            }
+            Check(!actor.ActionPending && actor.Error==InventoryError.None && actor.Graph.Count(supply,true)==1 &&
+                health.CurrentHealth<initialHealth && (supply=="ration" ? health.Energy>0 : health.Hydration>0),
+                "Supply completes under ongoing metabolic damage: "+supply);
+        }
+        actor=Actor("ration",out health,out id);health.Energy=0;
+        Check(actor.BeginConsumable(health,id,actor.Graph.Version,origin,0)==InventoryError.None,"Same-tick attack setup");
+        RaidHealth.CombatDamage(ref health,BodyPart.RightArm,5,42,RaidDamageKind.Bullet);
+        RaidNutrition.Tick(ref health,.5f,1000,1000,300,0,2,0,42);
+        actor.RefreshMedical(ref health,true,origin,.5);
+        Check(health.LastHitTick==42 && !actor.ActionPending && actor.Error==InventoryError.Inaccessible && actor.Graph.Count("ration",true)==2,
+            "Metabolic damage in the same tick cannot hide a bullet");
+        actor=Actor("ration",out health,out id);health.Energy=0;health.ShieldEquipped=true;health.ShieldCharge=100;
+        Check(actor.BeginConsumable(health,id,actor.Graph.Version,origin,0)==InventoryError.None,"Same-tick shield setup");
+        EnergyShieldRules.Absorb(ref health,5,43,RaidDamageKind.Bullet,new float3(1,1,1));
+        RaidNutrition.Tick(ref health,.5f,1000,1000,300,0,2,0,43);
+        actor.RefreshMedical(ref health,true,origin,.5);
+        Check(!actor.ActionPending && actor.Error==InventoryError.Inaccessible && actor.Graph.Count("ration",true)==2,
+            "Metabolic damage cannot hide a shield hit");
+
         actor = Actor("ration", out health, out id);
         int version = actor.Graph.Version;
         Check(actor.BeginConsumable(health, id, version - 1, origin, 0) == InventoryError.Stale && !actor.ActionPending, "Stale supply is rejected");
@@ -71,7 +103,7 @@ public static class RaidNutritionActionChecks
             switch (interruption)
             {
                 case 0: position.x += .76f; break;
-                case 1: health.LastHitTick++; break;
+                case 1: RaidHealth.Damage(ref health,BodyPart.RightArm,1,health.LastHitTick+1); break;
                 case 2: health.ShieldHitSequence++; break;
                 case 3: health.LastShotTick++; break;
                 case 4: health.LastGrenadeShotTick++; break;
