@@ -564,6 +564,12 @@ public static class MoonkovRaidActionChecks
             changed.ControllerState.IsReloadingState=false;changed.WeaponEquipRemaining=0;em.SetComponentData(player,changed);
             em.SetComponentData(player,LocalTransform.FromPosition(origin));
         }
+        Request(world,connection,Mission(48));Process(world,handle,"HandleMissions");
+        var sameTick=em.GetComponentData<PredictedPlayerGhost>(player);float oldArm=sameTick.RightArmHealth;
+        RaidHealth.Damage(ref sameTick,BodyPart.RightArm,1,sameTick.LastHitTick);
+        RaidHealth.Set(ref sameTick,BodyPart.RightArm,oldArm);em.SetComponentData(player,sameTick);
+        Request(world,connection,Mission(48,0,MissionIntent.Renew));Process(world,handle,"HandleMissions");
+        Check(context.Actors[connection].Node<0 && !context.Operation.Completed(0),"Same-tick injury and recovery hid mission interruption");
         Request(world,connection,Mission(50));Process(world,handle,"HandleMissions");
         now+=1.5;world.SetTime(new TimeData(now,.02f));Request(world,connection,Mission(50,0,MissionIntent.Renew));Process(world,handle,"HandleMissions");
         now+=1.6;world.SetTime(new TimeData(now,.02f));Request(world,connection,Mission(50,0,MissionIntent.Renew));Process(world,handle,"HandleMissions");

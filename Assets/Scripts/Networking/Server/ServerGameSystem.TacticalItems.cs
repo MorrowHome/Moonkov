@@ -114,7 +114,8 @@ namespace Unity.MP_FPS
                 valid=valid && player==use.Player && Vector3.Distance(root.transform.position,use.Origin)<=.55f &&
                     !RaidHealth.HandsBusy(health) &&
                     (use.Action==TacticalItemAction.Extinguish ? RaidHealth.SelfTreatmentDamageUnchanged(health,use.DamageSequence,use.ShieldHit) :
-                        health.LastHitTick==use.Hit && health.ShieldHitSequence==use.ShieldHit && health.CurrentHealth>=use.Health-.001f) &&
+                        health.LastHitTick==use.Hit && health.NonPhysiologicalDamageSequence==use.DamageSequence &&
+                        health.ShieldHitSequence==use.ShieldHit && health.CurrentHealth>=use.Health-.001f) &&
                     health.LastShotTick==use.Shot && health.LastGrenadeShotTick==use.Grenade &&
                     health.LastReloadTick==use.Reload && health.EquippedWeaponID==use.Weapon;
                 if(valid && now<use.Until)continue;

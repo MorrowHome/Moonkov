@@ -150,6 +150,10 @@ public static class TacticalItemsAuthorityChecks
             Request(TacticalItemAction.Use,antidote,version:inventory.Graph.Version-1);Check(inventory.Error==InventoryError.Stale,"Old graph rejected");
             Request(TacticalItemAction.Use,antidote);root.transform.position=Vector3.right;Tick();Check(!inventory.TacticalPending && inventory.Graph.Find(antidote).Quantity==initial,"Move interrupts atomically");root.transform.position=Vector3.zero;
             Request(TacticalItemAction.Use,antidote);health=em.GetComponentData<PredictedPlayerGhost>(player);health.LastHitTick++;em.SetComponentData(player,health);Tick();Check(!inventory.TacticalPending,"Damage interrupts");
+            Request(TacticalItemAction.Use,antidote);health=em.GetComponentData<PredictedPlayerGhost>(player);
+            float oldArm=health.RightArmHealth;RaidHealth.Damage(ref health,BodyPart.RightArm,1,health.LastHitTick);
+            RaidHealth.Set(ref health,BodyPart.RightArm,oldArm);em.SetComponentData(player,health);Tick();
+            Check(!inventory.TacticalPending && inventory.Graph.Find(antidote).Quantity==initial,"Same-tick injury and recovery hid tactical interruption");
             Request(TacticalItemAction.Use,antidote);Wait(3.2f);Check(inventory.Graph.Find(antidote).Quantity==initial-1 && Data().Statuses[player].Antidote>now,"Antidote completes once");
             health=em.GetComponentData<PredictedPlayerGhost>(player);health.ControllerState.Sprinting=true;health.ControllerState.MovementSpeed=4;em.SetComponentData(player,health);
             Tick(2);Check(em.GetComponentData<PredictedPlayerGhost>(player).TacticalSprintStamina==100,"Shift and blocked movement never consume sprint stamina");

@@ -54,6 +54,13 @@ public static class MissionCombatActionChecks
                 "Interrupted final renewal cannot complete the operation: " + kind);
         }
 
+        var sameTick=Health();var sameTickActor=new RaidMissionWorld.Actor {Key="player"};
+        sameTickActor.Capture(sameTick,float3.zero);float fullHealth=sameTick.CurrentHealth;
+        RaidHealth.Damage(ref sameTick,BodyPart.RightArm,5,sameTick.LastHitTick);
+        RaidHealth.Set(ref sameTick,BodyPart.RightArm,60);
+        Check(sameTick.CurrentHealth==fullHealth && sameTickActor.Interrupted(sameTick,float3.zero),
+            "Same-tick injury cannot be hidden by health recovery");
+
         var graph = InventoryGraph.Create(false);
         Check(graph.AddSupply(EnergyGrenadeRules.Code, 1, InventoryCatalog.Pockets) == InventoryError.None,
             "Create a real grenade");

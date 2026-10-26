@@ -133,6 +133,17 @@ public static class RaidNutritionActionChecks
         actor.RefreshMedical(ref health, true, origin, 3);
         Check(RaidHealth.Get(health, BodyPart.LeftArm) == 60 && actor.Graph.Count("medkit", true) == 0, "Existing medical action still completes");
 
+        actor=Actor("ration",out health,out id);
+        Check(actor.Graph.AddSupply("medkit",1,InventoryCatalog.Pockets)==InventoryError.None,"same-tick medical fixture");
+        med=actor.Graph.Items.Find(item=>item.Code=="medkit");
+        RaidHealth.Set(ref health,BodyPart.LeftArm,20);health.LastHitTick=42;
+        Check(actor.BeginMedical(health,med.Id,actor.Graph.Version,BodyPart.LeftArm,origin,0)==InventoryError.None,"same-tick medical starts");
+        RaidHealth.Damage(ref health,BodyPart.RightArm,5,42);
+        RaidHealth.Set(ref health,BodyPart.RightArm,60);
+        actor.RefreshMedical(ref health,true,origin,3);
+        Check(!actor.ActionPending && actor.Error==InventoryError.Inaccessible && actor.Graph.Find(med.Id)!=null &&
+            RaidHealth.Get(health,BodyPart.LeftArm)==20,"same-tick hit and recovery cannot hide medical interruption");
+
         actor = Actor("ration", out health, out id);
         Check(actor.BeginConsumable(health, id, actor.Graph.Version, origin, 0) == InventoryError.None, "Revalidation setup");
         health.Energy = 100;

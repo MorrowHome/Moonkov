@@ -20,7 +20,7 @@ namespace Unity.MP_FPS
             public string Key;
             public uint Request;
             public uint AcknowledgedRequest;
-            public uint LastHitTick, ShieldHitSequence, LastShotTick, LastGrenadeTick, LastReloadTick, Weapon;
+            public uint LastHitTick, DamageSequence, ShieldHitSequence, LastShotTick, LastGrenadeTick, LastReloadTick, Weapon;
             public float Health;
             public float3 Origin;
             public MissionActionResult Result;
@@ -28,12 +28,13 @@ namespace Unity.MP_FPS
             public void Capture(in PredictedPlayerGhost health, float3 position)
             {
                 Origin=position;
-                Health=health.CurrentHealth;LastHitTick=health.LastHitTick;ShieldHitSequence=health.ShieldHitSequence;
+                Health=health.CurrentHealth;LastHitTick=health.LastHitTick;DamageSequence=health.NonPhysiologicalDamageSequence;
+                ShieldHitSequence=health.ShieldHitSequence;
                 LastShotTick=health.LastShotTick;LastGrenadeTick=health.LastGrenadeShotTick;
                 LastReloadTick=health.LastReloadTick;Weapon=health.EquippedWeaponID;
             }
             public bool Interrupted(in PredictedPlayerGhost health, float3 position) => math.distancesq(position,Origin)>.75f*.75f || health.CurrentHealth<Health ||
-                health.LastHitTick!=LastHitTick || health.ShieldHitSequence!=ShieldHitSequence ||
+                health.LastHitTick!=LastHitTick || health.NonPhysiologicalDamageSequence!=DamageSequence || health.ShieldHitSequence!=ShieldHitSequence ||
                 health.LastShotTick!=LastShotTick || health.LastGrenadeShotTick!=LastGrenadeTick ||
                 health.LastReloadTick!=LastReloadTick || health.EquippedWeaponID!=Weapon || RaidHealth.HandsBusy(health);
         }
