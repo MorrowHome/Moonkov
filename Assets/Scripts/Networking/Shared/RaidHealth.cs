@@ -11,6 +11,10 @@ namespace Unity.MP_FPS
     {
         public const int PartCount = 7;
         public const float OxygenCapacity = 100f;
+        public const float SafeFallHeight = 4.5f;
+        public const float MoonGravity = 1.62f;
+        public const float FallDamagePerMeter = 12f;
+        public const float MaximumFallDamage = 600f;
         public static float Maximum(BodyPart part)
         {
             switch (part)
@@ -108,6 +112,32 @@ namespace Unity.MP_FPS
             state.LastHitPart = part; state.LastDamageAmount = amount;
             state.LastHitTick = tick; state.ControllerState.IsHit = true;
             return before - state.CurrentHealth;
+        }
+
+        // The controller measures physical descent after the apex, not its artificial
+        // standing fall velocity. Gravity scales impact energy for the same distance.
+        public static float FallDamage(float height, float gravity)
+        {
+            if (!float.IsFinite(height) || !float.IsFinite(gravity) || height <= SafeFallHeight || gravity >= 0)
+                return 0;
+            double damage = ((double)height - SafeFallHeight) * FallDamagePerMeter * (-(double)gravity / MoonGravity);
+            return (float)Math.Min(MaximumFallDamage, damage);
+        }
+
+        // Called only by the server immediately after the controller changes to landed.
+        // The pending flag prevents replaying an event until input processing clears it.
+        public static float ApplyLandingDamage(ref PredictedPlayerGhost state, bool wasLanding, float gravity, uint tick)
+        {
+            if (wasLanding || !state.ControllerState.LandTriggered || !state.BodyHealthInitialized ||
+                state.ClashEnabled || state.CurrentHealth <= 0) return 0;
+            float damage = FallDamage(state.ControllerState.FallHeight, gravity);
+            if (damage <= 0) return 0;
+            float before = state.CurrentHealth;
+            Damage(ref state, BodyPart.LeftLeg, damage * .5f, tick);
+            Damage(ref state, BodyPart.RightLeg, damage * .5f, tick);
+            float applied = before - state.CurrentHealth;
+            state.LastDamageAmount = applied;
+            return applied;
         }
         // Combat calls once per physical impact, before anatomical distribution.
         // Hypoxia, nutrition and other physiological damage keep using Damage/Set directly.

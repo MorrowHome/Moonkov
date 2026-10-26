@@ -592,10 +592,14 @@ namespace Unity.MP_FPS
                 var controllerLink = SystemAPI.ManagedAPI.GetComponent<PlayerControllerLink>(entity);
                 if (math.lengthsq(predictedPlayer.ValueRO.AccumulatedMovement) > 0f)
                 {
+                    bool wasLanding = predictedPlayer.ValueRO.ControllerState.LandTriggered;
                     controllerLink.Controller.ApplyMovementUpdate(ref predictedPlayer.ValueRW.ControllerState,
                         controllerConsts.ValueRO.ControllerConsts,
                         predictedPlayer.ValueRO.AccumulatedMovement,
                         deltaTime);
+                    if (MoonRaidMap.Active)
+                        RaidHealth.ApplyLandingDamage(ref predictedPlayer.ValueRW, wasLanding,
+                            controllerConsts.ValueRO.ControllerConsts.Gravity, serverTick);
                 }
 
                 predictedPlayer.ValueRW.AccumulatedMovement = float3.zero;
