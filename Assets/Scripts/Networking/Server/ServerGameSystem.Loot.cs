@@ -24,7 +24,7 @@ namespace Unity.MP_FPS
             {
                 if(!state.EntityManager.HasComponent<RaidInventoryState>(connection))continue;
                 var inventory=GetRaidInventory(ref state,connection);
-                inventory.OpenedLootId=-1;inventory.CancelActions();inventory.SearchedLoot.Clear();inventory.LastSentVersion=-1;inventory.LastSentLootVersion=-1;
+                inventory.OpenedLootId=-1;inventory.CancelActions();inventory.ClearSearchRecords();inventory.LastSentVersion=-1;inventory.LastSentLootVersion=-1;
                 inventory.NextDeathBagResync=0;
             }
         }
@@ -199,7 +199,8 @@ namespace Unity.MP_FPS
                             var player=SystemAPI.GetComponent<JoinedClient>(connection).PlayerEntity;
                             inventory.BeginDissection(r.LootId,SystemAPI.Time.ElapsedTime,SystemAPI.GetComponent<LocalTransform>(player).Position,
                                 SystemAPI.GetComponent<PredictedPlayerGhost>(player),
-                                caches.RequiresDissection(r.LootId) ? AlienHarvest.DissectionSeconds : MoonRaidMap.Active.SearchSeconds);
+                                caches.RequiresDissection(r.LootId) ? AlienHarvest.DissectionSeconds : MoonRaidMap.Active.SearchSeconds,
+                                caches.RefillGeneration(r.LootId));
                         }
                         if(weaponBusy)inventory.ActionFeedback="操作未开始：正在换弹或切换武器。";
                         inventory.Error=accepted ? InventoryError.None : InventoryError.Inaccessible;

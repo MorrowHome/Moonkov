@@ -55,6 +55,7 @@ namespace Unity.MP_FPS
         private readonly System.Collections.Generic.List<int> m_ExpiredDrops = new System.Collections.Generic.List<int>();
         public const int FirstMissionCacheId = 1000000000;
         private int m_NextDeathBagId=FirstDeathBagId;
+        public int RefillGeneration(int id) => RefillStates.TryGetValue(id,out var refill) ? refill.RefillCount : 0;
         // A fresh alien bag starts at version 1. Dissection advances it before
         // any inventory transfer is allowed; human corpses retain their old flow.
         public bool RequiresDissection(int id) => DeathBags.TryGetValue(id,out var corpse) && corpse.CharacterIndex==-1 &&
@@ -150,6 +151,7 @@ namespace Unity.MP_FPS
         public int DissectingLootId=-1;
         public double NextLootNoiseAt;
         public readonly System.Collections.Generic.HashSet<int> SearchedLoot = new System.Collections.Generic.HashSet<int>();
+        private readonly System.Collections.Generic.Dictionary<int,int> m_SearchedGenerations = new System.Collections.Generic.Dictionary<int,int>();
         public string MedicalItemId;
         public bool MedicalIsConsumable;
         public string ActionFeedback;
@@ -158,7 +160,9 @@ namespace Unity.MP_FPS
         public double MedicalUntil;
         public Unity.Mathematics.float3 MedicalOrigin;
         public uint MedicalDamageTick,MedicalShieldHitSequence,MedicalShotTick,MedicalGrenadeTick,MedicalReloadTick,MedicalWeapon;
-        public bool NeedsSearch(RaidLootContainers caches,int id) => !SearchedLoot.Contains(id) || caches.RequiresDissection(id);
+        public bool NeedsSearch(RaidLootContainers caches,int id) => !SearchedLoot.Contains(id) || caches.RequiresDissection(id) ||
+            caches.RefillStates.TryGetValue(id,out var refill) && (!m_SearchedGenerations.TryGetValue(id,out var generation) || generation!=refill.RefillCount);
+        public void ClearSearchRecords() { SearchedLoot.Clear();m_SearchedGenerations.Clear(); }
         public uint DeathBagSequence;
         public double NextDeathBagResync;
         public readonly System.Collections.Generic.List<int> HiddenDeathBags = new System.Collections.Generic.List<int>();
@@ -224,12 +228,13 @@ namespace Unity.MP_FPS
         }
         public double DissectionUntil;
         public Unity.Mathematics.float3 DissectionOrigin;
+        public int DissectionGeneration;
         public uint DissectionDamageTick,DissectionShieldHitSequence,DissectionShotTick,DissectionGrenadeTick,DissectionReloadTick,DissectionWeapon;
-        public bool BeginDissection(int id,double now,Unity.Mathematics.float3 origin,in PredictedPlayerGhost health,float seconds=AlienHarvest.DissectionSeconds)
+        public bool BeginDissection(int id,double now,Unity.Mathematics.float3 origin,in PredictedPlayerGhost health,float seconds=AlienHarvest.DissectionSeconds,int refillGeneration=0)
         {
             if(RaidHealth.HandsBusy(health))return false;
             CancelActions(ActionPending ? "原操作已取消：开始搜索；未消耗物品。" : ActionFeedback);DissectingLootId=id;DissectionUntil=now+System.Math.Max(.1f,seconds);
-            DissectionOrigin=origin;DissectionDamageTick=health.LastHitTick;DissectionShieldHitSequence=health.ShieldHitSequence;
+            DissectionOrigin=origin;DissectionGeneration=refillGeneration;DissectionDamageTick=health.LastHitTick;DissectionShieldHitSequence=health.ShieldHitSequence;
             DissectionShotTick=health.LastShotTick;DissectionGrenadeTick=health.LastGrenadeShotTick;
             DissectionReloadTick=health.LastReloadTick;DissectionWeapon=health.EquippedWeaponID;OpenedLootId=-1;LastSentVersion=-1;
             return true;
@@ -237,7 +242,9 @@ namespace Unity.MP_FPS
         public void RefreshDissection(RaidLootContainers caches,bool accessible,Unity.Mathematics.float3 position,in PredictedPlayerGhost health,double now)
         {
             if(DissectingLootId<0)return;
+            bool contentsChanged=caches.RefillStates.TryGetValue(DissectingLootId,out var refill) && refill.RefillCount!=DissectionGeneration;
             string reason=!accessible ? "搜索中断：离开范围、死亡或战局结束。" :
+                contentsChanged ? "搜索中断：容器内容已刷新。" :
                 Unity.Mathematics.math.distancesq(position,DissectionOrigin)>.75f*.75f ? "搜索中断：移动超过允许范围。" :
                 health.LastHitTick!=DissectionDamageTick || health.ShieldHitSequence!=DissectionShieldHitSequence ? "搜索中断：受到攻击。" :
                 health.LastShotTick!=DissectionShotTick || health.LastGrenadeShotTick!=DissectionGrenadeTick ? "搜索中断：开火或投掷。" :
@@ -249,7 +256,9 @@ namespace Unity.MP_FPS
             if(reason==null)
             {
                 if(caches.RequiresDissection(id))caches.Containers[id].Version++;
-                SearchedLoot.Add(id);OpenedLootId=id;
+                SearchedLoot.Add(id);
+                if(caches.RefillStates.TryGetValue(id,out refill))m_SearchedGenerations[id]=refill.RefillCount;
+                OpenedLootId=id;
             }
         }
         public readonly System.Collections.Generic.Dictionary<int,int> SentDeathBags = new System.Collections.Generic.Dictionary<int,int>();

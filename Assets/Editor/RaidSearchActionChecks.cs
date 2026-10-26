@@ -32,6 +32,38 @@ public static class RaidSearchActionChecks
         actor.RefreshDissection(caches, true, origin, health, 12);
         Check(actor.OpenedLootId == 0 && actor.SearchedLoot.Contains(0) && !actor.NeedsSearch(caches, 0), "Search opens and remembers the completed container");
 
+        var remembered = new RaidInventoryState();
+        remembered.BeginDissection(1, 0, origin, health, 2);
+        remembered.RefreshDissection(caches, true, origin, health, 2);
+        remembered.OpenedLootId = -1;
+        var another = new RaidInventoryState();
+        another.BeginDissection(1, 0, origin, health, 2);
+        another.RefreshDissection(caches, true, origin, health, 2);
+        another.OpenedLootId = -1;
+        var refilled = caches.Containers[1];
+        refilled.Items.RemoveAll(item => InventoryCatalog.Get(item.Code).Kind != ItemKind.Root); refilled.Version++;
+        var refill = caches.RefillStates[1]; var random = new System.Random(27);
+        Check(!refill.TryRefill(refilled, 10, 1, 2, false, random) && refill.TryRefill(refilled, 11, 1, 2, false, random), "Refill fixture generates a new batch");
+        Check(remembered.NeedsSearch(caches, 1) && another.NeedsSearch(caches, 1), "Every observer must search a new supply batch again");
+        remembered.BeginDissection(1, 20, origin, health, 2, caches.RefillGeneration(1));
+        remembered.RefreshDissection(caches, true, origin, health, 21.99);
+        Check(remembered.OpenedLootId == -1 && remembered.NeedsSearch(caches, 1), "Refilled contents stay hidden until the new search finishes");
+        remembered.RefreshDissection(caches, true, origin, health, 22);
+        Check(remembered.OpenedLootId == 1 && !remembered.NeedsSearch(caches, 1), "New batch search becomes remembered");
+        refilled.Version++;
+        Check(!remembered.NeedsSearch(caches, 1), "Ordinary item transfers do not restart a completed search");
+        var inFlight = new RaidInventoryState();
+        inFlight.BeginDissection(1, 30, origin, health, 2, caches.RefillGeneration(1));
+        refilled.Items.RemoveAll(item => InventoryCatalog.Get(item.Code).Kind != ItemKind.Root); refilled.Version++;
+        Check(!refill.TryRefill(refilled, 31, 1, 2, false, random) && refill.TryRefill(refilled, 32, 1, 2, false, random), "Second batch fixture");
+        inFlight.RefreshDissection(caches, true, origin, health, 32);
+        Check(inFlight.OpenedLootId == -1 && !inFlight.SearchedLoot.Contains(1), "A batch change during search cannot reveal new contents");
+        inFlight.BeginDissection(1, 40, origin, health, 2, caches.RefillGeneration(1));
+        inFlight.RefreshDissection(caches, true, origin, health, 42);
+        Check(inFlight.OpenedLootId == 1 && !inFlight.NeedsSearch(caches, 1), "New batch can be searched normally");
+        inFlight.ClearSearchRecords();
+        Check(inFlight.NeedsSearch(caches, 1), "New raid clears both search and batch memory");
+
         for (int interruption = 0; interruption < 10; interruption++)
         {
             actor = new RaidInventoryState();
@@ -80,6 +112,6 @@ public static class RaidSearchActionChecks
         actor.RefreshDissection(caches, true, origin, hit, 16);
         Check(!caches.RequiresDissection(alienId) && actor.OpenedLootId == alienId && caches.Containers[alienId].Version == 2,
             "Restarted dissection reveals shared remains once");
-        return "PASS " + s_Checks + " search interruption checks";
+        return "PASS " + s_Checks + " search and refill checks";
     }
 }

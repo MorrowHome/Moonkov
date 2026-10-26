@@ -346,7 +346,7 @@ namespace Unity.MP_FPS
             for(int i=0;map!=null&&i<map.LootPositions.Length;i++)
             {var graph=RaidLootTable.Create(map.GetLootProfile(i),loot.LootRandom);graph.Version=version;loot.Containers[i]=graph;loot.RefillStates[i]=new RaidLootRefillState(map.GetLootProfile(i));}
             foreach(var inventory in context.Inventories.Values)
-            {inventory.CancelActions();inventory.SearchedLoot.Clear();inventory.OpenedLootId=-1;inventory.LastSentVersion=inventory.LastSentLootVersion=-1;inventory.NextDeathBagResync=0;}
+            {inventory.CancelActions();inventory.ClearSearchRecords();inventory.OpenedLootId=-1;inventory.LastSentVersion=inventory.LastSentLootVersion=-1;inventory.NextDeathBagResync=0;}
             loot.NextRefillCheck=0;world.NextSnapshot=0;
         }
         private void SendClashSnapshots(ref SystemState state,EntityCommandBuffer ecb,BountyClashWorld world,double now)

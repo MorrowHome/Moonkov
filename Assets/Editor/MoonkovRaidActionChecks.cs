@@ -310,6 +310,7 @@ public static class MoonkovRaidActionChecks
         var em=world.EntityManager;var player=em.GetComponentData<JoinedClient>(connection).PlayerEntity;
         int id=RaidLootContainers.FirstMissionCacheId+1;
         caches.Containers.Add(id,LootInventoryExchange.CreateCache(0));caches.MissionCaches.Add(id,origin+new float3(0,.25f,2));
+        caches.RefillStates.Add(id,new RaidLootRefillState(RaidLootProfile.Supplies));
         var health=em.GetComponentData<PredictedPlayerGhost>(player);
         health.ShieldEquipped=true;health.ShieldCharge=100;health.LastHitTick=42;health.ControllerState.IsReloadingState=true;em.SetComponentData(player,health);
         world.SetTime(new TimeData(4,.02f));
@@ -330,7 +331,15 @@ public static class MoonkovRaidActionChecks
         Check(inventory.OpenedLootId<0 && !inventory.SearchedLoot.Contains(id),"Shooting during search revealed loot");
         open.RequestId=4;Request(world,connection,open);Process(world,handle,"HandleLootRequests");Refresh(world,handle,connection,10);
         Check(inventory.OpenedLootId==id && inventory.SearchedLoot.Contains(id),"Safe search did not recover after interruptions");
-        caches.Containers.Remove(id);caches.MissionCaches.Remove(id);inventory.OpenedLootId=-1;
+        Request(world,connection,new RaidLootOpenRpc {RaidId=7,RequestId=5,LootId=-1});Process(world,handle,"HandleLootRequests");
+        var cache=caches.Containers[id];cache.Items.RemoveAll(item=>InventoryCatalog.Get(item.Code).Kind!=ItemKind.Root);cache.Version++;
+        var refill=caches.RefillStates[id];var random=new System.Random(8);
+        Check(!refill.TryRefill(cache,10,1,1,false,random) && refill.TryRefill(cache,11,1,1,false,random),"Refill RPC fixture");
+        world.SetTime(new TimeData(11,.02f));open.RequestId=6;Request(world,connection,open);Process(world,handle,"HandleLootRequests");
+        Check(inventory.DissectingLootId==id && inventory.OpenedLootId<0,"Refilled cache reopened without searching");
+        Refresh(world,handle,connection,13);
+        Check(inventory.OpenedLootId==id && !inventory.NeedsSearch(caches,id),"Refilled cache search did not complete");
+        caches.Containers.Remove(id);caches.MissionCaches.Remove(id);caches.RefillStates.Remove(id);inventory.OpenedLootId=-1;
     }
     private delegate void BagHandler(ref ServerGameSystem system,ref SystemState state,EntityCommandBuffer commands,Entity connection);
     private static unsafe RaidGroundItemMarkerRpc[] SendBags(World world,SystemHandle handle,Entity connection,RaidDeathBagClientState client)
