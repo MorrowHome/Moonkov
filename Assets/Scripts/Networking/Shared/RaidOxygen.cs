@@ -70,7 +70,7 @@ namespace Unity.MP_FPS
             state.HypoxiaSeconds += exhaustedTime;
             state.OxygenGraceRemaining = Mathf.Max(0, parameters.GraceSeconds - state.HypoxiaSeconds);
             float exposure = Mathf.Max(0, state.HypoxiaSeconds - parameters.GraceSeconds) - before;
-            if (exposure > 0) RaidHealth.Damage(ref state, BodyPart.Chest, exposure * parameters.DamagePerSecond, tick);
+            if (exposure > 0) RaidHealth.Damage(ref state, BodyPart.Chest, exposure * parameters.DamagePerSecond, tick, physiological:true);
         }
         private static float FiniteNonnegative(float value) => float.IsFinite(value) ? Mathf.Max(0, value) : 0;
     }

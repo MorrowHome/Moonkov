@@ -103,9 +103,9 @@ public struct PredictedPlayerGhost : IComponentData
     [GhostField] public float Satiety;
     // Server exposure timers; snapshots carry the resulting resources/effects.
     public float StarvationSeconds, DehydrationSeconds;
-    // Server action guard: metabolic damage is continuous and must not make
-    // a starving or dehydrated player unable to finish eating or drinking.
-    public uint NonMetabolicDamageSequence;
+    // Server action guard: ongoing hunger, thirst and hypoxia must not prevent
+    // a player from searching for and using lifesaving supplies.
+    public uint NonPhysiologicalDamageSequence;
     // Server-only, accumulated between tactical updates; never client-authored.
     public float PendingBulletWound;
     public ClashDamageSource PendingBulletWoundSource;

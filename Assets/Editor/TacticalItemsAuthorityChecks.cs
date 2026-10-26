@@ -91,16 +91,17 @@ public static class TacticalItemsAuthorityChecks
             Clear();
             BountyClashDamage.Apply(world,player,8,BodyPart.LeftArm,25,tick,RaidDamageKind.Bullet);Tick();
             Check(Data().Statuses.TryGetValue(player,out var starvingWound) && starvingWound.Bleed>now,"Starving wound fixture");
-            health=em.GetComponentData<PredictedPlayerGhost>(player);health.Energy=0;health.Hydration=0;em.SetComponentData(player,health);
+            health=em.GetComponentData<PredictedPlayerGhost>(player);health.Energy=0;health.Hydration=0;health.Oxygen=0;em.SetComponentData(player,health);
             Request(TacticalItemAction.Extinguish);float starvingHp=em.GetComponentData<PredictedPlayerGhost>(player).CurrentHealth;
             for(int i=0;i<33;i++)
             {
                 health=em.GetComponentData<PredictedPlayerGhost>(player);
                 RaidNutrition.Tick(ref health,.1f,1000,1000,300,0,2,2,tick);
+                RaidHealth.TickOxygen(ref health,false,.1f,600,0,0,3,tick);
                 em.SetComponentData(player,health);Tick();
             }
             Check(starvingWound.Bleed==0 && !inventory.TacticalPending && em.GetComponentData<PredictedPlayerGhost>(player).CurrentHealth<starvingHp,
-                "Starvation and dehydration interrupted real self-treatment");
+                "Physiological damage interrupted real self-treatment");
             Clear();
             BountyClashDamage.Apply(world,player,8,BodyPart.LeftArm,25,tick,RaidDamageKind.Bullet);Tick();
             health=em.GetComponentData<PredictedPlayerGhost>(player);health.Energy=0;em.SetComponentData(player,health);

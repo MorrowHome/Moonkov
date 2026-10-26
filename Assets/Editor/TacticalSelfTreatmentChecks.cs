@@ -12,7 +12,7 @@ public static class TacticalSelfTreatmentChecks
         s_Checks=0;
         var health=new PredictedPlayerGhost();RaidHealth.Initialize(ref health);
         health.Energy=0;health.Hydration=0;
-        uint damage=health.NonMetabolicDamageSequence,shield=health.ShieldHitSequence;
+        uint damage=health.NonPhysiologicalDamageSequence,shield=health.ShieldHitSequence;
         float start=health.CurrentHealth;
         RaidNutrition.Tick(ref health,.5f,1000,1000,300,0,2,2,10);
         Check(health.CurrentHealth<start && health.LastHitTick==10,"metabolic damage still applies");
@@ -21,7 +21,7 @@ public static class TacticalSelfTreatmentChecks
         RaidHealth.CombatDamage(ref health,BodyPart.Auto,2,11,RaidDamageKind.Bleed);
         Check(health.CurrentHealth<beforeOwn.CurrentHealth && !RaidHealth.SelfTreatmentDamageUnchanged(health,damage,shield),"bleeding still deals damage");
         Check(RaidHealth.SelfTreatmentDamageUnchanged(beforeOwn,damage,shield),"only known status damage can advance treatment baseline");
-        damage=health.NonMetabolicDamageSequence;
+        damage=health.NonPhysiologicalDamageSequence;
         RaidNutrition.Tick(ref health,.5f,1000,1000,300,0,2,2,12);
         Check(RaidHealth.SelfTreatmentDamageUnchanged(health,damage,shield),"treatment can continue after known bleed and metabolic damage");
         var beforeAttack=health;
@@ -33,9 +33,9 @@ public static class TacticalSelfTreatmentChecks
         Check(!RaidHealth.SelfTreatmentDamageUnchanged(health,damage,shield),"later bleed cannot hide an unaccepted bullet");
         var protectedHealth=new PredictedPlayerGhost();RaidHealth.Initialize(ref protectedHealth);
         protectedHealth.ShieldEquipped=true;protectedHealth.ShieldCharge=100;
-        damage=protectedHealth.NonMetabolicDamageSequence;shield=protectedHealth.ShieldHitSequence;
+        damage=protectedHealth.NonPhysiologicalDamageSequence;shield=protectedHealth.ShieldHitSequence;
         RaidHealth.CombatDamage(ref protectedHealth,BodyPart.RightArm,5,20,RaidDamageKind.Bullet);
-        Check(protectedHealth.NonMetabolicDamageSequence==damage && !RaidHealth.SelfTreatmentDamageUnchanged(protectedHealth,damage,shield),
+        Check(protectedHealth.NonPhysiologicalDamageSequence==damage && !RaidHealth.SelfTreatmentDamageUnchanged(protectedHealth,damage,shield),
             "shield-only hit interrupts treatment");
         return "PASS "+s_Checks+" self-treatment damage checks";
     }

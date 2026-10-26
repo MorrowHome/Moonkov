@@ -246,7 +246,7 @@ namespace Unity.MP_FPS
             CancelManualMission(ref state,connection,"道具操作开始。");
             world.Uses[connection]=new TacticalServerWorld.Use {Player=player,RaidId=r.RaidId,Version=r.ExpectedVersion,Request=r.RequestId,
                 Target=r.TargetId,ItemId=r.ItemId.ToString(),Action=r.Action,Definition=definition,Origin=root.transform.position,Placement=placement,
-                Until=now+seconds,Hit=health.LastHitTick,DamageSequence=health.NonMetabolicDamageSequence,ShieldHit=health.ShieldHitSequence,Shot=health.LastShotTick,Grenade=health.LastGrenadeShotTick,
+                Until=now+seconds,Hit=health.LastHitTick,DamageSequence=health.NonPhysiologicalDamageSequence,ShieldHit=health.ShieldHitSequence,Shot=health.LastShotTick,Grenade=health.LastGrenadeShotTick,
                 Reload=health.LastReloadTick,Weapon=health.EquippedWeaponID,Health=health.CurrentHealth};
             inventory.Error=InventoryError.None;world.Feedbacks[connection]=TacticalItemFeedback.Started;
         }
@@ -469,7 +469,7 @@ namespace Unity.MP_FPS
                     foreach(var pending in world.Uses.Values)
                         if(pending.Player==victim && pending.Action==TacticalItemAction.Extinguish &&
                             RaidHealth.SelfTreatmentDamageUnchanged(health,pending.DamageSequence,pending.ShieldHit))
-                        {pending.Hit=after.LastHitTick;pending.DamageSequence=after.NonMetabolicDamageSequence;
+                        {pending.Hit=after.LastHitTick;pending.DamageSequence=after.NonPhysiologicalDamageSequence;
                             pending.ShieldHit=after.ShieldHitSequence;pending.Health=after.CurrentHealth;}
                 }
                 if(!status.Sprint.Initialized && Math.Max(Math.Max(Math.Max(status.Fire,status.Poison),Math.Max(status.Bleed,status.Stamina)),Math.Max(status.Antidote,Math.Max(status.Wire,status.Cough)))<=now)world.Scratch.Add(victim);

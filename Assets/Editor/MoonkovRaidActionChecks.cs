@@ -373,6 +373,16 @@ public static class MoonkovRaidActionChecks
         RaidNutrition.Tick(ref health,.5f,1000,1000,300,0,2,0,70);em.SetComponentData(player,health);
         Refresh(world,handle,connection,17.5);
         Check(inventory.OpenedLootId<0 && inventory.Error==InventoryError.Inaccessible,"Same-tick starvation concealed search interruption");
+        health=em.GetComponentData<PredictedPlayerGhost>(player);health.Energy=100;health.Oxygen=0;em.SetComponentData(player,health);
+        world.SetTime(new TimeData(18,.02f));open.RequestId=9;Request(world,connection,open);Process(world,handle,"HandleLootRequests");
+        hp=health.CurrentHealth;
+        for(uint tick=71;tick<=74;tick++)
+        {
+            health=em.GetComponentData<PredictedPlayerGhost>(player);RaidHealth.TickOxygen(ref health,false,.5f,600,0,0,3,tick);
+            em.SetComponentData(player,health);Refresh(world,handle,connection,18+(tick-70)*.5);
+        }
+        Check(inventory.OpenedLootId==id && em.GetComponentData<PredictedPlayerGhost>(player).CurrentHealth<hp,
+            "Hypoxia damage interrupted search RPC");
         caches.Containers.Remove(id);caches.MissionCaches.Remove(id);caches.RefillStates.Remove(id);inventory.OpenedLootId=-1;
     }
     private static void CheckReloadInventoryRequests(World world,SystemHandle handle,Entity connection,RaidInventoryState inventory,
