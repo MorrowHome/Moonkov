@@ -38,6 +38,8 @@ public static class HaloReloadQueueChecks
         HaloModuleFire.AdvanceTimers(ref state,1.2f);
         Check(HaloModuleFire.ReadyToReload(ref state,false,30),"queued press survives the complete long draw");
         Check(!HaloModuleFire.ReadyToReload(ref state,false,30),"failed reservation cannot retry indefinitely");
+        state.ReloadQueued=true;RaidHealth.Initialize(ref state);
+        Check(!state.ReloadQueued,"revival cannot replay a queued request from the previous life");
         return "PASS "+s_Checks+" queued reload checks";
     }
 }
