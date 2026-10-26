@@ -80,6 +80,28 @@ namespace Unity.MP_FPS
                     goal = brain.HasCover ? (brain.IsPeeking ? brain.PeekPosition : brain.CoverPosition) : position;
                     if (brain.Action == PmcAction.Retreat && contact && !brain.HasCover)
                         goal = ChooseWithdrawal(brain, position);
+                    else if (brain.Action == PmcAction.Retreat && !contact && !brain.IsClashBot &&
+                        PmcUnknownAttack.NeedsEvasion(false, false, brain.LastDamage, now))
+                    {
+                        if (brain.HasCover && !brain.PathFailed)
+                        {
+                            brain.IsPeeking = false;
+                            goal = brain.CoverPosition;
+                        }
+                        else if (changed || now >= brain.NextUnknownEvasion)
+                        {
+                            if (brain.HasCover)
+                            {
+                                AvoidCurrentCover(brain, now);
+                                brain.HasCover = brain.IsPeeking = false;
+                                m_CoverReservations.Remove(brain.Seed);
+                            }
+                            Vector3 direction = PmcUnknownAttack.Direction(position, brain.RaidExit, brain.Yaw);
+                            goal = ReachableOffset(brain, position, direction * 6);
+                            brain.NextUnknownEvasion = now + 1.5;
+                        }
+                        else goal = brain.TacticalGoal;
+                    }
                     break;
                 case PmcAction.Flank:
                     if (changed || brain.PathFailed)

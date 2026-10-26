@@ -37,6 +37,7 @@ public static class DollSingerHumanlikeChecks
             CheckDecisions(system, map, tuning);
             CheckCombatRecovery(system, map);
             CheckCombatPressure(system);
+            CheckUnknownAttack(system, map);
             CheckBleedTreatment(system, map);
             CheckReturnFire(system, map, world);
             CheckReloadAvailability(system, map);
@@ -304,6 +305,42 @@ public static class DollSingerHumanlikeChecks
             "A real shield impact failed to interrupt passive behavior.");
         Call(system, "UpdateCombatPressure", new object[] { brain, health, 13d, 0f });
         Require(brain.Suppression == pressure, "An unchanged shield event repeatedly added pressure.");
+    }
+
+    private static void CheckUnknownAttack(DollSingerEnemySystem system, MoonRaidMap map)
+    {
+        var brain = Brain(); var health = Health(); brain.Action = PmcAction.Scavenge;
+        brain.LastDamage = 10; brain.LootUntil = 20;
+        var decision = Decide(system, brain, health, map, 10.1);
+        Require(decision.action == PmcAction.Retreat && decision.emergency && !brain.Leaving && brain.Target == Entity.Null,
+            "An unseen hit did not interrupt looting for temporary evasion without inventing a target.");
+        var origin = new Vector3(900000, 900000, 900000); brain.RaidExit = origin + Vector3.forward * 20;
+        Call(system, "Decide", new object[] { brain, origin, health, map, 10.1d });
+        Require(brain.Action == PmcAction.Retreat && brain.LootUntil == 0 && brain.Target == Entity.Null &&
+            brain.NextUnknownEvasion > 10.1, "Unknown-fire evasion did not cancel the search and bound path retries.");
+        double retry = brain.NextUnknownEvasion; var goal = brain.TacticalGoal;
+        Call(system, "Decide", new object[] { brain, origin, health, map, 10.2d });
+        Require(brain.NextUnknownEvasion == retry && brain.TacticalGoal == goal && brain.Target == Entity.Null,
+            "Unseen danger replanned continuously or fabricated an attacker.");
+        decision = Decide(system, brain, health, map, 13);
+        Require(decision.action != PmcAction.Retreat, "Unseen-fire evasion did not expire after the danger interval.");
+
+        brain = Brain(); brain.Action = PmcAction.Scavenge; brain.LastDamage = 10;
+        brain.HasCover = brain.IsPeeking = true; brain.CoverPosition = origin + Vector3.right * 4;
+        brain.PeekPosition = origin + Vector3.left * 4;
+        Call(system, "Decide", new object[] { brain, origin, health, map, 10.1d });
+        Cover(system, brain, origin, 10.2);
+        Require(brain.HasCover && !brain.IsPeeking && brain.TacticalGoal == brain.CoverPosition,
+            "Unseen-fire evasion did not return to the available cover.");
+
+        brain = Brain(); brain.Action = PmcAction.Scavenge; brain.LastDamage = 10;
+        brain.HasCover = brain.PathFailed = true; brain.CoverPosition = origin + Vector3.right * 4;
+        brain.RaidExit = origin + Vector3.forward * 20;
+        Call(system, "Decide", new object[] { brain, origin, health, map, 10.1d });
+        goal = brain.TacticalGoal;
+        Cover(system, brain, origin, 10.2);
+        Require(!brain.HasCover && brain.TacticalGoal == goal && brain.NextUnknownEvasion > 10.1,
+            "Failed cover overrode the fallback evasion path.");
     }
 
     private static void CheckBleedTreatment(DollSingerEnemySystem system, MoonRaidMap map)

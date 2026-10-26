@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Entities;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.AI;
 using Unity.MP_FPS.Inventory;
@@ -104,6 +105,28 @@ namespace Unity.MP_FPS
         }
     }
 
+    public static class PmcUnknownAttack
+    {
+        public static bool NeedsEvasion(bool clash, bool hasContact, double lastDamage, double now) =>
+            !clash && !hasContact && double.IsFinite(lastDamage) && double.IsFinite(now) &&
+            now >= lastDamage && now - lastDamage < 3;
+
+        // Retreat toward a known exit, or backward when already there. Neither
+        // direction encodes an unseen attacker's actual position.
+        public static float3 Direction(float3 position, float3 exit, float yawDegrees)
+        {
+            if (math.all(math.isfinite(position)) && math.all(math.isfinite(exit)))
+            {
+                float2 towardExit = new float2(exit.x - position.x, exit.z - position.z);
+                float lengthSq = math.lengthsq(towardExit);
+                if (math.all(math.isfinite(towardExit)) && math.isfinite(lengthSq) && lengthSq > 1)
+                { towardExit = math.normalize(towardExit); return new float3(towardExit.x, 0, towardExit.y); }
+            }
+            float yaw = math.radians(float.IsFinite(yawDegrees) ? yawDegrees : 0);
+            return new float3(-math.sin(yaw), 0, -math.cos(yaw));
+        }
+    }
+
     // Observations are the only way world knowledge enters a brain. Decision code uses
     // this snapshot, never a hidden opponent's current transform or inventory.
     public sealed class PmcContact
@@ -139,6 +162,7 @@ namespace Unity.MP_FPS
         public double CacheObstructedSince = -1;
         public double NextCorpseScan;
         public double NextTacticalSwitch;
+        public double NextUnknownEvasion;
         public PmcMedicalFailure MedicalFailure;
         public Vector3 Goal, LastSeen, ObservedVelocity, ProgressPosition, CoverPosition, PeekPosition, TacticalGoal;
         public Vector3 RaidExit;

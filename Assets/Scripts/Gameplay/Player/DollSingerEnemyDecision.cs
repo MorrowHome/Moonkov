@@ -85,6 +85,8 @@ namespace Unity.MP_FPS
 
             // Withdrawal stops pursuing stale contacts. A wounded raider can actually leave
             // once sight is broken, instead of being stuck in Retreat until all memory expires.
+            if (PmcUnknownAttack.NeedsEvasion(brain.IsClashBot, contact, brain.LastDamage, now))
+                Consider(PmcAction.Retreat, 105, "move to safety after an unseen attack");
             if ((lowHealth || exhausted || brain.Leaving && (!brain.IsClashBot || brain.Mission != ClashBotGoal.Escort)) && underThreat)
                 Consider(PmcAction.Retreat, 110, "break contact to survive and extract");
             if (health.ControllerState.IsReloadingState || energy && ShouldReload(brain, health, position, now))

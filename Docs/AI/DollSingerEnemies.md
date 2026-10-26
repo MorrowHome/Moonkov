@@ -61,6 +61,10 @@ its leaderboard entry after queued kill-feed messages have resolved their names.
 
 武器选择的 14 项生产规则检查通过，覆盖距离边界、空弹、切枪/充能、死亡和武器槽位置。游戏与编辑器程序集隔离编译通过。真实武器配置和敌人输入夹具已补充，尚未在编辑器运行；近距离伤害、动作和敌人难度仍需实战校准。
 
+普通搜打撤中，人形敌人被未知方向的攻击命中后，会中断搜刮并短暂转移。它优先使用已有掩体；否则沿已知撤离方向寻找短距离可达路线。没有识别出攻击者时不会凭空锁定目标或开火。短暂危险结束后恢复原来的决策；无可达路线时留在原处。赏金模式不使用此规则。
+
+未知攻击的 12 项生产规则检查通过，覆盖危险时限、模式隔离、目标记忆和有限方向。游戏与编辑器程序集隔离编译通过；真实敌人决策和导航夹具已补充，尚未在编辑器运行，正式战场反应仍需试玩。
+
 ## Perception and combat
 
 Sight uses three physical rays (head, torso, hips), range, view angle, movement and
