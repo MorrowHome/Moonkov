@@ -73,7 +73,7 @@ namespace Unity.MP_FPS
             bool unsealed = !player.HeadDomeEquipped && !player.BreathableAir;
             m_HeadDomeStatus.EnableInClassList("raid-protection-head-danger", unsealed || !player.BreathableAir && player.Oxygen <= RaidOxygen.CriticalThreshold);
             MoonkovLocalization.Set(m_HeadDomeStatus, unsealed ? "NO COLLAR / SEEK PRESSURIZED AIR" :
-                player.HeadDomeEquipped ? "COLLAR / O₂ {0:0}%" : "COLLAR / NOT EQUIPPED", player.Oxygen);
+                player.HeadDomeEquipped ? "COLLAR / EQUIPPED" : "COLLAR / NOT EQUIPPED");
         }
 
         private void DisposeProtection()

@@ -328,6 +328,9 @@ namespace Unity.MP_FPS.Client
             var hud = m_Content.Q<Toggle>("alwaysShowHUD");
             hud.SetValueWithoutNotify(PlayerPrefs.GetInt("Moonkov.AlwaysShowHUD", 0) != 0);
             hud.RegisterValueChangedCallback(e => PlayerPrefs.SetInt("Moonkov.AlwaysShowHUD", e.newValue ? 1 : 0));
+            var vitalMotion = m_Content.Q<Toggle>("animateVitalSignal");
+            vitalMotion.SetValueWithoutNotify(PlayerPrefs.GetInt(RaidVitalsMonitor.AnimatePreference, 1) != 0);
+            vitalMotion.RegisterValueChangedCallback(e => PlayerPrefs.SetInt(RaidVitalsMonitor.AnimatePreference, e.newValue ? 1 : 0));
             var language = m_Content.Q<DropdownField>("language");
             language.choices = new List<string> { "简体中文", "English" };
             language.SetValueWithoutNotify(UnityEngine.Localization.Settings.LocalizationSettings.SelectedLocale?.Identifier.Code == "zh-Hans" ? "简体中文" : "English");

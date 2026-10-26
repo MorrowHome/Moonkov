@@ -95,3 +95,5 @@
 .raid-timed-action .unity-progress-bar__progress { background-color: #485f51; border-width: 0; }
 .raid-ui .raid-timed-action .unity-progress-bar__title { white-space: normal; color: #f1eee2; font-size: 14px; -unity-text-align: middle-center; }
 .raid-ui .raid-timed-action Button { margin-top: 8px; min-height: 32px; font-size: 13px; }
+/* Oxygen and nutrition are now consolidated in the transparent vital monitor. */
+#raidOxygenPanel, #raidOxygenWarning { display: none; }

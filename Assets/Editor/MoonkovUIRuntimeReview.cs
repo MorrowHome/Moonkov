@@ -243,11 +243,13 @@ public static class MoonkovUIRuntimeReview
     {
         Load("Assets/UI Toolkit/GameUI/PlayerHUD.uxml");
         Resources.Load<VisualTreeAsset>("Moonkov/RaidUI").CloneTree(s_Root);
-        Set("ammo-label", "18 / 30"); Set("health-state", "HEALTH"); Set("health-value", "440/440");
+        Set("ammo-label", "18 / 30");
+        var body = new RaidVitalsMonitor(); s_Root.Q("health-body-host").Add(body);
+        var bodyState = default(PredictedPlayerGhost); RaidHealth.Initialize(ref bodyState); body.Present(bodyState);
         s_Root.Q("reloading-label").style.display = DisplayStyle.None;
         var reticle = s_Root.Q("player-reticle"); reticle.AddToClassList("kits-reticle-cross"); reticle.style.width = reticle.style.height = 22;
         Set("raidTimer", "18:42"); Set("raidClock", "EXPEDITION / LOCAL REVIEW"); Set("raidBag", "CARGO / 4"); Set("raidGrenade", "GRENADE / 1");
-        s_Root.Q("raidOxygenPanel").style.display = DisplayStyle.Flex;
+        s_Root.Q("raidOxygenPanel").style.display = DisplayStyle.None;
         Set("raidOxygenReserve", "O₂ / 76%"); Set("raidOxygenTime", "EST. 08:20"); Set("raidOxygenAir", "SUIT AIR"); s_Root.Q("raidOxygenFill").style.width = Length.Percent(76);
         if (name == "hud-bright") s_Root.style.backgroundColor = new Color(.94f, .94f, .92f);
         if (name == "hud-alerts")
@@ -255,10 +257,10 @@ public static class MoonkovUIRuntimeReview
             s_Root.Q("reloading-label").style.display = DisplayStyle.Flex;
             s_Root.Q("raidOxygenPanel").AddToClassList("oxygen-critical");
             Set("raidOxygenReserve", "O₂ / 5%"); Set("raidOxygenWarning", "HYPOXIA / NO SPRINT, SEEK AIR");
-            s_Root.Q("raidOxygenWarning").style.display = DisplayStyle.Flex;
+            s_Root.Q("raidOxygenWarning").style.display = DisplayStyle.None;
             s_Root.Q("raidOxygenWarning").AddToClassList("oxygen-critical");
             s_Root.Q("raidOxygenFill").style.width = Length.Percent(5);
-            Set("health-state", "HEALTH / CRITICAL"); Set("health-value", "65/440"); s_Root.Q("health-info-container").AddToClassList("health-critical");
+            RaidHealth.Set(ref bodyState, BodyPart.Chest, 10); RaidHealth.Set(ref bodyState, BodyPart.LeftArm, 15); body.Present(bodyState);
         }
         if (name == "raidpack" || name == "loot" || name == "health")
         {

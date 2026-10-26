@@ -1,13 +1,8 @@
 /* Native field instruments: readable on both sunlit regolith and dark interiors. */
 #hud-root { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
-#weapon-info-container, #health-info-container { position: absolute; bottom: 28px; width: 258px; padding: 12px 16px; background-color: rgba(8,9,12,0.88); border-width: 1px; border-color: #5c626d; border-radius: 0; }
-#health-info-container { left: 28px; border-left-width: 3px; border-left-color: #f1f2ed; }
+#weapon-info-container { position: absolute; bottom: 28px; width: 258px; padding: 12px 16px; background-color: rgba(8,9,12,0.88); border-width: 1px; border-color: #5c626d; border-radius: 0; }
 #weapon-info-container { right: 28px; align-items: flex-end; border-right-width: 3px; border-right-color: #f1f2ed; }
-#health-heading { flex-direction: row; justify-content: space-between; margin-bottom: 8px; }
-#health-state, #health-value { color: #f1f2ed; font-size: 13px; letter-spacing: 0; }
-#health-info-container.health-critical { border-left-color: #f28c78; }
-#health-info-container.health-critical #health-state { color: #ffb0a0; }
-#player-health-bar, #player-ammo-bar { width: 100%; height: 5px; min-height: 5px; flex-shrink: 0; }
+#player-ammo-bar { width: 100%; height: 5px; min-height: 5px; flex-shrink: 0; }
 .kits-progress-bar .unity-progress-bar { min-height: 5px; max-height: 5px; background-color: transparent; border-radius: 0; }
 .kits-progress-bar .unity-progress-bar__background { height: 5px; min-height: 5px; max-height: 5px; background-color: #444a55; border-width: 0; border-radius: 0; }
 .kits-progress-bar .unity-progress-bar__progress { height: 5px; border-radius: 0; background-color: #f1f2ed; }
@@ -43,9 +38,7 @@
 }
 /* Reticle anchors to the viewport, independently of preceding HUD instruments. */
 #reticle-container { position: absolute; left: 0; right: 0; top: 0; bottom: 0; }
-#health-info-container { width: 300px; border-left-color: #164bff; background-image: url("../../Resources/Moonkov/UI/ApprovedHome/CardMoon.png"); background-size: cover; -unity-background-image-tint-color: #20232b; }
-#health-heading { background-color: rgba(8,9,12,0.92); padding: 4px 8px; }
-#health-state { font-size: 14px; }
-#health-value { font-size: 22px; }
 #weapon-info-container { width: 250px; border-right-color: #164bff; background-color: rgba(8,9,12,0.94); }
 #ammo-label { font-size: 32px; white-space: normal; max-width: 100%; }
+#health-info-container { position: absolute; left: 28px; bottom: 28px; width: 224px; height: 284px; }
+#health-body-host { flex-grow: 1; min-height: 0; }

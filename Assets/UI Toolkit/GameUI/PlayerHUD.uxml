@@ -11,9 +11,7 @@
         </ui:VisualElement>
     </ui:VisualElement>
     <ui:VisualElement name="health-info-container" picking-mode="Ignore">
-        <ui:VisualElement name="health-heading" picking-mode="Ignore"><ui:Label name="health-state" text="HEALTH" picking-mode="Ignore" /><ui:Label name="health-value" picking-mode="Ignore" /></ui:VisualElement>
-        <ui:ProgressBar value="63.8" title="HEALTH" name="player-health-bar" class="kits-progress-bar"/>
-        <ui:ProgressBar name="player-stamina-bar" low-value="0" high-value="100" value="100" class="kits-progress-bar" style="display: none;"/>
+        <ui:VisualElement name="health-body-host" picking-mode="Ignore" />
     </ui:VisualElement>
     <ui:VisualElement name="reticle-container" picking-mode="Ignore">
         <ui:VisualElement name="player-reticle" picking-mode="Ignore"/>

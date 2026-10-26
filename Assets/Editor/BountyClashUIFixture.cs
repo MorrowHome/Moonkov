@@ -172,10 +172,9 @@ public static class BountyClashUIFixture
         {
             var visual=s_PlayerHud.rootVisualElement;var g=em.GetComponentData<PredictedPlayerGhost>(s_Player);
             visual.style.display=RaidHUD.InventoryOpen?DisplayStyle.None:DisplayStyle.Flex;
-            visual.Q<ProgressBar>("player-health-bar").highValue=g.MaxHealth>0?g.MaxHealth:100;
-            visual.Q<ProgressBar>("player-health-bar").value=g.CurrentHealth;
-            visual.Q<Label>("health-state").text=MoonkovLocalization.Text("HEALTH");
-            visual.Q<Label>("health-value").text=g.CurrentHealth.ToString("0")+"/"+(g.MaxHealth>0?g.MaxHealth:100).ToString("0");
+            var body = visual.Q<RaidVitalsMonitor>();
+            if (body == null) { body = new RaidVitalsMonitor(); visual.Q("health-body-host").Add(body); }
+            body.Present(g);
             visual.Q<Label>("ammo-label").text=g.CurrentAmmo+" / "+(WeaponManager.Instance.WeaponRegistry.GetWeaponData(g.EquippedWeaponID,g.EquippedModules)?.MagazineSize??0);
             visual.Q<Label>("reloading-label").style.display=DisplayStyle.None;
         }

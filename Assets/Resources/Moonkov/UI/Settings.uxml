@@ -18,6 +18,7 @@
                 <ui:VisualElement class="archive-settings-row"><ui:Slider name="audioEffects" label="GAMEPLAY EFFECTS" class="terminal-slider" low-value="0" high-value="1" /><ui:Label name="audioEffectsValue" class="archive-audio-value" /></ui:VisualElement>
                 <ui:VisualElement class="archive-settings-row"><ui:Slider name="audioInterface" label="INTERFACE AUDIO" class="terminal-slider" low-value="0" high-value="1" /><ui:Label name="audioInterfaceValue" class="archive-audio-value" /></ui:VisualElement>
                 <ui:VisualElement class="archive-settings-row"><ui:Toggle name="alwaysShowHUD" label="ALWAYS SHOW FIELD STATUS" class="terminal-toggle" /></ui:VisualElement>
+                <ui:VisualElement class="archive-settings-row"><ui:Toggle name="animateVitalSignal" label="ANIMATE VITAL SIGNAL" class="terminal-toggle" /></ui:VisualElement>
                 <ui:Label class="terminal-copy" text="The default HUD reveals critical states automatically. Hold [H] to check status or press [Tab] to open your raid pack." />
             </ui:VisualElement>
             <ui:VisualElement class="terminal-panel terminal-side terminal-keys">

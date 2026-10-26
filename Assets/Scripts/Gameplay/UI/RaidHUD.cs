@@ -225,7 +225,7 @@ namespace Unity.MP_FPS
                 food, water, oxygenCanisters, foodCode, waterCode, oxygenCode, medicalRestore);
             bool oxygenReady = player.BodyHealthInitialized && player.CurrentHealth > 0 && !m_WasSettled;
             bool needsSuitAir = RaidOxygen.NeedsSuitAir(player);
-            m_OxygenPanel.style.display = oxygenReady ? DisplayStyle.Flex : DisplayStyle.None;
+            m_OxygenPanel.style.display = DisplayStyle.None; // Unified combat monitor owns the visual readout.
             if (oxygenReady)
             {
                 MoonkovLocalization.Set(m_OxygenReserve, "O₂ / {0:0}%", player.Oxygen);
@@ -239,7 +239,7 @@ namespace Unity.MP_FPS
             bool oxygenWarning = oxygenReady && needsSuitAir && player.Oxygen <= 25;
             var otherEffects = effects & ~(SurvivalEffects.LowOxygen | SurvivalEffects.Hypoxia);
             bool warning = (oxygenWarning || otherEffects != SurvivalEffects.None) && !m_WasSettled;
-            m_OxygenWarning.style.display = warning ? DisplayStyle.Flex : DisplayStyle.None;
+            m_OxygenWarning.style.display = DisplayStyle.None; // Keep the existing alert cadence below, without a second overlay.
             if (!warning) { m_NextOxygenAlert = 0; return; }
             bool critical = (oxygenWarning && player.Oxygen <= 10) || (effects & (SurvivalEffects.Starving | SurvivalEffects.Dehydrated)) != 0;
             m_OxygenWarning.EnableInClassList("oxygen-critical", critical);

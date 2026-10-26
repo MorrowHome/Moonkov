@@ -5567,6 +5567,62 @@ MonoBehaviour:
     m_Localized: Awaiting charge confirmation...
     m_Metadata:
       m_Items: []
+  - m_Id: 6942778511581184
+    m_Localized: TREAT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6965522615754752
+    m_Localized: ANIMATE VITAL SIGNAL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6965522628337664
+    m_Localized: HYDRATION
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6965522628337665
+    m_Localized: STOMACH
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6965522628337666
+    m_Localized: VITAL SIGNAL LOST
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6965522628337667
+    m_Localized: VITALS CRITICAL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6965522628337668
+    m_Localized: HYPOXIA
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6965522628337669
+    m_Localized: DEHYDRATED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6965522628337670
+    m_Localized: STARVING
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6965522628337671
+    m_Localized: THIRSTY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6965522628337672
+    m_Localized: HUNGRY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6965522628337673
+    m_Localized: POISONED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6968692284841984
+    m_Localized: ENERGY
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6973417545785344
+    m_Localized: COLLAR / EQUIPPED
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using Unity.Entities;
 using Unity.NetCode;
+using Unity.MP_FPS.Client;
 
 namespace Unity.MP_FPS
 {
@@ -14,12 +15,11 @@ namespace Unity.MP_FPS
 
         // UI Element references
         private VisualElement m_RootElement;
-        private ProgressBar m_HealthBar;
-        private VisualElement m_PlayerHealthBarFill;
+        private RaidVitalsMonitor m_Vitals;
+        private VisualElement m_VitalsPanel;
         private ProgressBar m_AmmoBar;
         private Label m_AmmoLabel;
         private Label m_ReloadingLabel;
-        private Label m_HealthState, m_HealthValue;
         private VisualElement m_Reticle;
         private static InGameHUD s_Active;
         private VisualElement m_RifleHit;
@@ -48,11 +48,9 @@ namespace Unity.MP_FPS
 
         // UI-side timer to ensure shot feedback is visible for a minimum duration.
         private float m_shotFeedbackTimer = 0f;
-        private float m_LastHealth = -1f, m_HealthRevealUntil;
 
         // The reticle will stay white for at least 100ms after a shot.
         private const float k_ShotFeedbackDuration = 0.1f;
-        private static readonly Color k_HealthBarColor = new Color(.92f, .93f, .90f);
         private const string k_CrossReticleClass = "kits-reticle-cross";
         private const string k_TCrossReticleClass = "kits-reticle-tcross";
         private const string k_CircularCrossClass = "kits-reticle-circularcross";
@@ -71,17 +69,16 @@ namespace Unity.MP_FPS
             m_ChargeWeaponPanel = m_RootElement.Q("weapon-info-container");
 
             // Find the UI elements by name
-            m_HealthBar = m_RootElement.Q<ProgressBar>("player-health-bar");
-            if (m_HealthBar != null)
-            {
-                m_PlayerHealthBarFill = m_HealthBar.Q<VisualElement>(null, "unity-progress-bar__progress");
-            }
+            var healthHost = m_RootElement.Q("health-body-host");
+            healthHost.Clear();
+            m_Vitals = new RaidVitalsMonitor(); healthHost.Add(m_Vitals);
+            m_VitalsPanel = m_RootElement.Q("health-info-container");
+            m_RootElement.RegisterCallback<GeometryChangedEvent>(FitVitals);
+            FitVitals(null);
 
             m_AmmoLabel = m_RootElement.Q<Label>("ammo-label");
             m_AmmoBar = m_RootElement.Q<ProgressBar>("player-ammo-bar");
             m_ReloadingLabel = m_RootElement.Q<Label>("reloading-label");
-            m_HealthState = m_RootElement.Q<Label>("health-state");
-            m_HealthValue = m_RootElement.Q<Label>("health-value");
             m_Reticle = m_RootElement.Q<VisualElement>("player-reticle");
             m_RifleHit = m_RootElement.Q<VisualElement>("rifle-hit-confirmation");
             if (m_RifleHit == null)
@@ -100,9 +97,18 @@ namespace Unity.MP_FPS
         private void OnDisable()
         {
             ResetChargeFeedback();
+            m_RootElement?.UnregisterCallback<GeometryChangedEvent>(FitVitals);
             if (s_Active == this) s_Active = null;
             if (m_RifleHit != null) m_RifleHit.generateVisualContent -= DrawRifleHit;
             m_RifleHitUntil = 0;
+        }
+
+        private void FitVitals(GeometryChangedEvent evt)
+        {
+            if (m_VitalsPanel == null) return;
+            bool compact = m_RootElement.contentRect.width > 0 && m_RootElement.contentRect.width < 1100;
+            m_VitalsPanel.style.width = compact ? 200 : 224;
+            m_VitalsPanel.style.bottom = compact ? 112 : 28;
         }
 
         private void DrawRifleHit(MeshGenerationContext context)
@@ -201,25 +207,8 @@ namespace Unity.MP_FPS
             PredictedPlayerGhost playerData = m_LocalPlayerQuery.GetSingleton<PredictedPlayerGhost>();
             bool statusCheck = UnityEngine.InputSystem.Keyboard.current != null && UnityEngine.InputSystem.Keyboard.current.hKey.isPressed;
             bool alwaysShow = PlayerPrefs.GetInt("Moonkov.AlwaysShowHUD", 0) != 0;
-            if (m_LastHealth != playerData.CurrentHealth) { m_LastHealth = playerData.CurrentHealth; m_HealthRevealUntil = Time.unscaledTime + 4f; }
-            var healthPanel = m_RootElement.Q<VisualElement>("health-info-container");
-            if (healthPanel != null) healthPanel.style.display = alwaysShow || statusCheck || Time.unscaledTime < m_HealthRevealUntil || RaidHealth.DangerFraction(playerData) < .35f ? DisplayStyle.Flex : DisplayStyle.None;
-
-            // Update Health Bar
-            if (m_HealthBar != null)
-            {
-                m_HealthBar.highValue = playerData.MaxHealth > 0 ? playerData.MaxHealth : 100;
-                m_HealthBar.value = playerData.CurrentHealth;
-
-                float healthPercent = RaidHealth.DangerFraction(playerData);
-                Color healthColor = healthPercent < .35f ? new Color(.95f, .47f, .38f) : k_HealthBarColor;
-                healthPanel?.EnableInClassList("health-critical", healthPercent < .35f);
-                MoonkovLocalization.Set(m_HealthState, healthPercent < .35f ? "HEALTH / CRITICAL" : "HEALTH");
-                MoonkovLocalization.Set(m_HealthValue, "{0:0}/{1:0}", playerData.CurrentHealth, m_HealthBar.highValue);
-
-                // Apply the calculated color to the fill element's background
-                m_PlayerHealthBarFill.style.backgroundColor = healthColor;
-            }
+            m_VitalsPanel.style.display = RaidHUD.InventoryOpen || GameSettings.Instance.IsPauseMenuOpen ? DisplayStyle.None : DisplayStyle.Flex;
+            m_Vitals.Present(playerData);
 
             // Update Ammo Label
             if (m_AmmoLabel != null)

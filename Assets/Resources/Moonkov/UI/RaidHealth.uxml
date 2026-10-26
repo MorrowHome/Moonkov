@@ -1,57 +1,20 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements">
     <ui:Style src="RaidHealthStyles.uss" />
     <ui:VisualElement name="raidHealthPage" class="raid-health-page">
-        <ui:ScrollView class="health-overview" mode="Vertical" horizontal-scroller-visibility="Hidden">
-            <ui:Label text="HEALTH / SUIT STATUS" class="health-eyebrow" />
-            <ui:Label name="healthTotal" class="health-total" />
-            <ui:Label text="TOTAL HEALTH" class="health-caption" />
-            <ui:VisualElement class="health-oxygen-card">
-                <ui:Label text="OXYGEN RESERVE" class="health-section-title" />
-                <ui:Label name="healthOxygenValue" class="health-oxygen-value" />
-                <ui:VisualElement class="health-meter"><ui:VisualElement name="healthOxygenFill" class="health-meter-fill" /></ui:VisualElement>
-                <ui:Label name="healthOxygenStage" class="health-oxygen-stage" />
-                <ui:Label name="healthAir" class="health-caption" />
-                <ui:Label name="healthOxygenTime" class="health-caption" />
-                <ui:Label name="healthAtmosphere" class="health-caption" />
-                <ui:Label name="healthOxygenRate" class="health-caption" />
-                <ui:Label name="healthOxygenGrace" class="health-help health-danger" />
-                <ui:VisualElement class="health-consume-actions">
-                    <ui:Button name="healthRefillOxygen" text="REFILL O₂" />
-                </ui:VisualElement>
-                <ui:Label name="healthOxygenSupplyStatus" class="health-help" />
-            </ui:VisualElement>
-            <ui:VisualElement class="health-nutrition-card">
-                <ui:Label text="NUTRITION / DIGESTION" class="health-section-title" />
-                <ui:Label name="healthEnergyValue" class="health-caption" />
-                <ui:VisualElement class="health-meter"><ui:VisualElement name="healthEnergyFill" class="health-meter-fill" /></ui:VisualElement>
-                <ui:Label name="healthHydrationValue" class="health-caption" />
-                <ui:VisualElement class="health-meter"><ui:VisualElement name="healthHydrationFill" class="health-meter-fill" /></ui:VisualElement>
-                <ui:Label name="healthSatietyValue" class="health-caption" />
-                <ui:VisualElement class="health-meter"><ui:VisualElement name="healthSatietyFill" class="health-meter-fill" /></ui:VisualElement>
-                <ui:VisualElement class="health-consume-actions">
-                    <ui:Button name="healthEat" text="EAT" /><ui:Button name="healthDrink" text="DRINK" />
-                </ui:VisualElement>
-                <ui:Label name="healthFoodStatus" class="health-help" />
-            </ui:VisualElement>
+        <ui:VisualElement name="healthDiagram" class="health-diagram" />
+        <ui:VisualElement class="health-actions">
+            <ui:Button name="healthTreat" text="TREAT" />
+            <ui:Button name="healthRefillOxygen" text="REFILL O₂" />
+            <ui:Button name="healthEat" text="EAT" />
+            <ui:Button name="healthDrink" text="DRINK" />
+        </ui:VisualElement>
+        <ui:VisualElement class="health-air-details">
+            <ui:Label name="healthAir" class="health-caption" />
+            <ui:Label name="healthOxygenTime" class="health-caption" />
+        </ui:VisualElement>
+        <ui:Label name="healthMedicalStatus" class="health-caption" />
+        <ui:ScrollView class="health-conditions" mode="Vertical" horizontal-scroller-visibility="Hidden">
+            <ui:Label name="healthConsequences" class="health-caption" />
         </ui:ScrollView>
-        <ui:VisualElement class="health-anatomy">
-            <ui:Label text="BODY CONDITION" class="health-eyebrow" />
-            <ui:VisualElement name="healthDiagram" class="health-diagram" />
-            <ui:Label text="Select a body part to treat it." class="health-caption" />
-            <ui:ScrollView class="health-conditions" mode="Vertical" horizontal-scroller-visibility="Hidden">
-                <ui:Label text="ACTIVE CONDITIONS" class="health-section-title" />
-                <ui:Label name="healthConsequences" class="health-help" />
-            </ui:ScrollView>
-        </ui:VisualElement>
-        <ui:VisualElement class="health-treatment">
-            <ui:Label text="BODY PARTS" class="health-eyebrow" />
-            <ui:ScrollView name="healthParts" mode="Vertical" class="health-parts" />
-            <ui:VisualElement class="health-medical-card">
-                <ui:Label name="healthSelectedPart" class="health-section-title" />
-                <ui:Label name="healthMedicalCount" class="health-caption" />
-                <ui:Button name="healthTreat" text="TREAT SELECTED PART / +40 HP" />
-                <ui:Label name="healthMedicalStatus" class="health-help" />
-            </ui:VisualElement>
-        </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
