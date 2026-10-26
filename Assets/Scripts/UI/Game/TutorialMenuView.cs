@@ -15,6 +15,8 @@ namespace Unity.MP_FPS.Client
         private readonly IVisualElementScheduledItem m_Timer;
         private bool m_Busy, m_Inline, m_Observing;
         private string m_Message;
+        private OfflineProfileStore m_MessageStore;
+        private int m_MessageInventoryVersion;
         private int m_LastPage = -1;
         private TutorialStatus m_LastStatus;
         public TutorialMenuView(VisualElement root, Action<int> navigate)
@@ -49,7 +51,10 @@ namespace Unity.MP_FPS.Client
                 if (inline && gear != null) m_Root.Insert(m_Root.IndexOf(gear), m_Card);
                 else m_Root.Add(m_Card);
             }
-            int prep = TutorialRules.Preparation(PlayerProfileClient.Inventory);
+            var inventory = PlayerProfileClient.Inventory;
+            if (m_Message != null && (m_MessageStore != PlayerProfileClient.OfflineStore || m_MessageInventoryVersion != (inventory?.Version ?? -1)))
+                m_Message = null;
+            int prep = TutorialRules.Preparation(inventory);
             if (!intro && active && !m_Observing && (state.CompletedSteps & prep) != prep) ObservePreparation(prep);
             m_Title.text = PlayerProfileClient.IsTutorialPractice ? "教学练习" : "第一次月面行动";
             m_Copy.text = m_Message ?? (intro ? TutorialRules.Introduction[state.IntroPage] : !active ? "本次练习已结束。可以返回正式档案。" :
@@ -70,7 +75,7 @@ namespace Unity.MP_FPS.Client
         {
             m_Observing = true;
             try { await PlayerProfileClient.UpdateTutorialAsync(steps: steps); }
-            catch (Exception e) { m_Message = e.Message; }
+            catch (Exception e) { ShowMessage(e.Message); }
             finally { m_Observing = false; }
         }
         private async void Next()
@@ -90,12 +95,18 @@ namespace Unity.MP_FPS.Client
             });
         }
         private async void Skip() => await Run(() => PlayerProfileClient.UpdateTutorialAsync(skip: true));
-        private async void Supply() => await Run(async () => m_Message = await PlayerProfileClient.ClaimTutorialSuppliesAsync());
-        private void Return() { if (m_Busy) return; try { PlayerProfileClient.EndTutorialPractice(); } catch (Exception e) { m_Message = e.Message; } Refresh(); }
+        private async void Supply() => await Run(async () => ShowMessage(await PlayerProfileClient.ClaimTutorialSuppliesAsync()));
+        private void Return() { if (m_Busy) return; try { PlayerProfileClient.EndTutorialPractice(); } catch (Exception e) { ShowMessage(e.Message); } Refresh(); }
+        private void ShowMessage(string message)
+        {
+            m_Message = message;
+            m_MessageStore = PlayerProfileClient.IsOffline ? PlayerProfileClient.OfflineStore : null;
+            m_MessageInventoryVersion = PlayerProfileClient.Inventory?.Version ?? -1;
+        }
         private async System.Threading.Tasks.Task Run(Func<System.Threading.Tasks.Task> action)
         {
             if (m_Busy) return; m_Busy = true; m_Card.SetEnabled(false);
-            try { await action(); } catch (Exception e) { m_Message = e.Message; }
+            try { await action(); } catch (Exception e) { ShowMessage(e.Message); }
             finally { m_Busy = false; m_Card.SetEnabled(true); Refresh(); }
         }
         public void Dispose() { m_Timer.Pause(); m_Card.RemoveFromHierarchy(); }
