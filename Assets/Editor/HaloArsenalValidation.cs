@@ -187,6 +187,24 @@ public static class HaloArsenalValidation
             ProjectileBlast.Apply(world,scene.GetPhysicsScene(),Vector3.zero,weapon.AoeRadius,2000,1,124,out flags);
             Require(flags==3&&manager.GetComponentData<PredictedPlayerGhost>(alien).CurrentHealth==0,"AOE lethal flags");
             Require(ProjectileBlast.Apply(world,scene.GetPhysicsScene(),Vector3.zero,weapon.AoeRadius,96,1,125,out flags)==0,"AOE dead victims ignored");
+            var friendly=Victim("Protected squadmate",new Vector3(21,0,0),scene,6,true);
+            manager.AddComponentData(friendly,new OnlineRaidMember {Team=42});
+            var oldHit=manager.GetComponentData<PredictedPlayerGhost>(friendly);oldHit.LastHitTick=30;
+            oldHit.LastHitPart=Unity.MP_FPS.BodyPart.LeftLeg;oldHit.LastDamageAmount=12;manager.SetComponentData(friendly,oldHit);
+            Physics.SyncTransforms();scene.GetPhysicsScene().Simulate(.02f);
+            var teamSource=new ClashDamageSource {NetworkId=1,OnlineHuman=true,OnlineTeam=42};
+            count=ProjectileBlast.Apply(world,scene.GetPhysicsScene(),new Vector3(20,0,0),3,100,teamSource,126,out flags);
+            var protectedHealth=manager.GetComponentData<PredictedPlayerGhost>(friendly);
+            Require(count==0&&flags==0&&protectedHealth.CurrentHealth==oldHit.CurrentHealth&&protectedHealth.LastHitTick==30&&
+                protectedHealth.LastHitPart==Unity.MP_FPS.BodyPart.LeftLeg&&protectedHealth.LastDamageAmount==12,
+                "Team-protected blast must not report damage or overwrite the previous hit");
+            var shielded=Victim("Shielded opponent",new Vector3(31,0,0),scene,7,true);
+            var shield=manager.GetComponentData<PredictedPlayerGhost>(shielded);shield.ShieldEquipped=true;shield.ShieldCharge=100;
+            manager.SetComponentData(shielded,shield);Physics.SyncTransforms();scene.GetPhysicsScene().Simulate(.02f);
+            count=ProjectileBlast.Apply(world,scene.GetPhysicsScene(),new Vector3(30,0,0),3,40,teamSource,127,out flags);
+            shield=manager.GetComponentData<PredictedPlayerGhost>(shielded);
+            Require(count==1&&flags==1&&shield.CurrentHealth==440&&shield.ShieldCharge==60,
+                "Fully shielded blast should still report a real impact");
             RaycastHit[] hits=new RaycastHit[16];Require(Ballistics.Sweep(scene.GetPhysicsScene(),new Vector3(0,0,1.3f),new Vector3(0,0,2.1f),.055f,EnergyGrenadePhysics.HitMask,null,ref hits,out var hit)&&hit.collider.gameObject==wall,"Sundown swept collision with thin wall");
             Report.Add("Actual ECS health + isolated PhysicsScene AOE: unowned alien damaged once despite two colliders, initialized PMC takes exactly 96 total damage, shooter immune, other PMC is damageable, wall occlusion and cross-scene isolation respected, lethal flags and dead victim filtering passed. Actual swept-radius collision hits thin wall.");
         }

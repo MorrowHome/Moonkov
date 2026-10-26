@@ -322,8 +322,9 @@ namespace Unity.MP_FPS
             if (BountyClashDamage.IsSelf(GhostGameObject.World,target.LinkedEntity,m_Data.DamageSource)) return 0;
             var player = players.GetRefRW(target.LinkedEntity);
             if (player.ValueRO.CurrentHealth <= 0 || m_Weapon.Damage <= 0) return 0;
+            var before = player.ValueRO;
             BountyClashDamage.Apply(GhostGameObject.World,target.LinkedEntity,m_Data.DamageSource,part,m_Weapon.Damage,GhostGameObject.GetCurrentTick(),RaidDamageKind.Bullet,(Unity.Mathematics.float3)impactPoint);
-            return (byte)(player.ValueRO.CurrentHealth <= 0 ? 3 : 1);
+            return RaidHealth.ImpactFlags(before, player.ValueRO);
         }
     }
 }

@@ -427,14 +427,15 @@ namespace Unity.MP_FPS
                                                     continue;
                                                 }
 
-                                                var healthBeforeDamage = targetPredictedPlayer.ValueRO.CurrentHealth;
+                                                var healthBeforeDamage = targetPredictedPlayer.ValueRO;
                                                 var hitPlayer = hitGhostObject.GetComponent<PlayerGhost>();
                                                 BountyClashDamage.Apply(World,hitGhostObject.LinkedEntity,BountyClashDamage.Capture(World,entity),
                                                     RaidHealth.ResolveHit(hitPlayer, hit.collider, hit.point),weaponData.Damage,serverTick,RaidDamageKind.Bullet,(float3)hit.point);
-                                                if (healthBeforeDamage > 0 && ((HaloModule)predictedPlayer.ValueRO.EquippedModules & HaloModule.HitMarker) != 0)
+                                                if (RaidHealth.ImpactFlags(healthBeforeDamage, targetPredictedPlayer.ValueRO) != 0 &&
+                                                    ((HaloModule)predictedPlayer.ValueRO.EquippedModules & HaloModule.HitMarker) != 0)
                                                     VisualEffectManager.ServerInstance?.Server_RequestHaloMark(shooterNetworkId, commandInput.Tick.TickIndexForValidTick, hit.point);
 
-                                                if (!targetPredictedPlayer.ValueRO.ClashEnabled && healthBeforeDamage > 0 &&
+                                                if (!targetPredictedPlayer.ValueRO.ClashEnabled && healthBeforeDamage.CurrentHealth > 0 &&
                                                     targetPredictedPlayer.ValueRO.CurrentHealth <= 0)
                                                 {
                                                     if (LeaderboardManager.Instance != null)

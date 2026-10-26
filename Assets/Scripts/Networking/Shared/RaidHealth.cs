@@ -161,6 +161,15 @@ namespace Unity.MP_FPS
                 state.LastImpactTick = tick;
             return before-state.CurrentHealth;
         }
+
+        // A shield-only hit is real, but a team-protected or otherwise rejected
+        // impact must not produce a hit confirmation or mark.
+        public static byte ImpactFlags(in PredictedPlayerGhost before, in PredictedPlayerGhost after)
+        {
+            if (!(before.CurrentHealth > 0) ||
+                (!(after.CurrentHealth < before.CurrentHealth) && after.ShieldHitSequence == before.ShieldHitSequence)) return 0;
+            return (byte)(after.CurrentHealth <= 0 ? 3 : 1);
+        }
         public static BodyPart MostInjured(in PredictedPlayerGhost state)
         {
             var selected = BodyPart.Auto; float lowest = 1f;

@@ -165,11 +165,8 @@ namespace Unity.MP_FPS
                 Vector3 point = collider ? collider.bounds.center : root.transform.position + Vector3.up * .8f;
                 float damage = EnergyGrenadeRules.DamageAt(Vector3.Distance(grenade.Position, point));
                 if (damage <= 0 || !EnergyGrenadePhysics.ClearSight(grenade.Scene, grenade.Position, point, root.transform)) continue;
-                float before = health.ValueRO.CurrentHealth;
                 // Resolve shielding once, then distribute the residual over living tissue.
                 BountyClashDamage.Apply(World, entity, grenade.Source, BodyPart.Auto, damage, tick, RaidDamageKind.Explosion, (Unity.Mathematics.float3)grenade.Position);
-                health.ValueRW.LastDamageAmount = before - health.ValueRO.CurrentHealth;
-                health.ValueRW.LastHitPart = BodyPart.Auto;
             }
         }
 

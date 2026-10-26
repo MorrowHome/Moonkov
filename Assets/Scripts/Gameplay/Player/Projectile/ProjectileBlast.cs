@@ -35,15 +35,13 @@ namespace Unity.MP_FPS
                 var collider = root.GetComponentInChildren<Collider>();
                 Vector3 point = collider ? collider.bounds.center : root.transform.position + Vector3.up * .8f;
                 if (Vector3.Distance(origin, point) > radius || !EnergyGrenadePhysics.ClearSight(scene, origin, point, root.transform)) continue;
-                float before = health.CurrentHealth;
-                uint shieldImpactBefore = health.ShieldHitSequence;
+                var before = health;
                 // A blast is one combat impact; the unified damage entry splits residual tissue damage.
                 BountyClashDamage.Apply(world, entity, source, BodyPart.Auto, damage, tick, RaidDamageKind.Explosion, (Unity.Mathematics.float3)origin);
                 health=manager.GetComponentData<PredictedPlayerGhost>(entity);
-                health.LastDamageAmount = before-health.CurrentHealth; health.LastHitPart=BodyPart.Auto;
-                manager.SetComponentData(entity,health);
-                if (health.CurrentHealth>=before && health.ShieldHitSequence==shieldImpactBefore) continue;
-                victims++; flags |= (byte)(health.CurrentHealth<=0 ? 3 : 1);
+                byte impact = RaidHealth.ImpactFlags(before, health);
+                if (impact == 0) continue;
+                victims++; flags |= impact;
             }
             return victims;
         }

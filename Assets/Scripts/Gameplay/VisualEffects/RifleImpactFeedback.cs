@@ -12,7 +12,7 @@ namespace Unity.MP_FPS
         public uint WeaponId;
         public int PelletIndex;
         public float3 Position, Normal;
-        public byte Kind, DamageFlags; // bit 0: applied damage; bit 1: lethal damage
+        public byte Kind, DamageFlags; // bit 0: body or shield hit; bit 1: lethal damage
     }
 
     // A client-world child of its existing VFX manager. Each slot owns fragments and a brief
