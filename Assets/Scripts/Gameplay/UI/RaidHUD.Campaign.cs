@@ -116,10 +116,11 @@ namespace Unity.MP_FPS
                 m_CampaignTitle.text = task.Title;
                 m_CampaignAction.text = CampaignActionText(node);
                 m_CampaignHint.text = Time.unscaledTime < m_MissionNoticeUntil ? m_MissionNotice : CampaignTeachingHint(node);
-                m_CampaignHasDestination = CampaignScene.TryDestination(m_World, progress, id, out m_CampaignDestination, out m_CampaignDestinationName);
-                if (m_CampaignHasDestination && m_PlayerQuery.HasSingleton<LocalTransform>())
+                Vector3? origin = m_PlayerQuery.HasSingleton<LocalTransform>() ? (Vector3)m_PlayerQuery.GetSingleton<LocalTransform>().Position : null;
+                m_CampaignHasDestination = CampaignScene.TryDestination(m_World, progress, id, origin, out m_CampaignDestination, out m_CampaignDestinationName);
+                if (m_CampaignHasDestination && origin.HasValue)
                 {
-                    Vector3 from = m_PlayerQuery.GetSingleton<LocalTransform>().Position;
+                    Vector3 from = origin.Value;
                     float height = m_CampaignDestination.y - from.y;
                     string floor = height > 3 ? "楼上" : height < -3 ? "楼下" : "当前层附近";
                     m_CampaignLocation.text = m_CampaignDestinationName + "\n" + floor + "  直线 " + Vector3.Distance(from, m_CampaignDestination).ToString("0") + " 米";

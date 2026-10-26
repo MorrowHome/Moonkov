@@ -74,13 +74,11 @@ namespace Unity.MP_FPS
                 if (SystemAPI.HasComponent<NetworkStreamRequestDisconnect>(connection)) continue;
                 RefreshLootAccess(ref state,connection,session.ValueRO);
                 SendInventory(ref state, ecb, connection, session.ValueRO.RaidId);
-                if(clash){var match=ClashWorld(ref state).Match;session.ValueRW.TimeLeft=match!=null?(float)math.max(0,match.Deadline-SystemAPI.Time.ElapsedTime):0;session.ValueRW.ExtractionProgress=0;}
+                if(clash){var match=ClashWorld(ref state).Match;session.ValueRW.TimeLeft=match!=null?(float)math.max(0,match.Deadline-SystemAPI.Time.ElapsedTime):0;session.ValueRW.ExtractionProgress=0;session.ValueRW.ExtractionIndex=-1;}
                 if (!clash && session.ValueRO.Phase == RaidPhase.Active && TryGetLivingPosition(ref state, joined.ValueRO.PlayerEntity, out var position))
                 {
                     session.ValueRW.TimeLeft = math.max(0, session.ValueRO.TimeLeft - dt);
-                    Vector3 delta = (Vector3)position - map.ExtractionPosition;
-                    bool inside = new Vector2(delta.x, delta.z).sqrMagnitude <= map.ExtractionRadius * map.ExtractionRadius && math.abs(delta.y) <= 3f;
-                    session.ValueRW.ExtractionProgress = inside ? session.ValueRO.ExtractionProgress + dt : 0;
+                    map.AdvanceExtraction(ref session.ValueRW, (Vector3)position, dt);
                     // Expiry takes precedence over extraction; death is handled before this method.
                     if (session.ValueRO.TimeLeft <= 0)
                         FinishRaid(ref state, ecb, connection, RaidPhase.TimedOut);

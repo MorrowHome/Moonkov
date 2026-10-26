@@ -86,7 +86,7 @@ public static class MissionRoleReview
     public static void Walk(string anchor)
     {
         if (!Player(out var p, out _)) throw new InvalidOperationException("No actual owned player.");
-        Vector3 target = anchor == "exit" ? MoonRaidMap.Active.ExtractionPosition : RaidMissionSite.Active.Anchor(anchor).Approach;
+        Vector3 target = anchor == "exit" ? MoonRaidMap.Active.NearestExtraction(p) : RaidMissionSite.Active.Anchor(anchor).Approach;
         if (!NavMesh.SamplePosition(p, out var start, 3, NavMesh.AllAreas) || !NavMesh.SamplePosition(target, out var end, 3, NavMesh.AllAreas)) throw new InvalidOperationException("No navigation at actual player or destination.");
         var path = new NavMeshPath();
         if (!NavMesh.CalculatePath(start.position, end.position, NavMesh.AllAreas, path) || path.status != NavMeshPathStatus.PathComplete) throw new InvalidOperationException("Actual player route incomplete.");

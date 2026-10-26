@@ -219,7 +219,8 @@ namespace Unity.MP_FPS
             var bounds = new Bounds(map.LootPositions[0], Vector3.one);
             foreach (var point in map.LootPositions) bounds.Encapsulate(point);
             foreach (var point in map.EnemySpawnPositions) bounds.Encapsulate(point);
-            bounds.Encapsulate(map.ExtractionPosition);
+            for (int i = 0; i < map.ExtractionCount; i++)
+                if (map.TryExtractionPosition(i, out var exit)) bounds.Encapsulate(exit);
             bounds.Expand(new Vector3(100, 100, 100));
             if (m_ClashArena != null)
                 bounds = new Bounds(BountyClashArenaSettings.Position(m_ClashArena.Center),

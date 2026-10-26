@@ -57,7 +57,7 @@ namespace Unity.MP_FPS
             {
                 m_NextCapture = Time.unscaledTime + CaptureInterval;
                 Capture();
-                Vector3 delta = map.ExtractionPosition - position;
+                Vector3 delta = map.NearestExtraction(position) - position;
                 MoonkovLocalization.Set(m_Distance, "EXIT / {0:0} m", new Vector2(delta.x, delta.z).magnitude);
                 MoonkovLocalization.Set(m_Signal, m_RenderUnavailable ? "SURFACE / NO IMAGE" : "SURFACE / LIVE");
             }
@@ -154,27 +154,32 @@ namespace Unity.MP_FPS
                 painter.ClosePath(); painter.Fill(); painter.Stroke();
                 if (empty) Line(painter, point + new Vector2(-3, 3), point + new Vector2(3, -3));
             }
-            Vector2 exit = Project(m_Map.ExtractionPosition, origin, size);
-            bool outside = !Inside(exit, size, 12);
-            if (outside)
+            int nearest = m_Map.NearestExtractionIndex(m_Position);
+            for (int i = 0; i < m_Map.ExtractionCount; i++)
             {
-                var delta = exit - size * .5f;
-                float factor = Mathf.Min((size.x * .5f - 12) / Mathf.Max(.001f, Mathf.Abs(delta.x)),
-                    (size.y * .5f - 12) / Mathf.Max(.001f, Mathf.Abs(delta.y)));
-                exit = size * .5f + delta * factor;
-                Vector2 direction = delta.normalized;
-                Triangle(painter, exit, direction, 7, ExitColor);
-            }
-            else
-            {
-                painter.strokeColor = ExitColor; painter.fillColor = new Color(.06f, .12f, .09f, .95f);
-                painter.lineWidth = 2;
-                painter.BeginPath(); painter.MoveTo(exit + Vector2.up * 6);
-                painter.LineTo(exit + Vector2.right * 6); painter.LineTo(exit + Vector2.down * 6);
-                painter.LineTo(exit + Vector2.left * 6); painter.ClosePath(); painter.Fill(); painter.Stroke();
-                Vector2 zone = size * (m_Map.ExtractionRadius / (HalfRange * 2));
-                painter.strokeColor = new Color(ExitColor.r, ExitColor.g, ExitColor.b, .45f);
-                painter.BeginPath(); painter.Arc(exit, Mathf.Max(8, zone.x), Angle.Degrees(0), Angle.Degrees(360)); painter.Stroke();
+                if (!m_Map.TryExtractionPosition(i, out var point)) continue;
+                Vector2 exit = Project(point, origin, size);
+                if (!Inside(exit, size, 12))
+                {
+                    // One edge arrow keeps distant alternatives from crowding the map.
+                    if (i != nearest) continue;
+                    var delta = exit - size * .5f;
+                    float factor = Mathf.Min((size.x * .5f - 12) / Mathf.Max(.001f, Mathf.Abs(delta.x)),
+                        (size.y * .5f - 12) / Mathf.Max(.001f, Mathf.Abs(delta.y)));
+                    exit = size * .5f + delta * factor;
+                    Triangle(painter, exit, delta.normalized, 7, ExitColor);
+                }
+                else
+                {
+                    painter.strokeColor = ExitColor; painter.fillColor = new Color(.06f, .12f, .09f, .95f);
+                    painter.lineWidth = 2;
+                    painter.BeginPath(); painter.MoveTo(exit + Vector2.up * 6);
+                    painter.LineTo(exit + Vector2.right * 6); painter.LineTo(exit + Vector2.down * 6);
+                    painter.LineTo(exit + Vector2.left * 6); painter.ClosePath(); painter.Fill(); painter.Stroke();
+                    Vector2 zone = size * (m_Map.ExtractionRadius / (HalfRange * 2));
+                    painter.strokeColor = new Color(ExitColor.r, ExitColor.g, ExitColor.b, .45f);
+                    painter.BeginPath(); painter.Arc(exit, Mathf.Max(8, zone.x), Angle.Degrees(0), Angle.Degrees(360)); painter.Stroke();
+                }
             }
             Vector2 player = Project(m_Position, origin, size);
             Triangle(painter, player, new Vector2(m_Forward.x, -m_Forward.y), 8, new Color(.95f, .96f, .93f));

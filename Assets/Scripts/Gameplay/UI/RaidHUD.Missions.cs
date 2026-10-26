@@ -338,11 +338,12 @@ namespace Unity.MP_FPS
             m_MissionLocation.text = $"{anchor.Region} · {layer} · 直线 {Vector3.Distance(position, anchor.Position):0} 米";
             m_MissionTarget = anchor.Position; m_MissionTargetLabel = anchor.Region + " · " + (next >= 0 ? definition.Objectives[next].Name : "任务产物");
             if (!ended && live && carried > 0 && MoonRaidMap.Active)
-            { m_MissionTarget = MoonRaidMap.Active.ExtractionPosition + Vector3.up; m_MissionTargetLabel = "携带产物撤离";
-                m_MissionLocation.text = $"返回撤离点 · 直线 {Vector3.Distance(position, MoonRaidMap.Active.ExtractionPosition):0} 米"; }
+            { var exit = MoonRaidMap.Active.NearestExtraction(position);
+                m_MissionTarget = exit + Vector3.up; m_MissionTargetLabel = "携带产物撤离";
+                m_MissionLocation.text = $"返回撤离点  直线 {Vector3.Distance(position, exit):0} 米"; }
             var direction = m_MissionTarget - position;
             int cardinal = (Mathf.RoundToInt(Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg / 45) + 8) % 8;
-            m_MissionLocation.text += " · " + MissionCardinals[cardinal];
+            m_MissionLocation.text += "  " + MissionCardinals[cardinal];
             m_MissionRisk.text = MissionRiskCopy(snapshot, live ? carried : 0);
             m_MissionRisk.EnableInClassList("mission-risk-urgent", !ended && snapshot.Remaining <= 60 && snapshot.Remaining > 0);
             m_MissionHud.EnableInClassList("mission-ended", ended);

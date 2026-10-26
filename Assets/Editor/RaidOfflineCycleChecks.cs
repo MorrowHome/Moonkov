@@ -83,6 +83,15 @@ public static class RaidOfflineCycleChecks
             Check(health.LeftArmHealth > wounded && inventory.Graph.Find(medId).Quantity == medicines - 1,
                 "completed treatment did not heal and consume one item");
 
+            var extraction = new RaidSession { Phase = RaidPhase.Active, TimeLeft = 100 };
+            var exits = new[] { new Vector3(100, 0, 0) };
+            RaidExtractionRules.Advance(ref extraction, Vector3.zero, exits, Vector3.zero, 5, 7);
+            RaidExtractionRules.Advance(ref extraction, Vector3.zero, exits, exits[0], 5, 1);
+            Check(extraction.ExtractionIndex == 1 && extraction.ExtractionProgress == 1,
+                "moving to another exit carried over the old progress");
+            RaidExtractionRules.Advance(ref extraction, Vector3.zero, exits, exits[0], 5, 7);
+            Check(extraction.ExtractionProgress == 8 && RaidRules.TrySettle(ref extraction, RaidPhase.Extracted, false),
+                "the alternate exit could not complete the existing settlement rule");
             var result = RaidResultManifest.Capture(inventory.Graph, 1, RaidPhase.Extracted);
             Check(result.Outcome == RaidPhase.Extracted && result.LostCount == 0 && result.ReturnedCount > 0,
                 "successful extraction manifest is inconsistent");

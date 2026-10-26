@@ -114,7 +114,8 @@ namespace Unity.MP_FPS
             var map = MoonRaidMap.Active;
             if (map)
             {
-                bounds.Encapsulate(map.ExtractionPosition);
+                for (int i = 0; i < map.ExtractionCount; i++)
+                    if (map.TryExtractionPosition(i, out var exit)) bounds.Encapsulate(exit);
                 foreach (var point in map.LootPositions) bounds.Encapsulate(point);
                 foreach (var terrain in Terrain.activeTerrains)
                 {

@@ -22,6 +22,8 @@ namespace Unity.MP_FPS
         public int StashDust, StashAlloy, StashCells;
         public bool PersistentDeployment, DeployPending;
         public RaidLoadoutError LoadoutError;
+        // Server-only index of the exit whose timer is currently advancing.
+        public int ExtractionIndex;
         public float TimeLeft, ExtractionProgress, SnapshotTimer;
         public int BagCount => Dust + Alloy + Cells;
     }
@@ -86,6 +88,7 @@ namespace Unity.MP_FPS
             }
             session.Phase = outcome;
             session.ExtractionProgress = 0;
+            session.ExtractionIndex = -1;
             session.SnapshotTimer = 0;
             return true;
         }
@@ -100,6 +103,7 @@ namespace Unity.MP_FPS
             session.PersistentDeployment = session.DeployPending = false;
             session.LoadoutError = RaidLoadoutError.None;
             session.ExtractionProgress = session.SnapshotTimer = 0;
+            session.ExtractionIndex = -1;
             session.TimeLeft = duration;
         }
 

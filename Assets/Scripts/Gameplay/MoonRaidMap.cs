@@ -17,6 +17,8 @@ namespace Unity.MP_FPS
         [Tooltip("Only activate PMC entries this close to a living player. Zero keeps all entries eligible.")]
         [SerializeField, Min(0)] private float m_EnemyActivationDistance;
         [SerializeField] private Vector3 m_ExtractionPosition;
+        [Tooltip("Up to seven additional ordinary-raid exits, in world coordinates. Leave empty for the original single exit.")]
+        [SerializeField] private Vector3[] m_AdditionalExtractionPositions = new Vector3[0];
         [SerializeField] private PanelSettings m_PanelSettings;
         [SerializeField, Min(30)] private float m_RaidDuration = 600;
         [SerializeField, Min(1)] private float m_ExtractionSeconds = 8;
@@ -71,6 +73,15 @@ namespace Unity.MP_FPS
             index < m_LootGroundNormals.Length && m_LootGroundNormals[index].sqrMagnitude > .5f
             ? m_LootGroundNormals[index].normalized : Vector3.up;
         public Vector3 ExtractionPosition => m_ExtractionPosition;
+        public int ExtractionCount => RaidExtractionRules.Count(m_AdditionalExtractionPositions);
+        public bool TryExtractionPosition(int index, out Vector3 position) =>
+            RaidExtractionRules.TryPosition(m_ExtractionPosition, m_AdditionalExtractionPositions, index, out position);
+        public int NearestExtractionIndex(Vector3 position) =>
+            RaidExtractionRules.NearestIndex(m_ExtractionPosition, m_AdditionalExtractionPositions, position);
+        public Vector3 NearestExtraction(Vector3 position) =>
+            RaidExtractionRules.Nearest(m_ExtractionPosition, m_AdditionalExtractionPositions, position);
+        public void AdvanceExtraction(ref RaidSession session, Vector3 position, float deltaTime) =>
+            RaidExtractionRules.Advance(ref session, m_ExtractionPosition, m_AdditionalExtractionPositions, position, m_ExtractionRadius, deltaTime);
         public float MedicalSeconds => float.IsFinite(m_MedicalSeconds) && m_MedicalSeconds>0 ? Mathf.Max(.1f,m_MedicalSeconds) : 3;
         public float SearchSeconds => float.IsFinite(m_SearchSeconds) && m_SearchSeconds>0 ? Mathf.Max(.1f,m_SearchSeconds) : 2;
         public float RaidDuration => m_RaidDuration;
@@ -107,6 +118,10 @@ namespace Unity.MP_FPS
                 Debug.LogError("Moon raid needs between 1 and 64 authored loot points.", this);
                 return;
             }
+            if (m_AdditionalExtractionPositions != null && m_AdditionalExtractionPositions.Length >= RaidExtractionRules.MaxExits)
+                Debug.LogWarning("Moon raid supports at most seven additional exits; extra entries are ignored.", this);
+            for (int i = 0; i < ExtractionCount; i++)
+                if (!TryExtractionPosition(i, out _)) Debug.LogError("Invalid extraction position at index " + i + ".", this);
             Active = this;
             if(Application.isPlaying)BountyClashArenaSettings.EnsureForMap(this);
         }
@@ -139,10 +154,14 @@ namespace Unity.MP_FPS
             }
             m_ExtractionVisuals=new GameObject("Expedition extraction presentation");
             m_ExtractionVisuals.transform.SetParent(transform,false);
-            Marker("Extraction zone", PrimitiveType.Cylinder, m_ExtractionPosition + Vector3.up * 0.08f,
-                new Vector3(m_ExtractionRadius * 2, 0.06f, m_ExtractionRadius * 2), m_ExtractionMaterial);
-            Marker("Extraction beacon", PrimitiveType.Cylinder, m_ExtractionPosition + Vector3.up * 4,
-                new Vector3(0.3f, 4, 0.3f), m_ExtractionMaterial);
+            for (int i = 0; i < ExtractionCount; i++)
+            {
+                if (!TryExtractionPosition(i, out var exit)) continue;
+                Marker(i == 0 ? "Extraction zone" : "Extraction zone " + i, PrimitiveType.Cylinder, exit + Vector3.up * 0.08f,
+                    new Vector3(m_ExtractionRadius * 2, 0.06f, m_ExtractionRadius * 2), m_ExtractionMaterial);
+                Marker(i == 0 ? "Extraction beacon" : "Extraction beacon " + i, PrimitiveType.Cylinder, exit + Vector3.up * 4,
+                    new Vector3(0.3f, 4, 0.3f), m_ExtractionMaterial);
+            }
             var document = gameObject.AddComponent<UIDocument>();
             document.panelSettings = m_PanelSettings;
             document.sortingOrder = 20;
@@ -237,6 +256,71 @@ namespace Unity.MP_FPS
             if (Active == this) Active = null;
             m_CacheVisuals?.Dispose();
             if (m_ExtractionMaterial != null) Destroy(m_ExtractionMaterial);
+        }
+    }
+
+    // Map-authored exits share the existing timer and radius. All configured
+    // exits are open; spawn-specific availability is a separate future rule.
+    public static class RaidExtractionRules
+    {
+        public const int MaxExits = 8;
+        public static int Count(Vector3[] extra) => 1 + System.Math.Min(extra?.Length ?? 0, MaxExits - 1);
+        private static bool Finite(Vector3 p) => float.IsFinite(p.x) && float.IsFinite(p.y) && float.IsFinite(p.z);
+        public static bool TryPosition(Vector3 primary, Vector3[] extra, int index, out Vector3 position)
+        {
+            position = default;
+            if (index < 0 || index >= Count(extra)) return false;
+            position = index == 0 ? primary : extra[index - 1];
+            return Finite(position);
+        }
+        private static double HorizontalSquared(Vector3 a, Vector3 b)
+        {
+            double x = (double)a.x - b.x, z = (double)a.z - b.z;
+            return x * x + z * z;
+        }
+        private static bool Inside(Vector3 position, Vector3 exit, float radius) =>
+            Finite(position) && Finite(exit) && float.IsFinite(radius) && radius > 0 &&
+            System.Math.Abs((double)position.y - exit.y) <= 3 && HorizontalSquared(position, exit) <= (double)radius * radius;
+        public static int NearestIndex(Vector3 primary, Vector3[] extra, Vector3 position)
+        {
+            if (!Finite(position)) return -1;
+            int best = -1; double distance = double.MaxValue;
+            for (int i = 0; i < Count(extra); i++)
+            {
+                if (!TryPosition(primary, extra, i, out var candidate)) continue;
+                double y = (double)position.y - candidate.y;
+                double next = HorizontalSquared(position, candidate) + y * y;
+                if (next >= distance) continue;
+                best = i; distance = next;
+            }
+            return best;
+        }
+        public static Vector3 Nearest(Vector3 primary, Vector3[] extra, Vector3 position)
+        {
+            int index = NearestIndex(primary, extra, position);
+            return TryPosition(primary, extra, index, out var exit) ? exit : primary;
+        }
+        public static int AtPosition(Vector3 primary, Vector3[] extra, Vector3 position, float radius, int previous)
+        {
+            if (TryPosition(primary, extra, previous, out var prior) && Inside(position, prior, radius)) return previous;
+            int best = -1; double distance = double.MaxValue;
+            for (int i = 0; i < Count(extra); i++)
+            {
+                if (!TryPosition(primary, extra, i, out var candidate) || !Inside(position, candidate, radius)) continue;
+                double next = HorizontalSquared(position, candidate);
+                if (next >= distance) continue;
+                best = i; distance = next;
+            }
+            return best;
+        }
+        public static void Advance(ref RaidSession session, Vector3 primary, Vector3[] extra, Vector3 position, float radius, float deltaTime)
+        {
+            int previous = session.ExtractionProgress > 0 ? session.ExtractionIndex : -1;
+            int current = AtPosition(primary, extra, position, radius, previous);
+            if (current < 0) { session.ExtractionProgress = 0; session.ExtractionIndex = -1; return; }
+            if (current != previous) session.ExtractionProgress = 0;
+            session.ExtractionIndex = current;
+            if (float.IsFinite(deltaTime) && deltaTime > 0) session.ExtractionProgress += deltaTime;
         }
     }
 }

@@ -572,10 +572,10 @@ namespace Unity.MP_FPS
             else m_ExtractionFill.style.width = Length.Percent(0);
             if (alive && !settled)
             {
-                Vector3 delta = MoonRaidMap.Active.ExtractionPosition - position;
+                Vector3 delta = MoonRaidMap.Active.NearestExtraction(position) - position;
                 string heading = Mathf.Abs(delta.x) > Mathf.Abs(delta.z) ? delta.x > 0 ? "E" : "W" : delta.z > 0 ? "N" : "S";
                 if (extracting)
-                    MoonkovLocalization.Set(m_Exit, "SHUTTLE BEACON");
+                    MoonkovLocalization.Set(m_Exit, MoonRaidMap.Active.ExtractionCount > 1 ? "EXTRACTION BEACON" : "SHUTTLE BEACON");
                 else if (returnBeacon)
                     MoonkovLocalization.Set(m_Exit, m_ReturnGuidance.BeaconText, delta.magnitude, MoonkovLocalization.Text(heading));
                 else

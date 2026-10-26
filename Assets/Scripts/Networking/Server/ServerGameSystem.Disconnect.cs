@@ -82,7 +82,7 @@ namespace Unity.MP_FPS
                 if (manager.GetComponentData<RaidDetached>(holder).Deadline <= SystemAPI.Time.ElapsedTime ||
                     session.Phase != RaidPhase.Active || !living || session.TimeLeft <= 0) return false;
                 if (!context.RebindBountyOwner(holder, connection, authenticated.PlayerId, session.SettlementId.ToString())) return false;
-                session.ExtractionProgress = 0; session.SnapshotTimer = 0;
+                session.ExtractionProgress = 0; session.ExtractionIndex = -1; session.SnapshotTimer = 0;
                 ecb.AddComponent(connection, session); ecb.AddComponent(connection, joined);
                 if (context.Inventories.TryGetValue(connection, out var inventory))
                 {
@@ -114,6 +114,7 @@ namespace Unity.MP_FPS
             {
                 session.ValueRW.TimeLeft = Unity.Mathematics.math.max(0, session.ValueRO.TimeLeft - SystemAPI.Time.DeltaTime);
                 session.ValueRW.ExtractionProgress = 0;
+                session.ValueRW.ExtractionIndex = -1;
                 bool dead = !SystemAPI.Exists(joined.ValueRO.PlayerEntity) ||
                     !SystemAPI.HasComponent<PredictedPlayerGhost>(joined.ValueRO.PlayerEntity) ||
                     SystemAPI.GetComponent<PredictedPlayerGhost>(joined.ValueRO.PlayerEntity).CurrentHealth <= 0;

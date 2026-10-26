@@ -1,5 +1,6 @@
 ﻿using Unity.Entities;
 using Unity.NetCode;
+using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -16,6 +17,9 @@ namespace Unity.MP_FPS.UI
         private EntityManager m_EntityManager;
         private EntityQuery m_LocalPlayerQuery;
         private EntityQuery m_ClashQuery;
+        private MoonRaidMap m_LastRaidMap;
+        private Vector3 m_LastRaidPosition;
+        private bool m_HasLastRaidPosition;
 
         private float m_RespawnCountdown;
         private const float RESPAWN_DURATION = 5.0f;
@@ -61,6 +65,8 @@ namespace Unity.MP_FPS.UI
             {
                 m_RespawnScreen.style.display = DisplayStyle.None;
                 RespawnCamera.gameObject.SetActive(false);
+                m_HasLastRaidPosition = false;
+                m_LastRaidMap = null;
                 return;
             }
 
@@ -93,12 +99,19 @@ namespace Unity.MP_FPS.UI
             if (MoonRaidMap.Active != null)
             {
                 // Raid settlement replaces arena auto-respawn, while retaining its spectator camera.
+                if (m_LastRaidMap != MoonRaidMap.Active) { m_LastRaidMap = MoonRaidMap.Active; m_HasLastRaidPosition = false; }
                 m_RespawnScreen.style.display = DisplayStyle.None;
                 bool alive = m_LocalPlayerQuery.HasSingleton<PredictedPlayerGhost>();
                 RespawnCamera.gameObject.SetActive(!alive);
+                if (alive)
+                {
+                    var player = m_LocalPlayerQuery.GetSingletonEntity();
+                    if (m_EntityManager.HasComponent<LocalTransform>(player))
+                    { m_LastRaidPosition = m_EntityManager.GetComponentData<LocalTransform>(player).Position; m_HasLastRaidPosition = true; }
+                }
                 if (!alive)
                 {
-                    Vector3 target = MoonRaidMap.Active.ExtractionPosition;
+                    Vector3 target = m_HasLastRaidPosition ? MoonRaidMap.Active.NearestExtraction(m_LastRaidPosition) : MoonRaidMap.Active.ExtractionPosition;
                     RespawnCamera.transform.position = target + new Vector3(0, 25, -25);
                     RespawnCamera.transform.LookAt(target);
                 }

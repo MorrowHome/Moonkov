@@ -122,10 +122,13 @@ namespace Unity.MP_FPS
             if (reset) LoadSurface(map.gameObject.scene.name);
             m_Expedition = true; m_ExpeditionSource = map; m_Snapshot = default; m_Friends.Clear();
             m_Local = local; m_HasLocal = true; Heading(forward); m_TakenMask = takenMask;
-            m_Supplies = map.LootPositions; m_Exit = map.ExtractionPosition;
+            m_Supplies = map.LootPositions; m_Exit = map.NearestExtraction(local);
             if (reset)
             {
                 m_SupplyMin = m_SupplyMax = XZ(m_Exit);
+                for (int i = 0; i < map.ExtractionCount; i++)
+                    if (map.TryExtractionPosition(i, out var exit))
+                    { m_SupplyMin = Vector2.Min(m_SupplyMin, XZ(exit)); m_SupplyMax = Vector2.Max(m_SupplyMax, XZ(exit)); }
                 foreach (var point in m_Supplies) { m_SupplyMin = Vector2.Min(m_SupplyMin, XZ(point)); m_SupplyMax = Vector2.Max(m_SupplyMax, XZ(point)); }
                 if (HasSurface)
                 {
@@ -368,7 +371,9 @@ namespace Unity.MP_FPS
                         Line(p, point + new Vector2(-3, 3), point + new Vector2(3, -3));
                     }
                 }
-                if (Inside(Project(m_Exit))) { Dot(p, Project(m_Exit), 7, Color.white); Dot(p, Project(m_Exit), 5, new Color(.16f, .57f, .32f)); }
+                for (int i = 0; i < m_ExpeditionSource.ExtractionCount; i++)
+                    if (m_ExpeditionSource.TryExtractionPosition(i, out var exit) && Inside(Project(exit)))
+                    { Dot(p, Project(exit), 7, Color.white); Dot(p, Project(exit), 5, new Color(.16f, .57f, .32f)); }
             }
             else
             {

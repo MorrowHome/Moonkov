@@ -14,6 +14,7 @@ namespace Unity.MP_FPS
     public partial class DollSingerEnemySystem
     {
         private readonly List<RaidSpawnObserver> m_SpawnObservers = new List<RaidSpawnObserver>();
+        private readonly List<Vector3> m_SpawnExitSamples = new List<Vector3>(RaidExtractionRules.MaxExits);
         private readonly NavMeshPath m_SpawnPath = new NavMeshPath();
         private Unity.Mathematics.Random m_SpawnRandom;
         private bool m_PopulationStarted;
@@ -145,7 +146,10 @@ namespace Unity.MP_FPS
                 if (anchor != null) anchors = new[] { anchor.Approach };
             }
             if (anchors.Length == 0) return false;
-            bool hasExtraction = NavMesh.SamplePosition(map.ExtractionPosition, out var extraction, 3, m_Filter);
+            m_SpawnExitSamples.Clear();
+            for (int i = 0; i < map.ExtractionCount; i++)
+                if (map.TryExtractionPosition(i, out var exit) && NavMesh.SamplePosition(exit, out var sample, 3, m_Filter))
+                    m_SpawnExitSamples.Add(sample.position);
             int start = m_SpawnRandom.NextInt(anchors.Length);
             float inner = Mathf.Max(0, m_Tuning.SpawnInnerRadius);
             float outer = Mathf.Max(inner, m_Tuning.SpawnOuterRadius);
@@ -171,14 +175,29 @@ namespace Unity.MP_FPS
                 if (!NavMesh.SamplePosition(candidate, out var sample, 3, m_Filter) ||
                     Mathf.Abs(sample.position.y - candidate.y) > 2.5f) continue;
                 var point = sample.position;
-                if (HorizontalDistance(point, map.ExtractionPosition) < map.ExtractionRadius + 8) continue;
+                bool nearExit = false;
+                for (int i = 0; i < map.ExtractionCount; i++)
+                    if (map.TryExtractionPosition(i, out var exit) && HorizontalDistance(point, exit) < map.ExtractionRadius + 8)
+                    { nearExit = true; break; }
+                if (nearExit) continue;
                 if (!RaidSpawnSafety.IsSafeFromObservers(point, m_SpawnObservers,
                     Mathf.Max(8, m_Tuning.SpawnPlayerDistance), Mathf.Max(10, m_Tuning.SpawnVisibilityDistance),
                     Mathf.Max(1, m_Tuning.SpawnActorSpacing))) continue;
                 if (!RaidSpawnSafety.TryGroundPosition(point, .35f, 1.8f, 45, out var ground, out _) ||
                     Mathf.Abs(ground.y - point.y) > .6f) continue;
-                bool reachesExit = hasExtraction && NavMesh.CalculatePath(point, extraction.position, m_Filter, m_SpawnPath) &&
-                    m_SpawnPath.status == NavMeshPathStatus.PathComplete;
+                bool reachesExit = false;
+                int nearestExit = -1; float nearestDistance = float.MaxValue;
+                for (int i = 0; i < m_SpawnExitSamples.Count; i++)
+                {
+                    float distance = HorizontalDistance(point, m_SpawnExitSamples[i]);
+                    if (distance < nearestDistance) { nearestDistance = distance; nearestExit = i; }
+                }
+                if (nearestExit >= 0)
+                    reachesExit = NavMesh.CalculatePath(point, m_SpawnExitSamples[nearestExit], m_Filter, m_SpawnPath) &&
+                        m_SpawnPath.status == NavMeshPathStatus.PathComplete;
+                for (int i = 0; !reachesExit && i < m_SpawnExitSamples.Count; i++)
+                    if (i != nearestExit && NavMesh.CalculatePath(point, m_SpawnExitSamples[i], m_Filter, m_SpawnPath) &&
+                        m_SpawnPath.status == NavMeshPathStatus.PathComplete) reachesExit = true;
                 // Full-map entries can serve separate crater basins. Require local walking
                 // space and let these raiders leave through their own entry instead.
                 if (!reachesExit && (map.EnemyActivationDistance <= 0 || !HasLocalSpawnRoute(point))) continue;
@@ -204,10 +223,17 @@ namespace Unity.MP_FPS
 
         private Vector3 SelectRaidExit(MoonRaidMap map, Vector3 position)
         {
-            if (NavMesh.SamplePosition(map.ExtractionPosition, out var exit, 3, m_Filter) &&
-                NavMesh.CalculatePath(position, exit.position, m_Filter, m_SpawnPath) &&
-                m_SpawnPath.status == NavMeshPathStatus.PathComplete) return map.ExtractionPosition;
-            return position;
+            Vector3 chosen = position; float nearest = float.MaxValue;
+            for (int i = 0; i < map.ExtractionCount; i++)
+            {
+                if (!map.TryExtractionPosition(i, out var candidate)) continue;
+                float distance = HorizontalDistance(position, candidate);
+                if (distance >= nearest || !NavMesh.SamplePosition(candidate, out var exit, 3, m_Filter) ||
+                    !NavMesh.CalculatePath(position, exit.position, m_Filter, m_SpawnPath) ||
+                    m_SpawnPath.status != NavMeshPathStatus.PathComplete) continue;
+                chosen = candidate; nearest = distance;
+            }
+            return chosen;
         }
 
         private Entity SpawnActor(MoonRaidMap map, Entity prefab, Vector3 position, double now, ClashBotSpawnRequest? clash = null)

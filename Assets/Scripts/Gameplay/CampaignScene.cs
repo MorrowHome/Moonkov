@@ -27,7 +27,10 @@ namespace Unity.MP_FPS
             return progress;
         }
 
-        public static bool TryDestination(World clientWorld, CampaignProgress progress, string taskId, out Vector3 position, out string location)
+        public static bool TryDestination(World clientWorld, CampaignProgress progress, string taskId, out Vector3 position, out string location) =>
+            TryDestination(clientWorld, progress, taskId, null, out position, out location);
+
+        public static bool TryDestination(World clientWorld, CampaignProgress progress, string taskId, Vector3? origin, out Vector3 position, out string location)
         {
             position = default; location = null;
             var node = CampaignRules.CurrentNode(progress, taskId);
@@ -35,7 +38,8 @@ namespace Unity.MP_FPS
             if (node.AnchorId == "ship.return")
             {
                 var map = MoonRaidMap.Active; if (!map) return false;
-                position = map.ExtractionPosition; location = "返回撤离点"; return true;
+                position = origin.HasValue ? map.NearestExtraction(origin.Value) : map.ExtractionPosition;
+                location = "返回撤离点"; return true;
             }
             var site = RaidMissionSite.Active; if (!site) return false;
             bool discovered = TrySnapshot(clientWorld, out var snapshot) && snapshot.OperationId.Length > 0;

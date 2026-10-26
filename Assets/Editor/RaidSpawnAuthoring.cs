@@ -120,7 +120,7 @@ public sealed class RaidSpawnAuthoring : Editor
                 float radius = attempt < 12 ? 12 : 20;
                 Vector3 candidate = map.LootPositions[index] + new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * radius;
                 if (!RaidSpawnSafety.TryGroundPosition(candidate, .35f, 1.8f, 40, out var floor, out _)) continue;
-                if (Vector3.Distance(floor, map.ExtractionPosition) < 35) continue;
+                if (Vector3.Distance(floor, map.NearestExtraction(floor)) < 35) continue;
                 entries.Add(floor + Vector3.up * .05f);
                 break;
             }
