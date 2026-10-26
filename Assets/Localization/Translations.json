@@ -1301,5 +1301,10 @@
   "No carried items at the end of this expedition.": "本次结束时没有携带物品。",
   "BROUGHT BACK": "带回物品",
   "PROTECTED ITEMS": "受保护物品",
-  "LOST ITEMS": "损失物品"
+  "LOST ITEMS": "损失物品",
+  "Loading equipment...": "装备同步中…",
+  "No halo weapon remains. Emergency supplies are available.": "已无光环，可领取应急补给。",
+  "No halo equipped. Open storage to equip one.": "尚未装备光环，请前往仓库装备。",
+  "Place medical supplies in pockets or your chest rig.": "将医疗用品放入口袋或胸挂。",
+  "Halo equipped. Medicine accessible.": "光环已装备，医疗用品可取用。"
 }

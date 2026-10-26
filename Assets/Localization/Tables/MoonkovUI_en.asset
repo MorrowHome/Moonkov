@@ -5515,6 +5515,26 @@ MonoBehaviour:
     m_Localized: LOST ITEMS
     m_Metadata:
       m_Items: []
+  - m_Id: 6909810799796224
+    m_Localized: Loading equipment...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6909810803990528
+    m_Localized: No halo weapon remains. Emergency supplies are available.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6909810803990529
+    m_Localized: No halo equipped. Open storage to equip one.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6909810803990530
+    m_Localized: Place medical supplies in pockets or your chest rig.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6909810803990531
+    m_Localized: Halo equipped. Medicine accessible.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

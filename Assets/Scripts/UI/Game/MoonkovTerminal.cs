@@ -34,6 +34,7 @@ namespace Unity.MP_FPS.Client
         {
             m_EquipmentInventory = inventory;
             m_Character?.SetEquipmentInventory(inventory);
+            if (m_Page == 4 && m_OperationStep == 4) PresentDepartureEquipment();
         }
         public event Action Navigating;
         public event Action LoadoutShowing;

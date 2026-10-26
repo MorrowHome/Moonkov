@@ -30,11 +30,11 @@
                 <ui:VisualElement class="op-check-row">
                     <ui:Label text="03" class="op-check-number" />
                     <ui:VisualElement class="op-check-label">
-                        <ui:Label text="RECOVERY" class="op-heading" />
-                        <ui:Label text="NO RECOVERY COVERAGE" class="op-copy" />
+                        <ui:Label text="EQUIPMENT CHECK" class="op-heading" />
+                        <ui:Label name="readyEquipmentNote" text="Loading equipment..." class="op-copy" />
                     </ui:VisualElement>
                     <ui:VisualElement class="op-check-value">
-                        <ui:Label text="NO CONTRACT" class="op-value op-warning" />
+                        <ui:Button name="readyEquipmentAction" text="OPEN STORAGE" class="op-button op-equipment-action" />
                     </ui:VisualElement>
                 </ui:VisualElement>
                 <ui:VisualElement class="op-check-row">

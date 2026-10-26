@@ -160,6 +160,7 @@
 .moonkov-terminal.archive-page-4 .op-page .op-warning { color: #ff8b87; }
 .moonkov-terminal.archive-page-4 .op-ready-cell { width: 60px; height: 60px; position: absolute; left: 8px; top: 5px; }
 .moonkov-terminal.archive-page-4 .op-check-value #readyCarry { margin-left: 65px; }
+.moonkov-terminal.archive-page-4 .op-equipment-action { min-height: 36px; height: auto; padding: 8px; font-size: 14px; white-space: normal; }
 .moonkov-terminal.archive-page-4 .op-terminal-photo { width: 100%; height: 100%; background-image: url("OperationArt/Terminal.png"); }
 .moonkov-terminal.archive-page-4 .op-final-row { padding-right: 0; }
 .moonkov-terminal.archive-page-4 .op-final-row .op-check-value { padding-left: 0; border-width: 0; margin: -10px 0; }

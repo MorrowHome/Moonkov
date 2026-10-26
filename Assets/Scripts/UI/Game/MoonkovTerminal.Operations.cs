@@ -52,6 +52,8 @@ namespace Unity.MP_FPS.Client
                     BindOperationCargo();
                     break;
                 case 4:
+                    m_Content.Q<Button>("readyEquipmentAction").clicked += ReviewDepartureEquipment;
+                    PresentDepartureEquipment();
                     AddOperationCellArt("readyCellArt");
                     MoonkovLocalization.Set(m_Content.Q<Label>("readyOperatorName"), GameSettings.CharacterName(GameSettings.Instance?.PlayerCharacter ?? GameSettings.DollSingerCharacterIndex));
                     MoonkovLocalization.Set(m_Content.Q<Label>("readyCarry"), "{0} ENERGY CELLS", PlayerProfileClient.CarryCells);
@@ -75,6 +77,27 @@ namespace Unity.MP_FPS.Client
 
         private static string DepartureAction(bool offline, bool lan) => lan ? "OPEN LAN ROOM" :
             offline ? "DEPLOY SOLO" : "OPEN CONNECTION TERMINAL";
+
+        private void PresentDepartureEquipment()
+        {
+            var copy = m_Content.Q<Label>("readyEquipmentNote");
+            var button = m_Content.Q<Button>("readyEquipmentAction");
+            if (copy == null || button == null) return;
+            var check = DepartureEquipmentCheck.Read(m_EquipmentInventory);
+            MoonkovLocalization.Set(copy, check.Copy);
+            copy.EnableInClassList("op-warning", check.Issue == DepartureEquipmentIssue.Halo || check.Issue == DepartureEquipmentIssue.Medicine);
+            MoonkovLocalization.Set(button, check.Action);
+            button.SetEnabled(!m_Busy && check.Issue != DepartureEquipmentIssue.Loading);
+        }
+
+        private void ReviewDepartureEquipment()
+        {
+            if (m_Busy || m_EquipmentInventory == null) return;
+            // Reuse the shop's authoritative eligibility, order receipt and retry flow.
+            if (DepartureEquipmentCheck.Read(m_EquipmentInventory).EmergencyAvailable)
+                OpenShop("LUNAR EMERGENCY SUPPLY", true);
+            else Navigate(1);
+        }
 
         private void BindOperationCharacters()
         {
