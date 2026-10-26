@@ -20,13 +20,19 @@ public static class RaidSearchActionChecks
         var health = new PredictedPlayerGhost { LastHitTick = 1, ShieldHitSequence = 2, LastShotTick = 3,
             LastGrenadeShotTick = 4, LastReloadTick = 5, EquippedWeaponID = 6 };
         var actor = new RaidInventoryState();
+        var busy = health; busy.ControllerState.IsReloadingState = true;
+        actor.BeginDissection(0, 0, origin, busy, 2);
+        Check(actor.DissectingLootId == -1 && actor.OpenedLootId == -1, "Already reloading cannot start search");
+        busy.ControllerState.IsReloadingState = false; busy.WeaponEquipRemaining = .2f;
+        actor.BeginDissection(0, 0, origin, busy, 2);
+        Check(actor.DissectingLootId == -1 && actor.OpenedLootId == -1, "Weapon switch cannot start search");
         actor.BeginDissection(0, 10, origin, health, 2);
         actor.RefreshDissection(caches, true, origin, health, 11.99);
         Check(actor.DissectingLootId == 0 && actor.OpenedLootId == -1 && !actor.SearchedLoot.Contains(0), "Search cannot reveal contents early");
         actor.RefreshDissection(caches, true, origin, health, 12);
         Check(actor.OpenedLootId == 0 && actor.SearchedLoot.Contains(0) && !actor.NeedsSearch(caches, 0), "Search opens and remembers the completed container");
 
-        for (int interruption = 0; interruption < 8; interruption++)
+        for (int interruption = 0; interruption < 10; interruption++)
         {
             actor = new RaidInventoryState();
             var changed = health;
@@ -42,11 +48,14 @@ public static class RaidSearchActionChecks
                 case 5: changed.EquippedWeaponID++; break;
                 case 6: position.x += .76f; break;
                 case 7: accessible = false; break;
+                case 8: changed.ControllerState.IsReloadingState = true; break;
+                case 9: changed.WeaponEquipRemaining = .2f; break;
             }
             actor.RefreshDissection(caches, accessible, position, changed, 22);
             Check(actor.DissectingLootId == -1 && actor.OpenedLootId == -1 && !actor.SearchedLoot.Contains(0) &&
                 actor.Error == InventoryError.Inaccessible, "Interruption must not reveal or remember loot: " + interruption);
             Check(!string.IsNullOrEmpty(actor.ActionFeedback), "Interruption needs feedback: " + interruption);
+            changed.ControllerState.IsReloadingState = false; changed.WeaponEquipRemaining = 0;
             actor.BeginDissection(0, 30, origin, changed, 2);
             actor.RefreshDissection(caches, true, origin, changed, 32);
             Check(actor.OpenedLootId == 0 && actor.SearchedLoot.Contains(0), "Search can be restarted after interruption: " + interruption);

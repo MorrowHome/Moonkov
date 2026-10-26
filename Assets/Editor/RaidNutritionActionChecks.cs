@@ -48,6 +48,13 @@ public static class RaidNutritionActionChecks
         actor = Actor("ration", out health, out id);
         int version = actor.Graph.Version;
         Check(actor.BeginConsumable(health, id, version - 1, origin, 0) == InventoryError.Stale && !actor.ActionPending, "Stale supply is rejected");
+        health.ControllerState.IsReloadingState = true;
+        Check(actor.BeginConsumable(health, id, version, origin, 0) == InventoryError.Inaccessible && !actor.ActionPending && actor.Graph.Count("ration", true) == 2,
+            "Already reloading cannot start a food action");
+        health.ControllerState.IsReloadingState = false; health.WeaponEquipRemaining = .2f;
+        Check(actor.BeginConsumable(health, id, version, origin, 0) == InventoryError.Inaccessible && !actor.ActionPending,
+            "Weapon switch cannot start a food action");
+        health.WeaponEquipRemaining = 0;
         health.Energy = 100;
         Check(actor.BeginConsumable(health, id, version, origin, 0) == InventoryError.Invalid && actor.Graph.Count("ration", true) == 2, "Full energy does not consume food");
         health.Energy = 40;
@@ -56,7 +63,7 @@ public static class RaidNutritionActionChecks
         actor.RefreshMedical(ref health, true, origin, 10);
         Check(!actor.ActionPending && !actor.MedicalIsConsumable && actor.Graph.Count("ration", true) == 2 && health.Energy == 40, "Cancelled food remains carried");
 
-        for (int interruption = 0; interruption < 9; interruption++)
+        for (int interruption = 0; interruption < 11; interruption++)
         {
             actor = Actor("ration", out health, out id);
             Check(actor.BeginConsumable(health, id, actor.Graph.Version, origin, 0) == InventoryError.None, "Interruption setup");
@@ -72,6 +79,8 @@ public static class RaidNutritionActionChecks
                 case 6: actor.Graph.Version++; break;
                 case 7: accessible = false; break;
                 case 8: health.EquippedWeaponID++; break;
+                case 9: health.ControllerState.IsReloadingState = true; break;
+                case 10: health.WeaponEquipRemaining = .2f; break;
             }
             actor.RefreshMedical(ref health, accessible, position, 3);
             Check(!actor.ActionPending && actor.Error != InventoryError.None && actor.Graph.Count("ration", true) == 2 && health.Energy == 40,
@@ -82,6 +91,10 @@ public static class RaidNutritionActionChecks
         Check(actor.Graph.AddSupply("medkit", 1, InventoryCatalog.Pockets) == InventoryError.None, "Create medicine");
         var med = actor.Graph.Items.Find(item => item.Code == "medkit");
         RaidHealth.Set(ref health, BodyPart.LeftArm, 20);
+        health.ControllerState.IsReloadingState = true;
+        Check(actor.BeginMedical(health, med.Id, actor.Graph.Version, BodyPart.LeftArm, origin, 0) == InventoryError.Inaccessible && !actor.ActionPending,
+            "Already reloading cannot start treatment");
+        health.ControllerState.IsReloadingState = false;
         Check(actor.BeginMedical(health, med.Id, actor.Graph.Version, BodyPart.LeftArm, origin, 0) == InventoryError.None, "Treatment starts");
         Check(actor.BeginConsumable(health, id, actor.Graph.Version, origin, 0) == InventoryError.Inaccessible && actor.MedicalItemId == med.Id,
             "Food cannot replace an active treatment");

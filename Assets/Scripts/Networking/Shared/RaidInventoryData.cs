@@ -172,6 +172,7 @@ namespace Unity.MP_FPS
         public InventoryError BeginMedical(in PredictedPlayerGhost health,string id,int version,BodyPart part,
             Unity.Mathematics.float3 origin,double now,float seconds=3)
         {
+            if(RaidHealth.HandsBusy(health))return InventoryError.Inaccessible;
             // Validate on copies: neither item consumption nor healing occurs before the deadline.
             var probe=health;var error=RaidHealth.UseMedical(ref probe,Graph.Clone(),id,version,part);
             if(error!=InventoryError.None)return error;
@@ -183,7 +184,7 @@ namespace Unity.MP_FPS
         public InventoryError BeginConsumable(in PredictedPlayerGhost health,string id,int version,
             Unity.Mathematics.float3 origin,double now)
         {
-            if(ActionPending)return InventoryError.Inaccessible;
+            if(ActionPending || RaidHealth.HandsBusy(health))return InventoryError.Inaccessible;
             // Validate without granting resources or consuming a stack before the deadline.
             var probe=health;var error=RaidNutrition.Consume(ref probe,Graph.Clone(),id,version);
             if(error!=InventoryError.None)return error;
@@ -209,7 +210,7 @@ namespace Unity.MP_FPS
                 Unity.Mathematics.math.distancesq(position,MedicalOrigin)>.75f*.75f ? "治疗中断：移动超过允许范围。" :
                 health.LastHitTick!=MedicalDamageTick || health.ShieldHitSequence!=MedicalShieldHitSequence ? "治疗中断：受到攻击。" :
                 health.LastShotTick!=MedicalShotTick || health.LastGrenadeShotTick!=MedicalGrenadeTick ? "治疗中断：开火或投掷。" :
-                health.LastReloadTick!=MedicalReloadTick || health.EquippedWeaponID!=MedicalWeapon ? "治疗中断：换弹或切换武器。" : null;
+                health.LastReloadTick!=MedicalReloadTick || health.EquippedWeaponID!=MedicalWeapon || RaidHealth.HandsBusy(health) ? "治疗中断：换弹或切换武器。" : null;
             if(Graph.Version!=MedicalVersion)reason="治疗中断：库存已变化，请重新选择物品。";
             if(reason==null && now<MedicalUntil)return;
             var id=MedicalItemId;bool consumable=MedicalIsConsumable;MedicalItemId=null;MedicalIsConsumable=false;LastSentVersion=-1;
@@ -224,12 +225,14 @@ namespace Unity.MP_FPS
         public double DissectionUntil;
         public Unity.Mathematics.float3 DissectionOrigin;
         public uint DissectionDamageTick,DissectionShieldHitSequence,DissectionShotTick,DissectionGrenadeTick,DissectionReloadTick,DissectionWeapon;
-        public void BeginDissection(int id,double now,Unity.Mathematics.float3 origin,in PredictedPlayerGhost health,float seconds=AlienHarvest.DissectionSeconds)
+        public bool BeginDissection(int id,double now,Unity.Mathematics.float3 origin,in PredictedPlayerGhost health,float seconds=AlienHarvest.DissectionSeconds)
         {
+            if(RaidHealth.HandsBusy(health))return false;
             CancelActions(ActionPending ? "原操作已取消：开始搜索；未消耗物品。" : ActionFeedback);DissectingLootId=id;DissectionUntil=now+System.Math.Max(.1f,seconds);
             DissectionOrigin=origin;DissectionDamageTick=health.LastHitTick;DissectionShieldHitSequence=health.ShieldHitSequence;
             DissectionShotTick=health.LastShotTick;DissectionGrenadeTick=health.LastGrenadeShotTick;
             DissectionReloadTick=health.LastReloadTick;DissectionWeapon=health.EquippedWeaponID;OpenedLootId=-1;LastSentVersion=-1;
+            return true;
         }
         public void RefreshDissection(RaidLootContainers caches,bool accessible,Unity.Mathematics.float3 position,in PredictedPlayerGhost health,double now)
         {
@@ -238,7 +241,7 @@ namespace Unity.MP_FPS
                 Unity.Mathematics.math.distancesq(position,DissectionOrigin)>.75f*.75f ? "搜索中断：移动超过允许范围。" :
                 health.LastHitTick!=DissectionDamageTick || health.ShieldHitSequence!=DissectionShieldHitSequence ? "搜索中断：受到攻击。" :
                 health.LastShotTick!=DissectionShotTick || health.LastGrenadeShotTick!=DissectionGrenadeTick ? "搜索中断：开火或投掷。" :
-                health.LastReloadTick!=DissectionReloadTick || health.EquippedWeaponID!=DissectionWeapon ? "搜索中断：换弹或切换武器。" : null;
+                health.LastReloadTick!=DissectionReloadTick || health.EquippedWeaponID!=DissectionWeapon || RaidHealth.HandsBusy(health) ? "搜索中断：换弹或切换武器。" : null;
             if(reason==null && now<DissectionUntil)return;
             int id=DissectingLootId;DissectingLootId=-1;LastSentVersion=-1;
             Error=reason==null ? InventoryError.None : InventoryError.Inaccessible;

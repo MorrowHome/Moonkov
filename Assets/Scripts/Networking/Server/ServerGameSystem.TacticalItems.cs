@@ -112,6 +112,7 @@ namespace Unity.MP_FPS
                 bool actorValid=TacticalActor(ref state,connection,out var player,out var health,out var root);
                 bool valid=actorValid && inventory.TacticalPending && inventory.RaidId==use.RaidId && inventory.Graph.Version==use.Version;
                 valid=valid && player==use.Player && Vector3.Distance(root.transform.position,use.Origin)<=.55f &&
+                    !RaidHealth.HandsBusy(health) &&
                     health.LastHitTick==use.Hit && health.ShieldHitSequence==use.ShieldHit && health.CurrentHealth>=use.Health-.001f &&
                     (use.Action!=TacticalItemAction.Extinguish || health.LastHitPart==use.LastPart && Mathf.Abs(health.LastDamageAmount-use.LastDamage)<.001f) && health.LastShotTick==use.Shot && health.LastGrenadeShotTick==use.Grenade &&
                     health.LastReloadTick==use.Reload && health.EquippedWeaponID==use.Weapon;
@@ -213,6 +214,8 @@ namespace Unity.MP_FPS
             Entity player,in PredictedPlayerGhost health,GhostGameObject root,in RaidTacticalItemActionRpc r,double now)
         {
             if(r.ExpectedVersion!=inventory.Graph.Version){inventory.Error=InventoryError.Stale;world.Feedbacks[connection]=TacticalItemFeedback.Stale;return;}
+            if(RaidHealth.HandsBusy(health))
+            {inventory.Error=InventoryError.Inaccessible;world.Feedbacks[connection]=TacticalItemFeedback.Unavailable;return;}
             TacticalItemDefinition definition=null;Vector3 placement=default;float seconds=3;
             if(r.Action==TacticalItemAction.Use)
             {

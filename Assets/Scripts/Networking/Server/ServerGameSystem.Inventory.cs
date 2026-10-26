@@ -111,6 +111,7 @@ namespace Unity.MP_FPS
                                 inventory.Error=inventory.BeginConsumable(ghost.ValueRO,itemId,r.ExpectedVersion,usePosition,SystemAPI.Time.ElapsedTime);
                                 if(inventory.Error==InventoryError.None)
                                     CancelManualMission(ref state,connection,"任务操作中断：开始使用补给；维修或下载进度未完成。");
+                                else if(RaidHealth.HandsBusy(ghost.ValueRO))inventory.ActionFeedback="操作未开始：正在换弹或切换武器。";
                             }
                             EnergyShieldEquipment.Flush(ref ghost.ValueRW,inventory.Graph);
                         }
@@ -143,6 +144,7 @@ namespace Unity.MP_FPS
                                 medicalPosition,SystemAPI.Time.ElapsedTime,MoonRaidMap.Active.MedicalSeconds);
                             if(inventory.Error==InventoryError.None)
                                 CancelManualMission(ref state,connection,"任务操作中断：开始治疗；维修或下载进度未完成。");
+                            else if(RaidHealth.HandsBusy(ghost.ValueRO))inventory.ActionFeedback="操作未开始：正在换弹或切换武器。";
                         }
                         inventory.LastSentVersion = -1;
                     }

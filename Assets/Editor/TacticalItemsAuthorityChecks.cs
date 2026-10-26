@@ -113,6 +113,14 @@ public static class TacticalItemsAuthorityChecks
                 "A fatal shot created a persistent wound on a dead body");
             Clear();health=em.GetComponentData<PredictedPlayerGhost>(player);health.ShieldEquipped=false;em.SetComponentData(player,health);
             string antidote=Add("antidote_shot",3);int initial=inventory.Graph.Find(antidote).Quantity;
+            health=em.GetComponentData<PredictedPlayerGhost>(player);health.ControllerState.IsReloadingState=true;em.SetComponentData(player,health);
+            Request(TacticalItemAction.Use,antidote);Check(!inventory.TacticalPending && inventory.Graph.Find(antidote).Quantity==initial,"Already reloading cannot start tactical use");
+            health=em.GetComponentData<PredictedPlayerGhost>(player);health.ControllerState.IsReloadingState=false;health.WeaponEquipRemaining=.2f;em.SetComponentData(player,health);
+            Request(TacticalItemAction.Use,antidote);Check(!inventory.TacticalPending && inventory.Graph.Find(antidote).Quantity==initial,"Weapon switch cannot start tactical use");
+            health=em.GetComponentData<PredictedPlayerGhost>(player);health.WeaponEquipRemaining=0;em.SetComponentData(player,health);
+            Request(TacticalItemAction.Use,antidote);health=em.GetComponentData<PredictedPlayerGhost>(player);health.ControllerState.IsReloadingState=true;em.SetComponentData(player,health);Tick();
+            Check(!inventory.TacticalPending && inventory.Graph.Find(antidote).Quantity==initial,"Same-tick reload interrupts tactical use");
+            health=em.GetComponentData<PredictedPlayerGhost>(player);health.ControllerState.IsReloadingState=false;em.SetComponentData(player,health);
             Request(TacticalItemAction.Use,antidote);Check(inventory.TacticalPending,"Use starts timed operation");
             Check(inventory.Graph.Find(antidote).Quantity==initial,"No early spend");
             Request(TacticalItemAction.Use,antidote,replay:requestId);Check(inventory.Graph.Find(antidote).Quantity==initial,"Replay no spend");

@@ -227,7 +227,12 @@ namespace Unity.MP_FPS
                 (owner.RequestId != m_QuickOwnerRequest || owner.Feedback != m_QuickOwnerFeedback || owner.Error != m_QuickOwnerError))
             {
                 m_QuickOwnerRequest = owner.RequestId; m_QuickOwnerFeedback = owner.Feedback; m_QuickOwnerError = owner.Error;
-                if (owner.Feedback != TacticalItemFeedback.None) QuickNotice(owner.Error == InventoryError.Overweight ? "Overweight" : QuickFeedback(owner.Feedback));
+                if (owner.Feedback != TacticalItemFeedback.None)
+                {
+                    bool weaponBusy=owner.Error==InventoryError.Inaccessible && owner.Feedback==TacticalItemFeedback.Unavailable &&
+                        m_PlayerQuery.HasSingleton<PredictedPlayerGhost>() && RaidHealth.HandsBusy(m_PlayerQuery.GetSingleton<PredictedPlayerGhost>());
+                    QuickNotice(owner.Error==InventoryError.Overweight ? "Overweight" : weaponBusy ? "INTERRUPTED / WEAPON CHANGED" : QuickFeedback(owner.Feedback));
+                }
             }
             if (m_QuickTacticalRequest != 0 && Time.unscaledTime - m_QuickTacticalRequestedAt > 8)
             { m_QuickTacticalRequest = 0; MoonkovAudio.Error(); QuickNotice("Waiting for the server. Retry after the connection recovers."); }

@@ -174,9 +174,12 @@ namespace Unity.MP_FPS
                     if(r.RequestId>inventory.RequestId)
                     {
                         inventory.RequestId=r.RequestId;
-                        bool accepted=r.RaidId==session.RaidId && inventory.RaidId==r.RaidId && session.Phase==RaidPhase.Active &&
+                        bool eligible=r.RaidId==session.RaidId && inventory.RaidId==r.RaidId && session.Phase==RaidPhase.Active &&
                             !SystemAPI.HasComponent<NetworkStreamRequestDisconnect>(connection) && (r.LootId==-1 ||
                             !caches.IsEmptyDrop(r.LootId) && CanAccessLoot(ref state,connection,r.LootId,session));
+                        bool weaponBusy=eligible && r.LootId>=0 && RaidHealth.HandsBusy(SystemAPI.GetComponent<PredictedPlayerGhost>(
+                            SystemAPI.GetComponent<JoinedClient>(connection).PlayerEntity));
+                        bool accepted=eligible && !weaponBusy;
                         if(accepted)
                         {
                             inventory.CancelActions(inventory.ActionPending ? "原操作已取消：切换搜刮目标；未消耗物品。" : null);
@@ -198,6 +201,7 @@ namespace Unity.MP_FPS
                                 SystemAPI.GetComponent<PredictedPlayerGhost>(player),
                                 caches.RequiresDissection(r.LootId) ? AlienHarvest.DissectionSeconds : MoonRaidMap.Active.SearchSeconds);
                         }
+                        if(weaponBusy)inventory.ActionFeedback="操作未开始：正在换弹或切换武器。";
                         inventory.Error=accepted ? InventoryError.None : InventoryError.Inaccessible;
                         inventory.LastSentVersion=-1;
                     }
