@@ -103,6 +103,7 @@ public partial class ClientInputReaderSystem : SystemBase
                 playerInput.LookYawPitchDegrees = _accumulatedLook;
                 playerInput.AimPoint = _dollSingerPresentation.CaptureAimPoint(_accumulatedLook, weapon != null ? weapon.HitscanRange : 100f);
                 TutorialRuntime.Observe(playerInput);
+                InGameHUD.ObserveHaloChargeInput(playerInput, equipped);
                 input.ValueRW.SetInput(0, playerInput);
                 movementInput.ValueRW.SetInput(0, playerInput);
                 continue;

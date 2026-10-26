@@ -16,7 +16,8 @@
 #ammo-label { color: #f1f2ed; font-size: 26px; letter-spacing: 1px; margin-bottom: 8px; -unity-font-definition: url("../RobotoMono-Medium.ttf"); }
 #ammo-label.low-ammo { color: #edc279; }
 #ammo-label.no-ammo { color: #ff9d8c; }
-#reloading-label { color: #14171e; background-color: #f1f2ed; padding: 4px 10px; margin-bottom: 8px; font-size: 13px; letter-spacing: 0; }
+#reloading-label { color: #14171e; background-color: #f1f2ed; padding: 4px 10px; margin-bottom: 8px; font-size: 13px; letter-spacing: 0; white-space: normal; max-width: 100%; }
+#reloading-label.halo-charge-warning { color: #edc279; background-color: transparent; padding-left: 0; padding-right: 0; }
 #weapon-type-label, #ammo-reserve-label { color: #b1b6c2; font-size: 12px; }
 #weapon-icon { width: 180px; height: 40px; background-size: contain; }
 #reticle-container { position: relative; width: 100%; height: 100%; justify-content: center; align-items: center; }
@@ -47,4 +48,4 @@
 #health-state { font-size: 14px; }
 #health-value { font-size: 22px; }
 #weapon-info-container { width: 250px; border-right-color: #164bff; background-color: rgba(8,9,12,0.94); }
-#ammo-label { font-size: 32px; }
+#ammo-label { font-size: 32px; white-space: normal; max-width: 100%; }

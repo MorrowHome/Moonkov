@@ -5509,6 +5509,38 @@ MonoBehaviour:
     m_Key: Halo equipped. Medicine accessible.
     m_Metadata:
       m_Items: []
+  - m_Id: 6914682936877056
+    m_Key: 'CHARGING / {0:0.0}s
+
+      TARGET {1}/{2}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6914682941071360
+    m_Key: CHARGED / {0}/{1}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6914682941071361
+    m_Key: HALO FULL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6914682941071362
+    m_Key: Move cells to pockets or your chest rig.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6914682941071363
+    m_Key: 'CELL ENERGY TOO LOW
+
+      READY {0} / NEED {1}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6914682941071364
+    m_Key: Syncing battery inventory...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6914682941071365
+    m_Key: Awaiting charge confirmation...
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

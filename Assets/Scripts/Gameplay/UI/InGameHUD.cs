@@ -7,7 +7,7 @@ namespace Unity.MP_FPS
 {
     [RequireComponent(typeof(UIDocument))]
     [DefaultExecutionOrder(160)]
-    public class InGameHUD : MonoBehaviour
+    public partial class InGameHUD : MonoBehaviour
     {
         [Header("Reticle Configuration")] [SerializeField]
         private float reticleBaseSize = 80f;
@@ -65,8 +65,10 @@ namespace Unity.MP_FPS
 
         void OnEnable()
         {
+            ResetChargeFeedback();
             s_Active = this;
             m_RootElement = GetComponent<UIDocument>().rootVisualElement;
+            m_ChargeWeaponPanel = m_RootElement.Q("weapon-info-container");
 
             // Find the UI elements by name
             m_HealthBar = m_RootElement.Q<ProgressBar>("player-health-bar");
@@ -97,6 +99,7 @@ namespace Unity.MP_FPS
 
         private void OnDisable()
         {
+            ResetChargeFeedback();
             if (s_Active == this) s_Active = null;
             if (m_RifleHit != null) m_RifleHit.generateVisualContent -= DrawRifleHit;
             m_RifleHitUntil = 0;
@@ -130,6 +133,7 @@ namespace Unity.MP_FPS
 
         private void InitializeEcs()
         {
+            ResetChargeFeedback();
             m_ClientWorld = null;
             // Find the active client world
             foreach (var world in World.All)
@@ -175,7 +179,7 @@ namespace Unity.MP_FPS
                 m_RootElement.style.display = isInGame ? DisplayStyle.Flex : DisplayStyle.None;
             }
 
-            if (!isInGame) return;
+            if (!isInGame) { m_ChargeFeedback.Reset(); return; }
 
             // If the world was destroyed (e.g., returned to main menu), try to re-initialize
             if (m_ClientWorld == null || !m_ClientWorld.IsCreated)
@@ -188,6 +192,7 @@ namespace Unity.MP_FPS
                 !m_LocalPlayerQuery.HasSingleton<PredictedPlayerGhost>())
             {
                 // No local player entity found, hide the HUD. This occurs when the player is dead.
+                m_ChargeFeedback.Reset();
                 m_RootElement.style.display = DisplayStyle.None;
                 return;
             }
@@ -236,17 +241,19 @@ namespace Unity.MP_FPS
                 else if (playerData.CurrentAmmo <= magazineSize * 0.3f) m_AmmoLabel.style.color = Color.yellow;
                 else m_AmmoLabel.style.color = Color.white;
 
-                m_AmmoBar.highValue = magazineSize;
-                m_AmmoBar.value = playerData.CurrentAmmo;
-                m_AmmoBar.style.display = DisplayStyle.None;
+                if (m_AmmoBar != null && (!playerData.InventoryWeapons || !DollSingerWeapons.IsHalo(playerData.EquippedWeaponID)))
+                    m_AmmoBar.style.display = DisplayStyle.None;
             }
 
             // Update Reloading Indicator
-            if (m_ReloadingLabel != null)
+            if (m_ReloadingLabel != null && (!playerData.InventoryWeapons || !DollSingerWeapons.IsHalo(playerData.EquippedWeaponID)))
             {
+                m_ReloadingLabel.RemoveFromClassList("halo-charge-warning");
+                MoonkovLocalization.Set(m_ReloadingLabel, "RELOADING");
                 m_ReloadingLabel.style.display =
                     playerData.ControllerState.IsReloadingState ? DisplayStyle.Flex : DisplayStyle.None;
             }
+            PresentChargeFeedback(playerData);
 
             // Update Reticle
             UpdateReticleVisual(playerData);

@@ -1306,5 +1306,12 @@
   "No halo weapon remains. Emergency supplies are available.": "已无光环，可领取应急补给。",
   "No halo equipped. Open storage to equip one.": "尚未装备光环，请前往仓库装备。",
   "Place medical supplies in pockets or your chest rig.": "将医疗用品放入口袋或胸挂。",
-  "Halo equipped. Medicine accessible.": "光环已装备，医疗用品可取用。"
+  "Halo equipped. Medicine accessible.": "光环已装备，医疗用品可取用。",
+  "CHARGING / {0:0.0}s\nTARGET {1}/{2}": "充能中 / {0:0.0} 秒\n完成后 {1}/{2} 发",
+  "CHARGED / {0}/{1}": "充能完成 / {0}/{1} 发",
+  "HALO FULL": "光环已充满",
+  "Move cells to pockets or your chest rig.": "将电池移入口袋或胸挂。",
+  "CELL ENERGY TOO LOW\nREADY {0} / NEED {1}": "电量不足\n可取用 {0} / 每发需要 {1}",
+  "Syncing battery inventory...": "正在同步电池状态…",
+  "Awaiting charge confirmation...": "等待充能确认…"
 }
