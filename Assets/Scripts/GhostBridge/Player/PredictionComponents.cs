@@ -103,6 +103,8 @@ public struct PredictedPlayerGhost : IComponentData
     [GhostField] public float Satiety;
     // Server exposure timers; snapshots carry the resulting resources/effects.
     public float StarvationSeconds, DehydrationSeconds;
+    // Server-only reload intent retained until the current draw completes.
+    public bool ReloadQueued;
     // Server action guard: ongoing hunger, thirst and hypoxia must not prevent
     // a player from searching for and using lifesaving supplies.
     public uint NonPhysiologicalDamageSequence;

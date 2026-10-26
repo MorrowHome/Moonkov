@@ -37,6 +37,7 @@ namespace Unity.MP_FPS
         public static void BeginEquip(ref PredictedPlayerGhost state, WeaponData weapon)
         {
             Reset(ref state);
+            state.ReloadQueued=false;
             if (weapon == null) { state.WeaponEquipRemaining = 0; state.WeaponCooldown = 0; return; }
             float recovery = state.EquippedWeaponSlot == 1 ? state.PrimaryFireRecovery :
                 state.EquippedWeaponSlot == 2 ? state.SecondaryFireRecovery : state.PistolFireRecovery;
@@ -44,6 +45,21 @@ namespace Unity.MP_FPS
                 ? Mathf.Max(0, weapon.EquipTime) * RaidHealth.HandlingMultiplier(state) : 0;
             state.WeaponCooldown = DollSingerWeapons.IsHalo(state.EquippedWeaponID)
                 ? Interval(state, weapon, IsPulse(state, weapon)) - recovery : 0;
+        }
+
+        // R pressed during a draw waits for that draw, without spending a cell
+        // early. A later weapon switch discards the old weapon's queued intent.
+        public static bool ReadyToReload(ref PredictedPlayerGhost state,bool requested,int magazineSize)
+        {
+            if(state.CurrentHealth<=0 || state.ControllerState.IsReloadingState || magazineSize<=state.CurrentAmmo)
+            {state.ReloadQueued=false;return false;}
+            if(state.WeaponEquipRemaining>0)
+            {
+                if(requested)state.ReloadQueued=true;
+                return false;
+            }
+            bool queued=state.ReloadQueued;state.ReloadQueued=false;
+            return requested || queued;
         }
 
         public static bool TryFire(ref PredictedPlayerGhost state, WeaponData weapon, bool trigger, bool aiming, bool switched)

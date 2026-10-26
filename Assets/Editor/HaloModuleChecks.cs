@@ -44,6 +44,7 @@ public static class HaloModuleChecks
         state.BurstRemaining=2;state.ControllerState.IsReloadingState=true;
         Check(!HaloModuleFire.TryFire(ref state,rifle,false,true,false) && state.BurstRemaining==0,"charge cancels");
         CheckPrepaidChargeSurvivesTemporaryEffects(registry);
+        CheckReloadQueuedDuringDraw(registry);
         var root=new GameObject("Module geometry check");
         try
         {
@@ -114,6 +115,21 @@ public static class HaloModuleChecks
         Check(DollSingerWeapons.CompleteExtractedCharge(ref state,graph,weapon.MagazineSize) && state.CurrentAmmo==target &&
             graph.Find(state.EquippedWeaponItem.ToString()).LoadedAmmo==target && graph.CellEnergy(accessibleOnly:true)==paid,
             "extraction settles real weapon charge into the carried item");
+    }
+    private static void CheckReloadQueuedDuringDraw(WeaponRegistry registry)
+    {
+        var graph=InventoryGraph.Create(false);
+        Check(graph.AddSupply("cells",1,InventoryCatalog.Pockets)==InventoryError.None,"draw queue battery fixture");
+        var state=new PredictedPlayerGhost {CurrentHealth=100,EquippedWeaponSlot=1,EquippedWeaponID=DollSingerWeapons.None};
+        DollSingerWeapons.SyncEquipment(ref state,graph,registry);state.CurrentAmmo=5;
+        var weapon=registry.GetWeaponData(state.EquippedWeaponID,state.EquippedModules);
+        int before=graph.CellEnergy(accessibleOnly:true);
+        Check(weapon!=null && state.WeaponEquipRemaining>0 && !HaloModuleFire.ReadyToReload(ref state,true,weapon.MagazineSize) &&
+            graph.CellEnergy(accessibleOnly:true)==before,"real draw queues charge without energy debit");
+        HaloModuleFire.AdvanceTimers(ref state,state.WeaponEquipRemaining);
+        Check(HaloModuleFire.ReadyToReload(ref state,false,weapon.MagazineSize) &&
+            graph.TryRecharge(state.CurrentAmmo,weapon.MagazineSize,weapon.EnergyPerRound,out int target) && target>state.CurrentAmmo,
+            "real charge can reserve energy after draw");
     }
     [MenuItem("Tools/Doll Singer/Update Module Translations")]
     public static void UpdateTranslations()

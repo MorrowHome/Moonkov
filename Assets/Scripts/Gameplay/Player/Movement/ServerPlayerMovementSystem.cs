@@ -375,9 +375,7 @@ namespace Unity.MP_FPS
                             (!DollSingerWeapons.IsHalo(predictedPlayer.ValueRO.EquippedWeaponID) || input.Aim);
                         bool mustReload = (wantsToShoot || weaponData.AutoReloadWhenEmpty) && predictedPlayer.ValueRO.CurrentAmmo <= 0;
 
-                        if ((wantsToReload || mustReload) &&
-                            !predictedPlayer.ValueRO.ControllerState.IsReloadingState &&
-                            predictedPlayer.ValueRO.CurrentAmmo < weaponData.MagazineSize &&
+                        if (HaloModuleFire.ReadyToReload(ref predictedPlayer.ValueRW,wantsToReload || mustReload,weaponData.MagazineSize) &&
                             TryReserveHaloEnergy(entity, predictedPlayer.ValueRO.EquippedWeaponID, weaponData, predictedPlayer.ValueRO.CurrentAmmo, out int targetAmmo))
                         {
                             predictedPlayer.ValueRW.ControllerState.IsReloadingState = true;
