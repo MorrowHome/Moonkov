@@ -102,7 +102,7 @@ namespace Unity.MP_FPS
                 m_NextPresentation = Time.unscaledTime + (unchecked((uint)GhostGameObject.Owner) % 16) * .004f;
             }
         }
-        // An operating sampler attracts nearby creatures without revealing the player.
+        // An operating machine attracts nearby creatures without revealing the player.
         public bool HearMissionAlarm(string operationId, Vector3 position)
         {
             if (Role != MultiplayerRole.Server || m_Body == null || !profile || m_AmbushEnabled ||

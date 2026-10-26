@@ -19,14 +19,20 @@ if (args.Length == 1 && args[0] == "--restore-only")
     Check(restored.Completed(0) && restored.Completed(1) && restored.Completed(4), "only committed facility facts restored");
     Check(!restored.Completed(2) && !restored.Completed(3) && restored.Phase == MissionPhase.Active, "sample start and process not restored");
     Check(restored.Progress(3, 20) == 0, "restored power does not secretly run cutting");
+    Check(!MissionMachineSounds.TryActiveSource(restored, out _, out _), "restored power does not emit a cutting sound");
     Check(!restored.RestoreCompleted(31, 20), "restore is rejected after nonempty restoration");
     Check(restored.Begin("actor", 1, 2, 1, 20) == MissionActionResult.Started, "player must start cutting normally");
     restored.Renew("actor", 1, 21); restored.Renew("actor", 1, 22);
     Check(restored.Renew("actor", 1, 23) == MissionActionResult.Completed, "real start interaction completes");
+    Check(MissionMachineSounds.TryActiveSource(restored, out var cutterAnchor, out var cutterRange) &&
+        cutterAnchor == "sampler" && cutterRange == 40, "cutting keeps its original sound radius and source");
+    Check(MissionMachineSounds.WithinRange(40 * 40, 40, false) && MissionMachineSounds.WithinRange(22 * 22, 40, true) &&
+        !MissionMachineSounds.WithinRange(22.1f * 22.1f, 40, true), "cutting keeps the original wall attenuation");
     restored.Tick(67);
     Check(restored.Phase == MissionPhase.Active && !restored.Completed(3), "restored mission still waits complete 45 seconds");
     restored.Tick(68);
     Check(restored.Phase == MissionPhase.OutputReady && restored.Completed(3), "normal process reaches real output after 45 seconds");
+    Check(!MissionMachineSounds.TryActiveSource(restored, out _, out _), "cutting sound stops when the process finishes");
     var invalid = Operation();
     Check(!invalid.RestoreCompleted(4, 10) && invalid.CompletedMask == 0, "start cannot be restored without power prerequisites");
     Check(!invalid.RestoreCompleted(32, 10), "unknown restore bit rejected");
@@ -70,6 +76,7 @@ Check(CampaignCatalog.Find("CM01").Nodes[1].ExistingObjectiveId == "report", "re
 Check(CampaignCatalog.Find("CM02").Nodes.Take(2).Select(n => n.ExistingObjectiveId).SequenceEqual(new[] { "power_a", "power_b" }), "power observes existing rules");
 Check(CampaignCatalog.Find("CM03").Nodes.Take(2).Select(n => n.ExistingObjectiveId).SequenceEqual(new[] { "start", "cutting" }), "cutting observes existing rules");
 Check(CampaignCatalog.Find("CM04").Nodes.Take(5).Select(n => n.ExistingObjectiveId).SequenceEqual(MissionCatalog.Archive().Objectives.Select(n => n.Id)), "investigation observes the existing archive facility");
+Check(CampaignCatalog.Find("CM04").Nodes[3].Briefing.Contains("附近敌人"), "the download warns players before the noise starts");
 Check(CampaignCatalog.Tasks.SelectMany(t=>t.Nodes).All(n=>n.AnchorId != null && n.SourceId.StartsWith("campaign.")), "semantic source bindings");
 var firstAdapter = CampaignRules.Create(); Record(firstAdapter,"CM01","arrive");
 var firstFacility = MissionCatalog.Mooncore();
@@ -131,6 +138,13 @@ CampaignMissionAdapter.RecordCompleted(adapted, 2, archiveDefinition, 31, "test-
 Check(CampaignRules.Mask(adapted,"CM04") == 31 && CampaignRules.CurrentNode(adapted,"CM04").Id == "recover", "completed download still requires taking the actual drive");
 var liveStory = CampaignRules.Clone(merged);
 var liveArchive = new MissionOperation(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), 1, archiveDefinition, 10);
+Check(!MissionMachineSounds.TryActiveSource(liveArchive, out _, out _), "archive is quiet before its real download starts");
+Check(MissionMachineSounds.WithinRange(25 * 25, 25, false) && !MissionMachineSounds.WithinRange(25.01f * 25.01f, 25, false),
+    "unobstructed archive sound has a bounded radius");
+Check(MissionMachineSounds.WithinRange(13.75f * 13.75f, 25, true) && !MissionMachineSounds.WithinRange(14 * 14, 25, true),
+    "walls attenuate the archive sound");
+Check(!MissionMachineSounds.WithinRange(float.NaN, 25, false) && !MissionMachineSounds.WithinRange(0, float.NaN, true),
+    "invalid sound positions and ranges do not create a clue");
 double time = 10; uint request = 0;
 void ArchiveInteraction(int node, int seconds)
 {
@@ -150,10 +164,13 @@ ArchiveInteraction(0, 3);
 ArchiveInteraction(1, 4);
 Check(CampaignRules.Mask(liveStory,"CM04") == 7, "real early scanning is carried into the story");
 ArchiveInteraction(3, 1);
+Check(MissionMachineSounds.TryActiveSource(liveArchive, out string soundAnchor, out float soundRange) &&
+    soundAnchor == "archive" && soundRange == 25, "the real download emits the archive location at its shorter range");
 liveArchive.Tick(time + 18);
 CampaignMissionAdapter.RecordCompleted(liveStory, 2, archiveDefinition, liveArchive.CompletedMask, "live-deployment", 1);
 Check(CampaignRules.CurrentNode(liveStory,"CM04").Id == "download", "download does not complete early");
 liveArchive.Tick(time + 20);
+Check(!MissionMachineSounds.TryActiveSource(liveArchive, out _, out _), "archive sound ends when downloading completes");
 CampaignMissionAdapter.RecordCompleted(liveStory, 2, archiveDefinition, liveArchive.CompletedMask, "live-deployment", 1);
 Check(liveArchive.Phase == MissionPhase.OutputReady && CampaignRules.CurrentNode(liveStory,"CM04").Id == "recover", "completed download exposes the physical pickup step");
 Archive(archiveRun);

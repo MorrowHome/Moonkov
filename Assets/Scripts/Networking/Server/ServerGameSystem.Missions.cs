@@ -51,21 +51,20 @@ namespace Unity.MP_FPS
         public bool OutputProduced;
         public bool BackendCompatible = true;
         public int CampaignChapter;
-        public double CampaignNextCheck, NextCutterAlarm;
+        public double CampaignNextCheck, NextMachineSound;
         public readonly Dictionary<Entity, int> CampaignRaidIds = new Dictionary<Entity, int>();
     }
 
     // Gameplay hearing is deliberately local and attenuated by world geometry.
     public static class MissionAlarm
     {
-        public const float HearingRange = 40;
-        private const float ObstructedRange = HearingRange * .55f;
+        public const float HearingRange = MissionMachineSounds.CutterRange;
         private static readonly int s_WorldMask = LayerMask.GetMask("Default", "Ground");
-        public static bool Audible(Vector3 source, Vector3 listener)
+        public static bool Audible(Vector3 source, Vector3 listener, float range = HearingRange)
         {
             float squared = (listener - source).sqrMagnitude;
-            if (squared > HearingRange * HearingRange) return false;
-            return squared <= ObstructedRange * ObstructedRange ||
+            if (!MissionMachineSounds.WithinRange(squared, range, false)) return false;
+            return MissionMachineSounds.WithinRange(squared, range, true) ||
                 !UnityEngine.Physics.Linecast(source, listener, s_WorldMask, QueryTriggerInteraction.Ignore);
         }
     }
@@ -219,7 +218,7 @@ namespace Unity.MP_FPS
                     context.Operation = null; context.OutputLootId = -1; context.Known.Clear(); context.Actors.Clear();
                 }
             }
-            EmitCutterAlarm(ref state, context, now);
+            EmitMachineSound(ref state, context, now);
             ObserveCampaign(ref state, context);
             if (now < context.NextSend) return;
             context.NextSend = now + .25; context.Sequence++;
@@ -255,14 +254,14 @@ namespace Unity.MP_FPS
             }
         }
 
-        private void EmitCutterAlarm(ref SystemState state, RaidMissionWorld context, double now)
+        private void EmitMachineSound(ref SystemState state, RaidMissionWorld context, double now)
         {
             var operation = context.Operation;
-            if (operation == null || operation.DefinitionId != "mc00_mooncore" || !operation.IsProcessing("cutting"))
-            { context.NextCutterAlarm = 0; return; }
-            if (now < context.NextCutterAlarm) return;
-            context.NextCutterAlarm = now + 2;
-            var anchor = context.Site ? context.Site.Anchor("sampler") : null;
+            if (!MissionMachineSounds.TryActiveSource(operation, out string anchorId, out float range))
+            { context.NextMachineSound = 0; return; }
+            if (now < context.NextMachineSound) return;
+            context.NextMachineSound = now + 2;
+            var anchor = context.Site ? context.Site.Anchor(anchorId) : null;
             if (anchor == null) return;
             Vector3 position = anchor.Approach, source = position + Vector3.up;
             foreach (var (pose, health, entity) in SystemAPI.Query<RefRO<LocalTransform>, RefRO<PredictedPlayerGhost>>()
@@ -271,17 +270,17 @@ namespace Unity.MP_FPS
                 if (health.ValueRO.CurrentHealth <= 0 || !state.EntityManager.HasComponent<DollSingerEnemyBrain>(entity)) continue;
                 var brain = state.EntityManager.GetComponentObject<DollSingerEnemyBrain>(entity);
                 if (brain.MissionAlarmId == operation.Id || brain.Target != Entity.Null || brain.Leaving) continue;
-                if (MissionAlarm.Audible(source, (Vector3)pose.ValueRO.Position + Vector3.up * 1.2f))
+                if (MissionAlarm.Audible(source, (Vector3)pose.ValueRO.Position + Vector3.up * 1.2f, range))
                     DollSingerEnemySystem.HearMissionAlarm(brain, operation.Id, position, now);
             }
             foreach (var (pose, health, entity) in SystemAPI.Query<RefRO<LocalTransform>, RefRO<PredictedPlayerGhost>>()
                          .WithAll<ProceduralAlienEnemy.State, GhostGameObjectLink, Simulate>().WithEntityAccess())
             {
                 if (health.ValueRO.CurrentHealth <= 0 ||
-                    ((Vector3)pose.ValueRO.Position - source).sqrMagnitude > MissionAlarm.HearingRange * MissionAlarm.HearingRange) continue;
+                    ((Vector3)pose.ValueRO.Position - source).sqrMagnitude > range * range) continue;
                 var link = state.EntityManager.GetComponentObject<GhostGameObjectLink>(entity);
                 var alien = link.LinkedInstance ? link.LinkedInstance.GetComponent<ProceduralAlienEnemy>() : null;
-                if (alien && MissionAlarm.Audible(source, alien.AimPoint)) alien.HearMissionAlarm(operation.Id, position);
+                if (alien && MissionAlarm.Audible(source, alien.AimPoint, range)) alien.HearMissionAlarm(operation.Id, position);
             }
         }
 

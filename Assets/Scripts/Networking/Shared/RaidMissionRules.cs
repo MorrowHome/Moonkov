@@ -100,6 +100,28 @@ namespace Unity.MP_FPS.Missions
         };
     }
 
+    // Running machinery is a location clue, never a player identity.
+    public static class MissionMachineSounds
+    {
+        public const float CutterRange = 40, ArchiveRange = 25;
+        public static bool WithinRange(float squaredDistance, float range, bool obstructed)
+        {
+            if (!float.IsFinite(squaredDistance) || squaredDistance < 0 || !float.IsFinite(range) || range <= 0) return false;
+            float limit = obstructed ? range * .55f : range;
+            return squaredDistance <= limit * limit;
+        }
+        public static bool TryActiveSource(MissionOperation operation, out string anchor, out float range)
+        {
+            anchor = null; range = 0;
+            if (operation == null) return false;
+            if (operation.DefinitionId == "mc00_mooncore" && operation.IsProcessing("cutting"))
+            { anchor = "sampler"; range = CutterRange; return true; }
+            if (operation.DefinitionId == "mc00_archive" && operation.IsProcessing("download"))
+            { anchor = "archive"; range = ArchiveRange; return true; }
+            return false;
+        }
+    }
+
     // Owned by one server World. No acceptance, discovery or UI tracking state exists here.
     public sealed class MissionOperation
     {

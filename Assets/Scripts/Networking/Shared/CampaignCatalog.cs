@@ -65,7 +65,7 @@ namespace Unity.MP_FPS.Campaign
                 {
                     Id = "CM04", Title = "事故之前", Chapter = 2, ChapterTitle = "错开的五分钟",
                     PrerequisiteTask = "CM03", RequireSavedPrerequisite = true,
-                    Briefing = "样本已经带回。MC00 的配电记录相差五分钟，先恢复档案终端，读取两处校验标签，再下载原始事故记录。标签可以提前读取。取得档案盘后，带回作业船保存；眼下的记录只能说明设备时间有差异，还不足以判断事故责任。",
+                    Briefing = "样本已经带回。MC00 的配电记录相差五分钟，先恢复档案终端，读取两处校验标签，再下载原始事故记录。标签可以提前读取；下载声可能引来附近敌人。取得档案盘后，带回作业船保存；眼下的记录只能说明设备时间有差异，还不足以判断事故责任。",
                     CompletionText = "沈禾：档案已经复制到船上。18:42 与 18:47 记录的是两台设备的状态，不能直接证明人员通道何时关闭。还需要门禁和求救记录。",
                     Nodes = new[] {
                         Node("self_check", "archive", "运行档案设备自检", "MC00 档案终端", CampaignObjectiveKind.Interact, 3, "self_check"),
@@ -89,7 +89,7 @@ namespace Unity.MP_FPS.Campaign
             tasks[2].Nodes[2].OutputQuantity = 2;
             tasks[2].Nodes[2].Briefing = "至少携带 1 枚合法来源的月核碎片撤离。取样完成、取得物品与成功入库是不同的结果。";
             tasks[3].Nodes[0].Briefing = "沈禾：先恢复档案设备。两处配电柜的标签也可以提前读取。";
-            tasks[3].Nodes[3].Briefing = "两处设备时间已经记录。下载原始资料后再判断它们的关系。";
+            tasks[3].Nodes[3].Briefing = "两处设备时间已经记录。下载声可能引来附近敌人；带回原始资料后再判断它们的关系。";
             tasks[3].Nodes[5].RequiredItemCode = "mc00_archive_drive";
             tasks[3].Nodes[5].OutputItemCode = "mc00_archive_drive";
             tasks[3].Nodes[5].Briefing = "档案盘必须装入随身库存并成功撤离。丢失后可以再次导出。";

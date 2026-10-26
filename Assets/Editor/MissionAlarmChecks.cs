@@ -28,7 +28,9 @@ public static partial class AlienEnemyChecks
         siteObject.transform.SetParent(holder.transform); siteObject.SetActive(false);
         var site = siteObject.AddComponent<RaidMissionSite>();
         Vector3 origin = new Vector3(-9200, 1000, -9200);
-        site.Author(new[] { new RaidMissionAnchor { Id = "sampler", Approach = origin, Position = origin + Vector3.up } },
+        Vector3 archivePosition = origin + Vector3.right * 8;
+        site.Author(new[] { new RaidMissionAnchor { Id = "sampler", Approach = origin, Position = origin + Vector3.up },
+                new RaidMissionAnchor { Id = "archive", Approach = archivePosition, Position = archivePosition + Vector3.up } },
             Array.Empty<RaidMissionDevice>(), null, null);
         var profile = Object.Instantiate(AssetDatabase.LoadAssetAtPath<AlienCreatureProfile>("Assets/AlienCreatures/Profiles/Snake.asset"));
         profile.Liquid = false; profile.PatrolRadius = 0;
@@ -44,7 +46,7 @@ public static partial class AlienEnemyChecks
             var handle = world.GetOrCreateSystem<ServerGameSystem>();
             ref var server = ref world.Unmanaged.GetUnsafeSystemRef<ServerGameSystem>(handle);
             ref var state = ref world.Unmanaged.ResolveSystemStateRef(handle);
-            var emit = (AlarmHandler)typeof(ServerGameSystem).GetMethod("EmitCutterAlarm", BindingFlags.Instance | BindingFlags.NonPublic)
+            var emit = (AlarmHandler)typeof(ServerGameSystem).GetMethod("EmitMachineSound", BindingFlags.Instance | BindingFlags.NonPublic)
                 .CreateDelegate(typeof(AlarmHandler));
             var definition = MissionCatalog.Mooncore();
             var operation = new MissionOperation(Guid.NewGuid().ToString("D"), Guid.NewGuid().ToString("D"), 1, definition, 10);
@@ -55,6 +57,10 @@ public static partial class AlienEnemyChecks
             Check(warning.Contains("附近敌人"), "The regular mission does not warn about the cutter before activation.");
             Check(CampaignCatalog.Find("CM03").Nodes[0].Briefing.Contains("附近敌人"),
                 "The first chapter does not warn about the cutter before activation.");
+            string archiveWarning = (string)step.Invoke(null, new object[] { MissionCatalog.Archive(),
+                new RaidMissionSnapshotRpc { Phase = MissionPhase.Active, CompletedMask = 7 }, 0 });
+            Check(archiveWarning.Contains("附近敌人") && CampaignCatalog.Find("CM04").Nodes[3].Briefing.Contains("附近敌人"),
+                "The archive risk was not communicated before downloading.");
 
             DollSingerEnemyBrain MakeBrain(Vector3 position, bool leaving = false, bool clash = false)
             {
@@ -151,6 +157,42 @@ public static partial class AlienEnemyChecks
             var late = MakeBrain(origin + Vector3.forward * 8);
             emit(ref server, ref state, context, 58.1);
             Check(!operation.IsProcessing("cutting") && late.MissionAlarmId == null, "The alarm continued after cutting finished.");
+            var archive = new MissionOperation(Guid.NewGuid().ToString("D"), Guid.NewGuid().ToString("D"), 1, MissionCatalog.Archive(), 70);
+            context.Operation = archive;
+            var archiveNear = MakeBrain(archivePosition + Vector3.forward * 8);
+            var archiveFar = MakeBrain(archivePosition + Vector3.forward * 30);
+            var archiveClash = MakeBrain(archivePosition + Vector3.forward * 8, clash: true);
+            var archiveAlien = Alien(holder.transform, world, profile, archivePosition + Vector3.forward * 8 + Vector3.up * (.56f * profile.Scale),
+                MultiplayerRole.Server, -29001);
+            manager.AddComponent<Simulate>(archiveAlien.GhostGameObject.LinkedEntity);
+            emit(ref server, ref state, context, 70);
+            Check(archiveNear.MissionAlarmId == null && archiveAlien.Action == AlienAction.Roam, "The archive emitted before downloading.");
+            void ArchiveInteraction(int node, uint request, double start, int duration)
+            {
+                Check(archive.Begin("archive actor", 1, node, request, start) == MissionActionResult.Started, "Archive interaction failed to start.");
+                for (int i = 1; i <= duration; i++)
+                    Check(archive.Renew("archive actor", request, start + i) ==
+                        (i == duration ? MissionActionResult.Completed : MissionActionResult.Running), "Archive interaction duration was invalid.");
+            }
+            ArchiveInteraction(0, 1, 70, 3);
+            ArchiveInteraction(1, 2, 73.1, 4);
+            ArchiveInteraction(2, 3, 77.2, 4);
+            ArchiveInteraction(3, 4, 81.3, 1);
+            emit(ref server, ref state, context, 82.3);
+            Check(archiveNear.MissionAlarmId == archive.Id && archiveNear.Target == Entity.Null && !archiveNear.Visible,
+                "A nearby PMC did not hear the anonymous archive location.");
+            Check(archiveFar.MissionAlarmId == null && archiveClash.MissionAlarmId == null,
+                "The quieter archive reached a distant or bounty actor.");
+            Step(archiveAlien, 45);
+            Check(archiveAlien.Action == AlienAction.Search && archiveAlien.Target == Entity.Null,
+                "A nearby alien did not receive the archive clue.");
+            double archiveMemory = archiveNear.MissionAlarmUntil;
+            emit(ref server, ref state, context, 84.3);
+            Check(archiveNear.MissionAlarmUntil == archiveMemory, "Repeated archive audio reset the same clue.");
+            archive.Tick(102.4);
+            var archiveLate = MakeBrain(archivePosition + Vector3.forward * 8);
+            emit(ref server, ref state, context, 102.4);
+            Check(archiveLate.MissionAlarmId == null, "The archive emitted after downloading completed.");
             return "PASS " + checks + " machine alarm checks: real process, server dispatch, NPC decisions, movement, occlusion and stop.";
         }
         finally
