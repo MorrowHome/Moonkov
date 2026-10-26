@@ -1,6 +1,6 @@
 #nullable disable
-// Only Unity presentation/preferences are stubbed. AccountClient, its JSON
-// parser and the shared inventory/catalogue rules are the production sources.
+// Unity presentation/preferences and the unrelated lobby state are stubbed.
+// AccountClient, its JSON parser and shared shop rules are production sources.
 namespace UnityEngine
 {
     public enum RuntimeInitializeLoadType { SubsystemRegistration }
@@ -24,6 +24,9 @@ namespace UnityEngine
 namespace Unity.MP_FPS
 {
     public static class RaidRules { public const int BagCapacity = 12; }
+    // Shop catalogue checks never join an online instance or request a game ticket.
+    public static class OnlineLobbyClient
+    { public static bool InInstance => false; public static string InstanceId => null; }
     public sealed class GameSettings
     { public static readonly GameSettings Instance = new(); public string PlayerName; }
     public static class RaidGuestIdentity { public static string GetToken(bool create) => ""; }
