@@ -260,7 +260,7 @@ namespace Unity.MP_FPS.Client
                 if (!m_Stash) RenderRaidLoot(null);
                 return;
             }
-            MoonkovLocalization.Set(m_Weight, "CARRIED {0:0.0} / {1:0} KG" , m_Graph.CarriedWeight, InventoryCatalog.CarryWeightLimit);
+            RefreshWeight();
             AddContainer(m_ContainerPane, m_Graph.Equipped("ChestRig"), "CHEST RIG");
             AddContainer(m_ContainerPane, m_Graph.Find("pockets"), "POCKETS");
             AddSpecialEquipment();

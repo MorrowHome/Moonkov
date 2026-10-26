@@ -5673,6 +5673,10 @@ MonoBehaviour:
     m_Key: TARGET {0}/{1}
     m_Metadata:
       m_Items: []
+  - m_Id: 7029257938132992
+    m_Key: CARRIED {0:0.0} / {1:0} KG / HEAVY
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -468,7 +468,7 @@ namespace Unity.MP_FPS
                 bool moved=status.SprintPositionKnown && travel.x*travel.x+travel.z*travel.z>threshold*threshold;
                 bool sprinting=canRun && health.ControllerState.Sprinting && health.ControllerState.MovementSpeed>.1f && moved;
                 status.SprintPosition=position;status.SprintPositionKnown=allowed;
-                TacticalSprintRules.Tick(ref status.Sprint,dt,sprinting,status.Stamina>now,allowed);
+                TacticalSprintRules.Tick(ref status.Sprint,dt,sprinting,status.Stamina>now,allowed,health.ClashEnabled ? 0 : health.CarriedWeight);
                 health.TacticalSprintStamina=status.Sprint.Value;health.TacticalSprintExhausted=status.Sprint.Exhausted;
                 SystemAPI.SetComponent(player,health);
             }

@@ -5,6 +5,7 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
+using System.Runtime.CompilerServices;
 
 namespace Unity.MP_FPS
 {
@@ -60,6 +61,26 @@ namespace Unity.MP_FPS
         public static uint PlayerMovementTick => s_PlayerMovementTick;
 
         private ComponentLookup<GhostOwner> ghostOwnerLookup;
+        private sealed class CarriedWeightSample
+        {
+            public int Version = int.MinValue;
+            public System.Collections.Generic.List<Inventory.InventoryItem> Items;
+            public float Weight;
+        }
+        private readonly ConditionalWeakTable<Inventory.InventoryGraph, CarriedWeightSample> m_CarriedWeights = new();
+
+        private float CarriedWeight(Inventory.InventoryGraph inventory)
+        {
+            if (inventory == null) return 0;
+            var sample = m_CarriedWeights.GetValue(inventory, _ => new CarriedWeightSample());
+            if (sample.Version != inventory.Version || !ReferenceEquals(sample.Items, inventory.Items))
+            {
+                sample.Version = inventory.Version; sample.Items = inventory.Items;
+                // Match Ghost quantization so prediction uses the server's exact rule input.
+                sample.Weight = Mathf.Round(inventory.CarriedWeight * 100) / 100;
+            }
+            return sample.Weight;
+        }
 
         private Inventory.InventoryGraph WeaponInventory(Entity player)
         {
@@ -294,7 +315,11 @@ namespace Unity.MP_FPS
 
             foreach (var (player, entity) in SystemAPI.Query<RefRW<PredictedPlayerGhost>>().WithAll<Simulate>().WithEntityAccess())
                 if (player.ValueRO.InventoryWeapons)
-                    DollSingerWeapons.SyncEquipment(ref player.ValueRW, WeaponInventory(entity), WeaponManager.Instance.WeaponRegistry);
+                {
+                    var inventory = WeaponInventory(entity);
+                    DollSingerWeapons.SyncEquipment(ref player.ValueRW, inventory, WeaponManager.Instance.WeaponRegistry);
+                    player.ValueRW.CarriedWeight = MoonRaidMap.Active && !player.ValueRO.ClashEnabled ? CarriedWeight(inventory) : 0;
+                }
 
             foreach (var predictedPlayer in SystemAPI.Query<RefRW<PredictedPlayerGhost>>()
                          .WithAll<Simulate>())

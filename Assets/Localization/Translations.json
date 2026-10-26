@@ -670,6 +670,7 @@
   "SELL / {0} DUST": "出售 / {0} 月尘",
   "MOON DUST / {0}": "月尘 / {0}",
   "CARRIED {0:0.0} / {1:0} KG": "负重 {0:0.0} / {1:0} kg",
+  "CARRIED {0:0.0} / {1:0} KG / HEAVY": "负重 {0:0.0} / {1:0} kg / 较重",
   "CARRIED / {0} supplies\nDust {1}   Alloy {2}   Cells {3}": "随身物资 / {0}\n月尘 {1}　合金 {2}　电池 {3}",
   "Carry {0}/{1} / Stash {2}": "携带 {0}/{1} / 仓库 {2}",
   "Carry {0}/{1} cells / Stash {2}.\nEach full cell stores {3} energy. [R] spends energy per round; partial charge is retained. Lost on death.": "携带电池 {0}/{1} / 仓库 {2}。\n每块满电电池储存 {3} 能源。按 R 按发数消耗，剩余能源保留；死亡后丢失。",

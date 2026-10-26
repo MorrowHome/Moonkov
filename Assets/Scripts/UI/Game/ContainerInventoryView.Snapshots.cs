@@ -33,8 +33,16 @@ namespace Unity.MP_FPS.Client
                 if (quantity != null) MoonkovLocalization.Set(quantity, def.Container ? "OPEN ↗" : BatteryEnergy.IsCell(item) ? $"{BatteryEnergy.Stored(item)}E" : item.Quantity.ToString());
                 tile.tooltip = MoonkovLocalization.Text(def.Name) + " ×" + item.Quantity + "\n" + MoonkovItemPresentation.Details(item.Code) + "\n" + MoonkovItemPresentation.ItemState(item);
             }
-            MoonkovLocalization.Set(m_Weight, "CARRIED {0:0.0} / {1:0} KG", m_Graph.CarriedWeight, InventoryCatalog.CarryWeightLimit);
+            RefreshWeight();
             if (m_Drag != null) m_Drag.RefreshItem();
+        }
+
+        private void RefreshWeight()
+        {
+            float weight = m_Graph.CarriedWeight;
+            MoonkovLocalization.Set(m_Weight, RaidEncumbrance.Burden(weight) > 0
+                ? "CARRIED {0:0.0} / {1:0} KG / HEAVY"
+                : "CARRIED {0:0.0} / {1:0} KG", weight, InventoryCatalog.CarryWeightLimit);
         }
     }
 }

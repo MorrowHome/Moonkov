@@ -164,7 +164,7 @@ namespace Unity.MP_FPS
         }
         public static FirstPersonController.ControllerConsts Movement(in PredictedPlayerGhost state,
             FirstPersonController.ControllerConsts constants)
-            => TacticalItemEffects.Movement(state, RaidNutrition.Movement(state, constants));
+            => TacticalItemEffects.Movement(state, RaidNutrition.Movement(state, RaidEncumbrance.Movement(state, constants)));
         public static float HandlingMultiplier(in PredictedPlayerGhost state) => RaidNutrition.HandlingMultiplier(state) * (state.TacticalCoughSeconds>0 ? 1.5f : 1);
         // A large remaining limb total must not hide a nearly fatal head/chest
         // injury from the compact HUD or the existing PMC retreat decision.

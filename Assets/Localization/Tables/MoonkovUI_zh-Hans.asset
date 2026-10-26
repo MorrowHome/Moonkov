@@ -5540,6 +5540,10 @@ MonoBehaviour:
     m_Localized: "\u5145\u80FD\u81F3 {0}/{1}"
     m_Metadata:
       m_Items: []
+  - m_Id: 7029257938132992
+    m_Localized: "\u8D1F\u91CD {0:0.0} / {1:0} kg / \u8F83\u91CD"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -62,6 +62,7 @@ public struct PredictedPlayerGhost : IComponentData
     [GhostField] public float TacticalWireSeconds, TacticalCoughSeconds, TacticalPoisonSeconds;
     [GhostField] public float TacticalSprintStamina;
     [GhostField] public bool TacticalSprintExhausted;
+    [GhostField(Quantization = 100)] public float CarriedWeight;
     [GhostField] public bool ShieldEquipped, HeadDomeEquipped, ShieldRegenerating;
     [GhostField] public byte SubspaceBackpack; // Equipped inventory: 0 none, 1 light, 2 expedition, 3 cargo, 4 scout.
     [GhostField] public bool HeadDomeStandard;
