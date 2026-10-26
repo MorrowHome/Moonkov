@@ -180,6 +180,8 @@ public static class MoonkovRaidActionChecks
             CheckNutritionRequests(world,handle,eater,eatingInventory);
             var searcher=Actor(out var searchingInventory);
             CheckSearchCombatRequests(world,handle,searcher,searchingInventory,caches,origin);
+            var reloader=Actor(out var reloadingInventory);
+            CheckReloadInventoryRequests(world,handle,reloader,reloadingInventory,caches,origin);
             var item=inventory.Graph.Items.Single(i=>i.Code=="medkit");int initial=inventory.Graph.Version;
             floor.SetActive(false);UnityEngine.Physics.SyncTransforms();
             Request(world,a,new RaidInventoryDropRpc {RaidId=7,RequestId=1,ExpectedVersion=initial,ItemId=item.Id});
@@ -340,6 +342,55 @@ public static class MoonkovRaidActionChecks
         Refresh(world,handle,connection,13);
         Check(inventory.OpenedLootId==id && !inventory.NeedsSearch(caches,id),"Refilled cache search did not complete");
         caches.Containers.Remove(id);caches.MissionCaches.Remove(id);caches.RefillStates.Remove(id);inventory.OpenedLootId=-1;
+    }
+    private static void CheckReloadInventoryRequests(World world,SystemHandle handle,Entity connection,RaidInventoryState inventory,
+        RaidLootContainers caches,float3 origin)
+    {
+        var em=world.EntityManager;var player=em.GetComponentData<JoinedClient>(connection).PlayerEntity;
+        var graph=InventoryGraph.Create(false);inventory.Graph=graph;
+        Check(graph.AddSupply("cells",1,"pockets")==InventoryError.None && graph.AddSupply("dust",1,"pockets")==InventoryError.None,"reload inventory fixture");
+        string active=graph.Equipped("Primary").Id,other=graph.Equipped("Secondary").Id,pack=graph.Equipped("Backpack").Id;
+        Check(graph.TryRecharge(5,30,3,out int target) && target==30,"reload inventory reservation");
+        int paid=graph.CellEnergy(accessibleOnly:true),version=graph.Version;
+        var actor=em.GetComponentData<PredictedPlayerGhost>(player);
+        actor.InventoryWeapons=true;actor.EquippedWeaponSlot=1;actor.EquippedWeaponItem=active;actor.EquippedWeaponID=DollSingerWeapons.Halo;
+        actor.CurrentAmmo=5;actor.ReloadTargetAmmo=target;actor.ReloadTimer=1.5f;actor.ControllerState.IsReloadingState=true;em.SetComponentData(player,actor);
+        var move=new RaidInventoryMoveRpc {RaidId=7,RequestId=1,ExpectedVersion=version,Operation=InventoryOperation.Move,ItemId=active,Parent=pack,Region="main"};
+        Request(world,connection,move);Process(world,handle,"HandleInventoryRequests");
+        Check(inventory.Error==InventoryError.Inaccessible && graph.Equipped("Primary").Id==active && graph.Version==version,"move replaced charging weapon");
+        move.RequestId=2;move.ItemId=other;move.Parent=InventoryCatalog.Equipment;move.Region="Primary";
+        Request(world,connection,move);Process(world,handle,"HandleInventoryRequests");
+        Check(inventory.Error==InventoryError.Inaccessible && graph.Equipped("Primary").Id==active && graph.Version==version,"swap replaced charging weapon");
+        Request(world,connection,new RaidInventoryDropRpc {RaidId=7,RequestId=3,ExpectedVersion=version,ItemId=active});
+        Process(world,handle,"HandleInventoryRequests");
+        Check(inventory.Error==InventoryError.Inaccessible && graph.Find(active)!=null && graph.Version==version && caches.DeathBags.Count==0,"drop removed charging weapon");
+        string dust=graph.Items.Single(i=>i.Code=="dust").Id;
+        move.RequestId=4;move.ItemId=dust;move.Parent=pack;move.Region="main";
+        Request(world,connection,move);Process(world,handle,"HandleInventoryRequests");
+        Check(inventory.Error==InventoryError.None && graph.Find(dust).Parent==pack,"unrelated item move blocked during charge");
+        int id=RaidLootContainers.FirstMissionCacheId+2;
+        var cache=LootInventoryExchange.CreateCache(0);caches.Containers.Add(id,cache);caches.MissionCaches.Add(id,origin+new float3(0,.25f,2));
+        inventory.OpenedLootId=id;
+        var loot=new RaidLootMoveRpc {RaidId=7,RequestId=5,LootId=id,ExpectedVersion=graph.Version,ExpectedLootVersion=cache.Version,
+            Operation=InventoryOperation.Move,ItemId=active,Parent=LootInventoryExchange.Root,Region="main"};
+        Request(world,connection,loot);Process(world,handle,"HandleLootRequests");
+        Check(inventory.Error==InventoryError.Inaccessible && graph.Find(active)!=null && cache.Find(active)==null,"loot transfer removed charging weapon");
+        Check(cache.FindSpace(graph.Find(other),LootInventoryExchange.Root,out string region,out int x,out int y),"loot swap fixture space");
+        loot.RequestId=6;loot.ItemId=other;loot.Region=region;loot.X=x;loot.Y=y;
+        Request(world,connection,loot);Process(world,handle,"HandleLootRequests");
+        Check(inventory.Error==InventoryError.None && cache.Find(other)!=null,"unrelated loot transfer blocked during charge");
+        loot.RequestId=7;loot.ExpectedVersion=graph.Version;loot.ExpectedLootVersion=cache.Version;
+        loot.Parent=InventoryCatalog.Equipment;loot.Region="Primary";loot.X=loot.Y=0;
+        Request(world,connection,loot);Process(world,handle,"HandleLootRequests");
+        Check(inventory.Error==InventoryError.Inaccessible && graph.Equipped("Primary").Id==active && cache.Find(other)!=null,"loot swap replaced charging weapon");
+        actor=em.GetComponentData<PredictedPlayerGhost>(player);
+        Check(actor.ControllerState.IsReloadingState && actor.ReloadTargetAmmo==target && graph.CellEnergy(accessibleOnly:true)==paid,"blocked requests lost prepaid charge");
+        actor.ControllerState.IsReloadingState=false;em.SetComponentData(player,actor);
+        move.RequestId=8;move.ExpectedVersion=graph.Version;move.ItemId=active;move.Parent=pack;
+        Check(graph.FindSpace(graph.Find(active),pack,out region,out x,out y),"post-charge fixture space");
+        move.Region=region;move.X=x;move.Y=y;Request(world,connection,move);Process(world,handle,"HandleInventoryRequests");
+        Check(inventory.Error==InventoryError.None && graph.Find(active).Parent==pack,"weapon still blocked after charge");
+        caches.Containers.Remove(id);caches.MissionCaches.Remove(id);inventory.OpenedLootId=-1;
     }
     private delegate void BagHandler(ref ServerGameSystem system,ref SystemState state,EntityCommandBuffer commands,Entity connection);
     private static unsafe RaidGroundItemMarkerRpc[] SendBags(World world,SystemHandle handle,Entity connection,RaidDeathBagClientState client)

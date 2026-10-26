@@ -219,13 +219,15 @@ namespace Unity.MP_FPS
                     {
                         inventory.RequestId=r.RequestId;inventory.ActionFeedback=null;
                         UpdateInventoryProtection(ref state,connection);
-                        inventory.Error=r.RaidId!=session.ValueRO.RaidId || inventory.RaidId!=r.RaidId || inventory.ActionPending || inventory.OpenedLootId!=r.LootId ||
+                        bool chargeBlocked=ReloadWeaponMoveBlocked(ref state,connection,r.Operation,r.ItemId.ToString(),r.Parent.ToString(),r.Region.ToString());
+                        inventory.Error=r.RaidId!=session.ValueRO.RaidId || inventory.RaidId!=r.RaidId || inventory.ActionPending || chargeBlocked || inventory.OpenedLootId!=r.LootId ||
                             !CanAccessLoot(ref state,connection,r.LootId,session.ValueRO) || caches.RequiresDissection(r.LootId) ||
                             !caches.Containers.TryGetValue(r.LootId,out var cache)
                             ? InventoryError.Inaccessible
                             : LootInventoryExchange.TryApply(inventory.Graph,cache,new InventoryCommand {ExpectedVersion=r.ExpectedVersion,Operation=r.Operation,
                                 ItemId=r.ItemId.ToString(),Parent=r.Parent.ToString(),Region=r.Region.ToString(),TargetId=r.TargetId.ToString(),
                                 X=r.X,Y=r.Y,Rotated=r.Rotated,Quantity=r.Quantity},r.ExpectedLootVersion);
+                        if(chargeBlocked)inventory.ActionFeedback="充能中不能移动当前武器。";
                         if(inventory.Error==InventoryError.None)UpdateInventoryProtection(ref state,connection,true);
                         inventory.LastSentVersion=-1;
                         if(session.ValueRO.Phase==RaidPhase.Active)RaidInventoryState.UpdateTotals(inventory.Graph,ref session.ValueRW);

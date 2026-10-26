@@ -25,6 +25,14 @@ namespace Unity.MP_FPS
         {
             return state.EntityManager.GetComponentObject<RaidInventoryState>(connection);
         }
+        private static bool ReloadWeaponMoveBlocked(ref SystemState state,Entity connection,InventoryOperation operation,string itemId,string parent=null,string region=null)
+        {
+            var manager=state.EntityManager;
+            if(!manager.Exists(connection) || !manager.HasComponent<JoinedClient>(connection)) return false;
+            var player=manager.GetComponentData<JoinedClient>(connection).PlayerEntity;
+            return manager.Exists(player) && manager.HasComponent<PredictedPlayerGhost>(player) &&
+                DollSingerWeapons.BlocksReloadWeaponMove(manager.GetComponentData<PredictedPlayerGhost>(player),operation,itemId,parent,region);
+        }
         private void EnsureRaidInventories(ref SystemState state)
         {
             // Structural additions happen before SystemAPI enumerators acquire component references.
@@ -69,7 +77,9 @@ namespace Unity.MP_FPS
                             BountyClashRuntime.CanAct(state.EntityManager,player) && TryGetLivingPosition(ref state,player,out var position))
                         {
                             UpdateInventoryProtection(ref state,connection);
-                            if(TryFindDropGround(position,out var grounded))
+                            if(ReloadWeaponMoveBlocked(ref state,connection,InventoryOperation.Move,r.ItemId.ToString()))
+                                inventory.ActionFeedback="充能中不能移动当前武器。";
+                            else if(TryFindDropGround(position,out var grounded))
                             {
                                 inventory.Error=LootContainers(ref state).DropItem(inventory.Graph,r.ItemId.ToString(),r.ExpectedVersion,
                                     grounded,SystemAPI.Time.ElapsedTime,out _);
@@ -161,12 +171,14 @@ namespace Unity.MP_FPS
                     {
                         inventory.RequestId = r.RequestId;inventory.ActionFeedback=null;
                         UpdateInventoryProtection(ref state,connection);
+                        bool chargeBlocked=ReloadWeaponMoveBlocked(ref state,connection,r.Operation,r.ItemId.ToString(),r.Parent.ToString(),r.Region.ToString());
                         inventory.Error = session.ValueRO.Phase != RaidPhase.Active || session.ValueRO.RaidId != r.RaidId || inventory.ActionPending ||
-                            SystemAPI.HasComponent<NetworkStreamRequestDisconnect>(connection) ||
+                            SystemAPI.HasComponent<NetworkStreamRequestDisconnect>(connection) || chargeBlocked ||
                             (BountyClashRuntime.Enabled(state.EntityManager) && (!SystemAPI.HasComponent<JoinedClient>(connection) ||
                                 !BountyClashRuntime.CanAct(state.EntityManager,SystemAPI.GetComponent<JoinedClient>(connection).PlayerEntity))) ? InventoryError.Inaccessible
                             : inventory.Graph.TryApply(new InventoryCommand { ExpectedVersion=r.ExpectedVersion, Operation=r.Operation, ItemId=r.ItemId.ToString(),
                                 Parent=r.Parent.ToString(), Region=r.Region.ToString(), TargetId=r.TargetId.ToString(), X=r.X, Y=r.Y, Rotated=r.Rotated, Quantity=r.Quantity });
+                        if(chargeBlocked)inventory.ActionFeedback="充能中不能移动当前武器。";
                         if(inventory.Error==InventoryError.None)UpdateInventoryProtection(ref state,connection,true);
                         inventory.LastSentVersion = -1;
                         if(session.ValueRO.Phase==RaidPhase.Active)RaidInventoryState.UpdateTotals(inventory.Graph, ref session.ValueRW);

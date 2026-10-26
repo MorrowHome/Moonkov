@@ -42,6 +42,17 @@ namespace Unity.MP_FPS
             state.EquippedModules=modules;
             return true;
         }
+        // Energy is reserved at the start of a timed charge. Do not let an
+        // inventory transaction replace its physical weapon before completion.
+        public static bool BlocksReloadWeaponMove(in PredictedPlayerGhost state,InventoryOperation operation,string itemId,string parent,string region)
+        {
+            if(!state.InventoryWeapons || !state.ControllerState.IsReloadingState || operation!=InventoryOperation.Move) return false;
+            string active=state.EquippedWeaponItem.ToString();
+            if(string.IsNullOrEmpty(active)) return false;
+            if(itemId==active) return true;
+            return state.EquippedWeaponSlot>=1 && state.EquippedWeaponSlot<=3 &&
+                parent==InventoryCatalog.Equipment && region==Slot(state.EquippedWeaponSlot);
+        }
         // The authoritative item tree determines possession; backpack weapons cannot be selected.
         public static void SyncEquipment(ref PredictedPlayerGhost state, InventoryGraph graph, WeaponRegistry registry)
         {
