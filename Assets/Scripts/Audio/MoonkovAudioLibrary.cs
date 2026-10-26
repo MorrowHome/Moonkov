@@ -10,7 +10,7 @@ namespace Unity.MP_FPS
         public SoundDef TacticalDeploy, TacticalAlarm, TacticalExplosion, TacticalGas, TacticalCough;
         public SoundDef MeleeSwing, MeleeEnergySwing, MeleeImpact, MeleeBlocked;
         public SoundDef Consume, PlayerPain, PlayerGroan;
-        public SoundDef Equipment, Container, Jump, Land, Hit, Death;
+        public SoundDef Equipment, Container, LootSearchWorld, Jump, Land, Hit, Death;
         public SoundDef RegolithFootsteps, MetalFootsteps, Cloth;
         public SoundDef HardFootsteps;
         public SoundDef AlienContact, AlienWarning, AlienStrike, AlienHurt, AlienDeath, AlienIdle;

@@ -12,7 +12,7 @@ namespace Unity.MP_FPS
         private SoundSystem.SoundInfo m_PainSound, m_GroanSound;
         private readonly MoonkovDistressAudio m_Distress = new MoonkovDistressAudio();
         private readonly MoonkovReloadAudio m_Reload = new MoonkovReloadAudio();
-        private uint m_JumpTick, m_LandTick, m_ImpactTick, m_Weapon;
+        private uint m_JumpTick, m_LandTick, m_ImpactTick, m_LootSequence, m_Weapon;
         private float m_Stride, m_SurfaceTimer;
         private Vector3 m_Position;
         private SoundDef m_Surface;
@@ -49,6 +49,7 @@ namespace Unity.MP_FPS
                 m_Initialized = true;
                 m_JumpTick = ghost.LastJumpTick;
                 m_LandTick = ghost.LastLandTick; m_ImpactTick = ghost.LastImpactTick;
+                m_LootSequence = ghost.LootSearchSequence;
                 m_Weapon = ghost.EquippedWeaponID; m_Position = position;
                 m_BreathAt = Time.unscaledTime + .75f; m_HeartAt = Time.unscaledTime + 1;
                 m_WasSealed = !ghost.BreathableAir;
@@ -69,6 +70,8 @@ namespace Unity.MP_FPS
             }
             if ((reload & ReloadAudioEvent.Ready) != 0) LocalOrWorld(library.ReloadReady, position, owned, .9f);
             if (NewTick(ghost.LastJumpTick, ref m_JumpTick)) LocalOrWorld(library.Jump, position, owned, .7f);
+            if (NewTick(ghost.LootSearchSequence, ref m_LootSequence))
+                LocalOrWorld(library.LootSearchWorld, position, owned, owned ? .65f : 1);
             if (NewTick(ghost.LastLandTick, ref m_LandTick))
             {
                 SampleSurface(player, library);

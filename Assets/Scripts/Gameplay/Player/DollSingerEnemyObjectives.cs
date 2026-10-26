@@ -30,7 +30,7 @@ namespace Unity.MP_FPS
             return brain.RaidExit;
         }
 
-        private void AdvanceObjective(DollSingerEnemyBrain brain, Vector3 position, Vector3 eye, MoonRaidMap map, double now, float dt)
+        private void AdvanceObjective(DollSingerEnemyBrain brain, ref PredictedPlayerGhost health, Vector3 position, Vector3 eye, MoonRaidMap map, double now, float dt)
         {
             if (brain.IsClashBot) { AdvanceClashObjective(brain, position, eye, now); return; }
             if (brain.Action == PmcAction.Scavenge && brain.Cache >= 0)
@@ -39,7 +39,11 @@ namespace Unity.MP_FPS
                 if (HorizontalDistance(position, cachePosition) > RaidRules.PickupRange ||
                     Mathf.Abs(position.y - cachePosition.y) > 3 || WorldBlocked(eye, cachePosition + Vector3.up * .3f))
                 { brain.LootUntil = 0; return; }
-                if (brain.LootUntil == 0) brain.LootUntil = now + m_Tuning.LootSearchSeconds;
+                if (brain.LootUntil == 0)
+                {
+                    brain.LootUntil = now + m_Tuning.LootSearchSeconds;
+                    RaidLootAcoustics.Mark(ref health);
+                }
                 if (now < brain.LootUntil) return;
                 var loot = EntityManager.GetComponentObject<RaidLootContainers>(SystemAPI.GetSingletonEntity<RaidLootWorld>());
                 if (loot.Containers.TryGetValue(brain.Cache, out var cache))

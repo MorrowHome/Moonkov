@@ -34,6 +34,7 @@ MonoBehaviour:
   PlayerGroan: {fileID: 11400000, guid: 70d513a3113764267af7f42935730751, type: 2}
   Equipment: {fileID: 11400000, guid: a278b15de85ac924cb9107a0efd6d328, type: 2}
   Container: {fileID: 11400000, guid: 80a6b40023bcc7c4a90217620cb71fd8, type: 2}
+  LootSearchWorld: {fileID: 11400000, guid: a05f97827eaa46feaefe1e2ed7f6f5ca, type: 2}
   Jump: {fileID: 11400000, guid: 73b72b3778f6cf34abb78d33dd4d9a23, type: 2}
   Land: {fileID: 11400000, guid: 966f5b4a02d3d714b9167a797b808023, type: 2}
   Hit: {fileID: 11400000, guid: 14beafcf0ecdae04ba3b72310a500d4b, type: 2}

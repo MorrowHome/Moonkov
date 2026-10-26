@@ -182,6 +182,14 @@ namespace Unity.MP_FPS
                             inventory.CancelActions(inventory.ActionPending ? "原操作已取消：切换搜刮目标；未消耗物品。" : null);
                             CancelManualMission(ref state,connection,"任务操作中断：开始搜索或关闭搜刮。");
                             inventory.OpenedLootId=r.LootId;
+                            double now=SystemAPI.Time.ElapsedTime;
+                            if(r.LootId>=0 && now>=inventory.NextLootNoiseAt)
+                            {
+                                var player=SystemAPI.GetComponent<JoinedClient>(connection).PlayerEntity;
+                                var health=SystemAPI.GetComponentRW<PredictedPlayerGhost>(player);
+                                RaidLootAcoustics.Mark(ref health.ValueRW);
+                                inventory.NextLootNoiseAt=now+RaidLootAcoustics.MinimumInterval;
+                            }
                         }
                         if(accepted && r.LootId>=0 && inventory.NeedsSearch(caches,r.LootId))
                         {

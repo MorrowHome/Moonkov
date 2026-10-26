@@ -37,7 +37,7 @@ namespace Unity.MP_FPS
         {
             public Vector3 Position;
             public float StepDistance;
-            public uint Shot, Reload, Land;
+            public uint Shot, Reload, Land, Loot;
             public double SeenAt;
         }
         private struct SensorEvent
@@ -274,7 +274,8 @@ namespace Unity.MP_FPS
                 if (!m_Tracks.TryGetValue(entity, out var track))
                 {
                     track = new SensorTrack { Position = position, SeenAt = now,
-                        Shot = health.ValueRO.LastShotTick, Reload = health.ValueRO.LastReloadTick, Land = health.ValueRO.LastLandTick };
+                        Shot = health.ValueRO.LastShotTick, Reload = health.ValueRO.LastReloadTick,
+                        Land = health.ValueRO.LastLandTick, Loot = health.ValueRO.LootSearchSequence };
                     m_Tracks.Add(entity, track);
                 }
                 else
@@ -289,6 +290,8 @@ namespace Unity.MP_FPS
                         m_Events.Add(new SensorEvent { Source = entity, Position = position, Range = m_Tuning.ShotSensorRange, Shot = true });
                     if (track.Reload != health.ValueRO.LastReloadTick)
                         m_Events.Add(new SensorEvent { Source = entity, Position = position, Range = 7 });
+                    if (track.Loot != health.ValueRO.LootSearchSequence)
+                        m_Events.Add(new SensorEvent { Source = entity, Position = position, Range = RaidLootAcoustics.HearingRange });
                     if (track.Land != health.ValueRO.LastLandTick)
                     {
                         m_Events.Add(new SensorEvent { Source = entity, Position = position,
@@ -308,6 +311,7 @@ namespace Unity.MP_FPS
                     track.Shot = health.ValueRO.LastShotTick;
                     track.Reload = health.ValueRO.LastReloadTick;
                     track.Land = health.ValueRO.LastLandTick;
+                    track.Loot = health.ValueRO.LootSearchSequence;
                 }
                 var player = link.LinkedInstance.GetComponent<PlayerGhost>();
                 var capsule = player != null && player.Controller != null ? player.Controller.CharacterController : null;

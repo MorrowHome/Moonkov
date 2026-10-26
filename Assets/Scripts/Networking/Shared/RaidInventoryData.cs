@@ -147,6 +147,7 @@ namespace Unity.MP_FPS
         public InventoryError Error;
         public int OpenedLootId=-1, LastSentLootVersion=-1;
         public int DissectingLootId=-1;
+        public double NextLootNoiseAt;
         public readonly System.Collections.Generic.HashSet<int> SearchedLoot = new System.Collections.Generic.HashSet<int>();
         public string MedicalItemId;
         public string ActionFeedback;

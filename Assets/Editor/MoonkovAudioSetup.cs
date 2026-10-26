@@ -65,6 +65,8 @@ public static class MoonkovAudioSetup
                   Clips = new[] { "Character/Cloth1.wav", "Character/Cloth2.wav" } },
         new Row { Name = "Container", Mixer = Mixer.SFX, Spatial = 0f, Db = -21f, PitchCents = 30f,
                   Clips = new[] { "Interaction/Container.wav" } },
+        new Row { Name = "LootSearchWorld", Mixer = Mixer.Footsteps, Spatial = 1f, Db = -13f, Range = 12f,
+                  PitchCents = 45f, Clips = new[] { "Interaction/Container.wav" } },
         // Deployment confirmation, layered: success gong body + android order acknowledgement.
         new Row { Name = "DeployConfirm", Mixer = Mixer.SFX, Spatial = 1f, Db = -13f, Range = 22f,
                   PitchCents = 0f, SpreadDb = 0f, Clips = new[] { "Interaction/DeployConfirm.wav" } },
@@ -167,6 +169,7 @@ public static class MoonkovAudioSetup
         library.Notification = byName["Notification"];
         library.Equipment = byName["Equipment"];
         library.Container = byName["Container"];
+        library.LootSearchWorld = byName["LootSearchWorld"];
         library.Consume = byName["Consume"];
         library.Jump = byName["Jump"];
         library.Land = byName["Land"];
@@ -318,6 +321,12 @@ public static class MoonkovAudioSetup
         sound.LowPassFilter = new SoundDef.Filter();
         sound.HighPassFilter = new SoundDef.Filter();
         sound.DistortionFilter = new SoundDef.Distortion();
+        if (row.Name == "LootSearchWorld")
+        {
+            sound.Role = SoundDef.MixRole.Foley; sound.Priority = 140; sound.MaxVoices = 6;
+            sound.MinimumInterval = .025f; sound.Occlusion = true;
+            sound.LowPassFilter.EnableComponent = true;
+        }
         EditorUtility.SetDirty(sound);
         return sound;
     }

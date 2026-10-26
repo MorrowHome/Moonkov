@@ -214,6 +214,7 @@ public static class MoonkovRaidActionChecks
             var hidden=SendBags(world,handle,a,markers);
             Check(!markers.Bags.ContainsKey(drop) && hidden.Any(u=>u.LootId==drop && u.Removed && !u.Deleted),"Interest exit did not hide marker");
             Request(world,a,new RaidLootOpenRpc {RaidId=7,RequestId=9,LootId=drop});Process(world,handle,"HandleLootRequests");Check(inventory.OpenedLootId<0 && !inventory.ActionPending,"Distant ground open accepted");
+            Check(em.GetComponentData<PredictedPlayerGhost>(player).LootSearchSequence==0,"Invalid loot request produced a sound");
             em.SetComponentData(player,LocalTransform.FromPosition(origin));
             SendBags(world,handle,a,markers);
             Check(markers.Bags.ContainsKey(drop),"Interest re-entry did not reconstruct marker");
@@ -221,20 +222,29 @@ public static class MoonkovRaidActionChecks
             Check(lateJoin.Bags.ContainsKey(drop),"Late join missed existing drop");
             Request(world,a,new RaidLootOpenRpc {RaidId=7,RequestId=10,LootId=drop});Process(world,handle,"HandleLootRequests");
             Check(inventory.DissectingLootId==drop && inventory.OpenedLootId<0,"First ground search bypassed");
+            Check(em.GetComponentData<PredictedPlayerGhost>(player).LootSearchSequence==1,"Accepted loot search did not produce a server sound");
+            Request(world,a,new RaidLootOpenRpc {RaidId=7,RequestId=10,LootId=drop});Process(world,handle,"HandleLootRequests");
+            Check(em.GetComponentData<PredictedPlayerGhost>(player).LootSearchSequence==1,"Replayed open produced another sound");
             var take=new RaidLootMoveRpc {RaidId=7,RequestId=11,LootId=drop,ExpectedVersion=inventory.Graph.Version,ExpectedLootVersion=caches.Containers[drop].Version,ItemId=item.Id,Parent="pockets",Region="1"};
             Request(world,a,take);Process(world,handle,"HandleLootRequests");Check(inventory.Graph.Find(item.Id)==null && inventory.Error==InventoryError.Inaccessible,"Premature pickup succeeded");
             Refresh(world,handle,a,22);Check(inventory.OpenedLootId==drop,"Server search did not finish");
             Request(world,a,new RaidLootOpenRpc {RaidId=7,RequestId=12,LootId=-1});Process(world,handle,"HandleLootRequests");
+            Check(em.GetComponentData<PredictedPlayerGhost>(player).LootSearchSequence==1,"Closing loot produced a search sound");
             Request(world,a,new RaidLootOpenRpc {RaidId=7,RequestId=13,LootId=drop});Process(world,handle,"HandleLootRequests");Check(inventory.OpenedLootId==drop && !inventory.ActionPending,"Completed search repeated after close/reopen");
+            Check(em.GetComponentData<PredictedPlayerGhost>(player).LootSearchSequence==2,"Reopening a searched container was silent");
+            Request(world,a,new RaidLootOpenRpc {RaidId=7,RequestId=14,LootId=drop});Process(world,handle,"HandleLootRequests");
+            Check(em.GetComponentData<PredictedPlayerGhost>(player).LootSearchSequence==2,"Rapid repeated opens bypassed the sound cooldown");
             // A real wall blocks shared-cache access, even with valid versions.
             wall=GameObject.CreatePrimitive(PrimitiveType.Cube);wall.transform.position=(Vector3)(origin+new float3(0,.7f,1));wall.transform.localScale=new Vector3(2,2,.2f);UnityEngine.Physics.SyncTransforms();
             Request(world,b,new RaidLootOpenRpc {RaidId=7,RequestId=2,LootId=0});Process(world,handle,"HandleLootRequests");Check(other.OpenedLootId<0 && !other.ActionPending,"Wall search accepted");
+            Check(em.GetComponentData<PredictedPlayerGhost>(em.GetComponentData<JoinedClient>(b).PlayerEntity).LootSearchSequence==0,
+                "Blocked search produced a server sound");
             UnityEngine.Object.DestroyImmediate(wall);wall=null;UnityEngine.Physics.SyncTransforms();
             Request(world,b,new RaidLootOpenRpc {RaidId=7,RequestId=3,LootId=drop});Process(world,handle,"HandleLootRequests");Refresh(world,handle,b,24);
-            take.RequestId=14;Request(world,a,take);Process(world,handle,"HandleLootRequests");Check(inventory.Graph.Find(item.Id)!=null && caches.Containers[drop].Find(item.Id)==null,"Ground re-pickup lost item");
+            take.RequestId=15;Request(world,a,take);Process(world,handle,"HandleLootRequests");Check(inventory.Graph.Find(item.Id)!=null && caches.Containers[drop].Find(item.Id)==null,"Ground re-pickup lost item");
             take.RequestId=4;take.ExpectedVersion=other.Graph.Version;Request(world,b,take);Process(world,handle,"HandleLootRequests");
             Check(other.Error==InventoryError.Stale && other.Graph.Find(item.Id)==null,"Competing ground claimant duplicated item");
-            Request(world,a,new RaidLootOpenRpc {RaidId=7,RequestId=15,LootId=-1});
+            Request(world,a,new RaidLootOpenRpc {RaidId=7,RequestId=16,LootId=-1});
             Request(world,b,new RaidLootOpenRpc {RaidId=7,RequestId=5,LootId=-1});Process(world,handle,"HandleLootRequests");
             caches.RecycleEmptyDrops(25,new System.Collections.Generic.HashSet<int>());
             caches.RecycleEmptyDrops(35,new System.Collections.Generic.HashSet<int>());

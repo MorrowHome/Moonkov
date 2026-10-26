@@ -138,6 +138,8 @@ public struct PredictedPlayerGhost : IComponentData
     [GhostField] public uint LastJumpTick;
     [GhostField] public uint LastLandTick;
     [GhostField] public uint LastReloadTick;
+    // Server-authored; one event when a container is opened or searched.
+    [GhostField] public uint LootSearchSequence;
     [GhostField] public uint LastGrenadeShotTick;
     [GhostField] public float ReloadTimer;
     [GhostField] public int ReloadTargetAmmo;

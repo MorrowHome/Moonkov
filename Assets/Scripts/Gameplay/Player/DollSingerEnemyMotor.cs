@@ -24,7 +24,7 @@ namespace Unity.MP_FPS
             }
             AdvanceCover(brain, position, now);
             AdvanceHealing(brain, ref health, position, now);
-            AdvanceObjective(brain, position, eye, map, now, dt);
+            AdvanceObjective(brain, ref health, position, eye, map, now, dt);
             UpdatePath(brain, position, brain.TacticalGoal, now);
             Vector3 move = FollowPath(brain, position);
             bool searching = (brain.Action == PmcAction.Search || brain.Action == PmcAction.Investigate) && !brain.Visible;
