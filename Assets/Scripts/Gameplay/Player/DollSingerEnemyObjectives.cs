@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using Unity.Entities;
 using UnityEngine;
@@ -6,6 +8,95 @@ using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS
 {
+    public static class PmcLootRules
+    {
+        private static float Value(InventoryItem item, bool needCells, bool needMedicine)
+        {
+            var def = InventoryCatalog.Get(item?.Code);
+            if (def == null || def.Kind == ItemKind.Root || MissionInventory.IsArtifact(item.Code)) return 0;
+            int price = ShopCatalog.Find(item.Code)?.SellDust ?? (item.Code == "dust" ? 1 : item.Code == "alloy" ? 6 : 0);
+            if (price <= 0) return 0;
+            float priority = price * item.Quantity / (float)Math.Max(1, def.Width * def.Height);
+            if (def.Kind == ItemKind.Cell && needCells) priority += 1000;
+            if (def.Kind == ItemKind.Medical && needMedicine) priority += 1000;
+            return priority;
+        }
+
+        private static IEnumerable<string> Destinations(InventoryGraph inventory, bool usable)
+        {
+            string rig = inventory.Equipped("ChestRig")?.Id, pack = inventory.Equipped("Backpack")?.Id;
+            if (!usable && pack != null) yield return pack;
+            yield return InventoryCatalog.Pockets;
+            if (rig != null) yield return rig;
+            if (usable && pack != null) yield return pack;
+        }
+
+        private static int WeightAllowance(InventoryGraph inventory, ItemDefinition definition, int desired)
+        {
+            if (definition.Weight <= 0) return desired;
+            double free = Math.Max(0, InventoryCatalog.CarryWeightLimit - inventory.CarriedWeight);
+            return Math.Min(desired, (int)Math.Floor((free + .0001) / definition.Weight));
+        }
+
+        // All moves use the same versioned transaction as a player. The candidate list
+        // holds IDs because a successful transaction replaces both inventory trees.
+        public static int TakeAvailable(InventoryGraph inventory, InventoryGraph cache)
+        {
+            if (inventory == null || cache == null || cache.Find(LootInventoryExchange.Root) == null) return 0;
+            bool needCells = inventory.CellEnergy(accessibleOnly: true) < BatteryEnergy.Capacity * 2;
+            bool needMedicine = inventory.Items.Where(inventory.MedicalAccessible).Sum(i => i.Quantity) < 2;
+            var occupiedContainers = new HashSet<string>(cache.Items.Select(i => i.Parent));
+            var candidates = cache.Items.Where(i => i.Parent == LootInventoryExchange.Root && !occupiedContainers.Contains(i.Id))
+                .Select(i => (item: i, value: Value(i, needCells, needMedicine))).Where(candidate => candidate.value > 0)
+                .OrderByDescending(candidate => candidate.value).Select(candidate => candidate.item.Id).ToArray();
+            int transfers = 0;
+            foreach (string id in candidates)
+            {
+                var source = cache.Find(id);
+                if (source == null || source.Parent != LootInventoryExchange.Root) continue;
+                var def = InventoryCatalog.Get(source.Code);
+                bool usable = def.Kind == ItemKind.Cell || def.Kind == ItemKind.Medical;
+                var destinations = Destinations(inventory, usable).ToArray();
+                if (!def.Container)
+                {
+                    var targets = destinations.SelectMany(parent => inventory.Items.Where(i => i.Parent == parent && i.Code == source.Code))
+                        .Select(i => i.Id).ToArray();
+                    foreach (string targetId in targets)
+                    {
+                        source = cache.Find(id); var target = inventory.Find(targetId);
+                        if (source == null) break;
+                        int count = WeightAllowance(inventory, def, Math.Min(source.Quantity, def.MaxStack - target.Quantity));
+                        if (count <= 0 || source.FoundInRaid != target.FoundInRaid || source.EmergencySupply != target.EmergencySupply ||
+                            !BatteryEnergy.CanMerge(source, target, count)) continue;
+                        var command = new InventoryCommand { Operation = InventoryOperation.Merge, ExpectedVersion = inventory.Version,
+                            ItemId = id, TargetId = targetId, Quantity = count };
+                        if (LootInventoryExchange.TryApply(inventory, cache, command, cache.Version) == InventoryError.None) transfers++;
+                    }
+                }
+                source = cache.Find(id);
+                if (source == null) continue;
+                int amount = WeightAllowance(inventory, def, source.Quantity);
+                if (amount <= 0) continue;
+                foreach (string parent in destinations)
+                {
+                    bool moved = false;
+                    for (int orientation = 0; orientation < (def.Width == def.Height ? 1 : 2); orientation++)
+                    {
+                        var probe = source.Clone(); if (orientation == 1) probe.Rotated = !probe.Rotated;
+                        if (!inventory.FindSpace(probe, parent, out string region, out int x, out int y)) continue;
+                        var command = new InventoryCommand { Operation = amount < source.Quantity ? InventoryOperation.Split : InventoryOperation.Move,
+                            ExpectedVersion = inventory.Version, ItemId = id, Quantity = amount, Parent = parent,
+                            Region = region, X = x, Y = y, Rotated = probe.Rotated };
+                        if (LootInventoryExchange.TryApply(inventory, cache, command, cache.Version) != InventoryError.None) continue;
+                        transfers++; moved = true; break;
+                    }
+                    if (moved) break;
+                }
+            }
+            return transfers;
+        }
+    }
+
     public partial class DollSingerEnemySystem
     {
         private Vector3 SelectCache(DollSingerEnemyBrain brain, Vector3 position, MoonRaidMap map)
@@ -47,23 +138,7 @@ namespace Unity.MP_FPS
                 if (now < brain.LootUntil) return;
                 var loot = EntityManager.GetComponentObject<RaidLootContainers>(SystemAPI.GetSingletonEntity<RaidLootWorld>());
                 if (loot.Containers.TryGetValue(brain.Cache, out var cache))
-                {
-                    // Use the same versioned, atomic transfer as a human, taking real shared loot.
-                    foreach (var item in cache.Items.Where(i => i.Parent == LootInventoryExchange.Root &&
-                                 (i.Code == "cells" || i.Code == "medkit" || i.Code == "alloy" || i.Code == "dust"))
-                                 .OrderBy(i => i.Code == "medkit" ? 0 : i.Code == "cells" ? 1 : 2).ToArray())
-                    {
-                        foreach (string parent in CarryContainers(brain.Inventory))
-                        {
-                            if (!brain.Inventory.FindSpace(item, parent, out var region, out int x, out int y)) continue;
-                            var result = LootInventoryExchange.TryApply(brain.Inventory, cache, new InventoryCommand {
-                                Operation = InventoryOperation.Move, ExpectedVersion = brain.Inventory.Version,
-                                ItemId = item.Id, Parent = parent, Region = region, X = x, Y = y, Rotated = item.Rotated
-                            }, cache.Version);
-                            if (result == InventoryError.None) break;
-                        }
-                    }
-                }
+                    PmcLootRules.TakeAvailable(brain.Inventory, cache);
                 brain.LootedCaches++;
                 brain.VisitedCaches.Add(brain.Cache);
                 brain.Cache = -1;
@@ -81,15 +156,6 @@ namespace Unity.MP_FPS
                 Debug.Log($"[DollSinger PMC {brain.Seed}] Extracted with {brain.Inventory.Count("dust")} dust, " +
                     $"{brain.Inventory.Count("alloy")} alloy and {brain.Inventory.Count("cells")} cells.");
             }
-        }
-
-        private static System.Collections.Generic.IEnumerable<string> CarryContainers(InventoryGraph inventory)
-        {
-            yield return InventoryCatalog.Pockets;
-            var rig = inventory.Equipped("ChestRig");
-            if (rig != null) yield return rig.Id;
-            var backpack = inventory.Equipped("Backpack");
-            if (backpack != null) yield return backpack.Id;
         }
 
     }

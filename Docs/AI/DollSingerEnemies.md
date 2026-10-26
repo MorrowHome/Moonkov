@@ -31,6 +31,10 @@ inventory transaction; there are no manufactured rewards. Cells go into pockets/
 before backpack space. Backpack cells must move into an accessible slot before
 reloading. A loaded secondary weapon remains an option when cells run out.
 
+人形敌人搜完固定补给箱后，会按需要取电池和医疗用品，也会按物品占格与出售价值选择其他物资。电池和医疗用品优先放入口袋或胸挂，其他物资优先放背包。兼容的物品会堆叠；空间不足时可旋转物品，重量不足时可只取部分堆叠。每次都使用共享库存事务和 45 公斤上限。任务关键物品和内部有物品的容器保留在箱内。敌人被击杀后，其实际携带的物资仍可从尸体取回。
+
+27 项生产规则检查覆盖价值排序、限重、旋转、电池余量、旧版本竞争、尸体取回和任务物品保护。游戏与编辑器程序集隔离编译通过。真实敌人计时搜箱的编辑器检查已补充，但尚未执行；正式地图上的路线、遭遇密度和物资平衡仍需试玩。
+
 Three searched caches, critical health, exhausted ammunition or the departure time
 make a PMC plan to leave. Extraction requires the existing radius, height tolerance
 and eight-second dwell; a visible threat, recent damage or pressure interrupts it.

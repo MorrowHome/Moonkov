@@ -157,6 +157,23 @@ public static partial class AlienEnemyChecks
                 scavenge.LootUntil = 0; args[2] = pmcOrigin + Vector3.right * 20; args[3] = (Vector3)args[2] + Vector3.up * 1.4f;
                 objective.Invoke(ai, args);
                 Check(((PredictedPlayerGhost)args[1]).LootSearchSequence == 1, "An out-of-range PMC produced a search sound.");
+
+                var lootEntity = manager.CreateEntity(typeof(RaidLootWorld));
+                var containers = new RaidLootContainers(); containers.Initialize(1); manager.AddComponentObject(lootEntity, containers);
+                var sharedCache = containers.Containers[0];
+                sharedCache.Items.RemoveAll(item => InventoryCatalog.Get(item.Code).Kind != ItemKind.Root); sharedCache.Version++;
+                Check(sharedCache.AddSupply("data_drive", 1, LootInventoryExchange.Root, true) == InventoryError.None,
+                    "PMC loot fixture could not create its real valuable item.");
+                var valuableId = sharedCache.Items.Find(item => item.Code == "data_drive").Id;
+                args[2] = pmcOrigin; args[3] = pmcOrigin + Vector3.up * 1.4f; args[5] = 21d; objective.Invoke(ai, args);
+                double finishedAt = scavenge.LootUntil;
+                args[5] = finishedAt - .01; objective.Invoke(ai, args);
+                Check(sharedCache.Find(valuableId) != null && scavenge.Inventory.Find(valuableId) == null,
+                    "PMC took the real item before its search finished.");
+                args[5] = finishedAt; objective.Invoke(ai, args);
+                Check(sharedCache.Find(valuableId) == null && scavenge.Inventory.Find(valuableId) != null &&
+                    scavenge.VisitedCaches.Contains(0) && scavenge.LootedCaches == 1,
+                    "A completed PMC search did not transfer the real valuable item and finish the objective.");
             }
             finally { Object.DestroyImmediate(tuning); }
             return $"PASS {checks} loot acoustics checks: world audio, server sequence, real PMC scavenging and alien/PMC hearing.";
