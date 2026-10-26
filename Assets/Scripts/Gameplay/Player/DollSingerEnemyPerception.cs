@@ -28,6 +28,7 @@ namespace Unity.MP_FPS
             float observationStep = Mathf.Min(.2f, elapsed);
             brain.LastSenseTime = now;
             ObserveGrenades(brain, root, eye, now);
+            ObserveFireArea(brain, root, now);
             float light = 1;
             if (SystemAPI.TryGetSingleton<ExpeditionClockState>(out var clock) && clock.Ready)
             {
@@ -176,6 +177,29 @@ namespace Unity.MP_FPS
             brain.LastHeardTime = System.Math.Max(memory.LastHeard, memory.LastReported);
             brain.ContactUncertainty = memory.PositionUncertainty;
             if (wasVisible != brain.Visible) brain.NextDecision = 0;
+        }
+
+        private void ObserveFireArea(DollSingerEnemyBrain brain, Transform root, double now)
+        {
+            uint id = 0; Vector3 position = default; float radius = 0, closest = float.MaxValue;
+            if (!brain.IsClashBot && root && m_TacticalWorld != null && brain.SelfStatus != null &&
+                brain.SelfStatus.Fire > now)
+            {
+                var scene = root.gameObject.scene.GetPhysicsScene();
+                if (scene.IsValid()) foreach (var area in m_TacticalWorld.Objects)
+                {
+                    if (area == null || area.Id == 0 || area.Definition == null || area.Definition.Kind != TacticalItemKind.Fire ||
+                        !PmcFireRules.Active(false, brain.SelfStatus.Fire, area.Phase, area.Until, now, true) ||
+                        !PmcGrenadeRules.Finite(area.Position) || !float.IsFinite(area.Definition.Radius) || area.Definition.Radius <= 0) continue;
+                    float distance = Vector3.Distance(root.position, area.Position);
+                    if (distance >= closest || !ServerGameSystem.TacticalWithin(area, root.position, 0, scene, root)) continue;
+                    id = area.Id; position = area.Position; radius = area.Definition.Radius; closest = distance;
+                }
+            }
+            bool danger = id != 0;
+            if (brain.FireDanger != danger || danger && (brain.FireId != id || (brain.FirePosition - position).sqrMagnitude > 1))
+                brain.NextDecision = 0;
+            brain.FireDanger = danger; brain.FireId = id; brain.FirePosition = position; brain.FireRadius = radius;
         }
 
         private void ObserveGrenades(DollSingerEnemyBrain brain, Transform root, Vector3 eye, double now)

@@ -8,7 +8,7 @@ using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS
 {
-    public enum PmcAction { Scavenge, Extract, Investigate, Search, Engage, Cover, Flank, Retreat, Reload, HoldAngle, Heal, ClashObjective, EvadeGrenade }
+    public enum PmcAction { Scavenge, Extract, Investigate, Search, Engage, Cover, Flank, Retreat, Reload, HoldAngle, Heal, ClashObjective, EvadeGrenade, EvadeFire }
     public enum PmcCoverPhase { Approaching, Settling, Advancing, Holding, Returning }
 
     // The observer only remembers positions it could actually see. Turning away
@@ -66,7 +66,7 @@ namespace Unity.MP_FPS
     {
         // An exhausted raider walks to recover, but may still attempt to flee an explosive.
         public static bool Allows(bool clash, PmcAction action, bool exhausted) =>
-            clash || !exhausted || action == PmcAction.EvadeGrenade;
+            clash || !exhausted || action == PmcAction.EvadeGrenade || action == PmcAction.EvadeFire;
 
         public static void Tick(ref TacticalSprintState stamina, ref float3 previous, ref bool known,
             float3 position, float dt, bool alive, bool sprinting, float speed, float weight, bool stimulated)
@@ -81,6 +81,14 @@ namespace Unity.MP_FPS
             known = alive && valid && float.IsFinite(dt) && dt > 0;
             TacticalSprintRules.Tick(ref stamina, dt, alive && sprinting && speed > .1f && moved, stimulated, alive, weight);
         }
+    }
+
+    public static class PmcFireRules
+    {
+        public static bool Active(bool clash, double burningUntil, TacticalWorldPhase phase, double areaUntil,
+            double now, bool inside) => !clash && inside && double.IsFinite(now) &&
+            double.IsFinite(burningUntil) && burningUntil > now && phase == TacticalWorldPhase.Fire &&
+            double.IsFinite(areaUntil) && areaUntil > now;
     }
 
     // A minority of ordinary raid actors carry the same physical shield item as
@@ -271,6 +279,11 @@ namespace Unity.MP_FPS
         public PmcGrenadeAwareness Grenade;
         public Vector3 GrenadePlanPosition;
         public double NextGrenadePath;
+        public bool FireDanger;
+        public uint FireId, FirePlanId;
+        public Vector3 FirePosition;
+        public float FireRadius;
+        public double NextFirePath;
         public PmcMedicalFailure MedicalFailure;
         public Vector3 Goal, LastSeen, ObservedVelocity, ProgressPosition, CoverPosition, PeekPosition, TacticalGoal;
         public Vector3 RaidExit;

@@ -367,7 +367,7 @@ namespace Unity.MP_FPS
             return delta.magnitude<=TacticalItemRules.InteractionRange && Mathf.Abs(target.Position.y-root.transform.position.y)<.7f &&
                 Vector3.Dot(delta.normalized,TacticalDirection(health))>.6f && EnergyGrenadePhysics.ClearSight(target.Scene,eye,target.Position+Vector3.up*.15f,root.transform);
         }
-        private static bool TacticalWithin(TacticalServerWorld.Object area,Vector3 point,float targetRadius,PhysicsScene scene,Transform target)
+        public static bool TacticalWithin(TacticalServerWorld.Object area,Vector3 point,float targetRadius,PhysicsScene scene,Transform target)
         {
             var delta=point-area.Position;float radius=area.Definition.Radius+targetRadius;
             if(scene!=area.Scene || Mathf.Abs(delta.y)>1.5f || new Vector2(delta.x,delta.z).sqrMagnitude>radius*radius)return false;

@@ -36,6 +36,10 @@ flowchart LR
 
 16 项检查覆盖配装、伤害、恢复、死亡瞬间写回、尸体转移和库存序列化。游戏与编辑器程序集隔离编译通过。真实服务器更新夹具已补充，但尚未在编辑器执行；盾牌表现、遭遇频率和交火难度需要正式地图试玩。
 
+普通人形敌人已经着火且仍在实际火区时，会中断搜索、撤离或治疗，尝试沿可达路线离开火区。判断复用火区本身的场景、范围和墙体遮挡规则；身体在火区外时不会凭空知道火的位置。逃离时不会开火或开始充能，手雷危险优先。无法找到路线时不瞬移。离开后余火沿原计时结束，敌人目前不会主动灭火；赏金模式保持原规则。
+
+8 项火区条件与路径方向规则通过，游戏与编辑器程序集隔离编译通过。真实火区遮挡、敌人决策和移动输入的编辑器夹具已补充，尚未执行；实际路线、特效及难度仍需试玩。
+
 PMCs choose reachable caches with different route preferences, spend 2.5 seconds
 searching within pickup range and line of sight, then transfer actual shared items
 through `LootInventoryExchange.TryApply`. Quantities and versions follow the normal

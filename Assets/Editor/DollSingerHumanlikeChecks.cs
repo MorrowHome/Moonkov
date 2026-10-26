@@ -37,6 +37,7 @@ public static class DollSingerHumanlikeChecks
             CheckMedicalLifecycle(system);
             CheckDecisions(system, map, tuning);
             CheckGrenadeDecisions(system, map);
+            CheckFireDecisions(system, map);
             CheckGrenadeVisibility(system, world);
             CheckCombatRecovery(system, map);
             CheckCombatPressure(system, map);
@@ -351,6 +352,26 @@ public static class DollSingerHumanlikeChecks
             Require(!expired.Grenade.Active(1.3) && !energy.TryGetLiveThreat(0, out _, out _, out _, out _),
                 "A detonated energy grenade remained an active threat.");
             energyObjects.Clear();
+
+            tactical.Objects.Clear();
+            var fire = new TacticalServerWorld.Object { Id = 3, Definition = TacticalItemRules.Find("fire_bomb"),
+                Phase = TacticalWorldPhase.Fire, Scene = scene.GetPhysicsScene(), Position = origin + Vector3.forward * 2, Until = 10 };
+            tactical.Objects.Add(fire);
+            var burning = Brain(); burning.SelfStatus = new TacticalServerWorld.Status { Fire = 5 };
+            void FireSight(DollSingerEnemyBrain brain) => Call(system, "ObserveFireArea", new object[] { brain, actor.transform, 1d });
+            blocker.enabled = false; Physics.SyncTransforms(); FireSight(burning);
+            Require(burning.FireDanger && burning.FireId == 3 && burning.FirePosition == fire.Position && burning.FireRadius == 3,
+                "A burning PMC ignored the active fire covering its position.");
+            wall.transform.position = origin + Vector3.forward + Vector3.up;
+            blocker.enabled = true; Physics.SyncTransforms(); FireSight(burning);
+            Require(!burning.FireDanger, "A wall-separated fire was treated as contact with the actor.");
+            blocker.enabled = false; Physics.SyncTransforms();
+            var unburned = Brain(); unburned.SelfStatus = new TacticalServerWorld.Status(); FireSight(unburned);
+            Require(!unburned.FireDanger, "The PMC inferred fire damage before the server applied it.");
+            var fireClash = Brain(); fireClash.ClashParticipantId = 1; fireClash.SelfStatus = new TacticalServerWorld.Status { Fire = 5 };
+            FireSight(fireClash); Require(!fireClash.FireDanger, "Fire evasion changed bounty mode.");
+            fire.Phase = TacticalWorldPhase.Removed; FireSight(burning);
+            Require(!burning.FireDanger, "An expired fire remained an active hazard.");
         }
         finally
         {
@@ -359,6 +380,33 @@ public static class DollSingerHumanlikeChecks
             SceneManager.SetActiveScene(original);
             EditorSceneManager.CloseScene(scene, true);
         }
+    }
+
+    private static void CheckFireDecisions(DollSingerEnemySystem system, MoonRaidMap map)
+    {
+        var brain = Brain(); var health = Health();
+        brain.Action = PmcAction.Scavenge; brain.CommitUntil = 40; brain.FireDanger = true;
+        var decision = Decide(system, brain, health, map, 10);
+        Require(decision.action == PmcAction.EvadeFire && decision.emergency,
+            "Standing in fire did not interrupt a committed search.");
+        brain.Action = PmcAction.EvadeFire; brain.HealUntil = 15; brain.HealItemId = "test";
+        Heal(system, brain, ref health, 10);
+        Require(brain.HealUntil == 0 && brain.HealItemId == null &&
+            !(bool)Call(system, "ShouldReload", new object[] { brain, health, Vector3.zero, 10d }),
+            "Treatment or reload continued while escaping fire.");
+        brain.Grenade.Observe(1, Vector3.forward, 8, 14, 10);
+        brain.Grenade.Observe(1, Vector3.forward, 8, 14, 10.1);
+        brain.Grenade.Observe(1, Vector3.forward, 8, 14, 10.2);
+        brain.Grenade.Observe(1, Vector3.forward, 8, 14, 10.3);
+        Require(Decide(system, brain, health, map, 10.3).action == PmcAction.EvadeGrenade,
+            "An immediate explosive did not take priority over fire.");
+        brain.FireDanger = false; brain.Action = PmcAction.EvadeFire;
+        decision = Decide(system, brain, health, map, 14);
+        Require(decision.action != PmcAction.EvadeFire && decision.emergency,
+            "The PMC remained in fire evasion after leaving the area.");
+        brain.FireDanger = true; brain.ClashParticipantId = 1;
+        Require(Decide(system, brain, health, map, 14).action != PmcAction.EvadeFire,
+            "The raid fire response changed bounty mode.");
     }
 
     private static void CheckCombatRecovery(DollSingerEnemySystem system, MoonRaidMap map)
@@ -554,6 +602,8 @@ public static class DollSingerHumanlikeChecks
             Require(!empty.Shoot && empty.Sprint, "An empty withdrawing PMC could not sprint to safety.");
             var grenade = Input(PmcAction.EvadeGrenade);
             Require(!grenade.Shoot && grenade.Sprint, "Explosive evasion did not sprint without firing.");
+            var fire = Input(PmcAction.EvadeFire, exhausted: true);
+            Require(!fire.Shoot && fire.Sprint, "Fire evasion did not attempt to sprint without firing.");
             Require(!Input(PmcAction.Retreat, visible: false, exhausted: true).Sprint,
                 "An exhausted PMC kept sprinting during an ordinary retreat.");
             Require(Input(PmcAction.EvadeGrenade, exhausted: true).Sprint,
