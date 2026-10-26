@@ -89,9 +89,12 @@
                 <ui:Label name="raidResultHeading" class="raid-result-heading" />
                 <ui:Label name="raidResultText" class="raid-result-text" />
                 <ui:VisualElement name="raidManifest" class="raid-manifest">
-                    <ui:VisualElement class="raid-manifest-row"><ui:Label text="MOON DUST" class="raid-manifest-name" /><ui:Label name="raidManifestDust" class="raid-manifest-value" /></ui:VisualElement>
-                    <ui:VisualElement class="raid-manifest-row"><ui:Label text="ALLOY" class="raid-manifest-name" /><ui:Label name="raidManifestAlloy" class="raid-manifest-value" /></ui:VisualElement>
-                    <ui:VisualElement class="raid-manifest-row"><ui:Label text="ENERGY CELLS" class="raid-manifest-name" /><ui:Label name="raidManifestCells" class="raid-manifest-value" /></ui:VisualElement>
+                    <ui:ScrollView name="raidCargoManifest" class="raid-cargo-manifest" mode="Vertical" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Auto" />
+                    <ui:VisualElement name="raidStorageManifest">
+                        <ui:VisualElement class="raid-manifest-row"><ui:Label text="MOON DUST" class="raid-manifest-name" /><ui:Label name="raidManifestDust" class="raid-manifest-value" /></ui:VisualElement>
+                        <ui:VisualElement class="raid-manifest-row"><ui:Label text="ALLOY" class="raid-manifest-name" /><ui:Label name="raidManifestAlloy" class="raid-manifest-value" /></ui:VisualElement>
+                        <ui:VisualElement class="raid-manifest-row"><ui:Label text="ENERGY CELLS" class="raid-manifest-name" /><ui:Label name="raidManifestCells" class="raid-manifest-value" /></ui:VisualElement>
+                    </ui:VisualElement>
                 </ui:VisualElement>
                 <ui:Label name="raidSaveStatus" class="raid-copy" />
                 <ui:VisualElement name="raidLoadout" class="raid-loadout">

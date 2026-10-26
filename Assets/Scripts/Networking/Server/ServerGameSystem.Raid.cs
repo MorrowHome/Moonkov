@@ -128,6 +128,14 @@ namespace Unity.MP_FPS
             if (!ClashEnabled(ref state) && SystemAPI.HasSingleton<RaidLootWorld>())
                 ObserveFirstChapter(ref state, state.EntityManager.GetComponentObject<RaidMissionWorld>(SystemAPI.GetSingletonEntity<RaidLootWorld>()));
             UpdateInventoryProtection(ref state,connection);
+            if (!ClashEnabled(ref state) && session.ValueRO.Phase == RaidPhase.Active &&
+                (outcome == RaidPhase.Extracted || outcome == RaidPhase.Dead || outcome == RaidPhase.TimedOut) &&
+                state.EntityManager.HasComponent<RaidInventoryState>(connection))
+            {
+                var inventory = GetRaidInventory(ref state, connection);
+                inventory.Result = RaidResultManifest.Capture(inventory.Graph, session.ValueRO.RaidId, outcome);
+                inventory.LastSentVersion = -1;
+            }
             // Commit ownership transfer exactly once, while the dead entity still has a
             // transform. Keep loss totals in RaidSession for the result screen only.
             if(outcome==RaidPhase.Dead && session.ValueRO.Phase==RaidPhase.Active && MoonRaidMap.Active!=null)

@@ -1292,5 +1292,14 @@
   "Rifle fires three rounds per trigger press; 0.42s between bursts.": "步枪每次按下发射三发，组间至少 0.42 秒。",
   "PREPARE TO RETURN\nGREEN BEACON / {0:F0}m {1}": "准备返程\n撤离信标 / {0:F0} 米 {1}",
   "RETURN TO EXTRACTION\nGREEN BEACON / {0:F0}m {1}": "请返回撤离点\n撤离信标 / {0:F0} 米 {1}",
-  "FINAL MINUTE\nGREEN BEACON / {0:F0}m {1}": "最后一分钟，立即撤离\n撤离信标 / {0:F0} 米 {1}"
+  "FINAL MINUTE\nGREEN BEACON / {0:F0}m {1}": "最后一分钟，立即撤离\n撤离信标 / {0:F0} 米 {1}",
+  "CARGO MANIFEST": "物品清单",
+  "RESOURCE BALANCES": "基础资源库存",
+  "EXPEDITION {0:000}": "远征 {0:000}",
+  "EXPEDITION {0:000}\nReturned {1:N0} / Lost {2:N0}": "远征 {0:000}\n带回 {1:N0} 件 / 损失 {2:N0} 件",
+  "Waiting for cargo manifest...": "正在同步结算清单…",
+  "No carried items at the end of this expedition.": "本次结束时没有携带物品。",
+  "BROUGHT BACK": "带回物品",
+  "PROTECTED ITEMS": "受保护物品",
+  "LOST ITEMS": "损失物品"
 }

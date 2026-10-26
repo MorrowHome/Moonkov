@@ -427,7 +427,7 @@ namespace Unity.MP_FPS
 
         private void RenderMissionResult(RaidMissionSnapshotRpc snapshot)
         {
-            if (snapshot.RaidId != m_Snapshot.RaidId || m_Snapshot.Phase == RaidPhase.Active)
+            if (m_ResultStep != 0 || snapshot.RaidId != m_Snapshot.RaidId || m_Snapshot.Phase == RaidPhase.Active)
             { m_MissionResult.style.display = DisplayStyle.None; return; }
             m_MissionResult.style.display = DisplayStyle.Flex;
             if (m_Snapshot.Phase != RaidPhase.Extracted) { m_MissionResult.text = "本次未安全带回任务产物；已有调查发现与首次奖励保留。"; return; }

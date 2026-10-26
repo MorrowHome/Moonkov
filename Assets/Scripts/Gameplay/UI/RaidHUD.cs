@@ -62,6 +62,7 @@ namespace Unity.MP_FPS
         private VisualElement m_LoadoutPanel;
         private Label m_LoadoutNote;
         private int m_ResultStep;
+        private Client.RaidResultCargoView m_ResultCargo;
         private bool m_InventoryVisible;
         private Button m_ResultBack, m_ResultNext, m_Return;
         private float m_RevealUntil;
@@ -125,6 +126,7 @@ namespace Unity.MP_FPS
             m_ResultNext = m_Root.Q<Button>("raidResultNext"); m_ResultNext.clicked += ResultNext;
             m_Return = m_Root.Q<Button>("raidReturn"); m_Return.clicked += ReturnToShip;
             m_Return.SetEnabled(GameManager.CanUseMainMenu);
+            m_ResultCargo = new Client.RaidResultCargoView(m_Root.Q<ScrollView>("raidCargoManifest"));
             m_Inventory = m_Root.Q("raidInventory");
             m_InventoryTitle=m_Root.Q<Label>(className:"raid-inventory-title");
             m_EquipmentHost = m_Root.Q("raidInventoryHost"); m_HealthHost = m_Root.Q("raidHealthHost");
@@ -315,21 +317,33 @@ namespace Unity.MP_FPS
         private void ReturnToShip() { if (GameManager.CanUseMainMenu) GameManager.Instance.ReturnToMainMenuAsync(); }
         private void RenderResult()
         {
-            int count = m_Snapshot.Dust + m_Snapshot.Alloy + m_Snapshot.Cells;
+            RaidResultManifest manifest = null;
+            if (m_World != null && m_World.IsCreated && !m_InventoryQuery.IsEmptyIgnoreFilter)
+            {
+                var inventory = m_World.EntityManager.GetComponentObject<RaidInventoryClientState>(m_InventoryQuery.GetSingletonEntity());
+                if (inventory.RaidId == m_Snapshot.RaidId && inventory.Result?.Outcome == m_Snapshot.Phase)
+                    manifest = inventory.Result;
+            }
             string title = m_Snapshot.Phase == RaidPhase.Extracted ? "SURVIVED" : m_Snapshot.Phase == RaidPhase.Dead ? "KILLED IN ACTION" : "TIME EXPIRED";
             MoonkovLocalization.Set(m_Root.Q<Label>("raidResultHeading"), m_ResultStep == 0 ? title : m_ResultStep == 1 ?
-                m_Snapshot.Phase == RaidPhase.Extracted ? "RECOVERED CARGO" : "LOST CARGO" : "PERSONAL STORAGE");
-            MoonkovLocalization.Set(m_ResultText, MoonkovLocalization.Format($"EXPEDITION {m_Snapshot.RaidId:000}\n{(m_Snapshot.Phase == RaidPhase.Extracted ? "Cargo recovered" : "Carried cargo lost")} / {count} supplies"));
+                "CARGO MANIFEST" : "RESOURCE BALANCES");
+            if (manifest != null && m_ResultStep != 2)
+                MoonkovLocalization.Set(m_ResultText, "EXPEDITION {0:000}\nReturned {1:N0} / Lost {2:N0}", m_Snapshot.RaidId, manifest.ReturnedCount, manifest.LostCount);
+            else MoonkovLocalization.Set(m_ResultText, "EXPEDITION {0:000}", m_Snapshot.RaidId);
             m_Result.EnableInClassList("raid-result-failed", m_Snapshot.Phase != RaidPhase.Extracted);
             m_Result.EnableInClassList("raid-result-cargo", m_ResultStep == 1);
             m_Result.EnableInClassList("raid-result-storage", m_ResultStep == 2);
             m_Root.Q("raidManifest").style.display = m_ResultStep == 0 ? DisplayStyle.None : DisplayStyle.Flex;
+            m_Root.Q("raidStorageManifest").style.display = m_ResultStep == 2 ? DisplayStyle.Flex : DisplayStyle.None;
+            m_Root.Q("raidCargoManifest").style.display = m_ResultStep == 1 ? DisplayStyle.Flex : DisplayStyle.None;
+            if (m_ResultStep == 1) m_ResultCargo.Present(manifest);
             MoonkovLocalization.Set(m_Root.Q<Label>("raidManifestDust"), "{0:N0}", m_ResultStep == 2 ? m_Snapshot.StashDust : m_Snapshot.Dust);
             MoonkovLocalization.Set(m_Root.Q<Label>("raidManifestAlloy"), "{0:N0}", m_ResultStep == 2 ? m_Snapshot.StashAlloy : m_Snapshot.Alloy);
             MoonkovLocalization.Set(m_Root.Q<Label>("raidManifestCells"), "{0:N0}", m_ResultStep == 2 ? m_Snapshot.StashCells : m_Snapshot.Cells);
             for (int i = 0; i < 3; i++) m_Root.Q<Label>("raidStep" + i).EnableInClassList("raid-step-active", i == m_ResultStep);
             m_ResultBack.SetEnabled(m_ResultStep > 0); m_ResultNext.style.display = m_ResultStep < 2 ? DisplayStyle.Flex : DisplayStyle.None;
-            m_Deploy.style.display = m_Return.style.display = m_ResultStep == 2 ? DisplayStyle.Flex : DisplayStyle.None;
+            m_Deploy.style.display = m_ResultStep == 2 ? DisplayStyle.Flex : DisplayStyle.None;
+            m_Return.style.display = DisplayStyle.Flex;
             m_LoadoutPanel.style.display = m_ResultStep == 2 ? DisplayStyle.Flex : DisplayStyle.None;
         }
 
@@ -410,7 +424,7 @@ namespace Unity.MP_FPS
                     : m_Snapshot.LoadoutError == RaidLoadoutError.InvalidCount ? "Choose 0-12 energy cells."
                     : m_Snapshot.LoadoutError == RaidLoadoutError.Rejected ? "Loadout rejected. You can retry or return to the ship."
                     : MoonkovLocalization.Format($"Storage: {m_Snapshot.StashCells} cells / Carry limit: {RaidRules.BagCapacity}. [R] spends energy per round. Unspent energy returns on extraction."));
-                if (!m_WasSettled && !saving) (m_TutorialConfigured ? m_Return : m_Deploy).Focus();
+                if (!m_WasSettled && !saving) m_Return.Focus();
             }
             m_WasSettled = settled;
             m_Result.style.display = settled && !clash && !(m_Cinematic?.HidesHUD ?? false) ? DisplayStyle.Flex : DisplayStyle.None;

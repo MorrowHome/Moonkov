@@ -14,7 +14,7 @@ namespace Unity.MP_FPS
             RaidInventoryState inventory;
             if (state.EntityManager.HasComponent<RaidInventoryState>(connection)) inventory = state.EntityManager.GetComponentObject<RaidInventoryState>(connection);
             else { inventory = new RaidInventoryState(); state.EntityManager.AddComponentObject(connection, inventory); }
-            inventory.CancelActions();inventory.SearchedLoot.Clear();
+            inventory.CancelActions();inventory.SearchedLoot.Clear();inventory.Result=null;
             inventory.Graph = graph; inventory.RaidId=raidId; inventory.LastSentVersion = -1; inventory.OpenedLootId=-1;inventory.LastSentLootVersion=-1;
             inventory.MissionFirstsBefore = inventory.MissionFirstsSaved = Persistence(ref state).Profiles.TryGetValue(connection, out var profile) &&
                 !string.IsNullOrEmpty(profile.InventoryJson) ? RaidInventoryTransport.Decode(profile.InventoryJson).MissionFirsts : 0;
@@ -207,7 +207,7 @@ namespace Unity.MP_FPS
             var json = RaidInventoryTransport.EncodeSnapshot(snapshot,cache==null ? -1 : inventory.OpenedLootId,lootVersion,
                 inventory.DissectingLootId,(float)System.Math.Max(0,inventory.DissectionUntil-SystemAPI.Time.ElapsedTime),
                 inventory.MedicalItemId,(float)System.Math.Max(0,inventory.MedicalUntil-SystemAPI.Time.ElapsedTime),inventory.ActionFeedback,
-                corpse?.CharacterIndex ?? -1, corpse?.EquipmentSlots);
+                corpse?.CharacterIndex ?? -1, corpse?.EquipmentSlots,inventory.Result);
             const int fragmentSize = RaidInventoryTransport.ChunkCharacters;
             int count = (json.Length + fragmentSize - 1) / fragmentSize;
             for (int index = 0; index < count; index++)

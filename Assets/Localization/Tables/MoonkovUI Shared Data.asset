@@ -5451,6 +5451,44 @@ MonoBehaviour:
       GREEN BEACON / {0:F0}m {1}'
     m_Metadata:
       m_Items: []
+  - m_Id: 6901528265744384
+    m_Key: CARGO MANIFEST
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6901528290910208
+    m_Key: RESOURCE BALANCES
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6901528290910209
+    m_Key: EXPEDITION {0:000}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6901528295104512
+    m_Key: 'EXPEDITION {0:000}
+
+      Returned {1:N0} / Lost {2:N0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6901528295104513
+    m_Key: Waiting for cargo manifest...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6901528295104514
+    m_Key: No carried items at the end of this expedition.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6901528295104515
+    m_Key: BROUGHT BACK
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6901528295104516
+    m_Key: PROTECTED ITEMS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6901528295104517
+    m_Key: LOST ITEMS
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

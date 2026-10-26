@@ -92,3 +92,20 @@
 .raid-ui .raid-inventory-window .raid-inventory-title { color: #f1f2ed; background-color: #08090c; padding: 4px 12px; }
 .raid-ui .raid-inventory-header Button { background-color: #08090c; color: #f1f2ed; border-width: 1px; border-color: #929ba5; }
 .raid-ui .raid-inventory-header Button:focus { border-width: 2px; border-color: #164bff; }
+.raid-ui .raid-result-cargo .raid-result-window { padding: 20px; }
+.raid-ui .raid-result-cargo .raid-result-heading { font-size: 28px; margin: 4px 0 8px; }
+.raid-ui .raid-result-cargo .raid-result-window > .raid-caption { font-size: 12px; margin-bottom: 8px; }
+.raid-ui .raid-result-cargo .raid-stepper { margin: 8px 0 12px; }
+.raid-ui .raid-result-cargo .raid-result-text { font-size: 16px; margin-bottom: 8px; }
+.raid-ui .raid-result-cargo .raid-manifest { margin: 4px 0 8px; }
+.raid-ui .raid-cargo-manifest { height: 180px; min-height: 80px; flex-shrink: 1; }
+.raid-ui .raid-cargo-manifest:focus { border-left-width: 2px; border-left-color: #164bff; padding-left: 6px; }
+.raid-ui .raid-cargo-row { flex-direction: row; align-items: center; min-height: 36px; border-bottom-width: 1px; border-bottom-color: #2e3135; }
+.raid-ui .raid-cargo-row Label { font-size: 16px; margin: 4px 0; }
+.raid-ui .raid-cargo-name { flex-grow: 1; flex-shrink: 1; white-space: normal; }
+.raid-ui .raid-cargo-quantity { min-width: 56px; margin-left: 12px; -unity-text-align: middle-right; }
+.raid-ui .raid-result-window .raid-cargo-group { font-size: 12px; margin: 12px 0 4px; color: #b0b4ba; }
+.raid-ui .raid-result-window .raid-cargo-empty { font-size: 16px; white-space: normal; margin: 12px 0; }
+.raid-ui .raid-result-cargo .raid-result-window .raid-copy { font-size: 12px; margin: 8px 0; }
+.raid-ui .raid-result-cargo .raid-result-actions { margin-top: 12px; }
+.raid-ui .raid-result-cargo .raid-result-actions Button { font-size: 16px; min-height: 40px; margin-right: 8px; }

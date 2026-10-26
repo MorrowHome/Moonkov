@@ -186,7 +186,7 @@ namespace Unity.MP_FPS
 
         private void PresentCampaignResult(CampaignProgress progress)
         {
-            bool complete = progress != null && progress.CompletedTasks.Contains("CM03") &&
+            bool complete = m_ResultStep == 0 && progress != null && progress.CompletedTasks.Contains("CM03") &&
                 m_Snapshot.Phase == RaidPhase.Extracted && m_Snapshot.SaveState == RaidSaveState.Saved;
             m_CampaignResult.EnableInClassList("campaign-hidden", !complete);
             if (complete) m_CampaignResult.text = "第一章 静默着陆 已完成\n沈禾：样本接收结果显示，实验场信号仍在维持。事故已经过去，为什么它还在运行？";

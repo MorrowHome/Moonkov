@@ -17,14 +17,15 @@ namespace Unity.MP_FPS
         public static string Encode(InventoryGraph graph) => Newtonsoft.Json.JsonConvert.SerializeObject(graph,
             new Newtonsoft.Json.JsonSerializerSettings { StringEscapeHandling=Newtonsoft.Json.StringEscapeHandling.EscapeNonAscii });
         public static InventoryGraph Decode(string json) => Newtonsoft.Json.JsonConvert.DeserializeObject<InventoryGraph>(json);
-        public static string EncodeSnapshot(InventoryGraph graph,int lootId,int lootVersion,int dissectingLootId=-1,float dissectionRemaining=0,string medicalItemId=null,float medicalRemaining=0,string actionFeedback=null,int corpseCharacterIndex=-1,Dictionary<string,string> corpseEquipmentSlots=null) => Newtonsoft.Json.JsonConvert.SerializeObject(
+        public static string EncodeSnapshot(InventoryGraph graph,int lootId,int lootVersion,int dissectingLootId=-1,float dissectionRemaining=0,string medicalItemId=null,float medicalRemaining=0,string actionFeedback=null,int corpseCharacterIndex=-1,Dictionary<string,string> corpseEquipmentSlots=null,RaidResultManifest result=null) => Newtonsoft.Json.JsonConvert.SerializeObject(
             new RaidInventorySnapshot {Graph=graph,LootId=lootId,LootVersion=lootVersion,
                 DissectingLootId=dissectingLootId,DissectionRemaining=dissectionRemaining,MedicalItemId=medicalItemId,MedicalRemaining=medicalRemaining,ActionFeedback=actionFeedback,
-                CorpseCharacterIndex=corpseCharacterIndex,CorpseEquipmentSlots=corpseEquipmentSlots},
+                CorpseCharacterIndex=corpseCharacterIndex,CorpseEquipmentSlots=corpseEquipmentSlots,Result=result},
             new Newtonsoft.Json.JsonSerializerSettings {StringEscapeHandling=Newtonsoft.Json.StringEscapeHandling.EscapeNonAscii});
     }
     public sealed class RaidInventorySnapshot
     {
+        public RaidResultManifest Result;
         public InventoryGraph Graph;
         public int LootId=-1, LootVersion;
         public int CorpseCharacterIndex=-1;
@@ -137,6 +138,7 @@ namespace Unity.MP_FPS
     }
     public sealed class RaidInventoryState : IComponentData
     {
+        public RaidResultManifest Result;
         public InventoryGraph Graph;
         public int RaidId;
         public int MissionFirstsBefore, MissionFirstsSaved;
@@ -348,6 +350,7 @@ namespace Unity.MP_FPS
     // Partial transport is never exposed to UI. A newer sequence supersedes old fragments.
     public sealed class RaidInventoryClientState : IComponentData
     {
+        public RaidResultManifest Result;
         public InventoryGraph Graph;
         public int RaidId;
         public uint Sequence, RequestId;
@@ -384,6 +387,7 @@ namespace Unity.MP_FPS
                 DissectingLootId=snapshot?.DissectingLootId ?? -1;
                 DissectionRemaining=snapshot?.DissectionRemaining ?? 0;
                 MedicalItemId=snapshot?.MedicalItemId;MedicalRemaining=snapshot?.MedicalRemaining ?? 0;ActionFeedback=snapshot?.ActionFeedback;
+                Result = snapshot?.Result != null && snapshot.Result.Valid(chunk.RaidId) ? snapshot.Result : null;
                 Graph = graph; RaidId = chunk.RaidId; Sequence = chunk.Sequence; RequestId = chunk.RequestId; Error = chunk.Error; return true;
             }
             catch (Exception) { return false; }
