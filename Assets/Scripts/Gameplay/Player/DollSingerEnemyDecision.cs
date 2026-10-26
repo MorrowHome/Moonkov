@@ -21,10 +21,22 @@ namespace Unity.MP_FPS
             bool exhausted = health.CurrentAmmo == 0 && spareAmmo == 0 && !energy;
             bool underThreat = brain.Visible || now - brain.LastDamage < 3 || brain.Suppression > .45f;
             double seenAge = now - brain.LastSeenTime;
+            bool needsHealing = NeedsHealing(health);
+            var medical = needsHealing ? FindMedical(brain.Inventory) : null;
+            bool handsBusy = brain.IsClashBot ? health.ControllerState.IsReloadingState : RaidHealth.HandsBusy(health);
+            bool canPrepareMedical = needsHealing && now >= brain.NextHeal && !handsBusy &&
+                SafeToTreat(brain, position, now);
+            if (!brain.IsClashBot && canPrepareMedical && medical == null && !brain.MedicalFailure.Matches(brain.Inventory.Version))
+            {
+                medical = PmcMedicalInventory.Prepare(brain.Inventory);
+                if (medical == null) brain.MedicalFailure.Record(brain.Inventory.Version);
+                else brain.MedicalFailure.Clear();
+            }
+            bool potentialMedical = medical != null || !canPrepareMedical && PmcMedicalInventory.HasCarried(brain.Inventory);
             // A treatable injury requests temporary Retreat below, not permanent raid departure.
             // Keep deliberate departure (spent supplies, exhausted caches, timeout) latched.
             bool bleeding = brain.SelfStatus != null && brain.SelfStatus.Bleed > now;
-            if (!brain.IsClashBot && (exhausted || lowHealth && !bleeding && (!NeedsHealing(health) || FindMedical(brain.Inventory) == null) ||
+            if (!brain.IsClashBot && (exhausted || lowHealth && !bleeding && (!needsHealing || !potentialMedical) ||
                 brain.LootedCaches >= m_Tuning.DesiredCaches || now - brain.SpawnTime >
                 map.RaidDuration * (m_Tuning.DepartureFraction + (brain.Seed % 3 - 1) * .08f)))
                 brain.Leaving = true;
@@ -77,8 +89,7 @@ namespace Unity.MP_FPS
                 Consider(PmcAction.Retreat, 110, "break contact to survive and extract");
             if (health.ControllerState.IsReloadingState || energy && ShouldReload(brain, health, position, now))
                 Consider(PmcAction.Reload, health.CurrentAmmo == 0 ? 98 : 76, "replenish the magazine during a safe opening");
-            if (NeedsHealing(health) && FindMedical(brain.Inventory) != null && now >= brain.NextHeal &&
-                !health.ControllerState.IsReloadingState && SafeToTreat(brain, position, now))
+            if (canPrepareMedical && medical != null)
                 Consider(PmcAction.Heal, lowHealth ? 108 : 84, "treat an injured body part with carried medicine");
             if (bleeding && now >= brain.NextHeal && !health.ControllerState.IsReloadingState && SafeToTreat(brain, position, now))
                 Consider(PmcAction.Heal, 110, "stop bleeding during a safe opening");
@@ -124,13 +135,7 @@ namespace Unity.MP_FPS
             return selected;
         }
 
-        private static InventoryItem FindMedical(InventoryGraph inventory)
-        {
-            if (inventory == null) return null;
-            foreach (var item in inventory.Items)
-                if (item.Quantity > 0 && inventory.MedicalAccessible(item)) return item;
-            return null;
-        }
+        private static InventoryItem FindMedical(InventoryGraph inventory) => PmcMedicalInventory.FindAccessible(inventory);
 
         private bool SafeToTreat(DollSingerEnemyBrain brain, Vector3 position, double now)
         {
@@ -145,7 +150,8 @@ namespace Unity.MP_FPS
         {
             bool bleeding = brain.SelfStatus != null && brain.SelfStatus.Bleed > now;
             if (brain.Action != PmcAction.Heal || !SafeToTreat(brain, position, now) ||
-                health.ControllerState.IsReloadingState || HorizontalDistance(position, brain.TacticalGoal) > TacticalArrivalDistance ||
+                (brain.IsClashBot ? health.ControllerState.IsReloadingState : RaidHealth.HandsBusy(health)) ||
+                HorizontalDistance(position, brain.TacticalGoal) > TacticalArrivalDistance ||
                 !bleeding && !NeedsHealing(health))
             {
                 if (brain.HealUntil > 0) brain.NextHeal = now + .75;

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Reflection;
 using Unity.Entities;
 using Unity.MP_FPS;
@@ -39,6 +40,7 @@ public static class DollSingerHumanlikeChecks
             CheckBleedTreatment(system, map);
             CheckReturnFire(system, map, world);
             CheckReloadAvailability(system, map);
+            CheckBackpackMedical(system, map);
         }
         finally
         {
@@ -91,6 +93,35 @@ public static class DollSingerHumanlikeChecks
             Require(brain.Leaving && decision.action==PmcAction.Extract,"PMC ignored the actual module's reload cost.");
         }
         finally {property.SetValue(null,old);Object.DestroyImmediate(root);}
+    }
+
+    private static void CheckBackpackMedical(DollSingerEnemySystem system, MoonRaidMap map)
+    {
+        var brain = Brain(); brain.Inventory = InventoryGraph.Create(false);
+        string pack = brain.Inventory.Equipped("Backpack").Id;
+        Require(brain.Inventory.AddSupply("medkit", 1, pack) == InventoryError.None, "Backpack medical fixture.");
+        string itemId = brain.Inventory.Items.First(item => item.Code == "medkit").Id;
+        var health = Health(); RaidHealth.Damage(ref health, BodyPart.Chest, 65, 1);
+        var decision = Decide(system, brain, health, map, 10);
+        Require(!brain.Leaving && decision.action == PmcAction.Heal && brain.Inventory.MedicalAccessible(brain.Inventory.Find(itemId)),
+            "A safe injured PMC did not move its own backpack medicine to an accessible slot.");
+        brain.Action = PmcAction.Heal; brain.TacticalGoal = Vector3.zero;
+        Heal(system, brain, ref health, 10); double complete = brain.HealUntil;
+        Require(complete > 10 && brain.Inventory.Find(itemId) != null, "PMC treatment consumed backpack medicine early.");
+        Heal(system, brain, ref health, complete);
+        Require(brain.Inventory.Find(itemId) == null && health.ChestHealth > 20,
+            "PMC failed to complete treatment using its own prepared medicine.");
+
+        brain = Brain(); brain.Inventory = InventoryGraph.Create(false); pack = brain.Inventory.Equipped("Backpack").Id;
+        Require(brain.Inventory.AddSupply("medkit", 1, pack) == InventoryError.None, "Unsafe backpack medical fixture.");
+        itemId = brain.Inventory.Items.First(item => item.Code == "medkit").Id;
+        health = Health(); RaidHealth.Damage(ref health, BodyPart.Chest, 65, 2); brain.LastDamage = 10;
+        decision = Decide(system, brain, health, map, 10);
+        Require(!brain.Leaving && decision.action == PmcAction.Retreat && brain.Inventory.Find(itemId).Parent == pack,
+            "A recently hit PMC abandoned its medicine or prepared it under immediate threat.");
+        decision = Decide(system, brain, health, map, 20);
+        Require(!brain.Leaving && decision.action == PmcAction.Heal && brain.Inventory.MedicalAccessible(brain.Inventory.Find(itemId)),
+            "A PMC did not prepare its medicine after reaching a safe opening.");
     }
 
     private static PredictedPlayerGhost Health()

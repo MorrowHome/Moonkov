@@ -43,6 +43,51 @@ namespace Unity.MP_FPS
         }
     }
 
+    public struct PmcMedicalFailure
+    {
+        private bool m_Failed;
+        private int m_Version;
+        public bool Matches(int version) => m_Failed && m_Version == version;
+        public void Record(int version) { m_Failed = true; m_Version = version; }
+        public void Clear() { m_Failed = false; }
+    }
+
+    public static class PmcMedicalInventory
+    {
+        public static InventoryItem FindAccessible(InventoryGraph inventory) => inventory?.Items
+            .FirstOrDefault(item => item.Quantity > 0 && inventory.MedicalAccessible(item));
+        public static bool HasCarried(InventoryGraph inventory) => inventory != null && inventory.Items.Any(item =>
+            item.Quantity > 0 && ConsumableCatalog.MedicalRestore(item.Code) > 0 && inventory.Carried(item));
+
+        // NPCs use the same carried-storage and versioned movement rules as players.
+        public static InventoryItem Prepare(InventoryGraph inventory)
+        {
+            var available = FindAccessible(inventory);
+            if (available != null || inventory == null) return available;
+            string rig = inventory.Equipped("ChestRig")?.Id;
+            var sources = inventory.Items.Where(item => item.Quantity > 0 && ConsumableCatalog.MedicalRestore(item.Code) > 0 &&
+                inventory.Carried(item)).Select(item => item.Id).ToArray();
+            foreach (string id in sources)
+            {
+                var item = inventory.Find(id);
+                foreach (string parent in new[] { InventoryCatalog.Pockets, rig })
+                {
+                    if (parent == null) continue;
+                    var def = InventoryCatalog.Get(item.Code);
+                    for (int orientation = 0; orientation < (def.Width == def.Height ? 1 : 2); orientation++)
+                    {
+                        var probe = item.Clone(); if (orientation == 1) probe.Rotated = !probe.Rotated;
+                        if (!inventory.FindSpace(probe, parent, out string region, out int x, out int y)) continue;
+                        var command = new InventoryCommand { Operation = InventoryOperation.Move, ExpectedVersion = inventory.Version,
+                            ItemId = id, Parent = parent, Region = region, X = x, Y = y, Rotated = probe.Rotated };
+                        if (inventory.TryApply(command) == InventoryError.None) return inventory.Find(id);
+                    }
+                }
+            }
+            return null;
+        }
+    }
+
     public static class PmcWeaponTactics
     {
         // Separate thresholds keep a target near the boundary from causing a weapon swap loop.
@@ -94,6 +139,7 @@ namespace Unity.MP_FPS
         public double CacheObstructedSince = -1;
         public double NextCorpseScan;
         public double NextTacticalSwitch;
+        public PmcMedicalFailure MedicalFailure;
         public Vector3 Goal, LastSeen, ObservedVelocity, ProgressPosition, CoverPosition, PeekPosition, TacticalGoal;
         public Vector3 RaidExit;
         public Vector3 AimOffset = Vector3.up * 1.15f;
