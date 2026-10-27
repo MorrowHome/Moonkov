@@ -37,7 +37,7 @@ namespace Unity.MP_FPS
         {
             public Vector3 Position;
             public float StepDistance;
-            public uint Shot, Reload, Land, Loot;
+            public uint Shot, Reload, Land, Loot, Consumable;
             public double SeenAt, NextCough;
         }
         private struct SensorEvent
@@ -280,7 +280,8 @@ namespace Unity.MP_FPS
                 {
                     track = new SensorTrack { Position = position, SeenAt = now,
                         Shot = health.ValueRO.LastShotTick, Reload = health.ValueRO.LastReloadTick,
-                        Land = health.ValueRO.LastLandTick, Loot = health.ValueRO.LootSearchSequence };
+                        Land = health.ValueRO.LastLandTick, Loot = health.ValueRO.LootSearchSequence,
+                        Consumable = health.ValueRO.ConsumableUseSequence };
                     m_Tracks.Add(entity, track);
                 }
                 else
@@ -297,6 +298,8 @@ namespace Unity.MP_FPS
                         m_Events.Add(new SensorEvent { Source = entity, Position = position, Range = 7 });
                     if (track.Loot != health.ValueRO.LootSearchSequence)
                         m_Events.Add(new SensorEvent { Source = entity, Position = position, Range = RaidLootAcoustics.HearingRange });
+                    if (track.Consumable != health.ValueRO.ConsumableUseSequence)
+                        m_Events.Add(new SensorEvent { Source = entity, Position = position, Range = RaidConsumableAcoustics.HearingRange });
                     if (track.Land != health.ValueRO.LastLandTick)
                     {
                         m_Events.Add(new SensorEvent { Source = entity, Position = position,
@@ -317,6 +320,7 @@ namespace Unity.MP_FPS
                     track.Reload = health.ValueRO.LastReloadTick;
                     track.Land = health.ValueRO.LastLandTick;
                     track.Loot = health.ValueRO.LootSearchSequence;
+                    track.Consumable = health.ValueRO.ConsumableUseSequence;
                 }
                 if (RaidCoughSound.TryEmit(ref track.NextCough, now, health.ValueRO.TacticalCoughSeconds,
                     health.ValueRO.ClashEnabled || m_ClashRegistry != null))

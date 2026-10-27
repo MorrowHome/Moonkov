@@ -450,6 +450,7 @@ namespace Unity.MP_FPS
             brain.NutritionGrenade = health.LastGrenadeShotTick; brain.NutritionReload = health.LastReloadTick;
             brain.NutritionWeapon = health.EquippedWeaponID;
             brain.NutritionUntil = now + (definition.Food ? RaidNutrition.FoodUseSeconds : RaidNutrition.DrinkUseSeconds);
+            RaidConsumableAcoustics.Mark(ref health);
         }
 
         private static void Cancel(DollSingerEnemyBrain brain, double now)

@@ -66,6 +66,9 @@ public static partial class AlienEnemyChecks
             Check(sound.DistanceInfo.SpatialBlend == 1 && sound.DistanceInfo.VolumeDistMax >= RaidLootAcoustics.HearingRange &&
                 sound.Occlusion && sound.LowPassFilter.EnableComponent && sound.MaxVoices > 0,
                 "The world search cue is not positional, bounded and occluded.");
+            Check(library.Cloth && library.Cloth.Occlusion && library.Cloth.DistanceInfo.SpatialBlend == 1 &&
+                library.Cloth.DistanceInfo.VolumeDistMax >= RaidConsumableAcoustics.HearingRange && library.Cloth.MaxVoices > 0,
+                "The world consumable cue is not positional, bounded and occluded.");
             uint last = 7;
             Check(!MoonkovPlayerAudio.NewTick(7, ref last) && MoonkovPlayerAudio.NewTick(8, ref last) &&
                 !MoonkovPlayerAudio.NewTick(8, ref last), "Late joins or repeated snapshots replay search audio.");
@@ -77,7 +80,7 @@ public static partial class AlienEnemyChecks
 
             world = CounterplayWorld("loot acoustics");
             var manager = world.EntityManager;
-            void AlienCase(float distance, bool wall, bool expected)
+            void AlienCase(float distance, bool wall, bool expected, bool consumable = false)
             {
                 Vector3 origin = new Vector3(-12000 + index++ * 100, 1000, -12000);
                 CounterplayBox(holder.transform, "Floor", origin - Vector3.up * .25f, new Vector3(50, .5f, 50));
@@ -88,10 +91,11 @@ public static partial class AlienEnemyChecks
                 if (wall) CounterplayBox(holder.transform, "Loot sound wall", targetOrigin + new Vector3(0, 2, distance / 2), new Vector3(15, 4, .5f));
                 var human = Humanoid(holder.transform, world, targetOrigin + new Vector3(0, 0, distance), false, 40 + index);
                 var health = manager.GetComponentData<PredictedPlayerGhost>(human.LinkedEntity);
-                health.LootSearchSequence = 7; manager.SetComponentData(human.LinkedEntity, health);
+                health.LootSearchSequence = 7; health.ConsumableUseSequence = 7; manager.SetComponentData(human.LinkedEntity, health);
                 Step(alien, 7);
                 Check(alien.Target == Entity.Null, "An old search was replayed when an alien began observing.");
-                RaidLootAcoustics.Mark(ref health); manager.SetComponentData(human.LinkedEntity, health);
+                if (consumable) RaidConsumableAcoustics.Mark(ref health); else RaidLootAcoustics.Mark(ref health);
+                manager.SetComponentData(human.LinkedEntity, health);
                 Step(alien, 7);
                 Check((alien.Target == human.LinkedEntity) == expected, $"Alien loot hearing mismatch: distance={distance}, wall={wall}.");
                 if (expected)
@@ -106,6 +110,10 @@ public static partial class AlienEnemyChecks
             AlienCase(12, false, false);
             AlienCase(6, true, false);
             AlienCase(4, true, true);
+            AlienCase(6, false, true, consumable: true);
+            AlienCase(9, false, false, consumable: true);
+            AlienCase(5, true, false, consumable: true);
+            AlienCase(3, true, true, consumable: true);
 
             Vector3 pmcOrigin = new Vector3(-11000, 1000, -12000);
             var humanTarget = Humanoid(holder.transform, world, pmcOrigin + new Vector3(0, 0, 6), false, 150);
@@ -140,6 +148,17 @@ public static partial class AlienEnemyChecks
                 Object.DestroyImmediate(wall); Physics.SyncTransforms();
                 collect.Invoke(ai, new object[] { 10.2d });
                 Check(((IList)events.GetValue(ai)).Count == 0, "An unchanged search sequence produced repeated events.");
+                health = manager.GetComponentData<PredictedPlayerGhost>(humanTarget.LinkedEntity);
+                RaidConsumableAcoustics.Mark(ref health); manager.SetComponentData(humanTarget.LinkedEntity, health);
+                collect.Invoke(ai, new object[] { 10.3d });
+                emitted = (IList)events.GetValue(ai);
+                Check(emitted.Count == 1 && Mathf.Approximately((float)emitted[0].GetType().GetField("Range").GetValue(emitted[0]),
+                    RaidConsumableAcoustics.HearingRange), "PMC did not collect the bounded consumable sound.");
+                listener = Brain(); sense.Invoke(ai, new object[] { listener, observer.transform, pmcOrigin + Vector3.up * 1.4f, 0f, 10.3d });
+                Check(listener.Target == humanTarget.LinkedEntity && !listener.Visible && !listener.Contacts[humanTarget.LinkedEntity].Confirmed,
+                    "PMC failed to investigate unseen consumable use as an uncertain clue.");
+                collect.Invoke(ai, new object[] { 10.4d });
+                Check(((IList)events.GetValue(ai)).Count == 0, "An unchanged consumable sequence produced repeated events.");
 
                 var mapObject = new GameObject("Temporary loot objective map"); mapObject.transform.SetParent(holder.transform); mapObject.SetActive(false);
                 var map = mapObject.AddComponent<MoonRaidMap>();

@@ -43,13 +43,14 @@ public static class PmcNutritionChecks
         string waterId = water.Id, rationId = inventory.Items.First(item => item.Code == "ration").Id;
         int version = inventory.Version;
         PmcNutrition.Advance(brain, ref health, Vector3.zero, true, 10);
-        Check(brain.NutritionUntil == 12 && brain.NutritionItemId == waterId && inventory.Version == version &&
+        Check(brain.NutritionUntil == 12 && brain.NutritionItemId == waterId && health.ConsumableUseSequence == 1 && inventory.Version == version &&
             inventory.Find(waterId) != null && Near(health.Hydration, 34), "starting a drink does not consume or restore early");
         Check(!PmcResourceActions.SafeWindow(brain, health, false, true, 10) &&
             PmcResourceActions.SafeWindow(brain, health, false, true, 10, continuingNutrition: true),
             "other supply actions cannot overlap an ongoing drink");
         PmcNutrition.Advance(brain, ref health, Vector3.zero, true, 11.9);
-        Check(inventory.Find(waterId) != null && Near(health.Hydration, 34), "the full drinking time is required");
+        Check(inventory.Find(waterId) != null && Near(health.Hydration, 34) && health.ConsumableUseSequence == 1,
+            "the full drinking time is required without repeating the sound");
         PmcNutrition.Advance(brain, ref health, Vector3.zero, true, 12);
         Check(inventory.Find(waterId) == null && inventory.Version == version + 1 && Near(health.Hydration, 84) &&
             brain.NutritionUntil == 0, "completion consumes the real water and applies its actual effect");
@@ -57,7 +58,8 @@ public static class PmcNutritionChecks
         Check(inventory.Version == version + 1, "a completed drink cannot be replayed");
 
         PmcNutrition.Advance(brain, ref health, Vector3.zero, true, 13);
-        Check(brain.NutritionUntil == 16 && brain.NutritionItemId == rationId, "a ration uses the normal food duration");
+        Check(brain.NutritionUntil == 16 && brain.NutritionItemId == rationId && health.ConsumableUseSequence == 2,
+            "a ration uses the normal food duration and emits one new sound");
         PmcNutrition.Advance(brain, ref health, Vector3.right * .75f, true, 13.5);
         Check(brain.NutritionUntil == 16 && inventory.Find(rationId) != null, "the player's exact movement boundary is permitted");
         PmcNutrition.Advance(brain, ref health, Vector3.right * .751f, true, 14);
@@ -175,6 +177,15 @@ public static class PmcNutritionChecks
         inventory = PocketFixture(); cache = LootFixture("ration");
         Check(PmcLootRules.TakeAvailable(inventory, cache) == 1 && inventory.Count("data_drive", true) == 1 &&
             cache.Count("ration") == 1, "tutorial and other callers retain their existing loot priority");
+        var wrapped = new PredictedPlayerGhost { ConsumableUseSequence = uint.MaxValue };
+        RaidConsumableAcoustics.Mark(ref wrapped); uint previous = uint.MaxValue;
+        Check(wrapped.ConsumableUseSequence == 1 && MoonkovPlayerAudio.NewTick(wrapped.ConsumableUseSequence, ref previous) &&
+            !MoonkovPlayerAudio.NewTick(wrapped.ConsumableUseSequence, ref previous), "wrapped or replayed sound sequences behave correctly");
+        var silent = new PredictedPlayerGhost(); RaidHealth.Initialize(ref silent);
+        var idle = (DollSingerEnemyBrain)FormatterServices.GetUninitializedObject(typeof(DollSingerEnemyBrain));
+        idle.Inventory = InventoryGraph.Create(false);
+        PmcNutrition.Advance(idle, ref silent, Vector3.zero, true, 1);
+        Check(silent.ConsumableUseSequence == 0 && idle.NutritionUntil == 0, "a rejected use produces no sound");
         return "PASS " + s_Checks + " PMC food, water and interruption checks";
     }
 

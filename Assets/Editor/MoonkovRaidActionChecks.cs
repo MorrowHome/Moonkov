@@ -281,17 +281,21 @@ public static class MoonkovRaidActionChecks
         world.SetTime(new TimeData(1,.02f));
         Request(world,connection,new RaidConsumableUseRpc {RaidId=7,RequestId=1,ExpectedVersion=version,ItemId=food.Id});
         Process(world,handle,"HandleInventoryRequests");
-        Check(!inventory.ActionPending && inventory.Graph.Count("ration",true)==2,"Reloading started food RPC");
+        Check(!inventory.ActionPending && inventory.Graph.Count("ration",true)==2 &&
+            em.GetComponentData<PredictedPlayerGhost>(player).ConsumableUseSequence==0,"Reloading started food RPC or produced a sound");
         health.ControllerState.IsReloadingState=false;em.SetComponentData(player,health);
         Request(world,connection,new RaidConsumableUseRpc {RaidId=6,RequestId=2,ExpectedVersion=version,ItemId=food.Id});
         Process(world,handle,"HandleInventoryRequests");
-        Check(!inventory.ActionPending && inventory.Graph.Count("ration",true)==2,"Wrong raid started food action");
+        Check(!inventory.ActionPending && inventory.Graph.Count("ration",true)==2 &&
+            em.GetComponentData<PredictedPlayerGhost>(player).ConsumableUseSequence==0,"Wrong raid started food action or produced a sound");
         var use=new RaidConsumableUseRpc {RaidId=7,RequestId=3,ExpectedVersion=version,ItemId=food.Id};
         Request(world,connection,use);Process(world,handle,"HandleInventoryRequests");
-        Check(inventory.ActionPending && inventory.MedicalIsConsumable && inventory.Graph.Count("ration",true)==2,"Food RPC committed early");
+        Check(inventory.ActionPending && inventory.MedicalIsConsumable && inventory.Graph.Count("ration",true)==2 &&
+            em.GetComponentData<PredictedPlayerGhost>(player).ConsumableUseSequence==1,"Food RPC committed early or missed its sound");
         Request(world,connection,use);Process(world,handle,"HandleInventoryRequests");
         Refresh(world,handle,connection,3.99);
-        Check(inventory.ActionPending && em.GetComponentData<PredictedPlayerGhost>(player).Energy==40,"Food bypassed server time or replayed");
+        Check(inventory.ActionPending && em.GetComponentData<PredictedPlayerGhost>(player).Energy==40 &&
+            em.GetComponentData<PredictedPlayerGhost>(player).ConsumableUseSequence==1,"Food bypassed server time or replayed its sound");
         Refresh(world,handle,connection,4);
         Check(!inventory.ActionPending && inventory.Graph.Count("ration",true)==1 && em.GetComponentData<PredictedPlayerGhost>(player).Energy==85,"Food did not commit exactly once");
         Request(world,connection,use);Process(world,handle,"HandleInventoryRequests");

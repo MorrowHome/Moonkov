@@ -12,4 +12,15 @@ namespace Unity.MP_FPS
             if (player.LootSearchSequence == 0) player.LootSearchSequence = 1;
         }
     }
+
+    // A real food or drink action produces a short, positional equipment sound.
+    public static class RaidConsumableAcoustics
+    {
+        public const float HearingRange = 8f;
+        public static void Mark(ref PredictedPlayerGhost player)
+        {
+            player.ConsumableUseSequence = unchecked(player.ConsumableUseSequence + 1);
+            if (player.ConsumableUseSequence == 0) player.ConsumableUseSequence = 1;
+        }
+    }
 }

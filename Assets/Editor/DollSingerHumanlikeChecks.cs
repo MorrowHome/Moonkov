@@ -84,14 +84,14 @@ public static class DollSingerHumanlikeChecks
         var health = Health(); PmcProtectionLoadout.Initialize(ref health, brain.Inventory); health.Energy = 20;
         string ration = brain.Inventory.Items.First(item => item.Code == "ration").Id;
         tick(brain, ref health, Vector3.zero, 10);
-        Require(brain.NutritionUntil == 13 && brain.Inventory.Find(ration) != null,
+        Require(brain.NutritionUntil == 13 && brain.Inventory.Find(ration) != null && health.ConsumableUseSequence == 1,
             "A hungry safe PMC did not start its timed food action.");
         brain.Visible = true;
         tick(brain, ref health, Vector3.zero, 11);
-        Require(brain.NutritionUntil == 0 && brain.Inventory.Find(ration) != null,
+        Require(brain.NutritionUntil == 0 && brain.Inventory.Find(ration) != null && health.ConsumableUseSequence == 1,
             "A new visible threat did not interrupt food without consuming it.");
         brain.Visible = false; tick(brain, ref health, Vector3.zero, 12);
-        Require(brain.NutritionUntil == 15, "A safe PMC did not resume its food action.");
+        Require(brain.NutritionUntil == 15 && health.ConsumableUseSequence == 2, "A safe PMC did not resume its food action with a new sound.");
         health.Oxygen = 0;
         tick(brain, ref health, Vector3.zero, 13);
         Require(brain.NutritionUntil == 0 && brain.Inventory.Find(ration) != null,
