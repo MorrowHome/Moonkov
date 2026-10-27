@@ -100,6 +100,53 @@ namespace Unity.MP_FPS
         }
     }
 
+    // A fallback entry is not a real extraction point. Keep a raider present
+    // while a nearby human could watch it disappear from the map.
+    public static class PmcLocalExitRules
+    {
+        public const float NearbyRange = 30, SightRange = 100;
+        private static int s_WorldMask = int.MinValue;
+        public static bool Nearby(Vector3 player, Vector3 actor) => !PmcGrenadeRules.Finite(player) ||
+            !PmcGrenadeRules.Finite(actor) || (player - actor).sqrMagnitude <= NearbyRange * NearbyRange;
+
+        public static bool InSightCone(Vector3 eye, Vector3 forward, Vector3 actor)
+        {
+            if (!PmcGrenadeRules.Finite(eye) || !PmcGrenadeRules.Finite(actor)) return true;
+            Vector3 delta = actor + Vector3.up - eye;
+            if (!PmcGrenadeRules.Finite(delta)) return true;
+            if (delta.sqrMagnitude > SightRange * SightRange) return false;
+            if (!PmcGrenadeRules.Finite(forward) || forward.sqrMagnitude < .01f || delta.sqrMagnitude < .001f) return true;
+            return Vector3.Dot(forward.normalized, delta.normalized) >= .5f;
+        }
+
+        public static bool Observed(PhysicsScene scene, Vector3 actor, IReadOnlyList<RaidSpawnObserver> observers)
+        {
+            if (!scene.IsValid() || observers == null || !PmcGrenadeRules.Finite(actor)) return true;
+            if (s_WorldMask == int.MinValue) s_WorldMask = LayerMask.GetMask("Default", "Ground");
+            foreach (var observer in observers)
+            {
+                if (!observer.CheckVisibility) continue;
+                if (Nearby(observer.Position, actor)) return true;
+                Vector3 eye = observer.Position + Vector3.up * 1.6f;
+                if (!InSightCone(eye, observer.Forward, actor)) continue;
+                bool Clear(Vector3 point)
+                {
+                    Vector3 delta = point - eye;
+                    return delta.sqrMagnitude < .001f || !scene.Raycast(eye, delta.normalized, out _, delta.magnitude, s_WorldMask, QueryTriggerInteraction.Ignore);
+                }
+                if (Clear(actor + Vector3.up * .7f) || Clear(actor + Vector3.up * 1.5f)) return true;
+            }
+            return false;
+        }
+
+        public static bool Advance(ref float progress, bool inExit, bool localExit, bool observed, float dt, float duration)
+        {
+            if (!inExit || localExit && observed) { progress = 0; return false; }
+            if (float.IsFinite(dt) && dt > 0) progress += dt;
+            return float.IsFinite(duration) && duration > 0 && progress >= duration;
+        }
+    }
+
     public static class PmcHazardRules
     {
         public static bool Active(bool clash, TacticalServerWorld.Status status, TacticalWorldPhase phase, double areaUntil,
@@ -358,6 +405,8 @@ namespace Unity.MP_FPS
         public PmcMedicalFailure MedicalFailure;
         public Vector3 Goal, LastSeen, ObservedVelocity, ProgressPosition, CoverPosition, PeekPosition, TacticalGoal;
         public Vector3 RaidExit;
+        public bool LocalRaidExit, LocalExitObserved;
+        public double NextLocalExitCheck;
         public Vector3 AimOffset = Vector3.up * 1.15f;
         public float Yaw, Pitch, LastHealth = 100, Suppression, Confidence, Aggression, Caution, AimErrorX, AimErrorY;
         public float ExtractionProgress, ActionScore;

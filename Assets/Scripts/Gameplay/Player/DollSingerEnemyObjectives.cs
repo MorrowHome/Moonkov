@@ -2,8 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Entities;
+using Unity.NetCode;
+using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.SceneManagement;
 using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS
@@ -180,6 +183,27 @@ namespace Unity.MP_FPS
 
     public partial class DollSingerEnemySystem
     {
+        private readonly List<RaidSpawnObserver> m_LocalExitObservers = new List<RaidSpawnObserver>();
+
+        private bool LocalExitObserved(Vector3 position, PhysicsScene scene)
+        {
+            m_LocalExitObservers.Clear();
+            foreach (var target in m_Targets)
+            {
+                if (target.Alien || !target.Root || !EntityManager.Exists(target.Entity) ||
+                    !EntityManager.HasComponent<GhostOwner>(target.Entity) || !EntityManager.HasComponent<PredictedPlayerGhost>(target.Entity) ||
+                    !EntityManager.HasComponent<LocalTransform>(target.Entity) || target.Root.gameObject.scene.GetPhysicsScene() != scene ||
+                    EntityManager.GetComponentData<GhostOwner>(target.Entity).NetworkId <= 0) continue;
+                var health = EntityManager.GetComponentData<PredictedPlayerGhost>(target.Entity);
+                if (health.CurrentHealth <= 0) continue;
+                var view = health.ControllerState;
+                var look = new Unity.Mathematics.float2(view.YawDegrees, view.PitchDegrees) + view.FreeLookOffset;
+                m_LocalExitObservers.Add(new RaidSpawnObserver { Position = EntityManager.GetComponentData<LocalTransform>(target.Entity).Position,
+                    Forward = Quaternion.Euler(look.y, look.x, 0) * Vector3.forward, CheckVisibility = true });
+            }
+            return PmcLocalExitRules.Observed(scene, position, m_LocalExitObservers);
+        }
+
         private static void AbandonCache(DollSingerEnemyBrain brain)
         {
             if (brain.Cache < 0) return;
@@ -307,8 +331,14 @@ namespace Unity.MP_FPS
                 HorizontalDistance(position, brain.RaidExit) <= map.ExtractionRadius &&
                 Mathf.Abs(position.y - brain.RaidExit.y) <= 3 && !brain.Visible &&
                 now - brain.LastDamage > 5 && brain.Suppression < .25f;
-            brain.ExtractionProgress = extracting ? brain.ExtractionProgress + dt : 0;
-            if (brain.ExtractionProgress >= map.ExtractionSeconds)
+            if (extracting && brain.LocalRaidExit && (now >= brain.NextLocalExitCheck ||
+                brain.ExtractionProgress + dt >= map.ExtractionSeconds))
+            {
+                brain.LocalExitObserved = LocalExitObserved(position, map.gameObject.scene.GetPhysicsScene());
+                brain.NextLocalExitCheck = now + .25;
+            }
+            if (PmcLocalExitRules.Advance(ref brain.ExtractionProgress, extracting, brain.LocalRaidExit,
+                brain.LocalExitObserved, dt, map.ExtractionSeconds))
             {
                 brain.Extracted = true;
                 Debug.Log($"[DollSinger PMC {brain.Seed}] Extracted with {brain.Inventory.Count("dust")} dust, " +

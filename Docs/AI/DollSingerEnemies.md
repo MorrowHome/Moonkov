@@ -83,6 +83,10 @@ loot out of this raid; it is not credited to any human account or an NPC databas
 A killed PMC drops its real remaining inventory. Permanent actor removal retires
 its leaderboard entry after queued kill-feed messages have resolved their names.
 
+地图局部导航与正式出口不连通时，普通人形敌人可返回自己的出生入口离场。入口不是玩家出口。30 米内有存活玩家时，敌人不会从这里消失；30 至 100 米内的玩家面向敌人且头部或身体无遮挡时也会阻止离场。离场前再次检查，受到观察会重置原有计时。正式出口不受这条限制。
+
+这套检查按服务端角色朝向和场景遮挡近似判断，每名等待离场的敌人最多每 0.25 秒检查一次，完成前再检查一次。100 米外的高倍率观察仍可能看到消失。10 项隔离规则和编译通过；实际视角、遮挡、导航及性能夹具尚未在编辑器执行。入口不是正式地图出口的替代方案。
+
 普通搜打撤的人形敌人会根据已看见的目标距离选择武器：11 米内优先使用有弹霰弹枪，18 米外优先使用有弹步枪。中间距离保持当前武器；两次战术切换至少间隔 3 秒。切换时不同时开火或充能，换弹、切枪、治疗和搜索期间不会启动这次切换。赏金模式不使用这套规则。
 
 武器选择的 14 项生产规则检查通过，覆盖距离边界、空弹、切枪/充能、死亡和武器槽位置。游戏与编辑器程序集隔离编译通过。真实武器配置和敌人输入夹具已补充，尚未在编辑器运行；近距离伤害、动作和敌人难度仍需实战校准。
@@ -261,8 +265,10 @@ raid duration measured from the first living human; late joiners do not reset th
 shared population clock. No new actors arrive while no living humans remain.
 
 Placement first tries authored anchors, then randomized nearby positions. Candidates
-must be on the runtime NavMesh, have physical standing space and a complete path to
-the extraction area. They avoid the exit, other actors by eight metres, and living
+must be on the runtime NavMesh and have physical standing space. A complete path to
+an extraction area is preferred; when local activation is enabled, an isolated basin
+can instead use a walkable local entry as the guarded fallback exit described above.
+Candidates avoid the exit, other actors by eight metres, and living
 humans by 30 metres; visible positions within 80 metres are also rejected using the
 server controller look direction, including free look. Unsafe or unavailable locations defer spawning rather
 than consuming initial/reinforcement slots. Map changes and system shutdown remove

@@ -221,7 +221,7 @@ namespace Unity.MP_FPS
             return false;
         }
 
-        private Vector3 SelectRaidExit(MoonRaidMap map, Vector3 position)
+        private Vector3 SelectRaidExit(MoonRaidMap map, Vector3 position, out bool localExit)
         {
             Vector3 chosen = position; float nearest = float.MaxValue;
             for (int i = 0; i < map.ExtractionCount; i++)
@@ -233,6 +233,7 @@ namespace Unity.MP_FPS
                     m_SpawnPath.status != NavMeshPathStatus.PathComplete) continue;
                 chosen = candidate; nearest = distance;
             }
+            localExit = nearest == float.MaxValue;
             return chosen;
         }
 
@@ -277,7 +278,8 @@ namespace Unity.MP_FPS
                 PmcProtectionLoadout.Initialize(ref healthState, inventory);
                 EntityManager.SetComponentData(player, healthState);
             }
-            var brain = new DollSingerEnemyBrain { Inventory = inventory, RaidExit = SelectRaidExit(map, position),
+            Vector3 raidExit = SelectRaidExit(map, position, out bool localExit);
+            var brain = new DollSingerEnemyBrain { Inventory = inventory, RaidExit = raidExit, LocalRaidExit = localExit,
                 Seed = serial, Yaw = yaw, Goal = position, ProgressPosition = position, SpawnTime = now,
                 NextSense = now + (serial % 3) * .033, NextDecision = now + (serial % 3) * .067,
                 Aggression = .4f + ((serial - 1) % 3) * .2f, Caution = .8f - ((serial - 1) % 3) * .2f,
