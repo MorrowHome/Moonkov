@@ -43,6 +43,7 @@ public static class DollSingerHumanlikeChecks
             CheckCombatPressure(system, map);
             CheckUnknownAttack(system, map);
             CheckBleedTreatment(system, map);
+            CheckFireTreatment(system, map);
             CheckReturnFire(system, map, world);
             CheckReloadAvailability(system, map);
             CheckBackpackMedical(system, map);
@@ -520,7 +521,9 @@ public static class DollSingerHumanlikeChecks
         var brain = Brain(); var health = Health();
         brain.SelfStatus = new TacticalServerWorld.Status { Bleed = 40 };
         brain.BleedOnlyDamage = true; brain.LastHealth = health.CurrentHealth;
+        var beforeStatus = health;
         RaidHealth.Damage(ref health, BodyPart.LeftArm, 1, 1);
+        PmcStatusDamage.Record(brain.SelfStatus, beforeStatus, health);
         Call(system, "UpdateCombatPressure", new object[] { brain, health, 10d, .1f });
         Require(brain.LastDamage < 0 && brain.Suppression == 0,
             "Ongoing blood loss was mistaken for a new attack.");
@@ -529,15 +532,17 @@ public static class DollSingerHumanlikeChecks
             "An unarmed wound did not prompt safe self-treatment without medicine.");
         brain.Action = PmcAction.Heal;
         Heal(system, brain, ref health, 10);
-        Require(brain.HealBleeding && brain.HealUntil == 13 && brain.SelfStatus.Bleed == 40,
+        Require(brain.HealStatus && brain.HealUntil == 13 && brain.SelfStatus.Bleed == 40,
             "Stopping a bleed changed status before its timer completed.");
+        beforeStatus = health;
         RaidHealth.Damage(ref health, BodyPart.LeftArm, 1, 2);
+        PmcStatusDamage.Record(brain.SelfStatus, beforeStatus, health);
         Call(system, "UpdateCombatPressure", new object[] { brain, health, 12.9d, .1f });
         Heal(system, brain, ref health, 12.9);
-        Require(brain.HealBleeding && brain.SelfStatus.Bleed == 40,
+        Require(brain.HealStatus && brain.SelfStatus.Bleed == 40,
             "Own blood loss interrupted a safe stop-bleeding action.");
         Heal(system, brain, ref health, 13);
-        Require(!brain.HealBleeding && brain.HealUntil == 0 && brain.SelfStatus.Bleed == 0,
+        Require(!brain.HealStatus && brain.HealUntil == 0 && brain.SelfStatus.Bleed == 0,
             "The PMC did not finish stopping the bleed once.");
 
         brain.SelfStatus.Bleed = 60; brain.NextHeal = 0; brain.LastDamage = -100; brain.Action = PmcAction.Heal;
@@ -547,6 +552,47 @@ public static class DollSingerHumanlikeChecks
         Heal(system, brain, ref health, 21);
         Require(brain.LastDamage == 21 && brain.HealUntil == 0 && brain.SelfStatus.Bleed == 60,
             "A fresh bullet did not interrupt the PMC's stop-bleeding action.");
+    }
+
+    private static void CheckFireTreatment(DollSingerEnemySystem system, MoonRaidMap map)
+    {
+        var brain = Brain(); var health = Health();
+        brain.SelfStatus = new TacticalServerWorld.Status { Fire = 30, Bleed = 30 };
+        brain.LastHealth = health.CurrentHealth;
+        var before = health;
+        RaidHealth.CombatDamage(ref health, BodyPart.LeftArm, 1, 1, RaidDamageKind.Fire);
+        PmcStatusDamage.Record(brain.SelfStatus, before, health);
+        Call(system, "UpdateCombatPressure", new object[] { brain, health, 10d, .1f });
+        Require(brain.LastDamage < 0 && Decide(system, brain, health, map, 10).action == PmcAction.Heal,
+            "A safe burning PMC could not choose self-treatment.");
+        brain.Action = PmcAction.Heal;
+        Heal(system, brain, ref health, 10);
+        Require(brain.HealStatus && brain.HealUntil == 13 && brain.SelfStatus.Fire == 30 && brain.SelfStatus.Bleed == 30,
+            "Self-treatment removed fire or bleeding before the timer finished.");
+        before = health;
+        RaidHealth.CombatDamage(ref health, BodyPart.LeftArm, 1, 2, RaidDamageKind.Fire);
+        PmcStatusDamage.Record(brain.SelfStatus, before, health);
+        Call(system, "UpdateCombatPressure", new object[] { brain, health, 12d, .1f });
+        Heal(system, brain, ref health, 12);
+        Require(brain.HealStatus && brain.SelfStatus.Fire == 30 && brain.SelfStatus.Bleed == 30,
+            "Own continuing fire stopped self-treatment.");
+        Heal(system, brain, ref health, 13);
+        Require(!brain.HealStatus && brain.SelfStatus.Fire == 0 && brain.SelfStatus.Bleed == 0,
+            "Completed self-treatment did not clear both statuses.");
+
+        brain.SelfStatus.Fire = 50; brain.NextHeal = 0; brain.LastDamage = -100; brain.Action = PmcAction.Heal;
+        Heal(system, brain, ref health, 20);
+        before = health;
+        RaidHealth.CombatDamage(ref health, BodyPart.LeftArm, 1, 3, RaidDamageKind.Fire);
+        PmcStatusDamage.Record(brain.SelfStatus, before, health);
+        RaidHealth.CombatDamage(ref health, BodyPart.RightArm, 5, 3, RaidDamageKind.Bullet);
+        Call(system, "UpdateCombatPressure", new object[] { brain, health, 21d, .1f });
+        Heal(system, brain, ref health, 21);
+        Require(brain.HealUntil == 0 && brain.SelfStatus.Fire == 50 && brain.LastDamage == 21,
+            "A same-tick bullet did not interrupt fire self-treatment.");
+        brain.FireDanger = true; brain.LastDamage = -100; brain.NextHeal = 0; brain.Action = PmcAction.Heal;
+        Heal(system, brain, ref health, 22);
+        Require(brain.HealUntil == 0, "The PMC tried to extinguish itself inside active fire.");
     }
 
     private static void CheckReturnFire(DollSingerEnemySystem system, MoonRaidMap map, World world)

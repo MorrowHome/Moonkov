@@ -91,6 +91,42 @@ namespace Unity.MP_FPS
             double.IsFinite(areaUntil) && areaUntil > now;
     }
 
+    // Returns true when the shared status action consumed this update. The
+    // caller supplies its real safety/position check and otherwise handles medicine.
+    public static class PmcSelfTreatment
+    {
+        public static bool Advance(DollSingerEnemyBrain brain, bool eligible, bool bleeding, bool burning, double now)
+        {
+            if (!eligible)
+            {
+                if (brain.HealUntil > 0) brain.NextHeal = now + .75;
+                brain.HealUntil = 0; brain.HealItemId = null; brain.HealStatus = false;
+                return true;
+            }
+            if (brain.HealUntil > 0 && !brain.HealStatus && (bleeding || burning))
+            {
+                brain.HealUntil = 0; brain.HealItemId = null;
+                brain.NextHeal = now + .75; brain.CommitUntil = brain.NextDecision = 0;
+                return true;
+            }
+            if (brain.HealUntil <= 0 && (bleeding || burning))
+            {
+                if (now < brain.NextHeal) return true;
+                brain.HealStatus = true; brain.HealItemId = null;
+                brain.HealUntil = now + TacticalItemRules.StopBleedSeconds;
+                brain.CommitUntil = brain.HealUntil;
+                return true;
+            }
+            if (!brain.HealStatus) return false;
+            if ((bleeding || burning) && now < brain.HealUntil) return true;
+            if (bleeding) brain.SelfStatus.Bleed = 0;
+            if (burning) brain.SelfStatus.Fire = 0;
+            brain.HealUntil = 0; brain.HealStatus = false;
+            brain.NextHeal = now + .75; brain.CommitUntil = brain.NextDecision = 0;
+            return true;
+        }
+    }
+
     // A minority of ordinary raid actors carry the same physical shield item as
     // players. Tutorial and bounty encounters retain their existing loadouts.
     public static class PmcProtectionLoadout
@@ -299,7 +335,10 @@ namespace Unity.MP_FPS
         public uint IntentSequence;
         public uint LastShieldHitSequence, LastImpactTick;
         public TacticalServerWorld.Status SelfStatus;
-        public bool BleedOnlyDamage, HealBleeding;
+        public TacticalServerWorld.Status ObservedSelfStatus;
+        public double LastStatusHealthDamage;
+        public ulong LastStatusShieldHits;
+        public bool BleedOnlyDamage, HealStatus;
         public ClashBotGoal Mission;
         public bool Interacting, MissionUrgent;
         public double NextSense, NextPath, LastSeenTime = -100, VisibleSince, NextProgress, NextDecision, CommitUntil;

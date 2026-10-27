@@ -56,6 +56,53 @@ public static class PmcCombatPressureChecks
         RaidHealth.Damage(ref health, BodyPart.LeftLeg, 2, 6);
         PmcCombatPressure.Update(brain, health, 17, 0);
         Check(brain.LastDamage == 17 && brain.NextDecision == 0, "other external injury keeps its existing response");
+
+        var statusBrain = (DollSingerEnemyBrain)System.Runtime.Serialization.FormatterServices.GetUninitializedObject(typeof(DollSingerEnemyBrain));
+        var statusHealth = new PredictedPlayerGhost(); RaidHealth.Initialize(ref statusHealth);
+        statusHealth.ShieldEquipped = true; statusHealth.ShieldCharge = 100;
+        statusBrain.SelfStatus = new TacticalServerWorld.Status { Fire = 30, Bleed = 30 };
+        statusBrain.LastHealth = statusHealth.CurrentHealth; statusBrain.LastDamage = -100; statusBrain.NextDecision = 100;
+        var beforeStatus = statusHealth;
+        RaidHealth.CombatDamage(ref statusHealth, BodyPart.LeftArm, 2, 20, RaidDamageKind.Fire);
+        PmcStatusDamage.Record(statusBrain.SelfStatus, beforeStatus, statusHealth);
+        beforeStatus = statusHealth;
+        RaidHealth.CombatDamage(ref statusHealth, BodyPart.LeftArm, 1, 20, RaidDamageKind.Bleed);
+        PmcStatusDamage.Record(statusBrain.SelfStatus, beforeStatus, statusHealth);
+        PmcCombatPressure.Update(statusBrain, statusHealth, 20, 0);
+        Check(statusBrain.LastDamage == -100 && statusBrain.NextDecision == 100 && statusBrain.Suppression == 0,
+            "own fire shield hits and blood loss are not repeated attacks");
+
+        beforeStatus = statusHealth;
+        RaidHealth.CombatDamage(ref statusHealth, BodyPart.LeftArm, 2, 21, RaidDamageKind.Fire);
+        PmcStatusDamage.Record(statusBrain.SelfStatus, beforeStatus, statusHealth);
+        RaidHealth.CombatDamage(ref statusHealth, BodyPart.Chest, 5, 21, RaidDamageKind.Bullet);
+        PmcCombatPressure.Update(statusBrain, statusHealth, 21, 0);
+        Check(statusBrain.LastDamage == 21 && statusBrain.NextDecision == 0,
+            "a shielded bullet in the same update as fire remains a new attack");
+        statusBrain.NextDecision = 100;
+        beforeStatus = statusHealth;
+        RaidHealth.CombatDamage(ref statusHealth, BodyPart.LeftArm, 1, 22, RaidDamageKind.Bleed);
+        PmcStatusDamage.Record(statusBrain.SelfStatus, beforeStatus, statusHealth);
+        RaidHealth.Damage(ref statusHealth, BodyPart.RightLeg, 2, 22);
+        PmcCombatPressure.Update(statusBrain, statusHealth, 22, 0);
+        Check(statusBrain.LastDamage == 22 && statusBrain.NextDecision == 0,
+            "a new non-combat injury during blood loss is not hidden by status damage");
+        statusBrain.NextDecision = 100;
+        beforeStatus = statusHealth;
+        RaidHealth.CombatDamage(ref statusHealth, BodyPart.LeftArm, 1, 23, RaidDamageKind.Fire);
+        PmcStatusDamage.Record(statusBrain.SelfStatus, beforeStatus, statusHealth);
+        RaidHealth.CombatDamage(ref statusHealth, BodyPart.Chest, 2, 23, RaidDamageKind.Poison);
+        PmcCombatPressure.Update(statusBrain, statusHealth, 23, 0);
+        Check(statusBrain.LastDamage == 23 && statusBrain.NextDecision == 0,
+            "poison damage continues to block self-treatment");
+        statusBrain.NextDecision = 100;
+        statusBrain.SelfStatus = new TacticalServerWorld.Status { Bleed = 50 };
+        beforeStatus = statusHealth;
+        RaidHealth.CombatDamage(ref statusHealth, BodyPart.LeftArm, 1, 24, RaidDamageKind.Bleed);
+        PmcStatusDamage.Record(statusBrain.SelfStatus, beforeStatus, statusHealth);
+        PmcCombatPressure.Update(statusBrain, statusHealth, 24, 0);
+        Check(statusBrain.LastDamage == 23 && statusBrain.NextDecision == 100,
+            "a replaced status record starts its own accounting without fake damage");
         return "PASS " + s_Checks + " PMC combat pressure checks";
     }
 }

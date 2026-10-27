@@ -85,6 +85,24 @@ public static class TacticalItemsAuthorityChecks
             Check(Math.Abs(em.GetComponentData<PredictedPlayerGhost>(clashNpc).TacticalSprintStamina-55)<.001f,
                 "Raid PMC stamina changed a bounty bot");
             em.DestroyEntity(npc);em.DestroyEntity(clashNpc);
+            var burningNpc=em.CreateEntity(typeof(DollSingerEnemy),typeof(Simulate),typeof(LocalTransform),typeof(PredictedPlayerGhost),typeof(GhostOwner));
+            var burningHealth=new PredictedPlayerGhost();RaidHealth.Initialize(ref burningHealth);
+            burningHealth.ShieldEquipped=true;burningHealth.ShieldCharge=100;
+            em.SetComponentData(burningNpc,burningHealth);em.SetComponentData(burningNpc,LocalTransform.Identity);
+            em.SetComponentData(burningNpc,new GhostOwner {NetworkId=-1000});
+            var burningStatus=new TacticalServerWorld.Status {Fire=now+20,Bleed=now+20};Data().Statuses[burningNpc]=burningStatus;
+            var burningBrain=new DollSingerEnemyBrain {SelfStatus=burningStatus,LastHealth=burningHealth.CurrentHealth,LastDamage=-100,NextDecision=100};
+            Tick();burningHealth=em.GetComponentData<PredictedPlayerGhost>(burningNpc);
+            PmcCombatPressure.Update(burningBrain,burningHealth,now,0);
+            Check(burningStatus.PmcStatusShieldHits==1 && burningStatus.PmcStatusHealthDamage>0 &&
+                burningBrain.LastDamage==-100 && burningBrain.NextDecision==100,
+                "Real server fire and bleed did not record their NPC damage separately");
+            BountyClashDamage.Apply(world,burningNpc,8,BodyPart.Chest,5,tick,RaidDamageKind.Bullet);
+            Tick();burningHealth=em.GetComponentData<PredictedPlayerGhost>(burningNpc);
+            PmcCombatPressure.Update(burningBrain,burningHealth,now,0);
+            Check(burningBrain.LastDamage==now && burningBrain.NextDecision==0,
+                "An actual shielded bullet during burning was mistaken for status damage");
+            em.DestroyEntity(burningNpc);
             // Real damage enters the same server status and self-treatment path as existing traps.
             Clear();
             BountyClashDamage.Apply(world,player,8,BodyPart.LeftArm,12,tick,RaidDamageKind.Bullet);Tick();

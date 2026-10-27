@@ -37,6 +37,10 @@ namespace Unity.MP_FPS
             public TacticalSprintState Sprint;public float3 SprintPosition;public bool SprintPositionKnown;
             public int FireOwner,PoisonOwner,BleedOwner;
             public ClashDamageSource FireSource,PoisonSource,BleedSource;
+            // Server-only accounting of this NPC's own fire/bleed ticks. It lets
+            // self-treatment distinguish them from new attacks in the same update.
+            public double PmcStatusHealthDamage;
+            public ulong PmcStatusShieldHits;
         }
         public readonly List<Object> Objects=new();
         public readonly Dictionary<Entity,Use> Uses=new();
@@ -457,9 +461,21 @@ namespace Unity.MP_FPS
                 if(!canHurt)continue;
                 bool treating=false;
                 foreach(var pending in world.Uses.Values)if(pending.Player==victim && pending.Action==TacticalItemAction.Extinguish){treating=true;break;}
-                if(status.Fire>now)BountyClashDamage.Apply(state.World,victim,status.FireSource,BodyPart.Auto,8*dt,tick,RaidDamageKind.Fire);
+                bool monitorPmc=(status.Fire>now || status.Bleed>now) && SystemAPI.HasComponent<DollSingerEnemy>(victim) &&
+                    !SystemAPI.HasComponent<ClashBot>(victim);
+                if(status.Fire>now)
+                {
+                    var before=monitorPmc ? SystemAPI.GetComponent<PredictedPlayerGhost>(victim) : default;
+                    BountyClashDamage.Apply(state.World,victim,status.FireSource,BodyPart.Auto,8*dt,tick,RaidDamageKind.Fire);
+                    if(monitorPmc)PmcStatusDamage.Record(status,before,SystemAPI.GetComponent<PredictedPlayerGhost>(victim));
+                }
                 if(status.Poison>now && status.Antidote<=now)BountyClashDamage.Apply(state.World,victim,status.PoisonSource,BodyPart.Auto,6*dt,tick,RaidDamageKind.Poison);
-                if(status.Bleed>now)BountyClashDamage.Apply(state.World,victim,status.BleedSource,BodyPart.Auto,4*dt,tick,RaidDamageKind.Bleed);
+                if(status.Bleed>now)
+                {
+                    var before=monitorPmc ? SystemAPI.GetComponent<PredictedPlayerGhost>(victim) : default;
+                    BountyClashDamage.Apply(state.World,victim,status.BleedSource,BodyPart.Auto,4*dt,tick,RaidDamageKind.Bleed);
+                    if(monitorPmc)PmcStatusDamage.Record(status,before,SystemAPI.GetComponent<PredictedPlayerGhost>(victim));
+                }
                 if(treating && status.Poison<=now)
                 {
                     // Damage still happens. Accept only this operation's known status damage as

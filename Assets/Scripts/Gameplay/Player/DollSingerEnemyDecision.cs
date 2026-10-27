@@ -38,7 +38,8 @@ namespace Unity.MP_FPS
             // A treatable injury requests temporary Retreat below, not permanent raid departure.
             // Keep deliberate departure (spent supplies, exhausted caches, timeout) latched.
             bool bleeding = brain.SelfStatus != null && brain.SelfStatus.Bleed > now;
-            if (!brain.IsClashBot && (exhausted || lowHealth && !bleeding && (!needsHealing || !potentialMedical) ||
+            bool burning = !brain.IsClashBot && brain.SelfStatus != null && brain.SelfStatus.Fire > now;
+            if (!brain.IsClashBot && (exhausted || lowHealth && !bleeding && !burning && (!needsHealing || !potentialMedical) ||
                 brain.LootedCaches >= m_Tuning.DesiredCaches || now - brain.SpawnTime >
                 map.RaidDuration * (m_Tuning.DepartureFraction + (brain.Seed % 3 - 1) * .08f)))
                 brain.Leaving = true;
@@ -95,8 +96,8 @@ namespace Unity.MP_FPS
                 Consider(PmcAction.Reload, health.CurrentAmmo == 0 ? 98 : 76, "replenish the magazine during a safe opening");
             if (canPrepareMedical && medical != null)
                 Consider(PmcAction.Heal, lowHealth ? 108 : 84, "treat an injured body part with carried medicine");
-            if (bleeding && now >= brain.NextHeal && !health.ControllerState.IsReloadingState && SafeToTreat(brain, position, now))
-                Consider(PmcAction.Heal, 110, "stop bleeding during a safe opening");
+            if ((bleeding || burning) && !fireDanger && now >= brain.NextHeal && !handsBusy && SafeToTreat(brain, position, now))
+                Consider(PmcAction.Heal, 110, "stop burning or bleeding during a safe opening");
 
             if (fireDanger) Consider(PmcAction.EvadeFire, 190, "leave the burning area");
             if (grenadeDanger) Consider(PmcAction.EvadeGrenade, 200, "move away from a visible explosive");
@@ -159,42 +160,22 @@ namespace Unity.MP_FPS
         private void AdvanceHealing(DollSingerEnemyBrain brain, ref PredictedPlayerGhost health, Vector3 position, double now)
         {
             bool bleeding = brain.SelfStatus != null && brain.SelfStatus.Bleed > now;
-            if (brain.Action != PmcAction.Heal || !SafeToTreat(brain, position, now) ||
-                (brain.IsClashBot ? health.ControllerState.IsReloadingState : RaidHealth.HandsBusy(health)) ||
-                HorizontalDistance(position, brain.TacticalGoal) > TacticalArrivalDistance ||
-                !bleeding && !NeedsHealing(health))
-            {
-                if (brain.HealUntil > 0) brain.NextHeal = now + .75;
-                brain.HealUntil = 0;
-                brain.HealItemId = null;
-                brain.HealBleeding = false;
-                return;
-            }
+            bool burning = !brain.IsClashBot && brain.SelfStatus != null && brain.SelfStatus.Fire > now;
+            bool eligible = brain.Action == PmcAction.Heal && (!brain.FireDanger || brain.IsClashBot) && SafeToTreat(brain, position, now) &&
+                !(brain.IsClashBot ? health.ControllerState.IsReloadingState : RaidHealth.HandsBusy(health)) &&
+                HorizontalDistance(position, brain.TacticalGoal) <= TacticalArrivalDistance &&
+                (bleeding || burning || NeedsHealing(health));
+            if (PmcSelfTreatment.Advance(brain, eligible, bleeding, burning, now)) return;
             if (brain.HealUntil <= 0)
             {
                 if (now < brain.NextHeal) return;
-                if (bleeding)
-                {
-                    brain.HealBleeding = true; brain.HealItemId = null;
-                    brain.HealUntil = now + TacticalItemRules.StopBleedSeconds;
-                    brain.CommitUntil = brain.HealUntil;
-                    return;
-                }
                 var medical = FindMedical(brain.Inventory);
                 if (medical == null) { brain.NextDecision = 0; return; }
-                brain.HealBleeding = false;
+                brain.HealStatus = false;
                 brain.HealItemId = medical.Id;
                 brain.HealInventoryVersion = brain.Inventory.Version;
                 brain.HealUntil = now + m_Tuning.HealSeconds;
                 brain.CommitUntil = brain.HealUntil;
-                return;
-            }
-            if (brain.HealBleeding)
-            {
-                if (bleeding && now < brain.HealUntil) return;
-                if (bleeding) brain.SelfStatus.Bleed = 0;
-                brain.HealUntil = 0; brain.HealBleeding = false;
-                brain.NextHeal = now + .75; brain.CommitUntil = brain.NextDecision = 0;
                 return;
             }
             if (brain.Inventory.Version != brain.HealInventoryVersion)

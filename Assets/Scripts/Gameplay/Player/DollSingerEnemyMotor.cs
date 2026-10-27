@@ -160,15 +160,28 @@ namespace Unity.MP_FPS
         public static void Update(DollSingerEnemyBrain brain, in PredictedPlayerGhost health, double now, float dt)
         {
             float lost = Mathf.Max(0, brain.LastHealth - health.CurrentHealth);
-            bool shieldHit = health.ShieldHitSequence != brain.LastShieldHitSequence;
+            bool tracked = !brain.IsClashBot && brain.SelfStatus != null;
+            if (brain.ObservedSelfStatus != brain.SelfStatus)
+            {
+                brain.ObservedSelfStatus = brain.SelfStatus;
+                brain.LastStatusHealthDamage = 0;
+                brain.LastStatusShieldHits = 0;
+            }
+            double statusLoss = tracked ? System.Math.Max(0, brain.SelfStatus.PmcStatusHealthDamage - brain.LastStatusHealthDamage) : 0;
+            ulong statusShieldHits = tracked && brain.SelfStatus.PmcStatusShieldHits >= brain.LastStatusShieldHits ?
+                brain.SelfStatus.PmcStatusShieldHits - brain.LastStatusShieldHits : 0;
+            uint allShieldHits = unchecked(health.ShieldHitSequence - brain.LastShieldHitSequence);
+            bool shieldHit = tracked ? allShieldHits > statusShieldHits : allShieldHits != 0;
+            float externalLoss = tracked ? Mathf.Max(0, lost - (float)statusLoss) : (brain.BleedOnlyDamage ? 0 : lost);
             bool impact = health.LastImpactTick != brain.LastImpactTick;
             // The impact event is authoritative even when healing in the same
             // update makes the net health change zero or positive.
-            if (impact || shieldHit || lost > 0 && !brain.BleedOnlyDamage)
+            if (impact || shieldHit || externalLoss > .001f)
             {
                 // Pressure scales with actual injury. Grazes and periodic tissue loss
                 // must not count like repeated half-strength panic impulses.
-                float pressure = Mathf.Clamp01(lost / RaidHealth.Maximum(BodyPart.Chest)) * .6f;
+                float pressureLoss = !tracked && impact ? lost : externalLoss;
+                float pressure = Mathf.Clamp01(pressureLoss / RaidHealth.Maximum(BodyPart.Chest)) * .6f;
                 if (shieldHit) pressure += .08f + Mathf.Clamp01(health.ShieldHitStrength) * .12f;
                 brain.Suppression = Mathf.Clamp01(brain.Suppression + pressure);
                 brain.LastDamage = now;
@@ -177,7 +190,19 @@ namespace Unity.MP_FPS
             brain.LastHealth = health.CurrentHealth;
             brain.LastShieldHitSequence = health.ShieldHitSequence;
             brain.LastImpactTick = health.LastImpactTick;
+            brain.LastStatusHealthDamage = tracked ? brain.SelfStatus.PmcStatusHealthDamage : 0;
+            brain.LastStatusShieldHits = tracked ? brain.SelfStatus.PmcStatusShieldHits : 0;
             brain.Suppression = Mathf.Max(0, brain.Suppression - Mathf.Max(0, dt) * .32f);
+        }
+    }
+
+    public static class PmcStatusDamage
+    {
+        public static void Record(TacticalServerWorld.Status status, in PredictedPlayerGhost before, in PredictedPlayerGhost after)
+        {
+            if (status == null) return;
+            status.PmcStatusHealthDamage += System.Math.Max(0, before.CurrentHealth - after.CurrentHealth);
+            status.PmcStatusShieldHits += unchecked(after.ShieldHitSequence - before.ShieldHitSequence);
         }
     }
 }
