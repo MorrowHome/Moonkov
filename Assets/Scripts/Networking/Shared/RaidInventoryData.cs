@@ -160,7 +160,7 @@ namespace Unity.MP_FPS
         public BodyPart MedicalPart;
         public double MedicalUntil;
         public Unity.Mathematics.float3 MedicalOrigin;
-        public uint MedicalDamageTick,MedicalDamageSequence,MedicalShieldHitSequence,MedicalShotTick,MedicalGrenadeTick,MedicalReloadTick,MedicalWeapon;
+        public uint MedicalDamageSequence,MedicalShieldHitSequence,MedicalShotTick,MedicalGrenadeTick,MedicalReloadTick,MedicalWeapon;
         public bool NeedsSearch(RaidLootContainers caches,int id) => !SearchedLoot.Contains(id) || caches.RequiresDissection(id) ||
             caches.RefillStates.TryGetValue(id,out var refill) && (!m_SearchedGenerations.TryGetValue(id,out var generation) || generation!=refill.RefillCount);
         public void ClearSearchRecords() { SearchedLoot.Clear();m_SearchedGenerations.Clear(); }
@@ -204,7 +204,7 @@ namespace Unity.MP_FPS
         {
             MedicalItemId=id;MedicalVersion=version;MedicalIsConsumable=consumable;
             MedicalOrigin=origin;MedicalUntil=now+System.Math.Max(.1f,seconds);
-            MedicalDamageTick=health.LastHitTick;MedicalDamageSequence=health.NonPhysiologicalDamageSequence;
+            MedicalDamageSequence=health.NonPhysiologicalDamageSequence;
             MedicalShieldHitSequence=health.ShieldHitSequence;MedicalShotTick=health.LastShotTick;
             MedicalGrenadeTick=health.LastGrenadeShotTick;MedicalReloadTick=health.LastReloadTick;MedicalWeapon=health.EquippedWeaponID;
             LastSentVersion=-1;
@@ -215,7 +215,6 @@ namespace Unity.MP_FPS
             string reason=!accessible ? "治疗中断：玩家死亡、断线或战局已结束。" :
                 Unity.Mathematics.math.distancesq(position,MedicalOrigin)>.75f*.75f ? "治疗中断：移动超过允许范围。" :
                 health.NonPhysiologicalDamageSequence!=MedicalDamageSequence ||
-                    (!MedicalIsConsumable && health.LastHitTick!=MedicalDamageTick) ||
                     health.ShieldHitSequence!=MedicalShieldHitSequence ? "治疗中断：受到攻击。" :
                 health.LastShotTick!=MedicalShotTick || health.LastGrenadeShotTick!=MedicalGrenadeTick ? "治疗中断：开火或投掷。" :
                 health.LastReloadTick!=MedicalReloadTick || health.EquippedWeaponID!=MedicalWeapon || RaidHealth.HandsBusy(health) ? "治疗中断：换弹或切换武器。" : null;

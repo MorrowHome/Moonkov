@@ -144,6 +144,8 @@ public static class RaidNutritionActionChecks
         Check(!actor.ActionPending && actor.Error==InventoryError.Inaccessible && actor.Graph.Find(med.Id)!=null &&
             RaidHealth.Get(health,BodyPart.LeftArm)==20,"same-tick hit and recovery cannot hide medical interruption");
 
+        CheckMedicalUnderSurvivalDamage(origin);
+
         actor = Actor("ration", out health, out id);
         Check(actor.BeginConsumable(health, id, actor.Graph.Version, origin, 0) == InventoryError.None, "Revalidation setup");
         health.Energy = 100;
@@ -166,5 +168,88 @@ public static class RaidNutritionActionChecks
         var old = Newtonsoft.Json.JsonConvert.DeserializeObject<RaidInventorySnapshot>("{}");
         Check(!old.MedicalIsConsumable, "Older snapshots default to medical behavior");
         return "PASS " + s_Checks + " nutrition action checks";
+    }
+
+    private static void CheckMedicalUnderSurvivalDamage(float3 origin)
+    {
+        foreach (int condition in new[] { 1, 2, 4, 7 })
+        {
+            var actor = Actor("ration", out var health, out _);
+            Check(actor.Graph.AddSupply("medkit", 2, InventoryCatalog.Pockets) == InventoryError.None,
+                "survival treatment medicine fits");
+            var med = actor.Graph.Items.Find(item => item.Code == "medkit");
+            RaidHealth.Set(ref health, BodyPart.LeftLeg, 20);
+            health.Energy = (condition & 1) != 0 ? 0 : 100;
+            health.Hydration = (condition & 2) != 0 ? 0 : 100;
+            health.HeadDomeEquipped = true;
+            health.Oxygen = (condition & 4) != 0 ? 0 : 100;
+            Check(actor.BeginMedical(health, med.Id, actor.Graph.Version, BodyPart.LeftLeg, origin, 0) == InventoryError.None,
+                "treatment starts during survival damage " + condition);
+            float afterDamage = health.CurrentHealth;
+            for (uint tick = 1; tick <= 6; tick++)
+            {
+                float before = health.CurrentHealth;
+                RaidNutrition.Tick(ref health, .5f, 1000, 1000, 300, 0, 2, 2, tick);
+                if ((condition & 4) != 0) RaidHealth.TickOxygen(ref health, false, .5f, 600, 0, 0, 3, tick);
+                afterDamage = health.CurrentHealth;
+                Check(afterDamage < before, "survival damage continues during treatment " + condition);
+                actor.RefreshMedical(ref health, health.CurrentHealth > 0, origin, tick * .5);
+                if (tick < 6) Check(actor.ActionPending && med.Quantity == 2,
+                    "survival damage does not interrupt treatment " + condition);
+            }
+            Check(actor.Error == InventoryError.None && !actor.ActionPending && med.Quantity == 1 &&
+                health.LeftLegHealth > 50 && health.CurrentHealth > afterDamage,
+                "treatment consumes one medicine and restores the injured limb " + condition);
+            float healed = health.CurrentHealth;
+            actor.RefreshMedical(ref health, true, origin, 4);
+            Check(med.Quantity == 1 && health.CurrentHealth == healed, "completed treatment cannot repeat " + condition);
+        }
+
+        foreach (bool shielded in new[] { false, true })
+        {
+            var actor = Actor("ration", out var health, out _);
+            Check(actor.Graph.AddSupply("medkit", 1, InventoryCatalog.Pockets) == InventoryError.None,
+                "same-tick survival attack fixture");
+            var med = actor.Graph.Items.Find(item => item.Code == "medkit");
+            RaidHealth.Set(ref health, BodyPart.LeftLeg, 20);
+            health.Energy = 0;
+            health.ShieldEquipped = shielded;
+            health.ShieldCharge = shielded ? 100 : 0;
+            Check(actor.BeginMedical(health, med.Id, actor.Graph.Version, BodyPart.LeftLeg, origin, 0) == InventoryError.None,
+                "same-tick survival treatment starts");
+            RaidHealth.CombatDamage(ref health, BodyPart.RightArm, 5, 42, RaidDamageKind.Bullet);
+            RaidNutrition.Tick(ref health, .5f, 1000, 1000, 300, 0, 2, 0, 42);
+            actor.RefreshMedical(ref health, true, origin, .5);
+            Check(!actor.ActionPending && actor.Error == InventoryError.Inaccessible && actor.Graph.Find(med.Id) != null,
+                "survival damage cannot hide a " + (shielded ? "shield hit" : "body hit"));
+        }
+
+        foreach (var kind in new[] { RaidDamageKind.Fire, RaidDamageKind.Poison, RaidDamageKind.Bleed })
+        {
+            var actor = Actor("ration", out var health, out _);
+            Check(actor.Graph.AddSupply("medkit", 1, InventoryCatalog.Pockets) == InventoryError.None,
+                "status damage treatment fixture");
+            var med = actor.Graph.Items.Find(item => item.Code == "medkit");
+            RaidHealth.Set(ref health, BodyPart.LeftLeg, 20);
+            Check(actor.BeginMedical(health, med.Id, actor.Graph.Version, BodyPart.LeftLeg, origin, 0) == InventoryError.None,
+                "treatment starts before status damage " + kind);
+            RaidHealth.CombatDamage(ref health, BodyPart.Auto, 2, 43, kind);
+            actor.RefreshMedical(ref health, true, origin, .5);
+            Check(!actor.ActionPending && actor.Error == InventoryError.Inaccessible && actor.Graph.Find(med.Id) != null,
+                "harmful status still interrupts ordinary medical treatment " + kind);
+        }
+
+        var dying = Actor("ration", out var fatal, out _);
+        Check(dying.Graph.AddSupply("medkit", 1, InventoryCatalog.Pockets) == InventoryError.None,
+            "fatal survival treatment fixture");
+        var medicine = dying.Graph.Items.Find(item => item.Code == "medkit");
+        RaidHealth.Set(ref fatal, BodyPart.Chest, 1);
+        fatal.HeadDomeEquipped = true; fatal.Oxygen = 0;
+        Check(dying.BeginMedical(fatal, medicine.Id, dying.Graph.Version, BodyPart.Chest, origin, 0) == InventoryError.None,
+            "fatal survival treatment starts");
+        RaidHealth.TickOxygen(ref fatal, false, .5f, 600, 0, 0, 3, 50);
+        dying.RefreshMedical(ref fatal, fatal.CurrentHealth > 0, origin, .5);
+        Check(fatal.CurrentHealth == 0 && dying.Error == InventoryError.Inaccessible && dying.Graph.Find(medicine.Id) != null,
+            "fatal hypoxia cancels treatment without consuming medicine");
     }
 }
