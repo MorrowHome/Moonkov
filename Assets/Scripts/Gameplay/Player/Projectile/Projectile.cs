@@ -292,9 +292,13 @@ namespace Unity.MP_FPS
             byte damageFlags = 0;
             if (m_Weapon.Behavior == ProjectileBehavior.AreaOfEffect)
             {
-                ProjectileBlast.Apply(GhostGameObject.World, gameObject.scene.GetPhysicsScene(),
-                    hit.point+hit.normal*.03f, m_Weapon.AoeRadius, m_Weapon.Damage,
+                var scene = gameObject.scene.GetPhysicsScene();
+                Vector3 blast = hit.point + hit.normal * .03f;
+                ProjectileBlast.Apply(GhostGameObject.World, scene,
+                    blast, m_Weapon.AoeRadius, m_Weapon.Damage,
                     m_Data.DamageSource, GhostGameObject.GetCurrentTick(), out damageFlags);
+                RaidEnvironmentalNoise.EmitExplosion(GhostGameObject.World.EntityManager, scene, blast,
+                    RaidEnvironmentalNoise.ProjectileExplosionId(GhostGameObject.LinkedEntity), GhostGameObject.World.Time.ElapsedTime);
             }
             else if (GhostGameObject.TryFindGhostGameObject(hit.collider.gameObject, out var target))
                 damageFlags = Damage(target, players, owners,

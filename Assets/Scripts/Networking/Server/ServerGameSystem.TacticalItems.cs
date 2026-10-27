@@ -81,6 +81,10 @@ namespace Unity.MP_FPS
         public const float ExplosionRange = 50;
         public static string ExplosionId(bool energy, uint epoch, uint id) => id == 0 ? null :
             energy ? $"blast/energy/{id}" : $"blast/tactical/{epoch}/{id}";
+        // The entity version keeps a recycled projectile ID distinct without
+        // exposing the shooter's identity as part of the sound clue.
+        public static string ProjectileExplosionId(Entity projectile) => projectile == Entity.Null ? null :
+            $"blast/projectile/{projectile.Index}/{projectile.Version}";
 
         public static void EmitExplosion(EntityManager manager, PhysicsScene scene, Vector3 position, string clue, double now)
         {

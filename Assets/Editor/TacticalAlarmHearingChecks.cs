@@ -37,6 +37,13 @@ public static class TacticalAlarmHearingChecks
             RaidEnvironmentalNoise.ExplosionId(false, 2, 7) != RaidEnvironmentalNoise.ExplosionId(true, 2, 7) &&
             RaidEnvironmentalNoise.ExplosionId(false, 2, 7) != id && RaidEnvironmentalNoise.ExplosionId(true, 0, 0) == null,
             "blast types, trap IDs and tactical world epochs cannot collide");
+        var projectile = new Entity { Index = 7, Version = 1 };
+        string projectileId = RaidEnvironmentalNoise.ProjectileExplosionId(projectile);
+        Check(projectileId != null && projectileId != RaidEnvironmentalNoise.ProjectileExplosionId(new Entity { Index = 7, Version = 2 }) &&
+            projectileId != RaidEnvironmentalNoise.ProjectileExplosionId(new Entity { Index = 8, Version = 1 }) &&
+            projectileId != RaidEnvironmentalNoise.ExplosionId(true, 0, 7) &&
+            RaidEnvironmentalNoise.ProjectileExplosionId(Entity.Null) == null,
+            "projectile blast clues are anonymous and distinguish reused entity IDs");
 
         var brain = (DollSingerEnemyBrain)FormatterServices.GetUninitializedObject(typeof(DollSingerEnemyBrain));
         brain.Action = PmcAction.Scavenge; brain.CommitUntil = 90; brain.NextDecision = 90;
@@ -58,6 +65,9 @@ public static class TacticalAlarmHearingChecks
         Check(!PmcSoundClue.Hear(brain, null, source, 13) &&
             PmcSoundClue.Hear(brain, "trap/2/8", source, 13) && brain.MissionAlarmUntil == 43,
             "a distinct audible alarm can become a new clue");
+        Check(PmcSoundClue.Hear(brain, projectileId, source, 14) && brain.Target == Entity.Null && !brain.Visible &&
+            brain.MissionAlarmPosition.Equals(source) && brain.MissionAlarmUntil == 44,
+            "an explosive projectile creates an anonymous location clue, not a firing solution");
         return "PASS " + s_Checks + " alarm and blast hearing rules checks";
     }
 }

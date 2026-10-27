@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using Unity.Entities;
 using Unity.NetCode;
+using Unity.Transforms;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -229,6 +230,13 @@ public static class HaloArsenalValidation
             var ghost=victim.AddComponent<GhostGameObject>();ghost.LinkGhost(world,target,MultiplayerRole.Server);manager.AddComponentObject(target,new GhostGameObjectLink{LinkedInstance=ghost});
             var flank=new GameObject("Off-ray splash victim");SceneManager.MoveGameObjectToScene(flank,scene);flank.transform.position=new Vector3(.8f,0,-.7f);flank.layer=victim.layer;flank.AddComponent<SphereCollider>().radius=.12f;
             var flankEntity=manager.CreateEntity(typeof(GhostGameObjectGuid),typeof(PredictedPlayerGhost));var flankGhost=flank.AddComponent<GhostGameObject>();flankGhost.LinkGhost(world,flankEntity,MultiplayerRole.Server);manager.AddComponentObject(flankEntity,new GhostGameObjectLink{LinkedInstance=flankGhost});
+            var listenerRoot=new GameObject("Idle PMC listening for projectile blasts");SceneManager.MoveGameObjectToScene(listenerRoot,scene);
+            listenerRoot.transform.position=new Vector3(7,0,-2);
+            var listener=manager.CreateEntity(typeof(DollSingerEnemy),typeof(Simulate),typeof(LocalTransform),typeof(PredictedPlayerGhost));
+            manager.SetComponentData(listener,LocalTransform.FromPosition(new Unity.Mathematics.float3(7,0,-2)));
+            var listenerHealth=new PredictedPlayerGhost();RaidHealth.Initialize(ref listenerHealth);manager.SetComponentData(listener,listenerHealth);
+            var listenerBrain=new DollSingerEnemyBrain();manager.AddComponentObject(listener,listenerBrain);
+            manager.AddComponentObject(listener,new GhostGameObjectLink{LinkedInstance=listenerRoot.AddComponent<GhostGameObject>()});
             Physics.SyncTransforms();scene.GetPhysicsScene().Simulate(.02f);
             foreach(var entry in HaloArsenal.Entries)
             {
@@ -239,12 +247,19 @@ public static class HaloArsenalValidation
                     var root=new GameObject(entry.Code+" actual authoritative projectile");SceneManager.MoveGameObjectToScene(root,scene);
                     var entity=manager.CreateEntity(typeof(GhostGameObjectGuid));var projectileGhost=root.AddComponent<GhostGameObject>();projectileGhost.LinkGhost(world,entity,MultiplayerRole.Server);
                     var projectile=root.AddComponent<Projectile>();projectile.enabled=false;projectile.SetGhostGameObject(projectileGhost);
+                    listenerBrain.MissionAlarmId=null;listenerBrain.MissionAlarmUntil=0;
                     var origin=Vector3.back*2;var direction=WeaponSpread.Direction(Vector3.forward,weapon,pellet,100);
                     typeof(Projectile).GetField("m_Weapon",fields).SetValue(projectile,weapon);
                     typeof(Projectile).GetField("m_Data",fields).SetValue(projectile,new Projectile.ProjectileData{WeaponID=entry.Id,OwnerNetworkId=1,SpawnTick=100,Origin=origin,InitialVelocity=direction*weapon.ProjectileSpeed,PelletIndex=pellet});
                     typeof(Projectile).GetField("m_HitMask",fields).SetValue(projectile,EnergyGrenadePhysics.HitMask);
                     typeof(Projectile).GetMethod("Advance",fields).Invoke(projectile,new object[]{.2f,true});
                     Require((bool)typeof(Projectile).GetField("m_Stopped",fields).GetValue(projectile),entry.Code+" projectile collision");
+                    if(entry.BlastRadius>0)
+                        Require(listenerBrain.MissionAlarmId==RaidEnvironmentalNoise.ProjectileExplosionId(entity) &&
+                            Vector3.Distance(listenerBrain.MissionAlarmPosition,root.transform.position)<.05f &&
+                            listenerBrain.Target==Entity.Null && !listenerBrain.Visible,
+                            entry.Code+" real blast did not create an anonymous local sound clue");
+                    else Require(listenerBrain.MissionAlarmId==null,entry.Code+" direct projectile made a blast clue");
                     UnityEngine.Object.DestroyImmediate(root);manager.DestroyEntity(entity);
                 }
                 float health=manager.GetComponentData<PredictedPlayerGhost>(target).CurrentHealth;
