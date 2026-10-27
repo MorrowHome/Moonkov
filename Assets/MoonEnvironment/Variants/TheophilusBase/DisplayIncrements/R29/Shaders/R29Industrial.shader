@@ -38,6 +38,7 @@ Shader "Moon/R29 Industrial Display"
             #pragma target 3.5
             #pragma vertex R29Vertex
             #pragma fragment R29Fragment
+            #pragma multi_compile_fragment _ _MOON_STOCHASTIC_SHADOWS
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
             #pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS
             #pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS
@@ -65,6 +66,8 @@ Shader "Moon/R29 Industrial Display"
             {
                 UNITY_SETUP_INSTANCE_ID(input);
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+                float sampleWeight;
+                UNITY_BRANCH if (!MoonKeepSurface(input.positionCS.xy, sampleWeight)) return half4(0,0,0,1);
                 float2 atlas = input.materialUV.xy;
                 float2 detail = input.materialUV.zw * _DetailTiling;
                 half3 albedo = SAMPLE_TEXTURE2D(_BaseMap,sampler_BaseMap,atlas).rgb * _BaseColor.rgb;
@@ -85,7 +88,9 @@ Shader "Moon/R29 Industrial Display"
                         normalTS = normalize(normalTS + _DetailFactor * (fine - half3(0,0,1)));
                     }
                 }
-                return R29Light(input,albedo,mask.r,1-roughness,R29TangentToWorld(input,normalTS));
+                half4 color = R29Light(input,albedo,mask.r,1-roughness,R29TangentToWorld(input,normalTS));
+                color.rgb *= sampleWeight;
+                return color;
             }
             ENDHLSL
         }

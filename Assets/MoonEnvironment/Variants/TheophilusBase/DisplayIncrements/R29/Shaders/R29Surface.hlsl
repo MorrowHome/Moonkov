@@ -2,7 +2,7 @@
 #define MOON_R29_SURFACE_INCLUDED
 
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
+#include "Assets/MoonEnvironment/Shaders/StochasticShadows.hlsl"
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/SurfaceData.hlsl"
 
 #if defined(MOON_SILVER_SAND)
@@ -101,6 +101,7 @@ float3 R29HeightNormal(float3 p, float3 n, float height)
 
 half4 R29Light(R29Varyings input, half3 albedo, half metallic, half smoothness, half3 normalWS)
 {
+    MoonSetShadowPixel(input.positionCS.xy);
     InputData data = (InputData)0;
     data.positionWS = input.positionWS;
     data.normalWS = normalize(normalWS);

@@ -48,6 +48,7 @@ Shader "MoonEnvironment/Industrial Dust"
             #pragma target 3.5
             #pragma vertex R29Vertex
             #pragma fragment DustFragment
+            #pragma multi_compile_fragment _ _MOON_STOCHASTIC_SHADOWS
             #pragma shader_feature_local _NORMALMAP
             #pragma shader_feature_local _METALLICSPECGLOSSMAP
             #pragma shader_feature_local _OCCLUSIONMAP
@@ -78,8 +79,11 @@ Shader "MoonEnvironment/Industrial Dust"
             #include "../Variants/TheophilusBase/DisplayIncrements/R29/Shaders/R29Surface.hlsl"
             half4 DustFragment(R29Varyings input) : SV_Target
             {
+                MoonSetShadowPixel(input.positionCS.xy);
                 UNITY_SETUP_INSTANCE_ID(input);
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+                float sampleWeight;
+                UNITY_BRANCH if (!MoonKeepSurface(input.positionCS.xy, sampleWeight)) return half4(0,0,0,1);
                 float2 uv = input.uv0 * _BaseMap_ST.xy + _BaseMap_ST.zw;
                 half3 albedo = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, uv).rgb * _BaseColor.rgb;
                 half metallic = _Metallic;
@@ -131,6 +135,7 @@ Shader "MoonEnvironment/Industrial Dust"
                 #endif
                 half4 color = UniversalFragmentPBR(lighting,surface);
                 color.rgb = MixFog(color.rgb,lighting.fogCoord);
+                color.rgb *= sampleWeight;
                 return color;
             }
             ENDHLSL

@@ -47,6 +47,7 @@ Shader "Moon/R29 Local Ground Display"
             #pragma target 3.5
             #pragma vertex R29Vertex
             #pragma fragment R29Fragment
+            #pragma multi_compile_fragment _ _MOON_STOCHASTIC_SHADOWS
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
             #pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS
             #pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS
@@ -81,6 +82,8 @@ Shader "Moon/R29 Local Ground Display"
             {
                 UNITY_SETUP_INSTANCE_ID(input);
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+                float sampleWeight;
+                UNITY_BRANCH if (!MoonKeepSurface(input.positionCS.xy, sampleWeight)) return half4(0,0,0,1);
                 float3 p = GetAbsolutePositionWS(input.positionWS);
                 half3 n = normalize(input.normalWS);
                 float distanceToView = distance(p,GetCameraPositionWS());
@@ -103,7 +106,9 @@ Shader "Moon/R29 Local Ground Display"
                 half3 microNormal = R29TangentToWorld(input,UnpackNormalScale(SAMPLE_TEXTURE2D(_MicroNormal,sampler_BaseMap,input.uv0/0.25),microStrength));
                 half3 localNormal = normalize(mainNormal+microNormal-n);
                 half3 normalWS = normalize(lerp(referenceNormal,normalize(localNormal+referenceNormal-n),mask));
-                return R29Light(input,albedo,0,1-saturate(roughness),normalWS);
+                half4 color = R29Light(input,albedo,0,1-saturate(roughness),normalWS);
+                color.rgb *= sampleWeight;
+                return color;
             }
             ENDHLSL
         }
