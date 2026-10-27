@@ -1,0 +1,29 @@
+{
+  "scope": "same corrected FBX wall geometry in original Blender scene, source nodes versus atlas; source lights, 16 samples",
+  "camera_position": [
+    1993.800048828125,
+    2457.60009765625,
+    254.1999969482422
+  ],
+  "camera_target": [
+    1998.4000244140625,
+    2463.0,
+    255.3000030517578
+  ],
+  "samples": 16,
+  "resolution": [
+    720,
+    480
+  ],
+  "visible_wall_mask_pixels": 87893,
+  "absolute_decoded_png_rgb_mean": 0.0012329163728281856,
+  "absolute_decoded_png_rgb_p95": 0.003921568393707275,
+  "source_render": "NR12WallBatchPilot/full_scene_source.png",
+  "baked_render": "NR12WallBatchPilot/full_scene_atlas.png",
+  "mask_render": "NR12WallBatchPilot/full_scene_mask.png",
+  "limitations": [
+    "Same corrected FBX geometry in both renders; not a geometry comparison.",
+    "Noisy 16-sample Blender comparison; not Unity or final lighting acceptance.",
+    "Original compositor is bypassed for both images. Source file is not saved."
+  ]
+}

@@ -1,0 +1,107 @@
+{
+  "scope": "six imported wall meshes; centroid samples and area-weighted texel density",
+  "objects": [
+    {
+      "object": "NR01_V5_WEST_Full_Height_Wall",
+      "uv_sample": [
+        0.4362105131149292,
+        0.27081696611518663
+      ],
+      "metallic_sample": 0.014999618524452583,
+      "basecolor_sample_srgb": [
+        0.6309910734721904,
+        0.6414435034714275,
+        0.61196307316701
+      ],
+      "surface_area_m2": 183.39872489485066,
+      "atlas_fraction": 0.3031795493459489,
+      "density_texels_per_metre_area_weighted_p10": 83.93207095428265,
+      "density_texels_per_metre_area_weighted_median": 83.93208122579735
+    },
+    {
+      "object": "NR01_V5_EAST_Full_Height_Wall",
+      "uv_sample": [
+        0.25003257393836975,
+        0.5362479750377437
+      ],
+      "metallic_sample": 0.014999618524452583,
+      "basecolor_sample_srgb": [
+        0.634531166552224,
+        0.6450293736171512,
+        0.61538109407187
+      ],
+      "surface_area_m2": 183.40023797589802,
+      "atlas_fraction": 0.3031795502352896,
+      "density_texels_per_metre_area_weighted_p10": 83.93207398414324,
+      "density_texels_per_metre_area_weighted_median": 83.9320740955533
+    },
+    {
+      "object": "NR01_V5_SOUTH_LEFT_RETURN_Structural_Screen",
+      "uv_sample": [
+        0.8250015377998352,
+        0.09371725050732493
+      ],
+      "metallic_sample": 0.014999618524452583,
+      "basecolor_sample_srgb": [
+        0.6277866788738842,
+        0.6381780727855344,
+        0.6088349736781872
+      ],
+      "surface_area_m2": 21.39393793833046,
+      "atlas_fraction": 0.03319556149951264,
+      "density_texels_per_metre_area_weighted_p10": 70.56609299414602,
+      "density_texels_per_metre_area_weighted_median": 83.93252450589239
+    },
+    {
+      "object": "NR01_V5_NORTH_RIGHT_RETURN_Structural_Screen",
+      "uv_sample": [
+        0.825001577536265,
+        0.5240565737088522
+      ],
+      "metallic_sample": 0.014999618524452583,
+      "basecolor_sample_srgb": [
+        0.6283817807278553,
+        0.6387731746395056,
+        0.609399557488365
+      ],
+      "surface_area_m2": 21.393879332547755,
+      "atlas_fraction": 0.03558544626443201,
+      "density_texels_per_metre_area_weighted_p10": 83.91762215544951,
+      "density_texels_per_metre_area_weighted_median": 83.93230124031987
+    },
+    {
+      "object": "NR01_V5_SOUTH_Raised_Roof_End_Fascia",
+      "uv_sample": [
+        0.827977200349172,
+        0.647612730662028
+      ],
+      "metallic_sample": 0.014999618524452583,
+      "basecolor_sample_srgb": [
+        0.6276035706111238,
+        0.637994964522774,
+        0.6086518654154268
+      ],
+      "surface_area_m2": 16.376676633762102,
+      "atlas_fraction": 0.027357957861029902,
+      "density_texels_per_metre_area_weighted_p10": 83.91625105450173,
+      "density_texels_per_metre_area_weighted_median": 83.93114928327077
+    },
+    {
+      "object": "NR01_V5_NORTH_Raised_Roof_End_Fascia",
+      "uv_sample": [
+        0.9594534436861674,
+        0.07409770864372452
+      ],
+      "metallic_sample": 0.014999618524452583,
+      "basecolor_sample_srgb": [
+        0.6201419089036393,
+        0.630411230640116,
+        0.601403830014496
+      ],
+      "surface_area_m2": 16.111870542227813,
+      "atlas_fraction": 0.026913986900544112,
+      "density_texels_per_metre_area_weighted_p10": 83.93096763966761,
+      "density_texels_per_metre_area_weighted_median": 83.93096763966761
+    }
+  ]
+}

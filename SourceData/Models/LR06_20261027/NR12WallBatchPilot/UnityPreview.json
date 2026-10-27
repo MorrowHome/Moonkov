@@ -1,0 +1,177 @@
+{
+  "scope": "isolated_editor_preview_only",
+  "formalSceneChanged": false,
+  "sourceLightsConverted": false,
+  "rendererCount": 6,
+  "totalTriangles": 1128,
+  "textureStats": [
+    {
+      "property": "_BaseMap",
+      "path": "Assets/MoonEnvironment/Variants/LR06WallBatchPilot/Textures/atlas_basecolor.png",
+      "width": 2048,
+      "height": 2048,
+      "format": "DXT5",
+      "mipmapCount": 12,
+      "editorRuntimeMemoryBytes": 11185872
+    },
+    {
+      "property": "_MetallicGlossMap",
+      "path": "Assets/MoonEnvironment/Variants/LR06WallBatchPilot/Textures/atlas_metallic_smoothness.png",
+      "width": 2048,
+      "height": 2048,
+      "format": "DXT5",
+      "mipmapCount": 12,
+      "editorRuntimeMemoryBytes": 11185872
+    },
+    {
+      "property": "_BumpMap",
+      "path": "Assets/MoonEnvironment/Variants/LR06WallBatchPilot/Textures/atlas_normal.exr",
+      "width": 2048,
+      "height": 2048,
+      "format": "DXT5",
+      "mipmapCount": 12,
+      "editorRuntimeMemoryBytes": 11185872
+    }
+  ],
+  "note": "Preview uses temporary illustrative lighting; it is not a physical match to Blender or a gameplay test.",
+  "materialChecks": [
+    {
+      "name": "NR01_V5_EAST_Full_Height_Wall",
+      "mesh": "Assets/MoonEnvironment/Variants/LR06WallBatchPilot/Models/NR12_wall_batch_pilot.fbx",
+      "material": "Assets/MoonEnvironment/Variants/LR06WallBatchPilot/Materials/LR06WallBatch_Shared.mat",
+      "shader": "Universal Render Pipeline/Lit",
+      "emission": "RGBA(0.000, 0.000, 0.000, 1.000)",
+      "baseMap": "Assets/MoonEnvironment/Variants/LR06WallBatchPilot/Textures/atlas_basecolor.png",
+      "mask": "Assets/MoonEnvironment/Variants/LR06WallBatchPilot/Textures/atlas_metallic_smoothness.png",
+      "normal": "Assets/MoonEnvironment/Variants/LR06WallBatchPilot/Textures/atlas_normal.exr",
+      "uvCount": 384,
+      "normalCount": 384,
+      "tangentCount": 384
+    },
+    {
+      "name": "NR01_V5_NORTH_Raised_Roof_End_Fascia",
+      "mesh": "Assets/MoonEnvironment/Variants/LR06WallBatchPilot/Models/NR12_wall_batch_pilot.fbx",
+      "material": "Assets/MoonEnvironment/Variants/LR06WallBatchPilot/Materials/LR06WallBatch_Shared.mat",
+      "shader": "Universal Render Pipeline/Lit",
+      "emission": "RGBA(0.000, 0.000, 0.000, 1.000)",
+      "baseMap": "Assets/MoonEnvironment/Variants/LR06WallBatchPilot/Textures/atlas_basecolor.png",
+      "mask": "Assets/MoonEnvironment/Variants/LR06WallBatchPilot/Textures/atlas_metallic_smoothness.png",
+      "normal": "Assets/MoonEnvironment/Variants/LR06WallBatchPilot/Textures/atlas_normal.exr",
+      "uvCount": 384,
+      "normalCount": 384,
+      "tangentCount": 384
+    },
+    {
+      "name": "NR01_V5_NORTH_RIGHT_RETURN_Structural_Screen",
+      "mesh": "Assets/MoonEnvironment/Variants/LR06WallBatchPilot/Models/NR12_wall_batch_pilot.fbx",
+      "material": "Assets/MoonEnvironment/Variants/LR06WallBatchPilot/Materials/LR06WallBatch_Shared.mat",
+      "shader": "Universal Render Pipeline/Lit",
+      "emission": "RGBA(0.000, 0.000, 0.000, 1.000)",
+      "baseMap": "Assets/MoonEnvironment/Variants/LR06WallBatchPilot/Textures/atlas_basecolor.png",
+      "mask": "Assets/MoonEnvironment/Variants/LR06WallBatchPilot/Textures/atlas_metallic_smoothness.png",
+      "normal": "Assets/MoonEnvironment/Variants/LR06WallBatchPilot/Textures/atlas_normal.exr",
+      "uvCount": 384,
+      "normalCount": 384,
+      "tangentCount": 384
+    },
+    {
+      "name": "NR01_V5_SOUTH_LEFT_RETURN_Structural_Screen",
+      "mesh": "Assets/MoonEnvironment/Variants/LR06WallBatchPilot/Models/NR12_wall_batch_pilot.fbx",
+      "material": "Assets/MoonEnvironment/Variants/LR06WallBatchPilot/Materials/LR06WallBatch_Shared.mat",
+      "shader": "Universal Render Pipeline/Lit",
+      "emission": "RGBA(0.000, 0.000, 0.000, 1.000)",
+      "baseMap": "Assets/MoonEnvironment/Variants/LR06WallBatchPilot/Textures/atlas_basecolor.png",
+      "mask": "Assets/MoonEnvironment/Variants/LR06WallBatchPilot/Textures/atlas_metallic_smoothness.png",
+      "normal": "Assets/MoonEnvironment/Variants/LR06WallBatchPilot/Textures/atlas_normal.exr",
+      "uvCount": 384,
+      "normalCount": 384,
+      "tangentCount": 384
+    },
+    {
+      "name": "NR01_V5_SOUTH_Raised_Roof_End_Fascia",
+      "mesh": "Assets/MoonEnvironment/Variants/LR06WallBatchPilot/Models/NR12_wall_batch_pilot.fbx",
+      "material": "Assets/MoonEnvironment/Variants/LR06WallBatchPilot/Materials/LR06WallBatch_Shared.mat",
+      "shader": "Universal Render Pipeline/Lit",
+      "emission": "RGBA(0.000, 0.000, 0.000, 1.000)",
+      "baseMap": "Assets/MoonEnvironment/Variants/LR06WallBatchPilot/Textures/atlas_basecolor.png",
+      "mask": "Assets/MoonEnvironment/Variants/LR06WallBatchPilot/Textures/atlas_metallic_smoothness.png",
+      "normal": "Assets/MoonEnvironment/Variants/LR06WallBatchPilot/Textures/atlas_normal.exr",
+      "uvCount": 384,
+      "normalCount": 384,
+      "tangentCount": 384
+    },
+    {
+      "name": "NR01_V5_WEST_Full_Height_Wall",
+      "mesh": "Assets/MoonEnvironment/Variants/LR06WallBatchPilot/Models/NR12_wall_batch_pilot.fbx",
+      "material": "Assets/MoonEnvironment/Variants/LR06WallBatchPilot/Materials/LR06WallBatch_Shared.mat",
+      "shader": "Universal Render Pipeline/Lit",
+      "emission": "RGBA(0.000, 0.000, 0.000, 1.000)",
+      "baseMap": "Assets/MoonEnvironment/Variants/LR06WallBatchPilot/Textures/atlas_basecolor.png",
+      "mask": "Assets/MoonEnvironment/Variants/LR06WallBatchPilot/Textures/atlas_metallic_smoothness.png",
+      "normal": "Assets/MoonEnvironment/Variants/LR06WallBatchPilot/Textures/atlas_normal.exr",
+      "uvCount": 384,
+      "normalCount": 384,
+      "tangentCount": 384
+    }
+  ],
+  "shots": [
+    {
+      "path": "Library/BuildValidation/LR06WallBatchPilot/fixture.png",
+      "position": [
+        1993.8,
+        254.2,
+        2457.6
+      ],
+      "look": [
+        1998.4,
+        255.3,
+        2463.0
+      ],
+      "illustrativeWarmPointIntensity": 9.0
+    },
+    {
+      "path": "Library/BuildValidation/LR06WallBatchPilot/wall_front.png",
+      "position": [
+        1992.5,
+        254.6,
+        2467.2
+      ],
+      "look": [
+        2000.5,
+        254.2,
+        2468.0
+      ],
+      "illustrativeWarmPointIntensity": 9.0
+    },
+    {
+      "path": "Library/BuildValidation/LR06WallBatchPilot/wall_back.png",
+      "position": [
+        2008.5,
+        254.6,
+        2467.2
+      ],
+      "look": [
+        2000.5,
+        254.2,
+        2468.0
+      ],
+      "illustrativeWarmPointIntensity": 9.0
+    },
+    {
+      "path": "Library/BuildValidation/LR06WallBatchPilot/inside.png",
+      "position": [
+        1998.0,
+        253.5,
+        2470.0
+      ],
+      "look": [
+        1998.0,
+        253.7,
+        2461.0
+      ],
+      "illustrativeWarmPointIntensity": 9.0
+    }
+  ],
+  "originalScene": "MainMenu",
+  "originalSceneDirty": false
+}

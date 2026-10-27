@@ -1,0 +1,187 @@
+{
+  "status": "awaiting_Unity_six_wall_trial",
+  "source_sha256": "cdb003ad58e2c081076cc874eb9f1c4fdf3c216e056321257dabcf5d6f817054",
+  "scope": "six isolated corridor walls; one shared material atlas",
+  "materials": [
+    {
+      "object": "NR01_V5_WEST_Full_Height_Wall",
+      "source_world_bounds": [
+        [
+          1995.6199951171875,
+          2460.5,
+          251.90005493164062
+        ],
+        [
+          1995.93994140625,
+          2480.0,
+          256.25006103515625
+        ]
+      ],
+      "source_material": "NR01_V9_Wall_Warm_Utility_Coat",
+      "evaluated_closed_components": [
+        {
+          "faces": 98,
+          "signed_volume_before": -27.114437999300804,
+          "reversed": true
+        }
+      ],
+      "reversed_component_count": 1
+    },
+    {
+      "object": "NR01_V5_EAST_Full_Height_Wall",
+      "source_world_bounds": [
+        [
+          2000.4100341796875,
+          2460.5,
+          251.90005493164062
+        ],
+        [
+          2000.72998046875,
+          2480.0,
+          256.25006103515625
+        ]
+      ],
+      "source_material": "NR01_V9_Wall_Warm_Utility_Coat",
+      "evaluated_closed_components": [
+        {
+          "faces": 98,
+          "signed_volume_before": -27.11443993682043,
+          "reversed": true
+        }
+      ],
+      "reversed_component_count": 1
+    },
+    {
+      "object": "NR01_V5_SOUTH_LEFT_RETURN_Structural_Screen",
+      "source_world_bounds": [
+        [
+          1995.93994140625,
+          2465.9599609375,
+          251.89004516601562
+        ],
+        [
+          1998.4100341796875,
+          2466.43994140625,
+          255.20004272460938
+        ]
+      ],
+      "source_material": "NR01_V9_Wall_Warm_Utility_Coat",
+      "evaluated_closed_components": [
+        {
+          "faces": 98,
+          "signed_volume_before": -3.9118104578737984,
+          "reversed": true
+        }
+      ],
+      "reversed_component_count": 1
+    },
+    {
+      "object": "NR01_V5_NORTH_RIGHT_RETURN_Structural_Screen",
+      "source_world_bounds": [
+        [
+          1997.93994140625,
+          2474.56005859375,
+          251.89004516601562
+        ],
+        [
+          2000.4100341796875,
+          2475.0400390625,
+          255.20004272460938
+        ]
+      ],
+      "source_material": "NR01_V9_Wall_Warm_Utility_Coat",
+      "evaluated_closed_components": [
+        {
+          "faces": 98,
+          "signed_volume_before": -3.911812870680783,
+          "reversed": true
+        }
+      ],
+      "reversed_component_count": 1
+    },
+    {
+      "object": "NR01_V5_SOUTH_Raised_Roof_End_Fascia",
+      "source_world_bounds": [
+        [
+          1995.6199951171875,
+          2460.330078125,
+          256.6500549316406
+        ],
+        [
+          2000.72998046875,
+          2460.530029296875,
+          258.0200500488281
+        ]
+      ],
+      "source_material": "NR01_V9_Wall_Warm_Utility_Coat",
+      "evaluated_closed_components": [
+        {
+          "faces": 98,
+          "signed_volume_before": -1.3979905169574824,
+          "reversed": true
+        }
+      ],
+      "reversed_component_count": 1
+    },
+    {
+      "object": "NR01_V5_NORTH_Raised_Roof_End_Fascia",
+      "source_world_bounds": [
+        [
+          1995.6199951171875,
+          2480.0,
+          256.7950439453125
+        ],
+        [
+          2000.72998046875,
+          2480.199951171875,
+          258.1400451660156
+        ]
+      ],
+      "source_material": "NR01_V9_Wall_Warm_Utility_Coat",
+      "evaluated_closed_components": [
+        {
+          "faces": 98,
+          "signed_volume_before": -1.3724439314767853,
+          "reversed": true
+        }
+      ],
+      "reversed_component_count": 1
+    }
+  ],
+  "assets": [
+    {
+      "path": "NR12WallBatchPilot/NR12_wall_batch_pilot.fbx",
+      "colorspace": null,
+      "bytes": 60764,
+      "sha256": "d7bacbbcb2cd32262da94f2a4be85019ddb712bb368348419b32bbf485c7bf51",
+      "role": "model"
+    },
+    {
+      "path": "NR12WallBatchPilot/atlas_basecolor.png",
+      "colorspace": "sRGB",
+      "bytes": 6946246,
+      "sha256": "cc2cb2436e5fbcbd0a7b498a24b5f3daaad00ba4d196cdbb1a6cf6ef997777a2",
+      "role": "basecolor"
+    },
+    {
+      "path": "NR12WallBatchPilot/atlas_metallic_smoothness.png",
+      "colorspace": "Non-Color",
+      "bytes": 6593905,
+      "sha256": "1335134d3656c625571736835d02d76a0b86805184840943c4b8edeece50625e",
+      "role": "mask"
+    },
+    {
+      "path": "NR12WallBatchPilot/atlas_normal.exr",
+      "colorspace": "Non-Color",
+      "bytes": 67142053,
+      "sha256": "05e56d74be65c58fde9108a886fef75ba41c49f2049be14566d7d8d9c0669925",
+      "role": "normal"
+    }
+  ],
+  "notes": [
+    "Source scene and lighting are not changed.",
+    "Original object identities, world-position shader nodes and scene context were used during the bake.",
+    "The shared material is not a claim that Unity will combine draw calls.",
+    "No formal scene, source lights, baked lighting, interaction or collision is included."
+  ]
+}

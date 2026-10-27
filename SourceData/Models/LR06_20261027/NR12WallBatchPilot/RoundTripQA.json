@@ -1,0 +1,521 @@
+{
+  "status": "blender_roundtrip_only_not_Unity",
+  "objects": [
+    {
+      "name": "NR01_V5_WEST_Full_Height_Wall",
+      "bounds_before_export": [
+        [
+          1995.6199951171875,
+          2460.5,
+          251.90005493164062
+        ],
+        [
+          1995.93994140625,
+          2480.0,
+          256.25006103515625
+        ]
+      ],
+      "bounds_after_reimport": [
+        [
+          1995.6199951171875,
+          2460.5,
+          251.90003967285156
+        ],
+        [
+          1995.93994140625,
+          2480.0,
+          256.2500305175781
+        ]
+      ],
+      "max_coordinate_error_m": 3.0517578125e-05,
+      "signed_volume_local_m3": 27.114438565522555,
+      "matrix_determinant": 1.0,
+      "vertices": 96,
+      "triangles": 188,
+      "uv_maps": [
+        "LR06_WallBatchUV"
+      ],
+      "materials": [
+        "NR01_V9_Wall_Warm_Utility_Coat.001"
+      ],
+      "recentered_qa": {
+        "ok": true,
+        "pass": true,
+        "errors": [],
+        "warnings": [
+          "asset lowest point z=0.35 (not resting on ground plane z=0)"
+        ],
+        "ground_z": 0.35,
+        "zfighting": [],
+        "floating": [],
+        "back_to_back": [],
+        "enclosed": [],
+        "objects": {
+          "NR01_V5_WEST_Full_Height_Wall": {
+            "verts": 96,
+            "faces": 188,
+            "tris": 188,
+            "ngons": 0,
+            "boundary_edges": 0,
+            "nonmanifold_edges": 0,
+            "wire_edges": 0,
+            "loose_verts": 0,
+            "degenerate_faces": 0,
+            "zero_length_edges": 0,
+            "inconsistent_normals_edges": 0,
+            "duplicate_verts": 0,
+            "islands": 1,
+            "inside_out_islands": 0,
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "materials": 1,
+            "uv_maps": 1,
+            "uv_oob_pct": 0.0,
+            "uv_zero_area_faces": 0,
+            "uv_overlap_pct": 0.0,
+            "uv_coverage_pct": 30.0
+          }
+        }
+      }
+    },
+    {
+      "name": "NR01_V5_EAST_Full_Height_Wall",
+      "bounds_before_export": [
+        [
+          2000.4100341796875,
+          2460.5,
+          251.90005493164062
+        ],
+        [
+          2000.72998046875,
+          2480.0,
+          256.25006103515625
+        ]
+      ],
+      "bounds_after_reimport": [
+        [
+          2000.4100341796875,
+          2460.5,
+          251.90003967285156
+        ],
+        [
+          2000.72998046875,
+          2480.0,
+          256.2500305175781
+        ]
+      ],
+      "max_coordinate_error_m": 3.0517578125e-05,
+      "signed_volume_local_m3": 27.114439938938215,
+      "matrix_determinant": 1.0,
+      "vertices": 96,
+      "triangles": 188,
+      "uv_maps": [
+        "LR06_WallBatchUV"
+      ],
+      "materials": [
+        "NR01_V9_Wall_Warm_Utility_Coat.001"
+      ],
+      "recentered_qa": {
+        "ok": true,
+        "pass": true,
+        "errors": [],
+        "warnings": [
+          "asset lowest point z=0.35 (not resting on ground plane z=0)"
+        ],
+        "ground_z": 0.35,
+        "zfighting": [],
+        "floating": [],
+        "back_to_back": [],
+        "enclosed": [],
+        "objects": {
+          "NR01_V5_EAST_Full_Height_Wall": {
+            "verts": 96,
+            "faces": 188,
+            "tris": 188,
+            "ngons": 0,
+            "boundary_edges": 0,
+            "nonmanifold_edges": 0,
+            "wire_edges": 0,
+            "loose_verts": 0,
+            "degenerate_faces": 0,
+            "zero_length_edges": 0,
+            "inconsistent_normals_edges": 0,
+            "duplicate_verts": 0,
+            "islands": 1,
+            "inside_out_islands": 0,
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "materials": 1,
+            "uv_maps": 1,
+            "uv_oob_pct": 0.0,
+            "uv_zero_area_faces": 0,
+            "uv_overlap_pct": 0.0,
+            "uv_coverage_pct": 29.8
+          }
+        }
+      }
+    },
+    {
+      "name": "NR01_V5_SOUTH_LEFT_RETURN_Structural_Screen",
+      "bounds_before_export": [
+        [
+          1995.93994140625,
+          2465.9599609375,
+          251.89004516601562
+        ],
+        [
+          1998.4100341796875,
+          2466.43994140625,
+          255.20004272460938
+        ]
+      ],
+      "bounds_after_reimport": [
+        [
+          1995.93994140625,
+          2465.9599609375,
+          251.89002990722656
+        ],
+        [
+          1998.4100341796875,
+          2466.43994140625,
+          255.20004272460938
+        ]
+      ],
+      "max_coordinate_error_m": 1.52587890625e-05,
+      "signed_volume_local_m3": 3.911811085801875,
+      "matrix_determinant": 1.0,
+      "vertices": 96,
+      "triangles": 188,
+      "uv_maps": [
+        "LR06_WallBatchUV"
+      ],
+      "materials": [
+        "NR01_V9_Wall_Warm_Utility_Coat.001"
+      ],
+      "recentered_qa": {
+        "ok": true,
+        "pass": true,
+        "errors": [],
+        "warnings": [
+          "asset lowest point z=0.34 (not resting on ground plane z=0)"
+        ],
+        "ground_z": 0.34,
+        "zfighting": [],
+        "floating": [],
+        "back_to_back": [],
+        "enclosed": [],
+        "objects": {
+          "NR01_V5_SOUTH_LEFT_RETURN_Structural_Screen": {
+            "verts": 96,
+            "faces": 188,
+            "tris": 188,
+            "ngons": 0,
+            "boundary_edges": 0,
+            "nonmanifold_edges": 0,
+            "wire_edges": 0,
+            "loose_verts": 0,
+            "degenerate_faces": 0,
+            "zero_length_edges": 0,
+            "inconsistent_normals_edges": 0,
+            "duplicate_verts": 0,
+            "islands": 1,
+            "inside_out_islands": 0,
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "materials": 1,
+            "uv_maps": 1,
+            "uv_oob_pct": 0.0,
+            "uv_zero_area_faces": 0,
+            "uv_overlap_pct": 0.0,
+            "uv_coverage_pct": 3.3
+          }
+        }
+      }
+    },
+    {
+      "name": "NR01_V5_NORTH_RIGHT_RETURN_Structural_Screen",
+      "bounds_before_export": [
+        [
+          1997.93994140625,
+          2474.56005859375,
+          251.89004516601562
+        ],
+        [
+          2000.4100341796875,
+          2475.0400390625,
+          255.20004272460938
+        ]
+      ],
+      "bounds_after_reimport": [
+        [
+          1997.93994140625,
+          2474.56005859375,
+          251.89002990722656
+        ],
+        [
+          2000.4100341796875,
+          2475.0400390625,
+          255.2000274658203
+        ]
+      ],
+      "max_coordinate_error_m": 1.52587890625e-05,
+      "signed_volume_local_m3": 3.9118135185035894,
+      "matrix_determinant": 1.0,
+      "vertices": 96,
+      "triangles": 188,
+      "uv_maps": [
+        "LR06_WallBatchUV"
+      ],
+      "materials": [
+        "NR01_V9_Wall_Warm_Utility_Coat.001"
+      ],
+      "recentered_qa": {
+        "ok": true,
+        "pass": true,
+        "errors": [],
+        "warnings": [
+          "asset lowest point z=0.34 (not resting on ground plane z=0)"
+        ],
+        "ground_z": 0.34,
+        "zfighting": [],
+        "floating": [],
+        "back_to_back": [],
+        "enclosed": [],
+        "objects": {
+          "NR01_V5_NORTH_RIGHT_RETURN_Structural_Screen": {
+            "verts": 96,
+            "faces": 188,
+            "tris": 188,
+            "ngons": 0,
+            "boundary_edges": 0,
+            "nonmanifold_edges": 0,
+            "wire_edges": 0,
+            "loose_verts": 0,
+            "degenerate_faces": 0,
+            "zero_length_edges": 0,
+            "inconsistent_normals_edges": 0,
+            "duplicate_verts": 0,
+            "islands": 1,
+            "inside_out_islands": 0,
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "materials": 1,
+            "uv_maps": 1,
+            "uv_oob_pct": 0.0,
+            "uv_zero_area_faces": 0,
+            "uv_overlap_pct": 0.0,
+            "uv_coverage_pct": 3.6
+          }
+        }
+      }
+    },
+    {
+      "name": "NR01_V5_SOUTH_Raised_Roof_End_Fascia",
+      "bounds_before_export": [
+        [
+          1995.6199951171875,
+          2460.330078125,
+          256.6500549316406
+        ],
+        [
+          2000.72998046875,
+          2460.530029296875,
+          258.0200500488281
+        ]
+      ],
+      "bounds_after_reimport": [
+        [
+          1995.6199951171875,
+          2460.330078125,
+          256.6500244140625
+        ],
+        [
+          2000.72998046875,
+          2460.530029296875,
+          258.0200500488281
+        ]
+      ],
+      "max_coordinate_error_m": 3.0517578125e-05,
+      "signed_volume_local_m3": 1.3979905919407145,
+      "matrix_determinant": 1.0,
+      "vertices": 96,
+      "triangles": 188,
+      "uv_maps": [
+        "LR06_WallBatchUV"
+      ],
+      "materials": [
+        "NR01_V9_Wall_Warm_Utility_Coat.001"
+      ],
+      "recentered_qa": {
+        "ok": true,
+        "pass": true,
+        "errors": [],
+        "warnings": [
+          "asset lowest point z=5.1 (not resting on ground plane z=0)"
+        ],
+        "ground_z": 5.1,
+        "zfighting": [],
+        "floating": [],
+        "back_to_back": [],
+        "enclosed": [],
+        "objects": {
+          "NR01_V5_SOUTH_Raised_Roof_End_Fascia": {
+            "verts": 96,
+            "faces": 188,
+            "tris": 188,
+            "ngons": 0,
+            "boundary_edges": 0,
+            "nonmanifold_edges": 0,
+            "wire_edges": 0,
+            "loose_verts": 0,
+            "degenerate_faces": 0,
+            "zero_length_edges": 0,
+            "inconsistent_normals_edges": 0,
+            "duplicate_verts": 0,
+            "islands": 1,
+            "inside_out_islands": 0,
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "materials": 1,
+            "uv_maps": 1,
+            "uv_oob_pct": 0.0,
+            "uv_zero_area_faces": 0,
+            "uv_overlap_pct": 0.0,
+            "uv_coverage_pct": 2.7
+          }
+        }
+      }
+    },
+    {
+      "name": "NR01_V5_NORTH_Raised_Roof_End_Fascia",
+      "bounds_before_export": [
+        [
+          1995.6199951171875,
+          2480.0,
+          256.7950439453125
+        ],
+        [
+          2000.72998046875,
+          2480.199951171875,
+          258.1400451660156
+        ]
+      ],
+      "bounds_after_reimport": [
+        [
+          1995.6199951171875,
+          2480.0,
+          256.7950439453125
+        ],
+        [
+          2000.72998046875,
+          2480.199951171875,
+          258.1400451660156
+        ]
+      ],
+      "max_coordinate_error_m": 0.0,
+      "signed_volume_local_m3": 1.372443949191734,
+      "matrix_determinant": 1.0,
+      "vertices": 96,
+      "triangles": 188,
+      "uv_maps": [
+        "LR06_WallBatchUV"
+      ],
+      "materials": [
+        "NR01_V9_Wall_Warm_Utility_Coat.001"
+      ],
+      "recentered_qa": {
+        "ok": true,
+        "pass": true,
+        "errors": [],
+        "warnings": [
+          "asset lowest point z=5.245 (not resting on ground plane z=0)"
+        ],
+        "ground_z": 5.245,
+        "zfighting": [],
+        "floating": [],
+        "back_to_back": [],
+        "enclosed": [],
+        "objects": {
+          "NR01_V5_NORTH_Raised_Roof_End_Fascia": {
+            "verts": 96,
+            "faces": 188,
+            "tris": 188,
+            "ngons": 0,
+            "boundary_edges": 0,
+            "nonmanifold_edges": 0,
+            "wire_edges": 0,
+            "loose_verts": 0,
+            "degenerate_faces": 0,
+            "zero_length_edges": 0,
+            "inconsistent_normals_edges": 0,
+            "duplicate_verts": 0,
+            "islands": 1,
+            "inside_out_islands": 0,
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "materials": 1,
+            "uv_maps": 1,
+            "uv_oob_pct": 0.0,
+            "uv_zero_area_faces": 0,
+            "uv_overlap_pct": 0.0,
+            "uv_coverage_pct": 2.7
+          }
+        }
+      }
+    }
+  ],
+  "reference_cube_signed_volume_m3": 0.9999999999999999,
+  "atlas_cross_object_overlap_samples": 0,
+  "random": {
+    "ok": true,
+    "sheet": "NR12WallBatchPilot/review_random.png",
+    "views": [
+      "NR12WallBatchPilot/review_random_front.png",
+      "NR12WallBatchPilot/review_random_right.png",
+      "NR12WallBatchPilot/review_random_top.png",
+      "NR12WallBatchPilot/review_random_three_quarter.png"
+    ],
+    "layout": "2x2",
+    "order": [
+      "front",
+      "right",
+      "top",
+      "three_quarter"
+    ]
+  },
+  "wire": {
+    "ok": true,
+    "sheet": "NR12WallBatchPilot/review_wire.png",
+    "views": [
+      "NR12WallBatchPilot/review_wire_front.png",
+      "NR12WallBatchPilot/review_wire_right.png",
+      "NR12WallBatchPilot/review_wire_top.png",
+      "NR12WallBatchPilot/review_wire_three_quarter.png"
+    ],
+    "layout": "2x2",
+    "order": [
+      "front",
+      "right",
+      "top",
+      "three_quarter"
+    ]
+  }
+}
