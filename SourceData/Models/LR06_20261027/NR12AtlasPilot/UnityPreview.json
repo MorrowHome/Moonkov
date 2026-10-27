@@ -1,0 +1,93 @@
+{
+  "scope": "isolated_editor_preview_only",
+  "formalSceneChanged": false,
+  "sourceLightsConverted": false,
+  "note": "Preview uses temporary illustrative lighting; it is not a physical match to Blender or a gameplay test.",
+  "materialChecks": [
+    {
+      "name": "NR01_V5_EAST_Full_Height_Wall",
+      "mesh": "Assets/MoonEnvironment/Variants/LR06AtlasPilot/Models/NR12_corridor_atlas_pilot.fbx",
+      "material": "Assets/MoonEnvironment/Variants/LR06AtlasPilot/Materials/LR06Atlas_Shared.mat",
+      "shader": "Universal Render Pipeline/Lit",
+      "emission": "RGBA(0.000, 0.000, 0.000, 1.000)",
+      "baseMap": "Assets/MoonEnvironment/Variants/LR06AtlasPilot/Textures/atlas_basecolor.png",
+      "mask": "Assets/MoonEnvironment/Variants/LR06AtlasPilot/Textures/atlas_metallic_smoothness.png",
+      "normal": "Assets/MoonEnvironment/Variants/LR06AtlasPilot/Textures/atlas_normal.exr",
+      "uvCount": 396,
+      "normalCount": 396,
+      "tangentCount": 396
+    },
+    {
+      "name": "NR01_V5_SOUTH_TRANSFER_Worklight_Diffuser",
+      "mesh": "Assets/MoonEnvironment/Variants/LR06AtlasPilot/Models/NR12_corridor_atlas_pilot.fbx",
+      "material": "Assets/MoonEnvironment/Variants/LR06AtlasPilot/Materials/LR06Atlas_Diffuser.mat",
+      "shader": "Universal Render Pipeline/Lit",
+      "emission": "RGBA(2.000, 1.360, 0.760, 2.000)",
+      "baseMap": null,
+      "mask": null,
+      "normal": null,
+      "uvCount": 0,
+      "normalCount": 384,
+      "tangentCount": 384
+    },
+    {
+      "name": "NR01_V5_SOUTH_TRANSFER_Worklight_Housing",
+      "mesh": "Assets/MoonEnvironment/Variants/LR06AtlasPilot/Models/NR12_corridor_atlas_pilot.fbx",
+      "material": "Assets/MoonEnvironment/Variants/LR06AtlasPilot/Materials/LR06Atlas_Shared.mat",
+      "shader": "Universal Render Pipeline/Lit",
+      "emission": "RGBA(0.000, 0.000, 0.000, 1.000)",
+      "baseMap": "Assets/MoonEnvironment/Variants/LR06AtlasPilot/Textures/atlas_basecolor.png",
+      "mask": "Assets/MoonEnvironment/Variants/LR06AtlasPilot/Textures/atlas_metallic_smoothness.png",
+      "normal": "Assets/MoonEnvironment/Variants/LR06AtlasPilot/Textures/atlas_normal.exr",
+      "uvCount": 384,
+      "normalCount": 384,
+      "tangentCount": 384
+    }
+  ],
+  "shots": [
+    {
+      "path": "Library/BuildValidation/LR06AtlasPilot/fixture.png",
+      "position": [
+        1993.8,
+        254.2,
+        2457.6
+      ],
+      "look": [
+        1998.4,
+        255.3,
+        2463.0
+      ],
+      "illustrativeWarmPointIntensity": 9.0
+    },
+    {
+      "path": "Library/BuildValidation/LR06AtlasPilot/wall_front.png",
+      "position": [
+        1992.5,
+        254.6,
+        2467.2
+      ],
+      "look": [
+        2000.5,
+        254.2,
+        2468.0
+      ],
+      "illustrativeWarmPointIntensity": 9.0
+    },
+    {
+      "path": "Library/BuildValidation/LR06AtlasPilot/wall_back.png",
+      "position": [
+        2008.5,
+        254.6,
+        2467.2
+      ],
+      "look": [
+        2000.5,
+        254.2,
+        2468.0
+      ],
+      "illustrativeWarmPointIntensity": 9.0
+    }
+  ],
+  "originalScene": "MainMenu",
+  "originalSceneDirty": false
+}

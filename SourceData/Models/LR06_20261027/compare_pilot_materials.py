@@ -2,15 +2,18 @@
 import bpy
 import json
 import math
+import sys
 import numpy as np
 from mathutils import Vector
 from pathlib import Path
 
 root=Path(__file__).resolve().parent
-pilot=root/'NR12Pilot_Corrected'
+pilot=root/(sys.argv[sys.argv.index('--')+1] if '--' in sys.argv and len(sys.argv)>sys.argv.index('--')+1 else 'NR12Pilot_Corrected')
 source=root/'Moonkov_WH01_HU01_LR06_Corridor_Warm_Fixture_Glow_REVIEW.blend'
 data=json.loads((pilot/'PilotManifest.json').read_text())
-assert bpy.ops.import_scene.fbx(filepath=str(pilot/'NR12_corridor_pilot.fbx'),use_custom_normals=True,
+fbx=Path(data['fbx']['path'])
+if not fbx.is_absolute():fbx=root/fbx
+assert bpy.ops.import_scene.fbx(filepath=str(fbx),use_custom_normals=True,
                                 use_image_search=False)=={'FINISHED'}
 source_names=tuple(o['source_material'] for o in data['objects'])
 with bpy.data.libraries.load(str(source),link=False) as (available,loaded):
@@ -64,13 +67,16 @@ for index,entry in enumerate(data['objects']):
     bsdf=next(n for n in nodes if n.type=='BSDF_PRINCIPLED')
     bsdf.inputs['Metallic'].default_value=entry['metallic']
     if index<2:
-        base=nodes.new('ShaderNodeTexImage');base.image=bpy.data.images.load(str(pilot/f'pilot_{index}_basecolor.png'))
+        def texture(key):
+            path=Path(entry['textures'][key]['path'])
+            return str(path if path.is_absolute() else root/path)
+        base=nodes.new('ShaderNodeTexImage');base.image=bpy.data.images.load(texture('basecolor'))
         base.image.colorspace_settings.name='sRGB'
-        rough=nodes.new('ShaderNodeTexImage');rough.image=bpy.data.images.load(str(pilot/f'pilot_{index}_roughness.png'))
+        rough=nodes.new('ShaderNodeTexImage');rough.image=bpy.data.images.load(texture('roughness'))
         rough.image.colorspace_settings.name='Non-Color'
-        normal=nodes.new('ShaderNodeTexImage');normal.image=bpy.data.images.load(str(pilot/f'pilot_{index}_normal.exr'))
+        normal=nodes.new('ShaderNodeTexImage');normal.image=bpy.data.images.load(texture('normal'))
         normal.image.colorspace_settings.name='Non-Color'
-        normnode=nodes.new('ShaderNodeNormalMap');normnode.uv_map='LR06_BakeUV'
+        normnode=nodes.new('ShaderNodeNormalMap');normnode.uv_map=obj.data.uv_layers.active.name
         mat.node_tree.links.new(base.outputs['Color'],bsdf.inputs['Base Color'])
         mat.node_tree.links.new(rough.outputs['Color'],bsdf.inputs['Roughness'])
         mat.node_tree.links.new(normal.outputs['Color'],normnode.inputs['Color'])

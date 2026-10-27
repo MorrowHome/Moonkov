@@ -1,0 +1,218 @@
+{
+  "status": "two_object_atlas_trial_not_unity_imported",
+  "source_sha256": "cdb003ad58e2c081076cc874eb9f1c4fdf3c216e056321257dabcf5d6f817054",
+  "objects": [
+    {
+      "object": "NR01_V5_EAST_Full_Height_Wall",
+      "source_material": "NR01_V9_Wall_Warm_Utility_Coat",
+      "source_has_uv": false,
+      "reversed_closed_mesh_in_export_copy": true,
+      "source_world_bounds": [
+        [
+          2000.4100341796875,
+          2460.5,
+          251.90005493164062
+        ],
+        [
+          2000.72998046875,
+          2480.0,
+          256.25006103515625
+        ]
+      ],
+      "base_color": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929,
+        1.0
+      ],
+      "metallic": 0.014999999664723873,
+      "roughness": 0.5,
+      "emission_color": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "emission_strength": 0.0,
+      "linked_inputs": [
+        "Base Color",
+        "Roughness",
+        "Normal"
+      ],
+      "textures": {
+        "basecolor": {
+          "path": "NR12AtlasPilot/atlas_basecolor.png",
+          "colorspace": "sRGB",
+          "bytes": 1003475,
+          "sha256": "0f700687de72801afa44555ed11bf985820e8c8ff9a4fb28d10c0d2901b0ffc1"
+        },
+        "roughness": {
+          "path": "NR12AtlasPilot/atlas_roughness.png",
+          "colorspace": "Non-Color",
+          "bytes": 804634,
+          "sha256": "023ca8415bcadd8112d857305af9aad292b45493cb8ed4a0b3a1fe9c25cc3c02"
+        },
+        "metallic": {
+          "path": "NR12AtlasPilot/atlas_metallic.png",
+          "colorspace": "Non-Color",
+          "bytes": 43533,
+          "sha256": "4422dd7cb45f11c240bdb0e32b0f090577931ba75b7c61f0269ced450bf7591c"
+        },
+        "mask": {
+          "path": "NR12AtlasPilot/atlas_metallic_smoothness.png",
+          "colorspace": "Non-Color",
+          "bytes": 1147012,
+          "sha256": "6f4a88d5ca41328062f4abdaf11541b24be61ebd708519f22b1dfce9049be4ea"
+        },
+        "normal": {
+          "path": "NR12AtlasPilot/atlas_normal.exr",
+          "colorspace": "Non-Color",
+          "bytes": 16794021,
+          "sha256": "3000af8e7c44fedf40c110c8e0b0f78524b57eeb82c03f13a607edf7371ba071"
+        }
+      },
+      "normal_status": "atlas_bake_needs_visual_comparison",
+      "normal_max_channel_difference": 9.298324584960938e-05,
+      "normal_strong_control_max_difference": 0.26543259620666504
+    },
+    {
+      "object": "NR01_V5_SOUTH_TRANSFER_Worklight_Housing",
+      "source_material": "NR01_Dark_Structural_Steel",
+      "source_has_uv": false,
+      "reversed_closed_mesh_in_export_copy": true,
+      "source_world_bounds": [
+        [
+          1996.375,
+          2462.41015625,
+          256.050048828125
+        ],
+        [
+          1999.97509765625,
+          2462.7900390625,
+          256.1900634765625
+        ]
+      ],
+      "base_color": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929,
+        1.0
+      ],
+      "metallic": 0.4300000071525574,
+      "roughness": 0.5,
+      "emission_color": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "emission_strength": 0.0,
+      "linked_inputs": [
+        "Base Color",
+        "Roughness",
+        "Normal"
+      ],
+      "textures": {
+        "basecolor": {
+          "path": "NR12AtlasPilot/atlas_basecolor.png",
+          "colorspace": "sRGB",
+          "bytes": 1003475,
+          "sha256": "0f700687de72801afa44555ed11bf985820e8c8ff9a4fb28d10c0d2901b0ffc1"
+        },
+        "roughness": {
+          "path": "NR12AtlasPilot/atlas_roughness.png",
+          "colorspace": "Non-Color",
+          "bytes": 804634,
+          "sha256": "023ca8415bcadd8112d857305af9aad292b45493cb8ed4a0b3a1fe9c25cc3c02"
+        },
+        "metallic": {
+          "path": "NR12AtlasPilot/atlas_metallic.png",
+          "colorspace": "Non-Color",
+          "bytes": 43533,
+          "sha256": "4422dd7cb45f11c240bdb0e32b0f090577931ba75b7c61f0269ced450bf7591c"
+        },
+        "mask": {
+          "path": "NR12AtlasPilot/atlas_metallic_smoothness.png",
+          "colorspace": "Non-Color",
+          "bytes": 1147012,
+          "sha256": "6f4a88d5ca41328062f4abdaf11541b24be61ebd708519f22b1dfce9049be4ea"
+        },
+        "normal": {
+          "path": "NR12AtlasPilot/atlas_normal.exr",
+          "colorspace": "Non-Color",
+          "bytes": 16794021,
+          "sha256": "3000af8e7c44fedf40c110c8e0b0f78524b57eeb82c03f13a607edf7371ba071"
+        }
+      },
+      "normal_status": "atlas_bake_needs_visual_comparison",
+      "normal_max_channel_difference": 0.0009668469429016113
+    },
+    {
+      "object": "NR01_V5_SOUTH_TRANSFER_Worklight_Diffuser",
+      "source_material": "LR06_NR01_V5_Transfer_Diffuser_Warm_LOCAL_ONLY",
+      "source_has_uv": false,
+      "reversed_closed_mesh_in_export_copy": true,
+      "source_world_bounds": [
+        [
+          1996.455078125,
+          2462.465087890625,
+          256.030029296875
+        ],
+        [
+          1999.89501953125,
+          2462.735107421875,
+          256.050048828125
+        ]
+      ],
+      "base_color": [
+        0.6200000047683716,
+        0.6700000166893005,
+        0.6499999761581421,
+        1.0
+      ],
+      "metallic": 0.0,
+      "roughness": 0.47999998927116394,
+      "emission_color": [
+        1.0,
+        0.6800000071525574,
+        0.3799999952316284,
+        1.0
+      ],
+      "emission_strength": 2.0,
+      "linked_inputs": [],
+      "textures": {},
+      "normal_status": "constant"
+    }
+  ],
+  "fbx": {
+    "path": "NR12AtlasPilot/NR12_corridor_atlas_pilot.fbx",
+    "colorspace": null,
+    "bytes": 39292,
+    "sha256": "a9a509f8d52761edd9b7c10bc06dff091ffb83b28012a1fd7213c3c238123965"
+  },
+  "material_probe": [
+    {
+      "object": "NR01_V5_EAST_Full_Height_Wall",
+      "uv": [
+        0.15114089846611023,
+        0.6646425127983093
+      ],
+      "metallic": 0.014999999664723873,
+      "expected_metallic": 0.014999999664723873
+    },
+    {
+      "object": "NR01_V5_SOUTH_TRANSFER_Worklight_Housing",
+      "uv": [
+        0.5202983021736145,
+        0.28878018260002136
+      ],
+      "metallic": 0.43000003695487976,
+      "expected_metallic": 0.4300000071525574
+    }
+  ],
+  "notes": [
+    "Only generated sample UVs were replaced; no source UV or original blend changed.",
+    "No lighting was baked; two-object atlas is a scalability experiment.",
+    "Requires source/baked visual comparison and Unity validation before wider use."
+  ]
+}

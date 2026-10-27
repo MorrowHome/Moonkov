@@ -1,0 +1,19 @@
+{
+  "scope": "isolated Blender comparison of source nodes and baked maps, same geometry/camera/lights; not Unity acceptance",
+  "samples": 64,
+  "compared_pixels": 349483,
+  "absolute_decoded_png_rgb_mean": 0.005195233505219221,
+  "absolute_decoded_png_rgb_p95": 0.003921583294868469,
+  "reference_mean_rgb": [
+    0.2742336392402649,
+    0.2723273038864136,
+    0.2573621869087219
+  ],
+  "baked_mean_rgb": [
+    0.2747519314289093,
+    0.2727349102497101,
+    0.2582615911960602
+  ],
+  "source_render": "NR12AtlasPilot/material_compare_source.png",
+  "baked_render": "NR12AtlasPilot/material_compare_baked.png"
+}

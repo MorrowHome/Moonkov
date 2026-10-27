@@ -1,0 +1,276 @@
+{
+  "status": "blender_roundtrip_only_not_Unity",
+  "objects": [
+    {
+      "name": "NR01_V5_EAST_Full_Height_Wall",
+      "bounds_before_export": [
+        [
+          2000.4100341796875,
+          2460.5,
+          251.90005493164062
+        ],
+        [
+          2000.72998046875,
+          2480.0,
+          256.25006103515625
+        ]
+      ],
+      "bounds_after_reimport": [
+        [
+          2000.4100341796875,
+          2460.5,
+          251.90003967285156
+        ],
+        [
+          2000.72998046875,
+          2480.0,
+          256.2500305175781
+        ]
+      ],
+      "max_coordinate_error_m": 3.0517578125e-05,
+      "signed_volume_local_m3": 27.114439938938215,
+      "matrix_determinant": 1.0,
+      "vertices": 96,
+      "triangles": 188,
+      "uv_maps": [
+        "LR06_AtlasUV"
+      ],
+      "materials": [
+        "NR01_V9_Wall_Warm_Utility_Coat"
+      ],
+      "recentered_qa": {
+        "ok": true,
+        "pass": true,
+        "errors": [],
+        "warnings": [
+          "asset lowest point z=0.35 (not resting on ground plane z=0)"
+        ],
+        "ground_z": 0.35,
+        "zfighting": [],
+        "floating": [],
+        "back_to_back": [],
+        "enclosed": [],
+        "objects": {
+          "NR01_V5_EAST_Full_Height_Wall": {
+            "verts": 96,
+            "faces": 188,
+            "tris": 188,
+            "ngons": 0,
+            "boundary_edges": 0,
+            "nonmanifold_edges": 0,
+            "wire_edges": 0,
+            "loose_verts": 0,
+            "degenerate_faces": 0,
+            "zero_length_edges": 0,
+            "inconsistent_normals_edges": 0,
+            "duplicate_verts": 0,
+            "islands": 1,
+            "inside_out_islands": 0,
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "materials": 1,
+            "uv_maps": 1,
+            "uv_oob_pct": 0.0,
+            "uv_zero_area_faces": 0,
+            "uv_overlap_pct": 0.0,
+            "uv_coverage_pct": 46.8
+          }
+        }
+      }
+    },
+    {
+      "name": "NR01_V5_SOUTH_TRANSFER_Worklight_Housing",
+      "bounds_before_export": [
+        [
+          1996.375,
+          2462.41015625,
+          256.050048828125
+        ],
+        [
+          1999.97509765625,
+          2462.7900390625,
+          256.1900634765625
+        ]
+      ],
+      "bounds_after_reimport": [
+        [
+          1996.3748779296875,
+          2462.41015625,
+          256.050048828125
+        ],
+        [
+          1999.9749755859375,
+          2462.7900390625,
+          256.1900634765625
+        ]
+      ],
+      "max_coordinate_error_m": 0.0001220703125,
+      "signed_volume_local_m3": 0.19092965420147634,
+      "matrix_determinant": 1.0,
+      "vertices": 96,
+      "triangles": 188,
+      "uv_maps": [
+        "LR06_AtlasUV"
+      ],
+      "materials": [
+        "NR01_Dark_Structural_Steel"
+      ],
+      "recentered_qa": {
+        "ok": true,
+        "pass": true,
+        "errors": [],
+        "warnings": [
+          "asset lowest point z=-0.07 (not resting on ground plane z=0)"
+        ],
+        "ground_z": -0.07,
+        "zfighting": [],
+        "floating": [],
+        "back_to_back": [],
+        "enclosed": [],
+        "objects": {
+          "NR01_V5_SOUTH_TRANSFER_Worklight_Housing": {
+            "verts": 96,
+            "faces": 188,
+            "tris": 188,
+            "ngons": 0,
+            "boundary_edges": 0,
+            "nonmanifold_edges": 0,
+            "wire_edges": 0,
+            "loose_verts": 0,
+            "degenerate_faces": 0,
+            "zero_length_edges": 0,
+            "inconsistent_normals_edges": 0,
+            "duplicate_verts": 0,
+            "islands": 1,
+            "inside_out_islands": 0,
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "materials": 1,
+            "uv_maps": 1,
+            "uv_oob_pct": 0.0,
+            "uv_zero_area_faces": 0,
+            "uv_overlap_pct": 0.0,
+            "uv_coverage_pct": 0.9
+          }
+        }
+      }
+    },
+    {
+      "name": "NR01_V5_SOUTH_TRANSFER_Worklight_Diffuser",
+      "bounds_before_export": [
+        [
+          1996.455078125,
+          2462.465087890625,
+          256.030029296875
+        ],
+        [
+          1999.89501953125,
+          2462.735107421875,
+          256.050048828125
+        ]
+      ],
+      "bounds_after_reimport": [
+        [
+          1996.4549560546875,
+          2462.465087890625,
+          256.030029296875
+        ],
+        [
+          1999.8948974609375,
+          2462.735107421875,
+          256.050048828125
+        ]
+      ],
+      "max_coordinate_error_m": 0.0001220703125,
+      "signed_volume_local_m3": 0.01851642982106315,
+      "matrix_determinant": 1.0,
+      "vertices": 96,
+      "triangles": 188,
+      "uv_maps": [],
+      "materials": [
+        "LR06_NR01_V5_Transfer_Diffuser_Warm_LOCAL_ONLY.001"
+      ],
+      "recentered_qa": {
+        "ok": true,
+        "pass": true,
+        "errors": [],
+        "warnings": [
+          "NR01_V5_SOUTH_TRANSFER_Worklight_Diffuser: no UV map",
+          "asset lowest point z=-0.01 (not resting on ground plane z=0)"
+        ],
+        "ground_z": -0.01,
+        "zfighting": [],
+        "floating": [],
+        "back_to_back": [],
+        "enclosed": [],
+        "objects": {
+          "NR01_V5_SOUTH_TRANSFER_Worklight_Diffuser": {
+            "verts": 96,
+            "faces": 188,
+            "tris": 188,
+            "ngons": 0,
+            "boundary_edges": 0,
+            "nonmanifold_edges": 0,
+            "wire_edges": 0,
+            "loose_verts": 0,
+            "degenerate_faces": 0,
+            "zero_length_edges": 0,
+            "inconsistent_normals_edges": 0,
+            "duplicate_verts": 0,
+            "islands": 1,
+            "inside_out_islands": 0,
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "materials": 1,
+            "uv_maps": 0
+          }
+        }
+      }
+    }
+  ],
+  "reference_cube_signed_volume_m3": 0.9999999999999999,
+  "atlas_cross_object_overlap_samples": 0,
+  "random": {
+    "ok": true,
+    "sheet": "NR12AtlasPilot/review_random.png",
+    "views": [
+      "NR12AtlasPilot/review_random_front.png",
+      "NR12AtlasPilot/review_random_right.png",
+      "NR12AtlasPilot/review_random_top.png",
+      "NR12AtlasPilot/review_random_three_quarter.png"
+    ],
+    "layout": "2x2",
+    "order": [
+      "front",
+      "right",
+      "top",
+      "three_quarter"
+    ]
+  },
+  "wire": {
+    "ok": true,
+    "sheet": "NR12AtlasPilot/review_wire.png",
+    "views": [
+      "NR12AtlasPilot/review_wire_front.png",
+      "NR12AtlasPilot/review_wire_right.png",
+      "NR12AtlasPilot/review_wire_top.png",
+      "NR12AtlasPilot/review_wire_three_quarter.png"
+    ],
+    "layout": "2x2",
+    "order": [
+      "front",
+      "right",
+      "top",
+      "three_quarter"
+    ]
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "scope": "Object Info Random only; same-named source wall versus isolated FBX copy",
+  "object": "NR01_V5_EAST_Full_Height_Wall",
+  "source": {
+    "nonzero_pixels": 2093,
+    "median": 0.9324284791946411,
+    "max": 0.9324285387992859
+  },
+  "fbx_copy": {
+    "nonzero_pixels": 2237,
+    "median": 0.9324284791946411,
+    "max": 0.9324285387992859
+  },
+  "absolute_difference": 0.0,
+  "source_file_saved": false
+}

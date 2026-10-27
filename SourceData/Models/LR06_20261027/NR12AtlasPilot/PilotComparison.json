@@ -1,0 +1,64 @@
+{
+  "scope": "three isolated Editor preview cameras with the same temporary lights; not source-lighting acceptance",
+  "uv_density": {
+    "separate": [
+      {
+        "object": "NR01_V5_EAST_Full_Height_Wall",
+        "surface_area_m2": 183.40023797589802,
+        "atlas_fraction": 0.4693240591994886,
+        "density_texels_per_metre_area_weighted_p10": 26.10684661263548,
+        "density_texels_per_metre_area_weighted_median": 26.106846640487998,
+        "density_texels_per_metre_area_weighted_p90": 26.106892752237947
+      },
+      {
+        "object": "NR01_V5_SOUTH_TRANSFER_Worklight_Housing",
+        "surface_area_m2": 3.762388808561754,
+        "atlas_fraction": 0.28154215890140327,
+        "density_texels_per_metre_area_weighted_p10": 138.59709088772013,
+        "density_texels_per_metre_area_weighted_median": 141.54445599002352,
+        "density_texels_per_metre_area_weighted_p90": 141.5444565234364
+      }
+    ],
+    "atlas": [
+      {
+        "object": "NR01_V5_EAST_Full_Height_Wall",
+        "surface_area_m2": 183.40023797589802,
+        "atlas_fraction": 0.47195216770075027,
+        "density_texels_per_metre_area_weighted_p10": 52.061717148626045,
+        "density_texels_per_metre_area_weighted_median": 52.06172044611739,
+        "density_texels_per_metre_area_weighted_p90": 52.06181266363505
+      },
+      {
+        "object": "NR01_V5_SOUTH_TRANSFER_Worklight_Housing",
+        "surface_area_m2": 3.762388808561754,
+        "atlas_fraction": 0.009557226949168995,
+        "density_texels_per_metre_area_weighted_p10": 51.32601275176354,
+        "density_texels_per_metre_area_weighted_median": 52.06562125282053,
+        "density_texels_per_metre_area_weighted_p90": 52.06562125282053
+      }
+    ]
+  },
+  "unity_preview_comparisons": [
+    {
+      "shot": "fixture",
+      "foreground_pixels": 352428,
+      "decoded_rgb_mean_abs_difference": 0.0005489537725225091,
+      "decoded_rgb_p95_abs_difference": 0.003921568393707275,
+      "decoded_rgb_max_abs_difference": 0.0313725471496582
+    },
+    {
+      "shot": "wall_front",
+      "foreground_pixels": 585225,
+      "decoded_rgb_mean_abs_difference": 0.00036821546382270753,
+      "decoded_rgb_p95_abs_difference": 0.003921568393707275,
+      "decoded_rgb_max_abs_difference": 0.0156862735748291
+    },
+    {
+      "shot": "wall_back",
+      "foreground_pixels": 595698,
+      "decoded_rgb_mean_abs_difference": 0.001080009387806058,
+      "decoded_rgb_p95_abs_difference": 0.003921568393707275,
+      "decoded_rgb_max_abs_difference": 0.023529410362243652
+    }
+  ]
+}

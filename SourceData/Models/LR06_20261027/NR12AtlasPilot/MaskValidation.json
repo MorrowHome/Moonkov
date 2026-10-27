@@ -1,0 +1,11 @@
+{
+  "dimensions": [
+    1024,
+    1024
+  ],
+  "compared_pixels": 565332,
+  "metallic_max_error_16bit": 0,
+  "smoothness_max_error_16bit": 0,
+  "metallic_mean_error_16bit": 0.0,
+  "smoothness_mean_error_16bit": 0.0
+}
