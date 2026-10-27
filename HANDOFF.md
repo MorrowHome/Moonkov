@@ -22,6 +22,7 @@
 
 - 本轮单人验证时，编辑器主线程等待异步操作而卡住。我终止了该编辑器。重开时 Unity 检测到未保存的场景备份，但 Mac 已锁屏，无法处理恢复窗口。
 - 原文件 `Temp/__Backupscenes/0.backup` 保持原样。副本在 `Library/BuildValidation/SceneRecovery-20261027/0.backup`，SHA-256 为 `559ddf2286563a940515d4223152fc254c48f87da3d0979815b5e751964e3fc2`。不要删除备份或自动选择丢弃。
+- 备份内容含 `MainMenu`、`Main Camera`、`PauseMenu` 和主相机与游戏管理器组件；当前场景文件中这些组件只见于 `Assets/Scenes/MainMenu.unity`。因此备份很可能属于主菜单场景，但没有在 Unity 中打开和比对，不能确认未保存的具体内容。
 - 解锁后重新打开项目，检查恢复窗口和场景内容，再决定是否恢复。Unity 主线程不要对需要回到主线程的异步方法调用 `GetAwaiter().GetResult()`。
 - 场景处理完并完成导入后，先检查 Console。在编辑模式依次运行 `Moonkov / AI / Check Humanlike Decisions`、`Moonkov / AI / Check Shield Loadout`、`Moonkov / AI / Check Life Support Rules`、`Moonkov / AI / Check Food and Water Rules`、`Moonkov / AI / Check Machine and Trap Hearing`、`Moonkov / AI / Check Shared Loot Refill`、`Moonkov / AI / Check Local Exit Safety`、`Moonkov / Tactical Items / Run Authority and Physics Checks`、`Moonkov / Energy Grenade / Run Authority Checks`、`Tools / Moonkov / Check Footstep Perception`、`Tools / Moonkov / Check Loot Acoustics` 和 `Tools / Moonkov / Check Raid Action Server Requests`。这些夹具使用临时世界，不需要联机。
 - 在单 Editor 的 Play 模式另运行 `Tools / Moonkov / Check Halo Arsenal Rules`。它检查真实弹体命中、范围伤害和爆炸声线索，使用隔离物理场景；不能代替正式战局试玩。
