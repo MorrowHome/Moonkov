@@ -104,19 +104,21 @@ namespace Unity.MP_FPS
     // while a nearby human could watch it disappear from the map.
     public static class PmcLocalExitRules
     {
-        public const float NearbyRange = 30, SightRange = 100;
+        public const float NearbyRange = 30, SightRange = 100, AimedSightRange = 1000;
+        private const float AimedConeDot = .990268f; // Eight degrees around the current view.
         private static int s_WorldMask = int.MinValue;
         public static bool Nearby(Vector3 player, Vector3 actor) => !PmcGrenadeRules.Finite(player) ||
             !PmcGrenadeRules.Finite(actor) || (player - actor).sqrMagnitude <= NearbyRange * NearbyRange;
 
-        public static bool InSightCone(Vector3 eye, Vector3 forward, Vector3 actor)
+        public static bool InSightCone(Vector3 eye, Vector3 forward, Vector3 actor, bool aiming = false)
         {
             if (!PmcGrenadeRules.Finite(eye) || !PmcGrenadeRules.Finite(actor)) return true;
             Vector3 delta = actor + Vector3.up - eye;
             if (!PmcGrenadeRules.Finite(delta)) return true;
-            if (delta.sqrMagnitude > SightRange * SightRange) return false;
+            bool distant = delta.sqrMagnitude > SightRange * SightRange;
+            if (distant && (!aiming || delta.sqrMagnitude > AimedSightRange * AimedSightRange)) return false;
             if (!PmcGrenadeRules.Finite(forward) || forward.sqrMagnitude < .01f || delta.sqrMagnitude < .001f) return true;
-            return Vector3.Dot(forward.normalized, delta.normalized) >= .5f;
+            return Vector3.Dot(forward.normalized, delta.normalized) >= (distant ? AimedConeDot : .5f);
         }
 
         public static bool Observed(PhysicsScene scene, Vector3 actor, IReadOnlyList<RaidSpawnObserver> observers)
@@ -128,7 +130,7 @@ namespace Unity.MP_FPS
                 if (!observer.CheckVisibility) continue;
                 if (Nearby(observer.Position, actor)) return true;
                 Vector3 eye = observer.Position + Vector3.up * 1.6f;
-                if (!InSightCone(eye, observer.Forward, actor)) continue;
+                if (!InSightCone(eye, observer.Forward, actor, observer.Aiming)) continue;
                 bool Clear(Vector3 point)
                 {
                     Vector3 delta = point - eye;

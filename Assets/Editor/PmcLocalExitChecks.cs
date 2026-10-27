@@ -28,6 +28,15 @@ public static class PmcLocalExitChecks
             "distant observers need a view toward the local exit");
         Check(PmcLocalExitRules.InSightCone(Vector3.up * 1.6f, Vector3.zero, Vector3.forward * 50),
             "an unknown view direction is treated conservatively");
+        Check(PmcLocalExitRules.InSightCone(Vector3.up * 1.6f, Vector3.forward, Vector3.forward * 450, true) &&
+            !PmcLocalExitRules.InSightCone(Vector3.up * 1.6f, Vector3.forward, Vector3.forward * 450),
+            "a distant aimed view protects an actor beyond the ordinary sight range");
+        Check(!PmcLocalExitRules.InSightCone(Vector3.up * 1.6f, Vector3.forward, new Vector3(100, 0, 450), true) &&
+            !PmcLocalExitRules.InSightCone(Vector3.up * 1.6f, Vector3.forward, Vector3.back * 450, true) &&
+            !PmcLocalExitRules.InSightCone(Vector3.up * 1.6f, Vector3.forward, Vector3.forward * 1001, true),
+            "long-range protection remains bounded and follows the aimed direction");
+        Check(PmcLocalExitRules.InSightCone(Vector3.up * 1.6f, Vector3.zero, Vector3.forward * 450, true),
+            "unknown long-range aim remains conservative");
         float progress = 0;
         Check(!PmcLocalExitRules.Advance(ref progress, true, true, false, 7, 8) && progress == 7,
             "unobserved local extraction waits for its full timer");
@@ -77,6 +86,12 @@ public static class PmcLocalExitChecks
             var second = origin + Vector3.right * 35;
             observers.Add(new RaidSpawnObserver { Position = second, Forward = (actor - second).normalized, CheckVisibility = true });
             Require(PmcLocalExitRules.Observed(physics, actor, observers), "a second human with sight did not block departure");
+            observers.RemoveAt(1); observer.Aiming = true; observers[0] = observer;
+            actor = origin + Vector3.forward * 250;
+            wall.SetActive(false); Physics.SyncTransforms();
+            Require(PmcLocalExitRules.Observed(physics, actor, observers), "long-range aimed actor disappeared in clear view");
+            wall.SetActive(true); Physics.SyncTransforms();
+            Require(!PmcLocalExitRules.Observed(physics, actor, observers), "a wall did not block long-range aimed observation");
             return "PASS " + checks + " local exit physics checks";
         }
         finally

@@ -8,6 +8,7 @@ namespace Unity.MP_FPS
         public Vector3 Position;
         public Vector3 Forward;
         public bool CheckVisibility;
+        public bool Aiming;
     }
 
     /// <summary>Bounded physical checks shared by server encounter placement and authoring.</summary>

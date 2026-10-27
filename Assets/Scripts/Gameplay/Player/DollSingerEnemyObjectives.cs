@@ -207,7 +207,7 @@ namespace Unity.MP_FPS
                 var view = health.ControllerState;
                 var look = new Unity.Mathematics.float2(view.YawDegrees, view.PitchDegrees) + view.FreeLookOffset;
                 m_LocalExitObservers.Add(new RaidSpawnObserver { Position = EntityManager.GetComponentData<LocalTransform>(target.Entity).Position,
-                    Forward = Quaternion.Euler(look.y, look.x, 0) * Vector3.forward, CheckVisibility = true });
+                    Forward = Quaternion.Euler(look.y, look.x, 0) * Vector3.forward, CheckVisibility = true, Aiming = view.Aiming });
             }
             return PmcLocalExitRules.Observed(scene, position, m_LocalExitObservers);
         }
