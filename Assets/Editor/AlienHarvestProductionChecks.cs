@@ -72,10 +72,54 @@ public static class AlienHarvestProductionChecks
                     "food effect expires for " + species);
             }
         }
+        CheckReducedHealthFood();
         bool rejected = false;
         try { AlienHarvest.Create(false, new System.Random(1), "missing-species"); }
         catch (ArgumentException) { rejected = true; }
         Check(rejected, "unknown species cannot silently create the wrong organ");
         return "PASS " + s_Checks + " alien harvest and food checks";
+    }
+
+    private static void CheckReducedHealthFood()
+    {
+        var health = new PredictedPlayerGhost
+        { ClashEnabled = true, ClashLife = ClashLife.Alive, ClashMaxHealthFraction = .5f };
+        RaidHealth.Initialize(ref health);
+        var carried = InventoryGraph.Create(false, false);
+        Check(carried.AddSupply("alien_raw_meat", 2, InventoryCatalog.Pockets, true) == InventoryError.None,
+            "meat fits inventory in reduced-health mode");
+        var meat = carried.Items.Single(i => i.Code == "alien_raw_meat");
+        int fullVersion = carried.Version;
+        Check(!RaidNutrition.CanConsume(health, ConsumableCatalog.Get(meat.Code)),
+            "healthy tissue at reduced caps does not count as injured");
+        Check(RaidNutrition.Consume(ref health, carried, meat.Id, fullVersion) == InventoryError.Invalid &&
+            carried.Version == fullVersion && meat.Quantity == 2,
+            "full reduced-health player cannot waste a healing food");
+
+        RaidHealth.Set(ref health, BodyPart.LeftLeg, 0);
+        RaidHealth.Damage(ref health, BodyPart.Chest, 20, 1, physiological: true);
+        Check(RaidNutrition.Consume(ref health, carried, meat.Id, fullVersion) == InventoryError.None &&
+            meat.Quantity == 1 && Near(health.HeadHealth, 17.5f) && Near(health.ChestHealth, 42.5f) &&
+            health.LeftLegHealth == 0, "meat heals injured tissue without reviving a destroyed limb");
+        Check(RaidNutrition.Consume(ref health, carried, meat.Id, fullVersion) == InventoryError.Stale &&
+            meat.Quantity == 1, "replayed meat use cannot consume another item");
+        Check(RaidNutrition.Consume(ref health, carried, meat.Id, carried.Version) == InventoryError.Invalid &&
+            meat.Quantity == 1, "a destroyed limb alone does not allow another food use");
+
+        var regeneration = new PredictedPlayerGhost
+        { ClashEnabled = true, ClashLife = ClashLife.Alive, ClashMaxHealthFraction = .5f };
+        RaidHealth.Initialize(ref regeneration);
+        RaidHealth.Set(ref regeneration, BodyPart.RightLeg, 0);
+        RaidHealth.Damage(ref regeneration, BodyPart.Chest, 10, 2, physiological: true);
+        regeneration.AlienFoodEffect = AlienFoodEffect.Regeneration;
+        regeneration.AlienFoodEffectSeconds = 7;
+        RaidNutrition.Tick(ref regeneration, 5, 10000, 10000, 10000, 10000, 0, 0, 3);
+        Check(Near(regeneration.HeadHealth, 17.5f) && Near(regeneration.ChestHealth, 37.5f) &&
+            regeneration.RightLegHealth == 0 && Near(regeneration.AlienFoodEffectSeconds, 2),
+            "regeneration skips healthy capped tissue and destroyed limbs");
+        RaidNutrition.Tick(ref regeneration, 5, 10000, 10000, 10000, 10000, 0, 0, 4);
+        Check(Near(regeneration.ChestHealth, 39.5f) && regeneration.RightLegHealth == 0 &&
+            regeneration.AlienFoodEffect == AlienFoodEffect.None && regeneration.AlienFoodEffectSeconds == 0,
+            "regeneration heals only for its remaining duration");
     }
 }

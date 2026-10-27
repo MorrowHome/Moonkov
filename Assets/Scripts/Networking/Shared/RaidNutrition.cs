@@ -99,7 +99,8 @@ namespace Unity.MP_FPS
                 var part = (BodyPart)i;
                 float current = RaidHealth.Get(state, part);
                 if (current <= 0) continue;
-                float restore = Mathf.Min(healing, RaidHealth.Maximum(part) - current);
+                float restore = Mathf.Min(healing, Mathf.Max(0, RaidHealth.Maximum(state, part) - current));
+                if (restore <= 0) continue;
                 RaidHealth.Set(ref state, part, current + restore); healing -= restore;
             }
         }
@@ -137,7 +138,7 @@ namespace Unity.MP_FPS
         private static bool HasInjuredLivingTissue(in PredictedPlayerGhost state)
         {
             for(int i=0;i<RaidHealth.PartCount;i++)
-            { float health=RaidHealth.Get(state,(BodyPart)i); if(health>0 && health<RaidHealth.Maximum((BodyPart)i))return true; }
+            { var part=(BodyPart)i; float health=RaidHealth.Get(state,part); if(health>0 && health<RaidHealth.Maximum(state,part))return true; }
             return false;
         }
         private static float Drain(ref float resource, ref float depletedSeconds, float rate, float dt, float grace)
