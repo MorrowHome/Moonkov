@@ -6,20 +6,8 @@
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Shadows.hlsl"
 
 #if defined(_MOON_STOCHASTIC_SHADOWS)
-float4 _MoonStochasticShadowParams; // radius in atlas texels, grain scale, shadow taps, shading probability
+float4 _MoonStochasticShadowParams; // radius in atlas texels, pixel size, shadow taps, light selection probability
 static float2 moonShadowPixel = 0;
-
-bool MoonKeepSurface(float2 pixel, out float weight)
-{
-    float probability = clamp(_MoonStochasticShadowParams.w, .25, 1);
-    weight = rcp(probability);
-    // Aligned 2x2 pixel quads keep implicit texture derivatives defined. Entire
-    // rejected quads skip textures AND PBR; this is sparse shading, not output grain.
-    float2 cell = floor(floor(pixel * .5) / max(floor(_MoonStochasticShadowParams.y), 1));
-    float3 p = frac(float3(cell, 17) * float3(.1031, .1030, .0973));
-    p += dot(p, p.yzx + 33.33);
-    return frac((p.x + p.y) * p.z) < probability;
-}
 
 void MoonSetShadowPixel(float2 pixel) { moonShadowPixel = floor(pixel / max(_MoonStochasticShadowParams.y, 1)); }
 
@@ -94,13 +82,76 @@ half MoonStochasticAdditionalShadow(int index, float3 positionWS, half3 directio
 #define AdditionalLightShadow MoonStochasticAdditionalShadow
 #else
 void MoonSetShadowPixel(float2 pixel) { }
-bool MoonKeepSurface(float2 pixel, out float weight) { weight = 1; return true; }
+#endif
+
+// Build URP's light accessors with our low-sample shadow functions first.
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/RealtimeLights.hlsl"
+#if defined(_MOON_STOCHASTIC_SHADOWS)
+#undef MainLightShadow
+#undef AdditionalLightShadow
+
+bool MoonSelectLight(float seed)
+{
+    // Each light gets an independent, single-pixel Bernoulli sample. Material
+    // textures, GI, emission and fog are evaluated for EVERY surface pixel.
+    // Integer avalanche hash avoids the visible diagonal pattern of ordered noise.
+    uint state = (uint)moonShadowPixel.x * 1973u + (uint)moonShadowPixel.y * 9277u + (uint)seed * 26699u + 911u;
+    state = (state ^ (state >> 16)) * 0x7feb352du;
+    state = (state ^ (state >> 15)) * 0x846ca68bu;
+    state ^= state >> 16;
+    float noise = (state & 0x00ffffffu) * (1.0 / 16777216.0);
+    return noise < _MoonStochasticShadowParams.w;
+}
+
+Light MoonSampleMainLight() { return GetMainLight(); }
+Light MoonSampleMainLight(float4 coord) { return GetMainLight(coord); }
+Light MoonSampleMainLight(float4 coord, float3 position, half4 mask) { return GetMainLight(coord, position, mask); }
+Light MoonSampleMainLight(InputData data, half4 mask, AmbientOcclusionFactor ao)
+{
+    UNITY_BRANCH if (_MoonStochasticShadowParams.w >= 1) return GetMainLight(data, mask, ao);
+    // Subtractive GI needs a deterministic input. Main-light cookies use
+    // implicit texture derivatives, so also preserve that path outside roulette.
+    #if (defined(LIGHTMAP_SHADOW_MIXING) && !defined(SHADOWS_SHADOWMASK)) || defined(_LIGHT_COOKIES)
+        return GetMainLight(data, mask, ao);
+    #else
+        UNITY_BRANCH if (!MoonSelectLight(0))
+        {
+            Light light = GetMainLight();
+            light.color = 0;
+            return light;
+        }
+        Light light = GetMainLight(data, mask, ao);
+        light.color /= max(_MoonStochasticShadowParams.w, .25);
+        return light;
+    #endif
+}
+
+Light MoonSampleAdditionalLight(uint index, float3 position) { return GetAdditionalLight(index, position); }
+Light MoonSampleAdditionalLight(uint index, float3 position, half4 mask) { return GetAdditionalLight(index, position, mask); }
+Light MoonSampleAdditionalLight(uint index, InputData data, half4 mask, AmbientOcclusionFactor ao)
+{
+    UNITY_BRANCH if (_MoonStochasticShadowParams.w >= 1) return GetAdditionalLight(index, data, mask, ao);
+    // Reject before shadow/cookie fetches. No implicit-derivative material
+    // texture sampling is hidden in this divergent branch (cookies use LOD 0).
+    UNITY_BRANCH if (!MoonSelectLight(index + 1))
+    {
+        Light light = (Light)0;
+        light.direction = half3(0,1,0);
+        return light;
+    }
+    Light light = GetAdditionalLight(index, data, mask, ao);
+    light.color /= max(_MoonStochasticShadowParams.w, .25);
+    return light;
+}
+
+#define GetMainLight MoonSampleMainLight
+#define GetAdditionalLight MoonSampleAdditionalLight
 #endif
 
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 // Do not leak remapping into other includes or passes.
 #if defined(_MOON_STOCHASTIC_SHADOWS)
-#undef MainLightShadow
-#undef AdditionalLightShadow
+#undef GetMainLight
+#undef GetAdditionalLight
 #endif
 #endif

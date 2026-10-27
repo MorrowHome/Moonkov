@@ -28,6 +28,7 @@ namespace Unity.MP_FPS.Moon.Editor
             public string device, utc, pipeline;
             public int width = 1600, height = 1000, rendersPerBlock = 32;
             public bool keywordRestored, parametersRestored, activeScenePreserved;
+            public int maximumHardOrUnshadowedByteDifference;
             public List<Measurement> measurements = new List<Measurement>();
             public string boundary = "Isolated Editor preview, original renderer with a temporary pipeline clone: 1024 main shadow atlas, one cascade, 20 m shadow distance. Synchronous render throughput includes CPU submission, GPU completion and one readback per block. This is NOT isolated GPU timing, gameplay FPS or target-device acceptance. Stock tent filtering and stochastic box filtering differ in kernel shape. Geometry, lights, resolution and camera are identical within each comparison.";
         }
@@ -122,7 +123,7 @@ namespace Unity.MP_FPS.Moon.Editor
                     effect.enabled = taps > 0;
                     var settings = new SerializedObject(effect);
                     settings.FindProperty("samples").intValue = taps == 3 ? 1 : Mathf.Max(1, taps);
-                    settings.FindProperty("shadingProbability").floatValue = taps == 3 ? .65f : 1;
+                    settings.FindProperty("lightSamplingProbability").floatValue = taps == 3 ? .85f : 1;
                     settings.ApplyModifiedPropertiesWithoutUndo();
                 }
                 void Capture(string name, int taps)
@@ -157,7 +158,7 @@ namespace Unity.MP_FPS.Moon.Editor
                     Capture(prefix + "-stock", 0);
                     Capture(prefix + "-one", 1);
                     Capture(prefix + "-two", 2);
-                    Capture(prefix + "-sparse", 3);
+                    Capture(prefix + "-sampled", 3);
                     // First-use pipeline/driver work is not a rendering saving.
                     foreach (int taps in new[] { 0, 1, 3 })
                     {
@@ -175,7 +176,7 @@ namespace Unity.MP_FPS.Moon.Editor
                         for (int i = 0; i < report.rendersPerBlock; i++) Render();
                         Read(); // Include GPU completion, not just command submission.
                         watch.Stop();
-                        report.measurements.Add(new Measurement { light = prefix, mode = taps == 0 ? "stock" : taps == 3 ? "sparse-65-percent" : taps + "-tap",
+                        report.measurements.Add(new Measurement { light = prefix, mode = taps == 0 ? "stock" : taps == 3 ? "sampled-lights-85-percent" : taps + "-tap",
                             millisecondsPerRender = watch.Elapsed.TotalMilliseconds / report.rendersPerBlock });
                     }
                     // Fixed camera must be deterministic; moving the view must still render valid shadows.
@@ -195,9 +196,14 @@ namespace Unity.MP_FPS.Moon.Editor
                     Mode(0); Render(); Read(); var before = pixels.GetRawTextureData<byte>().ToArray();
                     Mode(1); Render(); Read(); var after = pixels.GetRawTextureData<byte>();
                     for (int i = 0; i < before.Length; i++)
-                        if (before[i] != after[i]) throw new InvalidOperationException(shadows + " light changed at byte " + i);
+                    {
+                        int difference = Math.Abs(before[i] - after[i]);
+                        report.maximumHardOrUnshadowedByteDifference = Math.Max(report.maximumHardOrUnshadowedByteDifference, difference);
+                        // Equivalent shader variants may round one 8-bit output step differently.
+                        if (difference > 1) throw new InvalidOperationException(shadows + " light changed by " + difference + " at byte " + i);
+                    }
                 }
-                Capture("unshadowed-sparse", 3);
+                Capture("unshadowed-sampled", 3);
             }
             finally
             {

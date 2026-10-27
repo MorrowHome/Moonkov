@@ -3,7 +3,7 @@ using UnityEngine.Rendering;
 
 namespace Unity.MP_FPS.Moon
 {
-    /// <summary>Opt-in sparse surface shading and low-sample shadows for supported environment shaders.</summary>
+    /// <summary>Opt-in independent direct-light sampling and low-sample shadows for environment shaders.</summary>
     [ExecuteAlways, DisallowMultipleComponent, RequireComponent(typeof(Camera))]
     public sealed class MoonStochasticLighting : MonoBehaviour
     {
@@ -12,7 +12,8 @@ namespace Unity.MP_FPS.Moon
         [SerializeField, Range(.5f, 3)] private float radiusTexels = 2.5f;
         [SerializeField, Range(1, 4)] private float grainPixels = 1;
         [SerializeField, Range(1, 2)] private int samples = 1;
-        [SerializeField, Range(.25f, 1)] private float shadingProbability = .65f;
+        [UnityEngine.Serialization.FormerlySerializedAs("shadingProbability")]
+        [SerializeField, Range(.25f, 1)] private float lightSamplingProbability = .85f;
         private Camera owner;
         private bool rendering, previousKeyword;
         private Vector4 previousParameters;
@@ -31,7 +32,7 @@ namespace Unity.MP_FPS.Moon
             previousParameters = Shader.GetGlobalVector(Parameters);
             rendering = true;
             Shader.SetGlobalVector(Parameters, new Vector4(Mathf.Clamp(radiusTexels, .5f, 3),
-                Mathf.Clamp(grainPixels, 1, 4), Mathf.Clamp(samples, 1, 2), Mathf.Clamp(shadingProbability, .25f, 1)));
+                Mathf.Clamp(grainPixels, 1, 4), Mathf.Clamp(samples, 1, 2), Mathf.Clamp(lightSamplingProbability, .25f, 1)));
             Shader.EnableKeyword(Keyword);
         }
 

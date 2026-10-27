@@ -6,11 +6,11 @@
 - `ContainerInventoryView.Present()` 只在请求已确认后调度下一项。必须延后到本次 HUD 更新结束，避免同一回执被展示两次时连续发送。关面板、目标变化、只读动作或服务端拒绝会取消未发送项，不自动重试。手动拖动会清空剩余队列。
 - 单 Editor 编译及 40 项原生格子、真实库存事务检查通过。临时入口在忽略目录 `Library/BuildValidation/LootExperience-20261027/Review.cs`。未进正式战局或联机，没有修改账号或地图。Console 原有的 `editor status` 无效命令错误仍存在，未清除。
 
-## 随机着色风格实验
+## 随机灯光采样风格实验
 
-- 2026-10-27 新增相机组件 `MoonStochasticLighting`。在三种已接入的环境 Shader 中，随机跳过部分像素组的材质和光照计算，并用 1～2 次随机软阴影采样替代常规过滤。颗粒覆盖受光表面，不只是阴影边缘；没有叠加全屏噪点。
+- 2026-10-27 新增相机组件 `MoonStochasticLighting`。在三种环境 Shader 中，以单像素粒度独立选择直接灯光，并用 1～2 次随机软阴影采样替代常规过滤。所有表面像素保留材质、间接光、发光和雾。此前粗糙的 2×2 随机跳黑方案已撤下。
 - 正式场景默认未启用。其他环境材质、角色和天空尚未接入，不能称为正式地图全画面覆盖。临时预览入口为 `Tools / Moon Environment / Stochastic Lighting / Render comparison`。
-- 单 Editor 编译、三种灯光与静止确定性、硬阴影和无阴影回归、全局状态恢复检查通过。Apple M5 隔离预览中，组合方案渲染吞吐耗时下降约 7%～14%；主要来自阴影降采样，稀疏着色本身未测出额外收益。不是正式地图 FPS 或独立 GPU 计时。原理、开关、测量和限制见 [随机着色实验](Docs/Development/StochasticLighting.md)。
+- 单 Editor 编译、三种灯光与静止确定性、硬阴影和无阴影回归、全局状态恢复检查通过。Apple M5 隔离预览中，组合方案渲染吞吐耗时下降约 8%～14%，主要来自阴影降采样。不是正式地图 FPS 或独立 GPU 计时，也不等于 Cycles 的完整路径噪点。原理、开关、测量和限制见 [随机灯光实验](Docs/Development/StochasticLighting.md)。
 
 ## LR06 地图与灯光接入
 

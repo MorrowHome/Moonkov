@@ -82,8 +82,7 @@ Shader "Moon/R29 Local Ground Display"
             {
                 UNITY_SETUP_INSTANCE_ID(input);
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
-                float sampleWeight;
-                UNITY_BRANCH if (!MoonKeepSurface(input.positionCS.xy, sampleWeight)) return half4(0,0,0,1);
+                MoonSetShadowPixel(input.positionCS.xy);
                 float3 p = GetAbsolutePositionWS(input.positionWS);
                 half3 n = normalize(input.normalWS);
                 float distanceToView = distance(p,GetCameraPositionWS());
@@ -107,7 +106,6 @@ Shader "Moon/R29 Local Ground Display"
                 half3 localNormal = normalize(mainNormal+microNormal-n);
                 half3 normalWS = normalize(lerp(referenceNormal,normalize(localNormal+referenceNormal-n),mask));
                 half4 color = R29Light(input,albedo,0,1-saturate(roughness),normalWS);
-                color.rgb *= sampleWeight;
                 return color;
             }
             ENDHLSL
