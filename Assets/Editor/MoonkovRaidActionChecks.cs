@@ -191,11 +191,13 @@ public static class MoonkovRaidActionChecks
             world.SetTime(new TimeData(10,.02f));
             Request(world,a,new RaidMedicalUseRpc {RaidId=7,RequestId=1,ExpectedVersion=initial,ItemId=item.Id,Part=BodyPart.Auto});
             Process(world,handle,"HandleInventoryRequests");float hp=em.GetComponentData<PredictedPlayerGhost>(player).CurrentHealth;
-            Check(inventory.MedicalItemId==item.Id && inventory.Graph.Count("medkit")==2,"Medical RPC committed early");
+            Check(inventory.MedicalItemId==item.Id && inventory.Graph.Count("medkit")==2 &&
+                em.GetComponentData<PredictedPlayerGhost>(player).ConsumableUseSequence==1,"Medical RPC committed early or missed its sound");
             Refresh(world,handle,a,12.99);Check(em.GetComponentData<PredictedPlayerGhost>(player).CurrentHealth==hp,"Medical server clock bypassed");
             Refresh(world,handle,a,13);Check(em.GetComponentData<PredictedPlayerGhost>(player).CurrentHealth==hp+40 && inventory.Graph.Count("medkit")==1,"Medical RPC failed final atomic commit");
             Request(world,a,new RaidMedicalUseRpc {RaidId=7,RequestId=1,ExpectedVersion=initial,ItemId=item.Id,Part=BodyPart.Auto});
-            Process(world,handle,"HandleInventoryRequests");Check(inventory.Graph.Count("medkit")==1,"Medical request replay consumed again");
+            Process(world,handle,"HandleInventoryRequests");Check(inventory.Graph.Count("medkit")==1 &&
+                em.GetComponentData<PredictedPlayerGhost>(player).ConsumableUseSequence==1,"Medical request replay consumed or sounded again");
             Request(world,a,new RaidMedicalUseRpc {RaidId=7,RequestId=2,ExpectedVersion=inventory.Graph.Version,ItemId=item.Id,Part=BodyPart.Auto});
             Process(world,handle,"HandleInventoryRequests");Request(world,a,new RaidActionCancelRpc {RaidId=7,RequestId=3});Process(world,handle,"HandleInventoryRequests");
             Refresh(world,handle,a,20);Check(inventory.Graph.Count("medkit")==1 && !inventory.ActionPending,"Cancel RPC completed pending treatment");

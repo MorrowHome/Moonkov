@@ -172,7 +172,12 @@ namespace Unity.MP_FPS
                 !(brain.IsClashBot ? health.ControllerState.IsReloadingState : RaidHealth.HandsBusy(health)) &&
                 HorizontalDistance(position, brain.TacticalGoal) <= TacticalArrivalDistance &&
                 (bleeding || burning || NeedsHealing(health));
-            if (PmcSelfTreatment.Advance(brain, eligible, bleeding, burning, now)) return;
+            double previous = brain.HealUntil;
+            if (PmcSelfTreatment.Advance(brain, eligible, bleeding, burning, now))
+            {
+                if (previous <= 0 && brain.HealUntil > 0) RaidConsumableAcoustics.Mark(ref health);
+                return;
+            }
             if (brain.HealUntil <= 0)
             {
                 if (now < brain.NextHeal) return;
@@ -183,6 +188,7 @@ namespace Unity.MP_FPS
                 brain.HealInventoryVersion = brain.Inventory.Version;
                 brain.HealUntil = now + m_Tuning.HealSeconds;
                 brain.CommitUntil = brain.HealUntil;
+                RaidConsumableAcoustics.Mark(ref health);
                 return;
             }
             if (brain.Inventory.Version != brain.HealInventoryVersion)

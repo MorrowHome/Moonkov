@@ -327,6 +327,12 @@ namespace Unity.MP_FPS
                 Target=r.TargetId,ItemId=r.ItemId.ToString(),Action=r.Action,Definition=definition,Origin=root.transform.position,Placement=placement,
                 Until=now+seconds,Hit=health.LastHitTick,DamageSequence=health.NonPhysiologicalDamageSequence,ShieldHit=health.ShieldHitSequence,Shot=health.LastShotTick,Grenade=health.LastGrenadeShotTick,
                 Reload=health.LastReloadTick,Weapon=health.EquippedWeaponID,Health=health.CurrentHealth};
+            if (r.Action == TacticalItemAction.Extinguish || r.Action == TacticalItemAction.Use && definition != null &&
+                (definition.Kind == TacticalItemKind.Vitality || definition.Kind == TacticalItemKind.Stamina || definition.Kind == TacticalItemKind.Antidote))
+            {
+                var actionHealth = SystemAPI.GetComponentRW<PredictedPlayerGhost>(player);
+                RaidConsumableAcoustics.Mark(ref actionHealth.ValueRW);
+            }
             inventory.Error=InventoryError.None;world.Feedbacks[connection]=TacticalItemFeedback.Started;
         }
         private static bool TacticalCapacity(TacticalServerWorld world,TacticalItemDefinition definition,Entity player,Vector3 position)

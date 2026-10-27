@@ -117,7 +117,13 @@ public static class TacticalItemsAuthorityChecks
                 bulletWound.BleedSource.NetworkId==8 && bulletWound.BleedSource.ParticipantId==13 && bulletWound.BleedSource.Epoch==3,
                 "Actual pellet wounds did not combine or lost attacker attribution");
             float woundedHealth=em.GetComponentData<PredictedPlayerGhost>(player).CurrentHealth;
-            Request(TacticalItemAction.Extinguish);Wait(3.2f);
+            uint treatmentSound=em.GetComponentData<PredictedPlayerGhost>(player).ConsumableUseSequence;
+            Request(TacticalItemAction.Extinguish);
+            Check(em.GetComponentData<PredictedPlayerGhost>(player).ConsumableUseSequence==treatmentSound+1,
+                "Starting self-treatment did not emit exactly one sound");
+            Wait(3.2f);
+            Check(em.GetComponentData<PredictedPlayerGhost>(player).ConsumableUseSequence==treatmentSound+1,
+                "Continuing self-treatment repeated its sound");
             Check(bulletWound.Bleed==0 && !inventory.TacticalPending && em.GetComponentData<PredictedPlayerGhost>(player).CurrentHealth<woundedHealth,
                 "Real self-treatment did not stop the wound while damage continued");
             Clear();

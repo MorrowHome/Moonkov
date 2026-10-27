@@ -157,7 +157,10 @@ namespace Unity.MP_FPS
                             inventory.Error = inventory.BeginMedical(ghost.ValueRO,r.ItemId.ToString(),r.ExpectedVersion,r.Part,
                                 medicalPosition,SystemAPI.Time.ElapsedTime,MoonRaidMap.Active.MedicalSeconds);
                             if(inventory.Error==InventoryError.None)
+                            {
+                                RaidConsumableAcoustics.Mark(ref ghost.ValueRW);
                                 CancelManualMission(ref state,connection,"任务操作中断：开始治疗；维修或下载进度未完成。");
+                            }
                             else if(RaidHealth.HandsBusy(ghost.ValueRO))inventory.ActionFeedback="操作未开始：正在换弹或切换武器。";
                         }
                         inventory.LastSentVersion = -1;

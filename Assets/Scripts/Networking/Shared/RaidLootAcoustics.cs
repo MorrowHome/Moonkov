@@ -13,7 +13,7 @@ namespace Unity.MP_FPS
         }
     }
 
-    // A real food or drink action produces a short, positional equipment sound.
+    // A real timed consumable or self-treatment produces a short equipment sound.
     public static class RaidConsumableAcoustics
     {
         public const float HearingRange = 8f;

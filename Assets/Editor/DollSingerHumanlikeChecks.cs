@@ -377,10 +377,10 @@ public static class DollSingerHumanlikeChecks
         int version = brain.Inventory.Version;
         Heal(system, brain, ref health, 10);
         double completedAt = brain.HealUntil;
-        Require(completedAt > 10 && health.CurrentHealth == injured && brain.Inventory.Count("medkit") == 2 &&
+        Require(completedAt > 10 && health.CurrentHealth == injured && health.ConsumableUseSequence == 1 && brain.Inventory.Count("medkit") == 2 &&
             brain.Inventory.Version == version, "Starting treatment changed health or consumed medicine immediately.");
         Heal(system, brain, ref health, completedAt - .01);
-        Require(health.CurrentHealth == injured && brain.Inventory.Count("medkit") == 2,
+        Require(health.CurrentHealth == injured && health.ConsumableUseSequence == 1 && brain.Inventory.Count("medkit") == 2,
             "Treatment completed before its action timer.");
         Heal(system, brain, ref health, completedAt);
         Heal(system, brain, ref health, completedAt);
@@ -733,14 +733,14 @@ public static class DollSingerHumanlikeChecks
             "An unarmed wound did not prompt safe self-treatment without medicine.");
         brain.Action = PmcAction.Heal;
         Heal(system, brain, ref health, 10);
-        Require(brain.HealStatus && brain.HealUntil == 13 && brain.SelfStatus.Bleed == 40,
+        Require(brain.HealStatus && brain.HealUntil == 13 && health.ConsumableUseSequence == 1 && brain.SelfStatus.Bleed == 40,
             "Stopping a bleed changed status before its timer completed.");
         beforeStatus = health;
         RaidHealth.Damage(ref health, BodyPart.LeftArm, 1, 2);
         PmcStatusDamage.Record(brain.SelfStatus, beforeStatus, health);
         Call(system, "UpdateCombatPressure", new object[] { brain, health, 12.9d, .1f });
         Heal(system, brain, ref health, 12.9);
-        Require(brain.HealStatus && brain.SelfStatus.Bleed == 40,
+        Require(brain.HealStatus && health.ConsumableUseSequence == 1 && brain.SelfStatus.Bleed == 40,
             "Own blood loss interrupted a safe stop-bleeding action.");
         Heal(system, brain, ref health, 13);
         Require(!brain.HealStatus && brain.HealUntil == 0 && brain.SelfStatus.Bleed == 0,

@@ -148,7 +148,7 @@ public struct PredictedPlayerGhost : IComponentData
     [GhostField] public uint LastReloadTick;
     // Server-authored; one event when a container is opened or searched.
     [GhostField] public uint LootSearchSequence;
-    // Server-authored; one event when timed food or drink use begins.
+    // Server-authored; one event when a timed consumable or self-treatment begins.
     [GhostField] public uint ConsumableUseSequence;
     [GhostField] public uint LastGrenadeShotTick;
     [GhostField] public float ReloadTimer;
