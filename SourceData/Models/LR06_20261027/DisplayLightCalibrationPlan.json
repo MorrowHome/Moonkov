@@ -1,0 +1,942 @@
+{
+  "scope": "Independent display only; source fixture positions and sun direction are approximate, not game light conversion.",
+  "source_sun": {
+    "name": "B_PREVIEW_SUN_NOT_GAME_LIGHT",
+    "direction_unity": [
+      0.5367359519004822,
+      -0.8186547756195068,
+      0.20425206422805786
+    ],
+    "color_linear": [
+      0.800000011920929,
+      0.8799999952316284,
+      1.0
+    ],
+    "unity_intensity": 0.8,
+    "soft_shadows": true
+  },
+  "point_lights": [
+    {
+      "name": "LR06_Preview_WarmProxy_00",
+      "group": "NR01",
+      "category": "corridor",
+      "source_name": "NR01_V5_SOUTH_TRANSFER_AREA",
+      "original_source_names": [
+        "NR01_V5_SOUTH_TRANSFER_AREA"
+      ],
+      "original_position_blender": [
+        1998.175048828125,
+        2462.60009765625,
+        256.0240478515625
+      ],
+      "position_unity": [
+        1998.175048828125,
+        255.7740478515625,
+        2462.60009765625
+      ],
+      "source_color_linear": [
+        1.0,
+        0.6800000071525574,
+        0.3799999952316284
+      ],
+      "intensity": 14.0,
+      "range_metres": 22.0,
+      "shadows": false
+    },
+    {
+      "name": "LR06_Preview_WarmProxy_01",
+      "group": "NR01",
+      "category": "corridor",
+      "source_name": "NR01_V5_NORTH_TRANSFER_AREA",
+      "original_source_names": [
+        "NR01_V5_NORTH_TRANSFER_AREA"
+      ],
+      "original_position_blender": [
+        1998.175048828125,
+        2474.0,
+        256.0240478515625
+      ],
+      "position_unity": [
+        1998.175048828125,
+        255.7740478515625,
+        2474.0
+      ],
+      "source_color_linear": [
+        1.0,
+        0.6800000071525574,
+        0.3799999952316284
+      ],
+      "intensity": 14.0,
+      "range_metres": 22.0,
+      "shadows": false
+    },
+    {
+      "name": "LR06_Preview_WarmProxy_02",
+      "group": "LR01",
+      "category": "entry_or_transfer",
+      "source_name": "LR01_B_R07_WEST_PROCESS_EB01_03_EXIT",
+      "original_source_names": [
+        "LR01_B_R07_WEST_PROCESS_EB01_03_EXIT"
+      ],
+      "original_position_blender": [
+        1758.6416015625,
+        2025.0,
+        212.08114624023438
+      ],
+      "position_unity": [
+        1758.2504479289055,
+        211.16082084178925,
+        2025.000000065782
+      ],
+      "source_color_linear": [
+        1.0,
+        0.44999998807907104,
+        0.1599999964237213
+      ],
+      "intensity": 22.0,
+      "range_metres": 25.0,
+      "shadows": false
+    },
+    {
+      "name": "LR06_Preview_WarmProxy_03",
+      "group": "LR01",
+      "category": "window",
+      "source_name": "LR01_B_R07_WEST_PROCESS_EB01_00_WINDOW_WEST",
+      "original_source_names": [
+        "LR01_B_R07_WEST_PROCESS_EB01_00_WINDOW_WEST",
+        "LR01_B_R07_WEST_PROCESS_EB01_00_WINDOW_EAST",
+        "LR01_B_R07_WEST_PROCESS_EB07_02_WINDOW_WEST",
+        "LR01_B_R07_WEST_PROCESS_EB07_02_WINDOW_EAST",
+        "LR01_B_R07_WEST_PROCESS_EB01_00_ENTRY",
+        "LR01_B_R07_WEST_PROCESS_EB01_00_LOADING_CANOPY",
+        "LR01_B_R07_WEST_PROCESS_EB01_00_EXIT",
+        "LR01_B_R07_WEST_PROCESS_EB07_02_ENTRY",
+        "LR01_B_R07_WEST_PROCESS_EB07_02_EXIT"
+      ],
+      "original_position_blender": [
+        1788.2404276529949,
+        1973.3749898274739,
+        213.13414891560873
+      ],
+      "position_unity": [
+        1796.999999773858,
+        213.93394775390624,
+        1958.0059814453125
+      ],
+      "source_color_linear": [
+        1.0,
+        0.44999998807907104,
+        0.1599999964237213
+      ],
+      "intensity": 35.0,
+      "range_metres": 25.0,
+      "shadows": false
+    },
+    {
+      "name": "LR06_Preview_WarmProxy_04",
+      "group": "LR01",
+      "category": "window",
+      "source_name": "LR01_B_R08_NORTHWEST_RIM_EB01_02_WINDOW_WEST",
+      "original_source_names": [
+        "LR01_B_R08_NORTHWEST_RIM_EB01_02_WINDOW_WEST",
+        "LR01_B_R08_NORTHWEST_RIM_EB01_02_EXIT"
+      ],
+      "original_position_blender": [
+        1832.0160426089637,
+        2486.163458573191,
+        245.04024947317023
+      ],
+      "position_unity": [
+        1821.4223391477644,
+        245.75999755859374,
+        2483.0486278383505
+      ],
+      "source_color_linear": [
+        1.0,
+        0.44999998807907104,
+        0.1599999964237213
+      ],
+      "intensity": 35.0,
+      "range_metres": 25.0,
+      "shadows": false
+    },
+    {
+      "name": "LR06_Preview_WarmProxy_05",
+      "group": "LR01",
+      "category": "window",
+      "source_name": "LR01_B_F01_LOW_RECEIVING_EB02_00_WINDOW_EAST",
+      "original_source_names": [
+        "LR01_B_F01_LOW_RECEIVING_EB02_00_WINDOW_WEST",
+        "LR01_B_F01_LOW_RECEIVING_EB02_00_WINDOW_EAST",
+        "LR01_B_F01_LOW_RECEIVING_EB07_01_WINDOW_WEST",
+        "LR01_B_F01_LOW_RECEIVING_EB02_00_ENTRY",
+        "LR01_B_F01_LOW_RECEIVING_EB02_00_EXIT"
+      ],
+      "original_position_blender": [
+        1908.7587381998699,
+        2150.0,
+        148.80712827046713
+      ],
+      "position_unity": [
+        1922.2380371093732,
+        149.7127258300781,
+        2149.9999964816025
+      ],
+      "source_color_linear": [
+        1.0,
+        0.44999998807907104,
+        0.1599999964237213
+      ],
+      "intensity": 35.0,
+      "range_metres": 25.0,
+      "shadows": false
+    },
+    {
+      "name": "LR06_Preview_WarmProxy_06",
+      "group": "LR01",
+      "category": "window",
+      "source_name": "LR01_B_R08_NORTHWEST_RIM_EB07_01_WINDOW_WEST",
+      "original_source_names": [
+        "LR01_B_R08_NORTHWEST_RIM_EB02_00_WINDOW_EAST",
+        "LR01_B_R08_NORTHWEST_RIM_EB07_01_WINDOW_WEST",
+        "LR01_B_R08_NORTHWEST_RIM_EB07_01_WINDOW_EAST",
+        "LR01_B_R08_NORTHWEST_RIM_EB01_02_WINDOW_EAST",
+        "LR01_B_R08_NORTHWEST_RIM_EB02_03_WINDOW_WEST",
+        "LR01_B_R08_NORTHWEST_RIM_EB02_03_WINDOW_EAST",
+        "LR01_B_R08_NORTHWEST_RIM_EB07_01_ENTRY",
+        "LR01_B_R08_NORTHWEST_RIM_EB07_01_EXIT",
+        "LR01_B_R08_NORTHWEST_RIM_EB02_03_ENTRY"
+      ],
+      "original_position_blender": [
+        1876.455809143768,
+        2456.6524728358477,
+        245.48154177610903
+      ],
+      "position_unity": [
+        1866.5685793821394,
+        244.97999877929686,
+        2446.6560497133505
+      ],
+      "source_color_linear": [
+        1.0,
+        0.44999998807907104,
+        0.1599999964237213
+      ],
+      "intensity": 35.0,
+      "range_metres": 25.0,
+      "shadows": false
+    },
+    {
+      "name": "LR06_Preview_WarmProxy_07",
+      "group": "LR01",
+      "category": "platform",
+      "source_name": "LR01_SHAFT_GALLERY_24_180",
+      "original_source_names": [
+        "LR01_SHAFT_GALLERY_24_180",
+        "LR01_SHAFT_GALLERY_24_240",
+        "LR01_SHAFT_GALLERY_51_180",
+        "LR01_SHAFT_GALLERY_51_240"
+      ],
+      "original_position_blender": [
+        1977.5,
+        2108.349365234375,
+        40.5
+      ],
+      "position_unity": [
+        1965.780868768692,
+        26.375304877758026,
+        2129.999999988678
+      ],
+      "source_color_linear": [
+        1.0,
+        0.44999998807907104,
+        0.1599999964237213
+      ],
+      "intensity": 40.0,
+      "range_metres": 30.0,
+      "shadows": false
+    },
+    {
+      "name": "LR06_Preview_WarmProxy_08",
+      "group": "LR01",
+      "category": "platform",
+      "source_name": "LR01_UPPER_CASING_INSPECTION_310_W",
+      "original_source_names": [
+        "LR01_UPPER_CASING_INSPECTION_310_W",
+        "LR01_UPPER_CASING_INSPECTION_344_W"
+      ],
+      "original_position_blender": [
+        1994.8910478864398,
+        2122.6143101283483,
+        327.6617660522461
+      ],
+      "position_unity": [
+        1992.5726195573807,
+        319.76641714572906,
+        2117.7834343910217
+      ],
+      "source_color_linear": [
+        1.0,
+        0.38999998569488525,
+        0.11999999731779099
+      ],
+      "intensity": 40.0,
+      "range_metres": 30.0,
+      "shadows": false
+    },
+    {
+      "name": "LR06_Preview_WarmProxy_09",
+      "group": "LR01",
+      "category": "entry_or_transfer",
+      "source_name": "LR01_NORTH_TRANSFER_02",
+      "original_source_names": [
+        "LR01_NORTH_TRANSFER_02",
+        "LR01_NORTH_TRANSFER_04"
+      ],
+      "original_position_blender": [
+        1956.7266845703125,
+        2205.5517578125,
+        235.5
+      ],
+      "position_unity": [
+        1969.177436709404,
+        235.13959792256355,
+        2189.3965969085693
+      ],
+      "source_color_linear": [
+        1.0,
+        0.44999998807907104,
+        0.1599999964237213
+      ],
+      "intensity": 22.0,
+      "range_metres": 25.0,
+      "shadows": false
+    },
+    {
+      "name": "LR06_Preview_WarmProxy_10",
+      "group": "LR01",
+      "category": "window",
+      "source_name": "LR01_B_R05_SOUTH_RIM_EB07_04_WINDOW_EAST",
+      "original_source_names": [
+        "LR01_B_R05_SOUTH_RIM_EB07_01_WINDOW_EAST",
+        "LR01_B_R05_SOUTH_RIM_EB01_02_WINDOW_WEST",
+        "LR01_B_R05_SOUTH_RIM_EB01_02_WINDOW_EAST",
+        "LR01_B_R05_SOUTH_RIM_EB07_04_WINDOW_WEST",
+        "LR01_B_R05_SOUTH_RIM_EB07_04_WINDOW_EAST",
+        "LR01_B_R05_SOUTH_RIM_EB01_02_EXIT",
+        "LR01_B_R05_SOUTH_RIM_EB07_04_ENTRY",
+        "LR01_B_R05_SOUTH_RIM_EB07_04_EXIT"
+      ],
+      "original_position_blender": [
+        2056.660489169034,
+        1735.4646027800325,
+        304.5129422274503
+      ],
+      "position_unity": [
+        2045.785888671879,
+        304.49171752929686,
+        1723.0000052845655
+      ],
+      "source_color_linear": [
+        1.0,
+        0.44999998807907104,
+        0.1599999964237213
+      ],
+      "intensity": 35.0,
+      "range_metres": 25.0,
+      "shadows": false
+    },
+    {
+      "name": "LR06_Preview_WarmProxy_11",
+      "group": "LR01",
+      "category": "window",
+      "source_name": "LR01_B_F03_LOW_RECOVERY_EB01_00_WINDOW_WEST",
+      "original_source_names": [
+        "LR01_B_F03_LOW_RECOVERY_EB01_00_WINDOW_WEST",
+        "LR01_B_F03_LOW_RECOVERY_EB01_00_ENTRY",
+        "LR01_B_F03_LOW_RECOVERY_EB01_00_LOADING_CANOPY",
+        "LR01_B_F03_LOW_RECOVERY_EB01_00_EXIT",
+        "LR01_SOUTH_RECOVERY_02",
+        "LR01_SOUTH_RECOVERY_04"
+      ],
+      "original_position_blender": [
+        2062.4532267252603,
+        2054.9567260742188,
+        189.5672526889377
+      ],
+      "position_unity": [
+        2061.082031250002,
+        167.2039825439453,
+        2069.9999964816025
+      ],
+      "source_color_linear": [
+        1.0,
+        0.44999998807907104,
+        0.1599999964237213
+      ],
+      "intensity": 35.0,
+      "range_metres": 25.0,
+      "shadows": false
+    },
+    {
+      "name": "LR06_Preview_WarmProxy_12",
+      "group": "LR01",
+      "category": "platform",
+      "source_name": "LR01_UPPER_CASING_INSPECTION_272_E",
+      "original_source_names": [
+        "LR01_CORE_LEVEL_256_35",
+        "LR01_CORE_LEVEL_256_125",
+        "LR01_CORE_LEVEL_256_305",
+        "LR01_UPPER_CASING_INSPECTION_272_E"
+      ],
+      "original_position_blender": [
+        2023.5907555404974,
+        2122.6863091916453,
+        263.7015910245934
+      ],
+      "position_unity": [
+        2026.009912174195,
+        267.37938648462296,
+        2112.1729214787483
+      ],
+      "source_color_linear": [
+        1.0,
+        0.27000001072883606,
+        0.04500000178813934
+      ],
+      "intensity": 40.0,
+      "range_metres": 30.0,
+      "shadows": false
+    },
+    {
+      "name": "LR06_Preview_WarmProxy_13",
+      "group": "LR01",
+      "category": "platform",
+      "source_name": "LR01_SHAFT_GALLERY_78_60",
+      "original_source_names": [
+        "LR01_SHAFT_GALLERY_78_60"
+      ],
+      "original_position_blender": [
+        2040.0,
+        2173.30126953125,
+        81.0
+      ],
+      "position_unity": [
+        2039.6095659434795,
+        80.37530612945557,
+        2172.6250160336494
+      ],
+      "source_color_linear": [
+        1.0,
+        0.44999998807907104,
+        0.1599999964237213
+      ],
+      "intensity": 40.0,
+      "range_metres": 30.0,
+      "shadows": false
+    },
+    {
+      "name": "LR06_Preview_WarmProxy_14",
+      "group": "LR01",
+      "category": "window",
+      "source_name": "LR01_B_R01_NORTH_RIM_EB02_04_WINDOW_EAST",
+      "original_source_names": [
+        "LR01_B_R01_NORTH_RIM_EB02_04_WINDOW_EAST"
+      ],
+      "original_position_blender": [
+        2013.053955078125,
+        2497.0,
+        257.8524475097656
+      ],
+      "position_unity": [
+        2016.5539550781248,
+        257.5524475097656,
+        2496.9999989917305
+      ],
+      "source_color_linear": [
+        1.0,
+        0.44999998807907104,
+        0.1599999964237213
+      ],
+      "intensity": 35.0,
+      "range_metres": 25.0,
+      "shadows": false
+    },
+    {
+      "name": "LR06_Preview_WarmProxy_15",
+      "group": "LR01",
+      "category": "entry_or_transfer",
+      "source_name": "LR01_R51_2_G2_Recovery_Cross_Wing_Ground_Service_Bay_2_Deep_Lin",
+      "original_source_names": [
+        "LR01_R51_2_G2_Recovery_Cross_Wing_Ground_Service_Bay_2_Deep_Lin"
+      ],
+      "original_position_blender": [
+        2136.370361328125,
+        1896.566162109375,
+        220.43655395507812
+      ],
+      "position_unity": [
+        2136.370361328125,
+        219.43655395507812,
+        1896.566162109375
+      ],
+      "source_color_linear": [
+        1.0,
+        0.44999998807907104,
+        0.1599999964237213
+      ],
+      "intensity": 22.0,
+      "range_metres": 25.0,
+      "shadows": false
+    },
+    {
+      "name": "LR06_Preview_WarmProxy_16",
+      "group": "LR01",
+      "category": "window",
+      "source_name": "LR01_B_M02_EAST_SLOPE_EB01_02_WINDOW_EAST",
+      "original_source_names": [
+        "LR01_B_M02_EAST_SLOPE_EB01_02_WINDOW_WEST",
+        "LR01_B_M02_EAST_SLOPE_EB01_02_WINDOW_EAST",
+        "LR01_B_M02_EAST_SLOPE_EB02_03_WINDOW_WEST",
+        "LR01_B_M02_EAST_SLOPE_EB01_02_EXIT"
+      ],
+      "original_position_blender": [
+        2151.609600360577,
+        2123.9605243389424,
+        179.98634142753406
+      ],
+      "position_unity": [
+        2154.0,
+        179.98314208984374,
+        2131.993896484375
+      ],
+      "source_color_linear": [
+        1.0,
+        0.44999998807907104,
+        0.1599999964237213
+      ],
+      "intensity": 35.0,
+      "range_metres": 25.0,
+      "shadows": false
+    },
+    {
+      "name": "LR06_Preview_WarmProxy_17",
+      "group": "LR01",
+      "category": "entry_or_transfer",
+      "source_name": "LR01_R12_A_SouthDoorStructuralLintel",
+      "original_source_names": [
+        "LR01_R12_A_DeepWestEntryRecessSoffit",
+        "LR01_R12_A_SouthDoorStructuralLintel",
+        "LR01_R12_B_WestOpenPortalHeader"
+      ],
+      "original_position_blender": [
+        2105.6666666666665,
+        2258.5333658854165,
+        182.70452880859375
+      ],
+      "position_unity": [
+        2106.0,
+        181.69679260253906,
+        2252.60009765625
+      ],
+      "source_color_linear": [
+        1.0,
+        0.44999998807907104,
+        0.1599999964237213
+      ],
+      "intensity": 22.0,
+      "range_metres": 25.0,
+      "shadows": false
+    },
+    {
+      "name": "LR06_Preview_WarmProxy_18",
+      "group": "LR01",
+      "category": "entry_or_transfer",
+      "source_name": "LR01_R51_2_G2_Dispatch_High_Bay_Loading_Portal_1_Deep_Lintel",
+      "original_source_names": [
+        "LR01_R51_2_G2_Dispatch_High_Bay_Loading_Portal_1_Deep_Lintel",
+        "LR01_R51_2_G2_Dispatch_High_Bay_Loading_Portal_2_Deep_Lintel",
+        "LR01_R51_2_G2_Dispatch_High_Bay_End_Service_Portal_Deep_Lintel",
+        "LR01_R51_2_G2_Recovery_Cross_Wing_End_Service_Portal_Deep_Linte"
+      ],
+      "original_position_blender": [
+        2180.7562866210938,
+        1878.8215942382812,
+        244.83963775634766
+      ],
+      "position_unity": [
+        2190.211669921875,
+        245.88864135742188,
+        1879.2584228515625
+      ],
+      "source_color_linear": [
+        1.0,
+        0.44999998807907104,
+        0.1599999964237213
+      ],
+      "intensity": 22.0,
+      "range_metres": 25.0,
+      "shadows": false
+    },
+    {
+      "name": "LR06_Preview_WarmProxy_19",
+      "group": "LR01",
+      "category": "entry_or_transfer",
+      "source_name": "LR01_EAST_PROCESS_08",
+      "original_source_names": [
+        "LR01_EAST_PROCESS_08"
+      ],
+      "original_position_blender": [
+        2191.409912109375,
+        2258.894775390625,
+        236.7293243408203
+      ],
+      "position_unity": [
+        2191.9449368715286,
+        236.36892226338387,
+        2258.1306688189507
+      ],
+      "source_color_linear": [
+        1.0,
+        0.44999998807907104,
+        0.1599999964237213
+      ],
+      "intensity": 22.0,
+      "range_metres": 25.0,
+      "shadows": false
+    },
+    {
+      "name": "LR06_Preview_WarmProxy_20",
+      "group": "LR01",
+      "category": "window",
+      "source_name": "LR01_B_R09_UPPER_RECOVERY_EB07_03_WINDOW_WEST",
+      "original_source_names": [
+        "LR01_B_R09_UPPER_RECOVERY_EB07_00_WINDOW_EAST",
+        "LR01_B_R09_UPPER_RECOVERY_EB01_01_WINDOW_WEST",
+        "LR01_B_R09_UPPER_RECOVERY_EB01_01_WINDOW_EAST",
+        "LR01_B_R09_UPPER_RECOVERY_EB02_02_WINDOW_EAST",
+        "LR01_B_R09_UPPER_RECOVERY_EB07_03_WINDOW_WEST",
+        "LR01_B_R09_UPPER_RECOVERY_EB07_03_WINDOW_EAST",
+        "LR01_B_R09_UPPER_RECOVERY_EB01_01_EXIT",
+        "LR01_B_R09_UPPER_RECOVERY_EB07_03_ENTRY",
+        "LR01_B_R09_UPPER_RECOVERY_EB07_03_EXIT"
+      ],
+      "original_position_blender": [
+        2196.6974788972702,
+        2584.5198343211205,
+        301.2294223829247
+      ],
+      "position_unity": [
+        2188.785888671879,
+        300.99684448242186,
+        2596.0000052845658
+      ],
+      "source_color_linear": [
+        1.0,
+        0.44999998807907104,
+        0.1599999964237213
+      ],
+      "intensity": 35.0,
+      "range_metres": 25.0,
+      "shadows": false
+    },
+    {
+      "name": "LR06_Preview_WarmProxy_21",
+      "group": "LR01",
+      "category": "entry_or_transfer",
+      "source_name": "LR01_R51_3_G3_Inward_Maintenance_Wing_Loading_Portal_1_Deep_Lin",
+      "original_source_names": [
+        "LR01_R51_3_G3_Inward_Maintenance_Wing_Loading_Portal_1_Deep_Lin",
+        "LR01_R51_3_G3_Inward_Maintenance_Wing_End_Service_Portal_Deep_L"
+      ],
+      "original_position_blender": [
+        2276.6417236328125,
+        2052.775634765625,
+        229.44131469726562
+      ],
+      "position_unity": [
+        2268.82177734375,
+        228.7663116455078,
+        2061.856201171875
+      ],
+      "source_color_linear": [
+        1.0,
+        0.44999998807907104,
+        0.1599999964237213
+      ],
+      "intensity": 22.0,
+      "range_metres": 25.0,
+      "shadows": false
+    },
+    {
+      "name": "LR06_Preview_WarmProxy_22",
+      "group": "LR01",
+      "category": "window",
+      "source_name": "LR01_B_R02_NORTHEAST_RIM_EB07_01_WINDOW_EAST",
+      "original_source_names": [
+        "LR01_B_R02_NORTHEAST_RIM_EB07_01_WINDOW_EAST",
+        "LR01_B_R02_NORTHEAST_RIM_EB07_01_ENTRY",
+        "LR01_B_R02_NORTHEAST_RIM_EB07_01_EXIT"
+      ],
+      "original_position_blender": [
+        2247.6870465959823,
+        2412.156023297991,
+        285.6806858607701
+      ],
+      "position_unity": [
+        2258.6562054678425,
+        286.26320190429686,
+        2416.14889950754
+      ],
+      "source_color_linear": [
+        1.0,
+        0.44999998807907104,
+        0.1599999964237213
+      ],
+      "intensity": 35.0,
+      "range_metres": 25.0,
+      "shadows": false
+    },
+    {
+      "name": "LR06_Preview_WarmProxy_23",
+      "group": "LR01",
+      "category": "entry_or_transfer",
+      "source_name": "LR01_R51_3_G3_North_Process_High_Bay_Loading_Portal_1_Deep_Lint",
+      "original_source_names": [
+        "LR01_R51_3_G3_North_Process_High_Bay_Loading_Portal_1_Deep_Lint"
+      ],
+      "original_position_blender": [
+        2324.207275390625,
+        2062.676025390625,
+        250.72335815429688
+      ],
+      "position_unity": [
+        2324.207275390625,
+        249.72335815429688,
+        2062.676025390625
+      ],
+      "source_color_linear": [
+        1.0,
+        0.44999998807907104,
+        0.1599999964237213
+      ],
+      "intensity": 22.0,
+      "range_metres": 25.0,
+      "shadows": false
+    },
+    {
+      "name": "LR06_Preview_WarmProxy_24",
+      "group": "LR01",
+      "category": "entry_or_transfer",
+      "source_name": "LR01_R51_5_G5_Long_Sorting_Exchange_Ground_Service_Bay_1_Deep_L",
+      "original_source_names": [
+        "LR01_R51_5_G5_Long_Sorting_Exchange_Ground_Service_Bay_1_Deep_L"
+      ],
+      "original_position_blender": [
+        2355.07666015625,
+        2362.372802734375,
+        284.00762939453125
+      ],
+      "position_unity": [
+        2355.07666015625,
+        283.00762939453125,
+        2362.372802734375
+      ],
+      "source_color_linear": [
+        1.0,
+        0.44999998807907104,
+        0.1599999964237213
+      ],
+      "intensity": 22.0,
+      "range_metres": 25.0,
+      "shadows": false
+    },
+    {
+      "name": "LR06_Preview_WarmProxy_25",
+      "group": "LR01",
+      "category": "window",
+      "source_name": "LR01_B_R03_EAST_RIM_EB02_02_WINDOW_EAST",
+      "original_source_names": [
+        "LR01_B_R03_EAST_RIM_EB02_02_WINDOW_EAST"
+      ],
+      "original_position_blender": [
+        2420.0,
+        2249.053955078125,
+        303.5477600097656
+      ],
+      "position_unity": [
+        2420.0,
+        303.2477600097656,
+        2252.553955078125
+      ],
+      "source_color_linear": [
+        1.0,
+        0.44999998807907104,
+        0.1599999964237213
+      ],
+      "intensity": 35.0,
+      "range_metres": 25.0,
+      "shadows": false
+    },
+    {
+      "name": "LR06_Preview_WarmProxy_26",
+      "group": "W18",
+      "category": "work_area",
+      "source_name": "WC_L160_SOUTH_WALL_BENCH_AREA",
+      "original_source_names": [
+        "WC_F80_INSPECTION_CEILING_-3.6_-4.7",
+        "WC_F80_INSPECTION_CEILING_-3.6_4.8",
+        "WC_F80_INSPECTION_CEILING_3.6_-4.7",
+        "WC_F80_INSPECTION_CEILING_3.6_4.8",
+        "WC_F80_INSPECTION_WORKWALL",
+        "WC_L160_SOUTH_MOTOR_REPAIR_AREA",
+        "WC_L160_SOUTH_WALL_BENCH_AREA",
+        "WC_L160_SOUTH_LEVEL_CHANGE_AREA",
+        "WC_L160_NORTH_STOCK_AISLE_AREA",
+        "WC_L160_NORTH_DISPATCH_BENCH_AREA",
+        "WC_L160_SPARES_PREP_BENCH_AREA",
+        "WC_L160_SPARES_LEVEL_CHANGE_AREA",
+        "WC_L160_KIT_PREP_BENCH_AREA",
+        "WC_L160_KIT_LEVEL_CHANGE_AREA",
+        "WC_L160_SOUTH_ENTRY_AREA",
+        "WC_L160_NORTH_ENTRY_AREA",
+        "WC_L160_SPARES_ENTRY_AREA",
+        "WC_L160_KIT_ENTRY_AREA",
+        "WC_L160_UPPER_GALLERY_AREA",
+        "WC_L160_LOWER_GALLERY_AREA"
+      ],
+      "original_position_blender": [
+        1711.433991450413,
+        2266.8298810242086,
+        216.5269032861017
+      ],
+      "position_unity": [
+        1711.5162539072335,
+        214.33897756040096,
+        2258.7432961864397
+      ],
+      "source_color_linear": [
+        1.0,
+        0.8199999928474426,
+        0.6299999952316284
+      ],
+      "intensity": 18.0,
+      "range_metres": 22.0,
+      "shadows": false
+    },
+    {
+      "name": "LR06_Preview_WarmProxy_27",
+      "group": "NR01",
+      "category": "corridor",
+      "source_name": "NR01_V11_HOIST_EAST_Work_AREA",
+      "original_source_names": [
+        "NR01_V11_HOIST_WEST_Work_AREA",
+        "NR01_V11_HOIST_EAST_Work_AREA",
+        "NR01_V11_SERVICE_Work_AREA"
+      ],
+      "original_position_blender": [
+        1972.8388170345809,
+        2454.7786250151403,
+        260.38958385378817
+      ],
+      "position_unity": [
+        1974.9572916179895,
+        260.7801444604993,
+        2454.6168253719807
+      ],
+      "source_color_linear": [
+        1.0,
+        0.9399999976158142,
+        0.8600000143051147
+      ],
+      "intensity": 14.0,
+      "range_metres": 22.0,
+      "shadows": false
+    },
+    {
+      "name": "LR06_Preview_WarmProxy_28",
+      "group": "NR01",
+      "category": "corridor",
+      "source_name": "NR01_V4_MAINTENANCE_AREA",
+      "original_source_names": [
+        "NR01_V3_Dispatch_Entry_Task_AREA",
+        "NR01_V4_MAINTENANCE_AREA",
+        "NR01_V4_DISPATCH_AREA",
+        "NR01_V8_WEST_Entrance_AREA",
+        "NR01_V8_EAST_Entrance_AREA"
+      ],
+      "original_position_blender": [
+        1950.2919859503309,
+        2486.5255118042883,
+        262.3764113822993
+      ],
+      "position_unity": [
+        1945.1500244140625,
+        263.34906005859375,
+        2485.949951171875
+      ],
+      "source_color_linear": [
+        1.0,
+        0.9399999976158142,
+        0.8399999737739563
+      ],
+      "intensity": 14.0,
+      "range_metres": 22.0,
+      "shadows": false
+    },
+    {
+      "name": "LR06_Preview_WarmProxy_29",
+      "group": "LR02",
+      "category": "platform",
+      "source_name": "LR02_CORE_SERVICE_CASING_306",
+      "original_source_names": [
+        "LR02_CORE_SERVICE_CASING_306"
+      ],
+      "original_position_blender": [
+        2010.946533203125,
+        2114.91845703125,
+        299.6194152832031
+      ],
+      "position_unity": [
+        2011.5142508745193,
+        298.91574132442474,
+        2115.345703572035
+      ],
+      "source_color_linear": [
+        1.0,
+        0.3700000047683716,
+        0.10000000149011612
+      ],
+      "intensity": 40.0,
+      "range_metres": 30.0,
+      "shadows": false
+    },
+    {
+      "name": "LR06_Preview_WarmProxy_30",
+      "group": "LR02",
+      "category": "platform",
+      "source_name": "LR02_CROWN_DRIVE_HOOD_385",
+      "original_source_names": [
+        "LR02_CROWN_DRIVE_HOOD_385"
+      ],
+      "original_position_blender": [
+        2001.9981689453125,
+        2127.06884765625,
+        375.1897888183594
+      ],
+      "position_unity": [
+        2002.325050830841,
+        374.5295556783676,
+        2127.745043218136
+      ],
+      "source_color_linear": [
+        1.0,
+        0.33000001311302185,
+        0.07500000298023224
+      ],
+      "intensity": 40.0,
+      "range_metres": 30.0,
+      "shadows": false
+    }
+  ]
+}
