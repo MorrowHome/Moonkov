@@ -47,6 +47,7 @@ public static class DollSingerHumanlikeChecks
             CheckReturnFire(system, map, world);
             CheckReloadAvailability(system, map);
             CheckBackpackMedical(system, map);
+            CheckShieldSupply(system, world);
         }
         finally
         {
@@ -66,6 +67,53 @@ public static class DollSingerHumanlikeChecks
         ActionStarted = 10,
         TacticalGoal = Vector3.zero
     };
+
+    private delegate void ShieldSupplyTick(DollSingerEnemyBrain brain, ref PredictedPlayerGhost health, Vector3 position, double now);
+
+    private static void CheckShieldSupply(DollSingerEnemySystem system, World world)
+    {
+        var property = typeof(WeaponManager).GetProperty("Instance", BindingFlags.Public | BindingFlags.Static);
+        var old = property.GetValue(null);
+        var root = new GameObject("Temporary PMC shield supply registry") { hideFlags = HideFlags.HideAndDontSave };
+        root.SetActive(false);
+        try
+        {
+            var manager = root.AddComponent<WeaponManager>();
+            manager.WeaponRegistry = AssetDatabase.LoadAssetAtPath<WeaponRegistry>("Assets/Data/Weapons/WeaponRegistry.asset");
+            Require(manager.WeaponRegistry != null, "Weapon registry missing from PMC shield supply check.");
+            property.SetValue(null, manager);
+            var tick = (ShieldSupplyTick)typeof(DollSingerEnemySystem).GetMethod("UpdateShieldSupply", PrivateInstance)
+                .CreateDelegate(typeof(ShieldSupplyTick), system);
+            var brain = Brain(); brain.Inventory = InventoryGraph.Create(false); brain.Action = PmcAction.Scavenge;
+            Require(PmcProtectionLoadout.TryEquip(brain.Inventory, false, false, 0) &&
+                brain.Inventory.AddSupply("cells", 3, InventoryCatalog.Pockets, true) == InventoryError.None,
+                "PMC shield supply fixture.");
+            var health = Health(); PmcProtectionLoadout.Initialize(ref health, brain.Inventory);
+            health.ShieldEnergy = 0; EnergyShieldEquipment.Flush(ref health, brain.Inventory);
+            int original = brain.Inventory.CellEnergy(accessibleOnly: true);
+            brain.LootUntil = 11;
+            tick(brain, ref health, Vector3.zero, 10);
+            Require(health.ShieldEnergy == 0 && brain.Inventory.CellEnergy(accessibleOnly: true) == original,
+                "A PMC spent cells during a search.");
+            brain.LootUntil = 0;
+            tick(brain, ref health, Vector3.zero, 10.5);
+            Require(health.ShieldEnergy == 0, "The shield supply cadence was bypassed.");
+            var tutorial = world.EntityManager.CreateEntity(typeof(TutorialRaidMode));
+            tick(brain, ref health, Vector3.zero, 11.1);
+            Require(health.ShieldEnergy == 0, "A tutorial PMC changed its loadout.");
+            world.EntityManager.DestroyEntity(tutorial);
+            brain.LastDamage = 12.2;
+            tick(brain, ref health, Vector3.zero, 12.2);
+            Require(health.ShieldEnergy == 0, "A recently attacked PMC spent cells on a shield.");
+            tick(brain, ref health, Vector3.zero, 30);
+            var weapon = manager.WeaponRegistry.GetWeaponData(health.EquippedWeaponID, health.EquippedModules);
+            Require(weapon != null && health.ShieldEnergy == 100 &&
+                brain.Inventory.CellEnergy(accessibleOnly: true) == original - 100 &&
+                brain.Inventory.CellEnergy(accessibleOnly: true) >= weapon.MagazineSize * weapon.EnergyPerRound,
+                "A safe PMC did not recharge its shield while keeping a full magazine reserve.");
+        }
+        finally { property.SetValue(null, old); Object.DestroyImmediate(root); }
+    }
 
     private static void CheckReloadAvailability(DollSingerEnemySystem system,MoonRaidMap map)
     {

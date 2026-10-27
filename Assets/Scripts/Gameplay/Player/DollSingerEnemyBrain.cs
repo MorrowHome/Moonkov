@@ -242,6 +242,44 @@ namespace Unity.MP_FPS
         }
     }
 
+    // A shield and a halo draw from the same physical cells. Leave a full
+    // magazine's accessible energy before spending any cell on protection.
+    public static class PmcShieldSupply
+    {
+        public const float RechargeThreshold = 25;
+
+        public static bool MayRecharge(DollSingerEnemyBrain brain, in PredictedPlayerGhost health,
+            bool tutorial, bool safe, double now)
+        {
+            if (brain == null || brain.IsClashBot || tutorial || !safe || !double.IsFinite(now) ||
+                health.CurrentHealth <= 0 || !health.ShieldEquipped || !float.IsFinite(health.ShieldEnergy) || health.ShieldEnergy < 0 ||
+                health.ShieldEnergy > RechargeThreshold || RaidHealth.HandsBusy(health) || brain.Visible ||
+                brain.HazardDanger || brain.Grenade.Active(now) || brain.HealUntil > 0 || brain.Interacting ||
+                brain.LootUntil > 0 || brain.ExtractionProgress > 0 || brain.Extracted ||
+                brain.Action != PmcAction.Scavenge && brain.Action != PmcAction.Extract) return false;
+            var status = brain.SelfStatus;
+            return status == null || status.Bleed <= now && status.Fire <= now &&
+                (status.Poison <= now || status.Antidote > now);
+        }
+
+        public static bool TryRecharge(ref PredictedPlayerGhost health, InventoryGraph inventory, int roundCost, int magazineSize)
+        {
+            if (inventory == null || roundCost <= 0 || magazineSize <= 0 || !health.ShieldEquipped ||
+                !float.IsFinite(health.ShieldEnergy) || health.ShieldEnergy < 0 || health.ShieldEnergy > RechargeThreshold) return false;
+            long reserve = (long)roundCost * magazineSize;
+            int available = inventory.CellEnergy(accessibleOnly: true);
+            int needed = Mathf.FloorToInt(EnergyShieldRules.EnergyCapacity - health.ShieldEnergy + .0001f);
+            foreach (var cell in inventory.Items)
+            {
+                if (!EnergyShieldInventory.CanRecharge(health, inventory, cell)) continue;
+                int used = System.Math.Min(needed, BatteryEnergy.Stored(cell));
+                if (used <= 0 || available - (long)used < reserve) continue;
+                return EnergyShieldInventory.Recharge(ref health, inventory, cell.Id, inventory.Version) == InventoryError.None;
+            }
+            return false;
+        }
+    }
+
     // An inaccessible backpack cell cannot be re-attempted every frame while
     // the physical inventory and weapon's energy cost remain unchanged.
     public struct PmcReloadFailure
@@ -393,6 +431,7 @@ namespace Unity.MP_FPS
         public double CacheObstructedSince = -1;
         public double NextNearbyLootScan;
         public double NextTacticalSwitch;
+        public double NextShieldSupplyCheck;
         public double NextUnknownEvasion;
         public PmcGrenadeAwareness Grenade;
         public Vector3 GrenadePlanPosition;

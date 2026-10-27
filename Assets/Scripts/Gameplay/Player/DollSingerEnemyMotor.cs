@@ -30,6 +30,7 @@ namespace Unity.MP_FPS
             AdvanceCover(brain, position, now);
             AdvanceHealing(brain, ref health, position, now);
             AdvanceObjective(brain, ref health, position, eye, map, now, dt);
+            UpdateShieldSupply(brain, ref health, position, now);
             // A timed search is stationary; re-pathing to the actor's own position
             // can fail and cancel an otherwise reachable corpse or drawer.
             if (brain.Action != PmcAction.Scavenge || brain.LootUntil <= 0)
@@ -150,6 +151,16 @@ namespace Unity.MP_FPS
             (brain.Action == PmcAction.Engage || brain.Action == PmcAction.HoldAngle ||
              brain.Action == PmcAction.Cover && (!brain.HasCover || brain.IsPeeking || brain.CoverPhase == PmcCoverPhase.Returning) ||
              brain.Action == PmcAction.Retreat || brain.Action == PmcAction.Flank);
+
+        private void UpdateShieldSupply(DollSingerEnemyBrain brain, ref PredictedPlayerGhost health, Vector3 position, double now)
+        {
+            if (!health.ShieldEquipped || health.ShieldEnergy > PmcShieldSupply.RechargeThreshold || now < brain.NextShieldSupplyCheck) return;
+            brain.NextShieldSupplyCheck = now + 1;
+            if (!PmcShieldSupply.MayRecharge(brain, health, TutorialRuntime.Enabled(EntityManager),
+                SafeToTreat(brain, position, now), now)) return;
+            var held = WeaponManager.Instance?.WeaponRegistry?.GetWeaponData(health.EquippedWeaponID, health.EquippedModules);
+            if (held != null) PmcShieldSupply.TryRecharge(ref health, brain.Inventory, held.EnergyPerRound, held.MagazineSize);
+        }
 
         private static void UpdateCombatPressure(DollSingerEnemyBrain brain, PredictedPlayerGhost health, double now, float dt) =>
             PmcCombatPressure.Update(brain, health, now, dt);

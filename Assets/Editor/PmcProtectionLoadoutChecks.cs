@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Reflection;
 using Unity.Core;
 using Unity.Entities;
@@ -89,7 +90,82 @@ public static class PmcProtectionLoadoutChecks
             Near(decoded.Find(id).ShieldEnergy, 92) && decoded.Find(id).FoundInRaid,
             "inventory serialization retains the same recovered item and its actual resources");
         CheckScavengedProtection();
+        CheckShieldSupply();
         return "PASS " + s_Checks + " PMC shield loadout and corpse checks";
+    }
+
+    private static void CheckShieldSupply()
+    {
+        var inventory = InventoryGraph.Create(false);
+        Check(PmcProtectionLoadout.TryEquip(inventory, false, false, 0) &&
+            inventory.AddSupply("cells", 3, InventoryCatalog.Pockets, true) == InventoryError.None,
+            "shield supply fixture uses real carried cells");
+        var health = new PredictedPlayerGhost(); RaidHealth.Initialize(ref health);
+        PmcProtectionLoadout.Initialize(ref health, inventory);
+        string shieldId = health.ShieldItem.ToString();
+        health.ShieldCharge = 20; health.ShieldEnergy = 15.5f;
+        EnergyShieldEquipment.Flush(ref health, inventory);
+        var brain = (DollSingerEnemyBrain)System.Runtime.Serialization.FormatterServices.GetUninitializedObject(typeof(DollSingerEnemyBrain));
+        brain.Inventory = inventory; brain.Action = PmcAction.Scavenge;
+        Check(PmcShieldSupply.MayRecharge(brain, health, false, true, 10), "safe raider can replenish a low shield");
+        Check(!PmcShieldSupply.MayRecharge(brain, health, true, true, 10) &&
+            !PmcShieldSupply.MayRecharge(brain, health, false, false, 10), "tutorial or unsafe raiders do not replenish");
+        brain.ClashParticipantId = 1;
+        Check(!PmcShieldSupply.MayRecharge(brain, health, false, true, 10), "bounty loadouts are excluded");
+        brain.ClashParticipantId = 0; brain.Visible = true;
+        Check(!PmcShieldSupply.MayRecharge(brain, health, false, true, 10), "visible combat blocks supply");
+        brain.Visible = false; brain.HazardDanger = true;
+        Check(!PmcShieldSupply.MayRecharge(brain, health, false, true, 10), "hazards take priority over supply");
+        brain.HazardDanger = false; brain.LootUntil = 12;
+        Check(!PmcShieldSupply.MayRecharge(brain, health, false, true, 10), "search is not interrupted by supply");
+        brain.LootUntil = 0; brain.ExtractionProgress = 1;
+        Check(!PmcShieldSupply.MayRecharge(brain, health, false, true, 10), "extraction is not interrupted by supply");
+        brain.ExtractionProgress = 0; brain.HealUntil = 12;
+        Check(!PmcShieldSupply.MayRecharge(brain, health, false, true, 10), "healing is not interrupted by supply");
+        brain.HealUntil = 0; brain.SelfStatus = new TacticalServerWorld.Status { Bleed = 12 };
+        Check(!PmcShieldSupply.MayRecharge(brain, health, false, true, 10), "bleeding takes priority over supply");
+        brain.SelfStatus.Bleed = 0; brain.SelfStatus.Fire = 12;
+        Check(!PmcShieldSupply.MayRecharge(brain, health, false, true, 10), "burning takes priority over supply");
+        brain.SelfStatus.Fire = 0; brain.SelfStatus.Poison = 12;
+        Check(!PmcShieldSupply.MayRecharge(brain, health, false, true, 10), "poison takes priority over supply");
+        brain.SelfStatus.Antidote = 12;
+        Check(PmcShieldSupply.MayRecharge(brain, health, false, true, 10), "active antidote permits a safe supply");
+        brain.Action = PmcAction.Engage;
+        Check(!PmcShieldSupply.MayRecharge(brain, health, false, true, 10), "combat actions do not replenish");
+        brain.Action = PmcAction.Scavenge;
+
+        int before = inventory.CellEnergy(accessibleOnly: true), version = inventory.Version;
+        Check(!PmcShieldSupply.TryRecharge(ref health, inventory, 10, 30) &&
+            inventory.Version == version && inventory.CellEnergy(accessibleOnly: true) == before && Near(health.ShieldEnergy, 15.5f),
+            "a full magazine's reserve has priority over the shield");
+        Check(!PmcShieldSupply.TryRecharge(ref health, inventory, 0, 10) &&
+            !PmcShieldSupply.TryRecharge(ref health, inventory, 2, 0), "invalid weapon data does not spend cells");
+        Check(PmcShieldSupply.TryRecharge(ref health, inventory, 2, 30) && inventory.Version == version + 1 &&
+            inventory.CellEnergy(accessibleOnly: true) == before - 84 && Near(health.ShieldEnergy, 99.5f) &&
+            Near(inventory.Find(shieldId).ShieldEnergy, 99.5f) && Near(health.ShieldCharge, 20),
+            "the real recharge spends only whole cell energy and preserves shield identity and charge");
+        Check(!PmcShieldSupply.TryRecharge(ref health, inventory, 2, 30) && inventory.Version == version + 1,
+            "energy above the threshold does not repeatedly consume cells");
+        EnergyShieldEquipment.Tick(ref health, inventory, 7);
+        Check(Near(health.ShieldCharge, 28) && Near(health.ShieldEnergy, 95.5f),
+            "recharged energy powers the ordinary delayed shield recovery");
+        EnergyShieldEquipment.Flush(ref health, inventory);
+        var corpse = LootInventoryExchange.DropOnDeath(inventory);
+        Check(corpse.Find(shieldId) != null && Near(corpse.Find(shieldId).ShieldCharge, 28) &&
+            Near(corpse.Find(shieldId).ShieldEnergy, 95.5f) &&
+            corpse.Items.Where(i => i.Code == "cells").Sum(BatteryEnergy.Stored) == before - 84,
+            "death leaves the actual shield and remaining cell energy in the corpse");
+
+        inventory = InventoryGraph.Create(false);
+        Check(PmcProtectionLoadout.TryEquip(inventory, false, false, 0) &&
+            inventory.AddSupply("cells", 3, inventory.Equipped("Backpack").Id, true) == InventoryError.None,
+            "backpack-only cell fixture");
+        health = new PredictedPlayerGhost(); RaidHealth.Initialize(ref health); PmcProtectionLoadout.Initialize(ref health, inventory);
+        health.ShieldEnergy = 0;
+        version = inventory.Version;
+        Check(!PmcShieldSupply.TryRecharge(ref health, inventory, 1, 1) && inventory.Version == version &&
+            inventory.CellEnergy(carriedOnly: true) == 300,
+            "inaccessible backpack cells are neither spent nor counted as the ready reserve");
     }
 
     private static InventoryGraph ShieldCache(float charge, float energy, out string itemId)
