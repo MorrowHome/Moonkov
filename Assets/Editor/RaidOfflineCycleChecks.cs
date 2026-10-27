@@ -126,9 +126,10 @@ public static class RaidOfflineCycleChecks
             Check(restricted && RaidInventoryTransport.Decode(reopened.Read().InventoryJson).Find(freePistolId) != null,
                 "reopened free purchase was sold after extraction");
         }
-        CheckDeathAndSecureContainer(projectPath);
+        CheckFailureAndSecureContainer(projectPath, RaidPhase.Dead);
+        CheckFailureAndSecureContainer(projectPath, RaidPhase.TimedOut);
         CheckEnemyLootRecovery(projectPath);
-        return "PASS " + checks + " offline raid data-cycle checks: free purchase, loadout, competing enemy loot and corpse recovery, timed healing, extraction, death, secure return, replay and save reload. No Unity scene or multiplayer executed.";
+        return "PASS " + checks + " offline raid data-cycle checks: free purchase, loadout, competing enemy loot and corpse recovery, timed healing, extraction, death, timeout, secure return, replay and save reload. No Unity scene or multiplayer executed.";
     }
 
     private static void CheckEnemyLootRecovery(string projectPath)
@@ -219,7 +220,7 @@ public static class RaidOfflineCycleChecks
         }
     }
 
-    private static void CheckDeathAndSecureContainer(string projectPath)
+    private static void CheckFailureAndSecureContainer(string projectPath, RaidPhase outcome)
     {
         string path = Path.GetFullPath(Path.Combine(projectPath, "Library", "BuildValidation", "OfflineCycle", Guid.NewGuid().ToString("N") + ".json"));
         string rifleId, caseId, lootId, playerId;
@@ -241,7 +242,7 @@ public static class RaidOfflineCycleChecks
                 DeploymentId = Guid.NewGuid().ToString("D"), Cells = 0 };
             var raid = RaidInventoryTransport.Decode(store.Deploy(deployment).RaidInventoryJson);
             Check(raid.Equipped("SecureContainer")?.Id == caseId && raid.Find(rifleId) != null,
-                "death fixture did not deploy its equipment");
+                "failure fixture did not deploy its equipment");
             var caches = new RaidLootContainers(); caches.Initialize(1);
             var cache = RaidLootTable.Create(RaidLootProfile.Industrial, new System.Random(42));
             caches.Containers[0] = cache;
@@ -251,25 +252,38 @@ public static class RaidOfflineCycleChecks
             Check(LootInventoryExchange.TryApply(raid, cache, new InventoryCommand { Operation = InventoryOperation.Move,
                 ItemId = lootId, Parent = caseId, Region = region, X = x, Y = y, ExpectedVersion = raid.Version }, cache.Version) == InventoryError.None,
                 "secure loot transfer failed");
-            var manifest = RaidResultManifest.Capture(raid, 1, RaidPhase.Dead);
-            Check(manifest.ReturnedCount > 0 && manifest.LostCount > 0, "death manifest missed protected or dropped equipment");
-            int corpseId = caches.Drop(raid, float3.zero);
-            Check(raid.Find(lootId) != null && raid.Find(rifleId) == null && caches.Containers[corpseId].Find(rifleId) != null &&
-                caches.Containers[corpseId].Find(lootId) == null, "death duplicated or lost secure and dropped items");
+            var manifest = RaidResultManifest.Capture(raid, 1, outcome);
+            Check(manifest.Valid(1) && manifest.ReturnedCount > 0 && manifest.LostCount > 0,
+                "failure manifest missed protected or lost equipment");
+            if (outcome == RaidPhase.Dead)
+            {
+                int corpseId = caches.Drop(raid, float3.zero);
+                Check(raid.Find(lootId) != null && raid.Find(rifleId) == null && caches.Containers[corpseId].Find(rifleId) != null &&
+                    caches.Containers[corpseId].Find(lootId) == null, "death duplicated or lost secure and dropped items");
+            }
+            else
+                Check(raid.Find(lootId) != null && raid.Find(rifleId) != null && caches.DeathBags.Count == 0,
+                    "timeout fixture must settle the full inventory without creating a death bag");
             var receipt = new RaidPersistenceContext.Settlement { PlayerId = playerId, DeploymentId = deployment.DeploymentId,
-                SettlementId = deployment.DeploymentId, Outcome = "Dead", InventoryJson = RaidInventoryTransport.Encode(raid) };
+                SettlementId = deployment.DeploymentId, Outcome = outcome.ToString(), InventoryJson = RaidInventoryTransport.Encode(raid) };
             store.Settle(receipt); string once = store.Read().InventoryJson;
             store.Settle(receipt);
             var saved = RaidInventoryTransport.Decode(store.Read().InventoryJson);
             Check(store.Read().InventoryJson == once && saved.Find(caseId) != null && saved.Find(lootId) != null &&
                 !saved.Find(lootId).FoundInRaid && saved.Find(rifleId) == null && !store.RaidActive,
-                "death settlement did not preserve only the protected contents once");
+                "failure settlement did not preserve only the protected contents once");
+            receipt.Outcome = outcome == RaidPhase.Dead ? "TimedOut" : "Dead";
+            bool rejected = false;
+            try { store.Settle(receipt); }
+            catch (InvalidDataException) { rejected = true; }
+            Check(rejected && store.Read().InventoryJson == once,
+                "a conflicting replay changed a completed failure settlement");
         }
         using (var reopened = new OfflineProfileStore(path))
         {
             var saved = RaidInventoryTransport.Decode(reopened.Read().InventoryJson);
             Check(reopened.Read().PlayerId == playerId && saved.Find(caseId) != null && saved.Find(lootId) != null &&
-                saved.Find(rifleId) == null && !reopened.RaidActive, "death settlement did not survive reopening the save");
+                saved.Find(rifleId) == null && !reopened.RaidActive, "failure settlement did not survive reopening the save");
         }
     }
 }
