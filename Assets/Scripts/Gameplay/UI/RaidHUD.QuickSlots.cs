@@ -32,6 +32,17 @@ namespace Unity.MP_FPS
         private static void Reset() => s_Input = null;
     }
 
+    // The controller shares one button across mission, world control and
+    // tactical interactions. A single press must not start two hand actions.
+    public static class RaidInteractionInput
+    {
+        public static bool TacticalPressed(bool keyboard, bool gamepad, bool missionFocused, bool controlFocused, bool tacticalTarget)
+        {
+            if (gamepad && missionFocused) return false;
+            return keyboard || gamepad && (tacticalTarget || !controlFocused);
+        }
+    }
+
     public sealed partial class RaidHUD
     {
         private QuickSlotBindings m_QuickBindings;
@@ -265,7 +276,7 @@ namespace Unity.MP_FPS
                 text += (text.Length > 0 ? " / " : "") + MoonkovLocalization.Format($"ANTIDOTE {owner.AntidoteSeconds:0}s");
             return text.Length > 0 ? text : null;
         }
-        private bool TryQuickTacticalInteraction(bool active)
+        private bool TryQuickTacticalInteraction(bool active, bool missionFocused, bool controlFocused)
         {
             if (!active || !QuickAlive || QuickBusy || PointerRequested || GameSettings.Instance.IsPauseMenuOpen ||
                 UnityEngine.Cursor.lockState != CursorLockMode.Locked || !Application.isFocused ||
@@ -283,13 +294,15 @@ namespace Unity.MP_FPS
             Vector3 direction = Quaternion.Euler(health.ControllerState.PitchDegrees, health.ControllerState.YawDegrees, 0) * Vector3.forward;
             bool found = TacticalItemsFeedback.TryFindInteraction(eye, direction,
                 out uint target, out TacticalItemAction action);
+            bool tacticalTarget = found;
             if (!found && (QuickOwner.FireSeconds > 0 || QuickOwner.BleedSeconds > 0))
             { found = true; action = TacticalItemAction.Extinguish; }
             if (!found) return false;
             m_QuickInteractionHint = action == TacticalItemAction.Resupply ? "[E] RESUPPLY FROM AMMO BOX" :
                 action == TacticalItemAction.Disarm ? "[E] DISARM TRAP" : "[E] STOP BURNING / BLEEDING";
             m_QuickInteractionHintUntil = Time.unscaledTime + .2f;
-            bool pressed = Keyboard.current?.eKey.wasPressedThisFrame == true || Gamepad.current?.buttonWest.wasPressedThisFrame == true;
+            bool pressed = RaidInteractionInput.TacticalPressed(Keyboard.current?.eKey.wasPressedThisFrame == true,
+                Gamepad.current?.buttonWest.wasPressedThisFrame == true, missionFocused, controlFocused, tacticalTarget);
             if (!pressed) return false;
             SendQuickTactical(action, target: target); return true;
         }

@@ -454,10 +454,17 @@ namespace Unity.MP_FPS
             PresentTimedAction();
             UpdateCampaignHUD(alive && ready && !settled && !clash);
             UpdateTutorialHUD(alive && ready && !settled && !clash);
-            bool tacticalInteraction = TryQuickTacticalInteraction(alive && ready && !settled && !DarkSightRequested);
-            if (alive && ready && !settled && !MapInputBlocked)
+            bool liveInteraction = alive && ready && !settled && !MapInputBlocked;
+            if (liveInteraction)
             {
                 position = m_PlayerQuery.GetSingleton<LocalTransform>().Position;
+                m_AirlockPrompt.RefreshSelection(Camera.main, position, !clash && !m_InventoryVisible && !m_InventoryRequestPending &&
+                    UnityEngine.Cursor.lockState == CursorLockMode.Locked && !GameSettings.Instance.IsPauseMenuOpen, m_World);
+            }
+            bool tacticalInteraction = TryQuickTacticalInteraction(alive && ready && !settled && !DarkSightRequested,
+                missionControl, liveInteraction && m_AirlockPrompt.HasSelection);
+            if (liveInteraction)
+            {
                 var map = MoonRaidMap.Active;
                 for (int i = 0; i < map.LootPositions.Length; i++)
                 {
@@ -483,8 +490,6 @@ namespace Unity.MP_FPS
                     int drawer = RaidFurnitureLoot.Active.Select(camera, position, out float drawerDistance);
                     if (drawer >= 0) { nearest = drawer; distance = drawerDistance; }
                 }
-                m_AirlockPrompt.RefreshSelection(Camera.main, position, !clash && !m_InventoryVisible && !m_InventoryRequestPending &&
-                    UnityEngine.Cursor.lockState == CursorLockMode.Locked && !GameSettings.Instance.IsPauseMenuOpen, m_World);
                 bool pressed = (Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame) ||
                                (Gamepad.current != null && Gamepad.current.buttonWest.wasPressedThisFrame);
                 bool controlInput = (Keyboard.current != null && Keyboard.current.fKey.wasPressedThisFrame) ||
