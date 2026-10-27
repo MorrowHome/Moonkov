@@ -236,7 +236,7 @@ public static partial class AlienEnemyChecks
                 string corpseItemId = casualty.Items.Find(item => item.Code == "data_drive").Id;
                 int corpseId = containers.Drop(casualty, (Unity.Mathematics.float3)(pmcOrigin + Vector3.forward), characterIndex: 2);
                 var corpseInventory = containers.Containers[corpseId];
-                scavenge.Cache = 0; scavenge.LootUntil = 0; scavenge.NextCorpseScan = 0;
+                scavenge.Cache = 0; scavenge.LootUntil = 0; scavenge.NextNearbyLootScan = 0;
                 args[5] = 85d; objective.Invoke(ai, args);
                 Check(scavenge.Cache == corpseId && scavenge.LootUntil > 85 && corpseInventory.Find(corpseItemId) != null,
                     "A nearby visible human corpse did not start a timed PMC search.");
@@ -250,7 +250,7 @@ public static partial class AlienEnemyChecks
                 var bodyWall = GameObject.CreatePrimitive(PrimitiveType.Cube); bodyWall.transform.SetParent(holder.transform);
                 bodyWall.transform.position = pmcOrigin + Vector3.forward * .5f + Vector3.up * .8f;
                 bodyWall.transform.localScale = new Vector3(1, 2, .2f); Physics.SyncTransforms();
-                scavenge.Cache = -1; scavenge.LootUntil = 0; scavenge.NextCorpseScan = 0;
+                scavenge.Cache = -1; scavenge.LootUntil = 0; scavenge.NextNearbyLootScan = 0;
                 args[5] = 95d; objective.Invoke(ai, args);
                 Check(scavenge.Cache == -1 && !scavenge.VisitedCaches.Contains(hiddenCorpse),
                     "A PMC detected and searched a corpse through a wall.");
@@ -272,6 +272,28 @@ public static partial class AlienEnemyChecks
                 args[5] = 98d; objective.Invoke(ai, args);
                 Check(scavenge.LootUntil == 0 && !scavenge.VisitedCaches.Contains(hiddenCorpse),
                     "PMC kept searching while charging a weapon.");
+
+                reloading.ControllerState.IsReloadingState = false; args[1] = reloading;
+                scavenge.VisitedCaches.Add(hiddenCorpse); scavenge.Cache = -1; scavenge.LootUntil = 0;
+                scavenge.NextNearbyLootScan = 0; scavenge.LastDamage = -100;
+                var dropOwner = InventoryGraph.Create(false, false);
+                Check(dropOwner.AddSupply("circuit_board", 1, InventoryCatalog.Pockets, true) == InventoryError.None,
+                    "Ground pickup fixture could not carry a real item.");
+                string droppedItem = dropOwner.Items.Find(item => item.Code == "circuit_board").Id;
+                Check(containers.DropItem(dropOwner, droppedItem, dropOwner.Version,
+                    (Unity.Mathematics.float3)(pmcOrigin + Vector3.right), 104, out int groundId) == InventoryError.None,
+                    "Ground pickup fixture could not register the dropped item.");
+                int beforeGround = scavenge.LootedCaches;
+                args[5] = 105d; objective.Invoke(ai, args);
+                Check(scavenge.Cache == groundId && scavenge.LootUntil > 105 && containers.Containers[groundId].Find(droppedItem) != null,
+                    "A visible nearby dropped item did not start a timed PMC search.");
+                args[5] = scavenge.LootUntil - .01; objective.Invoke(ai, args);
+                Check(containers.Containers[groundId].Find(droppedItem) != null && scavenge.Inventory.Find(droppedItem) == null,
+                    "PMC picked up the dropped item before the search finished.");
+                args[5] = scavenge.LootUntil; objective.Invoke(ai, args);
+                Check(containers.IsEmptyDrop(groundId) && scavenge.Inventory.Find(droppedItem) != null &&
+                    scavenge.GroundItemsLooted == 1 && scavenge.LootedCaches == beforeGround,
+                    "A completed ground search did not transfer the real item or preserve its fractional objective count.");
             }
             finally { Object.DestroyImmediate(tuning); }
             return $"PASS {checks} loot acoustics checks: world audio, server sequence, real PMC scavenging and alien/PMC hearing.";

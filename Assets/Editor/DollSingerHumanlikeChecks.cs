@@ -671,7 +671,7 @@ public static class DollSingerHumanlikeChecks
             var looting = Brain(); var lootingHealth = Health();
             looting.Action = PmcAction.Scavenge; looting.Cache = -1; looting.LootUntil = 15;
             looting.LootLookPoint = origin + Vector3.right * 3; looting.LastHealth = lootingHealth.CurrentHealth;
-            looting.NextDecision = looting.NextSense = looting.NextPath = looting.NextAimError = looting.NextCorpseScan = 100;
+            looting.NextDecision = looting.NextSense = looting.NextPath = looting.NextAimError = looting.NextNearbyLootScan = 100;
             looting.Goal = looting.TacticalGoal = origin;
             var lootInput = (PlayerInput)Call(system, "Think", new object[] { looting, actor,
                 Unity.Transforms.LocalTransform.FromPosition(origin), lootingHealth, map, 10d, 1f / 60 });

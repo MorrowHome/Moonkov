@@ -21,7 +21,7 @@
 - 本轮单人验证时，编辑器主线程等待异步操作而卡住。我终止了该编辑器。重开时 Unity 检测到未保存的场景备份，但 Mac 已锁屏，无法处理恢复窗口。
 - 原文件 `Temp/__Backupscenes/0.backup` 保持原样。副本在 `Library/BuildValidation/SceneRecovery-20261027/0.backup`，SHA-256 为 `559ddf2286563a940515d4223152fc254c48f87da3d0979815b5e751964e3fc2`。不要删除备份或自动选择丢弃。
 - 解锁后重新打开项目，检查恢复窗口和场景内容，再决定是否恢复。Unity 主线程不要对需要回到主线程的异步方法调用 `GetAwaiter().GetResult()`。
-- 场景处理完并完成导入后，先检查 Console。在编辑模式依次运行 `Moonkov / AI / Check Humanlike Decisions`、`Moonkov / AI / Check Shield Loadout`、`Moonkov / AI / Check Machine and Trap Hearing`、`Moonkov / AI / Check Shared Loot Refill`、`Moonkov / Tactical Items / Run Authority and Physics Checks`、`Moonkov / Energy Grenade / Run Authority Checks` 和 `Tools / Moonkov / Check Footstep Perception`。这些夹具使用临时世界，不需要联机。
+- 场景处理完并完成导入后，先检查 Console。在编辑模式依次运行 `Moonkov / AI / Check Humanlike Decisions`、`Moonkov / AI / Check Shield Loadout`、`Moonkov / AI / Check Machine and Trap Hearing`、`Moonkov / AI / Check Shared Loot Refill`、`Moonkov / Tactical Items / Run Authority and Physics Checks`、`Moonkov / Energy Grenade / Run Authority Checks`、`Tools / Moonkov / Check Footstep Perception` 和 `Tools / Moonkov / Check Loot Acoustics`。这些夹具使用临时世界，不需要联机。
 - 在单 Editor 的 Play 模式另运行 `Tools / Moonkov / Check Halo Arsenal Rules`。它检查真实弹体命中、范围伤害和爆炸声线索，使用隔离物理场景；不能代替正式战局试玩。
 - 再用单个编辑器试玩一局：出装、搜索新物资、遭遇人形敌人、取回敌人装备、撤离并重开档案；另检查受伤、火区和陷阱。记录实际异常和难度，不把规则检查当作试玩通过。
 
@@ -33,7 +33,7 @@
 
 ## 人形敌人与建筑
 
-- 普通战局的人形敌人会搜索共享箱子、建筑抽屉和附近可见的人形尸体，按需要选择电池、医疗品和有价值的物资。物品使用真实库存事务，支持拆堆、旋转和重量上限。任务关键物品留在原处。工业抽屉可少量产出稀有材料。细节见[人形敌人](Docs/AI/DollSingerEnemies.md)和[搜刮箱](Docs/LootContainers.md)。
+- 普通战局的人形敌人会搜索共享箱子、建筑抽屉、附近可见的人形尸体和地面丢弃物，按需要选择电池、医疗品和有价值的物资。物品使用真实库存事务，支持拆堆、旋转和重量上限。任务关键物品留在原处。地面与尸体竞争的 36 项隔离检查通过；实际敌人搜索夹具尚未在编辑器执行。工业抽屉可少量产出稀有材料。细节见[人形敌人](Docs/AI/DollSingerEnemies.md)和[搜刮箱](Docs/LootContainers.md)。
 - 人形敌人会根据远近选枪、取出背包中的医疗品，在安全时治疗或止血；无弹、受压制或遭到未知攻击时会寻找掩体或撤离。枪声、脚步、搜刮和取样机声音提供有误差的调查线索，不提供直接开火条件。异形枪声听觉也受墙体影响。见[人形敌人](Docs/AI/DollSingerEnemies.md)、[异形](Docs/ProceduralAlienEnemies.md)和[月核行动](Docs/Planning/Missions/MC00-Mooncore.md)。
 - 敌人正在搜索空箱时，服务器会暂缓该箱补货；搜索完成或中断后恢复原有补货规则。33 项共享搜刮规则和隔离编译通过，服务器夹具尚未在编辑器执行。
 - 普通战局的人形敌人看到附近能量手雷、破片雷或炸药后会尝试逃离，只记住最后看到的位置。30 项规则检查与隔离编译通过；实际手雷、墙体、烟雾和导航夹具尚未在编辑器执行。见[人形敌人](Docs/AI/DollSingerEnemies.md)。
