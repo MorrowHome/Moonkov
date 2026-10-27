@@ -30,7 +30,7 @@ public static class PmcSelfTreatmentChecks
         {
             bool bleeding = brain.SelfStatus != null && brain.SelfStatus.Bleed > now;
             bool burning = !brain.IsClashBot && brain.SelfStatus != null && brain.SelfStatus.Fire > now;
-            bool eligible = brain.Action == PmcAction.Heal && (!brain.FireDanger || brain.IsClashBot) &&
+            bool eligible = brain.Action == PmcAction.Heal && (!brain.HazardDanger || brain.IsClashBot) &&
                 now - brain.LastDamage >= 3 && (bleeding || burning || brain.HealUntil > 0);
             PmcSelfTreatment.Advance(brain, eligible, bleeding, burning, now);
         }
@@ -67,9 +67,9 @@ public static class PmcSelfTreatmentChecks
         Check(brain.HealUntil == 0 && brain.SelfStatus.Fire == 50 && brain.LastDamage == 25,
             "poison interrupts self-treatment even during burning");
 
-        brain.LastDamage = -100; brain.NextHeal = 0; brain.Action = PmcAction.Heal; brain.FireDanger = true; Advance(30);
+        brain.LastDamage = -100; brain.NextHeal = 0; brain.Action = PmcAction.Heal; brain.HazardDanger = true; Advance(30);
         Check(brain.HealUntil == 0 && brain.SelfStatus.Fire == 50, "the actor cannot extinguish while still inside active fire");
-        brain.FireDanger = false;
+        brain.HazardDanger = false;
         Check(brain.Inventory.AddSupply("medkit", 1, InventoryCatalog.Pockets) == InventoryError.None, "medical fixture");
         var med = brain.Inventory.Items.Find(i => i.Code == "medkit");
         brain.HealStatus = false; brain.HealUntil = 31; brain.HealItemId = med.Id;

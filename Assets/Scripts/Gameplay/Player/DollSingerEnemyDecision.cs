@@ -24,9 +24,9 @@ namespace Unity.MP_FPS
             bool needsHealing = NeedsHealing(health);
             var medical = needsHealing ? FindMedical(brain.Inventory) : null;
             bool grenadeDanger = !brain.IsClashBot && brain.Grenade.Active(now);
-            bool fireDanger = !brain.IsClashBot && brain.FireDanger;
+            bool hazardDanger = !brain.IsClashBot && brain.HazardDanger;
             bool handsBusy = brain.IsClashBot ? health.ControllerState.IsReloadingState : RaidHealth.HandsBusy(health);
-            bool canPrepareMedical = !grenadeDanger && !fireDanger && needsHealing && now >= brain.NextHeal && !handsBusy &&
+            bool canPrepareMedical = !grenadeDanger && !hazardDanger && needsHealing && now >= brain.NextHeal && !handsBusy &&
                 SafeToTreat(brain, position, now);
             if (!brain.IsClashBot && canPrepareMedical && medical == null && !brain.MedicalFailure.Matches(brain.Inventory.Version))
             {
@@ -96,17 +96,17 @@ namespace Unity.MP_FPS
                 Consider(PmcAction.Reload, health.CurrentAmmo == 0 ? 98 : 76, "replenish the magazine during a safe opening");
             if (canPrepareMedical && medical != null)
                 Consider(PmcAction.Heal, lowHealth ? 108 : 84, "treat an injured body part with carried medicine");
-            if ((bleeding || burning) && !fireDanger && now >= brain.NextHeal && !handsBusy && SafeToTreat(brain, position, now))
+            if ((bleeding || burning) && !hazardDanger && now >= brain.NextHeal && !handsBusy && SafeToTreat(brain, position, now))
                 Consider(PmcAction.Heal, 110, "stop burning or bleeding during a safe opening");
 
-            if (fireDanger) Consider(PmcAction.EvadeFire, 190, "leave the burning area");
+            if (hazardDanger) Consider(PmcAction.EvadeHazard, 190, "leave the harmful area");
             if (grenadeDanger) Consider(PmcAction.EvadeGrenade, 200, "move away from a visible explosive");
 
             // New confirmed danger must interrupt looting/search, regardless of their commitment.
             bool passive = brain.Action == PmcAction.Scavenge || brain.Action == PmcAction.Extract ||
                 brain.Action == PmcAction.Search || brain.Action == PmcAction.Investigate || brain.Action == PmcAction.Heal || brain.Action == PmcAction.ClashObjective;
-            emergency = grenadeDanger || fireDanger || brain.Action == PmcAction.EvadeGrenade && !grenadeDanger ||
-                brain.Action == PmcAction.EvadeFire && !fireDanger ||
+            emergency = grenadeDanger || hazardDanger || brain.Action == PmcAction.EvadeGrenade && !grenadeDanger ||
+                brain.Action == PmcAction.EvadeHazard && !hazardDanger ||
                 health.CurrentAmmo == 0 || brain.Suppression > .7f || now - brain.LastDamage < 1 ||
                 brain.Visible && passive || brain.Action == PmcAction.Heal && !SafeToTreat(brain, position, now) ||
                 brain.Action == PmcAction.HoldAngle && seenAge >= m_Tuning.HoldAngleSeconds;
@@ -115,7 +115,7 @@ namespace Unity.MP_FPS
 
         private bool ShouldReload(DollSingerEnemyBrain brain, PredictedPlayerGhost health, Vector3 position, double now)
         {
-            if (brain.Action == PmcAction.Heal || brain.Action == PmcAction.EvadeGrenade || brain.Action == PmcAction.EvadeFire ||
+            if (brain.Action == PmcAction.Heal || brain.Action == PmcAction.EvadeGrenade || brain.Action == PmcAction.EvadeHazard ||
                 health.ControllerState.IsReloadingState) return false;
             if (health.CurrentAmmo <= 0) return true;
             var weapon = WeaponManager.Instance?.WeaponRegistry?.GetWeaponData(health.EquippedWeaponID,health.EquippedModules);
@@ -161,7 +161,7 @@ namespace Unity.MP_FPS
         {
             bool bleeding = brain.SelfStatus != null && brain.SelfStatus.Bleed > now;
             bool burning = !brain.IsClashBot && brain.SelfStatus != null && brain.SelfStatus.Fire > now;
-            bool eligible = brain.Action == PmcAction.Heal && (!brain.FireDanger || brain.IsClashBot) && SafeToTreat(brain, position, now) &&
+            bool eligible = brain.Action == PmcAction.Heal && (!brain.HazardDanger || brain.IsClashBot) && SafeToTreat(brain, position, now) &&
                 !(brain.IsClashBot ? health.ControllerState.IsReloadingState : RaidHealth.HandsBusy(health)) &&
                 HorizontalDistance(position, brain.TacticalGoal) <= TacticalArrivalDistance &&
                 (bleeding || burning || NeedsHealing(health));

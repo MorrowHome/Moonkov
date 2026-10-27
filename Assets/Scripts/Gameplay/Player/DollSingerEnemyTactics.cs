@@ -71,13 +71,13 @@ namespace Unity.MP_FPS
                         brain.NextGrenadePath = now + .6;
                     }
                     break;
-                case PmcAction.EvadeFire:
-                    if (changed || now >= brain.NextFirePath && (brain.FirePlanId != brain.FireId || brain.PathFailed ||
+                case PmcAction.EvadeHazard:
+                    if (changed || now >= brain.NextHazardPath && (brain.HazardPlanId != brain.HazardId || brain.PathFailed ||
                         HorizontalDistance(position, goal) < 1))
                     {
-                        goal = ChooseHazardEscape(brain, position, brain.FirePosition, brain.FireRadius);
-                        brain.FirePlanId = brain.FireId;
-                        brain.NextFirePath = now + .6;
+                        goal = ChooseHazardEscape(brain, position, brain.HazardPosition, brain.HazardRadius);
+                        brain.HazardPlanId = brain.HazardId;
+                        brain.NextHazardPath = now + .6;
                     }
                     break;
                 case PmcAction.Cover:

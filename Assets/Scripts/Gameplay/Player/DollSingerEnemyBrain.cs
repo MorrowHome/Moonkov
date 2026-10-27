@@ -8,7 +8,7 @@ using Unity.MP_FPS.Inventory;
 
 namespace Unity.MP_FPS
 {
-    public enum PmcAction { Scavenge, Extract, Investigate, Search, Engage, Cover, Flank, Retreat, Reload, HoldAngle, Heal, ClashObjective, EvadeGrenade, EvadeFire }
+    public enum PmcAction { Scavenge, Extract, Investigate, Search, Engage, Cover, Flank, Retreat, Reload, HoldAngle, Heal, ClashObjective, EvadeGrenade, EvadeHazard }
     public enum PmcCoverPhase { Approaching, Settling, Advancing, Holding, Returning }
 
     // The observer only remembers positions it could actually see. Turning away
@@ -66,7 +66,7 @@ namespace Unity.MP_FPS
     {
         // An exhausted raider walks to recover, but may still attempt to flee an explosive.
         public static bool Allows(bool clash, PmcAction action, bool exhausted) =>
-            clash || !exhausted || action == PmcAction.EvadeGrenade || action == PmcAction.EvadeFire;
+            clash || !exhausted || action == PmcAction.EvadeGrenade || action == PmcAction.EvadeHazard;
 
         public static void Tick(ref TacticalSprintState stamina, ref float3 previous, ref bool known,
             float3 position, float dt, bool alive, bool sprinting, float speed, float weight, bool stimulated)
@@ -83,12 +83,17 @@ namespace Unity.MP_FPS
         }
     }
 
-    public static class PmcFireRules
+    public static class PmcHazardRules
     {
-        public static bool Active(bool clash, double burningUntil, TacticalWorldPhase phase, double areaUntil,
-            double now, bool inside) => !clash && inside && double.IsFinite(now) &&
-            double.IsFinite(burningUntil) && burningUntil > now && phase == TacticalWorldPhase.Fire &&
-            double.IsFinite(areaUntil) && areaUntil > now;
+        public static bool Active(bool clash, TacticalServerWorld.Status status, TacticalWorldPhase phase, double areaUntil,
+            double now, bool inside)
+        {
+            if (clash || status == null || !inside || !double.IsFinite(now) || !double.IsFinite(areaUntil) || areaUntil <= now)
+                return false;
+            double until = phase == TacticalWorldPhase.Fire ? status.Fire : phase == TacticalWorldPhase.Wire ? status.Wire :
+                phase == TacticalWorldPhase.Poison && status.Antidote <= now ? status.Poison : 0;
+            return double.IsFinite(until) && until > now;
+        }
     }
 
     // Returns true when the shared status action consumed this update. The
@@ -315,11 +320,11 @@ namespace Unity.MP_FPS
         public PmcGrenadeAwareness Grenade;
         public Vector3 GrenadePlanPosition;
         public double NextGrenadePath;
-        public bool FireDanger;
-        public uint FireId, FirePlanId;
-        public Vector3 FirePosition;
-        public float FireRadius;
-        public double NextFirePath;
+        public bool HazardDanger;
+        public uint HazardId, HazardPlanId;
+        public Vector3 HazardPosition;
+        public float HazardRadius;
+        public double NextHazardPath;
         public PmcMedicalFailure MedicalFailure;
         public Vector3 Goal, LastSeen, ObservedVelocity, ProgressPosition, CoverPosition, PeekPosition, TacticalGoal;
         public Vector3 RaidExit;

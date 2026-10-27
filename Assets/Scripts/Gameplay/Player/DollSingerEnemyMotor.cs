@@ -99,7 +99,7 @@ namespace Unity.MP_FPS
             input.SetFlag(PlayerInput.InputFlag.Aim, fighting && brain.Visible || checkingCorner);
             input.SetFlag(PlayerInput.InputFlag.Sprint, PmcSprintRules.Allows(brain.IsClashBot, brain.Action, health.TacticalSprintExhausted) &&
                 brain.HealUntil <= 0 && !(fighting && brain.Visible) && move.sqrMagnitude > .1f &&
-                (brain.Action == PmcAction.Retreat || brain.Action == PmcAction.EvadeGrenade || brain.Action == PmcAction.EvadeFire || brain.Action == PmcAction.Flank && !brain.Visible ||
+                (brain.Action == PmcAction.Retreat || brain.Action == PmcAction.EvadeGrenade || brain.Action == PmcAction.EvadeHazard || brain.Action == PmcAction.Flank && !brain.Visible ||
                     (brain.Action == PmcAction.Extract || brain.IsClashBot && brain.Leaving) && !hasContact || brain.Action == PmcAction.Cover &&
                     (brain.CoverPhase == PmcCoverPhase.Approaching || brain.CoverPhase == PmcCoverPhase.Returning)));
             int preferred = !brain.IsClashBot && brain.Visible && CanReturnFire(brain) && brain.LootUntil <= 0 && now >= brain.NextTacticalSwitch
