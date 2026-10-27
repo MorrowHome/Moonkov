@@ -1,0 +1,1144 @@
+{
+  "scope": "read-only author source; game display and lights are separate",
+  "blender_version": "5.2.2 LTS",
+  "engine": "CYCLES",
+  "view_transform": "AgX",
+  "look": "AgX - Medium High Contrast",
+  "exposure": 0.0,
+  "gamma": 1.0,
+  "use_compositor": true,
+  "source_lights": 406,
+  "building": "R6_T06",
+  "building_meshes": [
+    "R6_T06_THICK_WALL_AND_ROOF_BACKING",
+    "R6_T06_LAYERED_CLADDING_PANELS",
+    "R6_T06_FIXED_INSPECTION_GLAZING",
+    "R6_T06_WINDOW_FRAMES_AND_SILLS",
+    "R6_T06_PORTAL_FRAME_AND_BEARING_SHOES",
+    "R6_T06_ACCESS_REVEALS_AND_CANOPY",
+    "R6_T06_PERSONNEL_DOOR_STATIC_CLOSED",
+    "R6_T06_CARGO_SHUTTER_STATIC_CLOSED",
+    "R6_T06_RECESSED_SEALED_THERMAL_SERVICE",
+    "R6_T06_LAYERED_EAVES_AND_ROOF_SERVICE",
+    "R6_T06_MAIN_FUNCTION_LABEL",
+    "R6_T06_PERSONNEL_LABEL",
+    "R6_T06_CARGO_LABEL"
+  ],
+  "uv_triangle_stats": {
+    "R8_Dark_Protective_Steel": {
+      "triangles": 6684,
+      "area_m2": 5821.034860869771,
+      "uv_area": 4042.383192962435,
+      "degenerate_uv_triangles": 0,
+      "rms_texels_per_metre_at_1024": 853.3331088231126
+    },
+    "R8_Scanned_Mineral_Support": {
+      "triangles": 0,
+      "area_m2": 0.0,
+      "uv_area": 0.0,
+      "degenerate_uv_triangles": 0,
+      "rms_texels_per_metre_at_1024": null
+    },
+    "R8_Matte_Deck_Plates": {
+      "triangles": 12,
+      "area_m2": 815.2100975393616,
+      "uv_area": 141.5295427217652,
+      "degenerate_uv_triangles": 0,
+      "rms_texels_per_metre_at_1024": 426.6666846024614
+    },
+    "R8_Restrained_Safety_Ochre": {
+      "triangles": 84,
+      "area_m2": 2.9971921112543503,
+      "uv_area": 2.0813796171333805,
+      "degenerate_uv_triangles": 0,
+      "rms_texels_per_metre_at_1024": 853.3325557045564
+    },
+    "R8_OffWhite_Ceramic_Coat": {
+      "triangles": 3540,
+      "area_m2": 2378.372523828608,
+      "uv_area": 1651.640820408743,
+      "degenerate_uv_triangles": 0,
+      "rms_texels_per_metre_at_1024": 853.3315855925472
+    },
+    "R8_GrayWhite_Panel_Cladding": {
+      "triangles": 0,
+      "area_m2": 0.0,
+      "uv_area": 0.0,
+      "degenerate_uv_triangles": 0,
+      "rms_texels_per_metre_at_1024": null
+    },
+    "R8_Rough_Exposed_Steel": {
+      "triangles": 1288,
+      "area_m2": 298.7759296061482,
+      "uv_area": 207.48339930098882,
+      "degenerate_uv_triangles": 0,
+      "rms_texels_per_metre_at_1024": 853.3335695144339
+    }
+  },
+  "materials": [
+    {
+      "name": "R8_Dark_Protective_Steel",
+      "nodes": [
+        {
+          "name": "Material Output",
+          "type": "OUTPUT_MATERIAL"
+        },
+        {
+          "name": "Principled BSDF",
+          "type": "BSDF_PRINCIPLED"
+        },
+        {
+          "name": "UV Map",
+          "type": "UVMAP",
+          "uv_map": "UVMap"
+        },
+        {
+          "name": "Image Texture",
+          "type": "TEX_IMAGE",
+          "image": "R8_Dark_Protective_Steel_BaseColor.png",
+          "colorspace": "sRGB",
+          "size": [
+            1024,
+            1024
+          ],
+          "interpolation": "Linear",
+          "extension": "REPEAT"
+        },
+        {
+          "name": "Image Texture.001",
+          "type": "TEX_IMAGE",
+          "image": "R8_Dark_Protective_Steel_Normal_OpenGL.png",
+          "colorspace": "Non-Color",
+          "size": [
+            1024,
+            1024
+          ],
+          "interpolation": "Linear",
+          "extension": "REPEAT"
+        },
+        {
+          "name": "Normal Map",
+          "type": "NORMAL_MAP",
+          "space": "TANGENT",
+          "strength": 1.0,
+          "uv_map": "UVMap"
+        },
+        {
+          "name": "Image Texture.002",
+          "type": "TEX_IMAGE",
+          "image": "R8_Dark_Protective_Steel_MetallicGloss.png",
+          "colorspace": "Non-Color",
+          "size": [
+            1024,
+            1024
+          ],
+          "interpolation": "Linear",
+          "extension": "REPEAT"
+        },
+        {
+          "name": "Separate Color",
+          "type": "SEPARATE_COLOR"
+        },
+        {
+          "name": "Math",
+          "type": "MATH",
+          "operation": "SUBTRACT",
+          "inputs": [
+            {
+              "value": 1.0,
+              "linked": false
+            },
+            {
+              "value": 0.5,
+              "linked": true
+            },
+            {
+              "value": 0.5,
+              "linked": false
+            }
+          ]
+        }
+      ],
+      "links": [
+        {
+          "from": "Principled BSDF",
+          "output": "BSDF",
+          "to": "Material Output",
+          "input": "Surface"
+        },
+        {
+          "from": "UV Map",
+          "output": "UV",
+          "to": "Image Texture",
+          "input": "Vector"
+        },
+        {
+          "from": "Image Texture",
+          "output": "Color",
+          "to": "Principled BSDF",
+          "input": "Base Color"
+        },
+        {
+          "from": "UV Map",
+          "output": "UV",
+          "to": "Image Texture.001",
+          "input": "Vector"
+        },
+        {
+          "from": "Image Texture.001",
+          "output": "Color",
+          "to": "Normal Map",
+          "input": "Color"
+        },
+        {
+          "from": "Normal Map",
+          "output": "Normal",
+          "to": "Principled BSDF",
+          "input": "Normal"
+        },
+        {
+          "from": "UV Map",
+          "output": "UV",
+          "to": "Image Texture.002",
+          "input": "Vector"
+        },
+        {
+          "from": "Image Texture.002",
+          "output": "Color",
+          "to": "Separate Color",
+          "input": "Color"
+        },
+        {
+          "from": "Separate Color",
+          "output": "Red",
+          "to": "Principled BSDF",
+          "input": "Metallic"
+        },
+        {
+          "from": "Image Texture.002",
+          "output": "Alpha",
+          "to": "Math",
+          "input": "Value"
+        },
+        {
+          "from": "Math",
+          "output": "Value",
+          "to": "Principled BSDF",
+          "input": "Roughness"
+        }
+      ]
+    },
+    {
+      "name": "R8_Scanned_Mineral_Support",
+      "nodes": [
+        {
+          "name": "Material Output",
+          "type": "OUTPUT_MATERIAL"
+        },
+        {
+          "name": "Principled BSDF",
+          "type": "BSDF_PRINCIPLED"
+        },
+        {
+          "name": "UV Map",
+          "type": "UVMAP",
+          "uv_map": "UVMap"
+        },
+        {
+          "name": "Image Texture",
+          "type": "TEX_IMAGE",
+          "image": "R5_PH_Concrete008_MetallicGloss_2k.png",
+          "colorspace": "Non-Color",
+          "size": [
+            2048,
+            2048
+          ],
+          "interpolation": "Linear",
+          "extension": "REPEAT"
+        },
+        {
+          "name": "Separate Color",
+          "type": "SEPARATE_COLOR"
+        },
+        {
+          "name": "Math",
+          "type": "MATH",
+          "operation": "SUBTRACT",
+          "inputs": [
+            {
+              "value": 1.0,
+              "linked": false
+            },
+            {
+              "value": 0.5,
+              "linked": true
+            },
+            {
+              "value": 0.5,
+              "linked": false
+            }
+          ]
+        },
+        {
+          "name": "Image Texture.001",
+          "type": "TEX_IMAGE",
+          "image": "R5_PH_Concrete008_Neutral_BaseColor_2k.png",
+          "colorspace": "sRGB",
+          "size": [
+            2048,
+            2048
+          ],
+          "interpolation": "Linear",
+          "extension": "REPEAT"
+        },
+        {
+          "name": "Image Texture.002",
+          "type": "TEX_IMAGE",
+          "image": "R5_PH_Concrete008_NormalGL_2k.png",
+          "colorspace": "Non-Color",
+          "size": [
+            2048,
+            2048
+          ],
+          "interpolation": "Linear",
+          "extension": "REPEAT"
+        },
+        {
+          "name": "Normal Map",
+          "type": "NORMAL_MAP",
+          "space": "TANGENT",
+          "strength": 1.0,
+          "uv_map": "UVMap"
+        }
+      ],
+      "links": [
+        {
+          "from": "Principled BSDF",
+          "output": "BSDF",
+          "to": "Material Output",
+          "input": "Surface"
+        },
+        {
+          "from": "UV Map",
+          "output": "UV",
+          "to": "Image Texture",
+          "input": "Vector"
+        },
+        {
+          "from": "Image Texture",
+          "output": "Color",
+          "to": "Separate Color",
+          "input": "Color"
+        },
+        {
+          "from": "Separate Color",
+          "output": "Red",
+          "to": "Principled BSDF",
+          "input": "Metallic"
+        },
+        {
+          "from": "Image Texture",
+          "output": "Alpha",
+          "to": "Math",
+          "input": "Value"
+        },
+        {
+          "from": "Math",
+          "output": "Value",
+          "to": "Principled BSDF",
+          "input": "Roughness"
+        },
+        {
+          "from": "UV Map",
+          "output": "UV",
+          "to": "Image Texture.001",
+          "input": "Vector"
+        },
+        {
+          "from": "Image Texture.001",
+          "output": "Color",
+          "to": "Principled BSDF",
+          "input": "Base Color"
+        },
+        {
+          "from": "UV Map",
+          "output": "UV",
+          "to": "Image Texture.002",
+          "input": "Vector"
+        },
+        {
+          "from": "Image Texture.002",
+          "output": "Color",
+          "to": "Normal Map",
+          "input": "Color"
+        },
+        {
+          "from": "Normal Map",
+          "output": "Normal",
+          "to": "Principled BSDF",
+          "input": "Normal"
+        }
+      ]
+    },
+    {
+      "name": "R8_Matte_Deck_Plates",
+      "nodes": [
+        {
+          "name": "Material Output",
+          "type": "OUTPUT_MATERIAL"
+        },
+        {
+          "name": "Principled BSDF",
+          "type": "BSDF_PRINCIPLED"
+        },
+        {
+          "name": "UV Map",
+          "type": "UVMAP",
+          "uv_map": "UVMap"
+        },
+        {
+          "name": "Image Texture",
+          "type": "TEX_IMAGE",
+          "image": "R8_Matte_Deck_Plates_BaseColor.png",
+          "colorspace": "sRGB",
+          "size": [
+            2048,
+            2048
+          ],
+          "interpolation": "Linear",
+          "extension": "REPEAT"
+        },
+        {
+          "name": "Image Texture.001",
+          "type": "TEX_IMAGE",
+          "image": "R8_Matte_Deck_Plates_Normal_OpenGL.png",
+          "colorspace": "Non-Color",
+          "size": [
+            2048,
+            2048
+          ],
+          "interpolation": "Linear",
+          "extension": "REPEAT"
+        },
+        {
+          "name": "Normal Map",
+          "type": "NORMAL_MAP",
+          "space": "TANGENT",
+          "strength": 1.0,
+          "uv_map": "UVMap"
+        },
+        {
+          "name": "Image Texture.002",
+          "type": "TEX_IMAGE",
+          "image": "R8_Matte_Deck_Plates_MetallicGloss.png",
+          "colorspace": "Non-Color",
+          "size": [
+            2048,
+            2048
+          ],
+          "interpolation": "Linear",
+          "extension": "REPEAT"
+        },
+        {
+          "name": "Separate Color",
+          "type": "SEPARATE_COLOR"
+        },
+        {
+          "name": "Math",
+          "type": "MATH",
+          "operation": "SUBTRACT",
+          "inputs": [
+            {
+              "value": 1.0,
+              "linked": false
+            },
+            {
+              "value": 0.5,
+              "linked": true
+            },
+            {
+              "value": 0.5,
+              "linked": false
+            }
+          ]
+        }
+      ],
+      "links": [
+        {
+          "from": "Principled BSDF",
+          "output": "BSDF",
+          "to": "Material Output",
+          "input": "Surface"
+        },
+        {
+          "from": "UV Map",
+          "output": "UV",
+          "to": "Image Texture",
+          "input": "Vector"
+        },
+        {
+          "from": "Image Texture",
+          "output": "Color",
+          "to": "Principled BSDF",
+          "input": "Base Color"
+        },
+        {
+          "from": "UV Map",
+          "output": "UV",
+          "to": "Image Texture.001",
+          "input": "Vector"
+        },
+        {
+          "from": "Image Texture.001",
+          "output": "Color",
+          "to": "Normal Map",
+          "input": "Color"
+        },
+        {
+          "from": "Normal Map",
+          "output": "Normal",
+          "to": "Principled BSDF",
+          "input": "Normal"
+        },
+        {
+          "from": "UV Map",
+          "output": "UV",
+          "to": "Image Texture.002",
+          "input": "Vector"
+        },
+        {
+          "from": "Image Texture.002",
+          "output": "Color",
+          "to": "Separate Color",
+          "input": "Color"
+        },
+        {
+          "from": "Separate Color",
+          "output": "Red",
+          "to": "Principled BSDF",
+          "input": "Metallic"
+        },
+        {
+          "from": "Image Texture.002",
+          "output": "Alpha",
+          "to": "Math",
+          "input": "Value"
+        },
+        {
+          "from": "Math",
+          "output": "Value",
+          "to": "Principled BSDF",
+          "input": "Roughness"
+        }
+      ]
+    },
+    {
+      "name": "R8_Restrained_Safety_Ochre",
+      "nodes": [
+        {
+          "name": "Material Output",
+          "type": "OUTPUT_MATERIAL"
+        },
+        {
+          "name": "Principled BSDF",
+          "type": "BSDF_PRINCIPLED"
+        },
+        {
+          "name": "UV Map",
+          "type": "UVMAP",
+          "uv_map": "UVMap"
+        },
+        {
+          "name": "Image Texture",
+          "type": "TEX_IMAGE",
+          "image": "R8_Restrained_Safety_Ochre_BaseColor.png",
+          "colorspace": "sRGB",
+          "size": [
+            1024,
+            1024
+          ],
+          "interpolation": "Linear",
+          "extension": "REPEAT"
+        },
+        {
+          "name": "Image Texture.001",
+          "type": "TEX_IMAGE",
+          "image": "R8_Dark_Protective_Steel_Normal_OpenGL.png",
+          "colorspace": "Non-Color",
+          "size": [
+            1024,
+            1024
+          ],
+          "interpolation": "Linear",
+          "extension": "REPEAT"
+        },
+        {
+          "name": "Normal Map",
+          "type": "NORMAL_MAP",
+          "space": "TANGENT",
+          "strength": 1.0,
+          "uv_map": "UVMap"
+        },
+        {
+          "name": "Image Texture.002",
+          "type": "TEX_IMAGE",
+          "image": "R8_Restrained_Safety_Ochre_MetallicGloss.png",
+          "colorspace": "Non-Color",
+          "size": [
+            1024,
+            1024
+          ],
+          "interpolation": "Linear",
+          "extension": "REPEAT"
+        },
+        {
+          "name": "Separate Color",
+          "type": "SEPARATE_COLOR"
+        },
+        {
+          "name": "Math",
+          "type": "MATH",
+          "operation": "SUBTRACT",
+          "inputs": [
+            {
+              "value": 1.0,
+              "linked": false
+            },
+            {
+              "value": 0.5,
+              "linked": true
+            },
+            {
+              "value": 0.5,
+              "linked": false
+            }
+          ]
+        }
+      ],
+      "links": [
+        {
+          "from": "Principled BSDF",
+          "output": "BSDF",
+          "to": "Material Output",
+          "input": "Surface"
+        },
+        {
+          "from": "UV Map",
+          "output": "UV",
+          "to": "Image Texture",
+          "input": "Vector"
+        },
+        {
+          "from": "Image Texture",
+          "output": "Color",
+          "to": "Principled BSDF",
+          "input": "Base Color"
+        },
+        {
+          "from": "UV Map",
+          "output": "UV",
+          "to": "Image Texture.001",
+          "input": "Vector"
+        },
+        {
+          "from": "Image Texture.001",
+          "output": "Color",
+          "to": "Normal Map",
+          "input": "Color"
+        },
+        {
+          "from": "Normal Map",
+          "output": "Normal",
+          "to": "Principled BSDF",
+          "input": "Normal"
+        },
+        {
+          "from": "UV Map",
+          "output": "UV",
+          "to": "Image Texture.002",
+          "input": "Vector"
+        },
+        {
+          "from": "Image Texture.002",
+          "output": "Color",
+          "to": "Separate Color",
+          "input": "Color"
+        },
+        {
+          "from": "Separate Color",
+          "output": "Red",
+          "to": "Principled BSDF",
+          "input": "Metallic"
+        },
+        {
+          "from": "Image Texture.002",
+          "output": "Alpha",
+          "to": "Math",
+          "input": "Value"
+        },
+        {
+          "from": "Math",
+          "output": "Value",
+          "to": "Principled BSDF",
+          "input": "Roughness"
+        }
+      ]
+    },
+    {
+      "name": "R8_OffWhite_Ceramic_Coat",
+      "nodes": [
+        {
+          "name": "Material Output",
+          "type": "OUTPUT_MATERIAL"
+        },
+        {
+          "name": "Principled BSDF",
+          "type": "BSDF_PRINCIPLED"
+        },
+        {
+          "name": "UV Map",
+          "type": "UVMAP",
+          "uv_map": "UVMap"
+        },
+        {
+          "name": "Image Texture",
+          "type": "TEX_IMAGE",
+          "image": "R8_OffWhite_Ceramic_Coat_BaseColor.png",
+          "colorspace": "sRGB",
+          "size": [
+            1024,
+            1024
+          ],
+          "interpolation": "Linear",
+          "extension": "REPEAT"
+        },
+        {
+          "name": "Image Texture.001",
+          "type": "TEX_IMAGE",
+          "image": "R8_OffWhite_Ceramic_Coat_Normal_OpenGL.png",
+          "colorspace": "Non-Color",
+          "size": [
+            1024,
+            1024
+          ],
+          "interpolation": "Linear",
+          "extension": "REPEAT"
+        },
+        {
+          "name": "Normal Map",
+          "type": "NORMAL_MAP",
+          "space": "TANGENT",
+          "strength": 1.0,
+          "uv_map": "UVMap"
+        },
+        {
+          "name": "Image Texture.002",
+          "type": "TEX_IMAGE",
+          "image": "R8_OffWhite_Ceramic_Coat_MetallicGloss.png",
+          "colorspace": "Non-Color",
+          "size": [
+            1024,
+            1024
+          ],
+          "interpolation": "Linear",
+          "extension": "REPEAT"
+        },
+        {
+          "name": "Separate Color",
+          "type": "SEPARATE_COLOR"
+        },
+        {
+          "name": "Math",
+          "type": "MATH",
+          "operation": "SUBTRACT",
+          "inputs": [
+            {
+              "value": 1.0,
+              "linked": false
+            },
+            {
+              "value": 0.5,
+              "linked": true
+            },
+            {
+              "value": 0.5,
+              "linked": false
+            }
+          ]
+        }
+      ],
+      "links": [
+        {
+          "from": "Principled BSDF",
+          "output": "BSDF",
+          "to": "Material Output",
+          "input": "Surface"
+        },
+        {
+          "from": "UV Map",
+          "output": "UV",
+          "to": "Image Texture",
+          "input": "Vector"
+        },
+        {
+          "from": "Image Texture",
+          "output": "Color",
+          "to": "Principled BSDF",
+          "input": "Base Color"
+        },
+        {
+          "from": "UV Map",
+          "output": "UV",
+          "to": "Image Texture.001",
+          "input": "Vector"
+        },
+        {
+          "from": "Image Texture.001",
+          "output": "Color",
+          "to": "Normal Map",
+          "input": "Color"
+        },
+        {
+          "from": "Normal Map",
+          "output": "Normal",
+          "to": "Principled BSDF",
+          "input": "Normal"
+        },
+        {
+          "from": "UV Map",
+          "output": "UV",
+          "to": "Image Texture.002",
+          "input": "Vector"
+        },
+        {
+          "from": "Image Texture.002",
+          "output": "Color",
+          "to": "Separate Color",
+          "input": "Color"
+        },
+        {
+          "from": "Separate Color",
+          "output": "Red",
+          "to": "Principled BSDF",
+          "input": "Metallic"
+        },
+        {
+          "from": "Image Texture.002",
+          "output": "Alpha",
+          "to": "Math",
+          "input": "Value"
+        },
+        {
+          "from": "Math",
+          "output": "Value",
+          "to": "Principled BSDF",
+          "input": "Roughness"
+        }
+      ]
+    },
+    {
+      "name": "R8_GrayWhite_Panel_Cladding",
+      "nodes": [
+        {
+          "name": "Material Output",
+          "type": "OUTPUT_MATERIAL"
+        },
+        {
+          "name": "Principled BSDF",
+          "type": "BSDF_PRINCIPLED"
+        },
+        {
+          "name": "UV Map",
+          "type": "UVMAP",
+          "uv_map": "UVMap"
+        },
+        {
+          "name": "Image Texture",
+          "type": "TEX_IMAGE",
+          "image": "R8_GrayWhite_Panel_Cladding_BaseColor.png",
+          "colorspace": "sRGB",
+          "size": [
+            2048,
+            2048
+          ],
+          "interpolation": "Linear",
+          "extension": "REPEAT"
+        },
+        {
+          "name": "Image Texture.001",
+          "type": "TEX_IMAGE",
+          "image": "R8_GrayWhite_Panel_Cladding_Normal_OpenGL.png",
+          "colorspace": "Non-Color",
+          "size": [
+            2048,
+            2048
+          ],
+          "interpolation": "Linear",
+          "extension": "REPEAT"
+        },
+        {
+          "name": "Normal Map",
+          "type": "NORMAL_MAP",
+          "space": "TANGENT",
+          "strength": 1.0,
+          "uv_map": "UVMap"
+        },
+        {
+          "name": "Image Texture.002",
+          "type": "TEX_IMAGE",
+          "image": "R8_GrayWhite_Panel_Cladding_MetallicGloss.png",
+          "colorspace": "Non-Color",
+          "size": [
+            2048,
+            2048
+          ],
+          "interpolation": "Linear",
+          "extension": "REPEAT"
+        },
+        {
+          "name": "Separate Color",
+          "type": "SEPARATE_COLOR"
+        },
+        {
+          "name": "Math",
+          "type": "MATH",
+          "operation": "SUBTRACT",
+          "inputs": [
+            {
+              "value": 1.0,
+              "linked": false
+            },
+            {
+              "value": 0.5,
+              "linked": true
+            },
+            {
+              "value": 0.5,
+              "linked": false
+            }
+          ]
+        }
+      ],
+      "links": [
+        {
+          "from": "Principled BSDF",
+          "output": "BSDF",
+          "to": "Material Output",
+          "input": "Surface"
+        },
+        {
+          "from": "UV Map",
+          "output": "UV",
+          "to": "Image Texture",
+          "input": "Vector"
+        },
+        {
+          "from": "Image Texture",
+          "output": "Color",
+          "to": "Principled BSDF",
+          "input": "Base Color"
+        },
+        {
+          "from": "UV Map",
+          "output": "UV",
+          "to": "Image Texture.001",
+          "input": "Vector"
+        },
+        {
+          "from": "Image Texture.001",
+          "output": "Color",
+          "to": "Normal Map",
+          "input": "Color"
+        },
+        {
+          "from": "Normal Map",
+          "output": "Normal",
+          "to": "Principled BSDF",
+          "input": "Normal"
+        },
+        {
+          "from": "UV Map",
+          "output": "UV",
+          "to": "Image Texture.002",
+          "input": "Vector"
+        },
+        {
+          "from": "Image Texture.002",
+          "output": "Color",
+          "to": "Separate Color",
+          "input": "Color"
+        },
+        {
+          "from": "Separate Color",
+          "output": "Red",
+          "to": "Principled BSDF",
+          "input": "Metallic"
+        },
+        {
+          "from": "Image Texture.002",
+          "output": "Alpha",
+          "to": "Math",
+          "input": "Value"
+        },
+        {
+          "from": "Math",
+          "output": "Value",
+          "to": "Principled BSDF",
+          "input": "Roughness"
+        }
+      ]
+    },
+    {
+      "name": "R8_Rough_Exposed_Steel",
+      "nodes": [
+        {
+          "name": "Material Output",
+          "type": "OUTPUT_MATERIAL"
+        },
+        {
+          "name": "Principled BSDF",
+          "type": "BSDF_PRINCIPLED"
+        },
+        {
+          "name": "UV Map",
+          "type": "UVMAP",
+          "uv_map": "UVMap"
+        },
+        {
+          "name": "Image Texture",
+          "type": "TEX_IMAGE",
+          "image": "R8_Rough_Exposed_Steel_BaseColor.png",
+          "colorspace": "sRGB",
+          "size": [
+            1024,
+            1024
+          ],
+          "interpolation": "Linear",
+          "extension": "REPEAT"
+        },
+        {
+          "name": "Image Texture.001",
+          "type": "TEX_IMAGE",
+          "image": "R8_Rough_Exposed_Steel_Normal_OpenGL.png",
+          "colorspace": "Non-Color",
+          "size": [
+            1024,
+            1024
+          ],
+          "interpolation": "Linear",
+          "extension": "REPEAT"
+        },
+        {
+          "name": "Normal Map",
+          "type": "NORMAL_MAP",
+          "space": "TANGENT",
+          "strength": 1.0,
+          "uv_map": "UVMap"
+        },
+        {
+          "name": "Image Texture.002",
+          "type": "TEX_IMAGE",
+          "image": "R8_Rough_Exposed_Steel_MetallicGloss.png",
+          "colorspace": "Non-Color",
+          "size": [
+            1024,
+            1024
+          ],
+          "interpolation": "Linear",
+          "extension": "REPEAT"
+        },
+        {
+          "name": "Separate Color",
+          "type": "SEPARATE_COLOR"
+        },
+        {
+          "name": "Math",
+          "type": "MATH",
+          "operation": "SUBTRACT",
+          "inputs": [
+            {
+              "value": 1.0,
+              "linked": false
+            },
+            {
+              "value": 0.5,
+              "linked": true
+            },
+            {
+              "value": 0.5,
+              "linked": false
+            }
+          ]
+        }
+      ],
+      "links": [
+        {
+          "from": "Principled BSDF",
+          "output": "BSDF",
+          "to": "Material Output",
+          "input": "Surface"
+        },
+        {
+          "from": "UV Map",
+          "output": "UV",
+          "to": "Image Texture",
+          "input": "Vector"
+        },
+        {
+          "from": "Image Texture",
+          "output": "Color",
+          "to": "Principled BSDF",
+          "input": "Base Color"
+        },
+        {
+          "from": "UV Map",
+          "output": "UV",
+          "to": "Image Texture.001",
+          "input": "Vector"
+        },
+        {
+          "from": "Image Texture.001",
+          "output": "Color",
+          "to": "Normal Map",
+          "input": "Color"
+        },
+        {
+          "from": "Normal Map",
+          "output": "Normal",
+          "to": "Principled BSDF",
+          "input": "Normal"
+        },
+        {
+          "from": "UV Map",
+          "output": "UV",
+          "to": "Image Texture.002",
+          "input": "Vector"
+        },
+        {
+          "from": "Image Texture.002",
+          "output": "Color",
+          "to": "Separate Color",
+          "input": "Color"
+        },
+        {
+          "from": "Separate Color",
+          "output": "Red",
+          "to": "Principled BSDF",
+          "input": "Metallic"
+        },
+        {
+          "from": "Image Texture.002",
+          "output": "Alpha",
+          "to": "Math",
+          "input": "Value"
+        },
+        {
+          "from": "Math",
+          "output": "Value",
+          "to": "Principled BSDF",
+          "input": "Roughness"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,223 @@
+{
+  "scope": "Source PBR images for existing independent LR06 display materials; no gameplay or light conversion.",
+  "source_sha256": "cdb003ad58e2c081076cc874eb9f1c4fdf3c216e056321257dabcf5d6f817054",
+  "materials": [
+    {
+      "name": "R8_Dark_Protective_Steel",
+      "index": 312,
+      "base_image": "R8_Dark_Protective_Steel_BaseColor.png",
+      "base_asset_path": "Assets/MoonEnvironment/Variants/LR06FullPreview/Textures/5789bb943ab122b5d2a0e4f5c94b0f2fbba37747a93e2453a69ab0fa59a43007.png",
+      "normal": {
+        "source_image": "R8_Dark_Protective_Steel_Normal_OpenGL.png",
+        "source_sha256": "ea1d58f8708e4e54cc0d51f4c087602dd83fcdee81ec345ee9683f0cfbfd6fa1",
+        "asset_path": "Assets/MoonEnvironment/Variants/LR06FullPreview/Textures/ea1d58f8708e4e54cc0d51f4c087602dd83fcdee81ec345ee9683f0cfbfd6fa1_normal.png",
+        "source_size": [
+          1024,
+          1024
+        ],
+        "source_colorspace": "Non-Color",
+        "unity_max_size": 1024
+      },
+      "metallic_smoothness": {
+        "source_image": "R8_Dark_Protective_Steel_MetallicGloss.png",
+        "source_sha256": "2c7cbf4ef1e3bff4cb204a1d346fab0de23b48aa4e794c0459db8c63c41605e2",
+        "asset_path": "Assets/MoonEnvironment/Variants/LR06FullPreview/Textures/2c7cbf4ef1e3bff4cb204a1d346fab0de23b48aa4e794c0459db8c63c41605e2_metallic_smoothness.png",
+        "source_size": [
+          1024,
+          1024
+        ],
+        "source_colorspace": "Non-Color",
+        "unity_max_size": 1024
+      },
+      "uv": "UVMap / Unity UV0",
+      "normal_convention": "tangent space, OpenGL +Y",
+      "channels": "R=metallic, A=smoothness; Blender roughness=1-A"
+    },
+    {
+      "name": "R8_Scanned_Mineral_Support",
+      "index": 320,
+      "base_image": "R5_PH_Concrete008_Neutral_BaseColor_2k.png",
+      "base_asset_path": "Assets/MoonEnvironment/Variants/LR06FullPreview/Textures/778e9de3de0f1ee7198fb3061227eb5a1c24f4057f1ca3c3a90f648bd3da19b4.png",
+      "normal": {
+        "source_image": "R5_PH_Concrete008_NormalGL_2k.png",
+        "source_sha256": "3d26d24586556ee400506888ad6496733a67bcc9020616c10119c1c343c5be24",
+        "asset_path": "Assets/MoonEnvironment/Variants/LR06FullPreview/Textures/3d26d24586556ee400506888ad6496733a67bcc9020616c10119c1c343c5be24_normal.png",
+        "source_size": [
+          2048,
+          2048
+        ],
+        "source_colorspace": "Non-Color",
+        "unity_max_size": 1024
+      },
+      "metallic_smoothness": {
+        "source_image": "R5_PH_Concrete008_MetallicGloss_2k.png",
+        "source_sha256": "cee28d21fa1325517f46ac0b4f1224514e8de339c3f32a581beea9bfd6bed0de",
+        "asset_path": "Assets/MoonEnvironment/Variants/LR06FullPreview/Textures/cee28d21fa1325517f46ac0b4f1224514e8de339c3f32a581beea9bfd6bed0de_metallic_smoothness.png",
+        "source_size": [
+          2048,
+          2048
+        ],
+        "source_colorspace": "Non-Color",
+        "unity_max_size": 1024
+      },
+      "uv": "UVMap / Unity UV0",
+      "normal_convention": "tangent space, OpenGL +Y",
+      "channels": "R=metallic, A=smoothness; Blender roughness=1-A"
+    },
+    {
+      "name": "R8_Matte_Deck_Plates",
+      "index": 314,
+      "base_image": "R8_Matte_Deck_Plates_BaseColor.png",
+      "base_asset_path": "Assets/MoonEnvironment/Variants/LR06FullPreview/Textures/9c4019e528cc8a9ac0bdb8ae11f42008967e5a80be4f9539889aae6c96ad1c56.png",
+      "normal": {
+        "source_image": "R8_Matte_Deck_Plates_Normal_OpenGL.png",
+        "source_sha256": "6d84a86c959554c8fc5f23739888242d6bc2dd1bf52635edad68546829e3e6a5",
+        "asset_path": "Assets/MoonEnvironment/Variants/LR06FullPreview/Textures/6d84a86c959554c8fc5f23739888242d6bc2dd1bf52635edad68546829e3e6a5_normal.png",
+        "source_size": [
+          2048,
+          2048
+        ],
+        "source_colorspace": "Non-Color",
+        "unity_max_size": 1024
+      },
+      "metallic_smoothness": {
+        "source_image": "R8_Matte_Deck_Plates_MetallicGloss.png",
+        "source_sha256": "2341e16c19e5270a5cbc82082e885ac8a14bbd032d47e73e949ec03a03f3168b",
+        "asset_path": "Assets/MoonEnvironment/Variants/LR06FullPreview/Textures/2341e16c19e5270a5cbc82082e885ac8a14bbd032d47e73e949ec03a03f3168b_metallic_smoothness.png",
+        "source_size": [
+          2048,
+          2048
+        ],
+        "source_colorspace": "Non-Color",
+        "unity_max_size": 1024
+      },
+      "uv": "UVMap / Unity UV0",
+      "normal_convention": "tangent space, OpenGL +Y",
+      "channels": "R=metallic, A=smoothness; Blender roughness=1-A"
+    },
+    {
+      "name": "R8_Restrained_Safety_Ochre",
+      "index": 317,
+      "base_image": "R8_Restrained_Safety_Ochre_BaseColor.png",
+      "base_asset_path": "Assets/MoonEnvironment/Variants/LR06FullPreview/Textures/9cd3709b6784f9afb6b168a846dfba4bc24bf7eba73ae0e3b00e293c2605f248.png",
+      "normal": {
+        "source_image": "R8_Dark_Protective_Steel_Normal_OpenGL.png",
+        "source_sha256": "ea1d58f8708e4e54cc0d51f4c087602dd83fcdee81ec345ee9683f0cfbfd6fa1",
+        "asset_path": "Assets/MoonEnvironment/Variants/LR06FullPreview/Textures/ea1d58f8708e4e54cc0d51f4c087602dd83fcdee81ec345ee9683f0cfbfd6fa1_normal.png",
+        "source_size": [
+          1024,
+          1024
+        ],
+        "source_colorspace": "Non-Color",
+        "unity_max_size": 1024
+      },
+      "metallic_smoothness": {
+        "source_image": "R8_Restrained_Safety_Ochre_MetallicGloss.png",
+        "source_sha256": "9763226c5cfed8f7b864b4bb928af051bc7986d45d6d2769c01321775ce7d444",
+        "asset_path": "Assets/MoonEnvironment/Variants/LR06FullPreview/Textures/9763226c5cfed8f7b864b4bb928af051bc7986d45d6d2769c01321775ce7d444_metallic_smoothness.png",
+        "source_size": [
+          1024,
+          1024
+        ],
+        "source_colorspace": "Non-Color",
+        "unity_max_size": 1024
+      },
+      "uv": "UVMap / Unity UV0",
+      "normal_convention": "tangent space, OpenGL +Y",
+      "channels": "R=metallic, A=smoothness; Blender roughness=1-A"
+    },
+    {
+      "name": "R8_OffWhite_Ceramic_Coat",
+      "index": 315,
+      "base_image": "R8_OffWhite_Ceramic_Coat_BaseColor.png",
+      "base_asset_path": "Assets/MoonEnvironment/Variants/LR06FullPreview/Textures/1d87c6dad47f6e884c5a55ee932a833ff17928317ca6a2ccb2497d51148ee569.png",
+      "normal": {
+        "source_image": "R8_OffWhite_Ceramic_Coat_Normal_OpenGL.png",
+        "source_sha256": "771dab9a32892381fd08e4db528fff03077da55ad5bdbea8b0f958cdd44f62fb",
+        "asset_path": "Assets/MoonEnvironment/Variants/LR06FullPreview/Textures/771dab9a32892381fd08e4db528fff03077da55ad5bdbea8b0f958cdd44f62fb_normal.png",
+        "source_size": [
+          1024,
+          1024
+        ],
+        "source_colorspace": "Non-Color",
+        "unity_max_size": 1024
+      },
+      "metallic_smoothness": {
+        "source_image": "R8_OffWhite_Ceramic_Coat_MetallicGloss.png",
+        "source_sha256": "0d05c3324ec31ae55a73dbce880e56764b633662f3c44b63b567cc5fe116613f",
+        "asset_path": "Assets/MoonEnvironment/Variants/LR06FullPreview/Textures/0d05c3324ec31ae55a73dbce880e56764b633662f3c44b63b567cc5fe116613f_metallic_smoothness.png",
+        "source_size": [
+          1024,
+          1024
+        ],
+        "source_colorspace": "Non-Color",
+        "unity_max_size": 1024
+      },
+      "uv": "UVMap / Unity UV0",
+      "normal_convention": "tangent space, OpenGL +Y",
+      "channels": "R=metallic, A=smoothness; Blender roughness=1-A"
+    },
+    {
+      "name": "R8_GrayWhite_Panel_Cladding",
+      "index": 313,
+      "base_image": "R8_GrayWhite_Panel_Cladding_BaseColor.png",
+      "base_asset_path": "Assets/MoonEnvironment/Variants/LR06FullPreview/Textures/5501c8cf1e25b4d9fcb04972b17ed990ea9af700465c32477d1ca6e1bd306301.png",
+      "normal": {
+        "source_image": "R8_GrayWhite_Panel_Cladding_Normal_OpenGL.png",
+        "source_sha256": "cebf29db883543727bfee9ace7fd68a67d8ed7312bf64e4f81403ceda5edc671",
+        "asset_path": "Assets/MoonEnvironment/Variants/LR06FullPreview/Textures/cebf29db883543727bfee9ace7fd68a67d8ed7312bf64e4f81403ceda5edc671_normal.png",
+        "source_size": [
+          2048,
+          2048
+        ],
+        "source_colorspace": "Non-Color",
+        "unity_max_size": 1024
+      },
+      "metallic_smoothness": {
+        "source_image": "R8_GrayWhite_Panel_Cladding_MetallicGloss.png",
+        "source_sha256": "a568cda507e94eca7e686759f76361f3432c0de0b9673c240a538ae36caa402f",
+        "asset_path": "Assets/MoonEnvironment/Variants/LR06FullPreview/Textures/a568cda507e94eca7e686759f76361f3432c0de0b9673c240a538ae36caa402f_metallic_smoothness.png",
+        "source_size": [
+          2048,
+          2048
+        ],
+        "source_colorspace": "Non-Color",
+        "unity_max_size": 1024
+      },
+      "uv": "UVMap / Unity UV0",
+      "normal_convention": "tangent space, OpenGL +Y",
+      "channels": "R=metallic, A=smoothness; Blender roughness=1-A"
+    },
+    {
+      "name": "R8_Rough_Exposed_Steel",
+      "index": 319,
+      "base_image": "R8_Rough_Exposed_Steel_BaseColor.png",
+      "base_asset_path": "Assets/MoonEnvironment/Variants/LR06FullPreview/Textures/a5c5475b1b01e29430c289382f69376cbb509625a7c652fe8e213b4f89851878.png",
+      "normal": {
+        "source_image": "R8_Rough_Exposed_Steel_Normal_OpenGL.png",
+        "source_sha256": "298ae64a7144e9217b9e3dbe1da58d38b2278515dfe54534831c1925099b126b",
+        "asset_path": "Assets/MoonEnvironment/Variants/LR06FullPreview/Textures/298ae64a7144e9217b9e3dbe1da58d38b2278515dfe54534831c1925099b126b_normal.png",
+        "source_size": [
+          1024,
+          1024
+        ],
+        "source_colorspace": "Non-Color",
+        "unity_max_size": 1024
+      },
+      "metallic_smoothness": {
+        "source_image": "R8_Rough_Exposed_Steel_MetallicGloss.png",
+        "source_sha256": "54d8efc5103da9b1c71bc8bacc58e3f842cd22d81c898d9a6a6e205f5dfa14b1",
+        "asset_path": "Assets/MoonEnvironment/Variants/LR06FullPreview/Textures/54d8efc5103da9b1c71bc8bacc58e3f842cd22d81c898d9a6a6e205f5dfa14b1_metallic_smoothness.png",
+        "source_size": [
+          1024,
+          1024
+        ],
+        "source_colorspace": "Non-Color",
+        "unity_max_size": 1024
+      },
+      "uv": "UVMap / Unity UV0",
+      "normal_convention": "tangent space, OpenGL +Y",
+      "channels": "R=metallic, A=smoothness; Blender roughness=1-A"
+    }
+  ]
+}
