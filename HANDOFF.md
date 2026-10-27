@@ -22,14 +22,14 @@
 - 本轮单人验证时，编辑器主线程等待异步操作而卡住。我终止了该编辑器。重开时 Unity 检测到未保存的场景备份，但 Mac 已锁屏，无法处理恢复窗口。
 - 原文件 `Temp/__Backupscenes/0.backup` 保持原样。副本在 `Library/BuildValidation/SceneRecovery-20261027/0.backup`，SHA-256 为 `559ddf2286563a940515d4223152fc254c48f87da3d0979815b5e751964e3fc2`。不要删除备份或自动选择丢弃。
 - 解锁后重新打开项目，检查恢复窗口和场景内容，再决定是否恢复。Unity 主线程不要对需要回到主线程的异步方法调用 `GetAwaiter().GetResult()`。
-- 场景处理完并完成导入后，先检查 Console。在编辑模式依次运行 `Moonkov / AI / Check Humanlike Decisions`、`Moonkov / AI / Check Shield Loadout`、`Moonkov / AI / Check Machine and Trap Hearing`、`Moonkov / AI / Check Shared Loot Refill`、`Moonkov / AI / Check Local Exit Safety`、`Moonkov / Tactical Items / Run Authority and Physics Checks`、`Moonkov / Energy Grenade / Run Authority Checks`、`Tools / Moonkov / Check Footstep Perception` 和 `Tools / Moonkov / Check Loot Acoustics`。这些夹具使用临时世界，不需要联机。
+- 场景处理完并完成导入后，先检查 Console。在编辑模式依次运行 `Moonkov / AI / Check Humanlike Decisions`、`Moonkov / AI / Check Shield Loadout`、`Moonkov / AI / Check Life Support Rules`、`Moonkov / AI / Check Machine and Trap Hearing`、`Moonkov / AI / Check Shared Loot Refill`、`Moonkov / AI / Check Local Exit Safety`、`Moonkov / Tactical Items / Run Authority and Physics Checks`、`Moonkov / Energy Grenade / Run Authority Checks`、`Tools / Moonkov / Check Footstep Perception` 和 `Tools / Moonkov / Check Loot Acoustics`。这些夹具使用临时世界，不需要联机。
 - 在单 Editor 的 Play 模式另运行 `Tools / Moonkov / Check Halo Arsenal Rules`。它检查真实弹体命中、范围伤害和爆炸声线索，使用隔离物理场景；不能代替正式战局试玩。
 - 再用单个编辑器试玩一局：出装、搜索新物资、遭遇人形敌人、取回敌人装备、撤离并重开档案；另检查受伤、火区和陷阱。记录实际异常和难度，不把规则检查当作试玩通过。
 
 ## 单人战局的数据闭环检查
 
 - `Tools / Moonkov / Check Offline Raid Data Cycle` 使用独立测试档案，检查出装、搜索、敌人争夺物资、尸体取回、治疗、撤离、死亡掉落、超时、保险箱、重复结算和重新读档。测试档案保留在 `Library/BuildValidation/OfflineCycle`，不使用玩家档案。
-- 53 项检查已在独立运行时通过，包含免费商品、敌人战利品、受损护盾和第二出口计时后的保存。检查覆盖死亡和超时保留保险箱及其内容，以及重复结算不复制物品。现有规则也保护特殊装备槽。敌人伤害、死亡和超时由测试直接触发；编辑器程序集隔离编译通过。它不运行 Unity 场景，不能代替局内搜刮、交火和撤离试玩。
+- 58 项检查已在独立运行时通过，包含免费商品、敌人战利品、受损护盾、剩余氧气的装备和第二出口计时后的保存。检查覆盖死亡和超时保留保险箱及其内容，以及重复结算不复制物品。现有规则也保护特殊装备槽。敌人伤害、死亡和超时由测试直接触发；编辑器程序集隔离编译通过。它不运行 Unity 场景，不能代替局内搜刮、交火和撤离试玩。
 - 当前没有装备投保和延时返还。保险箱与特殊装备槽的保护是现有机制，不等于塔科夫式保险；死亡掉落物品仍可被其他角色搜索。
 
 ## 人形敌人与建筑
@@ -42,6 +42,8 @@
 - 普通人形敌人按实际移动和负重消耗冲刺体力，耗尽后步行恢复；手雷逃生仍可尝试冲刺。18 项规则检查与隔离编译通过，服务端和移动输入夹具尚未在编辑器执行。赏金模式不受影响。
 - 普通局约三分之一的人形敌人开局携带真实能量护盾。没有护盾的敌人完成搜刮时，也会装备找到的可用护盾；保留原物品的剩余护盾与能源，不替换已有护盾。教学和赏金模式不变。服务器夹具和实战平衡尚未在编辑器验证。
 - 敌人的护盾能源低于或等于 25 时，可在安全且没有搜索、治疗或撤离计时的间隙，用口袋或胸挂中的真实电池补充。至少为当前武器保留一匣可直接使用的电量；背包内电池不算可直接使用。补充沿用玩家现有的即时事务。护盾配装及能源共 57 项隔离检查通过；新增的敌人实际决策夹具尚未在编辑器运行，交火节奏仍需试玩。
+- 普通局人形敌人携带真实生命维持装备和一瓶应急氧气。真空、可呼吸区域、移动消耗和缺氧伤害沿用玩家规则。氧气不足时会在安全处使用携带的氧气瓶；没有可用补给时会尝试撤离。死亡掉落保留装备的剩余氧气。教学和赏金模式不变，食物和饮水仍未模拟。
+- 人形氧气的 35 项隔离检查及游戏、编辑器程序集编译通过。服务端、真实决策、房间边界和完整对局尚未验收。室内空气每名敌人最多每 0.5 秒采样一次；正式地图的区域边界、性能、难度和新增掉落价值需要实测。
 - 普通人形敌人受到真实火区、毒区或铁丝影响时，会尝试中断当前行动并沿可达路径离开。安全后可花 3 秒灭火并止血，不消耗医疗物品；持续伤害照常发生，新攻击或中毒会打断。危险区 9 项、自救 9 项、压力与同帧伤害 16 项检查及隔离编译通过；现场、导航和服务器夹具尚未在编辑器执行。
 - 普通战局触发警报绊雷，或引爆破片雷、炸药包、能量手雷及范围武器弹体时，附近现存人形敌人和异形可调查声音位置；距离和墙体会限制听见的范围，不暴露触发者。14 项规则检查及隔离编译通过；触发、真实弹体、遮挡和异形反应夹具尚未在编辑器执行，实战效果与多次爆炸的性能待试玩。
 - 普通战局窒息时的咳嗽可被附近敌人听到。线索有误差，受距离和墙体限制，不直接授予视线。8 项节奏与听距检查、隔离编译通过；人形敌人和异形的实际听觉夹具尚未在编辑器执行。

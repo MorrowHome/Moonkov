@@ -47,7 +47,7 @@ public static class PmcProtectionLoadoutChecks
         Check(enemy.ShieldEquipped && Near(enemy.ShieldCharge, 100) && Near(enemy.ShieldEnergy, 100),
             "the shared equipment rules initialize the shield and finite energy");
         Check(Near(enemy.Oxygen, 100) && RaidNutrition.CanSprint(enemy),
-            "binding the shield preserves the PMC's existing non-simulated oxygen and movement");
+            "binding a shield without a collar preserves the existing oxygen and movement");
 
         float hp = enemy.CurrentHealth;
         Check(Near(RaidHealth.CombatDamage(ref enemy, BodyPart.Chest, 60, 1, RaidDamageKind.Bullet, new float3(1, 1, 1)), 0) &&

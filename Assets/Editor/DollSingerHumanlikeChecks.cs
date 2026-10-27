@@ -48,6 +48,7 @@ public static class DollSingerHumanlikeChecks
             CheckReloadAvailability(system, map);
             CheckBackpackMedical(system, map);
             CheckShieldSupply(system, world);
+            CheckLifeSupport(system, map, world);
         }
         finally
         {
@@ -69,6 +70,88 @@ public static class DollSingerHumanlikeChecks
     };
 
     private delegate void ShieldSupplyTick(DollSingerEnemyBrain brain, ref PredictedPlayerGhost health, Vector3 position, double now);
+
+    private static void CheckLifeSupport(DollSingerEnemySystem system, MoonRaidMap map, World world)
+    {
+        var tick = (ShieldSupplyTick)typeof(DollSingerEnemySystem).GetMethod("UpdateOxygenSupply", PrivateInstance)
+            .CreateDelegate(typeof(ShieldSupplyTick), system);
+        var brain = Brain(); brain.Inventory = InventoryGraph.Create(false); brain.Action = PmcAction.Scavenge;
+        Require(PmcLifeSupport.TryEquip(brain.Inventory, false, false) &&
+            brain.Inventory.AddSupply("oxygen_canister", 1, brain.Inventory.Equipped("Backpack").Id, true) == InventoryError.None,
+            "PMC oxygen fixture.");
+        var health = Health(); PmcProtectionLoadout.Initialize(ref health, brain.Inventory);
+        health.Oxygen = 15; health.BreathableAir = false;
+        string cylinder = brain.Inventory.Items.First(item => item.Code == "oxygen_canister").Id;
+        var decision = Decide(system, brain, health, map, 10);
+        Require(!brain.Leaving && brain.Inventory.Find(cylinder) != null,
+            "A PMC abandoned its raid despite carrying usable oxygen.");
+        brain.LastDamage = 10;
+        tick(brain, ref health, Vector3.zero, 10);
+        Require(health.Oxygen == 15 && brain.Inventory.Find(cylinder) != null,
+            "A recently hit PMC consumed oxygen under attack.");
+        var tutorial = world.EntityManager.CreateEntity(typeof(TutorialRaidMode));
+        tick(brain, ref health, Vector3.zero, 20);
+        Require(health.Oxygen == 15 && brain.Inventory.Find(cylinder) != null,
+            "Tutorial rules changed the oxygen loadout.");
+        world.EntityManager.DestroyEntity(tutorial);
+        tick(brain, ref health, Vector3.zero, 30);
+        Require(health.Oxygen == 55 && brain.Inventory.Find(cylinder) == null &&
+            brain.Inventory.Equipped("Helmet").SuitOxygen == 55,
+            "A safe PMC did not prepare and consume its actual backpack canister.");
+        Require(brain.Inventory.AddSupply("oxygen_canister", 1, InventoryCatalog.Pockets) == InventoryError.None,
+            "Emergency extraction oxygen fixture.");
+        health.Oxygen = 0; brain.Action = PmcAction.Extract; brain.ExtractionProgress = 2;
+        tick(brain, ref health, Vector3.zero, 31.5);
+        Require(health.Oxygen == 40 && brain.ExtractionProgress == 2 && !PmcLifeSupport.HasCarried(brain.Inventory),
+            "A critically low PMC could not use oxygen without interrupting extraction.");
+        health.Oxygen = 15;
+        brain.ExtractionProgress = 0;
+        decision = Decide(system, brain, health, map, 33);
+        Require(brain.Leaving && decision.action == PmcAction.Extract,
+            "A PMC without oxygen supplies did not plan to leave.");
+
+        brain = Brain(); brain.Inventory = InventoryGraph.Create(false); brain.Action = PmcAction.Scavenge;
+        Require(PmcLifeSupport.TryEquip(brain.Inventory, false, false), "Breathable-room oxygen fixture.");
+        health = Health(); PmcProtectionLoadout.Initialize(ref health, brain.Inventory);
+        health.Oxygen = 15; health.BreathableAir = true;
+        decision = Decide(system, brain, health, map, 10);
+        Require(!brain.Leaving && decision.action != PmcAction.Extract,
+            "A PMC in breathable air left only because its suit reserve was low.");
+
+        brain = Brain(); brain.Inventory = InventoryGraph.Create(false); brain.Action = PmcAction.Engage;
+        Require(PmcLifeSupport.TryEquip(brain.Inventory, false, false) &&
+            brain.Inventory.AddSupply("oxygen_canister", 1, InventoryCatalog.Pockets) == InventoryError.None,
+            "Threatened oxygen fixture.");
+        health = Health(); PmcProtectionLoadout.Initialize(ref health, brain.Inventory); health.Oxygen = 15;
+        brain.Target = new Entity { Index = 1, Version = 1 }; brain.Visible = true; brain.Confidence = 1;
+        brain.Contacts.Add(brain.Target, new PmcContact { Confirmed = true, Visible = true, Confidence = 1 });
+        decision = Decide(system, brain, health, map, 10);
+        Require(!brain.Leaving && decision.action == PmcAction.Retreat,
+            "A PMC with critically low oxygen did not break contact before using its supply.");
+        brain.Visible = false; brain.Target = Entity.Null; brain.Action = PmcAction.Retreat; health.Oxygen = 0;
+        tick(brain, ref health, Vector3.zero, 30);
+        Require(health.Oxygen == 40 && !PmcLifeSupport.HasCarried(brain.Inventory),
+            "A PMC at a safe withdrawal point could not use critical oxygen.");
+
+        brain = Brain(); brain.Inventory = InventoryGraph.Create(false); brain.Action = PmcAction.Scavenge;
+        var pack = brain.Inventory.Equipped("Backpack"); var rig = brain.Inventory.Equipped("ChestRig");
+        Require(PmcLifeSupport.TryEquip(brain.Inventory, false, false) &&
+            brain.Inventory.AddSupply("oxygen_canister", 1, pack.Id) == InventoryError.None, "Blocked oxygen fixture.");
+        InventoryItem Blocker(string parent, string region, int x = 0, int y = 0) =>
+            new InventoryItem { Id = Guid.NewGuid().ToString("D"), Code = "dust", Parent = parent, Region = region, X = x, Y = y };
+        for (int i = 1; i <= 4; i++) brain.Inventory.Items.Add(Blocker(InventoryCatalog.Pockets, i.ToString()));
+        foreach (string region in new[] { "left", "center", "right" })
+            for (int y = 0; y < 2; y++) for (int x = 0; x < (region == "center" ? 2 : 1); x++)
+                brain.Inventory.Items.Add(Blocker(rig.Id, region, x, y));
+        Require(brain.Inventory.Validate() == InventoryError.None, "Blocked oxygen inventory is invalid.");
+        health = Health(); PmcProtectionLoadout.Initialize(ref health, brain.Inventory); health.Oxygen = 15;
+        tick(brain, ref health, Vector3.zero, 10);
+        Require(brain.OxygenSupplyFailure.Matches(brain.Inventory.Version) && health.Oxygen == 15,
+            "Blocked oxygen preparation was not remembered without consuming the supply.");
+        decision = Decide(system, brain, health, map, 11);
+        Require(brain.Leaving && decision.action == PmcAction.Extract,
+            "A PMC with unusable backpack oxygen did not plan to leave.");
+    }
 
     private static void CheckShieldSupply(DollSingerEnemySystem system, World world)
     {

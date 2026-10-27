@@ -24,7 +24,7 @@ namespace Unity.MP_FPS
                 if(send && (health.ValueRO.ShieldEquipped || health.ValueRO.HeadDomeEquipped))inventory.LastSentVersion=-1;
             }
             // Ordinary PMCs have no connection/RaidSession. Only equipped shields
-            // need ticking; their finite item energy pays for the same recovery.
+            // need recovery here; their life support is updated separately below.
             foreach (var (health, entity) in SystemAPI.Query<RefRW<PredictedPlayerGhost>>()
                          .WithAll<DollSingerEnemy, Simulate>().WithNone<ClashBot>().WithEntityAccess())
             {
@@ -41,7 +41,7 @@ namespace Unity.MP_FPS
             if (map == null) return;
             uint tick = SystemAPI.GetSingleton<NetworkTime>().ServerTick.TickIndexForValidTick;
             // Once per authoritative simulation update, outside prediction replay.
-            // Settled players and PMCs do not consume the player's oxygen supply.
+            // Settled players do not consume oxygen.
             foreach (var (session, joined, connection) in SystemAPI.Query<RefRO<RaidSession>, RefRO<JoinedClient>>().WithEntityAccess())
             {
                 var player = joined.ValueRO.PlayerEntity;
@@ -67,6 +67,29 @@ namespace Unity.MP_FPS
                     map.EnergyReserveSeconds, map.HydrationReserveSeconds, map.DigestionSeconds,
                     map.NutritionGraceSeconds, map.StarvationDamagePerSecond, map.DehydrationDamagePerSecond, tick,moving);
                 if(inventory!=null)EnergyShieldEquipment.Flush(ref health.ValueRW,inventory.Graph);
+            }
+            if (SystemAPI.HasSingleton<TutorialRaidMode>()) return;
+            var tactical = TacticalWorld(ref state);
+            double now = SystemAPI.Time.ElapsedTime;
+            float dt = SystemAPI.Time.DeltaTime;
+            foreach (var (pose, health, entity) in SystemAPI.Query<RefRO<LocalTransform>, RefRW<PredictedPlayerGhost>>()
+                         .WithAll<DollSingerEnemy, Simulate>().WithNone<ClashBot>().WithEntityAccess())
+            {
+                if (health.ValueRO.CurrentHealth <= 0 || !state.EntityManager.HasComponent<DollSingerEnemyBrain>(entity)) continue;
+                var brain = state.EntityManager.GetComponentObject<DollSingerEnemyBrain>(entity);
+                Vector3 position = pose.ValueRO.Position;
+                bool moved = brain.OxygenMotion.Observe(position, dt);
+                bool sample = now >= brain.NextAtmosphereSample;
+                if (sample)
+                {
+                    var samplePosition = position + Vector3.up;
+                    BreathableZone.TrySample(samplePosition, out brain.CachedAtmosphere);
+                    brain.CachedOxygenSupply = OxygenRefillZone.SampleSupply(samplePosition, brain.CachedAtmosphere.Breathable);
+                    brain.NextAtmosphereSample = now + .5;
+                }
+                PmcLifeSupport.Tick(ref health.ValueRW, brain.Inventory, TacticalStatus(tactical, entity),
+                    brain.CachedAtmosphere, map.OxygenParameters, dt, tick, brain.CachedOxygenSupply,
+                    health.ValueRO.ControllerState.MovementSpeed > .1f && moved, flush: sample);
             }
         }
     }

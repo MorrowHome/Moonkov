@@ -272,8 +272,11 @@ namespace Unity.MP_FPS
             // A finite raid loadout; unused medicine remains in the normal death inventory.
             inventory.AddSupply("medkit", 2, parent: InventoryCatalog.Pockets, foundInRaid: true);
             if (map.EnemyCells > 0) inventory.AddSupply("cells", map.EnemyCells, foundInRaid: true);
-            if (!clash.HasValue && PmcProtectionLoadout.TryEquip(inventory, false,
-                    TutorialRuntime.Enabled(EntityManager), m_SpawnRandom.NextFloat()))
+            bool tutorial = TutorialRuntime.Enabled(EntityManager);
+            bool suit = PmcLifeSupport.TryEquip(inventory, clash.HasValue, tutorial);
+            if (suit) inventory.AddSupply("oxygen_canister", 1, foundInRaid: true);
+            bool shield = !clash.HasValue && PmcProtectionLoadout.TryEquip(inventory, false, tutorial, m_SpawnRandom.NextFloat());
+            if (suit || shield)
             {
                 PmcProtectionLoadout.Initialize(ref healthState, inventory);
                 EntityManager.SetComponentData(player, healthState);

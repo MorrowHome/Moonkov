@@ -135,7 +135,7 @@ public static class RaidOfflineCycleChecks
     private static void CheckEnemyLootRecovery(string projectPath)
     {
         string path = Path.GetFullPath(Path.Combine(projectPath, "Library", "BuildValidation", "OfflineCycle", Guid.NewGuid().ToString("N") + ".json"));
-        string lootId, shieldId, playerId;
+        string lootId, shieldId, suitId, playerId;
         using (var store = new OfflineProfileStore(path))
         {
             playerId = store.Read().PlayerId;
@@ -160,6 +160,8 @@ public static class RaidOfflineCycleChecks
             var enemy = InventoryGraph.Create(stash: false);
             Check(PmcProtectionLoadout.TryEquip(enemy, false, false, 0), "enemy shield did not fit its real loadout");
             shieldId = enemy.Equipped("Shield").Id;
+            Check(PmcLifeSupport.TryEquip(enemy, false, false), "enemy life-support equipment did not fit its real loadout");
+            suitId = enemy.Equipped("Helmet").Id;
             Check(PmcLootRules.TakeAvailable(enemy, cache) > 0 && enemy.Find(lootId)?.FoundInRaid == true && cache.Find(lootId) == null,
                 "enemy did not take the unique data drive from the shared cache");
             var pack = inventory.Graph.Equipped("Backpack");
@@ -173,6 +175,9 @@ public static class RaidOfflineCycleChecks
                 "a stale player request duplicated the enemy's loot");
             var enemyHealth = new PredictedPlayerGhost(); RaidHealth.Initialize(ref enemyHealth);
             PmcProtectionLoadout.Initialize(ref enemyHealth, enemy);
+            PmcLifeSupport.Tick(ref enemyHealth, enemy, null, default, OxygenParameters.Default, 180, 1, 0, false);
+            Check(Math.Abs(enemyHealth.Oxygen - 70) < .001f && Math.Abs(enemy.Find(suitId).SuitOxygen - 70) < .001f,
+                "the enemy suit did not preserve its actual used oxygen");
             RaidHealth.CombatDamage(ref enemyHealth, BodyPart.Chest, 60, 1, RaidDamageKind.Bullet);
             EnergyShieldEquipment.Tick(ref enemyHealth, enemy, 7);
             RaidHealth.CombatDamage(ref enemyHealth, BodyPart.Head, 100, 2, RaidDamageKind.Bullet);
@@ -186,6 +191,8 @@ public static class RaidOfflineCycleChecks
             Check(corpse.Find(shieldId)?.FoundInRaid == true && corpse.Find(shieldId).ShieldCharge == 0 &&
                 corpse.Find(shieldId).ShieldEnergy == 96 && enemy.Find(shieldId) == null,
                 "the enemy's damaged shield was refilled, duplicated, or lost on death");
+            Check(corpse.Find(suitId)?.FoundInRaid == true && Math.Abs(corpse.Find(suitId).SuitOxygen - 70) < .001f &&
+                enemy.Find(suitId) == null, "the enemy's used suit was refilled, duplicated, or lost on death");
             Check(inventory.BeginDissection(corpseId, 20, float3.zero, health, 2), "player could not begin searching corpse");
             inventory.RefreshDissection(caches, true, float3.zero, health, 22);
             Check(inventory.OpenedLootId == corpseId && inventory.SearchedLoot.Contains(corpseId), "corpse search did not finish");
@@ -202,6 +209,14 @@ public static class RaidOfflineCycleChecks
             Check(LootInventoryExchange.TryApply(inventory.Graph, corpse, recoverShield, corpse.Version) == InventoryError.None &&
                 corpse.Find(shieldId) == null && inventory.Graph.Find(shieldId)?.ShieldEnergy == 96,
                 "player did not recover the same depleted shield from the corpse");
+            var suit = corpse.Find(suitId);
+            Check(inventory.Graph.FindSpace(suit, pack.Id, out var suitRegion, out int suitX, out int suitY),
+                "player backpack could not receive the enemy suit");
+            var recoverSuit = new InventoryCommand { Operation = InventoryOperation.Move, ItemId = suitId, Parent = pack.Id,
+                Region = suitRegion, X = suitX, Y = suitY, ExpectedVersion = inventory.Graph.Version };
+            Check(LootInventoryExchange.TryApply(inventory.Graph, corpse, recoverSuit, corpse.Version) == InventoryError.None &&
+                corpse.Find(suitId) == null && Math.Abs(inventory.Graph.Find(suitId).SuitOxygen - 70) < .001f,
+                "player did not recover the same used suit from the corpse");
             var receipt = new RaidPersistenceContext.Settlement { PlayerId = playerId, DeploymentId = deployment.DeploymentId,
                 SettlementId = deployment.DeploymentId, Outcome = "Extracted", InventoryJson = RaidInventoryTransport.Encode(inventory.Graph),
                 Dust = inventory.Graph.Count("dust", true), Alloy = inventory.Graph.Count("alloy", true), Cells = inventory.Graph.Count("cells", true) };
@@ -209,6 +224,7 @@ public static class RaidOfflineCycleChecks
             var saved = RaidInventoryTransport.Decode(store.Read().InventoryJson);
             Check(saved.Find(lootId)?.FoundInRaid == true && saved.Find(shieldId)?.ShieldCharge == 0 &&
                 saved.Find(shieldId).ShieldEnergy == 96 && (saved.MissionFirsts & MissionInventory.FirstRecovery) != 0 &&
+                saved.Find(suitId) != null && Math.Abs(saved.Find(suitId).SuitOxygen - 70) < .001f &&
                 saved.Count("dust") == 110 && !store.RaidActive, "corpse loot or first recovery reward was not settled");
         }
         using (var reopened = new OfflineProfileStore(path))
@@ -216,6 +232,7 @@ public static class RaidOfflineCycleChecks
             var saved = RaidInventoryTransport.Decode(reopened.Read().InventoryJson);
             Check(reopened.Read().PlayerId == playerId && saved.Find(lootId)?.FoundInRaid == true &&
                 saved.Find(shieldId)?.ShieldCharge == 0 && saved.Find(shieldId).ShieldEnergy == 96 &&
+                saved.Find(suitId) != null && Math.Abs(saved.Find(suitId).SuitOxygen - 70) < .001f &&
                 saved.Count("dust") == 110 && !reopened.RaidActive, "enemy loot did not survive reopening the profile");
         }
     }

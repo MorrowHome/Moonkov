@@ -30,6 +30,7 @@ namespace Unity.MP_FPS
             AdvanceCover(brain, position, now);
             AdvanceHealing(brain, ref health, position, now);
             AdvanceObjective(brain, ref health, position, eye, map, now, dt);
+            UpdateOxygenSupply(brain, ref health, position, now);
             UpdateShieldSupply(brain, ref health, position, now);
             // A timed search is stationary; re-pathing to the actor's own position
             // can fail and cancel an otherwise reachable corpse or drawer.
@@ -160,6 +161,27 @@ namespace Unity.MP_FPS
                 SafeToTreat(brain, position, now), now)) return;
             var held = WeaponManager.Instance?.WeaponRegistry?.GetWeaponData(health.EquippedWeaponID, health.EquippedModules);
             if (held != null) PmcShieldSupply.TryRecharge(ref health, brain.Inventory, held.EnergyPerRound, held.MagazineSize);
+        }
+
+        private void UpdateOxygenSupply(DollSingerEnemyBrain brain, ref PredictedPlayerGhost health, Vector3 position, double now)
+        {
+            if (!PmcLifeSupport.Low(health, PmcLifeSupport.RefillThreshold) || now < brain.NextOxygenSupplyCheck) return;
+            brain.NextOxygenSupplyCheck = now + 1;
+            if (!PmcResourceActions.SafeWindow(brain, health, TutorialRuntime.Enabled(EntityManager),
+                SafeToTreat(brain, position, now), now, allowCriticalOxygen: true) || !health.HeadDomeEquipped || brain.Inventory == null) return;
+            var supply = PmcLifeSupport.FindAccessible(brain.Inventory);
+            if (supply == null && !brain.OxygenSupplyFailure.Matches(brain.Inventory.Version))
+            {
+                supply = PmcLifeSupport.Prepare(brain.Inventory);
+                if (supply == null) brain.OxygenSupplyFailure.Record(brain.Inventory.Version);
+                else brain.OxygenSupplyFailure.Clear();
+            }
+            if (PmcLifeSupport.TryRefill(ref health, brain.Inventory, supply))
+            {
+                brain.OxygenSupplyFailure.Clear();
+                EnergyShieldEquipment.Flush(ref health, brain.Inventory);
+                brain.NextDecision = 0;
+            }
         }
 
         private static void UpdateCombatPressure(DollSingerEnemyBrain brain, PredictedPlayerGhost health, double now, float dt) =>

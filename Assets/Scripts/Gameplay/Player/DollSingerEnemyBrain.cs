@@ -221,8 +221,8 @@ namespace Unity.MP_FPS
 
         public static void Initialize(ref PredictedPlayerGhost health, InventoryGraph inventory)
         {
-            // Ordinary PMCs do not simulate oxygen. Preserve their existing reserve
-            // when the shared equipment binding sees no life-support collar.
+            // Preserve the existing reserve for loadouts without life support,
+            // including the tutorial; binding a shield alone must not change it.
             float oxygen = health.Oxygen;
             EnergyShieldEquipment.Synchronize(ref health, inventory);
             if (!health.HeadDomeEquipped) health.Oxygen = oxygen;
@@ -242,6 +242,29 @@ namespace Unity.MP_FPS
         }
     }
 
+    // These instant inventory actions still wait for a safe opening and cannot
+    // overlap the actor's own search, treatment, extraction, or hazard response.
+    public static class PmcResourceActions
+    {
+        public static bool SafeWindow(DollSingerEnemyBrain brain, in PredictedPlayerGhost health,
+            bool tutorial, bool safe, double now, bool allowCriticalOxygen = false)
+        {
+            bool urgent = allowCriticalOxygen && PmcLifeSupport.Low(health, PmcLifeSupport.DepartureThreshold);
+            if (brain == null || brain.IsClashBot || tutorial || !safe || !double.IsFinite(now) ||
+                health.CurrentHealth <= 0 || RaidHealth.HandsBusy(health) || brain.Visible ||
+                brain.HazardDanger || brain.Grenade.Active(now) || brain.HealUntil > 0 || brain.Interacting ||
+                brain.LootUntil > 0 || brain.ExtractionProgress > 0 && !urgent || brain.Extracted) return false;
+            bool passive = brain.Action == PmcAction.Scavenge || brain.Action == PmcAction.Extract;
+            bool recovering = urgent && !brain.IsPeeking && (brain.Action == PmcAction.Retreat ||
+                brain.Action == PmcAction.Cover || brain.Action == PmcAction.Search ||
+                brain.Action == PmcAction.Investigate || brain.Action == PmcAction.HoldAngle);
+            if (!passive && !recovering) return false;
+            var status = brain.SelfStatus;
+            return status == null || status.Bleed <= now && status.Fire <= now &&
+                (status.Poison <= now || status.Antidote > now);
+        }
+    }
+
     // A shield and a halo draw from the same physical cells. Leave a full
     // magazine's accessible energy before spending any cell on protection.
     public static class PmcShieldSupply
@@ -249,18 +272,9 @@ namespace Unity.MP_FPS
         public const float RechargeThreshold = 25;
 
         public static bool MayRecharge(DollSingerEnemyBrain brain, in PredictedPlayerGhost health,
-            bool tutorial, bool safe, double now)
-        {
-            if (brain == null || brain.IsClashBot || tutorial || !safe || !double.IsFinite(now) ||
-                health.CurrentHealth <= 0 || !health.ShieldEquipped || !float.IsFinite(health.ShieldEnergy) || health.ShieldEnergy < 0 ||
-                health.ShieldEnergy > RechargeThreshold || RaidHealth.HandsBusy(health) || brain.Visible ||
-                brain.HazardDanger || brain.Grenade.Active(now) || brain.HealUntil > 0 || brain.Interacting ||
-                brain.LootUntil > 0 || brain.ExtractionProgress > 0 || brain.Extracted ||
-                brain.Action != PmcAction.Scavenge && brain.Action != PmcAction.Extract) return false;
-            var status = brain.SelfStatus;
-            return status == null || status.Bleed <= now && status.Fire <= now &&
-                (status.Poison <= now || status.Antidote > now);
-        }
+            bool tutorial, bool safe, double now) =>
+            PmcResourceActions.SafeWindow(brain, health, tutorial, safe, now) && health.ShieldEquipped &&
+            float.IsFinite(health.ShieldEnergy) && health.ShieldEnergy >= 0 && health.ShieldEnergy <= RechargeThreshold;
 
         public static bool TryRecharge(ref PredictedPlayerGhost health, InventoryGraph inventory, int roundCost, int magazineSize)
         {
@@ -278,6 +292,83 @@ namespace Unity.MP_FPS
             }
             return false;
         }
+    }
+
+    // The suit and refill are real carried items. NPCs use the same atmosphere,
+    // oxygen drain and atomic refill transaction as a player.
+    public static class PmcLifeSupport
+    {
+        public const float RefillThreshold = 40, DepartureThreshold = 20;
+
+        public static bool TryEquip(InventoryGraph inventory, bool clash, bool tutorial)
+        {
+            if (inventory == null || clash || tutorial || inventory.Equipped("Helmet") != null) return false;
+            var suit = new InventoryItem { Id = System.Guid.NewGuid().ToString("D"), Code = EnergyShieldEquipment.HeadDomeCode,
+                Parent = InventoryCatalog.Equipment, Region = "Helmet", FoundInRaid = true };
+            if (inventory.Items.Count >= InventoryCatalog.MaxItems ||
+                inventory.CarriedWeight + InventoryCatalog.Get(suit.Code).Weight > InventoryCatalog.CarryWeightLimit ||
+                inventory.CanPlace(suit, InventoryCatalog.Equipment, "Helmet", 0, 0, false) != InventoryError.None) return false;
+            inventory.Items.Add(suit); inventory.Version++;
+            return true;
+        }
+
+        public static bool Low(in PredictedPlayerGhost health, float threshold) => health.ProtectionInitialized &&
+            health.CurrentHealth > 0 && float.IsFinite(health.Oxygen) && health.Oxygen <= threshold && RaidOxygen.NeedsSuitAir(health);
+
+        public static void Tick(ref PredictedPlayerGhost health, InventoryGraph inventory, TacticalServerWorld.Status status,
+            in AtmosphereSample atmosphere, in OxygenParameters settings, float dt, uint tick, float supply, bool moving, bool flush = true)
+        {
+            var before = health;
+            RaidOxygen.Tick(ref health, atmosphere, settings, dt, tick, supply, health.HeadDomeEquipped, moving);
+            PmcStatusDamage.Record(status, before, health);
+            if (flush || health.CurrentHealth <= 0) EnergyShieldEquipment.Flush(ref health, inventory);
+        }
+
+        private static bool IsOxygen(InventoryItem item) => item != null && item.Quantity > 0 &&
+            (ConsumableCatalog.Get(item.Code)?.Oxygen ?? 0) > 0;
+        public static bool HasCarried(InventoryGraph inventory) => inventory != null &&
+            inventory.Items.Any(item => IsOxygen(item) && inventory.Carried(item));
+        public static InventoryItem FindAccessible(InventoryGraph inventory) => inventory?.Items
+            .FirstOrDefault(item => IsOxygen(item) && inventory.ConsumableAccessible(item));
+
+        public static InventoryItem Prepare(InventoryGraph inventory)
+        {
+            var ready = FindAccessible(inventory);
+            if (ready != null || inventory == null) return ready;
+            string rig = inventory.Equipped("ChestRig")?.Id;
+            var ids = inventory.Items.Where(item => IsOxygen(item) && inventory.Carried(item)).Select(item => item.Id).ToArray();
+            foreach (string id in ids)
+            {
+                var item = inventory.Find(id);
+                foreach (string parent in new[] { InventoryCatalog.Pockets, rig })
+                {
+                    if (parent == null) continue;
+                    var def = InventoryCatalog.Get(item.Code);
+                    for (int orientation = 0; orientation < (def.Width == def.Height ? 1 : 2); orientation++)
+                    {
+                        var probe = item.Clone(); if (orientation == 1) probe.Rotated = !probe.Rotated;
+                        if (!inventory.FindSpace(probe, parent, out string region, out int x, out int y)) continue;
+                        var command = new InventoryCommand { Operation = InventoryOperation.Move, ExpectedVersion = inventory.Version,
+                            ItemId = id, Parent = parent, Region = region, X = x, Y = y, Rotated = probe.Rotated };
+                        if (inventory.TryApply(command) == InventoryError.None) return inventory.Find(id);
+                    }
+                }
+            }
+            return null;
+        }
+
+        public static bool TryRefill(ref PredictedPlayerGhost health, InventoryGraph inventory, InventoryItem item) =>
+            Low(health, RefillThreshold) && inventory != null && item != null &&
+            RaidOxygenConsumables.Consume(ref health, inventory, item.Id, inventory.Version) == InventoryError.None;
+    }
+
+    public struct PmcOxygenFailure
+    {
+        private bool m_Failed;
+        private int m_Version;
+        public bool Matches(int version) => m_Failed && m_Version == version;
+        public void Record(int version) { m_Failed = true; m_Version = version; }
+        public void Clear() { m_Failed = false; }
     }
 
     // An inaccessible backpack cell cannot be re-attempted every frame while
@@ -432,6 +523,11 @@ namespace Unity.MP_FPS
         public double NextNearbyLootScan;
         public double NextTacticalSwitch;
         public double NextShieldSupplyCheck;
+        public double NextOxygenSupplyCheck, NextAtmosphereSample;
+        public AtmosphereSample CachedAtmosphere;
+        public float CachedOxygenSupply;
+        public RaidSurvivalMotion OxygenMotion;
+        public PmcOxygenFailure OxygenSupplyFailure;
         public double NextUnknownEvasion;
         public PmcGrenadeAwareness Grenade;
         public Vector3 GrenadePlanPosition;
