@@ -134,7 +134,7 @@ public static class RaidOfflineCycleChecks
     private static void CheckEnemyLootRecovery(string projectPath)
     {
         string path = Path.GetFullPath(Path.Combine(projectPath, "Library", "BuildValidation", "OfflineCycle", Guid.NewGuid().ToString("N") + ".json"));
-        string lootId, playerId;
+        string lootId, shieldId, playerId;
         using (var store = new OfflineProfileStore(path))
         {
             playerId = store.Read().PlayerId;
@@ -157,6 +157,8 @@ public static class RaidOfflineCycleChecks
             int oldCacheVersion = cache.Version;
             Check(inventory.OpenedLootId == 0 && inventory.SearchedLoot.Contains(0), "shared cache did not open after search");
             var enemy = InventoryGraph.Create(stash: false);
+            Check(PmcProtectionLoadout.TryEquip(enemy, false, false, 0), "enemy shield did not fit its real loadout");
+            shieldId = enemy.Equipped("Shield").Id;
             Check(PmcLootRules.TakeAvailable(enemy, cache) > 0 && enemy.Find(lootId)?.FoundInRaid == true && cache.Find(lootId) == null,
                 "enemy did not take the unique data drive from the shared cache");
             var pack = inventory.Graph.Equipped("Backpack");
@@ -168,10 +170,21 @@ public static class RaidOfflineCycleChecks
             Check(LootInventoryExchange.TryApply(inventory.Graph, cache, stale, oldCacheVersion) == InventoryError.Stale &&
                 inventory.Graph.Find(lootId) == null && enemy.Find(lootId) != null,
                 "a stale player request duplicated the enemy's loot");
+            var enemyHealth = new PredictedPlayerGhost(); RaidHealth.Initialize(ref enemyHealth);
+            PmcProtectionLoadout.Initialize(ref enemyHealth, enemy);
+            RaidHealth.CombatDamage(ref enemyHealth, BodyPart.Chest, 60, 1, RaidDamageKind.Bullet);
+            EnergyShieldEquipment.Tick(ref enemyHealth, enemy, 7);
+            RaidHealth.CombatDamage(ref enemyHealth, BodyPart.Head, 100, 2, RaidDamageKind.Bullet);
+            Check(enemyHealth.CurrentHealth <= 0 && enemyHealth.ShieldCharge == 0 && enemyHealth.ShieldEnergy == 96,
+                "shielded enemy damage or finite recovery did not use the real combat rules");
+            EnergyShieldEquipment.Flush(ref enemyHealth, enemy);
             int corpseId = caches.Drop(enemy, float3.zero);
             var corpse = caches.Containers[corpseId];
             Check(PmcLootRules.IsHumanCorpse(caches, corpseId) && corpse.Find(lootId) != null && enemy.Find(lootId) == null,
                 "enemy death did not leave the original loot in a human corpse");
+            Check(corpse.Find(shieldId)?.FoundInRaid == true && corpse.Find(shieldId).ShieldCharge == 0 &&
+                corpse.Find(shieldId).ShieldEnergy == 96 && enemy.Find(shieldId) == null,
+                "the enemy's damaged shield was refilled, duplicated, or lost on death");
             Check(inventory.BeginDissection(corpseId, 20, float3.zero, health, 2), "player could not begin searching corpse");
             inventory.RefreshDissection(caches, true, float3.zero, health, 22);
             Check(inventory.OpenedLootId == corpseId && inventory.SearchedLoot.Contains(corpseId), "corpse search did not finish");
@@ -180,18 +193,28 @@ public static class RaidOfflineCycleChecks
             Check(LootInventoryExchange.TryApply(inventory.Graph, corpse, recover, corpse.Version) == InventoryError.None &&
                 inventory.Graph.Find(lootId)?.FoundInRaid == true && corpse.Find(lootId) == null,
                 "player did not recover the same found-in-raid item from the corpse");
+            var shield = corpse.Find(shieldId);
+            Check(inventory.Graph.FindSpace(shield, pack.Id, out var shieldRegion, out int shieldX, out int shieldY),
+                "player backpack could not receive the enemy shield");
+            var recoverShield = new InventoryCommand { Operation = InventoryOperation.Move, ItemId = shieldId, Parent = pack.Id,
+                Region = shieldRegion, X = shieldX, Y = shieldY, ExpectedVersion = inventory.Graph.Version };
+            Check(LootInventoryExchange.TryApply(inventory.Graph, corpse, recoverShield, corpse.Version) == InventoryError.None &&
+                corpse.Find(shieldId) == null && inventory.Graph.Find(shieldId)?.ShieldEnergy == 96,
+                "player did not recover the same depleted shield from the corpse");
             var receipt = new RaidPersistenceContext.Settlement { PlayerId = playerId, DeploymentId = deployment.DeploymentId,
                 SettlementId = deployment.DeploymentId, Outcome = "Extracted", InventoryJson = RaidInventoryTransport.Encode(inventory.Graph),
                 Dust = inventory.Graph.Count("dust", true), Alloy = inventory.Graph.Count("alloy", true), Cells = inventory.Graph.Count("cells", true) };
             store.Settle(receipt);
             var saved = RaidInventoryTransport.Decode(store.Read().InventoryJson);
-            Check(saved.Find(lootId)?.FoundInRaid == true && (saved.MissionFirsts & MissionInventory.FirstRecovery) != 0 &&
+            Check(saved.Find(lootId)?.FoundInRaid == true && saved.Find(shieldId)?.ShieldCharge == 0 &&
+                saved.Find(shieldId).ShieldEnergy == 96 && (saved.MissionFirsts & MissionInventory.FirstRecovery) != 0 &&
                 saved.Count("dust") == 110 && !store.RaidActive, "corpse loot or first recovery reward was not settled");
         }
         using (var reopened = new OfflineProfileStore(path))
         {
             var saved = RaidInventoryTransport.Decode(reopened.Read().InventoryJson);
             Check(reopened.Read().PlayerId == playerId && saved.Find(lootId)?.FoundInRaid == true &&
+                saved.Find(shieldId)?.ShieldCharge == 0 && saved.Find(shieldId).ShieldEnergy == 96 &&
                 saved.Count("dust") == 110 && !reopened.RaidActive, "enemy loot did not survive reopening the profile");
         }
     }
