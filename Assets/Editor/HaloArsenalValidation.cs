@@ -58,6 +58,7 @@ public static class HaloArsenalValidation
     {
         var weapon=registry.GetWeaponData(entry.Id);
         Require(weapon && weapon.MagazineSize==entry.Capacity && weapon.EnergyPerRound==entry.Energy && weapon.ProjectileGhostPrefab!=null,entry.Code+" data/projectile");
+        Require(Mathf.Approximately(weapon.Damage,entry.Damage),entry.Code+" damage differs from the arsenal baseline");
         Require(weapon.Behavior==(entry.BlastRadius>0?ProjectileBehavior.AreaOfEffect:ProjectileBehavior.DirectDamage)&&
             (entry.BlastRadius==0||Mathf.Approximately(weapon.AoeRadius,entry.BlastRadius)),entry.Code+" blast configuration");
         Require(DollSingerWeapons.WeaponId(entry.Code)==entry.Id && InventoryCatalog.Get(entry.Code)?.Kind==ItemKind.LongGun,entry.Code+" mapping");
@@ -168,7 +169,7 @@ public static class HaloArsenalValidation
             {
                 var root=new GameObject(name);SceneManager.MoveGameObjectToScene(root,target);root.transform.position=position;root.layer=LayerMask.NameToLayer("ServerPlayer");
                 root.AddComponent<SphereCollider>().radius=.2f;var extra=new GameObject("second limb collider");extra.transform.SetParent(root.transform,false);extra.layer=root.layer;extra.AddComponent<SphereCollider>().radius=.12f;
-                var ghost=root.AddComponent<GhostGameObject>();var health=new PredictedPlayerGhost{CurrentHealth=200,MaxHealth=200};if(body)RaidHealth.Initialize(ref health);
+                var ghost=root.AddComponent<GhostGameObject>();var health=new PredictedPlayerGhost{CurrentHealth=1000,MaxHealth=1000};if(body)RaidHealth.Initialize(ref health);
                 var entity=manager.CreateEntity(typeof(PredictedPlayerGhost));manager.SetComponentData(entity,health);manager.AddComponentObject(entity,new GhostGameObjectLink{LinkedInstance=ghost});
                 if(owner.HasValue)manager.AddComponentData(entity,new GhostOwner{NetworkId=owner.Value});return entity;
             }
@@ -181,12 +182,12 @@ public static class HaloArsenalValidation
             Physics.SyncTransforms();scene.GetPhysicsScene().Simulate(.02f);other.GetPhysicsScene().Simulate(.02f);
             var weapon=registry.GetWeaponData(11);int count=ProjectileBlast.Apply(world,scene.GetPhysicsScene(),Vector3.zero,weapon.AoeRadius,weapon.Damage,1,123,out byte flags);
             Require(count==2&&flags==1,"AOE victim count/flags: "+count+" "+flags);
-            Require(Mathf.Approximately(manager.GetComponentData<PredictedPlayerGhost>(alien).CurrentHealth,104),"AOE alien damage or duplicate collider");
-            Require(Mathf.Approximately(manager.GetComponentData<PredictedPlayerGhost>(pmc).CurrentHealth,344),"AOE body damage conservation");
-            foreach(var entity in new[]{shooter,hidden,isolated})Require(manager.GetComponentData<PredictedPlayerGhost>(entity).CurrentHealth==200,"AOE immunity/occlusion/world isolation");
+            Require(Mathf.Approximately(manager.GetComponentData<PredictedPlayerGhost>(alien).CurrentHealth,1000-weapon.Damage),"AOE alien damage or duplicate collider");
+            Require(Mathf.Approximately(manager.GetComponentData<PredictedPlayerGhost>(pmc).CurrentHealth,440-weapon.Damage),"AOE body damage conservation");
+            foreach(var entity in new[]{shooter,hidden,isolated})Require(manager.GetComponentData<PredictedPlayerGhost>(entity).CurrentHealth==1000,"AOE immunity/occlusion/world isolation");
             ProjectileBlast.Apply(world,scene.GetPhysicsScene(),Vector3.zero,weapon.AoeRadius,2000,1,124,out flags);
             Require(flags==3&&manager.GetComponentData<PredictedPlayerGhost>(alien).CurrentHealth==0,"AOE lethal flags");
-            Require(ProjectileBlast.Apply(world,scene.GetPhysicsScene(),Vector3.zero,weapon.AoeRadius,96,1,125,out flags)==0,"AOE dead victims ignored");
+            Require(ProjectileBlast.Apply(world,scene.GetPhysicsScene(),Vector3.zero,weapon.AoeRadius,weapon.Damage,1,125,out flags)==0,"AOE dead victims ignored");
             var friendly=Victim("Protected squadmate",new Vector3(21,0,0),scene,6,true);
             manager.AddComponentData(friendly,new OnlineRaidMember {Team=42});
             var oldHit=manager.GetComponentData<PredictedPlayerGhost>(friendly);oldHit.LastHitTick=30;
@@ -206,7 +207,7 @@ public static class HaloArsenalValidation
             Require(count==1&&flags==1&&shield.CurrentHealth==440&&shield.ShieldCharge==60,
                 "Fully shielded blast should still report a real impact");
             RaycastHit[] hits=new RaycastHit[16];Require(Ballistics.Sweep(scene.GetPhysicsScene(),new Vector3(0,0,1.3f),new Vector3(0,0,2.1f),.055f,EnergyGrenadePhysics.HitMask,null,ref hits,out var hit)&&hit.collider.gameObject==wall,"Sundown swept collision with thin wall");
-            Report.Add("Actual ECS health + isolated PhysicsScene AOE: unowned alien damaged once despite two colliders, initialized PMC takes exactly 96 total damage, shooter immune, other PMC is damageable, wall occlusion and cross-scene isolation respected, lethal flags and dead victim filtering passed. Actual swept-radius collision hits thin wall.");
+            Report.Add("Actual ECS health + isolated PhysicsScene AOE: unowned alien damaged once despite two colliders, initialized PMC takes "+weapon.Damage+" total damage, shooter immune, other PMC is damageable, wall occlusion and cross-scene isolation respected, lethal flags and dead victim filtering passed. Actual swept-radius collision hits thin wall.");
         }
         finally
         {
