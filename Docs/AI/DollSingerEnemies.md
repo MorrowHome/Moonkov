@@ -71,6 +71,8 @@ reloading. A loaded secondary weapon remains an option when cells run out.
 
 尸体与地面目标的 36 项隔离检查通过，覆盖敌人拿取、旧版本竞争、空包回收、任务物品保护、护盾剩余资源和击杀后取回原物。游戏与编辑器程序集隔离编译通过；敌人的现场计时和墙体遮挡夹具尚未在编辑器执行，正式战场行为与大量地面包的性能仍需试玩。
 
+`Moonkov / AI / Check Ground Loot Conservation` 生成 500 组地面背包、物资和护盾，并执行搜索与死亡掉落。隔离运行完成 1350 次转移，3000 项检查通过；覆盖物品数量、来源、电池和护盾资源、旧版本及所有权。它不运行场景或敌人导航。
+
 敌人执行限时搜索时，会转向并低头看向当前箱子、抽屉或尸体；完成或中断后恢复其他目标方向。游戏与编辑器程序集隔离编译通过。实际敌人输入夹具已补充，尚未在编辑器运行；人物动作和观察角度仍需试玩。
 
 Three searched caches, critical health, exhausted ammunition or the departure time

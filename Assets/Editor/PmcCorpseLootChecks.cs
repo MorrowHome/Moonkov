@@ -4,7 +4,9 @@ using System.Linq;
 using Unity.Mathematics;
 using Unity.MP_FPS;
 using Unity.MP_FPS.Inventory;
+using UnityEditor;
 using UnityEngine;
+using BodyPart = Unity.MP_FPS.BodyPart;
 
 public static class PmcCorpseLootChecks
 {
@@ -23,6 +25,79 @@ public static class PmcCorpseLootChecks
             MissionWorldId = Guid.NewGuid().ToString("D"), MissionOperationId = Guid.NewGuid().ToString("D"), MissionContentVersion = 1 };
         if (!graph.FindSpace(item, parent, out string region, out int x, out int y)) throw new InvalidOperationException("Mission fixture has no space");
         item.Parent = parent; item.Region = region; item.X = x; item.Y = y; graph.Items.Add(item); return item;
+    }
+
+    private static Dictionary<string, int> Counts(params InventoryGraph[] graphs) => graphs.SelectMany(graph => graph.Items)
+        .Where(item => InventoryCatalog.Get(item.Code).Kind != ItemKind.Root)
+        .GroupBy(item => item.Code + ":" + item.FoundInRaid + ":" + item.EmergencySupply)
+        .ToDictionary(group => group.Key, group => group.Sum(item => item.Quantity));
+    private static bool EqualCounts(Dictionary<string, int> expected, params InventoryGraph[] graphs)
+    {
+        var actual = Counts(graphs);
+        return expected.Count == actual.Count && expected.All(pair => actual.TryGetValue(pair.Key, out int count) && count == pair.Value);
+    }
+    private static float ShieldResources(params InventoryGraph[] graphs) => graphs.SelectMany(graph => graph.Items)
+        .Where(item => item.Code == EnergyShieldEquipment.ShieldCode)
+        .Sum(item => (item.ShieldCharge == -1 ? 100 : item.ShieldCharge) + (item.ShieldEnergy == -1 ? 100 : item.ShieldEnergy));
+
+    [MenuItem("Moonkov/AI/Check Ground Loot Conservation")]
+    public static void RunStressFromEditor() => Debug.Log(RunStress());
+
+    public static string RunStress()
+    {
+        s_Checks = 0; int transfers = 0;
+        string[] codes = { "cells", "medkit", "ration", "water", "dust", "alloy", "circuit_board", "data_drive" };
+        for (int seed = 0; seed < 500; seed++)
+        {
+            var random = new System.Random(seed);
+            var owner = InventoryGraph.Create(false); var npc = InventoryGraph.Create(false);
+            string pack = owner.Equipped("Backpack").Id;
+            int supplyCount = 1 + random.Next(8);
+            for (int n = 0; n < supplyCount; n++)
+            {
+                string code = codes[random.Next(codes.Length)];
+                int amount = Math.Min(InventoryCatalog.Get(code).MaxStack, 1 + random.Next(3));
+                int charge = code == "cells" ? 1 + random.Next(100) : -1;
+                owner.AddSupply(code, amount, pack, random.Next(2) == 0, emergencySupply: random.Next(2) == 0, cellCharge: charge);
+            }
+            var shield = new InventoryItem { Id = Guid.NewGuid().ToString("D"), Code = EnergyShieldEquipment.ShieldCode,
+                Parent = InventoryCatalog.Equipment, Region = "Shield", FoundInRaid = true,
+                ShieldCharge = random.Next(101), ShieldEnergy = random.Next(101) };
+            owner.Items.Add(shield);
+            Check(owner.Validate() == InventoryError.None && npc.Validate() == InventoryError.None, "generated inventory " + seed);
+            var before = Counts(owner, npc);
+            int energy = owner.CellEnergy() + npc.CellEnergy();
+            float shieldBefore = ShieldResources(owner, npc);
+            string itemId = seed % 2 == 0 ? pack : shield.Id;
+            var containers = new RaidLootContainers(); containers.Initialize(1);
+            Check(containers.DropItem(owner, itemId, owner.Version, new float3(1, 0, 0), 1, out int id) == InventoryError.None,
+                "generated ground drop " + seed);
+            var ground = containers.Containers[id];
+            Check(PmcLootRules.NearbyLoot(containers, Vector3.zero, null).Contains(id), "generated ground target " + seed);
+            int oldVersion = ground.Version;
+            int count = PmcLootRules.TakeAvailable(npc, ground, includeNested: true, equipShield: true); transfers += count;
+            var health = new PredictedPlayerGhost(); RaidHealth.Initialize(ref health);
+            PmcProtectionLoadout.BindLootedShield(ref health, npc);
+            Check(npc.Validate() == InventoryError.None && owner.Validate() == InventoryError.None && ground.Validate() == InventoryError.None &&
+                npc.CarriedWeight <= InventoryCatalog.CarryWeightLimit + .001f && npc.CellEnergy() + owner.CellEnergy() + ground.CellEnergy() == energy &&
+                Math.Abs(ShieldResources(npc, owner, ground) - shieldBefore) < .01f && EqualCounts(before, npc, owner, ground),
+                "ground search conserves ownership and resources " + seed);
+            if (count > 0)
+            {
+                var player = InventoryGraph.Create(false);
+                var stale = new InventoryCommand { Operation = InventoryOperation.Move, ExpectedVersion = player.Version, ItemId = itemId,
+                    Parent = InventoryCatalog.Pockets, Region = "1" };
+                Check(LootInventoryExchange.TryApply(player, ground, stale, oldVersion) == InventoryError.Stale,
+                    "stale ground request " + seed);
+            }
+            EnergyShieldEquipment.Flush(ref health, npc);
+            var corpse = LootInventoryExchange.DropOnDeath(npc);
+            Check(npc.Validate() == InventoryError.None && corpse.Validate() == InventoryError.None &&
+                npc.CellEnergy() + owner.CellEnergy() + ground.CellEnergy() + corpse.CellEnergy() == energy &&
+                Math.Abs(ShieldResources(npc, owner, ground, corpse) - shieldBefore) < .01f && EqualCounts(before, npc, owner, ground, corpse),
+                "death conserves ownership and resources " + seed);
+        }
+        return "PASS " + s_Checks + " checks across 500 generated ground-loot and corpse cycles; transfers=" + transfers;
     }
 
     public static string Run()
