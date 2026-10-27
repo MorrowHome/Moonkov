@@ -369,17 +369,26 @@ namespace Unity.MP_FPS.Inventory
                 (long)target.Quantity + count <= definition.MaxStack && source.FoundInRaid == target.FoundInRaid &&
                 source.EmergencySupply == target.EmergencySupply && BatteryEnergy.CanMerge(source, target, count);
         }
-        public InventoryCommand PlanQuickMove(string itemId, string parent)
+        public InventoryCommand PlanQuickMove(string itemId, string parent, bool mergeOnly = false, bool allowPartialMerge = false)
         {
             var item = Find(itemId); var definition = InventoryCatalog.Get(item?.Code);
             if (item == null || definition == null || definition.Kind == ItemKind.Root) return null;
             if (!definition.Container && definition.MaxStack > 1)
                 foreach (var stack in Children(parent))
-                    if (CanMergeStacks(item, stack, item.Quantity))
-                        return new InventoryCommand { Operation = InventoryOperation.Merge, ItemId = item.Id, TargetId = stack.Id };
-            return FindSpace(item, parent, out var region, out var x, out var y)
-                ? new InventoryCommand { ItemId = item.Id, Parent = parent, Region = region, X = x, Y = y, Rotated = item.Rotated }
-                : null;
+                {
+                    int count = allowPartialMerge ? Math.Min(item.Quantity, definition.MaxStack - stack.Quantity) : item.Quantity;
+                    if (CanMergeStacks(item, stack, count))
+                        return new InventoryCommand { Operation = InventoryOperation.Merge, ItemId = item.Id, TargetId = stack.Id, Quantity = count };
+                }
+            if (mergeOnly) return null;
+            var placement = item;
+            if (!FindSpace(placement, parent, out var region, out var x, out var y))
+            {
+                if (definition.Width == definition.Height) return null;
+                placement = item.Clone(); placement.Rotated = !item.Rotated;
+                if (!FindSpace(placement, parent, out region, out x, out y)) return null;
+            }
+            return new InventoryCommand { ItemId = item.Id, Parent = parent, Region = region, X = x, Y = y, Rotated = placement.Rotated };
         }
         // Shortcut transfer never searches nested bags. Manual placement still can.
         public IEnumerable<string> QuickTransferContainers()

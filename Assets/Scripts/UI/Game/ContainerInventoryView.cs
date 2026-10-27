@@ -41,6 +41,14 @@ namespace Unity.MP_FPS.Client
         private InventoryGraph m_Graph;
         private Drag m_Drag;
         private bool m_Busy, m_Disposed, m_Rebuilding;
+        private sealed class QuickTransferIntent
+        {
+            public string ItemId;
+            public bool FromCarried;
+        }
+        private readonly Queue<QuickTransferIntent> m_QuickTransfers = new Queue<QuickTransferIntent>();
+        private IVisualElementScheduledItem m_QuickTransferPump;
+        private bool m_ProcessingQuickTransfer, m_QuickTransferSpaceBlocked;
         private string m_ReadOnlyReason;
         private string m_SelectedItemId;
         private int m_LootId=-1;
@@ -61,6 +69,7 @@ namespace Unity.MP_FPS.Client
         public void SetReadOnly(string reason)
         {
             if (m_ReadOnlyReason == reason) return;
+            if (reason != null) ClearQuickTransfers();
             CancelDrag(); m_ReadOnlyReason = reason;
             MoonkovLocalization.Set(m_Message, reason ?? "");
             RefreshWorkshop();
@@ -181,6 +190,7 @@ namespace Unity.MP_FPS.Client
             int corpseCharacterIndex=-1, IReadOnlyDictionary<string,string> corpseEquipmentSlots=null)
         {
             if (m_Disposed) return;
+            if (graph == null || m_LootId != lootId || operationCompleted && message != null) ClearQuickTransfers();
             if (OperationAudioEnabled && m_Busy && operationCompleted)
             {
                 if (message != null) MoonkovAudio.Error();
@@ -206,6 +216,13 @@ namespace Unity.MP_FPS.Client
             else if (!m_Busy && graph != null) MoonkovLocalization.Set(m_Message, m_ReadOnlyReason ?? "");
             if (operationCompleted) m_WorkshopMessage = message;
             if (workshopChanged) RefreshWorkshop();
+            if (operationCompleted && !m_Busy && m_QuickTransfers.Count > 0)
+            {
+                // Continue after the HUD has finished processing this receipt. It may
+                // present the same snapshot twice, or close access in the same update.
+                m_QuickTransferPump?.Pause();
+                m_QuickTransferPump = m_Root.schedule.Execute(ProcessQuickTransfers);
+            }
         }
         public void Show()
         {
@@ -217,6 +234,7 @@ namespace Unity.MP_FPS.Client
         }
         public void Suspend()
         {
+            ClearQuickTransfers();
             m_PortraitShowing = false;
             m_PortraitTimer?.Pause();
             ReleaseWorkshop();
@@ -442,11 +460,67 @@ namespace Unity.MP_FPS.Client
         }
         private void QuickTransfer(InventoryItem item)
         {
+            if (item == null || m_Graph == null || m_Disposed) return;
+            if (!m_Stash && m_Graph.Find(LootInventoryExchange.Root) != null)
+            {
+                if (m_ReadOnlyReason != null) { MoonkovLocalization.Set(m_Message, m_ReadOnlyReason); return; }
+                if (m_QuickTransfers.Any(intent => intent.ItemId == item.Id)) return;
+                if (m_QuickTransfers.Count >= 32) return;
+                m_QuickTransfers.Enqueue(new QuickTransferIntent { ItemId = item.Id, FromCarried = m_Graph.Carried(item) });
+                if (m_Busy) MoonkovLocalization.Set(m_Message, "正在收纳 {0} 项", m_QuickTransfers.Count);
+                ProcessQuickTransfers();
+                return;
+            }
             if(m_Graph.Find(LootInventoryExchange.Root)!=null && m_Graph.Carried(item))
             {if(!AutoMove(item,LootInventoryExchange.Root))MoonkovLocalization.Set(m_Message, "No compatible free space in this cache.");return;}
             if (m_Stash && m_Graph.Carried(item)) { if (!AutoMove(item,"stash")) MoonkovLocalization.Set(m_Message, "No free space in storage."); return; }
             foreach (string parent in m_Graph.QuickTransferContainers()) if (parent!=item.Parent && parent!=item.Id && AutoMove(item,parent)) return;
             MoonkovLocalization.Set(m_Message, "No compatible free space.");
+        }
+        private void ClearQuickTransfers()
+        {
+            m_QuickTransferPump?.Pause();
+            m_QuickTransferPump = null;
+            m_QuickTransfers.Clear();
+            m_QuickTransferSpaceBlocked = false;
+        }
+        private void ProcessQuickTransfers()
+        {
+            if (m_Busy || m_Disposed) return;
+            if (m_Graph == null || m_ReadOnlyReason != null || m_Graph.Find(LootInventoryExchange.Root) == null)
+            { ClearQuickTransfers(); return; }
+            while (m_QuickTransfers.Count > 0)
+            {
+                var intent = m_QuickTransfers.Peek();
+                var item = m_Graph.Find(intent.ItemId);
+                // Keep the original direction. An item already taken must never be
+                // sent back on the next receipt, even after a partial stack merge.
+                if (item == null || m_Graph.Carried(item) != intent.FromCarried)
+                { m_QuickTransfers.Dequeue(); continue; }
+                var parents = intent.FromCarried ? new[] { LootInventoryExchange.Root } : m_Graph.QuickTransferContainers().ToArray();
+                InventoryCommand command = null;
+                for (int pass = 0; pass < 2 && command == null; pass++)
+                    foreach (string parent in parents)
+                    {
+                        if (parent == item.Parent || parent == item.Id) continue;
+                        command = m_Graph.PlanQuickMove(item.Id, parent, mergeOnly: pass == 0, allowPartialMerge: true);
+                        if (command != null) break;
+                    }
+                if (command == null)
+                {
+                    m_QuickTransfers.Dequeue(); m_QuickTransferSpaceBlocked = true;
+                    continue;
+                }
+                m_ProcessingQuickTransfer = true;
+                try { Command(command); }
+                finally { m_ProcessingQuickTransfer = false; }
+                return;
+            }
+            if (m_QuickTransferSpaceBlocked)
+            {
+                m_QuickTransferSpaceBlocked = false; MoonkovAudio.Error();
+                MoonkovLocalization.Set(m_Message, "空间不足，未装下的物品留在原处。");
+            }
         }
         private bool AutoMove(InventoryItem item, string parent)
         {
@@ -457,10 +531,12 @@ namespace Unity.MP_FPS.Client
         private void Command(InventoryCommand command)
         {
             if (m_Busy || m_Graph==null) return;
+            if (!m_ProcessingQuickTransfer) ClearQuickTransfers();
             if (m_ReadOnlyReason != null) { MoonkovLocalization.Set(m_Message, m_ReadOnlyReason); return; }
             command.ExpectedVersion=m_Graph.Version;
             var error=m_Graph.Clone().TryApply(command);
-            if (error!=InventoryError.None) { MoonkovAudio.Error(); MoonkovLocalization.Set(m_Message, "Move blocked: {0}", error.ToString()); return; }
+            if (error!=InventoryError.None) { ClearQuickTransfers(); MoonkovAudio.Error(); MoonkovLocalization.Set(m_Message,
+                error == InventoryError.Overweight ? "已达携带重量上限，物品留在原处。" : "Move blocked: {0}", error.ToString()); return; }
             m_Busy=true; MoonkovLocalization.Set(m_Message, "UPDATING INVENTORY…"); RefreshWorkshop(); m_Send(command);
         }
         public void CancelDrag() => m_Drag?.Cancel();
