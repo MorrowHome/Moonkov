@@ -12,11 +12,17 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
 public static partial class AlienEnemyChecks
 {
     private delegate void AlarmHandler(ref ServerGameSystem system, ref SystemState state, RaidMissionWorld context, double now);
+    private delegate void TrapAlarmHandler(ref ServerGameSystem system, ref SystemState state, TacticalServerWorld world,
+        TacticalServerWorld.Object alarm, double now);
+
+    [MenuItem("Moonkov/AI/Check Machine and Trap Hearing")]
+    public static void RunMissionAlarmFromEditor() => Debug.Log(RunMissionAlarmContract());
 
     public static string RunMissionAlarmContract()
     {
@@ -193,7 +199,22 @@ public static partial class AlienEnemyChecks
             var archiveLate = MakeBrain(archivePosition + Vector3.forward * 8);
             emit(ref server, ref state, context, 102.4);
             Check(archiveLate.MissionAlarmId == null, "The archive emitted after downloading completed.");
-            return "PASS " + checks + " machine alarm checks: real process, server dispatch, NPC decisions, movement, occlusion and stop.";
+            var trapPosition = origin + new Vector3(-12, 0, -12);
+            var trapAlien = Alien(holder.transform, world, profile,
+                trapPosition + Vector3.forward * 8 + Vector3.up * (.56f * profile.Scale), MultiplayerRole.Server, -29002);
+            manager.AddComponent<Simulate>(trapAlien.GhostGameObject.LinkedEntity);
+            var emitTrap = (TrapAlarmHandler)typeof(ServerGameSystem)
+                .GetMethod("EmitTacticalAlarm", BindingFlags.Instance | BindingFlags.NonPublic).CreateDelegate(typeof(TrapAlarmHandler));
+            var tactical = new TacticalServerWorld();
+            var alarm = new TacticalServerWorld.Object { Id = 27, Position = trapPosition, Scene = holder.scene.GetPhysicsScene(),
+                Phase = TacticalWorldPhase.Alarm };
+            Vector3 alienStart = trapAlien.transform.position;
+            emitTrap(ref server, ref state, tactical, alarm, 110);
+            Step(trapAlien, 45);
+            Check(trapAlien.Action == AlienAction.Search && trapAlien.Target == Entity.Null && trapAlien.AttackCount == 0 &&
+                Vector3.Distance(trapAlien.transform.position, trapPosition) < Vector3.Distance(alienStart, trapPosition) - .1f,
+                "A nearby alien did not investigate the trap alarm without a fabricated target.");
+            return "PASS " + checks + " machine and trap hearing checks: server dispatch, NPC decisions, movement, occlusion and stop.";
         }
         finally
         {

@@ -7,6 +7,7 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 using Unity.MP_FPS.Inventory;
+using Unity.MP_FPS.Missions;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -51,6 +52,28 @@ namespace Unity.MP_FPS
         public uint Epoch=1,NextId,Sequence; public object Map; public double NextOwnerSnapshot,Now;
         public RaycastHit[] Hits=new RaycastHit[32]; public readonly Collider[] Overlaps=new Collider[32];
     }
+
+    // The alarm is a location clue. Occlusion shortens its useful hearing range;
+    // it never reveals who triggered the trap.
+    public static class TacticalAlarmHearing
+    {
+        public const float Range = 35;
+        private static class PhysicsMask { public static readonly int World = LayerMask.GetMask("Default", "Ground"); }
+        public static string EventId(uint epoch, uint id) => id == 0 ? null : $"trap/{epoch}/{id}";
+        public static bool WithinRange(float squaredDistance, bool obstructed) =>
+            MissionMachineSounds.WithinRange(squaredDistance, Range, obstructed);
+        public static bool Audible(PhysicsScene scene, Vector3 source, Vector3 listener)
+        {
+            if (!scene.IsValid()) return false;
+            Vector3 delta = listener - source;
+            float distanceSquared = delta.sqrMagnitude;
+            if (!WithinRange(distanceSquared, false)) return false;
+            if (WithinRange(distanceSquared, true)) return true;
+            float distance = Mathf.Sqrt(distanceSquared);
+            return !scene.Raycast(source, delta / distance, out _, distance, PhysicsMask.World, QueryTriggerInteraction.Ignore);
+        }
+    }
+
     public partial struct ServerGameSystem
     {
 #if UNITY_EDITOR
@@ -432,6 +455,11 @@ namespace Unity.MP_FPS
                     obj.Phase=obj.Definition.Kind==TacticalItemKind.AlertTrap ? TacticalWorldPhase.Alarm :
                         obj.Definition.Kind==TacticalItemKind.WireTrap ? TacticalWorldPhase.Wire : TacticalWorldPhase.Poison;
                     obj.Until=now+(obj.Phase==TacticalWorldPhase.Alarm ? 8 : obj.Phase==TacticalWorldPhase.Wire ? 45 : 30);obj.NextSnapshot=0;
+                    if(obj.Phase==TacticalWorldPhase.Alarm)
+                    {
+                        EmitTacticalAlarm(ref state,world,obj,now);
+                        break;
+                    }
                 }
                 // Traps can still be triggered by everyone. Team protection only
                 // stops the harmful status, preserving choke's shared utility/cough.
@@ -444,6 +472,36 @@ namespace Unity.MP_FPS
                 {status.Poison=now+2;status.PoisonOwner=obj.Owner;status.PoisonSource=obj.Source;}
                 else if(obj.Phase==TacticalWorldPhase.Wire)
                 {status.Wire=now+.5;TacticalRefreshBleed(status,now+TacticalItemRules.BleedDuration,obj.Owner,obj.Source);}
+            }
+        }
+
+        private void EmitTacticalAlarm(ref SystemState state, TacticalServerWorld world, TacticalServerWorld.Object alarm, double now)
+        {
+            if (ClashEnabled(ref state) || !alarm.Scene.IsValid()) return;
+            string clue = TacticalAlarmHearing.EventId(world.Epoch, alarm.Id);
+            if (clue == null) return;
+            Vector3 source = alarm.Position + Vector3.up;
+            foreach (var (pose, health, entity) in SystemAPI.Query<RefRO<LocalTransform>, RefRO<PredictedPlayerGhost>>()
+                         .WithAll<DollSingerEnemy, GhostGameObjectLink, Simulate>().WithNone<ClashBot>().WithEntityAccess())
+            {
+                if (health.ValueRO.CurrentHealth <= 0 || !state.EntityManager.HasComponent<DollSingerEnemyBrain>(entity)) continue;
+                var link = state.EntityManager.GetComponentObject<GhostGameObjectLink>(entity);
+                if (!link.LinkedInstance || link.LinkedInstance.gameObject.scene.GetPhysicsScene() != alarm.Scene) continue;
+                var brain = state.EntityManager.GetComponentObject<DollSingerEnemyBrain>(entity);
+                if (brain.Target != Entity.Null || brain.Leaving ||
+                    !TacticalAlarmHearing.Audible(alarm.Scene, source, (Vector3)pose.ValueRO.Position + Vector3.up * 1.2f)) continue;
+                DollSingerEnemySystem.HearMissionAlarm(brain, clue, alarm.Position, now);
+            }
+            foreach (var (pose, health, entity) in SystemAPI.Query<RefRO<LocalTransform>, RefRO<PredictedPlayerGhost>>()
+                         .WithAll<ProceduralAlienEnemy.State, GhostGameObjectLink, Simulate>().WithEntityAccess())
+            {
+                if (health.ValueRO.CurrentHealth <= 0 ||
+                    !TacticalAlarmHearing.WithinRange(((Vector3)pose.ValueRO.Position - source).sqrMagnitude, false)) continue;
+                var link = state.EntityManager.GetComponentObject<GhostGameObjectLink>(entity);
+                if (!link.LinkedInstance || link.LinkedInstance.gameObject.scene.GetPhysicsScene() != alarm.Scene) continue;
+                var alien = link.LinkedInstance.GetComponent<ProceduralAlienEnemy>();
+                if (alien && TacticalAlarmHearing.Audible(alarm.Scene, source, alien.AimPoint))
+                    alien.HearMissionAlarm(clue, alarm.Position);
             }
         }
         private void TacticalTickStatuses(ref SystemState state,TacticalServerWorld world,double now,float dt,uint tick)

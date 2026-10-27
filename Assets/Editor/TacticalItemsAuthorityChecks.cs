@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using BodyPart = Unity.MP_FPS.BodyPart;
 using Unity.Collections;
 using Unity.Core;
@@ -223,7 +224,45 @@ public static class TacticalItemsAuthorityChecks
             Clear();string trap=Add("alert_trip_mine",2);Request(TacticalItemAction.Use,trap);Check(inventory.TacticalPending,"Ground aim accepted");Wait(3.2f);
             Check(Data().Objects.Count==1 && Data().Objects[0].Phase==TacticalWorldPhase.Armed,"Trap really deployed");var deployed=Data().Objects[0];
             root.transform.position=deployed.Position+Vector3.up*2.5f;Wait(1.2f);Check(deployed.Phase==TacticalWorldPhase.Armed,"Upper floor cannot trigger");
+            var alarmListeners=new List<(Entity entity,GameObject root)>();
+            DollSingerEnemyBrain Listener(Vector3 position, bool leaving=false, bool clash=false, bool dead=false, bool contact=false)
+            {
+                var objectRoot=new GameObject("Temporary alarm listener");SceneManager.MoveGameObjectToScene(objectRoot,scene);
+                objectRoot.transform.position=position;var link=objectRoot.AddComponent<GhostGameObject>();
+                var entity=em.CreateEntity(typeof(DollSingerEnemy),typeof(Simulate),typeof(LocalTransform),typeof(PredictedPlayerGhost));
+                var listenerHealth=new PredictedPlayerGhost();RaidHealth.Initialize(ref listenerHealth);if(dead)listenerHealth.CurrentHealth=0;
+                em.SetComponentData(entity,listenerHealth);em.SetComponentData(entity,LocalTransform.FromPosition(position));
+                em.AddComponentObject(entity,new GhostGameObjectLink {LinkedInstance=link});
+                var brain=new DollSingerEnemyBrain {Leaving=leaving,Target=contact ? player : Entity.Null,Action=PmcAction.Scavenge};
+                if(clash){em.AddComponent<ClashBot>(entity);brain.ClashParticipantId=1;}
+                em.AddComponentObject(entity,brain);alarmListeners.Add((entity,objectRoot));return brain;
+            }
+            var nearListener=Listener(deployed.Position+Vector3.forward*8);
+            var farListener=Listener(deployed.Position+Vector3.forward*40);
+            var blockedListener=Listener(deployed.Position+Vector3.right*30);
+            var leavingListener=Listener(deployed.Position+Vector3.forward*7,leaving:true);
+            var clashListener=Listener(deployed.Position+Vector3.forward*7,clash:true);
+            var deadListener=Listener(deployed.Position+Vector3.forward*7,dead:true);
+            var fightingListener=Listener(deployed.Position+Vector3.forward*7,contact:true);
+            var soundSource=deployed.Position+Vector3.up;
+            var soundWall=GameObject.CreatePrimitive(PrimitiveType.Cube);SceneManager.MoveGameObjectToScene(soundWall,scene);
+            soundWall.transform.position=soundSource+Vector3.right*12.5f;soundWall.transform.localScale=new Vector3(.2f,4,5);
             root.transform.position=deployed.Position;Tick();Check(deployed.Phase==TacticalWorldPhase.Alarm,"Owner triggers own alarm");
+            Check(nearListener.MissionAlarmId==TacticalAlarmHearing.EventId(Data().Epoch,deployed.Id) &&
+                nearListener.MissionAlarmPosition==deployed.Position && nearListener.Target==Entity.Null && !nearListener.Visible,
+                "The real trap did not send an anonymous location clue to a nearby PMC");
+            Check(farListener.MissionAlarmId==null && blockedListener.MissionAlarmId==null && leavingListener.MissionAlarmId==null &&
+                clashListener.MissionAlarmId==null && deadListener.MissionAlarmId==null && fightingListener.MissionAlarmId==null,
+                "The alarm disturbed blocked, distant, leaving, bounty, dead or fighting actors");
+            double clueUntil=nearListener.MissionAlarmUntil;Tick();
+            Check(nearListener.MissionAlarmUntil==clueUntil,"A triggered alarm repeated its clue every server tick");
+            Physics.SyncTransforms();
+            Check(!TacticalAlarmHearing.Audible(scene.GetPhysicsScene(),soundSource,soundSource+Vector3.right*30) &&
+                TacticalAlarmHearing.Audible(scene.GetPhysicsScene(),soundSource,soundSource+Vector3.right*18) &&
+                !TacticalAlarmHearing.Audible(scene.GetPhysicsScene(),soundSource,soundSource+Vector3.right*36),
+                "The alarm did not respect the wall-attenuated hearing range");
+            UnityEngine.Object.DestroyImmediate(soundWall);
+            foreach(var listener in alarmListeners){em.DestroyEntity(listener.entity);UnityEngine.Object.DestroyImmediate(listener.root);}
             Clear();root.transform.position=Vector3.zero;
             var data=Data();var fireDef=TacticalItemRules.Find("fire_bomb");
             var fire=new TacticalServerWorld.Object {Id=50,Owner=7,OwnerPlayer=player,Definition=fireDef,Phase=TacticalWorldPhase.Fire,

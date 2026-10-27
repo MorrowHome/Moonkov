@@ -11,6 +11,23 @@ namespace Unity.MP_FPS
     public enum PmcAction { Scavenge, Extract, Investigate, Search, Engage, Cover, Flank, Retreat, Reload, HoldAngle, Heal, ClashObjective, EvadeGrenade, EvadeHazard }
     public enum PmcCoverPhase { Approaching, Settling, Advancing, Holding, Returning }
 
+    // A sound identifies a place, not an opponent or a firing solution.
+    public static class PmcSoundClue
+    {
+        public static bool Hear(DollSingerEnemyBrain brain, string id, Vector3 position, double now)
+        {
+            if (brain == null || string.IsNullOrEmpty(id) || brain.IsClashBot || brain.Leaving ||
+                brain.Target != Entity.Null || brain.MissionAlarmId == id) return false;
+            brain.MissionAlarmId = id;
+            brain.MissionAlarmPosition = position;
+            brain.MissionAlarmHeardAt = now;
+            brain.MissionAlarmUntil = now + 30;
+            brain.NextDecision = 0;
+            if (brain.Action == PmcAction.Scavenge) brain.CommitUntil = 0;
+            return true;
+        }
+    }
+
     // The observer only remembers positions it could actually see. Turning away
     // does not erase the clue before detonation or track it through walls.
     public struct PmcGrenadeAwareness

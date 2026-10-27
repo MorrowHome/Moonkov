@@ -84,7 +84,7 @@ namespace Unity.MP_FPS
                         "finish reaching cover or returning from a short peek");
             }
             else if (!brain.IsClashBot && !brain.Leaving && now < brain.MissionAlarmUntil)
-                Consider(PmcAction.Investigate, 35, "investigate the operating sampler");
+                Consider(PmcAction.Investigate, 35, "investigate the sound source");
 
             // Withdrawal stops pursuing stale contacts. A wounded raider can actually leave
             // once sight is broken, instead of being stuck in Retreat until all memory expires.

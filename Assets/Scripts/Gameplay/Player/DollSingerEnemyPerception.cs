@@ -7,19 +7,8 @@ namespace Unity.MP_FPS
 {
     public partial class DollSingerEnemySystem
     {
-        // A machine is a location clue, not an identified opponent or a firing solution.
-        public static bool HearMissionAlarm(DollSingerEnemyBrain brain, string operationId, Vector3 position, double now)
-        {
-            if (brain == null || string.IsNullOrEmpty(operationId) || brain.IsClashBot || brain.Leaving ||
-                brain.Target != Entity.Null || brain.MissionAlarmId == operationId) return false;
-            brain.MissionAlarmId = operationId;
-            brain.MissionAlarmPosition = position;
-            brain.MissionAlarmHeardAt = now;
-            brain.MissionAlarmUntil = now + 30;
-            brain.NextDecision = 0;
-            if (brain.Action == PmcAction.Scavenge) brain.CommitUntil = 0;
-            return true;
-        }
+        public static bool HearMissionAlarm(DollSingerEnemyBrain brain, string operationId, Vector3 position, double now) =>
+            PmcSoundClue.Hear(brain, operationId, position, now);
 
         private void Sense(DollSingerEnemyBrain brain, Transform root, Vector3 eye, float range, double now)
         {
