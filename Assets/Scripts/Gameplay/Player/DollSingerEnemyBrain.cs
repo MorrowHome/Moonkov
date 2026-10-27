@@ -180,6 +180,19 @@ namespace Unity.MP_FPS
             EnergyShieldEquipment.Synchronize(ref health, inventory);
             if (!health.HeadDomeEquipped) health.Oxygen = oxygen;
         }
+
+        public static bool CanUseLootedShield(InventoryItem item) => item?.Code == EnergyShieldEquipment.ShieldCode &&
+            (item.ShieldCharge == -1 || item.ShieldCharge > 0 || item.ShieldEnergy == -1 || item.ShieldEnergy > 0);
+
+        // Binding a found item preserves its stored resources; it does not create
+        // a new generator or refill it. Called immediately after the loot transfer.
+        public static bool BindLootedShield(ref PredictedPlayerGhost health, InventoryGraph inventory)
+        {
+            if (health.CurrentHealth <= 0 || health.ShieldEquipped ||
+                !CanUseLootedShield(inventory?.Equipped("Shield"))) return false;
+            Initialize(ref health, inventory);
+            return health.ShieldEquipped;
+        }
     }
 
     // An inaccessible backpack cell cannot be re-attempted every frame while

@@ -55,7 +55,7 @@ namespace Unity.MP_FPS
                 .ThenBy(pair => pair.Key).Take(4).Select(pair => pair.Key).ToArray();
         }
 
-        private static float Value(InventoryItem item, bool needCells, bool needMedicine)
+        private static float Value(InventoryItem item, bool needCells, bool needMedicine, bool needShield)
         {
             var def = InventoryCatalog.Get(item?.Code);
             if (def == null || def.Kind == ItemKind.Root || MissionInventory.IsArtifact(item.Code)) return 0;
@@ -64,6 +64,7 @@ namespace Unity.MP_FPS
             float priority = price * item.Quantity / (float)Math.Max(1, def.Width * def.Height);
             if (def.Kind == ItemKind.Cell && needCells) priority += 1000;
             if (def.Kind == ItemKind.Medical && needMedicine) priority += 1000;
+            if (needShield && PmcProtectionLoadout.CanUseLootedShield(item)) priority += 900;
             return priority;
         }
 
@@ -85,11 +86,12 @@ namespace Unity.MP_FPS
 
         // All moves use the same versioned transaction as a player. The candidate list
         // holds IDs because a successful transaction replaces both inventory trees.
-        public static int TakeAvailable(InventoryGraph inventory, InventoryGraph cache, bool includeNested = false)
+        public static int TakeAvailable(InventoryGraph inventory, InventoryGraph cache, bool includeNested = false, bool equipShield = false)
         {
             if (inventory == null || cache == null || cache.Find(LootInventoryExchange.Root) == null) return 0;
             bool needCells = inventory.CellEnergy(accessibleOnly: true) < BatteryEnergy.Capacity * 2;
             bool needMedicine = inventory.Items.Where(inventory.MedicalAccessible).Sum(i => i.Quantity) < 2;
+            bool needShield = equipShield && inventory.Equipped("Shield") == null;
             var occupiedContainers = new HashSet<string>(cache.Items.Select(i => i.Parent));
             var byId = includeNested ? cache.Items.ToDictionary(i => i.Id) : null;
             bool InLootTree(InventoryItem item)
@@ -104,7 +106,7 @@ namespace Unity.MP_FPS
                 return false;
             }
             var candidates = cache.Items.Where(i => InLootTree(i) && !occupiedContainers.Contains(i.Id))
-                .Select(i => (item: i, value: Value(i, needCells, needMedicine))).Where(candidate => candidate.value > 0)
+                .Select(i => (item: i, value: Value(i, needCells, needMedicine, needShield))).Where(candidate => candidate.value > 0)
                 .OrderByDescending(candidate => candidate.value).Select(candidate => candidate.item.Id).ToArray();
             int transfers = 0;
             foreach (string id in candidates)
@@ -134,6 +136,13 @@ namespace Unity.MP_FPS
                 if (source == null) continue;
                 int amount = WeightAllowance(inventory, def, source.Quantity);
                 if (amount <= 0) continue;
+                if (equipShield && inventory.Equipped("Shield") == null && PmcProtectionLoadout.CanUseLootedShield(source))
+                {
+                    var equip = new InventoryCommand { Operation = InventoryOperation.Move, ExpectedVersion = inventory.Version,
+                        ItemId = id, Parent = InventoryCatalog.Equipment, Region = "Shield" };
+                    if (LootInventoryExchange.TryApply(inventory, cache, equip, cache.Version) == InventoryError.None)
+                    { transfers++; continue; }
+                }
                 foreach (string parent in destinations)
                 {
                     bool moved = false;
@@ -265,7 +274,11 @@ namespace Unity.MP_FPS
                 }
                 if (now < brain.LootUntil) return;
                 if (loot != null && loot.Containers.TryGetValue(brain.Cache, out var cache))
-                    PmcLootRules.TakeAvailable(brain.Inventory, cache, includeNested: corpse);
+                {
+                    bool equipShield = !TutorialRuntime.Enabled(EntityManager);
+                    PmcLootRules.TakeAvailable(brain.Inventory, cache, includeNested: corpse, equipShield: equipShield);
+                    if (equipShield) PmcProtectionLoadout.BindLootedShield(ref health, brain.Inventory);
+                }
                 if (!drawer || ++brain.DrawersSearched % 3 == 0) brain.LootedCaches++;
                 brain.VisitedCaches.Add(brain.Cache);
                 brain.Cache = -1;

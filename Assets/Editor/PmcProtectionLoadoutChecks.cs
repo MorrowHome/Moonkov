@@ -88,7 +88,104 @@ public static class PmcProtectionLoadoutChecks
         Check(decoded.Equipped("Shield")?.Id == id && Near(decoded.Find(id).ShieldCharge, 8) &&
             Near(decoded.Find(id).ShieldEnergy, 92) && decoded.Find(id).FoundInRaid,
             "inventory serialization retains the same recovered item and its actual resources");
+        CheckScavengedProtection();
         return "PASS " + s_Checks + " PMC shield loadout and corpse checks";
+    }
+
+    private static InventoryGraph ShieldCache(float charge, float energy, out string itemId)
+    {
+        var cache = InventoryGraph.Create(false, false);
+        cache.Items.Add(new InventoryItem { Id = LootInventoryExchange.Root, Code = LootInventoryExchange.Root });
+        var shield = new InventoryItem { Id = Guid.NewGuid().ToString("D"), Code = EnergyShieldEquipment.ShieldCode,
+            FoundInRaid = true, ShieldCharge = charge, ShieldEnergy = energy };
+        if (!cache.FindSpace(shield, LootInventoryExchange.Root, out string region, out int x, out int y))
+            throw new InvalidOperationException("shield cache fixture");
+        shield.Parent = LootInventoryExchange.Root; shield.Region = region; shield.X = x; shield.Y = y;
+        cache.Items.Add(shield); itemId = shield.Id;
+        return cache;
+    }
+
+    private static void CheckScavengedProtection()
+    {
+        var inventory = InventoryGraph.Create(false);
+        var cache = ShieldCache(35, 60, out string id);
+        Check(inventory.Validate() == InventoryError.None && cache.Validate() == InventoryError.None,
+            "scavenged shield fixture is valid");
+        Check(PmcLootRules.TakeAvailable(inventory, cache, equipShield: true) == 1 && inventory.Equipped("Shield")?.Id == id &&
+            cache.Find(id) == null, "an unprotected PMC equips the actual shield it finds");
+        var enemy = new PredictedPlayerGhost(); RaidHealth.Initialize(ref enemy);
+        Check(PmcProtectionLoadout.BindLootedShield(ref enemy, inventory) && enemy.ShieldEquipped &&
+            Near(enemy.ShieldCharge, 35) && Near(enemy.ShieldEnergy, 60) && Near(enemy.Oxygen, 100),
+            "the scavenged shield keeps its real charge and energy without changing NPC oxygen");
+        float hp = enemy.CurrentHealth;
+        RaidHealth.CombatDamage(ref enemy, BodyPart.Chest, 20, 1, RaidDamageKind.Bullet);
+        Check(Near(enemy.CurrentHealth, hp) && Near(enemy.ShieldCharge, 15), "the scavenged shield actually protects its wearer");
+        Check(!PmcProtectionLoadout.BindLootedShield(ref enemy, inventory) && Near(enemy.ShieldCharge, 15),
+            "rebinding an equipped shield cannot refill it");
+        EnergyShieldEquipment.Flush(ref enemy, inventory);
+        var corpse = LootInventoryExchange.DropOnDeath(inventory);
+        Check(corpse.Find(id) != null && Near(corpse.Find(id).ShieldCharge, 15) && Near(corpse.Find(id).ShieldEnergy, 60),
+            "death drops the same used shield with its remaining resources");
+        var player = InventoryGraph.Create(false);
+        Check(LootInventoryExchange.TryApply(player, corpse, new InventoryCommand { Operation = InventoryOperation.Move,
+            ExpectedVersion = player.Version, ItemId = id, Parent = InventoryCatalog.Equipment, Region = "Shield" }, corpse.Version) == InventoryError.None &&
+            player.Equipped("Shield")?.Id == id && corpse.Find(id) == null,
+            "a player can recover the same shield from the scavenger without duplication");
+
+        inventory = InventoryGraph.Create(false);
+        Check(PmcProtectionLoadout.TryEquip(inventory, false, false, 0), "existing shield fixture");
+        string original = inventory.Equipped("Shield").Id;
+        cache = ShieldCache(80, 60, out id);
+        Check(PmcLootRules.TakeAvailable(inventory, cache, equipShield: true) == 1 && inventory.Equipped("Shield")?.Id == original &&
+            inventory.Find(id) != null && inventory.Find(id).Parent == inventory.Equipped("Backpack").Id,
+            "looting does not replace an already equipped shield");
+
+        inventory = InventoryGraph.Create(false);
+        cache = ShieldCache(0, 0, out id);
+        Check(PmcLootRules.TakeAvailable(inventory, cache, equipShield: true) == 1 && inventory.Equipped("Shield") == null &&
+            inventory.Find(id) != null, "a fully depleted shield can be carried but is not equipped as protection");
+
+        inventory = InventoryGraph.Create(false);
+        cache = ShieldCache(40, 60, out id);
+        Check(PmcLootRules.TakeAvailable(inventory, cache) == 1 && inventory.Equipped("Shield") == null &&
+            inventory.Find(id) != null, "disabled equip behavior leaves the tutorial loadout unchanged");
+
+        inventory = InventoryGraph.Create(false, false);
+        cache = ShieldCache(0, 60, out id);
+        Check(PmcLootRules.TakeAvailable(inventory, cache, equipShield: true) == 1 && inventory.Equipped("Shield")?.Id == id,
+            "a usable shield fits its equipment slot even with no backpack");
+        enemy = new PredictedPlayerGhost(); RaidHealth.Initialize(ref enemy);
+        Check(PmcProtectionLoadout.BindLootedShield(ref enemy, inventory) && Near(enemy.ShieldCharge, 0) && Near(enemy.ShieldEnergy, 60),
+            "an empty shield does not gain free charge when equipped");
+        EnergyShieldEquipment.Tick(ref enemy, inventory, 7);
+        Check(Near(enemy.ShieldCharge, 8) && Near(enemy.ShieldEnergy, 56),
+            "an empty shield recovers only after the delay and spends its own energy");
+
+        inventory = InventoryGraph.Create(false, false);
+        var pack = new InventoryItem { Id = Guid.NewGuid().ToString("D"), Code = "backpack",
+            Parent = InventoryCatalog.Equipment, Region = "Backpack" };
+        inventory.Items.Add(pack);
+        Check(inventory.AddSupply("alloy", 68, pack.Id) == InventoryError.None &&
+            inventory.AddSupply("dust", 18, pack.Id) == InventoryError.None, "near-weight-limit shield fixture");
+        cache = ShieldCache(70, 60, out id);
+        int inventoryVersion = inventory.Version, cacheVersion = cache.Version;
+        Check(PmcLootRules.TakeAvailable(inventory, cache, equipShield: true) == 0 &&
+            inventory.Equipped("Shield") == null && cache.Find(id) != null &&
+            inventory.Version == inventoryVersion && cache.Version == cacheVersion,
+            "a shield that exceeds the carry limit remains in the cache");
+
+        inventory = InventoryGraph.Create(false);
+        cache = ShieldCache(30, 45, out id);
+        var nestedShield = cache.Find(id);
+        var bag = new InventoryItem { Id = Guid.NewGuid().ToString("D"), Code = "small_pack", FoundInRaid = true };
+        Check(cache.FindSpace(bag, LootInventoryExchange.Root, out string region, out int x, out int y), "nested shield bag fits corpse");
+        bag.Parent = LootInventoryExchange.Root; bag.Region = region; bag.X = x; bag.Y = y; cache.Items.Add(bag);
+        nestedShield.Parent = bag.Id; nestedShield.Region = "main"; nestedShield.X = nestedShield.Y = 0;
+        Check(cache.Validate() == InventoryError.None && PmcLootRules.TakeAvailable(inventory, cache, equipShield: true) == 0,
+            "ordinary cache search does not reveal the contents of nested bags");
+        Check(PmcLootRules.TakeAvailable(inventory, cache, includeNested: true, equipShield: true) == 1 &&
+            inventory.Equipped("Shield")?.Id == id && cache.Find(id) == null,
+            "corpse search can equip a shield from the searched backpack");
     }
 
     // Uses the real server update in an isolated ECS world; no raid, profile or scene.
@@ -111,16 +208,28 @@ public static class PmcProtectionLoadoutChecks
         var clashInventory = inventory.Clone();
         manager.SetComponentData(clash, health);
         manager.AddComponentObject(clash, new DollSingerEnemyBrain { Inventory = clashInventory });
+        var scavengerInventory = InventoryGraph.Create(false);
+        var cache = ShieldCache(35, 60, out string scavengedId);
+        var scavengerHealth = new PredictedPlayerGhost(); RaidHealth.Initialize(ref scavengerHealth);
+        if (PmcLootRules.TakeAvailable(scavengerInventory, cache, equipShield: true) != 1 ||
+            !PmcProtectionLoadout.BindLootedShield(ref scavengerHealth, scavengerInventory))
+            throw new InvalidOperationException("Scavenged shield fixture");
+        var scavenger = manager.CreateEntity(typeof(DollSingerEnemy), typeof(Simulate), typeof(PredictedPlayerGhost));
+        manager.SetComponentData(scavenger, scavengerHealth);
+        manager.AddComponentObject(scavenger, new DollSingerEnemyBrain { Inventory = scavengerInventory });
         world.SetTime(new TimeData(7, 7));
         ref var system = ref world.Unmanaged.GetUnsafeSystemRef<ServerGameSystem>(handle);
         ref var state = ref world.Unmanaged.ResolveSystemStateRef(handle);
         tick(ref system, ref state);
         var updated = manager.GetComponentData<PredictedPlayerGhost>(npc);
         var excluded = manager.GetComponentData<PredictedPlayerGhost>(clash);
+        var scavenged = manager.GetComponentData<PredictedPlayerGhost>(scavenger);
         if (!Near(updated.ShieldCharge, 48) || !Near(updated.ShieldEnergy, 96) ||
             !Near(inventory.Equipped("Shield").ShieldCharge, 48) || !Near(updated.Oxygen, 100) ||
-            !Near(excluded.ShieldCharge, 40) || !Near(clashInventory.Equipped("Shield").ShieldCharge, 100))
+            !Near(excluded.ShieldCharge, 40) || !Near(clashInventory.Equipped("Shield").ShieldCharge, 100) ||
+            !Near(scavenged.ShieldCharge, 43) || !Near(scavenged.ShieldEnergy, 56) ||
+            !Near(scavengerInventory.Find(scavengedId).ShieldCharge, 43) || !Near(scavenged.Oxygen, 100))
             throw new InvalidOperationException("Server PMC protection update or bounty exclusion failed");
-        return "PASS server PMC shield update and bounty exclusion";
+        return "PASS server PMC loadout and scavenged shield updates with bounty exclusion";
     }
 }
